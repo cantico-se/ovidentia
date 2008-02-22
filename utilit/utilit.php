@@ -590,14 +590,19 @@ function addError($error) {
 	}
 }
 
-
+/**
+ * View as popup
+ * @param	string	$txt
+ * 
+ */ 
 function babpopup($txt) {
 	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->styleSheet = & $GLOBALS['babBody']->styleSheet;
 	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
-	$GLOBALS['babBodyPopup']->babecho($txt);
+	$GLOBALS['babBody']->babecho($txt);
+	$GLOBALS['babBodyPopup']->babecho($GLOBALS['babBody']->content);
 	printBabBodyPopup();
 	die();
 }

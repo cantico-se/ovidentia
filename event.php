@@ -138,6 +138,7 @@ class bab_cal_event
 		global $babDB;
 		if ($this->cat = $babDB->db_fetch_array($this->rescat)) {
 			$this->cat['name'] = bab_toHtml($this->cat['name']);
+			$this->cat['bgcolor'] = bab_toHtml($this->cat['bgcolor']);
 			$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
 			return true;
 			} 
@@ -151,7 +152,7 @@ class bab_cal_event
 
 function newEvent()
 	{
-	global $babBodyPopup;
+	global $babBody;
 	class temp extends bab_cal_event
 		{
 		var $arrresname = array();
@@ -237,8 +238,7 @@ function newEvent()
 			$this->block = true;
 			$this->bfree = true;
 
-			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
-			$this->avariability_message = &$GLOBALS['avariability_message'];
+			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
 			
 			$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
@@ -302,7 +302,11 @@ function newEvent()
 				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
 				}
 
+			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
+			$this->display_availability_message = 0 < count($this->availability_msg_list);
+			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory();
 			
+			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to create this event");
 			}
 
 		function getnextday()
@@ -436,9 +440,7 @@ function newEvent()
 
 		function getnextavariability()
 			{
-			if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability']))
-				return false;
-			return list(,$this->conflict) = each($GLOBALS['avariability']);
+			return list(,$this->conflict) = each($this->availability_msg_list);
 			}
 
 		function getnextreminderday()
@@ -544,14 +546,15 @@ function newEvent()
 		}
 
 	$temp = new temp();
-	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
-	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "newevent"));
+	$babBody->addStyleSheet('calendar.css');
+	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
+	$babBody->babpopup(bab_printTemplate($temp,"event.html", "newevent"));
 	}
 
 
 function modifyEvent($idcal, $evtid, $cci, $view, $date)
 	{
-	global $babBody,$babDB, $babBodyPopup;
+	global $babBody,$babDB;
 	class temp
 		{
 		var $datebegin;
@@ -784,12 +787,18 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->elapstime = $babBody->icalendars->elapstime;
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
-			$this->avariability = isset($GLOBALS['avariability']) && is_array($GLOBALS['avariability'])  ? 1 : 0;
-			$this->avariability_message = &$GLOBALS['avariability_message'];
+			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
 			
 
 			$this->rescat = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 			$this->rescount = $babDB->db_num_rows($this->rescat);
+			
+			
+			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
+			$this->display_availability_message = 0 < count($this->availability_msg_list);
+			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory();
+			
+			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
 			}
 
 		function getnextcat()
@@ -801,6 +810,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				$arr = $babDB->db_fetch_array($this->rescat);
 				$this->catid = $arr['id'];
 				$this->catname = bab_toHtml($arr['name']);
+				$this->bgcolor = bab_toHtml($arr['bgcolor']);
 				if( $this->evtarr['id_cat'] == $this->catid )
 					{
 					$this->selected = "selected";
@@ -955,9 +965,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 		function getnextavariability()
 			{
-			if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability']))
-				return false;
-			return list(,$this->conflict) = each($GLOBALS['avariability']);
+			return list(,$this->conflict) = each($this->availability_msg_list);
 			}
 
 		}
@@ -970,8 +978,9 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		}
 	
 	$temp = new temp($idcal, $evtid, $cci, $view, $date, $res);
-	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "scripts"));
-	$babBodyPopup->babecho(	bab_printTemplate($temp,"event.html", "modifyevent"));
+	$babBody->addStyleSheet('calendar.css');
+	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
+	$babBody->babpopup(bab_printTemplate($temp,"event.html", "modifyevent"));
 	}
 
 function deleteEvent()
@@ -1021,14 +1030,33 @@ function deleteEvent()
 
 
 
-function addEvent(&$avariability_message, &$message)
+function addEvent(&$message)
 	{
-
+	
+	
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
-	if ($posted->availabilityCheckAllEvents($avariability_message, $message)) {
+	
+
+	// if event is free
+	if (isset($_POST['bfree']) && $_POST['bfree'] == 'Y') {
 		return bab_createEvent($posted->args, $message);
 	}
+	
+	// if period is available
+	if ($posted->availabilityCheckAllEvents($message)) {
+		return bab_createEvent($posted->args, $message);
+	}
+	
+	// if availability message displayed and the event is submited
+	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
+		
+		// if availability is NOT mandatory
+		if (!bab_event_posted::availabilityIsMandatory()) {
+			return bab_createEvent($posted->args, $message);
+		}
+	}
+	
 	return false;
 }
 
@@ -1255,23 +1283,20 @@ function calendarquerystring()
 	}
 
 
-function eventAvariabilityCheck(&$avariability_message)
+function eventAvariabilityCheck()
 	{
 	global $babDB, $babBody;
 	
 	
-	if (isset($_POST['test_conflicts'])) {
-		$_POST['avariability'] = 0;
-	}
-
-	if (!isset($_POST['avariability']) || $_POST['avariability'] == 1 || (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' )) {
-		$GLOBALS['avariability'] = 0;
+	if (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' ) {
+		// event is free, allways available
 		return true;
 	}
 	
 	
 	$calid = explode(',',$GLOBALS['calid']);
 	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
+	
 	
 	
 	if( isset($_POST['monthbegin'])) {
@@ -1288,7 +1313,7 @@ function eventAvariabilityCheck(&$avariability_message)
 		$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
 		$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
 		
-		return bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false), $avariability_message);
+		$available_status = bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false));
 		
 	}
 	else {
@@ -1300,7 +1325,7 @@ function eventAvariabilityCheck(&$avariability_message)
 			return false;
 		}
 		
-		$returnvalue = true;
+		$available_status = true;
 		
 		$res = $babDB->db_query('SELECT hash FROM '.BAB_CAL_EVENTS_TBL.' WHERE id='.$babDB->quote($evtid));
 		if ($arr = $babDB->db_fetch_assoc($res)) {
@@ -1310,16 +1335,25 @@ function eventAvariabilityCheck(&$avariability_message)
 				$begin 	= bab_mktime($arr['start_date']);
 				$end 	= bab_mktime($arr['end_date']);
 				
-				if (false === bab_event_posted::availabilityCheck($calid, $begin, $end, $evtid, $avariability_message)) {
-					$returnvalue = false;
+				if (false === bab_event_posted::availabilityCheck($calid, $begin, $end, $evtid)) {
+					$available_status = false;
 				}
 			}
-			
-			return $returnvalue;
 		}
 	}
 	
-	return false;
+	// if period unavailable and availability allready displayed and no mandatory calendars on conflicts 
+	if (
+		false === $available_status 
+		&& isset($_POST['availability_displayed']) 
+		&& !isset($_POST['test_conflicts']) 
+		&& !bab_event_posted::availabilityIsMandatory()
+		) {
+		
+		$available_status = true;
+	}
+	
+	return $available_status;
 }
 
 
@@ -1346,7 +1380,7 @@ if( !$calid )
 	exit;
 	}
 
-$avariability_message = '';
+
 
 if (isset($_REQUEST['action']))
 	{
@@ -1359,7 +1393,7 @@ if (isset($_REQUEST['action']))
 
 		case 'addevent':
 			$message = '';
-			if (addEvent($avariability_message, $message))
+			if (addEvent($message))
 				{
 				$idx = "unload";
 				}
@@ -1373,7 +1407,7 @@ if (isset($_REQUEST['action']))
 			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
 				$message = '';
-				if (eventAvariabilityCheck($avariability_message) && updateEvent($message))
+				if (eventAvariabilityCheck() && updateEvent($message))
 					{
 					$idx = "unload";
 					}
@@ -1428,21 +1462,16 @@ switch($idx)
 
 	case "modevent":
 		if( !isset($message)) { $message = '';}
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = $message;
+		$babBody->msgerror = $message;
 		modifyEvent($calid, bab_rp('evtid'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
-		printBabBodyPopup();
 		exit;
 		break;
 
 	case "newevent":
 		if( !isset($message)) { $message = '';}
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("New calendar event");
-		$babBodyPopup->msgerror = $message;
+		$babBody->title = bab_translate("New calendar event");
+		$babBody->msgerror = $message;
 		newEvent();
-		printBabBodyPopup();
-		exit;
 		break;
 
 	default:

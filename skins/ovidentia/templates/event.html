@@ -8,20 +8,36 @@
 <input type="hidden" name="view" value="{ curview }" />
 <input type="hidden" name="curcalids" value="{ calid }" />
 <input type="hidden" name="action" value="addevent" />
-<input type="hidden" name="avariability" value="{ avariability }" />
+
+
+
 <table class="BabLoginCadreBackground" width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
-	<tr id="avariability_check">
+
+	<tr>
 		<td colspan="2">
-		{ avariability_message }<br />
-		<ol>
-			<!--#in getnextavariability -->
-			<li>{ conflict }</li>
-			<!--#endin getnextavariability -->
-		</ol>
-		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br />
+		
+			<!--#if display_availability_message -->
+			<div id="avariability_check">	
+				<input type="hidden" name="availability_displayed" value="1" />
+				<div <!--#if availability_mandatory --> class="mandatory" <!--#endif availability_mandatory -->>
+					<h3>{ avariability_message }</h3>
+					<ol>
+						<!--#in getnextavariability -->
+						<li>{ conflict }</li>
+						<!--#endin getnextavariability -->
+					</ol>
+					
+					<!--#if availability_mandatory -->
+					<p>{ t_availability_mandatory }</p>
+					<!--#endif availability_mandatory -->
+				</div>
+				<p style="text-align:center"><input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /></p>
+			</div>
+			<!--#endif display_availability_message -->
+		
 		</td>
 	</tr>
 	<tbody id="main_form">
@@ -204,9 +220,9 @@
 		<td> 
 			<select name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
-			<!--#in getnextcat -->
-			<option value="{ cat[id] }" { selected }>{ cat[name] }</option>
-			<!--#endin getnextcat -->
+				<!--#in getnextcat -->
+				<option value="{ cat[id] }" style="background:#{ cat[bgcolor] }" { selected }>{ cat[name] }</option>
+				<!--#endin getnextcat -->
 			</select>
 		</td>
 	</tr>
@@ -350,7 +366,6 @@ else
 </form>
 <script type="text/javascript">
 <!--
-check_avariability();
 ed();
 -->
 </script>
@@ -376,23 +391,37 @@ ed();
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="evtid" value="{ evtid }" />
 <input type="hidden" name="action" value="modifyevent" />
-<input type="hidden" name="avariability" value="{ avariability }" />
+
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
 	
 	
-	<tr id="avariability_check">
-		<td colspan="2">{ avariability_message }<br />
-		<ol>
-			<!--#in getnextavariability -->
-			<li>{ conflict }</li>
-			<!--#endin getnextavariability -->
-		</ol>
-		<input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /><br /><br />
+	<tr>
+		<td colspan="2">
+			<!--#if display_availability_message -->
+			<div id="avariability_check">
+			
+				<input type="hidden" name="availability_displayed" value="1" />
+				<div <!--#if availability_mandatory --> class="mandatory" <!--#endif availability_mandatory -->>
+					<h3>{ avariability_message }</h3>
+					<ol>
+						<!--#in getnextavariability -->
+						<li>{ conflict }</li>
+						<!--#endin getnextavariability -->
+					</ol>
+					<!--#if availability_mandatory -->
+					<p>{ t_availability_mandatory }</p>
+					<!--#endif availability_mandatory -->
+				</div>
+				<p style="text-align:center"><input type="submit" value="{ t_test_conflicts }" name="test_conflicts" /></p>
+			</div>
+			<!--#endif display_availability_message -->
 		</td>
 	</tr>
+	
+	
 	
 	<tbody id="main_form">
 	<!--#if brecevt -->
@@ -518,7 +547,7 @@ ed();
 			<select name="category" onchange="category_switch(this)">
 			<option value="" selected ></option>
 			<!--#in getnextcat -->
-			<option value="{ catid }" { selected }>{ catname }</option>
+			<option value="{ catid }" style="background:#{ bgcolor }" { selected }>{ catname }</option>
 			<!--#endin getnextcat -->
 			</select>
 		</td>
@@ -616,7 +645,6 @@ ed();
 if (typeof bupdrec_onchange != 'undefined') {
 	bupdrec_onchange(document.forms['vacform'].bupdrec);
 }
-check_avariability();
 -->
 </script>
 <br />
@@ -762,23 +790,7 @@ function submitCtrl(form, name)
 		}
 	}
 
-function check_avariability()
-	{
-	var f = document.forms['vacform'];
-	var main_form = document.getElementById('main_form').style;
-	var avariability_check = document.getElementById('avariability_check').style;
 
-	if (f.avariability.value == 1)
-		{
-		//main_form.display='none';
-		avariability_check.display='';
-		}
-	else
-		{
-		//main_form.display='';
-		avariability_check.display='none';
-		}
-	}
 
 function view_main_form()
 	{

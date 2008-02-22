@@ -482,10 +482,28 @@ function addResourceCalendar($calname, $caldesc, $calidsa)
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
 		}
+		
+	
+	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
+	
 
-	$babDB->db_query("insert into ".BAB_CAL_RESOURCES_TBL." (name, description, id_dgowner, idsa) values ('" .$babDB->db_escape_string($calname). "', '".$babDB->db_escape_string($caldesc)."', '".$babDB->db_escape_string($babBody->currentAdmGroup)."', '".$babDB->db_escape_string($calidsa)."')");
+	$babDB->db_query("
+		insert into ".BAB_CAL_RESOURCES_TBL." 
+			(name, description, id_dgowner, idsa, availability_lock) 
+		VALUES 
+			(
+				'" .$babDB->db_escape_string($calname). "', 
+				'".$babDB->db_escape_string($caldesc)."', 
+				'".$babDB->db_escape_string($babBody->currentAdmGroup)."', 
+				'".$babDB->db_escape_string($calidsa)."',
+				".$babDB->quote($availability_lock)."
+			)
+	");
+	
 	$idowner = $babDB->db_insert_id();
+	
 	$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('" .$babDB->db_escape_string($idowner). "', '".BAB_CAL_RES_TYPE."')");
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }

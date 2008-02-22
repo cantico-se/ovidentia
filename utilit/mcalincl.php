@@ -186,6 +186,56 @@ class bab_mcalendars
 			}
 		return "";
 		}
+		
+		
+	function getTypeLabel($type) {
+		switch($type)
+			{
+			case BAB_CAL_USER_TYPE:
+				return bab_translate('User');
+			case BAB_CAL_PUB_TYPE:
+				return bab_translate('Public');
+			case BAB_CAL_RES_TYPE:
+				return bab_translate('Resource');
+		}
+	}
+		
+		
+	/**
+	 * Get a list of calendars associated to the event
+	 * @param	object	$calPeriod
+	 * @return 	array
+	 */
+	function getEventCalendars($calPeriod) {
+	
+		$cals = array();
+		
+		$arr = $calPeriod->getData();
+		
+		if (isset($arr['id_cal'])) {
+			$cals[$arr['id_cal']] = array(
+				'name' => $this->getCalendarName($arr['id_cal']), 
+				'type' => $this->getTypeLabel($this->getCalendarType($arr['id_cal']))
+			);
+		}
+	
+		
+		if (isset($arr['idcal_owners'])) {
+			foreach($arr['idcal_owners'] as $id_cal) {	
+				$type = bab_getCalendarType($id_cal);
+				$cals[$id_cal] = array(
+					'name' => bab_getCalendarOwnerName($id_cal), 
+					'type' => $this->getTypeLabel($type)
+				);
+			}
+		}
+		
+		return $cals;
+	
+	}
+		
+		
+		
 
 	/**
 	 * Create events object

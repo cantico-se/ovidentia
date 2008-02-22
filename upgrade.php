@@ -4301,6 +4301,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FAQQR_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
 	}
+	
+	if(!bab_isTableField(BAB_CAL_RESOURCES_TBL, 'availability_lock')) 
+	{
+		$babDB->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD `availability_lock` tinyint(1) unsigned default NULL");
+	}
 
 
 	return true;

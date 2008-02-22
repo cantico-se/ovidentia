@@ -630,28 +630,8 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						}
 
 					$evt = & $this->resevent[$uid];
-					
 
-					if (isset($arr['id_cal'])) {
-						$evt['cals'][$arr['id_cal']] = array(
-							'name' => $this->mcals->getCalendarName($arr['id_cal']), 
-							'type' => $this->getTypeLabel($this->mcals->getCalendarType($arr['id_cal']))
-						);
-					}
-
-					
-					if (isset($arr['idcal_owners'])) {
-						foreach($arr['idcal_owners'] as $id_cal) {	
-							$type = bab_getCalendarType($id_cal);
-							$evt['cals'][$id_cal] = array(
-								'name' => bab_getCalendarOwnerName($id_cal), 
-								'type' => $this->getTypeLabel($type)
-							);
-						}
-					}
-					
-
-
+					$evt['cals'] = $this->mcals->getEventCalendars($calPeriod);
 
 					$evt['title'] = $calPeriod->getProperty('SUMMARY');
 					$evt['description'] = $calPeriod->getProperty('DESCRIPTION');
@@ -713,17 +693,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 			}
 
-		function getTypeLabel($type) {
-			switch($type)
-				{
-				case BAB_CAL_USER_TYPE:
-					return bab_translate('User');
-				case BAB_CAL_PUB_TYPE:
-					return bab_translate('Public');
-				case BAB_CAL_RES_TYPE:
-					return bab_translate('Resource');
-				}
-			}
+		
 
 
 		function getnextevent() {

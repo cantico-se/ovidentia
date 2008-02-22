@@ -92,31 +92,37 @@
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr> 
-		<td  width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
-		<td  width="70%" valign="middle"> 
-			<input type="text" name="calname" size="40" maxlength="255" value="{ calname }">
-		</td>
+			<td  width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
+			<td  width="70%" valign="middle"> 
+				<input type="text" name="calname" size="40" maxlength="255" value="{ calname }" />
+			</td>
 		</tr>
 		<tr> 
-		<td  width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
-		<td  width="70%" valign="middle"> 
-			<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }">
-		</td>
+			<td  width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
+			<td  width="70%" valign="middle"> 
+				<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }" />
+			</td>
 		</tr>
 		<tr> 
-		<td  align="right" nowrap valign="middle">{ approbationtxt }:</td>
-		<td  valign="middle">
-			<select name="calidsa">
-				<option value="0">{ nonetxt }</option>
-				<!--#in getnextschapp -->
-				<option value="{ said }" { selected }>{ saname }</option>
-				 <!--#endin getnextschapp -->
-			</select>
-		</td>
+			<td  width="30%" align="right" nowrap valign="middle">{ t_availability_lock }:</td>
+			<td  width="70%" valign="middle"> 
+				<input type="checkbox" name="availability_lock" <!--#if availability_lock --> checked="checked"<!--#endif availability_lock --> />
+			</td>
+		</tr>
+		<tr> 
+			<td  align="right" nowrap valign="middle">{ approbationtxt }:</td>
+			<td  valign="middle">
+				<select name="calidsa">
+					<option value="0">{ nonetxt }</option>
+					<!--#in getnextschapp -->
+					<option value="{ said }" { selected }>{ saname }</option>
+					 <!--#endin getnextschapp -->
+				</select>
+			</td>
 		</tr>
 		<tr> 
 		<td >&nbsp;</td>
-		<td  valign="middle"><input type="submit" name="submit" value="{ addtxt }"></td>
+		<td  valign="middle"><input type="submit" name="submit" value="{ addtxt }" /></td>
 		</tr>
 	</table>
 </td>

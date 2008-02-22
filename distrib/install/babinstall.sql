@@ -637,13 +637,14 @@ CREATE TABLE bab_cal_categories (
 #
 
 CREATE TABLE bab_cal_resources (
-  id int(11) unsigned NOT NULL auto_increment,
-  name varchar(60) NOT NULL default '',
-  description varchar(255) NOT NULL default '',
-  id_dgowner int(11) unsigned NOT NULL default '0',
-  idsa int(11) unsigned NOT NULL default '0',
-  PRIMARY KEY  (id),
-  KEY id_dgowner (id_dgowner)
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(60) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `id_dgowner` int(11) unsigned NOT NULL default '0',
+  `idsa` int(11) unsigned NOT NULL default '0',
+  `availability_lock` tinyint(1) unsigned default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_dgowner` (`id_dgowner`)
 );
 
 

@@ -321,6 +321,35 @@ class bab_calendarPeriod {
 
 
 
+
+
+
+
+
+class bab_availabilityReply {
+	
+	/**
+	 * @public
+	 */
+	var $status = NULL;
+	
+	/**
+	 * @public
+	 */
+	var $available_periods = array();
+	
+	/**
+	 * @public
+	 */
+	var $conflicts_events = array();
+}
+
+
+
+
+
+
+
 /**
  * Manage working and non-working hours
  * browse periods with working hours and non-working days
@@ -674,20 +703,18 @@ class bab_userWorkingHours {
 	
 
 	/**
-	 * Find available periods
-	 * @param	boolean		$period_availability
-	 * @return 	array
+	 * Find available periods on all processed period of object
+	 * @return 	bab_availabilityReply
 	 */
-	function getAvailability(&$period_availability) {
+	function getAvailability() {
+		
 		reset($this->boundaries);
 		$previous = NULL;
-		$periods = array();
-		$period_availability = NULL;
+		$availabilityReply = new bab_availabilityReply();
 		
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
-		
-		
+
 		// si pas d'agenda utilisateur
 		if (!$this->id_users) {
 		
@@ -699,6 +726,7 @@ class bab_userWorkingHours {
 					if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 						if (!$event->isAvailable()) {
 							$nb_unAvailable++;
+							$availabilityReply->conflicts_events[] = $event;
 						}
 					}
 				}
@@ -717,18 +745,17 @@ class bab_userWorkingHours {
 				
 				if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
 					
-					$periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
+					$availabilityReply->available_periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
 					
 					// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
 					$previous = false;
 				}
 			}
 			
-			
 			// si $previous est encore = à NULL, il n'y a aucun evenements qui genere de la non disponibilité
 			if (NULL === $previous) {
 			
-				$period_availability = true;
+				$availabilityReply->status = true;
 		
 				// autoriser la creation d'une nouvelle periode à partir de $test_begin
 				$previous = $test_begin;
@@ -736,10 +763,10 @@ class bab_userWorkingHours {
 			
 
 			if (false !== $previous && $previous < $test_end) {
-				$periods[$previous.'.'.$test_end] = new bab_calendarPeriod($previous, $test_end, BAB_PERIOD_NONWORKING);
+				$availabilityReply->available_periods[$previous.'.'.$test_end] = new bab_calendarPeriod($previous, $test_end, BAB_PERIOD_NONWORKING);
 			}
 			
-			return $periods;
+			return $availabilityReply;
 		}
 		
 		
@@ -798,6 +825,8 @@ class bab_userWorkingHours {
 						foreach($id_users as $id_user) {
 							$users_non_available[$id_user] = true;
 						}
+						
+						$availabilityReply->conflicts_events[] = $event;
 					}
 				}
 			}
@@ -814,8 +843,8 @@ class bab_userWorkingHours {
 				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous; 
 				$tmp_end 	= $ts > $test_end ? $test_end : $ts; 
 			
-				if (!isset($periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
-					$periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
+				if (!isset($availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
+					$availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
 				}
 				$previous = NULL;
 				// bab_debug('non-free '.bab_shortDate($ts));
@@ -831,17 +860,18 @@ class bab_userWorkingHours {
 		
 		
 		
-		if (1 === count($periods) && isset($periods[$test_begin.'.'.$test_end])) {
-			$period_availability = true;
+		if (1 === count($availabilityReply->available_periods) && isset($availabilityReply->available_periods[$test_begin.'.'.$test_end])) {
+			$availabilityReply->status = true;
 		} else {
-			$period_availability = false;
+			$availabilityReply->status = false;
 		}
 		
-		return $periods;
+		return $availabilityReply;
 	}
 
 
 	/**
+	 * Get availability periods between two dates with a minimum duration
 	 * @param	int		$start	timestamp
 	 * @param	int		$end	timestamp
 	 * @param	int		$gap	minimum event duration in seconds
@@ -851,8 +881,8 @@ class bab_userWorkingHours {
 		static $availability = NULL;
 
 		if (NULL === $availability) {
-			$period_availability = NULL;
-			$availability = $this->getAvailability($period_availability);
+			$obj = $this->getAvailability();
+			$availability = $obj->available_periods;
 			
 		} else {
 			reset($availability);

@@ -110,6 +110,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
+			$this->t_availability_lock = bab_translate("The availability of the ressource is mandatory to create an event");
 			$this->nonetxt = bab_translate("None");
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
@@ -136,6 +137,13 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 				{
 				$this->calidsa = bab_toHtml($arr['idsa']);
 				}
+				
+			$this->availability_lock = false;
+			
+			if (1 === (int) $arr['availability_lock']) {
+				$this->availability_lock = true;
+			}
+				
 			$this->add = "modr";
 			$this->idcal = $arr['id'];
 			$this->tgval = 'admcal';
@@ -296,8 +304,22 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
+	
+	$availability_lock = isset($_POST['availability_lock']) ? '1' : '0';
+	
+	
 
-	$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set name='".$babDB->db_escape_string($calname)."', description='".$babDB->db_escape_string($caldesc)."', idsa='".$babDB->db_escape_string($calidsa)."' where id='".$babDB->db_escape_string($idcal)."'");
+	$babDB->db_query("
+		UPDATE ".BAB_CAL_RESOURCES_TBL." 
+		SET 
+			name='".$babDB->db_escape_string($calname)."', 
+			description='".$babDB->db_escape_string($caldesc)."', 
+			idsa='".$babDB->db_escape_string($calidsa)."',
+			availability_lock=".$babDB->quote($availability_lock)."
+		WHERE 
+			id='".$babDB->db_escape_string($idcal)."'
+	");
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
 	exit;
 }

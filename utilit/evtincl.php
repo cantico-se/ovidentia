@@ -1447,6 +1447,35 @@ function bab_deleteEvent($idevent)
 
 
 
+/**
+ * search for availability lock in an array of calendars
+ * if one calendar require availability, the function return true
+ * @param	array	$calendars
+ * @return boolean
+ */
+function bab_event_availabilityMandatory($calendars) {
+	global $babDB;
+	
+	$res = $babDB->db_query('
+		SELECT 
+			COUNT(*) 
+		FROM 
+			'.BAB_CAL_RESOURCES_TBL.' r,
+			'.BAB_CALENDAR_TBL.' c
+		WHERE 
+			r.id = c.owner 
+			AND c.type=\''.BAB_CAL_RES_TYPE.'\' 
+			AND c.id IN('.$babDB->quote($calendars).') 
+			AND r.availability_lock=\'1\'
+	');
+	
+	list($n) = $babDB->db_fetch_row($res);
+	
+	return 0 !== (int) $n;
+}
+
+
+
 
 class bab_event_posted {
 
@@ -1665,17 +1694,17 @@ class bab_event_posted {
 	 * Verify form data and 
 	 * test availability on all events
 	 *
-	 * @param	string	&$avariability_message
 	 * @param	string	&$message
 	 * @return boolean
 	 */
-	function availabilityCheckAllEvents(&$avariability_message, &$message) {
+	function availabilityCheckAllEvents(&$message) {
 		if (false === bab_createEvent($this->args, $message, array($this, 'availabilityCheckCallback'))) {
 			return false;
 		}
 		
-		if (!empty($GLOBALS['avariability'])) {
-			$avariability_message = bab_translate("The event is in conflict with a calendar");
+		$availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
+		
+		if (0 < count($availability_msg_list)) {
 			return false;
 		}
 		
@@ -1704,13 +1733,23 @@ class bab_event_posted {
 	
 	
 	/**
+	 * Test availability on period
+	 * On conflicts, this function fill the list of conflicts
+	 * @see 	bab_event_posted::availabilityConflictsStore()
 	 * @static
+	 *
+	 * @param	array			$calid
+	 * @param	string			$begin					Timestamp
+	 * @param	string			$end					Timestamp
+	 * @param	int|false		$evtid					If event is in modification
+	 *													
+	 * @return boolean			true : period available	/ false : period unavailable
 	 */
-	function availabilityCheck($calid, $begin, $end, $evtid, &$avariability_message) {
+	function availabilityCheck($calid, $begin, $end, $evtid) {
 	
-		if (!isset($GLOBALS['avariability']) || !is_array($GLOBALS['avariability'])) {
-			$GLOBALS['avariability'] = array();
-		}
+		
+		$availability_msg_list = array();
+		$availability_conflicts_calendars = array();
 		
 		
 		$sdate = sprintf("%04s-%02s-%02s %02s:%02s:%02s", date('Y',$begin), date('m',$begin), date('d',$begin), date('H',$begin), date('i',$begin), date('s',$begin));
@@ -1735,62 +1774,124 @@ class bab_event_posted {
 			}
 		}
 	
-		$availability = NULL;
-		$arr = $whObj->getAvailability($availability);
 		
-		// debug
-		foreach($arr as $obj) {
-			bab_debug('periode dispo : '.bab_shortDate($obj->ts_begin).' '.bab_shortDate($obj->ts_end));
+		$AvaReply = $whObj->getAvailability();
+		
+		
+		
+		$mcals = & new bab_mcalendars($sdate, $edate, $calid);
+		foreach($AvaReply->conflicts_events as $calPeriod) {
+		
+			$event = $calPeriod->getData();
+			if (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event'])
+				{
+
+				$title = bab_translate("Private");
+				if( 
+					(
+						'PUBLIC' !== $calPeriod->getProperty('CLASS') 
+						&& $event['id_cal'] == $babBody->icalendars->id_percal
+					) 
+					|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
+				{
+					$title = $calPeriod->getProperty('SUMMARY');
+				}
+				
+				
+				
+				$calendar_labels = array();
+				$cals = $mcals->getEventCalendars($calPeriod);
+				foreach($cals as $id_cal => $arr) {
+					$availability_conflicts_calendars[] = $id_cal;
+					$calendar_labels[] = $arr['name'];
+				}
+				
+				
+
+				$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+
+			}
 		}
 		
-		if (false === $availability) {
-			$avariability_message = bab_translate("The event is in conflict with a calendar");
-		} 
 	
-	
-		// events tests
-		$mcals = & new bab_mcalendars($sdate, $edate, $calid);
 		
-		while ($cal = current($mcals->objcals)) 
-			{
-			$arr = array();
-			$cal->getEvents($sdate, $edate, $arr);
-			foreach ($arr as $calPeriod)
-				{
-				$event = $calPeriod->getData();
-	
-				if (isset($event['bfree']) && $event['bfree'] !='Y' && (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event']))
-					{
-					global $babBody;
-					$title = bab_translate("Private");
-					if( 
-						(
-							'PUBLIC' !== $calPeriod->getProperty('CLASS') 
-							&& $event['id_cal'] == $babBody->icalendars->id_percal
-						) 
-						|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
-					{
-						$title = $calPeriod->getProperty('SUMMARY');
-					}
-	
-					$GLOBALS['avariability'][] = $cal->cal_name.' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
-	
-					}
-				}
-			next($mcals->objcals);
+			
+			
+		if (false === $AvaReply->status && count($availability_msg_list) === 0) {
+			
+			if (0 < count($AvaReply->available_periods)) {
+			
+				// si il y a une periode dispo, l'afficher
+				reset($AvaReply->available_periods);
+				$calPeriod = current($AvaReply->available_periods);
+				$availability_msg_list[] = sprintf(
+					bab_translate('There is a conflict with working hours, the next available period is : %s to %s'),
+					bab_shortDate($calPeriod->ts_begin),
+					bab_time($calPeriod->ts_end)
+				);
+			
+			} else {
+			
+				$availability_msg_list[] = bab_translate("There is a conflict with working hours of the selected personnal calendars");
+			
 			}
-	
-	
-		if ($avariability_message || (is_array($GLOBALS['avariability']) && count($GLOBALS['avariability']) > 0 ))
+		}
+
+		if (count($availability_msg_list) > 0)
 			{
+			bab_event_posted::availabilityConflictsStore('MSG', $availability_msg_list);
+			bab_event_posted::availabilityConflictsStore('CAL', $availability_conflicts_calendars);
+			
 			return false;
 			}
 		else
 			{
-			
-			$GLOBALS['avariability'] = 0;
 			return true;
 			}
+	}
+	
+	
+	
+	/**
+	 * Register an array of message for availability check
+	 * if called without parameters, this method return the list
+	 *
+	 * @static
+	 * @param	string	$object_key		( 'MSG' | 'CAL' )
+	 * @param	array	[$arr]
+	 * @param	array
+	 */
+	function availabilityConflictsStore($object_key, $arr = NULL) {
+	
+		static $memory = array();
+		
+		if (!isset($memory[$object_key])) {
+			$memory[$object_key] = array();
+		}
+		
+		if (NULL !== $arr) {
+			$memory[$object_key] += $arr;
+		}
+
+		return $memory[$object_key];
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Test if availablity is mandatory after the availablity test
+	 * this method use the calendars in conflicts list
+	 * @see bab_event_posted::availabilityConflictsStore()
+	 * @return boolean
+	 */
+	function availabilityIsMandatory() {
+	
+		$calendars = bab_event_posted::availabilityConflictsStore('CAL');
+		$calendars = array_unique($calendars);
+		
+		return bab_event_availabilityMandatory($calendars);
 	}
 }
 
