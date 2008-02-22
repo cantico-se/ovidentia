@@ -45,6 +45,8 @@ function delgatList($res)
 		var $urlmem;
 		var $altbg = true;
 
+		var $addtxt = '';
+		
 		function temp($res)
 			{
 			global $babDB;
@@ -53,6 +55,11 @@ function delgatList($res)
 			$this->delegadmintxt = bab_translate("Managing administrators");
 			$this->memberstxt = bab_translate("Managing administrators");
 			$this->grpmtxt = bab_translate("Managed group");
+			
+			$this->sAddCaption = bab_translate("Add");
+			$this->sAddUrl = $GLOBALS['babUrlScript']."?tg=delegat&idx=new";
+			
+			
 			$this->res = $res;
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->c= 0;
@@ -85,6 +92,186 @@ function delgatList($res)
 	$temp = new temp($res);
 	$babBody->babecho(	bab_printTemplate($temp, "delegat.html", "delegationlist"));
 	}
+
+	
+function displayCategoriesListForm()
+{
+	global $babBody;
+	
+	class categoriesListForm
+	{
+		var $nametxt;
+		var $urlname;
+		var $url;
+		var $desc;
+		var $desctxt;
+		var $bgcolor;
+		var $bgcolortxt;
+				
+		var $arr = array();
+		var $db;
+		var $count;
+		var $countcal;
+		var $res;
+		var $altbg = true;
+
+		function categoriesListForm()
+		{
+			global $babDB;
+			$this->nametxt = bab_translate("Name");
+			$this->desctxt = bab_translate("Description");
+			$this->bgcolortxt = bab_translate("Color");
+			$this->add = bab_translate("Add");
+			$this->t_delete = bab_translate('Delete');
+			$this->t_delete_checked = bab_translate("Delete checked items");
+			$this->t_confirm_delete = bab_translate("Do you want to delete selected items?");
+			$this->urladdcat = $GLOBALS['babUrlScript'].'?tg=delegat&idx=displayAddCategorieForm';
+			
+			if ($delete_category = bab_pp('delete_category')) 
+			{
+				foreach($delete_category as $id_category) 
+				{
+					deleteCategory($id_category);
+				}
+				
+				Header("Location:". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+				exit;
+			}
+			
+			$this->res = $babDB->db_query("select * from ".BAB_DG_CATEGORIES_TBL." ORDER BY name,description ");
+			$this->countcal = $babDB->db_num_rows($this->res);
+		}
+			
+		function getnext()
+		{
+			global $babDB;
+			static $i = 0;
+			if($i < $this->countcal)
+			{
+				$this->altbg = !$this->altbg;
+				$this->arr = $babDB->db_fetch_array($this->res);
+				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=displayModifyCategorieForm&idcat=".$this->arr['id']);
+				$this->urlname = bab_toHtml($this->arr['name']);
+				$this->desc = bab_toHtml($this->arr['description']);
+				$this->bgcolor = bab_toHtml($this->arr['bgcolor']);
+				$this->id_category = (int) $this->arr['id'];
+				$i++;
+				return true;
+			}
+			else
+			{
+				$i = 0;
+				return false;
+			}
+		}
+	}
+	
+	$oForm = new categoriesListForm();
+	$babBody->babecho(bab_printTemplate($oForm, 'delegat.html', 'categorieslist'));
+}
+
+
+function displayAddCategorieForm($catname, $catdesc, $bgcolor)
+{
+	global $babBody;
+	class calendarsAddCategoryCls
+		{
+		var $name;
+		var $description;
+		var $bgcolor;
+		var $groupsname;
+		var $idgrp;
+		var $count;
+		var $add;
+		var $db;
+		var $arrgroups = array();
+		var $userid;
+
+		function calendarsAddCategoryCls($catname, $catdesc, $bgcolor)
+			{
+			$this->nametxt = bab_translate("Name");
+			$this->desctxt = bab_translate("Description");
+			$this->bgcolortxt = bab_translate("Color");
+			$this->addtxt = bab_translate("Add Category");
+			$this->idcat = '';
+			$this->add = 'addCategory';
+			$this->tgval = 'delegat';
+			$this->name = bab_toHtml($catname);
+			$this->desc = bab_toHtml($catdesc);
+			$this->bgcolor = bab_toHtml($bgcolor);
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			}
+		}
+
+	$temp = new calendarsAddCategoryCls($catname, $catdesc, $bgcolor);
+	$babBody->babecho( bab_printTemplate($temp, "delegat.html", "categorycreate"));
+}
+
+function displayModifyCategorieForm()
+{
+	global $babBody;
+	class odifyCategorieForm
+		{
+		var $name;
+		var $description;
+		var $bgcolor;
+		var $groupsname;
+		var $idgrp;
+		var $count;
+		var $add;
+		var $arrgroups = array();
+		var $userid;
+
+		function odifyCategorieForm()
+			{
+			global $babDB;
+
+			$this->nametxt = bab_translate("Name");
+			$this->desctxt = bab_translate("Description");
+			$this->bgcolortxt = bab_translate("Color");
+			$this->addtxt = bab_translate("Update");
+			
+			$this->idcat = $idcat = bab_rp('idcat');
+			$catname = bab_rp('catname');
+			$catdesc = bab_rp('catdesc');
+			$bgcolor = bab_rp('bgcolor');
+			
+			$this->add = 'updateCategory';
+			$this->tgval = 'delegat';
+			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DG_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat)));
+			if( !empty($catname))
+				{
+				$this->name = bab_toHtml($catname);
+				}
+			else
+				{
+				$this->name = bab_toHtml($arr['name']);
+				}
+			if( !empty($catdesc))
+				{
+				$this->desc = bab_toHtml($catdesc);
+				}
+			else
+				{
+				$this->desc = bab_toHtml($arr['description']);
+				}
+
+			if( !empty($bgcolor))
+				{
+				$this->bgcolor = bab_toHtml($bgcolor);
+				}
+			else
+				{
+				$this->bgcolor = bab_toHtml($arr['bgcolor']);
+				}
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			}
+		}
+
+	$temp = new odifyCategorieForm();
+	$babBody->babecho( bab_printTemplate($temp,"delegat.html", "categorycreate"));
+}
+
 
 function groupDelegatMembers($id)
 	{
@@ -462,6 +649,49 @@ function deleteDelegatMembers()
 	exit;
 }
 
+
+function addCategory($catname, $catdesc, $bgcolor)
+{
+	global $babDB, $babBody;
+
+	if( empty($catname))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
+		return false;
+		}
+
+		
+//	$this->res = $babDB->db_query("select * from ".BAB_DG_CATEGORIES_TBL." ORDER BY name,description ");
+		
+		
+	$babDB->db_query("insert into ".BAB_DG_CATEGORIES_TBL." (name, description, bgcolor) values ('" .$babDB->db_escape_string($catname). "', '".$babDB->db_escape_string($catdesc)."', '".$babDB->db_escape_string($bgcolor)."')");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+	exit;
+}
+
+
+function updateCategory($idcat, $catname, $catdesc, $bgcolor)
+{
+	global $babDB, $babBody;
+
+	if( empty($catname))
+		{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
+		return false;
+		}
+
+	$babDB->db_query("update ".BAB_DG_CATEGORIES_TBL." set name='".$babDB->db_escape_string($catname)."', description='".$babDB->db_escape_string($catdesc)."', bgcolor='".$babDB->db_escape_string($bgcolor)."' where id='".$babDB->db_escape_string($idcat)."'");
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+	exit;
+}
+
+
+function deleteCategory($idcat)
+{
+	global $babDB, $babBody;
+	$babDB->db_query("delete from ".BAB_DG_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat));
+}
+
 function confirmDeleteDelegatGroup($id)
 {
 	global $babDB;
@@ -615,9 +845,21 @@ switch($_POST['action'])
 		confirmDeleteDelegatGroup($_POST['id']);
 		$idx = 'list';
 		break;
+	case 'addCategory':
+		if(!addCategory(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
+		{
+			$idx = 'displayAddCategorieForm';
+		}
+		break;
+		
+	case 'updateCategory':
+		if(!updateCategory(bab_rp('idcat'), bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
+		{
+			$idx = 'displayAddCategorieForm';
+		}
+		break;
 	}
-
-
+	
 
 if( $idx == 'list' )
 {
@@ -692,12 +934,35 @@ switch($idx)
 		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 		break;
 
+	case 'displayAddCategorieForm':
+		displayAddCategorieForm(bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor'));
+		$babBody->title = bab_translate("Add a delegation category");
+		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+		$babBody->addItemMenu("displayAddCategorieForm", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayAddCategorieForm");
+		break;
+		
+	case "displayModifyCategorieForm":
+		displayModifyCategorieForm();
+		$babBody->title = bab_translate("Modify a delegation category");
+		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+		$babBody->addItemMenu("displayModifyCategorieForm", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayModifyCategorieForm");
+		break;
+		
+	case 'displayCategoriesListForm':
+		displayCategoriesListForm();
+		$babBody->title = bab_translate("Categories list");
+		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+		break;
+		
 	case "list":
 	default:
 		delgatList($dgres);
 		$babBody->title = bab_translate("Delegations list");
 		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
-		$babBody->addItemMenu("new", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=delegat&idx=new");
+		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 		break;
 	}
 

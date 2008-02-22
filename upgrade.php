@@ -4307,7 +4307,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD `availability_lock` tinyint(1) unsigned default NULL");
 	}
 
-
+	if (!bab_isTable(BAB_DG_CATEGORIES_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE ".BAB_DG_CATEGORIES_TBL." (
+				`id` TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+				`name` VARCHAR (60) not null,
+				`description` VARCHAR (255) not null,
+				`bgcolor` VARCHAR (6) not null,
+				PRIMARY KEY (`id`)
+			)
+		");
+	}
 	return true;
 }
 ?>

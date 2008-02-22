@@ -3848,3 +3848,17 @@ CREATE TABLE bab_sitemap_profiles (
    `uid_functions` int(11) unsigned NOT NULL,
    PRIMARY KEY (`id`)
 );
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_dg_categories'
+#
+
+CREATE TABLE bab_dg_categories (
+	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+	name VARCHAR (60) not null,
+	description VARCHAR (255) not null,
+	bgcolor VARCHAR (6) not null,
+	PRIMARY KEY (id)
+);

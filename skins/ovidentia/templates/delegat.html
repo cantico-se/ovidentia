@@ -17,11 +17,109 @@
 		<td align="right">&nbsp;<a href="{ urlmem }"><img src="{ babSkinPath }images/Puces/PuceUserAttrib.gif" alt="{ memberstxt }" border="0" /></a></td>
 	</tr>
 	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td colspan="4"><a href="{ sAddUrl }" title="{ sAddCaption }">{ sAddCaption }</a></td>
+	</tr>
 	</table>
 </td>
 </tr>
 </table>
 <!--#end delegationlist -->
+
+<!--#begin categorieslist -->
+<form method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="delegat" />
+	<input type="hidden" name="idx" value="displayCategoriesListForm" />
+
+	<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td  width="44%">{ nametxt }</td>
+						<td  width="44%">{ desctxt }</td>
+						<td  width="10%">{ bgcolortxt }</td>
+						<td  width="2%">{ t_delete }</td>
+					</tr>
+						<!--#in getnext -->
+						<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
+						<td valign="middle" nowrap> 
+						<a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a> 
+						</td>
+						<td valign="middle">{ desc }</td>
+						<td valign="middle" bgcolor="#{ bgcolor }"><span class="BabSiteAdminFont">{ bgcolor }</span></td>
+						<td align="center"><input type="checkbox" name="delete_category[]" value="{ id_category }" /></td>
+					</tr>
+					<!--#endin getnext -->
+					<tr class="BabSiteAdminTitleFontBackground">
+						<td><a href="{ urladdcat }">{ add }</td>
+						<td colspan="3">&nbsp;</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	
+	<p style="text-align:center">
+		<input type="submit" value="{ t_delete_checked }" onclick="return confirm(this.title)" title="{ t_confirm_delete }" />
+	</p>
+	
+</form>
+<!--#end categorieslist -->
+
+<!--#begin categorycreate -->
+<script language="JavaScript">
+<!--
+function setColor(color)
+	{
+	document.forms.catcolor.bgcolor.value=color;
+	if (color == '') color = 'fff';
+	document.getElementById('evtColor').style.backgroundColor = '#'+color;
+	}
+//-->
+</script>
+<form name="catcolor" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tgval }">
+<input type="hidden" name="idx" value="categoriesList">
+<input type="hidden" name="idcat" value="{ idcat }">
+<input type="hidden" name="action" value="{ add }">
+<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td class="BabLoginMenuBackground" width="30%" align="right" valign="middle">{ nametxt }:</td>
+<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+<input type="text" name="catname" size="40" maxlength="60" value="{ name }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap>{ desctxt }:</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="text" name="catdesc" size="50" maxlength="255" value="{ desc }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap><a class="BabSiteAdminListLink" href="javascript: Start('{ selctorurl }', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ bgcolortxt }</a>:</td>
+<td class="BabLoginMenuBackground" valign="middle">
+<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ bgcolor };"></div>
+<input type="hidden" name="bgcolor" value="{ bgcolor }">
+</td>
+</tr>
+<tr> 
+<td class="BabLoginMenuBackground">&nbsp;</td>
+<td class="BabLoginMenuBackground" valign="middle"> 
+<input type="submit" name="submit" value="{ addtxt }">
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br>
+</form>
+<!--#end categorycreate -->
+
 
 <!--#begin delegatcreate -->
 <script type="text/javascript">
