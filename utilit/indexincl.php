@@ -57,7 +57,7 @@ class bab_indexReturn {
 	}
 
 	function addDebug($debuginfos) {
-		bab_debug($debuginfos);
+		// bab_debug($debuginfos);
 		$this->debuginfos[] = $debuginfos;
 	}
 
