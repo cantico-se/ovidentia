@@ -425,9 +425,9 @@ class bab_synchronizeSql
 		}
 		
 		
-	function trimall($str, $charlist = " \t\n\r\0\x0B")
+	function trimall($str)
 		{
-	  return str_replace(str_split($charlist), '', $str);
+	  	return str_replace(array(' ', " \t", "\n", "\r", "\0", "\x0B"), '', $str);
 	}
 		
 	/**
