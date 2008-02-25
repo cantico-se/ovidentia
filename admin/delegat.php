@@ -340,6 +340,17 @@ function groupDelegatModify($gname, $description, $id = '')
 		var $delegitemdesc;
 		var $checked;
 
+		var $bCategoriesAvailable	= false;
+		var $oResCategories			= null;
+		
+		var $sCategoryName			= '';
+		var $sCategoryDesc			= '';
+		var $iIdCategory			= 0;
+		var $sCategoryColor			= '';
+		var $iPostedIdCategory		= 0;
+		var $sCategorySelected		= '';
+		var $sCategoryCaption		= '';
+		
 		var $id;
 
 		function temp($gname, $description, $id)
@@ -355,18 +366,23 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->functions = bab_translate("Deputy functions");
 			$this->attachdesc = bab_translate("Assign/unassign a user");
 			$this->none = bab_translate("None");
+			$this->sCategoryCaption = bab_translate("Category");
+			
 			$db = &$GLOBALS['babDB'];
 			$this->db = &$db;
 			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
 			$this->arr = $db->db_fetch_array($res);
 			$this->id = $id;
-
+			
+			$iIdCategory = 0;
+			
 			if (!empty($this->id))
 				{
 				$this->idGrp = &$this->arr['id_group'];
 				$this->bdel = true;
 				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
 				$battach = isset($_POST['battach']) ? $_POST['battach'] : $this->arr['battach'] ;
+				$iIdCategory = $this->arr['iIdCategory'];
 				}
 			else
 				{
@@ -404,8 +420,41 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->tgval = "delegat";
 			$this->what = "mod";
 
+			
+			global $babDB;
+			$this->iPostedIdCategory	= (int) bab_rp('iIdCategory', $iIdCategory);
+			$this->oResCategories		= $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
+			$this->bCategoriesAvailable	= (false !== $this->oResCategories && 0 < $babDB->db_num_rows($this->oResCategories));
 			}
 
+		function getNextCategory()
+		{
+			global $babDB;
+			
+			$this->sCategoryName		= '';
+			$this->iIdCategory			= 0;
+			$this->sCategoryColor		= '';
+			$this->sCategorySelected	= '';
+			
+			
+			if(false !== $this->oResCategories)
+			{
+				if(false != ($aDatas = $babDB->db_fetch_assoc($this->oResCategories)))
+				{
+					$this->sCategoryName	= $aDatas['name'];
+					$this->sCategoryDesc	= $aDatas['description'];
+					$this->iIdCategory		= $aDatas['id'];
+					$this->sCategoryColor	= $aDatas['bgcolor'];
+					if($this->iPostedIdCategory === (int) $this->iIdCategory)
+					{
+						$this->sCategorySelected	= 'selected="selected"';
+					}
+					return true;
+				}
+			}
+			return false;
+		}
+			
 		function getnext()
 			{
 			global $babDB, $babDG;
@@ -497,7 +546,7 @@ function deleteDelegatGroup($id)
 	}
 
 
-function addDelegatGroup($name, $description, $color, $battach, $delegitems)
+function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iIdCategory)
 	{
 	global $babBody, $babDB;
 
@@ -536,6 +585,9 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems)
 
 		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
 		
+		$req1 .= ",iIdCategory ";
+		$req2 .= ", " . $iIdCategory;
+		
 		$req1 .= ",id_group )";
 		$req2 .= ", ".$group." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
@@ -552,7 +604,7 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems)
 	exit;
 	}
 
-function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id)
+function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id, $iIdCategory)
 	{
 	global $babBody, $babDB, $babDG;
 
@@ -581,6 +633,7 @@ function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, 
 			name='".$babDB->db_escape_string($name)."', 
 			description='".$babDB->db_escape_string($description)."', 
 			color='".$babDB->db_escape_string($color)."',
+			iIdCategory='".$babDB->db_escape_string($iIdCategory)."',
 			battach='".$babDB->db_escape_string($battach)."'";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
@@ -654,15 +707,20 @@ function addCategory($catname, $catdesc, $bgcolor)
 {
 	global $babDB, $babBody;
 
-	if( empty($catname))
-		{
+	if(empty($catname))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
-		}
+	}
 
+	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" . 
+		$babDB->db_escape_like($catname) . "'");
 		
-//	$this->res = $babDB->db_query("select * from ".BAB_DG_CATEGORIES_TBL." ORDER BY name,description ");
-		
+	if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
+	{
+		$babBody->addError(bab_translate("ERROR: A category with the same name already exit")." !");
+		return false;
+	}
 		
 	$babDB->db_query("insert into ".BAB_DG_CATEGORIES_TBL." (name, description, bgcolor) values ('" .$babDB->db_escape_string($catname). "', '".$babDB->db_escape_string($catdesc)."', '".$babDB->db_escape_string($bgcolor)."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
@@ -674,12 +732,21 @@ function updateCategory($idcat, $catname, $catdesc, $bgcolor)
 {
 	global $babDB, $babBody;
 
-	if( empty($catname))
-		{
+	if(empty($catname))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name")." !";
 		return false;
-		}
+	}
 
+	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" . 
+		$babDB->db_escape_like($catname) . "' AND id NOT IN('" . $idcat . "')");
+		
+	if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
+	{
+		$babBody->addError(bab_translate("ERROR: A category with the same name already exit")." !");
+		return false;
+	}
+		
 	$babDB->db_query("update ".BAB_DG_CATEGORIES_TBL." set name='".$babDB->db_escape_string($catname)."', description='".$babDB->db_escape_string($catdesc)."', bgcolor='".$babDB->db_escape_string($bgcolor)."' where id='".$babDB->db_escape_string($idcat)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 	exit;
@@ -810,14 +877,14 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
-				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id']))
+				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], $_POST['iIdCategory']))
 					$idx = "mod";
 				else
 					$idx = 'list';
 				}
 			else
 				{
-				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array())))
+				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['iIdCategory']))
 					$idx = 'new';
 				else
 					$idx = 'list';
@@ -855,7 +922,7 @@ switch($_POST['action'])
 	case 'updateCategory':
 		if(!updateCategory(bab_rp('idcat'), bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 		{
-			$idx = 'displayAddCategorieForm';
+			$idx = 'displayModifyCategorieForm';
 		}
 		break;
 	}

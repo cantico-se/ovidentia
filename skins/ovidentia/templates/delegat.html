@@ -181,6 +181,20 @@ function evtSetColor(color)
 	</td>
 </tr>
 
+<!--#if bCategoriesAvailable -->
+<tr>
+	<td align="right">{ sCategoryCaption }</td>
+	<td> 
+		<select name="iIdCategory">
+			<option value="0"></option>
+		<!--#in getNextCategory -->
+			<option style="background-color: #{ sCategoryColor }" value="{ iIdCategory }" { sCategorySelected } title="{ sCategoryDesc }">{ sCategoryName }</option>
+		<!--#endin getNextCategory -->
+		</select>
+	</td>
+</tr>
+<!--#endif bCategoriesAvailable -->
+
 <tr>
 	<td align="right">&nbsp;{ functions }:</td>
 	<td>&nbsp;</td>

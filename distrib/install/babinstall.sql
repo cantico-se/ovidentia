@@ -1690,6 +1690,7 @@ CREATE TABLE `bab_dg_groups` (
   `orgchart` enum('N','Y') NOT NULL default 'N',
   `taskmanager` enum('N','Y') NOT NULL default 'N',
   `id_group` int(10) unsigned default NULL,
+  `iIdCategory` tinyint(2) unsigned not null default '0',
   PRIMARY KEY  (`id`),
   KEY `id_group` (`id_group`)
 );
@@ -3856,9 +3857,9 @@ CREATE TABLE bab_sitemap_profiles (
 #
 
 CREATE TABLE bab_dg_categories (
-	id TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
-	name VARCHAR (60) not null,
-	description VARCHAR (255) not null,
-	bgcolor VARCHAR (6) not null,
+	`id` TINYINT (2) UNSIGNED not null AUTO_INCREMENT,
+	`name` VARCHAR (60) not null,
+	`description` VARCHAR (255) not null,
+	`bgcolor` VARCHAR (6) not null,
 	PRIMARY KEY (id)
 );
