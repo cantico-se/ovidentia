@@ -54,7 +54,7 @@ class bab_CategoryCache
 	function getCategoryInfo($iIdCategory)
 	{
 		global $babDB;
-		$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
+		$oResult = $babDB->db_query('select * from ' . BAB_DG_CATEGORIES_TBL . ' WHERE id IN( ' . $babDB->quote($iIdCategory) . ')');
 		if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
 		{
 			$aDatas = $babDB->db_fetch_assoc($this->oResCategories);
@@ -156,7 +156,7 @@ class bab_Delegations extends bab_handler
 			$this->ctx->curctx->push('DelegationCategoryId', $arr['iIdCategory']);
 			$this->ctx->curctx->push('DelegationCategoryName', '');
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
-			$this->ctx->curctx->push('DelegationCategoryBgColor', '');
+			$this->ctx->curctx->push('DelegationCategoryColor', '');
 			
 			if(0 !== (int) $arr['iIdCategory'])
 			{
@@ -165,7 +165,7 @@ class bab_Delegations extends bab_handler
 				{
 					$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
 					$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
-					$this->ctx->curctx->push('DelegationCategoryBgColor', $aDatas['bgcolor']);
+					$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['bgcolor']);
 				}
 			}
 			
@@ -261,7 +261,7 @@ class bab_DelegationsManaged extends bab_handler
 			$this->ctx->curctx->push('DelegationGroupName', bab_getGroupName($arr['id_group']));
 			$this->ctx->curctx->push('DelegationCategoryName', '');
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
-			$this->ctx->curctx->push('DelegationCategoryBgColor', '');
+			$this->ctx->curctx->push('DelegationCategoryColor', '');
 			
 			if(0 !== (int) $arr['iIdCategory'])
 			{
@@ -270,7 +270,7 @@ class bab_DelegationsManaged extends bab_handler
 				{
 					$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
 					$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
-					$this->ctx->curctx->push('DelegationCategoryBgColor', $aDatas['bgcolor']);
+					$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['bgcolor']);
 				}
 			}
 			$this->idx++;
@@ -407,4 +407,97 @@ class bab_DelegationAdministrators extends bab_handler
 	}
 }
 
+
+
+
+class bab_DelegationsCategories extends bab_handler
+{
+	var $iIndex		= 0;
+	var $iCount		= 0;
+	var $oResult	= null;
+
+	function bab_DelegationsCategories(&$ctx)
+	{
+		global $babDB;
+		$this->bab_handler($ctx);
+		$this->iCount	= 0;
+		$categoryid		= $ctx->get_value('categoryid');
+		
+		if($categoryid === false || $categoryid === '')
+		{
+			$this->oResult = $babDB->db_query('SELECT * FROM '.BAB_DG_CATEGORIES_TBL.' order by name asc');
+			if(false !== $this->oResult)
+			{
+				$this->iCount = $babDB->db_num_rows($this->oResult);
+			}
+		}
+		else
+		{
+			$categoryid = explode(',', $categoryid);
+			$this->oResult = $babDB->db_query('SELECT * FROM '.BAB_DG_CATEGORIES_TBL.' WHERE id IN(' .  $babDB->quote($categoryid) . ') order by name asc');
+			if(false !== $this->oResult)
+			{
+				$this->iCount = $babDB->db_num_rows($this->oResult);
+			}
+		}
+		$this->ctx->curctx->push('CCount', $this->iCount);
+	}
+	
+	function getnext()
+	{
+		global $babDB;
+
+		if($this->idx < $this->iCount)
+		{
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			
+			$aDatas = $babDB->db_fetch_array($this->oResult);
+			if(false !== $aDatas)
+			{
+				$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
+				$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
+				$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['color']);
+				$this->ctx->curctx->push('DelegationCategoryId', $aDatas['id']);
+			}
+			else
+			{
+				$this->ctx->curctx->push('DelegationCategoryName', '');
+				$this->ctx->curctx->push('DelegationCategoryDescription', '');
+				$this->ctx->curctx->push('DelegationCategoryColor', '');
+				$this->ctx->curctx->push('DelegationCategoryId', 0);
+			}
+			
+			$this->idx++;
+			$this->iIndex = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx=0;
+			return false;
+		}
+	}
+}
+
+
+class bab_DelegationsCategory extends bab_DelegationsCategories
+{
+
+	function bab_DelegationsCategory(&$ctx)
+	{
+		parent::bab_DelegationsCategories($ctx);
+		
+		$delegationid = $ctx->get_value('delegationid');
+		if($delegationid !== false && !empty($delegationid) )
+		{
+			$this->bab_Delegations($ctx);
+		}
+		else
+		{
+			$this->bab_handler($ctx);
+			$this->count = 0;
+			$this->ctx->curctx->push('CCount', $this->count);
+		}
+	}
+}
 ?>
