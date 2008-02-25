@@ -25,16 +25,65 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 
 
+class bab_CategoryCache
+{
+	var $aCache = array();
+	
+	function bab_CategoryCache()
+	{
+		
+	}
+	
+	function getCategory($iIdCategory)
+	{
+		if(!array_key_exists($iIdCategory, $this->aCache))
+		{
+			$aDatas = $this->getCategoryInfo($iIdCategory);
+			if(false !== $aDatas)
+			{
+				$aCache[$iIdCategory] = $aDatas;
+			}
+			else
+			{
+				$aCache[$iIdCategory] = 0;
+			}
+		}
+		return $aCache[$iIdCategory];
+	}
+	
+	function getCategoryInfo($iIdCategory)
+	{
+		global $babDB;
+		$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
+		if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
+		{
+			$aDatas = $babDB->db_fetch_assoc($this->oResCategories);
+			if(false !== $aDatas)
+			{
+				return $aDatas;
+			}
+		}
+		return false;
+	}
+	
+}
+
+
 class bab_Delegations extends bab_handler
 {
 	var $index;
 	var $count;
 	var $res;
 
+	var $oCategoryCache = null;
+	
 	function bab_Delegations( &$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
+		
+		$this->oCategoryCache = new bab_CategoryCache();
+		
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 		$filter = $ctx->get_value('filter');
@@ -89,7 +138,7 @@ class bab_Delegations extends bab_handler
 
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
-
+	
 	function getnext()
 	{
 		global $babDB;
@@ -104,6 +153,22 @@ class bab_Delegations extends bab_handler
 			$this->ctx->curctx->push('DelegationId', $arr['id']);
 			$this->ctx->curctx->push('DelegationGroupId', $arr['id_group']);
 			$this->ctx->curctx->push('DelegationGroupName', bab_getGroupName($arr['id_group']));
+			$this->ctx->curctx->push('DelegationCategoryId', $arr['iIdCategory']);
+			$this->ctx->curctx->push('DelegationCategoryName', '');
+			$this->ctx->curctx->push('DelegationCategoryDescription', '');
+			$this->ctx->curctx->push('DelegationCategoryBgColor', '');
+			
+			if(0 !== (int) $arr['iIdCategory'])
+			{
+				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
+				if(false !== $aDatas)
+				{
+					$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
+					$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
+					$this->ctx->curctx->push('DelegationCategoryBgColor', $aDatas['bgcolor']);
+				}
+			}
+			
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -142,10 +207,15 @@ class bab_DelegationsManaged extends bab_handler
 	var $count;
 	var $res;
 
+	var $oCategoryCache = null;
+	
 	function bab_DelegationsManaged( &$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
+		
+		$this->oCategoryCache = new bab_CategoryCache();
+		
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 
@@ -189,6 +259,20 @@ class bab_DelegationsManaged extends bab_handler
 			$this->ctx->curctx->push('DelegationId', $arr['id']);
 			$this->ctx->curctx->push('DelegationGroupId', $arr['id_group']);
 			$this->ctx->curctx->push('DelegationGroupName', bab_getGroupName($arr['id_group']));
+			$this->ctx->curctx->push('DelegationCategoryName', '');
+			$this->ctx->curctx->push('DelegationCategoryDescription', '');
+			$this->ctx->curctx->push('DelegationCategoryBgColor', '');
+			
+			if(0 !== (int) $arr['iIdCategory'])
+			{
+				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
+				if(false !== $aDatas)
+				{
+					$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
+					$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
+					$this->ctx->curctx->push('DelegationCategoryBgColor', $aDatas['bgcolor']);
+				}
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
