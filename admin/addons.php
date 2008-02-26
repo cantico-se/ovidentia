@@ -293,7 +293,7 @@ function upgrade($id)
 		if( !empty($ini_version))
 			{
 			$func_name = $row['title']."_upgrade";
-			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<') )
+			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<') || 'N' === $row['installed'])
 				{
 				if (bab_setAddonGlobals($row['id'])) {
 					require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
@@ -444,6 +444,11 @@ function del($id)
 		{
 		return;
 		}
+		
+	// if addon return true, the addon is uninstalled in the table.
+	$db->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' where id='".$db->db_escape_string($id)."'");
+	
+	
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
@@ -461,22 +466,26 @@ function del($id)
 				
 			function deldir($dir)
 				{
-				  $current_dir = opendir($dir);
-				  while($entryname = readdir($current_dir)){
-					 if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-					   if (false === deldir($dir.'/'.$entryname)) {
+				global $babBody;
+				
+				
+				$current_dir = opendir($dir);
+				while($entryname = readdir($current_dir)){
+					if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+					   	if (false === deldir($dir.'/'.$entryname)) {
 							return false;
 						}
-					 }elseif($entryname != "." and $entryname!=".."){
-					   if (false === unlink($dir.'/'.$entryname)) {
+					 } elseif ($entryname != "." and $entryname!="..") {
+					   	if (false === unlink($dir.'/'.$entryname)) {
+					   		$babBody->addError(sprintf(bab_translate('delete does not work on file %s'), $dir.'/'.$entryname));
 							return false;
 						}
-					 }
-				  }
-				  closedir($current_dir);
-				  rmdir($dir);
-					return true;
+					}
 				}
+				closedir($current_dir);
+				rmdir($dir);
+				return true;
+			}
 				
 			
 			$addons_files_location = bab_getAddonsFilePath();
@@ -774,6 +783,17 @@ function history($item)
 	}
 	
 	
+/**
+ * test if functionalities are installed
+ * @return boolean
+ */
+function haveFunctionalities() {
+	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
+	$func = new bab_functionalities();
+	$childs = $func->getChilds('');
+	
+	return 0 !== count($childs);
+}
 	
 	
 function functionalities() {
@@ -800,7 +820,7 @@ function functionalities() {
 	
 	$tree = new bab_TreeView('bab_functionalities');
 
-	$root = & $tree->createElement( 'R', 'directory', bab_translate('Root'), '', '');
+	$root = & $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
 	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');					
 	$tree->appendElement($root, NULL);
 
@@ -851,7 +871,7 @@ function functionalities() {
 				if ($parent_obj->getPath() !== $obj->getPath()) {
 
 					$element->addAction('moveup',
-									bab_translate('Move up'),
+									bab_translate('Move Up'),
 									$GLOBALS['babSkinPath'] . 'images/Puces/go-up.png',
 									$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&uppath='.urlencode($funcpath),
 									'');
@@ -954,12 +974,18 @@ switch($idx)
 		break;
 		
 	case 'functionalities':
+		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+		$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		functionalities();
 		break;
 
 	case "upgrade":
 		upgrade($_GET['item']);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
+		
+		if (!headers_sent()) {
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
+			exit;
+		}
 		break;
 		
 	case "del":
@@ -977,6 +1003,11 @@ switch($idx)
 		$babBody->title = bab_translate("Add-ons list");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
+		
+		if (haveFunctionalities()) {
+			$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
+		}
+		
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

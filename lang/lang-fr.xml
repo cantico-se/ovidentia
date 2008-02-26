@@ -2526,5 +2526,7 @@
 <string id="One of the selected calendars require availability to create this event">Un des agendas sélectionnés requiert la disponibilité pour créer cet événement</string>
 <string id="One of the selected calendars require availability to modify this event">Un des agendas sélectionnés requiert la disponibilité pour modifier cet événement</string>
 <string id="There is a conflict with working hours, the next available period is : %s to %s">Il y a un conflit avec les heures travaillées, la prochaine période disponible est du %s jusqu'à %s</string>
-
+<string id="delete does not work on file %s">La suppression ne fonctionne pas sur le fichier %s</string>
+<string id="Functionalities">Fonctionnalités</string>
+<string id="All functionalities">Toutes les fonctionnalités</string>
 </fr>

@@ -63,7 +63,11 @@ class bab_functionalities {
 	 * @param	string	$location
 	 */
 	function onInsertNode($location) {
-		chmod($location, 0666);
+		if (is_dir($location)) {
+			chmod($location, 0777);
+		} else {
+			chmod($location, 0666);
+		}
 	}
 	
 	
@@ -95,7 +99,6 @@ class bab_functionalities {
 		$include_file = str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $include_file);
 		$classname = str_replace('/','_',$funcpath);
 		$content = '<?php if (false === include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
-		
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$linkfilename, 'w')) {
 			
 			if (false !== fwrite($handle, $content)) {
@@ -240,7 +243,7 @@ class bab_functionalities {
 			return false;
 		}
 		
-		if ($this->recordLinkToLink($parent_path, $func_path)) {
+		if (!$this->recordLinkToLink($parent_path, $func_path)) {
 			return false;
 		}
 		
@@ -253,17 +256,27 @@ class bab_functionalities {
 	 * Delete or replace with first child
 	 * @access	private
 	 * @param	string	$func_path	
+	 * @return 	boolean
 	 */
 	function deleteOrReplaceWithFirstChild($func_path) {
 		
 		
 		$childs = $this->getChilds($func_path);
-		unlink($this->treeRootPath.$func_path.'/'.$this->filename);
+		
+		$current_dir = opendir($this->treeRootPath.$func_path);
+		while($entryname = readdir($current_dir)){
+			if (is_file($this->treeRootPath.$func_path.'/'.$entryname)) {
+				if (false === unlink($this->treeRootPath.$func_path.'/'.$entryname)) {
+					return false;
+				}
+			}
+		}
+		
 		
 		if (0 === count($childs)) {
-			rmdir($this->treeRootPath.$func_path);
+			return rmdir($this->treeRootPath.$func_path);
 		} else {
-			$this->recordLinkToLink($func_path, $func_path.'/'.$childs[0]);
+			return $this->recordLinkToLink($func_path, $func_path.'/'.$childs[0]);
 		}
 
 	}
@@ -435,6 +448,7 @@ class bab_functionalities {
 	
 	/**
 	 * Unregister functionality
+	 * If the functionality is not registered, this method return true
 	 * Remove link in this directory
 	 * if link is present in parent functionality, delete or replace with another
 	 *
@@ -444,14 +458,14 @@ class bab_functionalities {
 	 */
 	function unregister($func_path) {
 	
-		$func_path = trim($func_path,'/ ');
-		$link = $func_path.'/'.$this->filename;
 		
-		if (!file_exists($this->treeRootPath.$link)) {
-			return false;
+		if (!file_exists($this->treeRootPath.$func_path)) {
+			return true;
 		}
 
-		$this->deleteOrReplaceWithFirstChild($func_path);
+		if (!$this->deleteOrReplaceWithFirstChild($func_path)) {
+			return false;
+		}
 
 		return true;
 	}
