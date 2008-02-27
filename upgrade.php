@@ -4307,9 +4307,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD `availability_lock` tinyint(1) unsigned default NULL");
 	}
 
-	if(!bab_isTableField(BAB_DG_CATEGORIES_TBL, 'iIdCategory')) 
+	if(!bab_isTableField(BAB_DG_GROUPS_TBL, 'iIdCategory')) 
 	{
-		$babDB->db_query("ALTER TABLE `".BAB_DG_CATEGORIES_TBL."` ADD `iIdCategory` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `id_group`");
+		$babDB->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `iIdCategory` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `id_group`");
 	}
 	
 	if (!bab_isTable(BAB_DG_CATEGORIES_TBL))  {
