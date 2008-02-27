@@ -1845,6 +1845,9 @@ function getFile()
 			if(file_exists($sFullPathName))
 			{
 				$fsize = filesize($sFullPathName);
+				
+				set_time_limit(3600);
+				
 				if(strtolower(bab_browserAgent()) == "msie")
 				{
 					header('Cache-Control: public');

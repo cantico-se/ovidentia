@@ -580,6 +580,9 @@ function getFile( $idf, $vmajor, $vminor )
 
 		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
+		
+		set_time_limit(3600);
+
 		if(strtolower(bab_browserAgent()) == "msie")
 		{
 			header('Cache-Control: public');
@@ -593,6 +596,9 @@ function getFile( $idf, $vmajor, $vminor )
 		{
 			header("Content-Disposition: attachment; filename=\"".$oFolderFile->getName()."\""."\n");
 		}
+		
+		
+		
 		header("Content-Type: $mime"."\n");
 		header("Content-Length: ". $fsize."\n");
 		header("Content-transfert-encoding: binary"."\n");
