@@ -293,7 +293,7 @@ class bab_DelegationManaged extends bab_Delegations
 		$delegationid = $ctx->get_value('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
-			$this->bab_bab_Delegations($ctx);
+			$this->bab_Delegations($ctx);
 			}
 		else
 			{
@@ -456,7 +456,7 @@ class bab_DelegationsCategories extends bab_handler
 			{
 				$this->ctx->curctx->push('DelegationCategoryName', $aDatas['name']);
 				$this->ctx->curctx->push('DelegationCategoryDescription', $aDatas['description']);
-				$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['color']);
+				$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['bgcolor']);
 				$this->ctx->curctx->push('DelegationCategoryId', $aDatas['id']);
 			}
 			else
@@ -485,12 +485,10 @@ class bab_DelegationsCategory extends bab_DelegationsCategories
 
 	function bab_DelegationsCategory(&$ctx)
 	{
-		parent::bab_DelegationsCategories($ctx);
-		
-		$delegationid = $ctx->get_value('delegationid');
-		if($delegationid !== false && !empty($delegationid) )
+		$categoryid = $ctx->get_value('categoryid');
+		if($categoryid !== false && !empty($categoryid) )
 		{
-			$this->bab_Delegations($ctx);
+			$this->bab_DelegationsCategories($ctx);
 		}
 		else
 		{
