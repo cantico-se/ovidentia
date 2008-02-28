@@ -5859,6 +5859,66 @@ function bab_PutSoapArray($args)
 	$this->gctx->push($name, $arr);
 	}
 
+
+function bab_rgp($args, $method)
+	{
+	$name = '';
+	$default = '';
+	$saveas = false;
+	$saveasname = '';
+
+	if (count($args)) 
+		{
+		foreach( $args as $p => $v) 
+			{
+			switch(strtolower(trim($p))) 
+				{
+				case 'name':
+					$name = $v;
+					break;
+				case 'default':
+					$default = $v;
+					break;
+				case 'saveas':
+					if (!empty($v)) 
+						{
+						$saveas = true;
+						$saveasname = $v;
+						}
+					break;
+				}
+			}
+		
+		if (!empty($name)) 
+			{
+			if ($saveas) 
+				{
+				$this->gctx->push($saveasname, $method($name, $default));
+				}
+			else 
+				{
+				$this->gctx->push($name, $method($name, $default));
+				}
+			}
+		}
+	}
+
+function bab_Request($args)
+	{
+	$this->bab_rgp($args, 'bab_rp');
+	}
+
+function bab_Post($args)
+	{
+	$this->bab_rgp($args, 'bab_pp');
+	}
+
+function bab_Get($args)
+	{
+	$this->bab_rgp($args, 'bab_gp');
+	}
+
+
 /**
  * Experimental ( can be changed in futur )
  * Returns an HTTP Request javascript call 
