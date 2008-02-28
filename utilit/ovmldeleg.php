@@ -57,7 +57,7 @@ class bab_CategoryCache
 		$oResult = $babDB->db_query('select * from ' . BAB_DG_CATEGORIES_TBL . ' WHERE id IN( ' . $babDB->quote($iIdCategory) . ')');
 		if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
 		{
-			$aDatas = $babDB->db_fetch_assoc($this->oResCategories);
+			$aDatas = $babDB->db_fetch_assoc($oResult);
 			if(false !== $aDatas)
 			{
 				return $aDatas;
