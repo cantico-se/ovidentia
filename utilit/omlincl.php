@@ -648,6 +648,7 @@ class bab_ArticleCategories extends bab_handler
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -709,6 +710,7 @@ class bab_ParentsArticleCategory extends bab_handler
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -760,6 +762,7 @@ class bab_ArticleCategory extends bab_handler
 			$this->ctx->curctx->push('CategoryId', $arr['id']);
 			$this->ctx->curctx->push('CategoryParentId', $arr['id_parent']);
 			$this->ctx->curctx->push('TopicsUrl', $GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+			$this->ctx->curctx->push('CategoryDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -888,9 +891,10 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
+			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
+			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -953,9 +957,10 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			list($cattitle) = $babDB->db_fetch_array($babDB->db_query("select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
+			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
+			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1430,6 +1435,7 @@ class bab_Forums extends bab_handler
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$this->ctx->curctx->push('ForumDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1471,6 +1477,7 @@ class bab_Forum extends bab_handler
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			$this->ctx->curctx->push('ForumDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1813,6 +1820,7 @@ class bab_Folders extends bab_handler
 			$this->ctx->curctx->push('CIndex', $iIndex);
 			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
 			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
+			$this->ctx->curctx->push('FolderDelegationId', $oFmFolder->getDelegationOwnerId());
 			$iIndex++;
 			$this->index = $iIndex;
 			return true;
@@ -1867,6 +1875,7 @@ class bab_Folder extends bab_handler
 			$this->ctx->curctx->push('CIndex', $iIndex);
 			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
 			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
+			$this->ctx->curctx->push('FolderDelegationId', $oFmFolder->getDelegationOwnerId());
 			$iIndex++;
 			$this->index = $iIndex;
 			return true;
@@ -2977,7 +2986,7 @@ class bab_RecentThreads extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select p.*, f.id_dgowner from ".BAB_POSTS_TBL." p LEFT JOIN bab_threads t on p.id_thread = t.id LEFT JOIN bab_forums f on f.id = t.forum where p.id IN (".$babDB->quote($this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select p.*, f.id_dgowner from ".BAB_POSTS_TBL." p LEFT JOIN bab_threads t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum where p.id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3672,6 +3681,7 @@ class bab_Faqs extends bab_handler
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3714,6 +3724,7 @@ class bab_Faq extends bab_handler
 			$this->ctx->curctx->push('FaqId', $arr['id']);
 			$this->ctx->curctx->push('FaqLanguage', $arr['lang']);
 			$this->ctx->curctx->push('FaqUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['id']);
+			$this->ctx->curctx->push('FaqDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
