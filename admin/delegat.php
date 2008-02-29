@@ -586,7 +586,7 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iI
 		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
 		
 		$req1 .= ",iIdCategory ";
-		$req2 .= ", " . $iIdCategory;
+		$req2 .= ", " . "'".$babDB->db_escape_string($iIdCategory)."'";
 		
 		$req1 .= ",id_group )";
 		$req2 .= ", ".$group." )";
