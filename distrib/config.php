@@ -29,5 +29,6 @@ $babInstallPath = "ovidentia/"; /* relatif path to ovidentia distribution */
 $babSiteName = "Ovidentia"; /* your site name */
 // $babUrl = "http://yourdomain/"; /* url to access to your site */
 $babVersion = "6.0"; /* current version */
-$babFileNameTranslation = array("&" => "_","\"" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
+$babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_', "&" => "_","\"" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
+
 ?>
