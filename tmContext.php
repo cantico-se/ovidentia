@@ -23,6 +23,7 @@
 ************************************************************************/
 include 'base.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/tableWrapperClass.php';
+require_once $GLOBALS['babInstallPath'] . 'utilit/tmIncl.php';
 
 class BAB_TM_Context
 {
