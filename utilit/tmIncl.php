@@ -98,6 +98,7 @@ function bab_getProjectSpace($iIdProjectSpace, &$aProjectSpace)
 		if(false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
 			$aProjectSpace = array('id' => $datas['id'],
+								   'idDelegation' => $datas['idDelegation'],
 								   'name' => $datas['name'], 
 								   'description' => $datas['description'],
 								   'refCount' => $datas['refCount']);
