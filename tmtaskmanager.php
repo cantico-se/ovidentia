@@ -417,7 +417,7 @@ function displayProjectRightsForm()
 	
 		require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 		
-		$macl = new macl('usrTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProject, BAB_TM_ACTION_SET_RIGHT);
+		$macl = new macl('usrTskMgr', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST, $iIdProject, BAB_TM_ACTION_SET_RIGHT, true, $oTmCtx->getIdDelegation());
 		$macl->set_hidden_field('iIdProjectSpace', $iIdProjectSpace);
 		$macl->set_hidden_field('iIdProject', $iIdProject);
 		

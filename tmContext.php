@@ -63,7 +63,13 @@ class BAB_TM_Context
 		$this->m_iIdProject = (int) bab_rp('iIdProject', 0);
 		$this->m_iIdTask = (int) bab_rp('iIdTask', 0);
 		$this->m_iIdDelegation = $babBody->currentAdmGroup;
-		
+
+		$aProjectSpace = array();
+		if(false !== bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
+		{
+			$this->m_iIdDelegation = (int) $aProjectSpace['idDelegation'];
+		}
+				
 		$this->m_oWorkingHours = null;
 		
 		$this->m_aConfiguration = null;
