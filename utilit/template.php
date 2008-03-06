@@ -185,6 +185,27 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 	return $highlightedTemplateString;
 }
 
+
+
+
+if (function_exists('file_get_contents')) {
+	/**
+	 * Returns the content of a file as a string
+	 *
+	 * @param string	$pathname
+	 * @return string
+	 */
+	function bab_getFileContents($pathname)
+	{
+		return file_get_contents($pathname);
+	}
+} else {
+	function bab_getFileContents($pathname)
+	{
+		return implode('', @file($pathname));	
+	}
+}
+
 /**
  * This class implements the template engine of Ovidentia. It compiles the templates to
  * php and caches them in memory.
@@ -198,18 +219,18 @@ class bab_Template
 	var $_errors;
 
 	/**
-	 * @param	string	$filename	The path to the template file.
+	 * @param	string	$pathname	The pathname to the template file.
 	 * @param	string	$section	The section name in the template file.
 	 * 								If empty, the whole template file is loaded.
 	 * @return	string|null			The template content or null if not found.
 	 * @access private
 	 */
-	function _loadTemplate($filename, $section)
+	function _loadTemplate($pathname, $section)
 	{
-		if (!is_readable($filename)) {
+		if (!is_readable($pathname)) {
 			return null;
 		}
-		$templateString = implode('', @file($filename));
+		$templateString = bab_getFileContents($pathname);
 		if (!empty($section)) {
 			$quotedSection = preg_quote($section);
 			if (preg_match('/<!--#begin\s+' . $quotedSection . '\s+-->(.*)<!--#end\s+' . $quotedSection . '\s+-->(.*)/s', $templateString, $matches)) {
@@ -547,14 +568,14 @@ class bab_Template
 	/**
 	 * Returns an array of strings containing the names of the sections in the template file.
 	 * 
-	 * @param	string	$filename	The path of the template file.
+	 * @param	string	$pathname	The pathname of the template file.
 	 * @return	array				The sections names.
 	 * @access public
 	 * @static
 	 */
-	function getTemplates($filename)
+	function getTemplates($pathname)
 	{
-		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', implode('', @file($filename)), $m)) {
+		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', bab_getFileContents($pathname), $m)) {
 			return $m[1];
 		}
 		return array();
@@ -793,5 +814,3 @@ function getTemplates($file)
 	return $ret;
 	}
 }
-
-?>
