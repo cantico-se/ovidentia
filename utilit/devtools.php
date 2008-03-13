@@ -234,6 +234,10 @@ class bab_synchronizeSql
 					{
 					$key = trim($n[1][$l]);
 					$f = $n[2][$l];
+					
+					if ('PRIMARY KEY' === $key) {
+						$f = 'PRIMARY';
+					}
 
 					if (!empty($key))
 						{
@@ -308,18 +312,35 @@ class bab_synchronizeSql
 		$key_type = array();
 		$non_unique = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+			if ('PRIMARY' === $arr['Key_name']) {
+				if (isset($fields['PRIMARY'])) {
+					$fields['PRIMARY'][] = $babDB->backTick($arr['Column_name']);
+				} else {
+					$fields['PRIMARY'] = array($babDB->backTick($arr['Column_name']));
+				}
 
-			if (isset($fields[$arr['Key_name']])) {
-				$fields[$arr['Key_name']][] = $babDB->backTick($arr['Column_name']);
+				$key_type['PRIMARY'] = 'PRI';
+
 			} else {
-				$fields[$arr['Key_name']] = array($babDB->backTick($arr['Column_name']));
+		
+				if (isset($fields[$arr['Key_name']])) {
+					$fields[$arr['Key_name']][] = $babDB->backTick($arr['Column_name']);
+				} else {
+					$fields[$arr['Key_name']] = array($babDB->backTick($arr['Column_name']));
+				}
+				
+
+				if ($arr['Non_unique']) {
+					$key_type[$arr['Key_name']] = 'MUL';
+				} else {
+					$key_type[$arr['Key_name']] = 'UNI';
+				}
 			}
 			
-			if (!empty($this->tables[$tablename][$arr['Column_name']]['Key'])) {
-				$key_type[$arr['Key_name']] = $this->tables[$tablename][$arr['Column_name']]['Key'];
-			}
 			
-			$non_unique[$arr['Key_name']] = (int) $arr['Non_unique'];
+			
+			
 		}
 		
 		
@@ -329,17 +350,16 @@ class bab_synchronizeSql
 			switch($type) {
 				case 'PRI':
 					$colname = trim($fields[$Key_name][0],'`');
-					$keys[$colname] = 'PRIMARY KEY ('.implode(', ', $fields[$Key_name]).')';
-				break;
+					$keys[$Key_name] = 'PRIMARY KEY ('.implode(', ', $fields[$Key_name]).')';
+					break;
 				
 				case 'MUL':
+					$keys[$Key_name] = 'KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
+					break;
+					
 				case 'UNI':
-					if ($non_unique[$Key_name]) {
-						$keys[$Key_name] = 'KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
-					} else {
-						$keys[$Key_name] = 'UNIQUE KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
-					}
-				break;
+					$keys[$Key_name] = 'UNIQUE KEY '.$babDB->backTick($Key_name).' ('.implode(', ', $fields[$Key_name]).')';
+					break;
 			}
 		}
 		
@@ -377,9 +397,12 @@ class bab_synchronizeSql
 				}
 			}
 			
+		$keys = $this->getTableKeysDetail($table);
+		
+			
 		foreach($this->create[$table]['keys'] as $key => $keydetail) 
 			{
-			$keys = $this->getTableKeysDetail($table);
+			
 			
 			if (isset($keys[$key]))
 				{
@@ -435,8 +458,6 @@ class bab_synchronizeSql
 	 * if key is different, drop and create
 	 */
 	function checkKeyDetail($table, $key_name, $existing_key, $new_key) {
-		
-		
 		
 		$old = $this->trimall($existing_key);
 		$new = $this->trimall($new_key);
