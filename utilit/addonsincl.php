@@ -193,9 +193,13 @@ function bab_setAddonGlobals($id_addon) {
  * all the additional parameters passed to bab_callAddonsFunction.
  
  * @param	string	$func
+ * @return 	array
  */
 function bab_callAddonsFunction($func)
 {
+	$results = array();
+	
+	
 	$oldBabAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
 	$oldBabAddonTarget = isset($GLOBALS['babAddonTarget'])? $GLOBALS['babAddonTarget']: '';
 	$oldBabAddonUrl =  isset($GLOBALS['babAddonUrl'])? $GLOBALS['babAddonUrl']: '';
@@ -221,11 +225,21 @@ function bab_callAddonsFunction($func)
 					{
 					$args = func_get_args();
 					$call .= '(';
-					for($k=1; $k < sizeof($args); $k++)
+					for($k=1; $k < sizeof($args); $k++) {
 						eval ( "\$call .= \"$args[$k],\";");
-					$call = substr($call, 0, -1);
+					}
+					
+					if (',' === substr($call, -1)) {
+						$call = substr($call, 0, -1);
+					}
 					$call .= ')';
+					
 					eval ( "\$retval = $call;");
+					
+						$results[$row['id']] = array(
+							'addon_name' => $row['title'],
+							'return_value' => $retval
+						);
 					}
 				}
 			}
@@ -237,6 +251,9 @@ function bab_callAddonsFunction($func)
 	$GLOBALS['babAddonPhpPath'] = $oldBabAddonPhpPath;
 	$GLOBALS['babAddonHtmlPath'] = $oldBabAddonHtmlPath;
 	$GLOBALS['babAddonUpload'] = $oldBabAddonUpload;
+	
+	
+	return $results;
 }
 
 

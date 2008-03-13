@@ -98,42 +98,36 @@ class bab_addonsSearch
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 		
-		$res = $babDB->db_query("select id,title from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
-		while (list($id,$title) = $babDB->db_fetch_array($res))
-			{
+		$searchinfos = bab_callAddonsFunction('searchinfos');
+		
+		foreach($searchinfos as $id => $arr) {
 			
-			if (bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id) && is_file($GLOBALS['babAddonsPath'].$title."/init.php"))
+			$title = $arr['addon_name'];
+		
+			$func_results = $arr['return_value'];
+
+			$this->titleAddons[$id] = $title;
+			
+
+			if (is_array($arr['return_value'])) {
+				list($text,$link) = $arr['return_value'];
+				}
+			else {
+				$text = $arr['return_value'];
+				}
+
+			if (is_string($text))
 				{
-				$func_infos = $title."_searchinfos";
 				$func_results = $title."_searchresults";
-
-				$this->titleAddons[$id] = $title;
-				bab_setAddonGlobals($id);
-
-				require_once($GLOBALS['babAddonsPath'].$title."/init.php");
-				if (function_exists($func_infos))
+				if (function_exists($func_results))
 					{
-					
-					$data = $func_infos();
-					if (is_array($data))
-						list($text,$link) = $data;
-					else
-						$text = $data;
-
-					if (is_string($text))
-						{
-						$text = htmlentities($text);
-						if (function_exists($func_results))
-							{
-							$this->func_results[$id] = $func_results;
-							$this->tabSearchAddons[$id] = $text;
-							}
-						if (isset($link))
-							{
-							$this->tabLinkAddons[$id] = $text;
-							$this->querystring[$id] = $link;
-							}
-						}
+					$this->func_results[$id] = $func_results;
+					$this->tabSearchAddons[$id] = $text;
+					}
+				if (isset($link))
+					{
+					$this->tabLinkAddons[$id] = $text;
+					$this->querystring[$id] = $link;
 					}
 				}
 			}
