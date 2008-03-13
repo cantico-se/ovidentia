@@ -25,7 +25,12 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include_once 'base.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 
+/**
+ * @deprecated
+ * @see	bab_getTopicTitle
+ */
 function bab_getCategoryTitle($id)
 	{
 	global $babDB;
@@ -42,6 +47,15 @@ function bab_getCategoryTitle($id)
 		}
 	}
 
+function bab_getTopicTitle($id)
+	{
+		return bab_getCategoryTitle($id);
+	}
+	
+/**
+ * @deprecated
+ * @see	bab_getTopicDescription
+ */	
 function bab_getCategoryDescription($id)
 	{
 	global $babDB;
@@ -58,6 +72,11 @@ function bab_getCategoryDescription($id)
 		}
 	}
 
+function bab_getTopicDescription($id)
+	{
+		return bab_getCategoryDescription($id);
+	}
+	
 function bab_getTopicCategoryTitle($id)
 	{
 	global $babDB;
