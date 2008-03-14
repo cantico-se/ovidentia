@@ -4323,6 +4323,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
+	
+	/**
+	 * Upgrade to 6.6.91
+	 */
 	return true;
 }
 ?>
