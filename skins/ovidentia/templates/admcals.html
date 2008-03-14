@@ -81,8 +81,7 @@
 </form>
 <!--#end calendarslist -->
 
-
-<!--#begin calendaradd -->
+<!--#begin calendaraddr -->
 <form name="calcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="{ tgval }" />
 <input type="hidden" name="idcal" value="{ idcal }" />
@@ -130,7 +129,51 @@
 </table>
 </form>
 <br>
-<!--#end calendaradd -->
+<!--#end calendaraddr -->
+
+<!--#begin calendaraddp -->
+<form name="calcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="{ tgval }" />
+<input type="hidden" name="idcal" value="{ idcal }" />
+<input type="hidden" name="addc" value="{ add }" />
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+			<td  width="30%" align="right" nowrap valign="middle">{ nametxt }:</td>
+			<td  width="70%" valign="middle"> 
+				<input type="text" name="calname" size="40" maxlength="255" value="{ calname }" />
+			</td>
+		</tr>
+		<tr> 
+			<td  width="30%" align="right" nowrap valign="middle">{ desctxt }:</td>
+			<td  width="70%" valign="middle"> 
+				<input type="text" name="caldesc" size="50" maxlength="255" value="{ caldesc }" />
+			</td>
+		</tr>
+		<tr> 
+			<td  align="right" nowrap valign="middle">{ approbationtxt }:</td>
+			<td  valign="middle">
+				<select name="calidsa">
+					<option value="0">{ nonetxt }</option>
+					<!--#in getnextschapp -->
+					<option value="{ said }" { selected }>{ saname }</option>
+					 <!--#endin getnextschapp -->
+				</select>
+			</td>
+		</tr>
+		<tr> 
+		<td >&nbsp;</td>
+		<td  valign="middle"><input type="submit" name="submit" value="{ addtxt }" /></td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<br>
+<!--#end calendaraddp -->
 
 <!--#begin categorieslist -->
 

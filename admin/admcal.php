@@ -182,7 +182,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 		}
 
 	$temp = new modifyCalendarResourceCls($idcal, $name, $desc, $idsa);
-	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
+	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
 function modifyCalendarPublic($idcal, $name, $desc, $idsa)
@@ -263,7 +263,7 @@ function modifyCalendarPublic($idcal, $name, $desc, $idsa)
 		}
 
 	$temp = new modifyCalendarPublicCls($idcal, $name, $desc, $idsa);
-	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
+	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
 

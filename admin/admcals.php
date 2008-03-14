@@ -329,7 +329,7 @@ function calendarsAddPublic($name, $desc, $idsa)
 		}
 
 	$temp = new calendarsAddPublicCls($name, $desc, $idsa);
-	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
+	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddp"));
 	}
 
 function calendarsAddResource($name, $desc, $idsa)
@@ -347,6 +347,7 @@ function calendarsAddResource($name, $desc, $idsa)
 			$this->addtxt = bab_translate("Add");
 			$this->approbationtxt = bab_translate("Approbation schema");
 			$this->nonetxt = bab_translate("None");
+			$this->t_availability_lock = bab_translate("The availability of the ressource is mandatory to create an event");
 			$this->calname = bab_toHtml($name);
 			$this->caldesc = bab_toHtml($desc);
 			$this->calidsa = bab_toHtml($idsa);
@@ -388,7 +389,7 @@ function calendarsAddResource($name, $desc, $idsa)
 		}
 
 	$temp = new calendarsAddResourceCls($name, $desc, $idsa);
-	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaradd"));
+	$babBody->babecho( bab_printTemplate($temp, "admcals.html", "calendaraddr"));
 	}
 
 function calendarsDelResource($idcal)
