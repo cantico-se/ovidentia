@@ -556,7 +556,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=entry&idx=more&article=".$arr['id']."&idg=".$this->idgroup);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			if ($arr['date_publication'] == $arr['date_modification'])
+			if ($arr['date'] == $arr['date_modification'])
 				{
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 				}
@@ -1182,7 +1182,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			if ($arr['date_publication'] == $arr['date_modification'])
+			if ($arr['date'] == $arr['date_modification'])
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
@@ -1260,7 +1260,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			if ($arr['date_publication'] == $arr['date_modification'])
+			if ($arr['date'] == $arr['date_modification'])
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
@@ -2652,7 +2652,7 @@ class bab_RecentArticles extends bab_handler
 				$this->ctx->curctx->push('ArticleReadMore', 1);
 			$this->ctx->curctx->push('ArticleId', $arr['id']);
 			$this->ctx->curctx->push('ArticleAuthor', $arr['id_author']);
-			if ($arr['date_publication'] == $arr['date_modification'])
+			if ($arr['date'] == $arr['date_modification'])
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
