@@ -2522,7 +2522,7 @@
 <string id="Do you want to delete selected items?">Voulez-vous supprimer les éléments sélectionnés?</string>
 <string id="Browse topics">Parcourir les thèmes d'articles</string>
 <string id="This topic is empty">Ce thème d'articles est vide</string>
-<string id="The availability of the ressource is mandatory to create an event">Considérer la disponibilité de la ressource comme un critère indispensable pour la création d'un événement</string>
+<string id="The availability of the ressource is mandatory to create an event">Empêcher la création d'événement en surbooking</string>
 <string id="One of the selected calendars require availability to create this event">Un des agendas sélectionnés requiert la disponibilité pour créer cet événement</string>
 <string id="One of the selected calendars require availability to modify this event">Un des agendas sélectionnés requiert la disponibilité pour modifier cet événement</string>
 <string id="There is a conflict with working hours, the next available period is : %s to %s">Il y a un conflit avec les heures travaillées, la prochaine période disponible est du %s jusqu'à %s</string>
