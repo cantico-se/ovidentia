@@ -124,6 +124,10 @@ function listArticles($id)
 				$this->index = true;
 				include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
 			}
+			else
+			{
+				$this->index = false;
+			}
 
 			$this->item = $id;
 			$this->siteid = $babBody->babsite['id'];
