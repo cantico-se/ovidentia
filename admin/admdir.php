@@ -1752,7 +1752,10 @@ switch($idx)
 
 	case 'gviewl':
 		$babBody->title = getDirectoryName($id, BAB_LDAP_DIRECTORIES_TBL);
-		aclGroups('admdir', 'list', BAB_LDAPDIRVIEW_GROUPS_TBL, $id, 'aclview');
+		$macl = new macl('admdir', 'list', $id, 'aclview');
+        $macl->addtable( BAB_LDAPDIRVIEW_GROUPS_TBL, bab_translate("View"));
+        $macl->babecho();
+        
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('gviewl', bab_translate("View"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$id);
 		break;
