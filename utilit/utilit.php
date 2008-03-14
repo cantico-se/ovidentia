@@ -1200,19 +1200,9 @@ function get_newfiles() {
 		return $newfiles;
 
 	$arrfid = array();
-	$newfiles = 0;
-	if( isset($this->aclfm['id']))
-		{
-		for( $i = 0; $i < count($this->aclfm['id']); $i++)
-			{
-			if($this->aclfm['down'][$i])
-				{
-				$arrfid[] = $this->aclfm['id'][$i];
-				}
-			}
-		}
-
-	if( count($arrfid) > 0 )
+	$arrfid = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
+	
+	if( is_array($arrfid) && count($arrfid) > 0 )
 		{
 		global $babDB;
 		$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".$babDB->quote($arrfid).")";
@@ -1220,6 +1210,10 @@ function get_newfiles() {
 		$req .= " order by f.modified desc";
 
 		list($newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
+		}
+	else
+		{
+			$newfiles = 0;
 		}
 
 	return $newfiles;
