@@ -2529,4 +2529,5 @@
 <string id="delete does not work on file %s">La suppression ne fonctionne pas sur le fichier %s</string>
 <string id="Functionalities">Fonctionnalités</string>
 <string id="All functionalities">Toutes les fonctionnalités</string>
+<string id="%d Online article(s) | %d Old article(s)">%d Article(s) en ligne | %d Article(s) archivés</string>
 </fr>
