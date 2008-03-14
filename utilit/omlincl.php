@@ -4369,7 +4369,8 @@ class bab_CalendarEvents extends bab_handler
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = strtoupper($ctx->get_value('filter')) !== "NO"; 
-			
+		$holiday = strtoupper($ctx->get_value('holiday')) !== "NO"; 
+		
 
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -4421,14 +4422,18 @@ class bab_CalendarEvents extends bab_handler
 			$this->whObj->category = $categoryid;
 		}
 
-		
-		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$options = BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT;
+		if( $holiday )
+		{
+			$options |= BAB_PERIOD_NWDAY;
+		}
+		$this->whObj->createPeriods(BAB_PERIOD_WORKING | $options);
 		$this->whObj->orderBoundaries();
 		
 		$this->events = $this->whObj->getEventsBetween(
 			$startdate->getTimeStamp(), 
 			$enddate->getTimeStamp(), 
-			BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT 
+			$options 
 		);
 
 		$this->count = count($this->events);
