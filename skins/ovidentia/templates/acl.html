@@ -143,25 +143,27 @@ function hideNonMultipleTable()
 		<!--#endin firstnode -->
 		</ul>
 	</div>
-</div>
 
-<!--#if countsets -->
-<p class="BabSiteAdminTitleFontBackground">{ t_sets_of_groups }</p>
-<div class="tree sets">
-<ul>
-<!--#in getnextset -->
-	<!--#if altbg --><li class="BabSiteAdminFontBackground"><!--#else altbg --><li class="BabForumBackground1"><!--#endif altbg -->
-		<div class="line">
-		{ arr[name] }
-			<span class="right_elements">
-			<!--#in getnexttable -->
-			<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
-			<!--#endin getnexttable -->
-			</span>
-		</div>
-	</li>
-<!--#endin getnextset -->
-</ul><br />
+
+	<!--#if countsets -->
+	<p class="BabSiteAdminTitleFontBackground">{ t_sets_of_groups }</p>
+	<div class="tree sets">
+	<ul>
+	<!--#in getnextset -->
+		<!--#if altbg --><li class="BabSiteAdminFontBackground"><!--#else altbg --><li class="BabForumBackground1"><!--#endif altbg -->
+			<div class="line">
+			{ arr[name] }
+				<span class="right_elements">
+				<!--#in getnexttable -->
+				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
+				<!--#endin getnexttable -->
+				</span>
+			</div>
+		</li>
+	<!--#endin getnextset -->
+	</ul><br />
+	</div>
+
 </div>
 <!--#endif countsets -->
 
