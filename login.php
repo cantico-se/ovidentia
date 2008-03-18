@@ -29,6 +29,8 @@
 
 include_once 'base.php';
 include_once $babInstallPath.'admin/register.php';
+include_once $babInstallPath.'utilit/loginIncl.php';
+
 
 
 
