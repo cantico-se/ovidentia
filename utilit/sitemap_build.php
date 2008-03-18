@@ -275,6 +275,77 @@ class bab_sitemap_tree extends bab_dbtree
 		}
 		
 	}
+	
+	
+	
+	
+	/**
+	 * Insert a new child node into a list in memory
+	 * Get ordered child nodes with first child ID
+	 * @param	int		$id_parent
+	 * @param	string	$childname
+	 * @return array
+	 */
+	function setAlphaChild($id_parent, $childname)
+	{
+		
+		global $babDB;
+		
+		$res = $babDB->db_query('
+			SELECT 
+				s.id, 
+				l.name  
+			FROM 
+				'.BAB_SITEMAP_TBL.' s, 
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' l 
+			WHERE 
+				l.id_function=s.id_function
+				AND s.id_parent = '.$babDB->quote($id_parent).'
+		');
+		
+		
+		if (0 === (int) $babDB->db_num_rows($res)) {
+			return array(
+				array(
+					'new' => $childname
+				)
+				,0);
+		}
+		
+		$child_nodes = array();
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+			$child_nodes[$arr['id']] = $arr['name'];
+		}
+		
+		$child_nodes['new'] = $childname;
+		natcasesort($child_nodes);
+		$firstchild = $nodes[0]['id'];
+		return array($child_nodes,$firstchild);
+	}
+
+
+	/**
+	 * Add a node ordered into childnodes list
+	 * @param	int		$id_parent
+	 * @param	string	$childname
+	 */
+	function addAlpha($id_parent, $childname)
+	{
+		list($child_nodes, $firstchild) = $this->setAlphaChild($id_parent, $childname);
+		foreach($child_nodes as $key => $value) {
+		
+			if ('new' == $key && isset($id_previous))
+				{
+				return $this->add($id_parent,$id_previous, true);
+			}
+			elseif ('new' == $key)
+				{
+				return $this->add($id_parent, $firstchild, false);
+			}
+			$id_previous = $key;
+		}
+	}
 }
 
 
@@ -755,7 +826,7 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 	
 		// leaf creation
 		
-		$id_node = $tree->add($id_parent);
+		$id_node = $tree->addAlpha($id_parent, $node->label);
 		if ($id_node) {
 			$tree->setFunction($id_node, $node->uid);
 		}
