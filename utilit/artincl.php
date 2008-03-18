@@ -120,7 +120,7 @@ function notifyArticleDraftApprovers($id, $users)
 				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($id)."'"));
 				$this->articletitle = $arr['title'];
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=approb&idx=all");
+				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=approb&idx=all");
 				$this->message = bab_translate("A new article is waiting for you");
 				$this->from = bab_translate("Author");
 				$this->category = bab_translate("Topic");
@@ -195,7 +195,7 @@ function notifyArticleDraftAuthor($idart, $what)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->titlename = $title;
-				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=approb&idx=all");
+				$this->articleurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=approb&idx=all");
 				if( $what == 0 )
 					{
 					$this->about = bab_translate("Your article has been refused");
@@ -375,7 +375,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				$this->message = $msg;
-				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=articles&topics=".$topics);
+				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=articles&topics=".$topics);
 				$this->linkname = viewCategoriesHierarchy_txt($topics);
 				}
 			}
@@ -485,7 +485,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 				$this->from = bab_translate("Author");
 				$this->subject = bab_translate("Subject");
 				$this->subjectname = $arr['subject'];
-				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($GLOBALS['babUrlScript']."?tg=waiting&idx=WaitingC&topics=".$arr['id_topic']."&article=".$arr['id_article']);
+				$this->subjecturl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=waiting&idx=WaitingC&topics=".$arr['id_topic']."&article=".$arr['id_article']);
 				$this->article = bab_translate("Article");
 				$this->articlename = bab_getArticleTitle($arr['id_article']);
 				$this->category = bab_translate("Topic");

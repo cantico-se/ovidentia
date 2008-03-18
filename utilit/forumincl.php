@@ -134,6 +134,12 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 					}
 				else
 					{
+					
+					if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+						$url = substr($url, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					}
+					
+					
 					$this->url = $GLOBALS['babUrlScript'].'?tg=login&cmd=detect&referer='.urlencode($url);
 					}
 				}

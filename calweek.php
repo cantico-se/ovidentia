@@ -425,7 +425,7 @@ switch($idx)
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("rfree", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=calweek&idx=rfree&calid=".$calid."&date=".$date);
 			if ($GLOBALS['BAB_SESS_LOGGED']) {
-				$urla = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date;
+				$urla = "?tg=calweek&calid=".$calid."&date=".$date;
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 				}
 			}
@@ -452,7 +452,7 @@ switch($idx)
 			$babBody->addItemMenu("view", bab_translate('Calendar'), $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date);
 			$babBody->addItemMenu("free", bab_translate("Availability"), $GLOBALS['babUrlScript']."?tg=calweek&idx=free&calid=".$calid."&date=".$date);
 			if ($GLOBALS['BAB_SESS_LOGGED']) {
-				$urla = $GLOBALS['babUrlScript']."?tg=calweek&calid=".$calid."&date=".$date;
+				$urla = "?tg=calweek&calid=".$calid."&date=".$date;
 				$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 				}
 			}

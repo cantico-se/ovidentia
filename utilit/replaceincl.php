@@ -58,6 +58,11 @@ function _var(&$txt,$var,$new)
 function _make_link($url,$text,$popup = 0,$url_popup = false)
 	{
 	if (isset($this->ext_url)) {
+	
+		if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+			$url = substr($href, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+		}
+	
 		$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
 		$popup = 0;
 		}

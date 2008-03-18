@@ -636,7 +636,7 @@ class cal_wmdbaseCls
 		$this->t_notifier = bab_translate("Open notifier");
 
 
-		$backurl = $GLOBALS['babUrlScript']."?tg=".$tg."&date=".$date."&calid=";
+		$backurl = "?tg=".$tg."&date=".$date."&calid=";
 		$this->calendarchoiceurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calopt&idx=pop_calendarchoice&calid=".$this->currentidcals."&date=".$date."&backurl=".urlencode($backurl));
 		$this->searcheventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=".$tg."&idx=rfree&date=".$date."&calid=".$this->currentidcals);
 		$this->calnotifierurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calnotif&idx=popup");

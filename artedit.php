@@ -2182,7 +2182,7 @@ else
 {
 $idx = bab_rp('idx', 'list');
 
-$rfurl = bab_rp('rfurl', $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+$rfurl = bab_rp('rfurl', "?tg=artedit&idx=list");
 
 if( $updstep01 = bab_rp('updstep01'))
 {
@@ -2214,7 +2214,7 @@ elseif( $updstep02 = bab_rp('updstep02') )
 	{
 		$topicid = bab_pp('topicid', 0);
 		$articleid = bab_pp('articleid', 0);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topicid."&article=".$articleid."&rfurl=".urlencode($GLOBALS['babUrlScript']."?tg=artedit&idx=list"));
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topicid."&article=".$articleid."&rfurl=".urlencode("?tg=artedit&idx=list"));
 		exit;
 	}
 }
