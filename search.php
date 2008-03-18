@@ -2045,7 +2045,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				{
 				$arr = $babDB->db_fetch_array($this->resart);
 				$this->articleid = $arr['id'];
-				$this->article = put_text($arr['title']);
+				$this->article = bab_toHtml($arr['title']);
 				$this->artdate = bab_shortDate($arr['date'], true);
 				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : bab_toHtml($arr['author']);
 				$this->archive = 'Y' == $arr['archive'];

@@ -544,17 +544,18 @@ setselects(document.forms.searchForm.g_directory);
 <ul>
 	<!--#in getnextart -->
 	<li>
-	<p>
-	<strong>{ arttopic }
-	<span class="bab-article-{ articleid }"></span>
-	&gt; 
-	<a class="BabFaqLink" href="{ articleurl }">{ article }</a></strong> 
-	- <a href="javascript: bab_popup('{ articleurlpop }');" title="{ t_popup_help }">{ popup }</a>  <!--#if archive --> ({ t_archive })<!--#endif archive --><br />
-	 { intro }<br />
-	 
-	<!--#if BAB_SESS_LOGGED -->
-	 <a href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
-	 </p>
+		<p>
+		<strong>
+			<span class="bab-article-{ articleid }"></span>
+			<a href="{ articleurl }">{ article }</a>
+		</strong> 
+		- <a href="javascript: bab_popup('{ articleurlpop }');" title="{ t_popup_help }">{ popup }</a>  <!--#if archive --> ({ t_archive })<!--#endif archive --><br />
+		{ arttopic }<br />
+		 { intro }<br />
+		 
+		<!--#if BAB_SESS_LOGGED -->
+		 <a href="mailto:{ authormail }"><!--#endif BAB_SESS_LOGGED -->{ artauthor }<!--#if BAB_SESS_LOGGED --></a><!--#endif BAB_SESS_LOGGED --> - <em>{ artdate }</em>
+		 </p>
 	</li>
 	<!--#endin getnextart -->
 </ul>
