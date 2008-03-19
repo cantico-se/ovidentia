@@ -307,7 +307,9 @@ function upgrade($id)
 							$from_version = $row['version'];
 						}
 						bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
-	
+						
+						// clear sitemap for addons without access rights management
+						bab_siteMap::clearAll();
 						return true;
 						}
 					}
