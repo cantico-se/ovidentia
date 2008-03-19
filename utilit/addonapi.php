@@ -799,7 +799,12 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	return $_SESSION['bab_groupAccess']['acltables'][$table];
 }
 
-//Il manque la partie pour les ensemble de groupes
+
+/**
+ * @deprecated
+ * @see aclGetAccessUsers() in admin/acl.php
+ * Il manque la partie pour les ensemble de groupes
+ */
 function bab_getUsersAccess($table)
 {
 	global $babBody, $babDB;
@@ -817,6 +822,13 @@ function bab_getUsersAccess($table)
 	return bab_getGroupsMembers($ids);
 }
 
+
+/**
+ * Get group list for access right
+ * @param	string	$table
+ * @param	int		$idobject
+ * @return 	array
+ */
 function bab_getGroupsAccess($table, $idobject)
 {
 	global $babBody, $babDB;
