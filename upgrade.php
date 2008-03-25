@@ -153,7 +153,7 @@ function fmUpgrade()
 								
 								$babDB->db_query($sQuery);
 								
-								updateFolderFilePathName($aDatas['iIdDgOwner'], $aDatas['iId'], 'Y', $aDatas['sName']);
+								updateFolderFilePathName($aDatas['iIdDgOwner'], $aDatas['iId'], 'Y', $sFolderName);
 							}
 							else 
 							{
