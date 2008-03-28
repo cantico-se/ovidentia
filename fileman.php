@@ -1820,7 +1820,10 @@ function getFile()
 	$oFolderFile = $oFolderFileSet->get($oId->in($iIdFile));
 	if(!is_null($oFolderFile))
 	{
-
+		//Peut être vient-on de l'OVML
+		$iCurrentDelegation = bab_getCurrentUserDelegation();
+		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
+	
 		$oFileManagerEnv =& getEnvObject();
 
 		if(canDownload($oFileManagerEnv->sRelativePath))
@@ -1871,16 +1874,22 @@ function getFile()
 						print fread($fp, 8192);
 					}
 					fclose($fp);
+					
+					bab_setCurrentUserDelegation($iCurrentDelegation);
 					exit;
 				}
 			}
 			else
 			{
+				bab_setCurrentUserDelegation($iCurrentDelegation);
+				
 				$babBody->msgerror = bab_translate("The file is not on the server");
 			}
 		}
 		else 
 		{
+			bab_setCurrentUserDelegation($iCurrentDelegation);
+		
 			echo bab_translate("Access denied");
 			return;
 		}
