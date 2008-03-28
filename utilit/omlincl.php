@@ -2203,7 +2203,7 @@ bab_debug(
 				
 				$sGroup	= $oFolderFile->getGroup();
 
-				$sEncodedPath = urlencode($oFolderFile->getPathName());
+				$sEncodedPath = urlencode(removeEndSlashes($oFolderFile->getPathName()));
 
 				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' . 
 					$sGroup . '&path=' . $sEncodedPath);
@@ -2314,7 +2314,7 @@ class bab_File extends bab_handler
 				$sRootFolderName = getFirstPath($this->oFolderFile->getPathName());
 				$this->initRootFolderId($sRootFolderName);
 				
-				$sEncodedPath = urlencode($this->oFolderFile->getPathName());
+				$sEncodedPath = urlencode(removeEndSlashes($this->oFolderFile->getPathName()));
 				
 				$sGroup	= $this->oFolderFile->getGroup();
 				
@@ -3159,9 +3159,9 @@ class bab_RecentFiles extends bab_handler
 				$this->ctx->curctx->push('FileName', $arr['name']);
 				$this->ctx->curctx->push('FilePath', $arr['path']);
 				$this->ctx->curctx->push('FileDescription', $arr['description']);
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath));
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']));
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode($sPath)."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath)));
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']));
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$arr['bgroup']."&path=".urlencode(removeEndSlashes($sPath))."&file=".urlencode($arr['name']) . '&idf=' . $arr['id']);
 				$this->ctx->curctx->push('FileAuthor', $arr['author']);
 				$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
 				$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
