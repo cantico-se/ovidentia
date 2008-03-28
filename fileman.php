@@ -1892,7 +1892,7 @@ function getFile()
 		{
 			bab_setCurrentUserDelegation($iCurrentDelegation);
 		
-			echo bab_translate("Access denied");
+			$babBody->msgerror = bab_translate("Access denied");
 			return;
 		}
 	}	
