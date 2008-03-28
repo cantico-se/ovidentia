@@ -726,9 +726,9 @@ function loadSections()
 	$type = '3';
 	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_ARTICLES))
 		{
-			if( isset($_SESSION['babCurrentDelegation']) && $_SESSION['babCurrentDelegation'] !== '' )
+			if( isset($_SESSION['babOvmlCurrentDelegation']) && $_SESSION['babOvmlCurrentDelegation'] !== '' )
 			{
-				$req = "select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and id_dgowner='".$babDB->db_escape_string($_SESSION['babCurrentDelegation'])."'";
+				$req = "select id, enabled, optional from ".BAB_TOPICS_CATEGORIES_TBL." where id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and id_dgowner='".$babDB->db_escape_string($_SESSION['babOvmlCurrentDelegation'])."'";
 			}
 			else
 			{
@@ -802,9 +802,9 @@ function loadSections()
 				{
 					$req .= " AND SUBSTRING(lang, 1, 2 ) IN ('*',".$babDB->quote($langFilterValues).")";
 				}
-			if( isset($_SESSION['babCurrentDelegation']) && $_SESSION['babCurrentDelegation'] !== '')
+			if( isset($_SESSION['babOvmlCurrentDelegation']) && $_SESSION['babOvmlCurrentDelegation'] !== '')
 			{
-				$req .=" and id_dgowner='".$babDB->db_escape_string($_SESSION['babCurrentDelegation'])."'";
+				$req .=" and id_dgowner='".$babDB->db_escape_string($_SESSION['babOvmlCurrentDelegation'])."'";
 			}
 			$res2 = $babDB->db_query($req);
 			while($arr2 = $babDB->db_fetch_array($res2))
