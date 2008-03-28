@@ -3653,25 +3653,7 @@ function changeDelegation()
 
 
 /* main */
-$iUsrDg = bab_getCurrentUserDelegation();
-if(0 === $iUsrDg)
-{
-	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
-	if(count($aCurrUsrDg) > 0 && !array_key_exists(0, $aCurrUsrDg))
-	{
-		$aItem = each($aCurrUsrDg);
-		if(false !== $aItem)
-		{
-			bab_setCurrentUserDelegation($aItem['key']);		
-		}
-	}
-}
-
-$iUsrDg = bab_getCurrentUserDelegation();
-
 initEnvObject();
-
-bab_setCurrentUserDelegation($iUsrDg);
 
 $oFileManagerEnv =& getEnvObject();
 if(false === $oFileManagerEnv->accessValid())
