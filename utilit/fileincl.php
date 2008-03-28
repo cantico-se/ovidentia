@@ -4236,7 +4236,8 @@ class BAB_FileManagerEnv
 			$this->sRelativePath	= $this->sPath . $this->sEndSlash;
 	
 			$this->oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($this->iIdObject);			
-			if(!is_null($this->oFmRootFolder))
+			//'' === $this->sGr si on à cliqué depuis la section utilisateur
+			if(!is_null($this->oFmRootFolder) && '' !== $this->sGr)
 			{
 				$this->iIdObject = $this->oFmRootFolder->getId();
 				
