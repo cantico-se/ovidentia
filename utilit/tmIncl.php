@@ -2081,8 +2081,34 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 	return $query;
 }
 
+function getFirstProjectTaskDate($iIdProject)
+{
+	global $babDB;
+	
+	$aLinkedTasks = array();
+	
+	$query = 
+		'SELECT ' . 
+			'MIN(startDate) sStartDate ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_TBL . ' ' .
+		'WHERE ' . 
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
 
-function bab_selectForGantt($sStartDate, $sEndDate, $aOrder = array())
+//	echo $query . '<br />';
+	
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		return $datas['sStartDate'];
+	}
+	return date("Y-m-d");
+}
+
+function bab_selectForGantt($aFilters, $aOrder = array())
 {
 	global $babDB;
 	
@@ -2126,8 +2152,46 @@ function bab_selectForGantt($sStartDate, $sEndDate, $aOrder = array())
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
 			't.id = ti.idTask AND ' .
-			't.endDate > ' . $babDB->quote($sStartDate) . ' AND ' .
-			't.startDate < ' . $babDB->quote($sEndDate) . ' ' .
+			't.endDate >= ' . $babDB->quote($aFilters['sStartDate']) . ' AND ' .
+			't.startDate <= ' . $babDB->quote($aFilters['sEndDate']) . ' ';
+
+	if(isset($aFilters['iIdProject']))
+	{
+		$query .= 'AND t.idProject = ' . $babDB->quote((int) $aFilters['iIdProject']) . ' ';
+	}
+
+	if(isset($aFilters['iIdOwner']))
+	{
+		$query .= 'AND ti.idOwner = ' . $babDB->quote((int) $aFilters['iIdOwner']) . ' ';
+	}
+
+	if(isset($aFilters['iTaskClass']))
+	{
+		$query .= 'AND t.class = ' . $babDB->quote((int) $aFilters['iTaskClass']) . ' ';
+	}
+
+	if(isset($aFilters['isPersonnal']))
+	{
+		$query .= 'AND ti.isPersonnal = ' . $babDB->quote(BAB_TM_YES) . ' ';
+	}
+	
+	if(isset($aFilters['bIsManager']) && false === $aFilters['bIsManager'])
+	{
+		$query .= 'AND t.participationStatus <> ' . $babDB->quote(BAB_TM_REFUSED) . ' ';
+	}
+	
+	if(isset($aFilters['iCompletion']) && -1 !== (int) $aFilters['iCompletion'])
+	{
+		$sCompletion = '= ' . $babDB->quote('100');
+		if(BAB_TM_IN_PROGRESS === (int) $aFilters['iCompletion'])
+		{
+			$sCompletion = '<> ' . $babDB->quote('100'); 
+		}
+		
+		$query .= 'AND t.completion ' . $sCompletion . ' ';
+	}
+			
+	$query .= 		
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
 

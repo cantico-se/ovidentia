@@ -1112,6 +1112,11 @@ function displayTaskList($sIdx)
 	global $babUrlScript;
 	$sGanttViewUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_GANTT_CHART);
 	
+	if(0 !== $iIdProjectSpace)
+	{
+		$sGanttViewUrl .= '&iIdProjectSpace=' . urlencode($iIdProjectSpace); 
+	}
+	
 	$aFilters = array();
 	if(-1 != $iTaskFilter)
 	{
@@ -1509,10 +1514,20 @@ function displayGanttChart()
 {
 	global $babInstallPath;
 	require_once($babInstallPath . 'tmGantt.php');
-//*
-	$sStartDate = bab_rp('date', date("Y-m-d"));
-	$oGantt = new BAB_TM_Gantt($sStartDate);
 	
+	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
+	$sStartDate			= date("Y-m-d");
+	
+	if(0 !== $iIdProjectSpace)
+	{
+		$sStartDate = getFirstProjectTaskDate(bab_rp('iIdProject'));
+	}
+	else
+	{
+		$sStartDate = bab_rp('date', $sStartDate);
+	}
+	
+	$oGantt = new BAB_TM_Gantt($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
 //*/
 	

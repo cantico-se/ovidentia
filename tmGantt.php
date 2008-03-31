@@ -22,13 +22,13 @@
  * USA.																	*
 ************************************************************************/
 include "base.php";
-
+require_once($babInstallPath . 'utilit/dateTime.php');
 
 
 class BAB_TM_GanttBase
 {
 	var $m_iWidth = '14';
-	var $m_iHeight = '25';
+	var $m_iHeight = '26';
 	
 	//m_iWidth = 1 day = 86400 secondes
 	//86400 / m_iWidth
@@ -66,6 +66,9 @@ class BAB_TM_GanttBase
 	var $m_iMonthHeigth = 0;
 	var $m_sMonth = '';
 	var $m_iCurrMonth = -1;
+	
+	//Used in getmonth
+	var $m_iYear = 0;
 	
 	var $m_iWeekPosX = 0;
 	var $m_iWeekPosY = 0;
@@ -187,21 +190,54 @@ class BAB_TM_GanttBase
 				$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
 			}
 			
+			/*
 			$iTaskClass = bab_rp('iTaskClass', -1);
 			if(-1 != $iTaskClass)
 			{
 				$aFilters['iTaskClass'] = $iTaskClass;
 				$this->m_GanttViewParamUrl .= '&iTaskClass=' . $aFilters['iTaskClass'];
 			}
+			//*/
 			
-		
+			/*
+			$_sStartDate = (string) bab_rp('sStartDate', '');
+			if(strlen(trim($_sStartDate)) > 0)
+			{
+				$oDate = bab_DateTime::fromDateStr(str_replace('-', '/', $_sStartDate));
+				if(is_a($oDate, 'bab_DateTime'))
+				{
+					$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth());
+					$aFilters['sStartDate'] = $oDate->getIsoDateTime();
+				}
+			}
+			else
+			{
+				$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+			}
+			
+			$_sEndDate = (string) bab_rp('sEndDate', '');
+			if(strlen(trim($_sEndDate)) > 0)
+			{
+				$oDate = bab_DateTime::fromDateStr(str_replace('-', '/', $_sEndDate));
+				if(is_a($oDate, 'bab_DateTime'))
+				{
+					$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth());
+					$aFilters['sEndDate'] = $oDate->getIsoDateTime();
+				}
+			}
+			else
+			{
+				$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);		
+			}
+			//*/
+			
 			$this->initDates($sStartDate, $iStartWeekDay);
-
-			$sStartDate = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-			$sEndDate = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
+			
+			$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+			$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
 			
 			global $babDB;
-			$this->m_result = $babDB->db_query(bab_selectForGantt($sStartDate, $sEndDate));
+			$this->m_result = $babDB->db_query(bab_selectForGantt($aFilters));
 		}
 		
 		if(false != $this->m_result)	
@@ -215,7 +251,6 @@ class BAB_TM_GanttBase
 	function initDates($sStartDate, $iStartWeekDay)
 	{
 		global $babInstallPath;
-		require_once($babInstallPath . 'utilit/dateTime.php');
 		
 		$this->m_sPrevMonth = bab_translate("Previous month");
 		$this->m_sPrevWeek	= bab_translate("Previous week");
@@ -255,6 +290,8 @@ class BAB_TM_GanttBase
 	{
 		$this->m_iStartWeekDay = $iStartWeekDay;
 		$this->m_aDisplayedStartDate = getdate(strtotime($sStartDate));
+		
+		$this->m_iYear = $this->m_aDisplayedStartDate['year']; 
 		
 		//Pour démarrer à un jour spécifique de la semaine
 		if($iStartWeekDay != $this->m_aDisplayedStartDate['wday'])
@@ -307,6 +344,10 @@ class BAB_TM_GanttBase
 		$this->m_iNavHeight = $this->m_iHeight;
 		$this->m_iNavWidth = ($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth));
 
+		
+//		echo '(' . $this->m_iTaskCaptionWidth . '+' . '(' . $this->m_iTotalDaysToDisplay . '*' . $this->m_iWidth . ')) = ' . $this->m_iNavWidth . '<br />'; 
+		
+		
 		$this->m_iGanttHeaderPosX = 0;
 		$this->m_iGanttHeaderPosY = $this->m_iHeight;
 		$this->m_iGanttHeaderHeight = (4 * $this->m_iHeight);
@@ -421,7 +462,7 @@ class BAB_TM_GanttBase
 		{
 			$iLeftParentBorderWidth = 1;
 
-			$this->m_sMonth = $this->getMonth($this->m_iCurrMonth);
+			$this->m_sMonth = $this->getMonth($this->m_iCurrMonth) . ' ' . $this->m_iYear;
 		
 			$this->m_iBorderLeft	= 1;
 			$this->m_iBorderRight	= 0;
@@ -432,8 +473,8 @@ class BAB_TM_GanttBase
 
 			$this->m_iMonthPosY = 0;
 			$this->m_iMonthPosX = ($this->m_iDisplayedDays * $this->m_iWidth) + $this->m_iTaskCaptionWidth - $iLeftParentBorderWidth;
-			
-			$iNbDaysInMonth = $this->getNbDaysInMonth($this->m_iCurrMonth, $this->m_aDisplayedStartDate['year']);
+
+			$iNbDaysInMonth = $this->getNbDaysInMonth($this->m_iCurrMonth, $this->m_iYear);
 			$iNbDaysInMonth = $iNbDaysInMonth - $this->m_iMonthDay;
 			
 			if($iNbDaysInMonth < $this->m_iTotalDaysToDisplay)
@@ -455,6 +496,7 @@ class BAB_TM_GanttBase
 			if(12 < $this->m_iCurrMonth)
 			{
 				$this->m_iCurrMonth = 1;
+				$this->m_iYear++;
 			}
 			
 			return true;
@@ -758,9 +800,210 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 		$iDisplayedTaskDurationInSeconds = $iTaskEndDateTs - $iTaskStartDateTs;
 		
 		$iPosX = round(($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes) - $this->m_iBorderLeft);
-		$iPosY = round($this->m_iTaskIndex * $this->m_iHeight);
-		$iHeigth = round($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom));
+		
+//		$iPosY = round($this->m_iTaskIndex * $this->m_iHeight);
+//		$iHeigth = round($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom));
+		
+		$iHeigth = round( ($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom)) / 2 );
+		$iPosY = round( (($this->m_iTaskIndex * $this->m_iHeight) + ($iHeigth / 2)));
+		
 		$iWidth = round(($iDisplayedTaskDurationInSeconds / $this->m_iOnePxInSecondes) - ($this->m_iBorderLeft));
 	}
 }
+
+/*
+class BAB_TM_Gantt2
+{
+	var $iHeight			= null;
+	var $iWidth				= null;
+	var $iOnePxInSecondes	= null;
+	
+	var $iDaysToDisplay 	= null;
+	var $iTaskTitleWidth	= null;
+	
+	//ganttNav
+	var $iNavPosY			= null;
+	var $iNavPosX			= null;
+	var $iNavHeight			= null;
+	var $iNavWidth			= null;
+	var $iNextMonthPosX		= null;
+	var $iNextMonthPosY 	= null;
+	var $iNextMonthHeight	= null;
+	var $iNextMonthWidth	= null;
+	var $iNextWeekPosX		= null;
+	var $iNextWeekPosY		= null;
+	var $iNextWeekHeight	= null;
+	var $iNextWeekWidth		= null;
+	var $iGotoDatePosX		= null;
+	var $iGotoDatePosY		= null;
+	var $iGotoDateHeight	= null;
+	var $iGotoDateWidth		= null;
+	
+	var $sPrevMonth			= '';
+	var $sPrevWeek			= '';
+	var $sNextWeek			= '';
+	var $sNextMonth			= '';
+	var $sGotoDate			= '';
+	var $sPrevMonthUrl		= '';
+	var $sPrevWeekUrl		= '';
+	var $sNextWeekUrl		= '';
+	var $sNextMonthUrl		= '';
+	var $sGotoDateUrl		= '';
+	var $sGanttViewParamUrl	= '';
+	
+	var $sTitle 			= '';
+	
+	function BAB_TM_Gantt2($sStartDate, $iStartWeekDay = 1)
+	{
+		$this->iHeight			= 25;
+		$this->iWidth			= 14;
+		$this->iDaysToDisplay	= 365;
+		$this->iTaskTitleWidth	= 200;
+		$this->sTitle 			= bab_translate("Gantt view");
+		$this->iOnePxInSecondes = 86400 / $this->iWidth;
+		
+		$this->initGanttNavPosition();
+	}
+	
+	function initGanttNavPosition()
+	{
+		$this->iNavPosX				= 0;
+		$this->iNavPosY				= 0;
+		$this->iNavHeight			= $this->iHeight;
+		$this->iNavWidth			= ($this->iTaskTitleWidth + ($this->iDaysToDisplay * $this->iWidth));
+
+		
+//		echo '(' . $this->iTaskTitleWidth . '+' . '(' . $this->iDaysToDisplay . '*' . $this->iWidth . ')) = ' . $this->iNavWidth . '<br />'; 
+		
+		
+		$this->iPrevWeekPosX		= 0;
+		$this->iPrevWeekPosY		= 0;
+		$this->iPrevWeekHeight		= $this->iHeight;
+		$this->iPrevWeekWidth		= $this->iWidth;
+		
+		$this->iPrevMonthPosX		= $this->iPrevWeekPosX + $this->iWidth;
+		$this->iPrevMonthPosY		= 0;
+		$this->iPrevMonthHeight		= $this->iHeight;
+		$this->iPrevMonthWidth		= $this->iWidth;
+	
+		$this->iGotoDatePosX		= (($this->iTaskTitleWidth + ($this->iDaysToDisplay * $this->iWidth)) / 2) - ($this->iWidth / 2);
+		$this->iGotoDatePosY		= 0;
+		$this->iGotoDateHeight		= $this->iHeight;
+		$this->iGotoDateWidth		= $this->iWidth;
+		
+		$this->iNextWeekPosX		= $this->iNavWidth - $this->iWidth;
+		$this->iNextWeekPosY		= 0;
+		$this->iNextWeekHeight		= $this->iHeight;
+		$this->iNextWeekWidth		= $this->iWidth;
+		
+		$this->iNextMonthPosX		= $this->iNextWeekPosX - $this->iWidth;
+		$this->iNextMonthPosY		= 0;
+		$this->iNextMonthHeight		= $this->iHeight;
+		$this->iNextMonthWidth		= $this->iWidth;
+	}
+
+	
+	
+	
+	function initDates($sStartDate, $iStartWeekDay)
+	{
+		global $babInstallPath;
+		require_once($babInstallPath . 'utilit/dateTime.php');
+		
+		$this->sPrevMonth	= bab_translate("Previous month");
+		$this->sPrevWeek	= bab_translate("Previous week");
+		$this->sGotoDate	= bab_translate("Go to date");
+		$this->sNextWeek	= bab_translate("Next week");
+		$this->sNextMonth	= bab_translate("Next month");
+		$sUrlBase			= $GLOBALS['babUrlScript'] . 
+			'?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . $this->sGanttViewParamUrl . '&date=';
+
+		$this->setDates($sStartDate, $iStartWeekDay);
+		//echo 'StartDate ==> ' . $sStartDate . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
+		$oDate->add(-1, BAB_DATETIME_MONTH);
+		$this->sPrevMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		//echo 'sPrevMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
+		$oDate->add(-7, BAB_DATETIME_DAY);
+		$this->sPrevWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		//echo 'sPrevWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+		
+		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
+		$oDate->add(7, BAB_DATETIME_DAY);
+		$this->sNextWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		//echo 'sNextWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+
+		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
+		$oDate->add(1, BAB_DATETIME_MONTH);
+		$this->sNextMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
+		
+		$this->m_sGotoDateUrl = $sUrlBase;
+	}
+	
+	
+	
+	// Tools functions
+	function getNbDaysInMonth($iMonth, $iYear)
+	{
+		static $aNbDaysInMonth_leap = array ('1' => 31, '2' => 29, '3' => 31, '4' => 30, '5' => 31, 
+			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
+		static $aNbDaysInMonth_nonLeap = array ('1' => 31, '2' => 28, '3' => 31, '4' => 30, '5' => 31, 
+			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
+
+		if($iMonth >= 1 && $iMonth <= 12)
+		{
+			$aNbDaysInMonth = ($this->isLeapYear($iYear)) ? $aNbDaysInMonth_leap : $aNbDaysInMonth_nonLeap;
+				
+			return $aNbDaysInMonth[$iMonth];
+		}
+		return 0;
+	}
+	
+	function isLeapYear($iYears)
+	{
+		return ( ($iYears % 4) == 0 && ($iYears % 100) != 0 || ($iYears % 400) == 0 );
+	}
+	
+	function getMonth($iMonth)
+	{
+		static $aMonths = null;
+
+		if(is_null($aMonths))
+		{
+			$aMonths = array ('1' => bab_translate("January"), '2' => bab_translate("February"), 
+				'3' => bab_translate("March"), '4' => bab_translate("April"), '5' => bab_translate("May"), 
+				'6' => bab_translate("June"), '7' => bab_translate("July"), '8' => bab_translate("August"),
+				'9' => bab_translate("September"), '10' => bab_translate("October"), '11' => bab_translate("November"), 
+				'12' => bab_translate("December"));
+		}
+			
+		if($iMonth >= 1 && $iMonth <= 12)
+		{
+			return $aMonths[$iMonth];
+		}
+		return '';
+	}
+
+	function getDay($iDay)
+	{
+		static $aDays = array ('0' => 'D', '1' => 'L', '2' => 'M', '3' => 'M', '4' => 'J', 
+				'5' => 'V', '6' => 'S');
+			
+		if($iDay >= 0 && $iDay <= 6)
+		{
+			return $aDays[$iDay];
+		}
+		return $iDay;
+	}
+
+	function dummyGetNext()
+	{
+		return ($this->m_iDummy++ == 0);
+	}
+}
+//*/
 ?>
