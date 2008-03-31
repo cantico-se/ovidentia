@@ -56,7 +56,11 @@ define('BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST', 'displayProjectCommentaryLi
 define('BAB_TM_IDX_DISPLAY_DELETE_PROJECT_COMMENTARY', 'displayDeleteProjectCommentary');
 define('BAB_TM_IDX_DISPLAY_COMMENTARY_FORM', 'displayCommentaryForm');
 define('BAB_TM_IDX_DISPLAY_TASK_COMMENTARY_LIST', 'displayTaskCommentaryList');
-define('BAB_TM_IDX_DISPLAY_TASK_LIST', 'displayTaskList');
+
+define('BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST', 'displayProjectTaskList');
+define('BAB_TM_IDX_DISPLAY_MY_TASK_LIST', 'displayMyTaskList');
+
+
 define('BAB_TM_IDX_DISPLAY_TASK_FORM', 'displayTaskForm');
 define('BAB_TM_IDX_DISPLAY_DELETE_TASK_FORM', 'displayDeleteTaskForm');
 

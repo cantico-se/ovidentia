@@ -247,10 +247,10 @@
 			$this->set_data('iMajorVersion', bab_rp('iMajorVersion', 1));
 			$this->set_data('iMinorVersion', bab_rp('iMinorVersion', 0));
 			
-			$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
 			if(!isFromIdxValid($sFromIdx))
 			{
-				$sFromIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
+				$sFromIdx = BAB_TM_IDX_DISPLAY_MY_TASK_LIST;
 			}
 			$this->set_data('sFromIdx', $sFromIdx);
 

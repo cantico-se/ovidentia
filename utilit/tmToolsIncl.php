@@ -135,15 +135,8 @@ function add_item_menu($items = array())
 		
 	if('usrTskMgr' == $sTg)
 	{
-		$sTitle = bab_translate("My tasks");
-		
-		if(1 === (int) bab_rp('isProject', 0))
-		{
-			$sTitle = bab_translate("Tasks of the project");
-		}
-
-		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_TASK_LIST, $sTitle, 
-			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_LIST));
+		$babBody->addItemMenu(BAB_TM_IDX_DISPLAY_MY_TASK_LIST, bab_translate("My tasks"), 
+			$GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_MY_TASK_LIST));
 	}
 
 	if(count($items) > 0)
@@ -163,7 +156,8 @@ function add_item_menu($items = array())
 
 function isFromIdxValid($sFromIdx)
 {
-	static $aFroms = array(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST => 0, BAB_TM_IDX_DISPLAY_TASK_LIST => 0);
+	static $aFroms = array(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST => 0, BAB_TM_IDX_DISPLAY_MY_TASK_LIST => 0, 
+		BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST => 0);
 	return isset($aFroms[$sFromIdx]);
 }
 

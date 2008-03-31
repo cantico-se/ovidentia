@@ -155,7 +155,7 @@ function displayProjectsSpacesList()
 
 					$iTaskCount = (int) bab_getTaskCount($datas['id']);					
 					
-					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_LIST, $iIdProjectSpace, $datas['id']) . bab_toHtml('&isProject=' . urlencode(1)) : null;
+					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST, $iIdProjectSpace, $datas['id']) . bab_toHtml('&isProject=' . urlencode(1)) : null;
 					$oProjectElement =& $this->createElement($this->m_dnp . '_' . $datas['id'], $this->m_dnp, bab_toHtml($datas['name']) . ' (' . $iTaskCount . ')', 
 						bab_toHtml($datas['description']), $sProjectUrl);
                		$this->appendElement($oProjectElement, $this->m_dnps . '_' . $iIdProjectSpace);
@@ -814,10 +814,13 @@ function displayDeleteProjectCommentary()
 	}	
 }
 
-function displayTaskList()
+function displayTaskList($sIdx)
 {
-	$isProject = (int) bab_rp('isProject', 0);
-	$iIdProject = (int) bab_rp('iIdProject', 0);
+	$aItemMenu = array();
+	
+	$isProject			= (int) bab_rp('isProject', 0);
+	$iIdProject			= (int) bab_rp('iIdProject', 0);
+	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
 	
 	$sTitle = bab_translate("My tasks");
 	
@@ -835,13 +838,23 @@ function displayTaskList()
 			{
 				$sTitle .= ': ' . $aProject['name'];
 			}
+
+			$aItemMenu = array(
+				array(
+					'idx' => BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST,
+					'mnuStr' => bab_translate("Tasks of the project"),
+					'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST) . 
+					'&isProject=' . urlencode($isProject) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+					'&iIdProject=' . urlencode($iIdProject))
+				);
 		}
 	}
 	
 	global $babBody;
 	$oTmCtx =& getTskMgrContext();
 	$babBody->title = bab_toHtml($sTitle);
-	add_item_menu();
+	
+	add_item_menu($aItemMenu);
 	
 	class BAB_TM_TaskFilterForm extends BAB_BaseFormProcessing
 	{
@@ -856,7 +869,7 @@ function displayTaskList()
 		var $m_aCompletion = array();
 		var $m_aTaskResponsible = array();
 		
-		function BAB_TM_TaskFilterForm()
+		function BAB_TM_TaskFilterForm($sIdx)
 		{
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));				
 			$this->set_data('idx', bab_rp('tg', ''));
@@ -869,7 +882,7 @@ function displayTaskList()
 			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
 			$this->set_caption('sCompletion', bab_translate("Completion"));
 			
-			$this->set_data('sFilterIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+			$this->set_data('sFilterIdx', $sIdx);
 			$this->set_data('sFilterAction', '');
 			$this->set_data('sAddTaskIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sAddTaskAction', '');
@@ -1087,7 +1100,7 @@ function displayTaskList()
 		}
 	}
 	
-	$oTaskFilterForm = new BAB_TM_TaskFilterForm();
+	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 	
@@ -1210,7 +1223,7 @@ function displayTaskList()
 	}
 
 	$oMultiPage = new BAB_MultiPageBase();
-	$oMultiPage->addPaginationAndFormParameters('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+	$oMultiPage->addPaginationAndFormParameters('sFromIdx', $sIdx);
 	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdOwner', $iIdOwner);
@@ -1229,7 +1242,7 @@ function displayTaskList()
 		}
 	}
 	
-	$oMultiPage->sIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
+	$oMultiPage->sIdx = $sIdx;
 //	$oMultiPage->iNbRowsPerPage = (int) 2;
 //	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
 	
@@ -1250,7 +1263,7 @@ function displayTaskList()
 	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
-		'&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_LIST) . '&isProject=' . urlencode($isProject);
+		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
 
 	//Pour les icônes
 	{		
@@ -1308,14 +1321,26 @@ function displayTaskForm()
 		$tab_caption = ($iIdTask == 0) ? bab_translate("Add a task") : bab_translate("Edition of a task");
 		$babBody->title = bab_toHtml($tab_caption);
 
-		$itemMenu = array(		
-			array(
+		$aItemMenu = array();
+
+		$isProject = (int) bab_rp('isProject', 0);
+		if(1 === $isProject)
+		{
+			$aItemMenu[] = array(
+				'idx' => BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST,
+				'mnuStr' => bab_translate("Tasks of the project"),
+				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST) . 
+				'&isProject=' . urlencode($isProject) . '&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+				'&iIdProject=' . urlencode($iIdProject));
+		}
+		
+		$aItemMenu[] = array(		
 				'idx' => BAB_TM_IDX_DISPLAY_TASK_FORM,
 				'mnuStr' => $tab_caption,
 				'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . 
-				'&iIdProject=' . urlencode($iIdProject))
-		);
-		add_item_menu($itemMenu);
+				'&iIdProject=' . urlencode($iIdProject));
+
+		add_item_menu($aItemMenu);
 		
 		global $babInstallPath;
 		require_once($babInstallPath . 'tmTaskClasses.php');
@@ -1342,21 +1367,23 @@ function displayDeleteTaskForm()
 	$iIdProject = (int) $oTmCtx->getIdProject();
 	$iIdTask = (int) $oTmCtx->getIdTask();
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
-
+	$isProject = (int) bab_rp('isProject', 0);
+	
 	$bf = & new BAB_BaseFormProcessing();
 	$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
 	$bf->set_data('iIdProject', $iIdProject);
+	$bf->set_data('isProject', $isProject);
 	$bf->set_data('objectName', 'iIdTask');
 	$bf->set_data('iIdObject', $iIdTask);
 	$bf->set_data('tg', 'usrTskMgr');
 
 	$bf->set_caption('yes', bab_translate("Yes"));
 	$bf->set_caption('no', bab_translate("No"));
-			
-	$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_TASK_LIST);
+
+	$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
 	if(!isFromIdxValid($sFromIdx))
 	{
-		$sFromIdx = BAB_TM_IDX_DISPLAY_TASK_LIST;
+		$sFromIdx = BAB_TM_IDX_DISPLAY_MY_TASK_LIST;
 	}
 	$bf->set_data('idx', $sFromIdx);
 	
@@ -1482,11 +1509,19 @@ function displayGanttChart()
 {
 	global $babInstallPath;
 	require_once($babInstallPath . 'tmGantt.php');
-
+//*
 	$sStartDate = bab_rp('date', date("Y-m-d"));
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
+//*/
+	
+/*
+	$sStartDate = bab_rp('date', date("Y-m-d"));
+	$oGantt = new BAB_TM_Gantt2($sStartDate);
+	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt2"));
+//*/
+	
 /*
 	global $babBody;
 	$babBody->babecho(bab_printTemplate($oGantt, 'tmUser.html', "gantt2"));
@@ -2072,7 +2107,7 @@ switch($action)
 }
 
 
-$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_TASK_LIST);
+$idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
 
 //bab_debug('idx ==> ' . $idx);
 
@@ -2115,8 +2150,9 @@ switch($idx)
 		displayDeleteProjectCommentary();
 		break;
 		
-	case BAB_TM_IDX_DISPLAY_TASK_LIST:
-		displayTaskList();
+	case BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST:
+	case BAB_TM_IDX_DISPLAY_MY_TASK_LIST:
+		displayTaskList($idx);
 		break;
 		
 	case BAB_TM_IDX_DISPLAY_TASK_FORM:
