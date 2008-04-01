@@ -53,6 +53,15 @@
 	padding-left:20px;
 	}
 */
+
+.ganttTodayColumn {
+	background-color: #88A8F8 !important;
+	background-color: #EDEDED !important;
+}
+	
+.ganttWeek {
+	background-color: #FFFF99 !important;
+	}
 	
 .ganttHeader {
 	background-color: #BD6363;

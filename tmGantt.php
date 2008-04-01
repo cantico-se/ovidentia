@@ -166,6 +166,9 @@ class BAB_TM_GanttBase
 	
 	var $m_sTitle = '';
 	
+	var $m_iTodayPosX = null;
+	var $m_aToDay = null;
+	
 	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
 	{
 		$this->m_sTitle = bab_translate("Gantt view");
@@ -342,6 +345,28 @@ class BAB_TM_GanttBase
 		
 		$this->m_iWeekNumber = $this->m_iStartWeekNumber = date('W', $this->m_aDisplayedStartDate[0]);
 		$this->m_iEndWeekNumber = date('W', $this->m_aDisplayedEndDate[0]);
+
+		//*
+		//Today pos
+		{
+			$sToday					= date("Y-m-d");
+			$iDisplayedStartDateTs	=& $this->m_aDisplayedStartDate[0];
+			$iDisplayedEndDateTs	=& $this->m_aDisplayedEndDate[0];
+			$iTodayTS				= strtotime($sToday);
+			
+			$this->m_aToDay			= getdate($iTodayTS);
+			
+			$iNbDays = BAB_DateTime::dateDiffIso($sToday, date("Y-m-d", $this->m_aDisplayedStartDate[0]));
+			
+			if($iTodayTS >= $iDisplayedStartDateTs && $iTodayTS <= $iDisplayedEndDateTs)
+			{
+				$this->m_iTodayPosX = $iNbDays;// * $this->m_iWidth;
+
+//				$iElaspedSecondsFromBigining	= $iTodayTS - $iDisplayedStartDateTs;
+//				$this->m_iTodayPosX				= round(($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes));
+			}
+		}
+		//*/
 	}
 	
 	function initLayout()
@@ -596,7 +621,17 @@ class BAB_TM_GanttBase
 			$this->m_iCurrDay	= ($this->m_iCurrDay + 1) % 7;
 
 			$this->m_iTimeStamp = mktime($aDate['hours'], $aDate['minutes'], $aDate['seconds'], $aDate['mon'], ($aDate['mday'] + 1), $aDate['year']);
-
+/*
+$iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - $iLeftParentBorderWidth;			
+//echo ' ==> ' . $iPosX . ' ==> ' . ($this->m_iDayPosX) . '<br />';
+			
+			$this->m_sTodayColumnAddClass = '';
+			if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iDayPosX)
+			{
+				$this->m_sTodayColumnAddClass = 'ganttTodayColumn';
+			}
+//*/
+						
 			$iDisplayedDays++;
 			return true;
 		}
@@ -668,11 +703,31 @@ class BAB_TM_GanttBase
 
 		$iBorderWidth = 1;
 		
+		$oDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
+		$oDate->add($iIndex, BAB_DATETIME_DAY);
+		$iDayOfWeek = $oDate->getDayOfWeek();
+
 		$this->m_iColumnPosY = 0;
 		$this->m_iColumnPosX = ($iIndex++ * $this->m_iWidth);
 		$this->m_iColumnHeigth = ($this->m_iNbResult + 1) * $this->m_iHeight;
 		$this->m_iColumnWidth = $this->m_iWidth - $iBorderWidth;
+
+//echo ' ==> ' . $this->m_iColumnPosX . '<br />';
+
+//*		
+$this->m_sTodayColumnAddClass = '';
+if($iDayOfWeek == 0 || $iDayOfWeek == 6)
+{
+//	echo ' ==> ' . $oDate->getIsoDateTime() . ' ' . $oDate->getDayOfWeek() . '<br />';
+	$this->m_sTodayColumnAddClass .= 'ganttWeek';
+}
 		
+$iPosX = ($this->m_iTodayPosX * $this->m_iWidth);			
+if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iColumnPosX)
+{
+	$this->m_sTodayColumnAddClass = ' ganttTodayColumn';
+}
+//*/
 		//car on commence à 1
 		return ( ($this->m_iTotalDaysToDisplay) >= $iIndex);
 	}
