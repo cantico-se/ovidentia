@@ -130,11 +130,14 @@ class BAB_TM_GanttBase
 	var $m_sNextWeek = "";
 	var $m_sNextMonth = "";
 	var $m_sGotoDate = "";
+	var $m_sToday = "";
 	var $m_sPrevMonthUrl = "";
 	var $m_sPrevWeekUrl = "";
 	var $m_sNextWeekUrl = "";
 	var $m_sNextMonthUrl = "";
 	var $m_sGotoDateUrl = "";
+	var $m_sTodayUrl = "";
+	
 	
 	var $m_iNavPosX = 0;
 	var $m_iNavPosY = 0;
@@ -156,6 +159,9 @@ class BAB_TM_GanttBase
 	var $m_iGotoDateHeight = 0;
 	var $m_iGotoDateWidth = 0;
 
+	var $m_iGotoTodayPosY = 0;
+	var $m_iGotoTodayPosX = 0;
+	
 	var $m_GanttViewParamUrl = '';
 	
 	var $m_sTitle = '';
@@ -257,6 +263,8 @@ class BAB_TM_GanttBase
 		$this->m_sGotoDate	= bab_translate("Go to date");
 		$this->m_sNextWeek	= bab_translate("Next week");
 		$this->m_sNextMonth	= bab_translate("Next month");
+		$this->m_sToday		= bab_translate("Today");
+		
 		$sUrlBase			= $GLOBALS['babUrlScript'] . 
 			'?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . $this->m_GanttViewParamUrl . '&date=';
 
@@ -283,7 +291,8 @@ class BAB_TM_GanttBase
 		$this->m_sNextMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
 		//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 		
-		$this->m_sGotoDateUrl = $sUrlBase;
+		$this->m_sTodayUrl		= $sUrlBase . urlencode(date("Y-m-d"));
+		$this->m_sGotoDateUrl 	= $sUrlBase;
 	}
 	
 	function setDates($sStartDate, $iStartWeekDay)
@@ -381,7 +390,11 @@ class BAB_TM_GanttBase
 		$this->m_iGotoDatePosX = (($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth)) / 2) - ($this->m_iWidth / 2);
 		$this->m_iGotoDatePosY = 0;
 		$this->m_iGotoDateHeight = $this->m_iHeight;
-		$this->m_iGotoDateWidth = $this->m_iWidth;
+		$this->m_iGotoDateWidth = $this->m_iWidth * 5;
+		
+		$this->m_iGotoTodayPosX = $this->m_iGotoDatePosX + $this->m_iWidth;
+		$this->m_iGotoTodayPosY = 0;
+		
 		
 		$this->m_iNextWeekPosX = $this->m_iNavWidth - $this->m_iWidth;
 		$this->m_iNextWeekPosY = 0;

@@ -1334,6 +1334,9 @@ function submit_form()
 <!--#end PersonnalTaskConfiguration -->
 
 onload="tmInit('ganttTask')"
+				
+<a class="ganttgotoToday" style="top:{ m_iGotoTodayPosY }px; left:{ m_iGotoTodayPosX }px;" href="{ m_sTodayUrl }" title="{ m_sToday }">{ m_sToday }</a>
+				
 
 <!--#begin gantt -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1361,7 +1364,7 @@ onload="tmInit('ganttTask')"
 			<div class="ganttNav" style="top:{ m_iNavPosY }px; left:{ m_iNavPosX }px; height:{ m_iNavHeight }px; width:{ m_iNavWidth }px">
 				<a class="ganttPrevWeek" style="top:{ m_iPrevWeekPosY }px; left:{ m_iPrevWeekPosX }px; height:{ m_iPrevWeekHeight }px; width:{ m_iPrevWeekWidth }px" href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">&nbsp;&nbsp;</a>
 				<a class="ganttPrevMonth" style="top:{ m_iPrevMonthPosY }px; left:{ m_iPrevMonthPosX }px; height:{ m_iPrevMonthHeight }px; width:{ m_iPrevMonthWidth }px" href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">&nbsp;&nbsp;</a>
-				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="javascript: Start('{ babUrlScript }?tg=month&callback=gotoDate&ymin=30&ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }">&nbsp;&nbsp;</a>
+				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="javascript: Start('{ babUrlScript }?tg=month&callback=gotoDate&ymin=30&ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }"><span>{ m_sGotoDate }</span></a>
 				<a class="ganttNextMonth" style="top:{ m_iNextMonthPosY }px; left:{ m_iNextMonthPosX }px; height:{ m_iNextMonthHeight }px; width:{ m_iNextMonthWidth }px" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">&nbsp;&nbsp;</a>
 				<a class="ganttNextWeek" style="top:{ m_iNextWeekPosY }px; left:{ m_iNextWeekPosX }px; height:{ m_iNextWeekHeight }px; width:{ m_iNextWeekWidth }px" href="{ m_sNextWeekUrl }" title="{ m_sNextWeek }">&nbsp;&nbsp;</a>
 			</div>
