@@ -253,7 +253,7 @@
 				$sFromIdx = BAB_TM_IDX_DISPLAY_MY_TASK_LIST;
 			}
 			$this->set_data('sFromIdx', $sFromIdx);
-
+			
 			$this->set_data('iAddSpfIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('iAddSpfAction', BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE);
 			$this->set_data('iAddIdx', $sFromIdx);

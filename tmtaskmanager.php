@@ -883,6 +883,7 @@ function displayTaskList($sIdx)
 			$this->set_caption('sCompletion', bab_translate("Completion"));
 			
 			$this->set_data('sFilterIdx', $sIdx);
+			$this->set_data('sFromIdx', $sIdx);
 			$this->set_data('sFilterAction', '');
 			$this->set_data('sAddTaskIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sAddTaskAction', '');
