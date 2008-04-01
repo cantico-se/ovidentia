@@ -1233,6 +1233,13 @@ function displayTaskList($sIdx)
 	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdOwner', $iIdOwner);
+	$oMultiPage->addPaginationAndFormParameters('idx', $sIdx);
+	
+	if(0 !== $iIdProjectSpace)
+	{
+		$oMultiPage->addPaginationAndFormParameters('iIdProjectSpace', $iIdProjectSpace);
+	}
+	
 	
 	$aOrder = array();
 	$sOrderBy = (string) bab_rp('sOrderBy', '');
@@ -1527,6 +1534,7 @@ function displayGanttChart()
 	{
 		$sStartDate = bab_rp('date', $sStartDate);
 	}
+
 	
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
