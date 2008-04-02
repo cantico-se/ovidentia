@@ -123,33 +123,32 @@ function bab_formatAuthor($format, $id)
 
 	if( !empty($id))
 		{
-		if( !isset($bab_authors[$id]))
-			{	
+		if( !isset($bab_authors[$id])) {	
 			$res = $babDB->db_query("select givenname, sn, mn from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($id)."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
+			if( $res && $babDB->db_num_rows($res) > 0 ) {
 				$bab_authors[$id] = $babDB->db_fetch_array($res);
-				}
 			}
-
-		if(preg_match_all('/%(.)/', $format, $m))
-			{
-			$txt = $format;
-			for( $i = 0; $i< count($m[1]); $i++)
+		}
+		if (isset($bab_authors[$id])) {
+			if(preg_match_all('/%(.)/', $format, $m))
 				{
-				switch($m[1][$i])
+				$txt = $format;
+				for( $i = 0; $i< count($m[1]); $i++)
 					{
-					case 'F':
-						$val = $bab_authors[$id]['givenname'];
-						break;
-					case 'L':
-						$val = $bab_authors[$id]['sn'];
-						break;
-					case 'M':
-						$val = $bab_authors[$id]['mn'];
-						break;
+					switch($m[1][$i])
+						{
+						case 'F':
+							$val = $bab_authors[$id]['givenname'];
+							break;
+						case 'L':
+							$val = $bab_authors[$id]['sn'];
+							break;
+						case 'M':
+							$val = $bab_authors[$id]['mn'];
+							break;
+						}
+					$txt = preg_replace('/'.preg_quote($m[0][$i]).'/', $val, $txt);
 					}
-				$txt = preg_replace('/'.preg_quote($m[0][$i]).'/', $val, $txt);
 				}
 			}
 		}
@@ -1763,8 +1762,5 @@ class babLanguageFilter
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
 $babLangFilter = new babLanguageFilter();
-
-
-
 
 ?>
