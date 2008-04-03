@@ -25,7 +25,7 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include_once 'base.php';
-include_once $babInstallPath.'utilit/artapi.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 
 class categoriesHierarchy
 {
