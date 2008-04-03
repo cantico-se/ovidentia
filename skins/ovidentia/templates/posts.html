@@ -271,7 +271,7 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 <a class="BabForumTopicsNavContribution" href="{ replyurl }">{ reply_txt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#endif replyurl --> 
 
-		  <a class="BabForumTopicsConfirm" href="{ flaturl }"><img src="{ babSkinPath }images/Puces/PuceForumFlat.gif" border=0 alt="{ altflattxt }" align="absmiddle"></a>
+		  <a class="BabForumTopicsConfirm" href="{ flaturl }"><img src="{ babSkinPath }images/Puces/PuceForumFlat.gif" border=0 alt="{ altflattxt }" align="absmiddle"></a><span class="bab-post-{ postid }"></span>
 		  </td>
         </tr>
         <!--#if more -->
@@ -519,7 +519,7 @@ window.focus();
 
 	</td>
 	<td >
-<A name="p{ postid }"></A>
+<a name="p{ postid }"></a>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td width="100%">
@@ -539,6 +539,9 @@ window.focus();
 			<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">[{ replytxt }]</a>
 			<!--#endif what -->
 			<!--#endif breply -->
+			<!--#if what "== Y" -->
+			<span class="bab-post-{ postid }"></span>
+			<!--#endif what -->
 			</td>
 		</tr>
 		<tr>
