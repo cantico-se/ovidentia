@@ -330,6 +330,9 @@ class bab_Template
 					$errors[$error['line']] = $error['message'];
 				}
 			}
+			if (!isset($this->_templateString)) {
+				$this->_templateString = bab_Template::_loadTemplate($filename, $section);
+			}
 			bab_debug('Template filename (' . $filename . ') section (' . $section . '):<br \>' . bab_Template::highlightSyntax($this->_templateString, $errors));
 			bab_debug('Parsed template :<br \>' . bab_Template::highlightSyntax($this->_parsedTemplate, $errors));
 		}
