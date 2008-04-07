@@ -149,8 +149,8 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 
 					if( $this->idgroup > 1 )
 						{
-						$req = " ".BAB_DBDIR_ENTRIES_TBL." e,
-								".BAB_USERS_GROUPS_TBL." u ".implode(' ',$leftjoin)." 
+						$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin).",
+								".BAB_USERS_GROUPS_TBL." u  
 									WHERE u.id_group='".$babDB->db_escape_string($this->idgroup)."' 
 									AND u.id_object=e.id_user 
 									AND e.id_directory='0'";
