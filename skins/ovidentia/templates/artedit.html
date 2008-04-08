@@ -25,10 +25,10 @@ function confirm_submit(url)
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td align="center" width="1%" nowrap>
-			<a title="{ t_modify }" href="javascript:bab_popup('{ urlname }',6)"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>&nbsp;<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;<a title="{ proptxt }" href="javascript:bab_popup('{ propurl }')"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;
+			<a title="{ t_modify }" href="{ urlname }" target="_blank" onclick="bab_popup(this.href,6);return false;"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>&nbsp;<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>&nbsp;<a title="{ proptxt }" href="{ propurl }" target="_blank" onclick="bab_popup(this.href);return false;"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;
 		</td>
 		<td>
-			<a class="BabSiteAdminListLink" href="javascript:bab_popup('{ previewurl }')" title="{ previewtxt }">{ name }</a>
+			<a class="BabSiteAdminListLink" href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;" title="{ previewtxt }">{ name }</a>
 			<!--#if attachment -->
 			&nbsp;<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
 			<!--#endif attachment -->
@@ -37,7 +37,7 @@ function confirm_submit(url)
 		<td>&nbsp;{ status }</td>
 		<td align="center">
 		<!--#if bsubmit -->
-		<a class="BabSiteAdminListLink" href="javascript:confirm_submit('{ bsubmiturl }');" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0"></a>
+		<a class="BabSiteAdminListLink" href="#" onclick="confirm_submit('{ bsubmiturl }');return false;" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0"></a>
 		<!--#else bsubmit -->&nbsp;
 		<!--#endif bsubmit -->
 		</td>
@@ -45,7 +45,7 @@ function confirm_submit(url)
 	<!--#endin getnext -->
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>&nbsp;</td>
-		<td nowrap><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ urladd }',6)">{ addtxt }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ urlmod }',6)">{ modtxt }</a></td>
+		<td nowrap><a class="BabSiteAdminListLink" href="{ urladd }" target="_blank" onclick="bab_popup(this.href,6);return false;">{ addtxt }</a>&nbsp;|&nbsp;<a class="BabSiteAdminListLink" href="{ urlmod }" target="_blank" onclick="bab_popup(this.href,6);return false;">{ modtxt }</a></td>
 		<td colspan="3">&nbsp;</td>
 	</tr>
 	</table>
@@ -70,7 +70,7 @@ function confirm_submit(url)
 		<td nowrap width="1%">
 			<a class="BabForumTopicsNavContribution" title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
 		</td>
-		<td><a class="BabSiteAdminListLink" title="{ previewtxt }" href="javascript: bab_popup('{ previewurl }',6)">{ name }</a></td>
+		<td><a class="BabSiteAdminListLink" title="{ previewtxt }" href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;">{ name }</a></td>
 		<td align="center">&nbsp;{ datecreate }</td>
 		<td align="center">&nbsp;{ datemodify }</td>
 	</tr>
@@ -136,10 +136,10 @@ window.focus();
 			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ restoretxt }" border="0"></a>
 			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			<!--#endif bdelete -->
-			<a title="{ proptxt }" href="javascript: bab_popup('{ urlname }',2);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;&nbsp;
+			<a title="{ proptxt }" href="{ urlname }" target="_blank" onclick="bab_popup(this.href,2);return false;"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;&nbsp;
 		</td>
 		<td>
-			<a href="javascript: bab_popup('{ previewurl }',2);" title="{ previewtxt }">{ name }</a>&nbsp;
+			<a href="{ previewurl }" title="{ previewtxt }" target="_blank" onclick="bab_popup(this.href,2);return false;">{ name }</a>&nbsp;
 			<!--#if attachment -->
 			<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
 			<!--#endif attachment -->
@@ -151,7 +151,7 @@ window.focus();
 		<td>&nbsp;{ status }</td>
 	</tr>
 	<!--#endin getnext -->
-	<tr class="BabSiteAdminTitleFontBackground"> 
+	<tr class="BabSiteAdminTitleFontBackground">
 		<td colspan="4">&nbsp;</td>
 	</tr>
 	</table>
@@ -202,7 +202,7 @@ window.focus();
 <td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ hpages1txt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ hpages1 }</td>
 </tr>
 <tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><a href="javascript:this.close()">{ closetxt }</a>
+<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><a href="#" onclick="this.close();return false;">{ closetxt }</a>
 </td>
 </tr>
 </table>
@@ -278,7 +278,7 @@ document.forms[fmname].updstep02.value = cmd;
 	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 	<tr> 
 	<td colspan="4" align="right">
-	<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','step02form');" />&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step02form');"><!--#if nbartmodify -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','step02form');"><!--#endif nbartmodify --></td>
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','step02form');" />&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','step02form');"><!--#if nbartmodify -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','step02form');"><!--#endif nbartmodify --></td>
 	</tr>
 	</table>
 </td>
@@ -317,7 +317,7 @@ function selectTopic(topicId)
 </form>
 
 <!--#if t_no_topic -->
-<p style="padding-left: 20px"><a href="javascript:selectTopic('');">{ t_no_topic }</a></p>
+<p style="padding-left: 20px"><a href="#" onclick="selectTopic('');return false;">{ t_no_topic }</a></p>
 <!--#endif t_no_topic -->
 
 <!--#end topictreeform -->
@@ -469,7 +469,7 @@ document.forms[fmname].updstep2.value = cmd;
 	<option value="2" { noapprobsel }>{ noapprobtxt }</option>
 	</select>
 	<!--#endif bupprobchoice -->&nbsp;&nbsp;
-	<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="javascript:stepSubmitForm('next','previewart');"></td>
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="stepSubmitForm('prev','previewart');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','previewart');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','previewart');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="stepSubmitForm('submit','previewart');"><!--#endif bsubmit -->&nbsp;&nbsp;<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','previewart');"></td>
 	</tr>
 	</table>
 </td>
@@ -828,7 +828,7 @@ window.onload = function()
 	<!--#if bshowtopics -->
 	<tr> 
 	<td align="center" valign="middle">{ topictxt }:&nbsp; 
-	<select name="topicid" onchange="javascript:stepChangeTopic('proptop','propform');">
+	<select name="topicid" onchange="stepChangeTopic('proptop','propform');">
 	<option value="0"></option>
 	<!--#in getnexttopic -->
 	<option value="{ idtopic }" { selected }>{ topicname }</option>
@@ -877,7 +877,7 @@ window.onload = function()
 	</td>
 	</tr>
 	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datesubtxt }</a>: </td>
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ datesubtxt }</a>: </td>
 	<td valign="middle"> 
 	<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
 	<td valign="middle"> 
@@ -915,7 +915,7 @@ window.onload = function()
 	</td>
 	</tr>
 	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ datebegintxt }</a>: </td>
 	<td valign="middle"> 
 	<input type="checkbox" id="idcdb" name="cdateb" value="Y" { cdatebcheck }></td>
 	<td valign="middle"> 
@@ -948,7 +948,7 @@ window.onload = function()
 	</td>
 	</tr>
 	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ dateendtxt }</a>: </td>
 	<td valign="middle"> 
 	<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
 	<td valign="middle"> 
@@ -1032,7 +1032,7 @@ window.onload = function()
 	<tr> 
 
 	<td colspan="2">{ filetxt }:<br /><input type="file" name="docf0" size="50" maxlength="255" value=""><br />{ desctxt }:<br /><input type="text" name="docdesc[]" size="50" maxlength="255" value="">
-	<p><a href="javascript:add_field()">{ t_add_field }</a>
+	<p><a href="#" onclick="add_field();return false;">{ t_add_field }</a>
 	</p>
 	</td>
 	</tr>
@@ -1040,7 +1040,7 @@ window.onload = function()
 	<td colspan="2">
 	<div id="post_addfiles">
 	</div>
-	<p><a id="urlremovefile" href="javascript:remove_field()" style="display:none">{ t_remove_field }</a>
+	<p><a id="urlremovefile" href="#" onclick="remove_field();return false;" style="display:none">{ t_remove_field }</a>
 	</p>
 	</td>
 	</tr>
@@ -1065,7 +1065,7 @@ window.onload = function()
 	</tr>
 	<!--#endif countfiles -->
 	<tr> 
-		<td colspan="2" align="center"><input type="submit" name="badd" value="{ addtxt }" onclick="javascript:stepSubmitForm('fadd','propform');">
+		<td colspan="2" align="center"><input type="submit" name="badd" value="{ addtxt }" onclick="stepSubmitForm('fadd','propform');">
 		</td>
 	</tr>
 	</table>
@@ -1167,7 +1167,7 @@ window.onload = function()
 	<option value="2" { noapprobsel }>{ noapprobtxt }</option>
 	</select>&nbsp;&nbsp;
 	<!--#endif bupprobchoice -->
-	<input type="submit" name="bprev" value="{ previoustxt }" onclick="javascript:return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="javascript:return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="javascript:return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="javascript:return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
+	<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','propform');">&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" onclick="return stepSubmitForm('cancel','propform');"><!--#if BAB_SESS_LOGGED -->&nbsp;&nbsp;<input type="submit" name="bsave" value="{ savetxt }" onclick="return stepSubmitForm('save','propform');"><!--#endif BAB_SESS_LOGGED --><!--#if bsubmit -->&nbsp;&nbsp;<input type="submit" name="bsubmit" value="{ submittxt }" onclick="return stepSubmitForm('submit','propform');"><!--#endif bsubmit --></td>
 	</tr>
 	</table>
 </td>
@@ -1177,7 +1177,7 @@ window.onload = function()
 </form>
 <!--#endif access -->
 <!--#if countfiles -->
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
   Sortable.create('sortfiles',{dropOnEmpty:true,handle:'handle',ghosting:true,constraint:false,onUpdate:onSortChange})
 </script>
 <!--#endif countfiles -->
