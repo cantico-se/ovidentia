@@ -1,28 +1,28 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/orgincl.php";
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
+include_once 'base.php';
+include_once $babInstallPath.'utilit/orgincl.php';
 
 function listOrgChartRoles($ocid, $oeid, $iduser)
 	{
@@ -283,36 +283,12 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 			$this->access = $access;
 
 			if( empty($iduser))
-				{
-				$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='1' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
-				if( $res && $babDB->db_num_rows($res) == 1)
-					{
-					$arr = $babDB->db_fetch_array($res);
-					$iduser = $arr['id_user'];
-					}
-				else
-					{
-					$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='3' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
-					if( $res && $babDB->db_num_rows($res) == 1)
-						{
-						$arr = $babDB->db_fetch_array($res);
-						$iduser = $arr['id_user'];
-						}
-					else
-						{
-						$res = $babDB->db_query("select orut.id_user from ".BAB_OC_ROLES_TBL." ort left join ".BAB_OC_ROLES_USERS_TBL." orut on ort.id=orut.id_role where ort.id_entity='".$oeid."' and ort.type='0' and ort.id_oc='".$ocid."' and orut.id_user is not null limit 0,1");
-						if( $res && $babDB->db_num_rows($res) == 1)
-							{
-							$arr = $babDB->db_fetch_array($res);
-							$iduser = $arr['id_user'];
-							}
-						else
-							{
-							$iduser = 0;
-							}
-						}
-					}
+			{
+				$members = bab_selectEntityMembers($ocid, $oeid);
+				if ($members && ($member = $babDB->db_fetch_array($members))) {
+					$iduser = $member['id_dir_entry'];
 				}
+			}
 			if( !empty($iduser))
 				{
 				$this->bab_viewDirectoryUser($iduser);
@@ -479,4 +455,3 @@ switch($idx)
 	}
 printFlbChartPage();
 exit;
-?>
