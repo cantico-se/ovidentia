@@ -2265,31 +2265,6 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	}
 
 	/**
-	 * Returns a record set containing the members of the entity $entityId.
-	 * 
-	 * @param int $entityId
-	 * @access private
-	 */
-	function _selectMembers($entityId)
-	{
-		global $babDB, $babBody;
-
-		$sql = 'SELECT users.id_user AS id_dir_entry, roles.type AS role_type, roles.name AS role_name, babusers.disabled AS user_disabled, babusers.is_confirmed AS user_confirmed, dir_entries.sn, dir_entries.givenname';
-		$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
-		$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
-		$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
-		$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
-		$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
-		$sql .= ' AND roles.id_oc = ' . $babDB->quote($this->_orgChartId);
-		$sql .= ' ORDER BY (roles.type - 1 % 4) ASC, '; // We want role types to appear in the order 1,2,3,0
-		$sql .= ($babBody->nameorder[0] === 'F') ? ' dir_entries.givenname ASC' : ' dir_entries.sn ASC';
-		
-		$members = $babDB->db_query($sql);
-		
-		return $members;
-	}
-
-	/**
 	 * Adds entities starting at entity id $startNode in the orgchart.
 	 * The entity with id $startNode will be the root of the orgchart. 
 	 * 
@@ -2298,6 +2273,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 */
 	function _addEntities($startEntityId)
 	{
+		require_once $GLOBALS['babInstallPath'].'utilit/orgincl.php';
 		global $babDB;
 
 		$entityType = 'entity';
@@ -2310,7 +2286,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 											 bab_toHtml($entity['name']),
 											 '',
 											 '');
-			$members = $this->_selectMembers($entity['id']);
+			$members = bab_selectEntityMembers($this->_orgChartId, $entity['id']);
 			while ($member = $babDB->db_fetch_array($members)) {
 				if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
 					$memberDirectoryEntryId = $member['id_dir_entry'];
