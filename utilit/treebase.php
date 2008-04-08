@@ -647,6 +647,7 @@ class bab_OrphanRootNode extends bab_RootNode
 	 * Creates a node.
 	 * @param mixed $data
 	 * @param string $id
+	 * @return bab_Node
 	 */
 	function &createNode(&$data, $id = null)
 	{
