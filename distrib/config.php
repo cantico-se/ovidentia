@@ -31,4 +31,12 @@ $babSiteName = "Ovidentia"; /* your site name */
 $babVersion = "6.0"; /* current version */
 $babFileNameTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_', "&" => "_","\"" => "_","'" => "_",";"=>"_","~"=>"-","+"=>""); /* translation characters for files names.*/
 
+/*
+ * Errors PHP
+ * To show the errors PHP on the site, remove comments on the following lines.
+ * It is advised not to show the errors in production.
+ */
+//ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+
 ?>
