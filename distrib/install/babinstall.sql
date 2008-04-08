@@ -1048,7 +1048,7 @@ CREATE TABLE bab_ini (
 
 INSERT INTO bab_ini VALUES ('ver_major', '6');
 INSERT INTO bab_ini VALUES ('ver_minor', '6');
-INSERT INTO bab_ini VALUES ('ver_build', '2');
+INSERT INTO bab_ini VALUES ('ver_build', '3');
 INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
