@@ -1729,7 +1729,7 @@ class bab_functionality {
 	function getFunctionalities($path) {
 		include_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$obj = new bab_functionalities();
-		return $obj->getChilds($path);
+		return $obj->getChildren($path);
 	}
 	
 	/**

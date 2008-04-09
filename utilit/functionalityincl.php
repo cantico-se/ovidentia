@@ -1,26 +1,25 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once 'base.php';
 
 /**
@@ -158,22 +157,22 @@ class bab_functionalities {
 	 * @param	array $func_path
 	 * @return 	array
 	 */
-	function getChilds($func_path) {
+	function getChildren($func_path) {
 	
 		$func_path = trim($func_path, '/ ');
 
-		$childs = array();
+		$children = array();
 		if ($dh = opendir($this->treeRootPath.$func_path)) {
 			while (($file = readdir($dh)) !== false) {
 				if (is_dir($this->treeRootPath.$func_path.'/'.$file) && '.' !== $file && '..' !== $file) {
-					$childs[] = $file;
+					$children[] = $file;
 				}
 			}
 			closedir($dh);
 		}
 		
-		sort($childs);
-		return $childs;
+		sort($children);
+		return $children;
 	}
 	
 	
@@ -182,8 +181,8 @@ class bab_functionalities {
 	 * @param	array $func_path
 	 * @return 	int
 	 */
-	function nbChilds($func_path) {
-		return count($this->getChilds($func_path));
+	function nbChildren($func_path) {
+		return count($this->getChildren($func_path));
 	}
 	
 	
@@ -261,7 +260,7 @@ class bab_functionalities {
 	function deleteOrReplaceWithFirstChild($func_path) {
 		
 		
-		$childs = $this->getChilds($func_path);
+		$children = $this->getChildren($func_path);
 		
 		$current_dir = opendir($this->treeRootPath.$func_path);
 		while($entryname = readdir($current_dir)){
@@ -273,10 +272,10 @@ class bab_functionalities {
 		}
 		
 		
-		if (0 === count($childs)) {
+		if (0 === count($children)) {
 			return rmdir($this->treeRootPath.$func_path);
 		} else {
-			return $this->recordLinkToLink($func_path, $func_path.'/'.$childs[0]);
+			return $this->recordLinkToLink($func_path, $func_path.'/'.$children[0]);
 		}
 
 	}
@@ -353,28 +352,28 @@ class bab_functionalities {
 	function register($func_path, $include_file) {
 	
 		$func_path = trim($func_path,'/ ');
-	
+
 		if (false !== strpos($func_path, '_')) {
 			trigger_error('$func_path must not contain _');
 			return false;
 		}
-		
+
 		// verify interface
-		
-		
+
+
 		if ($parent = $this->getParentPath($func_path)) {
 			if (false !== bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
 				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $func_path, $parent));
 				return false;
 			}
 		}
-		
+
 		// create directory if not exists
 		$arr = explode('/',$func_path);
 		$path = $this->treeRootPath;
 		foreach($arr as $directory) {
 			$path .= $directory.'/';
-			
+
 			if (!is_dir($path)) {
 				if (!bab_mkdir($path)) {
 					return false;
@@ -382,11 +381,11 @@ class bab_functionalities {
 				$this->onInsertNode($path);
 			}
 		}
-		
-		
+
+
 		// link upgrade
 		if (is_dir($this->treeRootPath.$func_path)) {
-		
+
 			if (file_exists($this->treeRootPath.$func_path.'/'.$this->original)) {
 				unlink($this->treeRootPath.$func_path.'/'.$this->original);
 			}
@@ -394,22 +393,26 @@ class bab_functionalities {
 			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->original)) {
 				return false;
 			}
-			
+
 			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
 				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
 			}
-			
+
 			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
 				return false;
 			}
 		}
-	
+
 		$this->normalizeNodeWithChild($this->getParentPath($func_path), $func_path);
+
+		$event = new bab_eventFunctionalityRegistered($func_path);
+		bab_fireEvent($event);
 		
 		return true;
 	}
-	
-	
+
+
+
 	/**
 	 * Test link validity
 	 * @param	string	$funcPath
@@ -419,8 +422,8 @@ class bab_functionalities {
 	function isValidLinks($funcPath) {
 		return (file_exists($this->treeRootPath.$funcPath.'/'.$this->filename) && file_exists($this->treeRootPath.$funcPath.'/'.$this->original));
 	}
-	
-	
+
+
 
 	/**
 	 * @param	string	$verifyPath		path to verifiy : if link is the same as original, link it to child
@@ -447,14 +450,14 @@ class bab_functionalities {
 	
 	
 	/**
-	 * Unregister functionality
+	 * Unregister a functionality.
 	 * If the functionality is not registered, this method return true
-	 * Remove link in this directory
-	 * if link is present in parent functionality, delete or replace with another
+	 * Removes the link in this directory
+	 * If link is present in parent functionality, delete or replace with another
 	 *
-	 * @access 	public
-	 * @param	string	$func_path
+	 * @param	string	$func_path		The path identifying the functionality
 	 * @return boolean
+	 * @access 	public
 	 */
 	function unregister($func_path) {
 	
@@ -466,20 +469,21 @@ class bab_functionalities {
 		if (!$this->deleteOrReplaceWithFirstChild($func_path)) {
 			return false;
 		}
-
+		$event = new bab_eventFunctionalityUnregistered($func_path);
+		bab_fireEvent($event);
 		return true;
 	}
 	
 	
 	/**
-	 * Verify tree
-	 * remove dead links
+	 * Verify tree.
+	 * Remove dead links
 	 * @param	string	[$path]
 	 */
 	function cleanTree($path = '') {
 	
-		$childs = $this->getChilds($path);
-		foreach ($childs as $child) {
+		$children = $this->getChildren($path);
+		foreach ($children as $child) {
 			$this->cleanTree($path.$child.'/');
 			$file = $this->treeRootPath.$path.$child.'/'.$this->filename;
 			if (true !== (include_once $file)) {
@@ -487,9 +491,59 @@ class bab_functionalities {
 				$this->unregister($path.$child);
 			}
 		}
-	
 	}
 }
 
 
-?>
+/**
+ * A functionality has been registered
+ * 
+ * @package events
+ * @since 6.6.93
+ */
+class bab_eventFunctionalityRegistered extends bab_event
+{
+	/**
+	 * The path identifying the functionality
+	 *
+	 * @access private
+	 * @var string
+	 */
+	var $functionalityPath;
+
+	/**
+	 * @param string	$functionalityPath		The path identifying the functionality
+	 * @return bab_eventFunctionalityRegistered
+	 */
+	function bab_eventFunctionalityRegistered($functionalityPath)
+	{
+		$this->functionalityPath = $functionalityPath;
+	}
+}
+
+
+/**
+ * A functionality has been unregistered
+ * 
+ * @package events
+ * @since 6.6.93
+ */
+class bab_eventFunctionalityUnregistered extends bab_event
+{
+	/**
+	 * The path identifying the functionality
+	 *
+	 * @access private
+	 * @var string
+	 */
+	var $functionalityPath;
+
+	/**
+	 * @param string	$functionalityPath		The path identifying the functionality
+	 * @return bab_eventFunctionalityUnregistered
+	 */
+	function bab_eventFunctionalityUnregistered($functionalityPath)
+	{
+		$this->functionalityPath = $functionalityPath;
+	}
+}

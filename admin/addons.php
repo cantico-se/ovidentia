@@ -792,7 +792,7 @@ function history($item)
 function haveFunctionalities() {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
 	$func = new bab_functionalities();
-	$childs = $func->getChilds('');
+	$childs = $func->getChildren('');
 	
 	return 0 !== count($childs);
 }
@@ -829,7 +829,7 @@ function functionalities() {
 
 	function buid_nodeLevel(&$tree, $node, $id, $path) {
 		$func = new bab_functionalities();
-		$childs = $func->getChilds($path);
+		$childs = $func->getChildren($path);
 		
 		$i = 1;
 		foreach ($childs as $dir) {
