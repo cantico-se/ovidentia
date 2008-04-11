@@ -1701,7 +1701,13 @@ class bab_functionality {
 	 * @return boolean
 	 */
 	function includefile($path) {
-		return include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		$include_result = @include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		
+		if (false === $include_result) {
+			trigger_error(sprintf('The functionality %s is not available', $path));
+		}
+		
+		return $include_result;
 	}
 	
 	/**

@@ -485,6 +485,12 @@ class bab_inifile_requirements {
 
 class bab_inifile {
 
+	var $addons;
+	var $recommendations;
+	var $functionalities;
+	var $customscript = array();
+
+
 	/**
 	 * Use a ini file in a zip file
 	 * @param $zipfile absolute path to the zip file
@@ -506,24 +512,65 @@ class bab_inifile {
 		
 		$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
 		$this->inifile( $GLOBALS['babUploadPath'].'/tmp/'.$filename);
+
 		unlink($GLOBALS['babUploadPath'].'/tmp/'.$filename);
+		
+		
+		// si le ini contiens un preinstall script, le chercher dans le même repertoire
+		
+		if (isset($this->inifile['preinstall_script'])) {
+		
+			$preinstall_script = $this->inifile['preinstall_script'];
+			
+			$inifileindex = false;
+			
+			foreach ($zipcontents as $k => $arr) {
+				if ($preinstall_script === $arr['filename']) {
+					$inifileindex = $arr['index'];
+					break;
+				}
+			}
+			
+			if ($inifileindex) {
+				$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
+				$this->addCustomScript($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
+				unlink($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
+			}
+		}
+		
+		
 	}
 
 	function inifile($file) {
 		 if ($arr = parse_ini_file($file, true)) {
 			 $this->inifile = $arr['general'];
+			 
 			 $this->addons = array();
 			 if (isset($arr['addons'])) {
 				$this->addons = $arr['addons'];
 			 }
+			 
 			 $this->recommendations = array();
 			 if (isset($arr['recommendations'])) {
 				$this->recommendations = $arr['recommendations'];
 			 }
-			 return true;
-		 } else {
+			 
+			$this->functionalities = array();
+			if (isset($arr['functionalities'])) {
+				$this->functionalities = $arr['functionalities'];
+			}
+			
+			if (isset($this->inifile['preinstall_script'])) {
+		
+				$preinstall_script = $this->inifile['preinstall_script'];
+				$this->addCustomScript(dirname($file).'/'.$preinstall_script);
+			}
+			
+			 
+			return true;
+		} else {
 			return false;
-		 }
+		}
 	}
 
 	function getName() {
@@ -562,6 +609,49 @@ class bab_inifile {
 		
 		return true;
 	}
+	
+	
+	
+	/**
+	 * Add a custom script for requirements
+	 * for addons
+	 * @param	string	$filepath
+	 *
+	 * @return 	boolean
+	 */
+	function addCustomScript($filepath) {
+	
+		$arr = include $filepath;
+		
+		if (!$arr || !is_array($arr)) {
+			trigger_error('preinstall script must return an array');
+			return false;
+		}
+		
+		
+		foreach($arr as $prerequisit) {
+		
+			if (
+					!isset($prerequisit['description']) 
+				|| 	!isset($prerequisit['required']) 
+				|| 	!isset($prerequisit['recommended']) 
+				||	!isset($prerequisit['current']) 
+				||	!isset($prerequisit['result']) 
+			) {
+				trigger_error('preinstall script must return an array prerequisit and each prerequisit must contains the keys : description, required, recommended, current, result');
+				return false;
+			}
+			
+			
+			$this->customscript[] = $prerequisit;
+		}
+		
+		return true;
+	}
+	
+	
+	
+	
 
 	/**
 	 * The list of requirements specified in the ini file
@@ -626,6 +716,62 @@ class bab_inifile {
 				}
 			}
 		}
+		
+		
+		
+		
+		if ($this->functionalities) {
+
+			foreach($this->functionalities as $name => $value) {
+			
+				// value can be "Available" or "Recommended"
+			
+				$obj = @bab_functionality::get($name);
+				
+				switch(strtolower($value)) {
+					case 'available':
+						$required = bab_translate('Available');
+						$recommended = false;
+						break;
+						
+					case 'recommended':
+						$required = false;
+						$recommended = bab_translate('Available');
+						break;
+				}
+			
+				if (false === $obj) {
+					$return[] = array(
+						'description'	=> bab_translate('Functionality').' : '.$name,
+						'required'		=> $required,
+						'recommended'	=> $recommended,
+						'current'		=> bab_translate('Not installed or disabled'),
+						'result'		=> false
+					);
+				} else {
+					$return[] = array(
+						'description'	=> bab_translate('Functionality').' : '.$name,
+						'required'		=> $required,
+						'recommended'	=> $recommended,
+						'current'		=> bab_translate('Available'),
+						'result'		=> true
+					);
+				}
+			}
+		}
+		
+		
+		
+		
+		if ($this->customscript) {
+			foreach($this->customscript as $prerequisit) {
+				$return[] = $prerequisit;
+			}
+		}
+		
+		
+		
+		
 	
 		$order = array();
 		foreach($return as $key => $value) {
