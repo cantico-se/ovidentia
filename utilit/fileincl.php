@@ -4072,7 +4072,7 @@ class BAB_FileManagerEnv
 			{
 				if($sParentPath !== $this->sPath)
 				{
-					$sUrl .= $sParentPath;
+					$sUrl .= urlencode($sParentPath);
 				}
 				return true;
 			}
@@ -4080,7 +4080,7 @@ class BAB_FileManagerEnv
 			{
 				if($sParentPath !== $this->sPath)
 				{
-					$sUrl .= $sParentPath;
+					$sUrl .= urlencode($sParentPath);
 					return true;
 				}
 			}
