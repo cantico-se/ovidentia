@@ -4254,6 +4254,13 @@ class BAB_FileManagerEnv
 					$this->iIdObject = $this->oFmFolder->getId();
 				}
 			}
+			else
+			{
+				$this->sFmCollectiveRootPath	= $this->sFmUploadPath . 'collectives/DG' . bab_getCurrentUserDelegation() . '/';	
+				$this->sFmCollectivePath		= $this->sFmCollectiveRootPath;
+				$this->sFmRootPath				= $this->sFmCollectivePath;
+				$this->sFmCollectivePath		.= $this->sRelativePath;
+			}
 		}
 		
 		if('N' === $this->sGr)
