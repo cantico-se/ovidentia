@@ -1692,6 +1692,10 @@ function displayAddFileForm()
 		return;
 	}
 
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
+		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
+		'&path=' . urlencode($oFileManagerEnv->sPath));
+	
 	$babBody->addItemMenu("displayAddFileForm", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
 		'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
 		'&path=' . urlencode($oFileManagerEnv->sPath));
@@ -1702,10 +1706,6 @@ function displayAddFileForm()
 			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
 			'&path=' . urlencode($oFileManagerEnv->sPath));
 	}
-	
-	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
-		'&path=' . urlencode($oFileManagerEnv->sPath));
 		
 	class temp
 	{
