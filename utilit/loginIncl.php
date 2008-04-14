@@ -458,11 +458,10 @@ function bab_updateUserConnectionDate($iIdUser)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query("select datelog, cookie_id from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($iIdUser)."'");
+	$res = $babDB->db_query("select datelog from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($iIdUser)."'");
 	if($res && $babDB->db_num_rows($res) > 0)
 	{
 		$arr = $babDB->db_fetch_array($res);
-		$old_token = $arr['cookie_id'];
 		$babDB->db_query("update ".BAB_USERS_TBL." set datelog=now(), lastlog='".$babDB->db_escape_string($arr['datelog'])."' where id='".$babDB->db_escape_string($iIdUser)."'");
 	}
 }
@@ -487,6 +486,13 @@ function bab_createReversableUserPassword($iIdUser, $sPassword)
 }
 
 
+/**
+ * Add a cookie for auto login
+ * if cookie_id allready exists in batabase for the user, the old cookie_id is used on the new browser
+ * @param	int		$iIdUser
+ * @param	string	$sLogin
+ * @param	int		$iLifeTime
+ */
 function bab_addUserCookie($iIdUser, $sLogin, $iLifeTime)
 {
 	
@@ -496,10 +502,22 @@ function bab_addUserCookie($iIdUser, $sLogin, $iLifeTime)
 		
 		if(true === $GLOBALS['babCookieIdent']) 
 		{
+			
+			global $babDB;
+			
+			$old_token = '';
+			
+			$res = $babDB->db_query("select cookie_id from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($iIdUser)."'");
+			if($res && $babDB->db_num_rows($res) > 0)
+			{
+				$arr = $babDB->db_fetch_array($res);
+				$old_token = $arr['cookie_id'];
+			}
+			
 			$token = empty($old_token) ? md5(uniqid(rand(), true)) : $old_token;
 			setcookie('c_password', $token, $cookie_validity);
 			
-			global $babDB;
+			
 			
 			$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET 
 				cookie_validity='".$babDB->db_escape_string(date('Y-m-d H:i:s',$cookie_validity))."', 
