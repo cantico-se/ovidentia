@@ -663,7 +663,7 @@ function readMore($topics, $article)
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
-					$sBody = $this->content = $editor->getHtml();
+					$sHead = $this->content = $editor->getHtml();
 					}
 				
 				/* template variables */
