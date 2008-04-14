@@ -535,6 +535,9 @@ function readMore($topics, $article)
 		var $countcom;
 		var $altbg = false;
 
+		var $babtpl_head = '';
+		var $babtpl_body = '';
+		
 		function temp($topics, $article)
 			{
 			global $babDB, $arrtop;
@@ -642,26 +645,30 @@ function readMore($topics, $article)
 					}
 				$GLOBALS['babWebStat']->addArticle($this->arr['id']);
 				$this->title = bab_toHtml($this->arr['title']);
+
+				$sHead = '';
+				$sBody = '';
+				
 				if( !empty($this->arr['body']))
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
-					$this->head = $editor->getHtml();
+					$sHead = $this->head = $editor->getHtml();
 					
 					$editor = new bab_contentEditor('bab_article_body');
 					$editor->setContent($this->arr['body']);
-					$this->content = $editor->getHtml();
+					$sBody = $this->content = $editor->getHtml();
 					}
 				else
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
-					$this->content = $editor->getHtml();
+					$sBody = $this->content = $editor->getHtml();
 					}
 				
 				/* template variables */
-				$this->babtpl_head =& $this->head;
-				$this->babtpl_body =& $this->content;
+				$this->babtpl_head = $sHead;
+				$this->babtpl_body = $sBody;
 
 				if( $this->arr['id_author'] != 0 && (($author = bab_getUserName($this->arr['id_author'])) != ""))
 					{
