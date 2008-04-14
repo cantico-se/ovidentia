@@ -17,11 +17,11 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 </td>
 </tr>
 </table>
-<br>
+<br />
 <!--#endin getnext -->
 <!--#end categorylist -->
 
-<br>
+<br />
 
 <!--#begin admquestioncreate -->
 <form name="qcreate" method="post" action="{ babPhpSelf }">
@@ -110,7 +110,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <tr> 
 <td align="center" valign="middle"> 
 <input type="submit" name="submit" value="{ add }">
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -149,7 +149,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <!--#if bdelete -->
 <input type="submit" name="bdel" value="{ del }">
 <!--#endif bdelete -->
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -160,7 +160,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 <!--#end admsubcatmodify -->
 
 
-<br><br><br><br><br>
+<br /><br /><br /><br /><br />
 <!--#begin admquestionmodify -->
 <form name="qmod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="faq">
@@ -207,7 +207,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 
 	<input type="submit" name="submit" value="{ add }">
 
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -217,22 +217,21 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 </form>
 
 <!--#end admquestionmodify -->
-<br><br><br><br><br>
+
 <!--#begin viewquestion -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
-</tr>
-<tr> 
-<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
-</tr>
-<tr> 
-<td class="BabFaqTitleFontBg" valign="top" align="right"><a class="BabFaqLink" 
-href="{ returnurl }">{ return }</a></td>
-</tr>
+	<tr> 
+		<td class="BabFaqQuestion" valign="middle">{ arr[question] }</td>
+	</tr>
+	<tr> 
+		<td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
+	</tr>
+	<tr> 
+		<td class="BabFaqTitleFontBg" valign="top" align="right"><a class="BabFaqLink" href="{ returnurl }">{ return }</a></td>
+	</tr>
 </table>
-<br>
+<br />
 <!--#end viewquestion -->
 <!--#begin popupquestion -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -248,18 +247,18 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
-<br>
+<br />
 <table border="0" width="95%" cellpadding="3" cellspacing="0" align="center">
 <tr> 
-<td class="BabFaqQuestion" nowrap valign="middle">{ arr[question] }</td>
+<td class="BabFaqQuestion" valign="middle">{ arr[question] }</td>
 </tr>
 <tr> 
 <td class="BabSiteAdminFontBackground" valign="top">{ arr[response] }</td>
 </tr>
 </table>
-<br>
+<br />
 <center><a href="javascript:this.close()">{ close }</a></center>
-<br>
+<br />
 </td>
 </tr>
 </table>
