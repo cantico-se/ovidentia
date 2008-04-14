@@ -3815,7 +3815,7 @@ class bab_FaqSubCategories extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			if( $this->faqinfo['id_root'] == $arr['id'] )
 			{
-			$this->ctx->curctx->push('FaqSubCatName', $faqinfo['category']);
+			$this->ctx->curctx->push('FaqSubCatName', $this->faqinfo['category']);
 			}
 			else
 			{
@@ -3880,8 +3880,8 @@ class bab_FaqSubCategory extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			if( empty($arr['name']) )
 			{
-			$faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
-			$this->ctx->curctx->push('FaqSubCatName', $faqinfo['category']);
+			$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
+			$this->ctx->curctx->push('FaqSubCatName', $this->faqinfo['category']);
 			}
 			else
 			{
