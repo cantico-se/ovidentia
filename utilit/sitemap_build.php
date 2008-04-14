@@ -320,7 +320,8 @@ class bab_sitemap_tree extends bab_dbtree
 		
 		$child_nodes['new'] = $childname;
 		natcasesort($child_nodes);
-		$firstchild = $child_nodes[0]['id'];
+		$first = reset($child_nodes);
+		$firstchild = $first['id'];
 		return array($child_nodes,$firstchild);
 	}
 
