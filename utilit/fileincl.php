@@ -3969,11 +3969,6 @@ class BAB_FmFolderHelper
 		
 		if(strlen(trim($sFullPathName)) > 0 && false === strstr($sFullPathName, '..'))
 		{
-			if(isset($GLOBALS['babFileNameTranslation']))
-			{
-				$sFullPathName = strtr($sFullPathName, $GLOBALS['babFileNameTranslation']);
-			}
-
 			if(!is_dir($sFullPathName))
 			{
 				$sUploadPath = BAB_FmFolderHelper::getUploadPath();
@@ -4004,6 +3999,10 @@ class BAB_FmFolderHelper
 			{
 				if(strlen(trim($sPathItem)) !== 0)
 				{
+					if(isset($GLOBALS['babFileNameTranslation'])) {
+						$sPathItem = strtr($sPathItem, $GLOBALS['babFileNameTranslation']);
+					}
+					
 					$sPath .= '/' . $sPathItem;
 					if(!is_dir($sPath))
 					{
