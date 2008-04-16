@@ -513,9 +513,9 @@ class bab_functionalities {
 	 * @return string
 	 */
 	function sanitize($sPath) {
-		$sPattern = '#[^0-9a-zA-Z/]#i';
-		$sReplacement = '';
-		return preg_replace($sPattern, $sReplacement, $sPath);
+		$aPattern = array('#[^0-9a-zA-Z/]#i', '#/+#i');
+		$aReplacement = array('', '/');
+		return trim(preg_replace($aPattern, $aReplacement, $sPath), '/');
 	}
 }
 
