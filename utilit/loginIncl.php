@@ -124,9 +124,9 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
  * Ensures that the user is logged in. 
  *
  */
-function bab_requireCredential()
+function bab_requireCredential($sAuthType)
 {
-	$sAuthType = bab_functionalities::sanitize((string) bab_rp('sAuthType', ''));
+	$sAuthType = bab_functionalities::sanitize($sAuthType);
 	
 	$sAuthType = (strlen($sAuthType) != 0) ? 'PortalAuthentication/' . $sAuthType :
 		'PortalAuthentication';
