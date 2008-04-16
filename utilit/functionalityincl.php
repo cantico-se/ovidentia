@@ -317,6 +317,7 @@ class bab_functionalities {
 		}
 		
 		if (!include_once $include_file) {
+			trigger_error(sprintf('The include file %s does not exist', $include_file));
 			return false;
 		}
 		
@@ -350,7 +351,21 @@ class bab_functionalities {
 	 * @return  boolean
 	 */
 	function register($func_path, $include_file) {
-	
+		
+		/*
+		$include_result = @include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$func_path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		
+		if (false === $include_result) {
+			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));
+			return false;
+		}
+		//*/
+		
+		if (!@include_once $include_file) {
+			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));
+			return false;
+		}
+		
 		$func_path = trim($func_path,'/ ');
 
 		if (false !== strpos($func_path, '_')) {
@@ -362,7 +377,7 @@ class bab_functionalities {
 
 
 		if ($parent = $this->getParentPath($func_path)) {
-			if (false !== bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
+			if (false !== @bab_functionality::get($parent) && !$this->compare($parent, $func_path, $include_file)) {
 				trigger_error(sprintf('The functionality %s does not implement interface from parent functionality %s', $func_path, $parent));
 				return false;
 			}
@@ -491,6 +506,16 @@ class bab_functionalities {
 				$this->unregister($path.$child);
 			}
 		}
+	}
+	
+	/**
+	 * sanities path remove non alphanum car
+	 * @return string
+	 */
+	function sanitize($sPath) {
+		$sPattern = '/\W/i';
+		$sReplacement = '';
+		return preg_replace($sPattern, $sReplacement, $sPath);
 	}
 }
 
