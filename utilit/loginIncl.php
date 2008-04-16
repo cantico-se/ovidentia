@@ -122,6 +122,11 @@ function bab_requireCredential()
 		$_SESSION['sAuthType'] = $sAuthType;
 		$oAuthObject->login();
 	}
+	else
+	{
+		global $babBody;
+		$babBody->addError(sprintf(bab_translate("The authentication method %s is invalid"), $sAuthType));
+	}
 }
 
 
