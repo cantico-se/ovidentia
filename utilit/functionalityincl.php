@@ -513,7 +513,7 @@ class bab_functionalities {
 	 * @return string
 	 */
 	function sanitize($sPath) {
-		$sPattern = '/\W/i';
+		$sPattern = '#[^0-9a-zA-Z/]#i';
 		$sReplacement = '';
 		return preg_replace($sPattern, $sReplacement, $sPath);
 	}
