@@ -35,7 +35,7 @@ class PortalAuthentication extends bab_functionality
 {
 	function getDescription() 
 	{
-		return bab_translate("Authentication functionnality");
+		return bab_translate("Authentication functionality");
 	}
 
 	function getFunctionalityCallableMethods() 
