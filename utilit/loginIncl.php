@@ -24,6 +24,107 @@
 include_once 'base.php';
 
 
+require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+
+
+class PortalAuthentication extends bab_functionality
+{
+	function getDescription() 
+	{
+		return bab_translate("Authentication functionnality");
+	}
+
+	function getFunctionalityCallableMethods() 
+	{
+		return array('login', 'logout');
+	}
+
+	function login() 
+	{
+		die(bab_translate("PortalAuthentication::login must not be called directly"));
+	}
+
+	function logout() 
+	{
+		die(bab_translate("PortalAuthentication::logout must not be called directly"));
+	}
+}
+
+
+class PortalAuthentication_ovidentia extends PortalAuthentication
+{
+	function getDescription() 
+	{
+		return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
+	}
+
+	function getFunctionalityCallableMethods() 
+	{
+		return array('login', 'logout');
+	}
+
+	function registerAuthType()
+	{
+		$oFunctionalities = new bab_functionalities();
+		
+		if(false !== $oFunctionalities->register('PortalAuthentication', $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php')) 
+		{
+			if(false !== $oFunctionalities->register('PortalAuthentication/ovidentia', $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php'))
+			{
+				return true;			
+			}
+		}
+		return false;		
+	}
+
+	function unregisterAuthType()
+	{
+		$oFunctionalities = new bab_functionalities();
+		
+		if(false !== $oFunctionalities->unregister('PortalAuthentication')) 
+		{
+			if(false !== $oFunctionalities->unregister('PortalAuthentication/ovidentia'))
+			{
+				return true;			
+			}
+		}
+		return false;		
+	}
+	
+	function login() 
+	{
+		bab_login();
+	}
+
+	function logout() 
+	{
+		bab_logout();
+	}
+}
+
+
+function bab_requireCredential()
+{
+	$sAuthType = bab_functionalities::sanitize((string) bab_rp('sAuthType', ''));
+	
+	$sAuthType = (strlen($sAuthType) != 0) ? 'PortalAuthentication/' . $sAuthType :
+		'PortalAuthentication';
+	
+	$oAuthObject = @bab_functionality::get($sAuthType);
+	if(false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
+	{
+		PortalAuthentication_ovidentia::registerAuthType();
+		$oAuthObject = bab_functionality::get($sAuthType);
+	}
+	
+	if(false !== $oAuthObject)
+	{
+		$_SESSION['sAuthType'] = $sAuthType;
+		$oAuthObject->login();
+	}
+}
+
+
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
 	global $babDB;
@@ -138,7 +239,7 @@ function bab_haveAdministratorRight($iIdUser)
 }
 
 
-function bab_login(&$oEvent)
+function bab_login()
 {
 	if($GLOBALS['BAB_SESS_LOGGED']) 
 	{
@@ -148,8 +249,6 @@ function bab_login(&$oEvent)
 	{
 		$sLogin = (string) bab_pp('nickname');
 		
-		$oEvent->setStopPropagation(true);
-		
 		if(strlen(trim($sLogin)) === 0) //Authentication
 		{
 			displayAuthenticationForm();
@@ -158,9 +257,6 @@ function bab_login(&$oEvent)
 		{
 			if(signOn())
 			{
-				
-				$oEvent->setSignedOn(true);
-				
 				$sUrl = (string) bab_rp('referer');
 				
 				if(substr_count($sUrl,'tg=login&cmd=') == 0) 
@@ -172,18 +268,13 @@ function bab_login(&$oEvent)
 					loginRedirect($GLOBALS['babUrlScript']);
 				}
 			}
-			else 
-			{
-				$oEvent->setSignedOn(false);
-			}
 		}
 	}	
 }
 
 
-function bab_logout(&$oEvent)
+function bab_logout()
 {
-	$oEvent->setStopPropagation(true);
 	signOff();
 	loginRedirect($GLOBALS['babPhpSelf']);
 }
