@@ -2533,4 +2533,9 @@
 <string id="%d Online article(s) | %d Old article(s)">%d Article(s) en ligne | %d Article(s) archivés</string>
 <string id="Add a delegation category">Ajouter une catégorie de délégation</string>
 <string id="Modify a delegation category">Modifier une catégorie de délégation</string>
+<string id="The authentication method %s is invalid">La méthode d'authentification %s n'est pas invalide</string>
+<string id="Authentication functionality">Fonctionnalité d'authentification</string>
+<string id="PortalAuthentication::login must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
+<string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
+<string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Form, LDAP, Active directory, Cookie</string>
 </fr>
