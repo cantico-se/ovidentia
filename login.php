@@ -721,9 +721,21 @@ else if('send' === bab_pp('sendpassword'))
 switch($cmd)
 	{
 	case 'signoff':
-		require_once $GLOBALS['babInstallPath'] . 'utilit/eventAuthentication.php';
-		$oEvent = new bab_eventLogout();
-		bab_fireEvent($oEvent);
+		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+		
+		if(array_key_exists('sAuthType', $_SESSION))
+		{
+			$sAuthType = $_SESSION['sAuthType'];
+			
+			$oAuthObject = bab_functionality::get($sAuthType);
+			
+			if(false !== $oAuthObject)
+			{
+				$oAuthObject->logout();
+				
+				unset($_SESSION['sAuthType']);
+			}
+		}
 		break;
 
 	case "showdp":
@@ -774,9 +786,8 @@ switch($cmd)
 		
 	case "signon":
 	default:
-		require_once $GLOBALS['babInstallPath'] . 'utilit/eventAuthentication.php';
-		$oEvent = new bab_eventLogin();
-		bab_fireEvent($oEvent);
+		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+		bab_requireCredential();
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);
