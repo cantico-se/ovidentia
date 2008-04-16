@@ -27,6 +27,10 @@ include_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
 
+/**
+ * Base functionality for all authentication methods.
+ *
+ */
 class PortalAuthentication extends bab_functionality
 {
 	function getDescription() 
@@ -47,6 +51,19 @@ class PortalAuthentication extends bab_functionality
 	function logout() 
 	{
 		die(bab_translate("PortalAuthentication::logout must not be called directly"));
+	}
+
+	/**
+	 * Checks whether current user is connected.
+	 *
+	 * @return bool
+	 */
+	function isLogged()
+	{
+		if (array_key_exists('BAB_SESS_LOGGED', $GLOBALS)) {
+			return $GLOBALS['BAB_SESS_LOGGED'];
+		}
+		return false;
 	}
 }
 
@@ -103,6 +120,10 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 }
 
 
+/**
+ * Ensures that the user is logged in. 
+ *
+ */
 function bab_requireCredential()
 {
 	$sAuthType = bab_functionalities::sanitize((string) bab_rp('sAuthType', ''));
@@ -111,8 +132,11 @@ function bab_requireCredential()
 		'PortalAuthentication';
 	
 	$oAuthObject = @bab_functionality::get($sAuthType);
+	
 	if(false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
 	{
+		// If the default authentication method 'PortalAuthentication' does not exist
+		// for example during first installation we (re)create it.
 		PortalAuthentication_ovidentia::registerAuthType();
 		$oAuthObject = bab_functionality::get($sAuthType);
 	}
@@ -120,7 +144,9 @@ function bab_requireCredential()
 	if(false !== $oAuthObject)
 	{
 		$_SESSION['sAuthType'] = $sAuthType;
-		$oAuthObject->login();
+		if (!$oAuthObject->isLogged()) {
+			$oAuthObject->login();
+		}
 	}
 	else
 	{
