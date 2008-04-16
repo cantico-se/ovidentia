@@ -787,7 +787,7 @@ switch($cmd)
 	case "signon":
 	default:
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-		bab_requireCredential();
+		bab_requireCredential((string) bab_rp('sAuthType', ''));
 		break;
 	}
 $babBody->setCurrentItemMenu($cmd);
