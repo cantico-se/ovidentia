@@ -198,24 +198,30 @@
 	background-color:transparent;
 	border-width: 0px;
 	}
-	
+
+/*
+style="background-color:#{ m_sTaskBgColor }; color:#{ m_sTaskColor }"
+*/
 	
 .ganttTooltip {
-	background-color:white;
-	border:1px solid black;
-	padding:2px;
+	font-family: Arial, sans-serif; 
+	font-size:11px;
+	background-color:#FFFFBF;
+	border:1px solid #CFCF3D;
+	padding:0px;
 	position:absolute;
 	text-align:left;
 	visibility:hidden;
 	width:200px;
 	z-index:100;
+	max-height:300px;
+	overflow:hidden;
 }
 
 .ganttTooltip h3 {
-	background-color:#FFFFFF;
-	font-size:11px;
+	background-color:#DDDD9D;
 	margin:0pt;
-	padding:2px;
+	padding:3px;
 }
 
 .ganttTooltip h5 {
@@ -225,8 +231,12 @@
 	margin-top:3px;
 }
 
+.ganttTooltip div{
+	padding:8px;
+}
+
 .ganttTooltip div p {
-	margin:0pt;
+	margin:0 0 0.3em 0;
 	padding:0pt;
 }
 
@@ -239,5 +249,7 @@
 .ganttTooltip .description {
 	background-color:#FFFFFF;
 	padding:2px;
+	max-height:300px;
+	overflow:hidden;
 }	
 	

@@ -2120,6 +2120,7 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			'IFNULL(p.name, \'\') sProjectName, ' .
 			't.id iIdTask, ' .
 			't.taskNumber sTaskNumber, ' .
+			't.description sDescription, ' .
 			't.shortDescription sShortDescription, ' .
 			't.class iClass, ' .
 		'CASE t.class ' .

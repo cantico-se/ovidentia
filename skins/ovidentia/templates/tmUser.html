@@ -1345,8 +1345,6 @@ onload="tmInit('ganttTask')"
 		<title>{ m_sTitle }</title>
 		<link rel="stylesheet" type="text/css" href="{ babInstallPath }styles/gantt.css" />
 		<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
-		<script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
-		<script type="text/javascript" src="{ babInstallPath }scripts/eventutil.js"></script>
 		<script type="text/javascript" src="{ babInstallPath }scripts/tmGantt.js"></script>
 		<script type="text/javascript">
 			function gotoDate(day, month, year)
@@ -1354,6 +1352,9 @@ onload="tmInit('ganttTask')"
 				//{}
 				document.location.href='{ m_sGotoDateUrl }&date=' + year + '-' + month + '-' + day;
 			}
+
+			bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; });
+
 		</script>
 	</head>
 	<body>
@@ -1419,13 +1420,16 @@ onload="tmInit('ganttTask')"
 	
 				<!--#in getNextTask -->
 			<!--#if m_iClass "== 0" -->
-				<div class="ganttTask" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+				<div class="ganttTask" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="background-color:#{ m_sTaskBgColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
 			<!--#else m_iClass -->
-				<div class="{ m_sAdditionnalClass }" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+				<div class="{ m_sAdditionnalClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
 			<!--#endif m_iClass -->
+					<div class="ganttTooltip" id="calevent{ m_iIdTask }">
+						{ m_sToolTip }
+					</div>
 				</div>
 			<!--#if m_bIsTaskCompletion -->
-				<div class="ganttTaskDone" style="background-color:#{ m_sDoneBgColor }; color:#{ m_sDoneColor }; top:{ m_iDonePosY }px; left:{ m_iDonePosX }px; height:{ m_iDoneHeigth }px; width:{ m_iDoneWidth }px;">
+				<div class="ganttTaskDone" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="background-color:#{ m_sDoneBgColor }; color:#{ m_sDoneColor }; top:{ m_iDonePosY }px; left:{ m_iDonePosX }px; height:{ m_iDoneHeigth }px; width:{ m_iDoneWidth }px;">
 				</div>
 			<!--#endif m_bIsTaskCompletion -->
 				<!--#endin getNextTask -->	

@@ -199,47 +199,6 @@ class BAB_TM_GanttBase
 				$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
 			}
 			
-			/*
-			$iTaskClass = bab_rp('iTaskClass', -1);
-			if(-1 != $iTaskClass)
-			{
-				$aFilters['iTaskClass'] = $iTaskClass;
-				$this->m_GanttViewParamUrl .= '&iTaskClass=' . $aFilters['iTaskClass'];
-			}
-			//*/
-			
-			/*
-			$_sStartDate = (string) bab_rp('sStartDate', '');
-			if(strlen(trim($_sStartDate)) > 0)
-			{
-				$oDate = bab_DateTime::fromDateStr(str_replace('-', '/', $_sStartDate));
-				if(is_a($oDate, 'bab_DateTime'))
-				{
-					$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth());
-					$aFilters['sStartDate'] = $oDate->getIsoDateTime();
-				}
-			}
-			else
-			{
-				$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-			}
-			
-			$_sEndDate = (string) bab_rp('sEndDate', '');
-			if(strlen(trim($_sEndDate)) > 0)
-			{
-				$oDate = bab_DateTime::fromDateStr(str_replace('-', '/', $_sEndDate));
-				if(is_a($oDate, 'bab_DateTime'))
-				{
-					$oDate->init($oDate->getYear(), $oDate->getMonth(), $oDate->getDayOfMonth());
-					$aFilters['sEndDate'] = $oDate->getIsoDateTime();
-				}
-			}
-			else
-			{
-				$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);		
-			}
-			//*/
-			
 			$this->initDates($sStartDate, $iStartWeekDay);
 			
 			$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
@@ -377,10 +336,6 @@ class BAB_TM_GanttBase
 		$this->m_iNavPosY = 0;
 		$this->m_iNavHeight = $this->m_iHeight;
 		$this->m_iNavWidth = ($this->m_iTaskCaptionWidth + ($this->m_iTotalDaysToDisplay * $this->m_iWidth));
-
-		
-//		echo '(' . $this->m_iTaskCaptionWidth . '+' . '(' . $this->m_iTotalDaysToDisplay . '*' . $this->m_iWidth . ')) = ' . $this->m_iNavWidth . '<br />'; 
-		
 		
 		$this->m_iGanttHeaderPosX = 0;
 		$this->m_iGanttHeaderPosY = $this->m_iHeight;
@@ -621,16 +576,16 @@ class BAB_TM_GanttBase
 			$this->m_iCurrDay	= ($this->m_iCurrDay + 1) % 7;
 
 			$this->m_iTimeStamp = mktime($aDate['hours'], $aDate['minutes'], $aDate['seconds'], $aDate['mon'], ($aDate['mday'] + 1), $aDate['year']);
-/*
-$iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - $iLeftParentBorderWidth;			
-//echo ' ==> ' . $iPosX . ' ==> ' . ($this->m_iDayPosX) . '<br />';
 			
+			/*
+			$iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - $iLeftParentBorderWidth;			
+						
 			$this->m_sTodayColumnAddClass = '';
 			if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iDayPosX)
 			{
 				$this->m_sTodayColumnAddClass = 'ganttTodayColumn';
 			}
-//*/
+			//*/
 						
 			$iDisplayedDays++;
 			return true;
@@ -671,21 +626,23 @@ $iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - 
 		
 		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
 		{
-			$iLeftParentBorderWidth = 1;
+			$iLeftParentBorderWidth 	= 1;
 
-			$this->m_iBorderLeft	= 0;
-			$this->m_iBorderRight	= 0;
-			$this->m_iBorderTop		= 0;
-			$this->m_iBorderBottom	= 1;
+			$this->m_iBorderLeft		= 0;
+			$this->m_iBorderRight		= 0;
+			$this->m_iBorderTop			= 0;
+			$this->m_iBorderBottom		= 1;
 
-			$this->m_iTaskInfoPosX = 0;
-			$this->m_iTaskInfoPosY = ($this->m_iHeight * $iIndex++);
-			$this->m_iTaskInfoHeigth = $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
-			$this->m_iTaskInfoWidth = $this->m_iTaskCaptionWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
-			$this->m_sTaskInfoBgColor = (strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'EFEFEF';
-			$this->m_sTaskInfoColor =  (strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000';
-			$this->m_sTaskInfo = $datas['sShortDescription'];
-		
+			$this->m_iTaskInfoPosX		= 0;
+			$this->m_iTaskInfoPosY		= ($this->m_iHeight * $iIndex++);
+			$this->m_iTaskInfoHeigth	= $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
+			$this->m_iTaskInfoWidth		= $this->m_iTaskCaptionWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
+			$this->m_sTaskInfoBgColor	= 'EFEFEF';
+			$this->m_sTaskInfoColor		= '000000';
+			$this->m_sTaskInfo			= $datas['sShortDescription'];
+			
+//			$this->m_sTaskInfoBgColor	= (strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'EFEFEF';
+//			$this->m_sTaskInfoColor		= (strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000';
 			return true;
 		}
 		
@@ -712,22 +669,20 @@ $iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - 
 		$this->m_iColumnHeigth = ($this->m_iNbResult + 1) * $this->m_iHeight;
 		$this->m_iColumnWidth = $this->m_iWidth - $iBorderWidth;
 
-//echo ' ==> ' . $this->m_iColumnPosX . '<br />';
-
-//*		
-$this->m_sTodayColumnAddClass = '';
-if($iDayOfWeek == 0 || $iDayOfWeek == 6)
-{
-//	echo ' ==> ' . $oDate->getIsoDateTime() . ' ' . $oDate->getDayOfWeek() . '<br />';
-	$this->m_sTodayColumnAddClass .= 'ganttWeek';
-}
+		//*		
+		$this->m_sTodayColumnAddClass = '';
+		if($iDayOfWeek == 0 || $iDayOfWeek == 6)
+		{
+			$this->m_sTodayColumnAddClass .= 'ganttWeek';
+		}
+				
+		$iPosX = ($this->m_iTodayPosX * $this->m_iWidth);			
+		if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iColumnPosX)
+		{
+			$this->m_sTodayColumnAddClass = ' ganttTodayColumn';
+		}
+		//*/
 		
-$iPosX = ($this->m_iTodayPosX * $this->m_iWidth);			
-if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iColumnPosX)
-{
-	$this->m_sTodayColumnAddClass = ' ganttTodayColumn';
-}
-//*/
 		//car on commence à 1
 		return ( ($this->m_iTotalDaysToDisplay) >= $iIndex);
 	}
@@ -771,6 +726,9 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 	var $m_sAdditionnalClass = '';
 	var	$m_iClass;
 
+	var $m_iIdTask = 0;
+	var $m_sToolTip = '';
+	
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
 	{
 		parent::BAB_TM_GanttBase($sStartDate, $iStartWeekDay);
@@ -815,9 +773,13 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			$iTaskDurationInSeconds = $iTaskEndDateTs - $iTaskStartDateTs;
 			
 			$this->getBox($iTaskStartDateTs, $iTaskEndDateTs, $this->m_iTaskPosX, $this->m_iTaskPosY, $this->m_iTaskHeigth, $this->m_iTaskWidth);
-			$this->m_sTaskBgColor = 'B0B0B0';
+			$this->m_sTaskBgColor = ((strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'B0B0B0');
+			$this->m_sTaskColor = ((strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000');
 			$this->m_sTask = '';
 			
+$this->m_iIdTask = $datas['iIdTask'];
+$this->m_sToolTip = $this->buildToolTip($datas);
+
 			$iDoneDurationInSeconds = ($datas['iCompletion'] * $iTaskDurationInSeconds) / 100;
 			$iDoneEndDateTs = $iTaskStartDateTs + $iDoneDurationInSeconds;
 			
@@ -876,6 +838,67 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 		$iPosY = round( (($this->m_iTaskIndex * $this->m_iHeight) + ($iHeigth / 2)));
 		
 		$iWidth = round(($iDisplayedTaskDurationInSeconds / $this->m_iOnePxInSecondes) - ($this->m_iBorderLeft));
+	}
+	
+	function buildToolTip($aTask)
+	{
+		$sToolTip = 
+			'<h3>' . $aTask['sShortDescription'] . '</h3>' . 
+			'<div>' .
+				'<p><strong>' . bab_translate("Project") . ': </strong>' . $aTask['sProjectName'] . '</p>' .
+				'<p><strong>' . bab_translate("Type") . ': </strong>' . $this->getStringType($aTask['iClass']) . '</p>' .
+				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate']), false) . '</p>';
+
+		if(BAB_TM_TASK === (int) $aTask['iClass'])
+		{
+			$sToolTip .= 
+				'<p><strong>' . bab_translate("date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['endDate']), false) . '</p>' .
+				'<p><strong>' . bab_translate("Completion") . ': </strong>' . $aTask['iCompletion'] . ' %' . '</p>';
+		}
+		
+		if(strlen($aTask['sCategoryName']) > 0)
+		{
+			$sToolTip .= 
+				'<p><strong>' . bab_translate("Category") . ': </strong>' . $aTask['sCategoryName'] . '</p>';
+		}
+		
+		if(BAB_TM_TASK === (int) $aTask['iClass'])
+		{
+			bab_getTaskResponsibles($aTask['iIdTask'], $aTaskResponsible);
+			
+			if(count($aTaskResponsible) > 0)
+			{
+				$sToolTip .= 
+					'<p><strong>' . bab_translate("Responsable") . ': </strong>' . $aTaskResponsible[$aTask['idOwner']]['name'] . '</p>';
+			}
+		}
+		
+		if(strlen($aTask['sDescription']) > 0)
+		{
+			require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+			$oEditor = new bab_contentEditor('bab_taskManagerDescription');
+			$oEditor->setContent($aTask['sDescription']);
+			
+			$sToolTip .= 
+				'<div class="description"/>' . $oEditor->getHtml() . '</div></div>';
+		}
+		
+		return $sToolTip;
+	}
+	
+	function getStringType($iClass)
+	{
+		switch($iClass)
+		{
+			case BAB_TM_TASK:
+				return bab_translate("Task");	
+			case BAB_TM_CHECKPOINT:
+				return bab_translate("Checkpoint");	
+			case BAB_TM_TODO:
+				return bab_translate("ToDo");	
+			default:
+				return '???';	
+		}
 	}
 }
 

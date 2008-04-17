@@ -1262,7 +1262,7 @@ function displayTaskList($sIdx)
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
-	$oMultiPage->addColumnHeader(0, bab_translate("Short description"), 'sShortDescription');
+	$oMultiPage->addColumnHeader(0, bab_translate("Title"), 'sShortDescription');
 	$oMultiPage->addColumnHeader(1, bab_translate("Type"), 'sClass');
 	$oMultiPage->addColumnHeader(2, bab_translate("Start date"), 'startDate');
 	$oMultiPage->addColumnHeader(3, bab_translate("End date"), 'endDate');
