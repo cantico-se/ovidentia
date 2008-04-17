@@ -2537,5 +2537,5 @@
 <string id="Authentication functionality">Fonctionnalité d'authentification</string>
 <string id="PortalAuthentication::login must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
-<string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Form, LDAP, Active directory, Cookie</string>
+<string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
 </fr>
