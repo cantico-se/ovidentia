@@ -1,28 +1,28 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/treeincl.php";
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
+include_once 'base.php';
+include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 
 function bab_OCGetRootEntity($idoc='')
 {
@@ -307,7 +307,12 @@ function bab_OCGetCollaborators($identity)
 	
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."' AND ocrt.type != '1' and ocrut.isprimary='Y'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename 
+							 FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
+							 LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role
+							 LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON det.id = ocrut.id_user
+							  WHERE ocrt.id_entity = '".$identity."'
+							   AND ocrt.type != '1' and ocrut.isprimary = 'Y'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		while( $arr = $babDB->db_fetch_array($res))
@@ -376,6 +381,47 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 
 
 
+/**
+ * Returns an ordered mysql result set containing the members of the entity $entityId.
+ * 
+ * Results fetched from the result set have the following structure:
+ * array(
+ * 		'id_dir_entry' => directory entry id (@see bab_getDirEntry)
+ * 		'role_type' =>  1 = Superior, 2 = Temporary employee, 3 = Members, 0 = Other collaborators
+ * 		'role_name' => The role title
+ * 		'user_disabled' => 1 = disabled, 0 = not disabled
+ * 		'user_confirmed' => 1 = confirmed, 0 = not confirmed
+ * 		'sn' =>	The member's surname (last name)
+ * 		'givenname' => The member's given name (first name)
+ * )
+ * The result set is ordered by role types (in order 1,2,3,0) and by user name (according to ovidentia name ordering rules).
+ * 
+ * @param int $entityId			Id of orgchart entity.
+ * 
+ * @return resource		The mysql resource or FALSE on error
+ */
+function bab_OCselectEntityCollaborators($entityId)
+{
+	global $babDB, $babBody;
 
+	$sql = 'SELECT users.id_user AS id_dir_entry,';
+	$sql .= '      roles.type AS role_type,';
+	$sql .= '      roles.name AS role_name,';
+	$sql .= '      babusers.disabled AS user_disabled,';
+	$sql .= '      babusers.is_confirmed AS user_confirmed,';
+	$sql .= '      dir_entries.sn,';
+	$sql .= '      dir_entries.givenname';
+	$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
+	$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
+	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
+	$sql .= ' LEFT JOIN ' . BAB_USERS_TBL . ' AS babusers ON dir_entries.id_user = babusers.id';
+	$sql .= ' WHERE roles.id_entity = ' . $babDB->quote($entityId);
+	$sql .= ' ORDER BY (roles.type - 1 % 4) ASC, '; // We want role types to appear in the order 1,2,3,0
+	$sql .= ($babBody->nameorder[0] === 'F') ?
+					' dir_entries.givenname ASC, dir_entries.sn ASC'
+					: ' dir_entries.sn ASC, dir_entries.givenname ASC';
 
-?>
+	$members = $babDB->db_query($sql);
+
+	return $members;
+}

@@ -2273,7 +2273,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 */
 	function _addEntities($startEntityId)
 	{
-		require_once $GLOBALS['babInstallPath'].'utilit/orgincl.php';
+		require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 		global $babDB;
 
 		$entityType = 'entity';
@@ -2286,7 +2286,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 											 bab_toHtml($entity['name']),
 											 '',
 											 '');
-			$members = bab_selectEntityMembers($this->_orgChartId, $entity['id']);
+			$members = bab_OCselectEntityCollaborators($entity['id']);
 			while ($member = $babDB->db_fetch_array($members)) {
 				if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
 					$memberDirectoryEntryId = $member['id_dir_entry'];
