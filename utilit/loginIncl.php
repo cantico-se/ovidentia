@@ -29,9 +29,15 @@ require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
 /**
  * Base functionality for all authentication methods.
+ * @since 6.7.0
  */
 class PortalAuthentication extends bab_functionality
 {
+	function PortalAuthentication()
+	{
+		parent::bab_functionality();
+	}
+
 	function getDescription() 
 	{
 		return bab_translate("Authentication functionality");
@@ -39,7 +45,7 @@ class PortalAuthentication extends bab_functionality
 
 	function getFunctionalityCallableMethods() 
 	{
-		return array('login', 'logout');
+		return array('login', 'logout', 'isLogged');
 	}
 
 	function login() 
@@ -69,9 +75,15 @@ class PortalAuthentication extends bab_functionality
 
 /**
  * Functionality for classic ovidentia authentication method.
+ * @since 6.7.0
  */
 class PortalAuthentication_ovidentia extends PortalAuthentication
 {
+	function PortalAuthentication_ovidentia()
+	{
+		parent::PortalAuthentication();
+	}
+
 	function getDescription() 
 	{
 		return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
@@ -79,7 +91,7 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 
 	function getFunctionalityCallableMethods() 
 	{
-		return array('login', 'logout');
+		return array('login', 'logout', 'isLogged');
 	}
 
 	function registerAuthType()
@@ -109,7 +121,7 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 		}
 		return false;		
 	}
-	
+
 	function login() 
 	{
 		bab_login();
@@ -123,13 +135,15 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 
 
 /**
- * Ensures that the user is logged in. 
+ * Ensures that the user is logged in.
  * If the user is not logged the "PortalAutentication" functionality
  * is used to let the user log in with its credential.
  * 
- * The parameter $sAuthType can be used to force the authentication method. 
+ * The parameter $sAuthType can be used to force the authentication method,
+ * it must be the name (path) of the functionality to use without 'PortalAuthentication/' 
  * 
  * @param	string		$sAuthType		Optional authentication type.
+ * @since 6.7.0
  */
 function bab_requireCredential($sAuthType = '')
 {
@@ -137,7 +151,7 @@ function bab_requireCredential($sAuthType = '')
 
 	$oAuthObject = @bab_functionality::get($sAuthType);
 
-	if(false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
+	if (false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
 	{
 		// If the default authentication method 'PortalAuthentication' does not exist
 		// for example during first installation we (re)create it.
@@ -145,7 +159,7 @@ function bab_requireCredential($sAuthType = '')
 		$oAuthObject = bab_functionality::get($sAuthType);
 	}
 
-	if(false === $oAuthObject) {
+	if (false === $oAuthObject) {
 		return false;
 	}
 	$_SESSION['sAuthType'] = $sAuthType;
