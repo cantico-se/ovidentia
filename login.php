@@ -787,8 +787,12 @@ switch($cmd)
 	case "signon":
 	default:
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-		bab_requireCredential((string) bab_rp('sAuthType', ''));
+		$sAuthType = (string) bab_rp('sAuthType', '');
+		if (false === bab_requireCredential($sAuthType)) {
+			$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
+		}
 		break;
+		
 	}
 $babBody->setCurrentItemMenu($cmd);
 ?>

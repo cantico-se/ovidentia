@@ -29,7 +29,6 @@ require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 
 /**
  * Base functionality for all authentication methods.
- *
  */
 class PortalAuthentication extends bab_functionality
 {
@@ -68,6 +67,9 @@ class PortalAuthentication extends bab_functionality
 }
 
 
+/**
+ * Functionality for classic ovidentia authentication method.
+ */
 class PortalAuthentication_ovidentia extends PortalAuthentication
 {
 	function getDescription() 
@@ -122,17 +124,19 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 
 /**
  * Ensures that the user is logged in. 
- *
+ * If the user is not logged the "PortalAutentication" functionality
+ * is used to let the user log in with its credential.
+ * 
+ * The parameter $sAuthType can be used to force the authentication method. 
+ * 
+ * @param	string		$sAuthType		Optional authentication type.
  */
 function bab_requireCredential($sAuthType = '')
 {
-	$sAuthType = bab_functionalities::sanitize($sAuthType);
-	
-	$sAuthType = (strlen($sAuthType) != 0) ? 'PortalAuthentication/' . $sAuthType :
-		'PortalAuthentication';
-	
+	$sAuthType = bab_functionalities::sanitize('PortalAuthentication/' . $sAuthType);
+
 	$oAuthObject = @bab_functionality::get($sAuthType);
-	
+
 	if(false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
 	{
 		// If the default authentication method 'PortalAuthentication' does not exist
@@ -140,19 +144,15 @@ function bab_requireCredential($sAuthType = '')
 		PortalAuthentication_ovidentia::registerAuthType();
 		$oAuthObject = bab_functionality::get($sAuthType);
 	}
-	
-	if(false !== $oAuthObject)
-	{
-		$_SESSION['sAuthType'] = $sAuthType;
-		if (!$oAuthObject->isLogged()) {
-			$oAuthObject->login();
-		}
+
+	if(false === $oAuthObject) {
+		return false;
 	}
-	else
-	{
-		global $babBody;
-		$babBody->addError(sprintf(bab_translate("The authentication method %s is invalid"), $sAuthType));
+	$_SESSION['sAuthType'] = $sAuthType;
+	if (!$oAuthObject->isLogged()) {
+		$oAuthObject->login();
 	}
+	return true;
 }
 
 
