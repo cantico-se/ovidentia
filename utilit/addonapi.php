@@ -1695,6 +1695,16 @@ function bab_locale() {
 class bab_functionality {
 
 	/**
+	 * Constructor
+	 *
+	 * @return bab_functionality
+	 */
+	function bab_functionality()
+	{
+	}
+
+
+	/**
 	 * @access public
 	 * @static
 	 * @param	string	$path
