@@ -614,8 +614,37 @@ function bab_deleteUser($id)
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunction('onUserDelete', $id);
 	
+
+	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 	
+	$oFileManagerEnv =& getEnvObject();
+	$sUserUploadPath = $oFileManagerEnv->getFmUploadPath() . 'users/U' . $id . '/';
+	
+	if(is_dir($sUserUploadPath))
+	{
+		$oFmFolderCliboardSet	= new BAB_FmFolderCliboardSet();
+		$oIdOwner				=& $oFmFolderCliboardSet->aField['iIdOwner'];
+		$oGroup					=& $oFmFolderCliboardSet->aField['sGroup'];
+		
+		$oCriteria				= $oIdOwner->in($id);
+		$oCriteria				= $oCriteria->_and($oGroup->in('N'));
+		
+		$oFmFolderCliboardSet->remove($oCriteria);
+		
+		$oFolderFileSet				= new BAB_FolderFileSet();
+	
+		$oFolderFileSet->bUseAlias	= false;
+		$oIdOwner 					=& $oFolderFileSet->aField['iIdOwner'];
+		$oGroup 					=& $oFolderFileSet->aField['sGroup'];
+		
+		$oCriteria 					= $oIdOwner->in($id);
+		$oCriteria 					= $oCriteria->_and($oGroup->in('N'));
+		
+		$oFolderFileSet->remove($oCriteria);
+		
+		BAB_FmFolderSet::removeDir($sUserUploadPath);
 	}
+}
 
 function bab_deleteOrgChart($id)
 {
