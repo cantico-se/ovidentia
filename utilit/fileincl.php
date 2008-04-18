@@ -2903,10 +2903,7 @@ class BAB_FmFolder extends BAB_DbRecord
 
 	function setRelativePath($sRelativePath)
 	{
-		if(isset($GLOBALS['babFileNameTranslation']))
-		{
-			$sRelativePath = strtr($sRelativePath, $GLOBALS['babFileNameTranslation']);
-		}
+		BAB_FmFolderHelper::sanitizePathname($sPathname);
 		$this->_set('sRelativePath', $sRelativePath);
 	}
 
@@ -3172,10 +3169,7 @@ class BAB_FolderFile extends BAB_DbRecord
 
 	function setPathName($sPathName)
 	{
-		if(isset($GLOBALS['babFileNameTranslation']))
-		{
-			$sPathName = strtr($sPathName, $GLOBALS['babFileNameTranslation']);
-		}
+		BAB_FmFolderHelper::sanitizePathname($sPathname);
 		$this->_set('sPathName', $sPathName);
 	}
 
@@ -3787,6 +3781,29 @@ class BAB_FmFolderHelper
 			return true;
 		}
 		return false;
+	}
+	
+	function sanitizePathname(&$sPathname)
+	{
+		$sPathname	= removeEndSlashes($sPathname);
+		$aPaths		= explode('/', $sPathname);
+		
+		if(is_array($aPaths) && count($aPaths) > 0)
+		{
+			foreach($aPaths as $iKey => $sPathItem)
+			{
+				if(strlen(trim($sPathItem)) !== 0)
+				{
+					$aPaths[$iKey] = replaceInvalidFolderNameChar($sPathItem);
+				}
+			}
+			
+			$sPathname = implode('/', $aPaths);
+			
+			return addEndSlash($sPathname);
+		}
+		
+		return $sPathname;
 	}
 	
 	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
