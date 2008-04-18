@@ -132,7 +132,7 @@ class bab_functionalities {
 			return false;
 		}
 		
-		$content = '<?php return include \''.$this->rootDirName.'/'.$funcpath.'/'.$this->filename.'\';  ?>';
+		$content = '<?php include_once \'' . $this->rootDirName.'/'.$path.'/'.$this->original . '\'; return include \''.$this->rootDirName.'/'.$funcpath.'/'.$this->filename.'\'; ?>';
 		
 		
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$this->filename, 'w')) {
