@@ -877,14 +877,14 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
-				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], $_POST['iIdCategory']))
+				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], bab_pp('iIdCategory')))
 					$idx = "mod";
 				else
 					$idx = 'list';
 				}
 			else
 				{
-				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['iIdCategory']))
+				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), bab_pp('iIdCategory')))
 					$idx = 'new';
 				else
 					$idx = 'list';
