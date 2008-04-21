@@ -352,14 +352,13 @@ class bab_functionalities {
 	 */
 	function register($func_path, $include_file) {
 		
-		/*
-		$include_result = @include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$func_path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+		// verify parent functionality
+		$parent_original = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$this->rootDirName.'/'.dirname($func_path).'/'.$this->original;
 		
-		if (false === $include_result) {
-			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));
+		if ('.' !== dirname($func_path) && !file_exists($parent_original)) {
+			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
 			return false;
 		}
-		//*/
 		
 		if (!@include_once $include_file) {
 			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));

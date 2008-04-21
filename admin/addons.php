@@ -836,18 +836,27 @@ function functionalities() {
 		
 			$funcpath = trim($path.'/'.$dir, '/');
 			$obj = bab_functionality::get($funcpath);
-			$original = $func->getOriginal($funcpath);
 			
-			$labelpath = $obj->getPath();
-			if (false !== strpos($labelpath,'/')) {
-				$labelpath = substr(strrchr($labelpath,'/'),1);
+			if (false !== $obj) {
+				$original = $func->getOriginal($funcpath);
+			
+				$labelpath = $obj->getPath();
+				if (false !== strpos($labelpath,'/')) {
+					$labelpath = substr(strrchr($labelpath,'/'),1);
+				}
+				
+				if ($labelpath !== $dir) {
+					$labelpath = $dir . ' ('.$labelpath.')';
+				}
+				
+				$description = $labelpath.' : '.$original->getDescription();
+			} else {
+				$description = $dir;
 			}
 			
-			if ($labelpath !== $dir) {
-				$labelpath = $dir . ' ('.$labelpath.')';
-			}
 			
-			$element = & $tree->createElement( $id.'.'.$i, 'directory', $labelpath.' : '.$original->getDescription(), '', '');
+			
+			$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 		
 		
 			
@@ -870,7 +879,7 @@ function functionalities() {
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = bab_functionality::get($parent_path);
 				
-				if ($parent_obj->getPath() !== $obj->getPath()) {
+				if (false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) {
 
 					$element->addAction('moveup',
 									bab_translate('Move Up'),
