@@ -1106,7 +1106,7 @@ function get_newfiles() {
 		return $newfiles;
 
 	$arrfid = array();
-	$arrfid = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
+	$arrfid = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
 	
 	if( is_array($arrfid) && count($arrfid) > 0 )
 		{
