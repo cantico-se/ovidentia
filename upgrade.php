@@ -4324,34 +4324,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		");
 	}
 	
+	
+	/**
+	 * Upgrade to 6.6.92
+	 */
 
 	
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
 	
-	bab_removeEventListener('bab_eventLogin', 'bab_onEventLogin', 
-		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
+	bab_removeEventListener('bab_eventLogin', 'bab_onEventLogin', 'utilit/eventAuthentication.php');
+	bab_removeEventListener('bab_eventLogout', 'bab_onEventLogout', 'utilit/eventAuthentication.php');
 	
-	bab_removeEventListener('bab_eventLogout', 'bab_onEventLogout', 
-		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
 	
-	require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-	
-	$oFunctionalities = new bab_functionalities();
-	
-	if(false === $oFunctionalities->register('PortalAuthentication', $GLOBALS['babAddonPhpPath'] . 'loginIncl.php')) 
-	{
-		return false;
-	}
 
-	if (false === $oFunctionalities->register('PortalAuthentication/ovidentia', $GLOBALS['babAddonPhpPath'] . 'loginIncl.php')) 
-	{
-		return false;
-	}
 	
 	
-	/**
-	 * Upgrade to 6.6.91
-	 */
+	
 	return true;
 }
 ?>
