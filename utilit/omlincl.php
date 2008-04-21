@@ -3798,7 +3798,7 @@ class bab_FaqSubCategories extends bab_handler
 			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $faqid))
 				{
 				$this->faqinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id='".$babDB->db_escape_string($faqid)."'"));
-				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($faqid)."'");
+				$this->res = $babDB->db_query("select * from ".BAB_FAQ_SUBCAT_TBL." where id_cat='".$babDB->db_escape_string($faqid)."' order by name asc");
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 
