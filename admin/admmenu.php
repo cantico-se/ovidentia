@@ -40,8 +40,7 @@ function bab_sitemap_adminSection(&$event) {
 		$adm = $babBody->currentDGGroup['name'];
 		}
 		
-	$head = sprintf(bab_translate("Currently you administer %s"), $adm);
-
+	$head = bab_translate("Currently you administer ").$adm;
 	
 	$item = $event->createItem('babAdmin');
 	$item->setLabel(bab_translate("Administration"));
