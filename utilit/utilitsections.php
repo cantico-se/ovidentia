@@ -200,6 +200,9 @@ function babAdminSection($close)
 	$rootNode = bab_siteMap::get();
 	$this->babAdminSection = $rootNode->getNodeById('babAdminSection');
 	
+	$this->head = '';
+	$this->foot = '';
+	
 	if ($this->babAdminSection) {
 		$item = $this->babAdminSection->getData();
 		$this->head = $item->description;
@@ -210,8 +213,6 @@ function babAdminSection($close)
 	if ($this->babAdminSectionAddons) {
 		$this->babAdminSectionAddons = $this->babAdminSectionAddons->firstChild();
 	}
-
-	$this->foot = "";
 
 
 	}
