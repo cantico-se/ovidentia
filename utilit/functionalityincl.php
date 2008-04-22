@@ -22,6 +22,13 @@
  */
 include_once 'base.php';
 
+
+/**
+ * Prefix for all bab_Functionality class.
+ */
+define('BAB_FUNCTIONALITY_CLASS_PREFIX', '');
+
+
 /**
  * manage the functionality tree
  * register and unregister functionalities
@@ -36,9 +43,11 @@ class bab_functionalities {
 	
 	var $treeLinks = array();
 	
-	
+
 	/**
 	 * Constructor
+	 *
+	 * @return bab_functionalities
 	 * @access	public
 	 */
 	function bab_functionalities() {
@@ -96,7 +105,7 @@ class bab_functionalities {
 	
 		// replace core directory with a variable
 		$include_file = str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $include_file);
-		$classname = str_replace('/','_',$funcpath);
+		$classname = bab_Functionalities::getClassname($funcpath);
 		$content = '<?php if (false === include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$linkfilename, 'w')) {
 			
@@ -236,8 +245,7 @@ class bab_functionalities {
 		if (false === $parent_path) {
 			return false;
 		}
-		
-		
+
 		if (!unlink($this->treeRootPath.$parent_path.'/'.$this->filename)) {
 			return false;
 		}
@@ -321,7 +329,7 @@ class bab_functionalities {
 			return false;
 		}
 		
-		$classname = str_replace('/', '_', $path2);
+		$classname = bab_Functionalities::getClassname($path2);
 		$child = new $classname();
 		
 		if (false === $child) {
@@ -459,10 +467,9 @@ class bab_functionalities {
 			}
 		}
 	}
-	
-	
-	
-	
+
+
+
 	/**
 	 * Unregister a functionality.
 	 * If the functionality is not registered, this method return true
@@ -508,13 +515,41 @@ class bab_functionalities {
 	}
 	
 	/**
-	 * sanities path remove non alphanum car
-	 * @return string
+	 * Returns the sanitized functionality path by removing non-allowed characters (only alphanumeric characters are allowed).
+	 * 
+	 * @param string $sPath		The functionality path to sanitize.
+	 * @return string			The sanitized functionality path.
+	 * @since 6.6.93
+	 * @static
 	 */
 	function sanitize($sPath) {
 		$aPattern = array('#[^0-9a-zA-Z/]#i', '#/+#i');
 		$aReplacement = array('', '/');
 		return trim(preg_replace($aPattern, $aReplacement, $sPath), '/');
+	}
+	
+	/**
+	 * Returns the path corresponding to a functionality classname.
+	 *
+	 * @param string $path		The functionality path.
+	 * @return string
+	 * @since 6.6.93
+	 * @static
+	 */
+	function getClassname($path) {
+		return BAB_FUNCTIONALITY_CLASS_PREFIX . str_replace('/', '_', $path);
+	}
+
+	/**
+	 * Returns the classname corresponding to a functionality path.
+	 *
+	 * @param string $classname	The functionality classname.
+	 * @return string
+	 * @since 6.6.93
+	 * @static
+	 */
+	function getPath($classname) {
+		return str_replace('/', '_', substr($classname, strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
 	}
 }
 
