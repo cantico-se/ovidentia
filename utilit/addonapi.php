@@ -1,26 +1,25 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once 'base.php';
 
 /**
@@ -46,7 +45,7 @@ function bab_time($time)
  * 
  * @access  public 
  * @return  int	unix timestamp
- * @param   string	(eg. '2006-03-10 17:37:02')
+ * @param   string	$time	(eg. '2006-03-10 17:37:02')
  */
 function bab_mktime($time)
 	{
@@ -1683,6 +1682,24 @@ function bab_locale() {
 
 
 
+/**
+ * Returns a singleton of the specified class.
+ *
+ * @param string $classname
+ * @return object
+ */
+function bab_getInstance($classname) {
+	static $instances = NULL;
+	if (is_null($instances)) {
+		$instances = array();
+	}
+	if (array_key_exists($classname, $instances)) {
+		return $instances[$classname];
+	}
+	return new $classname();
+}
+
+
 
 
 
@@ -1703,7 +1720,6 @@ class bab_functionality {
 	{
 	}
 
-
 	/**
 	 * @access public
 	 * @static
@@ -1719,20 +1735,30 @@ class bab_functionality {
 		
 		return $include_result;
 	}
-	
+
+
 	/**
-	 * Get functionality object
+	 * Returns the specified functionality object.
+	 * 
+	 * If $singleton is set to true, the functionality object will be instanciated as
+	 * a singleton, i.e. there will be at most one instance of the functionality
+	 * at a given time.
+	 * 
 	 * @access public
 	 * @static
-	 * @param	string	$path
-	 * @return false|object
+	 * @param	string	$path		The functionality path.
+	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
+	 * @return	object				The functionality object or false on error.
 	 */
-	function get($path) {
-		if ($classname = bab_functionality::includefile($path)) {
-			return new $classname();
+	function get($path, $singleton = true) {
+		$classname = bab_functionality::includefile($path);
+		if (!$classname) {
+			return false;
 		}
-		
-		return false;
+		if ($singleton) {
+			return bab_getInstance($classname);
+		}
+		return new $classname();
 	}
 	
 	/**
@@ -1743,7 +1769,7 @@ class bab_functionality {
 	 * @return array
 	 */
 	function getFunctionalities($path) {
-		include_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$obj = new bab_functionalities();
 		return $obj->getChildren($path);
 	}
@@ -1768,11 +1794,12 @@ class bab_functionality {
 	}
 	
 	/**
-	 * Get path to functionality at this node witch is the current path or a reference to a childnode
+	 * Get path to functionality at this node which is the current path or a reference to a childnode
 	 * @return string
 	 */
 	function getPath() {
-		return str_replace('_','/',get_class($this));
+		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+		return bab_Functionalities::getPath(get_class($this));
 	}
 }
 
