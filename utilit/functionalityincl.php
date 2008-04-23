@@ -24,7 +24,8 @@ include_once 'base.php';
 
 
 /**
- * Prefix for all bab_Functionality class.
+ * Prefix for all bab_Functionality classes.
+ * @since 6.6.92
  */
 define('BAB_FUNCTIONALITY_CLASS_PREFIX', '');
 
@@ -62,8 +63,6 @@ class bab_functionalities {
 		}
 	}
 	
-
-	
 	
 	/**
 	 * on insert file or directory
@@ -77,10 +76,6 @@ class bab_functionalities {
 			chmod($location, 0666);
 		}
 	}
-	
-	
-	
-	
 	
 	
 	/**
@@ -120,15 +115,14 @@ class bab_functionalities {
 
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Record link into tree, target is a link
-	 * @private
 	 *
 	 * @param	string		$path 		destination path to record the link
 	 * @param	string		$funcpath	path to functionality
-	 *
+	 * @access private
 	 * @return boolean
 	 */
 	function recordLinkToLink($path, $funcpath) {
@@ -136,14 +130,13 @@ class bab_functionalities {
 		if (file_exists($this->treeRootPath.$path.'/'.$this->filename)) {
 			return false;
 		}
-		
+
 		if ('' === $path) {
 			return false;
 		}
-		
+
 		$content = '<?php include_once \'' . $this->rootDirName.'/'.$path.'/'.$this->original . '\'; return include \''.$this->rootDirName.'/'.$funcpath.'/'.$this->filename.'\'; ?>';
-		
-		
+
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$this->filename, 'w')) {
 			
 			if (false !== fwrite($handle, $content)) {
@@ -157,17 +150,16 @@ class bab_functionalities {
 
 		return false;
 	}
-	
-	
 
-	
+
+
 	/**
 	 * @access	private
 	 * @param	array $func_path
 	 * @return 	array
 	 */
 	function getChildren($func_path) {
-	
+
 		$func_path = trim($func_path, '/ ');
 
 		$children = array();
@@ -179,12 +171,12 @@ class bab_functionalities {
 			}
 			closedir($dh);
 		}
-		
+
 		sort($children);
 		return $children;
 	}
-	
-	
+
+
 	/**
 	 * @access	private
 	 * @param	array $func_path
@@ -193,8 +185,8 @@ class bab_functionalities {
 	function nbChildren($func_path) {
 		return count($this->getChildren($func_path));
 	}
-	
-	
+
+
 	/**
 	 * Get CRC 32 for function
 	 * @access	private
@@ -206,16 +198,15 @@ class bab_functionalities {
 		$path = trim($func_path,'/ ');
 		$link = $this->treeRootPath.$func_path.'/'.$filename;
 		$file = file($link);
-		
+
 		if (!isset($file[0])) {
 			return 0;
 		}
-		
+
 		return abs(crc32($file[0]));
 	}
-	
-	
-	
+
+
 	/** 
 	 * @access	public
 	 * @param	array $func_path
@@ -223,17 +214,17 @@ class bab_functionalities {
 	 */
 	function getParentPath($func_path) {
 		$arr = explode('/', $func_path);
-		
+
 		if (2 > count($arr)) {
 			return false;
 		}
-		
+
 		array_pop($arr);
 		return implode('/', $arr);
 	}
-	
-	
-	/** 
+
+
+	/**
 	 * Force copy to parent manually
 	 * @access	public
 	 * @param	array $func_path
@@ -241,7 +232,7 @@ class bab_functionalities {
 	 */
 	function copyToParent($func_path) {
 		$parent_path = $this->getParentPath($func_path);
-		
+
 		if (false === $parent_path) {
 			return false;
 		}
@@ -249,27 +240,26 @@ class bab_functionalities {
 		if (!unlink($this->treeRootPath.$parent_path.'/'.$this->filename)) {
 			return false;
 		}
-		
+
 		if (!$this->recordLinkToLink($parent_path, $func_path)) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
-		
+
+
+
 	/**
 	 * Delete or replace with first child
 	 * @access	private
-	 * @param	string	$func_path	
+	 * @param	string	$func_path
 	 * @return 	boolean
 	 */
 	function deleteOrReplaceWithFirstChild($func_path) {
-		
-		
+
 		$children = $this->getChildren($func_path);
-		
+
 		$current_dir = opendir($this->treeRootPath.$func_path);
 		while($entryname = readdir($current_dir)){
 			if (is_file($this->treeRootPath.$func_path.'/'.$entryname)) {
@@ -278,8 +268,8 @@ class bab_functionalities {
 				}
 			}
 		}
-		
-		
+
+
 		if (0 === count($children)) {
 			return rmdir($this->treeRootPath.$func_path);
 		} else {
@@ -287,8 +277,8 @@ class bab_functionalities {
 		}
 
 	}
-	
-	
+
+
 	/**
 	 * Get functionality object with original link
 	 * @access public
@@ -301,11 +291,11 @@ class bab_functionalities {
 		if ($classname = @include $this->treeRootPath.$path.'/'.$this->original) {
 			return new $classname();
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * test if $path1 is a correct parent path for $path2
 	 * return true if $path2 contain methods from $path1
@@ -328,14 +318,14 @@ class bab_functionalities {
 			trigger_error(sprintf('The include file %s does not exist', $include_file));
 			return false;
 		}
-		
+
 		$classname = bab_Functionalities::getClassname($path2);
 		$child = new $classname();
 		
 		if (false === $child) {
 			return false;
 		}
-		
+
 		$parent_methods = $parent->getCallableMethods();
 		$child_methods = $child->getCallableMethods();
 		
@@ -343,15 +333,15 @@ class bab_functionalities {
 		if ($intersect != $parent_methods) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
-	
+
+
+
 	/**
-	 * Register functionality into functionality tree
-	 * duplicate registration link into parent directories while nothing is registered
+	 * Registers the specified functionality path into the functionality tree.
+	 * Duplicate registration link into parent directories while nothing is registered.
 	 *
 	 * @access	public
 	 * @param	string	$func_path		path to functionality
@@ -359,7 +349,7 @@ class bab_functionalities {
 	 * @return  boolean
 	 */
 	function register($func_path, $include_file) {
-		
+
 		// verify parent functionality
 		$parent_original = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$this->rootDirName.'/'.dirname($func_path).'/'.$this->original;
 		
@@ -367,12 +357,12 @@ class bab_functionalities {
 			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
 			return false;
 		}
-		
+
 		if (!@include_once $include_file) {
 			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));
 			return false;
 		}
-		
+
 		$func_path = trim($func_path,'/ ');
 
 		if (false !== strpos($func_path, '_')) {
@@ -434,6 +424,22 @@ class bab_functionalities {
 	}
 
 
+	/**
+	 * Registers the specified functionality class into the functionality tree.
+	 * Similar to bab_Functionalities::register but use classname instead of functionality path.
+	 * @see bab_Functionalities::register
+	 *
+	 * @access	public
+	 * @param	string	$classname		Name of functionality class
+	 * @param	string	$include_file	File to include before calling this functionality
+	 * @return  boolean
+	 * @since 6.6.92
+	 */
+	function registerClass($classname, $include_file)
+	{
+		return $this->register(bab_Functionalities::getPath($classname), $include_file);
+	}
+
 
 	/**
 	 * Test link validity
@@ -481,8 +487,7 @@ class bab_functionalities {
 	 * @access 	public
 	 */
 	function unregister($func_path) {
-	
-		
+
 		if (!file_exists($this->treeRootPath.$func_path)) {
 			return true;
 		}
@@ -502,7 +507,7 @@ class bab_functionalities {
 	 * @param	string	[$path]
 	 */
 	function cleanTree($path = '') {
-	
+
 		$children = $this->getChildren($path);
 		foreach ($children as $child) {
 			$this->cleanTree($path.$child.'/');
@@ -513,13 +518,13 @@ class bab_functionalities {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the sanitized functionality path by removing non-allowed characters (only alphanumeric characters are allowed).
 	 * 
 	 * @param string $sPath		The functionality path to sanitize.
 	 * @return string			The sanitized functionality path.
-	 * @since 6.6.93
+	 * @since 6.6.92
 	 * @static
 	 */
 	function sanitize($sPath) {
@@ -527,13 +532,13 @@ class bab_functionalities {
 		$aReplacement = array('', '/');
 		return trim(preg_replace($aPattern, $aReplacement, $sPath), '/');
 	}
-	
+
 	/**
 	 * Returns the path corresponding to a functionality classname.
 	 *
 	 * @param string $path		The functionality path.
 	 * @return string
-	 * @since 6.6.93
+	 * @since 6.6.92
 	 * @static
 	 */
 	function getClassname($path) {
@@ -545,7 +550,7 @@ class bab_functionalities {
 	 *
 	 * @param string $classname	The functionality classname.
 	 * @return string
-	 * @since 6.6.93
+	 * @since 6.6.92
 	 * @static
 	 */
 	function getPath($classname) {
@@ -558,7 +563,7 @@ class bab_functionalities {
  * A functionality has been registered
  * 
  * @package events
- * @since 6.6.93
+ * @since 6.6.92
  */
 class bab_eventFunctionalityRegistered extends bab_event
 {
@@ -585,7 +590,7 @@ class bab_eventFunctionalityRegistered extends bab_event
  * A functionality has been unregistered
  * 
  * @package events
- * @since 6.6.93
+ * @since 6.6.92
  */
 class bab_eventFunctionalityUnregistered extends bab_event
 {
