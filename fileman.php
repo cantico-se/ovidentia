@@ -3728,7 +3728,7 @@ switch($sAction)
 				bab_pp('readonly'));
 		if(false === $bSuccess)
 		{
-			$idx = "add";
+			$idx = "displayAddFileForm";
 		}
 		break;
 		
