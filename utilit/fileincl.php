@@ -1065,13 +1065,13 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		
 		if('Y' === $oFolderFile->getGroup())
 		{
-			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'");
-			while($arrf = $babDB->db_fetch_array($res))
+			$iIdRootFolder = (int) bab_rp('id', 0);
+			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($iIdRootFolder)."'");
+			while(false !== ($arrf = $babDB->db_fetch_array($res)))
 			{
-				$fd = 'field'.$oFolderFile->getId();
+				$fd = 'field'.$arrf['id'];
 				if(isset($GLOBALS[$fd]))
 				{
-
 					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
 
 					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arrf['id'])."'");
