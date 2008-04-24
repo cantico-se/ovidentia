@@ -258,6 +258,8 @@ function iframe($editor,$path="")
 					}
 				}
 			closedir($h);
+			/* Alphabetical sorting of the names of files */
+			sort($this->arrcfile);
 			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
