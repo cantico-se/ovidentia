@@ -278,6 +278,7 @@ function iframe($editor,$path="")
 			$this->gdi = extension_loaded('gd');
 			$this->countsubdir = 0;
 			$reper = opendir(BAB_IUD_COMMON.$path);
+			$this->subdir = array();
 			while($dir = readdir($reper) ) {
 				if (($dir != ".") && ($dir != "..") && is_dir(BAB_IUD_COMMON.$path.$dir) ) {
 					$this->subdir[] = $dir ;
