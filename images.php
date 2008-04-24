@@ -259,7 +259,8 @@ function iframe($editor,$path="")
 				}
 			closedir($h);
 			/* Alphabetical sorting of the names of files */
-			sort($this->arrcfile);
+			natcasesort($this->arrcfile);
+			$this->arrcfile = array_values($this->arrcfile);
 			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
@@ -277,15 +278,16 @@ function iframe($editor,$path="")
 			$this->gdi = extension_loaded('gd');
 			$this->countsubdir = 0;
 			$reper = opendir(BAB_IUD_COMMON.$path);
-			while($dir = readdir($reper) )
-				{
-				if (($dir != ".") && ($dir != "..") && is_dir(BAB_IUD_COMMON.$path.$dir) ) 
-					{
+			while($dir = readdir($reper) ) {
+				if (($dir != ".") && ($dir != "..") && is_dir(BAB_IUD_COMMON.$path.$dir) ) {
 					$this->subdir[] = $dir ;
 					$this->countsubdir++ ; 
-					}
 				}
 			}
+			/* Alphabetical sorting of the names of subfolders */
+			natcasesort($this->subdir);
+			$this->subdir = array_values($this->subdir);
+		}
 
 		function geturls($filename, $com)
 			{
