@@ -591,6 +591,9 @@ function mailUnload()
 	}
 
 /* main */
+if (!isset($accid)) {
+	$accid = '';
+}
 $idx = bab_pp('idx', 'compose');
 
 $to = bab_pp('to', '');
