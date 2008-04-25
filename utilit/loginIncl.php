@@ -1,26 +1,25 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once 'base.php';
 
 
@@ -31,9 +30,9 @@ require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
  * Base functionality for all authentication methods.
  * @since 6.7.0
  */
-class PortalAuthentication extends bab_functionality
+class Func_PortalAuthentication extends bab_functionality
 {
-	function PortalAuthentication()
+	function Func_PortalAuthentication()
 	{
 		parent::bab_functionality();
 	}
@@ -43,9 +42,20 @@ class PortalAuthentication extends bab_functionality
 		return bab_translate("Authentication functionality");
 	}
 
-	function getFunctionalityCallableMethods() 
+//	function getFunctionalityCallableMethods() 
+//	{
+//		return array('login', 'logout', 'isLogged');
+//	}
+
+	/**
+	 * Register myself as a functionality.
+	 * @static
+	 */
+	function register()
 	{
-		return array('login', 'logout', 'isLogged');
+		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+		$functionalities = new bab_functionalities();
+		$functionalities->registerClass(__CLASS__, __FILE__);
 	}
 
 	function login() 
@@ -77,11 +87,11 @@ class PortalAuthentication extends bab_functionality
  * Functionality for classic ovidentia authentication method.
  * @since 6.7.0
  */
-class PortalAuthentication_ovidentia extends PortalAuthentication
+class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 {
-	function PortalAuthentication_ovidentia()
+	function Func_PortalAuthentication_Ovidentia()
 	{
-		parent::PortalAuthentication();
+		parent::Func_PortalAuthentication();
 	}
 
 	function getDescription() 
@@ -89,38 +99,34 @@ class PortalAuthentication_ovidentia extends PortalAuthentication
 		return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
 	}
 
-	function getFunctionalityCallableMethods() 
+//	function getFunctionalityCallableMethods() 
+//	{
+//		return array('login', 'logout', 'isLogged');
+//	}
+
+	/**
+	 * Register myself as a functionality.
+	 * @static
+	 */
+	function register()
 	{
-		return array('login', 'logout', 'isLogged');
+		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+		$functionalities = new bab_functionalities();
+		$functionalities->registerClass(__CLASS__, __FILE__);
 	}
 
 	function registerAuthType()
 	{
-		$oFunctionalities = new bab_functionalities();
-		
-		if(false !== $oFunctionalities->register('PortalAuthentication', $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php')) 
-		{
-			if(false !== $oFunctionalities->register('PortalAuthentication/ovidentia', $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php'))
-			{
-				return true;			
-			}
-		}
-		return false;		
+		return Func_PortalAuthentication::register()
+				&& Func_PortalAuthentication_Ovidentia::register();
 	}
 
-	function unregisterAuthType()
-	{
-		$oFunctionalities = new bab_functionalities();
-		
-		if(false !== $oFunctionalities->unregister('PortalAuthentication')) 
-		{
-			if(false !== $oFunctionalities->unregister('PortalAuthentication/ovidentia'))
-			{
-				return true;			
-			}
-		}
-		return false;		
-	}
+//	function unregisterAuthType()
+//	{
+//		$oFunctionalities = new bab_functionalities();
+//		return $oFunctionalities->unregister('PortalAuthentication')
+//				&& $oFunctionalities->unregister('PortalAuthentication/ovidentia');
+//	}
 
 	function login() 
 	{
@@ -153,9 +159,9 @@ function bab_requireCredential($sAuthType = '')
 
 	if (false === $oAuthObject && 'PortalAuthentication' === $sAuthType)
 	{
-		// If the default authentication method 'PortalAuthentication' does not exist
+		// If the default authentication method 'Func_PortalAuthentication' does not exist
 		// for example during first installation we (re)create it.
-		PortalAuthentication_ovidentia::registerAuthType();
+		Func_PortalAuthentication_Ovidentia::registerAuthType();
 		$oAuthObject = bab_functionality::get($sAuthType);
 	}
 
@@ -302,11 +308,16 @@ function bab_login()
 		{
 			if(signOn())
 			{
+				require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
 				$sUrl = (string) bab_rp('referer');
 				
 				if(substr_count($sUrl,'tg=login&cmd=') == 0) 
 				{
 					loginRedirect($sUrl);
+				}
+				elseif ((string)bab_rp('tg') === 'login')
+				{
+					loginRedirect(bab_url::request_gp());
 				}
 				else
 				{
@@ -326,6 +337,64 @@ function bab_logout()
 
 
 
+class displayLogin_Template
+{
+	var $nickname;
+	var $password;
+
+	function displayLogin_Template($url)
+	{
+		$this->nickname = bab_translate("Nickname");
+		$this->password = bab_translate("Password");
+		$this->login = bab_translate("Login");
+		
+		// verify and buid url
+		$params = array();
+		$arr = explode('?',$url);
+		
+		if (isset($arr[1])) {
+			$params = explode('&',$arr[1]);
+		}
+		
+		$url = $GLOBALS['babPhpSelf'];
+	
+		foreach($params as $key => $param) {
+			$arr = explode('=',$param);
+			if (2 == count($arr)) {
+				
+				$params[$key] = $arr[0].'='.$arr[1];
+			} else {
+				unset($params[$key]);
+			}
+		}
+	
+		if (0 < count($params)) {
+			$url .= '?'.implode('&',$params);
+		}
+		
+		$url = str_replace("\n",'', $url);
+		$url = str_replace("\r",'', $url);
+		$url = str_replace('%0d','', $url);
+		$url = str_replace('%0a','', $url);
+		
+		$this->referer = bab_toHtml($url);
+		$this->life = bab_translate("Remember my login");
+		$this->nolife = bab_translate("No");
+		$this->oneday = bab_translate("one day");
+		$this->oneweek = bab_translate("one week");
+		$this->onemonth = bab_translate("one month");
+		$this->oneyear = bab_translate("one year");
+		$this->infinite = bab_translate("unlimited");
+	
+		$this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
+	}
+}
+
+
+/**
+ * Enter description here...
+ *
+ */
 function displayAuthenticationForm()
 {
 	global $babBody;
@@ -357,7 +426,8 @@ function displayAuthenticationForm()
 		$referer = $_REQUEST['referer'];
 	}
 	
-	displayLogin($referer);
+	$temp = new displayLogin_Template($referer);
+	$babBody->babecho(	bab_printTemplate($temp,"login.html", "login"));
 }
 
 
@@ -391,6 +461,12 @@ function loginRedirect($url)
 }
 
 
+/**
+ * Checks whether a user who has forgotten his password
+ * can ask for it to be resent by email.
+ *
+ * @return bool
+ */
 function isEmailPassword()
 {
 	global $babBody;
