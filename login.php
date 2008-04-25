@@ -34,65 +34,6 @@ include_once $babInstallPath.'utilit/loginIncl.php';
 
 
 
-function displayLogin($url)
-	{
-	global $babBody;
-	class temp
-		{
-		var $nickname;
-		var $password;
-
-		function temp($url)
-			{
-			$this->nickname = bab_translate("Nickname");
-			$this->password = bab_translate("Password");
-			$this->login = bab_translate("Login");
-			
-			// verify and buid url
-			$params = array();
-			$arr = explode('?',$url);
-			
-			if (isset($arr[1])) {
-				$params = explode('&',$arr[1]);
-			}
-			
-			$url = $GLOBALS['babPhpSelf'];
-
-			foreach($params as $key => $param) {
-				$arr = explode('=',$param);
-				if (2 == count($arr)) {
-					
-					$params[$key] = $arr[0].'='.$arr[1];
-				} else {
-					unset($params[$key]);
-				}
-			}
-
-			if (0 < count($params)) {
-				$url .= '?'.implode('&',$params);
-			}
-			
-			$url = str_replace("\n",'', $url);
-			$url = str_replace("\r",'', $url);
-			$url = str_replace('%0d','', $url);
-			$url = str_replace('%0a','', $url);
-			
-			$this->referer = bab_toHtml($url);
-			$this->life = bab_translate("Remember my login");
-			$this->nolife = bab_translate("No");
-			$this->oneday = bab_translate("one day");
-			$this->oneweek = bab_translate("one week");
-			$this->onemonth = bab_translate("one month");
-			$this->oneyear = bab_translate("one year");
-			$this->infinite = bab_translate("unlimited");
-
-			$this->c_nickname = isset($_COOKIE['c_nickname']) ? bab_toHtml($_COOKIE['c_nickname']) : '';
-			}
-		}
-
-	$temp = new temp($url);
-	$babBody->babecho(	bab_printTemplate($temp,"login.html", "login"));
-	}
 
 
 function emailPassword()
@@ -723,17 +664,17 @@ switch($cmd)
 	case 'signoff':
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 		
-		if(array_key_exists('sAuthType', $_SESSION))
+		if(array_key_exists('sAuthPath', $_SESSION))
 		{
-			$sAuthType = $_SESSION['sAuthType'];
+			$sAuthPath = $_SESSION['sAuthPath'];
 			
-			$oAuthObject = bab_functionality::get($sAuthType);
+			$oAuthObject = bab_functionality::get($sAuthPath);
 			
 			if(false !== $oAuthObject)
 			{
 				$oAuthObject->logout();
 				
-				unset($_SESSION['sAuthType']);
+				unset($_SESSION['sAuthPath']);
 			}
 		}
 		break;
