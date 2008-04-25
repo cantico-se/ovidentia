@@ -55,7 +55,7 @@ class Func_PortalAuthentication extends bab_functionality
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
-		$functionalities->registerClass(__CLASS__, __FILE__);
+		return $functionalities->registerClass(__CLASS__, __FILE__);
 	}
 
 	function login() 
