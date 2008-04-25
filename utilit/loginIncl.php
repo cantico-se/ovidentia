@@ -60,12 +60,12 @@ class Func_PortalAuthentication extends bab_functionality
 
 	function login() 
 	{
-		die(bab_translate("PortalAuthentication::login must not be called directly"));
+		die(bab_translate("Func_PortalAuthentication::login must not be called directly"));
 	}
 
 	function logout() 
 	{
-		die(bab_translate("PortalAuthentication::logout must not be called directly"));
+		die(bab_translate("Func_PortalAuthentication::logout must not be called directly"));
 	}
 
 	/**
