@@ -27,7 +27,7 @@ include_once 'base.php';
  * Prefix for all bab_Functionality classes.
  * @since 6.6.92
  */
-define('BAB_FUNCTIONALITY_CLASS_PREFIX', '');
+define('BAB_FUNCTIONALITY_CLASS_PREFIX', 'Func_');
 
 
 /**
@@ -297,40 +297,35 @@ class bab_functionalities {
 
 
 	/**
-	 * test if $path1 is a correct parent path for $path2
-	 * return true if $path2 contain methods from $path1
+	 * Tests if $parentPath is a correct parent path for $childPath.
 	 *
-	 * @param	string	$path1			path to existing functionality
-	 * @param	string	$path2			path to functionality not created
-	 * @param	string	$include_file	file to include for path2 object
+	 * @param	string	$parentPath		path to existing functionality
+	 * @param	string	$childPath		path to functionality not created
+	 * @param	string	$include_file	file to include for childPath object
 	 *
 	 * @return boolean
 	 */
-	function compare($path1, $path2, $include_file) {
-		
-		$parent = $this->getOriginal($path1);
+	function compare($parentPath, $childPath, $include_file) {
+
+		$parent = $this->getOriginal($parentPath);
 		if (false === $parent) {
-			bab_debug(sprintf('bab_functionalities::compare() : the path "%s" does not exists', $path1));
+			bab_debug(sprintf('bab_functionalities::compare() : the path "%s" does not exists', $parentPath));
 			return false;
 		}
-		
+
 		if (!include_once $include_file) {
 			trigger_error(sprintf('The include file %s does not exist', $include_file));
 			return false;
 		}
 
-		$classname = bab_Functionalities::getClassname($path2);
-		$child = new $classname();
+		$childClassname = bab_Functionalities::getClassname($childPath);
+		$child = new $childClassname();
 		
 		if (false === $child) {
 			return false;
 		}
 
-		$parent_methods = $parent->getCallableMethods();
-		$child_methods = $child->getCallableMethods();
-		
-		$intersect = array_intersect($parent_methods, $child_methods);
-		if ($intersect != $parent_methods) {
+		if (!is_subclass_of($child, get_class($parent))) {
 			return false;
 		}
 
@@ -426,7 +421,7 @@ class bab_functionalities {
 
 	/**
 	 * Registers the specified functionality class into the functionality tree.
-	 * Similar to bab_Functionalities::register but use classname instead of functionality path.
+	 * Similar to bab_Functionalities::register but uses classname instead of functionality path.
 	 * @see bab_Functionalities::register
 	 *
 	 * @access	public
@@ -520,7 +515,9 @@ class bab_functionalities {
 	}
 
 	/**
-	 * Returns the sanitized functionality path by removing non-allowed characters (only alphanumeric characters are allowed).
+	 * Returns the sanitized functionality path.
+	 * 
+	 * This method removes non-allowed characters (only alphanumeric characters and '/' are allowed).
 	 * 
 	 * @param string $sPath		The functionality path to sanitize.
 	 * @return string			The sanitized functionality path.
@@ -534,7 +531,10 @@ class bab_functionalities {
 	}
 
 	/**
-	 * Returns the path corresponding to a functionality classname.
+	 * Returns the classname corresponding to a functionality path.
+	 * 
+	 * The returned classname is computed from the path and does not mean that
+	 * the class or the path actually exist.  
 	 *
 	 * @param string $path		The functionality path.
 	 * @return string
@@ -546,8 +546,11 @@ class bab_functionalities {
 	}
 
 	/**
-	 * Returns the classname corresponding to a functionality path.
+	 * Returns the path corresponding to a functionality classname.
 	 *
+	 * The returned path is computed from the classname and does not mean that
+	 * the class or the path actually exist.  
+	 * 
 	 * @param string $classname	The functionality classname.
 	 * @return string
 	 * @since 6.6.92
