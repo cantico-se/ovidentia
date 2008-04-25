@@ -112,7 +112,7 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
-		$functionalities->registerClass(__CLASS__, __FILE__);
+		return $functionalities->registerClass(__CLASS__, __FILE__);
 	}
 
 	function registerAuthType()
