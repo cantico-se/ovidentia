@@ -117,8 +117,8 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 
 	function registerAuthType()
 	{
-		return Func_PortalAuthentication::register()
-				&& Func_PortalAuthentication_Ovidentia::register();
+		Func_PortalAuthentication::register();
+		return Func_PortalAuthentication_Ovidentia::register();
 	}
 
 //	function unregisterAuthType()

@@ -557,7 +557,7 @@ class bab_functionalities {
 	 * @static
 	 */
 	function getPath($classname) {
-		return str_replace('/', '_', substr($classname, strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
+		return str_replace('_', '/', substr($classname, strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
 	}
 }
 
