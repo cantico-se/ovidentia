@@ -759,8 +759,8 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			$this->m_sAdditionnalClass = $datas['sAdditionnalClass'];
 			$this->m_iClass = $datas['iClass'];
 			
-			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['startDate']);
-			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['endDate']);
+			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['plannedStartDate']);
+			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['plannedEndDate']);
 			
 			$iTaskStartDateTs = $oTaskStartDate->getTimeStamp();
 			$iTaskEndDateTs = $oTaskEndDate->getTimeStamp();
