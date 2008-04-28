@@ -381,12 +381,14 @@ function onMenuSelected(oSelectedLi)
 	var oLiResources = document.getElementById("oLiResources");
 	var oLiCommentaries = document.getElementById("oLiCommentaries");
 	var oLiSpfFld = document.getElementById("oLiSpfFld");
+	var oLiCost = document.getElementById("oLiCost");
 	
 	var oDivGeneral = document.getElementById("sGeneral");
 	var oDivSpfFld = document.getElementById("sSpfFld");
 	var oDivCommentaries = document.getElementById("sCommentaries");
 	var oDivResources = document.getElementById("sResources");
 	var oDivPredecessor = document.getElementById("sPredecessor");
+	var oDivCost = document.getElementById("sCost");
 	
 	switch(oSelectedLi.id)
 	{
@@ -397,12 +399,14 @@ function onMenuSelected(oSelectedLi)
 			if(null != oLiResources) oLiResources.firstChild.className = '';
 			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
 			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			if(null != oLiCost) oLiCost.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrShow);
 			showHideElement('sSpfFld', g_tskMgrHide);
 			showHideElement('sCommentaries', g_tskMgrHide);
 			showHideElement('sResources', g_tskMgrHide);
 			showHideElement('sPredecessor', g_tskMgrHide);
+			showHideElement('sCost', g_tskMgrHide);
 		}
 		break;
 		
@@ -413,28 +417,32 @@ function onMenuSelected(oSelectedLi)
 			if(null != oLiResources) oLiResources.firstChild.className = '';
 			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
 			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			if(null != oLiCost) oLiCost.firstChild.className = '';
 
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
 			showHideElement('sCommentaries', g_tskMgrHide);
 			showHideElement('sResources', g_tskMgrHide);
 			showHideElement('sPredecessor', g_tskMgrShow);
+			showHideElement('sCost', g_tskMgrHide);
 		}
 		break;
 		
-		case 'oLiResources':
+		case 'oLiCost':
 		{
 			if(null != oLiGeneral) oLiGeneral.firstChild.className = '';
 			if(null != oLiPredecessors) oLiPredecessors.firstChild.className = '';
-			if(null != oLiResources) oLiResources.firstChild.className = 'current';
+			if(null != oLiResources) oLiResources.firstChild.className = '';
 			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
 			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			if(null != oLiCost) oLiCost.firstChild.className = 'current';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
 			showHideElement('sCommentaries', g_tskMgrHide);
-			showHideElement('sResources', g_tskMgrShow);
+			showHideElement('sResources', g_tskMgrHide);
 			showHideElement('sPredecessor', g_tskMgrHide);
+			showHideElement('sCost', g_tskMgrShow);
 		}
 		break;
 		
@@ -445,13 +453,14 @@ function onMenuSelected(oSelectedLi)
 			if(null != oLiResources) oLiResources.firstChild.className = '';
 			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = 'current';
 			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = '';
+			if(null != oLiCost) oLiCost.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrHide);
 			showHideElement('sCommentaries', g_tskMgrShow);
 			showHideElement('sResources', g_tskMgrHide);
 			showHideElement('sPredecessor', g_tskMgrHide);
-			
+			showHideElement('sCost', g_tskMgrHide);
 		}
 		break;
 		
@@ -462,13 +471,14 @@ function onMenuSelected(oSelectedLi)
 			if(null != oLiResources) oLiResources.firstChild.className = '';
 			if(null != oLiCommentaries) oLiCommentaries.firstChild.className = '';
 			if(null != oLiSpfFld) oLiSpfFld.firstChild.className = 'current';
+			if(null != oLiCost) oLiCost.firstChild.className = '';
 			
 			showHideElement('sGeneral', g_tskMgrHide);
 			showHideElement('sSpfFld', g_tskMgrShow);
 			showHideElement('sCommentaries', g_tskMgrHide);
 			showHideElement('sResources', g_tskMgrHide);
 			showHideElement('sPredecessor', g_tskMgrHide);
-			
+			showHideElement('sCost', g_tskMgrHide);
 		}
 		break;
 	}
@@ -530,8 +540,12 @@ function onClassChanged(oSelect)
 			showHideElement('oTrLinkedTask', g_tskMgrHide);
 			showHideElement('oTrDurationType', g_tskMgrHide);
 			showHideElement('oTrDuration', g_tskMgrHide);
+			
 			showHideElement('oTrStartDate', g_tskMgrHide);
 			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oTrPlannedStartDate', g_tskMgrHide);
+			showHideElement('oTrPlannedEndDate', g_tskMgrHide);
+			
 			showHideElement('oTrProposable', g_tskMgrHide);
 			showHideElement('oTrCompletion', g_tskMgrShow);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
@@ -545,8 +559,12 @@ function onClassChanged(oSelect)
 			showHideElement('oTrLinkedTask', g_tskMgrHide);
 			showHideElement('oTrDurationType', g_tskMgrHide);
 			showHideElement('oTrDuration', g_tskMgrHide);
+			
 			showHideElement('oTrStartDate', g_tskMgrHide);
 			showHideElement('oTrEndDate', g_tskMgrShow);
+			showHideElement('oTrPlannedStartDate', g_tskMgrHide);
+			showHideElement('oTrPlannedEndDate', g_tskMgrHide);
+			
 			showHideElement('oTrProposable', g_tskMgrHide);
 			showHideElement('oTrCompletion', g_tskMgrShow);
 			showHideElement('oLiPredecessors', g_tskMgrHide);
@@ -570,7 +588,6 @@ function onDurationTypeChanged(oSelect)
 		case DURATION:
 		{
 			showHideElement('oTrDuration', g_tskMgrShow);
-			//showHideElement('oTrEndDate', g_tskMgrHide);
 		}
 		break;
 		
@@ -617,11 +634,14 @@ function processStartDate()
 	
 	if(null != oLinkedTask && true == oLinkedTask.checked)
 	{
-		showHideElement('oTrStartDate', g_tskMgrHide);
+		showHideElement('oTrPlannedStartDate', g_tskMgrHide);
 	}
 	else
 	{
 		showHideElement('oTrStartDate', g_tskMgrShow);
+		showHideElement('oTrEndDate', g_tskMgrShow);
+		showHideElement('oTrPlannedStartDate', g_tskMgrShow);
+		showHideElement('oTrPlannedEndDate', g_tskMgrShow);
 	}
 }
 
@@ -714,12 +734,13 @@ function check_all(strCtrlName, checked)
 		<!--#if m_iIdProject "!= 0" -->
 		<!--#endif m_iIdProject -->
 		<!--#if m_iIdTask "!= 0" -->
+			<li id="oLiCost"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">Coût</a></li>
 			<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
 			<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
 		<!--#endif m_iIdTask -->
 		</ul>						
 		<div id="sGeneral">
-			<table width="95%" border="0" cellspacing="2" cellpadding="2" align="center">
+			<table width="95%" border="0" cellspacing="2" cellpadding="5" align="center">
 				<tr>
 					<td colspan="2"><label for="sShortDescription">{ m_captions[sShortDescription] }</label></td>
 				</tr>
@@ -807,34 +828,117 @@ function check_all(strCtrlName, checked)
 					</td>
 					<td>
 						<input type="text" name="sDuration" { m_datas[sReadOnlyDuration] } id="sDuration" maxlength="20" value="{ m_datas[sDuration] }" size="10" />
+						&nbsp;
+						{ m_captions[sType] }:&nbsp;					
+						<select id="oDurationUnit" name="oDurationUnit" { m_datas[sDisabledDurationType] } >
+							<!--#in getNextDurationUnit -->
+							<option { m_datas[sSelectedDurationUnit] } value="{ m_datas[iDurationUnit] }">{ m_datas[sDurationUnitName] }</option>
+							<!--#endin getNextDurationUnit -->
+						</select>
 					</td>
 				</tr>
 	
-				<tr id="oTrStartDate">
+				<tr id="oTrPlannedStartDate">
 					<td>
 						<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
 					</td>
 					<td>
 						<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
 					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
-					<a href="javascript:dateCallback('sPlannedStartDate');">
+						<a href="javascript:dateCallback('sPlannedStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
 						</a>
 					<!--#endif m_datas[isReadOnlyDate] -->
+				
+						<select id="oPlannedStartHour" name="oPlannedStartHour">
+							<!--#in getNextPlannedStartHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedStartHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextPlannedStartHour -->
+						</select>:
+						<select id="oPlannedStartMinut" name="oPlannedStartMinut">
+							<!--#in getNextPlannedStartMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedStartMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextPlannedStartMinut -->
+						</select>
+									
 					</td>
 				</tr>
-				
-				<tr id="oTrEndDate">
+	
+				<tr id="oTrStartDate">
+					<td>
+						<label for="sStartDate">{ m_captions[sStartDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sStartDate" id="sStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+					<a href="javascript:dateCallback('sStartDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sStartDate] }" />
+						</a>
+					<!--#endif m_datas[isReadOnlyDate] -->
+
+						<select id="oStartHour" name="oStartHour">
+							<!--#in getNextStartHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedStartHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextStartHour -->
+						</select>:
+						<select id="oStartMinut" name="oStartMinut">
+							<!--#in getNextStartMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedStartMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextStartMinut -->
+						</select>
+					
+					</td>
+				</tr>
+
+				<tr id="oTrPlannedEndDate">
 					<td>
 						<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
 					</td>
 					<td>
 						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
 					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
-						<a href="javascript:dateCallback('sPlannedEndDate');">
+					<a href="javascript:dateCallback('sPlannedEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
 						</a>
 					<!--#endif m_datas[isReadOnlyDate] -->
+				
+						<select id="oPlannedEndHour" name="oPlannedEndHour">
+							<!--#in getNextPlannedEndHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedEndHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextPlannedEndHour -->
+						</select>:
+						<select id="oPlannedEndMinut" name="oPlannedEndMinut">
+							<!--#in getNextPlannedEndMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedEndMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextPlannedEndMinut -->
+						</select>
+									
+					</td>
+				</tr>
+				
+				<tr id="oTrEndDate">
+					<td>
+						<label for="sEndDate">{ m_captions[sEndDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="sEndDate" id="sEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+						<a href="javascript:dateCallback('sEndDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sEndDate] }" />
+						</a>
+					<!--#endif m_datas[isReadOnlyDate] -->
+
+					<select id="oEndHour" name="oEndHour">
+						<!--#in getNextEndHour -->
+						<option value="{ m_datas[iHour] }" { m_datas[sSelectedEndHour] } >{ m_datas[sHour] }</option>
+						<!--#endin getNextEndHour -->
+					</select>:
+					<select id="oEndMinut" name="oEndMinut">
+						<!--#in getNextEndMinut -->
+						<option value="{ m_datas[iMinut] }" { m_datas[sSelectedEndMinut] } >{ m_datas[sMinut] }</option>
+						<!--#endin getNextEndMinut -->
+					</select>
+					
 					</td>
 				</tr>
 					
@@ -868,7 +972,6 @@ function check_all(strCtrlName, checked)
 			<!--#endif m_datas[isAnswerEnable] -->
 			</table>
 		</div>
-		
 	<!--#if m_datas[isLinkable] -->
 		<div id="sPredecessor" class="">
 			<table border="0" cellspacing="0" cellpadding="2">
@@ -900,14 +1003,78 @@ function check_all(strCtrlName, checked)
 			</table>
 		</div>
 	<!--#endif m_datas[isLinkable] -->
+
+		<div id="sCost" class="">
+			<table width="95%" border="0" cellspacing="3" cellpadding="2" align="center">
+				<tr>
+					<td colspan="2">
+						&nbsp;
+					</td>
+				</tr>
+				<tr id="oTrPlannedTime">
+					<td>
+						<label for="_sPlannedStartDate">Temps prévu</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+				
+						<select>
+							<option value="Jour(s)">Jour(s)</option>
+							<option value="Heure(s)">Heure(s)</option>
+						</select>
+									
+					</td>
+				</tr>
+				
+				<tr id="oTrTime">
+					<td>
+						<label for="_sPlannedStartDate">Temps réel</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+				
+						<select>
+							<option value="Jour(s)">Jour(s)</option>
+							<option value="Heure(s)">Heure(s)</option>
+						</select>
+									
+					</td>
+				</tr>
+				
+				<tr id="oTrPlannedCost">
+					<td>
+						<label for="s_PlannedStartDate">Coût prévu</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+					</td>
+				</tr>
+				
+				<tr id="oTrCost">
+					<td>
+						<label for="sPlannedStartDate">Coût réel</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
 		
 		<!--#if m_iIdTask "!= 0" -->
 		<div id="sCommentaries" class="">
+			<br/>
 			{ m_datas[sTaskCommentaries] }
 		</div>
 		
 		<div id="sSpfFld" class="">
 			<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+				<tr>
+					<td colspan="2">
+						&nbsp;
+					</td>
+				</tr>
 				<tr class="BabSiteAdminTitleFontBackground"> 
 					<td>&nbsp;</td>
 					<td colspan="3" align="center">
@@ -1424,14 +1591,14 @@ onload="tmInit('ganttTask')"
 			<!--#else m_iClass -->
 				<div class="{ m_sAdditionnalClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
 			<!--#endif m_iClass -->
-					<div class="ganttTooltip" id="calevent{ m_iIdTask }">
-						{ m_sToolTip }
-					</div>
 				</div>
 			<!--#if m_bIsTaskCompletion -->
 				<div class="ganttTaskDone" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="background-color:#{ m_sDoneBgColor }; color:#{ m_sDoneColor }; top:{ m_iDonePosY }px; left:{ m_iDonePosX }px; height:{ m_iDoneHeigth }px; width:{ m_iDoneWidth }px;">
 				</div>
 			<!--#endif m_bIsTaskCompletion -->
+				<div class="ganttTooltip" id="calevent{ m_iIdTask }">
+					{ m_sToolTip }
+				</div>
 				<!--#endin getNextTask -->	
 			</div>
 			
