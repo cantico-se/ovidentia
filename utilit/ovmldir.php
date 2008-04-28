@@ -573,6 +573,8 @@ class bab_DbDirectoryEntry extends bab_handler
 					$this->ctx->curctx->push('DirectoryMemberUpdateDate', bab_mktime($this->arrentries['date_modification']));
 				$this->ctx->curctx->push('DirectoryMemberUpdateAuthor', $this->arrentries['id_modifiedby']);
 
+				$this->ctx->curctx->push('DirectoryEntryMemberUrl', $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$this->directoryid."&userid=".$this->arrentries['id']);
+
 				$this->count = 1;
 				}
 			}
