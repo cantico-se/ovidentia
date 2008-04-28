@@ -4095,27 +4095,39 @@ class bab_RecentFaqQuestions extends bab_handler
 		$this->last = $ctx->get_value('last');
 		$faqid = $ctx->get_value('faqid');
 		$faqsubcatid = $ctx->get_value('faqsubcatid');
-		$req = "select id, idcat from ".BAB_FAQQR_TBL;
+		$delegationid = (int) $ctx->get_value('delegationid');
+
+		$req = "select ft.id, ft.idcat from ".BAB_FAQQR_TBL." ft";
+		$where = array();
+		if(0 != $delegationid)	
+		{
+			$req .= " left join ".BAB_FAQCAT_TBL." fct on fct.id=ft.idcat";
+			$where[] = 'fct.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+		}
+
 		if( $faqid !== false && $faqid !== '' )
 			{
-			$req .= " where idcat IN (".$babDB->quote(explode(',', $faqid)).")";
-			if( $faqsubcatid !== false && $faqsubcatid !== '' )
-				{
-				$req .= " and id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
-				}
+			$where[] = "ft.idcat IN (".$babDB->quote(explode(',', $faqid)).")";
 			}
-		elseif( $faqsubcatid !== false && $faqsubcatid !== '' )
+		if( $faqsubcatid !== false && $faqsubcatid !== '' )
 			{
-			$req .= " where id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
+			$where[] = "ft.id_subcat IN (".$babDB->quote(explode(',', $faqsubcatid)).")";
 			}
 
 		if( $this->nbdays !== false)
 			{
-			$req .= " AND date_modification >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
+			$where[] = "ft.date_modification >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 			}
 
+		if( count($where))
+			{
+			$req .= " where ".implode(' AND ', $where);
+			}
+		
 		if( $this->last !== false)
+			{
 			$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
+			}
 
 		$res = $babDB->db_query($req);
 		while( $row = $babDB->db_fetch_array($res))
@@ -4129,7 +4141,12 @@ class bab_RecentFaqQuestions extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
+			$order = $ctx->get_value('order');
+			if( $order === false || $order === '' )
+				{
+				$order = 'asc';
+				}
+			$this->res = $babDB->db_query("select * from ".BAB_FAQQR_TBL." where id IN (".$babDB->quote($this->IdEntries).") order by date_modification ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
