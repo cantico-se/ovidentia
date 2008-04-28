@@ -2289,6 +2289,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iIdCalEvent']			= 0;
 				$aTask['sHashCalEvent']			= '';
 				$aTask['iDuration']				= 0;
+				$aTask['iDurationUnit']			= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
 				$aTask['sColor']				= $this->m_sColor;
