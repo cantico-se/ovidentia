@@ -1506,6 +1506,8 @@
 <string id="Add event category">Add event category</string>
 <string id="date_from">From</string>
 <string id="date_to">To</string>
+<string id="planned_date_from">Plannified from</string>
+<string id="planned_date_to">Plannified to</string>
 <string id="PublicCalendar">Public</string>
 <string id="Minimum interval time">Minimum interval time</string>
 <string id="Dates">Dates</string>

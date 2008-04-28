@@ -1453,6 +1453,8 @@
 <string id="Database">Base de données</string>
 <string id="date_from">Du</string>
 <string id="date_to">Au</string>
+<string id="planned_date_from">Plannifié du</string>
+<string id="planned_date_to">Plannifié au</string>
 <string id="View event">Voir l'événement</string>
 <string id="Attendee">Invité</string>
 <string id="Declined">Refusé</string>
