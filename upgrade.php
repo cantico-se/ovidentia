@@ -4336,10 +4336,55 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_removeEventListener('bab_eventLogout', 'bab_onEventLogout', 'utilit/eventAuthentication.php');
 	
 	
-
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `duration`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(is_array($aData) && array_key_exists('Type', $aData))
+		{
+			if($aData['Type'] != 'double(10,2) unsigned')
+			{
+				$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` CHANGE `duration` `duration` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+			}
+		}
+	}
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iDurationUnit`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL AFTER `duration`');			  
+		}
+	}
 	
+	$sQuery = 
+		'SELECT ' .
+			'id iId, ' . 
+			'startDate sStartDate, ' .
+			'endDate sEndDate ' .
+		'FROM ' .
+			BAB_TSKMGR_TASKS_TBL;
+			
+	$oResult = $babDB->db_query($sQuery);
+	$iNumRows = $babDB->db_num_rows($oResult);
+	$iIndex = 0;
 	
-	
+	while($iIndex < $iNumRows && false != ($aDatas = $babDB->db_fetch_assoc($oResult)))
+	{
+		$iIndex++;
+		$sQuery = 
+			'UPDATE ' . 
+				BAB_TSKMGR_TASKS_TBL . ' ' .
+			'SET ' . ' ' .
+				'`plannedStartDate` = \'' . $babDB->db_escape_string($aDatas['sStartDate']) . '\', ' .
+				'`plannedEndDate` = \'' . $babDB->db_escape_string($aDatas['sEndDate']) . '\' ' .
+			'WHERE ' . 
+				'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+				
+		$babDB->db_query($sQuery);
+	}
 	return true;
 }
 ?>
