@@ -2005,7 +2005,7 @@ function getFirstProjectTaskDate($iIdProject)
 	
 	$query = 
 		'SELECT ' . 
-			'MIN(startDate) sStartDate ' .
+			'MIN(plannedStartDate) plannedStartDate ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -2019,7 +2019,7 @@ function getFirstProjectTaskDate($iIdProject)
 	
 	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
 	{
-		return $datas['sStartDate'];
+		return $datas['plannedStartDate'];
 	}
 	return date("Y-m-d");
 }
