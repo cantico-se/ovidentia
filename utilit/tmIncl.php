@@ -830,59 +830,6 @@ function bab_getLastProjectRevision($iIdProject, &$iMajorVersion, &$iMinorVersio
 }
 
 
-//Task functions	
-/*
-function bab_startDependingTask($iIdProjectSpace, $iIdProject, $iIdTask, $iLinkType)
-{
-	$aDependingTasks = array();
-	bab_getDependingTasks($iIdTask, $iLinkType, $aDependingTasks);
-	
-	require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
-	$oSendMail = new BAB_TM_SendEmail();
-	
-	foreach($aDependingTasks as $iId => $aTaskInfo)
-	{
-		if(bab_getTask($iId, $aTask))
-		{
-			$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
-			$aTask['sStartDate'] = date("Y-m-d");
-			bab_updateTask($iId, $aTask);
-			
-			{
-				$sProjectName = '???';
-				if(bab_getProject($iIdProject, $aProject))
-				{
-					$sProjectName = $aProject['name'];
-				}
-					
-				$sProjectSpaceName = '???';
-				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
-				{
-					$sProjectSpaceName = $aProjectSpace['name'];
-				}
-				
-				$iIdEvent = BAB_TM_EV_TASK_STARTED;
-				$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
-				$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
-				$sBody = $g_aEmailMsg[$iIdEvent]['body'];
-				
-				$sBody = sprintf($sBody, $aTask['sTaskNumber'], $sProjectName, $sProjectSpaceName);
-				$oSendMail->send_notification(bab_getUserEmail($aTaskInfo['iIdResponsible']), $sSubject, $sBody);
-			}
-		}
-	}
-	
-	if(BAB_TM_END_TO_START == $iLinkType)
-	{
-		reset($aDependingTasks);
-		foreach($aDependingTasks as $iId => $aTaskInfo)
-		{
-			bab_startDependingTask($iIdProjectSpace, $iIdProject, $iId, BAB_TM_START_TO_START);
-		}
-	}
-}
-//*/
-
 function bab_getTaskCount($iIdProject, $iIdUser = -1)
 {
 	global $babDB;
@@ -912,41 +859,6 @@ function bab_getTaskCount($iIdProject, $iIdUser = -1)
 	return 0;
 }
 
-/*
-function bab_getDependingTasks($iIdTask, $iLinkType, &$aDependingTasks)
-{
-	$query = 
-		'SELECT ' . 
-			'lt.idTask, ' .
-			'tr.idResponsible ' .
-		'FROM ' . 
-			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt, ' .
-			BAB_TSKMGR_TASKS_TBL . ' t, ' .
-			BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' tr ' .
-		'WHERE ' . 
-			'lt.idPredecessorTask = \'' . $iIdTask . '\' AND ' .
-			'lt.linkType = \'' . $iLinkType . '\' AND ' .
-			't.participationStatus NOT IN(\'' . BAB_TM_IN_PROGRESS . '\', \'' . BAB_TM_ENDED . '\') ' .
-		'GROUP BY lt.idTask';
-		
-	//bab_debug($query);
-	
-	global $babDB;
-	$db	= & $GLOBALS['babDB'];
-
-	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
-	
-	while($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
-	{
-		bab_getDependingTasks($datas['idTask'], $iLinkType, $aDependingTasks);
-		$aDependingTasks[$datas['idTask']] = array('iIdTask' => $datas['idTask'],
-			'iIdResponsible' => $datas['idResponsible']);
-		$iIndex++;
-	}
-}
-//*/
 
 function bab_getDependingTasks($iIdTask, &$aDependingTasks, $iLinkType = -1)
 {
@@ -1007,6 +919,7 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'idCalEvent, ' .
 			'hashCalEvent, ' .
 			'duration, ' .
+			'iDurationUnit, ' .
 			'majorVersion, ' .
 			'minorVersion, ' .
 			'color, ' .
@@ -1036,9 +949,9 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'sModified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
 			'iIdUserModified' => $datas['idUserModified'], 'iClass' => $datas['class'], 
 			'iParticipationStatus' => $datas['participationStatus'],
-			'iIsLinked' => $datas['isLinked'], 
-			'iIdCalEvent' => $datas['idCalEvent'], 'sHashCalEvent' => $datas['hashCalEvent'], 
-			'iDuration' => $datas['duration'], 'iMajorVersion' => $datas['majorVersion'], 
+			'iIsLinked' => $datas['isLinked'], 'iIdCalEvent' => $datas['idCalEvent'],  
+			'sHashCalEvent' => $datas['hashCalEvent'], 'iDuration' => $datas['duration'],  
+			'iDurationUnit' => $datas['iDurationUnit'], 'iMajorVersion' => $datas['majorVersion'], 
 			'iMinorVersion' => $datas['minorVersion'], 'sColor' => $datas['color'], 
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
@@ -1063,7 +976,7 @@ function bab_createTask($aParams)
 				'`id`, ' .
 				'`idProject`, `taskNumber`, `description`, `idCategory`, `class`, ' .
 				'`participationStatus`, `isLinked`, `idCalEvent`, `hashCalEvent`, ' .
-				'`duration`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
+				'`duration`, `iDurationUnit`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
 				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
 				'`idUserModified`, `modified`, `shortDescription`' .
@@ -1080,6 +993,7 @@ function bab_createTask($aParams)
 				$babDB->db_escape_string($aParams['iIdCalEvent']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sHashCalEvent']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iDuration']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iDurationUnit']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iMajorVersion']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iMinorVersion']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sColor']) . '\', \'' . 
@@ -1087,8 +1001,8 @@ function bab_createTask($aParams)
 				$babDB->db_escape_string($aParams['iCompletion']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sStartDate']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sEndDate']) . '\', \'' . 
-				/*$babDB->db_escape_string($aParams['sPlannedStartDate'])*/'' . '\', \'' . 
-				/*$babDB->db_escape_string($aParams['sPlannedEndDate'])*/'' . '\', \'' . 
+				$babDB->db_escape_string($aParams['sPlannedStartDate']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['sPlannedEndDate']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sCreated']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iIdUserCreated']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iIsNotified']) . '\', \'' . 
@@ -1131,6 +1045,7 @@ function bab_getTask($iIdTask, &$aTask)
 			't.idCalEvent, ' .
 			't.hashCalEvent, ' .
 			't.duration, ' .
+			't.iDurationUnit, ' .
 			't.majorVersion, ' .
 			't.minorVersion, ' .
 			't.color, ' .
@@ -1163,9 +1078,9 @@ function bab_getTask($iIdTask, &$aTask)
 			'sModified' => $datas['modified'], 'iIdUserCreated' => $datas['idUserCreated'], 
 			'iIdUserModified' => $datas['idUserModified'], 'iClass' => $datas['class'], 
 			'iParticipationStatus' => $datas['participationStatus'],
-			'iIsLinked' => $datas['isLinked'], 
+			'iIsLinked' => $datas['isLinked'], 'iDuration' => $datas['duration'],
 			'iIdCalEvent' => $datas['idCalEvent'], 'sHashCalEvent' => $datas['hashCalEvent'], 
-			'iDuration' => $datas['duration'], 'iMajorVersion' => $datas['majorVersion'], 
+			'iDurationUnit' => $datas['iDurationUnit'], 'iMajorVersion' => $datas['majorVersion'], 
 			'iMinorVersion' => $datas['minorVersion'], 'sColor' => $datas['color'], 
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
@@ -1193,6 +1108,7 @@ function bab_updateTask($iIdTask, $aParams)
 			'`participationStatus` = \'' . $babDB->db_escape_string($aParams['iParticipationStatus']) . '\', ' .
 			'`isLinked` = \'' . $babDB->db_escape_string($aParams['iIsLinked']) . '\', ' .
 			'`duration` = \'' . $babDB->db_escape_string($aParams['iDuration']) . '\', ' .
+			'`iDurationUnit` = \'' . $babDB->db_escape_string($aParams['iDurationUnit']) . '\', ' .
 			'`majorVersion` = \'' . $babDB->db_escape_string($aParams['iMajorVersion']) . '\', ' .
 			'`minorVersion` = \'' . $babDB->db_escape_string($aParams['iMinorVersion']) . '\', ' .
 			'`color` = \'' . $babDB->db_escape_string($aParams['sColor']) . '\', ' .
@@ -2137,6 +2053,8 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			't.completion iCompletion, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate, ' .
+			't.plannedStartDate plannedStartDate, ' .
+			't.plannedEndDate plannedEndDate, ' .
 			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
 			'cat.name sCategoryName, ' .
@@ -2153,8 +2071,8 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
 			't.id = ti.idTask AND ' .
-			't.endDate >= ' . $babDB->quote($aFilters['sStartDate']) . ' AND ' .
-			't.startDate <= ' . $babDB->quote($aFilters['sEndDate']) . ' ';
+			't.plannedEndDate >= ' . $babDB->quote($aFilters['sPlannedStartDate']) . ' AND ' .
+			't.plannedStartDate <= ' . $babDB->quote($aFilters['sPlannedEndDate']) . ' ';
 
 	if(isset($aFilters['iIdProject']))
 	{
