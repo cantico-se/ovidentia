@@ -430,7 +430,9 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $authtype, $group
 			}
 		notifyUserconfirmation( bab_composeUserName($r['firstname'] , $r['lastname']), $r['email']);
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List");
+	$pos = bab_rp('pos', 'A');
+	$grp = bab_rp('grp', '');
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
 	}
 
 function confirmDeleteUser($id)
