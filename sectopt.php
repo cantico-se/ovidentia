@@ -88,6 +88,14 @@ function sectionsList()
 					}
 				}
 
+			if( isset($GLOBALS['babMaxOptionalSections']))
+				{
+				$this->babMaxOptionalSections = $GLOBALS['babMaxOptionalSections'];
+				}
+			else
+				{
+				$this->babMaxOptionalSections = 0;
+				}
 			$this->countcat = count($this->arrcatid);
 			$this->altbg = false;
 			}
