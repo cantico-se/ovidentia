@@ -1160,13 +1160,17 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sStartDate)) > 0)
 	{
-		BAB_TM_TaskValidatorBase::frenchDateToIso($sStartDate);
+//		BAB_TM_TaskValidatorBase::frenchDateToIso($sStartDate);
+
+		$oDate = BAB_DateTime::fromDateStr($sStartDate);
 		$aFilters['sStartDate'] = $sStartDate . ' 00:00:00';
 	}
 
 	if(strlen(trim($sEndDate)) > 0)
 	{
-		BAB_TM_TaskValidatorBase::frenchDateToIso($sEndDate);
+//		BAB_TM_TaskValidatorBase::frenchDateToIso($sEndDate);
+
+		$oDate = BAB_DateTime::fromDateStr($sEndDate);
 		$aFilters['sEndDate'] = $sEndDate . ' 23:59:59';
 	}
 	
@@ -1881,10 +1885,6 @@ function addModifyTask()
 		{
 			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
 		}
-//*/
-/*
-		$iIdProject = (int) bab_rp('iIdProject', 0);
-		bab_test($iIdProject);
 //*/
 	}
 

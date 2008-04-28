@@ -201,8 +201,8 @@ class BAB_TM_GanttBase
 			
 			$this->initDates($sStartDate, $iStartWeekDay);
 			
-			$aFilters['sStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-			$aFilters['sEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
+			$aFilters['sPlannedStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+			$aFilters['sPlannedEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
 			
 			global $babDB;
 			$this->m_result = $babDB->db_query(bab_selectForGantt($aFilters));
@@ -756,11 +756,6 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 
 			$this->m_bIsTaskCompletion = false;
 			
-			/*
-			$this->m_sAdditionnalClass = (BAB_TM_CHECKPOINT == $datas['iClass']) ? 'ganttCheckpoint' : 
-				((BAB_TM_TODO == $datas['iClass']) ? 'ganttToDo' : '');
-			//*/
-			
 			$this->m_sAdditionnalClass = $datas['sAdditionnalClass'];
 			$this->m_iClass = $datas['iClass'];
 			
@@ -777,8 +772,8 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			$this->m_sTaskColor = ((strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000');
 			$this->m_sTask = '';
 			
-$this->m_iIdTask = $datas['iIdTask'];
-$this->m_sToolTip = $this->buildToolTip($datas);
+			$this->m_iIdTask = $datas['iIdTask'];
+			$this->m_sToolTip = $this->buildToolTip($datas);
 
 			$iDoneDurationInSeconds = ($datas['iCompletion'] * $iTaskDurationInSeconds) / 100;
 			$iDoneEndDateTs = $iTaskStartDateTs + $iDoneDurationInSeconds;
@@ -846,14 +841,21 @@ $this->m_sToolTip = $this->buildToolTip($datas);
 			'<h3>' . $aTask['sShortDescription'] . '</h3>' . 
 			'<div>' .
 				'<p><strong>' . bab_translate("Project") . ': </strong>' . $aTask['sProjectName'] . '</p>' .
-				'<p><strong>' . bab_translate("Type") . ': </strong>' . $this->getStringType($aTask['iClass']) . '</p>' .
-				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate']), false) . '</p>';
+				'<p><strong>' . bab_translate("Type") . ': </strong>' . $this->getStringType($aTask['iClass']) . '</p>';
 
 		if(BAB_TM_TASK === (int) $aTask['iClass'])
 		{
 			$sToolTip .= 
-				'<p><strong>' . bab_translate("date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['endDate']), false) . '</p>' .
+				'<p><strong>' . bab_translate("planned_date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['plannedStartDate'])) . '</p>' .
+				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate'])) . '</p>' .
+				'<p><strong>' . bab_translate("planned_date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['plannedEndDate'])) . '</p>' .
+				'<p><strong>' . bab_translate("date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['endDate'])) . '</p>' .
 				'<p><strong>' . bab_translate("Completion") . ': </strong>' . $aTask['iCompletion'] . ' %' . '</p>';
+		}
+		else
+		{
+			$sToolTip .= 
+				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate'])) . '</p>';
 		}
 		
 		if(strlen($aTask['sCategoryName']) > 0)
@@ -880,8 +882,10 @@ $this->m_sToolTip = $this->buildToolTip($datas);
 			$oEditor->setContent($aTask['sDescription']);
 			
 			$sToolTip .= 
-				'<div class="description"/>' . $oEditor->getHtml() . '</div></div>';
+				'<div class="description"/>' . $oEditor->getHtml() . '</div>';
 		}
+		
+		$sToolTip .= '</div>';
 		
 		return $sToolTip;
 	}
