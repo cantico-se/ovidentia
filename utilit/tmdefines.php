@@ -102,6 +102,11 @@ define('BAB_TM_TODO', 2);
 define('BAB_TM_DURATION', 0);
 define('BAB_TM_DATE', 1);
 
+//duration unit
+define('BAB_TM_DAY', 0);
+define('BAB_TM_HOUR', 1);
+
+
 //participation status
 define('BAB_TM_TENTATIVE', 0);
 define('BAB_TM_ACCEPTED', 1);
