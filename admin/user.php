@@ -453,7 +453,7 @@ function updateNickname($item, $newnick)
 
 	if ( !empty($newnick) && strpos($newnick, ' ') !== false )
 		{
-		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
+		$babBody->msgerror = bab_translate("Nickname should not contain spaces");
 		return false;
 		}
 

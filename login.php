@@ -449,7 +449,7 @@ function addNewUser( $nickname, $password1, $password2)
 
 	if ( strpos($nickname, ' ') !== false )
 		{
-		$babBody->msgerror = bab_translate("Nickname contains blanc characters");
+		$babBody->msgerror = bab_translate("Nickname should not contain spaces");
 		return false;
 		}
 
