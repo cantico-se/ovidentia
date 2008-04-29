@@ -1123,7 +1123,7 @@
 <string id="Number of topics categories">Nombre de catégories de thèmes</string>
 <string id="Top">Début</string>
 <string id="Order a topic category">Ordonner les catégories</string>
-<string id="Nickname should not contain spaces">L'identifiant ne doit pas contenir d'espaces</string>
+<string id="Nickname contains blanc characters">L'identifiant ne doit pas contenir d'espaces</string>
 <string id="Alt">Alt</string>
 <string id="Horizontal spacing">Espacement horizontal</string>
 <string id="Vertical spacing">Espacement vertical</string>
