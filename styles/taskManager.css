@@ -46,3 +46,29 @@
 .displayNome {
 	display: none;
 	}
+	
+.planned {
+	/*font-size:10px;
+	font-style:italic;*/
+	color:green;
+	padding-top:5px;
+}
+
+.cost {
+	text-align:right;
+}
+
+
+.taskManager {
+/*	width: 1px; */
+	white-space: nowrap;
+}
+
+.taskManager thead tr {
+	text-align:center;
+}
+
+.taskManager tbody tr:hover {
+	background-color:#D0D0D0;
+/*	font-weight: bold;*/
+}

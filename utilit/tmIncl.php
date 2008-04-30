@@ -929,7 +929,13 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'plannedEndDate, ' .
 			'startDate, ' .
 			'endDate, ' .
-			'isNotified ' .
+			'isNotified, ' .
+			'iPlannedTime, ' .			  
+			'iPlannedTimeDurationUnit, ' .			  
+			'iTime, ' .			  
+			'iTimeDurationUnit, ' .			  
+			'iPlannedCost, ' .			  
+			'iCost ' .			  
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -956,9 +962,10 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'iPosition' => $datas['position'], 'iCompletion' => $datas['completion'],
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
 			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
-			'iIsNotified' => $datas['isNotified'],
-			'sShortDescription' => $datas['shortDescription']);
-			
+			'iIsNotified' => $datas['isNotified'], 'sShortDescription' => $datas['shortDescription'],
+			'iPlannedTime' => $datas['iPlannedTime'], 'iPlannedTimeDurationUnit' => $datas['iPlannedTimeDurationUnit'], 			  
+			'iTime' => $datas['iTime'], 'iTimeDurationUnit' => $datas['iTimeDurationUnit'], 			  
+			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost']);
 		$iIndex++;
 	}
 }
@@ -980,6 +987,8 @@ function bab_createTask($aParams)
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
 				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
 				'`idUserModified`, `modified`, `shortDescription`' .
+				'`iPlannedTime`, `iPlannedTimeDurationUnit`, `iTime`, ' . 
+				'`iTimeDurationUnit`, `iPlannedCost`, `iCost` ' .			  
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
@@ -1008,7 +1017,13 @@ function bab_createTask($aParams)
 				$babDB->db_escape_string($aParams['iIsNotified']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iIdUserModified']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['sModified']) . '\', \'' .
-				$babDB->db_escape_string($aParams['sShortDescription']) . 
+				$babDB->db_escape_string($aParams['sShortDescription']) . '\', \'' .
+				$babDB->db_escape_string($aParams['iPlannedTime']) . '\', \'' .
+				$babDB->db_escape_string($aParams['iPlannedTimeDurationUnit']) . '\', \'' . 			  
+				$babDB->db_escape_string($aParams['iTime']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iTimeDurationUnit']) . '\', \'' . 			  
+				$babDB->db_escape_string($aParams['iPlannedCost']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iCost']) .
 			'\')'; 
 
 	//bab_debug($query);
@@ -1056,8 +1071,14 @@ function bab_getTask($iIdTask, &$aTask)
 			't.startDate, ' .
 			't.endDate, ' .
 			't.isNotified, ' .
+			't.iPlannedTime, ' .			  
+			't.iPlannedTimeDurationUnit, ' .			  
+			't.iTime, ' .			  
+			't.iTimeDurationUnit, ' .			  
+			't.iPlannedCost, ' .			  
+			't.iCost, ' .			  
 			'ti.idOwner ' .
-		'FROM ' .
+	'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'LEFT JOIN ' .
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti ON ti.idTask = t.id ' .
@@ -1086,7 +1107,10 @@ function bab_getTask($iIdTask, &$aTask)
 			'sPlannedStartDate' => $datas['plannedStartDate'], 'sStartDate' => $datas['startDate'],
 			'sPlannedEndDate' => $datas['plannedEndDate'], 'sEndDate' => $datas['endDate'],
 			'iIsNotified' => $datas['isNotified'], 'iIdOwner' => $datas['idOwner'],
-			'sShortDescription' => $datas['shortDescription']);
+			'sShortDescription' => $datas['shortDescription'], 'iPlannedTime' => $datas['iPlannedTime'], 
+			'iPlannedTimeDurationUnit' => $datas['iPlannedTimeDurationUnit'], 			  
+			'iTime' => $datas['iTime'], 'iTimeDurationUnit' => $datas['iTimeDurationUnit'], 			  
+			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost']);
 		return true;
 	}
 	return false;
@@ -1119,11 +1143,17 @@ function bab_updateTask($iIdTask, $aParams)
 			'`plannedEndDate` = \'' . $babDB->db_escape_string($aParams['sPlannedEndDate']) . '\', ' .
 			'`idUserModified` = \'' . $babDB->db_escape_string($aParams['iIdUserModified']) . '\', ' .
 			'`modified` = \'' . $babDB->db_escape_string($aParams['sModified']) . '\', ' .
-			'`shortDescription` = \'' . $babDB->db_escape_string($aParams['sShortDescription']) . '\' ' .
+			'`shortDescription` = \'' . $babDB->db_escape_string($aParams['sShortDescription']) . '\', ' .
+			'`iPlannedTime` = \'' . $babDB->db_escape_string($aParams['iPlannedTime']) . '\', ' .
+			'`iPlannedTimeDurationUnit` = \'' . $babDB->db_escape_string($aParams['iPlannedTimeDurationUnit']) . '\', ' . 			  
+			'`iTime` = \'' . $babDB->db_escape_string($aParams['iTime']) . '\', ' . 
+			'`iTimeDurationUnit` = \'' . $babDB->db_escape_string($aParams['iTimeDurationUnit']) . '\', ' . 			  
+			'`iPlannedCost` = \'' . $babDB->db_escape_string($aParams['iPlannedCost']) . '\', ' . 
+			'`iCost` = \'' . $babDB->db_escape_string($aParams['iCost']) . '\' ' .
 		'WHERE ' . 
 			'id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
-	//bab_debug($query);
+//	bab_debug($query);
 	if(true === $babDB->db_query($query))
 	{
 		return true;
@@ -1919,6 +1949,14 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 			't.completion iCompletion, ' .
 			't.startDate startDate, ' .
 			't.endDate endDate, ' .
+			't.plannedStartDate plannedStartDate, ' .
+			't.plannedEndDate plannedEndDate, ' .
+			't.iPlannedTime iPlannedTime, ' .
+			't.iPlannedTimeDurationUnit iPlannedTimeDurationUnit, ' . 			  
+			't.iTime iTime, ' . 
+			't.iTimeDurationUnit iTimeDurationUnit, ' . 			  
+			't.iPlannedCost iPlannedCost, ' . 
+			't.iCost iCost, ' .
 			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
 			'cat.name sCategoryName, ' .

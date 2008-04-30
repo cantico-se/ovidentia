@@ -1188,10 +1188,15 @@ function displayTaskList($sIdx)
 
 	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
+	
 	class BAB_TaskDS extends BAB_MySqlDataSource
 	{
-		var $m_sImgSrc = '';
-		var $m_sImgText = '';
+		var $m_sImgSrc				= '';
+		var $m_sImgText				= '';
+		var $m_fTotalPlannedTime	= 0.00;
+		var $m_fTotalTime			= 0.00;
+		var $m_fTotalPlannedCost	= 0.00;
+		var $m_fTotalCost			= 0.00;
 		
 		function BAB_TaskDS($query, $iPage, $iNbRowsPerPage)
 		{
@@ -1203,9 +1208,27 @@ function displayTaskList($sIdx)
 			$datas = parent::getNextItem();
 			if(false != $datas)
 			{
-				$datas['startDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['startDate']), false));
-				$datas['endDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['endDate']), false));
-
+				$datas['startDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['startDate'])));
+				$datas['endDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['endDate'])));
+				$datas['plannedStartDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['plannedStartDate'])));
+				$datas['plannedEndDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['plannedEndDate'])));
+				
+				if($datas['iPlannedTimeDurationUnit'] == BAB_TM_DAY)
+				{
+					$datas['iPlannedTime'] = ((float) $datas['iPlannedTime'] * 24);
+				}
+				$this->m_fTotalPlannedTime += (float) $datas['iPlannedTime'];
+				
+				if($datas['iTimeDurationUnit'] == BAB_TM_DAY)
+				{
+					$datas['iTime'] = ((float) $datas['iTime'] * 24);
+				}
+				$this->m_fTotalTime	+= (float) $datas['iTime'];
+				
+				
+				$this->m_fTotalPlannedCost	+= (float) $datas['iPlannedCost'];
+				$this->m_fTotalCost			+= (float) $datas['iCost'];
+		
 				switch($datas['iClass'])
 				{
 					case BAB_TM_TASK:
@@ -1230,9 +1253,209 @@ function displayTaskList($sIdx)
 			}
 			return $datas;
 		}
+		
+		function getLastRow()
+		{
+			$datas = array();
+			$datas['idOwner']			= '';
+			$datas['sClass']			= '';
+			$datas['startDate']			= '';
+			$datas['endDate']			= '';
+			$datas['plannedStartDate']	= '';
+			$datas['plannedEndDate']	= '';
+			$datas['sShortDescription']	= '';
+
+			$datas['iPlannedTime']		= number_format($this->m_fTotalPlannedTime, 2, '.', '');
+			$datas['iTime']				= number_format($this->m_fTotalTime, 2, '.', '');
+			$datas['iPlannedCost']		= number_format($this->m_fTotalPlannedCost, 2, '.', '');
+			$datas['iCost']				= number_format($this->m_fTotalCost, 2, '.', '');
+			
+			return $datas;
+		}
 	}
 
-	$oMultiPage = new BAB_MultiPageBase();
+	
+	class BAB_TaskMultipage extends BAB_MultiPageBase
+	{
+		var $aCurrentColumnHeader;
+		var $aCurrentColumnData;
+		var $sClassName 	= '';
+		var $bFirst 		= false;
+		var $m_bLastPage	= false;
+		var $sCostClassName = '';
+		
+		function BAB_TaskMultipage()
+		{
+			parent::BAB_MultiPageBase();
+		}
+	
+		function setColumnDataSource($oDataSource)
+		{
+			parent::setColumnDataSource($oDataSource);
+			
+			if($this->iTotalNumOfRows > 0)
+			{
+				$iNbPages = ceil($this->iTotalNumOfRows / $this->iNbRowsPerPage);
+				$this->m_bLastPage = ($this->iPage == $iNbPages);
+			}
+		}
+		
+		function addColumnHeader($iId, $aText, $aDataSourceFieldName)
+		{
+			$this->aColumnHeaders[] = array('iId' => $iId, 'aText' => $aText, 'aDataSourceFieldName' => $aDataSourceFieldName);
+		}
+		
+		function getNextColumnHeader()
+		{
+			$this->bFirst = !$this->bFirst;
+			$this->aCurrentColumnHeader = each($this->aColumnHeaders);
+			
+			if(false !== $this->aCurrentColumnHeader)
+			{
+				
+				return true;
+			}
+			
+			$this->bFirst = false;
+			reset($this->aColumnHeaders);
+			return false;
+		}
+		
+		function getNextColumnHeaderItem()
+		{
+			$aText = each($this->aCurrentColumnHeader['value']['aText']);
+			$aDataSourceFieldName = each($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
+
+			if(false !== $aText && false !== $aDataSourceFieldName)
+			{
+				if($this->bFirst)
+				{
+					$this->sClassName = '';
+					$this->bFirst = false;
+				}
+				else
+				{
+					$this->sClassName = 'planned';
+				}
+				
+				if($this->bIsColumnHeaderUrl)
+				{
+					$sOrderBy = (string) bab_rp('sOrderBy', '');
+					$sOrder = (string) bab_rp('sOrder', '');
+					
+					$this->sColumnHeaderUrl = $this->buildPageUrl($this->iPage, false);
+					$this->sColumnHeaderUrl = ereg_replace('&sOrderBy=[^&.]+', '', $this->sColumnHeaderUrl);
+					$this->sColumnHeaderUrl = ereg_replace('&sOrder=[^&.]+', '', $this->sColumnHeaderUrl);
+					$this->sColumnHeaderUrl .= '&sOrderBy=' . $aDataSourceFieldName['value'];
+					
+					if($sOrderBy === (string) $aDataSourceFieldName['value'])
+					{
+						if($sOrder === (string) 'ASC')
+						{
+							$this->sColumnHeaderUrl .= '&sOrder=' . 'DESC';
+						}
+						else 
+						{
+							$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
+						}
+					}
+					else 
+					{
+						$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
+					}
+					$this->sColumnHeaderUrl = htmlentities($this->sColumnHeaderUrl);
+				}
+				else 
+				{
+					$this->sColumnHeaderUrl = '#';
+				}
+				
+				$this->sColumnHeaderText = $aText['value'];
+				return true;
+			}
+			return false;
+		}
+	
+		function getNextColumnData()
+		{
+			$this->bFirst = !$this->bFirst;
+			$this->aCurrentColumnHeader = each($this->aColumnHeaders);
+	
+			if(false !== $this->aCurrentColumnHeader)
+			{
+				return true;
+			}
+			
+			$this->bFirst = false;
+			reset($this->aColumnHeaders);
+			return false;
+		}
+	
+		function getNextColumnDataItem()
+		{
+			$aText = each($this->aCurrentColumnHeader['value']['aText']);
+			$aDataSourceFieldName = each($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
+
+			if(false !== $aText && false !== $aDataSourceFieldName)
+			{
+				if($this->bFirst)
+				{
+					$this->sClassName = '';
+					$this->bFirst = false;
+				}
+				else
+				{
+					$this->sClassName = 'planned';
+				}
+				
+				$this->sCostClassName = '';
+				$aColumn = array('iTime', 'iCost', 'iPlannedTime', 'iPlannedCost');
+				if(in_array($aDataSourceFieldName['value'], $aColumn))
+				{
+					$this->sCostClassName = 'cost';
+				}
+				
+				$this->sColumnData = '???';
+				if(isset($this->aRow[$aDataSourceFieldName['value']]))
+				{
+					$this->sColumnData = $this->aRow[$aDataSourceFieldName['value']];
+				}
+				return true;
+			}
+			return false;
+		}
+		
+		function getLastRow()
+		{
+			static $iIndex = 0;
+			
+			if(!is_null($this->oDataSource) && is_a($this->oDataSource, 'BAB_DataSourceBase'))
+			{
+				$this->aRow = $this->oDataSource->getLastRow();
+				
+//				bab_debug($this->aRow);
+				
+				
+				if($iIndex === 0 && false !== $this->aRow)
+				{
+					$iIndex++;
+					$this->bIsAltbg = !$this->bIsAltbg;
+					return true;
+				}
+			}
+			
+			$iIndex = 0;
+			return false;
+		}
+	}
+	
+	
+	
+	$oMultiPage = new BAB_TaskMultipage();
+
+	$oMultiPage->sTemplateFileName = 'tmUser.html';
+	$oMultiPage->sMultipageTemplate = 'taskMultipage';
+	
 	$oMultiPage->addPaginationAndFormParameters('sFromIdx', $sIdx);
 	$oMultiPage->addPaginationAndFormParameters('isProject', $isProject);
 	$oMultiPage->addPaginationAndFormParameters('iIdProject', $iIdProject);
@@ -1266,14 +1489,16 @@ function displayTaskList($sIdx)
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
-	$oMultiPage->addColumnHeader(0, bab_translate("Title"), 'sShortDescription');
-	$oMultiPage->addColumnHeader(1, bab_translate("Type"), 'sClass');
-	$oMultiPage->addColumnHeader(2, bab_translate("Start date"), 'startDate');
-	$oMultiPage->addColumnHeader(3, bab_translate("End date"), 'endDate');
+	$oMultiPage->addColumnHeader(0, array(bab_translate("Title")), array('sShortDescription'));
+	$oMultiPage->addColumnHeader(1, array(bab_translate("Type")), array('sClass'));
+	$oMultiPage->addColumnHeader(2, array(bab_translate("Start date"), bab_translate("Planned")), array('startDate', 'plannedStartDate'));
+	$oMultiPage->addColumnHeader(3, array(bab_translate("End date"), bab_translate("Planned")), array('endDate', 'plannedEndDate'));
 	
 	if(1 === $isProject)
 	{
-		$oMultiPage->addColumnHeader(4, bab_translate("Responsible"), 'idOwner');
+		$oMultiPage->addColumnHeader(4, array(bab_translate("Cost"), bab_translate("Planned")), array('iCost', 'iPlannedCost'));
+		$oMultiPage->addColumnHeader(5, array(bab_translate("Time"), bab_translate("Planned")), array('iTime', 'iPlannedTime'));
+		$oMultiPage->addColumnHeader(6, array(bab_translate("Responsible")), array('idOwner'));
 	}
 
 	$oMultiPage->bIsColumnHeaderUrl = true;
@@ -1295,6 +1520,7 @@ function displayTaskList($sIdx)
 			$sLink, $aDataSourceFields);
 	}
 	
+	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
 	$GLOBALS['babBody']->babecho(bab_printTemplate($oTaskFilterForm, 'tmUser.html', 'ganttView'));
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 }

@@ -181,6 +181,14 @@
 			$this->set_caption('sCompletion', bab_translate("Completion"));
 			$this->set_caption('sRelation', bab_translate("Relation"));
 			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
+			
+			
+			$this->set_caption('sPlannedTime', bab_translate("Planned time"));
+			$this->set_caption('sTime', bab_translate("Real time"));
+			$this->set_caption('sPlannedCost', bab_translate("Planned cost"));
+			$this->set_caption('sCost', bab_translate("Real cost"));
+
+			
 			$this->set_caption('sNone', bab_translate("None"));
 			$this->set_caption('sField', bab_translate("Field"));
 			$this->set_caption('sType', bab_translate("Type"));
@@ -315,6 +323,13 @@
 			
 			$this->set_data('sProjectSpace', '');
 			$this->set_data('sProject', '');
+			
+			$this->set_data('sReadOnlyCost', '');
+			
+			$this->set_data('iPlannedTime', 0);
+			$this->set_data('iTime', 0);
+			$this->set_data('iPlannedCost', 0);
+			$this->set_data('iCost', 0);
 		}
 
 		//getNext function
@@ -393,12 +408,12 @@
 			return false;
 		}
 		
-		function getNextDurationUnit()
+		function getNextDurationUnit($sFieldName)
 		{
 			$aDurationUnit = each($this->m_aDurationUnit);
 			if(false != $aDurationUnit)
 			{
-				$this->get_data('oDurationUnit', $oDurationUnit);
+				$this->get_data($sFieldName, $oDurationUnit);
 				$this->set_data('sSelectedDurationUnit', ($aDurationUnit['value']['iUnit'] == $oDurationUnit) ? 
 					'selected="selected"' : '');
 				
@@ -406,7 +421,26 @@
 				$this->set_data('sDurationUnitName', $aDurationUnit['value']['sName']);
 				return true;
 			}
+			reset($this->m_aDurationUnit);
 			return false;
+		}
+
+		function getNextTaskDurationUnit()
+		{
+			$sFieldName = 'oDurationUnit';
+			return $this->getNextDurationUnit($sFieldName);
+		}
+
+		function getNextPlannedTimeDurationUnit()
+		{
+			$sFieldName = 'oPlannedTimeDurationUnit';
+			return $this->getNextDurationUnit($sFieldName);
+		}
+
+		function getNextTimeDurationUnit()
+		{
+			$sFieldName = 'oTimeDurationUnit';
+			return $this->getNextDurationUnit($sFieldName);
 		}
 		
 		function getNextCategory()
@@ -792,14 +826,21 @@
 			if($bIsCreation || $bIsResubmission)
 			{
 				bab_getNextTaskNumber($this->m_iIdProject, $this->m_aCfg['tasksNumerotation'], $sTaskNumber);
-				$iClassType 		= (int) bab_rp('iClass', BAB_TM_TASK);
-				$iIdCategory 		= (int) bab_rp('iIdCategory', 0);
-				$sDescription 		= bab_rp('sDescription', '');
-				$sShortDescription 	= bab_rp('sShortDescription', '');
-				$iDurationType 		= (int) bab_rp('oDurationType', BAB_TM_DATE);
-				$iDurationUnit 		= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
-				$iDuration 			= number_format(bab_rp('sDuration', ''), 2, '.', '');
-				
+				$iClassType 				= (int) bab_rp('iClass', BAB_TM_TASK);
+				$iIdCategory 				= (int) bab_rp('iIdCategory', 0);
+				$sDescription 				= bab_rp('sDescription', '');
+				$sShortDescription 			= bab_rp('sShortDescription', '');
+				$iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
+				$iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
+				$iDuration 					= number_format(bab_rp('sDuration', ''), 2, '.', '');
+				$iPlannedTimeDurationUnit 	= (int) bab_rp('oPlannedTimeDurationUnit', BAB_TM_DAY);
+				$iPlannedTime 				= number_format(bab_rp('oPlannedTime', 0), 2, '.', '');
+				$iTimeDurationUnit 			= (int) bab_rp('oTimeDurationUnit', BAB_TM_DAY);
+				$iTime 						= number_format(bab_rp('oTime', 0), 2, '.', '');
+				$iPlannedCost				= number_format(bab_rp('oPlannedCost', 0), 2, '.', '');
+				$iCost 						= number_format(bab_rp('oCost', 0), 2, '.', '');
+
+
 				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate, 
 					$iPlannedStartHour, $iPlannedStartMinut);
 				
@@ -832,16 +873,22 @@
 			}
 			else if($bIsEdition)
 			{
-				$aTask 				=& $this->m_oTask->m_aTask;
-				$sTaskNumber 		= $aTask['sTaskNumber'];
-				$iClassType 		= $aTask['iClass'];
-				$iIdCategory 		= (int) bab_rp('iIdCategory', $aTask['iIdCategory']);
-				$sDescription 		= bab_rp('sDescription', $aTask['sDescription']);
-				$sShortDescription 	= bab_rp('sShortDescription', $aTask['sShortDescription']);
-				$iDurationType 		= (int) bab_rp('oDurationType', ((int) $aTask['iDuration'] != 0) ? BAB_TM_DURATION : BAB_TM_DATE);
-				$iDurationUnit 		= (int) bab_rp('oDurationUnit', (int) $aTask['iDurationUnit']);
-				$iDuration 			= number_format(bab_rp('sDuration', $aTask['iDuration']), 2, '.', '');
-							
+				$aTask 						=& $this->m_oTask->m_aTask;
+				$sTaskNumber 				= $aTask['sTaskNumber'];
+				$iClassType 				= $aTask['iClass'];
+				$iIdCategory 				= (int) bab_rp('iIdCategory', $aTask['iIdCategory']);
+				$sDescription 				= bab_rp('sDescription', $aTask['sDescription']);
+				$sShortDescription 			= bab_rp('sShortDescription', $aTask['sShortDescription']);
+				$iDurationType 				= (int) bab_rp('oDurationType', ((int) $aTask['iDuration'] != 0) ? BAB_TM_DURATION : BAB_TM_DATE);
+				$iDurationUnit 				= (int) bab_rp('oDurationUnit', (int) $aTask['iDurationUnit']);
+				$iDuration 					= number_format(bab_rp('sDuration', $aTask['iDuration']), 2, '.', '');
+				$iPlannedTimeDurationUnit 	= (int) bab_rp('oPlannedTimeDurationUnit', (int) $aTask['iPlannedTimeDurationUnit']);
+				$iPlannedTime 				= number_format(bab_rp('oPlannedTime', $aTask['iPlannedTime']), 2, '.', '');
+				$iTimeDurationUnit 			= (int) bab_rp('oTimeDurationUnit', (int) $aTask['iTimeDurationUnit']);
+				$iTime 						= number_format(bab_rp('oTime', $aTask['iTime']), 2, '.', '');
+				$iPlannedCost				= number_format(bab_rp('oPlannedCost', $aTask['iPlannedCost']), 2, '.', '');
+				$iCost 						= number_format(bab_rp('oCost', $aTask['iCost']), 2, '.', '');
+
 				$this->extractDateTimePart('PlannedStart', $sPlannedStartDate, 
 					$iPlannedStartHour, $iPlannedStartMinut);
 				
@@ -927,6 +974,13 @@
 			$this->initCompletion($iCompletion);
 			$this->initPredecessor($iPredecessor, $iLinkType);
 			$this->initAnwser($bIsCreation);
+			
+			$this->set_data('oPlannedTimeDurationUnit', $iPlannedTimeDurationUnit);
+			$this->set_data('iPlannedTime', $iPlannedTime);
+			$this->set_data('oTimeDurationUnit', $iTimeDurationUnit);
+			$this->set_data('iTime', $iTime);
+			$this->set_data('iPlannedCost', $iPlannedCost);
+			$this->set_data('iCost', $iCost);
 		}
 		
 		function extractDateTimePart($sFieldNamePart, &$sDate, &$iHour, &$iMinut)
@@ -1207,6 +1261,13 @@
 		
 		var $m_oSendMail				= null;
 		
+		var $m_iPlannedTimeDurationUnit = null;
+		var $m_iPlannedTime				= null;
+		var $m_iTimeDurationUnit		= null;
+		var $m_iTime					= null;
+		var $m_iPlannedCost				= null;
+		var $m_iCost					= null;
+		
 		function BAB_TM_TaskValidatorBase()
 		{
 			$this->init();
@@ -1224,7 +1285,7 @@
 
 			$this->m_oTask =& new BAB_TM_Task();
 			
-			$this->m_sTaskNumber			= trim(bab_rp('sTaskNumber', ''));
+			$this->m_sTaskNumber = trim(bab_rp('sTaskNumber', ''));
 
 			$iUseEditor = (int) bab_rp('iUseEditor', 0);
 			if(1 === $iUseEditor)
@@ -1238,34 +1299,51 @@
 				$this->m_sDescription = $this->m_oTask->m_aTask['sDescription'];
 			}
 			
-			$this->m_sShortDescription		= trim(bab_rp('sShortDescription', ''));
-			$this->m_iIdCategory			= (int) bab_rp('iIdCategory', 0);
-			$this->m_sCreated				= date("Y-m-d H:i:s");
-			$this->m_sModified				= date("Y-m-d H:i:s");
-			$this->m_iIdUserCreated			= $GLOBALS['BAB_SESS_USERID'];
-			$this->m_iIdUserModified		= $GLOBALS['BAB_SESS_USERID'];
-			$this->m_iClass					= (int) bab_rp('iClass', 0);
-			$this->m_iParticipationStatus	= 0;
-			$this->m_iIdCalEvent			= 0;
-			$this->m_sHashCalEvent			= '';
+			$this->m_sShortDescription			= trim(bab_rp('sShortDescription', ''));
+			$this->m_iIdCategory				= (int) bab_rp('iIdCategory', 0);
+			$this->m_sCreated					= date("Y-m-d H:i:s");
+			$this->m_sModified					= date("Y-m-d H:i:s");
+			$this->m_iIdUserCreated				= $GLOBALS['BAB_SESS_USERID'];
+			$this->m_iIdUserModified			= $GLOBALS['BAB_SESS_USERID'];
+			$this->m_iClass						= (int) bab_rp('iClass', 0);
+			$this->m_iParticipationStatus		= 0;
+			$this->m_iIdCalEvent				= 0;
+			$this->m_sHashCalEvent				= '';
 			
-			$this->m_iDurationType 			= (int) bab_rp('oDurationType', BAB_TM_DATE);
-			$this->m_iDuration				= (float) (BAB_TM_DATE != $this->m_iDurationType) ? number_format(bab_rp('sDuration', ''), 2, '.', '') : 0;
-			$this->m_DurationUnit 			= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
+			$this->m_iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
+			$this->m_iDuration					= (float) (BAB_TM_DATE != $this->m_iDurationType) ? number_format(bab_rp('sDuration', ''), 2, '.', '') : 0;
+			$this->m_DurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
 			
+			$this->m_iMajorVersion				= (int) bab_rp('iMajorVersion', 1);
+			$this->m_iMinorVersion				= (int) bab_rp('iMinorVersion', 0);
+			$this->m_sColor						= '';
+			$this->m_iPosition					= (0 != $this->m_iIdTask) ? $this->m_oTask->m_aTask['iPosition'] : $this->m_oTask->m_iNextPosition;
+			$this->m_iCompletion				= (int) bab_rp('oCompletion', 0);
 			
-			$this->m_iMajorVersion			= (int) bab_rp('iMajorVersion', 1);
-			$this->m_iMinorVersion			= (int) bab_rp('iMinorVersion', 0);
-			$this->m_sColor					= '';
-			$this->m_iPosition				= (0 != $this->m_iIdTask) ? $this->m_oTask->m_aTask['iPosition'] : $this->m_oTask->m_iNextPosition;
-			$this->m_iCompletion			= (int) bab_rp('oCompletion', 0);
+			$this->m_iIsNotified				= BAB_TM_NO;
+			$this->m_iAnswer					= (int) bab_rp('oAnswerEnable', -1);
 			
-			$this->m_iIsNotified			= BAB_TM_NO;
-			$this->m_iAnswer				= (int) bab_rp('oAnswerEnable', -1);
+			$this->m_iIsLinked					= (isset($_POST['oLinkedTask'])) ? BAB_TM_YES : BAB_TM_NO;
+			$this->m_iLinkType 					= -1;
+			$this->m_iIdPredecessor 			= (int) bab_rp('iPredecessor', -1);
 			
-			$this->m_iIsLinked				= (isset($_POST['oLinkedTask'])) ? BAB_TM_YES : BAB_TM_NO;
-			$this->m_iLinkType 				= -1;
-			$this->m_iIdPredecessor 		= (int) bab_rp('iPredecessor', -1);
+			$this->m_iPlannedTimeDurationUnit	= (int) bab_rp('oPlannedTimeDurationUnit', BAB_TM_DAY);
+			$this->m_iPlannedTime				= number_format(bab_rp('oPlannedTime', 0), 2, '.', '');
+			$this->m_iTimeDurationUnit			= (int) bab_rp('oTimeDurationUnit', BAB_TM_DAY);
+			$this->m_iTime						= number_format(bab_rp('oTime', 0), 2, '.', '');
+			$this->m_iPlannedCost				= number_format(bab_rp('oPlannedCost', 0), 2, '.', '');
+			$this->m_iCost						= number_format(bab_rp('oCost', 0), 2, '.', '');
+			
+			/*
+			bab_debug($_POST);
+			bab_debug('oPlannedTimeDurationUnit ==> ' . $this->m_iPlannedTimeDurationUnit);
+			bab_debug('iPlannedTime ==> ' . $this->m_iPlannedTime);
+			bab_debug('iTimeDurationUnit ==> ' . $this->m_iTimeDurationUnit);
+			bab_debug('iTime ==> ' . $this->m_iTime);
+			bab_debug('iPlannedCost ==> ' . $this->m_iPlannedCost);
+			bab_debug('iCost ==> ' . $this->m_iCost);
+			//*/			
+			
 			$aTask = null;
 			if(BAB_TM_YES === $this->m_iIsLinked && -1 != $this->m_iIdPredecessor && bab_getTask($this->m_iIdPredecessor, $aTask))
 			{
@@ -1312,12 +1390,12 @@
 				$this->computeEndDate();
 			}
 
-/*			
-echo 'sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . '<br/>';
-echo 'sPlannedEndDate ==> ' . $this->m_sPlannedEndDate . '<br/>';
-echo 'sStartDate ==> ' . $this->m_sStartDate . '<br/>';
-echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
-//*/
+			/*			
+			echo 'sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . '<br/>';
+			echo 'sPlannedEndDate ==> ' . $this->m_sPlannedEndDate . '<br/>';
+			echo 'sStartDate ==> ' . $this->m_sStartDate . '<br/>';
+			echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
+			//*/
 			
 			$this->m_iIdTaskResponsible = (int) bab_rp('iIdTaskResponsible', -1);
 
@@ -1818,31 +1896,37 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 				
 				$aTask =& $this->m_oTask->m_aTask;
 				
-				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= $this->m_sDescription;
-				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sCreated']				= $this->m_sCreated;
-				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
-				$aTask['sModified']				= '';
-				$aTask['iIdUserModified']		= 0;
-				$aTask['iClass']				= $this->m_iClass;
-				$aTask['iParticipationStatus']	= $iParticipationStatus;
-				$aTask['iIsLinked']				= $this->m_iIsLinked;
-				$aTask['iIdCalEvent']			= $this->m_iIdCalEvent;
-				$aTask['sHashCalEvent']			= $this->m_sHashCalEvent;
-				$aTask['iDuration']				= $this->m_iDuration;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['sColor']				= $this->m_sColor;
-				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= 0;
-				$aTask['sStartDate']			= $this->m_sStartDate;
-				$aTask['sEndDate'] 				= $this->m_sEndDate;
-				$aTask['sPlannedStartDate']		= $this->m_sPlannedStartDate;
-				$aTask['sPlannedEndDate'] 		= $this->m_sPlannedEndDate;
-				$aTask['iIsNotified']			= BAB_TM_YES;
+				$aTask['iIdProject']				= $this->m_iIdProject;
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= $this->m_sDescription;
+				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sCreated']					= $this->m_sCreated;
+				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
+				$aTask['sModified']					= '';
+				$aTask['iIdUserModified']			= 0;
+				$aTask['iClass']					= $this->m_iClass;
+				$aTask['iParticipationStatus']		= $iParticipationStatus;
+				$aTask['iIsLinked']					= $this->m_iIsLinked;
+				$aTask['iIdCalEvent']				= $this->m_iIdCalEvent;
+				$aTask['sHashCalEvent']				= $this->m_sHashCalEvent;
+				$aTask['iDuration']					= $this->m_iDuration;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['sColor']					= $this->m_sColor;
+				$aTask['iPosition']					= $this->m_iPosition;
+				$aTask['iCompletion']				= 0;
+				$aTask['sStartDate']				= $this->m_sStartDate;
+				$aTask['sEndDate'] 					= $this->m_sEndDate;
+				$aTask['sPlannedStartDate']			= $this->m_sPlannedStartDate;
+				$aTask['sPlannedEndDate'] 			= $this->m_sPlannedEndDate;
+				$aTask['iIsNotified']				= BAB_TM_YES;
+				$aTask['iPlannedTimeDurationUnit']	= $this->m_iPlannedTimeDurationUnit;
+				$aTask['iPlannedTime']				= $this->m_iPlannedTime;
+				$aTask['iTimeDurationUnit']			= $this->m_iTimeDurationUnit;
+				$aTask['iTime']						= $this->m_iTime;
+				$aTask['iPlannedCost']				= $this->m_iPlannedCost;
+				$aTask['iCost']						= $this->m_iCost;
 
 				//bab_debug($aTask);
 //*				
@@ -1902,35 +1986,42 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 			{
 				$aTask =& $this->m_oTask->m_aTask;
 				
-				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= $this->m_sDescription;
-				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sCreated']				= $this->m_sCreated;
-				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
-				$aTask['sModified']				= '';
-				$aTask['iIdUserModified']		= 0;
-				$aTask['iClass']				= $this->m_iClass;
-				$aTask['iParticipationStatus']	= 0;
-				$aTask['iIsLinked']				= BAB_TM_NO;
-				$aTask['iIdCalEvent']			= 0;
-				$aTask['sHashCalEvent']			= '';
-				$aTask['iDuration']				= 0;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['sColor']				= $this->m_sColor;
-				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= 0;
+				$aTask['iIdProject']				= $this->m_iIdProject;
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= $this->m_sDescription;
+				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sCreated']					= $this->m_sCreated;
+				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
+				$aTask['sModified']					= '';
+				$aTask['iIdUserModified']			= 0;
+				$aTask['iClass']					= $this->m_iClass;
+				$aTask['iParticipationStatus']		= 0;
+				$aTask['iIsLinked']					= BAB_TM_NO;
+				$aTask['iIdCalEvent']				= 0;
+				$aTask['sHashCalEvent']				= '';
+				$aTask['iDuration']					= 0;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['sColor']					= $this->m_sColor;
+				$aTask['iPosition']					= $this->m_iPosition;
+				$aTask['iCompletion']				= 0;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= $sEndDate;
-				$aTask['sPlannedStartDate']		= $sStartDate;
-				$aTask['sPlannedEndDate'] 		= $sEndDate;
-				$aTask['iIsNotified']			= BAB_TM_NO;
-//*				
+				$aTask['sStartDate']				= $sStartDate;
+				$aTask['sEndDate'] 					= $sEndDate;
+				$aTask['sPlannedStartDate']			= $sStartDate;
+				$aTask['sPlannedEndDate'] 			= $sEndDate;
+				$aTask['iIsNotified']				= BAB_TM_NO;
+				$aTask['iPlannedTimeDurationUnit']	= 0;
+				$aTask['iPlannedTime']				= 0.00;
+				$aTask['iTimeDurationUnit']			= 0;
+				$aTask['iTime']						= 0.00;
+				$aTask['iPlannedCost']				= 0.00;
+				$aTask['iCost']						= 0.00;
+				
+				//*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
@@ -1944,7 +2035,7 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 					$this->noticeCreateSuccess();
 				}
 				return (false !== $iIdTask);
-//*/
+				//*/
 			}
 			return false;
 		}
@@ -1955,35 +2046,42 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 			{
 				$aTask =& $this->m_oTask->m_aTask;
 				
-				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= $this->m_sDescription;
-				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sCreated']				= $this->m_sCreated;
-				$aTask['iIdUserCreated']		= $this->m_iIdUserCreated;
-				$aTask['sModified']				= '';
-				$aTask['iIdUserModified']		= 0;
-				$aTask['iClass']				= $this->m_iClass;
-				$aTask['iParticipationStatus']	= 0;
-				$aTask['iIsLinked']				= BAB_TM_NO;
-				$aTask['iIdCalEvent']			= 0;
-				$aTask['sHashCalEvent']			= '';
-				$aTask['iDuration']				= 0;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['sColor']				= $this->m_sColor;
-				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= 0;
+				$aTask['iIdProject']				= $this->m_iIdProject;
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= $this->m_sDescription;
+				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sCreated']					= $this->m_sCreated;
+				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
+				$aTask['sModified']					= '';
+				$aTask['iIdUserModified']			= 0;
+				$aTask['iClass']					= $this->m_iClass;
+				$aTask['iParticipationStatus']		= 0;
+				$aTask['iIsLinked']					= BAB_TM_NO;
+				$aTask['iIdCalEvent']				= 0;
+				$aTask['sHashCalEvent']				= '';
+				$aTask['iDuration']					= 0;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['sColor']					= $this->m_sColor;
+				$aTask['iPosition']					= $this->m_iPosition;
+				$aTask['iCompletion']				= 0;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= $sEndDate;
-				$aTask['sPlannedStartDate']		= $sStartDate;
-				$aTask['sPlannedEndDate'] 		= $sEndDate;
-				$aTask['iIsNotified']			= BAB_TM_NO;
-//*				
+				$aTask['sStartDate']				= $sStartDate;
+				$aTask['sEndDate'] 					= $sEndDate;
+				$aTask['sPlannedStartDate']			= $sStartDate;
+				$aTask['sPlannedEndDate'] 			= $sEndDate;
+				$aTask['iIsNotified']				= BAB_TM_NO;
+				$aTask['iPlannedTimeDurationUnit']	= 0;
+				$aTask['iPlannedTime']				= 0.00;
+				$aTask['iTimeDurationUnit']			= 0;
+				$aTask['iTime']						= 0.00;
+				$aTask['iPlannedCost']				= 0.00;
+				$aTask['iCost']						= 0.00;
+				
+				//*				
 				$iIdTask = bab_createTask($aTask);
 				if(false !== $iIdTask)
 				{
@@ -1997,7 +2095,7 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 					$this->noticeCreateSuccess();
 				}
 				return (false !== $iIdTask);
-//*/
+				//*/
 			}
 			return false;
 		}
@@ -2054,23 +2152,29 @@ echo 'sEndDate ==> ' . $this->m_sEndDate . '<br/>';
 
 				$aTask =& $this->m_oTask->m_aTask;
 
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
-				$aTask['sShortDescription']		= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sModified']				= $this->m_sModified;
-				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
-				$aTask['iIsLinked']				= $this->m_iIsLinked;
-				$aTask['iDuration']				= $this->m_iDuration;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['iCompletion']			= $this->m_iCompletion;
-				$aTask['sStartDate']			= $this->m_sStartDate;
-				$aTask['sEndDate'] 				= $this->m_sEndDate;
-				$aTask['sPlannedStartDate']		= $this->m_sPlannedStartDate;
-				$aTask['sPlannedEndDate'] 		= $this->m_sPlannedEndDate;
-				$aTask['iIsNotified']			= BAB_TM_YES;
-
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
+				$aTask['sShortDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sModified']					= $this->m_sModified;
+				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
+				$aTask['iIsLinked']					= $this->m_iIsLinked;
+				$aTask['iDuration']					= $this->m_iDuration;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['iCompletion']				= $this->m_iCompletion;
+				$aTask['sStartDate']				= $this->m_sStartDate;
+				$aTask['sEndDate'] 					= $this->m_sEndDate;
+				$aTask['sPlannedStartDate']			= $this->m_sPlannedStartDate;
+				$aTask['sPlannedEndDate'] 			= $this->m_sPlannedEndDate;
+				$aTask['iIsNotified']				= BAB_TM_YES;
+				$aTask['iPlannedTimeDurationUnit']	= $this->m_iPlannedTimeDurationUnit;
+				$aTask['iPlannedTime']				= $this->m_iPlannedTime;
+				$aTask['iTimeDurationUnit']			= $this->m_iTimeDurationUnit;
+				$aTask['iTime']						= $this->m_iTime;
+				$aTask['iPlannedCost']				= $this->m_iPlannedCost;
+				$aTask['iCost']						= $this->m_iCost;
+				
 				if(-1 != $this->m_iAnswer)
 				{
 					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
@@ -2228,31 +2332,37 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 //*				
 				$aTask =& $this->m_oTask->m_aTask;
 				
-				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= $this->m_sDescription;
-				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sModified']				= $this->m_sModified;
-				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
-				$aTask['iParticipationStatus']	= 0;
-				$aTask['iIsLinked']				= BAB_TM_NO;
-				$aTask['iIdCalEvent']			= 0;
-				$aTask['sHashCalEvent']			= '';
-				$aTask['iDuration']				= 0;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['sColor']				= $this->m_sColor;
-				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= $this->m_iCompletion;
+				$aTask['iIdProject']				= $this->m_iIdProject;
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= $this->m_sDescription;
+				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sModified']					= $this->m_sModified;
+				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
+				$aTask['iParticipationStatus']		= 0;
+				$aTask['iIsLinked']					= BAB_TM_NO;
+				$aTask['iIdCalEvent']				= 0;
+				$aTask['sHashCalEvent']				= '';
+				$aTask['iDuration']					= 0;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['sColor']					= $this->m_sColor;
+				$aTask['iPosition']					= $this->m_iPosition;
+				$aTask['iCompletion']				= $this->m_iCompletion;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= $sEndDate;
-				$aTask['sPlannedStartDate']		= $sStartDate;
-				$aTask['sPlannedEndDate'] 		= $sEndDate;
-				$aTask['iIsNotified']			= BAB_TM_NO;
+				$aTask['sStartDate']				= $sStartDate;
+				$aTask['sEndDate'] 					= $sEndDate;
+				$aTask['sPlannedStartDate']			= $sStartDate;
+				$aTask['sPlannedEndDate'] 			= $sEndDate;
+				$aTask['iIsNotified']				= BAB_TM_NO;
+				$aTask['iPlannedTimeDurationUnit']	= 0;
+				$aTask['iPlannedTime']				= 0.00;
+				$aTask['iTimeDurationUnit']			= 0;
+				$aTask['iTime']						= 0.00;
+				$aTask['iPlannedCost']				= 0.00;
+				$aTask['iCost']						= 0.00;
 				
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
 				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)
@@ -2277,32 +2387,38 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				
 				$aTask =& $this->m_oTask->m_aTask;
 				
-				$aTask['iIdProject']			= $this->m_iIdProject;
-				$aTask['sTaskNumber']			= $this->m_sTaskNumber;
-				$aTask['sDescription']			= $this->m_sDescription;
-				$aTask['sShortDescription']		= substr($this->m_sShortDescription, 0, 255);
-				$aTask['iIdCategory']			= $this->m_iIdCategory;
-				$aTask['sModified']				= $this->m_sModified;
-				$aTask['iIdUserModified']		= $this->m_iIdUserModified;
-				$aTask['iParticipationStatus']	= 0;
-				$aTask['iIsLinked']				= BAB_TM_NO;
-				$aTask['iIdCalEvent']			= 0;
-				$aTask['sHashCalEvent']			= '';
-				$aTask['iDuration']				= 0;
-				$aTask['iDurationUnit']			= $this->m_iDurationUnit;
-				$aTask['iMajorVersion']			= $this->m_iMajorVersion;
-				$aTask['iMinorVersion']			= $this->m_iMinorVersion;
-				$aTask['sColor']				= $this->m_sColor;
-				$aTask['iPosition']				= $this->m_iPosition;
-				$aTask['iCompletion']			= $this->m_iCompletion;
+				$aTask['iIdProject']				= $this->m_iIdProject;
+				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
+				$aTask['sDescription']				= $this->m_sDescription;
+				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['iIdCategory']				= $this->m_iIdCategory;
+				$aTask['sModified']					= $this->m_sModified;
+				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
+				$aTask['iParticipationStatus']		= 0;
+				$aTask['iIsLinked']					= BAB_TM_NO;
+				$aTask['iIdCalEvent']				= 0;
+				$aTask['sHashCalEvent']				= '';
+				$aTask['iDuration']					= 0;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
+				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
+				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
+				$aTask['sColor']					= $this->m_sColor;
+				$aTask['iPosition']					= $this->m_iPosition;
+				$aTask['iCompletion']				= $this->m_iCompletion;
 				
 				$this->getIsoDatesFromEndDate($sStartDate, $sEndDate);
 				
-				$aTask['sStartDate']			= $sStartDate;
-				$aTask['sEndDate'] 				= $sEndDate;
-				$aTask['sPlannedStartDate']		= $sStartDate;
-				$aTask['sPlannedEndDate'] 		= $sEndDate;
-				$aTask['iIsNotified']			= BAB_TM_NO;
+				$aTask['sStartDate']				= $sStartDate;
+				$aTask['sEndDate'] 					= $sEndDate;
+				$aTask['sPlannedStartDate']			= $sStartDate;
+				$aTask['sPlannedEndDate'] 			= $sEndDate;
+				$aTask['iIsNotified']				= BAB_TM_NO;
+				$aTask['iPlannedTimeDurationUnit']	= 0;
+				$aTask['iPlannedTime']				= 0.00;
+				$aTask['iTimeDurationUnit']			= 0;
+				$aTask['iTime']						= 0.00;
+				$aTask['iPlannedCost']				= 0.00;
+				$aTask['iCost']						= 0.00;
 				
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
 				if(true === $bSuccess && -1 !== $this->m_iIdTaskResponsible)

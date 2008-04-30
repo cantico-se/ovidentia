@@ -831,9 +831,9 @@ function check_all(strCtrlName, checked)
 						&nbsp;
 						{ m_captions[sType] }:&nbsp;					
 						<select id="oDurationUnit" name="oDurationUnit" { m_datas[sDisabledDurationType] } >
-							<!--#in getNextDurationUnit -->
+							<!--#in getNextTaskDurationUnit -->
 							<option { m_datas[sSelectedDurationUnit] } value="{ m_datas[iDurationUnit] }">{ m_datas[sDurationUnitName] }</option>
-							<!--#endin getNextDurationUnit -->
+							<!--#endin getNextTaskDurationUnit -->
 						</select>
 					</td>
 				</tr>
@@ -1013,49 +1013,47 @@ function check_all(strCtrlName, checked)
 				</tr>
 				<tr id="oTrPlannedTime">
 					<td>
-						<label for="_sPlannedStartDate">Temps prévu</label>
+						<label for="oPlannedTime">{ m_captions[sPlannedTime] }</label>
 					</td>
 					<td>
-						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
-				
-						<select>
-							<option value="Jour(s)">Jour(s)</option>
-							<option value="Heure(s)">Heure(s)</option>
+						<input type="text" name="oPlannedTime" id="oPlannedTime" { m_datas[sReadOnlyCost] } maxlength="20" value="{ m_datas[iPlannedTime] }" size="10" />
+						<select id="oPlannedTimeDurationUnit" name="oPlannedTimeDurationUnit" { m_datas[sDisabledDurationUnit] } >
+							<!--#in getNextPlannedTimeDurationUnit -->
+							<option { m_datas[sSelectedDurationUnit] } value="{ m_datas[iDurationUnit] }">{ m_datas[sDurationUnitName] }</option>
+							<!--#endin getNextPlannedTimeDurationUnit -->
 						</select>
-									
 					</td>
 				</tr>
 				
 				<tr id="oTrTime">
 					<td>
-						<label for="_sPlannedStartDate">Temps réel</label>
+						<label for="oTime">{ m_captions[sTime] }</label>
 					</td>
 					<td>
-						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
-				
-						<select>
-							<option value="Jour(s)">Jour(s)</option>
-							<option value="Heure(s)">Heure(s)</option>
+						<input type="text" name="oTime" id="oTime" { m_datas[sReadOnlyCost] } maxlength="20" value="{ m_datas[iTime] }" size="10" />
+						<select id="oTimeDurationUnit" name="oTimeDurationUnit" { m_datas[sDisabledDurationUnit] } >
+							<!--#in getNextTimeDurationUnit -->
+							<option { m_datas[sSelectedDurationUnit] } value="{ m_datas[iDurationUnit] }">{ m_datas[sDurationUnitName] }</option>
+							<!--#endin getNextTimeDurationUnit -->
 						</select>
-									
 					</td>
 				</tr>
 				
 				<tr id="oTrPlannedCost">
 					<td>
-						<label for="s_PlannedStartDate">Coût prévu</label>
+						<label for="oPlannedCost">{ m_captions[sPlannedCost] }</label>
 					</td>
 					<td>
-						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+						<input type="text" name="oPlannedCost" id="oPlannedCost" { m_datas[sReadOnlyCost] } maxlength="20" value="{ m_datas[iPlannedCost] }" size="10" />
 					</td>
 				</tr>
 				
 				<tr id="oTrCost">
 					<td>
-						<label for="sPlannedStartDate">Coût réel</label>
+						<label for="oCost">{ m_captions[sCost] }</label>
 					</td>
 					<td>
-						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="" size="10" />
+						<input type="text" name="oCost" id="oCost" { m_datas[sReadOnlyCost] } maxlength="20" value="{ m_datas[iCost] }" size="10" />
 					</td>
 				</tr>
 			</table>
@@ -1771,3 +1769,195 @@ function submit_form()
 	
 </form>
 <!--#end projectProperties -->
+
+<!--#begin pagination -->
+	<div class="bab_buttons">
+	<!--#if bIsPrevUrl -->
+		<a href="{ sPrevPageUrl }">{ sPrevPageText }</a>&nbsp;
+	<!--#else bIsPrevUrl -->
+		{ sPrevPageText }&nbsp;
+	<!--#endif bIsPrevUrl -->
+
+	<!--#in getNextPage -->
+		<!--#if bIsPageUrl -->
+			<a href="{ sPageUrl }">{ sPageText }</a>&nbsp;
+		<!--#else bIsPageUrl -->
+			{ sPageText }&nbsp;
+		<!--#endif bIsPageUrl -->
+	<!--#endin getNextPage -->
+
+	<!--#if bIsNextUrl -->
+		<a href="{ sNextPageUrl }">{ sNextPageText }</a>&nbsp;
+	<!--#else bIsNextUrl -->
+		{ sNextPageText }
+	<!--#endif bIsNextUrl -->
+	</div>
+<!--#end pagination -->
+
+<!--#begin img -->
+<img src="{ m_sImgSrc }" alt="{ m_sImgText }" title="{ m_sImgText }" border="0" />
+<!--#end img -->
+
+<!--#begin taskMultipage -->
+<script type="text/javascript">
+<!--
+function get_selectCtrl_value(oCtrl)
+{
+	var form = document.forms.multipage;
+	var idx;
+
+	for(idx = 0; idx < oCtrl.options.length; ++idx)
+	{
+		if(oCtrl.options[idx].selected)
+		{
+			return oCtrl.options[idx].value;
+		}
+	}
+}
+
+function on_selectCtrl_changed(oCtrl, sHiddenName)
+{
+	var form = document.forms.multipage;
+	document.forms['multipage'].elements[sHiddenName].value = get_selectCtrl_value(oCtrl);
+	form.submit();
+}
+
+function onNbRowPerPageChanged()
+{
+	var form = document.forms.multipage;
+	form.submit();
+}
+
+function hideOnNbRowPerPageChangedButton()
+{
+	var form = document.forms.multipage;
+	document.forms['multipage'].elements['_onNbRowPerPageChanged'].style.display = 'none';
+	
+}
+//-->
+</script>
+<form method="get" action="{ babPhpSelf }" name="multipage">
+	<input type="hidden" name="tg" value="{ sTg }" />
+	<input type="hidden" name="idx" value="{ sIdx }" />
+	<!--#in getNextAdditionnalParameter -->
+	<input type="hidden" name="{ m_sAdditionnalParameterName }" value="{ m_sAdditionnalParameterValue }" />
+	<!--#endin getNextAdditionnalParameter -->
+	<input type="hidden" name="action" value="" />
+
+	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">
+		<tr> 
+			<td> 
+				<table class="taskManager" width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
+
+					<thead>
+						<tr class="BabSiteAdminTitleFontBackground { sClassName }"> 
+						<!--#in getNextColumnHeader -->
+							<td>
+							<!--#in getNextColumnHeaderItem -->
+								<div>	
+									<!--#if bIsColumnHeaderUrl -->
+										<a href="{ sColumnHeaderUrl }" title="{ sColumnHeaderText }">{ sColumnHeaderText }</a>
+									<!--#else bIsColumnHeaderUrl -->
+										{ sColumnHeaderText }
+									<!--#endif bIsColumnHeaderUrl -->
+								</div>	
+							<!--#endin getNextColumnHeaderItem -->
+							</td>
+						<!--#endin getNextColumnHeader -->
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</thead>
+					
+					<tfoot align="center">
+						<tr class="BabSiteAdminTitleFontBackground"> 
+							<td colspan="{ iColumnHeadersCount }">
+								<input type="submit" name="_onNbRowPerPageChanged" value="{ sDisplay }" />
+								<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
+								<!--#in getNextNbRow -->
+									<option value="{ iNbRow }" { sNbRowPerPageSelected } >{ sNbRow }</option>
+								<!--#endin getNextNbRow -->
+								</select>
+								{ sResultPerPage }
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+						<tr class="BabLetterlists"> 
+							<td colspan="{ iColumnHeadersCount }" nowrap>
+								{ sPagination }<br />{ sStatusLine }
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</tfoot>
+
+					<tbody>
+						<!--#in getNextRow -->
+					<!--#if bIsAltbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else bIsAltbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif bIsAltbg -->
+						<!--#in getNextColumnData -->
+							<td>
+								<!--#in getNextColumnDataItem -->
+								<div class="{ sClassName } { sCostClassName }">	
+									{ sColumnData }
+								</div>	
+								<!--#endin getNextColumnDataItem -->
+							</td>
+						<!--#endin getNextColumnData -->
+							<td>
+							<!--#in processActionsExcludeFilter -->
+							<!--#endin processActionsExcludeFilter -->
+							<!--#in getNextAction -->
+							<a href="{ aActionItems[sLink] }" title="{ aActionItems[sText] }" >
+								<img src="{ aActionItems[sIcon] }" alt="{ aActionItems[sText] }" border="0" />
+							</a>
+							<!--#endin getNextAction -->
+							</td>
+						</tr>
+						<!--#endin getNextRow -->
+					</tbody>
+					
+				<!--#if m_bLastPage -->
+					<tbody>
+						<!--#in getLastRow -->
+					<!--#if bIsAltbg -->
+						<tr class="BabSiteAdminFontBackground"> 
+					<!--#else bIsAltbg -->
+						<tr class="BabForumBackground1">
+					<!--#endif bIsAltbg -->
+						<!--#in getNextColumnData -->
+							<td>
+								<!--#in getNextColumnDataItem -->
+								<div class="{ sClassName } { sCostClassName }">	
+									{ sColumnData }
+								</div>	
+								<!--#endin getNextColumnDataItem -->
+							</td>
+						<!--#endin getNextColumnData -->
+							<td>&nbsp;</td>
+						</tr>
+						<!--#endin getLastRow -->
+					</tbody>
+				<!--#endif m_bLastPage -->
+
+				</table>
+			</td>
+		</tr>
+	</table>
+	<script type="text/javascript">
+	<!--
+		hideOnNbRowPerPageChangedButton();
+	//-->
+	</script>
+</form>
+<!--#end taskMultipage -->
+
+
+

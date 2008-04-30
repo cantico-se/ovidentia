@@ -747,7 +747,8 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 				$this->m_iBorderTop		= 0;
 				$this->m_iBorderBottom	= 1;
 			}
-			else {
+			else
+			{
 				$this->m_iBorderLeft	= 0;
 				$this->m_iBorderRight	= 0;
 				$this->m_iBorderTop		= 0;
@@ -760,6 +761,10 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			$this->m_iClass = $datas['iClass'];
 			
 			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['plannedStartDate']);
+			
+//BAB_TM_DURATION === $this->m_iDurationType
+			
+			
 			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['plannedEndDate']);
 			
 			$iTaskStartDateTs = $oTaskStartDate->getTimeStamp();

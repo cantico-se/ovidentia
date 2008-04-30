@@ -4385,6 +4385,67 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				
 		$babDB->db_query($sQuery);
 	}
+	
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedTime`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+		}
+	}
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedTimeDurationUnit`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');			  
+		}
+	}
+	
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iTime`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+		}
+	}
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iTimeDurationUnit`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');			  
+		}
+	}
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedCost`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+		}
+	}
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iCost`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+		}
+	}
+	
 	return true;
 }
 ?>

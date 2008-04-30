@@ -242,8 +242,6 @@ class BAB_MultiPageBase
 		{
 			$this->aRow = $this->oDataSource->getNextItem();
 			
-			//bab_debug($this->aRow);
-			
 			if(false != $this->aRow)
 			{
 				$this->bIsAltbg = !$this->bIsAltbg;
@@ -318,10 +316,6 @@ class BAB_MultiPageBase
 		}
 		$this->aFilteredActions = $aActions;
 		return false; //for the template
-/*
-		array('sActionId' => $sActionId, 'sDataSourceFieldName' => $sDataSourceFieldName, 
-			'sDataSourceFieldValue' => $sDataSourceFieldValue);
-*/		
 	}
 	
 	function addActionExcludeFilter($sActionId, $sDataSourceFieldName, $sDataSourceFieldValue)
@@ -390,14 +384,6 @@ class BAB_MultiPageBase
 			$this->iPage = $this->iNumOfPages = 1;
 		}
 
-		/*
-		if($this->iPage > $this->iNumOfPages)
-		{
-bab_debug('8 heures de train');
-			$this->iNumOfPages = $this->iPage - 1;
-		}
-		//*/
-		
 		if($this->iPage >= $this->iNbLink)
 		{
 			$this->iStartLink = $this->iPage - $this->iNbLink;
