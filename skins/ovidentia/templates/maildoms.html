@@ -98,49 +98,40 @@ if (obj.value == 'pop3')
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr class="BabSiteAdminTitleFontBackground"> 
-<td>{ name }</td>
-<td>{ description }</td>
-<td>{ group }</td>
-</tr>
-<!--#in getnextadm -->
-<tr class="BabSiteAdminFontBackground"> 
-<td>
-<!--#if burl "== 1" -->
-<a href="{ url }">{ urlname }</a> 
-<!--#else burl -->
-{ urlname } 
-<!--#endif burl -->
-</td>
-<td>{ arr[description] }</td>
-<td>{ groupname }</td>
-</tr><!--#endin getnextadm -->
-<!--#in getnextgrp -->
-<tr> 
-<td>
-<!--#if burl "== 1" -->
-<a href="{ url }">{ urlname }</a> 
-<!--#else burl -->
-{ urlname } 
-<!--#endif burl -->
-</td>
-<td>{ arr[description] }</td>
-<td>{ groupname }</td>
-</tr> <!--#endin getnextgrp -->
-<!--#in getnextusr --><tr> 
-<td valign="middle">
-<!--#if burl "== 1" -->
-<a href="{ url }">{ urlname }</a> 
-<!--#else burl -->
-{ urlname } 
-<!--#endif burl -->
-</td>
-<td>{ arr[description] }</td>
-<td>{ groupname }</td>
-</tr>
-<!--#endin getnextusr -->
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+	<td>{ name }</td>
+	<td>{ description }</td>
+	<td>{ group }</td>
+	</tr>
+	<!--#in getnextadm -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>
+		<!--#if burl "== 1" -->
+		<a href="{ url }">{ urlname }</a> 
+		<!--#else burl -->
+		{ urlname } 
+		<!--#endif burl -->
+		</td>
+		<td>{ arr[description] }</td>
+		<td>{ groupname }</td>
+	</tr>
+	<!--#endin getnextadm -->
+	
+	<!--#in getnextusr -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td valign="middle">
+		<!--#if burl "== 1" -->
+		<a href="{ url }">{ urlname }</a> 
+		<!--#else burl -->
+		{ urlname } 
+		<!--#endif burl -->
+		</td>
+		<td>{ arr[description] }</td>
+		<td>{ groupname }</td>
+	</tr>
+	<!--#endin getnextusr -->
+	</table>
 </td>
 </tr>
 </table>

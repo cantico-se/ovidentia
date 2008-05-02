@@ -327,11 +327,8 @@ function accountModify($item)
 				$this->resadm = $babDB->db_query($req);
 				$this->countadm = $babDB->db_num_rows($this->resadm);
 
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
-				$this->resgrp = $babDB->db_query($req);
-				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='N' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 				$this->resusr = $babDB->db_query($req);
 				$this->countusr = $babDB->db_num_rows($this->resusr);
 				}
@@ -360,29 +357,8 @@ function accountModify($item)
 				}
 
 			}
-		function getnextgrp()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countgrp)
-				{
-				$arr = $babDB->db_fetch_array($this->resgrp);
-				$this->domid = $arr['id'];
-				$this->domname = $arr['name'];
-				if( $arr['id'] == $this->arr['domain'])
-					$this->domselect = "selected";
-				else
-					$this->domselect = "";
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
 
-			}
+			
 		function getnextusr()
 			{
 			global $babDB;

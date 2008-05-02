@@ -157,9 +157,6 @@
   <!--#in getnextadm -->
   <option value="{ domid }" { domselect }>{ domname }</option>
   <!--#endin getnextadm -->
-  <!--#in getnextgrp -->
- <option value="{ domid }" { domselect }>{ domname }</option>
- <!--#endin getnextgrp -->
   <!--#in getnextusr -->
   <option value="{ domid }" { domselect }>{ domname }</option>
   <!--#endin getnextusr -->
@@ -212,32 +209,32 @@
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr class="BabSiteAdminTitleFontBackground"> 
-	<td width="1%">&nbsp;</td>
-	<td>{ account_name }</td>
-	<td>{ name }</td>
-	<td>{ email }</td>
-	<td>{ login }</td>
-	<td>{ domname }</td>
-</tr>
-<!--#in getnext -->
-<tr class="BabSiteAdminFontBackground"> 
-	<td align="center"> 
-	<!--#if prefered "== P" -->
-	<img src="{ babSkinPath }images/Puces/PuceMailDefault.gif" alt="{ prefered }" /> 
-	<!--#else prefered -->
-	&nbsp; 
-	<!--#endif prefered -->
-	</td>
-	<td><a class="BabSiteAdminListLink" href="{ url }">{ arr[account_name] }</a></td>
-	<td>{ arr[name] } </td>
-	<td>{ arr[email] }</td>
-	<td>{ arr[login] }</td>
-	<td>{ domnameval }</td>
-</tr>
-<!--#endin getnext -->
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td width="1%">&nbsp;</td>
+			<td>{ account_name }</td>
+			<td>{ name }</td>
+			<td>{ email }</td>
+			<td>{ login }</td>
+			<td>{ domname }</td>
+		</tr>
+	<!--#in getnext -->
+		<tr class="BabSiteAdminFontBackground"> 
+			<td align="center"> 
+			<!--#if prefered "== P" -->
+			<img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ prefered }" /> 
+			<!--#else prefered -->
+			&nbsp; 
+			<!--#endif prefered -->
+			</td>
+			<td><a class="BabSiteAdminListLink" href="{ url }">{ arr[account_name] }</a></td>
+			<td>{ arr[name] } </td>
+			<td>{ arr[email] }</td>
+			<td>{ arr[login] }</td>
+			<td>{ domnameval }</td>
+		</tr>
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>
