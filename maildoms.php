@@ -136,27 +136,14 @@ function domainsList($userid, $grpid, $bgrp)
 				$this->resadm = $babDB->db_query($req);
 				$this->countadm = $babDB->db_num_rows($this->resadm);
 				}
-			else if( $bgrp == "y" && $userid != 0)
-				{
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
-				$this->resadm = $babDB->db_query($req);
-				$this->countadm = $babDB->db_num_rows($this->resadm);
-
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_GROUPS_TBL." where bgroup='Y' and ".BAB_GROUPS_TBL.".manager='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_GROUPS_TBL.".id";
-				$this->resgrp = $babDB->db_query($req);
-				$this->countgrp = $babDB->db_num_rows($this->resgrp);
-				}
+			
 			else
 				{
 				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='Y' and owner='1'";
 				$this->resadm = $babDB->db_query($req);
 				$this->countadm = $babDB->db_num_rows($this->resadm);
-
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
-				$this->resgrp = $babDB->db_query($req);
-				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where bgroup='N' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 				$this->resusr = $babDB->db_query($req);
 				$this->countusr = $babDB->db_num_rows($this->resusr);
 				}
@@ -198,38 +185,7 @@ function domainsList($userid, $grpid, $bgrp)
 				}
 
 			}
-		function getnextgrp()
-			{
-			global $BAB_SESS_USERID, $babDB;
-			static $m = 0;
-			if( $m < $this->countgrp)
-				{
-				$this->arr = $babDB->db_fetch_array($this->resgrp);
-				if( $this->arr['owner'] != 1 && $this->arr['bgroup'] == "Y")
-					$this->groupname = bab_getGroupName($this->arr['owner']);
-				else
-					$this->groupname = "";
-				$this->burl = 0;
-				for( $k = 0; $k < $this->count; $k++)
-					{
-					if( $this->idgrp[$k] == $this->arr['owner'])
-						{
-						$this->burl = 1;
-						$this->url = $GLOBALS['babUrlScript']."?tg=maildom&idx=modify&item=".$this->arr['id']."&userid=".$this->userid."&bgrp=y";
-						break;
-						}
-					}
-				$this->urlname = $this->arr['name'];
-				$m++;
-				return true;
-				}
-			else
-				{
-				$m = 0;
-				return false;
-				}
-
-			}
+		
 		function getnextusr()
 			{
 			global $BAB_SESS_USERID, $babDB;
@@ -237,7 +193,7 @@ function domainsList($userid, $grpid, $bgrp)
 			if( $k < $this->countusr)
 				{
 				$this->arr = $babDB->db_fetch_array($this->resusr);
-				$this->groupname = "";
+				$this->groupname = bab_getUserName($this->arr['owner']);
 				$this->burl = 0;
 				if( $this->arr['owner'] == $BAB_SESS_USERID)
 					{
@@ -406,17 +362,14 @@ switch($idx)
 		domainCreate($userid, $grpid, $bgrp);
 		if( $bgrp == "y")
 		{
-			if( $userid == 0)
-				$babBody->title = bab_translate("Create a global mail domain");
-			else
-				$babBody->title = bab_translate("Create a group mail domain");
+			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+			$babBody->title = bab_translate("Create a global mail domain");
 		}
 		else
 		{
 			$babBody->title = bab_translate("Create a private mail domain");
 		}
-		if( $bgrp != "y")
-			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
@@ -426,17 +379,13 @@ switch($idx)
 		domainsList($userid, $grpid, $bgrp);
 		if( $bgrp == "y")
 		{
-			if( $userid == 0)
-				$babBody->title = bab_translate("Global domains list");
-			else
-				$babBody->title = bab_translate("Group domains list");
+			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
+			$babBody->title = bab_translate("Global domains list");
 		}
 		else
 		{
 			$babBody->title = bab_translate("Available domains list");
 		}
-		if( $bgrp != "y")
-			$babBody->addItemMenu("listacc", bab_translate("Accounts"), $GLOBALS['babUrlScript']."?tg=mailopt&idx=listacc");
 		$babBody->addItemMenu("list", bab_translate("Domains"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=list&userid=".$userid."&bgrp=".$bgrp);
 		$babBody->addItemMenu("create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=maildoms&idx=create&userid=".$userid."&bgrp=".$bgrp);
 		break;
