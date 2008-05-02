@@ -1,55 +1,53 @@
 #commentary {
 	width:95%;
-	}
+}
 
-#tablist{
+#tablist {
 	padding: 3px 0;
 	margin-left: 0;
 	margin-bottom: 0;
 	margin-top: 0.1em;
 	font: bold 12px Verdana;
 	border-bottom: 1px solid gray;
-	}
+}
 
-#tablist li{
+#tablist li {
 	list-style: none;
 	display: inline;
 	margin: 0;
-	}
+}
 
-#tablist li a{
+#tablist li a {
 	text-decoration: none;
 	padding: 3px 0.5em;
 	margin-right: 1px;
 	border: 1px solid #778;
 	border-bottom: none;
 	background: white;
-	}
+}
 
-#tablist li a:link, #tablist li a:visited{
+#tablist li a:link, #tablist li a:visited {
 	color: navy;
-	}
+}
 
-#tablist li a:hover{
+#tablist li a:hover {
 	color: black;
 	background: lightyellow;
 	border-color: navy;
-	}
+}
 
-#tablist li a.current{
+#tablist li a.current {
 	background: transparent;
 	border: 1px solid #000;
 	border-top: 2px solid #000; 
 	border-bottom:0;
-	}
+}
 	
 .displayNome {
 	display: none;
-	}
+}
 	
 .planned {
-	/*font-size:10px;
-	font-style:italic;*/
 	color:green;
 	padding-top:5px;
 }
@@ -60,15 +58,19 @@
 
 
 .taskManager {
-/*	width: 1px; */
-	white-space: nowrap;
+	border-collapse:collapse;
 }
 
 .taskManager thead tr {
-	text-align:center;
+	text-align:left;
+}
+
+.taskManager td, .taskManager th {
+	white-space: nowrap;
+	padding:2px 5px;
+	border:#444 1px solid;
 }
 
 .taskManager tbody tr:hover {
 	background-color:#D0D0D0;
-/*	font-weight: bold;*/
 }

@@ -2047,7 +2047,8 @@ function getFirstProjectTaskDate($iIdProject)
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
-			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\'';
+			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
+			'plannedStartDate <> \'0000-00-00 00:00:00\'';
 
 //	echo $query . '<br />';
 	

@@ -1296,7 +1296,9 @@ function displayTaskList($sIdx)
 			if($this->iTotalNumOfRows > 0)
 			{
 				$iNbPages = ceil($this->iTotalNumOfRows / $this->iNbRowsPerPage);
-				$this->m_bLastPage = ($this->iPage == $iNbPages);
+				
+				$isProject = (int) bab_rp('isProject', 0);
+				$this->m_bLastPage = ($this->iPage == $iNbPages && 0 !== $isProject);
 			}
 		}
 		
@@ -1432,10 +1434,7 @@ function displayTaskList($sIdx)
 			if(!is_null($this->oDataSource) && is_a($this->oDataSource, 'BAB_DataSourceBase'))
 			{
 				$this->aRow = $this->oDataSource->getLastRow();
-				
-//				bab_debug($this->aRow);
-				
-				
+					
 				if($iIndex === 0 && false !== $this->aRow)
 				{
 					$iIndex++;
@@ -1446,6 +1445,13 @@ function displayTaskList($sIdx)
 			
 			$iIndex = 0;
 			return false;
+		}
+
+		function printTemplate()
+		{
+			//+1 for the action column
+			$this->iNbrColumnHeaders = count($this->aColumnHeaders) + 1;
+			return parent::printTemplate();
 		}
 	}
 	
@@ -1768,18 +1774,6 @@ function displayGanttChart()
 	
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
-//*/
-	
-/*
-	$sStartDate = bab_rp('date', date("Y-m-d"));
-	$oGantt = new BAB_TM_Gantt2($sStartDate);
-	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt2"));
-//*/
-	
-/*
-	global $babBody;
-	$babBody->babecho(bab_printTemplate($oGantt, 'tmUser.html', "gantt2"));
-//*/
 }
 
 function tskmgClosePopup()

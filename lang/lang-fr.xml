@@ -1123,7 +1123,7 @@
 <string id="Number of topics categories">Nombre de catégories de thèmes</string>
 <string id="Top">Début</string>
 <string id="Order a topic category">Ordonner les catégories</string>
-<string id="Nickname contains blanc characters">L'identifiant ne doit pas contenir d'espaces</string>
+<string id="Nickname should not contain spaces">L'identifiant ne doit pas contenir d'espaces</string>
 <string id="Alt">Alt</string>
 <string id="Horizontal spacing">Espacement horizontal</string>
 <string id="Vertical spacing">Espacement vertical</string>
@@ -2540,4 +2540,5 @@
 <string id="PortalAuthentication::login must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
 <string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
+<string id="Planned">Planifié</string>
 </fr>

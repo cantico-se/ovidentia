@@ -788,6 +788,7 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 				$this->m_bIsTaskCompletion = true;
 				
 				$this->getBox($iTaskStartDateTs, $iDoneEndDateTs, $this->m_iDonePosX, $this->m_iDonePosY, $this->m_iDoneHeigth, $this->m_iDoneWidth);
+				
 				$this->m_sDoneBgColor = '00F';
 				$this->m_sDoneColor = 'FFF';
 				

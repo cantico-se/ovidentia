@@ -1847,32 +1847,31 @@ function hideOnNbRowPerPageChangedButton()
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginCadreBackground">
 		<tr> 
 			<td> 
-				<table class="taskManager" width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
+				<table class="taskManager" width="100%" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
 
 					<thead>
 						<tr class="BabSiteAdminTitleFontBackground { sClassName }"> 
 						<!--#in getNextColumnHeader -->
-							<td>
+							<th>
 							<!--#in getNextColumnHeaderItem -->
-								<div>	
 									<!--#if bIsColumnHeaderUrl -->
 										<a href="{ sColumnHeaderUrl }" title="{ sColumnHeaderText }">{ sColumnHeaderText }</a>
 									<!--#else bIsColumnHeaderUrl -->
 										{ sColumnHeaderText }
 									<!--#endif bIsColumnHeaderUrl -->
-								</div>	
+								<br/>	
 							<!--#endin getNextColumnHeaderItem -->
-							</td>
+							</th>
 						<!--#endin getNextColumnHeader -->
-							<td>
+							<th>
 								&nbsp;
-							</td>
+							</th>
 						</tr>
 					</thead>
 					
 					<tfoot align="center">
 						<tr class="BabSiteAdminTitleFontBackground"> 
-							<td colspan="{ iColumnHeadersCount }">
+							<td colspan="{ iNbrColumnHeaders }">
 								<input type="submit" name="_onNbRowPerPageChanged" value="{ sDisplay }" />
 								<select name="iNbRowsPerPage" onchange="onNbRowPerPageChanged()">
 								<!--#in getNextNbRow -->
@@ -1881,16 +1880,10 @@ function hideOnNbRowPerPageChangedButton()
 								</select>
 								{ sResultPerPage }
 							</td>
-							<td>
-								&nbsp;
-							</td>
 						</tr>
 						<tr class="BabLetterlists"> 
-							<td colspan="{ iColumnHeadersCount }" nowrap>
+							<td colspan="{ iNbrColumnHeaders }" nowrap>
 								{ sPagination }<br />{ sStatusLine }
-							</td>
-							<td>
-								&nbsp;
 							</td>
 						</tr>
 					</tfoot>
