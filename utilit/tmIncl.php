@@ -986,7 +986,7 @@ function bab_createTask($aParams)
 				'`duration`, `iDurationUnit`, `majorVersion`, `minorVersion`, `color`, `position`, ' .
 				'`completion`, `startDate`, `endDate`, `plannedStartDate`, ' .
 				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
-				'`idUserModified`, `modified`, `shortDescription`' .
+				'`idUserModified`, `modified`, `shortDescription`, ' .
 				'`iPlannedTime`, `iPlannedTimeDurationUnit`, `iTime`, ' . 
 				'`iTimeDurationUnit`, `iPlannedCost`, `iCost` ' .			  
 			') ' .
@@ -1110,7 +1110,8 @@ function bab_getTask($iIdTask, &$aTask)
 			'sShortDescription' => $datas['shortDescription'], 'iPlannedTime' => $datas['iPlannedTime'], 
 			'iPlannedTimeDurationUnit' => $datas['iPlannedTimeDurationUnit'], 			  
 			'iTime' => $datas['iTime'], 'iTimeDurationUnit' => $datas['iTimeDurationUnit'], 			  
-			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost']);
+			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost'],
+			);
 		return true;
 	}
 	return false;

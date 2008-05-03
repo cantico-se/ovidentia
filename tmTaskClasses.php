@@ -1219,7 +1219,7 @@
 		
 		var $m_iDuration				= null;
 		var $m_iDurationType			= null;
-		var $m_DurationUnit				= null;
+		var $m_iDurationUnit			= null;
 		
 		var $m_iMajorVersion			= null;
 		var $m_iMinorVersion			= null;
@@ -1312,7 +1312,7 @@
 			
 			$this->m_iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
 			$this->m_iDuration					= (float) (BAB_TM_DATE != $this->m_iDurationType) ? number_format(bab_rp('sDuration', ''), 2, '.', '') : 0;
-			$this->m_DurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
+			$this->m_iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
 			
 			$this->m_iMajorVersion				= (int) bab_rp('iMajorVersion', 1);
 			$this->m_iMinorVersion				= (int) bab_rp('iMinorVersion', 0);
@@ -1370,7 +1370,7 @@
 					if(0 != $aTask['iDuration'])
 					{
 						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sPlannedEndDate']);
-						$oStartDate->add($aTask['iDuration'], (($this->m_DurationUnit == BAB_TM_DAY) ? BAB_DATETIME_DAY : BAB_DATETIME_HOUR));
+						$oStartDate->add($aTask['iDuration'], (($this->m_iDurationUnit == BAB_TM_DAY) ? BAB_DATETIME_DAY : BAB_DATETIME_HOUR));
 						$this->m_sPlannedStartDate = $oStartDate->getIsoDateTime();
 					}
 					else 
@@ -1451,7 +1451,7 @@
 			bab_calGetWorkingDays($GLOBALS['BAB_SESS_USERID'], $sWorkingDays);
 			$aWorkingDays = array_flip(explode(',', $sWorkingDays));
 			
-			if($this->m_DurationUnit === BAB_TM_DAY)
+			if($this->m_iDurationUnit === BAB_TM_DAY)
 			{
 				$iDuration = (int) ceil($this->m_iDuration);
 			}
@@ -1479,7 +1479,7 @@
 			//On a bouclé 1 fois de trop
 			$oPlannedEndDate->add(-1);
 
-			if($this->m_DurationUnit === BAB_TM_DAY)
+			if($this->m_iDurationUnit === BAB_TM_DAY)
 			{
 				$iDuration = ceil($this->m_iDuration);
 				if($iDuration != $this->m_iDuration)
@@ -1911,6 +1911,7 @@
 				$aTask['iIdCalEvent']				= $this->m_iIdCalEvent;
 				$aTask['sHashCalEvent']				= $this->m_sHashCalEvent;
 				$aTask['iDuration']					= $this->m_iDuration;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
 				$aTask['sColor']					= $this->m_sColor;
@@ -2001,6 +2002,7 @@
 				$aTask['iIdCalEvent']				= 0;
 				$aTask['sHashCalEvent']				= '';
 				$aTask['iDuration']					= 0;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
 				$aTask['sColor']					= $this->m_sColor;
@@ -2061,6 +2063,7 @@
 				$aTask['iIdCalEvent']				= 0;
 				$aTask['sHashCalEvent']				= '';
 				$aTask['iDuration']					= 0;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
 				$aTask['sColor']					= $this->m_sColor;
@@ -2160,6 +2163,7 @@
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
 				$aTask['iIsLinked']					= $this->m_iIsLinked;
 				$aTask['iDuration']					= $this->m_iDuration;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
 				$aTask['iCompletion']				= $this->m_iCompletion;
@@ -2344,6 +2348,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iIdCalEvent']				= 0;
 				$aTask['sHashCalEvent']				= '';
 				$aTask['iDuration']					= 0;
+				$aTask['iDurationUnit']				= $this->m_iDurationUnit;
 				$aTask['iMajorVersion']				= $this->m_iMajorVersion;
 				$aTask['iMinorVersion']				= $this->m_iMinorVersion;
 				$aTask['sColor']					= $this->m_sColor;
