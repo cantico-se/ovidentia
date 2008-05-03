@@ -32,6 +32,137 @@ require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 require_once($babInstallPath . 'tmContext.php');
 
 
+
+
+//Helper class
+class BAB_TM_ToolbarItem
+{
+	var $sText	= '';
+	var $sUrl	= '';
+	var $sImg	= '';
+	var $sTitle = '';
+	var $sAlt	= '';
+
+	function BAB_TM_ToolbarItem($sText, $sUrl, $sImg, $sTitle, $sAlt)
+	{
+		$this->setText($sText);
+		$this->setUrl($sUrl);
+		$this->setImg($sImg);
+		$this->setTitle($sTitle);
+		$this->setAlt($sAlt);
+	}
+
+	function setText($sText) 
+	{
+		$this->sText = $sText;
+	}
+	
+	function getText()
+	{
+		return $this->sText;
+	}
+	
+	function setUrl($sUrl)
+	{
+		$this->sUrl = $sUrl;
+	}
+	
+	function getUrl()
+	{
+		return $this->sUrl;
+	}
+
+	function setImg($sImg)
+	{
+		$this->sImg = $sImg;
+	}
+
+	function getImg()
+	{
+		return $this->sImg;
+	}
+
+	function setTitle($sTitle)
+	{
+		$this->sTitle = $sTitle;
+	}
+
+	function getTitle()
+	{
+		return $this->sTitle;
+	}
+
+	function setAlt($sAlt)
+	{
+		$this->sAlt = $sAlt;
+	}
+
+	function getAlt()
+	{
+		return $this->sAlt;
+	}
+}
+
+
+class BAB_TM_Toolbar
+{
+	var $aToolbarItem = array();
+
+	var $sText	= '';
+	var $sUrl	= '';
+	var $sImg	= '';
+	var $sTitle = '';
+	var $sAlt	= '';
+
+	var $sTemplateFileName = 'tmUser.html';
+	var $sTemplate = 'toolbar';
+
+	function BAB_TM_Toolbar()
+	{
+	}
+	
+	function addToolbarItem()
+	{
+    	$iNumArgs = func_num_args();
+    	if(0 < $iNumArgs)
+    	{
+    		for($iIndex = 0; $iIndex < $iNumArgs; $iIndex++)
+    		{
+				$oToolbarItem = func_get_arg($iIndex);
+//    			if(is_a($oToolbarItem, 'BAB_TM_ToolbarItem'))
+				{
+					$this->aToolbarItem[] = $oToolbarItem;
+				}
+    		}
+    	}
+	}
+
+	function getNextItem()
+	{
+		$aItem = each($this->aToolbarItem);
+		if(false !== $aItem)
+		{
+			$oToolbarItem =& $aItem['value'];
+
+			$this->sText	= $oToolbarItem->getText();
+			$this->sUrl		= htmlentities($oToolbarItem->getUrl());
+			$this->sImg		= $oToolbarItem->getImg();
+			$this->sTitle	= $oToolbarItem->getTitle();
+			$this->sAlt		= $oToolbarItem->getAlt();
+			return true;
+		}
+		return false;
+	}
+
+	function printTemplate()
+	{
+		return bab_printTemplate($this, $this->sTemplateFileName, $this->sTemplate);
+	}
+}
+
+
+
+
 function displayProjectsSpacesList()
 {
 	global $babBody, $babDB;
@@ -1102,10 +1233,6 @@ function displayTaskList($sIdx)
 	}
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
-	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
-	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
-	
-	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
 	$iTaskFilter =& $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
 	$iTaskClass =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
 	$iTaskCompletion =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskCompletion'];
@@ -1535,7 +1662,22 @@ function displayTaskList($sIdx)
 	}
 	
 	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
-	$GLOBALS['babBody']->babecho(bab_printTemplate($oTaskFilterForm, 'tmUser.html', 'ganttView'));
+//	$GLOBALS['babBody']->babecho(bab_printTemplate($oTaskFilterForm, 'tmUser.html', 'ganttView'));
+
+
+	$oToolbar = new BAB_TM_Toolbar();
+	$oToolbar->addToolbarItem(
+		new BAB_TM_ToolbarItem(bab_translate("Display the gantt View"), 'javascript:bab_popup("' . $sGanttViewUrl . '", 150, 1)', 
+			'ganttView.png', bab_translate("Display the gantt View"), bab_translate("Display the gantt View")),
+		new BAB_TM_ToolbarItem(bab_translate("Search"), 'javascript:tskMgr_showHideFilter()', 
+			'search.png', bab_translate("Search"), bab_translate("Search")));
+
+	$GLOBALS['babBody']->babecho($oToolbar->printTemplate());
+	
+	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
+	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
+	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
+	
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 }
 

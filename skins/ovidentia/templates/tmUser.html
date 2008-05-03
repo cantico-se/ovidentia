@@ -1232,7 +1232,7 @@ onClassChanged(document.forms.taskForm['iClass']);
 
 <!--#begin taskListFilter -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 function on_btn_clicked(idx, action)
 {
 	var form = document.forms.taskListFilter;
@@ -1293,13 +1293,34 @@ function dateCallback(sFieldName)
 	form.selectedDateFieldName.value = sFieldName;
 	bab_dialog.selectdate(setDateValue);
 }
-//-->
+
+function tskMgr_showHideFilter()
+{
+	var oTaskListFilter = document.getElementById("taskListFilter");
+	if(null !== oTaskListFilter)
+	{
+		tskMgr_showHide(oTaskListFilter);
+	}
+}
+
+function tskMgr_showHide(oControl)
+{
+	if(oControl.style.display == "none")
+	{
+		oControl.style.display = "";
+	}
+	else
+	{
+		oControl.style.display = "none";
+	}
+}
+//]]>
 </script>
 
 <script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
 
 
-<form name="taskListFilter" method="get" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<form name="taskListFilter" id="taskListFilter" method="get" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
@@ -1314,7 +1335,7 @@ function dateCallback(sFieldName)
 	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
 			<td class="BabLoginCadreBackground">
-				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="BabLoginMenuBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center" class="tskMgrDialog">
 				<tr>
 					<td>{ m_captions[sProject] }</td>
 					<td>
@@ -1407,15 +1428,14 @@ function dateCallback(sFieldName)
 		</tr>
 	</table>
 	<br />
-	<br />
-	<br />
 </form>
 <script type="text/javascript">
-<!--
+//<![CDATA[
 <!--#if m_datas[isProjectDisplayed] -->
 	onTaskFilterChanged(document.forms.taskListFilter.oTaskFilter, 'iIdProject');
 <!--#endif m_datas[isProjectDisplayed] -->
-//-->
+tskMgr_showHideFilter();
+//]]>
 </script>
 
 <!--#end taskListFilter -->
@@ -1605,13 +1625,16 @@ onload="tmInit('ganttTask')"
 </html>
 <!--#end gantt -->
 
-<!--#begin ganttView -->
-<a href="javascript:bab_popup('{ m_sGanttViewUrl }', 150, 1);" title="{ m_captions[ganttView] }">
-	<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/ganttView.png" alt="{ m_captions[ganttView] }" />
-</a>
-<br />
-<br />
-<!--#end ganttView -->
+<!--#begin toolbar -->
+	<div class="bab_toolbar" style="vertical-align: middle; margin-bottom: 10px; padding: 8px; background-color: #eeeeee; border:0px">
+	<!--#in getNextItem -->
+		<a style="text-decoration: none" href="{ sUrl }" title="{ sTitle }">
+			<img style="vertical-align: middle; margin-left: 10px; border:0px" src="{ babInstallPath }skins/ovidentia/images/Puces/{ sImg }" alt="{ sAlt }" /> { sText }
+		</a>
+	<!--#endin getNextItem -->
+	</div>
+<!--#end toolbar -->
+
 
 <!--#begin projectProperties -->
 <script type="text/javascript">
