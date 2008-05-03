@@ -1795,133 +1795,6 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	}
 }
 
-/*
-function bab_getOwnedTaskQuery($iTaskFilter = null, $iTaskClass = null)
-{
-	$query = 
-		'SELECT ' . 
-			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
-			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
-			'IFNULL(p.id, 0) iIdProject, ' .
-			'IFNULL(p.name, \'\') sProjectName, ' .
-			't.id iIdTask, ' .
-			't.shortDescription sShortDescription, ' .
-			't.taskNumber sTaskNumber, ' .
-			't.class iClass, ' .
-			't.startDate startDate, ' .
-			't.endDate endDate, ' .
-		'CASE t.class ' .			
-			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
-			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
-			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
-			'ELSE \'???\' ' .
-		'END AS sClass ' .
-		'FROM ' . 
-			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
-			BAB_TSKMGR_TASKS_TBL . ' t ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
-		'WHERE ' . 
-			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-			't.id = ti.idTask ';
-			
-	if(!is_null($iTaskFilter) && -1 != $iTaskFilter)
-	{
-		//iTaskFilter (-1 ==> All, -2 ==> personnal task)
-		if(-2 == $iTaskFilter)
-		{
-			$query .= 'AND ti.isPersonnal = \'' . BAB_TM_YES . '\' ';
-		}
-		else 
-		{
-			$query .= 'AND t.idProject = \'' . $iTaskFilter . '\' ';
-		}
-	}
-		
-	if(!is_null($iTaskClass) && -1 != $iTaskClass)
-	{
-		$query .= 'AND t.class = \'' . $iTaskClass . '\' ';
-	}
-			
-	$query .= 
-		'GROUP BY ' .
-			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
-
-	//bab_debug($query);
-	return $query;
-}
-//*/
-
-/*
-function bab_selectOwnedTaskQueryByDate($sStartDate, $sEndDate, $iTaskFilter = null, $iTaskClass = null)
-{
-	$query = 
-		'SELECT ' . 
-			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
-			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
-			'IFNULL(p.id, 0) iIdProject, ' .
-			'IFNULL(p.name, \'\') sProjectName, ' .
-			't.id iIdTask, ' .
-			't.taskNumber sTaskNumber, ' .
-			't.shortDescription sShortDescription, ' .
-			't.class iClass, ' .
-		'CASE t.class ' .
-			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
-			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
-			'ELSE \'\' ' .
-		'END AS sAdditionnalClass, ' .
-			't.completion iCompletion, ' .
-			't.startDate startDate, ' .
-			't.endDate endDate, ' .
-			'cat.id iIdCategory, ' .
-			'IFNULL(cat.color, \'\' ) sBgColor ' .
-		'FROM ' . 
-			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
-			BAB_TSKMGR_TASKS_TBL . ' t ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
-		'WHERE ' . 
-			'ti.idOwner = \'' . $GLOBALS['BAB_SESS_USERID'] . '\' AND ' .
-			't.id = ti.idTask AND ' .
-			't.endDate > \'' . $sStartDate . '\' AND ' .
-			't.startDate < \'' . $sEndDate . '\' ';
-
-	if(!is_null($iTaskFilter) && -1 != $iTaskFilter)
-	{
-		//iTaskFilter (-1 ==> All, -2 ==> personnal task)
-		if(-2 == $iTaskFilter)
-		{
-			$query .= 'AND ti.isPersonnal = \'' . BAB_TM_YES . '\' ';
-		}
-		else 
-		{
-			$query .= 'AND t.idProject = \'' . $iTaskFilter . '\' ';
-		}
-	}
-		
-	if(!is_null($iTaskClass) && -1 != $iTaskClass)
-	{
-		$query .= 'AND t.class = \'' . $iTaskClass . '\' ';
-	}
-			
-	$query .= 
-		'GROUP BY ' .
-			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC';
-
-	//bab_debug($query);
-	
-	//echo $query . '<br />';
-	global $babDB;
-	return $babDB->db_query($query);
-}
-//*/
-
 function bab_selectTaskQuery($aFilters, $aOrder = array())
 {
 	global $babDB;
@@ -1975,7 +1848,7 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 		'WHERE ' . 
 			't.id = ti.idTask ';
 
-	if(isset($aFilters['iIdProject']))
+	if(isset($aFilters['iIdProject']) && 0 !== (int) $aFilters['iIdProject'])
 	{
 		$query .= 'AND t.idProject = ' . $babDB->quote((int) $aFilters['iIdProject']) . ' ';
 	}
@@ -1993,6 +1866,16 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 	if(isset($aFilters['sEndDate']))
 	{
 		$query .= 'AND t.endDate <= ' . $babDB->quote($aFilters['sEndDate']) . ' ';
+	}
+
+	if(isset($aFilters['sPlannedStartDate']))
+	{
+		$query .= 'AND t.plannedStartDate >= ' . $babDB->quote($aFilters['sPlannedStartDate']) . ' ';
+	}
+
+	if(isset($aFilters['sPlannedEndDate']))
+	{
+		$query .= 'AND t.plannedEndDate <= ' . $babDB->quote($aFilters['sPlannedEndDate']) . ' ';
 	}
 
 	if(isset($aFilters['iTaskClass']))
@@ -2872,80 +2755,6 @@ function bab_createDefaultProjectSpaceNoticeEvent($iIdProjectSpace)
 	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_UPDATED_BY_RESP, BAB_TM_PROJECT_MANAGER);
 	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_TASK_DELETED, BAB_TM_TASK_RESPONSIBLE);
 	bab_createNoticeEvent($iIdProjectSpace, $iIdProject, BAB_TM_EV_NOTICE_ALERT, BAB_TM_TASK_RESPONSIBLE);
-}
-
-function bab_getTaskListFilter($iIdUser, &$aTaskFilters)
-{
-	global $babDB;
-
-	$query = 
-		'SELECT ' .
-			'* ' .
-		'FROM ' . 
-			BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
-		'WHERE ' . 
-			'idUser =\'' . $babDB->db_escape_string($iIdUser) . '\'';
-
-	//echo $query . '<br />';
-	//bab_debug($query);
-
-	$res = $babDB->db_query($query);
-
-	if(false != $res && $babDB->db_num_rows($res) > 0)
-	{
-		$datas = $babDB->db_fetch_array($res);
-
-		if(false != $datas)
-		{
-			$aTaskFilters = array('id' => $datas['id'], 'iIdUser' => $datas['idUser'], 
-				'iIdProject' => $datas['idProject'], 'iTaskClass' => $datas['iTaskClass'],
-				'iTaskCompletion' => $datas['iTaskCompletion']);
-		}
-	}
-	else 
-	{
-		$aTaskFilters = array('id' => -1, 'iIdUser' => $iIdUser, 'iIdProject' => -1, 'iTaskClass' => -1, 'iTaskCompletion' => -1);
-	}
-}
-
-function bab_createTaskListFilter($iIdUser, $aTaskFilters)
-{
-	global $babDB;
-	
-	$query = 
-		'INSERT INTO ' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
-			'(' .
-				'`id`, ' .
-				'`idUser`, `idProject`, `iTaskClass`, `iTaskCompletion`' .
-			') ' .
-		'VALUES ' . 
-			'(\'\', \'' . 
-				$babDB->db_escape_string($aTaskFilters['iIdUser']) . '\', \'' . 
-				$babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', \'' . 
-				$babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\', \'' . 
-				$babDB->db_escape_string($aTaskFilters['iTaskCompletion']) . 
-			'\')'; 
-
-	//bab_debug($query);
-	return $babDB->db_query($query);
-}
-
-function bab_updateTaskListFilter($iIdUser, $aTaskFilters)
-{
-	global $babDB;
-	$query = 
-		'UPDATE ' . 
-			BAB_TSKMGR_TASK_LIST_FILTER_TBL . ' ' .
-		'SET ' .
-			'idProject = \'' . $babDB->db_escape_string($aTaskFilters['iIdProject']) . '\', ' .
-			'iTaskClass = \'' . $babDB->db_escape_string($aTaskFilters['iTaskClass']) . '\', ' .
-			'iTaskCompletion = \'' . $babDB->db_escape_string($aTaskFilters['iTaskCompletion']) . '\' ' .
-		'WHERE ' .
-			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\'';
-
-	//bab_debug($query);
-
-	return $babDB->db_query($query);
 }
 
 function bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser)

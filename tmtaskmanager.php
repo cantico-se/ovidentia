@@ -161,6 +161,55 @@ class BAB_TM_Toolbar
 }
 
 
+class BAB_TM_SessionContext
+{
+	var $sKey		= '';
+	var $aSettings	= array();
+	
+	function BAB_TM_SessionContext($sKey)
+	{
+		$this->setKey($sKey);
+		$this->intSettings();
+	}
+	
+	function setKey($sKey)
+	{
+		$this->sKey = $sKey;
+	}
+	
+	function get($sName, $sDefaultValue = '')
+	{
+		if(array_key_exists($sName, $this->aSettings))
+		{
+			return $this->aSettings[$sName];
+		}
+		return $sDefaultValue;
+	}
+
+	function set($sName, $sValue)
+	{
+		$this->aSettings[$sName] = $sValue;
+	}
+	
+	function intSettings()
+	{
+		if(!array_key_exists($this->sKey, $_SESSION))
+		{
+			$_SESSION[$this->sKey] = $this->aSettings;
+		}
+		$this->aSettings =& $_SESSION[$this->sKey];
+	}
+	
+	function unsetSettings()
+	{
+		if(array_key_exists($this->sKey, $_SESSION))
+		{
+			unset($_SESSION[$this->sKey]);
+			$this->aSettings = array();
+		}
+	}
+}
+
 
 
 function displayProjectsSpacesList()
@@ -989,16 +1038,12 @@ function displayTaskList($sIdx)
 	
 	class BAB_TM_TaskFilterForm extends BAB_BaseFormProcessing
 	{
-		var $m_aTasksFilter;
-		var $m_aTasksTypeFilter;
-		
-		var $m_aSelectedFilterValues;
-		var $m_sGanttViewUrl;
-		
-		var $m_aTask = array();
-		
-		var $m_aCompletion = array();
-		var $m_aTaskResponsible = array();
+		var $m_aTasksFilter				= null;
+		var $m_aTasksTypeFilter			= null;
+		var $m_aTask 					= array();
+		var $m_aCompletion 				= array();
+		var $m_aTaskResponsible 		= array();
+		var $m_oFilterSessionContext	= null;
 		
 		function BAB_TM_TaskFilterForm($sIdx)
 		{
@@ -1007,9 +1052,10 @@ function displayTaskList($sIdx)
 			$this->set_data('isProject', (int) bab_rp('isProject', 0));		
 			$this->set_caption('sAddTask', bab_translate("Add a task"));
 			$this->set_caption('sFilter', bab_translate("Filter"));
-			$this->set_caption('ganttView', bab_translate("Display the gantt View"));
-			$this->set_caption('sStartDate', bab_translate("Start Date"));
-			$this->set_caption('sEndDate', bab_translate("End Date"));
+			$this->set_caption('sStartDate', bab_translate("Real start date"));
+			$this->set_caption('sEndDate', bab_translate("Real end date"));
+			$this->set_caption('sPlannedStartDate', bab_translate("Planned start date"));
+			$this->set_caption('sPlannedEndDate', bab_translate("Planned end date"));
 			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
 			$this->set_caption('sCompletion', bab_translate("Completion"));
 			
@@ -1019,28 +1065,43 @@ function displayTaskList($sIdx)
 			$this->set_data('sAddTaskIdx', BAB_TM_IDX_DISPLAY_TASK_FORM);
 			$this->set_data('sAddTaskAction', '');
 			$this->set_data('bIsAddButton', false);
-			$this->set_data('sStartDate', bab_rp('sStartDate', ''));
-			$this->set_data('sEndDate', bab_rp('sEndDate', ''));
+			
+			$this->set_data('sPlannedStartDate', '');
+			$this->set_data('iPlannedStartHour', 0);
+			$this->set_data('sSelectedPlannedStartHour', '');
+			$this->set_data('iPlannedStartMinut', 0);
+			$this->set_data('sSelectedPlannedStartMinut', '');
+			
+			$this->set_data('sPlannedEndDate', '');
+			$this->set_data('iPlannedEndHour', 0);
+			$this->set_data('sSelectedPlannedEndHour', '');
+			$this->set_data('iPlannedEndMinut', 0);
+			$this->set_data('sSelectedPlannedEndMinut', '');
+			
+			$this->set_data('sStartDate', '');
+			$this->set_data('iStartHour', 0);
+			$this->set_data('sSelectedStartHour', '');
+			$this->set_data('iStartMinut', 0);
+			$this->set_data('sSelectedStartMinut', '');
+			
+			$this->set_data('sEndDate', '');
+			$this->set_data('iEndHour', 0);
+			$this->set_data('sSelectedEndHour', '');
+			$this->set_data('iEndMinut', 0);
+			$this->set_data('sSelectedEndMinut', '');
+			
+			$this->iniContext();
 
 			$this->set_data('isProjectDisplayed', (0 === (int) bab_rp('isProject', 0)));
 			$this->get_data('isProjectDisplayed', $isProjectDisplayed);
-			
-			$this->m_aSelectedFilterValues = null;
-			bab_getTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
-			
-			$this->m_aSelectedFilterValues['iIdProject'] = ($isProjectDisplayed ? 
-				(int) bab_rp('oTaskFilter', $this->m_aSelectedFilterValues['iIdProject']) : (int) bab_rp('iIdProject', 0));
-			$this->m_aSelectedFilterValues['iTaskClass'] = (int) bab_rp('oTaskTypeFilter', $this->m_aSelectedFilterValues['iTaskClass']);
-			
+
 			$this->set_data('iIdProjectSpace', (int) bab_rp('iIdProjectSpace', 0));
-			$this->set_data('iIdProject', $this->m_aSelectedFilterValues['iIdProject']);
 			
 			//Task filter (-1 ==> All, -2 ==> personnal task)
 			$this->set_caption('sProject', (0 === (int) bab_rp('isProject', 0) ? bab_translate("Project") : ''));
 			$this->set_data('iTaskFilterValue', -1);
 			$this->set_data('sTaskFilterSelected', '');
 			$this->set_data('sTaskFilterName', '');
-			$this->set_data('iSelectedTaskFilter', $this->m_aSelectedFilterValues['iIdProject']);
 
 			$this->m_aTasksFilter = array(
 				array('value' => -1, 'text' => bab_translate("All")));
@@ -1050,7 +1111,6 @@ function displayTaskList($sIdx)
 			$this->set_data('iTaskTypeFilterValue', -1);
 			$this->set_data('sTaskTypeFilterSelected', '');
 			$this->set_data('sTaskTypeFilterName', '');
-			$this->set_data('iSelectedTaskTypeFilter', $this->m_aSelectedFilterValues['iTaskClass']);
 
 			$this->m_aTasksTypeFilter = array(
 				array('value' => -1, 'text' => bab_translate("All")),
@@ -1061,10 +1121,6 @@ function displayTaskList($sIdx)
 				
 			$this->initTaskFilter();
 			
-//			bab_debug($this->m_aSelectedFilterValues);
-			
-			$this->m_aSelectedFilterValues['iTaskCompletion'] = (int) bab_rp('iCompletion', $this->m_aSelectedFilterValues['iTaskCompletion']);
-			$this->set_data('iCompletion', $this->m_aSelectedFilterValues['iTaskCompletion']);
 			$this->set_data('sSelectedTaskCompletion', '');
 			$this->m_aCompletion = array(
 				array('value' => -1, 'text' => bab_translate("All")),
@@ -1072,21 +1128,86 @@ function displayTaskList($sIdx)
 				array('value' => BAB_TM_ENDED, 'text' => bab_translate("Ended")),
 			);
 			
-			
 			if(1 === (int) bab_rp('isProject', 0))
 			{
-				$this->set_data('iIdOwner', (int) bab_rp('iIdOwner', 0));
 				$this->initTaskResponsible();
 			}
+		}
+		
+		function iniContext()
+		{
+			$this->get_data('isProject', $iIsProject);
 			
-			if(-1 != $this->m_aSelectedFilterValues['id'])
-			{
-				bab_updateTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
-			}
-			else 
-			{
-				bab_createTaskListFilter($GLOBALS['BAB_SESS_USERID'], $this->m_aSelectedFilterValues);
-			}
+			$sKey = (0 === $iIsProject) ? 'tskMgrPersonnalFilter' : 'tskMgrProjectFilter';
+			
+			$this->m_oFilterSessionContext = new BAB_TM_SessionContext($sKey);
+			
+			$this->m_oFilterSessionContext->set('iSelectedTaskTypeFilter', bab_rp('oTaskTypeFilter', 
+				$this->m_oFilterSessionContext->get('iSelectedTaskTypeFilter', '')));
+			$this->set_data('iSelectedTaskTypeFilter', $this->m_oFilterSessionContext->get('iSelectedTaskTypeFilter', ''));	
+			
+			$this->m_oFilterSessionContext->set('iTaskCompletion', bab_rp('iCompletion', 
+				$this->m_oFilterSessionContext->get('iTaskCompletion', '')));
+			$this->set_data('iCompletion', $this->m_oFilterSessionContext->get('iTaskCompletion', ''));	
+			
+			$this->m_oFilterSessionContext->set('iIdOwner', bab_rp('iIdOwner', 
+				$this->m_oFilterSessionContext->get('iIdOwner', 0)));
+			$this->set_data('iIdOwner', $this->m_oFilterSessionContext->get('iIdOwner', 0));
+			
+			$this->m_oFilterSessionContext->set('iIdProject', bab_rp('iIdProject', 
+				$this->m_oFilterSessionContext->get('iIdProject', -1)));
+			$this->set_data('iIdProject', $this->m_oFilterSessionContext->get('iIdProject', -1));
+			$this->set_data('iSelectedTaskFilter', $this->m_oFilterSessionContext->get('iIdProject', -1));
+			
+			$this->m_oFilterSessionContext->set('sStartDate', bab_rp('_sStartDate', 
+				$this->m_oFilterSessionContext->get('sStartDate', '')));
+			$this->set_data('sStartDate', $this->m_oFilterSessionContext->get('sStartDate', ''));
+			
+			$this->m_oFilterSessionContext->set('iStartHour', bab_rp('_oStartHour', 
+				$this->m_oFilterSessionContext->get('iStartHour', 0)));
+			$this->set_data('iStartHour', $this->m_oFilterSessionContext->get('iStartHour', 0));
+			
+			$this->m_oFilterSessionContext->set('iStartMinut', bab_rp('_oStartMinut', 
+				$this->m_oFilterSessionContext->get('iStartMinut', 0)));
+			$this->set_data('iStartMinut', $this->m_oFilterSessionContext->get('iStartMinut', 0));
+
+			$this->m_oFilterSessionContext->set('sEndDate', bab_rp('_sEndDate', 
+				$this->m_oFilterSessionContext->get('sEndDate', '')));
+			$this->set_data('sEndDate', bab_rp('_sEndDate', ''));
+			
+			$this->m_oFilterSessionContext->set('iEndHour', bab_rp('_oEndHour', 
+				$this->m_oFilterSessionContext->get('iEndHour', 0)));
+			$this->set_data('iEndHour', $this->m_oFilterSessionContext->get('iEndHour', 0));
+			
+			$this->m_oFilterSessionContext->set('iEndMinut', bab_rp('_oEndMinut', 
+				$this->m_oFilterSessionContext->get('iEndMinut', 0)));
+			$this->set_data('iEndMinut', $this->m_oFilterSessionContext->get('iEndMinut', 0));
+			
+			$this->m_oFilterSessionContext->set('sPlannedStartDate', bab_rp('_sPlannedStartDate', 
+				$this->m_oFilterSessionContext->get('sPlannedStartDate', '')));
+			$this->set_data('sPlannedStartDate', $this->m_oFilterSessionContext->get('sPlannedStartDate', ''));
+			
+			$this->m_oFilterSessionContext->set('iPlannedStartHour', bab_rp('_oPlannedStartHour', 
+				$this->m_oFilterSessionContext->get('iPlannedStartHour', 0)));
+			$this->set_data('iPlannedStartHour', $this->m_oFilterSessionContext->get('iPlannedStartHour', 0));
+			
+			$this->m_oFilterSessionContext->set('iPlannedStartMinut', bab_rp('_oPlannedStartMinut', 
+				$this->m_oFilterSessionContext->get('iPlannedStartMinut', 0)));
+			$this->set_data('iPlannedStartMinut', $this->m_oFilterSessionContext->get('iPlannedStartMinut', 0));
+
+			$this->m_oFilterSessionContext->set('sPlannedEndDate', bab_rp('_sPlannedEndDate', 
+				$this->m_oFilterSessionContext->get('sPlannedEndDate', '')));
+			$this->set_data('sPlannedEndDate', bab_rp('_sPlannedEndDate', ''));
+			
+			$this->m_oFilterSessionContext->set('iPlannedEndHour', bab_rp('_oPlannedEndHour', 
+				$this->m_oFilterSessionContext->get('iEndHour', 0)));
+			$this->set_data('iPlannedEndHour', $this->m_oFilterSessionContext->get('iPlannedEndHour', 0));
+			
+			$this->m_oFilterSessionContext->set('iPlannedEndMinut', bab_rp('_oPlannedEndMinut', 
+				$this->m_oFilterSessionContext->get('iEndMinut', 0)));
+			$this->set_data('iPlannedEndMinut', $this->m_oFilterSessionContext->get('iPlannedEndMinut', 0));
+			
+//			bab_debug($_GET);
 		}
 		
 		function initTaskFilter()
@@ -1126,12 +1247,11 @@ function displayTaskList($sIdx)
 			}
 			
 			reset($this->m_aTasksFilter);
-			//bab_debug($this->m_aTasksFilter);
 		}
 		
 		function initTaskResponsible()
 		{
-			bab_getAllTaskIndexedById($this->m_aSelectedFilterValues['iIdProject'], $this->m_aTask);
+			bab_getAllTaskIndexedById($this->m_oFilterSessionContext->get('iIdProject', 0), $this->m_aTask);
 			
 			while(false != ($datas = each($this->m_aTask)))
 			{
@@ -1170,7 +1290,7 @@ function displayTaskList($sIdx)
 				$sName			= (string) $datas['value']['sName'];
 				
 				$this->set_data('idResponsible', $iIdResponsible);
-				$this->set_data('sSelectedUserName', (($iIdOwner === $iIdResponsible) ? 'selected="selected"' : ''));
+				$this->set_data('sSelectedUserName', (((int) $iIdOwner === $iIdResponsible) ? 'selected="selected"' : ''));
 				$this->set_data('sUserName', bab_toHtml($sName));
 				return true;
 			}			
@@ -1208,7 +1328,6 @@ function displayTaskList($sIdx)
 			}
 			return false;
 		}
-		
 			
 		function getNextTaskCompletion()
 		{
@@ -1230,12 +1349,101 @@ function displayTaskList($sIdx)
 		{
 			return bab_printTemplate($this, 'tmUser.html', 'taskListFilter');
 		}
+
+		function getNextPlannedStartHour()
+		{
+			$sFieldPart = 'PlannedStart';
+			return $this->getNextHour($sFieldPart);
+		}
+
+		function getNextPlannedEndHour()
+		{
+			$sFieldPart = 'PlannedEnd';
+			return $this->getNextHour($sFieldPart);
+		}
+
+		function getNextStartHour()
+		{
+			$sFieldPart = 'Start';
+			return $this->getNextHour($sFieldPart);
+		}
+
+		function getNextEndHour()
+		{
+			$sFieldPart = 'End';
+			return $this->getNextHour($sFieldPart);
+		}
+		
+		function getNextHour($sFieldPart)
+		{
+			static $iHour = -1;
+			
+			if($iHour < 23)
+			{
+				$this->set_data('iHour', ++$iHour);
+				$this->set_data('sHour', sprintf("%02d", $iHour));
+				$this->get_data('i' . $sFieldPart . 'Hour', $iFieldValue);
+				$this->set_data('sSelected' . $sFieldPart . 'Hour', ($iHour == $iFieldValue) ? 
+					'selected="selected"' : '');
+				return true;
+			}
+			else
+			{
+				$iHour = - 1; 
+				return false;
+			}
+		}
+
+		function getNextPlannedStartMinut()
+		{
+			$sFieldPart = 'PlannedStart';
+			return $this->getNextMinut($sFieldPart);
+		}
+
+		function getNextPlannedEndMinut()
+		{
+			$sFieldPart = 'PlannedEnd';
+			return $this->getNextMinut($sFieldPart);
+		}
+
+		function getNextStartMinut()
+		{
+			$sFieldPart = 'Start';
+			return $this->getNextMinut($sFieldPart);
+		}
+
+		function getNextEndMinut()
+		{
+			$sFieldPart = 'End';
+			return $this->getNextMinut($sFieldPart);
+		}
+
+		function getNextMinut($sFieldPart)
+		{
+			static $iMinut = -1;
+			
+			if($iMinut < 59)
+			{
+				$this->set_data('iMinut', ++$iMinut);
+				$this->set_data('sMinut', sprintf("%02d", $iMinut));
+				$this->get_data('i' . $sFieldPart . 'Minut', $iFieldValue);
+				$this->set_data('sSelected' . $sFieldPart . 'Minut', ($iMinut == $iFieldValue) ? 
+					'selected="selected"' : '');
+				return true;
+			}
+			else
+			{
+				$iMinut = - 1; 
+				return false;
+			}
+		}
 	}
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
-	$iTaskFilter =& $oTaskFilterForm->m_aSelectedFilterValues['iIdProject'];
-	$iTaskClass =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskClass'];
-	$iTaskCompletion =& $oTaskFilterForm->m_aSelectedFilterValues['iTaskCompletion'];
+	$iTaskFilter =& $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
+	
+	$iTaskClass =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskClass');
+	$iTaskCompletion =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskCompletion');
 
 	global $babUrlScript;
 	$sGanttViewUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_GANTT_CHART);
@@ -1256,6 +1464,7 @@ function displayTaskList($sIdx)
 		}
 		else 
 		{
+			
 			$aFilters['iIdProject'] = $iTaskFilter;
 			$sGanttViewUrl .= '&iIdProject=' . urlencode($aFilters['iIdProject']);
 		}
@@ -1282,19 +1491,57 @@ function displayTaskList($sIdx)
 	global $babInstallPath;
 	require_once($babInstallPath . 'tmTaskClasses.php');
 	
-	$sStartDate = (string) bab_rp('sStartDate', '');
-	$sEndDate = (string) bab_rp('sEndDate', '');
+	$sStartDate			= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sStartDate');
+	$sEndDate 			= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sEndDate');
+	$sPlannedStartDate	= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sPlannedStartDate');
+	$sPlannedEndDate	= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sPlannedEndDate');
 
 	if(strlen(trim($sStartDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr($sStartDate);
-		$aFilters['sStartDate'] = $sStartDate . ' 00:00:00';
+		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sStartDate));
+		if(!is_null($oDate))
+		{
+			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iStartHour'), 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iStartMinut'));
+			$aFilters['sStartDate'] = $oDate->getIsoDateTime();
+		}
 	}
 
 	if(strlen(trim($sEndDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr($sEndDate);
-		$aFilters['sEndDate'] = $sEndDate . ' 23:59:59';
+		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sEndDate));
+		if(!is_null($oDate))
+		{
+			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iEndHour'), 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iEndMinut'));
+			$aFilters['sEndDate'] = $oDate->getIsoDateTime();
+		}
+	}
+
+	if(strlen(trim($sPlannedStartDate)) > 0)
+	{
+		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedStartDate));
+		if(!is_null($oDate))
+		{
+			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iPlannedStartHour'), 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iPlannedStartMinut'));
+			$aFilters['sPlannedStartDate'] = $oDate->getIsoDateTime();
+		}
+	}
+
+	if(strlen(trim($sPlannedEndDate)) > 0)
+	{
+		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedEndDate));
+		if(!is_null($oDate))
+		{
+			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iPlannedEndHour'), 
+				$oTaskFilterForm->m_oFilterSessionContext->get('iPlannedEndMinut'));
+			$aFilters['sPlannedEndDate'] = $oDate->getIsoDateTime();
+		}
 	}
 	
 	$iIdOwner = (int) bab_rp('iIdOwner', 0);
@@ -1307,8 +1554,6 @@ function displayTaskList($sIdx)
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
 	$aFilters['bIsManager'] = ($iUserProfil === BAB_TM_PROJECT_MANAGER);
 	
-	$oTaskFilterForm->m_sGanttViewUrl = bab_toHtml($sGanttViewUrl);
-
 	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
 	

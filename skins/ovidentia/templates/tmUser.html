@@ -1361,22 +1361,82 @@ function tskMgr_showHide(oControl)
 				</tr>
 				<tr>
 					<td>
-						<label for="sStartDate">{ m_captions[sStartDate] }</label>
+						<label for="_sStartDate">{ m_captions[sStartDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sStartDate" id="sStartDate" maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
-						<a href="javascript:dateCallback('sStartDate');">
+						<input type="text" name="_sStartDate" id="_sStartDate" maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+						<a href="javascript:dateCallback('_sStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sStartDate] }" />
-						</a>
+						</a>&nbsp;&nbsp;
+						<select id="_oStartHour" name="_oStartHour">
+							<!--#in getNextStartHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedStartHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextStartHour -->
+						</select>:
+						<select id="_oStartMinut" name="_oStartMinut">
+							<!--#in getNextStartMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedStartMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextStartMinut -->
+						</select>
 					</td>
 					<td>
-						<label for="sEndDate">{ m_captions[sEndDate] }</label>
+						<label for="_sEndDate">{ m_captions[sEndDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sEndDate" id="sEndDate" maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
-						<a href="javascript:dateCallback('sEndDate');">
+						<input type="text" name="_sEndDate" id="_sEndDate" maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+						<a href="javascript:dateCallback('_sEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sEndDate] }" />
-						</a>
+						</a>&nbsp;&nbsp;
+						<select id="_oEndHour" name="_oEndHour">
+							<!--#in getNextEndHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedEndHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextEndHour -->
+						</select>:
+						<select id="_oEndMinut" name="_oEndMinut">
+							<!--#in getNextEndMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedEndMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextEndMinut -->
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="_sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedStartDate" id="_sPlannedStartDate" maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+						<a href="javascript:dateCallback('_sPlannedStartDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
+						</a>&nbsp;&nbsp;
+						<select id="_oPlannedStartHour" name="_oPlannedStartHour">
+							<!--#in getNextPlannedStartHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedStartHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getPlannedNextStartHour -->
+						</select>:
+						<select id="_oPlannedStartMinut" name="_oPlannedStartMinut">
+							<!--#in getNextPlannedStartMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedStartMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getPlannedNextStartMinut -->
+						</select>
+					</td>
+					<td>
+						<label for="_sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
+					</td>
+					<td>
+						<input type="text" name="_sPlannedEndDate" id="_sPlannedEndDate" maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+						<a href="javascript:dateCallback('_sPlannedEndDate');">
+							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
+						</a>&nbsp;&nbsp;
+						<select id="_oPlannedEndHour" name="_oPlannedEndHour">
+							<!--#in getNextPlannedEndHour -->
+							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedEndHour] } >{ m_datas[sHour] }</option>
+							<!--#endin getNextPlannedEndHour -->
+						</select>:
+						<select id="_oPlannedEndMinut" name="_oPlannedEndMinut">
+							<!--#in getNextPlannedEndMinut -->
+							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedEndMinut] } >{ m_datas[sMinut] }</option>
+							<!--#endin getNextPlannedEndMinut -->
+						</select>
 					</td>
 				</tr>
 				

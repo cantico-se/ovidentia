@@ -309,7 +309,7 @@
 			
 			$this->set_data('sEndDate', '');
 			$this->set_data('iEndHour', 0);
-			$this->set_data('sSelectedEndMinut', '');
+			$this->set_data('sSelectedEndHour', '');
 			$this->set_data('iEndMinut', 0);
 			$this->set_data('sSelectedEndMinut', '');
 			
