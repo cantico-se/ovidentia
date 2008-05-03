@@ -4446,6 +4446,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	$babDB->db_query('DROP TABLE `' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . '`');
+	
+	
 	return true;
 }
 ?>
