@@ -1160,16 +1160,12 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sStartDate)) > 0)
 	{
-//		BAB_TM_TaskValidatorBase::frenchDateToIso($sStartDate);
-
 		$oDate = BAB_DateTime::fromDateStr($sStartDate);
 		$aFilters['sStartDate'] = $sStartDate . ' 00:00:00';
 	}
 
 	if(strlen(trim($sEndDate)) > 0)
 	{
-//		BAB_TM_TaskValidatorBase::frenchDateToIso($sEndDate);
-
 		$oDate = BAB_DateTime::fromDateStr($sEndDate);
 		$aFilters['sEndDate'] = $sEndDate . ' 23:59:59';
 	}
@@ -1208,10 +1204,10 @@ function displayTaskList($sIdx)
 			$datas = parent::getNextItem();
 			if(false != $datas)
 			{
-				$datas['startDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['startDate'])));
-				$datas['endDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['endDate'])));
-				$datas['plannedStartDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['plannedStartDate'])));
-				$datas['plannedEndDate'] = bab_toHtml(bab_shortDate(bab_mktime($datas['plannedEndDate'])));
+				$this->setDateTime($datas['startDate']);
+				$this->setDateTime($datas['endDate']);
+				$this->setDateTime($datas['plannedStartDate']);
+				$this->setDateTime($datas['plannedEndDate']);
 				
 				if($datas['iPlannedTimeDurationUnit'] == BAB_TM_DAY)
 				{
@@ -1271,6 +1267,18 @@ function displayTaskList($sIdx)
 			$datas['iCost']				= number_format($this->m_fTotalCost, 2, '.', '');
 			
 			return $datas;
+		}
+		
+		function setDateTime(&$sDateTime)
+		{
+			if('0000-00-00 00:00:00' != $sDateTime)
+			{
+				$sDateTime = bab_toHtml(bab_shortDate(bab_mktime($sDateTime)));
+			}
+			else
+			{
+				$sDateTime = '&nbsp';
+			}
 		}
 	}
 
