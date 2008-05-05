@@ -1,37 +1,8 @@
 
 
 <!--#begin mailcompose -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }"></script>
 
-<script type="text/javascript">
-<!--
-<!--#if bhtml "== 1" -->
-function mm()
-{
-  document.forms.composef.compose.value = "";
-  document.forms.composef.idx.value = "compose";
-  document.forms.composef.submit.click();
-}
-
-<!--#endif bhtml -->
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY>
-<br>
-<center>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ msgerror }</td>
-</tr></table></center>
-<br>
+<br />
 <form method="post" name="composef" action="{ babPhpSelf }" enctype="multipart/form-data">
 <input type="hidden" name="tg" value="mail">
 <input type="hidden" name="idx" value="compose">
@@ -40,103 +11,102 @@ window.focus();
 <input type="hidden" name="reverse" value="{ reverse }">
 <input type="hidden" name="compose" value="message">
 
-<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
-<td class="BabContentBackground" align="center" valign="middle"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td  class="BabMailBackground" width="20%" align="right" nowrap valign="middle">{ from }</td>
-<td  class="BabMailBackground" width="80%" valign="middle"><b>{ fromval }</b></td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a href="javascript: Start('{ urlto }', 'OviMailL', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
-<td  class="BabMailBackground" valign="middle">
-<input type="text" name="to" size="40" value="{ toval }"> 
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a href="javascript: Start('{ urlto }', 'OviMailM', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
-<td class="BabMailBackground" valign="middle"> 
-<input type="text" name="cc" size="40" value="{ ccval }"> 
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle"><a href="javascript: Start('{ urlto }', 'OviMailW', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
-<td class="BabMailBackground" valign="middle"> 
-<input type="text" name="bcc" size="40" value="{ bccval }"> 
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">{ subject }</td>
-<td class="BabMailBackground" valign="middle"> 
-<input type="text" name="subject" size="60" value="{ subjectval }"> 
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">{ attachments }</td>
-<td class="BabMailBackground" valign="middle"> 
-<input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabMailBackground" align="left" valign="middle"> 
-<input type="file" name="files[]" size="40" value="{ file2 }">
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">&nbsp;</td>
-<td class="BabMailBackground" valign="middle"> 
-<input type="file" name="files[]" size="40" value="{ file3 }">
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" align="right" nowrap valign="middle">{ format }</td>
-<td class="BabMailBackground" valign="middle"> 
-	<select name="format" 
-  	<!--#if bhtml "== 1" -->
-	onChange="mm()" 
-	<!--#endif bhtml -->	
-	> 
-	<option value="plain" { plainselect }>{ plain }</option> 
-	<option value="html" { htmlselect }>{ html }</option> 
-	</select> 
-</td>
-</tr>
-
-<tr> 
-<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<!--#if plainselect -->
-	<textarea name="message" style="width:100%;" rows="20">{ messageval }</textarea>
-<!--#else plainselect -->
-	{ editor }
-<!--#endif plainselect -->
-</td>
-</tr>
-<tr> 
-<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-<select name="sigid">
-<option value="0" { defaultselected }>{ selectsig }</option>
-<!--#in getnextsig -->
-<option value="{ sigid }"  { sigselected }>{ signame }</option>
-<!--#endin getnextsig -->
-</select>
-</td>
-</tr>
-<tr> 
-	<td class="BabMailBackground" colspan="2" align="center" nowrap valign="middle"> 
-		<input type="submit" name="submit" value="{ send }" />
-		&nbsp;&nbsp;&nbsp;
-		<input type="button" name="cancel" value="{ cancel }" onClick="window.close()" />
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+	<table width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
+	<tr> 
+	<td  width="20%" align="right">{ from }</td>
+	<td  width="80%"><b>{ fromval }</b></td>
+	</tr>
+	<tr> 
+	<td align="right"><a href="javascript: Start('{ urlto }', 'OviMailL', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
+	<td   valign="middle">
+	<input type="text" name="to" size="40" value="{ toval }"> 
 	</td>
-</tr>
-</table>
+	</tr>
+	<tr> 
+	<td  align="right"><a href="javascript: Start('{ urlto }', 'OviMailM', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
+	<td> 
+	<input type="text" name="cc" size="40" value="{ ccval }"> 
+	</td>
+	</tr>
+	<tr> 
+	<td align="right"><a href="javascript: Start('{ urlto }', 'OviMailW', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
+	<td> 
+	<input type="text" name="bcc" size="40" value="{ bccval }"> 
+	</td>
+	</tr>
+	<tr> 
+	<td  align="right">{ subject }</td>
+	<td> 
+	<input type="text" name="subject" size="60" value="{ subjectval }"> 
+	</td>
+	</tr>
+	<tr> 
+	<td  align="right">{ attachments }</td>
+	<td> 
+	<input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
+	</td>
+	</tr>
+	<tr> 
+	<td  align="right">&nbsp;</td>
+	<td align="left"> 
+	<input type="file" name="files[]" size="40" value="{ file2 }">
+	</td>
+	</tr>
+	<tr> 
+	<td  align="right" >&nbsp;</td>
+	<td  valign="middle"> 
+	<input type="file" name="files[]" size="40" value="{ file3 }">
+	</td>
+	</tr>
+	<tr> 
+	<td  align="right">{ format }</td>
+	<td  valign="middle"> 
+		<select name="format" 
+		<!--#if bhtml "== 1" -->
+		onChange="mm()" 
+		<!--#endif bhtml -->	
+		> 
+		<option value="plain" { plainselect }>{ plain }</option> 
+		<option value="html" { htmlselect }>{ html }</option> 
+		</select> 
+	</td>
+	</tr>
+	
+	<tr> 
+	<td  colspan="2" align="center"> 
+	<!--#if plainselect -->
+		<textarea name="message" style="width:100%;" rows="20">{ messageval }</textarea>
+	<!--#else plainselect -->
+		{ editor }
+	<!--#endif plainselect -->
+	</td>
+	</tr>
+	<tr> 
+	<td  colspan="2" align="center"> 
+	<select name="sigid">
+	<option value="0" { defaultselected }>{ selectsig }</option>
+	<!--#in getnextsig -->
+	<option value="{ sigid }"  { sigselected }>{ signame }</option>
+	<!--#endin getnextsig -->
+	</select>
+	</td>
+	</tr>
+	<tr> 
+		<td  colspan="2" align="center"> 
+			<input type="submit" name="submit" value="{ send }" />
+			&nbsp;&nbsp;&nbsp;
+			<input type="button" name="cancel" value="{ cancel }" onClick="window.close()" />
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
-<br>
-</BODY></HTML>
+
 
 <!--#end mailcompose -->
 

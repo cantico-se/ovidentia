@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 include_once $babInstallPath.'utilit/mailincl.php';
+include_once $babInstallPath.'utilit/inboxincl.php';
 
 define('MAX_MSGROWS', 10);
 
@@ -95,25 +96,13 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->dateurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".SORTARRIVAL."&reverse=".$reverse;
 
 			$this->mailcount = 0;
-			if( empty($accid))
-				{
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and prefered='Y'";
-				$res = $babDB->db_query($req);
-				if( !$res || $babDB->db_num_rows($res) == 0 )
-					{
-					$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-					}
-				}
-			else
-				{
-				$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$babDB->db_escape_string($accid)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
-				}
 			$this->composeurl = $GLOBALS['babUrlScript']."?tg=mail&idx=compose&criteria=".$criteria."&reverse=".$reverse;
 
-			$res = $babDB->db_query($req);
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			
+			$arr = bab_getMailAccount($accid);
+
+			if($arr)
 				{
-				$arr = $babDB->db_fetch_array($res);
 				$this->maxrows = $arr['maxrows'];
 				$this->mailboxname = $arr['account_name'];
 				if( empty($accid))
@@ -129,14 +118,8 @@ function listMails($accid, $criteria, $reverse, $start)
 					{
 					$arr2 = $babDB->db_fetch_array($res2);
 					$this->access = $arr2['access'];
-					$protocol = '';
-					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
-						{
-						$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
-						}
 
-					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
+					$this->mbox = bab_getMailBox($accid);
 					if(!$this->mbox)
 						{
 						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
@@ -205,10 +188,16 @@ function listMails($accid, $criteria, $reverse, $start)
 				$this->msgid = $this->msguid[$this->start-1 + $i];
 				$headinfo = imap_header($this->mbox, imap_msgno($this->mbox, $this->msgid));
 				
-				if( empty($headinfo->from[0]->personal))
-					$this->msgfromurlname = $headinfo->from[0]->mailbox ."@". $headinfo->from[0]->host;
-				else
-					$this->msgfromurlname = $headinfo->from[0]->personal;
+				if (isset($headinfo->from)) {
+					if( empty($headinfo->from[0]->personal)) {
+						$this->msgfromurlname = $headinfo->from[0]->mailbox ."@". $headinfo->from[0]->host;
+						}
+					else {
+						$this->msgfromurlname = $headinfo->from[0]->personal;
+						}
+				} else {
+					$this->msgfromurlname = '';
+				}
 
 				$arr = imap_mime_header_decode($this->msgfromurlname);
 				$this->msgfromurlname = '';
@@ -232,6 +221,7 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->bunseen = true;
 				else
 					$this->bunseen = false;
+					
 				$this->attachment = 0;
 				$this->priority = 0;
 				$reg = "/Content-Type:\s+([^ ;\n\t]*)/s";
@@ -358,104 +348,90 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->accid = $accid;
 			$this->ccval = "";
 
-			$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where id='".$babDB->db_escape_string($accid)."'";
-			$res = $babDB->db_query($req);
-			if( $res && $babDB->db_num_rows($res) > 0 )
+			$arr = bab_getMailAccount($accid);
+			if( $arr )
 				{
-				$arr = $babDB->db_fetch_array($res);
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
-				$res2 = $babDB->db_query($req);
-				if( $res2 && $babDB->db_num_rows($res2) > 0 )
+
+				$this->mbox = bab_getMailBox($accid);
+				if(!$this->mbox)
 					{
-					$arr2 = $babDB->db_fetch_array($res2);
-					$protocol = '';
-					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+					$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
+					}
+				else
+					{
+					$msg = imap_msgno($this->mbox, $msg); 
+					$headinfo = imap_header($this->mbox, $msg); 
+					$arr = $headinfo->from;
+					$this->fromval = '';
+					for($i=0; $i < count($arr); $i++)
 						{
-						$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+						if( isset($arr[$i]->personal))
+							{
+							$mhc = imap_mime_header_decode($arr[$i]->personal);
+							$mhtext = $mhc[0]->text;
+							}
+						else
+							{
+							$mhtext ='';
+							}
+						$this->fromval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+						$this->arrfrom[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 						}
 
-					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-					$this->mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
-					if(!$this->mbox)
+					$arr = isset($headinfo->to) ? $headinfo->to : array();
+					$this->toval = '';
+					for($i=0; $i < count($arr); $i++)
 						{
-						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
+						if( isset($arr[$i]->personal))
+							{
+							$mhc = imap_mime_header_decode($arr[$i]->personal);
+							$mhtext = $mhc[0]->text;
+							}
+						else
+							{
+							$mhtext ='';
+							}
+						$this->toval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+						$this->arrto[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
+						}
+
+					$arr = isset($headinfo->cc) ? $headinfo->cc : array();
+					for($i=0; $i < count($arr); $i++)
+						{
+						if( isset($arr[$i]->personal))
+							{
+							$mhc = imap_mime_header_decode($arr[$i]->personal);
+							$mhtext = $mhc[0]->text;
+							}
+						else
+							{
+							$mhtext ='';
+							}
+						$this->ccval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
+						$this->arrcc[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
+						}
+
+					$mhc = imap_mime_header_decode($headinfo->subject);
+					if(empty($mhc[0]->text))
+						$this->subjectval = "(".bab_translate("none").")";
+					else
+						$this->subjectval = htmlentities($mhc[0]->text);
+					$this->dateval = bab_strftime($headinfo->udate);
+
+					$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/HTML");
+					if(!$this->msgbody)
+						{
+						$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/PLAIN");
+						$this->msgbody= nl2br(htmlentities ( $this->msgbody));
+						$this->msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a target='blank' href='\\1'>\\1</a>",$this->msgbody); 
 						}
 					else
 						{
-						$msg = imap_msgno($this->mbox, $msg); 
-						$headinfo = imap_header($this->mbox, $msg); 
-						$arr = $headinfo->from;
-						$this->fromval = '';
-						for($i=0; $i < count($arr); $i++)
-							{
-							if( isset($arr[$i]->personal))
-								{
-								$mhc = imap_mime_header_decode($arr[$i]->personal);
-								$mhtext = $mhc[0]->text;
-								}
-							else
-								{
-								$mhtext ='';
-								}
-							$this->fromval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrfrom[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
-							}
-
-						$arr = isset($headinfo->to) ? $headinfo->to : array();
-						$this->toval = '';
-						for($i=0; $i < count($arr); $i++)
-							{
-							if( isset($arr[$i]->personal))
-								{
-								$mhc = imap_mime_header_decode($arr[$i]->personal);
-								$mhtext = $mhc[0]->text;
-								}
-							else
-								{
-								$mhtext ='';
-								}
-							$this->toval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrto[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
-							}
-
-						$arr = isset($headinfo->cc) ? $headinfo->cc : array();
-						for($i=0; $i < count($arr); $i++)
-							{
-							if( isset($arr[$i]->personal))
-								{
-								$mhc = imap_mime_header_decode($arr[$i]->personal);
-								$mhtext = $mhc[0]->text;
-								}
-							else
-								{
-								$mhtext ='';
-								}
-							$this->ccval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
-							$this->arrcc[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
-							}
-
-						$mhc = imap_mime_header_decode($headinfo->subject);
-						if(empty($mhc[0]->text))
-							$this->subjectval = "(".bab_translate("none").")";
-						else
-							$this->subjectval = htmlentities($mhc[0]->text);
-						$this->dateval = bab_strftime($headinfo->udate);
-
-						$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/HTML");
-						if(!$this->msgbody)
-							{
-							$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/PLAIN");
-							$this->msgbody= nl2br(htmlentities ( $this->msgbody));
-							$this->msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a target='blank' href='\\1'>\\1</a>",$this->msgbody); 
-							}
-						else
-							{
-							$this->msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
-							}
-						$this->get_attachment($msg);
-						$this->count = count($this->attachment);
-						imap_close($this->mbox);
+						$this->msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
 						}
+					$this->get_attachment($msg);
+					$this->count = count($this->attachment);
+					imap_close($this->mbox);
 					}
 				}
 
@@ -684,146 +660,51 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 
 function showPart($accid, $msg, $cid)
 	{
-	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
-	$res = $babDB->db_query($req);
-	if( $res && $babDB->db_num_rows($res)> 0)
+	$mbox = bab_getMailBox($accid);
+	if($mbox)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
-		$res2 = $babDB->db_query($req);
-		if( $res2 && $babDB->db_num_rows($res2)> 0)
-			{
-			$arr2 = $babDB->db_fetch_array($res2);
-			$protocol = '';
-			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
-				{
-				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
-				}
-
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
-			if($mbox)
-				{
-				$data = get_cid_part ($mbox, $msg, "<" . $cid . ">");
-				imap_close ($mbox);
-				header ("Content-Type: " . strtolower ($data[1])); 
-				echo $data[0];
-				exit;
-				}
-			else
-				return;
-			}
+		$data = get_cid_part ($mbox, $msg, "<" . $cid . ">");
+		imap_close ($mbox);
+		header ("Content-Type: " . strtolower ($data[1])); 
+		echo $data[0];
+		exit;
 		}
 	}
 
 function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	{
-	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
-
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
-	$res = $babDB->db_query($req);
-	if( $res && $babDB->db_num_rows($res)> 0)
+	$mbox = bab_getMailBox($accid);
+	if($mbox)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
-		$res2 = $babDB->db_query($req);
-		if( $res2 && $babDB->db_num_rows($res2)> 0)
-			{
-			$arr2 = $babDB->db_fetch_array($res2);
-			$protocol = '';
-			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
-				{
-				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
-				}
+		$structure = imap_fetchstructure($mbox, $msg, FT_UID);
+		$text = imap_fetchbody($mbox, $msg, $part, FT_UID);
+		imap_close($mbox);
+		
+		if( $enc == 3)
+			$text =  imap_base64 ($text);
+		else if ($enc == 4)
+			$text = imap_qprint ($text);
 
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
-			if($mbox)
-				{
-            	$structure = imap_fetchstructure($mbox, $msg, FT_UID);
-				$text = imap_fetchbody($mbox, $msg, $part, FT_UID);
-				imap_close($mbox);
-				/*
-            	if (eregi("([0-9\.]*)\.([0-9\.]*)", $part, $m))
-                    {
-                    $idx = $m[2] - 1;
-                    }
-                else
-                    {
-                    $idx = 0;
-                    }
+		if( strtolower(bab_browserAgent()) == "msie")
+			header('Cache-Control: public');
 
-                if( $idx )
-                    {
-            		$msgpart = $structure->parts[$idx];
-                    }
-                else
-                    {
-            		$msgpart = $structure->parts[$part - 1];
-                    }
-                
-                $filename = "unknown";
-                for ($i=0; $i < count($msgpart->dparameters); $i++)
-                    {
-                    if (eregi("filename", $msgpart->dparameters[$i]->attribute))
-                        {
-                        $filename = $msgpart->dparameters[$i]->value;
-                        }
-                    }
-				*/
-				if( $enc == 3)
-					$text =  imap_base64 ($text);
-				else if ($enc == 4)
-					$text = imap_qprint ($text);
-
-				if( strtolower(bab_browserAgent()) == "msie")
-					header('Cache-Control: public');
-
-				header("Content-Type: " . $mime);
-				header("Content-Disposition: attachment; filename=\"".$file."\"");
-				echo $text;
-				exit;
-				}
-			else
-				return;
-			}
+		header("Content-Type: " . $mime);
+		header("Content-Disposition: attachment; filename=\"".$file."\"");
+		echo $text;
+		exit;
 		}
 	}
 
 function deleteMails($item, $accid, $criteria, $reverse)
 	{
-	global $BAB_SESS_USERID, $babDB, $BAB_HASH_VAR;
-
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
-	$res = $babDB->db_query($req);
-	if( $res && $babDB->db_num_rows($res)> 0)
+	$mbox = bab_getMailBox($accid);
+	if($mbox)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
-		$res2 = $babDB->db_query($req);
-		if( $res2 && $babDB->db_num_rows($res2)> 0)
-			{
-			$arr2 = $babDB->db_fetch_array($res2);
-			$protocol = '';
-			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
-				{
-				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
-				}
-
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-			$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
-			if($mbox)
-				{
-				for($i=0; $i < count($item); $i++)
-					imap_delete($mbox, $item[$i], FT_UID);
-				imap_expunge($mbox);
-				imap_close($mbox);
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-				}
-			else
-				return;
-			}
+		for($i=0; $i < count($item); $i++)
+			imap_delete($mbox, $item[$i], FT_UID);
+		imap_expunge($mbox);
+		imap_close($mbox);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		}
 	}
 
@@ -839,17 +720,14 @@ if (!function_exists('imap_open'))
 	return;
 	}
 
-if( !isset($criteria))
-	$criteria=SORTARRIVAL;
 
-if( !isset($accid))
-	$accid="";
-
-if( !isset($reverse))
-	$reverse=1;
-
-if( !isset($start) || empty($start))
+$criteria = bab_rp('criteria',SORTARRIVAL);
+$accid = bab_rp('accid');
+$reverse = bab_rp('reverse',1);
+$start = bab_rp('start',1);
+if(empty($start)) {
 	$start=1;
+}
 
 if( isset($viewacc) && $viewacc == "view")
 {

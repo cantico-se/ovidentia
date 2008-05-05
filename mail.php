@@ -105,7 +105,7 @@ function addAddress( $val, $to, &$adarr)
 }
 
 
-function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
+function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 	{
 	global $babBody;
 
@@ -146,11 +146,10 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 		var $msgerror;
 
 
-		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error)
+		function temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid)
 			{
 			global $babDB, $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
 			$this->psigid = $psigid;
-			$this->msgerror = $error;
 			$this->toval = "";
 			if( !empty($pto))
 				$this->toval = $pto;
@@ -279,9 +278,8 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 
 		}
 	
-	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid, $error);
-	//$babBody->babecho(	bab_printTemplate($temp,"mail.html", "mailcompose"));
-	echo bab_printTemplate($temp,"mail.html", "mailcompose");
+	$temp = new temp($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, $pfiles, $pformat, $pmsg, $psigid);
+	$babBody->babPopup(	bab_printTemplate($temp,"mail.html", "mailcompose"));
 	}
 
 function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
@@ -447,126 +445,100 @@ function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $file
 
 function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
     {
-    global $babBody, $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
+	include_once $GLOBALS['babInstallPath'].'utilit/inboxincl.php';
     $CRLF = "\r\n";
-	$req = "select *, DECODE(password, \"".$BAB_HASH_VAR."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
-	$res = $babDB->db_query($req);
-	
-    if( $res && $babDB->db_num_rows($res) > 0 )
-        {
-		
-        $arr = $babDB->db_fetch_array($res);
-        $req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($arr['domain'])."'";
-        $res2 = $babDB->db_query($req);
-        if( $res2 && $babDB->db_num_rows($res2) > 0 )
-            {
-			
-            $arr2 = $babDB->db_fetch_array($res2);
-			$protocol = '';
-			if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
+
+	$mbox = bab_getMailBox($accid);
+	if($mbox)
+		{
+		$idreply = imap_msgno($mbox, $idreply);
+		$headinfo = imap_header($mbox, $idreply);
+		$arr = $headinfo->from;
+		$toval = "";
+		$fromorg = '';
+		for($i=0; $i < count($arr); $i++)
+			{
+			if( isset($arr[$i]->personal))
 				{
-				$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
+				$mhc = imap_mime_header_decode($arr[$i]->personal);
+				$fromorg .= $mhc[0]->text;
+				}
+			$fromorg .= " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
+
+			if( $fw != 1)
+				$toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
+			}
+		$toorg = "";
+		if( $fw != 1)
+			{
+			$arr = $headinfo->to;
+			for($i=0; $i < count($arr); $i++)
+				{
+				if (isset($arr[$i]->personal))
+					{
+					$mhc =  imap_mime_header_decode($arr[$i]->personal);
+					$toorg .= $mhc[0]->text." ";
+					}
+				$toorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
+
+				if( $all == 1)
+					$toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
 				}
 
-			$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-            $mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
-            if(!$mbox)
-                {
-                $babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
-                }
-            else
-                {
-				
-				$idreply = imap_msgno($mbox, $idreply);
-                $headinfo = imap_header($mbox, $idreply);
-                $arr = $headinfo->from;
-                $toval = "";
-				$fromorg = '';
-                for($i=0; $i < count($arr); $i++)
-                    {
-					if( isset($arr[$i]->personal))
-						{
-	                    $mhc = imap_mime_header_decode($arr[$i]->personal);
-	                    $fromorg .= $mhc[0]->text;
-						}
-                    $fromorg .= " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
+			$arr = isset($headinfo->cc) ? $headinfo->cc : array();
+			$ccorg = "";
+			$ccval = "";
+			for($i=0; $i < count($arr); $i++)
+				{
+				if( isset($arr[$i]->personal))
+					{
+					$mhc = imap_mime_header_decode($arr[$i]->personal);
+					$ccorg .= $mhc[0]->text . " ";
+					}
+				$ccorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
 
-                    if( $fw != 1)
-                        $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
-                    }
-                $toorg = "";
-                if( $fw != 1)
-                    {
-                    $arr = $headinfo->to;
-                    for($i=0; $i < count($arr); $i++)
-                        {
-                        if (isset($arr[$i]->personal))
-							{
-							$mhc =  imap_mime_header_decode($arr[$i]->personal);
-							$toorg .= $mhc[0]->text." ";
-							}
-						$toorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
+				if( $all == 1)
+					$ccval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
+				}
+			$re = "RE:";
+			}
+		else
+			$re = "FW:";
 
-                        if( $all == 1)
-                            $toval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
-                        }
+		$mhc = imap_mime_header_decode($headinfo->subject);
+		if(empty($mhc[0]->text))
+			$subjectval = $re;
+		else
+			$subjectval = $re." ".$mhc[0]->text;
 
-                    $arr = isset($headinfo->cc) ? $headinfo->cc : array();
-                    $ccorg = "";
-                    $ccval = "";
-                    for($i=0; $i < count($arr); $i++)
-                        {
-						if( isset($arr[$i]->personal))
-							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$ccorg .= $mhc[0]->text . " ";
-							}
-						$ccorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
-
-                        if( $all == 1)
-                            $ccval .= $arr[$i]->mailbox . "@" . $arr[$i]->host.", ";
-                        }
-                    $re = "RE:";
-                    }
-                else
-                    $re = "FW:";
-
-                $mhc = imap_mime_header_decode($headinfo->subject);
-                if(empty($mhc[0]->text))
-                    $subjectval = $re;
-                else
-                    $subjectval = $re." ".$mhc[0]->text;
-
-                $msgbody = bab_getMimePart($mbox, $idreply, "TEXT/HTML");
-                if(!$msgbody)
-                    {
-					$format = "plain";
-                    $msgbody = bab_getMimePart($mbox, $idreply, "TEXT/PLAIN");
-                    $msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a href='\\1'>\\1</a>",$msgbody); 
-                    }
-                else
-                    {
-					$format = "html";
-                    $msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
-                    }
-				$messageval = $CRLF.$CRLF.$CRLF.$CRLF."------".bab_translate("Original Message")."------".$CRLF;
-                $messageval .= "From: ".$fromorg.$CRLF;
-                $messageval .= "Sent: ".bab_strftime($headinfo->udate).$CRLF;
-                $messageval .= "To: ".$toorg.$CRLF;
-                if( !empty($ccorg))
-                    $messageval .= "Cc: ".$ccorg.$CRLF;
-                $messageval .= $msgbody;
-                imap_close($mbox);
-                }
-            }
-        }
+		$msgbody = bab_getMimePart($mbox, $idreply, "TEXT/HTML");
+		if(!$msgbody)
+			{
+			$format = "plain";
+			$msgbody = bab_getMimePart($mbox, $idreply, "TEXT/PLAIN");
+			$msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a href='\\1'>\\1</a>",$msgbody); 
+			}
+		else
+			{
+			$format = "html";
+			$msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
+			}
+		$messageval = $CRLF.$CRLF.$CRLF.$CRLF."------".bab_translate("Original Message")."------".$CRLF;
+		$messageval .= "From: ".$fromorg.$CRLF;
+		$messageval .= "Sent: ".bab_strftime($headinfo->udate).$CRLF;
+		$messageval .= "To: ".$toorg.$CRLF;
+		if( !empty($ccorg))
+			$messageval .= "Cc: ".$ccorg.$CRLF;
+		$messageval .= $msgbody;
+		imap_close($mbox);
+		}
 
 	if (!isset($toval)) $toval = '';
 	if (!isset($ccval)) $ccval = '';
 	if (!isset($subjectval)) $subjectval = '';
 	if (!isset($format)) $format = '';
 	if (!isset($messageval)) $messageval = '';
-    composeMail($accid, $criteria, $reverse, trim($toval,', '), trim($ccval,', '), "", $subjectval, array(), $format, $messageval, 0, "");
+    composeMail($accid, $criteria, $reverse, trim($toval,', '), trim($ccval,', '), "", $subjectval, array(), $format, $messageval, 0);
 	}
 
 function mailUnload()
@@ -591,34 +563,25 @@ function mailUnload()
 	}
 
 /* main */
-if (!isset($accid)) {
-	$accid = '';
-}
-$idx = bab_pp('idx', 'compose');
 
+$idx = bab_rp('idx', 'compose');
+$accid = bab_rp('accid','');
+$sigid = bab_rp('sigid', '');
+$criteria = bab_rp('criteria', '');
+$reverse = bab_rp('reverse', '');
 $to = bab_pp('to', '');
-
 $cc = bab_pp('cc', '');
-
 $bcc = bab_pp('bcc', '');
-
 $subject = bab_pp('subject', '');
-
 $format = bab_pp('format', '');
-
 $message = bab_pp('message', '');
 
-$sigid = bab_pp('sigid', '');
-
-$criteria = bab_pp('criteria', '');
-
-$reverse = bab_pp('reverse', '');
 
 $files = bab_pp('files', array());
 $files_name = bab_pp('files_name', array());
 $files_type = bab_pp('files_type', array());
 
-if( isset($compose) && $compose == "message")
+if( "message" === bab_pp('compose'))
 	{
 	if(!createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid))
 		$idx = "compose";
@@ -648,7 +611,7 @@ switch($idx)
 		$babBody->title = bab_translate("Email");
 		$babBody->addItemMenu("list", bab_translate("List"), $GLOBALS['babUrlScript']."?tg=inbox&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
 		$babBody->addItemMenu("compose", bab_translate("Compose"), $GLOBALS['babUrlScript']."?tg=inbox&idx=compose&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse);
-	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid, $babBody->msgerror);
+	    composeMail($accid, $criteria, $reverse, $to, $cc, $bcc, $subject, /*$files_name*/array(), $format, $message, $sigid);
 		break;
 	}
 

@@ -200,6 +200,8 @@ function newEmails()
 		function temp4()
 			{
 			global $babDB, $BAB_SESS_USERID, $BAB_HASH_VAR;
+			include_once $GLOBALS['babInstallPath'].'utilit/inboxincl.php';
+			
 			$req = "select *, DECODE(password, \"".$babDB->db_escape_string($BAB_HASH_VAR)."\") as accpass from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -222,14 +224,8 @@ function newEmails()
 					{
 					$arr2 = $babDB->db_fetch_array($res2);
 					$this->domain = bab_toHtml($arr2['name']);
-					$protocol = '';
-					if( isset($GLOBALS['babImapProtocol']) && count($GLOBALS['babImapProtocol'])) 
-						{
-						$protocol = '/'.implode('/', $GLOBALS['babImapProtocol']);
-						}
 
-					$cnxstring = "{".$arr2['inserver'].":".$arr2['inport']."/".$arr2['access'].$protocol."}INBOX";
-					$mbox = @imap_open($cnxstring, $arr['login'], $arr['accpass']);
+					$mbox = bab_getMailBox($arr['id']);
 					if($mbox)
 						{
 						$this->domainurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=inbox&&accid=".$arr['id']);
