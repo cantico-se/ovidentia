@@ -2541,4 +2541,6 @@
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
 <string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
 <string id="Planned">Planifié</string>
+<string id="Your password has been reset">Votre mot de passe a été réinitialisé</string>
+<string id="Nickname of the account">Identifiant du compte</string>
 </fr>

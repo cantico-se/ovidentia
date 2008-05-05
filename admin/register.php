@@ -271,7 +271,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 	return $id;
 	}
 
-function notifyUserPassword($passw, $email)
+function notifyUserPassword($passw, $email, $nickname='')
 	{
 	global $babBody, $babAdminEmail, $babInstallPath;
 
@@ -284,11 +284,12 @@ function notifyUserPassword($passw, $email)
 		var $message;
 
 
-		function tempa($passw)
+		function tempa($passw, $email, $nickname='')
 			{
             global $babSiteName;
-			$this->sitename = bab_translate("On site").": ". $babSiteName."( <a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babUrl']."</a> )";
-			$this->message = bab_translate("Your password has been reset to").": ". $passw;
+			$this->message = bab_translate('On site').' '.$babSiteName.' (<a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'].'</a>)<br />';
+			$this->message .= bab_translate('Your password has been reset to').": ".$passw.'<br />';
+			$this->message .= bab_translate('Nickname of the account').": ".$nickname;
 			}
 		}
 	
@@ -298,9 +299,9 @@ function notifyUserPassword($passw, $email)
 	
     $mail->mailTo($email);
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject(bab_translate("Password Reset"));
+    $mail->mailSubject(bab_translate("Your password has been reset"));
 
-	$tempa = new tempa($passw);
+	$tempa = new tempa($passw, $email, $nickname);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "sendpassword"));
     $mail->mailBody($message, "html");
 
@@ -461,7 +462,7 @@ function sendPassword ($nickname)
 			$res=$babDB->db_query($req);
 
 			//send a simple email with the new password
-			notifyUserPassword($new_pass, $arr['email']);
+			notifyUserPassword($new_pass, $arr['email'], $nickname);
 			$babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
 			$error = '';
 			
