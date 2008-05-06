@@ -232,7 +232,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	function addFunction(&$obj) {
 		
 		$this->nodes[$obj->uid] = $obj;
-		$this->buidtree($this->nodes[$obj->uid]);
+		$this->buidtree($obj);
 		
 		return true;
 	}
@@ -253,7 +253,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		}
 		$obj->folder = true;
 		$this->nodes[$obj->uid] = $obj;
-		$this->buidtree($this->nodes[$obj->uid]);
+		$this->buidtree($obj);
 		
 		return true;
 	}
@@ -1050,7 +1050,7 @@ function bab_siteMap_build() {
 		$dgNode->copy_to_all_delegations = false;
 		
 		$event->nodes[$dgid] = $dgNode;
-		$event->buidtree($event->nodes[$dgid]);
+		$event->buidtree($dgNode);
 	}
 	
 	
@@ -1061,12 +1061,12 @@ function bab_siteMap_build() {
 	// add orphans nodes to tree
 	foreach($event->queue as $missing_node => $orphan) {
 		$newNode = new bab_siteMap_item($missing_node);
-		$newNode->setPosition(array('root', 'DG0'));
+		$newNode->setPosition(array('root', 'DGAll'));
 		$newNode->folder = 1;
 		$newNode->setLabel($missing_node);
 		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
 		$event->nodes[$newNode->uid] = $newNode;
-		$event->buidtree($event->nodes[$newNode->uid]);
+		$event->buidtree($newNode);
 	}
 	
 	
