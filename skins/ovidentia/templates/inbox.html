@@ -84,9 +84,9 @@
 				<!--#endif priority -->
 			</td>
 
-			<td><a href="javascript: Start('{ msgfromurl }', 'OviMailF', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><!--#if bunseen --><b><!--#endif bunseen -->{ msgfromurlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
+			<td><a href="{ msgfromurl }" onclick="bab_popup(this.href);return false;"><!--#if bunseen --><b><!--#endif bunseen -->{ msgfromurlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
 
-			<td><a href="javascript: Start('{ msgsubjecturl }', 'OviMailD', 'width=650,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><!--#if bunseen --><b><!--#endif bunseen -->{ msgsubjecturlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
+			<td><a href="{ msgsubjecturl }" onclick="bab_popup(this.href);return false;"><!--#if bunseen --><b><!--#endif bunseen -->{ msgsubjecturlname }<!--#if bunseen --></b><!--#endif bunseen --></a></td>
 
 			<td>{ msgdate }</td>
 		<!--#endin getnext -->
