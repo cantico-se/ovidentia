@@ -45,6 +45,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
 /**
  * Sitemap item contener
+ * the sitemap is a tre of items, each items is a bab_siteMapItem object
  */
 class bab_siteMapItem {
 
@@ -233,9 +234,7 @@ class bab_siteMap {
 		
 		if (0 === $babDB->db_num_rows($res)) {
 			// no sitemap for user, build it
-			
-			bab_debug('Buid sitemap...');
-			
+
 			bab_siteMap::build();
 			$res = $babDB->db_query($query);
 		}
@@ -265,7 +264,11 @@ class bab_siteMap {
 			$data->onclick 		= $arr['onclick'];
 			$data->folder 		= 1 == $arr['folder'];
 			
+			// in tree, uniques id are dynamicaly generated from the id in table and the id_function
+			// the id_function is duplicated if the tre contain multiples delegations
 			$node_list[$arr['id']] = $data->folder ? $current_delegation_node.'-'.$arr['id_function'] : $arr['id'].'-'.$arr['id_function'];
+			
+			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
 		
 			$node = & $rootNode->createNode($data, $node_list[$arr['id']]);
