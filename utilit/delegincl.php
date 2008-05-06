@@ -118,7 +118,7 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 			'name' => bab_translate('Home'),
 			'description' => bab_translate('All site'),
 			'color' => 'FFFFFF',
-			'homePageUrl' => '?tg=oml&file=private.html'
+			'homePageUrl' => '?'
 		)
 	);
 	
