@@ -23,6 +23,8 @@
 ************************************************************************/
 include_once 'base.php';
 
+include_once $GLOBALS['babInstallPath'].'utilit/pagesincl.php';
+
 define('DELTA_TIME', 86400);
 
 function bab_getForumName($id)
@@ -492,115 +494,6 @@ function indexAllForumFiles_end($param) {
 }
 
 
-function bab_generatePagination( $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
-{
-	global $lang;
-
-	$total_pages = ceil($num_items/$per_page);
-
-	if ( $total_pages == 1 )
-	{
-		return array();
-	}
-
-	$on_page = floor($start_item / $per_page) + 1;
-
-	$page_array = array();
-
-	if ( $total_pages > 10 )
-	{
-		$init_page_max = ( $total_pages > 3 ) ? 3 : $total_pages;
-
-		for($i = 1; $i < $init_page_max + 1; $i++)
-		{
-			$page_array[] = ( $i == $on_page ) ? array('page'=>$i, 'pagepos'=>( ( $i - 1 ) * $per_page ), 'current'=> true, 'url'=>false): array('page'=>$i, 'pagepos'=>( ( $i - 1 ) * $per_page ), 'current'=> false, 'url'=>true);
-			if ( $i <  $init_page_max )
-			{
-				$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-			}
-		}
-
-		if ( $total_pages > 3 )
-		{
-			if ( $on_page > 1  && $on_page < $total_pages )
-			{
-				if( $on_page > 5 )
-					$page_array[] =  array('page'=>'...', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-				else
-					$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-
-				$init_page_min = ( $on_page > 4 ) ? $on_page : 5;
-				$init_page_max = ( $on_page < $total_pages - 4 ) ? $on_page : $total_pages - 4;
-
-				for($i = $init_page_min - 1; $i < $init_page_max + 2; $i++)
-				{
-					if($i == $on_page)
-						$page_array[] =  array('page'=>$i, 'pagepos'=>0, 'current'=> true, 'url'=>false);
-					else
-						$page_array[] =  array('page'=>$i, 'pagepos'=>( ( $i - 1 ) * $per_page ), 'current'=> false, 'url'=>true);
-
-					if ( $i <  $init_page_max + 1 )
-					{
-						$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-					}
-				}
-
-				if( $on_page < $total_pages - 4 )
-					$page_array[] =  array('page'=>'...', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-				else
-					$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-			}
-			else
-			{
-				$page_array[] =  array('page'=>'...', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-			}
-
-			for($i = $total_pages - 2; $i < $total_pages + 1; $i++)
-			{
-				if( $i == $on_page )
-					$page_array[] =  array('page'=>$i, 'pagepos'=>0, 'current'=> true, 'url'=>false);
-				else
-					$page_array[] =  array('page'=>$i, 'pagepos'=>( ( $i - 1 ) * $per_page ), 'current'=> false, 'url'=>true);
-
-				if( $i <  $total_pages )
-				{
-					$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-				}
-			}
-		}
-	}
-	else
-	{
-		for($i = 1; $i < $total_pages + 1; $i++)
-		{
-			if( $i == $on_page )
-					$page_array[] =  array('page'=>$i, 'pagepos'=>0, 'current'=> true, 'url'=>false);
-				else
-					$page_array[] =  array('page'=>$i, 'pagepos'=>( ( $i - 1 ) * $per_page ), 'current'=> false, 'url'=>true);
-
-			if ( $i <  $total_pages )
-			{
-				$page_array[] =  array('page'=>', ', 'pagepos'=>0, 'current'=> false, 'url'=>false);
-			}
-		}
-	}
-
-	if ( $add_prevnext_text )
-	{
-		if ( $on_page > 1 )
-		{
-			$page_array =  array_pad($page_array, -(count($page_array)+1), array('page'=>bab_translate("Previous"), 'pagepos'=>( ( $on_page - 2 ) * $per_page ), 'current'=> false, 'url'=>true));
-		}
-
-		if ( $on_page < $total_pages )
-		{
-			$page_array[] =  array('page'=>bab_translate("Next"), 'pagepos'=>( $on_page * $per_page ), 'current'=> false, 'url'=>true);
-		}
-
-	}
-
-	return $page_array;
-}
 
 
 function bab_confirmPost($forum, $thread, $post)

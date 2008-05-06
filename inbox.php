@@ -83,7 +83,7 @@ function listMails($accid, $criteria, $reverse, $start)
 			$this->datename = bab_translate("Date");
 			$this->uncheckall = bab_translate("Uncheck all mails");
 			$this->checkall = bab_translate("Check all mails");
-			$this->deletealt = bab_translate("Delete");
+			$this->delete_checked = bab_translate("Delete checked items");
 			$this->compose = bab_translate("Compose");
 
 			$this->reverse = $reverse;
@@ -120,26 +120,17 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->access = $arr2['access'];
 
 					$this->mbox = bab_getMailBox($accid);
-					if(!$this->mbox)
-						{
-						$babBody->msgerror = bab_translate("ERROR"). " : ". imap_last_error();
-						}
-					else
+					if($this->mbox)
 						{
 						$this->msguid = imap_sort($this->mbox, $this->criteria, $this->reverse, SE_UID | SE_NOPREFETCH); 
 						$this->count = sizeof($this->msguid);
 						if( $this->count > 0 && $this->maxrows > 0)
 							{
-							$this->nbparts = intval($this->count / $this->maxrows);
-							if( $this->nbparts != 0  && $this->nbparts * $this->maxrows < $this->count)
-								$this->nbparts++;
-
 							$this->mailcount = ($this->start + $this->maxrows > $this->count )? $this->count - $this->start+1: $this->maxrows;
 							}
 						else
 							{
 							$this->mailcount = $this->count;
-							$this->nbparts = 0;
 							$this->start = 1;
 							}
 						}
@@ -153,30 +144,12 @@ function listMails($accid, $criteria, $reverse, $start)
 				{
 				$GLOBALS['babBody']->msgerror = bab_translate("No mail account");
 				}
-			}
-
-		function getnextpart()
-			{
-			static $k = 0;
-			if( $k < $this->nbparts)
-				{
-				$start = ($k*$this->maxrows)+1;
-				if( $start == $this->start )
-					$this->burl = 1;
-				else
-					$this->burl = 0;
-				$this->partname = "[".$start."-";
-				if((($k+1)*$this->maxrows) > $this->count)
-					$this->partname .= $this->count;
-				else
-					$this->partname .= (($k+1)*$this->maxrows);
-				$this->partname .= "]";
-				$this->parturl = $GLOBALS['babUrlScript']."?tg=inbox&idx=list&accid=".$this->accid."&criteria=".$this->criteria."&reverse=".$this->reverse."&start=".$start;
-				$k++;
-				return true;
-				}
-			else
-				return false;
+				
+				
+			include_once $GLOBALS['babInstallPath'].'utilit/pagesincl.php';	
+			$this->pagination = bab_generatePaginationString($this->count, $this->maxrows, $this->start, 'start');
+				
+				
 			}
 
 		function getnext()
@@ -608,6 +581,19 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 	echo bab_printTemplate($temp,"inbox.html", "mailview");
 	}
 
+
+
+/**
+ * Get the text part of the message with mime type
+ *
+ * @param	ressource	$mbox			An IMAP stream returned by imap_open().
+ * @param	int			$msg_number		The message number 
+ * @param	int			$cid			Identification string for the message part
+ * @param	boolean		[$structure]	Used internaly for the sub structures
+ * @param	boolean		[$part_number]	Used internaly for the sub structures
+ *
+ * @return	array
+ */
 function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number = false) 
 	{
 	if(!$structure) 
@@ -658,6 +644,14 @@ function get_cid_part($mbox, $msg_number, $cid, $structure = false, $part_number
 	}
 
 
+/**
+ * Print the text part of a message with the header
+ *
+ * @param	int		$accid	The mail account ID
+ * @param	int		$msg	The message number 
+ * @param	string	$cid	Identification string for the message part
+ *
+ */
 function showPart($accid, $msg, $cid)
 	{
 	$mbox = bab_getMailBox($accid);
@@ -671,6 +665,17 @@ function showPart($accid, $msg, $cid)
 		}
 	}
 
+
+/**
+ * Print an attachement part of a message with header
+ *
+ * @param	int		$accid	The mail account ID
+ * @param	int		$msg	The message number 
+ * @param	int		$part	The part number. It is a string of integers delimited by period which index into a body part list as per the IMAP4 specification 
+ * @param	string	$mime	mime type for attachement
+ * @param	string	$file	filename for attachement
+ *
+ */
 function getAttachment($accid, $msg, $part, $mime, $enc, $file)
 	{
 	$mbox = bab_getMailBox($accid);

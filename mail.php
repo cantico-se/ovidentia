@@ -166,8 +166,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			if( !empty($pmsg))
 				{
 				$this->messageval = $pmsg;
-				if( $pformat == "html")
-					$this->messageval = nl2br($this->messageval);
+				
 				}
 			$this->file1 = "";
 			if( !empty($pfiles[0]))
@@ -199,21 +198,11 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
             $this->selectsig = "-- ".bab_translate("Select signature"). " --";
 			$this->none = "-- ".bab_translate("Select destinataire"). " --";
 			$this->urlto = $GLOBALS['babUrlScript']."?tg=address&idx=list";
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-				{
-				$this->bhtml = 1;
-				}
-			else
-				{
-				$this->bhtml = 0;
-				}
+			
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
-			$editor = new bab_contentEditor('bab_mail_message');
-			$editor->setContent($this->messageval);
-			$editor->setFormat('html');
-			$this->editor = $editor->getEditor();
+			
 
 			$req = "select * from ".BAB_MAIL_ACCOUNTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id='".$babDB->db_escape_string($accid)."'";
 			$res = $babDB->db_query($req);
@@ -221,8 +210,37 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				{
 				$arr = $babDB->db_fetch_array($res);
 				$this->fromval = "\"".$arr['name']."\" &lt;".$arr['email']."&gt;";
-                if( empty($pformat))
-                    $pformat = $arr['format'];
+
+				// si format dans le compte est a html, on utiliser le WYSIWYG
+				
+				if ('html' === $arr['format']) {
+					$pformat = 'html';
+					  
+					$editor = new bab_contentEditor('bab_mail_message');
+					$postedcontent = $editor->getContent();
+					
+					if (empty($postedcontent)) {
+						$editor->setContent($this->messageval);
+					}
+					$editor->setFormat('html');
+					$this->editor = $editor->getEditor();
+				} else {
+				
+					$this->editor =false;
+				
+					if( $pformat == "plain")
+						{
+						$this->plainselect = "selected";
+						$this->htmlselect = "";
+					}
+					else
+						{
+						$this->htmlselect = "selected";
+						$this->plainselect = "";
+					}
+				}
+
+                  
                 $req = "select * from ".BAB_MAIL_SIGNATURES_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
                 $this->ressig = $babDB->db_query($req);
                 $this->countsig = $babDB->db_num_rows($this->ressig);
@@ -231,16 +249,7 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 				{
 				$this->fromval = "\"".$BAB_SESS_USER."\" &lt;".$BAB_SESS_EMAIL."&gt;";
 				}
-			if( $pformat == "plain")
-				{
-				$this->plainselect = "selected";
-				$this->htmlselect = "";
-				}
-			else
-				{
-				$this->htmlselect = "selected";
-				$this->plainselect = "";
-				}
+			
             if( $psigid == 0 || empty($psigid)) 
                 $this->defaultselected = "selected";
             else
@@ -282,8 +291,9 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 	$babBody->babPopup(	bab_printTemplate($temp,"mail.html", "mailcompose"));
 	}
 
-function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid)
+function createMail($accid, $to, $cc, $bcc, $subject, $criteria, $reverse, $format, $sigid)
 	{
+
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	if( empty($to))
 		{
@@ -296,17 +306,21 @@ function createMail($accid, $to, $cc, $bcc, $subject, $files, $files_name, $file
 		return false;
 		}
 		
+	include_once $GLOBALS['babInstallPath']."utilit/inboxincl.php";	
+	$account = bab_getMailAccount($accid);
 		
-	if( $format == 'html' )
+		
+	if( $account['format'] === 'html' )
 		{
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
-	$editor = new bab_contentEditor('bab_mail_message');
-	$message = $editor->getContent();	
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";	
+		$editor = new bab_contentEditor('bab_mail_message');
+		$message = $editor->getContent();
+		$format = 'html';
 		}
 	else
 		{
-		$message = bab_pp('message', '');
+		$message = bab_pp('message');
+		
 		}
 		
 		
@@ -521,7 +535,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 		else
 			{
 			$format = "html";
-			$msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$msg&cid=\\3\\4", $msgbody);
+			$msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$idreply&cid=\\3\\4", $msgbody);
 			}
 		$messageval = $CRLF.$CRLF.$CRLF.$CRLF."------".bab_translate("Original Message")."------".$CRLF;
 		$messageval .= "From: ".$fromorg.$CRLF;
@@ -529,15 +543,30 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 		$messageval .= "To: ".$toorg.$CRLF;
 		if( !empty($ccorg))
 			$messageval .= "Cc: ".$ccorg.$CRLF;
-		$messageval .= $msgbody;
+			
+		// if WYSIWYG message is HTML
+		$account = bab_getMailAccount($accid);
+		if ('html' === $account['format']) {
+		
+			$messageval = bab_toHtml($messageval, BAB_HTML_ALL);
+			$messageval .= $msgbody;
+		} else {
+		
+			// TODO: il est possible d'améliorer ici la convertion de html vers texte brut!
+			$messageval .= strip_tags($msgbody);
+		}
+			
+			
+		
 		imap_close($mbox);
 		}
 
 	if (!isset($toval)) $toval = '';
 	if (!isset($ccval)) $ccval = '';
 	if (!isset($subjectval)) $subjectval = '';
-	if (!isset($format)) $format = '';
+	if (!isset($format)) $format = 'plain';
 	if (!isset($messageval)) $messageval = '';
+	
     composeMail($accid, $criteria, $reverse, trim($toval,', '), trim($ccval,', '), "", $subjectval, array(), $format, $messageval, 0);
 	}
 
@@ -573,17 +602,14 @@ $to = bab_pp('to', '');
 $cc = bab_pp('cc', '');
 $bcc = bab_pp('bcc', '');
 $subject = bab_pp('subject', '');
-$format = bab_pp('format', '');
-$message = bab_pp('message', '');
+$format = bab_pp('format', 'plain');
 
 
-$files = bab_pp('files', array());
-$files_name = bab_pp('files_name', array());
-$files_type = bab_pp('files_type', array());
 
 if( "message" === bab_pp('compose'))
 	{
-	if(!createMail($accid, $to, $cc, $bcc, $subject, $message, $files, $files_name, $files_type,$criteria, $reverse, $format, $sigid))
+	    
+	if(!createMail($accid, $to, $cc, $bcc, $subject, $criteria, $reverse, $format, $sigid))
 		$idx = "compose";
 	else
 		$idx = "unload";

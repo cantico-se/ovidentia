@@ -1,16 +1,58 @@
 
 <!--#begin maillist -->
-<p align="center"><a href="{ composeurl }" onclick="bab_popup(this.href,6);return false;">{ compose }</a></p>
+
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="5" cellspacing="0">
+		<tr class="BabLoginMenuBackground"> 
+			<td>
+			
+				<a href="{ composeurl }" onclick="bab_popup(this.href,6);return false;">
+					<img src="{ babSkinPath }images/Puces/mail.png" align="absmiddle" alt="" border="0" />
+					{ compose }
+				</a>
+			</td>
+			<td>
+			
+				<form method="post" action="{ babPhpSelf }">
+				<input type="hidden" name="tg" value="inbox">
+				<input type="hidden" name="idx" value="list">
+				<input type="hidden" name="criteria" value="{ criteria }">
+				<input type="hidden" name="reverse" value="{ reverse }">
+				<input type="hidden" name="viewacc" value="view">
+				<!--#if countacc "> 1" -->
+				<select name="accid">
+				<!--#in getnextacc -->
+				<option value="{ accountid }" { selected }>{ accountname }</option>
+				<!--#endin getnextacc -->
+				</select>
+				
+				 &nbsp; <input type="submit" name="Submit" value="{ viewthis }" /></td>
+				<!--#endif countacc -->
+				</form>
+
+
+			</td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
+
+<br />
+
+
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="inbox">
-<input type="hidden" name="idx" value="">
+<input type="hidden" name="idx" value="delete">
 <input type="hidden" name="accid" value="{ accid }">
 <input type="hidden" name="criteria" value="{ criteria }">
 <input type="hidden" name="reverse" value="{ reverse }">
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table border="0" width="100%" cellpadding="2" cellspacing="0">
+	<table border="0" width="100%" cellpadding="3" cellspacing="0">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>
 				<a href="javascript:onCheckAll('item', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }"  border="0" /></a>
@@ -50,43 +92,22 @@
 		<!--#endin getnext -->
 		</tr>
 		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td>&nbsp;<a href="javascript:submitForm('delete','listform')" title="{ deletealt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deletealt }" border="0" /></a></td>
-			<td colspan="3" height="5"> &nbsp; 
-				<!--#in getnextpart -->
-				<!--#if burl "== 1" -->
-				{ partname }&nbsp; 
-				<!--#else burl -->
-				<a href="{ parturl }">{ partname }</a>&nbsp; 
-				<!--#endif burl -->
-				<!--#endin getnextpart -->
+			<td colspan="4" align="right"> 
+				{ pagination }
 			</td>
 		</tr>
 	</table>
 </td>
 </tr>
 </table>
-</form>
 
-
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="inbox">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="criteria" value="{ criteria }">
-<input type="hidden" name="reverse" value="{ reverse }">
-<input type="hidden" name="viewacc" value="view">
 <p align="center">
-<!--#if countacc "> 1" -->
-<select name="accid">
-<!--#in getnextacc -->
-<option value="{ accountid }" { selected }>{ accountname }</option>
-<!--#endin getnextacc -->
-</select>
-
- &nbsp; <input type="submit" name="Submit" value="{ viewthis }" /></td>
-<!--#endif countacc -->
- &nbsp; <a href="{ composeurl }" onclick="bab_popup(this.href,6);return false;">{ compose }</a>
+	<input type="submit" value="{ delete_checked }" />
 </p>
 </form>
+
+
+
 
 <!--#end maillist -->
 

@@ -53,9 +53,6 @@
   <!--#in getnextadm -->
   <option value="{ domid }">{ domname }</option>
   <!--#endin getnextadm -->
-  <!--#in getnextgrp -->
-  <option value="{ domid }">{ domname }</option>
-  <!--#endin getnextgrp -->
   <!--#in getnextusr -->
   <option value="{ domid }">{ domname }</option>
   <!--#endin getnextusr -->
@@ -74,10 +71,10 @@
 <tr> 
 <td align="right">{ prefformat }:</td>
 <td>
-<select name="prefformat">
-  <option value="plain">{ plain }</option>
-  <option value="html">{ html }</option>
-</select>
+	<select name="prefformat">
+	  <option value="plain">{ no }</option>
+	  <option value="html">{ yes }</option>
+	</select>
 </td>
 </tr>
 <tr> 
@@ -176,8 +173,8 @@
 <td align="right">{ prefformat }:</td>
 <td>
 <select name="prefformat">
-  <option value="plain" { plainselect }>{ plain }</option>
-  <option value="html" { htmlselect }>{ html }</option>
+  <option value="plain" { plainselect }>{ no }</option>
+  <option value="html" { htmlselect }>{ yes }</option>
 </select>
 </td>
 </tr>

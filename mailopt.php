@@ -159,7 +159,7 @@ function accountCreate()
 			$this->repassword = bab_translate("Retype Password");
 			$this->domain = bab_translate("Domain");
 			$this->prefaccount = bab_translate("Prefered account");
-			$this->prefformat = bab_translate("Prefered format");
+			$this->prefformat = bab_translate("Use WYSIWYG editor");
 			$this->maxrows = bab_translate("Messages to display per screen");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
@@ -175,11 +175,9 @@ function accountCreate()
 			$this->resadm = $babDB->db_query($req);
 			$this->countadm = $babDB->db_num_rows($this->resadm);
 
-			$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
-			$this->resgrp = $babDB->db_query($req);
-			$this->countgrp = $babDB->db_num_rows($this->resgrp);
 			
-			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+			
+			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND bgroup='N'";
 			$this->resusr = $babDB->db_query($req);
 			$this->countusr = $babDB->db_num_rows($this->resusr);
 			}
@@ -200,22 +198,8 @@ function accountCreate()
 				return false;
 
 			}
-		function getnextgrp()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countgrp)
-				{
-				$arr = $babDB->db_fetch_array($this->resgrp);
-				$this->domid = $arr['id'];
-				$this->domname = $arr['name'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
 
-			}
+			
 		function getnextusr()
 			{
 			global $babDB;
@@ -288,7 +272,7 @@ function accountModify($item)
 			$this->repassword = bab_translate("Retype Password");
 			$this->domain = bab_translate("Domain");
 			$this->prefaccount = bab_translate("Prefered account");
-			$this->prefformat = bab_translate("Prefered format");
+			$this->prefformat = bab_translate("Use WYSIWYG editor");
 			$this->maxrows = bab_translate("Default number of messages to display per screen");
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");

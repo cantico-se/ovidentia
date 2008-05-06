@@ -22,66 +22,67 @@
 	<tr> 
 	<td align="right"><a href="javascript: Start('{ urlto }', 'OviMailL', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ to }</a></td>
 	<td   valign="middle">
-	<input type="text" name="to" size="40" value="{ toval }"> 
+	<input type="text" name="to" size="60" value="{ toval }" /> 
 	</td>
 	</tr>
 	<tr> 
 	<td  align="right"><a href="javascript: Start('{ urlto }', 'OviMailM', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ cc }</a></td>
 	<td> 
-	<input type="text" name="cc" size="40" value="{ ccval }"> 
+	<input type="text" name="cc" size="60" value="{ ccval }" /> 
 	</td>
 	</tr>
 	<tr> 
 	<td align="right"><a href="javascript: Start('{ urlto }', 'OviMailW', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ bcc }</a></td>
 	<td> 
-	<input type="text" name="bcc" size="40" value="{ bccval }"> 
+	<input type="text" name="bcc" size="60" value="{ bccval }" /> 
 	</td>
 	</tr>
 	<tr> 
 	<td  align="right">{ subject }</td>
 	<td> 
-	<input type="text" name="subject" size="60" value="{ subjectval }"> 
+	<input type="text" name="subject" size="60" value="{ subjectval }" /> 
 	</td>
 	</tr>
 	<tr> 
 	<td  align="right">{ attachments }</td>
 	<td> 
-	<input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }">
+	<input type="file" name="files[]" size="40" maxlength="50" value="{ file1 }" />
 	</td>
 	</tr>
 	<tr> 
 	<td  align="right">&nbsp;</td>
 	<td align="left"> 
-	<input type="file" name="files[]" size="40" value="{ file2 }">
+	<input type="file" name="files[]" size="40" value="{ file2 }" />
 	</td>
 	</tr>
 	<tr> 
 	<td  align="right" >&nbsp;</td>
 	<td  valign="middle"> 
-	<input type="file" name="files[]" size="40" value="{ file3 }">
+	<input type="file" name="files[]" size="40" value="{ file3 }" />
 	</td>
 	</tr>
 	<tr> 
-	<td  align="right">{ format }</td>
+	<td  align="right"></td>
 	<td  valign="middle"> 
-		<select name="format" 
-		<!--#if bhtml "== 1" -->
-		onChange="mm()" 
-		<!--#endif bhtml -->	
-		> 
-		<option value="plain" { plainselect }>{ plain }</option> 
-		<option value="html" { htmlselect }>{ html }</option> 
-		</select> 
+		
 	</td>
 	</tr>
 	
 	<tr> 
 	<td  colspan="2" align="center"> 
-	<!--#if plainselect -->
-		<textarea name="message" style="width:100%;" rows="20">{ messageval }</textarea>
-	<!--#else plainselect -->
+	<!--#if editor -->
 		{ editor }
-	<!--#endif plainselect -->
+	<!--#else editor -->
+		<p align="center">
+			{ format } : 
+			
+			<select name="format"> 
+			<option value="plain" { plainselect }>{ plain }</option> 
+			<option value="html" { htmlselect }>{ html }</option> 
+			</select> 
+		</p>
+		<textarea name="message" style="width:100%;" rows="20">{ messageval }</textarea>
+	<!--#endif editor -->
 	</td>
 	</tr>
 	<tr> 
