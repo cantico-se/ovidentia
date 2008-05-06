@@ -2541,6 +2541,16 @@
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
 <string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
 <string id="Planned">Planifié</string>
+<string id="Cost">Coût</string>
+<string id="Time">Temps</string>
+<string id="Real start date">Date de début réelle</string>
+<string id="Real end date">Date de fin réelle</string>
+<string id="Planned start date">Date de début planifiée</string>
+<string id="Planned end date">Date de fin planifiée</string>
+<string id="Real time">Temps réel</string>
+<string id="Planned time">Temps planifié</string>
+<string id="Real cost">Coût réel</string>
+<string id="Planned cost">Coût planifié</string>
 <string id="Your password has been reset">Votre mot de passe a été réinitialisé</string>
 <string id="Nickname of the account">Identifiant du compte</string>
 </fr>
