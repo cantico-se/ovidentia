@@ -4524,6 +4524,8 @@ class bab_CalendarEvents extends bab_handler
 			$date = explode(' ', $p->getProperty('DTSTART'));
 			$date = explode('-', $date[0]);
 			$date = $date[0].",".$date[1].",".$date[2];
+			
+			$color = isset($p->color) ? $p->color : '';
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventTitle'				, $p->getProperty('SUMMARY'));
@@ -4532,7 +4534,7 @@ class bab_CalendarEvents extends bab_handler
 			$this->ctx->curctx->push('EventBeginDate'			, bab_mktime($p->getProperty('DTSTART')));
 			$this->ctx->curctx->push('EventEndDate'				, bab_mktime($p->getProperty('DTEND')));
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
-			$this->ctx->curctx->push('EventCategoryColor'		, $p->color);
+			$this->ctx->curctx->push('EventCategoryColor'		, $color);
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=calmonth".$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
