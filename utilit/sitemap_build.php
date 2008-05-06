@@ -232,7 +232,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	function addFunction(&$obj) {
 		
 		$this->nodes[$obj->uid] = $obj;
-		$this->buidtree($obj);
+		$this->buidtree($this->nodes[$obj->uid]);
 		
 		return true;
 	}
@@ -253,7 +253,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		}
 		$obj->folder = true;
 		$this->nodes[$obj->uid] = $obj;
-		$this->buidtree($obj);
+		$this->buidtree($this->nodes[$obj->uid]);
 		
 		return true;
 	}
@@ -1033,7 +1033,7 @@ function bab_siteMap_build() {
 	$rootNode->setLink('?');
 	$rootNode->folder = 1;
 	
-	$event->nodes[$rootNode->uid] = & $rootNode;
+	$event->nodes[$rootNode->uid] = $rootNode;
 	
 	// create delegations nodes
 	
@@ -1050,7 +1050,7 @@ function bab_siteMap_build() {
 		$dgNode->copy_to_all_delegations = false;
 		
 		$event->nodes[$dgid] = $dgNode;
-		$event->buidtree($dgNode);
+		$event->buidtree($event->nodes[$dgid]);
 	}
 	
 	
@@ -1066,7 +1066,7 @@ function bab_siteMap_build() {
 		$newNode->setLabel($missing_node);
 		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
 		$event->nodes[$newNode->uid] = $newNode;
-		$event->buidtree($newNode);
+		$event->buidtree($event->nodes[$newNode->uid]);
 	}
 	
 	
