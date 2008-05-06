@@ -42,11 +42,6 @@ class Func_PortalAuthentication extends bab_functionality
 		return bab_translate("Authentication functionality");
 	}
 
-//	function getFunctionalityCallableMethods() 
-//	{
-//		return array('login', 'logout', 'isLogged');
-//	}
-
 	/**
 	 * Register myself as a functionality.
 	 * @static
@@ -99,11 +94,6 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 		return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
 	}
 
-//	function getFunctionalityCallableMethods() 
-//	{
-//		return array('login', 'logout', 'isLogged');
-//	}
-
 	/**
 	 * Register myself as a functionality.
 	 * @static
@@ -112,7 +102,7 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
-		return $functionalities->registerClass(__CLASS__, __FILE__);
+		return $functionalities->registerClass('Func_PortalAuthentication_Ovidentia', __FILE__);
 	}
 
 	function registerAuthType()
