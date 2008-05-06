@@ -38,12 +38,21 @@ $GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
 				array("taskmanager", bab_translate("Task Manager"))
 				);
 
+
+/**
+ * Set current user delegation
+ * @param	int		$iIdDelegation
+ */
 function bab_setCurrentUserDelegation($iIdDelegation)
 {
 	$_SESSION['babCurrentDelegation'] = (int) $iIdDelegation;
 }
 
 
+/**
+ * Get current user delegation
+ * @return 	int
+ */
 function bab_getCurrentUserDelegation()
 {
 	if(!array_key_exists('babCurrentDelegation', $_SESSION))
@@ -64,4 +73,85 @@ function bab_getCurrentUserDelegation()
 	}
 	return (int) $_SESSION['babCurrentDelegation'];
 }
-?>
+
+
+/**
+ * Get the delegation where the user is a member of the delgation group
+ * @param	int	$id_user
+ * @since	6.7.0
+ *
+ * @return 	array
+ */
+function bab_getUserVisiblesDelegations($id_user = NULL) {
+
+	global $babDB;
+	
+	if (NULL === $id_user) {
+		$id_user = $GLOBALS['BAB_SESS_USERID'];
+	}
+	
+	
+	$res = $babDB->db_query('
+		SELECT 
+			d.id,
+			d.name,
+			d.description, 
+			d.color  
+		
+		FROM 
+			'.BAB_USERS_GROUPS_TBL.' ug,
+			'.BAB_DG_GROUPS_TBL.' d 
+		WHERE 
+			(
+				d.id_group = ug.id_group 
+				OR d.id_group='.$babDB->quote(BAB_REGISTERED_GROUP).' 
+				OR d.id_group='.$babDB->quote(BAB_ALLUSERS_GROUP).'
+			) 
+			AND ug.id_object = '.$babDB->quote($id_user).'
+		
+		ORDER BY name 
+	');
+	
+	$return = array(
+		'DGAll' => array(
+			'id' => false,
+			'name' => bab_translate('Home'),
+			'description' => bab_translate('All site'),
+			'color' => 'FFFFFF',
+			'homePageUrl' => '?tg=oml&file=private.html'
+		)
+	);
+	
+	
+	if (0 < $babDB->db_num_rows($res)) {
+		$return['DG0'] = array(
+			'id' => 0,
+			'name' => bab_translate('Common content'),
+			'description' => bab_translate('Common content created in the main delegation'),
+			'color' => 'FFFFFF',
+			'homePageUrl' => '?tg=oml&file=DG0.html'
+		);
+	}
+	
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		$return['DG'.$arr['id']] = array(
+			'id' => (int) $arr['id'],
+			'name' => $arr['name'],
+			'description' => $arr['description'],
+			'color' => $arr['color'],
+			'homePageUrl' => '?tg=oml&file=DG'.$arr['id'].'.html'
+		);
+	}
+	
+	
+	return $return;
+}
+
+
+
+
+
+
+
+
+

@@ -1405,9 +1405,55 @@ function bab_updateUserSettings()
 
 }
 
+
+
+
+
+/**
+ * Get version stored in database or NULL if Ovidentia is not installed correctely
+ * @return NULL|string
+ */
+function bab_getDbVersion() {
+
+	static $dbVersion = false;
+
+	if (false === $dbVersion) {
+		global $babDB;
+		$dbver = array();
+		$res = $babDB->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
+		if (3 === $babDB->db_num_rows($res)) {
+			while ($rr = $babDB->db_fetch_array($res)) {
+				$dbver[$rr['foption']] = $rr['fvalue'];
+			}
+			
+			$dbVersion = $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'];
+		} else {
+			$dbVersion = NULL;
+		}
+	}
+	
+	return $dbVersion;
+}
+
+
+
+
+
+
+
+/**
+ * first function called from index to get the site setings
+ *
+ */ 
 function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
+	
+	if (NULL === bab_getDbVersion()) {
+		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		bab_newInstall();
+	}
+	
 
 	$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 	$res=$babDB->db_query($req);

@@ -22,7 +22,26 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 
+/**
+ * Sitemap rootNode
+ */
+class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
+	
+	/**
+	 * Get a folder node by ID in the correct delegation branch
+	 * @param	string	$sId
+	 * @return bab_Node | null
+	 */
+	function getDgNodeById($sId) {
+	
+		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+		//$idDg = bab_getCurrentUserDelegation();
+		$idDg = 'All';
+		return parent::getNodeById('DG'.$idDg.'-'.$sId);
+	}
+}
 
 /**
  * Sitemap item contener
@@ -36,6 +55,7 @@ class bab_siteMapItem {
 	var $url;
 	var $onclick;
 	var $folder; 
+
 }
 
 
@@ -160,6 +180,7 @@ class bab_siteMap {
 		$query = 'SELECT 
 				s.id,
 				s.id_parent,
+				sp.id_function parent_node,
 				f.id_function,
 				fl.name,
 				fl.description,
@@ -170,7 +191,8 @@ class bab_siteMap {
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' f, 
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
 				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
-				'.BAB_SITEMAP_TBL.' s,
+				'.BAB_SITEMAP_TBL.' s
+					LEFT JOIN '.BAB_SITEMAP_TBL.' sp ON sp.id = s.id_parent,
 				'.BAB_SITEMAP_PROFILES_TBL.' p
 			'; 
 			
@@ -219,14 +241,21 @@ class bab_siteMap {
 		}
 		
 		
-		include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
-		$rootNode = new bab_OrphanRootNode();
+		
+		$rootNode = new bab_siteMapOrphanRootNode();
 
 		$node_list = array();
 		
 		// bab_debug(sprintf('bab_siteMap::get() %d nodes', $babDB->db_num_rows($res)));
 		
+		$current_delegation_node = NULL;
+		
+		
 		while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+			if ('root' === $arr['parent_node']) {
+				$current_delegation_node = $arr['id_function'];
+			}
 		
 			$data = & new bab_siteMapItem();
 			$data->id_function 	= $arr['id_function'];
@@ -236,7 +265,7 @@ class bab_siteMap {
 			$data->onclick 		= $arr['onclick'];
 			$data->folder 		= 1 == $arr['folder'];
 			
-			$node_list[$arr['id']] = $data->folder ? $arr['id_function'] : $arr['id'].'-'.$arr['id_function'];
+			$node_list[$arr['id']] = $data->folder ? $current_delegation_node.'-'.$arr['id_function'] : $arr['id'].'-'.$arr['id_function'];
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
 		
 			$node = & $rootNode->createNode($data, $node_list[$arr['id']]);

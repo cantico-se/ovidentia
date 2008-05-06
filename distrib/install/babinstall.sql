@@ -1050,10 +1050,6 @@ CREATE TABLE bab_ini (
 	UNIQUE KEY foption (foption)
 );
 
-INSERT INTO bab_ini VALUES ('ver_major', '6');
-INSERT INTO bab_ini VALUES ('ver_minor', '6');
-INSERT INTO bab_ini VALUES ('ver_build', '92');
-INSERT INTO bab_ini VALUES ('ver_prod', 'E');
 
 #
 # Structure de la table `bab_images_temp`

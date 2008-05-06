@@ -32,16 +32,10 @@ function getVersion()
 	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
 	$str = "Sources Version ". $ini->getVersion()."\n";
-	$db = &$GLOBALS['babDB'];
 
-	$dbver = array();
-	$res = $db->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
-	if (3 === $db->db_num_rows($res)) {
-		while ($rr = $db->db_fetch_array($res)) {
-			$dbver[$rr['foption']] = $rr['fvalue'];
-		}
-		
-		$str .= "Database Version ". $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'] ."\n";
+	$dbVer = bab_getDbVersion();
+	if (NULL !== $dbVer) {
+		$str .= "Database Version ". $dbVer ."\n";
 	} else {
 		$str .= "No Database Version (installation is not complete)\n";
 	}

@@ -173,7 +173,10 @@ function bab_writeConfig($replace)
 
 
 
-
+/**
+ * Ovidentia upgrade
+ * @return boolean
+ */
 function bab_upgrade($core_dir, &$ret)
 {
 
@@ -229,17 +232,7 @@ function bab_upgrade($core_dir, &$ret)
 	}
 
 	
-	$dbver = array();
-	$res = $db->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
-	if (3 === $db->db_num_rows($res)) {
-		while ($rr = $db->db_fetch_array($res)) {
-			$dbver[$rr['foption']] = $rr['fvalue'];
-		}
-		
-		$ver_from = $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'];
-	} else {
-		$ver_from = false;
-	}
+	$ver_from = bab_getDbVersion();
 
 	$ini = new bab_inifile();
 	$ini->inifile($core_dir.'version.inc');
@@ -299,6 +292,75 @@ function bab_upgrade($core_dir, &$ret)
 	
 	return false;
 }
+
+
+
+
+
+
+
+
+
+/**
+ * Ovidentia new install
+ * if prerequisite are not compatibles, the function will exit the script
+ */
+function bab_newInstall() {
+
+	global $babBody, $babDB;
+	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+	
+	$GLOBALS['babLanguage'] = 'en';
+	$GLOBALS['babStyle'] = 'ovidentia.css';
+	$GLOBALS['babSkin'] = 'ovidentia';
+	
+	$ini = new bab_inifile();
+	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+
+	if (!$ini->isValid()) {
+	
+	
+		$GLOBALS['babJs'] = $GLOBALS['babInstallPath']."scripts/ovidentia.js";
+		$GLOBALS['babCssPath'] = bab_getCssUrl();
+		
+		$babDummy = new babDummy();
+		
+		$GLOBALS['babCss'] = bab_printTemplate($babDummy, "config.html", "babCss");
+		$GLOBALS['babMeta'] = bab_printTemplate($babDummy, "config.html", "babMeta");
+	
+		$GLOBALS['babSkinPath'] = $GLOBALS['babInstallPath']."skins/ovidentia/";
+
+		$babBody->setTitle(bab_translate('Ovidentia prerequisit verification'));
+		$babBody->addError(bab_translate('One or more prerequisites are not fullfilled, you must fix them before continuing to Ovidentia homepage'));
+		$babBody->babPopup($ini->getRequirementsHtml());
+		
+		exit;
+	}
+	
+	
+	include_once $GLOBALS['babInstallPath'].'install.php';
+	
+	
+	$iniVersion = $ini->getVersion();
+	$arr = explode('.', $iniVersion);
+	
+	$babDB->db_query("INSERT INTO ".BAB_INI_TBL." (foption, fvalue) 
+	
+		VALUES 
+			('ver_major', ".$babDB->quote($arr[0])."),
+			('ver_minor', ".$babDB->quote($arr[1])."),
+			('ver_build', ".$babDB->quote($arr[2]).")
+	");
+}
+
+
+
+
+
+
+
+
+
 
 
 

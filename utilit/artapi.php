@@ -47,6 +47,12 @@ function bab_getCategoryTitle($id)
 		}
 	}
 
+
+/**
+ * Get topic title
+ * @param	int		$id
+ * @return	string
+ */
 function bab_getTopicTitle($id)
 	{
 		return bab_getCategoryTitle($id);
@@ -495,4 +501,108 @@ function bab_addArticle( $title, $head, $body, $idTopic, &$error, $articleArr=ar
 		return false;
 	}
 }
-?>
+
+
+
+/**
+ * Get articles topic categories
+ *
+ * @param	array		$parentid		: list of id of the parent category
+ * @param	false|int	$delegationid	: if delegationid is false, categories are not filtered
+ *
+ * @return 	ressource|false
+ */
+function bab_getArticleCategoriesRes($parentid, $delegationid = false) {
+	global $babBody, $babDB;
+
+	$sDelegation = ' ';
+	if(0 != $delegationid)
+	{
+		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+	}
+	
+	$IdEntries = array();
+
+	
+	if( count($parentid) > 0 )
+	{
+	$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
+	$topcatview = $babBody->get_topcatview();
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		if( isset($topcatview[$row['id']]) )
+			{
+			if( count($IdEntries) == 0 || !in_array($row['id'], $IdEntries))
+				{
+				array_push($IdEntries, $row['id']);
+				}
+			}
+		}
+	}
+	
+
+	if($IdEntries)
+		{
+		$req = "SELECT tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc 
+			LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
+			WHERE tc.id IN (".$babDB->quote($IdEntries).") and tot.type='1' " . $sDelegation .  " order by tot.ordering asc";
+		
+		return $babDB->db_query($req);
+		}
+		
+	return false;
+}
+
+/**
+ * Get articles topics
+ * @param	array		$categoryid		: list of articles categories
+ * @param	false|int	$delegationid	: if delegationid is false, topics are not filtered
+ * @return 	ressource|false
+ */
+function bab_getArticleTopicsRes($categoryid, $delegationid = false) {
+	global $babBody, $babDB;
+	
+
+	$sDelegation = ' ';
+	$sLeftJoin = ' ';
+	if(false !== $delegationid)
+	{
+		$sLeftJoin = 
+			'LEFT JOIN ' .
+				BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
+			'LEFT JOIN ' .
+				BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
+		
+		$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+	}
+	
+
+	$IdEntries = array();
+
+	if( count($categoryid) > 0 )
+	{
+	$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".$babDB->quote($categoryid).")" . $sDelegation . " order by tco.ordering asc";
+	
+	
+
+	$res = $babDB->db_query($req);
+	while( $row = $babDB->db_fetch_array($res))
+		{
+		if(isset($babBody->topview[$row['id_topcat']]))
+			{
+			array_push($IdEntries, $row['id_topcat']);
+			}
+		}
+	}
+
+	if( $IdEntries)
+		{
+		$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' order by tot.ordering asc";
+		return $babDB->db_query($req);
+	}
+		
+	return false;
+}
+
+
+

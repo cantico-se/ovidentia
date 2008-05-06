@@ -40,26 +40,8 @@ class bab_inifile_requirements {
 	 */
 	function require_ov_version($value) {
 
-		$db = &$GLOBALS['babDB'];
-		$res = $db->db_query("select foption,fvalue from ".BAB_INI_TBL." where foption IN ('ver_major','ver_minor','ver_build')");
-
-		$coreversion = array();
-		while ($arr = $db->db_fetch_assoc($res)) {
-			switch ($arr['foption']) {
-				case 'ver_major':
-					$coreversion[0] = $arr['fvalue'];
-					break;
-				case 'ver_minor':
-					$coreversion[1] = $arr['fvalue'];
-					break;
-				case 'ver_build':
-					$coreversion[2] = $arr['fvalue'];
-					break;
-			}
-		}
-
-		if (count($coreversion) == 3) {
-			$ovidentia = $coreversion[0].'.'.$coreversion[1].'.'.$coreversion[2];
+		if (NULL !== $dbVersion = bab_getDbVersion()) {
+			$ovidentia = $dbVersion;
 		} else {
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$ini = new bab_inifile();
@@ -483,6 +465,59 @@ class bab_inifile_requirements {
 }
 
 
+
+
+
+
+
+class bab_inifile_requirements_html
+	{
+	var $requirements;
+
+	function bab_inifile_requirements_html()
+		{
+		
+		$this->t_requirements = bab_translate("Requirements");
+		$this->t_recommended = bab_translate("Recommended");
+		$this->t_install = bab_translate("Install");
+		$this->t_required = bab_translate("Required value");
+		$this->t_current = bab_translate("Current value");
+		$this->t_addon = bab_translate("Addon");
+		$this->t_description = bab_translate("Description");
+		$this->t_version = bab_translate("Version");
+		$this->t_ok = bab_translate("Ok");
+		$this->t_error = bab_translate("Error");
+
+		}
+
+
+
+	function getnextreq() {
+		if (list(,$arr) = each($this->requirements)) {
+			$this->description = bab_toHtml($arr['description']);
+			$this->recommended = bab_toHtml($arr['recommended']);
+			$this->required = bab_toHtml($arr['required']);
+			$this->current = bab_toHtml($arr['current']);
+			$this->result = $arr['result']; 
+			return true;
+		}
+		return false;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class bab_inifile {
 
 	var $addons;
@@ -817,6 +852,23 @@ class bab_inifile {
 		}
 		return true;
 	}
+	
+	
+	
+	
+	/**
+	 * The list of requirements specified in the ini file
+	 * @return string
+	 */
+	function getRequirementsHtml() {
+		global $babBody;
+		
+	
+		$temp = new bab_inifile_requirements_html();
+		$temp->requirements = $this->getRequirements();
+		return bab_printTemplate($temp,"requirements.html");
+	}
+	
 }
 
 

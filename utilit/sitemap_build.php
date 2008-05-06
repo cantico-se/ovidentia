@@ -24,6 +24,7 @@
 include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
 /** 
  * Sitemap node as object
@@ -41,7 +42,26 @@ class bab_siteMap_item {
 	var $parentNode;	// ref bab_siteMap_item
 	var $parentNode_str;
 	var $childNodes = array();
+	
+	
+	/**
+	 * sitemap item is a folder
+	 * @access public
+	 */
 	var $folder = false;
+	
+	/**
+	 * sitemap item is a delegation folder
+	 * @access public
+	 */
+	var $delegation = false;
+	
+	/**
+	 * by default, an item is viewable in all delegation, this status is set to true to copy the node in the others branchs
+	 * If the node must be present in only one delegation, the variable can be overwriten to false
+	 * @access public
+	 */
+	var $copy_to_all_delegations = true;
 	
 	/**
 	 * constructor
@@ -128,6 +148,56 @@ class bab_siteMap_item {
 		$this->childNodes[$obj->uid] = & $obj;
 	}
 	
+	
+	
+	/**
+	 * Display as text
+	 * @param	int		[$deep]
+	 */
+	function displayAsText($deep = 0) {
+	
+		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$this->label, $this->uid, $this->href);
+		
+		if ($this->childNodes) {
+			$deep++;
+			foreach($this->childNodes as $uid => $obj) {
+				$str .= $obj->displayAsText($deep);
+			}
+		}
+		
+		return $str;
+	}
+	
+	/**
+	 * @return false|array
+	 */
+	function getParentsFromDelegation($parents = NULL) {
+	
+		if (NULL === $parents) {
+			$parents = array();
+		}
+		
+		$node = reset($parents);
+		
+		if (empty($node)) {
+			$node = $this->parentNode;
+		} else {
+			$node = $node->parentNode;
+		}
+		
+		if (empty($node)) {
+			return false;
+		}
+
+		array_unshift($parents, $node);
+		
+		if ($node->delegation) {
+			return $parents;
+		}
+		
+		return $this->getParentsFromDelegation($parents);
+	}
+	
 }
 
 
@@ -172,7 +242,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * Add folder into sitemap
 	 * Folder must be unique
 	 * @public
-	 * @param	bab_siteMap_item
+	 * @param	bab_siteMap_item	&$obj
 	 * @return	boolean
 	 */
 	function addFolder(&$obj) {
@@ -191,11 +261,12 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	
 	/**
 	 * @private
+	 * @param	bab_siteMap_item	&$obj
 	 */
 	function buidtree(&$obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			$obj->parentNode = & $this->nodes[$obj->parentNode_str];
-			$obj->parentNode->addChildNode($this->nodes[$obj->uid]);
+			$this->insertChildNodeWithDelegationSupport($obj->parentNode, $this->nodes[$obj->uid]);
 		} else {
 			$this->queue[$obj->parentNode_str] = $obj->uid;
 		}
@@ -205,6 +276,54 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 			unset($this->queue[$obj->uid]);
 		}
 	}
+	
+	/**
+	 * Insert nodes in multiples delegations branchs
+	 * @param	bab_siteMap_item	&$parent_node
+	 * @param	bab_siteMap_item	&$obj
+	 * @private
+	 */
+	function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
+	
+		if ($obj->copy_to_all_delegations) {
+			$parents = $obj->getParentsFromDelegation();
+			if (false === $parents) {
+				trigger_error(sprintf('The node %s cannot be duplicated in all delegation',$obj->uid));
+				return false;
+			}
+			
+			/*
+			$debugstr = $obj->uid.' : ';
+			
+			foreach($parents as $parentNode) {
+				$debugstr .= $parentNode->uid.' > ';
+			}
+			
+			bab_debug($debugstr);
+			*/
+			
+			$delegationParent = $parents[0]->parentNode;
+			foreach($delegationParent->childNodes as $uid => $node) {
+				if ($uid !== $parents[0]->uid) {
+					foreach($parents as $key => $nodeToInsert) {
+						if (0 < $key) {
+							if (isset($_parent->childNodes[$key])) {
+								$_parent = & $_parent->childNodes[$key];
+							} else {
+								$_parent->addChildNode($parents[$key]);
+								$_parent = & $parents[$key];
+							}
+						} else {
+							$_parent = & $node;
+						}
+					}
+				}
+			}
+		}
+	
+		$parent_node->addChildNode($obj);
+	}
+	
 }
 
 
@@ -439,7 +558,7 @@ function bab_siteMap_deleteFunction($id_function, $tree = false) {
 		$tree->remove($arr['id']);
 	}
 	
-	bab_debug('sitemap remove : '.$id_function);
+	// bab_debug('sitemap remove : '.$id_function);
 }
 
 
@@ -810,6 +929,7 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 	if (!isset($node->position[$deep])) {
 	
 		// create node, test if exists
+		
 		$child = $tree->getFirstChild($id_parent);
 		if ($child) {
 		
@@ -823,6 +943,7 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 				}
 			}
 		}
+		
 	
 	
 		// leaf creation
@@ -899,17 +1020,40 @@ function bab_siteMap_build() {
 	global $babBody;
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 	
 	
 	$event = new bab_eventBeforeSiteMapCreated;
 	
+	// insert rootnode
+	
 	$rootNode = new bab_siteMap_item('root');
-	$rootNode->setLabel(bab_translate('Home'));
+	$rootNode->setLabel($GLOBALS['babSiteName']);
 	$rootNode->setDescription($babBody->babsite['babslogan']);
 	$rootNode->setLink('?');
 	$rootNode->folder = 1;
 	
 	$event->nodes[$rootNode->uid] = & $rootNode;
+	
+	// create delegations nodes
+	
+	$delgations = bab_getUserVisiblesDelegations();
+	foreach($delgations as $dgid => $arr) {
+		
+		$dgNode = new bab_siteMap_item($dgid);
+		$dgNode->setLabel($arr['name']);
+		$dgNode->setDescription($arr['description']);
+		$dgNode->setPosition(array('root'));
+		$dgNode->setLink($arr['homePageUrl']);
+		$dgNode->folder = 1;
+		$dgNode->delegation = 1;
+		$dgNode->copy_to_all_delegations = false;
+		
+		$event->nodes[$dgid] = $dgNode;
+		$event->buidtree($dgNode);
+	}
+	
+	
 	
 	bab_fireEvent($event);
 	
@@ -917,13 +1061,19 @@ function bab_siteMap_build() {
 	// add orphans nodes to tree
 	foreach($event->queue as $missing_node => $orphan) {
 		$newNode = new bab_siteMap_item($missing_node);
-		$newNode->setPosition(array('root'));
+		$newNode->setPosition(array('root', 'DG0'));
 		$newNode->folder = 1;
-		$rootNode->setLabel($missing_node);
-		$rootNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
+		$newNode->setLabel($missing_node);
+		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
 		$event->nodes[$newNode->uid] = $newNode;
 		$event->buidtree($newNode);
 	}
+	
+	
+	bab_debug($rootNode->displayAsText());
+	
+	
+	
 	
 	 $insert_time = bab_getMicrotime();
 
@@ -956,17 +1106,17 @@ function bab_sitemap_userSection(&$event) {
 
 	$item = $event->createItem('babUser');
 	$item->setLabel(bab_translate("User's section"));
-	$item->setPosition(array('root'));
+	$item->setPosition(array('root', 'DG0'));
 	$event->addFolder($item);
 	
 	$item = $event->createItem('babUserSection');
 	$item->setLabel(bab_translate("Ovidentia functions"));
-	$item->setPosition(array('root','babUser'));
+	$item->setPosition(array('root', 'DG0', 'babUser'));
 	$event->addFolder($item);
 	
 	$item = $event->createItem('babUserSectionAddons');
 	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root','babUser'));
+	$item->setPosition(array('root', 'DG0', 'babUser'));
 	$event->addFolder($item);
 
 	// user links
@@ -1205,7 +1355,7 @@ function bab_sitemap_userSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root','babUser','babUserSection'));
+		$link->setPosition(array('root', 'DG0', 'babUser','babUserSection'));
 		if (isset($arr['desc'])) {
 			$link->setDescription($arr['desc']);
 		}
@@ -1240,10 +1390,144 @@ function bab_sitemap_userSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root','babUser','babUserSectionAddons'));
+		$link->setPosition(array('root', 'DG0', 'babUser','babUserSectionAddons'));
 		$event->addFunction($link);
 	}
 }
+
+
+
+
+
+
+/**
+ * @param	bab_eventBeforeSiteMapCreated &$event
+ */
+function bab_sitemap_articles(&$event) {
+
+	
+	include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
+	
+	function bab_sitemap_articlesCategoryLevel($id_category, $position, &$event, $id_delegation) {
+		
+		global $babDB;
+		$res = bab_getArticleCategoriesRes(array($id_category), $id_delegation);
+		
+		if (false !== $res) {
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+			
+				$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
+		
+				$uid = 'bab'.$dg.'ArticleCategory_'.$arr['id'];
+		
+				$item = $event->createItem($uid);
+				$item->setLabel($arr['title']);
+				$item->setDescription(strip_tags($arr['description']));
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$item->setLink($GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
+				$event->addFolder($item);
+				
+				array_push($position, $uid);
+				bab_sitemap_articlesCategoryLevel($arr['id'], $position, $event, $id_delegation);
+				array_pop($position);
+			}
+		}
+		
+		
+		
+		
+		
+		
+		$res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
+		
+		if (false !== $res) {
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+			
+				$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
+		
+				$uid = 'bab'.$dg.'ArticleTopic_'.$arr['id'];
+		
+				$item = $event->createItem($uid);
+				$item->setLabel($arr['category']);
+				$item->setDescription(strip_tags($arr['description']));
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$item->setLink($GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+				$event->addFunction($item);
+			}
+		}
+
+		
+	}
+	
+	
+	$delegations = bab_getUserVisiblesDelegations();
+	
+	foreach($delegations as $id_delegation => $arr) {
+	
+		$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
+	
+		$item = $event->createItem('bab'.$dg.'Articles');
+		$item->setLabel(bab_translate("Articles"));
+		$item->setPosition(array('root', $id_delegation));
+		$event->addFolder($item);
+	
+		$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
+		bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
+		
+	}
+}
+
+
+
+
+
+/**
+ * @param	bab_eventBeforeSiteMapCreated &$event
+ */
+function bab_sitemap_faq(&$event) {
+
+	global $babDB;
+	include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
+	
+	
+	
+	$delegations = bab_getUserVisiblesDelegations();
+	
+	foreach($delegations as $delegation => $arr) {
+	
+		$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
+	
+		$item = $event->createItem('bab'.$dg.'Faqs');
+		$item->setLabel(bab_translate("Faqs"));
+		$item->setPosition(array('root', $delegation));
+		$event->addFolder($item);
+	
+		$position = array('root', $delegation, 'bab'.$dg.'Faqs');
+		
+		$res = bab_getFaqRes(false, $arr['id']);
+		if (false !== $res) {
+			while ($faq = $babDB->db_fetch_assoc($res)) {
+				
+				$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
+			
+				$uid = 'bab'.$dg.'Faq_'.$faq['id'];
+		
+				$item = $event->createItem($uid);
+				$item->setLabel($faq['category']);
+				$item->setDescription(strip_tags($faq['description']));
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$item->setLink($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$arr['id']);
+				$event->addFunction($item);
+			}
+		}
+	}
+}
+
+
+
 
 
 
@@ -1265,7 +1549,11 @@ function bab_onBeforeSiteMapCreated(&$event) {
 		bab_sitemap_adminSection($event);
 	}
 	
-	// ...
+	// articles
+	bab_sitemap_articles($event);
+	
+	// faq
+	bab_sitemap_faq($event);
 }
 
 

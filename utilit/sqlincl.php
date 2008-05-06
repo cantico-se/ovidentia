@@ -55,14 +55,9 @@ class bab_sqlExport
 		$this->commentPush("babInstallPath : ".$GLOBALS['babInstallPath'],true);
 		$this->commentPush("babUrl : ".$GLOBALS['babUrl'],true);
 		
-		$version = array();
-		$res = $this->db->db_query("SELECT fvalue FROM ".BAB_INI_TBL." where foption IN ('ver_major','ver_minor','ver_build')");
-		while (list($v) = $this->db->db_fetch_array($res))
-			{
-			$version[] = $v;
-			}
+		
 			
-		$this->commentPush(bab_translate('Ovidentia version')." : ".implode('.',$version),true);
+		$this->commentPush(bab_translate('Ovidentia version')." : ".bab_getDbVersion(),true);
 			
 		$arr = $this->db->db_fetch_array($this->db->db_query("show variables like 'version'"));
 		$this->commentPush(bab_translate('Database server version')." : ".$arr['Value'],true);

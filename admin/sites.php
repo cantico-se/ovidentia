@@ -128,34 +128,15 @@ function viewVersion($message)
 			$this->urlphpinfo = $GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo";
 			$this->phpinfo = "phpinfo";
 			$this->currentyear = date("Y");
-			$res = $db->db_query("select * from ".BAB_INI_TBL."");
-			while( $arr = $db->db_fetch_array($res))
-				{
-				switch($arr['foption'])
-					{
-					case 'ver_major':
-						$bab_ov_dbver_major = $arr['fvalue'];
-						break;
-					case 'ver_minor':
-						$bab_ov_dbver_minor = $arr['fvalue'];
-						break;
-					case 'ver_build':
-						$bab_ov_dbver_build = $arr['fvalue'];
-						break;
-					case 'ver_prod':
-						$bab_ov_dbver_prod = $arr['fvalue'];
-						break;
-					}
-				}
+			
 
 			$ini = new bab_inifile();
 			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
-			$this->srcversion = "E-".$ini->getVersion();
-			$this->dbversion = $bab_ov_dbver_prod."-".$bab_ov_dbver_major.".".$bab_ov_dbver_minor.".".$bab_ov_dbver_build;
+			$this->srcversion = $ini->getVersion();
+			$this->dbversion = bab_getDbVersion();
 
-
-			$this->requirements = $ini->getRequirements();
+			$this->requirementsHtml = $ini->getRequirementsHtml();
 
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
@@ -179,18 +160,6 @@ function viewVersion($message)
 			}
 		}
 
-
-		function getnextreq() {
-			if (list(,$arr) = each($this->requirements)) {
-				$this->description = bab_toHtml($arr['description']);
-				$this->recommended = bab_toHtml($arr['recommended']);
-				$this->required = bab_toHtml($arr['required']);
-				$this->current = bab_toHtml($arr['current']);
-				$this->result = $arr['result']; 
-				return true;
-			}
-			return false;
-		}
 	}
 
 	$temp = new temp();

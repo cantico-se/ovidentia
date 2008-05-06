@@ -960,35 +960,7 @@ changetype(document.forms['formsite_bloc4'].nonworking_day_type);
 <br />
 
 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-	<tr> 
-		<td class="BabLoginCadreBackground" align="center"> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-			
-			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td>&nbsp;</td>
-				<td>{ t_recommended }</td>
-				<td>{ t_required }</td>
-				<td>{ t_current }</td>
-				<td>&nbsp;</td>
-			</tr>
-			<!--#in getnextreq -->
-			<tr class="BabSiteAdminFontBackground"> 
-				<td>&nbsp;{ description }</td>
-				<td>{ recommended }</td>
-				<td>{ required }</td>
-				<td>{ current }</td>
-				<!--#if result -->
-				<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_ok }" /></td>
-				<!--#else result -->
-				<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_error }" /></td>
-				<!--#endif result -->
-			</tr>
-			<!--#endin getnextreq -->
-		</table>
-		</td>
-	</tr>
-</table>
+{ requirementsHtml }
 
 <!--#end versions -->
 

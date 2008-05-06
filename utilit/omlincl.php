@@ -604,35 +604,16 @@ class bab_ArticleCategories extends bab_handler
 			$parentid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $parentid));
 
 		$delegationid = (int) $ctx->get_value('delegationid');
-		$sDelegation = ' ';
-		if(0 != $delegationid)
-		{
-			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-		}
-
 		
-		if( count($parentid) > 0 )
-		{
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
-		$topcatview = $babBody->get_topcatview();
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if( isset($topcatview[$row['id']]) )
-				{
-				if( count($this->IdEntries) == 0 || !in_array($row['id'], $this->IdEntries))
-					{
-					array_push($this->IdEntries, $row['id']);
-					}
-				}
-			}
-		}
-		$this->count = count($this->IdEntries);
-		if( $this->count > 0)
-			{
-			$req = "select tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($this->IdEntries).") and tot.type='1'" . $sDelegation .  " order by tot.ordering asc";
-			$this->res = $babDB->db_query($req);
+		include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
+		$this->res = bab_getArticleCategoriesRes($parentid, $delegationid);
+		
+		if (false === $this->res) {
+			$this->count = 0;
+		} else {
 			$this->count = $babDB->db_num_rows($this->res);
-			}
+		}
+		
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -833,45 +814,20 @@ class bab_ArticleTopics extends bab_handler
 		$catid = $ctx->get_value('categoryid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		$sDelegation = ' ';
-		$sLeftJoin = ' ';
-		if(0 != $delegationid)
-		{
-			$sLeftJoin = 
-				'LEFT JOIN ' .
-					BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
-				'LEFT JOIN ' .
-					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
-			
-			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-		}
-		
-		
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
 			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
 
-		if( count($catid) > 0 )
-		{
-		$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".$babDB->quote($catid).")" . $sDelegation . " order by tco.ordering asc";
-
-		$res = $babDB->db_query($req);
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(isset($babBody->topview[$row['id_topcat']]))
-				{
-				array_push($this->IdEntries, $row['id_topcat']);
-				}
-			}
-		}
-		$this->count = count($this->IdEntries);
-		if( $this->count > 0 )
-			{
-			$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($this->IdEntries).") and tot.type='2' order by tot.ordering asc";
-			$this->res = $babDB->db_query($req);
+		include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
+		$this->res = bab_getArticleTopicsRes($catid, $delegationid);
+		
+		if (false === $this->res) {
+			$this->count = 0;
+		} else {
 			$this->count = $babDB->db_num_rows($this->res);
-			}
+		}
+	
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -3635,37 +3591,21 @@ class bab_Faqs extends bab_handler
 		$this->bab_handler($ctx);
 		$faqid = $ctx->get_value('faqid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-
-		$req = "select id from ".BAB_FAQCAT_TBL;
 		
-		$isFaqId = ( $faqid !== false && $faqid !== '' );
-		if( $isFaqId )
-		{
-			$req .= " where id IN (".$babDB->quote(explode(',', $faqid)).")";
+		if (empty($faqid)) {
+			$faqid = false;
+		} else {
+			$faqid = explode(',', $faqid);
 		}
-
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
-		{
-			$sDelegation = 'id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-			$req .= ($isFaqId) ? (' AND ' . $sDelegation) : (' WHERE ' . $sDelegation);
+		
+		if (empty($delegationid)) {
+			$delegationid = false;
 		}
-
-		$res = $babDB->db_query($req);
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
-				{
-				array_push($this->IdEntries, $row['id']);
-				}
-			}
-
-		$this->count = count($this->IdEntries);
-		if( $this->count > 0 )
-			{
-			$this->res = $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id IN (".$babDB->quote($this->IdEntries).")");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
+		
+		$this->res = bab_getFaqRes($faqid, $delegationid);
+		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -5182,7 +5122,7 @@ class bab_SitemapEntries extends bab_handler
 		$node = $ctx->get_value('node');
 
 		$rootNode = bab_siteMap::get();
-		$node = $rootNode->getNodeById($node);
+		$node = $rootNode->getDgNodeById($node);
 		if ($node) {
 			$node = $node->firstChild();
 			while($node)
