@@ -318,8 +318,10 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	function displayAsText($uid, $deep = 0) {
 	
 		$node = & $this->nodes[$uid];
+		
+		$href = isset($node->href) ? $node->href : '';
 	
-		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $node->href);
+		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $href);
 		
 		if ($node->childNodes) {
 			$deep++;
@@ -345,6 +347,8 @@ class bab_sitemap_tree extends bab_dbtree
 	var $iduser = '';
 	var $userinfo = '';
 	var $table;
+	
+	var $nodes;
 
 	function bab_sitemap_tree() {
 
@@ -377,8 +381,10 @@ class bab_sitemap_tree extends bab_dbtree
 		
 		$lf = 1 + $insertlist[count($insertlist) - 1]['lf'];
 
-		foreach($node->childNodes as $childNode) {
-		
+		foreach($this->nodes[$node->uid]->childNodes as $childNode) {
+			
+			
+			
 			$id++;
 			$current_id = $id;
 			$key = count($insertlist);
@@ -391,7 +397,7 @@ class bab_sitemap_tree extends bab_dbtree
 				'id_function' => $childNode->uid
 			);
 			
-			if (0 < count($childNode->childNodes)) {
+			if (0 < count($this->nodes[$childNode->uid]->childNodes)) {
 				$this->getLevelToInsert($childNode, $id, $id, $insertlist);
 				
 				$nb_inserted = $id - $current_id;
@@ -857,6 +863,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 			'id_function' => $rootNode->uid
 		);
 		
+		$tree->nodes = & $nodeList;
 		$tree->getLevelToInsert($rootNode, $id, 1, $insertlist);
 		
 		$insertlist[0]['lr'] = 2 + (2*(count($insertlist) - 1));
