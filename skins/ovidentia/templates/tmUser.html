@@ -734,7 +734,10 @@ function check_all(strCtrlName, checked)
 		<!--#if m_iIdProject "!= 0" -->
 		<!--#endif m_iIdProject -->
 		<!--#if m_iIdTask "!= 0" -->
+		
+		<!--#if m_bIsManager -->
 			<li id="oLiCost"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">Coût</a></li>
+		<!--#endif m_bIsManager -->
 			<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
 			<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
 		<!--#endif m_iIdTask -->
@@ -767,6 +770,22 @@ function check_all(strCtrlName, checked)
 					</td>
 				</tr>
 				<!--#endif m_iUseEditor -->
+				
+			<!--#if m_datas[isTaskPriority] -->
+				<tr id="oTrTaskPriority">
+					<td>
+						<label for="oTaskPriority">{ m_captions[sTaskPriority] }</label>
+					</td>
+					<td>
+						<select id="oTaskPriority" name="oTaskPriority">
+							<!--#in getNextTaskPriority -->
+							<option { m_datas[sSlectedTaskPriority] } value="{ m_datas[iIdTaskPriority] }">{ m_datas[iIdTaskPriority] }</option>
+							<!--#endin getNextTaskPriority -->
+						</select>
+					</td>
+				</tr>
+			<!--#endif m_datas[isTaskPriority] -->
+				
 			<!--#if m_datas[isLinkable] -->
 				<tr id="oTrLinkedTask">
 					<td>
@@ -850,12 +869,12 @@ function check_all(strCtrlName, checked)
 						</a>
 					<!--#endif m_datas[isReadOnlyDate] -->
 				
-						<select id="oPlannedStartHour" name="oPlannedStartHour">
+						<select id="oPlannedStartHour" name="oPlannedStartHour" { m_datas[sDisabledTime] } >
 							<!--#in getNextPlannedStartHour -->
 							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedStartHour] } >{ m_datas[sHour] }</option>
 							<!--#endin getNextPlannedStartHour -->
 						</select>:
-						<select id="oPlannedStartMinut" name="oPlannedStartMinut">
+						<select id="oPlannedStartMinut" name="oPlannedStartMinut" { m_datas[sDisabledTime] } >
 							<!--#in getNextPlannedStartMinut -->
 							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedStartMinut] } >{ m_datas[sMinut] }</option>
 							<!--#endin getNextPlannedStartMinut -->
@@ -902,12 +921,12 @@ function check_all(strCtrlName, checked)
 						</a>
 					<!--#endif m_datas[isReadOnlyDate] -->
 				
-						<select id="oPlannedEndHour" name="oPlannedEndHour">
+						<select id="oPlannedEndHour" name="oPlannedEndHour" { m_datas[sDisabledTime] } >
 							<!--#in getNextPlannedEndHour -->
 							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedEndHour] } >{ m_datas[sHour] }</option>
 							<!--#endin getNextPlannedEndHour -->
 						</select>:
-						<select id="oPlannedEndMinut" name="oPlannedEndMinut">
+						<select id="oPlannedEndMinut" name="oPlannedEndMinut" { m_datas[sDisabledTime] } >
 							<!--#in getNextPlannedEndMinut -->
 							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedEndMinut] } >{ m_datas[sMinut] }</option>
 							<!--#endin getNextPlannedEndMinut -->
@@ -1004,6 +1023,7 @@ function check_all(strCtrlName, checked)
 		</div>
 	<!--#endif m_datas[isLinkable] -->
 
+	<!--#if m_bIsManager -->
 		<div id="sCost" class="">
 			<table width="95%" border="0" cellspacing="3" cellpadding="2" align="center">
 				<tr>
@@ -1058,6 +1078,7 @@ function check_all(strCtrlName, checked)
 				</tr>
 			</table>
 		</div>
+	<!--#endif m_bIsManager -->
 
 		
 		<!--#if m_iIdTask "!= 0" -->

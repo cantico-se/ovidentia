@@ -1142,13 +1142,19 @@ function displayTaskList($sIdx)
 			
 			$this->m_oFilterSessionContext = new BAB_TM_SessionContext($sKey);
 			
-			$this->m_oFilterSessionContext->set('iSelectedTaskTypeFilter', bab_rp('oTaskTypeFilter', 
-				$this->m_oFilterSessionContext->get('iSelectedTaskTypeFilter', '')));
-			$this->set_data('iSelectedTaskTypeFilter', $this->m_oFilterSessionContext->get('iSelectedTaskTypeFilter', ''));	
+			/*
+			$this->m_oFilterSessionContext->set('iPriority', bab_rp('iPriority', 
+				$this->m_oFilterSessionContext->get('iPriority', -1)));
+			$this->set_data('iPriority', $this->m_oFilterSessionContext->get('iPriority', -1));	
+			//*/
+			
+			$this->m_oFilterSessionContext->set('iTaskClass', bab_rp('oTaskTypeFilter', 
+				$this->m_oFilterSessionContext->get('iTaskClass', -1)));
+			$this->set_data('iTaskClass', $this->m_oFilterSessionContext->get('iTaskClass', -1));	
 			
 			$this->m_oFilterSessionContext->set('iTaskCompletion', bab_rp('iCompletion', 
-				$this->m_oFilterSessionContext->get('iTaskCompletion', '')));
-			$this->set_data('iCompletion', $this->m_oFilterSessionContext->get('iTaskCompletion', ''));	
+				$this->m_oFilterSessionContext->get('iTaskCompletion', -1)));
+			$this->set_data('iCompletion', $this->m_oFilterSessionContext->get('iTaskCompletion', -1));	
 			
 			$this->m_oFilterSessionContext->set('iIdOwner', bab_rp('iIdOwner', 
 				$this->m_oFilterSessionContext->get('iIdOwner', 0)));
@@ -1318,7 +1324,7 @@ function displayTaskList($sIdx)
 			$datas = each($this->m_aTasksTypeFilter);
 			if(false != $datas)
 			{
-				$this->get_data('iSelectedTaskTypeFilter', $iSelectedTaskTypeFilter);
+				$this->get_data('iTaskClass', $iSelectedTaskTypeFilter);
 				$this->set_data('sTaskTypeFilterSelected', bab_toHtml(($iSelectedTaskTypeFilter == $datas['value']['value']) ? 'selected="selected"' : ''));
 				
 				$this->set_data('iTaskTypeFilterValue', bab_toHtml($datas['value']['value']));				

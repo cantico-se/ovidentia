@@ -4447,6 +4447,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	$babDB->db_query('DROP TABLE `' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . '`');
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPriority`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPriority` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT \'5\'');			  
+		}
+	}
 	
 	
 	return true;

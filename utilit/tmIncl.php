@@ -935,7 +935,8 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'iTime, ' .			  
 			'iTimeDurationUnit, ' .			  
 			'iPlannedCost, ' .			  
-			'iCost ' .			  
+			'iCost, ' .
+			'iPriority ' .			  
 		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
@@ -965,7 +966,8 @@ function bab_getAllTaskIndexedById($iIdProject, &$aTasks)
 			'iIsNotified' => $datas['isNotified'], 'sShortDescription' => $datas['shortDescription'],
 			'iPlannedTime' => $datas['iPlannedTime'], 'iPlannedTimeDurationUnit' => $datas['iPlannedTimeDurationUnit'], 			  
 			'iTime' => $datas['iTime'], 'iTimeDurationUnit' => $datas['iTimeDurationUnit'], 			  
-			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost']);
+			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost'],
+			'iPriority' => $datas['iPriority']);
 		$iIndex++;
 	}
 }
@@ -988,7 +990,7 @@ function bab_createTask($aParams)
 				'`plannedEndDate`, `created`, `idUserCreated`, `isNotified`, ' .
 				'`idUserModified`, `modified`, `shortDescription`, ' .
 				'`iPlannedTime`, `iPlannedTimeDurationUnit`, `iTime`, ' . 
-				'`iTimeDurationUnit`, `iPlannedCost`, `iCost` ' .			  
+				'`iTimeDurationUnit`, `iPlannedCost`, `iCost`, `iPriority` ' .			  
 			') ' .
 		'VALUES ' . 
 			'(\'\', \'' . 
@@ -1023,7 +1025,8 @@ function bab_createTask($aParams)
 				$babDB->db_escape_string($aParams['iTime']) . '\', \'' . 
 				$babDB->db_escape_string($aParams['iTimeDurationUnit']) . '\', \'' . 			  
 				$babDB->db_escape_string($aParams['iPlannedCost']) . '\', \'' . 
-				$babDB->db_escape_string($aParams['iCost']) .
+				$babDB->db_escape_string($aParams['iCost']) . '\', \'' . 
+				$babDB->db_escape_string($aParams['iPriority']) .
 			'\')'; 
 
 	//bab_debug($query);
@@ -1077,16 +1080,18 @@ function bab_getTask($iIdTask, &$aTask)
 			't.iTimeDurationUnit, ' .			  
 			't.iPlannedCost, ' .			  
 			't.iCost, ' .			  
+			't.iPriority, ' .
 			'ti.idOwner ' .
-	'FROM ' .
+		'FROM ' .
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
 		'LEFT JOIN ' .
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti ON ti.idTask = t.id ' .
 		'WHERE ' . 
 			't.id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
-	//bab_debug($query);
-
+//	echo $query . '<br />';
+//	bab_debug($query);
+	
 	$result = $babDB->db_query($query);
 	$iNumRows = $babDB->db_num_rows($result);
 	$iIndex = 0;
@@ -1111,7 +1116,7 @@ function bab_getTask($iIdTask, &$aTask)
 			'iPlannedTimeDurationUnit' => $datas['iPlannedTimeDurationUnit'], 			  
 			'iTime' => $datas['iTime'], 'iTimeDurationUnit' => $datas['iTimeDurationUnit'], 			  
 			'iPlannedCost' => $datas['iPlannedCost'], 'iCost' => $datas['iCost'],
-			);
+			'iPriority' => $datas['iPriority']);
 		return true;
 	}
 	return false;
@@ -1150,7 +1155,8 @@ function bab_updateTask($iIdTask, $aParams)
 			'`iTime` = \'' . $babDB->db_escape_string($aParams['iTime']) . '\', ' . 
 			'`iTimeDurationUnit` = \'' . $babDB->db_escape_string($aParams['iTimeDurationUnit']) . '\', ' . 			  
 			'`iPlannedCost` = \'' . $babDB->db_escape_string($aParams['iPlannedCost']) . '\', ' . 
-			'`iCost` = \'' . $babDB->db_escape_string($aParams['iCost']) . '\' ' .
+			'`iCost` = \'' . $babDB->db_escape_string($aParams['iCost']) . '\', ' .
+			'`iPriority` = \'' . $babDB->db_escape_string($aParams['iPriority']) . '\' ' .
 		'WHERE ' . 
 			'id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
 			
@@ -1831,6 +1837,7 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 			't.iTimeDurationUnit iTimeDurationUnit, ' . 			  
 			't.iPlannedCost iPlannedCost, ' . 
 			't.iCost iCost, ' .
+			't.iPriority iPriority, ' .
 			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
 			'cat.name sCategoryName, ' .
@@ -1962,6 +1969,7 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			't.description sDescription, ' .
 			't.shortDescription sShortDescription, ' .
 			't.class iClass, ' .
+			't.iPriority iPriority, ' .
 		'CASE t.class ' .
 			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
 			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
