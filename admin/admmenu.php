@@ -44,19 +44,19 @@ function bab_sitemap_adminSection(&$event) {
 	
 	$item = $event->createItem('babAdmin');
 	$item->setLabel(bab_translate("Administration"));
-	$item->setPosition(array('root', 'DG0'));
+	$item->setPosition(array('root', 'DGAll'));
 	$event->addFolder($item);
 	
 	$item = $event->createItem('babAdminSection');
 	$item->setLabel(bab_translate("Ovidentia functions"));
 	$item->setDescription($head);
-	$item->setPosition(array('root', 'DG0','babAdmin'));
+	$item->setPosition(array('root', 'DGAll','babAdmin'));
 	$event->addFolder($item);
 
 	
 	$item = $event->createItem('babAdminSectionAddons');
 	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root','babAdmin'));
+	$item->setPosition(array('root','DGAll','babAdmin'));
 	$event->addFolder($item);
 	
 	$array_urls = array();
@@ -220,7 +220,7 @@ function bab_sitemap_adminSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DG0', 'babAdmin','babAdminSection'));
+		$link->setPosition(array('root','DGAll', 'babAdmin','babAdminSection'));
 		if (isset($arr['desc'])) {
 			$link->setDescription($arr['desc']);
 		}
@@ -261,7 +261,7 @@ function bab_sitemap_adminSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DG0', 'babAdmin','babAdminSectionAddons'));
+		$link->setPosition(array('root', 'DGAll', 'babAdmin','babAdminSectionAddons'));
 		$event->addFunction($link);
 	}
 }

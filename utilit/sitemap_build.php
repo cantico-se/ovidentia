@@ -145,28 +145,12 @@ class bab_siteMap_item {
 	 * @param	bab_siteMap_item	$obj
 	 */
 	function addChildNode(&$obj) {
-		$this->childNodes[$obj->uid] = & $obj;
+		$this->childNodes[$obj->uid] = $obj;
 	}
 	
 	
 	
-	/**
-	 * Display as text
-	 * @param	int		[$deep]
-	 */
-	function displayAsText($deep = 0) {
 	
-		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$this->label, $this->uid, $this->href);
-		
-		if ($this->childNodes) {
-			$deep++;
-			foreach($this->childNodes as $uid => $obj) {
-				$str .= $obj->displayAsText($deep);
-			}
-		}
-		
-		return $str;
-	}
 	
 	/**
 	 * @return false|array
@@ -265,7 +249,13 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 */
 	function buidtree(&$obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
+			
+			// reference vers le parent
 			$obj->parentNode = & $this->nodes[$obj->parentNode_str];
+			
+			// inserer la meme reference dans la node list , important pour php 4
+			$this->nodes[$obj->uid]->parentNode = & $this->nodes[$obj->parentNode_str];
+			
 			$this->insertChildNodeWithDelegationSupport($obj->parentNode, $this->nodes[$obj->uid]);
 		} else {
 			$this->queue[$obj->parentNode_str] = $obj->uid;
@@ -284,7 +274,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @private
 	 */
 	function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
-	
+
 		if ($obj->copy_to_all_delegations) {
 			$parents = $obj->getParentsFromDelegation();
 			if (false === $parents) {
@@ -292,15 +282,6 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 				return false;
 			}
 			
-			/*
-			$debugstr = $obj->uid.' : ';
-			
-			foreach($parents as $parentNode) {
-				$debugstr .= $parentNode->uid.' > ';
-			}
-			
-			bab_debug($debugstr);
-			*/
 			
 			$delegationParent = $parents[0]->parentNode;
 			foreach($delegationParent->childNodes as $uid => $node) {
@@ -308,7 +289,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 					foreach($parents as $key => $nodeToInsert) {
 						if (0 < $key) {
 							if (isset($_parent->childNodes[$key])) {
-								$_parent = & $_parent->childNodes[$key];
+								$_parent = & $this->nodes[$key];
 							} else {
 								$_parent->addChildNode($parents[$key]);
 								$_parent = & $parents[$key];
@@ -320,9 +301,36 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 				}
 			}
 		}
-	
+
 		$parent_node->addChildNode($obj);
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Display as text
+	 * @param	string	$uid
+	 * @param	int		[$deep]
+	 */
+	function displayAsText($uid, $deep = 0) {
+	
+		$node = & $this->nodes[$uid];
+	
+		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $node->href);
+		
+		if ($node->childNodes) {
+			$deep++;
+			foreach($node->childNodes as $uid => $obj) {
+				$str .= $this->displayAsText($uid, $deep);
+			}
+		}
+		
+		return $str;
+	}
+	
 	
 }
 
@@ -1070,7 +1078,7 @@ function bab_siteMap_build() {
 	}
 	
 	
-	bab_debug($rootNode->displayAsText());
+	bab_debug($event->displayAsText('root'));
 	
 	
 	
@@ -1106,17 +1114,17 @@ function bab_sitemap_userSection(&$event) {
 
 	$item = $event->createItem('babUser');
 	$item->setLabel(bab_translate("User's section"));
-	$item->setPosition(array('root', 'DG0'));
+	$item->setPosition(array('root', 'DGAll'));
 	$event->addFolder($item);
 	
 	$item = $event->createItem('babUserSection');
 	$item->setLabel(bab_translate("Ovidentia functions"));
-	$item->setPosition(array('root', 'DG0', 'babUser'));
+	$item->setPosition(array('root', 'DGAll', 'babUser'));
 	$event->addFolder($item);
 	
 	$item = $event->createItem('babUserSectionAddons');
 	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root', 'DG0', 'babUser'));
+	$item->setPosition(array('root', 'DGAll', 'babUser'));
 	$event->addFolder($item);
 
 	// user links
@@ -1355,7 +1363,7 @@ function bab_sitemap_userSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DG0', 'babUser','babUserSection'));
+		$link->setPosition(array('root', 'DGAll', 'babUser','babUserSection'));
 		if (isset($arr['desc'])) {
 			$link->setDescription($arr['desc']);
 		}
@@ -1390,7 +1398,7 @@ function bab_sitemap_userSection(&$event) {
 		$link = $event->createItem($arr['uid']);
 		$link->setLabel($label);
 		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DG0', 'babUser','babUserSectionAddons'));
+		$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
 		$event->addFunction($link);
 	}
 }
