@@ -4458,6 +4458,47 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	 
+	$oResult = $babDB->db_query('DESCRIBE `' . BAB_CAL_EVENTS_TBL . '` `uuid`');
+	if(false !== $oResult)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		if(!is_array($aData))
+		{
+			$babDB->db_query('ALTER TABLE `' . BAB_CAL_EVENTS_TBL . '` ADD `uuid` varchar(255) NOT NULL');
+	
+			$sQuery = 
+				'SELECT ' .
+					'id iId ' . 
+				'FROM ' .
+					BAB_CAL_EVENTS_TBL;
+					
+			$oResult = $babDB->db_query($sQuery);
+			$iNumRows = $babDB->db_num_rows($oResult);
+			$iIndex = 0;
+			
+			while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				//Generate a pseudo-random UUID according to RFC 4122
+				$sUUID = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+					mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+					mt_rand( 0, 0x0fff ) | 0x4000,
+					mt_rand( 0, 0x3fff ) | 0x8000,
+					mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+				
+				$iIndex++;
+				$sQuery = 
+					'UPDATE ' . 
+						BAB_CAL_EVENTS_TBL . ' ' .
+					'SET ' . ' ' .
+						'`uuid` = \'' . $babDB->db_escape_string($sUUID) . '\' ' .
+					'WHERE ' . 
+						'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+						
+				$babDB->db_query($sQuery);
+			}
+		}
+	}
 	
 	return true;
 }

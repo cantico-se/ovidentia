@@ -285,10 +285,10 @@ class cal_weekCls extends cal_wmdbaseCls
 						$calPeriod->getProperty('DTSTART') < $this->enddt )
 						{
 						$this->createCommonEventVars($calPeriod);
-						if( !isset($this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')]) )
+						if( !isset($this->bfirstevents[$this->cindex][$calPeriod->getProperty('X-CTO-PUID')]) )
 							{
 							$this->first=1;
-							$this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')] = 1;
+							$this->bfirstevents[$this->cindex][$calPeriod->getProperty('X-CTO-PUID')] = 1;
 							}
 						else
 							{

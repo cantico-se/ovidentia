@@ -834,8 +834,8 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 	while( $arr = $babDB->db_fetch_assoc($res))
 		{
 		$events[$arr['id']] = & new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
-		$uid = & $events[$arr['id']]->getProperty('UID');
-		$uid .= '.'.$arr['id'];
+		$xCtoPuid = & $events[$arr['id']]->getProperty('X-CTO-PUID');
+		$xCtoPuid .= '.'.$arr['id'];
 		
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');

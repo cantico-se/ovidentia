@@ -314,9 +314,10 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 
 	global $babBody, $babDB;
 
+	require_once $GLOBALS['babInstallPath'].'utilit/uuid.php';
 
 	$babDB->db_query("insert into ".BAB_CAL_EVENTS_TBL." 
-	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash, date_modification, id_modifiedby) 
+	( title, description, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash, date_modification, id_modifiedby, uuid) 
 	
 	values (
 		".$babDB->quote($title).", 
@@ -332,7 +333,8 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 		".$babDB->quote($free).", 
 		".$babDB->quote($hash).",
 		now(),
-		".$babDB->quote($id_owner)."
+		".$babDB->quote($id_owner).",
+		".$babDB->quote(bab_uuid())."
 	)
 		");
 	
@@ -1808,7 +1810,7 @@ class bab_event_posted {
 				
 				
 
-				$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+				$availability_msg_list[$calPeriod->getProperty('X-CTO-PUID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
 
 			}
 		}

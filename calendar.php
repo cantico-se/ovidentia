@@ -621,15 +621,15 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$arr = $calPeriod->getData();
 					$arr['color'] = $calPeriod->getColor();
 
-					$uid = $calPeriod->getProperty('UID');
+					$xCtoPuid = $calPeriod->getProperty('X-CTO-PUID');
 					
-					if (!isset($this->resevent[$uid]))
+					if (!isset($this->resevent[$xCtoPuid]))
 						{
-						$this->resevent[$uid] = array();
-						$this->resevent[$uid]['cals'] = array();
+						$this->resevent[$xCtoPuid] = array();
+						$this->resevent[$xCtoPuid]['cals'] = array();
 						}
 
-					$evt = & $this->resevent[$uid];
+					$evt = & $this->resevent[$xCtoPuid];
 
 					$evt['cals'] = $this->mcals->getEventCalendars($calPeriod);
 
@@ -639,7 +639,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					if ($ts <= time() && $last_ts < $ts)
 						{
 						$last_ts = $ts;
-						$this->last_id = $uid;
+						$this->last_id = $xCtoPuid;
 						}
 					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($calPeriod->getProperty('DTSTART'))));
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
@@ -674,7 +674,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$evt['notes'] = '';
 						}
 
-					$sortvalue[$uid] = $calPeriod->getProperty('DTSTART');
+					$sortvalue[$xCtoPuid] = $calPeriod->getProperty('DTSTART');
 					}
 				}
 			

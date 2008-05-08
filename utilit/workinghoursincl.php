@@ -158,8 +158,8 @@ class bab_calendarPeriod {
 		$this->ts_end	= $end;
 
 		$this->properties = array(
-				'UID'		=> $type.'.'.$begin.'.'.$end,
-				'CLASS'		=> 'PUBLIC'
+				'X-CTO-PUID'	=> $type.'.'.$begin.'.'.$end,
+				'CLASS'			=> 'PUBLIC'
 			);
 	}
 
@@ -555,8 +555,8 @@ class bab_userWorkingHours {
 		
 		$p = & new bab_calendarPeriod($beginDate->getTimeStamp(), $endDate->getTimeStamp(), $type);
 		if (false !== $id_user) {
-			$uid = & $p->getProperty('UID');
-			$uid .= '.'.$id_user;
+			$xCtoPuid = & $p->getProperty('X-CTO-PUID');
+			$xCtoPuid .= '.'.$id_user;
 		}
 		
 		$this->addPeriod($p);
@@ -602,8 +602,8 @@ class bab_userWorkingHours {
 		$arr = array();
 		foreach($this->id_users as $id_user) {
 			$p = new bab_calendarPeriod($begin, $end, $type);
-			$uid = & $p->getProperty('UID');
-			$uid .= '.'.$id_user;
+			$xCtoPuid = & $p->getProperty('X-CTO-PUID');
+			$xCtoPuid .= '.'.$id_user;
 			$arr[] = $p;
 		}
 
@@ -663,7 +663,7 @@ class bab_userWorkingHours {
 	function setAvailability($event, $available) {
 		$boundary = $this->boundaries[$event->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
-			if ($tmp_evt->getProperty('UID') === $event->getProperty('UID')) {
+			if ($tmp_evt->getProperty('X-CTO-PUID') === $event->getProperty('X-CTO-PUID')) {
 				$this->boundaries[$event->ts_begin][$key]->available = $available;
 			}
 		}
@@ -690,7 +690,7 @@ class bab_userWorkingHours {
 				
 			foreach($this->boundaries[$ts] as $event) {
 				if ($event->ts_end > $start && $event->ts_begin < $end && $event->type === ($filter & $event->type)) {
-					$r[$event->getProperty('UID')] = $event;
+					$r[$event->getProperty('X-CTO-PUID')] = $event;
 				}
 			}
 		}
