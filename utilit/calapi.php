@@ -145,7 +145,7 @@ function bab_calGetEvents(&$params)
 		}
 		
 		$events[] = array(
-			'uid'					=> $event->getProperty('UID'),
+			'uid'					=> $data['uuid'],
 			'id_event' 				=> isset($data['id_event']) ? $data['id_event'] : NULL,		
 			'title'					=> $event->getProperty('SUMMARY'),
 			'description'			=> $event->getProperty('DESCRIPTION'),
