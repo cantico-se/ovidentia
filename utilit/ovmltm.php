@@ -222,13 +222,22 @@ class bab_TmProjects extends bab_handler
  * - OVTaskProjectId			The id of the task's project
  * - OVTaskNumber				The task number
  * - OVTaskShortDescription		The task short description
- * - OVTaskStartDate
- * - OVTaskEndDate
+ * - OVTaskStartDate			The real start datetime
+ * - OVTaskEndDate				The real end datetime
+ * - OVTaskPlannedStartDate		The planned start datetime
+ * - OVTaskPlannedEndDate		The planned end datetime
  * - OVTaskCategoryId			The category id
  * - OVTaskCategoryName			The category name
  * - OVTaskCompletion			The task completion (integer in percent)
  * - OVTaskOwnerId				The user id of the task owner
  * - OVTaskClass				The task class (integer : 0 = task, 1 = checkpoint, 2 = todo)
+ * - OVTime 
+ * - OVTimeDurationUnit 			  
+ * - OVPlannedTime
+ * - OVPlannedTimeDurationUnit
+ * - OVCost
+ * - OVPlannedCost 
+ * - OVPriority
  */
 class bab_TmTasks extends bab_handler
 {
@@ -252,6 +261,8 @@ class bab_TmTasks extends bab_handler
 						'TaskShortDescription' => 'sShortDescription',
 						'TaskStartDate' => 'startDate',
 						'TaskEndDate' => 'endDate',
+						'TaskPlannedStartDate' => 'sPlannedStartDate',
+						'TaskPlannedEndDate' => 'sPlannedEndDate',
 						'TaskCategoryId' => 'iIdCategory',
 						'TaskCategoryName' => 'sCategoryName',
 						'TaskCompletion' => 'iCompletion',
@@ -288,7 +299,15 @@ class bab_TmTasks extends bab_handler
 		{
 			$aFilter['sEndDate'] = $endDate;
 		}
-
+		if ($plannedStartDate = $ctx->get_value('plannedStartDate'))
+		{
+			$aFilter['sPlannedStartDate'] = $plannedStartDate;
+		}
+		if ($plannedEndDate = $ctx->get_value('plannedEndDate'))
+		{
+			$aFilter['sPlannedEndDate'] = $plannedEndDate;
+		}
+		
 		// The default ordering is ascending on field 'TaskNumber'.
 		$sortFields = array('sName' => 'sTaskNumber', 'sOrder' => 'ASC');
 
@@ -330,11 +349,34 @@ class bab_TmTasks extends bab_handler
 			$this->ctx->curctx->push('TaskShortDescription', $task['sShortDescription']);
 			$this->ctx->curctx->push('TaskStartDate', bab_mktime($task['startDate']));
 			$this->ctx->curctx->push('TaskEndDate', bab_mktime($task['endDate']));
+			$this->ctx->curctx->push('TaskPlannedStartDate', $task['plannedStartDate']);
+			$this->ctx->curctx->push('TaskPlannedEndDate', $task['plannedEndDate']);
 			$this->ctx->curctx->push('TaskCategoryId', $task['iIdCategory']);
 			$this->ctx->curctx->push('TaskCategoryName', $task['sCategoryName']);
 			$this->ctx->curctx->push('TaskCompletion', $task['iCompletion']);
 			$this->ctx->curctx->push('TaskOwnerId', $task['idOwner']);
 			$this->ctx->curctx->push('TaskClass', $task['iClass']);
+			$this->ctx->curctx->push('Priority', $task['iPriority']);
+
+			$this->ctx->curctx->push('Time', '');
+			$this->ctx->curctx->push('TimeDurationUnit', '');
+			$this->ctx->curctx->push('PlannedTime', '');
+			$this->ctx->curctx->push('PlannedTimeDurationUnit', '');
+			$this->ctx->curctx->push('Cost', '');
+			$this->ctx->curctx->push('PlannedCost', '');
+
+			$bProjectManager = (0 !== (int) $task['iIdProject'] && bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, (int) $task['iIdProject']));
+			$bPersonnalTaskOwner = (0 === (int) $task['iIdProject'] && (int) $GLOBALS['BAB_SESS_USERID'] === (int) $task['idOwner']);
+
+			if($bProjectManager || $bPersonnalTaskOwner)
+			{
+				$this->ctx->curctx->push('Time', $task['iTime']);
+				$this->ctx->curctx->push('TimeDurationUnit', $task['iTimeDurationUnit']);
+				$this->ctx->curctx->push('PlannedTime', $task['iPlannedTime']);
+				$this->ctx->curctx->push('PlannedTimeDurationUnit', $task['iPlannedTimeDurationUnit']);
+				$this->ctx->curctx->push('Cost', $task['iCost']);
+				$this->ctx->curctx->push('PlannedCost', $task['iPlannedCost']);
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
