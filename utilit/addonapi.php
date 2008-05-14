@@ -1804,6 +1804,25 @@ class bab_functionality {
 }
 
 
+/**
+ * Get an object with informations for one addon
+ * @since 6.6.93
+ * @param	string	$addonname
+ * @return bab_addonInfos|false
+ */
+function bab_getAddonInfosInstance($addonname) {
 
+	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	static $instances = array();
+	
+	if (false === array_key_exists($addonname, $instances)) {
+		$obj = new bab_addonInfos();
+		if (false === $obj->setAddonName($addonname)) {
+			$instances[$classname] = false;
+		} else {
+			$instances[$classname] = $obj;
+		}
+	}
+	return $instances[$classname];
+}
 
-?>

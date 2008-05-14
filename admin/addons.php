@@ -677,7 +677,7 @@ function import()
 		}
 
 		$db = $GLOBALS['babDB'];
-		$db->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title='".$addon_name."'");
+		$db->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$db->quote($addon_name));
 
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 		$zip = new Zip;

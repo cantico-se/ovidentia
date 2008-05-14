@@ -28,18 +28,23 @@ include_once 'base.php';
 
 
 /**
- * Manage addons informations
+ * Manage addons informations for multiples addons
  */
 class bab_addonsInfos {
 
+	var $indexById 		= array();
+	var $indexByName 	= array();
+
 	/**
-	 * @return array
+	 * Create indexes
+	 * @return boolean
 	 */
-	function getRows() {
+	function createIndex() {
+		
 	
-		global $babBody, $babDB;
-	
-		if (!$babBody->babaddons) {
+		if (!$this->indexById || !$this->indexByName) {
+		
+			global $babDB;
 	
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 			while( $arr = $babDB->db_fetch_array($res)) {
@@ -60,12 +65,30 @@ class bab_addonsInfos {
 							}
 						}
 					}
-				$babBody->babaddons[$arr['id']] = $arr;
+					
+				$this->indexById[$arr['id']] 		= $arr;
+				$this->indexByName[$arr['title']] 	= $arr;
 			}
 		}
 		
-		return $babBody->babaddons;
 		
+		return !empty($this->indexById);
+	}
+
+
+
+	/**
+	 * Get all addons indexed by id
+	 * since $babBody->babaddons is deprecated, this method has the same result
+	 * @static
+	 * @return array
+	 */
+	function getRows() {
+	
+		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createIndex();
+		
+		return $obj->indexById;
 	}
 	
 	
@@ -120,14 +143,173 @@ class bab_addonsInfos {
 	
 	/**
 	 * Clear cache for addons
+	 * @static
 	 */
 	function clear() {
 		global $babBody;
 	
 		$babBody->babaddons = array();
+		
+		$obj = bab_getInstance('bab_addonsInfos');
+		
+		$obj->indexById 	= array();
+		$obj->indexByName 	= array();
+	}
+	
+	
+	
+	/**
+	 * Get addon id by name
+	 * @static
+	 * @return int|false
+	 */
+	function getAddonIdByName($name) {
+		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createIndex();
+		
+		if (!isset($obj->indexByName[$name])) {
+			return false;
+		}
+		
+		return (int) $obj->indexByName[$name]['id'];
 	}
 }
 
+
+
+
+
+
+
+/**
+ * Manage addon informations for one addon
+ * @since 6.6.93
+ */
+class bab_addonInfos {
+	
+	/**
+	 * @access private
+	 */
+	var $id_addon;
+	
+	/**
+	 * @access private
+	 */
+	var $addonname;
+
+
+	/**
+	 * Set addon Name
+	 * This function verifiy if the addon is accessible
+	 * define $this->id_addon and $this->addonname
+	 * @return boolean
+	 */
+	function setAddonName($addonname) {
+		
+		$id_addon = bab_addonsInfos::getAddonIdByName($addonname);
+		
+		if (false === $id_addon) {
+			return false;
+		}
+			
+		if (!bab_isAddonAccessValid($id_addon)) {
+			return false;
+		}
+	
+		$this->id_addon = $id_addon;
+		$this->addonname = $addonname;
+			
+		return true;
+	}
+	
+	
+	
+	/**
+	 * Get the addon name
+	 * a replacement for $babAddonFolder
+	 * @return string
+	 */
+	function getName() {
+		return $this->addonname;
+	}
+	
+	/**
+	 * a replacement for $babAddonTarget
+	 * @return string
+	 */
+	function getTarget() {
+		return "addon/".$this->id_addon;
+	}
+	
+	/**
+	 * a replacement for $babAddonUrl
+	 * @return string
+	 */
+	function getUrl() {
+		return $GLOBALS['babUrlScript'].'?tg=addon/'.$this->id_addon.'/';
+	}
+
+	/**
+	 * 
+	 * a replacement for $babAddonHtmlPath
+	 * @return string
+	 */
+	function getRelativePath() {
+		return 'addons/'.$this->addonname.'/';
+	}
+	
+	/**
+	 * a replacement for $babAddonPhpPath
+	 * @return string
+	 */
+	function getPhpPath() {
+		return $GLOBALS['babInstallPath'].'/'.$this->getRelativePath();
+	}
+	
+	/**
+	 * Get the addon upload path
+	 * a replacement for $babAddonUpload
+	 * @return string
+	 */
+	function getUploadPath() {
+		return $GLOBALS['babUploadPath'].'/'.$this->getRelativePath();
+	}
+	
+	/**
+	 * Get path to template directory
+	 * @return string
+	 */
+	function getTemplatePath() {
+		return $GLOBALS['babInstallPath'].'/skins/ovidentia/templates/'.$this->getRelativePath();
+	}
+	
+	
+	/**
+	 * Get path to images directory
+	 * @return string
+	 */
+	function getImagesPath() {
+		return $GLOBALS['babInstallPath'].'/skins/ovidentia/images/'.$this->getRelativePath();
+	}
+	
+	
+	/**
+	 * Get path to ovml directory
+	 * @return string
+	 */
+	function getOvmlPath() {
+		return $GLOBALS['babInstallPath'].'/skins/ovidentia/ovml/'.$this->getRelativePath();
+	}
+	
+	
+	/**
+	 * Get path to css stylesheets directory
+	 * @return string
+	 */
+	function getStylePath() {
+		return $GLOBALS['babInstallPath'].'/styles/'.$this->getRelativePath();
+	}
+}
 
 
 
@@ -173,11 +355,11 @@ function bab_setAddonGlobals($id_addon) {
 	}
 	
 	$GLOBALS['babAddonFolder'] = $arr['title'];
-	$GLOBALS['babAddonTarget'] = "addon/".$id_addon;
-	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript']."?tg=addon/".$id_addon."/";
-	$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath']."addons/".$arr['title']."/";
-	$GLOBALS['babAddonHtmlPath'] = "addons/".$arr['title']."/";
-	$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath']."/addons/".$arr['title']."/";
+	$GLOBALS['babAddonTarget'] = 'addon/'.$id_addon;
+	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$id_addon.'/';
+	$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$arr['title'].'/';
+	$GLOBALS['babAddonHtmlPath'] = 'addons/'.$arr['title'].'/';
+	$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$arr['title'].'/';
 	
 	return true;
 }

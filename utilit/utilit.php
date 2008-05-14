@@ -1210,10 +1210,12 @@ function bab_updateUserSettings()
 			}
 		}
 
-
+	
+	// The babBody->babaddons varaible is deprecated
+	// Use bab_addonsInfos::getRows(); instead
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	$addons = new bab_addonsInfos;
-	$addons->getRows();
+	$babBody->babaddons = bab_addonsInfos::getRows();
+
 
 	
 

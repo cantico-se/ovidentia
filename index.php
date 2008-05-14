@@ -1109,18 +1109,11 @@ switch($tg)
 			
 			if (!is_numeric($arr[1]))
 				{
-				foreach($GLOBALS['babBody']->babaddons as $k => $v)
-					{
-					if ($v['title'] == $arr[1])
-						{
-						$arr[1] = $k;
-						break;
-						}
-					}
+				$arr[1] = bab_addonsInfos::getAddonIdByName($arr[1]);
 				}
 			if(bab_isAddonAccessValid($arr[1]))
 				{
-				$row = &$babBody->babaddons[$arr[1]];
+				$row = bab_addonsInfos::getDbRow($arr[1]);
 				$incl = "addons/".$row['title'];
 
 				$module = "";
