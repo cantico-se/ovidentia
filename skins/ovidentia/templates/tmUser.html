@@ -1267,6 +1267,14 @@ function submit_form()
 	return true;
 }
 
+function addTask(idx, action)
+{
+	var form = document.forms.taskListFilter;
+	form.idx.value = idx;
+	form.action.value = action;
+	form.submit();
+}
+
 function getSelectCtrlValue(oCtrl)
 {
 	var form = document.forms.taskListFilter;
@@ -1285,21 +1293,35 @@ function onTaskFilterChanged(oCtrl, sHiddenName)
 {
 	var form = document.forms.taskListFilter;
 	var iIdProject = getSelectCtrlValue(oCtrl);
-	document.forms['taskListFilter'].elements[sHiddenName].value = (0 < iIdProject) ? iIdProject : 0;
+	document.forms['taskListFilter'].elements[sHiddenName].value = iIdProject;
 	
 	var oAddBtn = document.getElementById('sAddTaskBtn');
-	if(null != oAddBtn)
+	var oAddIcon = document.getElementById('oAddIcon');
+
+	if(-1 != iIdProject)
 	{
-		if(-1 != iIdProject)
+		if(null != oAddBtn)
 		{
 			oAddBtn.style.display = '';	
 		}
-		else
+		
+		if(null != oAddIcon)
 		{
-			oAddBtn.style.display = 'none';
+			oAddIcon.style.display = '';	
 		}
 	}
-	
+	else
+	{
+		if(null != oAddBtn)
+		{
+			oAddBtn.style.display = 'none';	
+		}
+		
+		if(null != oAddIcon)
+		{
+			oAddIcon.style.display = 'none';	
+		}
+	}
 }
 
 function setDateValue(aDate)
@@ -1709,7 +1731,7 @@ onload="tmInit('ganttTask')"
 <!--#begin toolbar -->
 	<div class="bab_toolbar" style="vertical-align: middle; margin-bottom: 10px; padding: 8px; background-color: #eeeeee; border:0px">
 	<!--#in getNextItem -->
-		<a style="text-decoration: none" href="{ sUrl }" title="{ sTitle }">
+		<a style="text-decoration: none" href="{ sUrl }" title="{ sTitle }" <!--#if sId "!= ''" --> id="{ sId }" <!--#endif sId --> >
 			<img style="vertical-align: middle; margin-left: 10px; border:0px" src="{ babInstallPath }skins/ovidentia/images/Puces/{ sImg }" alt="{ sAlt }" /> { sText }
 		</a>
 	<!--#endin getNextItem -->
