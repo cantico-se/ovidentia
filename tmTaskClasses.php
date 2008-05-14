@@ -1830,7 +1830,7 @@
 		{
 			if($this->isTaskNumberValid())
 			{
-				if($this->isDateValid($this->m_sPlannedEndDate))
+				if($this->isDateValid($this->m_sEndDate))
 				{
 					return true;
 				}
@@ -1842,7 +1842,7 @@
 		{
 			if($this->isTaskNumberValid())
 			{
-				if($this->isDateValid($this->m_sPlannedEndDate))
+				if($this->isDateValid($this->m_sEndDate))
 				{
 					return true;
 				}
@@ -1887,6 +1887,7 @@
 			$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
 			$oStartDate->init($oStartDate->_iYear, $oStartDate->_iMonth, $oStartDate->_iDay, 00, 00, 00);
 			$sStartDate = date('Y-m-d H:i:s', $oStartDate->getTimeStamp());
+			$sEndDate = $this->m_sEndDate;
 		}
 	}
 	
@@ -2183,10 +2184,12 @@
 
 				$aTask =& $this->m_oTask->m_aTask;
 				
+				/*
 				if((is_null($this->m_sStartDate) || 0 == strlen($this->m_sStartDate)) && 0 === (int) $aTask['iCompletion'] && 0 < $this->m_iCompletion)
 				{
 					$this->m_sStartDate = date('Y-m-d H:i:s');
 				}
+				//*/
 				
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
@@ -2220,12 +2223,12 @@
 				
 				if(100 != (int) $aTask['iCompletion'] && ((int) $this->m_iCompletion >= 100 || BAB_TM_ENDED === (int) $aTask['iParticipationStatus']))
 				{
-					$aTask['sEndDate'] = date("Y-m-d H:i:s");
+					//$aTask['sEndDate'] = date("Y-m-d H:i:s");
 					$aTask['iParticipationStatus'] = BAB_TM_ENDED;
 				}
 				else if(100 == (int) $aTask['iCompletion'] && (int) $this->m_iCompletion < 100)
 				{
-					$aTask['sEndDate'] = '';
+					//$aTask['sEndDate'] = '';
 					$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
 				}
 				

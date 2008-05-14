@@ -789,6 +789,9 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 				
 				$this->getBox($iTaskStartDateTs, $iDoneEndDateTs, $this->m_iDonePosX, $this->m_iDonePosY, $this->m_iDoneHeigth, $this->m_iDoneWidth);
 				
+				$this->m_iDonePosX++;
+				$this->m_iDonePosY++;
+				
 				$this->m_sDoneBgColor = '00F';
 				$this->m_sDoneColor = 'FFF';
 				
@@ -834,6 +837,11 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 		
 //		$iPosY = round($this->m_iTaskIndex * $this->m_iHeight);
 //		$iHeigth = round($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom));
+				/*
+				$oDoneStartDate = BAB_DateTime::fromTimeStamp($iDisplayedStartDateTs );
+				$oDoneEndDate = BAB_DateTime::fromTimeStamp($iDisplayedEndDateTs );
+				echo 'startDate ==> ' . $oDoneStartDate->getIsoDateTime() . ' endDate ==> ' . $oDoneEndDate->getIsoDateTime() . '<br />';
+				//*/
 		
 		$iHeigth = round( ($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom)) / 2 );
 		$iPosY = round( (($this->m_iTaskIndex * $this->m_iHeight) + ($iHeigth / 2)));

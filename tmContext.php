@@ -396,7 +396,7 @@ class BAB_TM_Context
 
 		if(0 == $this->m_iIdTask) //Creation
 		{
-			if(0 != $this->m_iIdProject)
+			if(0 < $this->m_iIdProject)
 			{
 				if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $this->m_iIdProject))
 				{
@@ -418,7 +418,7 @@ class BAB_TM_Context
 		}
 		else // Edition
 		{
-			if(0 != $this->m_iIdProject)
+			if(0 < $this->m_iIdProject)
 			{
 				if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $this->m_iIdProject))
 				{

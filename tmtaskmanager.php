@@ -42,14 +42,16 @@ class BAB_TM_ToolbarItem
 	var $sImg	= '';
 	var $sTitle = '';
 	var $sAlt	= '';
-
-	function BAB_TM_ToolbarItem($sText, $sUrl, $sImg, $sTitle, $sAlt)
+	var $sId	= '';
+	
+	function BAB_TM_ToolbarItem($sText, $sUrl, $sImg, $sTitle, $sAlt, $sId)
 	{
 		$this->setText($sText);
 		$this->setUrl($sUrl);
 		$this->setImg($sImg);
 		$this->setTitle($sTitle);
 		$this->setAlt($sAlt);
+		$this->setId($sId);
 	}
 
 	function setText($sText) 
@@ -101,6 +103,16 @@ class BAB_TM_ToolbarItem
 	{
 		return $this->sAlt;
 	}
+	
+	function setId($sId)
+	{
+		$this->sId = $sId;
+	}
+
+	function getId()
+	{
+		return $this->sId;
+	}
 }
 
 
@@ -113,7 +125,8 @@ class BAB_TM_Toolbar
 	var $sImg	= '';
 	var $sTitle = '';
 	var $sAlt	= '';
-
+	var $sId	= '';
+	
 	var $sTemplateFileName = 'tmUser.html';
 	var $sTemplate = 'toolbar';
 
@@ -149,6 +162,7 @@ class BAB_TM_Toolbar
 			$this->sImg		= $oToolbarItem->getImg();
 			$this->sTitle	= $oToolbarItem->getTitle();
 			$this->sAlt		= $oToolbarItem->getAlt();
+			$this->sId		= $oToolbarItem->getId();
 			return true;
 		}
 		return false;
@@ -1098,6 +1112,7 @@ function displayTaskList($sIdx)
 			$this->set_data('iIdProjectSpace', (int) bab_rp('iIdProjectSpace', 0));
 			
 			//Task filter (-1 ==> All, -2 ==> personnal task)
+			//Task filter (-1 ==> All, 0 ==> personnal task)
 			$this->set_caption('sProject', (0 === (int) bab_rp('isProject', 0) ? bab_translate("Project") : ''));
 			$this->set_data('iTaskFilterValue', -1);
 			$this->set_data('sTaskFilterSelected', '');
@@ -1141,12 +1156,6 @@ function displayTaskList($sIdx)
 			$sKey = (0 === $iIsProject) ? 'tskMgrPersonnalFilter' : 'tskMgrProjectFilter';
 			
 			$this->m_oFilterSessionContext = new BAB_TM_SessionContext($sKey);
-			
-			/*
-			$this->m_oFilterSessionContext->set('iPriority', bab_rp('iPriority', 
-				$this->m_oFilterSessionContext->get('iPriority', -1)));
-			$this->set_data('iPriority', $this->m_oFilterSessionContext->get('iPriority', -1));	
-			//*/
 			
 			$this->m_oFilterSessionContext->set('iTaskClass', bab_rp('oTaskTypeFilter', 
 				$this->m_oFilterSessionContext->get('iTaskClass', -1)));
@@ -1243,7 +1252,7 @@ function displayTaskList($sIdx)
 			$aPersTaskCreator = bab_getUserIdObjects(BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL);
 			if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
 			{
-				$this->m_aTasksFilter[] = array('value' => -2, 
+				$this->m_aTasksFilter[] = array('value' => 0, 
 					'text' => bab_translate("Personnal task"));
 			}
 			
@@ -1447,7 +1456,7 @@ function displayTaskList($sIdx)
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
 	$iTaskFilter =& $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
-	
+
 	$iTaskClass =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskClass');
 	$iTaskCompletion =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskCompletion');
 
@@ -1463,7 +1472,9 @@ function displayTaskList($sIdx)
 	if(-1 != $iTaskFilter)
 	{
 		//iTaskFilter (-1 ==> All, -2 ==> personnal task)
-		if(-2 == $iTaskFilter)
+		//if(-2 == $iTaskFilter)
+		//iTaskFilter (-1 ==> All, -2 ==> personnal task)
+		if(0 === $iTaskFilter)
 		{
 			$aFilters['isPersonnal'] = BAB_TM_YES;
 			$sGanttViewUrl .= '&isPersonnal=' . urlencode(BAB_TM_YES);
@@ -1631,19 +1642,17 @@ function displayTaskList($sIdx)
 		function getLastRow()
 		{
 			$datas = array();
-			$datas['idOwner']			= '';
+			$datas['sShortDescription']	= '';
 			$datas['sClass']			= '';
 			$datas['startDate']			= '';
 			$datas['endDate']			= '';
 			$datas['plannedStartDate']	= '';
 			$datas['plannedEndDate']	= '';
-			$datas['sShortDescription']	= '';
-
+			$datas['idOwner']			= '';
 			$datas['iPlannedTime']		= number_format($this->m_fTotalPlannedTime, 2, '.', '');
 			$datas['iTime']				= number_format($this->m_fTotalTime, 2, '.', '');
 			$datas['iPlannedCost']		= number_format($this->m_fTotalPlannedCost, 2, '.', '');
 			$datas['iCost']				= number_format($this->m_fTotalCost, 2, '.', '');
-			
 			return $datas;
 		}
 		
@@ -1913,16 +1922,28 @@ function displayTaskList($sIdx)
 	}
 	
 	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
-//	$GLOBALS['babBody']->babecho(bab_printTemplate($oTaskFilterForm, 'tmUser.html', 'ganttView'));
-
 
 	$oToolbar = new BAB_TM_Toolbar();
 	$oToolbar->addToolbarItem(
 		new BAB_TM_ToolbarItem(bab_translate("Display the gantt View"), 'javascript:bab_popup("' . $sGanttViewUrl . '", 150, 1)', 
-			'ganttView.png', bab_translate("Display the gantt View"), bab_translate("Display the gantt View")),
-		new BAB_TM_ToolbarItem(bab_translate("Search"), 'javascript:tskMgr_showHideFilter()', 
-			'search.png', bab_translate("Search"), bab_translate("Search")));
+			'ganttView.png', bab_translate("Display the gantt View"), bab_translate("Display the gantt View"), 'oGanttIcon'),
+		new BAB_TM_ToolbarItem(bab_translate("Add a task"), 'javascript:addTask(\'displayTaskForm\', \'\')', 
+			'list-add.png', bab_translate("Add a task"), bab_translate("Add a task"), 'oAddIcon'));
 
+	if($iIdProject > 0 && (bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) || 
+		bab_isAccessValid(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject)) )
+	{
+		$sExportUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&action=' . urlencode(BAB_TM_ACTION_PROCESS_EXPORT);
+		
+		$oToolbar->addToolbarItem(
+			new BAB_TM_ToolbarItem(bab_translate("Export"), $sExportUrl, 
+				'cvsExport.png', bab_translate("Export"), bab_translate("Export"), 'oExportIcon'));
+	}
+
+	$oToolbar->addToolbarItem(
+		new BAB_TM_ToolbarItem(bab_translate("Search"), 'javascript:tskMgr_showHideFilter()', 
+			'search.png', bab_translate("Search"), bab_translate("Search"), 'oSearchIcon'));
+		
 	$GLOBALS['babBody']->babecho($oToolbar->printTemplate());
 	
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
@@ -1940,7 +1961,7 @@ function displayTaskForm()
 	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
 	$iIdProject = (int) $oTmCtx->getIdProject();
 	
-	if(0 != $iIdProject)
+	if(0 < $iIdProject)
 	{
 		if(false != bab_getProject($iIdProject, $aProject))
 		{
@@ -1951,7 +1972,7 @@ function displayTaskForm()
 	$bIsTaskResp = false;
 	$bIsManager = false;
 
-	if(0 !== $iIdProjectSpace && 0 !== $iIdProject)
+	if(0 < $iIdProjectSpace && 0 < $iIdProject)
 	{
 		$bIsTaskResp = bab_isAccessValid(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
 		$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
@@ -2648,6 +2669,172 @@ function modifyProjectProperties()
 	}
 }
 
+
+function processExport()
+{
+	$sKey = 'tskMgrProjectFilter';
+	
+	$oFilterSessionContext = new BAB_TM_SessionContext($sKey);
+	$iIdProject	= (int) $oFilterSessionContext->get('iIdProject', -1);
+	
+	if($iIdProject > 0 && (bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) || 
+		bab_isAccessValid(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject)) )
+	{
+		$iTaskClass			= (int) $oFilterSessionContext->get('iTaskClass', -1);	
+		$iTaskCompletion	= (int) $oFilterSessionContext->get('iTaskCompletion', -1);	
+		$iIdOwner			= (int) $oFilterSessionContext->get('iIdOwner', 0);
+		$sStartDate			= (string) $oFilterSessionContext->get('sStartDate', '');
+		$iStartHour			= (int) $oFilterSessionContext->get('iStartHour', 0);
+		$iStartMinut		= (int) $oFilterSessionContext->get('iStartMinut', 0);
+		$sEndDate			= (string) $oFilterSessionContext->get('sEndDate', '');
+		$iEndHour			= (int) $oFilterSessionContext->get('iEndHour', 0);
+		$iEndMinut			= (int) $oFilterSessionContext->get('iEndMinut', 0);
+		$sPlannedStartDate	= (string) $oFilterSessionContext->get('sPlannedStartDate', '');
+		$iPlannedStartHour	= (int) $oFilterSessionContext->get('iPlannedStartHour', 0);
+		$iPlannedStartMinut	= (int) $oFilterSessionContext->get('iPlannedStartMinut', 0);
+		$sPlannedEndDate	= (string) $oFilterSessionContext->get('sPlannedEndDate', '');
+		$iPlannedEndHour	= (int) $oFilterSessionContext->get('iPlannedEndHour', 0);
+		$iPlannedEndMinut	= (int) $oFilterSessionContext->get('iPlannedEndMinut', 0);
+		
+		$aFilters = array();
+		
+		$aFilters['iIdProject'] = $iIdProject;
+				
+		if(-1 != $iTaskClass)
+		{
+			$aFilters['iTaskClass'] = $iTaskClass;
+		}
+	
+		if(-1 !== $iTaskCompletion)
+		{
+			$aFilters['iCompletion'] = $iTaskCompletion;
+		}
+		
+		global $babInstallPath;
+		require_once($babInstallPath . 'utilit/dateTime.php');
+	
+		if(strlen(trim($sStartDate)) > 0)
+		{
+			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sStartDate));
+			if(!is_null($oDate))
+			{
+				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+					$iStartHour, $iStartMinut);
+				$aFilters['sStartDate'] = $oDate->getIsoDateTime();
+			}
+		}
+	
+		if(strlen(trim($sEndDate)) > 0)
+		{
+			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sEndDate));
+			if(!is_null($oDate))
+			{
+				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+					$iEndHour, $iEndMinut);
+				$aFilters['sEndDate'] = $oDate->getIsoDateTime();
+			}
+		}
+	
+		if(strlen(trim($sPlannedStartDate)) > 0)
+		{
+			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedStartDate));
+			if(!is_null($oDate))
+			{
+				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+					$iPlannedStartHour, $iPlannedStartMinut);
+				$aFilters['sPlannedStartDate'] = $oDate->getIsoDateTime();
+			}
+		}
+	
+		if(strlen(trim($sPlannedEndDate)) > 0)
+		{
+			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedEndDate));
+			if(!is_null($oDate))
+			{
+				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
+					$iPlannedEndHour, $iPlannedEndMinut);
+				$aFilters['sPlannedEndDate'] = $oDate->getIsoDateTime();
+			}
+		}
+		
+		if(0 !== $iIdOwner)
+		{
+			$aFilters['iIdOwner'] = $iIdOwner;
+		}
+		
+		$aFilters['bIsManager'] = true;
+		
+		$aOrder = array();
+		$sQuery = bab_selectTaskQuery($aFilters, $aOrder);
+		
+//		bab_debug($sQuery);
+	
+		global $babDB;
+		$oResult = $babDB->db_query($sQuery);
+		$iNumRows = $babDB->db_num_rows($oResult);
+		$iIndex = 0;
+		
+		if($iNumRows > 0)
+		{		
+			$sSeparator = ',';
+			$sCrlf = "\r\n";
+	
+			$sOutput = 
+				'"' . bab_translate("Title") . '"' . $sSeparator .
+				'"' . bab_translate("Type") . '"' . $sSeparator .
+				'"' . bab_translate("Planned start date") . '"' . $sSeparator .
+				'"' . bab_translate("Real start date") . '"' . $sSeparator .
+				'"' . bab_translate("Planned end date") . '"' . $sSeparator .
+				'"' . bab_translate("Real end date") . '"' . $sSeparator .
+				'"' . bab_translate("Planned cost") . '"' . $sSeparator .
+				'"' . bab_translate("Real cost") . '"' . $sSeparator .
+				'"' . bab_translate("Planned time") . '"' . $sSeparator .
+				'"' . bab_translate("Real time") . '"' . $sSeparator .
+				'"' . bab_translate("Task responsible") . '"' . $sSeparator . $sCrlf;
+			
+			while($iIndex < $iNumRows && false != ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$iIndex++;
+				
+				$sOutput .= '"' . $aDatas['sShortDescription'] . '"' . $sSeparator;
+				$sOutput .= '"' . $aDatas['sClass'] . '"' . $sSeparator;
+				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['plannedStartDate']),true) . '"' . $sSeparator;
+				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['startDate']),true) . '"' . $sSeparator;
+				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['plannedEndDate']),true) . '"' . $sSeparator;
+				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['endDate']),true) . '"' . $sSeparator;
+				$sOutput .= '"' . $aDatas['iPlannedCost'] . '"' . $sSeparator;
+				$sOutput .= '"' . $aDatas['iCost'] . '"' . $sSeparator;
+				
+				
+				if($aDatas['iPlannedTimeDurationUnit'] == BAB_TM_DAY)
+				{
+					$aDatas['iPlannedTime'] = ((float) $aDatas['iPlannedTime'] * 24);
+				}
+				
+				if($aDatas['iTimeDurationUnit'] == BAB_TM_DAY)
+				{
+					$aDatas['iTime'] = ((float) $aDatas['iTime'] * 24);
+				}
+
+				
+				$sOutput .= '"' . $aDatas['iPlannedTime'] . '"' . $sSeparator;
+				$sOutput .= '"' . $aDatas['iTime'] . '"' . $sSeparator;
+				$sOutput .= '"' . bab_getUserName($aDatas['idOwner']) . '"' . $sCrlf;
+			}
+			
+			$sFileName = 'listeTâches.csv';
+		
+			header("Content-Disposition: attachment; filename=\"" . $sFileName . "\""."\n");
+			header("Content-Type: csv/plain"."\n");
+			header("Content-Length: ". strlen($sOutput) ."\n");
+			header("Content-transfert-encoding: binary"."\n");
+			print $sOutput;
+			die;
+		}
+	}
+}
+
+
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
 	(isset($_GET['action']) ? $_GET['action'] :  
@@ -2748,6 +2935,10 @@ switch($action)
 		
 	case BAB_TM_ACTION_MODIFY_PROJECT_PROPERTIES:
 		modifyProjectProperties();
+		break;
+		
+	case BAB_TM_ACTION_PROCESS_EXPORT:
+		processExport();
 		break;
 }
 
