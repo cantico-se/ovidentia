@@ -1818,11 +1818,11 @@ function bab_getAddonInfosInstance($addonname) {
 	if (false === array_key_exists($addonname, $instances)) {
 		$obj = new bab_addonInfos();
 		if (false === $obj->setAddonName($addonname)) {
-			$instances[$classname] = false;
+			$instances[$addonname] = false;
 		} else {
-			$instances[$classname] = $obj;
+			$instances[$addonname] = $obj;
 		}
 	}
-	return $instances[$classname];
+	return $instances[$addonname];
 }
 

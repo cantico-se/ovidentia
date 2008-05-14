@@ -263,7 +263,7 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getPhpPath() {
-		return $GLOBALS['babInstallPath'].'/'.$this->getRelativePath();
+		return $GLOBALS['babInstallPath'].$this->getRelativePath();
 	}
 	
 	/**
@@ -280,7 +280,7 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getTemplatePath() {
-		return $GLOBALS['babInstallPath'].'/skins/ovidentia/templates/'.$this->getRelativePath();
+		return $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$this->getRelativePath();
 	}
 	
 	
@@ -289,7 +289,7 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getImagesPath() {
-		return $GLOBALS['babInstallPath'].'/skins/ovidentia/images/'.$this->getRelativePath();
+		return $GLOBALS['babInstallPath'].'skins/ovidentia/images/'.$this->getRelativePath();
 	}
 	
 	
@@ -298,7 +298,7 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getOvmlPath() {
-		return $GLOBALS['babInstallPath'].'/skins/ovidentia/ovml/'.$this->getRelativePath();
+		return $GLOBALS['babInstallPath'].'skins/ovidentia/ovml/'.$this->getRelativePath();
 	}
 	
 	
@@ -307,7 +307,7 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getStylePath() {
-		return $GLOBALS['babInstallPath'].'/styles/'.$this->getRelativePath();
+		return $GLOBALS['babInstallPath'].'styles/'.$this->getRelativePath();
 	}
 }
 
