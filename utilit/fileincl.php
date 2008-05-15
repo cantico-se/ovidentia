@@ -3069,10 +3069,7 @@ class BAB_FmFolderCliboard extends BAB_DbRecord
 
 	function setRelativePath($sRelativePath)
 	{
-		if(isset($GLOBALS['babFileNameTranslation']))
-		{
-			$sRelativePath = strtr($sRelativePath, $GLOBALS['babFileNameTranslation']);
-		}
+		BAB_FmFolderHelper::sanitizePathname($sPathname);
 		$this->_set('sRelativePath', $sRelativePath);
 	}
 
