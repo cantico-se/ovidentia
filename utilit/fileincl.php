@@ -4293,7 +4293,7 @@ function replaceInvalidFolderNameChar($sName)
 			$sName = strtr($sName, $GLOBALS['babFileNameTranslation']);
 		}
 		
-		static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_');
+		static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_', '"' => '_');
 		$sName = strtr($sName, $aTranslation);
 	}
 	return $sName;
