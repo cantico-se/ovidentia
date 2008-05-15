@@ -347,6 +347,7 @@ class bab_TmTasks extends bab_handler
 			$this->ctx->curctx->push('TaskProjectId', $task['iIdProject']);
 			$this->ctx->curctx->push('TaskNumber', $task['sTaskNumber']);
 			$this->ctx->curctx->push('TaskShortDescription', $task['sShortDescription']);
+			$this->ctx->curctx->push('TaskDescription', $task['sDescription']);
 			$this->ctx->curctx->push('TaskStartDate', bab_mktime($task['startDate']));
 			$this->ctx->curctx->push('TaskEndDate', bab_mktime($task['endDate']));
 			$this->ctx->curctx->push('TaskPlannedStartDate', $task['plannedStartDate']);
@@ -357,7 +358,17 @@ class bab_TmTasks extends bab_handler
 			$this->ctx->curctx->push('TaskOwnerId', $task['idOwner']);
 			$this->ctx->curctx->push('TaskClass', $task['iClass']);
 			$this->ctx->curctx->push('Priority', $task['iPriority']);
-
+			
+			global $babUrlScript;
+			$sTaskUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . 
+				'&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) . 
+				'&isProject=0&iIdProjectSpace=' . urlencode($task['iIdProjectSpace']) . 
+				'&iIdProject=' . urlencode($task['iIdProject']) . 
+				'&iIdTask=' . urlencode($task['iIdTask']);
+			
+			$this->ctx->curctx->push('TaskUrl', $task['sTaskUrl']);
+			$this->ctx->curctx->push('TaskId', bab_translate($task['sClass']));
+			
 			$this->ctx->curctx->push('Time', '');
 			$this->ctx->curctx->push('TimeDurationUnit', '');
 			$this->ctx->curctx->push('PlannedTime', '');

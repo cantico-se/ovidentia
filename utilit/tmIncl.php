@@ -1814,6 +1814,7 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 			't.id iIdTask, ' .
 			't.taskNumber sTaskNumber, ' .
 			't.shortDescription sShortDescription, ' .
+			't.description sDescription, ' .
 			't.class iClass, ' .
 		'CASE t.class ' .
 			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
