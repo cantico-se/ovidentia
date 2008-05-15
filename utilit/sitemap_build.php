@@ -43,6 +43,8 @@ class bab_siteMap_item {
 	var $parentNode_str;
 	var $childNodes = array();
 	
+	var $id_dgowner = false;
+	
 	
 	/**
 	 * sitemap item is a folder
@@ -182,6 +184,25 @@ class bab_siteMap_item {
 		return $this->getParentsFromDelegation($parents);
 	}
 	
+	
+	
+	/**
+	 * Create a clone
+	 */
+	function cloneNode() {
+		$clone = new bab_siteMap_item($this->uid);
+
+		$clone->label					= $this->label;
+		$clone->description 			= $this->description;
+		$clone->href					= $this->href;
+		$clone->onclick					= $this->onclick;
+		$clone->position 				= $this->position;
+		$clone->folder 					= $this->folder;
+		$clone->delegation 				= $this->delegation;
+		
+		return $clone;
+	}
+	
 }
 
 
@@ -274,7 +295,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @private
 	 */
 	function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
-
+		
 		if ($obj->copy_to_all_delegations) {
 			$parents = $obj->getParentsFromDelegation();
 			if (false === $parents) {
@@ -282,22 +303,40 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 				return false;
 			}
 			
+			$parents[] = $obj;
+			
+			/*
+			$debugstr = '';
+			foreach($parents as $k => $v) {
+				$debugstr .= "[$k] ".$v->uid." -> ";
+			}
+			bab_debug($debugstr);
+			*/
+
 			
 			$delegationParent = $parents[0]->parentNode;
-			foreach($delegationParent->childNodes as $uid => $node) {
-				if ($uid !== $parents[0]->uid) {
+			foreach($delegationParent->childNodes as $dg_uid => $dg_node) {
+
+				if ($dg_uid !== $parents[0]->uid) { 
+					// toutes les branches de delegation excepté l'originale
+				
 					foreach($parents as $key => $nodeToInsert) {
-						if (0 < $key) {
-							if (isset($_parent->childNodes[$key])) {
-								$_parent = & $this->nodes[$key];
-							} else {
-								$_parent->addChildNode($parents[$key]);
-								$_parent = & $parents[$key];
-							}
+					
+						
+
+						if (0 === $key) {
+							// premier tour, _parent_uid deviens l'identifiant de la delegation
+							$_parent_uid = $dg_node->uid;
+						
 						} else {
-							$_parent = & $node;
+						
+							$cloneToInsert = $nodeToInsert->cloneNode();
+							
+							$this->nodes[$_parent_uid]->addChildNode($cloneToInsert);
+							$_parent_uid = $parents[$key]->uid;
+							
 						}
-					}
+				}
 				}
 			}
 		}
@@ -321,7 +360,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		
 		$href = isset($node->href) ? $node->href : '';
 	
-		$str = sprintf("%-50s %-30s %s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $href);
+		$str = sprintf("%-50s %-30s %-40s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $href);
 		
 		if ($node->childNodes) {
 			$deep++;
@@ -382,9 +421,7 @@ class bab_sitemap_tree extends bab_dbtree
 		$lf = 1 + $insertlist[count($insertlist) - 1]['lf'];
 
 		foreach($this->nodes[$node->uid]->childNodes as $childNode) {
-			
-			
-			
+
 			$id++;
 			$current_id = $id;
 			$key = count($insertlist);
@@ -394,8 +431,13 @@ class bab_sitemap_tree extends bab_dbtree
 				'id_parent' => $id_parent,
 				'lf' => $lf,
 				'lr' => 1 + $lf,
-				'id_function' => $childNode->uid
+				'id_function' => $childNode->uid,
+				'id_dgowner' => $childNode->id_dgowner
 			);
+			
+			
+			
+			
 			
 			if (0 < count($this->nodes[$childNode->uid]->childNodes)) {
 				$this->getLevelToInsert($childNode, $id, $id, $insertlist);
@@ -406,6 +448,8 @@ class bab_sitemap_tree extends bab_dbtree
 			
 			$lf = 1 + $insertlist[$key]['lr'];
 		}
+		
+	
 		
 	}
 	
@@ -860,7 +904,8 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 			'id_parent' => 0,
 			'lf' => 1,
 			'lr' => 0,
-			'id_function' => $rootNode->uid
+			'id_function' => $rootNode->uid,
+			'id_dgowner' => $rootNode->id_dgowner
 		);
 		
 		$tree->nodes = & $nodeList;
@@ -877,18 +922,22 @@ function bab_siteMap_insertTree($rootNode, $nodeList) {
 		
 			
 			
-			$req = 'INSERT INTO '.BAB_SITEMAP_TBL.' (id, id_parent, lf, lr, id_function) VALUES '."\n";
+			$req = 'INSERT INTO '.BAB_SITEMAP_TBL.' (id, id_parent, lf, lr, id_function, id_dgowner) VALUES '."\n";
 			foreach($arr as $key => $row) {
 			
 				if (0 < $key) {
 					$req.= ",\n";
 				}
+				
+				$dgOwner = false === $row['id_dgowner'] ? 'NULL' : $babDB->quote($row['id_dgowner']);
+				
 
 				$req.= '('.$babDB->quote($row['id'])
 				.','.$babDB->quote($row['id_parent'])
 				.','.$babDB->quote($row['lf'])
 				.','.$babDB->quote($row['lr'])
 				.','.$babDB->quote($row['id_function'])
+				.','.$dgOwner
 				.")";
 			}
 			
@@ -994,6 +1043,36 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 
 
 
+
+
+/**
+ * write delegation id into table
+ */
+function bab_siteMap_delegationsRecord() {
+
+	global $babDB;
+	
+	$res = $babDB->db_query('SELECT id_dgowner, lf, lr FROM '.BAB_SITEMAP_TBL.' WHERE id_dgowner IS NOT NULL');
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+	
+		$req = '
+			UPDATE '.BAB_SITEMAP_TBL.' SET 
+				id_dgowner = '.$babDB->quote($arr['id_dgowner']).' 
+				
+			WHERE 
+				lf > '.$babDB->quote($arr['lf']).' 
+				AND lr < '.$babDB->quote($arr['lr']).' 
+		';
+
+		$babDB->db_query($req);
+	}
+}
+
+
+
+
+
+
 /**
  * Recursive childs count
  * @param	bab_siteMap_item	$node
@@ -1046,6 +1125,7 @@ function bab_siteMap_build() {
 	$rootNode->setLabel($GLOBALS['babSiteName']);
 	$rootNode->setDescription($babBody->babsite['babslogan']);
 	$rootNode->setLink('?');
+	$rootNode->id_dgowner = false;
 	$rootNode->folder = 1;
 	
 	$event->nodes[$rootNode->uid] = $rootNode;
@@ -1063,6 +1143,7 @@ function bab_siteMap_build() {
 		$dgNode->folder = 1;
 		$dgNode->delegation = 1;
 		$dgNode->copy_to_all_delegations = false;
+		$dgNode->id_dgowner = $arr['id'];
 		
 		$event->nodes[$dgid] = $dgNode;
 		$event->buidtree($dgNode);
@@ -1086,7 +1167,7 @@ function bab_siteMap_build() {
 	
 	
 	bab_debug($event->displayAsText('root'));
-	
+	//bab_debug(array_keys($event->nodes));
 	
 	
 	
@@ -1094,6 +1175,9 @@ function bab_siteMap_build() {
 
 	// insert tree into database
 	bab_siteMap_insertTree($rootNode, $event->nodes);
+	
+	// write id_dgowner for delegation branchs
+	bab_siteMap_delegationsRecord();
 
 
     $stop_time = bab_getMicrotime();
@@ -1486,6 +1570,7 @@ function bab_sitemap_articles(&$event) {
 		$item = $event->createItem('bab'.$dg.'Articles');
 		$item->setLabel(bab_translate("Articles"));
 		$item->setPosition(array('root', $id_delegation));
+		$item->copy_to_all_delegations = false;
 		$event->addFolder($item);
 	
 		$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
@@ -1517,6 +1602,7 @@ function bab_sitemap_faq(&$event) {
 		$item = $event->createItem('bab'.$dg.'Faqs');
 		$item->setLabel(bab_translate("Faqs"));
 		$item->setPosition(array('root', $delegation));
+		$item->copy_to_all_delegations = false;
 		$event->addFolder($item);
 	
 		$position = array('root', $delegation, 'bab'.$dg.'Faqs');

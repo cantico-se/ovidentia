@@ -170,6 +170,8 @@ class bab_siteMap {
 	 */
 	function get() {
 	
+		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+	
 		static $rootNode = NULL;
 		
 		if (NULL !== $rootNode) {
@@ -217,18 +219,27 @@ class bab_siteMap {
 			$query .= 'WHERE 
 				s.id_function = f.id_function 
 				AND fp.id_function = f.id_function 
-				AND fp.id_profile = p.id
-				AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\' 
+				AND fp.id_profile = p.id 
 				AND p.uid_functions>\'0\' 
+				AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\' 
 				AND fl.id_function=f.id_function 
 				AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
 				';
 		}
 		
+		$viewable_delegations = array();
+		$delegations = bab_getUserVisiblesDelegations();
+		foreach($delegations as $arr) {
+			$viewable_delegations[$arr['id']] = $arr['id'];
+		}
+		
+		// $query .= ' AND (s.id_dgowner IS NULL OR s.id_dgowner IN('.$babDB->quote($viewable_delegations).') )';
+		// tenir compte que de DGAll pour le moment
+		$query .= ' AND s.id_dgowner IS NULL ';
 		
 		$query .= 'ORDER BY s.lf';
 		
-		// bab_debug($query);
+		//bab_debug($query);
 		
 		$res = $babDB->db_query($query);
 		
@@ -255,6 +266,8 @@ class bab_siteMap {
 			if ('root' === $arr['parent_node']) {
 				$current_delegation_node = $arr['id_function'];
 			}
+			
+			
 		
 			$data = & new bab_siteMapItem();
 			$data->id_function 	= $arr['id_function'];
@@ -265,7 +278,7 @@ class bab_siteMap {
 			$data->folder 		= 1 == $arr['folder'];
 			
 			// in tree, uniques id are dynamicaly generated from the id in table and the id_function
-			// the id_function is duplicated if the tre contain multiples delegations
+			// the id_function is duplicated if the tree contain multiples delegations
 			$node_list[$arr['id']] = $data->folder ? $current_delegation_node.'-'.$arr['id_function'] : $arr['id'].'-'.$arr['id_function'];
 			
 			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
@@ -275,6 +288,7 @@ class bab_siteMap {
 			$rootNode->appendChild($node, $id_parent);
 		}
 
+		bab_debug($rootNode->displayAsText());
 		
 		return $rootNode;
 	}

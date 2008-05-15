@@ -3815,11 +3815,12 @@ CREATE TABLE bab_sitemap (
    `lf` int(11) unsigned DEFAULT '0' NOT NULL,
    `lr` int(11) unsigned DEFAULT '0' NOT NULL,
    `id_function` varchar(64) NOT NULL,
+   `id_dgowner` int(11) unsigned DEFAULT NULL,
    PRIMARY KEY (`id`),
-   KEY `id_parent` (`id_parent`),
    KEY `id_function` (`id_function`),
    KEY `lf` (`lf`),
-   KEY `lr` (`lr`)
+   KEY `lr` (`lr`),
+   KEY `id_dgowner` (`id_dgowner`)
 );
 
 

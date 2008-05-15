@@ -4458,6 +4458,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 6.6.93
+	 */
+	
+	
 	 
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_CAL_EVENTS_TBL . '` `uuid`');
 	if(false !== $oResult)
@@ -4499,6 +4508,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			}
 		}
 	}
+	
+
+	
+	// verify bab_sitemap table
+	
+	if(!bab_isTableField(BAB_SITEMAP_TBL, 'id_dgowner')) 
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_TBL."` ADD `id_dgowner` int(11) unsigned DEFAULT NULL");
+		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_TBL."` ADD INDEX ( `id_dgowner` )");
+	}
+	
 	
 	return true;
 }

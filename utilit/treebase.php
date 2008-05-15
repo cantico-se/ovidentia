@@ -453,6 +453,46 @@ class bab_Node
 			$this->sortChildNodes();
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Display as text
+	 * @param	int		[$deep]
+	 */
+	function displayAsText($deep = 0) {
+	
+		$title = '';
+		$mixed = $this->getData();
+		if (is_array($mixed)) {
+			$title = reset($mixed);
+		} else if (is_object($mixed)) {
+			foreach($mixed as $key => $title) {
+				break;
+			}
+		
+		} else {
+			$title = (string) $mixed;
+		}
+	
+		$str = sprintf("%-60s %-30s\n", str_repeat('|   ',$deep).$title, $this->getId());
+		
+		if ($this->hasChildNodes()) {
+			$deep++;
+			$currentNode = $this->firstChild();
+			$str .= $currentNode->displayAsText($deep);
+			while(NULL !== $currentNode = $currentNode->nextSibling()) {
+				$str .= $currentNode->displayAsText($deep);
+			}
+		}
+		
+		return $str;
+	}
 }
 
 
