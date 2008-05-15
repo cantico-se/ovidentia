@@ -2554,4 +2554,13 @@
 <string id="Task priority">Priorité de la tâche</string>
 <string id="Your password has been reset">Votre mot de passe a été réinitialisé</string>
 <string id="Nickname of the account">Identifiant du compte</string>
+<string id="The uploaded file exceeds the upload_max_filesize directive.">Le fichier à télécharger excède la taille maximale autorisée par le serveur.</string>
+<string id="The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.">Le fichier à téléchargé excède la taille maximale autorisée par le formulaire.</string>
+<string id="The uploaded file was only partially uploaded.">Le fichier n'a été que partielement téléchargé.</string>
+<string id="No file was uploaded.">Aucun fichier n'a été téléchargé vers le serveur.</string>
+<string id="Missing a temporary folder.">Le fichier temporaire est manquant.</string>
+<string id="Failed to write file to disk.">Impossible d'écrire le fichier sur le disque.</string>
+<string id="Unknown File Error.">Erreur de fichier inconnue.</string>
+
+
 </fr>
