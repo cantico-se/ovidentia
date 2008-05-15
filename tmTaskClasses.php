@@ -193,7 +193,7 @@
 			$this->set_caption('sField', bab_translate("Field"));
 			$this->set_caption('sType', bab_translate("Type"));
 			$this->set_caption('sValue', bab_translate("Value"));
-			$this->set_caption('sAddSpf', bab_translate("Create an instance"));
+			$this->set_caption('sAddSpf', bab_translate("Add a field"));
 			$this->set_caption('sAdd', bab_translate("Add"));
 			$this->set_caption('sModify', bab_translate("Modify"));
 			$this->set_caption('sDelete', bab_translate("Delete"));
