@@ -2046,9 +2046,10 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
 
-	if(count($aOrder) > 0)
+//	if(count($aOrder) > 0)
 	{
-		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
+//		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
+		$query .= 'ORDER BY plannedEndDate ASC, iPriority ASC';
 	}
 	
 
