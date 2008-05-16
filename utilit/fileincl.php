@@ -1064,15 +1064,18 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
 		}
 		
-		if('Y' === $oFolderFile->getGroup())
+		
+		$sGr = (string) bab_rp('gr', '');
+		$iId = (int) bab_rp('id', 0);
+		
+		if('Y' === $sGr)
 		{
-			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($oFolderFile->getOwnerId())."'");
-			while($arrf = $babDB->db_fetch_array($res))
+			$res = $babDB->db_query("select id from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($iId)."'");
+			while(false !== ($arrf = $babDB->db_fetch_array($res)))
 			{
-				$fd = 'field'.$oFolderFile->getId();
+				$fd = 'field'.$arrf['id'];
 				if(isset($GLOBALS[$fd]))
 				{
-
 					$fval = $babDB->db_escape_string($GLOBALS[$fd]);
 
 					$res2 = $babDB->db_query("select id from ".BAB_FM_FIELDSVAL_TBL." where id_file='".$babDB->db_escape_string($idf)."' and id_field='".$babDB->db_escape_string($arrf['id'])."'");
