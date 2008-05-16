@@ -3993,9 +3993,7 @@ class BAB_FmFolderHelper
 			{
 				if(strlen(trim($sPathItem)) !== 0)
 				{
-					if(isset($GLOBALS['babFileNameTranslation'])) {
-						$sPathItem = strtr($sPathItem, $GLOBALS['babFileNameTranslation']);
-					}
+					$sPathItem = replaceInvalidFolderNameChar($sPathItem);
 					
 					$sPath .= '/' . $sPathItem;
 					if(!is_dir($sPath))
