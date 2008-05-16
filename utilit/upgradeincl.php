@@ -279,6 +279,8 @@ function bab_upgrade($core_dir, &$ret)
 		
 		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, $ret);
 		
+		bab_siteMap::clearAll();
+		
 		return true;
 	}
 	
