@@ -168,7 +168,7 @@ class bab_fileHandler {
 				break;
 				
 			case BAB_FILEHANDLER_MOVE:
-				return move($this->source, $destination);
+				return rename($this->source, $destination);
 				break;
 		}
 	}
