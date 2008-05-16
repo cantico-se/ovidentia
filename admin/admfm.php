@@ -492,8 +492,10 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 	$oName =& $oFmFolderSet->aField['sName'];
 	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
 	
+	$sName = replaceInvalidFolderNameChar($fname);
+	
 	$oCriteria = $oId->notIn($fid);
-	$oCriteria = $oCriteria->_and($oName->in($fname));
+	$oCriteria = $oCriteria->_and($oName->in($sName));
 	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
 	if(is_null($oFmFolder))
@@ -609,11 +611,11 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 			$sRootFmPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
 			$sRelativePath = '';
 			
-			BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $fname);
-			BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $fname, 'Y');
-			BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $fname, 'Y');
+			BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $sName);
+			BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $sName, 'Y');
+			BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $sName, 'Y');
 			
-			$oFmFolder->setName($fname);
+			$oFmFolder->setName($sName);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setApprobationSchemeId((int) $said);
 			$oFmFolder->setFileNotify($notification);

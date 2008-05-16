@@ -233,7 +233,9 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	$oName =& $oFmFolderSet->aField['sName']; 
 	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner']; 
 	
-	$oCriteria = $oName->in($fname);
+	$sName = replaceInvalidFolderNameChar($fname);
+	
+	$oCriteria = $oName->in($sName);
 	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
 	if(is_null($oFmFolder))
@@ -243,7 +245,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$said = 0;
 		}
 
-		$sFullPathName = BAB_FileManagerEnv::getCollectivePath($babBody->currentAdmGroup) . $fname;
+		$sFullPathName = BAB_FileManagerEnv::getCollectivePath($babBody->currentAdmGroup) . $sName;
 
 		//bab_debug($sFullPathName);
 		
@@ -252,7 +254,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$oFmFolder = new BAB_FmFolder();
 			$oFmFolder->setApprobationSchemeId($said);
 			$oFmFolder->setDelegationOwnerId($babBody->currentAdmGroup);
-			$oFmFolder->setName($fname);
+			$oFmFolder->setName($sName);
 			$oFmFolder->setRelativePath('');
 			$oFmFolder->setFileNotify($notification);
 			$oFmFolder->setActive($active);
