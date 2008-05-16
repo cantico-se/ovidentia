@@ -175,9 +175,10 @@ class bab_dbdata {
 	
 	/**
 	 * Insert Row into table
+	 * @param	string	[$method]
 	 * @return boolean|int
 	 */
-	function insertDbRow() {
+	function insertDbRow($method = 'db_query') {
 		
 		global $babDB;
 		
@@ -194,7 +195,7 @@ class bab_dbdata {
 				$keys[] = $babDB->backTick($key);
 			}
 			
-			$babDB->db_query('
+			$babDB->$method('
 				INSERT INTO '.$babDB->backTick($this->tablename).' 
 				('.implode(', ',$keys).') 
 				VALUES 
@@ -213,10 +214,10 @@ class bab_dbdata {
 	
 	/**
 	 * Update row into table
-	 * 
+	 * @param	string	[$method]
 	 * @return boolean
 	 */
-	function updateDbRow() {
+	function updateDbRow($method = 'db_query') {
 	
 		global $babDB;
 		
@@ -234,7 +235,7 @@ class bab_dbdata {
 		}
 
 		if ($id) {
-			$babDB->db_query('
+			$babDB->$method('
 				UPDATE '.$babDB->backTick($this->tablename).' 
 				SET '.implode(',',$keys).' 
 				WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'
