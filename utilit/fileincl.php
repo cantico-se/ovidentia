@@ -2222,7 +2222,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					{
 						if(is_dir($sFullPathName . '/' . $sName))
 						{
-							BAB_FmFolderHelper::removeDir($sFullPathName . '/' . $sName);
+							BAB_FmFolderSet::removeDir($sFullPathName . '/' . $sName);
 						}
 						else if(file_exists($sFullPathName . '/' . $sName))
 						{
