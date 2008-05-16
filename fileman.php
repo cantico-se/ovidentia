@@ -1839,7 +1839,7 @@ function getFile()
 			}
 			else 
 			{
-				$sUploadPath = $oFileManagerEnv->getPersonnalFolderPath();
+				$sUploadPath = $oFileManagerEnv->getRootFmPath();
 			}
 			
 			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
