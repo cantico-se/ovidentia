@@ -288,7 +288,7 @@ class bab_siteMap {
 			$rootNode->appendChild($node, $id_parent);
 		}
 
-		bab_debug($rootNode->displayAsText());
+		//bab_debug($rootNode->displayAsText());
 		
 		return $rootNode;
 	}
