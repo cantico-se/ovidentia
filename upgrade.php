@@ -121,6 +121,18 @@ function fmUpgrade()
 				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 				{
 					$sOldPath = $sUploadPath . 'G' . $aDatas['iId'];
+					
+					//Dans les anciennes versions tant que l'on avait pas accédé au répertoire
+					//il n'était pas créé
+					if(!is_dir($sOldPath))
+					{
+						if(false === @mkdir($sOldPath, 0777))
+						{
+							$babBody->addError('The directory: ' . $sOldPath . ' have not been created');
+							return false;
+						}
+					}
+					
 					if(is_dir($sOldPath))
 					{
 						$sDelegationId	= (string) $aDatas['iIdDgOwner'];
