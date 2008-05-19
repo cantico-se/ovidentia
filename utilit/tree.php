@@ -1460,7 +1460,8 @@ class bab_FileTreeView extends bab_TreeView
 			
 		$rootPath = '';
 
-		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file'
+		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup '
+			 . ' FROM ' . BAB_FILES_TBL . ' file'
 			 . ' WHERE file.bgroup=\'N\' AND file.id_owner=' . $babDB->quote($GLOBALS['BAB_SESS_USERID'])
 			 . ' AND file.state <> \'D\''
 			 . ' ORDER BY file.name';
@@ -1485,7 +1486,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		while ($file = $babDB->db_fetch_array($files)) {
 
-			$filePath = removeFirstPath($file['path']);
+			$filePath = $file['path'];
 
 			$subdirs = explode('/', $filePath);
 				
@@ -1495,7 +1496,7 @@ class bab_FileTreeView extends bab_TreeView
 			if (is_null($this->_rootNode->getNodeById($rootId))) {
 				$element =& $this->createElement($rootId,
 												 'foldercategory',
-				bab_translate("Personal folders"),
+												 bab_translate("Personal folders"),
 												 '',
 												 '');
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/personal_folder.png');
@@ -1503,7 +1504,6 @@ class bab_FileTreeView extends bab_TreeView
 			}
 
 			$parentId = '';
-			$subdirMd5Id = '';
 
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
@@ -1518,14 +1518,14 @@ class bab_FileTreeView extends bab_TreeView
 						&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 							$element->addCheckBox('select');
 						}
-						$this->appendElement($element, $parentId);
+						$this->appendElement($element, $rootId . $parentId);
 					}
 					$parentId .= ':' . $subdir;
 				}
 			}
 			$element =& $this->createElement($fileId,
-			$fileType,
-			$file['name'],
+											 $fileType,
+											 $file['name'],
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
@@ -1533,7 +1533,7 @@ class bab_FileTreeView extends bab_TreeView
 			&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 				$element->addCheckBox('select');
 			}
-			$this->appendElement($element, $parentId);
+			$this->appendElement($element, $rootId . $parentId);
 		}
 	}
 
