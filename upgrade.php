@@ -251,6 +251,18 @@ function updateUsersFolderFilePathName($sUploadPath)
 			if(preg_match('/(U\d+\/)(.*)/', $aDatas['sPathName'], $aBuffer))
 			{
 				$sPathName = $aBuffer[2];
+				
+				$iLength = strlen($sPathName);
+				
+				if($iLength > 0)
+				{
+					str_replace('\\', '/', $sPathName);
+					if('/' !== $sPathName{$iLength - 1})
+					{
+						$sPathName .= '/';
+					}
+				}
+
 				$sQuery = 
 					'UPDATE ' . 
 						BAB_FILES_TBL . '
