@@ -256,7 +256,7 @@ function updateUsersFolderFilePathName($sUploadPath)
 				
 				if($iLength > 0)
 				{
-					str_replace('\\', '/', $sPathName);
+					$sPathName = str_replace('\\', '/', $sPathName);
 					if('/' !== $sPathName{$iLength - 1})
 					{
 						$sPathName .= '/';
