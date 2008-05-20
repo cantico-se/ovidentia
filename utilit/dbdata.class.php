@@ -284,7 +284,7 @@ class bab_dbdata {
 	 * Count rows into table with same values as $this->row
 	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
 	 * @since 6.5.1
-	 * @param	array|false		[$filter]
+	 * @param	array|false		[$filter]	the keys of the array are collumn names
 	 * @return 	int
 	 */
 	function countDbRows($filter = false) {
@@ -311,6 +311,52 @@ class bab_dbdata {
 		
 		return 0;
 	}
+	
+	
+	
+	/**
+	 * Count rows into table with same values as $this->row
+	 * the autoincremented collumn value will be used to ignore le current row 
+	 * if the filter parameter is used, only keys defined as key in the filter array will be used in were clause
+	 * @since 6.6.94
+	 * @param	array|false		[$filter]	the keys of the array are collumn names
+	 * @return 	int
+	 */
+	function countDuplicates($filter = false) {
+	
+		global $babDB;
+		
+
+		$keys = array();
+		foreach($this->row as $key => $value) {
+			
+			if (false === $filter || isset($filter[$key])) {
+				$keys[] = $babDB->backTick($key).' = '.$babDB->quote($value);
+			}
+		}
+		
+		$req = '
+			SELECT COUNT(*) FROM '.$babDB->backTick($this->tablename).' 
+			WHERE '.implode(' AND ',$keys).' 
+		';
+		
+		$id = $this->getPrimaryAutoIncremented();
+		if (!empty($id)) {
+			$req .= ' AND '.$babDB->backTick($this->primaryautoincremented).' <> '.$babDB->quote($id);
+		}
+		
+		$res = $babDB->db_query($req);
+		
+		if ($res) {
+			$arr = $babDB->db_fetch_array($res);
+			return (int) $arr[0];
+		}
+		
+		return 0;
+	}
+	
+	
+	
 	
 	
 	/**
