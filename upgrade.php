@@ -28,7 +28,7 @@ function getUploadPathFromDataBase()
 {
 	$babDB = &$GLOBALS['babDB'];
 	
-	$aData = $babDB->db_fetch_array($babDB->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL));
+	$aData = $babDB->db_fetch_array($babDB->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL . ' WHERE name= ' . $babDB->quote($GLOBALS['babSiteName'])));
 	if(false != $aData)
 	{
 		$sUploadPath = (string) $aData['uploadpath'];
@@ -286,6 +286,8 @@ function updateUsersFolderFilePathName($sUploadPath)
 			}
 		}
 	}		
+	
+	clearstatcache();
 	
 	$aBuffer = array();
 	
