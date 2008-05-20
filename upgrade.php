@@ -305,8 +305,8 @@ function updateUsersFolderFilePathName($sUploadPath)
 				}
 			}
 		}
-		$oDir->close();
 	}
+	$oDir->close();
 	return true;
 }
 
