@@ -271,23 +271,9 @@ function updateUsersFolderFilePathName($sUploadPath)
 				WHERE 
 					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
 				
-				$babDB->db_query($sQuery);
-				
-			$sOldPath = $sUploadPath . 'U' . $aDatas['iId'];
-			if(is_dir(realpath($sOldPath)))
-			{
-				$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-				$sNewPath = $sUserUploadPath . 'U' . $aDatas['iId'];
-				if(false === @rename(realpath($sOldPath), $sNewPath))
-				{
-					$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
-					return false;
-				}
-			}
+			$babDB->db_query($sQuery);
 		}
 	}		
-	
-	clearstatcache();
 	
 	$aBuffer = array();
 	
@@ -321,7 +307,6 @@ function updateUsersFolderFilePathName($sUploadPath)
 		}
 		$oDir->close();
 	}
-
 	return true;
 }
 
