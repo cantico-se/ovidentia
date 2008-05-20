@@ -271,10 +271,72 @@ function updateUsersFolderFilePathName($sUploadPath)
 				WHERE 
 					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
 				
-				$babDB->db_query($sQuery);
-				
-			$sOldPath = $sUploadPath . 'U' . $aDatas['iId'];
-			if(is_dir(realpath($sOldPath)))
+			$babDB->db_query($sQuery);
+		}
+	}		
+	
+	$aBuffer = array();
+	
+	$oDir = dir($sUploadPath);
+	while(false !== ($sEntry = $oDir->read())) 
+	{
+		// Skip pointers
+		if($sEntry == '.' || $sEntry == '..') 
+		{
+			continue;
+		}
+		else if(is_dir($sUploadPath . $sEntry))
+		{
+			if(preg_match('/(U\d+)/', $sEntry, $aBuffer))
+			{
+				$sOldPath = $sUploadPath . $aBuffer[1];
+				if(is_dir(realpath($sOldPath)))
+				{
+					$sUserUploadPath = $sUploadPath . 'fileManager/users/';
+					$sNewPath = $sUserUploadPath . $aBuffer[1];
+					if(!is_dir($sNewPath))
+					{
+						if(false === @rename(realpath($sOldPath), $sNewPath))
+						{
+							$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		$oDir->close();
+	}
+	return true;
+}
+
+
+function updateFmFromPreviousUpgrade()
+{
+	$babDB = &$GLOBALS['babDB'];
+	$sUploadPath = getUploadPathFromDataBase();
+	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
+
+	global $babBody;
+	
+	if(is_dir($sUploadPath))
+	{
+		if(true === createFmDirectories($sUploadPath))
+		{
+			//Collective folders processing
+			
+			$sQuery = 
+				'SELECT 
+					`id` iId,
+					`folder` sName,
+					`id_dgowner` iIdDgOwner
+				FROM ' .
+					BAB_FM_FOLDERS_TBL . '
+				WHERE 
+					`sRelativePath` = \'' . $babDB->db_escape_string('') . '\'';
+		
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
 			{
 				$sUserUploadPath = $sUploadPath . 'fileManager/users/';
 				$sNewPath = $sUserUploadPath . 'U' . $aDatas['iId'];
