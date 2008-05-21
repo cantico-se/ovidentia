@@ -288,8 +288,8 @@ function notifyUserPassword($passw, $email, $nickname='')
 			{
             global $babSiteName;
 			$this->message = bab_translate('On site').' '.$babSiteName.' (<a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'].'</a>)<br />';
-			$this->message .= bab_translate('Your password has been reset to').": ".$passw.'<br />';
-			$this->message .= bab_translate('Nickname of the account').": ".$nickname;
+			$this->message .= bab_translate('The password of the account the identifier of which is').' <b>'.$nickname."</b> ";
+			$this->message .= bab_translate('was reset in').' <b>'.$passw.'</b><br />';
 			}
 		}
 	
