@@ -731,14 +731,17 @@ class bab_siteMap_insertFunctionObj {
  * Insert node and childs into database
  * @param	bab_siteMap_item	$rootNode
  * @param	array				$nodeList
+ * @param	$crc				$crc		sitemap uid_functions
  */
-function bab_siteMap_insertTree($rootNode, $nodeList) {
+function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 
 
 	
 	global $babDB;
 
-	$crc = abs(crc32(serialize($rootNode)));
+	//$crc = abs(crc32(serialize($rootNode)));
+	//bab_debug("crc for new sitemap = $crc");
+	
 
 	// search for available profile
 	// create new profile
@@ -1165,16 +1168,17 @@ function bab_siteMap_build() {
 		$event->buidtree($newNode);
 	}
 	
-	
-	bab_debug($event->displayAsText('root'));
-	//bab_debug(array_keys($event->nodes));
+	$textview = $event->displayAsText('root');
 	
 	
+	bab_debug($textview);
+	
+	$crc = abs(crc32($textview));
 	
 	 $insert_time = bab_getMicrotime();
 
 	// insert tree into database
-	bab_siteMap_insertTree($rootNode, $event->nodes);
+	bab_siteMap_insertTree($rootNode, $event->nodes, $crc);
 	
 	// write id_dgowner for delegation branchs
 	bab_siteMap_delegationsRecord();
@@ -1473,6 +1477,11 @@ function bab_sitemap_userSection(&$event) {
 				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
 				reset ($arr);
 				while (list ($txt, $url) = each($arr)) {
+				
+					if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+						$url = substr($url, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					}
+				
 					$addon_urls[$txt] = array(
 						'url' => $url,
 						'uid' => $row['title'].sprintf('_%u',crc32($url))

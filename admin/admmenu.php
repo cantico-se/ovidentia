@@ -244,6 +244,10 @@ function bab_sitemap_adminSection(&$event) {
 					reset ($arr);
 					while (list ($txt, $url) = each($arr))
 						{
+						if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+							$url = substr($url, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+						}
+
 						$addon_urls[$txt] = array(
 							'url' => $url,
 							'uid' => $row['title'].sprintf('_%u',crc32($url))
@@ -266,5 +270,3 @@ function bab_sitemap_adminSection(&$event) {
 	}
 }
 
-
-?>
