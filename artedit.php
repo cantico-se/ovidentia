@@ -1909,12 +1909,8 @@ function updatePropertiesArticleDraft(&$message)
 	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
 
 	list($topicid) = $babDB->db_fetch_array($babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'"));
-
-	if( $topicid == 0 )
-	{
-		$topicid = bab_pp('topicid', 0 );
-	}
-
+	$topicid = bab_pp('topicid', $topicid );
+	
 	if( $topicid != 0 )
 	{
 	list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'"));
