@@ -532,7 +532,52 @@ function notifyCommentApprovers($idcom, $nfusers)
 		}
 	}
 
+function notifyCommentAuthor($subject, $msg, $idfrom, $to)
+	{
+	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
+	class tempa
+		{
+		var $message;
+        var $from;
+        var $author;
+        var $about;
+        var $site;
+        var $sitename;
+        var $date;
+        var $dateval;
+
+
+		function tempa($subject, $msg, $from, $to)
+			{
+            global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
+            $this->about = bab_translate("About your comment");
+            $this->site = bab_translate("Web site");
+            $this->sitename = $babSiteName;
+            $this->date = bab_translate("Date");
+            $this->dateval = bab_strftime(mktime());
+            $this->message = $msg;
+			}
+		}
+	
+    $mail = bab_mail();
+	if( $mail == false )
+		return;
+
+	$mail->mailTo($to);
+    $mail->mailFrom(bab_getUserEmail($idfrom), bab_getUserName($idfrom));
+    $mail->mailSubject($subject);
+
+	$tempa = new tempa($subject, $msg, $idfrom, $to);
+	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "confirmcomment"));
+    $mail->mailBody($message, "html");
+
+	$message = bab_printTemplate($tempa,"mailinfo.html", "confirmcommenttxt");
+    $mail->mailAltBody($message);
+
+	$mail->send();
+	}
+	
 function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
