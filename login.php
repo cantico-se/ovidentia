@@ -677,6 +677,10 @@ switch($cmd)
 				unset($_SESSION['sAuthPath']);
 			}
 		}
+		else
+		{
+			bab_logout();
+		}
 		break;
 
 	case "showdp":
