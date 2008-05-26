@@ -353,11 +353,12 @@ class bab_functionalities {
 			return false;
 		}
 
-		if (!@include_once $include_file) {
+		if (!file_exists($include_file)) {
 			trigger_error(sprintf('The registered file "%s" for functionality "%s" cannot be included', $include_file, $func_path));
 			return false;
 		}
-
+		include_once $include_file;
+		
 		$func_path = trim($func_path,'/ ');
 
 		if (false !== strpos($func_path, '_')) {
