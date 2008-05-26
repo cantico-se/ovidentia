@@ -453,7 +453,7 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 		}
 	}
 	
-	if( !bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))
+	if( !bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])  && !bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))
 	{
 		$error = bab_translate("Access denied");
 		return 0;
