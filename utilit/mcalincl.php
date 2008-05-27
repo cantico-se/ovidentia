@@ -439,7 +439,7 @@ class bab_icalendar
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 
 			foreach($events as $event) {
-				if ($this->idcalendar == $event->data['id_cal'] || empty($event->data['id_cal']))
+				if (empty($event->data['id_cal']) || $this->idcalendar == $event->data['id_cal'])
 					$arr[] = $event;
 			}
 
