@@ -725,11 +725,14 @@ class bab_userWorkingHours {
 				foreach($events as $event) {
 					if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 						if (!$event->isAvailable()) {
+
 							$nb_unAvailable++;
 							$availabilityReply->conflicts_events[] = $event;
+
 						}
 					}
 				}
+
 				
 				if ($nb_unAvailable > 0 && NULL === $previous) {
 					// autoriser la creation d'une nouvelle periode à partir de $test_begin
@@ -759,14 +762,18 @@ class bab_userWorkingHours {
 		
 				// autoriser la creation d'une nouvelle periode à partir de $test_begin
 				$previous = $test_begin;
+
 			}
-			
+
+
 
 			if (false !== $previous && $previous < $test_end) {
 				$availabilityReply->available_periods[$previous.'.'.$test_end] = new bab_calendarPeriod($previous, $test_end, BAB_PERIOD_NONWORKING);
+
 			}
-			
+	
 			return $availabilityReply;
+
 		}
 		
 		
@@ -798,12 +805,12 @@ class bab_userWorkingHours {
 						$id_users = array($data['id_user']);
 						$working_period = true;
 						
-					} elseif (isset($data['iduser_owners'])) {
+					} elseif (!empty($data['iduser_owners'])) {
 						// evenement, liste des utilisateurs associés
 						$id_users = $data['iduser_owners'];
 						
 					} else {
-						// autres, ex jours feriés, considérer l'utilisateur courrant comme associé à l'evenement
+						// autres : (ex jours feriés, agenda de ressource) considérer l'utilisateur courrant comme associé à l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
 					}
 					
