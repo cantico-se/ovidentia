@@ -1783,15 +1783,6 @@ class bab_functionality {
 		return '';
 	}
 	
-	/**
-	 * Default method to create in inherited functionalities
-	 * @access protected
-	 * @return array
-	 */
-	function getCallableMethods() {
-		return array(
-		);
-	}
 	
 	/**
 	 * Get path to functionality at this node which is the current path or a reference to a childnode
