@@ -1693,10 +1693,11 @@ function bab_getInstance($classname) {
 	if (is_null($instances)) {
 		$instances = array();
 	}
-	if (array_key_exists($classname, $instances)) {
-		return $instances[$classname];
+	if (!array_key_exists($classname, $instances)) {
+		$instances[$classname] = new $classname();
 	}
-	return new $classname();
+	
+	return $instances[$classname];
 }
 
 
