@@ -1881,6 +1881,13 @@ function processImportDbFile( $pfile, $id, $separ )
 		$arr = fgetcsv($fd, 4096, $separ);
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
+			if(!isset($arr[$GLOBALS['nickname']]) || empty($arr[$GLOBALS['nickname']])
+			|| !isset($arr[$GLOBALS['givenname']]) || empty($arr[$GLOBALS['givenname']])
+			|| !isset($arr[$GLOBALS['sn']]) || empty($arr[$GLOBALS['sn']])
+			)
+			{
+			continue;
+			}
 			switch($GLOBALS['duphand'])
 				{
 				case 1: // Replace duplicates with items imported
@@ -1946,7 +1953,7 @@ function processImportDbFile( $pfile, $id, $separ )
 
 							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
 								{
-								$pwd=md5($arr[$GLOBALS['password3']]);
+								$pwd=md5(strtolower($arr[$GLOBALS['password3']]));
 								}
 							else
 								{
@@ -2050,7 +2057,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
 							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
 								{
-								$pwd=md5($arr[$GLOBALS['password3']]);
+								$pwd=md5(strtolower($arr[$GLOBALS['password3']]));
 								}
 							else
 								{
