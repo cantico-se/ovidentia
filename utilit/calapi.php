@@ -127,7 +127,7 @@ function bab_calGetEvents(&$params)
 				
 			} elseif (false === $access_control) {
 				
-				$infos = bab_getCalendarOwnerAndType($idcal);
+				$infos = bab_getCalendarOwnerAndType($id_cal);
 				
 				$whObj->addCalendar($id_cal);
 				if (BAB_CAL_USER_TYPE === $infos['type']) {
