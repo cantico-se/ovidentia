@@ -197,7 +197,7 @@ function bab_OCGetSuperior($identity)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '1'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '1'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -235,7 +235,7 @@ function bab_OCGetSuperiors($idoc='')
 
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '1'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '1'");
 	if( $res && $babDB->db_num_rows($res) > 1 )
 	{
 		while($arr = $babDB->db_fetch_array($res))
@@ -251,7 +251,7 @@ function bab_OCGetTemporaryEmployee($identity)
 {
 	global $babDB;
 	
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '2'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_entity='".$identity."'  AND ocrt.type = '2'");
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
 		$arr = $babDB->db_fetch_array($res);
@@ -289,7 +289,7 @@ function bab_OCGetTemporaryEmployees($idoc='')
 
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '2'");
+	$res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocrut.id_user WHERE ocrt.id_oc='".$idoc."'  AND ocrt.type = '2'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 	{
 		while($arr = $babDB->db_fetch_array($res))
@@ -307,7 +307,7 @@ function bab_OCGetCollaborators($identity)
 	
 	$ret = array();
 
-	$res = $babDB->db_query("SELECT det.id_user, det.sn firstname, det.givenname lastname, det.mn middlename 
+	$res = $babDB->db_query("SELECT det.id_user, det.sn lastname, det.givenname firstname, det.mn middlename 
 							 FROM ".BAB_OC_ROLES_USERS_TBL." ocrut
 							 LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role
 							 LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det ON det.id = ocrut.id_user

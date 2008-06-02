@@ -439,11 +439,21 @@ a img {
 	
 	
 	
+.bab_cal_vacation_types {
+	border-collapse:collapse;
+	margin:1em auto;
+}
 	
+
+.bab_cal_vacation_types td {
+
+	border:#bbb 1px solid;
+	padding:.2em .5em;
+}
 	
-	
-	
-	
+.bab_cal_vacation_types thead td {
+	background:#eee;
+}
 	
 	
 	

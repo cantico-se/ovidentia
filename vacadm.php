@@ -1171,7 +1171,21 @@ if( isset($_POST['add']) )
 			break;
 
 		case 'modrbu':
-			updateVacationRightByUser($iduser, $quantities, $idrights);
+			if (true === updateVacationRightByUser(
+				bab_pp('iduser'), 
+				bab_pp('quantities'), 
+				bab_pp('idrights')
+			)) {
+			
+				require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
+			
+				$url = bab_url::request('tg');
+				$url = bab_url::mod($url, 'idx', 'lrbu');
+				$url = bab_url::mod($url, 'idu', bab_pp('iduser'));
+			
+				header('location:'.$url);
+				exit;
+			}
 			break;
 		}
 	}
@@ -1202,13 +1216,20 @@ switch($idx)
 		exit;
 		break;
 	case "rlbuul":
-		rlistbyuserUnload(bab_translate("Your request has been updated"));
-		exit;
+		//rlistbyuserUnload(bab_translate("Your request has been updated"));
+		//exit;
+		
+		$idu = bab_pp('iduser');
 
 	case "lrbu":
+	
+		if (!isset($idu)) {
+			$idu = bab_rp('idu');
+		}
+	
 		listRightsByUser($idu);
-		exit;
 		break;
+		
 	case "delu":
 		$babBody->title = bab_translate("Delete users");
 		deleteVacationPersonnel(

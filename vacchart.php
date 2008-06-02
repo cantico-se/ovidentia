@@ -157,21 +157,13 @@ function entity_members($ide, $template)
 			if ($superior !== 0 )
 				{
 				$this->superior_id = $superior['id_user'];
-				$this->superior_name = bab_toHtml(bab_composeUserName($superior['firstname'], $superior['lastname']));
+				$this->superior_name = bab_toHtml($superior['lastname'].' '.$superior['firstname']);
 				}
 			$this->b_rights = $this->superior_id != $GLOBALS['BAB_SESS_USERID'];
 			
 			// si co-gestionnaire de cette entité, pas de droit sur le suppérieur
-			global $babDB;
-			
-			list($n) = $babDB->db_fetch_array($babDB->db_query('
-				SELECT COUNT(*) FROM '.BAB_VAC_COMANAGER_TBL.' 
-				WHERE 
-					id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
-					AND id_entity='.$babDB->quote($this->ide).'
-			'));
-			
-			if ($n > 0) {
+
+			if (bab_isAccessibleEntityAsCoManager($this->ide)) {
 				$this->b_rights = false;
 			}
 			
@@ -184,17 +176,18 @@ function entity_members($ide, $template)
 			$this->t_schema = bab_translate('Approbation schema');
 			$this->t_request = bab_translate('Request');
 			$this->t_viewrights = bab_translate('Balance');
+			$this->checkall = bab_translate('Check all');
+			$this->uncheckall = bab_translate('Uncheck all');
 
 			$this->requests = bab_getVacationOption('chart_superiors_create_request');
 			
 			$this->users = array();
 			
-
 			while (list(,$arr) = each($users))
 				{
 				if ($arr['id_user'] != $this->superior_id)
 					{
-					$this->users[$arr['id_user']] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+					$this->users[$arr['id_user']] = $arr['lastname'].' '.$arr['firstname'];
 					}
 				}
 			natcasesort($this->users);
@@ -416,6 +409,7 @@ function saveCoManager($userids, $params) {
 $userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
 bab_addCoManagerEntities($userentities, $GLOBALS['BAB_SESS_USERID']);
 $entities_access = count($userentities['superior']);
+
 
 
 $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : '';

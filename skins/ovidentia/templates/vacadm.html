@@ -673,10 +673,10 @@ function validateDayField(field) {
 </script>
 
 <form name="rmodify" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="{ tg }">
-<input type="hidden" name="idx" value="rlbuul">
-<input type="hidden" name="add" value="modrbu">
-<input type="hidden" name="iduser" value="{ iduser }">
+<input type="hidden" name="tg" value="{ tg }" />
+<input type="hidden" name="idx" value="rlbuul" />
+<input type="hidden" name="add" value="modrbu" />
+<input type="hidden" name="iduser" value="{ iduser }" />
 
 <br>
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -727,8 +727,23 @@ function validateDayField(field) {
 </tr>
 </table>
 <br>
-<div align="center"><input type="submit" name="submit" value="{ updatetxt }"></div>
+<table width="100%">
+	<tr>
+		<td width="30%">
+		<!--#in previoususer -->
+		<a href="{ previousurl }" style="text-decoration:none;"><img src="{ babSkinPath }images/Puces/arrowPrev3a.gif" alt="" align="absmiddle" /> { previous }</a>
+		<!--#endin previoususer -->
+		&nbsp;</td>
+		<td align="center"><input type="submit" name="submit" value="{ updatetxt }"></td>
+		<td width="30%" align="right">&nbsp;
+		<!--#in nextuser -->
+		<a href="{ nexturl }" style="text-decoration:none;">{ next } <img src="{ babSkinPath }images/Puces/arrowNext3a.gif" alt="" align="absmiddle" /></a>
+		<!--#endin nextuser -->
+		</td>
+	</tr>
+</table>
 </form>
+<br />
 
 <!--#end rlistbyuser -->
 
@@ -747,18 +762,18 @@ function validateDayField(field) {
 </HEAD>
 <BODY>
 <br><br><br><br>
+
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
-</tr>
-<tr align="left" valign="middle">
-<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
-close }</a> </td>
-</tr>
-</table>
+	<tr> 
+	<td> 
+	<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+			<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+		</tr>
+		<tr align="left" valign="middle">
+			<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
+		</tr>
+	</table>
 </td>
 </tr>
 </table>

@@ -1203,6 +1203,10 @@ function listRightsByUser($id)
 			$this->invalidentry1 = bab_translate("Invalid entry");
 			$this->invalidentry2 = bab_translate("Days must be multiple of 0.5");
 			$GLOBALS['babBody']->title = bab_translate("Vacation rights of:").' '.bab_getUserName($id);
+			
+			$infos = bab_getUserInfos($id);
+			$this->currentUserLastname = $infos['sn'];
+			$this->currentUserFirstname = $infos['givenname'];
 
 			$this->tg = $_REQUEST['tg'];
 
@@ -1236,6 +1240,7 @@ function listRightsByUser($id)
 
 			$this->count = $babDB->db_num_rows($this->res);
 			list($this->idcoll) = $babDB->db_fetch_row($babDB->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($id)."'"));
+			
 			}
 
 		function getnextright()
@@ -1290,25 +1295,234 @@ function listRightsByUser($id)
 				return false;
 
 			}
+			
+			
+			/**
+			 * get previous or next user in manager list
+			 * @param	string	$sign
+			 * @param	string	$sqlOrderType
+			 * @return 	int|false
+			 */
+			function getUserInManagerList($sign, $sqlOrderType) {
+			
+
+				global $babDB;
+
+				
+				$ide = bab_rp('ide');
+				
+				// delegation administration list
+				if ($ide && bab_isAccessibleEntityAsSuperior($ide)) {
+				
+					$users = bab_OCGetCollaborators($ide);
+					$superior = bab_OCGetSuperior($ide);
+					
+					if (((int)$superior['id_user']) !== (int)$GLOBALS['BAB_SESS_USERID'] && false === bab_isAccessibleEntityAsCoManager($ide)) {
+						$users[] = $superior;
+					}
+
+					
+					$ordering = array();
+					foreach($users as $key => $user) {
+						$ordering[$key] = $user['lastname'].' '.$user['firstname'];
+					}
+					
+					natcasesort($ordering);
+					
+					
+					$previous = false;
+					$next = false;
+					
+					$next_prev_index = array();
+					
+					foreach($ordering as $key => $dummy) {
+					
+						if (false !== $previous) {
+							$next_prev_index[$previous]['next'] = $users[$key]['id_user'];
+						}
+					
+						$next_prev_index[$users[$key]['id_user']] = array(
+							'previous' => $previous,
+							'next' => $next
+						);
+						
+						$previous = $users[$key]['id_user'];
+					}
+					
+					reset($ordering);
+					$firstuser = $users[key($ordering)]['id_user'];
+					next($ordering);
+					$seconduser = $users[key($ordering)]['id_user'];
+					
+					$next_prev_index[$firstuser]['next'] = $seconduser;
+
+					
+					
+					switch($sign) {
+						case '<':
+							return $next_prev_index[$this->iduser]['previous'];
+							
+						case '>':
+							return $next_prev_index[$this->iduser]['next'];
+					}
+					
+
+					return false;
+				}
+				
+				
+				
+				
+				
+				
+				// manager list
+				
+				$acclevel = bab_vacationsAccess();
+				if( true === $acclevel['manager'])
+					{
+				
+					$res = $babDB->db_query('
+						SELECT 
+							p.id_user  
+						FROM 
+							'.BAB_VAC_PERSONNEL_TBL.' p, '.BAB_USERS_TBL.' u 
+							
+						WHERE 
+							u.id = p.id_user 
+							AND (u.lastname '.$sign.' '.$babDB->quote($this->currentUserLastname).' 
+									OR (u.lastname = '.$babDB->quote($this->currentUserLastname).' 
+										AND u.firstname '.$sign.' '.$babDB->quote($this->currentUserFirstname).')
+								)
+							
+						ORDER BY u.lastname '.$sqlOrderType.', u.firstname '.$sqlOrderType.' 
+						
+						LIMIT 0,2 
+					');
+					
+					
+					
+					if ($arr = $babDB->db_fetch_assoc($res)) {
+						return (int) $arr['id_user'];
+					}
+					
+				}
+				
+				
+				
+				
+				
+				return false;
+			}
+			
+			
+			
+			
+			function previoususer() {
+				
+				static $i = 0;
+				
+				if (0 === $i) {
+				
+					$id_user = $this->getUserInManagerList('<','DESC');
+					if (!$id_user) {
+						return false;
+					}
+					
+					$this->previous = bab_toHtml(bab_getUserName($id_user));
+					
+					require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
+					$url = bab_url::request_gp();
+					
+					if (bab_rp('idu')) {
+						$url = bab_url::mod($url, 'idu', $id_user);
+					}
+					
+					if (bab_rp('id_user')) {
+						$url = bab_url::mod($url, 'id_user', $id_user);
+					}
+					
+					$this->previousurl = bab_toHtml($url);
+					
+				
+					$i++;
+					return true;
+				}
+				
+				return false;
+			}
+			
+			function nextuser() {
+
+				static $i = 0;
+				
+				if (0 === $i) {
+				
+					$id_user = $this->getUserInManagerList('>','ASC');
+					if (!$id_user) {
+						return false;
+					}
+					
+					$this->next = bab_toHtml(bab_getUserName($id_user));
+					
+					require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
+					$url = bab_url::request_gp();
+					if (bab_rp('idu')) {
+						$url = bab_url::mod($url, 'idu', $id_user);
+					}
+					
+					if (bab_rp('id_user')) {
+						$url = bab_url::mod($url, 'id_user', $id_user);
+					}
+					$this->nexturl = bab_toHtml($url);
+					
+				
+					$i++;
+					return true;
+				}
+
+				return false;
+			}
+			
 		}
 
 	$temp = new temp($id);
 	$GLOBALS['babBody']->babPopup(bab_printTemplate($temp, "vacadm.html", "rlistbyuser"));
 	}
 
+
+
+/**
+ * @param	int		$userid
+ * @param	array	$quantities
+ * @param	array	$idrights
+ *
+ * @return 	boolean
+ */
 function updateVacationRightByUser($userid, $quantities, $idrights)
 {
 	global $babDB;
+	
+
 	for($i = 0; $i < count($idrights); $i++)
 		{
+		
 		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idrights[$i])."'"));
 		if( $quantity != $quantities[$i] )
 			$quant = $quantities[$i];
 		else
 			$quant = '';
 
-		$babDB->db_query("update ".BAB_VAC_USERS_RIGHTS_TBL." set quantity='".$babDB->db_escape_string($quant)."' where id_user='".$babDB->db_escape_string($userid)."' and id_right='".$babDB->db_escape_string($idrights[$i])."'");
-		}
+		$babDB->db_query("
+			UPDATE 
+				".BAB_VAC_USERS_RIGHTS_TBL." 
+					SET quantity='".$babDB->db_escape_string($quant)."' 
+			WHERE 
+				id_user='".$babDB->db_escape_string($userid)."' 
+				AND id_right='".$babDB->db_escape_string($idrights[$i])."'
+		");
+	}
+	
+	return true;
 }
 
 
@@ -1503,6 +1717,58 @@ function bab_IsUserUnderSuperior($id_user)
 		}
 	return false;
 }
+
+
+
+
+
+/**
+ * 
+ * @param	int		$ide
+ * @return	boolean
+ */
+function bab_isAccessibleEntityAsSuperior($ide) {
+
+	$ide = (int) $ide;
+
+	$userentities = & bab_OCGetUserEntities($GLOBALS['BAB_SESS_USERID']);
+	bab_addCoManagerEntities($userentities, $GLOBALS['BAB_SESS_USERID']);
+	$userentities['superior'];
+	
+	foreach($userentities['superior'] as $arr) {
+		if ($ide === (int) $arr['id']) {
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+
+/**
+ * 
+ * @param	int		$ide
+ * @return	boolean
+ */
+function bab_isAccessibleEntityAsCoManager($ide) {
+
+	global $babDB;
+
+	list($n) = $babDB->db_fetch_array($babDB->db_query('
+		SELECT COUNT(*) FROM '.BAB_VAC_COMANAGER_TBL.' 
+		WHERE 
+			id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
+			AND id_entity='.$babDB->quote($ide).'
+	'));
+	
+	if ($n > 0) {
+		return true;
+	}
+	
+	return false;
+}
+
+
 
 function updateVacationUser($userid, $idsa)
 {
@@ -2006,7 +2272,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 		AND date_begin < ".$babDB->quote($end->getIsoDateTime())."");
 
 
-	while( $row = $babDB->db_fetch_array($res)) {
+	while( $row = $babDB->db_fetch_assoc($res)) {
 
 		static $events = array();
 
@@ -2040,25 +2306,10 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	
 			$count = $babDB->db_num_rows($res2);
 	
-			$type_day		= $date_begin->cloneDate();
-			$type_day_end	= $date_begin->cloneDate();
-	
-			
-			while ($arr = $babDB->db_fetch_array($res2))
+			$ventilation = array();
+			while ($arr = $babDB->db_fetch_assoc($res2))
 				{
-				$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
-				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
-					if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
-						bab_vac_typeColorStack(
-							$row['id'], 
-							array(
-								'id_type'	=> $arr['type'], 
-								'color'		=> $arr['color']
-							)
-						);
-					}
-					$type_day->add(12, BAB_DATETIME_HOUR);
-				}
+				$ventilation[] = $arr;
 			}
 		}
 
@@ -2096,9 +2347,29 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 		$p->setProperty('CATEGORIES'	, $category);
 		$p->color = $color;
 
+		$description = '';
+
 		if ('Y' !== $row['status']) {
-			$p->setProperty('DESCRIPTION',bab_translate("Waiting to be validate"));
+			$description .= '<p>'.bab_translate("Waiting to be validate").'</p>';
 		}
+
+		$label = (1 === count($ventilation)) ? bab_translate('Vacations type') : bab_translate('Vacations types');
+
+		$description .= '<table class="bab_cal_vacation_types">';
+		$description .= '<thead><tr><td colspan="3">'.bab_toHtml($label).'</td></tr></thead>';
+		$description .= '<tbody>';
+		
+		foreach($ventilation as $type) {
+			$description .= sprintf(
+				'<tr><td style="background:#%s">&nbsp; &nbsp;</td><td>%s</td><td>%s</td></tr>',
+				$type['color'],
+				trim($type['quantity'],'0.'),
+				$type['type']
+				);
+		}
+		$description .= '</tbody></table>';
+
+		$p->setProperty('DESCRIPTION', $description);
 
 	}
 }
@@ -2664,4 +2935,7 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 	return $calcul;
 }
 
-?>
+
+
+
+
