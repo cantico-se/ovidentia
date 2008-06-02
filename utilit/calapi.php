@@ -81,21 +81,28 @@ function bab_getPersonalCalendar($iduser)
 /**
  * Get all events for a specific calendar and specified dates.
  * Returns detailed information about calendar events in a multi-dimensional array.
- * - 'id_cal' : id of the calendar for which you want to get events. Can be an array of ids.
- * - 'begindate' : start date in ISO format (YYYY-MM-DD)
- * - 'enddate' : end date in ISO format (YYYY-MM-DD)
- * - 'id_category' : (optional) id of a category if you want to fetch only events of this category
- * - 'order' : "asc" for ascending and "desc" for descending.
+ *
+ * - 'id_cal' 			: id of the calendar for which you want to get events. Can be an array of ids.
+ * - 'begindate' 		: start date in ISO format (YYYY-MM-DD)
+ * - 'enddate' 			: end date in ISO format (YYYY-MM-DD)
+ * - 'id_category' 		: (optional) id of a category if you want to fetch only events of this category
+ * - 'order' 			: "asc" for ascending and "desc" for descending.
+ * - 'access_control'	: boolean, if access_control is true, the access to calendars is validated before returning the events, the default is TRUE
  *
  * @param array $params
  * @return array
+ *
  * @access public
+ *
  */
 function bab_calGetEvents(&$params)
 {
-	global $babBody;
 
 	$events = array();
+	
+	
+	$access_control = isset($params['access_control']) ? $params['access_control'] : true;
+	
 
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -105,6 +112,31 @@ function bab_calGetEvents(&$params)
 		BAB_dateTime::fromIsoDateTime($params['enddate'])
 	);
 	
+	
+	if (!function_exists('bab_calGetEvents_setCal')) {
+	
+		function bab_calGetEvents_setCal(&$whObj, $id_cal, $access_control) {
+			
+			global $babBody;
+			
+			$infos = $babBody->icalendars->getCalendarInfo($id_cal);
+		
+			if ($infos) {
+				$whObj->addCalendar($id_cal);
+				$whObj->addIdUser($infos['idowner']);
+				
+			} elseif (false === $access_control) {
+				
+				$infos = bab_getCalendarOwnerAndType($idcal);
+				
+				$whObj->addCalendar($id_cal);
+				if (BAB_CAL_USER_TYPE === $infos['type']) {
+					$whObj->addIdUser($infos['owner']);
+				}
+			}
+		}
+	}
+	
 
 	if( is_array($params['id_cal']) ) {
 	
@@ -113,14 +145,12 @@ function bab_calGetEvents(&$params)
 		}
 	
 		foreach($params['id_cal'] as $id_cal) {
-			$whObj->addCalendar($id_cal);
-			$infos = $babBody->icalendars->getCalendarInfo($id_cal);
-			$whObj->addIdUser($infos['idowner']);
+			bab_calGetEvents_setCal($whObj, $id_cal, $access_control);
 		}
 	} else {
-		$whObj->addCalendar($params['id_cal']);
-		$infos = $babBody->icalendars->getCalendarInfo($params['id_cal']);
-		$whObj->addIdUser($infos['idowner']);
+	
+		$id_cal = (int) $params['id_cal'];
+		bab_calGetEvents_setCal($whObj, $id_cal, $access_control);
 	}
 	
 	$whObj->createPeriods(BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);

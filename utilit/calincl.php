@@ -28,6 +28,11 @@
 
 include_once 'base.php';
 
+
+/**
+ * Get calendar type
+ * @return int
+ */
 function bab_getCalendarType($idcal)
 {
 	global $babDB;
@@ -36,7 +41,7 @@ function bab_getCalendarType($idcal)
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['type'];
+		return (int) $arr['type'];
 		}
 	else
 		{
@@ -44,6 +49,10 @@ function bab_getCalendarType($idcal)
 		}
 }
 
+/**
+ * Get calendar owner
+ * @return int
+ */
 function bab_getCalendarOwner($idcal)
 {
 	global $babDB;
@@ -52,13 +61,39 @@ function bab_getCalendarOwner($idcal)
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['owner'];
+		return (int) $arr['owner'];
 		}
 	else
 		{
 		return 0;
 		}
 }
+
+
+/**
+ * Get calendar owner and type
+ * @return array|false
+ */
+function bab_getCalendarOwnerAndType($idcal)
+{
+	global $babDB;
+	$query = "select owner, type from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal);
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return array(
+				'owner' => (int) $arr['owner'],
+				'type' => (int) $arr['type']
+			);
+		}
+	else
+		{
+		return false;
+		}
+}
+
+
 
 function bab_getCalendarOwnerName($idcal, $type='')
 {

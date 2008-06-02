@@ -67,9 +67,11 @@ function displayAttendees($evtid, $idcal)
 					$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
 					if( $icalinfo === false)
 					{
-						$icalinfo['type'] = bab_getCalendarType($arr['id_cal']);
+						$tmp = bab_getCalendarOwnerAndType($arr['id_cal']);
+					
+						$icalinfo['type'] = $tmp['type'];
 						$icalinfo['name'] = bab_getCalendarOwnerName($arr['id_cal']);
-						$icalinfo['idowner'] = bab_getCalendarOwner($arr['id_cal']);
+						$icalinfo['idowner'] = $tmp['owner'];
 						$icalinfo['access'] = '';
 					}
 					
