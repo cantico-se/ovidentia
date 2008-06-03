@@ -1761,7 +1761,6 @@
 <string id="View and manage">Voir et gérer</string>
 <string id="Folder manager">Gestionnaire de répertoire</string>
 <string id="Category to use in calendar">Catégorie à utiliser dans l'agenda</string>
-<string id="Retention period :">Disponibilité en fonction de la date de saisie de la demande de congés :</string>
 <string id="The right is available if the request is in the period">Le droit est disponible si la saisie de la demande est effectuée dans la période suivante</string>
 <string id="if empty, the right will be available with others conditions">Si aucune période n'est renseignée, aucun test sur la date de saisie n'est effectué. Ce droit sera donc disponible si les autres conditions sont respectées.</string>
 <string id="Nature of the right">Nature du droit</string>
@@ -2369,7 +2368,7 @@
 <string id="Default">Défaut</string>
 <string id="Assignement type">Type d'assignation</string>
 <string id="in this period">de la période suivante</string>
-<string id="Allow overlap between the request period and the test period">Permettre le chevauchement de la période de congés avec la période de test</string>
+<string id="Allow overlap between the request period and the test periods">Permettre le chevauchement de la période de congés avec les périodes de test</string>
 <string id="Right assignement in function of requested days">Attribution du droit en fonction des jours demandés et validés</string>
 <string id="The right is displayed if the user has requested">Le droit est accordé si l'utilisateur a pris</string>
 <string id="between">entre</string>
@@ -2564,6 +2563,7 @@
 <string id="Missing a temporary folder.">Le fichier temporaire est manquant.</string>
 <string id="Failed to write file to disk.">Impossible d'écrire le fichier sur le disque.</string>
 <string id="Unknown File Error.">Erreur de fichier inconnue.</string>
+<string id="Add a test period">Ajouter une période de test</string>
 
 
 </fr>

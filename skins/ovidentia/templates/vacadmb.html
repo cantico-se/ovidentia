@@ -1,17 +1,16 @@
 <!--#begin vrequestslist -->
-<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
 <script type="text/javascript">
 <!--
-function dateBegin(day, month, year)
-{
-	document.vacfreqs.elements['dateb'].value = day+'-'+month+'-'+year;
-}
 
-function dateEnd(day, month, year)
-{
-	document.vacfreqs.elements['datee'].value = day+'-'+month+'-'+year;
-}
 
+function getDateFilter(fieldname) {
+
+	bab_dialog.selectdate(function(arr) {
+		document.vacfreqs.elements[fieldname].value = arr['day']+'-'+arr['month']+'-'+arr['year'];
+	});
+
+}
 
 function openPopup()
 {
@@ -22,6 +21,8 @@ function openPopup()
 		}
 	)
 }
+
+
 function babReset()
 {
 document.forms['vacfreqs'].userid.value ='';
@@ -29,19 +30,20 @@ document.forms['vacfreqs'].user.value ='';
 document.forms['vacfreqs'].datee.value ='';
 document.forms['vacfreqs'].dateb.value ='';
 }
+
 //-->
 </script>
 
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="vacadmb">
-<input type="hidden" name="idx" value="lreq">
+<input type="hidden" name="tg" value="vacadmb" />
+<input type="hidden" name="idx" value="lreq" />
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
 	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
         <tr class="BabSiteAdminTitleFontBackground"> 
-            <td>{ nametxt }</td>
-            <td>{ begindatetxt }</td>
+            <td><a href="{ orderbyname }">{ nametxt }</a></td>
+            <td><a href="{ orderbybegin }">{ begindatetxt }</a></td>
             <td>{ enddatetxt }</td>
             <td>{ quantitytxt }</td>
             <td width="5%">{ statustxt }</td>
@@ -84,10 +86,11 @@ document.forms['vacfreqs'].dateb.value ='';
 
 
 <br>
-<form name="vacfreqs" method="post" action="{ babPhpSelf }" >
-<input type="hidden" name="tg" value="vacadmb">
-<input type="hidden" name="idx" value="lreq">
-<input type="hidden" name="vpos" value="{ pos }">
+<form name="vacfreqs" method="get" action="{ babPhpSelf }" >
+<input type="hidden" name="tg" value="vacadmb" />
+<input type="hidden" name="idx" value="lreq" />
+<input type="hidden" name="vpos" value="{ pos }" />
+<input type="hidden" name="orderby" value="{ orderby }" />
 <table border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr>
 <td class="BabLoginCadreBackground"> 
@@ -115,9 +118,9 @@ document.forms['vacfreqs'].dateb.value ='';
 			<input type="hidden" name="userid" value="{ userid }" />
 		</td>
 		<td>
-			<a href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a> 
+			<a href="#" onclick="getDateFilter('dateb');return false;">{ begintxt }</a> 
 			<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }" />
-			&nbsp;<a class="BabSiteAdminListLink" href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a> 
+			&nbsp;<a href="#" onclick="getDateFilter('datee');return false;">{ endtxt }</a> 
 			<input type="text" name="datee" size="10" maxlength="10" value="{ datee }" />
 		</td>
 	</tr>

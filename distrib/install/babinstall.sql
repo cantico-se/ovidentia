@@ -1564,6 +1564,43 @@ CREATE TABLE `bab_vac_rights` (
   KEY `id_rgroup` (`id_rgroup`)
 );
 
+
+
+
+CREATE TABLE `bab_vac_rights_rules` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_right` int(10) unsigned NOT NULL default '0',
+  `validoverlap` tinyint(1) unsigned NOT NULL default '0',
+  `trigger_nbdays_min` float NOT NULL default '0',
+  `trigger_nbdays_max` float NOT NULL default '0',
+  `trigger_type` int(10) unsigned NOT NULL default '0',
+  `trigger_p1_begin` date NOT NULL,
+  `trigger_p1_end` date NOT NULL,
+  `trigger_p2_begin` date NOT NULL,
+  `trigger_p2_end` date NOT NULL,
+  `trigger_overlap` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_right` (`id_right`,`period_start`,`period_end`),
+  KEY `trigger_type` (`trigger_type`)
+);
+
+
+
+
+
+CREATE TABLE `bab_vac_rights_inperiod` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_right` int(10) unsigned NOT NULL default '0',
+  `period_start` date NOT NULL default '0000-00-00',
+  `period_end` date NOT NULL default '0000-00-00',
+  `right_inperiod` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `id_right` (`id_right`)
+);
+
+
+
+
 #
 # Structure de la table `bab_vac_types`
 #
@@ -2633,25 +2670,7 @@ CREATE TABLE `bab_sites_nonworking_days` (
   KEY `nw_day` (`nw_day`)
 );
 
-CREATE TABLE `bab_vac_rights_rules` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_right` int(10) unsigned NOT NULL default '0',
-  `period_start` date NOT NULL default '0000-00-00',
-  `period_end` date NOT NULL default '0000-00-00',
-  `validoverlap` tinyint(1) unsigned NOT NULL default '0',
-  `trigger_nbdays_min` float NOT NULL default '0',
-  `trigger_nbdays_max` float NOT NULL default '0',
-  `trigger_type` int(10) unsigned NOT NULL default '0',
-  `right_inperiod` tinyint(4) NOT NULL default '0',
-  `trigger_p1_begin` date NOT NULL,
-  `trigger_p1_end` date NOT NULL,
-  `trigger_p2_begin` date NOT NULL,
-  `trigger_p2_end` date NOT NULL,
-  `trigger_overlap` tinyint(3) unsigned NOT NULL,
-  PRIMARY KEY  (`id`),
-  KEY `id_right` (`id_right`,`period_start`,`period_end`),
-  KEY `trigger_type` (`trigger_type`)
-);
+
 
 CREATE TABLE bab_users_unavailability (
   id_user int(11) unsigned NOT NULL default '0',

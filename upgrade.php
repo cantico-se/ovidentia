@@ -4528,6 +4528,66 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 6.6.96
+	 */
+	if (!bab_isTable(BAB_VAC_RIGHTS_INPERIOD_TBL))  {
+		$babDB->db_query("
+			CREATE TABLE `".BAB_VAC_RIGHTS_INPERIOD_TBL."` (
+			  `id` int(10) unsigned NOT NULL auto_increment,
+			  `id_right` int(10) unsigned NOT NULL default '0',
+			  `period_start` date NOT NULL default '0000-00-00',
+			  `period_end` date NOT NULL default '0000-00-00',
+			  `right_inperiod` tinyint(4) NOT NULL default '0',
+			  PRIMARY KEY  (`id`),
+			  KEY `id_right` (`id_right`)
+			)
+		");
+		
+		
+		if(bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'period_start')) 
+		{
+			$res = $babDB->db_query('SELECT 
+					id_right, 
+					period_start, 
+					period_end, 
+					right_inperiod  
+				FROM 
+					'.BAB_VAC_RIGHTS_RULES_TBL.' 
+					
+				WHERE 
+					(period_start<>\'0000-00-00\' OR period_end<>\'0000-00-00\')
+			');
+			
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+				$babDB->db_query('INSERT INTO '.BAB_VAC_RIGHTS_INPERIOD_TBL.' 
+					(id_right, period_start, period_end, right_inperiod) 
+				VALUES 
+					(
+						'.$babDB->quote($arr['id_right']).', 
+						'.$babDB->quote($arr['period_start']).',
+						'.$babDB->quote($arr['period_end']).',
+						'.$babDB->quote($arr['right_inperiod']).'
+					)');
+			}
+			
+			
+			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP period_start');
+			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP period_end');
+			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP right_inperiod');
+		}
+	}
+	
+	
+	
+	
+	
+	
 	return true;
 }
 ?>

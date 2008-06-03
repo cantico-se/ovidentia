@@ -157,6 +157,142 @@ function notifyOnRequestChange($id, $delete = false)
 		trigger_error($mail->ErrorInfo());
 		}
 	}
+	
+	
+	
+	
+	
+/**
+ *  
+ *
+ * @param	int		$id_right
+ * @param	int		$beginp			begin date of request		timestamp
+ * @param	int		$endp			end date of request			timestamp
+ * @param	boolean	$overlap		TRUE if overlap is allowed
+ *
+ * @return 	boolean
+ */	
+function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) {
+	
+	global $babDB;
+	
+	$res = $babDB->db_query('SELECT * FROM '.BAB_VAC_RIGHTS_INPERIOD_TBL.' WHERE id_right='.$babDB->quote($id_right));
+	
+	
+	$access_include = 1;
+	$access_exclude = 1;
+	
+	
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+		$period_start 	= bab_mktime($arr['period_start']);
+		$period_end 	= bab_mktime($arr['period_end']);
+		
+		
+		$period_access = ((int) $arr['right_inperiod']) + (((int) $overlap)*10);
+		
+		switch ($period_access)
+			{
+			case 0: // Toujours
+			case 10:
+				
+				break;
+			
+			case 1: // Dans la période de la règle
+				if ($period_start <= $beginp && $period_end >= $endp) {
+						$access_include |= 1;
+						$debug_result = 'TRUE';
+					} else {
+						$access_include |= 0;
+						$debug_result = 'FALSE';
+					}
+					
+					bab_debug(
+							"Disponibilité en fonction de la période de congés demandée\n".
+							"Dans l'intervale\n".
+							'id = '.$id_right."\n".
+							bab_shortDate($period_start).' <= '.bab_shortDate($beginp). 
+							' && '.bab_shortDate($period_end).' >= '.bab_shortDate($endp)."\n".
+							' => '.$debug_result
+							);
+					
+					
+				break;
+			
+			case 2: // En dehors de la période de la règle
+				if ($period_end <= $beginp || $period_start >= $endp) {
+						$access_exclude &= 1;
+						$debug_result = 'TRUE';
+					} else {
+						$access_exclude &= 0;
+						$debug_result = 'FALSE';
+					}
+					
+					
+					bab_debug(
+							"Disponibilité en fonction de la période de congés demandée\n".
+							"En dehors de l'intervale\n".
+							'id = '.$id_right."\n".
+							bab_shortDate($period_end).' <= '.bab_shortDate($beginp). 
+							' && '.bab_shortDate($period_start).' >= '.bab_shortDate($endp)."\n".
+							' => '.$debug_result
+							);
+				break;
+				
+			case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
+				
+				if ($period_start < $endp && $period_end > $beginp ) {
+						$access_include |= 1;
+						$debug_result = 'TRUE';
+					} else {
+						$access_include |= 0;
+						$debug_result = 'FALSE';
+					}
+					
+					
+					bab_debug(
+							"Disponibilité en fonction de la période de congés demandée\n".
+							"Dans l'intervale mais peut dépasser à l'exterieur\n".
+							'id = '.$id_right."\n".
+							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
+							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
+							' => '.$debug_result
+							);
+				break;
+
+			case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
+				if ($period_start > $beginp || $period_end < $endp) {
+						$access_exclude &= 1;
+						$debug_result = 'TRUE';
+					} else {
+						$access_exclude &= 0;
+						$debug_result = 'FALSE';
+					}
+					
+					bab_debug(
+							"acces sur la période, en fonction de la période de la demande\n".
+							"En dehors de l'intervale mais peut dépasser à l'intérieur\n".
+							'id = '.$id_right."\n".
+							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
+							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
+							' => '.$debug_result
+							);
+				break;
+		}
+	}
+	
+	$debug_include = $access_include ? 'TRUE' : 'FALSE';
+	$debug_exclude = $access_exclude ? 'TRUE' : 'FALSE';
+
+	bab_debug(sprintf("id = %d \ntests de périodes d'inclusion %s \ntests de périodes d'exclusion %s\n",$id_right, $debug_include, $debug_exclude));
+	
+	return $access_include && $access_exclude;
+}
+	
+	
+	
+	
+	
 
 
 /**
@@ -285,76 +421,19 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 		if ($access && !empty($arr['id_right']) ) {
 			// rules 
 
-			$period_start = bab_mktime($arr['period_start']);
-			$period_end = 86400 + bab_mktime($arr['period_end']);
+
 			
-			if ($period_start != -1 && $period_end != -1) {
-				// acces sur la période, en fonction de la période de la demande
 
-				$access = !$access_on_period; // $access sera false si les droits on été demandés avec une période
+			// acces sur la période, en fonction de la période de la demande
+			
+			
+			
+			if ($access_on_period) { 
+				$access = bab_vac_isRightAccessibleOnPeriod((int) $arr['id_right'], $beginp, $endp, (bool) $arr['validoverlap']);
+			} else {
+				$access = true; // le doit est accessible si on ne test pas de demande (premiere page de la demande)
+			}
 
-				$period_acess = $arr['right_inperiod']+($arr['validoverlap']*10);
-				switch ($period_acess)
-					{
-					case 0: // Toujours
-					case 10:
-						$access = true;
-						break;
-					
-					case 1: // Dans la période de la règle
-						if ($period_start <= $beginp && $period_end >= $endp) {
-								bab_debug(
-									"Disponibilité en fonction de la période de congés demandée\n".
-									"Dans l'intervale\n".
-									$arr['description']."\n".
-									bab_shortDate($period_start).' <= '.bab_shortDate($beginp). 
-									' && '.bab_shortDate($period_end).' >= '.bab_shortDate($endp)
-									);
-								$access = true;
-								}
-						break;
-					
-					case 2: // En dehors de la période de la règle
-						if ($period_end <= $beginp || $period_start >= $endp) {
-								bab_debug(
-									"Disponibilité en fonction de la période de congés demandée\n".
-									"En dehors de l'intervale\n".
-									$arr['description']."\n".
-									bab_shortDate($period_end).' <= '.bab_shortDate($beginp). 
-									' && '.bab_shortDate($period_start).' >= '.bab_shortDate($endp)
-									);
-								$access = true;
-								}
-						break;
-						
-					case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
-						
-						if ($period_start < $endp && $period_end > $beginp ) {
-								bab_debug(
-									"Disponibilité en fonction de la période de congés demandée\n".
-									"Dans l'intervale mais peut dépasser à l'exterieur\n".
-									$arr['description']."\n".
-									bab_shortDate($period_start).' < '.bab_shortDate($endp). 
-									' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)
-									);
-								$access = true;
-								}
-						break;
-
-					case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
-						if ($period_start > $beginp || $period_end < $endp) {
-								bab_debug(
-									"acces sur la période, en fonction de la période de la demande\n".
-									"En dehors de l'intervale mais peut dépasser à l'intérieur\n".
-									$arr['description']."\n".
-									bab_shortDate($period_start).' < '.bab_shortDate($endp). 
-									' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)
-									);
-								$access = true;
-								}
-						break;
-					}
-				}
 
 			
 

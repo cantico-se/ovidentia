@@ -1,0 +1,22 @@
+
+#bab_vac_rights_inperiod_contener p {
+
+	white-space:nowrap;
+}
+
+
+#bab_vac_rights_inperiod_contener input {
+	width:8em;
+	margin:0 .8em;
+}
+
+
+#bab_vac_rights_inperiod_contener select {
+	margin:0 .8em;
+
+}
+
+
+legend {
+	font-weight:bold;
+}

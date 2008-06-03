@@ -313,6 +313,7 @@ define("BAB_VAC_COLL_TYPES_TBL", "bab_vac_coll_types");
 define("BAB_VAC_PERSONNEL_TBL", "bab_vac_personnel");
 define("BAB_VAC_RIGHTS_TBL", "bab_vac_rights");
 define("BAB_VAC_RIGHTS_RULES_TBL", "bab_vac_rights_rules");
+define("BAB_VAC_RIGHTS_INPERIOD_TBL", "bab_vac_rights_inperiod");
 define("BAB_VAC_USERS_RIGHTS_TBL", "bab_vac_users_rights");
 define("BAB_VAC_ENTRIES_TBL", "bab_vac_entries");
 define("BAB_VAC_ENTRIES_ELEM_TBL", "bab_vac_entries_elem");

@@ -33,7 +33,7 @@ include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
 
-function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
+function listVacationRequestsb()
 {
 	global $babBody;
 
@@ -89,8 +89,19 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 		var $alttxt;
 		var $altbg = true;
 
-		function temp($idstatus, $userid, $dateb, $datee, $vpos)
+		function temp()
 			{
+			
+			
+			$idstatus = (int) bab_rp('idstatus');
+			$userid = (int) bab_rp('userid');
+			$dateb = bab_rp('dateb');
+			$datee = bab_rp('datee');
+			$vpos = (int) bab_rp('vpos', 0);
+			
+			
+			include_once $GLOBALS['babInstallPath']."utilit/urlincl.php";
+			
 			global $babDB;
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
@@ -130,27 +141,30 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			$this->pos = $vpos;
 			$this->userval = $userid != "" ? bab_toHtml(bab_getUserName($userid)) : "";
 			$aaareq = array();
-			$req = "".BAB_VAC_ENTRIES_TBL;
+			
+			$req = BAB_VAC_ENTRIES_TBL.' e, '.BAB_USERS_TBL.' u WHERE ';
+			
+			$aaareq[] = 'u.id=e.id_user';
+			
 			if( $idstatus != "" || $userid != "" || $dateb != "" || $datee != "")
 				{
-				$req .= " where ";
 
 				if( $idstatus != "")
 					{
 					switch($idstatus)
 						{
 						case 0:
-							$aaareq[] = "status=''"; break;
+							$aaareq[] = "e.status=''"; break;
 						case 1:
-							$aaareq[] = "status='Y'"; break;
+							$aaareq[] = "e.status='Y'"; break;
 						case 2:
-							$aaareq[] = "status='N'"; break;
+							$aaareq[] = "e.status='N'"; break;
 						}
 					}
 
 				if( $userid != "")
 					{
-					$aaareq[] = "id_user='".$babDB->db_escape_string($userid)."'";
+					$aaareq[] = "e.id_user='".$babDB->db_escape_string($userid)."'";
 					}
 
 				if( $dateb != "" )
@@ -167,27 +181,51 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 
 				if( $dateb != "" )
 					{
-					$aaareq[] = "date_begin >= '".$babDB->db_escape_string($dateb)."'";
+					$aaareq[] = "e.date_begin >= '".$babDB->db_escape_string($dateb)."'";
 					}
 				if( $datee != "" )
 					{
-					$aaareq[] = "date_end <= '".$babDB->db_escape_string($datee)."'";
+					$aaareq[] = "e.date_end <= '".$babDB->db_escape_string($datee)."'";
 					}
 				}
 
 			if( sizeof($aaareq) > 0 )
 				{
 				if( sizeof($aaareq) > 1 )
-					$req .= implode(' and ', $aaareq);
+					$req .= implode(' AND ', $aaareq);
 				else
 					$req .= $aaareq[0];
 				}
-			$req .= " order by date desc";
+				
+				
+			$orderby = bab_rp('orderby', 'begin');
+				
+			$url = bab_url::request('tg', 'idx', 'idstatus', 'userid', 'dateb', 'datee', 'vpos', 'orderby');
+			
+			$this->orderby = bab_toHtml($orderby);
+				
+			$this->orderbyname = bab_url::mod($url, 'orderby', 'name');
+			$this->orderbybegin	= bab_url::mod($url, 'orderby', 'begin');
+			
+			
+			switch($orderby) {
+			
+				case 'begin':
+					$req .= " ORDER BY e.date desc, u.lastname, u.firstname";
+					break;
+					
+				case 'name':
+					$req .= " ORDER BY u.lastname, u.firstname, e.date desc";
+					break;
+			}
+			
+				
+				
+			
 
 			list($total) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".$req));
 			if( $total > VAC_MAX_REQUESTS_LIST )
 				{
-				$urltmp = $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq&idstatus=".$this->idstatus."&userid=".$this->userid."&dateb=".$this->dateb."&datee=".$this->datee."&vpos=";
 
 				$page_number = 1 + ($this->pos / VAC_MAX_REQUESTS_LIST);
 				$page_total = 1 + ($total / VAC_MAX_REQUESTS_LIST);
@@ -195,26 +233,26 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 
 				if( $vpos > 0)
 					{
-					$this->topurl = bab_toHtml($urltmp."0");
+					$this->topurl = bab_toHtml(bab_url::mod($url, 'vpos', 0));
 					}
 
 				$next = $vpos - VAC_MAX_REQUESTS_LIST;
 				if( $next >= 0)
 					{
-					$this->prevurl = bab_toHtml($urltmp.$next);
+					$this->prevurl = bab_toHtml(bab_url::mod($url, 'vpos', $next));
 					}
 
 				$next = $vpos + VAC_MAX_REQUESTS_LIST;
 				if( $next < $total)
 					{
-					$this->nexturl = bab_toHtml($urltmp.$next);
+					$this->nexturl = bab_toHtml(bab_url::mod($url, 'vpos', $next));
 					if( $next + VAC_MAX_REQUESTS_LIST < $total)
 						{
 						$bottom = $total - VAC_MAX_REQUESTS_LIST;
 						}
 					else
 						$bottom = $next;
-					$this->bottomurl = bab_toHtml($urltmp.$bottom);
+					$this->bottomurl = bab_toHtml(bab_url::mod($url, 'vpos', $bottom));
 					}
 				}
 
@@ -224,11 +262,8 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 				$req .= " limit ".$vpos.",".VAC_MAX_REQUESTS_LIST;
 				}
 
-			$this->res = $babDB->db_query("select * from ".$req);
+			$this->res = $babDB->db_query("select e.*, u.lastname, u.firstname from ".$req);
 			$this->count = $babDB->db_num_rows($this->res);
-
-			$this->dateburl = bab_toHtml($GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=0&ymax=3");
-			$this->dateeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=0&ymax=3");
 			}
 
 		function getnext()
@@ -244,7 +279,7 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 				$url = "?tg=vacadmb&idx=lreq";
 				$this->urldelete = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=delete&id_entry=".$arr['id']."&from=".urlencode($url));
 				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id'])));
-				$this->urlname		= bab_toHtml(bab_getUserName($arr['id_user']));
+				$this->urlname		= bab_toHtml($arr['lastname'].' '.$arr['firstname']);
 				$this->begindate	= bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_begin'])));
 				$this->enddate		= bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_end'])));
 
@@ -287,7 +322,8 @@ function listVacationRequestsb($idstatus, $userid, $dateb, $datee, $vpos)
 			}
 		}
 
-	$temp = new temp($idstatus, $userid, $dateb, $datee, $vpos);
+	$temp = new temp();
+	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
 	$babBody->babecho(	bab_printTemplate($temp, "vacadmb.html", "vrequestslist"));
 	return $temp->count;
 }
@@ -1191,7 +1227,7 @@ switch($idx)
 	case "lreq":
 	default:
 		$babBody->title = bab_translate("Requests vacations list");
-		listVacationRequestsb(bab_rp('idstatus'), bab_rp('userid'), bab_rp('dateb'), bab_rp('datee'), bab_rp('vpos', 0));
+		listVacationRequestsb();
 		$babBody->addItemMenu("lreq", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=lreq");
 		$babBody->addItemMenu("dreq", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=dreq");
 		$babBody->addItemMenu("reqx", bab_translate("Export"), $GLOBALS['babUrlScript']."?tg=vacadmb&idx=reqx");

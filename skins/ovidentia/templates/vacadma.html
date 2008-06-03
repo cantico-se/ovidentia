@@ -137,7 +137,7 @@ function dateEnd(day, month, year)
 
 
 <!--#begin rightsedit -->
-<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
 <script type="text/javascript">
 <!--
 function use_rules_change(obj)
@@ -166,10 +166,17 @@ var tb_fixed = document.getElementById('vac_right_fixed');
 	}
 }
 
-function calwin(callback)
+function calwin(linkobj)
 {
 	bab_dialog.selectdate(function(arr) {
-		document.forms['rightsedit'].elements[callback].value = arr['day']+'-'+arr['month']+'-'+arr['year'];
+	
+		var intput = linkobj;
+		
+		while (intput.nodeName != 'INPUT') {
+ 			intput = intput.nextSibling;
+		}
+	
+		intput.value = arr['day']+'-'+arr['month']+'-'+arr['year'];
 	});
 }
 
@@ -325,10 +332,10 @@ function group_delete_selected() {
 			<tr> 
 				<td align="right">{ t_period }:</td>
 				<td> 
-					<a href="javascript:calwin('date_begin')">{ t_date_begin }</a>
+					<a href="#" onclick="calwin(this);return false;">{ t_date_begin }</a>
 					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />
 
-					&nbsp;<a href="javascript:calwin('date_end')">{ t_date_end }</a>
+					&nbsp;<a href="#" onclick="calwin(this);return false;">{ t_date_end }</a>
 					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />
 				</td>
 			</tr>
@@ -540,10 +547,10 @@ function group_delete_selected() {
 						<br />
 						<p>{ t_periodvalid_help1 }</p>
 						<p>
-						<a href="javascript:calwin('date_begin_valid')">{ t_date_begin }</a>
+						<a href="#" onclick="calwin(this);return false;">{ t_date_begin }</a>
 						<input type="text" name="date_begin_valid" size="10" maxlength="10" value="{ arr[date_begin_valid] }" />
 						 &nbsp; 
-						<a href="javascript:calwin('date_end_valid')">{ t_date_end }</a>
+						<a href="#" onclick="calwin(this);return false;">{ t_date_end }</a>
 						<input type="text" name="date_end_valid" size="10" maxlength="10" value="{ arr[date_end_valid] }" />
 						</p>
 						<p>{ t_periodvalid_help2 }</p>
@@ -566,16 +573,24 @@ function group_delete_selected() {
 						
 						<p>{ t_right_inperiod }</p>
 							
-						<p><select name="right_inperiod">
-								<option value="1">{ t_inperiod }</option>
-								<option value="2">{ t_outperiod }</option>
-							</select>
-							
-						{ t_period_rule } : <a href="javascript:calwin('period_start')">{ t_period_start }</a>
-							<input type="text" name="period_start" size="10" maxlength="10" value="{ arr[period_start] }" />
-
-							&nbsp;<a href="javascript:calwin('period_end')">{ t_period_end }</a>
-							<input type="text" name="period_end" size="10" maxlength="10" value="{ arr[period_end] }" />
+						<div id="bab_vac_rights_inperiod_contener">
+						<!--#in getnextinperiod -->
+							<p><select name="right_inperiod[]">
+									<!--#if right_inperiod "== 2" -->
+									<option value="1">{ t_inperiod }</option>
+									<option value="2" selected="selected">{ t_outperiod }</option>
+									<!--#else right_inperiod -->
+									<option value="1" selected="selected">{ t_inperiod }</option>
+									<option value="2">{ t_outperiod }</option>
+									<!--#endif right_inperiod -->
+								</select>{ t_period_rule } : <a href="#" onclick="calwin(this);return false;">{ t_period_start }</a><input type="text" name="period_start[]" maxlength="10" value="{ period_start }" /><a href="#" onclick="calwin(this);return false;">{ t_period_end }</a><input type="text" name="period_end[]" maxlength="10" value="{ period_end }" /><!--#if removebutton --><a href="#" onclick="bab_vac_rights_inperiod_remove(this.parentNode);return false;"><img src="{ babSkinPath }images/Puces/PuceDelete.png" alt="" /></a>
+								<!--#endif removebutton -->
+							</p>
+						<!--#endin getnextinperiod -->
+						</div>
+						
+						<p>
+							<a href="#" onclick="bab_vac_rights_inperiod_add(this.parentNode);return false;"><img src="{ babSkinPath }images/Puces/edit_add.png" alt="" align="absmiddle" />&nbsp;{ t_add_period }</a>
 						</p>
 
 						<!--#if arr[validoverlap] -->
@@ -586,6 +601,81 @@ function group_delete_selected() {
 							
 						
 						</fieldset>
+
+						<script type="text/javascript">
+						
+							function bab_vac_rights_inperiod_add() {
+							
+								var p = document.createElement('p');
+								var sel = document.createElement('select');
+								sel.name = 'right_inperiod[]';
+								
+								var opt1 = document.createElement('option');
+								opt1.appendChild(document.createTextNode('{ t_inperiod_js }'));
+								opt1.value='1';
+								sel.appendChild(opt1);
+								
+								var opt2 = document.createElement('option');
+								opt2.appendChild(document.createTextNode('{ t_outperiod_js }'));
+								opt2.value='2';
+								sel.appendChild(opt2);
+								
+								p.appendChild(sel);
+								
+								p.appendChild(document.createTextNode('{ t_period_rule } : '));
+								
+								var a1 = document.createElement('a');
+								a1.href='#';
+								a1.appendChild(document.createTextNode('{ t_period_start }'));
+								Event.observe(a1, 'click', function(evt) {
+									calwin(Event.element(evt));
+									Event.stop(evt);
+								}, false);
+								p.appendChild(a1);
+								
+								var input1 = document.createElement('input');
+								input1.name = 'period_start[]';
+								input1.maxlength = 10;
+								p.appendChild(input1);
+								
+								var a2 = document.createElement('a');
+								a2.href='#';
+								a2.appendChild(document.createTextNode('{ t_period_end }'));
+								Event.observe(a2, 'click', function(evt) {
+									calwin(Event.element(evt));
+									Event.stop(evt);
+								}, false);
+								p.appendChild(a2);
+								
+								var input2 = document.createElement('input');
+								input2.name = 'period_end[]';
+								input2.maxlength = 10;
+								p.appendChild(input2);
+								
+								var a3 = document.createElement('a');
+								a3.href='#';
+								Event.observe(a3, 'click', function(evt) {
+									var clicked = Event.element(evt);
+									bab_vac_rights_inperiod_remove(clicked.parentNode.parentNode);
+									Event.stop(evt);
+								}, false);
+								
+								var img = document.createElement('img');
+								img.src = '{ babSkinPath }images/Puces/PuceDelete.png';
+								img.alt= '';
+								a3.appendChild(img);
+								p.appendChild(a3);
+								
+								$('bab_vac_rights_inperiod_contener').appendChild(p);
+							}
+							
+							
+							function bab_vac_rights_inperiod_remove(obj) {
+								obj.parentNode.removeChild(obj);
+							}
+						
+						
+						</script>
 
 					</td>
 				</tr>
@@ -622,20 +712,20 @@ function group_delete_selected() {
 						<p>
 							{ t_trigger_p1 } : 
 
-							<a href="javascript:calwin('trigger_p1_begin')">{ t_date_begin }</a>
+							<a href="#" onclick="calwin(this);return false;">{ t_date_begin }</a>
 							<input type="text" name="trigger_p1_begin" size="10" maxlength="10" value="{ arr[trigger_p1_begin] }" />
 							 &nbsp; 
-							<a href="javascript:calwin('trigger_p1_end')">{ t_date_end }</a>
+							<a href="#" onclick="calwin(this);return false;">{ t_date_end }</a>
 							<input type="text" name="trigger_p1_end" size="10" maxlength="10" value="{ arr[trigger_p1_end] }" />
 						</p>
 
 						<p>
 							{ t_trigger_p2 } : 
 
-							<a href="javascript:calwin('trigger_p2_begin')">{ t_date_begin }</a>
+							<a href="#" onclick="calwin(this);return false;">{ t_date_begin }</a>
 							<input type="text" name="trigger_p2_begin" size="10" maxlength="10" value="{ arr[trigger_p2_begin] }" />
 							 &nbsp; 
-							<a href="javascript:calwin('trigger_p2_end')">{ t_date_end }</a>
+							<a href="#" onclick="calwin(this);return false;">{ t_date_end }</a>
 							<input type="text" name="trigger_p2_end" size="10" maxlength="10" value="{ arr[trigger_p2_end] }" />
 						</p>
 
@@ -653,7 +743,6 @@ function group_delete_selected() {
 						<script type="text/javascript">
 						<!--
 						document.forms['rightsedit'].trigger_type.value = '{ arr[trigger_type] }';
-						document.forms['rightsedit'].right_inperiod.value = '{ arr[right_inperiod] }';
 						-->
 						</script>
 					</td>
@@ -715,18 +804,14 @@ function mmvac(index)
 	{
 	f.collid.options[i+3] = new Option(tabvacn[index][i],tabvaci[index][i]);
 	}
-	
-	/*
-	if( index == tpsel )
-	{
-		f.collid.options[colsel].selected = true;
-	}
-	*/
-	
-
 }
+
 mmvac(tpsel);
+
+<!--#if arr[collid] -->
 document.forms['rightsedit'].collid.value = '{ arr[collid] }';
+<!--#endif arr[collid] -->
+
 <!--#endif arr[idvr] -->
 
 function validateNum(field) {
