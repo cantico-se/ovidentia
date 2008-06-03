@@ -278,6 +278,7 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 	global $babBody;
 	$oFmFolderSet = new BAB_FmFolderSet();
 	
+	global $babBody;
 	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
 	$oCriteria = $oCriteria->_and($oId->in($versions));
 	$oFmFolderSet = $oFmFolderSet->select($oCriteria);
