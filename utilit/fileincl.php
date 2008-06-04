@@ -746,6 +746,15 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
+			
+			$oFolderFileLog = new BAB_FolderFileLog();
+			$oFolderFileLog->setIdFile($idf);
+			$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
+			$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
+			$oFolderFileLog->setAction(BAB_FACTION_OTHER);
+			$oFolderFileLog->setComment(bab_translate("Initial upload"));
+			$oFolderFileLog->setVersion('1.0');
+			$oFolderFileLog->save();
 		}
 
 		if( count($otags))
