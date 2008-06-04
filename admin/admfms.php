@@ -278,14 +278,11 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 	global $babBody;
 	$oFmFolderSet = new BAB_FmFolderSet();
 	
-	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-	$oId		=& $oFmFolderSet->aField['iId'];
-	
-	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+	$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
+	$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
 
-	$aFolderId = array_merge($notifies, $actives, $versions, $bhides);
-	
-	$oCriteria = $oCriteria->_and($oId->in($aFolderId));
+	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
+	$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 	$oFmFolderSet->select($oCriteria);
 	
 	while(null !== ($oFmFolder = $oFmFolderSet->next()))
