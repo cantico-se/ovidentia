@@ -2564,6 +2564,5 @@
 <string id="Failed to write file to disk.">Impossible d'écrire le fichier sur le disque.</string>
 <string id="Unknown File Error.">Erreur de fichier inconnue.</string>
 <string id="Add a test period">Ajouter une période de test</string>
-
-
+<string id="Initial upload">Chargement initial</string>
 </fr>
