@@ -1814,8 +1814,6 @@ function updateVacationRight()
 						VALUES 
 							( 
 							".$babDB->quote($id).",
-							".$babDB->quote($post['period_start']).", 
-							".$babDB->quote($post['period_end']).", 
 							".$babDB->quote($validoverlap).", 
 							".$babDB->quote((int) $post['trigger_nbdays_min']).", 
 							".$babDB->quote((int) $post['trigger_nbdays_max']).", 
