@@ -1580,7 +1580,7 @@ CREATE TABLE `bab_vac_rights_rules` (
   `trigger_p2_end` date NOT NULL,
   `trigger_overlap` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `id_right` (`id_right`,`period_start`,`period_end`),
+  KEY `id_right` (`id_right`),
   KEY `trigger_type` (`trigger_type`)
 );
 
