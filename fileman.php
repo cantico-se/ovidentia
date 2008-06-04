@@ -29,6 +29,78 @@ require_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
 
 
+
+/*
+ * Called by ajax in the the upload fileform
+ */
+class BAB_GetHtmlUploadBlock
+{
+	var $iBlockNbr		= 0;
+	var $sName			= '';
+	var $sDescription	= '';
+	var $sKeywords		= '';
+	var $sFieldname		= '';
+	var $sAttribute		= '';
+	var $sYes			= '';
+	var $sNo			= '';
+
+	var $descval		= '';
+	var $keysval		= '';
+	
+	var $oResult		= false;
+	var $iCount			= 0;
+	
+	function BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr)
+	{
+		$this->iBlockNbr		= (int) bab_rp('iBlockNbr', 0);
+		$this->sName			= bab_translate("Name");
+		$this->sDescription		= bab_translate("Description");
+		$this->sKeywords		= bab_toHtml(bab_translate("Keywords"));
+		$this->sAttribute		= bab_translate("Read only");
+		$this->sYes				= bab_translate("Yes");
+		$this->sNo				= bab_translate("No");
+		
+		global $babDB;
+		
+		if($sGr == 'Y')
+		{
+			$this->oResult = $babDB->db_query('select * from ' . BAB_FM_FIELDS_TBL . ' where id_folder = ' . $babDB->quote($iIdRootFolder));
+			$this->iCount = $babDB->db_num_rows($this->oResult);
+		}
+		else
+		{
+			$this->iCount = 0;
+		}
+	}
+	
+	function getNextField()
+	{
+		global $babDB;
+		static $i = 0;
+		
+		if($i < $this->iCount)
+		{
+			$arr = $babDB->db_fetch_array($this->oResult);
+			$this->fieldname = bab_translate($arr['name']);
+			$this->field = 'field'.$arr['id'];
+			$this->fieldval = bab_toHtml($arr['defaultval']);
+			$i++;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function getHtml()
+	{
+		return bab_printTemplate($this, 'fileman.html', "uploadBlock");
+	}
+}
+
+
+
 class listFiles
 {
 	var $db;
@@ -1708,16 +1780,10 @@ function displayAddFileForm()
 		
 	class temp
 	{
-		var $name;
-		var $description;
-		var $keywords;
 		var $add;
-		var $attribute;
 		var $path;
 		var $id;
 		var $gr;
-		var $yes;
-		var $no;
 		var $maxfilesize;
 		var $descval;
 		var $keysval;
@@ -1730,13 +1796,7 @@ function displayAddFileForm()
 		function temp()
 		{
 			global $babBody, $babDB;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->keywords = bab_translate("Keywords");
 			$this->add = bab_translate("Add");
-			$this->attribute = bab_translate("Read only");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
 			$this->t_warnmaxsize = bab_translate("File size must not exceed");
 			$this->t_add_field = bab_translate("Attach another file");
 			$this->t_remove_field = bab_translate("Remove");
@@ -1761,44 +1821,39 @@ function displayAddFileForm()
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			$this->descval = (!is_null($description)) ? bab_toHtml($description[0]) : '';
 			$this->keysval = (!is_null($keywords)) ? bab_toHtml($keywords[0]) : '';
-			if($this->gr == 'Y')
-			{
-				$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$babDB->db_escape_string($this->id)."'");
-				$this->count = $babDB->db_num_rows($this->res);
-			}
-			else
-			{
-				$this->count = 0;
-			}
+
 			$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
 			$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 			$babBody->addStyleSheet('ajax.css');
-		}
-		
-
-		function getnextfield()
-		{
-			global $babDB;
-			static $i = 0;
-			if($i < $this->count)
-			{
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldname = bab_translate($arr['name']);
-				$this->field = 'field'.$arr['id'];
-				$this->fieldval = bab_toHtml($arr['defaultval']);
-				$i++;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			
+			$oGetHtmlUploadBlock = new BAB_GetHtmlUploadBlock($this->id, $this->gr);
+			$this->sUploadBlock = $oGetHtmlUploadBlock->getHtml();
 		}
 	}
 
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, 'fileman.html', "addfile"));
 }
+
+/*
+ * Called in ajax by the filemanager on upload form
+ */
+function getUploadBlock()
+{
+	$oFileManagerEnv =& getEnvObject();
+	
+	if(!canUpload($oFileManagerEnv->sRelativePath))
+	{
+		die();
+	}
+	
+	$iIdRootFolder	= (int) bab_rp('id', 0); 
+	$sGr			= (string) bab_rp('gr', '');
+	
+	$oGetHtmlUploadBlock = new BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr);
+	die($oGetHtmlUploadBlock->getHtml());
+}
+
 
 
 function getFile()
@@ -3804,6 +3859,11 @@ switch($idx)
 
 	case 'disk':
 		showDiskSpace();
+		break;
+
+	/* Called in ajax by the filemanager */
+	case 'GetUploadBlock':
+		GetUploadBlock();
 		break;
 		
 	default:
