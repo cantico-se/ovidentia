@@ -81,7 +81,7 @@ class BAB_GetHtmlUploadBlock
 		if($i < $this->iCount)
 		{
 			$arr = $babDB->db_fetch_array($this->oResult);
-			$this->fieldname = bab_translate($arr['name']);
+			$this->sFieldname = bab_translate($arr['name']);
 			$this->field = 'field'.$arr['id'];
 			$this->fieldval = bab_toHtml($arr['defaultval']);
 			$i++;
