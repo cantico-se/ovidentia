@@ -282,9 +282,12 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 	$oId		=& $oFmFolderSet->aField['iId'];
 	
 	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
-	$oCriteria = $oCriteria->_and($oId->in($versions));
-	$oFmFolderSet->select($oCriteria);
 
+	$aFolderId = array_merge($notifies, $actives, $versions, $bhides);
+	
+	$oCriteria = $oCriteria->_and($oId->in($aFolderId));
+	$oFmFolderSet->select($oCriteria);
+	
 	while(null !== ($oFmFolder = $oFmFolderSet->next()))
 	{
 		if(is_array($notifies) && count($notifies) > 0 && in_array($oFmFolder->getId(), $notifies))
