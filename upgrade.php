@@ -4534,7 +4534,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade to 6.6.96
+	 * Upgrade to 6.6.95
 	 */
 	if (!bab_isTable(BAB_VAC_RIGHTS_INPERIOD_TBL))  {
 		$babDB->db_query("
