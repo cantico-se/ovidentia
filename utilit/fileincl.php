@@ -27,11 +27,13 @@ require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
 define('BAB_FVERSION_FOLDER', 'OVF');
 
-/* 0 -> other, 1 -> edit, 2 -> unedit, 3 -> commit */
-define('BAB_FACTION_OTHER'	, 0);
-define('BAB_FACTION_EDIT'	, 1);
-define('BAB_FACTION_UNEDIT'	, 2);
-define('BAB_FACTION_COMMIT'	, 3);
+/* 0 -> other, 1 -> edit, 2 -> unedit, 3 -> commit, 4 -> initial upload */
+define('BAB_FACTION_OTHER',				0);
+define('BAB_FACTION_EDIT',				1);
+define('BAB_FACTION_UNEDIT',			2);
+define('BAB_FACTION_COMMIT',			3);
+define('BAB_FACTION_INITIAL_UPLOAD',	4);
+
 $babFileActions = array(bab_translate("Other"), bab_translate("Edit file"),
 bab_translate("Unedit file"), bab_translate("Commit file"));
 
@@ -751,7 +753,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$oFolderFileLog->setIdFile($idf);
 			$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
 			$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
-			$oFolderFileLog->setAction(BAB_FACTION_OTHER);
+			$oFolderFileLog->setAction(BAB_FACTION_INITIAL_UPLOAD);
 			$oFolderFileLog->setComment(bab_translate("Initial upload"));
 			$oFolderFileLog->setVersion('1.0');
 			$oFolderFileLog->save();
