@@ -2385,11 +2385,29 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	
 			$count = $babDB->db_num_rows($res2);
 	
+			$type_day       = $date_begin->cloneDate();
+			$type_day_end   = $date_begin->cloneDate();
+	
 			$ventilation = array();
 			while ($arr = $babDB->db_fetch_assoc($res2))
 				{
 				$ventilation[] = $arr;
+				
+				$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
+				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
+					if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
+							bab_vac_typeColorStack(
+									$row['id'], 
+									array(
+											'id_type'       => $arr['type'], 
+											'color'         => $arr['color']
+									)
+							);
+					}
+					$type_day->add(12, BAB_DATETIME_HOUR);
+				}
 			}
+
 		}
 
 		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
