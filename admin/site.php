@@ -1625,6 +1625,10 @@ function siteUpdate_menu1()
 	$res = $babDB->db_query($req);
 	if (0 != $babDB->db_affected_rows($res)) {
 		bab_siteMap::clearAll();
+		
+		// redirect on list, the $babLanguage is not up to date when the sitemap is generated
+		header('location:'.$GLOBALS['babUrlScript'].'?tg=sites&idx=list');
+		exit;
 	}
 
 	return $_POST['item'];
