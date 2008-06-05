@@ -4583,11 +4583,60 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	global $babBody, $babDB;
+	$sQuery = 
+		'SELECT 
+			`id` iId,
+			`created` sCreated,
+			`author` iIdAuthor
+		FROM ' .
+			BAB_FILES_TBL;
 	
+	$oResultFile = $babDB->db_query($sQuery);
+	if(false !== $oResultFile)
+	{
+		$aFileDatas = array();
+		while(false !== ($aFileDatas = $babDB->db_fetch_assoc($oResultFile)))
+		{
+			$sQuery = 
+				'SELECT 
+					`action` iAction
+				FROM ' .
+					BAB_FM_FILESLOG_TBL . ' ' .
+				'WHERE ' .
+					'id_file = ' . $babDB->quote($aFileDatas['iId']) . ' AND ' . 
+					'action = ' .  $babDB->quote(4);
 	
-	
-	
-	
+			// BAB_FACTION_INITIAL_UPLOAD ==> 4
+				
+			$oResultFileLog = $babDB->db_query($sQuery);
+			if(false !== $oResultFileLog)
+			{
+				$iNumRows = $babDB->db_num_rows($oResultFileLog);
+				if(0 == $iNumRows)
+				{
+					$sQuery = 
+						'INSERT INTO ' . BAB_FM_FILESLOG_TBL . ' ' .
+							'(' .
+								'`id`, ' .
+								'`id_file`, `date`, `author`, ' .
+								'`action`, `comment`, `version`' .
+							') ' .
+						'VALUES ' . 
+							'(\'\', ' . 
+								$babDB->quote($aFileDatas['iId']) . ', ' . 
+								$babDB->quote($aFileDatas['sCreated']) . ', ' . 
+								$babDB->quote($aFileDatas['iIdAuthor']) . ', ' . 
+								$babDB->quote(4) . ', ' . 
+								$babDB->quote(bab_translate("Initial upload")) . ', ' . 
+								$babDB->quote('1.0') . 
+							')'; 
+							
+					$babDB->db_query($sQuery);
+				}
+			}
+		}
+	}	
 	return true;
 }
 ?>
