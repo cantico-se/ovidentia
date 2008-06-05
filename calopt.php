@@ -244,7 +244,7 @@ function calendarOptions($calid, $urla)
 			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->calid = $calid;
-			$this->urla = $urla;
+			$this->urla = bab_toHtml($urla);
 			$this->calweekdisptxt = bab_translate("Days to display");
 			$this->calweekworktxt = bab_translate("Working days");
 			$this->t_working_hours = bab_translate("Define working hours");
@@ -532,7 +532,7 @@ function unload()
 		function temp()
 			{
 			$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
-			$this->backurl = $_POST['backurl'].implode(',',$selected);
+			$this->backurl = bab_toHtml($_POST['backurl'].implode(',',$selected));
 			$this->message = bab_translate("Successful recording");
 			}
 		}
