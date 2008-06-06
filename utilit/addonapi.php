@@ -949,35 +949,33 @@ function bab_printTemplate( &$class, $file, $section="")
 	$tplfound = false;
 	
 	if( isset($GLOBALS['babUseNewTemplateParser']) && $GLOBALS['babUseNewTemplateParser'] === false)
-		{
+	{
 		$tpl = new babTemplate(); /* old template parser */
-		}
+	}
 	else
-		{
+	{
 		$tpl = new bab_Template();
+		if (bab_TemplateCache::get('skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section)) {
+			return $tpl->printTemplate($class, 'skins/'.$GLOBALS['babSkin'].'/templates/'. $file, $section);
 		}
+		if (bab_TemplateCache::get($babSkinPath.'templates/'.$file, $section)) {
+			return $tpl->printTemplate($class, $babSkinPath.'templates/'.$file, $section);
+		}
+		if (bab_TemplateCache::get($babInstallPath.'skins/ovidentia/templates/'.$file, $section)) {
+			return $tpl->printTemplate($class, $babInstallPath.'skins/ovidentia/templates/'.$file, $section);
+		}
+	}
 
 	$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
 	if( file_exists( $filepath ) )
 		{
 		if( empty($section))
 			{
-//				$start = microtime(true);
-//				$t = $tpl->printTemplate($class,$filepath, '');
-//				echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
-//				return $t;
 				return $tpl->printTemplate($class,$filepath, '');
 			}
 
 		$arr = $tpl->getTemplates($filepath);
-		for( $i=0; $i < count($arr); $i++)
-			{
-			if( $arr[$i] == $section )
-				{
-				$tplfound = true;
-				break;
-				}
-			}
+		$tplfound = in_array($section, $arr);
 		}
 	
 	if( !$tplfound )
@@ -987,22 +985,11 @@ function bab_printTemplate( &$class, $file, $section="")
 			{
 			if( empty($section))
 				{
-//					$start = microtime(true);
-//					$t = $tpl->printTemplate($class,$filepath, '');
-//					echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
-//					return $t;
 					return $tpl->printTemplate($class,$filepath, '');
 				}
 
 			$arr = $tpl->getTemplates($filepath);
-			for( $i=0; $i < count($arr); $i++)
-				{
-				if( $arr[$i] == $section )
-					{
-					$tplfound = true;
-					break;
-					}
-				}
+			$tplfound = in_array($section, $arr);
 			}
 
 		}
@@ -1014,22 +1001,11 @@ function bab_printTemplate( &$class, $file, $section="")
 			{
 			if( empty($section))
 				{
-//					$start = microtime(true);
-//					$t = $tpl->printTemplate($class,$filepath, '');
-//					echo $file . ':' . $section . '=' . (int)((microtime(true) - $start) * 1000000) . "\n";
-//					return $t;
 					return $tpl->printTemplate($class,$filepath, '');
 				}
 
 			$arr = $tpl->getTemplates($filepath);
-			for( $i=0; $i < count($arr); $i++)
-				{
-				if( $arr[$i] == $section )
-					{
-					$tplfound = true;
-					break;
-					}
-				}
+			$tplfound = in_array($section, $arr);
 			}
 
 		}
@@ -1256,7 +1232,7 @@ function bab_detachUserFromGroup($iduser, $idgroup)
 
 /**
  * Get user infos from directory and additionnal parameters specific to registered users
- * return all infos necessary to use bab_uppdateUserById()
+ * return all infos necessary to use bab_updateUserById()
  * warning, password is not returned, $info['password_md5'] is returned instead
  *
  * 'changepwd', 'jpegphoto' are not modifiable
@@ -1449,6 +1425,8 @@ function bab_searchEngineInfos() {
  * $instance->fetchChildKey()
  *
  * @see bab_registry
+ * 
+ * @return bab_Registry
  */
 function bab_getRegistryInstance() {
 	static $_inst = null;
