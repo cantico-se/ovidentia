@@ -1583,6 +1583,7 @@ function listFiles()
 				$this->urlget	= bab_toHtml($sUrlFile . '&sAction=getFile');
 				$this->cuturl	= bab_toHtml($sUrlFile . '&sAction=cutFile');
 				$this->delurl	= bab_toHtml($sUrlFile . '&sAction=delFile');
+				$this->fileid	= $arr['id'];
 				
 				$this->updateFileInfo($arr);
 				
@@ -2255,7 +2256,17 @@ function viewFile()
 
 				$this->fsizetxt = bab_translate("Size");
 				
-				$fullpath = BAB_FileManagerEnv::getCollectivePath($oFolderFile->getDelegationOwnerId()) . $oFolderFile->getPathName() . $oFolderFile->getName();
+				$sUploadPath = '';
+				if(!$oFileManagerEnv->userIsInPersonnalFolder())
+				{
+					$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
+				}
+				else 
+				{
+					$sUploadPath = $oFileManagerEnv->getRootFmPath();
+				}
+				
+				$fullpath = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 				if(file_exists($fullpath)) 
 				{
 					$fstat = stat($fullpath);
