@@ -82,7 +82,7 @@ function ajaxResponse(oTransport)
 		{
 			new Insertion.After(oLastChild, oTransport.responseText);
 			
-			if(null != $("idtags" + oForm.files_fields.value)
+			if(null != $("idtags" + oForm.files_fields.value))
 			{
 				aR(parseInt(oForm.files_fields.value));
 			}
@@ -165,7 +165,7 @@ function remove_field()
 </form>
 <script type="text/javascript">
 <!--
-	if(null != $("idtags0")
+	if(null != $("idtags0"))
 	{
 		aR(0);
 	}
