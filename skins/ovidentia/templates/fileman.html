@@ -82,7 +82,10 @@ function ajaxResponse(oTransport)
 		{
 			new Insertion.After(oLastChild, oTransport.responseText);
 			
-			aR(parseInt(oForm.files_fields.value));
+			if(null != $("idtags" + oForm.files_fields.value)
+			{
+				aR(parseInt(oForm.files_fields.value));
+			}
 			
 			oForm.files_fields.value = parseInt(oForm.files_fields.value) + 1;
 		
@@ -162,7 +165,10 @@ function remove_field()
 </form>
 <script type="text/javascript">
 <!--
-	aR(0);
+	if(null != $("idtags0")
+	{
+		aR(0);
+	}
 -->
 </script>
 <!--#end addfile -->
@@ -182,6 +188,7 @@ function remove_field()
 			<input type="text" name="description[]" size="50" maxlength="255" value="{ descval }">
 		</td>
 	</tr>
+<!--#if bUseKeyword -->
 	<tr> 
 		<td align="right">{ sKeywords }</td>
 		<td>
@@ -189,6 +196,7 @@ function remove_field()
 			<div align="left" id="tags-ac{ iBlockNbr }" class="auto_complete"></div>
 		</td>
 	</tr>
+<!--#endif bUseKeyword -->
 	<!--#in getNextField -->
 	<tr> 
 		<td align="right">{ sFieldname }</td>
