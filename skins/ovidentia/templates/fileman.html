@@ -663,10 +663,12 @@ window.focus();
 <td width="30%" >{ description }</td>
 <td>{ descvalhtml }</td>
 </tr>
+<!--#if bUseKeyword -->
 <tr>
 <td>{ t_keywords }</td>
 <td>{ keysvalhtml }</td>
 </tr>
+<!--#endif bUseKeyword -->
 <!--#in getnextfield -->
 <tr>
 <td>{ field }</td>
@@ -735,6 +737,7 @@ window.focus();
 <input type="text" name="description" size="60" maxlength="255" value="{ descvalhtml }" />
 </td>
 </tr>
+<!--#if bUseKeyword -->
 <tr> 
 <td align="right">{ keywords }</td>
 <td>
@@ -742,6 +745,7 @@ window.focus();
 <div align="left" id="tags-ac" class="auto_complete">
 </td>
 </tr>
+<!--#endif bUseKeyword -->
 <!--#in getnextfield -->
 <tr> 
 <td align="right">{ field }</td>
@@ -848,9 +852,8 @@ window.focus();
 <script type="text/javascript">
 <!--
 
-//window.onload = function()
-//{
-
+if(null != $('idtags'))
+{
   aTokens = [','];
   aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
   
@@ -870,8 +873,7 @@ window.focus();
       }
     }
   );
-  
-//}
+}
 
 //-->
 </script>
