@@ -50,6 +50,8 @@ class BAB_GetHtmlUploadBlock
 	var $oResult		= false;
 	var $iCount			= 0;
 	
+	var $bUseKeyword	= false;
+	
 	function BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr)
 	{
 		$this->iBlockNbr		= (int) bab_rp('iBlockNbr', 0);
@@ -59,6 +61,7 @@ class BAB_GetHtmlUploadBlock
 		$this->sAttribute		= bab_translate("Read only");
 		$this->sYes				= bab_translate("Yes");
 		$this->sNo				= bab_translate("No");
+		$this->bUseKeyword		= ('Y' == $sGr);
 		
 		global $babDB;
 		
