@@ -2208,6 +2208,8 @@ function viewFile()
 		var $fieldid;
 		var $fieldvalhtml;
 
+		var $bUseKeyword = false;
+		
 		function temp($oFmFolder, $oFolderFile, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion)
 		{
 			global $babBody, $babDB;
@@ -2242,6 +2244,7 @@ function viewFile()
 				$this->id = $oFileManagerEnv->iId;
 				
 				$this->gr = $oFolderFile->getGroup();
+				$this->bUseKeyword = ('Y' == $oFolderFile->getGroup());
 				$this->path = bab_toHtml($oFileManagerEnv->sPath);
 				$this->file = bab_toHtml($oFolderFile->getName());
 				$GLOBALS['babBody']->setTitle($oFolderFile->getName() .( ($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
