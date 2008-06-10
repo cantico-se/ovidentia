@@ -339,6 +339,12 @@ function bab_emptyCalendar( $idcal )
 
 }
 
+function day_push(&$arr, $iIdUser, $day) {
+	$tmp = bab_getWHours($iIdUser, $day);
+	if ($tmp) {
+		$arr[] = $day;
+	}
+}
 
 /**
  * @param int		$iIdUser
@@ -346,15 +352,7 @@ function bab_emptyCalendar( $idcal )
  */
 function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
 {
-
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-
-	function day_push(&$arr, $iIdUser, $day) {
-		$tmp = bab_getWHours($iIdUser, $day);
-		if ($tmp) {
-			$arr[] = $day;
-		}
-	}
 
 	$arr = array();
 
