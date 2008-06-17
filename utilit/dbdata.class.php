@@ -175,6 +175,11 @@ class bab_dbdata {
 	
 	/**
 	 * Insert Row into table
+	 *
+	 * Method can be 'db_query' (default) or 'db_queryWem' query without error manager
+	 * the db_queryWem method is available in this function since ovidentia 6.6.96
+	 * 
+	 *
 	 * @param	string	[$method]
 	 * @return boolean|int
 	 */
