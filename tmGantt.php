@@ -339,6 +339,7 @@ class BAB_TM_GanttBase
 	{
 		$oTaskTimeManager 			=& getTaskTimeManager();
 		$oGanttTask					= $oTaskTimeManager->getTask($aTask);
+			
 		$iTaskPlannedStartDateTs	= $oGanttTask->m_oPlannedStartDate->getTimeStamp();
 		$iTaskPlannedEndDateTs		= $oGanttTask->m_oPlannedEndDate->getTimeStamp();
 		
@@ -1102,9 +1103,9 @@ class BAB_TM_GanttTaskBase
 		{
 			$sToolTip .= 
 				'<p><strong>' . bab_translate("planned_date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['plannedStartDate'])) . '</p>' .
-				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate'])) . '</p>' .
+				'<p><strong>' . bab_translate("started_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate'])) . '</p>' .
 				'<p><strong>' . bab_translate("planned_date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['plannedEndDate'])) . '</p>' .
-				'<p><strong>' . bab_translate("date_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['endDate'])) . '</p>' .
+				'<p><strong>' . bab_translate("finished_to") . ': </strong>' . bab_shortDate(bab_mktime($aTask['endDate'])) . '</p>' .
 				'<p><strong>' . bab_translate("Completion") . ': </strong>' . $aTask['iCompletion'] . ' %' . '</p>';
 		}
 		else
@@ -1297,48 +1298,11 @@ if($oRemainEndDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $oRemainS
 				$this->addPeriod($oPeriod);
 			}
 			
-/*			
-			$iIsEqual	= 0;
-			$iIsBefore	= -1;
-			$iIsAfter	= 1;
-			
-			$oStart	= null;
-			$oEndDate = null;
-			
-			
-			if($iIsAfter == BAB_DateTime::compare($oRemainEndDate, $oTodayDate))
-			{
-echo 
-	' oRemainEndDate ==> ' . $oRemainEndDate->getIsoDateTime() .
-	' est aprés ' .
-	' oTodayDate ==> ' . $oTodayDate->getIsoDateTime() .
-	'<br />';
-				$oEndDate = $oRemainEndDate;
-			}
-			else 
-			{
-echo 
-	' oRemainEndDate ==> ' . $oRemainEndDate->getIsoDateTime() .
-	' est avant ' .
-	' oTodayDate ==> ' . $oTodayDate->getIsoDateTime() .
-	'<br />';
-				$oEndDate = $oTodayDate->cloneDate();
-			}
-//*/			
-			
-			
-			
-			
-				
 			//Raccorde la date de fin de la tâche à la date de début de ce qui reste à faire
 if($oTodayDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $this->m_oTaskTime->getEndDateTimeStamp() < $this->m_iDisplayedEndDateTs)
-			{/*	
-echo 
-	'Début affichage ==> ' . $this->getEndDateTimeStamp() .
-	'Fin affichage ==> ' . $oTodayDate->getTimeStamp() .
-	'<br />';*/
+			{
 				$oPeriod = $this->createPeriod($this->m_oTaskTime->getEndDateTimeStamp(), 
-				$oTodayDate->getTimeStamp());
+					$oTodayDate->getTimeStamp());
 				$oPeriod->setClassName('ganttTaskFromTaskToRemaing');
 				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
 				$oPeriod->setTop($oPeriod->getTop() + ($oPeriod->getHeight() / 2));

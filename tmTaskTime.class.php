@@ -69,6 +69,10 @@ class BAB_TM_TaskTimeManager
 					$oTaskTime = new BAB_TM_TaskTimeDate();
 				}
 			}
+			else
+			{
+				$oTaskTime = new BAB_TaskTimeToDoCheckPoint();	
+			}
 			
 			if(!is_null($oTaskTime))
 			{
@@ -278,6 +282,34 @@ class BAB_TM_TaskTime
 			}
 			while(false === $bFound);
 		}
+	}
+}
+
+class BAB_TaskTimeToDoCheckPoint extends BAB_TM_TaskTime
+{
+	function BAB_TaskTimeToDoCheckPoint()
+	{
+		parent::BAB_TM_TaskTime();
+	}
+
+	function init($aTask)
+	{
+		$sIsoPlannedStartDate	= (string) $aTask['plannedStartDate'];
+		$sIsoPlannedEndDate		= (string) $aTask['plannedEndDate'];
+		$sIsoStartDate			= (string) $aTask['startDate'];
+		$sIsoEndDate			= (string) $aTask['endDate'];
+		$this->m_iIdTask		= (int) $aTask['iIdTask'];
+
+		$this->m_oPlannedStartDate	= BAB_DateTime::fromIsoDateTime($sIsoPlannedStartDate);
+		$this->m_oPlannedEndDate	= BAB_DateTime::fromIsoDateTime($sIsoPlannedEndDate);
+		$this->m_oStartDate			= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+		$this->m_oEndDate			= BAB_DateTime::fromIsoDateTime($sIsoEndDate);
+	}
+
+	function computeRemainingDates(&$oRemainStartDate, &$oRemainEndDate)
+	{
+		$oRemainStartDate	= $this->m_oPlannedStartDate->cloneDate();
+		$oRemainEndDate		= $this->m_oPlannedEndDate->cloneDate();
 	}
 }
 
