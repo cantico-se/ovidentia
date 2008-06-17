@@ -2460,7 +2460,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 			$description .= sprintf(
 				'<tr><td style="background:#%s">&nbsp; &nbsp;</td><td>%s</td><td>%s</td></tr>',
 				$type['color'],
-				trim($type['quantity'],'0.'),
+				rtrim($type['quantity'],'0.'),
 				$type['type']
 				);
 		}
