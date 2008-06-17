@@ -64,6 +64,34 @@ class BAB_TM_GanttLegend
 	}
 }
 
+function initFilter()
+{
+	$iIdProject	= (int) bab_rp('iIdProject', -1);
+	$sKey		= (0 === $iIdProject) ? 'tskMgrPersonnalFilter' : 'tskMgrProjectFilter';
+
+	$oFilterSessionContext = new BAB_TM_SessionContext($sKey); 
+			
+	$iTaskClass			= (int) $oFilterSessionContext->get('iTaskClass', -1);
+	$iTaskCompletion	= (int) $oFilterSessionContext->get('iTaskCompletion', -1);
+	$iIdOwner			= (int) $oFilterSessionContext->get('iIdOwner', 0);
+	$iIdProject			= (int) $oFilterSessionContext->get('iIdProject', -1);
+	$sStartDate			= (string) $oFilterSessionContext->get('sStartDate', '');			
+	$iStartHour			= (int) $oFilterSessionContext->get('iStartHour', 0);
+	$iStartMinut		= (int) $oFilterSessionContext->get('iStartMinut', 0);
+	$sEndDate			= (string) $oFilterSessionContext->get('sEndDate', '');
+	$iEndHour			= (int) $oFilterSessionContext->get('iEndHour', 0);
+	$iEndMinut			= (int) $oFilterSessionContext->get('iEndMinut', 0);
+	$sPlannedStartDate	= (string) $oFilterSessionContext->get('sPlannedStartDate', '');
+	$iPlannedStartHour	= (int) $oFilterSessionContext->get('iPlannedStartHour', 0);
+	$iPlannedStartMinut = (int) $oFilterSessionContext->get('iPlannedStartMinut', 0);
+	$sPlannedEndDate	= (string) $oFilterSessionContext->get('sPlannedEndDate', '');
+	$iPlannedEndHour	= (int) $oFilterSessionContext->get('iPlannedEndHour', 0);
+	$iPlannedEndMinut	= (int) $oFilterSessionContext->get('iPlannedEndMinut', 0);
+			
+	
+	
+}
+
 
 class BAB_TM_GanttBase
 {
@@ -255,32 +283,23 @@ class BAB_TM_GanttBase
 		
 		$this->initDates($sStartDate, $iStartWeekDay);
 		
-		$aFilters['sPlannedStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-		$aFilters['sPlannedEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
-		
 		global $babDB;
 		$this->m_result = $babDB->db_query(bab_selectForGantt($aFilters));
 		
 		if(false != $this->m_result)	
 		{
-			$oTaskTimeManager =& getTaskTimeManager();
-		
 			$iLinkType = -1;
 			$aForGantt	= array();
 			$aToProcess	= array();
 			
 			while(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
 			{
-				//bab_debug($datas);
-		
-				$aForGantt[$datas['iIdTask']]	= $datas['iIdTask'];
-				$aToProcess[$datas['iIdTask']]	= $datas['iIdTask'];
-				$bStop							= false;
-								
+				$bStop = false;
+
+				$this->isTaskDisplayableInGantt($datas, $aForGantt, $aToProcess);
 				
 				//récupére tous les descendant afin de savoir si ils sont dans la zone
 				//d'affichage 		
-				
 				while(count($aToProcess) > 0 && false === $bStop)
 				{
 					$aToProcessItem = each($aToProcess);
@@ -289,35 +308,12 @@ class BAB_TM_GanttBase
 						$aDependingTasks = array();
 						bab_getDependingTasks($aToProcessItem['value'], $aDependingTasks, $iLinkType);
 						
-		//				bab_debug($aDependingTasks);
-		//				bab_debug($aToProcessItem['value']);
-				
 						foreach($aDependingTasks as $iIdTask => $aDependingTask)
 						{
 							$aTask = array();
 							if(true === bab_getTaskForGantt($iIdTask, $aTask))
 							{
-								$oGanttTask = $oTaskTimeManager->getTask($aTask);
-								$iTaskStartDateTs	= $oGanttTask->m_oPlannedStartDate->getTimeStamp();
-								$iTaskEndDateTs		= $oGanttTask->m_oPlannedEndDate->getTimeStamp();
-		
-		//						bab_debug('iIdTask ==> ' . $iIdTask . ' ' . $oGanttTask->m_oPlannedStartDate->getIsoDateTime());
-		//						bab_debug($aToProcessItem['value']);
-		/*						
-								bab_debug(
-									'iIdTask ==> ' . $iIdTask . 
-									' sStart ==> ' . $oGanttTask->m_oPlannedStartDate->getIsoDateTime() .
-									' sEnd ==> ' . $oGanttTask->m_oPlannedEndDate->getIsoDateTime());
-		//*/						
-								
-								if($iTaskEndDateTs > $this->m_aDisplayedStartDate[0] && $iTaskStartDateTs < $this->m_aDisplayedEndDate[0])
-								{
-									$aForGantt[$iIdTask]	= $iIdTask;
-									$aToProcess[$iIdTask]	= $iIdTask;
-								}
-							
-								$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_START_TO_START);
-								$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_END_TO_START);
+								$this->isTaskDisplayableInGantt($aTask, $aForGantt, $aToProcess);
 							}
 						}
 						
@@ -330,15 +326,44 @@ class BAB_TM_GanttBase
 					}
 				}
 			}
-//			bab_debug($aForGantt);
 			$this->m_result = $babDB->db_query(bab_getSelectQueryForGanttById($aForGantt));
-			
 			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
-			
-//			$oGanttTaskManager->m_aCache = array();
 		}
 	}
 
+	function isTaskDisplayableInGantt($aTask, &$aForGantt, &$aToProcess)
+	{
+		$oTaskTimeManager 			=& getTaskTimeManager();
+		$oGanttTask					= $oTaskTimeManager->getTask($aTask);
+		$iTaskPlannedStartDateTs	= $oGanttTask->m_oPlannedStartDate->getTimeStamp();
+		$iTaskPlannedEndDateTs		= $oGanttTask->m_oPlannedEndDate->getTimeStamp();
+		
+		$iTaskStartDateTs			= $oGanttTask->getStartDateTimeStamp();
+		$iTaskEndDateTs				= $oGanttTask->getEndDateTimeStamp();
+		
+		$oRemainStartDate = null;
+		$oRemainEndDate = null;
+		$oGanttTask->computeRemainingDates($oRemainStartDate, $oRemainEndDate);
+		
+		$bRealDatesInBox = ($iTaskEndDateTs > $this->m_aDisplayedStartDate[0] && 
+			$iTaskStartDateTs < $this->m_aDisplayedEndDate[0]);
+		$bPlannedDatesInBox = ($iTaskPlannedEndDateTs > $this->m_aDisplayedStartDate[0] && 
+			$iTaskPlannedStartDateTs < $this->m_aDisplayedEndDate[0]);
+		$bRemainingDatesInBox = ($oRemainEndDate->getTimeStamp() > $this->m_aDisplayedStartDate[0] && 
+			$oRemainStartDate->getTimeStamp() < $this->m_aDisplayedEndDate[0]);
+			
+		$iIdTask = $oGanttTask->m_iIdTask;
+			
+		if($bRealDatesInBox || $bPlannedDatesInBox || $bRemainingDatesInBox)
+		{
+			$aForGantt[$iIdTask]	= $iIdTask;
+			$aToProcess[$iIdTask]	= $iIdTask;
+		}
+	
+		$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_START_TO_START);
+		$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_END_TO_START);
+	}
+	
 	function insertDependingTaskToArray($iIdTask, &$aToInsert, $iLinkType)
 	{
 		$aDependingTasks = array();

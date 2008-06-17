@@ -2091,10 +2091,8 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 		'LEFT JOIN ' . 
 			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt ON lt.idTask = t.id ' .
 		'WHERE ' . 
-			't.id = ti.idTask AND ' .
-			't.plannedEndDate >= ' . $babDB->quote($aFilters['sPlannedStartDate']) . ' AND ' .
-			't.plannedStartDate <= ' . $babDB->quote($aFilters['sPlannedEndDate']) . ' ';
-
+			't.id = ti.idTask ';
+			
 
 	if(isset($aFilters['iIdProject']))
 	{
@@ -2105,44 +2103,13 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 	{
 		$query .= 'AND ti.idOwner = ' . $babDB->quote((int) $aFilters['iIdOwner']) . ' ';
 	}
-
-	if(isset($aFilters['iTaskClass']))
-	{
-		$query .= 'AND t.class = ' . $babDB->quote((int) $aFilters['iTaskClass']) . ' ';
-	}
-
 	if(isset($aFilters['isPersonnal']))
 	{
 		$query .= 'AND ti.isPersonnal = ' . $babDB->quote(BAB_TM_YES) . ' ';
 	}
-	
-	if(isset($aFilters['bIsManager']) && false === $aFilters['bIsManager'])
-	{
-		$query .= 'AND t.participationStatus <> ' . $babDB->quote(BAB_TM_REFUSED) . ' ';
-	}
-	
-	if(isset($aFilters['iCompletion']) && -1 !== (int) $aFilters['iCompletion'])
-	{
-		$sCompletion = '= ' . $babDB->quote('100');
-		if(BAB_TM_IN_PROGRESS === (int) $aFilters['iCompletion'])
-		{
-			$sCompletion = '<> ' . $babDB->quote('100'); 
-		}
-		
-		$query .= 'AND t.completion ' . $sCompletion . ' ';
-	}
-			
 	$query .= 		
 		'GROUP BY ' .
 			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
-
-//	if(count($aOrder) > 0)
-	{
-//		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
-//		$query .= 'ORDER BY plannedEndDate ASC, iPriority ASC';
-		$query .= 'ORDER BY ps.name ASC, p.name ASC, plannedEndDate ASC, iPriority ASC';
-	}
-	
 
 //	bab_debug($query);
 //	echo $query . '<br />';
