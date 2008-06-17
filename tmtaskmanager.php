@@ -1455,10 +1455,10 @@ function displayTaskList($sIdx)
 	}
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
-	$iTaskFilter =& $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
+	$iTaskFilter = $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
 
-	$iTaskClass =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskClass');
-	$iTaskCompletion =& $oTaskFilterForm->m_oFilterSessionContext->get('iTaskCompletion');
+	$iTaskClass = $oTaskFilterForm->m_oFilterSessionContext->get('iTaskClass');
+	$iTaskCompletion = $oTaskFilterForm->m_oFilterSessionContext->get('iTaskCompletion');
 
 	global $babUrlScript;
 	$sGanttViewUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_GANTT_CHART);
@@ -2200,7 +2200,8 @@ function displayGanttChart()
 		$sStartDate = bab_rp('date', $sStartDate);
 	}
 	
-	$oGantt = new BAB_TM_Gantt($sStartDate);
+	$oGantt =& getGanttTaskInstance('BAB_TM_Gantt');
+	$oGantt->init($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));
 }
 

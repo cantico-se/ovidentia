@@ -246,7 +246,11 @@ class BAB_TM_GanttBase
 	var $m_isToday = false;
 	var $m_oTodayLine = null;
 
-	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
+	function BAB_TM_GanttBase()
+	{
+	}
+	
+	function init($sStartDate, $iStartWeekDay = 1)
 	{
 		$this->m_sTitle = bab_translate("Gantt view");
 		
@@ -849,7 +853,6 @@ $this->m_iTodayPosLineX = round(($iTodayLineTS - $iDisplayedStartDateTs) / $this
 
 
 
-
 class BAB_TM_Gantt extends BAB_TM_GanttBase
 {
 	var $m_iTaskIndex	= 1;
@@ -865,10 +868,10 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 	var $m_aPeriods				= null;
 	var $m_sGanttLegend			= '';
 	
-	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
+	function BAB_TM_Gantt()
 	{
-		parent::BAB_TM_GanttBase($sStartDate, $iStartWeekDay);
-		$this->m_oGanttTaskManager =& getGanttTaskManager($this);
+		parent::BAB_TM_GanttBase();
+		$this->m_oGanttTaskManager =& getGanttTaskManager();
 		
 		$oGanttLegend = new BAB_TM_GanttLegend();
 		$this->m_sGanttLegend = $oGanttLegend->getHtml();
@@ -928,12 +931,10 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 
 class BAB_TM_GanttTaskManager
 {
-	var $m_oGantt					= null;
-	var $m_aCache					= array();
+	var $m_aCache = array();
 	
-	function BAB_TM_GanttTaskManager($oGantt)
+	function BAB_TM_GanttTaskManager()
 	{
-		$this->m_oGantt = $oGantt;
 	}
 	
 	function getTask($aTask)
@@ -952,7 +953,7 @@ class BAB_TM_GanttTaskManager
 				case BAB_TM_CHECKPOINT:
 					$oObj = $this->handleCheckPoint();
 				case BAB_TM_TODO:
-					$oObj = $this->handleToDo($aTask);
+					$oObj = $this->handleToDo();
 				default:
 					break;	
 			}
@@ -972,33 +973,46 @@ class BAB_TM_GanttTaskManager
 	{
 		if(0 == $aTask['iDuration'])
 		{
-			return new BAB_TM_GanttTaskDate($this->m_oGantt);
+			$oObj = new BAB_TM_GanttTaskDate();
+			return $oObj;
 		}
 		else
 		{
-			return new BAB_TM_GanttTaskDuration($this->m_oGantt);
+			$oObj = new BAB_TM_GanttTaskDuration(); 
+			return $oObj; 
 		}
 	}
 	
 	function handleCheckPoint()	
 	{
-		return new BAB_TM_GanttCheckpoint($this->m_oGantt);
+		$oObj = new BAB_TM_GanttCheckpoint();
+		return $oObj; 
 	}
 	
 	function handleToDo()
 	{
-		return new BAB_TM_GanttToDo($this->m_oGantt);
+		$oObj = new BAB_TM_GanttToDo();
+		return $oObj; 
 	}
 }
 
 
-function &getGanttTaskManager($oGantt)
+function &getGanttTaskManager()
 {
 	if(!array_key_exists('babTmGanttTaskManager', $GLOBALS))
 	{
-		$GLOBALS['babTmGanttTaskManager'] = new BAB_TM_GanttTaskManager($oGantt);
+		$GLOBALS['babTmGanttTaskManager'] = new BAB_TM_GanttTaskManager();
 	}
 	return $GLOBALS['babTmGanttTaskManager'];
+}
+
+function &getGanttTaskInstance()
+{
+	if(!array_key_exists('babTmGantt', $GLOBALS))
+	{
+		$GLOBALS['babTmGantt'] = new BAB_TM_Gantt();
+	}
+	return $GLOBALS['babTmGantt'];
 }
 
 
@@ -1006,15 +1020,15 @@ class BAB_TM_GanttTaskBase
 {
 	var	$m_iDisplayedStartDateTs 	= 0;
 	var	$m_iDisplayedEndDateTs 		= 0;
-	var $m_oGantt 					= null;
 	var $m_aPeriods					= array();
 	var $m_sToolTip					= '';
 	
-	function BAB_TM_GanttTaskBase($oGantt)
+	function BAB_TM_GanttTaskBase()
 	{
-		$this->m_iDisplayedStartDateTs	= $oGantt->m_aDisplayedStartDate[0];
-		$this->m_iDisplayedEndDateTs	= $oGantt->m_aDisplayedEndDate[0];
-		$this->m_oGantt					= $oGantt;
+		$this->m_oGantt =& getGanttTaskInstance();
+		
+		$this->m_iDisplayedStartDateTs	= $this->m_oGantt->m_aDisplayedStartDate[0];
+		$this->m_iDisplayedEndDateTs	= $this->m_oGantt->m_aDisplayedEndDate[0];
 	}
 	
 	function createPeriod($iTaskStartDateTs, $iTaskEndDateTs)
@@ -1146,9 +1160,9 @@ class BAB_TM_GanttToDoCheckpoint extends BAB_TM_GanttTaskBase
 {
 	var $m_sClassName = '';
 	
-	function BAB_TM_GanttToDoCheckpoint($oGantt)
+	function BAB_TM_GanttToDoCheckpoint()
 	{
-		parent::BAB_TM_GanttTaskBase($oGantt);
+		parent::BAB_TM_GanttTaskBase();
 	}
 	
 	function buildPeriods($aTask)
@@ -1172,9 +1186,9 @@ class BAB_TM_GanttToDoCheckpoint extends BAB_TM_GanttTaskBase
 
 class BAB_TM_GanttToDo extends BAB_TM_GanttToDoCheckpoint
 {
-	function BAB_TM_GanttToDo($oGantt)
+	function BAB_TM_GanttToDo()
 	{
-		parent::BAB_TM_GanttToDoCheckpoint($oGantt);
+		parent::BAB_TM_GanttToDoCheckpoint();
 		
 		$this->m_sClassName = 'ganttToDo';
 	}
@@ -1183,9 +1197,9 @@ class BAB_TM_GanttToDo extends BAB_TM_GanttToDoCheckpoint
 
 class BAB_TM_GanttCheckpoint extends BAB_TM_GanttToDoCheckpoint
 {
-	function BAB_TM_GanttCheckpoint($oGantt)
+	function BAB_TM_GanttCheckpoint()
 	{
-		parent::BAB_TM_GanttToDoCheckpoint($oGantt);
+		parent::BAB_TM_GanttToDoCheckpoint();
 		
 		$this->m_sClassName = 'ganttCheckpoint';
 	}
@@ -1196,14 +1210,14 @@ class BAB_TM_GanttTask extends BAB_TM_GanttTaskBase
 {
 	var $m_oTaskTime = null;
 	
-	function BAB_TM_GanttTask($oGantt)
+	function BAB_TM_GanttTask()
 	{
-		parent::BAB_TM_GanttTaskBase($oGantt);
+		parent::BAB_TM_GanttTaskBase();
 	}
 	
 	function init($aTask)
 	{
-		$oTaskTimeManager = getTaskTimeManager();
+		$oTaskTimeManager =& getTaskTimeManager();
 		$this->m_oTaskTime = $oTaskTimeManager->getTask($aTask);
 	}
 	
@@ -1340,9 +1354,9 @@ echo
 class BAB_TM_GanttTaskDate extends BAB_TM_GanttTask
 {
 
-	function BAB_TM_GanttTaskDate($oGantt)
+	function BAB_TM_GanttTaskDate()
 	{
-		parent::BAB_TM_GanttTask($oGantt);
+		parent::BAB_TM_GanttTask();
 	}
 
 	function buildEffectivePeriod()
@@ -1393,9 +1407,9 @@ if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this
 class BAB_TM_GanttTaskDuration extends BAB_TM_GanttTask
 {
 	
-	function BAB_TM_GanttTaskDuration($oGantt)
+	function BAB_TM_GanttTaskDuration()
 	{
-		parent::BAB_TM_GanttTask($oGantt);
+		parent::BAB_TM_GanttTask();
 	}
 
 	function buildEffectivePeriod()
