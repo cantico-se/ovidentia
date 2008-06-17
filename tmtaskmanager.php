@@ -1215,11 +1215,11 @@ function displayTaskList($sIdx)
 			$this->set_data('sPlannedEndDate', bab_rp('_sPlannedEndDate', ''));
 			
 			$this->m_oFilterSessionContext->set('iPlannedEndHour', bab_rp('_oPlannedEndHour', 
-				$this->m_oFilterSessionContext->get('iEndHour', 0)));
+				$this->m_oFilterSessionContext->get('iPlannedEndHour', 0)));
 			$this->set_data('iPlannedEndHour', $this->m_oFilterSessionContext->get('iPlannedEndHour', 0));
 			
 			$this->m_oFilterSessionContext->set('iPlannedEndMinut', bab_rp('_oPlannedEndMinut', 
-				$this->m_oFilterSessionContext->get('iEndMinut', 0)));
+				$this->m_oFilterSessionContext->get('iPlannedEndMinut', 0)));
 			$this->set_data('iPlannedEndMinut', $this->m_oFilterSessionContext->get('iPlannedEndMinut', 0));
 			
 //			bab_debug($_GET);
