@@ -1953,16 +1953,21 @@ class bab_ForumTreeView extends bab_TreeView
 
 		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
 		for ($forumNode =& $this->_rootNode->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
-			$total = 0;
-			$iterator = $this->_rootNode->createNodeIterator($forumNode->_firstChild);
-			// We iterate all the nodes under the current forum node and calculate the total hits.
-			while ($node =& $iterator->nextNode()) {
-				if (!is_null($node)) {
-					$total += (int)($node->_data->_info);
+			
+			if (!is_null($forumNode->_firstChild)) {
+				
+				$total = 0;
+				$iterator = $this->_rootNode->createNodeIterator($forumNode->_firstChild);
+				// We iterate all the nodes under the current forum node and calculate the total hits.
+				while ($node =& $iterator->nextNode()) {
+					if (!is_null($node)) {
+						$total += (int)($node->_data->_info);
+					}
 				}
+				$forumNode->_data->setInfo('' . $total);
+				$forumNode->_data->setRank($total);
+				
 			}
-			$forumNode->_data->setInfo('' . $total);
-			$forumNode->_data->setRank($total);
 		}
 	}
 
