@@ -181,6 +181,7 @@
 			$this->set_caption('sEndDate', bab_translate("Real end date"));
 			$this->set_caption('sPlannedStartDate', bab_translate("Planned start date"));
 			$this->set_caption('sPlannedEndDate', bab_translate("Planned end date"));
+			$this->set_caption('sDeadline', bab_translate("Deadline"));
 			$this->set_caption('sCompletion', bab_translate("Completion"));
 			$this->set_caption('sRelation', bab_translate("Relation"));
 			$this->set_caption('sTaskResponsible', bab_translate("Task Responsible"));
@@ -741,6 +742,11 @@
 			$this->set_data('oDurationType', $iDurationType);
 			$this->set_data('sDisabledDurationType', $this->m_bIsManager ? '' : 'disabled="disabled"');
 			$this->set_data('sSelectedDuration', '');
+			
+			if(BAB_TM_DURATION == $iDurationType)
+			{
+				$this->set_caption('sPlannedEndDate', bab_translate("Deadline"));
+			}
 		}
 
 		function initDuration($iDuration)
@@ -1378,23 +1384,24 @@
 			//Si il y a un predecesseur
 			if(!is_null($aTask))
 			{
+/*
+$sMsg = 'This task have a predecessor';
+bab_debug($sMsg);			
+//echo $sMsg . '<br/>';
+//*/
 				if(BAB_TM_START_TO_START == $this->m_iLinkType)
 				{
 					$this->m_sPlannedStartDate = $aTask['sPlannedStartDate'];
 				}
 				else if(BAB_TM_END_TO_START == $this->m_iLinkType)
 				{
-					if(0 != $aTask['iDuration'])
-					{
-						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sPlannedEndDate']);
-						$oStartDate->add($aTask['iDuration'], (($this->m_iDurationUnit == BAB_TM_DAY) ? BAB_DATETIME_DAY : BAB_DATETIME_HOUR));
-						$this->m_sPlannedStartDate = $oStartDate->getIsoDateTime();
-					}
-					else 
-					{
-						$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sPlannedEndDate']);
-						$this->m_sPlannedStartDate = $oStartDate->getIsoDateTime();
-					}
+/*
+$sMsg = 'This task is linked : The link is END ==> START';
+bab_debug($sMsg);			
+//echo $sMsg . '<br/>';
+//*/
+					$oStartDate = BAB_DateTime::fromIsoDateTime($aTask['sPlannedEndDate']);
+					$this->m_sPlannedStartDate = $oStartDate->getIsoDateTime();
 				}
 				else 
 				{
@@ -1416,7 +1423,12 @@
 			
 			if(BAB_TM_DURATION === $this->m_iDurationType && 0 == strlen(trim(bab_rp('sPlannedEndDate', ''))))
 			{
-				$this->computeEndDate();
+				//$this->computeEndDate();
+				
+				require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
+				$oPlannedEndDate = null;
+				BAB_TM_TaskTime::computeEndDate($this->m_sPlannedStartDate, $this->m_iDuration, $this->m_iDurationUnit, $oPlannedEndDate);
+				$this->m_sPlannedEndDate = $oPlannedEndDate->getIsoDateTime();
 			}
 
 			/*			
@@ -1464,19 +1476,24 @@
 			}
 		}
 
-			
+/*		
 		function computeEndDate()
 		{
-			include_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
-			include_once $GLOBALS['babInstallPath'] . 'utilit/calapi.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
+			require_once $GLOBALS['babInstallPath'] . 'utilit/calapi.php';
 			
 			$sWorkingDays = '';
-			bab_calGetWorkingDays($GLOBALS['BAB_SESS_USERID'], $sWorkingDays);
+			$iIdUser = 0; //configuration du site
+			bab_calGetWorkingDays($iIdUser, $sWorkingDays);
 			$aWorkingDays = array_flip(explode(',', $sWorkingDays));
-			
+		
+			$fRemain = 0;
+		
 			if($this->m_iDurationUnit === BAB_TM_DAY)
 			{
+				//Arrondi au superieur donc on va boucler une fois de trop si le reste est > à zéro
 				$iDuration = (int) ceil($this->m_iDuration);
+				$fRemain	= ($this->m_iDuration - (int) $this->m_iDuration);			
 			}
 			else
 			{
@@ -1493,38 +1510,86 @@
 				$aNWD = bab_getNonWorkingDaysBetween($oPlannedStartDate->getTimeStamp(), $oPlannedEndDate->getTimeStamp());
 				if(isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]) && 0 == count($aNWD))
 				{
-					$iDuration--;	
+					$oPlannedEndDate->add(1);
 				}
-				$oPlannedEndDate->add(1);
+				else 
+				{
+					$oPlannedEndDate->add(2);
+				}
+				$iDuration--;
 			}
-			while(0 != $iDuration && $iWorkingDaysCount > 0);
-			
-			//On a bouclé 1 fois de trop
-			$oPlannedEndDate->add(-1);
+			while(0 < $iDuration && $iWorkingDaysCount > 0);
 
+			
 			if($this->m_iDurationUnit === BAB_TM_DAY)
 			{
-				$iDuration = ceil($this->m_iDuration);
-				if($iDuration != $this->m_iDuration)
+				if($fRemain > 0)
 				{
-					//Si $this->m_iDuration = 1.25 avec le calcul en bas fTime = 0.25
-					//Permet d'ajuster les heures				
-					$fTime = 1 - (ceil($this->m_iDuration) - $this->m_iDuration);
-					
 					//86400 nombre de secondes dans une journée
-					$oPlannedEndDate->add(86400 * $fTime, BAB_DATETIME_SECOND);
+					//On retranche une journée car à cause du floor qui arrondi au 
+					//superieure on a bouclé une fois de trop
+					$oPlannedEndDate->add((86400 * $fRemain) - 86400, BAB_DATETIME_SECOND);
+				
+					if(!isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]))
+					{
+						//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
+						
+						$iNbDays = 0;
+						$this->getGapToFirstWorkingDay($oPlannedEndDate, $aWorkingDays, BAB_DATETIME_DAY, $iNbDays);
+						$oPlannedEndDate->add($iNbDays, BAB_DATETIME_DAY);
+					}
 				}
 			}
 			else 
 			{
 				//3600 nombre de secondes dans une heure
 				$oPlannedEndDate->add(3600 * $this->m_iDuration, BAB_DATETIME_SECOND);
+				
+				if(!isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]))
+				{
+//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
+					
+					$iNbHours = 0;
+					$this->getGapToFirstWorkingDay($oPlannedEndDate, $aWorkingDays, BAB_DATETIME_HOUR, $iNbHours);
+					$oPlannedEndDate->add($iNbHours, BAB_DATETIME_HOUR);
+					
+//echo 'Nouvelle date ==> ' . $oPlannedEndDate->getIsoDateTime() . ' iNbHours ==> ' . $iNbHours . '<br />';
+				}
+				else
+				{
+//echo 'C\'est un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
+				}
 			}
-			
+		
 			$this->m_sPlannedEndDate = $oPlannedEndDate->getIsoDateTime();
-			//bab_debug(__FUNCTION__ . ' sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . ' sPlannedEndDate ==> ' . $this->m_sPlannedEndDate);
+			bab_debug(__FUNCTION__ . ' sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . ' sPlannedEndDate ==> ' . $this->m_sPlannedEndDate);
 		}
-
+	
+		function getGapToFirstWorkingDay($oFromDate, $aWorkingDays, $iDurationUnit, &$iNbDays)
+		{
+			$oStartDate	= BAB_DateTime::fromIsoDateTime($oFromDate->getIsoDateTime());
+			
+			$iNbDays = 0;
+			if(is_array($aWorkingDays) && count($aWorkingDays) > 0)
+			{
+				$bFound = false;
+				
+				do 
+				{
+					if(isset($aWorkingDays[$oStartDate->getDayOfWeek()]))
+					{
+						$bFound = true;
+					}
+					else
+					{
+						$iNbDays++;
+						$oStartDate->add(1, $iDurationUnit);
+					}
+				}
+				while(false === $bFound);
+			}
+		}
+//*/	
 		function isTaskNumberValid()
 		{
 			if(strlen($this->m_sTaskNumber) > 0)

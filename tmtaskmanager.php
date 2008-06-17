@@ -1635,6 +1635,8 @@ function displayTaskList($sIdx)
 				
 				$datas['idOwner'] = bab_toHtml(bab_getUserName($datas['idOwner']));
 				
+				$datas['sShortDescription'] = $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
+				
 			}
 			return $datas;
 		}
@@ -1949,9 +1951,10 @@ function displayTaskList($sIdx)
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
-	
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 }
+
+
 
 function displayTaskForm()
 {
@@ -2187,12 +2190,15 @@ function displayGanttChart()
 	if(0 !== $iIdProjectSpace)
 	{
 		$sStartDate = getFirstProjectTaskDate(bab_rp('iIdProject'));
+		if(strlen($sStartDate) > 10)
+		{
+			$sStartDate = substr($sStartDate, 0, 10);
+		}
 	}
 	else
 	{
 		$sStartDate = bab_rp('date', $sStartDate);
 	}
-
 	
 	$oGantt = new BAB_TM_Gantt($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));

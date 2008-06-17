@@ -2565,4 +2565,10 @@
 <string id="Unknown File Error.">Erreur de fichier inconnue.</string>
 <string id="Add a test period">Ajouter une période de test</string>
 <string id="Initial upload">Chargement initial</string>
+<string id="Plannified load">Charge planifiée</string>
+<string id="Real load">Charge réelle</string>
+<string id="Completion rate">Taux de completion</string>
+<string id="To achieve">Charge restante</string>
+<string id="Effective load">Charge effective</string>
+<string id="Deadline">Date butoir</string>
 </fr>

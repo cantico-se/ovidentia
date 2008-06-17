@@ -1123,6 +1123,88 @@ function bab_getTask($iIdTask, &$aTask)
 }
 
 
+/* Hack pour l'affichage du gantt, ne pas utiliser. Lorsque j'aurai du temp je referai une belle api*/
+function bab_getTaskForGantt($iIdTask, &$aTask)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' . 
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.description sDescription, ' .
+			't.shortDescription sShortDescription, ' .
+			't.class iClass, ' .
+			't.iPriority iPriority, ' .
+		'CASE t.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'ganttTask\' ' .
+			'ELSE \'\' ' .
+		'END AS sClassName, ' .
+		'CASE t.class ' .			
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
+			'ELSE \'???\' ' .
+		'END AS sClass, ' .
+			't.completion iCompletion, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate, ' .
+			't.plannedStartDate plannedStartDate, ' .
+			't.plannedEndDate plannedEndDate, ' .
+			't.duration iDuration, ' .
+			't.iDurationUnit iDurationUnit, ' .
+			'ti.idOwner idOwner, ' .
+			'cat.id iIdCategory, ' .
+			'cat.name sCategoryName, ' .
+			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
+			'IFNULL(cat.color, \'\' ) sColor, ' .
+			'IFNULL(lt.idPredecessorTask, 0) iIdPredecessorTask, ' .
+			'IFNULL(lt.linkType, -1) iLinkType ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt ON lt.idTask = t.id ' .
+		'WHERE ' . 
+			't.id = \'' . $babDB->db_escape_string($iIdTask) . '\'';
+	
+	$result = $babDB->db_query($query);
+	$iNumRows = $babDB->db_num_rows($result);
+	$iIndex = 0;
+	
+	if($iIndex < $iNumRows && false != ($datas = $babDB->db_fetch_assoc($result)))
+	{
+		$aTask = array('iIdTask' => $datas['iIdTask'], 'iIdProjectSpace' =>  $datas['iIdProjectSpace'], 
+			'sProjectSpaceName' => $datas['sProjectSpaceName'], 'iIdProject' => $datas['iIdProject'], 
+			'sProjectName' => $datas['sProjectName'], 'sTaskNumber' => $datas['sTaskNumber'], 
+			'sDescription' => $datas['sDescription'], 'sShortDescription' => $datas['sShortDescription'], 
+			'iClass' => $datas['iClass'], 'iPriority' => $datas['iPriority'], 
+			'sClassName' => $datas['sClassName'], 'sClass' => $datas['sClass'], 
+			'iCompletion' => $datas['iCompletion'], 'startDate' => $datas['startDate'], 
+			'endDate' => $datas['endDate'], 'plannedStartDate' => $datas['plannedStartDate'], 
+			'plannedEndDate' => $datas['plannedEndDate'], 'iDuration' => $datas['iDuration'], 
+			'iDurationUnit' => $datas['iDurationUnit'], 'idOwner' => $datas['idOwner'], 
+			'iIdCategory' => $datas['iIdCategory'], 'sCategoryName' => $datas['sCategoryName'], 
+			'sBgColor' => $datas['sBgColor'], 'sColor' => $datas['sColor'], 
+			'iIdPredecessorTask' => $datas['iIdPredecessorTask'], 'iLinkType' => $datas['iLinkType']);
+		return true;
+	}
+	return false;
+}
+
+
 function bab_updateTask($iIdTask, $aParams)
 {
 	global $babDB;
@@ -1961,7 +2043,7 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 	
 	$query = 
 		'SELECT ' . 
-			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' . "\n\r" .
 			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
 			'IFNULL(p.id, 0) iIdProject, ' .
 			'IFNULL(p.name, \'\') sProjectName, ' .
@@ -1974,8 +2056,9 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 		'CASE t.class ' .
 			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
 			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'ganttTask\' ' .
 			'ELSE \'\' ' .
-		'END AS sAdditionnalClass, ' .
+		'END AS sClassName, ' .
 		'CASE t.class ' .			
 			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
 			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
@@ -1987,11 +2070,15 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			't.endDate endDate, ' .
 			't.plannedStartDate plannedStartDate, ' .
 			't.plannedEndDate plannedEndDate, ' .
+			't.duration iDuration, ' .
+			't.iDurationUnit iDurationUnit, ' .
 			'ti.idOwner idOwner, ' .
 			'cat.id iIdCategory, ' .
 			'cat.name sCategoryName, ' .
 			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
-			'IFNULL(cat.color, \'\' ) sColor ' .
+			'IFNULL(cat.color, \'\' ) sColor, ' .
+			'IFNULL(lt.idPredecessorTask, 0) iIdPredecessorTask, ' .
+			'IFNULL(lt.linkType, -1) iLinkType ' .
 		'FROM ' . 
 			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
 			BAB_TSKMGR_TASKS_TBL . ' t ' .
@@ -2001,10 +2088,13 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
 		'LEFT JOIN ' . 
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt ON lt.idTask = t.id ' .
 		'WHERE ' . 
 			't.id = ti.idTask AND ' .
 			't.plannedEndDate >= ' . $babDB->quote($aFilters['sPlannedStartDate']) . ' AND ' .
 			't.plannedStartDate <= ' . $babDB->quote($aFilters['sPlannedEndDate']) . ' ';
+
 
 	if(isset($aFilters['iIdProject']))
 	{
@@ -2049,14 +2139,81 @@ function bab_selectForGantt($aFilters, $aOrder = array())
 //	if(count($aOrder) > 0)
 	{
 //		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
-		$query .= 'ORDER BY plannedEndDate ASC, iPriority ASC';
+//		$query .= 'ORDER BY plannedEndDate ASC, iPriority ASC';
+		$query .= 'ORDER BY ps.name ASC, p.name ASC, plannedEndDate ASC, iPriority ASC';
 	}
 	
 
 //	bab_debug($query);
-//	echo '*** ' . $query . '<br />';
+//	echo $query . '<br />';
 	return $query;
 }
+
+
+function bab_getSelectQueryForGanttById($aIdTask)
+{
+	global $babDB;
+	
+	$query = 
+		'SELECT ' . 
+			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
+			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(p.id, 0) iIdProject, ' .
+			'IFNULL(p.name, \'\') sProjectName, ' .
+			't.id iIdTask, ' .
+			't.taskNumber sTaskNumber, ' .
+			't.description sDescription, ' .
+			't.shortDescription sShortDescription, ' .
+			't.class iClass, ' .
+			't.iPriority iPriority, ' .
+		'CASE t.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'ganttTask\' ' .
+			'ELSE \'\' ' .
+		'END AS sClassName, ' .
+		'CASE t.class ' .			
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
+			'ELSE \'???\' ' .
+		'END AS sClass, ' .
+			't.completion iCompletion, ' .
+			't.startDate startDate, ' .
+			't.endDate endDate, ' .
+			't.plannedStartDate plannedStartDate, ' .
+			't.plannedEndDate plannedEndDate, ' .
+			't.duration iDuration, ' .
+			't.iDurationUnit iDurationUnit, ' .
+			'ti.idOwner idOwner, ' .
+			'cat.id iIdCategory, ' .
+			'cat.name sCategoryName, ' .
+			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
+			'IFNULL(cat.color, \'\' ) sColor, ' .
+			'IFNULL(lt.idPredecessorTask, 0) iIdPredecessorTask, ' .
+			'IFNULL(lt.linkType, -1) iLinkType ' .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_LINKED_TASKS_TBL . ' lt ON lt.idTask = t.id ' .
+		'WHERE ' . 
+			't.id IN(' . $babDB->quote($aIdTask) . ') ' .
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ' .
+		'ORDER BY ps.name ASC, p.name ASC, plannedEndDate ASC, iPriority ASC';
+
+//	bab_debug($query);
+//	echo $query . '<br />';
+	return $query;
+}
+
 
 function bab_createTaskInfo($iIdTask, $iIdOwner, $iIsPersonnal)
 {

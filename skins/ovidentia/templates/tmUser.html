@@ -354,6 +354,11 @@ function submit_form()
 <!--#begin taskForm -->
 <script type="text/javascript">
 <!--
+
+var g_sPlannedEndDate = '{ m_captions[sPlannedEndDate] }';
+var g_sDeadline = '{ m_captions[sDeadline] }';
+
+
 function on_btn_clicked(idx, action)
 {
 	var form = document.forms.taskForm;
@@ -497,6 +502,38 @@ function dateCallback(sFieldName)
 	bab_dialog.selectdate(setDateValue);
 }
 
+
+function setPlannedEndDateCaption()
+{
+	//{}
+	var TASK		= { m_datas[iClassTask] };
+	var CHECKPOINT	= { m_datas[iClassCheckPoint] };
+	var TODO		= { m_datas[iClassToDo] };
+	var DURATION	= { m_datas[iDateTypeDuration] };
+	var DATE		= { m_datas[iDateTypeDate] };
+
+	var oPlannedEndDate 	= document.getElementById('sPlannedEndDateCaption');
+	var oSelectClass		= document.getElementById('iClass');
+	var oSelectDurationType = document.getElementById('oDurationType');
+	
+	if(null != oPlannedEndDate && null != oSelectClass && null != oSelectDurationType)
+	{
+		var iDurationType = parseInt(oSelectDurationType.options[oSelectDurationType.selectedIndex].value);
+		var iType = parseInt(oSelectClass.options[oSelectClass.selectedIndex].value);
+		
+		
+		if(DURATION == iDurationType && TASK == iType)
+		{
+			oPlannedEndDate.innerHTML = g_sDeadline;
+		}
+		else
+		{
+			oPlannedEndDate.innerHTML = g_sPlannedEndDate;
+		}
+	}
+}
+
+
 function onClassChanged(oSelect)
 {
 	//{}
@@ -506,6 +543,7 @@ function onClassChanged(oSelect)
 	
 	var iType = parseInt(oSelect.options[oSelect.selectedIndex].value);
 
+	
 	switch(iType)
 	{
 		case TASK:
@@ -573,6 +611,7 @@ function onClassChanged(oSelect)
 		}
 		break;
 	}
+	setPlannedEndDateCaption();
 }
 
 function onDurationTypeChanged(oSelect)
@@ -600,6 +639,7 @@ function onDurationTypeChanged(oSelect)
 	}
 	
 	processStartDate();
+	setPlannedEndDateCaption();
 }
 
 function onLinkTaskChanged(oCheckBox)
@@ -627,6 +667,7 @@ function showHideElement(sIdElement, iShow)
 		oElement.style.display = (g_tskMgrHide == iShow) ? 'none' : '';
 	}
 }
+
 
 function processStartDate()
 {
@@ -911,7 +952,7 @@ function check_all(strCtrlName, checked)
 
 				<tr id="oTrPlannedEndDate">
 					<td>
-						<label for="sPlannedEndDate">{ m_captions[sPlannedEndDate] }</label>
+						<label for="sPlannedEndDate" id="sPlannedEndDateCaption">{ m_captions[sPlannedEndDate] }</label>
 					</td>
 					<td>
 						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
@@ -1620,10 +1661,6 @@ function submit_form()
 	</table>
 </form>
 <!--#end PersonnalTaskConfiguration -->
-
-onload="tmInit('ganttTask')"
-				
-<a class="ganttgotoToday" style="top:{ m_iGotoTodayPosY }px; left:{ m_iGotoTodayPosX }px;" href="{ m_sTodayUrl }" title="{ m_sToday }">{ m_sToday }</a>
 				
 
 <!--#begin gantt -->
@@ -1646,7 +1683,8 @@ onload="tmInit('ganttTask')"
 		</script>
 	</head>
 	<body>
-		<div id="ganttDebug" style="width:100%; height:{ m_iHeight }"> 									
+		<div id="ganttDebug" style="width:100%; height:{ m_iHeight }"> 
+											
 		</div>
 		
 		<div class="gantt">
@@ -1687,7 +1725,7 @@ onload="tmInit('ganttTask')"
 				
 				<div class="ganttTasksList" style="top:{ m_iGanttTasksListPosY }px; left:{ m_iGanttTasksListPosX }px; height:{ m_iGanttTasksListHeight }px; width:{ m_iGanttTasksListWidth }px;">
 					<!--#in getNextTaskItem -->
-					<div style="color:#{ m_sTaskInfoColor }; background-color:#{ m_sTaskInfoBgColor }; top:{ m_iTaskInfoPosY }px; left:{ m_iTaskInfoPosX }px; height:{ m_iTaskInfoHeigth }px; width:{ m_iTaskInfoWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+					<div style="color:#{ m_sTaskInfoColor }; background-color:#{ m_sTaskInfoBgColor };top:{ m_iTaskInfoPosY }px; left:{ m_iTaskInfoPosX }px; height:{ m_iTaskInfoHeigth }px; width:{ m_iTaskInfoWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
 					{ m_sTaskInfo }
 					</div>
 					<!--#endin getNextTaskItem -->	
@@ -1699,6 +1737,10 @@ onload="tmInit('ganttTask')"
 				<!--#in getNextColumn -->
 				<div class="ganttColumn { m_sTodayColumnAddClass }" style="top:{ m_iColumnPosY }px; left:{ m_iColumnPosX }px; height:{ m_iColumnHeigth }px; width:{ m_iColumnWidth }px">
 				</div>
+			<!--#if m_isToday -->
+				<div class="ganttTodayLine" style="top:{ m_iColumnPosY }px; left:{ m_iTodayPosLineX }px; height:{ m_iColumnHeigth }px">
+				</div>
+			<!--#endif m_isToday -->
 				<!--#endin getNextColumn -->	
 	
 				<!--#in getNextRow -->
@@ -1707,26 +1749,33 @@ onload="tmInit('ganttTask')"
 				<!--#endin getNextRow -->	
 	
 				<!--#in getNextTask -->
-			<!--#if m_iClass "== 0" -->
-				<div class="ganttTask" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="background-color:#{ m_sTaskBgColor }; top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-			<!--#else m_iClass -->
-				<div class="{ m_sAdditionnalClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-			<!--#endif m_iClass -->
-				</div>
-			<!--#if m_bIsTaskCompletion -->
-				<div class="ganttTaskDone" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="background-color:#{ m_sDoneBgColor }; color:#{ m_sDoneColor }; top:{ m_iDonePosY }px; left:{ m_iDonePosX }px; height:{ m_iDoneHeigth }px; width:{ m_iDoneWidth }px;">
-				</div>
-			<!--#endif m_bIsTaskCompletion -->
-				<div class="ganttTooltip" id="calevent{ m_iIdTask }">
-					{ m_sToolTip }
-				</div>
+					<!--#in getNextTaskPeriod -->
+						<div class="{ m_sTaskClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px;"></div>
+					<!--#endin getNextTaskPeriod -->	
+					<div class="ganttTooltip" id="calevent{ m_iIdTask }">
+						{ m_sToolTip }
+					</div>
 				<!--#endin getNextTask -->	
+				<div id="ganttLegend" style="top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; width:500px; height:100px">
+					{ m_sGanttLegend }
+				</div>
 			</div>
-			
 		</div>
 	</body>
 </html>
 <!--#end gantt -->
+
+
+<!--#begin ganttLegend -->
+	<ul>
+		<!--#in getNextLegendItem -->
+		<li>
+			<span class="ganttLegendItem { sClassName }" class="{ sTitle }">&nbsp</span>{ sCaption }
+		</li>
+		<!--#endin getNextLegendItem -->
+	</ul>
+<!--#end ganttLegend -->
+
 
 <!--#begin toolbar -->
 	<div class="bab_toolbar" style="vertical-align: middle; margin-bottom: 10px; padding: 8px; background-color: #eeeeee; border:0px">

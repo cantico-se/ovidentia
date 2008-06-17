@@ -23,12 +23,58 @@
 ************************************************************************/
 include "base.php";
 require_once($babInstallPath . 'utilit/dateTime.php');
+require_once($babInstallPath . 'tmTaskTime.class.php');
+
+
+class BAB_TM_GanttLegend
+{
+	var $aLegend		= null;
+	
+	var $sTitle			= '';
+	var $sCaption		= '';
+	var $sClassName		= '';
+	
+	function BAB_TM_GanttLegend()
+	{
+		$this->aLegend = array(
+			array('sTitle' => bab_translate("Plannified load"), 'sCaption' => bab_translate("Plannified load"), 'sClassName' => 'ganttPlannified'),
+			array('sTitle' => bab_translate("Real load"), 'sCaption' => bab_translate("Real load"), 'sClassName' => 'ganttReal'),
+			array('sTitle' => bab_translate("Completion rate"), 'sCaption' => bab_translate("Completion rate"), 'sClassName' => 'ganttCompletion'),
+			array('sTitle' => bab_translate("To achieve"), 'sCaption' => bab_translate("To achieve"), 'sClassName' => 'ganttRemaining'),
+			array('sTitle' => bab_translate("Effective load"), 'sCaption' => bab_translate("Effective load"), 'sClassName' => 'ganttEffectiveLoad'),
+		);
+	}
+
+	function getNextLegendItem() 
+	{
+		$aItem = each($this->aLegend);
+		if(false !== $aItem)
+		{
+			$this->sTitle		= $aItem['value']['sTitle'];
+			$this->sCaption		= $aItem['value']['sCaption'];
+			$this->sClassName	= $aItem['value']['sClassName'];
+			return true;
+		}
+		return false;
+	}
+	
+	function getHtml()
+	{
+		return bab_printTemplate($this, 'tmUser.html', 'ganttLegend');
+	}
+}
 
 
 class BAB_TM_GanttBase
 {
-	var $m_iWidth = '14';
-	var $m_iHeight = '26';
+//	var $m_iWidth = '14';
+//	var $m_iHeight = '26';
+	
+	var $m_iWidth = '18';
+	var $m_iHeight = '32';
+	
+//	var $m_iWidth = '28';
+//	var $m_iHeight = '52';
 	
 	//m_iWidth = 1 day = 86400 secondes
 	//86400 / m_iWidth
@@ -169,51 +215,138 @@ class BAB_TM_GanttBase
 	var $m_iTodayPosX = null;
 	var $m_aToDay = null;
 	
+	var $m_isToday = false;
+	var $m_oTodayLine = null;
+
 	function BAB_TM_GanttBase($sStartDate, $iStartWeekDay = 1)
 	{
 		$this->m_sTitle = bab_translate("Gantt view");
 		
 		$this->m_iOnePxInSecondes = 86400 / $this->m_iWidth;
 		
-		{
-			$aFilters = array();
+		$this->selectTask($sStartDate, $iStartWeekDay);
+		$this->initLayout();
+	}
+	
+	function selectTask($sStartDate, $iStartWeekDay)
+	{
+		$aFilters = array();
 
-			$isPersonnal = bab_rp('isPersonnal', -1);
-			if(-1 != $isPersonnal)
-			{
-				$aFilters['isPersonnal'] = BAB_TM_YES;
-				$this->m_GanttViewParamUrl .= '&isPersonnal=' . $aFilters['isPersonnal'];
-			}
-			
-			$iIdProject = bab_rp('iIdProject', -1);
-			if(-1 != $iIdProject)
-			{
-				$aFilters['iIdProject'] = $iIdProject;
-				$this->m_GanttViewParamUrl .= '&iIdProject=' . $aFilters['iIdProject'];
-			}
-			
-			$iIdOwner = bab_rp('iIdOwner', -1);
-			if(-1 != $iIdOwner)
-			{
-				$aFilters['iIdOwner'] = $iIdOwner;
-				$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
-			}
-			
-			$this->initDates($sStartDate, $iStartWeekDay);
-			
-			$aFilters['sPlannedStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
-			$aFilters['sPlannedEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
-			
-			global $babDB;
-			$this->m_result = $babDB->db_query(bab_selectForGantt($aFilters));
+		$isPersonnal = bab_rp('isPersonnal', -1);
+		if(-1 != $isPersonnal)
+		{
+			$aFilters['isPersonnal'] = BAB_TM_YES;
+			$this->m_GanttViewParamUrl .= '&isPersonnal=' . $aFilters['isPersonnal'];
 		}
+		
+		$iIdProject = bab_rp('iIdProject', -1);
+		if(-1 != $iIdProject)
+		{
+			$aFilters['iIdProject'] = $iIdProject;
+			$this->m_GanttViewParamUrl .= '&iIdProject=' . $aFilters['iIdProject'];
+		}
+		
+		$iIdOwner = bab_rp('iIdOwner', -1);
+		if(-1 != $iIdOwner)
+		{
+			$aFilters['iIdOwner'] = $iIdOwner;
+			$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
+		}
+		
+		$this->initDates($sStartDate, $iStartWeekDay);
+		
+		$aFilters['sPlannedStartDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedStartDate[0]);
+		$aFilters['sPlannedEndDate'] = date("Y-m-d H:i:s", $this->m_aDisplayedEndDate[0]);
+		
+		global $babDB;
+		$this->m_result = $babDB->db_query(bab_selectForGantt($aFilters));
 		
 		if(false != $this->m_result)	
 		{
-			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
-		}
+			$oTaskTimeManager =& getTaskTimeManager();
 		
-		$this->initLayout();
+			$iLinkType = -1;
+			$aForGantt	= array();
+			$aToProcess	= array();
+			
+			while(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
+			{
+				//bab_debug($datas);
+		
+				$aForGantt[$datas['iIdTask']]	= $datas['iIdTask'];
+				$aToProcess[$datas['iIdTask']]	= $datas['iIdTask'];
+				$bStop							= false;
+								
+				
+				//récupére tous les descendant afin de savoir si ils sont dans la zone
+				//d'affichage 		
+				
+				while(count($aToProcess) > 0 && false === $bStop)
+				{
+					$aToProcessItem = each($aToProcess);
+					if(false !== $aToProcessItem)
+					{
+						$aDependingTasks = array();
+						bab_getDependingTasks($aToProcessItem['value'], $aDependingTasks, $iLinkType);
+						
+		//				bab_debug($aDependingTasks);
+		//				bab_debug($aToProcessItem['value']);
+				
+						foreach($aDependingTasks as $iIdTask => $aDependingTask)
+						{
+							$aTask = array();
+							if(true === bab_getTaskForGantt($iIdTask, $aTask))
+							{
+								$oGanttTask = $oTaskTimeManager->getTask($aTask);
+								$iTaskStartDateTs	= $oGanttTask->m_oPlannedStartDate->getTimeStamp();
+								$iTaskEndDateTs		= $oGanttTask->m_oPlannedEndDate->getTimeStamp();
+		
+		//						bab_debug('iIdTask ==> ' . $iIdTask . ' ' . $oGanttTask->m_oPlannedStartDate->getIsoDateTime());
+		//						bab_debug($aToProcessItem['value']);
+		/*						
+								bab_debug(
+									'iIdTask ==> ' . $iIdTask . 
+									' sStart ==> ' . $oGanttTask->m_oPlannedStartDate->getIsoDateTime() .
+									' sEnd ==> ' . $oGanttTask->m_oPlannedEndDate->getIsoDateTime());
+		//*/						
+								
+								if($iTaskEndDateTs > $this->m_aDisplayedStartDate[0] && $iTaskStartDateTs < $this->m_aDisplayedEndDate[0])
+								{
+									$aForGantt[$iIdTask]	= $iIdTask;
+									$aToProcess[$iIdTask]	= $iIdTask;
+								}
+							
+								$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_START_TO_START);
+								$this->insertDependingTaskToArray($iIdTask, $aToProcess, BAB_TM_END_TO_START);
+							}
+						}
+						
+						unset($aToProcess[$aToProcessItem['value']]);
+						reset($aToProcess);
+					}
+					else
+					{
+						$bStop = false;
+					}
+				}
+			}
+//			bab_debug($aForGantt);
+			$this->m_result = $babDB->db_query(bab_getSelectQueryForGanttById($aForGantt));
+			
+			$this->m_iNbResult = $babDB->db_num_rows($this->m_result);
+			
+//			$oGanttTaskManager->m_aCache = array();
+		}
+	}
+
+	function insertDependingTaskToArray($iIdTask, &$aToInsert, $iLinkType)
+	{
+		$aDependingTasks = array();
+		bab_getDependingTasks($iIdTask, $aDependingTasks, $iLinkType);
+		foreach($aDependingTasks as $iIdTask => $aDependingTask)
+		{
+			$aToInsert[$iIdTask] = $iIdTask;
+		}
 	}
 	
 	function initDates($sStartDate, $iStartWeekDay)
@@ -305,27 +438,27 @@ class BAB_TM_GanttBase
 		$this->m_iWeekNumber = $this->m_iStartWeekNumber = date('W', $this->m_aDisplayedStartDate[0]);
 		$this->m_iEndWeekNumber = date('W', $this->m_aDisplayedEndDate[0]);
 
-		//*
 		//Today pos
 		{
-			$sToday					= date("Y-m-d");
+			$oTaskTimeManager		= getTaskTimeManager();
+			$sToday					= $oTaskTimeManager->getTodayIsoDateString();
 			$iDisplayedStartDateTs	=& $this->m_aDisplayedStartDate[0];
 			$iDisplayedEndDateTs	=& $this->m_aDisplayedEndDate[0];
 			$iTodayTS				= strtotime($sToday);
-			
 			$this->m_aToDay			= getdate($iTodayTS);
 			
 			$iNbDays = BAB_DateTime::dateDiffIso($sToday, date("Y-m-d", $this->m_aDisplayedStartDate[0]));
+
+$this->m_oTodayLine	= $oTaskTimeManager->getTodayIsoDateTime();
 			
 			if($iTodayTS >= $iDisplayedStartDateTs && $iTodayTS <= $iDisplayedEndDateTs)
 			{
-				$this->m_iTodayPosX = $iNbDays;// * $this->m_iWidth;
-
-//				$iElaspedSecondsFromBigining	= $iTodayTS - $iDisplayedStartDateTs;
-//				$this->m_iTodayPosX				= round(($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes));
+				$this->m_iTodayPosX = $iNbDays;
+				
+$iTodayLineTS = $this->m_oTodayLine->getTimeStamp();
+$this->m_iTodayPosLineX = round(($iTodayLineTS - $iDisplayedStartDateTs) / $this->m_iOnePxInSecondes);
 			}
 		}
-		//*/
 	}
 	
 	function initLayout()
@@ -451,7 +584,6 @@ class BAB_TM_GanttBase
 	function getNextMonth()
 	{
 		if($this->m_iTotalDaysToDisplay > 0)
-//		if($this->m_iCurrMonth <= $this->m_aDisplayedEndDate['mon'])
 		{
 			$iLeftParentBorderWidth = 1;
 
@@ -577,16 +709,6 @@ class BAB_TM_GanttBase
 
 			$this->m_iTimeStamp = mktime($aDate['hours'], $aDate['minutes'], $aDate['seconds'], $aDate['mon'], ($aDate['mday'] + 1), $aDate['year']);
 			
-			/*
-			$iPosX = ($this->m_iTodayPosX * $this->m_iWidth) + $this->m_iTaskCaptionWidth - $iLeftParentBorderWidth;			
-						
-			$this->m_sTodayColumnAddClass = '';
-			if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iDayPosX)
-			{
-				$this->m_sTodayColumnAddClass = 'ganttTodayColumn';
-			}
-			//*/
-						
 			$iDisplayedDays++;
 			return true;
 		}
@@ -623,11 +745,9 @@ class BAB_TM_GanttBase
 		global $babDB;
 		
 		static $iIndex = 0;
-		
 		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
 		{
 			$iLeftParentBorderWidth 	= 1;
-
 			$this->m_iBorderLeft		= 0;
 			$this->m_iBorderRight		= 0;
 			$this->m_iBorderTop			= 0;
@@ -637,12 +757,9 @@ class BAB_TM_GanttBase
 			$this->m_iTaskInfoPosY		= ($this->m_iHeight * $iIndex++);
 			$this->m_iTaskInfoHeigth	= $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
 			$this->m_iTaskInfoWidth		= $this->m_iTaskCaptionWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
-			$this->m_sTaskInfoBgColor	= 'EFEFEF';
-			$this->m_sTaskInfoColor		= '000000';
-			$this->m_sTaskInfo			= $datas['sShortDescription'];
-			
-//			$this->m_sTaskInfoBgColor	= (strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'EFEFEF';
-//			$this->m_sTaskInfoColor		= (strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000';
+			$this->m_sTaskInfoBgColor	= (strlen(trim($datas['sBgColor'])) > 0) ? $datas['sBgColor'] : 'EFEFEF';
+			$this->m_sTaskInfoColor		= (strlen(trim($datas['sColor'])) > 0) ? $datas['sColor'] : '000000';
+			$this->m_sTaskInfo			= $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
 			return true;
 		}
 		
@@ -669,19 +786,18 @@ class BAB_TM_GanttBase
 		$this->m_iColumnHeigth = ($this->m_iNbResult + 1) * $this->m_iHeight;
 		$this->m_iColumnWidth = $this->m_iWidth - $iBorderWidth;
 
-		//*		
 		$this->m_sTodayColumnAddClass = '';
 		if($iDayOfWeek == 0 || $iDayOfWeek == 6)
 		{
 			$this->m_sTodayColumnAddClass .= 'ganttWeek';
 		}
-				
-		$iPosX = ($this->m_iTodayPosX * $this->m_iWidth);			
-		if(!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iColumnPosX)
+
+		$iPosX				= ($this->m_iTodayPosX * $this->m_iWidth);			
+		$this->m_isToday	= (!is_null($this->m_iTodayPosX) && $iPosX == $this->m_iColumnPosX);
+		if($this->m_isToday)
 		{
 			$this->m_sTodayColumnAddClass = ' ganttTodayColumn';
 		}
-		//*/
 		
 		//car on commence à 1
 		return ( ($this->m_iTotalDaysToDisplay) >= $iIndex);
@@ -711,99 +827,47 @@ class BAB_TM_GanttBase
 
 class BAB_TM_Gantt extends BAB_TM_GanttBase
 {
-	var $m_iTaskPosX = 0;
-	var $m_iTaskPosY = 0;
-	var $m_iTaskHeigth = 0;
-	var $m_iTaskWidth = 0;
-	var $m_sTaskBgColor = 'FCC';
-	var $m_sTaskColor = 'FFF';
-	var $m_sTask = '';
-
-	var $m_iTaskIndex = 1;
+	var $m_iTaskIndex	= 1;
+	var $m_iTaskPosX	= 0;
+	var $m_iTaskPosY	= 0;
+	var $m_iTaskHeigth	= 0;
+	var $m_iTaskWidth	= 0;
+	var $m_sTaskClass	= '';
+	var $m_iIdTask		= 0;
+	var $m_sToolTip		= '';
 	
-	var $m_bIsTaskCompletion = false;
-	
-	var $m_sAdditionnalClass = '';
-	var	$m_iClass;
-
-	var $m_iIdTask = 0;
-	var $m_sToolTip = '';
+	var $m_oGanttTaskManager	= null;
+	var $m_aPeriods				= null;
+	var $m_sGanttLegend			= '';
 	
 	function BAB_TM_Gantt($sStartDate, $iStartWeekDay = 1)
 	{
 		parent::BAB_TM_GanttBase($sStartDate, $iStartWeekDay);
+		$this->m_oGanttTaskManager =& getGanttTaskManager($this);
+		
+		$oGanttLegend = new BAB_TM_GanttLegend();
+		$this->m_sGanttLegend = $oGanttLegend->getHtml();
 	}
 	
-	function getNextTask()
+	function getNextTask(&$bSkip)
 	{
 		global $babDB;
 		
-		if(false != $this->m_result && false != ($datas = $babDB->db_fetch_assoc($this->m_result)))
+		if(false != $this->m_result && false != ($aTask = $babDB->db_fetch_assoc($this->m_result)))
 		{
-			if(BAB_TM_TASK == $datas['iClass'])
+			$oGanttPeriods = $this->m_oGanttTaskManager->getTask($aTask);
+			if(!is_null($oGanttPeriods))
 			{
-				$this->m_iBorderLeft	= 1;
-				$this->m_iBorderRight	= 1;
-				$this->m_iBorderTop		= 0;
-				$this->m_iBorderBottom	= 1;
+				$this->m_aPeriods = $oGanttPeriods->getPeriods();
+				$this->m_sToolTip = $oGanttPeriods->getToolTip();
+				$this->m_iTaskIndex++;
+				return true;
 			}
 			else
 			{
-				$this->m_iBorderLeft	= 0;
-				$this->m_iBorderRight	= 0;
-				$this->m_iBorderTop		= 0;
-				$this->m_iBorderBottom	= 0;
+				$bSkip = true;
+				return true;
 			}
-
-			$this->m_bIsTaskCompletion = false;
-			
-			$this->m_sAdditionnalClass = $datas['sAdditionnalClass'];
-			$this->m_iClass = $datas['iClass'];
-			
-			$oTaskStartDate = BAB_DateTime::fromIsoDateTime($datas['plannedStartDate']);
-			
-//BAB_TM_DURATION === $this->m_iDurationType
-			
-			
-			$oTaskEndDate = BAB_DateTime::fromIsoDateTime($datas['plannedEndDate']);
-			
-			$iTaskStartDateTs = $oTaskStartDate->getTimeStamp();
-			$iTaskEndDateTs = $oTaskEndDate->getTimeStamp();
-			
-			$iTaskDurationInSeconds = $iTaskEndDateTs - $iTaskStartDateTs;
-			
-			$this->getBox($iTaskStartDateTs, $iTaskEndDateTs, $this->m_iTaskPosX, $this->m_iTaskPosY, $this->m_iTaskHeigth, $this->m_iTaskWidth);
-			$this->m_sTaskBgColor = ((strlen($datas['sBgColor']) != 0) ? $datas['sBgColor'] : 'B0B0B0');
-			$this->m_sTaskColor = ((strlen($datas['sColor']) != 0) ? $datas['sColor'] : '000000');
-			$this->m_sTask = '';
-			
-			$this->m_iIdTask = $datas['iIdTask'];
-			$this->m_sToolTip = $this->buildToolTip($datas);
-
-			$iDoneDurationInSeconds = ($datas['iCompletion'] * $iTaskDurationInSeconds) / 100;
-			$iDoneEndDateTs = $iTaskStartDateTs + $iDoneDurationInSeconds;
-			
-			if($iDoneEndDateTs > $this->m_aDisplayedStartDate[0])
-			{
-				$this->m_bIsTaskCompletion = true;
-				
-				$this->getBox($iTaskStartDateTs, $iDoneEndDateTs, $this->m_iDonePosX, $this->m_iDonePosY, $this->m_iDoneHeigth, $this->m_iDoneWidth);
-				
-				$this->m_iDonePosX++;
-				$this->m_iDonePosY++;
-				
-				$this->m_sDoneBgColor = '00F';
-				$this->m_sDoneColor = 'FFF';
-				
-				/*
-				$oDoneStartDate = BAB_DateTime::fromTimeStamp($iTaskStartDateTs);
-				$oDoneEndDate = BAB_DateTime::fromTimeStamp($iDoneEndDateTs);
-				echo 'startDate ==> ' . $oDoneStartDate->getIsoDateTime() . ' endDate ==> ' . $oDoneEndDate->getIsoDateTime() . '<br />';
-				//*/
-			}
-			
-			$this->m_iTaskIndex++;
-			return true;
 		}
 		
 		if($babDB->db_num_rows($this->m_result) > 0)
@@ -811,42 +875,180 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			$this->m_iTaskIndex = 1;
 			$babDB->db_data_seek($this->m_result, 0);
 		}
-		
 		return false;
 	}
-	
-	function getBox($iTaskStartDateTs, $iTaskEndDateTs, &$iPosX, &$iPosY, &$iHeigth, &$iWidth)
+		
+	function getNextTaskPeriod()
 	{
-		$iDisplayedStartDateTs =& $this->m_aDisplayedStartDate[0];
-		$iDisplayedEndDateTs =& $this->m_aDisplayedEndDate[0];
-		
-		if($iTaskStartDateTs < $iDisplayedStartDateTs)
+		if(is_array($this->m_aPeriods))
 		{
-			$iTaskStartDateTs = $iDisplayedStartDateTs;
+			$aPeriod = each($this->m_aPeriods);
+			if(false !== $aPeriod)
+			{
+				$oTaskPeriod			=& $aPeriod['value'];
+				$this->m_iTaskPosX		= $oTaskPeriod->getLeft();
+				$this->m_iTaskPosY		= $oTaskPeriod->getTop();
+				$this->m_iTaskHeigth	= $oTaskPeriod->getHeight();
+				$this->m_iTaskWidth		= $oTaskPeriod->getWidth();
+				$this->m_sTaskClass		= $oTaskPeriod->getClassName();
+				$this->m_iIdTask		= $oTaskPeriod->getId();
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+
+
+class BAB_TM_GanttTaskManager
+{
+	var $m_oGantt					= null;
+	var $m_aCache					= array();
+	
+	function BAB_TM_GanttTaskManager($oGantt)
+	{
+		$this->m_oGantt = $oGantt;
+	}
+	
+	function getTask($aTask)
+	{
+		$oGanttTask = null;
+		$iIdTask	= (int) $aTask['iIdTask'];
+		$iClass		= (int) $aTask['iClass'];
+		
+		if(!array_key_exists($iIdTask, $this->m_aCache))
+		{
+			switch($iClass)
+			{
+				case BAB_TM_TASK:
+					$oObj = $this->handleTask($aTask);
+					break;
+				case BAB_TM_CHECKPOINT:
+					$oObj = $this->handleCheckPoint();
+				case BAB_TM_TODO:
+					$oObj = $this->handleToDo($aTask);
+				default:
+					break;	
+			}
+			
+			if(!is_null($oObj))
+			{
+				$oObj->buildPeriods($aTask);
+				$oObj->buildToolTip($aTask);
+				
+				$this->m_aCache[$iIdTask] = $oObj;
+			}
+		}
+		return $this->m_aCache[$iIdTask];
+	}
+
+	function handleTask($aTask)	
+	{
+		if(0 == $aTask['iDuration'])
+		{
+			return new BAB_TM_GanttTaskDate($this->m_oGantt);
+		}
+		else
+		{
+			return new BAB_TM_GanttTaskDuration($this->m_oGantt);
+		}
+	}
+	
+	function handleCheckPoint()	
+	{
+		return new BAB_TM_GanttCheckpoint($this->m_oGantt);
+	}
+	
+	function handleToDo()
+	{
+		return new BAB_TM_GanttToDo($this->m_oGantt);
+	}
+}
+
+
+function &getGanttTaskManager($oGantt)
+{
+	if(!array_key_exists('babTmGanttTaskManager', $GLOBALS))
+	{
+		$GLOBALS['babTmGanttTaskManager'] = new BAB_TM_GanttTaskManager($oGantt);
+	}
+	return $GLOBALS['babTmGanttTaskManager'];
+}
+
+
+class BAB_TM_GanttTaskBase
+{
+	var	$m_iDisplayedStartDateTs 	= 0;
+	var	$m_iDisplayedEndDateTs 		= 0;
+	var $m_oGantt 					= null;
+	var $m_aPeriods					= array();
+	var $m_sToolTip					= '';
+	
+	function BAB_TM_GanttTaskBase($oGantt)
+	{
+		$this->m_iDisplayedStartDateTs	= $oGantt->m_aDisplayedStartDate[0];
+		$this->m_iDisplayedEndDateTs	= $oGantt->m_aDisplayedEndDate[0];
+		$this->m_oGantt					= $oGantt;
+	}
+	
+	function createPeriod($iTaskStartDateTs, $iTaskEndDateTs)
+	{
+		if($iTaskStartDateTs < $this->m_iDisplayedStartDateTs)
+		{
+			$iTaskStartDateTs = $this->m_iDisplayedStartDateTs;
 		}
 		
-		if($iTaskEndDateTs > $iDisplayedEndDateTs)
+		if($iTaskEndDateTs > $this->m_iDisplayedEndDateTs)
 		{
-			$iTaskEndDateTs = $iDisplayedEndDateTs;
+			$iTaskEndDateTs = $this->m_iDisplayedEndDateTs;
 		}
 		
-		$iElaspedSecondsFromBigining = $iTaskStartDateTs - $iDisplayedStartDateTs;
-		$iDisplayedTaskDurationInSeconds = $iTaskEndDateTs - $iTaskStartDateTs;
+		$iElaspedSecondsFromBigining		= $iTaskStartDateTs - $this->m_iDisplayedStartDateTs;
+		$iDisplayedTaskDurationInSeconds	= $iTaskEndDateTs - $iTaskStartDateTs;
 		
-		$iPosX = round(($iElaspedSecondsFromBigining / $this->m_iOnePxInSecondes) - $this->m_iBorderLeft);
+		$iLeft		= round($iElaspedSecondsFromBigining / $this->m_oGantt->m_iOnePxInSecondes);
+		$iHeight	= round($this->m_oGantt->m_iHeight / 2);
+		$iTop		= round(($this->m_oGantt->m_iTaskIndex * $this->m_oGantt->m_iHeight) + ($iHeight / 2));
+		$iWidth		= round($iDisplayedTaskDurationInSeconds / $this->m_oGantt->m_iOnePxInSecondes);
+
+		//Tous les carrés ont des bordures des quatres côtés de 1 px
+		$iBorderTop		= 1;
+		$iBorderLeft	= 1;
+		$iBorderRight	= 1;
+		$iBorderBottom	= 1;
 		
-//		$iPosY = round($this->m_iTaskIndex * $this->m_iHeight);
-//		$iHeigth = round($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom));
-				/*
-				$oDoneStartDate = BAB_DateTime::fromTimeStamp($iDisplayedStartDateTs );
-				$oDoneEndDate = BAB_DateTime::fromTimeStamp($iDisplayedEndDateTs );
-				echo 'startDate ==> ' . $oDoneStartDate->getIsoDateTime() . ' endDate ==> ' . $oDoneEndDate->getIsoDateTime() . '<br />';
-				//*/
+		$iLeft		-= $iBorderLeft;
+		$iHeight	-= ($iBorderTop + $iBorderBottom);
+		$iWidth		-= $iBorderRight;
 		
-		$iHeigth = round( ($this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom)) / 2 );
-		$iPosY = round( (($this->m_iTaskIndex * $this->m_iHeight) + ($iHeigth / 2)));
+		$oPeriod = new BAB_TM_GanttTaskPeriod();
+		$oPeriod->setTop($iTop);
+		$oPeriod->setLeft($iLeft);
+		$oPeriod->setHeight($iHeight);
+		$oPeriod->setWidth($iWidth);
 		
-		$iWidth = round(($iDisplayedTaskDurationInSeconds / $this->m_iOnePxInSecondes) - ($this->m_iBorderLeft));
+		return $oPeriod;
+	}
+	
+	function addPeriod($oPeriod)
+	{
+		$this->m_aPeriods[] = $oPeriod; 
+	}
+	
+	function resetPeriod()
+	{
+		$this->m_aPeriods = array();
+	}
+	
+	function getPeriods()
+	{
+		return $this->m_aPeriods;
+	}
+	
+	function buildPeriods($aTask)
+	{
+		
 	}
 	
 	function buildToolTip($aTask)
@@ -855,7 +1057,7 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			'<h3>' . $aTask['sShortDescription'] . '</h3>' . 
 			'<div>' .
 				'<p><strong>' . bab_translate("Project") . ': </strong>' . $aTask['sProjectName'] . '</p>' .
-				'<p><strong>' . bab_translate("Type") . ': </strong>' . $this->getStringType($aTask['iClass']) . '</p>';
+				'<p><strong>' . bab_translate("Type") . ': </strong>' . $aTask['sClass'] . '</p>';
 
 		if(BAB_TM_TASK === (int) $aTask['iClass'])
 		{
@@ -884,8 +1086,13 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 			
 			if(count($aTaskResponsible) > 0)
 			{
-				$sToolTip .= 
-					'<p><strong>' . bab_translate("Responsable") . ': </strong>' . $aTaskResponsible[$aTask['idOwner']]['name'] . '</p>';
+				$aItem = each($aTaskResponsible);
+				if(false !== $aItem)
+				{
+					$sToolTip .= 
+						'<p><strong>' . bab_translate("Responsable") . ': </strong>' . $aItem['value']['name'] . '</p>';
+//						'<p><strong>' . bab_translate("Responsable") . ': </strong>' . $aTaskResponsible[$aTask['idOwner']]['name'] . '</p>';
+				}
 			}
 		}
 		
@@ -900,219 +1107,392 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 		}
 		
 		$sToolTip .= '</div>';
-		
-		return $sToolTip;
+		$this->m_sToolTip = $sToolTip;
 	}
 	
-	function getStringType($iClass)
+	function getToolTip()
 	{
-		switch($iClass)
-		{
-			case BAB_TM_TASK:
-				return bab_translate("Task");	
-			case BAB_TM_CHECKPOINT:
-				return bab_translate("Checkpoint");	
-			case BAB_TM_TODO:
-				return bab_translate("ToDo");	
-			default:
-				return '???';	
-		}
+		return $this->m_sToolTip;
 	}
 }
 
-/*
-class BAB_TM_Gantt2
+
+class BAB_TM_GanttToDoCheckpoint extends BAB_TM_GanttTaskBase
 {
-	var $iHeight			= null;
-	var $iWidth				= null;
-	var $iOnePxInSecondes	= null;
+	var $m_sClassName = '';
 	
-	var $iDaysToDisplay 	= null;
-	var $iTaskTitleWidth	= null;
-	
-	//ganttNav
-	var $iNavPosY			= null;
-	var $iNavPosX			= null;
-	var $iNavHeight			= null;
-	var $iNavWidth			= null;
-	var $iNextMonthPosX		= null;
-	var $iNextMonthPosY 	= null;
-	var $iNextMonthHeight	= null;
-	var $iNextMonthWidth	= null;
-	var $iNextWeekPosX		= null;
-	var $iNextWeekPosY		= null;
-	var $iNextWeekHeight	= null;
-	var $iNextWeekWidth		= null;
-	var $iGotoDatePosX		= null;
-	var $iGotoDatePosY		= null;
-	var $iGotoDateHeight	= null;
-	var $iGotoDateWidth		= null;
-	
-	var $sPrevMonth			= '';
-	var $sPrevWeek			= '';
-	var $sNextWeek			= '';
-	var $sNextMonth			= '';
-	var $sGotoDate			= '';
-	var $sPrevMonthUrl		= '';
-	var $sPrevWeekUrl		= '';
-	var $sNextWeekUrl		= '';
-	var $sNextMonthUrl		= '';
-	var $sGotoDateUrl		= '';
-	var $sGanttViewParamUrl	= '';
-	
-	var $sTitle 			= '';
-	
-	function BAB_TM_Gantt2($sStartDate, $iStartWeekDay = 1)
+	function BAB_TM_GanttToDoCheckpoint($oGantt)
 	{
-		$this->iHeight			= 25;
-		$this->iWidth			= 14;
-		$this->iDaysToDisplay	= 365;
-		$this->iTaskTitleWidth	= 200;
-		$this->sTitle 			= bab_translate("Gantt view");
-		$this->iOnePxInSecondes = 86400 / $this->iWidth;
-		
-		$this->initGanttNavPosition();
+		parent::BAB_TM_GanttTaskBase($oGantt);
 	}
 	
-	function initGanttNavPosition()
+	function buildPeriods($aTask)
 	{
-		$this->iNavPosX				= 0;
-		$this->iNavPosY				= 0;
-		$this->iNavHeight			= $this->iHeight;
-		$this->iNavWidth			= ($this->iTaskTitleWidth + ($this->iDaysToDisplay * $this->iWidth));
+		$oTaskStartDate		= BAB_DateTime::fromIsoDateTime($aTask['plannedStartDate']);
+		$oTaskEndDate		= BAB_DateTime::fromIsoDateTime($aTask['plannedEndDate']);
 
+		$iTaskStartDateTs	= $oTaskStartDate->getTimeStamp();
+		$iTaskEndDateTs		= $oTaskEndDate->getTimeStamp();
 		
-//		echo '(' . $this->iTaskTitleWidth . '+' . '(' . $this->iDaysToDisplay . '*' . $this->iWidth . ')) = ' . $this->iNavWidth . '<br />'; 
+		$oPeriod 			= $this->createPeriod($iTaskStartDateTs, $iTaskEndDateTs);
 		
+		$oPeriod->setClassName($this->m_sClassName);
+		$oPeriod->setId((int) $aTask['iIdTask']);
+		$oPeriod->setWidth($this->m_oGantt->m_iWidth);
 		
-		$this->iPrevWeekPosX		= 0;
-		$this->iPrevWeekPosY		= 0;
-		$this->iPrevWeekHeight		= $this->iHeight;
-		$this->iPrevWeekWidth		= $this->iWidth;
-		
-		$this->iPrevMonthPosX		= $this->iPrevWeekPosX + $this->iWidth;
-		$this->iPrevMonthPosY		= 0;
-		$this->iPrevMonthHeight		= $this->iHeight;
-		$this->iPrevMonthWidth		= $this->iWidth;
-	
-		$this->iGotoDatePosX		= (($this->iTaskTitleWidth + ($this->iDaysToDisplay * $this->iWidth)) / 2) - ($this->iWidth / 2);
-		$this->iGotoDatePosY		= 0;
-		$this->iGotoDateHeight		= $this->iHeight;
-		$this->iGotoDateWidth		= $this->iWidth;
-		
-		$this->iNextWeekPosX		= $this->iNavWidth - $this->iWidth;
-		$this->iNextWeekPosY		= 0;
-		$this->iNextWeekHeight		= $this->iHeight;
-		$this->iNextWeekWidth		= $this->iWidth;
-		
-		$this->iNextMonthPosX		= $this->iNextWeekPosX - $this->iWidth;
-		$this->iNextMonthPosY		= 0;
-		$this->iNextMonthHeight		= $this->iHeight;
-		$this->iNextMonthWidth		= $this->iWidth;
-	}
-
-	
-	
-	
-	function initDates($sStartDate, $iStartWeekDay)
-	{
-		global $babInstallPath;
-		require_once($babInstallPath . 'utilit/dateTime.php');
-		
-		$this->sPrevMonth	= bab_translate("Previous month");
-		$this->sPrevWeek	= bab_translate("Previous week");
-		$this->sGotoDate	= bab_translate("Go to date");
-		$this->sNextWeek	= bab_translate("Next week");
-		$this->sNextMonth	= bab_translate("Next month");
-		$sUrlBase			= $GLOBALS['babUrlScript'] . 
-			'?tg=usrTskMgr&idx=' . BAB_TM_IDX_DISPLAY_GANTT_CHART . $this->sGanttViewParamUrl . '&date=';
-
-		$this->setDates($sStartDate, $iStartWeekDay);
-		//echo 'StartDate ==> ' . $sStartDate . '<br />';
-
-		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
-		$oDate->add(-1, BAB_DATETIME_MONTH);
-		$this->sPrevMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
-		//echo 'sPrevMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
-
-		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
-		$oDate->add(-7, BAB_DATETIME_DAY);
-		$this->sPrevWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
-		//echo 'sPrevWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
-		
-		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
-		$oDate->add(7, BAB_DATETIME_DAY);
-		$this->sNextWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
-		//echo 'sNextWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
-
-		$oDate = BAB_DateTime::fromTimeStamp($this->aDisplayedStartDate[0]);
-		$oDate->add(1, BAB_DATETIME_MONTH);
-		$this->sNextMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
-		//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
-		
-		$this->m_sGotoDateUrl = $sUrlBase;
-	}
-	
-	
-	
-	// Tools functions
-	function getNbDaysInMonth($iMonth, $iYear)
-	{
-		static $aNbDaysInMonth_leap = array ('1' => 31, '2' => 29, '3' => 31, '4' => 30, '5' => 31, 
-			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
-		static $aNbDaysInMonth_nonLeap = array ('1' => 31, '2' => 28, '3' => 31, '4' => 30, '5' => 31, 
-			'6' => 30, '7' => 31, '8' => 31, '9' => 30, '10' => 31, '11' => 30, '12' => 31);
-
-		if($iMonth >= 1 && $iMonth <= 12)
-		{
-			$aNbDaysInMonth = ($this->isLeapYear($iYear)) ? $aNbDaysInMonth_leap : $aNbDaysInMonth_nonLeap;
-				
-			return $aNbDaysInMonth[$iMonth];
-		}
-		return 0;
-	}
-	
-	function isLeapYear($iYears)
-	{
-		return ( ($iYears % 4) == 0 && ($iYears % 100) != 0 || ($iYears % 400) == 0 );
-	}
-	
-	function getMonth($iMonth)
-	{
-		static $aMonths = null;
-
-		if(is_null($aMonths))
-		{
-			$aMonths = array ('1' => bab_translate("January"), '2' => bab_translate("February"), 
-				'3' => bab_translate("March"), '4' => bab_translate("April"), '5' => bab_translate("May"), 
-				'6' => bab_translate("June"), '7' => bab_translate("July"), '8' => bab_translate("August"),
-				'9' => bab_translate("September"), '10' => bab_translate("October"), '11' => bab_translate("November"), 
-				'12' => bab_translate("December"));
-		}
-			
-		if($iMonth >= 1 && $iMonth <= 12)
-		{
-			return $aMonths[$iMonth];
-		}
-		return '';
-	}
-
-	function getDay($iDay)
-	{
-		static $aDays = array ('0' => 'D', '1' => 'L', '2' => 'M', '3' => 'M', '4' => 'J', 
-				'5' => 'V', '6' => 'S');
-			
-		if($iDay >= 0 && $iDay <= 6)
-		{
-			return $aDays[$iDay];
-		}
-		return $iDay;
-	}
-
-	function dummyGetNext()
-	{
-		return ($this->m_iDummy++ == 0);
+		$this->addPeriod($oPeriod);
 	}
 }
-//*/
+
+
+class BAB_TM_GanttToDo extends BAB_TM_GanttToDoCheckpoint
+{
+	function BAB_TM_GanttToDo($oGantt)
+	{
+		parent::BAB_TM_GanttToDoCheckpoint($oGantt);
+		
+		$this->m_sClassName = 'ganttToDo';
+	}
+}
+
+
+class BAB_TM_GanttCheckpoint extends BAB_TM_GanttToDoCheckpoint
+{
+	function BAB_TM_GanttCheckpoint($oGantt)
+	{
+		parent::BAB_TM_GanttToDoCheckpoint($oGantt);
+		
+		$this->m_sClassName = 'ganttCheckpoint';
+	}
+}
+
+
+class BAB_TM_GanttTask extends BAB_TM_GanttTaskBase
+{
+	var $m_oTaskTime = null;
+	
+	function BAB_TM_GanttTask($oGantt)
+	{
+		parent::BAB_TM_GanttTaskBase($oGantt);
+	}
+	
+	function init($aTask)
+	{
+		$oTaskTimeManager = getTaskTimeManager();
+		$this->m_oTaskTime = $oTaskTimeManager->getTask($aTask);
+	}
+	
+	function buildPeriods($aTask)
+	{
+		$this->init($aTask);
+		
+		$this->buildPlannedPeriod();
+		$this->buildRealPeriod();
+		$this->buildEffectivePeriod();
+		$this->buildCompletion();
+		$this->buildRemaingAccordingToday();
+		//$this->buildRealPeriod();
+	}
+	
+	function buildPlannedPeriod()
+	{
+		$iStartDateTs	= $this->m_oTaskTime->m_oPlannedStartDate->getTimeStamp();
+		$iEndDateTs		= $this->m_oTaskTime->m_oPlannedEndDate->getTimeStamp();
+		
+if($iEndDateTs > $this->m_iDisplayedStartDateTs && $iStartDateTs < $this->m_iDisplayedEndDateTs)
+		{
+			$oPeriod = $this->createPeriod($iStartDateTs, $iEndDateTs);
+			
+			$oPeriod->setClassName('ganttTask');
+			$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+			
+			$this->addPeriod($oPeriod);
+		}
+	}
+	
+	function buildRealPeriod()
+	{
+		if(!is_null($this->m_oTaskTime->m_oStartDate) && !is_null($this->m_oTaskTime->m_oEndDate))
+		{
+			$iStartDateTs	= $this->m_oTaskTime->m_oStartDate->getTimeStamp();
+			$iEndDateTs		= $this->m_oTaskTime->m_oEndDate->getTimeStamp();
+
+if($iEndDateTs > $this->m_iDisplayedStartDateTs && $iStartDateTs < $this->m_iDisplayedEndDateTs)
+			{
+				$oPeriod 		= $this->createPeriod($iStartDateTs, $iEndDateTs);
+				
+				$oPeriod->setClassName('ganttTaskReal');
+				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+				
+				$oPeriod->setTop($oPeriod->getTop() - 4);
+				$oPeriod->setHeight($oPeriod->getHeight() + 8);
+				
+				$this->addPeriod($oPeriod);
+			}
+		}
+	}
+	
+	function buildRemaingAccordingToday()
+	{
+		//Ce qui reste en fonction de la date du jour
+		if($this->m_oTaskTime->m_iCompletion < 100)
+		{
+			$oTaskTimeManager	=& getTaskTimeManager();
+			$oTodayDate			= $oTaskTimeManager->getTodayIsoDateTime();
+			$oRemainStartDate	= null;
+			$oRemainEndDate		= null;
+			
+			$this->m_oTaskTime->computeRemainingDates($oRemainStartDate, $oRemainEndDate);
+
+if($oRemainEndDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $oRemainStartDate->getTimeStamp() < $this->m_iDisplayedEndDateTs)
+			{
+				$oPeriod = $this->createPeriod($oRemainStartDate->getTimeStamp(), 
+					$oRemainEndDate->getTimeStamp());
+					
+				$oPeriod->setClassName('ganttTaskRemaining');
+				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+				
+				$oPeriod->setTop($oPeriod->getTop() + ($oPeriod->getHeight() / 2));
+				$oPeriod->setHeight($oPeriod->getHeight() / 2);
+	
+				$this->addPeriod($oPeriod);
+			}
+			
+/*			
+			$iIsEqual	= 0;
+			$iIsBefore	= -1;
+			$iIsAfter	= 1;
+			
+			$oStart	= null;
+			$oEndDate = null;
+			
+			
+			if($iIsAfter == BAB_DateTime::compare($oRemainEndDate, $oTodayDate))
+			{
+echo 
+	' oRemainEndDate ==> ' . $oRemainEndDate->getIsoDateTime() .
+	' est aprés ' .
+	' oTodayDate ==> ' . $oTodayDate->getIsoDateTime() .
+	'<br />';
+				$oEndDate = $oRemainEndDate;
+			}
+			else 
+			{
+echo 
+	' oRemainEndDate ==> ' . $oRemainEndDate->getIsoDateTime() .
+	' est avant ' .
+	' oTodayDate ==> ' . $oTodayDate->getIsoDateTime() .
+	'<br />';
+				$oEndDate = $oTodayDate->cloneDate();
+			}
+//*/			
+			
+			
+			
+			
+				
+			//Raccorde la date de fin de la tâche à la date de début de ce qui reste à faire
+if($oTodayDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $this->m_oTaskTime->getEndDateTimeStamp() < $this->m_iDisplayedEndDateTs)
+			{/*	
+echo 
+	'Début affichage ==> ' . $this->getEndDateTimeStamp() .
+	'Fin affichage ==> ' . $oTodayDate->getTimeStamp() .
+	'<br />';*/
+				$oPeriod = $this->createPeriod($this->m_oTaskTime->getEndDateTimeStamp(), 
+				$oTodayDate->getTimeStamp());
+				$oPeriod->setClassName('ganttTaskFromTaskToRemaing');
+				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+				$oPeriod->setTop($oPeriod->getTop() + ($oPeriod->getHeight() / 2));
+				$oPeriod->setHeight(($oPeriod->getHeight() / 2));
+				$this->addPeriod($oPeriod);
+			}
+		}
+	}
+}
+
+
+
+class BAB_TM_GanttTaskDate extends BAB_TM_GanttTask
+{
+
+	function BAB_TM_GanttTaskDate($oGantt)
+	{
+		parent::BAB_TM_GanttTask($oGantt);
+	}
+
+	function buildEffectivePeriod()
+	{
+		$iTaskStartDateTs	= $this->m_oTaskTime->getStartDateTimeStamp();
+		$iTaskEndDateTs		= $iTaskStartDateTs + $this->m_oTaskTime->m_iEffectiveDurationInSeconds;
+		
+if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this->m_iDisplayedEndDateTs)
+		{
+			$oPeriod 			= $this->createPeriod($iTaskStartDateTs, $iTaskEndDateTs);
+			
+			$oPeriod->setClassName('ganttTaskEffectiveDuration');
+			$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+			$oPeriod->setHeight($oPeriod->getHeight() / 2);
+			$this->addPeriod($oPeriod);
+		}
+	}
+
+	function buildCompletion() 
+	{
+		if($this->m_oTaskTime->m_iCompletion > 0)
+		{
+			$iDoneDurationInSeconds = ($this->m_oTaskTime->m_iCompletion * $this->m_oTaskTime->m_iEffectiveDurationInSeconds) / 100;
+
+			$oCompletionStartDate	= $this->m_oTaskTime->cloneStartDate();
+			$oCompletionEndDate		= $oCompletionStartDate->cloneDate();
+			$oCompletionEndDate->add($iDoneDurationInSeconds, BAB_DATETIME_SECOND);
+			
+			$iTaskStartDateTs	= $oCompletionStartDate->getTimeStamp();
+			$iTaskEndDateTs		= $oCompletionEndDate->getTimeStamp();
+
+if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this->m_iDisplayedEndDateTs)
+			{
+				$oPeriod = $this->createPeriod($iTaskStartDateTs, $iTaskEndDateTs);
+				
+				$oPeriod->setClassName('ganttTaskDone');
+				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+				$oPeriod->setHeight(($oPeriod->getHeight() / 2));
+				$this->addPeriod($oPeriod);
+			}
+		}
+	}
+}
+
+
+
+
+class BAB_TM_GanttTaskDuration extends BAB_TM_GanttTask
+{
+	
+	function BAB_TM_GanttTaskDuration($oGantt)
+	{
+		parent::BAB_TM_GanttTask($oGantt);
+	}
+
+	function buildEffectivePeriod()
+	{
+		$oStartDate = $this->m_oTaskTime->getStartDate();
+		$oEndDate	= null;
+
+		BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
+		
+		if($oEndDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $oStartDate->getTimeStamp() < $this->m_iDisplayedEndDateTs)
+		{
+			$oPeriod = $this->createPeriod($oStartDate->getTimeStamp(), $oEndDate->getTimeStamp());
+			
+			$oPeriod->setClassName('ganttTaskEffectiveDuration');
+			$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+			$oPeriod->setHeight($oPeriod->getHeight() / 2);
+			$this->addPeriod($oPeriod);
+		}
+	}
+
+	function buildCompletion() 
+	{
+		if($this->m_oTaskTime->m_iCompletion > 0)
+		{
+			$oStartDate = $this->m_oTaskTime->cloneStartDate();
+			$oEndDate	= $oStartDate->cloneDate();
+
+			BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
+			
+			$iEffectiveDurationInSeconds = $oEndDate->getTimeStamp() - $oStartDate->getTimeStamp();
+			$iDoneDurationInSeconds = ($this->m_oTaskTime->m_iCompletion * $iEffectiveDurationInSeconds) / 100;
+
+			$oEndDate->add( - ($iEffectiveDurationInSeconds - $iDoneDurationInSeconds), BAB_DATETIME_SECOND);
+
+			$iTaskStartDateTs	= $oStartDate->getTimeStamp();
+			$iTaskEndDateTs		= $oEndDate->getTimeStamp();
+			
+			if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this->m_iDisplayedEndDateTs)
+			{
+				$oPeriod = $this->createPeriod($iTaskStartDateTs, $iTaskEndDateTs);
+				
+				$oPeriod->setClassName('ganttTaskDone');
+				$oPeriod->setId($this->m_oTaskTime->m_iIdTask);
+				$oPeriod->setHeight(($oPeriod->getHeight() / 2));
+				$this->addPeriod($oPeriod);
+			}
+		}
+	}
+}
+
+
+class BAB_TM_GanttTaskPeriod
+{
+	var $m_iTop						= 0;
+	var $m_iLeft					= 0;
+	var $m_iHeight					= 0;
+	var $m_iWidth					= 0;
+	var $m_sClassName				= '';
+	var $m_iId						= 0;
+	
+	function BAB_TM_GanttTaskPeriod()
+	{
+	}
+
+	function setTop($iTop)
+	{
+		$this->m_iTop = (int) $iTop;
+	}
+	
+	function getTop()
+	{
+		return $this->m_iTop;
+	}
+	
+	function setLeft($iLeft)
+	{
+		$this->m_iLeft = (int) $iLeft;
+	}
+	
+	function getLeft()
+	{
+		return $this->m_iLeft;
+	}
+	
+	function setHeight($iHeight)
+	{
+		$this->m_iHeight = (int) $iHeight;
+	}
+	
+	function getHeight()
+	{
+		return $this->m_iHeight;
+	}
+	
+	function setWidth($iWidth)
+	{
+		$this->m_iWidth = (int) $iWidth;
+	}
+	
+	function getWidth()
+	{
+		return $this->m_iWidth;
+	}
+	
+	function setClassName($sClassName)
+	{
+		$this->m_sClassName = (string) $sClassName;
+	}
+	
+	function getClassName()
+	{
+		return $this->m_sClassName;
+	}
+	
+	function setId($iId)
+	{
+		$this->m_iId = (int) $iId;
+	}
+	
+	function getId()
+	{
+		return $this->m_iId;
+	}
+}
 ?>
