@@ -4583,7 +4583,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
-	global $babBody, $babDB;
+	/**
+	 * Upgrade to 6.6.96
+	 */
+
 	$sQuery = 
 		'SELECT 
 			`id` iId,
