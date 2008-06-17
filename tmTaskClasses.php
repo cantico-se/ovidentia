@@ -46,9 +46,9 @@
 		function BAB_TM_Task()
 		{
 			$oTmCtx 					=& getTskMgrContext();
-			$this->m_iIdProjectSpace	=& $oTmCtx->getIdProjectSpace();
-			$this->m_iIdProject			=& $oTmCtx->getIdProject();
-			$this->m_iIdTask 			=& $oTmCtx->getIdTask();
+			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject			= $oTmCtx->getIdProject();
+			$this->m_iIdTask 			= $oTmCtx->getIdTask();
 			
 			$this->m_isPersonnal = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject);
 			
@@ -139,9 +139,9 @@
 			$this->m_aTaskPriority = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 			
 			$oTmCtx 					=& getTskMgrContext();
-			$this->m_iIdProjectSpace	=& $oTmCtx->getIdProjectSpace();
-			$this->m_iIdProject			=& $oTmCtx->getIdProject();
-			$this->m_iIdTask			=& $oTmCtx->getIdTask();
+			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject			= $oTmCtx->getIdProject();
+			$this->m_iIdTask			= $oTmCtx->getIdTask();
 			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
 
 			$this->initCaptions();
