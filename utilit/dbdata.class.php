@@ -195,12 +195,18 @@ class bab_dbdata {
 				$keys[] = $babDB->backTick($key);
 			}
 			
-			$babDB->$method('
+			$res = $babDB->$method('
 				INSERT INTO '.$babDB->backTick($this->tablename).' 
 				('.implode(', ',$keys).') 
 				VALUES 
 				('.$babDB->quote($row).') 
 			');
+			
+			
+			if (false === $res) {
+				return false;
+			}
+			
 			
 			if (isset($this->primaryautoincremented)) {
 				return $babDB->db_insert_id();
