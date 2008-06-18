@@ -2583,4 +2583,5 @@
 <string id="You must select 100% for the completion rate when you enter a real end date">Vous devez séléctionner un taux d'avancement égale à 100% lorsque vous avez choisi une date de fin réelle</string>
 <string id="The planned start date is not valid">La date de début plannifiée n'est pas valide</string>
 <string id="The planned end date is not valid">La date de fin plannifiée n'est pas valide</string>
+<string id="You can not delete tis task because another task are linked on it">Vous ne pouvez pas supprimer cette tâche car une ou plusieures tâches sont liées à celle-ci</string>
 </fr>

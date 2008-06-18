@@ -2072,13 +2072,24 @@ function displayDeleteTaskForm()
 	
 	$oTask = new BAB_TM_Task();
 	
+	$aDependingTasks = array();
+	bab_getDependingTasks($iIdTask, $aDependingTasks);
 	if($oTask->loadFromDataBase($iIdTask))
 	{
-		$bf->set_data('action', BAB_TM_ACTION_DELETE_TASK);
-
-		$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
-		$bf->set_caption('message', bab_translate("Continue ?"));
-		$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
+		if(count($aDependingTasks) == 0)	
+		{
+			$bf->set_data('action', BAB_TM_ACTION_DELETE_TASK);
+	
+			$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
+			$bf->set_caption('message', bab_translate("Continue ?"));
+			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
+		}
+		else
+		{
+			$bf->set_caption('warning', bab_translate("You can not delete tis task because another task are linked on it"));
+			$bf->set_caption('message', bab_translate(""));
+			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
+		}
 	}
 	else 
 	{
@@ -2578,6 +2589,7 @@ function deleteTask()
 			bab_getDependingTasks($iIdTask, $aDependingTasks);
 			if(count($aDependingTasks) > 0)
 			{
+				/*
 				foreach($aDependingTasks as $iIdT)
 				{
 					bab_getTask($iIdT, $aTask);
@@ -2585,6 +2597,11 @@ function deleteTask()
 					bab_updateTask($iIdTask, $aTask);
 					bab_deleteTaskLinks($iIdT);
 				}
+				//*/
+				
+				global $babBody;
+				$babBody->addError(bab_translate("You can not delete tis task because another task are linked on it"));
+				return;
 			}
 		}
 
