@@ -2208,11 +2208,6 @@ bab_debug($sMsg);
 				}
 				
 				$aTask['iCompletion'] = $this->m_iCompletion;
-//*
-bab_debug($_POST);				
-//bab_debug($aTask);				
-return true;
-//*/
 				if(bab_updateTask($this->m_iIdTask, $aTask))
 				{
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
@@ -2487,6 +2482,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		var $m_iUserProfil				= null;
 		var $m_oTask					= null;
 		
+		var $m_sTaskNumber				= null;
 		function BAB_TM_TaskUpdateByTaskResponsible()
 		{
 			$oTmCtx						=& getTskMgrContext();
@@ -2503,6 +2499,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			$this->m_iIdUserModified	= $GLOBALS['BAB_SESS_USERID'];
 			$this->m_iCompletion		= (int) bab_rp('oCompletion', 0);
 			
+			$this->m_sTaskNumber		= $this->m_oTask->m_aTask['sTaskNumber'];
 			//$this->m_iParticipationStatus		= 0;
 		}
 		
@@ -2536,47 +2533,122 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		
 		function isTaskValid()
 		{
+			return $this->datesValid();
+		}
+				
+		function datesValid()
+		{
 			global $babBody;
 			$bSuccess = true;
-			$aTask =& $this->m_oTask->m_aTask;
-
-//fais une expression régulière
 			
-			if((int) $aTask['iCompletion'] === 0 && $this->m_iCompletion > 0)
+			$bStartDateValid = $this->isoDateTimeDateValid($this->m_sStartDate);
+			$bEndDateValid = $this->isoDateTimeDateValid($this->m_sEndDate);
+
+			if($this->m_iCompletion > 0 && !$bStartDateValid)
 			{
-				if(!$this->isDateValid($this->m_sStartDate))
-				{
-					$babBody->addError(bab_translate("You must enter a valid start date when the completion rate is greater than zero"));
-				}
+				$babBody->addError(bab_translate("You must enter a valid real start date when the completion rate is greater than 0%"));
+				$bSuccess = false;
 			}
 			
+			if($this->m_iCompletion >= 100 && !$bEndDateValid)
+			{
+				$babBody->addError(bab_translate("You must enter a valid real end date when the completion rate is equal to 100%"));
+				$bSuccess = false;
+			}
+
+			if($bStartDateValid && $this->m_iCompletion <= 0)
+			{
+				$babBody->addError(bab_translate("You must select a completion rate greater than 0% when you enter a real start date"));
+				$bSuccess = false;
+			}
+
+			if($bEndDateValid && $this->m_iCompletion < 100)
+			{
+				$babBody->addError(bab_translate("You must select 100% for the completion rate when you enter a real end date"));
+				$bSuccess = false;
+			}
+			
+			
+			//bab_debug($this->m_sStartDate . ' ' . $this->m_sEndDate);
+			
+			if($bStartDateValid && $bEndDateValid)
+			{
+				$oStartDate = BAB_DateTime::fromIsoDateTime($this->m_sStartDate);
+				$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sEndDate);
+				
+				$iIsEqual	= 0;
+				$iIsBefore	= -1;
+				$iIsAfter	= 1;
+				
+				if($iIsAfter == BAB_DateTime::compare($oStartDate, $oEndDate))
+				{
+					$babBody->addError(bab_translate("The real start date is greater than the real end date"));
+					$bSuccess = false;
+				}
+			}
 			return $bSuccess;
 		}
 		
-		function isDateValid($sIsoDateTime)
+		function isoDateTimeDateValid($sIsoDateTime)
 		{
-			if(strlen(trim($sIsoDateTime)) > 0)
+			if(0 !== preg_match("/^([0-9]{4}).{1}([0-9]{2}).{1}([0-9]{2})[[:space:]]{1}([0-9]{2})\:([0-9]{2})\:([0-9]{2})/", $sIsoDateTime, $aMatch))
 			{
-				$oDate = BAB_DateTime::fromIsoDateTime($sIsoDateTime);
-				if(null !== $oDate)
+				if(strlen(trim($sIsoDateTime)) > 0)
 				{
-					return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
+					$oDate = BAB_DateTime::fromIsoDateTime($sIsoDateTime);
+					if(null !== $oDate)
+					{
+						return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
+					}
 				}
 			}
 			return false;
+		}
+
+		function getProjectSpaceName()
+		{
+			$sProjectSpaceName = '???';
+			if(bab_getProjectSpace($this->m_iIdProjectSpace, $aProjectSpace))
+			{
+				$sProjectSpaceName = $aProjectSpace['name'];
+			}
+			return $sProjectSpaceName;
+		}
+
+		function getProjectName()
+		{
+			$sProjectName = '???';
+			if(bab_getProject($this->m_iIdProject, $aProject))
+			{
+				$sProjectName = $aProject['name'];
+			}
+			return $sProjectName;	
+		}
+
+		function noticeTaskUpdatedBy($iIdEvent)
+		{
+			$aTask =& $this->m_oTask->m_aTask;
+			
+			$g_aEmailMsg =& $GLOBALS['g_aEmailMsg'];
+			$sSubject = $g_aEmailMsg[$iIdEvent]['subject'];
+			$sBody = $g_aEmailMsg[$iIdEvent]['body'];
+			
+			$sProjectSpaceName = $this->getProjectSpaceName();
+			$sProjectName = $this->getProjectName();
+			$sBody = sprintf($sBody, ((strlen(trim($aTask['sShortDescription'])) > 0) ? $aTask['sShortDescription'] : $aTask['sTaskNumber']), $sProjectName, $sProjectSpaceName, 
+				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
+			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
+				$iIdEvent, $sSubject, $sBody);
 		}
 		
 		function save()
 		{
 			if($this->isTaskValid())
 			{
-//				bab_debug($_POST);
-				
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				$aTask['sModified']					= $this->m_sModified;
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
-//				$aTask['iCompletion']				= $this->m_iCompletion;
 				$aTask['sStartDate']				= $this->m_sStartDate;
 				$aTask['sEndDate'] 					= $this->m_sEndDate;
 				
@@ -2597,13 +2669,24 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 					//$aTask['sEndDate'] = '';
 					$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
 				}
+
+				if(0 === (int) $this->m_iCompletion)
+				{
+					$aTask['sStartDate'] = '';
+					$aTask['sEndDate'] = '';
+				}
 				
 				$aTask['iCompletion'] = $this->m_iCompletion;
 				
-				
-				
-				return false;
+				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
+				if(true === $bSuccess)				
+				{
+					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
+					$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
+				}
+				return $bSuccess;
 			}
+			return false;
 		}
 	}
 ?>

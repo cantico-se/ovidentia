@@ -903,19 +903,21 @@ function check_all(strCtrlName, checked)
 						<label for="sPlannedStartDate">{ m_captions[sPlannedStartDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
-					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+						<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyPlannedStartDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyPlannedStartDate] "!= 1" -->
 						<a href="javascript:dateCallback('sPlannedStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
 						</a>
-					<!--#endif m_datas[isReadOnlyDate] -->
+					<!--#else m_datas[isReadOnlyPlannedStartDate] -->
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/Space1PxTrans.gif" width="16px" />
+					<!--#endif m_datas[isReadOnlyPlannedStartDate] -->
 				
-						<select id="oPlannedStartHour" name="oPlannedStartHour" { m_datas[sDisabledTime] } >
+						<select id="oPlannedStartHour" name="oPlannedStartHour" { m_datas[sDisabledPlannedStartDateTime] } >
 							<!--#in getNextPlannedStartHour -->
 							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedStartHour] } >{ m_datas[sHour] }</option>
 							<!--#endin getNextPlannedStartHour -->
 						</select>:
-						<select id="oPlannedStartMinut" name="oPlannedStartMinut" { m_datas[sDisabledTime] } >
+						<select id="oPlannedStartMinut" name="oPlannedStartMinut" { m_datas[sDisabledPlannedStartDateTime] } >
 							<!--#in getNextPlannedStartMinut -->
 							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedStartMinut] } >{ m_datas[sMinut] }</option>
 							<!--#endin getNextPlannedStartMinut -->
@@ -929,19 +931,21 @@ function check_all(strCtrlName, checked)
 						<label for="sStartDate">{ m_captions[sStartDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sStartDate" id="sStartDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
-					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+						<input type="text" name="sStartDate" id="sStartDate" { m_datas[sReadOnlyStartDate] } maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyStartDate] "!= 1" -->
 					<a href="javascript:dateCallback('sStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sStartDate] }" />
 						</a>
-					<!--#endif m_datas[isReadOnlyDate] -->
+					<!--#else m_datas[isReadOnlyStartDate] -->
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/Space1PxTrans.gif" width="16px" />
+					<!--#endif m_datas[isReadOnlyStartDate] -->
 
-						<select id="oStartHour" name="oStartHour">
+						<select id="oStartHour" name="oStartHour" { m_datas[sDisabledStartDateTime] } >
 							<!--#in getNextStartHour -->
 							<option value="{ m_datas[iHour] }" { m_datas[sSelectedStartHour] } >{ m_datas[sHour] }</option>
 							<!--#endin getNextStartHour -->
 						</select>:
-						<select id="oStartMinut" name="oStartMinut">
+						<select id="oStartMinut" name="oStartMinut" { m_datas[sDisabledStartDateTime] } >
 							<!--#in getNextStartMinut -->
 							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedStartMinut] } >{ m_datas[sMinut] }</option>
 							<!--#endin getNextStartMinut -->
@@ -955,19 +959,21 @@ function check_all(strCtrlName, checked)
 						<label for="sPlannedEndDate" id="sPlannedEndDateCaption">{ m_captions[sPlannedEndDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
-					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
-					<a href="javascript:dateCallback('sPlannedEndDate');">
+						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyPlannedEndDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyPlannedEndDate] "!= 1" -->
+						<a href="javascript:dateCallback('sPlannedEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
 						</a>
-					<!--#endif m_datas[isReadOnlyDate] -->
+					<!--#else m_datas[isReadOnlyPlannedEndDate] -->
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/Space1PxTrans.gif" width="16px" />
+					<!--#endif m_datas[isReadOnlyPlannedEndDate] -->
 				
-						<select id="oPlannedEndHour" name="oPlannedEndHour" { m_datas[sDisabledTime] } >
+						<select id="oPlannedEndHour" name="oPlannedEndHour" { m_datas[sDisabledPlannedEndDateTime] } >
 							<!--#in getNextPlannedEndHour -->
 							<option value="{ m_datas[iHour] }" { m_datas[sSelectedPlannedEndHour] } >{ m_datas[sHour] }</option>
 							<!--#endin getNextPlannedEndHour -->
 						</select>:
-						<select id="oPlannedEndMinut" name="oPlannedEndMinut" { m_datas[sDisabledTime] } >
+						<select id="oPlannedEndMinut" name="oPlannedEndMinut" { m_datas[sDisabledPlannedEndDateTime] } >
 							<!--#in getNextPlannedEndMinut -->
 							<option value="{ m_datas[iMinut] }" { m_datas[sSelectedPlannedEndMinut] } >{ m_datas[sMinut] }</option>
 							<!--#endin getNextPlannedEndMinut -->
@@ -981,19 +987,21 @@ function check_all(strCtrlName, checked)
 						<label for="sEndDate">{ m_captions[sEndDate] }</label>
 					</td>
 					<td>
-						<input type="text" name="sEndDate" id="sEndDate" { m_datas[sReadOnlyDate] } maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
-					<!--#if m_datas[isReadOnlyDate] "!= 1" -->
+						<input type="text" name="sEndDate" id="sEndDate" { m_datas[sReadOnlyEndDate] } maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+					<!--#if m_datas[isReadOnlyEndDate] "!= 1" -->
 						<a href="javascript:dateCallback('sEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sEndDate] }" />
 						</a>
-					<!--#endif m_datas[isReadOnlyDate] -->
+					<!--#else m_datas[isReadOnlyEndDate] -->
+						<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/Space1PxTrans.gif" width="16px" />
+					<!--#endif m_datas[isReadOnlyEndDate] -->
 
-					<select id="oEndHour" name="oEndHour">
+					<select id="oEndHour" name="oEndHour" { m_datas[sDisabledEndDateTime] } >
 						<!--#in getNextEndHour -->
 						<option value="{ m_datas[iHour] }" { m_datas[sSelectedEndHour] } >{ m_datas[sHour] }</option>
 						<!--#endin getNextEndHour -->
 					</select>:
-					<select id="oEndMinut" name="oEndMinut">
+					<select id="oEndMinut" name="oEndMinut" { m_datas[sDisabledEndDateTime] } >
 						<!--#in getNextEndMinut -->
 						<option value="{ m_datas[iMinut] }" { m_datas[sSelectedEndMinut] } >{ m_datas[sMinut] }</option>
 						<!--#endin getNextEndMinut -->
@@ -1236,6 +1244,7 @@ onClassChanged(document.forms.taskForm['iClass']);
 //-->
 </script>
 <!--#end taskForm -->
+
 
 
 <!--#begin taskCommentariesList -->
