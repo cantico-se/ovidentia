@@ -1172,7 +1172,13 @@ function displayTaskList($sIdx)
 			$this->m_oFilterSessionContext->set('iIdProject', bab_rp('iIdProject', 
 				$this->m_oFilterSessionContext->get('iIdProject', -1)));
 			$this->set_data('iIdProject', $this->m_oFilterSessionContext->get('iIdProject', -1));
-			$this->set_data('iSelectedTaskFilter', $this->m_oFilterSessionContext->get('iIdProject', -1));
+			
+			$iTaskFilter = (int) bab_rp('oTaskFilter', -10);
+			if(-10 !== $iTaskFilter)
+			{
+				$this->m_oFilterSessionContext->set('oTaskFilter', $iTaskFilter);
+			}	
+			$this->set_data('iSelectedTaskFilter', $this->m_oFilterSessionContext->get('oTaskFilter', -1));
 			
 			$this->m_oFilterSessionContext->set('sStartDate', bab_rp('_sStartDate', 
 				$this->m_oFilterSessionContext->get('sStartDate', '')));
