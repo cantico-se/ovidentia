@@ -1239,7 +1239,7 @@ function displayTaskList($sIdx)
 				{
 					if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $datas['iIdProject']))
 					{
-						if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']))
+//						if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']))
 						{
 							$this->m_aTasksFilter[] = array('value' => $datas['iIdProject'], 
 								'text' => $datas['sProjectName']);
@@ -2510,9 +2510,13 @@ function addModifyTask()
 	{
 		$oTaskValidator =& new BAB_TM_MgrTaskCreatorValidator();
 	}
-	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_UNDEFINED != $iUserProfil)
+	else if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
 		$oTaskValidator =& new BAB_TM_TaskUpdaterValidator();
+	}
+	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_TASK_RESPONSIBLE == $iUserProfil)
+	{
+		$oTaskValidator =& new BAB_TM_TaskUpdateByTaskResponsible();
 	}
 	else
 	{

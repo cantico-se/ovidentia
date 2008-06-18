@@ -212,7 +212,6 @@
 			$this->set_data('tg', bab_rp('tg', 'usrTskMgr'));
 			$this->set_data('isLinkable', false);
 			$this->set_data('isProposable', false);
-			$this->set_data('isReadOnlyDate', false);
 			$this->set_data('isCompletionEnabled', false);
 			$this->set_data('isResourceAvailable', false);
 			$this->set_data('isAnswerEnable', false);
@@ -283,29 +282,46 @@
 			$this->set_data('sProposable', '');
 			$this->set_data('sDurationName', '');
 			$this->set_data('sDuration', '');
-			$this->set_data('sReadOnlyDate', '');
-			$this->set_data('sDisabledTime', '');
+
 			$this->set_data('isTaskPriority', false);
+			
+			$this->set_data('isReadOnlyPlannedStartDate', false);
+			$this->set_data('sReadOnlyPlannedStartDate', '');
+			$this->set_data('sDisabledPlannedStartDateTime', '');
 			$this->set_data('sPlannedStartDate', '');
 			$this->set_data('iPlannedStartHour', 0);
-			$this->set_data('sSelectedPlannedStartHour', '');
 			$this->set_data('iPlannedStartMinut', 0);
+			$this->set_data('sSelectedPlannedStartHour', '');
 			$this->set_data('sSelectedPlannedStartMinut', '');
+
+			$this->set_data('isReadOnlyPlannedEndDate', false);
+			$this->set_data('sReadOnlyPlannedEndDate', '');
+			$this->set_data('sDisabledPlannedEndDateTime', '');
 			$this->set_data('sPlannedEndDate', '');
 			$this->set_data('iPlannedEndHour', 0);
-			$this->set_data('sSelectedPlannedEndHour', '');
 			$this->set_data('iPlannedEndMinut', 0);
+			$this->set_data('sSelectedPlannedEndHour', '');
 			$this->set_data('sSelectedPlannedEndMinut', '');
+			
+			$this->set_data('isReadOnlyStartDate', false);
+			$this->set_data('sReadOnlyStartDate', '');
+			$this->set_data('sDisabledStartDateTime', '');
 			$this->set_data('sStartDate', '');
 			$this->set_data('iStartHour', 0);
-			$this->set_data('sSelectedStartHour', '');
 			$this->set_data('iStartMinut', 0);
+			$this->set_data('sSelectedStartHour', '');
 			$this->set_data('sSelectedStartMinut', '');
+			
+			$this->set_data('isReadOnlyEndDate', false);
+			$this->set_data('sReadOnlyEndDate', '');
+			$this->set_data('sDisabledEndDateTime', '');
 			$this->set_data('sEndDate', '');
 			$this->set_data('iEndHour', 0);
-			$this->set_data('sSelectedEndHour', '');
 			$this->set_data('iEndMinut', 0);
+			$this->set_data('sSelectedEndHour', '');
 			$this->set_data('sSelectedEndMinut', '');
+			
+			
 			$this->set_data('sPredecessorNumber', '');
 			$this->set_data('sStartToStart', '');
 			$this->set_data('sEndToStart', '');
@@ -767,10 +783,21 @@
 			$this->set_data('s' . $sFieldNamePart . 'Date', (('00-00-0000' !== (string) $sDate) ? (string) $sDate : ''));
 			$this->set_data('i' . $sFieldNamePart . 'Hour', (int) $iHour);
 			$this->set_data('i' . $sFieldNamePart . 'Minut', (int) $iMinut);
+
+			$isEnabled = false;
+			if('PlannedStart' == $sFieldNamePart || 'PlannedEnd' == $sFieldNamePart)
+			{
+				$isEnabled = $this->m_bIsManager;
+				 
+			}
+			else
+			{
+				$isEnabled = ($this->m_bIsManager || (BAB_TM_TASK_RESPONSIBLE == $this->m_iUserProfil && BAB_TM_YES == $this->m_aCfg['tskUpdateByMgr']));
+			}
 			
-			$this->set_data('isReadOnlyDate', !$this->m_bIsManager);
-			$this->set_data('sReadOnlyDate', (($this->m_bIsManager) ? '' : 'readonly="readonly"'));
-			$this->set_data('sDisabledTime', (($this->m_bIsManager) ? '' : 'disabled="disabled"'));
+			$this->set_data('isReadOnly' . $sFieldNamePart . 'Date', !$isEnabled);
+			$this->set_data('sReadOnly' . $sFieldNamePart . 'Date', (($isEnabled) ? '' : 'readonly="readonly"'));
+			$this->set_data('sDisabled' . $sFieldNamePart . 'DateTime', (($isEnabled) ? '' : 'disabled="disabled"'));
 		}
 
 		function initResponsible($iIdResponsible)
@@ -1292,16 +1319,13 @@
 		
 		function init()
 		{
-			$oTmCtx =& getTskMgrContext();
-			
-			$this->m_iIdProjectSpace =& $oTmCtx->getIdProjectSpace();
-			$this->m_iIdProject =& $oTmCtx->getIdProject();
-			$this->m_iIdTask =& $oTmCtx->getIdTask();
+			$oTmCtx						=& getTskMgrContext();
+			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject			= $oTmCtx->getIdProject();
+			$this->m_iIdTask			= $oTmCtx->getIdTask();
+			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
+			$this->m_oTask				=& new BAB_TM_Task();
 
-			$this->m_iUserProfil = $oTmCtx->getUserProfil();
-
-			$this->m_oTask =& new BAB_TM_Task();
-			
 			$this->m_sTaskNumber = trim(bab_rp('sTaskNumber', ''));
 
 			$iUseEditor = (int) bab_rp('iUseEditor', 0);
@@ -1447,7 +1471,7 @@ bab_debug($sMsg);
 				$this->m_aCfg =& $oTmCtx->getConfiguration();
 			}
 		}
-			
+		
 		function processPostedDate($sFieldPartName)
 		{
 			$sDateFieldName		= 's' . $sFieldPartName . 'Date';
@@ -1476,120 +1500,6 @@ bab_debug($sMsg);
 			}
 		}
 
-/*		
-		function computeEndDate()
-		{
-			require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
-			require_once $GLOBALS['babInstallPath'] . 'utilit/calapi.php';
-			
-			$sWorkingDays = '';
-			$iIdUser = 0; //configuration du site
-			bab_calGetWorkingDays($iIdUser, $sWorkingDays);
-			$aWorkingDays = array_flip(explode(',', $sWorkingDays));
-		
-			$fRemain = 0;
-		
-			if($this->m_iDurationUnit === BAB_TM_DAY)
-			{
-				//Arrondi au superieur donc on va boucler une fois de trop si le reste est > à zéro
-				$iDuration = (int) ceil($this->m_iDuration);
-				$fRemain	= ($this->m_iDuration - (int) $this->m_iDuration);			
-			}
-			else
-			{
-				$iDuration = (int) 1;
-			}
-			
-			$oPlannedStartDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedStartDate);
-			$oPlannedEndDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedStartDate);
-			
-			$iWorkingDaysCount = count($aWorkingDays);
-			
-			do
-			{
-				$aNWD = bab_getNonWorkingDaysBetween($oPlannedStartDate->getTimeStamp(), $oPlannedEndDate->getTimeStamp());
-				if(isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]) && 0 == count($aNWD))
-				{
-					$oPlannedEndDate->add(1);
-				}
-				else 
-				{
-					$oPlannedEndDate->add(2);
-				}
-				$iDuration--;
-			}
-			while(0 < $iDuration && $iWorkingDaysCount > 0);
-
-			
-			if($this->m_iDurationUnit === BAB_TM_DAY)
-			{
-				if($fRemain > 0)
-				{
-					//86400 nombre de secondes dans une journée
-					//On retranche une journée car à cause du floor qui arrondi au 
-					//superieure on a bouclé une fois de trop
-					$oPlannedEndDate->add((86400 * $fRemain) - 86400, BAB_DATETIME_SECOND);
-				
-					if(!isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]))
-					{
-						//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
-						
-						$iNbDays = 0;
-						$this->getGapToFirstWorkingDay($oPlannedEndDate, $aWorkingDays, BAB_DATETIME_DAY, $iNbDays);
-						$oPlannedEndDate->add($iNbDays, BAB_DATETIME_DAY);
-					}
-				}
-			}
-			else 
-			{
-				//3600 nombre de secondes dans une heure
-				$oPlannedEndDate->add(3600 * $this->m_iDuration, BAB_DATETIME_SECOND);
-				
-				if(!isset($aWorkingDays[$oPlannedEndDate->getDayOfWeek()]))
-				{
-//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
-					
-					$iNbHours = 0;
-					$this->getGapToFirstWorkingDay($oPlannedEndDate, $aWorkingDays, BAB_DATETIME_HOUR, $iNbHours);
-					$oPlannedEndDate->add($iNbHours, BAB_DATETIME_HOUR);
-					
-//echo 'Nouvelle date ==> ' . $oPlannedEndDate->getIsoDateTime() . ' iNbHours ==> ' . $iNbHours . '<br />';
-				}
-				else
-				{
-//echo 'C\'est un jour travaillé ==> ' . $oPlannedEndDate->getIsoDateTime() . '<br />';
-				}
-			}
-		
-			$this->m_sPlannedEndDate = $oPlannedEndDate->getIsoDateTime();
-			bab_debug(__FUNCTION__ . ' sPlannedStartDate ==> ' . $this->m_sPlannedStartDate . ' sPlannedEndDate ==> ' . $this->m_sPlannedEndDate);
-		}
-	
-		function getGapToFirstWorkingDay($oFromDate, $aWorkingDays, $iDurationUnit, &$iNbDays)
-		{
-			$oStartDate	= BAB_DateTime::fromIsoDateTime($oFromDate->getIsoDateTime());
-			
-			$iNbDays = 0;
-			if(is_array($aWorkingDays) && count($aWorkingDays) > 0)
-			{
-				$bFound = false;
-				
-				do 
-				{
-					if(isset($aWorkingDays[$oStartDate->getDayOfWeek()]))
-					{
-						$bFound = true;
-					}
-					else
-					{
-						$iNbDays++;
-						$oStartDate->add(1, $iDurationUnit);
-					}
-				}
-				while(false === $bFound);
-			}
-		}
-//*/	
 		function isTaskNumberValid()
 		{
 			if(strlen($this->m_sTaskNumber) > 0)
@@ -2298,7 +2208,11 @@ bab_debug($sMsg);
 				}
 				
 				$aTask['iCompletion'] = $this->m_iCompletion;
-				
+//*
+bab_debug($_POST);				
+//bab_debug($aTask);				
+return true;
+//*/
 				if(bab_updateTask($this->m_iIdTask, $aTask))
 				{
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
@@ -2551,6 +2465,145 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				return (false !== $bSuccess);
 			}
 			return false;
+		}
+	}
+	
+	
+	class BAB_TM_TaskUpdateByTaskResponsible
+	{
+		var $m_sStartDate				= null;
+		var $m_iStartHour				= null;
+		var $m_iStartMinut				= null;
+		var $m_sEndDate					= null;
+		var $m_iEndHour					= null;
+		var $m_iEndMinut				= null;
+		var $m_sModified				= null;
+		var $m_iIdUserModified			= null;
+		var $m_iCompletion				= null;
+
+		var $m_iIdProjectSpace			= null;
+		var $m_iIdProject				= null;
+		var $m_iIdTask					= null;
+		var $m_iUserProfil				= null;
+		var $m_oTask					= null;
+		
+		function BAB_TM_TaskUpdateByTaskResponsible()
+		{
+			$oTmCtx						=& getTskMgrContext();
+			$this->m_iIdProjectSpace	= $oTmCtx->getIdProjectSpace();
+			$this->m_iIdProject			= $oTmCtx->getIdProject();
+			$this->m_iIdTask			= $oTmCtx->getIdTask();
+			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
+			$this->m_oTask				= new BAB_TM_Task();
+
+			$this->processPostedDate('Start');
+			$this->processPostedDate('End');
+			
+			$this->m_sModified			= date("Y-m-d H:i:s");
+			$this->m_iIdUserModified	= $GLOBALS['BAB_SESS_USERID'];
+			$this->m_iCompletion		= (int) bab_rp('oCompletion', 0);
+			
+			//$this->m_iParticipationStatus		= 0;
+		}
+		
+		function processPostedDate($sFieldPartName)
+		{
+			$sDateFieldName		= 's' . $sFieldPartName . 'Date';
+			$sHourFieldName 	= 'o' . $sFieldPartName . 'Hour';
+			$sMinutFieldName 	= 'o' . $sFieldPartName . 'Minut';
+			
+			$sDate	= trim(bab_rp($sDateFieldName, ''));
+			$iHour	= (int) bab_rp($sHourFieldName, 0);
+			$iMinut	= (int) bab_rp($sMinutFieldName, 0);
+
+			$sDate = str_replace('-', '/', $sDate);
+
+			$sDateFieldName 	= 'm_s' . $sFieldPartName . 'Date';
+			$sHourFieldName 	= 'm_i' . $sFieldPartName . 'Hour';
+			$sMinutFieldName	= 'm_i' . $sFieldPartName . 'Minut';
+			
+			$this->$sDateFieldName	= $sDate;
+			$this->$sHourFieldName	= $iHour;
+			$this->$sMinutFieldName	= $iMinut;
+			
+			$oDate = BAB_DateTime::fromDateStr($sDate);
+			if(null !== $oDate)
+			{
+				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
+				$this->$sDateFieldName = $oDate->getIsoDateTime();
+			}
+		}
+		
+		function isTaskValid()
+		{
+			global $babBody;
+			$bSuccess = true;
+			$aTask =& $this->m_oTask->m_aTask;
+
+//fais une expression régulière
+			
+			if((int) $aTask['iCompletion'] === 0 && $this->m_iCompletion > 0)
+			{
+				if(!$this->isDateValid($this->m_sStartDate))
+				{
+					$babBody->addError(bab_translate("You must enter a valid start date when the completion rate is greater than zero"));
+				}
+			}
+			
+			return $bSuccess;
+		}
+		
+		function isDateValid($sIsoDateTime)
+		{
+			if(strlen(trim($sIsoDateTime)) > 0)
+			{
+				$oDate = BAB_DateTime::fromIsoDateTime($sIsoDateTime);
+				if(null !== $oDate)
+				{
+					return BAB_DateTime::isValidDate($oDate->_iDay, $oDate->_iMonth, $oDate->_iYear);
+				}
+			}
+			return false;
+		}
+		
+		function save()
+		{
+			if($this->isTaskValid())
+			{
+//				bab_debug($_POST);
+				
+				$aTask =& $this->m_oTask->m_aTask;
+				
+				$aTask['sModified']					= $this->m_sModified;
+				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
+//				$aTask['iCompletion']				= $this->m_iCompletion;
+				$aTask['sStartDate']				= $this->m_sStartDate;
+				$aTask['sEndDate'] 					= $this->m_sEndDate;
+				
+				/*
+				if(-1 != $this->m_iAnswer)
+				{
+					$aTask['iParticipationStatus'] = (BAB_TM_YES == $this->m_iAnswer) ? BAB_TM_ACCEPTED : BAB_TM_REFUSED;
+				}
+				//*/
+				
+				if(100 != (int) $aTask['iCompletion'] && ((int) $this->m_iCompletion >= 100 || BAB_TM_ENDED === (int) $aTask['iParticipationStatus']))
+				{
+					//$aTask['sEndDate'] = date("Y-m-d H:i:s");
+					$aTask['iParticipationStatus'] = BAB_TM_ENDED;
+				}
+				else if(100 == (int) $aTask['iCompletion'] && (int) $this->m_iCompletion < 100)
+				{
+					//$aTask['sEndDate'] = '';
+					$aTask['iParticipationStatus'] = BAB_TM_IN_PROGRESS;
+				}
+				
+				$aTask['iCompletion'] = $this->m_iCompletion;
+				
+				
+				
+				return false;
+			}
 		}
 	}
 ?>
