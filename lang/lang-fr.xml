@@ -2581,4 +2581,6 @@
 <string id="The real start date is greater than the real end date">La date de début réelle est supérieure à la date de fin réelle</string>
 <string id="You must select a completion rate greater than 0% when you enter a real start date">Vous devez séléctionner un taux d'avancement supérieur à 0% lorsque vous avez choisi une date de début réelle</string>
 <string id="You must select 100% for the completion rate when you enter a real end date">Vous devez séléctionner un taux d'avancement égale à 100% lorsque vous avez choisi une date de fin réelle</string>
+<string id="The planned start date is not valid">La date de début plannifiée n'est pas valide</string>
+<string id="The planned end date is not valid">La date de fin plannifiée n'est pas valide</string>
 </fr>
