@@ -1043,12 +1043,13 @@ function check_all(strCtrlName, checked)
 	<!--#if m_datas[isLinkable] -->
 		<div id="sPredecessor" class="">
 			<table border="0" cellspacing="0" cellpadding="2">
-				<tr class="BabSiteAdminTitleFontBackground">
+				<tr class="BabSiteAdminTitleFontBackground" align="center">
 					<td>{ m_captions[sTaskNumber] }</td>
 					<td>{ m_captions[sRelation] }</td>
+					<td>{ m_captions[sPredecessorShortDescription] }</td>
 				</tr>
 				<tr> 
-					<td colspan="2">
+					<td colspan="3">
 						<!--#in getNone -->
 						<input class="BabLoginMenuBackground" { m_datas[sSelectedPredecessor] } type="radio" name="iPredecessor" value="{ m_datas[iNone] }" />{ m_captions[sNone] }
 						<!--#endin getNone -->
@@ -1066,6 +1067,7 @@ function check_all(strCtrlName, checked)
 							<!--#endin getNextRelation -->
 						</select>
 					</td>
+					<td>&nbsp;&nbsp;&nbsp;{ m_datas[sPredecessorShortDescription] }</td>
 				</tr>
 				<!--#endin getNextPredecessor -->
 			</table>

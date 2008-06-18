@@ -173,6 +173,7 @@
 			$this->set_caption('sSpFld', bab_translate("Specific fields"));
 			$this->set_caption('sDescription', bab_translate("Description"));
 			$this->set_caption('sShortDescription', bab_translate("Short description"));
+			$this->set_caption('sPredecessorShortDescription', bab_translate("Short description"));
 			$this->set_caption('sLinkedTask', bab_translate("Linked task"));
 			$this->set_caption('sProposable', bab_translate("Proposed"));
 			$this->set_caption('sDurationType', bab_translate("Duration type"));
@@ -868,7 +869,23 @@
 				bab_getNextTaskNumber($this->m_iIdProject, $this->m_aCfg['tasksNumerotation'], $sTaskNumber);
 				$iClassType 				= (int) bab_rp('iClass', BAB_TM_TASK);
 				$iIdCategory 				= (int) bab_rp('iIdCategory', 0);
-				$sDescription 				= bab_rp('sDescription', '');
+				
+				$sDescription = '';
+				
+				$iUseEditor = (int) bab_rp('iUseEditor', 0);
+				if(1 === $iUseEditor)
+				{
+					require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+					$oEditor = new bab_contentEditor('bab_taskManagerDescription');
+					$sDescription = $oEditor->getContent();
+				}
+				else 
+				{
+					$sDescription = bab_rp('sDescription', '');
+				}
+				
+				
+				
 				$sShortDescription 			= bab_rp('sShortDescription', '');
 				$iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
 				$iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
@@ -902,8 +919,9 @@
 				$iLinkType = -1;
 				if(-1 != $iPredecessor && bab_getTask($iPredecessor, $aTask))
 				{
-					//zero based
-					$iPosition = $aTask['iPosition'] -1;
+					//zero basediUseEditor
+//					$iPosition = $aTask['iPosition'] -1;
+					$iPosition = $aTask['iPosition'];
 					if( isset($_POST['oLinkType']) && isset($_POST['oLinkType'][$iPosition]) )
 					{
 						$iLinkType = $_POST['oLinkType'][$iPosition];
@@ -1143,8 +1161,9 @@
 					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
 
-					$sPredecessor = (strlen(trim($datas['shortDescription']) > 0)) ? $datas['shortDescription'] : $datas['taskNumber'];
-					$this->set_data('sPredecessorNumber', $sPredecessor);
+//					$sPredecessor = (strlen(trim($datas['shortDescription']) > 0)) ? $datas['shortDescription'] : $datas['taskNumber'];
+					$this->set_data('sPredecessorNumber', $datas['taskNumber']);
+					$this->set_data('sPredecessorShortDescription', $datas['shortDescription']);
 					$this->set_data('iIsStarted', $datas['isStarted']);
 					return true;
 				}
