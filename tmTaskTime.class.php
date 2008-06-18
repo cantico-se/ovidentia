@@ -475,6 +475,16 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
 			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedEndDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
 		}
+		else if(0 !== $iIdPredecessor && BAB_TM_START_TO_START === $this->m_iLinkType)
+		{
+			$oRemainEndDate	= null;	
+			$oRemainStartDate = null;
+			$oGanttTask = $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
+
+			$this->m_oPlannedStartDate = $oGanttTask->getStartDate();
+			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
+			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedEndDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
+		}
 		else 
 		{
 			$sIsoPlannedEndDate	= (string) $aTask['plannedEndDate'];
