@@ -463,6 +463,7 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 			$oRemainEndDate	= null;	
 			$oRemainStartDate = null;
 			$oGanttTask = $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
+
 			$oGanttTask->computeRemainingDates($oRemainStartDate, $oRemainEndDate); // Appelé une fois de trop
 		
 			$iDurationInSeconds = $this->m_iEffectiveDurationInSeconds;
@@ -472,7 +473,7 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 			$this->m_oPlannedEndDate = BAB_DateTime::fromIsoDateTime($sIsoPlannedEndDate);
 			
 			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
-			$this->m_oPlannedEndDate->add($iDurationInSeconds, BAB_DATETIME_SECOND);
+			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedEndDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
 		}
 		else 
 		{
