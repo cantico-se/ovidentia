@@ -1784,7 +1784,11 @@ bab_debug($sMsg);
 
 		function isTaskValidByDate()
 		{
-			if($this->isDateValid($this->m_sPlannedStartDate) && $this->isDateValid($this->m_sPlannedEndDate))
+			global $babBody;
+			
+			$bPlannedStartDateValid = $this->isDateValid($this->m_sPlannedStartDate);
+			$bPlannedEndDateValid = $this->isDateValid($this->m_sPlannedEndDate);
+			if($bPlannedStartDateValid && $bPlannedEndDateValid)
 			{
 				$iIsEqual	= 0;
 				$iIsBefore	= -1;
@@ -1799,7 +1803,7 @@ bab_debug($sMsg);
 					if($this->m_iUserProfil == BAB_TM_PROJECT_MANAGER && !$this->isResponsibleValid())
 					{
 						bab_debug(__FUNCTION__ . ': Invalid iIdTaskResponsible');
-						$GLOBALS['babBody']->msgerror = bab_translate("The choosen task responsible is invalid");
+						$babBody->addError(bab_translate("The choosen task responsible is invalid"));
 					}
 					else 
 					{
@@ -1809,13 +1813,24 @@ bab_debug($sMsg);
 				else 
 				{
 					bab_debug(__FUNCTION__ . ' sEndDate is lower than sStartDate');
-					$GLOBALS['babBody']->msgerror = bab_translate("The end date is lower than the start date");
+					$babBody->addError(bab_translate("The planned end date is lower than the planned start date"));
+					$babBody->addError(bab_translate("Planned start date") . ' ' . bab_shortDate($oStart->getTimeStamp()));
+					$babBody->addError(bab_translate("Planned end date") . ' ' . bab_shortDate($oEnd->getTimeStamp()));
 				}
 			}
 			else 
 			{
-				bab_debug(__FUNCTION__ . ' invalid Date');
-				$GLOBALS['babBody']->msgerror = bab_translate("Invalid date");
+				if(!$bPlannedStartDateValid)
+				{
+					$babBody->addError(bab_translate("The planned start date is not valid"));
+					bab_debug(__FUNCTION__ . ' The planned start date is not valid');
+				}
+				
+				if(!$bPlannedEndDateValid)
+				{
+					$babBody->addError(bab_translate("The planned end date is not valid"));
+					bab_debug(__FUNCTION__ . ' The planned end date is not valid');
+				}
 			}
 			return false;
 		}

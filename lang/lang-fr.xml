@@ -2264,6 +2264,9 @@
 <string id="The end date is greater than the limit date">La date de fin dépasse la date butoir de fin</string>
 <string id="The choosen task responsible is invalid">Le responsable de tâche choisi est invalide</string>
 <string id="The end date is lower than the start date">La date de fin est avant la date de début</string>
+<string id="The planned end date is lower than the planned start date">La date de fin plannifiée est avant la date de début plannifié</string>
+<string id="Planned start date">Date de début plannifié</string>
+<string id="Planned end date">Date de fin plannifié</string>
 <string id="Personnals tasks configuration">Configuration des tâches personnelles</string>
 <string id="Task type">Type de tâche</string>
 <string id="Checkpoint">Point de contrôle</string>
