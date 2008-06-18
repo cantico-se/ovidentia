@@ -2584,4 +2584,5 @@
 <string id="The planned start date is not valid">La date de début plannifiée n'est pas valide</string>
 <string id="The planned end date is not valid">La date de fin plannifiée n'est pas valide</string>
 <string id="You can not delete tis task because another task are linked on it">Vous ne pouvez pas supprimer cette tâche car une ou plusieures tâches sont liées à celle-ci</string>
+<string id="Back to list">Retourner sur la liste</string>
 </fr>

@@ -335,6 +335,62 @@ function on_cancel()
 <!--#end warningyesno -->
 
 
+<!--#begin warning -->
+<script type="text/javascript">
+//<![CDATA[
+function on_cancel()
+{
+	var form = document.forms.warningyesno;
+	form.action.value = '';
+	form.submit();
+}
+//]]>
+</script>
+<form name ="warningyesno" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+	<input type="hidden" name="action" value="{ m_datas[action] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
+	<input type="hidden" name="{ m_datas[objectName] }" value="{ m_datas[iIdObject] }" />
+	
+	<table border="0" width="50%" cellpadding="3" cellspacing="0" align="center">
+		<tr>
+			<td class="BabWarningTitleBackground" align="center">
+				{ m_captions[warning] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				{ m_captions[message] }
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground">
+				<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningObjectBackground" align="center">
+				{ m_captions[title] }<br />
+			</td>
+		</tr>
+		<tr>
+			<td class="BabWarningBodyBackground" align="center">
+				<a class="BabWarningLinkColor" href="#" onclick="on_cancel()">{ m_captions[no] }</a>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end warning -->
+
+
 <!--#begin configuration -->
 <script type="text/javascript">
 //<![CDATA[

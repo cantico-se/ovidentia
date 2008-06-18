@@ -2072,6 +2072,8 @@ function displayDeleteTaskForm()
 	
 	$oTask = new BAB_TM_Task();
 	
+	$sTemplateName = 'warningyesno';
+	
 	$aDependingTasks = array();
 	bab_getDependingTasks($iIdTask, $aDependingTasks);
 	if($oTask->loadFromDataBase($iIdTask))
@@ -2079,13 +2081,14 @@ function displayDeleteTaskForm()
 		if(count($aDependingTasks) == 0)	
 		{
 			$bf->set_data('action', BAB_TM_ACTION_DELETE_TASK);
-	
 			$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
 			$bf->set_caption('message', bab_translate("Continue ?"));
 			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
 		}
 		else
 		{
+			$sTemplateName = 'warning';
+			$bf->set_caption('no', bab_translate("Back to list"));
 			$bf->set_caption('warning', bab_translate("You can not delete tis task because another task are linked on it"));
 			$bf->set_caption('message', bab_translate(""));
 			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
@@ -2101,7 +2104,7 @@ function displayDeleteTaskForm()
 		
 	$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 	$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
-	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', 'warningyesno'));
+	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', $sTemplateName));
 }
 
 function displayPersonnalTaskConfigurationForm()
