@@ -2573,4 +2573,9 @@
 <string id="Deadline">Date butoir</string>
 <string id="started_from">Commencé le</string>
 <string id="finished_to">Terminé le</string>
+<string id="You must enter a valid real start date when the completion rate is greater than 0%">Vous devez choisir une date de début réelle valide lorsque le taux d'avancement est supérieur à 0%</string>
+<string id="You must enter a valid real end date when the completion rate is equal to 100%">Vous devez choisir une date de fin réelle valide lorsque le taux d'avancement est égale à 100%</string>
+<string id="The real start date is greater than the real end date">La date de début réelle est supérieure à la date de fin réelle</string>
+<string id="You must select a completion rate greater than 0% when you enter a real start date">Vous devez séléctionner un taux d'avancement supérieur à 0% lorsque vous avez choisi une date de début réelle</string>
+<string id="You must select 100% for the completion rate when you enter a real end date">Vous devez séléctionner un taux d'avancement égale à 100% lorsque vous avez choisi une date de fin réelle</string>
 </fr>
