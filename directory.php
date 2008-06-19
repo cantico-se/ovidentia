@@ -2064,7 +2064,7 @@ function processImportDbFile( $pfile, $id, $separ )
 								$pwd = $password1;
 								}
 
-							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($pwd)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."'");
+							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($pwd)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang=''");
 							$iduser = $babDB->db_insert_id();
 							$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($iduser)."', '1')");
 							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$babDB->db_escape_string($iduser)."' where id='".$babDB->db_escape_string($idu)."'");

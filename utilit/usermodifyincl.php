@@ -133,7 +133,7 @@ class bab_userModify {
 			 '".$babDB->db_escape_string($hash)."',
 			 '".$babDB->db_escape_string($isconfirmed)."',
 			 '1',
-			 '".$babDB->db_escape_string($babLanguage)."',
+			 '',
 			 '".$babDB->db_escape_string($GLOBALS['babLangFilter']->getFilterAsInt())."',
 			  now(), 
 			  now()

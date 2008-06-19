@@ -351,9 +351,10 @@ function changeLanguage()
         	global $babDB, $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered language");
 			$this->update = bab_translate("Update Language");
+ 			$this->sitelangageval = bab_translate("Language of the site");
             $this->count = 0;
 
-            $req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+            $req = "select lang, langfilter from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
             $res = $babDB->db_query($req);
             if( $res && $babDB->db_num_rows($res) > 0 )
                 {
@@ -365,10 +366,6 @@ function changeLanguage()
                 $this->userlang = '';
 				}
            
-            if( $this->userlang == '')
-				{
-                $this->userlang = bab_toHtml($GLOBALS['babLanguage']);
-				}
 
             $this->title .= " : ".$this->userlang;
 
@@ -1066,7 +1063,7 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 function updateLanguage($lang, $langfilter)
 	{
     global $babDB, $BAB_SESS_USERID;
-	if( !empty($lang) && !empty($BAB_SESS_USERID))
+	if( !empty($BAB_SESS_USERID))
 		{
 		$req = "update ".BAB_USERS_TBL." 
 		set 
