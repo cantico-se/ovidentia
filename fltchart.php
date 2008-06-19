@@ -273,7 +273,8 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 	{
 	global $babLittleBody;
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-
+	include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
+	
 	class temp extends bab_viewDirectoryUser
 		{
 
@@ -284,7 +285,8 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 
 			if( empty($iduser))
 			{
-				$members = bab_selectEntityMembers($ocid, $oeid);
+				//$members = bab_selectEntityMembers($ocid, $oeid);
+				$members = bab_OCselectEntityCollaborators($oeid);
 				if ($members && ($member = $babDB->db_fetch_array($members))) {
 					$iduser = $member['id_dir_entry'];
 				}
