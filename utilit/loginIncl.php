@@ -321,7 +321,7 @@ function bab_login()
 	}	
 }
 
-function bab_signoff()
+function bab_signOff()
 {
 	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 	

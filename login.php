@@ -663,7 +663,7 @@ else if('send' === bab_pp('sendpassword'))
 switch($cmd)
 	{
 	case 'signoff':
-		bab_signoff();
+		bab_signOff();
 		break;
 
 	case "showdp":
