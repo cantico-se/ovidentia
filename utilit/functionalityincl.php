@@ -78,6 +78,36 @@ class bab_functionalities {
 	}
 	
 	
+	
+	
+	/**
+	 * Convert an path to a string useable in an include statement
+	 * @access	private
+	 * @param	string	$filePath
+	 * @return 	string
+	 */
+	function getIncludeFilePath($filePath) {
+	
+		// replace \ with / for windows platform
+		$installPath = str_replace('\\','/',$GLOBALS['babInstallPath']);
+		$includePath = str_replace('\\','/',$filePath);
+		
+		// include in relative path if file is under install path
+		if (false !== strpos($includePath, $installPath)) {
+			$pos = strlen($includePath) - strpos( strrev($includePath) , strrev($installPath)) - strlen($installPath);
+			$includePath = substr($includePath, $pos);
+		}
+		
+		return str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $includePath);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Record link into tree
 	 * the directory must be present
@@ -98,10 +128,8 @@ class bab_functionalities {
 			return false;
 		}
 	
-		// replace core directory with a variable
-		$include_file = str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $include_file);
 		$classname = bab_Functionalities::getClassname($funcpath);
-		$content = '<?php if (false === include_once \''.$include_file.'\') { return false; } else { return \''.$classname.'\'; } ?>';
+		$content = '<?php if (false === include_once \''.$this->getIncludeFilePath($include_file).'\') { return false; } else { return \''.$classname.'\'; } ?>';
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$linkfilename, 'w')) {
 			
 			if (false !== fwrite($handle, $content)) {
@@ -135,7 +163,7 @@ class bab_functionalities {
 			return false;
 		}
 
-		$content = '<?php include_once \'' . $this->rootDirName.'/'.$path.'/'.$this->original . '\'; return include \''.$this->rootDirName.'/'.$funcpath.'/'.$this->filename.'\'; ?>';
+		$content = '<?php include_once \'' . $this->getIncludeFilePath($this->rootDirName.'/'.$path.'/'.$this->original) . '\'; return include \'' . $this->getIncludeFilePath($this->rootDirName.'/'.$funcpath.'/'.$this->filename) . '\'; ?>';
 
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$this->filename, 'w')) {
 			
