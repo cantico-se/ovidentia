@@ -30,7 +30,7 @@ include_once 'base.php';
  */
 function bab_getMailAccount($id_account) {
 	
-	global $babDB, $BAB_HASH_VAR, $BAB_SESS_USERID;
+	global $babDB, $BAB_HASH_VAR, $BAB_SESS_USERID, $babBody;
 	
 	static $accounts = array();
 	
