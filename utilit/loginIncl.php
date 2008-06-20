@@ -291,32 +291,27 @@ function bab_login()
 	} 
 	else 
 	{
-		$sLogin = (string) bab_pp('nickname');
-		
-		if(strlen(trim($sLogin)) === 0) //Authentication
+		if(signOn())
+		{
+			require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
+			$sUrl = (string) bab_rp('referer');
+			
+			if(substr_count($sUrl,'tg=login&cmd=') == 0) 
+			{
+				loginRedirect($sUrl);
+			}
+			elseif ((string)bab_rp('tg') === 'login')
+			{
+				loginRedirect(bab_url::request_gp());
+			}
+			else
+			{
+				loginRedirect($GLOBALS['babUrlScript']);
+			}
+		}
+		else
 		{
 			displayAuthenticationForm();
-		} 
-		else //Authorization
-		{
-			if(signOn())
-			{
-				require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
-				$sUrl = (string) bab_rp('referer');
-				
-				if(substr_count($sUrl,'tg=login&cmd=') == 0) 
-				{
-					loginRedirect($sUrl);
-				}
-				elseif ((string)bab_rp('tg') === 'login')
-				{
-					loginRedirect(bab_url::request_gp());
-				}
-				else
-				{
-					loginRedirect($GLOBALS['babUrlScript']);
-				}
-			}
 		}
 	}	
 }
