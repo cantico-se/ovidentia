@@ -659,28 +659,11 @@ else if('send' === bab_pp('sendpassword'))
 
 
 
+
 switch($cmd)
 	{
 	case 'signoff':
-		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-		
-		if(array_key_exists('sAuthPath', $_SESSION))
-		{
-			$sAuthPath = $_SESSION['sAuthPath'];
-			
-			$oAuthObject = bab_functionality::get($sAuthPath);
-			
-			if(false !== $oAuthObject)
-			{
-				$oAuthObject->logout();
-				
-				unset($_SESSION['sAuthPath']);
-			}
-		}
-		else
-		{
-			bab_logout();
-		}
+		bab_signoff();
 		break;
 
 	case "showdp":

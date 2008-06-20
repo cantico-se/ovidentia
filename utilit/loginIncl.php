@@ -321,6 +321,27 @@ function bab_login()
 	}	
 }
 
+function bab_signoff()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+	
+	if(array_key_exists('sAuthPath', $_SESSION))
+	{
+		$sAuthPath = $_SESSION['sAuthPath'];
+		
+		$oAuthObject = bab_functionality::get($sAuthPath);
+		
+		if(false !== $oAuthObject)
+		{
+			$oAuthObject->logout();
+			
+			unset($_SESSION['sAuthPath']);
+			return;
+		}
+	}
+	bab_logout();
+}
+
 
 function bab_logout()
 {
