@@ -809,6 +809,11 @@ function signOn()
 {
 	global $babBody;
 
+	if(!array_key_exists('nickname', $_POST) && !array_key_exists('password', $_POST))
+	{
+		return false;
+	}
+	
 	$sLogin		= (string) bab_pp('nickname');
 	$sPassword	= (string) bab_pp('password');
 	$iLifeTime	= (int) bab_pp('lifetime', 0);	
