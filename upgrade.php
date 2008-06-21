@@ -4367,32 +4367,46 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
-	$sQuery = 
-		'SELECT ' .
-			'id iId, ' . 
-			'startDate sStartDate, ' .
-			'endDate sEndDate ' .
-		'FROM ' .
-			BAB_TSKMGR_TASKS_TBL;
-			
-	$oResult = $babDB->db_query($sQuery);
-	$iNumRows = $babDB->db_num_rows($oResult);
-	$iIndex = 0;
-	
-	while($iIndex < $iNumRows && false != ($aDatas = $babDB->db_fetch_assoc($oResult)))
+	$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'babTmTaskManagmentRuleUpgrade');
+	if(false === $ret)
 	{
-		$iIndex++;
 		$sQuery = 
-			'UPDATE ' . 
-				BAB_TSKMGR_TASKS_TBL . ' ' .
-			'SET ' . ' ' .
-				'`plannedStartDate` = \'' . $babDB->db_escape_string($aDatas['sStartDate']) . '\', ' .
-				'`plannedEndDate` = \'' . $babDB->db_escape_string($aDatas['sEndDate']) . '\' ' .
-			'WHERE ' . 
-				'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+			'SELECT ' .
+				'id iId, ' . 
+				'startDate sStartDate, ' .
+				'endDate sEndDate, ' .
+				'plannedStartDate sPlannedStartDate, ' .
+				'plannedStartDate sPlannedEndDate ' .
+			'FROM ' .
+				BAB_TSKMGR_TASKS_TBL;
 				
-		$babDB->db_query($sQuery);
-	}
+		$oResult = $babDB->db_query($sQuery);
+		$iNumRows = $babDB->db_num_rows($oResult);
+		$iIndex = 0;
+		
+		while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$iIndex++;
+			
+			//Avant le gestionnaire de projet n'utilisait jamais les dates de début et de fin plannifiée, ce qui fait que si elles sont vides toutes
+			//les deux c'est que l'on utilise l'ancien système
+			if('0000-00-00 00:00:00' == $aDatas['sPlannedStartDate'] && '0000-00-00 00:00:00' == $aDatas['sPlannedEndDate'])
+			{
+				$sQuery = 
+					'UPDATE ' . 
+						BAB_TSKMGR_TASKS_TBL . ' ' .
+					'SET ' . ' ' .
+						'`plannedStartDate` = \'' . $babDB->db_escape_string($aDatas['sStartDate']) . '\', ' .
+						'`plannedEndDate` = \'' . $babDB->db_escape_string($aDatas['sEndDate']) . '\' ' .
+					'WHERE ' . 
+						'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
+						
+				$babDB->db_query($sQuery);
+			}
+		}
+		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'Before this upgrade the taskManager use the real start date and the real end date for the planned date', 'babTmTaskManagmentRuleUpgrade');
+	}	
+	
 	
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedTime`');
 	if(false !== $oResult)
