@@ -1165,16 +1165,14 @@ function updateEvent(&$message)
 		
 		$min = $val['start'] < $min ? $val['start'] : $min;
 		$max = $val['end']	 > $max ? $val['end'] 	: $max;
+		$exclude = array();
+		bab_updateSelectedCalendars(
+			$key, 
+			bab_pp('selected_calendars'),
+			$exclude
+		);
 	}
-	
-	
-	$exclude = array();
-	bab_updateSelectedCalendars(
-		bab_pp('evtid'), 
-		bab_pp('selected_calendars'),
-		$exclude
-	);
-	
+
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
