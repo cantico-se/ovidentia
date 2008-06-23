@@ -1,6 +1,11 @@
 /* CALENDAR STYLES */
 
 
+
+
+
+
+
 	
 #bab_calmonth tbody td {
 	border:#000 1px solid;
@@ -438,24 +443,25 @@ a img {
 	
 	
 	
-	
 .bab_cal_vacation_types {
-	border-collapse:collapse;
-	margin:1em auto;
+	border-spacing:0;
+	margin:10px auto;
+	width:60%;
+	border-top:#aaa 1px solid;
+	border-right:#aaa 1px solid;
 }
 	
 
 .bab_cal_vacation_types td {
-
-	border:#bbb 1px solid;
+	border-bottom:#aaa 1px solid;
+	border-left:#aaa 1px solid;
 	padding:.2em .5em;
 }
 	
 .bab_cal_vacation_types thead td {
 	background:#eee;
 }
-	
-	
+
 	
 	
 	

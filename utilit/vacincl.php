@@ -2452,7 +2452,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 		$label = (1 === count($ventilation)) ? bab_translate('Vacations type') : bab_translate('Vacations types');
 
-		$description .= '<table class="bab_cal_vacation_types">';
+		$description .= '<table class="bab_cal_vacation_types" cellspacing="0">';
 		$description .= '<thead><tr><td colspan="3">'.bab_toHtml($label).'</td></tr></thead>';
 		$description .= '<tbody>';
 		
