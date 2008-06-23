@@ -124,6 +124,14 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		return;
 		}
 
+	$query = "select * from ".BAB_FORUMS_TBL." where name='".$babDB->db_escape_string($name)."' and id!='".$babDB->db_escape_string($id)."'";	
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) > 0)
+		{
+		$babBody->msgerror = bab_translate("ERROR: This forum already exists");
+		return false;
+		}
+
 	if (!is_numeric($nbmsgdisplay) || empty($nbmsgdisplay))
 		{
 		$nbmsgdisplay = 20;
