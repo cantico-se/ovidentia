@@ -546,7 +546,8 @@ function saveThread()
 
 	if( count($tables) > 0 )
 		{
-		$url = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$idthread.'&flat='.$arr['bflatview'].'&views=1';
+		$flat = $arr['bflatview'] == 'Y'? 1: 0;
+		$url = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$idthread.'&flat='.$flat.'&views=1';
 		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
 		}
 

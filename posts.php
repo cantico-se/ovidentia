@@ -1119,6 +1119,8 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		}
 
 	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'"));
+	$flat = $arr['bflatview'] == 'Y'? 1: 0;
+	
 	$tables = array();
 	if( $confirmed == "Y"  )
 		{
@@ -1132,12 +1134,11 @@ function saveReply($forum, $thread, $post, $name, $subject)
 
 	if( count($tables) > 0 )
 		{
-		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".urlencode($forum)."&thread=".urlencode($thread)."&flat=1&views=1";
+		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".urlencode($forum)."&thread=".urlencode($thread)."&flat=".$flat."&views=1";
 		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url);
 		}
-	if (!isset($flat)) $flat = '';
-	//Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
-	//exit;
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
+	exit;
 	}
 
 
