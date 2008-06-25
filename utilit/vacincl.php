@@ -2366,6 +2366,8 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 
 		$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
 		$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
+		
+		$ventilation = array();
 
 		if (1 === $events[$row['id']]) {
 
@@ -2387,8 +2389,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	
 			$type_day       = $date_begin->cloneDate();
 			$type_day_end   = $date_begin->cloneDate();
-	
-			$ventilation = array();
+			
 			while ($arr = $babDB->db_fetch_assoc($res2))
 				{
 				$ventilation[] = $arr;
