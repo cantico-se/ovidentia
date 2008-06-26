@@ -533,6 +533,11 @@ class bab_inifile {
 	 */
 	function getfromzip($zipfile, $inifile) {
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
+		include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
+
+		$addon_paths = bab_getAddonsFilePath();
+		$program_path = $addon_paths['loc_out'][0].'/';
+		
 
 		$filename = substr( $inifile,(strrpos( $inifile,'/')+1));
 
@@ -549,7 +554,7 @@ class bab_inifile {
 		$this->inifile( $GLOBALS['babUploadPath'].'/tmp/'.$filename);
 
 		unlink($GLOBALS['babUploadPath'].'/tmp/'.$filename);
-		
+
 		
 		// si le ini contiens un preinstall script, le chercher dans le même repertoire
 		
@@ -560,11 +565,18 @@ class bab_inifile {
 			$inifileindex = false;
 			
 			foreach ($zipcontents as $k => $arr) {
-				if ($preinstall_script === $arr['filename']) {
-					$inifileindex = $arr['index'];
-					break;
+				
+				if (0 === strpos($arr['filename'], $program_path)) {
+					$archive_filename = substr($arr['filename'], 9);
+					
+					if ($preinstall_script === $archive_filename) {
+						$inifileindex = $arr['index'];
+						break;
+					}
 				}
 			}
+			
+			
 			
 			if ($inifileindex) {
 				$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
@@ -572,8 +584,6 @@ class bab_inifile {
 				unlink($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
 			}
 		}
-		
-		
 	}
 
 	function inifile($file) {
@@ -655,6 +665,10 @@ class bab_inifile {
 	 * @return 	boolean
 	 */
 	function addCustomScript($filepath) {
+	
+		if (!file_exists($filepath)) {
+			return false;
+		}
 	
 		$arr = include $filepath;
 		
