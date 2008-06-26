@@ -156,10 +156,10 @@ function addonsList($upgradeall)
 				{
 				$this->altbg = !$this->altbg;
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->title = $this->arr['title'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=addons&idx=mod&item=".$this->arr['id'];
-				$this->viewurl = $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$this->arr['id'];
-				$this->exporturl = $GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$this->arr['id'];
+				$this->title = bab_toHtml($this->arr['title']);
+				$this->requrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$this->arr['id']);
+				$this->viewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$this->arr['id']);
+				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$this->arr['id']);
 				if( $this->arr['enabled'] == "N")
 					$this->catchecked = "checked";
 				else
@@ -205,13 +205,13 @@ function addonsList($upgradeall)
 						}
 
 					if ($this->arr['installed'] == 'N') {
-							$this->upgradeurl = $GLOBALS['babUrlScript']."?tg=addons&amp;idx=upgrade&amp;item=".$this->arr['id'];
+							$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id']);
 						}
 					}
 				if( !empty($arr_ini['description']))
-					$this->description = $arr_ini['description'];
+					$this->description = bab_toHtml($arr_ini['description']);
 				if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/history.txt"))
-					$this->history = $GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$this->arr['id'];
+					$this->history = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$this->arr['id']);
 				else
 					$this->history = false;
 				$i++;
@@ -566,11 +566,13 @@ function upload_tmpfile() {
 function test_requirements()
 {
 	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	global $babBody;
 	class temp {
 		function temp()
 			{
 			$this->item = bab_rp('item');
+			$this->installed = false;
 			
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
@@ -584,15 +586,30 @@ function test_requirements()
 				$this->tmpfile = bab_toHtml($filename);
 				$this->action = 'import';
 				$ini->getfromzip($ul, 'programs/addonini.php');
+				
+				$this->t_install = bab_translate("Install");
 
 			} elseif (isset($_GET['item'])) {
 
-				$name = getAddonName($_GET['item']);
+				$addon = bab_addonsInfos::getRow($_GET['item']);
+				$this->installed = 'Y' === $addon['installed'];
+				
+				if ($this->installed) {
+					$name = $addon['title'];
+				} else {
+					$name = getAddonName($_GET['item']);
+				}
+
+				
 				if (!is_file($GLOBALS['babAddonsPath'].$name."/addonini.php"))
 					return;
 				$ini->inifile($GLOBALS['babAddonsPath'].$name."/addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
+				
+				$this->t_install = bab_translate("Upgrade");
+				
+				
 			}
 
 			$this->name = bab_toHtml($name);
@@ -603,7 +620,7 @@ function test_requirements()
 
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
-			$this->t_install = bab_translate("Install");
+			
 			$this->t_required = bab_translate("Required value");
 			$this->t_current = bab_translate("Current value");
 			$this->t_addon = bab_translate("Addon");

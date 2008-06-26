@@ -27,7 +27,7 @@ function deladdon(id)
 		</tr>
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<td>{ title }</td>
+			<td><a href="{ requrl }">{ title }</a></td>
 			<td>{ description }</td>
 			<td align="center">
 			<!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
@@ -183,9 +183,13 @@ function deladdon(id)
 			<tr> 
 				<td colspan="5" align="center">
 				<br /><br />
+				
+				<!--#if installed -->
+				<!--#else installed -->
 				<!--#if allok -->
 					<input type="submit" value="{ t_install }" />
 				<!--#endif allok -->
+				<!--#endif installed -->
 				</td>
 			</tr>
 		</table>
