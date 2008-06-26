@@ -591,6 +591,71 @@ function summaryDbContactWithOvml($args)
 }
 
 
+
+
+/**
+ * Object to retreive photo data
+ * useable from a directory entry
+ * @see getDirEntry
+ */
+class bab_dirEntryPhoto {
+
+	var $id_entry = NULL;
+	
+	var $photo_data = NULL;
+	var $last_update = NULL;
+
+	function bab_dirEntryPhoto($id_entry) {
+		$this->id_entry = $id_entry;
+	}
+	
+
+	
+	function getData() {
+		global $babDB;
+		
+		if (NULL === $this->photo_data) {
+			$res = $babDB->db_query('
+				SELECT 
+					photo_data, 
+					photo_type, 
+					date_modification 
+				FROM 
+					'.BAB_DBDIR_ENTRIES_TBL.' 
+				WHERE 
+					id='.$babDB->quote($this->id_entry)
+			);
+			
+			$arr = $babDB->db_fetch_assoc($res);
+			
+			$this->photo_data = $arr['photo_data'];
+			$this->last_update = $arr['date_modification'];
+		}
+		
+		return $this->photo_data;
+	}
+
+	
+	/**
+	 * Last photo update date and time
+	 * @return string	ISO datetime
+	 */
+	function lastUpdate() {
+		if (NULL === $this->last_update) {
+			$this->getData();
+		}
+		
+		return $this->last_update;
+	}
+}
+
+
+
+
+
+
+
+
 function getDirEntry($id, $type, $id_directory, $accessCtrl) 
 	{
 	global $babDB;
@@ -779,6 +844,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			}
 		elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
 			$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
+			$return[$arr['id_user']][$name]['photo'] = new bab_dirEntryPhoto($arr['id']);
 			}
 		}
 	}
