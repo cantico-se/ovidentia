@@ -198,7 +198,7 @@ if( $tg != "version" || !isset($idx) || $idx != "upgrade")
 	
 
 	
-	if (isset($_GET['clear']) && isset($_COOKIE['bab_debug'])) {
+	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();
 		}
 	
