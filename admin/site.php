@@ -1725,37 +1725,28 @@ function siteUpdate_menu4()
 	$iLength = strlen(trim($uploadpath));
 	if($iLength > 0)
 	{
-		$sUploadPath = str_replace('\\', '/', $uploadpath);
-		$iLength = strlen(trim($sUploadPath));
+		$sUploadPath = str_replace('\\', '/', trim($uploadpath));
+		$iLength = strlen($sUploadPath);
 		if($iLength > 0)
 		{
-			if('\\' === (string) $sUploadPath{$iLength - 1} && '/' === (string) $sUploadPath{$iLength - 1})
-			{
-				$sUploadPath = substr($sUploadPath, 0, -1);
-			}
-	
-			$aPaths = explode('/', $sUploadPath);
-			if(is_array($aPaths) && count($aPaths) > 0)
-			{
-				$sPath = '';
-				foreach($aPaths as $sPathItem)
+
+			if (!is_dir($sUploadPath)) {
+				$aPaths = explode('/', $sUploadPath);
+				if(is_array($aPaths) && count($aPaths) > 0)
 				{
-					if(strlen(trim($sPathItem)) !== 0)
+					$sPath = '';
+					foreach($aPaths as $sPathItem)
 					{
-						if(strlen(trim($sPath)) !== 0)
-						{
+						if ($sPathItem) {
 							$sPath .= '/' . $sPathItem;
-						}
-						else 
-						{
-							$sPath .= $sPathItem;
-						}
-						
-						if(!is_dir($sPath))
-						{
-							if(!@mkdir($sPath, 0777))
+
+							if(!is_dir($sPath))
 							{
-								$babBody->addError(bab_translate(sprintf(' The directory: %s have not been created', $sPath)));
+								if(!mkdir($sPath, 0777))
+								{
+									$babBody->addError(bab_translate(sprintf(' The directory: %s have not been created', $sPath)));
+									break;
+								}
 							}
 						}
 					}
