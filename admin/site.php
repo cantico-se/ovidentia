@@ -1738,7 +1738,12 @@ function siteUpdate_menu4()
 					foreach($aPaths as $sPathItem)
 					{
 						if ($sPathItem) {
-							$sPath .= '/' . $sPathItem;
+						
+							if (empty($sPath) && '/' !== substr($sUploadPath,0,1)) {
+								$sPath .= $sPathItem;
+							} else {
+								$sPath .= '/' . $sPathItem;
+							}
 
 							if(!is_dir($sPath))
 							{
