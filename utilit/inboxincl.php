@@ -79,7 +79,7 @@ function bab_getMailAccount($id_account) {
  */
 function bab_getMailBox($id_account) {
 
-	global $babDB;
+	global $babBody,$babDB;
 
 	$arr = bab_getMailAccount($id_account);
 
