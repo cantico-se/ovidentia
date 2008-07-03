@@ -49,16 +49,16 @@ function bab_time($time)
  */
 function bab_mktime($time)
 	{
-	$arr = explode(" ", $time);
-	if ('0000-00-00' == $arr[0]) {
+	$arr = explode(" ", $time); //Split days and hours
+	if ('0000-00-00' == $arr[0] || '' == $arr[0]) {
 		return -1;
 	}
-	$arr0 = explode("-", $arr[0]);
-	if (isset($arr[1])) {
+	$arr0 = explode("-", $arr[0]); //Split year, month et day
+	if (isset($arr[1])) { //If the hours exist we send back days and hours
 		$arr1 = explode(":", $arr[1]);
 		return mktime( $arr1[0],$arr1[1],$arr1[2],$arr0[1],$arr0[2],$arr0[0]);
-		} else {
-		return mktime( 0,0,0,$arr0[1],$arr0[2],$arr0[0]);
+		} else { //If the hours do not exist, we send back only days
+		return mktime(0,0,0,$arr0[1],$arr0[2],$arr0[0]);
 		}
 	}
 
