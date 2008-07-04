@@ -509,6 +509,8 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 	{
 		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$pcalgrpids[$i]."'"); 
 	}
+	
+	bab_siteMap::clearAll();
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=options");
 	exit;
