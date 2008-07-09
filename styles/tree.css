@@ -133,6 +133,9 @@
 	font-weight: normal;
 }
 
+.line img.icon {
+	height: 16px;
+}
 
 .bab_searchField {
 	voice-family: "\"}\"";
@@ -143,7 +146,7 @@
 	background-position: 1px 50%;
 	background-repeat: no-repeat;
 	padding: 3px 2px 2px 18px;
-	border: 1px solid grey;
+	padding-left: 18px !important;
 }
 
 .bab_searchFieldSearching {
@@ -155,7 +158,7 @@
 	background-position: 0 0;
 	background-repeat: repeat-y;
 	padding: 3px 2px 2px 18px;
-	border: 1px solid grey;
+	padding-left: 18px !important;
 	background-color: #FFFFFF;
 }
 
@@ -168,8 +171,8 @@
 	background-position: 1px 50%;
 	background-repeat: no-repeat;
 	padding: 3px 2px 2px 18px;
-	border: 1px solid grey;
-	background-color: #CCFFCC;
+	padding-left: 18px !important;
+	background-color: #CCFFCC !important;
 }
 
 .bab_searchFieldNotFound {
@@ -181,8 +184,8 @@
 	background-position: 1px 50%;
 	background-repeat: no-repeat;
 	padding: 3px 2px 2px 18px;
-	border: 1px solid grey;
-	background-color: #FFCCCC;
+	padding-left: 18px !important;
+	background-color: #FFCCCC !important;
 }
 
 .bab_expandAll {

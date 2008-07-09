@@ -1,3 +1,4 @@
+@import "search.css";
 
 body {
 	overflow: hidden;
@@ -17,11 +18,10 @@ body {
 .orgchart {
 /*
 	position: relative;
-	overflow: auto;
 */
 	position: absolute;
 	left: 0;
-	top: 20px;
+	top: 56px;
 	right: 0;
 	bottom: 0;
 	overflow: auto;
@@ -45,6 +45,8 @@ div.entity .members {
 /*	background-image: url("../skins/ovidentia/images/nodetypes/collective_folder.png"); */
 	background-color: #FFFFFF;
 	color: #000000;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
 }
 
 div.entity .members .member_role {
@@ -60,6 +62,7 @@ div.entity .members .member {
 .orgchart table.horizontal {
 	border-collapse: collapse;
 	font-family: Tahoma, Verdana, sans-serif;
+	margin: 0 auto;
 }
 
 .orgchart table.horizontal table.horizontal {
@@ -75,7 +78,7 @@ div.entity .members .member {
 .orgchart div.entity {
 	position: relative;
 	background-color: #AACCEE;
-/*	background-image: url("../skins/ovidentia/images/orgchart/back.png"); */
+/*	background-image: url("../skins/ovidentia/images/orgchart/back.png");*/ 
 	margin: 0 auto;
 	color: white;
 	padding: 0.5em;
@@ -88,67 +91,89 @@ div.entity .members .member {
 }
 
 .orgchart div.entity img.icon {
-	width: 4em;
+	width: 5em;
 	margin: 0 0.3em 0 0;
 	border: 1px solid black;
 	background-color: #FFFFFF;
 	padding: 1px;
 }
 
-.orgchart div.entity .actions {
-	border-bottom: 1px solid black;
-	border-left: 1px solid black;
+.actions {
+	border: 1px solid black;
 	padding: 1px;
 	background-color: #FFFFFF;
+/*
 	float: right;
 	position: absolute;
 	z-index: 127;
 	top: 0;
 	right: 0;
+*/
+}
+
+.actions img.action {
+	margin: 0;
+	border: 0;
+	vertical-align: middle;
+}
+
+.actions a {
+	vertical-align: middle;
+	text-decoration: none;
+/*	display: block;*/
+	padding: 2px;
+}
+
+.actions a:hover {
+	background-color: #000000;
+	color: #ffffff;
 }
 
 .orgchart div.entity a {
 	text-decoration: none;
 }
 
-.orgchart div.entity img.action {
-	margin: 0;
-	border: 0;
-}
-
-.orgchart div.entity .actions a {
-	border: 1px solid #FFFFFF;
-}
-
-.orgchart div.entity .actions a:hover {
-	border: 1px solid #DDDDDD;
-}
 
 .level1 div.entity {
 	margin: 0 auto;
 	width: 18em;
-	border: 2px solid black;
+	background-image: none;
+	background-color: #86bf98;
+	border: 3px solid black;
+}
+.level1 div.entity a {
+	color: #ffffff;
 }
 
 .level2 div.entity {
 	width: 16em;
-	border: 1px solid black;
+	background-image: none;
+	background-color: #86adbf;
+	border: 3px solid black;
 }
 
 
 .level3 div.entity {
 	width: 14.5em;
-	border: 1px solid #BBBB99;
 	background-image: none;
-	background-color: #EEEECC;
+	background-color: #bf86ad;
+	border: 3px solid black;	
 	color: black;
 }
 
 .level4 div.entity {
 	width: 14em;
-	border: 1px solid #CCCCAA;
 	background-image: none;
-	background-color: #F4F4DD;
+	background-color: #bf9886;
+	border: 3px solid black;	
+	color: black;
+}
+
+.level5 div.entity {
+	width: 14em;
+	background-image: none;
+	background-color: #bbbbbb;
+	border: 3px solid black;	
 	color: black;
 }
 
@@ -163,6 +188,33 @@ div.entity .members .member {
 	text-align: left;
 }
 
+
+div.entity {
+/*	outline: 2px solid #bbbbbb; */
+}
+div.entity.matching {
+	outline: 3px solid lightgreen;
+}
+
+.horizontal div.entity.shaded {
+/*	width: 6px;
+	height: 6px;
+	overflow: hidden; */
+	opacity: 0.25;
+}
+
+.vertical div.entity.shaded {
+/*	height: 6px;
+	overflow: hidden; */
+	opacity: 0.25;
+}
+
+/*
+.horizontal div.entity.shaded *,
+.vertical div.entity.shaded * {
+	visibility: hidden;
+}
+*/
 
 .horizontal div.first_sibling {
 	padding: 8px 0.5em 0 0.5em;
@@ -250,11 +302,11 @@ div.entity .members .member {
 
 
 .orgchart div.switch_open {
-	background: url(../skins/ovidentia/images/Puces/minus.gif); 
+	background: url(../skins/ovidentia/images/orgchart/less.gif); 
 	background-repeat: no-repeat;
 	background-position: center center;
 	width: 21px;
-	height: 11px;
+	height: 9px;
 	margin: 0 auto;
 	padding: 0;
 	overflow: hidden;
@@ -262,20 +314,36 @@ div.entity .members .member {
 }
 
 .orgchart div.switch_closed {
-	background: url(../skins/ovidentia/images/Puces/plus.gif); 
+	background: url(../skins/ovidentia/images/orgchart/more.gif); 
 	background-repeat: no-repeat;
 	background-position: center center;
 	width: 21px;
-	height: 11px;
+	height: 9px;
 	margin: 0 auto;
 	padding: 0;
 	overflow: hidden;
 	cursor: pointer;
 }
 
+.orgchart div.switch_open:hover,
+.orgchart div.switch_closed:hover {
+	background-color: #000000;
+}
+
 
 .bab_treeToolbar {
-	padding: 2px 8px;
+	margin: 0 !important;
+	padding: 6px 8px;
+	vertical-align: middle;
+}
+
+.bab_treeLocationBar {
+	margin: 0 !important;
+	padding: 3px 8px;
+}
+
+.bab_treeLocationBar a {
+	text-decoration: none ;
 }
 
 .bab_treeToolbar select {
@@ -287,18 +355,21 @@ div.entity .members .member {
 
 .bab_toolbarGroup {
 	padding: 0 8px;
+	vertical-align: middle;
 }
 
-.bab_toolbarButton {
+.bab_treeToolbar .bab_toolbarButton {
 	margin: 5px;
+	padding-left: 16px;
 	cursor: pointer;
 	vertical-align: middle;
+	text-decoration: none;
 }
 
 .bab_zoomIn {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/zoomIn.png');
+	background-image: url('../skins/ovidentia/images/Puces/zoomIn.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -308,7 +379,7 @@ div.entity .members .member {
 .bab_zoomOut {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/zoomOut.png');
+	background-image: url('../skins/ovidentia/images/Puces/zoomOut.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -318,7 +389,7 @@ div.entity .members .member {
 .bab_zoomFit {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/zoomFitWidth.png');
+	background-image: url('../skins/ovidentia/images/Puces/zoomFitWidth.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -328,7 +399,7 @@ div.entity .members .member {
 .bab_help {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/help.png');
+	background-image: url('../skins/ovidentia/images/Puces/help.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -338,7 +409,7 @@ div.entity .members .member {
 .bab_print {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/print.png');
+	background-image: url('../skins/ovidentia/images/Puces/Print.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -348,7 +419,7 @@ div.entity .members .member {
 .bab_save {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/save.png');
+	background-image: url('../skins/ovidentia/images/Puces/save.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -358,7 +429,7 @@ div.entity .members .member {
 .bab_restore {
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	background-image: url('../skins/ovidentia/images/Puces/reload.png');
+	background-image: url('../skins/ovidentia/images/Puces/update.gif');
 	text-decoration: none;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -395,6 +466,62 @@ div.entity .members .member {
 
 .bab_tooltipEntity .actions {
 	display: none;
+}
+
+
+.bab_searchField {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	padding-left: 18px !important;
+	opacity: 0.5;
+}
+.bab_searchField:focus {
+	opacity: 1;
+}
+
+.bab_searchFieldSearching {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/grey_bg.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 0 0;
+	background-repeat: repeat-y;
+	padding: 3px 2px 2px 18px;
+	padding-left: 18px !important;
+	background-color: #FFFFFF;
+}
+
+.bab_searchFieldFound {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	padding-left: 18px !important;
+	background-color: #CCFFCC !important;
+}
+
+.bab_searchFieldNotFound {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/Puces/search.gif');
+	margin: 0px 0px 0px 8px;
+	text-decoration: none;
+	background-position: 1px 50%;
+	background-repeat: no-repeat;
+	padding: 3px 2px 2px 18px;
+	padding-left: 18px !important;
+	background-color: #FFCCCC !important;
 }
 
 
