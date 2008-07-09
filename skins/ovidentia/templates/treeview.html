@@ -10,25 +10,51 @@
 		<!--#if t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_not_loaded"><!--#else t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_leaf"><!--#endif t_fetchContentScript -->
 		<!--#if t_highlighted --><div class="line" style="background-color: #EEEEEE"><!--#else t_highlighted --><div class="line"><!--#endif t_highlighted -->
 			<!--#if t_fetchContentScript -->
-			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" onclick="if (hasClass(this.parentNode.parentNode, 'bab_ul_tree_not_loaded')) { t_fetchContentScript }" />
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="17" alt="" onclick="if (hasClass(this.parentNode.parentNode, 'bab_ul_tree_not_loaded')) { t_fetchContentScript }" />
 			<!--#else t_fetchContentScript -->
-			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="16" alt="" />
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="17" alt="" />
 			<!--#endif t_fetchContentScript -->
-			<!--#if t_nodeIcon --><img src="{ t_nodeIcon }" alt="" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" /><!--#endif t_nodeIcon -->
+			<div style="width: 16px; display: inline-block; text-align: center; border: 1px solid #cccccc"><!--#if t_nodeIcon --><img class="icon" src="{ t_nodeIcon }" alt="" title="{ t_tooltip }" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" title="{ t_tooltip }" /><!--#endif t_nodeIcon --></div>
 			<!--#if t_link -->
-			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }">{ t_title }</span></a>
+			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span></a>
 			<!--#else t_link -->
-			<span class="level{ t_offsetPreviousLevel } { t_type }">{ t_title }</span>
+			<span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span>
 			<!--#endif t_link -->
+
+			<!--#in getNextMenu -->
+			<div style="vertical-align: middle; padding-left: 5px; position: relative; display: inline" class="menu { t_css_classes }" id="menu.{ t_id }.{ menu_name }">
+				<a class="bab_menu_button" id="menubutton.{ t_id }.{ menu_name }" onclick="menu=document.getElementById('menuframe.{ t_id }.{ menu_name }'); bab_toggleMenu(this,menu);" style="position: relative; display: none; cursor: pointer; z-index: 126" title="{ menu_caption }"><img style="vertical-align: middle" src="{ menu_icon }" alt="" /></a>
+				<div class="BabLoginMenuBackground" style="padding: 0; border: 1px solid #cccccc" id="menuframe.{ t_id }.{ menu_name }">
+					<!--#in getNextMenuAction -->
+					<!--#if action_name "== -" -->
+					<div style="border-bottom: 1px solid #dddddd; display: block; margin: 8px 0; white-space: nowrap; vertical-align: middle" class="menu_action" href="{ action_url }" onclick="{ action_script }"></div>
+					<!--#else action_name -->
+					<div style="vertical-align: middle"><a style="display: block; padding: 4px; font-weight: normal; white-space: nowrap; vertical-align: middle" class="menu_action" href="{ action_url }" onclick="{ action_script }"><img src="{ action_icon }" alt=""  style="vertical-align: middle" />&nbsp;{ action_caption }</a></div>
+					<!--#endif action_name -->
+					<!--#endin getNextMenuAction -->
+				</div>
+			</div>
+			<script type="text/javascript">
+				document.getElementById('menubutton.{ t_id }.{ menu_name }').style.display = '';
+				document.getElementById('menuframe.{ t_id }.{ menu_name }').style.display = 'none';
+				document.getElementById('menuframe.{ t_id }.{ menu_name }').style.position = 'absolute';
+				document.getElementById('menuframe.{ t_id }.{ menu_name }').style.zIndex = '127';
+				document.getElementById('menuframe.{ t_id }.{ menu_name }').style.left = '0';
+				document.getElementById('menuframe.{ t_id }.{ menu_name }').style.top = '20px';
+			</script>					
+			<!--#endin getNextMenu -->
+
 			<!--#if t_showRightElements -->
 			<span class="right_elements">{ t_info }
 				<!--#in getNextCheckBox -->
 				<input type="checkbox" name="{ checkbox_name }" onclick="{ checkbox_script }" <!--#if checkbox_checked -->checked="checked"<!--#endif checkbox_checked --> />
 				<!--#endin getNextCheckBox -->
 				<span class="actions" style="background-color: white">
+
 					<!--#in getNextAction -->
 					<a class="action" href="{ action_url }" title="{ action_caption }" onclick="{ action_script }"><img src="{ action_icon }" alt="{ action_caption }" /></a>
 					<!--#endin getNextAction -->
+
 				</span>
 			</span>
 			<!--#endif t_showRightElements -->
@@ -42,8 +68,8 @@
 
 
 <!--#begin treeview -->
-<div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground" style="padding: 1px">
-	<div class="tree" style="position: relative">
+<div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground">
+	<div class="tree BabLoginMenuBackground" style="position: relative">
 		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
 		{ t_subtree }
 	</div>
@@ -152,6 +178,109 @@ if (tree) {
 
 <!--#begin treeview_scripts -->
 
+<script type="text/javascript"><!--
+//<![CDATA[
+
+
+
+function bab_stopEvent(ev)
+{
+	ev || (ev = window.event);
+	if ($.browser.msie) {
+		ev.cancelBubble = true;
+		ev.returnValue = false;
+	} else {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+	return false;
+};
+
+function bab_addEvent(el, evname, func)
+{
+	if (el.attachEvent) { // IE
+		el.attachEvent("on" + evname, func);
+	} else if (el.addEventListener) { // Gecko / W3C
+		el.addEventListener(evname, func, true);
+	} else {
+		el["on" + evname] = func;
+	}
+};
+
+
+// FIXME: the following 2 functions totally suck, are useless and should be replaced immediately.
+function bab_getElement(ev)
+{
+	var f = $.browser.msie ? window.event.srcElement : ev.currentTarget;
+	while (f.nodeType != 1 || /^div$/i.test(f.tagName))
+		f = f.parentNode;
+	return f;
+};
+
+function bab_getTargetElement(ev)
+{
+	var f = $.browser.msie ? window.event.srcElement : ev.target;
+	while (f.nodeType != 1)
+		f = f.parentNode;
+	return f;
+};
+
+// This gets called when the user presses a mouse button anywhere in the
+// document, if the calendar is shown.  If the click was outside the open
+// calendar this function closes it.
+bab_checkMenu = function(ev)
+{
+	var menu = window.bab_currentMenu;
+	if (!menu) {
+		return false;
+	}
+	var el = $.browser.msie ? bab_getElement(ev) : bab_getTargetElement(ev);
+	for (; el != null && el != menu; el = el.parentNode);
+	if (el == null) {
+		$(menu).hide();
+		window.bab_currentMenu = null;
+		return bab_stopEvent(ev);
+	}
+};
+
+
+function bab_toggleMenu(button,div)
+{
+//	if (window.bab_currentMenu && window.bab_currentMenu != div) {
+//		$(window.bab_currentMenu).hide();
+//	}
+
+	var parentTreeDiv = $(div).parents(".tree")[0];
+
+	var buttonX = 0;
+	var buttonY = 0;
+	for (var element = button; element != parentTreeDiv && element != null; element = element.offsetParent) {
+		buttonX += element.offsetLeft;
+		buttonY += element.offsetTop;
+	}
+	window.bab_currentMenu = div;
+	$(parentTreeDiv).append(div);
+	div.style.top = (buttonY + 10) + "px";
+	if ($.browser.msie) {
+		var nbUls = $(button).parents("ul").length + 1;
+		div.style.left = (buttonX - 23 * nbUls) + "px";
+	} else {
+		div.style.left = buttonX + "px";
+	}
+	if ($(div).is(":hidden")) {
+		$(div).fadeIn('normal');
+		window.bab_currentMenu = div;
+		bab_addEvent(document, "click", bab_checkMenu);
+	}
+//	 else {
+//		$(div).hide();
+//		window.bab_currentMenu = null;
+//	}
+}
+
+//]]>
+--></script>
+
 <!--#end treeview_scripts -->
 
 
@@ -171,10 +300,12 @@ if (tree) {
 <!--#begin orgchart_scripts -->
 
 <script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
-
+ <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script> 
 <script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
 <script type="text/javascript">
 //<![CDATA[
+var $j = jQuery.noConflict();
+
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
 }
@@ -209,7 +340,9 @@ orgchart.userId = <!--#if t_userId --> { t_userId } <!--#else t_userId --> 0 <!-
 orgchart.adminMode = <!--#if t_adminMode --> true <!--#else t_adminMode --> false <!--#endif t_adminMode -->;
 
 //console && console.time('bab_initOrgChart');
-bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+window.onload = function() {
+	bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+}
 //console && console.timeEnd('bab_initOrgChart');
 
 function changestyle(ent,oldstyle,newstyle)
@@ -244,6 +377,11 @@ function left_refresh()
 		return true;
 }
 
+function bab_editRoles(entityId)
+{
+	
+}
+
 function updateFlbFrame(url)
 {
 	if (left_refresh()) {
@@ -275,16 +413,24 @@ function flbhref(url)
 
 <script type="text/javascript">
 //<![CDATA[
-document.write('<div id="bab_loading" style="z-index: 255; padding: 4px; margin: 10 auto; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: white; vertical-align: middle">');
+document.write('<div id="bab_loading" style="z-index: 255; padding: 0; margin: 0; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #ffffff; vertical-align: middle">');
+document.write('<div style="vertical-align: middle; padding: 20px; margin: 50px; border: 1px solid grey; background-color: #eeeeee;">');
 document.write('<img style="vertical-align: middle" src="{ babSkinPath }images/indicator.gif" alt="" />');
-document.write('{ t_loading }');
+document.write(' { t_loading }');
+document.write('</div>');
 document.write('</div>');
 //]]>
 </script>
 
 <div class="orgchartcontainer">
-<div class="bab_treeToolbar BabSiteAdminTitleFontBackground"></div>
-<div class="orgchart" class="bab_tree BabLoginCadreBackground" id="{ t_treeViewId }">
+<div class="bab_treeToolbar bab_cal_buttons"></div>
+<div class="bab_treeLocationBar bab_cal_buttons" style="vertical-align: middle">
+ <!--#in getNextLocationElement  -->
+ <img src="{ babSkinPath }images/Puces/arrowNext3a.gif" style="vertical-align: middle" />
+ <a class="bab_treeLocationElement" style="vertical-align: middle" href="{ t_entityUrl }">{ t_entityTitle }</a>
+ <!--#endin getNextLocationElement  -->
+</div>
+<div class="orgchart" class="bab_tree BabLoginCadreBackground" id="{ t_treeViewId }" style="margin-left: auto; margin-right: auto">
 <!--#in getNextElement -->
 
 <!--#if t_previousLayout "== horizontal" -->
@@ -322,29 +468,29 @@ document.write('</div>');
   <!--#endif t_isMiddleChild -->
   <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
-  <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
-  <td width="1%"><img class="icon" src="{ t_nodeIcon }" alt="" /></td>
-  <td><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
-  </tr></table>
+   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
+   <td valign="top" width="1%"><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> ><img class="icon" src="{ t_nodeIcon }" alt="" /></a></td>
+   <td valign="top"><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
+   </tr></table>
   <!--#else t_nodeIcon -->
- <b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</b></a><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
+   <b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</b></a><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a>
   <!--#endif t_nodeIcon -->
 
-  <div class="actions">
+   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
+    <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
-  </div>
+   </div>
 
   <!--#if t_nbMembers "> 0" -->
-  <div class="members">
+   <div class="members">
   <!--#in getNextMemberRole -->
-  <div class="member_role">{ t_memberRole }</div>
+    <div class="member_role">{ t_memberRole }</div>
   <!--#in getNextMemberName -->
-  <div class="member">{ t_memberName }</div>
+    <div class="member">{ t_memberName }</div>
   <!--#endin getNextMemberName -->
   <!--#endin getNextMemberRole -->
-  </div>
+   </div>
   <!--#endif t_nbMembers -->
 
   </div>
