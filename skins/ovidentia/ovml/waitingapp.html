@@ -37,7 +37,7 @@
 	</tr>
 	<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 		<td>&nbsp;</td>
-		<td align="left"><a href="javascript: Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVArticleTitle strlen="100,..."></a></td>
+		<td align="left"><a href="<OVArticlePopupUrl>" target="_blank" onclick="Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;"><OVArticleTitle strlen="100,..."></a></td>
 		<td><OVArticleAuthor author="%F %L"></td>
 		<td align="right"><a href="<OVArticleUrl>"><img src="<OVbabSkinPath>images/Puces/confirm.gif" border="0" alt="" /></a></td>
 	</tr>
@@ -80,13 +80,13 @@
 	<OFAOModulus expr1="<OVCIndex>" expr2="2" saveas="modulo">
 	<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 		<td width="120"><OVCommentDate date="%S %T"></td>
-		<td align="left"><span style="font-Size:9"><OCArticleTopic topicid="<OVCommentTopicId>"><OCParentsArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="15,..."> /</OCParentsArticleCategory><OCArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="15,..."> /</OCArticleCategory><OCArticleTopic topicid="<OVCommentTopicId>"><OVTopicName strlen="15,..."> /</OCArticleTopic></OCArticleTopic><OCArticle articleid="<OVCommentArticleId>"><a href="javascript: Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVArticleTitle strlen="50,..."></a> </OCArticle></span></td>
+		<td align="left"><span style="font-Size:9"><OCArticleTopic topicid="<OVCommentTopicId>"><OCParentsArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="15,..."> /</OCParentsArticleCategory><OCArticleCategory categoryid="<OVTopicCategoryId>"><OVCategoryName strlen="15,..."> /</OCArticleCategory><OCArticleTopic topicid="<OVCommentTopicId>"><OVTopicName strlen="15,..."> /</OCArticleTopic></OCArticleTopic><OCArticle articleid="<OVCommentArticleId>"><a href="<OVArticlePopupUrl>" target="_blank" onclick="Start('<OVArticlePopupUrl>', 'OviArt', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;"><OVArticleTitle strlen="50,..."></a> </OCArticle></span></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 		<td>&nbsp;</td>
-		<td><a href="javascript: Start('<OVCommentPopupUrl>', 'OviCom', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVCommentTitle strlen="100,..."></a></td>
+		<td><a href="<OVCommentPopupUrl>" target="_blank" onclick="Start('<OVCommentPopupUrl>', 'OviCom', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;"><OVCommentTitle strlen="100,..."></a></td>
 		<td width="130"><OVCommentAuthor>&nbsp;</td>
 		<td align="right"><a href="<OVCommentUrl>"><img src="<OVbabSkinPath>images/Puces/confirm.gif" border="0" alt=""></a></td>
 	</tr>
@@ -132,7 +132,7 @@
 	<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 		<td width="120"><OVPostDate date="%S %T"></td>
 		<td align="right"><span style="font-Size:9"><OCForum forumid="<OVPostForumId>"><OVForumName strlen="20,..."> / </OCForum><OCPost postid="<OVPostThreadId>"><OVPostTitle strlen="20,..."> / </OCPost></span></td>
-		<td align="left"><a href="javascript: Start('<OVPostPopupUrl>', 'OviPost', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><OVPostTitle strlen="100,..."></a></td>
+		<td align="left"><a href="<OVPostPopupUrl>" target="_blank" onclick="Start('<OVPostPopupUrl>', 'OviPost', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;"><OVPostTitle strlen="100,..."></a></td>
 		<td><OVPostAuthor></td>
 		<td align="right"><a href="<OVPostUrl>"><img src="<OVbabSkinPath>images/Puces/confirm.gif" border="0" alt=""></a></td>
 	</tr>
@@ -179,9 +179,9 @@
 	</tr>
 	<tr class="<OCIfEqual expr1="<OVmodulo>" expr2="0">BabSiteAdminFontBackground</OCIfEqual><OCIfNotEqual expr1="<OVmodulo>" expr2="0">BabForumBackground1</OCIfNotEqual>">
 		<td>&nbsp;</td>
-		<td><a href="javascript: Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');" title="<OVFileDescription>"><OVFileName></a></td>
+		<td><a href="<OVFilePopupUrl>" target="_blank" onclick="Start('<OVFilePopupUrl>', 'OviFile', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;" title="<OVFileDescription>"><OVFileName></a></td>
 		<td><OVFileAuthor author="%F %L"></td>
-		<td align="right"><a href="javascript: Start('<OVFilePopupUrl urlencode="1">', 'OviPost', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');"><img src="<OVbabSkinPath>images/Puces/confirm.gif" border="0" alt=""></a></td>
+		<td align="right"><a href="<OVFilePopupUrl urlencode="1">" target="_blank" onclick="Start('<OVFilePopupUrl urlencode="1">', 'OviPost', 'width=550,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');return false;"><img src="<OVbabSkinPath>images/Puces/confirm.gif" border="0" alt=""></a></td>
 	</tr>
 	</OCWaitingFiles>
 	</table>
