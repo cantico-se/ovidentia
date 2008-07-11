@@ -260,7 +260,7 @@ class bab_synchronizeSql
 			}
 		else
 			{
-			trigger_error('can\'t fetch file content : '.$this->file);
+			trigger_error('can\'t fetch file content, no CREATE TABLE found in file : '.$this->file);
 			return false;
 			}
 
