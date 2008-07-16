@@ -34,9 +34,9 @@ class bab_siteMap_item {
 
 	var $uid;
 	var $label;
-	var $description = '';
-	var $href;
-	var $onclick;
+	var $description 	= '';
+	var $href 			= '';
+	var $onclick 		= '';
 	var $position = array();
 	var $lang;
 	var $parentNode;	// ref bab_siteMap_item
