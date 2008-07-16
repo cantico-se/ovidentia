@@ -289,6 +289,26 @@
 	</td>
 	</tr>
 	<!--#endin getnextprofile -->
+	
+	<!--#if bUseCaptcha -->
+	<tr>
+		<td align="right">
+			{ sCaptchaCaption1 }:
+		</td>
+		<td>
+			{ sCaptchaSecurityData }
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>&nbsp;{ sCaptchaCaption2 }:
+		</td>
+		<td>
+			<input type="text" name="sCaptchaSecurityCode" size="40" value="" />
+		</td>
+	</tr>
+	<!--#endif bUseCaptcha -->
+	
 	<tr> 
 	<td colspan="2" align="center"><font color="red">*</font>&nbsp;{ requiredtxt }</td>
 	</tr>

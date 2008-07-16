@@ -182,6 +182,16 @@ function displayRegistration($nickname, $fields, $cagree)
 			$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
 			$this->countpf = $babDB->db_num_rows($this->respf);
 			$this->altbg = true;
+			
+			$oCaptcha = @bab_functionality::get('Captcha');
+			$this->bUseCaptcha = false;
+			if(false !== $oCaptcha)
+				{
+					$this->bUseCaptcha = true;
+					$this->sCaptchaCaption1 = bab_translate("Word Verification");
+					$this->sCaptchaSecurityData = $oCaptcha->getGetSecurityHtmlData();
+					$this->sCaptchaCaption2 = bab_translate("Enter the letters in the image above");
+				}
 			}
 
 		function getnextfield(&$skip)
@@ -459,6 +469,30 @@ function addNewUser( $nickname, $password1, $password2)
 		return false;
 		}
 
+	$oCaptcha = @bab_functionality::get('Captcha');
+	if(false !== $oCaptcha)
+		{
+			$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
+			//echo 'sCaptchaSecurityCode ==> ' . $sCaptchaSecurityCode . ' session ==> ' . $_SESSION['sCaptchaSecurityCode'] . '<br />';
+						
+			if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
+			{
+				$babBody->msgerror = bab_translate("The captcha value is incorrect");
+				return false;
+			}/*
+			else
+			{
+				$babBody->msgerror = bab_translate("The captcha value is correct");
+				return false;
+			}/*/
+		}
+		
+		if ( !bab_isEmailValid($fields['email']))
+		{
+		$babBody->msgerror = bab_translate("Your email is not valid !!");
+		return false;
+		}
+
 	$bphoto = false;
 
 	$res = $babDB->db_query("SELECT sfrt.*, sfxt.id as idfx from ".BAB_SITES_FIELDS_REGISTRATION_TBL." sfrt left join ".BAB_DBDIR_FIELDSEXTRA_TBL." sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and sfrt.registration='Y' and sfxt.id_directory='0'");
@@ -711,6 +745,8 @@ switch($cmd)
 			exit;
 		}
 		/* no break; */
+
+	case 'displayCaptchaImg':
 		
 	case "signon":
 	default:
