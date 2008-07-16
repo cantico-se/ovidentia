@@ -366,7 +366,7 @@ class bab_TmTasks extends bab_handler
 				'&iIdProject=' . urlencode($task['iIdProject']) . 
 				'&iIdTask=' . urlencode($task['iIdTask']);
 			
-			$this->ctx->curctx->push('TaskUrl', $task['sTaskUrl']);
+			$this->ctx->curctx->push('TaskUrl', $sTaskUrl);
 			$this->ctx->curctx->push('TaskId', bab_translate($task['sClass']));
 			
 			$this->ctx->curctx->push('Time', '');
