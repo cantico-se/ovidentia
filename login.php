@@ -746,8 +746,6 @@ switch($cmd)
 		}
 		/* no break; */
 
-	case 'displayCaptchaImg':
-		
 	case "signon":
 	default:
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
