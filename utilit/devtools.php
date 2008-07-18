@@ -318,9 +318,11 @@ class bab_synchronizeSql
 	function checkTables()
 		{
 		
+		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		
 		foreach($this->create as $table => $arr)
 			{
-			if (isset($this->tables[$table]))
+			if (bab_isTable($table))
 				{
 				if ($this->checkFields($table))
 					$this->return[$table] = 2;
