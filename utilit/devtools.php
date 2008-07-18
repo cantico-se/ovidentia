@@ -270,17 +270,49 @@ class bab_synchronizeSql
 
 	function showTables()
 		{
-		$res = $this->db->db_query("SHOW TABLES");
-		while (list($table) = $this->db->db_fetch_array($res))
+		
+		global $babDB;
+		
+		$tables_in_files = array_keys($this->create);
+		
+
+		foreach ($tables_in_files as $table)
 			{
+			
 			$this->tables[$table] = array();
-			$res2 = $this->db->db_query("SHOW COLUMNS FROM ".$this->db->db_escape_string($table));
-			while ($arr = $this->db->db_fetch_assoc($res2))
+			
+
+			$req = '
+					SELECT 
+						`COLUMN_NAME` `Field`,
+						`COLUMN_TYPE` `Type`,
+						`IS_NULLABLE` `Null`,
+						`COLUMN_KEY` `Key`,
+						`COLUMN_DEFAULT` `Default`,
+						`EXTRA` `Extra`,
+						`COLUMN_COMMENT` `Comment`
+						
+					FROM 
+						INFORMATION_SCHEMA.COLUMNS
+					WHERE 
+						table_name = '.$babDB->quote($table).' 
+						AND table_schema = '.$babDB->quote($GLOBALS['babDBName']).' 
+				';
+			
+			
+			$res2 = $babDB->db_queryWem($req);
+			
+			if (!$res2) {
+				// alternate methode if no inforamtion schema
+			
+				$res2 = $babDB->db_query("SHOW COLUMNS FROM ".$babDB->db_escape_string($table));
+			}
+			
+			while ($arr = $babDB->db_fetch_assoc($res2))
 				{
 				$this->tables[$table][$arr['Field']] = $arr;
 				}
 			}
-
 		}
 
 	function checkTables()
@@ -428,17 +460,33 @@ class bab_synchronizeSql
 
 		return $return;
 		}
+		
+		
+		
+	function trimall($str) {
+	  	return strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B"), '', $str));
+	}
+		
+		
+		
+		
+		
 
 	function checkOptions($table, $field)
 		{
 		$option_file = $this->create[$table]['fields'][$field];
+		
 		$null = $this->tables[$table][$field]['Null'] != 'YES' ? ' NOT NULL' : '';
 		$default = $this->tables[$table][$field]['Default'] != '' || false !== strpos($this->tables[$table][$field]['Type'],'char') ? " default '".$this->tables[$table][$field]['Default']."'" : '';
 		$extra = !empty($this->tables[$table][$field]['Extra']) ? ' '.$this->tables[$table][$field]['Extra'] : '';
-		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra;
-
+		$comment = !empty($this->tables[$table][$field]['Comment']) ? " COMMENT '".$this->tables[$table][$field]['Comment']."'" : '';
+		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra.$comment;
 		
-		if (strtolower($option_file) !== strtolower($option_table))
+		$old = $this->trimall($option_table);
+		$new = $this->trimall($option_file);
+		
+		
+		if ($old != $new)
 			{
 			$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` CHANGE `".$this->db->db_escape_string($field)."` `".$this->db->db_escape_string($field)."` ".$option_file);
 			return true;
@@ -448,10 +496,7 @@ class bab_synchronizeSql
 		}
 		
 		
-	function trimall($str)
-		{
-	  	return str_replace(array(' ', " \t", "\n", "\r", "\0", "\x0B"), '', $str);
-	}
+	
 		
 	/**
 	 * verify key
