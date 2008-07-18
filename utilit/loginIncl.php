@@ -70,10 +70,8 @@ class Func_PortalAuthentication extends bab_functionality
 	 */
 	function isLogged()
 	{
-		if (array_key_exists('BAB_SESS_LOGGED', $GLOBALS)) {
-			return $GLOBALS['BAB_SESS_LOGGED'];
-		}
-		return false;
+		require_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
+		return bab_isUserLogged();
 	}
 }
 
