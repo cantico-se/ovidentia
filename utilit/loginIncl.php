@@ -113,6 +113,8 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 
 	function login() 
 	{
+		require_once $GLOBALS['babInstallPath'].'admin/register.php';
+		
 		if(signOn())
 		{
 			return true;
@@ -135,11 +137,13 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
  * 
  * The parameter $sAuthType can be used to force the authentication method,
  * it must be the name (path) of the functionality to use without 'PortalAuthentication/' 
+ *
+ * @see bab_requireCredential
  * 
- * @param	string		$sAuthType		Optional authentication type.
+ * @param	string		$sAuthType		Authentication type.
  * @since 6.7.0
  */
-function bab_requireCredential($sAuthType = '')
+function bab_doRequireCredential($sAuthType)
 {
 	if(Func_PortalAuthentication::isLogged())
 	{

@@ -1796,3 +1796,21 @@ function bab_getAddonInfosInstance($addonname) {
 	return $instances[$addonname];
 }
 
+
+/**
+ * Ensures that the user is logged in.
+ * If the user is not logged the "PortalAutentication" functionality
+ * is used to let the user log in with its credential.
+ * 
+ * The parameter $sAuthType can be used to force the authentication method,
+ * it must be the name (path) of the functionality to use without 'PortalAuthentication/' 
+ * 
+ * @param	string		$sAuthType		Optional authentication type.
+ * @since 6.7.0
+ *
+ * @return boolean
+ */
+function bab_requireCredential($sAuthType = '') {
+	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+	return bab_doRequireCredential($sAuthType);
+}
