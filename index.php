@@ -83,6 +83,7 @@ function bab_cleanGpc() {
 	}
 }
 
+
 bab_cleanGpc();
 
 if (!isset($babUrl)) {
@@ -106,8 +107,14 @@ elseif(!session_id())
 		session_start();
 	}
 	
-
-
+	
+if(isset($_GET['babHttpContext'])) 
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
+	bab_restoreHttpContext();	
+	bab_cleanGpc();
+}
+	
 
 if (!empty($_GET))
 	$babTmp =& $_GET;
@@ -166,6 +173,10 @@ $babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
 $babUrlScript = $babUrl.$babPhpSelf;
 $babAddonsPath = $GLOBALS['babInstallPath']."addons/";
 $babSiteName = substr($babSiteName, 0, 30);
+
+
+
+
 
 if( !isset($tg))
 	$tg = '';

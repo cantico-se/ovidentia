@@ -111,16 +111,14 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 		return Func_PortalAuthentication_Ovidentia::register();
 	}
 
-//	function unregisterAuthType()
-//	{
-//		$oFunctionalities = new bab_functionalities();
-//		return $oFunctionalities->unregister('PortalAuthentication')
-//				&& $oFunctionalities->unregister('PortalAuthentication/ovidentia');
-//	}
-
 	function login() 
 	{
-		bab_login();
+		if(signOn())
+		{
+			return true;
+		}
+		displayAuthenticationForm();
+		return false;
 	}
 
 	function logout() 
@@ -143,6 +141,11 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
  */
 function bab_requireCredential($sAuthType = '')
 {
+	if(Func_PortalAuthentication::isLogged())
+	{
+		return true;	
+	}
+	
 	if ($sAuthType === '') {
 		$sAuthPath = 'PortalAuthentication';
 	} else {
@@ -162,8 +165,19 @@ function bab_requireCredential($sAuthType = '')
 		return false;
 	}
 	$_SESSION['sAuthPath'] = $sAuthPath;
-	if (!$oAuthObject->isLogged()) {
-		$oAuthObject->login();
+	if(!$oAuthObject->isLogged()) 
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
+		if(!bab_haveHttpContext())
+		{
+			bab_storeHttpContext();
+		}
+		
+		if(true === $oAuthObject->login())
+		{
+			Header("Location:". $GLOBALS['babUrlScript'] . '?babHttpContext=restore');
+			exit;
+		}
 	}
 	return true;
 }
@@ -282,39 +296,6 @@ function bab_haveAdministratorRight($iIdUser)
 	return ($babDB->db_num_rows($oRes) !== 0);
 }
 
-
-function bab_login()
-{
-	if($GLOBALS['BAB_SESS_LOGGED']) 
-	{
-		return;
-	} 
-	else 
-	{
-		if(signOn())
-		{
-			require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
-			$sUrl = (string) bab_rp('referer');
-			
-			if(substr_count($sUrl,'tg=login&cmd=') == 0) 
-			{
-				loginRedirect($sUrl);
-			}
-			elseif ((string)bab_rp('tg') === 'login')
-			{
-				loginRedirect(bab_url::request_gp());
-			}
-			else
-			{
-				loginRedirect($GLOBALS['babUrlScript']);
-			}
-		}
-		else
-		{
-			displayAuthenticationForm();
-		}
-	}	
-}
 
 function bab_signOff()
 {
