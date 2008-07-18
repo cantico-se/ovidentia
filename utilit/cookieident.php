@@ -30,11 +30,12 @@ if(isset($_COOKIE['c_password']))
 	if(!empty($token) && !$GLOBALS['BAB_SESS_USERID'])
 	{
 		require_once $GLOBALS['babInstallPath'] . 'admin/register.php';
+		require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
 		
 		$iIdUser = authenticateUserByCookie($token);
-		if(!is_null($iIdUser) && userCanLogin($iIdUser))
+		if(!is_null($iIdUser) && bab_userCanLogin($iIdUser))
 		{
-			userLogin($iIdUser);
+			bab_setUserSessionInfo($iIdUser);
 		}
 		else 
 		{

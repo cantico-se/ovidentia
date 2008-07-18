@@ -172,7 +172,8 @@ function login($nickname, $password)
 	{
 	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
-
+	include_once $babInstallPath.'utilit/loginIncl.php';
+	
 	$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' and password='". $babDB->db_escape_string(md5(strtolower($password))) ."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
@@ -187,9 +188,9 @@ function login($nickname, $password)
 	if( $access )
 		{
 		$iIdUser = authenticateUserByLoginPassword($nickname, $password);
-		if(!is_null($iIdUser) && userCanLogin($iIdUser))
+		if(!is_null($iIdUser) && bab_userCanLogin($iIdUser))
 			{
-			userLogin($iIdUser);
+			bab_setUserSessionInfo($iIdUser);
 			bab_logUserConnectionToStat($iIdUser);
 			bab_updateUserConnectionDate($iIdUser);
 			bab_createReversableUserPassword($iIdUser, $password);
@@ -216,10 +217,11 @@ function logout($session)
 	{
 	global $babBody;
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
-
+	include_once $babInstallPath.'utilit/loginIncl.php';
+	
 	if( isset($_REQUEST['WSSESSIONID']) && $_REQUEST['WSSESSIONID'] == $session && bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']))
 		{
-		signOff();
+		bab_signOff();
 		$_SESSION['BAB_SESS_WSUSER'] = false;
 		return 1;
 		}

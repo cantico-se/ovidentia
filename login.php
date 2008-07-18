@@ -671,9 +671,9 @@ if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 		$iLifeTime	= (int) bab_pp('lifetime', 0);
 		
 		$iIdUser = authenticateUserByLoginPassword($sLogin, $sPassword);
-		if(!is_null($iIdUser) && userCanLogin($iIdUser))
+		if(!is_null($iIdUser) && bab_userCanLogin($iIdUser))
 		{
-			userLogin($iIdUser);
+			bab_setUserSessionInfo($iIdUser);
 			bab_logUserConnectionToStat($iIdUser);
 			bab_updateUserConnectionDate($iIdUser);
 			bab_createReversableUserPassword($iIdUser, $sPassword);

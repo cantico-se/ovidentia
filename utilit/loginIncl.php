@@ -321,10 +321,23 @@ function bab_signOff()
 
 function bab_logout()
 {
-	signOff();
+	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
+	
+	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".$babDB->db_escape_string(session_id())."'");
+	
+	$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET  cookie_validity=NOW(), cookie_id='' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+
+	bab_unsetUserSessionInfo();
+
+	// We destroy the session cookie. A new one will be created at the next session.
+	if(isset($_COOKIE[session_name()])) 
+	{
+	   setcookie(session_name(), '', time()-42000, '/');
+	}
+	session_destroy();
+	destroyAuthCookie();
 	loginRedirect($GLOBALS['babPhpSelf']);
 }
-
 
 
 class displayLogin_Template
@@ -732,5 +745,99 @@ function bab_addUserCookie($iIdUser, $sLogin, $iLifeTime)
 			setcookie('c_nickname', $sLogin, $cookie_validity);
 		}
 	}	
+}
+
+function bab_authenticateUser($sLogin, $sPassword)
+{
+	require_once $GLOBALS['babInstallPath'].'admin/register.php';
+	
+	global $babBody;
+	$iAuthenticationType = (int) $babBody->babsite['authentification'];	
+	switch($iAuthenticationType)
+	{
+		case BAB_AUTHENTIFICATION_OVIDENTIA:
+			return authenticateUserByLoginPassword($sLogin, $sPassword);
+		case BAB_AUTHENTIFICATION_LDAP:
+			return authenticateUserByLDAP($sLogin, $sPassword);
+		case BAB_AUTHENTIFICATION_AD:
+			return authenticateUserByActiveDirectory($sLogin, $sPassword);
+	}
+	return null;
+}
+
+function bab_userCanLogin($iIdUser)
+{
+	global $babBody, $babDB;
+
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET cnx_try=cnx_try+1 WHERE sessid='".session_id()."'");
+	list($cnx_try) = $babDB->db_fetch_array($babDB->db_query("SELECT cnx_try FROM ".BAB_USERS_LOG_TBL." WHERE sessid='".session_id()."'"));
+	if($cnx_try > 5)
+	{
+		$msgerror = bab_translate("Maximum connexion attempts has been reached");
+		return false;
+	}
+	
+	$aUser = bab_getUserById($iIdUser);
+	if(!is_null($aUser))
+	{
+		if($aUser['disabled'] == '1')
+		{
+			$babBody->addError(bab_translate("Sorry, your account is disabled. Please contact your administrator"));
+			return false;
+		}
+		else if($aUser['is_confirmed'] != '1')
+		{
+			$babBody->addError(bab_translate("Sorry - You haven't Confirmed Your Account Yet"));
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+function bab_setUserSessionInfo($iIdUser)
+{
+	$aUser = bab_getUserById($iIdUser);
+	if(!is_null($aUser))
+	{
+		$_SESSION['BAB_SESS_NICKNAME']	= $aUser['nickname'];
+		$_SESSION['BAB_SESS_USER']		= bab_composeUserName($aUser['firstname'], $aUser['lastname']);
+		$_SESSION['BAB_SESS_FIRSTNAME'] = $aUser['firstname'];
+		$_SESSION['BAB_SESS_LASTNAME']	= $aUser['lastname'];
+		$_SESSION['BAB_SESS_EMAIL']		= $aUser['email'];
+		$_SESSION['BAB_SESS_USERID']	= $aUser['id'];
+		$_SESSION['BAB_SESS_HASHID']	= $aUser['confirm_hash'];
+		$_SESSION['BAB_SESS_GROUPID']	= bab_getPrimaryGroupId($aUser['id']);
+		$_SESSION['BAB_SESS_GROUPNAME']	= bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
+		
+		$GLOBALS['BAB_SESS_NICKNAME'] 	= $_SESSION['BAB_SESS_NICKNAME'];
+		$GLOBALS['BAB_SESS_USER'] 		= $_SESSION['BAB_SESS_USER'];
+		$GLOBALS['BAB_SESS_FIRSTNAME'] 	= $_SESSION['BAB_SESS_FIRSTNAME'];
+		$GLOBALS['BAB_SESS_LASTNAME'] 	= $_SESSION['BAB_SESS_LASTNAME'];
+		$GLOBALS['BAB_SESS_EMAIL'] 		= $_SESSION['BAB_SESS_EMAIL'];
+		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
+		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
+	}
+}
+
+function bab_unsetUserSessionInfo()
+{
+	unset($_SESSION['BAB_SESS_NICKNAME']);
+	unset($_SESSION['BAB_SESS_USER']);
+	unset($_SESSION['BAB_SESS_FIRSTNAME']);
+	unset($_SESSION['BAB_SESS_LASTNAME']);
+	unset($_SESSION['BAB_SESS_EMAIL']);
+	unset($_SESSION['BAB_SESS_USERID']);
+	unset($_SESSION['BAB_SESS_HASHID']);
+
+	
+	$GLOBALS['BAB_SESS_NICKNAME'] = "";
+	$GLOBALS['BAB_SESS_USER'] = "";
+	$GLOBALS['BAB_SESS_FIRSTNAME'] = "";
+	$GLOBALS['BAB_SESS_LASTNAME'] = "";
+	$GLOBALS['BAB_SESS_EMAIL'] = "";
+	$GLOBALS['BAB_SESS_USERID'] ="";
+	$GLOBALS['BAB_SESS_HASHID'] = "";
 }
 ?>
