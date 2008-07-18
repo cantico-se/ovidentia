@@ -39,10 +39,15 @@ function bab_haveHttpContext()
  */
 function bab_storeHttpContext()
 {
-	$aHttpContext = array('Post' => $_POST,
-		'Get' => $_GET, 'Request' => $_REQUEST);
+	if('login' == bab_rp('tg', '') && 'signon' == bab_rp('cmd', ''))
+	{
+		$_SESSION['babHttpContext'] = array('Post' => array(),
+			'Get' => array(), 'Request' => array());
+		return;
+	}
 	
-	$_SESSION['babHttpContext'] = $aHttpContext;
+	$_SESSION['babHttpContext'] = array('Post' => $_POST,
+		'Get' => $_GET, 'Request' => $_REQUEST);
 }
 
 /**

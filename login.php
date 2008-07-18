@@ -747,10 +747,6 @@ switch($cmd)
 		/* no break; */
 
 	case "signon":
-		if(array_key_exists('BAB_SESS_LOGGED', $GLOBALS)) 
-		{
-			Header("Location:". $GLOBALS['babUrlScript']);
-		}
 	default:
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 		$sAuthType = (string) bab_rp('sAuthType', '');
