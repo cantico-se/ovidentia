@@ -148,7 +148,70 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 }
 
 
+/**
+* Return a delegation array
+*
+* @param mixed $name Array of name or name of the delegation to return
+* @since 6.7.0
+* @author Zébina Samuel
+* 
+* @return array The matching delegation
+*/
+function bab_getDelegationByName($name)
+{
+	global $babDB;
+	$sQuery = 
+		'SELECT  
+			* 
+		FROM ' . 
+			BAB_DG_GROUPS_TBL . ' 
+		WHERE  
+			name IN(' . $babDB->quote($name) . ')';
 
+	$aDG = array();
+	$oResult = $babDB->db_query($sQuery);
+	if(false != $oResult && $babDB->db_num_rows($oResult) > 0)
+	{
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$aDG[] = $aDatas;
+		}
+	}
+	return $aDG;
+}
+
+
+/**
+* Return a delegation array
+*
+* @param mixed $id Array of id or id of the delegation to return
+* @since 6.7.0
+* @author Zébina Samuel
+* 
+* @return array The matching delegation
+*/
+function bab_getDelegationById($id)
+{
+	global $babDB;
+	$sQuery = 
+		'SELECT  
+			* 
+		FROM ' . 
+			BAB_DG_GROUPS_TBL . ' 
+		WHERE  
+			id IN(' . $babDB->quote($id) . ')';
+
+	$aDG = array();
+	$oResult = $babDB->db_query($sQuery);
+	if(false != $oResult && $babDB->db_num_rows($oResult) > 0)
+	{
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$aDG[] = $aDatas;
+		}
+	}
+	return $aDG;
+}
 
 
 
