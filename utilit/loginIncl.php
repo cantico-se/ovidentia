@@ -80,9 +80,9 @@ class Func_PortalAuthentication extends bab_functionality
  * Functionality for classic ovidentia authentication method.
  * @since 6.7.0
  */
-class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
+class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 {
-	function Func_PortalAuthentication_Ovidentia()
+	function Func_PortalAuthentication_AuthOvidentia()
 	{
 		parent::Func_PortalAuthentication();
 	}
@@ -100,13 +100,13 @@ class Func_PortalAuthentication_Ovidentia extends Func_PortalAuthentication
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
-		return $functionalities->registerClass('Func_PortalAuthentication_Ovidentia', __FILE__);
+		return $functionalities->registerClass('Func_PortalAuthentication_AuthOvidentia', __FILE__);
 	}
 
 	function registerAuthType()
 	{
 		Func_PortalAuthentication::register();
-		return Func_PortalAuthentication_Ovidentia::register();
+		return Func_PortalAuthentication_AuthOvidentia::register();
 	}
 
 	function login() 
@@ -155,12 +155,15 @@ function bab_doRequireCredential($sAuthType)
 	}
 	$oAuthObject = @bab_functionality::get($sAuthPath);
 
-	if (false === $oAuthObject && 'PortalAuthentication' === $sAuthPath)
+	if (false === $oAuthObject)
 	{
-		// If the default authentication method 'Func_PortalAuthentication' does not exist
-		// for example during first installation we (re)create it.
-		Func_PortalAuthentication_Ovidentia::registerAuthType();
-		$oAuthObject = bab_functionality::get($sAuthPath);
+		if('PortalAuthentication' === $sAuthPath || 'PortalAuthentication/AuthOvidentia' === $sAuthPath)
+		{
+			// If the default authentication method 'Func_PortalAuthentication' does not exist
+			// for example during first installation we (re)create it.
+			Func_PortalAuthentication_AuthOvidentia::registerAuthType();
+			$oAuthObject = bab_functionality::get($sAuthPath);
+		}
 	}
 
 	if (false === $oAuthObject) {
