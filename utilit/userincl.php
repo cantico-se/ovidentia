@@ -784,4 +784,46 @@ function bab_replace_get() {
 	return $obj;
 }
 
+
+/**
+* Test if a session for a given user or for the current user
+* is active
+* Used in add-ons
+* 
+* @param	string	$sIdSession	Session to test
+* @param	integer	$iIdUser	Optional user identifier, if this parameter
+* 								is not passed so the current logged user is
+* 								used
+* 
+* @since	6.7.0
+* @author	Zébina Samuel
+* 
+* @return	boolean	True if the session for the given user is in bab_user_logs,
+* 					false othewise
+*/
+function bab_userSessionActive($sIdSession, $iIdUser = null)
+{
+	if(0 <= (int) $iIdUser)
+	{
+		$iIdUser = (int) $GLOBALS['BAB_SESS_USERID'];
+	}
+	
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT 
+			* 
+		FROM ' . 
+			BAB_USERS_LOG_TBL . '
+		WHERE 
+			id_user = ' . $babDB->quote($iIdUser) . ' AND 
+			sessid = ' . $babDB->quote($sIdSession);
+
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return (0 < $babDB->db_num_rows($oResult));
+	}
+	return false;
+}
 ?>
