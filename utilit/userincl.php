@@ -819,7 +819,7 @@ function bab_userSessionActive($sIdSession, $iIdUser = null)
 			id_user = ' . $babDB->quote($iIdUser) . ' AND 
 			sessid = ' . $babDB->quote($sIdSession);
 
-	bab_debug($sQuery);
+	//bab_debug($sQuery);
 			
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
