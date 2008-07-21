@@ -803,7 +803,7 @@ function bab_replace_get() {
 */
 function bab_userSessionActive($sIdSession, $iIdUser = null)
 {
-	if(0 <= (int) $iIdUser)
+	if(0 >= (int) $iIdUser)
 	{
 		$iIdUser = (int) $GLOBALS['BAB_SESS_USERID'];
 	}
@@ -819,6 +819,8 @@ function bab_userSessionActive($sIdSession, $iIdUser = null)
 			id_user = ' . $babDB->quote($iIdUser) . ' AND 
 			sessid = ' . $babDB->quote($sIdSession);
 
+	bab_debug($sQuery);
+			
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
