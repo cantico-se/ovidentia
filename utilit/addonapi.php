@@ -412,29 +412,53 @@ function bab_isUserGroupManager($grpid="")
 		}
 	}
 
-function bab_getUserName($id)
-	{
+/**
+* Return the username of a given user
+*
+* @param integer	$iIdUser			User identifier
+* @param boolean	$bComposeUserName	If true the username will 
+* 										be composed	
+* 
+* @return	mixed	If $bComposeUserName is true the retun value 
+* 					is a string, the string is a concatenation of
+* 					the firstname and lastname. The meaning depend 
+* 					of ovidentia configuration.
+* 					If $bComposeUserName is false the return value 
+* 					is an array with two keys (firstname, lastname)   
+*/
+function bab_getUserName($iIdUser, $bComposeUserName = true)
+{
 	global $babDB;
-	static $arrnames = array();
 
-	if( isset($arrnames[$id]) )
-		{
-		return $arrnames[$id];
-		}
+	$sQuery = 
+		'SELECT 
+			firstname, 
+			lastname 
+		FROM ' . 
+			BAB_USERS_TBL . ' 
+		WHERE 
+			id = ' . $babDB->quote($iIdUser);
 
-	$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
+	$aUserName[$iIdUser] = '';
+			
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult && $babDB->db_num_rows($oResult) > 0)
+	{
+		$aDatas = $babDB->db_fetch_assoc($oResult);
+		if(false !== $aDatas)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		$arrnames[$id] = bab_composeUserName($arr['firstname'], $arr['lastname']);
+			if(true === $bComposeUserName)
+			{
+				$aUserName[$iIdUser] = bab_composeUserName($aDatas['firstname'], $aDatas['lastname']);
+			}
+			else
+			{
+				$aUserName[$iIdUser] = $aDatas;
+			}
 		}
-	else
-		{
-		$arrnames[$id] = "";
-		}
-	return $arrnames[$id];
 	}
+	return $aUserName[$iIdUser];
+}
 
 function bab_getUserEmail($id)
 	{
