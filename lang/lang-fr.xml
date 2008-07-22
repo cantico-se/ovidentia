@@ -699,7 +699,7 @@
 <string id="Size">Taille</string>
 <string id="Skin">Skin</string>
 <string id="Smtp server">Serveur SMTP</string>
-<string id="Sorry - You haven't Confirmed Your Account Yet">Désolé, vous n'avez pas encore confirmé votre inscription</string>
+<string id="Sorry - You haven't confirmed your account yet">Désolé, vous n'avez pas encore confirmé votre inscription</string>
 <string id="Sorry, You cannot change your password. Please contact administrator">Désolé, vous ne pouvez pas modifier votre mot de passe. Contactez l'administrateur</string>
 <string id="Sorry, you cannot delete this user. He is already logged">Désolé, vous ne pouvez pas détruire cet utilisateur car il est connecté</string>
 <string id="Sorry, your account is disabled. Please contact your administrator">Désolé, votre compte est inactif. Veuillez contacter l'administrateur</string>
