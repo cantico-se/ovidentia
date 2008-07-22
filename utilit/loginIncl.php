@@ -88,7 +88,7 @@ class Func_PortalAuthentication extends bab_functionality
 			return false;
 		}
 	
-		if ($this->checkAttempts()) {
+		if ($this->checkAttempts($iIdUser)) {
 			$this->addError(bab_translate("Maximum number of connection attempts has been reached"));
 			return false;
 		}
