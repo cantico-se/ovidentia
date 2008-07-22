@@ -66,7 +66,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 * @param int		$iIdUser
 	 * @return bool
 	 */
-	function checkAttempts($iIdUser)
+	function checkAttempts()
 	{
 		global $babDB;
 		$babDB->db_query('UPDATE '.BAB_USERS_LOG_TBL.' SET grp_change=1');
@@ -88,7 +88,7 @@ class Func_PortalAuthentication extends bab_functionality
 			return false;
 		}
 	
-		if ($this->checkAttempts($iIdUser)) {
+		if ($this->checkAttempts()) {
 			$this->addError(bab_translate("Maximum number of connection attempts has been reached"));
 			return false;
 		}
@@ -110,7 +110,8 @@ class Func_PortalAuthentication extends bab_functionality
 		}
 		return false;
 	}
-	
+
+
 	/**
 	 * Checks whether current user is connected.
 	 *
@@ -124,6 +125,30 @@ class Func_PortalAuthentication extends bab_functionality
 
 	
 
+	/**
+	 * Returns the user id for the specified cookie id.
+	 *
+	 * @param string	$sCookie		The cookie id (stored in c_password cookie).
+	 * @return int		The user id or null if not found
+	 */
+	function authenticateUserByCookie($sCookie)
+	{
+		$aUser = bab_getUserByCookie($sCookie);
+		if (!is_null($aUser))
+		{
+			return (int) $aUser['id'];
+		}
+		return null;
+	}
+
+
+	/**
+	 * Returns the user id for the specified nickname and password using the local database backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
 	function authenticateUserByLoginPassword($sLogin, $sPassword)
 	{
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
@@ -136,17 +161,13 @@ class Func_PortalAuthentication extends bab_functionality
 	}
 	
 
-	function authenticateUserByCookie($sCookie)
-	{
-		$aUser = bab_getUserByCookie($sCookie);
-		if (!is_null($aUser))
-		{
-			return (int) $aUser['id'];
-		}
-		return null;
-	}
-
-	
+	/**
+	 * Returns the user id for the specified nickname and password using the ldap backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
 	function authenticateUserByLDAP($sLogin, $sPassword)
 	{
 		global $babBody;
@@ -228,8 +249,6 @@ class Func_PortalAuthentication extends bab_functionality
 			}
 		}
 		
-
-		
 		$iIdUser = false;
 		if (!isset($aEntries) || $aEntries === false)
 		{
@@ -274,11 +293,18 @@ class Func_PortalAuthentication extends bab_functionality
 		return null;
 	}
 	
-	
+
+	/**
+	 * Returns the user id for the specified nickname and password using the active directory backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
 	function authenticateUserByActiveDirectory($sLogin, $sPassword)
 	{
 		global $babBody;
-		
+
 		include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
 		$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
 		if (false === $oLdap->connect())
@@ -286,16 +312,16 @@ class Func_PortalAuthentication extends bab_functionality
 			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
 			return null;
 		}
-		
+
 		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
 		$aUpdateAttributes	= array();
 		$aExtraFieldId		= array();
-		
+
 		bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
-		
+
 		$bLdapOk = true;
 		$aEntries = array();
-		
+
 		//Active directory
 		{
 			if (isset($GLOBALS['babAdLdapOptions']))
@@ -325,15 +351,14 @@ class Func_PortalAuthentication extends bab_functionality
 				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
 			}
 		}
-		
-		
+
 		$iIdUser = false;
 		if (!isset($aEntries) || $aEntries === false)
 		{
 			$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
 			$bLdapOk = false;
 		}
-		
+
 		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes);
 		if (false === $iIdUser)
 		{
@@ -347,9 +372,9 @@ class Func_PortalAuthentication extends bab_functionality
 				bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
 			}
 		}
-			
+
 		$oLdap->close();
-		
+
 		if (false === $bLdapOk)
 		{
 			if ($babBody->babsite['ldap_allowadmincnx'] == 'Y')
@@ -361,17 +386,24 @@ class Func_PortalAuthentication extends bab_functionality
 				}
 			}
 		}
-		
+
 		if (false !== $iIdUser)
 		{
 			$this->clearErrors();
 			return $iIdUser;
 		}
-		
+
 		return null;
 	}
 
 
+	/**
+	 * Returns the user id for the specified nickname and password using the default backend for the site.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
 	function authenticateUser($sLogin, $sPassword)
 	{
 		global $babBody;
