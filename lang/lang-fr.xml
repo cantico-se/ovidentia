@@ -465,6 +465,7 @@
 <string id="Max">Max</string>
 <string id="May">Mai</string>
 <string id="Members">Membres</string>
+<string id="Show/Hide entity members">Afficher/cacher les membres de l'entité</string>
 <string id="Message">Message</string>
 <string id="Messages Per Page">Nb. de messages par page</string>
 <string id="Minutes">Minutes</string>
@@ -1248,8 +1249,8 @@
 <string id="View this organizational chart">Voir l'organigramme</string>
 <string id="Roles">Fonctions</string>
 <string id="Start">Débuter l'organigramme ici</string>
-<string id="Show from here">Débuter l'organigramme ici</string>
-<string id="Show from parent">Afficher à partir de l'entité parent</string>
+<string id="Show orgchart from this entity">Afficher à partir de cette entité</string>
+<string id="Show orgchart from parent entity">Afficher à partir de l'entité parent</string>
 <string id="Text view">Vue texte</string>
 <string id="Vertical view">Vue verticale</string>
 <string id="Horizontal view">Vue horizontale</string>
@@ -1283,7 +1284,7 @@
 <string id="Staff schema">Schéma fonctionnel</string>
 <string id="The image file is too big, maximum is :">La taille du fichier image est trop importante, le maximum est :</string>
 <string id="Configuration error : babSiteName in config.php not match site name in administration sites configuration">Erreur de configuration : babSiteName dans config.php ne correspond a aucun nom de site dans l'administration des sites</string>
-<string id="Maximum connexion attempts has been reached">Le nombre maximum de connexions a été atteint</string>
+<string id="Maximum number of connection attempts has been reached">Le nombre maximum de tentatives de connexion a été atteint</string>
 <string id="Approbation can't be disabled">L'approbation ne peut pas être désactivée</string>
 <string id="file(s) must be accepted or refused before">fichier(s) en attente</string>
 <string id="Modify an organization chart">Modifier un organigramme</string>
