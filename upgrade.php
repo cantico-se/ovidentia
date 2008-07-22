@@ -23,6 +23,38 @@
 ************************************************************************/
 
 
+/**
+ * Recursively deletes a filesystem directory.
+ *
+ * @param string	$sFullPathName
+ */
+function removeDir($sFullPathName)
+{
+	if(is_dir($sFullPathName))
+	{
+		$oHandle = opendir($sFullPathName);
+		if(false !== $oHandle)
+		{
+			while($sName = readdir($oHandle))
+			{
+				if('.' !== $sName && '..' !== $sName)
+				{
+					if(is_dir($sFullPathName . '/' . $sName))
+					{
+						removeDir($sFullPathName . '/' . $sName);
+					}
+					else if(file_exists($sFullPathName . '/' . $sName))
+					{
+						@unlink($sFullPathName . '/' . $sName);
+					}
+				}
+			}
+			closedir($oHandle);
+			@rmdir($sFullPathName);
+		}
+	}
+}
+
 
 function getUploadPathFromDataBase()	
 {
@@ -4653,7 +4685,20 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				}
 			}
 		}
-	}	
+	}
+
+
+	/**
+	 * Upgrade to 6.6.98
+	 */
+	
+	// The "PortalAuthentication/Ovidentia" functionality has been renamed as "PortalAuthentication/AuthOvidentia".
+	// If the old version was present on the system, we remove the "PortalAuthentication" directory so that it will be recreated on next login.
+	// If other authentication addons were installed they will have to be reinstalled.
+	
+	if (is_dir($_SERVER['SCRIPT_FILENAME'].'/functionalities/PortalAuthentication/Ovidentia/')) {
+		removeDir($_SERVER['SCRIPT_FILENAME'].'/functionalities/PortalAuthentication/');
+	}
+
 	return true;
 }
-?>
