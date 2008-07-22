@@ -132,7 +132,7 @@ class Func_PortalAuthentication extends bab_functionality
 			return (int) $aUser['id'];
 		}
 		$this->addError(bab_translate("User not found or bad password"));
-		return false;
+		return null;
 	}
 	
 
@@ -568,17 +568,12 @@ function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
-			* 
-		FROM ' . 
-			BAB_USERS_TBL . '
-		WHERE 
-			nickname = ' . $babDB->quote($sLogin) . ' AND 
-			password = ' . $babDB->quote(md5(strtolower($sPassword)));
+	$sQuery = '
+		SELECT * 
+		FROM ' . BAB_USERS_TBL . '
+		WHERE nickname = ' . $babDB->quote($sLogin) . '
+		  AND password = ' . $babDB->quote(md5(strtolower($sPassword)));
 
-//	bab_debug($sQuery);
-	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
@@ -596,16 +591,11 @@ function bab_getUserById($iIdUser)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
-			* 
-		FROM ' . 
-			BAB_USERS_TBL . '
-		WHERE 
-			id = ' . $babDB->quote($iIdUser);
+	$sQuery = '
+		SELECT * 
+		FROM ' . BAB_USERS_TBL . '
+		WHERE id = ' . $babDB->quote($iIdUser);
 
-//	bab_debug($sQuery);
-	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
@@ -623,14 +613,11 @@ function bab_getUserByCookie($sCookie)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
-			* 
-		FROM ' . 
-			BAB_USERS_TBL . '
-		WHERE 
-			cookie_id = \'' . $babDB->db_escape_string($sCookie) . '\' AND
-			cookie_validity > NOW()';
+	$sQuery = '
+		SELECT * 
+		FROM ' . BAB_USERS_TBL . '
+		WHERE cookie_id = ' . $babDB->quote($sCookie) . '
+		  AND cookie_validity > NOW()';
 			
 	$oResult = $babDB->db_query($sQuery);
 	if(false != $oResult)
@@ -649,13 +636,10 @@ function bab_getUserByNickname($sNickname)
 {
 	global $babDB;
 	
-	$sQuery = 
-		'SELECT 
-			* 
-		FROM ' . 
-			BAB_USERS_TBL . '
-		WHERE 
-			nickname = \'' . $babDB->db_escape_string($sNickname) . '\'';
+	$sQuery = '
+		SELECT * 
+		FROM ' . BAB_USERS_TBL . '
+		WHERE nickname = ' . $babDB->quote($sNickname);
 			
 	$oResult = $babDB->db_query($sQuery);
 	if(false != $oResult)
@@ -1131,25 +1115,6 @@ function bab_addUserCookie($iIdUser, $sLogin, $iLifeTime)
 		}
 	}	
 }
-
-function bab_authenticateUser($sLogin, $sPassword)
-{
-	require_once $GLOBALS['babInstallPath'].'admin/register.php';
-	
-	global $babBody;
-	$iAuthenticationType = (int) $babBody->babsite['authentification'];	
-	switch($iAuthenticationType)
-	{
-		case BAB_AUTHENTIFICATION_OVIDENTIA:
-			return authenticateUserByLoginPassword($sLogin, $sPassword);
-		case BAB_AUTHENTIFICATION_LDAP:
-			return authenticateUserByLDAP($sLogin, $sPassword);
-		case BAB_AUTHENTIFICATION_AD:
-			return authenticateUserByActiveDirectory($sLogin, $sPassword);
-	}
-	return null;
-}
-
 
 
 function bab_setUserSessionInfo($iIdUser)
