@@ -746,15 +746,21 @@ switch($cmd)
 		}
 		/* no break; */
 
+	case "authform":
+		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+		$loginMessage = bab_rp('msg', '');
+		$errorMessage = bab_rp('err', '');
+		displayAuthenticationForm($loginMessage, $errorMessage);
+		break;
+
 	case "signon":
 	default:
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 		$sAuthType = (string) bab_rp('sAuthType', '');
-		if (false === bab_requireCredential($sAuthType)) {
+		if (false === bab_requireCredential(bab_translate("Login"), $sAuthType)) {
 			$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
 		}
 		break;
 		
 	}
 $babBody->setCurrentItemMenu($cmd);
-?>
