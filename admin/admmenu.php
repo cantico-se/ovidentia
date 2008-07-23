@@ -202,6 +202,14 @@ function bab_sitemap_adminSection(&$event) {
 		);
 	}
 
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
+		$array_urls[bab_translate("Thesaurus")] = array(
+			'url' => $GLOBALS['babUrlScript']."?tg=admthesaurus",
+			'uid' => 'babAdminThesaurus'
+		);
+	}
+	
+	
 	$engine = bab_searchEngineInfos();
 
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && false !== $engine && $engine['indexes'] ) {
