@@ -45,11 +45,29 @@ class Func_PortalAuthentication extends bab_functionality
 		return bab_translate("Authentication functionality");
 	}
 
+	/**
+	 * Sets the message that will be displayed to the user when asked for his credentials.
+	 * 
+	 * This should provide some information about the reason why the user is required
+	 * to enter his credentials.
+	 * The message will be displayed in different ways depending on the authentication system.
+	 * For the default ovidentia authentication (with an html form), this will
+	 * be used as a title for the page.
+	 * 
+	 * Other authentication systems may not be able to display this text.
+	 *
+	 * @param string	$message
+	 */
 	function setLoginMessage($message)
 	{
 		$this->loginMessage = $message;
 	}
 
+	/**
+	 * Adds an error message that will be displayed to the user when asked for his credentials.
+	 *
+	 * @param unknown_type $message
+	 */
 	function addError($message)
 	{
 		$this->errorMessages[] = $message;
@@ -159,7 +177,7 @@ class Func_PortalAuthentication extends bab_functionality
 		$this->addError(bab_translate("User not found or bad password"));
 		return null;
 	}
-	
+
 
 	/**
 	 * Returns the user id for the specified nickname and password using the ldap backend.
@@ -180,7 +198,7 @@ class Func_PortalAuthentication extends bab_functionality
 			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
 			return null;
 		}
-		
+
 		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
 		$aUpdateAttributes	= array();
 		$aExtraFieldId		= array();
@@ -565,12 +583,13 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 
 	if (false === $oAuthObject)
 	{
-		$oAuthObject = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		if (false === $oAuthObject)
 		{
 			// If the default authentication method 'AuthOvidentia' does not exist
 			// for example during first installation we (re)create it.
 			Func_PortalAuthentication_AuthOvidentia::registerAuthType();
+			$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		}
 	}
 
