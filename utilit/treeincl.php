@@ -244,7 +244,7 @@ class bab_dbtree
 		}
 		return $arr[count($arr) -1];
 	}
-
+	
 	function add($parentId = 0, $previousId=0, $bprev=true, $id_node=false)
 	{
 		global $babDB;
@@ -705,7 +705,7 @@ class bab_arraytree
 		$res = $babDB->db_query($req);
 		$parents = array();
 		$k = 0;
-		while( $arr = $babDB->db_fetch_array($res))
+		while( $arr = $babDB->db_fetch_assoc($res))
 			{
 			if( $k == 0)
 				{
