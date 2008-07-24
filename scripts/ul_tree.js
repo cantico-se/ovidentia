@@ -77,64 +77,6 @@ bab_ul_tree.prototype.processList = function(rootList)
 }
 
 
-bab_ul_tree.prototype._processList = function(ul)
-{
-	if (null == ul)
-		{	
-		ul = this.treeId;
-		}
-		
-	if (!ul.childNodes || ul.childNodes.length==0) { return; }
-	// Iterate LIs
-	for (var itemi=0; itemi < ul.childNodes.length; itemi++) {
-		var item = ul.childNodes[itemi];
-		if ("LI" == item.nodeName) {
-			var subLists = false;
-			for (var sitemi=0;sitemi<item.childNodes.length;sitemi++) {
-				var sitem = item.childNodes[sitemi];
-				if (sitem.nodeName=="UL") {
-					subLists = true;
-					this.processList(sitem);
-				}
-			}	
-
-			var s= document.createElement("SPAN");
-			var t= '\u00A0'; // &nbsp;
-			s.className = this.nodeLinkClass;
-			if (subLists) {
-				if ( item.className==null || item.className=="" ) {
-					item.className = this.nodeClosedClass;
-				}
-				// If it's just text, make the text work as the link also
-				if (item.firstChild.nodeName=="#text") {
-					t = t+item.firstChild.nodeValue;
-					item.removeChild(item.firstChild);
-				}
-				s.onclick = function () {
-					this.parentNode.parentNode.className = (this.parentNode.parentNode.className=='bab_ul_tree_open') ? 'bab_ul_tree_closed' : 'bab_ul_tree_open';
-					return false;
-				}
-			}
-			else {
-				// No sublists, so it's just a bullet node
-				item.className = this.nodeBulletClass;
-				s.onclick = function () { return false; }
-			}
-			s.appendChild(document.createTextNode(t));
-			item = item.getElementsByTagName('div')[0];
-			item.className = this.nodeLineClass;
-			item.onmouseover = function() {
-				this.className='line hover';
-				}
-			item.onmouseout = function() {
-				this.className='line';
-				}
-			item.insertBefore(s,item.firstChild);
-		}
-	}
-}
-
-
 //
 bab_ul_tree.prototype.expandCollapseList = function(ul,cName,itemId) {
 	if (null == ul)
