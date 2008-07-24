@@ -7,14 +7,20 @@
 
 
 #bab_groups_tree #bab_ovgroup_3 ul li,
-#bab_groups_tree #bab_ovgroup_3 ul a {
+#bab_groups_tree #bab_ovgroup_3 ul a, {
 	text-decoration:none;
 	color:#000;
 }
 
 #bab_groups_tree li .bullet { 
-	padding-left: 15px; 
-	}
+/*	padding-left: 15px;*/ 
+}
+
+#bab_groups_tree li div.line img,
+#bab_groups_tree li div.line input,
+#bab_groups_tree li div.line span.bab-node-title { 
+	vertical-align: middle;
+}
 
 
 

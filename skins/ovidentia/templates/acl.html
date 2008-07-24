@@ -217,13 +217,9 @@ window.console && window.console.timeEnd('full init');
 			<img src="{ babSkinPath }images/Puces/folder_group.gif" alt="{ t_group }" />
 			<!--#in getnexttable --><!--#if id_group "> 2" --><input type="checkbox" class="tablecol{ tablenum }" name="tree[{ table }][]" value="{ arr[id] }" <!--#if treechecked --> checked="checked" <!--#endif treechecked --> /><!--#endif id_group --><!--#endin getnexttable -->
 			
-			{ arr[name] }
+			<span class="bab-node-title">{ arr[name] }</span>
 
-			<span class="right_elements">
-				<!--#in getnexttable -->
-				<input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> />
-				<!--#endin getnexttable -->
-			</span>
+			<span class="right_elements"><!--#in getnexttable --><input type="checkbox" class="tablecol{ tablenum }" name="group[{ table }][]" value="{ id_group }" <!--#if checked --> checked="checked" <!--#endif checked --> <!--#if disabled --> disabled="disabled" <!--#endif disabled --> /><!--#endin getnexttable --></span>
 
 			</div>
 			{ subtree }
