@@ -49,8 +49,6 @@ bab_ul_tree.prototype.processList = function(rootList)
 		div.onmouseout = function() {
 				this.className='line';
 			}
-//		var span = document.createElement('SPAN');
-//		var text = '\u00A0';
 		var span = document.createElement('IMG');
 		span.style.width = '20px';
 		span.style.height = '16px';
@@ -58,7 +56,6 @@ bab_ul_tree.prototype.processList = function(rootList)
 		span.className = this.nodeLinkClass;
 		span.tree = this;
 		span.onclick = bab_onNodeClick;
-//		span.appendChild(document.createTextNode(text));
 		div.insertBefore(span, div.firstChild);		
 	}
 
