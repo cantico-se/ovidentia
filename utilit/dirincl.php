@@ -843,7 +843,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			$return[$arr['id_user']][$name]['value'] = $arr[$name];
 			}
 		elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
-			$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=0&idu=".$arr['id'];
+			$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".intval($id_directory)."&idu=".$arr['id'];
 			$return[$arr['id_user']][$name]['photo'] = new bab_dirEntryPhoto($arr['id']);
 			}
 		}
