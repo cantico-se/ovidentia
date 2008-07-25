@@ -1788,7 +1788,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 
 				$req = "SELECT 
-					e.id 
+					e.id, ABS(STRCMP(e.sn,". $babDB->quote($this->like2) .")) AS relevance
 				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
@@ -1811,7 +1811,6 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					) ".$option_dir." 
 				GROUP BY e.id ";
 
-				//print_r($req);
 
 				$this->countdirfields = count($this->dirfields['name']);
 
@@ -1822,10 +1821,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				if ($navitem != "g") $navpos = 0;
 				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
 				$tmp = explode(" ",$order);
-				if (in_array("`title`",$tmp)) $order_tmp = "order by sn ASC, givenname ASC";
+				if (in_array("`title`",$tmp)) $order_tmp = "order by relevance ASC, sn ASC, givenname ASC";
 				else $order_tmp = "order by ".$babDB->db_escape_string($order);
 
 				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
+
+				//print_r($req);
+				
 				$this->resdir = $babDB->db_query($req);
 				$this->countdir = $babDB->db_num_rows($this->resdir);
 
