@@ -203,9 +203,18 @@ function babAdminSection($close)
 	$this->head = '';
 	$this->foot = '';
 	
+	global $babBody;
+	
+	$sDgName = '';
+	if( $babBody->currentAdmGroup == 0 ) {
+		$sDgName = bab_translate("all site");
+		}
+	else {
+		$sDgName = $babBody->currentDGGroup['name'];
+		}
+
 	if ($this->babAdminSection) {
-		$item = $this->babAdminSection->getData();
-		$this->head = $item->description;
+		$this->head = bab_translate("Currently you administer ") . $sDgName;
 		$this->babAdminSection = $this->babAdminSection->firstChild();
 	}
 	

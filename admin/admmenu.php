@@ -1,3 +1,4 @@
+
 <?php
 /************************************************************************
  * OVIDENTIA http://www.ovidentia.org                                   *
@@ -28,19 +29,7 @@ include_once "base.php";
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
 function bab_sitemap_adminSection(&$event) {
-
-	
 	global $babBody;
-	
-	
-	if( $babBody->currentAdmGroup == 0 ) {
-		$adm = bab_translate("all site");
-		}
-	else {
-		$adm = $babBody->currentDGGroup['name'];
-		}
-		
-	$head = bab_translate("Currently you administer ").$adm;
 	
 	$item = $event->createItem('babAdmin');
 	$item->setLabel(bab_translate("Administration"));
@@ -49,7 +38,6 @@ function bab_sitemap_adminSection(&$event) {
 	
 	$item = $event->createItem('babAdminSection');
 	$item->setLabel(bab_translate("Ovidentia functions"));
-	$item->setDescription($head);
 	$item->setPosition(array('root', 'DGAll','babAdmin'));
 	$event->addFolder($item);
 
