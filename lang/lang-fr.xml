@@ -2214,7 +2214,7 @@
 <string id="Recommended">Recommandé</string>
 <string id="Writable lang directory">Répertoire "lang" accessible en écriture</string>
 <string id="Maximum upload file size">Taille maximale d'un fichier téléchargé vers le serveur</string>
-<string id="You must configure ovidentia with a limit smaller or equal to the server limit : %s">Vous devez configurer ovidentia avec une limite de taille de chargement inférieur ou égale à la limite du serveur : %s</string>
+<string id="You must configure ovidentia with a limit smaller or equal to the server limit : %s">Vous devez configurer ovidentia avec une limite de taille de chargement inférieure ou égale à la limite du serveur : %s</string>
 <string id="files status">Etat des fichiers</string>
 <string id="Change the status for all the files">Modifier l'état d'indexation de tous les fichiers</string>
 <string id="Articles files">Fichiers liés aux articles</string>
