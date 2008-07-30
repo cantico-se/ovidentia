@@ -80,12 +80,12 @@ define("BAB_CAL_USER_TYPE"		, 1);
 define("BAB_CAL_PUB_TYPE"		, 2);
 define("BAB_CAL_RES_TYPE"		, 3);
 
-
-define("BAB_CAL_ACCESS_VIEW",			0); /* only for viewing */
-define("BAB_CAL_ACCESS_UPDATE",			1); /* can modify/delete event if user is creator */
-define("BAB_CAL_ACCESS_FULL",			2); /* full access */
-define("BAB_CAL_ACCESS_SHARED_UPDATE",	3); /* can modify/delete event with others */
-define("BAB_CAL_ACCESS_SHARED_FULL",	4); /* shared full access */
+define("BAB_CAL_ACCESS_NONE",			-1); /* used in bab_sites, bab_cal_user_options */
+define("BAB_CAL_ACCESS_VIEW",			0);  /* only for viewing */
+define("BAB_CAL_ACCESS_UPDATE",			1);  /* can modify/delete event if user is creator */
+define("BAB_CAL_ACCESS_FULL",			2);  /* full access */
+define("BAB_CAL_ACCESS_SHARED_UPDATE",	3);  /* can modify/delete event with others */
+define("BAB_CAL_ACCESS_SHARED_FULL",	4);  /* shared full access */
 
 define("BAB_CAL_VIEW_MONTH",	0); /* month view */
 define("BAB_CAL_VIEW_WEEK",		1); /* week view */

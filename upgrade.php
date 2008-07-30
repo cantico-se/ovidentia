@@ -4700,5 +4700,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		removeDir($_SERVER['SCRIPT_FILENAME'].'/functionalities/PortalAuthentication/');
 	}
 
+	if(!bab_isTableField(BAB_SITES_TBL, 'iDefaultCalendarAccess')) 
+	{
+		$babDB->db_query('ALTER TABLE `'.BAB_SITES_TBL.'` ADD `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT \'-1\' AFTER `show_update_info`');
+	}
+
+	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'iDefaultCalendarAccess')) 
+	{
+		$babDB->db_query('ALTER TABLE `'.BAB_CAL_USER_OPTIONS_TBL.'` ADD `iDefaultCalendarAccess` SMALLINT( 2 ) NULL DEFAULT NULL AFTER `show_update_info`');
+	}
+	
 	return true;
 }

@@ -40,3 +40,18 @@
 	border:#ccc 1px solid;
 	text-align:center;
 }
+
+
+input.bab_grabUser {
+	background-image:url('../skins/ovidentia/images/Puces/go-next.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+input.bab_dropUser {
+	background-image:url('../skins/ovidentia/images/Puces/go-previous.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}

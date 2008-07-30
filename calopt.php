@@ -51,24 +51,30 @@ function accessCalendar($calid, $urla)
 			$this->upduserstxt = bab_translate("Update access");
 			$this->usertxt = bab_translate("Add user");
 			$this->addtxt = bab_translate("Add");
-			$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$babDB->db_escape_string($calid)."'";
-
-			$res = $babDB->db_query($req);
-
-			$this->arrusers = array();
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-					$this->arrusers[] = array(
-						'user'		=> bab_composeUserName($arr['firstname'], $arr['lastname']), 
-						'id'		=> $arr['id_user'], 
-						'access'	=> $arr['bwrite']
-					);
-					
-					$users->addUser($arr['id_user']);
-				}
-			usort($this->arrusers, array($this, 'compare'));
-			$this->count = count($this->arrusers);
+			
+			$sAction = bab_rp('act', null);
+			
+			if(is_null($sAction))
+			{
+				$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$babDB->db_escape_string($calid)."'";
+	
+				$res = $babDB->db_query($req);
+	
+				$this->arrusers = array();
+				while( $arr = $babDB->db_fetch_array($res))
+					{
+						$this->arrusers[] = array(
+							'user'		=> bab_composeUserName($arr['firstname'], $arr['lastname']), 
+							'id'		=> $arr['id_user'], 
+							'access'	=> $arr['bwrite']
+						);
+						
+						$users->addUser($arr['id_user'], $arr['bwrite']);
+					}
+				usort($this->arrusers, array($this, 'compare'));
+				$this->count = count($this->arrusers);
 			}
+		}
 
 		function compare($a, $b)
 			{
@@ -118,64 +124,81 @@ function accessCalendar($calid, $urla)
 		
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	$obj = new bab_selectusers();
+	//$obj = new bab_selectusers();
+	$obj = new bab_selectCalendarUsers();
 	
 	$temp = new temp($calid, $urla, $obj);	
 	$obj->addVar('urla', $urla);
 	$obj->addVar('calid', $calid);
 	$obj->setRecordCallback('addAccessUsers');
 	$obj->setRecordLabel(bab_translate('Add selected users'));
+	$babBody->addStyleSheet('calopt.css');
 	$babBody->babecho($obj->getHtml()); 
 	
-	
-	$babBody->babecho(	bab_printTemplate($temp,"calopt.html", "access"));
+	/*
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
+	$babBody->babecho(bab_printTemplate($temp,"calopt.html", "access"));
+	//*/
 }
 
-function addAccessUsers( $userids, $params)
+
+function addAccessUsers($aCalUserAccess, $iIdCalendar)
 {
 	global $babDB;
-		
-	if (isset($userids[$GLOBALS['BAB_SESS_USERID']])) {
-		$GLOBALS['babBody']->addError(sprintf(bab_translate('%s is your personal calendar'),bab_getUserName($GLOBALS['BAB_SESS_USERID'])));
-		return false;
-	}
-		
-	$req = "
-		SELECT u.id, a.id_user inserted FROM ".BAB_USERS_TBL." u 
-			LEFT JOIN ".BAB_CALACCESS_USERS_TBL." a ON a.id_user=u.id and a.id_cal='".$babDB->db_escape_string($params['calid'])."' 
-			WHERE u.id IN(".$babDB->quote($userids).") and u.disabled='0' 
-		";
-
-	$res = $babDB->db_query($req);
 	
-	$inserted = array();
-	
-	while ($arr = $babDB->db_fetch_assoc($res)) {
-		if (!empty($arr['inserted'])) {
-			$inserted[$arr['id']] = $arr['id'];
-		} else {
+	foreach($aCalUserAccess as $iAccess => $sArrayName)
+	{
+		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE id_cal = ' . $babDB->quote($iIdCalendar) . ' AND bwrite = ' . $babDB->quote($iAccess);
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery);
 			
-			$req = "insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) values (
-			'".$babDB->db_escape_string($params['calid'])."', 
-			'".$babDB->db_escape_string($arr['id'])."', 
-			'0'
-			)";
-			$babDB->db_query($req);
-			$inserted[$arr['id']] = $arr['id'];
+		if(0 !== count($aCalUserAccess[$iAccess]))
+		{
+			$sQuery = 
+				'SELECT ' . 
+					'u.id iIdUser ' .
+				'FROM ' . 
+					BAB_USERS_TBL . ' u ' .
+				'WHERE ' . 
+					'u.id IN(' . $babDB->quote($aCalUserAccess[$iAccess]) . ') AND ' . 
+					'u.disabled=\'0\'';
+			//bab_debug($sQuery);
+					
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult && $babDB->db_num_rows($oResult) > 0)
+			{
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					if((int) $aDatas['iIdUser'] === (int) $GLOBALS['BAB_SESS_USERID'])
+					{
+						continue;
+					}
+					
+					$sQuery = 
+						'INSERT INTO ' . BAB_CALACCESS_USERS_TBL . ' ' .
+							'(' .
+								'`id`, ' .
+								'`id_cal`, `id_user`, `bwrite`' .
+							') ' .
+						'VALUES ' . 
+							'(\'\', ' . 
+								$babDB->quote($iIdCalendar) . ', ' . 
+								$babDB->quote($aDatas['iIdUser']) . ', ' . 
+								$babDB->quote($iAccess) . 
+							')';
+								
+					//bab_debug($sQuery);			
+					$babDB->db_query($sQuery);
+				} 
+			}
 		}
 	}
-	
-	if (0 < count($inserted)) {
-		$req = "DELETE FROM ".BAB_CALACCESS_USERS_TBL." WHERE id_cal='".$babDB->db_escape_string($params['calid'])."' AND id_user NOT IN(".$babDB->quote($inserted).")";
-		$babDB->db_query($req);
-	} else {
-		$babDB->db_query("DELETE FROM ".BAB_CALACCESS_USERS_TBL." WHERE id_cal='".$babDB->db_escape_string($params['calid'])."'");
-	}
-	
 	Header("Location:".$GLOBALS['babUrlScript'].'?tg=calopt&idx=access&urla='.urlencode($params['urla']));
 	exit;
 }
 
+/*
 function updateAccessUsers( $users, $calid, $urla)
 {
 
@@ -200,7 +223,7 @@ function updateAccessUsers( $users, $calid, $urla)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($urla));
 	exit;
 }
-
+//*/
 
 
 
@@ -239,6 +262,13 @@ function calendarOptions($calid, $urla)
 
 	class temp
 		{
+			var $t_defaultCalAccess		= '';
+			var $aCalAccess				= array();
+			var $iCalAccess				= -1;
+			var $sCalAccess				= '';
+			var $sCalAccessSelected		= '';
+			var $iSelectedCalAccess		= -1;
+			
 		function temp($calid, $urla)
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
@@ -269,11 +299,27 @@ function calendarOptions($calid, $urla)
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($res);
+			$this->arr = $babDB->db_fetch_assoc($res);
 			
+			$this->t_defaultCalAccess = bab_translate("Default calendar access for new user");
+
+			$this->aCalAccess = array(
+				BAB_CAL_ACCESS_NONE => bab_translate("None"),
+				BAB_CAL_ACCESS_VIEW => bab_translate("Consultation"), 
+				BAB_CAL_ACCESS_UPDATE => bab_translate("Creation and modification"), 
+				BAB_CAL_ACCESS_FULL => bab_translate("Full access"), 
+				BAB_CAL_ACCESS_SHARED_UPDATE => bab_translate("Shared creation and modification"),
+				BAB_CAL_ACCESS_SHARED_FULL => bab_translate("Shared full access"));
+				
+			if(is_array($this->arr) && array_key_exists('iDefaultCalendarAccess', $this->arr))
+			{
+				if(null !== $this->arr['iDefaultCalendarAccess'])
+				{
+					$this->iSelectedCalAccess = $this->arr['iDefaultCalendarAccess'];
+				}
+			}
+				
 			$this->halfday = bab_rp('halfday',1);
-			
-			
 			
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
@@ -491,6 +537,26 @@ function calendarOptions($calid, $urla)
 				}
 
 			}
+
+		function getNextCalAccess()
+			{
+				$this->sCalAccessSelected = '';
+
+				$aCalAccessItem = each($this->aCalAccess);
+				if(false !== $aCalAccessItem)
+				{
+					$this->iCalAccess = $aCalAccessItem['key'];
+					$this->sCalAccess = $aCalAccessItem['value'];
+					
+					if($this->iSelectedCalAccess == $this->iCalAccess)
+					{
+						$this->sCalAccessSelected = 'selected="selected"';
+					}			
+					//bab_debug($aCalAccessItem);
+					return true;
+				}
+				return false;
+			}
 		}
 
 	$temp = new temp($calid, $urla);
@@ -540,7 +606,7 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo, $iDefaultCalendarAccess)
 	{
 	global $babDB, $BAB_SESS_USERID;
 
@@ -568,6 +634,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			defaultview	=".$babDB->quote($defaultview).", 
 			dispdays	=".$babDB->quote($dispdays).", 
 			show_update_info =".$babDB->quote($showupdateinfo).", 
+			iDefaultCalendarAccess =".$babDB->quote($iDefaultCalendarAccess).", 
 			week_numbers='Y' 
 		WHERE 
 			id_user=".$babDB->quote($BAB_SESS_USERID)."
@@ -587,6 +654,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				defaultview, 
 				dispdays, 
 				show_update_info, 
+				iDefaultCalendarAccess,
 				week_numbers
 			) 
 		VALUES ";
@@ -602,7 +670,9 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$babDB->quote($defaultview).",
 			".$babDB->quote($dispdays).",
 			".$babDB->quote($showupdateinfo).",
-			'Y')
+			".$babDB->quote($iDefaultCalendarAccess).",
+			'Y'
+			)
 		";
 		}
 	$res = $babDB->db_query($req);
@@ -771,7 +841,7 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'] );
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess']);
 	}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");

@@ -1,7 +1,4 @@
 <!--#begin select -->
-
-
-
 <form method="post" action="{ babPhpSelf }">
 <!--#in _getnexthidden -->
 <input type="hidden" name="{ name }" value="{ value }" />
@@ -95,5 +92,233 @@ function searchresult_select_click(entry_url, obj) {
 searchresult_select_click('', false);
 
 </script>
-
 <!--#end select -->
+
+
+
+
+<!--#begin selectCalendarUsers -->
+<script type="text/javascript">
+//<![CDATA[
+//]]>
+</script>
+
+<form method="post" action="{ babPhpSelf }">
+	<!--#in _getnexthidden -->
+	<input type="hidden" name="{ name }" value="{ value }" />
+	<!--#endin _getnexthidden -->
+
+	<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
+					<tr align="center"> 
+						<td width="40%">
+							<p><label for="BAB_selectusers_searchtext">{ t_search }</label></p>
+							<input type="text" id="BAB_selectusers_searchtext" name="searchtext" value="{ searchtext }" /> 
+							<input type="submit" name="act[search]" value="{ t_searchsubmit }" />
+						</td>
+						<td>&nbsp;</td>
+						<td width="40%">&nbsp;</td>
+					</tr>
+				
+					<tr> 
+						<td valign="top" rowspan="5">
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oSearchResult'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oSearchResult'); return false;">{ sNone }</a>
+							<br />
+							<select id="oSearchResult" name="aSearchResult[]" multiple="multiple" size="35" style="width:100%">
+								<!--#in _getnextsearchresult -->
+								<option value="{ id_user }" onclick="bab_searchResultSelectClick('{ entry_url }', this)">{ username }</option>
+								<!--#endin _getnextsearchresult -->
+							</select>
+							<p>
+							{ t_view_directory_entry_for } <a id="bab_searchResultEntryLink" href="" onclick="bab_popup(this.href);return false;"></a>
+							</p>
+						</td>
+			
+						<td valign="middle" align="center">
+							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessView]" value="{ sGrapCaption }" /></p>
+							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessView]" value="{ sDropCaption }" /></p>
+						</td>
+			
+						<td valign="top">
+  							<h5>{ sAccessView }</h5>
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessView'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessView'); return false;">{ sNone }</a>
+							<br />
+							<select id="oAccessView" name="aAccessView[]" multiple="multiple" size="3" style="width:100%">
+								<!--#in _getNextAccessViewItem -->
+								<option value="{ id_user }">{ username }</option>
+								<!--#endin _getNextAccessViewItem -->
+							</select>
+						</td>
+					</tr>
+			
+					<tr> 
+						<td valign="middle" align="center">
+							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessUpdate]" value="{ sGrapCaption }" /></p>
+							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessUpdate]" value="{ sDropCaption }" /></p>
+						</td>
+						<td valign="top">
+							<h5>{ sAccessUpdate }</h5>
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessUpdate'); return false;">{ sNone }</a>
+							<br />
+							<select id="oAccessUpdate" name="aAccessUpdate[]" multiple="multiple" size="3" style="width:100%">
+								<!--#in _getNextAccessUpdateItem -->
+								<option value="{ id_user }">{ username }</option>
+								<!--#endin _getNextAccessUpdateItem -->
+							</select>
+						</td>
+					</tr>
+		
+					<tr> 
+						<td valign="middle" align="center">
+							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessFull]" value="{ sGrapCaption }" /></p>
+							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessFull]" value="{ sDropCaption }" /></p>
+						</td>
+						<td valign="top">
+							<h5>{ sAccessFull }</h5>
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessFull'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessFull'); return false;">{ sNone }</a>
+							<br />
+							<select id="oAccessFull" name="aAccessFull[]" multiple="multiple" size="3" style="width:100%">
+								<!--#in _getNextAccessFullItem -->
+								<option value="{ id_user }">{ username }</option>
+								<!--#endin _getNextAccessFullItem -->
+							</select>
+						</td>
+					</tr>
+					
+					<tr> 
+						<td valign="middle" align="center">
+							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessSharedUpdate]" value="{ sGrapCaption }" /></p>
+							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessSharedUpdate]" value="{ sDropCaption }" /></p>
+						</td>
+						<td valign="top">
+							<h5>{ sAccessSharedUpdate }</h5>
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessSharedUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessSharedUpdate'); return false;">{ sNone }</a>
+							<br />
+							<select id="oAccessSharedUpdate" name="aAccessSharedUpdate[]" multiple="multiple" size="3" style="width:100%">
+								<!--#in _getNextAccessSharedUpdateItem -->
+								<option value="{ id_user }">{ username }</option>
+								<!--#endin _getNextAccessSharedUpdateItem -->
+							</select>
+						</td>
+					</tr>
+					
+					<tr> 
+						<td valign="middle" align="center">
+							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessSharedFull]" value="{ sGrapCaption }" /></p>
+							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessSharedFull]" value="{ sDropCaption }" /></p>
+						</td>
+						<td valign="top">
+							<h5>{ sAccessSharedFull }</h5>
+							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessSharedFull'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessSharedFull'); return false;">{ sNone }</a>
+							<br />
+							<select id="oAccessSharedFull" name="aAccessSharedFull[]" multiple="multiple" size="3" style="width:100%">
+								<!--#in _getNextAccessSharedFullItem -->
+								<option value="{ id_user }">{ username }</option>
+								<!--#endin _getNextAccessSharedFullItem -->
+							</select>
+						</td>
+					</tr>
+		
+					<tr>
+						<td colspan="3" align="center">
+							<br />
+							<input name="act[record]" type="submit" value="{ t_record }" />
+							<br />
+							<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+function bab_searchResultSelectClick(entry_url, obj)
+{
+	var a = document.getElementById('bab_searchResultEntryLink');
+	
+	if('' != entry_url) 
+	{
+		a.parentNode.style.visibility = 'visible';
+	
+		if(a.lastChild) 
+		{
+			a.removeChild(a.lastChild);
+		}
+		a.appendChild(document.createTextNode(obj.innerHTML));
+		a.href = entry_url;
+		
+	} 
+	else
+	{
+		a.parentNode.style.visibility = 'hidden';
+	}
+}
+
+function bab_selectOption(sControlId, sAction)
+{
+	var bSelect;
+	if('All' === sAction)
+	{
+		bSelect = true;
+	}
+	else if('None' === sAction)
+	{
+		bSelect = false;
+	}
+	else
+	{
+		return;
+	}
+
+	var oControl = document.getElementById(sControlId);
+	if(null !== oControl)
+	{
+		var iLength = oControl.length;
+		for(var iIndex = 0; iIndex < iLength; ++iIndex)
+		{
+			oControl.options[iIndex].selected = bSelect;
+		}
+	}
+}
+
+
+function bab_selectAllOption(sControlId)
+{
+	bab_selectOption(sControlId, 'All');
+}
+
+function bab_deselectAllOption(sControlId)
+{
+	bab_selectOption(sControlId, 'None');
+}
+
+bab_searchResultSelectClick('', false);
+
+Event.observe(window, 'load', function() { 
+//	alert('!!!!');
+
+ $('oMoveSlectionTo').observe('click',function(event){  
+     
+     alert($(this.select));
+     
+     /*
+     $(this.select).style.visibility = 'hidden';  
+     new Effect.BlindDown(this.container,{  
+         duration: 0.3  
+     });  
+     Event.stop(event);  
+     return false;
+     //*/  
+ });
+ 
+});
+
+
+//]]>
+</script>
+<!--#end selectCalendarUsers -->

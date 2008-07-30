@@ -400,20 +400,23 @@ if( !isset($grp) || empty($grp))
 if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['users'] == 'Y'))
 {
 	$iduser = registerUser( stripslashes($firstname), stripslashes($lastname), stripslashes($middlename), $email, $nickname, $password1, $password2, true);
-	if( !$iduser)
+	if(!$iduser)
+	{
 		$idx = "Create";
+	}
 	else
-		{
-		if( $babBody->currentAdmGroup != 0 &&
+	{
+		if($babBody->currentAdmGroup != 0 &&
 			$babBody->currentDGGroup['id_group'] != BAB_ALLUSERS_GROUP &&
 			$babBody->currentDGGroup['id_group'] != BAB_REGISTERED_GROUP &&
 			$babBody->currentDGGroup['id_group'] != BAB_UNREGISTERED_GROUP &&
 			$babBody->currentDGGroup['users'] == 'Y')
-			{
+		{
 			bab_addUserToGroup($iduser, $babBody->currentDGGroup['id_group']);
-			}
+		}
 
-		switch ($babBody->nameorder[0]){
+		switch($babBody->nameorder[0])
+		{
 			case "L":
 				$pos = substr($lastname,0,1);
 			break;
@@ -422,13 +425,97 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 				$pos = substr($firstname,0,1);
 			break;
 		}
+		
 		$idx = "List";
 		if( $notifyuser == "Y" )
-			{
+		{
 
 			notifyAdminUserRegistration(bab_composeUserName($firstname , $lastname), $email, $nickname, $sendpwd == "Y"? $password1: "" );
-			}
 		}
+
+
+		//Default calendar access
+		{
+			global $babBody;
+	
+			$iDefaultCalendarSiteAccess = BAB_CAL_ACCESS_NONE;
+			$iDefaultUserCalendarAccess = BAB_CAL_ACCESS_NONE;	
+			
+			$oResult = $babDB->db_query("SELECT iDefaultCalendarAccess FROM ".BAB_SITES_TBL." WHERE id='".$babDB->db_escape_string($babBody->babsite['id'])."'");
+			if(false !== $oResult && $babDB->db_num_rows($oResult) > 0)
+			{
+				$aData = $babDB->db_fetch_assoc($oResult);
+				if(false !== $aData)
+				{
+					$iDefaultCalendarSiteAccess = (int) $aData['iDefaultCalendarAccess'];
+					//bab_debug('iDefaultCalendarSiteAccess ==> ' . $iDefaultCalendarSiteAccess);
+				}
+			}
+
+			$sQuery = 
+				'SELECT ' . 
+					'u.id iIdUser, ' .
+					'uo.iDefaultCalendarAccess iDefaultUserCalendarAccess ' .
+				'FROM ' . 
+					BAB_USERS_TBL . ' u ' .
+				'LEFT JOIN ' .
+					BAB_CAL_USER_OPTIONS . ' uo ON uo.id_user = u.id ' . 
+				'WHERE ' . 
+					'u.disabled=\'0\'';
+			//bab_debug($sQuery);
+					
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult && $babDB->db_num_rows($oResult) > 0)
+			{
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					$iCalendarAccess = (int) $iDefaultCalendarSiteAccess;
+					
+					if(null !== $aDatas['iDefaultUserCalendarAccess'])
+					{
+						$iCalendarAccess = (int) $aDatas['iDefaultUserCalendarAccess'];
+						//bab_debug('iDefaultUserCalendarAccess ==> ' . $iCalendarAccess);
+					}
+					//bab_debug('iCalendarAccess ==> ' . $iCalendarAccess);
+					
+					if(BAB_CAL_ACCESS_NONE !== $iCalendarAccess)
+					{
+						$sQuery = 
+							'SELECT ' . 
+								'id iIdCalendar ' .
+							'FROM ' . 
+								BAB_CALENDAR_TBL . ' ' .
+							'WHERE ' . 
+								'owner = ' . $babDB->quote($aDatas['iIdUser']) . ' AND ' . 
+								'type=' . $babDB->quote(BAB_CAL_USER_TYPE); 
+
+						$oResultCal = $babDB->db_query($sQuery);
+						if(false !== $oResultCal && $babDB->db_num_rows($oResultCal) > 0)
+						{
+							if(false !== ($aDataCal = $babDB->db_fetch_assoc($oResultCal)))
+							{
+								$sQuery = 
+									'INSERT INTO ' . BAB_CALACCESS_USERS_TBL . ' ' .
+										'(' .
+											'`id`, ' .
+											'`id_cal`, `id_user`, `bwrite`' .
+										') ' .
+									'VALUES ' . 
+										'(\'\', ' . 
+											$babDB->quote($aDataCal['iIdCalendar']) . ', ' . 
+											$babDB->quote($iduser) . ', ' . 
+											$babDB->quote($iCalendarAccess) . 
+										')';
+											
+								//bab_debug($sQuery);			
+								$babDB->db_query($sQuery);
+							}
+						}
+					}
+				}
+			}	
+		}
+	}
 }
 
 if( $idx == "chg")

@@ -149,6 +149,16 @@
 			</select>
 		</td>
 	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ t_defaultCalAccess }</td>
+		<td> 
+			<select name="iDefaultCalendarAccess">
+				<!--#in getNextCalAccess -->
+				<option value="{ iCalAccess }" { sCalAccessSelected } /> { sCalAccess }</option>
+				<!--#endin getNextCalAccess -->
+			</select>
+		</td>
+	</tr>
 	</table>
 </td>
 </tr>
@@ -514,6 +524,16 @@
 			<!--#in getnextdv -->
 			<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
 			<!--#endin getnextdv -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ t_defaultCalAccess }</td>
+		<td> 
+			<select name="iDefaultCalendarAccess">
+				<!--#in getNextCalAccess -->
+				<option value="{ iCalAccess }" { sCalAccessSelected } /> { sCalAccess }</option>
+				<!--#endin getNextCalAccess -->
 			</select>
 		</td>
 	</tr>

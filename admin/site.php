@@ -82,7 +82,6 @@ class site_configuration_cls
 		{
 		$res = $babDB->db_query("SELECT *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass FROM ".BAB_SITES_TBL." WHERE id='".$babDB->db_escape_string($id_site)."'");
 		$this->row = $babDB->db_fetch_assoc($res);
-
 		$this->arr = array();
 		foreach($this->row as $k => $val)
 			{
@@ -100,9 +99,6 @@ class site_configuration_cls
 		{
 		$GLOBALS['babBody']->title = bab_translate("Create site");
 		}
-
-
-
 	}
 }
 
@@ -512,7 +508,13 @@ function site_menu6($id)
 	global $babBody;
 	class temp extends site_configuration_cls
 		{
-
+			var $t_defaultCalAccess		= '';
+			var $aCalAccess				= array();
+			var $iCalAccess				= -1;
+			var $sCalAccess				= '';
+			var $sCalAccessSelected		= '';
+			var $iSelectedCalAccess		= -1;
+			
 		function temp($id)
 			{
 			global $babDB;
@@ -538,8 +540,27 @@ function site_menu6($id)
 			$this->minutes = bab_translate("Minutes");
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			
+			$this->t_defaultCalAccess = bab_translate("Default calendar access for new user");
+
+			$this->aCalAccess = array(
+				BAB_CAL_ACCESS_NONE => bab_translate("None"),
+				BAB_CAL_ACCESS_VIEW => bab_translate("Consultation"), 
+				BAB_CAL_ACCESS_UPDATE => bab_translate("Creation and modification"), 
+				BAB_CAL_ACCESS_FULL => bab_translate("Full access"), 
+				BAB_CAL_ACCESS_SHARED_UPDATE => bab_translate("Shared creation and modification"),
+				BAB_CAL_ACCESS_SHARED_FULL => bab_translate("Shared full access"));
+			
 			$this->site_configuration_cls($id);
 
+			if(property_exists($this, 'row'))
+			{
+				if(is_array($this->row) && array_key_exists('iDefaultCalendarAccess', $this->row))
+				{
+					$this->iSelectedCalAccess = $this->row['iDefaultCalendarAccess'];
+					//bab_debug('iDefaultCalendarAccess ==> ' . $this->iSelectedCalAccess);
+				}
+			}
+			
 			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
 			$sWorkingDays = '';
 			bab_calGetWorkingDays(0, $sWorkingDays);
@@ -793,6 +814,26 @@ function site_menu6($id)
 
 			}
 
+		function getNextCalAccess()
+			{
+				$this->sCalAccessSelected = '';
+
+				$aCalAccessItem = each($this->aCalAccess);
+				if(false !== $aCalAccessItem)
+				{
+					$this->iCalAccess = $aCalAccessItem['key'];
+					$this->sCalAccess = $aCalAccessItem['value'];
+					
+					if($this->iSelectedCalAccess == $this->iCalAccess)
+					{
+						$this->sCalAccessSelected = 'selected="selected"';
+					}			
+					//bab_debug($aCalAccessItem);
+					return true;
+				}
+				return false;
+			}
+			
 		} // class temp
 
 	$temp = new temp($id);
@@ -1893,6 +1934,11 @@ function siteUpdate_menu6($item)
 	if (isset($_POST['showupdateinfo']) )
 		{
 		$reqarr[] = "show_update_info='".$babDB->db_escape_string($_POST['showupdateinfo'])."'";
+		}
+
+	if (isset($_POST['iDefaultCalendarAccess']) )
+		{
+		$reqarr[] = "iDefaultCalendarAccess='".$babDB->db_escape_string($_POST['iDefaultCalendarAccess'])."'";
 		}
 
 	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");
