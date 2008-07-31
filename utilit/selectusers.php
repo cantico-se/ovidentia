@@ -419,6 +419,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 	var $sNone					= '';
 	var $sGrapCaption			= '';
 	var $sDropCaption			= '';
+	var $sMoveTo				= '';
 	
 	function bab_selectCalendarUsers() 
 	{
@@ -444,6 +445,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$this->sSelect						= bab_translate("Select");
 		$this->sAll							= bab_translate("All");
 		$this->sNone						= bab_translate("None");
+		$this->sMoveTo						= bab_translate("Move to");
 		
 		$this->aSessionKey = array(BAB_CAL_ACCESS_VIEW => 'bab_calAccessView', 
 			BAB_CAL_ACCESS_UPDATE => 'bab_calAccessUpdate', 
@@ -453,13 +455,10 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 			
 		foreach($this->aSessionKey as $iAccess => $sArrayName)
 		{
-			$_SESSION[$sArrayName] = array();
-			/*
 			if(!array_key_exists($sArrayName, $_SESSION))
 			{
 				$_SESSION[$sArrayName] = array();
 			}
-			//*/
 		}
 	}
 
@@ -562,7 +561,38 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		{
 			case 'search':
 				break;
-
+				
+				
+			case 'sRefresh':
+				foreach($this->aSessionKey as $iAccess => $sArrayName)
+				{
+					$_SESSION[$sArrayName] = array();
+				}
+				
+				$aInputBtnName = array('sGrabAccessView', 'sGrabAccessUpdate', 
+					'sGrabAccessFull', 'sGrabAccessSharedUpdate',
+					'sGrabAccessSharedFull');
+				
+				foreach($aInputBtnName as $sBtnName) 
+				{
+					$sArrayName = $this->getArrayNameKeyByInputBtnName($sBtnName);
+					if(!is_null($sArrayName))
+					{
+						if(isset($_POST[$sArrayName]) && 0 < count($_POST[$sArrayName])) 
+						{
+							$sKey = $this->getSessionKeyByInputBtnName($sBtnName);
+							if(!is_null($sKey))
+							{
+								foreach($_POST[$sArrayName] as $iIdUser) 
+								{
+									$_SESSION[$sKey][$iIdUser] = $iIdUser;
+								}
+							}
+						}
+					}
+				}
+				break;
+				
 			case 'sGrabAccessView':
 			case 'sGrabAccessUpdate':
 			case 'sGrabAccessFull':

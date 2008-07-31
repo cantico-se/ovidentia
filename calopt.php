@@ -32,119 +32,54 @@ include_once $babInstallPath.'utilit/mcalincl.php';
 
 function accessCalendar($calid, $urla)
 {
-	global $babBody;
+	global $babBody, $babDB;
 	
-	class temp
-		{
-		function temp($calid, $urla, &$users)
-			{
-			global $babDB;
-			$this->calid = $calid;
-			$this->urla = $urla;
-			$this->fullname = bab_translate("Fullname");
-			$this->access0txt = bab_translate("Consultation");
-			$this->access1txt = bab_translate("Creation and modification");
-			$this->access11txt = bab_translate("Shared creation and modification");
-			$this->access2txt = bab_translate("Full access");
-			$this->access22txt = bab_translate("Shared full access");
-			$this->deletetxt = bab_translate("Delete");
-			$this->upduserstxt = bab_translate("Update access");
-			$this->usertxt = bab_translate("Add user");
-			$this->addtxt = bab_translate("Add");
-			
-			$sAction = bab_rp('act', null);
-			
-			if(is_null($sAction))
-			{
-				$req = "select cut.id_user, cut.bwrite, ut.firstname, ut.lastname from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_USERS_TBL." ut on ut.id=cut.id_user where cut.id_cal='".$babDB->db_escape_string($calid)."'";
-	
-				$res = $babDB->db_query($req);
-	
-				$this->arrusers = array();
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-						$this->arrusers[] = array(
-							'user'		=> bab_composeUserName($arr['firstname'], $arr['lastname']), 
-							'id'		=> $arr['id_user'], 
-							'access'	=> $arr['bwrite']
-						);
-						
-						$users->addUser($arr['id_user'], $arr['bwrite']);
-					}
-				usort($this->arrusers, array($this, 'compare'));
-				$this->count = count($this->arrusers);
-			}
-		}
-
-		function compare($a, $b)
-			{
-			return strnatcmp($a['user'],$b['user']);
-			}
-
-		function getnext()
-			{
-			static $k=0;
-			if( $k < $this->count)
-				{
-				$this->fullnameval = bab_toHtml($this->arrusers[$k]['user']);
-				$this->userid = $this->arrusers[$k]['id'];
-				$this->cheched0 = '';
-				$this->cheched1 = '';
-				$this->cheched11 = '';
-				$this->cheched2 = '';
-				$this->cheched21 = '';
-				switch( $this->arrusers[$k]['access'])
-					{
-					case 1:
-						$this->cheched1 = 'checked';
-						break;
-					case 2:
-						$this->cheched2 = 'checked';
-						break;
-					case 3:
-						$this->cheched11 = 'checked';
-						break;
-					case 4:
-						$this->cheched21 = 'checked';
-						break;
-					default:
-						$this->cheched0 = 'checked';
-						break;
-					}
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;
-				}
-			}
-		}
-		
-		
 	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
-	//$obj = new bab_selectusers();
 	$obj = new bab_selectCalendarUsers();
-	
-	$temp = new temp($calid, $urla, $obj);	
 	$obj->addVar('urla', $urla);
 	$obj->addVar('calid', $calid);
 	$obj->setRecordCallback('addAccessUsers');
-	$obj->setRecordLabel(bab_translate('Add selected users'));
-	$babBody->addStyleSheet('calopt.css');
-	$babBody->babecho($obj->getHtml()); 
+	$obj->setRecordLabel(bab_translate('Update'));
 	
-	/*
-	$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
-	$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
-	$babBody->babecho(bab_printTemplate($temp,"calopt.html", "access"));
-	//*/
+	$sAction = bab_rp('act', null);
+	if(is_null($sAction))
+	{
+		$sQuery = 
+			'SELECT 
+				cut.id_user, 
+				cut.bwrite, 
+				ut.firstname, 
+				ut.lastname  
+			FROM ' . 
+				BAB_CALACCESS_USERS_TBL . ' cut 
+			LEFT JOIN ' . 
+				BAB_USERS_TBL . ' ut on ut.id = cut.id_user 
+			WHERE 
+				cut.id_cal = ' . $babDB->quote($calid);
+	
+		$oResult = $babDB->db_query($sQuery);
+
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$obj->addUser($aDatas['id_user'], $aDatas['bwrite']);
+		}
+	}
+	
+	$babBody->addStyleSheet('calopt.css');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'proto.menu.js');
+	$babBody->addStyleSheet('proto.menu.css');
+	$babBody->babecho($obj->getHtml()); 
 }
 
 
 function addAccessUsers($aCalUserAccess, $iIdCalendar)
 {
+	if((int) $iIdCalendar !== (int) bab_getCalendarId($BAB_SESS_USERID, 1))
+	{
+		return;
+	}
+
 	global $babDB;
 	
 	foreach($aCalUserAccess as $iAccess => $sArrayName)
@@ -197,36 +132,6 @@ function addAccessUsers($aCalUserAccess, $iIdCalendar)
 	Header("Location:".$GLOBALS['babUrlScript'].'?tg=calopt&idx=access&urla='.urlencode($params['urla']));
 	exit;
 }
-
-/*
-function updateAccessUsers( $users, $calid, $urla)
-{
-
-	global $babDB;
-	$res = $babDB->db_query("select * from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($calid)."'");
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		if( count($users) > 0 && in_array($arr['id_user'], $users))
-		{
-			$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where id_cal='".$babDB->db_escape_string($calid)."' and id_user='".$babDB->db_escape_string($arr['id_user'])."'");
-		}
-		else
-		{
-			$opt = 'acc_'.$arr['id_user'];
-			if( isset($GLOBALS[$opt]) )
-			{
-				$babDB->db_query("update ".BAB_CALACCESS_USERS_TBL." set bwrite='".$babDB->db_escape_string($GLOBALS[$opt])."' where id_cal='".$babDB->db_escape_string($calid)."' and id_user='".$babDB->db_escape_string($arr['id_user'])."'");
-			}
-		}
-
-	}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=calopt&idx=access&urla=".urlencode($urla));
-	exit;
-}
-//*/
-
-
-
 
 function cal_half_working_days($day) {
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
@@ -832,13 +737,11 @@ if(!isset($urla))
 	$urla = "";
 	}
 
+
+	
 if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	addAccessUsers($nuserid, $idcal, $urla);
-}elseif( isset($update) && $update == "access" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
-{
-	if( !isset($users)) { $users = array();}
-	updateAccessUsers($users, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess']);
