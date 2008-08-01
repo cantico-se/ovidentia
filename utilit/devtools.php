@@ -616,15 +616,31 @@ function bab_f_getDebug() {
 	global $babBody;
 
 	class bab_f_getDebugCls {
+		var $messages;
+		var $message;
+		
+		var $nb_messages = 0;
+		var $t_messages;
+		
 		function bab_f_getDebugCls() {
 			$this->messages = $GLOBALS['bab_debug_messages'];
+			$this->nb_messages += count($this->messages);
 			$this->t_messages = bab_translate('Messages');
-			$this->nb_message = count($this->messages);
+			$this->t_categories = bab_translate('Categories');
+			$this->t_all_categories = bab_translate('All');
+			
+			$this->categories = array();
+			foreach ($this->messages as $message) {
+				$category = $message['category'];
+				$this->categories[$message['category']] = $message['category'];
+			}
+			reset($this->messages);
+			reset($this->categories);
 		}
 
 		function color_query(&$str) {
 
-			if (preg_match("/UPDATE|INSERT|SELECT|DELETE/",$str)) {
+			if (preg_match('/UPDATE|INSERT|SELECT|DELETE/', $str)) {
 
 				$str = preg_replace("/(\(|\)|=|\<|\>)/","<span style=\"color:blue\">\\1</span>",$str);
 				$str = preg_replace("/(form_tbl_\d{4})/","<span style=\"color:green\">\\1</span>",$str);
@@ -634,14 +650,21 @@ function bab_f_getDebug() {
 			}
 		}
 
-
 		function getNextMessage() {
-			if (list(, $this->text) = each($this->messages)) {
+			if (list(, $this->message) = each($this->messages)) {
 				//$this->text = htmlspecialchars($this->text);
-				$this->color_query($this->text);
+				$this->color_query($this->message['text']);
 				return true;
 			}
 			reset($this->messages);
+			return false;
+		}
+
+		function getNextCategory() {
+			if (list(, $this->category) = each($this->categories)) {
+				return true;
+			}
+			reset($this->categories);
 			return false;
 		}
 	}
