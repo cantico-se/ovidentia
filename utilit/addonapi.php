@@ -797,6 +797,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 }
 
 
+
 function bab_getUserIdObjects($table)
 {
 global $babBody, $babDB;
@@ -1347,12 +1348,12 @@ define('DBG_FATAL',		32);
 /**
  * Log information.
  * 
- * @param mixed	$data		The data to log. If not a string $data is transformed through print_r.
- * @param int	$severity	The severity of the logged information.
+ * @param mixed		$data		The data to log. If not a string $data is transformed through print_r.
+ * @param int		$severity	The severity of the logged information.
+ * @param string	$category	A string to categorize the debug information.
  */
-function bab_debug($data, $severity = DBG_TRACE)
+function bab_debug($data, $severity = DBG_TRACE, $category = '')
 {
-
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
 		if (!is_string($data)) {
 			ob_start();
@@ -1360,22 +1361,30 @@ function bab_debug($data, $severity = DBG_TRACE)
 			$data = ob_get_contents();
 			ob_end_clean();
 		}
+		$message = array('category' => $category, 'severity' => $severity, 'text' => $data);
 		if (isset($GLOBALS['bab_debug_messages'])) {
-			$GLOBALS['bab_debug_messages'][] = $data;
+			$GLOBALS['bab_debug_messages'][] = $message;
 		} else {
-			$GLOBALS['bab_debug_messages'] = array($data);
+			$GLOBALS['bab_debug_messages'] = array($message);
 		}
 	}
 
-	if (file_exists('bab_debug.txt') && is_writable('bab_debug.txt')) {
+	$debugFilename = 'bab_debug.txt';
+	if (file_exists($debugFilename) && is_writable($debugFilename)) {
 		if (!is_string($data)) {
 			$data = print_r($data, true);
 		}
-		$h = fopen('bab_debug.txt', 'a');
-		fwrite($h, date('d/m/Y H:i:s')."\n\n".$data."\n\n\n------------------------\n");
+		$h = fopen($debugFilename, 'a');
+		$date = date('d/m/Y H:i:s');
+		$lines = explode("\n", $data);
+		foreach ($lines as $text) {
+			fwrite($h, $date."\t".$severity."\t".$category."\t".$text."\n");
+		}
+		fwrite($h, "\n");
 		fclose($h);
 	}
 }
+
 
 /**
  * Returns the html for the debug console, useful for popups
@@ -1384,7 +1393,7 @@ function bab_debug($data, $severity = DBG_TRACE)
  */
 function bab_getDebug() {
 	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
-		include_once $GLOBALS['babInstallPath']."utilit/devtools.php";
+		include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
 		return bab_f_getDebug();
 	}
 	return false;
