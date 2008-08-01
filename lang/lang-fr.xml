@@ -2590,4 +2590,6 @@
 <string id="Word Verification">Vérification des mots</string>
 <string id="Enter the letters in the image above">Entrez les caractères figurant dans l'image ci-dessus</string>
 <string id="Default calendar access for new user">Accès par defaut du calendrier pour les nouveaux utilisateurs</string>
+<string id="The character * allows you to retrieve a list of all users">Le caractère * permet de récuperer la liste de tous les utilisateurs</string>
+<string id="Select">Sélectionner</string>
 </fr>

@@ -420,6 +420,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 	var $sGrapCaption			= '';
 	var $sDropCaption			= '';
 	var $sMoveTo				= '';
+	var $sWildcard				= '';
 	
 	function bab_selectCalendarUsers() 
 	{
@@ -446,6 +447,8 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$this->sAll							= bab_translate("All");
 		$this->sNone						= bab_translate("None");
 		$this->sMoveTo						= bab_translate("Move to");
+		$this->sWildcard					= bab_translate("The character * allows you to retrieve a list of all users");
+		
 		
 		$this->aSessionKey = array(BAB_CAL_ACCESS_VIEW => 'bab_calAccessView', 
 			BAB_CAL_ACCESS_UPDATE => 'bab_calAccessUpdate', 

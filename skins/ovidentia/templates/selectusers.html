@@ -100,10 +100,211 @@ searchresult_select_click('', false);
 <!--#begin selectCalendarUsers -->
 <script type="text/javascript">
 //<![CDATA[
+
+function bab_moveSelection(sFromId, sToId)
+{
+	var oFromCtrl		= document.getElementById(sFromId);
+	var oToCtrl			= document.getElementById(sToId);
+	
+	if(null !== oFromCtrl && null !== oToCtrl )
+	{
+		var aCtrlToMove = new Array();
+		
+		var iLength = oFromCtrl.length;
+		for(var iIndex = 0; iIndex < iLength; ++iIndex)
+		{
+			if(true === oFromCtrl.options[iIndex].selected)
+			{
+				aCtrlToMove[aCtrlToMove.length] = oFromCtrl.options[iIndex];
+			}
+		}
+		
+		var iLength = aCtrlToMove.length;
+		if(iLength > 0)
+		{
+			var oNode = null;
+			
+			for(iIndex = 0; iIndex < iLength; ++iIndex)
+			{
+				oToCtrl.appendChild(aCtrlToMove[iIndex]);
+			}
+		}
+		
+		setTimeout(function(){
+			bab_selectOption('oAccessView', 'All'); 
+			bab_selectOption('oAccessUpdate', 'All'); 
+			bab_selectOption('oAccessFull', 'All'); 
+			bab_selectOption('oAccessSharedUpdate', 'All'); 
+			bab_selectOption('oAccessSharedFull', 'All');
+			
+			var oInput = new Element('input', { 'type': 'hidden', 'name': 'act[sRefresh]' });
+        	$('oCalAccessForm').insert(oInput).submit();
+			}, 0); 
+	}
+}
+
+
+document.observe('dom:loaded', function(){
+	var oAccessViewMenuItems = [
+	  {
+	    name: '{ sMoveTo } { sAccessUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessView', 'oAccessUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessView', 'oAccessFull');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessView', 'oAccessSharedUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessView', 'oAccessSharedFull');
+	    }
+	  }
+	]
+	
+	new Proto.Menu({
+	  selector: '#oAccessView', // context menu will be shown when element with id of "contextArea" is clicked
+	  className: 'menu desktop', // this is a class which will be attached to menu container (used for css styling)
+	  menuItems: oAccessViewMenuItems // array of menu items
+	})
+	
+	
+	var oAccessUpdateMenuItems = [
+	  {
+	    name: '{ sMoveTo } { sAccessView }',
+	    callback: function() {
+	      bab_moveSelection('oAccessUpdate', 'oAccessView');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessUpdate', 'oAccessFull');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessUpdate', 'oAccessSharedUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessUpdate', 'oAccessSharedFull');
+	    }
+	  }
+	]
+
+	new Proto.Menu({
+	  selector: '#oAccessUpdate', // context menu will be shown when element with id of "contextArea" is clicked
+	  className: 'menu desktop', // this is a class which will be attached to menu container (used for css styling)
+	  menuItems: oAccessUpdateMenuItems // array of menu items
+	})
+	
+	
+	var oAccessFullMenuItems = [
+	  {
+	    name: '{ sMoveTo } { sAccessView }',
+	    callback: function() {
+	      bab_moveSelection('oAccessFull', 'oAccessView');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessFull', 'oAccessUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessFull', 'oAccessSharedUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessFull', 'oAccessSharedFull');
+	    }
+	  }
+	]
+	new Proto.Menu({
+	  selector: '#oAccessFull', // context menu will be shown when element with id of "contextArea" is clicked
+	  className: 'menu desktop', // this is a class which will be attached to menu container (used for css styling)
+	  menuItems: oAccessFullMenuItems // array of menu items
+	})
+	
+	
+	var oAccessSharedUpdateMenuItems = [
+	  {
+	    name: '{ sMoveTo } { sAccessView }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedUpdate', 'oAccessView');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedUpdate', 'oAccessUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedUpdate', 'oAccessFull');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedUpdate', 'oAccessSharedFull');
+	    }
+	  }
+	]
+	
+	new Proto.Menu({
+	  selector: '#oAccessSharedUpdate', // context menu will be shown when element with id of "contextArea" is clicked
+	  className: 'menu desktop', // this is a class which will be attached to menu container (used for css styling)
+	  menuItems: oAccessSharedUpdateMenuItems // array of menu items
+	})
+	
+	
+	var oAccessSharedFullMenuItems = [
+	  {
+	    name: '{ sMoveTo } { sAccessView }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedFull', 'oAccessView');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedFull', 'oAccessUpdate');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessFull }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedFull', 'oAccessFull');
+	    }
+	  },{
+	    name: '{ sMoveTo } { sAccessSharedUpdate }',
+	    callback: function() {
+	      bab_moveSelection('oAccessSharedFull', 'oAccessSharedUpdate');
+	    }
+	  }
+	]
+	
+	new Proto.Menu({
+	  selector: '#oAccessSharedFull', // context menu will be shown when element with id of "contextArea" is clicked
+	  className: 'menu desktop', // this is a class which will be attached to menu container (used for css styling)
+	  menuItems: oAccessSharedFullMenuItems // array of menu items
+	})
+})
+
+bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; });
+
 //]]>
 </script>
 
-<form method="post" action="{ babPhpSelf }">
+<form method="post" id="oCalAccessForm" action="{ babPhpSelf }">
 	<!--#in _getnexthidden -->
 	<input type="hidden" name="{ name }" value="{ value }" />
 	<!--#endin _getnexthidden -->
@@ -115,8 +316,9 @@ searchresult_select_click('', false);
 					<tr align="center"> 
 						<td width="40%">
 							<p><label for="BAB_selectusers_searchtext">{ t_search }</label></p>
-							<input type="text" id="BAB_selectusers_searchtext" name="searchtext" value="{ searchtext }" /> 
-							<input type="submit" name="act[search]" value="{ t_searchsubmit }" />
+							<img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oSearchInfo', 0)" onmouseover="bab_showOnMouse('oSearchInfo', 1)" />&nbsp;&nbsp;<input type="text" id="BAB_selectusers_searchtext" name="searchtext" value="{ searchtext }" /> 
+							<input type="submit" id="oSearch" name="act[search]" value="{ t_searchsubmit }" />
+							<div id="oSearchInfo">{ sWildcard }</div>
 						</td>
 						<td>&nbsp;</td>
 						<td width="40%">&nbsp;</td>
@@ -124,7 +326,7 @@ searchresult_select_click('', false);
 				
 					<tr> 
 						<td valign="top" rowspan="5">
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oSearchResult'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oSearchResult'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oSearchResult'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oSearchResult'); return false;">{ sNone }</a>
 							<br />
 							<select id="oSearchResult" name="aSearchResult[]" multiple="multiple" size="35" style="width:100%">
 								<!--#in _getnextsearchresult -->
@@ -143,7 +345,7 @@ searchresult_select_click('', false);
 			
 						<td valign="top">
   							<h5>{ sAccessView }</h5>
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessView'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessView'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessView'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessView'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessView" name="aAccessView[]" multiple="multiple" size="3" style="width:100%">
 								<!--#in _getNextAccessViewItem -->
@@ -160,7 +362,7 @@ searchresult_select_click('', false);
 						</td>
 						<td valign="top">
 							<h5>{ sAccessUpdate }</h5>
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessUpdate'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessUpdate'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessUpdate" name="aAccessUpdate[]" multiple="multiple" size="3" style="width:100%">
 								<!--#in _getNextAccessUpdateItem -->
@@ -177,7 +379,7 @@ searchresult_select_click('', false);
 						</td>
 						<td valign="top">
 							<h5>{ sAccessFull }</h5>
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessFull'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessFull'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessFull'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessFull'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessFull" name="aAccessFull[]" multiple="multiple" size="3" style="width:100%">
 								<!--#in _getNextAccessFullItem -->
@@ -194,7 +396,7 @@ searchresult_select_click('', false);
 						</td>
 						<td valign="top">
 							<h5>{ sAccessSharedUpdate }</h5>
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessSharedUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessSharedUpdate'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessSharedUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessSharedUpdate'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessSharedUpdate" name="aAccessSharedUpdate[]" multiple="multiple" size="3" style="width:100%">
 								<!--#in _getNextAccessSharedUpdateItem -->
@@ -211,7 +413,7 @@ searchresult_select_click('', false);
 						</td>
 						<td valign="top">
 							<h5>{ sAccessSharedFull }</h5>
-							{ sSelect }:&nbsp;<a href="" onclick="bab_selectAllOption('oAccessSharedFull'); return false;">{ sAll }</a>,&nbsp;<a href="" onclick="bab_deselectAllOption('oAccessSharedFull'); return false;">{ sNone }</a>
+							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessSharedFull'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessSharedFull'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessSharedFull" name="aAccessSharedFull[]" multiple="multiple" size="3" style="width:100%">
 								<!--#in _getNextAccessSharedFullItem -->
@@ -224,7 +426,7 @@ searchresult_select_click('', false);
 					<tr>
 						<td colspan="3" align="center">
 							<br />
-							<input name="act[record]" type="submit" value="{ t_record }" />
+							<input id="oSave" name="act[record]" type="submit" value="{ t_record }" />
 							<br />
 							<br />
 						</td>
@@ -279,6 +481,9 @@ function bab_selectOption(sControlId, sAction)
 	if(null !== oControl)
 	{
 		var iLength = oControl.length;
+		
+//		alert(sControlId + ' iNbChild ==> ' + iLength);
+		
 		for(var iIndex = 0; iIndex < iLength; ++iIndex)
 		{
 			oControl.options[iIndex].selected = bSelect;
@@ -298,27 +503,6 @@ function bab_deselectAllOption(sControlId)
 }
 
 bab_searchResultSelectClick('', false);
-
-Event.observe(window, 'load', function() { 
-//	alert('!!!!');
-
- $('oMoveSlectionTo').observe('click',function(event){  
-     
-     alert($(this.select));
-     
-     /*
-     $(this.select).style.visibility = 'hidden';  
-     new Effect.BlindDown(this.container,{  
-         duration: 0.3  
-     });  
-     Event.stop(event);  
-     return false;
-     //*/  
- });
- 
-});
-
-
 //]]>
 </script>
 <!--#end selectCalendarUsers -->

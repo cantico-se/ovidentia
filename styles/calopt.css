@@ -55,3 +55,45 @@ input.bab_dropUser {
 	background-position:1px;
 	padding-left:16px;
 }
+
+#oSearchInfo
+{
+	font-family: Arial, sans-serif; 
+	font-size:11px;
+	border:#71BF44 2px solid;
+	background-color:#FFFBCB;	
+	padding:0px;
+	position:absolute;
+	text-align:left;
+	visibility:hidden;
+	width:200px;
+	z-index:100;
+	max-height:300px;
+	overflow:hidden;
+}
+
+#BAB_selectusers_searchtext
+{
+	background-image:url('../skins/ovidentia/images/Puces/search.gif');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+#oSave
+{
+	background-image:url('../skins/ovidentia/images/Puces/save.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+
+#oSearch
+{
+	background-image:url('../skins/ovidentia/images/Puces/action_success.gif');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+

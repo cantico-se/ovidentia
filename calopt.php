@@ -68,6 +68,7 @@ function accessCalendar($calid, $urla)
 	$babBody->addStyleSheet('calopt.css');
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'proto.menu.js');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'ovidentia.js');
 	$babBody->addStyleSheet('proto.menu.css');
 	$babBody->babecho($obj->getHtml()); 
 }
