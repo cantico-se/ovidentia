@@ -3056,9 +3056,9 @@ function pasteCollectiveDir()
 //		$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
 //		if($sPath !== $sFullSrcPath)
 		{
-			$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
-			$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
-
+			$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
+			$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
+			
 //			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
 //			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
 			
