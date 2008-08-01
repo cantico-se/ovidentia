@@ -2592,4 +2592,5 @@
 <string id="Default calendar access for new user">Accès par defaut du calendrier pour les nouveaux utilisateurs</string>
 <string id="The character * allows you to retrieve a list of all users">Le caractère * permet de récuperer la liste de tous les utilisateurs</string>
 <string id="Select">Sélectionner</string>
+<string id="File already exist">Le fichier existe déjà</string>
 </fr>

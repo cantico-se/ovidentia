@@ -949,6 +949,23 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			return false;
 		}
 
+		$fname = trim($fname);
+		$osfname = $fname;
+		
+		if(!empty($fname) && strcmp($oFolderFile->getName(), $osfname))
+		{
+			if(isset($GLOBALS['babFileNameTranslation']))
+			{
+				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
+			}
+		
+			if(file_exists($sUploadPath . $oFolderFile->getPathName() . $osfname))
+			{
+				$babBody->msgerror = bab_translate("File already exist") . ':' . bab_toHtml($osfname);
+				return false;
+			}
+		}		
+
 		$bmodified = false;
 		if(!empty($uploadf_name) && $uploadf_name != "none")
 		{
@@ -984,17 +1001,9 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			$bmodified = true;
 		}
 
-		$fname = trim($fname);
 		$frename = false;
-		$osfname = $fname;
-
 		if(!empty($fname) && strcmp($oFolderFile->getName(), $osfname))
 		{
-			if(isset($GLOBALS['babFileNameTranslation']))
-			{
-				$osfname = strtr($osfname, $GLOBALS['babFileNameTranslation']);
-			}
-
 			if(rename($sFullPathName, $sUploadPath . $oFolderFile->getPathName() . $osfname))
 			{
 				$frename = true;
@@ -1013,8 +1022,11 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 						$sTrg = $sUploadPath . $oFolderFile->getPathName() . BAB_FVERSION_FOLDER . '/' .
 						$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() .
 						',' . $osfname;
-
-						rename($sSrc, $sTrg);
+						
+						if(file_exists($sSrc))
+						{
+							rename($sSrc, $sTrg);
+						}
 					}
 				}
 			}
