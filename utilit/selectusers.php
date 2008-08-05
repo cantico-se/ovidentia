@@ -609,12 +609,10 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 					{
 						foreach($_POST['aSearchResult'] as $iIdUser) 
 						{
-							if((int) $iIdUser === (int) $GLOBALS['BAB_SESS_USERID'])
+							if((int) $iIdUser !== (int) $GLOBALS['BAB_SESS_USERID'])
 							{
-								return;;
+								$_SESSION[$sKey][$iIdUser] = $iIdUser;
 							}
-							
-							$_SESSION[$sKey][$iIdUser] = $iIdUser;
 						}
 					}
 				}
