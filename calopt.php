@@ -38,6 +38,9 @@ function accessCalendar($calid, $urla)
 	$obj = new bab_selectCalendarUsers();
 	$obj->addVar('urla', $urla);
 	$obj->addVar('calid', $calid);
+	
+	$obj->addVar('sCleanSessVar', (null == bab_rp('sCleanSessVar', null) ? 'Y' : 'N'));
+	
 	$obj->setRecordCallback('addAccessUsers');
 	$obj->setRecordLabel(bab_translate('Update'));
 	
@@ -76,6 +79,7 @@ function accessCalendar($calid, $urla)
 
 function addAccessUsers($aCalUserAccess, $iIdCalendar)
 {
+	global $BAB_SESS_USERID;
 	if((int) $iIdCalendar !== (int) bab_getCalendarId($BAB_SESS_USERID, 1))
 	{
 		return;
@@ -130,7 +134,7 @@ function addAccessUsers($aCalUserAccess, $iIdCalendar)
 			}
 		}
 	}
-	Header("Location:".$GLOBALS['babUrlScript'].'?tg=calopt&idx=access&urla='.urlencode($params['urla']));
+	Header("Location:".$GLOBALS['babUrlScript'].'?tg=calopt&idx=access&urla='.urlencode(bab_rp('urla')));
 	exit;
 }
 

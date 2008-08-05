@@ -449,16 +449,17 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$this->sMoveTo						= bab_translate("Move to");
 		$this->sWildcard					= bab_translate("The character * allows you to retrieve a list of all users");
 		
+		$sCleanSessVar = (null == bab_rp('sCleanSessVar', null)) ? 'Y' : 'N';
 		
 		$this->aSessionKey = array(BAB_CAL_ACCESS_VIEW => 'bab_calAccessView', 
 			BAB_CAL_ACCESS_UPDATE => 'bab_calAccessUpdate', 
 			BAB_CAL_ACCESS_FULL => 'bab_calAccessFull', 
 			BAB_CAL_ACCESS_SHARED_UPDATE => 'bab_calAccessSharedUpdate',
 			BAB_CAL_ACCESS_SHARED_FULL => 'bab_calAccessSharedFull');
-			
+
 		foreach($this->aSessionKey as $iAccess => $sArrayName)
 		{
-			if(!array_key_exists($sArrayName, $_SESSION))
+			if(!array_key_exists($sArrayName, $_SESSION) || 'Y' == $sCleanSessVar)
 			{
 				$_SESSION[$sArrayName] = array();
 			}
