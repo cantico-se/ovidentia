@@ -4696,8 +4696,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// If the old version was present on the system, we remove the "PortalAuthentication" directory so that it will be recreated on next login.
 	// If other authentication addons were installed they will have to be reinstalled.
 	
-	if (is_dir($_SERVER['SCRIPT_FILENAME'].'/functionalities/PortalAuthentication/Ovidentia/')) {
-		removeDir($_SERVER['SCRIPT_FILENAME'].'/functionalities/PortalAuthentication/');
+	$portalAuthenticationPath = dirname($_SERVER['SCRIPT_FILENAME']).'/functionalities/PortalAuthentication/';
+	if (is_dir($portalAuthenticationPath . 'Ovidentia/')) {
+		removeDir($portalAuthenticationPath);
 	}
 
 	if(!bab_isTableField(BAB_SITES_TBL, 'iDefaultCalendarAccess')) 
