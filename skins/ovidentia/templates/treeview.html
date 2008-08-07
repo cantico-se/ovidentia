@@ -300,12 +300,12 @@ function bab_toggleMenu(button,div)
 <!--#begin orgchart_scripts -->
 
 <script type="text/javascript" src="{ babInstallPath }scripts/prototype/prototype.js"></script>
- <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script> 
+<!--  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script> --> 
 <script type="text/javascript" src="{ babSkinPath }templates/orgchart.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 
-var $j = jQuery.noConflict();
+//var $j = jQuery.noConflict();
 
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
@@ -341,9 +341,11 @@ orgchart.userId = <!--#if t_userId --> { t_userId } <!--#else t_userId --> 0 <!-
 orgchart.adminMode = <!--#if t_adminMode --> true <!--#else t_adminMode --> false <!--#endif t_adminMode -->;
 
 //console && console.time('bab_initOrgChart');
-window.onload = function() {
-	bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
-}
+//window.onload = function() {
+//	bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+//}
+
+bab_initFunctions.push(function() { bab_initOrgChart(document.getElementById('{ t_treeViewId }')); });
 //console && console.timeEnd('bab_initOrgChart');
 
 function changestyle(ent,oldstyle,newstyle)
