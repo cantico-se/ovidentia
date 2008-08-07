@@ -438,7 +438,7 @@ bab_Tree.prototype.initSearch = function()
 	var nbListItems = listItems.length;
 	for (var i = 0; i < nbListItems; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0]
-		var span = div.getElementsByTagName('SPAN')[0];
+		var span = div.getElementsByTagName('SPAN')[1];
 		var text = span.firstChild.nodeValue;
 		text = cleanStringDiacritics(text);
 		listItems[i].setAttribute('content', text);
