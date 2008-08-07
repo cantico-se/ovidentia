@@ -189,21 +189,28 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 
 
 if (function_exists('file_get_contents')) {
+
 	/**
 	 * Returns the content of a file as a string
 	 *
 	 * @param string	$pathname
-	 * @return string
+	 * @return string	The file content or false if the file could not be read.
 	 */
 	function bab_getFileContents($pathname)
 	{
 		return file_get_contents($pathname);
 	}
+	
 } else {
+
 	function bab_getFileContents($pathname)
 	{
-		return implode('', @file($pathname));	
+		if (!is_readable($pathname)) {
+			return false;
+		}
+		return implode('', @file($pathname));
 	}
+
 }
 
 /**
@@ -218,28 +225,63 @@ class bab_Template
 	var $_parsedTemplate;
 	var $_errors;
 
+	
+	/**
+	 * @param string	$pathname	The pathname to the template file.
+	 * @param string	$section	The section name in the template file.
+	 * @return string				The content of the section or false if not found.
+	 * @access private
+	 */
+	function _loadSection($pathname, $section)
+	{
+		$templateFile = @fopen($pathname, 'r');
+		if ($templateFile === false) {
+			return false;
+		}
+		$quotedSection = preg_quote($section);
+		$sectionStart = '/<!--#begin\s+' . $quotedSection . '\s+-->/';
+		$sectionEnd = '/<!--#end\s+' . $quotedSection . '\s+-->/';
+
+		for ($sectionStartFound = false; !feof($templateFile); ) {
+			$line = fgets($templateFile, 8192);
+			if (preg_match($sectionStart, $line, $matches)) {
+				$sectionStartFound = true;
+				break;
+			}
+		}
+		if (!$sectionStartFound) {
+			return false;
+		}
+		$sectionContent = '';	
+		for ($sectionEndFound = false; !feof($templateFile); ) {
+			$line = fgets($templateFile, 8192);
+			if (preg_match($sectionEnd, $line, $matches)) {
+				$sectionEndFound = true;
+				break;
+			}
+			$sectionContent .= $line;
+		}
+		if (!$sectionEndFound) {
+			return false;
+		}
+		fclose($templateFile);
+		return $sectionContent;
+	}
+
+
 	/**
 	 * @param	string	$pathname	The pathname to the template file.
 	 * @param	string	$section	The section name in the template file.
 	 * 								If empty, the whole template file is loaded.
-	 * @return	string|null			The template content or null if not found.
+	 * @return	string				The template content or false if not found.
 	 * @access private
 	 */
 	function _loadTemplate($pathname, $section)
 	{
-		if (!is_readable($pathname)) {
-			return null;
-		}
-		$templateString = bab_getFileContents($pathname);
 		if (!empty($section)) {
-			$quotedSection = preg_quote($section);
-			if (preg_match('/<!--#begin\s+' . $quotedSection . '\s+-->(.*)<!--#end\s+' . $quotedSection . '\s+-->(.*)/s', $templateString, $matches)) {
-				$templateString = $matches[1];
-			} else {
-				return null;
-			}
+			return $this->_loadSection($pathname, $section);
 		}
-		return $templateString;
+		return bab_getFileContents($pathname);
 	}
 
 	
@@ -313,7 +355,7 @@ class bab_Template
 	 * @param	string	$section	The optional section name in the template file.
 	 * 								If not specified or empty, the whole template file is
 	 * 								processed.
-	 * @return	string|null			The processed template or null.
+	 * @return	string				The processed template or null.
 	 * @access public
 	 * @static
 	 */
@@ -323,7 +365,7 @@ class bab_Template
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
 		if ($this->_parsedTemplate === null) {
 			$this->_templateString = bab_Template::_loadTemplate($filename, $section);
-			if ($this->_templateString === null) {
+			if ($this->_templateString === false) {
 				return null;
 			}
 			$this->_parsedTemplate = bab_Template::_parseTemplate($this->_templateString, '$template');
@@ -367,7 +409,7 @@ class bab_Template
 	 * @param	string	$section	The optional section name in the template file.
 	 * 								If not specified or empty, the whole template file is
 	 * 								processed.
-	 * @return	string|null			The processed template or null.
+	 * @return	string			The processed template or null.
 	 * @access public
 	 */
 	function process($filename, $section = '')
