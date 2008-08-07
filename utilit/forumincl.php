@@ -160,6 +160,9 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 	if( $mail == false )
 		return;
 
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
+
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
 	$tempa = new tempa($forum, $threadTitle, $author, $forumname, $url);
@@ -190,11 +193,11 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 				$arrusers[] = $id;
 				if( $nbrecipients == 1 )
 					{
-					$mail->mailTo($arr['email'], $arr['name']);
+					$mail->$mailTo($arr['email'], $arr['name']);
 					}
 				else
 					{
-					$mail->mailBcc($arr['email'], $arr['name']);
+					$mail->$mailBCT($arr['email'], $arr['name']);
 					}
 				$count++;
 				}
@@ -202,7 +205,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 			if( $count >= $nbrecipients )
 				{
 				$mail->send();
-				$mail->clearBcc();
+				$mail->$clearBCT();
 				$mail->clearTo();
 				$count = 0;
 				}
@@ -212,7 +215,7 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 		if( $count > 0 )
 			{
 			$mail->send();
-			$mail->clearBcc();
+			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
 			}

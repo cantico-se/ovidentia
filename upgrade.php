@@ -4711,5 +4711,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('ALTER TABLE `'.BAB_CAL_USER_OPTIONS_TBL.'` ADD `iDefaultCalendarAccess` SMALLINT( 2 ) NULL DEFAULT NULL AFTER `show_update_info`');
 	}
 	
+	if (!bab_isTableField(BAB_SITES_TBL, 'mail_fieldaddress')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mail_fieldaddress char(3) DEFAULT 'Bcc' NOT NULL");
+	}
+
+	if (!bab_isTableField(BAB_SITES_TBL, 'mail_maxperpacket')) {
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mail_maxperpacket smallint(2) UNSIGNED NOT NULL default 25");
+	}
 	return true;
 }

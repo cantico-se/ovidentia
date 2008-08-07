@@ -147,6 +147,7 @@ function notifyArticleDraftApprovers($id, $users)
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
 	if( count($users) > 0 )
 		{
@@ -154,7 +155,7 @@ function notifyArticleDraftApprovers($id, $users)
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 			{
-			$mail->mailBcc($arr['email']);
+			$mail->$mailBCT($arr['email']);
 			}
 		}
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
@@ -298,6 +299,8 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
     $mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New article for home page"));
@@ -318,13 +321,13 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 		$count = 0;
 		while(list(,$arr) = each($arrusers))
 			{
-			$mail->mailBcc($arr['email'], $arr['name']);
+			$mail->$mailBCT($arr['email'], $arr['name']);
 			$count++;
 
-			if( $count > 25 )
+			if( $count > $babBody->babsite['mail_maxperpacket'] )
 				{
 				$mail->send();
-				$mail->clearBcc();
+				$mail->$clearBCT();
 				$mail->clearTo();
 				$count = 0;
 				}
@@ -333,7 +336,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 		if( $count > 0 )
 			{
 			$mail->send();
-			$mail->clearBcc();
+			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
 			}
@@ -383,6 +386,8 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
     $mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	if( $what == 'mod' )
 		$msg = bab_translate("An article has been modified");
@@ -428,15 +433,15 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$add = true;
 			if( $add )
 				{
-				$mail->mailBcc($arr['email'], $arr['name']);
+				$mail->$mailBCT($arr['email'], $arr['name']);
 				$count++;
 				}
 			}
 
-		if( $count > 25 )
+		if( $count > $babBody->babsite['mail_maxperpacket'] )
 			{
 			$mail->send();
-			$mail->clearBcc();
+			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
 			}
@@ -446,7 +451,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 	if( $count > 0 )
 		{
 		$mail->send();
-		$mail->clearBcc();
+		$mail->$clearBCT();
 		$mail->clearTo();
 		$count = 0;
 		}
@@ -510,13 +515,16 @@ function notifyCommentApprovers($idcom, $nfusers)
 		if( $mail == false )
 			return;
 
+		$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+		$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
+
 		if( count($nfusers) > 0 )
 			{
 			$sql = "select email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($nfusers).")";
 			$result=$babDB->db_query($sql);
 			while( $arr = $babDB->db_fetch_array($result))
 				{
-				$mail->mailBcc($arr['email']);
+				$mail->$mailBCT($arr['email']);
 				}
 			}
 		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);

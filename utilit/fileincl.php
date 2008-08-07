@@ -228,7 +228,8 @@ function notifyFileApprovers($id, $users, $msg)
 	}
 	$mail = bab_mail();
 	if( $mail == false )
-	return;
+		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
 	if( count($users) > 0 )
 	{
@@ -236,7 +237,7 @@ function notifyFileApprovers($id, $users, $msg)
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 		{
-			$mail->mailBcc($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
+			$mail->$mailBCT($arr['email'], bab_composeUserName($arr['firstname'],$arr['lastname']));
 		}
 	}
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
@@ -300,7 +301,9 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 
 	$mail = bab_mail();
 	if( $mail == false )
-	return;
+		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
@@ -325,14 +328,14 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 		if( count($arrusers) == 0 || !isset($arrusers[$id]))
 		{
 			$arrusers[$id] = $id;
-			$mail->mailBcc($arr['email'], $arr['name']);
+			$mail->$mailBCT($arr['email'], $arr['name']);
 			$count++;
 		}
 
-		if( $count == 25 )
+		if( $count == $babBody->babsite['mail_maxperpacket'] )
 		{
 			$mail->send();
-			$mail->clearBcc();
+			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
 		}
@@ -341,7 +344,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 	if( $count > 0 )
 	{
 		$mail->send();
-		$mail->clearBcc();
+		$mail->$clearBCT();
 		$mail->clearTo();
 		$count = 0;
 	}

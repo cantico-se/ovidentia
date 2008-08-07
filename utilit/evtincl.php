@@ -870,12 +870,13 @@ function notifyPersonalEvent($title, $description, $location, $startdate, $endda
 		$mail = bab_mail();
 		if( $mail == false )
 			return;
+		$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
 		$res=$babDB->db_query("select ut.firstname, ut.lastname, ut.email from ".BAB_USERS_TBL." ut left join ".BAB_CALENDAR_TBL." ct on ut.id=ct.owner where ct.type='1' and ct.id in (".$babDB->quote($idcals).")");
 
 		while( $arr = $babDB->db_fetch_array($res))
 			{
-			$mail->mailBcc($arr['email']);
+			$mail->$mailBCT($arr['email']);
 			}
 
 		if( empty($GLOBALS['BAB_SESS_USER']))
@@ -935,6 +936,8 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 		$mail = bab_mail();
 		if( $mail == false )
 			return;
+		$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+		$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 		if( empty($GLOBALS['BAB_SESS_USER']))
 			{
@@ -971,13 +974,13 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 				reset($arrusers);
 				while(list(,$arr) = each($arrusers))
 					{
-					$mail->mailBcc($arr['email'], $arr['name']);
+					$mail->$mailBCT($arr['email'], $arr['name']);
 					$count++;
 
-					if( $count > 25 )
+					if( $count > $babBody->babsite['mail_maxperpacket'] )
 						{
 						$mail->send();
-						$mail->clearBcc();
+						$mail->$clearBCT();
 						$mail->clearTo();
 						$count = 0;
 						}
@@ -986,7 +989,7 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 				if( $count > 0 )
 					{
 					$mail->send();
-					$mail->clearBcc();
+					$mail->$clearBCT();
 					$mail->clearTo();
 					$count = 0;
 					}
@@ -1095,6 +1098,8 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 		$mail = bab_mail();
 		if( $mail == false )
 			return;
+		$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+		$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 		if( empty($GLOBALS['BAB_SESS_USER']))
 			{
@@ -1129,13 +1134,13 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 				reset($arrusers);
 				while(list(,$arr) = each($arrusers))
 					{
-					$mail->mailBcc($arr['email'], $arr['name']);
+					$mail->$mailBCT($arr['email'], $arr['name']);
 					$count++;
 
-					if( $count > 25 )
+					if( $count > $babBody->babsite['mail_maxperpacket'] )
 						{
 						$mail->send();
-						$mail->clearBcc();
+						$mail->$clearBCT();
 						$mail->clearTo();
 						$count = 0;
 						}
@@ -1144,7 +1149,7 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 				if( $count > 0 )
 					{
 					$mail->send();
-					$mail->clearBcc();
+					$mail->$clearBCT();
 					$mail->clearTo();
 					$count = 0;
 					}
@@ -1250,6 +1255,8 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	$evtinfo=$babDB->db_fetch_array($babDB->db_query("select cet.* from ".BAB_CAL_EVENTS_TBL." cet where cet.id='".$babDB->db_escape_string($evtid)."'"));
 
@@ -1303,13 +1310,13 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 			reset($arrusers);
 			while(list(,$row) = each($arrusers))
 				{
-				$mail->mailBcc($row['email'], $row['name']);
+				$mail->$mailBCT($row['email'], $row['name']);
 				$count++;
 
-				if( $count > 25 )
+				if( $count > $babBody->babsite['mail_maxperpacket'] )
 					{
 					$mail->send();
-					$mail->clearBcc();
+					$mail->$clearBCT();
 					$mail->clearTo();
 					$count = 0;
 					}
@@ -1319,7 +1326,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 			if( $count > 0 )
 				{
 				$mail->send();
-				$mail->clearBcc();
+				$mail->$clearBCT();
 				$mail->clearTo();
 				$count = 0;
 				}
@@ -1400,6 +1407,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
 	if( count($users) > 0 )
 		{
@@ -1407,7 +1415,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 			{
-			$mail->mailBcc($arr['email']);
+			$mail->$mailBCT($arr['email']);
 			}
 		}
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);

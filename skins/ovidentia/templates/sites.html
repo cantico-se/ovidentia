@@ -137,6 +137,24 @@
 			</tr>
 
           <tr> 
+            <td>{ maxemailtxt }</td>
+            <td> 
+              <input type="text" name="maxemail" size="3" maxlength="3" value="{ arr[mail_maxperpacket] }" />
+			  </td>
+			</tr>
+
+          <tr> 
+            <td>{ mailfieldaddresstxt }</td>
+            <td> 
+              <select name="mfa">
+                  <option value="Bcc" { bccselected }>BCC</option>
+                  <option value="Cc" { ccselected }>CC</option>
+                  <option value="To" { toselected }>TO</option>
+                </select>
+			  </td>
+			</tr>
+
+		  <tr> 
             <td>{ stattxt }</td>
             <td> 
               <select name="statlog">

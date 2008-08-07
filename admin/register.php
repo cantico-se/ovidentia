@@ -130,6 +130,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
     $mail = bab_mail();
 	if( $mail == false )
 		return;
+	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 
 	$sql = "select * from ".BAB_USERS_GROUPS_TBL." where id_group='3'";
 	$result=$babDB->db_query($sql);
@@ -141,7 +142,7 @@ function notifyAdminRegistration($name, $useremail, $warning)
 			$res=$babDB->db_query($sql);
 			$r = $babDB->db_fetch_array($res);
 			if( $r['disabled'] != 1 )
-				$mail->mailBcc($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
+				$mail->$mailBCT($r['email'], bab_composeUserName($r['firstname'] , $r['lastname']));
 			}
 		}
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);

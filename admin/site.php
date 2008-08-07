@@ -127,6 +127,8 @@ function site_menu1()
 			$this->firstlast = bab_translate("Firstname")." ".bab_translate("Lastname");
 			$this->lastfirst = bab_translate("Lastname")." ".bab_translate("Firstname");
 			$this->babslogan_title = bab_translate("Site slogan");
+			$this->maxemailtxt = bab_translate("Max number of recipients by notification email");
+			$this->mailfieldaddresstxt = bab_translate("Field to use when sending notification email");
 			
 			
 			$this->skselectedindex = 0;
@@ -145,7 +147,9 @@ function site_menu1()
 						'skin'			=> '',
 						'style'			=> '',
 						'babslogan'		=> '',
-						'langfilter'	=> ''
+						'langfilter'	=> '',
+						'mail_maxperpacket'	=> '25',
+						'mail_fieldaddress'	=> 'Bcc'
 					);
 
 				$this->item = '';
@@ -155,7 +159,15 @@ function site_menu1()
 				$this->site_configuration_cls($_REQUEST['item']);
 				}
 			
-			
+			$this->bccselected = '';
+			$this->toselected = '';
+			$this->ccselected = '';
+			switch( $this->row['mail_fieldaddress'] )
+				{
+				case 'Bcc': $this->bccselected = 'selected'; break;
+				case 'Cc': $this->ccselected = 'selected'; break;
+				case 'To': $this->toselected = 'selected'; break;
+				}
 			
 			$this->arrfiles = bab_getAvailableLanguages();
 			$this->count = count($this->arrfiles);
@@ -1559,11 +1571,11 @@ function record_editor_configuration($id_site)
 
 
 
-function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog)
+function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog, $maxemail, $mfa)
 	{
 	global $babBody, $babDB;
 
-	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($lang). "', '" . $babDB->db_escape_string($siteemail). "', '" . $babDB->db_escape_string($adminname). "', '" . $babDB->db_escape_string($skin). "', '" . $babDB->db_escape_string($style). "', '" . $babDB->db_escape_string($statlog). "','".$babDB->db_escape_string($langfilter)."','". $babDB->db_escape_string($babslogan)."','". $babDB->db_escape_string($name_order)."')";
+	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order, mail_fieldaddress, mail_maxperpacket) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($lang). "', '" . $babDB->db_escape_string($siteemail). "', '" . $babDB->db_escape_string($adminname). "', '" . $babDB->db_escape_string($skin). "', '" . $babDB->db_escape_string($style). "', '" . $babDB->db_escape_string($statlog). "','".$babDB->db_escape_string($langfilter)."','". $babDB->db_escape_string($babslogan)."','". $babDB->db_escape_string($name_order)."','". $babDB->db_escape_string($mfa)."','". $babDB->db_escape_string($maxemail)."')";
 	$babDB->db_query($query);
 	$idsite = $babDB->db_insert_id();
 
@@ -1593,6 +1605,8 @@ function siteUpdate_menu1()
 	$style			= &$_POST['style'];
 	$siteemail		= &$_POST['siteemail'];
 	$adminname		= &$_POST['adminname'];
+	$maxemail		= &$_POST['maxemail'];
+	$mfa			= &$_POST['mfa'];
 	$skin			= &$_POST['skin'];
 	$langfilter		= &$babLangFilter->convertFilterToInt($_POST['langfilter']);
 	$name_order		= &$_POST['name_order'];
@@ -1605,6 +1619,7 @@ function siteUpdate_menu1()
 		return false;
 		}
 
+	$maxemail = is_numeric($maxemail) ? $maxemail : 25;
 
 	if (empty($_POST['item']))
 		{
@@ -1618,7 +1633,7 @@ function siteUpdate_menu1()
 			return false;
 			}
 
-		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog);
+		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog, $maxemail, $mfa);
 		}
 	
 	$query = "select * from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($name)."' AND id<>'".$babDB->db_escape_string($_POST['item'])."'";	
@@ -1659,7 +1674,9 @@ function siteUpdate_menu1()
 			stat_log='".$babDB->db_escape_string($statlog)."', 
 			langfilter='" .$babDB->db_escape_string($langfilter). "', 
 			name_order='".$babDB->db_escape_string($name_order)."', 
-			babslogan='".$babDB->db_escape_string($babslogan)."' 
+			babslogan='".$babDB->db_escape_string($babslogan)."' ,
+			mail_fieldaddress='".$babDB->db_escape_string($mfa)."' ,
+			mail_maxperpacket='".$babDB->db_escape_string($maxemail)."' 
 			
 		where id='".$babDB->db_escape_string($_POST['item'])."'";
 

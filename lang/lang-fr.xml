@@ -2593,4 +2593,6 @@
 <string id="The character * allows you to retrieve a list of all users">Le caractère * permet de récuperer la liste de tous les utilisateurs</string>
 <string id="Select">Sélectionner</string>
 <string id="File already exist">Le fichier existe déjà</string>
+<string id="Max number of recipients by notification email">Nombre maximum de destinataires par envoi de notifications</string>
+<string id="Field to use when sending notification email">Champ à utiliser lors de l'envoi des notifications</string>
 </fr>
