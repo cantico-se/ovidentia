@@ -210,6 +210,7 @@ class bab_OrgChart extends bab_TreeView
 
 	function getNextElement()
 	{
+		$this->t_tooltip = '';
 		$verticalThreshold = $this->_verticalThreshold - $this->_startLevel;
 		
 		if (is_null($this->_iterator)) {
