@@ -546,6 +546,152 @@ function __renameFmFilesVersions()
 	 __walkDirectoryRecursive($sCollectiveUploadPath, $sCallbackFunction);
 }
 
+function tskMgrFieldOrderUpgrade()
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	global $babDB;
+	if(!bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
+	{
+		$babDB->db_query("
+			CREATE TABLE `".BAB_TSKMGR_TASK_FIELDS_TBL."` (
+			  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+			  `sName` VARCHAR (60) NOT NULL,
+			  `sLegend` VARCHAR (255) NOT NULL,
+			  `iType` SMALLINT( 2 ) NOT NULL,
+			  PRIMARY KEY  (`iId`),
+			  KEY `sName` (`sName`),
+			  KEY `iType` (`iType`)
+			)
+		");
+
+		$aTaskField = array(		
+			array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Name of space project',			'iType' => 0),
+			array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project Name',					'iType' => 0),
+			array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Number of the task',				'iType' => 0),
+			array('iId' => 4,	'sName' => 'sDescription', 						'sLegend' => 'Description of the task',			'iType' => 0),
+			array('iId' => 5,	'sName' => 'sShortDescription', 				'sLegend' => 'Title',							'iType' => 0),
+			array('iId' => 6,	'sName' => 'sClass', 							'sLegend' => 'Type', 							'iType' => 0),
+			array('iId' => 7,	'sName' => 'sCreatedDate', 						'sLegend' => 'Creation Date', 					'iType' => 0),
+			array('iId' => 8,	'sName' => 'sModifiedDate', 					'sLegend' => 'Date Modified', 					'iType' => 0),
+			array('iId' => 9,	'sName' => 'iIdUserCreated', 					'sLegend' => 'Author of the establishment', 	'iType' => 0),
+			array('iId' => 10,	'sName' => 'iIdUserModified', 					'sLegend' => 'Author of the amendment', 		'iType' => 0),
+			array('iId' => 11,	'sName' => 'iCompletion', 						'sLegend' => 'Progress Rate', 					'iType' => 0),
+			array('iId' => 12,	'sName' => 'iPriority', 						'sLegend' => 'Priority', 						'iType' => 0),
+			array('iId' => 13,	'sName' => 'idOwner', 							'sLegend' => 'Responsible',				 		'iType' => 0),
+			array('iId' => 14,	'sName' => 'startDate,plannedStartDate', 		'sLegend' => 'Start Date,Planned', 				'iType' => 0),
+			array('iId' => 15,	'sName' => 'endDate,plannedEndDate', 			'sLegend' => 'End Date,Planned', 				'iType' => 0),
+			array('iId' => 16,	'sName' => 'iTime,iPlannedTime',				'sLegend' => 'Time,Planned', 					'iType' => 0),
+			array('iId' => 17,	'sName' => 'iCost,iPlannedCost',				'sLegend' => 'Cost,Planned', 					'iType' => 0),
+			array('iId' => 18,	'sName' => 'iDuration',							'sLegend' => 'Duration of the task', 			'iType' => 0),
+			array('iId' => 19,	'sName' => 'sCategoryName',						'sLegend' => 'Category', 						'iType' => 0),
+			array('iId' => 20,	'sName' => 'sShortDescription,sProjectName',	'sLegend' => 'Title,Project Name', 			'iType' => 0),
+		);		
+
+		foreach($aTaskField as $aTaskFieldItem)
+		{
+			$sQuery = 
+				'INSERT INTO ' . BAB_TSKMGR_TASK_FIELDS_TBL . ' ' .
+					'(' .
+						'`iId`, `sName`, `sLegend`, `iType` ' .
+					') ' .
+				'VALUES ' . 
+					'(' . 
+						$babDB->quote($aTaskFieldItem['iId']) . ', ' . 
+						$babDB->quote($aTaskFieldItem['sName']) . ', ' . 
+						$babDB->quote($aTaskFieldItem['sLegend']) . ', ' . 
+						$babDB->quote($aTaskFieldItem['iType']) . 
+					')'; 
+					
+			$babDB->db_query($sQuery);
+		}
+		
+		$babDB->db_query("
+			CREATE TABLE `".BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL."` (
+			  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+			  `iIdTaskField` int(10) UNSIGNED NOT NULL,
+			  `sTableAlias` VARCHAR (5) NOT NULL,
+			  `iIdProject` int(10) UNSIGNED NOT NULL,
+			  `iPosition` SMALLINT( 2 ) NOT NULL,
+			  `iType` SMALLINT( 2 ) NOT NULL,
+			  PRIMARY KEY  (`iId`),
+			  KEY `iIdTaskField` (`iIdTaskField`),
+			  KEY `iIdProject` (`iIdProject`),
+			  KEY `iType` (`iType`)
+			)
+		");
+		
+		//For my task and personnal task
+		$aDefaultField = array(
+			array('iIdTaskField' => 20, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 1, 'iType' => 0),
+			array('iIdTaskField' => 6,  'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 2, 'iType' => 0),
+			array('iIdTaskField' => 14, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 3, 'iType' => 0),
+			array('iIdTaskField' => 15, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 4, 'iType' => 0),
+		);
+		
+		foreach($aDefaultField as $aDefaultFieldItem)
+		{
+			$sQuery = 
+				'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+					'(' .
+						'`iId`, `iIdTaskField`, `sTableAlias`, `iIdProject`,  `iPosition`, `iType` ' .
+					') ' .
+				'VALUES ' . 
+					'(\'\', ' . 
+						$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
+						$babDB->quote($aDefaultFieldItem['sTableAlias']) . ', ' . 
+						$babDB->quote($aDefaultFieldItem['iIdProject']) . ', ' . 
+						$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
+						$babDB->quote($aDefaultFieldItem['iType']) . 
+					')'; 
+					
+			$babDB->db_query($sQuery);
+		}
+		
+		//For project
+		$aDefaultField[0]['iIdTaskField'] = 5;
+		$aDefaultField[] = array('iIdTaskField' => 17, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 5, 'iType' => 0);
+		$aDefaultField[] = array('iIdTaskField' => 16, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 6, 'iType' => 0);
+		$aDefaultField[] = array('iIdTaskField' => 13, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 7, 'iType' => 0);
+		
+		$sQuery = 
+			'SELECT 
+				`id` iId
+			FROM ' .
+				BAB_TSKMGR_PROJECTS_TBL;
+	
+		$oResultProject = $babDB->db_query($sQuery);
+		if(false !== $oResultProject)
+		{
+			$iNumRows = $babDB->db_num_rows($oResultProject);
+			if(0 < $iNumRows)
+			{
+				$aDatasProject = array();
+				while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
+				{
+					foreach($aDefaultField as $aDefaultFieldItem)
+					{
+						$sQuery = 
+							'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+								'(' .
+									'`iId`, `iIdTaskField`, `sTableAlias`, `iIdProject`,  `iPosition`, `iType` ' .
+								') ' .
+							'VALUES ' . 
+								'(\'\', ' . 
+									$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
+									$babDB->quote($aDefaultFieldItem['sTableAlias']) . ', ' . 
+									$babDB->quote($aDatasProject['iId']) . ', ' . 
+									$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
+									$babDB->quote($aDefaultFieldItem['iType']) . 
+								')'; 
+								
+						$babDB->db_query($sQuery);
+					}
+				}
+			}
+		}
+	}
+}
 
 
 function upgrade553to554()
@@ -4718,5 +4864,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'mail_maxperpacket')) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mail_maxperpacket smallint(2) UNSIGNED NOT NULL default 25");
 	}
+	
+	tskMgrFieldOrderUpgrade();
+	
 	return true;
 }

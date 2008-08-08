@@ -379,7 +379,10 @@ function displayProjectsSpacesList()
 						$oProjectElement->addAction('Categories_list',
 			               bab_toHtml(bab_translate("Categories list")), $GLOBALS['babSkinPath'] . 'images/Puces/kwikdisk.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_CATEGORIES_LIST, $iIdProjectSpace, $datas['id']), '');
-						$oProjectElement->addAction('Notices',
+						$oProjectElement->addAction('Fields_list',
+							bab_toHtml(bab_translate("Field(s) list")), $GLOBALS['babSkinPath'] . 'images/Puces/a-z.gif', 
+						    $this->getUrl(BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM, $iIdProjectSpace, $datas['id']), '');
+			          	$oProjectElement->addAction('Notices',
 			               bab_toHtml(bab_translate("Notices")), $GLOBALS['babSkinPath'] . 'images/Puces/mailreminder.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM, $iIdProjectSpace, $datas['id']), '');
 						$oProjectElement->addAction('Commentaries',
@@ -1641,7 +1644,7 @@ function displayTaskList($sIdx)
 				
 				$datas['idOwner'] = bab_toHtml(bab_getUserName($datas['idOwner']));
 				
-				$datas['sShortDescription'] = $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
+				//$datas['sShortDescription'] = $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
 				
 			}
 			return $datas;
@@ -1651,6 +1654,7 @@ function displayTaskList($sIdx)
 		{
 			$datas = array();
 			$datas['sShortDescription']	= '';
+			$datas['sProjectName']		= '';
 			$datas['sClass']			= '';
 			$datas['startDate']			= '';
 			$datas['endDate']			= '';
@@ -1785,7 +1789,6 @@ function displayTaskList($sIdx)
 		{
 			$this->bFirst = !$this->bFirst;
 			$this->aCurrentColumnHeader = each($this->aColumnHeaders);
-	
 			if(false !== $this->aCurrentColumnHeader)
 			{
 				return true;
@@ -1891,6 +1894,55 @@ function displayTaskList($sIdx)
 		}
 	}
 	
+/*	
+	require_once $GLOBALS['babInstallPath'] . 'upgrade.php';
+	tskMgrFieldOrderUpgrade();
+//*/	
+	
+	
+function getDisplayableFieldList($iIdProject)
+{
+	global $babDB;
+	$sQuery = 
+		'SELECT 
+			t0.`sTableAlias` sTableAlias, 
+			t0.`iPosition` iPosition, 
+			t1.`sName` sName, 
+			t1.`sLegend` sLegend
+		FROM ' .
+			BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' t0 ' .
+		'LEFT JOIN ' .
+			BAB_TSKMGR_TASK_FIELDS_TBL . ' t1 ON t1.iId = t0.iIdTaskField ' . 
+		'WHERE ' . 
+			't0.`iIdProject` = ' . $babDB->quote($iIdProject) . 
+		'ORDER BY ' .
+			 't0.`iPosition` ASC';
+
+	$aField = array();
+			
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);
+		if(0 < $iNumRows)
+		{
+			$aDatas = array();
+			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$aField[] = array(
+					'iPosition' => $aDatas['iPosition'], 
+					'sName' => $aDatas['sName'],
+					'sLegend' => $aDatas['sLegend']);
+			}
+		}
+	}
+	return $aField;
+}
+	
+	
+	$aColumnHeader = getDisplayableFieldList($iIdProject);
+
+
 	$oMultiPage->sIdx = $sIdx;
 //	$oMultiPage->iNbRowsPerPage = (int) 2;
 //	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
@@ -1898,6 +1950,7 @@ function displayTaskList($sIdx)
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
 	
+/*		
 	$oMultiPage->addColumnHeader(0, array(bab_translate("Title")), array('sShortDescription'));
 	$oMultiPage->addColumnHeader(1, array(bab_translate("Type")), array('sClass'));
 	$oMultiPage->addColumnHeader(2, array(bab_translate("Start date"), bab_translate("Planned")), array('startDate', 'plannedStartDate'));
@@ -1909,7 +1962,22 @@ function displayTaskList($sIdx)
 		$oMultiPage->addColumnHeader(5, array(bab_translate("Time"), bab_translate("Planned")), array('iTime', 'iPlannedTime'));
 		$oMultiPage->addColumnHeader(6, array(bab_translate("Responsible")), array('idOwner'));
 	}
+//*/
 
+	foreach($aColumnHeader as $aColumnHeaderItem)
+	{
+		$iPosition				= $aColumnHeaderItem['iPosition'];
+		$aCaption				= explode(',', $aColumnHeaderItem['sLegend']);
+		$aDataSourceFieldName	= explode(',', $aColumnHeaderItem['sName']);
+		
+		foreach($aCaption as $iKey => $sCaption)
+		{
+			$aCaption[$iKey] = bab_translate($sCaption);
+		}		
+		
+		$oMultiPage->addColumnHeader($iPosition, $aCaption, $aDataSourceFieldName);
+	}
+		
 	$oMultiPage->bIsColumnHeaderUrl = true;
 	
 	$sTg = bab_rp('tg', 'admTskMgr');
@@ -2228,8 +2296,121 @@ function displayGanttChart()
 function tskmgClosePopup()
 {
 	$bf = & new BAB_BaseFormProcessing();
-	die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
+	die(bab_printTemplate($bf, 'tmUser.html', 'close_popup'));
 }
+
+
+
+function displayOrderTaskFieldsForm()
+{
+	global $babBody;
+	
+	$iIdProject			= (int) bab_rp('iIdProject', 0);
+	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
+	
+	if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You are not a projects manager"));
+		return false;
+	}
+	
+	$sTitle = bab_translate("Field(s) list");
+	if(false !== bab_getProject($iIdProject, $aProject))
+	{
+		$sTitle .= ': ' . $aProject['name'];
+	}
+
+	$aItemMenu = array(
+		array(
+			'idx' => BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM,
+			'mnuStr' => bab_translate("Field(s) list"),
+			'url' => $GLOBALS['babUrlScript'] . '?tg=' . urlencode('usrTskMgr') . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM) . 
+			'&iIdProjectSpace=' . urlencode($iIdProjectSpace) .
+			'&iIdProject=' . urlencode($iIdProject))
+		);
+		
+	global $babBody;
+	$oTmCtx =& getTskMgrContext();
+	$babBody->title = bab_toHtml($sTitle);
+	
+	add_item_menu($aItemMenu);
+	
+	class BAB_OrderTaskFields extends BAB_BaseFormProcessing
+	{
+		var $aSelectedField = array();
+		var $aSelectableField = array();
+		
+		var $iIdField;
+		var $iFieldType;
+		var $sLegend;
+		var $sClassName;
+		
+		function BAB_OrderTaskFields($iIdProjectSpace, $iIdProject)
+		{
+			parent::BAB_BaseFormProcessing();
+			
+			$this->set_data('idx', BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM);
+			$this->set_data('action', '');
+			$this->set_data('tg', 'usrTskMgr');
+			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
+			$this->set_data('iIdProject', $iIdProject);
+			
+			$this->set_caption('sSelectableField', bab_translate("Selectable fields"));
+			$this->set_caption('sSelectedField', bab_translate("Selected fields"));
+			$this->set_caption('sMaxSelectableField', bab_translate("You can select up to 15 fields"));
+			
+			$aTaskField	= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_TASK_FIELD);
+			$aAdditionalField = bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_ADDITIONAL_FIELD);
+			$this->aSelectableField = bab_tskmgr_getSelectableTaskFields($iIdProject, $aTaskField, $aAdditionalField);
+			$this->aSelectedField = bab_tskmgr_getSelectedField($iIdProject);
+		}
+		
+		function getNextField($sPropertyName)
+		{
+			$aItem = each($this->$sPropertyName);
+			if(false !== $aItem)
+			{
+				$this->iIdField = $aItem['value']['iId'];
+				$this->iFieldType = $aItem['value']['iType'];
+				
+				$this->sClassName = 'additionalField';
+				
+				$sLegend = $aItem['value']['sLegend'];
+				if(BAB_TM_TASK_FIELD === (int) $this->iFieldType)
+				{
+					$this->sClassName = 'taskField';
+					
+					$aLegend = explode(',', $aItem['value']['sLegend']);
+					foreach($aLegend as $iKey => $sLegend)
+					{
+						$aLegend[$iKey] = bab_translate($sLegend);
+					}
+					
+					$sLegend = implode('/', $aLegend);
+				}
+				$this->sLegend = $sLegend;
+				return true;
+			}
+			return false;
+		}
+		
+		function getNextSelectableField()
+		{
+			return $this->getNextField('aSelectableField');
+		}
+		
+		function getNextSelectedField()
+		{
+			return $this->getNextField('aSelectedField');
+		}
+	}
+	
+	$oOrderTaskFields = new BAB_OrderTaskFields($iIdProjectSpace, $iIdProject);
+	$babBody->addStyleSheet('taskManager.css');
+	$babBody->babecho(bab_printTemplate($oOrderTaskFields, 'tmUser.html', 'orderTaskFields'));
+}
+
+
 //POST
 
 
@@ -3078,6 +3259,10 @@ switch($idx)
 		
 	case BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM:
 		displayProjectPropertiesForm();
+		break;
+		
+	case BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM:
+		displayOrderTaskFieldsForm();
 		break;
 }
 $babBody->setCurrentItemMenu($idx);
