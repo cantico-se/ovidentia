@@ -2466,7 +2466,7 @@
 <string id="Move to">Déplacer vers</string>
 <string id="Who is notified when a new file is uploaded or updated?">Qui est notifié lors d'un chargement de fichier ou d'une mise à jour?</string>
 <string id="Inherit the rights and the options of the parent directory">Hérite des droits et des options du répertoire parent</string>
-<string id="Or use this field as password if filled">Si ce champ n'est pas vide l'utilser comme mot de passe</string>
+<string id="Or use this field as password if filled">Si ce champ n'est pas vide l'utiliser comme mot de passe</string>
 <string id="In progress">En cours</string>
 <string id="Ended">Achevées</string>
 <string id="Users can add new tags">Les utilisateurs peuvent ajouter de nouveaux mots clés dans le thesaurus</string>
