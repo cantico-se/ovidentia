@@ -2595,4 +2595,8 @@
 <string id="File already exist">Le fichier existe déjà</string>
 <string id="Max number of recipients by notification email">Nombre maximum de destinataires par envoi de notifications</string>
 <string id="Field to use when sending notification email">Champ à utiliser lors de l'envoi des notifications</string>
+<string id="Field(s) list">Liste des champs</string>
+<string id="You can select up to 15 fields">Vous pouvez sélectionner jusqu'à 15 champs</string>
+<string id="Selectable fields">Champs sélectionnable</string>
+<string id="Selected fields">Champs sélectionnés</string>
 </fr>

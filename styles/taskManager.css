@@ -78,3 +78,28 @@
 .tskMgrDialog {
 	background-color: #F3F3F3;
 }
+
+.taskField {
+	background-image:url('../skins/ovidentia/images/Puces/kded.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:20px;
+/*	background-color:#71BF44 */
+}
+
+
+.additionalField {
+	background-image:url('../skins/ovidentia/images/Puces/list.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:20px;
+/*	background-color:#FFFBCB */
+}
+
+.messageInfo {
+	background-image:url('../skins/ovidentia/images/48x48/status/messagebox_warning.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:60px;
+	background-color:#FFFBCB
+}

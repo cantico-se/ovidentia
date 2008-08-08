@@ -2138,5 +2138,62 @@ function hideOnNbRowPerPageChangedButton()
 </form>
 <!--#end taskMultipage -->
 
+<!--#begin orderTaskFields -->
+<script type="text/javascript">
+//<![CDATA[
+
+
+
+//]]>
+</script>
+
+<form method="post" id="orderTaskFields" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
+	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
+	<input type="hidden" name="action" value="{ m_datas[action] }" />
+	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
+	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+
+	<table border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
+					<tr>
+						<td class="messageInfo" colspan="4"><h5>{ m_captions[sMaxSelectableField] }</h5></td>
+					</tr>
+					<tr>
+						<td with="1%">
+							<h5>{ m_captions[sSelectableField] }</h5>
+							<select id="oSelectableField" multiple="multiple" size="20">
+								<!--#in getNextSelectableField -->
+								<option class="{ sClassName }" value="{ iIdField }_{ iFieldType }" >{ sLegend }</option>
+								<!--#endin getNextSelectableField -->
+							</select>
+						</td> 
+						<td valign="middle" align="center">
+							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-next.png" border="0" />
+							<br />
+							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-previous.png" border="0" />
+						</td>
+						<td with="1%">
+							<h5>{ m_captions[sSelectedField] }</h5>
+							<select id="oSelectedField" multiple="multiple" size="20">
+								<!--#in getNextSelectedField -->
+								<option class="{ sClassName }" value="{ iIdField }_{ iFieldType }" >{ sLegend }</option>
+								<!--#endin getNextSelectedField -->
+							</select>
+						</td> 
+						<td valign="middle" align="center">
+							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-up.png" border="0" />
+							<br />
+							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-down.png" border="0" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form> 
+<!--#end orderTaskFields -->
 
 

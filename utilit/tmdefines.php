@@ -68,7 +68,7 @@ define('BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM', 'displayNoticeEventForm');
 define('BAB_TM_IDX_DISPLAY_PERSONNAL_TASK_RIGHT', 'displayPersonnalTaskRight');
 define('BAB_TM_IDX_DISPLAY_GANTT_CHART', 'displayGanttChart');
 define('BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM', 'displayProjectPropertiesForm');
-
+define('BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM', 'displayOderTaskFieldsForm');
 
 
 
@@ -137,9 +137,11 @@ define('BAB_TM_EV_TASK_RESPONSIBLE_PROPOSED', 9);
 define('BAB_TM_EV_TASK_STARTED', 10);
 
 //Specific field class
-define ('BAB_TM_TEXT_FIELD', 0);
-define ('BAB_TM_TEXT_AREA_FIELD', 1);
-define ('BAB_TM_RADIO_FIELD', 2);
+define('BAB_TM_TEXT_FIELD', 0);
+define('BAB_TM_TEXT_AREA_FIELD', 1);
+define('BAB_TM_RADIO_FIELD', 2);
 
-
+//Field type for the customization of the list
+define('BAB_TM_TASK_FIELD', 0);
+define('BAB_TM_ADDITIONAL_FIELD', 1);
 ?>
