@@ -64,7 +64,7 @@ class bab_contentEditor {
 		
 		// default parameters
 		$this->parameters = array(
-			'height' => 300,
+			'height' => 500,
 			'email' => false
 		);
 		
