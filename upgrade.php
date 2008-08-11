@@ -782,17 +782,16 @@ function tskMgrCreateProjectAdditionalFieldContext()
 					'\')';
 			
 			$aFldClass = array();
-							
+			
+			$aTableDefinition	= array();
+			$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+			$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+			
 //			bab_debug($sQuery);
 			$oResultField = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultField);
 			if(0 < $iNumRows)
 			{
-				$aTableDefinition = array();
-				
-				$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
-				$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
-				
 				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
@@ -800,15 +799,15 @@ function tskMgrCreateProjectAdditionalFieldContext()
 					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
 					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
 				}
-				
-				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
-				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
 			}
 
 			$sTableName = 'bab_tskmgr_project' . $aDatasProject['iIdProject'] . '_additional_fields';
 			
 			if(!bab_isTable($sTableName)) 
 			{
+				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+				
 				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
 //				bab_debug($sQuery);
 				$babDB->db_query($sQuery);
@@ -960,17 +959,16 @@ function tskMgrCreateUsersAdditionalFieldContext()
 					'\')';
 			
 			$aFldClass = array();
-							
+			
+			$aTableDefinition	= array();
+			$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+			$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+			
 //			bab_debug($sQuery);
 			$oResultField = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultField);
 			if(0 < $iNumRows)
 			{
-				$aTableDefinition = array();
-				
-				$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
-				$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
-				
 				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
@@ -978,15 +976,15 @@ function tskMgrCreateUsersAdditionalFieldContext()
 					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
 					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
 				}
-				
-				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
-				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
 			}
 
 			$sTableName = 'bab_tskmgr_user' . $aDatasUser['iIdUser'] . '_additional_fields';
 			
 			if(!bab_isTable($sTableName)) 
 			{
+				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+				
 				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
 //				bab_debug($sQuery);
 				$babDB->db_query($sQuery);

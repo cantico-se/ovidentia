@@ -2454,7 +2454,7 @@ function displayOrderTaskFieldsForm()
 		
 		function processAction()
 		{
-			if(!is_array($_POST['action']))
+			if(!isset($_POST['action']) || !is_array($_POST['action']))
 			{
 				return;
 			}
