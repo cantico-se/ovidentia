@@ -5290,6 +5290,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'mail_maxperpacket')) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mail_maxperpacket smallint(2) UNSIGNED NOT NULL default 25");
 	}
+
+	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_notifyadministrators')) {
+
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_notifyadministrators enum('N','Y') NOT NULL default 'N' AFTER ldap_decoding_type");
+	}
 	
 	tskMgrFieldOrderUpgrade();
 	

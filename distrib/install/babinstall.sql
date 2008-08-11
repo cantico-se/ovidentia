@@ -863,6 +863,7 @@ CREATE TABLE `bab_sites` (
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
   `ldap_decoding_type` tinyint(1) unsigned NOT NULL default '0',
+  `ldap_notifyadministrators` enum('N','Y') NOT NULL default 'N',
   `date_longformat` varchar(255) NOT NULL default '',
   `date_shortformat` varchar(255) NOT NULL default '',
   `time_format` varchar(255) NOT NULL default '',

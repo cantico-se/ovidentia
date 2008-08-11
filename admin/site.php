@@ -900,6 +900,7 @@ function siteAuthentification($id)
 				$this->adminpwd1txt = bab_translate("Admin password");
 				$this->adminpwd2txt = bab_translate("Re-type admin password");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
+				$this->ldpachknotifyadmintxt = bab_translate("Notify administrators when a new user is registered");
 
 				$this->arrayauthpasstype = array(
 					'plain' => bab_translate("plaintext"), 
@@ -920,6 +921,15 @@ function siteAuthentification($id)
 				else
 					{
 					$this->ldpachkcnxchecked = '';
+					}
+
+				if( $arr['ldap_notifyadministrators']  == 'Y' )
+					{
+					$this->ldpachknotifchecked = 'checked';
+					}
+				else
+					{
+					$this->ldpachknotifchecked = '';
 					}
 
 				$this->resf = $babDB->db_query("select * from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
@@ -2010,6 +2020,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$adminpwd2 = bab_pp('adminpwd2', '');
 	$decodetype = bab_pp('decodetype', '0');
 	$userdn = bab_pp('userdn', '');
+	$ldpapchknotif = bab_pp('ldpapchknotif', 'N');
 
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
@@ -2076,7 +2087,7 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 			}
 
 		$req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
-		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_userdn='".$babDB->db_escape_string($userdn)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
+		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_userdn='".$babDB->db_escape_string($userdn)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
 		if( !empty($adminpwd1))
 			{
 			$req .= ", ldap_adminpassword=ENCODE(\"".$babDB->db_escape_string($adminpwd1)."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")";

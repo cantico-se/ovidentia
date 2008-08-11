@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
+include_once $babInstallPath.'admin/register.php';
 
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
@@ -274,7 +275,8 @@ class Func_PortalAuthentication extends bab_functionality
 			$bLdapOk = false;
 		}
 		
-		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes);
+		$isNew = false;
+		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
 		if (false === $iIdUser)
 		{
 			$oLdap->close();
@@ -285,6 +287,14 @@ class Func_PortalAuthentication extends bab_functionality
 			if ($aEntries['count'] > 0)
 			{
 				bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+			}
+
+			if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+			{
+				$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+				$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+				$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+				notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
 			}
 		}
 			
@@ -377,7 +387,8 @@ class Func_PortalAuthentication extends bab_functionality
 			$bLdapOk = false;
 		}
 
-		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes);
+		$isNew = false;
+		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
 		if (false === $iIdUser)
 		{
 			$oLdap->close();
@@ -389,6 +400,15 @@ class Func_PortalAuthentication extends bab_functionality
 			{
 				bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
 			}
+
+			if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+			{
+				$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+				$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+				$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+				notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+			}
+
 		}
 
 		$oLdap->close();
@@ -998,12 +1018,13 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 }
 
 
-function bab_registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes)
+function bab_registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes, &$isNew)
 {
 	$iIdUser = false;
 	$aUser = bab_getUserByNickname($sNickname);
 	if(is_null($aUser))
 	{
+		$isNew = true;
 		$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
 		$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
 		$sMn		= isset($aUpdateAttributes['mn'])?$aEntries[0][$aUpdateAttributes['mn']][0]:'';
@@ -1012,6 +1033,7 @@ function bab_registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateA
 	}
 	else 
 	{
+		$isNew = false;
 		$iIdUser = $aUser['id'];
 	}
 	return $iIdUser;
