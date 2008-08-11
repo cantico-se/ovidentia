@@ -174,8 +174,8 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabBackground">
-<br>
-<br>
+<br />
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginMenuBackground"> 
@@ -210,7 +210,7 @@ window.focus();
 </tr>
 </table>
 </form>
-<br>
+<br />
 </BODY>
 </HTML>
 <!--#end propertiesarticles -->
@@ -232,7 +232,7 @@ document.forms[fmname].updstep02.value = cmd;
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="topicid" value="{ topicid }">
 <input type="hidden" name="updstep02" value="">
-<br>
+<br />
 
 
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -271,7 +271,7 @@ document.forms[fmname].updstep02.value = cmd;
 </td>
 </tr>
 </table>
-<br>
+<br />
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
@@ -366,6 +366,39 @@ return true;
 
 <p>{ steptitle }</p>
 
+<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+<tr> 
+<td colspan="4" align="right">
+<!--#if bupprobchoice -->
+<select name="approbid">
+<option value="0"></option>
+<option value="1" { yesapprobsel }>{ yesapprobtxt }</option>
+<option value="2" { noapprobsel }>{ noapprobtxt }</option>
+</select>
+<!--#endif bupprobchoice -->&nbsp;&nbsp;
+<!--#if bprev -->
+<input type="submit" name="bprev" value="{ previoustxt }" onclick="return stepSubmitForm('prev','createart');">&nbsp;&nbsp;
+<!--#endif bprev -->
+<input type="submit" name="bcancel" value="{ canceltxt }" onclick="stepSubmitForm('cancel','createart');">
+<!--#if BAB_SESS_LOGGED -->
+&nbsp;&nbsp;
+<input type="submit" name="bsave" value="{ savetxt }" onclick="stepSubmitForm('save','createart');">
+<!--#endif BAB_SESS_LOGGED -->
+<!--#if bsubmit -->
+&nbsp;&nbsp;
+<input type="submit" name="bsubmit" value="{ submittxt }" onclick="return stepSubmitForm('submit','createart');">
+<!--#endif bsubmit -->&nbsp;&nbsp;
+<input type="submit" name="bnext" value="{ nexttxt }" onclick="stepSubmitForm('next','createart');"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<br />
+
 { content }
 
 <br />
@@ -373,7 +406,6 @@ return true;
   <tr>
 <td class="BabErrorMessage" align="center" >{ warnmessage }</td>
 </tr></table>
-<br />
 
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
@@ -406,7 +438,8 @@ return true;
 </td>
 </tr>
 </table>
-<br>
+
+<br />
 </td>
 </tr>
 </table>
@@ -475,7 +508,7 @@ document.forms[fmname].updstep2.value = cmd;
 </td>
 </tr>
 </table>
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -983,7 +1016,7 @@ window.onload = function()
 	<!--#endif allowpubdates -->
 	<tr> 
 	<td colspan="6" valign="middle" align="right"> 
-	&nbsp;<br>
+	&nbsp;<br />
 	</td>
 	</tr>
 	</table>
@@ -1011,7 +1044,7 @@ window.onload = function()
 	</tr>
 	<tr> 
 	<td valign="middle" align="right"> 
-	&nbsp;<br>
+	&nbsp;<br />
 	</td>
 	</tr>
 	</table>
@@ -1131,7 +1164,7 @@ window.onload = function()
 	<td align="right">{ groupstxt }:</td>
 	<td> 
 	<!--#in getnextgroup -->
-	<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
+	<br /><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
 	<!--#endin getnextgroup -->
 	</td>
 	</tr>
@@ -1153,7 +1186,7 @@ window.onload = function()
 <br />
 
 <!--#endif restrictaccess -->
-<br>
+<br />
 <table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground">
