@@ -422,6 +422,8 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 		$tblWr =& $oTmCtx->getTableWrapper();
 		$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL);
 
+		$bCreation = false;
+		
 		if(0 != $iIdField)
 		{
 			$aAttribut = array('idFldBase' => $iIdField);
@@ -431,9 +433,13 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 		{
 			$db =& $tblWr->getDbObject();
 			$iIdField = $db->db_insert_id();
+			
+			$bCreation = true;
 		}
 		
 		$aOptions = bab_rp('aOptions', array());
+		
+		$sDefaultValue = '';
 		
 		$skipFirst = false;
 		foreach($aOptions as $key => $value)
@@ -441,8 +447,35 @@ function addModifySpecificFieldRadio($iIdProjectSpace, $iIdProject)
 			$aAttribut = array(
 				'idFldBase' => $iIdField, 'value' => $value, 'position' => $key, 
 				'isDefaultValue' => ($iDefaultOption == $key) ? BAB_TM_YES : BAB_TM_NO);
-				
+
+			if($iDefaultOption == $key)
+			{
+				$sDefaultValue = $value;
+			}
+			
 			$tblWr->save($aAttribut, $skipFirst);
+		}
+		
+		if($bCreation)
+		{
+			$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
+			
+			$aAttribut = array('id' => -1, 'name' => trim(bab_rp('sFieldName', '')), 
+				'idProjectSpace' => $iIdProjectSpace, 'idProject' => $iIdProject);
+				
+			if(0 == $iIdProjectSpace && 0 == $iIdProject)
+			{
+				$aAttribut['idUser'] = $GLOBALS['BAB_SESS_USERID'];
+			}
+		
+			$aAttribut = $tblWr->load($aAttribut, 0, 1, 1, (count($aAttribut) - 1));
+		
+			if(false !== $aAttribut)
+			{			
+				$iIdFieldClass = (int) $aAttribut['id'];
+				bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, 
+					BAB_TM_RADIO_FIELD, $iIdFieldClass, $sDefaultValue);
+			}
 		}
 	}
 }
@@ -468,7 +501,29 @@ function addModifySpecificFieldTextOrArea($iIdProjectSpace, $iIdProject, $iField
 				'defaultValue' => $sFieldValue);
 				
 			$skipFirst = false;
-			$tblWr->save($attribut, $skipFirst);
+			if(true === $tblWr->save($attribut, $skipFirst))
+			{
+				$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
+				
+				$aAttribut = array('id' => -1, 'name' => trim(bab_rp('sFieldName', '')), 
+					'idProjectSpace' => $iIdProjectSpace, 'idProject' => $iIdProject);
+					
+				if(0 == $iIdProjectSpace && 0 == $iIdProject)
+				{
+					$aAttribut['idUser'] = $GLOBALS['BAB_SESS_USERID'];
+				}
+			
+				$aAttribut = $tblWr->load($aAttribut, 0, 1, 1, (count($aAttribut) - 1));
+			
+				if(false !== $aAttribut)
+				{			
+					$iIdFieldClass = (int) $aAttribut['id'];
+				
+//					bab_debug('iIdFieldClass ==> ' . $iIdFieldClass);
+					bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, 
+						$iFieldType, $iIdFieldClass, $sFieldValue);
+				}
+			}
 		}
 		else
 		{
@@ -565,11 +620,12 @@ function deleteSpecificField()
 			
 			$aAttribut = $tblWr->load($aAttribut, 0, count($aAttribut), 0, 1);
 			
-			if(false !== $aAttribut && 0 == $aAttribut['refCount'])
+			if(false !== $aAttribut /*&& 0 == $aAttribut['refCount']*/)
 			{
 				switch($aAttribut['nature'])
 				{
 					case BAB_TM_TEXT_FIELD:
+						bab_tskmgr_deleteAdditionalField($id);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
 						$tblWr->delete($aAttribut, 0, 1);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL);
@@ -577,6 +633,7 @@ function deleteSpecificField()
 						break;
 					
 					case BAB_TM_TEXT_AREA_FIELD:
+						bab_tskmgr_deleteAdditionalField($id);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
 						$tblWr->delete($aAttribut, 0, 1);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL);
@@ -584,6 +641,7 @@ function deleteSpecificField()
 						break;
 					
 					case BAB_TM_RADIO_FIELD:
+						bab_tskmgr_deleteAdditionalField($id);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
 						$tblWr->delete($aAttribut, 0, 1);
 						$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL);

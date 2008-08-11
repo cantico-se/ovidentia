@@ -2906,11 +2906,11 @@ function addModifyTask()
 		
 		if($bIsOk)
 		{
-			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' is valid');
+			bab_debug('addModifyTask sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' is valid');
 		}
 		else
 		{
-			bab_debug(__FUNCTION__ . ' sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
+			bab_debug('addModifyTask sTask ==> ' . $oTaskValidator->m_sTaskNumber . ' invalid');
 		}
 //*/
 	}

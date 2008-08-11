@@ -591,8 +591,11 @@
 		var $m_aDependingTasks;
 
 		var $m_catResult;
-		var $m_spfResult;
-		var $m_spfInstResult;
+//		var $m_spfResult;
+//		var $m_spfInstResult;
+
+		var $aAdditionnalField = array();
+
 		var $m_spfValueResult;
 		var $m_linkableTaskResult;
 		var $m_iLinkedTaskCount;
@@ -611,7 +614,7 @@
 			parent::BAB_TaskFormBase();
 			
 			$this->m_catResult = false;
-			$this->m_spfResult = false;
+//			$this->m_spfResult = false;
 			$this->m_linkableTaskResult = false;
 			$this->m_spfValueResult = false;
 
@@ -689,8 +692,10 @@
 			$iIdUser = (0 === $this->m_iIdProjectSpace && 0 === $this->m_iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
 			
 			$this->m_catResult = bab_selectAvailableCategories($this->m_iIdProjectSpace, $this->m_iIdProject, $iIdUser);
-			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProjectSpace, $this->m_iIdProject);
-			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
+//			$this->m_spfResult = bab_selectAvailableSpecificFieldClassesByProject($this->m_iIdProjectSpace, $this->m_iIdProject);
+//			$this->m_spfInstResult = bab_selectAllSpecificFieldInstance($this->m_iIdTask);
+			
+			$this->aAdditionnalField = bab_getAdditionalTaskField($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
 			
 			$this->set_caption('sProjectSpace', bab_translate("Project space"));
 			$this->set_caption('sProject', bab_translate("Project"));
@@ -1129,6 +1134,7 @@
 			return false;
 		}
 		
+/*
 		function getNextSpecificField()
 		{
 			global $babDB;
@@ -1148,6 +1154,7 @@
 			}
 			return false;
 		}
+//*/
 
 		function getNextPredecessor()
 		{
@@ -1209,25 +1216,25 @@
 		function getNextSpecificFieldInstance()
 		{
 			global $babDB;
-			if(false != $this->m_spfInstResult)
+			
+			$aItem = each($this->aAdditionnalField);
+			
+			
+			if(false !== $aItem)
 			{
-				$datas = $babDB->db_fetch_assoc($this->m_spfInstResult);
-				if(false != $datas)
+				$this->set_data('sSpFldInstanceName', $aItem['value']['sFieldName']);
+				$this->set_data('sSpFldInstanceType', $aItem['value']['sType']);
+				$this->set_data('sSpFldInstanceValue', $aItem['value']['sValue']);
+				$this->set_data('iSpFldInstanceClass', $aItem['value']['iType']);
+$this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
+				
+				$this->set_data('sSpFldInstanceSelected', '');
+				if(BAB_TM_RADIO_FIELD == $aItem['value']['iType'])
 				{
-					$this->set_data('sSpFldInstanceName', $datas['sFieldName']);
-					$this->set_data('sSpFldInstanceType', $datas['sType']);
-					$this->set_data('sSpFldInstanceValue', $datas['sValue']);
-					$this->set_data('iSpFldInstanceClass', $datas['iType']);
-					$this->set_data('iSpFldInstanceId', $datas['iIdSpecificFieldInstance']);
-					
-					$this->set_data('sSpFldInstanceSelected', '');
-					if(BAB_TM_RADIO_FIELD == $datas['iType'])
-					{
-						$this->m_spfValueResult = bab_selectSpecificFieldClassValues($datas['iIdSpFldClass']);
-					}
-					
-					return true;
+					$this->m_spfValueResult = bab_selectSpecificFieldClassValues($aItem['value']['iIdFieldClass']);
 				}
+				
+				return true;
 			}
 			return false;
 		}
@@ -1971,6 +1978,9 @@ bab_debug($sMsg);
 				if(false !== $iIdTask)
 				{
 					$this->m_iIdTask = $iIdTask;
+					
+					bab_tskmgr_createTaskAdditionalFields($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask);
+					
 					if(BAB_TM_PROJECT_MANAGER == $this->m_iUserProfil)
 					{
 						bab_deleteTaskResponsibles($iIdTask);
@@ -2261,7 +2271,7 @@ bab_debug($sMsg);
 						$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
 					}
 					
-					$this->processSpecificFieldIntance();
+					$this->updateAdditionalField();
 					$this->updateDependingTask($this->m_iIdTask, $aTask);
 				}
 				return true;
@@ -2364,13 +2374,18 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		}
 
 		
-		function processSpecificFieldIntance()
+		function updateAdditionalField()
 		{
-			$aDeletableSpfObjects = isset($_POST['aDeletableSpfObjects']) ? $_POST['aDeletableSpfObjects'] : array();
+//			$aDeletableSpfObjects = isset($_POST['aDeletableSpfObjects']) ? $_POST['aDeletableSpfObjects'] : array();
 			$aSpFldInstanceValue = isset($_POST['aSpFldInstanceValue']) ? $_POST['aSpFldInstanceValue'] : array();
 			
-			foreach($aSpFldInstanceValue as $key => $value)
+			$aDatas = array();
+			
+			foreach($aSpFldInstanceValue as $iIdFieldClass => $sValue)
 			{
+				$aDatas['sField' . $iIdFieldClass] = $sValue;
+				
+				/*
 				if(!isset($aDeletableSpfObjects[$key]))
 				{
 					bab_updateSpecificInstanceValue($key, trim($value));
@@ -2379,6 +2394,14 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				{
 					bab_deleteSpecificFieldInstance($key);
 				}
+				//*/
+				
+			}
+			
+			if(count($aDatas) > 0)
+			{
+				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject, 
+					$this->m_iIdTask, $aDatas);
 			}
 		}
 
@@ -2675,6 +2698,23 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$iIdEvent, $sSubject, $sBody);
 		}
 		
+		function updateAdditionalField()
+		{
+			$aSpFldInstanceValue = isset($_POST['aSpFldInstanceValue']) ? $_POST['aSpFldInstanceValue'] : array();
+			$aDatas = array();
+						
+			foreach($aSpFldInstanceValue as $iIdFieldClass => $sValue)
+			{
+				$aDatas['sField' . $iIdFieldClass] = $sValue;
+			}
+			
+			if(count($aDatas) > 0)
+			{
+				bab_tskmgr_updateAdditionalField($this->m_iIdProjectSpace, $this->m_iIdProject, 
+					$this->m_iIdTask, $aDatas);
+			}
+		}
+		
 		function save()
 		{
 			if($this->isTaskValid())
@@ -2715,6 +2755,8 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$bSuccess = bab_updateTask($this->m_iIdTask, $aTask);
 				if(true === $bSuccess)				
 				{
+					$this->updateAdditionalField();
+					
 					require_once $GLOBALS['babInstallPath'] . 'tmSendMail.php';
 					$this->noticeTaskUpdatedBy(BAB_TM_EV_TASK_UPDATED_BY_RESP);
 				}
