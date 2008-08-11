@@ -546,150 +546,578 @@ function __renameFmFilesVersions()
 	 __walkDirectoryRecursive($sCollectiveUploadPath, $sCallbackFunction);
 }
 
-function tskMgrFieldOrderUpgrade()
+
+
+function tskMgrCreateTaskFieldContext()
 {
-	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
-	
 	global $babDB;
-	if(!bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
-	{
-		$babDB->db_query("
-			CREATE TABLE `".BAB_TSKMGR_TASK_FIELDS_TBL."` (
-			  `iId` int(10) UNSIGNED NOT NULL auto_increment,
-			  `sName` VARCHAR (60) NOT NULL,
-			  `sLegend` VARCHAR (255) NOT NULL,
-			  `iType` SMALLINT( 2 ) NOT NULL,
-			  PRIMARY KEY  (`iId`),
-			  KEY `sName` (`sName`),
-			  KEY `iType` (`iType`)
-			)
-		");
-
-		$aTaskField = array(		
-			array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Name of space project',			'iType' => 0),
-			array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project Name',					'iType' => 0),
-			array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Number of the task',				'iType' => 0),
-			array('iId' => 4,	'sName' => 'sDescription', 						'sLegend' => 'Description of the task',			'iType' => 0),
-			array('iId' => 5,	'sName' => 'sShortDescription', 				'sLegend' => 'Title',							'iType' => 0),
-			array('iId' => 6,	'sName' => 'sClass', 							'sLegend' => 'Type', 							'iType' => 0),
-			array('iId' => 7,	'sName' => 'sCreatedDate', 						'sLegend' => 'Creation Date', 					'iType' => 0),
-			array('iId' => 8,	'sName' => 'sModifiedDate', 					'sLegend' => 'Date Modified', 					'iType' => 0),
-			array('iId' => 9,	'sName' => 'iIdUserCreated', 					'sLegend' => 'Author of the establishment', 	'iType' => 0),
-			array('iId' => 10,	'sName' => 'iIdUserModified', 					'sLegend' => 'Author of the amendment', 		'iType' => 0),
-			array('iId' => 11,	'sName' => 'iCompletion', 						'sLegend' => 'Progress Rate', 					'iType' => 0),
-			array('iId' => 12,	'sName' => 'iPriority', 						'sLegend' => 'Priority', 						'iType' => 0),
-			array('iId' => 13,	'sName' => 'idOwner', 							'sLegend' => 'Responsible',				 		'iType' => 0),
-			array('iId' => 14,	'sName' => 'startDate,plannedStartDate', 		'sLegend' => 'Start Date,Planned', 				'iType' => 0),
-			array('iId' => 15,	'sName' => 'endDate,plannedEndDate', 			'sLegend' => 'End Date,Planned', 				'iType' => 0),
-			array('iId' => 16,	'sName' => 'iTime,iPlannedTime',				'sLegend' => 'Time,Planned', 					'iType' => 0),
-			array('iId' => 17,	'sName' => 'iCost,iPlannedCost',				'sLegend' => 'Cost,Planned', 					'iType' => 0),
-			array('iId' => 18,	'sName' => 'iDuration',							'sLegend' => 'Duration of the task', 			'iType' => 0),
-			array('iId' => 19,	'sName' => 'sCategoryName',						'sLegend' => 'Category', 						'iType' => 0),
-			array('iId' => 20,	'sName' => 'sShortDescription,sProjectName',	'sLegend' => 'Title,Project Name', 			'iType' => 0),
-		);		
-
-		foreach($aTaskField as $aTaskFieldItem)
-		{
-			$sQuery = 
-				'INSERT INTO ' . BAB_TSKMGR_TASK_FIELDS_TBL . ' ' .
-					'(' .
-						'`iId`, `sName`, `sLegend`, `iType` ' .
-					') ' .
-				'VALUES ' . 
-					'(' . 
-						$babDB->quote($aTaskFieldItem['iId']) . ', ' . 
-						$babDB->quote($aTaskFieldItem['sName']) . ', ' . 
-						$babDB->quote($aTaskFieldItem['sLegend']) . ', ' . 
-						$babDB->quote($aTaskFieldItem['iType']) . 
-					')'; 
-					
-			$babDB->db_query($sQuery);
-		}
-		
-		$babDB->db_query("
-			CREATE TABLE `".BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL."` (
-			  `iId` int(10) UNSIGNED NOT NULL auto_increment,
-			  `iIdTaskField` int(10) UNSIGNED NOT NULL,
-			  `sTableAlias` VARCHAR (5) NOT NULL,
-			  `iIdProject` int(10) UNSIGNED NOT NULL,
-			  `iPosition` SMALLINT( 2 ) NOT NULL,
-			  `iType` SMALLINT( 2 ) NOT NULL,
-			  PRIMARY KEY  (`iId`),
-			  KEY `iIdTaskField` (`iIdTaskField`),
-			  KEY `iIdProject` (`iIdProject`),
-			  KEY `iType` (`iType`)
-			)
-		");
-		
-		//For my task and personnal task
-		$aDefaultField = array(
-			array('iIdTaskField' => 20, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 1, 'iType' => 0),
-			array('iIdTaskField' => 6,  'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 2, 'iType' => 0),
-			array('iIdTaskField' => 14, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 3, 'iType' => 0),
-			array('iIdTaskField' => 15, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 4, 'iType' => 0),
-		);
-		
-		foreach($aDefaultField as $aDefaultFieldItem)
-		{
-			$sQuery = 
-				'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
-					'(' .
-						'`iId`, `iIdTaskField`, `sTableAlias`, `iIdProject`,  `iPosition`, `iType` ' .
-					') ' .
-				'VALUES ' . 
-					'(\'\', ' . 
-						$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
-						$babDB->quote($aDefaultFieldItem['sTableAlias']) . ', ' . 
-						$babDB->quote($aDefaultFieldItem['iIdProject']) . ', ' . 
-						$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
-						$babDB->quote($aDefaultFieldItem['iType']) . 
-					')'; 
-					
-			$babDB->db_query($sQuery);
-		}
-		
-		//For project
-		$aDefaultField[0]['iIdTaskField'] = 5;
-		$aDefaultField[] = array('iIdTaskField' => 17, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 5, 'iType' => 0);
-		$aDefaultField[] = array('iIdTaskField' => 16, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 6, 'iType' => 0);
-		$aDefaultField[] = array('iIdTaskField' => 13, 'sTableAlias' => '', 'iIdProject' => 0, 'iPosition' => 7, 'iType' => 0);
-		
-		$sQuery = 
-			'SELECT 
-				`id` iId
-			FROM ' .
-				BAB_TSKMGR_PROJECTS_TBL;
 	
-		$oResultProject = $babDB->db_query($sQuery);
-		if(false !== $oResultProject)
+	$babDB->db_query("
+		CREATE TABLE `".BAB_TSKMGR_TASK_FIELDS_TBL."` (
+		  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+		  `sName` VARCHAR (60) NOT NULL,
+		  `sLegend` VARCHAR (255) NOT NULL,
+		  PRIMARY KEY  (`iId`),
+		  KEY `sName` (`sName`)
+		)
+	");
+
+	$aTaskField = array(		
+		array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Name of space project'),
+		array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project Name'),
+		array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Number of the task'),
+		array('iId' => 4,	'sName' => 'sDescription', 						'sLegend' => 'Description of the task'),
+		array('iId' => 5,	'sName' => 'sShortDescription', 				'sLegend' => 'Title'),
+		array('iId' => 6,	'sName' => 'sClass', 							'sLegend' => 'Type'),
+		array('iId' => 7,	'sName' => 'sCreatedDate', 						'sLegend' => 'Creation Date'),
+		array('iId' => 8,	'sName' => 'sModifiedDate', 					'sLegend' => 'Date Modified'),
+		array('iId' => 9,	'sName' => 'iIdUserCreated', 					'sLegend' => 'Author of the establishment'),
+		array('iId' => 10,	'sName' => 'iIdUserModified', 					'sLegend' => 'Author of the amendment'),
+		array('iId' => 11,	'sName' => 'iCompletion', 						'sLegend' => 'Progress Rate'),
+		array('iId' => 12,	'sName' => 'iPriority', 						'sLegend' => 'Priority'),
+		array('iId' => 13,	'sName' => 'idOwner', 							'sLegend' => 'Responsible'),
+		array('iId' => 14,	'sName' => 'startDate,plannedStartDate', 		'sLegend' => 'Start Date,Planned'),
+		array('iId' => 15,	'sName' => 'endDate,plannedEndDate', 			'sLegend' => 'End Date,Planned'),
+		array('iId' => 16,	'sName' => 'iTime,iPlannedTime',				'sLegend' => 'Time,Planned'),
+		array('iId' => 17,	'sName' => 'iCost,iPlannedCost',				'sLegend' => 'Cost,Planned'),
+		array('iId' => 18,	'sName' => 'iDuration',							'sLegend' => 'Duration of the task'),
+		array('iId' => 19,	'sName' => 'sCategoryName',						'sLegend' => 'Category'),
+		array('iId' => 20,	'sName' => 'sShortDescription,sProjectName',	'sLegend' => 'Title,Project Name'),
+	);
+
+	foreach($aTaskField as $aTaskFieldItem)
+	{
+		$sQuery = 
+			'INSERT INTO ' . BAB_TSKMGR_TASK_FIELDS_TBL . ' ' .
+				'(' .
+					'`iId`, `sName`, `sLegend` ' .
+				') ' .
+			'VALUES ' . 
+				'(' . 
+					$babDB->quote($aTaskFieldItem['iId']) . ', ' . 
+					$babDB->quote($aTaskFieldItem['sName']) . ', ' . 
+					$babDB->quote($aTaskFieldItem['sLegend']) .
+				')'; 
+				
+		$babDB->db_query($sQuery);
+	}
+	
+	$babDB->db_query("
+		CREATE TABLE `".BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL."` (
+		  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+		  `iIdField` int(10) UNSIGNED NOT NULL,
+		  `iIdProject` int(10) UNSIGNED NOT NULL,
+		  `iPosition` SMALLINT( 2 ) NOT NULL,
+		  `iType` SMALLINT( 2 ) NOT NULL,
+		  PRIMARY KEY  (`iId`),
+		  KEY `iIdField` (`iIdField`),
+		  KEY `iIdProject` (`iIdProject`),
+		  KEY `iType` (`iType`)
+		)
+	");
+	
+	//For my task and personnal task
+	$aDefaultField = array(
+		array('iIdTaskField' => 20, 'iIdProject' => 0, 'iPosition' => 1, 'iType' => 0),
+		array('iIdTaskField' => 6,  'iIdProject' => 0, 'iPosition' => 2, 'iType' => 0),
+		array('iIdTaskField' => 14, 'iIdProject' => 0, 'iPosition' => 3, 'iType' => 0),
+		array('iIdTaskField' => 15, 'iIdProject' => 0, 'iPosition' => 4, 'iType' => 0),
+	);
+	
+	foreach($aDefaultField as $aDefaultFieldItem)
+	{
+		$sQuery = 
+			'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+				'(' .
+					'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
+					$babDB->quote($aDefaultFieldItem['iIdProject']) . ', ' . 
+					$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
+					$babDB->quote($aDefaultFieldItem['iType']) . 
+				')'; 
+				
+		$babDB->db_query($sQuery);
+	}
+	
+	//For project
+	$aDefaultField[0]['iIdTaskField'] = 5;
+	$aDefaultField[] = array('iIdTaskField' => 17, 'iIdProject' => 0, 'iPosition' => 5, 'iType' => 0);
+	$aDefaultField[] = array('iIdTaskField' => 16, 'iIdProject' => 0, 'iPosition' => 6, 'iType' => 0);
+	$aDefaultField[] = array('iIdTaskField' => 13, 'iIdProject' => 0, 'iPosition' => 7, 'iType' => 0);
+	
+	$sQuery = 
+		'SELECT 
+			`id` iId
+		FROM ' .
+			BAB_TSKMGR_PROJECTS_TBL;
+
+	$oResultProject = $babDB->db_query($sQuery);
+	if(false !== $oResultProject)
+	{
+		$iNumRows = $babDB->db_num_rows($oResultProject);
+		if(0 < $iNumRows)
 		{
-			$iNumRows = $babDB->db_num_rows($oResultProject);
+			$aDatasProject = array();
+			while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
+			{
+				foreach($aDefaultField as $aDefaultFieldItem)
+				{
+					$sQuery = 
+						'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+							'(' .
+								'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
+							') ' .
+						'VALUES ' . 
+							'(\'\', ' . 
+								$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
+								$babDB->quote($aDatasProject['iId']) . ', ' . 
+								$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
+								$babDB->quote($aDefaultFieldItem['iType']) . 
+							')'; 
+							
+					$babDB->db_query($sQuery);
+				}
+			}
+		}
+	}
+}
+
+function tskMgrRemoveDuplicateAdditionalFieldInstance()
+{
+	global $babDB;
+	
+	//Suppression des doublons d'instance de champs additionnels
+	$sQuery = 
+		'SELECT ' .
+			'id iIdSpecificFieldInstance, ' . 
+			'idSpFldClass iIdSpFldClass, ' .
+			'idTask iIdTask ' .
+		'FROM ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL;
+								
+	$oResult = $babDB->db_query($sQuery);
+	$iNumRows = $babDB->db_num_rows($oResult);
+	if(0 < $iNumRows)
+	{
+		$aSpFldClassId = array();
+		
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$sKey = $aDatas['iIdSpFldClass'] . '_' . $aDatas['iIdTask'];
+			if(!array_key_exists($sKey, $aSpFldClassId))
+			{
+				$aSpFldClassId[$sKey] = $sKey;
+			}
+			else 
+			{
+				$sQuery = 
+					'DELETE FROM '	. 
+						BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
+					'WHERE ' .
+						'id = \'' . $babDB->db_escape_string($aDatas['iIdSpecificFieldInstance']) . '\'';
+				$babDB->db_query($sQuery);
+				
+				$sQuery = 
+					'UPDATE ' . 
+						BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
+					'SET ' .
+						'refCount = refCount - 1 ' .
+					'WHERE ' .
+						'id = \'' . $babDB->db_escape_string($aDatas['iIdSpFldClass']) . '\'';
+			
+				//bab_debug($sQuery);
+				$babDB->db_query($sQuery);
+			}
+		}
+	}
+}
+
+
+function tskMgrCreateProjectAdditionalFieldContext()
+{
+	global $babDB;
+	
+	//Pour chaque projet création de la table avec la liste des champs additionnels
+	$sQuery = 
+		'SELECT ' .
+			'id iIdProject ' .
+		'FROM ' .
+			BAB_TSKMGR_PROJECTS_TBL;
+			
+//	bab_debug($sQuery);
+	$oResultProject = $babDB->db_query($sQuery);
+	$iNumRows = $babDB->db_num_rows($oResultProject);
+	if(0 < $iNumRows)
+	{
+		while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
+		{
+			//Liste des champs additionnels avec leurs valeurs par défaut et création de la table
+			$sQuery = 
+				'SELECT ' .
+					'fb.id iIdFldClass, ' . 
+					'fb.name, ' . 
+					'fb.nature iFieldType, ' .
+					'CASE fb.nature ' .
+						'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN ft.defaultValue ' .
+						'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN  fa.defaultValue  ' .
+						'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN frd.value ' .
+						'ELSE \'???\' ' .
+					'END AS sDefaultValue ' .
+				'FROM ' .
+					BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+				'LEFT JOIN ' . 
+					BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
+				'LEFT JOIN ' . 
+					BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
+				'LEFT JOIN ' .
+					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
+				'WHERE ' . 
+					'fb.idProject = \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\' AND ' .
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
+					'\')';
+			
+			$aFldClass = array();
+							
+//			bab_debug($sQuery);
+			$oResultField = $babDB->db_query($sQuery);
+			$iNumRows = $babDB->db_num_rows($oResultField);
 			if(0 < $iNumRows)
 			{
-				$aDatasProject = array();
-				while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
+				$aTableDefinition = array();
+				
+				$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+				$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+				
+				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
-					foreach($aDefaultField as $aDefaultFieldItem)
+					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
+					
+					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
+					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
+				}
+				
+				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+			}
+
+			$sTableName = 'bab_tskmgr_project' . $aDatasProject['iIdProject'] . '_additional_fields';
+			
+			if(!bab_isTable($sTableName)) 
+			{
+				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
+//				bab_debug($sQuery);
+				$babDB->db_query($sQuery);
+			}
+			
+			
+			//Pour chaque tâche insertion des champs avec leurs valeurs si il y en a
+			$sQuery = 
+				'SELECT ' .
+					'id iIdTask ' . 
+				'FROM ' .
+					BAB_TSKMGR_TASKS_TBL . ' ' .
+				'WHERE ' . 
+					'idProject = \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\'';
+						
+//			bab_debug($query);
+			$oResultTask = $babDB->db_query($sQuery);
+			$iNumRows = $babDB->db_num_rows($oResultTask);
+			if(0 < $iNumRows)
+			{
+				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
+				{
+					//Pour chaque tâche du projet créer une entré dans la table des champs additionnels
+					$sQuery = 
+						'SELECT ' .
+							'id iIdSpecificFieldInstance, ' . 
+							'idSpFldClass iIdSpFldClass, ' .
+							'value sValue, ' .
+							'idTask iIdTask ' .
+						'FROM ' .
+							BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
+						'WHERE ' . 
+							'idTask = ' . $babDB->quote($aDatasTask['iIdTask']);
+												
+					$aProcessed		= array();
+					$aSpFldClassId	= array();
+					$aInsertField	= array('`iId`', '`iIdTask`');
+					$aInsertValue	= array('\'\'', $aDatasTask['iIdTask']);
+					$aRefCount		= array();
+					
+					$oResultSPF = $babDB->db_query($sQuery);
+					$iNumRows = $babDB->db_num_rows($oResultSPF);
+					if(0 < $iNumRows)
+					{
+						//Mettre la valeur de l'instance
+						while(false !== ($aDatasSPF = $babDB->db_fetch_assoc($oResultSPF)))
+						{
+							if(array_key_exists($aDatasSPF['iIdSpFldClass'], $aFldClass))
+							{
+								$aProcessed[$aDatasSPF['iIdSpFldClass']] = $aDatasSPF['iIdSpFldClass'];
+								
+								$aInsertField[] = '`sField' . $aDatasSPF['iIdSpFldClass'] . '`';
+								$aInsertValue[] = '\'' . $babDB->db_escape_string($aDatasSPF['sValue']) . '\'';
+							}
+						}
+					}
+					
+					//Mettre la valeur par défaut
+					foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
+					{
+						if(!array_key_exists($iIdSpFldClass, $aProcessed))
+						{
+							$aRefCount[$iIdSpFldClass] = $iIdSpFldClass;
+							
+							$aInsertField[] = '`sField' . $iIdSpFldClass . '`';
+							$aInsertValue[] = '\'' . $babDB->db_escape_string($sDefaultValue) . '\'';
+						}
+					}
+					
+					$sQuery = 
+						'INSERT INTO ' . $sTableName . ' ' .
+							'(' .
+								implode(',', $aInsertField) . ' ' .
+							') ' .
+						'VALUES ' . 
+							'(' . 
+								implode(',', $aInsertValue) . ' ' .
+							')';
+							 
+//					bab_debug($sQuery);		
+					$babDB->db_query($sQuery);
+				
+					foreach($aRefCount as $iIdSpFldClass)
 					{
 						$sQuery = 
-							'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
-								'(' .
-									'`iId`, `iIdTaskField`, `sTableAlias`, `iIdProject`,  `iPosition`, `iType` ' .
-								') ' .
-							'VALUES ' . 
-								'(\'\', ' . 
-									$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
-									$babDB->quote($aDefaultFieldItem['sTableAlias']) . ', ' . 
-									$babDB->quote($aDatasProject['iId']) . ', ' . 
-									$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
-									$babDB->quote($aDefaultFieldItem['iType']) . 
-								')'; 
+							'UPDATE ' . 
+								BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
+							'SET ' .
+								'refCount = refCount + 1 ' .
+							'WHERE ' .
+								'id = \'' . $babDB->db_escape_string($iIdSpFldClass) . '\'';
+					
+//						bab_debug($sQuery);
+						$babDB->db_query($sQuery);
+					}
+				}
+			}
+		}			
+	}
+}
+
+
+function tskMgrCreateUsersAdditionalFieldContext()
+{
+	global $babDB;
+	
+	//Pour chaque utilisateur ayant des tâches perso création de la table avec la liste des champs additionnels
+	$sQuery = 
+		'SELECT ' .
+			'DISTINCT t0.idUser iIdUser ' .
+		'FROM ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' t0 ' .
+		'WHERE ' . 
+			't0.idUser NOT IN(\'0\')';
+			
+//	bab_debug($sQuery);
+	$oResultUser = $babDB->db_query($sQuery);
+	$iNumRows = $babDB->db_num_rows($oResultUser);
+	if(0 < $iNumRows)
+	{
+		while(false !== ($aDatasUser = $babDB->db_fetch_assoc($oResultUser)))
+		{
+			
+			//Liste des champs additionnels avec leurs valeurs par défaut et création de la table
+			$sQuery = 
+				'SELECT ' .
+					'fb.id iIdFldClass, ' . 
+					'fb.name, ' . 
+					'fb.nature iFieldType, ' .
+					'CASE fb.nature ' .
+						'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN ft.defaultValue ' .
+						'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN  fa.defaultValue  ' .
+						'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN frd.value ' .
+						'ELSE \'???\' ' .
+					'END AS sDefaultValue ' .
+				'FROM ' .
+					BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
+				'LEFT JOIN ' . 
+					BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
+				'LEFT JOIN ' . 
+					BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
+				'LEFT JOIN ' .
+					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
+				'WHERE ' . 
+					'fb.idUser = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' .
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
+					'\')';
+			
+			$aFldClass = array();
+							
+//			bab_debug($sQuery);
+			$oResultField = $babDB->db_query($sQuery);
+			$iNumRows = $babDB->db_num_rows($oResultField);
+			if(0 < $iNumRows)
+			{
+				$aTableDefinition = array();
+				
+				$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+				$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+				
+				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
+				{
+					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
+					
+					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
+					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
+				}
+				
+				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+			}
+
+			$sTableName = 'bab_tskmgr_user' . $aDatasUser['iIdUser'] . '_additional_fields';
+			
+			if(!bab_isTable($sTableName)) 
+			{
+				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
+//				bab_debug($sQuery);
+				$babDB->db_query($sQuery);
+			}
+			
+			//Pour chaque tâche insertion des champs avec leurs valeurs si il y en a
+			$sQuery = 
+				'SELECT ' .
+					'idTask iIdTask ' . 
+				'FROM ' .
+					BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+				'WHERE ' . 
+					'idOwner = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' . 
+					'isPersonnal = \'1\'';
+					
+//			bab_debug($sQuery);
+			
+			$oResultTask = $babDB->db_query($sQuery);
+			$iNumRows = $babDB->db_num_rows($oResultTask);
+			if(0 < $iNumRows)
+			{
+				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
+				{
+					//Pour chaque tâche perso créer une entré dans la table des champs additionnels
+					$sQuery = 
+						'SELECT ' .
+							'id iIdSpecificFieldInstance, ' . 
+							'idSpFldClass iIdSpFldClass, ' .
+							'value sValue, ' .
+							'idTask iIdTask ' .
+						'FROM ' .
+							BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
+						'WHERE ' . 
+							'idTask = ' . $babDB->quote($aDatasTask['iIdTask']);
+							
+					$aProcessed		= array();
+					$aSpFldClassId	= array();
+					$aInsertField	= array('`iId`', '`iIdTask`');
+					$aInsertValue	= array('\'\'', $aDatasTask['iIdTask']);
+					$aRefCount		= array();
+					
+					$oResultSPF = $babDB->db_query($sQuery);
+					$iNumRows = $babDB->db_num_rows($oResultSPF);
+					if(0 < $iNumRows)
+					{
+						//Mettre la valeur de l'instance
+						while(false !== ($aDatasSPF = $babDB->db_fetch_assoc($oResultSPF)))
+						{
+							if(array_key_exists($aDatasSPF['iIdSpFldClass'], $aFldClass))
+							{
+								$aProcessed[$aDatasSPF['iIdSpFldClass']] = $aDatasSPF['iIdSpFldClass'];
 								
+								$aInsertField[] = '`sField' . $aDatasSPF['iIdSpFldClass'] . '`';
+								$aInsertValue[] = '\'' . $babDB->db_escape_string($aDatasSPF['sValue']) . '\'';
+							}
+						}
+					}
+
+					//Mettre la valeur par défaut
+					foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
+					{
+						if(!array_key_exists($iIdSpFldClass, $aProcessed))
+						{
+							$aRefCount[$iIdSpFldClass] = $iIdSpFldClass;
+							
+							$aInsertField[] = '`sField' . $iIdSpFldClass . '`';
+							$aInsertValue[] = '\'' . $babDB->db_escape_string($sDefaultValue) . '\'';
+						}
+					}
+					
+					$sQuery = 
+						'INSERT INTO ' . $sTableName . ' ' .
+							'(' .
+								implode(',', $aInsertField) . ' ' .
+							') ' .
+						'VALUES ' . 
+							'(' . 
+								implode(',', $aInsertValue) . ' ' .
+							')';
+							 
+//					bab_debug($sQuery);		
+					$babDB->db_query($sQuery);
+				
+					foreach($aRefCount as $iIdSpFldClass)
+					{
+						$sQuery = 
+							'UPDATE ' . 
+								BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
+							'SET ' .
+								'refCount = refCount + 1 ' .
+							'WHERE ' .
+								'id = \'' . $babDB->db_escape_string($iIdSpFldClass) . '\'';
+					
+//						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
 				}
 			}
 		}
+	}
+}
+
+
+
+function tskMgrFieldOrderUpgrade()
+{
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	global $babDB;
+	
+	/*
+	if(bab_isTable(BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL))  
+	{
+		$babDB->db_query('DROP TABLE `'.BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL.'`');
+	}
+	
+	if(bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
+	{
+		$babDB->db_query('DROP TABLE `'.BAB_TSKMGR_TASK_FIELDS_TBL.'`');
+	}
+	//*/
+	
+	if(!bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
+	{
+		tskMgrCreateTaskFieldContext();
+		tskMgrRemoveDuplicateAdditionalFieldInstance();
+		tskMgrCreateProjectAdditionalFieldContext();
+		tskMgrCreateUsersAdditionalFieldContext();
+		
+		//A la fin il faut supprimer la table des instances de champs car elle ne sert plus
+		//par défaut lorsqu'une tâche est créée tous les champs sont créés aussi.
 	}
 }
 

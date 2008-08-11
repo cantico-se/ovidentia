@@ -1883,62 +1883,11 @@ function bab_getLinkedTasks($iIdTask, &$aLinkedTasks)
 	}
 }
 
+
 function bab_selectTaskQuery($aFilters, $aOrder = array())
 {
 	global $babDB;
 
-/*	
-	$query = 
-		'SELECT ' . 
-			'IFNULL(ps.id, 0) iIdProjectSpace, ' .
-			'IFNULL(ps.name, \'\') sProjectSpaceName, ' .
-			'IFNULL(p.id, 0) iIdProject, ' .
-			'IFNULL(p.name, \'\') sProjectName, ' .
-			't.id iIdTask, ' .
-			't.taskNumber sTaskNumber, ' .
-			't.shortDescription sShortDescription, ' .
-			't.description sDescription, ' .
-			't.class iClass, ' .
-		'CASE t.class ' .
-			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
-			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
-			'ELSE \'\' ' .
-		'END AS sAdditionnalClass, ' .
-		'CASE t.class ' .			
-			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
-			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
-			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
-			'ELSE \'???\' ' .
-		'END AS sClass, ' .
-			't.completion iCompletion, ' .
-			't.startDate startDate, ' .
-			't.endDate endDate, ' .
-			't.plannedStartDate plannedStartDate, ' .
-			't.plannedEndDate plannedEndDate, ' .
-			't.iPlannedTime iPlannedTime, ' .
-			't.iPlannedTimeDurationUnit iPlannedTimeDurationUnit, ' . 			  
-			't.iTime iTime, ' . 
-			't.iTimeDurationUnit iTimeDurationUnit, ' . 			  
-			't.iPlannedCost iPlannedCost, ' . 
-			't.iCost iCost, ' .
-			't.iPriority iPriority, ' .
-			'ti.idOwner idOwner, ' .
-			'cat.id iIdCategory, ' .
-			'cat.name sCategoryName, ' .
-			'IFNULL(cat.bgColor, \'\' ) sBgColor, ' .
-			'IFNULL(cat.color, \'\' ) sColor ' .
-		'FROM ' . 
-			BAB_TSKMGR_TASKS_INFO_TBL . ' ti, ' .
-			BAB_TSKMGR_TASKS_TBL . ' t ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_CATEGORIES_TBL . ' cat ON cat.id = t.idCategory ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_TBL . ' p ON p.id = t.idProject ' .
-		'LEFT JOIN ' . 
-			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
-		'WHERE ' . 
-			't.id = ti.idTask ';
-//*/
 	$query = 
 		'SELECT ' . 
 			'IFNULL(t4.id, 0) iIdProjectSpace, ' .
@@ -1989,15 +1938,6 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' t4 ON t4.id = t3.idProjectSpace ' .
 		'WHERE ' . 
 			't0.id = t1.idTask ';
-
-
-/*
-'t6.value sAddtionalFieldValue, ' .
-'LEFT JOIN ' .
-	BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' t5 ON t5.idProject = t3.id ' .
-'LEFT JOIN ' . 
-	BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' t6 ON t6.idSpFldClass = t5.id ' .
-//*/	
 
 
 	if(isset($aFilters['iIdProject']) && 0 !== (int) $aFilters['iIdProject'])
@@ -2064,11 +2004,159 @@ function bab_selectTaskQuery($aFilters, $aOrder = array())
 	{
 		$query .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
 	}
-	
 
-	bab_debug($query);
+//	bab_debug($query);
 //	echo $query . '<br />';
 	return $query;
+}
+
+
+function bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder = array())
+{
+	global $babDB;
+
+	$sField = '';
+	$sLeftJoin = '';
+	$sWhere = '';
+
+	if(isset($aFilters['iIdProject']) && 0 !== (int) $aFilters['iIdProject'])
+	{
+		if(0 < count($aField))
+		{
+			$sField = ',' . implode(',', $aField) . ' ';
+		}
+	
+		if(0 < count($aLeftJoin))
+		{
+			$sLeftJoin = implode('', $aLeftJoin) . ' ';
+		}
+	
+		if(0 < count($aWhere))
+		{
+			$sWhere = implode('', $aWhere) . ' ';
+		}
+	}
+	
+	$sQuery = 
+		'SELECT ' . 
+			'IFNULL(t4.id, 0) iIdProjectSpace, ' .
+			'IFNULL(t4.name, \'\') sProjectSpaceName, ' .
+			'IFNULL(t3.id, 0) iIdProject, ' .
+			'IFNULL(t3.name, \'\') sProjectName, ' .
+			't0.id iIdTask, ' .
+			't0.taskNumber sTaskNumber, ' .
+			't0.shortDescription sShortDescription, ' .
+			't0.description sDescription, ' .
+			't0.class iClass, ' .
+		'CASE t0.class ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'ganttCheckpoint\' ' . 
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'ganttToDo\' ' .
+			'ELSE \'\' ' .
+		'END AS sAdditionnalClass, ' .
+		'CASE t0.class ' .			
+			'WHEN \'' . BAB_TM_TASK . '\' THEN \'' . bab_translate("Task") . '\' ' .
+			'WHEN \'' . BAB_TM_CHECKPOINT . '\' THEN \'' . bab_translate("Checkpoint") . '\' ' .
+			'WHEN \'' . BAB_TM_TODO . '\' THEN \'' . bab_translate("ToDo") . '\' ' .
+			'ELSE \'???\' ' .
+		'END AS sClass, ' .
+			't0.completion iCompletion, ' .
+			't0.startDate startDate, ' .
+			't0.endDate endDate, ' .
+			't0.plannedStartDate plannedStartDate, ' .
+			't0.plannedEndDate plannedEndDate, ' .
+			't0.iPlannedTime iPlannedTime, ' .
+			't0.iPlannedTimeDurationUnit iPlannedTimeDurationUnit, ' . 			  
+			't0.iTime iTime, ' . 
+			't0.iTimeDurationUnit iTimeDurationUnit, ' . 			  
+			't0.iPlannedCost iPlannedCost, ' . 
+			't0.iCost iCost, ' .
+			't0.iPriority iPriority, ' .
+			't1.idOwner idOwner, ' .
+			't2.id iIdCategory, ' .
+			't2.name sCategoryName, ' .
+			'IFNULL(t2.bgColor, \'\' ) sBgColor, ' .
+			'IFNULL(t2.color, \'\' ) sColor ' . $sField .
+		'FROM ' . 
+			BAB_TSKMGR_TASKS_INFO_TBL . ' t1, ' .
+			BAB_TSKMGR_TASKS_TBL . ' t0 ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_CATEGORIES_TBL . ' t2 ON t2.id = t0.idCategory ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_TBL . ' t3 ON t3.id = t0.idProject ' .
+		'LEFT JOIN ' . 
+			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' t4 ON t4.id = t3.idProjectSpace ' . $sLeftJoin .
+		'WHERE ' . 
+			't0.id = t1.idTask ' . $sWhere;
+
+
+	if(isset($aFilters['iIdProject']) && 0 !== (int) $aFilters['iIdProject'])
+	{
+		$sQuery .= 'AND t0.idProject = ' . $babDB->quote((int) $aFilters['iIdProject']) . ' ';
+	}
+
+	if(isset($aFilters['iIdOwner']))
+	{
+		$sQuery .= 'AND t1.idOwner = ' . $babDB->quote((int) $aFilters['iIdOwner']) . ' ';
+	}
+
+	if(isset($aFilters['sStartDate']))
+	{
+		$sQuery .= 'AND t0.startDate >= ' . $babDB->quote($aFilters['sStartDate']) . ' ';
+	}
+
+	if(isset($aFilters['sEndDate']))
+	{
+		$sQuery .= 'AND t0.endDate <= ' . $babDB->quote($aFilters['sEndDate']) . ' ';
+	}
+
+	if(isset($aFilters['sPlannedStartDate']))
+	{
+		$sQuery .= 'AND t0.plannedStartDate >= ' . $babDB->quote($aFilters['sPlannedStartDate']) . ' ';
+	}
+
+	if(isset($aFilters['sPlannedEndDate']))
+	{
+		$sQuery .= 'AND t0.plannedEndDate <= ' . $babDB->quote($aFilters['sPlannedEndDate']) . ' ';
+	}
+
+	if(isset($aFilters['iTaskClass']))
+	{
+		$sQuery .= 'AND t0.class = ' . $babDB->quote((int) $aFilters['iTaskClass']) . ' ';
+	}
+
+	if(isset($aFilters['isPersonnal']))
+	{
+		$sQuery .= 'AND t1.isPersonnal = ' . $babDB->quote(BAB_TM_YES) . ' ';
+	}
+	
+	if(isset($aFilters['bIsManager']) && false === $aFilters['bIsManager'])
+	{
+		$sQuery .= 'AND t0.participationStatus <> ' . $babDB->quote(BAB_TM_REFUSED) . ' ';
+	}
+	
+	if(isset($aFilters['iCompletion']) && -1 !== (int) $aFilters['iCompletion'])
+	{
+		$sCompletion = '= ' . $babDB->quote('100');
+		if(BAB_TM_IN_PROGRESS === (int) $aFilters['iCompletion'])
+		{
+			$sCompletion = '<> ' . $babDB->quote('100'); 
+		}
+		
+		$sQuery .= 'AND t1.completion ' . $sCompletion . ' ';
+	}
+	
+	$sQuery .= 
+		'GROUP BY ' .
+			'sProjectSpaceName ASC, sProjectName ASC, sTaskNumber ASC ';
+
+	if(count($aOrder) > 0)
+	{
+		$sQuery .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
+	}
+
+//	bab_debug($sQuery);
+//	echo $sQuery . '<br />';
+	return $sQuery;
 }
 
 function getFirstProjectTaskDate($iIdProject)
@@ -2608,6 +2696,33 @@ function bab_selectAvailableSpecificFieldClassesByProject($iIdProjectSpace, $iId
 	return $babDB->db_query($query);
 }
 
+
+function bab_selectSpecificFieldClasses($aFieldId)
+{
+	global $babDB;
+
+	$query = 
+		'SELECT ' .
+			'id, ' . 
+			'name, ' . 
+			'nature iFieldType, ' .
+			'CASE nature ' .
+				'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN \'' . bab_translate("Text") . '\' ' .
+				'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
+				'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
+				'ELSE \'???\' ' .
+			'END AS sFieldType ' .
+		'FROM ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
+		'WHERE ' . 
+			'id IN(' . $babDB->quote($aFieldId) . ')';
+	
+//	bab_debug($query);
+	return $babDB->db_query($query);
+}
+
+
+
 function bab_getSpecificFieldClassDefaultValue($iIdSpecificFieldClass, &$sDefaultValue)
 {
 	global $babDB;
@@ -2870,6 +2985,90 @@ function bab_selectAllSpecificFieldInstance($iIdTask)
 }
 
 
+function bab_getAdditionalTaskField($iIdProjectSpace, $iIdProject, $iIdTask)
+{
+	global $babDB;
+	$sQuery = 
+		'SELECT ' .
+			'* ' .
+		'FROM ' .
+			bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject) . ' ' .
+		'WHERE ' .
+			'iIdTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
+			
+//	bab_debug($sQuery);
+
+	$aField = array();
+	
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);
+		if(0 < $iNumRows)
+		{
+			$aDatas = array();
+			if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				foreach($aDatas as $sKey => $sValue)
+				{
+					$sField = substr($sKey, 0, strlen('sField'));
+					if('sField' == $sField)
+					{
+						$iIdFieldClass = substr($sKey, strlen('sField'));
+						$aField[$iIdFieldClass] = array('sValue' => $sValue);
+					}
+				}
+				
+				if(0 < count($aField))
+				{
+					$sQuery = 
+						'SELECT ' .
+							'sb.id iIdFieldClass, ' .
+							'sb.name sFieldName, ' .
+							'sb.nature iType, ' .
+						'CASE sb.nature ' .
+							'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN \'' . bab_translate("Text") . '\' ' .
+							'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
+							'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
+							'ELSE \'???\' ' .
+						'END AS sType ' .
+						'FROM ' .
+							BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' sb ' .
+						'WHERE ' .
+							'id IN(' . $babDB->quote(array_keys($aField)) . ')';
+							
+//					bab_debug($sQuery);
+					$oResult = $babDB->db_query($sQuery);
+					if(false !== $oResult)
+					{
+						$iNumRows = $babDB->db_num_rows($oResult);
+						if(0 < $iNumRows)
+						{
+							$aDatas = array();
+							while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+							{
+								if(array_key_exists($aDatas['iIdFieldClass'], $aField))
+								{
+									$aField[$aDatas['iIdFieldClass']] = 
+										array('sValue' => $aField[$aDatas['iIdFieldClass']]['sValue'], 
+										'iIdFieldClass' => $aDatas['iIdFieldClass'], 
+										'sFieldName' => $aDatas['sFieldName'],
+										'iType' => $aDatas['iType'],
+										'sType' => $aDatas['sType']);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+//	bab_debug($aField);
+	return $aField;
+}
+
+
 function bab_createNoticeEvent($iIdProjectSpace, $iIdProject, $iIdEvent, $iProfil)
 {
 	global $babDB;
@@ -3090,7 +3289,7 @@ function bab_tskmgr_getSelectedFieldId($iIdProject, $iType)
 	
 	$sQuery = 
 		'SELECT 
-			`iIdTaskField` iIdTaskField
+			`iIdField` iIdField
 		FROM ' .
 			BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' . 
 		'WHERE ' . 
@@ -3109,7 +3308,7 @@ function bab_tskmgr_getSelectedFieldId($iIdProject, $iType)
 			$aDatas = array();
 			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 			{
-				$aField[] = $aDatas['iIdTaskField'];
+				$aField[] = $aDatas['iIdField'];
 			}
 		}
 	}
@@ -3121,9 +3320,20 @@ function bab_tskmgr_getSelectedField($iIdProject)
 {
 	global $babDB;
 	
+	$sWereClauseItem = ' ';
+	if(0 >= (int) $iIdProject)
+	{
+		$sWereClauseItem = 'spf.`idUser` = ' . $babDB->quote($GLOBALS['BAB_SESS_USERID']);
+		$iIdProject = 0;
+	}
+	else
+	{
+		$sWereClauseItem = 'spf.`idProject` = ' . $babDB->quote($iIdProject);
+	}
+	
 	$sQuery = 
 		'SELECT 
-			stf.`iIdTaskField` iId,
+			stf.`iIdField` iId,
 			stf.`iType` iType,
 			stf.`iPosition` iPosition,
 			IFNULL(tf.`sName`, spf.`name`) sName,
@@ -3131,12 +3341,12 @@ function bab_tskmgr_getSelectedField($iIdProject)
 		FROM ' .
 			BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' stf ' . 
 		'LEFT JOIN ' .
-			BAB_TSKMGR_TASK_FIELDS_TBL . ' tf ON tf.iId = stf.iIdTaskField AND stf.iType = ' . BAB_TM_TASK_FIELD . ' ' .
+			BAB_TSKMGR_TASK_FIELDS_TBL . ' tf ON tf.iId = stf.iIdField AND stf.iType = ' . BAB_TM_TASK_FIELD . ' ' .
 		'LEFT JOIN ' .
-			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' spf ON spf.id = stf.iIdTaskField AND stf.iType = ' . BAB_TM_ADDITIONAL_FIELD . ' ' .
+			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' spf ON spf.id = stf.iIdField AND stf.iType = ' . BAB_TM_ADDITIONAL_FIELD . ' ' .
 		'WHERE ' . 
 			'stf.`iIdProject` = ' . $babDB->quote($iIdProject) . ' OR ' .
-			'spf.`idProject` = ' . $babDB->quote($iIdProject) .
+			$sWereClauseItem . ' ' .
 		'ORDER BY ' .
 			'stf.`iPosition` ASC';
 
@@ -3162,6 +3372,41 @@ function bab_tskmgr_getSelectedField($iIdProject)
 }
 
 
+function bab_tskmgr_deleteSelectedTaskFields($iIdProject)
+{
+	global $babDB;
+	
+	$query = 'DELETE FROM ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' WHERE iIdProject = \'' . $babDB->db_escape_string($iIdProject) . '\''; 
+	//bab_debug($query);
+	$babDB->db_query($query);
+}
+
+
+function bab_tskmgr_saveSelectedTaskField($aField)
+{
+	global $babDB;
+	
+	$iIndex = 0;
+	foreach($aField as $aItem)
+	{
+		$sQuery = 
+			'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+				'(' .
+					'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($aItem['iIdField']) . ', ' . 
+					$babDB->quote($aItem['iIdProject']) . ', ' . 
+					$babDB->quote($iIndex) . ', ' . 
+					$babDB->quote($aItem['iType']) . 
+				')'; 
+				
+		$babDB->db_query($sQuery);
+		++$iIndex;
+	}
+	
+}
 
 function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $aSelectedAdditionalField)
 {
@@ -3170,7 +3415,6 @@ function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $a
 	$sQuery = 
 		'SELECT 
 			t0.`iId` iId,
-			t0.`iType` iType,
 			t0.`sName` sName, 
 			t0.`sLegend` sLegend
 		FROM ' .
@@ -3191,7 +3435,7 @@ function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $a
 			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 			{
 				$aField[] = array(
-					'iId' => $aDatas['iId'], 'iType' => $aDatas['iType'],
+					'iId' => $aDatas['iId'], 'iType' => BAB_TM_TASK_FIELD,
 					'sName' => $aDatas['sName'], 'sLegend' => $aDatas['sLegend']);
 			}
 		}
@@ -3225,5 +3469,92 @@ function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $a
 		}
 	}
 	return $aField;
+}
+
+
+function bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject)
+{
+	$sNamePart = '';
+	
+	if(0 == $iIdProjectSpace && 0 == $iIdProject)
+	{
+		$sNamePart = 'user' . $GLOBALS['BAB_SESS_USERID'];
+	}
+	else 
+	{
+		$sNamePart = 'project' . $iIdProject;
+	}
+	
+	return 'bab_tskmgr_' . $sNamePart . '_additional_fields';
+}
+
+
+function bab_tskmgr_processAdditionalFieldTableNameCreationModification($iIdProjectSpace, $iIdProject, $iFieldType, $iIdFieldClass, $sFieldValue)
+{
+	global $babDB;
+	
+	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	$sType = (1 == $iFieldType) ? 'TEXT' : 'VARCHAR(255)';
+	
+	if(!bab_isTable($sTableName))
+	{
+		$aTableDefinition	= array();
+		$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+		$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+		$aTableDefinition[] = '`sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
+		$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+		$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+		
+		$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
+		$babDB->db_query($sQuery);
+	}
+	else 
+	{
+		$sQuery = 'ALTER TABLE `' . $sTableName . '` ADD `sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
+		$babDB->db_query($sQuery);
+				
+		//Mettre à jour la colonne de la table avec la valeur par défaut
+		$sQuery = 
+			'UPDATE ' . 
+				$sTableName . ' ' .
+			'SET ' .
+				'sField' . $iIdFieldClass . ' = ' . $babDB->quote($sFieldValue);
+	
+		//bab_debug($query);
+		return $babDB->db_query($sQuery);
+	}
+}
+
+function bab_tskmgr_updateAdditionalFieldTable($iIdProjectSpace, $iIdProject, $iIdTask, $aDatas)
+{
+	global $babDB;
+	
+	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	if(bab_isTable($sTableName))
+	{
+		$aSet = array();
+		
+		foreach($aDatas as $sFieldName => $sFieldValue)
+		{
+			$aSet[] = $sFieldName . ' = ' . $babDB->quote($sFieldValue);
+		}
+		
+		$sQuery = 
+			'UPDATE ' .	
+				$sTableName . ' ' . 
+			'SET ' .
+				implode(', ', $aSet) . ' ' . 
+			'WHERE ' .
+				'iIdTask = ' . $babDB->quote($iIdTask);
+	
+		//bab_debug($sQuery);
+		return $babDB->db_query($sQuery);
+	}
 }
 ?>

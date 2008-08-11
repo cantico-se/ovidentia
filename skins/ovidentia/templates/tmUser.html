@@ -1148,13 +1148,7 @@ function check_all(strCtrlName, checked)
 				<tr class="BabSiteAdminTitleFontBackground"> 
 					<td>&nbsp;</td>
 					<td colspan="3" align="center">
-						<label for="oSpfField">{ m_captions[sSpFld] }</label>
-						<select id="oSpfField" name="oSpfField">
-							<!--#in getNextSpecificField -->
-							<option { m_datas[sSelectedSpfField] } value="{ m_datas[iIdSpField] }">{ m_datas[sSpFieldName] }</option>
-							<!--#endin getNextSpecificField -->
-						</select>
-						<input type="submit" value="{ m_captions[sAddSpf] }" onclick="on_btn_clicked('{ m_datas[iAddSpfIdx] }', '{ m_datas[iAddSpfAction] }')" />
+						{ m_captions[sSpFld] }
 					</td>
 				</tr>
 				<tr>
@@ -1169,7 +1163,7 @@ function check_all(strCtrlName, checked)
 			<!--#if m_datas[iSpFldInstanceClass] "== 0" -->
 				<tr>
 					<td>
-						<input type="checkbox" name="aDeletableSpfObjects[{ m_datas[iSpFldInstanceId] }]" value="{ m_datas[iSpFldInstanceId] }" Style="background-color:transparent;border=0" />
+						&nbsp;
 					</td>
 					<td>{ m_datas[sSpFldInstanceName] }</td>
 					<td>{ m_datas[sSpFldInstanceType] }</td>
@@ -1180,7 +1174,7 @@ function check_all(strCtrlName, checked)
 			<!--#if m_datas[iSpFldInstanceClass] "== 1" -->
 				<tr>
 					<td>
-						<input type="checkbox" name="aDeletableSpfObjects[{ m_datas[iSpFldInstanceId] }]" value="{ m_datas[iSpFldInstanceId] }" Style="background-color:transparent;border=0" />
+						&nbsp;
 					</td>
 					<td>{ m_datas[sSpFldInstanceName] }</td>
 					<td>{ m_datas[sSpFldInstanceType] }</td>
@@ -1191,7 +1185,7 @@ function check_all(strCtrlName, checked)
 			<!--#if m_datas[iSpFldInstanceClass] "== 2" -->
 				<tr>
 					<td>
-						<input type="checkbox" name="aDeletableSpfObjects[{ m_datas[iSpFldInstanceId] }]" value="{ m_datas[iSpFldInstanceId] }" Style="background-color:transparent;border=0" />
+						&nbsp;
 					</td>
 					<td>{ m_datas[sSpFldInstanceName] }</td>
 					<td>{ m_datas[sSpFldInstanceType] }</td>
@@ -1211,7 +1205,7 @@ function check_all(strCtrlName, checked)
 
 					<tr class="BabSiteAdminTitleFontBackground">
 						<td>
-							<a href="javascript:check_all('aDeletableSpfObjects', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ m_captions[sCheckAll] }" width="10" height="10" border="0" /></a><a href="javascript:check_all('aDeletableSpfObjects', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ m_captions[sUncheckAll] }" width="10" height="10" border="0"></a>
+							&nbsp;
 						</td>
 						<td colspan="3" align="right">&nbsp;</td>
 					</tr>
@@ -2141,11 +2135,89 @@ function hideOnNbRowPerPageChangedButton()
 <!--#begin orderTaskFields -->
 <script type="text/javascript">
 //<![CDATA[
+function bab_moveSelection(bDirection)
+{
+	var oSelectedField = document.getElementById('oSelectedField');
+	if(null != oSelectedField)
+	{
+		var iSelectedIndex = oSelectedField.selectedIndex;
+		if(iSelectedIndex != -1)
+		{
+			if(iSelectedIndex == 0 && bDirection == true)
+			{
+				return;
+			}
+			
+			if(iSelectedIndex == oSelectedField.options.length - 1 && bDirection == false)
+			{
+				return;
+			}
+			
+			var iIndex = iSelectedIndex + ( bDirection ? - 1 : 1)
+			
+			if(iIndex < 0)
+			{
+				iIndex = oSelectedField.length - 1;
+			}
+			
+			if(iIndex >= oSelectedField.length) 
+			{
+				iIndex = 0;
+			}
+			
+			var oldVal = oSelectedField[iSelectedIndex].value;
+			var oldText = oSelectedField[iSelectedIndex].text;
+			var oldClass = oSelectedField[iSelectedIndex].className;
+			
+			oSelectedField[iSelectedIndex].value = oSelectedField[iIndex].value;
+			oSelectedField[iSelectedIndex].text = oSelectedField[iIndex].text;
+			oSelectedField[iSelectedIndex].className = oSelectedField[iIndex].className;
+			
+			oSelectedField[iIndex].value = oldVal;
+			oSelectedField[iIndex].text = oldText;
+			oSelectedField[iIndex].className = oldClass;
+			
+			oSelectedField.selectedIndex = iIndex;
+		}
+	}
+}
 
 
+function bab_selectOption(sControlId, sAction)
+{
+	var bSelect;
+	if('All' === sAction)
+	{
+		bSelect = true;
+	}
+	else if('None' === sAction)
+	{
+		bSelect = false;
+	}
+	else
+	{
+		return;
+	}
+
+	var oControl = document.getElementById(sControlId);
+	if(null !== oControl)
+	{
+		var iLength = oControl.length;
+		
+//		alert(sControlId + ' iNbChild ==> ' + iLength);
+		
+		for(var iIndex = 0; iIndex < iLength; ++iIndex)
+		{
+			oControl.options[iIndex].selected = bSelect;
+		}
+	}
+}
+
+//onclick="bab_selectOption('oSelectedField', 'All')" 
 
 //]]>
 </script>
+
 
 <form method="post" id="orderTaskFields" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
@@ -2153,6 +2225,7 @@ function hideOnNbRowPerPageChangedButton()
 	<input type="hidden" name="action" value="{ m_datas[action] }" />
 	<input type="hidden" name="iIdProjectSpace" value="{ m_datas[iIdProjectSpace] }" />
 	<input type="hidden" name="iIdProject" value="{ m_datas[iIdProject] }" />
+	<input type="hidden" name="sCleanSessVar" value="{ m_datas[sCleanSessVar] }" />
 
 	<table border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
@@ -2164,29 +2237,32 @@ function hideOnNbRowPerPageChangedButton()
 					<tr>
 						<td with="1%">
 							<h5>{ m_captions[sSelectableField] }</h5>
-							<select id="oSelectableField" multiple="multiple" size="20">
+							<select id="oSelectableField" name="aSelectableField[]" multiple="multiple" size="20">
 								<!--#in getNextSelectableField -->
-								<option class="{ sClassName }" value="{ iIdField }_{ iFieldType }" >{ sLegend }</option>
+								<option class="{ m_datas[sClassName] }" value="{ m_datas[sValue] }" >{ m_datas[sLegend] }</option>
 								<!--#endin getNextSelectableField -->
 							</select>
 						</td> 
 						<td valign="middle" align="center">
-							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-next.png" border="0" />
-							<br />
-							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-previous.png" border="0" />
+							<p><input class="bab_grabField" type="submit" name="action[sGrabField]" value="{ m_captions[sGrabField] }" /></p>
+							<p><input class="bab_dropField" type="submit" name="action[sDropField]" value="{ m_captions[sDropField] }" /></p>
 						</td>
 						<td with="1%">
 							<h5>{ m_captions[sSelectedField] }</h5>
-							<select id="oSelectedField" multiple="multiple" size="20">
+							<select id="oSelectedField" name="aSelectedField[]" multiple="multiple" size="20">
 								<!--#in getNextSelectedField -->
-								<option class="{ sClassName }" value="{ iIdField }_{ iFieldType }" >{ sLegend }</option>
+								<option class="{ m_datas[sClassName] }" value="{ m_datas[sValue] }" { m_datas[sSelected] }>{ m_datas[sLegend] }</option>
 								<!--#endin getNextSelectedField -->
 							</select>
 						</td> 
 						<td valign="middle" align="center">
-							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-up.png" border="0" />
-							<br />
-							<img src="{ babInstallPath }skins/ovidentia/images/Puces/go-down.png" border="0" />
+							<p><input class="bab_upField" type="submit" name="action[sUpField]" value="{ m_captions[sUp] }" /></p>
+							<p><input class="bab_downField" type="submit" name="action[sDownField]" value="{ m_captions[sDown] }" /></p>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4" align="center">
+							<p><input type="submit" value="{ m_captions[sSave] }" /></p>
 						</td>
 					</tr>
 				</table>
@@ -2195,5 +2271,3 @@ function hideOnNbRowPerPageChangedButton()
 	</table>
 </form> 
 <!--#end orderTaskFields -->
-
-

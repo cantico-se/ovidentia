@@ -33,6 +33,7 @@ define('BAB_TM_ACTION_DELETE_TASK', 'deleteTask');
 define('BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE', 'createSpecificFieldInstance');
 define('BAB_TM_ACTION_MODIFY_NOTICE_EVENT', 'modifyNoticeEvent');
 define('BAB_TM_ACTION_PROCESS_EXPORT', 'processExport');
+define('BAB_TM_ACTION_SAVE_SELECTED_TASK_FIELD', 'saveSelectedTaskField');
 
 
 

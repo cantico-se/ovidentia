@@ -103,3 +103,35 @@
 	padding-left:60px;
 	background-color:#FFFBCB
 }
+
+input.bab_grabField {
+	background-image:url('../skins/ovidentia/images/Puces/go-next.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+	width:100px;
+}
+
+input.bab_dropField {
+	background-image:url('../skins/ovidentia/images/Puces/go-previous.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+	width:100px;
+}
+
+input.bab_upField {
+	background-image:url('../skins/ovidentia/images/Puces/go-up.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+	width:100px;
+}
+
+input.bab_downField {
+	background-image:url('../skins/ovidentia/images/Puces/go-down.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+	width:100px;
+}

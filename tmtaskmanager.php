@@ -1722,6 +1722,9 @@ function displayTaskList($sIdx)
 			if(false !== $this->aCurrentColumnHeader)
 			{
 				
+reset($this->aCurrentColumnHeader['value']['aText']);
+reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
+				
 				return true;
 			}
 			
@@ -1734,7 +1737,6 @@ function displayTaskList($sIdx)
 		{
 			$aText = each($this->aCurrentColumnHeader['value']['aText']);
 			$aDataSourceFieldName = each($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
-
 			if(false !== $aText && false !== $aDataSourceFieldName)
 			{
 				if($this->bFirst)
@@ -1778,7 +1780,6 @@ function displayTaskList($sIdx)
 				{
 					$this->sColumnHeaderUrl = '#';
 				}
-				
 				$this->sColumnHeaderText = $aText['value'];
 				return true;
 			}
@@ -1791,6 +1792,10 @@ function displayTaskList($sIdx)
 			$this->aCurrentColumnHeader = each($this->aColumnHeaders);
 			if(false !== $this->aCurrentColumnHeader)
 			{
+				
+reset($this->aCurrentColumnHeader['value']['aText']);
+reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
+				
 				return true;
 			}
 			
@@ -1898,72 +1903,40 @@ function displayTaskList($sIdx)
 	require_once $GLOBALS['babInstallPath'] . 'upgrade.php';
 	tskMgrFieldOrderUpgrade();
 //*/	
-	
-	
-function getDisplayableFieldList($iIdProject)
-{
-	global $babDB;
-	$sQuery = 
-		'SELECT 
-			t0.`sTableAlias` sTableAlias, 
-			t0.`iPosition` iPosition, 
-			t1.`sName` sName, 
-			t1.`sLegend` sLegend
-		FROM ' .
-			BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' t0 ' .
-		'LEFT JOIN ' .
-			BAB_TSKMGR_TASK_FIELDS_TBL . ' t1 ON t1.iId = t0.iIdTaskField ' . 
-		'WHERE ' . 
-			't0.`iIdProject` = ' . $babDB->quote($iIdProject) . 
-		'ORDER BY ' .
-			 't0.`iPosition` ASC';
 
-	$aField = array();
-			
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
-	{
-		$iNumRows = $babDB->db_num_rows($oResult);
-		if(0 < $iNumRows)
-		{
-			$aDatas = array();
-			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
-			{
-				$aField[] = array(
-					'iPosition' => $aDatas['iPosition'], 
-					'sName' => $aDatas['sName'],
-					'sLegend' => $aDatas['sLegend']);
-			}
-		}
-	}
-	return $aField;
-}
-	
-	
-	$aColumnHeader = getDisplayableFieldList($iIdProject);
+//Quand on clique sur le filtre $iIdProject === 0 donc cela ne marche pas
+//Il faut faire une fonction qui selon le context myTask ou tâche du projet 
+//remote les champs
 
+	
+	
+	
+	$aColumnHeader = bab_tskmgr_getSelectedField($iIdProject);
+
+//	bab_debug('iIdProject ==> ' . $iIdProject);
+//	bab_debug($aColumnHeader);
 
 	$oMultiPage->sIdx = $sIdx;
 //	$oMultiPage->iNbRowsPerPage = (int) 2;
 //	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
-	
+
+$aField		= array();
+$aLeftJoin	= array();
+$aWhere		= array();
+
+/*
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
-	
-/*		
-	$oMultiPage->addColumnHeader(0, array(bab_translate("Title")), array('sShortDescription'));
-	$oMultiPage->addColumnHeader(1, array(bab_translate("Type")), array('sClass'));
-	$oMultiPage->addColumnHeader(2, array(bab_translate("Start date"), bab_translate("Planned")), array('startDate', 'plannedStartDate'));
-	$oMultiPage->addColumnHeader(3, array(bab_translate("End date"), bab_translate("Planned")), array('endDate', 'plannedEndDate'));
-	
-	if(1 === $isProject)
-	{
-		$oMultiPage->addColumnHeader(4, array(bab_translate("Cost"), bab_translate("Planned")), array('iCost', 'iPlannedCost'));
-		$oMultiPage->addColumnHeader(5, array(bab_translate("Time"), bab_translate("Planned")), array('iTime', 'iPlannedTime'));
-		$oMultiPage->addColumnHeader(6, array(bab_translate("Responsible")), array('idOwner'));
-	}
 //*/
-
+		
+	$aLeftJoin[]	= 'LEFT JOIN ' . 
+		BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' stf ON stf.iIdProject = t0.idProject ';
+		
+	$aWhere[]		= 'AND stf.iIdProject = \'' . $iIdProject . '\'';
+//	$aWhere[]		= 'AND stf.iIdProject = \'' . $iIdProject . '\' AND stf.iType = \'' . BAB_TM_ADDITIONAL_FIELD . '\'';
+	
+	$sTableAlias = 't5';
+	
 	foreach($aColumnHeader as $aColumnHeaderItem)
 	{
 		$iPosition				= $aColumnHeaderItem['iPosition'];
@@ -1973,16 +1946,35 @@ function getDisplayableFieldList($iIdProject)
 		foreach($aCaption as $iKey => $sCaption)
 		{
 			$aCaption[$iKey] = bab_translate($sCaption);
-		}		
+		}
+		
+		if(BAB_TM_ADDITIONAL_FIELD == $aColumnHeaderItem['iType'])
+		{
+			foreach($aDataSourceFieldName as $iKey => $sFieldName)
+			{
+				$sAlias = $sTableAlias . '__' . $sFieldName;
+				
+				$aDataSourceFieldName[$iKey] = $sAlias;
+				
+				$aField[] = $sTableAlias . '.sField' . $aColumnHeaderItem['iId'] . ' AS ' . $sAlias;
+			}
+		}
 		
 		$oMultiPage->addColumnHeader($iPosition, $aCaption, $aDataSourceFieldName);
 	}
-		
+	
+	$aLeftJoin[]	= 'LEFT JOIN ' . 
+		bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject) . ' ' . $sTableAlias . ' ON ' . $sTableAlias . '.iIdTask = t0.id ';
+//*	
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder), 
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
+//*/
 	$oMultiPage->bIsColumnHeaderUrl = true;
 	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
+
 
 	//Pour les icônes
 	{		
@@ -2337,71 +2329,252 @@ function displayOrderTaskFieldsForm()
 	
 	class BAB_OrderTaskFields extends BAB_BaseFormProcessing
 	{
-		var $aSelectedField = array();
-		var $aSelectableField = array();
-		
-		var $iIdField;
-		var $iFieldType;
-		var $sLegend;
-		var $sClassName;
-		
 		function BAB_OrderTaskFields($iIdProjectSpace, $iIdProject)
 		{
 			parent::BAB_BaseFormProcessing();
 			
 			$this->set_data('idx', BAB_TM_IDX_DISPLAY_ORDER_TASK_FIELDS_FORM);
-			$this->set_data('action', '');
+			$this->set_data('action', BAB_TM_ACTION_SAVE_SELECTED_TASK_FIELD);
 			$this->set_data('tg', 'usrTskMgr');
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdProject', $iIdProject);
+			$this->set_data('sSelected', '');//Utilisé seulement lors du déplacement
+			$this->set_data('sSelectedField', '');//Utilisé seulement lors du déplacement
 			
 			$this->set_caption('sSelectableField', bab_translate("Selectable fields"));
 			$this->set_caption('sSelectedField', bab_translate("Selected fields"));
 			$this->set_caption('sMaxSelectableField', bab_translate("You can select up to 15 fields"));
+			$this->set_caption('sGrabField', bab_translate("Add"));
+			$this->set_caption('sDropField', bab_translate("Drop"));
+			$this->set_caption('sUp', bab_translate("Up"));
+			$this->set_caption('sDown', bab_translate("Down"));
+			$this->set_caption('sSave', bab_translate("Save"));
 			
-			$aTaskField	= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_TASK_FIELD);
-			$aAdditionalField = bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_ADDITIONAL_FIELD);
-			$this->aSelectableField = bab_tskmgr_getSelectableTaskFields($iIdProject, $aTaskField, $aAdditionalField);
-			$this->aSelectedField = bab_tskmgr_getSelectedField($iIdProject);
+			$this->initSessionContex();
+			$this->initSession($iIdProject);
+			
+			$this->processAction();
+			
+			if(!function_exists('babTskMgrCompareField'))
+			{		
+				function babTskMgrCompareField($f1, $f2)
+				{
+					return strcasecmp($f1['sLegend'], $f2['sLegend']);
+				}
+			}
+			uasort($_SESSION['babTskMgrSelectableField'], 'babTskMgrCompareField');
+			
+//			bab_debug($_SESSION['babTskMgrSelectableField']);
+//			bab_debug($_SESSION['babTskMgrSelectedField']);
+		}
+	
+		function initSessionContex()
+		{
+			$sCleanSessVar = (null == bab_rp('sCleanSessVar', null)) ? 'Y' : 'N';
+			$aSessionKey = array('babTskMgrSelectableField', 'babTskMgrSelectedField');
+	
+			foreach($aSessionKey as $sArrayName)
+			{
+				if(!array_key_exists($sArrayName, $_SESSION) || 'Y' == $sCleanSessVar)
+				{
+					$_SESSION[$sArrayName] = array();
+				}
+			}
+			
+			$_SESSION['babTskMgrInitSessionField'] = $sCleanSessVar;
+			$this->set_data('sCleanSessVar', 'N');
 		}
 		
-		function getNextField($sPropertyName)
+		function initSession($iIdProject)
 		{
-			$aItem = each($this->$sPropertyName);
-			if(false !== $aItem)
+			if('Y' == $_SESSION['babTskMgrInitSessionField'])
 			{
-				$this->iIdField = $aItem['value']['iId'];
-				$this->iFieldType = $aItem['value']['iType'];
+				$aTaskField			= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_TASK_FIELD);
+				$aAdditionalField	= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_ADDITIONAL_FIELD);
+				$aSelectableField	= bab_tskmgr_getSelectableTaskFields($iIdProject, $aTaskField, $aAdditionalField);
+				$aSelectedField		= bab_tskmgr_getSelectedField($iIdProject);
 				
-				$this->sClassName = 'additionalField';
+				$aToProcess = array('babTskMgrSelectableField' => 'aSelectableField', 
+					'babTskMgrSelectedField' => 'aSelectedField');
 				
-				$sLegend = $aItem['value']['sLegend'];
-				if(BAB_TM_TASK_FIELD === (int) $this->iFieldType)
+				foreach($aToProcess as $sSessionKeyName => $sArrayName) 
 				{
-					$this->sClassName = 'taskField';
-					
-					$aLegend = explode(',', $aItem['value']['sLegend']);
-					foreach($aLegend as $iKey => $sLegend)
+					foreach($$sArrayName as $aItem) 
 					{
-						$aLegend[$iKey] = bab_translate($sLegend);
+						$sClassName =  (BAB_TM_TASK_FIELD === (int) $aItem['iType']) ? 'taskField' : 'additionalField';
+						$sValue = $aItem['iId'] . '_' . $aItem['iType'];
+						
+						$aLegend = explode(',', $aItem['sLegend']);
+						foreach($aLegend as $iKey => $sLegend)
+						{
+							$aLegend[$iKey] = bab_translate($sLegend);
+						}
+						
+						$sLegend = implode('/', $aLegend);
+						
+						$_SESSION[$sSessionKeyName][$sValue] = array('sClassName' => $sClassName,
+							'sValue' => $sValue, 'sLegend' => $sLegend);
+					}
+				}
+				
+				$_SESSION['babTskMgrInitSessionField'] = 'N';
+				
+//				bab_debug($_SESSION['babTskMgrSelectableField']);
+//				bab_debug($_SESSION['babTskMgrSelectedField']);
+			}
+		}
+		
+		function getSelectedFieldSelectedIndex(&$sSelectedIndex, &$iSelectedIndex)
+		{
+			$sSelectedIndex = '';
+			$iSelectedIndex = -1;
+			
+			if(isset($_POST['aSelectedField']) && 0 < count($_POST['aSelectedField'])) 			
+			{
+				foreach($_POST['aSelectedField'] as $sValue) 
+				{
+					$iIndex = 0;
+					foreach($_SESSION['babTskMgrSelectedField'] as $iKey => $aItem)
+					{
+						if($sValue == $aItem['sValue'])
+						{
+							$sSelectedIndex = $sValue;
+							$iSelectedIndex = $iIndex;
+							
+							reset($_SESSION['babTskMgrSelectedField']);
+							return;
+						}
+						$iIndex++;
+					}
+				}
+				reset($_SESSION['babTskMgrSelectedField']);
+			}
+		}
+		
+		
+		function processAction()
+		{
+			if(!is_array($_POST['action']))
+			{
+				return;
+			}
+			
+			$sAction = isset($_POST['action']) ? key($_POST['action']) : false;
+		
+			switch($sAction) 
+			{
+				case 'sGrabField':
+					if(isset($_POST['aSelectableField']) && 0 < count($_POST['aSelectableField'])) 
+					{
+						foreach($_POST['aSelectableField'] as $sValue) 
+						{
+							if(array_key_exists($sValue, $_SESSION['babTskMgrSelectableField']))
+							{
+								$_SESSION['babTskMgrSelectedField'][$sValue] = $_SESSION['babTskMgrSelectableField'][$sValue];
+								unset($_SESSION['babTskMgrSelectableField'][$sValue]);
+							}
+						}
+					}
+					break;
+					
+				case 'sDropField':
+					if(isset($_POST['aSelectedField']) && 0 < count($_POST['aSelectedField'])) 
+					{
+						foreach($_POST['aSelectedField'] as $sValue) 
+						{
+							if(array_key_exists($sValue, $_SESSION['babTskMgrSelectedField']))
+							{
+								$_SESSION['babTskMgrSelectableField'][$sValue] = $_SESSION['babTskMgrSelectedField'][$sValue];
+								unset($_SESSION['babTskMgrSelectedField'][$sValue]);
+							}
+						}
+					}
+					break;
+			
+				case 'sUpField':
+				case 'sDownField':
+					$sSelectedIndex = '';
+					$iSelectedIndex = -1;
+					
+					$this->getSelectedFieldSelectedIndex($sSelectedIndex, $iSelectedIndex);
+					if(-1 != $iSelectedIndex)
+					{
+						$this->set_data('sSelectedField', $sSelectedIndex);
+						
+						if($iSelectedIndex == 0 && 'sUpField' == $sAction)
+						{
+							return;
+						}
+						else if($iSelectedIndex == (count($_SESSION['babTskMgrSelectedField']) - 1) && 'sDownField' == $sAction)
+						{
+							return;
+						}
+						
+						$iNewIndex = ('sUpField' == $sAction) ? $iSelectedIndex - 1 : $iSelectedIndex + 1;
+						
+						$aItemToMove = $_SESSION['babTskMgrSelectedField'][$sSelectedIndex];
+						unset($_SESSION['babTskMgrSelectedField'][$sSelectedIndex]);
+						
+						$aSelectedField = array();
+						
+						$iIndex = 0;
+						foreach($_SESSION['babTskMgrSelectedField'] as $sKey => $aItem)
+						{
+							if($iNewIndex == $iIndex)
+							{
+								$aSelectedField[$sSelectedIndex] = $aItemToMove;
+							}
+							$iIndex++;
+							
+							$aSelectedField[$sKey] = $aItem;
+						}
+						
+						//Pour le déplacement vers le bas
+						//Vu que l'on supprime(unset) l'élément à déplacer
+						if(!array_key_exists($sSelectedIndex, $_SESSION))
+						{
+							$aSelectedField[$sSelectedIndex] = $aItemToMove;
+						}
+						
+						$_SESSION['babTskMgrSelectedField'] = $aSelectedField;
+					}
+					break;
+			}
+			reset($_SESSION['babTskMgrSelectedField']);
+		}
+		
+		function getNextField($sSessionKeyName)
+		{
+			$this->set_data('sSelected', '');//Utilisé seulement lors du déplacement
+			$this->get_data('sSelectedField', $sSelectedField);//Utilisé seulement lors du déplacement
+
+			if(array_key_exists($sSessionKeyName, $_SESSION))
+			{
+				$aItem = each($_SESSION[$sSessionKeyName]);
+				if(false !== $aItem)
+				{
+					$this->set_data('sClassName', $aItem['value']['sClassName']);
+					$this->set_data('sValue', $aItem['value']['sValue']);
+					$this->set_data('sLegend', $aItem['value']['sLegend']);
+					if($sSelectedField == $aItem['value']['sValue'])
+					{
+						$this->set_data('sSelected', 'selected="selected"');
 					}
 					
-					$sLegend = implode('/', $aLegend);
+					return true;
 				}
-				$this->sLegend = $sLegend;
-				return true;
 			}
 			return false;
 		}
 		
 		function getNextSelectableField()
 		{
-			return $this->getNextField('aSelectableField');
+			return $this->getNextField('babTskMgrSelectableField');
 		}
 		
 		function getNextSelectedField()
 		{
-			return $this->getNextField('aSelectedField');
+			return $this->getNextField('babTskMgrSelectedField');
 		}
 	}
 	
@@ -3053,6 +3226,48 @@ function processExport()
 }
 
 
+function saveSelectedTaskField()
+{
+	global $babBody;
+	
+	$iIdProject			= (int) bab_rp('iIdProject', 0);
+	$iIdProjectSpace	= (int) bab_rp('iIdProjectSpace', 0);
+	
+	if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+	{
+		$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You are not a projects manager"));
+		return false;
+	}
+	
+	if(array_key_exists('babTskMgrSelectedField', $_SESSION))
+	{
+		$aField = array();
+		
+		$iIdFieldIdx	= 0;
+		$iTypeIdx		= 1;
+		$iIndex			= 0;
+		
+		foreach($_SESSION['babTskMgrSelectedField'] as $aItem) 
+		{
+			$aFieldInfo	= explode('_', $aItem['sValue']);
+			
+			if(false !== $aFieldInfo && 2 == count($aFieldInfo))
+			{
+				$aField[] = array('iIdField' => $aFieldInfo[$iIdFieldIdx],
+					'iType' => $aFieldInfo[$iTypeIdx], 'iIdProject' => $iIdProject,
+					'iPosition' => $iIndex++);
+
+			}			
+		}
+		
+		reset($_SESSION['babTskMgrSelectedField']);
+		bab_tskmgr_deleteSelectedTaskFields($iIdProject);
+		bab_tskmgr_saveSelectedTaskField($aField);
+	}
+}
+	
+
+
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 
 	(isset($_GET['action']) ? $_GET['action'] :  
@@ -3137,10 +3352,12 @@ switch($action)
 	case BAB_TM_ACTION_DELETE_TASK:
 		deleteTask();
 		break;
-		
+
+/*		
 	case BAB_TM_ACTION_CREATE_SPECIFIC_FIELD_INSTANCE:
 		createSpecificFieldInstance();
 		break;
+//*/
 		
 	case BAB_TM_ACTION_MODIFY_NOTICE_EVENT:
 		require_once($GLOBALS['babInstallPath'] . 'tmNoticesFunc.php');
@@ -3157,6 +3374,10 @@ switch($action)
 		
 	case BAB_TM_ACTION_PROCESS_EXPORT:
 		processExport();
+		break;
+		
+	case BAB_TM_ACTION_SAVE_SELECTED_TASK_FIELD:
+		saveSelectedTaskField();
 		break;
 }
 
