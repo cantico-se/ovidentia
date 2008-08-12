@@ -59,10 +59,10 @@ function bab_getFaqRes($faqid, $delegationid) {
 			}
 		}
 
-	if( $IdEntries )
-		{
-		return $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id IN (".$babDB->quote($IdEntries).")");
-		}
+	if( count($IdEntries) > 0 )
+	{
+		return $babDB->db_query("select * from ".BAB_FAQCAT_TBL." where id IN (".$babDB->quote($IdEntries).") order by category asc");
+	}
 		
 	return false;
 }
