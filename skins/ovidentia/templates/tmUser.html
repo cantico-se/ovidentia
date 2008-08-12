@@ -2219,6 +2219,7 @@ function bab_selectOption(sControlId, sAction)
 </script>
 
 
+
 <form method="post" id="orderTaskFields" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="{ m_datas[idx] }" />
@@ -2232,7 +2233,10 @@ function bab_selectOption(sControlId, sAction)
 			<td class="BabLoginCadreBackground" align="center"> 
 				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
 					<tr>
-						<td class="messageInfo" colspan="4"><h5>{ m_captions[sMaxSelectableField] }</h5></td>
+						<td colspan="4" align="left">
+							<span class="fieldLegendItem taskFieldLegend">&nbsp</span>{ m_captions[sTaskField] }
+							<span class="fieldLegendItem additionalFieldLegend">&nbsp</span>{ m_captions[sAdditionalField] }
+						</td>
 					</tr>
 					<tr>
 						<td with="1%">
@@ -2262,7 +2266,7 @@ function bab_selectOption(sControlId, sAction)
 					</tr>
 					<tr>
 						<td colspan="4" align="center">
-							<p><input type="submit" value="{ m_captions[sSave] }" /></p>
+							<p><input type="submit" class="bab_saveField" value="{ m_captions[sSave] }" /></p>
 						</td>
 					</tr>
 				</table>

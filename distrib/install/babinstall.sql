@@ -3450,6 +3450,67 @@ CREATE TABLE bab_tskmgr_tasks_responsibles (
 # --------------------------------------------------------
 
 # 
+# Structure de la table `bab_tskmgr_task_fields`
+# 
+
+CREATE TABLE `bab_tskmgr_task_fields` (
+  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+  `sName` VARCHAR (60) NOT NULL,
+  `sLegend` VARCHAR (255) NOT NULL,
+  PRIMARY KEY  (`iId`),
+  KEY `sName` (`sName`)
+);
+
+INSERT INTO `bab_tskmgr_task_fields` (`iId`, `sName`, `sLegend`) VALUES 
+(1,	 'sProjectSpaceName', 				'Project space name'),
+(2,	 'sProjectName', 					'Project name'),
+(3,	 'sTaskNumber', 					'Task number'),
+(4,	 'sDescription', 					'Description'),
+(5,	 'sShortDescription', 				'Name'),
+(6,	 'sClass', 							'Type'),
+(7,	 'sCreatedDate', 					'Creation date'),
+(8,	 'sModifiedDate', 					'Modified date'),
+(9,	 'iIdUserCreated', 					'Modified by'),
+(10, 'iIdUserModified', 				'Created by'),
+(11, 'iCompletion', 					'Progress rate'),
+(12, 'iPriority', 						'Priority'),
+(13, 'idOwner', 						'Responsible'),
+(14, 'startDate,plannedStartDate', 		'Start Date,Planned'),
+(15, 'endDate,plannedEndDate', 			'End Date,Planned'),
+(16, 'iTime,iPlannedTime',				'Time,Planned'),
+(17, 'iCost,iPlannedCost',				'Cost,Planned'),
+(18, 'iDuration',						'Duration'),
+(19, 'sCategoryName',					'Category'),
+(20, 'sShortDescription,sProjectName',	'Name,Project name');
+
+# --------------------------------------------------------
+
+# 
+# Structure de la table `bab_tskmgr_task_selected_fields`
+#
+
+CREATE TABLE `bab_tskmgr_task_selected_fields` (
+  `iId` int(10) UNSIGNED NOT NULL auto_increment,
+  `iIdField` int(10) UNSIGNED NOT NULL,
+  `iIdProject` int(10) UNSIGNED NOT NULL,
+  `iPosition` SMALLINT( 2 ) NOT NULL,
+  `iType` SMALLINT( 2 ) NOT NULL,
+  PRIMARY KEY  (`iId`),
+  KEY `iIdField` (`iIdField`),
+  KEY `iIdProject` (`iIdProject`),
+  KEY `iType` (`iType`)
+);
+
+INSERT INTO `bab_tskmgr_task_selected_fields` (`iId`, `iIdField`, `iIdProject`, `iPosition`, `iType`) VALUES 
+(1, 20, 0, 1, 0),
+(2, 6,  0, 2, 0),
+(3, 14, 0, 3, 0),
+(4, 15, 0, 4, 0);
+
+
+# --------------------------------------------------------
+
+# 
 # Structure de la table `bab_week_days`
 # 
 

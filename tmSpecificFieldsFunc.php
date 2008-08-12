@@ -241,7 +241,16 @@ function displayDeleteSpecificFieldForm()
 	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());
 	$bf->set_data('iIdProject', $oTmCtx->getIdProject());
 	$bf->set_data('tg', bab_rp('tg', ''));
+
+	$bf->set_data('isProject', ((0 < $oTmCtx->getIdProjectSpace() && 0 < $oTmCtx->getIdProject()) ? 1 : 0));
 	
+	$sProjectName = '';
+	$aProject = array();
+	if(true === bab_getProject($oTmCtx->getIdProject(), $aProject))
+	{
+		$sProjectName = $aProject['name'];
+	}
+
 	if('\'\'' != $sDeletableField)
 	{	
 		$query = 
@@ -251,11 +260,12 @@ function displayDeleteSpecificFieldForm()
 			'FROM ' .
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'WHERE ' .
-				'fb.id IN (' . $sDeletableField . ') AND ' .
-				'fb.refCount = \'0\' ' .
+				'fb.id IN (' . $sDeletableField . ') ' .
+//				'fb.id IN (' . $sDeletableField . ') AND ' .
+//				'fb.refCount = \'0\' ' .
 			'GROUP BY fb.name ASC';
 		
-			bab_debug($query);
+//			bab_debug($query);
 				
 			$db = & $GLOBALS['babDB'];
 			$res = $db->db_query($query);
@@ -279,21 +289,34 @@ function displayDeleteSpecificFieldForm()
 			if(count($items) > 1)
 			{
 				$babBody->title = bab_translate("Delete specifics fields");
-				$bf->set_caption('warning', bab_translate("This action will delete those specific fields and all references"));
+				
+				if(0 < $oTmCtx->getIdProject())
+				{
+					$bf->set_caption('warning', bab_translate("This action will remove the fields and all instances of these fields project") . ' ' . $sProjectName);
+				}
+				else
+				{
+					$bf->set_caption('warning', bab_translate("This action will remove the fields and all instances of these fields of your personal tasks"));
+				}
 			}
 			else
 			{
 				$babBody->title = bab_translate("Delete specific field");
-				$bf->set_caption('warning', bab_translate("This action will delete the specific field and all references"));
+				
+				if(0 < $oTmCtx->getIdProject())
+				{
+					$bf->set_caption('warning', bab_translate("This action will remove the field and all instances of this field project") . ' ' . $sProjectName);
+				}
+				else
+				{
+					$bf->set_caption('warning', bab_translate("This action will remove the field and all instances of this field of your personal tasks"));
+				}
 			}
-
 				
 			$bf->set_caption('message', bab_translate("Continue ?"));
 			$bf->set_caption('title', $title);
 			$bf->set_caption('yes', bab_translate("Yes"));
 			$bf->set_caption('no', bab_translate("No"));
-	
-			
 	}
 	else 
 	{

@@ -156,7 +156,7 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 	{
 		if(false != ($datas = $babDB->db_fetch_assoc($res)))
 		{
-			bab_deleteProject($datas['id']);
+			bab_deleteProject($iIdProjectSpace, $datas['id']);
 		}
 	}
 	
@@ -174,7 +174,6 @@ function bab_deleteProjectSpace($iIdProjectSpace)
 
 	bab_deleteProjectSpaceSpecificFields($iIdProjectSpace);
 	
-
 	require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 	
 	aclDelete(BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL, $iIdProjectSpace);
@@ -491,6 +490,9 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 				$iIndex++;
 			}
 		}
+		
+		createDefaultProjectSelectedField($iIdProject);
+		
 		return $iIdProject;		
 	}
 	return false;
@@ -515,11 +517,11 @@ function bab_updateProject($iIdProject, $sName, $sDescription)
 	return $babDB->db_query($query);
 }
 
-function bab_deleteProject($iIdProject)
+function bab_deleteProject($iIdProjectSpace, $iIdProject)
 {
 	global $babDB;
 	
-	bab_deleteAllTask($iIdProject);
+	bab_deleteAllTask($iIdProjectSpace, $iIdProject);
 	
 	aclDelete(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject);
 	aclDelete(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject);
@@ -560,6 +562,9 @@ function bab_deleteProject($iIdProject)
 
 	bab_deleteProjectSpecificFields($iIdProject);	
 	
+	bab_tskmgr_deleteSelectedTaskFields($iIdProject);
+	bab_tskmgr_dropAdditionalFieldTable($iIdProjectSpace, $iIdProject);
+
 	$query = 
 		'DELETE FROM ' . 
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
@@ -1250,9 +1255,10 @@ function bab_updateTask($iIdTask, $aParams)
 	return false;
 }
 
-function bab_deleteTask($iIdTask)
+
+function bab_deleteTask($iIdProjectSpace, $iIdProject, $iIdTask)
 {
-	bab_deleteAllTaskSpecificFieldInstance($iIdTask);
+	bab_tskmgr_deleteTaskAdditionalFields($iIdProjectSpace, $iIdProject, $iIdTask);
 	bab_deleteTaskLinks($iIdTask);
 	bab_deleteTaskResponsibles($iIdTask);
 
@@ -1279,7 +1285,7 @@ function bab_deleteTask($iIdTask)
 	$babDB->db_query($query);
 }
 
-function bab_deleteAllTask($iIdProject)
+function bab_deleteAllTask($iIdProjectSpace, $iIdProject)
 {
 	global $babDB;
 	
@@ -1297,7 +1303,7 @@ function bab_deleteAllTask($iIdProject)
 	
 	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
 	{
-		bab_deleteAllTaskSpecificFieldInstance($data['id']);
+		bab_tskmgr_deleteTaskAdditionalFields($iIdProjectSpace, $iIdProject, $data['id']);
 		bab_deleteTaskLinks($data['id']);
 		bab_deleteTaskResponsibles($data['id']);
 
@@ -1399,30 +1405,6 @@ function bab_deleteTaskResponsibles($iIdTask)
 	
 	//bab_debug($query);
 	$babDB->db_query($query);
-}
-
-function bab_deleteAllTaskSpecificFieldInstance($iIdTask)
-{
-	global $babDB;
-	
-	$query = 
-		'SELECT ' .
-			'idSpFldClass ' .
-		'FROM ' .
-			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
-		'WHERE ' .
-			'idTask = \'' . $babDB->db_escape_string($iIdTask) . '\'';
-			
-	//bab_debug($query);
-	$result = $babDB->db_query($query);
-	$iNumRows = $babDB->db_num_rows($result);
-	$iIndex = 0;
-	
-	while($iIndex < $iNumRows && false != ($data = $babDB->db_fetch_assoc($result)))
-	{
-		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $data['idSpFldClass'], '- 1');
-		$iIndex++;
-	}
 }
 
 function bab_selectTasksList($iIdProject, $iLenght = 50)
@@ -2071,9 +2053,14 @@ function bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder 
 			't0.iPlannedCost iPlannedCost, ' . 
 			't0.iCost iCost, ' .
 			't0.iPriority iPriority, ' .
+			't0.created sCreatedDate, ' .
+			't0.modified sModifiedDate, ' .
+			't0.idUserCreated iIdUserCreated, ' .
+			't0.idUserModified iIdUserModified, ' .
+			't0.duration iDuration, ' .
 			't1.idOwner idOwner, ' .
 			't2.id iIdCategory, ' .
-			't2.name sCategoryName, ' .
+			'IFNULL(t2.name, \'\') sCategoryName, ' .
 			'IFNULL(t2.bgColor, \'\' ) sBgColor, ' .
 			'IFNULL(t2.color, \'\' ) sColor ' . $sField .
 		'FROM ' . 
@@ -2154,7 +2141,7 @@ function bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder 
 		$sQuery .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
 	}
 
-//	bab_debug($sQuery);
+	bab_debug($sQuery);
 //	echo $sQuery . '<br />';
 	return $sQuery;
 }
@@ -2485,8 +2472,9 @@ function bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject)
 				'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
 				'ELSE \'???\' ' .
 			'END AS sFieldType, ' .
-			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . 
-				'\' AND fb.refCount = \'' . $babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . 
+//				'\' AND fb.refCount = \'' . $babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+				'1 AS is_deletable ' .
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'WHERE ' .
@@ -2557,8 +2545,9 @@ function bab_getSpecificTextFieldClassInfoQuery($iIdProject, $iIdField)
 			'fb.refCount refCount, ' .
 			'fb.idProject idProject, ' .
 			'ft.defaultValue defaultValue, ' .
-			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+			'1 AS is_deletable ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -2580,8 +2569,9 @@ function bab_getSpecificAreaFieldClassInfoQuery($iIdProject, $iIdField)
 			'fb.refCount refCount, ' .
 			'fb.idProject idProject, ' .
 			'fa.defaultValue defaultValue, ' .
-			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+			'1 AS is_deletable ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -2622,8 +2612,9 @@ function bab_getSpecificChoiceFieldClassNameAndDefaultChoiceQuery($iIdProject, $
 			'fb.refCount iRefCount, ' .
 			'fb.idProject idProject, ' .
 			'position iDefaultOption, ' .
-			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
+//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
+			'1 AS is_deletable ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -2770,7 +2761,7 @@ function bab_selectSpecificFieldClasses($aFieldId)
 }
 
 
-
+/*
 function bab_getSpecificFieldClassDefaultValue($iIdSpecificFieldClass, &$sDefaultValue)
 {
 	global $babDB;
@@ -2814,6 +2805,7 @@ function bab_getSpecificFieldClassDefaultValue($iIdSpecificFieldClass, &$sDefaul
 		$sDefaultValue = $data['sDefaultValue'];
 	}
 }
+//*/
 
 function bab_selectSpecificFieldClassValues($iIdSpecificFieldClass)
 {
@@ -2845,6 +2837,7 @@ function bab_selectSpecificFieldClassValues($iIdSpecificFieldClass)
 	return $babDB->db_query($query);
 }
 
+/*
 function bab_getNextSpecificFieldInstancePosition($iIdTask, &$iPosition)
 {
 	global $babDB;
@@ -2873,7 +2866,9 @@ function bab_getNextSpecificFieldInstancePosition($iIdTask, &$iPosition)
 		}
 	}
 }
+//*/
 
+/*
 function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 {
 	global $babDB;
@@ -2908,7 +2903,9 @@ function bab_createSpecificFieldInstance($iIdTask, $iIdSpecificField)
 	}
 	return false;
 }
+//*/
 
+/*
 function bab_updateSpecificInstanceValue($iIdSpecificFieldInstance, $sValue)
 {
 	global $babDB;
@@ -2923,7 +2920,9 @@ function bab_updateSpecificInstanceValue($iIdSpecificFieldInstance, $sValue)
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
+//*/
 
+/*
 function bab_deleteSpecificFieldInstance($iIdSpecificFieldInstance)
 {
 	global $babDB;
@@ -2947,7 +2946,9 @@ function bab_deleteSpecificFieldInstance($iIdSpecificFieldInstance)
 	}
 	return false;
 }
+//*/
 
+/*
 function bab_deleteAllSpecificFieldInstance($iIdTask)
 {
 	global $babDB;
@@ -2974,7 +2975,9 @@ function bab_deleteAllSpecificFieldInstance($iIdTask)
 		bab_updateRefCount(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, $datas['iIdSpFldClass'], '- 1');
 	}
 }
+//*/
 
+/*
 function bab_selectSpecificFieldInstance($iIdSpecificFieldInstance)
 {
 	global $babDB;
@@ -3002,8 +3005,9 @@ function bab_selectSpecificFieldInstance($iIdSpecificFieldInstance)
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
+//*/
 
-
+/*
 function bab_selectAllSpecificFieldInstance($iIdTask)
 {
 	global $babDB;
@@ -3031,6 +3035,7 @@ function bab_selectAllSpecificFieldInstance($iIdTask)
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
+//*/
 
 
 function bab_getAdditionalTaskField($iIdProjectSpace, $iIdProject, $iIdTask)
@@ -3723,6 +3728,29 @@ function bab_tskmgr_createTaskAdditionalFields($iIdProjectSpace, $iIdProject, $i
 }
 
 
+function bab_tskmgr_deleteTaskAdditionalFields($iIdProjectSpace, $iIdProject, $iIdTask)
+{
+	global $babDB;
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+
+	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
+	
+	if(bab_isTable($sTableName))
+	{
+		$sQuery = 
+			'DELETE FROM ' . 
+				$sTableName . ' ' . 
+			'WHERE ' . 
+				'iIdTask = ' . $babDB->quote($iIdTask);
+				 
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery);
+		
+	}	
+}
+
+
+
 //Appelé lors de la mise à jour d'une tâche
 function bab_tskmgr_updateAdditionalField($iIdProjectSpace, $iIdProject, $iIdTask, $aDatas)
 {
@@ -3791,18 +3819,68 @@ function bab_tskmgr_deleteAdditionalField($iIdFieldClass)
 			
 			require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
 			
-			if(bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
+			if(bab_isTable($sTableName))
 			{
-				$sQuery = 'ALTER TABLE `' . $sTableName . '` DROP `' . 'sField' . $iIdFieldClass . '`';	
-					
-				//bab_debug($sQuery);
-				$babDB->db_query($sQuery);
-			}
-			else
-			{
-				//bab_debug('NO table field');
+				if(bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
+				{
+					$sQuery = 'ALTER TABLE `' . $sTableName . '` DROP `' . 'sField' . $iIdFieldClass . '`';	
+						
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				}
 			}
 		}
+	}
+}
+
+
+function bab_tskmgr_dropAdditionalFieldTable($iIdProjectSpace, $iIdProject) 
+{
+	global $babDB;
+	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	if(bab_isTable($sTableName))
+	{
+		$sQuery = 'DROP TABLE `' . $sTableName . '`';	
+			
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery);
+	}
+}
+
+
+
+function createDefaultProjectSelectedField($iIdProject)
+{
+	$aDefaultField = array(
+		array('iIdTaskField' => 5,  'iIdProject' => 0, 'iPosition' => 1, 'iType' => 0),
+		array('iIdTaskField' => 6,  'iIdProject' => 0, 'iPosition' => 2, 'iType' => 0),
+		array('iIdTaskField' => 14, 'iIdProject' => 0, 'iPosition' => 3, 'iType' => 0),
+		array('iIdTaskField' => 15, 'iIdProject' => 0, 'iPosition' => 4, 'iType' => 0),
+		array('iIdTaskField' => 17, 'iIdProject' => 0, 'iPosition' => 5, 'iType' => 0),
+		array('iIdTaskField' => 16, 'iIdProject' => 0, 'iPosition' => 6, 'iType' => 0),
+		array('iIdTaskField' => 13, 'iIdProject' => 0, 'iPosition' => 7, 'iType' => 0)
+	);
+	
+	global $babDB;
+	foreach($aDefaultField as $aDefaultFieldItem)
+	{
+		$sQuery = 
+			'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
+				'(' .
+					'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
+					$babDB->quote($iIdProject) . ', ' . 
+					$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
+					$babDB->quote($aDefaultFieldItem['iType']) . 
+				')'; 
+				
+		$babDB->db_query($sQuery);
 	}
 }
 ?>

@@ -369,7 +369,6 @@ function displayProjectsSpacesList()
 						$oProjectElement->addAction('GanttView',
 			               bab_toHtml(bab_translate("Display the gantt View")), $GLOBALS['babSkinPath'] . 'images/Puces/schedule.png', 
 			               'javascript:bab_popup(\'' . $sGanttViewUrl . '\', 150, 1)' , '');
-//			               $sGanttViewUrl, 'Paul !!!', 'bab_popup(this.href, 150, 1);return false;');
 						$oProjectElement->addAction('Configuration',
 			               bab_toHtml(bab_translate("Project properties")), $GLOBALS['babSkinPath'] . 'images/Puces/package_settings.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_PROPERTIES_FORM, $iIdProjectSpace, $datas['id']), '');
@@ -389,19 +388,19 @@ function displayProjectsSpacesList()
 			               bab_toHtml(bab_translate("Commentaries list")), $GLOBALS['babSkinPath'] . 'images/Puces/lists.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST, $iIdProjectSpace, $datas['id']), '');
 
-						if(0 === $iTaskCount)		               
-						{
-							$oProjectElement->addAction('Delete_Project',
-							   bab_toHtml(bab_translate("Delete project")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', 
-							   $this->getUrl(BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM, $iIdProjectSpace, $datas['id']) 
-							   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
-						}
-
 						$oProjectElement->addAction('Task_list',
 						   bab_toHtml(bab_translate("Add a task")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
 						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']) 
 						   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
                		}
+
+					if(0 === $iTaskCount && $bIsCreator)		               
+					{
+						$oProjectElement->addAction('Delete_Project',
+						   bab_toHtml(bab_translate("Delete project")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_remove.png', 
+						   $this->getUrl(BAB_TM_IDX_DISPLAY_DELETE_PROJECT_FORM, $iIdProjectSpace, $datas['id']) 
+						   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
+					}
 				}
 			}	
 		}
@@ -1013,6 +1012,11 @@ function displayDeleteProjectCommentary()
 
 function displayTaskList($sIdx)
 {
+/*	
+	require_once $GLOBALS['babInstallPath'] . 'upgrade.php';
+	tskMgrFieldOrderUpgrade();
+//*/	
+
 	$aItemMenu = array();
 	
 	$isProject			= (int) bab_rp('isProject', 0);
@@ -1591,10 +1595,13 @@ function displayTaskList($sIdx)
 		var $m_fTotalTime			= 0.00;
 		var $m_fTotalPlannedCost	= 0.00;
 		var $m_fTotalCost			= 0.00;
+		var $m_aDisplayedField		= array();
 		
-		function BAB_TaskDS($query, $iPage, $iNbRowsPerPage)
+		function BAB_TaskDS($query, $iPage, $iNbRowsPerPage, $aDisplayedField)
 		{
 			parent::BAB_MySqlDataSource($query, $iPage, $iNbRowsPerPage);
+			
+			$this->m_aDisplayedField = $aDisplayedField;
 		}
 		
 		function getNextItem()
@@ -1602,10 +1609,14 @@ function displayTaskList($sIdx)
 			$datas = parent::getNextItem();
 			if(false != $datas)
 			{
-				$this->setDateTime($datas['startDate']);
-				$this->setDateTime($datas['endDate']);
-				$this->setDateTime($datas['plannedStartDate']);
-				$this->setDateTime($datas['plannedEndDate']);
+				$aDate = array('startDate', 'endDate',
+					'plannedStartDate', 'plannedEndDate',
+					'sCreatedDate', 'sModifiedDate');
+				
+				foreach($aDate as $sKey)
+				{				
+					$this->setDateTime($datas[$sKey]);	
+				}
 				
 				if($datas['iPlannedTimeDurationUnit'] == BAB_TM_DAY)
 				{
@@ -1642,10 +1653,11 @@ function displayTaskList($sIdx)
 						break;
 				}
 				
-				$datas['idOwner'] = bab_toHtml(bab_getUserName($datas['idOwner']));
-				
-				//$datas['sShortDescription'] = $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
-				
+				$aIdUser = array('idOwner', 'iIdUserCreated', 'iIdUserModified');
+				foreach($aIdUser as $sKey)
+				{				
+					$datas[$sKey] = bab_toHtml(bab_getUserName($datas[$sKey]));
+				}
 			}
 			return $datas;
 		}
@@ -1653,18 +1665,30 @@ function displayTaskList($sIdx)
 		function getLastRow()
 		{
 			$datas = array();
-			$datas['sShortDescription']	= '';
-			$datas['sProjectName']		= '';
-			$datas['sClass']			= '';
-			$datas['startDate']			= '';
-			$datas['endDate']			= '';
-			$datas['plannedStartDate']	= '';
-			$datas['plannedEndDate']	= '';
-			$datas['idOwner']			= '';
-			$datas['iPlannedTime']		= number_format($this->m_fTotalPlannedTime, 2, '.', '');
-			$datas['iTime']				= number_format($this->m_fTotalTime, 2, '.', '');
-			$datas['iPlannedCost']		= number_format($this->m_fTotalPlannedCost, 2, '.', '');
-			$datas['iCost']				= number_format($this->m_fTotalCost, 2, '.', '');
+			foreach($this->m_aDisplayedField as $sKey)
+			{
+				$datas[$sKey] = '';
+			}
+			
+			if(array_key_exists('iPlannedTime', $datas))
+			{
+				$datas['iPlannedTime'] = number_format($this->m_fTotalPlannedTime, 2, '.', '');
+			}
+
+			if(array_key_exists('iTime', $datas))
+			{
+				$datas['iTime'] = number_format($this->m_fTotalTime, 2, '.', '');
+			}
+
+			if(array_key_exists('iPlannedCost', $datas))
+			{
+				$datas['iPlannedCost'] = number_format($this->m_fTotalPlannedCost, 2, '.', '');
+			}
+
+			if(array_key_exists('iCost', $datas))
+			{
+				$datas['iCost'] = number_format($this->m_fTotalCost, 2, '.', '');
+			}
 			return $datas;
 		}
 		
@@ -1898,19 +1922,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 			$aOrder = array('sName' => $sOrderBy, 'sOrder' => $sOrder);
 		}
 	}
-	
-/*	
-	require_once $GLOBALS['babInstallPath'] . 'upgrade.php';
-	tskMgrFieldOrderUpgrade();
-//*/	
 
-//Quand on clique sur le filtre $iIdProject === 0 donc cela ne marche pas
-//Il faut faire une fonction qui selon le context myTask ou tâche du projet 
-//remote les champs
-
-	
-	
-	
 	$aColumnHeader = bab_tskmgr_getSelectedField($iIdProject);
 
 //	bab_debug('iIdProject ==> ' . $iIdProject);
@@ -1923,19 +1935,15 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 $aField		= array();
 $aLeftJoin	= array();
 $aWhere		= array();
-
-/*
-	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
-		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
-//*/
 		
 	$aLeftJoin[]	= 'LEFT JOIN ' . 
 		BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' stf ON stf.iIdProject = t0.idProject ';
 		
 	$aWhere[]		= 'AND stf.iIdProject = \'' . $iIdProject . '\'';
-//	$aWhere[]		= 'AND stf.iIdProject = \'' . $iIdProject . '\' AND stf.iType = \'' . BAB_TM_ADDITIONAL_FIELD . '\'';
 	
 	$sTableAlias = 't5';
+	
+	$aDisplayedField = array();
 	
 	foreach($aColumnHeader as $aColumnHeaderItem)
 	{
@@ -1947,29 +1955,74 @@ $aWhere		= array();
 		{
 			$aCaption[$iKey] = bab_translate($sCaption);
 		}
+
 		
-		if(BAB_TM_ADDITIONAL_FIELD == $aColumnHeaderItem['iType'])
+		foreach($aDataSourceFieldName as $iKey => $sFieldName)
 		{
-			foreach($aDataSourceFieldName as $iKey => $sFieldName)
+			if(BAB_TM_ADDITIONAL_FIELD == $aColumnHeaderItem['iType'])
 			{
 				$sAlias = $sTableAlias . '__' . $sFieldName;
 				
 				$aDataSourceFieldName[$iKey] = $sAlias;
 				
 				$aField[] = $sTableAlias . '.sField' . $aColumnHeaderItem['iId'] . ' AS ' . $sAlias;
+				
+				$aDisplayedField[$sAlias] = $sAlias;
+			}
+			else
+			{
+				$aDisplayedField[$sFieldName] = $sFieldName;
 			}
 		}
-		
+				
 		$oMultiPage->addColumnHeader($iPosition, $aCaption, $aDataSourceFieldName);
 	}
 	
-	$aLeftJoin[]	= 'LEFT JOIN ' . 
-		bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject) . ' ' . $sTableAlias . ' ON ' . $sTableAlias . '.iIdTask = t0.id ';
+	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
+	
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	if(bab_isTable($sTableName))
+	{
+		$aLeftJoin[]	= 'LEFT JOIN ' . 
+			$sTableName . ' ' . $sTableAlias . ' ON ' . $sTableAlias . '.iIdTask = t0.id ';
+	}
+	else 
+	{
+		$aField		= array();
+		$aLeftJoin	= array();
+		$aWhere		= array();
+	}
+		
 //*	
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder), 
-		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage));
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
 //*/
+
+/*
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
+//*/
+		
 	$oMultiPage->bIsColumnHeaderUrl = true;
+	
+	//Doit-on afficher la ligne de totalisation ?
+	{
+		$aToLook = array('iPlannedTime', 'iTime', 
+			'iPlannedCost', 'iCost');
+		
+		$oMultiPage->m_bLastPage = false;
+		foreach($aToLook as $sKey)
+		{
+			if(array_key_exists($sKey, $aDisplayedField))
+			{
+				$oMultiPage->m_bLastPage = true;
+				break;
+			}
+		}
+	}
+	
+	
 	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
@@ -2001,7 +2054,8 @@ $aWhere		= array();
 	if($iIdProject > 0 && (bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) || 
 		bab_isAccessValid(BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL, $iIdProject)) )
 	{
-		$sExportUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&action=' . urlencode(BAB_TM_ACTION_PROCESS_EXPORT);
+		$sExportUrl = $babUrlScript . '?tg=' . urlencode('usrTskMgr') . '&action=' . urlencode(BAB_TM_ACTION_PROCESS_EXPORT) . 
+			'&iIdProjectSpace=' . urlencode($iIdProjectSpace);
 		
 		$oToolbar->addToolbarItem(
 			new BAB_TM_ToolbarItem(bab_translate("Export"), $sExportUrl, 
@@ -2343,12 +2397,16 @@ function displayOrderTaskFieldsForm()
 			
 			$this->set_caption('sSelectableField', bab_translate("Selectable fields"));
 			$this->set_caption('sSelectedField', bab_translate("Selected fields"));
-			$this->set_caption('sMaxSelectableField', bab_translate("You can select up to 15 fields"));
 			$this->set_caption('sGrabField', bab_translate("Add"));
 			$this->set_caption('sDropField', bab_translate("Drop"));
 			$this->set_caption('sUp', bab_translate("Up"));
 			$this->set_caption('sDown', bab_translate("Down"));
 			$this->set_caption('sSave', bab_translate("Save"));
+			$this->set_caption('sTaskField', bab_translate("Task fields"));
+			$this->set_caption('sAdditionalField', bab_translate("Specific fields"));
+			
+			
+			
 			
 			$this->initSessionContex();
 			$this->initSession($iIdProject);
@@ -2698,7 +2756,7 @@ function deleteProject()
 
 			require_once($GLOBALS['babInstallPath'] . 'admin/acl.php');
 
-			if(bab_deleteProject($iIdProject))
+			if(bab_deleteProject($iIdProjectSpace, $iIdProject))
 			{
 				bab_updateRefCount(BAB_TSKMGR_PROJECTS_SPACES_TBL, $iIdProjectSpace, '- 1');
 				bab_deleteAllNoticeEvent($iIdProjectSpace, $iIdProject);
@@ -2988,10 +3046,11 @@ function deleteTask()
 			sendNotice($iIdProjectSpace, $iIdProject, $iIdTask, $iIdEvent, $sSubject, $sBody);
 		}
 		
-		bab_deleteTask($iIdTask);
+		bab_deleteTask($iIdProjectSpace, $iIdProject, $iIdTask);
 	}
 }
 
+/*
 function createSpecificFieldInstance()
 {
 	$oTmCtx =& getTskMgrContext();
@@ -3016,6 +3075,7 @@ function createSpecificFieldInstance()
 		}
 	}
 }
+//*/
 
 function savePersonnalTaskConfiguration()
 {
@@ -3155,9 +3215,64 @@ function processExport()
 		
 		$aFilters['bIsManager'] = true;
 		
-		$aOrder = array();
-		$sQuery = bab_selectTaskQuery($aFilters, $aOrder);
+		$aField			= array();
+		$aLeftJoin		= array();
+		$aWhere			= array();
 		
+		$aLeftJoin[] = 'LEFT JOIN ' . 
+			BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' stf ON stf.iIdProject = t0.idProject ';
+			
+		$aWhere[] = 'AND stf.iIdProject = \'' . $iIdProject . '\'';
+		
+		$sTableAlias = 't5';
+		
+		$aFieldInfo = array();
+		
+		$aFieldInfo		= array();
+		$aSelectedField	= bab_tskmgr_getSelectedField($iIdProject);
+		foreach($aSelectedField as $aSelectedFieldItem)
+		{
+			$aCaption				= explode(',', $aSelectedFieldItem['sLegend']);
+			$aDataSourceFieldName	= explode(',', $aSelectedFieldItem['sName']);
+			
+			foreach($aDataSourceFieldName as $iKey => $sFieldName)
+			{
+				$sAlias = $sFieldName;
+				
+				if(BAB_TM_ADDITIONAL_FIELD == $aSelectedFieldItem['iType'])
+				{
+					$sAlias		= $sTableAlias . '__' . $sFieldName;
+					$aField[]	= $sTableAlias . '.sField' . $aSelectedFieldItem['iId'] . ' AS ' . $sAlias;
+				}
+				
+				$sLegend = '???';
+				if(array_key_exists($iKey, $aCaption))
+				{
+					$sLegend = bab_translate($aCaption[$iKey]);
+				}
+				$aFieldInfo[$sAlias] = $sLegend;
+			}
+		}
+		
+		$sTableName = bab_tskmgr_getAdditionalFieldTableName(bab_rp('iIdProjectSpace', 1), $iIdProject);
+		
+		require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+		
+		if(bab_isTable($sTableName))
+		{
+			$aLeftJoin[]	= 'LEFT JOIN ' . 
+				$sTableName . ' ' . $sTableAlias . ' ON ' . $sTableAlias . '.iIdTask = t0.id ';
+		}
+		else 
+		{
+			$aField		= array();
+			$aLeftJoin	= array();
+			$aWhere		= array();
+		}
+		
+		$aOrder = array();
+//		$sQuery = bab_selectTaskQuery($aFilters, $aOrder);
+		$sQuery = bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder);
 //		bab_debug($sQuery);
 	
 		global $babDB;
@@ -3167,50 +3282,97 @@ function processExport()
 		
 		if($iNumRows > 0)
 		{		
-			$sSeparator = ',';
-			$sCrlf = "\r\n";
-	
-			$sOutput = 
-				'"' . bab_translate("Title") . '"' . $sSeparator .
-				'"' . bab_translate("Type") . '"' . $sSeparator .
-				'"' . bab_translate("Planned start date") . '"' . $sSeparator .
-				'"' . bab_translate("Real start date") . '"' . $sSeparator .
-				'"' . bab_translate("Planned end date") . '"' . $sSeparator .
-				'"' . bab_translate("Real end date") . '"' . $sSeparator .
-				'"' . bab_translate("Planned cost") . '"' . $sSeparator .
-				'"' . bab_translate("Real cost") . '"' . $sSeparator .
-				'"' . bab_translate("Planned time") . '"' . $sSeparator .
-				'"' . bab_translate("Real time") . '"' . $sSeparator .
-				'"' . bab_translate("Task responsible") . '"' . $sSeparator . $sCrlf;
+			$sSeparator	= ',';
+			$sCrlf		= "\r\n";
+			$sOutput	= '';
+			 
+			foreach($aFieldInfo as $sAlias => $sLegend)
+			{
+				if('sDescription' == $sAlias)
+				{
+					//SZ vue avec JLB le 12/08/2008 pour l'instant
+					//on ne traite pas la description car l'éditeur HTML
+					//remonte des caractères qui génére des saut de lignes
+					continue;
+				}
+				
+				$sOutput .= '"' . $sLegend . '"' . $sSeparator;
+			}
+			
+			$sLastChar = substr($sOutput, -1);
+			if(false !== $sLastChar && ',' == $sLastChar)
+			{
+				$sOutput = substr($sOutput, 0, -1);
+			}
+			
+			$sOutput .= $sCrlf;
+
+			$aDateField = array('startDate', 'endDate', 'plannedStartDate', 
+				'plannedEndDate', 'sCreatedDate', 'sModifiedDate');
+			
+			$aIdUserField = array('idOwner', 'iIdUserCreated', 'iIdUserModified');
+			
+			require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+			$oEditor = new bab_contentEditor('bab_taskManagerDescription');
+			
 			
 			while($iIndex < $iNumRows && false != ($aDatas = $babDB->db_fetch_assoc($oResult)))
 			{
 				$iIndex++;
 				
-				$sOutput .= '"' . $aDatas['sShortDescription'] . '"' . $sSeparator;
-				$sOutput .= '"' . $aDatas['sClass'] . '"' . $sSeparator;
-				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['plannedStartDate']),true) . '"' . $sSeparator;
-				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['startDate']),true) . '"' . $sSeparator;
-				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['plannedEndDate']),true) . '"' . $sSeparator;
-				$sOutput .= '"' . bab_shortDate(bab_mktime($aDatas['endDate']),true) . '"' . $sSeparator;
-				$sOutput .= '"' . $aDatas['iPlannedCost'] . '"' . $sSeparator;
-				$sOutput .= '"' . $aDatas['iCost'] . '"' . $sSeparator;
-				
-				
-				if($aDatas['iPlannedTimeDurationUnit'] == BAB_TM_DAY)
+				foreach($aFieldInfo as $sAlias => $sLegend)
 				{
-					$aDatas['iPlannedTime'] = ((float) $aDatas['iPlannedTime'] * 24);
-				}
-				
-				if($aDatas['iTimeDurationUnit'] == BAB_TM_DAY)
-				{
-					$aDatas['iTime'] = ((float) $aDatas['iTime'] * 24);
+					$sData = $aDatas[$sAlias];
+					
+					if(in_array($sAlias, $aDateField))
+					{
+						$sData = '';
+						if('0000-00-00 00:00:00' != $aDatas[$sAlias])
+						{
+							$sData = bab_toHtml(bab_shortDate(bab_mktime($aDatas[$sAlias])));
+						}
+					}
+					else if(in_array($sAlias, $aIdUserField))
+					{
+						$sData = bab_toHtml(bab_getUserName($aDatas[$sAlias]));
+					}
+					else if('iPlannedTime' == $sAlias)
+					{
+						$sData = $aDatas[$sAlias];
+						if(BAB_TM_DAY == $aDatas['iPlannedTimeDurationUnit'])
+						{
+							$sData = ((float) $aDatas[$sAlias] * 24);
+						}
+					}
+					else if('iTime' == $sAlias)
+					{
+						$sData = $aDatas[$sAlias];
+						if(BAB_TM_DAY == $aDatas['iTimeDurationUnit'])
+						{
+							$sData = ((float) $aDatas[$sAlias] * 24);
+						}
+					}
+					else if('sDescription' == $sAlias)
+					{
+//						$oEditor->setContent($aDatas[$sAlias]);
+//						$sData = tskmgr_htmlToText(html_entity_decode($oEditor->getHtml(), ENT_QUOTES));
+						
+						//SZ vue avec JLB le 12/08/2008 pour l'instant
+						//on ne traite pas la description car l'éditeur HTML
+						//remonte des caractères qui génére des saut de lignes
+						continue;
+					}
+
+					$sOutput .= '"' . $sData . '"' . $sSeparator;
 				}
 
+				$sLastChar = substr($sOutput, -1);
+				if(false !== $sLastChar && ',' == $sLastChar)
+				{
+					$sOutput = substr($sOutput, 0, -1);
+				}
 				
-				$sOutput .= '"' . $aDatas['iPlannedTime'] . '"' . $sSeparator;
-				$sOutput .= '"' . $aDatas['iTime'] . '"' . $sSeparator;
-				$sOutput .= '"' . bab_getUserName($aDatas['idOwner']) . '"' . $sCrlf;
+				$sOutput .= $sCrlf;
 			}
 			
 			$sFileName = 'listeTâches.csv';
@@ -3225,6 +3387,13 @@ function processExport()
 	}
 }
 
+function tskmgr_htmlToText($sHtml)
+{
+	$sHtml = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $sHtml);
+	$sHtml = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $sHtml);
+	$sHtml = strip_tags($sHtml);
+	return $sHtml;
+}
 
 function saveSelectedTaskField()
 {
@@ -3264,6 +3433,9 @@ function saveSelectedTaskField()
 		bab_tskmgr_deleteSelectedTaskFields($iIdProject);
 		bab_tskmgr_saveSelectedTaskField($aField);
 	}
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=usrTskMgr&idx=displayProjectsSpacesList");
+	exit;
 }
 	
 

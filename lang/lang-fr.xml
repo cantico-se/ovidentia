@@ -2003,6 +2003,7 @@
 <string id="Projects space">Espaces projets</string>
 <string id="Add a project space">Ajouter un espace projets</string>
 <string id="Specific fields">Champs spécifiques</string>
+<string id="Task fields">Champs de tâche</string>
 <string id="Categories list">Liste des catégories</string>
 <string id="Notices">Notifications</string>
 <string id="Edition of a project space">Edition d'un espace de projets</string>
@@ -2086,8 +2087,10 @@
 <string id="Add specific field">Ajouter un champ spécifique</string>
 <string id="Add a new field">Ajouter un nouveau champ</string>
 <string id="Modify the field">Modifier le champ</string>
-<string id="This action will delete those specific fields and all references">Cette action supprime ces champs spécifiques et leurs références</string>
-<string id="This action will delete the specific field and all references">Cette action supprime ce champ spécifique et ses références</string>
+<string id="This action will remove the field and all instances of this field project">Cette action va supprimer le champ ainsi que toutes les instances de ce champ du projet</string>
+<string id="This action will remove the fields and all instances of these fields project">Cette action va supprimer les champs ainsi que toutes les instances de ces champs du projet</string>
+<string id="This action will remove the field and all instances of this field of your personal tasks">Cette action va supprimer le champ ainsi que toutes les instances de ce champ de vos tâches personnelles</string>
+<string id="This action will remove the fields and all instances of these fields of your personal tasks">Cette action va supprimer les champs ainsi que toutes les instances de ces champs de vos tâches personnelles</string>
 <string id="Delete specific field">Supprimer le champ spécifique</string>
 <string id="There is an another field with the name">Un champ de même nom existe déjà</string>
 <string id="Task">Tâche</string>
@@ -2600,4 +2603,13 @@
 <string id="You can select up to 15 fields">Vous pouvez sélectionner jusqu'à 15 champs</string>
 <string id="Selectable fields">Champs sélectionnables</string>
 <string id="Selected fields">Champs sélectionnés</string>
+<string id="Project space name">Nom de l'espace de projet</string>
+<string id="Project name">Nom du projet</string>
+<string id="Creation date">Date de création</string>
+<string id="Modified date">Date de modification</string>
+<string id="Created by">Créé par</string>
+<string id="Progress rate">Taux d'avancement</string>
+<string id="Drop">Enlever</string>
+<string id="Up">Monter</string>
+<string id="Down">Descendre</string>
 </fr>

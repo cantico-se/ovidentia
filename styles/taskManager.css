@@ -84,7 +84,7 @@
 	background-repeat:no-repeat;
 	background-position:1px;
 	padding-left:20px;
-/*	background-color:#71BF44 */
+	background-color:#A9A9A9;  
 }
 
 
@@ -93,16 +93,24 @@
 	background-repeat:no-repeat;
 	background-position:1px;
 	padding-left:20px;
-/*	background-color:#FFFBCB */
+	background-color:#CCCCCC;  
 }
 
-.messageInfo {
-	background-image:url('../skins/ovidentia/images/48x48/status/messagebox_warning.png');
-	background-repeat:no-repeat;
-	background-position:1px;
-	padding-left:60px;
-	background-color:#FFFBCB
+.fieldLegendItem {
+	border:1px solid #000000;
+	margin-left: 15px;
+	padding-left: 15px;
+	margin-right: 10px;
 }
+
+.taskFieldLegend {
+	background-color:#A9A9A9;
+}
+
+.additionalFieldLegend {
+	background-color:#CCCCCC;
+}
+
 
 input.bab_grabField {
 	background-image:url('../skins/ovidentia/images/Puces/go-next.png');
@@ -130,6 +138,14 @@ input.bab_upField {
 
 input.bab_downField {
 	background-image:url('../skins/ovidentia/images/Puces/go-down.png');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+	width:100px;
+}
+
+input.bab_saveField {
+	background-image:url('../skins/ovidentia/images/Puces/save.png');
 	background-repeat:no-repeat;
 	background-position:1px;
 	padding-left:16px;

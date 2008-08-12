@@ -627,6 +627,7 @@ function bab_deleteUser($id)
 	// delete user
 	$res = $babDB->db_query("delete from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'");
 	
+	bab_tskmgr_deleteUserContext($id);
 	
 	include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
 	$event = new bab_eventUserDeleted($id);
@@ -689,4 +690,114 @@ function bab_deleteOrgChart($id)
 	$babTree->removeTree($rootinfo['id']);
 }
 
+
+function bab_tskmgr_deleteUserContext($iIdUser)
+{
+	global $babDB;
+	
+	$sTableName	= 'bab_tskmgr_user' . $iIdUser . '_additional_fields';
+	$aIsTable	= $babDB->db_fetch_array($babDB->db_query("SHOW TABLES LIKE '". $sTableName . "'"));
+	
+	$sQuery = 
+		'SELECT ' .
+			'idTask iIdTask ' . 
+		'FROM ' .
+			BAB_TSKMGR_TASKS_INFO_TBL . ' ' . 
+		'WHERE ' . 
+			'idOwner = ' . $babDB->quote($iIdUser) . ' AND ' .
+			'isPersonnal = ' . $babDB->quote(1); //1 == 'BAB_TM_YES'
+	
+	//bab_debug($sQuery);
+	$oResultTaskInfo = $babDB->db_query($sQuery);
+	if(false !== $oResultTaskInfo)
+	{
+		$iNumRows = $babDB->db_num_rows($oResultTaskInfo);
+		if(0 < $iNumRows)
+		{
+			$aDatas = array();
+			while(false !== ($aDatasTaskInfo = $babDB->db_fetch_assoc($oResultTaskInfo)))
+			{
+				$iIdTask = (int) $aDatasTaskInfo['iIdTask'];
+				
+				//bab_tskmgr_deleteTaskAdditionalFields
+				{				
+					if($aIsTable[0] == $sTableName)
+					{
+						$sQuery = 
+							'DELETE FROM ' . 
+								$sTableName . ' ' . 
+							'WHERE ' . 
+								'iIdTask = ' . $babDB->quote($iIdTask);
+								 
+						//bab_debug($sQuery);
+						$babDB->db_query($sQuery);
+						
+					}
+				}
+
+				//bab_deleteTaskLinks
+				{
+					$sQuery = 
+						'DELETE FROM ' . 
+							BAB_TSKMGR_LINKED_TASKS_TBL . ' ' .
+						'WHERE ' .
+							'idTask = ' . $babDB->quote($iIdTask);
+							
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				}
+				
+				//bab_deleteTaskResponsibles
+				{
+					$sQuery = 
+						'DELETE FROM ' . 
+							BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . ' ' .
+						'WHERE ' .
+							'idTask = ' . $babDB->quote($iIdTask);
+					
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				}
+				
+				//The other
+				{
+					$sQuery = 
+						'DELETE FROM ' . 
+							BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
+						'WHERE ' .
+							'idTask = ' . $babDB->quote($iIdTask);
+							
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				
+					$sQuery = 
+						'DELETE FROM ' . 
+							BAB_TSKMGR_TASKS_TBL . ' ' .
+						'WHERE ' .
+							'id = ' . $babDB->quote($iIdTask);
+							
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+											
+					$sQuery = 
+						'DELETE FROM ' . 
+							BAB_TSKMGR_TASKS_COMMENTS_TBL . ' ' .
+						'WHERE ' .
+							'idTask = ' . $babDB->quote($iIdTask);
+							
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				}
+			}
+		}
+	}
+
+	if($aIsTable[0] == $sTableName)
+	{
+		$sQuery = 'DROP TABLE `' . $sTableName . '`';	
+			
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery);
+	}
+}
 ?>

@@ -563,26 +563,26 @@ function tskMgrCreateTaskFieldContext()
 	");
 
 	$aTaskField = array(		
-		array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Name of space project'),
-		array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project Name'),
-		array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Number of the task'),
-		array('iId' => 4,	'sName' => 'sDescription', 						'sLegend' => 'Description of the task'),
-		array('iId' => 5,	'sName' => 'sShortDescription', 				'sLegend' => 'Title'),
+		array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Project space name'),
+		array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project name'),
+		array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Task number'),
+		array('iId' => 4,	'sName' => 'sDescription', 						'sLegend' => 'Description'),
+		array('iId' => 5,	'sName' => 'sShortDescription', 				'sLegend' => 'Name'),
 		array('iId' => 6,	'sName' => 'sClass', 							'sLegend' => 'Type'),
-		array('iId' => 7,	'sName' => 'sCreatedDate', 						'sLegend' => 'Creation Date'),
-		array('iId' => 8,	'sName' => 'sModifiedDate', 					'sLegend' => 'Date Modified'),
-		array('iId' => 9,	'sName' => 'iIdUserCreated', 					'sLegend' => 'Author of the establishment'),
-		array('iId' => 10,	'sName' => 'iIdUserModified', 					'sLegend' => 'Author of the amendment'),
-		array('iId' => 11,	'sName' => 'iCompletion', 						'sLegend' => 'Progress Rate'),
+		array('iId' => 7,	'sName' => 'sCreatedDate', 						'sLegend' => 'Creation date'),
+		array('iId' => 8,	'sName' => 'sModifiedDate', 					'sLegend' => 'Modified date'),
+		array('iId' => 9,	'sName' => 'iIdUserCreated', 					'sLegend' => 'Modified by'),
+		array('iId' => 10,	'sName' => 'iIdUserModified', 					'sLegend' => 'Created by'),
+		array('iId' => 11,	'sName' => 'iCompletion', 						'sLegend' => 'Progress rate'),
 		array('iId' => 12,	'sName' => 'iPriority', 						'sLegend' => 'Priority'),
 		array('iId' => 13,	'sName' => 'idOwner', 							'sLegend' => 'Responsible'),
 		array('iId' => 14,	'sName' => 'startDate,plannedStartDate', 		'sLegend' => 'Start Date,Planned'),
 		array('iId' => 15,	'sName' => 'endDate,plannedEndDate', 			'sLegend' => 'End Date,Planned'),
 		array('iId' => 16,	'sName' => 'iTime,iPlannedTime',				'sLegend' => 'Time,Planned'),
 		array('iId' => 17,	'sName' => 'iCost,iPlannedCost',				'sLegend' => 'Cost,Planned'),
-		array('iId' => 18,	'sName' => 'iDuration',							'sLegend' => 'Duration of the task'),
+		array('iId' => 18,	'sName' => 'iDuration',							'sLegend' => 'Duration'),
 		array('iId' => 19,	'sName' => 'sCategoryName',						'sLegend' => 'Category'),
-		array('iId' => 20,	'sName' => 'sShortDescription,sProjectName',	'sLegend' => 'Title,Project Name'),
+		array('iId' => 20,	'sName' => 'sShortDescription,sProjectName',	'sLegend' => 'Name,Project name'),
 	);
 
 	foreach($aTaskField as $aTaskFieldItem)

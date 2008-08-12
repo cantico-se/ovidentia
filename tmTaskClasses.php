@@ -172,8 +172,10 @@
 			$this->set_caption('sCommentaries', bab_translate("Commentaries"));
 			$this->set_caption('sSpFld', bab_translate("Specific fields"));
 			$this->set_caption('sDescription', bab_translate("Description"));
-			$this->set_caption('sShortDescription', bab_translate("Short description"));
-			$this->set_caption('sPredecessorShortDescription', bab_translate("Short description"));
+			$this->set_caption('sShortDescription', bab_translate("Name"));
+			$this->set_caption('sPredecessorShortDescription', bab_translate("Name"));
+//			$this->set_caption('sShortDescription', bab_translate("Short description"));
+//			$this->set_caption('sPredecessorShortDescription', bab_translate("Short description"));
 			$this->set_caption('sLinkedTask', bab_translate("Linked task"));
 			$this->set_caption('sProposable', bab_translate("Proposed"));
 			$this->set_caption('sDurationType', bab_translate("Duration type"));
@@ -2384,18 +2386,6 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			foreach($aSpFldInstanceValue as $iIdFieldClass => $sValue)
 			{
 				$aDatas['sField' . $iIdFieldClass] = $sValue;
-				
-				/*
-				if(!isset($aDeletableSpfObjects[$key]))
-				{
-					bab_updateSpecificInstanceValue($key, trim($value));
-				}
-				else
-				{
-					bab_deleteSpecificFieldInstance($key);
-				}
-				//*/
-				
 			}
 			
 			if(count($aDatas) > 0)
