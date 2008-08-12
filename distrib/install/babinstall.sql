@@ -879,7 +879,7 @@ CREATE TABLE `bab_sites` (
   `usebgcolor` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
   `show_update_info` enum('Y','N') NOT NULL default 'Y',
-  `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT '-1'
+  `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT '-1',
   `mail_fieldaddress` char(3) NOT NULL default 'Bcc',
   `mail_maxperpacket` smallint(2) unsigned NOT NULL default '25',
   PRIMARY KEY  (`id`),
