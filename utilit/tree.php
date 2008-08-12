@@ -2059,12 +2059,13 @@ class bab_FaqTreeView extends bab_TreeView
 		if ($babBody->currentAdmGroup != 0) {
 			$sql .= ' WHERE id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
 		}
+		$sql .= ' order by category asc';
 
 		$faqcategoryType = 'faqcategory';
 		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
 					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES) {
 			$faqcategoryType .= ' clickable';
-		}		
+		}
 		$categories = $babDB->db_query($sql);
 		while ($category = $babDB->db_fetch_array($categories)) {
 			$element =& $this->createElement('category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],

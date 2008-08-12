@@ -46,7 +46,7 @@ function browse($cat)
 				}
 			else
 				{
-				$req = "select * from ".BAB_FAQCAT_TBL;
+				$req = "select * from ".BAB_FAQCAT_TBL.' order by category asc';
 				$this->q = false;
 				}
 			$this->res = $babDB->db_query($req);	
