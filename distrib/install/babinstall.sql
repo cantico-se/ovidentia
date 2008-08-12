@@ -2385,7 +2385,7 @@ CREATE TABLE bab_cal_user_options (
   end_time time default NULL,
   user_calendarids varchar(255) NOT NULL default '',
   show_update_info enum('N','Y') NOT NULL default 'N',
-  iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL
+  iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );
