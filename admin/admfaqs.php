@@ -150,6 +150,7 @@ function listCategories()
 				default:
 					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			}
+			$req .= ' order by category asc';
 
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
