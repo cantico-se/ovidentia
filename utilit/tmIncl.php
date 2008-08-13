@@ -3619,7 +3619,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 		$sMessage = 'Should never append ' . 'iIdProjectSpace ==> ' . $iIdProjectSpace . ' iIdProject ==> ' . $iIdProject;
 	}
 					
-	bab_debug('bab_tskmgr_createAdditionalField ' . $sMessage);
+//	bab_debug('bab_tskmgr_createAdditionalField ' . $sMessage);
 	
 	if(false == $bAllProject)
 	{
@@ -3671,7 +3671,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 		'WHERE ' . 
 			implode(' AND ', $aWhereClauseItem);
 
-	bab_debug($sQuery);
+//	bab_debug($sQuery);
 	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
@@ -3707,7 +3707,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 								$babDB->db_escape_string($sFieldValue) . 
 							'\')'; 
 								
-					bab_debug($sQuery);
+//					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
 				}
 				else
@@ -3722,7 +3722,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 							'WHERE ' .
 								'iId = ' . $babDB->quote($aDatasTask['iId']);
 								
-						bab_debug($sQuery);
+//						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
 				}
