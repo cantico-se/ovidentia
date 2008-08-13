@@ -275,36 +275,39 @@ class Func_PortalAuthentication extends bab_functionality
 			$bLdapOk = false;
 		}
 		
-		$isNew = false;
-		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
-		if (false === $iIdUser)
+		if( $bLdapOk )
 		{
-			$oLdap->close();
-			return null;
-		}
-		else 
-		{
-			if ($aEntries['count'] > 0)
+			$isNew = false;
+			$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
+			if (false === $iIdUser)
 			{
-				bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				$oLdap->close();
+				return null;
 			}
+			else 
+			{
+				if ($aEntries['count'] > 0)
+				{
+					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				}
 
-			if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
-			{
-				$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-				$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-				$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-				notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+				{
+					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				}
 			}
-		}
-			
+		}	
+
 		$oLdap->close();
 		
 		if (false === $bLdapOk)
 		{
 			if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
 			{
-				$bLdapOk = bab_haveAdministratorRight($iIdUser);
+				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
 				if (false === $bLdapOk)
 				{
 					$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
@@ -312,7 +315,7 @@ class Func_PortalAuthentication extends bab_functionality
 			}
 		}
 		
-		if (false !== $iIdUser)
+		if (false !== $iIdUser && $bLdapOk)
 		{
 			$this->clearErrors();
 			return $iIdUser;
@@ -387,37 +390,39 @@ class Func_PortalAuthentication extends bab_functionality
 			$bLdapOk = false;
 		}
 
-		$isNew = false;
-		$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
-		if (false === $iIdUser)
+		if( $bLdapOk )
 		{
-			$oLdap->close();
-			return null;
-		}
-		else 
-		{
-			if ($aEntries['count'] > 0)
+			$isNew = false;
+			$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
+			if (false === $iIdUser)
 			{
-				bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				$oLdap->close();
+				return null;
 			}
-
-			if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+			else 
 			{
-				$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-				$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-				$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-				notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				if ($aEntries['count'] > 0)
+				{
+					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				}
+
+				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+				{
+					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				}
+
 			}
-
 		}
-
 		$oLdap->close();
 
 		if (false === $bLdapOk)
 		{
 			if ($babBody->babsite['ldap_allowadmincnx'] == 'Y')
 			{
-				$bLdapOk = bab_haveAdministratorRight($iIdUser);
+				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
 				if( false === $bLdapOk)
 				{
 					$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
@@ -425,7 +430,7 @@ class Func_PortalAuthentication extends bab_functionality
 			}
 		}
 
-		if (false !== $iIdUser)
+		if (false !== $iIdUser && $bLdapOk)
 		{
 			$this->clearErrors();
 			return $iIdUser;
@@ -725,11 +730,28 @@ function bab_getUserByNickname($sNickname)
 }
 
 
-function bab_haveAdministratorRight($iIdUser)
+function bab_haveAdministratorRight($sLogin, $sPassword, &$iIdUser)
 {
 	global $babDB;
-	$oRes = $babDB->db_query('select id from ' . BAB_USERS_GROUPS_TBL . ' where id_object=\'' . $babDB->db_escape_string($iIdUser) . '\' and id_group=\'3\'');
-	return ($babDB->db_num_rows($oRes) !== 0);
+	if (empty($iIdUser))
+	{
+		$res = $babDB->db_query("select id from ".BAB_USERS_TBL." WHERE nickname='".$babDB->db_escape_string($sLogin)."' and password='". $babDB->db_escape_string(md5(strtolower($sPassword))) ."'");
+		if( $res && $babDB->db_num_rows($res))
+		{
+			$arr = $babDB->db_fetch_array($res);
+			$iIdUser = $arr['id'];
+		}
+	}
+	
+	if( $iIdUser )
+	{
+		$oRes = $babDB->db_query('select id from ' . BAB_USERS_GROUPS_TBL . ' where id_object=\'' . $babDB->db_escape_string($iIdUser) . '\' and id_group=\'3\'');
+		return ($babDB->db_num_rows($oRes) !== 0);
+	}
+	else
+	{
+		return false;
+	}
 }
 
 
