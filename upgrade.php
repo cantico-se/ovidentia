@@ -777,7 +777,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 				'WHERE ' . 
 					'idProjectSpace = \'' . $babDB->db_escape_string($aDatasProject['iIdProjectSpace']) . '\' AND ' .
-					'(fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
+					'fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
 					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
 					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
 					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) . 
