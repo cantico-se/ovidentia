@@ -132,7 +132,7 @@ function contactUnload($pos, $bliste)
 function contactUpdate($id)
 {
 	global $bliste, $babDB, $BAB_SESS_USERID;
-	$req = "select * from ".BAB_CONTACTS_TBL." where id='$id' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+	$req = "select * from ".BAB_CONTACTS_TBL." where id='".$babDB->db_escape_string($id)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 	$res = $babDB->db_query($req);
 	if( $babDB->db_num_rows($res) > 0)
 		{
