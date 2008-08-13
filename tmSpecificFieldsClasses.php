@@ -25,7 +25,7 @@
 	require_once($babInstallPath . 'utilit/baseFormProcessingClass.php');
 	require_once($babInstallPath . 'utilit/tableWrapperClass.php');
 	require_once($babInstallPath . 'utilit/tmdefines.php');
-	
+	require_once($babInstallPath . 'utilit/tmIncl.php');
 	
 class BAB_TM_FieldBase extends BAB_BaseFormProcessing
 {
@@ -169,8 +169,10 @@ class BAB_TM_FieldText extends BAB_TM_FieldBase
 				$this->set_htmlData('sFieldName', $datas['name']);
 				$this->set_htmlData('sFieldValue', $datas['defaultValue']);
 				$this->set_htmlData('iRefCount', $datas['refCount']);
-				$this->set_data('is_deletable', $datas['is_deletable']);
-				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
+				
+				$bDelatable = bab_tskmgr_specificFieldDelatable($datas['iIdProjectSpace'], $datas['iIdProject'], $datas['iIdUser']);				
+				$this->set_data('is_deletable', (($bDelatable) ? '1' : '0'));
+				$this->set_data('is_modifiable', (($bDelatable) ? '1' : '0'));
 			}
 		}
 	}
@@ -213,8 +215,10 @@ class BAB_TM_FieldArea extends BAB_TM_FieldBase
 				$this->set_htmlData('sFieldName', $datas['name']);
 				$this->set_htmlData('sFieldValue', $datas['defaultValue']);
 				$this->set_htmlData('iRefCount', $datas['refCount']);
-				$this->set_data('is_deletable', $datas['is_deletable']);
-				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
+				
+				$bDelatable = bab_tskmgr_specificFieldDelatable($datas['iIdProjectSpace'], $datas['iIdProject'], $datas['iIdUser']);				
+				$this->set_data('is_deletable', (($bDelatable) ? '1' : '0'));
+				$this->set_data('is_modifiable', (($bDelatable) ? '1' : '0'));
 			}
 		}
 	}
@@ -304,6 +308,8 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 		$this->get_data('iIdProject', $iIdProject);
 		$result = $this->selectFieldNameAndDefaultChoiceQuery($iIdProject, $iIdField);
 
+		bab_debug($iIdField);
+		
 		if(false != $result && $db->db_num_rows($result) > 0)
 		{
 			$datas = $db->db_fetch_assoc($result);
@@ -312,7 +318,6 @@ class BAB_TM_FieldRadio extends BAB_TM_FieldBase
 				$this->set_htmlData('sFieldName', $datas['sFieldName']);
 				$this->set_data('iRefCount', $datas['iRefCount']);
 				$this->set_data('iDefaultOption', $datas['iDefaultOption']);
-				$this->set_data('is_deletable', $datas['is_deletable']);
 				$this->set_data('is_modifiable', ($datas['idProject'] == $iIdProject));
 			}
 		}

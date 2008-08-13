@@ -792,7 +792,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 			$iNumRows = $babDB->db_num_rows($oResultField);
 			if(0 < $iNumRows)
 			{
-				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
+				while(false !== ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
 					
@@ -969,7 +969,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 			$iNumRows = $babDB->db_num_rows($oResultField);
 			if(0 < $iNumRows)
 			{
-				while(false != ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
+				while(false !== ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
 					

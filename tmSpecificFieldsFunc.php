@@ -25,7 +25,7 @@ include "base.php";
 require_once $babInstallPath . 'tmContext.php';
 require_once $babInstallPath . 'tmSpecificFieldsClasses.php';
 require_once $babInstallPath . 'utilit/tmToolsIncl.php';
-		
+require_once $babInstallPath . 'utilit/tmIncl.php';
 	
 	
 	
@@ -66,9 +66,9 @@ function displaySpecificFieldList()
 				$this->set_caption('deleteField', bab_translate("Click here to delete"));
 				$this->set_caption('update', bab_translate("Update"));
 				
-				$oTmCtx =& getTskMgrContext();
-				$this->set_data('iIdProjectSpace', (int) $oTmCtx->getIdProjectSpace());
-				$this->set_data('iIdProject', (int) $oTmCtx->getIdProject());
+				$this->m_oTmCtx =& getTskMgrContext();
+				$this->set_data('iIdProjectSpace', (int) $this->m_oTmCtx->getIdProjectSpace());
+				$this->set_data('iIdProject', (int) $this->m_oTmCtx->getIdProject());
 				
 				$this->set_data('iIdField', 0);
 				$this->set_data('sFieldName', '');
@@ -78,8 +78,6 @@ function displaySpecificFieldList()
 				$this->set_data('sFieldLink', '#');
 				$this->set_data('tg', bab_rp('tg', ''));
 				$this->set_data('deleteFieldIdx', BAB_TM_IDX_DISPLAY_DELETE_SPECIFIC_FIELD_FORM);
-				
-				$this->m_oTmCtx =& getTskMgrContext();
 				
 				$this->m_result = $this->m_db->db_query($query);
 			}
@@ -98,9 +96,11 @@ function displaySpecificFieldList()
 					$this->set_data('iIdField', bab_toHtml($datas['iIdField']));
 					$this->set_data('sFieldName', bab_toHtml($datas['sFieldName']));
 					$this->set_data('sFieldType', bab_toHtml($datas['sFieldType']));
-					$this->set_data('is_deletable', bab_toHtml($datas['is_deletable']));
 
 					$tg = bab_rp('tg', '');
+					
+					$bDelatable = bab_tskmgr_specificFieldDelatable($datas['iIdProjectSpace'], $datas['iIdProject'], $datas['iIdUser']);				
+					$this->set_data('is_deletable', (($bDelatable) ? '1' : '0'));
 					
 					$this->set_data('sFieldLink', bab_toHtml($GLOBALS['babUrlScript'] . '?tg=' . urlencode($tg) . 
 						'&iIdProjectSpace=' . urlencode($iIdProjectSpace) . '&iIdProject=' . urlencode($iIdProject) .
@@ -255,16 +255,17 @@ function displayDeleteSpecificFieldForm()
 	{	
 		$query = 
 			'SELECT ' .
+				'fb.idProjectSpace iIdProjectSpace, ' .
+				'fb.idProject iIdProject, ' .
+				'fb.idUser iIdUser, ' .
 				'fb.id iIdField, ' .
 				'fb.name sFieldName ' .
 			'FROM ' .
 				BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 			'WHERE ' .
 				'fb.id IN (' . $sDeletableField . ') ' .
-//				'fb.id IN (' . $sDeletableField . ') AND ' .
-//				'fb.refCount = \'0\' ' .
 			'GROUP BY fb.name ASC';
-		
+	
 //			bab_debug($query);
 				
 			$db = & $GLOBALS['babDB'];
@@ -274,10 +275,14 @@ function displayDeleteSpecificFieldForm()
 			$title = '';
 			$items = array();
 			$idx = 0;
-			while($idx < $numrows && false != ($data = $db->db_fetch_array($res)))
+			while($idx < $numrows && false != ($datas = $db->db_fetch_array($res)))
 			{
-				$title .= "<br>"."-". $data['sFieldName'];
-				$items[] = $data['iIdField'];
+				$bDelatable = bab_tskmgr_specificFieldDelatable($datas['iIdProjectSpace'], $datas['iIdProject'], $datas['iIdUser']);				
+				if(true === $bDelatable)
+				{
+					$title .= "<br>"."-". $datas['sFieldName'];
+					$items[] = $datas['iIdField'];
+				}
 				$idx++;
 			}
 					
@@ -290,7 +295,7 @@ function displayDeleteSpecificFieldForm()
 			{
 				$babBody->title = bab_translate("Delete specifics fields");
 				
-				if(0 < $oTmCtx->getIdProject())
+				if(0 < $oTmCtx->getIdProjectSpace() && 0 <= $oTmCtx->getIdProject())
 				{
 					$bf->set_caption('warning', bab_translate("This action will remove the fields and all instances of these fields project") . ' ' . $sProjectName);
 				}
@@ -303,7 +308,7 @@ function displayDeleteSpecificFieldForm()
 			{
 				$babBody->title = bab_translate("Delete specific field");
 				
-				if(0 < $oTmCtx->getIdProject())
+				if(0 < $oTmCtx->getIdProjectSpace() && 0 <= $oTmCtx->getIdProject())
 				{
 					$bf->set_caption('warning', bab_translate("This action will remove the field and all instances of this field project") . ' ' . $sProjectName);
 				}
@@ -526,6 +531,7 @@ function addModifySpecificFieldTextOrArea($iIdProjectSpace, $iIdProject, $iField
 			$skipFirst = false;
 			if(true === $tblWr->save($attribut, $skipFirst))
 			{
+				
 				$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
 				
 				$aAttribut = array('id' => -1, 'name' => trim(bab_rp('sFieldName', '')), 
@@ -639,11 +645,18 @@ function deleteSpecificField()
 		{
 			$tblWr->setTableName(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL);
 			
-			$aAttribut = array('id' => $id, 'nature' => -1, 'refCount' => -1);
+			$aAttribut = array('id' => $id, 'nature' => -1, 'refCount' => -1, 
+				'idProjectSpace' => -1, 'idProject' => -1, 'idUser' => -1);
 			
 			$aAttribut = $tblWr->load($aAttribut, 0, count($aAttribut), 0, 1);
+	
+			$bDelatable = bab_tskmgr_specificFieldDelatable($aAttribut['idProjectSpace'], $aAttribut['idProject'], $aAttribut['idUser']);				
 			
-			if(false !== $aAttribut /*&& 0 == $aAttribut['refCount']*/)
+//			bab_debug('Field ==> ' . $id . ' is deletable ==> ' . (($bDelatable) ? 'YES' : 'NO'));
+			
+//			$bDelatable = false;
+			
+			if(false !== $aAttribut && $bDelatable)
 			{
 				switch($aAttribut['nature'])
 				{

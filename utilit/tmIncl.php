@@ -2141,7 +2141,7 @@ function bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder 
 		$sQuery .= 'ORDER BY ' . $babDB->backTick($aOrder['sName']) . ' ' . $aOrder['sOrder'] . ' ';
 	}
 
-	bab_debug($sQuery);
+//	bab_debug($sQuery);
 //	echo $sQuery . '<br />';
 	return $sQuery;
 }
@@ -2459,22 +2459,21 @@ function bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject)
 	
 	$iIdUser = (0 === $iIdProjectSpace && 0 === $iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
 	
-	$query = 
+	$sQuery = 
 		'SELECT ' .
 			'fb.id iIdField, ' .
 			'fb.idUser iIdUser, ' .
 			'fb.name sFieldName, ' .
 			'fb.refCount refCount, ' .
 			'fb.nature iFieldType, ' .
+			'fb.idProjectSpace iIdProjectSpace, ' .
+			'fb.idProject iIdProject, ' .
 			'CASE fb.nature ' .
 				'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN \'' . bab_translate("Text") . '\' ' .
 				'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN \'' . bab_translate("Text Area") . '\' ' .
 				'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN \'' . bab_translate("Choice") . '\' ' .
 				'ELSE \'???\' ' .
-			'END AS sFieldType, ' .
-//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . 
-//				'\' AND fb.refCount = \'' . $babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
-				'1 AS is_deletable ' .
+			'END AS sFieldType ' .
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'WHERE ' .
@@ -2483,8 +2482,8 @@ function bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject)
 			'idUser = \'' . $babDB->db_escape_string($iIdUser) . '\' ' .
 		'GROUP BY fb.name ASC';
 	
-		//bab_debug($query);
-		return $query;
+//		bab_debug($sQuery);
+		return $sQuery;
 }
 
 
@@ -2545,9 +2544,9 @@ function bab_getSpecificTextFieldClassInfoQuery($iIdProject, $iIdField)
 			'fb.refCount refCount, ' .
 			'fb.idProject idProject, ' .
 			'ft.defaultValue defaultValue, ' .
-//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
-			'1 AS is_deletable ' .
+			'fb.idUser iIdUser, ' .
+			'fb.idProjectSpace iIdProjectSpace, ' .
+			'fb.idProject iIdProject ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -2569,9 +2568,9 @@ function bab_getSpecificAreaFieldClassInfoQuery($iIdProject, $iIdField)
 			'fb.refCount refCount, ' .
 			'fb.idProject idProject, ' .
 			'fa.defaultValue defaultValue, ' .
-//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
-			'1 AS is_deletable ' .
+			'fb.idUser iIdUser, ' .
+			'fb.idProjectSpace iIdProjectSpace, ' .
+			'fb.idProject iIdProject ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -2612,9 +2611,9 @@ function bab_getSpecificChoiceFieldClassNameAndDefaultChoiceQuery($iIdProject, $
 			'fb.refCount iRefCount, ' .
 			'fb.idProject idProject, ' .
 			'position iDefaultOption, ' .
-//			'IF(fb.idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND fb.refCount = \'' . 
-//				$babDB->db_escape_string(0) . '\', 1, 0) is_deletable ' .
-			'1 AS is_deletable ' .
+			'fb.idUser iIdUser, ' .
+			'fb.idProjectSpace iIdProjectSpace, ' .
+			'fb.idProject iIdProject ' .
 		'FROM ' . 
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
 		'LEFT JOIN ' .
@@ -3468,7 +3467,7 @@ function bab_tskmgr_saveSelectedTaskField($aField)
 	
 }
 
-function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $aSelectedAdditionalField)
+function bab_tskmgr_getSelectableTaskFields($iIdProjectSpace, $iIdProject, $aSelectedTaskField, $aSelectedAdditionalField)
 {
 	global $babDB;
 	
@@ -3501,6 +3500,8 @@ function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $a
 		}
 	}
 	
+	$iIdUser = (0 === $iIdProjectSpace && 0 === $iIdProject) ? $GLOBALS['BAB_SESS_USERID'] : 0;
+	
 	$sQuery = 
 		'SELECT 
 			t0.`id` iId,
@@ -3508,7 +3509,9 @@ function bab_tskmgr_getSelectableTaskFields($iIdProject, $aSelectedTaskField, $a
 		FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' t0 ' . 
 		'WHERE ' . 
-			't0.`idProject` = ' . $babDB->quote($iIdProject) . ' AND ' .
+			't0.`idProjectSpace` = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' AND ' .
+			'(t0.`idProject` = \'' . $babDB->db_escape_string(0) . '\' OR t0.`idProject` = \'' . $babDB->db_escape_string($iIdProject) . '\') AND ' .
+			't0.`idUser` = \'' . $babDB->db_escape_string($iIdUser) . '\' AND ' .
 			't0.`id` NOT IN(' . $babDB->quote($aSelectedAdditionalField) . ')';
 			
 //	bab_debug($sQuery);
@@ -3548,55 +3551,96 @@ function bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject)
 	return 'bab_tskmgr_' . $sNamePart . '_additional_fields';
 }
 
+
 //Ajoute un champ additionel dans la table dynamique
 function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iFieldType, $iIdFieldClass, $sFieldValue)
 {
 	global $babDB;
 	
-	$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
-	
-	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
-	
-	$sType = (1 == $iFieldType) ? 'TEXT' : 'VARCHAR(255)';
-	
-	if(!bab_isTable($sTableName))
-	{
-		//Si la table n'existe pas la créer
-		
-		$aTableDefinition	= array();
-		$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
-		$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
-		$aTableDefinition[] = '`sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
-		$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
-		$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
-		
-		$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
-		$babDB->db_query($sQuery);
-	}
-	else
-	{
-		//Si la table existe alors ajouter la colonne
-		if(!bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
-		{		
-			$sQuery = 'ALTER TABLE `' . $sTableName . '` ADD `sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
-			$babDB->db_query($sQuery);
-		}
-	}
-
+	$aIdProject		= array();
+	$bAllProject	= false;
 	
 	$aWhereClauseItem = array();
-	if(0 >= $iIdProjectSpace && 0 >= $iIdProject)
+	$aWhereClauseItem[] = 't0.class = ' . $babDB->quote(BAB_TM_TASK);
+	$aWhereClauseItem[] = 't0.id = t1.idTask';
+	
+	$sMessage = ''; 
+	if(0 == $iIdProjectSpace && 0 == $iIdProject)
 	{
 		$aWhereClauseItem[] = 't1.idOwner = ' . $babDB->quote((int) $GLOBALS['BAB_SESS_USERID']);
 		$aWhereClauseItem[] = 't1.isPersonnal = ' . $babDB->quote(BAB_TM_YES);
+		
+		$sMessage = 'Ajouter le champ au user';
+	}
+	else if(0 < $iIdProjectSpace && 0 < $iIdProject)
+	{
+		$aWhereClauseItem[] = 't0.idProject = ' . $babDB->quote((int) $iIdProject);
+		$aWhereClauseItem[] = 't1.isPersonnal = ' . $babDB->quote(BAB_TM_NO);
+		
+		$sMessage = 'Ajouter le champ au projet ' . $iIdProject;
+	}
+	else if(0 < $iIdProjectSpace && 0 == $iIdProject)
+	{
+		$oResult = bab_selectProjectList($iIdProjectSpace);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);	
+			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$aIdProject[] = $aDatas['id'];
+			}
+		}
+		
+		$aWhereClauseItem[] = 't0.idProject IN(' . $babDB->quote($aIdProject) . ')';
+		$aWhereClauseItem[] = 't1.isPersonnal = ' . $babDB->quote(BAB_TM_NO);
+		
+		$bAllProject = true;
+		
+		$sMessage = 'Ajouter le champ à tous les projets de l\'espace ==> ' . $iIdProjectSpace;
 	}
 	else
 	{
-		$aWhereClauseItem[] = 't0.idProject = ' . $babDB->quote((int) $iIdProject);
+		$sMessage = 'Should never append ' . 'iIdProjectSpace ==> ' . $iIdProjectSpace . ' iIdProject ==> ' . $iIdProject;
 	}
+					
+	bab_debug('bab_tskmgr_createAdditionalField ' . $sMessage);
 	
-	$aWhereClauseItem[] = 't0.class = ' . $babDB->quote(BAB_TM_TASK);
-	$aWhereClauseItem[] = 't0.id = t1.idTask';
+	if(false == $bAllProject)
+	{
+		$aIdProject[] = $iIdProject;
+	}
+
+	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+	
+	foreach($aIdProject as $iKey => $iIdPrj)
+	{
+		$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdPrj);
+		
+		$sType = (1 == $iFieldType) ? 'TEXT' : 'VARCHAR(255)';
+		
+		if(!bab_isTable($sTableName))
+		{
+			//Si la table n'existe pas la créer
+			$aTableDefinition	= array();
+			$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
+			$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
+			$aTableDefinition[] = '`sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
+			$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
+			$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
+			
+			$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
+			$babDB->db_query($sQuery);
+		}
+		else
+		{
+			//Si la table existe alors ajouter la colonne
+			if(!bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
+			{		
+				$sQuery = 'ALTER TABLE `' . $sTableName . '` ADD `sField' . $iIdFieldClass . '` ' . $sType . ' NOT NULL';
+				$babDB->db_query($sQuery);
+			}
+		}
+	}
 	
 	//Récupérer la liste de toutes les tâches perso ou du projet 
 	//Si la tâche existe alors on lui rajoute la valeur par défaut
@@ -3611,7 +3655,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 		'WHERE ' . 
 			implode(' AND ', $aWhereClauseItem);
 
-//	bab_debug($sQuery);
+	bab_debug($sQuery);
 	
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
@@ -3647,7 +3691,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 								$babDB->db_escape_string($sFieldValue) . 
 							'\')'; 
 								
-//					bab_debug($sQuery);
+					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
 				}
 				else
@@ -3662,7 +3706,7 @@ function bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, $iField
 							'WHERE ' .
 								'iId = ' . $babDB->quote($aDatasTask['iId']);
 								
-//						bab_debug($sQuery);
+						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
 				}
@@ -3802,6 +3846,36 @@ function bab_tskmgr_deleteAdditionalField($iIdFieldClass)
 	{
 		if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
+			$iIdProjectSpace	= (int) $aDatas['idProjectSpace'];
+			$iIdProject			= (int) $aDatas['idProject'];
+			
+			$aIdProject 		= array($iIdProject);
+			
+			if(0 < $iIdProjectSpace && 0 == $iIdProject)
+			{
+				$aIdProject = array();
+				
+				$sQuery = 
+					'SELECT ' . 
+						'iIdProject ' .
+					'FROM ' .
+						BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' . 
+					'WHERE ' . 
+						'iIdField = ' . $babDB->quote($iIdFieldClass) . 'AND ' .
+						'iType = ' . $babDB->quote(BAB_TM_ADDITIONAL_FIELD);
+						 
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false !== $oResult)
+				{
+					$iNumRows = $babDB->db_num_rows($oResult);	
+					while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+					{
+						$aIdProject[] = $aDatas['iIdProject'];
+					}
+				}
+			}
+			
 			$sQuery = 
 				'DELETE FROM ' . 
 					BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' . 
@@ -3811,22 +3885,22 @@ function bab_tskmgr_deleteAdditionalField($iIdFieldClass)
 					 
 			//bab_debug($sQuery);
 			$babDB->db_query($sQuery);
-						
-			$iIdProjectSpace	= (int) $aDatas['idProjectSpace'];
-			$iIdProject			= (int) $aDatas['idProject'];
 			
-			$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdProject);
-			
-			require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
-			
-			if(bab_isTable($sTableName))
+			foreach($aIdProject as $iKey => $iIdPrj)
 			{
-				if(bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
+				$sTableName = bab_tskmgr_getAdditionalFieldTableName($iIdProjectSpace, $iIdPrj);
+				
+				require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
+				
+				if(bab_isTable($sTableName))
 				{
-					$sQuery = 'ALTER TABLE `' . $sTableName . '` DROP `' . 'sField' . $iIdFieldClass . '`';	
-						
-					//bab_debug($sQuery);
-					$babDB->db_query($sQuery);
+					if(bab_isTableField($sTableName, 'sField' . $iIdFieldClass))
+					{
+						$sQuery = 'ALTER TABLE `' . $sTableName . '` DROP `' . 'sField' . $iIdFieldClass . '`';	
+							
+						//bab_debug($sQuery);
+						$babDB->db_query($sQuery);
+					}
 				}
 			}
 		}
@@ -3879,8 +3953,32 @@ function createDefaultProjectSelectedField($iIdProject)
 					$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
 					$babDB->quote($aDefaultFieldItem['iType']) . 
 				')'; 
-				
+		
+//		bab_debug($sQuery);		
 		$babDB->db_query($sQuery);
 	}
+}
+
+
+function bab_tskmgr_specificFieldDelatable($iIdProjectSpace, $iIdProject, $iIdUser)
+{
+	global $babBody;
+	$sTg = bab_rp('tg', '');
+	if('admTskMgr' == $sTg && $babBody->isSuperAdmin)
+	{
+		return true;
+	}
+	else if('usrTskMgr' == $sTg)
+	{
+		if(0 == $iIdProjectSpace && 0 == $iIdProject && $iIdUser == $GLOBALS['BAB_SESS_USERID'])
+		{
+			return true;
+		}
+		else if(0 < $iIdProjectSpace && bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 ?>

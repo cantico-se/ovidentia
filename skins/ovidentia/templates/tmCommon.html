@@ -842,6 +842,8 @@ function submit_form()
 							<input type="button" value="{ m_captions[deleteOptions] }" onclick="delOption();" />
 						</td>
 					</tr>
+				<!--#if m_datas[is_modifiable] -->
+				<!--#endif m_datas[is_modifiable] -->
 					<tr>
 						<td colspan="3">&nbsp;</td>
 					</tr>
@@ -852,6 +854,8 @@ function submit_form()
 	{ m_datas[fieldButtons] }
 </form>
 <!--#end fieldRadio -->
+
+
 
 <!--#begin selectFieldType -->
 <table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">

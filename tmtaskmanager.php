@@ -1731,6 +1731,10 @@ function displayTaskList($sIdx)
 				$isProject = (int) bab_rp('isProject', 0);
 				$this->m_bLastPage = ($this->iPage == $iNbPages && 0 !== $isProject);
 			}
+			else 
+			{
+				$this->m_bLastPage = false;
+			}
 		}
 		
 		function addColumnHeader($iId, $aText, $aDataSourceFieldName)
@@ -1994,16 +1998,6 @@ $aWhere		= array();
 		$aWhere		= array();
 	}
 		
-//*	
-	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder), 
-		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
-//*/
-
-/*
-	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
-		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
-//*/
-		
 	$oMultiPage->bIsColumnHeaderUrl = true;
 	
 	//Doit-on afficher la ligne de totalisation ?
@@ -2021,6 +2015,16 @@ $aWhere		= array();
 			}
 		}
 	}
+		
+//*	
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder), 
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
+//*/
+
+/*
+	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
+		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
+//*/
 	
 	
 	
@@ -2405,11 +2409,8 @@ function displayOrderTaskFieldsForm()
 			$this->set_caption('sTaskField', bab_translate("Task fields"));
 			$this->set_caption('sAdditionalField', bab_translate("Specific fields"));
 			
-			
-			
-			
 			$this->initSessionContex();
-			$this->initSession($iIdProject);
+			$this->initSession($iIdProjectSpace, $iIdProject);
 			
 			$this->processAction();
 			
@@ -2443,13 +2444,13 @@ function displayOrderTaskFieldsForm()
 			$this->set_data('sCleanSessVar', 'N');
 		}
 		
-		function initSession($iIdProject)
+		function initSession($iIdProjectSpace, $iIdProject)
 		{
 			if('Y' == $_SESSION['babTskMgrInitSessionField'])
 			{
 				$aTaskField			= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_TASK_FIELD);
 				$aAdditionalField	= bab_tskmgr_getSelectedFieldId($iIdProject, BAB_TM_ADDITIONAL_FIELD);
-				$aSelectableField	= bab_tskmgr_getSelectableTaskFields($iIdProject, $aTaskField, $aAdditionalField);
+				$aSelectableField	= bab_tskmgr_getSelectableTaskFields($iIdProjectSpace, $iIdProject, $aTaskField, $aAdditionalField);
 				$aSelectedField		= bab_tskmgr_getSelectedField($iIdProject);
 				
 				$aToProcess = array('babTskMgrSelectableField' => 'aSelectableField', 
