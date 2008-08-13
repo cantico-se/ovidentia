@@ -775,12 +775,13 @@ function tskMgrCreateProjectAdditionalFieldContext()
 				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 				'WHERE ' . 
-					'fb.idProject = \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\' AND ' .
+					'(fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
 					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
 					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
 					'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
 					'\')';
-			
+					
+					
 			$aFldClass = array();
 			
 			$aTableDefinition	= array();
