@@ -21,7 +21,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-include_once $babInstallPath.'admin/register.php';
+include_once $GLOBALS['babInstallPath'].'admin/register.php';
 
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
