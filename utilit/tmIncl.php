@@ -493,6 +493,22 @@ function bab_createProject($iIdProjectSpace, $sName, $sDescription, $iMajorVersi
 		
 		createDefaultProjectSelectedField($iIdProject);
 		
+		//Récupération des champs additionnels au niveau espace de projet
+		//pour les rajouter dans la table dynamique du projet
+		$sQuery = bab_getSpecificFieldListQueryEx($iIdProjectSpace, $iIdProject);
+		
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				bab_tskmgr_createAdditionalField($iIdProjectSpace, $iIdProject, 
+					$aDatas['iFieldType'], $aDatas['iIdField'], $aDatas['sDefaultValue']);		
+			}
+		}
+		
 		return $iIdProject;		
 	}
 	return false;
