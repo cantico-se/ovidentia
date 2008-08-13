@@ -743,6 +743,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 	//Pour chaque projet création de la table avec la liste des champs additionnels
 	$sQuery = 
 		'SELECT ' .
+			'idProjectSpace iIdProjectSpace, ' .
 			'id iIdProject ' .
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL;
@@ -775,6 +776,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 				'WHERE ' . 
+					'idProjectSpace = \'' . $babDB->db_escape_string($aDatasProject['iIdProjectSpace']) . '\' AND ' .
 					'(fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
 					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
 					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 

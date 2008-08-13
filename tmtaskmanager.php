@@ -1586,7 +1586,6 @@ function displayTaskList($sIdx)
 	
 	require_once($GLOBALS['babInstallPath'] . 'utilit/multipage.php');
 	
-	
 	class BAB_TaskDS extends BAB_MySqlDataSource
 	{
 		var $m_sImgSrc				= '';
@@ -1704,7 +1703,6 @@ function displayTaskList($sIdx)
 			}
 		}
 	}
-
 	
 	class BAB_TaskMultipage extends BAB_MultiPageBase
 	{
@@ -1727,9 +1725,7 @@ function displayTaskList($sIdx)
 			if($this->iTotalNumOfRows > 0)
 			{
 				$iNbPages = ceil($this->iTotalNumOfRows / $this->iNbRowsPerPage);
-				
 				$isProject = (int) bab_rp('isProject', 0);
-				$this->m_bLastPage = ($this->iPage == $iNbPages && 0 !== $isProject);
 			}
 			else 
 			{
@@ -1894,8 +1890,6 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 		}
 	}
 	
-	
-	
 	$oMultiPage = new BAB_TaskMultipage();
 
 	$oMultiPage->sTemplateFileName = 'tmUser.html';
@@ -1929,16 +1923,13 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 
 	$aColumnHeader = bab_tskmgr_getSelectedField($iIdProject);
 
-//	bab_debug('iIdProject ==> ' . $iIdProject);
-//	bab_debug($aColumnHeader);
 
 	$oMultiPage->sIdx = $sIdx;
-//	$oMultiPage->iNbRowsPerPage = (int) 2;
-//	bab_debug($oMultiPage->m_aAdditionnalPaginationAndFormParameters);
+//	$oMultiPage->iNbRowsPerPage = (int) 1;
 
-$aField		= array();
-$aLeftJoin	= array();
-$aWhere		= array();
+	$aField		= array();
+	$aLeftJoin	= array();
+	$aWhere		= array();
 		
 	$aLeftJoin[]	= 'LEFT JOIN ' . 
 		BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' stf ON stf.iIdProject = t0.idProject ';
@@ -2016,22 +2007,17 @@ $aWhere		= array();
 		}
 	}
 		
-//*	
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
-//*/
 
 /*
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
 //*/
 	
-	
-	
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
-
 
 	//Pour les icônes
 	{		
