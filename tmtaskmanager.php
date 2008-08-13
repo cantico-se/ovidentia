@@ -1965,7 +1965,7 @@ $aWhere		= array();
 		{
 			if(BAB_TM_ADDITIONAL_FIELD == $aColumnHeaderItem['iType'])
 			{
-				$sAlias = $sTableAlias . '__' . $sFieldName;
+				$sAlias = $sTableAlias . '__' . 'sField' . $aColumnHeaderItem['iId'];
 				
 				$aDataSourceFieldName[$iKey] = $sAlias;
 				
@@ -3242,7 +3242,7 @@ function processExport()
 				
 				if(BAB_TM_ADDITIONAL_FIELD == $aSelectedFieldItem['iType'])
 				{
-					$sAlias		= $sTableAlias . '__' . $sFieldName;
+					$sAlias = $sTableAlias . '__' . 'sField' . $aSelectedFieldItem['iId'];
 					$aField[]	= $sTableAlias . '.sField' . $aSelectedFieldItem['iId'] . ' AS ' . $sAlias;
 				}
 				
