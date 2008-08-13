@@ -762,9 +762,9 @@ function tskMgrCreateProjectAdditionalFieldContext()
 					'fb.name, ' . 
 					'fb.nature iFieldType, ' .
 					'CASE fb.nature ' .
-						'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN ft.defaultValue ' .
-						'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN  fa.defaultValue  ' .
-						'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN frd.value ' .
+						'WHEN \'0\' THEN ft.defaultValue ' .
+						'WHEN \'1\' THEN  fa.defaultValue  ' .
+						'WHEN \'2\' THEN frd.value ' .
 						'ELSE \'???\' ' .
 					'END AS sDefaultValue ' .
 				'FROM ' .
@@ -778,9 +778,9 @@ function tskMgrCreateProjectAdditionalFieldContext()
 				'WHERE ' . 
 					'idProjectSpace = \'' . $babDB->db_escape_string($aDatasProject['iIdProjectSpace']) . '\' AND ' .
 					'(fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
-					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
-					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
-					'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) . 
 					'\')';
 					
 					
@@ -941,9 +941,9 @@ function tskMgrCreateUsersAdditionalFieldContext()
 					'fb.name, ' . 
 					'fb.nature iFieldType, ' .
 					'CASE fb.nature ' .
-						'WHEN \'' . BAB_TM_TEXT_FIELD . '\' THEN ft.defaultValue ' .
-						'WHEN \'' . BAB_TM_TEXT_AREA_FIELD . '\' THEN  fa.defaultValue  ' .
-						'WHEN \'' . BAB_TM_RADIO_FIELD . '\' THEN frd.value ' .
+						'WHEN \'0\' THEN ft.defaultValue ' .
+						'WHEN \'1\' THEN  fa.defaultValue  ' .
+						'WHEN \'2\' THEN frd.value ' .
 						'ELSE \'???\' ' .
 					'END AS sDefaultValue ' .
 				'FROM ' .
@@ -956,9 +956,9 @@ function tskMgrCreateUsersAdditionalFieldContext()
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
 				'WHERE ' . 
 					'fb.idUser = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' .
-					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
-					'fa.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . '\' OR ' . 
-					'frd.isDefaultValue = \'' . $babDB->db_escape_string(BAB_TM_YES) . 
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) . 
 					'\')';
 			
 			$aFldClass = array();
