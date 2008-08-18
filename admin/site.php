@@ -564,7 +564,7 @@ function site_menu6($id)
 			
 			$this->site_configuration_cls($id);
 
-			if(property_exists($this, 'row'))
+			if(array_key_exists('row', get_object_vars($this)))
 			{
 				if(is_array($this->row) && array_key_exists('iDefaultCalendarAccess', $this->row))
 				{
