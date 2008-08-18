@@ -860,10 +860,12 @@ function displayAuthenticationForm($title, $errorMessages)
 {
 	global $babBody;
 	
+	/*
 	if(!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && substr_count($GLOBALS['babUrl'], $_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
 	{
 		header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
 	}
+	*/
 	
 	$babBody->setTitle($title);
 	$errors = explode("\n", $errorMessages);
