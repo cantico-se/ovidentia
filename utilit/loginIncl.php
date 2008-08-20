@@ -546,7 +546,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		{
 			$this->addError(bab_translate("You must complete all fields !!"));
 		}
-		loginRedirect($GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages)));
+		header('location:'.$GLOBALS['babUrlScript'] . '?tg=login&cmd=authform&msg=' . urlencode($this->loginMessage) . '&err=' . urlencode(implode("\n", $this->errorMessages)));
 		return false;
 	}
 
@@ -913,6 +913,7 @@ function loginRedirect($url)
 			function loginRedirectCls($url)
 			{
 				$this->url = $url;
+				$this->next = bab_translate('Next page');
 			}
 		}
 
