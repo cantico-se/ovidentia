@@ -597,8 +597,11 @@ function babForumsSection($close)
 		return;
 		}
 	
-	if( empty($waitingpostsimg)) $waitingpostsimg = bab_printTemplate($this, "config.html", "babWaitingPosts");
-	$this->waitingpostsimg = &$waitingpostsimg;
+	if( empty($waitingpostsimg)) {
+		$waitingpostsimg = bab_printTemplate($this, "config.html", "babWaitingPosts");
+	}
+	
+	$this->waitingpostsimg = $waitingpostsimg;
 	$this->head = bab_translate("List of different forums");
 	$this->waitingf = bab_translate("Waiting posts");
 	$this->bfooter = 0;
