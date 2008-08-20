@@ -557,12 +557,14 @@ class bab_sitemap_addFuncToProfile {
 				$values[] = '('.$babDB->quote($row['id_function']).','.$babDB->quote($row['id_profile']).')';
 			}
 			
-			$babDB->db_query('
+			$babDB->db_query($query = '
 				INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
 					(id_function, id_profile) 
 				VALUES 
 						'.implode(",\n ",$values).' 
 			');
+			
+			bab_debug($query, DBG_TRACE, 'Record');
 			
 			$start += $length;
 		}
@@ -751,7 +753,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 		if ($arr = $babDB->db_fetch_assoc($res)) {
 			$id_profile = $arr['id'];
 			
-			bab_debug('found profile '.$id_profile);
+			bab_debug('found profile '.$id_profile, DBG_TRACE, 'Sitemap');
 
 
 		} else {
@@ -760,7 +762,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 			$res = $babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILES_TBL.' (uid_functions) VALUES ('.$babDB->quote($crc).')');
 			$id_profile = $babDB->db_insert_id($res);
 			
-			bab_debug('new profile created '.$id_profile);
+			bab_debug('new profile created '.$id_profile, DBG_TRACE, 'Sitemap');
 			
 		}
 		
@@ -855,6 +857,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 		
 		$addFuncToProfile = new bab_sitemap_addFuncToProfile();
 		
+		
 
 		foreach($functions as $id_function => $val) {
 		
@@ -882,6 +885,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 					if (isset($missing_profile[$id_function]) && isset($nodeList[$id_function])) {
 						// mais n'est pas dans le profile
 						$addFuncToProfile->add($id_function, $id_profile);
+						
 					}
 					break;
 				
@@ -975,7 +979,10 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 	insert node, profile : %s s', 
 		($nodes_stop_time - $nodes_start_time), 
 		($profile_stop_time - $nodes_stop_time)
-		)
+		),
+		
+		DBG_TRACE,
+		'Sitemap'
 	);
 }
 
@@ -1171,7 +1178,7 @@ function bab_siteMap_build() {
 	$textview = $event->displayAsText('root');
 	
 	
-	bab_debug($textview);
+	bab_debug($textview, DBG_TRACE, 'Sitemap');
 	
 	$crc = abs(crc32($textview));
 	
@@ -1194,7 +1201,7 @@ function bab_siteMap_build() {
     
     ($insert_time - $start_time),
     ($stop_time - $insert_time),
-    ($stop_time - $start_time) ));
+    ($stop_time - $start_time) ), DBG_TRACE, 'Sitemap');
 
 	return $event->propagation_status;
 }

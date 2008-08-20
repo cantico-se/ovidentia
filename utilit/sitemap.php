@@ -148,7 +148,7 @@ class bab_siteMap {
 	function clearAll() {
 		global $babDB;
 		
-		bab_debug('Clear sitemap...');
+		bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
 		$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL." SET uid_functions='0'");
