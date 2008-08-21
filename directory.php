@@ -1881,6 +1881,8 @@ function processImportDbFile( $pfile, $id, $separ )
 		$arr = fgetcsv($fd, 4096, $separ);
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
+			if( $idgroup > 0 )
+				{
 			if(!isset($arr[$GLOBALS['nickname']]) || empty($arr[$GLOBALS['nickname']])
 			|| !isset($arr[$GLOBALS['givenname']]) || empty($arr[$GLOBALS['givenname']])
 			|| !isset($arr[$GLOBALS['sn']]) || empty($arr[$GLOBALS['sn']])
@@ -1888,27 +1890,32 @@ function processImportDbFile( $pfile, $id, $separ )
 			{
 			continue;
 			}
+				}
+			else
+				{
+					if(!isset($arr[$GLOBALS['givenname']]) || empty($arr[$GLOBALS['givenname']])
+					|| !isset($arr[$GLOBALS['sn']]) || empty($arr[$GLOBALS['sn']])
+					)
+					{
+					continue;
+					}
+				}
+
 			switch($GLOBALS['duphand'])
 				{
 				case 1: // Replace duplicates with items imported
 				case 2: // Do not import duplicates
 					if( $idgroup > 0 )
 						{
-						$query = "select * from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."'";
+						$query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."'";
 						$res2 = $babDB->db_query($query);
-						if( $babDB->db_num_rows($res2) > 0 && $GLOBALS['duphand'] == 2 )
+						if( $babDB->db_num_rows($res2) > 0 )
+							{
+							if( $GLOBALS['duphand'] == 2 )
 							{
 							break;
 							}
 		
-						$replace = array( " " => "", "-" => "");
-						$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
-						$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."'";	
-						$res2 = $babDB->db_query($query);
-						if( $res2 && $babDB->db_num_rows($res2) > 0 )
-							{
-							if($GLOBALS['duphand'] == 2 )
-								break;
 							$rrr = $babDB->db_fetch_array($res2);
 							$req = '';
 
@@ -1959,6 +1966,8 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								$pwd = $password1;
 								}
+							$replace = array( " " => "", "-" => "");
+							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
 							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."', confirm_hash='".$babDB->db_escape_string($hash)."', password='".$babDB->db_escape_string($pwd)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
 							if( $bupdate )
@@ -1970,7 +1979,7 @@ function processImportDbFile( $pfile, $id, $separ )
 						}
 					else
 						{
-						$res2 = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where email='".(isset($arr[$GLOBALS['email']]) ? $babDB->db_escape_string($arr[$GLOBALS['email']]) : '')."' and id_directory='".$babDB->db_escape_string($id)."'");
+						$res2 = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where givenname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."' and sn='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."' and id_directory='".$babDB->db_escape_string($id)."'");
 						if( $res2 && $babDB->db_num_rows($res2 ) > 0 )
 							{
 							if( $GLOBALS['duphand'] == 2 )
