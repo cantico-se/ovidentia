@@ -557,14 +557,12 @@ class bab_sitemap_addFuncToProfile {
 				$values[] = '('.$babDB->quote($row['id_function']).','.$babDB->quote($row['id_profile']).')';
 			}
 			
-			$babDB->db_query($query = '
+			$babDB->db_query('
 				INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
 					(id_function, id_profile) 
 				VALUES 
 						'.implode(",\n ",$values).' 
 			');
-			
-			bab_debug($query, DBG_TRACE, 'Record');
 			
 			$start += $length;
 		}
@@ -723,7 +721,13 @@ class bab_siteMap_insertFunctionObj {
 
 
 
-
+function bab_siteMap_setUserProfile($id_profile) {
+	global $babDB;
+	
+	$babDB->db_query('UPDATE '.BAB_USERS_TBL.'  
+			SET id_sitemap_profile='.$babDB->quote($id_profile).' 
+			WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+}
 
 
 
@@ -754,7 +758,8 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 			$id_profile = $arr['id'];
 			
 			bab_debug('found profile '.$id_profile, DBG_TRACE, 'Sitemap');
-
+			bab_siteMap_setUserProfile($id_profile);
+			return;
 
 		} else {
 		
@@ -763,12 +768,10 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 			$id_profile = $babDB->db_insert_id($res);
 			
 			bab_debug('new profile created '.$id_profile, DBG_TRACE, 'Sitemap');
-			
+			bab_siteMap_setUserProfile($id_profile);
 		}
 		
-		$babDB->db_query('UPDATE '.BAB_USERS_TBL.'  
-			SET id_sitemap_profile='.$babDB->quote($id_profile).' 
-			WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+		
 		
 		
 		
