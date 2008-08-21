@@ -87,6 +87,7 @@ class bab_siteMap {
 		
 			// delete profile link
 			
+			/*
 			$res = $babDB->db_query('SELECT id_sitemap_profile FROM '.BAB_USERS_TBL.' 
 				WHERE id='.$babDB->quote($id_user)
 			);
@@ -119,7 +120,9 @@ class bab_siteMap {
 					$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL." WHERE id_profile=".$babDB->quote($arr['id_sitemap_profile']));
 				}
 			}
-		
+			*/
+			
+			
 			$babDB->db_query('UPDATE '.BAB_USERS_TBL.' 
 			SET 
 				id_sitemap_profile=\'0\' 
