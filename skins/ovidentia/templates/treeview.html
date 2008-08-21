@@ -86,7 +86,7 @@ document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style
 
 <script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
 
-<script type="text/javascript">
+<script type="text/javascript"><!--
 //<![CDATA[
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
@@ -112,6 +112,7 @@ treeview.onElementClick = function(element)
 treeview.onSubmitTree = function()
 {
 	if (!window.opener) {
+		window.close();
 		return;
 	}
 	try {
@@ -124,11 +125,12 @@ treeview.onSubmitTree = function()
 				var element;
 				for (j = 0; j < input.parentNode.parentNode.childNodes.length; j++) {
 					e = input.parentNode.parentNode.childNodes[j];
-					if (e.nodeName && (e.nodeName == 'SPAN' || e.nodeName == 'A')) {
+					if (e.nodeName && (e.nodeName == 'SPAN' || e.nodeName == 'A') && e.className) {
 						element = e;
 						break;
 					}
 				}
+
 				var returnParameter = {
 					'type': element.className.split(' ')[1],
 					'id': input.parentNode.parentNode.parentNode.id.split('{ t_id_separator }')[1],
@@ -137,12 +139,15 @@ treeview.onSubmitTree = function()
 				returnParameters.push(returnParameter);
 				returnParameters['param'] = returnParameters;
 				returnParameters['callback'] = 'EditorOnInsertFiles';
-//				window.opener.EditorOnInsertFile && window.opener.EditorOnInsertFile('', returnParameter.id, returnParameter.content);
 			}
 		}
 		window.opener.bab_dialog && window.opener.bab_dialog._return(returnParameters);
 		window.close();
-	} catch(e) {alert(e)};
+	} catch (err) {
+		for (name in err) {
+			window.console && window.console.debug(name + ': ' + err[name]);
+		}
+	}
 }
 
 
@@ -156,7 +161,7 @@ if (tree) {
 }
 
 //]]>
-</script>
+--></script>
 
 <!--#end treeview -->
 
