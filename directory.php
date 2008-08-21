@@ -729,7 +729,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->urlimg = '';
 				}
 
-			$res = $babDB->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto'");
+			$res = $babDB->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto' and disabled ='N'");
 
 			$this->modify = false;
 			$this->phrequired = false;
