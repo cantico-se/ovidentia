@@ -24,7 +24,9 @@
 include "base.php";
 
 
-
+/*
+ * @return BAB_TM_TaskTimeManager
+ */
 function &getTaskTimeManager()
 {
 	if(!array_key_exists('babTmTaskTimeManager', $GLOBALS))
@@ -43,7 +45,7 @@ class BAB_TM_TaskTimeManager
 	var $m_sTodayIsoDate = null;
 	var $m_oTodayIsoDateTime = null;
 	
-	var $m_iHoursWorkedPerDay = 24;
+	var $m_iWorkedHoursPerDay = 24;
 	
 	function BAB_TM_TaskTimeManager()
 	{
@@ -97,7 +99,7 @@ class BAB_TM_TaskTimeManager
 	
 	function getWorkedHoursPerDay()
 	{
-		return $this->m_iHoursWorkedPerDay;
+		return $this->m_iWorkedHoursPerDay;
 	}
 }
 
@@ -215,7 +217,7 @@ class BAB_TM_TaskTime
 		{
 			$iWorkingTimeToFoundInSeconds = $fDuration * $iOneHourInSeconds;
 		}
-	
+		
 	
 		//Que faire si la tâche démarre avant ce qui est spécifié dans le calendrier ?
 	 	$oLoopStartDate = BAB_dateTime::fromIsoDateTime($sIsoStartDate);
@@ -235,7 +237,6 @@ class BAB_TM_TaskTime
 //		$aNWD['2008-07-17'] = 1;
 		
 //		bab_debug($aNWD);
-	
 		//Tant que l'on à pas atteint la durée
 	 	while($iWorkedSeconds < $iWorkingTimeToFoundInSeconds)
 	 	{
@@ -307,7 +308,7 @@ class BAB_TM_TaskTime
 	 	$oEndDate->add($iPeriodDurationInSeconds, BAB_DATETIME_SECOND);
 	 	
 		bab_debug('WorkedTime => ' . $iWorkedSeconds . ' in hours ==> ' . sprintf('%.02f', ($iWorkedSeconds / 3600)));
-		bab_debug('Apres boucle ' . $oEndDate->getIsoDateTime());	
+		bab_debug('Apres boucle ' . $oEndDate->getIsoDateTime());
 	}
 //*/	
 	
@@ -474,7 +475,9 @@ class BAB_TM_TaskTimeDate extends BAB_TM_TaskTime
 		{
 			$this->m_oStartDate = BAB_DateTime::fromIsoDateTime($sIsoStartDate);
 		
-			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
+			//Avant on pouvait renseigner la date de fin avec un taux de completion < 100
+//			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
+			if(100 === $this->m_iCompletion || '0000-00-00 00:00:00' !== $sIsoEndDate)
 			{
 				$this->m_oEndDate = BAB_DateTime::fromIsoDateTime($sIsoEndDate);
 			}
@@ -513,14 +516,13 @@ class BAB_TM_TaskTimeDate extends BAB_TM_TaskTime
 
 	function computeRemainingDates(&$oRemainStartDate, &$oRemainEndDate)
 	{
-		$oTaskTimeManager		=& getTaskTimeManager();
+		$oTaskTimeManager	=& getTaskTimeManager();
 		
 		$oTodayDate			= $oTaskTimeManager->getTodayIsoDateTime();
 		$oRemainEndDate		= null;
 		$oRemainStartDate	= null;
 
 		$iDoneDurationInSeconds = $this->m_iEffectiveDurationInSeconds - (($this->m_iCompletion * $this->m_iEffectiveDurationInSeconds) / 100);
-//		$fDurationToAdd	= $iDoneDurationInSeconds / $this->m_iNbSeconds;
 
 		$iIsEqual	= 0;
 		$iIsBefore	= -1;
@@ -576,7 +578,9 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 		{
 			$this->m_oStartDate = BAB_DateTime::fromIsoDateTime($sIsoStartDate);
 		
-			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
+			//Avant on pouvait renseigner la date de fin avec un taux de completion < 100
+//			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
+			if(100 === $this->m_iCompletion || '0000-00-00 00:00:00' !== $sIsoEndDate)
 			{
 				$this->m_oEndDate = BAB_DateTime::fromIsoDateTime($sIsoEndDate);
 			}
@@ -649,6 +653,14 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 		$iDurationInSeconds				= $iEffectiveDurationInSeconds - (($this->m_iCompletion * $iEffectiveDurationInSeconds) / 100);
 		$fDuration						= $iDurationInSeconds / $this->m_iNbSeconds;
 
+		//Si iDurationInSeconds = 0 c'est que la tache est terminé (il y a une date de fin)
+		if(0 === $iDurationInSeconds)
+		{
+$oRemainStartDate = $this->cloneStartDate();			
+$oRemainEndDate = $this->cloneEndDate();
+return;			
+		}
+		
 		$iIsEqual	= 0;
 		$iIsBefore	= -1;
 		$iIsAfter	= 1;
@@ -666,5 +678,4 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 		BAB_TM_TaskTime::computeEndDate($oRemainStartDate->getIsoDateTime(), $fDuration, $this->m_iDurationUnit, $oRemainEndDate);
 	}
 }
-
 ?>

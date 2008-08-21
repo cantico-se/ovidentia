@@ -358,7 +358,7 @@ class BAB_TM_GanttBase
 			$oRemainStartDate->getTimeStamp() < $this->m_aDisplayedEndDate[0]);
 			
 		$iIdTask = $oGanttTask->m_iIdTask;
-			
+
 		if($bRealDatesInBox || $bPlannedDatesInBox || $bRemainingDatesInBox)
 		{
 			$aForGantt[$iIdTask]	= $iIdTask;

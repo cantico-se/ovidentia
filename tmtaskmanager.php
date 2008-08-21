@@ -2062,7 +2062,30 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 	$oTaskFilterForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
+
+/*
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
+	
+	$iIdTask = 86;
+	$aTask = array();
+	bab_getTask($iIdTask, $aTask);
+	
+$aTask['plannedStartDate']	= $aTask['sPlannedStartDate'];
+$aTask['plannedEndDate']	= $aTask['sPlannedEndDate'];
+$aTask['startDate']			= $aTask['sStartDate'];
+$aTask['endDate']			= $aTask['sEndDate'];
+$aTask['iIdTask']			= $aTask['id'];
+	
+	$oTaskTimeManager	=& getTaskTimeManager();
+	$oTaskTime			= $oTaskTimeManager->getTask($aTask);
+	
+//	bab_debug($aTask);
+	
+//	$oTaskTime->init($aTask);
+//*/
 }
+
+
 
 
 
