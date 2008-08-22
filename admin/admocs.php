@@ -183,7 +183,7 @@ switch($idx)
 	case "addocs":
 		$babBody->title = bab_translate("Add a new organization chart");
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
-		$babBody->addItemMenu("addoc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admocs&idx=addocs");
+		$babBody->addItemMenu("addocs", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admocs&idx=addocs");
 		if( !isset($fname)) { $fname ='';}
 		if( !isset($description)) { $description ='';}
 		addOrgChart($fname, $description);
@@ -194,7 +194,7 @@ switch($idx)
 		$babBody->title = bab_translate("List of all organization charts");
 		listOrgCharts();
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
-		$babBody->addItemMenu("addoc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admocs&idx=addocs");
+		$babBody->addItemMenu("addocs", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admocs&idx=addocs");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
