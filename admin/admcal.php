@@ -461,7 +461,7 @@ switch($idx)
         $macl->addtable( BAB_CAL_PUB_VIEW_GROUPS_TBL,bab_translate("Who can view this calendar"));
 		$macl->addtable( BAB_CAL_PUB_MAN_GROUPS_TBL,bab_translate("Who can manage this calendar"));
 		$macl->filter(0,0,1,1,1);
-		$macl->addtable( BAB_CAL_PUB_GRP_GROUPS_TBL,bab_translate("Users groups"));
+		$macl->addtable( BAB_CAL_PUB_GRP_GROUPS_TBL,bab_translate("Groups of users (together users who will be impacted, in term of search for availability in their own diary, if an event is put in the diary)"));
 		$macl->filter(0,0,1,0,1);
         $macl->babecho();
 
