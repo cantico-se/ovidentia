@@ -799,7 +799,7 @@ function loadSections()
 			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
 			if( count($langFilterValues) > 0 )
 				{
-					$req .= " AND SUBSTRING(lang, 1, 2 ) IN ('*',".$babDB->quote($langFilterValues).")";
+					$req .= " AND SUBSTRING(lang, 1, 2 ) IN ('*',".implode(',',$langFilterValues).")"; // $langFilterValues is already escaped
 				}
 			if( isset($_SESSION['babOvmlCurrentDelegation']) && $_SESSION['babOvmlCurrentDelegation'] !== '')
 			{
