@@ -2260,9 +2260,6 @@ elseif( $updstep1 = bab_rp('updstep1') )
 			$idx = 's0';
 		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
 		{
-			deleteDraft($idart);
-			unset($idart);
-			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
@@ -2295,9 +2292,6 @@ elseif( $updstep1 = bab_rp('updstep1') )
 			$idx = 's0';
 		}elseif(!updateArticleDraft($idart, $title, $lang, $approbid, $message))
 		{
-			deleteDraft($idart);
-			unset($idart);
-			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
@@ -2335,9 +2329,6 @@ elseif( $updstep1 = bab_rp('updstep1') )
 			$idx = 's0';
 		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
 		{
-			deleteDraft($idart);
-			unset($idart);
-			unset($_POST['idart']);
 			$idx = 's1';
 		}
 		else
