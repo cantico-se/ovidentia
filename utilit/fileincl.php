@@ -855,6 +855,9 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
 
+	require_once $GLOBALS['babInstallPath'] . 'utilit/pathUtil.class.php';
+	$fname = BAB_PathUtil::sanitizePathItem($fname);
+	
 	if($fmFile)
 	{
 		$uploadf_name = $fmFile->filename;
