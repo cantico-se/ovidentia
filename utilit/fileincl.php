@@ -2262,7 +2262,82 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		}
 	}
 	
+	function removeSimpleCollectiveFolder($sRelativePath)
+	{
+		require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
+			
+		//1 Chercher tous les répertoires collectifs
+		//2 Supprimer les répertoires collectifs
+		//3 Lister le contenu du répertoire à supprimer
+		//4 Pour chaque répertoire rappeler la fonction deleteSimpleCollectiveFolder
+		//5 Supprimer le repertoire
+		
+		global $babBody, $babDB;
 	
+		$oFileManagerEnv	=& getEnvObject();
+		$sUplaodPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->getRootFmPath()));
+	
+		$bDbRecordOnly	= false;
+		$oFmFolderSet	= new BAB_FmFolderSet();
+		$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
+		$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
+		$oName			=& $oFmFolderSet->aField['sName'];
+		
+		$sRelativePath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sRelativePath));
+		
+		$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
+		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
+	//	bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
+	
+		$oFmFolderSet->select($oCriteria);
+		if($oFmFolderSet->count() > 0)
+		{
+			while( null !== ($oFolder = $oFmFolderSet->next()) )
+			{
+				require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+				bab_deleteFolder($oFolder->getId());
+			}
+		}
+	
+		$sFullPathName = $sUplaodPath . $sRelativePath;
+	
+		if(is_dir($sFullPathName))
+		{
+			$oFolderFileSet = new BAB_FolderFileSet();
+			$oName =& $oFolderFileSet->aField['sName'];
+			$oPathName =& $oFolderFileSet->aField['sPathName'];
+			$oIdDgOwnerFile =& $oFolderFileSet->aField['iIdDgOwner'];
+	
+			$oDir = dir($sFullPathName);
+			while(false !== ($sEntry = $oDir->read())) 
+			{
+				if($sEntry == '.' || $sEntry == '..')
+				{
+					continue;
+				}
+				else
+				{
+					$sFullPathName = $sUplaodPath . $sRelativePath . $sEntry;
+	
+					if(is_dir($sFullPathName)) 
+					{
+						$this->removeSimpleCollectiveFolder($sRelativePath . $sEntry . '/');	
+					}
+					else if(is_file($sFullPathName))
+					{
+						$oCriteria = $oName->in($sEntry);
+						$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
+						$oCriteria = $oCriteria->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
+	
+						$oFolderFileSet->remove($oCriteria);
+					}
+				}
+			}
+			$oDir->close();
+			rmdir($sUplaodPath . $sRelativePath);
+		}
+	}
+		
 	function rename($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 //		bab_debug(__FUNCTION__);

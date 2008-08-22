@@ -546,7 +546,153 @@ function __renameFmFilesVersions()
 	 __walkDirectoryRecursive($sCollectiveUploadPath, $sCallbackFunction);
 }
 
+function removeOrphanDbFileEntry()
+{
+	$sUploadPath = getUploadPathFromDataBase();
+	if(is_dir($sUploadPath))
+	{
+		$sQuery = 
+			'SELECT 
+				`id` iId,
+				`name` sName,
+				`path` sPathName,
+				`iIdDgOwner` iIdDgOwner,
+				`idfai` iIdFlowApprobationInstance
+			FROM ' .
+				BAB_FILES_TBL . ' ' .
+			'WHERE ' .
+				'bgroup = \'Y\'';
+//		bab_debug($sQuery);
 
+		$oResultFile = $babDB->db_query($sQuery);
+		if(false !== $oResultFile)
+		{
+			while(false !== ($aDataFile = $babDB->db_fetch_assoc($oResultFile)))
+			{
+				$sRootColFmPath = $sUploadPath . 'fileManager/collectives/DG' . $aDataFile['iIdDgOwner'] . '/';
+				$sFullPathName = $sRootColFmPath . $aDataFile['sPathName'] . $aDataFile['sName'];
+
+				if(!is_file($sFullPathName))
+				{
+//					bab_debug($sFullPathName);
+
+					$iIdFlowApprobationInstance = (int) $aDataFile['iIdFlowApprobationInstance'];
+					{//deleteFlowInstance
+						if(0 !== $iIdFlowApprobationInstance)
+						{
+							$sQuery = 'SELECT * FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
+//							bab_debug($sQuery);
+							$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
+							
+							$sQuery = 'SELECT * FROM ' . BAB_FLOW_APPROVERS_TBL . ' WHERE id = ' . $babDB->quote($arr['idsch']);
+//							bab_debug($sQuery);
+							$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
+
+							if($arr['refcount'] > 0)
+							{
+								$sQuery = 'UPDATE ' . BAB_FLOW_APPROVERS_TBL . ' SET refcount = ' . $babDB->quote(($arr['refcount'] - 1 )) . ' WHERE id = ' . $babDB->quote($arr['id']);
+//								bab_debug($sQuery);
+								$babDB->db_query($sQuery);
+							}
+							
+							$sQuery = 'DELETE FROM ' . BAB_FAR_INSTANCES_TBL . ' WHERE idschi = ' . $babDB->quote($iIdFlowApprobationInstance);
+//							bab_debug($sQuery);
+							$babDB->db_query($sQuery);
+
+							$sQuery = 'DELETE FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
+//							bab_debug($sQuery);
+							$babDB->db_query($sQuery);
+							
+							$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
+//							bab_debug($sQuery);
+							$babDB-db_query($sQuery);
+						}
+					}
+					
+					$sQuery = 
+						'SELECT 
+							`ver_major` sVersionMajor,
+							`ver_minor` sVersionMinor,
+							`idfai` iIdFlowApprobationInstance
+						FROM ' .
+							BAB_FM_FILESVER_TBL . ' ' .
+						'WHERE ' .
+							'id_file = ' . $babDB->quote($aDataFile['iId']);
+//					bab_debug($sQuery);
+
+					$oResultFileVer = $babDB->db_query($sQuery);
+					if(false !== $oResultFileVer)
+					{
+						while(false !== ($aDataFileVer = $babDB->db_fetch_assoc($oResultFileVer)))
+						{
+							$sVersion = $aDataFileVer['sVersionMajor'] . ',' . $aDataFileVer['sVersionMinor'];
+							
+							$sFpn = $sRootColFmPath . $aDataFile['sPathName'] . 'OVF/' . $sVersion . ',' . $aDataFile['sName'];
+					
+//							bab_debug($sFpn);
+				
+							if(is_file($sFpn))
+							{
+//								bab_debug('unlink(' . $sFpn . ')');
+								unlink($sFpn);
+							}
+							
+							$iIdFlowApprobationInstance = (int) $aDataFileVer['iIdFlowApprobationInstance'];
+							
+							{//deleteFlowInstance
+								if(0 !== $iIdFlowApprobationInstance)
+								{
+									$sQuery = 'SELECT * FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
+//									bab_debug($sQuery);
+									$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
+									
+									$sQuery = 'SELECT * FROM ' . BAB_FLOW_APPROVERS_TBL . ' WHERE id = ' . $babDB->quote($arr['idsch']);
+//									bab_debug($sQuery);
+									$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
+
+									if($arr['refcount'] > 0)
+									{
+										$sQuery = 'UPDATE ' . BAB_FLOW_APPROVERS_TBL . ' SET refcount = ' . $babDB->quote(($arr['refcount'] - 1 )) . ' WHERE id = ' . $babDB->quote($arr['id']);
+//										bab_debug($sQuery);
+										$babDB->db_query($sQuery);
+									}
+									
+									$sQuery = 'DELETE FROM ' . BAB_FAR_INSTANCES_TBL . ' WHERE idschi = ' . $babDB->quote($iIdFlowApprobationInstance);
+//									bab_debug($sQuery);
+									$babDB->db_query($sQuery);
+
+									$sQuery = 'DELETE FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
+//									bab_debug($sQuery);
+									$babDB->db_query($sQuery);
+									
+									$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
+//									bab_debug($sQuery);
+									$babDB-db_query($sQuery);
+								}
+							}
+						}
+						
+						$sQuery = 'DELETE FROM ' . BAB_FM_FILESVER_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
+//						bab_debug($sQuery);
+						$babDB->db_query($sQuery);
+					}
+					
+					$sQuery = 'DELETE FROM ' . BAB_FM_FILESLOG_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
+//					bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+					
+					$sQuery = 'DELETE FROM ' . BAB_FM_FIELDSVAL_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
+//					bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+				}
+				else
+				{
+//					bab_debug('GOOD ==> ' . $sFullPathName);
+				}
+			}
+		}
+	}
+}
 
 function tskMgrCreateTaskFieldContext()
 {
@@ -5260,6 +5406,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				}
 			}
 		}
+	}
+	
+	$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'bab660FmremoveOrphanDbFileEntryDone');
+	if(false === $ret)
+	{
+		removeOrphanDbFileEntry();
+		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'The file manager orphan file was deleted successfully', 'bab660FmremoveOrphanDbFileEntryDone');
 	}
 
 

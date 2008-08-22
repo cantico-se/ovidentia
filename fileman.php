@@ -2635,7 +2635,64 @@ function displayRightForm()
 	}
 }
 
+function getOrphanFileList()
+{
+	if(false === bab_isUserAdministrator())
+	{
+		return;
+	}
 
+	$oFileManagerEnv =& getEnvObject();
+	$sUploadPath = $oFileManagerEnv->getRootFmPath();
+
+	if(is_dir($sUploadPath))
+	{
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oGroup =& $oFolderFileSet->aField['sGroup'];
+		$oId =& $oFolderFileSet->aField['iId'];
+
+		$oFolderFileSet->select($oGroup->in('Y'));
+
+		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		{
+			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+			if(!is_file($sFullPathName))
+			{
+				bab_debug($sFullPathName);
+			}
+		}
+	}
+}
+
+function deleteOrphanFile()
+{
+	if(false === bab_isUserAdministrator())
+	{
+		return;
+	}
+
+	$oFileManagerEnv =& getEnvObject();
+	$sUploadPath = $oFileManagerEnv->getRootFmPath();
+
+	if(is_dir($sUploadPath))
+	{
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oGroup =& $oFolderFileSet->aField['sGroup'];
+		$oId =& $oFolderFileSet->aField['iId'];
+
+		$oFolderFileSet->select($oGroup->in('Y'));
+
+		while(null !== ($oFolderFile = $oFolderFileSet->next()))
+		{
+			$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
+			if(!is_file($sFullPathName))
+			{
+//				bab_debug($sFullPathName);
+				$oFolderFileSet->remove($oId->in($oFolderFile->getId()));
+			}
+		}
+	}
+}
 function setRight()
 {
 	global $babBody;
@@ -3629,50 +3686,32 @@ function deleteFolderForCollectiveDir()
 {
 	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$sDirName = (string) bab_pp('sDirName', '');
-	if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
+	if(false === strstr($sDirName, '..'))
 	{
-		$iIdFld	= (int) bab_pp('iIdFolder', 0); 
-		if(0 !== $iIdFld)
+		if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
-			require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
-			bab_deleteFolder($iIdFld);
+			$iIdFld	= (int) bab_pp('iIdFolder', 0); 
+			if(0 !== $iIdFld)
+			{
+				require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+				bab_deleteFolder($iIdFld);
+			}
+			else 
+			{
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oFmFolderSet->removeSimpleCollectiveFolder($oFileManagerEnv->sRelativePath . $sDirName . '/');
+			}						
 		}
 		else 
 		{
-			$bDbRecordOnly = false;
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-			$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-			$oName =& $oFmFolderSet->aField['sName'];
-			
-			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
-			$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($oFileManagerEnv->sRelativePath . $sDirName . '/') . '%'));
-			//bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
-			$oFmFolderSet->remove($oCriteria, $bDbRecordOnly);
-		
-			/*	
-			
-			$oFolderFileSet = new BAB_FolderFileSet();
-			$oPathName =& $oFolderFileSet->aField['sPathName'];
-			$oCriteria = $oPathName->like($babDB->db_escape_like($sPathName) . '%');
-			$oFolderFileSet->remove($oCriteria);
-			//*/
-			
-			$sUploadPath = $oFileManagerEnv->getRootFmPath();
-			$sPathName = $oFileManagerEnv->sRelativePath . $sDirName . '/';
-			$sFullPathName = $sUploadPath . $sPathName;
-			$oFmFolderSet->removeDir($sFullPathName);
-			
-			$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
-			$oFmFolderCliboardSet->deleteFolder($sDirName, $oFileManagerEnv->sRelativePath, 'Y');
-			//*/
-		}						
+			$babBody->msgerror = bab_translate("Access denied");
+		}
 	}
-	else 
+	else
 	{
-		$babBody->msgerror = bab_translate("Access denied");
+		$babBody->msgerror = bab_translate("Please give a valid folder name");
 	}
 }
 
@@ -3686,25 +3725,31 @@ function deleteFolderForUserDir()
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(strlen(trim($sDirName)) > 0)
+		if(false === strstr($sDirName, '..'))
 		{
-			$sCurrentFmPath = $oFileManagerEnv->getCurrentFmPath();
-			$sUplaodPath = $oFileManagerEnv->getRootFmPath();
+			if(strlen(trim($sDirName)) > 0)
+			{
+				$sUplaodPath = $oFileManagerEnv->getRootFmPath();
+				
+				global $babDB;
 			
-			global $babDB;
-		
-			$sPathName = $oFileManagerEnv->sRelativePath . '/' . $sDirName . '/';
-			$sFullPathName = $sCurrentFmPath . $sPathName;
-			
-			$oFolderFileSet = new BAB_FolderFileSet();
-			$oPathName =& $oFolderFileSet->aField['sPathName'];
-			$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
-			
-			$oFmFolderSet = new BAB_FmFolderSet();
-			$oFmFolderSet->removeDir($sFullPathName);
-			
-			$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
-			$oFmFolderCliboardSet->deleteFolder($sDirName, $oFileManagerEnv->sRelativePath, 'N');
+				$sPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->sRelativePath . '/' . $sDirName . '/'));
+				$sFullPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sUploadPath . $sPathName));
+							
+				$oFolderFileSet = new BAB_FolderFileSet();
+				$oPathName =& $oFolderFileSet->aField['sPathName'];
+				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
+				
+				$oFmFolderSet = new BAB_FmFolderSet();
+				$oFmFolderSet->removeDir($sFullPathName);
+				
+				$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+				$oFmFolderCliboardSet->deleteFolder($sDirName, $oFileManagerEnv->sRelativePath, 'N');
+			}
+		}
+		else
+		{
+			$babBody->msgerror = bab_translate("Please give a valid folder name");
 		}
 	}
 	else 
@@ -3712,7 +3757,6 @@ function deleteFolderForUserDir()
 		$babBody->msgerror = bab_translate("Access denied");
 	}
 }
-
 
 function changeDelegation()
 {
@@ -3881,6 +3925,14 @@ switch($idx)
 	/* Called in ajax by the filemanager */
 	case 'GetUploadBlock':
 		GetUploadBlock();
+		break;
+
+	case 'getOrphanFileList':
+		getOrphanFileList();
+		break;		
+		
+	case 'deleteOrphanFile':
+		deleteOrphanFile();
 		break;
 		
 	default:
