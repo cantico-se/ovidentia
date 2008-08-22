@@ -329,19 +329,19 @@ function testVars()
 		return false;
 		}
 
-	if (!empty($_POST['babUploadPath']) && !is_dir($_POST['babUploadPath']))
+	if (!empty($_POST['babUploadPath']) )
 		{
-		if (!@mkdir($_POST['babUploadPath']))
+		if ( !is_dir($_POST['babUploadPath']) && !@mkdir($_POST['babUploadPath']))
 			{
 			$error = $trans->str('can\'t create upload directory');
 			return false;
 			}
-		else 
+
+		@mkdir($_POST['babUploadPath'].'/tmp/');
+
+		if (!_createFmDirectories())
 			{
-				if (!_createFmDirectories())
-					{
-					return false;
-					}
+			return false;
 			}
 		}
 		
