@@ -421,13 +421,15 @@ function showVersionHistoricFile($idf, $pos)
 		var $bottomname;
 		var $bottomurl;
 
+		var $oFolderFile = null;
+		
 		function temp($idf, $pos)
 		{
 			global $babDB;
 			
 			
 			$fm_file = fm_getFileAccess($idf);
-			$oFolderFile =& $fm_file['oFolderFile'];
+			$this->oFolderFile =& $fm_file['oFolderFile'];
 			$oFmFolder =& $fm_file['oFmFolder'];
 
 			$this->topurl = "";
@@ -448,7 +450,7 @@ function showVersionHistoricFile($idf, $pos)
 			$this->deletealt = bab_translate("Delete");
 			$this->t_index = bab_translate("Indexation");
 
-			if(!is_null($oFolderFile) && !is_null($oFmFolder))
+			if(!is_null($this->oFolderFile) && !is_null($oFmFolder))
 			{
 				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
 				{
@@ -515,7 +517,7 @@ function showVersionHistoricFile($idf, $pos)
 				$oFolderFileVersionSet->bUseAlias = false;
 				$oFolderFileVersionSet->select($oCriteria, array('sCreationDate' => 'DESC'), $aLimit);
 	
-				$GLOBALS['babBody']->setTitle($oFolderFile->getName());
+				$GLOBALS['babBody']->setTitle($this->oFolderFile->getName());
 				$this->res = $oFolderFileVersionSet->_oResult;
 				$this->count = $oFolderFileVersionSet->count();
 	
@@ -530,6 +532,52 @@ function showVersionHistoricFile($idf, $pos)
 			}
 		}
 
+		function getlastvers()
+		{
+			static $i = 0;
+			
+			if(0 === $i)
+			{
+				++$i;
+				
+				global $babDB;
+				
+				$sDate		= '';
+				$iIdUser	= 0;
+				if(0 != $this->oFolderFile->getModifierId())
+				{
+					$sDate		= $this->oFolderFile->getModifiedDate();
+					$iIdUser	= $this->oFolderFile->getModifierId();
+				}
+				else
+				{
+					$sDate		= $this->oFolderFile->getCreationDate();
+					$iIdUser	= $this->oFolderFile->getAuthorId();
+				}
+				
+				$time = bab_mktime($sDate);
+				$this->date = bab_toHtml(bab_strftime($time, false));
+				$this->hour = bab_toHtml(bab_time($time));
+				$this->author = bab_toHtml(bab_getUserName($iIdUser));
+				$this->comment = bab_toHtml($this->oFolderFile->getCommentVer());
+				$this->version = bab_toHtml($this->oFolderFile->getMajorVer().".".$this->oFolderFile->getMinorVer());
+				
+				$sUrlGet = $GLOBALS['babUrlScript'] . '?tg=fileman&id=' . urlencode($this->oFolderFile->getOwnerId()) . '&gr=' . 
+					urlencode($this->oFolderFile->getGroup()) . '&path=' . urlencode($this->oFolderFile->getPathName()) .
+					'&idf=' . urlencode($this->oFolderFile->getId()) . '&file=' . urlencode($this->oFolderFile->getName()) .
+					'&sAction=getFile';
+				
+				$this->geturl = bab_toHtml($sUrlGet);
+				$this->index_status = bab_toHtml(bab_getIndexStatusLabel($this->oFolderFile->getStatusIndex()));
+				$i++;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
 		function getnextvers()
 			{
 			static $i = 0;

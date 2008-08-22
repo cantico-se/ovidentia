@@ -338,6 +338,19 @@ function checkMaxLength(obj)
 		<!--#endif index -->
 
 	</tr> 
+	<!--#in getlastvers -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>&nbsp;</td>
+		<td><a href="{ geturl }">{ version }</a></td>
+		<td>{ date }</td>
+		<td>{ hour }</td>
+		<td>{ author }</td>
+		<td>{ comment }</td>
+		<!--#if index -->
+		<td>{ index_status }</td>
+		<!--#endif index -->
+	</tr>
+	<!--#endin getlastvers -->
 	<!--#in getnextvers -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td>
