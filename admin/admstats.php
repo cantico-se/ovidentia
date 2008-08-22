@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
-
+/*
 function cleanStatsTables()
 	{
 	global $babBody;
@@ -53,27 +53,85 @@ function cleanStatsTables()
 	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
+*/
 
+function cleanStatsTables()
+	{
+	global $babBody;
+	
+	class temp
+		{
+		var $t_statitem;
 
-function confirmCleanStatTables()
+		var $t_delete_statitems_before;
+		var $t_save;
+
+		function temp()
+			{
+			$this->t_delete_statitems_before = bab_translate("Delete logs before (dd/mm/yyyy)");
+			$this->t_save = bab_translate("Ok");
+			}
+		}
+
+	$temp = new temp();
+	$babBody->babecho(	bab_printTemplate($temp,"admstats.html", "cleanstats"));
+	}
+
+function confirmCleanStatTables($deleteBefore = null)
 {
 	global $babDB;
-	$babDB->db_query("truncate table `".BAB_STATS_EVENTS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_ADDONS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_ARTICLES_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_ARTICLES_REF_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_FAQQRS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_FAQS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_FMFILES_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_FMFOLDERS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_FORUMS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_MODULES_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_OVML_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_PAGES_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_POSTS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_SEARCH_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_THREADS_TBL."`");
-	$babDB->db_query("truncate table `".BAB_STATS_XLINKS_TBL."`");
+
+	if (!is_null($deleteBefore)) {
+
+		$before = $deleteBefore->getIsoDate();
+		if( $before >= date('Y-m-d') )
+		{
+		$babDB->db_query("truncate table `".BAB_STATS_EVENTS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_ADDONS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_ARTICLES_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_ARTICLES_REF_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_ARTICLES_NEW_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FAQQRS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FAQS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FMFILES_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FMFILES_NEW_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FMFOLDERS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_FORUMS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_MODULES_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_OVML_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_PAGES_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_POSTS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_SEARCH_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_THREADS_TBL."`");
+		$babDB->db_query("truncate table `".BAB_STATS_XLINKS_TBL."`");
+		}
+		else
+		{
+		$babDB->db_query('delete from `'.BAB_STATS_EVENTS_TBL.'` where evt_time < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_ADDONS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_ARTICLES_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_ARTICLES_NEW_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FAQQRS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FAQS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FMFILES_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FMFILES_NEW_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FMFOLDERS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_FORUMS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_MODULES_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_OVML_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_PAGES_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_POSTS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_SEARCH_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_THREADS_TBL.'` where st_date < '.$babDB->quote($before));
+		$babDB->db_query('delete from `'.BAB_STATS_XLINKS_TBL.'` where st_date < '.$babDB->quote($before));
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
 }
 
 
@@ -145,13 +203,6 @@ if( isset($aclman) )
 
 switch($idx)
 {
-	case 'empty':
-		$babBody->title = bab_translate("Clean statistics logs");
-		cleanStatsTables();
-		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
-		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
-		break;
 
 	case 'connections':
 		$babBody->title = bab_translate("Connections Log");
@@ -182,17 +233,28 @@ switch($idx)
 		$idx = 'connections';
 		break;
 
-	case 'delete':
-		if( isset($action) && $action == 'yes' )
-		{
-			confirmCleanStatTables();
+	case 'cleanstats':
+		$removeBefore = bab_rp('remove_before', '');
+
+		if (!empty($removeBefore)) {
+			require_once $babInstallPath . 'utilit/dateTime.php';
+			$removeBefore = BAB_DateTime::fromDateStr($removeBefore);
+			confirmCleanStatTables($removeBefore);
 			$babBody->msgerror = bab_translate("Done");
-			$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
-			$babBody->addItemMenu("delete", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
-			$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
-			break;
 		}
-	/* !!! no break !!! */
+		else
+		{
+			$babBody->msgerror = bab_translate("Nothing done");
+		}
+		$idx= 'empty';
+		/* no break; */
+	case 'empty':
+		$babBody->title = bab_translate("Clean statistics logs");
+		cleanStatsTables();
+		$babBody->addItemMenu("man", bab_translate("Managers"), $GLOBALS['babUrlScript']."?tg=admstats&idx=man");
+		$babBody->addItemMenu("empty", bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=admstats&idx=empty");
+		$babBody->addItemMenu("connections", bab_translate("Connections"), $GLOBALS['babUrlScript']."?tg=admstats&idx=connections");
+		break;
 
 	default:
 	case 'man':

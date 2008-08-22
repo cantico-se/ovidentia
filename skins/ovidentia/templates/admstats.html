@@ -22,3 +22,23 @@
 </form>
 
 <!--#end edit_connection_logging_setup -->
+
+
+<!--#begin cleanstats -->
+
+<form name="celanstatsform" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admstats" />
+<input type="hidden" name="idx" value="cleanstats" />
+<div class="BabLoginCadreBackground" style="padding: 2px; margin: 1em 3em"> 
+<div class="BabLoginMenuBackground" style="padding: 1em">
+<div style="margin: 2em 1em">
+{ t_delete_statitems_before } <input name="remove_before" type="text" value="" />
+</div>
+<div style="margin: 2em 1em 0 1em; text-align: center">
+<input type="submit" name="submit" value="{ t_save }" />
+</div>
+</div>
+</div>
+</form>
+
+<!--#end cleanstats -->
