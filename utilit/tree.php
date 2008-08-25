@@ -1376,6 +1376,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 
 
+
 define('BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES',		 0);
 define('BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES',				 1);
 define('BAB_FILE_TREE_VIEW_SHOW_FILES',							 2);
@@ -1421,7 +1422,8 @@ class bab_FileTreeView extends bab_TreeView
 		$this->_directories = array();
 	}
 
-
+	
+	
 	function setStartPath($folderId, $path)
 	{
 		$this->_startFolderId = $folderId;
@@ -1554,6 +1556,11 @@ class bab_FileTreeView extends bab_TreeView
 		}
 	}
 
+	function _getFolderIdDgOwner($folderId)
+	{
+		
+	}
+
 	/**
 	 * Add collective folders.
 	 * @access private
@@ -1619,118 +1626,150 @@ class bab_FileTreeView extends bab_TreeView
 
 
 
-	/**
-	 * Add files and subdirectories for a specific collective folder.
-	 * @access private
-	 */
-	function _addCollectiveFiles($folderId = null, $path = '')
-	{
-		global $babDB, $babBody;
+    /**
+     * Add files and subdirectories for a specific collective folder.
+     * @access private
+     */
+    function _addCollectiveFiles($folderId = null, $path = '')
+    {
+        global $babDB, $babBody;
 
-		$sEndSlash = (strlen(trim($path)) > 0 ) ? '/' : '' ;
+        $sEndSlash = (strlen(trim($path)) > 0 ) ? '/' : '' ;
 
-		$rootPath = '';
+        $rootPath = '';
 
-		if ($folderId !== null) {
-			$folders = new BAB_FmFolderSet();
+        $folders = new BAB_FmFolderSet();
+        $oId =& $folders->aField['iId'];
+        
+        if ($folderId !== null) {
+            $oFolder = $folders->get($oId->in($folderId));
+            if (is_a($oFolder, 'BAB_FmFolder')) {
+                $rootPath .= $oFolder->getName() . '/';
+                $idDgOwner = $oFolder->getDelegationOwnerId();
+            }
+        } elseif ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
+        	$idDgOwner = $babBody->currentAdmGroup;
+        } else {
+        	$idDgOwner = null;
+        }
 
-			$oId =& $folders->aField['iId'];
+        $aLeftJoin            = array();
+        $aWhereClauseItem    = array();
+                
+        if (isset($idDgOwner))
+        {
+            $aLeftJoin[]        = 'LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
+            $aWhereClauseItem[]    = 'file.bgroup=\'Y\'';
+            $aWhereClauseItem[]    = 'folder.id_dgowner = ' . $babDB->quote($idDgOwner);
+        }
+        else
+        {
+            $aWhereClauseItem[]    = 'file.bgroup=\'Y\'';
+        }
+        
+        if ($rootPath . $path . $sEndSlash !== '')
+        {
+            $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($rootPath . $path . $sEndSlash . '%');
+        }
 
-			$oFolder = $folders->get($oId->in($folderId));
-			if (is_a($oFolder, 'BAB_FmFolder')) {
-				$rootPath .= $oFolder->getName() . '/';
-			}
-		}
+        $aWhereClauseItem[]    = 'file.state<>\'D\'';
+
+        
+        $directoryType = 'folder';
+        if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+        	&& ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)) {
+            $directoryType .= ' clickable';
+        }
+        $groupFileType = 'gfile';
+        if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+       		&& ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)) {
+            $groupFileType .= ' clickable';
+        }
+        
+        
+        $sWhereClause = '';
+        if(count($aWhereClauseItem) > 0)
+        {
+            $sWhereClause = 'WHERE ' . implode(' AND ', $aWhereClauseItem);
+        }
+        
+        $sQuery =
+            'SELECT ' .
+                'file.id, ' .
+                'file.path, ' .
+                'file.name, ' .
+                'file.id_owner, ' .
+                'file.bgroup ' .
+            'FROM ' .
+                BAB_FILES_TBL . ' file ' .
+	            implode(' ', $aLeftJoin) . ' ' .
+    	        $sWhereClause . ' ' .
+            'ORDER BY ' .
+                'file.path ASC, file.name ASC';
+            
+        $files = $babDB->db_query($sQuery);
 
 
-		$sql = 'SELECT file.id, file.path, file.name, file.id_owner, file.bgroup FROM ' . BAB_FILES_TBL . ' file';
-		if ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
-			$sql .= ' LEFT JOIN ' . BAB_FM_FOLDERS_TBL . ' folder ON file.id_owner=folder.id ';
-			$sql .= ' WHERE file.bgroup=\'Y\' AND folder.id_dgowner = ' . $babDB->quote($babBody->currentAdmGroup);
-		} else {
-			$sql .= ' WHERE file.bgroup=\'Y\'';
-		}
-		if ($rootPath . $path . $sEndSlash !== '') {
-			$sql .= ' AND file.path LIKE ' . $babDB->quote($rootPath . $path . $sEndSlash . '%');
-		}
+        $folders = new BAB_FmFolderSet();
 
-		$sql .= ' AND file.state<>\'D\'';
-		$sql .= ' ORDER BY file.name';
+        $oRelativePath =& $folders->aField['sRelativePath'];
+        $oName =& $folders->aField['sName'];
 
-		$directoryType = 'folder';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-		&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES) {
-			$directoryType .= ' clickable';
-		}
-		$groupFileType = 'gfile';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-		&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES) {
-			$groupFileType .= ' clickable';
-		}
-		$files = $babDB->db_query($sql);
+        while ($file = $babDB->db_fetch_array($files)) {
 
+            $filePath = removeFirstPath($file['path']);
+            $subdirs = explode('/', $filePath);
 
-		$folders = new BAB_FmFolderSet();
+            $fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
+            $rootFolderName = getFirstPath($file['path']);
 
-		$oRelativePath =& $folders->aField['sRelativePath'];
-		$oName =& $folders->aField['sName'];
+            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
+            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
 
-		while ($file = $babDB->db_fetch_array($files)) {
+            $folder = $folders->get($oCriteria);
+            if (!$folder) {
+                continue;
+            }
+            $rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
+            $fileType =& $groupFileType;
 
-			$filePath = removeFirstPath($file['path']);
-			//echo $filePath . ' ' . $file['name'] . "\n";
-//			$filePath = $file['path'];
-			$subdirs = explode('/', $filePath);
+            $parentId = $rootId;
 
-			$fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
-			$rootFolderName = getFirstPath($file['path']);
+            foreach ($subdirs as $subdir) {
+                if (trim($subdir) !== '') {
+                    if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
+                        $element =& $this->createElement($parentId . ':' . $subdir,
+                                                         $directoryType,
+                                                         $subdir,
+                                                         '',
+                                                         '');
+                        $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
+                        if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
+                        && ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+                            $element->addCheckBox('select');
+                        }
+                        $this->appendElement($element, $parentId);
+                    }
+                    $parentId .= ':' . $subdir;
+                }
+            }
+            if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
+                $element =& $this->createElement($fileId,
+                                                 $fileType,
+                                                 $file['name'],
+                                                 '',
+                                                 '');
+                $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
+                if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)
+                		&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+                    $element->addCheckBox('select');
+                }
+                $this->appendElement($element, $parentId);
+            }
+        }
+    }
+	
 
-			$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
-			$oCriteria = $oCriteria->_and($oName->in($rootFolderName));
-
-			$folder = $folders->get($oCriteria);
-			if (!$folder) {
-				continue;
-			}
-			$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
-			$fileType =& $groupFileType;
-
-			$parentId = $rootId;
-//			die($parentId);
-
-			foreach ($subdirs as $subdir) {
-				if (trim($subdir) !== '') {
-					if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
-						$element =& $this->createElement($parentId . ':' . $subdir,
-														 $directoryType,
-														 $subdir,
-														 '',
-														 '');
-						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
-						&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
-							$element->addCheckBox('select');
-						}
-						$this->appendElement($element, $parentId);
-					}
-					$parentId .= ':' . $subdir;
-				}
-			}
-			if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
-				$element =& $this->createElement($fileId,
-												 $fileType,
-												 $file['name'],
-												 '',
-												 '');
-				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
-				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)
-				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
-					$element->addCheckBox('select');
-				}
-				$this->appendElement($element, $parentId);
-			}
-		}
-	}
 
 
 
@@ -1797,12 +1836,16 @@ class bab_FileTreeView extends bab_TreeView
 		$this->_addCollectiveDirectories($this->_startFolderId);
 
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES
-		|| $this->_attributes & BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES) {
+				|| $this->_attributes & BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES) {
+			$attributes = $this->_attributes;
+			$this->_attributes &= ~BAB_FILE_TREE_VIEW_SHOW_FILES;
+			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
+			$this->_attributes = $attributes;
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
 		}
 
 		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES
-		&& is_null($this->_startFolderId)) {
+				&& is_null($this->_startFolderId)) {
 			$this->_addPersonalFiles();
 		}
 
