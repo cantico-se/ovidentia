@@ -3846,6 +3846,15 @@ switch($sAction)
 		{
 			$idx = "displayAddFileForm";
 		}
+		else
+		{
+			//Pour faire apparaitre le lien approbation de la section utulisateur
+			$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+				'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath);
+			
+			header('Location: ' . $sUrl);
+			exit;
+		}
 		break;
 		
 	case 'updateFile':
