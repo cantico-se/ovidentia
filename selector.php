@@ -28,6 +28,9 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 
 
 
+/**
+ * Displays an article selection popup.
+ */
 function selectArticles()
 {
 	$attributes = 0;
@@ -59,6 +62,9 @@ function selectArticles()
 }
 
 
+/**
+ * Displays a faq selection popup.
+ */
 function selectFaqs()
 {
 	$attributes = 0;
@@ -89,6 +95,9 @@ function selectFaqs()
 }
 
 
+/**
+ * Displays a forum selection popup.
+ */
 function selectForums()
 {
 	$attributes = 0;
@@ -119,6 +128,19 @@ function selectForums()
 }
 
 
+/**
+ * Displays a file selection popup for files from ovidentia file manager.
+ * 
+ * This selection popup uses Ajax to dynamically load root folders subfolders.
+ * 
+ * If $folderId is not specified, a popup containing the root folders will be output
+ * (when they are opened by the user, selectFiles will be called automatically with
+ * the selected folderId as a parameter).
+ * Otherwise, the function will output the sub folder tree of the folder.
+ * 
+ * @param int		$folderId	
+ * @param string	$path
+ */
 function selectFiles($folderId = null, $path = '')
 {
 	$attributes = 0;
@@ -170,13 +192,17 @@ function selectFiles($folderId = null, $path = '')
 	$treeView->setUpdateBaseUrl('?tg=selector&idx=files' . $urlAttributes);
 	
 	if (!is_null($folderId)) {
+		// Here we are in the case where $folderId is specified,
+		// so we return only its sub folders tree. 
 		$treeView->setStartPath($folderId, $path);
 		$treeView->setAttributes($attributes);
 		header('Content-type: text/html; charset=ISO-8859-15');
 		echo($treeView->printSubTree());
 		die();
 	}
-	$attributes &= ~(BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES|BAB_FILE_TREE_VIEW_SHOW_FILES);
+	// Here we are in the case where $folderId is not set, so we only want to display the root folders
+	// (the sub folders will be loaded when the user opens one of these)
+	$attributes &= ~(BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES | BAB_FILE_TREE_VIEW_SHOW_FILES);
 	$treeView->setAttributes($attributes);
 	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
 	printBabBodyPopup();
@@ -184,7 +210,9 @@ function selectFiles($folderId = null, $path = '')
 }
 
 
-
+/**
+ * Displays a group selection popup.
+ */
 function selectGroups()
 {
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
