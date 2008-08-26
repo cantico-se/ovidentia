@@ -1723,14 +1723,18 @@ class bab_FileTreeView extends bab_TreeView
             $fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
             $rootFolderName = getFirstPath($file['path']);
 
-            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
-            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
-
-            $folder = $folders->get($oCriteria);
-            if (!$folder) {
-                continue;
+            if (is_null($folderId)) {
+	            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
+	            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
+	
+	            $folder = $folders->get($oCriteria);
+	            if (!$folder) {
+	                continue;
+	            }
+            	$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
+            } else {
+            	$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folderId; // $file['id_owner'];
             }
-            $rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
             $fileType =& $groupFileType;
 
             $parentId = $rootId;
