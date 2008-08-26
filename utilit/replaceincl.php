@@ -331,7 +331,12 @@ function ref(&$txt)
 									$oOwnerFmFolder = null;
 									$sPath = $oFmFolder->getName() . ((strlen(trim($path_object)) > 0 ) ? '/' . $path_object : '');
 									
+									$iOldDelegation = bab_getCurrentUserDelegation();
+									bab_setCurrentUserDelegation($oFmFolder->getDelegationOwnerId());
+
 									BAB_FmFolderHelper::getInfoFromCollectivePath($sPath, $oFmFolder->getId(), $oOwnerFmFolder);
+
+									bab_setCurrentUserDelegation($iOldDelegation);
 									
 									if(!is_null($oOwnerFmFolder) && (bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oOwnerFmFolder->getId()) || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oOwnerFmFolder->getId())))
 									{
