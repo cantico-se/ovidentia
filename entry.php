@@ -164,7 +164,14 @@ function readMore($article, $idg)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				
 			$editor = new bab_contentEditor('bab_article_body');
-			$editor->setContent($arr['body']);
+			if( empty($arr['body']))
+				{
+				$editor->setContent($arr['head']);
+				}
+			else
+				{
+				$editor->setContent($arr['body']);
+				}
 			$this->content = $editor->getHtml();
 			
 			$this->title = bab_toHtml($arr['title']);
