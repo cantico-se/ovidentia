@@ -32,11 +32,13 @@ include_once 'base.php';
  */
 class bab_addonsInfos {
 
-	var $indexById 		= array();
-	var $indexByName 	= array();
+	var $indexById 			= array();
+	var $indexByName 		= array();
+	var $fullIndexById		= array();
+	var $fullIndexByName	= array();
 
 	/**
-	 * Create indexes
+	 * Create indexes with access rights verification
 	 * @return boolean
 	 */
 	function createIndex() {
@@ -74,6 +76,32 @@ class bab_addonsInfos {
 		
 		return !empty($this->indexById);
 	}
+	
+	
+	
+	/**
+	 * Create full index of addons
+	 * @return boolean
+	 */
+	function createFullIndex() {
+	
+		if (!$this->fullIndexById || !$this->fullIndexByName) {
+		
+			global $babDB;
+	
+			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL."");
+			while( $arr = $babDB->db_fetch_array($res)) {
+					
+				$this->fullIndexById[$arr['id']] 		= $arr;
+				$this->fullIndexByName[$arr['title']] 	= $arr;
+			}
+		}
+		
+		
+		return !empty($this->fullIndexById);
+	}
+	
+	
 
 
 
@@ -113,6 +141,10 @@ class bab_addonsInfos {
 		return $arr[$id_addon];
 	}
 	
+	
+	
+
+	
 	/**
 	 * Get addon row if exist
 	 * @static
@@ -121,22 +153,14 @@ class bab_addonsInfos {
 	 */
 	function getDbRow($id_addon) {
 	
-		$arr = bab_addonsInfos::getRows();
-		if (isset($arr[$id_addon])) {
+		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createFullIndex();
 		
-			return $arr[$id_addon];
-		
-		} else {
-		
-			global $babDB;
-			
-			$res = $babDB->db_query("SELECT * FROM ".BAB_ADDONS_TBL." WHERE id=".$babDB->quote($id_addon));
-			$arr = $babDB->db_fetch_assoc($res);
-			
-			return $arr;
+		if (!isset($obj->fullIndexById[$id_addon])) {
+			return false;
 		}
 		
-		return false;
+		return $obj->fullIndexById[$id_addon];
 	}
 	
 	
@@ -152,8 +176,10 @@ class bab_addonsInfos {
 		
 		$obj = bab_getInstance('bab_addonsInfos');
 		
-		$obj->indexById 	= array();
-		$obj->indexByName 	= array();
+		$obj->indexById 		= array();
+		$obj->indexByName 		= array();
+		$obj->fullIndexById 	= array();
+		$obj->fullIndexByName 	= array();
 	}
 	
 	
@@ -161,17 +187,36 @@ class bab_addonsInfos {
 	/**
 	 * Get addon id by name
 	 * @static
+	 *
+	 * @param	string	$name
+	 * @param	boolean	$access_rights
+	 *
 	 * @return int|false
 	 */
-	function getAddonIdByName($name) {
+	function getAddonIdByName($name, $access_rights = true) {
+		
+		
 		$obj = bab_getInstance('bab_addonsInfos');
-		$obj->createIndex();
 		
-		if (!isset($obj->indexByName[$name])) {
-			return false;
+		if ($access_rights) {
+			$obj->createIndex();
+			
+			if (!isset($obj->indexByName[$name])) {
+				return false;
+			}
+			
+			return (int) $obj->indexByName[$name]['id'];
+		} else {
+		
+			$obj->createFullIndex();
+			
+			if (!isset($obj->fullIndexByName[$name])) {
+				return false;
+			}
+			
+			return (int) $obj->fullIndexByName[$name]['id'];
+		
 		}
-		
-		return (int) $obj->indexByName[$name]['id'];
 	}
 }
 
@@ -202,18 +247,23 @@ class bab_addonInfos {
 	 * Set addon Name
 	 * This function verifiy if the addon is accessible
 	 * define $this->id_addon and $this->addonname
+	 *
+	 * @param	string	$addonname
+	 * @param	boolean	$access_rights	: access rights verification on addon
 	 * @return boolean
 	 */
-	function setAddonName($addonname) {
+	function setAddonName($addonname, $access_rights = true) {
 		
-		$id_addon = bab_addonsInfos::getAddonIdByName($addonname);
+		$id_addon = bab_addonsInfos::getAddonIdByName($addonname, $access_rights);
 		
 		if (false === $id_addon) {
 			return false;
 		}
-			
-		if (!bab_isAddonAccessValid($id_addon)) {
-			return false;
+		
+		if ($access_rights) {
+			if (!bab_isAddonAccessValid($id_addon)) {
+				return false;
+			}
 		}
 	
 		$this->id_addon = $id_addon;

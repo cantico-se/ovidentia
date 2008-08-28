@@ -1820,7 +1820,7 @@ function bab_getAddonInfosInstance($addonname) {
 	
 	if (false === array_key_exists($addonname, $instances)) {
 		$obj = new bab_addonInfos();
-		if (false === $obj->setAddonName($addonname)) {
+		if (false === $obj->setAddonName($addonname, false)) {
 			$instances[$addonname] = false;
 		} else {
 			$instances[$addonname] = $obj;
