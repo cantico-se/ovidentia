@@ -400,7 +400,7 @@ function bab_OCGetUserEntities($iduser, $idoc='')
  * 
  * @return resource		The mysql resource or FALSE on error
  */
-function bab_OCselectEntityCollaborators($entityId)
+function bab_OCSelectEntityCollaborators($entityId)
 {
 	global $babDB, $babBody;
 
@@ -424,4 +424,114 @@ function bab_OCselectEntityCollaborators($entityId)
 	$members = $babDB->db_query($sql);
 
 	return $members;
+}
+
+
+
+//-------------------------------------------------------------------------
+
+
+/**
+ * Creates an organizational chart.
+ * 
+ * If an organizationnal chart with the same name in
+ * the delegation already exist nothing is created.
+ * 
+ * @param	string	$sName			The name of the organizational chart
+ * @param	string	$sDescription	The description of the organizational chart
+ * @param	int		$iIdDelegation	The delegation identifier of the organizational chart
+ * 
+ * @return	int		The identifier of the created organizational chart on success, 
+ * 					0 on error 
+ */
+function bab_OCCreate($sName, $sDescription, $iIdDelegation)
+{
+	
+}
+
+
+/**
+ * Deletes an organizational chart.
+ * 
+ * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	bool	True on success, False on error
+ *  					
+ */
+function bab_OCDelete($iIdOrgChart)
+{
+	
+}
+
+
+/**
+ * Gets a value that indicates whether an organizational chart exists
+ * 
+ * @param	string	$sName			The identifier of the organizational
+ * @param	int		$iIdDelegation	The delegation identifier 
+ *  
+ * @return	bool	True if the organizational chart exist, False on error
+ *  					
+ */
+function bab_OCExist($sName, $iIdDelegation)
+{
+	
+}
+
+
+/**
+ * Locks an organizational chart.
+ * 
+ * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	bool	True on success, False on error
+ *  					
+ */
+function bab_OCLock($iIdOrgChart)
+{
+	
+}
+
+
+/**
+ * Unlocks an organizational chart.
+ * 
+ * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	bool	True on success, False on error
+ *  					
+ */
+function bab_OCUnlock($iIdOrgChart)
+{
+	
+}
+
+
+/**
+ * Gets a value that indicates whether an organizational chart is locked.
+ * 
+ * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	bool	True on success, False on error
+ *  					
+ */
+function bab_OCIsLocked($iIdOrgChart)
+{
+	
+
+}
+
+
+/**
+ * Gets the lock value info.
+ * 
+ * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	array	The lock info
+ *  					
+ */
+function bab_OCGetLockInfo($iIdOrgChart)
+{
+	
+
 }
