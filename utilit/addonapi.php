@@ -797,30 +797,6 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 }
 
 
-define('BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE', 'You must log in before accessing this page.');
-
-function bab_requireAccess($tables, $idobject, $loginMessage = BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE)
-{
-	if (is_string($tables)) {
-		$tables = array($tables);
-	}
-	foreach ($tables as $table) {
-		if (bab_isAccessValid($table, $idobject, '')) {
-			return true;
-		}
-	}
-	if (bab_userIsloggedin()) {
-		return false;
-	}
-	bab_requireCredential($loginMessage);
-	foreach ($tables as $table) {
-		if (bab_isAccessValid($table, $idobject, '')) {
-			return true;
-		}
-	}
-	return false;
-}
-
 
 /**
  * Get the list of id_object accessible by the current user
@@ -1973,3 +1949,47 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '') {
 	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 	return bab_doRequireCredential($sLoginMessage, $sAuthType);
 }
+
+
+
+
+
+define('BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE', 'You must log in before accessing this page.');
+
+/**
+ * Checks that the user has at least one of the specified ACL access ($tables) on $idobject. 
+ * 
+ * If the user has none of the required accesses and is not logged,
+ * the function will require en authentication (through) bab_requireCredential
+ * and then check once again the access.
+ * 
+ * @param	string|array	$tables			The name of the ACL table (*_groups) or an array of them.
+ * @param	int				$idObject		
+ * @param	string			$sAuthType		Optional authentication type.
+ * @since 6.7.0
+ *
+ * @return boolean
+ */
+function bab_requireAccess($tables, $idObject, $loginMessage = BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE)
+{
+	if (is_string($tables)) {
+		$tables = array($tables);
+	}
+	foreach ($tables as $table) {
+		if (bab_isAccessValid($table, $idObject, '')) {
+			return true;
+		}
+	}
+	if (bab_userIsloggedin()) {
+		return false;
+	}
+	bab_requireCredential($loginMessage);
+	foreach ($tables as $table) {
+		if (bab_isAccessValid($table, $idObject, '')) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
