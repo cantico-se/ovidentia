@@ -248,6 +248,8 @@ class BAB_TM_GanttBase
 	var $m_isToday = false;
 	var $m_oTodayLine = null;
 
+	var $m_sMainTitle = '';
+	
 	function BAB_TM_GanttBase()
 	{
 	}
@@ -276,6 +278,12 @@ class BAB_TM_GanttBase
 		$iIdProject = bab_rp('iIdProject', -1);
 		if(-1 != $iIdProject)
 		{
+			$aProject = null;
+			if(bab_getProject($iIdProject, $aProject))
+			{
+				$this->m_sMainTitle = bab_toHtml(bab_translate("Project") . ': ' . $aProject['name']);
+			}
+			
 			$aFilters['iIdProject'] = $iIdProject;
 			$this->m_GanttViewParamUrl .= '&iIdProject=' . $aFilters['iIdProject'];
 		}
@@ -283,6 +291,8 @@ class BAB_TM_GanttBase
 		$iIdOwner = bab_rp('iIdOwner', -1);
 		if(-1 != $iIdOwner)
 		{
+			$this->m_sMainTitle = bab_toHtml(bab_translate("My tasks"));
+			
 			$aFilters['iIdOwner'] = $iIdOwner;
 			$this->m_GanttViewParamUrl .= '&iIdOwner=' . $aFilters['iIdOwner'];
 		}
@@ -359,9 +369,14 @@ class BAB_TM_GanttBase
 		$bRemainingDatesInBox = ($oRemainEndDate->getTimeStamp() > $this->m_aDisplayedStartDate[0] && 
 			$oRemainStartDate->getTimeStamp() < $this->m_aDisplayedEndDate[0]);
 			
+		$bIsEnded = (('0000-00-00 00:00:00' !== $aTask['startDate'] && 
+			'0000-00-00 00:00:00' !== $aTask['endDate']) || 100 == $aTask['iCompletion']);
+		$bAccordingToRemaining = ($oTaskTimeManager->getTodayIsoDateTime()->getTimeStamp() > $this->m_aDisplayedStartDate[0] && 
+			$oGanttTask->getEndDateTimeStamp() < $this->m_aDisplayedEndDate[0] && !$bIsEnded);
+			
 		$iIdTask = $oGanttTask->m_iIdTask;
 
-		if($bRealDatesInBox || $bPlannedDatesInBox || $bRemainingDatesInBox)
+		if($bRealDatesInBox || $bPlannedDatesInBox || $bRemainingDatesInBox || $bAccordingToRemaining)
 		{
 			$aForGantt[$iIdTask]	= $iIdTask;
 			$aToProcess[$iIdTask]	= $iIdTask;
