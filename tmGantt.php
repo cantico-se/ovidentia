@@ -338,7 +338,7 @@ class BAB_TM_GanttBase
 					}
 					else
 					{
-						$bStop = false;
+						$bStop = true;
 					}
 				}
 			}
