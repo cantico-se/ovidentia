@@ -189,26 +189,100 @@ class BAB_TM_TaskTime
 		}
 		return $aPredecessors;
 	}
+
 	
-/*
-	function computeEndDate($sIsoStartDate, $fDuration, $iDurationUnit, &$oEndDate)
+	function getWorkingSecondsBetween($oStartDate, $oEndDate)
 	{
 		require_once($GLOBALS['babInstallPath'] . 'tmCalendar.php');
 		require_once($GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php');
 	
 		$oTaskTimeManager	=& getTaskTimeManager();
 		$oTmCalendar		= bab_tskmgr_getCalendar();
+
+		$oLoopStartDate			= $oStartDate->cloneDate();
+		$oLoopEndDate			= $oEndDate->cloneDate();
+		$oStartPeriodDateTime	= $oStartDate->cloneDate();			
+		$oEndPeriodDateTime		= $oEndDate->cloneDate();			
 		
+	 	$iYear				= $oLoopStartDate->getYear();
+	 	$aNWD				= bab_getNonWorkingDays($iYear);
+		$iWorkedSeconds		= 0;
+	 	
+		while($oLoopStartDate->getTimeStamp() < $oLoopEndDate->getTimeStamp())
+	 	{
+			if($oLoopStartDate->getYear() > $iYear)
+	 		{
+	 			$aNWD = bab_getNonWorkingDays($iYear);
+	 			$iYear = $oLoopStartDate->getYear();
+	 		}
+	 		
+	 		if(!array_key_exists($oLoopStartDate->getIsoDate(), $aNWD))
+	 		{
+				$aPeriod = $oTmCalendar->getPeriod($oLoopStartDate->getDayOfWeek());
+				
+				foreach($aPeriod as $iKey => $oCalendarPeriod)
+				{
+					$iDayToAdd = 0;
+					//Si la start période est supérieure ou égale à la end période
+					//alors il faut ajouter 1 jour car c'est le lendemain
+					if(!(BAB_TM_PERIOD_BEFORE === $oCalendarPeriod->compare()))
+					{
+						$iDayToAdd = 1;
+					}
+
+					$oStartPeriodDateTime->init($oLoopStartDate->getYear(), $oLoopStartDate->getMonth(),
+						$oLoopStartDate->getDayOfMonth(), $oCalendarPeriod->getStartHour(), 
+						$oCalendarPeriod->getStartMinut(), $oCalendarPeriod->getStartSecond());			
+					
+					$oEndPeriodDateTime->init($oLoopStartDate->getYear(), $oLoopStartDate->getMonth(),
+						$oLoopStartDate->getDayOfMonth() + $iDayToAdd, $oCalendarPeriod->getEndHour(), 
+						$oCalendarPeriod->getEndMinut(), $oCalendarPeriod->getEndSecond());			
+					
+					if($oLoopStartDate->getTimeStamp() > $oStartPeriodDateTime->getTimeStamp())
+					{
+						$oStartPeriodDateTime = $oLoopStartDate->cloneDate();
+					}
+					
+					if($oEndPeriodDateTime->getTimeStamp() > $oLoopEndDate->getTimeStamp())
+					{
+						$oEndPeriodDateTime = $oLoopEndDate->cloneDate();
+					}
+					
+					$iPeriodDurationInSeconds = $oEndPeriodDateTime->getTimeStamp() - $oStartPeriodDateTime->getTimeStamp();
+					$iWorkedSeconds += $iPeriodDurationInSeconds;
+
+					/*					
+					bab_debug(
+						__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+						'sStartDate ' . bab_shortDate($oStartPeriodDateTime->getTimeStamp()) . ' ' . "\n" . 
+						'sEndDate   ' . bab_shortDate($oEndPeriodDateTime->getTimeStamp()) . ' ' . "\n" . 
+						'           ' . sprintf('%.02f', ($iWorkedSeconds / 86400)) . ' in day(s) ' . "\n" .
+						'           ' . sprintf('%.02f', ($iWorkedSeconds / 3600)) . ' in hours(s) ' . "\n" .
+						'           ' . $iWorkedSeconds . ' in second(s) ');
+					//*/
+				}
+	 		}
+
+			$oLoopStartDate->init($oLoopStartDate->getYear(), $oLoopStartDate->getMonth(), $oLoopStartDate->getDayOfMonth() + 1, 0, 0, 0);
+	 	}
+	 	return $iWorkedSeconds;
+	}
+
+	
+	function computeEndDate($sIsoStartDate, $fDuration, $iDurationUnit, &$oEndDate)
+	{
+		require_once($GLOBALS['babInstallPath'] . 'tmCalendar.php');
+		require_once($GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php');
+
+		$oTaskTimeManager	=& getTaskTimeManager();
+		$oTmCalendar		= bab_tskmgr_getCalendar();
 //		bab_debug($oTmCalendar);
 
-		$iOneHourInSeconds		= 3600;
-//		$iHoursWorkedPerDay		= 7;
-//		$iHoursWorkedPerDay		= 24;
-		$iOneDayOfWorkInSeconds	= $oTaskTimeManager->getWorkedHoursPerDay() * $iOneHourInSeconds;
-		
-		
-//		$iWorkingTimeToFoundInSeconds = $fDuration * $iOneDayOfWorkInSeconds;
-		$iWorkingTimeToFoundInSeconds = 0;
+		$iOneHourInSeconds				= 3600;
+		$iOneDayInSeconds				= 86400;
+		$iOneDayOfWorkInSeconds			= $oTaskTimeManager->getWorkedHoursPerDay() * $iOneHourInSeconds;
+		$iWorkingTimeToFoundInSeconds	= 0;
+
 		if(BAB_TM_DAY == $iDurationUnit)
 		{
 			$iWorkingTimeToFoundInSeconds = $fDuration * $iOneDayOfWorkInSeconds;
@@ -218,204 +292,241 @@ class BAB_TM_TaskTime
 			$iWorkingTimeToFoundInSeconds = $fDuration * $iOneHourInSeconds;
 		}
 		
+	 	$oLoopDate = BAB_dateTime::fromIsoDateTime($sIsoStartDate);
 	
-		//Que faire si la tâche démarre avant ce qui est spécifié dans le calendrier ?
-	 	$oLoopStartDate = BAB_dateTime::fromIsoDateTime($sIsoStartDate);
-	 	$oLoopEndDate = $oLoopStartDate->cloneDate();
-	
-	 	bab_debug('Before loop working time to found ' . ($iWorkingTimeToFoundInSeconds / 86400));
-		
-		$iWorkedSeconds				= 0;
+$oStartPeriodDateTime = $oLoopDate->cloneDate();			
+$oEndPeriodDateTime = $oLoopDate->cloneDate();			
+$oEndDate = $oLoopDate->cloneDate();
+
+	 	/*
+	 	bab_debug(
+			__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+	 		'Before loop working time to found ' . "\n" . 
+			'oStart ' . $oLoopDate->getIsoDateTime() . "\n" .
+			sprintf('%.02f', ($iWorkingTimeToFoundInSeconds / $iOneDayInSeconds)) . ' in day(s) ' . "\n" .
+	 		sprintf('%.02f', ($iWorkingTimeToFoundInSeconds / $iOneHourInSeconds)) . ' in hours(s) ' . "\n" .
+	 		$iWorkingTimeToFoundInSeconds . ' in second(s) ');
+	 	//*/
+
 		$iRemainingSeconds			= $iWorkingTimeToFoundInSeconds;
 		$iPeriodDurationInSeconds	= 0;
-		$oStartPeriodDateTime 		= null;
-		$oEndPeriodDateTime 		= null;
+		$iWorkedSeconds				= 0;
+
+		$iYear = $oLoopDate->getYear();
+		$aNWD = bab_getNonWorkingDays($oLoopDate->getYear());
 		
-		$aNWD = bab_getNonWorkingDays($oLoopStartDate->getYear());
-		
-//		$aNWD['2008-07-16'] = 1;
-//		$aNWD['2008-07-17'] = 1;
-		
-//		bab_debug($aNWD);
 		//Tant que l'on à pas atteint la durée
-	 	while($iWorkedSeconds < $iWorkingTimeToFoundInSeconds)
+	 	while($iWorkedSeconds < $iWorkingTimeToFoundInSeconds && $iRemainingSeconds > 0)
 	 	{
-	 		$oLoopEndDate->init($oLoopStartDate->getYear(), $oLoopStartDate->getMonth(), $oLoopStartDate->getDayOfMonth(), 23, 59, 59);
-	 		
-	 		//bab_debug($oLoopStartDate->getIsoDateTime() . ' ' . $oLoopEndDate->getIsoDateTime());
-	
-	 		if(!array_key_exists($oLoopStartDate->getIsoDate(), $aNWD))
+	 		if($oLoopDate->getYear() > $iYear)
 	 		{
-	 			$iPeriodDurationInSeconds	= 0;
+	 			$aNWD	= bab_getNonWorkingDays($iYear);
+	 			$iYear	= $oLoopDate->getYear();
+	 		}
+	 		
+	 		if(!array_key_exists($oLoopDate->getIsoDate(), $aNWD))
+	 		{
+	 			$iPeriodDurationInSeconds = 0;
 	 			
-				$aPeriod = $oTmCalendar->getPeriod($oLoopStartDate->getDayOfWeek()); 	
+				$aPeriod = $oTmCalendar->getPeriod($oLoopDate->getDayOfWeek()); 	
 				
 				foreach($aPeriod as $iKey => $oCalendarPeriod)
 				{
-					if($iRemainingSeconds > 0)
+					if($iRemainingSeconds > 0 && $iWorkedSeconds < $iWorkingTimeToFoundInSeconds)
 					{
-						$oStartPeriodDateTime = new BAB_DateTime($oLoopStartDate->getYear(),	$oLoopStartDate->getMonth(),
-							$oLoopStartDate->getDayOfMonth(), $oCalendarPeriod->iStartHour, $oCalendarPeriod->iStartMinut,
-							00);			
-						
-						$oEndPeriodDateTime = new BAB_DateTime($oLoopStartDate->getYear(),	$oLoopStartDate->getMonth(),
-							$oLoopStartDate->getDayOfMonth(), $oCalendarPeriod->iEndHour, $oCalendarPeriod->iEndMinut,
-							59);			
-						
-						if($oLoopEndDate->getTimeStamp() > $oStartPeriodDateTime->getTimeStamp() && $oLoopStartDate->getTimeStamp() < $oEndPeriodDateTime->getTimeStamp())
+						$iDayToAdd = 0;
+						//Si la start période est supérieure ou égale à la end période
+						//alors il faut ajouter 1 jour car c'est le lendemain
+						if(!(BAB_TM_PERIOD_BEFORE === $oCalendarPeriod->compare()))
 						{
-							//bab_debug('Intersection FOUND ' . $oLoopStartDate->getIsoDateTime() . ' ' . $oLoopEndDate->getIsoDateTime());	
-		
-							if($oLoopStartDate->getTimeStamp() > $oStartPeriodDateTime->getTimeStamp())
-							{
-								$oStartPeriodDateTime = $oLoopStartDate;
-							}
-							
-							if($oLoopEndDate->getTimeStamp() < $oEndPeriodDateTime->getTimeStamp())
-							{
-								$oEndPeriodDateTime = $oLoopEndDate;
-							}
-							
-							$iPeriodDurationInSeconds = $oEndPeriodDateTime->getTimeStamp() - $oStartPeriodDateTime->getTimeStamp();
-							
-							if($iPeriodDurationInSeconds > $iRemainingSeconds)
-							{
-								$iPeriodDurationInSeconds = $iRemainingSeconds;
-							}
-							
-							$iRemainingSeconds -= $iPeriodDurationInSeconds;
-							$iWorkedSeconds += $iPeriodDurationInSeconds;
-		
-							//bab_debug(
-							//	' oStart ==> ' . $oStartPeriodDateTime->getIsoDateTime() .
-							//	' oEnd ==> ' . $oEndPeriodDateTime->getIsoDateTime() .
-							//	' iWorkedSeconds ==> ' . $iPeriodDurationInSeconds .
-							//	' iWorkedSecondsInHour ==> ' . ($iPeriodDurationInSeconds / 3600));
+							$iDayToAdd = 1;
 						}
+
+						$oStartPeriodDateTime = new BAB_DateTime($oLoopDate->getYear(), $oLoopDate->getMonth(),
+							$oLoopDate->getDayOfMonth(), $oCalendarPeriod->getStartHour(), 
+							$oCalendarPeriod->getStartMinut(), $oCalendarPeriod->getStartSecond());			
+						
+						$oEndPeriodDateTime = new BAB_DateTime($oLoopDate->getYear(), $oLoopDate->getMonth(),
+							$oLoopDate->getDayOfMonth() + $iDayToAdd, $oCalendarPeriod->getEndHour(), 
+							$oCalendarPeriod->getEndMinut(), $oCalendarPeriod->getEndSecond());			
+						
+						if($oLoopDate->getTimeStamp() > $oStartPeriodDateTime->getTimeStamp())
+						{
+							$oStartPeriodDateTime = $oLoopDate;
+						}
+
+						$iPeriodDurationInSeconds = $oEndPeriodDateTime->getTimeStamp() - $oStartPeriodDateTime->getTimeStamp();
+						
+						if($iPeriodDurationInSeconds >= $iRemainingSeconds)
+						{
+							$iPeriodDurationInSeconds = $iRemainingSeconds;
+
+							$oEndDate = $oStartPeriodDateTime->cloneDate();
+							$oEndDate->add($iPeriodDurationInSeconds, BAB_DATETIME_SECOND);
+						}
+						
+						$iRemainingSeconds		-= $iPeriodDurationInSeconds;
+						$iWorkedSeconds			+= $iPeriodDurationInSeconds;
+
+						/*
+						bab_debug(
+							__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+							'oStart            ' . $oStartPeriodDateTime->getIsoDateTime() . "\n" .
+							'oEnd              ' . $oEndPeriodDateTime->getIsoDateTime() . "\n" .
+							'iRemainingSeconds ' . $iRemainingSeconds . "\n" .
+							'iWorkedSeconds    ' . sprintf('%.02f', ($iWorkedSeconds / 86400)) . ' in day(s) ' . "\n" .
+							'                  ' . sprintf('%.02f', ($iWorkedSeconds / 3600)) . ' in hours(s) ' . "\n" .
+							'                  ' . $iWorkedSeconds . ' in second(s) '
+							);
+						//*/
 					}
 				}
 			}
 			else
 			{
-//				bab_debug('NWD DETECTED ==> ' . $oLoopStartDate->getIsoDate());	
+//				bab_debug('NWD DETECTED ==> ' . $oLoopDate->getIsoDate());	
 			}
-			
-	 		$oLoopStartDate = $oLoopEndDate->cloneDate();
-	 		$oLoopStartDate->add(1, BAB_DATETIME_SECOND);
+
+			$oLoopDate->init($oLoopDate->getYear(), $oLoopDate->getMonth(), $oLoopDate->getDayOfMonth() + 1, 0, 0, 0);
 	 	}
-	 	
-	 	$oEndDate	= $oStartPeriodDateTime->cloneDate();
-	 	$oEndDate->add($iPeriodDurationInSeconds, BAB_DATETIME_SECOND);
-	 	
-		bab_debug('WorkedTime => ' . $iWorkedSeconds . ' in hours ==> ' . sprintf('%.02f', ($iWorkedSeconds / 3600)));
-		bab_debug('Apres boucle ' . $oEndDate->getIsoDateTime());
+
+	 	/*
+	 	bab_debug(
+			__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+	 		'After loop working time found ' . "\n" . 
+	 		sprintf('%.02f', ($iWorkedSeconds / 86400)) . ' in day(s) ' . "\n" .
+	 		sprintf('%.02f', ($iWorkedSeconds / 3600)) . ' in hours(s) ' . "\n" .
+	 		$iWorkedSeconds . ' in second(s) ');
+	 	//*/
+
+	 	/*
+		$oStartDate = BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+		$iWorkSec2 = BAB_TM_TaskTime::getWorkingSecondsBetween($oStartDate, $oEndDate);
+		bab_debug(
+			__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+			'sStartDate ' . $oStartDate->getIsoDateTime() . ' ' . "\n" . 
+			'sEndDate   ' . $oEndDate->getIsoDateTime() . ' ' . "\n" . 
+			'           ' . sprintf('%.02f', ($iWorkSec2 / 86400)) . ' in day(s) ' . "\n" .
+			'           ' . sprintf('%.02f', ($iWorkSec2 / 3600)) . ' in hours(s) ' . "\n" .
+			'           ' . $iWorkSec2 . ' in second(s) ' . "\n" .
+			'Test calculation (' . (($iWorkingTimeToFoundInSeconds == $iWorkSec2) ? 'SUCCESS' : 'ERROR') . ')');
+
+//		bab_debug('Apres boucle sStartDate ==> ' . $sIsoStartDate);
+//		bab_debug('Apres boucle sEndDate   ==> ' . $oEndDate->getIsoDateTime());
+		//*/
 	}
-//*/	
-	
-//*
-	function computeEndDate($sIsoStartDate, $fDuration, $iDurationUnit, &$oEndDate)
+//*/
+
+	function computeRemainingDates(&$oRemainStartDate, &$oRemainEndDate)
 	{
-		require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
-		require_once $GLOBALS['babInstallPath'] . 'utilit/calapi.php';
-		
-		$sWorkingDays = '';
-		$iIdUser = 0; //configuration du site
-		bab_calGetWorkingDays($iIdUser, $sWorkingDays);
-		$aWorkingDays = array_flip(explode(',', $sWorkingDays));
-		
-		$fRemain = 0;
-		
-		if($iDurationUnit === BAB_TM_DAY)
+		if(100 == $this->m_iCompletion)
 		{
-			//Arrondi au superieur donc on va boucler une fois de trop si le reste est > à zéro
-			$iDuration	= (int) ceil($fDuration);
-			$fRemain	= ($fDuration - (int) $fDuration);			
-		}
-		else
-		{
-			$iDuration = (int) 1;
-		}
-		
-		$oStartDate			= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
-		$oEndDate			= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
-		$iWorkingDaysCount	= count($aWorkingDays);
+			$oRemainStartDate = $this->cloneStartDate();			
+			$oRemainEndDate = $this->cloneEndDate();
 
-		do
-		{
-			$aNWD = bab_getNonWorkingDaysBetween($oStartDate->getTimeStamp(), $oEndDate->getTimeStamp());
-			if(isset($aWorkingDays[$oEndDate->getDayOfWeek()]) && 0 == count($aNWD))
-			{
-				$oEndDate->add(1);
-			}
-			else 
-			{
-				$oEndDate->add(2);
-			}
-			$iDuration--;	
-		}
-		while(0 < $iDuration && $iWorkingDaysCount > 0);
-		
-		if($iDurationUnit === BAB_TM_DAY)
-		{
-			if($fRemain > 0)
-			{
-				//86400 nombre de secondes dans une journée
-				//On retranche une journée car à cause du floor qui arrondi au 
-				//superieure on a bouclé une fois de trop
-				$oEndDate->add((86400 * $fRemain) - 86400, BAB_DATETIME_SECOND);
+			/*
+			bab_debug(
+				__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+				'iIdTask           ' . $this->m_iIdTask . ' ' . "\n" . 
+				'                  ' . ' ENDED TASK DETECTED ' . "\n" . 
+				'sPlannedStartDate ' . bab_shortDate($this->m_oPlannedStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'sPlannedEndDate   ' . bab_shortDate($this->m_oPlannedEndDate->getTimeStamp()) . ' ' . "\n" . 
+				'sStartDate        ' . bab_shortDate($this->m_oStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'sEndDate          ' . bab_shortDate($this->m_oEndDate->getTimeStamp()) . ' ' . "\n" . 
 
-				if(!isset($aWorkingDays[$oEndDate->getDayOfWeek()]))
-				{
-					//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oEndDate->getIsoDateTime() . '<br />';
-					
-					$iNbDays = 0;
-					BAB_TM_TaskTime::getGapToFirstWorkingDay($oEndDate, $aWorkingDays, BAB_DATETIME_DAY, $iNbDays);
-					$oEndDate->add($iNbDays, BAB_DATETIME_DAY);
-				}
-			}
+				'sStartDateRet     ' . bab_shortDate($oRemainStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'sEndDateRet       ' . bab_shortDate($oRemainEndDate->getTimeStamp()) . ' '
+			);
+			//*/
+			return;
+
+		}
+
+		$oTaskTimeManager	=& getTaskTimeManager();
+		$oTodayDate			= $oTaskTimeManager->getTodayIsoDateTime();
+		$oRemainEndDate		= null;
+		$oRemainStartDate	= null;
+
+		$iIsEqual	= 0;
+		$iIsBefore	= -1;
+		$iIsAfter	= 1;
+		
+		if($iIsAfter == BAB_DateTime::compare($this->getStartDate(), $oTodayDate))
+		{
+			//echo ("La date de début est supérieure à la date de fin");
+			$oRemainStartDate = $this->cloneStartDate();
 		}
 		else 
 		{
-			//3600 nombre de secondes dans une heure
-			$oEndDate->add(3600 * $fDuration, BAB_DATETIME_SECOND);
-				
-			if(!isset($aWorkingDays[$oEndDate->getDayOfWeek()]))
-			{
-				//echo 'Ce jour n\'est pas un jour travaillé ==> ' . $oEndDate->getIsoDateTime() . '<br />';
-				
-				$iNbHours = 0;
-				BAB_TM_TaskTime::getGapToFirstWorkingDay($oEndDate, $aWorkingDays, BAB_DATETIME_HOUR, $iNbHours);
-				$oEndDate->add($iNbHours, BAB_DATETIME_HOUR);
-			}
+			//echo ("La date de début est inferieur à la date de fin");
+			$oRemainStartDate = $oTodayDate->cloneDate();
 		}
-//		echo __FUNCTION__ . ' sStartDate ==> ' . $sIsoStartDate . ' sEndDate ==> ' . $oEndDate->getIsoDateTime();
-	}
-	
-	function getGapToFirstWorkingDay($oFromDate, $aWorkingDays, $iDurationUnit, &$iNbDays)
-	{
-		$oStartDate	= $oFromDate->cloneDate();
+		$oRemainEndDate = $oRemainStartDate->cloneDate();
 		
-		$iNbDays = 0;
-		if(is_array($aWorkingDays) && count($aWorkingDays) > 0)
+		$iRemainPercent = 100 - $this->m_iCompletion;
+
+		$oStart = null;
+		$oEnd = null;
+		if(!is_null($this->m_oEndDate))
 		{
-			$bFound = false;
-			
-			do 
-			{
-				if(isset($aWorkingDays[$oStartDate->getDayOfWeek()]))
-				{
-					$bFound = true;
-				}
-				else
-				{
-					$iNbDays++;
-					$oStartDate->add(1, $iDurationUnit);
-				}
-			}
-			while(false === $bFound);
+			$oStart = $this->m_oStartDate;
+			$oEnd = $this->m_oEndDate;
 		}
+		else
+		{
+			$oStart = $this->m_oPlannedStartDate;
+			$oEnd = $this->m_oPlannedEndDate;
+		}
+		
+		//Du début de la tâche jusqu'a fin du taux de completion. (barre noir).
+		//Ce calcul ne tient pas compte des jours non travaillés
+		$iTaskTimeStamp	= $oEnd->getTimeStamp() - $oStart->getTimeStamp();
+		$iDoneTimeStamp = ($iTaskTimeStamp / 100) * $this->m_iCompletion;
+		$oDoneStart		= $this->getStartDate()->cloneDate();
+		$oDoneEnd		= $this->getStartDate()->cloneDate();
+		$oDoneEnd->add($iDoneTimeStamp, BAB_DATETIME_SECOND);
+
+		//Fin de completion jusqu'a la fin de la tâche. (barre blanche).
+		//Ce calcul ne tient pas compte des jours non travaillés
+		$iToDoTimeStamp	= ($iTaskTimeStamp / 100) * $iRemainPercent;
+		$oToDoStart		= $oDoneEnd->cloneDate();
+		$oToDoEnd		= $oDoneEnd->cloneDate();
+		$oToDoEnd->add($iToDoTimeStamp, BAB_DATETIME_SECOND);
+
+		//Entre la fin de completion et ce qui reste à faire, prise du nombres de secondes
+		//ce calcul tient compte des jours non travaillés car à partir de la date du jour
+		//il va falloir rajouter ce qui reste à faire et ceci en tennat compte des jours non travaillés
+		$iWorkSec1 = BAB_TM_TaskTime::getWorkingSecondsBetween($oToDoStart, $oToDoEnd);
+		$fRemainDuration = ($iWorkSec1 / $this->m_iNbSeconds);
+		
+		//A partir de la date du jour, calcul de ce qui reste à faire en tenant compte des jours non travaillés (barre rose)
+		BAB_TM_TaskTime::computeEndDate($oRemainStartDate->getIsoDateTime(), $fRemainDuration, $this->m_iDurationUnit, $oRemainEndDate);
+		
+		/*
+		bab_debug(
+			__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+			'iIdTask    ' . $this->m_iIdTask . ' ' . "\n" .
+			'sDoneStart ' . $oDoneStart->getIsoDateTime() . ' ' . "\n" .
+			'sDoneEnd   ' . $oDoneEnd->getIsoDateTime() . ' ' . "\n" .
+			'sToDoStart ' . $oToDoStart->getIsoDateTime() . ' ' . "\n" .
+			'sToDoEnd   ' . $oToDoEnd->getIsoDateTime() . ' ' . "\n" .
+	 		'           ' . sprintf('%.02f', ($iWorkSec1 / 86400)) . ' in day(s) ' . "\n" .
+	 		'           ' . sprintf('%.02f', ($iWorkSec1 / 3600)) . ' in hours(s) ' . "\n" .
+			'           ' . $iWorkSec1 . ' in second(s) '
+	 	);
+
+		$iWorkSec2 = BAB_TM_TaskTime::getWorkingSecondsBetween($oRemainStartDate, $oRemainEndDate);
+		bab_debug(
+			__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+			'iIdTask          ' . $this->m_iIdTask . ' ' . "\n" .
+			'sRemainStartDate ' . $oRemainStartDate->getIsoDateTime() . ' ' . "\n" .
+			'sRemainEndDate   ' . $oRemainEndDate->getIsoDateTime() . ' ' . "\n" .
+	 		'                 ' . sprintf('%.02f', ($iWorkSec2 / 86400)) . ' in day(s) ' . "\n" .
+	 		'                 ' . sprintf('%.02f', ($iWorkSec2 / 3600)) . ' in hours(s) ' . "\n" .
+			'                 ' . $iWorkSec2 . ' in second(s) ' . "\n" .
+	 		'                 ' . 'Test calculation (' . (($iWorkSec1 == $iWorkSec2) ? 'SUCCESS' : 'ERROR') . ')');
+		//*/
 	}
-//*/
 }
 
 class BAB_TaskTimeToDoCheckPoint extends BAB_TM_TaskTime
@@ -476,70 +587,102 @@ class BAB_TM_TaskTimeDate extends BAB_TM_TaskTime
 			$this->m_oStartDate = BAB_DateTime::fromIsoDateTime($sIsoStartDate);
 		
 			//Avant on pouvait renseigner la date de fin avec un taux de completion < 100
-//			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
-			if(100 === $this->m_iCompletion || '0000-00-00 00:00:00' !== $sIsoEndDate)
+			if('0000-00-00 00:00:00' !== $sIsoEndDate)
 			{
 				$this->m_oEndDate = BAB_DateTime::fromIsoDateTime($sIsoEndDate);
+				$this->m_iEffectiveDurationInSeconds = $this->m_oEndDate->getTimeStamp() - $this->m_oStartDate->getTimeStamp();
 			}
 			else
 			{
-				$this->m_oEndDate = $this->m_oStartDate->cloneDate();
-				$this->m_oEndDate->add($this->m_oPlannedEndDate->getTimeStamp() - $this->m_oPlannedStartDate->getTimeStamp(), BAB_DATETIME_SECOND);
+				//A ce stade la date de début réel est renseignée mais pas la date de fin
+				//il faut donc calculer en incluant les non workings days ainsi que les 
+				//plages de travail la date de fin théorique
+
+				//Récupére le temp en seconde entre deux dates, tient compte des jours travaillés
+				$iWorkingSeconds = BAB_TM_TaskTime::getWorkingSecondsBetween($this->m_oPlannedStartDate, $this->m_oPlannedEndDate);
+				
+				/*
+				$iWorkSec1 = $iWorkingSeconds;
+				bab_debug(
+					__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+	 				'iIdTask ' . $this->m_iIdTask . ' ' . "\n" . 
+					'sStartDate ==> ' . bab_shortDate($this->m_oPlannedStartDate->getTimeStamp()) . ' ' . "\n" . 
+					'sEndDate ==> ' . bab_shortDate($this->m_oPlannedEndDate->getTimeStamp()) . ' ' . "\n" . 
+					sprintf('%.02f', ($iWorkSec1 / 86400)) . ' in day(s) ' . "\n" .
+			 		sprintf('%.02f', ($iWorkSec1 / 3600)) . ' in hours(s) ' . "\n" .
+			 		$iWorkSec1 . ' in second(s) ');
+				//*/
+				
+				//Recalcule la date de fin théorique en fonction des jours travaillés
+			 	$fDuration = $iWorkingSeconds / $this->m_iNbSeconds;
+				BAB_TM_TaskTime::computeEndDate($sIsoStartDate, $fDuration, $this->m_iDurationUnit, $this->m_oEndDate);	
+	
+				$this->m_iEffectiveDurationInSeconds = $this->m_oEndDate->getTimeStamp() - $this->m_oStartDate->getTimeStamp();
+
+				/*
+				//Si le calcul est bon normalement les deux temps (bab_debug en commentaire) doivent être égaux
+				$iWorkingSeconds = BAB_TM_TaskTime::getWorkingSecondsBetween($this->m_oStartDate, $this->m_oEndDate);
+				
+				$iWorkSec2 = $iWorkingSeconds;
+				bab_debug(
+					__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+					'iIdTask ' . $this->m_iIdTask . ' ' . "\n" . 
+					'sStartDate ==> ' . bab_shortDate($this->m_oStartDate->getTimeStamp()) . ' ' . "\n" . 
+					'sEndDate ==> ' . bab_shortDate($this->m_oEndDate->getTimeStamp()) . ' ' . "\n" . 
+					sprintf('%.02f', ($iWorkSec2 / 86400)) . ' in day(s) ' . "\n" .
+			 		sprintf('%.02f', ($iWorkSec2 / 3600)) . ' in hours(s) ' . "\n" .
+			 		$iWorkSec2 . ' in second(s) ' . "\n" .
+			 		'Test calculation (' . (($iWorkSec1 == $iWorkSec2) ? 'SUCCESS' : 'ERROR') . ')');
+				//*/
 			}
 		}
-		
-		$oTaskTimeManager	=& getTaskTimeManager();
-		$aPredecessors		= BAB_TM_TaskTime::getTaskPredecessor($aTask);
-		$oGanttTask			= null;
-		 
-		foreach($aPredecessors as $iIdPredecessor => $aPredecessor)
-		{
-			$oGanttTask = $oTaskTimeManager->getTask($aPredecessor);
-		}
-		
-		$oRemainEndDate	= null;	
-		$oRemainStartDate = null;
 		
 		$iIdPredecessor	= (int) $aTask['iIdPredecessorTask'];
 
 		//Si la tâche à un prédécesseur et qu'elle est liée avec celui-ci
 		if(0 !== $iIdPredecessor && BAB_TM_END_TO_START === $this->m_iLinkType)
 		{	
+			$oRemainEndDate		= null;	
+			$oRemainStartDate	= null;
+			
+			$oTaskTimeManager	=& getTaskTimeManager();
+			$aPredecessors		= BAB_TM_TaskTime::getTaskPredecessor($aTask);
+			$oGanttTask			= null;
+			 
+			foreach($aPredecessors as $iIdPredecessor => $aPredecessor)
+			{
+				$oGanttTask = $oTaskTimeManager->getTask($aPredecessor);
+			}
+			
 			$oGanttTask->computeRemainingDates($oRemainStartDate, $oRemainEndDate);
 	
 			$iDurationInSeconds = $this->m_oPlannedEndDate->getTimeStamp() - $this->m_oPlannedStartDate->getTimeStamp();
 			$this->m_oPlannedStartDate = $oRemainEndDate->cloneDate();
-			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
-			$this->m_oPlannedEndDate->add($iDurationInSeconds, BAB_DATETIME_SECOND);
-		}
-	}
+			$fDuration = ($iDurationInSeconds / $this->m_iNbSeconds);
 
-	function computeRemainingDates(&$oRemainStartDate, &$oRemainEndDate)
-	{
-		$oTaskTimeManager	=& getTaskTimeManager();
-		
-		$oTodayDate			= $oTaskTimeManager->getTodayIsoDateTime();
-		$oRemainEndDate		= null;
-		$oRemainStartDate	= null;
+			/*
+			bab_debug(
+				__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+				'iIdTask    ' . $this->m_iIdTask . ' ' . "\n" . 
+				'pred rem sStartDate ' . bab_shortDate($oRemainStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'pred rem sEndDate   ' . bab_shortDate($oRemainEndDate->getTimeStamp()) . "\n" .
+			 	'           ' . sprintf('%.02f', ($iDurationInSeconds / 86400)) . ' in day(s) ' . "\n" .
+			 	'           ' . sprintf('%.02f', ($iDurationInSeconds / 3600)) . ' in hours(s) ' . "\n" .
+				'           ' . $iDurationInSeconds . ' in second(s) ');
+			//*/
+			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedStartDate->getIsoDateTime(), $fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
 
-		$iDoneDurationInSeconds = $this->m_iEffectiveDurationInSeconds - (($this->m_iCompletion * $this->m_iEffectiveDurationInSeconds) / 100);
-
-		$iIsEqual	= 0;
-		$iIsBefore	= -1;
-		$iIsAfter	= 1;
-		
-		if(100 == $this->m_iCompletion || $iIsAfter == BAB_DateTime::compare($this->getStartDate(), $oTodayDate))
-		{
-			//echo ("La date de début est supérieure à la date de fin");
-			$oRemainStartDate = $this->cloneStartDate();
+			/*
+			bab_debug(
+				__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+				'iIdTask    ' . $this->m_iIdTask . ' ' . "\n" . 
+				'pred rem sStartDate ' . bab_shortDate($oRemainStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'pred rem sEndDate   ' . bab_shortDate($oRemainEndDate->getTimeStamp()) . "\n" .
+			 	'           ' . sprintf('%.02f', ($iDurationInSeconds / 86400)) . ' in day(s) ' . "\n" .
+			 	'           ' . sprintf('%.02f', ($iDurationInSeconds / 3600)) . ' in hours(s) ' . "\n" .
+				'           ' . $iDurationInSeconds . ' in second(s) ');
+			//*/
 		}
-		else 
-		{
-			//echo ("La date de début est inferieur à la date de fin");
-			$oRemainStartDate = $oTodayDate->cloneDate();
-		}
-		$oRemainEndDate = $oRemainStartDate->cloneDate();
-		$oRemainEndDate->add($iDoneDurationInSeconds, BAB_DATETIME_SECOND);
 	}
 }
 
@@ -573,55 +716,84 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 		BAB_TM_TaskTime::computeEndDate($sIsoPlannedStartDate, $this->m_fDuration, $this->m_iDurationUnit, $oEffectiveEndDate);
 		$this->m_iEffectiveDurationInSeconds = $oEffectiveEndDate->getTimeStamp() - $this->m_oPlannedStartDate->getTimeStamp();
 
+		$this->m_oPlannedEndDate = $oEffectiveEndDate->cloneDate();
 		
 		if('0000-00-00 00:00:00' !== $sIsoStartDate)
 		{
 			$this->m_oStartDate = BAB_DateTime::fromIsoDateTime($sIsoStartDate);
 		
 			//Avant on pouvait renseigner la date de fin avec un taux de completion < 100
-//			if(100 === $this->m_iCompletion && '0000-00-00 00:00:00' !== $sIsoEndDate)
-			if(100 === $this->m_iCompletion || '0000-00-00 00:00:00' !== $sIsoEndDate)
+			if('0000-00-00 00:00:00' !== $sIsoEndDate)
 			{
 				$this->m_oEndDate = BAB_DateTime::fromIsoDateTime($sIsoEndDate);
+				$this->m_iEffectiveDurationInSeconds = $this->m_oEndDate->getTimeStamp() - $this->m_oStartDate->getTimeStamp();
 			}
 			else
 			{
 				BAB_TM_TaskTime::computeEndDate($this->m_oStartDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oEndDate);
+				$this->m_iEffectiveDurationInSeconds = $this->m_oEndDate->getTimeStamp() - $this->m_oStartDate->getTimeStamp();
 			}
 		}
-		
+/*
+bab_debug(
+	__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+	'iIdTask           ' . $this->m_iIdTask . ' ' . "\n" . 
+	'                  ' . ' ENDED TASK DETECTED ' . "\n" . 
+	'sPlannedStartDate ' . bab_shortDate($this->m_oPlannedStartDate->getTimeStamp()) . ' ' . "\n" . 
+	'sPlannedEndDate   ' . bab_shortDate($this->m_oPlannedEndDate->getTimeStamp()) . ' ' . "\n" . 
+	'sStartDate        ' . bab_shortDate($this->m_oStartDate->getTimeStamp()) . ' ' . "\n" . 
+	'sEndDate          ' . bab_shortDate($this->m_oEndDate->getTimeStamp())
+);
+//*/
+
 		$oTaskTimeManager	=& getTaskTimeManager();
 		$aPredecessors		= BAB_TM_TaskTime::getTaskPredecessor($aTask);
 		$oGanttTask			= null;
 		$iIdPredecessor		= (int) $aTask['iIdPredecessorTask'];
-		
+
 		//Si la tâche à un prédécesseur et qu'elle est liée avec celui-ci
 		if(0 !== $iIdPredecessor && BAB_TM_END_TO_START === $this->m_iLinkType)
 		{
-			$oRemainEndDate	= null;	
-			$oRemainStartDate = null;
-			$oGanttTask = $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
+			$oRemainEndDate		= null;
+			$oRemainStartDate	= null;
+			$oGanttTask			= $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
 
-			$oGanttTask->computeRemainingDates($oRemainStartDate, $oRemainEndDate); // Appelé une fois de trop
-		
-			$iDurationInSeconds = $this->m_iEffectiveDurationInSeconds;
-			
-			$sIsoPlannedEndDate	= (string) $aTask['plannedEndDate'];
-			$this->m_oPlannedStartDate = $oRemainEndDate->cloneDate();
-			$this->m_oPlannedEndDate = BAB_DateTime::fromIsoDateTime($sIsoPlannedEndDate);
-			
-			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
-			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedEndDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
+			// Appelé une fois de trop pas sur
+			$oGanttTask->computeRemainingDates($oRemainStartDate, $oRemainEndDate);
+			$this->m_oPlannedStartDate	= $oRemainEndDate->cloneDate();
+			$this->m_oPlannedEndDate	= null;
+			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedStartDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
+
+			/*
+			$iWorkSec = BAB_TM_TaskTime::getWorkingSecondsBetween($this->m_oPlannedStartDate, $this->m_oPlannedEndDate);
+			bab_debug(
+				__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+				'iIdTask           ' . $this->m_iIdTask . ' ' . "\n" . 
+				
+				'fDuration         ' . $this->m_fDuration . ' ' . "\n" . 
+
+				'sPlannedStartDate ' . bab_shortDate($this->m_oPlannedStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'sPlannedEndDate   ' . bab_shortDate($this->m_oPlannedEndDate->getTimeStamp()) . ' ' . "\n" . 
+
+				'                  ' . sprintf('%.02f', ($iWorkSec / 86400)) . ' in day(s) ' . "\n" .
+				'                  ' . sprintf('%.02f', ($iWorkSec / 3600)) . ' in hours(s) ' . "\n" .
+				'                  ' . $iWorkSec . ' in second(s) ' . "\n" .
+
+				'iIdPredecessor    ' . $oGanttTask->m_iIdTask . ' ' . "\n" . 
+				'pred sStartDate   ' . bab_shortDate($oRemainStartDate->getTimeStamp()) . ' ' . "\n" . 
+				'pred sEndDate     ' . bab_shortDate($oRemainEndDate->getTimeStamp())
+			);
+			//*/
 		}
 		else if(0 !== $iIdPredecessor && BAB_TM_START_TO_START === $this->m_iLinkType)
 		{
-			$oRemainEndDate	= null;	
-			$oRemainStartDate = null;
-			$oGanttTask = $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
+			$oRemainEndDate		= null;	
+			$oRemainStartDate	= null;
+			$oGanttTask			= $oTaskTimeManager->getTask($aPredecessors[$aTask['iIdPredecessorTask']]);
 
-			$this->m_oPlannedStartDate = $oGanttTask->getStartDate();
-			$this->m_oPlannedEndDate = $this->m_oPlannedStartDate->cloneDate();
-			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedEndDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
+			$this->m_oPlannedStartDate	= $oGanttTask->getStartDate();
+			$this->m_oPlannedEndDate	= null;
+			BAB_TM_TaskTime::computeEndDate($this->m_oPlannedStartDate->getIsoDateTime(), $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
 		}
 		else 
 		{
@@ -635,47 +807,6 @@ class BAB_TM_TaskTimeDuration extends BAB_TM_TaskTime
 				BAB_TM_TaskTime::computeEndDate($sIsoPlannedStartDate, $this->m_fDuration, $this->m_iDurationUnit, $this->m_oPlannedEndDate);
 			}
 		}
-	}
-
-	function computeRemainingDates(&$oRemainStartDate, &$oRemainEndDate)
-	{
-		$oTaskTimeManager	=& getTaskTimeManager();
-		$oTodayDate			= $oTaskTimeManager->getTodayIsoDateTime();
-		$oRemainEndDate		= null;
-		$oRemainStartDate	= null;
-
-		$oStartDate = $this->cloneStartDate();
-		$oEndDate	= $oStartDate->cloneDate();
-		
-		$oEndDate->add( ($this->m_fDuration * $this->m_iNbSeconds) , BAB_DATETIME_SECOND);
-
-		$iEffectiveDurationInSeconds	= $oEndDate->getTimeStamp() - $oStartDate->getTimeStamp();
-		$iDurationInSeconds				= $iEffectiveDurationInSeconds - (($this->m_iCompletion * $iEffectiveDurationInSeconds) / 100);
-		$fDuration						= $iDurationInSeconds / $this->m_iNbSeconds;
-
-		//Si iDurationInSeconds = 0 c'est que la tache est terminé (il y a une date de fin)
-		if(0 === $iDurationInSeconds)
-		{
-$oRemainStartDate = $this->cloneStartDate();			
-$oRemainEndDate = $this->cloneEndDate();
-return;			
-		}
-		
-		$iIsEqual	= 0;
-		$iIsBefore	= -1;
-		$iIsAfter	= 1;
-		
-		if(100 == $this->m_iCompletion || $iIsAfter == BAB_DateTime::compare($oStartDate, $oTodayDate))
-		{
-			//$babBody->addError(gPrd_translate("La date de début est supérieure à la date de fin"));
-			$oRemainStartDate = $oStartDate;
-		}
-		else 
-		{
-			$oRemainStartDate = $oTodayDate->cloneDate();
-		}
-		
-		BAB_TM_TaskTime::computeEndDate($oRemainStartDate->getIsoDateTime(), $fDuration, $this->m_iDurationUnit, $oRemainEndDate);
 	}
 }
 ?>

@@ -49,12 +49,19 @@
 /*	background-color: #88A8F8 !important; */
 	background-color: #EDEDED !important;
 }
-	
+
+/*
 .ganttTodayLine {
 	background-color: red;
 	border-width: 0px;
 	margin: 0;
 	width: 1px;
+}
+//*/
+
+.ganttTodayLine {
+	border-left: 1px red solid;
+	width: 0px;
 }
 	
 .ganttWeek {
@@ -215,9 +222,9 @@
 
 .ganttTaskFromTaskToRemaing {
 	background-color:transparent;
-/*	border: 1px dashed #F00; */
 	border-top: 1px dashed #F00; 
 	border-bottom: 1px dashed #F00; 
+/*	border: 1px dashed #F00;*/
 }
 
 .ganttTaskEffectiveDuration {

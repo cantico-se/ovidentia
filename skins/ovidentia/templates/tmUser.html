@@ -1669,22 +1669,26 @@ function submit_form()
 				
 
 <!--#begin gantt -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<title>{ m_sTitle }</title>
 		<link rel="stylesheet" type="text/css" href="{ babInstallPath }styles/gantt.css" />
 		<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
 		<script type="text/javascript" src="{ babInstallPath }scripts/tmGantt.js"></script>
 		<script type="text/javascript">
+			//<![CDATA[
 			function gotoDate(day, month, year)
 			{
 				//{}
-				document.location.href='{ m_sGotoDateUrl }&date=' + year + '-' + month + '-' + day;
+				document.location.href='{ m_sGotoDateUrl }' + year + '-' + month + '-' + day;
 			}
 
 			bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; });
-
+			//]]>
 		</script>
 	</head>
 	<body>
@@ -1696,7 +1700,7 @@ function submit_form()
 			<div class="ganttNav" style="top:{ m_iNavPosY }px; left:{ m_iNavPosX }px; height:{ m_iNavHeight }px; width:{ m_iNavWidth }px">
 				<a class="ganttPrevWeek" style="top:{ m_iPrevWeekPosY }px; left:{ m_iPrevWeekPosX }px; height:{ m_iPrevWeekHeight }px; width:{ m_iPrevWeekWidth }px" href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">&nbsp;&nbsp;</a>
 				<a class="ganttPrevMonth" style="top:{ m_iPrevMonthPosY }px; left:{ m_iPrevMonthPosX }px; height:{ m_iPrevMonthHeight }px; width:{ m_iPrevMonthWidth }px" href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">&nbsp;&nbsp;</a>
-				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="javascript: Start('{ babUrlScript }?tg=month&callback=gotoDate&ymin=30&ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }"><span>{ m_sGotoDate }</span></a>
+				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="#" onclick="Start('{ babUrlScript }?tg=month&amp;callback=gotoDate&amp;ymin=30&amp;ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }"><span>{ m_sGotoDate }</span></a>
 				<a class="ganttNextMonth" style="top:{ m_iNextMonthPosY }px; left:{ m_iNextMonthPosX }px; height:{ m_iNextMonthHeight }px; width:{ m_iNextMonthWidth }px" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">&nbsp;&nbsp;</a>
 				<a class="ganttNextWeek" style="top:{ m_iNextWeekPosY }px; left:{ m_iNextWeekPosX }px; height:{ m_iNextWeekHeight }px; width:{ m_iNextWeekWidth }px" href="{ m_sNextWeekUrl }" title="{ m_sNextWeek }">&nbsp;&nbsp;</a>
 			</div>
@@ -1775,7 +1779,7 @@ function submit_form()
 	<ul>
 		<!--#in getNextLegendItem -->
 		<li>
-			<span class="ganttLegendItem { sClassName }" class="{ sTitle }">&nbsp</span>{ sCaption }
+			<span class="ganttLegendItem { sClassName }" title="{ sTitle }">&nbsp;</span>{ sCaption }
 		</li>
 		<!--#endin getNextLegendItem -->
 	</ul>
@@ -2031,6 +2035,7 @@ function hideOnNbRowPerPageChangedButton()
 
 					<thead>
 						<tr class="BabSiteAdminTitleFontBackground { sClassName }"> 
+							<th>&nbsp;</th>
 						<!--#in getNextColumnHeader -->
 							<th>
 							<!--#in getNextColumnHeaderItem -->
@@ -2043,9 +2048,6 @@ function hideOnNbRowPerPageChangedButton()
 							<!--#endin getNextColumnHeaderItem -->
 							</th>
 						<!--#endin getNextColumnHeader -->
-							<th>
-								&nbsp;
-							</th>
 						</tr>
 					</thead>
 					
@@ -2075,6 +2077,14 @@ function hideOnNbRowPerPageChangedButton()
 					<!--#else bIsAltbg -->
 						<tr class="BabForumBackground1">
 					<!--#endif bIsAltbg -->
+						<td>
+						<!--#in processActionsExcludeFilter -->
+						<!--#endin processActionsExcludeFilter -->
+						<!--#in getNextAction -->
+						<a href="{ aActionItems[sLink] }" title="{ aActionItems[sText] }" >
+							<img src="{ aActionItems[sIcon] }" alt="{ aActionItems[sText] }" border="0" />
+						</a>
+						<!--#endin getNextAction -->
 						<!--#in getNextColumnData -->
 							<td>
 								<!--#in getNextColumnDataItem -->
@@ -2084,14 +2094,6 @@ function hideOnNbRowPerPageChangedButton()
 								<!--#endin getNextColumnDataItem -->
 							</td>
 						<!--#endin getNextColumnData -->
-							<td>
-							<!--#in processActionsExcludeFilter -->
-							<!--#endin processActionsExcludeFilter -->
-							<!--#in getNextAction -->
-							<a href="{ aActionItems[sLink] }" title="{ aActionItems[sText] }" >
-								<img src="{ aActionItems[sIcon] }" alt="{ aActionItems[sText] }" border="0" />
-							</a>
-							<!--#endin getNextAction -->
 							</td>
 						</tr>
 						<!--#endin getNextRow -->
@@ -2105,6 +2107,7 @@ function hideOnNbRowPerPageChangedButton()
 					<!--#else bIsAltbg -->
 						<tr class="BabForumBackground1">
 					<!--#endif bIsAltbg -->
+						<td>&nbsp;</td>
 						<!--#in getNextColumnData -->
 							<td>
 								<!--#in getNextColumnDataItem -->
@@ -2114,7 +2117,6 @@ function hideOnNbRowPerPageChangedButton()
 								<!--#endin getNextColumnDataItem -->
 							</td>
 						<!--#endin getNextColumnData -->
-							<td>&nbsp;</td>
 						</tr>
 						<!--#endin getLastRow -->
 					</tbody>

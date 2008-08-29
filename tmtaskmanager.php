@@ -2014,7 +2014,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 	$oMultiPage->setColumnDataSource(new BAB_TaskDS(bab_selectTaskQuery($aFilters, $aOrder), 
 		(int) bab_rp('iPage', 1), $oMultiPage->iNbRowsPerPage, $aDisplayedField));
 //*/
-	
+
 	$sTg = bab_rp('tg', 'admTskMgr');
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
@@ -2031,7 +2031,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 			$GLOBALS['babSkinPath'] . 'images/Puces/edit.png', 
 			$sLink, $aDataSourceFields);
 	}
-	
+
 	$GLOBALS['babBody']->addStyleSheet('taskManager.css');
 
 	$oToolbar = new BAB_TM_Toolbar();
@@ -2063,25 +2063,198 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 	$GLOBALS['babBody']->babecho($oTaskFilterForm->printTemplate());
 	$GLOBALS['babBody']->babecho($oMultiPage->printTemplate());
 
+
+/*
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
+	require_once($GLOBALS['babInstallPath'] . 'tmCalendar.php');
+	require_once $GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php';
+
+	$sIsoStartDate	= '2009-01-01 00:00:00';
+	$sIsoEndDate	= '2010-01-01 00:00:00';
+	$oStartDate		= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+	$oEndDate		= BAB_DateTime::fromIsoDateTime($sIsoEndDate);
+
+	$whObj = new bab_userWorkingHours($oStartDate, $oEndDate);
+
+	$iIdUser = 1;
+	$whObj->addIdUser($iIdUser);
+	$whObj->createPeriods(BAB_PERIOD_VACATION | BAB_PERIOD_NWDAY);
+
+	$whObj->orderBoundaries();
+
+	$oTaskTimeManager	=& getTaskTimeManager();
+	$oTmCalendar		= bab_tskmgr_getCalendar();
+
+	$oLoopDate = BAB_dateTime::fromIsoDateTime('2009-07-10 00:00:00');
+	for($iDayOfWeek = 0; $iDayOfWeek < 9; $iDayOfWeek++)
+	{
+		$aPeriod = $oTmCalendar->getPeriod($oLoopDate->getDayOfWeek()); 	
+		
+		foreach($aPeriod as $iKey => $oCalendarPeriod)
+		{
+			$iDayToAdd = 0;
+			//Si la start période est supérieure ou égale à la end période
+			//alors il faut ajouter 1 jour car c'est le lendemain
+			if(!(BAB_TM_PERIOD_BEFORE === $oCalendarPeriod->compare()))
+			{
+				$iDayToAdd = 1;
+			}
+
+			$oStartPeriodDateTime = new BAB_DateTime($oLoopDate->getYear(), $oLoopDate->getMonth(),
+				$oLoopDate->getDayOfMonth(), $oCalendarPeriod->getStartHour(), 
+				$oCalendarPeriod->getStartMinut(), $oCalendarPeriod->getStartSecond());			
+
+			$oEndPeriodDateTime = new BAB_DateTime($oLoopDate->getYear(), $oLoopDate->getMonth(),
+				$oLoopDate->getDayOfMonth() + $iDayToAdd, $oCalendarPeriod->getEndHour(), 
+				$oCalendarPeriod->getEndMinut(), $oCalendarPeriod->getEndSecond());			
+
+			if($oLoopDate->getTimeStamp() > $oStartPeriodDateTime->getTimeStamp())
+			{
+				$oStartPeriodDateTime = $oLoopDate;
+			}
+
+			$events = $whObj->getEventsBetween($oStartPeriodDateTime->getTimeStamp(), 
+				$oEndPeriodDateTime->getTimeStamp(), BAB_PERIOD_VACATION | BAB_PERIOD_NWDAY);
+
+			//TODO
+			//Il faut prendre le tableau $events et en fonction des chevauchement 
+			//recréer des périodes pour les traiter plus bas dans le foreach
+
+			$iBegin = 0;
+			$iEnd = 0;
+			foreach($events as $event)
+			{
+//				$iWorkedSeconds = $event->ts_end - $event->ts_begin;
+//				bab_debug(
+//					'oStart ' . $oStartPeriodDateTime->getIsoDateTime() . "\n" .
+//					'oEnd   ' . $oEndPeriodDateTime->getIsoDateTime() . "\n" .
+//					'oStart ' . bab_shortDate($event->ts_begin) . "\n" .
+//					'oEnd   ' . bab_shortDate($event->ts_end) . "\n" .
+//					'       ' . sprintf('%.02f', ($iWorkedSeconds / 86400)) . ' in day(s) ' . "\n" .
+//					'       ' . sprintf('%.02f', ($iWorkedSeconds / 3600)) . ' in hours(s) ' . "\n" .
+//					'       ' . $iWorkedSeconds . ' in second(s) '
+//				);
+
+				//Exemple: imaginons que le 16/07/2009 et le 17/07/2009 je sois en vacances
+				//c'est à dire de 2009-07-16 00:00:00 à 2009-07-18 00:00:00 soit 48 heures (interval semie ouvert)
+				//L'appel à getEventsBetween('2009-07-16 00:00:00', '2009-07-17 00:00:00') retourne 172800 soit 2 jours
+				//L'appel à getEventsBetween('2009-07-17 00:00:00', '2009-07-18 00:00:00') retourne 172800 soit 2 jours
+				//En fait il faudrait qui travail en interval semie ouvert (début inclut, fin exclus) permette de 
+				//determiner retourne le temp disponible, l'agenda le fait mais actuellement le gestionnaire
+				//de tâche à des jours de travail de 24 heures
+				{
+					$iBegin = $event->ts_begin;
+					if($event->ts_begin < $oStartPeriodDateTime->getTimeStamp())
+					{
+						$iBegin = $oStartPeriodDateTime->getTimeStamp();
+					}
+
+					$iEnd = $event->ts_end;
+					if($event->ts_end > $oEndPeriodDateTime->getTimeStamp())
+					{
+						$iEnd = $oEndPeriodDateTime->getTimeStamp();
+					}
+				}
+
+//				$iWorkedSeconds = $iEnd - $iBegin;
+//				bab_debug(
+//					'       ' . sprintf('%.02f', ($iWorkedSeconds / 86400)) . ' in day(s) ' . "\n" .
+//					'       ' . sprintf('%.02f', ($iWorkedSeconds / 3600)) . ' in hours(s) ' . "\n" .
+//					'       ' . $iWorkedSeconds . ' in second(s) '
+//				);
+			}
+		}
+		$oLoopDate->init($oLoopDate->getYear(), $oLoopDate->getMonth(), $oLoopDate->getDayOfMonth() + 1, 0, 0, 0);
+	}
+//*/
+
+
+/*
+	require_once($GLOBALS['babInstallPath'] . 'tmCalendar.php');
+
+	$oTmCalendar	= bab_tskmgr_getCalendar();
+	$oStartDate		= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+	$aPeriod		= $oTmCalendar->getPeriod($oStartDate->getDayOfWeek()); 	
+
+	foreach($aPeriod as $iKey => $oCalendarPeriod)
+	{
+		$i = $oCalendarPeriod->compare();
+
+		if(!(BAB_TM_PERIOD_BEFORE === $i))
+		{
+			bab_debug('!BAB_TM_PERIOD_BEFORE ==> ' . $i);
+		}
+		else
+		{
+			bab_debug('BAB_TM_PERIOD_BEFORE ==> ' . $i);
+		}
+	}
+//*/
+
 /*
 	require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
 	
-	$iIdTask = 86;
-	$aTask = array();
-	bab_getTask($iIdTask, $aTask);
+	$sIsoStartDate	= '2008-09-12 00:00:00';
+	$sIsoStartDate	= '2008-09-25 00:54:53';
+	$sIsoStartDate	= '2008-09-12 12:15:50';
+	$fDuration		= 0.50;
+//	$fDuration		= 3.25;
+//	$fDuration		= 0.25;
+	$iDurationUnit	= BAB_TM_DAY;
+	$oStartDate		= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+	$oEndDate		= null;
+
+	BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $fDuration, $iDurationUnit, $oEndDate);
+
+//	bab_debug($oStartDate);
+//	bab_debug($oEndDate);
+/*
+	$iWorkSec1 = 0;
+//	$iWorkSec1 = BAB_TM_TaskTime::getWorkingSecondsBetween($oStartDate, $oEndDate);
+	bab_debug(
+		__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+		'sStartDate ==> ' . bab_shortDate($oStartDate->getTimeStamp()) . ' ' . "\n" .  
+		'sEndDate ==> ' . bab_shortDate($oEndDate->getTimeStamp()) . ' ' . "\n" . 
+ 		sprintf('%.02f', ($iWorkSec1 / 86400)) . ' in day(s) ' . "\n" .
+ 		sprintf('%.02f', ($iWorkSec1 / 3600)) . ' in hours(s) ' . "\n" .
+ 		($iWorkSec1 / 86400) . ' in day(s) ' . "\n" .
+ 		($iWorkSec1 / 3600) . ' in hours(s) ' . "\n" .
+		$iWorkSec1 . ' in second(s) '
+ 	);
+
+//*/
+
+/*
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
 	
-$aTask['plannedStartDate']	= $aTask['sPlannedStartDate'];
-$aTask['plannedEndDate']	= $aTask['sPlannedEndDate'];
-$aTask['startDate']			= $aTask['sStartDate'];
-$aTask['endDate']			= $aTask['sEndDate'];
-$aTask['iIdTask']			= $aTask['id'];
+	$iIdTask = 12;
+	$iIdTask = 13;
+	$iIdTask = 26;
+	$aTask = array();
+	bab_getTaskForGantt($iIdTask, $aTask);
 	
 	$oTaskTimeManager	=& getTaskTimeManager();
 	$oTaskTime			= $oTaskTimeManager->getTask($aTask);
+//*/
 	
-//	bab_debug($aTask);
+/*
+	require_once($GLOBALS['babInstallPath'] . 'tmTaskTime.class.php');
 	
-//	$oTaskTime->init($aTask);
+	$sIsoStartDate		= '2008-08-18 21:35:59'; 
+	$sIsoEndDate		= '2008-09-16 23:59:58';
+	
+	$oStartDate			= BAB_DateTime::fromIsoDateTime($sIsoStartDate);
+	$oEndDate			= BAB_DateTime::fromIsoDateTime($sIsoEndDate);
+	
+	$iWorkSec1 = BAB_TM_TaskTime::getWorkingSecondsBetween($oStartDate, $oEndDate);
+	bab_debug(
+		__METHOD__ . ' ' . basename(__FILE__) . '(' . __LINE__ . ') ' . "\n" .
+ 		sprintf('%.02f', ($iWorkSec1 / 86400)) . ' in day(s) ' . "\n" .
+ 		sprintf('%.02f', ($iWorkSec1 / 3600)) . ' in hours(s) ' . "\n" .
+ 		($iWorkSec1 / 86400) . ' in day(s) ' . "\n" .
+ 		($iWorkSec1 / 3600) . ' in hours(s) ' . "\n" .
+		$iWorkSec1 . ' in second(s) '
+ 	);
 //*/
 }
 
@@ -2347,6 +2520,8 @@ function displayGanttChart()
 		$sStartDate = bab_rp('date', $sStartDate);
 	}
 	
+//	echo 'sStartDate ' . $sStartDate . '<br />';
+
 	$oGantt =& getGanttTaskInstance('BAB_TM_Gantt');
 	$oGantt->init($sStartDate);
 	die(bab_printTemplate($oGantt, 'tmUser.html', "gantt"));

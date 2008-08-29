@@ -97,13 +97,15 @@ class BAB_TM_GanttBase
 {
 //	var $m_iWidth = '14';
 //	var $m_iHeight = '26';
-	
+
 	var $m_iWidth = '18';
 	var $m_iHeight = '32';
-	
-//	var $m_iWidth = '28';
-//	var $m_iHeight = '52';
-	
+
+/*
+	var $m_iWidth = '52';
+	var $m_iHeight = '60';
+//*/
+
 	//m_iWidth = 1 day = 86400 secondes
 	//86400 / m_iWidth
 	var $m_iOnePxInSecondes;
@@ -398,26 +400,26 @@ class BAB_TM_GanttBase
 
 		$oDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
 		$oDate->add(-1, BAB_DATETIME_MONTH);
-		$this->m_sPrevMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		$this->m_sPrevMonthUrl = bab_toHtml($sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0])));
 		//echo 'sPrevMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 
 		$oDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
 		$oDate->add(-7, BAB_DATETIME_DAY);
-		$this->m_sPrevWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		$this->m_sPrevWeekUrl = bab_toHtml($sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0])));
 		//echo 'sPrevWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 		
 		$oDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
 		$oDate->add(7, BAB_DATETIME_DAY);
-		$this->m_sNextWeekUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		$this->m_sNextWeekUrl = bab_toHtml($sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0])));
 		//echo 'sNextWeek ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 
 		$oDate = BAB_DateTime::fromTimeStamp($this->m_aDisplayedStartDate[0]);
 		$oDate->add(1, BAB_DATETIME_MONTH);
-		$this->m_sNextMonthUrl = $sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0]));
+		$this->m_sNextMonthUrl = bab_toHtml($sUrlBase . urlencode(date("Y-m-d", $oDate->_aDate[0])));
 		//echo 'sNextMonth ==> ' . date("Y-m-d", $oDate->_aDate[0]) . '<br />';
 		
-		$this->m_sTodayUrl		= $sUrlBase . urlencode(date("Y-m-d"));
-		$this->m_sGotoDateUrl 	= $sUrlBase;
+		$this->m_sTodayUrl		= bab_toHtml($sUrlBase . urlencode(date("Y-m-d")));
+		$this->m_sGotoDateUrl 	= bab_toHtml($sUrlBase, BAB_HTML_JS);
 	}
 	
 	function setDates($sStartDate, $iStartWeekDay)
@@ -487,6 +489,9 @@ $this->m_oTodayLine	= $oTaskTimeManager->getTodayIsoDateTime();
 				
 $iTodayLineTS = $this->m_oTodayLine->getTimeStamp();
 $this->m_iTodayPosLineX = round(($iTodayLineTS - $iDisplayedStartDateTs) / $this->m_iOnePxInSecondes);
+
+				$iBorderLeft	= 1;
+				$this->m_iTodayPosLineX	-= $iBorderLeft;
 			}
 		}
 	}
@@ -1046,22 +1051,23 @@ class BAB_TM_GanttTaskBase
 		
 		$iElaspedSecondsFromBigining		= $iTaskStartDateTs - $this->m_iDisplayedStartDateTs;
 		$iDisplayedTaskDurationInSeconds	= $iTaskEndDateTs - $iTaskStartDateTs;
-		
+
 		$iLeft		= round($iElaspedSecondsFromBigining / $this->m_oGantt->m_iOnePxInSecondes);
+		$iRight		= round(($iElaspedSecondsFromBigining + $iDisplayedTaskDurationInSeconds) / $this->m_oGantt->m_iOnePxInSecondes);
 		$iHeight	= round($this->m_oGantt->m_iHeight / 2);
 		$iTop		= round(($this->m_oGantt->m_iTaskIndex * $this->m_oGantt->m_iHeight) + ($iHeight / 2));
-		$iWidth		= round($iDisplayedTaskDurationInSeconds / $this->m_oGantt->m_iOnePxInSecondes);
+		$iWidth		= $iRight - $iLeft;
 
 		//Tous les carrés ont des bordures des quatres côtés de 1 px
 		$iBorderTop		= 1;
 		$iBorderLeft	= 1;
 		$iBorderRight	= 1;
 		$iBorderBottom	= 1;
-		
+
 		$iLeft		-= $iBorderLeft;
 		$iHeight	-= ($iBorderTop + $iBorderBottom);
 		$iWidth		-= $iBorderRight;
-		
+
 		$oPeriod = new BAB_TM_GanttTaskPeriod();
 		$oPeriod->setTop($iTop);
 		$oPeriod->setLeft($iLeft);
@@ -1143,7 +1149,7 @@ class BAB_TM_GanttTaskBase
 			$oEditor->setContent($aTask['sDescription']);
 			
 			$sToolTip .= 
-				'<div class="description"/>' . $oEditor->getHtml() . '</div>';
+				'<div class="description">' . $oEditor->getHtml() . '</div>';
 		}
 		
 		$sToolTip .= '</div>';
@@ -1348,10 +1354,10 @@ if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this
 			$oCompletionStartDate	= $this->m_oTaskTime->cloneStartDate();
 			$oCompletionEndDate		= $oCompletionStartDate->cloneDate();
 			$oCompletionEndDate->add($iDoneDurationInSeconds, BAB_DATETIME_SECOND);
-			
+
 			$iTaskStartDateTs	= $oCompletionStartDate->getTimeStamp();
 			$iTaskEndDateTs		= $oCompletionEndDate->getTimeStamp();
-
+			
 if($iTaskEndDateTs > $this->m_iDisplayedStartDateTs && $iTaskStartDateTs < $this->m_iDisplayedEndDateTs)
 			{
 				$oPeriod = $this->createPeriod($iTaskStartDateTs, $iTaskEndDateTs);
@@ -1379,9 +1385,9 @@ class BAB_TM_GanttTaskDuration extends BAB_TM_GanttTask
 	function buildEffectivePeriod()
 	{
 		$oStartDate = $this->m_oTaskTime->getStartDate();
-		$oEndDate	= null;
+		$oEndDate	= $this->m_oTaskTime->getEndDate();
 
-		BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
+//		BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
 		
 		if($oEndDate->getTimeStamp() > $this->m_iDisplayedStartDateTs && $oStartDate->getTimeStamp() < $this->m_iDisplayedEndDateTs)
 		{
@@ -1394,19 +1400,21 @@ class BAB_TM_GanttTaskDuration extends BAB_TM_GanttTask
 		}
 	}
 
+
 	function buildCompletion() 
 	{
 		if($this->m_oTaskTime->m_iCompletion > 0)
 		{
-			$oStartDate = $this->m_oTaskTime->cloneStartDate();
-			$oEndDate	= $oStartDate->cloneDate();
+			$oStartDate = $this->m_oTaskTime->getStartDate();
+			$oEndDate	= $this->m_oTaskTime->getEndDate();
 
-			BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
+//			BAB_TM_TaskTime::computeEndDate($oStartDate->getIsoDateTime(), $this->m_oTaskTime->m_fDuration, $this->m_oTaskTime->m_iDurationUnit, $oEndDate);
 			
 			$iEffectiveDurationInSeconds = $oEndDate->getTimeStamp() - $oStartDate->getTimeStamp();
-			$iDoneDurationInSeconds = ($this->m_oTaskTime->m_iCompletion * $iEffectiveDurationInSeconds) / 100;
+			$iDoneDurationInSeconds = ($iEffectiveDurationInSeconds / 100) * $this->m_oTaskTime->m_iCompletion;
 
-			$oEndDate->add( - ($iEffectiveDurationInSeconds - $iDoneDurationInSeconds), BAB_DATETIME_SECOND);
+			$oEndDate = $oStartDate->cloneDate();
+			$oEndDate->add($iDoneDurationInSeconds, BAB_DATETIME_SECOND);
 
 			$iTaskStartDateTs	= $oStartDate->getTimeStamp();
 			$iTaskEndDateTs		= $oEndDate->getTimeStamp();

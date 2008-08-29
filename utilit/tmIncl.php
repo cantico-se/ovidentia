@@ -1842,8 +1842,9 @@ function bab_selectLinkableTask($iIdProject, $iIdTask)
 			BAB_TSKMGR_TASKS_TBL . ' ' .
 		'WHERE ' . 
 			'idProject = \'' . $babDB->db_escape_string($iIdProject) . '\' AND ' .
-			'class =\'' . $babDB->db_escape_string(BAB_TM_TASK) . '\' AND ' .
-			'participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_ENDED) . '\'' . ' ' . 
+//			'class =\'' . $babDB->db_escape_string(BAB_TM_TASK) . '\' AND ' .
+//			'participationStatus <> \'' . $babDB->db_escape_string(BAB_TM_ENDED) . '\'' . ' ' . 
+			'class =\'' . $babDB->db_escape_string(BAB_TM_TASK) . '\' ' .
 			$sIdTask . ' ' .
 		'ORDER BY position';
 
