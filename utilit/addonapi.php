@@ -797,6 +797,30 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 }
 
 
+define('BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE', 'You must log in before accessing this page.');
+
+function bab_requireAccess($tables, $idobject, $loginMessage = BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE)
+{
+	if (is_string($tables)) {
+		$tables = array($tables);
+	}
+	foreach ($tables as $table) {
+		if (bab_isAccessValid($table, $idobject, '')) {
+			return true;
+		}
+	}
+	if (bab_userIsloggedin()) {
+		return false;
+	}
+	bab_requireCredential($loginMessage);
+	foreach ($tables as $table) {
+		if (bab_isAccessValid($table, $idobject, '')) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 function bab_getUserIdObjects($table)
 {
@@ -1361,6 +1385,8 @@ define('DBG_FATAL',		32);
  */
 function bab_debug($data, $severity = DBG_TRACE, $category = '')
 {
+	$file = $line = $function = '';
+
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
 		if (!is_string($data)) {
 			ob_start();
@@ -1370,7 +1396,6 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		}
 
 		// Here we find information about the file and line where bab_debug was called.
-		$file = $line = $function = '';
 		$backtrace = debug_backtrace();
 		$call = array_shift($backtrace);
 		if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
@@ -1391,6 +1416,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 						 'line' => $line,
 						 'function' => $function);
 
+		// We store the information in the global bab_debug_messages that will later be displayed by bab_getDebug
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $message;
 		} else {
@@ -1399,6 +1425,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	}
 
 	$debugFilename = 'bab_debug.txt';
+	// We immediately log in the bab_debug.txt file.
 	if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
 		 && file_exists($debugFilename) && is_writable($debugFilename)) {
 		if (!is_string($data)) {
