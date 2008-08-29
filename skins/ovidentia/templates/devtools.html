@@ -1,40 +1,28 @@
 <!--#begin debug -->
 <a id="BAB_DEBUG_link" href="#" onclick="show_hide_debug();return false;">{ nb_messages } { t_messages }</a>
-<style>
-<!--
-.bab_dbg_severity_2 {
-	border-left: 1em solid orange;
-}
-.bab_dbg_severity_3 {
-	border-left: 1em solid red;
-}
-a.bab_dbg_category {
-	display: block;
-	float: left;
-	margin: 0.5em;
-	padding: 4px;
-	border: 1px solid #cccccc;
-	text-decoration: none;
-}
--->
-</style>
+
+
 <div id="BAB_DEBUG">
 	{ t_categories }:
-	<a class="bab_dbg_category" href="#" onclick="bab_showAllDebugCategories(); return false;">{ t_all_categories }</a>
+	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showAllDebugCategories(); return false;">{ t_all_categories }</a>
 	<!--#in getNextCategory -->
 	<!--#if category "== " -->
-	<a class="bab_dbg_category" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">Default</a>
+	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">Default</a>
 	<!--#else category -->
-	<a class="bab_dbg_category" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">{ category }</a>
+	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">{ category }</a>
 	<!--#endif category -->
 	<!--#endin getNextCategory -->
 	<br style="clear: both" />
 	<!--#in getNextMessage -->
-	<pre class="bab_dbg_category_{ message[category] } bab_dbg_severity_{ message[severity] }">{ message[text] }</pre>
+	<pre class="bab_dbg_category_{ message[category] } bab_dbg_severity_{ message[severity] }">
+		<div style="padding-bottom:1em;font-weight:bold;font-style:italic" class="bab_dbg_call_info"><span class="bab_dbg_call_file">{ message[file] }</span> <span class="bab_dbg_call_line">({ message[line] })</span> <span class="bab_dbg_call_function">{ message[function] }</span></div>{ message[text] }
+	</pre>
 	<!--#endin getNextMessage -->
 </div>
 
+
 <script type="text/javascript">
+// <![CDATA[
 function show_hide_debug()
 {
 	var obj = document.getElementById('BAB_DEBUG');
@@ -72,6 +60,7 @@ function bab_showAllDebugCategories()
 	}
 }
 document.getElementById('BAB_DEBUG').style.display = 'none';
+// ]]>
 </script>
 <!--#end debug -->
 
