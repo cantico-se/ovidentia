@@ -822,6 +822,11 @@ function bab_requireAccess($tables, $idobject, $loginMessage = BAB_REQUIRED_ACCE
 }
 
 
+/**
+ * Get the list of id_object accessible by the current user
+ * The id_object is stored in key and in the value
+ * @return array
+ */
 function bab_getUserIdObjects($table)
 {
 global $babBody, $babDB;
@@ -905,6 +910,12 @@ function bab_getGroupsAccess($table, $idobject)
 	return $ret;
 }
 
+
+/**
+ * Get the calendar popup url for an href attribute
+ * @deprecated	use the bab_dialog api in bab_dialog.js
+ * @return string	url of the calendar popup
+ */
 function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 {
 	$url = $GLOBALS['babUrlScript']."?tg=month&amp;callback=".$callback;
@@ -927,6 +938,10 @@ function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
 	return "javascript:Start('".$url."','OVCalendarPopup','width=250,height=250,status=no,resizable=no,top=200,left=200')";
 }
 
+
+/**
+ * Create a directory
+ */
 function bab_mkdir($path, $mode='')
 {
 	if( substr($path, -1) == "/" )
@@ -958,7 +973,11 @@ function bab_isMagicQuotesGpcOn()
 
 
 
-
+/**
+ * Get available languages
+ * The returned values are extracted from the list of translation files
+ * @return array	list of languages codes
+ */
 function bab_getAvailableLanguages()
 	{
 	$langs = array();
@@ -992,6 +1011,16 @@ function bab_getAvailableLanguages()
 	return $langs;
 	}
 
+
+/**
+ * merge a template with a class object instance
+ *
+ * @param	object	$class
+ * @param	string	$file		file path in a template directory (in the core or in the skin)
+ * @param	string	[$section]	name of the section in file (begin and end tag)
+ *
+ * @return string
+ */
 function bab_printTemplate( &$class, $file, $section="")
 	{
 	global $babInstallPath, $babSkinPath;
@@ -1069,6 +1098,32 @@ function bab_printTemplate( &$class, $file, $section="")
 		return '';
 	}
 }
+
+
+
+
+
+
+/**
+ * Get the actives sessions
+ * Users currently connected to the site
+ * each session is an array with keys :
+ *
+ * <ul>
+ * 	<li>id_user 			: 0 if user is annonymous or supperior if the user is logged</li>
+ * 	<li>user_name 			: empty string or user name if the user is logged</li>
+ * 	<li>user_email 			: empty string or email if the user is logged</li>
+ * 	<li>session_id 			: php session id</li>
+ * 	<li>remote_addr 		: IP address of the user</li>
+ * 	<li>forwarded_for 		: IP address or empty string, can be the adress of a proxy...</li>
+ *	<li>registration_date 	: registration date in timestamp of the user in ovidentia</li>
+ * 	<li>previous_login_date : login date of the previous session as timestamp</li>
+ *	<li>login_date 			: login date of the current session as timestamp</li>
+ *	<li>last_hit_date 		: last refresh date of the user as timestamp</li>
+ * </ul>
+ *
+ * @return array
+ */
 function bab_getActiveSessions()
 {
 	global $babDB;
@@ -1218,6 +1273,19 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	}
 
+
+
+
+/**
+ * Get ovidentia groups
+ * The returned groups are stored in an array with three keys : id, name, description
+ * in each keys, a list of group is stored with ordered numeric keys
+ * the default value for the $all parameter is true
+ * 
+ * @param	int			$parent		parent group in tree
+ * @param	boolean		$all		return one level of groups or groups from all sublevels
+ * @return	array
+ */
 function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
