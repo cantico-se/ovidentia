@@ -653,6 +653,7 @@ function bab_f_getDebug() {
 		function getNextMessage() {
 			if (list(, $this->message) = each($this->messages)) {
 				//$this->text = htmlspecialchars($this->text);
+				$this->message['file'] = basename($this->message['file']);
 				$this->color_query($this->message['text']);
 				return true;
 			}
