@@ -421,8 +421,10 @@ class bab_dbdata {
 	}
 	
 	/**
+	 * Delete table row by key
 	 * @since 6.6.0
 	 * @param	string	$ikey
+	 * @return 	boolean
 	 */
 	function deleteDbRowByKey($ikey) {
 		global $babDB;
@@ -432,6 +434,24 @@ class bab_dbdata {
 			$res = $babDB->db_query('DELETE FROM '.$babDB->backTick($this->tablename).' WHERE '.$babDB->backTick($ikey).' = '.$babDB->quote($id).'');
 			
 			return 1 === $babDB->db_affected_rows($res);
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Fetch mysql resource
+	 * @since 6.6.100
+	 * @param	resource	$res	mysql ressource
+	 * @return	boolean
+	 */
+	function fetchRes($res) {
+		global $babDB;
+		
+		if ($row = $babDB->db_fetch_assoc($res)) {
+			$this->setRow($row);
+			return true;
 		}
 		
 		return false;
