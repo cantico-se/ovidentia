@@ -1940,6 +1940,7 @@ function bab_getAddonInfosInstance($addonname) {
  * it must be the name (path) of the functionality to use without 'PortalAuthentication/' and the 'Auth' prefix.
  * E.g. for 'PortalAuthentication/BasicAuth' use basic 
  * 
+ * @param	string		$sLoginMessage	Message displayed to the user when asked to log in.
  * @param	string		$sAuthType		Optional authentication type.
  * @since 6.7.0
  *
@@ -1954,7 +1955,6 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '') {
 
 
 
-define('BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE', 'You must log in before accessing this page.');
 
 /**
  * Checks that the user has at least one of the specified ACL access ($tables) on $idobject. 
@@ -1965,12 +1965,12 @@ define('BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE', 'You must log in before accessing 
  * 
  * @param	string|array	$tables			The name of the ACL table (*_groups) or an array of them.
  * @param	int				$idObject		
- * @param	string			$sAuthType		Optional authentication type.
+ * @param	string			$loginMessage	Message displayed to the user when asked to log in.
  * @since 6.7.0
  *
  * @return boolean
  */
-function bab_requireAccess($tables, $idObject, $loginMessage = BAB_REQUIRED_ACCESS_DEFAULT_MESSAGE)
+function bab_requireAccess($tables, $idObject, $loginMessage)
 {
 	if (is_string($tables)) {
 		$tables = array($tables);
