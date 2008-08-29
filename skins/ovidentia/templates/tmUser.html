@@ -1692,81 +1692,80 @@ function submit_form()
 		</script>
 	</head>
 	<body>
-		<div id="ganttDebug" style="width:100%; height:{ m_iHeight }"> 
-											
-		</div>
-		
-		<div class="gantt">
-			<div class="ganttNav" style="top:{ m_iNavPosY }px; left:{ m_iNavPosX }px; height:{ m_iNavHeight }px; width:{ m_iNavWidth }px">
-				<a class="ganttPrevWeek" style="top:{ m_iPrevWeekPosY }px; left:{ m_iPrevWeekPosX }px; height:{ m_iPrevWeekHeight }px; width:{ m_iPrevWeekWidth }px" href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">&nbsp;&nbsp;</a>
-				<a class="ganttPrevMonth" style="top:{ m_iPrevMonthPosY }px; left:{ m_iPrevMonthPosX }px; height:{ m_iPrevMonthHeight }px; width:{ m_iPrevMonthWidth }px" href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">&nbsp;&nbsp;</a>
-				<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="#" onclick="Start('{ babUrlScript }?tg=month&amp;callback=gotoDate&amp;ymin=30&amp;ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }"><span>{ m_sGotoDate }</span></a>
-				<a class="ganttNextMonth" style="top:{ m_iNextMonthPosY }px; left:{ m_iNextMonthPosX }px; height:{ m_iNextMonthHeight }px; width:{ m_iNextMonthWidth }px" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">&nbsp;&nbsp;</a>
-				<a class="ganttNextWeek" style="top:{ m_iNextWeekPosY }px; left:{ m_iNextWeekPosX }px; height:{ m_iNextWeekHeight }px; width:{ m_iNextWeekWidth }px" href="{ m_sNextWeekUrl }" title="{ m_sNextWeek }">&nbsp;&nbsp;</a>
-			</div>
-			<div class="ganttHeader" style="top:{ m_iGanttHeaderPosY }px; left:{ m_iGanttHeaderPosX }px; height:{ m_iGanttHeaderHeight }px; width:{ m_iGanttHeaderWidth }px">
-				<!--#in getNextMonth -->
-				<div class="ganttMonth" style="top:{ m_iMonthPosY }px; left:{ m_iMonthPosX }px; height:{ m_iMonthHeigth }px; width:{ m_iMonthWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-					<div style="overflow:hidden; height:{ m_iMonthHeigth }px;" title="{ m_sMonth }">{ m_sMonth }</div>
+		<div class="ganttMainTitle"><h1>{ m_sMainTitle }</h1></div>
+		<div class="ganttMainContainer">		
+			<div class="gantt">
+				<div class="ganttNav" style="top:{ m_iNavPosY }px; left:{ m_iNavPosX }px; height:{ m_iNavHeight }px; width:{ m_iNavWidth }px">
+					<a class="ganttPrevWeek" style="top:{ m_iPrevWeekPosY }px; left:{ m_iPrevWeekPosX }px; height:{ m_iPrevWeekHeight }px; width:{ m_iPrevWeekWidth }px" href="{ m_sPrevWeekUrl }" title="{ m_sPrevWeek }">&nbsp;&nbsp;</a>
+					<a class="ganttPrevMonth" style="top:{ m_iPrevMonthPosY }px; left:{ m_iPrevMonthPosX }px; height:{ m_iPrevMonthHeight }px; width:{ m_iPrevMonthWidth }px" href="{ m_sPrevMonthUrl }" title="{ m_sPrevMonth }">&nbsp;&nbsp;</a>
+					<a class="ganttgotoDate" style="top:{ m_iGotoDatePosY }px; left:{ m_iGotoDatePosX }px; height:{ m_iGotoDateHeight }px; width:{ m_iGotoDateWidth }px" href="#" onclick="Start('{ babUrlScript }?tg=month&amp;callback=gotoDate&amp;ymin=30&amp;ymax=30', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');" title="{ m_sGotoDate }"><span>{ m_sGotoDate }</span></a>
+					<a class="ganttNextMonth" style="top:{ m_iNextMonthPosY }px; left:{ m_iNextMonthPosX }px; height:{ m_iNextMonthHeight }px; width:{ m_iNextMonthWidth }px" href="{ m_sNextMonthUrl }" title="{ m_sNextMonth }">&nbsp;&nbsp;</a>
+					<a class="ganttNextWeek" style="top:{ m_iNextWeekPosY }px; left:{ m_iNextWeekPosX }px; height:{ m_iNextWeekHeight }px; width:{ m_iNextWeekWidth }px" href="{ m_sNextWeekUrl }" title="{ m_sNextWeek }">&nbsp;&nbsp;</a>
 				</div>
-				<!--#endin getNextMonth -->
-		
-				<!--#in getNextWeekNumber -->
-				<div class="ganttWeekNumber" style="width:{ m_iWeekWidth }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iWeekHeigth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-					<div style="text-align:center; overflow:hidden; height:{ m_iWeekHeigth }px;" title="{ m_sWeek }">{ m_sWeek }</div>
-				</div>
-				<!--#endin getNextWeekNumber -->
-			
-				<!--#in getNextDay -->
-				<div class="ganttDay" style="top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeigth }px; width:{ m_iDayWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-					<div style="text-align:center; overflow:hidden; height:{ m_iDayHeigth }px;" title="{ m_sDay }">{ m_sDay }<br />{ m_sMday }</div>
-				</div>
-				<!--#endin getNextDay -->
-			</div>
-			
-			<div class="ganttTasks" style="top:{ m_iGanttTasksPosY }px; left:{ m_iGanttTasksPosX }px; height:{ m_iGanttTasksHeight }px; width:{ m_iGanttTasksWidth }px;">
-				
-				<!--#in getNextTaskTitle -->						
-				<div class="ganttTaskTitle" style="top:{ m_iTaskTitlePosY }px; left:{ m_iTaskTitlePosX }px; height:{ m_iTaskTitleHeigth }px; width:{ m_iTaskTitleWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-					{ m_sTaskTitle }
-				</div>
-				<!--#endin getNextTaskTitle -->
-				
-				<div class="ganttTasksList" style="top:{ m_iGanttTasksListPosY }px; left:{ m_iGanttTasksListPosX }px; height:{ m_iGanttTasksListHeight }px; width:{ m_iGanttTasksListWidth }px;">
-					<!--#in getNextTaskItem -->
-					<div style="color:#{ m_sTaskInfoColor }; background-color:#{ m_sTaskInfoBgColor };top:{ m_iTaskInfoPosY }px; left:{ m_iTaskInfoPosX }px; height:{ m_iTaskInfoHeigth }px; width:{ m_iTaskInfoWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
-					{ m_sTaskInfo }
+				<div class="ganttHeader" style="top:{ m_iGanttHeaderPosY }px; left:{ m_iGanttHeaderPosX }px; height:{ m_iGanttHeaderHeight }px; width:{ m_iGanttHeaderWidth }px">
+					<!--#in getNextMonth -->
+					<div class="ganttMonth" style="top:{ m_iMonthPosY }px; left:{ m_iMonthPosX }px; height:{ m_iMonthHeigth }px; width:{ m_iMonthWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+						<div style="overflow:hidden; height:{ m_iMonthHeigth }px;" title="{ m_sMonth }">{ m_sMonth }</div>
 					</div>
-					<!--#endin getNextTaskItem -->	
-				</div>
+					<!--#endin getNextMonth -->
 			
-			</div>
-
-			<div class="ganttView" style="top:{ m_iGanttViewPosY }px; left:{ m_iGanttViewPosX }px; height:{ m_iGanttViewHeight }px; width:{ m_iGanttViewWidth }px;">
-				<!--#in getNextColumn -->
-				<div class="ganttColumn { m_sTodayColumnAddClass }" style="top:{ m_iColumnPosY }px; left:{ m_iColumnPosX }px; height:{ m_iColumnHeigth }px; width:{ m_iColumnWidth }px">
-				</div>
-			<!--#if m_isToday -->
-				<div class="ganttTodayLine" style="top:{ m_iColumnPosY }px; left:{ m_iTodayPosLineX }px; height:{ m_iColumnHeigth }px">
-				</div>
-			<!--#endif m_isToday -->
-				<!--#endin getNextColumn -->	
-	
-				<!--#in getNextRow -->
-				<div class="ganttRow" style="top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; height:{ m_iRowHeigth }px; width:{ m_iRowWidth }px;">
-				</div>
-				<!--#endin getNextRow -->	
-	
-				<!--#in getNextTask -->
-					<!--#in getNextTaskPeriod -->
-						<div class="{ m_sTaskClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px;"></div>
-					<!--#endin getNextTaskPeriod -->	
-					<div class="ganttTooltip" id="calevent{ m_iIdTask }">
-						{ m_sToolTip }
+					<!--#in getNextWeekNumber -->
+					<div class="ganttWeekNumber" style="width:{ m_iWeekWidth }px; top:{ m_iWeekPosY }px; left:{ m_iWeekPosX }px; height:{ m_iWeekHeigth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+						<div style="text-align:center; overflow:hidden; height:{ m_iWeekHeigth }px;" title="{ m_sWeek }">{ m_sWeek }</div>
 					</div>
-				<!--#endin getNextTask -->	
-				<div id="ganttLegend" style="top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; width:600px; height:100px">
-					{ m_sGanttLegend }
+					<!--#endin getNextWeekNumber -->
+				
+					<!--#in getNextDay -->
+					<div class="ganttDay" style="top:{ m_iDayPosY }px; left:{ m_iDayPosX }px; height:{ m_iDayHeigth }px; width:{ m_iDayWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+						<div style="text-align:center; overflow:hidden; height:{ m_iDayHeigth }px;" title="{ m_sDay }">{ m_sDay }<br />{ m_sMday }</div>
+					</div>
+					<!--#endin getNextDay -->
+				</div>
+				
+				<div class="ganttTasks" style="top:{ m_iGanttTasksPosY }px; left:{ m_iGanttTasksPosX }px; height:{ m_iGanttTasksHeight }px; width:{ m_iGanttTasksWidth }px;">
+					
+					<!--#in getNextTaskTitle -->						
+					<div class="ganttTaskTitle" style="top:{ m_iTaskTitlePosY }px; left:{ m_iTaskTitlePosX }px; height:{ m_iTaskTitleHeigth }px; width:{ m_iTaskTitleWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+						{ m_sTaskTitle }
+					</div>
+					<!--#endin getNextTaskTitle -->
+					
+					<div class="ganttTasksList" style="top:{ m_iGanttTasksListPosY }px; left:{ m_iGanttTasksListPosX }px; height:{ m_iGanttTasksListHeight }px; width:{ m_iGanttTasksListWidth }px;">
+						<!--#in getNextTaskItem -->
+						<div style="color:#{ m_sTaskInfoColor }; background-color:#{ m_sTaskInfoBgColor };top:{ m_iTaskInfoPosY }px; left:{ m_iTaskInfoPosX }px; height:{ m_iTaskInfoHeigth }px; width:{ m_iTaskInfoWidth }px; border-width:{ m_iBorderTop }px { m_iBorderRight }px { m_iBorderBottom }px { m_iBorderLeft }px;">
+						{ m_sTaskInfo }
+						</div>
+						<!--#endin getNextTaskItem -->	
+					</div>
+				
+				</div>
+	
+				<div class="ganttView" style="top:{ m_iGanttViewPosY }px; left:{ m_iGanttViewPosX }px; height:{ m_iGanttViewHeight }px; width:{ m_iGanttViewWidth }px;">
+					<!--#in getNextColumn -->
+					<div class="ganttColumn { m_sTodayColumnAddClass }" style="top:{ m_iColumnPosY }px; left:{ m_iColumnPosX }px; height:{ m_iColumnHeigth }px; width:{ m_iColumnWidth }px">
+					</div>
+				<!--#if m_isToday -->
+					<div class="ganttTodayLine" style="top:{ m_iColumnPosY }px; left:{ m_iTodayPosLineX }px; height:{ m_iColumnHeigth }px">
+					</div>
+				<!--#endif m_isToday -->
+					<!--#endin getNextColumn -->	
+		
+					<!--#in getNextRow -->
+					<div class="ganttRow" style="top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; height:{ m_iRowHeigth }px; width:{ m_iRowWidth }px;">
+					</div>
+					<!--#endin getNextRow -->	
+		
+					<!--#in getNextTask -->
+						<!--#in getNextTaskPeriod -->
+							<div class="{ m_sTaskClass }" onmouseout="bab_showOnMouse('calevent{ m_iIdTask }',0)" onmouseover="bab_showOnMouse('calevent{ m_iIdTask }',1)" style="top:{ m_iTaskPosY }px; left:{ m_iTaskPosX }px; height:{ m_iTaskHeigth }px; width:{ m_iTaskWidth }px;"></div>
+						<!--#endin getNextTaskPeriod -->	
+						<div class="ganttTooltip" id="calevent{ m_iIdTask }">
+							{ m_sToolTip }
+						</div>
+					<!--#endin getNextTask -->	
+					<div id="ganttLegend" style="top:{ m_iRowPosY }px; left:{ m_iRowPosX }px; width:600px; height:100px">
+						{ m_sGanttLegend }
+					</div>
 				</div>
 			</div>
 		</div>
