@@ -1346,10 +1346,17 @@ define('DBG_FATAL',		32);
 
 
 /**
- * Log information.
+ * Log the specified information.
+ * 
+ * If the file bab_debug.txt is present (same directory as config.php) and writable,
+ * the information is appended.  
+ * 
+ * If $GLOBALS['babDebugLogMinSeverity'] is set, it determines the minimum severity of messages
+ * that will be logged in bab_debug.txt. 
+ *  
  * 
  * @param mixed		$data		The data to log. If not a string $data is transformed through print_r.
- * @param int		$severity	The severity of the logged information.
+ * @param int		$severity	The severity of the logged information (One of: DBG_TRACE, DBG_DEBUG, DBG_INFO, DBG_WARNING, DBG_ERROR, DBG_FATAL)
  * @param string	$category	A string to categorize the debug information.
  */
 function bab_debug($data, $severity = DBG_TRACE, $category = '')
@@ -1361,7 +1368,29 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 			$data = ob_get_contents();
 			ob_end_clean();
 		}
-		$message = array('category' => $category, 'severity' => $severity, 'text' => $data);
+
+		// Here we find information about the file and line where bab_debug was called.
+		$file = $line = $function = '';
+		$backtrace = debug_backtrace();
+		$call = array_shift($backtrace);
+		if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
+			$file = $call['file'];
+			$line = $call['line'];
+		}
+
+		// Here we find information about the method or function from which bab_debug was called.
+		$call = array_shift($backtrace);
+		if (is_array($call)) {
+			$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
+		}
+		
+		$message = array('category' => $category,
+						 'severity' => $severity,
+						 'text' => $data,
+						 'file' => $file,
+						 'line' => $line,
+						 'function' => $function);
+
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $message;
 		} else {
@@ -1370,7 +1399,8 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	}
 
 	$debugFilename = 'bab_debug.txt';
-	if (file_exists($debugFilename) && is_writable($debugFilename)) {
+	if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
+		 && file_exists($debugFilename) && is_writable($debugFilename)) {
 		if (!is_string($data)) {
 			$data = print_r($data, true);
 		}
@@ -1378,7 +1408,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		$date = date('d/m/Y H:i:s');
 		$lines = explode("\n", $data);
 		foreach ($lines as $text) {
-			fwrite($h, $date."\t".$severity."\t".$category."\t".$text."\n");
+			fwrite($h, $date."\t".$severity."\t".$category."\t".basename($file).'('.$line.')'."\t".$function."\t".$text."\n");
 		}
 		fwrite($h, "\n");
 		fclose($h);
