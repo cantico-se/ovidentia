@@ -2292,9 +2292,9 @@ function bab_selectOption(sControlId, sAction)
 			<!--#endif t_fetchContentScript -->
 			<span style="vertical-align: middle; width: 16px; display: -moz-inline-stack; display: inline-block; text-align: center"><!--#if t_nodeIcon --><img class="icon" src="{ t_nodeIcon }" alt="" title="{ t_tooltip }" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" title="{ t_tooltip }" /><!--#endif t_nodeIcon --></span>
 			<!--#if t_link -->
-			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span></a>
+			<a href="{ t_link }"><span id="nodeTitle.{ t_id }" class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span></a>
 			<!--#else t_link -->
-			<span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span>
+			<span id="nodeTitle.{ t_id }" class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span>
 			<!--#endif t_link -->
 
 
@@ -2305,10 +2305,10 @@ function bab_selectOption(sControlId, sAction)
 				<!--#endin getNextCheckBox -->
 				<span class="actions" style="background-color: white">
 					<div style="position: relative" class="bab_tm_menu">
-						<div id="{ t_id }.button" style="position: relative; display: none; cursor: pointer; z-index: 126" onclick="menu=document.getElementById('{ t_id }.menu'); bab_tm_toggleMenu(menu);">
+						<div id="{ t_id }.button" style="position: absolute display: none; cursor: pointer;" onclick="menu=document.getElementById('{ t_id }.menu'); bab_tm_toggleMenu(menu, 'nodeTitle.{ t_id }');">
 							<img alt="" style="vertical-align: middle" src="{ babSkinPath }images/taskManager/menu.png" />
 						</div>
-						<div id="{ t_id }.menu" class="bab_tm_opaque" style="">
+						<div id="{ t_id }.menu" class="bab_tm_opaque" style="margin-right:22px;">
 							<div class="bab_tm_frame">
 								<div style="margin: 0px;">
 									<!--#in getNextAction -->
@@ -2538,18 +2538,30 @@ function bab_toggleMenu(button,div)
 //	}
 }
 
-function bab_tm_toggleMenu(div)
+function bab_tm_toggleMenu(div, sNodeTiltleId)
 {
-	if (window.bab_tm_currentMenu && window.bab_tm_currentMenu != div) {
+	if(window.bab_tm_currentMenu && window.bab_tm_currentMenu != div) 
+	{
 		window.bab_tm_currentMenu.style.display = 'none';
 	}
+	
+	var oLI = document.getElementById(sNodeTiltleId);
+	if(window.bab_tm_nodeTiltle && window.bab_tm_nodeTiltle != oLI) 
+	{
+		window.bab_tm_nodeTiltle.style.color = '#000000';
+	}
+	
+	window.bab_tm_nodeTiltle = oLI;
 	window.bab_tm_currentMenu = div;
-	if (div.style.display == 'none') {
+	if(div.style.display == 'none') 
+	{
 		div.style.display = '';
-	//	window.onmousedown = function() { window.status = Date.now(); window.bab_tm_currentMenu.style.display = 'none'; };
-	} else {
+		oLI.style.color = 'red';
+	}
+	else
+	{
 		div.style.display = 'none';
-	//	window.onclick = '';
+		oLI.style.color = '#000000';
 	}
 }
 //]]>

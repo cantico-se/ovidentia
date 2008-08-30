@@ -46,3 +46,16 @@ a.bab_tm_pushbutton:hover {
 .bab_tm_opaque {
 	background: #f5f5f5 url(../skins/ovidentia/images/taskManager/tabcontent.png) repeat-x scroll left top;
 }
+
+
+.bab_tree div.line {
+	border: 0px !important; 
+}
+
+.bab_tree div.highlighted {
+	border: 0px !important; 
+}
+
+.bab_tree div.hover {
+	border: 0px !important; 
+}
