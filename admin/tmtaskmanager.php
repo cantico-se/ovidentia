@@ -49,6 +49,8 @@ function displayProjectsSpacesList()
 			function BAB_TM_List()
 			{
 				parent::bab_TreeView('myTreeView');
+			
+				$this->_templateFile = 'tmUser.html';
 				
 				$sTg = bab_rp('tg', 'admTskMgr');
 				$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
@@ -61,6 +63,7 @@ function displayProjectsSpacesList()
 	               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_FORM, 0, 0), '');
 	              
 	            $this->appendElement($oSpaceElement, null);
+				$oSpaceElement->setIcon($GLOBALS['babSkinPath'] . 'images/Puces/internet.png');
 	
 	            $result = bab_selectProjectSpaceList();
 				if(false != $result)
@@ -93,6 +96,7 @@ function displayProjectsSpacesList()
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_NOTICE_EVENT_FORM, $datas['id'], $iIdProject), '');
 	
 	               		$this->appendElement($oElement, $this->m_iIdSpaceElement);
+	               		$oElement->setIcon($GLOBALS['babSkinPath'] . 'images/Puces/file-manager.png');
 					}
 				}	
 			}
@@ -104,7 +108,10 @@ function displayProjectsSpacesList()
 		}
 		
 		$list = new BAB_TM_List();
-		$GLOBALS['babBody']->babecho($list->printTemplate());
+	
+		global $babBody;
+		$babBody->addStyleSheet('tmTreeViewMenu.css');
+		$babBody->babecho($list->printTemplate());
 	}
 	else 
 	{

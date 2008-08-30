@@ -2275,3 +2275,284 @@ function bab_selectOption(sControlId, sAction)
 	</table>
 </form> 
 <!--#end orderTaskFields -->
+
+
+<!--#begin subtree -->
+	<!--#in getNextElement -->
+	<!--#if t_levelVariation "== 1" --><ul><!--#endif t_levelVariation -->
+	<!--#if t_levelVariation "<= -1" --></li></ul><!--#endif t_levelVariation -->
+	<!--#if t_levelVariation "== 0" --></li><!--#endif t_levelVariation -->
+	<!--#if t_levelVariation ">= -1" -->
+		<!--#if t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_not_loaded"><!--#else t_fetchContentScript --><li id="li{ t_id }" class="bab_ul_tree_leaf"><!--#endif t_fetchContentScript -->
+		<!--#if t_highlighted --><div class="line" style="background-color: #EEEEEE"><!--#else t_highlighted --><div class="line"><!--#endif t_highlighted -->
+			<!--#if t_fetchContentScript -->
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="17" alt="" onclick="if (hasClass(this.parentNode.parentNode, 'bab_ul_tree_not_loaded')) { t_fetchContentScript }" />
+			<!--#else t_fetchContentScript -->
+			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="17" alt="" />
+			<!--#endif t_fetchContentScript -->
+			<span style="vertical-align: middle; width: 16px; display: -moz-inline-stack; display: inline-block; text-align: center"><!--#if t_nodeIcon --><img class="icon" src="{ t_nodeIcon }" alt="" title="{ t_tooltip }" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" title="{ t_tooltip }" /><!--#endif t_nodeIcon --></span>
+			<!--#if t_link -->
+			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span></a>
+			<!--#else t_link -->
+			<span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span>
+			<!--#endif t_link -->
+
+
+			<!--#if t_showRightElements -->
+			<span class="right_elements">{ t_info }
+				<!--#in getNextCheckBox -->
+				<input type="checkbox" name="{ checkbox_name }" onclick="{ checkbox_script }" <!--#if checkbox_checked -->checked="checked"<!--#endif checkbox_checked --> />
+				<!--#endin getNextCheckBox -->
+				<span class="actions" style="background-color: white">
+					<div style="position: relative" class="bab_tm_menu">
+						<div id="{ t_id }.button" style="position: relative; display: none; cursor: pointer; z-index: 126" onclick="menu=document.getElementById('{ t_id }.menu'); bab_tm_toggleMenu(menu);">
+							<img alt="" style="vertical-align: middle" src="{ babSkinPath }images/taskManager/menu.png" />
+						</div>
+						<div id="{ t_id }.menu" class="bab_tm_opaque" style="">
+							<div class="bab_tm_frame">
+								<div style="margin: 0px;">
+									<!--#in getNextAction -->
+									<div style="margin: 0px 0pt 0pt;">
+										<a href="{ action_url }" title="{ t_tooltip }" class="bab_tm_pushbutton" style="vertical-align: middle">
+											<img alt="" style="vertical-align: middle" src="{ action_icon }" />{ action_caption }
+										</a>
+									</div>
+									<!--#endin getNextAction -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<script type="text/javascript">
+						document.getElementById('{ t_id }.button').style.display = '';
+						document.getElementById('{ t_id }.menu').style.display = 'none';
+						document.getElementById('{ t_id }.menu').style.position = 'absolute';
+						document.getElementById('{ t_id }.menu').style.zIndex = '127';
+						document.getElementById('{ t_id }.menu').style.right = window.isIE6 ? '24px' : '0';
+					</script>
+				</span>
+			</span>
+			<!--#endif t_showRightElements -->
+		</div>
+	<!--#endif t_levelVariation -->
+	<!--#endin getNextElement -->
+<!--#end subtree -->
+
+
+<!--#begin treeview -->
+<div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground">
+	<div class="tree BabLoginMenuBackground" style="position: relative">
+		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
+		{ t_subtree }
+	</div>
+	<!--#if t_isMultiSelect -->
+	<div class="bab_treeToolbar BabSiteAdminTitleFontBackground" style="text-align: center;"><button type="submit" onclick="document.getElementById('{ t_treeViewId }').onSubmitTree();">{ t_submit }</button></div>
+	<!--#endif t_isMultiSelect  -->
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+	document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''
+//]]>
+</script>
+
+<script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
+
+<script type="text/javascript">
+//<![CDATA[
+if (!window.bab_Translations) {
+	window.bab_Translations = new Array();
+}
+window.bab_Translations['Expand'] = '{ t_expand }';
+window.bab_Translations['Collapse'] = '{ t_collapse }';
+
+var treeview = document.getElementById("{ t_treeViewId }");
+
+treeview.onElementClick = function(element)
+{
+	try {
+		var returnParameters = {
+			'type': element.className.split(' ')[1],
+			'id': element.parentNode.parentNode.id.split('{ t_id_separator }')[1],
+			'content': element.firstChild.nodeValue
+		};
+		window.opener.bab_dialog._return(returnParameters);
+		window.close();
+	} catch(e) {};
+}
+
+treeview.onSubmitTree = function()
+{
+	if (!window.opener) {
+		window.close();
+		return;
+	}
+	try {
+		var returnParameters = new Array();
+		var retstr = '';
+		var inputs = this.getElementsByTagName('INPUT');
+		for (i = 0; i < inputs.length; i++) {
+			input = inputs[i];
+			if (input.type == 'checkbox' && input.checked) {
+				var element;
+				for (j = 0; j < input.parentNode.parentNode.childNodes.length; j++) {
+					e = input.parentNode.parentNode.childNodes[j];
+					if (e.nodeName && (e.nodeName == 'SPAN' || e.nodeName == 'A') && e.className) {
+						element = e;
+						break;
+					}
+				}
+
+				var returnParameter = {
+					'type': element.className.split(' ')[1],
+					'id': input.parentNode.parentNode.parentNode.id.split('{ t_id_separator }')[1],
+					'content': element.firstChild.nodeValue
+				}
+				returnParameters.push(returnParameter);
+				returnParameters['param'] = returnParameters;
+				returnParameters['callback'] = 'EditorOnInsertFiles';
+			}
+		}
+		window.opener.bab_dialog && window.opener.bab_dialog._return(returnParameters);
+		window.close();
+	} catch (err) {
+		for (name in err) {
+			window.console && window.console.debug(name + ': ' + err[name]);
+		}
+	}
+}
+
+var tree = bab_initTree(document.getElementById("{ t_treeViewId }"));
+
+if (tree) {
+	<!--#if t_memorizeOpenNodes -->
+	tree.memorizeOpenNodes = true;
+	<!--#endif t_memorizeOpenNodes -->
+	tree.loadState();
+}
+//]]>
+</script>
+<!--#end treeview -->
+
+<!--#begin treeview_css -->
+<style type="text/css">
+	@import url('{ babInstallPath }styles/tree.css');
+</style>
+<!--#end treeview_css -->
+
+
+<!--#begin treeview_scripts -->
+<script type="text/javascript">
+//<![CDATA[
+function bab_stopEvent(ev)
+{
+	ev || (ev = window.event);
+	if ($.browser.msie) {
+		ev.cancelBubble = true;
+		ev.returnValue = false;
+	} else {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+	return false;
+};
+
+function bab_addEvent(el, evname, func)
+{
+	if (el.attachEvent) { // IE
+		el.attachEvent("on" + evname, func);
+	} else if (el.addEventListener) { // Gecko / W3C
+		el.addEventListener(evname, func, true);
+	} else {
+		el["on" + evname] = func;
+	}
+};
+
+
+// FIXME: the following 2 functions totally suck, are useless and should be replaced immediately.
+function bab_getElement(ev)
+{
+	var f = $.browser.msie ? window.event.srcElement : ev.currentTarget;
+	while (f.nodeType != 1 || /^div$/i.test(f.tagName))
+		f = f.parentNode;
+	return f;
+};
+
+function bab_getTargetElement(ev)
+{
+	var f = $.browser.msie ? window.event.srcElement : ev.target;
+	while (f.nodeType != 1)
+		f = f.parentNode;
+	return f;
+};
+
+// This gets called when the user presses a mouse button anywhere in the
+// document, if the calendar is shown.  If the click was outside the open
+// calendar this function closes it.
+bab_checkMenu = function(ev)
+{
+	var menu = window.bab_currentMenu;
+	if (!menu) {
+		return false;
+	}
+	var el = $.browser.msie ? bab_getElement(ev) : bab_getTargetElement(ev);
+	for (; el != null && el != menu; el = el.parentNode);
+	if (el == null) {
+		$(menu).hide();
+		window.bab_currentMenu = null;
+		return bab_stopEvent(ev);
+	}
+};
+
+
+function bab_toggleMenu(button,div)
+{
+//	if (window.bab_currentMenu && window.bab_currentMenu != div) {
+//		$(window.bab_currentMenu).hide();
+//	}
+
+	var parentTreeDiv = $(div).parents(".tree")[0];
+
+	var buttonX = 0;
+	var buttonY = 0;
+	for (var element = button; element != parentTreeDiv && element != null; element = element.offsetParent) {
+		buttonX += element.offsetLeft;
+		buttonY += element.offsetTop;
+	}
+	window.bab_currentMenu = div;
+	$(parentTreeDiv).append(div);
+	div.style.top = (buttonY + 10) + "px";
+	if ($.browser.msie) {
+		var nbUls = $(button).parents("ul").length + 1;
+		div.style.left = (buttonX - 23 * nbUls) + "px";
+	} else {
+		div.style.left = buttonX + "px";
+	}
+	if ($(div).is(":hidden")) {
+		$(div).fadeIn('normal');
+		window.bab_currentMenu = div;
+		bab_addEvent(document, "click", bab_checkMenu);
+	}
+//	 else {
+//		$(div).hide();
+//		window.bab_currentMenu = null;
+//	}
+}
+
+function bab_tm_toggleMenu(div)
+{
+	if (window.bab_tm_currentMenu && window.bab_tm_currentMenu != div) {
+		window.bab_tm_currentMenu.style.display = 'none';
+	}
+	window.bab_tm_currentMenu = div;
+	if (div.style.display == 'none') {
+		div.style.display = '';
+	//	window.onmousedown = function() { window.status = Date.now(); window.bab_tm_currentMenu.style.display = 'none'; };
+	} else {
+		div.style.display = 'none';
+	//	window.onclick = '';
+	}
+}
+//]]>
+</script>
+<!--#end treeview_scripts -->
+

@@ -1,0 +1,48 @@
+/* Frame */
+
+.bab_tm_frame {
+}
+
+/* Menu */
+
+.bab_tm_menu .bab_tm_frame {
+	border: 1px solid #aaaaaa;
+	padding: 1px;
+}
+
+.bab_tm_menu a.bab_tm_pushbutton {
+	padding: 4px;
+	display: block;
+	background: transparent;
+}
+
+.bab_tm_menu .bab_tm_pushbutton:hover {
+	background: #000000 url(../skins/ovidentia/images/taskManager/tableheaderselected.png) repeat-x;
+	color: #ffffff;
+}
+
+
+/* PushButton */
+
+.bab_tm_pushbutton {
+	cursor: pointer;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.bab_tm_pushbutton img {
+	border: 0;
+}
+
+.bab_tm_pushbutton:hover {
+	outline: 1px solid #dddddd;
+}
+
+a.bab_tm_pushbutton,
+a.bab_tm_pushbutton:hover {
+	text-decoration: none !important;
+}
+
+.bab_tm_opaque {
+	background: #f5f5f5 url(../skins/ovidentia/images/taskManager/tabcontent.png) repeat-x scroll left top;
+}

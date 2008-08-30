@@ -254,6 +254,8 @@ function displayProjectsSpacesList()
 		{
 			parent::bab_TreeView('myTreeView');
 			
+			$this->_templateFile = 'tmUser.html';
+			
 			$sTg = bab_rp('tg', 'admTskMgr');
 			$this->m_sUrlBase = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=%s&iIdProjectSpace=%d&iIdProject=%d';
 			
@@ -362,7 +364,7 @@ function displayProjectsSpacesList()
 			               bab_toHtml(bab_translate("Rights")), $GLOBALS['babSkinPath'] . 'images/Puces/agent.png', 
 			               $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_RIGHTS_FORM, $iIdProjectSpace, $datas['id']), '');
                		}
-               		
+
                		if($bIsManager)
                		{
                			$sGanttViewUrl = $this->getUrl(BAB_TM_IDX_DISPLAY_GANTT_CHART, $iIdProjectSpace, $datas['id']);
@@ -439,7 +441,10 @@ function displayProjectsSpacesList()
 	}
 	
 	$list = new BAB_TM_List();
-	$GLOBALS['babBody']->babecho($list->printTemplate());
+	
+	global $babBody;
+	$babBody->addStyleSheet('tmTreeViewMenu.css');
+	$babBody->babecho($list->printTemplate());
 }
 
 function displayProjectForm()
