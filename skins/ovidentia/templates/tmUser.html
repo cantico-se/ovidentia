@@ -2547,6 +2547,8 @@ function bab_tm_toggleMenu(div, sNodeTiltleId, oEvent)
 	if(window.bab_tm_currentMenu && window.bab_tm_currentMenu != div) 
 	{
 		window.bab_tm_currentMenu.style.display = 'none';
+//		new Effect.BlindUp($(window.bab_tm_currentMenu));
+		
 	}
 	
 	var oLI = document.getElementById(sNodeTiltleId);
@@ -2566,6 +2568,7 @@ function bab_tm_toggleMenu(div, sNodeTiltleId, oEvent)
 		var iTop		= bab_tm_getPosY(oEvent);
 		var iLeft		= bab_tm_getPosX(oEvent);
 
+/*
 		$(div).style.top = '';
 		$(div).style.top = (iTop - 10) + 'px';
 		
@@ -2574,11 +2577,20 @@ function bab_tm_toggleMenu(div, sNodeTiltleId, oEvent)
 		
 		$(div).style.width = '';
 		$(div).style.width = iWidth + 'px';
+//*/
+		
+		var sLeft	= (iLeft - iWidth - 10) + 'px';
+		var sTop	= (iTop - 10) + 'px';
+		var sWidth	= iWidth + 'px';
+		
+		$(div).setStyle({ left: sLeft, top: sTop, width: sWidth});
+		$(div).style.display = '';
+		$(div).style.display = 'none';
 
-//		new Effect.BlindDown($(div));
-//		new Effect.Grow($(div));
+		new Effect.BlindDown($(div));
 
 		oLI.style.color = 'red';
+		new Effect.Pulsate($(oLI));
 	}
 	else
 	{
