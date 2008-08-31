@@ -111,6 +111,8 @@ function displayProjectsSpacesList()
 	
 		global $babBody;
 		$babBody->addStyleSheet('tmTreeViewMenu.css');
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
 		$babBody->babecho($list->printTemplate());
 	}
 	else 

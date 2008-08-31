@@ -2305,16 +2305,16 @@ function bab_selectOption(sControlId, sAction)
 				<!--#endin getNextCheckBox -->
 				<span class="actions" style="background-color: white">
 					<div style="position: relative" class="bab_tm_menu">
-						<div id="{ t_id }.button" style="position: absolute display: none; cursor: pointer;" onclick="menu=document.getElementById('{ t_id }.menu'); bab_tm_toggleMenu(menu, 'nodeTitle.{ t_id }');">
+						<div id="{ t_id }.button" style="position: absolute display: none; cursor: pointer;" onclick="menu=document.getElementById('{ t_id }.menu'); bab_tm_toggleMenu(menu, 'nodeTitle.{ t_id }', event);">
 							<img alt="" style="vertical-align: middle" src="{ babSkinPath }images/taskManager/menu.png" />
 						</div>
-						<div id="{ t_id }.menu" class="bab_tm_opaque" style="margin-right:22px;">
+						<div id="{ t_id }.menu" class="bab_tm_menu bab_tm_opaque bab_tm_divToMoveToMenuContainer" style="margin-right:30px;">
 							<div class="bab_tm_frame">
 								<div style="margin: 0px;">
 									<!--#in getNextAction -->
 									<div style="margin: 0px 0pt 0pt;">
 										<a href="{ action_url }" title="{ t_tooltip }" class="bab_tm_pushbutton" style="vertical-align: middle">
-											<img alt="" style="vertical-align: middle" src="{ action_icon }" />{ action_caption }
+											<img alt="" style="vertical-align: middle" src="{ action_icon }" />&nbsp;{ action_caption }
 										</a>
 									</div>
 									<!--#endin getNextAction -->
@@ -2325,8 +2325,8 @@ function bab_selectOption(sControlId, sAction)
 					<script type="text/javascript">
 						document.getElementById('{ t_id }.button').style.display = '';
 						document.getElementById('{ t_id }.menu').style.display = 'none';
-						document.getElementById('{ t_id }.menu').style.position = 'absolute';
-						document.getElementById('{ t_id }.menu').style.zIndex = '127';
+//						document.getElementById('{ t_id }.menu').style.position = 'absolute';
+//						document.getElementById('{ t_id }.menu').style.zIndex = '127';
 						document.getElementById('{ t_id }.menu').style.right = window.isIE6 ? '24px' : '0';
 					</script>
 				</span>
@@ -2348,6 +2348,10 @@ function bab_selectOption(sControlId, sAction)
 	<div class="bab_treeToolbar BabSiteAdminTitleFontBackground" style="text-align: center;"><button type="submit" onclick="document.getElementById('{ t_treeViewId }').onSubmitTree();">{ t_submit }</button></div>
 	<!--#endif t_isMultiSelect  -->
 </div>
+
+<div id="bab_tm_menuContainer">
+</div>
+
 
 <script type="text/javascript">
 //<![CDATA[
@@ -2538,7 +2542,7 @@ function bab_toggleMenu(button,div)
 //	}
 }
 
-function bab_tm_toggleMenu(div, sNodeTiltleId)
+function bab_tm_toggleMenu(div, sNodeTiltleId, oEvent)
 {
 	if(window.bab_tm_currentMenu && window.bab_tm_currentMenu != div) 
 	{
@@ -2555,7 +2559,25 @@ function bab_tm_toggleMenu(div, sNodeTiltleId)
 	window.bab_tm_currentMenu = div;
 	if(div.style.display == 'none') 
 	{
-		div.style.display = '';
+		$(div).style.display = '';
+		
+		var iWidth		= div.offsetWidth;
+		var iHeight		= div.offsetHeight;
+		var iTop		= bab_tm_getPosY(oEvent);
+		var iLeft		= bab_tm_getPosX(oEvent);
+
+		$(div).style.top = '';
+		$(div).style.top = (iTop - 10) + 'px';
+		
+		$(div).style.left = '';
+		$(div).style.left = (iLeft - iWidth - 10) + 'px';
+		
+		$(div).style.width = '';
+		$(div).style.width = iWidth + 'px';
+
+//		new Effect.BlindDown($(div));
+//		new Effect.Grow($(div));
+
 		oLI.style.color = 'red';
 	}
 	else
@@ -2564,6 +2586,63 @@ function bab_tm_toggleMenu(div, sNodeTiltleId)
 		oLI.style.color = '#000000';
 	}
 }
+
+function bab_tm_getPosY(oEvent)
+{
+	var ev=(!oEvent)?window.event:oEvent;//IE:Moz
+	if(ev.pageX){//Moz
+		/*
+		posx=ev.pageX+window.pageXOffset;
+		posy=ev.pageY+window.pageYOffset;
+		//*/
+		posy=ev.pageY;
+		return posy;
+	}
+	else if(ev.clientX){//IE
+		/*
+		posx=ev.clientX+document.body.scrollLeft;
+		posy=ev.clientY+document.body.scrollTop;
+		//*/
+		posy=ev.clientY;
+		return posy;
+	}
+	else
+	{//old browsers
+		return 0;
+	}
+}
+
+function bab_tm_getPosX(oEvent)
+{
+	var ev=(!oEvent)?window.event:oEvent;//IE:Moz
+	if(ev.pageX){//Moz
+		/*
+		posx=ev.pageX+window.pageXOffset;
+		posy=ev.pageY+window.pageYOffset;
+		//*/
+		posx=ev.pageX;
+		return posx;
+	}
+	else if(ev.clientX){//IE
+		/*
+		posx=ev.clientX+document.body.scrollLeft;
+		posy=ev.clientY+document.body.scrollTop;
+		//*/
+		posx=ev.clientX;
+		return posx;
+	}
+	else
+	{//old browsers
+		return 0;
+	}
+}
+
+document.observe("dom:loaded", function bab_tm_moveMenu() {
+	$$('div.bab_tm_divToMoveToMenuContainer').each(function(oDiv) {
+		oDiv.style.position = 'absolute';
+		$('bab_tm_menuContainer').appendChild(oDiv);
+	});
+});
 //]]>
 </script>
 <!--#end treeview_scripts -->
