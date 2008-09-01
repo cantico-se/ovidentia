@@ -525,6 +525,15 @@ function bab_OCIsLocked($iIdOrgChart)
 /**
  * Gets the lock value info.
  * 
+ * The array have those keys :
+ * 
+ * <ul>
+ * 	<li>iIdUser 			: User identifier</li>
+ * 	<li>sNickName 			: User nickname</li>
+ * 	<li>sFirstName 			: User firstname</li>
+ *  <li>sLastName 			: User lastname</li>
+ * </ul>
+ * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
  * 
  * @return	array	The lock info
@@ -535,3 +544,99 @@ function bab_OCGetLockInfo($iIdOrgChart)
 	
 
 }
+
+
+
+define('BAB_OC_ROLE_CUSTOM', '0');
+define('BAB_OC_ROLE_SUPERIOR', '1');
+define('BAB_OC_ROLE_TEMPORARY_EMPLOYEE', '2');
+define('BAB_OC_ROLE_MEMBER', '3');
+
+
+function bab_OCCreateRole($sName, $sDescription, $iIdEntity, $iType, $sCardinality)
+{
+	
+}
+
+function bab_OCDeleteRole($iIdRole)
+{
+	
+}
+
+function bab_OCGetRolesByOrganizationChartId($iIdOrganizationChart, $iType = null)
+{
+	
+}
+
+function bab_OCGetRolesByEntityId($iIdEntity, $iType = null)
+{
+	
+}
+
+function bab_OCGetRoleById($iIdRole)
+{
+	
+}
+
+
+
+function bab_OCCreateRoleUser($iIdRole, $iIdUser)
+{
+	
+}
+
+function bab_OCDeleteRoleUser($iIdRoleUser)
+{
+	
+}
+
+function bab_OCGetRoleUserByEntityId($iIdEntity, $iType)
+{
+	
+}
+
+function bab_OCAppendEntity($iIdParentEntity, $sName, $sDescription, $sNote, $iIdGroup)
+{
+	
+}
+
+function bab_OCRemoveEntity($iIdEntity)
+{
+	
+}
+
+function bab_OCRemoveEntityChild($iIdEntity)
+{
+
+}
+
+function bab_OCInsertBeforeEntity($iIdEntity, $sName, $sDescription, $sNote, $iIdGroup)
+{
+	
+}
+
+function bab_OCMoveEntity($iIdEntity, $iIdParent)
+{
+	
+}
+
+
+
+/*
+function bab_OCCreateEntity($iIdOrganizationChart, $iIdNode, $sName, $sDescription, $sNote, $iIdGroup)
+{
+	
+}
+
+
+function bab_OCDeleteEntityByNodeId($iIdNode)
+{
+	
+}
+
+
+function bab_OCDeleteEntityById($iIdEntity)
+{
+	
+}
+//*/
