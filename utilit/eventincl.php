@@ -177,6 +177,7 @@ class bab_fireEvent_Obj {
  */
 function bab_fireEvent(&$event_obj) {
 
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	
 	global $babDB;
 	
