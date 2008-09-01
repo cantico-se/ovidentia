@@ -371,9 +371,10 @@ class BAB_TM_GanttBase
 			
 		$bIsEnded = (('0000-00-00 00:00:00' !== $aTask['startDate'] && 
 			'0000-00-00 00:00:00' !== $aTask['endDate']) || 100 == $aTask['iCompletion']);
-		$bAccordingToRemaining = ($oTaskTimeManager->getTodayIsoDateTime()->getTimeStamp() > $this->m_aDisplayedStartDate[0] && 
+		$oToday = $oTaskTimeManager->getTodayIsoDateTime();
+		$bAccordingToRemaining = ($oToday->getTimeStamp() > $this->m_aDisplayedStartDate[0] && 
 			$oGanttTask->getEndDateTimeStamp() < $this->m_aDisplayedEndDate[0] && !$bIsEnded);
-			
+					
 		$iIdTask = $oGanttTask->m_iIdTask;
 
 		if($bRealDatesInBox || $bPlannedDatesInBox || $bRemainingDatesInBox || $bAccordingToRemaining)

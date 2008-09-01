@@ -482,8 +482,10 @@ $oEndDate = $oLoopDate->cloneDate();
 		//Ce calcul ne tient pas compte des jours non travaillés
 		$iTaskTimeStamp	= $oEnd->getTimeStamp() - $oStart->getTimeStamp();
 		$iDoneTimeStamp = ($iTaskTimeStamp / 100) * $this->m_iCompletion;
-		$oDoneStart		= $this->getStartDate()->cloneDate();
-		$oDoneEnd		= $this->getStartDate()->cloneDate();
+		
+		$_oStart		= $this->getStartDate();
+		$oDoneStart		= $_oStart->cloneDate();
+		$oDoneEnd		= $_oStart->cloneDate();
 		$oDoneEnd->add($iDoneTimeStamp, BAB_DATETIME_SECOND);
 
 		//Fin de completion jusqu'a la fin de la tâche. (barre blanche).
