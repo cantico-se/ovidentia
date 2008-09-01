@@ -2597,6 +2597,8 @@ document.observe("dom:loaded", function bab_tm_moveMenu() {
 			var sId = $(oDiv).id.substring(0, $(oDiv).id.indexOf('.menu'));
 			$(sId + '.button').observe('click', bab_tm_toggleMenu);
 		}
+
+		$(document.body).appendChild($('bab_tm_menuContainer'));
 	});
 });
 //]]>
