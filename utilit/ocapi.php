@@ -487,7 +487,7 @@ function bab_OCExist($sName, $iIdDelegation)
  * @return	bool	True on success, False on error
  *  					
  */
-function bab_OCLock($iIdOrgChart)
+function bab_OCLock($iIdOrgChart, $iIdUser)
 {
 	
 }
@@ -501,7 +501,7 @@ function bab_OCLock($iIdOrgChart)
  * @return	bool	True on success, False on error
  *  					
  */
-function bab_OCUnlock($iIdOrgChart)
+function bab_OCUnlock($iIdOrgChart, $iIdUser)
 {
 	
 }
