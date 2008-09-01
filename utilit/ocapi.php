@@ -428,7 +428,21 @@ function bab_OCSelectEntityCollaborators($entityId)
 
 
 
+
 //-------------------------------------------------------------------------
+
+/**
+ * Gets a value that indicates whether a user have administration right on an organization chart.
+ * 
+ * @return	bool	True on success, false othewise 
+ */
+function bab_OCHaveAdminRight()
+{
+	global $babBody;
+	
+	return ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || 
+		(isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y');
+}
 
 
 /**
@@ -440,6 +454,7 @@ function bab_OCSelectEntityCollaborators($entityId)
  * @param	string	$sName			The name of the organizational chart
  * @param	string	$sDescription	The description of the organizational chart
  * @param	int		$iIdDelegation	The delegation identifier of the organizational chart
+ * @param	int		$iIdDirectory	The directory identifier (bab_db_directories identifier)
  * 
  * @return	int		The identifier of the created organizational chart on success, 
  * 					0 on error 
@@ -447,18 +462,19 @@ function bab_OCSelectEntityCollaborators($entityId)
 function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 {
 	global $babBody;
-	if(false === bab_isUserAdministrator())
+	if(false === bab_OCHaveAdminRight())
 	{
 		$babBody->addError(bab_translate("Acces denied"));
 		return false;
 	}
 	
-	if(false !== bab_OCExist($sName, $iIdDelegation))
+	if(true === bab_OCExist($sName, $iIdDelegation))
 	{
 		$babBody->addError(bab_translate("Acces denied"));
 		return false;
 	}
 	
+	require_once(dirname(__FILE__) . '/dirincl.php');
 	$sDirectoryName = getDirectoryName($iIdDirectory, BAB_DB_DIRECTORIES_TBL);
 	if(0 === strlen($sDirectoryName))
 	{
@@ -478,18 +494,18 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 			') ' .
 		'VALUES ' . 
 			'(\'\', ' . 
-				$babDB->db_quote($sName) . ', ' . 
-				$babDB->db_quote($sDescription) . ', ' . 
-				$babDB->db_quote('N') . ', ' . 
-				$babDB->db_quote(0) . ', ' . 
-				$babDB->db_quote(0) . ', ' . 
-				$babDB->db_quote('0000-00-00 00:00:00') . ', ' . 
-				$babDB->db_quote($iIdDelegation) . ', ' . 
-				$babDB->db_quote($iIdDirectory) . ', ' . 
-				$babDB->db_quote(0) . ', ' . 
-				$babDB->db_quote(0) . ', ' . 
-				$babDB->db_quote(0) . 
-			'\')'; 
+				$babDB->quote($sName) . ', ' . 
+				$babDB->quote($sDescription) . ', ' . 
+				$babDB->quote('N') . ', ' . 
+				$babDB->quote('N') . ', ' . 
+				$babDB->quote(0) . ', ' . 
+				$babDB->quote('0000-00-00 00:00:00') . ', ' . 
+				$babDB->quote($iIdDelegation) . ', ' . 
+				$babDB->quote($iIdDirectory) . ', ' . 
+				$babDB->quote(0) . ', ' . 
+				$babDB->quote(0) . ', ' . 
+				$babDB->quote('') . 
+			')'; 
 
 	//bab_debug($sQuery);
 	$oResult = $babDB->db_query($sQuery);
@@ -507,32 +523,89 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
  * 
  * @return	bool	True on success, False on error
- *  					
  */
 function bab_OCDelete($iIdOrgChart)
 {
+	//TODO
+	//Finish this function
 	global $babBody;
-	if(false === bab_isUserAdministrator())
+	if(false === bab_OCHaveAdminRight())
 	{
 		$babBody->addError(bab_translate("Acces denied"));
 		return false;
 	}
 	
+	$aData = bab_OCGet($iIdOrgChart);
+	if(false === $aData || 'Y' === (string) $aData['isprimary'])
+	{
+		$babBody->addError(bab_translate("8 Acces denied"));
+		return false;
+	}
+	
 	global $babDB;
-	$sQuery = 'DELETE FROM ' . BAB_ORG_CHARTS_TBL . ' WHERE id = ' . $babDB->db_quote($iIdProjectSpace) . ''; 
+	$sQuery = 'DELETE FROM ' . BAB_ORG_CHARTS_TBL . ' WHERE id = ' . $babDB->quote($iIdOrgChart); 
 	//bab_debug($query);
 	return $babDB->db_query($sQuery);
 }
 
 
 /**
- * Gets a value that indicates whether an organizational chart exists
+ * Get an organizational chart.
+ * 
+ * The array have those keys :
+ * 
+ * <ul>
+ * 	<li>id
+ * 	<li>name
+ * 	<li>description
+ *  <li>edit
+ *  <li>edit_author
+ *  <li>edit_date
+ *  <li>id_dgowner
+ *  <li>id_directory
+ *  <li>type
+ *  <li>id_first_node
+ *  <li>id_closed_nodes
+ * </ul>
+ * 
+ * @param	int	$iIdOrgChart	The identifier of the organizational chart
+ * 
+ * @return	array|false			array on success, false otherwise
+ */
+function bab_OCGet($iIdOrgChart)
+{
+	global $babDB;
+
+	$sQuery = 
+		'SELECT ' .
+			'* ' .
+		'FROM ' .
+			BAB_ORG_CHARTS_TBL . ' ' .
+		'WHERE ' . 
+			'id = ' . $babDB->quote($iIdOrgChart);
+	
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);
+		if(0 < $iNumRows)
+		{
+			return $babDB->db_fetch_assoc($oResult);
+		}
+	}
+	return false;
+}
+
+
+/**
+ * Gets a value that indicates whether an organizational chart exists.
  * 
  * @param	string	$sName			The identifier of the organizational
  * @param	int		$iIdDelegation	The delegation identifier 
  *  
  * @return	bool	True if the organizational chart exist, False on error
- *  					
  */
 function bab_OCExist($sName, $iIdDelegation)
 {
@@ -550,12 +623,12 @@ function bab_OCExist($sName, $iIdDelegation)
 		'FROM ' . 
 			BAB_ORG_CHARTS_TBL . ' ' .
 		'WHERE ' . 
-			'id_dgowner = ' . $babDB->db_quote($iIdDelegation) . ' AND ' .
-			'name LIKE ' . $babDB->db_quote($sName);
+			'id_dgowner = ' . $babDB->quote($iIdDelegation) . ' AND ' .
+			'name LIKE ' . $babDB->quote($sName);
 			
-		//bab_debug($sQuery);
-		$oResult = $babDB->db_query($sQuery);
-		return (false !== $oResult && 0 === $babDB->db_num_rows($oResult));
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	return (false !== $oResult && 0 !== $babDB->db_num_rows($oResult));
 }
 
 
@@ -563,13 +636,43 @@ function bab_OCExist($sName, $iIdDelegation)
  * Locks an organizational chart.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
+ * @param	int		$iIdUser		The user identifier
  * 
  * @return	bool	True on success, False on error
- *  					
  */
 function bab_OCLock($iIdOrgChart, $iIdUser)
 {
+	global $babBody;
+	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdUser))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
 	
+	if(true === bab_OCIsLocked($iIdOrgChart))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
+	
+	global $babDB;
+	$sQuery = 
+		'UPDATE ' .	
+			BAB_ORG_CHARTS_TBL . ' ' . 
+		'SET ' .
+			'`edit` = ' . $babDB->quote('Y') . ', ' .
+			'`edit_author` = ' . $babDB->quote($iIdUser) . ', ' .
+			'`edit_date` = ' . $babDB->quote(date("Y-m-d H:i:s")) . ' ' .
+		'WHERE ' . 
+			'`id` = ' . $babDB->quote($iIdOrgChart);
+			
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return (0 !== $babDB->db_affected_rows($oResult));			
+	}
+	return false;
 }
 
 
@@ -577,13 +680,44 @@ function bab_OCLock($iIdOrgChart, $iIdUser)
  * Unlocks an organizational chart.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
- * 
+ * @param	int		$iIdUser		The user identifier
+ *  * 
  * @return	bool	True on success, False on error
- *  					
  */
 function bab_OCUnlock($iIdOrgChart, $iIdUser)
 {
+	global $babBody;
+	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdUser))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
 	
+	$aData = bab_OCGet($iIdOrgChart);	
+	if(false !== $aData && 'Y' === (string) $aData['edit'] && (int) $iIdUser === (int) $aData['edit_author'])
+	{
+		global $babDB;
+		$sQuery = 
+			'UPDATE ' .	
+				BAB_ORG_CHARTS_TBL . ' ' . 
+			'SET ' .
+				'`edit` = ' . $babDB->quote('N') . ' ' .
+			'WHERE ' . 
+				'`id` = ' . $babDB->quote($iIdOrgChart);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return (0 !== $babDB->db_affected_rows($oResult));			
+		}
+		return false;
+	}
+	else
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
 }
 
 
@@ -593,12 +727,11 @@ function bab_OCUnlock($iIdOrgChart, $iIdUser)
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
  * 
  * @return	bool	True on success, False on error
- *  					
  */
 function bab_OCIsLocked($iIdOrgChart)
 {
-	
-
+	$aData = bab_OCGet($iIdOrgChart);	
+	return (false !== $aData && 'Y' === (string) $aData['edit'] && 0 !== (int) $aData['edit_author']);
 }
 
 
@@ -617,12 +750,25 @@ function bab_OCIsLocked($iIdOrgChart)
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
  * 
  * @return	array	The lock info
- *  					
  */
 function bab_OCGetLockInfo($iIdOrgChart)
 {
+	$aLockInfo = array('iIdUser' => 0, 'sNickName' => '', 'sFirstName' => '', 'sLastName' => '');
 	
-
+	$aData = bab_OCGet($iIdOrgChart);
+	if(false !== $aData)
+	{
+		$iIdUser = (int) $aData['edit_author'];
+		$aLockInfo['iIdUser'] = $iIdUser;
+		
+		$bComposeUserName = false;
+		$aUserName = bab_getUserName($iIdUser, $bComposeUserName);
+		
+		$aLockInfo['sNickName']		= bab_getUserNickname($iIdUser);
+		$aLockInfo['sFirstName']	= $aUserName['firstname'];
+		$aLockInfo['sLastName']		= $aUserName['lastname'];
+	}
+	return $aLockInfo;
 }
 
 
@@ -643,7 +789,7 @@ function bab_OCDeleteRole($iIdRole)
 	
 }
 
-function bab_OCGetRolesByOrganizationChartId($iIdOrganizationChart, $iType = null)
+function bab_OCGetRolesByOrganizationChartId($iIdOrgChart, $iType = null)
 {
 	
 }
@@ -703,7 +849,7 @@ function bab_OCMoveEntity($iIdEntity, $iIdParent)
 
 
 /*
-function bab_OCCreateEntity($iIdOrganizationChart, $iIdNode, $sName, $sDescription, $sNote, $iIdGroup)
+function bab_OCCreateEntity($iIdOrgChart, $iIdNode, $sName, $sDescription, $sNote, $iIdGroup)
 {
 	
 }
