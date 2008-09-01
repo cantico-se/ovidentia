@@ -1088,7 +1088,7 @@ function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttr
 		{
 //			$aDatasReq2 = $babDB->db_fetch_array($babDB->db_query('select * from ' . BAB_DBDIR_FIELDS_DIRECTORY_TBL . ' where id=\'' . $babDB->db_escape_string(($aDatasReq1['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)) . '\''));
 			$sFieldName = 'babdirf' . $aDatasReq1['id'];
-			$arridfx[$aDatasReq1['id']] = $aDatasReq1['idfx'];
+			$aExtraFieldId[$aDatasReq1['id']] = $aDatasReq1['idfx'];
 		}
 
 		if(!empty($aDatasReq1['x_name']))
