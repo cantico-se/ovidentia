@@ -444,9 +444,60 @@ function bab_OCSelectEntityCollaborators($entityId)
  * @return	int		The identifier of the created organizational chart on success, 
  * 					0 on error 
  */
-function bab_OCCreate($sName, $sDescription, $iIdDelegation)
+function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 {
+	global $babBody;
+	if(false === bab_isUserAdministrator())
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
 	
+	if(false !== bab_OCExist($sName, $iIdDelegation))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
+	
+	$sDirectoryName = getDirectoryName($iIdDirectory, BAB_DB_DIRECTORIES_TBL);
+	if(0 === strlen($sDirectoryName))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
+	
+	global $babDB;
+
+	$sQuery = 
+		'INSERT INTO ' . BAB_ORG_CHARTS_TBL . ' ' .
+			'(' .
+				'`id`, ' .
+				'`name`, `description`, `isprimary`, `edit`, ' .
+				'`edit_author`, `edit_date`, `id_dgowner`, `id_directory`, ' .
+				'`type`, `id_first_node`, `id_closed_nodes` ' .
+			') ' .
+		'VALUES ' . 
+			'(\'\', ' . 
+				$babDB->db_quote($sName) . ', ' . 
+				$babDB->db_quote($sDescription) . ', ' . 
+				$babDB->db_quote('N') . ', ' . 
+				$babDB->db_quote(0) . ', ' . 
+				$babDB->db_quote(0) . ', ' . 
+				$babDB->db_quote('0000-00-00 00:00:00') . ', ' . 
+				$babDB->db_quote($iIdDelegation) . ', ' . 
+				$babDB->db_quote($iIdDirectory) . ', ' . 
+				$babDB->db_quote(0) . ', ' . 
+				$babDB->db_quote(0) . ', ' . 
+				$babDB->db_quote(0) . 
+			'\')'; 
+
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return $babDB->db_insert_id();
+	}
+	return 0;
 }
 
 
@@ -460,7 +511,17 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation)
  */
 function bab_OCDelete($iIdOrgChart)
 {
+	global $babBody;
+	if(false === bab_isUserAdministrator())
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
 	
+	global $babDB;
+	$sQuery = 'DELETE FROM ' . BAB_ORG_CHARTS_TBL . ' WHERE id = ' . $babDB->db_quote($iIdProjectSpace) . ''; 
+	//bab_debug($query);
+	return $babDB->db_query($sQuery);
 }
 
 
@@ -475,7 +536,26 @@ function bab_OCDelete($iIdOrgChart)
  */
 function bab_OCExist($sName, $iIdDelegation)
 {
+	global $babDB;
 	
+	$sName = trim($sName);
+	if(0 === strlen($sName))
+	{
+		return false;
+	}
+	
+	$sQuery = 
+		'SELECT ' . 
+			'id ' .
+		'FROM ' . 
+			BAB_ORG_CHARTS_TBL . ' ' .
+		'WHERE ' . 
+			'id_dgowner = ' . $babDB->db_quote($iIdDelegation) . ' AND ' .
+			'name LIKE ' . $babDB->db_quote($sName);
+			
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		return (false !== $oResult && 0 === $babDB->db_num_rows($oResult));
 }
 
 
