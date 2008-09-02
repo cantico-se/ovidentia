@@ -293,7 +293,7 @@ function upgrade($id)
 		if( !empty($ini_version))
 			{
 			$func_name = $row['title']."_upgrade";
-			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<') || 'N' === $row['installed'])
+			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<=') || 'N' === $row['installed'])
 				{
 				if (bab_setAddonGlobals($row['id'])) {
 					require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
@@ -628,6 +628,9 @@ function test_requirements()
 			$this->t_version = bab_translate("Version");
 			$this->t_ok = bab_translate("Ok");
 			$this->t_error = bab_translate("Error");
+			
+			$this->call_upgrade = isset($_COOKIE['bab_debug']);
+			$this->t_call_upgrade = bab_translate("Launch addon installation program");
 
 			$this->allok = $ini->isValid();
 		}

@@ -183,13 +183,15 @@ function deladdon(id)
 			<tr> 
 				<td colspan="5" align="center">
 				<br /><br />
-				
-				<!--#if installed -->
-				<!--#else installed -->
 				<!--#if allok -->
+				<!--#if installed -->
+					<!--#if call_upgrade -->
+					<a href="{ babUrlScript }?tg=addons&amp;idx=upgrade&amp;item={ item }">{ t_call_upgrade }</a><br /><br />
+					<!--#endif call_upgrade -->
+				<!--#else installed -->
 					<input type="submit" value="{ t_install }" />
-				<!--#endif allok -->
 				<!--#endif installed -->
+				<!--#endif allok -->
 				</td>
 			</tr>
 		</table>
