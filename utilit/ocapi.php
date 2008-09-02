@@ -844,7 +844,7 @@ function bab_OCCreateRole($iIdEntity, $sName, $sDescription, $iType, $sCardinali
 		return false;
 	}
 	
-	$aEntity = bab_OCGetEntity($iIdEntity);
+	$aEntity = bab_OCGetEntityEx($iIdEntity);
 	if(false === $aEntity)
 	{
 		return false;
@@ -982,7 +982,7 @@ function bab_OCGetRoleUserByEntityId($iIdEntity, $iType)
 	
 }
 
-function bab_OCGetEntity($iIdEntity)
+function bab_OCGetEntityEx($iIdEntity)
 {
 	global $babBody;
 
@@ -1073,7 +1073,7 @@ if(/*1 !== $iIdParentGroup &&*/ false === bab_isGroup($iIdParentGroup))
 	if(0 !== $iIdParentEntity)
 	{
 		//This function test right and set error on babBody
-		$aData = bab_OCGetEntity($iIdParentEntity);
+		$aData = bab_OCGetEntityEx($iIdParentEntity);
 		if(false === $aData)
 		{
 			return false;
