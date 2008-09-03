@@ -145,7 +145,6 @@ treeview.onSubmitTree = function()
 		window.close();
 	} catch (err) {
 		for (name in err) {
-			window.console && window.console.debug(name + ': ' + err[name]);
 		}
 	}
 }
@@ -345,13 +344,8 @@ orgchart.entityId = <!--#if t_entityId --> { t_entityId } <!--#else t_entityId -
 orgchart.userId = <!--#if t_userId --> { t_userId } <!--#else t_userId --> 0 <!--#endif t_userId -->;
 orgchart.adminMode = <!--#if t_adminMode --> true <!--#else t_adminMode --> false <!--#endif t_adminMode -->;
 
-//console && console.time('bab_initOrgChart');
-//window.onload = function() {
-//	bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
-//}
 
 bab_initFunctions.push(function() { bab_initOrgChart(document.getElementById('{ t_treeViewId }')); });
-//console && console.timeEnd('bab_initOrgChart');
 
 function changestyle(ent,oldstyle,newstyle)
 {

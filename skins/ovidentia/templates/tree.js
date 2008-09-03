@@ -354,7 +354,7 @@ function bab_onElementClick()
 
 bab_Tree.prototype.processList = function()
 {
-	window.console && console.time('processList');
+//	window.console && console.time('processList');
 
 	var uls = this.rootList.getElementsByTagName('UL');
 	var nbUls = uls.length;
@@ -367,7 +367,7 @@ bab_Tree.prototype.processList = function()
 		img.onclick = bab_onNodeClick;
 	}
 
-	window.console && console.timeEnd('processList');
+//	window.console && console.timeEnd('processList');
 }
 
 
@@ -431,7 +431,7 @@ bab_Tree.prototype.expand = function()
 
 bab_Tree.prototype.initSearch = function()
 {
-	window.console && console.time('initSearch');
+//	window.console && console.time('initSearch');
 	if (this.initDone)
 		return;
 	var listItems = this.rootList.getElementsByTagName('LI');
@@ -457,7 +457,7 @@ bab_Tree.prototype.initSearch = function()
 		}
 	}
 	this.initDone = true;
-	window.console && console.timeEnd('initSearch');
+//	window.console && console.timeEnd('initSearch');
 }
 
 function bab_initSubTreeSearch(rootList)
