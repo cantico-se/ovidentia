@@ -242,30 +242,6 @@ function bab_initTree(div)
 	toolbar.appendChild(search);
 	window.bab_searchContext = new bab_SearchContext(tree, search);
 
-/*
-	var actionsList = div.getElementsByTagName('SPAN');
-	var nbActions = actionsList.length
-	for (var i = 0; i < nbActions; i++) {
-		var actions = actionsList[i];
-		if (hasClass(actions, 'actions')) {
-			var node = actions.parentNode.parentNode.parentNode;
-			var d = actions.parentNode.parentNode;
-			var rightElements = actions.parentNode;
-			var menu = document.createElement('SPAN');
-			menu.appendChild(document.createTextNode('Menu'));
-			rightElements.appendChild(menu);
-			menu.actions = actions;
-			menu.onclick = bab_showActions;
-//			menu.onmouseout = bab_hideActions;
-			actions.style.position = 'absolute';
-			actions.style.left = '0px';
-			actions.style.top = '0px';
-			actions.style.display = 'none';
-			actions.controlledElement = node;
-			node.appendChild(actions);
-		}
-	}
-*/
 	div.initialized = true;
 	
 	return tree;
@@ -354,8 +330,6 @@ function bab_onElementClick()
 
 bab_Tree.prototype.processList = function()
 {
-//	window.console && console.time('processList');
-
 	var uls = this.rootList.getElementsByTagName('UL');
 	var nbUls = uls.length;
 	for (var i = 0; i < nbUls; i++) {
@@ -366,8 +340,6 @@ bab_Tree.prototype.processList = function()
 		img.tree = this;
 		img.onclick = bab_onNodeClick;
 	}
-
-//	window.console && console.timeEnd('processList');
 }
 
 
@@ -431,7 +403,6 @@ bab_Tree.prototype.expand = function()
 
 bab_Tree.prototype.initSearch = function()
 {
-//	window.console && console.time('initSearch');
 	if (this.initDone)
 		return;
 	var listItems = this.rootList.getElementsByTagName('LI');
@@ -446,18 +417,11 @@ bab_Tree.prototype.initSearch = function()
 		div.onmouseover = bab_onItemMouseOver;
 		div.onmouseout = bab_onItemMouseOut;
 
-/*	
-		var img = div.getElementsByTagName('IMG')[0];
-		if (img.onclick) {
-			img.onclick();
-		}
-*/
 		if (hasClass(span, 'clickable')) {
 			span.onclick = bab_onElementClick;
 		}
 	}
 	this.initDone = true;
-//	window.console && console.timeEnd('initSearch');
 }
 
 function bab_initSubTreeSearch(rootList)
