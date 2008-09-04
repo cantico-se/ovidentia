@@ -943,3 +943,10 @@ a.BabTopicsAdminTitleLink:Visited {
 a.BabTopicsAdminTitleLink:Hover { 
 	color: #009933;
 	}
+	
+/**************** ORG CHARTS ****************************/
+
+div.orgchart {
+	background-color: #888888;
+}
+	
