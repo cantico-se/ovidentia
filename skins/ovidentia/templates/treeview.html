@@ -309,8 +309,6 @@ function bab_toggleMenu(button,div)
 <script type="text/javascript">
 //<![CDATA[
 
-//var $j = jQuery.noConflict();
-
 if (!window.bab_Translations) {
 	window.bab_Translations = new Array();
 }
@@ -368,30 +366,40 @@ function changestyle(ent,oldstyle,newstyle)
 function left_refresh()
 {
 	var left_refresh = top.flb.document.forms.left_refresh;
-	if (typeof left_refresh == 'undefined')
+	if (typeof left_refresh == 'undefined') {
 		return true;
-
+	}
 	var left_refresh_disabled = left_refresh.left_refresh_disabled;
 	if ((typeof left_refresh_disabled != 'undefined') && left_refresh_disabled.value == 1) {
 		left_refresh_disabled.value = 0;
 		return false;
-	} else
+	} else {
 		return true;
+	}
 }
 
-function bab_editRoles(entityId)
+function bab_editEntityRoles(orgChartId, entityId)
 {
-	
+	bab_updateFltFrame("?tg=fltchart&rf=0&ocid=" + orgChartId + "&oeid=" + entityId + "&idx=listr");
+	bab_updateFlbFrame("?tg=flbchart&rf=0&ocid=" + orgChartId + "&oeid=" + entityId + "&idx=listr");
+	return false;
 }
 
-function updateFlbFrame(url)
+function bab_deleteEntity(orgChartId, entityId)
+{
+	bab_updateFlbFrame("?tg=flbchart&rf=0&ocid=" + orgChartId + "&oeid=" + entityId + "&idx=dele");
+	bab_updateFltFrame("?tg=fltchart&rf=0&ocid=" + orgChartId + "&oeid=" + entityId + "&idx=listr");
+	return false;
+}
+
+function bab_updateFlbFrame(url)
 {
 	if (left_refresh()) {
 		top.flb.document.location.href = url;
 	}
 }
 
-function updateFltFrame(url)
+function bab_updateFltFrame(url)
 {
 	if (left_refresh()) {
 		top.flt.document.location.href = url;
@@ -480,7 +488,7 @@ document.write('</div>');
 
    <div class="actions">
   <!--#in getNextAction -->
-    <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
+    <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
    </div>
 
@@ -530,7 +538,7 @@ document.write('</div>');
 
   <div class="actions">
   <!--#in getNextAction -->
-  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }(this);" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
+  <a href="{ action_url }" title="{ action_caption }" <!--#if action_script --> onclick="return bab_{ action_script }({ action_script_args });" <!--#endif action_script --> ><img class="action" src="{ action_icon }" alt="" /></a>
   <!--#endin getNextAction -->
   </div>
   

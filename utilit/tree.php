@@ -102,20 +102,22 @@ class bab_TreeViewElement
 	/**
 	 * Adds an action icon for the treeview element.
 	 * 
-	 * @param string $name
-	 * @param string $caption
-	 * @param string $icon
-	 * @param string $link
-	 * @param string $script
+	 * @param string	$name
+	 * @param string	$caption
+	 * @param string	$icon
+	 * @param string	$link
+	 * @param string	$script
+	 * @param array		$scriptArgs
 	 * @access public 
 	 */
-	function addAction($name, $caption, $icon, $link, $script)
+	function addAction($name, $caption, $icon, $link, $script, $scriptArgs = array('this'))
 	{
 		$this->_actions[] = array('name' => $name,
 								  'caption' => $caption,
 								  'icon' => $icon,
 								  'link' => $link,
-								  'script' => $script);
+								  'script' => $script,
+								  'args' => $scriptArgs);
 	}
 
 
@@ -573,8 +575,9 @@ class bab_TreeView
 			$this->action_name = $action['name'];
 			$this->action_caption = $action['caption'];
 			$this->action_icon = $action['icon'];
-			$this->action_url = $action['link'];
+			$this->action_url = bab_toHtml($action['link']);
 			$this->action_script = $action['script'];
+			$this->action_script_args = implode(',', $action['args']);
 			return true;
 		}
 		reset($this->_currentElement->_actions);

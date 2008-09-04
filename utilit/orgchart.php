@@ -372,7 +372,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 						AND trees.id_user = ' . $babDB->quote($this->_orgChartId) . '
 						LIMIT 1';
 				$entities = $babDB->db_query($sql);
-				if (($entity = $babDB->db_fetch_array($entities)) && (($entityId = $entity['id']) != 0))
+				if (($entity = $babDB->db_fetch_assoc($entities)) && (($entityId = $entity['id']) != 0))
 				{
 					$this->_locationElements[$entity['id']] = $entity['name'];
 				}
@@ -443,7 +443,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$elementIdPrefix = 'ENT';
 		
 		$entities = $this->_selectEntities($startEntityId);
-		while ($entity = $babDB->db_fetch_array($entities)) {
+		while ($entity = $babDB->db_fetch_assoc($entities)) {
 			$element =& $this->createElement($elementIdPrefix . $entity['id'],
 											 $entityType,
 											 bab_toHtml($entity['name']),
@@ -454,28 +454,57 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 				if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
 					$memberDirectoryEntryId = $member['id_dir_entry'];
 					$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID);
-					$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
+					if (isset($dirEntry['givenname']) && isset($dirEntry['sn'])) {
+						$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
+					}
 					if ($member['role_type'] == 1) {
-						if (isset($dirEntry['jpegphoto'])) {
+						if (isset($dirEntry['jpegphoto']) && !empty($dirEntry['jpegphoto']['value'])) {
 							$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
 						}
 						$element->setInfo($memberName);
-						$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
+						$element->setLink('javascript:'
+												. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');"
+												. "changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');"
+												. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
 					}
 					$element->addMember($memberName, $member['role_name']);
 				}
 			}
-			$element->setLinkEntity("javascript:updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
+			$element->setLinkEntity('javascript:'
+										. "bab_updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');"
+										. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
 
 			if ($entity['id'] != $startEntityId) {
-				$element->addAction('show_from_here', bab_translate("Show orgchart from this entity"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
+				$element->addAction('show_from_here',
+									bab_translate("Show orgchart from this entity"),
+									$GLOBALS['babSkinPath'] . 'images/Puces/bottom.png',
+									$GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3',
+									'');
 			} else if ($entity['id_parent'] != 0) {
-				$element->addAction('show_from_parent', bab_translate("Show orgchart from parent entity"), $GLOBALS['babSkinPath'] . 'images/Puces/parent.gif', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id_parent'] . '&disp=disp3', '');
+				$element->addAction('show_from_parent',
+									bab_translate("Show orgchart from parent entity"),
+									$GLOBALS['babSkinPath'] . 'images/Puces/parent.gif',
+									$GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id_parent'] . '&disp=disp3',
+									'');
 			}
-			$element->addAction('toggle_members', bab_translate("Show/Hide entity members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
+			$element->addAction('toggle_members',
+								bab_translate("Show/Hide entity members"),
+								$GLOBALS['babSkinPath'] . 'images/Puces/members.png',
+								'',
+								'toggleMembers');
 			if ($this->_adminMode) {
-				$element->addAction('edit', bab_translate("Roles"), $GLOBALS['babSkinPath'] . 'images/Puces/edit.gif', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');", '');
-				$element->addAction('delete', bab_translate("Delete"), $GLOBALS['babSkinPath'] . 'images/Puces/delete.png', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=dele');", '');
+				$element->addAction('edit',
+									bab_translate("Roles"),
+									$GLOBALS['babSkinPath'] . 'images/Puces/head.gif',
+									'',
+									'editEntityRoles', array($this->_orgChartId, $entity['id']));
+				if ($entity['id'] != $startEntityId) { // The root entity cannot be removed
+					$element->addAction('delete',
+										bab_translate("Delete"),
+										$GLOBALS['babSkinPath'] . 'images/Puces/del.gif',
+										'',
+										'deleteEntity', array($this->_orgChartId, $entity['id']));
+				}
 			}
 			$this->appendElement($element, ($entity['id_parent'] == 0 || $entity['id'] == $this->_startEntityId) ? null : $elementIdPrefix . $entity['id_parent']);		
 		}
