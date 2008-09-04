@@ -125,8 +125,8 @@ div.entity .members .member {
 }
 
 .actions a:hover {
-	background-color: #000000;
-	color: #ffffff;
+	background-color: #dddddd;
+	color: #000000;
 }
 
 .orgchart div.entity a {
