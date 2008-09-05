@@ -610,6 +610,44 @@ class bab_dirEntryPhoto {
 	}
 	
 
+	function setDataByFile($file) {
+		global $babDB;
+		if( !is_file($file))
+		{
+			return false;
+		}
+
+		$data = '';
+		$fp=fopen($file,"rb");
+		if( $fp )
+			{
+				while (!feof($fp)) {
+					$data .= fread($fp,8192);
+				}
+			}
+		fclose($fp);
+
+		$type = mime_content_type($file);
+
+		$babDB->db_query('
+			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
+			SET photo_date='.$babDB->quote($data).', 
+			photo_type='.$babDB->quote($type).' 
+			WHERE 
+			id='.$babDB->quote($this->id_entry)
+			);
+	}
+
+	function setData($data, $type) {
+		global $babDB;
+		$babDB->db_query('
+			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
+			SET photo_date='.$babDB->quote($data).', 
+			photo_type='.$babDB->quote($type).' 
+			WHERE 
+			id='.$babDB->quote($this->id_entry)
+			);
+	}
 	
 	function getData() {
 		global $babDB;
@@ -920,6 +958,136 @@ function getUserDirEntryLink($id, $type, $id_directory) {
 			return $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$id_directory."&userid=".$id;
 	}
 }
+
+
+
+function searchDirEntriesByField($id_directory, $likefields, $and = true)
+	{
+	global $babDB;
+
+	$result = array();
+	$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id=".$babDB->quote($id_directory)."");
+	if( $res && $babDB->db_num_rows($res ) > 0 )
+		{
+		$arr = $babDB->db_fetch_array($res);
+		$idgroup = $arr['id_group'];
+
+		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory=".($idgroup != 0? 0: $babDB->quote($id_directory))." order by list_ordering asc");
+
+		$nfields = array();
+		$xfields = array();
+		$leftjoin = array();
+		$select = array();
+
+		while( $arr = $babDB->db_fetch_array($res))
+			{
+			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
+				$nfields[] = $rr['name'];
+				$IdEntries[] = array('name' => translateDirectoryField($rr['description']) , 'xname' => $rr['name']);
+				$select[] = 'e.'.$rr['name'];
+				}
+			else
+				{
+				$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+				$xfields[] = "babdirf".$arr['id'];
+				$IdEntries[] = array('name' => translateDirectoryField($rr['name']) , 'xname' => "babdirf".$arr['id']);
+
+				$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
+				$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
+				}
+			}
+		
+		$count = 0;
+
+		if( count($nfields) > 0 || count($xfields) > 0)
+			{
+			$nfields[] = "id";
+			$select[] = 'e.id';
+			$nfields[] = "id_user";
+			$select[] = 'e.id_user';
+			$select[] = 'e.date_modification';
+			$select[] = 'e.id_modifiedby';
+			if( !in_array('email', $select))
+				{
+				$select[] = 'e.email';
+				}
+
+			$alike = array();
+			foreach( $likefields as $fid => $str )
+				{
+				if ( false === strpos($fid, 'babdirf'))
+					$alike[] = $fid." LIKE '".$babDB->db_escape_string($str)."'";
+				elseif (0 === strpos($fid, 'babdirf'))
+					{
+					$idfield = substr($fid,7);
+					$alike[] = "lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($str)."'";
+					}
+				}
+			if( count($alike))
+				{
+				$like = 'AND ( ';
+				$like .= $and? implode( ' AND ', $alike): implode( ' OR ', $alike);
+				$like .= ' )';
+				}
+			else
+				{
+				$like = '';
+				}
+
+			if( $idgroup > 1 )
+				{
+				$req = " ".BAB_USERS_TBL." u2,
+						".BAB_USERS_GROUPS_TBL." u,
+						".BAB_DBDIR_ENTRIES_TBL." e 
+							".implode(' ',$leftjoin)." 
+							WHERE u.id_group='".$idgroup."' 
+							AND u2.id=e.id_user 
+							AND u2.disabled='0' 
+							AND u.id_object=e.id_user 
+							AND e.id_directory='0'";
+				}
+			elseif (1 == $idgroup) {
+				$req = " ".BAB_USERS_TBL." u,
+				".BAB_DBDIR_ENTRIES_TBL." e 
+				".implode(' ',$leftjoin)." 
+				WHERE 
+					u.id=e.id_user 
+					AND u.disabled='0' 
+					AND e.id_directory='0'";
+				}
+			else
+				{
+				$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($id_directory) ."'";
+				}
+
+		
+			$req = "select ".implode(',', $select)." from ".$req." ".$like;
+			$res = $babDB->db_query($req);
+			$result = array();
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$entry = array();
+				for( $k = 0; $k < count($IdEntries); $k++ )
+					{
+					if( $IdEntries[$k]['xname'] == 'jpegphoto')
+						{
+						$entry[$IdEntries[$k]['xname']]= array('name'=> $IdEntries[$k]['name'], 'value'=>$GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id_directory."&idu=".$arr['id']);
+						}
+					else
+						{
+						$entry[$IdEntries[$k]['xname']]= array('name'=> $IdEntries[$k]['name'], 'value'=>$arr[$IdEntries[$k]['xname']]);
+						}
+					}
+				$result[] = $entry;
+				}
+			}
+		}
+
+		return $result;
+	}
+
 
 
 ?>

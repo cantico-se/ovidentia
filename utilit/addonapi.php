@@ -1197,6 +1197,21 @@ function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directo
 	return getDirEntry($id, $type, $id_directory, true);
 	}
 
+
+/**
+ * return an array of directory entries using a search on fields
+ * @param	int		[$id_directory]		the id of the directory
+ * @param	array	[$likefields]		array of filed/like string ( array('sn' => 'admin', 'email'=> '%cantico.fr', 'babdirf27'=>'123') for example )
+ * @param	bool	[$and]				true to use AND operator / false for OR operator
+ * @return 	string
+ */
+function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
+	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	return searchDirEntriesByField($id_directory, $likefields, $and);
+	}
+
+
+
 /**
  * List of viewables directories for the user
  */ 
