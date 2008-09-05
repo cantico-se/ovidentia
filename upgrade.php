@@ -5454,5 +5454,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	tskMgrFieldOrderUpgrade();
 	
+	/**
+	 * Upgrade to 6.6.100
+	 */
 	return true;
 }
