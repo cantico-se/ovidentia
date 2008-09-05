@@ -575,7 +575,7 @@ class bab_TreeView
 			$this->action_name = $action['name'];
 			$this->action_caption = $action['caption'];
 			$this->action_icon = $action['icon'];
-			$this->action_url = bab_toHtml($action['link']);
+			$this->action_url = $action['link'];
 			$this->action_script = $action['script'];
 			$this->action_script_args = implode(',', $action['args']);
 			return true;
