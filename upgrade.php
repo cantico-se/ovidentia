@@ -548,6 +548,8 @@ function __renameFmFilesVersions()
 
 function removeOrphanDbFileEntry()
 {
+	global $babDB;
+	
 	$sUploadPath = getUploadPathFromDataBase();
 	if(is_dir($sUploadPath))
 	{
