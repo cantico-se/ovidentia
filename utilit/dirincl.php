@@ -631,22 +631,25 @@ class bab_dirEntryPhoto {
 
 		$babDB->db_query('
 			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
-			SET photo_date='.$babDB->quote($data).', 
+			SET photo_data='.$babDB->quote($data).', 
 			photo_type='.$babDB->quote($type).' 
 			WHERE 
 			id='.$babDB->quote($this->id_entry)
 			);
+
+		return true;
 	}
 
 	function setData($data, $type) {
 		global $babDB;
 		$babDB->db_query('
 			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
-			SET photo_date='.$babDB->quote($data).', 
+			SET photo_data='.$babDB->quote($data).', 
 			photo_type='.$babDB->quote($type).' 
 			WHERE 
 			id='.$babDB->quote($this->id_entry)
 			);
+		return true;
 	}
 	
 	function getData() {
@@ -1080,7 +1083,7 @@ function searchDirEntriesByField($id_directory, $likefields, $and = true)
 						$entry[$IdEntries[$k]['xname']]= array('name'=> $IdEntries[$k]['name'], 'value'=>$arr[$IdEntries[$k]['xname']]);
 						}
 					}
-				$result[] = $entry;
+				$result[$arr['id']] = $entry;
 				}
 			}
 		}
