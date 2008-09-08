@@ -113,7 +113,7 @@ h2.msgerror {
 	}
 
 #ovfx_head h1 {
-	position: absolute;
+	position: relative;
 	color:#B2BFE8;
 	font-family:"Century Gothic",Verdana, Arial;
 	background:transparent url('../images/head_bg2.gif') repeat-y 100% 0;
