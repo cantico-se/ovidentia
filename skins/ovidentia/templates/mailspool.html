@@ -16,7 +16,9 @@
 		</tr>
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<td title="{ error_msg }">{ mail_subject }</td>
+			<td title="{ error_msg }">{ mail_subject }<br />
+				<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" title="" alt="" style="position:relative;top:3px;" /> { error_msg }
+			</td>
 			<td>{ mail_date }</td>
 			<td align="center">
 				<input type="checkbox" name="mail[]" value="{ id }" />
