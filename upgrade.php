@@ -607,7 +607,7 @@ function removeOrphanDbFileEntry()
 							
 							$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
 //							bab_debug($sQuery);
-							$babDB-db_query($sQuery);
+							$babDB->db_query($sQuery);
 						}
 					}
 					
@@ -669,7 +669,7 @@ function removeOrphanDbFileEntry()
 									
 									$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
 //									bab_debug($sQuery);
-									$babDB-db_query($sQuery);
+									$babDB->db_query($sQuery);
 								}
 							}
 						}
