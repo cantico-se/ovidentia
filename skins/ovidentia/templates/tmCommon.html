@@ -1085,17 +1085,17 @@ function evtSetColor(color)
 						</td>
 					</tr>
 					<tr id="bgColor_tr"> 
-						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtBgSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sBgColorTxt] }</a>:</td>
+						<td>{ m_datas[sBgColorTxt] } :</td>
 						<td> 
-							<div id="evtBgColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sBgColor] };float:left"></div><input type="hidden" name="sBgColor" value="" />
+							<div id="evtBgColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sBgColor] };float:left"></div><input type="hidden" name="sBgColor" value="" />&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtBgSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="ovidentia/skins/ovidentia/images/Puces/colorize.png" alt="" border="0" /></a>
 							&nbsp;<a href="javascript:evtBgSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
 					<tr id="color_tr"> 
-						<td><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ m_datas[sColorTxt] }</a>:</td>
+						<td>{ m_datas[sColorTxt] } :</td>
 						<td> 
 							<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ m_datas[sColor] };float:left"></div><input type="hidden" name="sColor" value="" />
-							&nbsp;<a href="javascript:evtSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
+							&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="ovidentia/skins/ovidentia/images/Puces/colorize.png" alt="" border="0" /></a>&nbsp;<a href="javascript:evtSetColor('')"><img src="ovidentia/skins/ovidentia/images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
 					<tr> 
