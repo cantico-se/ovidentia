@@ -393,7 +393,7 @@ function displayProjectsSpacesList()
 						$oProjectElement->addAction('Task_list',
 						   bab_toHtml(bab_translate("Add a task")), $GLOBALS['babSkinPath'] . 'images/Puces/edit_add.png', 
 						   $this->getUrl(BAB_TM_IDX_DISPLAY_TASK_FORM, $iIdProjectSpace, $datas['id']) 
-						   . bab_toHtml('&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
+						   . bab_toHtml('&iUseEditor=1&sFromIdx=' . urlencode(BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST)), '');
                		}
 
 					if(0 === $iTaskCount && $bIsCreator)		               
