@@ -218,13 +218,13 @@ function displayCategoryForm()
 				
 				if(false != ($attributs = $tblWr->load($attributs, 2, 7, 0, 2)))
 				{
-					$this->set_data('sName', bab_toHtml($attributs['name']) );
-					$this->set_data('sDescription', bab_toHtml($attributs['description']));
+					$this->set_data('sName', $attributs['name']);
+					$this->set_data('sDescription', $attributs['description']);
 					$this->set_data('iRefCount', $attributs['refCount']);
 					$this->set_data('bIsDeletable', ($attributs['refCount'] == 0 && $attributs['idProject'] == $iIdProject));
 					$this->set_data('bIsModifiable', ($attributs['idProject'] == $iIdProject));
-					$this->set_data('sColor', bab_toHtml($attributs['color']));
-					$this->set_data('sBgColor', bab_toHtml($attributs['bgColor']));
+					$this->set_data('sColor', $attributs['color']);
+					$this->set_data('sBgColor', $attributs['bgColor']);
 				}
 			}
 			else
