@@ -194,7 +194,7 @@ if( !$babBody->isSuperAdmin )
 }
 
 $idx = bab_rp('idx', 'list');
-
+$item = bab_rp('item', 1); /* id site */
 
 if (isset($_POST['send'])) {
 	send_checked_mail();
@@ -211,6 +211,7 @@ switch($idx)
 	case "list":
 		mailspool();
 		$babBody->title = bab_translate("Undelivered mails");
+		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=site&idx=menu2&item=".$item);
 		$babBody->addItemMenu("list", bab_translate("Mails"), $GLOBALS['babUrlScript']."?tg=mailspool&idx=list");
 		break;
 	}
