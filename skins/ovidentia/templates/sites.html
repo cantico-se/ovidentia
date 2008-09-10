@@ -225,87 +225,121 @@ mm(sksel);
 
 
 <!--#begin menu2 -->
-<script language="javascript">
-function validateNum(field) 
-	{
-	var valid = "0123456789"
-	var temp;
-	for (var i=0; i<field.value.length; i++) {
-		temp = "" + field.value.substring(i, i+1);
-		if (valid.indexOf(temp) == "-1") 
-			field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+<script type="text/javascript">
+	<!--
+	
+	function validateNum(field) {
+		var valid = "0123456789"
+		var temp;
+		for (var i=0; i<field.value.length; i++) {
+			temp = "" + field.value.substring(i, i+1);
+			if (valid.indexOf(temp) == "-1") {
+				field.value = field.value.substring(0, i)+field.value.substring(i+1,field.value.length);
+			}
 		}
 	}
+	
+	/* Hide or display smtp functions */
+	function ovidentia_hidesmtpfunctions(select) {
+		var selection = select.options.selectedIndex;
+		switch(select.options[selection].value) {
+			case 'mail':
+				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+				break;
+			case 'smtp':
+				document.getElementById('ovidentia_smtpfunctions').style.display = 'block';
+				break;
+			case 'sendmail':
+				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+				break;
+			case '':
+				document.getElementById('ovidentia_smtpfunctions').style.display = 'none';
+				break;
+		}
+	}
+	
+	// -->
 </script>
+
 <form name="formsite" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="site" />
-<input type="hidden" name="idx" value="menusite" />
-<input type="hidden" name="item" value="{ item }" />
-<input type="hidden" name="action" value="menu2" />
-<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
-
-          <tr> 
-            <td>{ mailfunction }</td>
-            <td> 
-              <select name="mailfunc">
-				  <option value="">{ disabled }</option>
-                  <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
-                  
-                  <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
-                  <option value="sendmail" <!--#if arr[mailfunc] "== sendmail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ sendmail }</option>
-                </select>
-            </td>
-</tr>
-          <tr> 
-            <td>{ server }</td>
-            <td> 
-              <input type="text" name="smtpserver" size="30" maxlength="254" value="{ arr[smtpserver] }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ serverport }</td>
-            <td> 
-              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtpuser }</td>
-            <td> 
-              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ arr[smtpuser] }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtppass }</td>
-            <td> 
-              <input type="password" name="smtppass" size="30" maxlength="20" value="{ arr[smtppass] }" />
-</td>
-</tr>
-          <tr> 
-            <td>{ smtppass2 }</td>
-            <td> 
-              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ arr[smtppass] }" />
-		</td>
-</tr>
-</tr>
-          <tr> 
-            <td colspan="2" align="center"><br /><a href="{ babUrlScript }?tg=mailspool&item={ item }">{ t_mailspool }</a><br /><br /></td>
-</tr>
-
-          <tr> 
-            <td>&nbsp;</td>
-            <td> <br />
-              <input type="submit" name="Submit" value="{ t_record }" />
-			<br />
+	<input type="hidden" name="tg" value="site" />
+	<input type="hidden" name="idx" value="menusite" />
+	<input type="hidden" name="item" value="{ item }" />
+	<input type="hidden" name="action" value="menu2" />
+	<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground"> 
+	        <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center" class="BabLoginMenuBackground">
+	          <tr> 
+	            <td width="50%">{ mailfunction }</td>
+	            <td width="50%"> 
+	              <select name="mailfunc" onchange="ovidentia_hidesmtpfunctions(this);" id="ovidentia_smtpfunctionsselect">
+					  <option value="">{ disabled }</option>
+	                  <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
+	                  <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
+	                  <option value="sendmail" <!--#if arr[mailfunc] "== sendmail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ sendmail }</option>
+	                </select>
+	            </td>
+			  </tr>
+			  <tr>
+			  	<td colspan="2">
+			  		<table width="100%" border="0" cellspacing="0" cellpadding="4" id="ovidentia_smtpfunctions">
+				          <tr> 
+				            <td width="50%">{ server }</td>
+				            <td width="50%"> 
+				              <input type="text" name="smtpserver" size="30" maxlength="254" value="{ arr[smtpserver] }" />
+							</td>
+							</tr>
+				          <tr> 
+				            <td>{ serverport }</td>
+				            <td> 
+				              <input type="text" name="smtpport" size="5" maxlength="10" value="{ arr[smtpport] }" onKeyUp="validateNum(this)" />
+							</td>
+							</tr>
+				          <tr> 
+				            <td>{ smtpuser }</td>
+				            <td> 
+				              <input type="text" name="smtpuser" size="30" maxlength="255" value="{ arr[smtpuser] }" />
+							</td>
+							</tr>
+				          <tr> 
+				            <td>{ smtppass }</td>
+				            <td> 
+				              <input type="password" name="smtppass" size="30" maxlength="20" value="{ arr[smtppass] }" />
+							</td>
+							</tr>
+				          <tr> 
+				            <td>{ smtppass2 }</td>
+				            <td> 
+				              <input type="password" name="smtppass2" size="30" maxlength="20" value="{ arr[smtppass] }" />
+						    </td>
+						  </tr>
+					</table>
+				</td>
+	          <tr> 
+	            <td colspan="2" align="center"><br /><a href="{ babUrlScript }?tg=mailspool&item={ item }">{ t_mailspool }</a><br /><br /></td>
+				</tr>
+	          <tr> 
+	            <td>&nbsp;</td>
+	            <td> <br />
+	              <input type="submit" name="Submit" value="{ t_record }" />
+				<br />
+				</td>
+			</tr>
+		</table>
 			</td>
 		</tr>
-</table>
-</td>
-</tr>
-</table>
+	</table>
 </form>
+
+<script type="text/javascript">
+	<!--
+	
+	/* Hide smtp functions when onload page */
+	ovidentia_hidesmtpfunctions(document.getElementById('ovidentia_smtpfunctionsselect'));
+	
+	// -->
+</script>
 <!--#end menu2 -->
 
 
