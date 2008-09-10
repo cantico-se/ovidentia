@@ -290,8 +290,9 @@ function displayProjectsSpacesList()
 				'FROM ' .
 					BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 				'WHERE ' . 
-					'id IN(' . $babDB->quote(array_keys($oTmCtx->getVisualisedIdProjectSpace())) . ')';	
-					
+					'id IN(' . $babDB->quote(array_keys($oTmCtx->getVisualisedIdProjectSpace())) . ') ' .
+				'ORDER BY name ASC';	
+										
 			//bab_debug($query);
 			return $babDB->db_query($query);
 		}

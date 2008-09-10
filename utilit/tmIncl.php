@@ -40,8 +40,9 @@ function bab_selectProjectSpaceList()
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ' .
 		'WHERE ' . 
-			'idDelegation =\'' . $babDB->db_escape_string($babBody->currentAdmGroup) . '\'';
-	
+			'idDelegation =\'' . $babDB->db_escape_string($babBody->currentAdmGroup) . '\' ' .
+		'ORDER BY name ASC' ;
+				
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
@@ -350,8 +351,9 @@ function bab_selectProjectListByDelegation($iIdDelegation)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
-			'ps.idDelegation = \'' . $babDB->db_escape_string($iIdDelegation) . '\'';
-			
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' ' .
+		'ORDER BY ps.name ASC, p.name ASC' ;
+						
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
@@ -367,8 +369,9 @@ function bab_selectProjectList($iIdProjectSpace)
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL . ' ' .
 		'WHERE ' . 
-			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\'';
-			
+			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' ' .
+		'ORDER BY name ASC';
+						
 	//bab_debug($query);
 	return $babDB->db_query($query);
 }
