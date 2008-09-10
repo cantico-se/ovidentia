@@ -344,8 +344,12 @@ function site_menu2($id)
 			$this->smtp = "smtp";
 			$this->sendmail = "sendmail";
 			$this->mail = "mail";
-
-
+			$this->thelp = bab_translate('Help to the configuration of the messaging:');
+			$this->thelp2 = bab_translate('Disabled: the announcements e-mails of the portal will not be sent');
+			$this->thelp3 = bab_translate('E-mail: Ovidentia uses the SMTP waiter(server) informed in the configuration PHP (see the variables smtp, smtp_port, sendmail_from and sendmail_path in the php.ini file)');
+			$this->thelp4 = bab_translate('SMTP: manual configuration');
+			$this->thelp5 = bab_translate('Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file');
+			
 			$this->site_configuration_cls($id);
 			}
 
