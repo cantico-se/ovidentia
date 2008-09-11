@@ -737,12 +737,14 @@ function printout()
 		}
 
 	$this->htmlid = 'montha';
+	
+	$this->title = $this->curmonth.' '.$this->curyear;
 
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
 		{
-		if (!$this->close)
+		if (!$this->close) {
 			$this->content = bab_printTemplate($this,'insections.html', 'montha');
-		$this->title = $this->curmonth.' '.$this->curyear;
+		}
 		return bab_printTemplate($this,'sectiontemplate.html', 'default');
 		}
 
