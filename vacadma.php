@@ -1837,7 +1837,8 @@ function updateVacationRight()
 			
 			foreach($right_inperiod as $key => $value) {
 			
-			
+				if( !empty($period_start[$key]) && !empty($period_end[$key]))
+				{
 				$arr = explode("-", $period_start[$key]);
 				$period_start_date = sprintf("%04d-%02d-%02d", $arr[2], $arr[1], $arr[0]);
 				
@@ -1862,6 +1863,7 @@ function updateVacationRight()
 							'.$babDB->quote($value).'
 						)
 				');
+			}
 			}
 				
 		}
