@@ -93,7 +93,7 @@ function listVacationRequestsb()
 			{
 			
 			
-			$idstatus = (int) bab_rp('idstatus');
+			$idstatus = bab_rp('idstatus', '');
 			$userid = (int) bab_rp('userid');
 			$dateb = bab_rp('dateb');
 			$datee = bab_rp('datee');
