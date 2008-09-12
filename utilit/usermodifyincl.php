@@ -144,6 +144,7 @@ class bab_userModify {
 			{
 			$id = $babDB->db_insert_id();
 			$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($id)."', '1')");
+			$idusercal = $babDB->db_insert_id();
 			$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." 
 				(givenname, mn, sn, email, id_directory, id_user) 
 				values 
@@ -166,6 +167,12 @@ class bab_userModify {
 				$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select c.id, ".$id.", if(uo.iDefaultCalendarAccess = -1, 100, if(uo.iDefaultCalendarAccess is null, ".$iDefaultCalendarSiteAccess.", uo.iDefaultCalendarAccess))  from ".BAB_CALENDAR_TBL." c left join ".BAB_CAL_USER_OPTIONS_TBL." uo on c.owner=uo.id_user where type=".BAB_CAL_USER_TYPE."");
 				$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where bwrite = 100");
 				}
+
+			if( $iDefaultCalendarSiteAccess != BAB_CAL_ACCESS_NONE )
+				{
+				$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select ".$idusercal.", id, ".$iDefaultCalendarSiteAccess." from ".BAB_USERS_TBL." where id !='".$id."'");
+				}
+
 
 			if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 				{
