@@ -885,6 +885,18 @@ define('BAB_OC_DELETE_ENTITY_ONLY', '0');
 define('BAB_OC_DELETE_ENTITY_AND_CHILDREN', '1');
 define('BAB_OC_DELETE_CHILDREN_ONLY', '2');
 
+define('BAB_OC_MOVE_ENTITY_AND_CHILDREN', '1');
+define('BAB_OC_MOVE_ENTITY_ONLY', '0');
+
+define('BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING', '0');
+define('BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING', '1');
+define('BAB_OC_MOVE_TYPE_AS_CHILD', '2');
+
+
+
+
+
+
 
 function bab_OCIsAccessValid($iIdSessUser, $iIdOrgChart)
 {
@@ -1130,7 +1142,7 @@ function bab_OCGetEntityEx($iIdSessUser, $iIdEntity)
 	//bab_debug($sQuery);
 	$aEntity = false;
 	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult && 0 !== $babDB->db_num_rows($oResult));
+	if(false !== $oResult && 1 === $babDB->db_num_rows($oResult));
 	{
 		$aEntity = $babDB->db_fetch_assoc($oResult);
 	}
@@ -1225,9 +1237,89 @@ function removeOrgChartEntityEx($iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary
 }
 
 
-function bab_OCMoveEntity($iIdEntity, $iIdParent)
+function bab_OCMoveEntity($iIdSessUser, $iIdSrcEntity, $iIdTrgEntity, $iMove, $iMoveType)
 {
+	global $babBody;
 	
+	$aGoodValue = array(
+		BAB_OC_MOVE_ENTITY_AND_CHILDREN => BAB_OC_MOVE_ENTITY_AND_CHILDREN,
+		BAB_OC_MOVE_ENTITY_ONLY => BAB_OC_MOVE_ENTITY_ONLY);
+		
+	if(!array_key_exists($iMove, $aGoodValue))
+	{
+		$babBody->addError(bab_translate("Error: Movement unknown"));
+		return false;
+	}
+	
+	$aGoodValue = array(
+		BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING => BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING,
+		BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING => BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING,
+		BAB_OC_MOVE_TYPE_AS_CHILD => BAB_OC_MOVE_TYPE_AS_CHILD);
+		
+	if(!array_key_exists($iMoveType, $aGoodValue))
+	{
+		$babBody->addError(bab_translate("Error: Type of movement unknown"));
+		return false;
+	}
+
+	$sFunctionName = '';
+	if((int) BAB_OC_MOVE_ENTITY_AND_CHILDREN === (int) $iMove)
+	{
+		$sFunctionName = 'moveTree';
+	}
+	else if((int) BAB_OC_MOVE_ENTITY_ONLY === (int) $iMove)
+	{
+		$sFunctionName = 'move';
+	}
+	else
+	{//Should never happen
+		return false;
+	}
+	
+	$aSrcEntity = bab_OCGetEntityEx($iIdSessUser, $iIdSrcEntity);
+	if(false === $aSrcEntity)
+	{
+		$babBody->addError(bab_translate("Error: Cannot get source entity information"));
+		return false;
+	}
+	
+	$aTrgEntity = bab_OCGetEntityEx($iIdSessUser, $iIdTrgEntity);
+	if(false === $aTrgEntity)
+	{
+		$babBody->addError(bab_translate("Error: Cannot get target entity information"));
+		return false;
+	}
+	
+	if((int) $aSrcEntity['id_oc'] !== (int) $aTrgEntity['id_oc'])
+	{
+		$babBody->addError(bab_translate("Error: Entity are not in the same organization chart"));
+		return false;
+	}
+	
+	$iIdOrgChart = (int) $aSrcEntity['id_oc'];
+	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+	{
+		$babBody->addError(bab_translate("Acces denied"));
+		return false;
+	}
+	
+	$iIdSrcNode = (int) $aSrcEntity['id_node'];
+	$iIdParentNode = (int) $aTrgEntity['id_node'];
+	
+	$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
+	switch($iMoveType)
+	{
+		case BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING:
+			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode, false);
+			return true;
+		case BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING:
+			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode);
+			return true;
+		case BAB_OC_MOVE_TYPE_AS_CHILD:
+			$oBabTree->$sFunctionName($iIdSrcNode, $iIdParentNode);
+			return true;
+	}
+	return false;
 }
 
 
