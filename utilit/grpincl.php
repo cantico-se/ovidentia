@@ -248,7 +248,7 @@ function bab_isGroup($iIdGroup, $iIdParent = null)
 	
 	$sQuery = 
 		'SELECT ' .
-			'childGrp.id iId ' .
+			'childGrp.id id ' .
 		'FROM ' . 
 			implode(', ', $aFromItem) . ' ' . 
 		'WHERE ' .  
@@ -283,7 +283,7 @@ function bab_groupIsChildOf($iIdParent, $sName)
 	
 	$sQuery = 
 		'SELECT ' .
-			'childGrp.id iId ' .
+			'childGrp.id id ' .
 		'FROM ' . 
 			implode(', ', $aFromItem) . ' ' . 
 		'WHERE ' .  
@@ -296,7 +296,7 @@ function bab_groupIsChildOf($iIdParent, $sName)
 		$iNumrows = $babDB->db_num_rows($oResult);
 		if(1 === $iNumrows)
 		{
-			return true;
+			return $babDB->db_fetch_assoc($oResult);
 		}
 	}
 	return false;

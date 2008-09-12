@@ -976,8 +976,11 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 					
 					$iIdDelegation = 0;
 					$iIdManager = 0;
-					
-					$iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
+					$iIdGroup = bab_groupIsChildOf($iIdParentGroup, $sName);
+					if(false === $iIdEntity)
+					{
+						$iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
+					}
 				}
 				break;
 			case 'none':
