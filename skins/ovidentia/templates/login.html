@@ -198,14 +198,13 @@
 	</tr>
 	
 	<tr> 
-	<td width="30%" align="right"><font color="red">*</font>{ nickname } : </td>
+	<td width="30%" align="right">{ nickname }<font color="red">*</font> : </td>
 	<td><input type="text" name="nickname" size="30" maxlength="60" value="{ nicknameval }" /></td>
 	</tr>
 	<!--#in getnextfield -->
 	<tr> 
 	<td align="right">
-	<!--#if required "== Y" --><font color="red">*</font><!--#endif required -->
-	{ fieldname } :
+	{ fieldname }<!--#if required "== Y" --><font color="red">*</font><!--#endif required --> :
 	</td>
 	<td>
 	<!--#if bfieldphoto -->
@@ -236,11 +235,11 @@
 	</tr>
 	<!--#endin getnextfield -->
 	<tr> 
-	<td align="right"><font color="red">*</font>{ password } : </td>
+	<td align="right">{ password }<font color="red">*</font> : </td>
 	<td><input type="password" name="password1" size="20" maxlength="15" />&nbsp;{ passwordlengthtxt }</td>
 	</tr>
 	<tr> 
-	<td align="right"><font color="red">*</font>{ repassword } : </td>
+	<td align="right">{ repassword }<font color="red">*</font> : </td>
 	<td><input type="password" name="password2" size="20" maxlength="15" /></td>
 	</tr>
 	<!--#if bagree -->
@@ -255,7 +254,7 @@
 		<table border="0" width="90%" cellpadding="2" cellspacing="0">
 		<tr class="BabSiteAdminTitleFontBackground">
 		<td width="1%">&nbsp;</td>
-		<td><!--#if brequired --><font color="red">*</font><!--#endif brequired -->&nbsp;{ pdesc } </td>
+		<td>{ pdesc }<!--#if brequired --><font color="red">*</font><!--#endif brequired --> </td>
 		</tr>
 		
 		<!--#if bmultiplicity -->
@@ -301,7 +300,7 @@
 	</tr>
 	<tr>
 		<td align="right">
-			<font color="red">*</font>&nbsp;{ sCaptchaCaption2 }:
+			{ sCaptchaCaption2 }<font color="red">*</font>:
 		</td>
 		<td>
 			<input type="text" name="sCaptchaSecurityCode" size="40" value="" />
