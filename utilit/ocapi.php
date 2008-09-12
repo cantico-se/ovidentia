@@ -1883,6 +1883,37 @@ function bab_OCTreeCreateNode($iIdOrgChart, $iIdParentNode, $iPosition)
 }
 
 
+function bab_OCGetNodeRank($iIdNode)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT ' .
+			'octCh.id iId, ' .
+			'octCh.id_parent iIdParent, ' .
+			'octCh.lf iLf, ' .
+			'octCh.lr iLr, ' .
+			'octCh.id_user iIdTree ' .
+		'FROM ' .
+			BAB_OC_TREES_TBL . ' octNode, ' .
+			BAB_OC_TREES_TBL . ' octPr, ' .
+			BAB_OC_TREES_TBL . ' octCh ' .
+		'WHERE ' .
+			'octNode.id = ' . $babDB->quote($iIdNode) . ' AND ' .
+			'octPr.id = octNode.id_parent AND ' .
+			'octCh.lf > octPr.lf AND octCh.lr < octPr.lr AND ' .
+			'octCh.lf <= octNode.lf AND octCh.lr <= octNode.lr';
+			
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return $babDB->db_num_rows($oResult);
+	}
+	return 0;	
+}
+
+
 function bab_OCSelectTreeQuery($iIdTree)
 {
 	global $babDB;
