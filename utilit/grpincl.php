@@ -228,7 +228,79 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		}
 	}
 
+function bab_isGroup($iIdGroup, $iIdParent = null)
+{
+	global $babDB;
+	
+	$aFromItem			= array();
+	$aWhereClauseItem	= array();
+	
+	if(!is_null($iIdParent))
+	{
+		$aFromItem[]		= BAB_GROUPS_TBL . ' parentGrp';
+		$aWhereClauseItem[] = 'parentGrp.id = ' . $babDB->quote((int)$iIdParent);
+		$aWhereClauseItem[] = 'childGrp.lf > parentGrp.lf AND childGrp.lr < parentGrp.lr';
+	}
+	
+	$aFromItem[]		= BAB_GROUPS_TBL . ' childGrp';
+	$aWhereClauseItem[] = 'childGrp.id = ' . $babDB->quote((int)$iIdGroup);
+	
+	
+	$sQuery = 
+		'SELECT ' .
+			'childGrp.id iId ' .
+		'FROM ' . 
+			implode(', ', $aFromItem) . ' ' . 
+		'WHERE ' .  
+			implode(' AND ', $aWhereClauseItem);
 
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumrows = $babDB->db_num_rows($oResult);
+		if(1 === $iNumrows)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+function bab_groupIsChildOf($iIdParent, $sName)
+{
+	global $babDB;
+	
+	$aFromItem			= array();
+	$aWhereClauseItem	= array();
+	
+	$aFromItem[]		= BAB_GROUPS_TBL . ' parentGrp';
+	$aFromItem[]		= BAB_GROUPS_TBL . ' childGrp';
+	
+	$aWhereClauseItem[] = 'parentGrp.id = ' . $babDB->quote((int)$iIdParent);
+	$aWhereClauseItem[] = 'childGrp.lf > parentGrp.lf AND childGrp.lr < parentGrp.lr';
+	$aWhereClauseItem[] = 'childGrp.name = \'' . $babDB->db_escape_like($sName) . '\'';
+	
+	$sQuery = 
+		'SELECT ' .
+			'childGrp.id iId ' .
+		'FROM ' . 
+			implode(', ', $aFromItem) . ' ' . 
+		'WHERE ' .  
+			implode(' AND ', $aWhereClauseItem);
+
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumrows = $babDB->db_num_rows($oResult);
+		if(1 === $iNumrows)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 
 function getNextAvariableId()
