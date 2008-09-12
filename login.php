@@ -751,6 +751,7 @@ switch($cmd)
 		$loginMessage = bab_rp('msg', '');
 		$errorMessage = bab_rp('err', '');
 		displayAuthenticationForm($loginMessage, $errorMessage);
+		$cmd = 'signon';
 		break;
 
 	case "signon":
