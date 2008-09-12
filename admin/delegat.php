@@ -930,7 +930,7 @@ switch($_POST['action'])
 
 if( $idx == 'list' )
 {
-	$dgres = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."");
+	$dgres = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." order by name asc");
 	if( !$dgres || $babDB->db_num_rows($dgres) == 0 )
 		$idx = 'new';
 }
