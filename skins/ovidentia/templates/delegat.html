@@ -174,10 +174,10 @@ function evtSetColor(color)
 </tr>
 
 <tr id="color_tr"> 
-	<td align="right"><a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');">{ t_color }</a>:</td>
+	<td align="right">{ t_color }</a>:</td>
 	<td nowrap> 
 		<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
-		&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+		&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&idx=popup&callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a> &nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 	</td>
 </tr>
 
@@ -345,10 +345,11 @@ else
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr> 
-	<td align="right"><a href="javascript:openPopup('?tg=users&idx=brow&cb=');">{ usertxt }</a>:</td>
+	<td align="right">{ usertxt } :</td>
 	<td> 
 		<input type="text" name="nuser" size="40" maxlength="255" value="" disabled="disabled" />
-		<input type="hidden" name="nuserid" value="" />
+		<input type="hidden" name="nuserid" value="" />&nbsp;<a href="javascript:openPopup('?tg=users&idx=brow&cb=');"><img src="ovidentia/skins/ovidentia/images/Puces/PuceUserAttrib.gif" alt="" border="0" /></a>
+
 	</td>
 	</tr>
 	<tr> 
