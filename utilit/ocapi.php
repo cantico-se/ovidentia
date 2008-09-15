@@ -1900,7 +1900,7 @@ function bab_OCIsEntityChildOfRoot($iIdEntity)
 			'octChildEntity.id IN(' . $babDB->quote($iIdEntity) . ') AND ' .
 			'octParent.id_parent IN (' . $babDB->quote(0) . ')'; 
 			
-	bab_debug($sQuery, 1, 'PivotTable');
+	//bab_debug($sQuery, 1, 'PivotTable');
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
@@ -1930,7 +1930,7 @@ function bab_OCIsEntityParentOf($iIdParentEntity, $iIdEntity)
 			'octParentEntity.id IN (' . $babDB->quote($iIdParentEntity) . ')'; 
 //			'octChildEntity.id IN(' . $babDB->quote($iIdEntity) . ')'; 
 			
-	bab_debug($sQuery);
+	//bab_debug($sQuery);
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
