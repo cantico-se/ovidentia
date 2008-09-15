@@ -855,7 +855,7 @@ function bab_OCGetLockInfo($iIdSessUser, $iIdOrgChart)
 	
 	//this function test rights
 	$aData = bab_OCGet($iIdSessUser, $iIdOrgChart);
-	if(false !== $aData)
+	if(false !== $aData && 'Y' === (string) $aData['edit'])
 	{
 		$iIdUser = (int) $aData['edit_author'];
 		$aLockInfo['iIdUser'] = $iIdUser;
@@ -989,7 +989,7 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 					$iIdDelegation = 0;
 					$iIdManager = 0;
 					$iIdGroup = bab_groupIsChildOf($iIdParentGroup, $sName);
-					if(false === $iIdEntity)
+					if(false === $iIdGroup)
 					{
 						$iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
 					}
@@ -1883,6 +1883,62 @@ function bab_OCTreeCreateNode($iIdOrgChart, $iIdParentNode, $iPosition)
 }
 
 
+function bab_OCIsEntityChildOfRoot($iIdEntity)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT ' .
+			'octParent.id iIdRootNode ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octChildEntity ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octChild ON octChild.id = octChildEntity.id_node ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octParent ON octParent.id = octChild.id_parent ' .
+		'WHERE ' .
+			'octChildEntity.id IN(' . $babDB->quote($iIdEntity) . ') AND ' .
+			'octParent.id_parent IN (' . $babDB->quote(0) . ')'; 
+			
+	bab_debug($sQuery, 1, 'PivotTable');
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return (1 === $babDB->db_num_rows($oResult));
+	}
+	return false;	
+}
+
+
+function bab_OCIsEntityParentOf($iIdParentEntity, $iIdEntity)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT ' .
+			'octParentEntity.id iIdParentEntity ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octChildEntity ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octChild ON octChild.id = octChildEntity.id_node ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octParent ON octParent.id = octChild.id_parent ' .
+		'LEFT JOIN ' . 
+			BAB_OC_ENTITIES_TBL . ' octParentEntity ON octParentEntity.id_node = octParent.id ' .
+		'WHERE ' .
+			'octChildEntity.id IN(' . $babDB->quote($iIdEntity) . ') AND ' .
+			'octParentEntity.id IN (' . $babDB->quote($iIdParentEntity) . ')'; 
+//			'octChildEntity.id IN(' . $babDB->quote($iIdEntity) . ')'; 
+			
+	bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		return (1 === $babDB->db_num_rows($oResult));
+	}
+	return false;	
+}
+
 function bab_OCGetNodeRank($iIdNode)
 {
 	global $babDB;
@@ -1926,6 +1982,7 @@ function bab_OCSelectTreeQuery($iIdTree)
 			'octCh.lr iLr, ' .
 			'octCh.id_user iIdTree, ' .
 			'octEntity.name sName, ' .
+			'octEntity.description sDescription, ' .
 			'octEntity.id iIdEntity, ' .
 			'COUNT(DISTINCT octChildcount.id) childcount ' .
 		'FROM ' .
