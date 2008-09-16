@@ -1977,7 +1977,7 @@ function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
 	$sSetRowQuery = 'SET @iNumRow = 0';
 	$sQuery = 
 		'SELECT ' .
-			'@iNumRow := IF(octPr.id = octCh.id_parent, @iNumRow + 1,  @iNumRow + 1) AS iNumRow, ' .
+			'@iNumRow := IF(octPr.id = octCh.id_parent, @iNumRow + 1, @iNumRow + 0) AS iNumRow, ' .
 			'octCh.id iId, ' .
 			'octCh.id_parent iIdParent, ' .
 			'octCh.lf iLf, ' .
