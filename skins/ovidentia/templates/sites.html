@@ -273,7 +273,7 @@ mm(sksel);
 	          <tr> 
 	            <td width="50%">{ mailfunction }</td>
 	            <td width="50%"> 
-	              <select name="mailfunc" onchange="ovidentia_hidesmtpfunctions(this);" id="ovidentia_smtpfunctionsselect">
+	              <select name="mailfunc" onchange="ovidentia_hidesmtpfunctions(this);" onkeyup="ovidentia_hidesmtpfunctions(this);" id="ovidentia_smtpfunctionsselect">
 					  <option value="">{ disabled }</option>
 	                  <option value="mail" <!--#if arr[mailfunc] "== mail" --> selected="selected"<!--#endif arr[mailfunc] --> >{ mail }</option>
 	                  <option value="smtp" <!--#if arr[mailfunc] "== smtp" --> selected="selected"<!--#endif arr[mailfunc] --> >{ smtp }</option>
