@@ -450,6 +450,11 @@ class Func_PortalAuthentication extends bab_functionality
 	function authenticateUser($sLogin, $sPassword)
 	{
 		global $babBody;
+		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
+		if (!is_null($aUser) && $aUser['db_authentification'] == 'Y')
+			{
+			$babBody->babsite['authentification'] = BAB_AUTHENTIFICATION_OVIDENTIA;
+			}
 		$iAuthenticationType = (int) $babBody->babsite['authentification'];	
 		switch ($iAuthenticationType)
 		{
