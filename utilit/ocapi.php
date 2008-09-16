@@ -1970,6 +1970,51 @@ function bab_OCGetNodeRank($iIdNode)
 }
 
 
+function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
+{
+	global $babDB;
+	
+	$sSetRowQuery = 'SET @iNumRow = 0';
+	$sQuery = 
+		'SELECT ' .
+			'@iNumRow := IF(octPr.id = octCh.id_parent, @iNumRow + 1,  @iNumRow + 1) AS iNumRow, ' .
+			'octCh.id iId, ' .
+			'octCh.id_parent iIdParent, ' .
+			'octCh.lf iLf, ' .
+			'octCh.lr iLr, ' .
+			'octCh.id_user iIdTree, ' .
+			'octEntity.name sName, ' .
+			'octEntity.description sDescription, ' .
+			'octEntity.id iIdEntity ' .
+		'FROM ' .
+			BAB_OC_TREES_TBL . ' octPr, ' .
+			BAB_OC_TREES_TBL . ' octCh ' .
+		'LEFT JOIN ' . 
+			BAB_OC_ENTITIES_TBL . ' octEntity ON octEntity.id_node = octCh.id ' .
+		'WHERE ' .
+			'octPr.id IN(' . $babDB->quote($iIdParentNode) . ') AND ' .
+			'octCh.id_parent IN(' . $babDB->quote($iIdParentNode) . ') AND ' .
+			'octCh.lf > octPr.lf AND octCh.lr < octPr.lr ' . 
+		'HAVING iNumRow = ' . $babDB->quote($iPosition) . ' ' .
+		'ORDER ' .
+			'BY octCh.lf asc';
+			
+	//bab_debug($sSetRowQuery);
+	//bab_debug($sQuery);
+	$babDB->db_query($sSetRowQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);	
+		if(0 < $iNumRows)
+		{
+			return $babDB->db_fetch_assoc($oResult);
+		}
+	}
+	return false;
+}
+
+
 function bab_OCSelectTreeQuery($iIdTree)
 {
 	global $babDB;
