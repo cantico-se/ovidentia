@@ -417,6 +417,16 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/orgchart/' . $ocid);
 
+	$verticalThreshold = $registry->getValue('vertical_threshold');
+	if (!isset($verticalThreshold)) {
+		if (isset($GLOBALS['babChartVerticalThreshold'])) {
+			$verticalThreshold = $GLOBALS['babChartVerticalThreshold'];
+		} else {
+			$verticalThreshold = 3;
+		}
+	}
+	$orgChart->setVerticalThreshold($verticalThreshold);
+	
 	$openNodes = $registry->getValue('open_nodes');
 	if (!is_array($openNodes)) {
 		$openNodes = array();
@@ -436,69 +446,6 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 	$babBody->babpopup($orgChart->printTemplate());
 }
 
-
-//TODO REMOVE
-function displayChartTree2($ocid, $oeid, $update, $iduser)
-	{
-	global $babBody;
-	class temp
-		{
-		function temp($ocid, $oeid, $update, $iduser)
-			{
-			global $babDB, $ocinfo;
-			$this->ocid = $ocid;
-			$this->update = $update;
-			$this->roles = bab_translate("Roles");
-			$this->delete = bab_translate("Delete");
-			$this->startnode = bab_translate("Start");
-			$this->closenode = bab_translate("Close");
-			$this->opennode = bab_translate("Open");
-			$this->closednodes = array();
-			$this->coeid = $oeid;
-
-
-			$this->babTree  = new bab_arraytree(BAB_OC_TREES_TBL, $ocid, "", $ocinfo['id_first_node']);
-
-			$arr= explode(',', $ocinfo['id_closed_nodes'] );
-			for( $i=0; $i < count($arr); $i++ )
-				{
-				if( $this->babTree->hasChildren($arr[$i]) )
-					{
-					$this->babTree->removeChilds($arr[$i]);
-					$this->closednodes[] = $arr[$i];
-					}
-				}
-
-			if( $update )
-				{
-				$this->updateurlb = $GLOBALS['babUrlScript']."?tg=flbchart&rf=0&ocid=".$ocid."&oeid=";
-				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
-				}
-			else
-				{
-				$this->updateurlb = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
-				$this->updateurlt = $GLOBALS['babUrlScript']."?tg=fltchart&rf=0&ocid=".$ocid."&oeid=";
-				}
-			$this->currentoe = $oeid."&iduser=".$iduser;
-			
-			$this->res = $babDB->db_query("select ocet.*, ocet.id as identity, ocut.id_user, det.sn, det.givenname from ".BAB_OC_ENTITIES_TBL." ocet LEFT JOIN ".BAB_OC_TREES_TBL." octt on octt.id=ocet.id_node LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt on ocrt.id_oc=ocet.id_oc and ocrt.id_entity=ocet.id and ocrt.type='1' LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocut on ocut.id_role=ocrt.id LEFT JOIN ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ocut.id_user where ocet.id_oc='".$this->ocid."' order by octt.lf asc");
-
-			while($row = $babDB->db_fetch_array($this->res))
-				{
-				if( isset($this->babTree->nodes[$row['id_node']]))
-					{
-					$this->babTree->nodes[$row['id_node']]['datas'] = $row;
-					}
-				}
-			$this->javascript = bab_printTemplate($this, "frchart.html", "orgjavascript");
-			$this->content =  printChartNode($this, $this->babTree->rootid);
-			}
-
-		}
-
-	$temp = new temp($ocid, $oeid, $update, $iduser);
-	echo bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp3");
-	}
 
 
 function displayFrtFrame($ocid, $oeid, $update)
@@ -1262,6 +1209,7 @@ switch($idx)
 			case "disp3":
 				displayChartTree($ocid, $oeid, $iduser, $update);
 				break;
+
 			default:
 				displayChart($ocid, $oeid, $update, $iduser, $disp);
 				break;
