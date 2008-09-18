@@ -417,6 +417,16 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/orgchart/' . $ocid);
 
+	$verticalThreshold = $registry->getValue('vertical_threshold');
+	if (!isset($verticalThreshold)) {
+		if (isset($GLOBALS['babChartVerticalThreshold'])) {
+			$verticalThreshold = $GLOBALS['babChartVerticalThreshold'];
+		} else {
+			$verticalThreshold = 3;
+		}
+	}
+	$orgChart->setVerticalThreshold($verticalThreshold);
+
 	$openNodes = $registry->getValue('open_nodes');
 	if (!is_array($openNodes)) {
 		$openNodes = array();
