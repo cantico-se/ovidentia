@@ -192,7 +192,7 @@ function changeNickname($item, $pos, $grp)
 			$this->item = $item;
 			$this->pos = $pos;
 			$this->grp = $grp;
-			$this->newnickname = bab_translate("Nickname");
+			$this->newnickname = bab_translate("Login ID");
 			$this->update = bab_translate("Update");
 			list($this->nicknameval) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
 			}
@@ -453,7 +453,7 @@ function updateNickname($item, $newnick)
 
 	if ( !empty($newnick) && strpos($newnick, ' ') !== false )
 		{
-		$babBody->msgerror = bab_translate("Nickname should not contain spaces");
+		$babBody->msgerror = bab_translate("Login ID should not contain spaces");
 		return false;
 		}
 
@@ -464,7 +464,7 @@ function updateNickname($item, $newnick)
 		$res = $db->db_query($query);
 		if( $db->db_num_rows($res) > 0)
 			{
-			$babBody->msgerror = bab_translate("This nickname already exists !!");
+			$babBody->msgerror = bab_translate("This login ID already exists !!");
 			return false;
 			}
 
