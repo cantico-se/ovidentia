@@ -54,7 +54,7 @@ function browseUsers($pos, $cb)
 			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 			$this->cb = $cb;
 
 			switch ($babBody->nameorder[0]) {
@@ -183,7 +183,7 @@ function browseArticlesAuthors($pos, $cb)
 			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 			$this->cb = $cb;
 			$this->altbg = false;
 

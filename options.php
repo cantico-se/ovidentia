@@ -122,7 +122,7 @@ function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)
 			$this->emailval = $email != ""? bab_toHtml($email): "";
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 			$this->middlename = bab_translate("Middle Name");
 			$this->email = bab_translate("Email");
 
@@ -190,9 +190,9 @@ function changeNickname($nickname)
 				}
 			$this->urlchangepassword = bab_toHtml($GLOBALS['babUrlScript']."?tg=options&idx=changePassword");
 			$this->nicknameval = $nickname != ""? $nickname: "";
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 			$this->password = bab_translate("Password");
-			$this->update = bab_translate("Update nickname");
+			$this->update = bab_translate("Update login");
 			}
 		}
 
@@ -892,7 +892,7 @@ function userChangePassword($oldpwd, $newpwd)
 					if( $entries === false )
 						{
 						$ldap->close();
-						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your login and your password");
 						return false;
 						}
 
@@ -934,7 +934,7 @@ function userChangePassword($oldpwd, $newpwd)
 				$ret = $ldap->bind($userdn, $password);
 				if( !$ret )
 					{
-					$msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+					$msgerror = bab_translate("LDAP authentification failed. Please verify your login and your password");
 					$ldap->close();
 					return false;
 					}
@@ -969,7 +969,7 @@ function userChangePassword($oldpwd, $newpwd)
 					if( $entries === false || $entries['count'] == 0 || !isset($entries[0]['dn']) || empty($entries[0]['dn']))
 						{
 						$ldap->close();
-						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your nickname and your password");
+						$babBody->msgerror = bab_translate("LDAP authentification failed. Please verify your login and your password");
 						return false;
 						}
 
@@ -1130,7 +1130,7 @@ function updateNickname($password, $nickname)
 			$res = $babDB->db_query($req);
 			if( $babDB->db_num_rows($res) > 0)
 				{
-				$babBody->msgerror = bab_translate("This nickname already exists !!");
+				$babBody->msgerror = bab_translate("This login already exists !!");
 				return false;
 				}
 			}
