@@ -2009,7 +2009,7 @@
 <string id="Edition of a project space">Edition d'un espace de projets</string>
 <string id="Project space = ">Espace projet = </string>
 <string id="This action will delete the project space and all references">Cette action supprime l'espace projets et tout ses composants.</string>
-<string id="Continue ?">Voulez-vous continuez ?</string>
+<string id="Continue ?">Voulez-vous continuer ?</string>
 <string id="You cannot delete this project space before is not empty">Vous ne pouvez pas supprimer cet espace projets tant qu'il n'est pas vide</string>
 <string id="Cannot retreive project space information">Impossible d'accéder aux information de l'espace projets</string>
 <string id="Delete project space">Supprimer un espace projets</string>
