@@ -56,7 +56,7 @@ class bab_userModify {
 	
 		if( empty($nickname) )
 			{
-			$error = bab_translate( "Nickname is required");
+			$error = bab_translate( "Login ID is required");
 			return false;
 			}
 	
@@ -76,7 +76,7 @@ class bab_userModify {
 		$res = $babDB->db_query($query);
 		if( $babDB->db_num_rows($res) > 0)
 			{
-			$error = bab_translate("This nickname already exists !!");
+			$error = bab_translate("This login ID already exists !!");
 			return false;
 			}
 		

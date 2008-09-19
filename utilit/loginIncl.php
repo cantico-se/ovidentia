@@ -271,7 +271,7 @@ class Func_PortalAuthentication extends bab_functionality
 		$iIdUser = false;
 		if (!isset($aEntries) || $aEntries === false)
 		{
-			$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
 			$bLdapOk = false;
 		}
 		
@@ -310,7 +310,7 @@ class Func_PortalAuthentication extends bab_functionality
 				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
 				if (false === $bLdapOk)
 				{
-					$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
 				}
 			}
 		}
@@ -386,7 +386,7 @@ class Func_PortalAuthentication extends bab_functionality
 		$iIdUser = false;
 		if (!isset($aEntries) || $aEntries === false)
 		{
-			$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
 			$bLdapOk = false;
 		}
 
@@ -425,7 +425,7 @@ class Func_PortalAuthentication extends bab_functionality
 				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
 				if( false === $bLdapOk)
 				{
-					$this->addError(bab_translate("LDAP authentification failed. Please verify your nickname and your password"));
+					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
 				}
 			}
 		}
@@ -810,7 +810,7 @@ class displayLogin_Template
 
 	function displayLogin_Template($url)
 	{
-		$this->nickname = bab_translate("Nickname");
+		$this->nickname = bab_translate("Login ID");
 		$this->password = bab_translate("Password");
 		$this->login = bab_translate("Login");
 		

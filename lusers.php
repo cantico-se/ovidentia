@@ -56,7 +56,7 @@ function browseUsers($pos, $cb)
 			global $babBody, $babDB;
 
 			$this->allname = bab_translate("All");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login ID");
 			$this->cb = $cb;
 
 			if( !bab_isUserAdministrator() && $babBody->babsite['browse_users'] == 'N')
