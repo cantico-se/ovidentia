@@ -2620,4 +2620,11 @@
 <string id="E-mail: Ovidentia uses the SMTP waiter(server) informed in the configuration PHP (see the variables smtp, smtp_port, sendmail_from and sendmail_path in the php.ini file)">Mail : Ovidentia utilise le serveur SMTP renseigné dans la configuration PHP (variables smtp, smtp_port, sendmail_from et sendmail_path dans le fichier php.ini)</string>
 <string id="SMTP: manual configuration">SMTP : configuration manuelle</string>
 <string id="Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file">Sendmail : Ovidentia utilise l'application sendmail installée sur la machine locale (voir variables sendmail_path dans le fichier php.ini)</string>
+<string id="Day number must be 1 at least">Le nombre de jours doit être au minimum de 1</string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
 </fr>

@@ -1409,4 +1409,11 @@
 <string id="E-mail: Ovidentia uses the SMTP waiter(server) informed in the configuration PHP (see the variables smtp, smtp_port, sendmail_from and sendmail_path in the php.ini file)">E-mail: Ovidentia uses the SMTP waiter(server) informed in the configuration PHP (see the variables smtp, smtp_port, sendmail_from and sendmail_path in the php.ini file)</string>
 <string id="SMTP: manual configuration">SMTP: manual configuration</string>
 <string id="Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file">Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file</string>
+<string id="Day number must be 1 at least">Day number must be 1 at least</string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
 </nl-be>
