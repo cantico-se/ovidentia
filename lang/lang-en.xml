@@ -384,7 +384,7 @@
 <string id="Entity">Entity</string>
 <string id="Entry date ( dd-mm-yyyy )">Entry date ( dd-mm-yyyy )</string>
 <string id="Entry date">Entry date</string>
-<string id="ERROR - Nickname is required">ERROR - Nickname is required</string>
+<string id="ERROR - Login ID is required">ERROR - Login ID is required</string>
 <string id="Error occured when sending email !!">Error occured when sending e-mail !!</string>
 <string id="ERROR">ERROR</string>
 <string id="ERROR: End date must be older">ERROR: End date must be older</string>
@@ -548,7 +548,7 @@
 <string id="Inbox">Inbox</string>
 <string id="Incoming mail server port">Incoming mail server port</string>
 <string id="Incoming mail server">Incoming mail server</string>
-<string id="Incorrect nickname">Incorrect nickname</string>
+<string id="Incorrect login ID">Incorrect login ID</string>
 <string id="Incorrect total number of days">Incorrect total number of days</string>
 <string id="Index of questions">Index of questions</string>
 <string id="Information">Information</string>
@@ -716,8 +716,8 @@
 <string id="Next Sibling">Next Sibling</string>
 <string id="Next time">Next time</string>
 <string id="Next">Next</string>
-<string id="Nickname contains blanc characters">Nickname contains blank characters</string>
-<string id="Nickname">Nickname</string>
+<string id="Login ID contains blanc characters">Login ID contains blank characters</string>
+<string id="Login ID">Login ID</string>
 <string id="No filter">No filter</string>
 <string id="No restriction">No restriction</string>
 <string id="No">No</string>
@@ -1002,7 +1002,7 @@
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">This is a reccuring event.Are you sure you want to delete this event and all occurrences</string>
 <string id="This is recurring event. Do you want to update this occurence or series?">This is recurring event. Do you want to update this occurence or series?</string>
 <string id="This is recurring event. Do you want to update this ocuurence or series?">This is recurring event. Do you want to update this ocuurence or series?</string>
-<string id="This nickname already exists !!">This nickname already exists !!</string>
+<string id="This login ID already exists !!">This login ID already exists !!</string>
 <string id="This occurence">This occurence</string>
 <string id="This resource already exists">This resource already exists</string>
 <string id="This section is for Administration">This section is for Administration</string>
@@ -1070,7 +1070,7 @@
 <string id="Update Groups">Update Groups</string>
 <string id="Update Info">Update Info</string>
 <string id="Update Language">Update Language</string>
-<string id="Update nickname">Update nickname</string>
+<string id="Update login ID">Update login ID</string>
 <string id="Update Note">Update Note</string>
 <string id="Update Password">Update Password</string>
 <string id="Update personal informations">Update personal information</string>
@@ -1094,7 +1094,7 @@
 <string id="User 4">User 4</string>
 <string id="User Account Updated - You can now log to our site">User Account Updated - You can now log to our site</string>
 <string id="User already exist!">User already exist!</string>
-<string id="User can modifiy his nickname">User can modifiy his nickname</string>
+<string id="User can modifiy his login ID">User can modifiy his login ID</string>
 <string id="User can modifiy his password">User can modifiy his password</string>
 <string id="User can update my calendar">User can update my calendar</string>
 <string id="User DN">User DN</string>
@@ -1257,7 +1257,7 @@
 <string id="Your new file version has been accepted">Your new file version has been accepted</string>
 <string id="Your new file version has been refused">Your new file version has been refused</string>
 <string id="Your new password has been emailed to you.">Your new password has been e-mailed to you.</string>
-<string id="Your nickname">Your nickname</string>
+<string id="Your login ID">Your login ID</string>
 <string id="Your password has been modified">Your password has been modified</string>
 <string id="Your password has been reset to">Your password has been reset to</string>
 <string id="Your registration has been confirmed.">Your registration has been confirmed.</string>
@@ -1273,9 +1273,9 @@
 <string id="Attribute">Attribute</string>
 <string id="Password encryption type">Password encryption type</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Allow administrators to connect if LDAP authentication fails</string>
-<string id="You must provide a nickname">You must provide a nickname</string>
+<string id="You must provide a login ID">You must provide a login ID</string>
 <string id="LDAP connection failed. Please contact your administrator">LDAP connection failed. Please contact your administrator</string>
-<string id="LDAP authentification failed. Please verify your nickname and your password">LDAP authentication failed. Please verify your nickname and your password</string>
+<string id="LDAP authentification failed. Please verify your login ID and your password">LDAP authentication failed. Please verify your login ID and your password</string>
 <string id="LDAP bind failed. Please contact your administratorrrrr">LDAP bind failed. Please contact your administratorrrrr</string>
 <string id="Are you sure you want to delete this add-on">Are you sure you want to delete this add-on</string>
 <string id="Approbation can't be disabled">Approbation can't be disabled</string>
