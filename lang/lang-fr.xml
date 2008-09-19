@@ -263,7 +263,7 @@
 <string id="Domain">Domaine</string>
 <string id="Domains">Domaines</string>
 <string id="Download">Télécharger</string>
-<string id="ERROR - Login is required">ERREUR : l'identifiant est nécessaire</string>
+<string id="ERROR - Login ID is required">ERREUR : l'identifiant est nécessaire</string>
 <string id="ERROR">ERREUR</string>
 <string id="ERROR: End date must be older">ERREUR : la date de fin doit être postérieure</string>
 <string id="ERROR: Old password incorrect !!">ERREUR : ancien mot de passe incorrect !</string>
@@ -400,7 +400,7 @@
 <string id="Inbox">Boîte de réception</string>
 <string id="Incoming mail server port">Port pour le serveur 'entrant'</string>
 <string id="Incoming mail server">Serveur de messagerie 'entrant' (Pop/Imap)</string>
-<string id="Incorrect login">Identifiant incorrect</string>
+<string id="Incorrect login ID">Identifiant incorrect</string>
 <string id="Incorrect total number of days">Nombre de jours total incorrect</string>
 <string id="Index of questions">Index des questions</string>
 <string id="Information">Information</string>
@@ -531,7 +531,7 @@
 <string id="Next Year">Année suivante</string>
 <string id="Next time">Suivant</string>
 <string id="Next">Suivant</string>
-<string id="Login">Identifiant</string>
+<string id="Login ID">Identifiant</string>
 <string id="No filter">Pas de filtre</string>
 <string id="No">Non</string>
 <string id="None">Aucun</string>
@@ -736,7 +736,7 @@
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">Ceci est un événement répétitif. Êtes-vous sûr de vouloir supprimer toute la série</string>
 <string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
 <string id="This is recurring event. Do you want to update this ocuurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
-<string id="This login already exists !!">Cet identifiant existe déjà</string>
+<string id="This login ID already exists !!">Cet identifiant existe déjà</string>
 <string id="This occurence">Cet événement</string>
 <string id="This resource already exists">Cette ressource existe déjà</string>
 <string id="This section is for Administration">Cette section est réservée à l'administration du site</string>
@@ -941,7 +941,7 @@
 <string id="Your file list has been updated">Votre fichier a été mis à jour</string>
 <string id="Your message has been sent">Votre message a été envoyé</string>
 <string id="Your new password has been emailed to you.">Votre nouveau mot de passe vous a été envoyé par email</string>
-<string id="Your login">Votre identifiant</string>
+<string id="Your login ID">Votre identifiant</string>
 <string id="Your password has been reset to">Votre mot de passe a été réinitialisé à</string>
 <string id="Your registration has been confirmed.">Votre inscription a été confirmée.</string>
 <string id="Your request has been updated">Votre demande a été exécutée</string>
@@ -1125,7 +1125,7 @@
 <string id="Number of topics categories">Nombre de catégories de thèmes</string>
 <string id="Top">Début</string>
 <string id="Order a topic category">Ordonner les catégories</string>
-<string id="Login should not contain spaces">L'identifiant ne doit pas contenir d'espaces</string>
+<string id="Login ID should not contain spaces">L'identifiant ne doit pas contenir d'espaces</string>
 <string id="Alt">Alt</string>
 <string id="Horizontal spacing">Espacement horizontal</string>
 <string id="Vertical spacing">Espacement vertical</string>
@@ -1169,7 +1169,7 @@
 <string id="Articles's authors can restrict access to articles">Les auteurs peuvent restreindre l'accès aux articles</string>
 <string id="WARNING! Some articles uses access restriction. Changing access topic can make them inaccessible">ATTENTION ! certains articles utilisent la restriction. Les changer de thèmes pourrait les rendre inaccessibles</string>
 <string id="User name composition">Composition du nom d'utilisateur</string>
-<string id="User can modifiy his login">L'utilisateur peut modifier son identifiant</string>
+<string id="User can modifiy his login ID">L'utilisateur peut modifier son identifiant</string>
 <string id="User can modifiy his password">L'utilisateur peut modifier son mot de passe</string>
 <string id="Automatic connection">Connexion automatique</string>
 <string id="Site slogan">Slogan du site</string>
@@ -1301,9 +1301,9 @@
 <string id="Attribute">Attribut</string>
 <string id="Password encryption type">Type de codage du mot de passe</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Permettre aux administrateurs de se connecter si l'authentification par LDAP échoue</string>
-<string id="You must provide a login">Vous devez fournir un identifiant</string>
+<string id="You must provide a login ID">Vous devez fournir un identifiant</string>
 <string id="LDAP connection failed. Please contact your administrator">La connection LDAP a échoué. Contacter l'administrateur</string>
-<string id="LDAP authentification failed. Please verify your login and your password">L'authentification LDAP a échoué. Vérifier votre identifiant et votre mot de passe</string>
+<string id="LDAP authentification failed. Please verify your login ID and your password">L'authentification LDAP a échoué. Vérifier votre identifiant et votre mot de passe</string>
 <string id="LDAP bind failed. Please contact your administrator">La liaison LDAP a échoué. Contactez l'administrateur</string>
 <string id="With/without introduction">Avec/sans introduction</string>
 <string id="With/without body">Avec/sans corps</string>
@@ -1415,7 +1415,7 @@
 <string id="File size must not exceed">La taille du fichier ne doit pas excéder</string>
 <string id="The number of days exceed the total allowed">Le nombre de jours excède le total permis</string>
 <string id="Do you really want to submit">Voulez-vous vraiment soumettre</string>
-<string id="Login only">identifiant seulement</string>
+<string id="Login ID only">identifiant seulement</string>
 <string id="Reason of the modification">Raison de la modification</string>
 <string id="Session expire in">La session expire dans</string>
 <string id="Session expired">La session a expiré</string>
@@ -1657,7 +1657,7 @@
 <string id="Firstname is required">Le prénom est obligatoire</string>
 <string id="Lastname is required">Le nom est obligatoire</string>
 <string id="Email is required">Une adresse de messagerie électronique est obligatoire</string>
-<string id="Login is required">L'identifiant est obligatoire</string>
+<string id="Login ID is required">L'identifiant est obligatoire</string>
 <string id="Date type">Type de date</string>
 <string id="Rule">Règle</string>
 <string id="Remain">Reste</string>
@@ -1698,7 +1698,7 @@
 <string id="Waiting days">Jours en attente d'approbation</string>
 <string id="ERROR: No members">ERREUR : aucun membre</string>
 <string id="Entries with the same e-mail address are duplicates">Les entrées avec la même adresse email qu'une entrée de l'annuaire sont des doublons</string>
-<string id="Entries with the same login or the same firstname/lastname are duplicates">Les entrées avec le même identifiant ou les mêmes nom et prénoms qu'une entrée de l'annuaire sont des doublons</string>
+<string id="Entries with the same login ID or the same firstname/lastname are duplicates">Les entrées avec le même identifiant ou les mêmes nom et prénoms qu'une entrée de l'annuaire sont des doublons</string>
 <string id="Period days">Jours dans la période sélectionnée</string>
 <string id="Negative balance are not allowed with this vacation type">Les soldes négatifs ne sont pas permis avec ce type de congé</string>
 <string id="Waiting appointments">Evénements en attente</string>
@@ -1930,7 +1930,7 @@
 <string id="Assign">Attacher</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
 <string id="Your contact has been assigned">Votre contact ont été attaché à l'annuaire</string>
-<string id="WARNING: User with this login already exist">ATTENTION: Un utilisateur avec le même identifiant existe déjà</string>
+<string id="WARNING: User with this login ID already exist">ATTENTION: Un utilisateur avec le même identifiant existe déjà</string>
 <string id="WARNING: User with this fullname already exist">ATTENTION: Un utilisateur avec les mêmes nom et prénom existe déjà</string>
 <string id="Automatically approve author if he belongs to approbation schema">Approuver automatiquement le contributeur s'il fait partie de la première étape du schéma d'approbation</string>
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
@@ -2344,7 +2344,7 @@
 <string id="Total days does'nt fit between dates">Le nombre total de jour n'est pas adapté à l'intervale de date</string>
 <string id="Working period">Période travaillée</string>
 <string id="Selected users">Utilisateurs sélectionnés</string>
-<string id="Search by login, firstname and lastname">Recherche par identifiant, nom et prénom</string>
+<string id="Search by login ID, firstname and lastname">Recherche par identifiant, nom et prénom</string>
 <string id="Grab users">Ajouter</string>
 <string id="Drop users">Enlever</string>
 <string id="Do you really want to delete the vacation request ?">Voulez-vous vraiment supprimer la demande de congés ?</string>
@@ -2544,7 +2544,7 @@
 <string id="Modify a delegation category">Modifier une catégorie de délégation</string>
 <string id="The authentication method %s is invalid">La méthode d'authentification %s n'est pas invalide</string>
 <string id="Authentication functionality">Fonctionnalité d'authentification</string>
-<string id="PortalAuthentication::login must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
+<string id="PortalAuthentication::login ID must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
 <string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
 <string id="Planned">Planifié</string>
@@ -2562,7 +2562,7 @@
 <string id="The password of the account the identifier of which is">Le mot de passe du compte dont l'identifiant est</string>
 <string id="was reset in">a été réinitialisé à</string>
 <string id="Your password has been reset">Votre mot de passe a été réinitialisé</string>
-<string id="Login of the account">Identifiant du compte</string>
+<string id="Login ID of the account">Identifiant du compte</string>
 <string id="The uploaded file exceeds the upload_max_filesize directive.">Le fichier à télécharger excède la taille maximale autorisée par le serveur.</string>
 <string id="The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.">Le fichier à téléchargé excède la taille maximale autorisée par le formulaire.</string>
 <string id="The uploaded file was only partially uploaded.">Le fichier n'a été que partielement téléchargé.</string>

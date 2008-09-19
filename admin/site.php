@@ -370,10 +370,10 @@ function site_menu3($id)
 
 		function temp($id)
 			{
-			$this->change_nickname_title = bab_translate("User can modifiy his login");
+			$this->change_nickname_title = bab_translate("User can modifiy his login ID");
 			$this->change_password_title = bab_translate("User can modifiy his password");
 			$this->remember_login_title = bab_translate("Automatic connection");
-			$this->login_only = bab_translate("Login only");
+			$this->login_only = bab_translate("Login ID only");
 			$this->email_password_title = bab_translate("Display option 'Lost Password'");
 			$this->user_workdays_title = bab_translate("User can modifiy his working days");			
 			$this->change_lang_title = bab_translate("User can modifiy his language");
@@ -988,7 +988,7 @@ function siteAuthentification($id)
 				$this->iindex = $i;
 				if( 0  == $i )
 					{
-					$this->ofieldname = bab_translate("Login");
+					$this->ofieldname = bab_translate("Login ID");
 					$this->ofieldv = "nickname";
 					$this->required = true;				
 					if( in_array($this->ldapattributesite, $bab_ldapAttributes) )

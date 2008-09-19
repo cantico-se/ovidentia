@@ -319,7 +319,7 @@
 <string id="E-mail 3 Display Name">E-mail 3 Display Name</string>
 <string id="E-mail Address">E-mail</string>
 <string id="E-mail Display Name">E-mail Display Name</string>
-<string id="ERROR - Login is required">FOUT: Login is vereist</string>
+<string id="ERROR - Login ID is required">FOUT: Login is vereist</string>
 <string id="ERROR">FOUT</string>
 <string id="ERROR: End date must be older">FOUT: Eind datum moet later zijn</string>
 <string id="ERROR: Old password incorrect !!">FOUT: Oud wachtwoord is fout !!</string>
@@ -480,7 +480,7 @@
 <string id="Inbox">Inbox</string>
 <string id="Incoming mail server port">Incoming mail server port</string>
 <string id="Incoming mail server">Incoming mail server</string>
-<string id="Incorrect login">Foute login</string>
+<string id="Incorrect login ID">Foute login</string>
 <string id="Incorrect total number of days">Totaal aantal dagen is niet correct</string>
 <string id="Index of questions">Index van de vragen</string>
 <string id="Information">Informatie</string>
@@ -623,8 +623,8 @@
 <string id="Next day">Volgende dag</string>
 <string id="Next time">Volgende tijd</string>
 <string id="Next">Volgende</string>
-<string id="Login contains blanc characters">Nicknaam bevat blanco lettertekens</string>
-<string id="Login">Login</string>
+<string id="Login ID contains blanc characters">Nicknaam bevat blanco lettertekens</string>
+<string id="Login ID">Login</string>
 <string id="No filter">Geen filter</string>
 <string id="No">Nee</string>
 <string id="None">Geen enkele</string>
@@ -860,7 +860,7 @@
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">Dit is een regelmatig evenement. Wil u de hele reeks verwijderen?</string>
 <string id="This is recurring event. Do you want to update this occurence or series?">Dit is een regelmatig evenement. Enkel dit evenement of de hele reeks wijzigen?</string>
 <string id="This is recurring event. Do you want to update this ocuurence or series?">Dit is een regelmatig evenement. Enkel dit evenement of de hele reeks wijzigen?</string>
-<string id="This login already exists !!">Deze login bestaat reeds !!</string>
+<string id="This login ID already exists !!">Deze login bestaat reeds !!</string>
 <string id="This occurence">Dit evenement</string>
 <string id="This resource already exists">Deze resource bestaat reeds</string>
 <string id="This section is for Administration">Deze afdeling is voor de administratie van de site</string>
@@ -925,7 +925,7 @@
 <string id="Update Topic">Onderwerp bijwerken</string>
 <string id="Update access">Toegang wijzigen</string>
 <string id="Update failed">Bijwerken mislukt</string>
-<string id="Update login">Nicknaam wijzigen</string>
+<string id="Update login ID">Nicknaam wijzigen</string>
 <string id="Update personal informations">Persoonlijke info wijzigen</string>
 <string id="Update reply">Antwoord wijzigen</string>
 <string id="Update">Wijzigen</string>
@@ -1089,7 +1089,7 @@
 <string id="Your new file version has been accepted">Uw nieuwe versie van een bestand werd goedgekeurd</string>
 <string id="Your new file version has been refused">Uw nieuwe versie van een bestand werd geweigerd</string>
 <string id="Your new password has been emailed to you.">Uw nieuw wachtwoord werd u per e-mail toegestuurd.</string>
-<string id="Your login">Uw login</string>
+<string id="Your login ID">Uw login</string>
 <string id="Your password has been reset to">Uw wachtwoord werd geinitialiseerd op</string>
 <string id="Your registration has been confirmed.">Uw registratie is bevestigd.</string>
 <string id="Your request has been updated">Uw aanvraag werd aangpast</string>
@@ -1144,7 +1144,7 @@
 <string id="Name to use for notification emails">Name to use for notification emails</string>
 <string id="Mb">Mb</string>
 <string id="User name composition">User name composition</string>
-<string id="User can modifiy his login">User can modifiy his login</string>
+<string id="User can modifiy his login ID">User can modifiy his login</string>
 <string id="User can modifiy his password">User can modifiy his password</string>
 <string id="Automatic connection">Automatic connection</string>
 <string id="Display option 'Lost Password'">Display option 'Lost Password'</string>
@@ -1265,9 +1265,9 @@
 <string id="Attribute">Attribute</string>
 <string id="Password encryption type">Password encryption type</string>
 <string id="Allow administrators to connect if LDAP authentification fails">Allow administrators to connect if LDAP authentification fails</string>
-<string id="You must provide a login">You must provide a login</string>
+<string id="You must provide a login ID">You must provide a login ID</string>
 <string id="LDAP connection failed. Please contact your administrator">LDAP connection failed. Please contact your administrator</string>
-<string id="LDAP authentification failed. Please verify your login and your password">LDAP authentification failed. Please verify your login and your password</string>
+<string id="LDAP authentification failed. Please verify your login ID and your password">LDAP authentification failed. Please verify your login ID and your password</string>
 <string id="LDAP bind failed. Please contact your administratorrrrr">LDAP bind failed. Please contact your administratorrrrr</string>
 <string id="Are you sure you want to delete this add-on">Are you sure you want to delete this add-on</string>
 <string id="Approbation can't be disabled">Approbation can't be disabled</string>

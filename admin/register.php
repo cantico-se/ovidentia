@@ -196,7 +196,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 
 	if( empty($nickname) )
 		{
-		$babBody->msgerror = bab_translate( "Login is required");
+		$babBody->msgerror = bab_translate( "Login ID is required");
 		return false;
 		}
 
@@ -343,7 +343,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
     $mail->mailSubject(bab_translate("Registration Confirmation"));
 	
 	$message = bab_translate("You have been registered on our site") ."<br>";
-	$message .= bab_translate("Login") .": ". $nickname;
+	$message .= bab_translate("Login ID") .": ". $nickname;
 	if( !empty($pwd))
 		{
 		$message .= " / ". bab_translate("Password") .": ". $pwd;
@@ -389,7 +389,7 @@ function sendPassword ($nickname)
 		$res = $babDB->db_query($req);
 		if (!$res || $babDB->db_num_rows($res) < 1)
 			{
-			$babBody->msgerror = bab_translate("Incorrect login");
+			$babBody->msgerror = bab_translate("Incorrect login ID");
 			return false;
 			}
 		else
@@ -485,7 +485,7 @@ function sendPassword ($nickname)
 		}
 	else
 		{
-		$babBody->msgerror = bab_translate("ERROR - Login is required");
+		$babBody->msgerror = bab_translate("ERROR - Login ID is required");
 		return false;
 		}
 }

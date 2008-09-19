@@ -524,7 +524,7 @@ a:hover {
 		?>
 		<p><?php echo $trans->str('Congratulation, ovidentia is now configured, now you can log in with the default account') ?></p>
 		<ul>
-			<li><?php echo $trans->str('Login') ?> : <strong>admin@admin.bab</strong></li>
+			<li><?php echo $trans->str('Login ID') ?> : <strong>admin@admin.bab</strong></li>
 			<li><?php echo $trans->str('Password') ?> : <strong>012345678</strong></li>
 		</ul>
 		<p><a href="index.php?tg=login"><?php echo $trans->str('Go to login page') ?></a></p>
@@ -542,7 +542,7 @@ a:hover {
 					<dt><label for="babDBName"><?php echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="<?php if(isset($_POST['babDBName'])) echo $_POST['babDBName']; else echo 'ovidentia'; ?>" /></dt>
 					<dt><label for="babDBName"><?php echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" <?php if(isset($_POST['clearDb']) and !empty($_POST['clearDb'])) echo 'checked';?> /></dt>
 						<dd><?php echo $trans->str('If the database exists, it will be dropped and data will be lost') ?></dd>
-					<dt><label for="babDBLogin"><?php echo $trans->str('Login') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="<?php if(isset($_POST['babDBLogin'])) echo $_POST['babDBLogin']; else echo 'root'?>" /></dt>
+					<dt><label for="babDBLogin"><?php echo $trans->str('Login ID') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="<?php if(isset($_POST['babDBLogin'])) echo $_POST['babDBLogin']; else echo 'root'?>" /></dt>
 					<dt><label for="babDBPasswd"><?php echo $trans->str('Password') ?> :</label><input type="password" id="babDBPasswd" name="babDBPasswd" /></dt>
 				</fieldset>
 				
