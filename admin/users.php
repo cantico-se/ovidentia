@@ -74,7 +74,7 @@ function listUsers($pos, $grp)
 			$this->email = bab_translate("Email");
 			$this->allname = bab_translate("All");
 			$this->update = bab_translate("Update");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 
 			$this->t_online = bab_translate("Online");
 			$this->t_unconfirmed = bab_translate("Unconfirmed");
@@ -288,7 +288,7 @@ function userCreate()
 			$this->firstname = bab_translate("First Name");
 			$this->lastname = bab_translate("Last Name");
 			$this->middlename = bab_translate("Middle Name");
-			$this->nickname = bab_translate("Nickname");
+			$this->nickname = bab_translate("Login");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
