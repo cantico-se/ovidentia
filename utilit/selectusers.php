@@ -320,7 +320,7 @@ class bab_selectusers extends bab_selectUsersBase
 
 	function init()
 	{
-		$this->t_search						= bab_translate("Search by login, firstname and lastname");
+		$this->t_search						= bab_translate("Search by login ID, firstname and lastname");
 		$this->t_grab_users					= bab_translate("Grab users");
 		$this->t_drop_users					= bab_translate("Drop users");
 		$this->t_selected_users				= bab_translate("Selected users");
@@ -429,7 +429,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 
 	function init()
 	{
-		$this->t_search						= bab_translate("Search by login, firstname and lastname");
+		$this->t_search						= bab_translate("Search by login ID, firstname and lastname");
 		$this->t_selected_users				= bab_translate("Selected users");
 		$this->t_searchsubmit				= bab_translate("Search");
 		$this->t_view_directory_entry_for	= bab_translate("View directory entry for");

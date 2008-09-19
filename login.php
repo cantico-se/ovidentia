@@ -46,7 +46,7 @@ function emailPassword()
 
 		function temp()
 			{
-			$this->nickname = bab_translate("Your login");
+			$this->nickname = bab_translate("Your login ID");
 			$this->send = bab_translate("Send");
 			}
 		}
@@ -86,7 +86,7 @@ function userCreate($firstname, $middlename, $lastname, $nickname, $email)
 			$this->firstname = bab_translate("First Name");
 			$this->middlename = bab_translate("Middle Name");
 			$this->lastname = bab_translate("Last Name");
-			$this->nickname = bab_translate("Login");
+			$this->nickname = bab_translate("Login ID");
 			$this->email = bab_translate("Email");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
@@ -112,7 +112,7 @@ function displayRegistration($nickname, $fields, $cagree)
 			{
 			
 			global $babBody, $babDB;
-			$this->nickname = bab_translate("Login");
+			$this->nickname = bab_translate("Login ID");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
 			$this->adduser = bab_translate("Register");
@@ -459,7 +459,7 @@ function addNewUser( $nickname, $password1, $password2)
 
 	if ( strpos($nickname, ' ') !== false )
 		{
-		$babBody->msgerror = bab_translate("Login should not contain spaces");
+		$babBody->msgerror = bab_translate("Login ID should not contain spaces");
 		return false;
 		}
 

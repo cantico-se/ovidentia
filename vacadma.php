@@ -144,7 +144,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 		function temp($pos, $cb, $idtype)
 			{
 			$this->allname = bab_translate("All");
-			$this->nickname = bab_translate("Login");
+			$this->nickname = bab_translate("Login ID");
 			global $babDB;
 			$this->cb = $cb;
 			$this->idtype = $idtype;

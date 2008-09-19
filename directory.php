@@ -945,7 +945,7 @@ function addDbContact($id, $fields)
 				{
 				$iddir = 0;
 				$this->buserinfo = true;
-				$this->nickname = bab_translate("Login");
+				$this->nickname = bab_translate("Login ID");
 				$this->password = bab_translate("Password");
 				$this->repassword = bab_translate("Retype Password");
 				$this->notifyuser = bab_translate("Notify user");
@@ -1295,9 +1295,9 @@ function mapDbFile($id, $wsepar, $separ)
 			list($this->idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $this->idgroup >= 1 )
 				{
-				$this->t_dupinfo = bab_translate("Entries with the same login or the same firstname/lastname are duplicates");
+				$this->t_dupinfo = bab_translate("Entries with the same login ID or the same firstname/lastname are duplicates");
 				$this->buserinfo = true;
-				$this->nickname = bab_translate("Login");
+				$this->nickname = bab_translate("Login ID");
 				$this->password = bab_translate("Default password (at least 6 characters)");
 				$this->repassword = bab_translate("Retype default password");
 				$this->altpassword = bab_translate("Or use this field as password if filled");
@@ -1779,12 +1779,12 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->directoryname = bab_toHtml($this->directoryname);
 			$this->fullnametxt = bab_translate("Fullname");
-			$this->nicknametxt = bab_translate("Login");
+			$this->nicknametxt = bab_translate("Login ID");
 			$this->usernickname = bab_toHtml($arr['nickname']);
 			$this->userfullname = bab_toHtml(bab_getUserName($idauser));
 			if( $idatype == 'nickname' )
 				{
-				$this->warning = bab_translate("WARNING: User with this login already exist");
+				$this->warning = bab_translate("WARNING: User with this login ID already exist");
 				}
 			else
 				{
@@ -2699,7 +2699,7 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 	$output = "";
 	if( $idgroup > 0 )
 		{
-		$output .= '"'.str_replace('"','""',bab_translate("Login")).'"'.$separ;
+		$output .= '"'.str_replace('"','""',bab_translate("Login ID")).'"'.$separ;
 		}
 
 	$arrnamef = array();
