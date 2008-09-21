@@ -888,9 +888,9 @@ define('BAB_OC_DELETE_CHILDREN_ONLY', '2');
 define('BAB_OC_MOVE_ENTITY_AND_CHILDREN', '1');
 define('BAB_OC_MOVE_ENTITY_ONLY', '0');
 
-define('BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING', '0');
-define('BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING', '1');
-define('BAB_OC_MOVE_TYPE_AS_CHILD', '2');
+define('BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING', '1');
+define('BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING', '2');
+define('BAB_OC_MOVE_TYPE_AS_CHILD', '0');
 
 
 
@@ -1164,6 +1164,53 @@ function bab_OCGetEntityEx($iIdSessUser, $iIdEntity)
 }
 
 
+function bab_OCUpdateEntity($iIdSessUser, $iIdEntity, $sName, $sDescription)
+{
+	global $babBody, $babDB;
+	
+	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
+	if(false !== $aEntity)
+	{
+		global $babBody;
+		
+		$iIdOrgChart = (int) $aEntity['id_oc'];
+		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		if(0 === strlen(trim($sName)))
+		{
+			$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
+			return false;
+		}
+		
+		$sQuery = 
+			'UPDATE ' . 
+				BAB_OC_ENTITIES_TBL . ' ' .
+			'SET ' . 
+				'name = ' . $babDB->quote($sName) . ', ' . 
+				'description = ' . $babDB->quote($sDescription) . ' ' . 
+			'WHERE ' .
+				'id = ' . $babDB->quote($iIdEntity);
+		
+		//bab_debug($sQuery);	
+		$babDB->db_query($sQuery);
+		
+		require_once dirname(__FILE__) . '/grpincl.php';
+		
+		$iIdManager	= 0;
+		$iIdGroup	= (int) $aEntity['id_group'];
+		
+		bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
+		
+		return true;
+	}
+	return false;
+}
+
+
 function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 {
 	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
@@ -1310,12 +1357,15 @@ function bab_OCMoveEntity($iIdSessUser, $iIdSrcEntity, $iIdTrgEntity, $iMove, $i
 	switch($iMoveType)
 	{
 		case BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING:
+			//bab_debug('previous sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
 			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode, false);
 			return true;
 		case BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING:
+			//bab_debug('next sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
 			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode);
 			return true;
 		case BAB_OC_MOVE_TYPE_AS_CHILD:
+			//bab_debug('as child ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
 			$oBabTree->$sFunctionName($iIdSrcNode, $iIdParentNode);
 			return true;
 	}
@@ -1970,6 +2020,53 @@ function bab_OCGetNodeRank($iIdNode)
 }
 
 
+function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
+{
+	global $babDB;
+	
+	$sSetRowQuery = 'SET @iNumRow = 0';
+	$sQuery = 
+		'SELECT ' .
+			'@iNumRow := IF(octPr.id = octCh.id_parent, @iNumRow + 1, @iNumRow + 0) AS iNumRow, ' .
+			'octCh.id iId, ' .
+			'octCh.id_parent iIdParent, ' .
+			'octCh.lf iLf, ' .
+			'octCh.lr iLr, ' .
+			'octCh.id_user iIdTree, ' .
+			'octEntity.name sName, ' .
+			'octEntity.description sDescription, ' .
+			'octEntity.id iIdEntity ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octPrEntity ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octPr ON octPr.id = octPrEntity.id_node ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octCh ON octCh.id_parent = octPr.id ' .
+		'LEFT JOIN ' . 
+			BAB_OC_ENTITIES_TBL . ' octEntity ON octEntity.id_node = octCh.id ' .
+		'WHERE ' .
+			'octPrEntity.id IN(' . $babDB->quote($iIdParentEntity) . ') AND ' .
+			'octCh.lf > octPr.lf AND octCh.lr < octPr.lr ' . 
+		'HAVING iNumRow = ' . $babDB->quote($iPosition) . ' ' .
+		'ORDER ' .
+			'BY octCh.lf asc';
+			
+	//bab_debug($sSetRowQuery);
+	//bab_debug($sSetRowQuery . ';' . $sQuery);
+	$babDB->db_query($sSetRowQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);	
+		if(0 < $iNumRows)
+		{
+			return $babDB->db_fetch_assoc($oResult);
+		}
+	}
+	return false;
+}
+
+/*
 function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
 {
 	global $babDB;
@@ -2000,7 +2097,7 @@ function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
 			'BY octCh.lf asc';
 			
 	//bab_debug($sSetRowQuery);
-	//bab_debug($sQuery);
+	//bab_debug($sSetRowQuery . ';' . $sQuery);
 	$babDB->db_query($sSetRowQuery);
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
@@ -2012,6 +2109,75 @@ function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
 		}
 	}
 	return false;
+}
+//*/
+
+function bab_OCGetChildCount($iIdEntity)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT ' .
+			'COUNT(DISTINCT octCh.id) iChildCount ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octEntity ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octPr ON octPr.id = octEntity.id_node ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octCh ON octCh.id_parent = octPr.id ' .
+		'WHERE ' .
+			'octEntity.id IN (' . $babDB->quote($iIdEntity) . ')'; 
+			
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		if(1 === $babDB->db_num_rows($oResult))
+		{
+			if(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
+			{
+				return $aData['iChildCount'];
+			}
+		}
+	}
+	return 0;	
+}
+
+
+function bab_OCGetLastChild($iIdEntity)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT ' .
+			'octChEntity.id iIdEntity ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octEntity ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octPr ON octPr.id = octEntity.id_node ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octCh ON octCh.id_parent = octPr.id ' .
+		'LEFT JOIN ' . 
+			BAB_OC_ENTITIES_TBL . ' octChEntity ON octChEntity.id_node = octCh.id ' .
+		'WHERE ' .
+			'octEntity.id IN (' . $babDB->quote($iIdEntity) . ') ' .
+		'ORDER BY ' .
+			'octCh.lr DESC ' .
+		'LIMIT 1'; 
+			
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		if(1 === $babDB->db_num_rows($oResult))
+		{
+			if(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
+			{
+				return $aData['iIdEntity'];
+			}
+		}
+	}
+	return false;	
 }
 
 
