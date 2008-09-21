@@ -2067,6 +2067,7 @@ function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
 	return false;
 }
 
+/*
 function bab_OCIsGroupAssociatedToEntity($iIdGroup)
 {
 	global $babDB;
