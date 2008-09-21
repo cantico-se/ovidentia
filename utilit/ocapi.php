@@ -1244,8 +1244,9 @@ function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 			default:
 				if($oBabTree->remove($iIdNode))
 				{
-					removeOrgChartEntityEx($iIdEntity, $iIdEntityGroup, 
+					removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, 
 						$sIsOrgChartPrimary, $iIdOrgChartGroup);
+					return true;
 				}
 				break;
 		}
@@ -1254,7 +1255,7 @@ function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 	return false;
 }
 
-function removeOrgChartEntityEx($iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
+function removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
 {
 	bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity);
 	
@@ -1480,7 +1481,7 @@ function bab_OCGetRoleById($iIdSessUser, $iIdRole)
 		}
 	}
 
-	if(false === $aData)
+	if(false === $aRole)
 	{
 		return false;
 	}
@@ -1627,7 +1628,7 @@ function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 		
 		foreach($aRole as $iRoleId => $aRoleItem)
 		{
-			bab_OCDeleteRoleUserByRoleId($iIdUserSess, $iRoleId);
+			bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iRoleId);
 		}
 		
 		$aWhereClauseItem = array();
@@ -1837,7 +1838,7 @@ function bab_OCDeleteRoleUserById($iIdUserSess, $iIdRoleUser)
 }
 
 
-function bab_OCDeleteRoleUserByRoleId($iIdUserSess, $iIdRole)
+function bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iIdRole)
 {
 	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
 	if(false !== $aRole)
@@ -2066,8 +2067,7 @@ function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
 	return false;
 }
 
-/*
-function bab_OCGetChildNodeByPosition($iIdParentNode, $iPosition)
+function bab_OCIsGroupAssociatedToEntity($iIdGroup)
 {
 	global $babDB;
 	
