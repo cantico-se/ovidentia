@@ -114,12 +114,11 @@ function dateEnd(day, month, year)
 	</tr>
 
 	<tr>
-		
 		<td colspan="3"> { date2txt } : 
-			<a href="javascript: Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ begintxt }</a> 
+			{ begintxt }
 			<input type="text" name="dateb" size="10" maxlength="10" value="{ dateb }" />
-			&nbsp;<a href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ endtxt }</a> 
-			<input type="text" name="datee" size="10" maxlength="10" value="{ datee }" />
+			&nbsp;<a href="#" onclick="Start('{ dateburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/Calendar.gif" alt="{ begintxt }" border="0" align="absmiddle" /></a>&nbsp;{ endtxt }
+			<input type="text" name="datee" size="10" maxlength="10" value="{ datee }" />&nbsp;<a href="javascript: Start('{ dateeurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/Calendar.gif" alt="{ endtxt }" border="0" align="absmiddle" /></a>
 		</td>
 	</tr>
 	<tr>
@@ -332,11 +331,10 @@ function group_delete_selected() {
 			<tr> 
 				<td align="right">{ t_period }:</td>
 				<td> 
-					<a href="#" onclick="calwin(this);return false;">{ t_date_begin }</a>
-					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />
-
-					&nbsp;<a href="#" onclick="calwin(this);return false;">{ t_date_end }</a>
-					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />
+					{ t_date_begin }
+					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />&nbsp;<a href="#" onclick="calwin(this);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="t_date_begin" border="0" align="absmiddle" /></a>
+					&nbsp;{ t_date_end }
+					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />&nbsp;<a href="#" onclick="calwin(this);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="" border="0" align="absmiddle" /></a>
 				</td>
 			</tr>
 
