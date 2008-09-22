@@ -51,6 +51,15 @@ hr.clear {
 	visibility:hidden;
 	}
 
+h1.title {
+	font-family:"Trebuchet MS",Verdana,Arial;
+	font-size:1.5em;
+	font-weight:bold;
+	color:#039;
+	padding-left:25px;
+	background:transparent url('../images/puce5.gif') no-repeat 4px 50%;
+	}
+
 h2.title {
 	font-family:"Trebuchet MS",Verdana,Arial;
 	font-size:1.5em;
