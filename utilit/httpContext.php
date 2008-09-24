@@ -41,14 +41,27 @@ function bab_storeHttpContext()
 {
 	if('login' == bab_rp('tg', '') && 'signon' == bab_rp('cmd', ''))
 	{
+		$tabreferer = array();
+
+		$referer = bab_rp('referer', '');
+		if( !empty($referer))
+		{
+			$rr = parse_url($referer);
+			if( $rr !== false && isset($rr['query']))
+			{
+				parse_str($rr['query'], $tabreferer);	
+			}
+
+		}
 		$_SESSION['babHttpContext'] = array('Post' => array(),
-			'Get' => array(), 'Request' => array());
+			'Get' => $tabreferer, 'Request' => array());
 		return;
 	}
 	
 	$_SESSION['babHttpContext'] = array('Post' => $_POST,
 		'Get' => $_GET, 'Request' => $_REQUEST);
 }
+
 
 /**
  * Restore the REQUEST, POST, GET from the session
