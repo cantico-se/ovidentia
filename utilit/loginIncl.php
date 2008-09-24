@@ -640,6 +640,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 			loginRedirect($GLOBALS['babUrlScript'] . '?babHttpContext=restore');
 			exit;
 		}
+		die(bab_translate("Failed authentication"));
 	}
 	return true;
 }
