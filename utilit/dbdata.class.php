@@ -246,11 +246,15 @@ class bab_dbdata {
 		}
 
 		if ($id) {
-			$babDB->$method('
+			$res = $babDB->$method('
 				UPDATE '.$babDB->backTick($this->tablename).' 
 				SET '.implode(',',$keys).' 
 				WHERE '.$babDB->backTick($this->primaryautoincremented).' = '.$babDB->quote($id).'
 			');
+			
+			if (false === $res) {
+				return false;
+			}
 			
 			return true;
 		}
