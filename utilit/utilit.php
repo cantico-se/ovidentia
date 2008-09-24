@@ -930,6 +930,21 @@ function addJavascriptFile($file)
 	}
 }
 
+/**
+ * Adds some javascript code to the current page.
+ *
+ * @param string $code
+ */
+function addJavascript($code)
+{
+	global $babOvidentiaJs;
+
+	$babOvidentiaJs .= '"></script><script type="text/javascript">';
+	$babOvidentiaJs .= $code;
+	$babOvidentiaJs .= '</script><script src="'; 
+}
+
+
 function getnextstylesheet()
 {
 return list(,$this->file) = each($this->styleSheet);
