@@ -2547,7 +2547,7 @@
 <string id="PortalAuthentication::login ID must not be called directly">PortalAuthentication::login ne doit pas être appelé directement</string>
 <string id="PortalAuthentication::logout must not be called directly">PortalAuthentication::logout ne doit pas être appelé directement</string>
 <string id="Authentication methods: Form, LDAP, Active directory, Cookie">Méthode d'authentification: Formulaire, LDAP, Active directory, Cookie</string>
-<string id="Planned">Planifié</string>
+<string id="Planned">Planifiée</string>
 <string id="Cost">Coût</string>
 <string id="Time">Temps</string>
 <string id="Real start date">Date de début réelle</string>
