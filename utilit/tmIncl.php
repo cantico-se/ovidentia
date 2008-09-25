@@ -351,7 +351,7 @@ function bab_selectProjectListByDelegation($iIdDelegation)
 		'LEFT JOIN ' .
 			BAB_TSKMGR_PROJECTS_SPACES_TBL . ' ps ON ps.id = p.idProjectSpace ' .
 		'WHERE ' . 
-			'idProjectSpace = \'' . $babDB->db_escape_string($iIdProjectSpace) . '\' ' .
+			'idDelegation = \'' . $babDB->db_escape_string($iIdDelegation) . '\' ' .
 		'ORDER BY ps.name ASC, p.name ASC' ;
 						
 	//bab_debug($query);
