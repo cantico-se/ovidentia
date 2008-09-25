@@ -1460,6 +1460,13 @@ function bab_sitemap_userSection(&$event) {
 			);
 		}
 	
+	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
+		{
+		$array_urls[bab_translate("Thesaurus")] = array(
+			'url' =>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
+			'uid' => 'babUserThesaurus'
+			);
+		}
 	
 	ksort($array_urls);
 	
