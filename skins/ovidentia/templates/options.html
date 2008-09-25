@@ -575,24 +575,25 @@ eval('f.id_substitute.value=\'\';');
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 <tr> 
-<td align="right" nowrap valign="middle"><a href="{ urlfromdate  }">{ fromtxt }</a> : </td>
+<td align="right" nowrap valign="middle">{ fromtxt } : </td>
 <td valign="middle"> 
-<input type="text" name="fromdate_disp" size="10" maxlength="10" value="{ fromdate_val }" disabled="disabled">
-<input type="hidden" name="fromdate" size="10" maxlength="10" value="{ fromdate_val }">
+<input type="text" name="fromdate_disp" size="10" maxlength="10" value="{ fromdate_val }" disabled="disabled" />
+<input type="hidden" name="fromdate" size="10" maxlength="10" value="{ fromdate_val }" /> <a href="{ urlfromdate  }"><img src="{ babSkinPath }images/Puces/Calendar.gif" alt="" border="0" align="absmiddle" /></a>
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle"><a href="{ urltodate  }">{ totxt }</a> : </td>
+<td align="right" nowrap valign="middle">{ totxt } : </td>
 <td valign="middle"> 
-<input type="text" name="todate_disp" size="10" maxlength="10" value="{ todate_val }" disabled="disabled">
-<input type="hidden" name="todate" size="10" maxlength="10" value="{ todate_val }">
+<input type="text" name="todate_disp" size="10" maxlength="10" value="{ todate_val }" disabled="disabled" />
+<input type="hidden" name="todate" size="10" maxlength="10" value="{ todate_val }" /><a href="{ urltodate  }"><img src="{ babSkinPath }images/Puces/Calendar.gif" alt="" border="0" align="absmiddle" /></a>
+
 </td>
 </tr>
 <tr> 
-<td align="right" nowrap valign="middle"><a href="javascript: openPopup('{ browseurl }');">{ usertxt }</a> : </td>
+<td align="right" nowrap valign="middle">{ usertxt } : </td>
 <td valign="middle"> 
-<input type="text" name="user_disp" size="45" maxlength="255" value="{ user_disp_val }" disabled="disabled">&nbsp;&nbsp;<a href="javascript:resetcell();"><img border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
-<input type="hidden" name="id_substitute" value="{ id_substitute_val }">
+<input type="text" name="user_disp" size="45" maxlength="255" value="{ user_disp_val }" disabled="disabled" />&nbsp;<a href="#" onclick="openPopup('{ browseurl }');return false;"><img src="{ babSkinPath }images/Puces/head.gif" alt="" border="0" align="absmiddle" /></a>&nbsp;<a href="javascript:resetcell();"><img border="0" src="{ babSkinPath }images/Puces/del.gif" align="absmiddle" /></a>
+<input type="hidden" name="id_substitute" value="{ id_substitute_val }" />
 </td>
 </tr>
 <tr> 
