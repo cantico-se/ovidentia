@@ -721,7 +721,14 @@ class cal_wmdbaseCls
 					{
 					$modify = 1;
 					}
+				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && ($GLOBALS['BAB_SESS_USERID'] != $evtarr['id_creator'] ))
+					{
+					$viewtitle = 0;
+					}
+				else
+					{
 				$viewtitle = 1;
+					}
 				break;
 
 			default: // no calendar associated with event
