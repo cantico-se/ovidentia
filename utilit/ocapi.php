@@ -1496,6 +1496,123 @@ function bab_OCGetRoleById($iIdSessUser, $iIdRole)
 }
 
 
+function bab_OCGetRoleByType($iIdSessUser, $iIdEntity, $iType)
+{
+	global $babBody, $babDB;
+	
+	$aRole = array();
+	
+	static $aGoodType = array(
+		BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+		BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+		BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+		BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+		
+	$aWhereClauseItem = array();
+		
+	if(!array_key_exists($iType, $aGoodType))
+	{			
+		$babBody->addError(bab_translate("Error: Wrong role type"));
+		return false;
+	}
+	
+	$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+	$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+	
+	$sQuery = 
+		'SELECT ' . 
+			'* ' .
+		'FROM ' . 
+			BAB_OC_ROLES_TBL . ' ' .
+		'WHERE ' . 
+			implode(' AND ', $aWhereClauseItem);
+			
+	//bab_debug($sQuery);
+	$iIdOrgChart = 0;
+	$iNumRows = 0;
+	$aRole	= array();
+	$aDatas	= array();
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$iIdOrgChart = (int) $aDatas['id_oc'];
+			$aRole[] = $aDatas;
+		}
+	}
+		
+	if($iNumRows > 0 && false === bab_OCIsAccessValid($iIdSessUser, $iIdOrgChart))
+	{
+		$babBody->addError(bab_translate("Error: Right insufficient"));
+		return false;
+	}
+	return $aRole;
+}
+
+
+function bab_OCGetRoleByName($iIdSessUser, $iIdEntity, $sName, $iType)
+{
+	global $babBody, $babDB;
+	
+	$aRole = array();
+	
+	static $aGoodType = array(
+		BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+		BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+		BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+		BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+		
+	$aWhereClauseItem = array();
+		
+	if(!array_key_exists($iType, $aGoodType))
+	{			
+		$babBody->addError(bab_translate("Error: Wrong role type"));
+		return false;
+	}
+	
+	if(0 === strlen(trim($sName)))
+	{
+		$babBody->addError(bab_translate("Error: The role name is not valide"));
+		return false;
+	}
+	
+	$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+	$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+	$aWhereClauseItem[] = 'name LIKE ' . $babDB->quote($babDB->db_escape_like($sName));
+	
+	$sQuery = 
+		'SELECT ' . 
+			'* ' .
+		'FROM ' . 
+			BAB_OC_ROLES_TBL . ' ' .
+		'WHERE ' . 
+			implode(' AND ', $aWhereClauseItem);
+			
+	//bab_debug($sQuery);
+	$iIdOrgChart = 0;
+	$iNumRows = 0;
+	$aRole	= array();
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iNumRows = $babDB->db_num_rows($oResult);
+		if(false !== ($aRole = $babDB->db_fetch_assoc($oResult)))
+		{
+			$iIdOrgChart = (int) $aRole['id_oc'];
+		}
+	}
+		
+	if($iNumRows > 0 && false === bab_OCIsAccessValid($iIdSessUser, $iIdOrgChart))
+	{
+		$babBody->addError(bab_translate("Error: Right insufficient"));
+		return false;
+	}
+	return $aRole;
+}
+
+
 function bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 {
 	global $babBody, $babDB;
