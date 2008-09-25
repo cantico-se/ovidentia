@@ -3570,7 +3570,7 @@ function editFolderForCollectiveDir()
 				{
 					//To rebuild sitemap
 					$bRedirect = true;
-					
+/* NA: See BugM 1688 					
 					require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 					
 					aclDuplicateRights(BAB_FMUPLOAD_GROUPS_TBL, $iIdOwner, BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
@@ -3578,6 +3578,7 @@ function editFolderForCollectiveDir()
 					aclDuplicateRights(BAB_FMUPDATE_GROUPS_TBL, $iIdOwner, BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
 					aclDuplicateRights(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner, BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
 					aclDuplicateRights(BAB_FMNOTIFY_GROUPS_TBL, $iIdOwner, BAB_FMNOTIFY_GROUPS_TBL, $oFmFolder->getId());
+*/
 				}
 				
 				if($bChangeFileIdOwner)
