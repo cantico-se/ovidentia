@@ -4142,6 +4142,13 @@ class bab_Calendars extends bab_handler
 		$delegationid = (int) $ctx->get_value('delegationid');
 
 		$babBody->icalendars->initializeCalendars();
+		switch($babBody->icalendars->defaultview)
+			{
+			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
+			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
+			default: $this->view='calmonth'; break;
+			}		
+
 		if( $type === false || $type === '' )
 			{
 			if( $babBody->icalendars->id_percal )
@@ -4244,7 +4251,7 @@ class bab_Calendars extends bab_handler
 			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
 			$this->ctx->curctx->push('CalendarType', $iarr['type']);
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=calmonth&calid=".$this->IdEntries[$this->idx]);
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$this->IdEntries[$this->idx]);
 			$this->idx++;
 			$this->index = $this->idx;
 			next($this->IdEntries);
@@ -4327,7 +4334,12 @@ class bab_CalendarEvents extends bab_handler
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = strtoupper($ctx->get_value('filter')) !== "NO"; 
 		$holiday = strtoupper($ctx->get_value('holiday')) !== "NO"; 
-		
+		switch($babBody->icalendars->defaultview)
+			{
+			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
+			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
+			default: $this->view='calmonth'; break;
+			}		
 
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -4536,7 +4548,7 @@ class bab_CalendarEvents extends bab_handler
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
 			$this->ctx->curctx->push('EventCategoryColor'		, $color);
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
-			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=calmonth".$calid_param."&date=".$date);
+			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
 			$this->ctx->curctx->push('EventCategoryName'		, $p->getProperty('CATEGORIES'));
 			
