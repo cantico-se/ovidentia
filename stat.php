@@ -140,9 +140,10 @@ function displayStatisticPanel($idx)
 
 			if( $babBody->stataccess == BAB_STAT_ACCESS_MANAGER || ($babBody->stataccess == BAB_STAT_ACCESS_DELEGATION && isset($babBody->currentDGGroup['articles']) && $babBody->currentDGGroup['articles'] == 'Y' ))
 				{
-				$this->itemarray[] = array( array('idx' => 'art', 'item' => bab_translate("Articles"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree")
+				$this->itemarray[] = array(  array('idx' => 'topcat', 'item' => bab_translate("Topics categories"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat", 		'treeviewurl' => $GLOBALS['babUrlScript']."?tg=stat&idx=arttree")
 				, array('idx' => 'topart', 'item' => bab_translate("Topics"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topart")
-				, array('idx' => 'topcat', 'item' => bab_translate("Topics categories"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=topcat") );
+				, array('idx' => 'art', 'item' => bab_translate("Articles"), 'url' => $GLOBALS['babUrlScript']."?tg=stat&idx=art")
+				);
 				if( empty($this->current)) { $this->current = 'art'; }
 				}
 
