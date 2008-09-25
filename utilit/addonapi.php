@@ -1468,7 +1468,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 			$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
 		}
 		
-		$message = array('category' => $category,
+		$message = array('category' => str_replace(' ', '_', $category),
 						 'severity' => $severity,
 						 'text' => $data,
 						 'file' => $file,
