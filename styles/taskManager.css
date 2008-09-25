@@ -66,7 +66,6 @@
 }
 
 .taskManager td, .taskManager th {
-	white-space: nowrap;
 	padding:2px 5px;
 	border:#444 1px solid;
 }
