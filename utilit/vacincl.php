@@ -178,8 +178,13 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 	
 	$res = $babDB->db_query('SELECT * FROM '.BAB_VAC_RIGHTS_INPERIOD_TBL.' WHERE id_right='.$babDB->quote($id_right));
 	
+	if( !$res || $babDB->db_num_rows($res) == 0 )
+	 {
+		return true;
+	 }
 	
-	$access_include = 1;
+	
+	$access_include = 0;
 	$access_exclude = 1;
 	
 	
@@ -428,7 +433,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			
 			
 			
-			if ($access_on_period) { 
+			if ($begin) { 
 				$access = bab_vac_isRightAccessibleOnPeriod((int) $arr['id_right'], $beginp, $endp, (bool) $arr['validoverlap']);
 			} else {
 				$access = true; // le doit est accessible si on ne test pas de demande (premiere page de la demande)
