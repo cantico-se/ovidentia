@@ -218,7 +218,7 @@ else
 <input type="hidden" name="navitem" value="" />
 <input type="hidden" name="field" value="{ field }" />
 <input type="hidden" name="order" value="{ order }" />
-<input type="hidden" name="advenced" value="{ fields[advenced] }" />
+<input type="hidden" name="advenced" value="{ htmlfields[advenced] }" />
 <table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground" align="center">
@@ -228,7 +228,7 @@ else
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 	<td align="right">
-	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ fields[what] }" />&nbsp;
+	&nbsp;&nbsp;{ search }:&nbsp;</td><td><input type="text" name="what" size="35" value="{ htmlfields[what] }" />&nbsp;
 	</td>
 	<td align="left">&nbsp;
 	</td>
@@ -242,7 +242,7 @@ else
 			  <option value="AND" { and_selected }>{ option_and }</option>
 			  <option value="NOT" { not_selected }>{ option_not }</option>
 	</select>
-	<input type="text" name="what2" size="20" value="{ fields[what2] }" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] --> />
+	<input type="text" name="what2" size="20" value="{ htmlfields[what2] }" <!--#if fields[advenced] "== 1" --> <!--#else fields[advenced] --> style="display:none"<!--#endif fields[advenced] --> />
 	</td>
 	<td align="center" width="1">
 	&nbsp;
@@ -289,7 +289,7 @@ else
 	<tr>
 	<td align="right">{ tags_txt }</td>
 	<td nowrap="nowrap">
-	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ fields[tagsname] }" />
+	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ htmlfields[tagsname] }" />
 	<div align="left" id="tags-ac" class="auto_complete">
 	</div>&nbsp;&nbsp;
 	<select name="optags">
@@ -308,12 +308,12 @@ else
 	<!--#if BAB_SESS_USERID -->
 	<td align="right"><a class="BabAlphabetLink" href="javascript: openPopup('{ author_url }');">{ Author }</a></td>
 	<td>
-	<input name="a_author" value="{ fields[a_author_memo] }" size="30" disabled>&nbsp;<a href="javascript:cleanAuthor()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
-	<input type="hidden" name="a_authorid" value="{ fields[a_authorid] }">
-	<input type="hidden" name="a_author_memo" value="{ fields[a_author_memo] }">
+	<input name="a_author" value="{ htmlfields[a_author_memo] }" size="30" disabled>&nbsp;<a href="javascript:cleanAuthor()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+	<input type="hidden" name="a_authorid" value="{ htmlfields[a_authorid] }">
+	<input type="hidden" name="a_author_memo" value="{ htmlfields[a_author_memo] }">
 	<!--#else BAB_SESS_USERID -->
 	<td align="right">{ Author }</td>
-	<td><input name="a_author_memo" value="{ fields[a_author_memo] }"></td>
+	<td><input name="a_author_memo" value="{ htmlfields[a_author_memo] }"></td>
 	<!--#endif BAB_SESS_USERID -->
 	</td>
 	</tr>
@@ -321,18 +321,18 @@ else
 		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 		</td>
-		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled="disabled">&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
-		<input type="hidden" name="after" value="{ fields[after] }">
-		<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
+		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ htmlfields[after_memo] }" disabled="disabled">&nbsp;<a href="javascript:cleanAfter();"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="after" value="{ htmlfields[after] }">
+		<input type="hidden" name="after_memo" value="{ htmlfields[after_memo] }">
 		</td>
 	</tr>
 	<tr>
 		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 		</td>
-		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
-		<input type="hidden" name="before" value="{ fields[before] }">
-		<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
+		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ htmlfields[before_memo] }" disabled>&nbsp;<a href="javascript:cleanBefore()"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="before" value="{ htmlfields[before] }">
+		<input type="hidden" name="before_memo" value="{ htmlfields[before_memo] }">
 		</td>
 	</tr>
 	<!--#if index -->
@@ -408,18 +408,18 @@ setselects(document.forms.searchForm.g_directory);
 		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ afterlink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ after }</a>
 		</td>
-		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ fields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';" /><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
-		<input type="hidden" name="after" value="{ fields[after] }">
-		<input type="hidden" name="after_memo" value="{ fields[after_memo] }">
+		<td align="left"><input type="text" size=10 maxlength=10 name="after_display" value="{ htmlfields[after_memo] }" disabled>&nbsp;<a href="#" onclick="after_display.value='';after_memo.value='';after.value='';" /><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="after" value="{ htmlfields[after] }">
+		<input type="hidden" name="after_memo" value="{ htmlfields[after_memo] }">
 		</td>
 	</tr>
 	<tr>
 		<td align="right">
 		<a  class="BabAlphabetLink" href="javascript: Start('{ beforelink }','CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ before }</a>
 		</td>
-		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ fields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
-		<input type="hidden" name="before" value="{ fields[before] }">
-		<input type="hidden" name="before_memo" value="{ fields[before_memo] }">
+		<td align="left"><input type="text" size=10 maxlength=10 name="before_display" value="{ htmlfields[before_memo] }" disabled>&nbsp;<a href="#" onclick="before_display.value='';before_memo.value='';before.value='';"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" align="absmiddle"></a>
+		<input type="hidden" name="before" value="{ htmlfields[before] }">
+		<input type="hidden" name="before_memo" value="{ htmlfields[before_memo] }">
 		</td>
 	</tr>
 	</table>
@@ -436,7 +436,7 @@ setselects(document.forms.searchForm.g_directory);
 	<tr>
 	<td align="right">{ tags_txt }</td>
 	<td nowrap="nowrap">
-	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ fields[tagsname] }" />
+	<input type="text" id="idtags" name="tagsname" size="30" maxlength="255" value="{ htmlfields[tagsname] }" />
 	<div align="left" id="tags-ac" class="auto_complete">
 	</div>&nbsp;&nbsp;
 	<select name="optags">

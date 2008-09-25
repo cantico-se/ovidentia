@@ -215,6 +215,12 @@ function searchKeyword($item , $option = "OR")
 			$this->in = bab_translate("in");
 			if (!isset($this->fields['what'])) $this->fields['what'] = '';
 			if (!isset($this->fields['what2'])) $this->fields['what2'] = '';
+			if (!isset($this->fields['advenced'])) $this->fields['advenced'] = '';
+			$this->htmlfields = $this->fields;
+			foreach($this->htmlfields as $key=>$val)
+				{
+				$this->fields[$key] = bab_toHTML($val);
+				}
 			$this->what = stripslashes($this->fields['what']);
 			$this->fields['what'] = bab_toHtml(stripslashes($this->fields['what']));
 			$this->fields['what2'] = bab_toHtml(stripslashes($this->fields['what2']));
@@ -234,7 +240,7 @@ function searchKeyword($item , $option = "OR")
 			
 			$this->pat = bab_toHtml(bab_rp('pat'));
 			$this->field = bab_rp('field');
-			$this->order = bab_rp('order');
+			$this->order = bab_toHtml(bab_rp('order'));
 			$this->atleastone_txt = bab_translate("Or");
 			$this->all_txt = bab_translate("And");
 
@@ -269,7 +275,13 @@ function searchKeyword($item , $option = "OR")
 			if ((isset($this->fields['idx']) && $this->fields['idx'] != "find")||((!isset($this->fields['a_mm']))&&(!isset($this->fields['g_mm'])))) 
 				{
 				foreach($this->el_to_init as  $value)
-					if (! isset($this->fields[$value])) $this->fields[$value] = "";
+					{
+					if (! isset($this->fields[$value]))
+						{
+						$this->fields[$value] = "";
+						$this->htmlfields[$value] = "";
+						}
+					}
 				}
 
 			$this->busetags = false;
@@ -503,7 +515,7 @@ function searchKeyword($item , $option = "OR")
 				$this->name = $arr['name'];
 				$this->description = $arr['description'];
 				$this->descriptionJs = addslashes($arr['description']);
-				$this->fieldvalue = isset($this->fields[$arr['name']])?$this->fields[$arr['name']]:'';
+				$this->fieldvalue = isset($this->htmlfields[$arr['name']])?$this->htmlfields[$arr['name']]:'';
 				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $arr['name'])
 					$this->selected = "selected";
 				else	
@@ -548,7 +560,7 @@ function searchKeyword($item , $option = "OR")
 				{
 				$this->fieldcounter = $j;
 				
-				$this->value = isset($this->fields['dirfield_'.$j]) ? $this->fields['dirfield_'.$j] : '';
+				$this->value = isset($this->htmlfields['dirfield_'.$j]) ? $this->htmlfields['dirfield_'.$j] : '';
 				$this->j = $j;
 				$j++;
 				return true;
