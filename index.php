@@ -347,6 +347,9 @@ function printBody()
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
+			$this->tpowered = bab_translate("Powered by Ovidentia,");
+			$this->tgroupware = bab_translate("Groupware Portal");
+			$this->ttrademark = bab_translate('Ovidentia is a registered trademark by');
 			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
 				{
 				$this->login = bab_translate("Logout");

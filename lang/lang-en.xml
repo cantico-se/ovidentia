@@ -1546,6 +1546,9 @@
 <string id="SMTP: manual configuration">SMTP: manual configuration</string>
 <string id="Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file">Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file</string>
 <string id="Day number must be 1 at least">Day number must be 1 at least</string>
+<string id="Powered by Ovidentia,">Powered by Ovidentia,</string>
+<string id="Groupware Portal">Groupware Portal</string>
+<string id="Ovidentia is a registered trademark by">Ovidentia is a registered trademark by</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
