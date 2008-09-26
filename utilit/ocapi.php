@@ -1887,21 +1887,23 @@ function bab_OCGetRoleUserByRoleId($iIdSessUser, $iIdRole)
 }
 
 
-function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdRole, $iIdUser)
+function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdEntity, $iIdUser)
 {
 	//This function test right
-	if(false !== bab_OCGetRoleById($iIdSessUser, $iIdRole))
+	if(false !== bab_OCGetEntityEx($iIdSessUser, $iIdEntity))
 	{
 		global $babDB;
 		
 		$sQuery = 
 			'SELECT ' .
-				'* ' .
+				'ru.* ' .
 			'FROM ' . 
-				BAB_OC_ROLES_USERS_TBL . ' ' .
+				BAB_OC_ROLES_USERS_TBL . ' ru ' .
+			'LEFT JOIN ' .
+				BAB_OC_ROLES_TBL . ' r on r.id = ru.id_role ' . 
 			'WHERE ' .
-				'id_role = ' . $babDB->quote($iIdRole) . ' AND ' .
-				'id_user = ' . $babDB->quote($iIdUser);
+				'r.id_entity = ' . $babDB->quote($iIdEntity) . ' AND ' .
+				'ru.id_user = ' . $babDB->quote($iIdUser);
 	
 		$aRoleUser = false;
 		$aDatas = false;
@@ -1922,6 +1924,7 @@ function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdRole, $iIdUser)
 	}
 	return false;
 }
+
 
 
 function bab_OCDeleteRoleUserById($iIdUserSess, $iIdRoleUser)
@@ -1946,6 +1949,27 @@ function bab_OCDeleteRoleUserById($iIdUserSess, $iIdRoleUser)
 					BAB_OC_ROLES_USERS_TBL . ' ' .
 				'WHERE ' .
 					'id = ' . $babDB->quote($iIdRoleUser);
+			
+			//bab_debug($sQuery);
+			return $babDB->db_query($sQuery);
+		}
+	}
+	return false;
+}
+
+
+function bab_OCDeleteRoleUserByIds($iIdUserSess, $iIdOrgChart, $aIdRoleUser)
+{
+	if(false !== bab_OCGet($iIdSessUser, $iIdOrgChart))
+	{
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdUserSess))
+		{
+			global $babDB;
+			$sQuery = 
+				'DELETE FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ' .
+				'WHERE ' .
+					'id IN(' . $babDB->quote($iIdRoleUser) . ')';
 			
 			//bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
@@ -1980,6 +2004,8 @@ function bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iIdRole)
 	}
 	return false;
 }
+
+
 
 
 function bab_OCDeleteRoleUserByUserId($iIdUserSess, $iIdRole, $iIdUser)
