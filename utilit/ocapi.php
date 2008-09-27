@@ -1090,33 +1090,8 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 				{				
 					while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
 					{
-						$sQuery = 
-							'SELECT ' .
-								'ocrut.id ' .
-							'FROM ' . 
-								BAB_OC_ROLES_USERS_TBL . ' ocrut ' .
-							'LEFT JOIN ' . 
-								BAB_OC_ROLES_TBL . ' ocrt on ocrt.id = ocrut.id_role ' . 
-							'WHERE ' .
-								'ocrt.id_oc = ' . $babDB->quote($iIdOrgChart) . ' AND ' .
-								'ocrut.id_user = ' . $babDB->quote($aData['id']) . ' AND ' .
-								'ocrut.isprimary = \'Y\'';
-			
-						//bab_debug($sQuery);
-												
-						$oResult2 = $babDB->db_query($sQuery);
-						if(false !== $oResult2)
-						{
-							$sPrimary = 'Y';
-							$iNumRows = $babDB->db_num_rows($oResult2);
-							if(0 < $iNumRows)
-							{
-								$isprimary = 'N';
-							}
-				
-							$iIdUser = (int) $aData['id'];
-							bab_OCCreateRoleUser($iIdSessUser, $iIdMemberRole, $iIdUser, $sPrimary);
-						}
+						$iIdUser = (int) $aData['id'];
+						bab_OCCreateRoleUser($iIdSessUser, $iIdMemberRole, $iIdUser);
 					}
 				}
 			}
@@ -1779,107 +1754,121 @@ function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 
 //Role user functions
 
-function bab_OCCreateRoleUser($iIdSessUser, $iIdRole, $iIdUser, $sPrimary)
+function bab_OCCreateRoleUser($iIdSessUser, $iIdRole, $iIdUser)
 {
+	global $babDB, $babBody;
+	
 	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
 	if(false !== $aRole)
 	{
-		$iIdOrgChart = (int) $aRole['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-		{
-			global $babBody;
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
-		}
+		$iIdEntity		= (int) $aRole['id_entity'];
+		$iIdOrgChart	= (int) $aRole['id_oc'];
 		
-		global $babDB;
-		
-		$sQuery = 
-			'INSERT INTO ' . BAB_OC_ROLES_USERS_TBL . ' ' .
-				'(' .
-					'`id`, ' .
-					'`id_role`, `id_user`, `isprimary` ' .
-				') ' .
-			'VALUES ' . 
-				'(\'\', ' . 
-					$babDB->quote($iIdRole) . ', ' . 
-					$babDB->quote($iIdUser) . ', ' . 
-					$babDB->quote($sPrimary) . 
-				')'; 
-	
-		//bab_debug($sQuery);
-		$oResult = $babDB->db_query($sQuery);
-		if(false !== $oResult)
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			return $babDB->db_insert_id();
-		}
-	}
-	return false;
-}
-
-
-function bab_OCGetRoleUserById($iIdSessUser, $iIdRoleUser)
-{
-	global $babDB;
-	
-	$sQuery = 
-		'SELECT ' .
-			'* ' .
-		'FROM ' . 
-			BAB_OC_ROLES_USERS_TBL . ' ' .
-		'WHERE ' .
-			'id = ' . $babDB->quote($iIdRoleUser);
-
-	$aRoleUser = false;
-	//bab_debug($sQuery);
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
-	{
-		$iNumRows = $babDB->db_num_rows($oResult);	
-		if(1 === $iNumRows)
-		{
-			$aRoleUser = $babDB->db_fetch_assoc($oResult);
-		}
-	}
-	
-	//This function test right
-	if(false !== $aRoleUser && false !== bab_OCGetRoleById($iIdSessUser, $aRoleUser['id_role']))
-	{
-		return $aRoleUser;
-	}
-	return false;
-}
-
-
-function bab_OCGetRoleUserByRoleId($iIdSessUser, $iIdRole)
-{
-	//This function test right
-	if(false !== bab_OCGetRoleById($iIdSessUser, $iIdRole))
-	{
-		global $babDB;
-		
-		$sQuery = 
-			'SELECT ' .
-				'* ' .
-			'FROM ' . 
-				BAB_OC_ROLES_USERS_TBL . ' ' .
-			'WHERE ' .
-				'id_role = ' . $babDB->quote($iIdRole);
-	
-		$aRoleUser = false;
-		$aDatas = false;
-		//bab_debug($sQuery);
-		$oResult = $babDB->db_query($sQuery);
-		if(false !== $oResult)
-		{
-			$iNumRows = $babDB->db_num_rows($oResult);	
-			if(0 < $iNumRows)
+			$sQuery = 
+				'SELECT ' .
+					'* ' .
+				'FROM  ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ' . 
+				'WHERE ' .
+					'id_role = ' . $babDB->quote($iIdRole) . ' AND ' .
+					'id_user = ' . $babDB->quote($iIdUser);
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false === $oResult)
 			{
-				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				return false;
+			}
+			
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if($iNumRows > 0 )
+			{
+				$babBody->addError(bab_translate("User already exist!"));
+				return;
+			}
+			
+			$sPrimary = 'Y';
+			
+			$sQuery = 
+				'SELECT ' .
+					'ocrut.id ' .
+				'FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ocrut ' . 
+				'LEFT JOIN ' . 
+					BAB_OC_ROLES_TBL . ' ocrt on ocrut.id_role = ocrt.id ' . 
+				'WHERE ' .
+					'ocrt.id_oc = ' . $babDB->quote($iIdOrgChart) . ' AND ' .
+					'ocrut.id_user = ' . $babDB->quote($iIdUser) . ' AND ' .
+					'ocrut.isprimary = \'Y\'';
+					
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false === $oResult)
+			{
+				return false;
+			}
+			
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if($iNumRows > 0 )
+			{
+				$sPrimary = 'N';
+			}
+	
+			$aOrgChart	= bab_OCGet($iIdSessUser, $iIdOrgChart);
+			$aEntity	= bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
+			
+			if(false === $aOrgChart || false === $aEntity)
+			{
+				return false;
+			}
+			
+			if('Y' === (string) $aOrgChart['isprimary'] && 1 === (int) $aOrgChart['id_group'] && 0 !== (int) $aEntity['id_group'])
+			{
+				$sQuery = 
+					'SELECT ' . 
+						'id_user ' . 
+					'FROM ' . 
+						BAB_DBDIR_ENTRIES_TBL . ' ' . 
+					'WHERE ' .
+						'id = '.$babDB->quote($iIdUser);
+					
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false === $oResult)
 				{
-					$aRoleUser[$aDatas['id']] = $aDatas;
+					return false;
 				}
-				return $aRoleUser;
+				
+				$iNumRows = $babDB->db_num_rows($oResult);
+				if($iNumRows > 0 )
+				{
+					if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+					{
+						require_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
+						bab_addUserToGroup($aDatas['id_user'], $aEntity['id_group'], false);
+					}
+				}
+			}
+			
+			$sQuery = 
+				'INSERT INTO ' . BAB_OC_ROLES_USERS_TBL . ' ' .
+					'(' .
+						'`id`, ' .
+						'`id_role`, `id_user`, `isprimary` ' .
+					') ' .
+				'VALUES ' . 
+					'(\'\', ' . 
+						$babDB->quote($iIdRole) . ', ' . 
+						$babDB->quote($iIdUser) . ', ' . 
+						$babDB->quote($sPrimary) . 
+					')'; 
+		
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				return $babDB->db_insert_id();
 			}
 		}
 	}
@@ -1926,53 +1915,81 @@ function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdEntity, $iIdUser)
 }
 
 
-
-function bab_OCDeleteRoleUserById($iIdUserSess, $iIdRoleUser)
+function bab_OCDeleteUserRolesByRoleUserIds($iIdSessUser, $aIdRoleUser, $iIdUser)
 {
-	$aRoleUser = bab_OCGetRoleUserById($iIdSessUser, $iIdRoleUser);
-	if(false !== $aRoleUser)
+	foreach($aIdRoleUser as $IdRoleUser)
 	{
-		$aRole = bab_OCGetRoleById($iIdSessUser, $aRoleUser['id_role']);
-		if(false !== $aRole)
-		{
-			$iIdOrgChart = (int) $aRole['id_oc'];
-			if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-			{
-				global $babBody;
-				$babBody->addError(bab_translate("Acces denied"));
-				return false;
-			}
-			
-			global $babDB;
-			$sQuery = 
-				'DELETE FROM ' . 
-					BAB_OC_ROLES_USERS_TBL . ' ' .
-				'WHERE ' .
-					'id = ' . $babDB->quote($iIdRoleUser);
-			
-			//bab_debug($sQuery);
-			return $babDB->db_query($sQuery);
-		}
+		bab_OCDeleteRoleUserByRoleUserId($iIdSessUser, $IdRoleUser, $iIdUser);
 	}
-	return false;
 }
 
 
-function bab_OCDeleteRoleUserByIds($iIdUserSess, $iIdOrgChart, $aIdRoleUser)
+function bab_OCDeleteRoleUserByRoleUserId($iIdSessUser, $IdRoleUser)
 {
-	if(false !== bab_OCGet($iIdSessUser, $iIdOrgChart))
-	{
-		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdUserSess))
-		{
-			global $babDB;
-			$sQuery = 
-				'DELETE FROM ' . 
-					BAB_OC_ROLES_USERS_TBL . ' ' .
-				'WHERE ' .
-					'id IN(' . $babDB->quote($iIdRoleUser) . ')';
+	global $babDB;
+	
+	$iIdRole = 0;
+	$aUserInfo = array();
+	
+	$sQuery =
+		'SELECT ' .
+			'id_role, ' .
+			'id_user, ' .
+			'isprimary ' .
+		'FROM ' . 
+			BAB_OC_ROLES_USERS_TBL . ' ' .
+		'WHERE ' .
+			'id = ' . $babDB->quote($IdRoleUser);
 			
-			//bab_debug($sQuery);
-			return $babDB->db_query($sQuery);
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false === $oResult)
+	{
+		return false;		
+	}
+	
+	$iNumRows = $babDB->db_num_rows($oResult);	
+	if(0 < $iNumRows)
+	{
+		$iIndex = 0;
+		if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$iIdRole = (int) $aDatas['id_role'];
+			$aUserInfo[] = array('iIdUser' => $aDatas['id_user'], 'sIsPrimary' => $aDatas['isprimary']);
+		}
+	}
+
+	if(0 == count($aUserInfo))
+	{
+		return false;
+	}
+
+	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
+	if(false !== $aRole)
+	{
+		$iIdOrgChart = (int) $aRole['id_oc'];
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
+		{
+			$iIdEntity	= (int) $aRole['id_entity'];
+			foreach($aUserInfo as $iKey => $aItem)
+			{
+				$iIdUser = (int) $aItem['iIdUser'];
+				$sIsPrimary = (string) $aItem['sIsPrimary'];
+					
+				$sQuery = 
+					'DELETE FROM ' . 
+						BAB_OC_ROLES_USERS_TBL . ' ' .
+					'WHERE ' .
+						'id_role = ' . $babDB->quote($iIdRole) . ' AND ' .
+						'id_user = ' . $babDB->quote($iIdUser);
+				//bab_debug($sQuery);
+				$bRet = $babDB->db_query($sQuery);
+				if(false !== $bRet)
+				{
+					bab_OCCommonDeleteRoleUserAction($iIdSessUser, $iIdOrgChart, $iIdEntity, $iIdUser, $sIsPrimary);
+				}
+			}
+			return true;
 		}
 	}
 	return false;
@@ -1981,59 +1998,188 @@ function bab_OCDeleteRoleUserByIds($iIdUserSess, $iIdOrgChart, $aIdRoleUser)
 
 function bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iIdRole)
 {
+	global $babDB;
+	
+	$aUserInfo = array();
+	
+	$sQuery =
+		'SELECT ' .
+			'id_user, ' .
+			'isprimary ' .
+		'FROM ' . 
+			BAB_OC_ROLES_USERS_TBL . ' ' .
+		'WHERE ' .
+			'id_role = ' . $babDB->quote($iIdRole);
+			
+	//bab_debug($sQuery);
+	$oResult = $babDB->db_query($sQuery);
+	if(false === $oResult)
+	{
+		return false;		
+	}
+	
+	$iNumRows = $babDB->db_num_rows($oResult);	
+	if(0 < $iNumRows)
+	{
+		$iIndex = 0;
+		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		{
+			$aUserInfo[] = array('iIdUser' => $aDatas['id_user'], 'sIsPrimary' => $aDatas['isprimary']);
+		}
+	}
+
+	if(0 == count($aUserInfo))
+	{
+		return false;
+	}
+	
 	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
 	if(false !== $aRole)
 	{
 		$iIdOrgChart = (int) $aRole['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			global $babBody;
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
+			$iIdEntity	= (int) $aRole['id_entity'];
+			
+			$sQuery = 
+				'DELETE FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ' .
+				'WHERE ' .
+					'id_role IN(' . $babDB->quote($iIdRole) . ')';
+			//bab_debug($sQuery);
+			$bRet = $babDB->db_query($sQuery);
+			if(false !== $bRet)
+			{
+				foreach($aUserInfo as $iKey => $aItem)
+				{
+					$iIdUser = (int) $aItem['iIdUser'];
+					$sIsPrimary = (string) $aItem['sIsPrimary'];
+					
+					bab_OCCommonDeleteRoleUserAction($iIdSessUser, $iIdOrgChart, $iIdEntity, $iIdUser, $sIsPrimary);
+				}
+				return true;
+			}
 		}
-		global $babDB;
-		
-		$sQuery = 
-			'DELETE FROM ' . 
-				BAB_OC_ROLES_USERS_TBL . ' ' .
-			'WHERE ' .
-				'id_role IN(' . $babDB->quote($iIdRole) . ')';
-		
-		//bab_debug($sQuery);
-		return $babDB->db_query($sQuery);
 	}
 	return false;
 }
 
 
-
-
-function bab_OCDeleteRoleUserByUserId($iIdUserSess, $iIdRole, $iIdUser)
+//This function must not be called directly			
+function bab_OCCommonDeleteRoleUserAction($iIdSessUser, $iIdOrgChart, $iIdEntity, $iIdUser, $sIsPrimary)
 {
-	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
-	if(false !== $aRole)
-	{
-		$iIdOrgChart = (int) $aRole['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-		{
-			global $babBody;
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
-		}
-		global $babDB;
-		
+	global $babDB;
+	
+	$sQuery = 
+		'DELETE FROM ' . 
+			BAB_VAC_PLANNING_TBL . ' ' .
+		'WHERE ' .
+			'id_user = '	. $babDB->quote($iIdUser);
+	//bab_debug($sQuery);
+	$babDB->db_query($sQuery);
+
+	if('Y' === $sIsPrimary)
+	{		
 		$sQuery = 
-			'DELETE FROM ' . 
-				BAB_OC_ROLES_USERS_TBL . ' ' .
+			'SELECT ' .
+				'ocrut.id ' .
+			'FROM ' .
+				BAB_OC_ROLES_USERS_TBL . ' ocrut ' .
+			'LEFT JOIN ' .
+				BAB_OC_ROLES_TBL . ' ocrt on ocrt.id = ocrut.id_role ' .
 			'WHERE ' .
-				'id_user = ' . $babDB->quote($iIdUser) . ' AND ' .
-				'id_role = ' . $babDB->quote($iIdRole);
-		
+				'ocrt.id_oc = ' . $babDB->quote($iIdOrgChart) . 'AND ' .
+				'ocrut.id_user = ' . $babDB->quote($iIdUser);
 		//bab_debug($sQuery);
-		return $babDB->db_query($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);	
+			if(0 < $iNumRows)
+			{
+				$iIndex = 0;
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					//user must have a primary role, use the first
+					$sQuery = 
+						'UPDATE ' . 
+							BAB_OC_ROLES_USERS_TBL . ' ' .
+						'SET ' . 
+							'isprimary = ' . $babDB->quote($sIsPrimary) . ' ' .
+						'WHERE id = ' . $babDB->quote($aDatas['id']);
+					//bab_debug($sQuery);
+					$babDB->db_query($sQuery);
+					$sIsPrimary = 'N';	
+				}
+			}
+		}
+	
+		$aOrgChart = bab_OCGet($iIdSessUser, $iIdOrgChart);
+		$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
+		if(false !== $aOrgChart && false !== $aEntity)
+		{
+			if('Y' === (string) $aOrgChart['isprimary'] && 1 === (int) $aOrgChart['id_group'] && 0 !== (int) $aEntity['id_group'])
+			{
+				$sQuery = 
+					'SELECT ' . 
+						'COUNT(orut.id) as iTotal ' .
+					'FROM ' . 
+						BAB_OC_ROLES_USERS_TBL . ' orut ' . 
+					'LEFT JOIN ' . 
+						BAB_OC_ROLES_TBL . ' ort on ort.id = orut.id_role ' .
+					'LEFT JOIN ' . 
+						BAB_OC_ENTITIES_TBL . ' oct on oct.id = ort.id_entity ' . 
+					'WHERE ' .
+						'orut.id_user = ' . $babDB->quote($sIsPrimary) . ' AND ' .
+						'ort.id_entity = ' . $babDB->quote($iIdEntity);
+						
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false !== $oResult)
+				{
+					$iNumRows = $babDB->db_num_rows($oResult);	
+					if(0 < $iNumRows)
+					{
+						if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+						{
+							if(0 === (int) $aDatas['iTotal'])
+							{
+								$sQuery = 
+									'SELECT ' . 
+										'id_user ' . 
+									'FROM ' . 
+										BAB_DBDIR_ENTRIES_TBL . ' ' . 
+									'WHERE ' . 
+										'id = ' . $babDB->quote($iIdUser);
+								//bab_debug($sQuery);
+								$oResult = $babDB->db_query($sQuery);
+								if(false !== $oResult)
+								{
+									$iNumRows = $babDB->db_num_rows($oResult);	
+									if(0 < $iNumRows)
+									{
+										if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+										{
+											$iIdUser = (int) $aDatas['id_user'];
+											$sQuery = 
+												'DELETE from ' . 
+													BAB_USERS_GROUPS_TBL . ' ' .
+												'WHERE ' .
+													'id_group = ' . $babDB->quote($aEntity['id_group']) . ' AND ' . 
+													'id_object = ' . $babDB->quote($iIdUser);
+											//bab_debug($sQuery);
+											$babDB->db_query($sQuery);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
-	return false;
-}
+}				
 
 
 
@@ -2209,52 +2355,6 @@ function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
 	}
 	return false;
 }
-
-/*
-function bab_OCIsGroupAssociatedToEntity($iIdGroup)
-{
-	global $babDB;
-	
-	$sSetRowQuery = 'SET @iNumRow = 0';
-	$sQuery = 
-		'SELECT ' .
-			'@iNumRow := IF(octPr.id = octCh.id_parent, @iNumRow + 1, @iNumRow + 0) AS iNumRow, ' .
-			'octCh.id iId, ' .
-			'octCh.id_parent iIdParent, ' .
-			'octCh.lf iLf, ' .
-			'octCh.lr iLr, ' .
-			'octCh.id_user iIdTree, ' .
-			'octEntity.name sName, ' .
-			'octEntity.description sDescription, ' .
-			'octEntity.id iIdEntity ' .
-		'FROM ' .
-			BAB_OC_TREES_TBL . ' octPr, ' .
-			BAB_OC_TREES_TBL . ' octCh ' .
-		'LEFT JOIN ' . 
-			BAB_OC_ENTITIES_TBL . ' octEntity ON octEntity.id_node = octCh.id ' .
-		'WHERE ' .
-			'octPr.id IN(' . $babDB->quote($iIdParentNode) . ') AND ' .
-			'octCh.id_parent IN(' . $babDB->quote($iIdParentNode) . ') AND ' .
-			'octCh.lf > octPr.lf AND octCh.lr < octPr.lr ' . 
-		'HAVING iNumRow = ' . $babDB->quote($iPosition) . ' ' .
-		'ORDER ' .
-			'BY octCh.lf asc';
-			
-	//bab_debug($sSetRowQuery);
-	//bab_debug($sSetRowQuery . ';' . $sQuery);
-	$babDB->db_query($sSetRowQuery);
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
-	{
-		$iNumRows = $babDB->db_num_rows($oResult);	
-		if(0 < $iNumRows)
-		{
-			return $babDB->db_fetch_assoc($oResult);
-		}
-	}
-	return false;
-}
-//*/
 
 function bab_OCGetChildCount($iIdEntity)
 {
