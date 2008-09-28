@@ -1466,7 +1466,7 @@ function bab_OCGetRoleByType($iIdSessUser, $iIdEntity, $iType)
 		
 	if(!array_key_exists($iType, $aGoodType))
 	{			
-		$babBody->addError(bab_translate("Error: Wrong role type"));
+		$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
 		return false;
 	}
 	
@@ -1522,13 +1522,13 @@ function bab_OCGetRoleByName($iIdSessUser, $iIdEntity, $sName, $iType)
 		
 	if(!array_key_exists($iType, $aGoodType))
 	{			
-		$babBody->addError(bab_translate("Error: Wrong role type"));
+		$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
 		return false;
 	}
 	
 	if(0 === strlen(trim($sName)))
 	{
-		$babBody->addError(bab_translate("Error: The role name is not valide"));
+		$babBody->addError(bab_translate("Error: The role name is not valid"));
 		return false;
 	}
 	
@@ -1585,7 +1585,7 @@ function bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 	{
 		if(!array_key_exists($iType, $aGoodType))
 		{			
-			$babBody->addError(bab_translate("Error: Wrong role type"));
+			$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
 			return false;
 		}
 		
@@ -1638,7 +1638,7 @@ function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 			$aRole = bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType);
 			if(false === $aRole)
 			{
-				$babBody->addError(bab_translate("Error : cannot get role entity list"));
+				$babBody->addError(bab_translate("Error : Cannot get role entity list"));
 				return false;
 			}
 			
