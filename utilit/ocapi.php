@@ -533,6 +533,7 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
  * 
  * @return	bool	True on success, False on error
  */
+/*
 function bab_OCDelete($iIdOrgChart)
 {
 	//TODO
@@ -556,7 +557,7 @@ function bab_OCDelete($iIdOrgChart)
 	//bab_debug($query);
 	return $babDB->db_query($sQuery);
 }
-
+//*/
 
 /**
  * Get an organizational chart.
@@ -929,15 +930,6 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 		return false;
 	}
 	
-	//If is locked by $iIdSessUser so the user have update rights
-	/*
-	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-	{
-		$babBody->addError(bab_translate("Acces denied"));
-		return false;
-	}
-	//*/
-	
 	require_once dirname(__FILE__) . '/grpincl.php';
 	if(false === bab_isGroup($iIdParentGroup))
 	{
@@ -1149,38 +1141,35 @@ function bab_OCUpdateEntity($iIdSessUser, $iIdEntity, $sName, $sDescription)
 		global $babBody;
 		
 		$iIdOrgChart = (int) $aEntity['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
+			if(0 === strlen(trim($sName)))
+			{
+				$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
+				return false;
+			}
+			
+			$sQuery = 
+				'UPDATE ' . 
+					BAB_OC_ENTITIES_TBL . ' ' .
+				'SET ' . 
+					'name = ' . $babDB->quote($sName) . ', ' . 
+					'description = ' . $babDB->quote($sDescription) . ' ' . 
+				'WHERE ' .
+					'id = ' . $babDB->quote($iIdEntity);
+			
+			//bab_debug($sQuery);	
+			$babDB->db_query($sQuery);
+			
+			require_once dirname(__FILE__) . '/grpincl.php';
+			
+			$iIdManager	= 0;
+			$iIdGroup	= (int) $aEntity['id_group'];
+			
+			bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
+			
+			return true;
 		}
-		
-		if(0 === strlen(trim($sName)))
-		{
-			$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
-			return false;
-		}
-		
-		$sQuery = 
-			'UPDATE ' . 
-				BAB_OC_ENTITIES_TBL . ' ' .
-			'SET ' . 
-				'name = ' . $babDB->quote($sName) . ', ' . 
-				'description = ' . $babDB->quote($sDescription) . ' ' . 
-			'WHERE ' .
-				'id = ' . $babDB->quote($iIdEntity);
-		
-		//bab_debug($sQuery);	
-		$babDB->db_query($sQuery);
-		
-		require_once dirname(__FILE__) . '/grpincl.php';
-		
-		$iIdManager	= 0;
-		$iIdGroup	= (int) $aEntity['id_group'];
-		
-		bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
-		
-		return true;
 	}
 	return false;
 }
@@ -1194,38 +1183,34 @@ function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 		global $babBody;
 		
 		$iIdOrgChart = (int) $aEntity['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
+			$aOrgChart				= bab_OCGet($iIdSessUser, $iIdOrgChart);
+			$iIdNode				= (int)		$aEntity['id_node'];
+			$iIdEntityGroup			= (int) 	$aEntity['id_group'];
+			$sIsOrgChartPrimary		= (string)	$aOrgChart['isprimary'];
+			$iIdOrgChartGroup		= (int) 	$aOrgChart['id_group'];
+			$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
+			
+			switch($iDeleteType)
+			{
+				case BAB_OC_DELETE_CHILDREN_ONLY:
+					break;
+					
+				case BAB_OC_DELETE_ENTITY_AND_CHILDREN:
+					break;
+					
+				case BAB_OC_DELETE_ENTITY_ONLY:
+				default:
+					if($oBabTree->remove($iIdNode))
+					{
+						removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, 
+							$sIsOrgChartPrimary, $iIdOrgChartGroup);
+						return true;
+					}
+					break;
+			}
 		}
-		
-		$aOrgChart				= bab_OCGet($iIdSessUser, $iIdOrgChart);
-		$iIdNode				= (int)		$aEntity['id_node'];
-		$iIdEntityGroup			= (int) 	$aEntity['id_group'];
-		$sIsOrgChartPrimary		= (string)	$aOrgChart['isprimary'];
-		$iIdOrgChartGroup		= (int) 	$aOrgChart['id_group'];
-		$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
-		
-		switch($iDeleteType)
-		{
-			case BAB_OC_DELETE_CHILDREN_ONLY:
-				break;
-				
-			case BAB_OC_DELETE_ENTITY_AND_CHILDREN:
-				break;
-				
-			case BAB_OC_DELETE_ENTITY_ONLY:
-			default:
-				if($oBabTree->remove($iIdNode))
-				{
-					removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, 
-						$sIsOrgChartPrimary, $iIdOrgChartGroup);
-					return true;
-				}
-				break;
-		}
-		
 	}
 	return false;
 }
@@ -1320,30 +1305,27 @@ function bab_OCMoveEntity($iIdSessUser, $iIdSrcEntity, $iIdTrgEntity, $iMove, $i
 	}
 	
 	$iIdOrgChart = (int) $aSrcEntity['id_oc'];
-	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+	if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
-		return false;
-	}
-	
-	$iIdSrcNode = (int) $aSrcEntity['id_node'];
-	$iIdParentNode = (int) $aTrgEntity['id_node'];
-	
-	$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
-	switch($iMoveType)
-	{
-		case BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING:
-			//bab_debug('previous sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
-			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode, false);
-			return true;
-		case BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING:
-			//bab_debug('next sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
-			$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode);
-			return true;
-		case BAB_OC_MOVE_TYPE_AS_CHILD:
-			//bab_debug('as child ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
-			$oBabTree->$sFunctionName($iIdSrcNode, $iIdParentNode);
-			return true;
+		$iIdSrcNode = (int) $aSrcEntity['id_node'];
+		$iIdParentNode = (int) $aTrgEntity['id_node'];
+		
+		$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
+		switch($iMoveType)
+		{
+			case BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING:
+				//bab_debug('previous sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode, false);
+				return true;
+			case BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING:
+				//bab_debug('next sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode);
+				return true;
+			case BAB_OC_MOVE_TYPE_AS_CHILD:
+				//bab_debug('as child ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, $iIdParentNode);
+				return true;
+		}
 	}
 	return false;
 }
@@ -1394,36 +1376,33 @@ function bab_OCCreateRole($iIdSessUser, $iIdEntity, $sName, $sDescription, $iTyp
 	}
 	
 	$iIdOrgChart = (int) $aEntity['id_oc'];
-	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
+	if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
-		return false;
-	}
+		global $babDB;
 	
-	global $babDB;
-
-	$sQuery = 
-		'INSERT INTO ' . BAB_OC_ROLES_TBL . ' ' .
-			'(' .
-				'`id`, ' .
-				'`name`, `description`, `id_oc`, `id_entity`, ' .
-				'`type`, `cardinality` ' .
-			') ' .
-		'VALUES ' . 
-			'(\'\', ' . 
-				$babDB->quote($sName) . ', ' . 
-				$babDB->quote($sDescription) . ', ' . 
-				$babDB->quote($iIdOrgChart) . ', ' . 
-				$babDB->quote($iIdEntity) . ', ' . 
-				$babDB->quote($iType) . ', ' . 
-				$babDB->quote($sCardinality) . 
-			')'; 
-
-	//bab_debug($sQuery);
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
-	{
-		return $babDB->db_insert_id();
+		$sQuery = 
+			'INSERT INTO ' . BAB_OC_ROLES_TBL . ' ' .
+				'(' .
+					'`id`, ' .
+					'`name`, `description`, `id_oc`, `id_entity`, ' .
+					'`type`, `cardinality` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($sName) . ', ' . 
+					$babDB->quote($sDescription) . ', ' . 
+					$babDB->quote($iIdOrgChart) . ', ' . 
+					$babDB->quote($iIdEntity) . ', ' . 
+					$babDB->quote($iType) . ', ' . 
+					$babDB->quote($sCardinality) . 
+				')'; 
+	
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return $babDB->db_insert_id();
+		}
 	}
 	return false;
 }
@@ -1646,42 +1625,38 @@ function bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 }
 
 
-function bab_OCDeleteRoleById($iIdSessUser, $iIdRole)
+function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 {
-	global $babBody, $babDB;
-	
-	$aRole = bab_OCGetRoleById($iIdSessUser, $iIdRole);
-	if(false !== $aRole)
+	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
+	if(false !== $aEntity)
 	{
-		$iIdOrgChart = (int) $aRole['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-		{
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
-		}
+		global $babBody, $babDB;
 		
-		if(bab_OCDeleteRoleUserByRoleId($iIdUserSess, $iIdRole))
+		$iIdOrgChart = (int) $aEntity['id_oc'];
+		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			static $aGoodType = array(
-				BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
-				BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
-				BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
-				BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
-				
+			$aRole = bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType);
+			if(false === $aRole)
+			{
+				$babBody->addError(bab_translate("Error : cannot get role entity list"));
+				return false;
+			}
+			
+			foreach($aRole as $iRoleId => $aRoleItem)
+			{
+				bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iRoleId);
+			}
+			
 			$aWhereClauseItem = array();
 				
 			if(!is_null($iType))
 			{
-				if(!array_key_exists($iType, $aGoodType))
-				{			
-					$babBody->addError(bab_translate("Error: Wrong role type"));
-					return false;
-				}
-				
 				$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
 			}
 			
-			$aWhereClauseItem[] = 'id = ' . $babDB->quote($iIdRole);
+			$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+			
+			global $babDB;
 			
 			$sQuery = 
 				'DELETE FROM ' . 
@@ -1692,56 +1667,6 @@ function bab_OCDeleteRoleById($iIdSessUser, $iIdRole)
 			//bab_debug($sQuery);
 			return $babDB->db_query($sQuery);
 		}
-	}
-	return false;
-}
-
-
-function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
-{
-	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
-	if(false !== $aEntity)
-	{
-		global $babBody, $babDB;
-		
-		$iIdOrgChart = (int) $aEntity['id_oc'];
-		if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
-		{
-			$babBody->addError(bab_translate("Acces denied"));
-			return false;
-		}
-		
-		$aRole = bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType);
-		if(false === $aRole)
-		{
-			$babBody->addError(bab_translate("Error : cannot get role entity list"));
-			return false;
-		}
-		
-		foreach($aRole as $iRoleId => $aRoleItem)
-		{
-			bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iRoleId);
-		}
-		
-		$aWhereClauseItem = array();
-			
-		if(!is_null($iType))
-		{
-			$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
-		}
-		
-		$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
-		
-		global $babDB;
-		
-		$sQuery = 
-			'DELETE FROM ' . 
-				BAB_OC_ROLES_TBL . ' ' .
-			'WHERE ' .
-				implode('AND ', $aWhereClauseItem);
-		
-		//bab_debug($sQuery);
-		return $babDB->db_query($sQuery);
 	}
 	return false;
 }
