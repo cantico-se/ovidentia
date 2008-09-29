@@ -617,6 +617,19 @@ class bab_inifile {
 			return false;
 		}
 	}
+	
+	
+	
+	function inifileGeneral($file) {
+	
+		if ($arr = parse_ini_file($file, true)) {
+			 $this->inifile = $arr['general'];
+		}
+	}
+	
+	
+	
+	
 
 	function getName() {
 		if (isset($this->inifile['name'])) {
@@ -630,7 +643,24 @@ class bab_inifile {
 	}
 
 	function getVersion() {
+	
 		if (isset($this->inifile['version'])) {
+		
+			if (preg_match('/\$Name$/', $this->inifile['version'], $m)) {
+				$tag = trim($m[1]);
+				
+				if (empty($tag)) {
+					// ongoing dev
+					return '';
+				}
+				
+				$tag = str_replace('version-', '', $tag);
+				$version = str_replace('-', '.', $tag);
+				
+				return $version;
+			}
+
+		
 			return $this->inifile['version'];
 		}
 		return '';

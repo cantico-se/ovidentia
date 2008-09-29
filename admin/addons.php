@@ -24,7 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
 include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 
 
 
@@ -89,7 +89,7 @@ function addonsList($upgradeall)
 		function temp($upgradeall)
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-			
+
 			$this->name = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->upgradetxt = bab_translate("Upgrade");
@@ -164,18 +164,24 @@ function addonsList($upgradeall)
 					$this->catchecked = "checked";
 				else
 					$this->catchecked = "";
-				$arr_ini = @parse_ini_file( $GLOBALS['babAddonsPath'].$this->arr['title']."/addonini.php");
+					
+				$ini = new bab_inifile();
+				$ini->inifileGeneral($GLOBALS['babAddonsPath'].$this->arr['title'].'/addonini.php');
+				$arr_ini = $ini->inifile;
 				
 				$this->access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control']: 1;
 				$this->delete = isset($arr_ini['delete']) && $arr_ini['delete']==1 ? true : false;
 				$this->addversion = "";
 				$this->description = "";
 				$this->upgradeurl = false;
-				if( !empty($arr_ini['version']))
+				if($ini->getVersion())
 					{
+					
+					
 					$this->addversion = $this->arr['version'];
-					if ( empty($this->arr['version']) || 0 !== version_compare($this->arr['version'],$arr_ini['version']))
+					if ( empty($this->arr['version']) || 0 !== version_compare($this->arr['version'],$ini->getVersion()))
 						{
+						
 						$func_name = $this->arr['title']."_upgrade";
 						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
 							{
@@ -185,12 +191,12 @@ function addonsList($upgradeall)
 								if (!function_exists($func_name))
 									{
 									$req = "update ".BAB_ADDONS_TBL." set 
-										version=".$this->db->quote($arr_ini['version']).", 
+										version=".$this->db->quote($ini->getVersion()).", 
 										installed='Y' 
 										where id=".$this->db->quote($this->arr['id']);
 										
 									$this->db->db_query($req);
-									$this->addversion = $arr_ini['version'];
+									$this->addversion = $ini->getVersion();
 									$this->arr['installed'] = 'Y';
 									}
 								else
@@ -260,7 +266,7 @@ function upgrade($id)
 
 	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
 		{
-		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 
@@ -312,6 +318,8 @@ function upgrade($id)
 						bab_siteMap::clearAll();
 						return true;
 						}
+						
+						
 					}
 				}
 			else 
@@ -321,7 +329,6 @@ function upgrade($id)
 				}
 			}
 		}
-	
 	return false;
 	}
 
@@ -938,6 +945,7 @@ function functionalities() {
 	
 
 /* main */
+
 if( !$babBody->isSuperAdmin )
 {
 	$babBody->msgerror = bab_translate("Access denied");
@@ -1012,7 +1020,7 @@ switch($idx)
 
 	case "upgrade":
 		upgrade($_GET['item']);
-		
+
 		if (!headers_sent()) {
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list&errormsg=".urlencode($babBody->msgerror));
 			exit;
