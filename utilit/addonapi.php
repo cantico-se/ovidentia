@@ -1196,6 +1196,28 @@ function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directo
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getDirEntry($id, $type, $id_directory, true);
 	}
+	
+	
+/** 
+ * Get a directory entry or a list of entries
+ * without acces control
+ *
+ * BAB_DIR_ENTRY_ID_USER		: $id is a user id
+ * BAB_DIR_ENTRY_ID				: $id is a directory entry
+ * BAB_DIR_ENTRY_ID_DIRECTORY	: liste des champs de l'annuaire
+ * BAB_DIR_ENTRY_ID_GROUP		: liste des champs de l'annuaire de groupe
+ *
+ * @param	false|int	$id
+ * @param	int			$type
+ * @param	NULL|int	$id_directory
+ * @return array
+ */
+
+function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = NULL ) {
+	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	return getDirEntry($id, $type, $id_directory, false);
+	}
+	
 
 
 /**
