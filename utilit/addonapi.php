@@ -1469,12 +1469,29 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	$file = $line = $function = '';
 
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
+	
+		$size = 0;
+		
+		if (is_array($data) || is_object($data)) {
+			$size = count($data);
+		}
+	
+		if (is_string($data)) {
+			$size = strlen($data);
+		}
+		
+		$infos = sprintf("<span style=\"color:blue\">type=%s, size=%d</span>\n\n", gettype($data), $size);
+		
+		
 		if (!is_string($data)) {
 			ob_start();
 			print_r($data);
 			$data = ob_get_contents();
 			ob_end_clean();
 		}
+		
+		$data = $infos.$data;
+		
 
 		// Here we find information about the file and line where bab_debug was called.
 		$backtrace = debug_backtrace();
