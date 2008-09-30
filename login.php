@@ -685,10 +685,15 @@ if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 			Header("Location: ". $GLOBALS['babUrlScript']);
 		}
 	}
+	else
+	{
+		$cmd = 'displayMessage';
+	}
 }
 else if('send' === bab_pp('sendpassword'))
 {
 	sendPassword(bab_pp('nickname'));
+	$cmd = 'displayMessage';
 }
 
 
@@ -700,6 +705,24 @@ switch($cmd)
 		bab_signOff();
 		break;
 
+	case 'displayMessage':
+		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php'; 
+		
+		global $babBody;
+		
+		$oForm = new BAB_BaseFormProcessing();
+		
+		$oForm->set_data('sTg', 'login');
+		$oForm->set_data('sCmd', 'authform');
+		$oForm->set_data('sMessage', $babBody->msgerror);
+		$oForm->set_data('sBtnCaption', bab_translate("Ok"));
+		$oForm->raw_2_html(BAB_RAW_2_HTML_DATA);
+		
+		$babBody->msgerror = '';
+		
+		$babBody->babecho(bab_printTemplate($oForm, 'login.html', 'displayMessage'));
+		break;
+		
 	case "showdp":
 		displayDisclaimer();
 		break;
