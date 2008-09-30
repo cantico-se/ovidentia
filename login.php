@@ -716,7 +716,6 @@ switch($cmd)
 		$oForm->set_data('sCmd', 'authform');
 		$oForm->set_data('sMessage', $babBody->msgerror);
 		$oForm->set_data('sBtnCaption', bab_translate("Ok"));
-		$oForm->raw_2_html(BAB_RAW_2_HTML_DATA);
 		
 		$babBody->msgerror = '';
 		
