@@ -32,21 +32,60 @@ class bab_url {
 	/**
 	 * Add or modify a parameter value into an URL
 	 * @static
-	 * @param string $url
-	 * @param string $param name of the variable
-	 * @param string $value
+	 * @param string 	$url
+	 * @param string 	$param 	name of the variable
+	 * @param mixed 	$value
 	 * @return string $url
 	 */
 	function mod($url, $param, $value) {
-		$newurl = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$param.'='.urlencode($value),$url,1);
+	
+		if (is_array($value)) {
+			
+			debug_print_backtrace();
+			print_r($value);
+			
+			die();
+			$keyval = bab_url::urlAsArray($param, $value);
+		} else {
+			$keyval = urlencode($param).'='.urlencode($value);
+		}
+	
+		$newurl = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$keyval,$url,1);
 		if ($newurl !== $url) {
 			return $newurl;
-		} elseif (false === strpos($url,'?')) {
-			$url .= '?'.$param.'='.urlencode($value);
+		}
+		
+		 
+		if (false === strpos($url,'?')) {
+			$url .= '?'.$keyval;
 		} else {
-			$url .= '&'.$param.'='.urlencode($value);
+			$url .= '&'.$keyval;
 		}
 		return $url;
+	}
+	
+	
+	
+	
+	/**
+	 * @access private
+	 */
+	function urlAsArray($name, $arr) {
+		
+		$params = array();
+		
+		foreach($arr as $key => $value) {
+		
+			if (!is_null($value)) {
+				if (is_array($value)) {
+					$params[] = bab_url::urlAsArray($name.'['.$key.']', $value);
+				} else {
+					$params[] = urlencode($name.'['.$key.']').'='.urlencode($value);
+				}
+			}
+		}
+		
+		return implode('&', $params);
 	}
 	
 	
