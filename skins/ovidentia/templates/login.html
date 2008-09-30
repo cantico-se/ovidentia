@@ -374,3 +374,32 @@
 </BODY>
 </HTML>
 <!--#end javaredirect -->
+
+<!--#begin displayMessage -->
+<script type="text/javascript">
+//<![CDATA[
+//]]>
+</script>
+<form name ="displayMessage" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ m_datas[sTg] }" />
+	<input type="hidden" name="cmd" value="{  m_datas[sCmd] }" />
+	<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="10" class="BabLoginMenuBackground">
+					<tr>
+						<td style="font-weight:bold" align="left">
+							{ m_datas[sMessage] }<br />
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+							<input type="submit" value="{ m_datas[sBtnCaption] }">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end displayMessage -->
