@@ -1468,52 +1468,53 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 {
 	$file = $line = $function = '';
 
+	
+	$size = 0;
+	
+	if (is_array($data) || is_object($data)) {
+		$size = count($data);
+	}
+
+	if (is_string($data)) {
+		$size = strlen($data);
+	}
+	
+	$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
+	$htmlinfos = sprintf("<span style=\"color:blue\">type=%s, size=%d</span>\n\n", gettype($data), $size);
+	
+	
+	if (!is_string($data)) {
+		ob_start();
+		print_r($data);
+		$data = ob_get_contents();
+		ob_end_clean();
+	}
+
+
+	// Here we find information about the file and line where bab_debug was called.
+	$backtrace = debug_backtrace();
+	$call = array_shift($backtrace);
+	if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
+		$file = $call['file'];
+		$line = $call['line'];
+	}
+
+	// Here we find information about the method or function from which bab_debug was called.
+	$call = array_shift($backtrace);
+	if (is_array($call)) {
+		$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
+	}
+	
+	$message = array('category' => str_replace(' ', '_', $category),
+						'severity' => $severity,
+						'text' => $htmlinfos.$data,
+						'file' => $file,
+						'line' => $line,
+						'function' => $function);
+						 
+						 
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
 	
-		$size = 0;
-		
-		if (is_array($data) || is_object($data)) {
-			$size = count($data);
-		}
-	
-		if (is_string($data)) {
-			$size = strlen($data);
-		}
-		
-		$infos = sprintf("<span style=\"color:blue\">type=%s, size=%d</span>\n\n", gettype($data), $size);
-		
-		
-		if (!is_string($data)) {
-			ob_start();
-			print_r($data);
-			$data = ob_get_contents();
-			ob_end_clean();
-		}
-		
-		$data = $infos.$data;
-		
-
-		// Here we find information about the file and line where bab_debug was called.
-		$backtrace = debug_backtrace();
-		$call = array_shift($backtrace);
-		if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
-			$file = $call['file'];
-			$line = $call['line'];
-		}
-
-		// Here we find information about the method or function from which bab_debug was called.
-		$call = array_shift($backtrace);
-		if (is_array($call)) {
-			$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
-		}
-		
-		$message = array('category' => str_replace(' ', '_', $category),
-						 'severity' => $severity,
-						 'text' => $data,
-						 'file' => $file,
-						 'line' => $line,
-						 'function' => $function);
-
 		// We store the information in the global bab_debug_messages that will later be displayed by bab_getDebug
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $message;
@@ -1526,9 +1527,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	// We immediately log in the bab_debug.txt file.
 	if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
 		 && file_exists($debugFilename) && is_writable($debugFilename)) {
-		if (!is_string($data)) {
-			$data = print_r($data, true);
-		}
+		$data = $textinfos.$data;
 		$h = fopen($debugFilename, 'a');
 		$date = date('d/m/Y H:i:s');
 		$lines = explode("\n", $data);
