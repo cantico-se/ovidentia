@@ -289,21 +289,22 @@ class bab_functionalities {
 		$children = $this->getChildren($func_path);
 
 		$current_dir = opendir($this->treeRootPath.$func_path);
-		while($entryname = readdir($current_dir)){
-			if (is_file($this->treeRootPath.$func_path.'/'.$entryname)) {
-				if (false === unlink($this->treeRootPath.$func_path.'/'.$entryname)) {
-					return false;
+		if ($current_dir !== false) {
+			while($entryname = readdir($current_dir)){
+				if (is_file($this->treeRootPath.$func_path.'/'.$entryname)) {
+					if (false === unlink($this->treeRootPath.$func_path.'/'.$entryname)) {
+						return false;
+					}
 				}
 			}
+			closedir($current_dir);
+	
+			if (0 === count($children)) {
+				return rmdir($this->treeRootPath.$func_path);
+			} else {
+				return $this->recordLinkToLink($func_path, $func_path.'/'.$children[0]);
+			}
 		}
-
-
-		if (0 === count($children)) {
-			return rmdir($this->treeRootPath.$func_path);
-		} else {
-			return $this->recordLinkToLink($func_path, $func_path.'/'.$children[0]);
-		}
-
 	}
 
 
