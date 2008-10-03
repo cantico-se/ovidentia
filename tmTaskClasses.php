@@ -1510,7 +1510,7 @@ bab_debug($sMsg);
 			$iHour	= (int) bab_rp($sHourFieldName, 0);
 			$iMinut	= (int) bab_rp($sMinutFieldName, 0);
 
-			$sDate = str_replace('-', '/', $sDate);
+			//$sDate = str_replace('-', '/', $sDate);
 
 			$sDateFieldName 	= 'm_s' . $sFieldPartName . 'Date';
 			$sHourFieldName 	= 'm_i' . $sFieldPartName . 'Hour';
