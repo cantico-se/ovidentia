@@ -905,120 +905,129 @@ window.onload = function()
 <tr> 
 <td> 
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-	<tr> 
-	<td align="left" valign="middle" colspan="6"><b>{ datesubtitle }:</b></td>
-	</td>
-	</tr>
-	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ datesubtxt }</a>: </td>
-	<td valign="middle"> 
-	<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck }></td>
-	<td valign="middle"> 
-	<select name="daysub">
-	  <!--#in getnextday -->
-	  <option value="{ dayid }" { selected }>{ dayid }</option>
-	  <!--#endin getnextday -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="monthsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
-	  <!--#in getnextmonth -->
-	  <option value="{ monthid }" { selected }>{ monthname }</option>
-	  <!--#endin getnextmonth -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="yearsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
-	  <!--#in getnextyear -->
-	  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-	  <!--#endin getnextyear -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="timesub">
-	<!--#in getnexttime -->
-	<option value="{ timeval }" { selected }>{ time }</option>
-	<!--#endin getnexttime -->
-	</select >
-	</td>
-	</tr>
-	<!--#if allowpubdates -->
-	<tr> 
-	<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
-	</td>
-	</tr>
-	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ datebegintxt }</a>: </td>
-	<td valign="middle"> 
-	<input type="checkbox" id="idcdb" name="cdateb" value="Y" { cdatebcheck }></td>
-	<td valign="middle"> 
-	<select name="daybegin">
-	  <!--#in getnextday -->
-	  <option value="{ dayid }" { selected }>{ dayid }</option>
-	  <!--#endin getnextday -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-	  <!--#in getnextmonth -->
-	  <option value="{ monthid }" { selected }>{ monthname }</option>
-	  <!--#endin getnextmonth -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
-	  <!--#in getnextyear -->
-	  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-	  <!--#endin getnextyear -->
-	</select>
-	</td>
-	<td valign="middle"> 
-	<select name="timebegin">
-	<!--#in getnexttime -->
-	<option value="{ timeval }" { selected }>{ time }</option>
-	<!--#endin getnexttime -->
-	</select >
-	</td>
-	</tr>
-	<tr> 
-	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="#" onclick="Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ dateendtxt }</a>: </td>
-	<td valign="middle"> 
-	<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
-	<td valign="middle"> 
-	<select name="dayend">
-	  <!--#in getnextday -->
-	  <option value="{ dayid }"  { selected }>{ dayid }</option>
-	  <!--#endin getnextday -->
-	</select >
-	</td>
-	<td valign="middle"> 
-	<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-	  <!--#in getnextmonth -->
-	  <option value="{ monthid }"  { selected }>{ monthname }</option>
-	  <!--#endin getnextmonth -->
-	</select >
-	</td>
-	<td valign="middle"> 
-	<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-	  <!--#in getnextyear -->
-	  <option value="{ yearid }" { selected }>{ yearidval }</option>
-	  <!--#endin getnextyear -->
-	</select >
-	</td>
-	<td valign="middle"> 
-	<select name="timeend">
-	<!--#in getnexttime -->
-	<option value="{ timeval }" { selected }>{ time }</option>
-	<!--#endin getnexttime -->
-	</select >
-	</td>
-	</tr>
-	<!--#endif allowpubdates -->
-	<tr> 
-	<td colspan="6" valign="middle" align="right"> 
-	&nbsp;<br />
-	</td>
-	</tr>
+		<tr> 
+			<td align="left" valign="middle" colspan="6"><b>{ datesubtitle }:</b></td>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right" valign="middle">{ datesubtxt } : </td>
+			<td valign="middle"> 
+				<input type="checkbox" id="idcds" name="cdates" value="Y" { cdatescheck } /></td>
+			<td valign="middle"> 
+				<select name="daysub">
+				  <!--#in getnextday -->
+				  <option value="{ dayid }" { selected }>{ dayid }</option>
+				  <!--#endin getnextday -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="monthsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
+				  <!--#in getnextmonth -->
+				  <option value="{ monthid }" { selected }>{ monthname }</option>
+				  <!--#endin getnextmonth -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="yearsub" onChange="updateDates(this.form.daysub, this.form.monthsub, this.form.yearsub);">
+				  <!--#in getnextyear -->
+				  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+				  <!--#endin getnextyear -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="timesub">
+				<!--#in getnexttime -->
+				<option value="{ timeval }" { selected }>{ time }</option>
+				<!--#endin getnexttime -->
+				</select >
+			</td>
+			<td valign="middle">
+				<a class="BabSiteAdminListLink" href="#" onclick="Start('{ datesuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" title="" alt="" /></a>
+			</td>
+		</tr>
+		<!--#if allowpubdates -->
+		<tr> 
+			<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right" valign="middle">{ datebegintxt } : </td>
+			<td valign="middle"> 
+				<input type="checkbox" id="idcdb" name="cdateb" value="Y" { cdatebcheck }></td>
+			<td valign="middle"> 
+				<select name="daybegin">
+				  <!--#in getnextday -->
+				  <option value="{ dayid }" { selected }>{ dayid }</option>
+				  <!--#endin getnextday -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="monthbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+				  <!--#in getnextmonth -->
+				  <option value="{ monthid }" { selected }>{ monthname }</option>
+				  <!--#endin getnextmonth -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="yearbegin" onChange="updateDates(this.form.daybegin, this.form.monthbegin, this.form.yearbegin);">
+				  <!--#in getnextyear -->
+				  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+				  <!--#endin getnextyear -->
+				</select>
+			</td>
+			<td valign="middle"> 
+				<select name="timebegin">
+				<!--#in getnexttime -->
+				<option value="{ timeval }" { selected }>{ time }</option>
+				<!--#endin getnexttime -->
+				</select >
+			</td>
+			<td valign="middle">
+				<a class="BabSiteAdminListLink" href="#" onclick="Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" title="" alt="" /></a>
+			</td>
+		</tr>
+		<tr> 
+			<td align="right" valign="middle">{ dateendtxt } : </td>
+			<td valign="middle"> 
+				<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
+			<td valign="middle"> 
+				<select name="dayend">
+				  <!--#in getnextday -->
+				  <option value="{ dayid }"  { selected }>{ dayid }</option>
+				  <!--#endin getnextday -->
+				</select >
+			</td>
+			<td valign="middle"> 
+				<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				  <!--#in getnextmonth -->
+				  <option value="{ monthid }"  { selected }>{ monthname }</option>
+				  <!--#endin getnextmonth -->
+				</select >
+			</td>
+			<td valign="middle"> 
+				<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+				  <!--#in getnextyear -->
+				  <option value="{ yearid }" { selected }>{ yearidval }</option>
+				  <!--#endin getnextyear -->
+				</select >
+			</td>
+			<td valign="middle"> 
+				<select name="timeend">
+					<!--#in getnexttime -->
+					<option value="{ timeval }" { selected }>{ time }</option>
+					<!--#endin getnexttime -->
+				</select >
+			</td>
+			<td valign="middle">
+				<a class="BabSiteAdminListLink" href="#" onclick="Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" title="" alt="" /></a>
+			</td>
+		</tr>
+		<!--#endif allowpubdates -->
+		<tr> 
+			<td colspan="7" valign="middle" align="right"> 
+				&nbsp;<br />
+			</td>
+		</tr>
 	</table>
 </td>
 </tr>
