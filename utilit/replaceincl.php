@@ -95,6 +95,34 @@ function removeIgnoreMacro($macro) {
 
 
 /**
+* Test ignored macro, a macro is ignored if the test is done more than 5 time
+* @access private
+* @param	string	$macro			ex : OVML
+* @return	boolean
+*/
+function isMacroIgnored($macro, $params) {
+	static $ignore_stack = array();
+	
+	if (isset($this->ignore_macro[$macro])) {
+		
+		if (isset($ignore_stack[$macro.$params])) {
+			$ignore_stack[$macro.$params]++;
+		} else {
+			$ignore_stack[$macro.$params] = 1;
+		}
+		
+		
+		return $ignore_stack[$macro.$params] > 5;
+	}
+		
+	return false;
+}
+
+
+
+
+
+/**
  * external links for email
  * @public
  * @param	string	&$txt
@@ -121,7 +149,7 @@ function ref(&$txt)
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			if (!isset($this->ignore_macro[$m[1][$k]]))
+			if (!$this->isMacroIgnored($m[1][$k], $m[2][$k]))
 				{
 				$var = $m[0][$k];
 				$varname = $m[1][$k];
