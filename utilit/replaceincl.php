@@ -35,84 +35,109 @@ include_once "base.php";
  */
 class bab_replace {
 
-/**
- * @private
- */
-var $ext_url;
-var $ignore_macro = array();
-
-
-
-/**
- * @static
- * @private
- */
-function _var(&$txt,$var,$new)
-	{
-	$txt = preg_replace("/".preg_quote($var,"/")."/", $new, $txt);
-	}
+	/**
+	* @access private
+	*/
+	var $ext_url;
+	var $ignore_macro = array();
 	
-/**
- * @access private
- */
-function _make_link($url,$text,$popup = 0,$url_popup = false,$classname = false)
-	{
-	if (isset($this->ext_url)) {
-		$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
-		$popup = 0;
-		}
-	if ($classname !== false) {
-		$classname = 'class="' . $classname . '"';
-	}
-	$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
-	if ($popup == 1 || $popup === true)
+
+	
+	/**
+	* @static
+	* @access private
+	*/
+	function _var(&$txt,$var,$new)
 		{
-		return '<a ' . $classname . ' href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.$text.'</a>';
+		$txt = preg_replace("/".preg_quote($var,"/")."/", $new, $txt);
 		}
-	elseif ($popup == 2) {
-		return '<a ' . $classname . ' target="_blank" href="'.bab_toHtml($url).'">'.$text.'</a>';
+		
+	/**
+	* @access private
+	*/
+	function _make_link($url,$text,$popup = 0,$url_popup = false,$classname = false)
+		{
+		if (isset($this->ext_url)) {
+			$url = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode($url);
+			$popup = 0;
+			}
+		if ($classname !== false) {
+			$classname = 'class="' . $classname . '"';
 		}
-	else {
-		return '<a ' . $classname . ' href="'.bab_toHtml($url).'">'.$text.'</a>';
+		$url = ($popup == 1 || $popup == true) && $url_popup != false ? $url_popup : $url;
+		if ($popup == 1 || $popup === true)
+			{
+			return '<a ' . $classname . ' href="'.bab_toHtml($url).'" onclick="bab_popup(this.href);return false;">'.$text.'</a>';
+			}
+		elseif ($popup == 2) {
+			return '<a ' . $classname . ' target="_blank" href="'.bab_toHtml($url).'">'.$text.'</a>';
+			}
+		else {
+			return '<a ' . $classname . ' href="'.bab_toHtml($url).'">'.$text.'</a>';
+			}
 		}
+		
+	/**
+	* @access public
+	* @param	string	$macro			ex : OVML
+	*/
+	function addIgnoreMacro($macro) {
+		$this->ignore_macro[$macro] = 1;
 	}
 	
-/**
- * @public
- * @param	string	$macro			ex : OVML
- */
-function addIgnoreMacro($macro) {
-	$this->ignore_macro[$macro] = 1;
-}
-
-/**
- * @public
- * @param	string	$macro			ex : OVML
- */
-function removeIgnoreMacro($macro) {
-	unset($this->ignore_macro[$macro]);
-}
-
-
-/**
- * external links for email
- * @public
- * @param	string	&$txt
- */
-function email(&$txt)
-	{
-	$this->ext_url = true;
-	$this->ref($txt);
-	unset($this->ext_url);
+	/**
+	* @access public
+	* @param	string	$macro			ex : OVML
+	*/
+	function removeIgnoreMacro($macro) {
+		unset($this->ignore_macro[$macro]);
 	}
+	
+	/**
+	 * Test ignored macro, a macro is ignored if the test is done more than 5 time
+	 * @access private
+	 * @param	string	$macro			ex : OVML
+	 * @return	boolean
+	 */
+	function isMacroIgnored($macro, $params) {
+		static $ignore_stack = array();
+		
+		if (isset($this->ignore_macro[$macro])) {
+			
+			if (isset($ignore_stack[$macro.$params])) {
+				$ignore_stack[$macro.$params]++;
+			} else {
+				$ignore_stack[$macro.$params] = 1;
+			}
+			
+			
+			return $ignore_stack[$macro.$params] > 5;
+		}
+			
+		return false;
+	}
+	
 
 
-/**
- * replace macro in string
- * @public
- * @param	string	&$txt
- */
-function ref(&$txt)
+	/**
+	* external links for email
+	* @access public
+	* @param	string	&$txt
+	*/
+	function email(&$txt)
+		{
+		$this->ext_url = true;
+		$this->ref($txt);
+		unset($this->ext_url);
+		}
+
+
+	/**
+	* replace macro in string
+	* @access public
+	* @param	string	&$txt
+	*/
+	function ref(&$txt)
 	{
 	global $babBody, $babDB;
 	
@@ -121,7 +146,7 @@ function ref(&$txt)
 		{
 		for ($k = 0; $k < count($m[1]); $k++ )
 			{
-			if (!isset($this->ignore_macro[$m[1][$k]]))
+			if (!$this->isMacroIgnored($m[1][$k], $m[2][$k]))
 				{
 				$var = $m[0][$k];
 				$varname = $m[1][$k];
@@ -408,5 +433,3 @@ function ref(&$txt)
 	}
 }
 
-
-?>
