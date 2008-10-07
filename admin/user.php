@@ -472,6 +472,11 @@ function updateNickname($item, $newnick)
 		$req="update ".BAB_USERS_TBL." set confirm_hash='".$hash."', nickname='".$newnick."'".
 			"where id='". $item . "'";
 		$res = $db->db_query($req);
+			
+		require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
+		$iIdUser = (int) $item;
+		$oEvent = new bab_eventUserModified($iIdUser);
+		bab_fireEvent($oEvent);
 		}
 
 	return true;
