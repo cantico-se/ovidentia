@@ -35,6 +35,25 @@ function isDirectoryGroup($id)
 	return $id_group;
 }
 
+function getDirectoryFieldName($fxid)
+{
+	global $babDB;
+	$name = '';
+	list($id_field) = $babDB->db_fetch_row($babDB->db_query("select id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id=".$babDB->quote($fxid).""));
+	if( $id_field )
+	{
+		if( $id_field > BAB_DBDIR_MAX_COMMON_FIELDS )
+		{
+		list($name) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id=".$babDB->quote($id_field - BAB_DBDIR_MAX_COMMON_FIELDS).""));		
+		}
+		else
+		{
+		list($name) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id=".$babDB->quote($id_field).""));	
+		$name = bab_translate($name);
+		}
+	}
+	return $name;
+}
 
 function listAds()
 {
@@ -595,6 +614,10 @@ function modifyDb($id)
 			$this->disabledtxt = bab_translate("Disabled");
 			$this->allowuserupdate = bab_translate("Allow user update personal information");
 			$this->displayinfoupdate = bab_translate("Display the date and the author of update");
+			$this->fieldrights_title = bab_translate("Rights");
+			$this->imgrights_url = $GLOBALS['babSkinPath'] . 'images/Puces/access.png';
+			$this->imgrights_url2 = $GLOBALS['babSkinPath'] . 'images/Puces/access2.png';
+
 			$this->bdel = true;
 			$this->bfields = true;
 			$this->ballowuserupdate = false;
@@ -715,6 +738,8 @@ function modifyDb($id)
 					{
 					$this->defvalue = '';
 					}
+				$this->fieldrights_url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=fieldrights&id='.$this->id.'&fxid='.$arr['id'];
+				list($this->fncount) =  $this->db->db_fetch_row($this->db->db_query("select count(id_object) from ".BAB_DBDIRFIELDUPDATE_GROUPS_TBL." where id_object=".$this->db->quote($arr['id']).""));
 				$i++;
 				return true;
 				}
@@ -767,6 +792,8 @@ function modifyDb($id)
 					{
 					$this->defvalue = '';
 					}
+				$this->fieldrights_url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=fieldrights&id='.$this->id.'&fxid='.$arr['id'];
+				list($this->fncount) = $this->db->db_fetch_row($this->db->db_query("select count(id_object) from ".BAB_DBDIRFIELDUPDATE_GROUPS_TBL." where id_object=".$this->db->quote($arr['id']).""));
 				$i++;
 				return true;
 				}
@@ -1371,6 +1398,7 @@ function deleteFieldsExtra($id, $fxid)
 		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($fxid)."'");
 		$babDB->db_query("delete from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($fxid)."'");
 		$babDB->db_query("delete from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS))."'");
+		$babDB->db_query("delete from ".BAB_DBDIRFIELDUPDATE_GROUPS_TBL." where id_object='".$babDB->db_escape_string($fxid)."'");
 		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id='".$babDB->db_escape_string($fxid)."'");
 		if( $arr['id_directory'] == 0 )
 		{
@@ -1573,8 +1601,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['directories'] != 'Y')
 	return;
 }
 
-if( !isset($idx ))
-	$idx = 'list';
+$idx = bab_rp('idx', 'list');
 
 if( isset($add))
 {
@@ -1689,6 +1716,11 @@ if( isset($aclview))
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 	}
 
+if( isset($aclfield))
+	{
+	maclGroups();
+	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+	}
 
 if( isset($update) )
 	{
@@ -1758,6 +1790,21 @@ switch($idx)
         
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('gviewl', bab_translate("View"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$id);
+		break;
+
+	case 'fieldrights':
+		$babBody->title = getDirectoryName($id, BAB_DB_DIRECTORIES_TBL);
+		$idgroup =  isDirectoryGroup($id);
+		$fieldname = getDirectoryFieldName($fxid);
+
+		$macl = new macl('admdir', 'mdb', $fxid, 'aclfield');
+		$macl->set_hidden_field('id', $id);
+        $macl->addtable( BAB_DBDIRFIELDUPDATE_GROUPS_TBL, bab_translate("Who can update this field").':  '.$fieldname);
+        $macl->babecho();
+
+		$babBody->addItemMenu('mdb', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+		$babBody->addItemMenu('fieldrights', bab_translate("Field rights"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=fieldrights&id='.$id.'&fxid='.$fxid);
 		break;
 
 	case 'db_rights':

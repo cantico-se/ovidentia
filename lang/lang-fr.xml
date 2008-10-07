@@ -2640,8 +2640,8 @@
 <string id="Error: The role name is not valid">Erreur: Le nom du rôle n'est pas valide</string>
 <string id="Error : Cannot get role entity list">Erreur: Impossible d'obtenir la liste des rôles de l'entité</string>
 <string id="ERROR: The node was not created">Erreur: Le noeud n'a pas été créé</string>
-<string id=""></string>
-<string id=""></string>
+<string id="Who can update this field">Qui peut mettre à jour ce champ</string>
+<string id="Field rights">Droits sur le champ</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>

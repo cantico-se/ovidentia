@@ -364,6 +364,7 @@
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;</td>
 <td class="BabSiteAdminTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ field }</td>
 <td class="BabSiteAdminTitleFontBackground" width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
 <td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
@@ -377,6 +378,14 @@
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
+<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
+<!--#if fncount -->
+<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
+<!--#else fncount -->
+<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
+<!--#endif fncount -->
+</a>
+</td>
 <td>
 <!--#if addvalurl -->
 <a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
@@ -405,6 +414,14 @@
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
+<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
+<!--#if fncount -->
+<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
+<!--#else fncount -->
+<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
+<!--#endif fncount -->
+</a>
+</td>
 <td>
 <!--#if addvalurl -->
 <a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
@@ -432,7 +449,7 @@
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
-<td colspan="6" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);">{ addftxt }</a></td>
+<td colspan="7" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);">{ addftxt }</a></td>
 </tr>
 </table>
 </td>

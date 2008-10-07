@@ -157,6 +157,7 @@ define("BAB_DBDIRIMPORT_GROUPS_TBL", "bab_dbdirimport_groups");
 define("BAB_DBDIRBIND_GROUPS_TBL", "bab_dbdirbind_groups");
 define("BAB_DBDIRUNBIND_GROUPS_TBL", "bab_dbdirunbind_groups");
 define("BAB_DBDIREMPTY_GROUPS_TBL", "bab_dbdirempty_groups");
+define("BAB_DBDIRFIELDUPDATE_GROUPS_TBL", "bab_dbdirfieldupdate_groups");
 define("BAB_DBDIR_FIELDS_TBL", "bab_dbdir_fields");
 define("BAB_DBDIR_FIELDS_DIRECTORY_TBL", "bab_dbdir_fields_directory");
 define("BAB_DBDIR_FIELDSEXTRA_TBL", "bab_dbdir_fieldsextra");

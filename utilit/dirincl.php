@@ -421,6 +421,19 @@ function summaryDbContact($id, $idu, $update=true)
 					{
 					$this->modify = true;
 					}
+				
+				if( $this->modify == false )
+					{
+					while( $arr = $babDB->db_fetch_array($this->res))
+						{
+						if( bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
+							{
+							$this->modify = true;
+							break;
+							}
+						}
+					$babDB->db_data_seek($this->res, 0);
+					}
 
 				if( $this->modify )
 					{

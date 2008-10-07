@@ -3954,3 +3954,16 @@ CREATE TABLE bab_dg_categories (
 	`bgcolor` VARCHAR (6) not null,
 	PRIMARY KEY (id)
 );
+
+#
+# Structure de la table bab_dbdirfieldupdate_groups
+#
+
+CREATE TABLE bab_dbdirfieldupdate_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);

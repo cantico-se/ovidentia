@@ -663,7 +663,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			
 			$this->fields = $fields;
 			$this->what = 'dbc';
-			$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+			//$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
 			$this->bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
 			$this->buserinfo = false;
 			$this->refresh = bab_toHtml($refresh);
@@ -695,7 +695,27 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 
 			$this->idu = bab_toHtml($idu);
 
-			if ( (!$this->bupd && $allowuu == 'N') || (!$this->bupd && $allowuu == 'Y' && !$personnal ) )
+
+			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and disabled='N' order by list_ordering asc");
+			$this->fxidaccess = array();
+			if( $this->res && $babDB->db_num_rows($this->res) > 0)
+				{
+				$this->count = $babDB->db_num_rows($this->res);
+				while($arr = $babDB->db_fetch_array($this->res))
+					{
+					if( $this->bupd || (!$this->bupd && $allowuu == 'Y' && $personnal) || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
+						{
+						$this->fxidaccess[$arr['id']] = true;
+						}
+					}
+				$babDB->db_data_seek($this->res, 0);
+				}
+			else
+				{
+				$this->count = 0;
+				}
+
+			if ( count($this->fxidaccess) == 0 )
 				{
 				die( bab_translate('Access denied'));
 				}
@@ -720,8 +740,6 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					$this->delete = bab_translate("Delete this picture");
 					}
 				
-				if( $this->bupd == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
-					$this->bupd = true;
 				}
 			else
 				{
@@ -729,7 +747,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->urlimg = '';
 				}
 
-			$res = $babDB->db_query("select modifiable, required from ".BAB_DBDIR_FIELDSEXTRA_TBL." join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto' and disabled ='N'");
+			$res = $babDB->db_query("select dft.id, dft.modifiable, dft.required from ".BAB_DBDIR_FIELDSEXTRA_TBL." dft join ".BAB_DBDIR_FIELDS_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and id_field=".BAB_DBDIR_FIELDS_TBL.".id and ".BAB_DBDIR_FIELDS_TBL.".name='jpegphoto' and disabled ='N'");
 
 			$this->modify = false;
 			$this->phrequired = false;
@@ -737,11 +755,10 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			if( $res && $babDB->db_num_rows($res) > 0)
 				{
 				$arr = $babDB->db_fetch_array($res);
-				if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
+				if( isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y")
 					{
 					$this->modify = true;
-					if ($this->bupd && $arr['modifiable'] == "Y")
-						$this->delph = true;
+					$this->delph = true;
 					}
 
 				if ($arr['required'] == 'Y')
@@ -751,15 +768,6 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					}
 				}
 
-			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($this->idgroup != 0? 0: $babDB->db_escape_string($this->id))."' and disabled='N' order by list_ordering asc");
-			if( $this->res && $babDB->db_num_rows($this->res) > 0)
-				{
-				$this->count = $babDB->db_num_rows($this->res);
-				}
-			else
-				{
-				$this->count = 0;
-				}
 			
 			}
 		
@@ -821,7 +829,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					}
 				$this->fieldt = $arr['multilignes'];
 
-				if( $this->badd || ($this->bupd && $arr['modifiable'] == "Y"))
+				if( isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y")
 					{
 					$this->modify = true;
 					}
@@ -2167,63 +2175,101 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 	list($idgroup, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
-
 	$usertbl = $babDB->db_fetch_assoc($babDB->db_query("select id_user,givenname,mn,sn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
 
 	$iduser = &$usertbl['id_user'];
 
-
+	$baccess = false;
 	if(bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id) || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
 		{
-		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL."");
-		$req = "";
-		while( $arr = $babDB->db_fetch_array($res))
+		$baccess = true;
+		}
+
+
+	$res = $babDB->db_query("select dfxt.*, dft.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt left join ".BAB_DBDIR_FIELDS_TBL." dft on dfxt.id_field=dft.id where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field < ".BAB_DBDIR_MAX_COMMON_FIELDS." and dfxt.modifiable='Y'");
+
+	$fxidaccess = array();
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		while($arr = $babDB->db_fetch_array($res))
 			{
-
-			$rr = $babDB->db_fetch_array($babDB->db_query("select required, modifiable from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($arr['id'])."'"));
-
-			if ($arr['name'] == 'jpegphoto' && $rr['required'] == "Y" && (empty($file) || $file == "none"))
+			if( $baccess || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
 				{
-				$tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
-
-				if (empty($tmp['photo_data']))
-					{
-					$babBody->msgerror = bab_translate("You must complete required fields");
-					return false;
-					}
-				}
-
-
-			if( isset($fields[$arr['name']]))
-				{
-				if( $arr['name'] != 'jpegphoto' && $rr['required'] == "Y" && empty($fields[$arr['name']]))
-					{
-					$babBody->msgerror = bab_translate("You must complete required fields");
-					return false;
-					}
-
-				$req .= $arr['name']."='".$babDB->db_escape_string($fields[$arr['name']])."',";
-				}
-
-			if (($arr['name'] == 'sn' && empty($fields['sn']) && $rr['modifiable'] == 'Y') || ($arr['name'] == 'givenname' && empty($fields['sn']) && $rr['modifiable'] == 'Y'))
-				{
-				$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
-				return false;
+				$fxidaccess[$arr['name']] = $arr;
 				}
 			}
+		}
 
+	$res = $babDB->db_query("select dfxt.* from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field > ".BAB_DBDIR_MAX_COMMON_FIELDS." and dfxt.modifiable='Y'");
 
-		if ( !empty($fields['email']) && !bab_isEmailValid($fields['email']))
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		while($arr = $babDB->db_fetch_array($res))
 			{
-			$babBody->msgerror = bab_translate("Your email is not valid !!");
-			return false;
+			if( $baccess || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
+				{
+				$fxidaccess['babdirf'.$arr['id']] = $arr;
+				}
+			}
+		}
+
+	if( $baccess == false &&  count($fxidaccess) )
+		{
+		$baccess = true;//XXXXXXXXX
+		}
+
+	if($baccess)
+		{
+
+		foreach( $fxidaccess as $fname => $datafield )
+			{
+			if( $datafield['required'] == 'Y' )
+				{
+				if( $fname == 'jpegphoto' )
+					{
+					if( empty($file) || $file == "none")
+						{
+						$tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
+
+						if (empty($tmp['photo_data']))
+							{
+							$babBody->msgerror = bab_translate("You must complete required fields");
+							return false;
+							}
+						}
+					else
+						{
+						if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
+							{
+							$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
+							return false;
+							}
+						include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
+						$cphoto = bab_getUploadedFileContent('photof');
+						}
+					}
+				elseif( $fname == 'email' )
+					{
+						if ( !isset($fields['email']) || empty($fields['email']) || !bab_isEmailValid($fields['email']))
+							{
+							$babBody->msgerror = bab_translate("Your email is not valid !!");
+							return false;
+							}
+					}
+				elseif ( !isset($fields[$fname]) || empty($fields[$fname]) )
+					{
+						$babBody->msgerror = bab_translate("You must complete required fields");
+						return false;
+					}
+
+				}
+
 			}
 
-		if( $idgroup > 0)
+		if( $idgroup > 0 && (isset($fields['givenname']) || isset($fields['mn']) || isset($fields['sn']) || isset($fields['email'])))
 			{
 
 			$replace = array( " " => "", "-" => "");
-
 
 			if (!isset($fields['givenname']))
 				$fields['givenname'] = $usertbl['givenname'];
@@ -2233,7 +2279,6 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 			if (!isset($fields['sn']))
 				$fields['sn'] = $usertbl['sn'];
-			
 			
 			$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
 			$query = "select * from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."' and id!='".$babDB->db_escape_string($iduser)."'";	
@@ -2245,39 +2290,45 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 				}
 
 			$babDB->db_query("update ".BAB_USERS_TBL." set firstname='".$babDB->db_escape_string($fields['givenname'])."', lastname='".$babDB->db_escape_string($fields['sn'])."', email='".$babDB->db_escape_string($fields['email'])."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($iduser)."'");
+			$bupdate = true;
 			}
-		if( !empty($file) && $file != "none")
+
+		$req = '';
+		reset($fxidaccess);
+		$cphoto = '';
+		foreach( $fxidaccess as $fname => $datafield )
 			{
-			if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
+			if( $fname == 'jpegphoto' && !empty($file) && $file != "none")
 				{
-				$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
-				return false;
+				include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
+				$cphoto = bab_getUploadedFileContent('photof');
 				}
-				
-			include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
-			$cphoto = bab_getUploadedFileContent('photof');
-			
-			}
-
-
-		foreach( $fields as $key => $value )
-			{
-			$value = trim($value);
-			if( empty($value) && substr($key, 0, strlen("babdirf")) == 'babdirf' )
+			elseif( isset($fields[$fname]))
 				{
-				$tmp = substr($key, strlen("babdirf"));
-				$rs = $babDB->db_query("select d.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." e,".BAB_DBDIR_FIELDS_DIRECTORY_TBL." d where e.id='".$babDB->db_escape_string($tmp)."' AND e.required='Y' AND d.id=(e.id_field-'".BAB_DBDIR_MAX_COMMON_FIELDS."')");
-				if( $rs && $babDB->db_num_rows($rs) > 0 )
+				if( $datafield['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
-					list($name) = $babDB->db_fetch_array($rs);
-					$babBody->msgerror = bab_translate( "You must complete").' '.$name;
-					return false;
+					$req .= $fname."='".$babDB->db_escape_string($fields[$fname])."',";
+					}
+				else
+					{
+					if( substr($fname, 0, strlen("babdirf")) == 'babdirf' )
+						{
+						$tmp = substr($fname, strlen("babdirf"));
+
+						$bupdate = true;
+						$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
+						if( $rs && $babDB->db_num_rows($rs) > 0 )
+							{
+							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($fields[$fname])."' where id_fieldx='".$babDB->db_escape_string($tmp)."' and id_entry='".$babDB->db_escape_string($idu)."'");
+							}
+						else
+							{
+							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($fields[$fname])."', '".$babDB->db_escape_string($tmp)."', '".$babDB->db_escape_string($idu)."')");
+							}
+						}
 					}
 				}
 			}
-
-
-
 
 		if( !empty($cphoto))
 			$req .= " photo_data='".$babDB->db_escape_string($cphoto)."'";
@@ -2287,7 +2338,6 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$req = substr($req, 0, strlen($req) -1);
 
 		$bupdate = false;
-
 		if( !empty($req))
 			{
 			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
@@ -2295,26 +2345,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$babDB->db_query($req);
 			$bupdate = true;
 			}
-		
 
-		foreach( $fields as $key => $value )
-			{
-			if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
-				{
-				$tmp = substr($key, strlen("babdirf"));
-
-				$bupdate = true;
-				$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
-				if( $rs && $babDB->db_num_rows($rs) > 0 )
-					{
-					$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($value)."' where id_fieldx='".$babDB->db_escape_string($tmp)."' and id_entry='".$babDB->db_escape_string($idu)."'");
-					}
-				else
-					{
-					$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($value)."', '".$babDB->db_escape_string($tmp)."', '".$babDB->db_escape_string($idu)."')");
-					}
-				}
-			}
 
 		if( $bupdate )
 			{
@@ -2331,7 +2362,9 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			$event = new bab_eventDirectoryEntryModified($idu);
 			bab_fireEvent($event);
 			}
+
 		}
+
 
 	return true;
 	}
@@ -2826,7 +2859,9 @@ if( '' != ($modify = bab_pp('modify')))
 		if( $modify == 'dbc' )
 			{
 			$idx = 'dbmod';
-			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $_FILES['photof']['name'],$_FILES['photof']['tmp_name'],bab_pp('photod')))
+			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
+			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
+			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $photo_name,$photof,bab_pp('photod')))
 				{
 				$msg = bab_translate("Your contact has been updated");
 				$idx = 'dbcunload';

@@ -390,6 +390,7 @@ function bab_deleteDbDirectory($id)
 	while( $arr = $babDB->db_fetch_array($res))
 	{
 		$babDB->db_query("delete from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['id'])."'");
+		$babDB->db_query("delete from ".BAB_DBDIRFIELDUPDATE_GROUPS_TBL." where id_object='".$babDB->db_escape_string($arr['id'])."'");
 	}
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($id)."'");
 	$babDB->db_query("delete from ".BAB_DBDIR_FIELDSEXPORT_TBL." where id_directory='".$babDB->db_escape_string($id)."'");
