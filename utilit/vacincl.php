@@ -191,7 +191,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		
 		$period_start 	= bab_mktime($arr['period_start']);
-		$period_end 	= bab_mktime($arr['period_end']);
+		$period_end 	= 86400 + bab_mktime($arr['period_end']);
 		
 		
 		$period_access = ((int) $arr['right_inperiod']) + (((int) $overlap)*10);
