@@ -1974,6 +1974,12 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'");
 								}
+
+							if( $idgroup > 1 )
+								{
+								bab_addUserToGroup($rrr['id'], $idgroup);
+								}
+
 							break;
 							}
 						}
