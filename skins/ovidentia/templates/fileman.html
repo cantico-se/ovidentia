@@ -936,35 +936,27 @@ function showHide()
 	{
 		if(oType.checked)
 		{
-			hide();
+			ovidentia_fileman_hide();
 		}
 		else
 		{
-			show();
+			ovidentia_fileman_show();
 		}
 	}
 }
 
-function show(aNode)
+function ovidentia_fileman_show()
 {
-	var aNodes = document.getElementsByClassName("showHide");
-	var iLength = aNodes.length;
-	
-	for(i = 0; i < iLength; i++) 
-	{
-	    aNodes[i].show();
-	}	
+	$$('.showHide').each(function(e) {
+		Element.show(e);
+	});
 }
 
-function hide(aNode)
+function ovidentia_fileman_hide()
 {
-	var aNodes = document.getElementsByClassName("showHide");
-	var iLength = aNodes.length;
-	
-	for(i = 0; i < iLength; i++) 
-	{
-	    aNodes[i].hide();
-	}	
+	$$('.showHide').each(function(e) {
+		Element.hide(e);
+	});
 }
 //]]>
 </script>
@@ -985,12 +977,13 @@ function hide(aNode)
 </form>
 <script type="text/javascript">
 //<![CDATA[
-	var oForm = document.forms.displayFolderForm;
-	if('Y' == oForm['gr'].value)
-	{
-		showHide();
-	}
-	
+	bab_initFunctions.push(function() {
+		var oForm = document.forms.displayFolderForm;
+		if('Y' == oForm['gr'].value)
+		{
+			showHide();
+		}
+	});	
 //]]>
 </script>
 <!--#end displayFolderForm -->
