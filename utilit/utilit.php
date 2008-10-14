@@ -1538,14 +1538,17 @@ function bab_updateSiteSettings()
 		{
 		$GLOBALS['babMaxGroupSize'] = '50000000'; 
 		}
+		
 	if( !empty($arr['maxfilesize']))
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
 		}
 	else
 		{
-		$GLOBALS['babMaxFileSize'] = '30000000'; 
+		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		$GLOBALS['babMaxFileSize'] = bab_inifile_requirements::getIniMaxUpload(); 
 		}
+		
 	if( !empty($arr['uploadpath']))
 		{
 		$GLOBALS['babUploadPath'] = $arr['uploadpath'];

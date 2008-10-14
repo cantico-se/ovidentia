@@ -96,15 +96,23 @@ class bab_inifile_requirements {
 		}
 		return $val;
 	}
+	
+	
+	
+	function getIniMaxUpload() {
+		$upload_max_filesize = bab_inifile_requirements::return_bytes(ini_get('upload_max_filesize'));
+		$post_max_size = bab_inifile_requirements::return_bytes(ini_get('post_max_size'));
+		return $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size; 
+	}
+	
+	
+	
 
 	function require_upload_max_file_size($value) {
 	
 		global $babDB;
 
-		$upload_max_filesize = $this->return_bytes(ini_get('upload_max_filesize'));
-		$post_max_size = $this->return_bytes(ini_get('post_max_size'));
-
-		$current = $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size;
+		$current = bab_inifile_requirements::getIniMaxUpload();
 		$current_display = sprintf("%dM",$current/1024/1024);
 		$result = $current >= $this->return_bytes($value);
 		
