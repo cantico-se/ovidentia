@@ -1963,6 +1963,8 @@ class bab_functionality {
 
 /**
  * Get an object with informations for one addon
+ * if the addon does not exist, the function return false
+ *
  * @since 6.6.93
  * @param	string	$addonname
  * @return bab_addonInfos|false

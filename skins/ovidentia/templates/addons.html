@@ -1,4 +1,10 @@
 <!--#begin addonslist -->
+<!--#if title -->
+<h2 class="title">{ title }</h2>
+<!--#endif title -->
+
+<!--#if display_in_form -->
+
 <script type="text/javascript">
 <!--
 function deladdon(id)
@@ -13,6 +19,9 @@ function deladdon(id)
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="list" />
 <input type="hidden" name="update" value="disable" />
+
+<!--#endif display_in_form -->
+
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -20,17 +29,18 @@ function deladdon(id)
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ name } </td>
 			<td>{ desctxt }</td>
-			<td align="center">{ upgradetxt }</td>
+			<td align="center">&nbsp;</td>
 			<td align="center">{ versiontxt }</td>
 			<td colspan="4">&nbsp;</td>
+			<!--#if display_in_form -->
 			<td width="1%">{ disabled }</td>
+			<!--#endif display_in_form -->
 		</tr>
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td><a href="{ requrl }">{ title }</a></td>
 			<td>{ description }</td>
-			<td align="center">
-			<!--#if upgradeurl --><a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a><!--#endif upgradeurl -->&nbsp;</td>
+			<td align="center">&nbsp;</td>
 			<td align="center">{ addversion }</td>
 			<td align="center">
 				<!--#if access_control -->
@@ -42,38 +52,52 @@ function deladdon(id)
 			<td align="center"><a href="{ exporturl }" title="{ t_download }"><img alt="{ t_download }" border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
 			<td align="center">
 				<!--#if history -->
-				<a href="javascript:bab_popup('{ history }')" title="{ t_historic }"><img alt="{ t_historic }" border="0" src="{ babSkinPath }images/Puces/properties.gif"></a>
+				<a href="{ history }" onclick="bab_popup(this.href); return false;" title="{ t_historic }"><img alt="{ t_historic }" border="0" src="{ babSkinPath }images/Puces/properties.gif"></a>
 				<!--#else history -->&nbsp;
 				<!--#endif history -->
 			</td>
 			<td align="center">
 				<!--#if delete -->
-				<a href="javascript:deladdon({ arr[id] })" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
+				<a href="javascript:deladdon({ id_addon })" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
 				<!--#else delete -->&nbsp;
 				<!--#endif delete -->
 			</td>
+			<!--#if display_in_form -->
 			<td valign="middle" width="0%" align="center"> 
 				<!--#if access_control -->
-				<input type="checkbox" name="addons[]" { catchecked } value="{ arr[id] }">
+				<input type="checkbox" name="addons[]" <!--#if catchecked --> checked="checked"<!--#endif catchecked --> value="{ id_addon }">
 				<!--#else access_control -->
 				&nbsp;
 				<!--#endif access_control -->
 			</td>
+			<!--#endif display_in_form -->
 			</tr>
 			<!--#endin getnext -->
+			
+			<!--#if display_in_form -->
+			
 			<tr class="BabSiteAdminTitleFontBackground"> 
-			<td colspan="8">&nbsp;</td>
-			<td width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }"  border="0"></a></td>
-		</tr>
+				<td colspan="8">&nbsp;</td>
+				
+				<td width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }"  border="0"></a></td>
+				
+			</tr>
+			<!--#endif display_in_form -->
 		</table>
 	</td>
 </tr>
 </table>
 <br />
+
+<!--#if display_in_form -->
+
 <div align="center">
 <input type="submit" name="submit" value="{ update }" /></div>
 <br />
 </form>
+
+<!--#endif display_in_form -->
+
 <!--#end addonslist -->
 
 

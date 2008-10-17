@@ -84,7 +84,7 @@ class bab_addonsInfos {
 	
 	
 	/**
-	 * Create full index of addons
+	 * Create full index of addons with disabled and not installed addons
 	 * @return boolean
 	 */
 	function createFullIndex() {
@@ -110,7 +110,7 @@ class bab_addonsInfos {
 
 
 	/**
-	 * Get all addons indexed by id
+	 * Get available addons indexed by id
 	 * since $babBody->babaddons is deprecated, this method has the same result
 	 * @static
 	 * @return array
@@ -146,25 +146,48 @@ class bab_addonsInfos {
 	}
 	
 	
+	/**
+	 * Get all addons indexed by id
+	 * @static
+	 * @return array
+	 */
+	function getDbRows() {
 	
+		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createFullIndex();
+		
+		return $obj->fullIndexById;
+	}
+	
+	
+	/**
+	 * Get all addons indexed by name
+	 * @static
+	 * @return array
+	 */
+	function getDbRowsByName() {
+		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createFullIndex();
+		
+		return $obj->fullIndexByName;
+	}
 
 	
 	/**
-	 * Get addon row if exist
+	 * Get addon row if exist, from all addons in table
 	 * @static
 	 * @param	int	$id_addon
 	 * @return	false|array
 	 */
 	function getDbRow($id_addon) {
 	
-		$obj = bab_getInstance('bab_addonsInfos');
-		$obj->createFullIndex();
+		$arr = bab_addonsInfos::getDbRows();
 		
-		if (!isset($obj->fullIndexById[$id_addon])) {
+		if (!isset($arr[$id_addon])) {
 			return false;
 		}
 		
-		return $obj->fullIndexById[$id_addon];
+		return $arr[$id_addon];
 	}
 	
 	
@@ -222,6 +245,64 @@ class bab_addonsInfos {
 		
 		}
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Browse addons folder and add missing addons to bab_addons
+	 * @static
+	 */
+	function insertMissingAddonsInTable() {
+	
+		global $babDB;
+	
+		$h = opendir($GLOBALS['babAddonsPath']);
+		while (($f = readdir($h)) != false)
+			{
+			if ($f != "." and $f != "..") 
+				{
+				if (is_dir($GLOBALS['babAddonsPath'].$f) && is_file($GLOBALS['babAddonsPath'].$f."/init.php"))
+					{
+					$res = $babDB->db_query("SELECT * FROM ".BAB_ADDONS_TBL." 
+					where title='".$babDB->db_escape_string($f)."' ORDER BY title ASC");
+					if( $res && $babDB->db_num_rows($res) < 1)
+						{
+							$babDB->db_query("
+							INSERT INTO ".BAB_ADDONS_TBL." (title, enabled) 
+							VALUES ('".$babDB->db_escape_string($f)."', 'Y')
+							");
+						}
+					}
+				}
+			}
+		closedir($h);
+	}
+	
+	
+	/**
+	 * Browse addons table and remove obsolete lines
+	 * @static
+	 */
+	function deleteObsoleteAddonsInTable() {
+		global $babDB;
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
+
+		$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL."");
+		
+		while($row = $babDB->db_fetch_array($res)) {
+		
+			if (!is_dir($GLOBALS['babAddonsPath'].$row['title']) || !is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php")) {
+				
+				$babDB->db_query("delete from ".BAB_ADDONS_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
+				aclDelete(BAB_ADDONS_GROUPS_TBL, $row['id']);
+				$babDB->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$babDB->db_escape_string($row['id'])."' and type='4'");
+				$babDB->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$babDB->db_escape_string($row['id'])."' and type='4'");
+			}
+		}
+	}
 }
 
 
@@ -245,12 +326,18 @@ class bab_addonInfos {
 	 * @access private
 	 */
 	var $addonname;
+	
+	/**
+	 * @access private
+	 */
+	var $ini = null;
 
 
 	/**
 	 * Set addon Name
 	 * This function verifiy if the addon is accessible
 	 * define $this->id_addon and $this->addonname
+	 * @see bab_getAddonInfosInstance() this method is used for the creation of the instance with acces_rights=false
 	 *
 	 * @param	string	$addonname
 	 * @param	boolean	$access_rights	: access rights verification on addon
@@ -286,6 +373,15 @@ class bab_addonInfos {
 	function getName() {
 		return $this->addonname;
 	}
+	
+	/**
+	 * get the addon ID
+	 * @return int
+	 */
+	function getId() {
+		return (int) $this->id_addon;
+	}
+	
 	
 	/**
 	 * a replacement for $babAddonTarget
@@ -362,6 +458,289 @@ class bab_addonInfos {
 	 */
 	function getStylePath() {
 		return $GLOBALS['babInstallPath'].'styles/'.$this->getRelativePath();
+	}
+	
+	
+	/**
+	 * get INI object, general section only
+	 * @access private
+	 */
+	function getIni() {
+		if (null === $this->ini) {
+	
+			$this->ini = new bab_inifile();
+			$this->ini->inifileGeneral($this->getPhpPath().'addonini.php');
+		}
+		
+		return $this->ini;
+	}
+	
+	
+	/**
+	 * Check validity of addon INI file requirements
+	 * @return boolean
+	 */
+	function isValid() {
+		$ini = new bab_inifile();
+		$ini->inifile($this->getPhpPath().'addonini.php');
+		return $ini->isValid();
+	}
+	
+	
+	
+	/**
+	 * addon has global access control 
+	 * @return boolean
+	 */
+	function hasAccessControl() {
+		$ini = $this->getIni();
+		return !isset($ini->inifile['addon_access_control']) || 
+			(isset($ini->inifile['addon_access_control']) && 1 === (int) $ini->inifile['addon_access_control']);
+	}
+	
+	/**
+	 * addon is deletable by administrator
+	 * @return boolean
+	 */
+	function isDeletable() {
+		$ini = $this->getIni();
+		return isset($ini->inifile['delete']) && 1 === (int) $ini->inifile['delete'];
+	}
+	
+	/**
+	 * Test if addon is accessible
+	 * if access control, and addons access rights verification return false, addon is not accessible
+	 * if addons is disabled, the addons is not accessible
+	 * if addon is not installed, addon is not accessible
+	 * @return boolean
+	 */
+	function isAccessValid() {
+		if (bab_isAddonAccessValid($this->id_addon)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * is addon installed by administrator
+	 * @return boolean
+	 */
+	function isInstalled() {
+		$arr = bab_addonsInfos::getDbRow($this->id_addon);
+		return 'Y' === $arr['installed'];
+	}
+	
+	
+	/**
+	 * is addon disabled by administrator
+	 * @return boolean
+	 */
+	function isDisabled() {
+	
+		$arr = bab_addonsInfos::getDbRow($this->id_addon);
+		return 'N' === $arr['enabled'];
+	}
+	
+	/**
+	 * Disable addon
+	 * @return bab_addonInfos
+	 */
+	function disable() {
+		global $babDB;
+		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='N' WHERE id=".$babDB->quote($this->id_addon));
+		bab_addonsInfos::clear();
+		return $this;
+	}
+	
+	
+	/**
+	 * Enable addon
+	 * @return bab_addonInfos
+	 */
+	function enable() {
+		global $babDB;
+		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='Y' WHERE id=".$babDB->quote($this->id_addon));
+		bab_addonsInfos::clear();
+		return $this;
+	}
+	
+	
+	/**
+	 * Get version from ini file
+	 * @return string
+	 */
+	function getIniVersion() {
+	
+		$ini = $this->getIni();
+		return $ini->getVersion();
+	}
+	
+	
+	/**
+	 * Get description from ini file
+	 * @return string
+	 */
+	function getDescription() {
+		
+		$ini = $this->getIni();
+		return $ini->getDescription();
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * get version from database
+	 * @return string
+	 */
+	function getDbVersion() {
+		$arr = bab_addonsInfos::getDbRow($this->id_addon);
+		return $arr['version'];
+	}
+	
+	/**
+	 * Test if the addon need an upgrade of the database
+	 */
+	function isUpgradable() {
+	
+		$vini 	= $this->getIniVersion();
+		$vdb 	= $this->getDbVersion();
+	
+		if ( empty($vdb) || 0 !== version_compare($vdb,$vini)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Verify addon installation status
+	 * after addon files has been modified, this method update the table with new installation status
+	 * @return boolean
+	 */
+	function updateInstallStatus() {
+	
+		if (!$this->isUpgradable()) {
+			return false;
+		}
+	
+		global $babDB;
+
+		
+		
+		if (!is_file($this->getPhpPath().'init.php')) {
+			return false;	
+		}
+		
+		
+		
+		if (!bab_setAddonGlobals($this->id_addon)) {
+			return false;
+		}
+		
+		
+		require_once( $this->getPhpPath().'init.php' );
+		$func_name = $this->getName().'_upgrade';
+		
+		if (!function_exists($func_name)) {
+			
+			$this->setDbVersion($this->getIniVersion());
+			
+		} else {
+			if ($this->isInstalled()) {
+				$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id=".$babDB->quote($this->id_addon));
+				bab_addonsInfos::clear();
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	
+	
+	/**
+	 * @access private
+	 * @return	boolean
+	 */
+	function setDbVersion($version) {
+	
+		global $babDB;
+	
+		$res = $babDB->db_query("
+			UPDATE ".BAB_ADDONS_TBL." 
+			SET 
+				version=".$babDB->quote($version).",
+				installed='Y' 
+			WHERE 
+				id=".$babDB->quote($this->id_addon)."
+		");
+		
+		if (0 !== $babDB->db_affected_rows($res)) {
+			bab_addonsInfos::clear();
+			return true;
+		}
+		
+		return false;
+	}
+	
+
+	
+	
+	/**
+	 * Call upgrade function of addon
+	 * @return boolean
+	 */
+	function upgrade() {
+
+		if (!$this->isValid()) {
+			return false;
+		}
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		
+		
+		
+		
+		if (!is_file($this->getPhpPath().'init.php')) {
+			return false;	
+		}
+		
+		
+		if (!bab_setAddonGlobals($this->id_addon)) {
+			return false;
+		}
+		
+		$func_name = $this->getName().'_upgrade';
+		require_once( $this->getPhpPath().'init.php');
+		
+		global $babDB;
+		
+		$vini 	= $this->getIniVersion();
+		$vdb 	= $this->getDbVersion();
+		
+		if ((function_exists($func_name) && $func_name($vdb, $vini)) || !function_exists($func_name))
+			{
+			
+			if ($this->setDbVersion($vini)) {
+
+				if (empty($vdb)) {
+					$from_version = '0.0';
+				} else {
+					$from_version = $vdb;
+				}
+				bab_setUpgradeLogMsg($this->getName(), sprintf('The addon has been updated from %s to %s', $from_version, $vini));
+				
+				// clear sitemap for addons without access rights management
+				bab_siteMap::clearAll();
+				return true;
+			}
+		}	
 	}
 }
 

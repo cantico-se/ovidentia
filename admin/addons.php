@@ -64,7 +64,7 @@ function callSingleAddonFunction($id,$name,$func)
 	return true;
 }
 
-function addonsList($upgradeall)
+function addonsList()
 	{
 	global $babBody;
 	class temp
@@ -86,9 +86,12 @@ function addonsList($upgradeall)
 		var $viewurl;
 		var $altbg = true;
 
-		function temp($upgradeall)
+		function temp()
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+			
+			$this->display_in_form = true;
+			$this->title = false;
 
 			$this->name = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
@@ -103,234 +106,157 @@ function addonsList($upgradeall)
 			$this->t_historic = bab_translate("Historic");
 			$this->t_download = bab_translate("Download");
 			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
-			$this->db = $GLOBALS['babDB'];
-			$this->upgradeall = $upgradeall;
-			$this->upgradeallurl = $GLOBALS['babUrlScript']."?tg=addons&idx=list&upgradeall=1";
-
-			$h = opendir($GLOBALS['babAddonsPath']);
-			while (($f = readdir($h)) != false)
-				{
-				if ($f != "." and $f != "..") 
-					{
-					if (is_dir($GLOBALS['babAddonsPath'].$f) && is_file($GLOBALS['babAddonsPath'].$f."/init.php"))
-						{
-						$res = $this->db->db_query("SELECT * FROM ".BAB_ADDONS_TBL." 
-						where title='".$this->db->db_escape_string($f)."' ORDER BY title ASC");
-						if( $res && $this->db->db_num_rows($res) < 1)
-							{
-								$this->db->db_query("
-								INSERT INTO ".BAB_ADDONS_TBL." (title, enabled) 
-								VALUES ('".$this->db->db_escape_string($f)."', 'Y')
-								");
-							}
-						}
-					}
-				}
-			closedir($h);
-
-			include_once $GLOBALS['babInstallPath']."admin/acl.php";
-
-			$res = $this->db->db_query("select * from ".BAB_ADDONS_TBL."");
-			while($row = $this->db->db_fetch_array($res))
-				{
-				if (!is_dir($GLOBALS['babAddonsPath'].$row['title']) || !is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php"))
-					{
-					$this->db->db_query("delete from ".BAB_ADDONS_TBL." where id='".$this->db->db_escape_string($row['id'])."'");
-					aclDelete(BAB_ADDONS_GROUPS_TBL, $row['id']);
-					$this->db->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$this->db->db_escape_string($row['id'])."' and type='4'");
-					$this->db->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$this->db->db_escape_string($row['id'])."' and type='4'");
-					}
-				}
-			$this->res = $this->db->db_query("select * from ".BAB_ADDONS_TBL." ORDER BY title ASC");
-			$this->count = $this->db->db_num_rows($this->res);
 			
-			
+			bab_addonsInfos::insertMissingAddonsInTable();
+			bab_addonsInfos::deleteObsoleteAddonsInTable();
 			bab_addonsInfos::clear();
 			
+			$this->res = $this->getRes();
+		}
+			
+		function getRes() {
+			$res = bab_addonsInfos::getDbRowsByName();
+			$return = array();
+			foreach($res as $name => $row) {
+				$addon = bab_getAddonInfosInstance($name);
+				if ($this->display($addon)) {
+					$return[$name] = $addon;
+				}
 			}
+			
+			uksort($return, 'strcasecmp');
+			
+			return $return;
+		}
+		
+		
+		
+		function display($addon) {
+			return $addon->hasAccessControl();
+		}
+		
+		
+			
 
 		function getnext()
 			{
-			static $i = 0;
-			if( $i < $this->count)
+			
+			if( list(,$addon) = each($this->res))
 				{
 				$this->altbg = !$this->altbg;
-				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->title = bab_toHtml($this->arr['title']);
-				$this->requrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$this->arr['id']);
-				$this->viewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$this->arr['id']);
-				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$this->arr['id']);
-				if( $this->arr['enabled'] == "N")
-					$this->catchecked = "checked";
-				else
-					$this->catchecked = "";
-					
-				$ini = new bab_inifile();
-				$ini->inifileGeneral($GLOBALS['babAddonsPath'].$this->arr['title'].'/addonini.php');
-				$arr_ini = $ini->inifile;
 				
-				$this->access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control']: 1;
-				$this->delete = isset($arr_ini['delete']) && $arr_ini['delete']==1 ? true : false;
-				$this->addversion = "";
-				$this->description = "";
-				$this->upgradeurl = false;
-				if($ini->getVersion())
-					{
-					
-					
-					$this->addversion = $this->arr['version'];
-					if ( empty($this->arr['version']) || 0 !== version_compare($this->arr['version'],$ini->getVersion()))
-						{
-						
-						$func_name = $this->arr['title']."_upgrade";
-						if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/init.php"))
-							{
-							if (bab_setAddonGlobals($this->arr['id'])) {
-								require_once( $GLOBALS['babAddonsPath'].$this->arr['title']."/init.php" );
-								
-								if (!function_exists($func_name))
-									{
-									$req = "update ".BAB_ADDONS_TBL." set 
-										version=".$this->db->quote($ini->getVersion()).", 
-										installed='Y' 
-										where id=".$this->db->quote($this->arr['id']);
-										
-									$this->db->db_query($req);
-									$this->addversion = $ini->getVersion();
-									$this->arr['installed'] = 'Y';
-									}
-								else
-									{
-									if ($this->arr['installed'] == 'Y') {
-										$this->db->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id='".$this->arr['id']."'");
-										$this->arr['installed'] = 'N';
-										}
-									}
-								}
-							}
-						}
+				
+				
+				$this->title = bab_toHtml($addon->getName());
+				$this->requrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$addon->getId());
+				$this->viewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$addon->getId());
+				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
+				
 
-					if ($this->arr['installed'] == 'N') {
-							$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$this->arr['id']);
-						}
-					}
-				if( !empty($arr_ini['description']))
-					$this->description = bab_toHtml($arr_ini['description']);
-				if (is_file($GLOBALS['babAddonsPath'].$this->arr['title']."/history.txt"))
-					$this->history = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$this->arr['id']);
+				$addon->updateInstallStatus();
+				
+				$this->id_addon 		= $addon->getId();
+				
+				$this->catchecked 		= $addon->isDisabled();
+				$this->access_control 	= $addon->hasAccessControl();
+				$this->delete 			= $addon->isDeletable();
+				$this->addversion 		= $addon->getDbVersion();
+				$this->description 		= $addon->getDescription();
+				
+				if ($addon->isUpgradable()) {
+					$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());
+				} else {
+					$this->upgradeurl = false;
+				}
+
+
+				if (is_file($addon->getPhpPath()."history.txt"))
+					$this->history = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
 				else
 					$this->history = false;
-				$i++;
+
 				return true;
 				}
-			else
-				return false;
-
+			
+			return false;
 			}
 		}
+		
 
-	$temp = new temp($upgradeall);
-	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "addonslist"));
+	class temp2 extends temp {
+	
+		function temp2() {
+			parent::temp();
+			
+			$this->display_in_form = false;
+			
+			$this->title = bab_translate('Shared Libraries');
+		}
+	
+		function display($addon) {
+			return false === $addon->hasAccessControl();
+		}
 	}
 
-function disableAddons($addons)
-	{
-	$db = $GLOBALS['babDB'];
-	$req = "select id from ".BAB_ADDONS_TBL."";
-	$res = $db->db_query($req);
-	while( $row = $db->db_fetch_array($res))
-		{
-		if( count($addons) > 0 && in_array($row['id'], $addons))
-			$enabled = "N";
-		else
-			$enabled = "Y";
 
-		$req = "update ".BAB_ADDONS_TBL." set enabled='".$enabled."' where id='".$row['id']."'";
-		$db->db_query($req);
+	$temp = new temp();
+	$babBody->babecho(bab_printTemplate($temp, "addons.html", "addonslist"));
+	
+	$temp2 = new temp2();
+	$babBody->babecho(bab_printTemplate($temp2, "addons.html", "addonslist"));
+	
+	}
+
+
+
+/**
+ * Disable of enable addons
+ */
+function disableAddons($addons) {
+	
+	$addons = (array) $addons;
+	$kaddons = array_flip($addons);
+	
+	foreach(bab_addonsInfos::getDbRows() as $row) {
+	
+		$addon = bab_getAddonInfosInstance($row['title']);
+	
+		if (isset($kaddons[$row['id']])) {
+			$addon->disable();
+		} else {
+			$addon->enable();
 		}
-		
-	$db->db_query("TRUNCATE bab_vac_calendar");
+	}
+
+	global $babDB;
+
+	
+	// if an addon has put some events in vacation cache
+	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	bab_siteMap::clearAll();
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	exit;
-	}
+}
 
 
 
 
-function upgrade($id)
-	{
+function upgrade($id) {
 	global $babDB;
-	$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where id='".$babDB->db_escape_string($id)."'");
-	$row = $babDB->db_fetch_array($res);
-
-	if (is_dir($GLOBALS['babAddonsPath'].$row['title']) && is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php") && is_file($GLOBALS['babAddonsPath'].$row['title']."/addonini.php"))
-		{
-		
-		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
-		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-
-		/*
-
-		upgradeincl.php is included for
-
-			bab_isTable($table)
-			bab_isTableField($table, $field)
-
-		usable in addons since 5.8.2
-
-			bab_setUpgradeLogMsg($addon_name, $message, $uid = '')
-			bab_getUpgradeLogMsg($addon_name, $uid)
-
-		usable in addons since 6.3.0
-
-		*/
-
-		$ini = new bab_inifile();
-		$ini->inifile($GLOBALS['babAddonsPath'].$row['title']."/addonini.php");
-
-		if (!$ini->isValid()) {
-			header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$id);
-			exit;
-		}
-
-		$ini_version = $ini->getVersion();
-
-		if( !empty($ini_version))
-			{
-			$func_name = $row['title']."_upgrade";
-			if ( '' == $row['version'] || version_compare($row['version'],$ini_version, '<=') || 'N' === $row['installed'])
-				{
-				if (bab_setAddonGlobals($row['id'])) {
-					require_once( $GLOBALS['babAddonsPath'].$row['title']."/init.php" );
-					if ((function_exists($func_name) && $func_name($row['version'],$ini_version)) || !function_exists($func_name))
-						{
-						$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
 	
-						if (empty($row['version'])) {
-							$from_version = '0.0';
-						} else {
-							$from_version = $row['version'];
-						}
-						bab_setUpgradeLogMsg($row['title'], sprintf('The addon has been updated from %s to %s', $from_version, $ini_version));
-						
-						// clear sitemap for addons without access rights management
-						bab_siteMap::clearAll();
-						return true;
-						}
-						
-						
-					}
-				}
-			else 
-				{
-				$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set version='".$babDB->db_escape_string($ini_version)."',installed='Y' where id='".$babDB->db_escape_string($id)."'");
-				return true;
-				}
-			}
-		}
-	return false;
+	$row = bab_addonsInfos::getDbRow($id);
+	$addon = bab_getAddonInfosInstance($row['title']);
+	
+	if (!$addon->isValid()) {
+		header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$id);
+		exit;
 	}
+	
+	return $addon->upgrade();
+}
+
+
 
 function export($id)
 	{
@@ -598,25 +524,20 @@ function test_requirements()
 
 			} elseif (isset($_GET['item'])) {
 
-				$addon = bab_addonsInfos::getRow($_GET['item']);
-				$this->installed = 'Y' === $addon['installed'];
+				$row = bab_addonsInfos::getDbRow($_GET['item']);
+				$addon = bab_getAddonInfosInstance($row['title']);
+				$this->installed = $addon->isInstalled();
 				
-				if ($this->installed) {
-					$name = $addon['title'];
-				} else {
-					$name = getAddonName($_GET['item']);
-				}
-
 				
-				if (!is_file($GLOBALS['babAddonsPath'].$name."/addonini.php"))
+				if (!is_file($addon->getPhpPath()."addonini.php"))
 					return;
-				$ini->inifile($GLOBALS['babAddonsPath'].$name."/addonini.php");
+				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
 				
 				$this->t_install = bab_translate("Upgrade");
 				
-				
+				$name = $addon->getName();
 			}
 
 			$this->name = bab_toHtml($name);
@@ -1038,7 +959,7 @@ switch($idx)
 	case "list":
 	default:
 		if (isset($errormsg)) $babBody->msgerror = urldecode($errormsg);
-		addonsList($upgradeall);
+		addonsList();
 		$babBody->title = bab_translate("Add-ons list");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
