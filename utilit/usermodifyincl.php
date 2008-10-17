@@ -156,6 +156,8 @@ class bab_userModify {
 				'".$id."'
 				)");
 	
+			if( isset($babBody->babsite) && isset($babBody->babsite['iDefaultCalendarAccess'] ))
+				{
 			$iDefaultCalendarSiteAccess = (int)($babBody->babsite['iDefaultCalendarAccess']);
 			if( $iDefaultCalendarSiteAccess == BAB_CAL_ACCESS_NONE )
 				{
@@ -172,7 +174,7 @@ class bab_userModify {
 				{
 				$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select ".$idusercal.", id, ".$iDefaultCalendarSiteAccess." from ".BAB_USERS_TBL." where id !='".$id."'");
 				}
-
+				}
 
 			if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 				{
