@@ -2832,7 +2832,9 @@ if( '' != ($modify = bab_pp('modify')))
 		if( $modify == 'dbc' )
 			{
 			$idx = 'dbmod';
-			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $_FILES['photof']['name'],$_FILES['photof']['tmp_name'],bab_pp('photod')))
+			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
+			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
+			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $photo_name,$photof,bab_pp('photod')))
 				{
 				$msg = bab_translate("Your contact has been updated");
 				$idx = 'dbcunload';
