@@ -5472,5 +5472,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	 // nothing todo
 
+	/**
+	 * Upgrade to 6.7.2
+	 */
+
+	 // nothing todo
 	return true;
 }
