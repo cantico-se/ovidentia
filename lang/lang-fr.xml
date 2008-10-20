@@ -2645,6 +2645,7 @@
 <string id="Shared Libraries">Bibliothèques partagées</string>
 <string id="Success">Succès</string>
 <string id="The scripts files must not output data before the end of the script, this error may appear if some of the php files have been modified">Le programme ne doit pas envoyer de donnés avant la fin de son execution, cette erreur peut apparaitre si des fichiers php ont été modifiés.</string>
+<string id="Failed authentication">Échec de l'authentification</string>
 
 
 </fr>
