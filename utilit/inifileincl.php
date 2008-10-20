@@ -172,6 +172,26 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	
+	/**
+	 * @since 6.7.90
+	 */
+	function require_headers_not_sent($value) {
+
+		
+		$status = headers_sent();
+
+		return array(
+			'description'	=> bab_translate("The scripts files must not output data before the end of the script, this error may appear if some of the php files have been modified"),
+			'current'		=> $status ? bab_translate("Error") : bab_translate("Success"),
+			'result'		=> !$status
+		);
+	}
+	
+	
+	
+	
+	
 	function require_upload_directory($value) {
 	
 		global $babDB;

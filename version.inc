@@ -41,6 +41,9 @@ mod_mysql="Available"
 mysql_version="3.23" 
 mod_zlib="Available"
 
+; available since 6.7.90
+
+headers_not_sent="Success"
 
 [recommendations]
 register_globals="Off"
@@ -54,7 +57,7 @@ versions_directory="Available"
 mod_imap="Available"
 mod_gd2="Available"
 mod_mcrypt="Available"
-mod_gettext="Available"
+; mod_gettext="Available"
 ; mod_pdf="Available"
 ; mod_ftp="Available"
 ; mod_curl="Available"
