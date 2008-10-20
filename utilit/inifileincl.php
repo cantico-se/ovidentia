@@ -174,7 +174,7 @@ class bab_inifile_requirements {
 	
 	
 	/**
-	 * @since 6.7.90
+	 * @since 6.7.91
 	 */
 	function require_headers_not_sent($value) {
 

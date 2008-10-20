@@ -41,7 +41,7 @@ mod_mysql="Available"
 mysql_version="3.23" 
 mod_zlib="Available"
 
-; available since 6.7.90
+; available since 6.7.91
 
 headers_not_sent="Success"
 

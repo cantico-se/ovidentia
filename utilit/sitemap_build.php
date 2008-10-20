@@ -1331,21 +1331,9 @@ function bab_sitemap_userSection(&$event) {
 		}
 
 	if( $babBody->icalendars->calendarAccess())
-		{
-		$babBody->calaccess = true;
-		switch($babBody->icalendars->defaultview)
-			{
-			case BAB_CAL_VIEW_DAY: $view='calday';	break;
-			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
-			default: $view='calmonth'; break;
-			}
-		if( empty($babBody->icalendars->user_calendarids))
-			{
-			$babBody->icalendars->initializeCalendars();
-			}
-			
+		{	
 		$array_urls[bab_translate("Calendar")] = array(
-			'url' =>  $GLOBALS['babUrlScript']."?tg=".$view,
+			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
 			'uid' => 'babUserCal'
 			);
 		}
