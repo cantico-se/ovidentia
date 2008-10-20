@@ -1202,6 +1202,8 @@ function bab_updateUserSettings()
 				$babBody->usergroups[] = $arr['id_set'];
 				$babBody->ovgroups[$arr['id_set']]['member'] = 'Y';
 				}
+				
+				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' where sessid='".$babDB->db_escape_string(session_id())."'");			
 			}
 		else
 			{
