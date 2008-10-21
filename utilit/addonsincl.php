@@ -610,7 +610,7 @@ class bab_addonInfos {
 		$vini 	= $this->getIniVersion();
 		$vdb 	= $this->getDbVersion();
 	
-		if ( empty($vdb) || 0 !== version_compare($vdb,$vini)) {
+		if ( empty($vdb) || 0 !== version_compare($vdb,$vini) || !$this->isInstalled()) {
 			return true;
 		}
 		
@@ -741,6 +741,47 @@ class bab_addonInfos {
 				return true;
 			}
 		}	
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * list of addons used by the current addon
+	 * @return	array	in the key, the name of the addon, in the value a boolean for dependency satisfaction status
+	 */
+	function getDependencies() {
+		$ini = new bab_inifile();
+		$ini->inifile($this->getPhpPath().'addonini.php');
+		$addons = $ini->getAddonsRequirements();
+		$return = array();
+		foreach($addons as $arr) {
+			$return[$arr['name']] = $arr['result'];
+		}
+		
+		return $return;
+	}
+	
+	
+	
+	/**
+	 * list of addons that use the current addon
+	 * @return	array	in the key, the name of the addon, in the value a boolean for dependency satisfaction status
+	 */
+	function getDependences() {
+		$return = array();
+		foreach(bab_addonsInfos::getDbRows() as $arr) {
+			$addon = bab_getAddonInfosInstance($arr['title']);
+			foreach($addon->getDependencies() as $addonname => $statisfaction) {
+				if ($addonname === $this->getName()) {
+					$return[$addon->getName()] = $statisfaction;
+				}
+			}
+		}
+		
+		return $return;
 	}
 }
 

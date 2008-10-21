@@ -40,7 +40,11 @@ function deladdon(id)
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td><a href="{ requrl }">{ title }</a></td>
 			<td>{ description }</td>
-			<td align="center">&nbsp;</td>
+			<td align="center">
+				<!--#if upgradeurl -->
+				<a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a>
+				<!--#endif upgradeurl -->&nbsp;
+			</td>
 			<td align="center">{ addversion }</td>
 			<td align="center">
 				<!--#if access_control -->
@@ -100,38 +104,6 @@ function deladdon(id)
 
 <!--#end addonslist -->
 
-
-<!--#begin addon_txt -->
-<html>
-<head>
-<title>OVIDENTIA add-on { arr_ini[title] }</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
-
-<body bgcolor="#FFFFFF" text="#000000">
-<table cellspacing="0" cellpadding="3" bordercolor="#000000" border="1">
-  <tr>
-    <td><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">OVIDENTIA add-on<br>
-      Copyright (c) { year } by CANTICO (info@cantico.fr)<br>
-
-      http://www.cantico.fr <br>
-      This program is free software. You can redistribute it and/or modify <br>
-      it under the terms of the GNU General Public License as published by <br>
-      the Free Software Foundation; either version 2 of the License. </font></font></td>
-  </tr>
-</table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on name :</b> { arr_ini[title] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on description :</b> { arr_ini[longdesc] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on version :</b> { arr_ini[version] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Date :</b> { date }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add-on database prefix :</b> { arr_ini[db_prefix] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Author :</b> { arr_ini[author] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Prerequisites:</b> Ovidentia { arr_ini[ov_version] }</font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Database tables:</b> { arr_ini[tbllist] }</font></p>
-
-</body>
-</html>
-<!--#end addon_txt -->
 
 <!--#begin upload -->
 <form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
@@ -204,8 +176,31 @@ function deladdon(id)
 				<!--#endif result -->
 			</tr>
 			<!--#endin getnextreq -->
+			
+			<!--#if dependences -->
+			<tr>
+				<td colspan="5">
+					
+					<ul>
+						<!--#in getnextdependence -->
+						<li>
+							<!--#if addonurl -->
+							<a href="{ addonurl }">{ addonname }</a>
+							<!--#else addonurl -->
+							{ addonname }
+							<!--#endif addonurl -->
+						</li>
+						<!--#endin getnextdependence -->
+					</ul>
+					
+				</td>
+			</tr>
+			<!--#endif dependences -->
+			
 			<tr> 
 				<td colspan="5" align="center">
+				
+				
 				<br /><br />
 				<!--#if allok -->
 				<!--#if installed -->

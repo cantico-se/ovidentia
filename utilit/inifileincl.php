@@ -605,10 +605,16 @@ class bab_inifile {
 			}
 			
 			
+			$name = $this->getName();
+			
+			if (false === $name) {
+				$name = basename($zipfile);
+			}
+			
 			
 			if ($inifileindex) {
 				$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
-				$this->addCustomScript($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
+				$this->addCustomScript($name, $GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
 				unlink($GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
 			}
 		}
@@ -634,9 +640,15 @@ class bab_inifile {
 			}
 			
 			if (isset($this->inifile['preinstall_script'])) {
+			
+				$name = $this->getName();
+			
+				if (false === $name) {
+					$name = basename(dirname($file));
+				}
 		
 				$preinstall_script = $this->inifile['preinstall_script'];
-				$this->addCustomScript(dirname($file).'/'.$preinstall_script);
+				$this->addCustomScript($name, dirname($file).'/'.$preinstall_script);
 			}
 			
 			 
@@ -718,17 +730,24 @@ class bab_inifile {
 	/**
 	 * Add a custom script for requirements
 	 * for addons
+	 * @param	string	$addonname		used as a static for result storage
 	 * @param	string	$filepath
 	 *
 	 * @return 	boolean
 	 */
-	function addCustomScript($filepath) {
+	function addCustomScript($addonname, $filepath) {
 	
 		if (!file_exists($filepath)) {
 			return false;
 		}
+		
+		static $custom_script_result = array();
+		
+		if (!isset($custom_script_result[$addonname])) {
+			$custom_script_result[$addonname] = include $filepath;
+		} 
 	
-		$arr = include $filepath;
+		$arr = $custom_script_result[$addonname];
 		
 		if (!$arr || !is_array($arr)) {
 			trigger_error('preinstall script must return an array');
@@ -794,36 +813,8 @@ class bab_inifile {
 		}
 
 
-		if ($this->addons) {
-
-			$db = &$GLOBALS['babDB'];
-			$res = $db->db_query("SELECT title, version FROM ".BAB_ADDONS_TBL." WHERE title IN('".implode("','",array_keys($this->addons))."') AND installed='Y' AND enabled='Y'");
-			$installed = array();
-			while ($arr = $db->db_fetch_assoc($res)) {
-				$installed[$arr['title']] = $arr['version'];
-			}
-			
-			foreach($this->addons as $name => $required) {
-				if (isset($installed[$name])) {
-					$return[] = array(
-						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
-						'required'		=> $required,
-						'recommended'	=> false,
-						'current'		=> $installed[$name],
-						'result'		=> version_compare($required, $installed[$name], '<=')
-					);
-				} else {
-					$return[] = array(
-						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
-						'required'		=> $required,
-						'recommended'	=> false,
-						'current'		=> bab_translate('Not installed or disabled'),
-						'result'		=> false
-					);
-				}
-			}
-		}
 		
+		$return = array_merge($return, $this->getAddonsRequirements());
 		
 		
 		
@@ -894,6 +885,73 @@ class bab_inifile {
 
 		return $return_ordered;
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @return array
+	 */
+	function getAddonsRequirements() {
+	
+		$return = array();
+		
+		
+		if ($this->addons) {
+
+			$db = &$GLOBALS['babDB'];
+			$res = $db->db_query("SELECT title, version FROM ".BAB_ADDONS_TBL." WHERE title IN('".implode("','",array_keys($this->addons))."') AND installed='Y' AND enabled='Y'");
+			$installed = array();
+			while ($arr = $db->db_fetch_assoc($res)) {
+				$installed[$arr['title']] = $arr['version'];
+			}
+			
+			foreach($this->addons as $name => $required) {
+				if (isset($installed[$name])) {
+					$return[] = array(
+						'name'			=> $name,
+						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
+						'required'		=> $required,
+						'recommended'	=> false,
+						'current'		=> $installed[$name],
+						'result'		=> version_compare($required, $installed[$name], '<=')
+					);
+				} else {
+					$return[] = array(
+						'name'			=> $name,
+						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
+						'required'		=> $required,
+						'recommended'	=> false,
+						'current'		=> bab_translate('Not installed or disabled'),
+						'result'		=> false
+					);
+				}
+			}
+		}
+		
+		return $return;
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * Tables in database related to the given ini file
