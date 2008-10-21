@@ -511,7 +511,7 @@ function test_requirements()
 
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
-			
+			$this->t_dependencies = bab_translate("Dependencies");
 			$this->t_required = bab_translate("Required value");
 			$this->t_current = bab_translate("Current value");
 			$this->t_addon = bab_translate("Addon");
