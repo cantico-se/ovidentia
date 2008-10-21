@@ -552,7 +552,7 @@ class bab_inifile {
 	var $recommendations;
 	var $functionalities;
 	var $customscript = array();
-
+	
 
 	/**
 	 * Use a ini file in a zip file
@@ -679,7 +679,20 @@ class bab_inifile {
 	}
 
 	function getDescription() {
-		return $this->inifile['description'];
+
+		$lang = 'description.'.$GLOBALS['babLanguage'];
+	
+		if (isset($this->inifile[$lang])) {
+			return $this->inifile[$lang];
+		} elseif(isset($this->inifile['description.en'])) {
+			return $this->inifile['description.en'];
+		}
+		
+		if (isset($this->inifile['description'])) {
+			return $this->inifile['description'];
+		}
+	
+		return '';
 	}
 
 	function getVersion() {
