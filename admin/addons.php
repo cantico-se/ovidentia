@@ -249,7 +249,8 @@ function upgrade($id) {
 		exit;
 	}
 	
-	return $addon->upgrade();
+	$addon->upgrade();
+	bab_siteMap::clearAll();
 }
 
 
