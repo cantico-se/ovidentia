@@ -573,6 +573,12 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);			
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
+
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			{
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -847,6 +853,13 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+			$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
+			{
+				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
+				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
+			}
 			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
@@ -913,6 +926,13 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
+			$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+			$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
+			{
+				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
+				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
+			}
 			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
@@ -1149,6 +1169,11 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			{
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1224,6 +1249,11 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			{
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3276,6 +3306,11 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=approb");
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			{
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
