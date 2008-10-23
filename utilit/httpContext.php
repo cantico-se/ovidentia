@@ -64,6 +64,12 @@ function bab_storeHttpContext()
 
 /**
  * Restore the REQUEST, POST, GET from the session
+ * 
+ * If the context contains only GET parameters, we redirect
+ * to the corresponding page, so that the url will be visible in
+ * web browser navigation bar.
+ * 
+ * @see bab_storeHttpContext, bab_haveHttpContext
  */
 function bab_restoreHttpContext()
 {
@@ -72,7 +78,13 @@ function bab_restoreHttpContext()
 		$_POST		= $_SESSION['babHttpContext']['Post'];
 		$_GET 		= $_SESSION['babHttpContext']['Get'];
 		$_REQUEST 	= $_SESSION['babHttpContext']['Request'];
-		
+
+		if (empty($_POST) && !empty($_GET)) {
+			require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+			$redirectUrl = $GLOBALS['babPhpSelf'] . '?' . bab_url::buildQuery($_GET);
+			header('Location: ' . $redirectUrl);
+		}
+
 		unset($_SESSION['babHttpContext']);
 	}
 }
