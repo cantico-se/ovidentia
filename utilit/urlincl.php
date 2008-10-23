@@ -63,9 +63,29 @@ class bab_url {
 		}
 		return $url;
 	}
-	
-	
-	
+
+
+	/**
+	 * Returns an URL-encoded query string form a (possibly multi-dimensional) array.
+	 *
+	 * @param array	$data		The array may be a simple one-dimensional structure,
+	 * 							or an array of arrays (who in turn may contain other arrays).
+	 * @return string
+	 */
+	function buildQuery($data) {
+		if (function_exists('http_build_query')) {
+			// Only available in php >= 5
+			$url = http_build_query($data);
+		} else {
+			// For php < 5 compatibility.
+			$url = '';
+			foreach ($data as $param => $value)	 {
+				$url = self::mod($url, $param, $value);
+			}
+		}
+		
+		return $url;
+	}
 	
 	/**
 	 * @access private
