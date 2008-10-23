@@ -65,9 +65,9 @@ function bab_storeHttpContext()
 /**
  * Restore the REQUEST, POST, GET from the session
  * 
- * If the context contains only GET parameters, we redirect
+ * If the restored context contains only GET parameters, we redirect
  * to the corresponding page, so that the url will be visible in
- * web browser navigation bar.
+ * the user's web browser navigation bar.
  * 
  * @see bab_storeHttpContext, bab_haveHttpContext
  */
