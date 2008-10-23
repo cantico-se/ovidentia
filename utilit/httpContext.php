@@ -81,8 +81,11 @@ function bab_restoreHttpContext()
 
 		if (empty($_POST)) {
 			require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
-			$phpSelf =  substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
-			$redirectUrl = $phpSelf . '?' . bab_url::buildQuery($_GET);
+			$phpSelf =  substr($_SERVER['PHP_SELF'],-strpos(strrev($_SERVER['PHP_SELF']),'/'));
+			$redirectUrl = $phpSelf;
+			if ($query = bab_url::buildQuery($_GET)) {
+				$redirectUrl .= '?' . $query;
+			}
 			header('Location: ' . $redirectUrl);
 		}
 
