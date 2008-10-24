@@ -467,7 +467,7 @@ class Func_PortalAuthentication extends bab_functionality
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * Register myself as a functionality.
@@ -522,7 +522,9 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 	function registerAuthType()
 	{
-		Func_PortalAuthentication::register();
+		if (Func_PortalAuthentication::register() === false) {
+			return false;
+		}
 		return Func_PortalAuthentication_AuthOvidentia::register();
 	}
 
