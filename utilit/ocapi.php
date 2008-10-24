@@ -383,6 +383,49 @@ function bab_OCGetUserEntities($iduser, $idoc='')
 
 
 /**
+ * Returns an ordered mysql result set containing the entity types avaiblable for the specified orgchart.
+ *
+ * @param int			$ocid
+ * @return resource		The mysql resource or FALSE on error
+ */
+function bab_OCGetOrgChartEntityTypes($idoc)
+{
+	global $babDB;
+
+	$sql = 'SELECT types.* FROM ' . BAB_OC_ENTITY_TYPES_TBL . ' AS types'
+		. ' WHERE id_oc = ' . $babDB->quote($idoc)
+		. ' ORDER BY types.name';
+
+	$entityTypes = $babDB->db_query($sql);
+
+	return $entityTypes;
+}
+
+
+
+
+/**
+ * Returns an ordered mysql result set containing the entity types for the specified entity.
+ *
+ * @param	int		$entityId			Id of orgchart entity.
+ * @return resource		The mysql resource or FALSE on error
+ */
+function bab_OCGetEntityTypes($entityId)
+{
+	global $babDB;
+
+	$sql = 'SELECT types.* FROM ' . BAB_OC_ENTITIES_ENTITY_TYPES_TBL . ' AS entities_types '
+		. ' LEFT JOIN ' . BAB_OC_ENTITY_TYPES_TBL . ' AS types ON types.id = entities_types.id_entity_type '
+		. ' WHERE id_entity = ' . $babDB->quote($entityId);
+
+	$entityTypes = $babDB->db_query($sql);
+
+	return $entityTypes;
+}
+
+
+
+/**
  * Returns an ordered mysql result set containing the members of the entity $entityId.
  * 
  * Results fetched from the result set have the following structure:
@@ -560,10 +603,11 @@ function bab_OCDelete($iIdOrgChart)
 //*/
 
 /**
- * Get an organizational chart.
+ * Returns information about a specified organizational chart.
  * 
- * This function use a local cache.
- * The array have those keys :
+ * The current user must have "view" or "update" access to the organizational chart.
+ * 
+ * The returned array has the following keys :
  * 
  * <ul>
  * 	<li>id
@@ -579,9 +623,9 @@ function bab_OCDelete($iIdOrgChart)
  *  <li>id_closed_nodes
  * </ul>
  * 
- * @param	int	$iIdOrgChart	The identifier of the organizational chart
+ * @param	int	$iIdOrgChart	The identifier of the organizational chart.
  * 
- * @return	array|false			array on success, false otherwise
+ * @return	array|false			array on success, false otherwise.
  */
 function bab_OCGet($iIdSessUser, $iIdOrgChart)
 {
