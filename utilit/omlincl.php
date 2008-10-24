@@ -6001,6 +6001,38 @@ function bab_GetSessionVar($args)
 			}
 		}
 	}
+
+function bab_GetPageTitle($args)
+	{
+	global $babBody;
+	$varname = '';
+
+	if(count($args))
+		{
+		foreach( $args as $p => $v)
+			{
+			switch(strtolower(trim($p)))
+				{
+				case 'saveas':
+					$varname = $v;
+					break;
+				}
+			}
+		if( $varname !== '')
+			{
+			$this->gctx->push($varname, $babBody->title);
+			}
+		else
+			{
+			return $babBody->title;
+			}
+		}
+	else
+		{
+		return $babBody->title;
+		}
+	}
+
 /* save a variable to global space */
 function bab_PutVar($args)
 	{
