@@ -413,7 +413,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 							' AND trees.lr < '  . $babDB->quote($tree['lr']) . '))';
 		}
 
-		
+
 		$sql = 'SELECT entities.*, entities2.id as id_parent ';
 		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
 		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
@@ -426,6 +426,32 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		
 		return $entities;
 	}
+
+
+
+	/**
+	 * Returns an array containing information about types associated with the specified entity.
+	 *
+	 * For each type an array with 'id', 'name' and 'description' keys is provided.
+	 * 
+	 * @param int $entityId
+	 * @return array
+	 */
+	function _getEntityTypes($entityId)
+	{
+		global $babDB;
+
+		$entityTypes = bab_OCGetEntityTypes($entityId);
+		
+		$types = array();
+		while ($entityType = $babDB->db_fetch_assoc($entityTypes)) {
+			$types[] = $entityType;
+		}
+		
+		return $types;
+	}
+
+
 
 	/**
 	 * Adds entities starting at entity id $startEntityId in the orgchart.
@@ -444,6 +470,11 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		
 		$entities = $this->_selectEntities($startEntityId);
 		while ($entity = $babDB->db_fetch_assoc($entities)) {
+			$entityType = 'entity';
+			$entityTypes = $this->_getEntityTypes($entity['id']);
+			foreach($entityTypes as $type) {
+				$entityType .= ' ' . strtr($type['name'], ' ', '_');
+			}
 			$element =& $this->createElement($elementIdPrefix . $entity['id'],
 											 $entityType,
 											 bab_toHtml($entity['name']),
