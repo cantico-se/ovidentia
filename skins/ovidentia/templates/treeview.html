@@ -343,7 +343,12 @@ orgchart.userId = <!--#if t_userId --> { t_userId } <!--#else t_userId --> 0 <!-
 orgchart.adminMode = <!--#if t_adminMode --> true <!--#else t_adminMode --> false <!--#endif t_adminMode -->;
 
 
-bab_initFunctions.push(function() { bab_initOrgChart(document.getElementById('{ t_treeViewId }')); });
+//bab_initFunctions.push(function() { bab_initOrgChart(document.getElementById('{ t_treeViewId }')); });
+
+document.observe("dom:loaded", function() {
+  bab_initOrgChart(document.getElementById('{ t_treeViewId }'));
+});
+
 
 function changestyle(ent,oldstyle,newstyle)
 {
