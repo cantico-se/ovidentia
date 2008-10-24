@@ -1814,6 +1814,28 @@ CREATE TABLE bab_oc_entities (
 );
 
 #
+# Structure de la table `bab_oc_entity_types`
+#
+
+CREATE TABLE bab_oc_entity_types (
+  id int(11) unsigned NOT NULL auto_increment,
+  name varchar(255) NOT NULL default '',
+  description varchar(255) NOT NULL default '',
+  id_oc int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_oc (id_oc)
+);
+
+#
+# Structure de la table `bab_oc_entities_entity_types`
+#
+
+CREATE TABLE bab_oc_entities_entity_types (
+  id_entity int(11) unsigned NOT NULL,
+  id_entity_type int(11) unsigned NOT NULL
+);
+
+#
 # Structure de la table `bab_oc_roles`
 #
 

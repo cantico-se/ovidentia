@@ -224,6 +224,8 @@ define("BAB_ORG_CHARTS_TBL", "bab_org_charts");
 define("BAB_OCVIEW_GROUPS_TBL", "bab_ocview_groups");
 define("BAB_OCUPDATE_GROUPS_TBL", "bab_ocupdate_groups");
 define("BAB_OC_ENTITIES_TBL", "bab_oc_entities");
+define("BAB_OC_ENTITY_TYPES_TBL", "bab_oc_entity_types");
+define("BAB_OC_ENTITIES_ENTITY_TYPES_TBL", "bab_oc_entities_entity_types");
 define("BAB_OC_TREES_TBL", "bab_oc_trees");
 define("BAB_OC_ROLES_TBL", "bab_oc_roles");
 define("BAB_OC_ROLES_USERS_TBL", "bab_oc_roles_users");

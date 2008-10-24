@@ -5489,5 +5489,35 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)		
 			");
 	}
+	
+	/**
+	 * Upgrade to 6.7.92
+	 */
+	if (!bab_isTable(BAB_OC_ENTITY_TYPES_TBL)) 
+	{
+
+	$babDB->db_query("	
+			CREATE TABLE ".BAB_OC_ENTITY_TYPES_TBL." (
+			  id int(11) unsigned NOT NULL auto_increment,
+			  name varchar(255) NOT NULL default '',
+			  description varchar(255) NOT NULL default '',
+			  id_oc int(11) unsigned NOT NULL default '0',
+			  PRIMARY KEY  (id),
+			  KEY id_oc (id_oc)
+			)
+			");
+	}
+	
+	if (!bab_isTable(BAB_OC_ENTITIES_ENTITY_TYPES_TBL)) 
+	{
+
+	$babDB->db_query("	
+			CREATE TABLE ".BAB_OC_ENTITIES_ENTITY_TYPES_TBL." (
+			  id_entity int(11) unsigned NOT NULL,
+			  id_entity_type int(11) unsigned NOT NULL
+			)
+			");
+	}
+	
 	return true;
 }
