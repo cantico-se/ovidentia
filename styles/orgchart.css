@@ -82,12 +82,21 @@ div.entity .members .member {
 	margin: 0 auto;
 	color: white;
 	padding: 0.5em;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
 }
 
-.orgchart div.entity:hover {
-	outline: 3px solid orange;
-	cursor: pointer;
+.orgchart div.entity .bab-menu-button img {
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+}
 
+
+.orgchart div.entity:hover {
+	border-color: orange;
+	cursor: pointer;
 }
 
 .orgchart div.entity img.icon {
@@ -102,13 +111,6 @@ div.entity .members .member {
 	border: 1px solid black;
 	padding: 1px;
 	background-color: #FFFFFF;
-/*
-	float: right;
-	position: absolute;
-	z-index: 127;
-	top: 0;
-	right: 0;
-*/
 }
 
 .actions img.action {
