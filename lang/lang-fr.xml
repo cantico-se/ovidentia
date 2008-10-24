@@ -1229,6 +1229,10 @@
 <string id="Are you sure you want to delete this organization chart">Êtes-vous sûr de vouloir supprimer cet organigramme</string>
 <string id="WARNING: This operation will delete the chart and all composants">ATTENTION : cette opération va supprimer cet organigramme et son contenu</string>
 <string id="Entity">Entités</string>
+<string id="Entity type">Type d'entité</string>
+<string id="Entity types">Type d'entités</string>
+<string id="Add entity type">Ajouter</string>
+<string id="Remove entity type">Supprimer</string>
 <string id="Role">Fonction</string>
 <string id="Provided role">Fonction pourvue</string>
 <string id="Vacant role">Fonction vacante</string>

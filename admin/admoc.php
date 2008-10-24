@@ -26,6 +26,8 @@ include_once $babInstallPath."admin/acl.php";
 
 define("ORG_MAX_REQUESTS_LIST", 100);
 
+
+
 function bab_getOrgChartName($id)
 {
 	$db = $GLOBALS['babDB'];
@@ -391,6 +393,110 @@ function confirmDeleteOrgChart($id)
 	//Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs");
 	}
 
+	
+	
+/**
+ * Displays an interface to edit entity types available for a specified org chart.
+ *
+ * @param int $ocid			The org chart id.
+ */
+function editOrgChartEntityTypes($ocid)
+{
+	global $babBody;
+
+	class EditOrgChartTypes_Template 
+	{
+		var $ocid;
+		var $t_remove_entity_type;
+		var $t_add_entity_type;
+		var $t_entity_type_name;
+		var $t_entity_type_description;
+		var $t_save;
+		
+		var $entity_type_name = null;
+		var $entity_type_description = null;
+		
+		var $entityTypes;
+		
+		function EditOrgChartTypes_Template($ocid)
+		{
+			require_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
+			$this->ocid = $ocid;
+			
+			$this->t_remove_entity_type = bab_translate("Remove entity type");
+			$this->t_save = bab_translate("Save");
+			$this->t_entity_type_name = bab_translate("Nom");
+			$this->t_entity_type_description = bab_translate("Description");
+			
+			$this->entityTypes = bab_OCGetOrgChartEntityTypes($ocid);
+		}
+
+
+		function entityTypes()
+		{
+			global $babDB;
+			if ($entityType = $babDB->db_fetch_assoc($this->entityTypes)) {
+				$this->entity_type_id = $entityType['id'];
+				$this->entity_type_name = $entityType['name'];
+				$this->entity_type_description= $entityType['description'];
+				$this->remove_entity_type_url = $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&action=delete_type&item=" . $this->ocid . '&entitytype=' . $entityType['id'];
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	$editOrgChartTypes_template = new EditOrgChartTypes_Template($ocid);
+	$babBody->babEcho(bab_printTemplate($editOrgChartTypes_template, 'admocs.html', 'edit_entity_types'));
+}
+
+
+/**
+ * Adds the org chart entity type.
+ *
+ * @param int		$ocid
+ * @param string	$entityTypeName
+ * @param string	$entityTypeDescription
+ */
+function addOrgChartEntityType($ocid, $entityType)
+{
+	global $babDB;
+	$sql = 'INSERT INTO ' . BAB_OC_ENTITY_TYPES_TBL . '(name, description, id_oc) VALUES (' . $babDB->quote($entityType['name']) . ',' . $babDB->quote($entityType['description']) . ',' . $babDB->quote($ocid) . ')';
+	$babDB->db_query($sql);
+}
+
+
+/**
+ * Saves the org chart entity types.
+ *
+ * @param int		$ocid
+ * @param array	$entityTypes
+ */
+function saveOrgChartEntityTypes($ocid, $entityTypes)
+{
+	global $babDB;
+
+	foreach ($entityTypes as $entityId => $entityType) {
+		$sql = 'UPDATE ' . BAB_OC_ENTITY_TYPES_TBL . ' SET name =  ' . $babDB->quote($entityType['name']) . ', description = ' . $babDB->quote($entityType['description']) . ' WHERE id = ' . $babDB->quote($entityId);
+		$babDB->db_query($sql);
+	}
+}
+
+/**
+ * Deletes the specified org chart entity type.
+ *
+ * @param int $ocid
+ * @param int $entityTypeId
+ */
+function deleteOrgChartEntityType($ocid, $entityTypeId)
+{
+	global $babDB;
+	$sql = 'DELETE FROM ' . BAB_OC_ENTITY_TYPES_TBL . ' WHERE id = ' . $babDB->quote($entityTypeId);
+	$babDB->db_query($sql);
+}
+
+
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['orgchart'] != 'Y')
 {
@@ -399,6 +505,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['orgchart'] != 'Y')
 }
 
 $idx = bab_rp('idx', 'modify');
+$item = bab_rp('item');
 
 if( '' != ($update = bab_pp('update')))
 	{
@@ -427,12 +534,30 @@ if( isset($aclview))
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 	}
 
-if( isset($action) && $action == "Yes")
-	{
-	confirmDeleteOrgChart($item);
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
-	exit;
+if (isset($action)) {
+	switch($action) {
+	case 'Yes':
+		confirmDeleteOrgChart($item);
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
+		exit;
+
+	case 'save_types':
+		$entityTypes = bab_rp('entity_type', array());
+		saveOrgChartEntityTypes($item, $entityTypes);
+		
+		$newEntityType = bab_rp('new_entity_type', null);
+		if ($newEntityType && $newEntityType['name'] != '') {
+			addOrgChartEntityType($item, $newEntityType);
+		}
+		break;
+
+	case 'delete_type':
+		$entityTypeId = bab_rp('entitytype');
+		deleteOrgChartEntityType($item, $entityTypeId);
+		break;
 	}
+}
+
 
 switch($idx)
 	{
@@ -457,6 +582,7 @@ switch($idx)
 
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
+		$babBody->addItemMenu("octypes", bab_translate("Entity types"), $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&item=".$item);
 		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
@@ -465,6 +591,7 @@ switch($idx)
 		aclGroups("admoc", "modify", BAB_OCUPDATE_GROUPS_TBL, $item, "aclview");
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
+		$babBody->addItemMenu("octypes", bab_translate("Entity types"), $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&item=".$item);
 		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
@@ -473,6 +600,16 @@ switch($idx)
 		deleteOrgChart($item);
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
+		$babBody->addItemMenu("octypes", bab_translate("Entity types"), $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&item=".$item);
+		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
+		break;
+
+	case 'octypes':
+		$babBody->title = bab_getOrgChartName($item) . ": ".bab_translate("Entity types");
+		editOrgChartEntityTypes($item);
+		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
+		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
+		$babBody->addItemMenu("octypes", bab_translate("Entity types"), $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&item=".$item);
 		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 
@@ -482,6 +619,7 @@ switch($idx)
 		modifyOrgChart($item);
 		$babBody->addItemMenu("list", bab_translate("Charts"), $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
 		$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admoc&idx=addoc&item=".$item);
+		$babBody->addItemMenu("octypes", bab_translate("Entity types"), $GLOBALS['babUrlScript']."?tg=admoc&idx=octypes&item=".$item);
 		$babBody->addItemMenu("ocrights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=admoc&idx=ocrights&item=".$item);
 		break;
 	}

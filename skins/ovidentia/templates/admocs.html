@@ -296,3 +296,48 @@ function org_mm()
 </BODY>
 </HTML>
 <!--#end browseroles -->
+
+
+
+
+
+
+
+
+<!--#begin edit_entity_types -->$
+
+<form name="edit_entity_types" method="post" action="{ babPhpSelf }">
+  <input type="hidden" name="tg" value="admoc">
+  <input type="hidden" name="idx" value="octypes">
+  <input type="hidden" name="action" value="save_types">
+  <input type="hidden" name="item" value="{ ocid }">
+
+<table class="BabLoginCadreBackground" width="70%" align="center">
+  <tr><td>
+  <table class="BabLoginMenuBackground" width="100%">
+    <tr>
+      <th>{ t_entity_type_name }</th>
+      <th>{ t_entity_type_description }</th>
+      <th></th>
+    </tr>
+    <!--#in entityTypes -->
+    <tr>
+      <td><input type="text" name="entity_type[{ entity_type_id }][name]" size="20" style="width: 95%" value="{ entity_type_name }" /></td>
+      <td><input type="text" name="entity_type[{ entity_type_id }][description]" size="40" style="width: 95%" value="{ entity_type_description }" /></td>
+      <td align="left"><a href="{ remove_entity_type_url }">{ t_remove_entity_type }</a></td>
+    </tr>
+    <!--#endin entityTypes -->
+    <tr>
+      <td><input type="text" name="new_entity_type[name]" size="20" style="width: 95%" /></td>
+      <td><input type="text" name="new_entity_type[description]" size="40" style="width: 95%" /></td>
+      <td></td>
+    </tr>
+    <tr>
+    	<td colspan="3" align="center"><input type="submit" name="add_entity_type" value="{ t_save }" /></td>
+    </tr>
+  </table>
+  </td></tr>
+</table>
+</form>
+
+<!--#end edit_entity_types -->
