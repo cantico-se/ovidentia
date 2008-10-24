@@ -413,6 +413,11 @@ class bab_functionalities {
 
 			if (!is_dir($path)) {
 				if (!bab_mkdir($path)) {
+					trigger_error(sprintf('Cannot create folder "%s"', $path));
+					return false;
+				}
+				if (!is_writable($path)) {
+					trigger_error(sprintf('Cannot create writable folder "%s"', $path));
 					return false;
 				}
 				$this->onInsertNode($path);
