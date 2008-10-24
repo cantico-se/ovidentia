@@ -186,6 +186,13 @@ valign="middle">{ name }:<br>
 </td>
 </tr>
 <tr>
+<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">{ type }:<br>
+<!--#in entityTypes -->
+<input id="entity_type_{ entity_type_id }" style="vertical-align: middle" type="checkbox" <!--#if entity_type_selected -->checked="checked"<!--#endif entity_type_selected --> name="entity_type[{ entity_type_id }]" title="{ entity_type_description }" /><label for="entity_type_{ entity_type_id }" title="{ entity_type_description }" style="vertical-align: middle" >{ entity_type_name }</label><br />
+<!--#endin entityTypes -->
+</td>
+</tr>
+<tr>
 <td class="BabSiteAdminTitleFontBackground" align="right" valign="middle">
 <input type="submit" name="submit" value="{ add }">
 </td>

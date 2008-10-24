@@ -89,55 +89,86 @@ function addOrgChartEntity($ocid, $oeid, $nameval, $descriptionval)
 	$babLittleBody->babecho(bab_printTemplate($temp,"flbchart.html", "ocecreate"));
 	}
 
+
+
 function modifyOrgChartEntity($ocid, $eid)
-	{
+{
 	global $babLittleBody;
-	class temp
+
+	class ModifyOrgChartEntity_Template
 		{
 		var $name;
 		var $description;
+		var $types;
 		var $ocid;
 		var $nameval;
 		var $descriptionval;
 		var $add;
 		var $parent;
 		var $delete;
+		var $entityTypes;
 
-		function temp($ocid, $eid)
-			{
+		function ModifyOrgChartEntity_Template($ocid, $eid)
+		{
 			global $babDB;
 			$this->ocid = $ocid;
 			$this->oeid = $eid;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
+			$this->type = bab_translate("Entity type");
 			$this->parent = bab_translate("Parent entity");
 			$this->add = bab_translate("Update");
 			$this->delete = bab_translate("Delete");
 			$res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id='".$eid."'");
 			if( !$res || $babDB->db_num_rows($res) == 0 )
-				{
+			{
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=adde&ocid=".$ocid);
 				exit;
-				}
+			}
 			$arr = $babDB->db_fetch_array($res);
 			$this->nameval = $arr['name'];
 			$this->descriptionval = $arr['description'];
 			if( $arr['id_group'] != 0 )
-				{
+			{
 				$this->groupname = bab_getGroupName($arr['id_group']);
 				$this->grouptxt = bab_translate("Associated group");
-				}
+			}
 			else
-				{
+			{
 				$this->groupname = false;
-				}
 			}
 
+			require_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
+			$this->ocEntityTypes = bab_OCGetOrgChartEntityTypes($ocid);
+			
+			$this->entityTypes = bab_OCGetEntityTypes($eid);
+			$this->selectedEntityTypes = array();
+			while ($entityType = $babDB->db_fetch_assoc($this->entityTypes)) {
+				$this->selectedEntityTypes[$entityType['id']] = $entityType['id'];
+			}
+			
 		}
 
-	$temp = new temp($ocid, $eid);
-	$babLittleBody->babecho(bab_printTemplate($temp,"flbchart.html", "ocemodify"));
+		function entityTypes()
+		{
+			global $babDB;
+			if ($entityType = $babDB->db_fetch_assoc($this->ocEntityTypes)) {
+				$this->entity_type_id = $entityType['id'];
+				$this->entity_type_name = $entityType['name'];
+				$this->entity_type_description= $entityType['description'];
+				$this->entity_type_selected = isset($this->selectedEntityTypes[$entityType['id']]);
+				return true;
+			}
+			return false;
+		}
 	}
+
+	$temp = new ModifyOrgChartEntity_Template($ocid, $eid);
+	$babLittleBody->babecho(bab_printTemplate($temp, 'flbchart.html', 'ocemodify'));
+}
+
+
+
 
 function deleteOrgChartEntity($ocid, $eid)
 	{
@@ -718,7 +749,7 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 		}
 	}
 
-function updateOrgChartEntity($ocid, $name, $description, $oeid)
+function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = array())
 	{
 	global $babBody, $babDB, $babLittleBody, $oeinfo;
 
@@ -733,6 +764,17 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid)
 		description='".$babDB->db_escape_string($description)."' 
 		WHERE id='".$oeid."'
 	");
+	
+	
+
+	$sql = 'DELETE FROM ' . BAB_OC_ENTITIES_ENTITY_TYPES_TBL . ' WHERE id_entity = ' . $babDB->quote($oeid);
+	$babDB->db_query($sql);
+
+	foreach ($entityTypes as $entityTypeId) {
+		$sql = 'INSERT INTO ' . BAB_OC_ENTITIES_ENTITY_TYPES_TBL . '(id_entity, id_entity_type) VALUES (' . $babDB->quote($oeid) . ',' . $babDB->quote($entityTypeId) . ')';
+		$babDB->db_query($sql);
+	}
+
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&rf=1&idx=mode&ocid=".$ocid."&oeid=".$oeid);
 	}
@@ -1192,7 +1234,8 @@ if( isset($addoce) )
 			break;
 
 		case "modoce":
-				if( !updateOrgChartEntity($ocid, $fname, $description, $oeid))
+				$entityTypes = array_keys(bab_rp('entity_type', array()));
+				if( !updateOrgChartEntity($ocid, $fname, $description, $oeid, $entityTypes))
 				{
 				$idx = "mode";
 				}
