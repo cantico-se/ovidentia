@@ -65,6 +65,8 @@ function modifyOrgChart($id)
 
 		function temp($id)
 			{
+			global $babDB;
+
 			$this->id = $id;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
@@ -73,10 +75,13 @@ function modifyOrgChart($id)
 			$this->t_name = bab_translate("New name");
 			$this->duplicate = bab_translate("Duplicate");
 			$this->delete = bab_translate("Delete");
-			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$id."'");
-			$this->arr = $this->db->db_fetch_array($this->res);
-			if( $this->arr['isprimary'] == 'Y' )
+			
+			$sql = 'SELECT *
+					FROM ' . BAB_ORG_CHARTS_TBL . '
+					WHERE id = '. $babDB->quote($id);
+			$res = $babDB->db_query($sql);
+			$arr = $babDB->db_fetch_array($res);
+			if( $arr['isprimary'] == 'Y' )
 				{
 				$this->bdelete = false;
 				}
@@ -84,8 +89,13 @@ function modifyOrgChart($id)
 				{
 				$this->bdelete = true;
 				}
-			$this->nameval = $this->arr['name'];
-			$this->descval = $this->arr['description'];
+			$this->nameval = $arr['name'];
+			$this->descval = $arr['description'];
+			
+			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
+			$this->ovmldetailval = $arr['ovml_detail'];
+			$this->browsetxt = bab_translate("Browse");
+			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
 			}
 		}
 
@@ -496,6 +506,22 @@ function deleteOrgChartEntityType($ocid, $entityTypeId)
 }
 
 
+/**
+ * Updates the specified org chart's ovml file used to display a user information.
+ *
+ * @param int $ocid
+ * @param string $ovmlfile
+ */
+function updateOrgChartOvmlFile($ocid, $ovmlfile)
+{
+	global $babDB;
+	
+	$sql = 'UPDATE ' . BAB_ORG_CHARTS_TBL . '
+			SET ovml_detail = '. $babDB->quote($ovmlfile) . '
+			WHERE id = ' . $babDB->quote($ocid);
+	$babDB->db_query($sql);
+}
+
 
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['orgchart'] != 'Y')
@@ -524,7 +550,11 @@ if( '' != ($update = bab_pp('update')))
 			$ocndesc = bab_pp('ocndesc', '');
 			duplicateOrgChart($item, $ocnname, $ocndesc);
 			break;
-		}
+		case 'ovmldb':
+			$ovmldetail = bab_pp('ovmldetail', '');
+			updateOrgChartOvmlFile($item, $ovmldetail);
+			break;
+        }
 	}
 
 

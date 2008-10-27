@@ -5500,7 +5500,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			CREATE TABLE ".BAB_OC_ENTITY_TYPES_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  name varchar(255) NOT NULL default '',
-			  description varchar(255) NOT NULL default '',
+			  description varchar(255) NOT NULL default '',G
 			  id_oc int(11) unsigned NOT NULL default '0',
 			  PRIMARY KEY  (id),
 			  KEY id_oc (id_oc)
@@ -5518,6 +5518,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 			");
 	}
+
+	// An ovml filename to customize the information displayed for a user.
+	if (!bab_isTableField(BAB_ORG_CHARTS_TBL, 'ovml_detail')) {
+
+		$babDB->db_query("ALTER TABLE ".BAB_ORG_CHARTS_TBL." ADD ovml_detail tinytext NOT NULL default '' AFTER id_closed_nodes");
+	}
+	
 	
 	return true;
 }

@@ -130,6 +130,33 @@ valign="middle">{  name }:</td>
 </center>
 </form>
 <br>
+<form method="post" name="ovmldbf" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admoc">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="update" value="ovmldb">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmldetailtxt }:<br /><br />
+<input type="text" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;<a href="javascript:Start('{ browseurl }&cb=OnInsertOvmlDetail','bab_ovml','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes')">{ browsetxt }</a>
+</td>
+</tr>
+<tr> 
+
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="Submit2" value="{ update }">
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</form>
+
 <!--#end ocmodify -->
 
 <br><br><br><br><br>
