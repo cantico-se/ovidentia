@@ -519,6 +519,8 @@ function bab_OCSelectEntityCollaborators($entityId)
 //-------------------------------------------------------------------------
 
 /**
+ * @deprecated 
+ * 
  * Gets a value that indicates whether a user have administration right on an organization chart.
  * 
  * @return	bool	True on success, false othewise 
@@ -533,6 +535,8 @@ function bab_OCHaveAdminRight()
 
 
 /**
+ * @deprecated 
+ * 
  * Creates an organizational chart.
  * 
  * If an organizationnal chart with the same name in
@@ -646,6 +650,8 @@ function bab_OCDelete($iIdOrgChart)
 //*/
 
 /**
+ * @deprecated 
+ * 
  * Returns information about a specified organizational chart.
  * 
  * The current user must have "view" or "update" access to the organizational chart.
@@ -708,6 +714,10 @@ function bab_OCGet($iIdSessUser, $iIdOrgChart)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoot($iIdSessUser, $iIdOrgChart)
 {
 	global $babDB, $babBody;
@@ -754,6 +764,8 @@ function bab_OCGetRoot($iIdSessUser, $iIdOrgChart)
 
 
 /**
+ * @deprecated 
+ * 
  * Gets a value that indicates whether an organizational chart exists.
  * 
  * @param	string	$sName			The identifier of the organizational
@@ -792,6 +804,8 @@ function bab_OCExist($iIdSessUser, $sName, $iIdDelegation)
 
 
 /**
+ * @deprecated 
+ * 
  * Locks an organizational chart.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
@@ -840,6 +854,8 @@ function bab_OCLock($iIdSessUser, $iIdOrgChart)
 
 
 /**
+ * @deprecated 
+ * 
  * Unlocks an organizational chart.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
@@ -882,6 +898,8 @@ function bab_OCUnlock($iIdSessUser, $iIdOrgChart)
 
 
 /**
+ * @deprecated 
+ * 
  * Gets a value that indicates whether an organizational chart is locked.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
@@ -902,6 +920,8 @@ function bab_OCIsLocked($iIdSessUser, $iIdOrgChart)
 
 
 /**
+ * @deprecated 
+ * 
  * Gets a value that indicates whether an organizational chart is locked by a specific user.
  * 
  * @param	int		$iIdOrgChart	The identifier of the organizational chart
@@ -922,6 +942,8 @@ function bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdUser)
 
 
 /**
+ * @deprecated 
+ * 
  * Gets the lock value info.
  * 
  * The array have those keys :
@@ -986,6 +1008,10 @@ define('BAB_OC_MOVE_TYPE_AS_CHILD', '0');
 
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCIsAccessValid($iIdSessUser, $iIdOrgChart)
 {
 	$bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser);
@@ -1000,6 +1026,10 @@ function bab_OCIsAccessValid($iIdSessUser, $iIdOrgChart)
 
 //Entity functions
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName, $sDescription, $sNote, $iPosition, $mixedGroup = null, $iIdParentGroup = BAB_REGISTERED_GROUP)
 {
 	global $babBody;
@@ -1180,6 +1210,10 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetEntityEx($iIdSessUser, $iIdEntity)
 {
 	global $babBody;
@@ -1218,6 +1252,10 @@ function bab_OCGetEntityEx($iIdSessUser, $iIdEntity)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCUpdateEntity($iIdSessUser, $iIdEntity, $sName, $sDescription)
 {
 	global $babBody, $babDB;
@@ -1262,6 +1300,10 @@ function bab_OCUpdateEntity($iIdSessUser, $iIdEntity, $sName, $sDescription)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 {
 	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
@@ -1302,6 +1344,10 @@ function bab_OCDeleteEntity($iIdSessUser, $iIdEntity, $iDeleteType)
 	return false;
 }
 
+/**
+ * @deprecated
+ *
+ */
 function removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
 {
 	bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity);
@@ -1332,6 +1378,10 @@ function removeOrgChartEntityEx($iIdSessUser, $iIdEntity, $iIdEntityGroup, $sIsO
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCMoveEntity($iIdSessUser, $iIdSrcEntity, $iIdTrgEntity, $iMove, $iMoveType)
 {
 	global $babBody;
@@ -1425,6 +1475,10 @@ function bab_OCMoveEntity($iIdSessUser, $iIdSrcEntity, $iIdTrgEntity, $iMove, $i
 
 //Role functions
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCCreateRole($iIdSessUser, $iIdEntity, $sName, $sDescription, $iType, $sCardinality)
 {
 	global $babBody;
@@ -1495,6 +1549,10 @@ function bab_OCCreateRole($iIdSessUser, $iIdEntity, $sName, $sDescription, $iTyp
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoleById($iIdSessUser, $iIdRole)
 {
 	global $babBody;
@@ -1537,6 +1595,10 @@ function bab_OCGetRoleById($iIdSessUser, $iIdRole)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoleByType($iIdSessUser, $iIdEntity, $iType)
 {
 	global $babBody, $babDB;
@@ -1593,6 +1655,10 @@ function bab_OCGetRoleByType($iIdSessUser, $iIdEntity, $iType)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoleByName($iIdSessUser, $iIdEntity, $sName, $iType)
 {
 	global $babBody, $babDB;
@@ -1654,6 +1720,10 @@ function bab_OCGetRoleByName($iIdSessUser, $iIdEntity, $sName, $iType)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 {
 	global $babBody, $babDB;
@@ -1712,6 +1782,10 @@ function bab_OCGetRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 {
 	$aEntity = bab_OCGetEntityEx($iIdSessUser, $iIdEntity);
@@ -1766,6 +1840,10 @@ function bab_OCDeleteRoleByEntityId($iIdSessUser, $iIdEntity, $iType = null)
 
 //Role user functions
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCCreateRoleUser($iIdSessUser, $iIdRole, $iIdUser)
 {
 	global $babDB, $babBody;
@@ -1888,6 +1966,10 @@ function bab_OCCreateRoleUser($iIdSessUser, $iIdRole, $iIdUser)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdEntity, $iIdUser)
 {
 	//This function test right
@@ -1927,6 +2009,10 @@ function bab_OCGetRoleUserByUserId($iIdSessUser, $iIdEntity, $iIdUser)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCDeleteUserRolesByRoleUserIds($iIdSessUser, $aIdRoleUser, $iIdUser)
 {
 	foreach($aIdRoleUser as $IdRoleUser)
@@ -1936,6 +2022,10 @@ function bab_OCDeleteUserRolesByRoleUserIds($iIdSessUser, $aIdRoleUser, $iIdUser
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCDeleteRoleUserByRoleUserId($iIdSessUser, $IdRoleUser)
 {
 	global $babDB;
@@ -2008,6 +2098,10 @@ function bab_OCDeleteRoleUserByRoleUserId($iIdSessUser, $IdRoleUser)
 }
 
 
+/**
+ * @deprecated
+ *
+ */
 function bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iIdRole)
 {
 	global $babDB;
@@ -2078,6 +2172,10 @@ function bab_OCDeleteRoleUserByRoleId($iIdSessUser, $iIdRole)
 
 
 //This function must not be called directly			
+/**
+ * @deprecated
+ *
+ */
 function bab_OCCommonDeleteRoleUserAction($iIdSessUser, $iIdOrgChart, $iIdEntity, $iIdUser, $sIsPrimary)
 {
 	global $babDB;
@@ -2196,7 +2294,10 @@ function bab_OCCommonDeleteRoleUserAction($iIdSessUser, $iIdOrgChart, $iIdEntity
 
 
 //Tools functions
-
+/**
+ * @deprecated
+ *
+ */
 function bab_OCTreeCreateNode($iIdOrgChart, $iIdParentNode, $iPosition)
 {
 	$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $iIdOrgChart);
@@ -2291,6 +2392,7 @@ function bab_OCIsEntityParentOf($iIdParentEntity, $iIdEntity)
 	return false;	
 }
 
+
 function bab_OCGetNodeRank($iIdNode)
 {
 	global $babDB;
@@ -2367,6 +2469,7 @@ function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
 	}
 	return false;
 }
+
 
 function bab_OCGetChildCount($iIdEntity)
 {
@@ -2470,5 +2573,1679 @@ function bab_OCSelectTreeQuery($iIdTree)
 			
 	//bab_debug($sQuery);
 	return $sQuery;
+}
+
+
+class bab_OrgChartUtil
+{
+	private $iIdSessUser		= null;
+	private $iIdOrgChart		= null;
+	private $bHaveAdminRight	= false; 
+	private $bHaveViewRight		= false; 
+	
+	private $aCachedOrgChart	= false;
+	private $aCachedEntity		= false;
+	
+	function __construct($iIdOrgChart, $iIdSessUser = null)
+	{
+		$this->setOrgChartId($iIdOrgChart);
+		
+		if(is_null($iIdSessUser))
+		{
+			$iIdSessUser = (int) $GLOBALS['BAB_SESS_USERID'];	
+		}
+		$this->setSessUserId($iIdSessUser);
+		
+		$this->initRight();
+		$this->aCachedOrgChart = $this->getRoot();
+	}
+	
+	function __destruct()
+	{
+		
+	}
+	
+	
+	//------------------------
+	public function getOrgChartId()
+	{
+		return $this->iIdOrgChart;
+	}
+	
+	public function setOrgChartId($iIdOrgChart)
+	{
+		$this->iIdOrgChart = (int) $iIdOrgChart;
+	}
+	
+	public function setSessUserId($iIdSessUser)
+	{
+		$this->iIdSessUser = (int) $iIdSessUser;
+	}
+	
+	public function initRight()
+	{
+		$this->bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
+		$this->bHaveViewRight	= bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $this->iIdOrgChart, $this->iIdSessUser);
+	}
+	
+	
+	// ACL ----------
+	
+	/**
+	 * Gets a value that indicates whether a user have administration right on an organization chart.
+	 * 
+	 * @return	bool	True on success, false othewise 
+	 */
+	public function haveAdminRight()
+	{
+		global $babBody;
+		return ($babBody->isSuperAdmin && 0 === (int) $babBody->currentAdmGroup) || 
+			(isset($babBody->currentDGGroup['orgchart']) && 'Y' === (string) $babBody->currentDGGroup['orgchart']);
+	}
+	
+	
+	function isAccessValid()
+	{
+		return (false !== $this->bHaveUpdateRight || false !== $this->bHaveViewRight);
+	}
+	
+	
+	/**
+	 * Creates an organizational chart.
+	 * 
+	 * If an organizationnal chart with the same name in
+	 * the delegation already exist nothing is created.
+	 * 
+	 * @param	string	$sName			The name of the organizational chart
+	 * @param	string	$sDescription	The description of the organizational chart
+	 * @param	int		$iIdDelegation	The delegation identifier of the organizational chart
+	 * @param	int		$iIdDirectory	The directory identifier (bab_db_directories identifier)
+	 * 
+	 * @return	int		The identifier of the created organizational chart on success, 
+	 * 					0 on error 
+	 */
+	function create($sName, $sDescription, $iIdDelegation, $iIdDirectory)
+	{
+		global $babBody;
+		
+		$sName = trim($sName);
+		if(0 === strlen($sName))
+		{
+			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
+			return false;
+		}
+		
+		if(false === $this->haveAdminRight())
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		if(true === $this->orgChartExist($sName, $iIdDelegation))
+		{
+			$babBody->addError(bab_translate("ERROR: This organization chart already exists"));
+			return false;
+		}
+		
+		require_once(dirname(__FILE__) . '/dirincl.php');
+		$sDirectoryName = getDirectoryName($iIdDirectory, BAB_DB_DIRECTORIES_TBL);
+		if(0 === strlen($sDirectoryName))
+		{
+			$babBody->addError(bab_translate("ERROR: The directory does not exist"));
+			return false;
+		}
+		
+		global $babDB;
+	
+		$sQuery = 
+			'INSERT INTO ' . BAB_ORG_CHARTS_TBL . ' ' .
+				'(' .
+					'`id`, ' .
+					'`name`, `description`, `isprimary`, `edit`, ' .
+					'`edit_author`, `edit_date`, `id_dgowner`, `id_directory`, ' .
+					'`type`, `id_first_node`, `id_closed_nodes` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($sName) . ', ' . 
+					$babDB->quote($sDescription) . ', ' . 
+					$babDB->quote('N') . ', ' . 
+					$babDB->quote('N') . ', ' . 
+					$babDB->quote(0) . ', ' . 
+					$babDB->quote('0000-00-00 00:00:00') . ', ' . 
+					$babDB->quote($iIdDelegation) . ', ' . 
+					$babDB->quote($iIdDirectory) . ', ' . 
+					$babDB->quote(0) . ', ' . 
+					$babDB->quote(0) . ', ' . 
+					$babDB->quote('') . 
+				')'; 
+	
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return $babDB->db_insert_id();
+		}
+		return 0;
+	}
+	
+	
+	/**
+	 * Returns information about a specified organizational chart.
+	 * 
+	 * The current user must have "view" or "update" access to the organizational chart.
+	 * 
+	 * The returned array has the following keys :
+	 * 
+	 * <ul>
+	 * 	<li>id
+	 * 	<li>name
+	 * 	<li>description
+	 *  <li>edit
+	 *  <li>edit_author
+	 *  <li>edit_date
+	 *  <li>id_dgowner
+	 *  <li>id_directory
+	 *  <li>type
+	 *  <li>id_first_node
+	 *  <li>id_closed_nodes
+	 * </ul>
+	 * 
+	 * @param	int	$iIdOrgChart	The identifier of the organizational chart.
+	 * 
+	 * @return	array|false			array on success, false otherwise.
+	 */
+	function getRoot()
+	{
+		global $babDB, $babBody;
+	
+		if(false === $this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		$sQuery = 
+			'SELECT ' .
+				'orgChart.*, ' .
+				'dbDir.name sDirName, ' .
+				'dbDir.id_group, ' .
+				'ocTree.id id_node, ' .
+				'ocEntity.id id_entity ' .
+			'FROM ' .
+				BAB_ORG_CHARTS_TBL . ' orgChart ' .
+			'LEFT JOIN ' .
+				BAB_DB_DIRECTORIES_TBL . ' dbDir ON dbDir.id = orgChart.id_directory, ' .
+				BAB_OC_TREES_TBL . ' ocTree ' .
+			'LEFT JOIN ' .
+				BAB_OC_ENTITIES_TBL . ' ocEntity ON ocEntity.id_node = ocTree.id ' .
+			'WHERE ' . 
+				'orgChart.id = ' . $babDB->quote($this->iIdOrgChart) . ' AND ' . 
+				'ocTree.id_user = ' . $babDB->quote($this->iIdOrgChart) . ' AND ' .
+				'ocTree.id_parent = ' . $babDB->quote(0);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if(1 === $iNumRows)
+			{
+				$this->aCachedOrgChart = $babDB->db_fetch_assoc($oResult);
+				return $this->aCachedOrgChart;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * Gets a value that indicates whether an organizational chart exists.
+	 * 
+	 * @param	string	$sName			The identifier of the organizational
+	 * @param	int		$iIdDelegation	The delegation identifier 
+	 *  
+	 * @return	bool	True if the organizational chart exist, False on error
+	 */
+	function orgChartExist($sName, $iIdDelegation)
+	{
+		global $babDB, $babBody;
+		
+		$sName = trim($sName);
+		if(0 === strlen($sName))
+		{
+			return false;
+		}
+		
+		$sQuery = 
+			'SELECT ' . 
+				'id ' .
+			'FROM ' . 
+				BAB_ORG_CHARTS_TBL . ' ' .
+			'WHERE ' . 
+				'id_dgowner = ' . $babDB->quote($iIdDelegation) . ' AND ' .
+				'name LIKE ' . $babDB->quote($babDB->db_escape_like($sName));
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			if(0 !== $babDB->db_num_rows($oResult))
+			{
+				if(false !== ($aOrgChartInfo = $babDB->db_fetch_assoc($oResult)))
+				{
+					$bHaveUpdateRight	= bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, (int) $aOrgChartInfo['id'], $this->iIdSessUser);
+					$bHaveViewRight		= bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, (int) $aOrgChartInfo['id'], $this->iIdSessUser);
+					if(false !== $bHaveUpdateRight || false !== $bHaveViewRight)
+					{
+						return true;
+					}
+					else
+					{
+						$babBody->addError(bab_translate("Error: Right insufficient"));
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Locks an organizational chart.
+	 * 
+	 * @return	bool	True on success, False on error
+	 */
+	function lock()
+	{
+		global $babDB, $babBody;
+		
+		if(false === $this->bHaveUpdateRight)
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		if(true === $this->isLocked())
+		{
+			if($this->isLockedBy($this->iIdSessUser))
+			{
+				return true;
+			}
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		$sQuery = 
+			'UPDATE ' .	
+				BAB_ORG_CHARTS_TBL . ' ' . 
+			'SET ' .
+				'`edit` = ' . $babDB->quote('Y') . ', ' .
+				'`edit_author` = ' . $babDB->quote($this->iIdSessUser) . ', ' .
+				'`edit_date` = ' . $babDB->quote(date("Y-m-d H:i:s")) . ' ' .
+			'WHERE ' . 
+				'`id` = ' . $babDB->quote($this->iIdOrgChart);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			if(0 !== $babDB->db_affected_rows($oResult))
+			{
+				$this->aCachedOrgChart = $this->getRoot();
+				return true;
+			}			
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Unlocks an organizational chart.
+	 * 
+	 * @return	bool	True on success, False on error
+	 */
+	function unlock()
+	{
+		global $babDB, $babBody;
+		
+		if(false === $this->bHaveUpdateRight)
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		if(false === $this->isLockedBy($this->iIdSessUser))
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		$sQuery = 
+			'UPDATE ' .	
+				BAB_ORG_CHARTS_TBL . ' ' . 
+			'SET ' .
+				'`edit` = ' . $babDB->quote('N') . ' ' .
+			'WHERE ' . 
+				'`id` = ' . $babDB->quote($this->iIdOrgChart);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			if(0 !== $babDB->db_affected_rows($oResult))
+			{
+				$this->aCachedOrgChart = $this->getRoot();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * Gets a value that indicates whether an organizational chart is locked.
+	 * 
+	 * @return	bool	True on success, False on error
+	 */
+	function isLocked()
+	{
+		global $babBody;
+		if(false === $this->bHaveUpdateRight)
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && 0 !== (int) $this->aCachedOrgChart['edit_author']);
+	}
+	
+	
+	/**
+	 * Gets a value that indicates whether an organizational chart is locked by a specific user.
+	 * 
+	 * @param	int		$iIdUser	The identifier of the user
+	 * 
+	 * @return	bool	True on success, False on error
+	 */
+	function isLockedBy($iIdUser)
+	{
+		global $babBody;
+		if(false === $this->bHaveUpdateRight)
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && (int) $iIdUser === (int) $this->aCachedOrgChart['edit_author']);
+	}
+	
+	
+	/**
+	 * Gets the lock value info.
+	 * 
+	 * The array have those keys :
+	 * 
+	 * <ul>
+	 * 	<li>iIdUser 			: User identifier</li>
+	 * 	<li>sNickName 			: User nickname</li>
+	 * 	<li>sFirstName 			: User firstname</li>
+	 *  <li>sLastName 			: User lastname</li>
+	 * </ul>
+	 * 
+	 * @return	array	The lock info
+	 */
+	function getLockInfo()
+	{
+		global $babBody;
+		if(false === $this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		$aLockInfo = array('iIdUser' => 0, 'sNickName' => '', 'sFirstName' => '', 'sLastName' => '');
+		
+		//this function test rights
+		if(false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'])
+		{
+			$iIdUser = (int) $this->aCachedOrgChart['edit_author'];
+			$aLockInfo['iIdUser'] = $iIdUser;
+			
+			$bComposeUserName = false;
+			$aUserName = bab_getUserName($iIdUser, $bComposeUserName);
+			
+			$aLockInfo['sNickName']		= bab_getUserNickname($iIdUser);
+			$aLockInfo['sFirstName']	= $aUserName['firstname'];
+			$aLockInfo['sLastName']		= $aUserName['lastname'];
+		}
+		return $aLockInfo;
+	}
+
+	
+	//-- Entity functions
+
+	
+	function createEntity($iIdParentEntity, $sName, $sDescription, $sNote, $iPosition, $mixedGroup = null, $iIdParentGroup = BAB_REGISTERED_GROUP)
+	{
+		global $babBody;
+		
+		$sName = trim($sName);
+		if(0 === strlen($sName))
+		{
+			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
+			return false;
+		}
+		
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			$babBody->addError(bab_translate("Acces denied"));
+			return false;
+		}
+		
+		require_once dirname(__FILE__) . '/grpincl.php';
+		if(false === bab_isGroup($iIdParentGroup))
+		{
+			$babBody->addError(bab_translate("Error: The parent group is not a valid group"));
+			return false;
+		}
+		
+		$iIdParentNode = 0;
+		if(0 !== $iIdParentEntity)
+		{
+			$aDatas = $this->getEntity($iIdParentEntity);
+			if(false === $aDatas)
+			{
+				return false;
+			}
+			
+			$iIdParentNode = (int) $aDatas['id_node'];
+		}
+	
+		//This function set error on babBody
+		$iIdTreeNode = $this->treeCreateNode($iIdParentNode, $iPosition);
+		if(false === $iIdTreeNode)
+		{
+			return false;
+		}
+	
+		$iIdGroup = 0;
+		{
+			if(is_null($mixedGroup))
+			{
+				$mixedGroup = 'none';
+			}
+			
+			switch($mixedGroup)
+			{
+				case 'new':
+					if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
+					{
+						require_once dirname(__FILE__) . '/grpincl.php';
+						
+						$iIdDelegation = 0;
+						$iIdManager = 0;
+						$iIdGroup = bab_groupIsChildOf($iIdParentGroup, $sName);
+						if(false === $iIdGroup)
+						{
+							$iIdGroup = bab_addGroup($sName, $sDescription, $iIdManager, $iIdDelegation, $iIdParentGroup);
+						}
+					}
+					break;
+				case 'none':
+					$iIdGroup = 0;
+					break;
+				default:
+					$iIdGroup = (int) $mixedGroup;
+					break;
+			}
+		}
+	
+		$bIsGroup = true;
+		if(0 !== $iIdGroup)
+		{
+			$bIsGroup = bab_isGroup($iIdParentGroup);
+		}
+		
+		global $babDB;
+	
+		$sQuery = 
+			'INSERT INTO ' . BAB_OC_ENTITIES_TBL . ' ' .
+				'(' .
+					'`id`, ' .
+					'`name`, `description`, `id_oc`, `id_node`, `id_group` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($sName) . ', ' . 
+					$babDB->quote($sDescription) . ', ' . 
+					$babDB->quote($this->iIdOrgChart) . ', ' . 
+					$babDB->quote($iIdTreeNode) . ', ' . 
+					$babDB->quote($iIdGroup) . 
+				')'; 
+	
+		//bab_debug($sQuery);
+		$iIdEntity = 0;
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iIdEntity = $babDB->db_insert_id();
+		}
+	
+		if(0 === $iIdEntity || !$bIsGroup)
+		{
+			$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $this->iIdOrgChart);
+			$oBabTree->remove($iIdTreeNode);
+			if('new' === (string) $mixedGroup)
+			{
+				bab_deleteGroup($iIdGroup);
+			}
+			
+			$babBody->addError(bab_translate("Error: Cannot create the entity"));
+			return false;
+		}
+	
+		if('none' !== (string) $mixedGroup)
+		{
+			$sQuery = 
+				'UPDATE ' . 
+					BAB_GROUPS_TBL . ' ' .
+				'SET ' . 
+					'id_ocentity = ' . $babDB->quote($iIdEntity) . ' ' . 
+				'WHERE ' .
+					'id = ' . $babDB->quote($iIdGroup);
+			
+			//bab_debug($sQuery);	
+			$babDB->db_query($sQuery);
+		}
+		
+		$iIdSuperiorRole	= $this->createRole($iIdEntity, bab_translate("Superior"), '', BAB_OC_ROLE_SUPERIOR, 'N');
+		$iIdTempEmpRole 	= $this->createRole($iIdEntity, bab_translate("Temporary employee"), '', BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 'N');
+		$iIdMemberRole 		= $this->createRole($iIdEntity, bab_translate("Members"), '', BAB_OC_ROLE_MEMBER, 'Y');
+		
+		if('none' !== (string) $mixedGroup && 'new' !== (string) $mixedGroup)
+		{
+			if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'])
+			{
+				$sQuery = 
+					'SELECT ' .
+						'det.id ' .
+					'FROM ' . 
+						BAB_DBDIR_ENTRIES_TBL . ' det ' .
+					'LEFT JOIN ' . 
+						BAB_USERS_GROUPS_TBL . ' ugt on det.id_user = ugt.id_object ' . 
+					'WHERE ' .
+						'ugt.id_group = ' . $babDB->quote($iIdGroup) . ' AND ' .
+						'det.id_directory = \'0\'';
+	
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false !== $oResult)
+				{
+					$iNumRows = $babDB->db_num_rows($oResult);
+					if(0 < $iNumRows)
+					{				
+						while(false !== ($aData = $babDB->db_fetch_assoc($oResult)))
+						{
+							$iIdUser = (int) $aData['id'];
+							$this->createRoleUser($iIdMemberRole, $iIdUser);
+						}
+					}
+				}
+			}
+		}
+		return $iIdEntity;
+	}
+	
+
+	function getEntity($iIdEntity)
+	{
+		global $babBody, $babDB;
+		
+		if(false !== $this->aCachedEntity)
+		{
+			if((int) $this->aCachedEntity['id'] === (int) $iIdEntity)
+			{
+				if(false === $this->isAccessValid())
+				{
+					$babBody->addError(bab_translate("Error: Right insufficient"));
+					return false;
+				}
+				return $this->aCachedEntity;
+			}
+		}
+		
+		$sQuery = 
+			'SELECT ' . 
+				'* ' .
+			'FROM ' . 
+				BAB_OC_ENTITIES_TBL . ' ' .
+			'WHERE ' . 
+				'id = ' . $babDB->quote($iIdEntity) . ' AND ' .
+				'id_oc = ' . $babDB->quote($this->iIdOrgChart);
+	
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult && 1 === $babDB->db_num_rows($oResult));
+		{
+			$this->aCachedEntity = $babDB->db_fetch_assoc($oResult);
+		}
+	
+		if(false === $this->aCachedEntity)
+		{
+			$babBody->addError(bab_translate("Error: Unknown entity"));
+			return false;
+		}
+			
+		if(false === $this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		return $this->aCachedEntity;
+	}
+
+
+	function updateEntity($iIdEntity, $sName, $sDescription)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babBody, $babDB;
+		
+		$aEntity = $this->getEntity($iIdEntity);
+		if(false !== $aEntity)
+		{
+			if(0 === strlen(trim($sName)))
+			{
+				$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
+				return false;
+			}
+			
+			$sQuery = 
+				'UPDATE ' . 
+					BAB_OC_ENTITIES_TBL . ' ' .
+				'SET ' . 
+					'name = ' . $babDB->quote($sName) . ', ' . 
+					'description = ' . $babDB->quote($sDescription) . ' ' . 
+				'WHERE ' .
+					'id = ' . $babDB->quote($iIdEntity);
+			
+			//bab_debug($sQuery);	
+			$babDB->db_query($sQuery);
+			
+			require_once dirname(__FILE__) . '/grpincl.php';
+			
+			$iIdManager	= 0;
+			$iIdGroup	= (int) $aEntity['id_group'];
+			
+			bab_updateGroup($iIdGroup, $sName, $sDescription, $iIdManager);
+			
+			return true;
+		}
+		return false;
+	}
+	
+
+	function deleteEntity($iIdEntity, $iDeleteType)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		$aEntity = $this->getEntity($iIdEntity);
+		if(false !== $aEntity)
+		{
+			global $babBody;
+			
+			$iIdNode				= (int)		$aEntity['id_node'];
+			$iIdEntityGroup			= (int) 	$aEntity['id_group'];
+			$sIsOrgChartPrimary		= (string)	$this->aCachedOrgChart['isprimary'];
+			$iIdOrgChartGroup		= (int) 	$this->aCachedOrgChart['id_group'];
+			$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $this->iIdOrgChart);
+			
+			switch($iDeleteType)
+			{
+				case BAB_OC_DELETE_CHILDREN_ONLY:
+					break;
+					
+				case BAB_OC_DELETE_ENTITY_AND_CHILDREN:
+					break;
+					
+				case BAB_OC_DELETE_ENTITY_ONLY:
+				default:
+					if($oBabTree->remove($iIdNode))
+					{
+						$this->removeOrgChartEntity($iIdEntity, $iIdEntityGroup, 
+							$sIsOrgChartPrimary, $iIdOrgChartGroup);
+						$this->aCachedEntity = false;
+						return true;
+					}
+					break;
+			}
+		}
+		return false;
+	}
+	
+
+	function moveEntity($iIdSrcEntity, $iIdTrgEntity, $iMove, $iMoveType)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babBody;
+		
+		$aGoodValue = array(
+			BAB_OC_MOVE_ENTITY_AND_CHILDREN => BAB_OC_MOVE_ENTITY_AND_CHILDREN,
+			BAB_OC_MOVE_ENTITY_ONLY => BAB_OC_MOVE_ENTITY_ONLY);
+			
+		if(!isset($aGoodValue[$iMove]))
+		{
+			$babBody->addError(bab_translate("Error: Movement unknown"));
+			return false;
+		}
+		
+		$aGoodValue = array(
+			BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING => BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING,
+			BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING => BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING,
+			BAB_OC_MOVE_TYPE_AS_CHILD => BAB_OC_MOVE_TYPE_AS_CHILD);
+			
+		if(!isset($aGoodValue[$iMoveType]))
+		{
+			$babBody->addError(bab_translate("Error: Type of movement unknown"));
+			return false;
+		}
+	
+		$sFunctionName = '';
+		if((int) BAB_OC_MOVE_ENTITY_AND_CHILDREN === (int) $iMove)
+		{
+			$sFunctionName = 'moveTree';
+		}
+		else if((int) BAB_OC_MOVE_ENTITY_ONLY === (int) $iMove)
+		{
+			$sFunctionName = 'move';
+		}
+		else
+		{//Should never happen
+			return false;
+		}
+		
+		$aSrcEntity = $this->getEntity($iIdSrcEntity);
+		if(false === $aSrcEntity)
+		{
+			$babBody->addError(bab_translate("Error: Cannot get source entity information"));
+			return false;
+		}
+		
+		$aTrgEntity = $this->getEntity($iIdTrgEntity);
+		if(false === $aTrgEntity)
+		{
+			$babBody->addError(bab_translate("Error: Cannot get target entity information"));
+			return false;
+		}
+		
+		if((int) $aSrcEntity['id_oc'] !== (int) $aTrgEntity['id_oc'])
+		{
+			$babBody->addError(bab_translate("Error: Entity are not in the same organization chart"));
+			return false;
+		}
+		
+		$iIdSrcNode = (int) $aSrcEntity['id_node'];
+		$iIdParentNode = (int) $aTrgEntity['id_node'];
+		
+		$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $this->iIdOrgChart);
+		switch($iMoveType)
+		{
+			case BAB_OC_MOVE_TYPE_AS_PREVIOUS_SIBLING:
+				//bab_debug('previous sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode, false);
+				return true;
+			case BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING:
+				//bab_debug('next sibling ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, 0, $iIdParentNode);
+				return true;
+			case BAB_OC_MOVE_TYPE_AS_CHILD:
+				//bab_debug('as child ' . $sFunctionName . ' src => ' . $iIdSrcNode . ' trg => ' . $iIdParentNode);
+				$oBabTree->$sFunctionName($iIdSrcNode, $iIdParentNode);
+				return true;
+		}
+		return false;
+	}
+
+
+	//-- Role functions
+
+
+	function createRole($iIdEntity, $sName, $sDescription, $iType, $sCardinality)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babBody;
+		
+		$sName = trim($sName);
+		if(0 === strlen($sName))
+		{
+			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
+			return false;
+		}
+		
+		static $aGoodType = array(
+			BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+			BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR, 
+			BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+			BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER 
+		);
+		
+		if(!isset($aGoodType[$iType]))
+		{
+			$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
+			return false;
+		}
+		
+		static $aGoodCardinality = array('Y' => 'Y', 'N' => 'N');
+		if(!isset($aGoodCardinality[$sCardinality]))
+		{
+			$babBody->addError(bab_translate("ERROR: The specified cardinality is not valid"));
+			return false;
+		}
+		
+		if(false === $this->getEntity($iIdEntity))
+		{
+			return false;
+		}
+		
+		global $babDB;
+	
+		$sQuery = 
+			'INSERT INTO ' . BAB_OC_ROLES_TBL . ' ' .
+				'(' .
+					'`id`, ' .
+					'`name`, `description`, `id_oc`, `id_entity`, ' .
+					'`type`, `cardinality` ' .
+				') ' .
+			'VALUES ' . 
+				'(\'\', ' . 
+					$babDB->quote($sName) . ', ' . 
+					$babDB->quote($sDescription) . ', ' . 
+					$babDB->quote($this->iIdOrgChart) . ', ' . 
+					$babDB->quote($iIdEntity) . ', ' . 
+					$babDB->quote($iType) . ', ' . 
+					$babDB->quote($sCardinality) . 
+				')'; 
+	
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			return $babDB->db_insert_id();
+		}
+		return false;
+	}
+
+	
+	function getRoleById($iIdRole)
+	{
+		global $babBody, $babDB;
+		
+		if(!$this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		$aRole = array();
+		
+		global $babDB;
+		$sQuery = 
+			'SELECT ' . 
+				'* ' .
+			'FROM ' . 
+				BAB_OC_ROLES_TBL . ' ' .
+			'WHERE ' . 
+				'id = ' . $babDB->quote($iIdRole);
+				
+		//bab_debug($sQuery);
+		$aRole = false;
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if(1 === $iNumRows)
+			{
+				$aRole = $babDB->db_fetch_assoc($oResult);
+			}
+		}
+	
+		if(false === $aRole)
+		{
+			return false;
+		}
+		
+		return $aRole;
+	}
+
+
+	function getRoleByType($iIdEntity, $iType)
+	{
+		global $babBody, $babDB;
+		
+		if(!$this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		$aRole = array();
+		
+		static $aGoodType = array(
+			BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+			BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+			BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+			BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+			
+		$aWhereClauseItem = array();
+			
+		if(!isset($aGoodType[$iType]))
+		{			
+			$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
+			return false;
+		}
+		
+		$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+		$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+		
+		$sQuery = 
+			'SELECT ' . 
+				'* ' .
+			'FROM ' . 
+				BAB_OC_ROLES_TBL . ' ' .
+			'WHERE ' . 
+				implode(' AND ', $aWhereClauseItem);
+				
+		//bab_debug($sQuery);
+		$iNumRows = 0;
+		$aRole	= array();
+		$aDatas	= array();
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);			
+			if($iNumRows > 0)
+			{
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					$aRole[] = $aDatas;
+				}
+			}
+		}
+		return $aRole;
+	}
+	
+
+	function getRoleByName($iIdEntity, $sName, $iType)
+	{
+		global $babBody, $babDB;
+		
+		if($this->isAccessValid())
+		{
+			$aRole = array();
+			
+			static $aGoodType = array(
+				BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+				BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+				BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+				BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+				
+			$aWhereClauseItem = array();
+				
+			if(!isset($aGoodType[$iType]))
+			{			
+				$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
+				return false;
+			}
+			
+			if(0 === strlen(trim($sName)))
+			{
+				$babBody->addError(bab_translate("Error: The role name is not valid"));
+				return false;
+			}
+			
+			$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+			$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+			$aWhereClauseItem[] = 'name LIKE ' . $babDB->quote($babDB->db_escape_like($sName));
+			
+			$sQuery = 
+				'SELECT ' . 
+					'* ' .
+				'FROM ' . 
+					BAB_OC_ROLES_TBL . ' ' .
+				'WHERE ' . 
+					implode(' AND ', $aWhereClauseItem);
+					
+			//bab_debug($sQuery);
+			$iNumRows	= 0;
+			$aRole		= array();
+			$oResult	= $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				$iNumRows = $babDB->db_num_rows($oResult);
+				if($iNumRows > 0)
+				{
+					$aRole = $babDB->db_fetch_assoc($oResult);
+				}
+			}
+			return $aRole;
+		}
+
+		$babBody->addError(bab_translate("Error: Right insufficient"));
+		return false;
+	}
+	
+
+	function getRoleByEntityId($iIdEntity, $iType = null)
+	{
+		global $babBody, $babDB;
+			
+		if(false === $this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		$aRole = array();
+		
+		static $aGoodType = array(
+			BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+			BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR,
+			BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+			BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER);
+			
+		$aWhereClauseItem = array();
+			
+		if(!is_null($iType))
+		{
+			if(!isset($aGoodType[$iType]))
+			{			
+				$babBody->addError(bab_translate("ERROR: The specified role type is not valid"));
+				return false;
+			}
+			
+			$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+		}
+		
+		$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+		
+		$sQuery = 
+			'SELECT ' . 
+				'* ' .
+			'FROM ' . 
+				BAB_OC_ROLES_TBL . ' ' .
+			'WHERE ' . 
+				implode('AND ', $aWhereClauseItem);
+				
+		//bab_debug($sQuery);
+		$aDatas	= false;
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$aRole[$aDatas['id']] = $aDatas;
+			}
+		}
+		return $aRole;
+	}
+	
+	
+	function deleteRoleByEntityId($iIdEntity, $iType = null)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		$aEntity = $this->getEntity($iIdEntity);
+		if(false !== $aEntity)
+		{
+			global $babBody, $babDB;
+			
+			$aRole = $this->getRoleByEntityId($iIdEntity, $iType);
+			if(false === $aRole)
+			{
+				$babBody->addError(bab_translate("Error : Cannot get role entity list"));
+				return false;
+			}
+			
+			foreach($aRole as $iRoleId => $aRoleItem)
+			{
+				$this->deleteRoleUserByRoleId($iRoleId);
+			}
+			
+			$aWhereClauseItem = array();
+				
+			if(!is_null($iType))
+			{
+				$aWhereClauseItem[] = 'type = ' . $babDB->quote($iType);
+			}
+			
+			$aWhereClauseItem[] = 'id_entity = ' . $babDB->quote($iIdEntity);
+			
+			global $babDB;
+			
+			$sQuery = 
+				'DELETE FROM ' . 
+					BAB_OC_ROLES_TBL . ' ' .
+				'WHERE ' .
+					implode('AND ', $aWhereClauseItem);
+			
+			//bab_debug($sQuery);
+			return $babDB->db_query($sQuery);
+		}
+		return false;
+	}
+	
+	
+	//--- Role user functions
+	
+	
+	function createRoleUser($iIdRole, $iIdUser)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babDB, $babBody;
+		
+		$aRole = $this->getRoleById($iIdRole);
+		if(false !== $aRole)
+		{
+			$iIdEntity		= (int) $aRole['id_entity'];
+			$iIdOrgChart	= (int) $this->iIdOrgChart;
+			
+			$sQuery = 
+				'SELECT ' .
+					'* ' .
+				'FROM  ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ' . 
+				'WHERE ' .
+					'id_role = ' . $babDB->quote($iIdRole) . ' AND ' .
+					'id_user = ' . $babDB->quote($iIdUser);
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false === $oResult)
+			{
+				return false;
+			}
+			
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if($iNumRows > 0 )
+			{
+				$babBody->addError(bab_translate("User already exist!"));
+				return;
+			}
+				
+			$sPrimary = 'Y';
+			
+			$sQuery = 
+				'SELECT ' .
+					'ocrut.id ' .
+				'FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ocrut ' . 
+				'LEFT JOIN ' . 
+					BAB_OC_ROLES_TBL . ' ocrt on ocrut.id_role = ocrt.id ' . 
+				'WHERE ' .
+					'ocrt.id_oc = ' . $babDB->quote($iIdOrgChart) . ' AND ' .
+					'ocrut.id_user = ' . $babDB->quote($iIdUser) . ' AND ' .
+					'ocrut.isprimary = \'Y\'';
+					
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false === $oResult)
+			{
+				return false;
+			}
+			
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if($iNumRows > 0 )
+			{
+				$sPrimary = 'N';
+			}
+	
+			$aEntity = $this->getEntity($iIdEntity);
+			
+			if(false === $aEntity)
+			{
+				return false;
+			}
+				
+			if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'] && 0 !== (int) $aEntity['id_group'])
+			{
+				$sQuery = 
+					'SELECT ' . 
+						'id_user ' . 
+					'FROM ' . 
+						BAB_DBDIR_ENTRIES_TBL . ' ' . 
+					'WHERE ' .
+						'id = '.$babDB->quote($iIdUser);
+					
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false === $oResult)
+				{
+					return false;
+				}
+				
+				$iNumRows = $babDB->db_num_rows($oResult);
+				if($iNumRows > 0 )
+				{
+					if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+					{
+						require_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
+						bab_addUserToGroup($aDatas['id_user'], $aEntity['id_group'], false);
+					}
+				}
+			}
+				
+			$sQuery = 
+				'INSERT INTO ' . BAB_OC_ROLES_USERS_TBL . ' ' .
+					'(' .
+						'`id`, ' .
+						'`id_role`, `id_user`, `isprimary` ' .
+					') ' .
+				'VALUES ' . 
+					'(\'\', ' . 
+						$babDB->quote($iIdRole) . ', ' . 
+						$babDB->quote($iIdUser) . ', ' . 
+						$babDB->quote($sPrimary) . 
+					')'; 
+		
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				return $babDB->db_insert_id();
+			}
+		}
+		return false;
+	}
+	
+	
+	function getRoleUserByUserId($iIdEntity, $iIdUser)
+	{
+		if($this->isAccessValid())
+		{
+			global $babDB;
+			
+			$sQuery = 
+				'SELECT ' .
+					'ru.* ' .
+				'FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ru ' .
+				'LEFT JOIN ' .
+					BAB_OC_ROLES_TBL . ' r on r.id = ru.id_role ' . 
+				'WHERE ' .
+					'r.id_entity = ' . $babDB->quote($iIdEntity) . ' AND ' .
+					'ru.id_user = ' . $babDB->quote($iIdUser);
+		
+			$aRoleUser = false;
+			$aDatas = false;
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				$iNumRows = $babDB->db_num_rows($oResult);	
+				if(0 < $iNumRows)
+				{
+					while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+					{
+						$aRoleUser[$aDatas['id']] = $aDatas;
+					}
+					return $aRoleUser;
+				}
+			}
+		}
+		return false;
+	}
+	
+
+	function deleteUserRolesByRoleUserIds($aIdRoleUser, $iIdUser)
+	{
+		foreach($aIdRoleUser as $IdRoleUser)
+		{
+			$this->deleteRoleUserByRoleUserId($IdRoleUser, $iIdUser);
+		}
+	}
+	
+	
+	function deleteRoleUserByRoleUserId($IdRoleUser)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babDB;
+		
+		$iIdRole = 0;
+		$aUserInfo = array();
+		
+		$sQuery =
+			'SELECT ' .
+				'id_role, ' .
+				'id_user, ' .
+				'isprimary ' .
+			'FROM ' . 
+				BAB_OC_ROLES_USERS_TBL . ' ' .
+			'WHERE ' .
+				'id = ' . $babDB->quote($IdRoleUser);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false === $oResult)
+		{
+			return false;		
+		}
+		
+		$iNumRows = $babDB->db_num_rows($oResult);	
+		if(0 < $iNumRows)
+		{
+			$iIndex = 0;
+			if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$iIdRole = (int) $aDatas['id_role'];
+				$aUserInfo[] = array('iIdUser' => $aDatas['id_user'], 'sIsPrimary' => $aDatas['isprimary']);
+			}
+		}
+	
+		if(0 == count($aUserInfo))
+		{
+			return false;
+		}
+	
+		$aRole = $this->getRoleById($iIdRole);
+		if(false !== $aRole)
+		{
+			$iIdEntity	= (int) $aRole['id_entity'];
+			foreach($aUserInfo as $iKey => $aItem)
+			{
+				$iIdUser = (int) $aItem['iIdUser'];
+				$sIsPrimary = (string) $aItem['sIsPrimary'];
+					
+				$sQuery = 
+					'DELETE FROM ' . 
+						BAB_OC_ROLES_USERS_TBL . ' ' .
+					'WHERE ' .
+						'id_role = ' . $babDB->quote($iIdRole) . ' AND ' .
+						'id_user = ' . $babDB->quote($iIdUser);
+				//bab_debug($sQuery);
+				$bRet = $babDB->db_query($sQuery);
+				if(false !== $bRet)
+				{
+					$this->commonDeleteRoleUserAction($iIdEntity, $iIdUser, $sIsPrimary);
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	
+	function deleteRoleUserByRoleId($iIdRole)
+	{
+		if(!$this->isLockedBy($this->iIdSessUser))
+		{
+			return false;
+		}
+		
+		global $babDB;
+		
+		$aUserInfo = array();
+		
+		$sQuery =
+			'SELECT ' .
+				'id_user, ' .
+				'isprimary ' .
+			'FROM ' . 
+				BAB_OC_ROLES_USERS_TBL . ' ' .
+			'WHERE ' .
+				'id_role = ' . $babDB->quote($iIdRole);
+				
+		//bab_debug($sQuery);
+		$oResult = $babDB->db_query($sQuery);
+		if(false === $oResult)
+		{
+			return false;		
+		}
+		
+		$iNumRows = $babDB->db_num_rows($oResult);	
+		if(0 < $iNumRows)
+		{
+			$iIndex = 0;
+			while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+			{
+				$aUserInfo[] = array('iIdUser' => $aDatas['id_user'], 'sIsPrimary' => $aDatas['isprimary']);
+			}
+		}
+	
+		if(0 == count($aUserInfo))
+		{
+			return false;
+		}
+		
+		$aRole = $this->getRoleById($iIdRole);
+		if(false !== $aRole)
+		{
+			$iIdEntity	= (int) $aRole['id_entity'];
+			
+			$sQuery = 
+				'DELETE FROM ' . 
+					BAB_OC_ROLES_USERS_TBL . ' ' .
+				'WHERE ' .
+					'id_role IN(' . $babDB->quote($iIdRole) . ')';
+			//bab_debug($sQuery);
+			$bRet = $babDB->db_query($sQuery);
+			if(false !== $bRet)
+			{
+				foreach($aUserInfo as $iKey => $aItem)
+				{
+					$iIdUser = (int) $aItem['iIdUser'];
+					$sIsPrimary = (string) $aItem['sIsPrimary'];
+					
+					$this->commonDeleteRoleUserAction($iIdEntity, $iIdUser, $sIsPrimary);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	private function commonDeleteRoleUserAction($iIdEntity, $iIdUser, $sIsPrimary)
+	{
+		global $babDB;
+		
+		$sQuery = 
+			'DELETE FROM ' . 
+				BAB_VAC_PLANNING_TBL . ' ' .
+			'WHERE ' .
+				'id_user = '	. $babDB->quote($iIdUser);
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery);
+	
+		if('Y' === $sIsPrimary)
+		{		
+			$sQuery = 
+				'SELECT ' .
+					'ocrut.id ' .
+				'FROM ' .
+					BAB_OC_ROLES_USERS_TBL . ' ocrut ' .
+				'LEFT JOIN ' .
+					BAB_OC_ROLES_TBL . ' ocrt on ocrt.id = ocrut.id_role ' .
+				'WHERE ' .
+					'ocrt.id_oc = ' . $babDB->quote($this->iIdOrgChart) . 'AND ' .
+					'ocrut.id_user = ' . $babDB->quote($iIdUser);
+			//bab_debug($sQuery);
+			$oResult = $babDB->db_query($sQuery);
+			if(false !== $oResult)
+			{
+				$iNumRows = $babDB->db_num_rows($oResult);	
+				if(0 < $iNumRows)
+				{
+					$iIndex = 0;
+					while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+					{
+						//user must have a primary role, use the first
+						$sQuery = 
+							'UPDATE ' . 
+								BAB_OC_ROLES_USERS_TBL . ' ' .
+							'SET ' . 
+								'isprimary = ' . $babDB->quote($sIsPrimary) . ' ' .
+							'WHERE id = ' . $babDB->quote($aDatas['id']);
+						//bab_debug($sQuery);
+						$babDB->db_query($sQuery);
+						$sIsPrimary = 'N';	
+					}
+				}
+			}
+		
+			$aEntity = $this->getEntity($iIdEntity);
+			if('Y' === (string) $this->aCachedOrgChart['isprimary'] && 1 === (int) $this->aCachedOrgChart['id_group'] && 0 !== (int) $aEntity['id_group'])
+			{
+				$sQuery = 
+					'SELECT ' . 
+						'COUNT(orut.id) as iTotal ' .
+					'FROM ' . 
+						BAB_OC_ROLES_USERS_TBL . ' orut ' . 
+					'LEFT JOIN ' . 
+						BAB_OC_ROLES_TBL . ' ort on ort.id = orut.id_role ' .
+					'LEFT JOIN ' . 
+						BAB_OC_ENTITIES_TBL . ' oct on oct.id = ort.id_entity ' . 
+					'WHERE ' .
+						'orut.id_user = ' . $babDB->quote($sIsPrimary) . ' AND ' .
+						'ort.id_entity = ' . $babDB->quote($iIdEntity);
+						
+				//bab_debug($sQuery);
+				$oResult = $babDB->db_query($sQuery);
+				if(false !== $oResult)
+				{
+					$iNumRows = $babDB->db_num_rows($oResult);	
+					if(0 < $iNumRows)
+					{
+						if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+						{
+							if(0 === (int) $aDatas['iTotal'])
+							{
+								$sQuery = 
+									'SELECT ' . 
+										'id_user ' . 
+									'FROM ' . 
+										BAB_DBDIR_ENTRIES_TBL . ' ' . 
+									'WHERE ' . 
+										'id = ' . $babDB->quote($iIdUser);
+								//bab_debug($sQuery);
+								$oResult = $babDB->db_query($sQuery);
+								if(false !== $oResult)
+								{
+									$iNumRows = $babDB->db_num_rows($oResult);	
+									if(0 < $iNumRows)
+									{
+										if(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+										{
+											$iIdUser = (int) $aDatas['id_user'];
+											$sQuery = 
+												'DELETE from ' . 
+													BAB_USERS_GROUPS_TBL . ' ' .
+												'WHERE ' .
+													'id_group = ' . $babDB->quote($aEntity['id_group']) . ' AND ' . 
+													'id_object = ' . $babDB->quote($iIdUser);
+											//bab_debug($sQuery);
+											$babDB->db_query($sQuery);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}				
+
+	private function removeOrgChartEntity($iIdEntity, $iIdEntityGroup, $sIsOrgChartPrimary, $iIdOrgChartGroup)
+	{
+		$this->deleteRoleByEntityId($this->iIdSessUser, $iIdEntity);
+		
+		if('Y' === (string) $sIsOrgChartPrimary && 1 === (int) $iIdOrgChartGroup)
+		{
+			global $babDB;
+			
+			$sQuery = 
+				'UPDATE ' .
+					BAB_GROUPS_TBL . ' ' .
+				'SET ' .
+					'id_ocentity = ' . $babDB->quote(0) . ' ' .
+				'WHERE ' .
+					'id = ' . $babDB->quote($iIdEntityGroup);
+			
+			//bab_debug($sQuery);
+			$babDB->db_query($sQuery);
+		}
+		
+		$sQuery = 'DELETE FROM ' . BAB_OC_ENTITIES_TBL . ' WHERE id = '	. $babDB->quote($iIdEntity);
+		//bab_debug($sQuery); 
+		$babDB->db_query($sQuery);
+		
+		$sQuery = 'DELETE FROM ' . BAB_VAC_PLANNING_TBL . ' WHERE id_entity = '	. $babDB->quote($iIdEntity);
+		//bab_debug($sQuery);
+		$babDB->db_query($sQuery); 
+	}
+
+	
+	private function treeCreateNode($iIdParentNode, $iPosition)
+	{
+		$oBabTree = new bab_dbtree(BAB_OC_TREES_TBL, $this->iIdOrgChart);
+		
+		$iIdNode = 0;
+		
+		//Root node
+		if(0 === $iIdParentNode)
+		{
+			$iIdNode = $oBabTree->add();	
+		}
+		else
+		{//Child node
+			switch($iPosition)
+			{
+				case BAB_OC_TREES_PREVIOUS_SIBLING:
+					$iIdNode = (int) $oBabTree->add(0, $iIdParentNode, false);
+					break;
+				case BAB_OC_TREES_NEXT_SIBLING:
+					$iIdNode = (int) $oBabTree->add(0, $iIdParentNode);
+					break;
+				case BAB_OC_TREES_LAST_CHILD:
+				default:
+					$iIdNode = (int) $oBabTree->add($iIdParentNode);
+					break;
+			}
+		}
+	
+		if(0 === $iIdNode)
+		{
+			global $babBody;
+			$babBody->addError(bab_translate("ERROR: The node was not created"));
+			return false;
+		}
+		return $iIdNode;
+	}
 }
 
