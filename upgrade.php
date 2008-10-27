@@ -5525,6 +5525,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE ".BAB_ORG_CHARTS_TBL." ADD ovml_detail tinytext NOT NULL default '' AFTER id_closed_nodes");
 	}
 	
+	// increased the size of fields to 255
+	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `name` `name` VARCHAR(255)');
+	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `description` `description` VARCHAR(255)');
 	
 	return true;
 }

@@ -817,8 +817,8 @@ CREATE TABLE bab_contacts (
 
 CREATE TABLE `bab_sites` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(30) NOT NULL default '',
-  `description` varchar(100) NOT NULL default '',
+  `name` varchar(255) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
   `lang` varchar(10) NOT NULL default '',
   `adminemail` varchar(255) NOT NULL default '',
   `adminname` varchar(255) NOT NULL default '',
