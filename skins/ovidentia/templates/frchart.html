@@ -513,6 +513,7 @@ else if (3 == chart_showhideleft)
 	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img title="{ chart_disp1_title }" alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" name="disp1" border="0" /></a>
  	<a style="display: none" href="javascript:updateFrFrame('disp2')"><img title="{ chart_disp2_title }" alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" name="disp2" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img title="{ chart_disp3_title }" alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" name="disp3" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp6')"><img title="{ chart_disp6_title }" alt="{ chart_disp6_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp6" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img title="{ chart_disp4_title }" alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp4" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img title="{ chart_disp5_title }" alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" name="disp5" border="0" /></a>
 	</td>
@@ -630,6 +631,14 @@ if (disp)
 <input type="hidden" name="xf" value="{ xf }">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr valign="middle"> 
+<td align="right" class="BabLetterlists">
+<select name="entity">
+<option value="">{ t_all_entities }</option>
+<!--#in getnextentity -->
+<option value="{ entity_id }">{ entity_name }</option>
+<!--#endin getnextentity -->
+</select>
+</td>
 <td align="right" class="BabLetterlists"><input type="submit" name="submit" value="{ search }">&nbsp;&nbsp;<input type="text" name="q" value="{ q }">
 </td>
 </tr>
@@ -682,7 +691,8 @@ if (disp)
         </tr>
         <!--#in getnext -->
         <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-          <td align="center" valign="middle" width="1%" >&nbsp;</td>
+<!--      <td align="center" valign="middle" width="1%" >&nbsp;</td> -->
+          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:window.open('index.php?tg=directory&idx=ddbovml&directoryid=5&userid=209');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
           <td align="left" valign="middle">

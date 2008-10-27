@@ -24,6 +24,34 @@
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 
+
+/**
+ * Returns the primary org chart id.
+ *
+ * @return int	or null.
+ */
+function bab_OCgetPrimaryOcId()
+{
+	global $babBody, $babDB;
+ 
+	if (empty($babBody->idprimaryoc)) {
+		$sql = 'SELECT oct.id 
+				FROM ' . BAB_ORG_CHARTS_TBL . ' AS oct 
+				LEFT JOIN ' . BAB_DB_DIRECTORIES_TBL . ' AS ddt ON oct.id_directory = ddt.id 
+				WHERE ddt.id_group = \'1\' AND oct.isprimary = \'Y\'';
+		$res = $babDB->db_query($sql);
+		if ($res && $babDB->db_num_rows($res) > 0) {
+			$ocinfo = $babDB->db_fetch_array($res);
+			$idoc = $ocinfo['id'];
+			$babBody->idprimaryoc = $idoc;
+		}
+		return null;
+	}
+	return $babBody->idprimaryoc;
+}
+
+
+
 function bab_OCGetRootEntity($idoc='')
 {
 	static $ocrootentities = array();
@@ -69,32 +97,47 @@ function bab_OCGetRootEntity($idoc='')
 	return $ocrootentities[$idoc];
 }
 
-function bab_OCGetEntities($idoc='')
+
+/**
+ * Returns an array containing 'id', 'name' and 'description' for each entity in the specified org chart.
+ * If no org chart id is given, the primary org chart is used.
+ *
+ * @param int $idoc
+ * @return array
+ */
+function bab_OCGetEntities($idoc = '')
 {
 	static $ocentities = array();
 	global $babBody, $babDB;
 
-	if( empty($idoc))
-	{
-		if( !empty($babBody->idprimaryoc))
-		{
-			$idoc = $babBody->idprimaryoc;
-		}
-		else
-		{
-			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$ocinfo = $babDB->db_fetch_array($res);
-				$idoc = $ocinfo['id'];
-				$babBody->idprimaryoc = $idoc;
-			}
-			else
-			{
-				return array();
-			}
+	if (empty($idoc)) {
+		$idoc = bab_OCgetPrimaryOcId();
+		if (empty($idoc)) {
+			return array();
 		}
 	}
+
+//	if( empty($idoc))
+//	{
+//		if( !empty($babBody->idprimaryoc))
+//		{
+//			$idoc = $babBody->idprimaryoc;
+//		}
+//		else
+//		{
+//			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
+//			if( $res && $babDB->db_num_rows($res) > 0 )
+//			{
+//				$ocinfo = $babDB->db_fetch_array($res);
+//				$idoc = $ocinfo['id'];
+//				$babBody->idprimaryoc = $idoc;
+//			}
+//			else
+//			{
+//				return array();
+//			}
+//		}
+//	}
 
 	if( isset($ocentities[$idoc]))
 	{

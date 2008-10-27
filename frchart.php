@@ -1,32 +1,31 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."utilit/orgincl.php";
-include_once $babInstallPath."utilit/treeincl.php";
-include_once $babInstallPath."utilit/tree.php";
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
+include_once 'base.php';
+include_once $babInstallPath.'utilit/orgincl.php';
+include_once $babInstallPath.'utilit/treeincl.php';
+include_once $babInstallPath.'utilit/tree.php';
 
-define("ORG_MAX_REQUESTS_LIST", 100);
+define('ORG_MAX_REQUESTS_LIST', 100);
 
 
 function displayChart($ocid, $oeid, $update, $iduser, $disp='')
@@ -408,6 +407,8 @@ function printChartNode(&$obj, $id)
 		}
 }
 
+
+
 function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 {
 	global $babBody;
@@ -448,6 +449,68 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 
 
 
+
+class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart 
+{
+	function bab_OvidentiaOrgChartTreeView($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
+	{
+		parent::bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
+	}
+	
+	
+	function _addActions(&$element)
+	{
+		$element->addAction('view_entity_directory',
+					bab_translate("View in directory"),
+					$GLOBALS['babSkinPath'] . 'images/Puces/members.png',
+					'',
+					'toggleMembers');
+		
+	}
+
+	function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
+	{
+		$elementIdPrefix = 'ENT';
+		
+		$element =& $this->createElement($elementIdPrefix . $entityId,
+										 $entityType,
+										 bab_toHtml($entityName),
+										 '',
+										 '');
+		//$this->_addMembers($element, $entityId);
+		
+		$element->setLink('http://www.google.com');
+		//$element->setLinkEntity('http://www.google.com');
+
+		$this->_addActions($element, $entityId, $entityParentId);
+		
+		return $element;
+	}
+	
+}
+
+
+
+function displayChartTreeView($ocid, $oeid, $iduser, $adminMode)
+{
+	global $babBody;
+	$orgChart = new bab_OvidentiaOrgChartTreeView('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
+
+	$orgChart->_templateFile = 'treeview.html';
+	$orgChart->_templateSection = 'treeview';
+	$orgChart->_templateCss = 'treeview_css';
+	$orgChart->_templateScripts = 'treeview_scripts';
+	
+	// 
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/bab/orgchart/' . $ocid);
+
+	$babBody->title = '';
+	$babBody->babpopup($orgChart->printTemplate());
+}
+
+
+
 function displayFrtFrame($ocid, $oeid, $update)
 {
 
@@ -461,6 +524,7 @@ function displayFrtFrame($ocid, $oeid, $update)
 			$this->charttitle = $ocinfo['name'];
 			$this->chart_disp1_title = bab_translate("Text view");
 			$this->chart_disp2_title = bab_translate("Vertical view");
+			$this->chart_disp6_title = bab_translate("Entity search");
 			$this->chart_disp3_title = bab_translate("Horizontal view");
 			$this->chart_disp4_title = bab_translate("Roles");
 			$this->chart_disp5_title = bab_translate("Directories");
@@ -474,6 +538,12 @@ function displayFrtFrame($ocid, $oeid, $update)
 }
 
 
+
+
+
+
+
+
 function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 {
 	global $babBody;
@@ -482,11 +552,19 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 		{
 		var $count;
 
+		var $entities = array();
+
 		function temp($ocid, $oeid, $update, $pos, $xf, $q)
 			{
 			global $ocinfo;
+			require_once $GLOBALS['babInstallPath'] . 'utilit/ocapi.php';
 			$this->allname = bab_translate("All");
 			$this->search = bab_translate("Search");
+			$this->t_entity = bab_translate("Entity");
+			$this->t_all_entities = bab_translate("All");
+			
+			$this->entities = bab_OCGetEntities($ocid);
+
 			$this->ocid = $ocid;
 			$this->oeid = $oeid;
 			$this->pos = $pos;
@@ -624,6 +702,18 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 				}
 
 			}
+
+		function getnextentity()
+		{
+			if (list(,$entity) = each($this->entities)) {
+				$this->entity_id = $entity['id'];
+				$this->entity_name = bab_toHtml($entity['name']);
+				return true;
+			}
+			reset($this->entities);
+			return false;
+		}
+
 
 		function getnextcol()
 			{
@@ -1089,6 +1179,35 @@ function openNode($ocid, $oeid)
 }
 
 
+
+function summaryOcContactWithOvml($ocid, $directoryid, $userid)
+{
+	global $babDB;
+
+//	if (bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid'])) {
+
+		$sql = 'SELECT ovml_detail 
+				FROM ' . BAB_ORG_CHARTS_TBL . '
+				WHERE id = ' . $babDB->quote($ocid);
+
+		$arr = $babDB->db_fetch_array($babDB->db_query($sql));
+
+		if (isset($userid)) {
+			$sql = 'SELECT id 
+					FROM ' . BAB_DBDIR_ENTRIES_TBL . '
+					WHERE id_user = ' . $babDB->quote($userid);
+			list($userid) = $babDB->db_fetch_array($babDB->db_query($sql));
+		}
+
+		if (!empty($arr['ovml_detail'])) {
+			echo bab_printOvmlTemplate($arr['ovml_detail'], $args);
+		} else {
+			summaryDbContact($directoryid, $userid);
+		}
+//	}
+}
+
+
 /* main */
 $update = false;
 $ocinfo = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
@@ -1195,6 +1314,7 @@ switch($idx)
 				if( !isset($swhat)) $swhat =0;
 				browseRoles($ocid, $eid, $role, $swhat, $word, $type, $vpos, $update);
 				break;
+
 			case "disp5":
 				include_once $babInstallPath."utilit/dirincl.php";
 				if( isset($submit))
@@ -1206,8 +1326,13 @@ switch($idx)
 				if( !isset($xf )){	$xf = ""; }
 				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
 				break;
+
 			case "disp3":
 				displayChartTree($ocid, $oeid, $iduser, $update);
+				break;
+
+			case "disp6":
+				displayChartTreeView($ocid, $oeid, $iduser, $update);
 				break;
 
 			default:
