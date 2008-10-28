@@ -527,7 +527,7 @@ function summaryDbContact($id, $idu, $update=true)
 
 				if( isset($this->arr[$this->fieldv]) )
 					{
-					$this->fieldv = bab_toHtml(stripslashes($this->arr[$this->fieldv]), BAB_HTML_ALL);
+					$this->fieldv = bab_toHtml(stripslashes($this->arr[$this->fieldv]), BAB_HTML_ALL &~ BAB_HTML_P);
 					}
 				else
 					{
@@ -576,7 +576,7 @@ function summaryDbContact($id, $idu, $update=true)
 		}
 
 	$temp = new temp($id, $idu, $update);
-	echo bab_printTemplate($temp, "directory.html", "summarydbcontact");
+	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "summarydbcontact"));
 }
 
 function summaryDbContactWithOvml($args)

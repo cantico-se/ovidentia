@@ -880,7 +880,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 		}
 
 	$temp = new temp($id, $idu, $fields, $refresh);
-	echo bab_printTemplate($temp, "directory.html", "modifycontact");
+	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "modifycontact"));
 }
 
 function addDbContact($id, $fields)
@@ -1105,7 +1105,7 @@ function addDbContact($id, $fields)
 		}
 
 	$temp = new temp($id, $fields);
-	echo bab_printTemplate($temp, "directory.html", "modifycontact");
+	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "modifycontact"));
 }
 
 
@@ -1547,7 +1547,7 @@ function dbEntryDirectories($id, $idu)
 		}
 
 	$temp = new dbEntryDirectoriesCls($id, $idu);
-	echo bab_printTemplate($temp, "directory.html", "dbentrydirectories");
+	$babBody->babPopup(bab_printTemplate($temp, "directory.html", "dbentrydirectories"));
 }
 
 

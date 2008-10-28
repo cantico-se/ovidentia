@@ -375,70 +375,70 @@ address a:link, address a:visited {
 	display:inline;
 	}
 
-#bab_usersection {
+.bab_usersection {
 	background-color:#F7FFEB;
 	border-bottom:#B9D987 1px solid;
 	}
 
-#bab_usersection .bab_title {
+.bab_usersection .bab_title {
 	background-color:#B9D987;
 	}
 
-#bab_usersection ul a {
+.bab_usersection ul a {
 	color:#330;
 	}
 
-#bab_usersection ul .addon a {
+.bab_usersection ul .addon a {
 	background-color:#EEFAD2;
 	}
 
-#bab_usersection ul a:hover {
+.bab_usersection ul a:hover {
 	background-color:#B9D987;
 	}
 
-#bab_adminsection {
+.bab_adminsection {
 	background-color:#FFF7F6;
 	border-bottom:#f96 1px solid;
 	}
 
-#bab_adminsection .bab_title {
+.bab_adminsection .bab_title {
 	background-color:#f96;
 	}
 
-#bab_adminsection ul a {
+.bab_adminsection ul a {
 	color:#600;
 	}
 
-#bab_adminsection ul .addon a {
+.bab_adminsection ul .addon a {
 	background-color:#FFEDE7;
 	}
 
-#bab_adminsection ul a:hover {
+.bab_adminsection ul a:hover {
 	background-color:#f96;
 	}
 
-#bab_montha {
+.bab_montha {
 	background-color:#FFFBED;
 	border-bottom:#fc3 1px solid;
 	}
 
-#bab_montha .bab_title {
+.bab_montha .bab_title {
 	background-color:#fc3;
 	}
 
-#bab_montha table {
+.bab_montha table {
 	width:95%;
 	padding:0px;
 	border-collapse:collapse;
 	margin:0 auto;
 	}
 
-#bab_montha thead td {
+.bab_montha thead td {
 	font-weight:bold;
 	border-bottom:#ccc 1px solid;
 	}
 
-#bab_montha td {
+.bab_montha td {
 	padding:1px;
 	text-align:center;
 	}
@@ -450,15 +450,15 @@ address a:link, address a:visited {
 
 /* topics sections, left only */
 
-#leftcontent #bab_topicssection .bab_title {
+#leftcontent .bab_topicssection .bab_title {
 	background-color:transparent;
 	}
 
-#leftcontent #bab_topicssection .bab_content h5 {
+#leftcontent .bab_topicssection .bab_content h5 {
 	display:none;
 	}
 
-#leftcontent #bab_topicssection .bab_content li a {
+#leftcontent .bab_topicssection .bab_content li a {
 	background:#039 url('../images/puce2.gif') no-repeat 95% 50%;
 	color:#fff;
 	font-weight:bold;
@@ -466,7 +466,7 @@ address a:link, address a:visited {
 	margin-bottom:1px;
 	}
 
-#leftcontent #bab_topicssection .bab_content li a:hover {
+#leftcontent .bab_topicssection .bab_content li a:hover {
 	background:#039 url('../images/puce3.gif') no-repeat 95% 50%;
 	color:#ddd;
 	}
