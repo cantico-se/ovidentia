@@ -1340,7 +1340,18 @@ function bab_removeGroup($id)
 
 /**
  * Register a user
- * @param	boolean	$bgroup
+ *
+ * @param	string		$firstname		mandatory firstname
+ * @param	string		$lastname		mandatory lastname
+ * @param	string		$middlename		The middlename can be an empty string
+ * @param	string		$email			mandatory mail address
+ * @param	string		$nickname		mandatory Login ID
+ * @param	string		$password1		mandatory password
+ * @param	string		$password2		mandatory password verification
+ * @param	string		$confirmed		[1|0] 1 : the user is confirmed ; 0 : the user is not confirmed
+ * @param	string		&$error			an empty string varaible, the error message will be set in this variable if the user cannot be registered
+ * @param	boolean		$bgroup
+ *
  * @return 	int|false
  */
 function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, &$error, $bgroup = true)
@@ -1365,7 +1376,6 @@ function bab_detachUserFromGroup($iduser, $idgroup)
  * return all infos necessary to use bab_updateUserById()
  * warning, password is not returned, $info['password_md5'] is returned instead
  *
- * 'changepwd', 'jpegphoto' are not modifiable
  *
  * @param	int		$id_user
  * @return 	false|array
