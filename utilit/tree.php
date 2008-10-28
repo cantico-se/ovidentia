@@ -329,6 +329,8 @@ class bab_TreeView
 
 	var $t_nodeIcon;
 
+	var $t_classes;
+
 	var $t_expand;
 	var $t_collapse;
 	var $t_submit;
@@ -380,6 +382,8 @@ class bab_TreeView
 		$this->t_previousLevel = null;
 		$this->t_baseLevel = 0;
 
+		$this->t_classes = '';
+
 		$this->t_layout = 'horizontal';
 
 		$this->_templateFile = 'treeview.html';
@@ -398,6 +402,18 @@ class bab_TreeView
 		$this->t_isMultiSelect = false;
 		$this->t_fetchContentScript = false;
 	}
+
+
+	/**
+	 * Sets additional classes for use in css stylesheets.
+	 *
+	 * @param string $classes		Space separated list of classes.
+	 */
+	function setClasses($classes)
+	{
+		$this->t_classes = $classes;
+	}
+
 
 	/**
 	 * Defines the attributes of the treeview.
@@ -2499,7 +2515,7 @@ class bab_GroupTreeView extends bab_TreeView
 	{
 		parent::appendElement($element, $parentId);
 		$groupId = $element->getGroupId();
-		if ($groupId !== '') {
+		if ($groupId !== '' && ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
 			$element->addCheckBox('select[' . $groupId . ']', isset($this->_selectedGroups[$groupId]));
 		}
 	}
