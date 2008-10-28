@@ -2653,4 +2653,5 @@
 <string id="Failed authentication">Échec de l'authentification</string>
 <string id="The directory %s is not writable">Le répertoire %s n'est pas accessible en écriture</string>
 <string id="Dependencies">Dépendences</string>
+<string id="There is a conflict with working hours of the selected personnal calendars">Il y a un conflit avec les heures travaillées de l'agenda personnel sélectionné</string>
 </fr>
