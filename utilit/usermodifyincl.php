@@ -269,6 +269,26 @@ class bab_userModify {
 				{
 					$arruq[] =  'email=\''.$babDB->db_escape_string($info['email']).'\'';
 				}
+				
+				
+				
+				if (isset($info['jpegphoto'])) {
+				
+					if ($info['jpegphoto'] instanceOf bab_fileHandler) {
+						if (false !== $tmppath = $info['jpegphoto']->importTemporary()) {
+							include_once dirname(__FILE__).'/dirincl.php';
+							$photo = new bab_dirEntryPhoto($arruinfo['id_entry']);
+							if (!$photo->setDataByFile($tmppath)) {
+								$error = bab_translate("photo cannot be updated");
+								return false;
+							}
+						}
+					}
+					
+					unset($info['jpegphoto']);
+				}
+				
+
 	
 				if( isset($info['sn']) || isset($info['givenname']) || isset($info['mn']))
 				{

@@ -1400,11 +1400,15 @@ function bab_getUserInfos($id_user) {
 /**
  * Update a user
  * @see bab_getUserInfos()
- * 'changepwd', 'jpegphoto' are not modifiable
+ * @see bab_fileHandler
  *
- * @param	int		$id
- * @param	array	$info		: Array returned by bab_getUserInfos()
- * @param	string	&$error
+ * the 'changepwd' key is not modifiable
+ * the 'jpegphoto' can be modified with an instance of bab_fileHandler
+ * @since 	6.7.91	add support for jpegphoto key
+ *
+ * @param	int		$id			ID user
+ * @param	array	$info		Array returned by bab_getUserInfos()
+ * @param	string	&$error		error message
  * @return 	boolean
  */
 function bab_updateUserById($id, $info, &$error)
