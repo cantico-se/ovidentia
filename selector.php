@@ -56,8 +56,7 @@ function selectArticles()
 	$treeView->order();
 	$treeView->sort();
 	
-	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
-	printBabBodyPopup();
+	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -89,8 +88,7 @@ function selectFaqs()
 	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
 
-	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
-	printBabBodyPopup();
+	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -122,8 +120,7 @@ function selectForums()
 	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
 
-	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
-	printBabBodyPopup();
+	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -204,8 +201,7 @@ function selectFiles($folderId = null, $path = '')
 	// (the sub folders will be loaded when the user opens one of these)
 	$attributes &= ~(BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES | BAB_FILE_TREE_VIEW_SHOW_FILES);
 	$treeView->setAttributes($attributes);
-	$GLOBALS['babBodyPopup']->babecho($treeView->printTemplate());
-	printBabBodyPopup();
+	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -216,6 +212,9 @@ function selectFiles($folderId = null, $path = '')
 function selectGroups()
 {
 	$attributes = 0;
+	if (bab_rp('selectable_groups', false)) {
+		$attributes |= BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS;
+	}
 	if (bab_rp('multi', false)) {
 		$attributes |= BAB_TREE_VIEW_MULTISELECT;
 	}
@@ -223,7 +222,7 @@ function selectGroups()
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
 	$treeView->setAttributes($attributes);
 	$treeView->sort();
-	$GLOBALS['babBody']->babpopup($treeView->printTemplate());
+	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 }
 
 
