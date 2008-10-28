@@ -2576,6 +2576,56 @@ function bab_OCSelectTreeQuery($iIdTree)
 }
 
 
+function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder = 'ASC')
+{
+	global $babDB;
+	
+	$aGoodValue = array('asc' => 'asc', 'desc' => 'desc'); 
+	if(!isset($aGoodValue[strtolower($sOrder)]))
+	{
+		$sOrder = 'ASC';
+	}
+	
+	$sGtOperator = '>'; 
+	$sLtOperator = '<'; 
+	
+	if($bIncludeEntity)
+	{
+		$sGtOperator = '>='; 
+		$sLtOperator = '<='; 
+	}
+	
+	$sQuery = 
+		'SELECT ' .
+			'octCh.id iId, ' .
+			'octCh.id_parent iIdParent, ' .
+			'octCh.lf iLf, ' .
+			'octCh.lr iLr, ' .
+			'octCh.id_user iIdTree, ' .
+			'octEntityCh.name sName, ' .
+			'octEntityCh.description sDescription, ' .
+			'octEntityCh.id iIdEntity ' .
+		'FROM ' .
+			BAB_OC_ENTITIES_TBL . ' octEntityPr ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octPr ON octPr.id_user = octEntityPr.id_oc ' .
+		'LEFT JOIN ' . 
+			BAB_OC_TREES_TBL . ' octCh ON octPr.id_user = octEntityPr.id_oc ' .
+		'LEFT JOIN ' . 
+			BAB_OC_ENTITIES_TBL . ' octEntityCh ON octEntityCh.id_node = octCh.id ' .
+		'WHERE ' .
+			'octEntityPr.id = ' . $babDB->quote($iIdEntity) . ' AND ' .
+			'octPr.id = octEntityPr.id_node AND ' .
+			'octCh.lf ' . $sLtOperator . ' octPr.lf AND ' . 
+			'octCh.lr ' . $sGtOperator . ' octPr.lr ' . 
+		'ORDER ' .
+			'BY octCh.lf ' . $sOrder;
+			
+	//bab_debug($sQuery);
+	return $sQuery;
+}
+
+
 class bab_OrgChartUtil
 {
 	private $iIdSessUser		= null;
@@ -3245,6 +3295,77 @@ class bab_OrgChartUtil
 		return $this->aCachedEntity;
 	}
 
+	
+	function getUserEntities($iIdUser, $aRoleType = null)
+	{
+		global $babBody, $babDB;
+		
+		if(!$this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		static $aGoodType = array(
+			BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+			BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR, 
+			BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+			BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER 
+		);
+		
+		$aWhereClauseItem	= array();
+		$aWhereClauseItem[]	= 'userRole.id_user = ' . $babDB->quote($iIdUser);
+
+		$aGoodRoleType = null;
+		if(isset($aRoleType))
+		{
+			foreach($aRoleType as $iKey => $iRoleType)
+			{
+				if(isset($aGoodType[$iRoleType]))
+				{
+					$aGoodRoleType[$iRoleType] = $iRoleType;
+				}
+			}
+			
+			if(isset($aGoodRoleType) && count($aGoodRoleType))
+			{
+				$aWhereClauseItem[] = 'role.type IN(' . $babDB->quote($aGoodRoleType) . ')';
+			}
+		}
+		
+		$sQuery = 
+			'SELECT ' . 
+				'DISTINCT(entity.id), ' .
+				'entity.name, ' .
+				'entity.description ' .
+			'FROM ' . 
+				BAB_OC_ROLES_TBL . ' role ' .
+			'LEFT JOIN ' .
+				BAB_OC_ROLES_USERS_TBL . ' userRole ON userRole.id_role = role.id ' .	
+			'LEFT JOIN ' .
+				BAB_OC_ENTITIES_TBL . ' entity ON entity.id = role.id_entity ' .	
+			'WHERE ' . 
+				implode(' AND ', $aWhereClauseItem);
+
+		//bab_debug($sQuery);
+		$aEntity = array();
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);
+			if(0 < $iNumRows)
+			{
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					$aEntity[$aDatas['id']] = $aDatas;
+					$aRole = $this->getRoleByUserId($aDatas['id'], $iIdUser, $aGoodRoleType);
+					$aEntity[$aDatas['id']]['role'] = $aRole;
+				}
+			}
+		}
+		return $aEntity;		
+	}
+	
 
 	function updateEntity($iIdEntity, $sName, $sDescription)
 	{
@@ -3529,6 +3650,85 @@ class bab_OrgChartUtil
 			return false;
 		}
 		
+		return $aRole;
+	}
+
+
+	function getRoleByUserId($iIdEntity, $iIdUser, $aRoleType = null)
+	{
+		global $babBody, $babDB;
+		
+		if(!$this->isAccessValid())
+		{
+			$babBody->addError(bab_translate("Error: Right insufficient"));
+			return false;
+		}
+		
+		static $aGoodType = array(
+			BAB_OC_ROLE_CUSTOM => BAB_OC_ROLE_CUSTOM, 
+			BAB_OC_ROLE_SUPERIOR => BAB_OC_ROLE_SUPERIOR, 
+			BAB_OC_ROLE_TEMPORARY_EMPLOYEE => BAB_OC_ROLE_TEMPORARY_EMPLOYEE, 
+			BAB_OC_ROLE_MEMBER => BAB_OC_ROLE_MEMBER 
+		);
+		
+		$aWhereClauseItem	= array();
+		$aWhereClauseItem[]	= 'userRole.id_user = ' . $babDB->quote($iIdUser);
+
+		$aGoodRoleType = null;
+		if(isset($aRoleType))
+		{
+			foreach($aRoleType as $iKey => $iRoleType)
+			{
+				if(isset($aGoodType[$iRoleType]))
+				{
+					$aGoodRoleType[$iRoleType] = $iRoleType;
+				}
+			}
+		}
+		
+		$aRole = array();
+		
+		$aWhereClauseItem[] = 'entity.id = ' . $babDB->quote($iIdEntity);
+		$aWhereClauseItem[]	= 'userRole.id_user = ' . $babDB->quote($iIdUser);
+				
+		$sQuery = 
+			'SELECT ' . 
+				'role.* ' .
+			'FROM ' . 
+				BAB_OC_ENTITIES_TBL . ' entity ' .
+			'LEFT JOIN ' . 
+				BAB_OC_ROLES_TBL . ' role ON role.id_entity = entity.id ' .
+			'LEFT JOIN ' .
+				BAB_OC_ROLES_USERS_TBL . ' userRole ON userRole.id_role = role.id ' .	
+			'WHERE ' . 
+				implode(' AND ', $aWhereClauseItem);
+				
+		//bab_debug($sQuery);
+		$iNumRows = 0;
+		$aRole	= array();
+		$aDatas	= array();
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+		{
+			$iNumRows = $babDB->db_num_rows($oResult);			
+			if($iNumRows > 0)
+			{
+				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+				{
+					if(isset($aGoodRoleType))
+					{
+						if(isset($aGoodRoleType[$aDatas['type']]))
+						{
+							$aRole[] = $aDatas;
+						}
+					}
+					else
+					{
+						$aRole[] = $aDatas;
+					}
+				}
+			}
+		}
 		return $aRole;
 	}
 
