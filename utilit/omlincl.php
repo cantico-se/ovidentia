@@ -5539,6 +5539,10 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/ovmltm.php';
 			}
+		elseif( !strncmp($handler, 'bab_Org', strlen('bab_Org')))
+			{
+			include_once $GLOBALS['babInstallPath'].'utilit/ovmlChart.php';
+			}
 		}
 
 
