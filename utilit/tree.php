@@ -2464,6 +2464,13 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 }
 
 
+
+
+/**
+ * Make group nodes selectable.
+ */
+define('BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS',		 4);
+
 /**
  * Enter description here...
  *
@@ -2548,8 +2555,13 @@ class bab_GroupTreeView extends bab_TreeView
 			} else {
 				$groupName = $group['name'];
 			}
+			$groupType = 'group';
+			if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
+					&& $this->_attributes & BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS) {
+				$groupType .= ' clickable';
+			}
 			$element =& $this->createElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id'],
-											 'group',
+											 $groupType,
 											 bab_toHtml($groupName),
 											 '',
 											 '');
@@ -2573,7 +2585,3 @@ class bab_GroupTreeView extends bab_TreeView
 		parent::_updateTree();
 	}
 }
-
-
-
-?>

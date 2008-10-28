@@ -47,9 +47,9 @@ function selectArticles()
 	if (bab_rp('selectable_articles', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
 
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 
 	$treeView = new bab_ArticleTreeView('bab_tv_article');
 	$treeView->setAttributes($attributes);
@@ -81,9 +81,9 @@ function selectFaqs()
 	if (bab_rp('selectable_questions', false))
 		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS;
 
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
 	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
@@ -113,9 +113,9 @@ function selectForums()
 	if (bab_rp('selectable_posts', false))
 		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS;
 	
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
 	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
@@ -180,9 +180,9 @@ function selectFiles($folderId = null, $path = '')
 		$attributes |= BAB_TREE_VIEW_MULTISELECT;
 	}
 
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
+//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
+//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 	
 	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
 
@@ -212,10 +212,10 @@ function selectFiles($folderId = null, $path = '')
 function selectGroups()
 {
 	$attributes = 0;
-	if (bab_rp('selectable_groups', false)) {
+	if (bab_rp('selectable_groups', false) !== false) {
 		$attributes |= BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS;
 	}
-	if (bab_rp('multi', false)) {
+	if (bab_rp('multi', false) !== false) {
 		$attributes |= BAB_TREE_VIEW_MULTISELECT;
 	}
 	

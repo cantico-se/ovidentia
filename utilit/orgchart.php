@@ -492,18 +492,18 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 				$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID);
 				if (isset($dirEntry['givenname']) && isset($dirEntry['sn'])) {
 					$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
-				}
-				if ($member['role_type'] == 1) {
-					if (isset($dirEntry['jpegphoto']) && !empty($dirEntry['jpegphoto']['value'])) {
-						$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+					if ($member['role_type'] == 1) {
+						if (isset($dirEntry['jpegphoto']) && !empty($dirEntry['jpegphoto']['value'])) {
+							$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+						}
+						$element->setInfo($memberName);
+						$element->setLink('javascript:'
+												. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&iduser=" . $memberDirectoryEntryId . "');"
+												. "changestyle('ENT" . $entityId . "','BabLoginMenuBackground','BabTopicsButtonBackground');"
+												. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');");
 					}
-					$element->setInfo($memberName);
-					$element->setLink('javascript:'
-											. "flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&iduser=" . $memberDirectoryEntryId . "');"
-											. "changestyle('ENT" . $entityId . "','BabLoginMenuBackground','BabTopicsButtonBackground');"
-											. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');");
+					$element->addMember($memberName, $member['role_name']);
 				}
-				$element->addMember($memberName, $member['role_name']);
 			}
 		}
 	}

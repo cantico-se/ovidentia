@@ -462,7 +462,7 @@ class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 	{
 		$element->addAction('view_entity_directory',
 					bab_translate("View in directory"),
-					$GLOBALS['babSkinPath'] . 'images/Puces/members.png',
+					$GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
 					'',
 					'toggleMembers');
 		
@@ -481,6 +481,7 @@ class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 		
 		$element->setLink('http://www.google.com');
 		//$element->setLinkEntity('http://www.google.com');
+		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 
 		$this->_addActions($element, $entityId, $entityParentId);
 		
@@ -494,7 +495,10 @@ class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 function displayChartTreeView($ocid, $oeid, $iduser, $adminMode)
 {
 	global $babBody;
+
 	$orgChart = new bab_OvidentiaOrgChartTreeView('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
+
+	$orgChart->setClasses('bab-orgchart-entitysearch bab-hide-non-matching-items bab-expand-matching-items-sub-tree');
 
 	$orgChart->_templateFile = 'treeview.html';
 	$orgChart->_templateSection = 'treeview';

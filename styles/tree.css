@@ -110,6 +110,12 @@
 	background: none;
 }
 
+.bab_ul_tree_invisible {
+	display: none;
+	border: 1px solid white;
+	background-color: orange;
+}
+
 .bab_ul_tree_open ul {
 	display: default;
 }
@@ -278,3 +284,39 @@
 	font-weight: bold;
 }
 
+
+
+
+.bab-orgchart-entitysearch .tree span.level1.entity {
+	font-weight: bold;
+	color: #000000;
+}
+
+.bab-orgchart-entitysearch .tree span.level2.entity {
+	font-weight: bold;
+	color: #888888;
+}
+
+.bab-orgchart-entitysearch .tree span.level3.entity {
+	font-weight: normal;
+	color: #000000;
+}
+
+.bab-orgchart-entitysearch .tree span.level4.entity {
+	font-weight: normal;
+	color: #333333;
+}
+
+.bab-orgchart-entitysearch .tree span.level5.entity {
+	font-weight: normal;
+	color: #555555;
+}
+
+
+.bab-orgchart-entitysearch .tree span.level6.entity,
+.bab-orgchart-entitysearch .tree span.level7.entity,
+.bab-orgchart-entitysearch .tree span.level8.entity,
+.bab-orgchart-entitysearch .tree span.level9.entity {
+	font-weight: normal;
+	color: #777777;
+}
