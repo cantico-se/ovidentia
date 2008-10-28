@@ -138,7 +138,7 @@ function selectForums()
  * the selected folderId as a parameter).
  * Otherwise, the function will output the sub folder tree of the folder.
  * 
- * @param int		$folderId	
+ * @param int		$folderId
  * @param string	$path
  */
 function selectFiles($folderId = null, $path = '')
@@ -215,7 +215,13 @@ function selectFiles($folderId = null, $path = '')
  */
 function selectGroups()
 {
+	$attributes = 0;
+	if (bab_rp('multi', false)) {
+		$attributes |= BAB_TREE_VIEW_MULTISELECT;
+	}
+	
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
+	$treeView->setAttributes($attributes);
 	$treeView->sort();
 	$GLOBALS['babBody']->babpopup($treeView->printTemplate());
 }
@@ -258,6 +264,3 @@ switch ($idx) {
 	default:
 		break;
 }
-
-
-?>
