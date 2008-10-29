@@ -459,13 +459,17 @@ updateFltFrame('{ currentoe }&idx=listr');
 { babCss }
 <script type="text/javascript">
 <!--
-function updateFrFrame(idx)
+function updateFrFrame(idx, params)
 {
 //}
-top.fr.document.location.href='{ updatefrurl }&disp=' + idx;
-for( var i = 1 ; i <= 5 ; i++ )
-	document.images['disp'+i].src = '{ babSkinPath }images/Puces/chart_disp'+i+'.gif';
-document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
+	if (typeof params == "undefined") {
+		params = '';
+	}
+	top.fr.document.location.href='{ updatefrurl }&disp=' + idx + params;
+	for (var i = 1 ; i <= 6 ; i++) {
+		document.images['disp'+i].src = '{ babSkinPath }images/Puces/chart_disp'+i+'.gif';
+	}
+	document.images[idx].src = '{ babSkinPath }images/Puces/chart_'+idx+'_on.gif';
 }
 
 var chart_showhideleft = 1;
@@ -513,7 +517,7 @@ else if (3 == chart_showhideleft)
 	&nbsp;<a href="javascript:updateFrFrame('disp1')"><img title="{ chart_disp1_title }" alt="{ chart_disp1_title }" src="{ babSkinPath }images/Puces/chart_disp1.gif" name="disp1" border="0" /></a>
  	<a style="display: none" href="javascript:updateFrFrame('disp2')"><img title="{ chart_disp2_title }" alt="{ chart_disp2_title }" src="{ babSkinPath }images/Puces/chart_disp2.gif" name="disp2" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp3')"><img title="{ chart_disp3_title }" alt="{ chart_disp3_title }" src="{ babSkinPath }images/Puces/chart_disp3.gif" name="disp3" border="0" /></a>
-	&nbsp;<a href="javascript:updateFrFrame('disp6')"><img title="{ chart_disp6_title }" alt="{ chart_disp6_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp6" border="0" /></a>
+	&nbsp;<a href="javascript:updateFrFrame('disp6')"><img title="{ chart_disp6_title }" alt="{ chart_disp6_title }" src="{ babSkinPath }images/Puces/chart_disp6.gif" name="disp6" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp4')"><img title="{ chart_disp4_title }" alt="{ chart_disp4_title }" src="{ babSkinPath }images/Puces/chart_disp4.gif" name="disp4" border="0" /></a>
 	&nbsp;<a href="javascript:updateFrFrame('disp5')"><img title="{ chart_disp5_title }" alt="{ chart_disp5_title }" src="{ babSkinPath }images/Puces/chart_disp5.gif" name="disp5" border="0" /></a>
 	</td>
@@ -613,13 +617,42 @@ if (disp)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 <head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+ <meta http-equiv="Content-type" content="text/html; charset=iso-8859-15" />
  <title>{ babSiteName }</title>
 { babMeta }
 { babCss }
 { javascript }
+<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+<script type="text/javascript">
+
+function bab_initPage()
+{
+	window.bab_emailAddresses = [];
+	var userList = document.getElementById("bab_user_list");
+	var links = userList.getElementsByTagName("A");
+	
+	var nbLinks = links.length;
+	for (var i = 0; i < nbLinks; i++) {
+		var link = links[i];
+		if (link.href.substr(0, "mailto:".length) == "mailto:") {
+			window.bab_emailAddresses.push(link.href.substr("mailto:".length));
+		}
+	}
+	if (window.bab_emailAddresses.length > 0) {
+		var copyAddressesButton = document.getElementById("bab_copy_email_addresses");
+		copyAddressesButton.style.display = "";
+	}
+};
+
+function bab_showAddressesWindow()
+{
+	var w = window.open();
+	w.document.writeln(window.bab_emailAddresses.join(', '));
+}
+
+</script>
 </head>
-<body>
+<body onload="bab_initPage()">
 <br>
 <form name="eorgform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="frchart">
@@ -635,7 +668,7 @@ if (disp)
 <select name="entity">
 <option value="">{ t_all_entities }</option>
 <!--#in getnextentity -->
-<option value="{ entity_id }">{ entity_name }</option>
+<option value="{ entity_id }" <!--#if entity_id "== entityId" -->selected="selected"<!--#endif entity_id --> >{ entity_name }</option>
 <!--#endin getnextentity -->
 </select>
 </td>
@@ -674,8 +707,12 @@ if (disp)
 
 <tr>
 
-<td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<td class="BabLoginCadreBackground">
+<form name="mail" method="post" target="_blank" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="mail">
+<input type="hidden" name="idx" value="compose">
+<input type="hidden" name="message" value="">
+<table id="bab_user_list" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr> 
           <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
           <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
@@ -697,6 +734,7 @@ if (disp)
           <!--#in getnextcolval -->
           <td align="left" valign="middle">
 			<!--#if bmail -->
+			<input type="hidden" name="to[]" value="{ coltxt }">
 			<a href="mailto:{ coltxt }">{ coltxt }</a>
 			<!--#else bmail -->
 			{ coltxt }
@@ -709,10 +747,17 @@ if (disp)
 </td>
 </tr>
 </table>
+
+<input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
+<input type="submit" id="bab_send_email" value="{ t_send_email }" />
+
+</form>
+
 <script type="text/javascript">
 <!--
 updateFlbFrame('{ cuoeid }&idx=detr&iduser={ cuserid }'); 
-updateFltFrame('{ cuoeid }&idx=listr'); 
+updateFltFrame('{ cuoeid }&idx=listr');
+ 
 //-->
 </script>
 </body>

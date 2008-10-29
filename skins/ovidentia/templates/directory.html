@@ -90,7 +90,7 @@
 </tr>
 <tr>
 	<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table id="bab_user_list" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr class="BabSiteAdminTitleFontBackground"> 
           <td colspan="3">&nbsp;</td>
           <!--#in getnextcol -->
@@ -130,6 +130,39 @@
 	</td>
 </tr>
 </table>
+
+<button id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()">{ t_copy_email_addresses }</button>
+
+<script type="text/javascript">
+
+function bab_initPage()
+{
+	window.bab_emailAddresses = [];
+	var userList = document.getElementById("bab_user_list");
+	var links = userList.getElementsByTagName("A");
+	
+	var nbLinks = links.length;
+	for (var i = 0; i < nbLinks; i++) {
+		var link = links[i];
+		if (link.href.substr(0, "mailto:".length) == "mailto:") {
+			window.bab_emailAddresses.push(link.href.substr("mailto:".length));
+		}
+	}
+	if (window.bab_emailAddresses.length > 0) {
+		var copyAddressesButton = document.getElementById("bab_copy_email_addresses");
+		copyAddressesButton.style.display = "";
+	}
+};
+
+function bab_showAddressesWindow()
+{
+	var w = window.open();
+	w.document.writeln(window.bab_emailAddresses.join(', '));
+}
+
+bab_initFunctions.push(bab_initPage());
+</script>
+
 <!--#end adbrowse -->
 
 

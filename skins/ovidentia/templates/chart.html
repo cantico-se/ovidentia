@@ -28,12 +28,12 @@ catch (e)
 <frameset id="leftpane" cols="240,*" rows="*"  border="1" frameborder="1" framespacing="0"  onUnload="unlock('{ unlockurl }')">
 
 <frameset rows="*, *" framespacing="0" frameborder="1" border="1">
-	<frame src="{ flturl }" name="flt" frameborder="1" />
-	<frame src="" name="flb" frameborder="1" />
+	<frame id="flt" name="flt" src="{ flturl }" frameborder="1" />
+	<frame id="flb" name="flb" src="" frameborder="1" />
 </frameset>
 <frameset rows="25,*" frameborder="NO" border="0" framespacing="0" cols="*"> 
-	<frame name="frt" scrolling="NO" noresize src="{ frturl }" frameborder="1">
-	<frame src="{ frurl }" name="fr" frameborder="1" />
+	<frame id="frt" name="frt" scrolling="NO" noresize src="{ frturl }" frameborder="1">
+	<frame id="fr" name="fr" src="{ frurl }" frameborder="1" />
  </frameset>
  <noframes>
 <body bgcolor="#FFFFFF">

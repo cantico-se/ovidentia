@@ -465,8 +465,8 @@ class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 					$GLOBALS['babSkinPath'] . 'images/nodetypes/collective_folder.png',
 					'',
 					'toggleMembers');
-		
 	}
+
 
 	function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
 	{
@@ -479,12 +479,9 @@ class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart
 										 '');
 		//$this->_addMembers($element, $entityId);
 		
-		$element->setLink('http://www.google.com');
-		//$element->setLinkEntity('http://www.google.com');
+		$element->setLink('javascript:window.parent.document.getElementById(\'frt\').contentWindow.updateFrFrame(\'disp5\',\'&pos=&xf=&q=&idx=list&entity=' .  $entityId . '\')');
 		$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 
-		$this->_addActions($element, $entityId, $entityParentId);
-		
 		return $element;
 	}
 	
@@ -496,7 +493,7 @@ function displayChartTreeView($ocid, $oeid, $iduser, $adminMode)
 {
 	global $babBody;
 
-	$orgChart = new bab_OvidentiaOrgChartTreeView('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
+	$orgChart = new bab_OvidentiaOrgChartTreeView('orgChart_' . $ocid, $ocid, 0, $iduser, 0, $adminMode);
 
 	$orgChart->setClasses('bab-orgchart-entitysearch bab-hide-non-matching-items bab-expand-matching-items-sub-tree');
 
@@ -504,8 +501,7 @@ function displayChartTreeView($ocid, $oeid, $iduser, $adminMode)
 	$orgChart->_templateSection = 'treeview';
 	$orgChart->_templateCss = 'treeview_css';
 	$orgChart->_templateScripts = 'treeview_scripts';
-	
-	// 
+
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/orgchart/' . $ocid);
 
@@ -548,7 +544,7 @@ function displayFrtFrame($ocid, $oeid, $update)
 
 
 
-function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
+function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null)
 {
 	global $babBody;
 
@@ -558,14 +554,18 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 
 		var $entities = array();
 
-		function temp($ocid, $oeid, $update, $pos, $xf, $q)
+		function temp($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null)
 			{
 			global $ocinfo;
+			global $babDB;
+
 			require_once $GLOBALS['babInstallPath'] . 'utilit/ocapi.php';
 			$this->allname = bab_translate("All");
 			$this->search = bab_translate("Search");
 			$this->t_entity = bab_translate("Entity");
 			$this->t_all_entities = bab_translate("All");
+			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
+			$this->t_send_email = bab_translate("Send email");
 			
 			$this->entities = bab_OCGetEntities($ocid);
 
@@ -574,6 +574,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			$this->pos = $pos;
 			$this->xf = $xf;
 			$this->q = $q;
+			$this->entityId = $entityId;
 			$this->iddir = $ocinfo['id_directory'];
 			$this->altbg = false;
 			if( strlen($pos) > 0 && $pos[0] == "-" )
@@ -669,6 +670,10 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 					$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$this->iddir ."'";
 					}
 
+				if (isset($entityId)) {
+					$req .= ' AND ocet.id = ' . $babDB->quote($entityId);
+				}
+	
 				$this->request = "select ".implode(',', $this->select)." from ".$req;
 				}
 			else
@@ -846,7 +851,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q)
 			}
 		}
 
-	$temp = new temp($ocid, $oeid, $update, $pos, $xf, $q);
+	$temp = new temp($ocid, $oeid, $update, $pos, $xf, $q, $entityId);
 	echo bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp4");
 }
 
@@ -1328,7 +1333,15 @@ switch($idx)
 				if( !isset($pos )){	$pos = "A"; }
 				if( !isset($q )){	$q = ""; }
 				if( !isset($xf )){	$xf = ""; }
-				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q);
+				$entityId = bab_rp('entity', null);
+				if ($entityId == '') {
+					 $entityId = null;
+				}
+//				if (isset($entityId)) {
+//					$oeid = $entityId;
+//				}
+				
+				displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId);
 				break;
 
 			case "disp3":
@@ -1346,5 +1359,3 @@ switch($idx)
 		break;
 	}
 exit;
-
-?>

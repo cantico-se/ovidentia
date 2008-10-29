@@ -100,7 +100,7 @@ function bab_OCGetRootEntity($idoc='')
 
 /**
  * Returns an array containing 'id', 'name' and 'description' for each entity in the specified org chart.
- * If no org chart id is given, the primary org chart is used.
+ * If no org chart id is specified, the primary org chart is used.
  *
  * @param int $idoc
  * @return array
@@ -117,39 +117,14 @@ function bab_OCGetEntities($idoc = '')
 		}
 	}
 
-//	if( empty($idoc))
-//	{
-//		if( !empty($babBody->idprimaryoc))
-//		{
-//			$idoc = $babBody->idprimaryoc;
-//		}
-//		else
-//		{
-//			$res = $babDB->db_query("select oct.id from ".BAB_ORG_CHARTS_TBL." oct LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." ddt on oct.id_directory=ddt.id where ddt.id_group='1' and oct.isprimary='Y'");
-//			if( $res && $babDB->db_num_rows($res) > 0 )
-//			{
-//				$ocinfo = $babDB->db_fetch_array($res);
-//				$idoc = $ocinfo['id'];
-//				$babBody->idprimaryoc = $idoc;
-//			}
-//			else
-//			{
-//				return array();
-//			}
-//		}
-//	}
-
-	if( isset($ocentities[$idoc]))
-	{
+	if (isset($ocentities[$idoc])) {
 		return $ocentities[$idoc];
 	}
 	$ocentities[$idoc] = array();
 
-	$res = $babDB->db_query("select * from ".BAB_OC_ENTITIES_TBL." where id_oc='".$idoc."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
-		while ($arr = $babDB->db_fetch_array($res))
-		{
+	$res = $babDB->db_query('SELECT * FROM ' . BAB_OC_ENTITIES_TBL . '  WHERE id_oc = ' . $babDB->quote($idoc) . ' ORDER BY name');
+	if ($res && $babDB->db_num_rows($res) > 0) {
+		while ($arr = $babDB->db_fetch_array($res)) {
 			$ocentities[$idoc][] = array('id' => $arr['id'], 'name' => $arr['name'], 'description' => $arr['description']);
 		}
 	}

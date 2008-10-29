@@ -151,14 +151,26 @@ function composeMail($accid, $criteria, $reverse, $pto, $pcc, $pbcc, $psubject, 
 			global $babDB, $BAB_SESS_USERID,$BAB_SESS_USER,$BAB_SESS_EMAIL;
 			$this->psigid = $psigid;
 			$this->toval = "";
-			if( !empty($pto))
+			if( !empty($pto)) {
+				if (is_array($pto)) {
+					$pto = implode(',', array_unique($pto));
+				}
 				$this->toval = $pto;
+			}
 			$this->ccval = "";
-			if( !empty($pcc))
+			if( !empty($pcc)) {
+				if (is_array($pcc)) {
+					$pcc = implode(',', array_unique($pcc));
+				}
 				$this->ccval = $pcc;
+			}
 			$this->bccval = "";
-			if( !empty($pbcc))
+			if( !empty($pbcc)) {
+				if (is_array($pbcc)) {
+					$pbcc = implode(',', array_unique($pbcc));
+				}
 				$this->bccval = $pbcc;
+			}
 			$this->subjectval = "";
 			if( !empty($psubject))
 				$this->subjectval = $psubject;
