@@ -25,10 +25,7 @@
 /**
 * @internal SEC1 PR 16/02/2007 FULL
 */
-
-include_once "base.php";
-include_once $babInstallPath."admin/register.php";
-include_once $babInstallPath."utilit/lusersincl.php";
+require_once $babInstallPath . 'utilit/toolbar.class.php';
 
 function listUsers($pos, $grp)
 	{
@@ -66,38 +63,42 @@ function listUsers($pos, $grp)
 		var $bmodname;
 		var $altbg = true;
 
+		var $sHtmlToolBarData		= '';
+		var $sSearchCaption			= '';
+		var $sSearchButtonCaption	= '';
+		var $sSearchText			= '';
+		var $iUseSearchText			= '0';
+
 		function temp($pos, $grp)
 			{
 			global $babBody;
 			global $babDB;
-			
-			$this->email = bab_translate("Email");
-			$this->allname = bab_translate("All");
-			$this->update = bab_translate("Update");
-			$this->nickname = bab_translate("Login ID");
 
-			$this->t_online = bab_translate("Online");
-			$this->t_unconfirmed = bab_translate("Unconfirmed");
-			$this->t_disabled = bab_translate("Disabled");
-			$this->t_dirdetail = bab_translate("Detail");
-			$this->t_groups = bab_translate("Groups");
-			
-			$this->checkall = bab_translate("Check all");
-			$this->uncheckall = bab_translate("Uncheck all");
+			$this->email			= bab_translate("Email");
+			$this->allname			= bab_translate("All");
+			$this->update			= bab_translate("Update");
+			$this->nickname			= bab_translate("Login ID");
+			$this->t_online			= bab_translate("Online");
+			$this->t_unconfirmed	= bab_translate("Unconfirmed");
+			$this->t_disabled		= bab_translate("Disabled");
+			$this->t_dirdetail		= bab_translate("Detail");
+			$this->t_groups			= bab_translate("Groups");
+			$this->checkall			= bab_translate("Check all");
+			$this->uncheckall		= bab_translate("Uncheck all");
 
-			
-			$this->group = bab_toHtml(bab_getGroupName($grp));
-			$this->grp = $grp;
+
+			$this->group	= bab_toHtml(bab_getGroupName($grp));
+			$this->grp		= $grp;
 
 			switch ($babBody->nameorder[0]) {
 				case "L":
-					$this->namesearch = "lastname";
-					$this->namesearch2 = "firstname";
+					$this->namesearch	= "lastname";
+					$this->namesearch2	= "firstname";
 				break;
 				case "F":
 				default:
-					$this->namesearch = "firstname";
-					$this->namesearch2 = "lastname";
+					$this->namesearch	= "firstname";
+					$this->namesearch2	= "lastname";
 				break; }
 
 			// group members
@@ -116,42 +117,50 @@ function listUsers($pos, $grp)
 				$this->users_logged[$id_user] = $id_user;
 				}
 
+			$this->bupdate				= isset($_REQUEST['bupd']) ? $_REQUEST['bupd'] : 0;
+			$this->sSearchText			= bab_rp('sSearchText', '');
+			$this->iUseSearchText		= (0 == strlen(trim($this->sSearchText))) ? '0' : '1';
 
-			$this->bupdate = isset($_REQUEST['bupd'])? $_REQUEST['bupd']: 0;
-
-			$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
-
-			if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
-				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
-				$this->ord = $pos[0];
-				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
+			if(0 == $this->iUseSearchText)
+			{
+				$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
+	
+				if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
 					{
-					$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
+					$this->pos = strlen($pos)>1? $pos[1]: '';
+					$this->ord = $pos[0];
+					if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
+						{
+						$req .= " where ".$this->namesearch2." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
+						}
+					else
+						{
+						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc";
+						}
+	
+					$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
+					$this->fullnameurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 					}
 				else
 					{
-					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch2)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch2).", u.".$babDB->db_escape_string($this->namesearch)." asc";
+					$this->pos = $pos;
+					$this->ord = "";
+					if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
+						$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
+					else
+						$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
+					$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
+					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
 					}
-
-				$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
-				$this->fullnameurl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
-				}
-			else
-				{
-				$this->pos = $pos;
-				$this->ord = "";
-				if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
-					$req .= " where ".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch).", ".$babDB->db_escape_string($this->namesearch2)." asc";
-				else
-					$req .= ", ".BAB_USERS_GROUPS_TBL." ug, ".BAB_GROUPS_TBL." g where u.disabled != '1' and ug.id_object=u.id and ug.id_group=g.id AND g.lf>='".$babDB->db_escape_string($babBody->currentDGGroup['lf'])."' AND g.lr<='".$babDB->db_escape_string($babBody->currentDGGroup['lr'])."' and u.".$babDB->db_escape_string($this->namesearch)." like '".$babDB->db_escape_string($this->pos)."%' order by u.".$babDB->db_escape_string($this->namesearch).", u.".$babDB->db_escape_string($this->namesearch2)." asc";
-				$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname")));
-				$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=chg&pos=".urlencode($this->ord.$this->pos)."&grp=".urlencode($this->grp));
-				}
 				
-			bab_debug($req);
-
-			$this->res = $babDB->db_query($req);
+				//bab_debug($req);
+				$this->res = $babDB->db_query($req);
+			}
+			else
+			{
+				$this->selectFilteredUsers($pos, $grp);
+			}
+				
 			$this->count = $babDB->db_num_rows($this->res);
 
 			if( empty($this->pos))
@@ -179,10 +188,96 @@ function listUsers($pos, $grp)
 				{
 				$this->bshowform = true;
 				}
+	
+			//The toolbar call bab_toHtml
+			$sCreateUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=Create&pos='.urlencode($pos).'&grp='.urlencode($grp);
+			$sSearchUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.urlencode($pos).'&grp='.urlencode($grp).
+				'&sSearchText='.urlencode($this->sSearchText);
 			
+			$this->sSearchCaption		= bab_translate("Search by login ID, firstname, lastname and email");
+			$this->sSearchButtonCaption	= bab_translate("Search");
+			
+			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
+			$babBody->addStyleSheet('toolbar.css');
+			$babBody->addStyleSheet('admUserList.css');
+			$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
+			$oToolbar = new BAB_Toolbar();
+			$oToolbar->addToolbarItem(
+				new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl, 
+					$sImgPath . 'addSmall.png', bab_translate("Create a user"), bab_translate("Add a user"), ''),
+				new BAB_ToolbarItem(bab_translate("Search"), $sSearchUserUrl, 
+					$sImgPath . 'searchSmall.png', bab_translate("Search"), bab_translate("Search"), 'oSearchImg'));
+			$this->sHtmlToolBarData = $oToolbar->printTemplate();
 
 			}
+			
+			
+		function selectFilteredUsers($pos, $grp)
+		{
+			global $babDB, $babBody;
 
+			$sOrderBy = '';
+			if(isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
+			{
+				$this->pos = strlen($pos) > 1 ? $pos[1] : '';
+				$this->ord = $pos[0];
+			 
+				$sOrderBy = 'ORDER BY ' . $babDB->db_escape_string($this->namesearch2) . ', ' . $babDB->db_escape_string($this->namesearch) . ' asc';
+			}
+			else
+			{
+				$this->pos = $pos;
+				$this->ord = "";
+			
+				$sOrderBy = 'ORDER BY ' . $babDB->db_escape_string($this->namesearch2) . ', ' . $babDB->db_escape_string($this->namesearch) . ' asc';
+			}
+			
+			$bUseInnerJoin = !($babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']));
+			
+			$aWhereClauseItem	= array();
+			$sInnerJoin			= '';
+
+			if($bUseInnerJoin)
+			{
+				$sInnerJoin = 
+					', ' . BAB_USERS_GROUPS_TBL . ' ug' . 
+					', ' . BAB_GROUPS_TBL . ' g ';	
+
+				$aWhereClauseItem[] = 'u.disabled != \'1\'';
+				$aWhereClauseItem[] = 'ug.id_object = u.id';
+				$aWhereClauseItem[] = 'ug.id_group = g.id';
+				$aWhereClauseItem[] = 'g.lf >= ' . $babDB->db_escape_string($babBody->currentDGGroup['lf']);
+				$aWhereClauseItem[] = 'g.lr <= ' . $babDB->db_escape_string($babBody->currentDGGroup['lr']);
+			}
+			
+			$sWhereClauseItem = (0 == count($aWhereClauseItem)) ? ' ' : implode(' AND ', $aWhereClauseItem) . ' AND ';
+			
+			$sQuery = 
+				'SELECT ' .
+					'DISTINCT u.* ' .
+				'FROM ' . 
+					BAB_USERS_TBL . ' u ' . 
+				$sInnerJoin . ' ' .
+				'WHERE ' .
+					$sWhereClauseItem .
+					'(	' .
+						'u.email	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+						'u.nickname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+						'u.firstname LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' OR '  .
+						'u.lastname	 LIKE \'%' . $babDB->db_escape_like($this->sSearchText) . '%\' ' . 
+					') ' .
+				$sOrderBy;
+			
+			//bab_debug($sQuery);
+			$this->res = $babDB->db_query($sQuery);
+			
+			$this->fullname = bab_toHtml(bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname")));
+			$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=users&idx=chg&pos='.
+				urlencode($this->ord.$this->pos).'&grp='.urlencode($this->grp).
+				'&sSearchText='.urlencode($this->sSearchText));
+		}
+
+		
 		function getnext()
 			{
 			static $i = 0;
@@ -206,7 +301,7 @@ function listUsers($pos, $grp)
 
 				if( isset($this->group_members[$this->userid]))
 					{
-					$this->checked = "checked";
+					$this->checked = 'checked="checked"';
 					if( empty($this->userst))
 						$this->userst = $this->arr['id'];
 					else
@@ -251,7 +346,6 @@ function listUsers($pos, $grp)
 
 			}
 		}
-
 	$temp = new temp($pos, $grp);
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "userslist"));
 	return $temp->count;
@@ -493,10 +587,12 @@ switch($idx)
 			$cnt = listUsers($pos, $grp);
 
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
+			/*
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
 				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 				}
+			//*/
 			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['battach'] == 'Y' && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
 				{
 				$babBody->addItemMenu("Attach", bab_translate("Attach"),$GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$grp."&bupd=1");
