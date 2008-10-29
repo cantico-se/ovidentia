@@ -32,6 +32,7 @@ class BAB_ToolbarItem
 	var $sTitle = '';
 	var $sAlt	= '';
 	var $sId	= '';
+	var $bId	= false;
 	
 	function BAB_ToolbarItem($sText, $sUrl, $sImg, $sTitle, $sAlt, $sId)
 	{
@@ -40,7 +41,18 @@ class BAB_ToolbarItem
 		$this->setImg($sImg);
 		$this->setTitle($sTitle);
 		$this->setAlt($sAlt);
-		$this->setId($sId);
+		
+		static $iInstance = 0;
+		++$iInstance;
+		
+		if(0 == strlen($sId))
+		{
+			$this->setId('_babTbItem' . $iInstance . '_');
+		}
+		else
+		{
+			$this->setId($sId);
+		}
 	}
 
 	function setText($sText) 
