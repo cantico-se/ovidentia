@@ -1,0 +1,13 @@
+<!--#begin toolbar -->
+	<div class="bab_toolbar">
+	<!--#in getNextItem -->
+	<!--#if sId "!= ''" -->
+		<a class="bab_toolbarItem" href="{ sUrl }" title="{ sTitle }" id="{ sId }">
+	<!--#else -->
+		<a class="bab_toolbarItem" href="{ sUrl }" title="{ sTitle }">
+	<!--#endif sId -->
+			<img src="{ sImg }" alt="{ sAlt }" /> { sText }
+		</a>
+	<!--#endin getNextItem -->
+	</div>
+<!--#end toolbar -->
