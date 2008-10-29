@@ -1,4 +1,28 @@
 <!--#begin userslist -->
+<script type="text/javascript">
+//<![CDATA[
+document.observe("dom:loaded", function bab_userListInit() {
+	$('oSearchImg').href = '#';
+	$('oSearchImg').observe('click',  bab_userListShowHideFilter);
+
+	if('' == $('BAB_sSearchField').value)
+	{
+		bab_userListShowHideFilter();
+	}
+});
+
+function bab_userListShowHideFilter()
+{
+	if($('babUserListFilter').visible())
+	{
+		$('babUserListFilter').hide();
+	}
+	else
+	{
+		$('babUserListFilter').show();
+	}
+}//]]>
+</script>
 <!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="users" />
@@ -6,6 +30,26 @@
 <input type="hidden" name="pos" value="{ pos }" />
 <input type="hidden" name="grp" value="{ grp }" />
 <input type="hidden" name="bupd" value="{ bupdate }" />
+{ sHtmlToolBarData }
+
+
+<table border="0" width="95%" cellspacing="0" cellpadding="1" align="center" id="babUserListFilter">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabLoginMenuBackground">
+				<tr> 
+					<td align="center">
+						<label for="BAB_sSearchField">{ sSearchCaption }&nbsp;</label>
+						<input type="text" class="bab_search" id="BAB_sSearchField" name="sSearchText" size="30" maxlength="255" value="{ sSearchText }" />
+						<input type="submit" class="bab_searchSubmit" name="sSearchButton" value="{ sSearchButtonCaption }"/>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<br />			
+				
 <!--#endif bshowform -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -17,13 +61,15 @@
 				<td align="center">
 				<!--#if bshowform -->
 					<a href="javascript:onCheckAll('users', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="javascript:onCheckAll('users', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a>
-					<!--#endif bshowform -->
+				<!--#endif bshowform -->
 				</td>
 			</tr>
 		</tfoot>
+		<!--#if iUseSearchText "== 0" -->
 		<tr> 
 			<td colspan="5" nowrap="nowrap" class="BabLetterlists"><!--#if allselected "== 1" -->{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else allselected --><a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif allselected --><!--#in getnextselect --><!--#if selected "== 1" -->{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#else selected --><a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /><!--#endif selected --><!--#endin getnextselect --></td>
 		</tr>
+		<!--#endif iUseSearchText -->
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td width="1%" align="right" nowrap="nowrap" valign="middle">&nbsp;</td>
 			<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
@@ -66,7 +112,6 @@
 <div align="center"><br /><input type="submit" name="Updateg" value="{ update }" /></div><!--#endif bshowform -->
 </form>
 <!--#end userslist -->
-
 
 <!--#begin usercreate -->
 <form method="post" action="{ babPhpSelf }">
