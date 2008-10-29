@@ -2350,6 +2350,8 @@
 <string id="Working period">Période travaillée</string>
 <string id="Selected users">Utilisateurs sélectionnés</string>
 <string id="Search by login ID, firstname and lastname">Recherche par identifiant, nom et prénom</string>
+<string id="Search by login ID, firstname, lastname and email">Recherche par identifiant, nom, prénom et courriel</string>
+<string id="Create a user">Créer un utilisateur</string>
 <string id="Grab users">Ajouter</string>
 <string id="Drop users">Enlever</string>
 <string id="Do you really want to delete the vacation request ?">Voulez-vous vraiment supprimer la demande de congés ?</string>
