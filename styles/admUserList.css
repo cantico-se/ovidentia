@@ -1,0 +1,15 @@
+input.bab_search {
+	background:url('../skins/ovidentia/images/Puces/search.gif');
+	background-color:#D0D0D0;
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+input.bab_searchSubmit {
+	background:url('../skins/ovidentia/images/Puces/action_success.gif');
+	background-color:#D0D0D0;
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
