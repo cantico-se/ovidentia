@@ -638,6 +638,12 @@ body.page.articles .bab_buttons .bab_title {
 	}
 
 
+.BabSiteAdminFontBackground:hover ,
+.BabForumBackground1:hover {
+	background-color:#D0D0D0;
+	}
+
+
 .BabSiteAdminFontBackground,
 .BabTopicsBackground,
 .BabTopicsButtonBackground {
