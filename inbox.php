@@ -59,7 +59,7 @@ function listMails($accid, $criteria, $reverse, $start)
 		var $burl;
 		var $uncheckall;
 		var $checkall;
-		var $maxrows;
+		var $maxrows = 20;
 		var $mailboxname;
 		var $bunseen;
 		var $access;
