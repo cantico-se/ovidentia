@@ -621,6 +621,13 @@ class bab_inifile {
 	}
 
 	function inifile($file) {
+	
+		if (!file_exists($file) || !is_readable($file)) {
+			$this->inifile = array();
+			return false;
+		}
+	
+	
 		 if ($arr = parse_ini_file($file, true)) {
 			 $this->inifile = $arr['general'];
 			 
@@ -659,12 +666,22 @@ class bab_inifile {
 	}
 	
 	
-	
+	/**
+	 * @return boolean
+	 */
 	function inifileGeneral($file) {
+	
+		if (!file_exists($file) || !is_readable($file)) {
+			$this->inifile = array();
+			return false;
+		}
 	
 		if ($arr = parse_ini_file($file, true)) {
 			 $this->inifile = $arr['general'];
+			 return true;
 		}
+		
+		return false;
 	}
 	
 	
