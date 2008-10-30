@@ -512,8 +512,8 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
-				$this->coltxt = nl2br(bab_toHtml(stripslashes(bab_translate($this->arrf[$i]))));
-				$this->mailcol = $this->arrf[$i] == $this->email && $this->email != '' ? true : false;
+				$this->coltxt = nl2br(bab_toHtml(stripslashes($this->arrf[$i]), BAB_HTML_ALL &~ BAB_HTML_P));
+				$this->mailcol = $this->arrf[$i] == $this->email && $this->email != '';
 				$i++;
 				return true;
 				}
