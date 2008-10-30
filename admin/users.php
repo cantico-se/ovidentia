@@ -26,6 +26,8 @@
 * @internal SEC1 PR 16/02/2007 FULL
 */
 require_once $babInstallPath . 'utilit/toolbar.class.php';
+include_once $babInstallPath . 'admin/register.php';
+include_once $babInstallPath . 'utilit/lusersincl.php';
 
 function listUsers($pos, $grp)
 	{
