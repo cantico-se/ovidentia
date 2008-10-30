@@ -10,8 +10,7 @@
 function deladdon(id)
 	{
 	//}
-	if (window.confirm('{ confirmdelete }'))
-		window.document.location.href = '{ babUrlScript }?tg=addons&idx=del&item='+id;
+	return confirm('{ confirmdelete }');
 	}
 //-->
 </script>
@@ -25,7 +24,7 @@ function deladdon(id)
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
 			<td>{ name } </td>
 			<td>{ desctxt }</td>
@@ -62,7 +61,7 @@ function deladdon(id)
 			</td>
 			<td align="center">
 				<!--#if delete -->
-				<a href="javascript:deladdon({ id_addon })" title="{ t_delete }"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
+				<a href="{ deleteurl }" title="{ t_delete }" onclick="return deladdon();"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
 				<!--#else delete -->&nbsp;
 				<!--#endif delete -->
 			</td>

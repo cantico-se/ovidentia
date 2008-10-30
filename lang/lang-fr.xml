@@ -2441,7 +2441,7 @@
 <string id="%s is your personal calendar">%s est votre agenda personnel</string>
 <string id="Mail subject">Sujet du mail</string>
 <string id="Topic name">Nom du thème</string>
-<string id="The addon files are not deleteable">Les fichiers du module ne sont pas supprimables</string>
+<string id="The addon file is not deletable : %s">Le fichier du module n'est pas supprimable : %s</string>
 <string id="Reply(ies)">Contribution(s)</string>
 <string id="File(s)">Fichier(s)</string>
 <string id="Writable upload directory, absolute path">Répertoire des téléchargements accessible en écriture, avec un chemin absolu</string>
@@ -2656,4 +2656,7 @@
 <string id="The directory %s is not writable">Le répertoire %s n'est pas accessible en écriture</string>
 <string id="Dependencies">Dépendences</string>
 <string id="There is a conflict with working hours of the selected personnal calendars">Il y a un conflit avec les heures travaillées de l'agenda personnel sélectionné</string>
+<string id="This addon is not deletable">Cet addon n'est pas supprimable</string>
+<string id="Add-ons installation">Installation d'un module</string>
+<string id="This addon has dependences from other addons">Ce module a des dépendences depuis d'autres modules</string>
 </fr>

@@ -498,6 +498,31 @@ class bab_addonInfos {
 			(isset($ini->inifile['addon_access_control']) && 1 === (int) $ini->inifile['addon_access_control']);
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Get the type of addon.
+	 * The addon type can be EXTENSION | LIBRARY | THEME
+	 * 
+	 * @return string
+	 */
+	function getAddonType() {
+	
+		if (is_dir('skins/'.$this->getName())) {
+			return 'THEME';
+		}
+	
+		if ($this->hasAccessControl()) {
+			return 'EXTENSION';
+		} else {
+			return 'LIBRARY';
+		}
+	}
+	
+	
+	
 	/**
 	 * addon is deletable by administrator
 	 * @return boolean
@@ -690,6 +715,32 @@ class bab_addonInfos {
 	}
 	
 
+	/**
+	 * Get the list of tables associated to addon
+	 * from db_prefix in addon ini file
+	 * @return array
+	 */
+	function getTablesNames() {
+		
+		global $babDB;
+		$ini = $this->getIni();
+		
+		$tbllist = array();
+		
+		if (
+			!empty($ini->inifile['db_prefix']) 
+			&& strlen($ini->inifile['db_prefix']) >= 3 
+			&& substr($ini->inifile['db_prefix'],0,3) != 'bab') {
+			
+			$res = $babDB->db_query("SHOW TABLES LIKE '".$babDB->db_escape_like($ini->inifile['db_prefix'])."%'");
+			while(list($tbl) = $babDB->db_fetch_array($res)) {
+				$tbllist[] = $tbl;
+			}
+		}
+		
+		return $tbllist;
+	}
+
 	
 	
 	/**
@@ -703,9 +754,6 @@ class bab_addonInfos {
 		}
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
-		
-		
-		
 		
 		if (!is_file($this->getPhpPath().'init.php')) {
 			return false;	
@@ -726,7 +774,7 @@ class bab_addonInfos {
 		
 		if ((function_exists($func_name) && $func_name($vdb, $vini)) || !function_exists($func_name))
 			{
-			
+
 			if ($this->setDbVersion($vini)) {
 
 				if (empty($vdb)) {
@@ -740,11 +788,90 @@ class bab_addonInfos {
 				bab_siteMap::clearAll();
 				return true;
 			}
+			
+			if ($vdb === $vini) {
+				return true;
+			}
 		}	
 	}
+
 	
 	
+	/**
+	 * Remove addon
+	 * @param	string	&$msgerror
+	 * @return boolean
+	 */
+	function delete(&$msgerror) {
 	
+		global $babDB;
+	
+		
+		if (false === $this->isDeletable()) {
+			$msgerror = bab_translate('This addon is not deletable');
+			return false;
+		}
+		
+		if ($this->getDependences()) {
+			$msgerror = bab_translate('This addon has dependences from other addons');
+			return false;
+		}
+	
+	
+		if (!callSingleAddonFunction($this->getId(), $this->getName(), 'onDeleteAddon')) {
+			$msgerror = $babBody->msgerror;
+			return false;
+		}
+			
+		// if addon return true, the addon is uninstalled in the table.
+		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' where id=".$babDB->quote($this->getId()));
+		
+		
+		$tbllist = $this->getTablesNames();
+
+		
+		if (!function_exists('bab_deldir')) {
+			
+			function bab_deldir($dir, &$msgerror) {
+				$current_dir = opendir($dir);
+				while($entryname = readdir($current_dir)){
+					if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+						if (false === bab_deldir($dir.'/'.$entryname, $msgerror)) {
+							return false;
+						}
+					} elseif ($entryname != "." and $entryname!="..") {
+						if (false === unlink($dir.'/'.$entryname)) {
+							$msgerror = sprintf(bab_translate('The addon file is not deletable : %s'), $dir.'/'.$entryname);
+							return false;
+						}
+					}
+				}
+				closedir($current_dir);
+				rmdir($dir);
+				return true;
+			}
+		}
+		
+		$addons_files_location = bab_getAddonsFilePath();
+		
+		$loc_in = $addons_files_location['loc_in'];	
+		
+		foreach($loc_in as $path) {
+			if (is_dir($path.'/'.$this->getName())) {
+				if (false === bab_deldir($path.'/'.$this->getName(), $msgerror)) {
+					return false;
+				}
+			}
+		}
+			
+		if (count($tbllist) > 0) {
+			foreach($tbllist as $tbl) {
+				$babDB->db_query("DROP TABLE ".$babDB->backTick($tbl));
+			}
+		}
+		
+		return true;
+	}
 	
 	
 	
