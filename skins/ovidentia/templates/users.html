@@ -2,12 +2,15 @@
 <script type="text/javascript">
 //<![CDATA[
 document.observe("dom:loaded", function bab_userListInit() {
-	$('oSearchImg').href = '#';
-	$('oSearchImg').observe('click',  bab_userListShowHideFilter);
-
-	if('' == $('BAB_sSearchField').value)
+	if(null != $('oSearchImg'))
 	{
-		bab_userListShowHideFilter();
+		$('oSearchImg').href = '#';
+		$('oSearchImg').observe('click',  bab_userListShowHideFilter);
+	
+		if('' == $('BAB_sSearchField').value)
+		{
+			bab_userListShowHideFilter();
+		}
 	}
 });
 
@@ -30,9 +33,11 @@ function bab_userListShowHideFilter()
 <input type="hidden" name="pos" value="{ pos }" />
 <input type="hidden" name="grp" value="{ grp }" />
 <input type="hidden" name="bupd" value="{ bupdate }" />
+
+<!--#endif bshowform -->
 { sHtmlToolBarData }
 
-
+<!--#if bshowform -->
 <table border="0" width="95%" cellspacing="0" cellpadding="1" align="center" id="babUserListFilter">
 	<tr> 
 		<td class="BabLoginCadreBackground">
@@ -49,8 +54,8 @@ function bab_userListShowHideFilter()
 	</tr>
 </table>
 <br />			
-				
 <!--#endif bshowform -->
+
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 

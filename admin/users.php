@@ -194,6 +194,7 @@ function listUsers($pos, $grp)
 	
 			//The toolbar call bab_toHtml
 			$sCreateUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=Create&pos='.urlencode($pos).'&grp='.urlencode($grp);
+			$sAttachUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=List&grp='.urlencode($grp).'&bupd=1';
 			$sSearchUserUrl = $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.urlencode($pos).'&grp='.urlencode($grp).
 				'&sSearchText='.urlencode($this->sSearchText);
 			
@@ -204,12 +205,32 @@ function listUsers($pos, $grp)
 			$babBody->addStyleSheet('toolbar.css');
 			$babBody->addStyleSheet('admUserList.css');
 			$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
+			
 			$oToolbar = new BAB_Toolbar();
-			$oToolbar->addToolbarItem(
-				new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl, 
-					$sImgPath . 'addSmall.png', bab_translate("Create a user"), bab_translate("Add a user"), ''),
-				new BAB_ToolbarItem(bab_translate("Search"), $sSearchUserUrl, 
-					$sImgPath . 'searchSmall.png', bab_translate("Search"), bab_translate("Search"), 'oSearchImg'));
+			
+			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
+				{
+					$oToolbar->addToolbarItem(
+						new BAB_ToolbarItem(bab_translate("Create a user"), $sCreateUserUrl, 
+							$sImgPath . 'list-add-user.png', bab_translate("Create a user"), bab_translate("Add a user"), '')
+					);
+				}
+			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['battach'] == 'Y' && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
+				{
+					$oToolbar->addToolbarItem(
+						new BAB_ToolbarItem(bab_translate("Attach"), $sAttachUserUrl, 
+							$sImgPath . 'user-group-new.png', bab_translate("Attach"), bab_translate("Attach"), '')
+					);
+				}
+			
+			if($this->bshowform) 
+				{
+				$oToolbar->addToolbarItem(
+					new BAB_ToolbarItem(bab_translate("Search"), $sSearchUserUrl, 
+						$sImgPath . 'searchSmall.png', bab_translate("Search"), bab_translate("Search"), 'oSearchImg')
+					);
+				}
+					
 			$this->sHtmlToolBarData = $oToolbar->printTemplate();
 
 			}
@@ -595,11 +616,11 @@ switch($idx)
 				{
 				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
 				}
-			//*/
 			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['battach'] == 'Y' && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
 				{
 				$babBody->addItemMenu("Attach", bab_translate("Attach"),$GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$grp."&bupd=1");
 				}
+			//*/
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
