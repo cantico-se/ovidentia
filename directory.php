@@ -292,6 +292,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 		function temp($id, $pos, $xf, $badd)
 			{
 			global $babDB;
+			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
 			$this->allname = bab_translate("All");
 			$this->addname = bab_translate("Add");
 			$this->assignname = bab_translate("Assign");

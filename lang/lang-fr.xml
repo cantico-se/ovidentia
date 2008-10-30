@@ -1259,6 +1259,9 @@
 <string id="Text view">Vue texte</string>
 <string id="Vertical view">Vue verticale</string>
 <string id="Horizontal view">Vue horizontale</string>
+<string id="Copy email addresses">Copier les adresses email</string>
+<string id="Send email">Envoyer un email</string>
+<string id="Entity search">Recherche d'entité</string>
 <string id="Parent entity">Entité parente</string>
 <string id="Relation">Relation</string>
 <string id="Child">Enfant</string>
