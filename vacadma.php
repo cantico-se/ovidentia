@@ -2154,9 +2154,7 @@ function rightcopy() {
 			if ($rule = $babDB->db_fetch_assoc($res)) {
 				unset($rule['id']);
 				$rule['id_right'] = $new_id_right;
-				$rule['period_start']		= $this->increment_ISO($rule['period_start']);
-				$rule['period_end']			= $this->increment_ISO($rule['period_end']);
-				
+
 				$rule['trigger_p1_begin']	= $this->increment_ISO($rule['trigger_p1_begin']);
 				$rule['trigger_p1_end']		= $this->increment_ISO($rule['trigger_p1_end']);
 				
@@ -2164,6 +2162,18 @@ function rightcopy() {
 				$rule['trigger_p2_end']		= $this->increment_ISO($rule['trigger_p2_end']);
 				
 				$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_RULES_TBL." (".implode(',',array_keys($rule)).") VALUES (".$babDB->quote($rule).")");
+			}
+			
+			
+			$res = $babDB->db_query("SELECT * FROM ".BAB_VAC_RIGHTS_INPERIOD_TBL." WHERE id_right=".$babDB->quote($old_id_right));
+			if ($inperiod = $babDB->db_fetch_assoc($res)) {
+				unset($inperiod['id']);
+				$inperiod['id_right'] = $new_id_right;
+
+				$inperiod['period_start']	= $this->increment_ISO($inperiod['period_start']);
+				$inperiod['period_end']		= $this->increment_ISO($inperiod['period_end']);
+				
+				$babDB->db_query("INSERT INTO ".BAB_VAC_RIGHTS_INPERIOD_TBL." (".implode(',',array_keys($inperiod)).") VALUES (".$babDB->quote($inperiod).")");
 			}
 
 
