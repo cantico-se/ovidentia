@@ -252,7 +252,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 	$arr = $babDB->db_fetch_array($res);
 
 
-	if (1 == $arr['jscript']) {
+	if ('Y' == $arr['jscript']) {
 		$content = bab_rp('content');
 	} else {
 	
@@ -263,7 +263,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 	}
 	
 
-
+	bab_debug($content);
 
 	$query = "update ".BAB_SECTIONS_TBL." 
 	set 
@@ -279,6 +279,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 		";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sections&idx=List");
+	exit;
 	}
 
 function confirmDeleteSection($id)
