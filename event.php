@@ -686,7 +686,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 					{
 					$this->evtarr[$k] = bab_pp($k);
 					}
-				$this->evtarr['id_cat'] = $_POST['category'];
+				$this->evtarr['id_cat'] = bab_pp('category');
 				}
 				
 			if (isset($this->evtarr['yearbegin'])) {	

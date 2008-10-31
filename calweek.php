@@ -245,7 +245,7 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->fullname = bab_toHtml($calname);
 			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
-			$this->cols = count($this->harray[$this->cindex]);
+			$this->cols = count($this->harray[$this->cindex]) + 1;
 			
 			if (0 == $this->cols) {
 				$this->cols = 1;

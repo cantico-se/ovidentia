@@ -1768,9 +1768,7 @@ class bab_event_posted {
 	
 		// working hours test
 	
-	
-		bab_debug("periode teste : $sdate, $edate");
-		
+
 		$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
 		
 		while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
