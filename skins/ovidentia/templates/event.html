@@ -436,7 +436,7 @@ ed();
 			function bupdrec_onchange(obj)
 				{
 				var f = document.forms['vacform'];
-				if (obj.value == 1)
+				if (obj.value != 2)
 					{
 					f.daybegin.disabled = true;
 					f.monthbegin.disabled = true;
@@ -455,16 +455,23 @@ ed();
 					f.yearend.disabled = false;
 					}
 				}
+				
+			function bab_enableDateField()
+			{
+				var f = document.forms['vacform'];
+				f.daybegin.disabled = false;
+				f.monthbegin.disabled = false;
+				f.yearbegin.disabled = false;
+				f.dayend.disabled = false;
+				f.monthend.disabled = false;
+				f.yearend.disabled = false;
+			}
 			-->
 			</script>
 			<select name="bupdrec" onchange="bupdrec_onchange(this)">
-				<!--#if bupdrec "== 2" -->
-				<option value="1">{ all }</option>
-				<option value="2" selected="selected">{ thisone }</option>
-				<!--#else bupdrec -->
-				<option value="1" selected="selected">{ all }</option>
-				<option value="2">{ thisone }</option>
-				<!--#endif bupdrec -->
+				<!--#in getNextRule -->
+					<option value="{ iRule }" { sRuleSelected }>{ sRuleCaption }</option>
+				<!--#endin getNextRule -->
 			</select>
 		</td>
 	</tr>
@@ -628,6 +635,7 @@ ed();
 	<tr> 
 		<td>&nbsp;</td>
 		<td> 
+			<input type="submit" name="idx[newevent]" onclick="bab_enableDateField()" value="Copier" />
 			<input type="submit" name="Submit" value="{ modify }" />
 			<!--#if bmodif -->
 			&nbsp;&nbsp;<input type="submit" name="evtdel" value="{ delete }" />

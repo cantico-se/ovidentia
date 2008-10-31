@@ -171,7 +171,7 @@ function newEvent()
 			$this->mcals = explode(",", $this->calid);
 			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
 			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
-				
+
 			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
 			$this->repeat_dateend = $this->urlDate('repeat_dateend',$this->curmonth,$this->curyear);
@@ -252,7 +252,12 @@ function newEvent()
 				{
 				$this->remailtxt = "";
 				}
-
+				
+			$this->arr['repeat_n_1'] = '';
+			$this->arr['repeat_n_2'] = '';
+			$this->arr['repeat_n_3'] = '';
+			$this->arr['repeat_n_4'] = '';
+				
 			if (isset($_POST) && count($_POST) > 0)
 				{
 				foreach($_POST as $k => $v)
@@ -584,10 +589,13 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		var $descurl;
 		var $delete;
 		var $brecevt;
-		var $all;
-		var $thisone;
 		var $updaterec;
 
+		var $iRule;		
+		var $sRuleCaption;	
+		var $sRuleSelected;	
+		var $aRule = array();
+		
 		function temp($idcal, $evtid, $cci, $view, $date, $res)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
@@ -610,6 +618,12 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->curdate = $date;
 			
 			$this->bupdrec = bab_rp('bupdrec', 1);
+				
+			$this->aRule = array(
+				1 => bab_translate("All"), 
+				2 => bab_translate("This occurence"),
+				3 => bab_translate("This occurence and all previous occurences"),
+				4 => bab_translate("This occurence and all next occurences"));
 			
 			$resown = $babDB->db_query('
 				SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($this->evtid).'
@@ -652,8 +666,6 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				{
 				$this->brecevt = true;
 				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-				$this->all = bab_translate("All");
-				$this->thisone = bab_translate("This occurence");
 				}
 			else
 				{
@@ -801,6 +813,28 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
 			}
 
+		function getNextRule()
+		{
+			$this->iRule			= '';		
+			$this->sRuleCaption		= '';
+			$this->sRuleSelected	= '';
+			
+			$aDatas = each($this->aRule);
+			if(false !== $aDatas)
+			{
+				$this->iRule		= bab_toHtml($aDatas['key']);		
+				$this->sRuleCaption	= bab_toHtml($aDatas['value']);	
+
+				if((int) $this->bupdrec === (int) $aDatas['key'])
+				{
+					$this->sRuleSelected = 'selected="selected"';
+				}
+				
+				return true;
+			}
+			return false;
+		}
+			
 		function getnextcat()
 			{
 			global $babDB;
@@ -1072,7 +1106,6 @@ function updateEvent(&$message)
 		return false;
 		}
 
-	
 	$title = bab_pp('title');
 	$location = bab_pp('location');
 
@@ -1090,9 +1123,32 @@ function updateEvent(&$message)
 
 	$arrupdate = array();
 
-	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
+	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] != "2" )
 	{
-		$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($evtinfo['hash'])."'");
+		$aWhereClauseItem = array();
+		$aWhereClauseItem[] = 'hash = ' . $babDB->quote($evtinfo['hash']);
+
+		//Previous
+		if($_POST['bupdrec'] == "3")
+		{
+			$aWhereClauseItem[] = 'start_date <= ' . $babDB->quote($evtinfo['start_date']);
+		}
+		else if($_POST['bupdrec'] == "4")
+		{
+			$aWhereClauseItem[] = 'start_date >= ' . $babDB->quote($evtinfo['start_date']);
+		}
+		
+		$sQuery = 
+			'SELECT 
+				* 
+			FROM ' . 
+				BAB_CAL_EVENTS_TBL . ' 
+			WHERE ' .
+				implode(' AND ', $aWhereClauseItem);
+				
+		//bab_debug($sQuery);
+		
+		$res = $babDB->db_query($sQuery);
 		while( $arr = $babDB->db_fetch_array($res))
 		{
 			$rr = explode(" ", $arr['start_date']);
@@ -1115,7 +1171,6 @@ function updateEvent(&$message)
 			$min = $startdate;
 			$max = $enddate;
 		}
-
 	}
 	else
 	{
@@ -1365,6 +1420,15 @@ function eventAvariabilityCheck()
 
 /* main */
 $idx = bab_rp('idx','newevent');
+if(is_array($idx))
+{
+	$idx = each($idx);
+	if(false !== $idx)
+	{
+		$idx = $idx['key'];
+	}
+}
+
 if (isset($_POST['selected_calendars'])) {
 	$calid = implode(',', $_POST['selected_calendars']);
 } else {
