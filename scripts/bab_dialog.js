@@ -268,16 +268,24 @@ bab_dialog.selectfile = function(action, attributes) {
 
 
 /**
- * A groups dialog.
+ * A groups selector dialog.
+ * <ul>
+ * <li>selectable_groups: groups can be selected</li>
+ * <li>multi: more than 1 item can be selected (there will be a checkboxes and a "select" button)</li>
+ * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter. 
+ * @param string attributes	list of '&' separated attributes for the groups tree selector.
  */
-bab_dialog.selectgroups = function(action) {
+bab_dialog.selectgroups = function(action, attributes) {
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
 	};
 	url = '?tg=selector&idx=groups';
 
+	bab_dialog(url, useparam, action);
+	if (attributes != '')
+		url += '&' + attributes;
 	bab_dialog(url, useparam, action);
 }
 
