@@ -740,6 +740,8 @@
 <string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
 <string id="This login ID already exists !!">Cet identifiant existe déjà</string>
 <string id="This occurence">Cet événement</string>
+<string id="This occurence and all previous occurences">Cet événement et les précédents</string>
+<string id="This occurence and all next occurences">Cet événement et les suivants</string>
 <string id="This resource already exists">Cette ressource existe déjà</string>
 <string id="This section is for Administration">Cette section est réservée à l'administration du site</string>
 <string id="This topic category already exists">Cette catégorie de thèmes d'articles existe déjà</string>
