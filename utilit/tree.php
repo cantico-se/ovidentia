@@ -2569,10 +2569,6 @@ class bab_GroupTreeView extends bab_TreeView
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id_parent']);
 			
-			if (($this->_attributes & BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS)
-			&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
-				$element->addCheckBox('select');
-			}
 			$this->appendElement($element, $parentId);
 		}
 
