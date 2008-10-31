@@ -730,13 +730,14 @@
 <string id="There is no topic">Il n'y a pas de thème d'articles</string>
 <string id="There is no waiting vacation request">Il n'y a pas de demande de congés en attente</string>
 <string id="There is not enough free space">Il n'y a pas assez d'espace disque</string>
+<string id="The file size exceed the limit configured for the file manager">La taille du fichier excède la limite configurée pour le gestionnaire de fichier</string>
+<string id="The file size exceed the limit configured for the current type of folder">La taille du fichier excède la limite configurée pour le type de répertoire en cours</string>
 <string id="This collection already exists">Ce régime existe déjà</string>
 <string id="This flow approvers already exists">Ce shéma d'approbation existe déjà</string>
 <string id="This folder already exists">Ce répertoire existe déjà</string>
 <string id="This group already exists">Ce groupe existe déjà</string>
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">Ceci est un événement répétitif. Êtes-vous sûr de vouloir supprimer toute la série</string>
 <string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
-<string id="This is recurring event. Do you want to update this ocuurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
 <string id="This login ID already exists !!">Cet identifiant existe déjà</string>
 <string id="This occurence">Cet événement</string>
 <string id="This resource already exists">Cette ressource existe déjà</string>

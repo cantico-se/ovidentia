@@ -34,7 +34,7 @@ function accessCalendar($calid, $urla)
 {
 	global $babBody, $babDB;
 	
-	include_once $GLOBALS['babInstallPath'].'utilit/selectusers.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/selectcalendarusers.php';
 	$obj = new bab_selectCalendarUsers();
 	$obj->addVar('urla', $urla);
 	$obj->addVar('calid', $calid);

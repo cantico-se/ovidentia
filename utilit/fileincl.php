@@ -554,18 +554,19 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
 			continue;
 		}
+		
+		
 
-		$totalsize = getDirSize($GLOBALS['babUploadPath']);
-		if($file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
+		if($file['size'] + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
 		{
-			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the file manager"), 'file'=>$file['name']);
 			continue;
 		}
 
 		$totalsize = getDirSize($pathx);
 		if($file['size'] + $totalsize > ($gr == "Y"? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 		{
-			$errfiles[] = array('error' => bab_translate("There is not enough free space"), 'file'=>$file['name']);
+			$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the current type of folder"), 'file'=>$file['name']);
 			continue;
 		}
 
@@ -980,17 +981,17 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
 				return false;
 			}
-			$totalsize = getDirSize($GLOBALS['babUploadPath']);
-			if($uploadf_size + $totalsize > $GLOBALS['babMaxTotalSize'])
+			
+			if($uploadf_size + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
 			{
-				$babBody->msgerror = bab_translate("There is not enough free space");
+				$babBody->msgerror = bab_translate("The file size exceed the limit configured for the file manager");
 				return false;
 			}
 
 			$totalsize = getDirSize($sUploadPath . $oFolderFile->getPathName());
 			if($uploadf_size + $totalsize > ('Y' === $oFolderFile->getGroup() ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
 			{
-				$babBody->msgerror = bab_translate("There is not enough free space");
+				$babBody->msgerror = bab_translate("The file size exceed the limit configured for the current type of folder");
 				return false;
 			}
 
@@ -1414,10 +1415,9 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			return false;
 		}
 
-		$totalsize = getDirSize($GLOBALS['babUploadPath']);
-		if($size + $totalsize > $GLOBALS['babMaxTotalSize'])
+		if($size + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
 		{
-			$babBody->msgerror = bab_translate("There is not enough free space");
+			$babBody->msgerror = bab_translate("The file size exceed the limit configured for the file manager");
 			return false;
 		}
 
@@ -1427,7 +1427,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 		$totalsize = getDirSize($sFullPathName);
 		if($size + $totalsize > $GLOBALS['babMaxGroupSize'] )
 		{
-			$babBody->msgerror = bab_translate("There is not enough free space");
+			$babBody->msgerror = bab_translate("The file size exceed the limit configured for the current type of folder");
 			return false;
 		}
 
@@ -4490,6 +4490,18 @@ class BAB_FileManagerEnv
 	{
 		return BAB_FmFolderHelper::getUploadPath() . 'fileManager/collectives/DG' . $iIdDelegation . '/';
 	}
+	
+	/**
+	 * Get total size used in the fileManager directory
+	 * @access 	public
+	 * @since	6.7.91
+	 * @return 	int
+	 */
+	function getFMTotalSize() 
+	{
+		return getDirSize($this->sFmUploadPath);
+	}
+	
 	
 	function userIsInRootFolder()
 	{
