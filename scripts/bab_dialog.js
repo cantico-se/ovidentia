@@ -282,8 +282,6 @@ bab_dialog.selectgroups = function(action, attributes) {
 		'height'	: 500
 	};
 	url = '?tg=selector&idx=groups';
-
-	bab_dialog(url, useparam, action);
 	if (attributes != '')
 		url += '&' + attributes;
 	bab_dialog(url, useparam, action);
