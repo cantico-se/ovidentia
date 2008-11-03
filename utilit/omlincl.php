@@ -5595,7 +5595,7 @@ function format_output($val, $matches)
 				if( strlen($val) > $arr[0] )
 					{
 					if (isset($arr[1])) {
-					$val = substr($val, 0, $v).$arr[1];
+						$val = substr($val, 0, $v).$arr[1];
 					} else {
 						$val = substr($val, 0, $v);
 					}
