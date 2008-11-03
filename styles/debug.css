@@ -14,9 +14,12 @@
 	word-wrap: break-word;       /* IE 5.5+ */
 	}
 
-#BAB_DEBUG_link {
+#BAB_DEBUG_link:link,
+#BAB_DEBUG_link:visited,
+#BAB_DEBUG_link:hover {
 	color:red;
 	background:white;
 	padding:.5em;
 	text-decoration:none;
-	}
+	outline: none;
+}
