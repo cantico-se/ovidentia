@@ -625,7 +625,11 @@ function bab_f_getDebug() {
 		function bab_f_getDebugCls() {
 			$this->messages = $GLOBALS['bab_debug_messages'];
 			$this->nb_messages += count($this->messages);
-			$this->t_messages = bab_translate('Messages');
+			if (count($this->messages) > 1) {
+				$this->t_messages = bab_translate('Messages');
+			} else {
+				$this->t_messages = bab_translate('Message');
+			}
 			$this->t_categories = bab_translate('Categories');
 			$this->t_all_categories = bab_translate('All');
 			
