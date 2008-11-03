@@ -1162,6 +1162,9 @@ function exportDbFile($id)
 			$this->other = bab_translate("Other");
 			$this->comma = bab_translate("Comma");
 			$this->tab = bab_translate("Tab");
+			$this->t_yes = bab_translate("Yes");
+			$this->t_no = bab_translate("No");
+			$this->t_export_disbaled_users = bab_translate("Include disabled users");
 
 			$this->infotxt = bab_translate("Specify which fields will be exported");
 			$this->listftxt = "---- ".bab_translate("Fields")." ----";
@@ -1180,6 +1183,7 @@ function exportDbFile($id)
 				$iddir = $id;
 				}
 
+			$this->bgroup = $arr['id_group'] > 0;
 
 			$this->selected_1 = '';
 			$this->selected_2 = '';
@@ -2717,7 +2721,8 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 				$separ = ",";
 			break;
 		}
-
+	
+	$bdisabled = bab_pp('bdisabled', 'Y');
 
 	list($idgroup, $idname) = $babDB->db_fetch_array($babDB->db_query("select id_group, name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 
@@ -2799,19 +2804,30 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 
 	while( $row = $babDB->db_fetch_array($res2))
 		{
+		$badd = true;
 		if( $idgroup > 0 )
 			{
-			list($nickname) = $babDB->db_fetch_array($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($row['id_user'])."'"));
-			$output .= '"'.str_replace('"','""',$nickname).'"'.$separ;
+			$uarr = $babDB->db_fetch_array($babDB->db_query("select nickname, disabled from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($row['id_user'])."'"));
+			if( $bdisabled === 'N' && $uarr['disabled'] != 0 )
+				{
+				$badd = false;
+				}
+			else
+				{
+				$output .= '"'.str_replace('"','""',$uarr['nickname']).'"'.$separ;
+				}
 			}
 
-		for( $k=0; $k < count($arrnamef); $k++ )
+		if( $badd )
 			{
-			$output .= '"'.str_replace(array("\r","\n",'"'),array('',' ','""'),stripslashes($row[$arrnamef[$k]])).'"'.$separ;
-			}
+			for( $k=0; $k < count($arrnamef); $k++ )
+				{
+				$output .= '"'.str_replace(array("\r","\n",'"'),array('',' ','""'),stripslashes($row[$arrnamef[$k]])).'"'.$separ;
+				}
 
-		$output = substr($output, 0, -1);
-		$output .= "\n";
+			$output = substr($output, 0, -1);
+			$output .= "\n";
+			}
 		}
 
 	header("Content-Disposition: attachment; filename=\"".$idname.".csv\""."\n");

@@ -434,8 +434,17 @@ function selectAll(list)
 	<input type="text" name="separ" size="1" maxlength="1" value="{ separvalue }">
 	</td>
 	</tr>
-
-	
+<!--#if bgroup -->
+	<tr> 
+	<td align="right">{ t_export_disbaled_users }</td>
+	<td  colspan="3">
+	<select name="bdisabled">
+	<option value='Y'>{ t_yes }</option>
+	<option value='N'>{ t_no }</option>
+	</select>
+	</td>
+	</tr>
+<!--#endif bgroup -->	
 
 <tr> 
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
@@ -451,7 +460,7 @@ function selectAll(list)
 </select>
 </td>
 
-<td align="center"><a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[6])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispdbf.elements[6],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
+<td align="center"><a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
 </td>
 
 <td align="center"> 
@@ -463,10 +472,10 @@ function selectAll(list)
 </select>
 </td>
 
-<td align="center" ><a href="Javascript:move(true, document.dispdbf.elements[6])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+<td align="center" ><a href="Javascript:move(true, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
 <br>
 <br>
-<a href="Javascript:move(false, document.dispdbf.elements[6])"> 
+<a href="Javascript:move(false, document.dispdbf.elements[7])"> 
 <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
 </td>
 </tr>
@@ -474,7 +483,7 @@ function selectAll(list)
 
 	<tr>
 	<td valign="middle" align="center" colspan="4"> 
-	<input type="submit" name="expfile" value="{ export }" onClick="selectAll(document.dispdbf.elements[6]); document.dispdbf.submit()">
+	<input type="submit" name="expfile" value="{ export }" onClick="selectAll(document.dispdbf.elements[7]); document.dispdbf.submit()">
 	<br>
 	</td>
 	</tr>

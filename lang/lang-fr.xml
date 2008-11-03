@@ -2667,4 +2667,5 @@
 <string id="Add-ons installation">Installation d'un module</string>
 <string id="This addon has dependences from other addons">Ce module a des dépendences depuis d'autres modules</string>
 <string id="Messages">Messages</string>
+<string id="Include disabled users">Inclure les utilisateurs désactivés</string>
 </fr>
