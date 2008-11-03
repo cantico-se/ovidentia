@@ -4318,10 +4318,20 @@ class BAB_FileManagerEnv
 	}
 	
 	
-	function getValuesFromRequest() {
+	function getValuesFromRequest() 
+	{
 		global $BAB_SESS_USERID, $babBody;
 
-		$this->sPath = (string) bab_rp('path');
+		$this->sPath = '';
+		if($this->isAjax())
+		{
+			$this->sPath = utf8_decode((string) bab_rp('path'));
+		}
+		else
+		{
+			$this->sPath = (string) bab_rp('path');
+		}
+		
 		$this->sGr = (string) bab_rp('gr', '');
 
 		if(!empty($BAB_SESS_USERID))
@@ -4333,7 +4343,16 @@ class BAB_FileManagerEnv
 			$this->iIdObject = (int) bab_rp('id', 0);
 		}
 	}
+
 	
+	//Prototype adds a custom HTTP header to all its AJAX requests so that your server 
+	//application can detect that it's an AJAX call, rather than a normal call. 
+	//The header is: X-Requested-With: XMLHttpRequest
+	function isAjax() 
+	{
+		return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER ['HTTP_X_REQUESTED_WITH']  == 'XMLHttpRequest');
+	}	
+		
 	
 	
 	function init()
