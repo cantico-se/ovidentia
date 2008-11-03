@@ -1410,4 +1410,5 @@
 <string id="SMTP: manual configuration">SMTP: manual configuration</string>
 <string id="Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file">Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file</string>
 <string id="There is a conflict with working hours of the selected personnal calendars">There is a conflict with working hours of the selected personnal calendars</string>
+<string id="Messages">Messages</string>
 </nl>
