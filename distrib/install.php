@@ -126,7 +126,7 @@ class bab_dumpToDb
 		return mysql_fetch_assoc($result);
 		}
 		
-	function quote($str)
+	function quote($param)
 		{
 		if (is_array($param)) {
 
@@ -431,6 +431,7 @@ function getIni() {
 
 	
 /* main */
+
 
 if (get_magic_quotes_gpc()) {
  foreach($_POST as $k=>$v) $_POST["$k"]=stripslashes($v);

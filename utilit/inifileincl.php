@@ -141,7 +141,10 @@ class bab_inifile_requirements {
 		$current_display = sprintf("%dM",$current/1024/1024);
 		$result = $current >= $this->return_bytes($value);
 		
-		$req = "SELECT maxfilesize from ".BAB_SITES_TBL." WHERE name=".$babDB->quote($GLOBALS['babSiteName'])."";
+		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
+		
+		// table constants are not available in install script
+		$req = "SELECT maxfilesize from bab_sites WHERE name=".$babDB->quote($sitename)."";
 		$res = $babDB->db_queryWem($req);
 		
 		if (!$res) {
@@ -251,7 +254,12 @@ class bab_inifile_requirements {
 		// $babBody->babsite not available in upgrade
 		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
 		
-		$req = "SELECT uploadpath from ".BAB_SITES_TBL." WHERE name=".$babDB->quote($GLOBALS['babSiteName']);
+		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
+		
+		
+		// table constant are not available in install script
+		
+		$req = "SELECT uploadpath from bab_sites WHERE name=".$babDB->quote($sitename);
 		$res = $babDB->db_queryWem($req);
 		
 		if (!$res) {
