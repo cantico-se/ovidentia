@@ -164,9 +164,7 @@ Each a new Ovidentia release comes with templates changes.
 By this you can update your skin through Ovidentia evolution.
 
 You can browse documentations here : 
-	-Installation Guide : http://ovidentia.koblix.org/documentation/ig-en.html 
-	-Developper Guide : http://ovidentia.koblix.org/documentation/dg-en.html 
-	-User Guide : http://ovidentia.koblix.org/documentation/ug-en.html
+	http://www.ovidentia.org
 
 If you have any comment or remarks please send an email to: community@ovidentia.org
 
