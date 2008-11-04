@@ -41,8 +41,15 @@ mod_mysql="Available"
 mysql_version="3.23" 
 mod_zlib="Available"
 
+; available since 6.6.0
+
+mysql_character_set_database="latin1"
+mysql_collation_database="latin1_swedish_ci"
+mysql_sql_mode="Undefined"
+
 ; available since 6.7.91
 
+functionalities_directory="Available"
 headers_not_sent="Success"
 
 [recommendations]
@@ -65,9 +72,7 @@ upload_max_file_size=30M
 
 ; available since 6.6.0
 
-mysql_character_set_database="latin1"
-mysql_collation_database="latin1_swedish_ci"
 mysql_max_allowed_packet=15M
-mysql_sql_mode="Undefined"
+
 
 ;*/?>
