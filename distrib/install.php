@@ -24,7 +24,7 @@
 ************************************************************************/
 
 define('BABINSTALL','install/babinstall.sql');
-define('FILETOTEST','utilit/dbutil.php');
+define('VERSION_FILE','version.inc');
 define('CONFIG','config.php');
 define('RENAMEFILE','install.old');
 define('LANG','en');
@@ -68,35 +68,6 @@ class bab_dumpToDb
 		if( $this->db )
 			{
 			$this->succes[] = $this->trans->str('Connexion test to mysql server successful');
-			$res = mysql_select_db($_POST['babDBName'], $this->db);
-			if( $res == true && !empty($_POST['clearDb']) )
-				{
-				if (!$this->db_query('DROP DATABASE '.$_POST['babDBName']))
-					{
-					$this->error = $this->trans->str('Can\'t drop the database : ').$_POST['babDBName'].$this->trans->str(' you must delete it manually');
-					return false;
-					}
-				else
-					{
-					$this->succes[] = $this->trans->str('Database deleted : ').$_POST['babDBName'];
-					$createdatabase = true;
-					}
-				}
-				
-			if (!$res || (isset($createdatabase) && $createdatabase === true))
-				{
-				if (!$this->db_query('CREATE DATABASE '.$_POST['babDBName']))
-					{
-					$this->error = $this->trans->str('Can\'t create the database : ').$_POST['babDBName'].$this->trans->str(' you must create it manually');
-					return false;
-					}
-				else
-					{
-					$this->succes[] = $this->trans->str('Database created : ').$_POST['babDBName'];
-					mysql_select_db($_POST['babDBName'], $this->db);
-					}
-				}
-			
 			}
 		else
 			{
@@ -106,11 +77,71 @@ class bab_dumpToDb
 
 		return true;
 		}
-		
-	function db_query($query)
+
+	function getDatabase() {
+		$res = mysql_select_db($_POST['babDBName'], $this->db);
+		if( $res == true && !empty($_POST['clearDb']) )
+			{
+			if (!$this->db_queryWem('DROP DATABASE '.$_POST['babDBName']))
+				{
+				$this->error = $this->trans->str('Can\'t drop the database : ').$_POST['babDBName'].$this->trans->str(' you must delete it manually');
+				return false;
+				}
+			else
+				{
+				$this->succes[] = $this->trans->str('Database deleted : ').$_POST['babDBName'];
+				$createdatabase = true;
+				}
+			}
+			
+		if (!$res || (isset($createdatabase) && $createdatabase === true))
+			{
+			if (!$this->db_queryWem('CREATE DATABASE '.$_POST['babDBName']))
+				{
+				$this->error = $this->trans->str('Can\'t create the database : ').$_POST['babDBName'].$this->trans->str(' you must create it manually');
+				return false;
+				}
+			else
+				{
+				$this->succes[] = $this->trans->str('Database created : ').$_POST['babDBName'];
+				mysql_select_db($_POST['babDBName'], $this->db);
+				}
+			}
+			
+		return true;
+	}
+
+	function db_queryWem($query) 
 		{
 		return mysql_query($query, $this->db);
 		}
+		
+	function db_fetch_array($result)
+    	{
+		return mysql_fetch_array($result);
+		}
+		
+	function db_fetch_assoc($result)
+    	{
+		return mysql_fetch_assoc($result);
+		}
+		
+	function quote($str)
+		{
+		if (is_array($param)) {
+
+				$keys = array_keys($param); 
+			
+				foreach($keys as $key) {
+					$param[$key] = mysql_escape_string($param[$key]);
+				}
+
+				return "'".implode("','",$param)."'";
+			} else {
+				return "'".mysql_escape_string($param)."'";
+			}
+		}
+
 		
 	function getFileContent()
 		{
@@ -137,7 +168,7 @@ class bab_dumpToDb
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
 				$query = $m[1][$k];
-				if (!$this->db_query($query))
+				if (!$this->db_queryWem($query))
 					{
 					$this->error = $this->trans->str('There is an error into sql dump file at query : ').'<p>'.nl2br($query).'</p><br />'.'<p>'.mysql_error().'</p>';
 					return false;
@@ -160,7 +191,7 @@ class bab_dumpToDb
 		{
 		if (!empty($_POST['babUploadPath']))
 			{
-			$this->db_query("UPDATE bab_sites SET uploadpath='".mysql_escape_string ($_POST['babUploadPath'])."' WHERE id='1'");
+			$this->db_queryWem("UPDATE bab_sites SET uploadpath='".mysql_escape_string ($_POST['babUploadPath'])."' WHERE id='1'");
 			}
 		return true;
 		}
@@ -323,7 +354,7 @@ function testVars()
 	{
 	global $error,$succes,$trans;
 	
-	if (!is_file($_POST['babInstallPath'].FILETOTEST))
+	if (!is_file($_POST['babInstallPath'].VERSION_FILE))
 		{
 		$error = $trans->str('No acces to core, Relative path to ovidentia core is wrong');
 		return false;
@@ -355,6 +386,49 @@ function testVars()
 	return true;
 	}
 
+
+
+
+
+/**
+ * @return bab_inifile|false
+ */
+function getIni() {
+	global $error,$succes,$trans;
+
+	$version_file = 'ovidentia/'.VERSION_FILE;
+
+	if (is_file($version_file)) {
+
+		require_once 'ovidentia/utilit/inifileincl.php';
+		
+		if (!class_exists('bab_inifile')) {
+			$error = $trans->str('error on file inclusion, bab_inifile is not available');
+			return false;
+		}
+
+		$ini = new bab_inifile;
+		$ini->inifile($version_file);
+		
+		return $ini;
+	}
+	$error = $trans->str('can\'t get ini file');
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 /* main */
 
@@ -370,21 +444,31 @@ if (isset($_POST) && count($_POST) > 0)
 	{
 	if (testVars())
 		{
-		$dump = new bab_dumpToDb();
-		if ($dump->db_connect())
-			{
-			if ($dump->getFileContent())
+		if (false !== $ini = getIni()) {
+			$dump = new bab_dumpToDb();
+			if ($dump->db_connect())
 				{
-				if ($dump->workOnQuery())
+				if ($ini->isInstallValid($dump, $error)) 
 					{
-					if ($dump->dbConfig())
+					$succes[] = $trans->str('Configuration requirements tests successful');
+					
+					if ($dump->getDatabase()) 
 						{
-						if (writeConfig())
+						if ($dump->getFileContent())
 							{
-							if (renameFile())
+							if ($dump->workOnQuery())
 								{
-								$succes[] = $trans->str('Configuration done');
-								$all_is_ok = true;
+								if ($dump->dbConfig())
+									{
+									if (writeConfig())
+										{
+										if (renameFile())
+											{
+											$succes[] = $trans->str('Configuration done');
+											$all_is_ok = true;
+											}
+										}
+									}
 								}
 							}
 						}
@@ -393,6 +477,9 @@ if (isset($_POST) && count($_POST) > 0)
 			}
 		}
 	}
+	
+	
+
 	
 if (!empty($error))
 	$succes[] = $trans->str('Aborted');
@@ -408,9 +495,10 @@ else
 	$subpath = '';
 }
 $babUrl = 'http://'.$_SERVER['HTTP_HOST'].$subpath.'/'; 
-?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Ovidentia install</title>
