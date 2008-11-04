@@ -31,6 +31,16 @@ include_once "base.php";
  *			'current'		=> (mixed) the current value
  *			'result'		=> (boolean) requirement fullfiled or not
  *			)
+ *
+ * If a method return NULL, the requirement will be ignored
+ *
+ * The requirements can be called by the installation script
+ * all query to database need to be tested, if table not exist
+ * the babDB object can be a babDatabase or a bab_dumpToDb
+ *
+ * @see babDatabase
+ * @see bab_dumpToDb
+ *
  */
 class bab_inifile_requirements {
 	
@@ -43,9 +53,8 @@ class bab_inifile_requirements {
 		if (NULL !== $dbVersion = bab_getDbVersion()) {
 			$ovidentia = $dbVersion;
 		} else {
-			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$ini = new bab_inifile();
-			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+			$ini->inifile(dirname(dirname(__FILE__)).'/version.inc');
 			$ovidentia = $ini->getVersion();
 		}
 
@@ -65,9 +74,25 @@ class bab_inifile_requirements {
 	}
 
 	function require_mysql_version($value) {
-
+		
+		
 		$db = &$GLOBALS['babDB'];
-		$arr = $db->db_fetch_assoc($db->db_query("show variables like 'version'"));
+		
+		$res = $db->db_queryWem("show variables like 'version'");
+		
+		if (!$res) {
+		
+			$mysql = '0.0';
+		
+			return array(
+				'description'	=> bab_translate("MySQL version (error, version not found)"),
+				'current'		=> $mysql,
+				'result'		=> version_compare($value, $mysql, '<=')
+			);
+		}
+		
+		
+		$arr = $db->db_fetch_assoc($res);
 		
 		$mysql = 'Undefined';
 		
@@ -116,8 +141,14 @@ class bab_inifile_requirements {
 		$current_display = sprintf("%dM",$current/1024/1024);
 		$result = $current >= $this->return_bytes($value);
 		
-		$req = "SELECT maxfilesize from ".BAB_SITES_TBL." WHERE name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
-		$res = $babDB->db_query($req);
+		$req = "SELECT maxfilesize from ".BAB_SITES_TBL." WHERE name=".$babDB->quote($GLOBALS['babSiteName'])."";
+		$res = $babDB->db_queryWem($req);
+		
+		if (!$res) {
+			// if table does not exist, ignore requirement
+			return null;
+		}
+		
 		$babsite = $babDB->db_fetch_assoc($res);
 
 		if (isset($babsite['maxfilesize'])) {
@@ -147,6 +178,24 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
+	
+	/**
+	 * @since 6.7.91
+	 */
+	function require_functionalities_directory($value) {
+
+		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/functionalities/';
+		$status = is_dir($images) && is_writable($images);
+		
+		return array(
+			'description'	=> bab_translate("Writable functionalities directory"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
+	
+	
 
 	function require_versions_directory($value) {
 
@@ -202,8 +251,14 @@ class bab_inifile_requirements {
 		// $babBody->babsite not available in upgrade
 		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
 		
-		$req = "SELECT uploadpath from ".BAB_SITES_TBL." WHERE name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
-		$res = $babDB->db_query($req);
+		$req = "SELECT uploadpath from ".BAB_SITES_TBL." WHERE name=".$babDB->quote($GLOBALS['babSiteName']);
+		$res = $babDB->db_queryWem($req);
+		
+		if (!$res) {
+			// if table does not exists, ignore requirement
+			return null;
+		}
+		
 		$babsite = $babDB->db_fetch_assoc($res);
 		$ul = $babsite['uploadpath'];
 		
@@ -475,6 +530,9 @@ class bab_inifile_requirements {
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'sql_mode'");
 		
+		if (!$res) {
+			return null;
+		}
 		
 		$current = 'Undefined';
 		
@@ -823,10 +881,12 @@ class bab_inifile {
 		foreach($this->inifile as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
 			if (method_exists ( $requirementsObj, $keyword )) {
-				 $arr = $requirementsObj->$keyword($value);
-				 $arr['required'] = bab_translate($value);
-				 $arr['recommended'] = false;
-				 $return[] = $arr;
+				$arr = $requirementsObj->$keyword($value);
+				if (is_array($arr)) {
+				 	$arr['required'] = bab_translate($value);
+				 	$arr['recommended'] = false;
+				 	$return[] = $arr;
+				}
 			}
 		}
 
@@ -835,10 +895,12 @@ class bab_inifile {
 		foreach($this->recommendations as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
 			if (method_exists ( $requirementsObj, $keyword )) {
-				 $arr = $requirementsObj->$keyword($value);
-				 $arr['required'] = false;
-				 $arr['recommended'] = bab_translate($value);
-				 $return[] = $arr;
+				$arr = $requirementsObj->$keyword($value);
+				if (is_array($arr)) {
+					$arr['required'] = false;
+					$arr['recommended'] = bab_translate($value);
+					$return[] = $arr;
+				}
 			}
 		}
 
@@ -997,6 +1059,11 @@ class bab_inifile {
 		}
 		return $return;
 	}
+	
+	
+	
+	
+	
 
 	/**
 	 * Test the validity of the requirements specified in the ini file on the current ovidentia version
@@ -1014,6 +1081,48 @@ class bab_inifile {
 	}
 	
 	
+	/**
+	 * check validity for new installation
+	 * execution is out of ovidentia context
+	 * this method need to bring all required environement before the validity test
+	 *
+	 * @param	bab_dumpToDb	$installDB	a database connexion with method db_query, db_fetch_array, db_fetch_assoc, quote, db_queryWem
+	 * @param	string			&$error
+	 *
+	 * @return boolean
+	 */
+	function isInstallValid($installDB, &$error) {
+	
+		if (!function_exists('bab_translate')) {
+			function bab_translate($str) {
+				return $str;
+			}
+		}
+		
+		if (!function_exists('bab_getDbVersion')) {
+			function bab_getDbVersion() {
+				return null;
+			}
+		}
+		
+		
+		if (!class_exists('babDatabase')) {
+			$GLOBALS['babDB'] = $installDB;
+		}
+		
+
+		
+		$requirements = $this->getRequirements();
+		foreach($requirements as $arr) {
+			if (false === $arr['result'] && false !== $arr['required']) {
+				$error = sprintf('error, %s is "%s" but "%s" is required', $arr['description'], $arr['current'], $arr['required']);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
 	
 	
 	/**
@@ -1021,9 +1130,7 @@ class bab_inifile {
 	 * @return string
 	 */
 	function getRequirementsHtml() {
-		global $babBody;
-		
-	
+
 		$temp = new bab_inifile_requirements_html();
 		$temp->requirements = $this->getRequirements();
 		return bab_printTemplate($temp,"requirements.html");
@@ -1032,4 +1139,3 @@ class bab_inifile {
 }
 
 
-?>
