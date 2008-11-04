@@ -740,6 +740,30 @@ class bab_addonInfos {
 		
 		return $tbllist;
 	}
+	
+	
+	
+	/**
+	 * Return the image path 
+	 * a 200x150px png, jpg or gif image, representation of the addon
+	 * @return string|null
+	 */
+	function getImagePath() {
+		$ini = $this->getIni();
+		
+		if (!isset($ini->inifile['image'])) {
+			return null;
+		}
+		
+		$imgpath = $this->getImagesPath().$ini->inifile['image'];
+		
+		if (!is_file($imgpath)) {
+			return null;
+		}
+		
+		
+		return $imgpath;
+	}
 
 	
 	

@@ -141,19 +141,24 @@ function deladdon(id)
 	<tr> 
 		<td class="BabLoginCadreBackground" align="center"> 
 		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
-			
-			<tr> 
-				<td colspan="5">
+			<tr valign="top"> 
+				<td colspan="2">
 					<ul>
 						<li>{ t_addon } : { name }</li>
 						<li>{ t_description } : { adescription }</li>
 						<li>{ t_version } : { version }</li>
 					</ul>
 				</td>
+				
+				<td  colspan="3" style="text-align:right">
+					<!--#if imagepath -->
+					<img src="{ imagepath }" style="margin:.5em;border:#333 1px solid;padding:3px;background:white;" />
+					<!--#endif imagepath -->
+				</td>
 			</tr>
 			
 			<tr> 
-				<td colspan="5">{ t_requirements } :<br /><br /></td>
+				<td>{ t_requirements } :<br /><br /></td>
 			</tr>
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td>&nbsp;</td>
@@ -163,7 +168,7 @@ function deladdon(id)
 				<td>&nbsp;</td>
 			</tr>
 			<!--#in getnextreq -->
-			<tr class="BabSiteAdminFontBackground"> 
+			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 				<td>&nbsp;{ description }</td>
 				<td>{ recommended }</td>
 				<td>{ required }</td>
