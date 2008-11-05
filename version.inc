@@ -33,12 +33,12 @@ version="6.7.91"
 ; available since 5.8.1
 
 ov_version="5.5.3"
-php_version="4.1.2"
+php_version="5.1.0"
 
 ; available since 5.8.7
 
 mod_mysql="Available"
-mysql_version="3.23" 
+mysql_version="4.1.0" 
 mod_zlib="Available"
 
 ; available since 6.6.0
