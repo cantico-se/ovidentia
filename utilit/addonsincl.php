@@ -816,7 +816,9 @@ class bab_addonInfos {
 			if ($vdb === $vini) {
 				return true;
 			}
-		}	
+		}
+			
+		return false;
 	}
 
 	
