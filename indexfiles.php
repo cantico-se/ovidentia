@@ -29,6 +29,8 @@ include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
  * @param string $idx
  */
 function bab_indexJobs($idx, $object) {
+
+	global $babBody;
 	
 	$reg = bab_getRegistryInstance();
 
@@ -75,19 +77,23 @@ function bab_indexJobs($idx, $object) {
 
 		if (isset($r)) {
 			while ($msg = $r->getNextInfo()) {
-				$job .= $msg."\n";
+				$babBody->babEcho('<strong>'.bab_toHtml($msg, BAB_HTML_ALL).'</strong>');
 			}
 	
 			while ($msg = $r->getNextError()) {
-				$GLOBALS['babBodyPopup']->msgerror .= bab_toHtml($msg." \n", BAB_HTML_ALL);
+				$babBody->addError($msg);
+			}
+			
+			while ($msg = $r->getNextDebug()) {
+				$babBody->babEcho('<pre>'.bab_toHtml($msg).'</pre>');
 			}
 		}
 		
 	} else {
-		$GLOBALS['babBodyPopup']->msgerror = sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']);
+		$babBody->addError(sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']));
 	}
 
-	$GLOBALS['babBodyPopup']->babecho(bab_toHtml($job."\n", BAB_HTML_ALL));
+	$babBody->babPopup('');
 	
 }
 
@@ -109,11 +115,9 @@ function indexEOF() {
 
 
 
-bab_cleanGpc();
 
-include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-$GLOBALS['babBodyPopup'] = new babBodyPopup();
-$GLOBALS['babBodyPopup']->title = bab_translate('Indexation');
+
+$babBody->title = bab_translate('Indexation');
 
 if (isset($_GET['idx'])) {
 	if (isset($_GET['obj'])) {
@@ -141,7 +145,6 @@ if (isset($_GET['cmd'])) {
 	}
 }
 
-printBabBodyPopup();
-die();
+
 
 ?>
