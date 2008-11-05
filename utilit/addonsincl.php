@@ -925,9 +925,9 @@ class bab_addonInfos {
 		$return = array();
 		foreach(bab_addonsInfos::getDbRows() as $arr) {
 			$addon = bab_getAddonInfosInstance($arr['title']);
-			foreach($addon->getDependencies() as $addonname => $statisfaction) {
+			foreach($addon->getDependencies() as $addonname => $satisfaction) {
 				if ($addonname === $this->getName()) {
-					$return[$addon->getName()] = $statisfaction;
+					$return[$addon->getName()] = $satisfaction;
 				}
 			}
 		}
