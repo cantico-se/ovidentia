@@ -567,6 +567,7 @@ class bab_inifile_requirements {
 class bab_inifile_requirements_html
 	{
 	var $requirements;
+	var $altbg = false;
 
 	function bab_inifile_requirements_html()
 		{
@@ -588,6 +589,7 @@ class bab_inifile_requirements_html
 
 	function getnextreq() {
 		if (list(,$arr) = each($this->requirements)) {
+			$this->altbg = !$this->altbg;
 			$this->description = bab_toHtml($arr['description']);
 			$this->recommended = bab_toHtml($arr['recommended']);
 			$this->required = bab_toHtml($arr['required']);
