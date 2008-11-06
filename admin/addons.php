@@ -932,14 +932,14 @@ switch($idx)
 		$babBody->title = bab_translate("Access to Add-on")." ".getAddonName($item);
 		aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
 		break;
 
 	case "upload":
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		$babBody->title = bab_translate("Upload");
@@ -948,7 +948,7 @@ switch($idx)
 
 	case 'requirements':
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("requirements", bab_translate("Install"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
 		$babBody->title = bab_translate("Install an addon");
@@ -961,7 +961,7 @@ switch($idx)
 		
 	case 'functionalities':
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		functionalities();
@@ -977,7 +977,7 @@ switch($idx)
 	case "del":
 		$babBody->setTitle(bab_translate('Delete addon'));
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=addons&idx=del");
 		del($item);
@@ -993,7 +993,7 @@ switch($idx)
 
 		$babBody->title = bab_translate('Shared Libraries');
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 	
@@ -1007,15 +1007,12 @@ switch($idx)
 	
 		themeList();
 
-		$babBody->title = bab_translate('Themes');
+		$babBody->title = bab_translate('Skins');
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 	
-		if (haveFunctionalities()) {
-			$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
-		}
 
 		break;
 
@@ -1025,7 +1022,7 @@ switch($idx)
 		
 		$babBody->title = bab_translate("Add-ons list");
 		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Themes'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 
