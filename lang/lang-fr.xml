@@ -738,6 +738,8 @@
 <string id="This folder already exists">Ce répertoire existe déjà</string>
 <string id="This group already exists">Ce groupe existe déjà</string>
 <string id="This is a reccuring event.Are you sure you want to delete this event and all occurrences">Ceci est un événement répétitif. Êtes-vous sûr de vouloir supprimer toute la série</string>
+<string id="This is a reccuring event.Are you sure you want to delete this event and all the previous">Ceci est un événement répétitif. Voulez-vous supprimer cet événement et les précédents</string>
+<string id="This is a reccuring event.Are you sure you want to delete this event and all the next">Ceci est un événement répétitif. Voulez-vous supprimer cet événement et les suivants</string>
 <string id="This is recurring event. Do you want to update this occurence or series?">Ceci est un événement répétitif. Voulez-vous mettre à jour cet événement ou toute la série ?</string>
 <string id="This login ID already exists !!">Cet identifiant existe déjà</string>
 <string id="This occurence">Cet événement</string>

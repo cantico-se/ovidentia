@@ -595,6 +595,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		var $sRuleCaption;	
 		var $sRuleSelected;	
 		var $aRule = array();
+		var $sCopyCaption;
 		
 		function temp($idcal, $evtid, $cci, $view, $date, $res)
 			{
@@ -618,7 +619,9 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->curdate = $date;
 			
 			$this->bupdrec = bab_rp('bupdrec', 1);
-				
+
+			$this->sCopyCaption = bab_translate("Copy event");
+			
 			$this->aRule = array(
 				1 => bab_translate("All"), 
 				2 => bab_translate("This occurence"),
@@ -1035,20 +1038,33 @@ function deleteEvent()
 
 		function deleteEventCls()
 			{
-			if( isset($_POST['bupdrec']) && $_POST['bupdrec'] == "1" )
-				{
-				$bupd = 1;
-				$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
-				$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
-				}
-			else
-				{
-				$bupd = 2;
-				$this->message = bab_translate("Are you sure you want to delete this event");
-				$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
-				}
+			$iReccurenceRule = (int) isset($_POST['bupdrec']) ? $_POST['bupdrec'] : 2;
+			
+			switch($iReccurenceRule)
+			{
+				case 1://All
+					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
+					$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
+					break;
+					
+				case 3://This event and previous
+					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all the previous");
+					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
+					break;
+					
+				case 4://This event and next
+					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all the next");
+					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
+					break;
+					
+				default:
+				case 2: //This event
+					$this->message = bab_translate("Are you sure you want to delete this event");
+					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
+					break;
+			}
 			$this->title = bab_getCalendarEventTitle($_POST['evtid']);
-			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$bupd."&curcalids=".$_POST['curcalids']);
+			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids']);
 			$this->yes = bab_translate("Yes");
 			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=");
 			$this->no = bab_translate("No");
@@ -1253,7 +1269,7 @@ function confirmDeleteEvent()
 		$calendars[$row['id_cal']] = $row['id_cal'];
 	}
 	
-	if( $GLOBALS['bupdrec'] == "1" )
+	if( $GLOBALS['bupdrec'] == "1" )//All event
 		{
 		$date_min = '9999-99-99 99:99:99';
 		$date_max = '0000-00-00 00:00:00';
@@ -1287,18 +1303,52 @@ function confirmDeleteEvent()
 		$date_min = $event['start_date'];
 		$date_max = $event['end_date'];
 		
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		while( $rr = $babDB->db_fetch_array($res2) )
-			{
-			if( $rr['idfai'] != 0 )
-				{
-				deleteFlowInstance($rr['idfai']);
-				}
+		//2 this event
+		
+		$aWhereClauseItem = array();
+		$aWhereClauseItem[] = 'hash = ' . $babDB->quote($event['hash']);
+
+		//Previous
+		if($GLOBALS['bupdrec'] == "3")
+		{
+			$aWhereClauseItem[] = 'start_date <= ' . $babDB->quote($event['start_date']);
+		}
+		else if($GLOBALS['bupdrec'] == "4")
+		{
+			$aWhereClauseItem[] = 'start_date >= ' . $babDB->quote($event['start_date']);
+		}
+		else
+		{
+			$aWhereClauseItem[] = 'id = ' . $babDB->quote($GLOBALS['evtid']);
+		}
+		
+		$sQuery = 
+			'SELECT 
+				* 
+			FROM ' . 
+				BAB_CAL_EVENTS_TBL . ' 
+			WHERE ' .
+				implode(' AND ', $aWhereClauseItem);
+			
+		$oResult = $babDB->db_query($sQuery);
+		if(false !== $oResult)
+			{	
+				while($aDatas = $babDB->db_fetch_assoc($oResult))
+					{
+					$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($aDatas['id'])."'");
+					$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
+					while( $rr = $babDB->db_fetch_array($res2) )
+						{
+						if( $rr['idfai'] != 0 )
+							{
+							deleteFlowInstance($rr['idfai']);
+							}
+						}
+					$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
+					$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
+					$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
+					}
 			}
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
 		}
 		
 		
