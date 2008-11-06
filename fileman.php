@@ -23,6 +23,7 @@
 ************************************************************************/
 require_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
 require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
@@ -3731,7 +3732,7 @@ function deleteFolderForUserDir()
 		{
 			if(strlen(trim($sDirName)) > 0)
 			{
-				$sUplaodPath = $oFileManagerEnv->getRootFmPath();
+				$sUploadPath = $oFileManagerEnv->getRootFmPath();
 				
 				global $babDB;
 			
