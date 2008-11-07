@@ -129,6 +129,7 @@ class bab_addons_list
 			$this->delete 			= $addon->isDeletable();
 			$this->addversion 		= $addon->getDbVersion();
 			$this->description 		= $addon->getDescription();
+			$this->iconpath			= $addon->getIconPath();
 			
 			if ($addon->isUpgradable()) {
 				$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());

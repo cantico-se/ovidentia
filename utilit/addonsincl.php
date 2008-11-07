@@ -764,6 +764,30 @@ class bab_addonInfos {
 		
 		return $imgpath;
 	}
+	
+	
+	/**
+	 * Return the icon path 
+	 * a 48x48px png, jpg or gif image, representation of the addon
+	 * @return string|null
+	 */
+	function getIconPath() {
+		$ini = $this->getIni();
+		$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-default.png';
+		
+		if (!isset($ini->inifile['icon'])) {
+			return $default;
+		}
+		
+		$imgpath = $this->getImagesPath().$ini->inifile['icon'];
+		
+		if (!is_file($imgpath)) {
+			return $default;
+		}
+		
+		
+		return $imgpath;
+	}
 
 	
 	

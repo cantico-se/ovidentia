@@ -26,8 +26,8 @@ function deladdon(id)
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
 		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td>{ name } </td>
-			<td>{ desctxt }</td>
+			<td width="1%">&nbsp;</td>
+			<td>{ name }</td>
 			<td align="center">&nbsp;</td>
 			<td align="center">{ versiontxt }</td>
 			<td colspan="4">&nbsp;</td>
@@ -37,8 +37,11 @@ function deladdon(id)
 		</tr>
 		<!--#in getnext --> 
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<td><a href="{ requrl }">{ title }</a></td>
-			<td>{ description }</td>
+			<td><img src="{ iconpath }" /></td>
+			<td>
+				<strong><a href="{ requrl }">{ title }</a><br /></strong>
+				{ description }
+			</td>
 			<td align="center">
 				<!--#if upgradeurl -->
 				<a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a>
