@@ -2238,6 +2238,12 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		return null;
 	}
 
+	/**
+	 * Recusively deletes a folder.
+	 *
+	 * @param string $sFullPathName
+	 * @static
+	 */
 	function removeDir($sFullPathName)
 	{
 		if(is_dir($sFullPathName))
