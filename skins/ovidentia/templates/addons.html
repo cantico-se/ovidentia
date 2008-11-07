@@ -1,7 +1,5 @@
 <!--#begin addonslist -->
-<!--#if title -->
-<h2 class="title">{ title }</h2>
-<!--#endif title -->
+
 
 <!--#if display_in_form -->
 
@@ -29,8 +27,8 @@ function deladdon(id)
 			<td width="1%">&nbsp;</td>
 			<td>{ name }</td>
 			<td align="center">&nbsp;</td>
-			<td align="center">{ versiontxt }</td>
-			<td colspan="4">&nbsp;</td>
+			<td width="2%" align="center">{ versiontxt }</td>
+			<td width="2%">{ t_access }</td>
 			<!--#if display_in_form -->
 			<td width="1%">{ disabled }</td>
 			<!--#endif display_in_form -->
@@ -48,6 +46,8 @@ function deladdon(id)
 				<!--#else upgradeurl -->&nbsp;<!--#endif upgradeurl -->
 			</td>
 			<td align="center">{ addversion }</td>
+
+			
 			<td align="center">
 				<!--#if access_control -->
 				<a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a>
@@ -55,19 +55,8 @@ function deladdon(id)
 				&nbsp;
 				<!--#endif access_control -->
 			</td>
-			<td align="center"><a href="{ exporturl }" title="{ t_download }"><img alt="{ t_download }" border="0" src="{ babSkinPath }images/Puces/download.gif"></a></td>
-			<td align="center">
-				<!--#if history -->
-				<a href="{ history }" onclick="bab_popup(this.href); return false;" title="{ t_historic }"><img alt="{ t_historic }" border="0" src="{ babSkinPath }images/Puces/properties.gif"></a>
-				<!--#else history -->&nbsp;
-				<!--#endif history -->
-			</td>
-			<td align="center">
-				<!--#if delete -->
-				<a href="{ deleteurl }" title="{ t_delete }" onclick="return deladdon();"><img alt="{ t_delete }" border="0" src="{ babSkinPath }images/Puces/del.gif"></a>
-				<!--#else delete -->&nbsp;
-				<!--#endif delete -->
-			</td>
+			
+			
 			<!--#if display_in_form -->
 			<td valign="middle" width="0%" align="center"> 
 				<!--#if access_control -->
@@ -83,7 +72,7 @@ function deladdon(id)
 			<!--#if display_in_form -->
 			
 			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td colspan="8">&nbsp;</td>
+				<td colspan="5">&nbsp;</td>
 				
 				<td width="1%" align="center"><a href="javascript:onCheckAll('addons', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" border="0"></a><a href="javascript:onCheckAll('addons', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }"  border="0"></a></td>
 				
@@ -132,6 +121,8 @@ function deladdon(id)
 <!--#end upload -->
 
 <!--#begin requirements -->
+
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="list" />
@@ -151,6 +142,25 @@ function deladdon(id)
 						<li>{ t_description } : { adescription }</li>
 						<li>{ t_version } : { version }</li>
 					</ul>
+
+					<br />
+					<p>
+						&nbsp;&nbsp;
+
+						<a href="{ exporturl }"><img alt="" border="0" src="{ babSkinPath }images/Puces/download.gif"> { t_export }</a>
+						
+						&nbsp;&nbsp;
+						
+						<!--#if historyurl -->
+						<a href="{ historyurl }" onclick="bab_popup(this.href); return false;"><img alt="" border="0" src="{ babSkinPath }images/Puces/properties.gif"> { t_history }</a>
+						<!--#endif historyurl -->
+						
+						&nbsp;&nbsp;
+
+						<!--#if deleteurl -->
+						<a href="{ deleteurl }" title="{ confirmdelete }" onclick="return confirm(this.title);"><img alt="" border="0" src="{ babSkinPath }images/Puces/del.gif"> { t_delete }</a>
+						<!--#endif deleteurl -->
+					</p>
 				</td>
 				
 				<td  colspan="3" style="text-align:right">
@@ -242,7 +252,7 @@ function deladdon(id)
 				</td>
 			</tr>
 			<tr> 
-				<td class="BabSiteAdminFontBackground">
+				<td class="BabTopicsBackground">
 					<br />
 					{ history }
 					<br />

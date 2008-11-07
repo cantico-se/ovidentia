@@ -2672,4 +2672,5 @@
 <string id="Writable functionalities directory">Répertoire "functionalities" accessible en écriture</string>
 <string id="Include disabled users">Inclure les utilisateurs désactivés</string>
 <string id="There is an error in addon upgrade">Il y a une erreur dans la mise à jour du module</string>
+<string id="Addon requirements">Configuration requise du module</string>
 </fr>

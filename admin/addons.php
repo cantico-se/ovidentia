@@ -65,6 +65,7 @@ class bab_addons_list
 		$this->uncheckall = bab_translate("Uncheck all");
 		$this->checkall = bab_translate("Check all");
 		$this->update = bab_translate("Update");
+		$this->t_access = bab_translate("Access");
 		$this->view = bab_translate("Rights");
 		$this->versiontxt = bab_translate("Version");
 		$this->t_delete = bab_translate("Delete");
@@ -531,6 +532,15 @@ function bab_display_addon_requirements($id_addon)
 				$name = $addon->getName();
 				
 				$this->imagepath = bab_toHtml($addon->getImagePath());
+				if ($addon->isDeletable()) {
+					$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=del&item=".$addon->getId());
+				}
+				
+				if (is_file($addon->getPhpPath()."history.txt")) {
+					$this->historyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
+				}
+				
+				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
 			}
 
 			$this->name = bab_toHtml($name);
@@ -539,6 +549,7 @@ function bab_display_addon_requirements($id_addon)
 			
 			$this->requirements = $ini->getRequirements();
 
+			
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
 			$this->t_dependencies = bab_translate("Dependencies");
@@ -549,6 +560,10 @@ function bab_display_addon_requirements($id_addon)
 			$this->t_version = bab_translate("Version");
 			$this->t_ok = bab_translate("Ok");
 			$this->t_error = bab_translate("Error");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_history = bab_translate("Historic");
+			$this->t_export = bab_translate("Download");
+			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"));
 			
 			$this->call_upgrade = isset($_COOKIE['bab_debug']);
 			$this->t_call_upgrade = bab_translate("Launch addon installation program");
@@ -884,6 +899,14 @@ function functionalities() {
 	
 	
 	
+function display_addons_menu() {
+	global $babBody;
+	
+	$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
+	$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
+	$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+}
+	
 	
 	
 
@@ -932,27 +955,21 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Access to Add-on")." ".getAddonName($item);
 		aclGroups("addons", "list", BAB_ADDONS_GROUPS_TBL, $item, "acladd");
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("view", bab_translate("Access"), $GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$item);
 		break;
 
 	case "upload":
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		$babBody->title = bab_translate("Upload");
 		upload();
 		break;
 
 	case 'requirements':
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
-		$babBody->addItemMenu("requirements", bab_translate("Install"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
-		$babBody->title = bab_translate("Install an addon");
+		display_addons_menu();
+		$babBody->addItemMenu("requirements", bab_translate("Requirements"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
+		$babBody->title = bab_translate("Addon requirements");
 		bab_display_addon_requirements(bab_rp('item'));
 		break;
 
@@ -961,25 +978,20 @@ switch($idx)
 		break;
 		
 	case 'functionalities':
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		functionalities();
 		break;
 
 	case "upgrade":
 		upgrade($_GET['item']);
-		
 		$babBody->addItemMenu("upgrade", bab_translate("Upgrade"), $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade");
 		$babBody->setTitle(bab_translate("Add-ons installation"));
 		break;
 		
 	case "del":
 		$babBody->setTitle(bab_translate('Delete addon'));
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=addons&idx=del");
 		del($item);
 		break;
