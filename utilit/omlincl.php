@@ -2652,6 +2652,11 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			{
+				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
+				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
