@@ -128,9 +128,9 @@ class bab_addons_list
 			$this->catchecked 		= $addon->isDisabled();
 			$this->access_control 	= $addon->hasAccessControl();
 			$this->delete 			= $addon->isDeletable();
-			$this->addversion 		= $addon->getDbVersion();
-			$this->description 		= $addon->getDescription();
-			$this->iconpath			= $addon->getIconPath();
+			$this->addversion 		= bab_toHtml($addon->getDbVersion());
+			$this->description 		= bab_toHtml($addon->getDescription(), BAB_HTML_ALL);
+			$this->iconpath			= bab_toHtml($addon->getIconPath());
 			
 			if ($addon->isUpgradable()) {
 				$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());
@@ -199,8 +199,12 @@ function goto_list($addon) {
 	
 	switch($type) {
 		case 'EXTENSION':
-		case 'THEME':
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=list');
+			break;
+		
+		
+		case 'THEME':
+			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=theme');
 			break;
 		
 		case 'LIBRARY':
