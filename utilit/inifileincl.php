@@ -225,6 +225,26 @@ class bab_inifile_requirements {
 	}
 	
 	
+	function require_addons_directory($value) {
+
+		include_once dirname(__FILE__).'/addonsincl.php';
+		$folders = bab_getAddonsFilePath();
+		
+		$status = true;
+		foreach($folders['loc_in'] as $folder) {
+			if (!is_writable($folder)) {
+				$status = false;
+			}
+		}
+
+		return array(
+			'description'	=> sprintf(bab_translate("Writable addons subfolders (%s)"), implode(', ',$folders['loc_in'])),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
+	
 	/**
 	 * @since 6.7.91
 	 */

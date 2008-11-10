@@ -51,6 +51,7 @@ mysql_sql_mode="Undefined"
 
 functionalities_directory="Available"
 headers_not_sent="Success"
+addons_directory="Available"
 
 [recommendations]
 register_globals="Off"
