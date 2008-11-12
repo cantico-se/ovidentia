@@ -6432,14 +6432,7 @@ function bab_Addon($args)
 			switch(strtolower(trim($p)))
 				{
 				case 'name':
-					foreach ($babBody->babaddons as $value)
-						{
-						if ($value['title'] == $v)
-							{
-							$addonid = $value['id'];
-							break;
-							}
-						}
+					$addon = bab_getAddonInfosInstance($v);
 					break;
 				
 				case 'function':
@@ -6451,10 +6444,12 @@ function bab_Addon($args)
 				}
 			}
 
-		if (!empty($addonid) && !empty($function) && isset($babBody->babaddons[$addonid]) && $babBody->babaddons[$addonid]['access'])
+		
+
+		if ($addon && $addon->isAccessValid())
 			{
-			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
-			if( is_file($addonpath."/ovml.php" ))
+			$addonpath = $addon->getPhpPath();
+			if( is_file($addonpath."ovml.php" ))
 				{
 				/* save old vars */
 				$oldAddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
@@ -6465,13 +6460,13 @@ function bab_Addon($args)
 				$oldAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
 				include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
-				bab_setAddonGlobals($addonid);
-				require_once( $addonpath."/ovml.php" );
+				bab_setAddonGlobals($addon->getId());
+				require_once( $addonpath."ovml.php" );
 
-				$call = $babBody->babaddons[$addonid]['title']."_".$function;
+				$call = $addon->getName()."_".$function;
 				if( !empty($call)  && function_exists($call) )
 					{
-					$output = call_user_func_array ( $call, $function_args );
+					$output = call_user_func_array($call, $function_args );
 					}
 
 				$GLOBALS['babAddonFolder'] = $oldAddonFolder;
