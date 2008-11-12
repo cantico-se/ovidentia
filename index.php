@@ -41,7 +41,14 @@ function bab_getBabUrl() {
 		$babWebRoot .= '/';
 	}
 	$babHost = isset($_SERVER["HTTP_X_FORWARDED_HOST"]) ? $_SERVER["HTTP_X_FORWARDED_HOST"] : $_SERVER["HTTP_HOST"];
-	$babProtocol = (!isset($_SERVER["HTTPS"]) && 'off' != strtolower($_SERVER["HTTPS"])) ? 'https://' : 'http://';
+	
+	$babProtocol = 'http://';
+	
+	if( (isset($_SERVER["HTTPS"]) && 'on' == strtolower($_SERVER["HTTPS"])) ||
+	    (isset($_SERVER["SCRIPT_URI"]) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) 
+	{
+		$babProtocol = 'https://';
+	}
 	return $babProtocol . $babHost . '/' . $babWebRoot ;
 }
 
