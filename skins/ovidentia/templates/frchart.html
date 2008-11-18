@@ -750,8 +750,10 @@ function bab_showAddressesWindow()
 </tr>
 </table>
 
+<!--#if mass_mailing -->
 <input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
 <input type="submit" id="bab_send_email" onclick="bab_dialog('', { width: '800px', height: '500px' }); document.getElementById('bab_member_list').target = bab_dialog._modal.name; return t;" value="{ t_send_email }" />
+<!--#endif mass_mailing -->
 
 </form>
 

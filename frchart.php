@@ -558,6 +558,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			{
 			global $ocinfo;
 			global $babDB;
+			global $babBody;
 
 			require_once $GLOBALS['babInstallPath'] . 'utilit/ocapi.php';
 			$this->allname = bab_translate("All");
@@ -567,6 +568,8 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
 			$this->t_send_email = bab_translate("Send email");
 			
+			$this->mass_mailing = ($babBody->babsite['mass_mailing'] == 'Y');
+
 			$this->entities = bab_OCGetEntities($ocid);
 
 			$this->ocid = $ocid;
@@ -854,8 +857,12 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 	$temp = new temp($ocid, $oeid, $update, $pos, $xf, $q, $entityId);
 	$babBody->title = '';
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
-	$babBody->babpopup(bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp4"));
+	$babBody->babpopup(bab_printTemplate($temp, 'frchart.html', 'oedirectorylist_disp4'));
 }
+
+
+
+
 
 
 

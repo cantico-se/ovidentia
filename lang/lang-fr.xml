@@ -2675,4 +2675,5 @@
 <string id="Addon requirements">Configuration requise du module</string>
 <string id="Writable addons subfolders (%s)">Sous-répertoires des modules accessibles en écriture (%s)</string>
 <string id="Addons links">Modules</string>
+<string id="Propose mass mailing in directory views?">Proposer l'envoi d'email en masse dans les vues annuaires?</string>
 </fr>

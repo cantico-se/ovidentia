@@ -129,6 +129,7 @@ function site_menu1()
 			$this->babslogan_title = bab_translate("Site slogan");
 			$this->maxemailtxt = bab_translate("Max number of recipients by notification email");
 			$this->mailfieldaddresstxt = bab_translate("Field to use when sending notification email");
+			$this->proposemassmailingtxt = bab_translate("Propose mass mailing in directory views?");
 			
 			
 			$this->skselectedindex = 0;
@@ -149,7 +150,8 @@ function site_menu1()
 						'babslogan'		=> '',
 						'langfilter'	=> '',
 						'mail_maxperpacket'	=> '25',
-						'mail_fieldaddress'	=> 'Bcc'
+						'mail_fieldaddress'	=> 'Bcc',
+						'mass_mailing' => 'N'
 					);
 
 				$this->item = '';
@@ -319,7 +321,7 @@ function site_menu1()
 		} // class temp
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu1"));
+	$babBody->babecho(	bab_printTemplate($temp, 'sites.html', 'menu1'));
 }
 
 
@@ -1625,7 +1627,8 @@ function siteUpdate_menu1()
 	$langfilter		= &$babLangFilter->convertFilterToInt($_POST['langfilter']);
 	$name_order		= &$_POST['name_order'];
 	$statlog		= &$_POST['statlog'];
-
+	$mass_mailing	= &$_POST['mass_mailing'];
+	
 
 	if( empty($name))
 		{
@@ -1690,7 +1693,8 @@ function siteUpdate_menu1()
 			name_order='".$babDB->db_escape_string($name_order)."', 
 			babslogan='".$babDB->db_escape_string($babslogan)."' ,
 			mail_fieldaddress='".$babDB->db_escape_string($mfa)."' ,
-			mail_maxperpacket='".$babDB->db_escape_string($maxemail)."' 
+			mail_maxperpacket='".$babDB->db_escape_string($maxemail)."' ,
+			mass_mailing='".$babDB->db_escape_string($mass_mailing)."' 
 			
 		where id='".$babDB->db_escape_string($_POST['item'])."'";
 

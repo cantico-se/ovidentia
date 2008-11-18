@@ -154,6 +154,21 @@
 			  </td>
 			</tr>
 
+          <tr> 
+            <td>{ proposemassmailingtxt }</td>
+           <td> 
+              <select name="mass_mailing">
+				<!--#if arr[mass_mailing] "== Y" -->
+                  <option value="Y" selected="selected">{ yes }</option>
+                  <option value="N">{ no }</option>
+				 <!--#else arr[mass_mailing] -->
+				  <option value="Y">{ yes }</option>
+                  <option value="N" selected="selected">{ no }</option>
+				<!--#endif arr[mass_mailing] -->
+                </select>
+            </td>
+			</tr>
+
 		  <tr> 
             <td>{ stattxt }</td>
             <td> 
