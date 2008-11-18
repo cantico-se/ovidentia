@@ -5528,6 +5528,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// increased the size of fields to 255
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `name` `name` VARCHAR(255)');
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `description` `description` VARCHAR(255)');
-	
+
+	// Add configuration for enabling possibility of sending mass email to users in directory views (orgchart and directories).
+	if (!bab_isTableField(BAB_SITES_TBL, 'mass_mailing')) {
+
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mass_mailing enum('Y','N') NOT NULL default 'N' AFTER mail_maxperpacket");
+	}
 	return true;
 }

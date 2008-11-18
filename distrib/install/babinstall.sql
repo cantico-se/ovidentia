@@ -882,6 +882,7 @@ CREATE TABLE `bab_sites` (
   `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT '-1',
   `mail_fieldaddress` char(3) NOT NULL default 'Bcc',
   `mail_maxperpacket` smallint(2) unsigned NOT NULL default '25',
+  `mass_mailing` enum('Y','N') NOT NULL default 'N',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
