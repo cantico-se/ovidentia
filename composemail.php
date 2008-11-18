@@ -177,7 +177,7 @@ function bab_composeEmailEditor($recipients = array(), $subject = '', $message =
 		{
 			global $babDB;
 
-			$this->toval = implode(',', array_unique($recipients));
+			$this->toval = implode(', ', array_unique($recipients));
 			$this->ccval = '';
 			$this->bccval = '';
 			$this->subjectval = $subject;
@@ -192,6 +192,8 @@ function bab_composeEmailEditor($recipients = array(), $subject = '', $message =
 			$this->t_to = bab_translate("To");
 			$this->t_subject = bab_translate("Subject");
 			$this->t_message = bab_translate("Message:");
+			
+			$this->to_field_rows = 1 + count($recipients) / 10;
 			
 			$account = getUserEmailAccountInfo();
 			$this->fromval = '"' . $account['name'] . '" &lt;' . $account['email'] . '&gt;';
@@ -366,6 +368,8 @@ class bab_MailDispatcher
 		foreach ($keys as $key) {
 			if (!self::emailAddressIsValid($recipients[$key])) {
 				unset($recipients[$key]);
+			} else {
+				$recipients[$key] = trim($recipients[$key]);
 			}
 		}
 
@@ -431,7 +435,8 @@ class bab_MailDispatcher
 			if ($retry < 5) {
 				$errorStatus = BAB_MAIL_DISPATCH_OK;
 			} else {
-				$errorStatus = BAB_MAIL_DISPATCH_OK;
+				$errorStatus = BAB_MAIL_DISPATCH_ERROR;
+				$result = false;
 			}
 			$this->status[] = array('status' => $errorStatus, 'dest' => $dest[0], 'error' => $this->mail->ErrorInfo());
 		}
