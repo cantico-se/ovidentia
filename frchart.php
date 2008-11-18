@@ -852,7 +852,9 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 		}
 
 	$temp = new temp($ocid, $oeid, $update, $pos, $xf, $q, $entityId);
-	echo bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp4");
+	$babBody->title = '';
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
+	$babBody->babpopup(bab_printTemplate($temp, "frchart.html", "oedirectorylist_disp4"));
 }
 
 

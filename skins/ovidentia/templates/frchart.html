@@ -646,7 +646,8 @@ function bab_initPage()
 
 function bab_showAddressesWindow()
 {
-	var w = window.open();
+	bab_dialog('', { width: '600px', height: '400px' });
+	var w = bab_dialog._modal;
 	w.document.writeln(window.bab_emailAddresses.join(', '));
 }
 
@@ -708,9 +709,10 @@ function bab_showAddressesWindow()
 <tr>
 
 <td class="BabLoginCadreBackground">
-<form name="mail" method="post" target="_blank" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="mail">
+<form id="bab_member_list" name="mail" method="post"  action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="composemail">
 <input type="hidden" name="idx" value="compose">
+<input type="hidden" name="popup" value="yes">
 <input type="hidden" name="message" value="">
 <table id="bab_user_list" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr> 
@@ -729,7 +731,7 @@ function bab_showAddressesWindow()
         <!--#in getnext -->
         <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
 <!--      <td align="center" valign="middle" width="1%" >&nbsp;</td> -->
-          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:window.open('index.php?tg=directory&idx=ddbovml&directoryid=5&userid=209');"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" onclick="bab_dialog(this.href, { width: '600px', height: '600px' }); return false;" href="index.php?tg=directory&idx=ddbovml&directoryid=5&userid={ userid }" onclick="window.open(this.href); return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
           <!--#in getnextcolval -->
           <td align="left" valign="middle">
@@ -749,7 +751,7 @@ function bab_showAddressesWindow()
 </table>
 
 <input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
-<input type="submit" id="bab_send_email" value="{ t_send_email }" />
+<input type="submit" id="bab_send_email" onclick="bab_dialog('', { width: '800px', height: '500px' }); document.getElementById('bab_member_list').target = bab_dialog._modal.name; return t;" value="{ t_send_email }" />
 
 </form>
 

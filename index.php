@@ -753,6 +753,12 @@ switch($tg)
 		if( $BAB_SESS_LOGGED)
     		$incl = "options";
 		break;
+	case "composemail":
+		$babLevelOne = bab_translate("User's section");
+		$babLevelTwo = bab_translate("Compose mail");
+		if( $BAB_SESS_LOGGED)
+    		$incl = "composemail";
+		break;
 	case "mail":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Mail");

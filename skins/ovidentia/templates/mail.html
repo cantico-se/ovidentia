@@ -113,6 +113,90 @@
 
 
 
+<!--#begin statusPage -->
+
+<ul>
+<!--#in nextStatus -->
+<!--#if status[status] "== 0" -->
+<li>{ status[dest] } : { t_mail_sent }</li>
+<!--#else status[status] -->
+<li style="color: red">{ status[dest] } : { t_mail_error }</li>
+<!--#endif status[status] -->
+<!--#endin nextStatus -->
+</ul>
+
+<!--#end statusPage -->
+
+
+
+
+<!--#begin composeMailEditor -->
+
+<form method="post" name="composemail" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="composemail">
+<input type="hidden" name="idx" value="send">
+<!--#if popup -->
+<input type="hidden" name="popup" value="">
+<!--#endif popup -->
+
+<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle">
+  <table width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
+
+	<tr> 
+	  <td>{ t_from }</td>
+	  <td><b>{ fromval }</b></td>
+	</tr>
+
+	<tr> 
+	  <td>{ t_to }</td>
+	  <td   valign="middle">
+	    <input type="text" name="to" style="width:100%;" size="80" value="{ toval }" /> 
+	  </td>
+	</tr>
+
+	<tr> 
+	  <td>{ t_subject }</td>
+	  <td> 
+	    <input type="text" name="subject" style="width:100%;" size="80" value="{ subjectval }" /> 
+	  </td>
+	</tr>
+	
+	<tr> 
+	  <td>{ t_message }</td>
+	</tr>
+	<tr>
+	  <td colspan="2">
+	  <!--#if format "== html" --> 
+		{ editor }
+	  <!--#else format --> 
+		<textarea name="message" style="width:100%;" rows="10">{ messageval }</textarea>
+	  <!--#endif format --> 
+	  </td>
+	</tr>
+
+	<tr> 
+	  <td  colspan="2" align="center"> 
+	    <input type="submit" name="submit" value="{ t_send }" />
+		  &nbsp;&nbsp;&nbsp;
+	    <input type="button" name="cancel" value="{ t_cancel }" onClick="window.close()" />
+	  </td>
+	</tr>
+
+  </table>
+</td>
+</tr>
+</table>
+</form>
+
+
+<!--#end composeMailEditor -->
+
+
+
+
+
 <!--#begin mailunload -->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
