@@ -613,6 +613,12 @@ if (disp)
 <!--#end adbrowse -->
 
 
+
+
+/**
+ * Vue annuaire de l'organigramme
+ */
+ 
 <!--#begin oedirectorylist_disp4 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -654,26 +660,32 @@ function bab_showAddressesWindow()
 </script>
 </head>
 <body onload="bab_initPage()">
-<br>
+<br />
 <form name="eorgform" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="frchart">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="disp" value="disp5">
-<input type="hidden" name="ocid" value="{ ocid }">
-<input type="hidden" name="oeid" value="{ oeid }">
-<input type="hidden" name="pos" value="{ pos }">
-<input type="hidden" name="xf" value="{ xf }">
-<table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
+<input type="hidden" name="tg" value="frchart" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="disp" value="disp5" />
+<input type="hidden" name="ocid" value="{ ocid }" />
+<input type="hidden" name="oeid" value="{ oeid }" />
+<input type="hidden" name="pos" value="{ pos }" />
+<input type="hidden" name="xf" value="{ xf }" />
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr valign="middle"> 
-<td align="right" class="BabLetterlists">
-<select name="entity">
-<option value="">{ t_all_entities }</option>
-<!--#in getnextentity -->
-<option value="{ entity_id }" <!--#if entity_id "== entityId" -->selected="selected"<!--#endif entity_id --> >{ entity_name }</option>
-<!--#endin getnextentity -->
-</select>
+<td align="right">
+	{ t_entity }: 
+	<select name="entity">
+	<option value="">{ t_all_entities }</option>
+	<!--#in getnextentity -->
+	<option value="{ entity_id }" <!--#if entity_id "== entityId" -->selected="selected"<!--#endif entity_id --> >{ entity_name }</option>
+	<!--#endin getnextentity -->
+	</select>
 </td>
-<td align="right" class="BabLetterlists"><input type="submit" name="submit" value="{ search }">&nbsp;&nbsp;<input type="text" name="q" value="{ q }">
+<td align="right">
+	{ t_name }: 
+	<input type="text" name="q" value="{ q }" />
+</td>
+<td align="right">
+	<input type="submit" name="submit" value="{ search }" />
 </td>
 </tr>
 </table>
@@ -686,19 +698,19 @@ function bab_showAddressesWindow()
 <tr valign="middle"> 
 <td colspan="3" class="BabLetterlists"> 
 <!--#if allselected "== 1" -->
-{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+{ allname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0" /> 
 <!--#else allselected -->
-<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0"> 
+<a class="BabAlphabetLink" href="{ allurl }">{ allname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="8" height="8" border="0" /> 
 <!--#endif allselected -->
 <!--#in getnextselect -->
 <!--#if selected "== 1" -->
-{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+{ selectname }<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /> 
 <!--#else selected -->
-<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"> 
+<a class="BabAlphabetLink" href="{ selecturl }">{ selectname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /> 
 <!--#endif selected -->
 <!--#endin getnextselect -->
 </td>
-<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0">
+<td align="right" class="BabLetterlists"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0" />
 </td>
 </tr>
 </table>
@@ -710,14 +722,14 @@ function bab_showAddressesWindow()
 
 <td class="BabLoginCadreBackground">
 <form id="bab_member_list" name="mail" method="post"  action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="composemail">
-<input type="hidden" name="idx" value="compose">
-<input type="hidden" name="popup" value="yes">
-<input type="hidden" name="message" value="">
+<input type="hidden" name="tg" value="composemail" />
+<input type="hidden" name="idx" value="compose" />
+<input type="hidden" name="popup" value="yes" />
+<input type="hidden" name="message" value="" />
 <table id="bab_user_list" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr> 
-          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td>
+          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td>
           <!--#in getnextcol -->
           <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>
 		  <!--#if colurl -->
@@ -725,7 +737,7 @@ function bab_showAddressesWindow()
 		  <!--#else colurl -->
 		  { coltxt }
 		  <!--#endif colurl -->
-		  <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></b></td>
+		  <img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></b></td>
           <!--#endin getnextcol -->
         </tr>
         <!--#in getnext -->
@@ -736,7 +748,7 @@ function bab_showAddressesWindow()
           <!--#in getnextcolval -->
           <td align="left" valign="middle">
 			<!--#if bmail -->
-			<input type="hidden" name="to[]" value="{ coltxt }">
+			<input type="hidden" name="to[]" value="{ coltxt }" />
 			<a href="mailto:{ coltxt }">{ coltxt }</a>
 			<!--#else bmail -->
 			{ coltxt }
@@ -767,6 +779,11 @@ updateFltFrame('{ cuoeid }&idx=listr');
 </body>
 </html>
 <!--#end oedirectorylist_disp4 -->
+
+
+
+
+
 
 <!--#begin browseroles -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

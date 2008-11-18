@@ -564,10 +564,11 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			$this->allname = bab_translate("All");
 			$this->search = bab_translate("Search");
 			$this->t_entity = bab_translate("Entity");
-			$this->t_all_entities = bab_translate("All");
+			$this->t_name = bab_translate("Name");
+			$this->t_all_entities = bab_translate("All entities");
 			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
 			$this->t_send_email = bab_translate("Send email");
-			
+
 			$this->mass_mailing = ($babBody->babsite['mass_mailing'] == 'Y');
 
 			$this->entities = bab_OCGetEntities($ocid);
