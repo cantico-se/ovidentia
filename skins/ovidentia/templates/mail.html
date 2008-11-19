@@ -118,9 +118,9 @@
 <ul>
 <!--#in nextStatus -->
 <!--#if status[status] "== 0" -->
-<li>{ status[dest] } : { t_mail_sent }</li>
+<li>"{ status[dest] }" : { t_mail_sent }</li>
 <!--#else status[status] -->
-<li style="color: red">{ status[dest] } : { t_mail_error }</li>
+<li style="color: red">"{ status[dest] }" : { t_mail_error }<br />{ t_server_message } { status[error] } ({ status[attempts] } attempts)</li>
 <!--#endif status[status] -->
 <!--#endin nextStatus -->
 </ul>
