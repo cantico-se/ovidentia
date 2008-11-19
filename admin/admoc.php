@@ -48,7 +48,7 @@ function modifyOrgChart($id)
 	{
 	global $babBody;
 
-	class temp
+	class ModifyOrgChart_Temp
 		{
 		var $name;
 		var $description;
@@ -63,7 +63,7 @@ function modifyOrgChart($id)
 		var $descval;
 		var $id;
 
-		function temp($id)
+		function ModifyOrgChart_Temp($id)
 			{
 			global $babDB;
 
@@ -94,14 +94,23 @@ function modifyOrgChart($id)
 			
 			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
 			$this->ovmldetailval = $arr['ovml_detail'];
+
+			$this->ovmlembeddedtxt = bab_translate("OVML file to be used for embedded view");
+			$this->ovmlembeddedval = $arr['ovml_embedded'];
+			
 			$this->browsetxt = bab_translate("Browse");
 			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
 			}
 		}
 
-	$temp = new temp($id);
-	$babBody->babecho(	bab_printTemplate($temp,"admocs.html", "ocmodify"));
+	$temp = new ModifyOrgChart_Temp($id);
+
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
+	$babBody->babEcho(bab_printTemplate($temp, 'admocs.html', 'ocmodify'));
 	}
+
+
+
 
 function deleteOrgChart($id)
 	{
@@ -510,14 +519,16 @@ function deleteOrgChartEntityType($ocid, $entityTypeId)
  * Updates the specified org chart's ovml file used to display a user information.
  *
  * @param int $ocid
- * @param string $ovmlfile
+ * @param string $ovmldetail
+ * @param string $ovmlembedded
  */
-function updateOrgChartOvmlFile($ocid, $ovmlfile)
+function updateOrgChartOvmlFile($ocid, $ovmldetail, $ovmlembedded)
 {
 	global $babDB;
 	
 	$sql = 'UPDATE ' . BAB_ORG_CHARTS_TBL . '
 			SET ovml_detail = '. $babDB->quote($ovmlfile) . '
+			SET ovml_embedded = '. $babDB->quote($ovmlembedded) . '
 			WHERE id = ' . $babDB->quote($ocid);
 	$babDB->db_query($sql);
 }
@@ -552,7 +563,8 @@ if( '' != ($update = bab_pp('update')))
 			break;
 		case 'ovmldb':
 			$ovmldetail = bab_pp('ovmldetail', '');
-			updateOrgChartOvmlFile($item, $ovmldetail);
+			$ovmlembedded = bab_pp('ovmlembedded', '');
+			updateOrgChartOvmlFile($item, $ovmldetail, $ovmlembedded);
 			break;
         }
 	}

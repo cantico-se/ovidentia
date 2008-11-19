@@ -1763,6 +1763,7 @@ CREATE TABLE bab_org_charts (
   id_first_node int(11) unsigned NOT NULL default '0',
   id_closed_nodes text NOT NULL,
   ovml_detail tinytext NOT NULL default '',
+  ovml_embedded tinytext NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner),
   KEY id_directory (id_directory)

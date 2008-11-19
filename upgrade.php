@@ -5524,6 +5524,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_ORG_CHARTS_TBL." ADD ovml_detail tinytext NOT NULL default '' AFTER id_closed_nodes");
 	}
+	// An ovml filename to customize the information displayed for a user (embedded).
+	if (!bab_isTableField(BAB_ORG_CHARTS_TBL, 'ovml_embedded')) {
+
+		$babDB->db_query("ALTER TABLE ".BAB_ORG_CHARTS_TBL." ADD ovml_embedded tinytext NOT NULL default '' AFTER ovml_detail");
+	}
+	
 	
 	// increased the size of fields to 255
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `name` `name` VARCHAR(255)');

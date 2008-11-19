@@ -8,7 +8,8 @@ function func(txt)
 	{
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$OVML('+txt+')'
+		'param'		: '$OVML('+txt+')',
+		'filename'	: txt,
 	});
 	
 	window.close();

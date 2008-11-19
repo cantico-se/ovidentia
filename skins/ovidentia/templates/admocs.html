@@ -48,7 +48,10 @@ valign="middle">{  name }:</td>
 
 <br><br><br><br><br>
 
+
+
 <!--#begin ocmodify -->
+
 <form name="ocmodify" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="admoc">
 <input type="hidden" name="idx" value="modify">
@@ -142,11 +145,17 @@ valign="middle">{  name }:</td>
 
 <tr> 
 <td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmldetailtxt }:<br /><br />
-<input type="text" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;<a href="javascript:Start('{ browseurl }&cb=OnInsertOvmlDetail','bab_ovml','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes')">{ browsetxt }</a>
+<input type="text" id="ovmldetail" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;<a href="{ browseurl }&cb=OnInsertOvmlDetail" onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmldetail').value = ret.filename; }); return false;">{ browsetxt }</a>
 </td>
 </tr>
-<tr> 
 
+<tr> 
+<td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmlembeddedtxt }:<br /><br />
+<input type="text" id="ovmlembedded" name="ovmlembedded" value="{ ovmlembeddedval }" size="70" />&nbsp;&nbsp;<a href="{ browseurl }&cb=OnInsertOvmlDetail" onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmlembedded').value = ret.filename; }); return false;">{ browsetxt }</a>
+</td>
+</tr>
+
+<tr> 
 <td class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="Submit2" value="{ update }">
 </td>
 </tr>
@@ -158,6 +167,8 @@ valign="middle">{  name }:</td>
 </form>
 
 <!--#end ocmodify -->
+
+
 
 <br><br><br><br><br>
 <!--#begin oclist -->
