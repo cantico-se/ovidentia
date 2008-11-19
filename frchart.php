@@ -676,6 +676,8 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 
 				if (isset($entityId)) {
 					$req .= ' AND ocet.id = ' . $babDB->quote($entityId);
+				} else {
+					$req .= ' AND ocet.id IS NOT NULL';
 				}
 	
 				$this->request = "select ".implode(',', $this->select)." from ".$req;
