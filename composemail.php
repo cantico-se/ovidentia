@@ -101,19 +101,22 @@ function getUserEmailAccountInfo($userId = null)
  */
 function bab_emailStatusPage($statusList)
 {
-
 	class StatusPageTemplate extends bab_Template
 	{
 		var $statusList;
+		var $t_mail_sent;
+		var $t_mail_error;
+		var $t_server_message;
 
 		function StatusPageTemplate($statusList)
 		{
 			$this->statusList = $statusList;
-			
+
 			$this->t_mail_sent = bab_translate("Mail sent");
 			$this->t_mail_error = bab_translate("Mail error");
+			$this->t_server_message = bab_translate("Server response: ");
 		}
-		
+
 
 		function nextStatus()
 		{
@@ -194,6 +197,9 @@ function bab_composeEmailEditor($recipients = array(), $subject = '', $message =
 			$this->t_message = bab_translate("Message:");
 			
 			$this->to_field_rows = 1 + count($recipients) / 10;
+			if ($this->to_field_rows > 12) {
+				$this->to_field_rows = 12;
+			}
 			
 			$account = getUserEmailAccountInfo();
 			$this->fromval = '"' . $account['name'] . '" &lt;' . $account['email'] . '&gt;';
@@ -399,6 +405,7 @@ class bab_MailDispatcher
 		return true;
 	}
 
+
 	function get_gust_recipients()
 	{
 		$this->mail->clearAllRecipients();
@@ -428,6 +435,7 @@ class bab_MailDispatcher
 		while ($this->get_gust_recipients()) {
 			$retry = 0;
 			while (true !== $this->mail->send() && $retry < 5) {
+				sleep(1);
 				$retry++;
 			}
 
@@ -438,7 +446,11 @@ class bab_MailDispatcher
 				$errorStatus = BAB_MAIL_DISPATCH_ERROR;
 				$result = false;
 			}
-			$this->status[] = array('status' => $errorStatus, 'dest' => $dest[0], 'error' => $this->mail->ErrorInfo());
+			$this->status[] = array(
+									'status' => $errorStatus,
+									'attempts' => $retry,
+									'dest' => $dest[0],
+									'error' => $this->mail->ErrorInfo() );
 		}
 
 		$this->stack = array();
@@ -465,7 +477,7 @@ $babBody->title = bab_translate("Send a message by email");
 if (!bab_userIsloggedin()) {
 	$babBody->addError(bab_translate("You must be logged in"));
 	if (isset($popup)) {
-		$babBody->babPopup('.');
+		$babBody->babPopup('');
     	die;
 	}
 }
