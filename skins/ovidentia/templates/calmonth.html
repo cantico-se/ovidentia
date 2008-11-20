@@ -34,10 +34,10 @@ document.onmousemove = bab_tooltipPosition;
 			{ monthurlname }
 		</td>
 		<td width="10%" align="center">
-			<a class="BabTopicsAdminTitleLink" href="{ weekurl }">{ weekurlname }</a>
+			<a href="{ weekurl }">{ weekurlname }</a>
 		</td>
 		<td  width="10%" align="center">
-			<a class="BabTopicsAdminTitleLink" href="{ dayurl }">{ dayurlname }</a>
+			<a href="{ dayurl }">{ dayurlname }</a>
 		</td>
 		<td  width="20%" align="center">
 			<script type="text/javascript">
@@ -49,7 +49,7 @@ document.onmousemove = bab_tooltipPosition;
 				}
 			-->
 			</script>
-			<a class="BabTopicsAdminTitleLink" href="javascript:Start('{ gotodateurl }','calendar','width=250,height=250,status=no,resizable=no,top=200,left=200')">{ gotodatename }</a> 
+			<a href="{ gotodateurl }" onclick="Start(this.href,'calendar','width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ gotodatename }</a> 
 		</td>
 		<td class="next" width="25%" align="right">
 			<a onmouseover="bab_showOnMouse('cal_btn_next_month',1)" onmouseout="bab_showOnMouse('cal_btn_next_month',0)" href="{ nextmonthurl }" class="next2"><strong>&gt;&gt;</strong></a>
@@ -205,10 +205,10 @@ document.onmousemove = bab_tooltipPosition;
 			{ monthurlname }
 		</td>
 		<td width="10%" align="center">
-			<a class="BabTopicsAdminTitleLink" href="{ weekurl }">{ weekurlname }</a>
+			<a href="{ weekurl }">{ weekurlname }</a>
 		</td>
 		<td  width="10%" align="center">
-			<a class="BabTopicsAdminTitleLink" href="{ dayurl }">{ dayurlname }</a>
+			<a href="{ dayurl }">{ dayurlname }</a>
 		</td>
 		<td  width="20%" align="center"> 
 			<script type="text/javascript">
@@ -220,7 +220,7 @@ document.onmousemove = bab_tooltipPosition;
 				}
 			-->
 			</script>
-			<a class="BabTopicsAdminTitleLink" href="javascript:Start('{ gotodateurl }','calendar','width=250,height=250,status=no,resizable=no,top=200,left=200')">{ gotodatename }</a> 
+			<a href="{ gotodateurl }" onclick="Start(this.href,'calendar','width=250,height=250,status=no,resizable=no,top=200,left=200');return false;">{ gotodatename }</a> 
 		</td>
 		<td class="next" width="25%" align="right">
 			<a onmouseover="bab_showOnMouse('cal_btn_next_month',1)" onmouseout="bab_showOnMouse('cal_btn_next_month',0)" href="{ nextmonthurl }" class="next2"><strong>&gt;&gt;</strong></a>

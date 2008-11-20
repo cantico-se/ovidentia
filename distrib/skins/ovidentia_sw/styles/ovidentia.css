@@ -945,19 +945,7 @@ a.BabFaqLink:Hover {
 	}
 
 
-/********** ADMINISTRATION THEMES TOPICS **********/
 
-
-a.BabTopicsAdminTitleLink,
-a.BabTopicsAdminTitleLink:Link,
-a.BabTopicsAdminTitleLink:Visited { 
-	color: #111166; 
-	font-weight: bold;
-	}
-	
-a.BabTopicsAdminTitleLink:Hover { 
-	color: #009933;
-	}
 	
 /**************** ORG CHARTS ****************************/
 
