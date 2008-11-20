@@ -404,9 +404,7 @@ a.BabForumTopicsNavContribution:Hover {
 
 /************* ADMINISTRATION SITES*************/
 
-.BabSiteAdminTitleFontBackground,
-.BabFaqTitleFontBg,
-.BabTopicsAdminListTitle {
+.BabSiteAdminTitleFontBackground {
 	background:#FFB527 url('../images/page/titlebg.gif') repeat-x 0px 0px; 
 	color: #FF6C00 ; 
 	font-weight: bold;
@@ -434,19 +432,6 @@ a.BabForumTopicsNavContribution:Hover {
 	}
 
 
-/********** ADMINISTRATION THEMES TOPICS **********/
-
-
-a.BabTopicsAdminTitleLink,
-a.BabTopicsAdminTitleLink:Link,
-a.BabTopicsAdminTitleLink:Visited { 
-	color: #EA4D00; 
-	font-weight: bold;
-	}
-	
-a.BabTopicsAdminTitleLink:Hover { 
-	color: #009933;
-	}
 
 
 

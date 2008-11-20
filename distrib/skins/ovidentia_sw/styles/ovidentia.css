@@ -905,9 +905,7 @@ a.BabForumTopicsNavContribution:Hover {
 
 /************* ADMINISTRATION SITES*************/
 
-.BabSiteAdminTitleFontBackground,
-.BabFaqTitleFontBg,
-.BabTopicsAdminListTitle {
+.BabSiteAdminTitleFontBackground {
 	background-color: #fc3; 
 	color: #000 ; 
 	font-weight: bold;
@@ -944,12 +942,4 @@ a.BabFaqLink:Hover {
 	font-weight: bold;
 	}
 
-
-
-	
-/**************** ORG CHARTS ****************************/
-
-div.orgchart {
-	background-color: #888888;
-}
 	
