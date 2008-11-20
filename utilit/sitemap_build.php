@@ -1646,7 +1646,7 @@ function bab_sitemap_faq(&$event) {
 				$item->setDescription(strip_tags($faq['description']));
 				$item->setPosition($position);
 				$item->copy_to_all_delegations = false;
-				$item->setLink($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$arr['id']);
+				$item->setLink($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$faq['id']);
 				$event->addFunction($item);
 			}
 		}
