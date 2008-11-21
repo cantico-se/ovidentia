@@ -42,10 +42,7 @@ function bab_sitemap_adminSection(&$event) {
 	$event->addFolder($item);
 
 	
-	$item = $event->createItem('babAdminSectionAddons');
-	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root','DGAll','babAdmin'));
-	$event->addFolder($item);
+	
 	
 	$array_urls = array();
 
@@ -256,13 +253,19 @@ function bab_sitemap_adminSection(&$event) {
 		
 	ksort($addon_urls);
 	
+	if (0 < count($addon_urls)) {
+		$item = $event->createItem('babAdminSectionAddons');
+		$item->setLabel(bab_translate("Addons links"));
+		$item->setPosition(array('root','DGAll','babAdmin'));
+		$event->addFolder($item);
 
-	foreach($addon_urls as $label => $arr) {
-		$link = $event->createItem($arr['uid']);
-		$link->setLabel($label);
-		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DGAll', 'babAdmin','babAdminSectionAddons'));
-		$event->addFunction($link);
+		foreach($addon_urls as $label => $arr) {
+			$link = $event->createItem($arr['uid']);
+			$link->setLabel($label);
+			$link->setLink($arr['url']);
+			$link->setPosition(array('root', 'DGAll', 'babAdmin','babAdminSectionAddons'));
+			$event->addFunction($link);
+		}
 	}
 }
 

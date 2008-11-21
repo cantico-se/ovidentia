@@ -1227,10 +1227,7 @@ function bab_sitemap_userSection(&$event) {
 	$item->setPosition(array('root', 'DGAll', 'babUser'));
 	$event->addFolder($item);
 	
-	$item = $event->createItem('babUserSectionAddons');
-	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root', 'DGAll', 'babUser'));
-	$event->addFolder($item);
+	
 
 	// user links
 	
@@ -1473,7 +1470,11 @@ function bab_sitemap_userSection(&$event) {
 	
 	// addons
 	$addon_urls = array();
-	$addons = bab_addonsInfos::getRows();				
+	$addons = bab_addonsInfos::getRows();	
+	
+
+	
+	
 	foreach( $addons as $row ) 
 		{
 		if($row['access']) {
@@ -1498,13 +1499,20 @@ function bab_sitemap_userSection(&$event) {
 	
 	ksort($addon_urls);
 	
+	if (0 < count($addon_urls)) {
+		$item = $event->createItem('babUserSectionAddons');
+		$item->setLabel(bab_translate("Addons links"));
+		$item->setPosition(array('root', 'DGAll', 'babUser'));
+		$event->addFolder($item);
+		
 
-	foreach($addon_urls as $label => $arr) {
-		$link = $event->createItem($arr['uid']);
-		$link->setLabel($label);
-		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
-		$event->addFunction($link);
+		foreach($addon_urls as $label => $arr) {
+			$link = $event->createItem($arr['uid']);
+			$link->setLabel($label);
+			$link->setLink($arr['url']);
+			$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
+			$event->addFunction($link);
+		}
 	}
 }
 
