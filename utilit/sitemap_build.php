@@ -1178,13 +1178,13 @@ function bab_siteMap_build() {
 		$event->buidtree($newNode);
 	}
 	
+
 	$textview = $event->displayAsText('root');
-	
-	
-	bab_debug($textview, DBG_TRACE, 'Sitemap');
-	
 	$crc = abs(crc32($textview));
-	
+
+
+	bab_debug($textview, DBG_TRACE, 'Sitemap');
+
 	 $insert_time = bab_getMicrotime();
 
 	// insert tree into database
@@ -1227,10 +1227,7 @@ function bab_sitemap_userSection(&$event) {
 	$item->setPosition(array('root', 'DGAll', 'babUser'));
 	$event->addFolder($item);
 	
-	$item = $event->createItem('babUserSectionAddons');
-	$item->setLabel(bab_translate("Addons links"));
-	$item->setPosition(array('root', 'DGAll', 'babUser'));
-	$event->addFolder($item);
+	
 
 	// user links
 	
@@ -1331,21 +1328,9 @@ function bab_sitemap_userSection(&$event) {
 		}
 
 	if( $babBody->icalendars->calendarAccess())
-		{
-		$babBody->calaccess = true;
-		switch($babBody->icalendars->defaultview)
-			{
-			case BAB_CAL_VIEW_DAY: $view='calday';	break;
-			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
-			default: $view='calmonth'; break;
-			}
-		if( empty($babBody->icalendars->user_calendarids))
-			{
-			$babBody->icalendars->initializeCalendars();
-			}
-			
+		{	
 		$array_urls[bab_translate("Calendar")] = array(
-			'url' =>  $GLOBALS['babUrlScript']."?tg=".$view,
+			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
 			'uid' => 'babUserCal'
 			);
 		}
@@ -1485,7 +1470,11 @@ function bab_sitemap_userSection(&$event) {
 	
 	// addons
 	$addon_urls = array();
-	$addons = bab_addonsInfos::getRows();				
+	$addons = bab_addonsInfos::getRows();	
+	
+
+	
+	
 	foreach( $addons as $row ) 
 		{
 		if($row['access']) {
@@ -1510,13 +1499,20 @@ function bab_sitemap_userSection(&$event) {
 	
 	ksort($addon_urls);
 	
+	if (0 < count($addon_urls)) {
+		$item = $event->createItem('babUserSectionAddons');
+		$item->setLabel(bab_translate("Addons links"));
+		$item->setPosition(array('root', 'DGAll', 'babUser'));
+		$event->addFolder($item);
+		
 
-	foreach($addon_urls as $label => $arr) {
-		$link = $event->createItem($arr['uid']);
-		$link->setLabel($label);
-		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
-		$event->addFunction($link);
+		foreach($addon_urls as $label => $arr) {
+			$link = $event->createItem($arr['uid']);
+			$link->setLabel($label);
+			$link->setLink($arr['url']);
+			$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
+			$event->addFunction($link);
+		}
 	}
 }
 
@@ -1623,18 +1619,22 @@ function bab_sitemap_faq(&$event) {
 	
 	foreach($delegations as $delegation => $arr) {
 	
-		$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
-	
-		$item = $event->createItem('bab'.$dg.'Faqs');
-		$item->setLabel(bab_translate("Faqs"));
-		$item->setPosition(array('root', $delegation));
-		$item->copy_to_all_delegations = false;
-		$event->addFolder($item);
-	
-		$position = array('root', $delegation, 'bab'.$dg.'Faqs');
+		
 		
 		$res = bab_getFaqRes(false, $arr['id']);
 		if (false !== $res) {
+
+			$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
+	
+			$item = $event->createItem('bab'.$dg.'Faqs');
+			$item->setLabel(bab_translate("Faqs"));
+			$item->setPosition(array('root', $delegation));
+			$item->copy_to_all_delegations = false;
+			$event->addFolder($item);
+		
+			$position = array('root', $delegation, 'bab'.$dg.'Faqs');
+
+
 			while ($faq = $babDB->db_fetch_assoc($res)) {
 				
 				$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
@@ -1646,7 +1646,7 @@ function bab_sitemap_faq(&$event) {
 				$item->setDescription(strip_tags($faq['description']));
 				$item->setPosition($position);
 				$item->copy_to_all_delegations = false;
-				$item->setLink($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$faq['id']);
+				$item->setLink("?tg=faq&idx=Print&item=".$faq['id']);
 				$event->addFunction($item);
 			}
 		}
@@ -1669,6 +1669,9 @@ function bab_onBeforeSiteMapCreated(&$event) {
 	
 	// build user node
 	bab_sitemap_userSection($event);
+
+	$logged_status = empty($BAB_SESS_LOGGED) ? 'FALSE' : 'TRUE';
+	$isSuperAdmin  =  $babBody->isSuperAdmin ? 'TRUE'  : 'FALSE';
 
 	// build admin node
 	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0)) {

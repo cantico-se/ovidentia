@@ -57,6 +57,10 @@ class bab_siteMapItem {
 	var $onclick;
 	var $folder; 
 
+	public function compare($node) {
+		return strcasecmp($this->name, $node->name);
+	}
+
 }
 
 
@@ -84,44 +88,7 @@ class bab_siteMap {
 			if (false === $id_user) {
 				$id_user = $GLOBALS['BAB_SESS_USERID'];
 			}
-		
-			// delete profile link
-			
-			/*
-			$res = $babDB->db_query('SELECT id_sitemap_profile FROM '.BAB_USERS_TBL.' 
-				WHERE id='.$babDB->quote($id_user)
-			);
-			
-			$arr = $babDB->db_fetch_assoc($res);
 
-			if ($arr) {
-				$res = $babDB->db_query('SELECT COUNT(*) FROM '.BAB_USERS_TBL.' 
-				WHERE id_sitemap_profile='.$babDB->quote($arr['id_sitemap_profile']));
-				
-				list($n) = $babDB->db_fetch_array($res);
-				if (1 === (int) $n) {
-					$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL." WHERE id=".$babDB->quote($arr['id_sitemap_profile']));
-					
-					$res2 = $babDB->db_query('SELECT id_function FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
-					WHERE id_profile='.$babDB->quote($arr['id_sitemap_profile']));
-					
-					while(list($id_function) = $babDB->db_fetch_array($res2)) {
-						$res3 = $babDB->db_query('SELECT COUNT(*) FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
-						WHERE id_function='.$babDB->quote($id_function));
-						
-						list($n) = $babDB->db_fetch_array($res3);
-						if (1 === (int) $n) {
-							// delete function
-							include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
-							bab_siteMap_deleteFunction($id_function);
-						}
-					}
-					
-					$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL." WHERE id_profile=".$babDB->quote($arr['id_sitemap_profile']));
-				}
-			}
-			*/
-			
 			
 			$babDB->db_query('UPDATE '.BAB_USERS_TBL.' 
 			SET 
@@ -151,7 +118,7 @@ class bab_siteMap {
 	function clearAll() {
 		global $babDB;
 		
-		bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
+		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
 		$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL." SET uid_functions='0'");

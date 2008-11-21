@@ -214,12 +214,17 @@ function babAdminSection($close)
 		}
 
 	if ($this->babAdminSection) {
+		$this->babAdminSection->sortChildNodes();
 		$this->head = bab_translate("Currently you administer ") . $sDgName;
 		$this->babAdminSection = $this->babAdminSection->firstChild();
 	}
 	
 	$this->babAdminSectionAddons = $rootNode->getDgNodeById('babAdminSectionAddons');
+
+	
+
 	if ($this->babAdminSectionAddons) {
+		$this->babAdminSectionAddons->sortChildNodes();
 		$this->babAdminSectionAddons = $this->babAdminSectionAddons->firstChild();
 	}
 
@@ -310,11 +315,13 @@ function babUserSection($close) {
 	$rootNode = bab_siteMap::get();
 	$this->babUserSection = $rootNode->getDgNodeById('babUserSection');
 	if ($this->babUserSection) {
+		$this->babUserSection->sortChildNodes();
 		$this->babUserSection = $this->babUserSection->firstChild();
 	}
 	
 	$this->babUserSectionAddons = $rootNode->getDgNodeById('babUserSectionAddons');
 	if ($this->babUserSectionAddons) {
+		$this->babUserSectionAddons->sortChildNodes();
 		$this->babUserSectionAddons = $this->babUserSectionAddons->firstChild();
 	}
 	

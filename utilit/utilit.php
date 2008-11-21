@@ -1213,11 +1213,11 @@ function bab_updateUserSettings()
 		}
 
 	
-	// The babBody->babaddons varaible is deprecated
+	// The babBody->babaddons variable is deprecated
 	// Use bab_addonsInfos::getRows(); instead
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	$babBody->babaddons = bab_addonsInfos::getRows();
-
+	
 
 	
 
@@ -1273,8 +1273,6 @@ function bab_updateUserSettings()
 			
 
 			$babBody->lastlog = $arr['lastlog'];
-
-
 
 			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y') {
 				$babBody->isSuperAdmin = true;
