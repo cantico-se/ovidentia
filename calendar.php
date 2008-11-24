@@ -814,6 +814,33 @@ function updateEventAlert()
 }
 
 
+
+
+function bab_gotoCalendarView() {
+
+	global $babBody;
+
+	if( $babBody->icalendars->calendarAccess()) {
+		$babBody->calaccess = true;
+		switch($babBody->icalendars->defaultview)
+			{
+			case BAB_CAL_VIEW_DAY: $view='calday';	break;
+			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;
+			default: $view='calmonth'; break;
+		}
+
+		header('location:'.$GLOBALS['babUrlScript']."?tg=".$view);
+		exit;
+	}
+}
+
+
+
+
+
+
+
+
 /* main */
 
 $idx = bab_rp('idx');
@@ -922,6 +949,7 @@ switch($idx)
 		eventlist($_GET['from'],$_GET['to'],$_GET['calid']);
 		break;
 	default:
+		bab_gotoCalendarView();
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
