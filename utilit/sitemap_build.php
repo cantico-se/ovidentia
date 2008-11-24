@@ -1525,7 +1525,7 @@ function bab_sitemap_userSection(&$event) {
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
 function bab_sitemap_articles(&$event) {
-
+	global $babDB;
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 	
@@ -1586,18 +1586,22 @@ function bab_sitemap_articles(&$event) {
 	$delegations = bab_getUserVisiblesDelegations();
 	
 	foreach($delegations as $id_delegation => $arr) {
+
+		$res = bab_getArticleCategoriesRes(array(0), $id_delegation);
+		if (0 < $babDB->db_num_rows($res)) {
+
+			$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
 	
-		$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
-	
-		$item = $event->createItem('bab'.$dg.'Articles');
-		$item->setLabel(bab_translate("Articles"));
-		$item->setPosition(array('root', $id_delegation));
-		$item->copy_to_all_delegations = false;
-		$event->addFolder($item);
-	
-		$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
-		bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
-		
+			$item = $event->createItem('bab'.$dg.'Articles');
+			$item->setLabel(bab_translate("Articles"));
+			$item->setPosition(array('root', $id_delegation));
+			$item->copy_to_all_delegations = false;
+			$event->addFolder($item);
+
+			$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
+			bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
+		}
+
 	}
 }
 
