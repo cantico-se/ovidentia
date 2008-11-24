@@ -364,11 +364,40 @@ class bab_icalendars
 				$this->user_calendarids = $arr['user_calendarids'];
 				}
 			}
+		
 		if( empty($this->user_calendarids) && $this->id_percal != 0)
 			{
 			$this->user_calendarids = $this->id_percal;
 			}
 	}
+
+
+	function getUserCalendars() 
+	{
+
+		if (!empty($this->user_calendarids)) {
+			// user is logged
+			return $this->user_calendarids;
+
+		}
+		else {
+			// not logged, init user calendars with all accessible calendars
+			$arr = getAvailableGroupsCalendars();
+			$arr += getAvailableResourcesCalendars();
+			
+			$tmp = array();
+			foreach($arr as $cal) {
+				$tmp[] = $cal['idcal'];
+			}
+
+			$this->user_calendarids = implode(',', $tmp);
+		}
+
+		return $this->user_calendarids;
+
+	}
+
+
 
 	function initializePublicCalendars()
 	{

@@ -72,7 +72,7 @@ class cal_monthCls extends cal_wmdbaseCls
 
 		$this->cindex = 0;
 		$this->evtidx = 0;
-
+		
 		}
 
 	function prepare_events() {
@@ -276,7 +276,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 /* main */
 
-$calid =bab_rp('calid',$babBody->icalendars->user_calendarids);
+$calid =bab_rp('calid',$babBody->icalendars->getUserCalendars());
 $idx = bab_rp('idx', 'view');
 $date = bab_rp('date', date("Y,n,j"));
 
@@ -338,7 +338,7 @@ switch($idx)
 			{
 			$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
 			}
-
+		
 		if( !$calid )
 			{
 			$babBody->setTitle(bab_translate("Acces denied"));
