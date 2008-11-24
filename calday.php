@@ -268,7 +268,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 $idx = bab_rp('idx','view');
 $date = bab_rp('date', date("Y,n,j"));
-$calid =bab_rp('calid',$babBody->icalendars->user_calendarids);
+$calid =bab_rp('calid',$babBody->icalendars->getUserCalendars());
 
 
 switch($idx)
