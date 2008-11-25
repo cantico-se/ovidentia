@@ -196,6 +196,7 @@ function moveOptions(src,dest,action)
 	destcnt = 0;
 	rescnt = 0;
 	nbsel = 0;
+	current_optgroup = '';
 
 	while(destcnt < dest.options.length)
 		{
@@ -211,10 +212,11 @@ function moveOptions(src,dest,action)
 			{
 			nbsel++;
 			resopt[rescnt] = new Option(src.options[i].text, src.options[i].value);
+			current_optgroup = assoc[src.options[i].value];
 			
 			if (typeof cal_movecalendar != 'undefined')
 				{
-				cal_movecalendar(action,src.options[i].text, src.options[i].value, assoc[src.options[i].value]);
+				cal_movecalendar(action,src.options[i].text, src.options[i].value, current_optgroup);
 				}
 
 			src.options[i] = null;
@@ -238,6 +240,9 @@ function moveOptions(src,dest,action)
 		dest.options[nbsel + i] = resopt[i];
 		}
 
+	
+	// put option in correct optgroup with DOM
+
 	var sort = true;
 	
 	while (sort)
@@ -252,7 +257,45 @@ function moveOptions(src,dest,action)
 			}
 		sort = loop ? true : false;
 		}
+
+
+	// sort optgroup
+	if (destgroups[current_optgroup]) {
+		bab_calSortOptGroup(destgroups[current_optgroup]);
+	}
 }
+
+
+
+
+
+function bab_calSortOptGroup(current_optgroup) {
+
+	for (var i = 0; i < current_optgroup.childNodes.length; i++) {
+		lvl1node = current_optgroup.childNodes[i];
+		if ('OPTION' == lvl1node.nodeName) {
+			for (var j = i; j < current_optgroup.childNodes.length -1; j++) {
+				lvl2node1 = current_optgroup.childNodes[j];
+				lvl2node2 = current_optgroup.childNodes[j + 1];
+
+				if (lvl2node1.innerHTML.toLowerCase() > lvl2node2.innerHTML.toLowerCase()) {
+					current_optgroup.insertBefore(lvl2node2, lvl2node1);
+				}
+			}
+		}
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
 
 function movecalendar(action)
 	{
