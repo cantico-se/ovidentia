@@ -248,9 +248,9 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
-	if(!class_exists("tempa"))
+	if(!class_exists("notifyArticleHomePageCls"))
 		{
-		class tempa
+		class notifyArticleHomePageCls
 			{
 			var $articletitle;
 			var $message;
@@ -265,7 +265,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 			var $dateval;
 
 
-			function tempa($top, $title, $homepage0, $homepage1)
+			function notifyArticleHomePageCls($top, $title, $homepage0, $homepage1)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->articletitle = $title;
@@ -305,7 +305,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New article for home page"));
 
-	$tempa = new tempa($top, $title, $homepage0, $homepage1);
+	$tempa = new notifyArticleHomePageCls($top, $title, $homepage0, $homepage1);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlehomepage"));
 	$mail->mailBody($message, "html");
 
