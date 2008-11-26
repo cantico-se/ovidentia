@@ -187,8 +187,8 @@ class bab_inifile_requirements {
 	 */
 	function require_functionalities_directory($value) {
 
-		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/functionalities/';
-		$status = is_dir($images) && is_writable($images);
+		$functionalities = dirname($_SERVER['SCRIPT_FILENAME']).'/functionalities/';
+		$status = (is_dir($functionalities) && is_writable($functionalities)) || is_writable(dirname($_SERVER['SCRIPT_FILENAME']));
 		
 		return array(
 			'description'	=> bab_translate("Writable functionalities directory"),
