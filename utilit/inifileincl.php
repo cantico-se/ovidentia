@@ -225,6 +225,24 @@ class bab_inifile_requirements {
 	}
 	
 	
+	function require_search_engine($value) {
+
+		$SearchEngine = bab_searchEngineInfos();
+		
+		if (false === $SearchEngine) {
+			$current = bab_translate("Unavailable");
+		} else {
+			$current = $SearchEngine['name'];
+		}
+
+		return array(
+			'description'	=> bab_translate("Indexation and search engine"),
+			'current'		=> $current,
+			'result'		=> $current === $value
+		);
+	}
+	
+	
 	function require_addons_directory($value) {
 
 		include_once dirname(__FILE__).'/addonsincl.php';
