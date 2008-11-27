@@ -773,7 +773,20 @@ class bab_addonInfos {
 	 */
 	function getIconPath() {
 		$ini = $this->getIni();
-		$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-default.png';
+		
+		switch ($this->getAddonType()) {
+			case 'THEME':
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-theme.png';
+				break;
+			case 'LIBRARY':
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-library.png';
+				break;
+			case 'EXTENSION':
+			default:
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-extension.png';
+				break;
+		}
+//		$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-default.png';
 		
 		if (!isset($ini->inifile['icon'])) {
 			return $default;
