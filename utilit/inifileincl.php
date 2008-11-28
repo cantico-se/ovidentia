@@ -514,11 +514,13 @@ class bab_inifile_requirements {
 			// undefined on old mysql version
 			$charset = 'latin1';
 		}
+		
+		$arr_values = preg_split('/[\s,]+/', $value);
 
 		return array(
 			'description'	=> bab_translate("MySQL database charset"),
 			'current'		=> $charset,
-			'result'		=> $value === $charset
+			'result'		=> in_array($charset, $arr_values)
 		);
 	}
 	
@@ -539,11 +541,13 @@ class bab_inifile_requirements {
 			// undefined on old mysql version
 			$collation = 'latin1_swedish_ci';
 		}
+		
+		$arr_values = preg_split('/[\s,]+/', $value);
 
 		return array(
 			'description'	=> bab_translate("MySQL database collation"),
 			'current'		=> $collation,
-			'result'		=> $value === $collation
+			'result'		=> in_array($collation, $arr_values)
 		);
 	}
 	
