@@ -412,10 +412,21 @@ function printChartNode(&$obj, $id)
 function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 {
 	global $babBody;
-	$orgChart = new bab_OvidentiaOrgChart('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
 
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/orgchart/' . $ocid);
+	
+	if (isset($_COOKIE['orgChart_' . $ocid . 'relative'])) {
+		$relativeThreshold = ($_COOKIE['orgChart_' . $ocid . 'relative'] == 'on');
+	} else {
+		$relativeThreshold = $registry->getValue('relative');
+		if (!isset($relativeThreshold)) {
+			$relativeThreshold = true;
+		}
+	}
+//	var_dump($relativeThreshold);echo "*";
+	$orgChart = new bab_OvidentiaOrgChart('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode, $relativeThreshold);
+//	$orgChart->setRelativeThreshold($relativeThreshold);
 	
 	if (isset($_COOKIE['orgChart_' . $ocid . 'threshold'])) {
 		$verticalThreshold = $_COOKIE['orgChart_' . $ocid . 'threshold'];
@@ -429,17 +440,9 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 			}
 		}
 	}
+	
 	$orgChart->setVerticalThreshold($verticalThreshold);
 
-	if (isset($_COOKIE['orgChart_' . $ocid . 'relative'])) {
-		$relativeThreshold = ($_COOKIE['orgChart_' . $ocid . 'relative'] == 'on');
-	} else {
-		$relativeThreshold = $registry->getValue('relative');
-		if (!isset($relativeThreshold)) {
-			$relativeThreshold = true;
-		}
-	}
-//	$orgChart->setRelativeThreshold($relativeThreshold);
 	
 	$openNodes = $registry->getValue('open_nodes');
 	if (!is_array($openNodes)) {

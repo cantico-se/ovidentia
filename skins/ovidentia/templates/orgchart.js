@@ -825,7 +825,7 @@ function bab_initOrgChart(orgChartDiv)
 		for (var i = 1; i <= 9; i++) {
 			option = document.createElement('OPTION');
 			option.value = i + 1;
-			option.className = 'level' + i;
+//			option.className = 'level' + i;
 			option.appendChild(document.createTextNode(i));
 			thresholdSelect.appendChild(option);
 		}
@@ -838,7 +838,7 @@ function bab_initOrgChart(orgChartDiv)
 		orgChartDiv.thresholdSelect = thresholdSelect;
 		
 		// Relative threshold selector.
-		var relativeWidget = createToolbarGroup(/*window.bab_Translations['relative'] + ' '*/ 'Relatif', '');
+		var relativeWidget = createToolbarGroup(window.bab_Translations['relative'] + ' ', '');
 		//relativeWidget.title = window.bab_Translations['relative_tip'];
 
 		var relativeCheckbox = document.createElement('INPUT');

@@ -77,6 +77,7 @@ class bab_OrgChart extends bab_TreeView
 	 * @access private
 	 */	
 	var $_verticalThreshold;
+	var $_relativeThreshold;
 	var $_startLevel;
 	
 	var $_locationElements;
@@ -110,6 +111,7 @@ class bab_OrgChart extends bab_TreeView
 		parent::bab_TreeView($id);
 
 		$this->_verticalThreshold = 3;
+		$this->_relativeThreshold = true;
 		
 		$this->_startLevel = $startLevel;
 		$this->_templateFile = 'treeview.html';
@@ -124,6 +126,7 @@ class bab_OrgChart extends bab_TreeView
 		$this->t_fit_width = bab_translate("Fit width");
 		$this->t_threshold = bab_translate("Horizontal/vertical threshold");
 		$this->t_threshold_tip = bab_translate("Level at which org chart branchs will be displayed vertically");
+		$this->t_relative = bab_translate("Relative to org chart top");
 		$this->t_visible_levels = bab_translate("Visible levels");
 		$this->t_visible_levels_tip = bab_translate("Only show n first levels of the org chart");
 		$this->t_zoom_in = bab_translate("Zoom in");
@@ -170,16 +173,30 @@ class bab_OrgChart extends bab_TreeView
 
 	/**
 	 * Sets the depth level from which the org chart branches are displayed vertically.
+	 * 
 	 * @param int	$threshold
 	 * @access public
 	 */
 	function setVerticalThreshold($threshold)
 	{
-		$this->_verticalThreshold = $threshold;		
+		$this->_verticalThreshold = $threshold;
+	}
+
+	/**
+	 * Sets if the depth level from which the org chart branches are displayed vertically
+	 * is relative to the root level or to the start level.
+	 * 
+	 * @param bool	$relative
+	 * @access public
+	 */
+	function setRelativeThreshold($relative)
+	{
+		$this->_relativeThreshold = $relative;
 	}
 
 	/**
 	 * Returns the depth level from which the org chart branches are displayed vertically.
+	 * 
 	 * @access public
 	 * @return int
 	 */
@@ -216,7 +233,15 @@ class bab_OrgChart extends bab_TreeView
 	function getNextElement()
 	{
 		$this->t_tooltip = '';
-		$verticalThreshold = $this->_verticalThreshold - $this->_startLevel;
+		if ($this->_relativeThreshold) {
+			$verticalThreshold = $this->_verticalThreshold - $this->_startLevel;
+			if ($verticalThreshold < 2) {
+				$verticalThreshold = 2;
+			}
+		} else {
+			$verticalThreshold = $this->_verticalThreshold;
+		}
+//		echo "[" . $verticalThreshold . "][" . $this->_startLevel . "]";
 		
 		if (is_null($this->_iterator)) {
 			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
@@ -336,7 +361,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 * @return bab_OrgChart
 	 * @access public
 	 */
-	function bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
+	function bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false, $relative = true)
 	{
 		parent::bab_OrgChart($id, $startLevel);
 
@@ -344,6 +369,8 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		$this->_startEntityId = $this->t_entityId = $startEntityId;
 		$this->_userId = $this->t_userId = $userId;
 		$this->_adminMode = $this->t_adminMode = $adminMode;
+
+		$this->setRelativeThreshold($relative);
 
 		$this->_initLocation();
 	}
@@ -389,7 +416,14 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 			} while ($entityId != 0);
 		}
 		$this->_locationElements = array_reverse($this->_locationElements, true);
-		$this->setVerticalThreshold($this->getVerticalThreshold() - (count($this->_locationElements) - 1));
+		
+//		var_dump($this->_relativeThreshold);
+//		die();
+		if ($this->_relativeThreshold) {
+			$this->setVerticalThreshold($this->getVerticalThreshold() - (count($this->_locationElements) - 1));
+		}
+		$this->_startLevel = count($this->_locationElements) - 1;
+//		$this->setVerticalThreshold(5);
 	}
 
 	/**

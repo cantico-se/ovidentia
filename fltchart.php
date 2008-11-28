@@ -32,7 +32,7 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 	global $babLittleBody;
 
 	
-	// We check if anovml file has been specified for the embedded user view has been specified. 
+	// We check if an ovml file has been specified for the embedded user view has been specified. 
 	$sql = 'SELECT ovml_embedded
 			FROM '.BAB_ORG_CHARTS_TBL.'
 			WHERE id='.$babDB->quote($ocid);
