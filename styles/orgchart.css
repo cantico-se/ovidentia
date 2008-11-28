@@ -560,6 +560,16 @@ div.entity.matching {
 	padding-left: 18px;
 }
 
+.bab_more {
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	background-image: url('../skins/ovidentia/images/orgchart/more.gif');
+	text-decoration: none;
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	padding-left: 18px;
+}
+
 .bab_restore {
 	voice-family: "\"}\"";
 	voice-family: inherit;
