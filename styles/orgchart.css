@@ -87,6 +87,7 @@ div.entity .members .member {
 	margin: 0 auto;
 	color: white;
 	padding: 0.5em;
+	overflow: hidden;
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;

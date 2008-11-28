@@ -83,6 +83,64 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 }
 
 
+function bab_popupContactWithOvml($ocid, $oeid, $userid, $access)
+{
+	global $babDB;
+
+	
+	// We check if an ovml file has been specified for the embedded user view has been specified. 
+	$sql = 'SELECT ovml_detail
+			FROM '.BAB_ORG_CHARTS_TBL.'
+			WHERE id='.$babDB->quote($ocid);
+	$arr = $babDB->db_fetch_array($babDB->db_query($sql));
+
+
+		
+	if (empty($userid)) {
+		include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
+		
+		$members = bab_OCselectEntityCollaborators($oeid);
+		if ($members && ($member = $babDB->db_fetch_array($members))) {
+			$userid = $member['id_dir_entry'];
+			$directoryid = $member['id_directory'];
+		}
+	} else {
+		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+
+		$sql = 'SELECT id_directory
+				FROM '.BAB_DBDIR_ENTRIES_TBL.'
+				WHERE id='.$babDB->quote($userid);
+		$entries = $babDB->db_fetch_array($babDB->db_query($sql));
+		$directoryid = $entries['id_directory'];
+	}
+	if ($directoryid == 0) {
+		$sql = 'SELECT id
+				FROM '.BAB_DB_DIRECTORIES_TBL.'
+				WHERE id_group='.$babDB->quote(BAB_REGISTERED_GROUP);
+		$directories = $babDB->db_fetch_array($babDB->db_query($sql));
+		$directoryid = $directories['id'];
+	}
+	
+	$args = array(
+			'ocid' => $ocid,
+			'entityid' => $oeid,
+			'userid' => $userid,
+			'directoryid' => $directoryid
+	);
+
+	
+	if (!empty($arr['ovml_detail'])) {
+		echo(bab_printOvmlTemplate($arr['ovml_detail'], $args));
+		return $userid;
+	} else {
+		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+		summaryDbContactWithOvml($args);
+	}
+}
+
+
+
+
 function listOrgChartRoles($ocid, $oeid, $iduser)
 	{
 	global $babLittleBody;
@@ -481,6 +539,7 @@ switch($idx)
 		$babLittleBody->setCurrentItemMenu($idx);
 		viewOrgChartRoleUpdate($ocid, $oeid, $iduser);
 		break;
+
 	case "detr":
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
@@ -492,6 +551,10 @@ switch($idx)
 		$babLittleBody->setCurrentItemMenu($idx);
 		break;
 
+	case "detrpopup":
+		$iduser = bab_popupContactWithOvml($ocid, $oeid, $iduser, $access);
+		break;
+		
 	case "more":
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
