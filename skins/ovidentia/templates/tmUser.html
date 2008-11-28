@@ -1442,7 +1442,7 @@ function tskMgr_showHide(oControl)
 					<!--#if m_datas[isProjectDisplayed] -->
 						<select name="oTaskFilter" onchange="onTaskFilterChanged(this, 'iIdProject')">
 						<!--#in getNextTaskFilter -->
-							<option value="{ m_datas[iTaskFilterValue] }" { m_datas[sTaskFilterSelected] } >{ m_datas[sTaskFilterName] }</option>
+							<option value="{ m_datas[iTaskFilterValue] }_{ m_datas[iDisplayAddTask] }" { m_datas[sTaskFilterSelected] } >{ m_datas[sTaskFilterName] }</option>
 						<!--#endin getNextTaskFilter -->
 						</select>
 					<!--#endif m_datas[isProjectDisplayed] -->
