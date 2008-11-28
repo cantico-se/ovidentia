@@ -1346,13 +1346,16 @@ function getSelectCtrlValue(oCtrl)
 function onTaskFilterChanged(oCtrl, sHiddenName)
 {
 	var form = document.forms.taskListFilter;
-	var iIdProject = getSelectCtrlValue(oCtrl);
+	var aValue = getSelectCtrlValue(oCtrl).split('_');
+	
+	var iIdProject = aValue[0];
+	var iIsManager = aValue[1];
 	document.forms['taskListFilter'].elements[sHiddenName].value = iIdProject;
 	
 	var oAddBtn = document.getElementById('sAddTaskBtn');
 	var oAddIcon = document.getElementById('oAddIcon');
 
-	if(-1 != iIdProject)
+	if(-1 != iIdProject && 1 == iIsManager)
 	{
 		if(null != oAddBtn)
 		{
