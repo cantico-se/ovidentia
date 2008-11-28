@@ -1894,6 +1894,7 @@
 <string id="Specify which fields will be displayed when browsing directory">Indiquez les champs à afficher lors de la consultation de l'annuaire</string>
 <string id="OVML file to be used for list">Fichier OVML à utiliser lors de l'affichage de la liste</string>
 <string id="OVML file to be used for detail">Fichier OVML à utiliser lors de l'affichage d'une fiche</string>
+<string id="OVML file to be used for embedded view">Fichier OVML à utiliser lors de l'affichage intégré</string>
 <string id="The request has been modified">La demande à été modifiée</string>
 
 <string id="Swish-e command (swish-e.exe)">Commande swish-e (swish-e.exe)</string>
@@ -2439,6 +2440,9 @@
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
 <string id="Loading...">En cours de chargement...</string>
 <string id="Fit width">Ajuster à la largeur de la fenêtre</string>
+<string id="Horizontal/vertical threshold">Seuil horizontal/vertical</string>
+<string id="Display parameters">Paramètres d'affichage</string>
+<string id="Level at which org chart branchs will be displayed vertically">Niveau à partir duquel les branches sont affichées verticalement</string>
 <string id="Visible levels">Niveaux visibles</string>
 <string id="Only show n first levels of the org chart">Affiche seulement les n premiers niveaux</string>
 <string id="Zoom in">Agrandir</string>

@@ -86,14 +86,14 @@ function bab_search()
 		context.nbMatches = 0;
 		context.tree.collapse = bab_collapseOrgChart;
 		context.tree.collapse();
-		
+
 		context.tree.initSearch = bab_initSearch;
 		context.tree.initSearch();
 
 		context.targetString = cleanStringDiacritics(context.inputField.value);
 	}
 	var targetString = context.targetString;
-	
+
 	var nbItems = context.nbItemsPerLoop;
 
 	var currentIndex = context.currentIndex;
@@ -311,6 +311,10 @@ function bab_saveStateInCookie()
 						+ '; path=' + cookiePath;
 	document.cookie = this.id + 'zoom=' + escape(this.zoomFactor)
 						+ '; path=' + cookiePath;
+	document.cookie = this.id + 'threshold=' + escape(this.thresholdLevel)
+						+ '; path=' + cookiePath;
+	document.cookie = this.id + 'relative=' + escape(this.thresholdRelative)
+						+ '; path=' + cookiePath;
 }
 
 
@@ -329,6 +333,10 @@ function bab_loadStateFromCookie()
 			} else if (keyValue[0] == this.id + 'zoom') {
 				//this.zoomFactor = parseFloat(keyValue[1]);
 				this.setZoom(parseFloat(keyValue[1]));
+			}  else if (keyValue[0] == this.id + 'threshold') {
+				this.thresholdLevel = parseInt(keyValue[1]);
+			}  else if (keyValue[0] == this.id + 'relative') {
+				this.setRelative(keyValue[1]);
 			}
 		}
 	}
@@ -349,6 +357,25 @@ function bab_refresh(orgChartDiv)
 
 
 
+function bab_setThreshold()
+{
+	var orgChartDiv = this.controlledElement;
+	orgChartDiv.thresholdLevel = parseInt(this.value);
+	
+	orgChartDiv.saveStateInCookie();
+
+	document.location.reload();
+}
+
+function bab_setThresholdRelative()
+{
+	var orgChartDiv = this.controlledElement;
+	orgChartDiv.thresholdRelative = (this.checked ? 'on' : 'off');
+	
+	orgChartDiv.saveStateInCookie();
+
+	document.location.reload();
+}
 
 function bab_setLevel()
 {
@@ -361,7 +388,7 @@ function bab_setLevel()
 		previousLevels.push('level' + i);
 	}
 	var nextLevels = Array();
-	for (var i = orgChartDiv.currentLevel + 1; i <= 7; i++) {
+	for (var i = orgChartDiv.currentLevel + 1; i <= 9; i++) {
 		nextLevels.push('level' + i);
 	}
 
@@ -385,6 +412,13 @@ function bab_setLevel()
 }
 
 
+function bab_setRelative(relativeThreshold)
+{
+	this.relativeThreshold = relativeThreshold;
+	this.relativeCheckbox.checked = (relativeThreshold == 'on');
+	bab_refresh(this);
+}
+
 
 function bab_setZoom(zoomFactor)
 {
@@ -398,6 +432,7 @@ function bab_zoomIn(evt)
     evt = evt || window.event;
 	var orgChartDiv = this.getControlledElement();
 	orgChartDiv.setZoom(orgChartDiv.zoomFactor * 1.071773463);
+	orgChartDiv.saveStateInCookie();
 	return false;
 }
 
@@ -406,6 +441,7 @@ function bab_zoomOut(evt)
     evt = evt || window.event;
 	var orgChartDiv = this.getControlledElement();
 	orgChartDiv.setZoom(orgChartDiv.zoomFactor / 1.071773463);
+	orgChartDiv.saveStateInCookie();
 	return false;
 }
 
@@ -424,6 +460,7 @@ function bab_zoomFit()
 	this.zoomText.firstChild.nodeValue = parseInt(orgChartDiv.zoomFactor * 100 + 0.5) + "%";
 	tables[0].style.fontSize = orgChartDiv.zoomFactor + 'em';
 	orgChartDiv.style.display = '';
+	orgChartDiv.saveStateInCookie();
 }
 
 
@@ -481,7 +518,7 @@ function bab_resizeOrgChartContainer() {
 function bab_saveState()
 {
 	var orgChartDiv = this.getControlledElement();
-	window.location = '?tg=frchart&idx=save_state&disp=disp3&ocid=' + orgChartDiv.orgChartId + '&oeid=' + orgChartDiv.entityId + '&iduser=' + orgChartDiv.userId + '&open_nodes=' + orgChartDiv.getOpenNodes().join(',') + '&open_members=' + orgChartDiv.getOpenMembers().join(',') + '&zoom_factor=' + orgChartDiv.zoomFactor;
+	window.location = '?tg=frchart&idx=save_state&disp=disp3&ocid=' + orgChartDiv.orgChartId + '&oeid=' + orgChartDiv.entityId + '&iduser=' + orgChartDiv.userId + '&open_nodes=' + orgChartDiv.getOpenNodes().join(',') + '&open_members=' + orgChartDiv.getOpenMembers().join(',') + '&zoom_factor=' + orgChartDiv.zoomFactor + '&threshold_level=' + orgChartDiv.thresholdLevel;
 }
 
 function bab_restoreState()
@@ -499,8 +536,14 @@ function bab_restoreState()
 	document.cookie = orgChartDiv.id + 'zoom=' + escape(null)
 						+ '; expires=' + expiryDate.toGMTString()
 						+ '; path=' + cookiePath;
+	document.cookie = orgChartDiv.id + 'threshold=' + escape(null)
+						+ '; expires=' + expiryDate.toGMTString()
+						+ '; path=' + cookiePath;
+	document.cookie = orgChartDiv.id + 'relative=' + escape(null)
+						+ '; expires=' + expiryDate.toGMTString()
+						+ '; path=' + cookiePath;
 	window.onunload = function() {	};
-	window.location = '?tg=frchart&idx=list&disp=disp3&ocid=' + orgChartDiv.orgChartId + '&oeid=' + orgChartDiv.entityId + '&iduser=' + orgChartDiv.userId;
+	window.location.href = '?tg=frchart&idx=list&disp=disp3&ocid=' + orgChartDiv.orgChartId + '&oeid=' + orgChartDiv.entityId + '&iduser=' + orgChartDiv.userId;
 }
 
 function bab_print()
@@ -514,7 +557,15 @@ function bab_help()
 	window.open('?tg=oml&echo=1&file=help/orgchart.html');
 }
 
+function bab_more()
+{
+	var orgChartDiv = this.getControlledElement();
+	var orgChartContainer = orgChartDiv.parentNode;
 
+	var configbar = $(orgChartContainer).select('.bab_treeToolbar')[1];
+	//configbar.style.display = 'none';
+	$(configbar).toggle();
+}
 
 
 function getControlledElement()
@@ -533,7 +584,11 @@ function createToolbarGroup(label, className)
 {
 	var toolbarGroup = document.createElement('SPAN');
 	toolbarGroup.className = 'bab_toolbarGroup ' + className;
-	toolbarGroup.appendChild(document.createTextNode(label));
+	
+	var spanLabel = document.createElement('SPAN');
+	spanLabel.appendChild(document.createTextNode(label));
+	spanLabel.className = 'bab_label';
+	toolbarGroup.appendChild(spanLabel);
 	toolbarGroup.getControlledElement = getControlledElement;
 	toolbarGroup.onselectstart = function () { return false; } // ie
 	toolbarGroup.onmousedown = function () { return false; } // mozilla
@@ -603,9 +658,23 @@ function bab_createContextMenu(actionsDiv, entity)
 	    document.body.appendChild(back);
 		back.appendChild(entity.actions);
 		entity.actions.style.position = "absolute";
-		entity.actions.style.left = (cursorPosition.x - 32) + 'px';
-		entity.actions.style.top = (cursorPosition.y) + 'px';
-		var style = entity.actions.style; style.display == '' ? style.display = 'none' : style.display = '';
+		
+		var style = entity.actions.style;
+
+		style.display == '' ? style.display = 'none' : style.display = '';
+		
+		var windowWidth = (typeof window.innerWidth != 'undefined') ? window.innerWidth : document.body.offsetWidth;
+
+		var menuWidth = entity.actions.offsetWidth;
+
+		if (cursorPosition.x > windowWidth - menuWidth) {
+			style.left = (windowWidth - menuWidth - 4) + 'px';
+		} else {
+			style.left = (cursorPosition.x - 32) + 'px';
+		}
+		style.top = (cursorPosition.y + 12) + 'px';
+		
+
 	};
 	entity.menuButton = menuButton;
 	entity.onmouseover = function() { this.menuButton.style.display = ''; };
@@ -674,30 +743,6 @@ function bab_initOrgChart(orgChartDiv)
 		orgChartDiv.setZoom = bab_setZoom;
 		orgChartDiv.setZoom(orgChartDiv.zoomFactor);
 
-		var levelWidget = createToolbarGroup(window.bab_Translations['visible_levels'] + ' ', '');
-		levelWidget.title = window.bab_Translations['visible_levels_tip'];
-
-		var levelSelect = document.createElement('SELECT');
-		levelSelect.controlledElement = orgChartDiv;
-
-		var option = document.createElement('OPTION');
-		option.appendChild(document.createTextNode('-'));
-		levelSelect.appendChild(option);
-
-		for (var i = 1; i <= 7; i++) {
-			option = document.createElement('OPTION');
-			option.value = i;
-			option.appendChild(document.createTextNode(i));
-			levelSelect.appendChild(option);
-		}
-		levelSelect.onchange = bab_setLevel;
-		
-		levelWidget.appendChild(levelSelect);
-		
-		toolbar.appendChild(levelWidget);
-		
-		orgChartDiv.levelSelect = levelSelect;
-		
 		if (orgChartDiv.adminMode) {
 			var save = createButton('', 'bab_save');
 			save.onclick = bab_saveState;
@@ -721,6 +766,10 @@ function bab_initOrgChart(orgChartDiv)
 		help.title = window.bab_Translations['help'];
 		toolbar.appendChild(help);
 
+		var more = createButton(window.bab_Translations['parameters'], 'bab_more');
+		more.onclick = bab_more;
+		more.title = window.bab_Translations['parameters'];
+		toolbar.appendChild(more);
 /*
 		var searchWidget = createLabelInput('Search' + ' ', '');
 		searchWidget.title = 'Search entities';
@@ -733,6 +782,78 @@ function bab_initOrgChart(orgChartDiv)
 		searchWidget.appendChild(search);
 		window.bab_searchContext = new bab_SearchContext(orgChartDiv, search);
 */
+	}
+	var configbar = $(orgChartContainer).select('.bab_treeToolbar')[1]; //bab_getElementsByClassName(orgChartContainer, 'bab_treeToolbar')[0];
+	if (configbar) {
+
+		configbar.style.display = 'none';
+
+		// Visible level selector.
+		var levelWidget = createToolbarGroup(window.bab_Translations['visible_levels'] + ' ', '');
+		levelWidget.title = window.bab_Translations['visible_levels_tip'];
+
+		var levelSelect = document.createElement('SELECT');
+		levelSelect.controlledElement = orgChartDiv;
+
+		var option = document.createElement('OPTION');
+		option.appendChild(document.createTextNode('-'));
+		levelSelect.appendChild(option);
+
+		for (var i = 1; i <= 9; i++) {
+			option = document.createElement('OPTION');
+			option.value = i;
+			option.className = 'level' + i;
+			option.appendChild(document.createTextNode(i));
+			levelSelect.appendChild(option);
+		}
+		levelSelect.onchange = bab_setLevel;
+		
+		levelWidget.appendChild(levelSelect);
+		
+		configbar.appendChild(levelWidget);
+		
+		orgChartDiv.levelSelect = levelSelect;
+
+
+		// Horizontal-vertical threshold selector.
+		var thresholdWidget = createToolbarGroup(window.bab_Translations['threshold'] + ' ', '');
+		thresholdWidget.title = window.bab_Translations['threshold_tip'];
+
+		var thresholdSelect = document.createElement('SELECT');
+		thresholdSelect.controlledElement = orgChartDiv;
+
+		for (var i = 1; i <= 9; i++) {
+			option = document.createElement('OPTION');
+			option.value = i + 1;
+			option.className = 'level' + i;
+			option.appendChild(document.createTextNode(i));
+			thresholdSelect.appendChild(option);
+		}
+		thresholdSelect.onchange = bab_setThreshold;
+		
+		thresholdWidget.appendChild(thresholdSelect);
+		
+		configbar.appendChild(thresholdWidget);
+		
+		orgChartDiv.thresholdSelect = thresholdSelect;
+		
+		// Relative threshold selector.
+		var relativeWidget = createToolbarGroup(/*window.bab_Translations['relative'] + ' '*/ 'Relatif', '');
+		//relativeWidget.title = window.bab_Translations['relative_tip'];
+
+		var relativeCheckbox = document.createElement('INPUT');
+		relativeCheckbox.type = 'checkbox';
+		relativeCheckbox.controlledElement = orgChartDiv;
+		relativeCheckbox.onclick = bab_setThresholdRelative;
+		
+		relativeWidget.appendChild(relativeCheckbox);
+		
+		configbar.appendChild(relativeWidget);
+		
+		orgChartDiv.relativeCheckbox = relativeCheckbox;
+
+		orgChartDiv.setRelative = bab_setRelative;
+		
 	}
 
 	//console && console.timeEnd('toolbar');
@@ -782,6 +903,8 @@ function bab_initOrgChart(orgChartDiv)
 
 
 	orgChartDiv.levelSelect.value = '-';
+	
+	orgChartDiv.thresholdSelect.value = orgchart.thresholdLevel;
 
 	window.setTimeout('bab_setOpenNodes(window.bab_orgChart.bab_openNodes);'
 						+ 'bab_setOpenMembers(window.bab_orgChart.bab_openMembers);'

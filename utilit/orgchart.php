@@ -108,7 +108,9 @@ class bab_OrgChart extends bab_TreeView
 	function bab_OrgChart($id, $startLevel = 0)
 	{
 		parent::bab_TreeView($id);
+
 		$this->_verticalThreshold = 3;
+		
 		$this->_startLevel = $startLevel;
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'orgchart';
@@ -119,15 +121,18 @@ class bab_OrgChart extends bab_TreeView
 		$this->_zoomFactor = 1.0;
 		$this->_locationElements = array();
 
-		$this->t_fit_width = bab_translate('Fit width');
-		$this->t_visible_levels = bab_translate('Visible levels');
-		$this->t_visible_levels_tip = bab_translate('Only show n first levels of the org chart');
-		$this->t_zoom_in = bab_translate('Zoom in');
-		$this->t_zoom_out = bab_translate('Zoom out');
-		$this->t_default_view = bab_translate('Default view');
-		$this->t_save_default_view = bab_translate('Save default view');
-		$this->t_print = bab_translate('Print');
-		$this->t_help = bab_translate('Help');
+		$this->t_fit_width = bab_translate("Fit width");
+		$this->t_threshold = bab_translate("Horizontal/vertical threshold");
+		$this->t_threshold_tip = bab_translate("Level at which org chart branchs will be displayed vertically");
+		$this->t_visible_levels = bab_translate("Visible levels");
+		$this->t_visible_levels_tip = bab_translate("Only show n first levels of the org chart");
+		$this->t_zoom_in = bab_translate("Zoom in");
+		$this->t_zoom_out = bab_translate("Zoom out");
+		$this->t_default_view = bab_translate("Default view");
+		$this->t_save_default_view = bab_translate("Save default view");
+		$this->t_print = bab_translate("Print");
+		$this->t_help = bab_translate("Help");
+		$this->t_parameters = bab_translate("Display parameters");
 	}
 
 	/**

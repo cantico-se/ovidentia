@@ -59,6 +59,11 @@ div.entity .members .member {
 	margin-left: 1em;
 }
 
+
+.orgchart {
+	background-color: #225577;
+}
+
 .orgchart table.horizontal {
 	border-collapse: collapse;
 	font-family: Tahoma, Verdana, sans-serif;
@@ -136,47 +141,160 @@ div.entity .members .member {
 }
 
 
+
 .level1 div.entity {
 	margin: 0 auto;
 	width: 18em;
 	background-image: none;
 	background-color: #86bf98;
-	border: 3px solid black;
+	border: 3px solid #000000;
 }
 .level1 div.entity a {
 	color: #ffffff;
+}
+option.level1 {
+	font-weight: bold;
+	border-left: 32px solid #86bf98;
+	text-align: right;
+	margin-bottom: 1px;
 }
 
 .level2 div.entity {
 	width: 16em;
 	background-image: none;
 	background-color: #86adbf;
-	border: 3px solid black;
+	border: 3px solid #000000;
 }
+.level2 div.entity a {
+	color: #ffffff;
+}
+option.level2 {
+	font-weight: bold;
+	border-left: 32px solid #86adbf;
+	text-align: right;
+	margin-bottom: 1px;
+}
+
 
 
 .level3 div.entity {
 	width: 14.5em;
 	background-image: none;
 	background-color: #bf86ad;
-	border: 3px solid black;	
+	border: 3px solid #000000;
 	color: black;
+}
+.level3 div.entity a {
+	color: #ffffff;
+}
+option.level3 {
+	font-weight: bold;
+	border-left: 32px solid #bf86ad;
+	text-align: right;
+	margin-bottom: 1px;
 }
 
 .level4 div.entity {
 	width: 14em;
 	background-image: none;
 	background-color: #bf9886;
-	border: 3px solid black;	
+	border: 3px solid #000000;
 	color: black;
+}
+.level4 div.entity a {
+	color: #ffffff;
+}
+option.level4 {
+	font-weight: bold;
+	border-left: 32px solid #bf9886;
+	text-align: right;
+	margin-bottom: 1px;
 }
 
 .level5 div.entity {
 	width: 14em;
 	background-image: none;
-	background-color: #bbbbbb;
-	border: 3px solid black;	
-	color: black;
+/*	background-color: #939393;*/
+	background-color: #ADCCB7;
+	border: 2px solid #000000;
+	color: #000000;
+}
+.level5 div.entity a {
+	color: #000000;
+}
+option.level5 {
+	font-weight: bold;
+	border-left: 32px solid #ADCCB7;
+	text-align: right;
+	margin-bottom: 1px;
+}
+
+.level6 div.entity {
+	width: 14em;
+	background-image: none;
+/*	background-color: #b4b4b4;*/
+	background-color: #A3BFCC;
+	border: 2px solid #000000;
+	color: #000000;
+}
+.level6 div.entity a {
+	color: #000000;
+}
+option.level6 {
+	font-weight: bold;
+	border-left: 32px solid #A3BFCC;
+	text-align: right;
+	margin-bottom: 1px;
+}
+
+
+.level7 div.entity {
+	width: 14em;
+	background-image: none;
+/*	background-color: #cccccc;*/
+	background-color: #AD9CA9;
+	border: 2px solid #000000;
+	color: #000000;
+}
+.level7 div.entity a {
+	color: #000000;
+}
+option.level7 {
+	font-weight: bold;
+	border-left: 32px solid #AD9CA9;
+	text-align: right;
+	margin-bottom: 1px;
+}
+
+.level8 div.entity {
+	width: 14em;
+	background-image: none;
+/*	background-color: #dddddd;*/
+	background-color: #D9D0C3;
+	border: 1px solid #000000;
+	color: #000000;
+}
+.level8 div.entity a {
+	color: #000000;
+}
+option.level8 {
+	font-weight: bold;
+	border-left: 32px solid #D9D0C3;
+	text-align: right;
+	margin-bottom: 1px;
+}
+
+option.level9 {
+	font-weight: bold;
+	border-left: 32px solid #eeeeee;
+	text-align: right;
+	margin-bottom: 1px;
+}
+option.level10 {
+	font-weight: bold;
+	border-left: 32px solid #ffffff;
+	text-align: right;
+	margin-bottom: 1px;
 }
 
 
@@ -354,14 +472,28 @@ div.entity.matching {
 	font-size: 10px;
 	border: 1px solid black;
 }
-
-.bab_toolbarGroup {
-	padding: 0 8px;
+.bab_treeToolbar input {
+	margin-bottom: 0;
 	vertical-align: middle;
 }
 
+
+.bab_treeToolbar .bab_label {
+	padding: 0 1em 0 0;
+	vertical-align: middle;
+	display: inline-block;
+	display: -moz-inline-block;
+}
+
+.bab_toolbarGroup {
+	padding: 0 8px;
+	vertical-align: top;
+	display: inline-block;
+	display: -moz-inline-block;
+}
+
 .bab_treeToolbar .bab_toolbarButton {
-	margin: 5px;
+	margin: 0 5px;
 	padding-left: 16px;
 	cursor: pointer;
 	vertical-align: middle;

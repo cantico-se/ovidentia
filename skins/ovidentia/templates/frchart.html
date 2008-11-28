@@ -728,7 +728,7 @@ function bab_showAddressesWindow()
 <input type="hidden" name="message" value="" />
 <table id="bab_user_list" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
         <tr> 
-          <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td>
+<!--      <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td> -->
           <td class="BabSiteAdminSmall" valign="middle" width="1%" nowrap ><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0" /></td>
           <!--#in getnextcol -->
           <td class="BabSiteAdminSmall" valign="middle" nowrap ><b>
@@ -742,16 +742,21 @@ function bab_showAddressesWindow()
         </tr>
         <!--#in getnext -->
         <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-<!--      <td align="center" valign="middle" width="1%" >&nbsp;</td> -->
-          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" onclick="bab_dialog(this.href, { width: '600px', height: '600px' }); return false;" href="index.php?tg=directory&idx=ddbovml&directoryid=5&userid={ userid }" onclick="window.open(this.href); return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
-          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+          <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" onclick="bab_dialog(this.href, { width: '600px', height: '600px' }); return false;" href="index.php?tg=directory&idx=ddbovml&directoryid={ iddir }&userid={ userid }" onclick="window.open(this.href); return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td>
+<!--      <td align="center" valign="middle" width="1%" ><a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')"><img src="{ babSkinPath }images/Puces/contact.png" border="0"></a></td> -->
           <!--#in getnextcolval -->
           <td align="left" valign="middle">
 			<!--#if bmail -->
 			<input type="hidden" name="to[]" value="{ coltxt }" />
 			<a href="mailto:{ coltxt }">{ coltxt }</a>
 			<!--#else bmail -->
-			{ coltxt }
+				<!--#if colnumber "== 0" -->
+				<a class="BabNameEmailLink" href="javascript:updateFlbFrame('{ uoeid }&idx=detr&iduser={ userid }');updateFltFrame('{ uoeid }&idx=listr')">
+				<!--#endif colnumber -->
+				{ coltxt }
+				<!--#if colnumber "== 0" -->
+				</a>
+				<!--#endif colnumber -->
 			<!--#endif bmail -->
 		  </td>
           <!--#endin getnextcolval -->

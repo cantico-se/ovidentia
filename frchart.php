@@ -414,19 +414,32 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 	global $babBody;
 	$orgChart = new bab_OvidentiaOrgChart('orgChart_' . $ocid, $ocid, $oeid, $iduser, 0, $adminMode);
 
-	// 
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/orgchart/' . $ocid);
-
-	$verticalThreshold = $registry->getValue('vertical_threshold');
-	if (!isset($verticalThreshold)) {
-		if (isset($GLOBALS['babChartVerticalThreshold'])) {
-			$verticalThreshold = $GLOBALS['babChartVerticalThreshold'];
-		} else {
-			$verticalThreshold = 3;
+	
+	if (isset($_COOKIE['orgChart_' . $ocid . 'threshold'])) {
+		$verticalThreshold = $_COOKIE['orgChart_' . $ocid . 'threshold'];
+	} else {
+		$verticalThreshold = $registry->getValue('threshold_level');
+		if (!isset($verticalThreshold)) {
+			if (isset($GLOBALS['babChartVerticalThreshold'])) {
+				$verticalThreshold = $GLOBALS['babChartVerticalThreshold'];
+			} else {
+				$verticalThreshold = 3;
+			}
 		}
 	}
 	$orgChart->setVerticalThreshold($verticalThreshold);
+
+	if (isset($_COOKIE['orgChart_' . $ocid . 'relative'])) {
+		$relativeThreshold = ($_COOKIE['orgChart_' . $ocid . 'relative'] == 'on');
+	} else {
+		$relativeThreshold = $registry->getValue('relative');
+		if (!isset($relativeThreshold)) {
+			$relativeThreshold = true;
+		}
+	}
+//	$orgChart->setRelativeThreshold($relativeThreshold);
 	
 	$openNodes = $registry->getValue('open_nodes');
 	if (!is_array($openNodes)) {
@@ -824,6 +837,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			static $i = 0;
 			if( $i < $this->countcol)
 				{
+				$this->colnumber = $i;
 				$this->bmail = $this->mailaddr == $this->arrf[$i];
 				$this->coltxt = stripslashes(bab_translate($this->arrf[$i]));
 				$i++;
@@ -1291,12 +1305,14 @@ else if ($idx == 'save_state')
 		$openNodes = explode(',', bab_rp('open_nodes', ''));
 		$openMembers = explode(',', bab_rp('open_members', ''));
 		$zoomFactor = bab_rp('zoom_factor', 1.0);
+		$thresholdLevel = bab_rp('threshold_level', 3);
 		$registry = bab_getRegistryInstance();
 
 		$registry->changeDirectory('/bab/orgchart/' . $ocid);
 		$registry->setKeyValue('open_nodes', $openNodes);
 		$registry->setKeyValue('open_members', $openMembers);
 		$registry->setKeyValue('zoom_factor', $zoomFactor);
+		$registry->setKeyValue('threshold_level', $thresholdLevel);
 	}
 	$idx = 'list';
 }
