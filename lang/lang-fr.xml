@@ -2441,6 +2441,7 @@
 <string id="Loading...">En cours de chargement...</string>
 <string id="Fit width">Ajuster à la largeur de la fenêtre</string>
 <string id="Horizontal/vertical threshold">Seuil horizontal/vertical</string>
+<string id="Relative to org chart top">Par rapport au sommet de l'organigramme</string>
 <string id="Display parameters">Paramètres d'affichage</string>
 <string id="Level at which org chart branchs will be displayed vertically">Niveau à partir duquel les branches sont affichées verticalement</string>
 <string id="Visible levels">Niveaux visibles</string>
