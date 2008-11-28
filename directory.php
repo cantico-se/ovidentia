@@ -664,7 +664,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 			
 			$this->fields = $fields;
 			$this->what = 'dbc';
-			//$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+			$this->badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
 			$this->bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
 			$this->buserinfo = false;
 			$this->refresh = bab_toHtml($refresh);
@@ -830,7 +830,7 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 					}
 				$this->fieldt = $arr['multilignes'];
 
-				if( isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y")
+				if( $this->badd || (isset($this->fxidaccess[$arr['id']]) && $arr['modifiable'] == "Y"))
 					{
 					$this->modify = true;
 					}
