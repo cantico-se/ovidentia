@@ -702,6 +702,9 @@ function check_all(strCtrlName, checked)
 		}
 	}
 }
+
+document.onmousemove = bab_tooltipPosition;
+
 //-->
 </script>
 
@@ -731,6 +734,7 @@ function check_all(strCtrlName, checked)
 		<!--#if m_datas[bIsProjectSpace] --><h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4><!--#endif m_datas[bIsProjectSpace] --><h5>{ m_captions[sProject] }:&nbsp;{ m_datas[sProject] }</h5>
 	</div>
 	<br />
+	<div id="oDateFormat">{ m_captions[sDateFormat] }</div>
 	<div class="BabLoginMenuBackground">
 		<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr> 
@@ -904,6 +908,7 @@ function check_all(strCtrlName, checked)
 					</td>
 					<td>
 						<input type="text" name="sPlannedStartDate" id="sPlannedStartDate" { m_datas[sReadOnlyPlannedStartDate] } maxlength="20" value="{ m_datas[sPlannedStartDate] }" size="10" />
+						<img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oDateFormat', 0)" onmouseover="bab_showOnMouse('oDateFormat', 1)" />
 					<!--#if m_datas[isReadOnlyPlannedStartDate] "!= 1" -->
 						<a href="javascript:dateCallback('sPlannedStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedStartDate] }" />
@@ -932,8 +937,9 @@ function check_all(strCtrlName, checked)
 					</td>
 					<td>
 						<input type="text" name="sStartDate" id="sStartDate" { m_datas[sReadOnlyStartDate] } maxlength="20" value="{ m_datas[sStartDate] }" size="10" />
+						<img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oDateFormat', 0)" onmouseover="bab_showOnMouse('oDateFormat', 1)" />
 					<!--#if m_datas[isReadOnlyStartDate] "!= 1" -->
-					<a href="javascript:dateCallback('sStartDate');">
+						<a href="javascript:dateCallback('sStartDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sStartDate] }" />
 						</a>
 					<!--#else m_datas[isReadOnlyStartDate] -->
@@ -960,6 +966,7 @@ function check_all(strCtrlName, checked)
 					</td>
 					<td>
 						<input type="text" name="sPlannedEndDate" id="sPlannedEndDate" { m_datas[sReadOnlyPlannedEndDate] } maxlength="20" value="{ m_datas[sPlannedEndDate] }" size="10" />
+						<img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oDateFormat', 0)" onmouseover="bab_showOnMouse('oDateFormat', 1)" />
 					<!--#if m_datas[isReadOnlyPlannedEndDate] "!= 1" -->
 						<a href="javascript:dateCallback('sPlannedEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sPlannedEndDate] }" />
@@ -988,6 +995,7 @@ function check_all(strCtrlName, checked)
 					</td>
 					<td>
 						<input type="text" name="sEndDate" id="sEndDate" { m_datas[sReadOnlyEndDate] } maxlength="20" value="{ m_datas[sEndDate] }" size="10" />
+						<img src="{ babInstallPath }skins/ovidentia/images/Puces/help.png" alt="" onmouseout="bab_showOnMouse('oDateFormat', 0)" onmouseover="bab_showOnMouse('oDateFormat', 1)" />
 					<!--#if m_datas[isReadOnlyEndDate] "!= 1" -->
 						<a href="javascript:dateCallback('sEndDate');">
 							<img border="0" src="{ babInstallPath }skins/ovidentia/images/Puces/calendar.gif" alt="{ m_captions[sEndDate] }" />

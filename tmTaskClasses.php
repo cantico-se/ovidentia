@@ -208,6 +208,7 @@
 			$this->set_caption('sModify', bab_translate("Modify"));
 			$this->set_caption('sCheckAll', bab_translate("Check all"));
 			$this->set_caption('sUncheckAll', bab_translate("Uncheck all"));
+			$this->set_caption('sDateFormat', bab_translate("The date format is JJ-MM-AAAA"));
 		}
 
 		function initDatas()
@@ -1520,7 +1521,7 @@ bab_debug($sMsg);
 			$this->$sHourFieldName	= $iHour;
 			$this->$sMinutFieldName	= $iMinut;
 			
-			$oDate = BAB_DateTime::fromDateStr($sDate);
+			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
 				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
@@ -2570,7 +2571,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			$this->$sHourFieldName	= $iHour;
 			$this->$sMinutFieldName	= $iMinut;
 			
-			$oDate = BAB_DateTime::fromDateStr($sDate);
+			$oDate = BAB_DateTime::fromUserInput($sDate);
 			if(null !== $oDate)
 			{
 				$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, $iHour, $iMinut);
