@@ -472,7 +472,8 @@ function bab_OCSelectEntityCollaborators($entityId)
 	$sql .= '      babusers.disabled AS user_disabled,';
 	$sql .= '      babusers.is_confirmed AS user_confirmed,';
 	$sql .= '      dir_entries.sn,';
-	$sql .= '      dir_entries.givenname';
+	$sql .= '      dir_entries.givenname,';
+	$sql .= '      dir_entries.id_directory';
 	$sql .= ' FROM ' . BAB_OC_ROLES_USERS_TBL . ' AS users';
 	$sql .= ' LEFT JOIN ' . BAB_OC_ROLES_TBL . ' AS roles ON users.id_role = roles.id';
 	$sql .= ' LEFT JOIN ' . BAB_DBDIR_ENTRIES_TBL . ' AS dir_entries ON users.id_user = dir_entries.id';
