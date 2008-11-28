@@ -199,6 +199,7 @@ function viewOrgChartRoleMore($ocid, $oeid, $iduser, $update)
 				}
 			$this->username = bab_getDbUserName($iduser);
 			$this->res = $babDB->db_query("select ocet.*, ocrt.name as r_name, ocrut.id as id_ru, ocrut.isprimary as isprimary from ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet on ocrt.id_entity=ocet.id where ocrut.id_user='".$iduser."' and ocrt.id_oc='".$this->ocid."' ");
+			$this->entities = array();
 			while( $row = $babDB->db_fetch_array($this->res) )
 				{
 				if( !isset($this->entities[$row['id']]))
