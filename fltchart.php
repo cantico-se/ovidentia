@@ -24,6 +24,53 @@
 include_once 'base.php';
 include_once $babInstallPath.'utilit/orgincl.php';
 
+
+
+function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
+{
+	global $babDB;
+	global $babLittleBody;
+
+	$sql = 'SELECT ovml_embedded
+			FROM '.BAB_ORG_CHARTS_TBL.'
+			WHERE id='.$babDB->quote($ocid);
+	$arr = $babDB->db_fetch_array($babDB->db_query($sql));
+
+
+	if (!empty($arr['ovml_embedded'])) {
+		
+		if (empty($userid)) {
+			include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
+			
+			$members = bab_OCselectEntityCollaborators($oeid);
+			if ($members && ($member = $babDB->db_fetch_array($members))) {
+				$userid = $member['id_dir_entry'];
+				$directoryid = $member['id_directory'];
+			}
+		} else {
+			include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+
+			$sql = 'SELECT id_directory
+					FROM '.BAB_DBDIR_ENTRIES_TBL.'
+					WHERE id='.$babDB->quote($userid);
+			$entries = $babDB->db_fetch_array($babDB->db_query($sql));
+			$directoryid = $entries['id_directory'];
+		}
+		$args = array(
+				'ocid' => $ocid,
+				'entityid' => $oeid,
+				'userid' => $userid,
+				'directoryid' => $directoryid
+		);
+		echo bab_printOvmlTemplate($arr['ovml_embedded'], $args);
+		return $userid;
+	} else {
+		return viewOrgChartRoleDetail($ocid, $oeid, $userid, $access);
+	}
+
+}
+
+
 function listOrgChartRoles($ocid, $oeid, $iduser)
 	{
 	global $babLittleBody;
@@ -359,6 +406,10 @@ function updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
 }
 
+
+
+
+
 /* main */
 $babLittleBody = new babLittleBody();
 $babLittleBody->frrefresh = isset($rf)?$rf: false;
@@ -421,7 +472,7 @@ switch($idx)
 	case "detr":
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
-		$iduser = viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access);
+		$iduser = bab_embeddedContactWithOvml($ocid, $oeid, $iduser, $access);
 		if( $access && $oeid)
 			{
 			$babLittleBody->addItemMenu("more", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=more&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);
