@@ -1346,13 +1346,16 @@ function getSelectCtrlValue(oCtrl)
 function onTaskFilterChanged(oCtrl, sHiddenName)
 {
 	var form = document.forms.taskListFilter;
-	var iIdProject = getSelectCtrlValue(oCtrl);
+	var aValue = getSelectCtrlValue(oCtrl).split('_');
+	
+	var iIdProject = aValue[0];
+	var iIsManager = aValue[1];
 	document.forms['taskListFilter'].elements[sHiddenName].value = iIdProject;
 	
 	var oAddBtn = document.getElementById('sAddTaskBtn');
 	var oAddIcon = document.getElementById('oAddIcon');
 
-	if(-1 != iIdProject)
+	if(-1 != iIdProject && 1 == iIsManager)
 	{
 		if(null != oAddBtn)
 		{
@@ -1439,7 +1442,7 @@ function tskMgr_showHide(oControl)
 					<!--#if m_datas[isProjectDisplayed] -->
 						<select name="oTaskFilter" onchange="onTaskFilterChanged(this, 'iIdProject')">
 						<!--#in getNextTaskFilter -->
-							<option value="{ m_datas[iTaskFilterValue] }" { m_datas[sTaskFilterSelected] } >{ m_datas[sTaskFilterName] }</option>
+							<option value="{ m_datas[iTaskFilterValue] }_{ m_datas[iDisplayAddTask] }" { m_datas[sTaskFilterSelected] } >{ m_datas[sTaskFilterName] }</option>
 						<!--#endin getNextTaskFilter -->
 						</select>
 					<!--#endif m_datas[isProjectDisplayed] -->
