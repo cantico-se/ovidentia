@@ -150,3 +150,19 @@ input.bab_saveField {
 	padding-left:16px;
 	width:100px;
 }
+
+#oDateFormat
+{
+	font-family: Arial, sans-serif; 
+	font-size:11px;
+	border:#71BF44 2px solid;
+	background-color:#FFFBCB;	
+	padding:0px;
+	position:absolute;
+	text-align:left;
+	visibility:hidden;
+	width:200px;
+	z-index:100;
+	max-height:300px;
+	overflow:hidden;
+}

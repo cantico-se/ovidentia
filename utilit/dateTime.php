@@ -628,6 +628,21 @@ class BAB_DateTime
 		return new BAB_DateTime($year, $month, $day);
 	}
     
+	
+	function fromUserInput($sDate)
+	{
+		$aMatch = array();
+		if(0 !== preg_match("#([0-9]{1,2})-([0-9]{1,2})-([0-9]{4})#", $sDate, $aMatch))
+		{
+			$iYear	= (int) $aMatch[2];
+			$iMonth	= (int) $aMatch[1];
+			$iDay	= (int) $aMatch[0];
+			
+			return new BAB_DateTime($iYear, $iMonth, $iDay);
+		}
+		return null;
+	}
+	
 
 	/**
 	 * Intersection of two periods
