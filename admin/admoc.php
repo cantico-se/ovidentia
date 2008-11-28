@@ -527,8 +527,8 @@ function updateOrgChartOvmlFile($ocid, $ovmldetail, $ovmlembedded)
 	global $babDB;
 	
 	$sql = 'UPDATE ' . BAB_ORG_CHARTS_TBL . '
-			SET ovml_detail = '. $babDB->quote($ovmlfile) . '
-			SET ovml_embedded = '. $babDB->quote($ovmlembedded) . '
+			SET ovml_detail = '. $babDB->quote($ovmldetail) . ',
+			ovml_embedded = '. $babDB->quote($ovmlembedded) . '
 			WHERE id = ' . $babDB->quote($ocid);
 	$babDB->db_query($sql);
 }
