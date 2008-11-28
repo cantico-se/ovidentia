@@ -160,7 +160,7 @@ option.level1 {
 }
 
 .level2 div.entity {
-	width: 16em;
+	width: 17em;
 	background-image: none;
 	background-color: #86adbf;
 	border: 3px solid #000000;
@@ -178,7 +178,7 @@ option.level2 {
 
 
 .level3 div.entity {
-	width: 14.5em;
+	width: 16em;
 	background-image: none;
 	background-color: #bf86ad;
 	border: 3px solid #000000;
@@ -195,7 +195,7 @@ option.level3 {
 }
 
 .level4 div.entity {
-	width: 14em;
+	width: 15em;
 	background-image: none;
 	background-color: #bf9886;
 	border: 3px solid #000000;
