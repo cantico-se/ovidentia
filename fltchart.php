@@ -58,12 +58,21 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 			$entries = $babDB->db_fetch_array($babDB->db_query($sql));
 			$directoryid = $entries['id_directory'];
 		}
+		if ($directoryid == 0) {
+			$sql = 'SELECT id
+					FROM '.BAB_DB_DIRECTORIES_TBL.'
+					WHERE id_group='.$babDB->quote(BAB_REGISTERED_GROUP);
+			$directories = $babDB->db_fetch_array($babDB->db_query($sql));
+			$directoryid = $directories['id'];
+		}
+		
 		$args = array(
 				'ocid' => $ocid,
 				'entityid' => $oeid,
 				'userid' => $userid,
 				'directoryid' => $directoryid
 		);
+		
 		$babLittleBody->babecho(bab_printOvmlTemplate($arr['ovml_embedded'], $args));
 		return $userid;
 		
