@@ -31,6 +31,8 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 	global $babDB;
 	global $babLittleBody;
 
+	
+	// We check if anovml file has been specified for the embedded user view has been specified. 
 	$sql = 'SELECT ovml_embedded
 			FROM '.BAB_ORG_CHARTS_TBL.'
 			WHERE id='.$babDB->quote($ocid);
@@ -62,12 +64,13 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 				'userid' => $userid,
 				'directoryid' => $directoryid
 		);
-		echo bab_printOvmlTemplate($arr['ovml_embedded'], $args);
+		$babLittleBody->babecho(bab_printOvmlTemplate($arr['ovml_embedded'], $args));
 		return $userid;
+		
 	} else {
+		// Here we don't use ovml to display the user info.
 		return viewOrgChartRoleDetail($ocid, $oeid, $userid, $access);
 	}
-
 }
 
 
