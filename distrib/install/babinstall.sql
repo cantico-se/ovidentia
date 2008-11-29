@@ -1769,7 +1769,7 @@ CREATE TABLE bab_org_charts (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '', '');
+INSERT INTO bab_org_charts VALUES (1, 'Ovidentia', 'Ovidentia organizational chart', 'Y', 'N', 0, '0000-00-00 00:00:00', 0, 1, 0, 0, '', '', '');
 
 #
 # Structure de la table `bab_ocupdate_groups`
