@@ -360,6 +360,8 @@ function testVars()
 		return false;
 		}
 
+	$GLOBALS['babInstallPath'] = $_POST['babInstallPath'];
+
 	if (!empty($_POST['babUploadPath']) )
 		{
 		if ( !is_dir($_POST['babUploadPath']) && !@mkdir($_POST['babUploadPath']))
