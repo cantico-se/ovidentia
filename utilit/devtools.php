@@ -703,6 +703,31 @@ function bab_f_getDebug() {
 }
 
 
+
+
+
+
+
+function bab_getParentsClasses($obj, $str = '') {
+	$parent = get_parent_class($obj);
+	if (false !== $parent) {
+		if (empty($str)) {
+			$str = $parent;
+		} else {
+			$str = $parent.' -> '.$str;
+		}
+		$str = bab_getParentsClasses($parent, $str);
+	}
+	
+	return $str;
+}
+
+
+
+
+
+
+
 /**
  * Print a backtrace
  * Need error_reporting set with E_NOTICE
@@ -742,10 +767,24 @@ function bab_debug_print_backtrace($echo = false)
 			$nbParam = 0;
 			foreach ($call['args'] as $param)
 			{
-				ob_start();
-				print_r($param);
-				$param_str = ob_get_contents();
-				ob_end_clean();
+				if (is_string($param) || is_numeric($param)) {
+					$param_str = (string) $param;
+				} elseif (is_array($param)) {
+					$param_str = sprintf('%d element(s)', (string) count($param));
+				} elseif (is_object($param)) {
+					$param_str = get_class($param)."\n";
+					$vars = get_object_vars($param);
+					if ($vars) {
+						$param_str .= 'public properties :'."\n";
+						foreach($vars as $key => $val) {
+							$param_str .= $key.' = '.((string) $val)."\n";
+						}
+					}
+					$parent = bab_getParentsClasses($param);
+					if ('' !== $parent) {
+						$param_str .= "parent class : ".$parent;
+					}
+				}
 
 
 				if ($nbParam > 0)
