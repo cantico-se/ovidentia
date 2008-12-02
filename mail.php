@@ -615,7 +615,7 @@ $cc = bab_pp('cc', '');
 $bcc = bab_pp('bcc', '');
 $subject = bab_pp('subject', '');
 $format = bab_pp('format', 'plain');
-
+$message = bab_pp('message');
 
 
 if( "message" === bab_pp('compose'))
