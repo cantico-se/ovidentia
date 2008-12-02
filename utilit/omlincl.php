@@ -578,6 +578,9 @@ class bab_ArticlesHomePages extends bab_handler
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			} else {
+				$this->ctx->curctx->push('ArticleEditUrl', '');
+				$this->ctx->curctx->push('ArticleEditName', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
@@ -1173,6 +1176,9 @@ class bab_Articles extends bab_handler
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			} else {
+				$this->ctx->curctx->push('ArticleEditUrl', '');
+				$this->ctx->curctx->push('ArticleEditName', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
@@ -1253,6 +1259,9 @@ class bab_Article extends bab_handler
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			} else {
+				$this->ctx->curctx->push('ArticleEditUrl', '');
+				$this->ctx->curctx->push('ArticleEditName', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
@@ -2656,6 +2665,9 @@ class bab_RecentArticles extends bab_handler
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			} else {
+				$this->ctx->curctx->push('ArticleEditUrl', '');
+				$this->ctx->curctx->push('ArticleEditName', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
@@ -3315,6 +3327,9 @@ class bab_WaitingArticles extends bab_handler
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
+			} else {
+				$this->ctx->curctx->push('ArticleEditUrl', '');
+				$this->ctx->curctx->push('ArticleEditName', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
