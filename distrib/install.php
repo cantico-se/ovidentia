@@ -396,9 +396,11 @@ function testVars()
  * @return bab_inifile|false
  */
 function getIni() {
-	global $error,$succes,$trans;
+	global $error,$succes,$trans, $babInstallPath;
 
-	$version_file = 'ovidentia/'.VERSION_FILE;
+	$babInstallPath = $_POST['babInstallPath'];
+
+	$version_file = $babInstallPath.VERSION_FILE;
 
 	if (is_file($version_file)) {
 
