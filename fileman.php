@@ -1909,7 +1909,10 @@ function getFile()
 			{
 				$fsize = filesize($sFullPathName);
 				
-				set_time_limit(3600);
+				if(function_exists('set_time_limit'))
+				{
+					set_time_limit(3600);
+				}
 				
 				if(strtolower(bab_browserAgent()) == "msie")
 				{
