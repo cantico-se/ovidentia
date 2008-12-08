@@ -40,11 +40,6 @@ class bab_url {
 	function mod($url, $param, $value) {
 	
 		if (is_array($value)) {
-			
-			debug_print_backtrace();
-			print_r($value);
-			
-			die();
 			$keyval = bab_url::urlAsArray($param, $value);
 		} else {
 			$keyval = urlencode($param).'='.urlencode($value);
