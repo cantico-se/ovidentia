@@ -5482,5 +5482,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `name` `name` VARCHAR(255)');
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `description` `description` VARCHAR(255)');
+	/**
+	 * Upgrade to 6.7.4
+	 */
+
+	 // nothing todo
 	return true;
 }
