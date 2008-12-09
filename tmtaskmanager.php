@@ -1188,10 +1188,17 @@ function displayTaskList($sIdx)
 				$this->m_oFilterSessionContext->get('iIdProject', -1)));
 			$this->set_data('iIdProject', $this->m_oFilterSessionContext->get('iIdProject', -1));
 			
-			$iTaskFilter = (int) bab_rp('oTaskFilter', -10);
-			if(-10 !== $iTaskFilter)
+			$sTaskFilter = (string) bab_rp('oTaskFilter', '-10');
+			if('-10' !== $sTaskFilter)
 			{
-				$this->m_oFilterSessionContext->set('oTaskFilter', $iTaskFilter);
+				$aExplodedValue = explode('_', $sTaskFilter);
+				if(false !== $aExplodedValue && 2 == count($aExplodedValue))
+				{
+					$iIdProjectIdx = 0;
+					$iIsManagerIdx = 1;
+					
+					$this->m_oFilterSessionContext->set('oTaskFilter', $aExplodedValue[$iIdProjectIdx]);
+				}
 			}	
 			$this->set_data('iSelectedTaskFilter', $this->m_oFilterSessionContext->get('oTaskFilter', -1));
 			
@@ -1260,11 +1267,10 @@ function displayTaskList($sIdx)
 				{
 					if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $datas['iIdProject']))
 					{
-//						if(bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']))
-						{
-							$this->m_aTasksFilter[] = array('value' => $datas['iIdProject'], 
-								'text' => $datas['sProjectName']);
-						}
+						$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['iIdProject']);
+						
+						$this->m_aTasksFilter[] = array('value' => $datas['iIdProject'], 
+							'text' => $datas['sProjectName'], 'manager' => $bIsManager);
 					}
 					$iIndex++;
 				}
@@ -1274,7 +1280,7 @@ function displayTaskList($sIdx)
 			if(count($aPersTaskCreator) > 0 && isset($aPersTaskCreator[$oTmCtx->getIdDelegation()]))
 			{
 				$this->m_aTasksFilter[] = array('value' => 0, 
-					'text' => bab_translate("Personnal task"));
+					'text' => bab_translate("Personnal task"), 'manager' => true);
 			}
 			
 			if(count($this->m_aTasksFilter) >= 2)
@@ -1284,7 +1290,7 @@ function displayTaskList($sIdx)
 			
 			reset($this->m_aTasksFilter);
 		}
-		
+				
 		function initTaskResponsible()
 		{
 			bab_getAllTaskIndexedById($this->m_oFilterSessionContext->get('iIdProject', 0), $this->m_aTask);
@@ -1343,6 +1349,7 @@ function displayTaskList($sIdx)
 				
 				$this->set_data('iTaskFilterValue', bab_toHtml($datas['value']['value']));				
 				$this->set_data('sTaskFilterName', bab_toHtml($datas['value']['text']));
+				$this->set_data('iDisplayAddTask', (($datas['value']['manager']) ? '1' : '0') );
 				
 				return true;				
 			}
