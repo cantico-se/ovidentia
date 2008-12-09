@@ -1901,10 +1901,12 @@ class bab_functionality {
 	}
 
 	/**
+	 * Include php file with the functionality class
+	 * @see bab_functionality::get()
 	 * @access public
 	 * @static
-	 * @param	string	$path
-	 * @return boolean
+	 * @param	string	$path		path to functionality
+	 * @return string | false		the object class name or false if the file allready included or false if the include failed
 	 */
 	function includefile($path) {
 		$include_result = /*@*/include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
