@@ -2149,7 +2149,7 @@ function bab_selectTaskQueryEx($aFilters, $aField, $aLeftJoin, $aWhere, $aOrder 
 			$sCompletion = '<> ' . $babDB->quote('100'); 
 		}
 		
-		$sQuery .= 'AND t1.completion ' . $sCompletion . ' ';
+		$sQuery .= 'AND t0.completion ' . $sCompletion . ' ';
 	}
 	
 	$sQuery .= 
