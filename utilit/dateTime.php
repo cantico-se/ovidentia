@@ -634,9 +634,9 @@ class BAB_DateTime
 		$aMatch = array();
 		if(0 !== preg_match("#([0-9]{1,2})-([0-9]{1,2})-([0-9]{4})#", $sDate, $aMatch))
 		{
-			$iYear	= (int) $aMatch[2];
-			$iMonth	= (int) $aMatch[1];
-			$iDay	= (int) $aMatch[0];
+			$iYear	= (int) $aMatch[3];
+			$iMonth	= (int) $aMatch[2];
+			$iDay	= (int) $aMatch[1];
 			
 			return new BAB_DateTime($iYear, $iMonth, $iDay);
 		}

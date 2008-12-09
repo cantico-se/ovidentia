@@ -1189,10 +1189,8 @@ function displayTaskList($sIdx)
 			$this->set_data('iIdProject', $this->m_oFilterSessionContext->get('iIdProject', -1));
 			
 			$sTaskFilter = (string) bab_rp('oTaskFilter', '-10');
-			if('-10' !== $iTaskFilter)
+			if('-10' !== $sTaskFilter)
 			{
-				bab_debug($iTaskFilter);
-				
 				$aExplodedValue = explode('_', $sTaskFilter);
 				if(false !== $aExplodedValue && 2 == count($aExplodedValue))
 				{
