@@ -57,7 +57,7 @@ class bab_siteMapItem {
 	var $onclick;
 	var $folder; 
 
-	public function compare($node) {
+	function compare($node) {
 		return strcasecmp($this->name, $node->name);
 	}
 
