@@ -329,9 +329,7 @@ function export($id)
 	{
 
 
-	if( !get_cfg_var('safe_mode')) {
-			set_time_limit(0);
-		}
+	bab_setTimeLimit(0);
 		
 
 	function rd($d) {
@@ -657,9 +655,7 @@ function test_requirements()
  */
 function import()
 	{
-	if( !get_cfg_var('safe_mode')) {
-		set_time_limit(0);
-	}
+	bab_setTimeLimit(0);
 
 	if( !empty($_POST['tmpfile']))
 		{

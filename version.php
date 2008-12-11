@@ -46,7 +46,7 @@ function getVersion()
 
 function echoLang($path)
 {
-	set_time_limit(3600);
+	bab_setTimeLimit(3600);
 	
 	$arr = array();
 	$handle = opendir($path); 

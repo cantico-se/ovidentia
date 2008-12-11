@@ -154,9 +154,7 @@ class bab_fileHandler {
 	 */
 	function import($destination) {
 	
-		if( !get_cfg_var('safe_mode')) {
-			set_time_limit(0);
-		}
+		bab_setTimeLimit(0);
 	
 		switch($this->type) {
 			case BAB_FILEHANDLER_UPLOAD:

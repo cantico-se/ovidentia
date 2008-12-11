@@ -629,10 +629,7 @@ function getFile( $idf, $vmajor, $vminor )
 		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
 		
-		if(function_exists('set_time_limit'))
-		{
-			set_time_limit(3600);
-		}
+		bab_setTimeLimit(3600);
 		
 		if(strtolower(bab_browserAgent()) == "msie")
 		{

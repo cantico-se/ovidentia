@@ -1855,10 +1855,8 @@ function updateDocumentsArticleDraft($idart, &$message)
 				continue;
 				}
 
-			if( !get_cfg_var('safe_mode'))
-				{
-				set_time_limit(0);
-				}
+			bab_setTimeLimit(0);
+
 			if( !move_uploaded_file($file['tmp_name'], $path.$osfname))
 				{
 				$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file'=>$file['name']);
