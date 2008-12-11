@@ -333,7 +333,7 @@ function upgrade($id) {
 function export($id)
 	{
 
-	set_time_limit(0);
+	bab_setTimeLimit(0);
 	
 	
 	if (!function_exists('bab_addon_export_rd')) {
@@ -469,9 +469,7 @@ function upload_tmpfile() {
 			return false;
 		}
 
-		if( !get_cfg_var('safe_mode')) {
-			set_time_limit(0);
-		}
+		bab_setTimeLimit(0);
 
 		if (!is_dir($GLOBALS['babUploadPath'].'/tmp/')) {
 			bab_mkdir($GLOBALS['babUploadPath'].'/tmp/',$GLOBALS['babMkdirMode']);
@@ -617,9 +615,7 @@ function bab_display_addon_requirements($id_addon)
  */
 function import()
 	{
-	if( !get_cfg_var('safe_mode')) {
-		set_time_limit(0);
-	}
+	bab_setTimeLimit(0);
 	
 	global $babBody;
 	
