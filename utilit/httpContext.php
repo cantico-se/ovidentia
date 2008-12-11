@@ -87,6 +87,8 @@ function bab_restoreHttpContext()
 				$redirectUrl .= '?' . $query;
 			}
 			header('Location: ' . $redirectUrl);
+			unset($_SESSION['babHttpContext']);
+			exit;
 		}
 
 		unset($_SESSION['babHttpContext']);
