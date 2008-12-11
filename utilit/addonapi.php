@@ -2008,3 +2008,14 @@ function bab_requireAccess($tables, $idObject, $loginMessage)
 }
 
 
+/**
+ * Limits the maximum execution time
+ *
+ * @param int	$seconds	The maximum execution time, in seconds. If set to zero, no time limit is imposed. 
+ */
+function bab_setTimeLimit($seconds)
+{
+	if (function_exists('set_time_limit')) {
+		@set_time_limit($seconds);
+	}
+}
