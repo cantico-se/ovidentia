@@ -2190,34 +2190,38 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 	$iduser = &$usertbl['id_user'];
 
+	/* Users who have add access right, can update all fields even those wich are not updatable */
+	$badd = bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id);
+	$bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
+
 	$baccess = false;
-	if(bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id) || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
+	if($badd || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
 		{
 		$baccess = true;
 		}
 
 
-	$res = $babDB->db_query("select dfxt.*, dft.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt left join ".BAB_DBDIR_FIELDS_TBL." dft on dfxt.id_field=dft.id where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field < ".BAB_DBDIR_MAX_COMMON_FIELDS." and dfxt.modifiable='Y'");
+	$res = $babDB->db_query("select dfxt.*, dft.name from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt left join ".BAB_DBDIR_FIELDS_TBL." dft on dfxt.id_field=dft.id where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field < ".BAB_DBDIR_MAX_COMMON_FIELDS."");
 
 	$fxidaccess = array();
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( $baccess || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
+			if( $baccess || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess[$arr['name']] = $arr;
 				}
 			}
 		}
 
-	$res = $babDB->db_query("select dfxt.* from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field > ".BAB_DBDIR_MAX_COMMON_FIELDS." and dfxt.modifiable='Y'");
+	$res = $babDB->db_query("select dfxt.* from ".BAB_DBDIR_FIELDSEXTRA_TBL." dfxt where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and dfxt.id_field > ".BAB_DBDIR_MAX_COMMON_FIELDS."");
 
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( $baccess || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id']))
+			if( $baccess || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess['babdirf'.$arr['id']] = $arr;
 				}
@@ -2226,7 +2230,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 
 	if( $baccess == false &&  count($fxidaccess) )
 		{
-		$baccess = true;//XXXXXXXXX
+		$baccess = true;
 		}
 
 	if($baccess)
