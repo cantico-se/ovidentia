@@ -64,6 +64,12 @@ div.entity .members .member {
 	background-color: #225577;
 }
 
+@media print {
+	.orgchart {
+		background-color: #FFFFFF !important;
+	}
+}
+
 .orgchart table.horizontal {
 	border-collapse: collapse;
 	font-family: Tahoma, Verdana, sans-serif;
