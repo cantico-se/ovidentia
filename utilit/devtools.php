@@ -305,7 +305,7 @@ class bab_synchronizeSql
 			if (!$res2) {
 				// alternate methode if no inforamtion schema
 			
-				$res2 = $babDB->db_query("SHOW COLUMNS FROM ".$babDB->db_escape_string($table));
+				$res2 = $babDB->db_queryWem("SHOW COLUMNS FROM ".$babDB->db_escape_string($table));
 			}
 			
 			while ($arr = $babDB->db_fetch_assoc($res2))
