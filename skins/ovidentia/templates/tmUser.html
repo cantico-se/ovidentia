@@ -372,6 +372,11 @@ function submit_form()
 //	var oShortDescription = document.getElementById("sShortDescription");
 //	oShortDescription.disabled = false;
 	
+	var oTrProposable = document.getElementById("oTrProposable");
+	if(null != oTrProposable)
+	{
+		oTrProposable.style.display = '';
+	}
 	return true;
 }
 
@@ -703,6 +708,30 @@ function check_all(strCtrlName, checked)
 	}
 }
 
+
+function onTaskResponsibleChanged()
+{
+	var oForm			= document.getElementById("taskForm");
+	var oTrProposable	= document.getElementById("oTrProposable");
+	var oSelect			= document.getElementById("iIdTaskResponsible");
+	
+	if(null != oForm && null != oTrProposable && null != oSelect)
+	{
+		var iIdSessUser			= oForm.iIdSessUser.value;
+		var iIdTaskResponsible	= oSelect.value;
+		
+		if(iIdSessUser > 0 && iIdSessUser == iIdTaskResponsible)
+		{
+			oTrProposable.style.display = 'none';
+		}
+		else
+		{
+			oTrProposable.style.display = '';
+		}
+	}
+}
+
+
 document.onmousemove = bab_tooltipPosition;
 
 //-->
@@ -715,7 +744,7 @@ document.onmousemove = bab_tooltipPosition;
 	@import url('{ babInstallPath }styles/taskManager.css');
 </style>
 
-<form name="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
+<form name="taskForm" id="taskForm" method="post" action="{ babPhpSelf }" onsubmit="return(submit_form())">
 	<input type="hidden" name="tg" value="{ m_datas[tg] }" />
 	<input type="hidden" name="idx" value="" />
 	<input type="hidden" name="action" value="" />
@@ -729,6 +758,7 @@ document.onmousemove = bab_tooltipPosition;
 	<input type="hidden" name="sFromIdx" value="{ m_datas[sFromIdx] }" />
 	<input type="hidden" name="isProject" value="{ m_datas[isProject] }" />
 	<input type="hidden" name="iUseEditor" value="{ m_iUseEditor }" />
+	<input type="hidden" name="iIdSessUser" value="{ m_iIdSessUser }" />
 	
 	<div class="BabSiteAdminTitleFontBackground" align="center">
 		<!--#if m_datas[bIsProjectSpace] --><h4>{ m_captions[sProjectSpace] }:&nbsp;{ m_datas[sProjectSpace] }&nbsp;&nbsp;</h4><!--#endif m_datas[bIsProjectSpace] --><h5>{ m_captions[sProject] }:&nbsp;{ m_datas[sProject] }</h5>
@@ -781,7 +811,7 @@ document.onmousemove = bab_tooltipPosition;
 		<!--#if m_iIdTask "!= 0" -->
 		
 		<!--#if m_bIsManager -->
-			<li id="oLiCost"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">Coût</a></li>
+			<li id="oLiCost"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCostTab] }</a></li>
 		<!--#endif m_bIsManager -->
 			<li id="oLiCommentaries"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sCommentaries] }</a></li>
 			<li id="oLiSpfFld"><a class="" href="" onclick="onMenuSelected(this.parentNode);return false;">{ m_captions[sSpFld] }</a></li>
@@ -848,7 +878,7 @@ document.onmousemove = bab_tooltipPosition;
 						<label for="iIdTaskResponsible">{ m_captions[sTaskResponsible] }</label>
 					</td>
 					<td>
-						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible">
+						<select id="iIdTaskResponsible" { m_datas[sReadOnlyTaskResponsible] } name="iIdTaskResponsible" onchange="onTaskResponsibleChanged()">
 							<option value="{ m_datas[iNone] }">{ m_captions[sNone] }</option>
 							<!--#in getNextTaskResponsible -->
 							<option { m_datas[sSlectedTaskResponsible] } value="{ m_datas[iIdTaskResponsible] }">{ m_datas[sTaskResponsibleName] }</option>
@@ -1245,6 +1275,7 @@ document.onmousemove = bab_tooltipPosition;
 var oLiGeneral = document.getElementById('{ m_datas[selectedMenu] }');
 if(null != oLiGeneral) onMenuSelected(oLiGeneral);
 onClassChanged(document.forms.taskForm['iClass']);
+onTaskResponsibleChanged();
 //-->
 </script>
 <!--#end taskForm -->

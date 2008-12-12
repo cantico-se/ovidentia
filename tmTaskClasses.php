@@ -98,7 +98,9 @@
 		var $m_iIdProject;
 		var $m_iIdTask;
 		var $m_iUserProfil;
-
+					
+		var $m_iIdSessUser;
+		
 		var $m_aDurations;
 		var $m_aDurationUnit;
 		var $m_aProposable;
@@ -143,7 +145,8 @@
 			$this->m_iIdProject			= $oTmCtx->getIdProject();
 			$this->m_iIdTask			= $oTmCtx->getIdTask();
 			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
-
+			$this->m_iIdSessUser		= $GLOBALS['BAB_SESS_USERID'];
+			
 			$this->initCaptions();
 			$this->initDatas();
 
@@ -193,6 +196,7 @@
 			$this->set_caption('sTime', bab_translate("Real time"));
 			$this->set_caption('sPlannedCost', bab_translate("Planned cost"));
 			$this->set_caption('sCost', bab_translate("Real cost"));
+			$this->set_caption('sCostTab', bab_translate("Cost"));
 			$this->set_caption('sNone', bab_translate("None"));
 			$this->set_caption('sField', bab_translate("Field"));
 			$this->set_caption('sType', bab_translate("Type"));

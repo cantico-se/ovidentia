@@ -1483,7 +1483,7 @@ function displayTaskList($sIdx)
 	}
 	
 	$oTaskFilterForm = new BAB_TM_TaskFilterForm($sIdx);
-	$iTaskFilter = $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
+	$iTaskFilter = $oTaskFilterForm->m_oFilterSessionContext->get('oTaskFilter');
 
 	$iTaskClass = $oTaskFilterForm->m_oFilterSessionContext->get('iTaskClass');
 	$iTaskCompletion = $oTaskFilterForm->m_oFilterSessionContext->get('iTaskCompletion');
@@ -1543,7 +1543,7 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sStartDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sStartDate));
+		$oDate = BAB_DateTime::fromUserInput($sStartDate);
 		if(!is_null($oDate))
 		{
 			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
@@ -1555,7 +1555,7 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sEndDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sEndDate));
+		$oDate = BAB_DateTime::fromUserInput($sEndDate);
 		if(!is_null($oDate))
 		{
 			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
@@ -1567,7 +1567,7 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sPlannedStartDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedStartDate));
+		$oDate = BAB_DateTime::fromUserInput($sPlannedStartDate);
 		if(!is_null($oDate))
 		{
 			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
@@ -1579,7 +1579,7 @@ function displayTaskList($sIdx)
 
 	if(strlen(trim($sPlannedEndDate)) > 0)
 	{
-		$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedEndDate));
+		$oDate = BAB_DateTime::fromUserInput($sPlannedEndDate);
 		if(!is_null($oDate))
 		{
 			$oDate->init($oDate->_iYear, $oDate->_iMonth, $oDate->_iDay, 
