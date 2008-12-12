@@ -1313,6 +1313,8 @@ function listFiles()
 		var $sDelegationSelected = '';
 		var $sSubmit = 'Soumettre';
 		
+		var $sWaitingFileTitle = '';
+		
 		function temp()
 		{
 			$this->listFiles();
@@ -1343,7 +1345,8 @@ function listFiles()
             $this->altfilelock =  bab_translate("Edit file");
             $this->altfileunlock =  bab_translate("Unedit file");
             $this->altfilewrite =  bab_translate("Commit file");
-
+			$this->sWaitingFileTitle = bab_translate("This file is awaiting approval");
+            
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
             
