@@ -532,9 +532,11 @@ function hideDelegationSubmitBtn()
 		</table>
 	<script type="text/javascript">
 	//<![CDATA[
-	<!--#if bDisplayDelegationSelect -->
-		hideDelegationSubmitBtn();
-	<!--#endif bDisplayDelegationSelect -->
+	document.observe("dom:loaded", function fm_init() {
+		<!--#if bDisplayDelegationSelect -->
+			hideDelegationSubmitBtn();
+		<!--#endif bDisplayDelegationSelect -->
+	});
 	//]]>
 	</script>
 </form>
