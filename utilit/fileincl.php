@@ -290,6 +290,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 			{
 				$this->filename = $file;
 				$this->message = $msg;
+				$this->from = bab_translate("Author");
 				$this->path = bab_translate("Path");
 				$this->file = bab_translate("File");
 				$this->group = bab_translate("Folder");
