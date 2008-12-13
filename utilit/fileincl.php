@@ -1456,6 +1456,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			return false;
 		}
 
+		$oFileManagerEnv =& getEnvObject();
 		if($size + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
 		{
 			$babBody->msgerror = bab_translate("The file size exceed the limit configured for the file manager");
