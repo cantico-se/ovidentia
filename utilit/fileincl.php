@@ -335,7 +335,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 					$oFolderFileVersionSet	= new BAB_FolderFileVersionSet();
 					$oIdFile				= $oFolderFileVersionSet->aField['iIdFile'];
 					
-					$oFolderFileVersionSet->select($oIdFile->in(), array('iVerMajor' => 'DESC', 'iVerMinor' => 'DESC'));
+					$oFolderFileVersionSet->select($oIdFile->in($oFolderFile->getId()), array('iVerMajor' => 'DESC', 'iVerMinor' => 'DESC'));
 					if(null !== ($oFolderFileVersion = $oFolderFileVersionSet->get()))
 					{
 						$this->author = bab_getUserName($oFolderFileVersion->getAuthorId());
