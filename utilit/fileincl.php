@@ -332,8 +332,20 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				
 				if(null !== $oFolderFile)
 				{
-					$this->author = bab_getUserName($oFolderFile->getAuthorId());
-					$this->authoremail = bab_getUserEmail($oFolderFile->getAuthorId());
+					$oFolderFileVersionSet	= new BAB_FolderFileVersionSet();
+					$oIdFile				= $oFolderFileVersionSet->aField['iIdFile'];
+					
+					$oFolderFileVersionSet->select($oIdFile->in(), array('iVerMajor' => 'DESC', 'iVerMinor' => 'DESC'));
+					if(null !== ($oFolderFileVersion = $oFolderFileVersionSet->get()))
+					{
+						$this->author = bab_getUserName($oFolderFileVersion->getAuthorId());
+						$this->authoremail = bab_getUserEmail($oFolderFileVersion->getAuthorId());
+					}
+					else
+					{
+						$this->author = bab_translate("Unknown user");
+						$this->authoremail = "";
+					}
 				}
 				else
 				{
@@ -394,6 +406,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 		$count = 0;
 	}
 }
+
 
 function acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify)
 {
