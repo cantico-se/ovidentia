@@ -209,7 +209,16 @@ function notifyFileApprovers($id, $users, $msg)
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
+
+					$iIdRootFolder = 0;
+					$oRootFmFolder = null; 
+					BAB_FmFolderHelper::getInfoFromCollectivePath($oFmFolder->getRelativePath() . $oFmFolder->getName(), $iIdRootFolder, $oRootFmFolder);
+					if(null !== $oRootFmFolder)
+					{
+						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($oFmFolder->getRelativePath() . $oFmFolder->getName()));
+					}
 				}
+				
 				$this->site = bab_translate("Web site");
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
@@ -266,6 +275,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 		{
 			var $filename;
 			var $message;
+			var $from;
 			var $author;
 			var $path;
 			var $pathname;
@@ -291,10 +301,44 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				if(!is_null($oFmFolder))
 				{
 					$this->groupname = $oFmFolder->getName();
+
+					$iIdRootFolder = 0;
+					$oRootFmFolder = null; 
+					BAB_FmFolderHelper::getInfoFromCollectivePath($oFmFolder->getRelativePath() . $oFmFolder->getName(), $iIdRootFolder, $oRootFmFolder);
+					if(null !== $oRootFmFolder)
+					{
+						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($oFmFolder->getRelativePath() . $oFmFolder->getName()));
+					}
 				}
 				$this->site = bab_translate("Web site");
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
+				
+				$oFolderFileSet				= new BAB_FolderFileSet();
+				$oFolderFileSet->bUseAlias	= false;
+				$oIdOwner					= $this->oFolderFileSet->aField['iIdOwner'];
+				$oGroup						= $this->oFolderFileSet->aField['sGroup'];
+				$oPathName					= $this->oFolderFileSet->aField['sPathName'];
+				$oIdDgOwner					= $this->oFolderFileSet->aField['iIdDgOwner'];
+
+				$oCriteria = $oIdOwner->in($idgrp);
+				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
+				$oCriteria = $oCriteria->_and($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+			
+				$oFolderFile = $oFolderFileSet->get($oCriteria);
+				$oFolderFileSet->bUseAlias = true;
+				
+				if(null !== $oFolderFile)
+				{
+					$this->author = bab_getUserName($oFolderFile->getAuthorId());
+					$this->authoremail = bab_getUserEmail($oFolderFile->getAuthorId());
+				}
+				else
+				{
+					$this->author = bab_translate("Unknown user");
+					$this->authoremail = "";
+				}
 			}
 		}
 	}
