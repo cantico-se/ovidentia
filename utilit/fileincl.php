@@ -316,10 +316,10 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				
 				$oFolderFileSet				= new BAB_FolderFileSet();
 				$oFolderFileSet->bUseAlias	= false;
-				$oIdOwner					= $this->oFolderFileSet->aField['iIdOwner'];
-				$oGroup						= $this->oFolderFileSet->aField['sGroup'];
-				$oPathName					= $this->oFolderFileSet->aField['sPathName'];
-				$oIdDgOwner					= $this->oFolderFileSet->aField['iIdDgOwner'];
+				$oIdOwner					= $oFolderFileSet->aField['iIdOwner'];
+				$oGroup						= $oFolderFileSet->aField['sGroup'];
+				$oPathName					= $oFolderFileSet->aField['sPathName'];
+				$oIdDgOwner					= $oFolderFileSet->aField['iIdDgOwner'];
 
 				$oCriteria = $oIdOwner->in($idgrp);
 				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
@@ -600,7 +600,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 		
 		
-
+		$oFileManagerEnv =& getEnvObject();
 		if($file['size'] + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
 		{
 			$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the file manager"), 'file'=>$file['name']);
