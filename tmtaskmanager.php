@@ -1509,8 +1509,7 @@ function displayTaskList($sIdx)
 		}
 		else 
 		{
-			
-			$aFilters['iIdProject'] = $iTaskFilter;
+			$aFilters['iIdProject'] = $oTaskFilterForm->m_oFilterSessionContext->get('iIdProject');
 			$sGanttViewUrl .= '&iIdProject=' . urlencode($aFilters['iIdProject']);
 		}
 	}
