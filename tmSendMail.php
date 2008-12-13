@@ -93,7 +93,7 @@
 
 			$this->m_mail->mailTo($user_email);
 
-			if(false == $this->m_mail->send())
+			if(false == @$this->m_mail->send())
 			{
 				//echo ' send Error ==> ' . $this->m_mail->mail->$ErrorInfo . '<br />';
 			}
