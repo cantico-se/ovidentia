@@ -730,14 +730,10 @@ function onTaskResponsibleChanged()
 		}
 	}
 }
-
-
-document.onmousemove = bab_tooltipPosition;
-
 //-->
 </script>
 
-<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js">document.onmousemove = bab_tooltipPosition;</script>
 
 
 <style type="text/css">
