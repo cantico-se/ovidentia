@@ -1753,6 +1753,9 @@ function listFiles()
 		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
 
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
+	
 	$babBody->babecho(bab_printTemplate($temp,"fileman.html", "fileslist"));
 	return $temp->count;
 }
