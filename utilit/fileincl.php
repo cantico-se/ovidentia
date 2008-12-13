@@ -316,10 +316,10 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				
 				$oFolderFileSet				= new BAB_FolderFileSet();
 				$oFolderFileSet->bUseAlias	= false;
-				$oIdOwner					= $this->oFolderFileSet->aField['iIdOwner'];
-				$oGroup						= $this->oFolderFileSet->aField['sGroup'];
-				$oPathName					= $this->oFolderFileSet->aField['sPathName'];
-				$oIdDgOwner					= $this->oFolderFileSet->aField['iIdDgOwner'];
+				$oIdOwner					= $oFolderFileSet->aField['iIdOwner'];
+				$oGroup						= $oFolderFileSet->aField['sGroup'];
+				$oPathName					= $oFolderFileSet->aField['sPathName'];
+				$oIdDgOwner					= $oFolderFileSet->aField['iIdDgOwner'];
 
 				$oCriteria = $oIdOwner->in($idgrp);
 				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
