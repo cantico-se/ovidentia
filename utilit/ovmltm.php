@@ -21,8 +21,8 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
  */
-include_once 'base.php';
-//include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
+require_once 'base.php';
+//require_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 require_once $GLOBALS['babInstallPath'] . 'utilit/tmIncl.php';
 require_once $GLOBALS['babInstallPath'] . 'tmContext.php';
 
@@ -221,7 +221,9 @@ class bab_TmProjects extends bab_handler
  * - OVTaskId					The task id
  * - OVTaskProjectId			The id of the task's project
  * - OVTaskNumber				The task number
+ * - OVTaskDescription			The task description
  * - OVTaskShortDescription		The task short description
+ * - OVTaskUrl					The task url
  * - OVTaskStartDate			The real start datetime
  * - OVTaskEndDate				The real end datetime
  * - OVTaskPlannedStartDate		The planned start datetime
@@ -231,6 +233,7 @@ class bab_TmProjects extends bab_handler
  * - OVTaskCompletion			The task completion (integer in percent)
  * - OVTaskOwnerId				The user id of the task owner
  * - OVTaskClass				The task class (integer : 0 = task, 1 = checkpoint, 2 = todo)
+ * - OVTaskClassName			The task class task, checkpoint, todo
  * - OVTime 
  * - OVTimeDurationUnit 			  
  * - OVPlannedTime
@@ -258,6 +261,7 @@ class bab_TmTasks extends bab_handler
 						'TaskId' => 'iIdTask',
 						'TaskProjectId' => 'iIdProject',
 						'TaskNumber' => 'sTaskNumber',
+						'TaskDescription' => 'sDescription',
 						'TaskShortDescription' => 'sShortDescription',
 						'TaskStartDate' => 'startDate',
 						'TaskEndDate' => 'endDate',
@@ -357,6 +361,7 @@ class bab_TmTasks extends bab_handler
 			$this->ctx->curctx->push('TaskCompletion', $task['iCompletion']);
 			$this->ctx->curctx->push('TaskOwnerId', $task['idOwner']);
 			$this->ctx->curctx->push('TaskClass', $task['iClass']);
+			$this->ctx->curctx->push('TaskClassName', $task['sClass']);
 			$this->ctx->curctx->push('Priority', $task['iPriority']);
 			
 			global $babUrlScript;
@@ -402,5 +407,81 @@ class bab_TmTasks extends bab_handler
 }
 
 
+/**
+ * OVML Container <OCTmTaskField taskid="taskid">
+ *
+ * This container returns the additionnal field list of a task of a project
+ *
+ * Returned OVML variables are:
+ * - OVTaskFieldClassId			The additionnal field class id
+ * - OVTaskFieldValue			The additionnal field value
+ * - OVTaskFieldName			The additionnal field name
+ * - OVTaskFieldType			The additionnal field type in integer value
+ * - OVTaskFieldTypeName		The additionnal field type in string
+ */
+class bab_TmTaskFields extends bab_handler
+{
+	var $index;
+	var $count;
+	var $aAdditionnalField;
 
+	/**
+	 * @param bab_context	$ctx
+	 * @return bab_TmTasks
+	 */
+	function bab_TmTaskFields(&$ctx)
+	{
+		global $babDB, $babBody;
+
+		$this->bab_handler($ctx);
+		$aTask		= array();
+		$iIdTask	= (int) $ctx->get_value('taskid');
+
+		if($iIdTask > 0)
+		{
+			$bSuccess = bab_getTaskForGantt($iIdTask, $aTask);
+
+			if(!$bSuccess || !bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $aTask['iIdProject']))
+			{
+				$this->count = 0;
+				$this->ctx->curctx->push('CCount', $this->count);
+				return;
+			}
+		}
+
+		$this->aAdditionnalField = bab_getAdditionalTaskField($aTask['iIdProjectSpace'], $aTask['iIdProject'], $aTask['iIdTask']);
+		$this->count = count($this->aAdditionnalField);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+
+	/**
+	 * Fetch the next element of the container.
+	 *
+	 * @return bool		FALSE if there are no more elements.
+	 */
+	function getnext()
+	{
+		if($this->idx < $this->count)
+		{
+			$aItem = each($this->aAdditionnalField);
+			if(false !== $aItem)
+			{
+				$this->ctx->curctx->push('CIndex', $this->idx);
+				$this->ctx->curctx->push('TaskFieldClassId', $aItem['value']['iIdFieldClass']);
+				$this->ctx->curctx->push('TaskFieldValue', $aItem['value']['sValue']);
+				$this->ctx->curctx->push('TaskFieldName', $aItem['value']['sFieldName']);
+				$this->ctx->curctx->push('TaskFieldType', $aItem['value']['iType']);
+				$this->ctx->curctx->push('TaskFieldTypeName', $aItem['value']['sType']);
+				
+				$this->idx++;
+				$this->index = $this->idx;
+				return true;
+			}
+		}
+
+		$this->idx = 0;
+		return false;
+	}
+}
 ?>
