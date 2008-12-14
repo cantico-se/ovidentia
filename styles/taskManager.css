@@ -166,3 +166,40 @@ input.bab_saveField {
 	max-height:300px;
 	overflow:hidden;
 }
+
+
+input.tskmgr_notempty, textarea.tskmgr_notempty {
+	background:#FFF8F8 none repeat scroll 0%;
+	border-color:#DCB3B3;
+}
+
+input.tskmgr_notempty, textarea.tskmgr_notempty, select.tskmgr_notempty {
+	background:#FFF8F8 none repeat scroll 0%;
+	border-color:#DCB3B3;
+}
+
+
+input.tskmgr_delete, input.tskmgr_cancel {
+	background:url('../skins/ovidentia/images/Puces/action_fail.gif');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+
+input.tskmgr_ok {
+	background:url('../skins/ovidentia/images/Puces/action_success.gif');
+	background-repeat:no-repeat;
+	background-position:1px;
+	padding-left:16px;
+}
+
+td.tskmgr_warningTitle {
+	color:red;
+	font-size:1.2em;
+	font-weight:bold;
+}
+
+.tskmgr_dialogBackground {
+	background-color:#F3F3F3;
+}

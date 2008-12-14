@@ -2353,40 +2353,79 @@ function displayTaskForm()
 
 function displayDeleteTaskForm()
 {
+	if(!function_exists('tskmgr_GetTaskMessage'))
+	{
+		function tskmgr_GetTaskMessage($oTask)
+		{
+			$oTmCtx				= getTskMgrContext();
+			$iIdProjectSpace	= (int) $oTmCtx->getIdProjectSpace();
+			$iIdProject			= (int) $oTmCtx->getIdProject();
+			$iIdTask			= (int) $oTmCtx->getIdTask();
+			
+			
+			$sMessage = bab_translate('Information on Task');
+			$sMessage .= '<UL>';
+			if(0 < $iIdProjectSpace && 0 < $iIdProject)
+			{
+				$aProjectSpace = array();
+				if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
+				{
+					$sMessage .= '<LI>' . bab_translate('Project space') . ': ' . $aProjectSpace['name'];
+				}
+				
+				$aProject = array();
+				if(bab_getProject($iIdProject, $aProject))
+				{
+					$sMessage .= '<LI>' . bab_translate('Project') . ': ' . $aProject['name'];
+				}
+			}
+				
+			$sMessage .= '<LI>' . bab_translate('Task number') . ': ' . $oTask->m_aTask['sTaskNumber'];
+			if(0 < strlen(trim($oTask->m_aTask['sDescription'])))
+			{
+				$sMessage .= '<LI>' . bab_translate('Description') . ': ' . $oTask->m_aTask['sDescription'];
+			}
+						
+			$sMessage .= '</UL>';
+			
+			return $sMessage;
+		}
+	}
+	
+	
 	global $babBody;
-	$babBody->title = bab_toHtml(bab_translate("Delete task"));
+	$sTitle = bab_translate("Remove task");
+	$babBody->setTitle($sTitle);
 	
-	$oTmCtx =& getTskMgrContext();
-	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
-	$iIdProject = (int) $oTmCtx->getIdProject();
-	$iIdTask = (int) $oTmCtx->getIdTask();
-	$iUserProfil = (int) $oTmCtx->getUserProfil();
-	$isProject = (int) bab_rp('isProject', 0);
+	$oTmCtx				= getTskMgrContext();
+	$iIdProjectSpace	= (int) $oTmCtx->getIdProjectSpace();
+	$iIdProject			= (int) $oTmCtx->getIdProject();
+	$iIdTask			= (int) $oTmCtx->getIdTask();
+	$iUserProfil		= (int) $oTmCtx->getUserProfil();
+	$isProject			= (int) bab_rp('isProject', 0);
 	
-	$bf = & new BAB_BaseFormProcessing();
-	$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
-	$bf->set_data('iIdProject', $iIdProject);
-	$bf->set_data('isProject', $isProject);
-	$bf->set_data('objectName', 'iIdTask');
-	$bf->set_data('iIdObject', $iIdTask);
-	$bf->set_data('tg', 'usrTskMgr');
+	
+	$oForm = new BAB_TM_ConfirmForm();	
 
-	$bf->set_caption('yes', bab_translate("Yes"));
-	$bf->set_caption('no', bab_translate("No"));
-
+	$oForm->addHiddenField('iIdProjectSpace', $iIdProjectSpace);
+	$oForm->addHiddenField('iIdProject', $iIdProject);
+	$oForm->addHiddenField('isProject', $isProject);
+	$oForm->addHiddenField('iIdTask', $iIdTask);
+	
+	$oForm->setTitle($sTitle);
+	$oForm->setTg('usrTskMgr');
+	
 	$sFromIdx = bab_rp('sFromIdx', BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
 	if(!isFromIdxValid($sFromIdx))
 	{
 		$sFromIdx = BAB_TM_IDX_DISPLAY_MY_TASK_LIST;
 	}
-	$bf->set_data('idx', $sFromIdx);
+	$oForm->addHiddenField('idx', $sFromIdx);
 	
 	global $babInstallPath;
 	require_once($babInstallPath . 'tmTaskClasses.php');
 	
 	$oTask = new BAB_TM_Task();
-	
-	$sTemplateName = 'warningyesno';
 	
 	$aDependingTasks = array();
 	bab_getDependingTasks($iIdTask, $aDependingTasks);
@@ -2394,31 +2433,32 @@ function displayDeleteTaskForm()
 	{
 		if(count($aDependingTasks) == 0)	
 		{
-			$bf->set_data('action', BAB_TM_ACTION_DELETE_TASK);
-			$bf->set_caption('warning', bab_translate("This action will delete the task and all references"));
-			$bf->set_caption('message', bab_translate("Continue ?"));
-			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
+			$oForm->setOkInfo(BAB_TM_ACTION_DELETE_TASK, bab_translate("Supprimer"));
+			$oForm->setCancelInfo($sFromIdx, bab_translate("Annuler"));
+			$oForm->setWarning(bab_translate("This action will delete the task and all references"));
+			$oForm->setMessage(tskmgr_GetTaskMessage($oTask));
+			$oForm->setQuestion(bab_translate("Continue ?").'<br /><br />');
 		}
 		else
 		{
-			$sTemplateName = 'warning';
-			$bf->set_caption('no', bab_translate("Back to list"));
-			$bf->set_caption('warning', bab_translate("You can not delete tis task because another task are linked on it"));
-			$bf->set_caption('message', bab_translate(""));
-			$bf->set_caption('title', bab_translate("Short description") . " = " . $oTask->m_aTask['sShortDescription']);
+			$oForm->setOkInfo($sFromIdx, bab_translate("Go to the list"));
+			$oForm->setWarning(bab_translate("You can not delete tis task because another task are linked on it"));
+			$oForm->setMessage(tskmgr_GetTaskMessage($oTask));
+			$oForm->setQuestion('');
 		}
-	}
+	}	
 	else 
 	{
-		$bf->set_data('action', '');
-		$bf->set_caption('warning', bab_translate("Cannot get the task information"));
-		$bf->set_caption('message', '');
-		$bf->set_caption('title', '');
+		$oForm->setOkInfo($sFromIdx, bab_translate("Go to the list"));
+		$oForm->setWarning(bab_translate("Cannot get the task information"));
+		$oForm->setMessage('');
+		$oForm->setQuestion('');
 	}
-		
-	$bf->raw_2_html(BAB_RAW_2_HTML_CAPTION);
-	$bf->raw_2_html(BAB_RAW_2_HTML_DATA);
-	$babBody->babecho(bab_printTemplate($bf, 'tmCommon.html', $sTemplateName));
+	
+	global $babBody;
+	$babBody->setTitle($sTitle);
+	$babBody->addStyleSheet('taskManager.css');
+	$babBody->babecho($oForm->printTemplate());
 }
 
 function displayPersonnalTaskConfigurationForm()
@@ -3645,6 +3685,15 @@ $action = isset($_POST['action']) ? $_POST['action'] :
 	(isset($_POST[BAB_TM_ACTION_SET_RIGHT]) ? BAB_TM_ACTION_SET_RIGHT : '???')
 	);
 
+if(is_array($action))
+{
+	$action = each($action);
+	if(false !== $action)
+	{
+		$action = $action['key'];
+	}
+}
+	
 //bab_debug('action ==> ' . $action);
 
 switch($action)
@@ -3754,6 +3803,15 @@ switch($action)
 
 
 $idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
+
+if(is_array($idx))
+{
+	$idx = each($idx);
+	if(false !== $idx)
+	{
+		$idx = $idx['key'];
+	}
+}
 
 //bab_debug('idx ==> ' . $idx);
 

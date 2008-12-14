@@ -2624,4 +2624,7 @@
 <string id="Messages">Messages</string>
 <string id="The date format is JJ-MM-AAAA">Le format de la date est JJ-MM-AAAA</string>
 <string id="This file is awaiting approval">Ce fichier est en attente d'approbation</string>
+<string id="Remove task">Suppression de tâche</string>
+<string id="Information on Task">Information sur la tâche</string>
+<string id="Go to the list">Allez sur la liste</string>
 </fr>

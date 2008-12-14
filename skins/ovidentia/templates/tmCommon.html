@@ -1,3 +1,57 @@
+<!--#begin confirm -->
+<script type="text/javascript">
+//<![CDATA[
+//]]>
+</script>
+<form name ="confirm" method="{ sMethod }" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="{ sTg }" />
+	<!--#in getNextHiddenField -->
+	<input type="hidden" name="{ sHiddenFieldName }" value="{ sHiddenFieldValue }" />
+	<!--#endin getNextHiddenField -->
+	
+	<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="5" class="tskmgr_dialogBackground">
+					<tr>
+						<td align="left" class="BabSiteAdminTitleFontBackground" colspan="2">
+							<h4>{ sTitle }</h4>
+						</td>
+					</tr>
+					<tr>
+						<td class="tskmgr_warningTitle" align="left" rowspan="2" width="64">
+							<img style="vertical-align: middle; margin-left: 10px" src="{ babInstallPath }skins/ovidentia/images/48x48/status/{ sImg }" />
+						</td>
+						<td class="tskmgr_warningTitle" align="left">
+							{ sWarning }
+						</td>
+					</tr>
+					<tr>
+						<td class="tskmgr_message" align="left">
+							{ sMessage }<br />
+						</td>
+					</tr>
+					<tr>
+						<td class="tskmgr_message" colspan="2" align="center">
+							{ sQuestion }<br />
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+							<input type="submit" class="tskmgr_ok" name="action[{ sOk }]" value="{ sOkCaption }">&nbsp;
+							<!--#if bDisplayCancel -->
+							<input type="submit" class="tskmgr_cancel" name="idx[{ sCancel }]" value="{ sCancelCaption }">
+							<!--#endif bDisplayCancel -->
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!--#end confirm -->
+
+
 <!--#begin displayMenu -->
 <table width="85%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
