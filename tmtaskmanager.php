@@ -2381,9 +2381,9 @@ function displayDeleteTaskForm()
 			}
 				
 			$sMessage .= '<LI>' . bab_translate('Task number') . ': ' . $oTask->m_aTask['sTaskNumber'];
-			if(0 < strlen(trim($oTask->m_aTask['sDescription'])))
+			if(0 < strlen(trim($oTask->m_aTask['sShortDescription'])))
 			{
-				$sMessage .= '<LI>' . bab_translate('Description') . ': ' . $oTask->m_aTask['sDescription'];
+				$sMessage .= '<LI>' . bab_translate('Title') . ': ' . $oTask->m_aTask['sShortDescription'];
 			}
 						
 			$sMessage .= '</UL>';
@@ -3685,6 +3685,15 @@ $action = isset($_POST['action']) ? $_POST['action'] :
 	(isset($_POST[BAB_TM_ACTION_SET_RIGHT]) ? BAB_TM_ACTION_SET_RIGHT : '???')
 	);
 
+if(is_array($action))
+{
+	$action = each($action);
+	if(false !== $action)
+	{
+		$action = $action['key'];
+	}
+}
+	
 //bab_debug('action ==> ' . $action);
 
 switch($action)
@@ -3794,6 +3803,15 @@ switch($action)
 
 
 $idx = isset($_POST['idx']) ? $_POST['idx'] : (isset($_GET['idx']) ? $_GET['idx'] : BAB_TM_IDX_DISPLAY_MY_TASK_LIST);
+
+if(is_array($idx))
+{
+	$idx = each($idx);
+	if(false !== $idx)
+	{
+		$idx = $idx['key'];
+	}
+}
 
 //bab_debug('idx ==> ' . $idx);
 
