@@ -2380,9 +2380,9 @@ function displayDeleteTaskForm()
 			}
 				
 			$sMessage .= '<LI>' . bab_translate('Task number') . ': ' . $oTask->m_aTask['sTaskNumber'];
-			if(0 < strlen(trim($oTask->m_aTask['sDescription'])))
+			if(0 < strlen(trim($oTask->m_aTask['sShortDescription'])))
 			{
-				$sMessage .= '<LI>' . bab_translate('Description') . ': ' . $oTask->m_aTask['sDescription'];
+				$sMessage .= '<LI>' . bab_translate('Title') . ': ' . $oTask->m_aTask['sShortDescription'];
 			}
 						
 			$sMessage .= '</UL>';
