@@ -2160,7 +2160,7 @@
 <string id="Invalid task">Tâche invalide</string>
 <string id="You do not have the right to delete a task">Vous n'avez pas les droits suffisants pour supprimer la tâche</string>
 <string id="Delete task">Supprimer la tâche</string>
-<string id="This action will delete the task and all references">Cette action supprime la tâche et toutes références</string>
+<string id="This action will delete the task and all references">Cette action supprimera la tâche et toutes les références</string>
 <string id="Task number = ">Numéro de tâche = </string>
 <string id="This task is not deletable">Cette tâche ne peut pas être supprimée</string>
 <string id="The task is not stoppable because it is not started">La tâche ne peut pas être arrêtée puisqu'elle n'est pas démarrée</string>
@@ -2687,4 +2687,7 @@
 <string id="Indexation and search engine">Moteur de recherche et d'indexation</string>
 <string id="The date format is JJ-MM-AAAA">Le format de la date est JJ-MM-AAAA</string>
 <string id="This file is awaiting approval">Ce fichier est en attente d'approbation</string>
+<string id="Remove task">Suppression de tâche</string>
+<string id="Information on Task">Information sur la tâche</string>
+<string id="Go to the list">Allez sur la liste</string>
 </fr>

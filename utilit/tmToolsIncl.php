@@ -21,7 +21,101 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include "base.php";
+require_once "base.php";
+
+
+
+class BAB_TM_ConfirmForm
+{
+	var	$aHiddenField		= array();
+	var $sHiddenFieldName	= '';
+	var $sHiddenFieldValue	= '';
+	var	$sTg				= '';
+	var	$sMethod			= 'GET';
+	
+	var	$sTitle				= '';
+	var	$sWarning			= '';
+	var	$sMessage			= '';
+	var	$sQuestion			= '';
+	
+	var	$sImg				= 'messagebox_warning.png';
+	var	$sOkCaption			= '';
+	var	$sOk				= '';
+	var	$sCancelCaption		= '';
+	var	$sCancel			= '';
+	var	$bDisplayCancel		= false;
+	
+	public function BAB_TM_ConfirmForm()
+	{
+	}
+	
+	public function setOkInfo($sIdx, $sCaption)
+	{
+		$this->sOk			= $sIdx;
+		$this->sOkCaption	= $sCaption;
+	}
+	
+	public function setCancelInfo($sIdx, $sCaption)
+	{
+		$this->sCancel			= $sIdx;
+		$this->sCancelCaption	= $sCaption;
+		$this->bDisplayCancel	= (0 != strlen($sCaption));
+	}
+	
+	public function setWarning($sWarning)
+	{
+		$this->sWarning = $sWarning;
+	}
+		
+	public function setMessage($sMessage)
+	{
+		$this->sMessage = $sMessage;
+	}
+		
+	public function setQuestion($sQuestion)
+	{
+		$this->sQuestion = $sQuestion;
+	}
+	
+	public function setTitle($sTitle)
+	{
+		$this->sTitle = $sTitle;
+	}
+	
+	public function setTg($sTg)
+	{
+		$this->sTg = $sTg;
+	}
+	
+	public function addHiddenField($sName, $sValue)
+	{
+		$this->aHiddenField[] = array('sName' => $sName, 'sValue' => $sValue);
+	}
+	
+	public function getNextHiddenField()
+	{
+		$this->sHiddenFieldName = '';
+		$this->sHiddenFieldValue = '';
+	
+		$aDatas = each($this->aHiddenField);
+		if(false != $aDatas)
+		{
+			$this->sHiddenFieldName = bab_toHtml($aDatas['value']['sName']);
+			$this->sHiddenFieldValue = bab_toHtml($aDatas['value']['sValue']);
+			return true;
+		}
+		else
+		{
+			reset($this->aHiddenField);
+			return false;
+		}
+	}
+
+	public function printTemplate()
+	{
+		return bab_printTemplate($this, 'tmCommon.html', 'confirm');
+	}
+}
 
 
 function isNameUsedInProjectAndProjectSpace($sTblName, $iIdProjectSpace, $iIdProject, $iIdObject, $sName)
