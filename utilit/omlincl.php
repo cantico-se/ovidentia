@@ -2342,7 +2342,7 @@ class bab_File extends bab_handler
 				return true;
 			}
 		}
-		$this->idx=0;
+		$this->idx = $iIndex = 0;
 		return false;
 	}
 
