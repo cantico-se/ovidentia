@@ -2367,9 +2367,9 @@ function bab_selectOption(sControlId, sAction)
 						</div>
 					</div>
 					<script type="text/javascript">
-						document.getElementById('{ t_id }.button').style.display = '';
-						document.getElementById('{ t_id }.menu').style.display = 'none';
-						document.getElementById('{ t_id }.menu').style.right = window.isIE6 ? '24px' : '0';
+						document.getElementById('{ t_id }.button').style.visibility	= 'visible';
+						document.getElementById('{ t_id }.menu').style.visibility	= 'hidden';
+						document.getElementById('{ t_id }.menu').style.right		= window.isIE6 ? '24px' : '0';
 					</script>
 				</span>
 			</span>
@@ -2397,7 +2397,7 @@ function bab_selectOption(sControlId, sAction)
 
 <script type="text/javascript">
 //<![CDATA[
-	document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''
+	document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display = ''
 //]]>
 </script>
 
@@ -2552,10 +2552,6 @@ bab_checkMenu = function(ev)
 
 function bab_toggleMenu(button,div)
 {
-//	if (window.bab_currentMenu && window.bab_currentMenu != div) {
-//		$(window.bab_currentMenu).hide();
-//	}
-
 	var parentTreeDiv = $(div).parents(".tree")[0];
 
 	var buttonX = 0;
@@ -2578,10 +2574,6 @@ function bab_toggleMenu(button,div)
 		window.bab_currentMenu = div;
 		bab_addEvent(document, "click", bab_checkMenu);
 	}
-//	 else {
-//		$(div).hide();
-//		window.bab_currentMenu = null;
-//	}
 }
 
 function bab_tm_toggleMenu(oEvent)
@@ -2592,7 +2584,7 @@ function bab_tm_toggleMenu(oEvent)
 	
 	if(window.bab_tm_currentMenu && window.bab_tm_currentMenu != oDiv) 
 	{
-		window.bab_tm_currentMenu.style.display = 'none';
+		window.bab_tm_currentMenu.style.visibility	= 'hidden';
 	}
 	
 	if(window.bab_tm_nodeTiltle && window.bab_tm_nodeTiltle != oLI) 
@@ -2603,7 +2595,7 @@ function bab_tm_toggleMenu(oEvent)
 	window.bab_tm_nodeTiltle	= oLI;
 	window.bab_tm_currentMenu	= oDiv;
 
-	if(!$(oDiv).visible()) 
+	if('hidden' == $(oDiv).style.visibility) 
 	{
 		var iWidth	= parseInt($(oDiv).style.width);
 		var iTop	= Event.pointerY(oEvent);
@@ -2612,29 +2604,27 @@ function bab_tm_toggleMenu(oEvent)
 		var sLeft	= (iLeft - iWidth - 10) + 'px';
 		var sTop	= (iTop - 10) + 'px';
 		
-		$(oDiv).setStyle({ left: sLeft, top: sTop});
+		$(oDiv).setStyle({ left: sLeft, top: sTop });
 		$(oLI).setStyle({ color: 'red'});
-
-		new Effect.BlindDown($(oDiv));
-//		new Effect.Pulsate($(oLI));
+		$(oDiv).setStyle({ visibility: 'visible' });
 	}
 	else
 	{
-		$(oDiv).setStyle({ display: 'none'});
+		$(oDiv).setStyle({ visibility: 'hidden'});
 		$(oLI).setStyle({ color: '#000000'});
 	}
 }
 
 document.observe("dom:loaded", function bab_tm_moveMenu() {
 	$$('div.bab_tm_divToMoveToMenuContainer').each(function(oDiv) {
-		
+
 		$('bab_tm_menuContainer').appendChild(oDiv);
 		oDiv.style.position = 'absolute';
-		
+
 		{	
-			oDiv.style.display	= '';
-			var iWidth			= parseInt(oDiv.offsetWidth);
-			oDiv.style.display	= 'none';		
+			oDiv.style.visibility	= 'visible';
+			var iWidth				= parseInt(oDiv.offsetWidth);
+			oDiv.style.visibility	= 'hidden';		
 
 			$(oDiv).setStyle({ left: '-1000px', top: '-1000px', width: iWidth + 'px'});
 	
