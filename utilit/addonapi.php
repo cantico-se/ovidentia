@@ -241,25 +241,6 @@ function bab_sprintf($sFormat)
 }
 
 
-/**
- * This function convert the input string to the charset
- * of the database. If the charset of the string and the
- * database match so the string is not converted.
- *
- * @param	string $sString	The string to convert
- * @return	string			The converted input string
- */
-function bab_convertToDatabaseEncoding($sString)
-{
-	$sDetectedEncoding	= mb_detect_encoding($sString, 'UTF-8, ISO-8859-15');
-	$sEncoding			= bab_charset::getIso(); 
-	
-	if($sEncoding != $sDetectedEncoding)
-	{
-		return mb_convert_encoding($sString, $sEncoding, $sDetectedEncoding);
-	}
-	return $sString;
-}
 
 
 /**

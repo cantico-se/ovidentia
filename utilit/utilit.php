@@ -195,6 +195,37 @@ function bab_getTimeFormat($format)
 
 
 
+
+
+/**
+ * This function convert the input string to the charset
+ * of the database. If the charset of the string and the
+ * database match so the string is not converted.
+ *
+ * bug with utf8 in url on firefox
+ *
+ * @param	string $sString	The string to convert
+ * @return	string			The converted input string
+ */
+function bab_convertToDatabaseEncoding($sString)
+{
+	$sDetectedEncoding	= mb_detect_encoding($sString, 'UTF-8, ISO-8859-15');
+	$sEncoding			= bab_charset::getIso(); 
+	
+	if($sEncoding != $sDetectedEncoding)
+	{
+		return mb_convert_encoding($sString, $sEncoding, $sDetectedEncoding);
+	}
+	return $sString;
+}
+
+
+
+
+
+
+
+
 function babLoadLanguage($lang, $folder, &$arr)
 	{
 	if( empty($folder))
@@ -252,10 +283,12 @@ function babLoadLanguage($lang, $folder, &$arr)
 				{
 				$tmp = fread($file, filesize($filename));
 				
-				if ('latin1' === bab_charset::getDatabase()) {
-					$tmp = utf8_decode($tmp);
+
+				$charset = 'ISO-8859-15';
+				if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', substr($tmp, 0, 70), $m)) {
+					$tmp = bab_getStringAccordingToDataBase($tmp, $m[1]);
 				}
-				
+
 				
 				fclose($file);
 				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
