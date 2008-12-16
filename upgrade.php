@@ -4489,9 +4489,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	if('latin1' != $aDbCharset['Value'])
 	{
-		$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
-		$babBody->addError('Please make a backup of your database and then convert it into latin1');	
-		return false;	
+		//$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
+		//$babBody->addError('Please make a backup of your database and then convert it into latin1');	
+		//return false;	
 	}
 	
 	
@@ -5578,5 +5578,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mass_mailing enum('Y','N') NOT NULL default 'N' AFTER mail_maxperpacket");
 	}
+
+
+	$res = $babDB->db_query('SHOW KEYS FROM '.BAB_EVENT_LISTENERS_TBL.'');
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		if (isset($arr['Key_name']) && 'event' === $arr['Key_name']) {
+			$babDB->db_queryWem('ALTER TABLE '.BAB_EVENT_LISTENERS_TBL.' DROP INDEX `event`');
+			$babDB->db_queryWem('ALTER TABLE '.BAB_EVENT_LISTENERS_TBL.' ADD INDEX (`event_class_name`)');
+		}
+	}
+
 	return true;
 }

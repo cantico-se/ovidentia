@@ -26,6 +26,7 @@ require_once 'base.php';
 require_once dirname(__FILE__) . '/../utilit/baseFormProcessingClass.php';
 require_once dirname(__FILE__) . '/../utilit/fileincl.php';
 require_once dirname(__FILE__) . '/../utilit/iterator/iterator.php';
+require_once dirname(__FILE__) . '/../utilit/addonsincl.php';
 
 //Begin of helpers classes, functions
 
@@ -521,6 +522,10 @@ class DisplayMessage extends BAB_BaseFormProcessing
 	public function __construct($oIterator, $sTitle)
 	{
 		parent::BAB_BaseFormProcessing();
+
+		if (is_array($oIterator) && !is_object($oIterator)) {
+			$oIterator = new ArrayIterator($oIterator);
+		}
 		
 		$this->oIterator = $oIterator;
 		$this->set_data('sTitle', $sTitle);
@@ -566,6 +571,14 @@ class DisplayMessage extends BAB_BaseFormProcessing
 		$this->raw_2_html(BAB_RAW_2_HTML_DATA);
 	
 		return bab_printTemplate($this, 'charset.html', 'displayMessage');	
+	}
+
+
+	public function display() 
+	{
+		global $babBody;
+		$babBody->addStyleSheet('charset.css');
+		$babBody->babecho($this->printTemplate());	
 	}
 }
 
@@ -643,6 +656,25 @@ function convertSite()
 		
 		if(bab_gp('sFromCharset') == $sFromCharset && bab_gp('sToCharset') == $sToCharset)
 		{
+			// verify addons
+			$addons = bab_addonsInfos::getDbRows();
+			$addons_errors = array(bab_translate('Addons not compatibles'));
+			foreach($addons as $row) {
+				$addon = bab_getAddonInfosInstance($row['title']);
+				if (!$addon->isCharsetCompatible(bab_charset::getIsoCharsetFromDataBaseCharset($sToCharset))) {
+					$aSearch			= array('%convertTo%'	, '%addonName%');
+					$aReplace			= array($sToCharset		, $row['title']);
+					$addons_errors[] 	= str_replace($aSearch	, $aReplace, bab_translate('The site may not be converted to %convertTo% because the addon %addonName% is not compatible with the charset (parameter mysql_character_set_database in ini file)'));
+				}
+			}
+
+			if (1 < count($addons_errors)) {
+				$oForm = new DisplayMessage($addons_errors, bab_translate('Error'));
+				$oForm->display();
+				return;
+			}
+
+
 			if(1 == $iConvertFileSystem)
 			{
 				$sIsoFrom	= (string) bab_charset::getIsoCharsetFromDataBaseCharset($sFromCharset); 
@@ -651,9 +683,8 @@ function convertSite()
 				
 				if(0 != count($aError))
 				{
-					$oForm = new DisplayMessage(new ArrayIterator(array_merge((array) $sMessage, $aError)), bab_translate('Error'));
-					$babBody->addStyleSheet('charset.css');
-					$babBody->babecho($oForm->printTemplate());	
+					$oForm = new DisplayMessage(array_merge((array) $sMessage, $aError), bab_translate('Error'));
+					$oForm->display();	
 					return;
 				}
 			}
@@ -662,9 +693,8 @@ function convertSite()
 			$aError = convertDataBaseToCharset($sToCharset);
 			if(0 != count($aError))
 			{
-				$oForm = new DisplayMessage(new ArrayIterator(array_merge((array) $sMessage, $aError)), bab_translate('Error'));
-				$babBody->addStyleSheet('charset.css');
-				$babBody->babecho($oForm->printTemplate());	
+				$oForm = new DisplayMessage(array_merge((array) $sMessage, $aError), bab_translate('Error'));
+				$oForm->display();	
 				return;
 			}
 
@@ -691,9 +721,8 @@ function convertSite()
 		else
 		{
 			$aError[] = bab_translate('The charset are not supported');
-			$oForm = new DisplayMessage(new ArrayIterator(array_merge((array) $sMessage, $aError)), bab_translate('Error'));
-			$babBody->addStyleSheet('charset.css');
-			$babBody->babecho($oForm->printTemplate());	
+			$oForm = new DisplayMessage(array_merge((array) $sMessage, $aError), bab_translate('Error'));
+			$oForm->display();
 		}
 	}
 	else
@@ -723,7 +752,7 @@ function convertFileManager()
 		if($sFromCharset != $sDbCharset || $sToCharset != $sFsCharset)
 		{
 			$aError[] = bab_translate('The charset are not supported');
-			$oForm = new DisplayMessage(new ArrayIterator(array_merge((array) $sMessage, $aError)), bab_translate('Error'));
+			$oForm = new DisplayMessage(array_merge((array) $sMessage, $aError), bab_translate('Error'));
 			$babBody->addStyleSheet('charset.css');
 			$babBody->babecho($oForm->printTemplate());
 			return;
@@ -891,11 +920,8 @@ function displayMessage($sTitle)
 
 
 $sIdx = (string) bab_gp('idx', 'displayWarning');
-		
-if(function_exists('set_time_limit'))
-{
-	set_time_limit(3600);
-}
+bab_setTimeLimit(3600);
+
 
 createCharsetConvertLogTable();
 

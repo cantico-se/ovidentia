@@ -973,6 +973,30 @@ class bab_addonInfos {
 		
 		return $return;
 	}
+
+
+	/**
+	 * Test if the addon is compatible with the specified charset
+	 * @param	string	$isoCharset
+	 * @boolean
+	 */
+	function isCharsetCompatible($isoCharset) {
+		$ini = $this->getIni();
+		$compatibles = array('latin1');
+		if (isset($ini->inifile['mysql_character_set_database'])) {
+			$compatibles = explode(',',$ini->inifile['mysql_character_set_database']);
+		}
+
+		
+
+		foreach($compatibles as $addoncharset) {
+			if ($isoCharset === bab_charset::getIsoCharsetFromDataBaseCharset(trim($addoncharset))) {
+				return true;
+			}
+		}
+
+		return false; 
+	}
 }
 
 

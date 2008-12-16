@@ -970,9 +970,8 @@ class bab_inifile {
 	 * @return array
 	 */
 	function getRequirements() {
-		static $return = array();
-		if ($return)
-			return $return;
+
+		$return = array();
 
 		$requirementsObj = new bab_inifile_requirements();
 
