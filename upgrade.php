@@ -4469,7 +4469,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	if(version_compare(PHP_VERSION, '5.1.0', '<'))
 	{
-		$babBody->addError('The update cannot be done because the minimum should be php 5.1.0');	
+		$babBody->addError('The update cannot be done because the minimum version of php should be 5.1.0');	
 		return false;	
 	}
 	
