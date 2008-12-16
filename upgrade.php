@@ -4456,7 +4456,44 @@ function upgrade612to620()
 function ovidentia_upgrade($version_base,$version_ini) {
 
 	global $babBody, $babDB;
+	
 
+	/**
+	 * Upgrade to 6.7.92 The first version that support UTF-8
+	 */
+	if(!extension_loaded('mbstring'))
+	{
+		$babBody->addError('The update cannot be done because the mbstring extension is not loaded');
+		return false;	
+	}
+
+	if(version_compare(PHP_VERSION, '5.1.0', '<'))
+	{
+		$babBody->addError('The update cannot be done because the minimum should be php 5.1.0');	
+		return false;	
+	}
+	
+	$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+	if(false === $oResult)
+	{
+		$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
+		return false;	
+	}
+	
+	$aDbCharset = $babDB->db_fetch_assoc($oResult);
+	if(false === $aDbCharset)
+	{
+		$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
+		return false;	
+	}
+	
+	if('latin1' != $aDbCharset['Value'])
+	{
+		$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
+		$babBody->addError('Please make a backup of your database and then convert it into latin1');	
+		return false;	
+	}
+	
 	
 	/**
 	 * Old upgrades
@@ -5490,10 +5527,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			");
 	}
 	
+	
 	/**
 	 * Upgrade to 6.7.92
 	 */
-	if (!bab_isTable(BAB_OC_ENTITY_TYPES_TBL)) 
+	if(!bab_isTable(BAB_OC_ENTITY_TYPES_TBL)) 
 	{
 
 	$babDB->db_query("	
