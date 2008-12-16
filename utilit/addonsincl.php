@@ -744,67 +744,6 @@ class bab_addonInfos {
 	
 	
 	
-	/**
-	 * Return the image path 
-	 * a 200x150px png, jpg or gif image, representation of the addon
-	 * @return string|null
-	 */
-	function getImagePath() {
-		$ini = $this->getIni();
-		
-		if (!isset($ini->inifile['image'])) {
-			return null;
-		}
-		
-		$imgpath = $this->getImagesPath().$ini->inifile['image'];
-		
-		if (!is_file($imgpath)) {
-			return null;
-		}
-		
-		
-		return $imgpath;
-	}
-	
-	
-	/**
-	 * Return the icon path 
-	 * a 48x48px png, jpg or gif image, representation of the addon
-	 * @return string|null
-	 */
-	function getIconPath() {
-		$ini = $this->getIni();
-		
-		switch ($this->getAddonType()) {
-			case 'THEME':
-				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-theme.png';
-				break;
-			case 'LIBRARY':
-				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-library.png';
-				break;
-			case 'EXTENSION':
-			default:
-				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-extension.png';
-				break;
-		}
-//		$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-default.png';
-		
-		if (!isset($ini->inifile['icon'])) {
-			return $default;
-		}
-		
-		$imgpath = $this->getImagesPath().$ini->inifile['icon'];
-		
-		if (!is_file($imgpath)) {
-			return $default;
-		}
-		
-		
-		return $imgpath;
-	}
-
-	
-	
 	
 	/**
 	 * Return the image path 
