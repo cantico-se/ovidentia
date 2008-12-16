@@ -124,9 +124,9 @@ function directory($id, $pos, $xf, $badd)
 			$this->pos = $pos;
 			$this->badd = $badd;
 			$this->xf = $xf;
-			if( substr($pos,0,1) == "-" )
+			if( mb_substr($pos,0,1) == "-" )
 				{
-				$this->pos = substr($pos,1);
+				$this->pos = mb_substr($pos,1);
 				$this->ord = "";
 				}
 			else
@@ -231,11 +231,11 @@ function directory($id, $pos, $xf, $badd)
 					if( !in_array('email', $this->select))
 						$this->select[] = 'e.email';
 
-					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
+					if (!empty($this->pos) && false === mb_strpos($this->xf, 'babdirf'))
 						$like = " AND `".$this->xf."` LIKE '".$babDB->db_escape_like($this->pos)."%'";
-					elseif (0 === strpos($this->xf, 'babdirf'))
+					elseif (0 === mb_strpos($this->xf, 'babdirf'))
 						{
-						$idfield = substr($this->xf,7);
+						$idfield = mb_substr($this->xf,7);
 						$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_like($this->pos)."%'";
 						}
 					else
@@ -305,7 +305,7 @@ function directory($id, $pos, $xf, $badd)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=editorcontdir&idx=directory&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf;
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;

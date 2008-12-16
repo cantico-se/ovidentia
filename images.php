@@ -30,14 +30,14 @@ include_once $babInstallPath.'utilit/imgincl.php';
 
 function put_text($txt,$limit=12,$limitmot=15)
 {
-	if (strlen($txt) > $limit)
-		$out = substr(strip_tags($txt),0,$limit).'...';
+	if (mb_strlen($txt) > $limit)
+		$out = mb_substr(strip_tags($txt),0,$limit).'...';
 	else
 		$out = strip_tags($txt);
 	$arr = explode(' ',$out);
 	foreach($arr as $key => $mot)
 		{
-		$arr[$key] = substr($mot,0,$limitmot);
+		$arr[$key] = mb_substr($mot,0,$limitmot);
 		}
 return implode(' ',$arr);
 }
@@ -223,10 +223,10 @@ function iframe($editor,$path="")
 
 			$this->del = bab_translate("Delete");
 			$this->editor = $editor;
-			if( substr($path, -1) == "/" )
-				$path = substr($path, 0, -1);
-			$this->prevpath = substr( $path,0, strrpos($path,"/") );
-			if( $path != "" && substr($path, -1) != "/" )
+			if( mb_substr($path, -1) == "/" )
+				$path = mb_substr($path, 0, -1);
+			$this->prevpath = mb_substr( $path,0, mb_strrpos($path,"/") );
+			if( $path != "" && mb_substr($path, -1) != "/" )
 				$path .="/";
 			$this->path = $path;
 			
@@ -259,7 +259,7 @@ function iframe($editor,$path="")
 				}
 			closedir($h);
 			/* Alphabetical sorting of the names of files */
-			natcasesort($this->arrcfile);
+			bab_sort::natcasesort($this->arrcfile);
 			$this->arrcfile = array_values($this->arrcfile);
 			$res = $babDB->db_query("select * from ".BAB_IMAGES_TEMP_TBL." where id_owner='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -286,7 +286,7 @@ function iframe($editor,$path="")
 				}
 			}
 			/* Alphabetical sorting of the names of subfolders */
-			natcasesort($this->subdir);
+			bab_sort::natcasesort($this->subdir);
 			$this->subdir = array_values($this->subdir);
 		}
 
@@ -429,14 +429,17 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 	$nf = '';
 	$bOk = true;
 
-	if( false !== strstr($path, '..') || false !== strstr($file, '..'))
+	if( false !== mb_strpos($path, '..') || false !== mb_strpos($file, '..'))
 		{
 		$bOk = false;
 		}
 
-	if ($ext = strrchr($file,"."))
+	$iOffset = mb_strpos($file,'.');
+	$sFileExtention = mb_substr($file, $iOffset);
+		
+	if ($ext = $sFileExtention)
 		{
-		$ext = strtolower(substr($ext,1));
+		$ext = mb_strtolower(mb_substr($ext,1));
 		switch($ext)
 			{
 			case 'jpg':
@@ -500,7 +503,7 @@ function delImage($com, $f)
 	{
 	global $babDB;
 
-	if( false !== strstr($f, '..'))
+	if( false !== mb_strpos($f, '..'))
 		{
 		return;
 		}
@@ -541,7 +544,7 @@ $idx = bab_rp('idx', 'list');
 $editor = bab_rp('editor', 'none');
 $path = bab_rp('path', '');
 
-if( false !== strstr($path, '..'))
+if( false !== mb_strpos($path, '..'))
 	{
 	$path = '';
 	}
@@ -557,7 +560,7 @@ if( $addf == 'add')
 
 if ( '' != ($directory = bab_pp('directory')) && bab_isUserAdministrator() )
 	{
-	if ( substr($path, -1) != "/" ) $p = $path."/";
+	if ( mb_substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
 	if (!is_dir(BAB_IUD_COMMON.$p.$directory))
 		bab_mkdir(BAB_IUD_COMMON.$p.$directory,$GLOBALS['babMkdirMode']);
@@ -567,17 +570,17 @@ if ( '' != ($directory = bab_pp('directory')) && bab_isUserAdministrator() )
 
 $old_name = bab_rp('old_name', '');
 $new_name = bab_rp('new_name', '');
-if( false !== strstr($old_name, '..'))
+if( false !== mb_strpos($old_name, '..'))
 	{
 	$old_name = '';
 	}
-if( false !== strstr($new_name, '..'))
+if( false !== mb_strpos($new_name, '..'))
 	{
 	$new_name = '';
 	}
 if ( $old_name != '' && $new_name != '' && $old_name!=$new_name && bab_isUserAdministrator() )
 	{
-	if ( substr($path, -1) != "/" ) $p = $path."/";
+	if ( mb_substr($path, -1) != "/" ) $p = $path."/";
 	else $p = $path;
 	if (is_dir(BAB_IUD_COMMON.$p.$old_name))
 		{
@@ -614,7 +617,7 @@ switch($idx)
 		{
 			deldir(BAB_IUD_COMMON.$path);
 		}
-		$path = substr( $path,0, strpos($path,"/") );
+		$path = mb_substr( $path,0, mb_strpos($path,"/") );
 	case 'del':
 		$com = bab_gp('com', 0);
 		if ($com != 0 ) 

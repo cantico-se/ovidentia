@@ -45,7 +45,7 @@ class BAB_ToolbarItem
 		static $iInstance = 0;
 		++$iInstance;
 		
-		if(0 == strlen($sId))
+		if(0 == mb_strlen($sId))
 		{
 			$this->setId('_babTbItem' . $iInstance . '_');
 		}
@@ -159,7 +159,7 @@ class BAB_Toolbar
 			$oToolbarItem =& $aItem['value'];
 
 			$this->sText	= $oToolbarItem->getText();
-			$this->sUrl		= htmlentities($oToolbarItem->getUrl());
+			$this->sUrl		= bab_toHtml($oToolbarItem->getUrl());
 			$this->sImg		= $oToolbarItem->getImg();
 			$this->sTitle	= $oToolbarItem->getTitle();
 			$this->sAlt		= $oToolbarItem->getAlt();

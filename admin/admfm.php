@@ -27,10 +27,11 @@ include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 
 function modifyFolder($fid)
-	{
+{
 	global $babBody;
+	
 	class temp
-		{
+	{
 		var $name;
 		var $description;
 		var $moderation;
@@ -59,118 +60,126 @@ function modifyFolder($fid)
 		function temp($fid)
 		{
 			global $babDB, $babBody;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->moderation = bab_translate("Approbation schema");
-			$this->notification = bab_translate("Notification");
-			$this->version = bab_translate("Versioning");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->add = bab_translate("Update");
-			$this->del = bab_translate("Delete");
-			$this->active = bab_translate("Active");
-			$this->display = bab_translate("Visible in file manager?");
-			$this->addtags_txt = bab_translate("Users can add new tags");
-			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
-			$this->fid = $fid;
-			$this->none = bab_translate("None");
+			
+			$this->name					= bab_translate("Name");
+			$this->description			= bab_translate("Description");
+			$this->moderation			= bab_translate("Approbation schema");
+			$this->notification			= bab_translate("Notification");
+			$this->version				= bab_translate("Versioning");
+			$this->yes					= bab_translate("Yes");
+			$this->no					= bab_translate("No");
+			$this->add					= bab_translate("Update");
+			$this->del					= bab_translate("Delete");
+			$this->active				= bab_translate("Active");
+			$this->display				= bab_translate("Visible in file manager?");
+			$this->addtags_txt			= bab_translate("Users can add new tags");
+			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->none					= bab_translate("None");
+			$this->fid					= $fid;
 			
 			$sFolderName = '';
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($this->fid);
 			if(!is_null($oFmFolder))
 			{
-				$sFolderName = $this->folderval = $oFmFolder->getName();
-				$this->said = $oFmFolder->getDelegationOwnerId();
+				$sFolderName	= $this->folderval = $oFmFolder->getName();
+				$this->said 	= $oFmFolder->getDelegationOwnerId();
 
 				$this->yactsel = '';
-				$this->nactsel = 'selected';
+				$this->nactsel = 'selected="selected"';
 				if('Y' === $oFmFolder->getActive())
 				{
-					$this->yactsel = 'selected';
+					$this->yactsel = 'selected="selected"';
 					$this->nactsel = '';
 				}
 				
 				$this->ynfsel = '';
-				$this->nnfsel = 'selected';
+				$this->nnfsel = 'selected="selected"';
 				if('Y' === $oFmFolder->getFileNotify())
 				{
-					$this->ynfsel = 'selected';
+					$this->ynfsel = 'selected="selected"';
 					$this->nnfsel = '';
 				}
 				
 				$this->yversel = '';
-				$this->nversel = 'selected';
+				$this->nversel = 'selected="selected"';
 				if('Y' === $oFmFolder->getVersioning())
 				{
-					$this->yversel = 'selected';
+					$this->yversel = 'selected="selected"';
 					$this->nversel = '';
 				}
 				
 				$this->nhidesel = '';
-				$this->yhidesel = 'selected';
+				$this->yhidesel = 'selected="selected"';
 				if('Y' === $oFmFolder->getHide())
 				{
-					$this->nhidesel = 'selected';
+					$this->nhidesel = 'selected="selected"';
 					$this->yhidesel = '';
 				}
 				
 				$this->autoappysel = '';
-				$this->autoappnsel = 'selected';
+				$this->autoappnsel = 'selected="selected"';
 				if('Y' === $oFmFolder->getAutoApprobation())
 				{
-					$this->autoappysel = 'selected';
+					$this->autoappysel = 'selected="selected"';
 					$this->autoappnsel = '';
 				}
 				
 				$this->ntagssel = '';
-				$this->ytagssel = 'selected';
+				$this->ytagssel = 'selected="selected"';
 				if('Y' === $oFmFolder->getAddTags())
 				{
-					$this->ntagssel = 'selected';
+					$this->ntagssel = 'selected="selected"';
 					$this->ytagssel = '';
 				}
 
 				$this->safm = $oFmFolder->getApprobationSchemeId();
 				
 				list($n) = $babDB->db_fetch_array($babDB->db_query("select COUNT(i.id) from ".BAB_FA_INSTANCES_TBL." i, ".BAB_FILES_TBL." f where i.idsch='".$this->safm."' AND i.id=f.idfai"));
-				if ($n > 0)
-					{
+				if($n > 0)
+				{
 					$this->js_appflowlock = bab_translate("Approbation can't be disabled").', '.$n.' '.bab_translate("file(s) must be accepted or refused before");
 					$this->js_appflowlock = str_replace("'", "\'", $this->js_appflowlock );
 					$this->js_appflowlock = str_replace('"', "'+String.fromCharCode(34)+'",$this->js_appflowlock );
-					}
+				}
 				$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
-				if( !$this->sares )
+				if(!$this->sares)
+				{
 					$this->sacount = 0;
+				}
 				else
+				{
 					$this->sacount = $babDB->db_num_rows($this->sares);
+				}
 			}
-			
 			$babBody->title = $sFolderName . ": ".bab_translate("Modify folder");
 		}
 
 		function getnextschapp()
-			{
+		{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->sacount)
-				{
+			if($i < $this->sacount)
+			{
 				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->said = $arr['id'];
-				if( $this->said == $this->safm )
-					$this->sasel = "selected";
+				if($this->said == $this->safm)
+				{
+					$this->sasel = 'selected="selected"';
+				}
 				else
+				{
 					$this->sasel = "";
+				}
 				$i++;
 				return true;
-				}
+			}
 			else
-				{
+			{
 				return false;
-				}
 			}
 		}
+	}
 
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
@@ -179,15 +188,15 @@ function modifyFolder($fid)
 		
 	$temp = new temp($fid);
 	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "foldermodify"));
-	}
+}
 
 
 function fieldsFolder($fid)
-	{
+{
 	global $babBody;
 	
 	class temp
-		{
+	{
 		var $fid;
 		var $fieldname;
 		var $fieldnameval;
@@ -198,36 +207,37 @@ function fieldsFolder($fid)
 		var $defaultname;
 
 		function temp($fid)
-			{
+		{
 			global $babDB;
-			$this->fid = $fid;
-			$this->fieldname = bab_translate("Field");
-			$this->defaultname = bab_translate("Default Value");
-			$this->altdelf = bab_translate("Delete fields");
-			$this->res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'order by id asc");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-
-		function getnext()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->fieldnameval = $arr['name'];
-				$this->fielddefval = $arr['defaultval'];
-				$this->fieldid = $arr['id'];
-				$this->fieldurl = $GLOBALS['babUrlScript']."?tg=admfm&idx=mfield&fid=".$this->fid."&ffid=".$arr['id'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
+			
+			$this->fid			= $fid;
+			$this->fieldname	= bab_translate("Field");
+			$this->defaultname	= bab_translate("Default Value");
+			$this->altdelf		= bab_translate("Delete fields");
+			$this->res			= $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id_folder='".$fid."'order by id asc");
+			$this->count		= $babDB->db_num_rows($this->res);
 		}
 
+		function getnext()
+		{
+			global $babDB;
+			static $i = 0;
+			if($i < $this->count)
+			{
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->fieldnameval	= $arr['name'];
+				$this->fielddefval	= $arr['defaultval'];
+				$this->fieldid		= $arr['id'];
+				$this->fieldurl		= bab_toHtml($GLOBALS['babUrlScript']."?tg=admfm&idx=mfield&fid=".$this->fid."&ffid=".$arr['id']);
+				$i++;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 			
 	$sFolderName = '';
 	$oFmFolder = BAB_FmFolderHelper::getFmFolderById($fid);
@@ -236,22 +246,23 @@ function fieldsFolder($fid)
 		$sFolderName = $oFmFolder->getName();
 	}
 		
-	$babBody->title = $sFolderName . ": ".bab_translate("Folder's fields");
+	$babBody->title = bab_toHtml($sFolderName . ": ".bab_translate("Folder's fields"));
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 	$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
 	$babBody->addItemMenu("afield", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfm&idx=afield&fid=".$fid);
 		
 	$temp = new temp($fid);
-	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfields"));
-	}
+	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "fmfields"));
+}
+
 
 function addFieldFolder($fid, $fname, $defval)
-	{
+{
 	global $babBody;
 	
 	class tempa
-		{
+	{
 		var $fid;
 		var $ffid;
 		var $field;
@@ -262,26 +273,26 @@ function addFieldFolder($fid, $fname, $defval)
 		var $default;
 
 		function tempa($fid, $fname, $defval)
+		{
+			$this->fid		= $fid;
+			$this->ffid		= '';
+			$this->field	= bab_translate("Field name");
+			$this->default	= bab_translate("Default Value");
+			$this->add		= bab_translate("Add");
+			
+			if(!empty($fname))
 			{
-			$this->fid = $fid;
-			$this->ffid = '';
-			$this->field = bab_translate("Field name");
-			$this->default = bab_translate("Default Value");
-			$this->add = bab_translate("Add");
-			if( !empty($fname))
-				{
-				$fname = htmlentities(stripslashes($fname));
-				}
-			if( !empty($defval))
-				{
-				$defval = htmlentities(stripslashes($defval));
-				}
-			$this->fname = $fname;
-			$this->defval = $defval;
-			$this->what = 'fadd';
+				$fname = bab_toHtml(stripslashes($fname));
 			}
-
+			if(!empty($defval))
+			{
+				$defval = bab_toHtml(stripslashes($defval));
+			}
+			$this->fname	= $fname;
+			$this->defval	= $defval;
+			$this->what		= 'fadd';
 		}
+	}
 		
 	$sFolderName = '';
 	$oFmFolder = BAB_FmFolderHelper::getFmFolderById($fid);
@@ -290,22 +301,23 @@ function addFieldFolder($fid, $fname, $defval)
 		$sFolderName = $oFmFolder->getName();
 	}
 		
-	$babBody->title = $sFolderName . ": ".bab_translate("Add folder's field");
+	$babBody->title = bab_toHtml($sFolderName . ": ".bab_translate("Add folder's field"));
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 	$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
 	$babBody->addItemMenu("afield", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfm&idx=afield&fid=".$fid);
 
 	$temp = new tempa($fid, $fname, $defval);
-	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
-	}
+	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
+}
+
 
 function modifyFieldFolder($fid, $ffid, $fname, $defval)
-	{
+{
 	global $babBody;
 	
 	class tempa
-		{
+	{
 		var $fid;
 		var $ffid;
 		var $field;
@@ -316,28 +328,29 @@ function modifyFieldFolder($fid, $ffid, $fname, $defval)
 		var $defval;
 
 		function tempa($fid, $ffid, $fname, $defval)
-			{
+		{
 			global $babDB;
-			$this->fid = $fid;
-			$this->field = bab_translate("Field name");
-			$this->default = bab_translate("Default value");
-			$this->add = bab_translate("Modify");
-			$this->fname = $fname;
-			$this->defval = $defval;
-			$this->what = 'fmod';
-			if( empty($fname))
-				{
+			$this->fid		= $fid;
+			$this->field	= bab_translate("Field name");
+			$this->default	= bab_translate("Default value");
+			$this->add		= bab_translate("Modify");
+			$this->fname	= $fname;
+			$this->defval	= $defval;
+			$this->what		= 'fmod';
+			$this->ffid		= $ffid;
+			
+			if(empty($fname))
+			{
 				$res = $babDB->db_query("select * from ".BAB_FM_FIELDS_TBL." where id='".$ffid."'");
-				if( $res && $babDB->db_num_rows($res) > 0 )
-					{
+				if($res && $babDB->db_num_rows($res) > 0)
+				{
 					$arr = $babDB->db_fetch_array($res);
-					$this->fname = htmlentities($arr['name']);
-					$this->defval = htmlentities($arr['defaultval']);
-					}
+					$this->fname = bab_toHtml($arr['name']);
+					$this->defval = bab_toHtml($arr['defaultval']);
 				}
 			}
-
 		}
+	}
 	
 	$sFolderName = '';
 	$oFmFolder = BAB_FmFolderHelper::getFmFolderById($fid);
@@ -346,22 +359,23 @@ function modifyFieldFolder($fid, $ffid, $fname, $defval)
 		$sFolderName = $oFmFolder->getName();
 	}
 		
-	$babBody->title = $sFolderName . ": ".bab_translate("Modify folder's field");
+	$babBody->title = bab_toHtml($sFolderName . ": ".bab_translate("Modify folder's field"));
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
 	$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
 	$babBody->addItemMenu("mfield", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=mfield&fid=".$fid);
 
 	$temp = new tempa($fid, $ffid, $fname, $defval);
-	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
-	}
+	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "fmfieldadd"));
+}
+
 
 function deleteFolder($fid)
-	{
+{
 	global $babBody;
 	
 	class temp
-		{
+	{
 		var $warning;
 		var $message;
 		var $title;
@@ -373,7 +387,7 @@ function deleteFolder($fid)
 		var $article;
 
 		function temp($fid)
-			{
+		{
 			$this->message = bab_translate("Are you sure you want to delete this folder");
 			
 			$this->title = '';
@@ -383,21 +397,22 @@ function deleteFolder($fid)
 				$this->title = $oFmFolder->getName();
 			}
 
-			$babBody->title = $this->title . ": ".bab_translate("Delete folder");
-			$this->warning = bab_translate("WARNING: This operation will delete the folder with all files"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=list&fid=".$fid."&action=fyes";
-			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfms&idx=list";
-			$this->no = bab_translate("No");
-			}
+			$babBody->title = bab_toHtml($this->title . ": ".bab_translate("Delete folder"));
+			$this->warning	= bab_toHtml(bab_translate("WARNING: This operation will delete the folder with all files"). "!");
+			$this->urlyes	= bab_toHtml($GLOBALS['babUrlScript']."?tg=admfm&idx=list&fid=".$fid."&action=fyes");
+			$this->yes		= bab_toHtml(bab_translate("Yes"));
+			$this->urlno	= bab_toHtml($GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+			$this->no		= bab_toHtml(bab_translate("No"));
 		}
+	}
 
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 	
 	$temp = new temp($fid);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
-	}
+}
+
 
 function displayRightForm($fid)
 {
@@ -430,11 +445,11 @@ function displayRightForm($fid)
 	
 
 function deleteFieldsFolder($fid, $fields)
-	{
+{
 	global $babBody;
 	
 	class temp
-		{
+	{
 		var $warning;
 		var $message;
 		var $title;
@@ -446,7 +461,7 @@ function deleteFieldsFolder($fid, $fields)
 		var $article;
 
 		function temp($fid, $fields)
-			{
+		{
 			global $babBody;
 			$this->message = bab_translate("Are you sure you want to delete selected fields");
 			
@@ -457,15 +472,14 @@ function deleteFieldsFolder($fid, $fields)
 				$this->title = $oFmFolder->getName();
 			}
 			
-			$babBody->title = $this->title . ": ".bab_translate("Delete folder's fields");
-			
-			$this->warning = bab_translate("WARNING: This operation will delete those fields with their values"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields);
-			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid;
-			$this->no = bab_translate("No");
-			}
+			$babBody->title	= bab_toHtml($this->title . ": ".bab_translate("Delete folder's fields"));
+			$this->warning	= bab_toHtml(bab_translate("WARNING: This operation will delete those fields with their values"). "!");
+			$this->urlyes	= bab_toHtml($GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid."&action=ffyes&fields=".implode(',', $fields));
+			$this->yes		= bab_toHtml(bab_translate("Yes"));
+			$this->urlno	= bab_toHtml($GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
+			$this->no		= bab_toHtml(bab_translate("No"));
 		}
+	}
 
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
@@ -473,8 +487,8 @@ function deleteFieldsFolder($fid, $fields)
 	$babBody->addItemMenu("delff", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=admfm&idx=delff&fid=".$fid);
 	
 	$temp = new temp($fid, $fields);
-	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
-	}
+	$babBody->babecho(bab_printTemplate($temp,"warning.html", "warningyesno"));
+}
 
 
 function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags)
@@ -488,9 +502,9 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 	
 	$oFmFolderSet = new BAB_FmFolderSet();
 
-	$oId =& $oFmFolderSet->aField['iId'];
-	$oName =& $oFmFolderSet->aField['sName'];
-	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
+	$oId = $oFmFolderSet->aField['iId'];
+	$oName = $oFmFolderSet->aField['sName'];
+	$oIdDgOwner = $oFmFolderSet->aField['iIdDgOwner'];
 	
 	$sName = replaceInvalidFolderNameChar($fname);
 	
@@ -510,9 +524,9 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 				
 				$oFolderFileSet = new BAB_FolderFileSet();
-				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
-				$oGroup =& $oFolderFileSet->aField['sGroup'];
-				$oConfirmed =& $oFolderFileSet->aField['sConfirmed'];
+				$oIdOwner = $oFolderFileSet->aField['iIdOwner'];
+				$oGroup = $oFolderFileSet->aField['sGroup'];
+				$oConfirmed = $oFolderFileSet->aField['sConfirmed'];
 				
 				$oCriteria = $oIdOwner->in($fid);
 				$oCriteria = $oCriteria->_and($oGroup->in('Y'));
@@ -560,8 +574,8 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 
 				
 					$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
-					$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
-					$oConfirmed =& $oFolderFileVersionSet->aField['sConfirmed'];
+					$oIdFile = $oFolderFileVersionSet->aField['iIdFile'];
+					$oConfirmed = $oFolderFileVersionSet->aField['sConfirmed'];
 					
 					$oCriteria = $oIdFile->in($oFolderFile->getId());
 					$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
@@ -607,24 +621,32 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				}
 			}
 			
-			$oFileManagerEnv =& getEnvObject();
-			$sRootFmPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
-			$sRelativePath = '';
+			$oFileManagerEnv	= getEnvObject();
+			$sRootFmPath		= BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
+			$sRelativePath		= '';
 			
-			BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $sName);
-			BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $sName, 'Y');
-			BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $sName, 'Y');
-			
-			$oFmFolder->setName($sName);
-			$oFmFolder->setRelativePath('');
-			$oFmFolder->setApprobationSchemeId((int) $said);
-			$oFmFolder->setFileNotify($notification);
-			$oFmFolder->setActive($active);
-			$oFmFolder->setVersioning($version);
-			$oFmFolder->setHide($bhide);
-			$oFmFolder->setAddTags($baddtags);
-			$oFmFolder->setAutoApprobation($bautoapp);
-			$oFmFolder->save();
+			if(isStringSupportedByFileSystem($sName))
+			{
+				BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $oFmFolder->getName(), $sName);
+				BAB_FmFolderCliboardSet::rename($sRelativePath, $oFmFolder->getName(), $sName, 'Y');
+				BAB_FolderFileSet::renameFolder($oFmFolder->getName() . '/', $sName, 'Y');
+				
+				$oFmFolder->setName($sName);
+				$oFmFolder->setRelativePath('');
+				$oFmFolder->setApprobationSchemeId((int) $said);
+				$oFmFolder->setFileNotify($notification);
+				$oFmFolder->setActive($active);
+				$oFmFolder->setVersioning($version);
+				$oFmFolder->setHide($bhide);
+				$oFmFolder->setAddTags($baddtags);
+				$oFmFolder->setAutoApprobation($bautoapp);
+				$oFmFolder->save();
+			}
+			else
+			{
+				$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+				return;	
+			}
 		}		
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 		exit;
@@ -730,12 +752,12 @@ else if( isset($fmf))
 		}
 
 	}
-else if( isset($aclview))
-	{
+else if(isset($aclview))
+{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	exit;
-	}
+}
 
 switch($idx)
 {
@@ -748,8 +770,8 @@ switch($idx)
 		break;
 
 	case "mfield":
-		if( !isset($ffname)) $ffname = '';
-		if( !isset($defval)) $defval = '';
+		if(!isset($ffname)) $ffname = '';
+		if(!isset($defval)) $defval = '';
 		modifyFieldFolder($fid, $ffid, $ffname, $defval);
 		break;
 
@@ -760,7 +782,7 @@ switch($idx)
 		break;
 
 	case "delff":
-		if( count($fields) > 0)
+		if(count($fields) > 0)
 		{
 			deleteFieldsFolder($fid, $fields);
 			break;

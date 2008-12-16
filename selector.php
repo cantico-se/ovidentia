@@ -193,7 +193,7 @@ function selectFiles($folderId = null, $path = '')
 		// so we return only its sub folders tree. 
 		$treeView->setStartPath($folderId, $path);
 		$treeView->setAttributes($attributes);
-		header('Content-type: text/html; charset=ISO-8859-15');
+		header('Content-type: text/html; charset=' . bab_charset::getIso());
 		echo($treeView->printSubTree());
 		die();
 	}

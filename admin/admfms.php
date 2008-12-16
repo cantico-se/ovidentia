@@ -26,10 +26,11 @@ include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 
 function addFolder()
-	{
+{
 	global $babBody;
+	
 	class temp
-		{
+	{
 		var $name;
 		var $description;
 		var $moderation;
@@ -47,56 +48,63 @@ function addFolder()
 		var $version;
 
 		function temp()
-			{
+		{
 			global $babBody, $babDB;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->moderation = bab_translate("Approbation schema");
-			$this->notification = bab_translate("Notification");
-			$this->version = bab_translate("Versioning");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->add = bab_translate("Add");
-			$this->active = bab_translate("Active");
-			$this->none = bab_translate("None");
-			$this->display = bab_translate("Visible in file manager?");
-			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
-			$this->addtags_txt = bab_translate("Users can add new tags");
+			
+			$this->name					= bab_translate("Name");
+			$this->description			= bab_translate("Description");
+			$this->moderation			= bab_translate("Approbation schema");
+			$this->notification			= bab_translate("Notification");
+			$this->version				= bab_translate("Versioning");
+			$this->yes					= bab_translate("Yes");
+			$this->no					= bab_translate("No");
+			$this->add					= bab_translate("Add");
+			$this->active				= bab_translate("Active");
+			$this->none					= bab_translate("None");
+			$this->display				= bab_translate("Visible in file manager?");
+			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->addtags_txt			= bab_translate("Users can add new tags");
 			
 			
 			$this->sares = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc");
-			if( !$this->sares )
+			if(!$this->sares)
+			{
 				$this->sacount = 0;
+			}
 			else
+			{
 				$this->sacount = $babDB->db_num_rows($this->sares);
 			}
+		}
 
 		function getnextschapp()
-			{
+		{
 			global $babDB;
 			static $i = 0;
 			if( $i < $this->sacount)
-				{
+			{
 				$arr = $babDB->db_fetch_array($this->sares);
 				$this->saname = $arr['name'];
 				$this->said = $arr['id'];
 				$i++;
 				return true;
-				}
+			}
 			else
-				{
+			{
 				return false;
-				}
 			}
 		}
+	}
 
 	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "foldercreate"));
-	}
+}
+
 
 function listFolders()
 {
 	global $babBody;
+	
 	class temp
 	{
 		var $fullname;
@@ -122,32 +130,34 @@ function listFolders()
 		var $altbg = true;
 		var $add = '';
 		var $oFmFolderSet = null;
-
+		var $sAddUrl = '';
+		
 		function temp()
 		{
 			global $babBody, $babDB;
-			$this->fullname = bab_translate("Folders");
-			$this->notify = bab_translate("Notify");
-			$this->version = bab_translate("Versioning");
-			$this->access = bab_translate("Access");
-			$this->active = bab_translate("Enabled");
-			$this->notify = bab_translate("Notify");
-			$this->modify = bab_translate("Update");
-			$this->display = bab_translate("Hidden");
-			$this->urlrightsname = bab_translate("Rights");
-			$this->uncheckall = bab_translate("Uncheck all");
-			$this->checkall = bab_translate("Check all");
-			$this->add = bab_translate("Add");
-
-			global $babBody;
-			$this->oFmFolderSet = new BAB_FmFolderSet();
 			
-			$oRelativePath =& $this->oFmFolderSet->aField['sRelativePath']; 
-			$oIdDgOwner =& $this->oFmFolderSet->aField['iIdDgOwner']; 
+			$this->fullname			= bab_translate("Folders");
+			$this->notify			= bab_translate("Notify");
+			$this->version			= bab_translate("Versioning");
+			$this->access			= bab_translate("Access");
+			$this->active			= bab_translate("Enabled");
+			$this->notify			= bab_translate("Notify");
+			$this->modify			= bab_translate("Update");
+			$this->display			= bab_translate("Hidden");
+			$this->urlrightsname	= bab_translate("Rights");
+			$this->uncheckall		= bab_translate("Uncheck all");
+			$this->checkall			= bab_translate("Check all");
+			$this->add				= bab_translate("Add");
+			$this->sAddUrl			= bab_toHtml('?tg=admfms&idx=addf');
 			
-			$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
-			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
-			$aOrder = array('sName' => 'ASC');
+			$this->oFmFolderSet	= new BAB_FmFolderSet();
+			$oRelativePath		= $this->oFmFolderSet->aField['sRelativePath']; 
+			$oIdDgOwner			= $this->oFmFolderSet->aField['iIdDgOwner']; 
+			
+			$oCriteria	= $oRelativePath->in($babDB->db_escape_like(''));
+			$oCriteria	= $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
+			$aOrder		= array('sName' => 'ASC');
+			
 			$this->oFmFolderSet->select($oCriteria, $aOrder);
 		}
 
@@ -165,29 +175,29 @@ function listFolders()
 				{
 					if('Y' === $oFmFolder->getFileNotify())
 					{
-						$this->fnotify = 'checked';
+						$this->fnotify = 'checked="checked"';
 					}
 					
 					if('Y' === $oFmFolder->getActive())
 					{
-						$this->factive = 'checked';
+						$this->factive = 'checked="checked"';
 					}
 					
 					if('Y' === $oFmFolder->getVersioning())
 					{
-						$this->fversion = 'checked';
+						$this->fversion = 'checked="checked"';
 					}
 					
 					if('Y' === $oFmFolder->getHide())
 					{
-						$this->fbhide = 'checked';
+						$this->fbhide = 'checked="checked"';
 					}
 					
-					$this->fid = $oFmFolder->getId();
-					$this->url = $GLOBALS['babUrlScript'] . '?tg=admfm&idx=modify&fid=' . $this->fid;
-					$this->urlname = $oFmFolder->getName();
-					$this->urlrights = $GLOBALS['babUrlScript'] . '?tg=admfm&idx=rights&fid=' . $this->fid;
-					$this->access = bab_translate("Access");
+					$this->fid			= $oFmFolder->getId();
+					$this->url			= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfm&idx=modify&fid=' . $this->fid);
+					$this->urlname		= $oFmFolder->getName();
+					$this->urlrights	= bab_toHtml($GLOBALS['babUrlScript'] . '?tg=admfm&idx=rights&fid=' . $this->fid);
+					$this->access		= bab_translate("Access");
 					return true;
 				}
 			}
@@ -205,9 +215,10 @@ function listFolders()
 	}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "admfms.html", "folderlist"));
+	$babBody->babecho(bab_printTemplate($temp, "admfms.html", "folderlist"));
 	return $temp->count();
 }
+
 
 function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags)
 {
@@ -220,7 +231,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	
 	include_once $GLOBALS['babInstallPath'] . 'utilit/delegincl.php';
 	bab_setCurrentUserDelegation($babBody->currentAdmGroup);
-	$oFileManagerEnv =& getEnvObject();
+	$oFileManagerEnv = getEnvObject();
 	if(!$oFileManagerEnv->pathValid())
 	{
 		return false;
@@ -228,13 +239,18 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 	
 	global $babBody;
 	
-	$oFmFolderSet = new BAB_FmFolderSet();
-	
-	$oName =& $oFmFolderSet->aField['sName']; 
-	$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner']; 
+	$oFmFolderSet	= new BAB_FmFolderSet();
+	$oName			= $oFmFolderSet->aField['sName']; 
+	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner']; 
 	
 	$sName = replaceInvalidFolderNameChar($fname);
-	
+			
+	if(!isStringSupportedByFileSystem($sName))
+	{
+		$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+		return false;
+	}
+			
 	$oCriteria = $oName->in($sName);
 	$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 	$oFmFolder = $oFmFolderSet->get($oCriteria);
@@ -276,10 +292,10 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 function updateFolders($notifies, $actives, $versions, $bhides)
 {
 	global $babBody;
-	$oFmFolderSet = new BAB_FmFolderSet();
 	
-	$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
-	$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
+	$oFmFolderSet	= new BAB_FmFolderSet();
+	$oIdDgOwner		= $oFmFolderSet->aField['iIdDgOwner'];
+	$oRelativePath	= $oFmFolderSet->aField['sRelativePath'];
 
 	$oCriteria = $oIdDgOwner->in($babBody->currentAdmGroup);
 	$oCriteria = $oCriteria->_and($oRelativePath->in(''));
@@ -322,9 +338,6 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 		{
 			$oFmFolder->setHide('N');	
 		}
-		
-		
-		
 		$oFmFolder->save();
 	}
 	
@@ -334,7 +347,7 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 
 
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
+if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -343,24 +356,32 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 //bab_debug(__FILE__);
 //bab_debug($_POST);
 
-if( !isset($idx))
+if(!isset($idx))
+{
 	$idx = "list";
+}
 
-if( isset($add) && $add == "addfolder")
-	if (!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags))
-		$idx = "addf";
 
-if( isset($update) && $update == "folders")
+if(isset($add) && $add == "addfolder")
+{
+	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags))
 	{
+		$idx = "addf";
+	}
+}
+
+
+if(isset($update) && $update == "folders")
+{
 	if(!isset($notifies)) { $notifies= array();}
 	if(!isset($actives)) { $actives= array();}
 	if(!isset($versions)) { $versions= array();}
 	if(!isset($bhides)) { $bhides= array();}
 	updateFolders($notifies, $actives, $versions, $bhides);
-	}
+}
 
 switch($idx)
-	{
+{
 	case "addf":
 		$babBody->title = bab_translate("Add a new folder");
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
@@ -371,14 +392,12 @@ switch($idx)
 	default:
 	case "list":
 		$babBody->title = bab_translate("File manager");
-		if( listFolders() > 0 )
-			{
+		if(listFolders() > 0)
+		{
 			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-			}
-
-		//$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
+		}
 		break;
-	}
+}
 $babBody->setCurrentItemMenu($idx);
 
 ?>

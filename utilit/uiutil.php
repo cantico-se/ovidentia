@@ -31,13 +31,15 @@ function popupUnload($message, $redirecturl, $openerreload=false)
 		var $close;
 		var $redirecturl;
 		var $openerreload;
-
+		var $sContent;
+		
 		function temp($message, $redirecturl, $openerreload)
 			{
 			$this->message = $message;
 			$this->close = bab_translate("Close");
 			$this->redirecturl = $redirecturl;
 			$this->openerreload = $openerreload;
+			$this->sContent = 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 
@@ -124,14 +126,16 @@ function printBabBodyPopup()
 		var $content;
 		var $title;
 		var $msgerror;
-
+		var $sContent;
+		
 		function clsPrintBabBodyPopup()
 			{
 			global $babBodyPopup;
 			$this->menukeys = array_keys($babBodyPopup->menu->items);
 			$this->menuvals = array_values($babBodyPopup->menu->items);
 			$this->menuitems = count($this->menukeys);
-
+			$this->sContent = 'text/html; charset=' . bab_charset::getIso();
+			
 			$this->content = bab_getDebug();
 			$this->content .= $babBodyPopup->printout();
 			$this->title = &$babBodyPopup->title;

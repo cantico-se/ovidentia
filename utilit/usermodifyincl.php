@@ -83,7 +83,7 @@ class bab_userModify {
 	
 		$replace = array( " " => "", "-" => "");
 	
-		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
+		$hashname = md5(mb_strtolower(strtr($firstname.$middlename.$lastname, $replace)));
 		$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."'";	
 		$res = $babDB->db_query($query);
 		if( $babDB->db_num_rows($res) > 0)
@@ -107,7 +107,7 @@ class bab_userModify {
 			return false;
 		}
 	
-		$password1=strtolower($password1);
+		$password1=mb_strtolower($password1);
 		$hash=md5($nickname.$BAB_HASH_VAR);
 		if( $isconfirmed )
 			{
@@ -119,7 +119,7 @@ class bab_userModify {
 			}
 			
 		$replace = array( " " => "", "-" => "");
-		$hashname = md5(strtolower(strtr($firstname.$middlename.$lastname, $replace)));
+		$hashname = md5(mb_strtolower(strtr($firstname.$middlename.$lastname, $replace)));
 	
 		$sql="insert into ".BAB_USERS_TBL." (nickname, firstname, lastname, hashname, password,email,date,confirm_hash,is_confirmed,changepwd,lang, langfilter, datelog, lastlog) ".
 			"values (
@@ -237,7 +237,7 @@ class bab_userModify {
 	
 				if( isset($info['password']) )
 				{
-					$arruq[] = 'password=\''.$babDB->db_escape_string(md5(strtolower($info['password']))).'\'';
+					$arruq[] = 'password=\''.$babDB->db_escape_string(md5(mb_strtolower($info['password']))).'\'';
 				}
 				
 				if( isset($info['disabled']))
@@ -322,7 +322,7 @@ class bab_userModify {
 					}
 	
 					$replace = array( " " => "", "-" => "");
-					$hashname = md5(strtolower(strtr($firstname.$mn.$lastname, $replace)));
+					$hashname = md5(mb_strtolower(strtr($firstname.$mn.$lastname, $replace)));
 					$arruq[] =  'firstname=\''.$babDB->db_escape_string($firstname).'\'';
 					$arruq[] =  'lastname=\''.$babDB->db_escape_string($lastname).'\'';
 					$arruq[] =  'hashname=\''.$babDB->db_escape_string($hashname).'\'';

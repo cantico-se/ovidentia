@@ -242,7 +242,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	$gr = $bgroup ? 'Y' : 'N';
 	
 	$sEndSlash = '';
-	if(strlen(trim($path)) > 0)
+	if(mb_strlen(trim($path)) > 0)
 	{
 		$sEndSlash = '/';
 	}
@@ -259,8 +259,6 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	
 		$path = $oFmRootFolder->getName().'/'.$path;
 		
-		bab_debug($path);
-	
 		$oFmFolder = null;
 		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id_owner, $path, $id_owner, $sPathName, $oFmFolder);
 	}
@@ -272,8 +270,8 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	
 	$oFileManagerEnv =& getEnvObject();
 	
-	$oFileManagerEnv->sPath = removeEndSlashes($sPathName);
-	$oFileManagerEnv->sGr = $gr;
+	$oFileManagerEnv->sPath	= (string) bab_convertToDatabaseEncoding(removeEndSlashes($sPathName));
+	$oFileManagerEnv->sGr	= $gr;
 
 	if(!empty($BAB_SESS_USERID))
 	{

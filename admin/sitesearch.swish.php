@@ -62,7 +62,7 @@ function site_menu11($id_site)
 					}
 				}
 
-			array_walk($this->arr, create_function('&$v,$k','$v = htmlentities($v);'));
+			array_walk($this->arr, create_function('&$v,$k','$v = bab_toHtml($v);'));
 			}
 		}
 

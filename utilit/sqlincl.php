@@ -229,11 +229,11 @@ class bab_sqlExport
 			if ($x == 'PRIMARY') {
 				$schema_create = 'PRIMARY KEY (';
 				} else 
-			if (substr($x, 0, 6) == 'UNIQUE') {
-				$schema_create = 'UNIQUE ' . substr($x, 7) . ' (';
+			if (mb_substr($x, 0, 6) == 'UNIQUE') {
+				$schema_create = 'UNIQUE ' . mb_substr($x, 7) . ' (';
 				} else 
-			if (substr($x, 0, 8) == 'FULLTEXT') {
-				$schema_create = 'FULLTEXT ' . substr($x, 9) . ' (';
+			if (mb_substr($x, 0, 8) == 'FULLTEXT') {
+				$schema_create = 'FULLTEXT ' . mb_substr($x, 9) . ' (';
 				} 
 			else {
 				$schema_create = 'KEY ' . $x . ' (';
@@ -245,7 +245,7 @@ class bab_sqlExport
 		
 	function getType($str)
 		{
-		if (substr_count($str,'(') > 0)
+		if (mb_substr_count($str,'(') > 0)
 			{
 			$tmp = explode('(',$str);
 			return $tmp[0];

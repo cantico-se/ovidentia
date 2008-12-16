@@ -137,8 +137,8 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 				else
 					{
 					
-					if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
-						$url = substr($url, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 					}
 					
 					
@@ -290,7 +290,6 @@ function bab_uploadPostFiles($postid, $id_forum) {
 
 
 	foreach ($_FILES as $file) {
-
 		if( isset($GLOBALS['babFileNameTranslation']))
 			{
 			$file['name'] = strtr($file['name'], $GLOBALS['babFileNameTranslation']);
@@ -305,7 +304,7 @@ function bab_uploadPostFiles($postid, $id_forum) {
 
 	}
 
-	bab_debug($postfiles);
+	//bab_debug($postfiles);
 	$index_status = bab_indexOnLoadFiles($postfiles, 'bab_forumsfiles');
 
 
@@ -355,13 +354,16 @@ function bab_getPostFiles($forum,$postid)
 
 	if (is_dir($baseurl) && $h = opendir($baseurl)) {
 		while (false !== ($file = readdir($h))) {
-			if (substr($file,0,strpos($file,',')) == $postid) {
-				$name = substr(strstr($file,','),1);
-				$filedirectory[$name] = $baseurl.$file;
+			if (mb_substr($file,0,mb_strpos($file,',')) == $postid) {
+				$iOffset = mb_strpos($file,',');
+				if(false !== $iOffset)
+				{
+					$name = mb_substr($file, $iOffset + 1);
+					$filedirectory[$name] = $baseurl.$file;
+				}
 			}
 		}
 	}
-
 
 	$res = $babDB->db_query("SELECT * FROM ".BAB_FORUMSFILES_TBL." WHERE id_post='".$babDB->db_escape_string($postid)."'");
 	while ($arr = $babDB->db_fetch_assoc($res)) {

@@ -141,7 +141,7 @@ function listCategories()
 					$req .= ")";
 					break;
 				case 1:
-					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang like '". substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
+					$req = "select * from ".BAB_FAQCAT_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and (lang like '". mb_substr($GLOBALS['babLanguage'], 0, 2) ."%' or lang='*' or lang = ''";
 					if ($GLOBALS['babApplyLanguageFilter'] == 'loose')
 						$req.= " or id_manager = '" .$GLOBALS['BAB_SESS_USERID']. "'";
 					$req .= ")";

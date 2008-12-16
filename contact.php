@@ -156,7 +156,7 @@ function addContact( $firstname, $lastname, $email, $compagny, $hometel, $mobile
 		}
 
 	$replace = array( " " => "", "-" => "");
-	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
+	$hash = md5(mb_strtolower(strtr($firstname.$lastname, $replace)));
 	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";	
 	$res = $babDB->db_query($req);
 	if( $babDB->db_num_rows($res) > 0)
@@ -185,7 +185,7 @@ function updateContact( $id, $firstname, $lastname, $email, $compagny, $hometel,
 		}
 
 	$replace = array( " " => "", "-" => "");
-	$hash = md5(strtolower(strtr($firstname.$lastname, $replace)));
+	$hash = md5(mb_strtolower(strtr($firstname.$lastname, $replace)));
 	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."' and owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and id!='".$babDB->db_escape_string($id)."'";	
 	$res = $babDB->db_query($req);
 	if( $babDB->db_num_rows($res) > 0)
@@ -233,7 +233,7 @@ if( '' != ($addcontact = bab_pp('addcontact')))
 		else
 			{
 			$idx = 'unload';
-			$pos = strtoupper(substr($firstname, 0, 1));
+			$pos = mb_strtoupper(mb_substr($firstname, 0, 1));
 			}
 		}
 	else if ($addcontact == 'update')
@@ -257,7 +257,7 @@ if( '' != ($addcontact = bab_pp('addcontact')))
 		else
 			{
 			$idx = 'unload';
-			$pos = strtoupper(substr($firstname, 0, 1));
+			$pos = mb_strtoupper(mb_substr($firstname, 0, 1));
 			}
 		}
 	}

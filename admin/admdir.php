@@ -60,7 +60,7 @@ function listAds()
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $db;
 		var $resdb;
 		var $countdb;
@@ -87,78 +87,89 @@ function listAds()
 		var $altbg = true;
 
 		function temp()
-			{
+		{
 			global $babBody;
-			$this->directories = bab_translate("Directories");
-			$this->desctxt = bab_translate("Description");
-			$this->grouptxt = bab_translate("Group");
-			$this->ldaptitle = bab_translate("Ldap Directories list");
-			$this->databasetitle = bab_translate("Databases Directories list");
-			$this->add = bab_translate("Add");
-			$this->gview = bab_translate("Rights");
-			$this->grights = bab_translate("Rights");
-			$this->urladdldap = $GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap';
-			$this->urladddb = $GLOBALS['babUrlScript'].'?tg=admdir&idx=db';
-			$this->db = $GLOBALS['babDB'];
-			$this->resldap = $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
-			$this->countldap = $this->db->db_num_rows($this->resldap);
-			$this->resdb = $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
-			$this->countdb = $this->db->db_num_rows($this->resdb);
-			}
+			$this->directories		= bab_translate("Directories");
+			$this->desctxt			= bab_translate("Description");
+			$this->grouptxt			= bab_translate("Group");
+			$this->ldaptitle		= bab_translate("Ldap Directories list");
+			$this->databasetitle	= bab_translate("Databases Directories list");
+			$this->add				= bab_translate("Add");
+			$this->gview			= bab_translate("Rights");
+			$this->grights			= bab_translate("Rights");
+			$this->urladdldap		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=ldap');
+			$this->urladddb			= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=db');
+			$this->db				= $GLOBALS['babDB'];
+			$this->resldap			= $this->db->db_query("select * from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
+			$this->countldap		= $this->db->db_num_rows($this->resldap);
+			$this->resdb			= $this->db->db_query("select * from ".BAB_DB_DIRECTORIES_TBL." where id_dgowner='".$this->db->db_escape_string($babBody->currentAdmGroup)."' ORDER BY name");
+			$this->countdb			= $this->db->db_num_rows($this->resdb);
+		}
 
 		function getnextldap()
-			{
+		{
 			static $i = 0;
-			if( $i < $this->countldap)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$arr = $this->db->db_fetch_array($this->resldap);
-				$this->description = $arr['description'];
-				$this->url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mldap&id='.$arr['id'];
-				$this->urlname = $arr['name'];
-				$this->gviewurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$arr['id'];
+			if($i < $this->countldap)
+			{
+				$this->altbg		= !$this->altbg;
+				$arr				= $this->db->db_fetch_array($this->resldap);
+				$this->description	= bab_toHtml($arr['description']);
+				$this->url			= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=mldap&id='.$arr['id']);
+				$this->urlname		= bab_toHtml($arr['name']);
+				$this->gviewurl		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=gviewl&id='.$arr['id']);
 				$i++;
 				return true;
-				}
+			}
 			else
 				return false;
-			}
+		}
 
 		function getnextdb()
-			{
+		{
 			static $i = 0;
-			if( $i < $this->countdb)
-				{
+			if($i < $this->countdb)
+			{
 				$arr = $this->db->db_fetch_array($this->resdb);
-				if( $arr['id_group'] != '0' )
-					{
+				if($arr['id_group'] != '0')
+				{
 					list($this->bshow) = $this->db->db_fetch_row($this->db->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$this->db->db_escape_string($arr['id_group'])."'"));
-					if ($this->bshow == 'Y') $this->altbg = $this->altbg ? false : true;
-					if ($arr['id_group'] == BAB_REGISTERED_GROUP)
-						$this->group = bab_getGroupName($arr['id_group'], false);
-					else
-						$this->group = bab_getGroupName($arr['id_group']);
-					}
-				else
+					if($this->bshow == 'Y')
 					{
-					$this->altbg = $this->altbg ? false : true;
+						$this->altbg = !$this->altbg;
+					}
+					
+					if($arr['id_group'] == BAB_REGISTERED_GROUP)
+					{
+						$this->group = bab_toHtml(bab_getGroupName($arr['id_group'], false));
+					}
+					else
+					{
+						$this->group = bab_toHtml(bab_getGroupName($arr['id_group']));
+					}
+				}
+				else
+				{
+					$this->altbg = !$this->altbg;
 					$this->bshow = 'Y';
 					$this->group = '';
-					}
-				$this->description = $arr['description'];
-				$this->url = $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$arr['id'];
-				$this->urlname = $arr['name'];
-				$this->grightsurl = $GLOBALS['babUrlScript'].'?tg=admdir&idx=db_rights&id='.$arr['id'];
+				}
+				
+				$this->description	= bab_toHtml($arr['description']);
+				$this->url			= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$arr['id']);
+				$this->urlname		= bab_toHtml($arr['name']);
+				$this->grightsurl	= bab_toHtml($GLOBALS['babUrlScript'].'?tg=admdir&idx=db_rights&id='.$arr['id']);
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
 			}
 		}
+	}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'adlist'));
+	$babBody->babecho(bab_printTemplate($temp, 'admdir.html', 'adlist'));
 }
 
 function dirGroups() // liste des annuaires de groupes
@@ -206,7 +217,7 @@ function dirGroups() // liste des annuaires de groupes
 				{
 				$this->altbg = !$this->altbg;
 				$this->grpid = $this->arr['id'];
-				$this->urlname = $this->arr['name'];
+				$this->urlname = bab_toHtml($this->arr['name']);
 
 				if( $this->arr['directory'] == "Y")
 					{
@@ -312,11 +323,11 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 
 		function temp($name, $description, $servertype, $decodetype, $host, $basedn, $userdn)
 			{
-			global $babLdapServerTypes, $babLdapEncodingTypes;
+			global $babLdapServerTypes;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->servertypetxt = bab_translate("Server type");
-			$this->decodetypetxt = bab_translate("Decoding type");
+			$this->decodetypetxt = bab_translate("Server charset");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->password = bab_translate("Password");
@@ -335,7 +346,6 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 			$this->vservettype = $servertype;
 			$this->vdecodetype = $decodetype;
 			$this->count = count($babLdapServerTypes);
-			$this->countd = count($babLdapEncodingTypes);
 			}
 
 		function getnextservertype()
@@ -363,12 +373,19 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 
 		function getnextdecodetype()
 			{
-			global $babLdapEncodingTypes;
+			static $encodingTypes = null;
 			static $i = 0;
-			if( $i < $this->countd)
+
+			if (null === $encodingTypes) {
+				include_once $GLOBALS['babInstallPath'].'utilit/ldap.php';
+				$encodingTypes = bab_getLdapEncoding();
+			}
+
+
+			if( $i < count($encodingTypes))
 				{
 				$this->stid = $i;
-				$this->stval = $babLdapEncodingTypes[$i];
+				$this->stval = $encodingTypes[$i];
 				if( $this->vdecodetype == $i )
 					{
 					$this->selected = 'selected';
@@ -386,7 +403,7 @@ function addAdLdap($name, $description, $servertype, $decodetype, $host, $basedn
 		}
 
 	$temp = new temp($name, $description, $servertype, $decodetype, $host, $basedn, $userdn);
-	$babBody->babecho(	bab_printTemplate($temp,'admdir.html', 'ldapadd'));
+	$babBody->babecho(bab_printTemplate($temp,'admdir.html', 'ldapadd'));
 	}
 
 function modifyLdap($id)
@@ -413,12 +430,12 @@ function modifyLdap($id)
 
 		function temp($id)
 			{
-			global $babLdapServerTypes, $babLdapEncodingTypes;
+			global $babLdapServerTypes;
 			$this->id = $id;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
 			$this->servertypetxt = bab_translate("Server type");
-			$this->decodetypetxt = bab_translate("Decoding type");
+			$this->decodetypetxt = bab_translate("Server charset");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Confirm");
 			$this->host = bab_translate("Host");
@@ -442,7 +459,6 @@ function modifyLdap($id)
 
 				}
 			$this->count = count($babLdapServerTypes);
-			$this->countd = count($babLdapEncodingTypes);
 			}
 
 		function getnextservertype()
@@ -470,12 +486,18 @@ function modifyLdap($id)
 
 		function getnextdecodetype()
 			{
-			global $babLdapEncodingTypes;
+			static $encodingTypes;
 			static $i = 0;
-			if( $i < $this->countd)
+
+			if (null === $encodingTypes) {
+				include_once $GLOBALS['babInstallPath'].'utilit/ldap.php';
+				$encodingTypes = bab_getLdapEncoding();
+			}
+
+			if( $i < count($encodingTypes))
 				{
 				$this->stid = $i;
-				$this->stval = $babLdapEncodingTypes[$i];
+				$this->stval = $encodingTypes[$i];
 				if( $this->vdecodetype == $i )
 					{
 					$this->selected = 'selected';
@@ -519,7 +541,7 @@ function addAdDb($adname, $description)
 		var $arr = array();
 		var $reqchecked;
 		var $mlchecked;
-		var $dzchecked;
+		var $dzchecked = '';
 
 		function temp($adname, $description)
 			{
@@ -1036,7 +1058,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 				$this->yesselected = '';
 				$this->noselected = 'selected';
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->value = htmlentities($arr['field_value']);
+				$this->value = bab_toHtml($arr['field_value']);
 				if ($this->count > 0)
 					$babDB->db_data_seek($this->res, 0);
 				}
@@ -1062,7 +1084,7 @@ function showDbFieldValuesModify($id, $idfieldx)
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->fval = htmlentities($arr['field_value']);
+				$this->fval = bab_toHtml($arr['field_value']);
 				$this->fvdefselected = '';
 				if( $arr['id'] == $this->fvdefid )
 					{
@@ -1099,8 +1121,8 @@ function showDbAddField($id, $fieldn, $fieldv)
 			$this->fieldnametxt = bab_translate("Field");
 			$this->fieldvaltxt = bab_translate("Default value");
 			$this->id = $id;
-			$this->fieldn = htmlentities($fieldn);
-			$this->fieldv = htmlentities($fieldv);
+			$this->fieldn = bab_toHtml($fieldn);
+			$this->fieldv = bab_toHtml($fieldv);
 			}
 		}
 
@@ -1251,6 +1273,7 @@ function modifyAdLdap($id, $name, $description, $servertype, $decodetype, $host,
 			$req .= ", password=ENCODE(\"".$password1."\",\"".$GLOBALS['BAB_HASH_VAR']."\")";
 		$req .= " where id='".$db->db_escape_string($id)."'";
 		$db->db_query($req);
+		bab_sitemap::clearAll();
 		}
 	return true;
 	}

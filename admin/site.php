@@ -90,7 +90,7 @@ class site_configuration_cls
 
 		if (isset($_REQUEST['idx']))
 			{
-			$key = (int) substr($_REQUEST['idx'],4);
+			$key = (int) mb_substr($_REQUEST['idx'],4);
 			if (isset($this->menu[$key]))
 				$GLOBALS['babBody']->title = $this->menu[$key];
 			}
@@ -171,25 +171,25 @@ function site_menu1()
 				case 'To': $this->toselected = 'selected'; break;
 				}
 			
-			$this->arrfiles = bab_getAvailableLanguages();
-			$this->count = count($this->arrfiles);
-			sort($this->arrfiles);
+			$this->arrfiles	= bab_getAvailableLanguages();
+			$this->count	= count($this->arrfiles);
+			if($this->count > 0)
+			{
+				bab_sort::sort($this->arrfiles);
+			}
 
-			if( is_dir("skins/"))
-				{
-				$h = opendir("skins/"); 
-				while ( $file = readdir($h))
-					{ 
-					if ($file != "." && $file != "..")
-						{
-						if( is_dir("skins/".$file))
-							{
-								$this->arrskins[] = $file; 
-							}
-						} 
+			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
+			$this->arrskins = bab_skin::getList();
+			$this->cntskins = count($this->arrskins);
+			$ignoredskins = bab_skin::getNotAccessibles();
+
+			if (0 < count($ignoredskins)) {
+					$this->skinerror = bab_translate('One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.');
+					if (bab_charset::getIso()) {
+						$this->skinerror .= '<br /> '.bab_translate('Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported charcter sets as value');
 					}
-				closedir($h);
-				$this->cntskins = count($this->arrskins);
+				} else {
+					$this->skinerror = false;
 				}
 
 			}
@@ -210,15 +210,28 @@ function site_menu1()
 			else
 				return false;
 			}
-
+			
+		function getExtention($sFileName, $sSearch)
+			{
+			$iPos = mb_strpos($sFileName, $sSearch);
+			if (false !== $iPos)
+				{
+					return mb_substr($sFileName, $iPos+1);
+				}
+			return false;
+			}
+			
 		function getnextskin()
 			{
 			static $i = 0;
 			if( $i < $this->cntskins)
 				{
+
+				$obj = $this->arrskins[$i];
+
 				$this->iindex = $i;
-                $this->skinname = $this->arrskins[$i];
-                $this->skinval = $this->arrskins[$i];
+                $this->skinname = bab_toHtml($obj->getName());
+                $this->skinval = bab_toHtml($obj->getName());
                 if( $this->skinname == $this->row['skin'] )
 					{
 	                $this->skselectedindex = $i;
@@ -227,45 +240,7 @@ function site_menu1()
                 else
                     $this->skinselected = "";
 
-				$this->arrstyles = array();
-				if( is_dir("skins/".$this->skinname."/styles/"))
-					{
-					$h = opendir("skins/".$this->skinname."/styles/"); 
-					while ( $file = readdir($h))
-						{ 
-						if ($file != "." && $file != "..")
-							{
-							if( is_file("skins/".$this->skinname."/styles/".$file))
-								{
-									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
-										{
-										$this->arrstyles[] = $file;
-										}
-								}
-							} 
-						}
-					closedir($h);
-					}
-
-				if( is_dir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"))
-					{
-					$h = opendir($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/"); 
-					while ( $file = readdir($h))
-						{ 
-						if ($file != "." && $file != "..")
-							{
-							if( is_file($GLOBALS['babInstallPath']."skins/".$this->skinname."/styles/".$file))
-								{
-									if( strtolower(substr(strrchr($file, "."), 1)) == "css" )
-										{
-										if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
-											$this->arrstyles[] = $file;
-										}
-								}
-							} 
-						}
-					closedir($h);
-					}
+				$this->arrstyles = array_values($obj->getStyles());
 				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
@@ -707,7 +682,7 @@ function site_menu6($id)
 			if( $i < 24 )
 				{
 				$this->timeid = sprintf("%02s:00:00", $i);
-				$this->timeval = substr($this->timeid, 0, 2);
+				$this->timeval = mb_substr($this->timeid, 0, 2);
 				if( $this->timeid == $this->sttime)
 					{
 					$this->checked = "selected";
@@ -869,7 +844,7 @@ function siteAuthentification($id)
 
 		function clsSiteAuthentification($id)
 			{
-			global $babDB, $bab_ldapAttributes, $babLdapEncodingTypes;
+			global $babDB, $bab_ldapAttributes;
 			$this->id = $id;
 			$req = "select *, DECODE(smtppassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as smtppass, DECODE(ldap_adminpassword, \"".$GLOBALS['BAB_HASH_VAR']."\") as ldapadminpwd from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
 			$this->res = $babDB->db_query($req);
@@ -890,7 +865,7 @@ function siteAuthentification($id)
 				$this->ldapadminpwd1 = $arr['ldapadminpwd'];
 				$this->ldapadminpwd2 = $arr['ldapadminpwd'];
 				$this->vdecodetype = $arr['ldap_decoding_type']; 
-				$this->decodetypetxt = bab_translate("Decoding type");
+				$this->decodetypetxt = bab_translate("Server charset");
 
 				$this->authentificationtxt = bab_translate("Authentification");
 				$this->arrayauth = array(BAB_AUTHENTIFICATION_OVIDENTIA => "OVIDENTIA", BAB_AUTHENTIFICATION_LDAP => "LDAP", BAB_AUTHENTIFICATION_AD => "ACTIVE DIRECTORY");
@@ -949,9 +924,8 @@ function siteAuthentification($id)
 					$this->countf = 0;
 					}
 
-				sort($bab_ldapAttributes);
+				bab_sort::sort($bab_ldapAttributes);
 				$this->countv = count($bab_ldapAttributes);
-				$this->countd = count($babLdapEncodingTypes);
 				}
 			else
 				{
@@ -1115,12 +1089,18 @@ function siteAuthentification($id)
 
 		function getnextdecodetype()
 			{
-			global $babLdapEncodingTypes;
+			static $encodingTypes = null;
+			
+			if (null === $encodingTypes) {
+				include_once $GLOBALS['babInstallPath'].'utilit/ldap.php';
+				$encodingTypes = bab_getLdapEncoding();
+			}
+
 			static $i = 0;
-			if( $i < $this->countd)
+			if( $i < count($encodingTypes))
 				{
 				$this->stid = $i;
-				$this->stval = $babLdapEncodingTypes[$i];
+				$this->stval = $encodingTypes[$i];
 				if( $this->vdecodetype == $i )
 					{
 					$this->selected = 'selected';
@@ -1798,11 +1778,11 @@ function siteUpdate_menu4()
 
 	
 	global $babBody;
-	$iLength = strlen(trim($uploadpath));
+	$iLength = mb_strlen(trim($uploadpath));
 	if($iLength > 0)
 	{
 		$sUploadPath = str_replace('\\', '/', trim($uploadpath));
-		$iLength = strlen($sUploadPath);
+		$iLength = mb_strlen($sUploadPath);
 		if($iLength > 0)
 		{
 
@@ -1815,7 +1795,7 @@ function siteUpdate_menu4()
 					{
 						if ($sPathItem) {
 						
-							if (empty($sPath) && '/' !== substr($sUploadPath,0,1)) {
+							if (empty($sPath) && '/' !== mb_substr($sUploadPath,0,1)) {
 								$sPath .= $sPathItem;
 							} else {
 								$sPath .= '/' . $sPathItem;

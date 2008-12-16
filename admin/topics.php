@@ -368,9 +368,9 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
-					if( strpos($arr[$i], "head_") !== false ||  strpos($arr[$i], "body_") !== false )
-						if( count($this->arrarttmpl) == 0  || !in_array(substr($arr[$i], 5), $this->arrarttmpl ))
-							$this->arrarttmpl[] = substr($arr[$i], 5);
+					if( mb_strpos($arr[$i], "head_") !== false ||  mb_strpos($arr[$i], "body_") !== false )
+						if( count($this->arrarttmpl) == 0  || !in_array(mb_substr($arr[$i], 5), $this->arrarttmpl ))
+							$this->arrarttmpl[] = mb_substr($arr[$i], 5);
 					}
 				}
 			$this->countarttmpl = count($this->arrarttmpl);
@@ -391,9 +391,9 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
-					if( strpos($arr[$i], "head_") !== false ||  strpos($arr[$i], "body_") !== false )
-						if( count($this->arrdisptmpl) == 0  || !in_array(substr($arr[$i], 5), $this->arrdisptmpl ))
-							$this->arrdisptmpl[] = substr($arr[$i], 5);
+					if( mb_strpos($arr[$i], "head_") !== false ||  mb_strpos($arr[$i], "body_") !== false )
+						if( count($this->arrdisptmpl) == 0  || !in_array(mb_substr($arr[$i], 5), $this->arrdisptmpl ))
+							$this->arrdisptmpl[] = mb_substr($arr[$i], 5);
 					}
 				}
 			$this->countdisptmpl = count($this->arrdisptmpl);

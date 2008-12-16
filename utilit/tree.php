@@ -266,7 +266,8 @@ class bab_TreeViewElement
 	{
 		$diff = (int)$element->_rank - (int)$this->_rank;
 		if ($diff === 0) {
-			return strcasecmp($this->_title, $element->_title);
+			$oCollator = bab_getCollatorInstance('');
+			return $oCollator->compare(mb_strtolower($this->_title), mb_strtolower($element->_title));
 		}
 		return $diff;
 	}
@@ -1368,7 +1369,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				$deadBranches = array();
 				while ($node =& $iterator->nextNode()) {
 					$element =& $node->getData();
-					if (!$node->hasChildNodes() && isset($element->_type) && strstr($element->_type, 'category'))
+					if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'category'))
 						$deadBranches[] =& $node;
 				}
 				$modified = (count($deadBranches) > 0);
@@ -1563,7 +1564,7 @@ class bab_FileTreeView extends bab_TreeView
 			}
 			$element =& $this->createElement($fileId,
 											 $fileType,
-											 $file['name'],
+											 bab_toHtml($file['name']),
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
@@ -1625,7 +1626,8 @@ class bab_FileTreeView extends bab_TreeView
 			{
 				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
 												 $elementType,
-												 bab_toHtml($folder->getName()),
+bab_toHtml($folder->getName()),
+//												 $folder->getName(),
 												 '',
 												 '');
 				if ($this->_updateBaseUrl)
@@ -1653,7 +1655,7 @@ class bab_FileTreeView extends bab_TreeView
     {
         global $babDB, $babBody;
 
-        $sEndSlash = (strlen(trim($path)) > 0 ) ? '/' : '' ;
+        $sEndSlash = (mb_strlen(trim($path)) > 0 ) ? '/' : '' ;
 
         $rootPath = '';
 
@@ -1725,7 +1727,8 @@ class bab_FileTreeView extends bab_TreeView
     	        $sWhereClause . ' ' .
             'ORDER BY ' .
                 'file.path ASC, file.name ASC';
-            
+
+		//bab_debug($sQuery);
         $files = $babDB->db_query($sQuery);
 
 
@@ -1735,13 +1738,11 @@ class bab_FileTreeView extends bab_TreeView
         $oName =& $folders->aField['sName'];
 
         while ($file = $babDB->db_fetch_array($files)) {
-
             $filePath = removeFirstPath($file['path']);
             $subdirs = explode('/', $filePath);
 
             $fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
             $rootFolderName = getFirstPath($file['path']);
-
             if (is_null($folderId)) {
 	            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 	            $oCriteria = $oCriteria->_and($oName->in($rootFolderName));
@@ -1760,10 +1761,10 @@ class bab_FileTreeView extends bab_TreeView
 
             foreach ($subdirs as $subdir) {
                 if (trim($subdir) !== '') {
-                    if (is_null($this->_rootNode->getNodeById($parentId . ':' . $subdir))) {
-                        $element =& $this->createElement($parentId . ':' . $subdir,
+                    if (is_null($this->_rootNode->getNodeById($parentId . ':' . bab_toHtml($subdir)))) {
+                        $element =& $this->createElement($parentId . ':' . bab_toHtml($subdir),
                                                          $directoryType,
-                                                         $subdir,
+                                                         bab_toHtml($subdir),
                                                          '',
                                                          '');
                         $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
@@ -1773,13 +1774,13 @@ class bab_FileTreeView extends bab_TreeView
                         }
                         $this->appendElement($element, $parentId);
                     }
-                    $parentId .= ':' . $subdir;
+                    $parentId .= ':' . bab_toHtml($subdir);
                 }
             }
             if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
                 $element =& $this->createElement($fileId,
                                                  $fileType,
-                                                 $file['name'],
+                                                 bab_toHtml($file['name']),
                                                  '',
                                                  '');
                 $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');

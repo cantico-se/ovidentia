@@ -757,7 +757,7 @@ class bab_stats_search extends bab_stats_base
 		{
 		for( $i = 0; $i < count($datas['info']['bab_searchword']); $i++ )
 			{
-			$word = strtolower($datas['info']['bab_searchword'][$i]);
+			$word = mb_strtolower($datas['info']['bab_searchword'][$i]);
 			if(!isset($this->results[$datas['date']][$datas['hour']][$word]))
 				{
 				$res = $babDB->db_query("select * from ".BAB_STATS_SEARCH_TBL." where st_date='".$babDB->db_escape_string($datas['date'])."' and st_hour='".$babDB->db_escape_string($datas['hour'])."' and st_word='".$babDB->db_escape_string($word)."'");

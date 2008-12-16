@@ -172,7 +172,7 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 	$highlightedTemplateString = '<ol style="font-weight: normal">';
 	$lineNumber = 1;
 	foreach ($lines as $line) {
-		$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', htmlEntities($line));
+		$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', bab_toHtml($line));
 		if ($lineNumber == $highlightLineNumber) {
 			$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
 		} else {
@@ -303,7 +303,7 @@ class bab_Template
 		$highlightedTemplateString = '<ol style="font-weight: normal">';
 		$lineNumber = 1;
 		foreach ($lines as $line) {
-			$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', htmlEntities($line));
+			$line = preg_replace('/(&lt;!--#(?:if|else|endif|in|endin)\s+(?:(?:[A-Za-z0-9_\[\]]+)\s+)?--&gt;)/', '<span style="color: #4466DD; font-weight: bold">$1</span>', bab_toHtml($line));
 			if (isset($highlightLineNumbers[$lineNumber])) {
 				$highlightedTemplateString .= '<li style="font-weight: bold; padding: 2px; border-bottom: 1px solid white; background-color: #FFBBBB">' . $line . '</li>';
 			} else {
@@ -761,8 +761,8 @@ function processTemplate(&$class, $str)
 				else if ( $bool )
 					$rep = $m2[1];
 
-				if( strlen($rep) > 1 && $rep[strlen($rep)-1] == chr(10))
-					$rep = substr($rep, 0, strlen($rep)-1);
+				if( mb_strlen($rep) > 1 && $rep[mb_strlen($rep)-1] == chr(10))
+					$rep = mb_substr($rep, 0, mb_strlen($rep)-1);
 
 				$str =  chop($m[1]). $rep .$m2[2];
 				}

@@ -354,7 +354,7 @@ class bab_replace {
 								if (!is_null($oFmFolder))
 								{
 									$oOwnerFmFolder = null;
-									$sPath = $oFmFolder->getName() . ((strlen(trim($path_object)) > 0 ) ? '/' . $path_object : '');
+									$sPath = $oFmFolder->getName() . ((mb_strlen(trim($path_object)) > 0 ) ? '/' . $path_object : '');
 									
 									$iOldDelegation = bab_getCurrentUserDelegation();
 									bab_setCurrentUserDelegation($oFmFolder->getDelegationOwnerId());

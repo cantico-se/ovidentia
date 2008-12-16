@@ -1,148 +1,152 @@
-
 <!--#begin foldercreate -->
 <form name="fmcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admfms">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="add" value="addfolder">
-<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="right">{  name }:</td>
-<td> 
-<input type="text" name="fname" size="30" maxlength="100" value="">
-</td>
-</tr>
-<tr> 
-<td align="right">{ active }:</td>
-<td> 
-<select name="active">
-<option value="Y" selected >{ yes }</option>
-<option value="N" >{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ moderation }:</td>
-<td>
-<select name="said">
-<option value="0">{ none }</option>
-<!--#in getnextschapp -->
-<option value="{ said }">{ saname }</option>
- <!--#endin getnextschapp -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ autoapprobationtxt }:</td>
-<td> 
-<select name="bautoapp">
-<option value="Y">{ yes }</option>
-<option value="N" selected>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ notification }:</td>
-<td> 
-<select name="notification">
-<option value="Y">{ yes }</option>
-<option value="N" selected>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ version }:</td>
-<td> 
-<select name="version">
-<option value="Y">{ yes }</option>
-<option value="N" selected>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ display }:</td>
-<td> 
-<select name="bhide">
-<option value="N" selected>{ yes }</option>
-<option value="Y">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ addtags_txt }:</td>
-<td> 
-<select name="baddtags">
-<option value="Y" selected>{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td>&nbsp;</td>
-<td>
-<input type="submit" name="Submit" value="{ add }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="admfms" />
+	<input type="hidden" name="idx" value="list" />
+	<input type="hidden" name="add" value="addfolder" />
+	<table width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td align="right">{  name }:</td>
+						<td> 
+							<input type="text" name="fname" size="30" maxlength="100" value="" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ active }:</td>
+						<td> 
+							<select name="active">
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N" >{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ moderation }:</td>
+						<td>
+							<select name="said">
+								<option value="0">{ none }</option>
+							<!--#in getnextschapp -->
+								<option value="{ said }">{ saname }</option>
+							<!--#endin getnextschapp -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ autoapprobationtxt }:</td>
+						<td> 
+							<select name="bautoapp">
+								<option value="Y">{ yes }</option>
+								<option value="N" selected="selected">{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ notification }:</td>
+						<td> 
+							<select name="notification">
+								<option value="Y">{ yes }</option>
+								<option value="N" selected="selected">{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ version }:</td>
+						<td> 
+							<select name="version">
+								<option value="Y">{ yes }</option>
+								<option value="N" selected="selected">{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ display }:</td>
+						<td> 
+							<select name="bhide">
+								<option value="N" selected="selected">{ yes }</option>
+								<option value="Y">{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ addtags_txt }:</td>
+						<td> 
+							<select name="baddtags">
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N">{ no }</option>
+						</select>
+					</td>
+					</tr>
+					<tr> 
+						<td>&nbsp;</td>
+						<td>
+							<input type="submit" name="Submit" value="{ add }" />
+							<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br>
+<br />
 <!--#end foldercreate -->
 
 <!--#begin folderlist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="admfms">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="update" value="folders">
-<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
-<tr class="BabSiteAdminTitleFontBackground"> 
-<td>{ fullname } </td>
-<td align="center">{ access }</td>
-<td align="center">{ notify }</td>
-<td align="center">{ active }</td>
-<td align="center">{ version }</td>
-<td align="center">{ display }</td>
-</tr>
-<!--#in getnext -->
-<!--#if altbg --><tr valign="middle" class="BabSiteAdminFontBackground"><!--#else altbg --><tr valign="middle" class="BabForumBackground1"><!--#endif altbg -->
-<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
-<td align="center"><a class="BabSiteAdminListLink" href="{ urlrights }">{ urlrightsname }</a></td>
-<td width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }"></td>
-<td width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }"></td>
-<td width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }"></td>
-<td width="0%" align="center"><input type="checkbox" name="bhides[]" { fbhide } value="{ fid }"></td>
-</tr>        
-<!--#endin getnext -->
-<tr class="BabSiteAdminTitleFontBackground"> 
-<td><a href="?tg=admfms&idx=addf">{ add }</a></td>
-<td>&nbsp;</td>
-<td width="1%" align="center"><a href="javascript:onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('versions', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('versions', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="javascript:onCheckAll('bhides', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0"></a><a href="javascript:onCheckAll('bhides', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0"></a></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<div align="center">
-<input type="submit" name="submit" value="{ modify }"></div>
-<br>
+	<input type="hidden" name="tg" value="admfms" />
+	<input type="hidden" name="idx" value="list" />
+	<input type="hidden" name="update" value="folders" />
+	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabMailBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td>{ fullname } </td>
+						<td align="center">{ access }</td>
+						<td align="center">{ notify }</td>
+						<td align="center">{ active }</td>
+						<td align="center">{ version }</td>
+						<td align="center">{ display }</td>
+					</tr>
+				<!--#in getnext -->
+				<!--#if altbg -->
+					<tr valign="middle" class="BabSiteAdminFontBackground">
+				<!--#else altbg -->
+					<tr valign="middle" class="BabForumBackground1">
+				<!--#endif altbg -->
+						<td><a class="BabSiteAdminListLink" href="{ url }">{ urlname }</a></td>
+						<td align="center"><a class="BabSiteAdminListLink" href="{ urlrights }">{ urlrightsname }</a></td>
+						<td width="0%" align="center"><input type="checkbox" name="notifies[]" { fnotify } value="{ fid }" /></td>
+						<td width="0%" align="center"><input type="checkbox" name="actives[]" { factive } value="{ fid }" /></td>
+						<td width="0%" align="center"><input type="checkbox" name="versions[]" { fversion } value="{ fid }" /></td>
+						<td width="0%" align="center"><input type="checkbox" name="bhides[]" { fbhide } value="{ fid }" /></td>
+					</tr>        
+				<!--#endin getnext -->
+					<tr class="BabSiteAdminTitleFontBackground"> 
+						<td><a href="{ sAddUrl }">{ add }</a></td>
+						<td>&nbsp;</td>
+						<td width="1%" align="center"><a href="#" onclick="onCheckAll('notifies', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="#" onclick="onCheckAll('notifies', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+						<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="#" onclick="onCheckAll('actives', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="#" onclick="onCheckAll('actives', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+						<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="#" onclick="onCheckAll('versions', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="#" onclick="onCheckAll('versions', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+						<td class="BabSiteAdminTitleFontBackground" width="1%" align="center"><a href="#" onclick="onCheckAll('bhides', true)"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ checkall }" width="10" height="10" border="0" /></a><a href="#" onclick="onCheckAll('bhides', false)"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ uncheckall }" width="10" height="10" border="0" /></a></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div align="center">
+		<input type="submit" name="submit" value="{ modify }" />
+	</div>
+	<br />
 </form>
 <!--#end folderlist -->
 
 <!--#begin foldermodify -->
 <script type="text/javascript">
-<!--
+//<![CDATA[
 <!--#if js_appflowlock -->
 function submitCtr()
 	{
@@ -157,178 +161,181 @@ function submitCtr()
 	return true;
 	}
 <!--#endif js_appflowlock -->
-//-->
+//]]>
 </script>
 
 <form name="fmcreate" method="post" action="{ babPhpSelf }" <!--#if js_appflowlock -->onSubmit="return(submitCtr())"<!--#endif js_appflowlock -->>
-<input type="hidden" name="tg" value="admfm" />
-<input type="hidden" name="idx" value="list" />
-<input type="hidden" name="fid" value="{ fid }" />
-<input type="hidden" name="mod" value="modfolder" />
-<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="right">{  name }:</td>
-<td> 
-<input type="text" name="fname" size="30" maxlength="100" value="{ folderval }" />
-</td>
-</tr>
-<tr> 
-<td align="right">{ active }:</td>
-<td> 
-<select name="active">
-<option value="Y" { yactsel }>{ yes }</option>
-<option value="N" { nactsel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ moderation }:</td>
-<td> 
-<select name="said">
-<option value="0">{ none }</option>
-<!--#in getnextschapp -->
-<option value="{ said }" { sasel }>{ saname }</option>
- <!--#endin getnextschapp -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ autoapprobationtxt }:</td>
-<td> 
-<select name="bautoapp">
-<option value="Y" { autoappysel }>{ yes }</option>
-<option value="N" { autoappnsel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ notification }:</td>
-<td> 
-<select name="notification">
-<option value="Y" { ynfsel }>{ yes }</option>
-<option value="N" { nnfsel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ version }:</td>
-<td> 
-<select name="version">
-<option value="Y" { yversel }>{ yes }</option>
-<option value="N" { nversel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ display }:</td>
-<td> 
-<select name="bhide">
-<option value="N" { yhidesel }>{ yes }</option>
-<option value="Y" { nhidesel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ addtags_txt }:</td>
-<td> 
-<select name="baddtags">
-<option value="Y" { ytagssel }>{ yes }</option>
-<option value="N" { ytagssel }>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td>&nbsp;</td>
-<td>
-<input type="submit" name="bupdate" value="{ add }" />&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }" />
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="admfm" />
+	<input type="hidden" name="idx" value="list" />
+	<input type="hidden" name="fid" value="{ fid }" />
+	<input type="hidden" name="mod" value="modfolder" />
+	<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td align="right">{  name }:</td>
+						<td> 
+							<input type="text" name="fname" size="30" maxlength="100" value="{ folderval }" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ active }:</td>
+						<td> 
+							<select name="active">
+								<option value="Y" { yactsel }>{ yes }</option>
+								<option value="N" { nactsel }>{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+					<td align="right">{ moderation }:</td>
+						<td> 
+							<select name="said">
+								<option value="0">{ none }</option>
+							<!--#in getnextschapp -->
+								<option value="{ said }" { sasel }>{ saname }</option>
+							<!--#endin getnextschapp -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+					<td align="right">{ autoapprobationtxt }:</td>
+						<td> 
+							<select name="bautoapp">
+								<option value="Y" { autoappysel }>{ yes }</option>
+								<option value="N" { autoappnsel }>{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+					<td align="right">{ notification }:</td>
+						<td> 
+							<select name="notification">
+								<option value="Y" { ynfsel }>{ yes }</option>
+								<option value="N" { nnfsel }>{ no }</option>
+						</select>
+					</td>
+					</tr>
+					<tr> 
+						<td align="right">{ version }:</td>
+						<td> 
+							<select name="version">
+								<option value="Y" { yversel }>{ yes }</option>
+								<option value="N" { nversel }>{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ display }:</td>
+						<td> 
+							<select name="bhide">
+								<option value="N" { yhidesel }>{ yes }</option>
+								<option value="Y" { nhidesel }>{ no }</option>
+						</select>
+					</td>
+					</tr>
+					<tr> 
+						<td align="right">{ addtags_txt }:</td>
+						<td> 
+							<select name="baddtags">
+								<option value="Y" { ytagssel }>{ yes }</option>
+								<option value="N" { ytagssel }>{ no }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td>&nbsp;</td>
+						<td>
+							<input type="submit" name="bupdate" value="{ add }" />&nbsp;&nbsp;<input type="submit" name="bdel" value="{ del }" />
+						<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br>
+<br />
 <!--#end foldermodify -->
+
 <!--#begin fmfields -->
 <form name="fmfield" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admfm">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="fid" value="{ fid }">
-<input type="hidden" name="fmf" value="del">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
-valign="middle"><b>{ fieldname }</b></td>
-<td class="BabSiteAdminTitleFontBackground" align="left" 
-valign="middle">{ defaultname }</td>
-<td class="BabSiteAdminTitleFontBackground" width="2%" align="right" 
-valign="middle">&nbsp;</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" align="left" nowrap 
-valign="middle"><a class="BabSiteAdminListLink" href="{ fieldurl }">{ fieldnameval }</a></td>
-<td class="BabSiteAdminFontBackground" align="left" nowrap 
-valign="middle">{ fielddefval }</td>
-<td class="BabSiteAdminFontBackground" align="left" 
-valign="middle"><input type="checkbox" name="fields[]" value="{ fieldid }"></td>
-</tr>
-<!--#endin getnext -->
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap 
-valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" align="right" 
-valign="middle"><a href="javascript:submitForm('delff', 'fmfield')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ altdelf }" border="0"></a></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="admfm" />
+	<input type="hidden" name="idx" value="modify" />
+	<input type="hidden" name="fid" value="{ fid }" />
+	<input type="hidden" name="fmf" value="del" />
+	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td class="BabSiteAdminTitleFontBackground" align="left" nowrap="nowrap" valign="middle">
+							<b>{ fieldname }</b>
+						</td>
+						<td class="BabSiteAdminTitleFontBackground" align="left" valign="middle">{ defaultname }</td>
+						<td class="BabSiteAdminTitleFontBackground" width="2%" align="right" valign="middle">&nbsp;</td>
+					</tr>
+					<!--#in getnext -->
+					<tr> 
+						<td class="BabSiteAdminFontBackground" align="left" nowrap="nowrap" valign="middle">
+							<a class="BabSiteAdminListLink" href="{ fieldurl }">{ fieldnameval }</a>
+						</td>
+						<td class="BabSiteAdminFontBackground" align="left" nowrap="nowrap" valign="middle">{ fielddefval }</td>
+						<td class="BabSiteAdminFontBackground" align="left" valign="middle">
+							<input type="checkbox" name="fields[]" value="{ fieldid }" />
+						</td>
+					</tr>
+					<!--#endin getnext -->
+					<tr> 
+						<td class="BabSiteAdminTitleFontBackground" align="left" nowrap="nowrap" valign="middle">&nbsp;</td>
+						<td class="BabSiteAdminTitleFontBackground" align="left" nowrap="nowrap" valign="middle">&nbsp;</td>
+						<td class="BabSiteAdminTitleFontBackground" align="right" valign="middle">
+							<a href="#" onclick="submitForm('delff', 'fmfield')">
+								<img src="{ babSkinPath }images/Puces/del.gif" alt="{ altdelf }" border="0" />
+							</a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br>
+<br />
 <!--#end fmfields -->
+
 <!--#begin fmfieldadd -->
 <form name="addfield" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="admfm">
-<input type="hidden" name="idx" value="fields">
-<input type="hidden" name="fid" value="{ fid }">
-<input type="hidden" name="ffid" value="{ ffid }">
-<input type="hidden" name="fmf" value="{ what }">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ field }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="ffname" size="45" maxlength="255" value="{ fname }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ default }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="defval" size="45" maxlength="255" value="{ defval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="addfmf" value="{ add }">
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="admfm" />
+	<input type="hidden" name="idx" value="fields" />
+	<input type="hidden" name="fid" value="{ fid }" />
+	<input type="hidden" name="ffid" value="{ ffid }" />
+	<input type="hidden" name="fmf" value="{ what }" />
+	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td class="BabLoginMenuBackground" width="30%" align="right" nowrap="nowrap" valign="middle">{ field }:</td>
+						<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+							<input type="text" name="ffname" size="45" maxlength="255" value="{ fname }" />
+						</td>
+					</tr>
+					<tr> 
+						<td class="BabLoginMenuBackground" align="right" nowrap="nowrap" valign="middle">{ default }:</td>
+						<td class="BabLoginMenuBackground" valign="middle"> 
+							<input type="text" name="defval" size="45" maxlength="255" value="{ defval }" />
+						</td>
+					</tr>
+					<tr> 
+						<td class="BabLoginMenuBackground">&nbsp;</td>
+						<td class="BabLoginMenuBackground" valign="middle"> 
+							<input type="submit" name="addfmf" value="{ add }" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
 <!--#end fmfieldadd -->

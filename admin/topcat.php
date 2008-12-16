@@ -78,8 +78,8 @@ function topcatModify($id)
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
 			$this->res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr['title'] = htmlentities($this->arr['title']);
-			$this->arr['description'] = htmlentities($this->arr['description']);
+			$this->arr['title'] = bab_toHtml($this->arr['title']);
+			$this->arr['description'] = bab_toHtml($this->arr['description']);
 			$this->idp = $this->arr['id_parent'];
 
 			if( $this->idp == 0 && $babBody->currentAdmGroup )

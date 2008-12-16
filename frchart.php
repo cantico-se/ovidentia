@@ -70,7 +70,7 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 					$this->maxlevel = $row[1]['level'];
 					}
 				}
-			asort($this->arr);
+			bab_sort::asort($this->arr);
 			reset($this->arr);
 			$this->arr = array_keys($this->arr);
 			if( $update )
@@ -597,9 +597,9 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			$this->entityId = $entityId;
 			$this->iddir = $ocinfo['id_directory'];
 			$this->altbg = false;
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = "";
 				}
 			else
@@ -722,7 +722,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 
 				for( $k = 0; $k < count($dbdirxfields); $k++ )
 					{
-					$tmpid = substr($dbdirxfields[$k], strlen("babdirf"));
+					$tmpid = mb_substr($dbdirxfields[$k], mb_strlen("babdirf"));
 					$tmplike[] = "lj".$tmpid.".field_value like '%".$qs."%'";
 					}
 				
@@ -859,7 +859,7 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=frchart&disp=disp5&ocid=".$this->ocid."&oeid=".$this->oeid."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf."&q=".urlencode($this->q);
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -1159,7 +1159,7 @@ function closeNode($ocid, $oeid)
 	}
 	if( count($rr) > 0 )
 	{
-	asort($rr);
+	bab_sort::asort($rr);
 	$closednodes = implode(',', $rr);
 	if ($update)
 		{
@@ -1205,7 +1205,7 @@ function openNode($ocid, $oeid)
 
 	if( count($rr2) > 0 )
 	{
-	asort($rr2);
+	bab_sort::asort($rr2);
 	$closednodes = implode(',', $rr2);
 	if ($update)
 		{

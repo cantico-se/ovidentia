@@ -531,7 +531,7 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 	global $babBody;
 	
 	$sName = trim($sName);
-	if(0 === strlen($sName))
+	if(0 === mb_strlen($sName))
 	{
 		$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 		return false;
@@ -551,7 +551,7 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 	
 	require_once(dirname(__FILE__) . '/dirincl.php');
 	$sDirectoryName = getDirectoryName($iIdDirectory, BAB_DB_DIRECTORIES_TBL);
-	if(0 === strlen($sDirectoryName))
+	if(0 === mb_strlen($sDirectoryName))
 	{
 		$babBody->addError(bab_translate("ERROR: The directory does not exist"));
 		return false;
@@ -759,7 +759,7 @@ function bab_OCExist($iIdSessUser, $sName, $iIdDelegation)
 	}
 	
 	$sName = trim($sName);
-	if(0 === strlen($sName))
+	if(0 === mb_strlen($sName))
 	{
 		return false;
 	}
@@ -1011,7 +1011,7 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 	global $babBody;
 	
 	$sName = trim($sName);
-	if(0 === strlen($sName))
+	if(0 === mb_strlen($sName))
 	{
 		$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 		return false;
@@ -1244,7 +1244,7 @@ function bab_OCUpdateEntity($iIdSessUser, $iIdEntity, $sName, $sDescription)
 		$iIdOrgChart = (int) $aEntity['id_oc'];
 		if(bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 		{
-			if(0 === strlen(trim($sName)))
+			if(0 === mb_strlen(trim($sName)))
 			{
 				$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
 				return false;
@@ -1460,7 +1460,7 @@ function bab_OCCreateRole($iIdSessUser, $iIdEntity, $sName, $sDescription, $iTyp
 	global $babBody;
 	
 	$sName = trim($sName);
-	if(0 === strlen($sName))
+	if(0 === mb_strlen($sName))
 	{
 		$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 		return false;
@@ -1655,7 +1655,7 @@ function bab_OCGetRoleByName($iIdSessUser, $iIdEntity, $sName, $iType)
 		return false;
 	}
 	
-	if(0 === strlen(trim($sName)))
+	if(0 === mb_strlen(trim($sName)))
 	{
 		$babBody->addError(bab_translate("Error: The role name is not valid"));
 		return false;
@@ -2557,7 +2557,7 @@ function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder =
 	global $babDB;
 	
 	$aGoodValue = array('asc' => 'asc', 'desc' => 'desc'); 
-	if(!isset($aGoodValue[strtolower($sOrder)]))
+	if(!isset($aGoodValue[mb_strtolower($sOrder)]))
 	{
 		$sOrder = 'ASC';
 	}
@@ -2695,7 +2695,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		
 		$sName = trim($sName);
-		if(0 === strlen($sName))
+		if(0 === mb_strlen($sName))
 		{
 			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 			return false;
@@ -2715,7 +2715,7 @@ class bab_OrgChartUtil
 		
 		require_once(dirname(__FILE__) . '/dirincl.php');
 		$sDirectoryName = getDirectoryName($iIdDirectory, BAB_DB_DIRECTORIES_TBL);
-		if(0 === strlen($sDirectoryName))
+		if(0 === mb_strlen($sDirectoryName))
 		{
 			$babBody->addError(bab_translate("ERROR: The directory does not exist"));
 			return false;
@@ -2839,7 +2839,7 @@ class bab_OrgChartUtil
 		global $babDB, $babBody;
 		
 		$sName = trim($sName);
-		if(0 === strlen($sName))
+		if(0 === mb_strlen($sName))
 		{
 			return false;
 		}
@@ -3056,7 +3056,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		
 		$sName = trim($sName);
-		if(0 === strlen($sName))
+		if(0 === mb_strlen($sName))
 		{
 			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 			return false;
@@ -3355,7 +3355,7 @@ class bab_OrgChartUtil
 		$aEntity = $this->getEntity($iIdEntity);
 		if(false !== $aEntity)
 		{
-			if(0 === strlen(trim($sName)))
+			if(0 === mb_strlen(trim($sName)))
 			{
 				$babBody->addError(bab_translate("ERROR: You must provide a name")." !");
 				return false;
@@ -3528,7 +3528,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		
 		$sName = trim($sName);
-		if(0 === strlen($sName))
+		if(0 === mb_strlen($sName))
 		{
 			$babBody->addError(bab_translate("ERROR: You must provide a name"). ' !');
 			return false;
@@ -3788,7 +3788,7 @@ class bab_OrgChartUtil
 				return false;
 			}
 			
-			if(0 === strlen(trim($sName)))
+			if(0 === mb_strlen(trim($sName)))
 			{
 				$babBody->addError(bab_translate("Error: The role name is not valid"));
 				return false;

@@ -565,7 +565,7 @@ function bab_getGroupEmails($id)
 			$emails .= $arr['email'].",";
 			}
 		}
-		$emails = substr("$emails", 0, -1);
+		$emails = mb_substr("$emails", 0, -1);
 		return $emails;
 		}
 	else

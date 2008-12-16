@@ -95,13 +95,13 @@ class bab_cal_event
 		$this->t_weeks = bab_translate("weeks");
 		$this->t_days = bab_translate("days");
 
-		$this->t_sun = substr(bab_translate("Sunday"),0,3);
-		$this->t_mon = substr(bab_translate("Monday"),0,3);
-		$this->t_tue = substr(bab_translate("Tuesday"),0,3);
-		$this->t_wen = substr(bab_translate("Wednesday"),0,3);
-		$this->t_thu = substr(bab_translate("Thursday"),0,3);
-		$this->t_fri = substr(bab_translate("Friday"),0,3);
-		$this->t_sat = substr(bab_translate("Saturday"),0,3);
+		$this->t_sun = mb_substr(bab_translate("Sunday"),0,3);
+		$this->t_mon = mb_substr(bab_translate("Monday"),0,3);
+		$this->t_tue = mb_substr(bab_translate("Tuesday"),0,3);
+		$this->t_wen = mb_substr(bab_translate("Wednesday"),0,3);
+		$this->t_thu = mb_substr(bab_translate("Thursday"),0,3);
+		$this->t_fri = mb_substr(bab_translate("Friday"),0,3);
+		$this->t_sat = mb_substr(bab_translate("Saturday"),0,3);
 
 		$this->t_color = bab_translate("Color");
 		$this->t_bprivate = bab_translate("Private");
@@ -707,49 +707,49 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			if (isset($this->evtarr['yearbegin'])) {	
 				$this->yearbegin = $this->evtarr['yearbegin'];
 			} else {
-				$this->yearbegin = substr($this->evtarr['start_date'], 0,4 );
+				$this->yearbegin = mb_substr($this->evtarr['start_date'], 0,4 );
 			}
 			
 			if (isset($this->evtarr['daybegin'])) {
 				$this->daybegin = $this->evtarr['daybegin'];
 			} else {
-				$this->daybegin = substr($this->evtarr['start_date'], 8, 2);
+				$this->daybegin = mb_substr($this->evtarr['start_date'], 8, 2);
 			}
 			
 			if (isset($this->evtarr['monthbegin'])) {
 				$this->monthbegin = $this->evtarr['monthbegin'];
 			} else {
-				$this->monthbegin = substr($this->evtarr['start_date'], 5, 2);
+				$this->monthbegin = mb_substr($this->evtarr['start_date'], 5, 2);
 			}
 			
 			if (isset($this->evtarr['yearend'])) {
 				$this->yearend = $this->evtarr['yearend'];
 			} else {
-				$this->yearend = substr($this->evtarr['end_date'], 0,4 );
+				$this->yearend = mb_substr($this->evtarr['end_date'], 0,4 );
 			}
 			
 			if (isset($this->evtarr['dayend'])) {
 				$this->dayend = $this->evtarr['dayend'];
 			} else {
-				$this->dayend = substr($this->evtarr['end_date'], 8, 2);
+				$this->dayend = mb_substr($this->evtarr['end_date'], 8, 2);
 			}
 			
 			if (isset($this->evtarr['monthend'])) {
 				$this->monthend = $this->evtarr['monthend'];
 			} else {
-				$this->monthend = substr($this->evtarr['end_date'], 5, 2);
+				$this->monthend = mb_substr($this->evtarr['end_date'], 5, 2);
 			}
 			
 			if (isset($this->evtarr['timebegin'])) {
 				$this->timebegin = $this->evtarr['timebegin'];
 			} else {
-				$this->timebegin = substr($this->evtarr['start_date'], 11, 5);
+				$this->timebegin = mb_substr($this->evtarr['start_date'], 11, 5);
 			}
 			
 			if (isset($this->evtarr['timeend'])) {
 				$this->timeend = $this->evtarr['timeend'];
 			} else {
-				$this->timeend = substr($this->evtarr['end_date'], 11, 5);
+				$this->timeend = mb_substr($this->evtarr['end_date'], 11, 5);
 			}
 			
 

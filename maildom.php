@@ -73,7 +73,7 @@ function domainModify($userid, $id, $bgrp)
 			$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where id='".$babDB->db_escape_string($id)."'";
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
-			if( strtolower($this->arr['access']) == "pop3")
+			if( mb_strtolower($this->arr['access']) == "pop3")
 				{
 				$this->popselected = "selected";
 				$this->imapselected = "";

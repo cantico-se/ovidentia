@@ -29,10 +29,10 @@ include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
 
 
 function delgatList($res)
-	{
+{
 	global $babBody;
 	class temp
-		{
+	{
 
 		var $delegtxt;
 		var $delegdesctxt;
@@ -48,50 +48,49 @@ function delgatList($res)
 		var $addtxt = '';
 		
 		function temp($res)
-			{
+		{
 			global $babDB;
-			$this->delegtxt = bab_translate("Delegation");
-			$this->delegdesctxt = bab_translate("Description");
-			$this->delegadmintxt = bab_translate("Managing administrators");
-			$this->memberstxt = bab_translate("Managing administrators");
-			$this->grpmtxt = bab_translate("Managed group");
-			
-			$this->sAddCaption = bab_translate("Add");
-			$this->sAddUrl = $GLOBALS['babUrlScript']."?tg=delegat&idx=new";
+			$this->delegtxt			= bab_translate("Delegation");
+			$this->delegdesctxt		= bab_translate("Description");
+			$this->delegadmintxt	= bab_translate("Managing administrators");
+			$this->memberstxt		= bab_translate("Managing administrators");
+			$this->grpmtxt			= bab_translate("Managed group");
+			$this->sAddCaption		= bab_translate("Add");
+			$this->sAddUrl			= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=new");
 			
 			
 			$this->res = $res;
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->c= 0;
-			}
+		}
 
 		function getnext()
-			{
+		{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->altbg = !$this->altbg;
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->delegval = $arr['description'];
-				$this->urltxt = $arr['name'];
-				$this->url = $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$arr['id'];
-				$this->urlmem = $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$arr['id'];
-				$this->grpmval = $GLOBALS['babBody']->getGroupPathName($arr['id_group'], NULL);
+			if($i < $this->count)
+			{
+				$this->altbg	= !$this->altbg;
+				$arr			= $babDB->db_fetch_array($this->res);
+				$this->delegval	= bab_toHtml($arr['description']);
+				$this->urltxt	= bab_toHtml($arr['name']);
+				$this->url		= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$arr['id']);
+				$this->urlmem	= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$arr['id']);
+				$this->grpmval	= bab_toHtml($GLOBALS['babBody']->getGroupPathName($arr['id_group'], NULL));
 				$this->c++;
 				$i++;
 				return true;
-				}
-			else{
-				return false;
-				}
 			}
-
+			else
+			{
+				return false;
+			}
 		}
+	}
 
 	$temp = new temp($res);
 	$babBody->babecho(	bab_printTemplate($temp, "delegat.html", "delegationlist"));
-	}
+}
 
 	
 function displayCategoriesListForm()
@@ -118,16 +117,16 @@ function displayCategoriesListForm()
 		function categoriesListForm()
 		{
 			global $babDB;
-			$this->nametxt = bab_translate("Name");
-			$this->desctxt = bab_translate("Description");
-			$this->bgcolortxt = bab_translate("Color");
-			$this->add = bab_translate("Add");
-			$this->t_delete = bab_translate('Delete');
-			$this->t_delete_checked = bab_translate("Delete checked items");
-			$this->t_confirm_delete = bab_translate("Do you want to delete selected items?");
-			$this->urladdcat = $GLOBALS['babUrlScript'].'?tg=delegat&idx=displayAddCategorieForm';
+			$this->nametxt 			= bab_translate("Name");
+			$this->desctxt 			= bab_translate("Description");
+			$this->bgcolortxt 		= bab_translate("Color");
+			$this->add 				= bab_translate("Add");
+			$this->t_delete 		= bab_translate('Delete');
+			$this->t_delete_checked	= bab_translate("Delete checked items");
+			$this->t_confirm_delete	= bab_translate("Do you want to delete selected items?");
+			$this->urladdcat 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=delegat&idx=displayAddCategorieForm');
 			
-			if ($delete_category = bab_pp('delete_category')) 
+			if($delete_category = bab_pp('delete_category')) 
 			{
 				foreach($delete_category as $id_category) 
 				{
@@ -148,13 +147,13 @@ function displayCategoriesListForm()
 			static $i = 0;
 			if($i < $this->countcal)
 			{
-				$this->altbg = !$this->altbg;
-				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=displayModifyCategorieForm&idcat=".$this->arr['id']);
-				$this->urlname = bab_toHtml($this->arr['name']);
-				$this->desc = bab_toHtml($this->arr['description']);
-				$this->bgcolor = bab_toHtml($this->arr['bgcolor']);
-				$this->id_category = (int) $this->arr['id'];
+				$this->altbg		= !$this->altbg;
+				$this->arr			= $babDB->db_fetch_array($this->res);
+				$this->url 			= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=displayModifyCategorieForm&idcat=".$this->arr['id']);
+				$this->urlname		= bab_toHtml($this->arr['name']);
+				$this->desc 		= bab_toHtml($this->arr['description']);
+				$this->bgcolor		= bab_toHtml($this->arr['bgcolor']);
+				$this->id_category	= (int) $this->arr['id'];
 				$i++;
 				return true;
 			}
@@ -175,7 +174,7 @@ function displayAddCategorieForm($catname, $catdesc, $bgcolor)
 {
 	global $babBody;
 	class calendarsAddCategoryCls
-		{
+	{
 		var $name;
 		var $description;
 		var $bgcolor;
@@ -188,7 +187,7 @@ function displayAddCategorieForm($catname, $catdesc, $bgcolor)
 		var $userid;
 
 		function calendarsAddCategoryCls($catname, $catdesc, $bgcolor)
-			{
+		{
 			$this->nametxt = bab_translate("Name");
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
@@ -200,12 +199,13 @@ function displayAddCategorieForm($catname, $catdesc, $bgcolor)
 			$this->desc = bab_toHtml($catdesc);
 			$this->bgcolor = bab_toHtml($bgcolor);
 			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
-			}
 		}
+	}
 
 	$temp = new calendarsAddCategoryCls($catname, $catdesc, $bgcolor);
 	$babBody->babecho( bab_printTemplate($temp, "delegat.html", "categorycreate"));
 }
+
 
 function displayModifyCategorieForm()
 {
@@ -324,11 +324,11 @@ function groupDelegatMembers($id)
 
 
 function groupDelegatModify($gname, $description, $id = '')
-	{
+{
 	global $babBody;
 
 	class temp
-		{
+	{
 		var $name;
 		var $description;
 		var $add;
@@ -354,69 +354,73 @@ function groupDelegatModify($gname, $description, $id = '')
 		var $id;
 
 		function temp($gname, $description, $id)
-			{
+		{
 			global $babDB;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->add = bab_translate("Record");
-			$this->delete = bab_translate("Delete");
-			$this->t_color = bab_translate("Color");
-			$this->alert_msg = bab_translate("It is necessary to remove all associations with the users groups");
-			$this->grp_members = bab_translate("Managed group");
-			$this->functions = bab_translate("Deputy functions");
-			$this->attachdesc = bab_translate("Assign/unassign a user");
-			$this->none = bab_translate("None");
-			$this->sCategoryCaption = bab_translate("Category");
+			$this->name				= bab_translate("Name");
+			$this->description		= bab_translate("Description");
+			$this->add				= bab_translate("Record");
+			$this->delete			= bab_translate("Delete");
+			$this->t_color			= bab_translate("Color");
+			$this->alert_msg		= bab_translate("It is necessary to remove all associations with the users groups");
+			$this->grp_members		= bab_translate("Managed group");
+			$this->functions		= bab_translate("Deputy functions");
+			$this->attachdesc		= bab_translate("Assign/unassign a user");
+			$this->none				= bab_translate("None");
+			$this->sCategoryCaption	= bab_translate("Category");
 			
-			$db = &$GLOBALS['babDB'];
-			$this->db = &$db;
-			$res = $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
-			$this->arr = $db->db_fetch_array($res);
-			$this->id = $id;
+			$db			= $GLOBALS['babDB'];
+			$this->db	= $db;
+			$res		= $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
+			$this->arr	= $db->db_fetch_array($res);
+			$this->id	= $id;
 			
 			$iIdCategory = 0;
 			
-			if (!empty($this->id))
-				{
-				$this->idGrp = &$this->arr['id_group'];
-				$this->bdel = true;
-				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
-				$battach = isset($_POST['battach']) ? $_POST['battach'] : $this->arr['battach'] ;
-				$iIdCategory = $this->arr['iIdCategory'];
-				}
+			if(!empty($this->id))
+			{
+				$this->idGrp		= $this->arr['id_group'];
+				$this->bdel			= true;
+				$this->colorvalue	= isset($_POST['color']) ? $_POST['color'] : $this->arr['color'] ;
+				$battach			= isset($_POST['battach']) ? $_POST['battach'] : $this->arr['battach'] ;
+				$iIdCategory		= $this->arr['iIdCategory'];
+			}
 			else
-				{
-				$this->idGrp = false;
-				$this->bdel = false;
-				$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : '' ;
-				$battach = isset($_POST['battach']) ? $_POST['battach'] : 'N' ;
-				}
-			if( $battach == 'Y' )
-				{
-				$this->battachchecked = 'checked';
-				}
+			{
+				$this->idGrp		= false;
+				$this->bdel			= false;
+				$this->colorvalue	= isset($_POST['color']) ? $_POST['color'] : '' ;
+				$battach			= isset($_POST['battach']) ? $_POST['battach'] : 'N' ;
+			}
+			
+			if($battach == 'Y')
+			{
+				$this->battachchecked = 'checked="checked"';
+			}
 			else
-				{
+			{
 				$this->battachchecked = '';
-				}
-
-
+			}
 
 			$tree = new bab_grptree();
 			$this->groups = $tree->getGroups(NULL, '%s '.chr(160).' '.chr(160).' ');
+			
+			//bab_debug($this->groups);
+			
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->count2 = count($this->groups);
 
 			
-			if( $gname != '' )
-				$this->grpname = htmlentities($gname);
+			if($gname != '')
+			{
+				$this->grpname = bab_toHtml($gname);
+				$this->grpdesc = bab_toHtml($description);
+			}
 			else
-				$this->grpname = htmlentities($this->arr['name']);
-
-			if( $gname != '' )
-				$this->grpdesc = htmlentities($description);
-			else
-				$this->grpdesc = htmlentities($this->arr['description']);
+			{
+				$this->grpname = bab_toHtml($this->arr['name']);
+				$this->grpdesc = bab_toHtml($this->arr['description']);
+			}
+			
 			$this->tgval = "delegat";
 			$this->what = "mod";
 
@@ -425,7 +429,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->iPostedIdCategory	= (int) bab_rp('iIdCategory', $iIdCategory);
 			$this->oResCategories		= $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
 			$this->bCategoriesAvailable	= (false !== $this->oResCategories && 0 < $babDB->db_num_rows($this->oResCategories));
-			}
+		}
 
 		function getNextCategory()
 		{
@@ -435,7 +439,6 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->iIdCategory			= 0;
 			$this->sCategoryColor		= '';
 			$this->sCategorySelected	= '';
-			
 			
 			if(false !== $this->oResCategories)
 			{
@@ -447,7 +450,7 @@ function groupDelegatModify($gname, $description, $id = '')
 					$this->sCategoryColor	= $aDatas['bgcolor'];
 					if($this->iPostedIdCategory === (int) $this->iIdCategory)
 					{
-						$this->sCategorySelected	= 'selected="selected"';
+						$this->sCategorySelected = 'selected="selected"';
 					}
 					return true;
 				}
@@ -475,7 +478,7 @@ function groupDelegatModify($gname, $description, $id = '')
 						break;
 					}
 				if( $this->arr[$babDG[$i][0]] == 'Y')
-					$this->checked = 'checked';
+					$this->checked = 'checked="checked"';
 				else
 					$this->checked = '';
 				$i++;
@@ -487,30 +490,34 @@ function groupDelegatModify($gname, $description, $id = '')
 			}
 
 		function getnextgroup()
-			{
+		{
 			static $i = 0;
 			
-			if( list(,$this->arrgroups) = each($this->groups))
-				{
+			$aDatas = each($this->groups);
+			
+			if(false !== $aDatas)
+			{
+				$this->arrgroups = $aDatas['value'];
+				
 				$this->arrgroups['select'] = "";
-				if( $this->idGrp == $this->arrgroups['id'])
-					{
-					$this->arrgroups['select'] = "selected";
-					}
+				if($this->idGrp == $this->arrgroups['id'])
+				{
+					$this->arrgroups['select'] = 'selected="selected"';
+				}
 
 				$i++;
 				return true;
-				}
+			}
 			else
-				{
+			{
 				return false;
-				}
 			}
 		}
+	}
 
 	$temp = new temp($gname, $description, $id);
 	$babBody->babecho(	bab_printTemplate($temp,"delegat.html", "delegatcreate"));
-	}
+}
 
 
 function deleteDelegatGroup($id)

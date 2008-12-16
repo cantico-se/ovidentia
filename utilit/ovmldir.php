@@ -37,7 +37,7 @@ class bab_DbDirectories extends bab_handler
 		global $babDB;
 		$this->bab_handler($ctx);
 		$directoryid = $ctx->get_value('directoryid');
-		$directorytype = strtolower($ctx->get_value('type'));
+		$directorytype = mb_strtolower($ctx->get_value('type'));
 		$delegationid = (int) $ctx->get_value('delegationid');
 
 		$sDelegation = ' ';	
@@ -329,11 +329,11 @@ class bab_DbDirectoryMembers extends bab_handler
 						}
 					else
 						{
-						if ( false === strpos($orderby, 'babdirf'))
+						if ( false === mb_strpos($orderby, 'babdirf'))
 							$like = " AND `".$babDB->db_escape_string($orderby)."` LIKE '".$babDB->db_escape_string($like)."%'";
-						elseif (0 === strpos($orderby, 'babdirf'))
+						elseif (0 === mb_strpos($orderby, 'babdirf'))
 							{
-							$idfield = substr($orderby,7);
+							$idfield = mb_substr($orderby,7);
 							$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($like)."%'";
 							}
 						else
@@ -698,7 +698,7 @@ class bab_DbDirectoryAcl extends bab_handler
 			$type = $ctx->get_value('type');
 			if( $type !== false && $type !== '' )
 			{
-				switch(strtolower($type))
+				switch(mb_strtolower($type))
 				{
 					case 'add':
 						$table = BAB_DBDIRADD_GROUPS_TBL;

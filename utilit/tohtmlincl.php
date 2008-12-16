@@ -25,7 +25,7 @@ include_once "base.php";
 
 
 function bab_parseUri($matches) {
-	$link = (strlen($matches[0]) > 30) ? substr($matches[0],0,30).'...' : $matches[0];
+	$link = (mb_strlen($matches[0]) > 30) ? mb_substr($matches[0],0,30).'...' : $matches[0];
 	return '<a href="'.$matches[0].'" title="'.$matches[0].'" class="url" target="_blank">'.$link.'</a>';
 }
 
@@ -49,7 +49,9 @@ function bab_f_toHtml($pee, $opt) {
 	}
 
 	if (BAB_HTML_ENTITIES === ($opt & BAB_HTML_ENTITIES))
-		$pee = htmlentities($pee);
+	{
+		$pee = htmlspecialchars($pee, ENT_COMPAT, bab_charset::getIso());
+	}
 		
 	if (BAB_HTML_LINKS === ($opt & BAB_HTML_LINKS)) {
 		$pee = preg_replace_callback('/(http|https|ftp):(\/\/){0,1}([^\"\s]*)/i','bab_parseUri',$pee);

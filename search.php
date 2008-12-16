@@ -59,13 +59,13 @@ function put_text($txt, $limit = 60, $limitmot = 30 )
 	$obj = bab_replace_get();
 	$obj->ref($txt);
 	
-	if (strlen($txt) > $limit)
-		$out = substr(unhtmlentities(strip_tags($txt)),0,$limit)."...";
+	if (mb_strlen($txt) > $limit)
+		$out = mb_substr(unhtmlentities(strip_tags($txt)),0,$limit)."...";
 	else
 		$out = unhtmlentities(strip_tags($txt));
 	$arr = explode(" ",$out);
 	foreach($arr as $key => $mot)
-		$arr[$key] = substr($mot,0,$limitmot);
+		$arr[$key] = mb_substr($mot,0,$limitmot);
 	$txt = implode(" ",$arr);
 	
 	return bab_toHtml($txt);
@@ -149,9 +149,9 @@ class bab_addonsSearch
 			{
 			return $this->tabSearchAddons;
 			}
-		elseif (substr($item,0,3) == 'as-')
+		elseif (mb_substr($item,0,3) == 'as-')
 			{
-			$id = substr($item,3);
+			$id = mb_substr($item,3);
 			if (!empty($id) && is_numeric($id) && isset($this->tabSearchAddons[$id]))
 				return array($id => $this->tabSearchAddons[$id]);	
 			}
@@ -342,7 +342,7 @@ function searchKeyword($item , $option = "OR")
 				$i++;
 				}
 			$fliped = array_flip($this->tbld);
-			ksort($fliped);
+			bab_sort::ksort($fliped);
 			$i = 0;
 			foreach($fliped as $value => $key)
 				{
@@ -360,7 +360,7 @@ function searchKeyword($item , $option = "OR")
 					$this->rescal[$arr['name']] = $arr;
 					unset($this->rescal[$k]);
 					}
-				ksort($this->rescal);
+				bab_sort::ksort($this->rescal);
 				$this->rescal = array_values($this->rescal);
 				
 				$this->countcal = count($this->rescal);
@@ -409,7 +409,7 @@ function searchKeyword($item , $option = "OR")
 
 			$menuarray = $this->addons->getmenuarray();
 			$this->searchItems = array_merge($this->searchItems,$menuarray);
-			asort($this->searchItems);
+			bab_sort::asort($this->searchItems);
 			}
 
 		function getnextitem()
@@ -484,7 +484,7 @@ function searchKeyword($item , $option = "OR")
 					{
 					
 					$fliped = array_flip($tblxd);
-					ksort($fliped);
+					bab_sort::ksort($fliped);
 					$lk= 0;
 					foreach($fliped as $value => $key)
 						{
@@ -1169,7 +1169,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				else $plus = "";
 
 				if ($idcat != "") {
-					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".substr($idcat,0,-1).") order by ".$babDB->db_escape_string($order);
+					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".mb_substr($idcat,0,-1).") order by ".$babDB->db_escape_string($order);
 					$babDB->db_query($req);
 				}
 
@@ -1270,7 +1270,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 							if(!is_null($oFmFolder))
 							{
-								$sRelativePath = (strlen(trim($oFmFolder->getRelativePath())) > 0 ? $oFmFolder->getRelativePath() : $oFmFolder->getName() . '/');
+								$sRelativePath = (mb_strlen(trim($oFmFolder->getRelativePath())) > 0 ? $oFmFolder->getRelativePath() : $oFmFolder->getName() . '/');
 								$aCollectiveFolderId[$iIdFolder] = $iIdFolder;
 								$aCollectiveFolderRelativePath[$sRelativePath] = 'F.path LIKE \'' . $babDB->db_escape_like($sRelativePath) . '%\'';
 							}
@@ -1392,7 +1392,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 								$name = basename($fullpath);
 								$path = dirname($fullpath);
-								if( !empty($path) && '/' !== $path{strlen($path) - 1}) 
+								if( !empty($path) && '/' !== $path{mb_strlen($path) - 1}) 
 								{
 									$path .='/';
 								}
@@ -1485,7 +1485,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 					$this->tmptable_inserted_id('filresults');
 					
-					$sPlus = (strlen($plus) > 0) ? 'and ' . $plus . ' ' : ' ';
+					$sPlus = (mb_strlen($plus) > 0) ? 'and ' . $plus . ' ' : ' ';
 					
 					$req = "INSERT INTO filresults 
 						SELECT 
@@ -1696,10 +1696,10 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$dirfield = isset($this->fields['dirfield_'.$i]) ? $this->fields['dirfield_'.$i] : '';
 					if ($dirfield !="") 
 						{
-						if (0 === strpos($dirselect, 'babdirf'))
+						if (0 === mb_strpos($dirselect, 'babdirf'))
 							{
 							// champ supplémentaire
-							$crit_fields_add[] = "t.id_fieldx = '".$babDB->db_escape_string(substr($dirselect,7))."' AND t.field_value LIKE '%".$babDB->db_escape_like($dirfield)."%'";
+							$crit_fields_add[] = "t.id_fieldx = '".$babDB->db_escape_string(mb_substr($dirselect,7))."' AND t.field_value LIKE '%".$babDB->db_escape_like($dirfield)."%'";
 							}
 						else
 							{
@@ -2066,7 +2066,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
 				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what);
-				if (strlen(trim(stripslashes($arr['body']))) > 0)
+				if (mb_strlen(trim(stripslashes($arr['body']))) > 0)
 					{
 					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
 					}
@@ -2117,7 +2117,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->article = bab_toHtml($arr['arttitle']);
 				$this->arttopicid = $arr['id_topic'];
 				$this->com = bab_toHtml($arr['subject']);
-				if (strlen(trim(stripslashes($arr['body']))) > 0)
+				if (mb_strlen(trim(stripslashes($arr['body']))) > 0)
 					$this->urlok = true;
 				else
 					$this->urlok = false;
@@ -2312,7 +2312,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						break;
 					}
 
-				$this->alloworder = 0 !== strpos($this->name,'babdirf');
+				$this->alloworder = 0 !== mb_strpos($this->name,'babdirf');
 
 				$i++;
 				return true;
@@ -3090,7 +3090,7 @@ function viewDirectoryUser($id, $what)
 function goto_addon()
 	{
 	$addons = new bab_addonsSearch;
-	$id = substr($_POST['item'],3);
+	$id = mb_substr($_POST['item'],3);
 	if (!empty($id) && is_numeric($id) && isset($addons->tabLinkAddons[$id]))
 		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id."/".$addons->querystring[$id]);
 	}
@@ -3120,7 +3120,7 @@ if((!isset($order)) || ($order == ""))
 if((!isset($pat)) || ($pat == ""))
 	$pat = $GLOBALS['babSearchUrl'];
 
-if (isset($_POST['item']) && substr($_POST['item'],0,3) == 'al-')
+if (isset($_POST['item']) && mb_substr($_POST['item'],0,3) == 'al-')
 	{
 	goto_addon();
 	}
@@ -3173,7 +3173,7 @@ switch($idx)
 	case "find":
 		$babBody->title = bab_translate("Search");
 		searchKeyword($item, $option);
-		$order = strtoupper(bab_rp($order, 'ASC'));
+		$order = mb_strtoupper(bab_rp($order, 'ASC'));
 		if ($order !== 'ASC' && $order !== 'DESC')
 		{
 			$order = 'ASC';

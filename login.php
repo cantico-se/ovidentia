@@ -451,13 +451,13 @@ function addNewUser( $nickname, $password1, $password2)
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
-	if ( strlen($password1) < 6 )
+	if ( mb_strlen($password1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
 		}
 
-	if ( strpos($nickname, ' ') !== false )
+	if ( mb_strpos($nickname, ' ') !== false )
 		{
 		$babBody->msgerror = bab_translate("Login ID should not contain spaces");
 		return false;
@@ -599,7 +599,7 @@ function addNewUser( $nickname, $password1, $password2)
 		}
 	else
 		{
-		$req = substr($req, 0, strlen($req) -1);
+		$req = mb_substr($req, 0, mb_strlen($req) -1);
 		}
 
 	if( !empty($req))
@@ -613,9 +613,9 @@ function addNewUser( $nickname, $password1, $password2)
 
 			foreach( $fields as $key => $value )
 				{
-				if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+				if( mb_substr($key, 0, mb_strlen("babdirf")) == 'babdirf' )
 					{
-					$tmp = substr($key, strlen("babdirf"));
+					$tmp = mb_substr($key, mb_strlen("babdirf"));
 
 					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 					if( $rs && $babDB->db_num_rows($rs) > 0 )

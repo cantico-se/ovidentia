@@ -3778,7 +3778,7 @@ CREATE TABLE `bab_event_listeners` (
   `addon_name` varchar(255) NOT NULL,
   `priority` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `event` (`event_class_name`,`function_name`,`require_file`)
+  KEY `event_class_name` (`event_class_name`)
 );
 
 

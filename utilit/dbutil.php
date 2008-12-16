@@ -311,6 +311,15 @@ class babDatabase extends bab_database
 		return parent::db_close($this->db_connect());
 		}
 
+	function db_setCharset()
+		{
+			require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+			if('utf8' == bab_charset::getDatabase())
+			{
+				$this->db_query("SET NAMES utf8");
+			}			
+		}
+
 	function db_create_db($dbname)
 		{
 		return parent::db_create_db($dbname, $this->db_connect());

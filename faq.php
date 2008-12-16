@@ -97,7 +97,7 @@ function listCategories()
 			$req.= " or id_manager = '" .$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']). "'";
 		break;
 	case 1:
-		$req = "select * from ".BAB_FAQCAT_TBL." where lang like '". $babDB->db_escape_like(substr($GLOBALS['babLanguage'], 0, 2)) ."%' or lang='*' or lang = ''";
+		$req = "select * from ".BAB_FAQCAT_TBL." where lang like '". $babDB->db_escape_like(mb_substr($GLOBALS['babLanguage'], 0, 2)) ."%' or lang='*' or lang = ''";
 		if (isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
 			$req.= " or id_manager = '" .$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID']). "'";
 		break;
@@ -150,7 +150,7 @@ function FaqTableOfContents($idcat)
 					$this->maxlevel = $row[1]['level'];
 					}
 				}
-			asort($this->arr);
+			bab_sort::asort($this->arr);
 			reset($this->arr);
 			$this->arr = array_keys($this->arr);
 			$this->maxlevel += 1;
@@ -304,7 +304,7 @@ function FaqPrintContents($idcat)
 					$this->maxlevel = $row[1]['level'];
 					}
 				}
-			asort($this->arr);
+			bab_sort::asort($this->arr);
 			reset($this->arr);
 			$this->arr = array_keys($this->arr);
 			$this->maxlevel += 1;

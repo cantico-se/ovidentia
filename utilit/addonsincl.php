@@ -481,6 +481,7 @@ class bab_addonInfos {
 	 * @return boolean
 	 */
 	function isValid() {
+		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		$ini = new bab_inifile();
 		$ini->inifile($this->getPhpPath().'addonini.php');
 		return $ini->isValid();
@@ -729,8 +730,8 @@ class bab_addonInfos {
 		
 		if (
 			!empty($ini->inifile['db_prefix']) 
-			&& strlen($ini->inifile['db_prefix']) >= 3 
-			&& substr($ini->inifile['db_prefix'],0,3) != 'bab') {
+			&& mb_strlen($ini->inifile['db_prefix']) >= 3 
+			&& mb_substr($ini->inifile['db_prefix'],0,3) != 'bab') {
 			
 			$res = $babDB->db_query("SHOW TABLES LIKE '".$babDB->db_escape_like($ini->inifile['db_prefix'])."%'");
 			while(list($tbl) = $babDB->db_fetch_array($res)) {
@@ -801,6 +802,69 @@ class bab_addonInfos {
 		
 		return $imgpath;
 	}
+
+	
+	
+	
+	/**
+	 * Return the image path 
+	 * a 200x150px png, jpg or gif image, representation of the addon
+	 * @return string|null
+	 */
+	function getImagePath() {
+		$ini = $this->getIni();
+		
+		if (!isset($ini->inifile['image'])) {
+			return null;
+		}
+		
+		$imgpath = $this->getImagesPath().$ini->inifile['image'];
+		
+		if (!is_file($imgpath)) {
+			return null;
+		}
+		
+		
+		return $imgpath;
+	}
+	
+	
+	/**
+	 * Return the icon path 
+	 * a 48x48px png, jpg or gif image, representation of the addon
+	 * @return string|null
+	 */
+	function getIconPath() {
+		$ini = $this->getIni();
+		
+		switch ($this->getAddonType()) {
+			case 'THEME':
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-theme.png';
+				break;
+			case 'LIBRARY':
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-library.png';
+				break;
+			case 'EXTENSION':
+			default:
+				$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-extension.png';
+				break;
+		}
+//		$default = $GLOBALS['babSkinPath'].'images/48x48/apps/addon-default.png';
+		
+		if (!isset($ini->inifile['icon'])) {
+			return $default;
+		}
+		
+		$imgpath = $this->getImagesPath().$ini->inifile['icon'];
+		
+		if (!is_file($imgpath)) {
+			return $default;
+		}
+		
+		
+		return $imgpath;
+	}
+
 
 	
 	
@@ -1075,8 +1139,8 @@ function bab_callAddonsFunction($func)
 						eval ( "\$call .= \"$args[$k],\";");
 					}
 					
-					if (',' === substr($call, -1)) {
-						$call = substr($call, 0, -1);
+					if (',' === mb_substr($call, -1)) {
+						$call = mb_substr($call, 0, -1);
 					}
 					$call .= ')';
 					

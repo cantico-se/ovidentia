@@ -41,14 +41,17 @@ function bab_getBabUrl() {
 		$babWebRoot .= '/';
 	}
 	$babHost = isset($_SERVER["HTTP_X_FORWARDED_HOST"]) ? $_SERVER["HTTP_X_FORWARDED_HOST"] : $_SERVER["HTTP_HOST"];
+
 	
 	$babProtocol = 'http://';
 	
-	if( (isset($_SERVER["HTTPS"]) && 'on' == strtolower($_SERVER["HTTPS"])) ||
-	    (isset($_SERVER["SCRIPT_URI"]) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) 
+	if( (isset($_SERVER["HTTPS"]) && 'on' == mb_strtolower($_SERVER["HTTPS"])) ||
+	    (isset($_SERVER["SCRIPT_URI"]) && mb_strtolower(mb_substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) 
 	{
 		$babProtocol = 'https://';
 	}
+
+
 	return $babProtocol . $babHost . '/' . $babWebRoot ;
 }
 
@@ -97,6 +100,7 @@ bab_cleanGpc();
 if (!isset($babUrl)) {
 	$babUrl = bab_getBabUrl();
 }
+
 
 
 if( isset($_REQUEST['WSSESSIONID']))
@@ -177,10 +181,21 @@ if( !isset($GLOBALS['babUmaskMode']))
 	$GLOBALS['babUmaskMode'] = 0;
 	}
 
-$babPhpSelf = substr($PHP_SELF,-strpos(strrev($PHP_SELF),'/'));
-$babUrlScript = $babUrl.$babPhpSelf;
-$babAddonsPath = $GLOBALS['babInstallPath']."addons/";
-$babSiteName = substr($babSiteName, 0, 30);
+
+function bab_getSelf() {
+	$pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
+
+	if (false === $pos) {
+		return $_SERVER['PHP_SELF'];
+	}
+
+	return mb_substr($_SERVER['PHP_SELF'], $pos +1);
+}
+
+$babPhpSelf		= bab_getSelf();
+$babUrlScript	= $babUrl.$babPhpSelf;
+$babAddonsPath	= $GLOBALS['babInstallPath']."addons/";
+$babSiteName	= mb_substr($babSiteName, 0, 30);
 
 
 
@@ -192,6 +207,7 @@ if( !isset($tg))
 include_once $babInstallPath."utilit/defines.php";
 include_once $babInstallPath."utilit/dbutil.php";
 $babDB = new babDatabase();
+$babDB->db_setCharset();
 include_once $babInstallPath."utilit/statincl.php";
 $babWebStat =& new bab_WebStatEvent();
 
@@ -236,21 +252,7 @@ else
 		$babSkin = 'ovidentia';
 	}
 
-$babSkinPath = $babInstallPath."skins/".$babSkin."/";
-if(!is_dir($babSkinPath)) {
-	$babSkinPath = $babInstallPath."skins/".'ovidentia'."/";
-	if(!is_dir($babSkinPath)) {
-		$folder = opendir($babInstallPath.'skins/');
-		while (false!==($file = readdir($folder))) {
-			if($file == '.' or $file == '..') break;
-			if(is_dir($file)) {
-				$babSkinPath = $babInstallPath."skins/".$file."/";
-				break;
-			}
-		}
-		closedir($folder);
-	}
-}
+$babSkinPath = bab_getSkinPath();
 $babScriptPath = $babInstallPath."scripts/";
 $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
@@ -263,7 +265,7 @@ $babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_t
 $babShortMonths = array();
 foreach($babMonths as $key => $val )
 	{
-	$sm = substr($val, 0 , 3);
+	$sm = mb_substr($val, 0 , 3);
 	if( count($babShortMonths) == 0 || !in_array($sm, $babShortMonths))
 		{
 		$babShortMonths[$key] = $sm;
@@ -271,9 +273,9 @@ foreach($babMonths as $key => $val )
 	else
 		{
 		$m=4;
-		while( in_array($sm, $babShortMonths) && $m < strlen($val))
+		while( in_array($sm, $babShortMonths) && $m < mb_strlen($val))
 			{
-			$sm = substr($val, 0 , $m++);
+			$sm = mb_substr($val, 0 , $m++);
 			}
 
 		$babShortMonths[$key] = $sm;			
@@ -297,7 +299,7 @@ $babCss = bab_printTemplate($babDummy, "config.html", "babCss");
 $babMeta = bab_printTemplate($babDummy, "config.html", "babMeta");
 $babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
 $babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
-if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+if(( mb_strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 	$babIE = 1;
 else
 	$babIE = 0;
@@ -334,17 +336,19 @@ function printBody()
 		var $search;
 		var $bsearch;
 		var $searchurl;
-
+		var $sContent;
+		 
 		function tpl()
 			{
 			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
-			$this->version = isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
-			$this->babLogoLT = "";
-			$this->babLogoRT = "";
-			$this->babLogoLB = "";
-			$this->babLogoRB = "";
-			$this->babBanner = "";
-
+			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
+			$this->babLogoLT	= "";
+			$this->babLogoRT	= "";
+			$this->babLogoLB	= "";
+			$this->babLogoRB	= "";
+			$this->babBanner	= "";
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();	
+			
 			$this->style = $babStyle;
 
 			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
@@ -465,7 +469,7 @@ function printBody()
 						{
 						$this->menuattribute = "";
 						}
-					$this->menuurl = htmlentities($this->menuvals[$i]["url"]);
+					$this->menuurl = bab_toHtml($this->menuvals[$i]["url"]);
 					}
 				$i++;
 				return true;
@@ -1124,6 +1128,9 @@ switch($tg)
 		break;
 	case 'usrTskMgr':
 		$incl = 'tmtaskmanager';
+		break;
+	case 'charset':
+		$incl = 'admin/charset';
 		break;
 	default:
 		$babLevelOne = "";

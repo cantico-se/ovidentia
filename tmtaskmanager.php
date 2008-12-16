@@ -158,7 +158,7 @@ class BAB_TM_Toolbar
 			$oToolbarItem =& $aItem['value'];
 
 			$this->sText	= $oToolbarItem->getText();
-			$this->sUrl		= htmlentities($oToolbarItem->getUrl());
+			$this->sUrl		= bab_toHtml($oToolbarItem->getUrl());
 			$this->sImg		= $oToolbarItem->getImg();
 			$this->sTitle	= $oToolbarItem->getTitle();
 			$this->sAlt		= $oToolbarItem->getAlt();
@@ -1539,7 +1539,7 @@ function displayTaskList($sIdx)
 	$sPlannedStartDate	= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sPlannedStartDate');
 	$sPlannedEndDate	= (string) $oTaskFilterForm->m_oFilterSessionContext->get('sPlannedEndDate');
 
-	if(strlen(trim($sStartDate)) > 0)
+	if(mb_strlen(trim($sStartDate)) > 0)
 	{
 		$oDate = BAB_DateTime::fromUserInput($sStartDate);
 		if(!is_null($oDate))
@@ -1551,7 +1551,7 @@ function displayTaskList($sIdx)
 		}
 	}
 
-	if(strlen(trim($sEndDate)) > 0)
+	if(mb_strlen(trim($sEndDate)) > 0)
 	{
 		$oDate = BAB_DateTime::fromUserInput($sEndDate);
 		if(!is_null($oDate))
@@ -1563,7 +1563,7 @@ function displayTaskList($sIdx)
 		}
 	}
 
-	if(strlen(trim($sPlannedStartDate)) > 0)
+	if(mb_strlen(trim($sPlannedStartDate)) > 0)
 	{
 		$oDate = BAB_DateTime::fromUserInput($sPlannedStartDate);
 		if(!is_null($oDate))
@@ -1575,7 +1575,7 @@ function displayTaskList($sIdx)
 		}
 	}
 
-	if(strlen(trim($sPlannedEndDate)) > 0)
+	if(mb_strlen(trim($sPlannedEndDate)) > 0)
 	{
 		$oDate = BAB_DateTime::fromUserInput($sPlannedEndDate);
 		if(!is_null($oDate))
@@ -1811,7 +1811,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 					{
 						$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
 					}
-					$this->sColumnHeaderUrl = htmlentities($this->sColumnHeaderUrl);
+					$this->sColumnHeaderUrl = bab_toHtml($this->sColumnHeaderUrl);
 				}
 				else 
 				{
@@ -1922,12 +1922,12 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 	
 	$aOrder = array();
 	$sOrderBy = (string) bab_rp('sOrderBy', '');
-	if(strlen(trim($sOrderBy)) > 0)
+	if(mb_strlen(trim($sOrderBy)) > 0)
 	{
 		$oMultiPage->addPaginationAndFormParameters('sOrderBy', $sOrderBy);
 	
 		$sOrder = (string) bab_rp('sOrder', '');
-		if(strlen(trim($sOrder)) > 0)
+		if(mb_strlen(trim($sOrder)) > 0)
 		{
 			$oMultiPage->addPaginationAndFormParameters('sOrder', $sOrder);
 			$aOrder = array('sName' => $sOrderBy, 'sOrder' => $sOrder);
@@ -2563,9 +2563,9 @@ function displayGanttChart()
 	if(0 !== $iIdProjectSpace)
 	{
 		$sStartDate = getFirstProjectTaskDate(bab_rp('iIdProject'));
-		if(strlen($sStartDate) > 10)
+		if(mb_strlen($sStartDate) > 10)
 		{
-			$sStartDate = substr($sStartDate, 0, 10);
+			$sStartDate = mb_substr($sStartDate, 0, 10);
 		}
 	}
 	else
@@ -2650,15 +2650,7 @@ function displayOrderTaskFieldsForm()
 			$this->initSession($iIdProjectSpace, $iIdProject);
 			
 			$this->processAction();
-			
-			if(!function_exists('babTskMgrCompareField'))
-			{		
-				function babTskMgrCompareField($f1, $f2)
-				{
-					return strcasecmp($f1['sLegend'], $f2['sLegend']);
-				}
-			}
-			uasort($_SESSION['babTskMgrSelectableField'], 'babTskMgrCompareField');
+			bab_sort::asort($_SESSION['babTskMgrSelectableField'], 'sLegend', 1);
 			
 //			bab_debug($_SESSION['babTskMgrSelectableField']);
 //			bab_debug($_SESSION['babTskMgrSelectedField']);
@@ -2895,7 +2887,7 @@ function addModifyProject()
 	{
 		$sName = trim(bab_rp('sName', ''));
 
-		if(0 < strlen($sName))
+		if(0 < mb_strlen($sName))
 		{
 			$isValid = isNameUsedInProjectSpace(BAB_TSKMGR_PROJECTS_TBL, $iIdProjectSpace, $iIdProject, $sName);
 			
@@ -3062,7 +3054,7 @@ function addModifyProjectCommentary()
 	{
 		$sCommentary = trim(bab_rp('sCommentary', ''));
 		
-		if(strlen(trim($sCommentary)) > 0)
+		if(mb_strlen(trim($sCommentary)) > 0)
 		{
 			if(0 == $iIdCommentary)
 			{
@@ -3112,7 +3104,7 @@ function addModifyTaskCommentary()
 	{
 		$sCommentary = trim(bab_rp('sCommentary', ''));
 		
-		if(strlen(trim($sCommentary)) > 0)
+		if(mb_strlen(trim($sCommentary)) > 0)
 		{
 			if(0 == $iIdCommentary)
 			{
@@ -3258,7 +3250,7 @@ function deleteTask()
 			}
 		}
 
-		$sTaskNumber = ((strlen(trim($aTaskToDel['sShortDescription'])) > 0) ? $aTaskToDel['sShortDescription'] : $aTaskToDel['sTaskNumber']);
+		$sTaskNumber = ((mb_strlen(trim($aTaskToDel['sShortDescription'])) > 0) ? $aTaskToDel['sShortDescription'] : $aTaskToDel['sTaskNumber']);
 		{
 			$sProjectSpaceName = '???';
 			if(bab_getProjectSpace($iIdProjectSpace, $aProjectSpace))
@@ -3402,7 +3394,7 @@ function processExport()
 		global $babInstallPath;
 		require_once($babInstallPath . 'utilit/dateTime.php');
 	
-		if(strlen(trim($sStartDate)) > 0)
+		if(mb_strlen(trim($sStartDate)) > 0)
 		{
 			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sStartDate));
 			if(!is_null($oDate))
@@ -3413,7 +3405,7 @@ function processExport()
 			}
 		}
 	
-		if(strlen(trim($sEndDate)) > 0)
+		if(mb_strlen(trim($sEndDate)) > 0)
 		{
 			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sEndDate));
 			if(!is_null($oDate))
@@ -3424,7 +3416,7 @@ function processExport()
 			}
 		}
 	
-		if(strlen(trim($sPlannedStartDate)) > 0)
+		if(mb_strlen(trim($sPlannedStartDate)) > 0)
 		{
 			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedStartDate));
 			if(!is_null($oDate))
@@ -3435,7 +3427,7 @@ function processExport()
 			}
 		}
 	
-		if(strlen(trim($sPlannedEndDate)) > 0)
+		if(mb_strlen(trim($sPlannedEndDate)) > 0)
 		{
 			$oDate = BAB_DateTime::fromDateStr(str_replace('-', '/', $sPlannedEndDate));
 			if(!is_null($oDate))
@@ -3537,10 +3529,10 @@ function processExport()
 				$sOutput .= '"' . $sLegend . '"' . $sSeparator;
 			}
 			
-			$sLastChar = substr($sOutput, -1);
+			$sLastChar = mb_substr($sOutput, -1);
 			if(false !== $sLastChar && ',' == $sLastChar)
 			{
-				$sOutput = substr($sOutput, 0, -1);
+				$sOutput = mb_substr($sOutput, 0, -1);
 			}
 			
 			$sOutput .= $sCrlf;
@@ -3604,10 +3596,10 @@ function processExport()
 					$sOutput .= '"' . $sData . '"' . $sSeparator;
 				}
 
-				$sLastChar = substr($sOutput, -1);
+				$sLastChar = mb_substr($sOutput, -1);
 				if(false !== $sLastChar && ',' == $sLastChar)
 				{
-					$sOutput = substr($sOutput, 0, -1);
+					$sOutput = mb_substr($sOutput, 0, -1);
 				}
 				
 				$sOutput .= $sCrlf;
@@ -3617,7 +3609,7 @@ function processExport()
 		
 			header("Content-Disposition: attachment; filename=\"" . $sFileName . "\""."\n");
 			header("Content-Type: csv/plain"."\n");
-			header("Content-Length: ". strlen($sOutput) ."\n");
+			header("Content-Length: ". mb_strlen($sOutput) ."\n");
 			header("Content-transfert-encoding: binary"."\n");
 			print $sOutput;
 			die;

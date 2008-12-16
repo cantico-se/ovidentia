@@ -1584,14 +1584,6 @@ function bab_getNextTaskPosition($iIdProject, &$iPosition)
  */
 function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 {
-	if(!function_exists('bab_compareTaskResponsibles'))
-	{
-		function bab_compareTaskResponsibles($r1, $r2)
-		{
-			return strcmp($r1['name'], $r2['name']);
-		}
-	}
-
 	$aTaskResponsible = array();
 	
 	$aIdObject = bab_getGroupsAccess(BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL, $iIdProject);
@@ -1611,7 +1603,7 @@ function bab_getAvailableTaskResponsibles($iIdProject, &$aTaskResponsible)
 			}
 		}
 	}
-	uasort($aTaskResponsible, 'bab_compareTaskResponsibles');
+	bab_sort::asort($aTaskResponsible, 'name');
 }
 
 
@@ -3089,10 +3081,10 @@ function bab_getAdditionalTaskField($iIdProjectSpace, $iIdProject, $iIdTask)
 				{
 					foreach($aDatas as $sKey => $sValue)
 					{
-						$sField = substr($sKey, 0, strlen('sField'));
+						$sField = mb_substr($sKey, 0, mb_strlen('sField'));
 						if('sField' == $sField)
 						{
-							$iIdFieldClass = substr($sKey, strlen('sField'));
+							$iIdFieldClass = mb_substr($sKey, mb_strlen('sField'));
 							$aField[$iIdFieldClass] = array('sValue' => $sValue);
 						}
 					}
@@ -3288,7 +3280,7 @@ function bab_getCategoriesName($aIdCategories, $bIsDeletable)
 			$sId .= ', \'' . $babDB->db_escape_string($iId) . '\'';
 		}
 		
-		$sId = substr($sId, strlen(', '));
+		$sId = mb_substr($sId, mb_strlen(', '));
 		
 		$query = 
 			'SELECT ' .

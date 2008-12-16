@@ -103,7 +103,7 @@ function sectionsList()
 			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			$this->processres($rescat, '-3');
 			
-			ksort($this->sections);
+			bab_sort::ksort($this->sections, bab_sort::CASE_INSENTIVE);
 			}
 			
 		function processres($res, $suffix) {
@@ -132,7 +132,7 @@ function sectionsList()
 				}
 					
 					
-				$this->sections[strtolower($arr['title']).$idvalue] = array(
+				$this->sections[mb_strtolower($arr['title']).$idvalue] = array(
 					'title' 		=> $arr['title'],
 					'description' 	=> $arr['description'],
 					'idvalue'		=> $idvalue,

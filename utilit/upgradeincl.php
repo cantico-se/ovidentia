@@ -86,8 +86,8 @@ function bab_cpaddons($from, $to, &$message)
 	return true;
 	}
 
-	if (substr($from,-1) != "/") $from.="/";
-	if (substr($to,-1) != "/") $to.="/";
+	if (mb_substr($from,-1) != "/") $from.="/";
+	if (mb_substr($to,-1) != "/") $to.="/";
 	$loc = array(
 				"addons",
 				"lang/addons",

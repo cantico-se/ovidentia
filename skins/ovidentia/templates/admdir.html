@@ -272,39 +272,39 @@
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ field }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ rw }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
-</tr>
-<!--#in getnextfield -->
-<tr> 
-<td class="BabSiteAdminFontBackground">{ fieldn }</td>
-<td class="BabSiteAdminFontBackground"><input type="text" name="fields[{ fieldv }]" size="40" value=""></td>
-<!--#if disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" disabled></td>
-<!--#else disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
-<!--#if disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
-<!--#else disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td class="BabSiteAdminFontBackground"><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
-</tr>
-<!--#endin getnextfield -->
-<tr>
-<td valign="middle" colspan="5">
-<center><input type="submit" name="Submit" value="{ add }"></center>
-</td>
-</tr>
-</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td width="20%" align="left" nowrap valign="middle">{ field }</td>
+		<td width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
+		<td width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
+		<td width="10%" align="left" nowrap valign="middle">{ rw }</td>
+		<td width="10%" align="left" nowrap valign="middle">{ required }</td>
+		<td width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
+	</tr>
+	<!--#in getnextfield -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>{ fieldn }</td>
+		<td><input type="text" name="fields[{ fieldv }]" size="40" value=""></td>
+		<!--#if disabled -->
+		<td><input type="checkbox" disabled></td>
+		<!--#else disabled -->
+		<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
+		<!--#endif disabled -->
+		<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+		<!--#if disabled -->
+		<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+		<!--#else disabled -->
+		<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+		<!--#endif disabled -->
+		<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
+	</tr>
+	<!--#endin getnextfield -->
+	<tr class="BabSiteAdminTitleFontBackground">
+		<td valign="middle" colspan="6">
+		<center><input type="submit" name="Submit" value="{ add }"></center>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -363,14 +363,14 @@
 <tr> 
 <td class="BabLoginCadreBackground"> 
 <table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" align="left" nowrap valign="middle">&nbsp;</td>
-<td class="BabSiteAdminTitleFontBackground" width="20%" align="left" nowrap valign="middle">{ field }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ rw }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ required }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
+<tr class="BabSiteAdminTitleFontBackground"> 
+	<td align="left" nowrap valign="middle">&nbsp;</td>
+	<td width="20%" align="left" nowrap valign="middle">{ field }</td>
+	<td width="50%" align="left" nowrap valign="middle">{ defaultvalue }</td>
+	<td width="10%" align="left" nowrap valign="middle">{ disabledtxt }</td>
+	<td width="10%" align="left" nowrap valign="middle">{ rw }</td>
+	<td width="10%" align="left" nowrap valign="middle">{ required }</td>
+	<td width="10%" align="left" nowrap valign="middle">{ multilignes }</td>
 </tr>
 <!--#in getnextfield -->
 <!--#if altbg -->
@@ -378,34 +378,34 @@
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
-<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
-<!--#if fncount -->
-<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
-<!--#else fncount -->
-<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
-<!--#endif fncount -->
-</a>
-</td>
-<td>
-<!--#if addvalurl -->
-<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
-<!--#else addvalurl -->
-{ fieldn }
-<!--#endif addvalurl -->
-</td>
-<td>{ defvalue }</td>
-<!--#if disabled -->
-<td><input type="checkbox" disabled></td>
-<!--#else disabled -->
-<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
-<!--#if disabled -->
-<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
-<!--#else disabled -->
-<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
+	<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
+	<!--#if fncount -->
+	<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
+	<!--#else fncount -->
+	<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
+	<!--#endif fncount -->
+	</a>
+	</td>
+	<td>
+	<!--#if addvalurl -->
+	<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
+	<!--#else addvalurl -->
+	{ fieldn }
+	<!--#endif addvalurl -->
+	</td>
+	<td>{ defvalue }</td>
+	<!--#if disabled -->
+	<td><input type="checkbox" disabled></td>
+	<!--#else disabled -->
+	<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
+	<!--#endif disabled -->
+	<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+	<!--#if disabled -->
+	<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+	<!--#else disabled -->
+	<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+	<!--#endif disabled -->
+	<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
 </tr>
 <!--#endin getnextfield -->
 <!--#in getnextfieldx -->
@@ -414,42 +414,38 @@
 <!--#else altbg -->
 <tr class="BabForumBackground1">
 <!--#endif altbg -->
-<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
-<!--#if fncount -->
-<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
-<!--#else fncount -->
-<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
-<!--#endif fncount -->
-</a>
-</td>
-<td>
-<!--#if addvalurl -->
-<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
-<!--#else addvalurl -->
-{ fieldn }
-<!--#endif addvalurl -->
-</td>
-<td>{ defvalue }</td>
-<!--#if disabled -->
-<td><input type="checkbox" disabled></td>
-<!--#else disabled -->
-<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
-<!--#if disabled -->
-<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
-<!--#else disabled -->
-<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
-<!--#endif disabled -->
-<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
+	<td><a href="{ fieldrights_url }" title="{ fieldrights_title }">
+		<!--#if fncount -->
+		<img src="{ imgrights_url2 }" border="0" alt="{ fieldrights_title }" align="middle"  />
+		<!--#else fncount -->
+		<img src="{ imgrights_url }" border="0" alt="{ fieldrights_title }" align="middle"  />
+		<!--#endif fncount -->
+	</a>
+	</td>
+	<td>
+		<!--#if addvalurl -->
+		<a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addvalurl }',2);">{ fieldn }</a>
+		<!--#else addvalurl -->
+		{ fieldn }
+		<!--#endif addvalurl -->
+	</td>
+	<td>{ defvalue }</td>
+	<!--#if disabled -->
+	<td><input type="checkbox" disabled></td>
+	<!--#else disabled -->
+	<td><input type="checkbox" name="dz[]" { dzchecked } value="{ fieldid }"></td>
+	<!--#endif disabled -->
+	<td><input type="checkbox" name="rw[]" { rwchecked } value="{ fieldid }"></td>
+	<!--#if disabled -->
+	<td><input type="checkbox" checked disabled><input type="hidden" name="req[]" value="{ fieldid }"></td>
+	<!--#else disabled -->
+	<td><input type="checkbox" name="req[]" { reqchecked } value="{ fieldid }"></td>
+	<!--#endif disabled -->
+	<td><input type="checkbox" name="ml[]" { mlchecked } value="{ fieldid }"></td>
 </tr>
 <!--#endin getnextfieldx -->
-<!--#if altbg -->
-<tr class="BabSiteAdminFontBackground">
-<!--#else altbg -->
-<tr class="BabForumBackground1">
-<!--#endif altbg -->
-<td colspan="7" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);">{ addftxt }</a></td>
+<tr class="BabSiteAdminTitleFontBackground">
+	<td colspan="7" align="right"><a class="BabSiteAdminListLink" href="javascript: bab_popup('{ addfurl }',2);">{ addftxt }</a></td>
 </tr>
 </table>
 </td>

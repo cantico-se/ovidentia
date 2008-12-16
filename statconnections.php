@@ -95,7 +95,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 
 			$this->startnum = $pos + 1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = ($order == 'asc' ? 'desc': 'asc');
 			$this->sortcol = $col;
 			$this->totalconnections = 0;
@@ -177,7 +177,7 @@ function summaryConnections($col, $order, $pos, $startday, $endday)
 		}
 		header('Content-Disposition: attachment; filename="export.csv"' . "\n");
 		header('Content-Type: text/plain' . "\n");
-		header('Content-Length: ' . strlen($output) . "\n");
+		header('Content-Length: ' . mb_strlen($output) . "\n");
 		header('Content-transfert-encoding: binary' . "\n");
 		print $output;
 		exit;
@@ -269,7 +269,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 
 			$this->startnum = $pos + 1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = ($order == 'asc' ? 'desc': 'asc');
 			$this->sortcol = $col;
 			$this->totalduration = 0;
@@ -367,7 +367,7 @@ function detailConnections($col, $order, $pos, $startday, $endday, $userId)
 		}
 		header('Content-Disposition: attachment; filename="export.csv"' . "\n");
 		header('Content-Type: text/plain' . "\n");
-		header('Content-Length: ' . strlen($output) . "\n");
+		header('Content-Length: ' . mb_strlen($output) . "\n");
 		header('Content-transfert-encoding: binary' . "\n");
 		print $output;
 		exit;

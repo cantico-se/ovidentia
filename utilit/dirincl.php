@@ -48,7 +48,7 @@ function getDirectoryName($id, $table)
 function translateDirectoryField($field)
 	{
 		$txt = bab_translate("DF-".$field);
-		if( substr($txt, 0, 3) == "DF-" )
+		if( mb_substr($txt, 0, 3) == "DF-" )
 		{
 			return bab_translate($field);
 		}
@@ -74,7 +74,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 			$this->cb = bab_toHtml($cb);
 			if( !empty($pos) && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos) > 1? bab_toHtml($pos[1]): '';
+				$this->pos = mb_strlen($pos) > 1? bab_toHtml($pos[1]): '';
 				$this->ord = '';
 				}
 			else
@@ -164,11 +164,11 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 					if( !in_array('email', $this->select))
 						$this->select[] = 'e.email';
 
-					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
+					if (!empty($this->pos) && false === mb_strpos($this->xf, 'babdirf'))
 						$like = " AND `".$babDB->db_escape_string($this->xf)."` LIKE '".$babDB->db_escape_string($this->pos)."%'";
-					elseif (0 === strpos($this->xf, 'babdirf'))
+					elseif (0 === mb_strpos($this->xf, 'babdirf'))
 						{
-						$idfield = substr($this->xf,7);
+						$idfield = mb_substr($this->xf,7);
 						$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($this->pos)."%'";
 						}
 					else
@@ -238,7 +238,7 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$this->id."&pos=".($this->ord == "-"? "":$this->ord).$this->selectname."&xf=".$this->xf."&cb=".urlencode($this->cb));
 				if( $this->pos == $this->selectname)
 					{
@@ -534,7 +534,7 @@ function summaryDbContact($id, $idu, $update=true)
 					$this->fieldv = '';
 					}
 
-				if( strlen($this->fieldv) > 0 )
+				if( mb_strlen($this->fieldv) > 0 )
 					{
 					$this->bfieldv = true;
 					}
@@ -907,40 +907,104 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 }
 
 
+/**
+ * get a list of directories
+ * For each directory, you will get an array with keys : 
+ * <ul>
+ * 	<li>id : the ID in table BAB_DB_DIRECTORIES_TBL</li>
+ *  <li>name</li>
+ *  <li>description</li>
+ *  <li>entry_id_directory : each entry in this directory will contain the value in the id_directory column, > 0 if the directory is not a group directory</li>
+ *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
+ * </ul>
+ *
+ * @param	bool	$accessCtrl		test access rights on directories, right by default
+ * @return array					each key of the returned array is an id_directory
+ */
 function getUserDirectories($accessCtrl = true)
 	{
 	global $babDB;
-	static $return = array();
 
-	if (0 == count($return)) {
-		$res = $babDB->db_query("
-			SELECT 
-				d.id, 
-				d.name, 
-				d.description, 
-				d.id_group 
-			FROM ".BAB_DB_DIRECTORIES_TBL." d 
-				LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
-				WHERE (d.id_group='0' OR g.id>'0') ORDER BY name
-			");
-			
-		while( $row = $babDB->db_fetch_array($res))
+	$res = $babDB->db_query("
+		SELECT 
+			d.id, 
+			d.name, 
+			d.description, 
+			d.id_group 
+		FROM ".BAB_DB_DIRECTORIES_TBL." d 
+			LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
+			WHERE (d.id_group='0' OR g.id>'0') ORDER BY name
+		");
+		
+	while( $row = $babDB->db_fetch_assoc($res))
+		{
+		if(!$accessCtrl || bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 			{
-			if(!$accessCtrl || bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
-				{
-				$return[$row['id']] = array(
-						'id'					=> $row['id'],
-						'name'					=> $row['name'],
-						'description'			=> $row['description'],
-						'entry_id_directory'	=> $row['id_group'] > 0 ? 0 : $row['id'],
-						'id_group'				=> $row['id_group']
-					);
-				}
+			$return[$row['id']] = array(
+					'id'					=> $row['id'],
+					'name'					=> $row['name'],
+					'description'			=> $row['description'],
+					'entry_id_directory'	=> $row['id_group'] > 0 ? 0 : $row['id'],
+					'id_group'				=> $row['id_group']
+				);
 			}
 		}
 
+	
 	return $return;
 	}
+
+
+
+
+
+/**
+ * get a list of LDAP directories
+ * For each directory, you will get an array with keys : 
+ * <ul>
+ * 	<li>id : the ID in table BAB_LDAP_DIRECTORIES_TBL</li>
+ *  <li>name</li>
+ *  <li>description</li>
+ * </ul>
+ *
+ * @param	bool	$accessCtrl		test access rights on directories, right by default
+ * @return array					each key of the returned array is an id_ldap_directory (same as the id key)
+ */
+function getUserLdapDirectories($accessCtrl = true)
+	{
+	global $babDB;
+
+
+	$res = $babDB->db_query('
+		SELECT id,name,description FROM 
+			'.BAB_LDAP_DIRECTORIES_TBL.' 
+		 ORDER BY name
+	');
+	
+	$return = array();
+
+	while ($row = $babDB->db_fetch_assoc($res)) {
+		if(!$accessCtrl || bab_isAccessValid(BAB_LDAPDIRVIEW_GROUPS_TBL, $row['id']))
+			{
+			$return[$row['id']] = array(
+				'id'					=> $row['id'],
+				'name'					=> $row['name'],
+				'description'			=> $row['description']
+			);
+		}
+	}
+
+	return $return;
+	}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1033,11 +1097,11 @@ function searchDirEntriesByField($id_directory, $likefields, $and = true)
 			$alike = array();
 			foreach( $likefields as $fid => $str )
 				{
-				if ( false === strpos($fid, 'babdirf'))
+				if ( false === mb_strpos($fid, 'babdirf'))
 					$alike[] = $fid." LIKE '".$babDB->db_escape_string($str)."'";
-				elseif (0 === strpos($fid, 'babdirf'))
+				elseif (0 === mb_strpos($fid, 'babdirf'))
 					{
-					$idfield = substr($fid,7);
+					$idfield = mb_substr($fid,7);
 					$alike[] = "lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($str)."'";
 					}
 				}

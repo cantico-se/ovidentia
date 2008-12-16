@@ -122,15 +122,15 @@ function listUsers($pos, $grp)
 
 			$this->bupdate				= isset($_REQUEST['bupd']) ? $_REQUEST['bupd'] : 0;
 			$this->sSearchText			= bab_rp('sSearchText', '');
-			$this->iUseSearchText		= (0 == strlen(trim($this->sSearchText))) ? '0' : '1';
+			$this->iUseSearchText		= (0 == mb_strlen(trim($this->sSearchText))) ? '0' : '1';
 
 			if(0 == $this->iUseSearchText)
 			{
 				$req = "SELECT distinct u.* from ".BAB_USERS_TBL." u";
 	
-				if( isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
+				if( isset($pos) &&  mb_strlen($pos) > 0 && $pos[0] == "-" )
 					{
-					$this->pos = strlen($pos)>1? $pos[1]: '';
+					$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 					$this->ord = $pos[0];
 					if( $babBody->currentAdmGroup == 0 || ($this->bupdate && $babBody->currentDGGroup['battach'] == 'Y' && $this->grp == $babBody->currentDGGroup['id_group']))
 						{
@@ -241,9 +241,9 @@ function listUsers($pos, $grp)
 			global $babDB, $babBody;
 
 			$sOrderBy = '';
-			if(isset($pos) &&  strlen($pos) > 0 && $pos[0] == "-" )
+			if(isset($pos) &&  mb_strlen($pos) > 0 && $pos[0] == "-" )
 			{
-				$this->pos = strlen($pos) > 1 ? $pos[1] : '';
+				$this->pos = mb_strlen($pos) > 1 ? $pos[1] : '';
 				$this->ord = $pos[0];
 			 
 				$sOrderBy = 'ORDER BY ' . $babDB->db_escape_string($this->namesearch2) . ', ' . $babDB->db_escape_string($this->namesearch) . ' asc';
@@ -355,7 +355,7 @@ function listUsers($pos, $grp)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".urlencode($this->ord.$this->selectname)."&grp=".urlencode($this->grp)."&bupd=".urlencode($this->bupdate));
 				$this->selected = 0;
 				
@@ -536,11 +536,11 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 		switch($babBody->nameorder[0])
 		{
 			case "L":
-				$pos = substr($lastname,0,1);
+				$pos = mb_substr($lastname,0,1);
 			break;
 			case "F":
 			default:
-				$pos = substr($firstname,0,1);
+				$pos = mb_substr($firstname,0,1);
 			break;
 		}
 		
@@ -556,8 +556,8 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 
 if( $idx == "chg")
 {
-	if( strlen($pos) > 0 && $pos[0] == "-" )
-		$pos = strlen($pos)>1? $pos[1]: '';
+	if( mb_strlen($pos) > 0 && $pos[0] == "-" )
+		$pos = mb_strlen($pos)>1? $pos[1]: '';
 	else
 		$pos = "-" .$pos;
 	$idx = "List";

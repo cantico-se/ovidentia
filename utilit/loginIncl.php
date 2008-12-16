@@ -180,265 +180,6 @@ class Func_PortalAuthentication extends bab_functionality
 	}
 
 
-	/**
-	 * Returns the user id for the specified nickname and password using the ldap backend.
-	 *
-	 * @param string	$sLogin		The user nickname
-	 * @param string	$sPassword	The user password
-	 * @return int		The user id or null if not found
-	 */
-	function authenticateUserByLDAP($sLogin, $sPassword)
-	{
-		global $babBody;
-
-		include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
-
-		$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
-		if (false === $oLdap->connect())
-		{
-			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
-			return null;
-		}
-
-		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
-		$aUpdateAttributes	= array();
-		$aExtraFieldId		= array();
-		
-		bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
-		
-		$bLdapOk = true;
-		$aEntries = array();
-		
-		//LDAP
-		{
-			if (isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
-			{
-				$sUserdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
-				$sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
-				if (false === $ldap->bind($sUserdn, $sPassword))
-				{
-					$aError[] = bab_translate("LDAP bind failed. Please contact your administrator");
-					$bLdapOk = false;
-				}
-				else
-				{
-					$aEntries = $oLdap->search($sUserdn, '(objectclass=*)', $aAttributes);
-					if ($aEntries === false || $aEntries['count'] == 0)
-					{
-						$this->addError(bab_translate("LDAP search failed"));
-						$bLdapOk = false;
-					}
-				}
-			}
-			else
-			{
-				$sFilter = '';
-				if(isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-				{
-					$sFilter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-					$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sFilter);
-				}
-				else
-				{
-					$sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
-				}
-				
-				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
-	
-				if($aEntries !== false && $aEntries['count'] > 0 && isset($aEntries[0]['dn']))
-				{
-					if(isset($GLOBALS['babAdLdapOptions']))
-					{
-						for($k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
-						{						
-							$oLdap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
-						}
-					}
-					
-					if(false === $oLdap->bind($aEntries[0]['dn'], $sPassword))
-					{
-						$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
-						$bLdapOk = false;
-					}
-				}
-				else 
-				{
-					$bLdapOk = false;
-				}
-			}
-		}
-		
-		$iIdUser = false;
-		if (!isset($aEntries) || $aEntries === false)
-		{
-			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
-			$bLdapOk = false;
-		}
-		
-		if( $bLdapOk )
-		{
-			$isNew = false;
-			$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
-			if (false === $iIdUser)
-			{
-				$oLdap->close();
-				return null;
-			}
-			else 
-			{
-				if ($aEntries['count'] > 0)
-				{
-					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
-				}
-
-				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
-				{
-					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
-				}
-			}
-		}	
-
-		$oLdap->close();
-		
-		if (false === $bLdapOk)
-		{
-			if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
-			{
-				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
-				if (false === $bLdapOk)
-				{
-					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
-				}
-			}
-		}
-		
-		if (false !== $iIdUser && $bLdapOk)
-		{
-			$this->clearErrors();
-			return $iIdUser;
-		}
-		
-		return null;
-	}
-	
-
-	/**
-	 * Returns the user id for the specified nickname and password using the active directory backend.
-	 *
-	 * @param string	$sLogin		The user nickname
-	 * @param string	$sPassword	The user password
-	 * @return int		The user id or null if not found
-	 */
-	function authenticateUserByActiveDirectory($sLogin, $sPassword)
-	{
-		global $babBody;
-
-		include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
-		$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
-		if (false === $oLdap->connect())
-		{
-			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
-			return null;
-		}
-
-		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
-		$aUpdateAttributes	= array();
-		$aExtraFieldId		= array();
-
-		bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
-
-		$bLdapOk = true;
-		$aEntries = array();
-
-		//Active directory
-		{
-			if (isset($GLOBALS['babAdLdapOptions']))
-			{
-				for ($k=0; $k < count($GLOBALS['babAdLdapOptions']); $k++)
-				{						
-					$oLdap->set_option($GLOBALS['babAdLdapOptions'][$k][0],$GLOBALS['babAdLdapOptions'][$k][1]);
-				}
-			}
-	
-			if (false === $oLdap->bind($sLogin."@".$babBody->babsite['ldap_domainname'], $sPassword))
-			{
-				$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
-				$bLdapOk = false;
-			}
-			else
-			{
-				$sFilter = '';
-				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
-				{
-					$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $babBody->babsite['ldap_filter']);
-				}
-				else
-				{
-					$sFilter = "(|(samaccountname=".ldap_escapefilter($sLogin)."))";
-				}
-				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
-			}
-		}
-
-		$iIdUser = false;
-		if (!isset($aEntries) || $aEntries === false)
-		{
-			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
-			$bLdapOk = false;
-		}
-
-		if( $bLdapOk )
-		{
-			$isNew = false;
-			$iIdUser = bab_registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
-			if (false === $iIdUser)
-			{
-				$oLdap->close();
-				return null;
-			}
-			else 
-			{
-				if ($aEntries['count'] > 0)
-				{
-					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
-				}
-
-				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
-				{
-					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
-				}
-
-			}
-		}
-		$oLdap->close();
-
-		if (false === $bLdapOk)
-		{
-			if ($babBody->babsite['ldap_allowadmincnx'] == 'Y')
-			{
-				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
-				if( false === $bLdapOk)
-				{
-					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
-				}
-			}
-		}
-
-		if (false !== $iIdUser && $bLdapOk)
-		{
-			$this->clearErrors();
-			return $iIdUser;
-		}
-
-		return null;
-	}
-
 
 	/**
 	 * Returns the user id for the specified nickname and password using the default backend for the site.
@@ -562,6 +303,340 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	{
 		bab_logout();
 	}
+
+
+
+
+
+	
+	/**
+	 * Returns the user id for the specified nickname and password using the ldap backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
+	function authenticateUserByLDAP($sLogin, $sPassword)
+	{
+		global $babBody;
+
+		include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
+
+		$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
+		if (false === $oLdap->connect())
+		{
+			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+			return null;
+		}
+
+		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
+		$aUpdateAttributes	= array();
+		$aExtraFieldId		= array();
+		
+		bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
+		
+		$bLdapOk = true;
+		$aEntries = array();
+		
+		//LDAP
+		{
+			if (isset($babBody->babsite['ldap_userdn']) && !empty($babBody->babsite['ldap_userdn']))
+			{
+				$sUserdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
+				$sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
+				
+
+				if (false === $oLdap->bind($sUserdn, $sPassword))
+				{
+
+					$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+					$bLdapOk = false;
+				}
+				else
+				{
+					$aEntries = $oLdap->search($sUserdn, '(objectclass=*)', $aAttributes);
+					if ($aEntries === false || $aEntries['count'] == 0)
+					{
+						$this->addError(bab_translate("LDAP search failed"));
+						$bLdapOk = false;
+					}
+				}
+			}
+			else
+			{
+				$sFilter = '';
+				if(isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+				{
+					$sFilter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+					$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sFilter);
+				}
+				else
+				{
+					$sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
+				}
+				
+				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+	
+				if($aEntries !== false && $aEntries['count'] > 0 && isset($aEntries[0]['dn']))
+				{
+
+					if(false === $oLdap->bind($aEntries[0]['dn'], $sPassword))
+					{
+						$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+						$bLdapOk = false;
+					}
+				}
+				else 
+				{
+					$bLdapOk = false;
+				}
+			}
+		}
+		
+		$iIdUser = false;
+		if (!isset($aEntries) || $aEntries === false)
+		{
+			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+			$bLdapOk = false;
+		}
+		
+		if( $bLdapOk )
+		{
+			$isNew = false;
+			$iIdUser = $this->registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
+			if (false === $iIdUser)
+			{
+				$oLdap->close();
+				return null;
+			}
+			else 
+			{
+				if ($aEntries['count'] > 0)
+				{
+					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				}
+
+				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+				{
+					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				}
+			}
+		}	
+
+		$oLdap->close();
+		
+		if (false === $bLdapOk)
+		{
+			if($babBody->babsite['ldap_allowadmincnx'] == 'Y')
+			{
+				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
+				if (false === $bLdapOk)
+				{
+					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+				}
+			}
+		}
+		
+		if (false !== $iIdUser && $bLdapOk)
+		{
+			$this->clearErrors();
+			return $iIdUser;
+		}
+		
+		return null;
+	}
+
+
+	/**
+	 * LDAP method to create the account
+	 */
+	private function registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes, &$isNew)
+	{
+
+		$iIdUser = false;
+		$aUser = bab_getUserByNickname($sNickname);
+
+		if(is_null($aUser))
+		{
+			$isNew = true;
+
+			if (isset($aUpdateAttributes['givenname'])) {
+				$attribute_for_givenname = $aUpdateAttributes['givenname'];
+			}
+
+			$attribute_for_givenname	= isset($aUpdateAttributes['givenname']) 	? $aUpdateAttributes['givenname'] 	: 'givenname';
+			$attribute_for_sn			= isset($aUpdateAttributes['sn']) 			? $aUpdateAttributes['sn']			: 'sn';
+			$attribute_for_mn			= isset($aUpdateAttributes['mn'])			? $aUpdateAttributes['mn']			: '';
+			$attribute_for_mail			= isset($aUpdateAttributes['email'])		? $aUpdateAttributes['email'] 		: 'mail';
+		
+			if (isset($aEntries[0][$attribute_for_givenname][0])) {
+				$sGivenname	= $aEntries[0][$attribute_for_givenname][0];
+			} else {
+				$this->addError(bab_translate('Error, registration of user is impossible, the givenname is missing'));
+				return false;
+			}
+
+
+			if (isset($aEntries[0][$attribute_for_sn][0])) {
+				$sSn	= $aEntries[0][$attribute_for_sn][0];
+			} else {
+				$this->addError(bab_translate('Error, registration of user is impossible, the lastname is missing'));
+				return false;
+			}
+
+			if ($attribute_for_mn && isset($aEntries[0][$attribute_for_mn][0])) {
+				$sMn	= $aEntries[0][$attribute_for_mn][0];
+			} else {
+				$sMn	= '';
+			}
+
+			if (isset($aEntries[0][$attribute_for_mail][0])) {
+				$sMail	= $aEntries[0][$attribute_for_mail][0];
+			} else {
+				$this->addError(bab_translate('Error, registration of user is impossible, the email is missing'));
+				return false;
+			}
+
+
+			$iIdUser = registerUser(
+				auth_decode($sGivenname), 
+				auth_decode($sSn), 
+				auth_decode($sMn), 
+				auth_decode($sMail), 
+				auth_decode($sNickname), 
+				$sPassword, 
+				$sPassword, 
+				true
+			);
+		}
+		else 
+		{
+			$isNew = false;
+			$iIdUser = $aUser['id'];
+		}
+		return $iIdUser;
+	}
+
+
+
+
+
+
+	
+
+	/**
+	 * Returns the user id for the specified nickname and password using the active directory backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
+	function authenticateUserByActiveDirectory($sLogin, $sPassword)
+	{
+		global $babBody;
+
+		include_once $GLOBALS['babInstallPath'] . 'utilit/ldap.php';
+		$oLdap = new babLDAP($babBody->babsite['ldap_host'], '', false);
+		if (false === $oLdap->connect())
+		{
+			$this->addError(bab_translate("LDAP connection failed. Please contact your administrator"));
+			return null;
+		}
+
+		$aAttributes		= array('dn', 'modifyTimestamp', $babBody->babsite['ldap_attribute'], 'cn');
+		$aUpdateAttributes	= array();
+		$aExtraFieldId		= array();
+
+		bab_getLdapExtraFieldIdAndUpdateAttributes($aAttributes, $aUpdateAttributes, $aExtraFieldId);
+
+		$bLdapOk = true;
+		$aEntries = array();
+
+		//Active directory
+		{
+
+			if (false === $oLdap->bind($sLogin."@".$babBody->babsite['ldap_domainname'], $sPassword))
+			{
+				$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
+				$bLdapOk = false;
+			}
+			else
+			{
+				$sFilter = '';
+				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter']))
+				{
+					$sFilter = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $babBody->babsite['ldap_filter']);
+				}
+				else
+				{
+					$sFilter = "(|(samaccountname=".ldap_escapefilter($sLogin)."))";
+				}
+				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+			}
+		}
+
+		$iIdUser = false;
+		if (!isset($aEntries) || $aEntries === false)
+		{
+			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+			$bLdapOk = false;
+		}
+
+		if( $bLdapOk )
+		{
+			$isNew = false;
+			$iIdUser = $this->registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
+			if (false === $iIdUser)
+			{
+				$oLdap->close();
+				return null;
+			}
+			else 
+			{
+				if ($aEntries['count'] > 0)
+				{
+					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+				}
+
+				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
+				{
+					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
+					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
+					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
+					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+				}
+
+			}
+		}
+		$oLdap->close();
+
+		if (false === $bLdapOk)
+		{
+			if ($babBody->babsite['ldap_allowadmincnx'] == 'Y')
+			{
+				$bLdapOk = bab_haveAdministratorRight($sLogin, $sPassword, $iIdUser);
+				if( false === $bLdapOk)
+				{
+					$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
+				}
+			}
+		}
+
+		if (false !== $iIdUser && $bLdapOk)
+		{
+			$this->clearErrors();
+			return $iIdUser;
+		}
+
+		return null;
+	}
+
+
+
+
 }
 
 
@@ -656,7 +731,7 @@ function bab_getUserByLoginPassword($sLogin, $sPassword)
 		SELECT * 
 		FROM ' . BAB_USERS_TBL . '
 		WHERE nickname = ' . $babDB->quote($sLogin) . '
-		  AND password = ' . $babDB->quote(md5(strtolower($sPassword)));
+		  AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
 
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
@@ -743,7 +818,7 @@ function bab_haveAdministratorRight($sLogin, $sPassword, &$iIdUser)
 	global $babDB;
 	if (empty($iIdUser))
 	{
-		$res = $babDB->db_query("select id from ".BAB_USERS_TBL." WHERE nickname='".$babDB->db_escape_string($sLogin)."' and password='". $babDB->db_escape_string(md5(strtolower($sPassword))) ."'");
+		$res = $babDB->db_query("select id from ".BAB_USERS_TBL." WHERE nickname='".$babDB->db_escape_string($sLogin)."' and password='". $babDB->db_escape_string(md5(mb_strtolower($sPassword))) ."'");
 		if( $res && $babDB->db_num_rows($res))
 		{
 			$arr = $babDB->db_fetch_array($res);
@@ -873,7 +948,7 @@ function displayAuthenticationForm($title, $errorMessages)
 	global $babBody;
 	
 	/*
-	if(!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && substr_count($GLOBALS['babUrl'], $_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
+	if(!empty($_SERVER['HTTP_HOST']) && !isset($_GET['redirected']) && mb_substr_count($GLOBALS['babUrl'], $_SERVER['HTTP_HOST']) == 0 && !$GLOBALS['BAB_SESS_LOGGED'])
 	{
 		header('location:'.$GLOBALS['babUrlScript'].'?tg=login&cmd=signon&redirected=1');
 	}
@@ -975,7 +1050,7 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 {
 	global $babDB;
 	
-	$sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . md5(strtolower($sPassword)) . '\'';
+	$sQuery = 'update ' . BAB_USERS_TBL . ' set password=\'' . md5(mb_strtolower($sPassword)) . '\'';
 	reset($aUpdateAttributes);
 	while(list($key, $val) = each($aUpdateAttributes))
 	{
@@ -1027,9 +1102,9 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 					break;
 					
 				default:
-					if(substr($val, 0, strlen('babdirf')) == 'babdirf')
+					if(mb_substr($val, 0, mb_strlen('babdirf')) == 'babdirf')
 					{
-						$tmp = substr($val, strlen('babdirf'));
+						$tmp = mb_substr($val, mb_strlen('babdirf'));
 						$rs = $babDB->db_query('select id from ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and  id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						if($rs && $babDB->db_num_rows($rs) > 0)
 						{
@@ -1048,33 +1123,14 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 			}
 		}
 
-		$sQuery = 'update ' . BAB_DBDIR_ENTRIES_TBL . ' set ' . substr($sQuery, 1);
+		$sQuery = 'update ' . BAB_DBDIR_ENTRIES_TBL . ' set ' . mb_substr($sQuery, 1);
 		$sQuery .= ' where id_directory=\'0\' and id_user=\'' . $babDB->db_escape_string($iIdUser) . '\'';
 		$babDB->db_query($sQuery);
 	}	
 }
 
 
-function bab_registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes, &$isNew)
-{
-	$iIdUser = false;
-	$aUser = bab_getUserByNickname($sNickname);
-	if(is_null($aUser))
-	{
-		$isNew = true;
-		$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
-		$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
-		$sMn		= isset($aUpdateAttributes['mn'])?$aEntries[0][$aUpdateAttributes['mn']][0]:'';
-		$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-		$iIdUser	= registerUser(auth_decode($sGivenname), auth_decode($sSn), auth_decode($sMn), auth_decode($sMail), $sNickname, $sPassword, $sPassword, true);
-	}
-	else 
-	{
-		$isNew = false;
-		$iIdUser = $aUser['id'];
-	}
-	return $iIdUser;
-}
+
 
 
 function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttributes, &$aExtraFieldId)
@@ -1105,7 +1161,7 @@ function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttr
 
 		if(!empty($aDatasReq1['x_name']))
 		{
-			$aUpdateAttributes[$aDatasReq1['x_name']] = strtolower($sFieldName);
+			$aUpdateAttributes[$aDatasReq1['x_name']] = mb_strtolower($sFieldName);
 		}
 	}
 	

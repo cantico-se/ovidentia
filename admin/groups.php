@@ -187,8 +187,8 @@ function groupList()
 			$tree = & new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
-			$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
-			$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
+			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
+			$this->arr['managerval'] = bab_toHtml(bab_getUserName($this->arr['manager']));
 			$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($tree->delegat[$this->arr['id']]);
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 

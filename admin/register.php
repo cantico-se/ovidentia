@@ -24,11 +24,7 @@
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
 
-function auth_decode($str)
-{
-	global $babBody;
-	return bab_ldapDecode($str, $babBody->babsite['ldap_decoding_type']);
-}
+
 
 
 function notifyUserRegistration($link, $name, $email)
@@ -164,9 +160,9 @@ function random_password($length)
 	mt_srand((double)microtime() * 1000000);
 	$possible = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	$str = "";
-	while( strlen($str) < $length)
+	while( mb_strlen($str) < $length)
 		{
-		$str .= substr($possible, mt_rand(0, strlen($possible) - 1), 1);
+		$str .= mb_substr($possible, mt_rand(0, mb_strlen($possible) - 1), 1);
 		}
 	return $str;
 	}
@@ -211,7 +207,7 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		return false;
 		}
 
-	if ( strlen($password1) < 6 )
+	if ( mb_strlen($password1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
@@ -395,7 +391,7 @@ function sendPassword ($nickname)
 		else
 			{
 			$arr = $babDB->db_fetch_array($res);
-			$new_pass=strtolower(random_password(8));
+			$new_pass=mb_strtolower(random_password(8));
 
 			switch($babBody->babsite['authentification'])
 				{

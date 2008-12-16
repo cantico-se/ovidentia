@@ -31,13 +31,13 @@ class BAB_PathUtil
 	{
 		$sPath = str_replace('\\', '/', $sPath);
 		
-		$sFirstChar = substr($sPath, 0, 1);
+		$sFirstChar = mb_substr($sPath, 0, 1);
 
 		$sDrive = '';
 		if(0 !== preg_match("/(^[a-zA-z0-9]){1}(\:){1}(\/){1}.*$/", $sPath, $aMatch))
 		{
 			$sDrive	= $aMatch[1] . $aMatch[2] . $aMatch[3];
-			$sPath	= substr($sPath, strlen($sDrive));
+			$sPath	= mb_substr($sPath, mb_strlen($sDrive));
 		}
 		
 		$sPath	= BAB_PathUtil::removeEndSlashes($sPath);
@@ -48,7 +48,7 @@ class BAB_PathUtil
 			$aGoodPathItem = array();
 			foreach($aPaths as $iKey => $sPathItem)
 			{
-				if(strlen(trim($sPathItem)) !== 0)
+				if(mb_strlen(trim($sPathItem)) !== 0)
 				{
 					$aGoodPathItem[] = BAB_PathUtil::sanitizePathItem($sPathItem);
 				}
@@ -65,10 +65,10 @@ class BAB_PathUtil
 	{
 		if(is_string($sPath))
 		{
-			$iLength = strlen(trim($sPath));
+			$iLength = mb_strlen(trim($sPath));
 			if($iLength > 0)
 			{
-				$sLastChar = substr($sPath, -1);
+				$sLastChar = mb_substr($sPath, -1);
 				if($sLastChar !== '/' && $sLastChar !== '\\')
 				{
 					$sPath .= '/';
@@ -82,13 +82,13 @@ class BAB_PathUtil
 	{
 		if(is_string($sPath))
 		{
-			$iLength = strlen(trim($sPath));
+			$iLength = mb_strlen(trim($sPath));
 			if($iLength > 0)
 			{
-				$sLastChar = substr($sPath, -1);
+				$sLastChar = mb_substr($sPath, -1);
 				if($sLastChar === '/' || $sLastChar === '\\')
 				{
-					return substr($sPath, 0, -1);
+					return mb_substr($sPath, 0, -1);
 				}
 			}
 		}
@@ -97,10 +97,10 @@ class BAB_PathUtil
 	
 	function haveEndSlash($sPath)
 	{
-		$iLength = strlen(trim($sPath));
+		$iLength = mb_strlen(trim($sPath));
 		if($iLength > 0)
 		{
-			$sLastChar = substr($sPath, -1);
+			$sLastChar = mb_substr($sPath, -1);
 			return ($sLastChar === '/' || $sLastChar === '\\');
 		}
 		return false;	
@@ -117,7 +117,7 @@ class BAB_PathUtil
 	
 	function sanitizePathItem($sPathItem)
 	{
-		if(is_string($sPathItem) && strlen(trim($sPathItem)) > 0)
+		if(is_string($sPathItem) && mb_strlen(trim($sPathItem)) > 0)
 		{
 			if(isset($GLOBALS['babFileNameTranslation']))
 			{

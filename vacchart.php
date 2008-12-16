@@ -84,7 +84,7 @@ global $babBody;
 				   $sort_values[$k] = $val[$key];
 			   }
 
-			   natcasesort($sort_values);
+			   bab_sort::natcasesort($sort_values);
 			   reset($sort_values);
 
 				foreach($sort_values as $k => $val) {
@@ -190,7 +190,7 @@ function entity_members($ide, $template)
 					$this->users[$arr['id_user']] = $arr['lastname'].' '.$arr['firstname'];
 					}
 				}
-			natcasesort($this->users);
+			bab_sort::natcasesort($this->users);
 
 			if (count($this->users) > 0)
 				{

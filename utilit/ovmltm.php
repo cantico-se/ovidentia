@@ -322,9 +322,9 @@ class bab_TmTasks extends bab_handler
 			$sortFields['sName'] = $columnNames[$orderBy];
 		}
 		// The 'order' parameter must contain 'asc' or 'desc'.
-		if (($order = $ctx->get_value('order')) && (strtoupper($order) == 'ASC' || strtoupper($order) == 'DESC'))
+		if (($order = $ctx->get_value('order')) && (mb_strtoupper($order) == 'ASC' || mb_strtoupper($order) == 'DESC'))
 		{
-			$sortFields['sOrder'] = strtoupper($order);
+			$sortFields['sOrder'] = mb_strtoupper($order);
 		}
 
 		$sql = bab_selectTaskQuery($aFilter, $sortFields);

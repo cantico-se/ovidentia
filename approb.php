@@ -51,7 +51,7 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
 	
 	function addObject($title,$arr) {
 		static $i = 0;
-		$key = strtolower(substr($title,0,3));
+		$key = mb_strtolower(mb_substr($title,0,3));
 		$this->objects[$key.$i] = array(
 			'title' => $title,
 			'arr'	=> $arr
@@ -384,7 +384,7 @@ function listWaitingFiles()
 				$oFolderFile =& $fm_file['oFolderFile'];
 				$sPathName = getUrlPath($oFolderFile->getPathName());	
 				$iIdUrl = $oFmFolder->getId();
-				if(strlen($oFmFolder->getRelativePath()) > 0)
+				if(mb_strlen($oFmFolder->getRelativePath()) > 0)
 				{
 					$oRootFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($oFmFolder->getRelativePath());
 					if(!is_null($oRootFmFolder))
@@ -406,7 +406,7 @@ function listWaitingFiles()
 			}
 		function cleanFmPath($sPath)
 			{
-			return substr($sPath, 0, -1);	
+			return mb_substr($sPath, 0, -1);	
 			}
 		}
 		
@@ -708,7 +708,7 @@ function listWaitingAddons()
 						$arr = array();
 						call_user_func_array($this->call, array(&$title, &$arr));
 						if (count($arr) > 0) {
-								$key = strtolower(substr($title,0,3));
+								$key = mb_strtolower(mb_substr($title,0,3));
 								$this->arrObjects[$key.$row['id']] = array(
 									'title' => $title,
 									'arr'	=> $arr
@@ -718,7 +718,7 @@ function listWaitingAddons()
 					}
 				}
 				
-			ksort($this->arrObjects);
+			bab_sort::ksort($this->arrObjects);
 			
 			}
 

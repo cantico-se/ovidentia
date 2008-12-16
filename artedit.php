@@ -1522,7 +1522,7 @@ function getDocumentArticleDraft( $idart, $idf )
 
 	$mime = bab_getFileMimeType($file);
 
-	if( strtolower(bab_browserAgent()) == "msie")
+	if( mb_strtolower(bab_browserAgent()) == "msie")
 		header('Cache-Control: public');
 	$inl = bab_getFileContentDisposition() == 1? 1: '';
 	if( $inl == '1' )
@@ -1759,7 +1759,9 @@ function updateArticleDraft($idart, $title,  $lang, $approbid, &$message)
 
 	if($lang == '') { $lang = $GLOBALS['babLanguage']; }
 
-	if( !strcasecmp($bodytext, "<P>&nbsp;</P>") || !strcasecmp($bodytext, "<P />"))
+	$oCollator = bab_getCollatorInstance('');
+	if( !$oCollator->compare(mb_strtolower($bodytext), mb_strtolower("<P>&nbsp;</P>")) || 
+	    !$oCollator->compare(mb_strtolower($bodytext), mb_strtolower("<P />")))
 		{
 		$bodytext = "";
 		}

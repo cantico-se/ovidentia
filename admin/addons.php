@@ -89,15 +89,18 @@ class bab_addons_list
 				$return[$name] = $addon;
 			}
 		}
-		
-		uksort($return, 'strcasecmp');
-		
+
+		bab_sort::ksort($return, bab_sort::CASE_INSENTIVE);
 		return $return;
 	}
 	
 	
 	
 	function display($addon) {
+
+		if (!$addon) {
+			return false;
+		}
 	
 		$type = $addon->getAddonType();
 		return 'EXTENSION' === $type;
@@ -339,7 +342,7 @@ function export($id)
 	if (!function_exists('bab_addon_export_rd')) {
 		function bab_addon_export_rd($d) {
 			$res = array();
-			$d = substr($d,-1) != '/' ? $d.'/' : $d;
+			$d = mb_substr($d,-1) != '/' ? $d.'/' : $d;
 			if (is_dir($d)) {
 				$handle=opendir($d);
 				while ($file = readdir($handle)) {
@@ -374,12 +377,12 @@ function export($id)
 	foreach ($loc_in as $k => $path)
 		{
 		$res = bab_addon_export_rd($path.'/'.$row['title']);
-		$len = strlen($path.'/'.$row['title']);
+		$len = mb_strlen($path.'/'.$row['title']);
 		foreach ($res as $file)
 			{
 			if (is_file($file))
 				{
-				$rec_into = $loc_out[$k].substr($file,$len);
+				$rec_into = $loc_out[$k].mb_substr($file,$len);
 				$size = filesize($file);
 				if ($size > 0)
 					{
@@ -506,7 +509,7 @@ function bab_display_addon_requirements($id_addon)
 					$GLOBALS['babBody']->msgerror = bab_translate("Upload error");
 				}
 
-				$name = $filename = substr( $ul,(strrpos( $ul,'/')+1));
+				$name = $filename = mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
 				$this->tmpfile = bab_toHtml($filename);
 				$this->action = 'import';
 				$ini->getfromzip($ul, 'programs/addonini.php');
@@ -533,6 +536,8 @@ function bab_display_addon_requirements($id_addon)
 				
 				$name = $addon->getName();
 				
+
+
 				$this->imagepath = bab_toHtml($addon->getImagePath());
 				if ($addon->isDeletable()) {
 					$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=del&item=".$addon->getId());
@@ -540,8 +545,8 @@ function bab_display_addon_requirements($id_addon)
 				
 				if (is_file($addon->getPhpPath()."history.txt")) {
 					$this->historyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
-				}
-				
+				}		
+
 				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
 			}
 
@@ -643,7 +648,7 @@ function import()
 
 		if (false === $addon_name) {
 
-			$fn = substr($_POST['tmpfile'],0,strrpos($_POST['tmpfile'],'.'));
+			$fn = mb_substr($_POST['tmpfile'],0,mb_strrpos($_POST['tmpfile'],'.'));
 			$arr = explode('-',$fn);
 			$i = 0;
 			while(isset($arr[$i]) && !is_numeric($arr[$i]))
@@ -685,13 +690,13 @@ function import()
 		
 		foreach ($zipcontents as $k => $arr)
 			{
-			$tmppath = substr($arr['filename'],0,strrpos($arr['filename'],'/'));
+			$tmppath = mb_substr($arr['filename'],0,mb_strrpos($arr['filename'],'/'));
 			if (!empty($tmppath))
 				{
 				if (!isset($path_file[$tmppath])) $path_file[$tmppath] = array();
 				foreach ($loc_out as $key => $zippath)
 					{
-					if ($arr['folder'] == 0 && substr_count($arr['filename'],$zippath))
+					if ($arr['folder'] == 0 && mb_substr_count($arr['filename'],$zippath))
 						{
 						$file_zipid[] = array($key,$arr['index'],$k);
 						}
@@ -726,7 +731,7 @@ function import()
 		foreach ($file_zipid as $arr)
 			{
 			$path = $loc_in[$arr[0]].'/'.$addon_name;
-			$subdir = dirname(substr($zipcontents[$arr[2]]['filename'],strlen($loc_out[$arr[0]])+1));
+			$subdir = dirname(mb_substr($zipcontents[$arr[2]]['filename'],mb_strlen($loc_out[$arr[0]])+1));
 			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
 			create_directory($path.$subdir);
 			$zip->Extract($ul,$path.$subdir,$arr[1],false );
@@ -826,8 +831,9 @@ function functionalities() {
 				$original = $func->getOriginal($funcpath);
 			
 				$labelpath = $obj->getPath();
-				if (false !== strpos($labelpath,'/')) {
-					$labelpath = substr(strrchr($labelpath,'/'),1);
+				$iPos = mb_strpos($labelpath,'/');
+				if (false !== $iPos) {
+					$labelpath = mb_substr($labelpath,$iPos+1);
 				}
 				
 				if ($labelpath !== $dir) {
@@ -859,7 +865,7 @@ function functionalities() {
 			
 			
 			
-			if (0 < substr_count($funcpath, '/')) {
+			if (0 < mb_substr_count($funcpath, '/')) {
 			
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = bab_functionality::get($parent_path);
@@ -1005,9 +1011,8 @@ switch($idx)
 		libraryList();
 
 		$babBody->title = bab_translate('Shared Libraries');
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
+
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 	
 		if (haveFunctionalities()) {
@@ -1015,28 +1020,26 @@ switch($idx)
 		}
 
 		break;
+
 		
 	case 'theme':
 	
 		themeList();
 
 		$babBody->title = bab_translate('Skins');
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 	
 
 		break;
+
 
 	case "list":
 	default:
 		addonsList();
 		
 		$babBody->title = bab_translate("Add-ons list");
-		$babBody->addItemMenu("list", bab_translate("Add-ons"), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
-		$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
-		$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
+		display_addons_menu();
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 
 		break;

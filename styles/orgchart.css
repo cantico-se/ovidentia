@@ -60,6 +60,7 @@ div.entity .members .member {
 }
 
 
+
 .orgchart {
 	background-color: #225577;
 }
@@ -69,6 +70,7 @@ div.entity .members .member {
 		background-color: #FFFFFF !important;
 	}
 }
+
 
 .orgchart table.horizontal {
 	border-collapse: collapse;
@@ -175,12 +177,14 @@ option.level1 {
 .level2 div.entity a {
 	color: #ffffff;
 }
+
 option.level2 {
 	font-weight: bold;
 	border-left: 32px solid #86adbf;
 	text-align: right;
 	margin-bottom: 1px;
 }
+
 
 
 

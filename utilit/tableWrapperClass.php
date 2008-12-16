@@ -130,7 +130,7 @@
 			}
 
 			reset($attribut);
-			return ' WHERE ' . substr($whereClause, strlen(' AND '));
+			return ' WHERE ' . mb_substr($whereClause, mb_strlen(' AND '));
 		}
 
 		function load(& $attribut, $selectOffset = BAB_ALL_ATTRIBUTS, $selectLength = BAB_ALL_ATTRIBUTS,
@@ -167,8 +167,8 @@
 				$values .= ', ' . '\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
 
-			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. substr($insert, strlen(', ')) . ') ' . 
-				'VALUES ( ' . substr($values, strlen(', ')) . ')';
+			$requete = 'INSERT INTO ' . $this->m_TableName . '(  '. mb_substr($insert, mb_strlen(', ')) . ') ' . 
+				'VALUES ( ' . mb_substr($values, mb_strlen(', ')) . ')';
 
 			//bab_debug($requete);
 
@@ -188,7 +188,7 @@
 				$requete .= ', `' . $item['key'] . '`=\'' . $this->m_db->db_escape_string($item['value']) . '\'';
 			}
 			
-			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . substr($requete, strlen(', ')) . ' WHERE id = \'' 
+			$requete = 'UPDATE ' . $this->m_TableName . ' SET ' . mb_substr($requete, mb_strlen(', ')) . ' WHERE id = \'' 
 				. $this->m_db->db_escape_string($attributsList['id']) . '\'';
 
 			//bab_debug($requete);

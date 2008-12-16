@@ -417,8 +417,8 @@ class BAB_DateTime
      */
     function dateToDays($iDay, $iMonth, $iYear)
     {
-        $iCentury = (int)substr($iYear, 0, 2);
-        $iYear = (int)substr($iYear, 2, 2);
+        $iCentury = (int)mb_substr($iYear, 0, 2);
+        $iYear = (int)mb_substr($iYear, 2, 2);
         if($iMonth > 2) 
         {
             $iMonth -= 3;
@@ -594,19 +594,19 @@ class BAB_DateTime
 		$strPattern = str_replace('Déc', '([0-9]{1,2})', $strPattern);
 		$strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
 		$strPattern = str_replace('00', '([0-9]{2})', $strPattern);
-		$indexDay = strpos($strDate, '31');
-		$indexMonth = strpos($strDate, '12');
+		$indexDay = mb_strpos($strDate, '31');
+		$indexMonth = mb_strpos($strDate, '12');
 		if($indexMonth === false)
 		{
-			$indexMonth = strpos($strDate, 'D');
+			$indexMonth = mb_strpos($strDate, 'D');
 		}
-		$indexYear = strpos($strDate, '2000');
+		$indexYear = mb_strpos($strDate, '2000');
 		if($indexYear === false)
 		{
-			$indexYear = strpos($strDate, '00');
+			$indexYear = mb_strpos($strDate, '00');
 		}
 		$d = array($indexDay => 1, $indexMonth => 2, $indexYear => 3);
-		ksort($d);
+		bab_sort::ksort($d);
 
 		if (preg_match('`' . $strPattern . '`', $value, $matches) < 1)
 		{

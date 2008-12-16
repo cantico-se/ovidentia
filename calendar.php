@@ -75,7 +75,7 @@ function displayAttendees($evtid, $idcal)
 						$icalinfo['access'] = '';
 					}
 					
-					$key = strtolower($icalinfo['name'].$arr['id_cal']);
+					$key = mb_strtolower($icalinfo['name'].$arr['id_cal']);
 					
 					$this->arrinfo[$key] = array('name' => $icalinfo['name'],'idcal' => $arr['id_cal'], 'idowner' => $icalinfo['idowner'],'status' => $arr['status']);
 					if( $idcal == $arr['id_cal'] )
@@ -132,7 +132,7 @@ function displayAttendees($evtid, $idcal)
 						}
 					}
 					
-				ksort($this->arrinfo);
+				bab_sort::ksort($this->arrinfo);
 					
 				}
 			else
@@ -683,7 +683,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			if (isset($sortvalue))
 				{
 
-				asort($sortvalue);
+				bab_sort::asort($sortvalue);
 				reset($sortvalue);
 
 				while (list ($arr_key, $arr_val) = each ($sortvalue)) {

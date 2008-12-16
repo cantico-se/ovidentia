@@ -327,13 +327,14 @@ function mm(index)
 	for (i = document.forms.formskin.style.length; i >= 0; i--) {
 		document.forms.formskin.style.options[i] = null; 
 	}
-	for (var i = 0; i < tab[index].length; i++)
-	{
-	document.forms.formskin.style.options[i] = new Option(tab[index][i],tab[index][i]);
+	if (tab[index]) {
+		for (var i = 0; i < tab[index].length; i++)
+		{
+		document.forms.formskin.style.options[i] = new Option(tab[index][i],tab[index][i]);
+		}
+		if( index == sksel )
+			document.forms.formskin.style.options[stsel].selected = true;
 	}
-	if( index == sksel )
-		document.forms.formskin.style.options[stsel].selected = true;
-
 }
 mm(sksel);
 //-->

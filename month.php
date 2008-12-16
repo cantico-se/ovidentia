@@ -93,7 +93,7 @@ function getnextwday()
 	if ($i < 7)
 		{
 		$index = $this->startday + $i < 7 ? $this->startday + $i : $this->startday + $i -7;
-		$this->text = substr($GLOBALS['babDays'][$index],0,3);
+		$this->text = mb_substr($GLOBALS['babDays'][$index],0,3);
 		$i++;
 		return true;
 		}

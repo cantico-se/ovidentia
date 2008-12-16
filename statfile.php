@@ -55,7 +55,7 @@ function summaryFileManager($col, $order)
 			$req .= " group by fft.id";
 
 			$res = $babDB->db_query($req);		
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->nbfilest = 0;
@@ -97,7 +97,7 @@ function summaryFileManager($col, $order)
 					{
 					if (is_dir($sUsersRootFmPath.$f))
 						{
-						if( $f{0} == 'U' && is_numeric(substr($f, 1)))
+						if( $f{0} == 'U' && is_numeric(mb_substr($f, 1)))
 							{
 							$size += getDirSize($sUsersRootFmPath.$f);
 							}
@@ -184,7 +184,7 @@ function summaryFileManager($col, $order)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -227,19 +227,25 @@ function showPersonalFoldersDetail()
 					{
 					if (is_dir($GLOBALS['babUploadPath']."/".$f))
 						{
-						if( $f{0} == 'U' && is_numeric(substr($f, 1)))
+						if( $f{0} == 'U' && is_numeric(mb_substr($f, 1)))
 							{
 							$size = getDirSize($GLOBALS['babUploadPath']."/".$f);
 							if( $size > 0 )
 								{
-								$this->arrinfo[substr($f, 1)] = $size;
+								$this->arrinfo[mb_substr($f, 1)] = $size;
 								}
 							}
 						}
 					}
 				}
-			arsort($this->arrinfo, SORT_REGULAR);
-			$this->count= count($this->arrinfo);
+				
+			$this->count = count($this->arrinfo);
+			if($this->count > 0)
+			{	
+				bab_sort::asort($this->arrinfo, null, bab_sort::CASE_INSENTIVE);
+				$this->arrinfo = array_reverse($this->arrinfo);
+			}
+			
 
 			$this->users = false;
 			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['id_group'] != 0 )
@@ -354,7 +360,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 
 			$this->startnum = $pos+1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->totalhits = 0;
@@ -457,7 +463,7 @@ function summaryFmDownloads($col, $order, $pos, $startday, $endday)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -534,7 +540,7 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 
 			$this->startnum = $pos+1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->totalhits = 0;
@@ -630,7 +636,7 @@ function summaryFmFolders($col, $order, $pos, $startday, $endday)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -812,7 +818,7 @@ function showStatFmDownloads($id, $date)
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;

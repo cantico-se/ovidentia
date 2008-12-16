@@ -81,9 +81,9 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 			$this->urltrail = "&table=".$this->table."&target=".$this->target."&idgroup=".$this->idgroup;
 			$this->userst =  '';
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				$req = "select * from ".BAB_USERS_TBL." where ".$this->namesearch2." like '".$this->pos."%' order by ".$this->namesearch2.", ".$this->namesearch." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
@@ -157,7 +157,7 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=aclug&idx=list&pos=".$this->ord.$this->selectname.$this->urltrail;
 				$this->selected = 0;
 
@@ -202,8 +202,8 @@ function aclugUnload($redirect)
 /* main */
 if( $idx == "chg")
 {
-	if( strlen($pos) > 0 && $pos[0] == "-" )
-		$pos = strlen($pos)>1? $pos[1]: '';
+	if( mb_strlen($pos) > 0 && $pos[0] == "-" )
+		$pos = mb_strlen($pos)>1? $pos[1]: '';
 	else
 		$pos = "-" .$pos;
 	$idx = "list";

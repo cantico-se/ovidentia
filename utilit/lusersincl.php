@@ -68,9 +68,9 @@ function browseUsers($pos, $cb)
 					$this->namesearch2 = 'lastname';
 				break; }
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				if( $babBody->currentAdmGroup == 0)
 					{
@@ -144,7 +144,7 @@ function browseUsers($pos, $cb)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
 
 				$this->selected = 0;
@@ -198,9 +198,9 @@ function browseArticlesAuthors($pos, $cb)
 					$this->namesearch2 = 'lastname';
 				break; }
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 
 				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(array_keys($babBody->topview)).") and ut.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
@@ -262,7 +262,7 @@ function browseArticlesAuthors($pos, $cb)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->ord.$this->selectname."&cb=".$this->cb;
 
 				$this->selected = 0;

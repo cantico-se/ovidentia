@@ -50,7 +50,7 @@ class bab_OrgUserEntities extends bab_handler
 		}
 		
 		$aRoleType = null;
-		if(0 !== strlen(trim($sRoleType)))
+		if(0 !== mb_strlen(trim($sRoleType)))
 		{
 			$aType = explode(',', $sRoleType);
 			if(false !== $aType)

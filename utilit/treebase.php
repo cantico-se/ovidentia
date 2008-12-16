@@ -31,7 +31,7 @@ if (!function_exists('is_a'))
     {
         if (!is_object($object))
             return false;
-        if (strtolower(get_class($object)) === strtolower($class))
+        if (mb_strtolower(get_class($object)) === mb_strtolower($class))
             return true;
         return is_subclass_of($object, $class);
     }

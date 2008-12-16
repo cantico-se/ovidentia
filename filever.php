@@ -629,9 +629,11 @@ function getFile( $idf, $vmajor, $vminor )
 		$fullpath .= BAB_FVERSION_FOLDER."/".$vmajor.",".$vminor.",".$oFolderFile->getName();
 		$fsize = filesize($fullpath);
 		
+
 		bab_setTimeLimit(3600);
 
-		if(strtolower(bab_browserAgent()) == "msie")
+
+		if(mb_strtolower(bab_browserAgent()) == "msie")
 		{
 			header('Cache-Control: public');
 		}
@@ -682,14 +684,14 @@ function fileUnload($idf)
 			if(!is_null($oFolderFile) && !is_null($oFmFolder))
 			{
 				$sPathName = $oFolderFile->getPathName();	
-				$iLength = (int) strlen(trim($sPathName));
+				$iLength = (int) mb_strlen(trim($sPathName));
 				if(0 !== $iLength)
 				{
-					$sPathName = substr($sPathName, 0, -1);
+					$sPathName = mb_substr($sPathName, 0, -1);
 				}
 				
 				$iIdUrl = $oFmFolder->getId();
-				if(strlen($oFmFolder->getRelativePath()) > 0)
+				if(mb_strlen($oFmFolder->getRelativePath()) > 0)
 				{
 					$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($oFmFolder->getRelativePath());
 					if(!is_null($oRootFmFolder))

@@ -65,7 +65,7 @@ function getUploadPathFromDataBase()
 	{
 		$sUploadPath = (string) $aData['uploadpath'];
 		$sUploadPath = realpath($sUploadPath);
-		$iLength = strlen(trim($sUploadPath));
+		$iLength = mb_strlen(trim($sUploadPath));
 		if($iLength && '/' !== $sUploadPath{$iLength - 1} && '\\' !== $sUploadPath{$iLength - 1})
 		{
 			$sUploadPath .= '/';
@@ -241,7 +241,7 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
 			$sPathName = $sDirName . '/' . $aDatas['sPathName'];
-			if(strlen(trim($aDatas['sPathName'])) > 0)
+			if(mb_strlen(trim($aDatas['sPathName'])) > 0)
 			{
 				$sPathName .= '/';
 			}
@@ -283,7 +283,7 @@ function updateUsersFolderFilePathName($sUploadPath)
 		{
 			$sPathName = $aDatas['sPathName'];
 			
-			$iLength = strlen($sPathName);
+			$iLength = mb_strlen($sPathName);
 			
 			if($iLength > 0)
 			{
@@ -511,12 +511,12 @@ function __renameFmFileVersion($sPathName)
 			else 
 			{
 
-				$iLength = strlen($sEntry);
+				$iLength = mb_strlen($sEntry);
 
 				if(3 <= $iLength && '.' === (string) $sEntry{1})
 				{
-					$sFirst	= substr($sEntry, 0, 1);
-					$sEnd	= substr($sEntry, 2);
+					$sFirst	= mb_substr($sEntry, 0, 1);
+					$sEnd	= mb_substr($sEntry, 2);
 					
 					if(false !== $sFirst && false !== $sEnd)
 					{
@@ -1753,7 +1753,7 @@ if ($arr[0] != 'id_group')
 	$db->db_query("ALTER TABLE `bab_groups` CHANGE `id` `id` INT( 11 ) UNSIGNED NOT NULL"); // remove auto_increment
 
 
-	natcasesort($level3);
+	bab_sort::natcasesort($level3);
 	$n = 3;
 	foreach($level3 as $id_group => $name)
 		{
@@ -1818,7 +1818,7 @@ if ($arr[0] != 'change_lang')
 
 
 $arr = $db->db_fetch_assoc($db->db_query("DESCRIBE ".BAB_SITES_EDITOR_TBL." id"));
-if (strtolower($arr['Extra']) != 'auto_increment')
+if (mb_strtolower($arr['Extra']) != 'auto_increment')
 	{
 	$db->db_query("ALTER TABLE `".BAB_SITES_EDITOR_TBL."` CHANGE `id` `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT");
 	}
@@ -2005,7 +2005,7 @@ $ret = "";
 $db = & $GLOBALS['babDB'];
 
 $arr = $db->db_fetch_array($db->db_query("DESCRIBE ".BAB_DBDIR_ENTRIES_EXTRA_TBL." field_value"));
-if ('text' != strtolower($arr['Type']))
+if ('text' != mb_strtolower($arr['Type']))
 	{
 	$res = $db->db_query("ALTER TABLE `".BAB_DBDIR_ENTRIES_EXTRA_TBL."` CHANGE `field_value` `field_value` TEXT NOT NULL ");
 	if( !$res)
@@ -4363,7 +4363,7 @@ function upgrade606to610()
 			`require_file` VARCHAR( 255 ) NOT NULL ,
 			`addon_name` VARCHAR( 255 ) NOT NULL ,
 			PRIMARY KEY  (`id`),
-			UNIQUE KEY `event` (`event_class_name`,`function_name`,`require_file`)
+			KEY `event_class_name` (`event_class_name`)
 			)"
 		);
 		

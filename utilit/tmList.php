@@ -80,8 +80,8 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 		{
 			$this->m_is_altbg = !$this->m_is_altbg;
 			$this->set_data('id', $this->m_rowDatas['id']);
-			$this->set_data('name', htmlentities($this->m_rowDatas['name'], ENT_QUOTES));
-			$this->set_data('description', htmlentities($this->m_rowDatas['description'], ENT_QUOTES));
+			$this->set_data('name', bab_toHtml($this->m_rowDatas['name']));
+			$this->set_data('description', bab_toHtml($this->m_rowDatas['description']));
 			return true;
 		}
 		return false;
@@ -95,7 +95,7 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 			//bab_debug($this->m_rowDatas);
 			$this->m_is_altbg = !$this->m_is_altbg;
 			$this->set_data('id', $this->m_rowDatas['id']);
-			$this->set_data('commentary', htmlentities($this->m_rowDatas['commentary'], ENT_QUOTES));
+			$this->set_data('commentary', bab_toHtml($this->m_rowDatas['commentary']));
 			$this->set_data('created', bab_longDate(bab_mktime($this->m_rowDatas['created'])));
 			return true;
 		}
@@ -110,7 +110,7 @@ class BAB_TM_ListBase extends BAB_BaseFormProcessing
 			//bab_debug($this->m_rowDatas);
 			$this->m_is_altbg = !$this->m_is_altbg;
 			$this->set_data('id', $this->m_rowDatas['id']);
-			$this->set_data('description', htmlentities($this->m_rowDatas['description'], ENT_QUOTES));
+			$this->set_data('description', bab_toHtml($this->m_rowDatas['description']));
 			$this->set_data('taskNumber', $this->m_rowDatas['taskNumber']);
 			$this->set_data('created', bab_longDate(bab_mktime($this->m_rowDatas['created'])));
 			return true;

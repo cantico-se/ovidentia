@@ -35,45 +35,7 @@ include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/sitemap.php';
 include_once $babInstallPath.'utilit/eventincl.php';
 
-$babLdapEncodingTypes = array(0 => '', BAB_LDAP_UTF8_ISO_8859_1 => 'UTF8 -> ISO_8859_1', BAB_LDAP_T61_ISO_8859_1 => 'T61 -> ISO_8859_1');
 
-function bab_ldapDecode($str, $type)
-{
-	
-	switch($type)
-	{
-		case BAB_LDAP_UTF8_ISO_8859_1:
-			return utf8_decode($str);
-			break;
-
-		case BAB_LDAP_T61_ISO_8859_1:
-			return ldap_t61_to_8859($str);
-			break;
-
-		default:
-			return $str;
-			break;
-	}
-
-}
-
-function bab_ldapEncode($str, $type)
-{
-	switch($type)
-	{
-		case BAB_LDAP_UTF8_ISO_8859_1:
-			return utf8_encode($str);
-			break;
-
-		case BAB_LDAP_T61_ISO_8859_1:
-			return ldap_8859_to_t61($str);
-			break;
-
-		default:
-			return $str;
-			break;
-	}
-}
 
 
 function bab_encrypt($txt,$key)
@@ -81,7 +43,7 @@ function bab_encrypt($txt,$key)
 	$td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
 	if( $td === false)
 		return '';
-	$key = substr($key, 0, mcrypt_enc_get_key_size($td));
+	$key = mb_substr($key, 0, mcrypt_enc_get_key_size($td));
 	$iv_size = mcrypt_enc_get_iv_size($td);
 	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
 	if( mcrypt_generic_init($td, $key, $iv) != -1 )
@@ -100,10 +62,10 @@ function bab_decrypt($txt,$key)
 	$td = mcrypt_module_open(MCRYPT_TRIPLEDES, '', MCRYPT_MODE_CFB, '');
 	if( $td === false)
 		return '';
-	$key = substr($key, 0, mcrypt_enc_get_key_size($td));
+	$key = mb_substr($key, 0, mcrypt_enc_get_key_size($td));
 	$iv_size = mcrypt_enc_get_iv_size($td);
-	$iv = substr($txt,0,$iv_size);
-	$txt = substr($txt,$iv_size);
+	$iv = mb_substr($txt,0,$iv_size);
+	$txt = mb_substr($txt,$iv_size);
 	if (mcrypt_generic_init($td, $key, $iv) != -1)
 		{
 		$crypttxt = mdecrypt_generic($td, $txt);
@@ -206,7 +168,7 @@ function bab_getDateFormat($format)
 function bab_getTimeFormat($format)
 {
 	global $babBody;
-	$pos = strpos(strtolower($format), 't');
+	$pos = mb_strpos(mb_strtolower($format), 't');
 	if( $pos !== false)
 	{
 		$babBody->ampm = true;
@@ -289,6 +251,12 @@ function babLoadLanguage($lang, $folder, &$arr)
 			if( $file )
 				{
 				$tmp = fread($file, filesize($filename));
+				
+				if ('latin1' === bab_charset::getDatabase()) {
+					$tmp = utf8_decode($tmp);
+				}
+				
+				
 				fclose($file);
 				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
 				preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', isset($m[1]) ? $m[1] : '' , $tmparr);
@@ -1263,7 +1231,7 @@ function bab_updateUserSettings()
 			if($arr['langfilter'] != '')
 				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 			
-			if(!empty($arr['skin']) && is_dir('skins/'.$arr['skin']))
+			if($arr['skin'] !== $GLOBALS['babSkin'] && !empty($arr['skin']))
 				{
 				$GLOBALS['babSkin'] = $arr['skin'];
 				}
@@ -1369,6 +1337,17 @@ function bab_updateUserSettings()
 			}
 		}
 
+
+	// verify skin validity
+
+	include_once dirname(__FILE__).'/skinincl.php';
+	$objSkin = new bab_skin($GLOBALS['babSkin']);
+	if (!$objSkin->isAccessValid()) {
+		$GLOBALS['babSkin'] = bab_skin::getDefaultSkin()->getName(); 
+	}
+	
+	
+
 	
 	$res = $babDB->db_query("select id, id_dg, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'");
 	if( $res && $babDB->db_num_rows($res) > 0)
@@ -1454,6 +1433,21 @@ function bab_getDbVersion() {
 
 
 
+/**
+ * Get skin path
+ * @return string
+ */
+function bab_getSkinPath() {
+
+	global $babInstallPath;
+
+	return $babInstallPath."skins/ovidentia/";
+}
+
+
+
+
+
 
 
 
@@ -1481,19 +1475,19 @@ function bab_updateSiteSettings()
 	$arr = $babDB->db_fetch_array($res);
 	$babBody->babsite = $arr;
 
-	if( $arr['skin'] != '')
-		{
-		$GLOBALS['babSkin'] = $arr['skin'];
-		}
-	else {
-		$GLOBALS['babSkin'] = 'ovidentia'; }
+
+	$GLOBALS['babSkin'] = $arr['skin'];
+
+	
+	
 
 	if( $arr['style'] != '')
 		{
 		$GLOBALS['babStyle'] = $arr['style'];
 		}
 	else {
-		$GLOBALS['babStyle'] = 'ovidentia.css'; }
+		$GLOBALS['babStyle'] = 'ovidentia.css'; 
+		}
 
 	if( $arr['lang'] != '')
 		{
@@ -1501,6 +1495,10 @@ function bab_updateSiteSettings()
 		}
 	else {
 		$GLOBALS['babLanguage'] = 'en'; }
+
+	
+
+
 	if( $arr['adminemail'] != '')
 		{
 		$GLOBALS['babAdminEmail'] = $arr['adminemail'];
@@ -1698,7 +1696,7 @@ class babLanguageFilter
 						$this->activeLanguageValues[] = '\'\'';
 						break;
 					case 1:
-						$this->activeLanguageValues[] = '\''.substr($GLOBALS['babLanguage'], 0, 2).'\'';
+						$this->activeLanguageValues[] = '\''.mb_substr($GLOBALS['babLanguage'], 0, 2).'\'';
 						$this->activeLanguageValues[] = '\'*\'';
 						$this->activeLanguageValues[] = '\'\'';
 						break;
@@ -1747,17 +1745,38 @@ class babLanguageFilter
 
 		function isLangFile($fileName)
 			{
-				$res = substr($fileName, 0, 5);
-				if ($res != 'lang-') return false;
-				$res = strtolower(strstr($fileName, '.'));
-				if ($res != '.xml') return false;
+				$res = mb_substr($fileName, 0, 5);
+				if ($res != 'lang-')
+				{
+					return false;
+				}
+				
+				$iOffset = mb_strpos($fileName, '.');
+				if(false === $iOffset)
+				{
+					return false;
+				}
+				
+				$iOffset = mb_strpos($fileName, '.');
+				if(false === $iOffset)
+				{
+					return false;
+				}
+
+				$sFileExtention = mb_strtolower(mb_substr($fileName, $iOffset));
+				
+				if($sFileExtention != '.xml')
+				{
+					return false;
+				}
+				
 				return true;
 			}
 
 		function getLangCode($file)
 			{
-				$langCode = substr($file,5);
-				return substr($langCode,0,strlen($langCode)-4);
+				$langCode = mb_substr($file,5);
+				return mb_substr($langCode,0,mb_strlen($langCode)-4);
 			}
 
 		function readLangFiles()
@@ -1792,7 +1811,7 @@ class babLanguageFilter
 						closedir($folder);
 }
 				$tmpLangFiles[] = '*';
-				sort($tmpLangFiles);
+				bab_sort::sort($tmpLangFiles);
 				$this->langFiles = array();
 				$tmpLang = '';
 				$i = 0;
@@ -1825,6 +1844,19 @@ class babLanguageFilter
 
 	} //class LanguageFilter
 
+
+
+
+function bab_initMbString() {
+	mb_internal_encoding(bab_charset::getIso());
+	mb_http_output(bab_charset::getIso());
+}
+
+
+
+
+
+bab_initMbString();
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
 $babLangFilter = new babLanguageFilter();

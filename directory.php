@@ -32,8 +32,8 @@ include_once $babInstallPath.'admin/register.php';
 
 function trimQuotes($str)
 {
-	if( $str[strlen($str) - 1] == "\"" && $str[0] == "\"")
-		return substr(substr($str, 1), 0, strlen($str)-2);
+	if( $str[mb_strlen($str) - 1] == "\"" && $str[0] == "\"")
+		return mb_substr(mb_substr($str, 1), 0, mb_strlen($str)-2);
 	else
 		return $str;
 }
@@ -165,6 +165,7 @@ function browseLdapDirectory($id, $pos)
 		var $selected;
 		var $badd;
 		var $altbg = true;
+		private $current_order = null;
 
 		function temp($id, $pos)
 			{
@@ -204,7 +205,7 @@ function browseLdapDirectory($id, $pos)
 						$this->order[$i] = bab_ldapDecode($this->entries[$i]['sn'][0], $this->ldapdecodetype);
 						}
 
-					natcasesort($this->order);
+					bab_sort::natcasesort($this->order);
 					$this->order = array_keys($this->order);
 					}
 				}
@@ -227,25 +228,33 @@ function browseLdapDirectory($id, $pos)
 				$this->accid = 0;
 			}
 
+
+		function getFromEntry($keyname) 
+			{
+				if (!isset($this->entries[$this->current_order][$keyname][0])) {
+					return '';
+				}
+	
+				return bab_ldapDecode($this->entries[$this->current_order][$keyname][0], $this->ldapdecodetype);
+			}
+
+
+
 		function getnext()
 			{
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$o = $this->order[$i];
+				$this->current_order = $this->order[$i];
 				$this->altbg = !$this->altbg;
 				$this->cn = "";
-				$this->url = "";
-				$this->btel = "";
-				$this->htel = "";
-				$this->email = "";
-				$this->sn = bab_toHtml(bab_ldapDecode($this->entries[$o]['sn'][0], $this->ldapdecodetype));
-				$this->givenname = bab_toHtml(bab_ldapDecode($this->entries[$o]['givenname'][0], $this->ldapdecodetype));
-				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode(quoted_printable_decode($this->entries[$o]['cn'][0]))."&pos=".$this->pos);
-				$this->btel = isset($this->entries[$o]['telephonenumber'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['telephonenumber'][0], $this->ldapdecodetype)):"";
-				$this->htel = isset($this->entries[$o]['homephone'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['homephone'][0], $this->ldapdecodetype)):"";
-				$this->email = isset($this->entries[$o]['mail'][0])?bab_toHtml(bab_ldapDecode($this->entries[$o]['mail'][0], $this->ldapdecodetype)):"";
-				$this->urlmail = bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->email));
+				$this->sn 					= bab_toHtml($this->getFromEntry('sn'));
+				$this->givenname 			= bab_toHtml($this->getFromEntry('givenname'));
+				$this->url 					= bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=dldap&id=".$this->id."&cn=".urlencode($this->getFromEntry('cn'))."&pos=".$this->pos);
+				$this->btel 				= bab_toHtml($this->getFromEntry('telephonenumber'));
+				$this->htel 				= bab_toHtml($this->getFromEntry('homephone'));
+				$this->email 				= bab_toHtml($this->getFromEntry('mail'));
+				$this->urlmail 				= bab_toHtml($GLOBALS['babUrlScript']."?tg=mail&idx=compose&accid=".$this->accid."&to=".urlencode($this->getFromEntry('email')));
 				$i++;
 				return true;
 				}
@@ -262,7 +271,7 @@ function browseLdapDirectory($id, $pos)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sldap&id=".$this->id."&pos=".$this->selectname);
 				if( $this->pos == $this->selectname)
 					$this->selected = 1;
@@ -300,9 +309,9 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->pos = $pos;
 			$this->badd = $badd;
 			$this->xf = $xf;
-			if( substr($pos,0,1) == "-" )
+			if( mb_substr($pos,0,1) == "-" )
 				{
-				$this->pos = substr($pos,1);
+				$this->pos = mb_substr($pos,1);
 				$this->ord = "";
 				}
 			else
@@ -448,11 +457,11 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					if( !in_array('email', $this->select))
 						$this->select[] = 'e.email';
 
-					if (!empty($this->pos) && false === strpos($this->xf, 'babdirf'))
+					if (!empty($this->pos) && false === mb_strpos($this->xf, 'babdirf'))
 						$like = " AND e.`".$babDB->db_escape_string($this->xf)."` LIKE '".$babDB->db_escape_string($this->pos)."%'";
-					elseif (0 === strpos($this->xf, 'babdirf'))
+					elseif (0 === mb_strpos($this->xf, 'babdirf'))
 						{
-						$idfield = substr($this->xf,7);
+						$idfield = mb_substr($this->xf,7);
 						$like = " AND lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($this->pos)."%'";
 						}
 					else
@@ -531,7 +540,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				if ($_GET['idx'] == 'sdbovml')
 					{
 					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode(($this->ord == "-"? "":$this->ord)).$this->selectname."&xf=".urlencode($this->xf));
@@ -1399,7 +1408,7 @@ function mapDbFile($id, $wsepar, $separ)
 				{
 				$this->ffieldid = $i;
 				$this->ffieldname = bab_toHtml($this->arr[$i]);
-				if( isset($this->ofieldname) && strtolower($this->ofieldname) == strtolower($this->ffieldname) )
+				if( isset($this->ofieldname) && mb_strtolower($this->ofieldname) == mb_strtolower($this->ffieldname) )
 					$this->fselected = "selected";
 				else
 					$this->fselected = "";
@@ -1862,7 +1871,7 @@ function processImportDbFile( $pfile, $id, $separ )
 
 	if( $idgroup > 0 )
 		{
-		if( empty($GLOBALS['password1']) || empty($GLOBALS['password2']) || strlen($GLOBALS['nickname']) == 0)
+		if( empty($GLOBALS['password1']) || empty($GLOBALS['password2']) || mb_strlen($GLOBALS['nickname']) == 0)
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
@@ -1874,7 +1883,7 @@ function processImportDbFile( $pfile, $id, $separ )
 			return false;
 			}
 
-		if ( strlen($GLOBALS['password1']) < 6 )
+		if ( mb_strlen($GLOBALS['password1']) < 6 )
 			{
 			$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 			return false;
@@ -1885,7 +1894,7 @@ function processImportDbFile( $pfile, $id, $separ )
 			$babBody->msgerror = bab_translate("Passwords not match !!");
 			return false;
 			}
-		$password1=md5(strtolower($GLOBALS['password1']));
+		$password1=md5(mb_strtolower($GLOBALS['password1']));
 		}
 
 	$fd = fopen($pfile, "r");
@@ -1943,7 +1952,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							$bupdate = false;
 							if( !empty($req))
 								{
-								$req = substr($req, 0, strlen($req) -1);
+								$req = mb_substr($req, 0, mb_strlen($req) -1);
 								$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
 								$req .= " where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'";
 								$babDB->db_query($req);
@@ -1971,16 +1980,16 @@ function processImportDbFile( $pfile, $id, $separ )
 									}
 								}
 
-							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
+							if( $GLOBALS['password3'] !== '' && mb_strlen($arr[$GLOBALS['password3']]) >= 6)
 								{
-								$pwd=md5(strtolower($arr[$GLOBALS['password3']]));
+								$pwd=md5(mb_strtolower($arr[$GLOBALS['password3']]));
 								}
 							else
 								{
 								$pwd = $password1;
 								}
 							$replace = array( " " => "", "-" => "");
-							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
+							$hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
 							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."', confirm_hash='".$babDB->db_escape_string($hash)."', password='".$babDB->db_escape_string($pwd)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
 							if( $bupdate )
@@ -2021,7 +2030,7 @@ function processImportDbFile( $pfile, $id, $separ )
 							$bupdate = false;
 							if( !empty($req))
 								{
-								$req = substr($req, 0, strlen($req) -1);
+								$req = mb_substr($req, 0, mb_strlen($req) -1);
 								$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
 								$req .= " where id='".$babDB->db_escape_string($arr2['id'])."'";
 								$babDB->db_query($req);
@@ -2081,11 +2090,11 @@ function processImportDbFile( $pfile, $id, $separ )
 						if( $idgroup > 0 )
 							{
 							$replace = array( " " => "", "-" => "");
-							$hashname = md5(strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
+							$hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-							if( $GLOBALS['password3'] !== '' && strlen($arr[$GLOBALS['password3']]) >= 6)
+							if( $GLOBALS['password3'] !== '' && mb_strlen($arr[$GLOBALS['password3']]) >= 6)
 								{
-								$pwd=md5(strtolower($arr[$GLOBALS['password3']]));
+								$pwd=md5(mb_strtolower($arr[$GLOBALS['password3']]));
 								}
 							else
 								{
@@ -2295,7 +2304,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 			if (!isset($fields['sn']))
 				$fields['sn'] = $usertbl['sn'];
 			
-			$hashname = md5(strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
+			$hashname = md5(mb_strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
 			$query = "select * from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."' and id!='".$babDB->db_escape_string($iduser)."'";	
 			$res = $babDB->db_query($query);
 			if( $babDB->db_num_rows($res) > 0)
@@ -2326,9 +2335,9 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 					}
 				else
 					{
-					if( substr($fname, 0, strlen("babdirf")) == 'babdirf' )
+					if( mb_substr($fname, 0, mb_strlen("babdirf")) == 'babdirf' )
 						{
-						$tmp = substr($fname, strlen("babdirf"));
+						$tmp = mb_substr($fname, mb_strlen("babdirf"));
 
 						$bupdate = true;
 						$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
@@ -2350,7 +2359,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		elseif ($photod == "delete")
 			$req .= " photo_data=''";
 		else
-			$req = substr($req, 0, strlen($req) -1);
+			$req = mb_substr($req, 0, mb_strlen($req) -1);
 
 		$bupdate = false;
 		if( !empty($req))
@@ -2497,7 +2506,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			return 0;
 			}
 
-		if ( strlen($password1) < 6 )
+		if ( mb_strlen($password1) < 6 )
 			{
 			$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 			return 0;
@@ -2594,7 +2603,7 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 	if( $idgroup > 0 && !empty($req))
 		{
 		list($iddbu) = $babDB->db_fetch_array($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='0' and id_user='".$babDB->db_escape_string($iduser)."'"));
-		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . substr($req, 0, strlen($req) -1);
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . mb_substr($req, 0, mb_strlen($req) -1);
 		$req .= " where id='".$babDB->db_escape_string($iddbu)."'";
 		$babDB->db_query($req);
 		}
@@ -2622,9 +2631,9 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 
 	foreach( $fields as $key => $value )
 		{
-		if( substr($key, 0, strlen("babdirf")) == 'babdirf' )
+		if( mb_substr($key, 0, mb_strlen("babdirf")) == 'babdirf' )
 			{
-			$tmp = substr($key, strlen("babdirf"));
+			$tmp = mb_substr($key, mb_strlen("babdirf"));
 
 			$babDB->db_query("INSERT into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." 
 				(id_fieldx, id_entry, field_value) 
@@ -2785,7 +2794,7 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 		$output .= '"'.str_replace('"','""',translateDirectoryField($fieldn)).'"'.$separ;
 		}
 
-	$output = substr($output, 0, -1);
+	$output = mb_substr($output, 0, -1);
 	$output .= "\n";
 
 	if( $idgroup > 1 )
@@ -2829,14 +2838,14 @@ function exportDbDirectory($id, $wsepar, $separ, $listfd)
 				$output .= '"'.str_replace(array("\r","\n",'"'),array('',' ','""'),stripslashes($row[$arrnamef[$k]])).'"'.$separ;
 				}
 
-			$output = substr($output, 0, -1);
+			$output = mb_substr($output, 0, -1);
 			$output .= "\n";
 			}
 		}
 
 	header("Content-Disposition: attachment; filename=\"".$idname.".csv\""."\n");
 	header("Content-Type: text/plain"."\n");
-	header("Content-Length: ". strlen($output)."\n");
+	header("Content-Length: ". mb_strlen($output)."\n");
 	header("Content-transfert-encoding: binary"."\n");
 	print $output;
 	exit;

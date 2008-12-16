@@ -57,10 +57,11 @@ class bab_siteMapItem {
 	var $onclick;
 	var $folder; 
 
-	public function compare($node) {
-		return strcasecmp($this->name, $node->name);
-	}
 
+	public function compare($node) {
+		$collator = bab_getCollatorInstance();
+		return $collator->compare($this->name, $node->name);
+	}
 }
 
 
@@ -258,7 +259,7 @@ class bab_siteMap {
 			$rootNode->appendChild($node, $id_parent);
 		}
 
-		//bab_debug($rootNode->displayAsText());
+		$rootNode->sortSubTree();
 		
 		return $rootNode;
 	}

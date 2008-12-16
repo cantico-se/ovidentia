@@ -113,7 +113,7 @@ class listArticles extends categoriesHierarchy
 				$arr = $tpl->getTemplates($filepath);
 				for( $i=0; $i < count($arr); $i++)
 					{
-					if( substr($arr[$i], 5) == $this->template )
+					if( mb_substr($arr[$i], 5) == $this->template )
 						{
 						$tplfound = true;
 						break;
@@ -150,7 +150,7 @@ function listArticles($topics)
 						$req .= " and (at.lang='".$babDB->db_escape_string($GLOBALS['babLanguage'])."' or at.lang='*' or lang='')  order by at.ordering asc";
 						break;
 					case 1:
-						$req .= " and ((at.lang like '". $babDB->db_escape_like(substr($GLOBALS['babLanguage'], 0, 2)) ."%') or at.lang='*' or lang='') order by at.ordering asc";
+						$req .= " and ((at.lang like '". $babDB->db_escape_like(mb_substr($GLOBALS['babLanguage'], 0, 2)) ."%') or at.lang='*' or lang='') order by at.ordering asc";
 						break;
 					case 0:
 					default:
@@ -800,7 +800,7 @@ function readMore($topics, $article)
 			$arr = $tpl->getTemplates($filepath);
 			for( $i=0; $i < count($arr); $i++)
 				{
-				if( substr($arr[$i], 5) == $template )
+				if( mb_substr($arr[$i], 5) == $template )
 					{
 					$tplfound = true;
 					break;

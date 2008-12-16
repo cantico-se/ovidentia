@@ -371,7 +371,7 @@ function changeLanguage()
 
 			$this->arrfiles = bab_getAvailableLanguages();
             $this->count = count($this->arrfiles);
-			sort($this->arrfiles);
+			bab_sort::sort($this->arrfiles);
 			reset($this->arrfiles);
 			$this->userlangfilter = $arr['langfilter'];
 			$this->langfiltertxt = bab_translate("Language filter") . " : " . $GLOBALS['babLangFilter']->convertFilterToStr($this->userlangfilter);
@@ -480,8 +480,8 @@ function changeSkin($skin)
 				}
 
 			$this->title .= ' : '.bab_toHtml($this->userskin);
-			$this->title_style .= " : ".bab_toHtml(substr($this->userstyle,0,strrpos($this->userstyle, ".")));
-
+			$this->title_style .= " : ".bab_toHtml(mb_substr($this->userstyle,0,mb_strrpos($this->userstyle, ".")));
+			
 			if(!isset($skin) || empty($skin))
 				{
 				$this->skin = $this->userskin;
@@ -491,22 +491,9 @@ function changeSkin($skin)
 				$this->skin = $skin;
 				}
 
-			if( is_dir("skins/"))
-				{
-				$h = opendir("skins/"); 
-				while ( $file = readdir($h))
-					{ 
-					if ($file != "." && $file != "..")
-						{
-						if( is_dir("skins/".$file))
-							{
-							$this->arrskins[] = $file; 
-							}
-						} 
-					}
-				closedir($h);
-				$this->cntskins = count($this->arrskins);
-				}
+			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
+			$this->arrskins = bab_skin::getList();
+			$this->cntskins = count($this->arrskins);
 
 			$this->skselectedindex = 0;
             $this->stselectedindex = 0;
@@ -517,58 +504,20 @@ function changeSkin($skin)
 			static $i = 0;
 			if( $i < $this->cntskins)
 				{
+				$obj = $this->arrskins[$i];
+
 				$this->iindex = $i;
-                $this->skinname = bab_toHtml($this->arrskins[$i]);
-                $this->skinval = bab_toHtml($this->arrskins[$i]);
+                $this->skinname = bab_toHtml($obj->getName());
+                $this->skinval = bab_toHtml($obj->getName());
                 if( $this->skinname == $this->skin )
 					{
 	                $this->skselectedindex = $i;
-                    $this->skinselected = 'selected';
+                    $this->skinselected = "selected";
 					}
                 else
-					{
-                    $this->skinselected = '';
-					}
+                    $this->skinselected = "";
 
-				$this->arrstyles = array();
-				if( is_dir('skins/'.$this->skinname.'/styles/'))
-					{
-					$h = opendir('skins/'.$this->skinname.'/styles/'); 
-					while ( $file = readdir($h))
-						{ 
-						if ($file != '.' && $file != '..')
-							{
-							if( is_file('skins/'.$this->skinname.'/styles/'.$file))
-								{
-									if( strtolower(substr(strrchr($file, '.'), 1)) == 'css' )
-										{
-										$this->arrstyles[] = $file;
-										}
-								}
-							} 
-						}
-					closedir($h);
-					}
-
-				if( is_dir($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'))
-					{
-					$h = opendir($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'); 
-					while ( $file = readdir($h))
-						{ 
-						if ($file != '.' && $file != '..')
-							{
-							if( is_file($GLOBALS['babInstallPath'].'skins/'.$this->skinname.'/styles/'.$file))
-								{
-									if( strtolower(substr(strrchr($file, '.'), 1)) == 'css' )
-										{
-										if( count($this->arrstyles) == 0 || !in_array($file, $this->arrstyles) )
-											$this->arrstyles[] = $file;
-										}
-								}
-							} 
-						}
-					closedir($h);
-					}
+				$this->arrstyles = array_values($obj->getStyles());
 				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
@@ -824,7 +773,7 @@ function userChangePassword($oldpwd, $newpwd)
 	{
 	global $babBody, $babDB, $BAB_SESS_USERID, $BAB_SESS_HASHID;
 
-	$new_password1=strtolower($newpwd);
+	$new_password1=mb_strtolower($newpwd);
 
 	$res=$babDB->db_query("select password, changepwd, db_authentification from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 	$arruser = $babDB->db_fetch_array($res);
@@ -897,7 +846,7 @@ function userChangePassword($oldpwd, $newpwd)
 						}
 
 					// create the unicode password 
-					$len = strlen($newpwd); 
+					$len = mb_strlen($newpwd); 
 					$newPass = '"'; 
 					for ($i = 0; $i < $len; $i++) 
 					{ 
@@ -993,7 +942,7 @@ function userChangePassword($oldpwd, $newpwd)
 				}
 			break;
 		default:
-			$oldpwd2 = md5(strtolower($oldpwd));
+			$oldpwd2 = md5(mb_strtolower($oldpwd));
 			if( $oldpwd2 != $arruser['password'])
 				{
 				$babBody->msgerror = bab_translate("ERROR: Old password incorrect !!");
@@ -1002,7 +951,7 @@ function userChangePassword($oldpwd, $newpwd)
 			break;
 		}
 
-	$result=$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd)). "' where id='". $babDB->db_escape_string($BAB_SESS_USERID) . "'");
+	$result=$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(mb_strtolower($newpwd)). "' where id='". $babDB->db_escape_string($BAB_SESS_USERID) . "'");
 	if ($babDB->db_affected_rows() < 1)
 		{
 		$babBody->msgerror = bab_translate("Nothing Changed");
@@ -1050,7 +999,7 @@ function updatePassword($oldpwd, $newpwd1, $newpwd2)
 		return false;
 		}
 
-	if( strlen($newpwd1) < 6)
+	if( mb_strlen($newpwd1) < 6)
 		{
 		$babBody->msgerror =  bab_translate("Password must be at least 6 characters !!");
 		return false;
@@ -1106,7 +1055,7 @@ function updateNickname($password, $nickname)
 	if( empty($GLOBALS['BAB_SESS_USERID']))
 		return false;
 
-	$password = strtolower($password);
+	$password = mb_strtolower($password);
 	$req = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($BAB_SESS_NICKNAME)."' and password='". md5($password) ."'";
 	$res = $babDB->db_query($req);
 	if (!$res || $babDB->db_num_rows($res) < 1)
@@ -1417,7 +1366,7 @@ if( !isset($firstname) &&  !isset($middlename) &&  !isset($lastname) && !isset($
 		$nickname = bab_getUserNickname($BAB_SESS_USERID);
 		}
 	}
-
+	
 switch($idx)
 	{
 	case 'unav':

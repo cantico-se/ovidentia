@@ -841,8 +841,8 @@ class cal_wmdbaseCls
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 		{
-		if (strlen($str) > $n && (!$this->print || 'calweek' === bab_rp('tg') ))
-			return bab_toHtml(substr($str, 0, $n))."...";
+		if (mb_strlen($str) > $n && (!$this->print || 'calweek' === bab_rp('tg') ))
+			return bab_toHtml(mb_substr($str, 0, $n))."...";
 		else
 			return bab_toHtml($str);
 		}
@@ -1042,16 +1042,16 @@ class calendarchoice
 			if ($_REQUEST['tg'] != 'event' || $v['access'] > 0)
 				$this->resuser_sort[$k] = $v['name'];
 			}
-		natcasesort($this->resuser_sort);
-
+		bab_sort::natcasesort($this->resuser_sort);
+		
 		$this->respub_sort = array();
 		foreach($this->respub as $k => $v)
 			{
 			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
 				$this->respub_sort[$k] = $v['name'];
 			}
-		natcasesort($this->respub_sort);
-
+		bab_sort::natcasesort($this->respub_sort);
+		
 		$this->resres_sort = array();
 
 		foreach($this->resres as $k => $v)
@@ -1059,8 +1059,8 @@ class calendarchoice
 			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1 || $v['add'] == 1)
 				$this->resres_sort[$k] = $v['name'];
 			}
-		natcasesort($this->resres_sort);
-
+		bab_sort::natcasesort($this->resres_sort);
+		
 		}
 
 	function getnextusrcal()
@@ -1173,8 +1173,8 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 		}
 
 
-	$sdate = 10 === strlen($date0) ? $date0.' 00:00:00' : $date0;
-	$edate = 10 === strlen($date0) ? $date1.' 23:59:59' : $date1;
+	$sdate = 10 === mb_strlen($date0) ? $date0.' 00:00:00' : $date0;
+	$edate = 10 === mb_strlen($date0) ? $date1.' 23:59:59' : $date1;
 
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $idcals);
 

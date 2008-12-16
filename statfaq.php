@@ -89,7 +89,7 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 
 			$this->startnum = $pos+1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->totalhits = 0;
@@ -186,7 +186,7 @@ function summaryFaqs($col, $order, $pos, $startday, $endday)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -264,7 +264,7 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 
 			$this->startnum = $pos+1;
 			$this->lastnum = ($pos + BAB_STAT_MAX_ROWS) > $this->total ? $this->total: ($pos + BAB_STAT_MAX_ROWS);
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->totalhits = 0;
@@ -364,7 +364,7 @@ function summaryQuestionsFaqs($col, $order, $pos, $startday, $endday)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -476,7 +476,7 @@ function showStatFaq($id, $date)
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -586,7 +586,7 @@ function showStatFaqQuestion($id, $date)
 
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;

@@ -36,12 +36,12 @@ function bab_highlightWord( $w, $text)
 	foreach($arr as $mot)
 		{
 
-		$text = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
+		$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
 
-		$he = htmlentities($mot);
+		$he = bab_toHtml($mot);
 		
 		if ($he != $mot) {
-			$text = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($he,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
+			$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($he,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
 			}
     
 		}
@@ -50,7 +50,7 @@ function bab_highlightWord( $w, $text)
 }
 
 /**
- * Search a string with htmlentities
+ * Search a string with bab_toHtml
  */
 function bab_sql_finder_he($tbl, $str, $not="")
 	{
@@ -58,7 +58,7 @@ function bab_sql_finder_he($tbl, $str, $not="")
 	
 	if ($not == "NOT") $op = "AND";
 	else $op =  "OR";
-	$tmp = htmlentities($str);
+	$tmp = bab_toHtml($str);
 	if ($tmp != $str)
 		return " ".$op." ".$tbl.$not." like '%".$babDB->db_escape_like($tmp)."%'";
 	}
@@ -294,12 +294,12 @@ function bab_removeIndexObject($object) {
 
 function bab_removeUploadPath($str) {
 	
-	$last_char = substr($GLOBALS['babUploadPath'],-1);
+	$last_char = mb_substr($GLOBALS['babUploadPath'],-1);
 	
 	if ('/' == $last_char || '\\' == $last_char) {
-		return substr($str, strlen($GLOBALS['babUploadPath']));
+		return mb_substr($str, mb_strlen($GLOBALS['babUploadPath']));
 	} else {
-		return substr($str, 1+strlen($GLOBALS['babUploadPath']));
+		return mb_substr($str, 1+mb_strlen($GLOBALS['babUploadPath']));
 	}
 }
 

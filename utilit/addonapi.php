@@ -20,7 +20,357 @@
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
-include_once 'base.php';
+require_once 'base.php';
+
+
+/**
+ * Helper class for sort
+ *
+ */
+class bab_sort
+{
+	private static $sKeyName	= null;
+	private static $iCase		= 0;
+	
+	const CASE_SENTIVE			= 0;
+	const CASE_INSENTIVE		= 1;
+	
+	public function __construct()
+	{
+		
+	}
+	
+	/**
+	 * Sort an array using a case insensitive "natural order" algorithm
+	 *
+	 * @param array		$aToSort	array to sort
+	 * @return bool
+	 */
+	public static function natcasesort(array &$aToSort)
+	{
+		self::$sKeyName = null;
+		self::$iCase	= bab_sort::CASE_INSENTIVE;
+		
+		return uasort($aToSort, array('bab_sort', 'uasortCallback'));
+	}
+	
+	/**
+	 * Sort an array and maintain index association
+	 *
+	 * @param array		$aToSort	array to sort
+	 * @param string	$sKeyName	If $aToSort is an array of array $sKeyName is the sort key
+	 * @param int		$iCase		Case used in compare
+	 * @return bool
+	 */
+	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_sort::CASE_SENTIVE)
+	{
+		self::$sKeyName = $sKeyName;
+		self::$iCase	= $iCase;
+		
+		return uasort($aToSort, array('bab_sort', 'uasortCallback'));
+	}
+	
+	private static function uasortCallback($mixedParam1, $mixedParam2)
+	{
+		$oCollator = bab_getCollatorInstance();
+
+		if(isset(self::$sKeyName))
+		{
+			return $oCollator->compare(
+				bab_sort::getStringAccordingToCase($mixedParam1[self::$sKeyName]), 
+				bab_sort::getStringAccordingToCase($mixedParam2[self::$sKeyName])
+			);
+		}
+		else
+		{
+			return $oCollator->compare(
+				bab_sort::getStringAccordingToCase($mixedParam1), 
+				bab_sort::getStringAccordingToCase($mixedParam2)
+			);
+		}
+	}	
+	
+	/**
+	 * Sort an array by key
+	 *
+	 * @param array		$aToSort	array to sort
+	 * @param int		$iCase		Case used in compare
+	 * @return bool
+	 */
+	public static function ksort(array &$aToSort, $iCase = 0)
+	{
+		$oCollator = bab_getCollatorInstance();
+		
+		return uksort($aToSort, array('bab_sort', 'uksortCallback'));
+	}
+	
+	private static function uksortCallback($sStr1, $sStr2)
+	{
+		$oCollator = bab_getCollatorInstance();
+		
+		return $oCollator->compare(
+			bab_sort::getStringAccordingToCase($sStr1), 
+			bab_sort::getStringAccordingToCase($sStr2)
+		);
+	}	
+	
+	/**
+	 * Sort an array
+	 *
+	 * @param array		$aToSort	array to sort
+	 * @param int		$iCase		Case used in compare
+	 * @return bool
+	 */
+	public static function sort(array &$aToSort, $iCase = 0)
+	{
+		self::$iCase = $iCase;
+		
+		return usort($aToSort, array('bab_sort', 'sortCallback'));
+	}
+	
+	private static function sortCallback($sStr1, $sStr2)
+	{
+		$oCollator = bab_getCollatorInstance();
+		
+		return $oCollator->compare(
+			bab_sort::getStringAccordingToCase($sStr1), 
+			bab_sort::getStringAccordingToCase($sStr2)
+		);
+	}	
+	
+	private static function getStringAccordingToCase($sString)
+	{
+		if(bab_sort::CASE_INSENTIVE == self::$iCase)
+		{
+			return mb_strtolower($sString);
+		}
+		else
+		{
+			return $sString;
+		}
+	}
+}
+
+
+
+/**
+ * Get a string according to the charset of the databese
+ *
+ * @param string | array $input			String(s) to convert
+ * @param string $sStringIsoCharset		Iso charset of the string to convert
+ * @return string | array				The converted string(s)
+ */
+function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
+{
+	if (is_array($input)) {
+		foreach($input as $k => $data) {
+			$input[$k] = bab_getStringAccordingToDataBase($data, $sStringIsoCharset);
+		}
+			
+		return $input;
+	}
+
+	if (bab_charset::getIso() === $sStringIsoCharset) {
+		return $input;
+	}
+
+	return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
+}
+
+/**
+ * Get a instance of the collator object
+ *
+ * @param string|array $locale
+ * @return Collator
+ */
+function bab_getCollatorInstance($locale = '')
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
+	
+	static $oCollator = null;
+	if(!isset($oCollator))
+	{
+		$oCollator = new Collator($locale);
+	}
+	return $oCollator;
+}
+
+function bab_multibyteToHex($sBuffer)
+{
+    $sHexs	= '';
+	$iCount = mb_strlen($sBuffer, 'UTF-8');
+	for($iIndex = 0; $iIndex < $iCount; $iIndex++)
+	{
+        $sCh	= mb_substr($sBuffer, $iIndex, 1, 'UTF-8');
+        $iChlen	= mb_strwidth($sCh, 'UTF-8');
+        for($iIdx = 0; $iIdx < $iChlen; $iIdx++)
+        {
+            $sHexs = $sHexs . sprintf("%lx ", ord($sCh[$iIdx]));
+        }
+//        printf("width=%d => '%s' |hex=%s<br>", $iChlen, $sCh, $sHexs);
+    }
+    return $sHexs; 
+}
+
+
+function utf8Sprintf($sFormat)
+{
+	$aArgs	= func_get_args();
+	$iCount	= count($aArgs);
+  
+	for($i = 1; $i < $iCount; $i++)
+	{
+    	$aArgs[$i] = iconv('UTF-8', 'ISO-8859-2', $aArgs[$i]);
+	}
+	return iconv('ISO-8859-2', 'UTF-8', call_user_func_array('sprintf', $aArgs));
+}
+
+
+function bab_sprintf($sFormat)
+{
+	$aArgs = func_get_args();
+	
+	if('utf8' == bab_charset::getDatabase())
+	{
+		return call_user_func_array('utf8Sprintf', $aArgs);
+	}
+	else
+	{
+		return call_user_func_array('sprintf', $aArgs);
+	}
+}
+
+
+/**
+ * This function convert the input string to the charset
+ * of the database. If the charset of the string and the
+ * database match so the string is not converted.
+ *
+ * @param	string $sString	The string to convert
+ * @return	string			The converted input string
+ */
+function bab_convertToDatabaseEncoding($sString)
+{
+	$sDetectedEncoding	= mb_detect_encoding($sString, 'UTF-8, ISO-8859-15');
+	$sEncoding			= bab_charset::getIso(); 
+	
+	if($sEncoding != $sDetectedEncoding)
+	{
+		return mb_convert_encoding($sString, $sEncoding, $sDetectedEncoding);
+	}
+	return $sString;
+}
+
+
+/**
+ * This function remove diacritics 
+ *
+ * @param string $sString The string to process
+ * @return string The prcessed string
+ */	
+function bab_removeDiacritics($sString)
+{
+	$aSearch = array(
+		chr(192), chr(193), chr(194), chr(195), chr(196), chr(197), 
+		chr(197),
+		chr(200), chr(201), chr(202), chr(203),  
+		chr(204), chr(205), chr(206), chr(207),  
+		chr(208),
+		chr(209),
+		chr(210), chr(211), chr(212), chr(213), chr(214), chr(216),  
+		chr(217), chr(218), chr(219), chr(220),  
+		chr(221),
+		chr(224), chr(225), chr(226), chr(227), chr(228), chr(229),  
+		chr(231),
+		chr(232), chr(233), chr(234), chr(235),  
+		chr(236), chr(237), chr(238), chr(239),  
+		chr(241),
+		chr(242), chr(243), chr(244), chr(245), chr(246), chr(248),  
+		chr(249), chr(250), chr(251), chr(252),
+		chr(253), chr(255)  
+		);
+		
+	$aReplace = array(
+		chr(65), chr(65), chr(65), chr(65), chr(65), chr(65), 
+		chr(67), 
+		chr(69), chr(69), chr(69), chr(69),  
+		chr(73), chr(73), chr(73), chr(73),  
+		chr(68),
+		chr(78),
+		chr(79), chr(79), chr(79), chr(79), chr(79), chr(79),  
+		chr(85), chr(85), chr(85), chr(85),  
+		chr(89),
+		chr(97), chr(97), chr(97), chr(97), chr(97), chr(97),  
+		chr(99),
+		chr(101), chr(101), chr(101), chr(101),  
+		chr(105), chr(105), chr(105), chr(105),  
+		chr(110),
+		chr(111), chr(111), chr(111), chr(111), chr(111), chr(111),  
+		chr(117), chr(117), chr(117), chr(117),  
+		chr(121), chr(121)  
+		);
+	
+	return str_replace($aSearch, $aReplace, $sString);
+}
+
+class bab_charset 
+{
+	private static $sCharset = null;
+	 
+	/**
+	 * Returns the database charset
+	 * @static
+	 * @return   string	The database charset
+	 */
+	public static function getDatabase() 
+	{
+		if(!isset(self::$sCharset))
+		{
+			global $babDB;
+			$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+			if(false === $oResult)
+			{
+				self::$sCharset = 'latin1';
+			}
+			
+			$aDbCharset = $babDB->db_fetch_assoc($oResult);
+			if(false === $aDbCharset)
+			{
+				self::$sCharset = 'latin1';
+			}
+			
+			self::$sCharset = $aDbCharset['Value'];
+		}
+		return self::$sCharset;
+	}
+	
+	private static function resetCharset()
+	{
+		self::$sCharset = null;
+		bab_charset::getDatabase();
+	}
+	
+	public static function getIso() 
+	{
+		return self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
+	}
+
+	public static function getIsoCharsetFromDataBaseCharset($sCharset)
+	{
+		switch($sCharset) 
+		{
+			case 'utf8':
+				return 'UTF-8';
+				
+			case 'latin1':
+				return 'ISO-8859-15';
+		
+			default:
+				return '';
+		}
+	}
+}
+
 
 /**
 * @internal SEC1 PR 18/01/2007 FULL
@@ -99,7 +449,7 @@ function bab_formatDate($format, $time)
 			switch($m[1][$i])
 				{
 				case 'd': /* A short textual representation of a day, three letters */
-					$val = substr($babDays[date("w", $time)], 0 , 3);
+					$val = mb_substr($babDays[date("w", $time)], 0 , 3);
 					break;
 				case 'D': /* day */
 					$val = $babDays[date("w", $time)];
@@ -255,7 +605,7 @@ function bab_editor_record(&$str)
 		$tag  = &$out[0][$i];
 		
 		list($tmp) = explode(' ',trim($out[1][$i]));
-		$name = strtolower($tmp);
+		$name = mb_strtolower($tmp);
 
 		if (!isset($worked[$tag]))
 			{
@@ -270,7 +620,7 @@ function bab_editor_record(&$str)
 				for($j = 0 ; $j < count($elements[0]) ; $j++ )
 					{
 					$att_elem = &$elements[0][$j];
-					$att_name = strtolower($elements[1][$j]);
+					$att_name = mb_strtolower($elements[1][$j]);
 
 					if (!empty($att_name) && !isset($allowed_attributes[$att_name]))
 						{
@@ -303,15 +653,15 @@ function bab_editor_record(&$str)
 function bab_browserOS()
 	{
 	global $HTTP_USER_AGENT;
-	if ( stristr($HTTP_USER_AGENT, "windows"))
+	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "windows"))
 		{
 	 	return "windows";
 		}
-	if ( stristr($HTTP_USER_AGENT, "mac"))
+	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mac"))
 		{
 		return "macos";
 		}
-	if ( stristr($HTTP_USER_AGENT, "linux"))
+	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "linux"))
 		{
 		return "linux";
 		}
@@ -321,21 +671,21 @@ function bab_browserOS()
 function bab_browserAgent()
 	{
 	global $HTTP_USER_AGENT;
-	if ( stristr($HTTP_USER_AGENT, "konqueror"))
+	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "konqueror"))
 		{
 		return "konqueror";
 		}
-	if( stristr($HTTP_USER_AGENT, "opera"))
+	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "opera"))
 		{
 		return "opera";
 		}
-	if( stristr($HTTP_USER_AGENT, "msie"))
+	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "msie"))
 		{
 		return "msie";
 		}
-	if( stristr($HTTP_USER_AGENT, "mozilla"))
+	if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "mozilla"))
 		{
-		if(stristr($HTTP_USER_AGENT, "gecko"))
+		if(false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "gecko"))
 			return "nn6";
 		else
 			return "nn4";
@@ -359,8 +709,13 @@ function bab_translate($str, $folder = "", $lang="")
 	{
 	static $babLA = array();
 
-	if( empty($lang))
-		$lang = $GLOBALS['babLanguage'];
+	if( empty($lang)) {
+		if (!isset($GLOBALS['babLanguage'])) {
+			$lang = 'en';
+		} else {
+			$lang = $GLOBALS['babLanguage'];
+		}
+	}
 
 	if( empty($lang) || empty($str))
 		return $str;
@@ -674,7 +1029,7 @@ function bab_getUserId( $name )
 	{
 	global $babDB;
 	$replace = array( " " => "", "-" => "");
-	$hash = md5(strtolower(strtr($name, $replace)));
+	$hash = md5(mb_strtolower(strtr($name, $replace)));
 	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";	
 	$res = $babDB->db_query($query);
 	if( $babDB->db_num_rows($res) > 0)
@@ -920,9 +1275,9 @@ function bab_calendarPopup($callback, $month='', $year='', $low='', $high='')
  */
 function bab_mkdir($path, $mode='')
 {
-	if( substr($path, -1) == "/" )
+	if( mb_substr($path, -1) == "/" )
 		{
-		$path = substr($path, 0, -1);
+		$path = mb_substr($path, 0, -1);
 		}
 	$umask = umask($GLOBALS['babUmaskMode']);
 	if( $mode === '' )
@@ -1143,9 +1498,10 @@ function bab_getFileMimeType($file)
 {
 	global $babDB;
 	$mime = "application/octet-stream";
-	if ($ext = strrchr($file,"."))
+	$iPos = mb_strpos($file, ".");
+	if (false !== $iPos)
 		{
-		$ext = substr($ext,1);
+		$ext = mb_substr($file,$iPos+1);
 		$res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
@@ -1236,6 +1592,16 @@ function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
 
 /**
  * List of viewables directories for the user
+ * For each directory, you will get an array with keys : 
+ * <ul>
+ * 	<li>id : the ID in table</li>
+ *  <li>name</li>
+ *  <li>description</li>
+ *  <li>entry_id_directory : each entry in this directory will contain the value in the id_directory column, > 0 if the directory is not a group directory</li>
+ *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
+ * </ul>
+ *
+ * @return array					each key of the returned array is an id_directory
  */ 
 function bab_getUserDirectories() {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
@@ -1490,7 +1856,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	}
 
 	if (is_string($data)) {
-		$size = strlen($data);
+		$size = mb_strlen($data);
 	}
 	
 	$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
@@ -1715,7 +2081,7 @@ function bab_printOvmlTemplate($file, $args=array())
 {
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
 
-	if ((false !== strstr($file, '..')) || strtolower(substr($file, 0, 4)) == 'http')
+	if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http')
 	{
 		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
 	}
@@ -1758,7 +2124,7 @@ function bab_printOvmlTemplate($file, $args=array())
  * @return 	string
  */
 function bab_abbr($text, $type, $max_length) {
-	$len = strlen($text);
+	$len = mb_strlen($text);
 	if ($len < $max_length) {
 		return $text;
 	}
@@ -1768,7 +2134,7 @@ function bab_abbr($text, $type, $max_length) {
 	if (BAB_ABBR_FULL_WORDS === $type) {
 		for ($i = count($mots)-1; $i >= 0; $i--) {
 			if ($mots[$i][1] < $max_length) {
-				return substr($text,0,$mots[$i][1]).'...';
+				return mb_substr($text,0,$mots[$i][1]).'...';
 			}
 		}
 	}
@@ -1778,7 +2144,7 @@ function bab_abbr($text, $type, $max_length) {
 		if ($max_length < $n) {
 			return bab_abbr($text, BAB_ABBR_FULL_WORDS, $max_length);
 		} else {
-			array_walk($mots, create_function('&$v,$k','$v = strtoupper(substr($v[0],0,1)).".";'));
+			array_walk($mots, create_function('&$v,$k','$v = mb_strtoupper(mb_substr($v[0],0,1)).".";'));
 			return implode('',$mots);
 		}
 	}
@@ -1808,7 +2174,7 @@ function bab_locale() {
 		}
 		
 		
-		switch(strtolower($babLanguage)) {
+		switch(mb_strtolower($babLanguage)) {
 			case 'fr':
 				$arrLoc = array('fr_FR', 'fr');
 				break;
@@ -1816,7 +2182,7 @@ function bab_locale() {
 				$arrLoc = array('en_GB', 'en_US', 'en');
 				break;
 			default:
-				$arrLoc = array(strtolower($babLanguage).'_'.strtoupper($babLanguage), strtolower($babLanguage));
+				$arrLoc = array(mb_strtolower($babLanguage).'_'.mb_strtoupper($babLanguage), mb_strtolower($babLanguage));
 				break;
 		}
 		

@@ -161,7 +161,7 @@ function babSectionTemplate($file, $section="")
 
 	
 	$this->file = $file;
-	$this->htmlid = substr($this->file,0,-5);
+	$this->htmlid = mb_substr($this->file,0,-5);
 	$this->setTemplate($section);
 	}
 
@@ -490,7 +490,7 @@ function babTopicsSection($cat, $close)
 			else if((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and ( bab_isUserTopicManager($arr['id']) or bab_isCurrentUserApproverFlow($arr['idsaart']) or bab_isCurrentUserApproverFlow($arr['iddacom'])))
 				$whatToFilter = 0;
 
-			if(($whatToFilter == 0)	or ($whatToFilter == 1 and (substr($arr['lang'], 0, 2) == substr($GLOBALS['babLanguage'], 0, 2)))
+			if(($whatToFilter == 0)	or ($whatToFilter == 1 and (mb_substr($arr['lang'], 0, 2) == mb_substr($GLOBALS['babLanguage'], 0, 2)))
 				or ($whatToFilter == 2 and ($arr['lang'] == $GLOBALS['babLanguage'])))
 				array_push($this->arrid, $arr['topid']);
 			}
@@ -767,7 +767,7 @@ function printout()
 			$a = $i + $this->babCalendarStartDay;
 			if( $a > 6)
 				$a -=  7;
-			$this->day3 = substr($babDays[$a], 0, 1);
+			$this->day3 = mb_substr($babDays[$a], 0, 1);
 			$i++;
 			return true;
 			}

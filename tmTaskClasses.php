@@ -1175,7 +1175,7 @@
 					$this->set_data('sSelectedPredecessor', ($datas['id'] == $iSelectedPredecessor) ? 'checked="checked"' : '');
 					$this->set_data('iIdPredecessor', $datas['id']);
 
-//					$sPredecessor = (strlen(trim($datas['shortDescription']) > 0)) ? $datas['shortDescription'] : $datas['taskNumber'];
+//					$sPredecessor = (mb_strlen(trim($datas['shortDescription']) > 0)) ? $datas['shortDescription'] : $datas['taskNumber'];
 					$this->set_data('sPredecessorNumber', $datas['taskNumber']);
 					$this->set_data('sPredecessorShortDescription', $datas['shortDescription']);
 					$this->set_data('iIsStarted', $datas['isStarted']);
@@ -1478,7 +1478,7 @@ bab_debug($sMsg);
 				}
 			}
 			
-			if(BAB_TM_DURATION === $this->m_iDurationType && 0 == strlen(trim(bab_rp('sPlannedEndDate', ''))))
+			if(BAB_TM_DURATION === $this->m_iDurationType && 0 == mb_strlen(trim(bab_rp('sPlannedEndDate', ''))))
 			{
 				//$this->computeEndDate();
 				
@@ -1535,7 +1535,7 @@ bab_debug($sMsg);
 
 		function isTaskNumberValid()
 		{
-			if(strlen($this->m_sTaskNumber) > 0)
+			if(mb_strlen($this->m_sTaskNumber) > 0)
 			{
 				if(!is_null($this->m_aCfg))
 				{
@@ -1576,7 +1576,7 @@ bab_debug($sMsg);
 		
 		function isDateValid($sDate)
 		{
-			if(0 != trim(strlen($sDate)))
+			if(0 != trim(mb_strlen($sDate)))
 			{
 				$oDate = BAB_DateTime::fromIsoDateTime($sDate);
 				return (!is_null($oDate));
@@ -1614,7 +1614,7 @@ bab_debug($sMsg);
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
 				$iIdEvent, $sSubject, $sBody);
 		}
@@ -1628,7 +1628,7 @@ bab_debug($sMsg);
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			
 			if(is_null($this->m_oSendMail))
 			{
@@ -1646,7 +1646,7 @@ bab_debug($sMsg);
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			if(is_null($this->m_oSendMail))
 			{
 				$this->m_oSendMail = new BAB_TM_SendEmail();
@@ -1663,7 +1663,7 @@ bab_debug($sMsg);
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName);
 			
 			if(is_null($this->m_oSendMail))
 			{
@@ -1680,7 +1680,7 @@ bab_debug($sMsg);
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName, 
+			$sBody = sprintf($sBody, ((mb_strlen(trim($this->m_sShortDescription)) > 0) ? $this->m_sShortDescription : $this->m_sTaskNumber), $sProjectName, $sProjectSpaceName, 
 				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
 			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
 				$iIdEvent, $sSubject, $sBody);
@@ -1766,7 +1766,7 @@ bab_debug($sMsg);
 			if($this->isTaskValidByDate())
 			{
 				//si date butoir de fin
-				if(0 != strlen(trim(bab_rp('sPlannedEndDate', ''))))
+				if(0 != mb_strlen(trim(bab_rp('sPlannedEndDate', ''))))
 				{
 					$oLimitEndDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedEndDate);
 					$oEndDate = BAB_DateTime::fromIsoDateTime($this->m_sPlannedStartDate);
@@ -1947,7 +1947,7 @@ bab_debug($sMsg);
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
-				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['sShortDescription']			= mb_substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sCreated']					= $this->m_sCreated;
 				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
@@ -2043,7 +2043,7 @@ bab_debug($sMsg);
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
-				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['sShortDescription']			= mb_substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sCreated']					= $this->m_sCreated;
 				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
@@ -2105,7 +2105,7 @@ bab_debug($sMsg);
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
-				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['sShortDescription']			= mb_substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sCreated']					= $this->m_sCreated;
 				$aTask['iIdUserCreated']			= $this->m_iIdUserCreated;
@@ -2211,7 +2211,7 @@ bab_debug($sMsg);
 				$aTask =& $this->m_oTask->m_aTask;
 				
 				/*
-				if((is_null($this->m_sStartDate) || 0 == strlen($this->m_sStartDate)) && 0 === (int) $aTask['iCompletion'] && 0 < $this->m_iCompletion)
+				if((is_null($this->m_sStartDate) || 0 == mb_strlen($this->m_sStartDate)) && 0 === (int) $aTask['iCompletion'] && 0 < $this->m_iCompletion)
 				{
 					$this->m_sStartDate = date('Y-m-d H:i:s');
 				}
@@ -2219,7 +2219,7 @@ bab_debug($sMsg);
 				
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? $this->m_sDescription : $aTask['sShortDescription'];
-				$aTask['sShortDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
+				$aTask['sShortDescription']			= (BAB_TM_TASK_RESPONSIBLE !== $this->m_iUserProfil) ? mb_substr($this->m_sShortDescription, 0, 255) : $aTask['sShortDescription'];
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sModified']					= $this->m_sModified;
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
@@ -2412,7 +2412,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
-				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['sShortDescription']			= mb_substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sModified']					= $this->m_sModified;
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
@@ -2469,7 +2469,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 				$aTask['iIdProject']				= $this->m_iIdProject;
 				$aTask['sTaskNumber']				= $this->m_sTaskNumber;
 				$aTask['sDescription']				= $this->m_sDescription;
-				$aTask['sShortDescription']			= substr($this->m_sShortDescription, 0, 255);
+				$aTask['sShortDescription']			= mb_substr($this->m_sShortDescription, 0, 255);
 				$aTask['iIdCategory']				= $this->m_iIdCategory;
 				$aTask['sModified']					= $this->m_sModified;
 				$aTask['iIdUserModified']			= $this->m_iIdUserModified;
@@ -2645,7 +2645,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 		{
 			if(0 !== preg_match("/^([0-9]{4}).{1}([0-9]{2}).{1}([0-9]{2})[[:space:]]{1}([0-9]{2})\:([0-9]{2})\:([0-9]{2})/", $sIsoDateTime, $aMatch))
 			{
-				if(strlen(trim($sIsoDateTime)) > 0)
+				if(mb_strlen(trim($sIsoDateTime)) > 0)
 				{
 					$oDate = BAB_DateTime::fromIsoDateTime($sIsoDateTime);
 					if(null !== $oDate)
@@ -2687,7 +2687,7 @@ bab_debug('A terminer, PB avec la date butoir de fin');
 			
 			$sProjectSpaceName = $this->getProjectSpaceName();
 			$sProjectName = $this->getProjectName();
-			$sBody = sprintf($sBody, ((strlen(trim($aTask['sShortDescription'])) > 0) ? $aTask['sShortDescription'] : $aTask['sTaskNumber']), $sProjectName, $sProjectSpaceName, 
+			$sBody = sprintf($sBody, ((mb_strlen(trim($aTask['sShortDescription'])) > 0) ? $aTask['sShortDescription'] : $aTask['sTaskNumber']), $sProjectName, $sProjectSpaceName, 
 				bab_getUserName($GLOBALS['BAB_SESS_USERID']));
 			sendNotice($this->m_iIdProjectSpace, $this->m_iIdProject, $this->m_iIdTask, 
 				$iIdEvent, $sSubject, $sBody);

@@ -149,9 +149,9 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			$this->cb = $cb;
 			$this->idtype = $idtype;
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
-				$this->pos = strlen($pos)>1? $pos[1]: '';
+				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 				$req = "select * from ".BAB_USERS_TBL." where lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
 				$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
@@ -224,7 +224,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&pos=".$this->ord.$this->selectname."&idtype=".$this->idtype."&cb=".$this->cb;
 
 				if( $this->pos == $this->selectname)
@@ -1240,7 +1240,7 @@ function listVacationRightPersonnel($pos, $idvr)
 			if( $k < 26)
 				{
 				global $babDB;
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&pos=".$this->ord.$this->selectname."&idvr=".$this->idvr);
 
 				if( $this->pos == $this->selectname)

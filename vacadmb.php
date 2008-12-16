@@ -1090,7 +1090,7 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 	header("Content-Disposition: attachment; filename=\"".bab_translate("Vacation").".csv\""."\n");
 	header("Content-Type: text/plain"."\n");
-	header("Content-Length: ". strlen($output)."\n");
+	header("Content-Length: ". mb_strlen($output)."\n");
 	header("Content-transfert-encoding: binary"."\n");
 	print $output;
 	exit;

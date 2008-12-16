@@ -1,49 +1,50 @@
 <!--#begin popupunload -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{ babLanguage }" lang="{ babLanguage }">
-<head>
-<title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-
-</head>
-<!--#if redirecturl -->
-<body onUnload="javascript:this.opener.location.href='{ redirecturl }';">
-<!--#else redirecturl -->
-<!--#if openerreload -->
-<body onUnload="this.opener.location.reload()">
-<!--#else openerreload -->
-<body>
-<!--#endif openerreload -->
-<!--#endif redirecturl -->
-<br><br><br><br>
-
-<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
-</tr>
-<tr align="left" valign="middle">
-<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
-close }</a> </td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<script type="text/javascript">
-	setTimeout("this.close()","1000");
-</script>
-
-</BODY>
+	<head>
+		<title>{ babSiteName }</title>
+		{ babMeta }
+		{ babCss }
+		<meta http-equiv="Content-type" content="{ sContent }"/>
+		<script type="text/javascript">
+		//<![CDATA[
+		window.focus();
+		//]]>
+		</script>
+	</head>
+	<!--#if redirecturl -->
+	<body onUnload="javascript:this.opener.location.href='{ redirecturl }';">
+	<!--#else redirecturl -->
+	<!--#if openerreload -->
+	<body onUnload="this.opener.location.reload()">
+	<!--#else openerreload -->
+	<body>
+	<!--#endif openerreload -->
+	<!--#endif redirecturl -->
+	<br /><br /><br /><br />
+	
+	<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td> 
+				<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+					</tr>
+					<tr align="left" valign="middle">
+						<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br />
+	<script type="text/javascript">
+	//<![CDATA[
+		setTimeout("this.close()","1000");
+	//]]>
+	</script>
+	
+	</BODY>
 </HTML>
 <!--#end popupunload -->
 
@@ -54,7 +55,7 @@ close }</a> </td>
 	<title>{ babSiteName } <!--#if title --> - { title } <!--#endif title --></title>
 	{ babMeta }
 	{ babCss }
-
+	<meta http-equiv="Content-type" content="{ sContent }"/>
 	<style type="text/css">
 	<!--#in getnextstylesheet -->
 	@import url('{ babInstallPath }styles/{ file }');
@@ -67,8 +68,8 @@ close }</a> </td>
 	</style>
 
 	<script type="text/javascript" src="{ babOvidentiaJs }">
-	<!--
-	//-->
+	//<![CDATA[
+	//]]>
 	</script>
 </head>
 <body class="babbodypopup BabContentBackground">

@@ -225,7 +225,7 @@ $req = "select * from users";
 $res1 = $db->db_query($req);
 while( $arr = $db->db_fetch_array($res1))
 	{
-	$hash = md5(strtolower(strtr($arr[firstname].$arr[lastname], $replace)));
+	$hash = md5(mb_strtolower(strtr($arr[firstname].$arr[lastname], $replace)));
 	$req = "update users set hashname='".$hash."' where id='".$arr[id]."'";
 	$res = $db->db_query($req);
 	}

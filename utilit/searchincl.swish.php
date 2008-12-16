@@ -282,7 +282,7 @@ class bab_indexFilesCls extends swishCls
 				} else {
 					
 					$content = implode("", @file($this->indexLog));
-					if (false === strpos($content,'OVIDENTIA EOF')) {
+					if (false === mb_strpos($content,'OVIDENTIA EOF')) {
 						// file created but script not finished
 						$r->result = BAB_INDEX_RUNNING;
 						$r->addDebug($content);

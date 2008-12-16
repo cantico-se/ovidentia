@@ -74,7 +74,7 @@
 
 		function send_notification($user_email, $subject, $body)
 		{
-			if($this->m_mail === false || strlen(trim($user_email)) < 0)
+			if($this->m_mail === false || mb_strlen(trim($user_email)) < 0)
 			{
 				return;
 			}

@@ -64,10 +64,10 @@ function listContacts($pos)
 				$this->namesearch2 = 'lastname';
 			break;}
 
-			if( substr($pos,0,1) == '-' )
+			if( mb_substr($pos,0,1) == '-' )
 				{
 				$this->pos = '-';
-				$this->ord = substr($pos,1);
+				$this->ord = mb_substr($pos,1);
 				$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ".$babDB->db_escape_string($this->namesearch2).", ".$babDB->db_escape_string($this->namesearch)." asc";
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->urlfullname = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=chg&pos=".$pos);
@@ -156,7 +156,7 @@ function listContacts($pos)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = bab_toHtml(substr($t, $k, 1));
+				$this->selectname = bab_toHtml(mb_substr($t, $k, 1));
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$this->ord.$this->selectname;
 
 				if( $this->pos == $this->selectname)

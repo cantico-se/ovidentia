@@ -102,8 +102,8 @@ class bab_siteMap_item {
 	 */
 	function setLink($href, $onclick = '') {
 	
-		if (0 === strpos($href, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
-			$href = substr($href, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+		if (0 === mb_strpos($href, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+			$href = mb_substr($href, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 		}
 	
 		$this->href = $href;
@@ -453,77 +453,6 @@ class bab_sitemap_tree extends bab_dbtree
 		
 	}
 	
-	
-	
-	
-	/**
-	 * Insert a new child node into a list in memory
-	 * Get ordered child nodes with first child ID
-	 * @param	int		$id_parent
-	 * @param	string	$childname
-	 * @return array
-	 */
-	function setAlphaChild($id_parent, $childname)
-	{
-		
-		global $babDB;
-		
-		$res = $babDB->db_query('
-			SELECT 
-				s.id, 
-				l.name  
-			FROM 
-				'.BAB_SITEMAP_TBL.' s, 
-				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' l 
-			WHERE 
-				l.id_function=s.id_function
-				AND s.id_parent = '.$babDB->quote($id_parent).'
-		');
-		
-		
-		if (0 === (int) $babDB->db_num_rows($res)) {
-			return array(
-				array(
-					'new' => $childname
-				)
-				,0);
-		}
-		
-		$child_nodes = array();
-		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
-			$child_nodes[$arr['id']] = $arr['name'];
-		}
-		
-		$child_nodes['new'] = $childname;
-		natcasesort($child_nodes);
-		$first = reset($child_nodes);
-		$firstchild = $first['id'];
-		return array($child_nodes,$firstchild);
-	}
-
-
-	/**
-	 * Add a node ordered into childnodes list
-	 * @param	int		$id_parent
-	 * @param	string	$childname
-	 */
-	function addAlpha($id_parent, $childname)
-	{
-		list($child_nodes, $firstchild) = $this->setAlphaChild($id_parent, $childname);
-		foreach($child_nodes as $key => $value) {
-		
-			if ('new' == $key && isset($id_previous))
-				{
-				return $this->add($id_parent,$id_previous, true);
-			}
-			elseif ('new' == $key)
-				{
-				return $this->add($id_parent, $firstchild, false);
-			}
-			$id_previous = $key;
-		}
-	}
 }
 
 
@@ -1025,7 +954,10 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 	
 		// leaf creation
 		
-		$id_node = $tree->addAlpha($id_parent, $node->label);
+		//$id_node = $tree->addAlpha($id_parent, $node->label);
+
+		$id_node = $tree->add($id_parent);
+
 		if ($id_node) {
 			$tree->setFunction($id_node, $node->uid);
 		}
@@ -1217,17 +1149,7 @@ function bab_sitemap_userSection(&$event) {
 
 	global $babBody, $babDB;
 
-	$item = $event->createItem('babUser');
-	$item->setLabel(bab_translate("User's section"));
-	$item->setPosition(array('root', 'DGAll'));
-	$event->addFolder($item);
-	
-	$item = $event->createItem('babUserSection');
-	$item->setLabel(bab_translate("Ovidentia functions"));
-	$item->setPosition(array('root', 'DGAll', 'babUser'));
-	$event->addFolder($item);
-	
-	
+
 
 	// user links
 	
@@ -1361,46 +1283,35 @@ function bab_sitemap_userSection(&$event) {
 			);
 		}
 
+	require_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+	$directories = getUserDirectories(true);
+	$ldapdirectories = getUserLdapDirectories(true);
 
-	$bdiradd = false;
-	$res = $babDB->db_query("select id, id_group from ".BAB_DB_DIRECTORIES_TBL."");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if( $row['id_group'] != 0 )
-			{
-			list($bdiraccess) = $babDB->db_fetch_row($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$row['id_group']."'"));
-			}
-		else
-			$bdiraccess = 'Y';
-		if($bdiraccess == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
-			{
-			$bdiradd = true;
-			break;
-			}
-		}
-
-	if( $bdiradd === false )
-		{
-		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL."");
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(bab_isAccessValid(BAB_LDAPDIRVIEW_GROUPS_TBL, $row['id']))
-				{
-				$array_urls[bab_translate("Directories")] = array(
-					'url' =>  $GLOBALS['babUrlScript']."?tg=directory",
-					'uid' => 'babUserDir'
-					);
-				break;
-				}
-			}
-		}
-
-	if( $bdiradd )
+	if( $directories || $ldapdirectories )
 		{
 		$array_urls[bab_translate("Directories")] = array(
 			'url' =>  $GLOBALS['babUrlScript']."?tg=directory",
-			'uid' => 'babUserDir'
+			'uid' => 'babUserDir',
+			'folder' => array()
 			);
+
+		foreach($directories as $id_directory => $arr_directory) {
+				$array_urls[bab_translate("Directories")]['folder'][$arr_directory['name']] = array(
+					'url' =>  $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id_directory,
+					'uid' => 'babUserDbDirId'.$id_directory,
+					'desc' => $arr_directory['description']
+				);
+			}
+
+
+		foreach($ldapdirectories as $id_directory => $arr_directory) {
+				$array_urls[bab_translate("Directories")]['folder'][$arr_directory['name']] = array(
+					'url' =>  $GLOBALS['babUrlScript'].'?tg=directory&idx=sldap&id='.$id_directory,
+					'uid' => 'babUserLdapDirId'.$id_directory,
+					'desc' => $arr_directory['description']
+				);
+			}
+
 		}
 
 	if( count($babBody->ocids) > 0 )
@@ -1452,28 +1363,14 @@ function bab_sitemap_userSection(&$event) {
 			'uid' => 'babUserThesaurus'
 			);
 		}
-	
-	ksort($array_urls);
-	
-	
-	foreach($array_urls as $label => $arr) {
-		$link = $event->createItem($arr['uid']);
-		$link->setLabel($label);
-		$link->setLink($arr['url']);
-		$link->setPosition(array('root', 'DGAll', 'babUser','babUserSection'));
-		if (isset($arr['desc'])) {
-			$link->setDescription($arr['desc']);
-		}
-		$event->addFunction($link);
-	}
-	
-	
+
+
+
+
+
 	// addons
 	$addon_urls = array();
 	$addons = bab_addonsInfos::getRows();	
-	
-
-	
 	
 	foreach( $addons as $row ) 
 		{
@@ -1484,8 +1381,8 @@ function bab_sitemap_userSection(&$event) {
 				reset ($arr);
 				while (list ($txt, $url) = each($arr)) {
 				
-					if (0 === strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
-						$url = substr($url, strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
+					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 					}
 				
 					$addon_urls[$txt] = array(
@@ -1497,22 +1394,81 @@ function bab_sitemap_userSection(&$event) {
 			}
 		}
 	
-	ksort($addon_urls);
-	
-	if (0 < count($addon_urls)) {
-		$item = $event->createItem('babUserSectionAddons');
-		$item->setLabel(bab_translate("Addons links"));
-		$item->setPosition(array('root', 'DGAll', 'babUser'));
-		$event->addFolder($item);
-		
 
-		foreach($addon_urls as $label => $arr) {
-			$link = $event->createItem($arr['uid']);
-			$link->setLabel($label);
-			$link->setLink($arr['url']);
-			$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
-			$event->addFunction($link);
+
+
+
+	
+	
+
+
+
+	if (0 < count($array_urls) || 0 < count($addon_urls)) {
+
+		$item = $event->createItem('babUser');
+		$item->setLabel(bab_translate("User's section"));
+		$item->setPosition(array('root', 'DGAll'));
+		$event->addFolder($item);
+
+		if (0 < count($array_urls)) {
+
+			$item = $event->createItem('babUserSection');
+			$item->setLabel(bab_translate("Ovidentia functions"));
+			$item->setPosition(array('root', 'DGAll', 'babUser'));
+			$event->addFolder($item);
+
+			foreach($array_urls as $label => $arr) {
+				$link = $event->createItem($arr['uid']);
+				$link->setLabel($label);
+				$link->setLink($arr['url']);
+				$link->setPosition(array('root', 'DGAll', 'babUser','babUserSection'));
+				if (isset($arr['desc'])) {
+					$link->setDescription($arr['desc']);
+				}
+				if (isset($arr['folder'])) {
+					$event->addFolder($link);
+
+					foreach($arr['folder'] as $sub_label => $sub_arr) {
+						$sub_link = $event->createItem($sub_arr['uid']);
+						$sub_link->setLabel($sub_label);
+						$sub_link->setLink($sub_arr['url']);
+						$sub_link->setPosition(array('root', 'DGAll', 'babUser','babUserSection', $arr['uid']));
+						if (isset($sub_arr['desc'])) {
+							$sub_link->setDescription($sub_arr['desc']);
+						}
+
+						$event->addFunction($sub_link);
+					}
+
+
+				} else {
+					$event->addFunction($link);
+				}
+			}
+			
 		}
+		
+		
+		
+		if (0 < count($addon_urls)) {
+			
+			$item = $event->createItem('babUserSectionAddons');
+			$item->setLabel(bab_translate("Addons links"));
+			$item->setPosition(array('root', 'DGAll', 'babUser'));
+			$event->addFolder($item);
+			
+
+			foreach($addon_urls as $label => $arr) {
+				$link = $event->createItem($arr['uid']);
+				$link->setLabel($label);
+				$link->setLink($arr['url']);
+				$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
+				$event->addFunction($link);
+			}
+		}
+
+
+
 	}
 }
 

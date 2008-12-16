@@ -69,7 +69,7 @@ function pushHtmlData($id,$str, $attrib = false)
 	if (is_array($attrib))
 		{
 		foreach ($attrib as $key => $value)
-			$strattrib .= $key.'="'.htmlentities($value).'" ';
+			$strattrib .= $key.'="'.bab_toHtml($value).'" ';
 		}
 	$this->elements[$id][1][] = array(0 => $str, 1 => $strattrib);
 	}
@@ -222,40 +222,42 @@ class bab_synchronizeSql
 			{
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
-				$l = (strlen(strrchr($m[2][$k],')'))*-1);
-				$fields = substr($m[2][$k],0,$l);
-
-
-				$field = array();
-				$keys = array();
-
-				preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
-				for ($l = 0; $l < count($n[2]); $l++ )
+				$iPos = mb_strpos($m[2][$k], ')');
+				if(false !== $iPos)
 					{
-					$key = trim($n[1][$l]);
-					$f = $n[2][$l];
-					
-					if ('PRIMARY KEY' === $key) {
-						$f = 'PRIMARY';
-					}
-
-					if (!empty($key))
+					$l = (mb_strlen(mb_substr($m[2][$k], $iPos+1))*-1);
+					$fields = mb_substr($m[2][$k],0,$l);
+	
+					$field = array();
+					$keys = array();
+	
+					preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
+					for ($l = 0; $l < count($n[2]); $l++ )
 						{
-						$keys[$f] = trim(trim($n[0][$l]),",");
+						$key = trim($n[1][$l]);
+						$f = $n[2][$l];
+						
+						if ('PRIMARY KEY' === $key) {
+							$f = 'PRIMARY';
 						}
-					else
-						{
-						$field[$f] = str_replace("`$f`",'',$n[0][$l]);
-						$field[$f] = trim(trim($field[$f]),",");
+	
+						if (!empty($key))
+							{
+							$keys[$f] = trim(trim($n[0][$l]),",");
+							}
+						else
+							{
+							$field[$f] = str_replace("`$f`",'',$n[0][$l]);
+							$field[$f] = trim(trim($field[$f]),",");
+							}
 						}
+	
+					$this->create[$m[1][$k]] = array(
+									'create' => $m[0][$k],
+									'fields' => $field,
+									'keys' => $keys
+									);
 					}
-
-				$this->create[$m[1][$k]] = array(
-								'create' => $m[0][$k],
-								'fields' => $field,
-								'keys' => $keys
-								);
-				
 				}
 			}
 		else
@@ -468,7 +470,7 @@ class bab_synchronizeSql
 		
 		
 	function trimall($str) {
-	  	return strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B"), '', $str));
+	  	return mb_strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B"), '', $str));
 	}
 		
 		
@@ -481,7 +483,7 @@ class bab_synchronizeSql
 		$option_file = $this->create[$table]['fields'][$field];
 		
 		$null = $this->tables[$table][$field]['Null'] != 'YES' ? ' NOT NULL' : '';
-		$default = $this->tables[$table][$field]['Default'] != '' || false !== strpos($this->tables[$table][$field]['Type'],'char') ? " default '".$this->tables[$table][$field]['Default']."'" : '';
+		$default = $this->tables[$table][$field]['Default'] != '' || false !== mb_strpos($this->tables[$table][$field]['Type'],'char') ? " default '".$this->tables[$table][$field]['Default']."'" : '';
 		$extra = !empty($this->tables[$table][$field]['Extra']) ? ' '.$this->tables[$table][$field]['Extra'] : '';
 		$comment = !empty($this->tables[$table][$field]['Comment']) ? " COMMENT '".$this->tables[$table][$field]['Comment']."'" : '';
 		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra.$comment;
@@ -796,8 +798,8 @@ function bab_debug_print_backtrace($echo = false)
 					$param = get_class($param);
 				}
 
-				$params .= '<span title="' . htmlEntities('[' . $param . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
-						.  '<div style="display: none; background-color: #EEEECC" id="' . $spanId . '">' . htmlEntities('[' . $param_str . ']') . '</div>';
+				$params .= '<span title="' . bab_toHtml('[' . $param . ']') . '" style="cursor: pointer" onclick="s=document.getElementById(\'' . $spanId . '\'); s.style.display==\'none\'?s.style.display=\'\':s.style.display=\'none\'">[+]</span>'
+						.  '<div style="display: none; background-color: #EEEECC" id="' . $spanId . '">' . bab_toHtml('[' . $param_str . ']') . '</div>';
 				$nbParam++;
 			}
         }

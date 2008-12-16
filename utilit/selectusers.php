@@ -115,7 +115,7 @@ class bab_selectUsersBase
 			{
 				$aUserList[$iIdUser] = bab_getUserName($iIdUser);
 			}
-			natcasesort($aUserList);
+			bab_sort::natcasesort($aUserList);
 		}
 
 		if(list($this->id_user, $u) = each($aUserList)) 
@@ -307,14 +307,14 @@ class bab_selectUsersBase
 			
 			if(0 < count($aExcludedUserId))
 			{
-				if(strlen($sExcludedIdUser) > 0)
+				if(mb_strlen($sExcludedIdUser) > 0)
 				{
 					$sExcludedIdUser .= ', ';
 				}
 				$sExcludedIdUser .= $babDB->quote($aExcludedUserId);
 			}
 	
-			if(strlen($sExcludedIdUser) > 0)
+			if(mb_strlen($sExcludedIdUser) > 0)
 			{
 				return sprintf(' AND usr.id NOT IN(%s)', $sExcludedIdUser);
 			}

@@ -61,7 +61,7 @@ function summaryXlinks($col, $order, $startday, $endday)
 
 			$res = $babDB->db_query($req);
 
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 			$this->totalhits = 0;
@@ -141,7 +141,7 @@ function summaryXlinks($col, $order, $startday, $endday)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;

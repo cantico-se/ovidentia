@@ -85,7 +85,7 @@ class mgroups
 		}
 	$this->delegat = isset($tree->delegat[$this->arr['id']]);
 	$this->arr['name'] = bab_translate($this->arr['name']);
-	$this->arr['description'] = htmlentities(bab_translate($this->arr['description']));
+	$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
 	$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;
 	$this->tpl_tree = bab_grp_node_html($tree, $this->arr['id'], 'mgroup.html', 'grp_childs', $this->options);
 

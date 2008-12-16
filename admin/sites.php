@@ -218,7 +218,7 @@ function zipupgrade($message)
 				} 
 			}
 			
-			natcasesort($this->dirs);
+			bab_sort::natcasesort($this->dirs);
 		}
 
 
@@ -328,7 +328,7 @@ function unzipcore()
 		}
 	else
 		{
-		$new_dir = substr($ul,0,-4);
+		$new_dir = mb_substr($ul,0,-4);
 		}
 	
 	if (is_file($tmpdir.$ul))
@@ -358,9 +358,9 @@ function unzipcore()
 
 			foreach ($zipcontents as $key => $value)
 				{
-				if (substr($value['filename'],0,strlen($core)) == $core)
+				if (mb_substr($value['filename'],0,mb_strlen($core)) == $core)
 					{
-					$subdir = substr($value['filename'],strlen($core));
+					$subdir = mb_substr($value['filename'],mb_strlen($core));
 					$where = isset($subdir) && $subdir != '.' ? $new_dir.'/'.$subdir : $new_dir;
 					if ($value['size'] == 0) // directory
 						{

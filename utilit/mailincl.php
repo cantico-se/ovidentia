@@ -54,7 +54,7 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 
 			if ($structure->ifdisposition)
 				{
-				if (strtolower ($structure->disposition) == "attachment")
+				if (mb_strtolower ($structure->disposition) == "attachment")
 					{
 					return false;
 					}
@@ -121,6 +121,7 @@ class babMail
 		include_once $GLOBALS['babInstallPath']."utilit/class.smtp.php";
 		
 		$this->mail = new phpmailer();
+		$this->mail->CharSet = bab_charset::getIso();
 		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
 		$this->mail->From = $GLOBALS['babAdminEmail'];
 		$this->mail->FromName = $GLOBALS['babAdminName'];

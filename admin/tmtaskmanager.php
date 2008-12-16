@@ -496,7 +496,7 @@ function addModifyProjectSpace()
 		$sName = bab_pp('sName', '');
 		$sDescription = bab_pp('sDescription', '');
 		
-		if(strlen(trim($sName)) > 0)
+		if(mb_strlen(trim($sName)) > 0)
 		{
 			$id = bab_isProjectSpaceExist($iIdDelegation, $sName);
 			

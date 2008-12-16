@@ -28,6 +28,7 @@ require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
+require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
 
 
 
@@ -103,8 +104,6 @@ class BAB_GetHtmlUploadBlock
 	}
 }
 
-
-
 class listFiles
 {
 	var $db;
@@ -143,14 +142,6 @@ class listFiles
 	
 	function listFiles($what="list")
 	{
-		if(!function_exists('bab_compareFmFiles'))
-		{		
-			function bab_compareFmFiles($f1, $f2)
-			{
-				return strcasecmp($f1['sName'], $f2['sName']);
-			}
-		}
-		
 		$this->sParentTitle = bab_translate("Parent");
 		
 		global $babBody, $babDB, $BAB_SESS_USERID;
@@ -164,7 +155,7 @@ class listFiles
 		$this->{$this->sListFunctionName}();
 		
 		$this->prepare();
-		$this->autoadd_files();
+//		$this->autoadd_files();
 	}
 	
 	function initEnv()
@@ -239,7 +230,7 @@ class listFiles
 		{
 			$this->addCollectiveDirectory($oFmFolder, $oFmFolder->getId());
 		}
-		uasort($this->aFolders, 'bab_compareFmFiles');
+		bab_sort::asort($this->aFolders, 'sName');
 		
 		if(userHavePersonnalStorage())
 		{
@@ -268,7 +259,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'simpleDirectoryCallback');
 		}
-		uasort($this->aFolders, 'bab_compareFmFiles');
+		bab_sort::asort($this->aFolders, 'sName');
 	}
 
 	function listCollectiveFolder()
@@ -279,7 +270,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
 		}
-		uasort($this->aFolders, 'bab_compareFmFiles');
+		bab_sort::asort($this->aFolders, 'sName');
 	}
 	
 	function walkDirectory($sPathName, $sCallbackFunction)
@@ -563,6 +554,7 @@ class listFiles
 	/** 
 	 * if there is file not presents in database, add and recreate $this->res
 	 */
+/*	
 	function autoadd_files() 
 	{
 		global $babDB, $babBody;
@@ -631,6 +623,7 @@ class listFiles
 			$this->prepare();
 		}
 	}
+//*/
 }
 
 
@@ -989,7 +982,8 @@ function listTrashFiles()
 				$oFolderFile = $this->oFolderFileSet->next();
 				if(!is_null($oFolderFile))
 				{
-					$ext = substr(strrchr($oFolderFile->getName(), "."), 1);
+					$iPos = mb_strpos($oFolderFile->getName(), ".");
+					$ext = mb_substr($oFolderFile->getName(), $iPos+1);
 					if(empty($this->arrext[$ext]))
 					{
 						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
@@ -1478,7 +1472,7 @@ function listFiles()
 					
 				$this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=cutFolder&id=' . $iIdRootFolder . 
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
-
+				
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr . '&path=' . $sUrlEncodedPath);
 				
 				$this->altbg = !$this->altbg;
@@ -1533,21 +1527,29 @@ function listFiles()
 		}
 		
 		function updateFileInfo($arr)
+		{
+			$this->fileimage = '';
+			
+			$iOffset = mb_strpos($arr['name'], '.');
+			if(false !== $iOffset)
 			{
-			$ext = strtolower(substr(strrchr($arr['name'], "."), 1));
-			if( !empty($ext) && empty($this->arrext[$ext]))
-				{
-				$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
-				if( empty($this->arrext[$ext]))
-					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
-				$this->fileimage = $this->arrext[$ext];
-				}
-			else if( empty($ext))
-				{
-				$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
-				}
-			else
-				$this->fileimage = $this->arrext[$ext];
+				$ext = mb_strtolower(mb_substr($arr['name'], $iOffset+1));
+				if( !empty($ext) && empty($this->arrext[$ext]))
+					{
+					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
+					if( empty($this->arrext[$ext]))
+						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
+					$this->fileimage = $this->arrext[$ext];
+					}
+				else if( empty($ext))
+					{
+					$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
+					}
+				else
+					$this->fileimage = $this->arrext[$ext];
+			}
+				
+				
 			$this->name = $arr['name'];
 			
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
@@ -1566,7 +1568,7 @@ function listFiles()
 				$this->readonly = "R";
 			else
 				$this->readonly = "";
-			}
+		}
 
 		function getnextfile()
 		{
@@ -1709,9 +1711,9 @@ function listFiles()
 					$this->description = bab_toHTML($arr['description']);
 					$ufile = urlencode($arr['name']);
 					$upath = '';
-					if(strlen(trim($arr['path'])) > 0)
+					if(mb_strlen(trim($arr['path'])) > 0)
 					{
-						$upath = urlencode((string) substr($arr['path'], 0, -1));
+						$upath = urlencode((string) mb_substr($arr['path'], 0, -1));
 					}
 					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile.'&idf='.$arr['id']);
@@ -1915,9 +1917,11 @@ function getFile()
 			{
 				$fsize = filesize($sFullPathName);
 				
+
 				bab_setTimeLimit(3600);
+
 				
-				if(strtolower(bab_browserAgent()) == "msie")
+				if(mb_strtolower(bab_browserAgent()) == "msie")
 				{
 					header('Cache-Control: public');
 				}
@@ -2074,8 +2078,8 @@ function pasteFile()
 	
 		if($oFileManagerEnv->userIsInPersonnalFolder())
 		{
-			$sOldEndPath = (strlen(trim($sSrcPath)) > 0) ? '/' : '';
-			$sNewEndPath = (strlen(trim($sTrgPath)) > 0) ? '/' : '';
+			$sOldEndPath = (mb_strlen(trim($sSrcPath)) > 0) ? '/' : '';
+			$sNewEndPath = (mb_strlen(trim($sTrgPath)) > 0) ? '/' : '';
 			
 			$sOldRelativePath = $sSrcPath . $sOldEndPath;
 			$sNewRelativePath = $sTrgPath . $sNewEndPath;
@@ -2889,7 +2893,7 @@ function cutCollectiveDir()
 	
 	$sDirName = (string) bab_gp('sDirName', '');
 	
-	if(strlen(trim($sDirName)) > 0)
+	if(mb_strlen(trim($sDirName)) > 0)
 	{
 		if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
 		{
@@ -2964,7 +2968,7 @@ function cutUserFolder()
 		return;
 	}
 	
-	if(strlen(trim($sDirName)) > 0)
+	if(mb_strlen(trim($sDirName)) > 0)
 	{
 		$sUploadPath = $oFileManagerEnv->getRootFmPath();
 		$sFullPathName = realpath($sUploadPath . $oFileManagerEnv->sRelativePath . $sDirName);
@@ -3117,11 +3121,11 @@ function pasteCollectiveDir()
 //		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
 //		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
 
-//		$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
+//		$sPath = mb_substr($sFullTrgPath, 0, mb_strlen($sFullSrcPath));
 //		if($sPath !== $sFullSrcPath)
 		{
-			$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
-			$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
+			$bSrcValid = ((realpath(mb_substr($sFullSrcPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
+			$bTrgValid = ((realpath(mb_substr($sFullTrgPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
 			
 //			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
 //			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
@@ -3150,7 +3154,7 @@ function pasteCollectiveDir()
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 				
 				$sLastRelativePath = $sSrcPath . '/';
-				$sNewRelativePath = ((strlen(trim($sTrgPath)) > 0) ? 
+				$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ? 
 					$sTrgPath . '/' : '') . getLastPath($sSrcPath) . '/';
 					
 				if(false === $bSrcPathCollective)
@@ -3246,11 +3250,11 @@ function pasteUserFolder()
 		}
 		else 
 		{
-//			$sPath = substr($sFullTrgPath, 0, strlen($sFullSrcPath));
+//			$sPath = mb_substr($sFullTrgPath, 0, mb_strlen($sFullSrcPath));
 //			if($sPath !== $sFullSrcPath)
 			{
-				$bSrcValid = ((realpath(substr($sFullSrcPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
-				$bTrgValid = ((realpath(substr($sFullTrgPath, 0, strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
+				$bSrcValid = ((realpath(mb_substr($sFullSrcPath, 0, mb_strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
+				$bTrgValid = ((realpath(mb_substr($sFullTrgPath, 0, mb_strlen($sUploadPath))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
 
 //				bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
 //				bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
@@ -3258,7 +3262,7 @@ function pasteUserFolder()
 				if($bSrcValid && $bTrgValid)
 				{
 					$sLastRelativePath = $sSrcPath . '/';
-					$sNewRelativePath = ((strlen(trim($sTrgPath)) > 0) ? 
+					$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ? 
 						$sTrgPath . '/' : '') . getLastPath($sSrcPath) . '/';
 					
 					$sSrc = removeEndSlah($sUploadPath . $sLastRelativePath);
@@ -3288,11 +3292,11 @@ function pasteUserFolder()
 						$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
 						
 						$oFolderFileSet->select($oCriteria);
-						$iL = strlen($sLastRelativePath);
+						$iL = mb_strlen($sLastRelativePath);
 						while(null !== ($oFolderFile = $oFolderFileSet->next()))
 						{
 							$opath = $oFolderFile->getPathName();
-							$oFolderFile->setPathName($sNewRelativePath.substr($opath, $iL ));
+							$oFolderFile->setPathName($sNewRelativePath.mb_substr($opath, $iL ));
 							$oFolderFile->save();
 						}
 					}
@@ -3332,7 +3336,7 @@ function createFolderForCollectiveDir()
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{	
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(strlen(trim($sDirName)) > 0)
+		if(mb_strlen(trim($sDirName)) > 0)
 		{
 			$sType					= (string) bab_pp('sType', 'collective');
 			$sActive				= (string) bab_pp('sActive', 'Y');
@@ -3353,6 +3357,14 @@ function createFolderForCollectiveDir()
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
 				$sUploadPath	= BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
 				$sDirName		= replaceInvalidFolderNameChar($sDirName);
+	
+				if(!isStringSupportedByFileSystem($sDirName))
+				{
+					$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+					return ;
+				}
+				
+				
 				$sFullPathName	= $sUploadPath . $sRelativePath . $sDirName;
 
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
@@ -3407,13 +3419,20 @@ function createFolderForUserDir()
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(strlen(trim($sDirName)) > 0)
+		if(mb_strlen(trim($sDirName)) > 0)
 		{
 //			bab_debug('sFullPathName ==> ' .  $sFullPathName);
 //			bab_debug('sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
 
 			$sUploadPath	= $oFileManagerEnv->getCurrentFmPath();
 			$sDirName		= replaceInvalidFolderNameChar($sDirName);
+	
+			if(!isStringSupportedByFileSystem($sDirName))
+			{
+				$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+				return ;
+			}
+			
 			$sFullPathName	= $sUploadPath . $sDirName;
 			BAB_FmFolderHelper::createDirectory($sFullPathName);
 		}
@@ -3463,7 +3482,7 @@ function editFolderForCollectiveDir()
 	{	
 //bab_debug('Rajouter un test qui permet d\'être que c\'est répertoire collectif ou pas');
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(strlen(trim($sDirName)) > 0)
+		if(mb_strlen(trim($sDirName)) > 0)
 		{
 			$sType				= (string) bab_pp('sType', 'collective');
 			$iIdFld				= (int) bab_pp('iIdFolder', 0); 
@@ -3517,9 +3536,16 @@ function editFolderForCollectiveDir()
 
 			if($bFolderRenamed)
 			{
-				if(strlen(trim($sOldDirName)) > 0)
+				if(mb_strlen(trim($sOldDirName)) > 0)
 				{
 					$sLocalDirName = replaceInvalidFolderNameChar($sDirName);
+	
+					if(!isStringSupportedByFileSystem($sLocalDirName))
+					{
+						$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+						return ;
+					}
+					
 					$bSuccess = BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sLocalDirName);
 					if(false !== $bSuccess)
 					{
@@ -3636,7 +3662,7 @@ function editFolderForUserDir()
 		$sDirName = (string) bab_pp('sDirName', '');
 		$sOldDirName = (string) bab_pp('sOldDirName', '');
 
-		if(strlen(trim($sDirName)) > 0 && strlen(trim($sOldDirName)) > 0)
+		if(mb_strlen(trim($sDirName)) > 0 && mb_strlen(trim($sOldDirName)) > 0)
 		{
 			$sPathName = $sRelativePath . $sOldDirName . '/';
 			$sRootFmPath = $oFileManagerEnv->getRootFmPath();
@@ -3651,6 +3677,13 @@ function editFolderForUserDir()
 			if($bFolderRenamed)
 			{
 				$sDirName = replaceInvalidFolderNameChar($sDirName);
+	
+				if(!isStringSupportedByFileSystem($sDirName))
+				{
+					$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
+					return ;
+				}
+				
 				if(BAB_FmFolderHelper::renameDirectory($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName))
 				{
 					BAB_FolderFileSet::renameFolder($sPathName, $sDirName, 'N');
@@ -3697,9 +3730,9 @@ function deleteFolderForCollectiveDir()
 	$oFileManagerEnv =& getEnvObject();
 
 	$sDirName = (string) bab_pp('sDirName', '');
-	if(false === strstr($sDirName, '..'))
+	if(false === mb_strpos($sDirName, '..'))
 	{
-		if(strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
+		if(mb_strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
 		{
 			$iIdFld	= (int) bab_pp('iIdFolder', 0); 
 			if(0 !== $iIdFld)
@@ -3734,9 +3767,9 @@ function deleteFolderForUserDir()
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(false === strstr($sDirName, '..'))
+		if(false === mb_strpos($sDirName, '..'))
 		{
-			if(strlen(trim($sDirName)) > 0)
+			if(mb_strlen(trim($sDirName)) > 0)
 			{
 				$sUploadPath = $oFileManagerEnv->getRootFmPath();
 				
@@ -3777,6 +3810,7 @@ function changeDelegation()
 		bab_setCurrentUserDelegation($iDelegation);
 	}
 }
+
 
 
 /* main */

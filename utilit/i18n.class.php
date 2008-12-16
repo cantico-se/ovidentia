@@ -21,70 +21,51 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-class babTempFiles
+require_once 'base.php';
+
+
+if(!class_exists('Collator'))
 {
-var $tmpdir;
-var $elapsed;
-
-function babTempFiles($path, $elapsed = 3600, $prefix = "ov_")
+	class Collator
 	{
-	$this->elapsed = $elapsed;
-	$this->prefix = $prefix;
-
-	if( mb_substr($path, -1) != "/")
-		$path .= "/";
-
-	if( !empty($path) && is_dir($path))
+		private $mixedLocale = null;
+		
+		const SORT_REGULAR	= SORT_REGULAR;
+		const SORT_NUMERIC	= SORT_NUMERIC;
+		const SORT_STRING	= SORT_STRING;
+		
+		public function __construct($locale)
 		{
-		$this->tmpdir = $path;
-		$h = opendir($this->tmpdir);
-		$size = 0;
-		while (($f = readdir($h)) != false)
+			$this->mixedLocale = $locale;
+		}
+		
+		public static function create($locale)
+		{
+			return new Collator($locale);
+		}
+		
+		public function sort(array &$aToSort)
+		{
+			return usort($aToSort, array('Collator', 'compare'));
+		}
+		
+		public function asort(array &$aToSort)
+		{
+			return uasort($aToSort, array('Collator', 'compare'));
+		}
+		
+		public static function compare($sStr1, $sStr2)
+		{
+			if('utf8' == bab_charset::getDatabase())
 			{
-			if ($f != "." and $f != "..") 
-				{
-				$fpath = $this->tmpdir.$f;
-				if (is_file($fpath) && mb_substr($f, 0, mb_strlen($this->prefix)) == $this->prefix)
-					{
-					$ftime = mb_substr($f, mb_strlen($this->prefix));
-					if( mktime() - $ftime > $this->elapsed )
-						unlink( $fpath );
-					}
-				}
+				$sStr1 = utf8_decode($sStr1);
+				$sStr2 = utf8_decode($sStr2);
 			}
-		closedir($h);
-		}
-	}
-
-
-function tempfile( $tmpfile, $file )
-	{
-	if( empty($this->tmpdir) || !is_dir($this->tmpdir))
-		return "";
-
-	$iPos = mb_strpos($file, '.');
-	if(false !== $iPos)	
-		{	
-		$ext = mb_substr($file, $iPos+1);
-		}
-	else
-		{
-		$ext = "";
-		}
-
-	$filename = $this->prefix.mktime();
-	if( $ext )
-		$filename .= ".".$ext;
-
-	if( !move_uploaded_file($tmpfile, $this->tmpdir.$filename))
-		{
-		return "";
-		}
-	else
-		{
-		return $this->tmpdir.$filename;
+			return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 		}
 	}
 }
+
+
+
 ?>

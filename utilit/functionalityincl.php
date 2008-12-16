@@ -93,9 +93,9 @@ class bab_functionalities {
 		$includePath = str_replace('\\','/',$filePath);
 		
 		// include in relative path if file is under install path
-		if (false !== strpos($includePath, $installPath)) {
-			$pos = strlen($includePath) - strpos( strrev($includePath) , strrev($installPath)) - strlen($installPath);
-			$includePath = substr($includePath, $pos);
+		if (false !== mb_strpos($includePath, $installPath)) {
+			$pos = mb_strlen($includePath) - mb_strpos( strrev($includePath) , strrev($installPath)) - mb_strlen($installPath);
+			$includePath = mb_substr($includePath, $pos);
 		}
 		
 		return str_replace($GLOBALS['babInstallPath'], '\'.$GLOBALS[\'babInstallPath\'].\'', $includePath);
@@ -200,7 +200,7 @@ class bab_functionalities {
 			closedir($dh);
 		}
 
-		sort($children);
+		bab_sort::sort($children, bab_sort::CASE_INSENTIVE);
 		return $children;
 	}
 
@@ -390,7 +390,7 @@ class bab_functionalities {
 		
 		$func_path = trim($func_path,'/ ');
 
-		if (false !== strpos($func_path, '_')) {
+		if (false !== mb_strpos($func_path, '_')) {
 			trigger_error('$func_path must not contain _');
 			return false;
 		}
@@ -592,7 +592,7 @@ class bab_functionalities {
 	 * @static
 	 */
 	function getPath($classname) {
-		return str_replace('_', '/', substr($classname, strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
+		return str_replace('_', '/', mb_substr($classname, mb_strlen(BAB_FUNCTIONALITY_CLASS_PREFIX)));
 	}
 }
 

@@ -380,7 +380,7 @@ if( isset($tg) && $tg == "statinfo" )
 					case "tg":
 						break;
 					default:
-						if( substr($args[0], 0, 4) == "bab_" )
+						if( mb_substr($args[0], 0, 4) == "bab_" )
 							{	
 							$arr = explode(',', $args[1]);
 							for( $k = 0; $k < count($arr); $k++ )

@@ -141,10 +141,16 @@ function bab_getResizedImage($imgf, $w, $h)
 					   phpinfo(8);
 					   $info = ob_get_contents();
 					   ob_end_clean();
-					   $info = stristr($info, 'gd version');
-					   preg_match('/\d/', $info, $match);
-					   $gd_ver = $match[0];
-					   return $match[0];
+					   
+					   $info = mb_strtolower($info);
+					   $iOffset = mb_strpos($info, 'gd version');
+					   if(false !== $iOffset)
+					   {
+					   		$info = mb_substr($info, $iOffset);	
+						   preg_match('/\d/', $info, $match);
+						   $gd_ver = $match[0];
+						   return $match[0];
+					   }
 					} // End gdVersion()
 
 				if (gdVersion() >= 2)

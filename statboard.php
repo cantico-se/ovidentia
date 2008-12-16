@@ -62,7 +62,7 @@ function summaryDelegatList($col, $order)
 				array("orgcharts", bab_translate("Charts"))
 				);
 
-			$this->oldorder = strtolower($order);
+			$this->oldorder = mb_strtolower($order);
 			$this->sortord = $this->oldorder == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 
@@ -179,7 +179,7 @@ function summaryDelegatList($col, $order)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;
@@ -205,7 +205,7 @@ function summarySections($col, $order)
 			$this->delegattxt = bab_translate("Delegation");
 			$this->usagetxt = bab_translate("Usage");
 
-			$order = strtolower($order);
+			$order = mb_strtolower($order);
 			$this->sortord = $order == "asc"? "desc": "asc";
 			$this->sortcol = $col;
 	
@@ -426,7 +426,7 @@ function summarySections($col, $order)
 			}
 		header("Content-Disposition: attachment; filename=\"export.csv\""."\n");
 		header("Content-Type: text/plain"."\n");
-		header("Content-Length: ". strlen($output)."\n");
+		header("Content-Length: ". mb_strlen($output)."\n");
 		header("Content-transfert-encoding: binary"."\n");
 		print $output;
 		exit;

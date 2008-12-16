@@ -572,7 +572,7 @@ function processSpecificFieldBaseClass($iIdProjectSpace, $iIdProject, $iFieldTyp
 {
 	$sFieldName = trim(bab_rp('sFieldName', ''));
 	
-	if(0 < strlen($sFieldName))
+	if(0 < mb_strlen($sFieldName))
 	{
 		$iIdField = (int) bab_rp('iIdField', 0);
 		$iIdUser = (int) bab_rp('iIdUser', 0);

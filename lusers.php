@@ -79,7 +79,7 @@ function browseUsers($pos, $cb)
 			else
 				$reqa = "select * from ".BAB_USERS_TBL." where is_confirmed ='1' and disabled='0'";
 
-			if( strlen($pos) > 0 && $pos[0] == "-" )
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
 				{
 				$this->pos = isset($pos[1]) ? $pos[1] : '';
 				$this->ord = $pos[0];
@@ -146,7 +146,7 @@ function browseUsers($pos, $cb)
 			static $t = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=lusers&idx=brow&pos=".$this->ord.$this->selectname."&cb=").$this->cb;
 
 				if( $this->pos == $this->selectname)

@@ -55,7 +55,7 @@ function bab_deleteArticleFiles($idart)
 
 function bab_getUploadDraftsPath()
 {
-	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
+	if( mb_substr($GLOBALS['babUploadPath'], -1) == "/" )
 		{
 		$path = $GLOBALS['babUploadPath'];
 		}
@@ -75,7 +75,7 @@ function bab_getUploadDraftsPath()
 
 function bab_getUploadArticlesPath()
 {
-	if( substr($GLOBALS['babUploadPath'], -1) == "/" )
+	if( mb_substr($GLOBALS['babUploadPath'], -1) == "/" )
 		{
 		$path = $GLOBALS['babUploadPath'];
 		}
@@ -1033,7 +1033,7 @@ function bab_getDocumentArticle( $idf )
 	$fsize = filesize($fullpath);
 	$mime = bab_getFileMimeType($file);
 
-	if( strtolower(bab_browserAgent()) == "msie")
+	if( mb_strtolower(bab_browserAgent()) == "msie")
 		header('Cache-Control: public');
 	$inl = bab_getFileContentDisposition() == 1? 1: '';
 	if( $inl == '1' )

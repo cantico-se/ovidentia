@@ -333,7 +333,7 @@ function listPosts($forum, $thread, $post)
 						{
 						$r = $babDB->db_fetch_array($res);
 						$this->replymail = $r['email']."?subject=";
-						if( substr($arr['subject'], 0, 3) != "RE:")
+						if( mb_substr($arr['subject'], 0, 3) != "RE:")
 							$this->replymail .= "RE: ";
 						$this->replymail .= $arr['subject'];
 						}
@@ -777,7 +777,7 @@ function newReply($forum, $thread, $post)
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
-			if( substr($arr['subject'], 0, 3) == "RE:")
+			if( mb_substr($arr['subject'], 0, 3) == "RE:")
 				{
 				$this->subjectval = bab_toHtml($arr['subject']);
 				}
@@ -1229,7 +1229,7 @@ function dlfile($forum,$post,$name)
 		if ($name == $file['name'])
 			{
 			$mime = bab_getFileMimeType($name);
-			if( strtolower(bab_browserAgent()) == "msie")
+			if( mb_strtolower(bab_browserAgent()) == "msie")
 				header('Cache-Control: public');
 			$inl = bab_getFileContentDisposition() == 1? 1: '';
 			if( $inl == "1" )

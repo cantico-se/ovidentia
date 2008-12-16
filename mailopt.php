@@ -557,7 +557,7 @@ function signatureModify($sigid, $signature, $name, $html)
 				$this->nameval = $name;
 				}
 
-			if(( strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
+			if(( mb_strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
 				{
 				$this->bhtml = 1;
 				}

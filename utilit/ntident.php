@@ -68,9 +68,9 @@ function NTuserLogin($nickname)
 	}
 }
 
-if (substr($GLOBALS['babPhpSelf'], 0, 1) == '/')
+if (mb_substr($GLOBALS['babPhpSelf'], 0, 1) == '/')
 {
-	$babPhpSelf = substr($GLOBALS['babPhpSelf'], 1);
+	$babPhpSelf = mb_substr($GLOBALS['babPhpSelf'], 1);
 }
 else
 {

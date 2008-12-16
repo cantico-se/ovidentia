@@ -340,7 +340,7 @@ function addModifyCategory()
 	$sBgColor = bab_rp('sBgColor', '');
 	$iIdUser = bab_rp('iIdUser', 0);
 	
-	if(0 < strlen($sCategoryName))
+	if(0 < mb_strlen($sCategoryName))
 	{
 		$iIdCategory = (int) bab_rp('iIdCategory', 0);
 		

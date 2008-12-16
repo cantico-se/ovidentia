@@ -26,18 +26,26 @@ include_once 'base.php';
 function dire_ext($rep,$ext )
 {
 	$fichier = array();
-	if (!is_dir($rep)) return false;
+	if(!is_dir($rep))
+	{
+		return false;
+	}
+	
 	$reper = opendir($rep);
 	$i = 0;
+	
 	while($dir = readdir($reper))
+	{
+		if(($dir != ".") && ($dir != "..")) 
 		{
-		if (($dir != ".") && ($dir != "..") && (in_array(strrchr($dir,"."),$ext)) ) 
+			$iPos = mb_strpos($dir, '.');
+			if(false !== $iPos && in_array(mb_substr($dir, $iPos+1), $ext))
 			{
-			$fichier[$i] = $dir ; 
-			$i++;
+				$fichier[$i] = $dir ; 
+				$i++;
 			}
-		
 		}
+	}
 	return $fichier;
 }
 
@@ -76,7 +84,7 @@ function browse($url)
 			if ( $url != "" ) 
 				{
 				$this->backlink = true;
-				$upperpath = substr($url,0,strrpos($url,"/"));
+				$upperpath = mb_substr($url,0,mb_strrpos($url,"/"));
 				$this->backlink = bab_toHtml($GLOBALS['babUrlScript']."?tg=editorovml&url=".$upperpath);
 				}
 			$this->path = is_dir($GLOBALS['babOvmlPath'].'editor') ? 'editor/' : '';

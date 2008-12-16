@@ -363,7 +363,7 @@ class bab_ObjectsInfo extends bab_handler
 		$type = $ctx->get_value('type');
 		if( $type !== false && $type !== '' )
 		{
-			$type = strtolower(trim($type));
+			$type = mb_strtolower(trim($type));
 			switch( $type )
 			{
 				case 'folder':
@@ -482,7 +482,7 @@ class bab_ArticlesHomePages extends bab_handler
 		if( $order === false || $order === '' )
 			$order = "asc";
 
-		switch(strtoupper($order))
+		switch(mb_strtoupper($order))
 		{
 			case "DESC": $order = "ht.ordering DESC"; break;
 			case "RAND": $order = "rand()"; break;
@@ -490,7 +490,7 @@ class bab_ArticlesHomePages extends bab_handler
 			default: $order = "ht.ordering"; break;
 		}
 
-		switch(strtolower($this->idgroup))
+		switch(mb_strtolower($this->idgroup))
 			{
 			case "public":
 				$this->idgroup = 2; // non registered users
@@ -510,7 +510,7 @@ class bab_ArticlesHomePages extends bab_handler
 	
 		$filter = $ctx->get_value('filter');
 
-		if (($filter == "")||(strtoupper($filter) == "NO")) 
+		if (($filter == "")||(mb_strtoupper($filter) == "NO")) 
 			$filter = false;
 		else
 			$filter = true;
@@ -1040,7 +1040,7 @@ class bab_Articles extends bab_handler
 			if( $archive === false || $archive === '')
 				$archive = "no";
 
-			switch(strtoupper($archive))
+			switch(mb_strtoupper($archive))
 			{
 				case 'NO': $archive = " and archive='N' "; break;
 				case 'YES': $archive = " and archive='Y' "; break;
@@ -1055,7 +1055,7 @@ class bab_Articles extends bab_handler
 				$order = 'asc';
 
 			$forder = $ctx->get_value('topicorder');
-			switch(strtoupper($forder))
+			switch(mb_strtoupper($forder))
 			{
 				case 'YES': $forder = true; break;
 				case 'NO': /* no break */
@@ -1068,7 +1068,7 @@ class bab_Articles extends bab_handler
 				$orderby = "at.date";
 			else
 				{
-				switch(strtolower($orderby))
+				switch(mb_strtolower($orderby))
 					{
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
@@ -1078,7 +1078,7 @@ class bab_Articles extends bab_handler
 					}
 				}
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case 'ASC':
 					if( $forder )
@@ -1555,7 +1555,7 @@ class bab_Post extends bab_handler
 				$order = "asc";
 				}
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case "ASC": $order = "p.date ASC"; break;
 				case "RAND": $order = "rand()"; break;
@@ -1642,9 +1642,10 @@ class bab_PostFiles extends bab_handler
 				$this->arr = array();
 				while (false !== ($file = readdir($h))) 
 					{
-					if (substr($file,0,strpos($file,',')) == $postid)
+					$iOffset = mb_strpos($file,',');	
+					if(false !== $iOffset && mb_substr($file, 0, $iOffset) == $postid)
 						{
-						$name = substr($file,strstr(',',$file)+2);
+						$name = mb_substr($file, $iOffset+1);
 						$this->arr[] = array(
 								'url' => $GLOBALS['babUrlScript']."?tg=posts&idx=dlfile&forum=".$forum."&post=".$postid."&file=".urlencode($name),
 								'name' => $name
@@ -1704,7 +1705,7 @@ class bab_Thread extends bab_handler
 			if( $order === false || $order === '' )
 				$order = "asc";
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case "ASC": $order = "date ASC"; break;
 				case "RAND": $order = "rand()"; break;
@@ -1958,7 +1959,7 @@ class bab_SubFolders extends bab_handler
 			{
 
 				
-				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
+				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
 //				bab_debug('sRelativePath ==> ' . $sRelativePath . 
@@ -1983,13 +1984,14 @@ class bab_SubFolders extends bab_handler
 						$order = 'asc';
 					}
 					
-					switch(strtolower($order))
+					switch(mb_strtolower($order))
 					{
 						case 'desc':
-							rsort($this->IdEntries);
+							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENTIVE);
+							$this->IdEntries = array_reverse($this->IdEntries);
 							break;
 						default:
-							sort($this->IdEntries);
+							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENTIVE);
 							break;
 					}
 				}
@@ -2086,11 +2088,11 @@ class bab_Files extends bab_handler
 		$this->count	= 0;
 		$folderid		= (int) $ctx->get_value('folderid');
 		$this->sPath	= (string) $ctx->get_value('path');
-		$iLength		= strlen(trim($this->sPath));
+		$iLength		= mb_strlen(trim($this->sPath));
 		
 		if($iLength && '/' === $this->sPath{$iLength - 1})
 		{
-			$this->sPath = substr($sEncodedPath, 0, -1); 
+			$this->sPath = mb_substr($sEncodedPath, 0, -1); 
 		}
 
 		$this->sEncodedPath = urlencode($this->sPath);
@@ -2109,7 +2111,7 @@ class bab_Files extends bab_handler
 			{
 				$this->iIdDelegation = $oFmFolder->getDelegationOwnerId();
 				
-				$iRelativePathLength = strlen($oFmFolder->getRelativePath());
+				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
 //				bab_debug('sRelativePath ==> ' . $sRelativePath . 
@@ -2262,7 +2264,7 @@ class bab_File extends bab_handler
 		$this->bab_handler($ctx);
 		$this->count = 0;
 		$sFileId = (string) $ctx->get_value('fileid');
-		if(0 !== strlen(trim($sFileId)))
+		if(0 !== mb_strlen(trim($sFileId)))
 		{
 			$aFileId = explode(',', $sFileId);
 			$this->oFolderFileSet->select($oId->in($aFileId));
@@ -2406,7 +2408,7 @@ class bab_FileFields extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FileFieldName', bab_translate($arr['name']));
-			$fieldval = htmlentities($arr['fvalue']);
+			$fieldval = bab_toHtml($arr['fvalue']);
 			$this->ctx->curctx->push('FileFieldValue', $fieldval);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -2510,7 +2512,7 @@ class bab_RecentArticles extends bab_handler
 			if( $archive === false || $archive === '')
 				$archive = "no";
 
-			switch(strtoupper($archive))
+			switch(mb_strtoupper($archive))
 			{
 				case 'NO': $archive = " AND at.archive='N' "; break;
 				case 'YES': $archive = " AND at.archive='Y' "; break;
@@ -2564,7 +2566,7 @@ class bab_RecentArticles extends bab_handler
 				$orderby = 'at.date_modification';
 			else
 				{
-				switch(strtolower($orderby))
+				switch(mb_strtolower($orderby))
 					{
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
@@ -2574,7 +2576,7 @@ class bab_RecentArticles extends bab_handler
 					}
 				}
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case 'ASC': $order = $orderby.' ASC'; break;
 				case 'RAND': $order = 'rand()'; break;
@@ -2751,7 +2753,7 @@ class bab_RecentComments extends bab_handler
 			if( $order === false || $order === '' )
 				$order = "desc";
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case "ASC": $order = "date ASC"; break;
 				case "RAND": $order = "rand()"; break;
@@ -2861,7 +2863,7 @@ class bab_RecentPosts extends bab_handler
 			if( $order === false || $order === '' )
 				$order = "desc";
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case "ASC": $order = "p.date ASC"; break;
 				case "RAND": $order = "rand()"; break;
@@ -2963,7 +2965,7 @@ class bab_RecentThreads extends bab_handler
 		if( $order === false || $order === '' )
 			$order = "desc";
 
-		switch(strtoupper($order))
+		switch(mb_strtoupper($order))
 		{
 			case "ASC": $order = "p.date ASC"; break;
 			case "RAND": $order = "rand()"; break;
@@ -3110,7 +3112,7 @@ class bab_RecentFiles extends bab_handler
 				$order = "desc";
 				}
 
-			switch(strtoupper($order))
+			switch(mb_strtoupper($order))
 			{
 				case "ASC": $order = 'f.modified ASC'; break;
 				case "RAND": $order = 'rand()'; break;
@@ -4236,7 +4238,7 @@ class bab_Calendars extends bab_handler
 			}
 		else
 			{
-			$typename = strtolower($type);
+			$typename = mb_strtolower($type);
 			switch($typename)
 				{
 				case 'user': $type = BAB_CAL_USER_TYPE;	break;
@@ -4387,8 +4389,8 @@ class bab_CalendarEvents extends bab_handler
 		$babBody->icalendars->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-		$filter = strtoupper($ctx->get_value('filter')) !== "NO"; 
-		$holiday = strtoupper($ctx->get_value('holiday')) !== "NO"; 
+		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO"; 
+		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO"; 
 		switch($babBody->icalendars->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
@@ -4712,7 +4714,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 			{
 			$all = $ctx->get_value('all');
 
-			if ( $all !== false && strtoupper($all) == "YES") 
+			if ( $all !== false && mb_strtoupper($all) == "YES") 
 				$all = true;
 			else
 				$all = false;
@@ -4728,7 +4730,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 				}
 
 			$childs = $ctx->get_value('childs');
-			if ( $childs !== false && strtoupper($childs) == "YES")
+			if ( $childs !== false && mb_strtoupper($childs) == "YES")
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 				$rr = $groupid;
@@ -5485,7 +5487,7 @@ function get_handler($name)
 	for( $i = count($this->handlers)-1; $i >= 0; $i--)
 		{
 		$handler = get_class($this->handlers[$i]);
-		if(  $handler && (strtolower($handler) == strtolower($name)) )
+		if(  $handler && (mb_strtolower($handler) == mb_strtolower($name)) )
 			{
 			return $this->handlers[$i];
 			}
@@ -5547,19 +5549,19 @@ function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 	$handler = "bab_".$handler;
 	if( !class_exists($handler))
 		{
-		if( !strncmp($handler, "bab_DbDir", strlen("bab_DbDir")))
+		if( !strncmp($handler, "bab_DbDir", mb_strlen("bab_DbDir")))
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/ovmldir.php";
 			}
-		elseif( !strncmp($handler, "bab_Delegation", strlen("bab_Delegation")))
+		elseif( !strncmp($handler, "bab_Delegation", mb_strlen("bab_Delegation")))
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/ovmldeleg.php";
 			}
-		elseif( !strncmp($handler, 'bab_Tm', strlen('bab_Tm')))
+		elseif( !strncmp($handler, 'bab_Tm', mb_strlen('bab_Tm')))
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/ovmltm.php';
 			}
-		elseif( !strncmp($handler, 'bab_Org', strlen('bab_Org')))
+		elseif( !strncmp($handler, 'bab_Org', mb_strlen('bab_Org')))
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/ovmlChart.php';
 			}
@@ -5612,16 +5614,16 @@ function format_output($val, $matches)
 
 	foreach( $matches as $p => $v)
 		{
-		switch(strtolower(trim($p)))
+		switch(mb_strtolower(trim($p)))
 			{
 			case 'strlen':
 				$arr = explode(',', $v );
-				if( strlen($val) > $arr[0] )
+				if( mb_strlen($val) > $arr[0] )
 					{
 					if (isset($arr[1])) {
-						$val = substr($val, 0, $v).$arr[1];
+						$val = mb_substr($val, 0, $v).$arr[1];
 					} else {
-						$val = substr($val, 0, $v);
+						$val = mb_substr($val, 0, $v);
 					}
 					$this->gctx->push('substr', 1);
 					}
@@ -5648,7 +5650,7 @@ function format_output($val, $matches)
 						$lhtmlentities = true; break;
 					case '1':
 						$lhtmlentities = true;
-						$val = htmlentities($val); break;
+						$val = bab_toHtml($val); break;
 					case '2':
 						$lhtmlentities = true;
 						$trans = get_html_translation_table(HTML_ENTITIES);
@@ -5657,7 +5659,9 @@ function format_output($val, $matches)
 						break;
 					case '3':
 						$lhtmlentities = true;
-						$val = htmlspecialchars($val);
+						
+						require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+						$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
 						break;
 					}
 				break;
@@ -5679,9 +5683,9 @@ function format_output($val, $matches)
 				switch($v)
 					{
 					case 'upper':
-						$val = strtoupper($val); break;
+						$val = mb_strtoupper($val); break;
 					case 'lower':
-						$val = strtolower($val); break;
+						$val = mb_strtolower($val); break;
 					}
 				break;
 			case 'nlremove':
@@ -5720,9 +5724,9 @@ function format_output($val, $matches)
 				if( !empty($v))
 				{
 				$trans = array();
-				for( $i =0; $i < strlen($v); $i +=2 )
+				for( $i =0; $i < mb_strlen($v); $i +=2 )
 					{
-					$trans[substr($v, $i, 1)] = substr($v, $i+1, 1);
+					$trans[mb_substr($v, $i, 1)] = mb_substr($v, $i+1, 1);
 					}
 				if( count($trans)> 0 )
 					{
@@ -5858,7 +5862,7 @@ function bab_Translate($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'text':
 					$text = $v;
@@ -5882,7 +5886,7 @@ function bab_WebStat($args)
 		$value = '';
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -5894,7 +5898,7 @@ function bab_WebStat($args)
 			}
 		if( !empty($name) && !empty($value))
 			{
-			if( substr($name, 0, 4) == "bab_" )
+			if( mb_substr($name, 0, 4) == "bab_" )
 				{	
 				$arr = explode(',', $value);
 				for( $k = 0; $k < count($arr); $k++ )
@@ -5921,7 +5925,7 @@ function bab_SetCookie($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -5958,7 +5962,7 @@ function bab_GetCookie($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -5983,7 +5987,7 @@ function bab_SetSessionVar($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6012,7 +6016,7 @@ function bab_GetSessionVar($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6035,7 +6039,7 @@ function bab_GetPageTitle($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'saveas':
 					$varname = $v;
@@ -6069,7 +6073,7 @@ function bab_PutVar($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6109,7 +6113,7 @@ function bab_GetVar($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6138,7 +6142,7 @@ function bab_IfNotIsSet($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6166,7 +6170,7 @@ function bab_PutArray($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = trim($v);
@@ -6190,7 +6194,7 @@ function bab_PutSoapArray($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = trim($v);
@@ -6217,7 +6221,7 @@ function bab_rgp($args, $method)
 		{
 		foreach( $args as $p => $v) 
 			{
-			switch(strtolower(trim($p))) 
+			switch(mb_strtolower(trim($p))) 
 				{
 				case 'name':
 					$name = $v;
@@ -6297,7 +6301,7 @@ function bab_Ajax($args)
 		foreach( $args as $p => $v)
 			{
 			$p = trim($p);
-			switch(strtolower($p))
+			switch(mb_strtolower($p))
 				{
 				case 'url':
 					$url = $v;
@@ -6360,7 +6364,7 @@ function bab_ArithmeticOperator($args, $ope)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'expr1':
 					$expr1 = $this->cast($v);
@@ -6398,7 +6402,7 @@ function bab_UrlContent($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'url':
 					$url = $v;
@@ -6417,7 +6421,7 @@ function bab_Header($args)
 		{
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'value':
 					$value = $v;
@@ -6430,7 +6434,7 @@ function bab_Header($args)
 
 
 function bab_Recurse($args) {
-	$handler = substr($this->curctx->getname(), 4);
+	$handler = mb_substr($this->curctx->getname(), 4);
 	return $this->handle_tag($handler, $this->curctx->getcontent(), $args);	
 }
 
@@ -6444,7 +6448,7 @@ function bab_Addon($args)
 		$function_args = array();
 		foreach( $args as $p => $v)
 			{
-			switch(strtolower(trim($p)))
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$addon = bab_getAddonInfosInstance($v);
@@ -6516,24 +6520,24 @@ function bab_rel2abs($relative, $url)
 	if( $relative[0] == '#')
 		return $relative;
 
-    if (strlen($url['path']) > 1 && $url['path']{strlen($url['path']) - 1} == '/')
-        $dir = substr($url['path'], 0, strlen($url['path']) - 1);
+    if (mb_strlen($url['path']) > 1 && $url['path']{mb_strlen($url['path']) - 1} == '/')
+        $dir = mb_substr($url['path'], 0, mb_strlen($url['path']) - 1);
     else
         $dir = dirname($url['path']);
 
     if ($relative{0} == '/')
 		{
-        $relative = substr($relative, 1);
+        $relative = mb_substr($relative, 1);
         $dir = '';
 		}
-    else if (substr($relative, 0, 2) == './')
+    else if (mb_substr($relative, 0, 2) == './')
 		{
-        $relative = substr($relative, 2);
+        $relative = mb_substr($relative, 2);
 		}
-    else while (substr($relative, 0, 3) == '../')
+    else while (mb_substr($relative, 0, 3) == '../')
 		{
-        $relative = substr($relative, 3);
-        $dir = substr($dir, 0, strrpos($dir, '/'));
+        $relative = mb_substr($relative, 3);
+        $dir = mb_substr($dir, 0, mb_strrpos($dir, '/'));
 		}
     return sprintf('%s://%s%s/%s', $url['scheme'], $url['host'], $dir, $relative);
 }

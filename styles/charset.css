@@ -1,0 +1,20 @@
+.warningTitle {
+	font-size:15px;
+	font-weight:bold;
+	margin-left:20px;
+}
+
+.warningMessage {
+	font-weight:bold;
+	color:red;
+}
+
+.warningIcon {
+	vertical-align:middle; 
+	margin-left:10px;
+	border:0;
+}
+
+#convertFileSystem {
+	vertical-align:middle; 
+}

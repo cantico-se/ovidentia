@@ -1,0 +1,123 @@
+<!--#begin displayWarning -->
+<script type="text/javascript">
+//<![CDATA[
+//]]>
+</script>
+<form method="get" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="charset" />
+	<input type="hidden" name="idx" value="convertSite" />
+	<input type="hidden" name="sFromCharset" value="{ m_datas[sFromCharset] }" />
+	<input type="hidden" name="sToCharset" value="{ m_datas[sToCharset] }" />
+	
+	<table border="0" width="50%" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground">
+				<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabTopicsBackground">
+					<tr> 
+						<td align="left" class="BabSiteAdminTitleFontBackground" colspan="2">
+							<span class="warningTitle">{ m_captions[sTitle] }</span>
+						</td>
+					</tr>
+					<tr> 
+						<td colspan="2">
+							&nbsp;
+						</td>
+					</tr>
+					<tr> 
+						<td>
+							<img class="warningIcon" src="{ babInstallPath }skins/ovidentia/images/48x48/status/messagebox_warning.png" alt="" />
+						</td>
+						<td class="warningMessage">
+							{ m_captions[sWarningMsg] }<br /><br /><!--#if m_datas[iDisplayWarningMsg2] -->{ m_captions[sWarningMsg2] }<!--#endif m_datas[iDisplayWarningMsg2] -->
+						</td>
+					</tr>
+					<tr> 
+						<td colspan="2">
+							&nbsp;
+						</td>
+					</tr>
+					<tr> 
+						<td class="message" align="center" colspan="2">
+							{ m_captions[sMessage] }
+						</td>
+					</tr>
+					<tr> 
+						<td colspan="2">
+							&nbsp;
+						</td>
+					</tr>
+					<tr> 
+						<td align="center" colspan="2">
+							<input type="checkbox" id="convertFileSystem" name="convertFileSystem" value="1" />&nbsp;&nbsp;{ m_captions[sConvertFileSystem] }
+						</td>
+					</tr>
+					<tr> 
+						<td colspan="2">
+							&nbsp;
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+							<input type="submit" value="{ m_captions[sClickHere] }" />
+						</td>
+					</tr>
+					<tr> 
+						<td colspan="2">
+							&nbsp;
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+<!--#end displayWarning -->
+
+
+<!--#begin displayMessage -->
+<script type="text/javascript">
+//<![CDATA[
+//]]>
+</script>
+<table border="0" width="90%" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground">
+			<table width="100%" border="0" cellspacing="0" cellpadding="2" class="BabTopicsBackground">
+				<tr> 
+					<td align="left" class="BabSiteAdminTitleFontBackground">
+						<span class="warningTitle">{ m_datas[sTitle] }</span>
+					</td>
+				</tr>
+				<tr> 
+					<td>
+						&nbsp;
+					</td>
+				</tr>
+				<!--#in getNextMessage -->
+				<tr> 
+					<td class="warningMessage">
+						{ m_datas[sMessage] }
+					</td>
+				</tr>
+				<!--#endin getNextMessage -->
+				<tr> 
+					<td>
+						&nbsp;
+					</td>
+				</tr>
+				<!--#in getNextMessageItem -->
+				<tr>
+					<td>
+						{ m_datas[sMessageItem] }</a>
+					</td>
+				</tr>
+				<!--#endin getNextMessageItem -->
+				<tr> 
+					<td>
+						&nbsp;
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<!--#end displayMessage -->

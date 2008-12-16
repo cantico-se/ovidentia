@@ -451,7 +451,7 @@ function updateNickname($item, $newnick)
 	{
 	global $babBody, $BAB_HASH_VAR;
 
-	if ( !empty($newnick) && strpos($newnick, ' ') !== false )
+	if ( !empty($newnick) && mb_strpos($newnick, ' ') !== false )
 		{
 		$babBody->msgerror = bab_translate("Login ID should not contain spaces");
 		return false;
@@ -501,7 +501,7 @@ function updatePassword($item, $newpwd1, $newpwd2)
 		return false;
 		}
 	
-	if ( strlen($newpwd1) < 6 )
+	if ( mb_strlen($newpwd1) < 6 )
 		{
 		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
 		return false;
@@ -575,7 +575,7 @@ function updatePassword($item, $newpwd1, $newpwd2)
 			break;
 		}
 
-	$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(strtolower($newpwd1)). "' where id='". $item . "'");
+	$babDB->db_query("update ".BAB_USERS_TBL." set password='". md5(mb_strtolower($newpwd1)). "' where id='". $item . "'");
 	$error = '';
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';

@@ -320,7 +320,7 @@ function calendarOptions($calid, $urla)
 			if( $i < 24 )
 				{
 				$this->timeid = sprintf("%02s:00:00", $i);
-				$this->timeval = substr($this->timeid, 0, 2);
+				$this->timeval = mb_substr($this->timeid, 0, 2);
 				if( $this->timeid == $this->sttime)
 					{
 					$this->selected = "selected";

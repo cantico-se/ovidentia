@@ -187,7 +187,7 @@ function listAddress($pos)
 			static $t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 			if( $k < 26)
 				{
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript'].'?tg=address&idx=list&pos='.$this->selectname;
 
 				if( $this->pos == $this->selectname)

@@ -28,7 +28,7 @@ function getContactId( $name )
 	{
 	global $babDB;
 	$replace = array( " " => "", "-" => "");
-	$hash = md5(strtolower(strtr($name, $replace)));
+	$hash = md5(mb_strtolower(strtr($name, $replace)));
 	$req = "select * from ".BAB_CONTACTS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";	
 	$res = $babDB->db_query($req);
 	if( $babDB->db_num_rows($res) > 0)
@@ -53,12 +53,12 @@ function addAddress( $val, $to, &$adarr)
 			{
 				$adarr[$to][] = array($addr,$addr);
 			}
-			else if( strtolower(substr($addr, -3)) == "(g)")
+			else if( mb_strtolower(mb_substr($addr, -3)) == "(g)")
 			{
-				$id = bab_getUserId(substr($addr, 0, -3));
+				$id = bab_getUserId(mb_substr($addr, 0, -3));
 				if( $id < 1) // it's a group
 				{
-					$idgrp = bab_isMemberOfGroup(substr($addr, 0, -3));
+					$idgrp = bab_isMemberOfGroup(mb_substr($addr, 0, -3));
 					if( $idgrp > 0 )
 					{
 					$req = "select p1.firstname, p1.lastname, p1.email from ".BAB_USERS_TBL." as p1, ".BAB_USERS_GROUPS_TBL." as p2 where p2.id_group='".$babDB->db_escape_string($idgrp)."' and p1.id=p2.id_object";
@@ -431,7 +431,8 @@ function createMail($accid, $to, $cc, $bcc, $subject, $criteria, $reverse, $form
 				{
 				if(!$mail->send())
 					{
-					$babBody->msgerror = bab_translate("Error occured when sending email !!");
+					$babBody->addError(bab_translate("Error occured when sending email !!"));
+					$babBody->addError((string) $mail->ErrorInfo());
 					return false;
 					}
 				$mail->clearBcc();
@@ -448,7 +449,8 @@ function createMail($accid, $to, $cc, $bcc, $subject, $criteria, $reverse, $form
 			{
 			if(!$mail->send())
 				{
-				$babBody->msgerror = bab_translate("Error occured when sending email !!");
+				$babBody->addError(bab_translate("Error occured when sending email !!"));
+				$babBody->addError((string) $mail->ErrorInfo());
 				return false;
 				}
 			$mail->clearBcc();

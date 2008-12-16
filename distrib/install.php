@@ -78,36 +78,87 @@ class bab_dumpToDb
 		return true;
 		}
 
-	function getDatabase() {
-		$res = mysql_select_db($_POST['babDBName'], $this->db);
-		if( $res == true && !empty($_POST['clearDb']) )
+	function getDatabase()
+	{
+		$sDBCharset = (string) isset($_POST['babDBCharset']) ? $_POST['babDBCharset'] : 'utf8';
+		
+		$oResult = mysql_select_db($_POST['babDBName'], $this->db);
+		if($oResult === true)
+		{
+			if(!empty($_POST['clearDb']))
 			{
-			if (!$this->db_queryWem('DROP DATABASE '.$_POST['babDBName']))
+				if(!$this->db_queryWem('DROP DATABASE '.$_POST['babDBName']))
 				{
-				$this->error = $this->trans->str('Can\'t drop the database : ').$_POST['babDBName'].$this->trans->str(' you must delete it manually');
-				return false;
+					$this->error = $this->trans->str('Can\'t drop the database : ').$_POST['babDBName'].$this->trans->str(' you must delete it manually');
+					return false;
 				}
-			else
+				else
 				{
-				$this->succes[] = $this->trans->str('Database deleted : ').$_POST['babDBName'];
-				$createdatabase = true;
+					$this->succes[] = $this->trans->str('Database deleted : ').$_POST['babDBName'];
+					$createdatabase = true;
 				}
 			}
-			
-		if (!$res || (isset($createdatabase) && $createdatabase === true))
+			else
 			{
-			if (!$this->db_queryWem('CREATE DATABASE '.$_POST['babDBName']))
+				$oResult = $this->db_queryWem("SHOW VARIABLES LIKE 'character_set_database'");
+				if(false === $oResult)
 				{
+					$this->error = $this->trans->str('Can\'t get the database charset of : ') . $_POST['babDBName'];
+					return false;
+				}
+				
+				$aDbCharset = $this->db_fetch_assoc($oResult);
+				if(false === $aDbCharset)
+				{
+					$this->error = $this->trans->str('Can\'t fetch the database charset of : ') . $_POST['babDBName'];
+					return false;
+				}
+				
+				$sDbCharsetToCompare = (mb_strtolower($sDBCharset) == 'utf8') ? 'utf8' : 'latin1';
+				
+				if(mb_strtolower($aDbCharset['Value']) !== $sDbCharsetToCompare)
+				{
+					$this->error = $this->trans->str('Incompatible database charset, you have selected : ') . 
+						$sDBCharset . $this->trans->str(' and the charset of the database is : ') . 
+						$aDbCharset['Value'];
+					return false;
+				}
+			}
+		}
+
+			
+		if(!$oResult || (isset($createdatabase) && $createdatabase === true))
+		{
+			$sQuery = '';
+			if('utf8' === $sDBCharset)
+			{
+				$sQuery = 'CREATE DATABASE ' . $_POST['babDBName'] . ' ' .
+					'CHARACTER SET utf8 ' .
+					'DEFAULT CHARACTER SET utf8 ' .
+					'COLLATE utf8_general_ci ' .
+					'DEFAULT COLLATE utf8_general_ci ';
+			}
+			else
+			{
+				$sQuery = 'CREATE DATABASE ' . $_POST['babDBName'] . ' ' .
+					'CHARACTER SET latin1 ' .
+					'DEFAULT CHARACTER SET latin1 ' .
+					'COLLATE latin1_swedish_ci ' .
+					'DEFAULT COLLATE latin1_swedish_ci ';
+			}
+			
+			
+			if(!$this->db_queryWem($sQuery))
+			{
 				$this->error = $this->trans->str('Can\'t create the database : ').$_POST['babDBName'].$this->trans->str(' you must create it manually');
 				return false;
-				}
+			}
 			else
-				{
+			{
 				$this->succes[] = $this->trans->str('Database created : ').$_POST['babDBName'];
 				mysql_select_db($_POST['babDBName'], $this->db);
-				}
 			}
-			
+		}
 		return true;
 	}
 
@@ -285,7 +336,7 @@ function _createFmDirectories()
 	global $error, $succes, $trans;
 	
 	$sUploadPath = $_POST['babUploadPath'];
-	$sLastChar = (string) substr($sUploadPath, 0, -1);
+	$sLastChar = (string) mb_substr($sUploadPath, 0, -1);
 	
 	if('\\' !== $sLastChar && '/' !== $sLastChar)
 	{
@@ -494,8 +545,13 @@ if (!empty($error))
 
 if( isset($_SERVER['REQUEST_URI']))
 {
-	$subpath = substr_count($_SERVER['REQUEST_URI'],'?') ? substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],'?')) : $_SERVER['REQUEST_URI'];
-	$subpath = substr($_SERVER['REQUEST_URI'],0,strlen($subpath)-strlen(strrchr($subpath,'/')));
+	$subpath = mb_substr_count($_SERVER['REQUEST_URI'],'?') ? mb_substr($_SERVER['REQUEST_URI'],0,mb_strpos($_SERVER['REQUEST_URI'],'?')) : $_SERVER['REQUEST_URI'];
+	
+	$iPos = mb_strpos($subpath, '/');
+	if(false !== $iPos)
+	{
+		$subpath = mb_substr($_SERVER['REQUEST_URI'],0,mb_strlen($subpath)-mb_strlen(mb_substr($subpath, $iPos+1)));
+	}
 }
 else
 {
@@ -635,6 +691,24 @@ a:hover {
 					<legend><?php echo $trans->str('database') ?></legend>
 					<dt><label for="babDBHost"><?php echo $trans->str('Database host') ?> :</label><input type="text" id="babDBHost" name="babDBHost" value="<?php if(isset($_POST['babDBHost'])) echo $_POST['babDBHost']; else echo 'localhost'; ?>" /></dt>
 					<dt><label for="babDBName"><?php echo $trans->str('Database name') ?> :</label><input type="text" id="babDBName" name="babDBName" value="<?php if(isset($_POST['babDBName'])) echo $_POST['babDBName']; else echo 'ovidentia'; ?>" /></dt>
+					
+					<dt>
+						<label for="babDBCharset"><?php echo $trans->str('Charset') ?> :</label>					
+						<select id="babDBCharset" name="babDBCharset">
+						<?php 					
+						$sSelectedCharset = isset($_POST['babDBCharset']) ? $_POST['babDBCharset'] : 'utf8';
+						if('utf8' == $sSelectedCharset)
+						{
+							echo '<option value="utf8" selected="selected">utf8</option><option value="latin1">latin1</option>';
+						}
+						else
+						{
+							echo '<option value="utf8">utf8</option><option value="latin1" selected="selected">latin1</option>';
+						}
+						?>
+						</select>					
+					</dt>
+										
 					<dt><label for="babDBName"><?php echo $trans->str('Drop database') ?> :</label><input type="checkbox" id="clearDb" name="clearDb" <?php if(isset($_POST['clearDb']) and !empty($_POST['clearDb'])) echo 'checked';?> /></dt>
 						<dd><?php echo $trans->str('If the database exists, it will be dropped and data will be lost') ?></dd>
 					<dt><label for="babDBLogin"><?php echo $trans->str('Login ID') ?> :</label><input type="text" id="babDBLogin" name="babDBLogin" value="<?php if(isset($_POST['babDBLogin'])) echo $_POST['babDBLogin']; else echo 'root'?>" /></dt>

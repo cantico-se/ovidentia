@@ -60,7 +60,7 @@ function echoLang($path)
 				}
 			else
 				{
-				if( substr($filename,-4) == ".php")
+				if( mb_substr($filename,-4) == ".php")
 					{
 					$file = fopen($path.$filename, "r");
 					if( $file )

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF8"?>
 <nl-be>
 <string id=" is member of"> is lid van</string>
 <string id=" is visible by groups"> is zichtbaar voor de groepen</string>
@@ -180,7 +181,7 @@
 <string id="Cannot rename directory">Naam wijzigen van de folder is niet mogelijk</string>
 <string id="Cannot upload file">Bestand kan niet worden opgeladen</string>
 <string id="Car Phone">Auto Telefoon</string>
-<string id="Categories">Categorieën</string>
+<string id="Categories">CategorieÃ«n</string>
 <string id="Category">Categorie</string>
 <string id="Cc">Cc</string>
 <string id="Change administration group">Wijzig administratie groep</string>
@@ -721,7 +722,7 @@
 <string id="Print">Druk</string>
 <string id="Priority">Priority</string>
 <string id="Private home page articles">Private home page articles</string>
-<string id="Private">Privé</string>
+<string id="Private">PrivÃ©</string>
 <string id="Profession">Profession</string>
 <string id="Public home page articles">Public home page articles</string>
 <string id="Public">Publiek</string>

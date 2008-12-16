@@ -109,7 +109,7 @@ class bab_inifile_requirements {
 
 	function return_bytes($val) {
 	   $val = trim($val);
-	   $last = strtolower($val{strlen($val)-1});
+	   $last = mb_strtolower($val{mb_strlen($val)-1});
 	   switch($last) {
 			// The 'G' modifier is available since PHP 5.1.0
 			case 'g':
@@ -344,6 +344,17 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	
+	function require_mod_mbstring($value) {
+		
+		$status = extension_loaded('mbstring');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'mbstring'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
 
 	function require_mod_imap($value) {
 		
@@ -500,7 +511,7 @@ class bab_inifile_requirements {
 	
 	function require_mysql_character_set_database($value) {
 
-		$value = strtolower($value);
+		$value = mb_strtolower($value);
 		
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'character_set_database'");
@@ -509,7 +520,7 @@ class bab_inifile_requirements {
 		$charset = 'Undefined';
 		
 		if ($arr = $babDB->db_fetch_array($res)) {
-			$charset = strtolower($arr[1]);
+			$charset = mb_strtolower($arr[1]);
 		} else {
 			// undefined on old mysql version
 			$charset = 'latin1';
@@ -527,7 +538,7 @@ class bab_inifile_requirements {
 	
 	function require_mysql_collation_database($value) {
 
-		$value = strtolower($value);
+		$value = mb_strtolower($value);
 		
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'collation_database'");
@@ -536,7 +547,7 @@ class bab_inifile_requirements {
 		$collation = false;
 		
 		if ($arr = $babDB->db_fetch_array($res)) {
-			$collation = strtolower($arr[1]);
+			$collation = mb_strtolower($arr[1]);
 		} else {
 			// undefined on old mysql version
 			$collation = 'latin1_swedish_ci';
@@ -588,7 +599,7 @@ class bab_inifile_requirements {
 		
 		if ($arr = $babDB->db_fetch_array($res)) {
 			if (!empty($arr[1])) {
-				$current = strtolower($arr[1]);
+				$current = mb_strtolower($arr[1]);
 			}
 		}
 
@@ -677,7 +688,7 @@ class bab_inifile {
 		$program_path = $addon_paths['loc_out'][0].'/';
 		
 
-		$filename = substr( $inifile,(strrpos( $inifile,'/')+1));
+		$filename = mb_substr( $inifile,(mb_strrpos( $inifile,'/')+1));
 
 		$zip = new Zip;
 		$zipcontents = $zip->get_List($zipfile);
@@ -704,8 +715,8 @@ class bab_inifile {
 			
 			foreach ($zipcontents as $k => $arr) {
 				
-				if (0 === strpos($arr['filename'], $program_path)) {
-					$archive_filename = substr($arr['filename'], 9);
+				if (0 === mb_strpos($arr['filename'], $program_path)) {
+					$archive_filename = mb_substr($arr['filename'], 9);
 					
 					if ($preinstall_script === $archive_filename) {
 						$inifileindex = $arr['index'];
@@ -730,16 +741,56 @@ class bab_inifile {
 		}
 	}
 
-	function inifile($file) {
-	
+
+
+	function parse($file) {
+
 		if (!file_exists($file) || !is_readable($file)) {
 			$this->inifile = array();
 			return false;
 		}
-	
-	
-		 if ($arr = parse_ini_file($file, true)) {
-			 $this->inifile = $arr['general'];
+
+
+		if ($arr = parse_ini_file($file, true)) {
+			if (isset($arr['general']['encoding'])) {
+				// the charset of the ini file
+
+				switch($arr['general']['encoding']) {
+					case 'ISO-8859-15':
+					case 'UTF-8':
+						$arr = bab_getStringAccordingToDataBase($arr, $arr['general']['encoding']);
+						break;
+
+					default:
+						trigger_error(bab_sprintf('the encoding specified in file "%s" is not supported, fallback to ISO-8859-15',$file));
+						break;
+				}
+			}
+
+			return $arr;
+		}
+
+
+		return false;
+	}
+
+
+
+
+
+
+	function inifile($file) {
+
+		 if ($arr = $this->parse($file)) {
+
+			$this->inifile = $arr['general'];
+
+			 
+			if (!isset($this->inifile['mysql_character_set_database'])) {
+				// if charset test is not here, verify that the database is latin1
+				$this->inifile['mysql_character_set_database'] = 'latin1';
+			}
+			 
 			 
 			 $this->addons = array();
 			 if (isset($arr['addons'])) {
@@ -781,14 +832,9 @@ class bab_inifile {
 	 */
 	function inifileGeneral($file) {
 	
-		if (!file_exists($file) || !is_readable($file)) {
-			$this->inifile = array();
-			return false;
-		}
-	
-		if ($arr = parse_ini_file($file, true)) {
-			 $this->inifile = $arr['general'];
-			 return true;
+		if ($arr = $this->parse($file)) {
+			$this->inifile = $arr['general'];
+			return true;
 		}
 		
 		return false;
@@ -970,7 +1016,7 @@ class bab_inifile {
 			
 				$obj = @bab_functionality::get($name);
 				
-				switch(strtolower($value)) {
+				switch(mb_strtolower($value)) {
 					case 'available':
 						$required = bab_translate('Available');
 						$recommended = false;
@@ -1020,8 +1066,10 @@ class bab_inifile {
 			$order[$key] = $value['description'];
 		}
 
-		natcasesort($order);
-
+		if (class_exists('bab_sort')) {
+			bab_sort::natcasesort($order);
+		}
+		
 		$return_ordered = array();
 		foreach($order as $key => $value) {
 			$return_ordered[] = $return[$key];

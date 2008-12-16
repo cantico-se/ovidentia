@@ -663,7 +663,7 @@ function viewVacationCalendar($users, $period = false )
 				$this->userNameArr[$uid] = bab_getUserName($uid);
 				}
 
-			natcasesort($this->userNameArr);
+			bab_sort::natcasesort($this->userNameArr);
 
 			$this->idusers 		= array_keys($this->userNameArr);
 			$this->nbusers 		= count($this->idusers);
@@ -1411,7 +1411,7 @@ function listRightsByUser($id)
 						$ordering[$key] = $user['lastname'].' '.$user['firstname'];
 					}
 					
-					natcasesort($ordering);
+					bab_sort::natcasesort($ordering);
 					
 					
 					$previous = false;
@@ -1903,7 +1903,7 @@ function updateUserColl()
 
 	foreach($_POST as $field => $value)
 		{
-		if (substr($field,0,strlen($prefix)) == $prefix)
+		if (mb_substr($field,0,mb_strlen($prefix)) == $prefix)
 			{
 			list(,$id_right) = explode('_',$field);
 			if (isset($used[$id_right]))

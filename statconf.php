@@ -630,9 +630,9 @@ function addPage($url, $page )
 		return false;
 		}
 
-	if( !strncasecmp($GLOBALS['babUrl'], $url, strlen($GLOBALS['babUrl'])))
+	if( !strncasecmp($GLOBALS['babUrl'], $url, mb_strlen($GLOBALS['babUrl'])))
 	{
-		$url = substr($url, strlen($GLOBALS['babUrl']));
+		$url = mb_substr($url, mb_strlen($GLOBALS['babUrl']));
 	}
 	$babDB->db_query("insert into ".BAB_STATS_IPAGES_TBL." (page_name, page_url, id_dgowner) values ('".addslashes($page)."','".addslashes($url)."','".$babBody->currentAdmGroup."')");
 }

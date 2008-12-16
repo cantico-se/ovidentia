@@ -434,7 +434,7 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 				$this->fieldn = $this->fields[$i]['name'];
 				$this->fieldv = $this->fields[$i]['value'];
 				$this->mailto = isset($this->fields[$i]['email']) ? $this->fields[$i]['email'] : false;
-				if( strlen($this->fieldv) > 0 )
+				if( mb_strlen($this->fieldv) > 0 )
 					$this->bfieldv = true;
 				else
 					$this->bfieldv = false;

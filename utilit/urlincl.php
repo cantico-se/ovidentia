@@ -51,7 +51,7 @@ class bab_url {
 		}
 		
 		 
-		if (false === strpos($url,'?')) {
+		if (false === mb_strpos($url,'?')) {
 			$url .= '?'.$keyval;
 		} else {
 			$url .= '&'.$keyval;

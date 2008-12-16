@@ -98,7 +98,8 @@ class bab_grptree extends bab_dbtree
 	
 			if (isset($prefix[$arr['id_parent']]))
 				{
-				$prefix[$arr['id']] = sprintf($format, $prefix[$arr['id_parent']], $grp[$arr['id_parent']]['name']);
+					require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+					$prefix[$arr['id']] = bab_sprintf($format, $prefix[$arr['id_parent']], $grp[$arr['id_parent']]['name']);
 				}
 			else
 				{
@@ -126,8 +127,8 @@ class bab_grptree extends bab_dbtree
 			}
 		}
 	$grp['new'] = $childname;
-	natcasesort($grp);
-
+	bab_sort::natcasesort($grp);
+	
 	if (count($groups) > 0)
 		$firstchild = $groups[0]['id'];
 	else
@@ -222,8 +223,8 @@ class bab_grp_node
 
 		//$this->arr['name'] = '['.$this->arr['lf'].','.$this->arr['lr'].'] '.$this->arr['name'];
 
-		$this->arr['description'] = htmlentities($this->arr['description']);
-		$this->arr['managerval'] = htmlentities(bab_getUserName($this->arr['manager']));
+		$this->arr['description'] = bab_toHtml($this->arr['description']);
+		$this->arr['managerval'] = bab_toHtml(bab_getUserName($this->arr['manager']));
 		$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($this->tree->delegat[$this->arr['id']]);
 		$this->set = $GLOBALS['babBody']->currentAdmGroup == 0 && $this->arr['nb_set'] > 0;
 		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;

@@ -23,6 +23,105 @@
 ************************************************************************/
 include_once "base.php";
 
+
+
+
+/**
+ * Return possibles options for ldap server encoding
+ * @return array
+ */
+function bab_getLdapEncoding() {
+	return array(
+		0 => '', 
+		BAB_LDAP_UTF8 => 'UTF-8', 
+		BAB_LDAP_T61 => 'T61'
+	);
+}
+
+
+/**
+ * Return a string of ldap according to ovidentia charset
+ */
+function bab_ldapDecode($str, $type)
+{
+	$ovCharset = bab_charset::getDatabase();
+
+	switch($type)
+	{
+		case BAB_LDAP_UTF8:
+			if ('utf8' === $ovCharset) {
+				return $str; // utf8 to utf8
+			} else {
+				return utf8_decode($str); // utf8 to latin1
+			}
+			break;
+
+		case BAB_LDAP_T61:
+			if ('utf8' === $ovCharset) {
+				return utf8_encode(ldap_t61_to_8859($str)); // t61 to utf8
+			} else {
+				return ldap_t61_to_8859($str); //t61 to latin1
+			}
+			break;
+
+		default:
+			return $str;
+			break;
+	}
+
+}
+
+
+/**
+ * Return a string of ovidentia according to ldap charset
+ */
+function bab_ldapEncode($str, $type)
+{
+
+	$ovCharset = bab_charset::getDatabase();
+
+	switch($type)
+	{
+		case BAB_LDAP_UTF8:
+			if ('utf8' === $ovCharset) {
+				return $str; // utf8 to utf8
+			} else {
+				return utf8_encode($str); // latin1 to utf8
+			}
+			break;
+
+		case BAB_LDAP_T61:
+			if ('utf8' === $ovCharset) {
+				return ldap_8859_to_t61(utf8_decode($str)); // utf8 to t61
+			} else {
+				return ldap_8859_to_t61($str); // latin1 to t61
+			}
+			break;
+
+		default:
+			return $str;
+			break;
+	}
+}
+
+
+/**
+ * Decode from ovidentia charset to authentication ldap charset
+ * @param	string	$str
+ * @return string
+ */
+function auth_decode($str)
+{
+	global $babBody;
+	return bab_ldapDecode($str, $babBody->babsite['ldap_decoding_type']);
+}
+
+
+
+
+
+
+
 function ldap_encrypt($str, $encryption)
 {
 	switch($encryption)
@@ -34,7 +133,7 @@ function ldap_encrypt($str, $encryption)
 			return "{SHA}".base64_encode(mHash(MHASH_SHA1, $str));
 			break;
 		case 'crypt':
-			return "{CRYPT}".crypt($str,substr($str,0,2));
+			return "{CRYPT}".crypt($str,mb_substr($str,0,2));
 			break;
 		case 'md5-hex':
 			return md5($str);
@@ -43,11 +142,11 @@ function ldap_encrypt($str, $encryption)
 			return "{MD5}".base64_encode(mHash(MHASH_MD5, $str));
 			break;
 		case 'ssha':
-			$salt = mhash_keygen_s2k(MHASH_SHA1,$str,substr(pack("h*",md5(mt_rand() )),0,8),4);
+			$salt = mhash_keygen_s2k(MHASH_SHA1,$str,mb_substr(pack("h*",md5(mt_rand() )),0,8),4);
 			return "{SSHA}" .base64_encode(mHash(MHASH_SHA1, $str.$salt).$salt);
 			break;
 		case 'smd5':
-			$salt = mhash_keygen_s2k(MHASH_MD5,$str,substr(pack("h*",md5(mt_rand()) ),0,8),4);
+			$salt = mhash_keygen_s2k(MHASH_MD5,$str,mb_substr(pack("h*",md5(mt_rand()) ),0,8),4);
 			return "{SMD5}".base64_encode(mHash(MHASH_MD5, $str.$salt).$salt); 
 			break;
 		default:
@@ -100,6 +199,8 @@ class babLDAP
 
 	function connect()
 	{
+		
+
 		if( !isset($this->port) || empty($this->port))
 			{
 			$this->idlink = ldap_connect($this->host);
@@ -114,6 +215,16 @@ class babLDAP
 			$this->print_error("Cannot connect to ldap server : " . $this->host);
 			return false;
 			}
+
+		# Go with LDAP version 3 if possible (needed for renaming and Novell schema fetching)
+		@ldap_set_option($this->idlink,LDAP_OPT_PROTOCOL_VERSION,3);
+
+		/* Disabling this makes it possible to browse the tree for Active Directory, and seems
+		 * to not affect other LDAP servers (tested with OpenLDAP) as phpLDAPadmin explicitly
+		 * specifies deref behavior for each ldap_search operation. */
+		@ldap_set_option($this->idlink,LDAP_OPT_REFERRALS,0);
+
+
 		return $this->idlink;
 	}
 

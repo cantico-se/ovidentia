@@ -221,7 +221,7 @@ class BAB_MultiPageBase
 				{
 					$this->sColumnHeaderUrl .= '&sOrder=' . 'ASC';
 				}
-				$this->sColumnHeaderUrl = htmlentities($this->sColumnHeaderUrl);
+				$this->sColumnHeaderUrl = bab_toHtml($this->sColumnHeaderUrl);
 			}
 			else 
 			{
@@ -355,8 +355,8 @@ class BAB_MultiPageBase
 		$datas = each($this->m_aAdditionnalPaginationAndFormParameters);
 		if(false != $datas)
 		{
-			$this->m_sAdditionnalParameterName = htmlentities($datas['key']);
-			$this->m_sAdditionnalParameterValue = htmlentities($datas['value']);
+			$this->m_sAdditionnalParameterName = bab_toHtml($datas['key']);
+			$this->m_sAdditionnalParameterValue = bab_toHtml($datas['value']);
 			return true;
 		}
 		else
@@ -482,7 +482,7 @@ class BAB_MultiPageBase
 		{
 			foreach ($parameters as $paramaterName => $paramaterValue)
 				$l[] = $paramaterName . '=' . $paramaterValue;
-			if (strpos($url, '?') === false)
+			if (mb_strpos($url, '?') === false)
 				$url .= '?';
 			else
 				$url .= '&';
@@ -508,7 +508,7 @@ class BAB_MultiPageBase
 		
 		if(true === $bUseHtmlEntities)
 		{
-			return htmlentities($sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams);
+			return bab_toHtml($sPageUrl .= '&iPage=' . urlencode($iPageNumber) . '&iNbRowsPerPage=' . urlencode($this->iNbRowsPerPage) . $sExtraParams);
 		}
 		else 
 		{
@@ -553,14 +553,14 @@ class BAB_MultiPageBase
 		if(-1 != $this->iNbRowsPerPage)
 		{
 			$sString = bab_translate("Result(s) from %d to %d (%d %s / %d %s )");
-			return htmlentities(sprintf($sString, $iStart, $iEnd, $this->iTotalNumOfRows, 
+			return bab_toHtml(sprintf($sString, $iStart, $iEnd, $this->iTotalNumOfRows, 
 				(((1 < $this->iTotalNumOfRows) ? $sResults : $sResult)), $iNumOfPages, 
 				((1 < $iNumOfPages) ? $sPages : $sPage)));
 		}
 		else
 		{
 			$sString = bab_translate("All results (%d %s / 1 %s)");
-			return htmlentities(sprintf($sString, $this->iTotalNumOfRows, 
+			return bab_toHtml(sprintf($sString, $this->iTotalNumOfRows, 
 				((1 < $this->iTotalNumOfRows) ? $sResults : $sResult), $sPage));
 		}
 	}

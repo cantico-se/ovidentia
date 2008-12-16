@@ -38,8 +38,8 @@ define("BAB_AUTHENTIFICATION_OVIDENTIA",	0);
 define("BAB_AUTHENTIFICATION_LDAP",			1);
 define("BAB_AUTHENTIFICATION_AD",			2); /* Active directory */
 
-define("BAB_LDAP_UTF8_ISO_8859_1",	1); /* UTF8 to ISO_8859_1 */
-define("BAB_LDAP_T61_ISO_8859_1",	2); /* T61 to ISO_8859_1 */
+define("BAB_LDAP_UTF8",	1); /* ldap server is UTF8 */
+define("BAB_LDAP_T61",	2); /* ldap server is T61 */
 
 define("BAB_DIR_ENTRY_ID_USER",				1);
 define("BAB_DIR_ENTRY_ID",					2);

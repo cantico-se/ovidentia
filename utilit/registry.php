@@ -54,10 +54,10 @@ class bab_Registry
 	 */
 	function getFullPath($path)
 	{
-		if ('/' !== substr($path, 0, 1)) {
+		if ('/' !== mb_substr($path, 0, 1)) {
 			$path = $this->dir . $path;
 		}
-		if ('/' !== substr($path, -1)) {
+		if ('/' !== mb_substr($path, -1)) {
 			$path .= '/';
 		}
 		return $path;
@@ -93,7 +93,7 @@ class bab_Registry
 	{
 		global $babDB;
 
-		if (false !== strpos($key, '/')) {
+		if (false !== mb_strpos($key, '/')) {
 			trigger_error('"/" are forbidden in the key parameter of setKeyValue');
 			return 0;
 		}
@@ -283,7 +283,7 @@ class bab_Registry
 	{
 		global $babDB;
 
-		$l = strlen($this->dir);
+		$l = mb_strlen($this->dir);
 
 		$res = $babDB->db_query("
 			DELETE 
@@ -310,7 +310,7 @@ class bab_Registry
 
 		$sql = '
 			SELECT dirkey FROM ' . BAB_REGISTRY_TBL . '
-			WHERE LEFT(dirkey, ' . $babDB->quote(strlen($path)) . ') = ' . $babDB->quote($path);
+			WHERE LEFT(dirkey, ' . $babDB->quote(mb_strlen($path)) . ') = ' . $babDB->quote($path);
 		
 		$res = $babDB->db_query($sql);
 		return ($babDB->db_num_rows($res) > 0);
@@ -337,7 +337,7 @@ class bab_Registry
 		$source = $this->getFullPath($source);
 		$dest = $this->getFullPath($dest);
 
-		$sourceLength = strlen($source);
+		$sourceLength = mb_strlen($source);
 
 		$sql = '
 			UPDATE ' . BAB_REGISTRY_TBL . '
@@ -359,7 +359,7 @@ class bab_Registry
 
 		static $r = array();
 		if (!isset($r[$this->dir])) {
-			$l = strlen($this->dir);
+			$l = mb_strlen($this->dir);
 			$r[$this->dir] = $babDB->db_query("
 			
 			SELECT DISTINCT 
@@ -391,7 +391,7 @@ class bab_Registry
 		
 		static $r = array();
 		if (!isset($r[$this->dir])) {
-			$l = strlen($this->dir);
+			$l = mb_strlen($this->dir);
 			$r[$this->dir] = $babDB->db_query("
 			
 			SELECT 

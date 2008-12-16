@@ -105,7 +105,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 	{
 		//Remove prefix. Valid prefix are sGrabAccess and sDropAccess.
 		//All the prefix have the same size
-		$sAccess = substr($sButtonName, strlen('sGrabAccess'));
+		$sAccess = mb_substr($sButtonName, mb_strlen('sGrabAccess'));
 		if(false !== $sAccess)
 		{
 			$aAccess = array('View' => BAB_CAL_ACCESS_VIEW, 'Update' => BAB_CAL_ACCESS_UPDATE, 
@@ -124,7 +124,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 	{
 		//Remove prefix. Valid prefix are sGrabAccess and sDropAccess.
 		//All the prefix have the same size
-		$sAccess = substr($sButtonName, strlen('sGrabAccess'));
+		$sAccess = mb_substr($sButtonName, mb_strlen('sGrabAccess'));
 		if(false !== $sAccess)
 		{
 			$aAccess = array('View' => 'aAccessView', 'Update' => 'aAccessUpdate', 

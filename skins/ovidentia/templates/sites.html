@@ -111,6 +111,15 @@
 			</select>
 </td>
 </tr>
+
+		<!--#if skinerror -->
+		<tr>
+			<td colspan="2">
+				{ skinerror }
+			</td>
+		</tr>
+		<!--#endif skinerror -->
+
           <tr> 
             <td>{ skin }</td>
             <td> 
@@ -224,13 +233,14 @@ function mm(index)
 	for (i = document.forms.formsite.style.length; i >= 0; i--) {
 		document.forms.formsite.style.options[i] = null; 
 	}
-	for (var i = 0; i < tab[index].length; i++)
-	{
-	document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
+	if (tab[index]) {
+		for (var i = 0; i < tab[index].length; i++)
+		{
+		document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
+		}
+		if( index == sksel )
+			document.forms.formsite.style.options[stsel].selected = true;
 	}
-	if( index == sksel )
-		document.forms.formsite.style.options[stsel].selected = true;
-
 }
 mm(sksel);
 //-->
@@ -1254,10 +1264,10 @@ function hideShowCnx()
 		<td align="right" colspan="2">
 		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr> 
-		<td align="center" colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span nowrap>{ ldpachkcnxtxt }</span></td>
+		<td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span nowrap>{ ldpachkcnxtxt }</span></td>
 	</tr>
 	<tr> 
-		<td align="center" colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;<span nowrap>{ ldpachknotifyadmintxt }</span></td>
+		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;<span nowrap>{ ldpachknotifyadmintxt }</span></td>
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>

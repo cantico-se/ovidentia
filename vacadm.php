@@ -504,7 +504,7 @@ function listVacationPersonnel($pos, $idcol, $idsa)
 				{
 				global $babDB;
 				
-				$this->selectname = substr($t, $k, 1);
+				$this->selectname = mb_substr($t, $k, 1);
 				$this->selecturl = $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$this->selectname."&idcol=".$this->idcol."&idsa=".$this->idsa;
 
 				if( $this->pos == $this->selectname)
@@ -1276,8 +1276,8 @@ switch($idx)
 		
 		if( isset($chg))
 		{
-			if( strlen($pos) > 0 && $pos[0] == "-" )
-				$pos = strlen($pos)>1? $pos[1]: '';
+			if( mb_strlen($pos) > 0 && $pos[0] == "-" )
+				$pos = mb_strlen($pos)>1? $pos[1]: '';
 			else
 				$pos = "-" .$pos;
 		}

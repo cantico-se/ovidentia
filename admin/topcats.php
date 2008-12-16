@@ -455,7 +455,9 @@ function orderTopcat($idp)
 					$this->topicval = bab_getCategoryTitle($arr['id_topcat']);
 				else
 					$this->topicval = "";
-
+					
+				$this->topicval = bab_toHtml($this->topicval);
+					
 				$this->topicid = $arr['id'];
 				$i++;
 				return true;

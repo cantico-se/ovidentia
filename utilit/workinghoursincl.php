@@ -518,7 +518,7 @@ class bab_userWorkingHours {
 	 */
 	function orderBoundaries() {
 		// order by date
-		ksort($this->boundaries);
+		bab_sort::ksort($this->boundaries);
 
 		$previous = NULL;
 		foreach($this->boundaries as $ts => $arr) {

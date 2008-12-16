@@ -106,9 +106,9 @@ function sectionModify($id)
 			if( $this->db->db_num_rows($this->res) > 0 )
 				{
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->titleval = htmlentities($this->arr['title']);
+				$this->titleval = bab_toHtml($this->arr['title']);
 				$this->pos = $this->arr['position'];
-				$this->descval = htmlentities($this->arr['description']);
+				$this->descval = bab_toHtml($this->arr['description']);
 
 				if( $this->arr['script'] == "Y")
 					$this->ischecked = "checked";

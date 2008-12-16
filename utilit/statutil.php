@@ -64,7 +64,10 @@ class summaryBaseCls
 			}
 		else
 			{
-			$r = strnatcmp($a[$this->sortcol],$b[$this->sortcol]);
+			$oCollator = bab_getCollatorInstance('');
+			$r = $oCollator->compare(
+				mb_strtolower($a[$this->sortcol]), 
+				mb_strtolower($b[$this->sortcol]));
 			}
 
 		if ($this->sortord == "desc")

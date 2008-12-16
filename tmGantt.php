@@ -808,8 +808,8 @@ $this->m_iTodayPosLineX = round(($iTodayLineTS - $iDisplayedStartDateTs) / $this
 			$this->m_iTaskInfoPosY		= ($this->m_iHeight * $iIndex++);
 			$this->m_iTaskInfoHeigth	= $this->m_iHeight - ($this->m_iBorderTop + $this->m_iBorderBottom);
 			$this->m_iTaskInfoWidth		= $this->m_iTaskCaptionWidth - ($this->m_iBorderLeft + $this->m_iBorderRight);
-			$this->m_sTaskInfoBgColor	= (strlen(trim($datas['sBgColor'])) > 0) ? $datas['sBgColor'] : 'EFEFEF';
-			$this->m_sTaskInfoColor		= (strlen(trim($datas['sColor'])) > 0) ? $datas['sColor'] : '000000';
+			$this->m_sTaskInfoBgColor	= (mb_strlen(trim($datas['sBgColor'])) > 0) ? $datas['sBgColor'] : 'EFEFEF';
+			$this->m_sTaskInfoColor		= (mb_strlen(trim($datas['sColor'])) > 0) ? $datas['sColor'] : '000000';
 			$this->m_sTaskInfo			= $datas['sShortDescription'] . '<br />' . $datas['sProjectName'];
 			return true;
 		}
@@ -1136,7 +1136,7 @@ class BAB_TM_GanttTaskBase
 				'<p><strong>' . bab_translate("date_from") . ': </strong>' . bab_shortDate(bab_mktime($aTask['startDate'])) . '</p>';
 		}
 		
-		if(strlen($aTask['sCategoryName']) > 0)
+		if(mb_strlen($aTask['sCategoryName']) > 0)
 		{
 			$sToolTip .= 
 				'<p><strong>' . bab_translate("Category") . ': </strong>' . $aTask['sCategoryName'] . '</p>';
@@ -1158,7 +1158,7 @@ class BAB_TM_GanttTaskBase
 			}
 		}
 		
-		if(strlen($aTask['sDescription']) > 0)
+		if(mb_strlen($aTask['sDescription']) > 0)
 		{
 			require_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 			$oEditor = new bab_contentEditor('bab_taskManagerDescription');
