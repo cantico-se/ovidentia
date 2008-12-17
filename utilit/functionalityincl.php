@@ -129,7 +129,7 @@ class bab_functionalities {
 		}
 	
 		$classname = bab_Functionalities::getClassname($funcpath);
-		$content = '<?php if (false === include_once \''.$this->getIncludeFilePath($include_file).'\') { return false; } else { return \''.$classname.'\'; } ?>';
+		$content = '<?php if (class_exists(\''.$classname.'\') || false !== include_once \''.$this->getIncludeFilePath($include_file).'\') { return \''.$classname.'\'; } else { return false; } ?>';
 		if ($handle = fopen($this->treeRootPath.$path.'/'.$linkfilename, 'w')) {
 			
 			if (false !== fwrite($handle, $content)) {
