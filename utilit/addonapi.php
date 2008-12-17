@@ -213,31 +213,19 @@ function bab_multibyteToHex($sBuffer)
 }
 
 
-function utf8Sprintf($sFormat)
-{
-	$aArgs	= func_get_args();
-	$iCount	= count($aArgs);
-  
-	for($i = 1; $i < $iCount; $i++)
-	{
-    	$aArgs[$i] = iconv('UTF-8', 'ISO-8859-2', $aArgs[$i]);
-	}
-	return iconv('ISO-8859-2', 'UTF-8', call_user_func_array('sprintf', $aArgs));
-}
 
-
+/**
+ * Return a formatted string, Wrapper for sprintf function
+ * @param	string 	$format  
+ * @param	mixed 	$args
+		[ 	mixed 	$...  ]
+ * @return
+ * @see http://www.php.net/sprintf
+ */
 function bab_sprintf($sFormat)
 {
-	$aArgs = func_get_args();
-	
-	if('utf8' == bab_charset::getDatabase())
-	{
-		return call_user_func_array('utf8Sprintf', $aArgs);
-	}
-	else
-	{
-		return call_user_func_array('sprintf', $aArgs);
-	}
+	$aArgs = func_get_args();	
+	return call_user_func_array('sprintf', $aArgs);
 }
 
 

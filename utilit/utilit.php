@@ -220,8 +220,37 @@ function bab_convertToDatabaseEncoding($sString)
 
 
 
+/**
+ * Get translations matchs found in one lang file
+ * @param	string	$lang
+ * @param	string	$filename
+ * @return array
+ */
+function bab_getLangFileMatchs($lang, $filename) 
+{
+	$file = @fopen($filename, 'r');
+	if( $file )
+		{
+		$tmp = fread($file, filesize($filename));
+		
+		$preg_filter = '';
+		$charset = 'ISO-8859-15';
+		if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', substr($tmp, 0, 70), $m)) {
+			$tmp = bab_getStringAccordingToDataBase($tmp, $m[1]);
+			if ('UTF-8' === $m[1]) {
+				$preg_filter = 'u';
+			}
+		}
 
+		fclose($file);
+		preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s'.$preg_filter, $tmp, $m);
+		preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s'.$preg_filter, isset($m[1]) ? $m[1] : '' , $tmparr);
 
+		return $tmparr;
+		}
+
+	return array();
+}
 
 
 
@@ -277,22 +306,7 @@ function babLoadLanguage($lang, $folder, &$arr)
 		{
 		if( $filename )
 			{
-			$file = @fopen($filename, 'r');
-			if( $file )
-				{
-				$tmp = fread($file, filesize($filename));
-				
-
-				$charset = 'ISO-8859-15';
-				if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', substr($tmp, 0, 70), $m)) {
-					$tmp = bab_getStringAccordingToDataBase($tmp, $m[1]);
-				}
-
-				
-				fclose($file);
-				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
-				preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', isset($m[1]) ? $m[1] : '' , $tmparr);
-				}
+			$tmparr = bab_getLangFileMatchs($lang, $filename);
 			}
 
 		if( isset($tmparr[0]))
@@ -305,13 +319,10 @@ function babLoadLanguage($lang, $folder, &$arr)
 
 		if ($filename_m)
 			{
-			$file = @fopen($filename_m, 'r');
-			if( $file )
+			$arr_replace = bab_getLangFileMatchs($lang, $filename_m);
+
+			if (isset($arr_replace[0])) 
 				{
-				$tmp = fread($file, filesize($filename_m));
-				fclose($file);
-				preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp, $m);
-				preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', $m[1], $arr_replace);
 				for( $i = 0; $i < count($arr_replace[0]); $i++ )
 					{
 					$arr[$arr_replace[1][$i]] = $arr_replace[2][$i];

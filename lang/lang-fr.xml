@@ -2700,6 +2700,7 @@
 <string id="The site may not be converted to %convertTo% because the addon %addonName% is not compatible with the charset (parameter mysql_character_set_database in ini file)">Le site ne peut pas être convertis en %convertTo% car le module %addonName% n'est pas compatible (le paramètre mysql_character_set_database dans le fichier ini)</string>
 <string id="Addons not compatibles">Modules non compatibles</string>
 <string id="Add-ons links">Liens des modules</string>
+<string id="Propose mass mailing in directory views?">Proposer l'envoi de mail en masse dans les vues des annuaires?</string>
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed">La base de données ne peut pas être converti de %fromCharset% en %toCharset% car la commande SHOW TABLES a échouée</string>
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed">La base de données ne peut pas être converti de %fromCharset% en %toCharset% car la commande ALTER TABLE sur la table %table% a échouée</string>
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed">La base de données ne peut pas être converti de %fromCharset% en %toCharset% car la commande ALTER DATABASE sur la base de données %database% a échouée</string>

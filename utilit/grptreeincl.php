@@ -67,6 +67,32 @@ class bab_grptree extends bab_dbtree
 		}
 	}
 
+
+	/**
+	 * get groupes indented with non breakin spaces for display in select boxes
+	 * @param int		$id_parent
+	 * @return array
+	 */
+	function getIndentedGroups() {
+
+		switch(bab_charset::getIso()) {
+			case 'UTF-8';
+				$nbsp = chr(0xC2).chr(0xA0);
+				break;
+
+			default:
+				$nbsp = chr(160);
+				break;
+		}
+
+		return $this->getGroups($id_parent, '%s '.$nbsp.' '.$nbsp.' ');
+	}
+
+
+
+
+
+
 	/**
 	 * Returns an array containing information about groups.
 	 *

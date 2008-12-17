@@ -85,8 +85,11 @@ function groupCreateMod()
 				}
 			else
 				$id_parent = $tree->firstnode_info['id'];
+
+			$nbsp = chr(0xC2).chr(0xA0);
+			//$nbsp = chr(160);
 			
-			$this->groups = $tree->getGroups($id_parent, '%s '.chr(160).' '.chr(160).' ');
+			$this->groups = $tree->getGroups($id_parent, '%s '.$nbsp.' '.$nbsp.' ');
 
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
 				{
@@ -101,12 +104,12 @@ function groupCreateMod()
 			if (isset($_POST['grpid']))
 				{
 				$this->arr = array(
-						'id' => $_POST['grpid'],
-						'name' => $_POST['name'],
-						'description' => $_POST['description'],
-						'manager' => $_POST['manager'],
-						'managerval' => bab_getUserName($_POST['manager']),
-						'id_parent' => $_POST['parent']
+						'id' 			=> $_POST['grpid'],
+						'name' 			=> $_POST['name'],
+						'description' 	=> $_POST['description'],
+						'manager' 		=> $_POST['manager'],
+						'managerval' 	=> bab_getUserName($_POST['manager']),
+						'id_parent' 	=> $_POST['parent']
 					);
 
 				}
