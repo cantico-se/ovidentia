@@ -1187,7 +1187,8 @@ function bab_sitemap_userSection(&$event) {
 		{
 		if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
 			{
-			$array_urls[bab_translate("Publication")] = array(
+			$array_urls[] = array(
+				'label' => bab_translate("Publication"),
 				'url' => $GLOBALS['babUrlScript']."?tg=artedit",
 				'uid' => 'babUserPublication'
 				);
@@ -1196,7 +1197,8 @@ function bab_sitemap_userSection(&$event) {
 		$babBody->waitapprobations = bab_isWaitingApprobations();
 		if( $babBody->waitapprobations )
 			{
-			$array_urls[bab_translate("Approbations")] = array(
+			$array_urls[] = array(
+				'label' => bab_translate("Approbations"),
 				'url' => $GLOBALS['babUrlScript']."?tg=approb",
 				'uid' => 'babUserApprob',
 				'desc' => bab_translate("Validate waiting items")
@@ -1206,7 +1208,8 @@ function bab_sitemap_userSection(&$event) {
 
 	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
 		{
-		$array_urls[bab_translate("Articles management")] = array(
+		$array_urls[] = array(
+				'label' => bab_translate("Articles management"),
 				'url' => $GLOBALS['babUrlScript']."?tg=topman",
 				'uid' => 'babUserArticlesMan',
 				'desc' => bab_translate("List article topics where i am manager")
@@ -1215,19 +1218,22 @@ function bab_sitemap_userSection(&$event) {
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		$array_urls[bab_translate("Summary")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Summary"),
 			'url' => $GLOBALS['babUrlScript']."?tg=calview",
 			'uid' => 'babUserSummary',
 			'desc' => bab_translate("Last published items")
 		);
 		
-		$array_urls[bab_translate("Options")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Options"),
 			'url' => $GLOBALS['babUrlScript']."?tg=options",
 			'uid' => 'babUserOptions'
 		);
 		
 		if( bab_notesAccess())
-			$array_urls[bab_translate("Notes")] = array(
+			$array_urls[] = array(
+				'label' => bab_translate("Notes"),
 				'url' => $GLOBALS['babUrlScript']."?tg=notes",
 				'uid' => 'babUserNotes'
 			);
@@ -1235,7 +1241,8 @@ function bab_sitemap_userSection(&$event) {
 
 	if( $faq )
 		{
-		$array_urls[bab_translate("Faq")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Faq"),
 			'url' => $GLOBALS['babUrlScript']."?tg=faq",
 			'uid' => 'babUserFaq',
 			'desc' => bab_translate("Frequently Asked Questions")
@@ -1243,7 +1250,8 @@ function bab_sitemap_userSection(&$event) {
 		}
 	if( $vac )
 		{
-		$array_urls[bab_translate("Vacation")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Vacation"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=vacuser",
 			'uid' => 'babUserVac'
 			);
@@ -1251,7 +1259,8 @@ function bab_sitemap_userSection(&$event) {
 
 	if( $babBody->icalendars->calendarAccess())
 		{	
-		$array_urls[bab_translate("Calendar")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Calendar"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
 			'uid' => 'babUserCal'
 			);
@@ -1259,14 +1268,16 @@ function bab_sitemap_userSection(&$event) {
 
 	if( $bemail )
 		{
-		$array_urls[bab_translate("Mail")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Mail"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=inbox",
 			'uid' => 'babUserMail'
 			);
 		}
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
 		{
-		$array_urls[bab_translate("Contacts")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Contacts"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=contacts",
 			'uid' => 'babUserContacts'
 			);
@@ -1276,7 +1287,8 @@ function bab_sitemap_userSection(&$event) {
 	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
 		{
-		$array_urls[bab_translate("File manager")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("File manager"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=fileman",
 			'uid' => 'babUserFm',
 			'desc' => bab_translate("Access to file manager")
@@ -1289,14 +1301,11 @@ function bab_sitemap_userSection(&$event) {
 
 	if( $directories || $ldapdirectories )
 		{
-		$array_urls[bab_translate("Directories")] = array(
-			'url' =>  $GLOBALS['babUrlScript']."?tg=directory",
-			'uid' => 'babUserDir',
-			'folder' => array()
-			);
+		$folder = array();
 
 		foreach($directories as $id_directory => $arr_directory) {
-				$array_urls[bab_translate("Directories")]['folder'][$arr_directory['name']] = array(
+				$folder[] = array(
+					'label' => $arr_directory['name'],
 					'url' =>  $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id_directory,
 					'uid' => 'babUserDbDirId'.$id_directory,
 					'desc' => $arr_directory['description']
@@ -1305,18 +1314,27 @@ function bab_sitemap_userSection(&$event) {
 
 
 		foreach($ldapdirectories as $id_directory => $arr_directory) {
-				$array_urls[bab_translate("Directories")]['folder'][$arr_directory['name']] = array(
+				$folder[] = array(
+					'label' => $arr_directory['name'],
 					'url' =>  $GLOBALS['babUrlScript'].'?tg=directory&idx=sldap&id='.$id_directory,
 					'uid' => 'babUserLdapDirId'.$id_directory,
 					'desc' => $arr_directory['description']
 				);
 			}
 
+		$array_urls[] = array(
+			'label' 	=> bab_translate("Directories"),
+			'url' 		=>  $GLOBALS['babUrlScript']."?tg=directory",
+			'uid' 		=> 'babUserDir',
+			'folder' 	=> $folder
+			);
+
 		}
 
 	if( count($babBody->ocids) > 0 )
 		{
-		$array_urls[bab_translate("Charts")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Charts"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=charts",
 			'uid' => 'babUserCharts'
 			);
@@ -1324,7 +1342,8 @@ function bab_sitemap_userSection(&$event) {
 
 	if ( bab_statisticsAccess() != -1 )
 		{
-		$array_urls[bab_translate("Statistics")] = array(
+		$array_urls[] = array(
+			'label' => bab_translate("Statistics"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=stat",
 			'uid' => 'babUserStats'
 			);
@@ -1341,26 +1360,29 @@ function bab_sitemap_userSection(&$event) {
 			
 	if($bIsAccessValid)
 		{
-		$array_urls[bab_translate("Task Manager")] = array(
-			'url' =>  $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
-			'uid' => 'babUserTm'
+		$array_urls[] = array(
+			'label' => bab_translate("Task Manager"),
+			'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
+			'uid' 	=> 'babUserTm'
 			);
 		}
 		
 	$forums = $babBody->get_forums();
 	if(count($forums))
 		{
-		$array_urls[bab_translate("Forums")] = array(
-			'url' =>  $GLOBALS['babUrlScript'].'?tg=forumsuser',
-			'uid' => 'babUserForums'
+		$array_urls[] = array(
+			'label' => bab_translate("Forums"),
+			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=forumsuser',
+			'uid' 	=> 'babUserForums'
 			);
 		}
 	
 	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
-		$array_urls[bab_translate("Thesaurus")] = array(
-			'url' =>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
-			'uid' => 'babUserThesaurus'
+		$array_urls[] = array(
+			'label' => bab_translate("Thesaurus"),
+			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
+			'uid' 	=> 'babUserThesaurus'
 			);
 		}
 
@@ -1385,7 +1407,8 @@ function bab_sitemap_userSection(&$event) {
 						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 					}
 				
-					$addon_urls[$txt] = array(
+					$addon_urls[] = array(
+						'label' => $txt,
 						'url' => $url,
 						'uid' => $row['title'].sprintf('_%u',crc32($url))
 						);
@@ -1417,9 +1440,9 @@ function bab_sitemap_userSection(&$event) {
 			$item->setPosition(array('root', 'DGAll', 'babUser'));
 			$event->addFolder($item);
 
-			foreach($array_urls as $label => $arr) {
+			foreach($array_urls as $arr) {
 				$link = $event->createItem($arr['uid']);
-				$link->setLabel($label);
+				$link->setLabel($arr['label']);
 				$link->setLink($arr['url']);
 				$link->setPosition(array('root', 'DGAll', 'babUser','babUserSection'));
 				if (isset($arr['desc'])) {
@@ -1428,9 +1451,9 @@ function bab_sitemap_userSection(&$event) {
 				if (isset($arr['folder'])) {
 					$event->addFolder($link);
 
-					foreach($arr['folder'] as $sub_label => $sub_arr) {
+					foreach($arr['folder'] as $sub_arr) {
 						$sub_link = $event->createItem($sub_arr['uid']);
-						$sub_link->setLabel($sub_label);
+						$sub_link->setLabel($sub_arr['label']);
 						$sub_link->setLink($sub_arr['url']);
 						$sub_link->setPosition(array('root', 'DGAll', 'babUser','babUserSection', $arr['uid']));
 						if (isset($sub_arr['desc'])) {

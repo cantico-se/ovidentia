@@ -39,40 +39,43 @@
 <input type="hidden" name="evtid" value="{ evtid }">
 <input type="hidden" name="idcal" value="{ idcal }">
 <br>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
-<select name="bconfirm">
-<!--#in getnextstatus -->
-<option value="{ statusval }">{ statusname }</option>
-<!--#endin getnextstatus -->
-</select>
-</td>
-</tr>
-<!--#if brepetitive -->
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
-{ repetitivetxt }
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left">
-<select name="bupdrec">
-<option value="1">{ all }</option>
-<option value="2"  selected>{ thisone }</option>
-</select>
-</td>
-</tr>
-<!--#endif brepetitive -->
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left"><textarea cols="40" rows="10" name="comment"></textarea>
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%">&nbsp;</td><td class="BabSiteAdminFontBackground" align="left"><input type="submit" name="block" value="{ updatetxt }">
-</td>
-</tr>
-</table>
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="5" cellspacing="0" class="BabLoginMenuBackground">
+	<tr> 
+	<td align="right" width="30%">&nbsp;</td><td align="left">
+	<select name="bconfirm">
+	<!--#in getnextstatus -->
+	<option value="{ statusval }">{ statusname }</option>
+	<!--#endin getnextstatus -->
+	</select>
+	</td>
+	</tr>
+	<!--#if brepetitive -->
+	<tr>
+	<td  align="right" width="30%">&nbsp;</td><td  align="left">
+	{ repetitivetxt }
+	</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">&nbsp;</td><td  align="left">
+	<select name="bupdrec">
+	<option value="1">{ all }</option>
+	<option value="2"  selected>{ thisone }</option>
+	</select>
+	</td>
+	</tr>
+	<!--#endif brepetitive -->
+	<tr>
+	<td align="right" width="30%"><b>{ commenttxt }:</b></td><td align="left"><textarea cols="40" rows="10" name="comment"></textarea>
+	</td>
+	</tr>
+	<tr>
+	<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="block" value="{ updatetxt }">
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
