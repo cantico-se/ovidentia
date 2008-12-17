@@ -4505,7 +4505,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	$sOvVersion = getOvidentiaVersion();
-	if(version_compare(PHP_VERSION, '6.7.92', '<'))
+	if(false === $sOvVersion)
+	{
+		$babBody->addError('The update cannot be done because the version of Ovidentia cannot be determined');	
+		return false;	
+	}
+	
+	if(version_compare($sOvVersion, '6.7.92', '<'))
 	{
 		$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
 		if(false === $oResult)
