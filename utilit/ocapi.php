@@ -2592,6 +2592,7 @@ function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder =
 		'WHERE ' .
 			'octEntityPr.id = ' . $babDB->quote($iIdEntity) . ' AND ' .
 			'octPr.id = octEntityPr.id_node AND ' .
+			'octCh.id_user = octEntityPr.id_oc AND ' .
 			'octCh.lf ' . $sLtOperator . ' octPr.lf AND ' . 
 			'octCh.lr ' . $sGtOperator . ' octPr.lr ' . 
 		'ORDER ' .
@@ -3291,6 +3292,7 @@ class bab_OrgChartUtil
 		
 		$aWhereClauseItem	= array();
 		$aWhereClauseItem[]	= 'userRole.id_user = ' . $babDB->quote($iIdUser);
+		$aWhereClauseItem[]	= 'entity.id_oc = ' . $babDB->quote($this->iIdOrgChart);
 
 		$aGoodRoleType = null;
 		if(isset($aRoleType))
@@ -3323,7 +3325,7 @@ class bab_OrgChartUtil
 			'WHERE ' . 
 				implode(' AND ', $aWhereClauseItem);
 
-		//bab_debug($sQuery);
+		bab_debug($sQuery);
 		$aEntity = array();
 		$oResult = $babDB->db_query($sQuery);
 		if(false !== $oResult)
