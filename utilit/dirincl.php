@@ -935,6 +935,8 @@ function getUserDirectories($accessCtrl = true)
 			LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
 			WHERE (d.id_group='0' OR g.id>'0') ORDER BY name
 		");
+
+	$return = array();
 		
 	while( $row = $babDB->db_fetch_assoc($res))
 		{
