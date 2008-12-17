@@ -1483,9 +1483,9 @@ function bab_sitemap_userSection(&$event) {
 			$event->addFolder($item);
 			
 
-			foreach($addon_urls as $label => $arr) {
+			foreach($addon_urls as $arr) {
 				$link = $event->createItem($arr['uid']);
-				$link->setLabel($label);
+				$link->setLabel($arr['label']);
 				$link->setLink($arr['url']);
 				$link->setPosition(array('root', 'DGAll', 'babUser','babUserSectionAddons'));
 				$event->addFunction($link);
