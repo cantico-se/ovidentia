@@ -330,7 +330,7 @@ function babLoadLanguage($lang, $folder, &$arr)
 				}
 			}
 
-		if (is_file($filename_c)) {	
+		if (is_writable(dirname($filename_c))) {	
 			$file = @fopen($filename_c, 'w');
 			if( $file )
 				{
