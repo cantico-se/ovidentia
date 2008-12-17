@@ -25,6 +25,19 @@ require_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 
 
+
+
+
+/**
+ * OVML Container <OCOrgUserEntities [orgChartId=""] userId="" [roleType=""]>
+ *
+ * List of organizational chart entities for which a user has a role.
+ *
+ * Returned OVML variables are :
+ * - OVEntityId
+ * - OVEntityName
+ * - OVEntityDescription
+ */
 class bab_OrgUserEntities extends bab_handler
 {
 	var $aEntity = array();
@@ -102,7 +115,16 @@ class bab_OrgUserEntities extends bab_handler
 }
 
 
-
+/**
+ * OVML Container <OCOrgPathToEntity entityId="" [order=""] [includeEntity=""]>
+ *
+ * List all entities related to an entity of an organization chart.
+ *
+ * Returned OVML variables are :
+ * - OVEntityId
+ * - OVEntityName
+ * - OVEntityDescription
+ */
 class bab_OrgPathToEntity extends bab_handler
 {
 	var $aEntity	= array();
