@@ -1577,4 +1577,7 @@
 <string id="The file %oldFile% may not be converted to %newFile% because some characters are not supported by the file system">The file %oldFile% may not be converted to %newFile% because some characters are not supported by the file system</string>
 <string id="The file %file% contains characters not supported by the file system">The file %file% contains characters not supported by the file system</string>
 <string id="The date format is JJ-MM-AAAA">The date format is JJ-MM-AAAA</string>
+<string id="The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed">The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed</string>
+<string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed">The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed</string>
+<string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed">The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed</string>
 </en>
