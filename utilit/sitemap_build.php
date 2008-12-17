@@ -1453,7 +1453,7 @@ function bab_sitemap_userSection(&$event) {
 		if (0 < count($addon_urls)) {
 			
 			$item = $event->createItem('babUserSectionAddons');
-			$item->setLabel(bab_translate("Addons links"));
+			$item->setLabel(bab_translate("Add-ons links"));
 			$item->setPosition(array('root', 'DGAll', 'babUser'));
 			$event->addFolder($item);
 			

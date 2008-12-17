@@ -252,7 +252,7 @@ function bab_sitemap_adminSection(&$event) {
 	
 	if (0 < count($addon_urls)) {
 		$item = $event->createItem('babAdminSectionAddons');
-		$item->setLabel(bab_translate("Addons links"));
+		$item->setLabel(bab_translate("Add-ons links"));
 		$item->setPosition(array('root','DGAll','babAdmin'));
 		$event->addFolder($item);
 

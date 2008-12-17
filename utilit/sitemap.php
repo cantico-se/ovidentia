@@ -49,15 +49,47 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
  */
 class bab_siteMapItem {
 
+	/**
+	 * Unique string in sitemap that identify the item
+	 * Mandatory
+	 */
+	public $id_function;
 
-	var $id_function;
-	var $name;
-	var $description;
-	var $url;
-	var $onclick;
-	var $folder; 
+	/**
+	 * Internationalized name of the item
+	 * Mandatory
+	 */
+	public $name;
 
+	/**
+	 * Internationalized description of the item
+	 * Optional
+	 */
+	public $description;
 
+	/**
+	 * Url 
+	 * Optional if folder si true or mandatory if folder is false
+	 */
+	public $url;
+
+	/**
+	 * Javascript string for the onclick attribute in html
+	 * Mandatory
+	 */
+	public $onclick;
+
+	/**
+	 * Boolean
+	 * If true, the item may contain sub-items
+	 */
+	public $folder; 
+
+	/**
+	 * Compare sitemap items
+	 * @see bab_Node::sortSubTree()
+	 * @see bab_Node::sortChildNodes()
+	 */
 	public function compare($node) {
 		$collator = bab_getCollatorInstance();
 		return $collator->compare($this->name, $node->name);
@@ -238,6 +270,12 @@ class bab_siteMap {
 				$current_delegation_node = $arr['id_function'];
 			}
 			
+
+			if ('?' === @mb_substr($arr['url'],0,1)) {
+				// sitemap store URL without the php filename
+				$arr['url'] = $GLOBALS['babPhpSelf'].$arr['url'];
+			}
+
 			
 		
 			$data = & new bab_siteMapItem();
@@ -259,7 +297,8 @@ class bab_siteMap {
 			$rootNode->appendChild($node, $id_parent);
 		}
 
-		$rootNode->sortSubTree();
+		// each level will be sorted individually if needed before each usage
+		// $rootNode->sortSubTree();
 		
 		return $rootNode;
 	}

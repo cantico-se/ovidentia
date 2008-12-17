@@ -2699,4 +2699,5 @@
 <string id="Error, registration of user is impossible, the email is missing">Erreur, l'enregistrement de l'utilisateur est impossible, l'email est manquant</string>
 <string id="The site may not be converted to %convertTo% because the addon %addonName% is not compatible with the charset (parameter mysql_character_set_database in ini file)">Le site ne peut pas être convertis en %convertTo% car le module %addonName% n'est pas compatible (le paramètre mysql_character_set_database dans le fichier ini)</string>
 <string id="Addons not compatibles">Modules non compatibles</string>
+<string id="Add-ons links">Liens des modules</string>
 </fr>
