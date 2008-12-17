@@ -235,8 +235,10 @@ function bab_getLangFileMatchs($lang, $filename)
 		
 		$preg_filter = '';
 		$charset = 'ISO-8859-15';
+
 		if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', substr($tmp, 0, 70), $m)) {
 			$tmp = bab_getStringAccordingToDataBase($tmp, $m[1]);
+
 			if ('UTF-8' === $m[1]) {
 				$preg_filter = 'u';
 			}
@@ -245,6 +247,8 @@ function bab_getLangFileMatchs($lang, $filename)
 		fclose($file);
 		preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s'.$preg_filter, $tmp, $m);
 		preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s'.$preg_filter, isset($m[1]) ? $m[1] : '' , $tmparr);
+
+		
 
 		return $tmparr;
 		}

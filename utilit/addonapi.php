@@ -694,8 +694,14 @@ function bab_translate($str, $folder = "", $lang="")
 	else
 		$tag = "bab/".$lang;
 
-	if( !isset($babLA[$tag]))
+	if( !isset($babLA[$tag])) {
+
 		babLoadLanguage($lang, $folder, $babLA[$tag]);
+		
+		if (!isset($babLA[$tag])) {
+			$babLA[$tag] = array();
+		}
+	}
 
 	if(isset($babLA[$tag][$str]))
 		{
