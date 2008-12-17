@@ -414,21 +414,44 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 	
 	$sCollate = $aCharset[$sCharset];
 	
-	$sQuery = 'ALTER DATABASE ' . $sDataBaseName . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
-	
 	global $babDB;
-	$babDB->db_query($sQuery);
+
+	$sToCharset		= $sCharset;
+	$sFromCharset	= ($sFromCharset == 'utf8') ? 'latin1' : 'utf8';
+	$aSearch		= array('%fromCharset%', '%toCharset%');
+	$aReplace		= array($sFromCharset, $sToCharset);
 	
-	$sQuery = 'SHOW TABLES FROM ' . $sDataBaseName;
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult)
+	$sQuery			= 'SHOW TABLES FROM ' . $sDataBaseName;
+	$oResult		= $babDB->db_query($sQuery);
+	
+	if(false === $oResult)
 	{
-		while(false !== ($aData = $babDB->db_fetch_array($oResult)))
-		{
-			$sQuery = 'ALTER TABLE ' . $aData[0] . ' CONVERT TO CHARACTER SET DEFAULT';
-			$babDB->db_query($sQuery);
-		}		
+		$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed'));
+		$aError[]	= $sMessage;
+		return $aError;
 	}
+	
+	while(false !== ($aData = $babDB->db_fetch_array($oResult)))
+	{
+		$sQuery = 'ALTER TABLE ' . $aData[0] . ' CONVERT TO CHARACTER SET DEFAULT';
+		if(false === $babDB->db_query($sQuery))
+		{
+			$aSearch[]	= '%table%';
+			$aReplace[]	= $aData[0];
+			$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed'));
+			$aError[]	= $sMessage;
+			return $aError;
+		}
+	}		
+	
+	$sQuery = 'ALTER DATABASE ' . $sDataBaseName . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
+	if(false === $babDB->db_query($sQuery))
+	{
+		$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed'));
+		$aError[]	= $sMessage;
+		return $aError;
+	}
+	
 	return $aError;
 }
 
