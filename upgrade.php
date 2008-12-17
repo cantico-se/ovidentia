@@ -4441,7 +4441,38 @@ function upgrade612to620()
 }
 
 
-
+/**
+ * This function return the version of 
+ * Ovidentia from the version.inc
+ *
+ */
+/**
+ * This function return the version of 
+ * Ovidentia from the version.inc
+ *
+ */
+function getOvidentiaVersion()
+{
+	$sFullPathName = dirname(__FILE__) . 'version.inc';
+	
+	$aParsedIni = parse_ini_file($sFullPathName, true);
+	if(false === $aParsedIni)
+	{
+		return false;
+	}
+	
+	if(!array_key_exists('general', $aParsedIni))
+	{
+		return false;
+	}
+	
+	
+	if(!array_key_exists('version', $aParsedIni['general']))
+	{
+		return false;
+	}
+	return $aParsedIni['general']['version'];
+}
 
 
 /**
@@ -4473,26 +4504,30 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		return false;	
 	}
 	
-	$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-	if(false === $oResult)
+	$sOvVersion = getOvidentiaVersion();
+	if(version_compare(PHP_VERSION, '6.7.92', '<'))
 	{
-		$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
-		return false;	
-	}
-	
-	$aDbCharset = $babDB->db_fetch_assoc($oResult);
-	if(false === $aDbCharset)
-	{
-		$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
-		return false;	
-	}
-	
-	if('latin1' != $aDbCharset['Value'])
-	{
-		//$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
-		//$babBody->addError('Please make a backup of your database and then convert it into latin1');	
-		//return false;	
-	}
+		$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+		if(false === $oResult)
+		{
+			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
+			return false;	
+		}
+		
+		$aDbCharset = $babDB->db_fetch_assoc($oResult);
+		if(false === $aDbCharset)
+		{
+			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
+			return false;	
+		}
+		
+		if('latin1' != $aDbCharset['Value'])
+		{
+			$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
+			$babBody->addError('Please make a backup of your database and then convert it into latin1');	
+			return false;	
+		}
+	}	
 	
 	
 	/**
