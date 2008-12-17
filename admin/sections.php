@@ -103,7 +103,7 @@ function sectionsList()
 			$rescat = $this->db->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 			$this->processres($rescat, '-3');
 			
-			bab_sort::ksort($this->sections, bab_sort::CASE_INSENTIVE);
+			bab_sort::ksort($this->sections, bab_sort::CASE_INSENSITIVE);
 			}
 			
 		function processres($res, $suffix) {

@@ -200,7 +200,7 @@ class bab_functionalities {
 			closedir($dh);
 		}
 
-		bab_sort::sort($children, bab_sort::CASE_INSENTIVE);
+		bab_sort::sort($children, bab_sort::CASE_INSENSITIVE);
 		return $children;
 	}
 

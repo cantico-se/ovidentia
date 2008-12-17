@@ -32,8 +32,8 @@ class bab_sort
 	private static $sKeyName	= null;
 	private static $iCase		= 0;
 	
-	const CASE_SENTIVE			= 0;
-	const CASE_INSENTIVE		= 1;
+	const CASE_SENSITIVE		= 0;
+	const CASE_INSENSITIVE		= 1;
 	
 	public function __construct()
 	{
@@ -49,7 +49,7 @@ class bab_sort
 	public static function natcasesort(array &$aToSort)
 	{
 		self::$sKeyName = null;
-		self::$iCase	= bab_sort::CASE_INSENTIVE;
+		self::$iCase	= bab_sort::CASE_INSENSITIVE;
 		
 		return uasort($aToSort, array('bab_sort', 'uasortCallback'));
 	}
@@ -62,7 +62,7 @@ class bab_sort
 	 * @param int		$iCase		Case used in compare
 	 * @return bool
 	 */
-	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_sort::CASE_SENTIVE)
+	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_sort::CASE_SENSITIVE)
 	{
 		self::$sKeyName = $sKeyName;
 		self::$iCase	= $iCase;
@@ -140,7 +140,7 @@ class bab_sort
 	
 	private static function getStringAccordingToCase($sString)
 	{
-		if(bab_sort::CASE_INSENTIVE == self::$iCase)
+		if(bab_sort::CASE_INSENSITIVE == self::$iCase)
 		{
 			return mb_strtolower($sString);
 		}

@@ -1987,11 +1987,11 @@ class bab_SubFolders extends bab_handler
 					switch(mb_strtolower($order))
 					{
 						case 'desc':
-							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENTIVE);
+							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
 							$this->IdEntries = array_reverse($this->IdEntries);
 							break;
 						default:
-							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENTIVE);
+							bab_sort::sort($this->IdEntries, bab_sort::CASE_INSENSITIVE);
 							break;
 					}
 				}

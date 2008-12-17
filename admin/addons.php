@@ -90,7 +90,7 @@ class bab_addons_list
 			}
 		}
 
-		bab_sort::ksort($return, bab_sort::CASE_INSENTIVE);
+		bab_sort::ksort($return, bab_sort::CASE_INSENSITIVE);
 		return $return;
 	}
 	

@@ -242,7 +242,7 @@ function showPersonalFoldersDetail()
 			$this->count = count($this->arrinfo);
 			if($this->count > 0)
 			{	
-				bab_sort::asort($this->arrinfo, null, bab_sort::CASE_INSENTIVE);
+				bab_sort::asort($this->arrinfo, null, bab_sort::CASE_INSENSITIVE);
 				$this->arrinfo = array_reverse($this->arrinfo);
 			}
 			
