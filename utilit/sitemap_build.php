@@ -1451,6 +1451,8 @@ function bab_sitemap_userSection(&$event) {
 				if (isset($arr['folder'])) {
 					$event->addFolder($link);
 
+					bab_sort::asort($arr['folder'], 'label', bab_sort::CASE_INSENSITIVE);
+
 					foreach($arr['folder'] as $sub_arr) {
 						$sub_link = $event->createItem($sub_arr['uid']);
 						$sub_link->setLabel($sub_arr['label']);
