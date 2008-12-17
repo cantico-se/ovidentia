@@ -2665,7 +2665,7 @@
 <string id="The directory %s is not writable">Le répertoire %s n'est pas accessible en écriture</string>
 <string id="Dependencies">Dépendences</string>
 <string id="There is a conflict with working hours of the selected personnal calendars">Il y a un conflit avec les heures travaillées de l'agenda personnel sélectionné</string>
-<string id="This addon is not deletable">Cet addon n'est pas supprimable</string>
+<string id="This addon is not deletable">Cet addon ne peut pas être supprimé</string>
 <string id="Add-ons installation">Installation d'un module</string>
 <string id="This addon has dependences from other addons">Ce module a des dépendences depuis d'autres modules</string>
 <string id="Messages">Messages</string>
