@@ -141,15 +141,17 @@ else  if (!empty($HTTP_POST_VARS))
 if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 unset($babTmp);
 
+/*
 if (!empty($_SERVER))
 	$babTmp =& $_SERVER;
 else  if (!empty($HTTP_SERVER_VARS)) 
 	$babTmp =& $HTTP_SERVER_VARS;
 if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 unset($babTmp);
+*/
 
 bab_unset($_REQUEST);
-bab_unset($_SERVER);
+// bab_unset($_SERVER);
 bab_unset($_COOKIE);
 
 

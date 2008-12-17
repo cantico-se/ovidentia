@@ -925,6 +925,8 @@ function getUserDirectories($accessCtrl = true)
 	{
 	global $babDB;
 
+	$return = array();
+
 	$res = $babDB->db_query("
 		SELECT 
 			d.id, 

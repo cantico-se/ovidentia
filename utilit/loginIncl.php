@@ -161,23 +161,7 @@ class Func_PortalAuthentication extends bab_functionality
 	}
 
 
-	/**
-	 * Returns the user id for the specified nickname and password using the local database backend.
-	 *
-	 * @param string	$sLogin		The user nickname
-	 * @param string	$sPassword	The user password
-	 * @return int		The user id or null if not found
-	 */
-	function authenticateUserByLoginPassword($sLogin, $sPassword)
-	{
-		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
-		if (!is_null($aUser))
-		{
-			return (int) $aUser['id'];
-		}
-		$this->addError(bab_translate("User not found or bad password"));
-		return null;
-	}
+	
 
 
 
@@ -196,15 +180,18 @@ class Func_PortalAuthentication extends bab_functionality
 			{
 			$babBody->babsite['authentification'] = BAB_AUTHENTIFICATION_OVIDENTIA;
 			}
+
 		$iAuthenticationType = (int) $babBody->babsite['authentification'];	
+		$AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+
 		switch ($iAuthenticationType)
 		{
 			case BAB_AUTHENTIFICATION_OVIDENTIA:
-				return $this->authenticateUserByLoginPassword($sLogin, $sPassword);
+				return $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
 			case BAB_AUTHENTIFICATION_LDAP:
-				return $this->authenticateUserByLDAP($sLogin, $sPassword);
+				return $AuthOvidentia->authenticateUserByLDAP($sLogin, $sPassword);
 			case BAB_AUTHENTIFICATION_AD:
-				return $this->authenticateUserByActiveDirectory($sLogin, $sPassword);
+				return $AuthOvidentia->authenticateUserByActiveDirectory($sLogin, $sPassword);
 		}
 		return null;
 	}
@@ -305,7 +292,23 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	}
 
 
-
+	/**
+	 * Returns the user id for the specified nickname and password using the local database backend.
+	 *
+	 * @param string	$sLogin		The user nickname
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
+	function authenticateUserByLoginPassword($sLogin, $sPassword)
+	{
+		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
+		if (!is_null($aUser))
+		{
+			return (int) $aUser['id'];
+		}
+		$this->addError(bab_translate("User not found or bad password"));
+		return null;
+	}
 
 
 	
