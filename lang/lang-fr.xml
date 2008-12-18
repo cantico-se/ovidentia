@@ -2688,7 +2688,7 @@
 <string id="The site is not completely converted due to the errors below, please restore your backup. Fix the error and try again.">Le site n'a pas été complétement converti, a cause des erreurs ci dessous. Restaurer votre saugarde, corrigez les erreurs et essayez à nouveau.</string>
 <string id="The database could not be converted in %unsupportedCharset% because this character set is not valid. The good values are %supportedCharset%">La base de données n'a pas pu être convertie en %unsupportedCharset% parce que ce jeu de caractères n'est pas valide. Les bonnes valeurs sont %supportedCharset%</string>
 <string id="Convertion result">Résultat de la conversion</string>
-<string id="The site have been successfully converted from %convertFrom% to %convertTo%">Le site a été converti de %convertFrom% à %convertTo% avec succès</string></fr>
+<string id="The site have been successfully converted from %convertFrom% to %convertTo%">Le site a été converti de %convertFrom% à %convertTo% avec succès</string>
 <string id="The directory %oldDirectory% may not be converted to %newDirectory% because some characters are not supported by the file system">Le répertoire %oldDirectory% ne peut pas être converti en %newDirectory% car certains caractères ne sont pas supportés par le système de fichier</string>
 <string id="The file %oldFile% may not be converted to %newFile% because some characters are not supported by the file system">Le fichier %oldFile% ne peut pas être converti en %newFile% car certains caractères ne sont pas supportés par le système de fichier</string>
 <string id="The file %file% contains characters not supported by the file system">Le fichier %file% contient des caractères non supportés par le système de fichier</string>
