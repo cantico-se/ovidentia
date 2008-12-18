@@ -474,6 +474,7 @@ if( isset($modify))
 	if( isset($submit))
 	{
 		modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid);
+		bab_sitemap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
 	}
 	else if( isset($catdel))

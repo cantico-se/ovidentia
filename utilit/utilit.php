@@ -155,7 +155,7 @@ function bab_getRegionalFormats() {
 			'dd MMMM yyyy',
 			'MMMM dd, yyyy',
 			'dddd, MMMM dd, yyyy',
-			'dddd, dd MMMM, yyyy',
+			'dddd dd MMMM yyyy',
 			'dd MMMM, yyyy'
 		),
 

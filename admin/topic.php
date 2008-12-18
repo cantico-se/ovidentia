@@ -1011,6 +1011,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 			$ord = 1;
 		$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$db->db_escape_string($cat)."', ordering='".$ord."' where id_topcat='".$db->db_escape_string($id)."' and type='2'");
 		}
+	bab_sitemap::clearAll();
 	Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
 	}
 
@@ -1107,6 +1108,7 @@ if( isset($action) && $action == "Yes")
 		{
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteTopic($category);
+		bab_sitemap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 		}
@@ -1114,6 +1116,7 @@ if( isset($action) && $action == "Yes")
 		{
 		include_once $babInstallPath."utilit/delincl.php";
 		bab_confirmDeleteArticles($items);
+		bab_sitemap::clearAll();
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 		exit;
 		}
