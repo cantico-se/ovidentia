@@ -4973,7 +4973,7 @@ function removeLastPath($sPath)
 			{
 				$aToRemove = array();
 				$sLastChar = mb_substr($sPath, - 1);
-				if($sPath == '/')
+				if($sLastChar == '/')
 				{
 					$aToRemove = array($iCount - 1, $iCount - 2);
 				}
