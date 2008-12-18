@@ -721,7 +721,19 @@ function convertSite()
 				return;
 			}
 
-			
+			$sLangDir = dirname(__FILE__) . '/../../lang';
+			if(is_dir($sLangDir))
+			{
+				$oDirIterator = new DirectoryIterator($sLangDir);
+				foreach($oDirIterator as $oItem)
+				{
+					if($oItem->isFile() && mb_substr($oItem->getFilename(), -4) == '.dat')
+					{
+						unlink($oItem->getPathname());
+					}
+				}
+			}
+						
 			if(1 == $iConvertFileSystem)
 			{
 				$sFromCharset	= $sToCharset;
@@ -737,6 +749,7 @@ function convertSite()
 			$sMessage = str_replace($aSearch, $aReplace, bab_translate('The site have been successfully converted from %convertFrom% to %convertTo%'));
 			emptyCharsetLogTable();
 			logToCharsetTable($sMessage);
+			
 			$sUrl = $GLOBALS['babUrl'] . 'index.php?tg=charset&idx=displaySuccessMessage';
 			header('Location: ' . $sUrl);
 			exit;			
@@ -947,6 +960,7 @@ bab_setTimeLimit(3600);
 
 
 createCharsetConvertLogTable();
+
 
 switch($sIdx)
 {
