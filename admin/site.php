@@ -416,32 +416,11 @@ function site_menu5($id)
 
 			$this->site_configuration_cls($id);
 
-			$this->arrlfdate = array();
-			$this->arrlfdate[] = "dd MMMM yyyy";
-			$this->arrlfdate[] = "MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, MMMM dd, yyyy";
-			$this->arrlfdate[] = "dddd, dd MMMM, yyyy";
-			$this->arrlfdate[] = "dd MMMM, yyyy";
+			$formats = bab_getRegionalFormats();
 
-			$this->arrsfdate = array();
-			$this->arrsfdate[] = "M/d/yyyy";
-			$this->arrsfdate[] = "M/d/yy";
-			$this->arrsfdate[] = "MM/dd/yy";
-			$this->arrsfdate[] = "MM/dd/yyyy";
-			$this->arrsfdate[] = "yy/MM/dd";
-			$this->arrsfdate[] = "yyyy-MM-dd";
-			$this->arrsfdate[] = "dd-MMM-yy";
-			
-			$this->arrtime = array();
-			$this->arrtime[] = "HH:mm";
-			$this->arrtime[] = "HH:mm tt";
-			$this->arrtime[] = "HH:mm TT";
-			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss tt";
-			$this->arrtime[] = "h:mm:ss tt";
-			$this->arrtime[] = "hh:mm:ss tt";
-			$this->arrtime[] = "HH:mm:ss";
-			$this->arrtime[] = "H:m:s";
+			$this->arrlfdate 	= $formats['longDate'];
+			$this->arrsfdate 	= $formats['shortDate'];
+			$this->arrtime 		= $formats['hour'];
 			}
 
 		function getnextlongdate()
@@ -449,8 +428,9 @@ function site_menu5($id)
 			static $i = 0;
 			if( $i < count($this->arrlfdate))
 				{
-                $this->dateval = $this->arrlfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
+                $this->dateval = bab_toHtml($this->arrlfdate[$i]);
+                $this->datetxt = bab_toHtml($this->arrlfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() ));
+				$this->selected = $this->arrlfdate[$i] === $this->row['date_longformat'];
 				$i++;
 				return true;
 				}
@@ -463,8 +443,9 @@ function site_menu5($id)
 			static $i = 0;
 			if( $i < count($this->arrsfdate))
 				{
-                $this->dateval = $this->arrsfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
+                $this->dateval = bab_toHtml($this->arrsfdate[$i]);
+                $this->datetxt = bab_toHtml($this->arrsfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() ));
+				$this->selected = $this->arrsfdate[$i] === $this->row['date_shortformat'];
 				$i++;
 				return true;
 				}
@@ -477,8 +458,9 @@ function site_menu5($id)
 			static $i = 0;
 			if( $i < count($this->arrtime))
 				{
-                $this->timeval = $this->arrtime[$i];
-                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
+                $this->timeval = bab_toHtml($this->arrtime[$i]);
+                $this->timetxt = bab_toHtml($this->arrtime[$i].' : '.date( bab_getTimeFormat($this->arrtime[$i]) ));
+				$this->selected = $this->arrtime[$i] === $this->row['time_format'];
 				$i++;
 				return true;
 				}

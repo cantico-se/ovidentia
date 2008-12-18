@@ -423,106 +423,70 @@ mm(sksel);
 </form>
 <br>
 <!--#end profileslist -->
+
+
 <!--#begin regionalsettings -->
-<script language="javascript">
-<!--
-function selChange(obj, edit)
-{
-if( obj.value == '' )
-	return;
-document.forms.regsetform[edit].value = obj.value;
-}
--->
-</script>
 <form name="regsetform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options">
 <input type="hidden" name="update" value="regsettings">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" nowrap valign="middle" colspan="2">{ regsettings_title }</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="datelformat" size="30" maxlength="255" value="{ date_lformat_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="" onchange="selChange(this, 'datelformat')">
-<option value=""></option>
-<!--#in getnextlongdate -->
-<option value="{ dateval }">{ datetxt }</option>
-<!--#endin getnextlongdate -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="datesformat" size="30" maxlength="255" value="{ date_sformat_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="" onchange="selChange(this, 'datesformat')">
-<option value=""></option>
-<!--#in getnextshortdate -->
-<option value="{ dateval }">{ datetxt }</option>
-<!--#endin getnextshortdate -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
-<td width="70%" valign="middle"> 
-<table>
-<tr>
-<td>
-<input type="text" name="timeformat" size="30" maxlength="255" value="{ time_format_val }">
-</td>
-</tr>
-<tr>
-<td>
-<select name="" onchange="selChange(this, 'timeformat')">
-<option value=""></option>
-<!--#in getnexttime -->
-<option value="{ timeval }">{ timetxt }</option>
-<!--#endin getnexttime -->
-</select>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr> 
-<td nowrap>&nbsp;</td>
-<td valign="middle"> 
-<input type="submit" name="submit" value="{ update }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+		<tr> 
+		<td align="center" nowrap valign="middle" colspan="2">{ regsettings_title }</td>
+		</tr>
+		<tr> 
+		<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
+		<td width="70%" valign="middle"> 
+			
+			<select name="datelformat">
+				<option value=""></option>
+				<!--#in getnextlongdate -->
+				<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+				<!--#endin getnextlongdate -->
+			</select>
+				
+		</td>
+		</tr>
+		<tr> 
+		<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
+		<td width="70%" valign="middle"> 
+	
+			<select name="datesformat">
+			<option value=""></option>
+			<!--#in getnextshortdate -->
+			<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+			<!--#endin getnextshortdate -->
+			</select>
+
+		</td>
+		</tr>
+		<tr> 
+		<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
+		<td width="70%" valign="middle"> 
+
+			<select name="timeformat">
+			<option value=""></option>
+			<!--#in getnexttime -->
+			<option value="{ timeval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ timetxt }</option>
+			<!--#endin getnexttime -->
+			</select>
+			
+		</td>
+		</tr>
+		<tr> 
+		<td colspan="2" align="center"> 
+		<input type="submit" name="submit" value="{ update }" />
+		<br>
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
 </form>
-<br>
+<br />
 <!--#end regionalsettings -->
 
 <!--#begin unavailability -->

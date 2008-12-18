@@ -657,47 +657,42 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
 	<tr> 
-	<td>{ date_lformat_title }:</td>
-	<td> 
-
-		<input type="text" name="date_longformat" size="30" maxlength="255" value="{ arr[date_longformat] }" /> 
+	<td width="30%" align="right" nowrap valign="middle">{ date_lformat_title }:</td>
+	<td width="70%" valign="middle"> 
 		
-		<select name="selldate" onchange="selChange(this, 'date_longformat')">
-		<option value=""></option>
-		<!--#in getnextlongdate -->
-		<option value="{ dateval }">{ datetxt }</option>
-		<!--#endin getnextlongdate -->
+		<select name="date_longformat">
+			<option value=""></option>
+			<!--#in getnextlongdate -->
+			<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+			<!--#endin getnextlongdate -->
+		</select>
+			
+	</td>
+	</tr>
+	<tr> 
+	<td width="30%" align="right" nowrap valign="middle">{ date_sformat_title }:</td>
+	<td width="70%" valign="middle"> 
+
+		<select name="date_shortformat">
+			<option value=""></option>
+			<!--#in getnextshortdate -->
+			<option value="{ dateval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ datetxt }</option>
+			<!--#endin getnextshortdate -->
 		</select>
 
 	</td>
 	</tr>
 	<tr> 
-	<td>{ date_sformat_title }:</td>
-	<td> 
+	<td width="30%" align="right" nowrap valign="middle">{ time_format_title }:</td>
+	<td width="70%" valign="middle"> 
 
-		<input type="text" name="date_shortformat" size="30" maxlength="255" value="{ arr[date_shortformat] }" /> 
-
-		<select name="selsdate" onchange="selChange(this, 'date_shortformat')">
-		<option value=""></option>
-		<!--#in getnextshortdate -->
-		<option value="{ dateval }">{ datetxt }</option>
-		<!--#endin getnextshortdate -->
+		<select name="time_format">
+			<option value=""></option>
+			<!--#in getnexttime -->
+			<option value="{ timeval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ timetxt }</option>
+			<!--#endin getnexttime -->
 		</select>
-
-	</td>
-	</tr>
-	<tr> 
-	<td>{ time_format_title }:</td>
-	<td> 
-
-		<input type="text" name="time_format" size="30" maxlength="255" value="{ arr[time_format] }" /> 
 		
-		<select name="seltime" onchange="selChange(this, 'time_format')">
-		<option value=""></option>
-		<!--#in getnexttime -->
-		<option value="{ timeval }">{ timetxt }</option>
-		<!--#endin getnexttime -->
-		</select>
 	</td>
 	</tr>
 	<tr> 

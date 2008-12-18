@@ -144,22 +144,64 @@ function bab_getCssUrl()
 	return $filepath;
 	}
 
+/**
+ * Date and time format proposed for site configuration and user configuration
+ * @array
+ */
+function bab_getRegionalFormats() {
+
+	return array(
+		'longDate' => array(
+			'dd MMMM yyyy',
+			'MMMM dd, yyyy',
+			'dddd, MMMM dd, yyyy',
+			'dddd, dd MMMM, yyyy',
+			'dd MMMM, yyyy'
+		),
+
+		'shortDate'	=> array(
+			'M/d/yyyy',
+			'dd/MM/yyyy',
+			'M/d/yy',
+			'MM/dd/yy',
+			'MM/dd/yyyy',
+			'yy/MM/dd',
+			'yyyy-MM-dd',
+			'dd-MMM-yy'
+		),
+			
+		'hour' => array(
+			'HH:mm',
+			'HH:mm tt',
+			'HH:mm TT',
+			'HH:mm:ss tt',
+			'HH:mm:ss tt',
+			'h:mm:ss tt',
+			'hh:mm:ss tt',
+			'HH:mm:ss',
+			'H:m:s'
+		)
+	);
+}
+
+
+
 function bab_getDateFormat($format)
 {
-	$format = preg_replace("/(?<!M)M(?!M)/i", "$1%n$2", $format);
-	$format = preg_replace("/(?<!M)MM(?!M)/i", "$1%n$2", $format);
-	$format = preg_replace("/(?<!M)MMM(?!M)/i", "$1%m$2", $format);
-	$format = preg_replace("/(?<!M)M{4,}(?!M)/i", "$1%M$3", $format);
+	$format = preg_replace("/(?<!M)M(?!M)/", "$1%n$2", $format);
+	$format = preg_replace("/(?<!M)MM(?!M)/", "$1%n$2", $format);
+	$format = preg_replace("/(?<!M)MMM(?!M)/", "$1%m$2", $format);
+	$format = preg_replace("/(?<!M)M{4,}(?!M)/", "$1%M$3", $format);
 
-	$format = preg_replace("/(?<!D)D(?!D)/i", "$1%j$2", $format);
-	$format = preg_replace("/(?<!D)DD(?!D)/i", "$1%j$2", $format);
-	$format = preg_replace("/(?<!D)DDD(?!D)/i", "$1%d$2", $format);
-	$format = preg_replace("/(?<!D)D{4,}(?!D)/i", "$1%D$2", $format);
+	$format = preg_replace("/(?<!d)d(?!d)/", "$1%j$2", $format);
+	$format = preg_replace("/(?<!d)dd(?!d)/", "$1%j$2", $format);
+	$format = preg_replace("/(?<!d)ddd(?!d)/", "$1%d$2", $format);
+	$format = preg_replace("/(?<!d)d{4,}(?!d)/", "$1%D$2", $format);
 	
-	$format = preg_replace("/(?<!Y)Y(?!Y)/i", "$1%y$2", $format);
-	$format = preg_replace("/(?<!Y)YY(?!Y)/i", "$1%y$2", $format);
-	$format = preg_replace("/(?<!Y)YYY(?!Y)/i", "$1%Y$2", $format);
-	$format = preg_replace("/(?<!Y)Y{4,}(?!Y)/i", "$1%Y$2", $format);
+	$format = preg_replace("/(?<!y)y(?!y)/", "$1%y$2", $format);
+	$format = preg_replace("/(?<!y)yy(?!y)/", "$1%y$2", $format);
+	$format = preg_replace("/(?<!y)yyy(?!y)/", "$1%Y$2", $format);
+	$format = preg_replace("/(?<!y)y{4,}(?!y)/", "$1%Y$2", $format);
 
 	return $format;
 }
@@ -183,8 +225,8 @@ function bab_getTimeFormat($format)
 	$format = preg_replace("/(?<!H)H(?!H)/", "$1G$2", $format);
 	$format = preg_replace("/(?<!H)H{2,}(?!H)/", "$1H$2", $format);
 
-	$format = preg_replace("/(?<!m)m{1,}(?!m)/i", "$1i$2", $format);
-	$format = preg_replace("/(?<!s)s{1,}(?!s)/i", "$1s$2", $format);
+	$format = preg_replace("/(?<!m)m{1,}(?!m)/", "$1i$2", $format);
+	$format = preg_replace("/(?<!s)s{1,}(?!s)/", "$1s$2", $format);
 
 	$format = preg_replace("/(?<!t)t{1,}(?!t)/", "$1a$2", $format);
 	$format = preg_replace("/(?<!T)T{1,}(?!T)/", "$1A$2", $format);

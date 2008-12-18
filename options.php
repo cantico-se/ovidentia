@@ -227,54 +227,36 @@ function changeRegionalSettings()
 			$arr = $babDB->db_fetch_array($res);
 			if( empty($arr['date_shortformat']))
 				{
-				$this->date_sformat_val = bab_toHtml($babBody->babsite['date_shortformat']);
+				$this->date_sformat_val = $babBody->babsite['date_shortformat'];
 				}
 			else
 				{
-				$this->date_sformat_val = bab_toHtml($arr['date_shortformat']);
+				$this->date_sformat_val = $arr['date_shortformat'];
 				}
 			if( empty($arr['date_longformat']))
 				{
-				$this->date_lformat_val = bab_toHtml($babBody->babsite['date_longformat']);
+				$this->date_lformat_val = $babBody->babsite['date_longformat'];
 				}
 			else
 				{
-				$this->date_lformat_val = bab_toHtml($arr['date_longformat']);
+				$this->date_lformat_val = $arr['date_longformat'];
 				}
 			if( empty($arr['time_format']))
 				{
-				$this->time_format_val = bab_toHtml($babBody->babsite['time_format']);
+				$this->time_format_val = $babBody->babsite['time_format'];
 				}
 			else
 				{
-				$this->time_format_val = bab_toHtml($arr['time_format']);
+				$this->time_format_val = $arr['time_format'];
 				}
 
 			$this->update = bab_translate("Update");
 
-			$this->arrlfdate = array();
-			$this->arrlfdate[] = 'dd MMMM yyyy';
-			$this->arrlfdate[] = 'MMMM dd, yyyy';
-			$this->arrlfdate[] = 'dddd, MMMM dd, yyyy';
-			$this->arrlfdate[] = 'dddd, dd MMMM, yyyy';
-			$this->arrlfdate[] = 'dd MMMM, yyyy';
+			$formats = bab_getRegionalFormats();
 
-			$this->arrsfdate = array();
-			$this->arrsfdate[] = 'M/d/yyyy';
-			$this->arrsfdate[] = 'M/d/yy';
-			$this->arrsfdate[] = 'MM/dd/yy';
-			$this->arrsfdate[] = 'yy/MM/dd';
-			$this->arrsfdate[] = 'yyyy-MM-dd';
-			$this->arrsfdate[] = 'dd-MMM-yy';
-			
-			$this->arrtime = array();
-			$this->arrtime[] = 'HH:mm';
-			$this->arrtime[] = 'HH:mm tt';
-			$this->arrtime[] = 'HH:mm TT';
-			$this->arrtime[] = 'HH:mm:ss tt';
-			$this->arrtime[] = 'h:mm:ss tt';
-			$this->arrtime[] = 'hh:mm:ss tt';
-			$this->arrtime[] = 'HH:mm:ss';
+			$this->arrlfdate = $formats['longDate'];
+			$this->arrsfdate = $formats['shortDate'];
+			$this->arrtime = $formats['hour'];
 			}
 
 		function getnextlongdate()
@@ -282,8 +264,9 @@ function changeRegionalSettings()
 			static $i = 0;
 			if( $i < count($this->arrlfdate))
 				{
-                $this->dateval = $this->arrlfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() );
+                $this->dateval = bab_toHtml($this->arrlfdate[$i]);
+                $this->datetxt = bab_toHtml($this->arrlfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrlfdate[$i]), mktime() ));
+				$this->selected = $this->date_lformat_val === $this->arrlfdate[$i];
 				$i++;
 				return true;
 				}
@@ -296,8 +279,9 @@ function changeRegionalSettings()
 			static $i = 0;
 			if( $i < count($this->arrsfdate))
 				{
-                $this->dateval = $this->arrsfdate[$i];
-                $this->datetxt = bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() );
+                $this->dateval = bab_toHtml($this->arrsfdate[$i]);
+                $this->datetxt = bab_toHtml($this->arrsfdate[$i].' : '.bab_formatDate( bab_getDateFormat($this->arrsfdate[$i]), mktime() ));
+				$this->selected = $this->date_sformat_val === $this->arrsfdate[$i];
 				$i++;
 				return true;
 				}
@@ -310,8 +294,9 @@ function changeRegionalSettings()
 			static $i = 0;
 			if( $i < count($this->arrtime))
 				{
-                $this->timeval = $this->arrtime[$i];
-                $this->timetxt = date( bab_getTimeFormat($this->arrtime[$i]), mktime() );
+                $this->timeval = bab_toHtml($this->arrtime[$i]);
+                $this->timetxt = bab_toHtml($this->arrtime[$i].' : '.date( bab_getTimeFormat($this->arrtime[$i])));
+				$this->selected = $this->time_format_val === $this->arrtime[$i];
 				$i++;
 				return true;
 				}
