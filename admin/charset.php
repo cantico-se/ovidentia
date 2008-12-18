@@ -417,7 +417,7 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 	global $babDB;
 
 	$sToCharset		= $sCharset;
-	$sFromCharset	= ($sFromCharset == 'utf8') ? 'latin1' : 'utf8';
+	$sFromCharset	= ($sToCharset == 'utf8') ? 'latin1' : 'utf8';
 	$aSearch		= array('%fromCharset%', '%toCharset%');
 	$aReplace		= array($sFromCharset, $sToCharset);
 	
