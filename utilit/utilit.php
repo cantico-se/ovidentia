@@ -220,6 +220,7 @@ function bab_convertToDatabaseEncoding($sString)
 
 
 
+
 /**
  * Get translations matchs found in one lang file
  * @param	string	$lang
@@ -232,25 +233,26 @@ function bab_getLangFileMatchs($lang, $filename)
 	if( $file )
 		{
 		$tmp = fread($file, filesize($filename));
+		fclose($file);
 		
-		$preg_filter = '';
+		
 		$charset = 'ISO-8859-15';
 
-		if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', substr($tmp, 0, 70), $m)) {
-			$tmp = bab_getStringAccordingToDataBase($tmp, $m[1]);
 
-			if ('UTF-8' === $m[1]) {
-				$preg_filter = 'u';
-			}
+		$xml_header_pos = strpos($tmp, "?>");
+		if (false !== $xml_header_pos) {
+			$xml_header = substr($tmp, 0, $xml_header_pos);
+			if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', $xml_header, $m)) {
+				$charset = $m[1];
+			}	
 		}
 
-		fclose($file);
-		preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s'.$preg_filter, $tmp, $m);
-		preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s'.$preg_filter, isset($m[1]) ? $m[1] : '' , $tmparr);
+		$tmp = bab_getStringAccordingToDataBase($tmp, $charset);
 
-		
-
-		return $tmparr;
+		if (preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp)) {
+			preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', $tmp , $tmparr);
+			return $tmparr;
+			}
 		}
 
 	return array();
