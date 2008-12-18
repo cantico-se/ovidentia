@@ -539,7 +539,7 @@ function bab_OCCreate($sName, $sDescription, $iIdDelegation, $iIdDirectory)
 	
 	if(false === bab_OCHaveAdminRight())
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -607,14 +607,14 @@ function bab_OCDelete($iIdOrgChart)
 	global $babBody;
 	if(false === bab_OCHaveAdminRight())
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
 	$aData = bab_OCGet($iIdOrgChart);
 	if(false === $aData || 'Y' === (string) $aData['isprimary'])
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -795,7 +795,7 @@ function bab_OCLock($iIdSessUser, $iIdOrgChart)
 	
 	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -805,7 +805,7 @@ function bab_OCLock($iIdSessUser, $iIdOrgChart)
 		{
 			return true;
 		}
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -845,13 +845,13 @@ function bab_OCUnlock($iIdSessUser, $iIdOrgChart)
 	
 	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
 	if(false === bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -887,7 +887,7 @@ function bab_OCIsLocked($iIdSessUser, $iIdOrgChart)
 	global $babBody;
 	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	$aData = bab_OCGet($iIdSessUser, $iIdOrgChart);	
@@ -909,7 +909,7 @@ function bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdUser)
 	global $babBody;
 	if(false === bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	$aData = bab_OCGet($iIdSessUser, $iIdOrgChart);	
@@ -1019,7 +1019,7 @@ function bab_OCCreateEntity($iIdSessUser, $iIdOrgChart, $iIdParentEntity, $sName
 	
 	if(false === bab_OCIsLockedBy($iIdSessUser, $iIdOrgChart, $iIdSessUser))
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 		return false;
 	}
 	
@@ -2704,7 +2704,7 @@ class bab_OrgChartUtil
 		
 		if(false === $this->haveAdminRight())
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
@@ -2890,7 +2890,7 @@ class bab_OrgChartUtil
 		
 		if(false === $this->bHaveUpdateRight)
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
@@ -2900,7 +2900,7 @@ class bab_OrgChartUtil
 			{
 				return true;
 			}
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
@@ -2939,13 +2939,13 @@ class bab_OrgChartUtil
 		
 		if(false === $this->bHaveUpdateRight)
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
 		if(false === $this->isLockedBy($this->iIdSessUser))
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
@@ -2981,7 +2981,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		if(false === $this->bHaveUpdateRight)
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && 0 !== (int) $this->aCachedOrgChart['edit_author']);
@@ -3000,7 +3000,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		if(false === $this->bHaveUpdateRight)
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		return (false !== $this->aCachedOrgChart && 'Y' === (string) $this->aCachedOrgChart['edit'] && (int) $iIdUser === (int) $this->aCachedOrgChart['edit_author']);
@@ -3026,7 +3026,7 @@ class bab_OrgChartUtil
 		global $babBody;
 		if(false === $this->isAccessValid())
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		
@@ -3065,7 +3065,7 @@ class bab_OrgChartUtil
 		
 		if(!$this->isLockedBy($this->iIdSessUser))
 		{
-			$babBody->addError(bab_translate("Acces denied"));
+			$babBody->addError(bab_translate("Access denied"));
 			return false;
 		}
 		

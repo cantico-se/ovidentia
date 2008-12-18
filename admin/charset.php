@@ -658,7 +658,7 @@ function displayWarning()
 	}
 	else
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 	}
 }
 
