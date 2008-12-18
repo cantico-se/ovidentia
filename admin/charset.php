@@ -421,8 +421,16 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 	$aSearch		= array('%fromCharset%', '%toCharset%');
 	$aReplace		= array($sFromCharset, $sToCharset);
 	
-	$sQuery			= 'SHOW TABLES FROM ' . $sDataBaseName;
-	$oResult		= $babDB->db_query($sQuery);
+	$sQuery = 'ALTER DATABASE ' . $sDataBaseName . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
+	if(false === $babDB->db_query($sQuery))
+	{
+		$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed'));
+		$aError[]	= $sMessage;
+		return $aError;
+	}
+	
+	$sQuery		= 'SHOW TABLES FROM ' . $sDataBaseName;
+	$oResult	= $babDB->db_query($sQuery);
 	
 	if(false === $oResult)
 	{
@@ -443,14 +451,6 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 			return $aError;
 		}
 	}		
-	
-	$sQuery = 'ALTER DATABASE ' . $sDataBaseName . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
-	if(false === $babDB->db_query($sQuery))
-	{
-		$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed'));
-		$aError[]	= $sMessage;
-		return $aError;
-	}
 	
 	return $aError;
 }
