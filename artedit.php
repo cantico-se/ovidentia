@@ -2634,7 +2634,7 @@ switch($idx)
 		else
 		{
 			$babBodyPopup->title = bab_translate("Article edition");
-			$babBodyPopup->msgerror = bab_translate("Acess denied");
+			$babBodyPopup->msgerror = bab_translate("Access denied");
 			printBabBodyPopup();
 			exit;
 		}
