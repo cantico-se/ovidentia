@@ -415,7 +415,7 @@ switch($idx)
 		$calid = bab_isCalendarAccessValid($calid);
 		if( !$calid )
 			{
-			$babBody->setTitle(bab_translate("Acces denied"));
+			$babBody->setTitle(bab_translate("Access denied"));
 			}
 		else
 			{
@@ -443,7 +443,7 @@ switch($idx)
 
 		if( !$calid )
 			{
-			$babBody->title = bab_translate("Acces denied");
+			$babBody->title = bab_translate("Access denied");
 			}
 		else
 			{

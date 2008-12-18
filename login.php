@@ -753,7 +753,7 @@ switch($cmd)
 			$babBody->addItemMenu("emailpwd", bab_translate("Lost Password"), $GLOBALS['babUrlScript']."?tg=login&cmd=emailpwd");
 			emailPassword();
 		} else {
-			$babBody->msgerror = bab_translate("Acces denied");
+			$babBody->msgerror = bab_translate("Access denied");
 		}
 		break;
 

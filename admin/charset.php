@@ -750,7 +750,7 @@ function convertSite()
 	}
 	else
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 	}
 }
 
@@ -909,7 +909,7 @@ function convertFileManager()
 	}
 	else
 	{
-		$babBody->addError(bab_translate("Acces denied"));
+		$babBody->addError(bab_translate("Access denied"));
 	}
 }
 
