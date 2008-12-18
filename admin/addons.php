@@ -81,10 +81,9 @@ class bab_addons_list
 	}
 		
 	function getRes() {
-		$res = bab_addonsInfos::getDbRowsByName();
+
 		$return = array();
-		foreach($res as $name => $row) {
-			$addon = bab_getAddonInfosInstance($name);
+		foreach(bab_addonsInfos::getDbAddonsByName() as $name => $addon) {
 			if ($this->display($addon)) {
 				$return[$name] = $addon;
 			}

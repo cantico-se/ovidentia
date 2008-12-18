@@ -338,6 +338,15 @@ function bab_newInstall() {
 		
 		exit;
 	}
+
+	// add in database the default addons
+	bab_addonsInfos::insertMissingAddonsInTable();
+	bab_addonsInfos::clear();
+
+	// install database for the default addons
+	foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
+		$addon->upgrade();
+	}
 	
 	
 	include_once $GLOBALS['babInstallPath'].'install.php';

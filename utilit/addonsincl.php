@@ -31,16 +31,16 @@ include_once 'base.php';
  */
 class bab_addonsInfos {
 
-	var $indexById 			= array();
-	var $indexByName 		= array();
-	var $fullIndexById		= array();
-	var $fullIndexByName	= array();
+	private $indexById 			= array();
+	private $indexByName 		= array();
+	private $fullIndexById		= array();
+	private $fullIndexByName	= array();
 
 	/**
 	 * Create indexes with access rights verification
 	 * @return boolean
 	 */
-	function createIndex() {
+	private function createIndex() {
 		
 	
 		if (!$this->indexById || !$this->indexByName) {
@@ -86,7 +86,7 @@ class bab_addonsInfos {
 	 * Create full index of addons with disabled and not installed addons
 	 * @return boolean
 	 */
-	function createFullIndex() {
+	private function createFullIndex() {
 	
 		if (!$this->fullIndexById || !$this->fullIndexByName) {
 		
@@ -111,10 +111,9 @@ class bab_addonsInfos {
 	/**
 	 * Get available addons indexed by id
 	 * since $babBody->babaddons is deprecated, this method has the same result
-	 * @static
 	 * @return array
 	 */
-	function getRows() {
+	public static function getRows() {
 	
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createIndex();
@@ -125,11 +124,10 @@ class bab_addonsInfos {
 	
 	/**
 	 * Get addon row from installed and enabled addons list
-	 * @static
 	 * @param	int	$id_addon
 	 * @return	false|array
 	 */
-	function getRow($id_addon) {
+	public static function getRow($id_addon) {
 		
 
 		$arr = bab_addonsInfos::getRows();
@@ -147,10 +145,9 @@ class bab_addonsInfos {
 	
 	/**
 	 * Get all addons indexed by id
-	 * @static
 	 * @return array
 	 */
-	function getDbRows() {
+	public static function getDbRows() {
 	
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
@@ -160,25 +157,39 @@ class bab_addonsInfos {
 	
 	
 	/**
-	 * Get all addons indexed by name
-	 * @static
+	 * Get all addons rows indexed by name
 	 * @return array
 	 */
-	function getDbRowsByName() {
+	public static function getDbRowsByName() {
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
 		
 		return $obj->fullIndexByName;
 	}
 
+	/**
+	 * Get all addons objects indexed by name
+	 * @return array	of bab_addonInfos
+	 * @see bab_addonInfos
+	 */
+	public static function getDbAddonsByName() {
+		$return = array();
+		foreach(self::getDbRows() as $row) {
+			if ($obj = bab_getAddonInfosInstance($row['title'])) {
+				$return[$row['title']] = $obj;
+			}
+		}
+
+		return $return;
+	}
+
 	
 	/**
 	 * Get addon row if exist, from all addons in table
-	 * @static
 	 * @param	int	$id_addon
 	 * @return	false|array
 	 */
-	function getDbRow($id_addon) {
+	public static function getDbRow($id_addon) {
 	
 		$arr = bab_addonsInfos::getDbRows();
 		
@@ -193,9 +204,8 @@ class bab_addonsInfos {
 	
 	/**
 	 * Clear cache for addons
-	 * @static
 	 */
-	function clear() {
+	public static function clear() {
 		global $babBody;
 	
 		$babBody->babaddons = array();
@@ -212,14 +222,13 @@ class bab_addonsInfos {
 	
 	/**
 	 * Get addon id by name
-	 * @static
 	 *
 	 * @param	string	$name
 	 * @param	boolean	$access_rights
 	 *
 	 * @return int|false
 	 */
-	function getAddonIdByName($name, $access_rights = true) {
+	public static function getAddonIdByName($name, $access_rights = true) {
 		
 		
 		$obj = bab_getInstance('bab_addonsInfos');
@@ -252,9 +261,8 @@ class bab_addonsInfos {
 	
 	/**
 	 * Browse addons folder and add missing addons to bab_addons
-	 * @static
 	 */
-	function insertMissingAddonsInTable() {
+	public static function insertMissingAddonsInTable() {
 	
 		global $babDB;
 	
@@ -283,9 +291,8 @@ class bab_addonsInfos {
 	
 	/**
 	 * Browse addons table and remove obsolete lines
-	 * @static
 	 */
-	function deleteObsoleteAddonsInTable() {
+	public static function deleteObsoleteAddonsInTable() {
 		global $babDB;
 		include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
