@@ -98,9 +98,12 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 class babMailTemplate
 	{
 	var $mailcontent;
+	var $sContent;
+	
 	function babMailTemplate($msg)
 		{
-		$this->mailcontent = $msg;
+		$this->mailcontent	= $msg;
+		$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 		}
 	}
 
