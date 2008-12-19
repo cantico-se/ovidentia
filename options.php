@@ -68,12 +68,11 @@ function changePassword()
 				$this->update = bab_translate("Update Password");
 				$this->title = bab_translate("Change password");
 				}
-			$this->msgerror = $this->changepwd ? ($babBody->msgerror!='' ? $babBody->msgerror : false ) : bab_translate("Sorry, You cannot change your password. Please contact administrator");
 			}
 		}
 
 	$tempb = new tempb();
-	die(bab_printTemplate($tempb,"options.html", "changepassword"));
+	$babBody->babPopup(bab_printTemplate($tempb,"options.html", "changepassword"));
 	}
 
 
@@ -90,7 +89,8 @@ function changePasswordUnload($msg)
 			}
 		}
 	$temp = new temp($msg);
-	die(bab_printTemplate($temp,"options.html", "changePasswordUnload"));
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp,"options.html", "changePasswordUnload"));
 	}
 
 function changeUserInfo($firstname, $middlename, $lastname, $nickname, $email)

@@ -1,13 +1,5 @@
 
 <!--#begin changepassword -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-</HEAD>
-<BODY>
 <br>
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="options" />
@@ -16,13 +8,7 @@
 	<tr> 
 	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
 		<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-		<!--#if msgerror -->
-		<tr> 
-			<td valign="middle" align="center" colspan="2" class="BabErrorMessage"> 
-				{ msgerror }
-			</td>
-		</tr>
-		<!--#endif msgerror -->
+
 		<!--#if changepwd -->
 		<tr> 
 			<td width="50%" align="right">{ oldpwd }:</td>
@@ -56,19 +42,10 @@
 </table>
 </form>
 <br>
-</BODY>
 <!--#end changepassword -->
 
 <!--#begin changePasswordUnload -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ sitename }</TITLE>
-{ babMeta }
-{ babCss }
-</HEAD>
-<BODY>
-<br><br><br><br>
+<br><br>
 	<table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 	<td> 
@@ -87,8 +64,6 @@
 <script type="text/javascript">
 	setTimeout("this.close()","1000");
 </script>
-</BODY>
-</HTML>
 <!--#end changePasswordUnload -->
 
 <!--#begin changeuserinfo -->
