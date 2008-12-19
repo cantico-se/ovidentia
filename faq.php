@@ -584,15 +584,17 @@ function viewPopupQuestion($id)
 		var $res;
 		var $more;
 		var $close;
-
+		var $sContent;
 
 		function temp($id)
 			{
 			global $babDB;
-			$this->close = bab_translate("Close");
-			$req = "select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($id)."'";
-			$res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($res);
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			$this->close	= bab_translate("Close");
+			$req			= "select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($id)."'";
+			$res			= $babDB->db_query($req);
+			$this->arr		= $babDB->db_fetch_array($res);
+			
 			if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $this->arr['idcat']) || isUserManager())
 				{
 				$GLOBALS['babWebStat']->addFaqsQuestion($id);
@@ -631,13 +633,17 @@ function faqPrint($idcat, $idscat)
 		var $indexquestions;
 		var $sitename;
 		var $urlsite;
-
+		var $sContent;
+		
 		function temp($idcat, $idscat)
 			{
 			global $babDB, $faqinfo;
-			$this->return = bab_translate("Go to Top");
-			$this->indexquestions = bab_translate("Index of questions");
-			$this->faqname = $faqinfo['category'];
+			
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			$this->return			= bab_translate("Go to Top");
+			$this->indexquestions	= bab_translate("Index of questions");
+			$this->faqname			= $faqinfo['category'];
+			
 			if( !empty($idscat) )
 				{
 				list($this->subcatname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_FAQ_SUBCAT_TBL." where id='".$babDB->db_escape_string($idscat)."'"));
