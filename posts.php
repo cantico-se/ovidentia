@@ -1047,7 +1047,7 @@ function viewPost($thread, $post)
 		}
 	
 	$temp = new viewPostCls($thread, $post);
-	echo bab_printTemplate($temp,"posts.html", "postview");
+	$babBody->babPopup(bab_printTemplate($temp,"posts.html", "postview"));
 	}
 
 
