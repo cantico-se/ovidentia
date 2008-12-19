@@ -31,14 +31,18 @@ function browseSa($cb)
 	global $babBody;
 	class temp
 		{
+		var $sContent;
+		
 		function temp($cb)
 			{
 			global $babDB;
-			$this->cb = $cb;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-
-			$this->sares = $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
+			$this->cb			= $cb;
+			$this->name			= bab_translate("Name");
+			$this->description	= bab_translate("Description");
+			$this->sares		= $babDB->db_query("select id, name, description from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
+			
 			if( !$this->sares )
 				{
 				$this->sacount = 0;
