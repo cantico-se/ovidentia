@@ -592,12 +592,14 @@ function mailUnload()
 		var $message;
 		var $close;
 		var $url;
-
+		var $sContent;
+		
 		function temp()
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->message = bab_translate("Your message has been sent");
-			$this->close = bab_translate("Close");
+			$this->babCss	= bab_printTemplate($this,"config.html", "babCss");
+			$this->message	= bab_translate("Your message has been sent");
+			$this->close	= bab_translate("Close");
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 
