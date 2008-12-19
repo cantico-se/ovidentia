@@ -1712,10 +1712,14 @@ function previewArticleDraft($idart)
 		class temp
 			{
 			var $content;
-
+			
+			/*charset UTF-8*/
+			var $sContent;
+			
 			function temp($idart)
 				{
-				$this->content = bab_previewArticleDraft($idart, 0);
+				$this->content	= bab_previewArticleDraft($idart, 0);
+				$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 				}
 			}
 
