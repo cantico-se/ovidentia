@@ -567,7 +567,8 @@ function vedUnload()
 		}
 
 	$temp = new temp();
-	echo bab_printTemplate($temp,"vacuser.html", "vedunload");
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp,"vacuser.html", "vedunload"));
 	}
 
 function addNewVacation()

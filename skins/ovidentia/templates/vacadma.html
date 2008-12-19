@@ -332,9 +332,9 @@ function group_delete_selected() {
 				<td align="right">{ t_period }:</td>
 				<td> 
 					{ t_date_begin }
-					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />&nbsp;<a href="#" onclick="calwin(this);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="t_date_begin" border="0" align="absmiddle" /></a>
+					<input type="text" name="date_begin" size="10" maxlength="10" value="{ arr[date_begin] }" />&nbsp;<a href="#" onclick="calwin(this.previousSibling.previousSibling);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="t_date_begin" border="0" align="absmiddle" /></a>
 					&nbsp;{ t_date_end }
-					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />&nbsp;<a href="#" onclick="calwin(this);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="" border="0" align="absmiddle" /></a>
+					<input type="text" name="date_end" size="10" maxlength="10" value="{ arr[date_end] }" />&nbsp;<a href="#" onclick="calwin(this.previousSibling.previousSibling);return false;"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="" border="0" align="absmiddle" /></a>
 				</td>
 			</tr>
 
@@ -798,9 +798,12 @@ function mmvac(index)
 	for (i = f.collid.length; i >= 3; i--) {
 		f.collid.options[i] = null; 
 	}
-	for (var i = 0; i < tabvacn[index].length; i++)
-	{
-	f.collid.options[i+3] = new Option(tabvacn[index][i],tabvaci[index][i]);
+
+	if (tabvacn && tabvacn[index]) {
+		for (var i = 0; i < tabvacn[index].length; i++)
+		{
+		f.collid.options[i+3] = new Option(tabvacn[index][i],tabvaci[index][i]);
+		}
 	}
 }
 
@@ -842,7 +845,15 @@ var op = null;
 function openPopup(url)
 {
 	var f = document.forms['rightsedit'];
-	var nurl = url+'&idtype='+f.id_type.options[f.id_type.selectedIndex].value+'&cb=onUser'
+	var id_type = '0';
+
+	console.debug(f.id_type.selectedIndex);
+
+	if (f.id_type.selectedIndex >= 0) {
+		id_type = f.id_type.options[f.id_type.selectedIndex].value;
+	}
+	var nurl = url+'&idtype='+id_type+'&cb=onUser';
+
 	if( op == null || op.closed )
 		op = this.open(nurl, 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 	else
@@ -977,17 +988,17 @@ function updateDates(elemDay, elemMonth, elemYear)
 <!--#endin getnextselect -->
 </td>
 </tr>
-<tr valign="middle"> 
-<td class="BabSiteAdminTitleFontBackground" width="1%" align="right" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td class="BabSiteAdminTitleFontBackground"><a class="BabSiteAdminListLink" href="{ fullnameurl }"><b>{ fullname }</b></a></td>
-<td class="BabSiteAdminTitleFontBackground"><b>{ nickname }</b></td>
+<tr class="BabSiteAdminTitleFontBackground" valign="middle"> 
+<td  width="1%" align="right" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
+<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
+<td>{ nickname }</td>
 </tr>
 <!--#in getnext -->
 <!--#if bview -->
-<tr valign="middle"> 
+<tr valign="middle" class="BabSiteAdminFontBackground"> 
 <td width="1%" align="right" nowrap><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td class="BabSiteAdminFontBackground"><a class="BabNameEmailLink" href="#" onclick="self.opener.{ cb }({ userid }, '{ firstlast }')">{ urlname }</a> </td>
-<td class="BabSiteAdminFontBackground">{ arr[nickname] }</td>
+<td><a  href="#" onclick="self.opener.{ cb }({ userid }, '{ firstlast }')">{ urlname }</a> </td>
+<td>{ arr[nickname] }</td>
 </tr>
 <!--#endif bview -->
 <!--#endin getnext -->

@@ -603,7 +603,7 @@ function addGroupVacationPersonnel()
 
 			$babDB = & $GLOBALS['babDB'];
 
-			$this->idsa = $_REQUEST['idsa'];
+			$this->idsa = bab_rp('idsa', 0);
 			$this->idcol = isset($_REQUEST['idcol']) ? $_REQUEST['idcol'] : '';
 
 

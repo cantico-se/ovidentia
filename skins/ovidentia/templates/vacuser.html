@@ -359,45 +359,33 @@ window.focus();
 <!--#end vwdetail -->
 
 <!--#begin vedunload -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-
-</HEAD>
-<BODY onUnload="javascript:this.opener.location.href='{ redirecturl }';">
 <br><br><br><br>
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
-</tr>
-<tr align="left" valign="middle">
-<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ 
-close }</a> </td>
-</tr>
-</table>
+	<table class="" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td class="BabErrorMessage" colspan="2" align="center">{ message } </td>
+	</tr>
+	<tr align="left" valign="middle">
+		<td class="BabWarningBodyBackground" colspan="2" align="center"><a href="javascript:this.close()">{ close }</a> </td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 <br>
 
 <script type="text/javascript">
+
+	window.onunload = function() {
+		window.opener.location.href='{ redirecturl }';
+	};
+
 	setTimeout("this.close()","1000");
 </script>
 
-</BODY>
-</HTML>
 <!--#end vedunload -->
 
 <!--#begin ventrydetail -->

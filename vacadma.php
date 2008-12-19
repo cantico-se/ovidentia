@@ -165,6 +165,8 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=vacadma&idx=browt&chg=&pos=-".$this->pos."&idtype=".$this->idtype."&cb=".$this->cb;
 				}
+
+			
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 
@@ -183,6 +185,9 @@ function browsePersonnelByType($pos, $cb, $idtype)
 				global $babDB;
 				$this->arr = $babDB->db_fetch_array($this->res);
 				$this->bview = false;
+
+				
+
 				$res = $babDB->db_query("select id_coll from ".BAB_VAC_PERSONNEL_TBL." where id_user='".$babDB->db_escape_string($this->arr['id'])."'");
 				if( $this->idtype != "" )
 					{
@@ -191,6 +196,7 @@ function browsePersonnelByType($pos, $cb, $idtype)
 						$res2 = $babDB->db_query("select id from ".BAB_VAC_COLL_TYPES_TBL." where id_type='".$babDB->db_escape_string($this->idtype)."' and id_coll ='".$babDB->db_escape_string($arr['id_coll'])."'");
 						if( $res2 && $babDB->db_num_rows($res2) > 0 )
 							{
+							
 							$this->bview = true;
 							break;
 							}
@@ -252,13 +258,8 @@ function browsePersonnelByType($pos, $cb, $idtype)
 
 	$temp = new temp($pos, $cb, $idtype);
 
-	include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
-	$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($temp, "vacadma.html", "browseusers"));
-	printBabBodyPopup();
-	die();
+	
+	$babBody->babPopup(bab_printTemplate($temp, "vacadma.html", "browseusers"));
 
 	
 	}
@@ -2312,7 +2313,7 @@ switch($idx)
 	case "browt":
 		if( !isset($pos)) $pos ="";
 		$babBody->title = bab_translate("Personnel associated with type");
-		browsePersonnelByType($pos, $cb, $idtype);
+		browsePersonnelByType($pos,  bab_rp('cb'), bab_rp('idtype'));
 		exit;
 		break;
 	case "viewvr":
