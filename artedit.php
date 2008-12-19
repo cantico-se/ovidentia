@@ -317,10 +317,12 @@ function propertiesArticle($idart)
 	class temp
 		{
 		var $arttxt;
-
+		var $sContent;
+		
 		function temp($idart)
 			{
 			global $babDB;
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{

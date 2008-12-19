@@ -87,20 +87,11 @@ function confirm_submit(url)
 <!--#end trashlist -->
 
 <!--#begin editdraft --> 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-<head>
-<title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }"></script>
 <script type="text/javascript">
 <!--
 window.focus();
 //-->
 </script>
-</head>
-<body class="BabBackground">
 <center>
 <!--#if message -->
 { message }
@@ -115,7 +106,6 @@ window.focus();
 <div align="center"><input type="submit" name="submit" value="{ updatetxt }"></div>
 </form>
 <br />
-</body></html>
 <!--#end editdraft --> 
 
 <!--#begin submitedarticleslist --> 
@@ -165,6 +155,7 @@ window.focus();
 <HTML>
 <HEAD>
 <TITLE>{ babSiteName }</TITLE>
+<meta http-equiv="Content-type" content="{ sContent }"/>
 { babMeta }
 { babCss }
 <script type="text/javascript" src="{ babOvidentiaJs }">
