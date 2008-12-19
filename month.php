@@ -26,6 +26,7 @@ include_once "base.php";
 
 class bab_calendar
 {
+var $sContent;
 
 function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	{
@@ -36,6 +37,8 @@ function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	$this->ymin = $year - $ymin - 1;
 	$this->ymax = $year + $ymax;
 	$this->value = $this->ymin;
+	$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+	
 	reset($GLOBALS['babMonths']);
 	reset($GLOBALS['babDays']);
 
