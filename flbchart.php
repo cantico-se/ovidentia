@@ -525,6 +525,8 @@ function viewOrgChartRoleUpdate($ocid, $oeid, $iduser)
 	class temp
 		{
 
+		public $userroles = array();
+
 		function temp($ocid, $oeid, $iduser)
 			{
 			global $babDB;

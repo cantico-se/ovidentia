@@ -30,6 +30,9 @@ function OrgChartPage($ocid, $oeid, $iduser, $disp)
 
 		function temp($ocid, $oeid, $iduser, $disp)
 			{
+
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
+
 			$this->frurl = $GLOBALS['babUrlScript']."?tg=frchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->frturl = $GLOBALS['babUrlScript']."?tg=frchart&idx=frt&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser."&disp=".$disp;
 			$this->flturl = $GLOBALS['babUrlScript']."?tg=fltchart&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser;
@@ -38,6 +41,9 @@ function OrgChartPage($ocid, $oeid, $iduser, $disp)
 			}
 
 		}
+
+	global $babBody;
+
 	$temp = new temp($ocid, $oeid, $iduser, $disp);
 	die(bab_printTemplate($temp,"chart.html", "chartpage"));
 	}

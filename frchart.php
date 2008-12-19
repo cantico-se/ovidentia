@@ -254,7 +254,8 @@ function displayChart($ocid, $oeid, $update, $iduser, $disp='')
 			}
 		}
 	$temp = new temp($ocid, $oeid, $update, $iduser, $disp);
-	echo bab_printTemplate($temp, "frchart.html", $template);
+	
+	$babBody->babPopup( bab_printTemplate($temp, "frchart.html", $template));
 	}
 
 class orgtemp
@@ -550,7 +551,8 @@ function displayFrtFrame($ocid, $oeid, $update)
 
 		}
 	$temp = new temp($ocid, $oeid, $update);
-	die(bab_printTemplate($temp,"frchart.html", "frtframe"));
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp,"frchart.html", "frtframe"));
 }
 
 
@@ -1108,7 +1110,8 @@ function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 		}
 
 	$temp = new temp($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update);
-	echo bab_printTemplate($temp, "frchart.html", "browseroles");
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp, "frchart.html", "browseroles"));
 	}
 
 
@@ -1340,7 +1343,7 @@ switch($idx)
 		break;
 	default:
 	case "list":
-		$babBody->title = $ocinfo['name'];
+		//$babBody->title = $ocinfo['name'];
 		if( !isset($oeid)) { $oeid = 0;}
 		if( !isset($iduser)) { $iduser = 0;}
 		switch($disp)

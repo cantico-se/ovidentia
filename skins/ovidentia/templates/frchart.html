@@ -62,16 +62,7 @@ top.flb.document.location.href=url;
 <!--#end orgjavascript -->
 
 <!--#begin oedirectorylist_disp1 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
- <title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
 { javascript }
-</head>
-<body>
 <br>
 <table width="99%" class="BabForumTopicsNavTreeBody" border="0" cellpadding="0" cellspacing="0" align="center">
 <!--#in getnext -->
@@ -170,8 +161,6 @@ location.href = '#ENT{ coeid }';
 
 //-->
 </script>
-</body>
-</html>
 <!--#end oedirectorylist_disp1 -->
 
 <!--#begin nodecell -->
@@ -237,17 +226,7 @@ location.href = '#ENT{ coeid }';
 <!--#end nodecell -->
 
 <!--#begin oedirectorylist_disp2 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
- <title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
 { javascript }
-
-</head>
-<body>
 <br>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -319,8 +298,6 @@ updateFltFrame('{ currentoe }&idx=listr');
 location.href = '#ENT{ coeid }';
 //-->
 </script>
-</body>
-</html>
 <!--#end oedirectorylist_disp2 -->
 
 
@@ -417,17 +394,7 @@ else
 <!--#end display_node -->
 
 <!--#begin oedirectorylist_disp3 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
- <tile>{ babSiteName }</tile>
-{ babMeta }
-{ babCss }
 { javascript }
-
-</head>
-<body>
 <br>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> <td>
@@ -444,19 +411,11 @@ updateFlbFrame('{ currentoe }&idx=detr');
 updateFltFrame('{ currentoe }&idx=listr'); 
 //-->
 </script>
-
-</body>
-</html>
 <!--#end oedirectorylist_disp3 -->
 
 <!--#begin frtframe -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
-<title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
+
+
 <script type="text/javascript">
 <!--
 function updateFrFrame(idx, params)
@@ -500,9 +459,7 @@ else if (3 == chart_showhideleft)
 //-->
 </script>
 
-</head>
-<body>
-<table border="0" height="25" width="100%" cellspacing="0" cellpadding="1" >
+<table style="position:absolute;top:0;" border="0" height="25" width="100%" cellspacing="0" cellpadding="1" >
 	<tr class="BabLoginMenuBackground">
 	<td width="5" align="left" valign="middle">
 	&nbsp;
@@ -550,8 +507,6 @@ if (disp)
 	
 //-->
 </script>
-</body>
-</html>
 <!--#end frtframe -->
 
 <!--#begin adbrowse -->
@@ -620,15 +575,9 @@ if (disp)
  */
  
 <!--#begin oedirectorylist_disp4 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-15" />
- <title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
+
 { javascript }
-<script type="text/javascript" src="{ babOvidentiaJs }"></script>
+
 <script type="text/javascript">
 
 function bab_initPage()
@@ -650,6 +599,8 @@ function bab_initPage()
 	}
 };
 
+bab_initFunctions.push(bab_initPage);
+
 function bab_showAddressesWindow()
 {
 	bab_dialog('', { width: '600px', height: '400px' });
@@ -658,8 +609,7 @@ function bab_showAddressesWindow()
 }
 
 </script>
-</head>
-<body onload="bab_initPage()">
+
 <br />
 <form name="eorgform" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="frchart" />
@@ -781,8 +731,6 @@ updateFltFrame('{ cuoeid }&idx=listr');
  
 //-->
 </script>
-</body>
-</html>
 <!--#end oedirectorylist_disp4 -->
 
 
@@ -791,13 +739,7 @@ updateFltFrame('{ cuoeid }&idx=listr');
 
 
 <!--#begin browseroles -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
- <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
- <title>{ babSiteName }</title>
-{ babMeta }
-{ babCss }
+
 { javascript }
 
 <script type="text/javascript">
@@ -811,8 +753,8 @@ function org_mm()
 }
 //-->
 </script>
-</head>
-<body>
+
+
 <br>
 <table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
 
@@ -949,6 +891,5 @@ updateFltFrame('{ cuoeid }&idx=listr');
 //-->
 </script>
 <!--#endif count -->
-</body>
-</html>
+
 <!--#end browseroles -->

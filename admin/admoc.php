@@ -318,7 +318,7 @@ function browseRoles($ocid, $oeid, $role, $type, $cb, $vpos, $echo=1)
 	$temp = new temp($ocid, $oeid, $role, $type, $cb, $vpos, $echo);
 	if( $echo )
 		{
-		echo bab_printTemplate($temp, "admocs.html", "browseroles");
+		$babBody->babEcho(bab_printTemplate($temp, "admocs.html", "browseroles"));
 		}
 	else
 		{

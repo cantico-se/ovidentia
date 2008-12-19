@@ -153,7 +153,8 @@ function printFlbChartPage()
 	}
 
 	$temp = new tpl();
-	echo bab_printTemplate($temp,"flbchart.html", "flbchartpage");
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp,"flbchart.html", "flbchartpage"));
 }
 
 
