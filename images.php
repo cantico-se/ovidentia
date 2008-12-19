@@ -120,12 +120,14 @@ function listImages($editor,$path='')
 	{
 	class temp
 		{
-
+		var $sContent;
+		
 		function temp($editor,$path)
 			{
 			global $babBody, $babDB;
-
-			$this->maximagessize = $babBody->babsite['imgsize'];
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			$this->maximagessize	= $babBody->babsite['imgsize'];
+			
 			if( $this->maximagessize != 0 )
 				{
 				$this->maxsizetxt = bab_translate("Image size must not exceed").' '.$this->maximagessize. ' '. bab_translate("Kb");
@@ -213,16 +215,18 @@ function iframe($editor,$path="")
 	{
 	class temp
 		{
-
+		var $sContent;
+		
 		function temp($editor,$path)
 			{
 			global $babBody, $babDB;
 
-			$this->maximagessize = $babBody->babsite['imgsize'];
-			$this->msgerror = bab_toHtml($GLOBALS['msgerror']);
-
-			$this->del = bab_translate("Delete");
-			$this->editor = $editor;
+			$this->maximagessize	= $babBody->babsite['imgsize'];
+			$this->msgerror			= bab_toHtml($GLOBALS['msgerror']);
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			$this->del				= bab_translate("Delete");
+			$this->editor			= $editor;
+			
 			if( mb_substr($path, -1) == "/" )
 				$path = mb_substr($path, 0, -1);
 			$this->prevpath = mb_substr( $path,0, mb_strrpos($path,"/") );
@@ -409,11 +413,13 @@ function rename_popup($old_name,$path)
 	{
 	class temp
 		{
+		var $sContent;
 		function temp($old_name,$path)
 			{
-			$this->path = $path;
+			$this->path		= $path;
 			$this->old_name = $old_name;
-			$this->rename = bab_translate('Rename');
+			$this->rename	= bab_translate('Rename');
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 	$temp = new temp($old_name,$path);

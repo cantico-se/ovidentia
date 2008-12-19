@@ -294,29 +294,30 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 		var $replyurl;
 		var $replyaurl;
 		var $forwardurl;
-
+		var $sContent;
+		
 		function temp($accid, $msg, $criteria, $reverse, $start)
 			{
 			global $babBody, $babDB, $BAB_HASH_VAR;
-			$this->fromname = bab_translate("From");
-			$this->subjectname = bab_translate("Subject");
-			$this->toname = bab_translate("To");
-			$this->ccname = bab_translate("Cc");
-			$this->datename = bab_translate("Date");
-			$this->attachmentname = bab_translate("Attachments");
-			$this->addcontact = bab_translate("Add to contacts");
-			$this->replyname = bab_translate("Reply");
-			$this->replyaname = bab_translate("Reply to all");
-			$this->forwardname = bab_translate("Forward");
-			$this->criteria = $criteria;
-			$this->reverse = $reverse;
-			$this->start = $start;
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
-
-			$this->replyurl = $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
-			$this->forwardurl = $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
-
+			$this->fromname			= bab_translate("From");
+			$this->subjectname		= bab_translate("Subject");
+			$this->toname			= bab_translate("To");
+			$this->ccname			= bab_translate("Cc");
+			$this->datename			= bab_translate("Date");
+			$this->attachmentname 	= bab_translate("Attachments");
+			$this->addcontact 		= bab_translate("Add to contacts");
+			$this->replyname 		= bab_translate("Reply");
+			$this->replyaname 		= bab_translate("Reply to all");
+			$this->forwardname 		= bab_translate("Forward");
+			$this->criteria 		= $criteria;
+			$this->reverse 			= $reverse;
+			$this->start 			= $start;
+			$this->babCss 			= bab_printTemplate($this,"config.html", "babCss");
+			$this->babMeta 			= bab_printTemplate($this,"config.html", "babMeta");
+			$this->replyurl			= $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
+			$this->forwardurl		= $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			
 			$this->msg = $msg;
 			$this->accid = $accid;
 			$this->ccval = "";

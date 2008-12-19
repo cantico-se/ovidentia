@@ -999,10 +999,13 @@ function loginRedirect($url)
 	{
 		class loginRedirectCls 
 		{
+			var $sContent;
+			
 			function loginRedirectCls($url)
 			{
-				$this->url = $url;
-				$this->next = bab_translate('Next page');
+				$this->url		= $url;
+				$this->next		= bab_translate('Next page');
+				$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 
