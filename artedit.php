@@ -1715,22 +1715,19 @@ function previewArticleDraft($idart)
 			{
 			var $content;
 			
-			/*charset UTF-8*/
-			var $sContent;
 			
 			function temp($idart)
 				{
 				$this->content	= bab_previewArticleDraft($idart, 0);
-				$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 				}
 			}
 
 		$temp = new temp($idart);
-		echo bab_printTemplate($temp, "artedit.html", "previewarticle");
+		$babBody->babPopup( bab_printTemplate($temp, "artedit.html", "previewarticle"));
 		}
 	else
 		{
-		echo bab_translate("Access denied");
+		$babBody->babPopup( bab_translate("Access denied"));
 		}
 	}
 
