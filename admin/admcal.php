@@ -110,7 +110,7 @@ function modifyCalendarResource($idcal, $name, $desc, $idsa)
 			$this->desctxt = bab_translate("Description");
 			$this->addtxt = bab_translate("Modify");
 			$this->approbationtxt = bab_translate("Approbation schema");
-			$this->t_availability_lock = bab_translate("The availability of the ressource is mandatory to create an event");
+			$this->t_availability_lock = bab_translate("The availability of the resource is mandatory to create an event");
 			$this->nonetxt = bab_translate("None");
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT cpt.* from ".BAB_CAL_RESOURCES_TBL." cpt left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id where ct.id=".$babDB->quote($idcal)));
 			if( !empty($name))
