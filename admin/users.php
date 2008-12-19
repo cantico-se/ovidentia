@@ -71,7 +71,9 @@ function listUsers($pos, $grp)
 		var $sSearchButtonCaption	= '';
 		var $sSearchText			= '';
 		var $iUseSearchText			= '0';
-
+			
+		var $sContent;
+		
 		function temp($pos, $grp)
 			{
 			global $babBody;
@@ -88,7 +90,7 @@ function listUsers($pos, $grp)
 			$this->t_groups			= bab_translate("Groups");
 			$this->checkall			= bab_translate("Check all");
 			$this->uncheckall		= bab_translate("Uncheck all");
-
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
 			$this->grp		= $grp;

@@ -57,10 +57,14 @@ function aclUsersGroups($pos, $table, $target, $idgroup)
 		var $usert;
 
 		var $urltrail;
-
+		var $sContent;
+		
 		function aclusersgroups($pos, $table, $target, $idgroup)
 			{
 			global $babBody;
+			
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
 			switch ($babBody->nameorder[0]) {
 			case "L":
 				$this->namesearch = "lastname";
