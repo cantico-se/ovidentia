@@ -1343,7 +1343,7 @@ switch($idx)
 		break;
 	default:
 	case "list":
-		//$babBody->title = $ocinfo['name'];
+		
 		if( !isset($oeid)) { $oeid = 0;}
 		if( !isset($iduser)) { $iduser = 0;}
 		switch($disp)
