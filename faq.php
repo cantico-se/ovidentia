@@ -633,17 +633,13 @@ function faqPrint($idcat, $idscat)
 		var $indexquestions;
 		var $sitename;
 		var $urlsite;
-		var $sContent;
-		
+
 		function temp($idcat, $idscat)
 			{
 			global $babDB, $faqinfo;
-			
-			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
-			$this->return			= bab_translate("Go to Top");
-			$this->indexquestions	= bab_translate("Index of questions");
-			$this->faqname			= $faqinfo['category'];
-			
+			$this->return = bab_translate("Go to Top");
+			$this->indexquestions = bab_translate("Index of questions");
+			$this->faqname = $faqinfo['category'];
 			if( !empty($idscat) )
 				{
 				list($this->subcatname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_FAQ_SUBCAT_TBL." where id='".$babDB->db_escape_string($idscat)."'"));
