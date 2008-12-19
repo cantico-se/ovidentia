@@ -913,7 +913,7 @@ function browseRoles($ocid, $oeid, $role, $swhat, $word, $type, $vpos, $update)
 			$this->all2txt = bab_translate("All");
 			$this->restricttxt = bab_translate("Restrict to");
 			$this->intxt = bab_translate("In");
-			$this->messageemptytxt = bab_translate("Search result empty");
+			$this->messageemptytxt = bab_translate("Search result is empty");
 			$this->topurl = "";
 			$this->bottomurl = "";
 			$this->nexturl = "";

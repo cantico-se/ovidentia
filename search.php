@@ -2000,7 +2000,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 			if( !$this->counttot)
 				{
-				$babBody->msgerror = bab_translate("Search result empty");
+				$babBody->msgerror = bab_translate("Search result is empty");
 				}
 
 			}
