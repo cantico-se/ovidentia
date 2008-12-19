@@ -238,14 +238,17 @@ function articlePrint($topics, $article)
 		var $head;
 		var $title;
 		var $url;
-
+		var $sContent;
+		
 		function temp($topics, $article)
 			{
 			global $babDB;
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
-			$this->topics = $topics;
+			$req			= "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res		= $babDB->db_query($req);
+			$this->count	= $babDB->db_num_rows($this->res);
+			$this->topics	= $topics;
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( $this->count > 0 )
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
