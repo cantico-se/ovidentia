@@ -839,7 +839,7 @@
 <string id="Thank You For Registering at our site">Hartelijk bedankt voor uw inschrijving op onze site.</string>
 <string id="The category doesn't exist">De categorie bestaat niet</string>
 <string id="The file could not be uploaded">Het bestand kon niet worden opgeladen</string>
-<string id="The file was greater than the maximum allowed">Het bestand is groter dan het max. toegestane</string>
+<string id="The file was larger than the maximum allowed size">Het bestand is groter dan het max. toegestane</string>
 <string id="The maximum number of authorized optional sections was reached">Het maximum aantal optionele afdelingen werd bereikt</string>
 <string id="The resource doesn't exist">De resource bestaat niet</string>
 <string id="The state doesn't exist">Deze status bestaat niet</string>

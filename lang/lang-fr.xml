@@ -718,7 +718,7 @@
 <string id="Thank You For Registering at our site">Merci pour votre inscription sur notre site</string>
 <string id="The category doesn't exist">La catégorie n'existe pas</string>
 <string id="The file could not be uploaded">Le fichier ne peut pas être déposé</string>
-<string id="The file was greater than the maximum allowed">La taille du fichier est plus grande que la taille autorisée</string>
+<string id="The file was larger than the maximum allowed size">La taille du fichier est plus grande que la taille autorisée</string>
 <string id="The resource doesn't exist">La ressource n'existe pas</string>
 <string id="The state doesn't exist">L'état n'existe pas</string>
 <string id="There are no submitted article">Il n'y a pas d'article soumis en attente de validation</string>

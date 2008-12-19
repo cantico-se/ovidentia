@@ -609,7 +609,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 		if($file['size'] > $GLOBALS['babMaxFileSize'])
 		{
-			$errfiles[] = array('error' => bab_translate("The file was greater than the maximum allowed") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
+			$errfiles[] = array('error' => bab_translate("The file was larger than the maximum allowed size") ." : ". $GLOBALS['babMaxFileSize'], 'file' => $file['name']);
 			continue;
 		}
 
@@ -1030,7 +1030,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 		{
 			if($uploadf_size > $GLOBALS['babMaxFileSize'])
 			{
-				$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+				$babBody->msgerror = bab_translate("The file was larger than the maximum allowed size") ." :". $GLOBALS['babMaxFileSize'];
 				return false;
 			}
 			
@@ -1465,7 +1465,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 
 		if($size > $GLOBALS['babMaxFileSize'])
 		{
-			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+			$babBody->msgerror = bab_translate("The file was larger than the maximum allowed size") ." :". $GLOBALS['babMaxFileSize'];
 			return false;
 		}
 		

@@ -1823,7 +1823,7 @@ function updateDocumentsArticleDraft($idart, &$message)
 
 			if( $file['size'] > $GLOBALS['babMaxFileSize'])
 				{
-				$errfiles[] = array('error'=> bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'], 'file'=>$file['name']);
+				$errfiles[] = array('error'=> bab_translate("The file was larger than the maximum allowed size") ." :". $GLOBALS['babMaxFileSize'], 'file'=>$file['name']);
 				$k++;
 				continue;
 				}

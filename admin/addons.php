@@ -461,7 +461,7 @@ function upload()
 function upload_tmpfile() {
 	if( !empty($_FILES['uploadf']['name'])) {
 		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize']) {
-			$babBody->msgerror = bab_translate("The file was greater than the maximum allowed") ." :". $GLOBALS['babMaxFileSize'];
+			$babBody->msgerror = bab_translate("The file was larger than the maximum allowed size") ." :". $GLOBALS['babMaxFileSize'];
 			return false;
 		}
 		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";

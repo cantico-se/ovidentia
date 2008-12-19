@@ -977,7 +977,7 @@
 <string id="Thank You For Registering at our site">Thank you for registering at our site</string>
 <string id="The category doesn't exist">The category doesn't exist</string>
 <string id="The file could not be uploaded">The file could not be uploaded</string>
-<string id="The file was greater than the maximum allowed">The file was greater than the maximum allowed</string>
+<string id="The file was larger than the maximum allowed size">The file was larger than the maximum allowed size</string>
 <string id="The maximum number of authorized optional sections was reached">The maximum number of authorized optional sections was reached</string>
 <string id="The new version need to be installed">The new version need to be installed</string>
 <string id="The resource doesn't exist">The resource doesn't exist</string>
