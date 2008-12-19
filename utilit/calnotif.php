@@ -115,17 +115,19 @@ function updatePopupNotifier()
 
 	class popupNotifierCls
 		{
-
+		var $sContent;
+		
 		function popupNotifierCls()
 			{
 			global $babDB;
-			$this->resevent = $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where cer.id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
-			$this->countevents = $babDB->db_num_rows($this->resevent);
-			$this->altbg = true;
-			$this->datetxt = bab_translate("Date");
-			$this->eventtxt = bab_translate("Appointment");
-			$this->dismisstxt = bab_translate("Dismiss the notification");
-			$this->notifiertxt = bab_translate("Event notifier");
+			$this->resevent		= $babDB->db_query("select ce.*, cer.* from ".BAB_CAL_EVENTS_REMINDERS_TBL." cer left join ".BAB_CAL_EVENTS_TBL." ce on ce.id=cer.id_event where cer.id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and (unix_timestamp(ce.start_date)-((cer.day*24*60*60)+(cer.hour*60*60)+(cer.minute*60))) < unix_timestamp() and processed='N'");
+			$this->countevents	= $babDB->db_num_rows($this->resevent);
+			$this->altbg		= true;
+			$this->datetxt		= bab_translate("Date");
+			$this->eventtxt		= bab_translate("Appointment");
+			$this->dismisstxt	= bab_translate("Dismiss the notification");
+			$this->notifiertxt	= bab_translate("Event notifier");
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 			}
 
 		function getnextevent()

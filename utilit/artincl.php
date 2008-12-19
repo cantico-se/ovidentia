@@ -982,17 +982,18 @@ function bab_previewComment($com)
 		var $res;
 		var $close;
 		var $title;
-
+		var $sContent;
 
 		function bab_previewCommentCls($com)
 			{
 			global $babDB;
-			$this->close = bab_translate("Close");
-			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->title = bab_toHtml($this->arr['subject']);
-
+			$this->close	= bab_translate("Close");
+			$req			= "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
+			$this->res		= $babDB->db_query($req);
+			$this->arr		= $babDB->db_fetch_array($this->res);
+			$this->title	= bab_toHtml($this->arr['subject']);
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
 			$editor = new bab_contentEditor('bab_article_comment');
