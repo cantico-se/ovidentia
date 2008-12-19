@@ -231,7 +231,7 @@ function listAddress($pos)
 		}
 
 	$temp = new temp($pos);
-	echo bab_printTemplate($temp, 'address.html', 'addresslist');
+	$babBody->babpopup(bab_printTemplate($temp, 'address.html', 'addresslist'));	
 	}
 
 /* main */

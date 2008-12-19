@@ -709,7 +709,7 @@ switch($idx)
 	case "list":
 	default:
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
-		break;
+		exit;
 	}
 $babBody->setCurrentItemMenu($idx);
 
