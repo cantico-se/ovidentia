@@ -15,8 +15,6 @@
 <string id="About your article">Au sujet de votre article</string>
 <string id="About your comment">A propos de votre commentaire</string>
 <string id="Accepted">Accepté</string>
-<string id="Acces denied">Accès refusé</string>
-<string id="Acces">Accès</string>
 <string id="Access denied">Accès refusé</string>
 <string id="Access method">Méthode d'accès</string>
 <string id="Access to Add-on">Accès au module</string>
@@ -2496,7 +2494,6 @@
 <string id="The upload path is not set">Le répertoire d'upload n'est pas défini</string>
 <string id="The upload path is not a dir">Le chemin du répertoire d'upload n'est pas valide</string> 
 <string id="Groups directories">Annuaires de groupes</string>
-<string id="Acess denied">Accès refusé</string>
 <string id="View directory entry for">Visualiser la fiche annuaire pour</string>
 <string id="Categories, topics and articles">Catégories, thèmes et articles</string>
 <string id="CAUTION: This will permanently remove this directory and all subdirectories files on it !">ATTENTION : Cette opération supprime définitivement ce répertoire, les sous-répertoires et tous les fichiers qu'il contient !</string>
