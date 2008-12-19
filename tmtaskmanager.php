@@ -881,7 +881,7 @@ function displayCommentaryForm()
 {
 	global $babBody;
 
-	$oTmCtx =& getTskMgrContext();
+	$oTmCtx =getTskMgrContext();
 	$iIdProjectSpace = (int) $oTmCtx->getIdProjectSpace();
 	$iIdProject = (int) $oTmCtx->getIdProject();
 	$iIdTask = (int) $oTmCtx->getIdTask();
@@ -894,7 +894,7 @@ function displayCommentaryForm()
 		$tab_caption = ($iIdCommentary == 0) ? bab_translate("Add a commentary") : bab_translate("Edition of a commentary");
 		$babBody->title = bab_toHtml($tab_caption);
 		
-		$oBf = & new BAB_BaseFormProcessing();
+		$oBf = new BAB_BaseFormProcessing();
 		
 		$oBf->set_caption('add', bab_translate("Add"));
 		$oBf->set_caption('modify', bab_translate("Modify"));
@@ -962,7 +962,7 @@ function displayCommentaryForm()
 		}
 		else
 		{
-			die(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));	
+			$babBody->babpopup(bab_printTemplate($oBf, 'tmUser.html', 'displayCommentary'));	
 		}
 	}
 	else 
@@ -2582,8 +2582,9 @@ function displayGanttChart()
 
 function tskmgClosePopup()
 {
-	$bf = & new BAB_BaseFormProcessing();
-	die(bab_printTemplate($bf, 'tmUser.html', 'close_popup'));
+	global $babBody;
+	$bf = new BAB_BaseFormProcessing();
+	$babBody->babPopup(bab_printTemplate($bf, 'tmUser.html', 'close_popup'));
 }
 
 
@@ -3127,8 +3128,7 @@ function addModifyTaskCommentary()
 	
 	if(1 == (int) bab_rp('isPopUp', 0))	
 	{
-		$bf = & new BAB_BaseFormProcessing();
-		die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
+		tskmgClosePopup();
 	}
 }
 
@@ -3150,8 +3150,7 @@ function deleteTaskCommentary()
 	
 	if(1 == (int) bab_rp('isPopUp', 0))	
 	{
-		$bf = & new BAB_BaseFormProcessing();
-		die(bab_printTemplate($bf, $GLOBALS['babAddonHtmlPath'] . 'tmUser.html', 'close_popup'));
+		tskmgClosePopup();
 	}
 }
 

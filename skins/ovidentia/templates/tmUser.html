@@ -136,36 +136,24 @@
 <!--#end commentariesList -->
 
 <!--#begin close_popup -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-	<title></title>
-	<head>
-		<script type="text/javascript">
-		<!--
-			if(window.opener != null)
-			{
-				if(typeof opener.onMenuSelected != 'undefined')
-				{
-					opener.onMenuSelected('oLiCommentaries');
-					opener.location.href = opener.location.href + '&selectedMenu=' + 'oLiCommentaries';
-				}
-				window.close();
-			}
-		//-->
-		</script>
-	</head>
-	<body>
-	</body>
-</html>
+
+<script type="text/javascript">
+<!--
+	if(window.opener != null)
+	{
+		if(typeof opener.onMenuSelected != 'undefined')
+		{
+			opener.onMenuSelected('oLiCommentaries');
+			opener.location.href = opener.location.href + '&selectedMenu=' + 'oLiCommentaries';
+		}
+		window.close();
+	}
+//-->
+</script>
+	
 <!--#end close_popup -->
 
 <!--#begin displayCommentary -->
-<!--#if m_datas[isPopUp] "== 1" -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-	<head></head>
-	<body>
-<!--#endif m_datas[isPopUp] -->
 <script type="text/javascript" language="JavaScript1.5">
 <!--
 function on_btn_clicked(idx, action)
@@ -216,10 +204,6 @@ function submit_form()
 <!--#endif m_datas[iIdCommentary] -->
 </div>
 </form>
-<!--#if m_datas[isPopUp] "== 1" -->
-	</body>
-</html>
-<!--#endif m_datas[isPopUp] -->
 <!--#end displayCommentary -->
 
 
@@ -1718,6 +1702,7 @@ function submit_form()
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<title>{ m_sTitle }</title>
+		<meta http-equiv="Content-type" content="{ sContent }"/>
 		<link rel="stylesheet" type="text/css" href="{ babInstallPath }styles/gantt.css" />
 		<script type="text/javascript" src="{ babInstallPath }scripts/ovidentia.js"></script>
 		<script type="text/javascript" src="{ babInstallPath }scripts/tmGantt.js"></script>

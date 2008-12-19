@@ -897,6 +897,8 @@ class BAB_TM_Gantt extends BAB_TM_GanttBase
 		
 		$oGanttLegend = new BAB_TM_GanttLegend();
 		$this->m_sGanttLegend = $oGanttLegend->getHtml();
+
+		$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 	}
 	
 	function getNextTask(&$bSkip)
