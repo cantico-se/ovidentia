@@ -298,20 +298,24 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 		{
 		var $count;
 		var $altbg = true;
+		var $sContent;
+		
 		function temp($id, $pos, $xf, $badd)
 			{
 			global $babDB;
 			global $babBody;
 
-			$this->mass_mailing = ($babBody->babsite['mass_mailing'] == 'Y'); 
-			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
-			$this->allname = bab_translate("All");
-			$this->addname = bab_translate("Add");
-			$this->assignname = bab_translate("Assign");
-			$this->id = $id;
-			$this->pos = $pos;
-			$this->badd = $badd;
-			$this->xf = $xf;
+			$this->mass_mailing				= ($babBody->babsite['mass_mailing'] == 'Y'); 
+			$this->t_copy_email_addresses	= bab_translate("Copy email addresses");
+			$this->allname					= bab_translate("All");
+			$this->addname					= bab_translate("Add");
+			$this->assignname				= bab_translate("Assign");
+			$this->id						= $id;
+			$this->pos						= $pos;
+			$this->badd						= $badd;
+			$this->xf						= $xf;
+			$this->sContent					= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( mb_substr($pos,0,1) == "-" )
 				{
 				$this->pos = mb_substr($pos,1);
@@ -1484,9 +1488,12 @@ function contactDbUnload($msg, $refresh)
 		var $message;
 		var $close;
 		var $refresh;
-
+		var $sContent;
+		
 		function temp($msg, $refresh)
 			{
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( empty($refresh))
 				{
 				$this->refresh = true;
@@ -1796,22 +1803,25 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 		var $urlno;
 		var $yes;
 		var $no;
-
+		var $sContent;
+		
 		function temp($id, $fields, $idauser, $idatype)
 			{
 			global $babDB;
 
-			$this->refresh = '';
-			$this->id = bab_toHtml($id);
-			$this->idauser = bab_toHtml($idauser);
-			$this->fields =& $fields;
-			$arr = $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$babDB->db_escape_string($idauser)."' and id_directory='0'"));
-			list($this->directoryname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-			$this->directoryname = bab_toHtml($this->directoryname);
-			$this->fullnametxt = bab_translate("Fullname");
-			$this->nicknametxt = bab_translate("Login ID");
-			$this->usernickname = bab_toHtml($arr['nickname']);
-			$this->userfullname = bab_toHtml(bab_getUserName($idauser));
+			$this->refresh				= '';
+			$this->id					= bab_toHtml($id);
+			$this->idauser				= bab_toHtml($idauser);
+			$this->fields				=& $fields;
+			$arr						= $babDB->db_fetch_array($babDB->db_query("select ut.nickname,det.sn, det.givenname, det.mn from ".BAB_DBDIR_ENTRIES_TBL." det left join ".BAB_USERS_TBL." ut on ut.id = det.id_user where id_user='".$babDB->db_escape_string($idauser)."' and id_directory='0'"));
+			list($this->directoryname)	= $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			$this->directoryname		= bab_toHtml($this->directoryname);
+			$this->fullnametxt			= bab_translate("Fullname");
+			$this->nicknametxt			= bab_translate("Login ID");
+			$this->usernickname			= bab_toHtml($arr['nickname']);
+			$this->userfullname			= bab_toHtml(bab_getUserName($idauser));
+			$this->sContent				= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( $idatype == 'nickname' )
 				{
 				$this->warning = bab_translate("WARNING: User with this login ID already exist");

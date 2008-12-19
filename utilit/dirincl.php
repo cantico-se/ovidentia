@@ -62,16 +62,19 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 	class temp
 		{
 		var $count;
-
+		var $sContent;
+		
 		function temp($id, $pos, $xf, $cb)
 			{
 			global $babDB;
-			$this->allname = bab_translate("All");
-			$this->id = bab_toHtml($id);
-			$this->pos = $pos;
-			$this->badd = false;
-			$this->xf = bab_toHtml($xf);
-			$this->cb = bab_toHtml($cb);
+			$this->allname	= bab_translate("All");
+			$this->id		= bab_toHtml($id);
+			$this->pos		= $pos;
+			$this->badd		= false;
+			$this->xf		= bab_toHtml($xf);
+			$this->cb		= bab_toHtml($cb);
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( !empty($pos) && $pos[0] == "-" )
 				{
 				$this->pos = mb_strlen($pos) > 1? bab_toHtml($pos[1]): '';
