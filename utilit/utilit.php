@@ -1563,7 +1563,7 @@ function bab_updateSiteSettings()
 		{
 		$babBody->msgerror = bab_translate("Configuration error : babSiteName in config.php not match site name in administration sites configuration");
 		}
-	$arr = $babDB->db_fetch_array($res);
+	$arr = $babDB->db_fetch_assoc($res);
 	$babBody->babsite = $arr;
 
 

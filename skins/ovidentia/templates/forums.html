@@ -356,26 +356,25 @@ selected
 <br>
 <!--#end forummodify -->
 
-<br><br><br><br><br>
+
 <!--#begin forumslist -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle"	nowrap>{ name }</td>
-<td class="BabSiteAdminTitleFontBackground" width="50%" valign="middle">{ description }</td>
-<td class="BabSiteAdminTitleFontBackground" width="10%" valign="middle" align="left">{ access }</td>
-</tr>
-<!--#in getnext -->
-<tr> 
-<td class="BabSiteAdminFontBackground" width="10%" valign="middle" 
-nowrap><a class="BabSiteAdminListLink" href="{ url }" nowrap>{ urlname }</a></td>
-<td class="BabSiteAdminFontBackground" width="40%" valign="middle">{ descval }</td>
-<td class="BabSiteAdminFontBackground" width="10%" valign="middle"><a class="BabSiteAdminListLink" href="{ rightsurl }" nowrap>{ rights }</a></td>
-</tr>
-<!--#endin getnext -->
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+	<td width="10%" valign="middle">{ name }</td>
+	<td width="50%" valign="middle">{ description }</td>
+	<td width="10%" valign="middle" align="left">{ access }</td>
+	</tr>
+	<!--#in getnext -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td><a href="{ url }" nowrap>{ urlname }</a></td>
+		<td>{ descval }</td>
+		<td><a href="{ rightsurl }" nowrap>{ rights }</a></td>
+	</tr>
+	<!--#endin getnext -->
+	</table>
 </td>
 </tr>
 </table>

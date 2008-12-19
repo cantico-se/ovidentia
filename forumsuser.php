@@ -43,6 +43,8 @@ function listForums()
 	class listForumsCls
 		{
 
+		public $altBg = true;
+
 		function listForumsCls()
 			{
 			global $babBody, $babDB;
@@ -149,6 +151,9 @@ function listForums()
 			static $i=0;
 			if( $i < $this->count )
 				{
+
+				$this->altBg = !$this->altBg;
+
 				$this->forumname = bab_toHtml($this->forums[$i]['name']);
 				$this->forumdescription = bab_toHtml($this->forums[$i]['description']);
 				$this->threads = bab_toHtml($this->forums[$i]['threads']);
@@ -183,6 +188,8 @@ function searchForums()
 	class searchForumsCls
 		{
 
+		public $altBg = true;
+
 		function searchForumsCls()
 			{
 			global $babBody, $babDB;
@@ -204,6 +211,7 @@ function searchForums()
 			static $i=0;
 			if( list($key, $val) = each($this->forums))
 				{
+
 				$this->forumid = bab_toHtml($key);
 				$this->forumname = bab_toHtml($val['name']);
 				if( isset($_REQUEST['forum']) && $this->forumid == $_REQUEST['forum'] )

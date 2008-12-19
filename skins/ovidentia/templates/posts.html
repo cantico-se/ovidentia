@@ -248,8 +248,7 @@
     <td valign="middle"> 
       <table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="0">
         <tr> 
-          <td class="BabForumTopicsNavTitle">{ postsubject 
-            }
+          <td class="BabForumTopicsNavTitle">{ postsubject }
           
           </td>
           <td align="right" class="BabForumTopicsNavTitle">
@@ -486,112 +485,110 @@ window.focus();
 <!--#endif countpages -->
 <tr>
 <td>
-<div class="BabLoginCadreBackground" style="padding:2px; margin:4px">
-<table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="1">
-<tr height="30" class="BabSiteAdminTitleFontBackground"  align="center"> 
-	<td width="150"><b>{ author }</b></td>
-	<td>
-	<table width="100%">
-	<tr class="BabSiteAdminTitleFontBackground" align="center">
-	<td><b>{ message }</b></td>
-	<td align="right"><a href="{ noflaturl }"><img src="{ babSkinPath }images/Puces/tree.gif" alt="{ treeview_txt }" title="{ treeview_txt }" border="0" align="absmiddle"></a></td>
+	<table border="0" width="100%" cellpadding="2" cellspacing="0">
+	<tr>
+	<td class="BabLoginCadreBackground">
+		<table border="0" width="100%" cellpadding="4" cellspacing="0">
+		<tr height="30" class="BabSiteAdminTitleFontBackground"  align="center"> 
+			<td width="150"><b>{ author }</b></td>
+				<td>
+				<table width="100%">
+				<tr align="center">
+				<td><b>{ message }</b></td>
+				<td align="right"><a href="{ noflaturl }"><img src="{ babSkinPath }images/Puces/tree.gif" alt="{ treeview_txt }" title="{ treeview_txt }" border="0" align="absmiddle"></a></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		<!--#in getnext -->
+		<!--#if altbg -->
+		<tbody class="BabForumBackground1" valign="top">
+		<!--#else altbg -->
+		<tbody class="BabSiteAdminFontBackground" valign="top">
+		<!--#endif altbg -->
+		<tr>
+			<td width="150" ><b>
+			<!--#if postauthordetailsurl -->
+			<a href="javascript: Start('{ postauthordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ postauthor }</a>
+			<!--#else postauthordetailsurl -->
+			{ postauthor }
+			<!--#endif postauthordetailsurl -->
+			<!--#if postauthoremail -->
+			<br /><a class="BabForumTopicsNavContribution" href="mailto:{ postauthoremail }" target=_top><img src="{ babSkinPath }images/Puces/mail.png" border="0" align="absmiddle"></a>
+			<!--#endif postauthoremail -->
+		</b>
+
+
+			</td>
+			<td >
+		<a name="p{ postid }"></a>
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+					<!--#if what "!= N" -->
+					<!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle">&nbsp;
+					<!--#endif brecent -->
+					<!--#else what -->
+					<!--#if moreurl --> 
+		<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle">
+					<!--#endif moreurl --> 
+
+					<!--#endif what -->
+					<span>{ posted_txt }: { postdate }</span><br /><span>{ postsubject_txt }: <b>{ postsubject }</b></span></td>
+					<td valign="top" nowrap="nowrap">
+					<!--#if breply -->
+					<!--#if what "== Y" -->
+					<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">[{ replytxt }]</a>
+					<!--#endif what -->
+					<!--#endif breply -->
+					<!--#if what "== Y" -->
+					<span class="bab-post-{ postid }"></span>
+					<!--#endif what -->
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2"><span>{ postmessage }</span><br /><br />
+					<!--#if files -->
+					<dl class="BabForumFiles">
+						<dt><span>{ t_files }:</span></dt>
+						<!--#in getnextfile -->
+						<dd><a href="{ file_url }">{ file_name }</a> <span>( { file_size }<!--#if ismanager -->, { file_index_label }<!--#endif ismanager --> )</span></dd>
+						<!--#endin getnextfile -->
+					</dl>
+					<!--#endif files -->
+					<!--#if more -->
+					<span>{ more }</span>
+					<!--#endif more -->
+					</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+		<tr>
+		<td><a  href="#TOP">{ backtotoptxt }</a>&nbsp;</td>
+		<td align="right">
+		<!--#if what "== N" --> 
+		<!--#if moderator --> 
+		<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+		 href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
+		 href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		<!--#endif moderator --> 
+		<!--#endif what -->
+
+		<!--#if moreurl --> 
+		<a  href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		<!--#endif moreurl --> 
+		</td>
+		</tr>
+		</tbody>
+		<!--#endin getnext -->
+		</table>
+	</td>
 	</tr>
 	</table>
-	</td>
-</tr>
-<!--#in getnext -->
-<!--#if altbg -->
-<tr class="BabForumBackground1" height="40" valign="top">
-<!--#else altbg -->
-<tr class="BabSiteAdminFontBackground" height="40" valign="top">
-<!--#endif altbg -->
-	<td width="150" ><b>
-	<!--#if postauthordetailsurl -->
-	<a href="javascript: Start('{ postauthordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ postauthor }</a>
-	<!--#else postauthordetailsurl -->
-	{ postauthor }
-	<!--#endif postauthordetailsurl -->
-	<!--#if postauthoremail -->
-	<br /><a class="BabForumTopicsNavContribution" href="mailto:{ postauthoremail }" target=_top><img src="{ babSkinPath }images/Puces/mail.png" border="0" align="absmiddle"></a>
-	<!--#endif postauthoremail -->
-</b>
-
-
-	</td>
-	<td >
-<a name="p{ postid }"></a>
-	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td width="100%">
-			<!--#if what "!= N" -->
-			<!--#if brecent "== 1" --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ altrecentposts }" border="0" align="absmiddle">&nbsp;
-			<!--#endif brecent -->
-			<!--#else what -->
-			<!--#if moreurl --> 
-<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle">
-			<!--#endif moreurl --> 
-
-			<!--#endif what -->
-			<span>{ posted_txt }: { postdate }</span><br /><span>{ postsubject_txt }: <b>{ postsubject }</b></span></td>
-			<td valign="top" nowrap="nowrap">
-			<!--#if breply -->
-			<!--#if what "== Y" -->
-			<a class="BabForumTopicsNavContribution" href="{ replysubjecturl }">[{ replytxt }]</a>
-			<!--#endif what -->
-			<!--#endif breply -->
-			<!--#if what "== Y" -->
-			<span class="bab-post-{ postid }"></span>
-			<!--#endif what -->
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2"><hr /></td>
-		</tr>
-		<tr>
-			<td colspan="2"><span>{ postmessage }</span><br /><br />
-			<!--#if files -->
-			<dl class="BabForumFiles">
-				<dt><span>{ t_files }:</span></dt>
-				<!--#in getnextfile -->
-				<dd><a href="{ file_url }">{ file_name }</a> <span>( { file_size }<!--#if ismanager -->, { file_index_label }<!--#endif ismanager --> )</span></dd>
-				<!--#endin getnextfile -->
-			</dl>
-			<!--#endif files -->
-			<!--#if more -->
-			<span>{ more }</span>
-			<!--#endif more -->
-			</td>
-		</tr>
-	</table>
-	</td>
-</tr>
-<!--#if altbg -->
-<tr class="BabForumBackground1" height="40">
-<!--#else altbg -->
-<tr class="BabSiteAdminFontBackground" height="40">
-<!--#endif altbg -->
-<td><A class="BabForumTopicsNavContribution" HREF="#TOP">{ backtotoptxt }</A>&nbsp;</td>
-<td align="right">
-<!--#if what "== N" --> 
-<!--#if moderator --> 
-<img src="{ babSkinPath }images/Puces/PuceForumWaitConfirm.gif" border=0 alt="{ waiting_txt }" title="{ waiting_txt }" align="absmiddle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0"><a 
-class="BabForumTopicsNavContribution" href="{ deleteurl }">{ deletename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-<!--#endif moderator --> 
-<!--#endif what -->
-
-<!--#if moreurl --> 
-<a class="BabForumTopicsNavContribution" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-<!--#endif moreurl --> 
-</td>
-</tr>
-<tr>
-<td colspan="2" height="1">
-</td>
-</tr>
-<!--#endin getnext -->
-</table>
-</div>
 </td>
 </tr>
 <!--#if countpages -->

@@ -1141,6 +1141,7 @@ function importDbFile($id)
 			$this->other = bab_translate("Other");
 			$this->comma = bab_translate("Comma");
 			$this->tab = bab_translate("Tab");
+			$this->t_encoding = bab_translate("Encoding");
 			$this->maxfilesize = $GLOBALS['babMaxFileSize'];
 			}
 		}
@@ -1356,10 +1357,14 @@ function mapDbFile($id, $wsepar, $separ)
 						$separ = ",";
 					break;
 				}
+
+			$encoding = bab_rp('encoding', 'ISO-8859-15');
+
 			$fd = fopen($pfile, "r");
-			$this->arr = fgetcsv( $fd, 4096, $separ);
+			$this->arr = bab_getStringAccordingToDataBase(fgetcsv( $fd, 4096, $separ), $encoding );
 			fclose($fd);
 			$this->separ = bab_toHtml($separ);
+			$this->encoding = bab_toHtml($encoding);
 			}
 
 		function getnextfield(&$skip)
@@ -1897,11 +1902,13 @@ function processImportDbFile( $pfile, $id, $separ )
 		$password1=md5(mb_strtolower($GLOBALS['password1']));
 		}
 
+	$encoding = bab_rp('encoding', 'ISO-8859-15');
+
 	$fd = fopen($pfile, "r");
 	if( $fd )
 		{
 		$arr = fgetcsv($fd, 4096, $separ);
-		while ($arr = fgetcsv($fd, 4096, $separ))
+		while ($arr = bab_getStringAccordingToDataBase(fgetcsv($fd, 4096, $separ), $encoding))
 			{
 			if( $idgroup > 0 )
 				{
@@ -2127,7 +2134,10 @@ function processImportDbFile( $pfile, $id, $separ )
 			}
 		fclose($fd);
 		unlink($pfile);
-		}		
+		}
+
+		header('location:'.$GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id);
+		exit;
 	}
 
 function getDbContactImage($id, $idu)

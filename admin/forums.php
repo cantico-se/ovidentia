@@ -379,6 +379,7 @@ switch($idx)
 		orderForum();
 		break;
 	default:
+		$idx = 'List';
 	case "List":
 		$babBody->title = bab_translate("List of all forums");
 		if( listForums() > 0 )

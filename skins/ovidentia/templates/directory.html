@@ -295,32 +295,41 @@ window.focus();
 <table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td align="right" nowrap valign="middle">{ name }</td>
-<td> 
-<input type="file" name="uploadf" size="40" maxlength="255" value="">
-</td>
-</tr>
-<tr> 
-<td align="right" nowrap valign="middle">{ separator }</td>
-<td > 
-<select name="wsepar">
-<option value="0">{ other }</option>
-<option value="1" selected >{ comma }</option>
-<option value="2">{ tab }</option>
-</select>&nbsp;&nbsp;
-<input type="text" name="separ" size="1" maxlength="1" value="">
-</td>
-</tr>
-<tr>
-<td >&nbsp;</td>
-<td > 
-<input type="submit" name="Submit" value="{ import }">
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td align="right" nowrap valign="middle">{ name }</td>
+	<td> 
+		<input type="file" name="uploadf" size="40" maxlength="255" value="">
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" nowrap valign="middle">{ separator }</td>
+	<td > 
+		<select name="wsepar">
+		<option value="0">{ other }</option>
+		<option value="1" selected >{ comma }</option>
+		<option value="2">{ tab }</option>
+		</select>&nbsp;&nbsp;
+		<input type="text" name="separ" size="1" maxlength="1" value="" />
+	</td>
+	</tr>
+	<tr> 
+		<td align="right" valign="middle">{ t_encoding }</td>
+		<td > 
+			<select name="encoding">
+				<option value="ISO-8859-15">ISO-8859-15</option>
+				<option value="UTF-8">UTF-8</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+	<td >&nbsp;</td>
+	<td > <br />
+		<input type="submit" name="Submit" value="{ import }"><br />
+	<br>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -499,11 +508,12 @@ function selectAll(list)
 <br>
 <!--#begin dbmapfile -->
 <form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="directory">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="id" value="{ id }">
-<input type="hidden" name="separ" value="{ separ }">
-<input type="hidden" name="pfile" value="{ pfile }">
+<input type="hidden" name="tg" value="directory" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="id" value="{ id }" />
+<input type="hidden" name="separ" value="{ separ }" />
+<input type="hidden" name="encoding" value="{ encoding }" />
+<input type="hidden" name="pfile" value="{ pfile }" />
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 

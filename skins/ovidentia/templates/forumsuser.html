@@ -1,80 +1,85 @@
 <!--#begin forumslist -->
-<table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+    
+<tr>
+<td class="BabLoginCadreBackground">
+	<table border="0" width="100%" cellpadding="5" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"  align="center"> 
+		<td>&nbsp;</td>
+		<td>{ forums_txt }</td>
+		<td>{ threads_txt }</td>
+		<td width="1%">{ posts_txt }</td>                  
+		<td  width="20%">{ lastposts_txt }</td>
+	</tr>
+	<!--#in getNextForum -->
+	<!--#if altBg --><tr class="BabSiteAdminFontBackground"><!--#else altBg --><tr class="BabForumBackground1"><!--#endif altBg -->
+		<td  align="center" width="1%" nowrap="nowrap">
+		<!--#if nbnewposts --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ recentposts_txt }" title="{ recentposts_txt }" border="0" align="absmiddle" /><!--#else nbnewposts --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ noposts_txt }" title="{ noposts_txt }" border="0" align="absmiddle" /><!--#endif nbnewposts --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /></td>
+		<td align="left" valign="top"><b><a href="{ forumurl }">{ forumname }</a></b><br />{ forumdescription }</td>
+
+		<td align="center">{ threads }</td>
+
+		<td align="center">{ posts }</td>
+		<td align="center">
+		<!--#if lastpostdate -->
+		{ lastpostdate }<br />
+		<!--#if lastpostauthordetails -->
+		<a href="javascript: Start('{ lastpostauthordetails }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ lastpostauthor }</a>
+		<!--#else lastpostauthordetails -->
+		{ lastpostauthor }
+		<!--#endif lastpostauthordetails -->
+		<!--#if lastpostauthoremail -->
+		 &lt;{ lastpostauthoremail }&gt;
+		<!--#endif lastpostauthoremail -->
+		&nbsp; <a href="{ lastposturl }"><img src="{ babSkinPath }images/Puces/PuceArrowRight.gif" alt="{ viewlastpost_txt }" title="{ viewlastpost_txt }" border="0" align="absmiddle" /></a><!--#endif lastpostdate --></td>
+	</tr>
+	<!--#endin getNextForum -->
+	</table>
+</td>
+</tr>
+</table>
+
+
+<br />
+
+<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     
 <tr>
 <td>
-<table border="0" width="100%" cellpadding="2" cellspacing="1">
-<tr class="BabSiteAdminTitleFontBackground"  align="center"> 
-	<td>&nbsp;</td>
-	<td><b>{ forums_txt }</b></td>
-	<td><b>{ threads_txt }</b></td>
-	<td><b>{ posts_txt }</b></td>                  
-	<td><b>{ lastposts_txt }</b></td>
-</tr>
-<!--#in getNextForum -->
-<tr height="50" >
-<td class="BabForumBackground1" align="center" width="1%" nowrap="nowrap">
-<!--#if nbnewposts --><img src="{ babSkinPath }images/Puces/RecentPost.gif" alt="{ recentposts_txt }" title="{ recentposts_txt }" border="0" align="absmiddle" /><!--#else nbnewposts --><img src="{ babSkinPath }images/Puces/PuceForumOpen.gif" alt="{ noposts_txt }" title="{ noposts_txt }" border="0" align="absmiddle" /><!--#endif nbnewposts --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0" /></td>
-<td class="BabForumBackground1" align="left" valign="top"><b><a href="{ forumurl }">{ forumname }</a></b><br />{ forumdescription }</td>
+	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="right">
+	<tr>
+	<td class="BabLoginCadreBackground">
+	<table border="0" width="100%" cellpadding="3" cellspacing="0" class="BabLoginMenuBackground">
+	<tr> 
+		<td colspan="2"><h5>{ whoisonline_txt }</h5></td>
+	</tr>
 
-<td class="BabForumBackground1" align="center" width="1%">{ threads }</td>
+	<tr>
+		<td>{ nbusers_txt }</td>
+		<td align="left" valign="top">{ nbusers }</td>
+	</tr>
 
-<td class="BabForumBackground1" align="center" width="1%">{ posts }</td>
-<td class="BabForumBackground1" align="center" nowrap width="1%">
-<!--#if lastpostdate -->
-{ lastpostdate }<br />
-<!--#if lastpostauthordetails -->
-<a href="javascript: Start('{ lastpostauthordetails }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ lastpostauthor }</a>
-<!--#else lastpostauthordetails -->
-{ lastpostauthor }
-<!--#endif lastpostauthordetails -->
-<!--#if lastpostauthoremail -->
-<br />&lt;{ lastpostauthoremail }&gt;
-<!--#endif lastpostauthoremail -->
-<br /><a href="{ lastposturl }"><img src="{ babSkinPath }images/Puces/PuceArrowRight.gif" alt="{ viewlastpost_txt }" title="{ viewlastpost_txt }" border="0" align="absmiddle" /></a><!--#endif lastpostdate --></td>
+	<tr>
+		<td>{ nbregistered_txt }</td>
+		<td align="left" valign="top">{ nbregistered }</td>
+	</tr>
 
-</tr>
-<!--#endin getNextForum -->
-</table>
-</td>
-</tr>
-</table>
-<br />
-<table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
-<tr>
-<td>
-<table border="0" width="100%" cellpadding="2" cellspacing="1">
-<tr class="BabSiteAdminTitleFontBackground"  align="center"> 
-	<td colspan="2"><b>{ whoisonline_txt }</b></td>
-</tr>
+	<tr>
+		<td>{ nbanonymous_txt }</td>
+		<td align="left" valign="top">{ nbanonymous }</td>
+	</tr>
 
-<tr >
-<td class="BabForumBackground1" width="50%"><b>{ nbusers_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">{ nbusers }
-</td>
-</tr>
+	<!--#if BAB_SESS_LOGGED -->
+	<tr>
+		<td>{ nbtotalnewposts_txt }</td>
+		<td align="left" valign="top">{ nbtotalnewposts }</td>
+	</tr>
+	<!--#endif BAB_SESS_LOGGED -->
 
-<tr >
-<td class="BabForumBackground1" ><b>{ nbregistered_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">{ nbregistered }
-</td>
-</tr>
-
-<tr >
-<td class="BabForumBackground1" ><b>{ nbanonymous_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">{ nbanonymous }
-</td>
-</tr>
-
-<!--#if BAB_SESS_LOGGED -->
-<tr >
-<td class="BabForumBackground1" ><b>{ nbtotalnewposts_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">{ nbtotalnewposts }
-</td>
-</tr>
-<!--#endif BAB_SESS_LOGGED -->
-
-</table>
+	</table>
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -88,45 +93,45 @@
 <table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
     
 <tr>
-<td>
-<table border="0" width="100%" cellpadding="2" cellspacing="1">
-<tr class="BabSiteAdminTitleFontBackground"  align="center"> 
-	<td colspan="2"><b>{ search_txt }</b></td>
-</tr>
+<td class="BabLoginCadreBackground">
+	<table border="0" width="100%" cellpadding="5" cellspacing="0" class="BabLoginMenuBackground">
+	<tr   align="center"> 
+		<td colspan="2"><h4>{ search_txt }</h4></td>
+	</tr>
 
-<tr >
-<td class="BabForumBackground1" ><b>{ wordtosearch_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">
-<input type="text" name="sword" size="45" value="{ wordvalue }" />
-</td>
-</tr>
+	<tr >
+	<td><b>{ wordtosearch_txt }</b></td>
+	<td align="left" valign="top">
+	<input type="text" name="sword" size="45" value="{ wordvalue }" />
+	</td>
+	</tr>
 
-<tr >
-<td class="BabForumBackground1" ><b>{ forum_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">
-<select class="BabForumBackground" name="forum">
-<option value="">{ selecforum_txt }</option>
-<!--#in getnextforum -->
-<option value="{ forumid }" { selected }>{ forumname }</option>
-<!--#endin getnextforum -->
-</select>&nbsp;
-</td>
-</tr>
+	<tr >
+	<td><b>{ forum_txt }</b></td>
+	<td align="left" valign="top">
+	<select name="forum">
+	<option value="">{ selecforum_txt }</option>
+	<!--#in getnextforum -->
+	<option value="{ forumid }" { selected }>{ forumname }</option>
+	<!--#endin getnextforum -->
+	</select>&nbsp;
+	</td>
+	</tr>
 
-<tr >
-<td class="BabForumBackground1" ><b>{ searchoptions_txt }</b></td>
-<td class="BabForumBackground1" align="left" valign="top">
-<input type="radio" name="sopt" value="all" checked="checked" />{ optionall_txt }<br />
-<input type="radio" name="sopt" value="subject" />{ optionsubject_txt }
-</td>
-</tr>
+	<tr>
+	<td><b>{ searchoptions_txt }</b></td>
+	<td align="left" valign="top">
+	<input type="radio" name="sopt" value="all" checked="checked" />{ optionall_txt }<br />
+	<input type="radio" name="sopt" value="subject" />{ optionsubject_txt }
+	</td>
+	</tr>
 
-<tr >
-<td class="BabForumBackground1" colspan="2" align="center">
-<input type="submit" name="submit" value="{ search_txt }" />
-</td>
-</tr>
-</table>
+	<tr >
+	<td colspan="2" align="center"><br />
+		<input type="submit" name="submit" value="{ search_txt }" /><br /><br />
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
@@ -154,38 +159,43 @@
 <!--#endif countpages -->
 <tr>
 <td>
-<div class="BabLoginCadreBackground" style="padding:2px; margin:4px">
-<table class="BabForumBackground" border="0" width="100%" cellpadding="2" cellspacing="1">
-<tr height="40" class="BabSiteAdminTitleFontBackground"  align="center"> 
-	<td></td>
-	<td><b>{ forum_txt }</b></td>
-	<td><b>{ thread_txt }</b></td>
-	<td><b>{ author_txt }</b></td>		 
-</tr>
-<!--#in getnext -->
-<!--#if altbg -->
-<tr class="BabForumBackground1" height="40">
-<!--#else altbg -->
-<tr class="BabSiteAdminFontBackground" height="40">
-<!--#endif altbg -->
-	<td align="center"><a href="javascript:bab_popup('{ post_url }');"><img src="{ babSkinPath }images/Puces/popupselect.gif" alt="{ viewpost_txt }" title="{ viewpost_txt }" border="0" align="absmiddle" /></a></td>
-	<td ><a href="{ forum_url }">{ forum_name }</a></td>
-	<td ><a href="{ thread_url }">{ thread_name }</a></td>
-	<td align="center">
-		<!--#if authordetailsurl -->
-		<a href="javascript: Start('{ authordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ author_name }</a>
-		<!--#else authordetailsurl -->
-		{ author_name }
-		<!--#endif authordetailsurl -->
-		<!--#if authoremail -->
-		<br />&lt;{ authoremail }&gt;
-		<!--#endif authoremail -->
-		<br />
-	</td>		 
-</tr>
-<!--#endin getnext -->
-</table>
-</div>
+	<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr>
+	<td class="BabLoginCadreBackground">
+		<table border="0" width="100%" cellpadding="2" cellspacing="0">
+		<tr height="40" class="BabSiteAdminTitleFontBackground"  align="center"> 
+			<td>&nbsp;</td>
+			<td><b>{ forum_txt }</b></td>
+			<td><b>{ thread_txt }</b></td>
+			<td><b>{ author_txt }</b></td>		 
+		</tr>
+		<!--#in getnext -->
+		<!--#if altbg -->
+		<tr class="BabForumBackground1" height="40">
+		<!--#else altbg -->
+		<tr class="BabSiteAdminFontBackground" height="40">
+		<!--#endif altbg -->
+			<td align="center"><a href="javascript:bab_popup('{ post_url }');"><img src="{ babSkinPath }images/Puces/popupselect.gif" alt="{ viewpost_txt }" title="{ viewpost_txt }" border="0" align="absmiddle" /></a></td>
+			<td ><a href="{ forum_url }">{ forum_name }</a></td>
+			<td ><a href="{ thread_url }">{ thread_name }</a></td>
+			<td align="center">
+				<!--#if authordetailsurl -->
+				<a href="javascript: Start('{ authordetailsurl }', 'OviContactB', 'width=650,height=500,status=no,resizable=yes,top=200,left=200,scrollbars=yes');">{ author_name }</a>
+				<!--#else authordetailsurl -->
+				{ author_name }
+				<!--#endif authordetailsurl -->
+				<!--#if authoremail -->
+				<br />&lt;{ authoremail }&gt;
+				<!--#endif authoremail -->
+				<br />
+			</td>		 
+		</tr>
+		<!--#endin getnext -->
+		</table>
+	</td>
+	</tr>
+	</table>
+
 </td>
 </tr>
 <!--#if countpages -->

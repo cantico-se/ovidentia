@@ -757,11 +757,18 @@ function history($item)
 			$this->t_title = bab_translate("Historic");
 			$this->t_close = bab_translate("Close");
 
-			$db = &$GLOBALS['babDB'];
-			list($title) = $db->db_fetch_array($db->db_query("SELECT title FROM ".BAB_ADDONS_TBL." where id='".$item."'"));
-			if (!empty($title))
+			$arr = bab_addonsInfos::getDbRow($item);
+			$addon = bab_getAddonInfosInstance($arr['title']);
+			
+			if ($addon)
 				{
-				$this->history = implode('',file($GLOBALS['babAddonsPath'].$title.'/history.txt'));
+				$encoding = 'ISO-8859-15';
+				$ini = $addon->getIni();
+				if (isset($ini->inifile['encoding'])) {
+					$encoding = $ini->inifile['encoding'];
+				}
+
+				$this->history = bab_getStringAccordingToDataBase(implode('',file($addon->getPhpPath().'history.txt')), $encoding);
 				$this->history = bab_toHtml($this->history, BAB_HTML_ALL);
 				}
 			else
