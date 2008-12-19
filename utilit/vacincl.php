@@ -1625,7 +1625,8 @@ function rlistbyuserUnload($msg)
 		}
 
 	$temp = new temp($msg);
-	echo bab_printTemplate($temp,"vacadm.html", "rlistbyuserunload");
+	global $babBody;
+	$babBody->babPopup(bab_printTemplate($temp,"vacadm.html", "rlistbyuserunload"));
 	}
 
 

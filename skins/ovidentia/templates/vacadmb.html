@@ -374,75 +374,7 @@ return true;
 </form>
 <!--#end editvacrequest -->
 
-<!--#begin ventrydetail -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babOvidentiaJs }">
-<!--
-//-->
-</script>
-<script type="text/javascript">
-<!--
-window.focus();
-//-->
-</script>
-</HEAD>
-<BODY class="BabBackground">
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ fullname1 }</td>
-</tr></table></center>
-<br>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ datebegintxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ datebegin }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ dateendtxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ dateend }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ nbdaystxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">
-<!--#in getnexttype -->
-{ nbdays }&nbsp;&nbsp;&nbsp;&nbsp;{ typename }&nbsp;&nbsp;<br>
-<!--#endin getnexttype -->
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ totaltxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ totalval }</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ commenttxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ comment }</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginMenuBackground"> 
-<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" valign="top" width="30%"><b>{ statustxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ status }<br>
-<!--#in getnextuser -->
-<br>{ fullname }
-<!--#endin getnextuser -->
-</td>
-</tr>
-<tr>
-<td class="BabSiteAdminFontBackground" align="right" width="30%"><b>{ remarktxt }:</b></td><td class="BabSiteAdminFontBackground" align="left">{ remark }</td>
-</tr>
-</table>
-</BODY>
-</HTML>
-<!--#end ventrydetail -->
+
 
 
 <!--#begin reqexport -->
