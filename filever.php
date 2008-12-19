@@ -674,12 +674,14 @@ function fileUnload($idf)
 		var $message;
 		var $close;
 		var $redirecturl;
-
+		var $sContent;
+		
 		function temp($idf)
 		{
-			$fm_file = fm_getFileAccess($idf);
-			$oFmFolder =& $fm_file['oFmFolder'];
-			$oFolderFile =& $fm_file['oFolderFile'];
+			$fm_file		= fm_getFileAccess($idf);
+			$oFmFolder		=& $fm_file['oFmFolder'];
+			$oFolderFile	=& $fm_file['oFolderFile'];
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			
 			if(!is_null($oFolderFile) && !is_null($oFmFolder))
 			{

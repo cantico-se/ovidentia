@@ -431,22 +431,24 @@ function viewSearchResultForums()
 
 	class viewSearchResultForumsCLs
 		{
-	
+		var $sContent;
+		
 		function viewSearchResultForumsCLs()
 			{
 			global $babBody, $babDB;
-			$this->subject = bab_translate("Subject");
-			$this->author = bab_translate("Author");
-			$this->date = bab_translate("Date");
-			$this->date = bab_translate("Message");
-			$this->altrecentposts = bab_translate("Recent posts");
-			$this->t_files = bab_translate("Dependent files");
-			$this->message = bab_translate("Message");
-			$this->noposts_txt = bab_translate("No new posts");
-			$this->waiting_txt = bab_translate("Waiting posts");
-			$this->close_txt = bab_translate("Close");
-			$this->postsubject_txt = bab_translate("Post subject");
-			$this->posted_txt = bab_translate("Posted");
+			$this->subject			= bab_translate("Subject");
+			$this->author			= bab_translate("Author");
+			$this->date				= bab_translate("Date");
+			$this->date				= bab_translate("Message");
+			$this->altrecentposts	= bab_translate("Recent posts");
+			$this->t_files			= bab_translate("Dependent files");
+			$this->message			= bab_translate("Message");
+			$this->noposts_txt		= bab_translate("No new posts");
+			$this->waiting_txt		= bab_translate("Waiting posts");
+			$this->close_txt		= bab_translate("Close");
+			$this->postsubject_txt	= bab_translate("Post subject");
+			$this->posted_txt		= bab_translate("Posted");
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 
 			$this->forums = $babBody->get_forums();
 			
