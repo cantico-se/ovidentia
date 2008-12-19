@@ -131,7 +131,9 @@
 </tr>
 </table>
 
-<button id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()">{ t_copy_email_addresses }</button>
+<!--#if mass_mailing -->
+<input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
+<!--#endif mass_mailing -->
 
 <script type="text/javascript">
 

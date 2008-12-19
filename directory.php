@@ -301,6 +301,9 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 		function temp($id, $pos, $xf, $badd)
 			{
 			global $babDB;
+			global $babBody;
+
+			$this->mass_mailing = ($babBody->babsite['mass_mailing'] == 'Y'); 
 			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
 			$this->allname = bab_translate("All");
 			$this->addname = bab_translate("Add");
