@@ -740,12 +740,7 @@ switch($tg)
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
 			$incl = "admin/admthesaurus";
 		break;
-	case "aclug":
-		$babLevelOne = bab_translate("Administration");
-		$babLevelTwo = "";
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0))
-			$incl = "admin/aclug";
-		break;
+
 	case "delegusr":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Delegation");

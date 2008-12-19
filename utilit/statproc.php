@@ -308,7 +308,6 @@ class bab_stats_modules extends bab_stats_base
 				$id = 25; /* Web services */
 				break;
 
-			case "aclug":
 			case "lusers":
 			case "lsa":
 			case "images":
