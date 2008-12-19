@@ -336,20 +336,22 @@ function viewArticle($article)
 		var $babCss;
 		var $close;
 		var $altbg = false;
-
+		var $sContent = '';
 
 		function temp($article)
 			{
 			global $babDB;
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->babMeta = bab_printTemplate($this,"config.html", "babMeta");
-			$this->close = bab_translate("Close");
-			$this->deletetxt = bab_translate("Delete");
+			$this->babCss		= bab_printTemplate($this,"config.html", "babCss");
+			$this->babMeta		= bab_printTemplate($this,"config.html", "babMeta");
+			$this->close		= bab_translate("Close");
+			$this->deletetxt	= bab_translate("Delete");
 			$this->attachmentxt = bab_translate("Associated documents");
-			$this->commentstxt = bab_translate("Comments");
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
+			$this->commentstxt	= bab_translate("Comments");
+			$req				= "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res			= $babDB->db_query($req);
+			$this->arr			= $babDB->db_fetch_array($this->res);
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( bab_isUserTopicManager($this->arr['id_topic']))
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

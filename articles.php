@@ -1124,20 +1124,23 @@ function viewArticle($article)
 		var $babCss;
 		var $close;
 		var $altbg = false;
+		var $sContent = '';
 
 
 		function temp($article)
 			{
 			global $babDB;
-			$this->close = bab_translate("Close");
-			$this->attachmentxt = bab_translate("Associated documents");
-			$this->commentstxt = bab_translate("Comments");
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-			$this->res = $babDB->db_query($req);
-			$this->arr = $babDB->db_fetch_array($this->res);
-			$this->article_title = bab_toHtml($this->arr['title']);
-			$this->countf = 0;
-			$this->countcom = 0;
+			$this->close			= bab_translate("Close");
+			$this->attachmentxt		= bab_translate("Associated documents");
+			$this->commentstxt		= bab_translate("Comments");
+			$req					= "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+			$this->res				= $babDB->db_query($req);
+			$this->arr				= $babDB->db_fetch_array($this->res);
+			$this->article_title	= bab_toHtml($this->arr['title']);
+			$this->countf			= 0;
+			$this->countcom			= 0;
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

@@ -755,16 +755,17 @@ function viewArticle($article)
 		var $baCss;
 		var $close;
 		var $head;
-
+		var $sContent;
 
 		function temp($article)
 			{
-			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
-			$this->close = bab_translate("Close");
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_ARTICLES_TBL." where id='$article'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
+			$this->babCss	= bab_printTemplate($this,"config.html", "babCss");
+			$this->close	= bab_translate("Close");
+			$this->db		= $GLOBALS['babDB'];
+			$req			= "select * from ".BAB_ARTICLES_TBL." where id='$article'";
+			$this->res		= $this->db->db_query($req);
+			$this->arr		= $this->db->db_fetch_array($this->res);
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
