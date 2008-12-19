@@ -57,25 +57,28 @@ function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, 
 		var $what;
 		var $cancel;
 		var $babCss;
-
+		var $sContent;
+		
 		function temp($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 			{
 			global $msgerror;
-			$this->id = bab_toHtml($id);
-			$this->bliste = bab_toHtml($bliste);
-			$this->firstname = bab_translate("First Name");
-			$this->lastname = bab_translate("Last Name");
-			$this->email = bab_translate("Email");
-			$this->compagny = bab_translate("Compagny");
-			$this->hometel = bab_translate("Home Tel");
-			$this->mobiletel = bab_translate("Mobile Tel");
-			$this->businesstel = bab_translate("Business Tel");
-			$this->businessfax = bab_translate("Business Fax");
-			$this->jobtitle = bab_translate("Job Title");
-			$this->businessaddress = bab_translate("Business Address");
-			$this->homeaddress = bab_translate("Home Address");
-			$this->cancel = bab_translate("Cancel");
-			$this->msgerror = bab_toHtml($msgerror);
+			$this->id				= bab_toHtml($id);
+			$this->bliste			= bab_toHtml($bliste);
+			$this->firstname		= bab_translate("First Name");
+			$this->lastname			= bab_translate("Last Name");
+			$this->email			= bab_translate("Email");
+			$this->compagny			= bab_translate("Compagny");
+			$this->hometel			= bab_translate("Home Tel");
+			$this->mobiletel		= bab_translate("Mobile Tel");
+			$this->businesstel		= bab_translate("Business Tel");
+			$this->businessfax		= bab_translate("Business Fax");
+			$this->jobtitle			= bab_translate("Job Title");
+			$this->businessaddress	= bab_translate("Business Address");
+			$this->homeaddress 		= bab_translate("Home Address");
+			$this->cancel			= bab_translate("Cancel");
+			$this->msgerror			= bab_toHtml($msgerror);
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			
 			if( empty($id))
 				{
 				$this->addcontact = bab_translate("Add Contact");
@@ -115,13 +118,15 @@ function contactUnload($pos, $bliste)
 		var $close;
 		var $url;
 		var $bliste;
-
+		var $sContent;
+		
 		function temp($pos, $bliste)
 			{
-			$this->message = bab_translate("Your contacts list has been updated");
-			$this->close = bab_translate("Close");
-			$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos);
-			$this->bliste = bab_toHtml($bliste);
+			$this->message	= bab_translate("Your contacts list has been updated");
+			$this->close	= bab_translate("Close");
+			$this->url		= bab_toHtml($GLOBALS['babUrlScript']."?tg=contacts&idx=list&pos=".$pos);
+			$this->bliste	= bab_toHtml($bliste);
+			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 
