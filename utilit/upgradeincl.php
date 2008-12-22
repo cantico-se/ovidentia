@@ -23,6 +23,60 @@
 ************************************************************************/
 include_once "base.php";
 
+
+class BabDirectoryFilter
+{
+	const DOT	= 1;
+	const FILE	= 2;
+	const DIR	= 4;
+}
+
+
+class BabDirectoryFiltered extends FilterIterator
+{
+	protected $iFilterBits = 0;
+	
+	public function __construct($sPath, $iFilterBits = 0)
+    {
+        parent::__construct(new DirectoryIterator($sPath));
+        $this->setFilter($iFilterBits);
+    }
+
+    public function setFilter($iBit)
+    {
+		$this->iFilterBits |= $iBit;		
+    }
+
+    public function accept()
+    {
+    	$oIterator = $this->getInnerIterator();
+    	
+    	if($this->bitActivated(BabDirectoryFilter::DOT) && $oIterator->isDot())
+    	{
+    		return false;
+    	}
+    	
+    	if($this->bitActivated(BabDirectoryFilter::DIR) && $oIterator->isDir())
+    	{
+    		return false;
+    	}
+    	
+    	if($this->bitActivated(BabDirectoryFilter::FILE) && $oIterator->isFile())
+    	{
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public function bitActivated($iBit)
+    {
+    	return ($this->iFilterBits & $iBit);
+    }
+}
+
+
+
+
 function bab_cpaddons($from, $to, &$message)
 	{
 	function ls_a($wh){
@@ -339,6 +393,41 @@ function bab_newInstall() {
 		exit;
 	}
 
+
+	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	$sInstallDir = dirname(__FILE__) . '/../../install/addons';
+	if(is_dir($sInstallDir))
+	{
+		$aAddonsFilePath	= bab_getAddonsFilePath();
+		$aAddonList			= bab_getAddonListFromInstall($sInstallDir);
+		
+		if(0 < count($aAddonList))
+		{
+			$aLocIn	 = $aAddonList['loc_in'];
+			$aLocOut = $aAddonList['loc_out'];
+			
+			if(count($aLocIn) == count($aLocOut))
+			{
+				foreach($aAddonList as $iKey1 => $sAddonName)
+				{
+					reset($aLocIn);
+					reset($aLocOut);
+					
+					foreach($aAddonsFilePath as $iKey2 => $sPathName)
+					{
+						$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
+						$sNewName = $aLocIn[$iKey2] . '/' . $sAddonName;
+	
+						rename($sOldName, $sNewName);
+					}
+				}
+			}
+		}
+	}
+
+
+
+
 	// add in database the default addons
 	bab_addonsInfos::insertMissingAddonsInTable();
 	bab_addonsInfos::clear();
@@ -365,6 +454,24 @@ function bab_newInstall() {
 }
 
 
+
+
+function bab_getAddonListFromInstall($sInstallDir)
+{
+	$aAddons = array();
+	
+	if(is_dir($sInstallDir))
+	{
+		$oDirIterator = new BabDirectoryFiltered($sInstallDir, 
+			BabDirectoryFilter::DOT | BabDirectoryFilter::FILE);
+			
+		foreach($oDirIterator as $oItem)
+		{
+			$aAddons[] = $oItem->getFilename();
+		}
+	}
+	return $aAddons;
+}
 
 
 
