@@ -152,13 +152,50 @@ class bab_sort
 			$str = $sString;
 		}
 
-		if ('UTF-8' !== bab_charset::getIso()) {
+		if('UTF-8' !== bab_charset::getIso()) 
+		{
 			$str = utf8_encode($str);
 		}
-
+		
 		return $str;
 	}
 }
+
+/**
+ * Compare strings
+ *
+ * @param string $sStr1				Input string to compare
+ * @param string $sStr2				Input string to compare
+ * @param string $sStringIsoCharset	Iso charset of the input string to compare.
+ * 									If this parameter is null strings are then 
+ * 									considered in the same format as the database
+ * 
+ * @return							1 if $sStr1 is greater than $sStr2
+ * 									0 if $sStr1 is equal to $sStr2
+ * 									-1 if $sStr1 is less than $sStr2
+ * 									On error boolean  FALSE  is returned
+ */
+function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
+{
+	if(!isset($sInputStringIsoCharset))
+	{
+		$sInputStringIsoCharset = bab_charset::getIso();
+	}
+	
+	if('UTF-8' != $sInputStringIsoCharset)
+	{
+		$sStr1 = mb_convert_encoding($sStr1, 'UTF-8', $sInputStringIsoCharset);
+		$sStr2 = mb_convert_encoding($sStr2, 'UTF-8', $sInputStringIsoCharset);	
+	}
+
+	$oCollator = bab_getCollatorInstance();
+	
+	return $oCollator->compare(
+		bab_sort::getStringAccordingToCase($sStr1), 
+		bab_sort::getStringAccordingToCase($sStr2)
+	);
+}
+
 
 
 
