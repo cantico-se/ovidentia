@@ -4453,7 +4453,7 @@ function upgrade612to620()
  */
 function getOvidentiaVersion()
 {
-	$sFullPathName = dirname(__FILE__) . 'version.inc';
+	$sFullPathName = dirname(__FILE__) . '/version.inc';
 	
 	$aParsedIni = parse_ini_file($sFullPathName, true);
 	if(false === $aParsedIni)
