@@ -1076,13 +1076,9 @@ class bab_inifile {
 
 
 		if (class_exists('bab_sort')) {
-			bab_debug($order);
-
 			bab_sort::natcasesort($order);
 		}
 
-		bab_debug($order);
-		
 		$return_ordered = array();
 		foreach($order as $key => $value) {
 			$return_ordered[] = $return[$key];
