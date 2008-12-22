@@ -222,42 +222,40 @@ class bab_synchronizeSql
 			{
 			for ($k = 0; $k < count($m[1]); $k++ )
 				{
-				$iPos = mb_strpos($m[2][$k], ')');
-				if(false !== $iPos)
+				$l = (mb_strlen(strrchr($m[2][$k], ')'))*-1);
+				$fields = mb_substr($m[2][$k],0,$l);
+
+				$field = array();
+				$keys = array();
+
+				preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
+
+				for ($l = 0; $l < count($n[2]); $l++ )
 					{
-					$l = (mb_strlen(mb_substr($m[2][$k], $iPos+1))*-1);
-					$fields = mb_substr($m[2][$k],0,$l);
-	
-					$field = array();
-					$keys = array();
-	
-					preg_match_all("/(.*?)[\s|\(]`(.*?)`.*/", $fields, $n);
-					for ($l = 0; $l < count($n[2]); $l++ )
-						{
-						$key = trim($n[1][$l]);
-						$f = $n[2][$l];
-						
-						if ('PRIMARY KEY' === $key) {
-							$f = 'PRIMARY';
-						}
-	
-						if (!empty($key))
-							{
-							$keys[$f] = trim(trim($n[0][$l]),",");
-							}
-						else
-							{
-							$field[$f] = str_replace("`$f`",'',$n[0][$l]);
-							$field[$f] = trim(trim($field[$f]),",");
-							}
-						}
-	
-					$this->create[$m[1][$k]] = array(
-									'create' => $m[0][$k],
-									'fields' => $field,
-									'keys' => $keys
-									);
+					$key = trim($n[1][$l]);
+					$f = $n[2][$l];
+					
+					if ('PRIMARY KEY' === $key) {
+						$f = 'PRIMARY';
 					}
+
+					if (!empty($key))
+						{
+						$keys[$f] = trim(trim($n[0][$l]),",");
+						}
+					else
+						{
+						$field[$f] = str_replace("`$f`",'',$n[0][$l]);
+						$field[$f] = trim(trim($field[$f]),",");
+						}
+					}
+
+				$this->create[$m[1][$k]] = array(
+								'create' => $m[0][$k],
+								'fields' => $field,
+								'keys' => $keys
+								);
+
 				}
 			}
 		else
