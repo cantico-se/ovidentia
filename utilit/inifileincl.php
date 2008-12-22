@@ -788,12 +788,9 @@ class bab_inifile {
 
 			$this->inifile = $arr['general'];
 
-			 
-			if (!isset($this->inifile['mysql_character_set_database'])) {
-				// if charset test is not here, verify that the database is latin1
-				$this->inifile['mysql_character_set_database'] = 'latin1';
-			}
-			 
+			
+			
+			
 			 
 			 $this->addons = array();
 			 if (isset($arr['addons'])) {
@@ -809,6 +806,14 @@ class bab_inifile {
 			if (isset($arr['functionalities'])) {
 				$this->functionalities = $arr['functionalities'];
 			}
+
+
+			if (!isset($this->inifile['mysql_character_set_database']) && !isset($this->recommendations['mysql_character_set_database'])) {
+				// if charset test is not here, verify that the database is latin1
+				$this->inifile['mysql_character_set_database'] = 'latin1';
+			}
+
+
 			
 			if (isset($this->inifile['preinstall_script'])) {
 			
@@ -1068,9 +1073,15 @@ class bab_inifile {
 			$order[$key] = $value['description'];
 		}
 
+
+
 		if (class_exists('bab_sort')) {
+			bab_debug($order);
+
 			bab_sort::natcasesort($order);
 		}
+
+		bab_debug($order);
 		
 		$return_ordered = array();
 		foreach($order as $key => $value) {

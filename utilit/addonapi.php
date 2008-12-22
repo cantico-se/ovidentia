@@ -138,16 +138,25 @@ class bab_sort
 		);
 	}	
 	
+	/**
+	 * @return string	UTF-8 string
+	 */
 	private static function getStringAccordingToCase($sString)
 	{
 		if(bab_sort::CASE_INSENSITIVE == self::$iCase)
 		{
-			return mb_strtolower($sString);
+			$str = mb_strtolower($sString);
 		}
 		else
 		{
-			return $sString;
+			$str = $sString;
 		}
+
+		if ('UTF-8' !== bab_charset::getIso()) {
+			$str = utf8_encode($str);
+		}
+
+		return $str;
 	}
 }
 
@@ -183,7 +192,7 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
  * @param string|array $locale
  * @return Collator
  */
-function bab_getCollatorInstance($locale = '')
+function bab_getCollatorInstance($locale = 'en_US')
 {
 	require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
 	

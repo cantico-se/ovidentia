@@ -54,6 +54,10 @@ if(!class_exists('Collator'))
 			return uasort($aToSort, array('Collator', 'compare'));
 		}
 		
+		/**
+		 * @param	string	$sStr1		UTF-8 string
+		 * @param	string	$sStr2		UTF-8 string
+		 */
 		public static function compare($sStr1, $sStr2)
 		{
 			if('utf8' == bab_charset::getDatabase())
@@ -64,8 +68,7 @@ if(!class_exists('Collator'))
 			return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 		}
 	}
-}
-
+} 
 
 
 ?>
