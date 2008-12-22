@@ -758,7 +758,10 @@ class bab_inifile {
 				switch($arr['general']['encoding']) {
 					case 'ISO-8859-15':
 					case 'UTF-8':
-						$arr = bab_getStringAccordingToDataBase($arr, $arr['general']['encoding']);
+						if (function_exists('bab_getStringAccordingToDataBase')) {
+							// for ovidentia core new install, the function is not present but version.inc is ascii only
+							$arr = bab_getStringAccordingToDataBase($arr, $arr['general']['encoding']);
+						}
 						break;
 
 					default:
