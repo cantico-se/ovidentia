@@ -1762,9 +1762,8 @@ function updateArticleDraft($idart, $title,  $lang, $approbid, &$message)
 
 	if($lang == '') { $lang = $GLOBALS['babLanguage']; }
 
-	$oCollator = bab_getCollatorInstance('');
-	if( !$oCollator->compare(mb_strtolower($bodytext), mb_strtolower("<P>&nbsp;</P>")) || 
-	    !$oCollator->compare(mb_strtolower($bodytext), mb_strtolower("<P />")))
+	if( !bab_compare(mb_strtolower($bodytext), mb_strtolower("<P>&nbsp;</P>")) || 
+	    !bab_compare(mb_strtolower($bodytext), mb_strtolower("<P />")))
 		{
 		$bodytext = "";
 		}

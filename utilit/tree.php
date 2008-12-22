@@ -266,8 +266,7 @@ class bab_TreeViewElement
 	{
 		$diff = (int)$element->_rank - (int)$this->_rank;
 		if ($diff === 0) {
-			$oCollator = bab_getCollatorInstance('');
-			return $oCollator->compare(mb_strtolower($this->_title), mb_strtolower($element->_title));
+			return bab_compare(mb_strtolower($this->_title), mb_strtolower($element->_title));
 		}
 		return $diff;
 	}

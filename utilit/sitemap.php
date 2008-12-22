@@ -91,8 +91,7 @@ class bab_siteMapItem {
 	 * @see bab_Node::sortChildNodes()
 	 */
 	public function compare($node) {
-		$collator = bab_getCollatorInstance();
-		return $collator->compare($this->name, $node->name);
+		return bab_compare($this->name, $node->name);
 	}
 }
 

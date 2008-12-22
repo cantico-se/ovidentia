@@ -64,8 +64,7 @@ class summaryBaseCls
 			}
 		else
 			{
-			$oCollator = bab_getCollatorInstance('');
-			$r = $oCollator->compare(
+			$r = bab_compare(
 				mb_strtolower($a[$this->sortcol]), 
 				mb_strtolower($b[$this->sortcol]));
 			}
