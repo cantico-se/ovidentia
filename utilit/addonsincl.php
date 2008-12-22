@@ -1054,7 +1054,22 @@ function bab_setAddonGlobals($id_addon) {
 	$GLOBALS['babAddonUrl'] = $GLOBALS['babUrlScript'].'?tg=addon/'.$id_addon.'/';
 	$GLOBALS['babAddonPhpPath'] = $GLOBALS['babInstallPath'].'addons/'.$arr['title'].'/';
 	$GLOBALS['babAddonHtmlPath'] = 'addons/'.$arr['title'].'/';
-	$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$arr['title'].'/';
+
+	if (isset($GLOBALS['babUploadPath'])) {
+		$GLOBALS['babAddonUpload'] = $GLOBALS['babUploadPath'].'/addons/'.$arr['title'].'/';
+
+	} else {
+
+		// in some cases, babUploadPath is not defined
+		
+		global $babDB;
+		
+		$req="SELECT uploadpath from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
+		$res = $babDB->db_query($req);
+		$arr = $babDB->db_fetch_assoc($res);
+
+		$GLOBALS['babAddonUpload'] = $arr['uploadpath'];
+	}
 	
 	return true;
 }

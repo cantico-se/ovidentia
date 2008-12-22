@@ -670,7 +670,7 @@ class bab_inifile_requirements_html
 class bab_inifile {
 
 	var $addons;
-	var $recommendations;
+	var $recommendations = array();
 	var $functionalities;
 	var $customscript = array();
 	

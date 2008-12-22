@@ -360,6 +360,7 @@ function bab_upgrade($core_dir, &$ret)
 /**
  * Ovidentia new install
  * if prerequisite are not compatibles, the function will exit the script
+ * @return bool
  */
 function bab_newInstall() {
 
@@ -395,7 +396,7 @@ function bab_newInstall() {
 
 
 	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	$sInstallDir = dirname(__FILE__) . '/../../install/addons';
+	$sInstallDir = dirname($_SERVER['SCRIPT_FILENAME']).'/install/addons';
 	if(is_dir($sInstallDir))
 	{
 		$aAddonsFilePath	= bab_getAddonsFilePath();
@@ -403,26 +404,34 @@ function bab_newInstall() {
 		
 		if(0 < count($aAddonList))
 		{
-			$aLocIn	 = $aAddonList['loc_in'];
-			$aLocOut = $aAddonList['loc_out'];
+			$aLocIn	 = $aAddonsFilePath['loc_in'];
+			$aLocOut = $aAddonsFilePath['loc_out'];
 			
 			if(count($aLocIn) == count($aLocOut))
 			{
 				foreach($aAddonList as $iKey1 => $sAddonName)
 				{
-					reset($aLocIn);
-					reset($aLocOut);
-					
-					foreach($aAddonsFilePath as $iKey2 => $sPathName)
+
+					foreach($aLocIn as $iKey2 => $sPathName)
 					{
 						$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
-						$sNewName = $aLocIn[$iKey2] . '/' . $sAddonName;
+						$sNewName = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
 	
-						rename($sOldName, $sNewName);
+						if (!rename($sOldName, $sNewName)) {
+							return false;
+						}
 					}
 				}
 			}
+		} 
+		else 
+		{
+			bab_debug('aAddonList empty');
 		}
+	} 
+	else 
+	{
+		bab_debug('missing sInstallDir '.$sInstallDir);
 	}
 
 
@@ -451,6 +460,8 @@ function bab_newInstall() {
 			('ver_minor', ".$babDB->quote($arr[1])."),
 			('ver_build', ".$babDB->quote($arr[2]).")
 	");
+
+	return true;
 }
 
 
