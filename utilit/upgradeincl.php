@@ -77,9 +77,9 @@ class BabDirectoryFiltered extends FilterIterator
 
 
 
-function bab_cpaddons($from, $to, &$message)
-	{
-	function ls_a($wh){
+
+
+function bab_recursive_cp_ls_a($wh){
          if ($handle = opendir($wh)) {
              while (false !== ($file = readdir($handle))) {
 				if ($file != "." && $file != ".." ) {
@@ -96,33 +96,44 @@ function bab_cpaddons($from, $to, &$message)
 			return array();
         $arr=explode("\n",$files);
         return $arr;
-     }
-	function cp($wf, $wto){ 
-		  if (!is_dir($wto)) { 
-			  if (!bab_mkdir($wto)) {
-				return sprintf(bab_translate("Error : can't create directory : %s"), $wto);
-			  }
-			}
-		  $arr=ls_a($wf);
-		  foreach ($arr as $fn){
-			  if($fn){
-				  $fl="$wf/$fn";
-				 $flto="$wto/$fn";
-				  if(is_dir($fl)) {
-						$return = cp($fl,$flto);
-						if (true !== $return) {
-							return $return;
-						}
-					} else {
-						if (!copy($fl,$flto)) {
-							return sprintf(bab_translate("Error : can't copy the file %s to the directory %s"), basename($fl), dirname($flto) );
-						}
-					}
-			   }
-		   }
+    }
 
-		return true;
-      }
+
+
+function bab_recursive_cp($wf, $wto){ 
+	  if (!is_dir($wto)) { 
+		  if (!bab_mkdir($wto)) {
+			return sprintf(bab_translate("Error : can't create directory : %s"), $wto);
+		  }
+		}
+	  $arr=bab_recursive_cp_ls_a($wf);
+	  foreach ($arr as $fn){
+		  if($fn){
+			  $fl="$wf/$fn";
+			 $flto="$wto/$fn";
+			  if(is_dir($fl)) {
+					$return = bab_recursive_cp($fl,$flto);
+					if (true !== $return) {
+						return $return;
+					}
+				} else {
+					if (!copy($fl,$flto)) {
+						return sprintf(bab_translate("Error : can't copy the file %s to the directory %s"), basename($fl), dirname($flto) );
+					}
+				}
+		   }
+	   }
+
+	return true;
+  }
+
+
+
+function bab_cpaddons($from, $to, &$message)
+	{
+	
+
+
 
 	function create($path)
 	{
@@ -159,7 +170,7 @@ function bab_cpaddons($from, $to, &$message)
 			return false;
 		}
 
-		$copy = cp($from.$path,$to.$path);
+		$copy = bab_recursive_cp($from.$path,$to.$path);
 
 		if (true !== $copy) {
 			$message = $copy;
@@ -417,7 +428,7 @@ function bab_newInstall() {
 						$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
 						$sNewName = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
 	
-						if (!rename($sOldName, $sNewName)) {
+						if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
 							return false;
 						}
 					}
