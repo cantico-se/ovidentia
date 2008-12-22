@@ -190,10 +190,7 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 	$oCollator = bab_getCollatorInstance();
 	
-	return $oCollator->compare(
-		bab_sort::getStringAccordingToCase($sStr1), 
-		bab_sort::getStringAccordingToCase($sStr2)
-	);
+	return $oCollator->compare($sStr1, $sStr2);
 }
 
 
