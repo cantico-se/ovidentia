@@ -81,5 +81,10 @@ function bab_getFaqRes($faqid, $delegationid) {
 function bab_getFaqDgNumber($id_delegation) {
 	global $babDB;
 	$res = bab_getFaqRes(false, $id_delegation);
+
+	if (false === $res) {
+		return 0;
+	}
+
 	return $babDB->db_num_rows($res);
 }

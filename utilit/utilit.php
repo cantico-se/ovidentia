@@ -1147,6 +1147,13 @@ function get_forums() {
 
 		include_once dirname(__FILE__).'/forumincl.php';
 		$res = bab_getForumsRes();
+
+		if (false === $res) {
+			$forumsview = array();
+			return $forumsview;
+		}
+
+
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			$forumsview[$arr['id']]['name'] = $arr['name'];
