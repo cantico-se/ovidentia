@@ -597,7 +597,9 @@ function babForumsSection($close)
 	$this->babSectionTemplate("forumssection.html", "template");
 	$this->title = bab_translate("Forums");
 
-	$this->arrid = $babBody->get_forums();
+	include_once dirname(__FILE__).'/forumincl.php';
+
+	$this->arrid = bab_get_forums();
 	if( count($this->arrid) && $close )
 		{
 		$this->count = 1;

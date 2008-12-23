@@ -387,17 +387,27 @@ function bab_notesAccess()
 	return false;
 	}
 
+
+/**
+ * get id of accessibles org charts
+ * @return array
+ */
 function bab_orgchartAccess()
 	{
-	global $babBody, $babDB;
+	static $ret = null;
 
-	$ret = array();
-	$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL."");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if(bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $row['id']) || bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $row['id']))
+	if (null === $ret) {
+		
+		global $babDB;
+
+		$ret = array();
+		$res = $babDB->db_query("select id from ".BAB_ORG_CHARTS_TBL."");
+		while( $row = $babDB->db_fetch_array($res))
 			{
-			$ret[] = $row['id'];
+			if(bab_isAccessValid(BAB_OCVIEW_GROUPS_TBL, $row['id']) || bab_isAccessValid(BAB_OCUPDATE_GROUPS_TBL, $row['id']))
+				{
+				$ret[] = $row['id'];
+				}
 			}
 		}
 	return $ret;

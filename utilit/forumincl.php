@@ -69,7 +69,37 @@ function bab_getForumsRes($forumid = false, $delegationid = false) {
 
 
 
+function bab_get_forums() {
+		static $forumsview = null;
+		if (!is_null($forumsview))
+			return $forumsview;
 
+		global $babDB;
+
+		include_once dirname(__FILE__).'/forumincl.php';
+		$res = bab_getForumsRes();
+
+		if (false === $res) {
+			$forumsview = array();
+			return $forumsview;
+		}
+
+
+		while($arr = $babDB->db_fetch_array($res))
+			{
+			$forumsview[$arr['id']]['name'] = $arr['name'];
+			$forumsview[$arr['id']]['description'] = $arr['description'];
+			$forumsview[$arr['id']]['display'] = $arr['display'];
+			$forumsview[$arr['id']]['moderation'] = $arr['moderation'];
+			$forumsview[$arr['id']]['bdisplayemailaddress'] = $arr['bdisplayemailaddress'];
+			$forumsview[$arr['id']]['bdisplayauhtordetails'] = $arr['bdisplayauhtordetails'];
+			$forumsview[$arr['id']]['bflatview'] = $arr['bflatview'];
+			$forumsview[$arr['id']]['bupdatemoderator'] = $arr['bupdatemoderator'];
+			$forumsview[$arr['id']]['bupdateauthor'] = $arr['bupdateauthor'];
+			}
+
+		return $forumsview;
+	}
 
 
 

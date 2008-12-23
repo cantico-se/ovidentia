@@ -1369,7 +1369,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			}
 		}
 
-	if( count($babBody->ocids) > 0 )
+	if( bab_orgchartAccess() )
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Charts"),
@@ -1398,22 +1398,27 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			
 	if($bIsAccessValid)
 		{
-		$array_urls[] = array(
-			'label' => bab_translate("Task Manager"),
-			'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
-			'uid' 	=> $dg_prefix.'UserTm',
-			'folder' => true
+			$array_urls[] = array(
+				'label' => bab_translate("Task Manager"),
+				'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
+				'uid' 	=> $dg_prefix.'UserTm',
+				'folder' => true
 			);
 
 			$projects = array();
 
 			foreach($context->getVisualisedIdProjectSpace() as $id_projectSpace => $dummy) {
-				$res = bab_selectProjectList($id_projectSpace);
-				while ($project = $babDB->db_fetch_assoc($res))
-				{
-					if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $project['id']))
+				$projectSpace = bab_selectProjectSpace($id_projectSpace);
+
+				if (false === $deleg['id'] || (int) $deleg['id'] === (int) $projectSpace['idDelegation']) {
+
+					$res = bab_selectProjectList($id_projectSpace);
+					while ($project = $babDB->db_fetch_assoc($res))
 					{
-						$projects[] = $project;
+						if (bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $project['id']))
+						{
+							$projects[] = $project;
+						}
 					}
 				}
 			}
@@ -1429,35 +1434,34 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 					'position' => array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserTm')
 				);
 			}
-
 		}
-		
-	$forums = $babBody->get_forums();
-	if(count($forums))
-		{
-			
+
+	
+
+	include_once dirname(__FILE__).'/forumincl.php';
+	$res = bab_getForumsRes(false, $deleg['id']);
+	if ($res) {
+
+		$array_urls[] = array(
+			'label' => bab_translate("Forums"),
+			'url' 	=> $GLOBALS['babUrlScript'].'?tg=forumsuser',
+			'uid' 	=> $dg_prefix.'UserForums',
+			'desc' 	=> bab_translate('Discussion forums'),
+			'folder' => true
+		);
+
+		while ($forum = $babDB->db_fetch_assoc($res)) {
+
 			$array_urls[] = array(
-				'label' => bab_translate("Forums"),
-				'url' 	=> $GLOBALS['babUrlScript'].'?tg=forumsuser',
-				'uid' 	=> $dg_prefix.'UserForums',
-				'desc' 	=> bab_translate('Discussion forums'),
-				'folder' => true
+				'label' 	=> $forum['name'],
+				'url' 		=> $GLOBALS['babUrlScript'].'?tg=threads&forum='.$forum['id'],
+				'uid' 		=> $dg_prefix.'UserForum'.$forum['id'],
+				'desc' 		=> $forum['description'],
+				'position'	=> array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserForums')
 			);
-
-			//include_once dirname(__FILE__).'/forumincl.php';
-
-
-			foreach($forums as $id_forum => $forum) {
-				$array_urls[] = array(
-					'label' 	=> $forum['name'],
-					'url' 		=> $GLOBALS['babUrlScript'].'?tg=threads&forum='.$id_forum,
-					'uid' 		=> $dg_prefix.'UserForum'.$id_forum,
-					'desc' 		=> $forum['description'],
-					'position'	=> array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserForums')
-				);
-			}
-
 		}
+	}
+
 	
 	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{

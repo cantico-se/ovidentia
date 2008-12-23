@@ -275,22 +275,11 @@ class bab_Addon extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$name = $ctx->get_value('name');
-		$addonid = 0;
-		foreach ($babBody->babaddons as $value)
-			{
-			if ($value['title'] == $name)
-				{
-				$addonid = $value['id'];
-				break;
-				}
-			}
-			
-		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+		$addon = bab_getAddonInfosInstance($name);
 
-		if( $addonid && bab_isAddonAccessValid($addonid))
+		if($addon->isAccessValid())
 			{
-			$addonpath = $GLOBALS['babAddonsPath'].$babBody->babaddons[$addonid]['title'];
-			if( is_file($addonpath."/ovml.php" ))
+			if( is_file($addon->getPhpPath()."ovml.php" ))
 				{
 				/* save old vars */
 				$this->AddonFolder = isset($GLOBALS['babAddonFolder'])? $GLOBALS['babAddonFolder']: '';
@@ -300,10 +289,10 @@ class bab_Addon extends bab_handler
 				$this->AddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 				$this->AddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
 
-				bab_setAddonGlobals($addonid);
-				require_once( $addonpath."/ovml.php" );
+				bab_setAddonGlobals($addon->getId());
+				require_once( $addon->getPhpPath()."ovml.php" );
 
-				$call = $babBody->babaddons[$addonid]['title']."_ovml";
+				$call = $addon->getName()."_ovml";
 				if( !empty($call)  && function_exists($call) )
 					{
 					$args = $ctx->get_variables('bab_Addon');

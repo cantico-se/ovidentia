@@ -691,7 +691,8 @@ function listWaitingAddons()
 			 * @deprecated
 			 * Addons should not use this method since 6.1.1
 			 */
-			foreach( $babBody->babaddons as $key => $row)
+			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+			foreach(bab_addonsInfos::getRows() as $key => $row)
 				{
 				$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
 				if($row['access'] && is_file($addonpath."/init.php" ))

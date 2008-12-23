@@ -170,7 +170,7 @@ function listPosts($forum, $thread, $post)
 					$this->deletename = bab_translate("Refuse");
 					}
 
-				$this->forums = $babBody->get_forums();
+				$this->forums = bab_get_forums();
 				if( ($moderator && $this->forums[$this->forum]['bupdatemoderator'] == 'Y') || ($GLOBALS['BAB_SESS_USERID'] && $this->forums[$this->forum]['bupdateauthor'] == 'Y' && $GLOBALS['BAB_SESS_USERID'] == $arr['id_author']))
 					{
 					$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
@@ -552,7 +552,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			else
 				$this->breply = false;
 
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 			$this->arrforum = $this->forums[$this->forum];
 			unset($this->forums[$this->forum]);
 			$this->countforums = count($this->forums);
@@ -866,7 +866,7 @@ function editPost($forum, $thread, $post)
 		function editPostCls($forum, $thread, $post)
 			{
 			global $babBody, $babDB, $BAB_SESS_USERID, $flat, $moderator;
-			$forums = $babBody->get_forums();
+			$forums = bab_get_forums();
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($res);
@@ -982,7 +982,7 @@ function moveThread($forum, $thread)
 			$this->move_txt = bab_translate("Move to");
 			$this->update_txt = bab_translate("Update");
 
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 			$this->arrforum = $this->forums[$this->forum];
 			unset($this->forums[$this->forum]);
 			$this->countforums = count($this->forums);
@@ -1156,7 +1156,7 @@ function updateReply($forum, $thread, $subject, $post)
 		return;
 		}
 
-	$forums = $babBody->get_forums();
+	$forums = bab_get_forums();
 
 	$res = $babDB->db_query("select id_author from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'");
 	$arr = $babDB->db_fetch_array($res);
@@ -1472,7 +1472,7 @@ switch($idx)
 					$babBody->addItemMenu('Open', bab_translate("Open thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=Open&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
 					}
 				$babBody->addItemMenu('DeleteT', bab_translate("Delete thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=DeleteT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);
-				$forums = $babBody->get_forums();
+				$forums = bab_get_forums();
 				if( count($forums) > 1 )
 					{
 					$babBody->addItemMenu('MoveT', bab_translate("Move thread"), $GLOBALS['babUrlScript'].'?tg=posts&idx=MoveT&forum='.$forum.'&thread='.$thread.'&flat='.$flat);

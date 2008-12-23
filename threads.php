@@ -103,7 +103,7 @@ function listThreads($forum, $active, $pos)
 
 			$this->search_url = bab_toHtml($GLOBALS['babUrlScript'].'?tg=forumsuser&idx=search&forum='.$forum);
 
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 
 			if( $active == 'N')
 				{

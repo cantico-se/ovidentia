@@ -64,7 +64,7 @@ function listForums()
 			$this->nbtotalnewposts_txt = bab_translate("Number of posts since last visit");
 			$this->nbtotalnewposts = 0;
 
-			$fv = $babBody->get_forums();
+			$fv = bab_get_forums();
 
 			$this->forums = array();
 			if( count($fv))
@@ -203,7 +203,7 @@ function searchForums()
 			$this->optionsubject_txt = bab_translate("Search post message only");
 			$this->wordvalue = bab_rp('sword', '');
 
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 			}
 
 		function getNextForum()
@@ -257,7 +257,7 @@ function displaySearchResultsForums()
 		
 			$this->count = 0;
 			$this->countpages = 0;
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 			$fstype = bab_rp('fstype', '');
 			list($this->iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".$babDB->db_escape_string(BAB_REGISTERED_GROUP)."'"));
 
@@ -450,7 +450,7 @@ function viewSearchResultForums()
 			$this->posted_txt		= bab_translate("Posted");
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 
-			$this->forums = $babBody->get_forums();
+			$this->forums = bab_get_forums();
 			
 			$this->files = array();
 

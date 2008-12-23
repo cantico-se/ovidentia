@@ -54,9 +54,12 @@ function listOrgCharts()
 			$this->description = bab_translate("Description");
 			$this->edit = bab_translate("Edit");
 			$this->view = bab_translate("View");
-			if( count($babBody->ocids) > 0 )
+
+			$ocids = bab_orgchartAccess();
+
+			if( count($ocids) > 0 )
 				{
-				$req = "select * from ".BAB_ORG_CHARTS_TBL." where id IN (".$babDB->quote($babBody->ocids).") order by name asc";
+				$req = "select * from ".BAB_ORG_CHARTS_TBL." where id IN (".$babDB->quote($ocids).") order by name asc";
 				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
@@ -134,7 +137,7 @@ if(!isset($disp))
 	}
 
 $access = false;
-if( count($babBody->ocids) > 0)
+if(bab_orgchartAccess())
 {
 	if( $idx == "edit" || $idx == "unlock")
 	{
