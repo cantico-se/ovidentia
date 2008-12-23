@@ -50,6 +50,7 @@ function bab_getFaqRes($faqid, $delegationid) {
 	}
 
 	$IdEntries = array();
+
 	$res = $babDB->db_query($req);
 	while( $row = $babDB->db_fetch_array($res))
 		{
@@ -65,4 +66,20 @@ function bab_getFaqRes($faqid, $delegationid) {
 	}
 		
 	return false;
+}
+
+
+
+
+
+
+/**
+ * Get the number of accessibles faq in one delegation
+ * @param	int | false		$id_delegation		if id_delegation is false, the filter is disabled
+ * @return int
+ */
+function bab_getFaqDgNumber($id_delegation) {
+	global $babDB;
+	$res = bab_getFaqRes(false, $id_delegation);
+	return $babDB->db_num_rows($res);
 }

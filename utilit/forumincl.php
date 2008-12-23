@@ -27,6 +27,54 @@ include_once $GLOBALS['babInstallPath'].'utilit/pagesincl.php';
 
 define('DELTA_TIME', 86400);
 
+
+
+/**
+ * Get Forums as mysql ressource or false if no accessible forums
+ * @param	false | array		$forumid			array of id or false for all accessible forums
+ * @param	false | int			$delegationid		if delegationid is false, forums are not filtered
+ * @return 	ressource | false
+ */
+function bab_getForumsRes($forumid = false, $delegationid = false) {
+
+	global $babDB;
+
+	$fv = bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL);
+
+	$req = "
+		SELECT * from ".BAB_FORUMS_TBL." 
+		WHERE 
+			active='Y' 
+			AND id IN(".$babDB->quote(array_keys($fv)).') 
+	';
+
+	if ($delegationid !== false) {
+		$req .= '
+			AND id_dgowner='.$babDB->quote($delegationid).'
+		';
+	}
+
+	$req .= '
+			ORDER BY ordering ASC 
+	';
+
+	$res = $babDB->db_query($req);
+	
+	if (0 === $babDB->db_num_rows($res)) {
+		return false;
+	}
+
+	return $res;
+}
+
+
+
+
+
+
+
+
+
 function bab_getForumName($id)
 	{
 	global $babDB;

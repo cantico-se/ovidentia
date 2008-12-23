@@ -188,10 +188,13 @@ function bab_getRegionalFormats() {
 
 function bab_getDateFormat($format)
 {
-	$format = preg_replace("/(?<!M)M(?!M)/", "$1%n$2", $format);
-	$format = preg_replace("/(?<!M)MM(?!M)/", "$1%n$2", $format);
-	$format = preg_replace("/(?<!M)MMM(?!M)/", "$1%m$2", $format);
-	$format = preg_replace("/(?<!M)M{4,}(?!M)/", "$1%M$3", $format);
+	$format = strtolower($format);
+
+
+	$format = preg_replace("/(?<!m)m(?!m)/", "$1%n$2", $format);
+	$format = preg_replace("/(?<!m)mm(?!m)/", "$1%n$2", $format);
+	$format = preg_replace("/(?<!m)mmm(?!m)/", "$1%m$2", $format);
+	$format = preg_replace("/(?<!m)m{4,}(?!m)/", "$1%M$3", $format);
 
 	$format = preg_replace("/(?<!d)d(?!d)/", "$1%j$2", $format);
 	$format = preg_replace("/(?<!d)dd(?!d)/", "$1%j$2", $format);
@@ -1142,8 +1145,8 @@ function get_forums() {
 
 		global $babDB;
 
-		$fv = bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL);
-		$res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id in (".$babDB->quote(array_keys($fv)).")  order by ordering asc");
+		include_once dirname(__FILE__).'/forumincl.php';
+		$res = bab_getForumsRes();
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			$forumsview[$arr['id']]['name'] = $arr['name'];
@@ -1685,7 +1688,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ; }
 
 	if( $arr['date_longformat'] == '') {
-		$GLOBALS['babLongDateFormat'] = bab_getDateFormat('ddd dd MMMM yyyy') ; }
+		$GLOBALS['babLongDateFormat'] = bab_getDateFormat('ddd dd mmmm yyyy') ; }
 	else {
 		$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ; }
 

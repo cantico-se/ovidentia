@@ -1388,34 +1388,26 @@ class bab_Forums extends bab_handler
 		$forumid = $ctx->get_value('forumid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
-		{
-			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-		}
+		if (0 === $delegationid) 
+			{
+			$delegationid = false;
+			}
+	
 		
-		if( $forumid === false || $forumid === '' )
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "order by ordering asc");
+		if( $forumid === '' ) 
+			{
+			$forumid = false;
+			}
 		else
 			{
 			$forumid = explode(',', $forumid);
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL." where active='Y'" . $sDelegation . "and id IN (".$babDB->quote($forumid).") order by ordering asc");
 			}
-		while( $row = $babDB->db_fetch_array($res))
-			{
-			if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
-				{
-				array_push($this->IdEntries, $row['id']);
-				}
-			}
-		$this->count = count($this->IdEntries);
-		if( $this->count > 0 )
-			{
-			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where active='Y' and id IN (".$babDB->quote($this->IdEntries).") order by ordering asc");
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-		$this->ctx->curctx->push('CCount', $this->count);
+		
+		include_once dirname(__FILE__).'/forumincl.php';
+		$this->res = bab_getForumsRes($forumid, $delegationid);
+		$this->count = $babDB->db_num_rows($this->res);
 
+		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 	function getnext()

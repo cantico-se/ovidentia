@@ -634,7 +634,7 @@ function aclGetAccessUsers($table, $id_object) {
 	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
-	if(array_key_exists('bab_groupAccess', $_SESSION['bab_groupAccess']))
+	if(array_key_exists('bab_groupAccess', $_SESSION))
 	{
 		unset($_SESSION['bab_groupAccess']);
 	}

@@ -921,25 +921,34 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
  *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
  * </ul>
  *
- * @param	bool	$accessCtrl		test access rights on directories, right by default
- * @return array					each key of the returned array is an id_directory
+ * @param	bool			$accessCtrl		test access rights on directories, right by default
+ * @param	int | false		$delegationid	filter the result by delegation
+ * @return array							each key of the returned array is an id_directory
  */
-function getUserDirectories($accessCtrl = true)
+function getUserDirectories($accessCtrl = true, $delegationid = false)
 	{
 	global $babDB;
 
 	$return = array();
 
-	$res = $babDB->db_query("
-		SELECT 
-			d.id, 
-			d.name, 
-			d.description, 
-			d.id_group 
-		FROM ".BAB_DB_DIRECTORIES_TBL." d 
-			LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
-			WHERE (d.id_group='0' OR g.id>'0') ORDER BY name
-		");
+	$req = "
+	SELECT 
+		d.id, 
+		d.name, 
+		d.description, 
+		d.id_group 
+	FROM ".BAB_DB_DIRECTORIES_TBL." d 
+		LEFT JOIN ".BAB_GROUPS_TBL." g ON g.id=d.id_group AND g.directory='Y' 
+		WHERE (d.id_group='0' OR g.id>'0') 
+	";
+
+	if ($delegationid) {
+		$req .= ' AND d.id_dgowner='.$babDB->quote($delegationid);
+	}
+
+	$req .= ' ORDER BY d.name';
+
+	$res = $babDB->db_query($req);
 
 	$return = array();
 		
@@ -974,19 +983,25 @@ function getUserDirectories($accessCtrl = true)
  *  <li>description</li>
  * </ul>
  *
- * @param	bool	$accessCtrl		test access rights on directories, right by default
- * @return array					each key of the returned array is an id_ldap_directory (same as the id key)
+ * @param	bool			$accessCtrl		test access rights on directories, right by default
+  * @param	int | false		$delegationid	filter the result by delegation
+ * @return array							each key of the returned array is an id_ldap_directory (same as the id key)
  */
-function getUserLdapDirectories($accessCtrl = true)
+function getUserLdapDirectories($accessCtrl = true, $delegationid = false)
 	{
 	global $babDB;
-
-
-	$res = $babDB->db_query('
+	
+	$req = '
 		SELECT id,name,description FROM 
 			'.BAB_LDAP_DIRECTORIES_TBL.' 
-		 ORDER BY name
-	');
+	';
+
+	if ($delegationid) {
+		$req .= ' WHERE id_dgowner='.$babDB->quote($delegationid);
+	}
+
+	$req .= ' ORDER BY name';
+	$res = $babDB->db_query($req);
 	
 	$return = array();
 
@@ -1006,6 +1021,55 @@ function getUserLdapDirectories($accessCtrl = true)
 
 
 
+/**
+ * Get all directories mixed
+ * For each directory, you will get an array with keys : 
+ * <ul>
+ * 	<li>name : name of the directory</li>
+ *  <li>description</li>
+ *  <li>url : for directory visualisation</li>
+ *  <li>uid : sitemap UID</li>
+ * </ul>
+ *
+ * @param	bool			$accessCtrl		test access rights on directories, right by default
+  * @param	int | false		$delegationid	filter the result by delegation
+ * @return array							
+ */
+function getUserDirectoriesMixed($accessCtrl = true, $delegationid = false) {
+
+	$directories 		= getUserDirectories(true, $delegationid);
+	$ldapdirectories 	= getUserLdapDirectories(true, $delegationid);
+
+	if( !$directories && !$ldapdirectories ) {
+		return array();
+	}
+
+	$dg_prefix = false === $delegationid ? 'bab' : 'babDG'.$delegationid;
+
+	$alldirectories = array();
+
+	foreach($directories as $id_directory => $dir) {
+		$alldirectories[] = array(
+			'name' 			=> $dir['name'],
+			'url'			=> $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id_directory,
+			'uid' 			=> $dg_prefix.'UserDbDirId'.$id_directory,
+			'description' 	=> $dir['description']
+		);
+	}
+
+	foreach($ldapdirectories as $id_directory => $dir) {
+		$alldirectories[] = array(
+			'name' 			=> $dir['name'],
+			'url'			=> $GLOBALS['babUrlScript'].'?tg=directory&idx=sldap&id='.$id_directory,
+			'uid' 			=> $dg_prefix.'UserLdapDirId'.$id_directory,
+			'description' 	=> $dir['description']
+		);
+	}
+
+	bab_sort::asort($alldirectories, 'name', bab_sort::CASE_INSENSITIVE);
+
+	return $alldirectories;
+}
 
 
 
