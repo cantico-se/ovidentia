@@ -1185,7 +1185,8 @@ function bab_getUserAddonsUrls() {
 				}
 			}
 		}
-	
+
+	return $addon_urls;
 }
 
 
@@ -1541,6 +1542,8 @@ function bab_sitemap_userSection(&$event) {
 				$item->setPosition(array('root', $id_delegation, $dg_prefix.'User'));
 				$item->copy_to_all_delegations = false;
 				$event->addFolder($item);
+
+			
 				
 
 				foreach($addon_urls as $arr) {
