@@ -1037,7 +1037,7 @@ class bab_inifile {
 			
 				if (false === $obj) {
 					$return[] = array(
-						'description'	=> bab_translate('Functionality').' : '.$name,
+						'description'	=> bab_translate('Library').' : '.$name,
 						'required'		=> $required,
 						'recommended'	=> $recommended,
 						'current'		=> bab_translate('Not installed or disabled'),
@@ -1045,7 +1045,7 @@ class bab_inifile {
 					);
 				} else {
 					$return[] = array(
-						'description'	=> bab_translate('Functionality').' : '.$name,
+						'description'	=> bab_translate('Library').' : '.$name,
 						'required'		=> $required,
 						'recommended'	=> $recommended,
 						'current'		=> bab_translate('Available'),

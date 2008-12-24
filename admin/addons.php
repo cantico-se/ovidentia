@@ -904,7 +904,7 @@ function functionalities() {
 
 	global $babBody;
 
-	$babBody->setTitle(bab_translate('Functionalities'));
+	$babBody->setTitle(bab_translate('Libraries administration'));
 	$babBody->babecho($tree->printTemplate());
 }
 	
@@ -991,7 +991,7 @@ switch($idx)
 		
 	case 'functionalities':
 		display_addons_menu();
-		$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
+		$babBody->addItemMenu("functionalities", bab_translate("Libraries administration"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		functionalities();
 		break;
 
@@ -1022,7 +1022,7 @@ switch($idx)
 		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 	
 		if (haveFunctionalities()) {
-			$babBody->addItemMenu("functionalities", bab_translate("Functionalities"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
+			$babBody->addItemMenu("functionalities", bab_translate("Libraries administration"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		}
 
 		break;
