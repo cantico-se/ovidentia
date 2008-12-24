@@ -236,7 +236,15 @@ function bab_fireEvent(&$event_obj) {
 					
 					if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
 						bab_debug('Missing addon : '.$arr['addon_name'].
-						"\nFor registered event : ".$arr['event_class_name']);
+						"\nFor registered event : ".$arr['event_class_name'].
+						"\nthe registration has been removed automatically"
+						);
+
+						bab_removeEventListener(
+							$arr['event_class_name'], 
+							$arr['function_name'], 
+							$arr['require_file']
+						);
 					}
 				}
 			} else {
