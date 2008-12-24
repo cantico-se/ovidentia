@@ -264,6 +264,22 @@ function bab_convertToDatabaseEncoding($sString)
 }
 
 
+/**
+ * return non breakin space
+ * @return string
+ */
+function bab_nbsp() 
+{
+	switch(bab_charset::getIso()) {
+		case 'UTF-8':
+			return chr(0xC2).chr(0xA0);
+		case 'ISO-8859-15':
+			return chr(160);
+		default:
+			return '-';
+	}
+}
+
 
 
 /**

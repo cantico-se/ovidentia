@@ -86,10 +86,8 @@ function groupCreateMod()
 			else
 				$id_parent = $tree->firstnode_info['id'];
 
-			$nbsp = chr(0xC2).chr(0xA0);
-			//$nbsp = chr(160);
 			
-			$this->groups = $tree->getGroups($id_parent, '%s '.$nbsp.' '.$nbsp.' ');
+			$this->groups = $tree->getGroups($id_parent, '%s '.bab_nbsp().' '.bab_nbsp().' ');
 
 			if (isset($this->groups[BAB_UNREGISTERED_GROUP]))
 				{

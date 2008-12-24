@@ -402,7 +402,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			}
 
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(NULL, '%s '.chr(160).' '.chr(160).' ');
+			$this->groups = $tree->getIndentedGroups(NULL);
 			
 			//bab_debug($this->groups);
 			

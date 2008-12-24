@@ -141,17 +141,8 @@ else  if (!empty($HTTP_POST_VARS))
 if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
 unset($babTmp);
 
-/*
-if (!empty($_SERVER))
-	$babTmp =& $_SERVER;
-else  if (!empty($HTTP_SERVER_VARS)) 
-	$babTmp =& $HTTP_SERVER_VARS;
-if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
-unset($babTmp);
-*/
 
 bab_unset($_REQUEST);
-// bab_unset($_SERVER);
 bab_unset($_COOKIE);
 
 
@@ -288,9 +279,6 @@ $babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
 				bab_translate("Friday"), bab_translate("Saturday"));
 
 
-$babSearchUrl = "abcdefgh";
-$babSearchItems = array ('a' => bab_translate("Articles"), 'b' => bab_translate("Forums"), 'c' => bab_translate("Faq"), 'd' => bab_translate("Notes"), 'e' => bab_translate("File manager"), 'f' => bab_translate("Contacts"), 'g' => bab_translate("Directories"), 'h' => bab_translate("Calendar"));  
-
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
 $babCssPath = bab_getCssUrl();
 class babDummy { var $duumy; }
@@ -335,13 +323,12 @@ function printBody()
 		var $message;
 		var $version;
 		var $search;
-		var $bsearch;
 		var $searchurl;
 		var $sContent;
 		 
 		function tpl()
 			{
-			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle, $babSearchUrl;
+			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle;
 			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
 			$this->babLogoLT	= "";
 			$this->babLogoRT	= "";
@@ -378,15 +365,8 @@ function printBody()
 				}
 
 			$this->search = bab_translate("Search");
-			if( !empty($babSearchUrl))
-				{
-				$this->searchurl = $GLOBALS['babUrlScript']."?tg=search&amp;pat=".$babSearchUrl;
-				$this->bsearch = 1;
-				}
-			else
-				{
-				$this->bsearch = 0;
-				}
+			$this->searchurl = $GLOBALS['babUrlScript'].'?tg=search';
+			
 
 			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '')
 				$this->babSlogan = $babSlogan;

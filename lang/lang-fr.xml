@@ -2704,4 +2704,5 @@
 <string id="The registration will not be effective while the LDAP authentication is active">L'inscription ne sera pas visible tant que l'authentification LDAP est active</string>
 <string id="Writable addons subfolders (%s)">Sous-répertoires des modules accessibles en écriture (%s)</string>
 <string id="There is an error in addon upgrade">Une erreur c'est produite lors de la mise à jour du module</string>
+<string id="Your search is empty">Votre recherche est vide</string>
 </fr>

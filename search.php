@@ -133,12 +133,51 @@ class bab_addonsSearch
 			}
 		}
 
+	/**
+	 * item definition for searching in an addon
+	 * @param	int		$id_addon
+	 * @return string
+	 */
+	public static function getItemFromAddon($id_addon) {
+		return 'addon/'.$id_addon;
+	}
+
+	/**
+	 * get addon from item or false if item is not an addon
+	 * @return int		id_addon
+	 */
+	public static function getAddonFromItem($item) {
+
+		if (empty($item)) {
+			return false;
+		}
+
+		if (false === mb_strpos($item, 'addon/')) {
+			return false;
+		}
+
+		$trail = mb_substr($item, mb_strlen('addon/'));
+
+		if (!is_numeric($trail)) {
+			$addon = bab_getAddonInfosInstance($trail);
+
+			if (false === $addon) {
+				return false;
+			}
+
+			return $addon->getId();
+		}
+
+		return (int) $trail;
+	}
+
+
 	function getmenuarray()
 		{
 		foreach ($this->tabLinkAddons as $key => $value)
-			$out['al-'.$key] = $value;
+			$out[self::getItemFromAddon($key)] = $value;
 		foreach ($this->tabSearchAddons as $key => $value)
-			if (!isset($out['al-'.$key])) $out['as-'.$key] = $value;
+			if (!isset($out[self::getItemFromAddon($key)])) $out[self::getItemFromAddon($key)] = $value;
 		
 		return isset($out) ? $out : array();
 		}
@@ -149,11 +188,11 @@ class bab_addonsSearch
 			{
 			return $this->tabSearchAddons;
 			}
-		elseif (mb_substr($item,0,3) == 'as-')
+		elseif ($id = self::getAddonFromItem($item))
 			{
-			$id = mb_substr($item,3);
-			if (!empty($id) && is_numeric($id) && isset($this->tabSearchAddons[$id]))
+			if (isset($this->tabSearchAddons[$id])) {
 				return array($id => $this->tabSearchAddons[$id]);	
+				}
 			}
 		}
 
@@ -207,9 +246,9 @@ function searchKeyword($item , $option = "OR")
 		function tempb($item ,$option )
 			{
 
-			global  $babDB,$babBody,$babSearchItems;
+			global  $babDB,$babBody;
 			$this->item = $item;
-			$this->fields = isset($_POST) ? $_POST : array();
+			$this->fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
 			$this->search = bab_translate("Search");
 			$this->all = bab_translate("All");
 			$this->in = bab_translate("in");
@@ -245,7 +284,7 @@ function searchKeyword($item , $option = "OR")
 			$this->all_txt = bab_translate("And");
 
 			$this->index = bab_searchEngineInfos();
-			$this->search_files_only = isset($_POST['search_files_only']);
+			$this->search_files_only = isset($_REQUEST['search_files_only']);
 
 			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
 			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
@@ -285,27 +324,11 @@ function searchKeyword($item , $option = "OR")
 				}
 
 			$this->busetags = false;
-			$restc = $babDB->db_query("select tt.id,tt.category, tt.id_cat, tc.title, tt.busetags from ".BAB_TOPICS_TBL." tt left join ".BAB_TOPICS_CATEGORIES_TBL." tc on tt.id_cat=tc.id order by tt.category, tc.title ");
-			$this->arrtopicscategories = array();
-			while( $row = $babDB->db_fetch_array($restc))
-				{
-				if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']))
-					{
-					$this->arrtopics[$row['id_cat']][] = array('id'=>$row['id'], 'category'=>$row['category']);
-					if(  $row['busetags'] == 'Y' )
-						{
-						$this->busetags = true;
-						}
-					if( !isset($this->arrtopicscategories[$row['id_cat']]))
-						{
-						$this->arrtopicscategories[$row['id_cat']] = $row['title'];
-						}
-					}
-				}
 
-			$this->counttopicscategories = count($this->arrtopicscategories);
+			$this->arrtopicscategories = bab_getArticleTopicsAsTextTree();
+			$this->busetags = bab_userTopicsUseTags();
 
-			if( $item == 'e') // Files
+			if( $item == 'files') // Files
 				{
 				$this->busetags = true;
 				}
@@ -351,7 +374,7 @@ function searchKeyword($item , $option = "OR")
 				$i++;
 				}
 
-			if ($item == 'h')
+			if ($item == 'calendars')
 				{
 				$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
 				
@@ -366,21 +389,21 @@ function searchKeyword($item , $option = "OR")
 				$this->countcal = count($this->rescal);
 				}
 
-			$this->acces['a'] = true;
-			$this->acces['b'] = false;
-			$this->acces['c'] = false;
-			$this->acces['d'] = false;
-			$this->acces['e'] = false;
-			$this->acces['f'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_contactsAccess();
-			$this->acces['g'] = $this->countdirs;
-			$this->acces['h'] = bab_calendarAccess();
+			$this->acces['articles'] = true;
+			$this->acces['forums'] = false;
+			$this->acces['faqs'] = false;
+			$this->acces['notes'] = false;
+			$this->acces['files'] = false;
+			$this->acces['contacts'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_contactsAccess();
+			$this->acces['directories'] = $this->countdirs;
+			$this->acces['calendars'] = bab_calendarAccess();
 
 			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL);
 			while( $row = $babDB->db_fetch_array($res))
 				{
 				if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
 					{
-					$this->acces['b'] = true;
+					$this->acces['forums'] = true;
 					break;
 					}
 				}
@@ -390,16 +413,28 @@ function searchKeyword($item , $option = "OR")
 				{
 				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
 					{
-					$this->acces['c'] = true;
+					$this->acces['faqs'] = true;
 					break;
 					}
 				}
-			$this->acces['d'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_notesAccess();
+			$this->acces['notes'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_notesAccess();
 			
 			if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
 			{
-				$this->acces['e'] = true;
+				$this->acces['files'] = true;
 			}
+
+			$babSearchItems = array (
+				'articles' => bab_translate("Articles"), 
+				'forums' => bab_translate("Forums"), 
+				'faqs' => bab_translate("Faq"), 
+				'notes' => bab_translate("Notes"), 
+				'files' => bab_translate("File manager"), 
+				'contacts' => bab_translate("Contacts"), 
+				'directories' => bab_translate("Directories"), 
+				'calendars' => bab_translate("Calendar")
+			);  
+
 
 			foreach ($babSearchItems as $key => $value)
 				{
@@ -419,38 +454,30 @@ function searchKeyword($item , $option = "OR")
 			return $flag;
 			}
 
-		function getnexttopic() 
-			{
-			static $i = 0;
-			if( $i < $this->counttopics)
-				{
-				$this->topicid = $this->arrtopics[$this->id_cat][$i]['id'];
-				$this->topictitle = bab_toHtml($this->arrtopics[$this->id_cat][$i]['category']);
-				$this->selected = isset($this->fields['a_topic']) ? $this->topicid == $this->fields['a_topic'] : '';
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i=0;
-				return false;
-				}
-			}
+
 		
 		function getnexttopiccategory() 
 			{
-			static $i = 0;
-			if (list($this->id_cat, $title) = each($this->arrtopicscategories))
+
+			if (list(,$arr) = each($this->arrtopicscategories))
 				{
-				$this->topiccategorytitle = bab_toHtml($title);
-				$this->counttopics = count($this->arrtopics[$this->id_cat]);
-				$i++;
+
+				$type = $arr['category'] ? 'category-' : 'topic-';
+				$value = $type.$arr['id_object'];
+
+				$this->option 	= bab_toHtml(str_repeat(bab_nbsp(),3).$arr['name']);
+				$this->value 	= bab_toHtml($value);
+
+				if (isset($this->fields['a_topiccategory'])) {
+					$this->selected = $value === $this->fields['a_topiccategory'];
+				} else {
+					$this->selected = false;
+				}
+
 				return true;
 				}
-			else
-				{
-				return false;
-				}
+
+			return false;
 			}
 
 		function getnextdir() 
@@ -730,17 +757,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->t_private = bab_translate("Private");
 
 			$navpos = (int) $navpos;
-			$this->fields = $_POST;
+			$this->fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
 
 
-			$this->like2 = trim($what);
-			$this->like = isset($this->fields['what2']) ? trim($this->fields['what2']) : '';
+			$this->primary_search = trim($what);
+			$this->secondary_search = isset($this->fields['what2']) ? trim($this->fields['what2']) : '';
 		
 
 			$this->option = &$option;
 
 			
-			$this->what = urlencode($what." ".$this->like);
+			$this->what = urlencode($what." ".$this->secondary_search);
 			$this->countart = 0;
 			$this->countfor = 0;
 			$this->countnot = 0;
@@ -753,10 +780,34 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->counttot = false;
 			$this->navitem = $navitem;
 			$this->navpos = $navpos;
+
+
+			if (
+				empty($item)  
+				|| !in_array($item, array(
+					'articles', 
+					'directories',
+					'calendars',
+					'files'
+					)
+				)
+				&& empty($this->primary_search)
+				&& empty($this->secondary_search)
+				) {
+
+				$babBody->addError(bab_translate('Your search is empty'));
+				return;
+			}
+
+
+
+
+
+
 			
 
 // ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
-			if( empty($item) || $item == "a")
+			if( empty($item) || $item == 'articles')
 				{
 				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
 				$babDB->db_query($req);
@@ -784,10 +835,34 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						}
 					}
 
-				if (isset($this->fields['a_topic']) && trim($this->fields['a_topic']) != "")
+				if (isset($this->fields['a_topiccategory']) && trim($this->fields['a_topiccategory']) != "")
 					{
-					$crit_art .= " and id_topic = ".$babDB->quote($this->fields['a_topic']);
-					$crit_com .= " and C.id_topic = ".$babDB->quote($this->fields['a_topic']);
+
+					$id_category = false;
+					$id_topic = false;
+
+					if (false !== mb_strpos($this->fields['a_topiccategory'], 'category-')) {
+						$id_category = (int) mb_substr($this->fields['a_topiccategory'], strlen('category-'));
+						}
+
+					if (false !== mb_strpos($this->fields['a_topiccategory'], 'topic-')) {
+						$id_topic = (int) mb_substr($this->fields['a_topiccategory'], strlen('topic-'));
+						}
+
+					if ($id_topic) {
+						$crit_art .= " and id_topic = ".$babDB->quote($id_topic);
+						$crit_com .= " and C.id_topic = ".$babDB->quote($id_topic);
+						}
+
+
+					if ($id_category) {
+						
+						$topics = bab_getTopicsFromCategory($id_category);
+
+						$crit_art .= " and id_topic IN(".$babDB->quote($topics).')';
+						$crit_com .= " and C.id_topic IN(".$babDB->quote($topics).')';
+						}
+
 					}
 
 				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
@@ -835,7 +910,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 									$maptags[$rr['tag_name']][] = $rr['id_art'];
 									$arrids[] = $rr['id_art'];
 									}
-								$optags = intval(bab_pp('optags', 1));
+								$optags = intval(bab_rp('optags', 1));
 								if( $optags == 0 && count($maptags))
 									{
 									list(,$arrids) = each($maptags);
@@ -857,15 +932,15 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 
-					if (!isset($_POST['search_files_only'])) {
+					if (!isset($_REQUEST['search_files_only'])) {
 
-						if ($this->like || $this->like2)
+						if ($this->secondary_search || $this->primary_search)
 							$reqsup = "AND (
-						".finder($this->like,"title",$option,$this->like2)." OR 
-						".finder($this->like,"head",$option,$this->like2)." OR 
-						".finder($this->like,"body",$option,$this->like2)." OR 
-						".finder($this->like,"f.name",$option,$this->like2)." OR 
-						".finder($this->like,"f.description",$option,$this->like2)." 
+						".finder($this->secondary_search,"title",$option,$this->primary_search)." OR 
+						".finder($this->secondary_search,"head",$option,$this->primary_search)." OR 
+						".finder($this->secondary_search,"body",$option,$this->primary_search)." OR 
+						".finder($this->secondary_search,"f.name",$option,$this->primary_search)." OR 
+						".finder($this->secondary_search,"f.description",$option,$this->primary_search)." 
 						)";
 						
 						$req = "
@@ -903,7 +978,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 					if ($engine = bab_searchEngineInfos()) {
 						if (!$engine['indexes']['bab_art_files']['index_disabled']) {
-							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_art_files');
+							$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_art_files');
 
 
 							$file_path = array();
@@ -965,8 +1040,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if (!empty($incom))
 					{
-					if ($this->like || $this->like2)
-						$reqsup = "and (".finder($this->like,"subject",$option,$this->like2)." or ".finder($this->like,"message",$option,$this->like2).")";
+					if ($this->secondary_search || $this->primary_search)
+						$reqsup = "and (".finder($this->secondary_search,"subject",$option,$this->primary_search)." or ".finder($this->secondary_search,"message",$option,$this->primary_search).")";
 
 					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by ".$babDB->db_escape_string($order);
 					$babDB->db_query($req);
@@ -983,22 +1058,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$this->nbresult += $nbrows;
 
-				if ($navitem != "a") $navpos=0;
+				if ($navitem != 'articles') $navpos=0;
 				$req = "select * from artresults ORDER BY ".$babDB->db_escape_string($order)." limit ".$navpos.", ".$babLimit;
 
 				$this->resart = $babDB->db_query($req);
 				$this->countart = $babDB->db_num_rows($this->resart);
 				if( !$this->counttot && $this->countart > 0 )
 					$this->counttot = true;
-				$this->navbar_a = navbar($babLimit,$nbrows,"a",$navpos);
+				$this->navbar_a = navbar($babLimit,$nbrows,'articles',$navpos);
 
 				$navpos=$this->navpos;
-				if ($navitem != "ac") $navpos=0;
+				if ($navitem != 'ac') $navpos=0;
 				$req = "select count(*) from comresults";
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 
-				$this->navbar_ac = navbar($babLimit,$nbrows,"ac",$navpos);
+				$this->navbar_ac = navbar($babLimit,$nbrows,'ac',$navpos);
 				$req = "select * from comresults limit ".$navpos.", ".$babLimit;
 
 				$this->rescom = $babDB->db_query($req);
@@ -1010,7 +1085,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 			// ------------------------------------------------- POSTS
-			if( empty($item) || $item == "b")
+			if( empty($item) || $item == 'forums')
 				{
 				$req = "create temporary table forresults select id, id_thread, subject topic, id id_topic, subject title,message, author, 'dd-mm-yyyy' date from ".BAB_POSTS_TBL." where 0";
 				$babDB->db_query($req);
@@ -1031,8 +1106,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							}
 						}
 					}
-				$temp1 = finder($this->like,"b.subject",$option,$this->like2);
-				$temp2 = finder($this->like,"b.message",$option,$this->like2);
+				$temp1 = finder($this->secondary_search,"b.subject",$option,$this->primary_search);
+				$temp2 = finder($this->secondary_search,"b.message",$option,$this->primary_search);
 				if ($temp1 != "" && $temp2 != "")
 					$plus = "( ".$temp1." or ".$temp2.") and";
 				else $plus = "";
@@ -1069,7 +1144,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				if ($idthreads != "" && $engine = bab_searchEngineInfos()) {
 					if (!$engine['indexes']['bab_forumsfiles']['index_disabled']) {
-						$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_forumsfiles');
+						$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_forumsfiles');
 
 
 						$file_path = array();
@@ -1133,8 +1208,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$navpos = $this->navpos;
-				if ($navitem != "b") $navpos = 0;
-				$this->navbar_b = navbar($babLimit,$nbrows,"b",$navpos);
+				if ($navitem != 'forums') $navpos = 0;
+				$this->navbar_b = navbar($babLimit,$nbrows,'forums',$navpos);
 			
 				$req = "select * from forresults ORDER BY ".$babDB->db_escape_string($order)." LIMIT ".$navpos.", ".$babLimit;
 				$this->resfor = $babDB->db_query($req);
@@ -1145,7 +1220,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 			// ---------------------------------------------- FAQ
-			if( empty($item) || $item == "c")
+			if( empty($item) || $item == 'faqs')
 				{
 				$req = "create temporary table faqresults select id, idcat, question title, response, question topic from ".BAB_FAQQR_TBL." where 0";
 				$babDB->db_query($req);
@@ -1162,8 +1237,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						$idcat .= $row['id'].",";
 						}
 					}
-				$temp1 = finder($this->like,"question",$option,$this->like2);
-				$temp2 = finder($this->like,"response",$option,$this->like2);
+				$temp1 = finder($this->secondary_search,"question",$option,$this->primary_search);
+				$temp2 = finder($this->secondary_search,"response",$option,$this->primary_search);
 				if ($temp1 != "" && $temp2 != "")
 					$plus = "( ".$temp1." or ".$temp2.") and";
 				else $plus = "";
@@ -1178,8 +1253,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$navpos = $this->navpos;
-				if ($navitem != "c") $navpos = 0;
-				$this->navbar_c = navbar($babLimit,$nbrows,"c",$navpos);
+				if ($navitem != 'faqs') $navpos = 0;
+				$this->navbar_c = navbar($babLimit,$nbrows,'faqs',$navpos);
 
 				$req = "select * from faqresults limit ".$navpos.", ".$babLimit;
 				$this->resfaq = $babDB->db_query($req);
@@ -1190,17 +1265,17 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 			// ------------------------------------------------------------------------ PERSONAL NOTES
-			if( (empty($item) || $item == "d") && !empty($BAB_SESS_USERID))
+			if( (empty($item) || $item == 'notes') && !empty($BAB_SESS_USERID))
 				{
 
-				$plus = finder($this->like,"content",$option,$this->like2);
+				$plus = finder($this->secondary_search,"content",$option,$this->primary_search);
 				if ($plus != "") $plus = "($plus) and";
 				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID);
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$navpos = $this->navpos;
-				if ($navitem != "d") $navpos = 0;
-				$this->navbar_d = navbar($babLimit,$nbrows,"d",$navpos);
+				if ($navitem != 'notes') $navpos = 0;
+				$this->navbar_d = navbar($babLimit,$nbrows,'notes',$navpos);
 
 				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID)." limit ".$navpos.", ".$babLimit;
 				$this->resnot = $babDB->db_query($req);
@@ -1211,7 +1286,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->nbresult += $nbrows;
 
 			// ------------------------------------- FILES
-			if( empty($item) || $item == "e")
+			if( empty($item) || $item == 'files')
 				{
 
 				define('BAB_TYPE_MATCH_DATABASE'	, 1);
@@ -1302,12 +1377,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				}
 
 				$plus = "";
-				$temp1 = finder($this->like, "F.name",		$option,$this->like2);
-				$temp2 = finder($this->like, "description", $option,$this->like2);
-				$temp3 = finder($this->like, "F.path",		$option,$this->like2);
-				$temp4 = finder($this->like, "R.folder",	$option,$this->like2);
-				$temp5 = finder($this->like, "M.fvalue",	$option,$this->like2);
-				//$temp6 = finder($this->like, "tag_name",	$option,$this->like2);
+				$temp1 = finder($this->secondary_search, "F.name",		$option,$this->primary_search);
+				$temp2 = finder($this->secondary_search, "description", $option,$this->primary_search);
+				$temp3 = finder($this->secondary_search, "F.path",		$option,$this->primary_search);
+				$temp4 = finder($this->secondary_search, "R.folder",	$option,$this->primary_search);
+				$temp5 = finder($this->secondary_search, "M.fvalue",	$option,$this->primary_search);
+				//$temp6 = finder($this->secondary_search, "tag_name",	$option,$this->primary_search);
 				$this->fields['tagsname'] = isset($this->fields['tagsname'])?trim($this->fields['tagsname']):'';
 				$tidfiles = array();
 				if( !empty($this->fields['tagsname']))
@@ -1333,7 +1408,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$maptags[$rr['tag_name']][] = $rr['id_file'];
 							$tidfiles[] = $rr['id_file'];
 							}
-						$optags = intval(bab_pp('optags', 1));
+						$optags = intval(bab_rp('optags', 1));
 						if( $optags == 0 && count($maptags))
 							{
 							list(,$tidfiles) = each($maptags);
@@ -1384,7 +1459,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					if ($engine = bab_searchEngineInfos()) { 
 						if (!$engine['indexes']['bab_files']['index_disabled']) {
 
-							$found_files = bab_searchIndexedFiles($this->like2, $this->like, $option, 'bab_files');
+							$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_files');
 							$current_version = array();
 							$old_version = array();
 							foreach($found_files as $arr) {
@@ -1565,12 +1640,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 
 				$navpos = $this->navpos;
-				if ($navitem != "e") $navpos = 0;
-				$this->navbar_e = navbar($babLimit,$nbrows,"e",$navpos);
+				if ($navitem != 'files') $navpos = 0;
+				$this->navbar_e = navbar($babLimit,$nbrows,'files',$navpos);
 
 				$req = "SELECT * FROM filresults ";
 
-				if (isset($_POST['index_priority'])) {
+				if (false !== bab_rp('index_priority',false)) {
 					$req .= " ORDER BY type_match DESC,".$babDB->db_escape_string($order);
 				} else {
 					$req .= " ORDER BY ".$babDB->db_escape_string($order);
@@ -1589,7 +1664,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 			
 			// ------------------------------------------------ PERSONAL CONTACTS
-			if( empty($item) || $item == "f")
+			if( empty($item) || $item == 'contacts')
 				{
 				$req = "create temporary table conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where 0";
 				$babDB->db_query($req);
@@ -1597,13 +1672,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$babDB->db_query($req);
 
 				$plus = "";
-				$temp1 = finder($this->like,"firstname",$option,$this->like2);
-				$temp2 = finder($this->like,"lastname",$option,$this->like2);
-				$temp3 = finder($this->like,"email",$option,$this->like2);
-				$temp4 = finder($this->like,"compagny",$option,$this->like2);
-				$temp5 = finder($this->like,"jobtitle",$option,$this->like2);
-				$temp6 = finder($this->like,"businessaddress",$option,$this->like2);
-				$temp7 = finder($this->like,"homeaddress",$option,$this->like2);
+				$temp1 = finder($this->secondary_search,"firstname",$option,$this->primary_search);
+				$temp2 = finder($this->secondary_search,"lastname",$option,$this->primary_search);
+				$temp3 = finder($this->secondary_search,"email",$option,$this->primary_search);
+				$temp4 = finder($this->secondary_search,"compagny",$option,$this->primary_search);
+				$temp5 = finder($this->secondary_search,"jobtitle",$option,$this->primary_search);
+				$temp6 = finder($this->secondary_search,"businessaddress",$option,$this->primary_search);
+				$temp7 = finder($this->secondary_search,"homeaddress",$option,$this->primary_search);
 
 				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "" && $temp6 != "" && $temp7 != "")
 					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6." or ".$temp7.") and";
@@ -1616,8 +1691,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$navpos = $this->navpos;
-				if ($navitem != "f") $navpos = 0;
-				$this->navbar_f = navbar($babLimit,$nbrows,"f",$navpos);
+				if ($navitem != 'contacts') $navpos = 0;
+				$this->navbar_f = navbar($babLimit,$nbrows,'contacts',$navpos);
 
 				$req = "select * from conresults limit ".$navpos.", ".$babLimit;
 				$this->rescon = $babDB->db_query($req);
@@ -1629,7 +1704,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			// --------------------------------------------- DIRECTORIES
 			$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
 			
-			if( count($arrview) && (empty($item) || $item == "g"))
+			if( count($arrview) && (empty($item) || $item == 'directories'))
 				{
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
 				
@@ -1752,7 +1827,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 
 				// recherche dans les champs supplémentaires avec la recherche principale + recherche avancée
-				$additional = finder($this->like,'t.field_value',$this->option,$this->like2);
+				$additional = finder($this->secondary_search,'t.field_value',$this->option,$this->primary_search);
 				if (!empty($additional))
 					{
 					if( !empty($crit_fields))
@@ -1800,7 +1875,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				
 
 				$req = "SELECT 
-					e.id, ABS(STRCMP(e.sn,". $babDB->quote($this->like2) .")) AS relevance
+					e.id, ABS(STRCMP(e.sn,". $babDB->quote($this->primary_search) .")) AS relevance
 				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
 				LEFT JOIN 
 						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
@@ -1830,8 +1905,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$nbrows = $babDB->db_num_rows($res);
 
 				$navpos = $this->navpos;
-				if ($navitem != "g") $navpos = 0;
-				$this->navbar_g = navbar($babLimit,$nbrows,"g",$navpos);
+				if ($navitem != 'directories') $navpos = 0;
+				$this->navbar_g = navbar($babLimit,$nbrows,'directories',$navpos);
 				$tmp = explode(" ",$order);
 				if (in_array("`title`",$tmp)) $order_tmp = "order by relevance ASC, sn ASC, givenname ASC";
 				else $order_tmp = "order by ".$babDB->db_escape_string($order);
@@ -1853,7 +1928,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		
 		// --------------------------------------------- AGENDA
 
-		if( empty($item) || $item == "h")
+		if( empty($item) || $item == 'calendars')
 				{
 				$crit_date = '';
 				$select_idcal = '';
@@ -1898,14 +1973,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				foreach ($tmp as $arr)
 					$list_id_cal[] = $arr['idcal'];
 				
-				if ($this->like || $this->like2)
+				if ($this->secondary_search || $this->primary_search)
 					{
 					$reqsup = "(ceo.id_cal=".$babDB->quote(bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']))." OR ce.bprivate='N') AND (".
-						finder($this->like,"ce.title",$option,$this->like2)." or ".
-						finder($this->like,"ce.description",$option,$this->like2)." or ".
-						finder($this->like,"cct.description",$option,$this->like2)." or ".
-						finder($this->like,"cct.name",$option,$this->like2)." or ".
-						finder($this->like,"ce.location",$option,$this->like2)
+						finder($this->secondary_search,"ce.title",$option,$this->primary_search)." or ".
+						finder($this->secondary_search,"ce.description",$option,$this->primary_search)." or ".
+						finder($this->secondary_search,"cct.description",$option,$this->primary_search)." or ".
+						finder($this->secondary_search,"cct.name",$option,$this->primary_search)." or ".
+						finder($this->secondary_search,"ce.location",$option,$this->primary_search)
 						.")";
 					}
 				else 
@@ -1948,8 +2023,8 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$res = $babDB->db_query($req);
 				list($nbrows) = $babDB->db_fetch_row($res);
 				$navpos = $this->navpos;
-				if ($navitem != "h") $navpos = 0;
-				$this->navbar_h = navbar($babLimit,$nbrows,"h",$navpos);
+				if ($navitem != 'calendars') $navpos = 0;
+				$this->navbar_h = navbar($babLimit,$nbrows,'calendars',$navpos);
 
 				$req = "select * from ageresults limit ".$navpos.", ".$babLimit;
 				$this->resage = $babDB->db_query($req);
@@ -1965,7 +2040,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->addons = new bab_addonsSearch;
 			$this->addonSearchArray = $this->addons->getsearcharray($item);
 			$this->countaddons = count($this->addonSearchArray);
-			$this->addons->setSearchParam($this->like2, $this->like, $option, $babLimit);
+			$this->addons->setSearchParam($this->primary_search, $this->secondary_search, $option, $babLimit);
 
 			$this->addonsdata = array();
 			$first_addon_searchresults = array();
@@ -1975,13 +2050,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					if (isset($addon_id) && is_numeric($addon_id))
 						{
-						$navpos = $this->navitem == 'as-'.$addon_id ? $this->navpos : 0;
+						$navpos = $this->navitem == bab_addonsSearch::getItemFromAddon($addon_id) ? $this->navpos : 0;
 						$this->addons->pos[$addon_id] = $navpos;
 
 						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
 						$nbrows = $first_addon_searchresults[$addon_id][1];
 						
-						$navbar_i = navbar($GLOBALS['babLimit'],$nbrows,'as-'.$addon_id,$navpos);
+						$navbar_i = navbar($GLOBALS['babLimit'], $nbrows, bab_addonsSearch::getItemFromAddon($addon_id),$navpos);
 						if ($nbrows > 0)
 							{
 							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i, $first_addon_searchresults);
@@ -2025,7 +2100,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			{
 			global $babDB;
 
-			if (!$this->like && !$this->like2)
+			if (!$this->secondary_search && !$this->primary_search)
 				{
 				return '';
 				}
@@ -2041,7 +2116,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 							$like .= " or ";
 						}
 						
-						$like .= finder($this->like, 'e.'.$colname, $this->option, $this->like2);
+						$like .= finder($this->secondary_search, 'e.'.$colname, $this->option, $this->primary_search);
 					}
 				}
 			$like .= ") ";
@@ -2389,6 +2464,11 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 		function getnextaddon()
 			{
+			if (!isset($this->addonsdata)) {
+				return false;
+			}
+
+
 			return list($key,list($this->addon_id, $this->addon_title, $this->navbar_i, $this->first_addon_searchresults)) = each($this->addonsdata);
 			}
 
@@ -3087,12 +3167,25 @@ function viewDirectoryUser($id, $what)
 }
  
 
-function goto_addon()
+/**
+ * Redirect to addon if necessary
+ * @param	string	$item
+ */
+function bab_gotoAddonIfRedirect($item)
 	{
+
+	$id_addon = bab_addonsSearch::getAddonFromItem($item);
+	
+	if (false === $id_addon) {
+		return false;
+	}
+
 	$addons = new bab_addonsSearch;
-	$id = mb_substr($_POST['item'],3);
-	if (!empty($id) && is_numeric($id) && isset($addons->tabLinkAddons[$id]))
+
+	if (isset($addons->tabLinkAddons[$id_addon])) {
 		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id."/".$addons->querystring[$id]);
+		exit;
+		}
 	}
 
 
@@ -3117,13 +3210,10 @@ if((!isset($field)) || ($field==""))
 if((!isset($order)) || ($order == ""))
 	$order = " ASC";
 
-if((!isset($pat)) || ($pat == ""))
-	$pat = $GLOBALS['babSearchUrl'];
 
-if (isset($_POST['item']) && mb_substr($_POST['item'],0,3) == 'al-')
-	{
-	goto_addon();
-	}
+
+bab_gotoAddonIfRedirect(bab_rp('item'));
+
 
 
 
@@ -3135,37 +3225,37 @@ switch($idx)
 		browseArticlesAuthors($pos, $cb);
 		exit;
 		break;
-	case "a":
+	case 'articles':
 		viewArticle($id, $w);
 		exit;
 		break;
 
-	case "ac":
+	case 'ac':
 		viewComment($idt, $ida, $idc, $w);
 		exit;
 		break;
 
-	case "b":
+	case 'forums':
 		viewPost($idt, $idp, $w);
 		exit;
 		break;
 
-	case "c":
+	case 'faqs':
 		viewQuestion($idc, $idq, $w);
 		exit;
 		break;
 
-	case "e":
+	case 'files':
 		viewFile($id, $w);
 		exit;
 		break;
 
-	case "f":
+	case 'contacts':
 		viewContact($id, $w);
 		exit;
 		break;
 
-	case "g":
+	case 'directories':
 		viewDirectoryUser($id, $w);
 		exit;
 		break;

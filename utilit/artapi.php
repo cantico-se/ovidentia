@@ -604,5 +604,3 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false) {
 	return false;
 }
 
-
-

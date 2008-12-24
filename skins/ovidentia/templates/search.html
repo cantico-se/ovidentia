@@ -1,7 +1,7 @@
 <!--#begin search -->
 <script type="text/javascript">
 <!--
-<!--#if item "== a" --><!-- ARTICLES -->
+<!--#if item "== articles" --><!-- ARTICLES -->
 function validateNum(field) 
 	{
 	var valid = "0123456789"
@@ -14,7 +14,7 @@ function validateNum(field)
 	}
 
 <!--#endif item -->
-<!--#if item "== g" --><!-- DIRECTORIES -->
+<!--#if item "== directories" --><!-- DIRECTORIES -->
 function setselects(obj) 
 	{
 	var id = 0;
@@ -86,15 +86,6 @@ function prepareSQL()
 	{
 	var sf = document.forms.searchForm;
 	while(''+sf.what.value.charAt(sf.what.value.length-1)==' ')sf.what.value=sf.what.value.substring(0,sf.what.value.length-1);
-	<!--#if item "!= a" -->
-	<!--#if item "!= g" -->
-	<!--#if item "!= h" -->
-	<!--#if item "!= e" -->
-	if (sf.what.value.length < 1 && sf.what2.value.length < 1) return false;
-	<!--#endif item -->
-	<!--#endif item -->
-	<!--#endif item -->
-	<!--#endif item -->
 	}
 
 function cleanFields() 
@@ -169,7 +160,7 @@ function afterJs(day, month, year)
 	eval("sf.after_memo.value='"+day+"/"+month+"/"+year+"'");
 	}
 
-<!--#if item "== a" -->
+<!--#if item "== articles" -->
 function cleanAuthor() {
 	var sf = document.forms.searchForm;
 	sf.a_authorid.value='';
@@ -210,9 +201,8 @@ else
 -->
 </script>
 
-<form name="searchForm" method="post" action="{ babPhpSelf }" onsubmit="return (prepareSQL())">
+<form name="searchForm" method="get" action="{ babPhpSelf }" onsubmit="return (prepareSQL())">
 <input type="hidden" name="tg" value="search" />
-<input type="hidden" name="pat" value="{ pat }" />
 <input type="hidden" name="idx" value="find" />
 <input type="hidden" name="navpos" value="0" />
 <input type="hidden" name="navitem" value="" />
@@ -263,7 +253,7 @@ else
 </tr>
 </table>
 <br />
-<!--#if item "== a" --><!-- ARTICLES -->
+<!--#if item "== articles" --><!-- ARTICLES -->
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
@@ -271,17 +261,14 @@ else
 	<tr>
 	<td align="right">{ Topic }</td>
 	<td>
-		<select name="a_topic">
+		<select name="a_topiccategory">
 			<option value="">{ all }</option>
 		  <!--#in getnexttopiccategory -->
-			<optgroup class="usr" label="{ topiccategorytitle }">
-		  <!--#in getnexttopic -->
 			<!--#if selected -->
-				<option value="{ topicid }" selected="selected">{ topictitle }</option>
+				<option value="{ value }" selected="selected">{ option }</option>
 			<!--#else selected -->
-				<option value="{ topicid }">{ topictitle }</option>
+				<option value="{ value }">{ option }</option>
 			<!--#endif selected -->
-		  <!--#endin getnexttopic -->
 		  <!--#endin getnexttopiccategory -->
 		</select>
 	</td></tr>
@@ -349,7 +336,7 @@ else
 </tr>
 </table>
 <!--#endif item -->
-<!--#if item "== g" --><!-- ANNUAIRES -->
+<!--#if item "== directories" --><!-- ANNUAIRES -->
 <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
@@ -387,7 +374,7 @@ setselects(document.forms.searchForm.g_directory);
 -->
 </script>
 <!--#endif item -->
-<!--#if item "== h" --><!-- CALENDAR -->
+<!--#if item "== calendars" --><!-- CALENDAR -->
 <table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td align="left">
@@ -428,7 +415,7 @@ setselects(document.forms.searchForm.g_directory);
 </table>
 <!--#endif item -->
 
-<!--#if item "== e" --><!-- FILES -->
+<!--#if item "== files" --><!-- FILES -->
 <table  width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>

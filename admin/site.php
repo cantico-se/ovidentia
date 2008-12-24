@@ -1176,7 +1176,7 @@ function siteRegistration($id)
 			include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 			$tree = new bab_grptree();
-			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP, '%s '.chr(160).' '.chr(160).' ');
+			$this->groups = $tree->getIndentedGroups(BAB_REGISTERED_GROUP);
 			unset($this->groups[BAB_ADMINISTRATOR_GROUP]);
 
 			$this->arrsite = $babDB->db_fetch_array($babDB->db_query("select authentification, registration, email_confirm, display_disclaimer, idgroup from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'"));
