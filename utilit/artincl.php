@@ -141,8 +141,7 @@ class bab_PublicationPathsEnv
 	
 	
 	/**
-	 * Returns the path to the image(s) associated with article, 
-	 * the path is based on the identifier of delegation.
+	 * Returns the temp path used by the publication 
 	 * The path is terminated with a '/'. 
 	 *
 	 * @return string The temp path used by the publication
