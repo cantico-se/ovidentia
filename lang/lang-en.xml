@@ -1578,4 +1578,7 @@
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed">The database could not be converted from %fromCharset% to %toCharset% because the command SHOW TABLES has failed</string>
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed">The database could not be converted from %fromCharset% to %toCharset% because the command ALTER TABLE on table %table% has failed</string>
 <string id="The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed">The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed</string>
+<string id="The directory %directory% does not exits">The directory %directory% does not exits</string>
+<string id="The directory %directory% is not writeable">The directory %directory% is not writeable</string>
+<string id="The directory %directory% is not readable">The directory %directory% is not readable</string>
 </en>
