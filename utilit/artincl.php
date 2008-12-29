@@ -24,8 +24,200 @@
 /**
 * @internal SEC1 NA 08/12/2006 FULL
 */
-include_once 'base.php';
-include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
+require_once 'base.php';
+require_once dirname(__FILE__) . '/artapi.php';
+
+
+
+/**
+ * Helper class that contain the path
+ * used in publication according to
+ * the delegation identifier
+ *
+ */
+class bab_PublicationPathsEnv
+{
+	private $sUploadPath		= null;
+	private $sRootImgPath		= null;
+	private $sCategoriesImgPath	= null;
+	private $sTopicsImgPath		= null;
+	private $sArticlesImgPath	= null;
+	private $sTempPath			= null;
+	private $iIdDelegation		= null;
+	private $aError				= array();
+
+	
+	public function __construct()
+	{
+		
+	}
+	
+	/**
+	 * Set up all the path
+	 *
+	 * @param int $iIdDelegation The delegation identifier
+	 * 
+	 * @return bool	True on success, false on error. To get the error call the method getError()
+	 */
+	public function setEnv($iIdDelegation)
+	{
+		$this->iIdDelegation	= (int) $iIdDelegation;
+		$this->sUploadPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+		
+		if(!$this->checkDirAccess($this->sUploadPath))
+		{
+			return false;
+		}		
+		
+		$aPath = array(
+			'root'			=> 'articles',
+			'categories'	=> 'articles/DG' . $this->iIdDelegation . '/categoriesImg',
+			'topics'		=> 'articles/DG' . $this->iIdDelegation . '/topicsImg',
+			'articles'		=> 'articles/DG' . $this->iIdDelegation . '/articlesImg',
+			'temp'			=> 'articles/temp',
+		);
+		
+		foreach($aPath as $sKey => $sRelativePath)
+		{
+			BAB_FmFolderHelper::makeDirectory($this->sUploadPath, $sRelativePath);
+		}
+		
+		$this->sRootImgPath			= $this->sUploadPath . $aPath['root'] . '/';
+		$this->sCategoriesImgPath	= $this->sUploadPath . $aPath['categories'] . '/';
+		$this->sTopicsImgPath		= $this->sUploadPath . $aPath['topics'] . '/';
+		$this->sArticlesImgPath		= $this->sUploadPath . $aPath['articles'] . '/';
+		$this->sTempPath			= $this->sUploadPath . $aPath['temp'] . '/';
+		
+		$this->checkDirAccess($this->sRootImgPath);
+		$this->checkDirAccess($this->sCategoriesImgPath);
+		$this->checkDirAccess($this->sTopicsImgPath);
+		$this->checkDirAccess($this->sArticlesImgPath);
+		$this->checkDirAccess($this->sTempPath);
+		
+		return (0 === count($this->aError));
+	}
+	
+	/**
+	 * Returns the path to the image(s) associated with category, 
+	 * the path is based on the identifier of delegation.
+	 * The path is terminated with a '/'. 
+	 *
+	 * @param int $iIdCategory The identifier of the category to which the path must be returned 
+	 * 
+	 * @return string The path to the image of the category
+	 */
+	public function getCategoryImgPath($iIdCategory)
+	{
+		return $this->sCategoriesImgPath . $iIdCategory . '/';
+	}
+	
+	/**
+	 * Returns the path to the image(s) associated with topic, 
+	 * the path is based on the identifier of delegation.
+	 * The path is terminated with a '/'. 
+	 *
+	 * @param int $iIdTopic The identifier of the topic to which the path must be returned 
+	 * 
+	 * @return string The path to the image of the topic
+	 */
+	public function getTopicImgPath($iIdTopic)
+	{
+		return $this->sTopicsImgPath . $iIdTopic . '/';
+	}
+	
+	/**
+	 * Returns the path to the image(s) associated with article, 
+	 * the path is based on the identifier of delegation.
+	 * The path is terminated with a '/'. 
+	 *
+	 * @param int $iIdCategory The identifier of the article to which the path must be returned 
+	 * 
+	 * @return string The path to the image of the article
+	 */
+	public function getArticleImgPath($iIdArticle)
+	{
+		return $this->sTopicsImgPath . $iIdArticle . '/';
+	}
+	
+	
+	/**
+	 * Returns the path to the image(s) associated with article, 
+	 * the path is based on the identifier of delegation.
+	 * The path is terminated with a '/'. 
+	 *
+	 * @return string The temp path used by the publication
+	 */
+	public function getTempPath()
+	{
+		return $this->sTempPath;
+	}
+	
+	/**
+	 * Return a value that indicate if the directory is accessible.
+	 * To be accessible the $sFullPathName must be a directory,
+	 * must be writable, must be readable.
+	 *
+	 * @param string $sFullPathName The full path name of the directory
+	 * 
+	 * @return bool	True on success, false on error. To get the error call the method getError()
+	 */
+	private function checkDirAccess($sFullPathName)
+	{
+		$Success = true;
+		
+		if(!is_dir($sFullPathName))
+		{
+			$this->addError(sprintf(bab_translate("The directory %s does not exits"), $sFullPathName));
+			return false;			
+		}
+		
+		if(!is_writable($sFullPathName))
+		{
+			$this->addError(sprintf(bab_translate("The directory %s is not writeable"), $sFullPathName));
+			$Success = false;
+		}
+		
+		if(!is_readable($sFullPathName))
+		{
+			$this->addError(sprintf(bab_translate("The directory %s is not readable"), $sFullPathName));
+			$Success = false;
+		}
+		
+		return $Success;
+	}
+	
+	/**
+	 * Add an error
+	 *
+	 * @param string $sMessage The error message
+	 */
+	private function addError($sMessage)
+	{
+		$this->aError[] = $sMessage;
+	}
+	
+	/**
+	 * Return a value that indicate if there is error
+	 *
+	 * @return bool True if there is error, false otherwise
+	 */
+	public function haveError()
+	{
+		return (0 !== count($this->aError));
+	}
+	
+	/**
+	 * Return an array of error string
+	 *
+	 * @return Array The array of error string
+	 */
+	public function getError()
+	{
+		return $this->aError;
+	}
+}
+
+
 
 function bab_deleteDraftFiles($idart)
 {
