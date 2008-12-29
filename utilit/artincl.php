@@ -162,23 +162,25 @@ class bab_PublicationPathsEnv
 	 */
 	private function checkDirAccess($sFullPathName)
 	{
-		$Success = true;
+		$Success	= true;
+		$aSearch	= array('%directory%');
+		$aReplace	= array($sFullPathName);
 		
 		if(!is_dir($sFullPathName))
 		{
-			$this->addError(sprintf(bab_translate("The directory %s does not exits"), $sFullPathName));
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% does not exits")));
 			return false;			
 		}
 		
 		if(!is_writable($sFullPathName))
 		{
-			$this->addError(sprintf(bab_translate("The directory %s is not writeable"), $sFullPathName));
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% is not writeable")));
 			$Success = false;
 		}
 		
 		if(!is_readable($sFullPathName))
 		{
-			$this->addError(sprintf(bab_translate("The directory %s is not readable"), $sFullPathName));
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% is not readable")));
 			$Success = false;
 		}
 		
