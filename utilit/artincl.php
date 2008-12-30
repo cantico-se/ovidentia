@@ -61,6 +61,9 @@ class bab_PublicationPathsEnv
 	 */
 	public function setEnv($iIdDelegation)
 	{
+		require_once dirname(__FILE__) . '/pathUtil.class.php';
+		require_once dirname(__FILE__) . '/fileincl.php';
+		
 		$this->iIdDelegation	= (int) $iIdDelegation;
 		$this->sUploadPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 		
@@ -160,7 +163,7 @@ class bab_PublicationPathsEnv
 	 * 
 	 * @return bool	True on success, false on error. To get the error call the method getError()
 	 */
-	private function checkDirAccess($sFullPathName)
+	public function checkDirAccess($sFullPathName)
 	{
 		$Success	= true;
 		$aSearch	= array('%directory%');
@@ -218,6 +221,188 @@ class bab_PublicationPathsEnv
 	}
 }
 
+
+/**
+ * Helper class to upload image to
+ * category, topic, article
+ *
+ */
+class bab_PublicationImageUploader
+{
+	private $aError	= array();
+	
+	public function __construct()
+	{
+		
+	}
+	
+	/**
+	 * Upload an image to a category, this function does not
+	 * test the validity of the category identifier.
+	 * The identifier is used to determine the upload path
+	 *
+	 * @param int $iIdDelegation	The delegation identifier
+	 * @param int $iIdCategory		The category identifier
+	 * @param int $sKeyOfPhpFile	The index of the $_FILES
+	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 */
+	public function uploadCategoryImage($iIdDelegation, $iIdCategory, $sKeyOfPhpFile)
+	{
+		$sFunctionName = 'getCategoryImgPath';
+		return $this->uploadImage($iIdDelegation, $iIdCategory, $sKeyOfPhpFile, $sFunctionName);
+	}
+	
+	/**
+	 * Upload an image to a topic, this function does not
+	 * test the validity of the topic identifier.
+	 * The identifier is used to determine the upload path
+	 * 
+	 * @param int $iIdDelegation	The delegation identifier
+	 * @param int $iIdTopic			The topic identifier
+	 * @param int $sKeyOfPhpFile	The index of the $_FILES
+	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 */
+	public function uploadTopicImage($iIdDelegation, $iIdTopic, $sKeyOfPhpFile)
+	{
+		$sFunctionName = 'getTopicImgPath';
+		return $this->uploadImage($iIdDelegation, $iIdTopic, $sKeyOfPhpFile, $sFunctionName);
+	}
+	
+	/**
+	 * Upload an image to an article, this function does not
+	 * test the validity of the article identifier.
+	 * The identifier is used to determine the upload path
+	 * 
+	 * @param int $iIdDelegation	The delegation identifier
+	 * @param int $iIdArticle		The article identifier
+	 * @param int $sKeyOfPhpFile	The index of the $_FILES
+	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 */
+	public function uploadArticleImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile)
+	{
+		$sFunctionName = 'getArticleImgPath';
+		return $this->uploadImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile, $sFunctionName);
+	}
+	
+	/**
+	 * Upload an image to a publication image folder, 
+	 * this function does not test the validity of the $iIdObject.
+	 * The $iIdObject is used to determine the upload path
+	 * 
+	 * @param int 		$iIdDelegation	The delegation identifier
+	 * @param int 		$iIdObject		The object identifier (iIdCategory, iIdTopic, iIdArticle)
+	 * @param int		$sKeyOfPhpFile	The index of the $_FILES
+	 * @param string	$sFunctionName	Depending the nature of the $iIdObject, this variable
+	 * 									can be one of ('getCategoryImgPath', 'getTopicImgPath', 'getArticleImgPath')
+	 * @return string|false				The full path name of the uploaded image on success, false otherwise
+	 */
+	private function uploadImage($iIdDelegation, $iIdObject, $sKeyOfPhpFile, $sFunctionName)
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
+		
+		$oFileHandler = bab_fileHandler::upload($sKeyOfPhpFile);
+		if('' !== (string) $oFileHandler->error)
+		{
+			$this->addError($oFileHandler->error);
+			return false;
+		}
+		
+		if((int) $GLOBALS['babMaxImgFileSize'] < $oFileHandler->size)
+		{
+			$aSearch	= array('%filesize%', '%maxsize%');
+			$aReplace	= array($oFileHandler->size, $GLOBALS['babMaxImgFileSize']);
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The file size(%filesize%) exceeds the maximum allowed(%maxsize%)")));
+			return false;
+		}
+		
+		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
+		if(!array_key_exists($oFileHandler->mime, $aSupportedMime))
+		{
+			$aSearch	= array('%mime%', '%supportedMime%');
+			$aReplace	= array($oFileHandler->mime, implode(',', $aSupportedMime));
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("Mime type %mime% is not supported, supported types are %supportedMime%")));
+			return false;
+		}
+		
+		global $babBody;
+		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+		if(false === $oPubPathEnv->setEnv($iIdDelegation))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+		
+		$sPathName = $oPubPathEnv->$sFunctionName($iIdObject);
+		if(!is_dir($sPathName))
+		{
+			if(false === bab_mkdir($sPathName))
+			{
+				$this->addError(bab_translate("Can't create directory: ") . $sPathName);
+				return false;
+			}
+		}
+		
+		if(false === $oPubPathEnv->checkDirAccess($sPathName))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+		
+		$sFullPathName = $sPathName . $oFileHandler->filename;
+		if(is_file($sFullPathName))
+		{
+			$this->addError(bab_translate("A file with the same name already exists"));
+			return false;
+		}
+		
+		if(false === $oFileHandler->import($sFullPathName))
+		{
+			$this->addError(bab_translate("Cannot upload file"));
+			return false;
+		}
+		return $sFullPathName;
+	}
+	
+	/**
+	 * Add an error
+	 *
+	 * @param string $sMessage The error message
+	 */
+	private function addError($sMessage)
+	{
+		$this->aError[] = $sMessage;
+	}
+	
+	/**
+	 * Add an array of error
+	 *
+	 * @param string $aError The array of error message
+	 */
+	private function addErrors($aError)
+	{
+		$this->aError = array_merge($this->aError, $aError);
+	}
+	
+	/**
+	 * Return a value that indicate if there is error
+	 *
+	 * @return bool True if there is error, false otherwise
+	 */
+	public function haveError()
+	{
+		return (0 !== count($this->aError));
+	}
+	
+	/**
+	 * Return an array of error string
+	 *
+	 * @return Array The array of error string
+	 */
+	public function getError()
+	{
+		return $this->aError;
+	}
+}
 
 
 function bab_deleteDraftFiles($idart)
