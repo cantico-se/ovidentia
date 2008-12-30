@@ -456,6 +456,20 @@ CREATE TABLE bab_topics (
 
 # --------------------------------------------------------
 #
+# Structure de la table 'bab_topics_images'
+#
+
+CREATE TABLE bab_topics_images (
+   iId int(11) unsigned NOT NULL auto_increment,
+   iIdTopic int(11) unsigned NOT NULL,
+   sName varchar(255),
+   sRelativePath text NOT NULL,
+   PRIMARY KEY (iId),
+   KEY iIdCategory (iIdTopic)
+);
+
+# --------------------------------------------------------
+#
 # Structure de la table 'bab_topics_categories'
 #
 
@@ -474,6 +488,20 @@ CREATE TABLE bab_topics_categories (
 );
 
 INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default category', 'Y', '', '0', 'N', '0', '');
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_topics_categories_images'
+#
+
+CREATE TABLE bab_topics_categories_images (
+   iId int(11) unsigned NOT NULL auto_increment,
+   iIdCategory int(11) unsigned NOT NULL,
+   sName varchar(255),
+   sRelativePath text NOT NULL,
+   PRIMARY KEY (iId),
+   KEY iIdCategory (iIdCategory)
+);
 
 # --------------------------------------------------------
 #
