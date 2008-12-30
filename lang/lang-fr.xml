@@ -2709,4 +2709,7 @@
 <string id="The directory %directory% does not exits">Le répertoire %directory% n'existe pas</string>
 <string id="The directory %directory% is not writeable">The directory %directory% n'est pas accessible en écriture</string>
 <string id="The directory %directory% is not readable">The directory %directory% n'est pas accessible en lecture</string>
+<string id="The directory %directory% is not readable">The directory %directory% n'est pas accessible en lecture</string>
+<string id="Mime type %mime% is not supported, supported types are %supportedMime%">Le type mime %mime% n'est pas supporté, les types supportés sont %supportedMime%</string>
+<string id="The file size(%filesize%) exceeds the maximum allowed(%maxsize%)">The file size(%filesize%) exceeds the maximum allowed(%maxsize%)</string>
 </fr>

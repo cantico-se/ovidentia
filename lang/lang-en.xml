@@ -1581,4 +1581,6 @@
 <string id="The directory %directory% does not exits">The directory %directory% does not exits</string>
 <string id="The directory %directory% is not writeable">The directory %directory% is not writeable</string>
 <string id="The directory %directory% is not readable">The directory %directory% is not readable</string>
+<string id="Mime type %mime% is not supported, supported types are %supportedMime%">Mime type %mime% is not supported, supported types are %supportedMime%</string>
+<string id="The file size(%filesize%) exceeds the maximum allowed(%maxsize%)">La taille du fichier(%filesize%) dépasse le maximum autorisé(%maxsize%)</string>
 </en>
