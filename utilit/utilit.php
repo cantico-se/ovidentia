@@ -1622,6 +1622,16 @@ function bab_updateSiteSettings()
 		$GLOBALS['babMaxGroupSize'] = '50000000'; 
 		}
 		
+	if( !empty($arr['imgsize']))
+		{
+		$GLOBALS['babMaxImgFileSize'] = $arr['imgsize']*1024;
+		}
+	else
+		{
+		$GLOBALS['babMaxImgFileSize'] = 0; 
+		}
+		
+		
 	if( !empty($arr['maxfilesize']))
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
