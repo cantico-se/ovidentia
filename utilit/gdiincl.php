@@ -196,4 +196,325 @@ function bab_getResizedImage($imgf, $w, $h)
 			}
 		}
 	}
+	
+/**
+ * Helper class to resize image
+ *
+ */
+class bab_ImageResize
+{
+	private $sFullPathName	= null;
+	private $sMime			= null;
+	private $iRealHeight	= null;
+	private $iRealWidth		= null;
+	
+	public function __construct()
+	{
+		
+	}
+	
+	private function gdLoaded()
+	{
+		return extension_loaded('gd');
+	}
+	
+	private function createImageFromType()
+	{
+		switch($this->sMime)
+		{
+	        case 'image/gif':
+	            if(imagetypes() & IMG_GIF)  
+	            {
+	                return imageCreateFromGIF($this->sFullPathName);
+	            }	            break;
+	        case 'image/jpeg':
+	            if(imagetypes() & IMG_JPG)  
+	            {
+	                return imageCreateFromJPEG($this->sFullPathName);
+	            }
+	            break;
+	        case 'image/png':
+	            if(imagetypes() & IMG_PNG) 
+	            {
+	                return imageCreateFromPNG($this->sFullPathName);
+	            }
+	        default:
+	            return null;
+    	}
+	}
+	
+	private function chkgd2()
+	{
+		if(function_exists('gd_info'))
+		{
+			$aInfo = gd_info();
+			preg_match('/\d/', $aInfo['GD Version'], $aMatch);
+			if($aMatch[0] >= 2) 
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
+	private function gdVersion($iUserVer = 0)
+	{
+	   static $iGdVer = 0;
+	   // Just accept the specified setting if it's 1.
+	   if($iUserVer == 1) 
+	   { 
+	   		$iGdVer = 1; 
+	   		return 1; 
+	   }
+	   
+	   // Use the static variable if function was called previously.
+	   if($iUserVer != 2 && $iGdVer > 0) 
+	   { 
+	   		return $iGdVer; 
+	   }
+	   
+	   // Use the gd_info() function if possible.
+	   if(function_exists('gd_info')) 
+	   {
+		   $aInfo = gd_info();
+		   preg_match('/\d/', $aInfo['GD Version'], $aMatch);
+		   $iGdVer = $aMatch[0];
+		   return $aMatch[0];
+	   }
+	   
+	   // If phpinfo() is disabled use a specified / fail-safe choice...
+	   if(preg_match('/phpinfo/', ini_get('disable_functions'))) 
+	   {
+		   if($iUserVer == 2) 
+		   {
+			   $iUserVer = 2;
+			   return 2;
+		   }
+		   else
+		   {
+			   $iUserVer = 1;
+			   return 1;
+		   }
+	   }
+	   
+	   // ...otherwise use phpinfo().
+	   ob_start();
+	   phpinfo(8);
+	   $aInfo = ob_get_contents();
+	   ob_end_clean();
+	   $aInfo = stristr($aInfo, 'gd version');
+	   preg_match('/\d/', $aInfo, $aMatch);
+	   $iGdVer = $aMatch[0];
+	   return $aMatch[0];
+	} // End gdVersion()
+
+					
+	private function outputImage($oOutImgRes)
+	{
+		switch($this->sMime)
+		{
+	        case 'image/gif':
+				header('Content-type: image/gif');
+				imagegif($oOutImgRes);
+				break;
+	        case 'image/jpeg':
+				header('Content-type: image/jpeg');
+				imagejpeg($oOutImgRes);
+				break;
+	        case 'image/png':
+				header('Content-type: image/png');
+				imagepng($oOutImgRes);
+				break;
+	        default:
+	            echo '';
+    	}
+	}
+	
+	function scale($sFullPathname, $iScale) 
+	{
+		if(!bab_ImageResize::gdLoaded())
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		if(!$this->setImageInformation($sFullPathname))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$oImgRes = $this->createImageFromType();
+		if(is_null($oImgRes))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$iWidth = $this->iRealWidth * $iScale / 100;
+    	$iHeight = $this->iRealHeight * $iScale / 100; 
+    	$this->resize($oImgRes, $iWidth, $iHeight);
+	}
+ 
+	public function resizeImageToWidth($sFullPathname, $iWidth)
+	{
+		if(!bab_ImageResize::gdLoaded())
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		if(!$this->setImageInformation($sFullPathname))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$oImgRes = $this->createImageFromType();
+		if(is_null($oImgRes))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$iRatio		= $iWidth / $this->iRealWidth;
+     	$iHeight	= $this->iRealHeight * $iRatio;
+      	$this->resize($oImgRes, $iWidth, $iHeight);
+	}
+	
+	public function resizeToHeight($sFullPathname, $iHeight) 
+	{
+		if(!bab_ImageResize::gdLoaded())
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		if(!$this->setImageInformation($sFullPathname))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$oImgRes = $this->createImageFromType();
+		if(is_null($oImgRes))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$iRatio	= $iHeight / $this->iRealHeight;
+      	$iWidth	= $this->iRealWidth * $iRatio;
+      	$this->resize($oImgRes, $iWidth, $iHeight);
+	}
+	
+	public function resizeImage($sFullPathname, $iWidth, $iHeight)
+	{
+		if(!bab_ImageResize::gdLoaded())
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		if(!$this->setImageInformation($sFullPathname))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		$oImgRes = $this->createImageFromType();
+		if(is_null($oImgRes))
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
+		
+		if($this->iRealHeight > $this->iRealWidth)
+		{
+			$iRatio = ($iHeight / $this->iRealHeight);
+		}
+		else 
+		{
+			$iRatio = ($iWidth / $this->iRealWidth);
+		}
+		
+		$iHeight	= $iRatio * $this->iRealHeight;
+		$iWidth		= $iRatio * $this->iRealWidth;
+		$this->resize($oImgRes, $iWidth, $iHeight);
+	}
+	
+	private function resize($oImgRes, $iWidth, $iHeight)
+	{
+		if($this->gdVersion() >= 2)
+		{
+			$oOutImgRes = ImageCreateTrueColor($iWidth, $iHeight);
+			imagecopyresampled($oOutImgRes, $oImgRes, 0, 0, 0, 0, $iWidth, $iHeight, $this->iRealWidth, $this->iRealHeight);
+		}
+		else
+		{
+			$oOutImgRes = ImageCreate($iWidth, $iHeight);
+			imagecopyresized($oOutImgRes, $oImgRes, 0, 0, 0, 0, $iWidth, $iHeight, $this->iRealWidth, $this->iRealHeight);
+		}
+		
+		imagedestroy($oImgRes);
+		$this->outputImage($oOutImgRes);
+	}
+	
+	private function setImageInformation($sFullPathname)
+	{
+		if(!is_file($sFullPathname))
+		{
+			return false;
+		}
+		
+		if(!is_readable($sFullPathname))
+		{
+			return false;
+		}
+
+		$aImgInfo = getimagesize($sFullPathname);
+		if(!is_array($aImgInfo))
+		{
+			return false;
+		}
+
+		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
+		if(!array_key_exists($aImgInfo['mime'], $aSupportedMime))
+		{
+			return false;
+		}
+		
+		$this->sFullPathName	= $sFullPathname;
+		$this->sMime			= $aImgInfo['mime'];
+		$this->iRealWidth		= $aImgInfo[0];
+		$this->iRealHeight		= $aImgInfo[1];
+		return true;
+	}
+	
+	private function outputNoResizedImage($sFullPathName)
+	{
+		if(!is_file($sFullPathName))
+		{
+			echo '';
+			return;
+		}
+		
+		if(!is_readable($sFullPathName))
+		{
+			echo '';
+			return;
+		}
+		
+		$sMime = bab_getFileMimeType($sFullPathName);
+		$iSize = filesize($sFullPathName);
+		header("Content-Type: $sMime" . "\n");
+		header("Content-Length: ". $iSize . "\n");
+		header("Content-transfert-encoding: binary"."\n");
+		$fp = fopen($this->sFullPathName, "rb");
+		print fread($fp, $iSize);
+		fclose($fp);	
+	}
+}
+	
 ?>
