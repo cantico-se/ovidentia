@@ -244,7 +244,9 @@ class bab_PublicationImageUploader
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdCategory		The category identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 * 
+	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
+	 * 								To get the error call the method getError().
 	 */
 	public function uploadCategoryImage($iIdDelegation, $iIdCategory, $sKeyOfPhpFile)
 	{
@@ -260,7 +262,9 @@ class bab_PublicationImageUploader
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdTopic			The topic identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 * 
+	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
+	 * 								To get the error call the method getError().
 	 */
 	public function uploadTopicImage($iIdDelegation, $iIdTopic, $sKeyOfPhpFile)
 	{
@@ -276,7 +280,9 @@ class bab_PublicationImageUploader
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdArticle		The article identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * @return @return string|false	The full path name of the uploaded image on success, false otherwise
+	 * 
+	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
+	 * 								To get the error call the method getError().
 	 */
 	public function uploadArticleImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile)
 	{
@@ -294,41 +300,33 @@ class bab_PublicationImageUploader
 	 * @param int		$sKeyOfPhpFile	The index of the $_FILES
 	 * @param string	$sFunctionName	Depending the nature of the $iIdObject, this variable
 	 * 									can be one of ('getCategoryImgPath', 'getTopicImgPath', 'getArticleImgPath')
-	 * @return string|false				The full path name of the uploaded image on success, false otherwise
+	 * 
+	 * @return string|false				The full path name of the uploaded image on success, false otherwise.
+	 * 									To get the error call the method getError().
 	 */
 	private function uploadImage($iIdDelegation, $iIdObject, $sKeyOfPhpFile, $sFunctionName)
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
 		
-		$oFileHandler = bab_fileHandler::upload($sKeyOfPhpFile);
-		if('' !== (string) $oFileHandler->error)
+		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
+		if(!($oFileHandler instanceof bab_fileHandler))
 		{
-			$this->addError($oFileHandler->error);
 			return false;
 		}
 		
-		if((int) $GLOBALS['babMaxImgFileSize'] < $oFileHandler->size)
+		if(true === $this->fileSizeToLarge($oFileHandler))
 		{
-			$aSearch	= array('%filesize%', '%maxsize%');
-			$aReplace	= array($oFileHandler->size, $GLOBALS['babMaxImgFileSize']);
-			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The file size(%filesize%) exceeds the maximum allowed(%maxsize%)")));
 			return false;
 		}
 		
-		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
-		if(!array_key_exists($oFileHandler->mime, $aSupportedMime))
+		if(false === $this->mimeSupported($oFileHandler))
 		{
-			$aSearch	= array('%mime%', '%supportedMime%');
-			$aReplace	= array($oFileHandler->mime, implode(',', $aSupportedMime));
-			$this->addError(str_replace($aSearch, $aReplace, bab_translate("Mime type %mime% is not supported, supported types are %supportedMime%")));
 			return false;
 		}
 		
-		global $babBody;
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $oPubPathEnv->setEnv($iIdDelegation))
+		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
 		{
-			$this->addErrors($oPubPathEnv->getError());
 			return false;
 		}
 		
@@ -347,20 +345,204 @@ class bab_PublicationImageUploader
 			$this->addErrors($oPubPathEnv->getError());
 			return false;
 		}
-		
+
 		$sFullPathName = $sPathName . $oFileHandler->filename;
-		if(is_file($sFullPathName))
+		if(true === $this->isfile($sFullPathName))
 		{
-			$this->addError(bab_translate("A file with the same name already exists"));
 			return false;
 		}
 		
+		if(false === $this->importFile($oFileHandler, $sFullPathName))
+		{
+			return false;
+		}
+		return $sFullPathName;
+	}
+	
+	/**
+	 * Upload an image to the temp path of the publication
+	 * 
+	 * @param int $iIdDelegation	The delegation identifier
+	 * @param int $sKeyOfPhpFile	The index of the $_FILES
+	 * 
+	 * @return array|false			False on error, an array indexed by two keys:
+	 * 								array('sTempName' => tempName, 'sFileName' => fileName);
+	 * 								To get the file from the temp path use bab_PublicationPathsEnv. 
+	 * 								To get the error call the method getError().
+	 */
+	public function uploadImageToTemp($iIdDelegation, $sKeyOfPhpFile)
+	{
+		require_once dirname(__FILE__) . '/uploadincl.php';
+		require_once dirname(__FILE__) . '/uuid.php';
+		
+		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
+		if(!($oFileHandler instanceof bab_fileHandler))
+		{
+			return false;
+		}
+		
+		if(true === $this->fileSizeToLarge($oFileHandler))
+		{
+			return false;
+		}
+		
+		if(false === $this->mimeSupported($oFileHandler))
+		{
+			return false;
+		}
+		
+		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		{
+			return false;
+		}
+		
+		$sFileName		= $oFileHandler->filename;
+		$sFullPathName	= $oPubPathEnv->getTempPath() . bab_uuid();
+		if(true === $this->isfile($sFullPathName))
+		{
+			return false;
+		}
+		
+		$sFileExtention = $this->getFileExtention($sFileName);
+		if(false !== $sFileExtention)
+		{
+			$sFullPathName .= $sFileExtention;
+		}
+		
+		if(false === $this->importFile($oFileHandler, $sFullPathName))
+		{
+			return false;
+		}
+		return array('sTempName' => basename($sFullPathName), 'sFileName' => $sFileName);
+	}
+	
+	/**
+	 * Upload the image to the php temp directory
+	 *
+	 * @param string $sKeyOfPhpFile		The index of the $_FILES
+	 * 
+	 * @return bab_fileHandler|false	False on error, a bab_fileHandler object on success.
+	 * 									To get the error call the method getError().
+	 */
+	private function uploadFile($sKeyOfPhpFile)
+	{
+		$oFileHandler = bab_fileHandler::upload($sKeyOfPhpFile);
+		if('' !== (string) $oFileHandler->error)
+		{
+			$this->addError($oFileHandler->error);
+			return false;
+		}
+		return $oFileHandler;
+	}
+	
+	/**
+	 * Return a value that indicate if the uploaded file
+	 * exceeds the maximum size allowed.
+	 *
+	 * @param bab_fileHandler $oFileHandler The object returned by the method uploadFile
+	 * 
+	 * @return bool							True if the file exceeds, false otherwise
+	 * 										To get the error call the method getError().
+	 */
+	private function fileSizeToLarge(bab_fileHandler $oFileHandler)
+	{
+		if((int) $GLOBALS['babMaxImgFileSize'] < $oFileHandler->size)
+		{
+			$aSearch	= array('%filesize%', '%maxsize%');
+			$aReplace	= array($oFileHandler->size, $GLOBALS['babMaxImgFileSize']);
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The file size(%filesize%) exceeds the maximum allowed(%maxsize%)")));
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Return a value that indicate if the image format is supported
+	 *
+	 * @param bab_fileHandler $oFileHandler	 The object returned by the method uploadFile
+	 * 
+	 * @return bool							True if the file exceeds, false otherwise
+	 * 										To get the error call the method getError().
+	 */
+	private function mimeSupported(bab_fileHandler $oFileHandler)
+	{
+		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
+		if(!array_key_exists($oFileHandler->mime, $aSupportedMime))
+		{
+			$aSearch	= array('%mime%', '%supportedMime%');
+			$aReplace	= array($oFileHandler->mime, implode(',', $aSupportedMime));
+			$this->addError(str_replace($aSearch, $aReplace, bab_translate("Mime type %mime% is not supported, supported types are %supportedMime%")));
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * This function set the publication path environements.
+	 * 
+	 * @param bab_PublicationPathsEnv	$oPubPathEnv
+	 * @param int						$iIdDelegation
+	 * 
+	 * @return bool						True on success, false on error.
+	 * 									To get the error call the method getError().
+	 */
+	private function setEnv(bab_PublicationPathsEnv $oPubPathEnv, $iIdDelegation)
+	{
+		if(false === $oPubPathEnv->setEnv($iIdDelegation))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Return a value that indicate if a file already exits with this name
+	 *
+	 * @param string $sFullPathName	The full path name
+	 * 
+	 * @return bool					True if the file already exists, false othewise.
+	 * 								To get the error call the method getError().
+	 */
+	private function isfile($sFullPathName)
+	{
+		if(is_file($sFullPathName))
+		{
+			$this->addError(bab_translate("A file with the same name already exists"));
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * This function import an uploaded file to a destination.
+	 *
+	 * @param bab_fileHandler	$oFileHandler
+	 * @param string			$sFullPathName
+	 * 
+	 * @return bool				True if the file was imported successfully, false otherwise.
+	 * 							To get the error call the method getError().
+	 */
+	private function importFile(bab_fileHandler $oFileHandler, $sFullPathName)
+	{
 		if(false === $oFileHandler->import($sFullPathName))
 		{
 			$this->addError(bab_translate("Cannot upload file"));
 			return false;
 		}
-		return $sFullPathName;
+		return true;		
+	}
+	
+	private function getFileExtention($sFileName)
+	{
+		$iOffset = mb_strpos($sFileName, '.');
+		if(false === $iOffset)
+		{
+			return false;
+		}
+
+		return mb_strtolower(mb_substr($sFileName, $iOffset));
 	}
 	
 	/**
