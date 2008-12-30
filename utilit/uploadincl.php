@@ -47,6 +47,7 @@ class bab_fileHandler {
 	var $filename;
 	var $size;
 	var $error;
+	var $mime;
 	/**#@-*/
 	
 	/**
@@ -55,10 +56,12 @@ class bab_fileHandler {
 	 * @param	int		$type		BAB_FILEHANDLER_UPLOAD, BAB_FILEHANDLER_MOVE, BAB_FILEHANDLER_COPY
 	 */
 	function bab_fileHandler($type, $source) {
-		$this->type = $type;
-		$this->source = $source;
-		$this->error = false;
+		$this->type		= $type;
+		$this->source	= $source;
+		$this->mime		= bab_getFileMimeType($source);
+		$this->error	= false;
 	}
+	
 	
 	/**
 	 * @static
@@ -118,6 +121,7 @@ class bab_fileHandler {
 		$obj->filename 	= $_FILES[$fieldname]['name'];
 		$obj->size	 	= $_FILES[$fieldname]['size'];
 		$obj->error		= $tmp_error;
+		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
 	
@@ -131,6 +135,7 @@ class bab_fileHandler {
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_COPY, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
+		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
 	
@@ -144,6 +149,7 @@ class bab_fileHandler {
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
+		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
 	
@@ -182,8 +188,9 @@ class bab_fileHandler {
 	
 		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
 		if ($this->import($temporaryPathToFile)) {
-			$this->source = $temporaryPathToFile;
-			$this->type = BAB_FILEHANDLER_MOVE;
+			$this->source	= $temporaryPathToFile;
+			$this->type		= BAB_FILEHANDLER_MOVE;
+			$obj->mime		= bab_getFileMimeType($temporaryPathToFile);
 			return $temporaryPathToFile;
 		}
 		
