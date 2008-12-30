@@ -136,7 +136,7 @@ class bab_PublicationPathsEnv
 	 */
 	public function getArticleImgPath($iIdArticle)
 	{
-		return $this->sTopicsImgPath . $iIdArticle . '/';
+		return $this->sArticlesImgPath . $iIdArticle . '/';
 	}
 	
 	
