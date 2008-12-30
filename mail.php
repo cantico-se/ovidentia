@@ -614,15 +614,15 @@ $accid = bab_rp('accid','');
 $sigid = bab_rp('sigid', '');
 $criteria = bab_rp('criteria', '');
 $reverse = bab_rp('reverse', '');
-$to = bab_pp('to', '');
-$cc = bab_pp('cc', '');
-$bcc = bab_pp('bcc', '');
-$subject = bab_pp('subject', '');
-$format = bab_pp('format', 'plain');
-$message = bab_pp('message');
+$to = bab_rp('to', '');
+$cc = bab_rp('cc', '');
+$bcc = bab_rp('bcc', '');
+$subject = bab_rp('subject', '');
+$format = bab_rp('format', 'plain');
+$message = bab_rp('message');
 
 
-if( "message" === bab_pp('compose'))
+if( "message" === bab_rp('compose'))
 	{
 	    
 	if(!createMail($accid, $to, $cc, $bcc, $subject, $criteria, $reverse, $format, $sigid))
