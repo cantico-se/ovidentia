@@ -1,82 +1,310 @@
 
 <!--#begin topcatcreate -->
+<script type="text/javascript" language="JavaScript1.5">
+//<![CDATA[
 
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="topcats">
-<input type="hidden" name="idx" value="List">
-<input type="hidden" name="add" value="add">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-	<tr> 
-	<td width="30%" align="right">{ name }:</td>
-	<td width="70%"> 
-	<input type="text" name="name" size="20" maxlength="60">
-	</td>
-	</tr>
-	<tr> 
-	<td align="right">{ description }:</td>
-	<td> 
-	<input type="text" name="description" size="45" maxlength="200">
-	</td>
-	</tr>
-	<tr> 
-	<td align="right">{ enabled }:</td>
-	<td> 
-	<select name="benabled">
-	<option value="Y">{ yes }</option>
-	<option value="N" selected>{ no }</option>
-	</select>
-	</td>
-	</tr>
-	<tr> 
-	<td align="right">{ templatetxt }:</td>
-	<td> 
-	<select name="template">
-	<!--#in getnexttemplate -->
-	<option value="{ templateid }">{ templateval }</option>
-	<!--#endin getnexttemplate -->
-	</select>
-	</td>
-	</tr>
-	<tr> 
-	<td align="right">{ disptmpltxt }:</td>
-	<td> 
-	<select name="disptmpl">
-	<!--#in getnextdisptemplate -->
-	<option value="{ templateid }">{ templateval }</option>
-	<!--#endin getnextdisptemplate -->
-	</select>
-	</td>
-	</tr>
-	<!--#if topcatscount -->
-	<tr> 
-	<td align="right">{ topcattxt }:</td>
-	<td> 
-	<select name="topcatid">
-	<!--#in getnexttopcat -->
-	<option value="{ topcatid }" { selected }>{ topcatval }</option>
-	<!--#endin getnexttopcat -->
-	</select>
-	</td>
-	</tr>
-	<!--#endif topcatscount -->
-	<tr> 
-	<td>&nbsp;</td>
-	<td> 
-	<input type="submit" name="submit" value="{ add }">
-	<br>
-	</td>
-	</tr>
+function bab_onImageSelected(oEvent)
+{
+	var oFile = document.getElementById('categoryPicture');
+	if(null !== oFile && oFile.value.length > 0)
+	{
+		oFile.style.visibility = 'hidden';
+		$(oFile).id = '';
+		
+		var oInput		= document.createElement("input");
+		oInput.type		= 'file';
+		oInput.id		= 'categoryPicture';
+		oInput.name		= 'categoryPicture';
+		
+		oFile.parentNode.replaceChild(oInput, oFile);
+
+		$('hiddenFrom').appendChild(oFile);
+
+		$('categoryPicture').observe('change', bab_onImageSelected);
+		
+		$('hiddenFrom').submit();
+		
+		bab_disableForm();
+	}
+}
+
+function bab_onDeletePicture(oEvent)
+{
+	Event.stop(oEvent);
+
+	var sImage = $('topCatCreate').sTempName.value;
+	$('topCatCreate').sTempName.value = '';
+	$('topCatCreate').sFileName.value = '';
+
+	var sUrl = '{ babUrlScript }?tg=topcats&idx=deleteTempImage&sImage=' + sImage + '&t=' + (new Date()).getTime();
+	new Ajax.Request(sUrl, 
+		{
+			method: "get",
+			onSuccess: onDeleteImageResponse
+		}
+	);
+
+	bab_disableForm();
+}
+
+function onDeleteImageResponse()
+{
+	$('sTempImg').src = '#';
+	bab_hide('imagePreviewTR');
+	bab_enableForm();
+}
+
+function bab_onLoadImagePreview()
+{
+	if(this.src != '#')
+	{
+		bab_show('imagePreviewTR');
+	}
+}
+
+function uploadDone()
+{
+	var sBodyContent = frames['hiddenIFrame'].document.getElementsByTagName("body")[0].innerHTML;
+
+	if(sBodyContent.length != 0)
+	{
+		var sJSon = eval("(" + sBodyContent + ")"); //Parse JSON
+		
+		if(sJSon.success) 
+		{ //This part happens when the image gets uploaded.
+	
+			var aImg = sJSon.sMessage.split(',');
+			
+			var sOldImage = $('topCatCreate').sTempName.value;
+			$('topCatCreate').sTempName.value = aImg[0];
+			$('topCatCreate').sFileName.value = aImg[1];
+	
+			$('sTempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			
+			//bab_show('imagePreviewTR');
+			bab_hide('messageTR');
+		}
+		else if(sJSon.failure) 
+		{ //Upload failed - show user the reason.
+			bab_displayMessage(sJSon.sMessage);
+		}	
+	}
+	
+	bab_enableForm();
+}
+
+function bab_getHiddenUpload()
+{
+	var sUrl = '{ babUrlScript }?tg=topcats&idx=getHiddenUpload&t=' + (new Date()).getTime();
+	new Ajax.Request(sUrl, 
+		{
+			method: "get",
+			onSuccess: onHiddenUploadResponse
+		}
+	);
+}
+
+function onHiddenUploadResponse(oTransport)
+{
+	try
+	{
+		$($('topCatCreate').parentNode).insert({'bottom' : oTransport.responseText});
+		bab_enableForm();
+	}
+	catch(e)
+	{
+		bab_displayMessage(e.message);
+	}
+}
+
+function bab_displayMessage(message)
+{
+	if(bab_show('messageTR'))
+	{
+		$('statusLine').update(message);
+	}
+}
+
+function bab_show(sIdElement)
+{
+	if($(sIdElement))
+	{
+		$(sIdElement).show();
+		return true;
+	}
+	return false;
+}
+
+function bab_hide(sIdElement)
+{
+	if($(sIdElement))
+	{
+		$(sIdElement).hide();
+		return true;
+	}
+	return false;
+}
+
+function bab_disableForm()
+{
+	$('mainFormSubmit').disable();
+	if($('categoryPicture'))
+	{
+		$('categoryPicture').disable();
+	}
+}
+
+function bab_enableForm()
+{
+	$('mainFormSubmit').enable();
+	if($('categoryPicture'))
+	{
+		$('categoryPicture').enable();
+	}
+}
+
+//]]>
+</script>
+
+<form method="post" id="topCatCreate" name="topCatCreate" enctype="multipart/form-data" action="{ babPhpSelf }">
+	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
+	<input type="hidden" name="tg" value="topcats" />
+	<input type="hidden" name="idx" value="List" />
+	<input type="hidden" name="add" value="add" />
+	<input type="hidden" name="sTempName" value="{ sTempImgName }" />
+	<input type="hidden" name="sFileName" value="{ sImgName }" />
+	
+	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td width="30%" align="right">{ sNameCaption }:</td>
+						<td width="70%"> 
+							<input type="text" name="name" size="20" maxlength="60" value="{ sName }" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ sDescriptionCaption }:</td>
+						<td> 
+							<input type="text" name="description" size="45" maxlength="200" value="{ sDescription }" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ enabled }:</td>
+						<td> 
+							<select name="benabled">
+								<!--#in getNextPrivateSectionInfo -->
+								<option value="{ sPrivSecValue }" { sSelectedPrivSec }>{ sPrivSecCaption }</option>
+								<!--#endin getNextPrivateSectionInfo -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ templatetxt }:</td>
+						<td> 
+							<select name="template">
+								<!--#in getnexttemplate -->
+								<option value="{ templateid }" { sSelectedTmpl }>{ templateval }</option>
+								<!--#endin getnexttemplate -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ disptmpltxt }:</td>
+						<td> 
+							<select name="disptmpl">
+								<!--#in getnextdisptemplate -->
+								<option value="{ templateid }" { sSelectedDispTmpl }>{ templateval }</option>
+								<!--#endin getnextdisptemplate -->
+							</select>
+						</td>
+					</tr>
+					<!--#if topcatscount -->
+					<tr> 
+						<td align="right">{ topcattxt }:</td>
+						<td> 
+							<select name="topcatid">
+								<!--#in getnexttopcat -->
+								<option value="{ topcatid }" { selected }>{ topcatval }</option>
+								<!--#endin getnexttopcat -->
+							</select>
+						</td>
+					</tr>
+					<!--#endif topcatscount -->
+					<!--#if bImageUploadEnable  -->
+					<tr> 
+						<td align="right">{ sSelectImageCaption }</td>
+						<td>
+							<input type="file" id="categoryPicture" name="categoryPicture" />
+						</td>
+					</tr>
+					<tr id="messageTR" style="display:none"> 
+						<td colspan="2">
+							<div id="statusLine">
+							</div>
+						</td>
+					</tr>
+					<tr id="imagePreviewTR" style="display:none"> 
+						<td align="right">{ sImagePreviewCaption }</td>
+						<td>
+							<img id="sTempImg" border="0" src="#" />
+							<input type="image" id="deletePicture" src="{ babInstallPath }skins/ovidentia/images/22x22/stop.png" />
+						</td>
+					</tr>
+					<!--#endif bImageUploadEnable -->
+					<tr> 
+						<td colspan="2" align="center"> 
+							<input type="submit" id="mainFormSubmit" name="submit" value="{ add }" />
+							<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
 	</table>
-</td>
-</tr>
-</table>
 </form>
-<br>
+<br />
 
+<script type="text/javascript" language="JavaScript1.5">
+//<![CDATA[
+if('undefined' != typeof document.observe)
+{
+	document.observe("dom:loaded", function bab_init() {
+		bab_getHiddenUpload();
+		
+		bab_disableForm();
+		
+		if($('categoryPicture'))
+		{
+			$('categoryPicture').observe('change', bab_onImageSelected);
+		}
+		
+		if($('deletePicture'))
+		{
+			$('deletePicture').observe('click', bab_onDeletePicture);
+		}
+		
+		if($('sTempImg'))
+		{
+			$('sTempImg').observe('load', bab_onLoadImagePreview);
+			
+			var sImage = $('topCatCreate').sTempName.value;
+			var sFileName = $('topCatCreate').sFileName.value;
+			
+			if(sImage.length > 0 && sFileName.length > 0)
+			{
+				$('sTempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + sImage;
+				//bab_show('imagePreviewTR');
+			}
+		}
+	});
+}
+//]]>
+</script>
 <!--#end topcatcreate -->
+
+
 
 <br><br><br><br>
 <!--#begin topcatslist -->
@@ -153,89 +381,213 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 <!--#end topcatslist -->
 
 
+
+
+
 <br><br><br><br>
 <!--#begin topcatmodify -->
+<script type="text/javascript" language="JavaScript1.5">
+//<![CDATA[
 
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="topcat">
-<input type="hidden" name="idx" value="Modify">
-<input type="hidden" name="item" value="{ arr[id] }">
-<input type="hidden" name="idp" value="{ arr[id_parent] }">
-<input type="hidden" name="oldname" value="{ arr[title] }">
-<input type="hidden" name="modify" value="modify">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+var g_oHiddenForm = null;
+
+function bab_onPictureChange()
+{
+	var oFile = document.getElementById('sFile');
+	if(null !== oFile)
+	{
+		oFile.style.visibility = 'hidden';
+		
+		var oInput		= document.createElement("input");
+		oInput.type		= 'file';
+		oInput.id		= 'sFile';
+		oInput.name		= 'sFile';
+		
+		$(oInput).observe('change', bab_onPictureChange);
+		
+		oFile.parentNode.replaceChild(oInput, oFile);
+		
+		$('topcatModify').appendChild(oFile);
+		
+		g_oHiddenForm.submit();
+	}
+}
+
+function uploadDone()
+{
+	var ret = frames['hiddenIFrame'].document.getElementsByTagName("body")[0].innerHTML;
+	
+	if(ret.length == 0)
+		return;
+	
+	var data = eval("("+ret+")"); //Parse JSON // Read the below explanations before passing judgment on me
+	
+	if(data.success) { //This part happens when the image gets uploaded.
+		//document.getElementById("image_details").innerHTML = "<img src='image_uploads/" + data.file_name + "' /><br />Size: " + data.size + " KB";
+//		alert("Upload success: " + data.file_name);
+	}
+	else if(data.failure) { //Upload failed - show user the reason.
+//		alert("Upload Failed: " + data.failure);
+	}	
+
+	var oMessage = document.getElementById('sMessage');
+	if(null !== oMessage)
+	{
+		oMessage.innerHTML = data.file_name;
+	}
+}
+
+
+
+function bab_getHiddenUpload()
+{
+	if(null === g_oHiddenForm)
+	{
+		var sUrl = '{ babUrlScript }?tg=topcat&idx=GetHiddenUpload&iIdCategory=' + { arr[id] };
+		new Ajax.Request(sUrl, 
+			{
+				method: "get",
+				onSuccess: onHiddenUploadResponse
+			}
+		);
+	}
+}
+
+
+function onHiddenUploadResponse(oTransport)
+{
+	try
+	{
+		if(null === g_oHiddenForm)
+		{
+			$($('topcatModify').parentNode).insert({'bottom' : oTransport.responseText});
+			g_oHiddenForm = $('hiddenFrom');
+		}
+	}
+	catch(e)
+	{
+		var oMessage = document.getElementById('sMessage');
+		if(null !== oMessage)
+		{
+			oMessage.innerHTML = e.message;
+		}
+	}
+}
+
+
+//]]>
+</script>
+
+
+<form method="post" id="topcatModify" name="topcatModify" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="topcat" />
+	<input type="hidden" name="idx" value="Modify" />
+	<input type="hidden" name="item" value="{ arr[id] }" />
+	<input type="hidden" name="idp" value="{ arr[id_parent] }" />
+	<input type="hidden" name="oldname" value="{ arr[title] }" />
+	<input type="hidden" name="modify" value="modify" />
+	
+	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr> 
+						<td width="30%" align="right">{ name }:</td>
+						<td width="70%"> 
+							<input type="text" name="title" size="20" maxlength="60" value="{ arr[title] }" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ description }:</td>
+						<td> 
+							<input type="text" name="description" size="30" maxlength="200" value="{ arr[description] }" />
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ enabled }</td>
+						<td> 
+							<select name="benabled">
+								<option value="N" { noselected }>{ no }</option>
+								<option value="Y" { yesselected }>{ yes }</option>
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ templatetxt }</td>
+						<td> 
+							<select name="template">
+								<option value=""></option>
+								<!--#in getnexttemplate -->
+								<option value="{ templateid }" { tmplselected }>{ templateval }</option>
+								<!--#endin getnexttemplate -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ disptmpltxt }:</td>
+						<td> 
+							<select name="disptmpl">
+								<!--#in getnextdisptemplate -->
+								<option value="{ templateid }" { tmplselected }>{ templateval }</option>
+								<!--#endin getnextdisptemplate -->
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="right">{ topcattxt }:</td>
+						<td> 
+							<select name="topcatid">
+								<!--#in getnexttopcat -->
+								<option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
+								<!--#endin getnexttopcat -->
+							</select>
+						</td>
+					</tr>
+
 <tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td width="30%" align="right">{ name }:</td>
-<td width="70%"> 
-<input type="text" name="title" size="20" maxlength="60" value="{ arr[title] }">
-</td>
+	<td align="right">Image</td>
+	<td>
+		<input type="file" id="sFile" name="sFile" />
+	</td>
 </tr>
 <tr> 
-<td align="right">{ description }:</td>
-<td> 
-<input type="text" name="description" size="30" maxlength="200" value="{ arr[description] }">
-</td>
+	<td colspan="2">
+		<div id="sMessage" style="background-color:#FDF9F1; border:2px solid #E7DAC5; color:#C26400;">
+			Les filles vous êtes NULL de chez NULL
+			<div id="imageDetail"></div>
+		</div>
+	</td>
 </tr>
-<tr> 
-<td align="right">{ enabled }</td>
-<td> 
-<select name="benabled">
-<option value="N" { noselected }>{ no }</option>
-<option value="Y" { yesselected }>{ yes }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ templatetxt }</td>
-<td> 
-<select name="template">
-<option value=""></option>
-<!--#in getnexttemplate -->
-<option value="{ templateid }" { tmplselected }>{ templateval }</option>
-<!--#endin getnexttemplate -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ disptmpltxt }:</td>
-<td> 
-<select name="disptmpl">
-<!--#in getnextdisptemplate -->
-<option value="{ templateid }" { tmplselected }>{ templateval }</option>
-<!--#endin getnextdisptemplate -->
-</select>
-</td>
-</tr>
-<tr> 
-<td align="right">{ topcattxt }:</td>
-<td> 
-<select name="topcatid">
-<!--#in getnexttopcat -->
-<option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
-<!--#endin getnexttopcat -->
-</select>
-</td>
-</tr>
-<tr> 
-<td >&nbsp;</td>
-<td> 
-<input type="submit" name="submit" value="{ modify }">&nbsp;&nbsp;
-<!--#if bdelete -->
-<input type="submit" name="catdel" value="{ delete }">
-<!--#endif bdelete -->
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+
+					<tr> 
+						<td>&nbsp;</td>
+						<td> 
+							<input type="submit" name="submit" value="{ modify }" />&nbsp;&nbsp;
+							<!--#if bdelete -->
+							<input type="submit" name="catdel" value="{ delete }" />
+							<!--#endif bdelete -->
+							<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br>
+<br />
+
+<script type="text/javascript" language="JavaScript1.5">
+//<![CDATA[
+document.observe("dom:loaded", function bab_init() {
+	bab_getHiddenUpload();
+	
+	$('sFile').observe('change', bab_onPictureChange);
+});
+//]]>
+</script>
 <!--#end topcatmodify -->
+
+
 <br><br><br><br>
 <!--#begin topcatorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
