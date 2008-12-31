@@ -43,7 +43,7 @@ function listCategories()
 	{
 	global $babBody, $babDB;
 	$arrid = array();
-	class temp
+	class listCategoriesCls
 		{
 	
 		var $arr = array();
@@ -54,7 +54,7 @@ function listCategories()
 		var $urlcategory;
 		var $namecategory;
 
-		function temp($arrid)
+		function listCategoriesCls($arrid)
 			{
 			global $babDB;
 			$this->count = count($arrid);
@@ -117,7 +117,7 @@ function listCategories()
 			}
 		}
 
-	$temp = new temp($arrid);
+	$temp = new listCategoriesCls($arrid);
 	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "categorylist"));
 
 	return count($arrid);
@@ -127,11 +127,11 @@ function listCategories()
 function FaqTableOfContents($idcat)
 	{
 	global $babBody;
-	class temp
+	class FaqTableOfContentsCls
 		{
 		var $idcat;
 
-		function temp($idcat)
+		function FaqTableOfContentsCls($idcat)
 			{
 			global $babDB, $faqinfo;
 			$this->idcat = $idcat;
@@ -270,7 +270,7 @@ function FaqTableOfContents($idcat)
 
 
 		}
-	$temp = new temp($idcat);
+	$temp = new FaqTableOfContentsCls($idcat);
 	$babBody->babecho(bab_printTemplate($temp,"faq.html", "tableofcontents"));
 	return true;
 	}
@@ -279,11 +279,11 @@ function FaqTableOfContents($idcat)
 function FaqPrintContents($idcat)
 	{
 	global $babBody;
-	class temp
+	class FaqPrintContentsCls
 		{
 		var $idcat;
 
-		function temp($idcat)
+		function FaqPrintContentsCls($idcat)
 			{
 			global $babDB, $faqinfo;
 			$this->idcat = $idcat;
@@ -434,7 +434,7 @@ function FaqPrintContents($idcat)
 				}
 			}
 		}
-	$temp = new temp($idcat);
+	$temp = new FaqPrintContentsCls($idcat);
 	if (empty($_GET['popup']))
 		{
 		$babBody->babecho(bab_printTemplate($temp,"faqprint.html", "contents"));
@@ -455,7 +455,7 @@ function FaqPrintContents($idcat)
 function listSubCategoryQuestions($idcat, $idscat)
 	{
 	global $babBody;
-	class temp
+	class listSubCategoryQuestionsCls
 		{
 		
 		var $arr1 = array();
@@ -469,7 +469,7 @@ function listSubCategoryQuestions($idcat, $idscat)
 		var $sitename;
 		var $urlsite;
 
-		function temp($idcat, $idscat)
+		function listSubCategoryQuestionsCls($idcat, $idscat)
 			{
 			global $babDB, $faqinfo;
 			$this->return = bab_translate("Go to Top");
@@ -531,7 +531,7 @@ function listSubCategoryQuestions($idcat, $idscat)
 			}
 		}
 
-	$temp = new temp($idcat, $idscat);
+	$temp = new listSubCategoryQuestionsCls($idcat, $idscat);
 	$babBody->babecho(bab_printTemplate($temp,"faq.html", "subcatquestions"));
 	}
 
@@ -540,7 +540,7 @@ function listSubCategoryQuestions($idcat, $idscat)
 function viewQuestion($idcat, $idscat, $id)
 	{
 	global $babBody;
-	class temp
+	class viewQuestionCls
 		{
 		var $arr = array();
 		var $db;
@@ -548,7 +548,7 @@ function viewQuestion($idcat, $idscat, $id)
 		var $return;
 		var $returnurl;
 
-		function temp($idcat, $idscat, $id)
+		function viewQuestionCls($idcat, $idscat, $id)
 			{
 			global $babDB;
 			$req = "select * from ".BAB_FAQQR_TBL." where id='".$babDB->db_escape_string($id)."'";
@@ -567,7 +567,7 @@ function viewQuestion($idcat, $idscat, $id)
 
 		}
 
-	$temp = new temp($idcat, $idscat, $id);
+	$temp = new viewQuestionCls($idcat, $idscat, $id);
 	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "viewquestion"));
 	return true;
 	}
@@ -576,7 +576,7 @@ function viewPopupQuestion($id)
 	{
 	global $babBody;
 
-	class temp
+	class viewPopupQuestionCls
 		{
 	
 		var $arr = array();
@@ -586,7 +586,7 @@ function viewPopupQuestion($id)
 		var $close;
 		var $sContent;
 
-		function temp($id)
+		function viewPopupQuestionCls($id)
 			{
 			global $babDB;
 			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
@@ -613,14 +613,14 @@ function viewPopupQuestion($id)
 			}
 		}
 	
-	$temp = new temp($id);
+	$temp = new viewPopupQuestionCls($id);
 	echo bab_printTemplate($temp,"faq.html", "popupquestion");
 	}
 
 function faqPrint($idcat, $idscat)
 	{
 	global $babBody;
-	class temp
+	class faqPrintCls
 		{
 		
 		var $arr1 = array();
@@ -633,13 +633,17 @@ function faqPrint($idcat, $idscat)
 		var $indexquestions;
 		var $sitename;
 		var $urlsite;
-
-		function temp($idcat, $idscat)
+		var $sContent;
+		
+		function faqPrintCls($idcat, $idscat)
 			{
 			global $babDB, $faqinfo;
-			$this->return = bab_translate("Go to Top");
-			$this->indexquestions = bab_translate("Index of questions");
-			$this->faqname = $faqinfo['category'];
+			
+			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+			$this->return			= bab_translate("Go to Top");
+			$this->indexquestions	= bab_translate("Index of questions");
+			$this->faqname			= $faqinfo['category'];
+			
 			if( !empty($idscat) )
 				{
 				list($this->subcatname) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_FAQ_SUBCAT_TBL." where id='".$babDB->db_escape_string($idscat)."'"));
@@ -704,7 +708,7 @@ function faqPrint($idcat, $idscat)
 			}
 		}
 
-	$temp = new temp($idcat, $idscat);
+	$temp = new faqPrintCls($idcat, $idscat);
 	echo bab_printTemplate($temp,"faqprint.html", "subcategory");
 	}
 
@@ -712,14 +716,14 @@ function faqPrint($idcat, $idscat)
 function addQuestion($idcat, $idscat)
 	{
 	global $babBody;
-	class temp
+	class addQuestionCls
 		{
 		var $question;
 		var $response;
 		var $add;
 		var $idcat;
 
-		function temp($idcat, $idscat)
+		function addQuestionCls($idcat, $idscat)
 			{
 			global $babDB;
 			$this->subcattxt = bab_translate("Sub category");
@@ -770,21 +774,21 @@ function addQuestion($idcat, $idscat)
 			}
 		}
 
-	$temp = new temp($idcat, $idscat);
+	$temp = new addQuestionCls($idcat, $idscat);
 	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admquestioncreate"));
 	}
 
 function addSubCategory($idcat, $idscat)
 	{
 	global $babBody;
-	class temp
+	class addSubCategoryCls
 		{
 		var $question;
 		var $response;
 		var $add;
 		var $idcat;
 
-		function temp($idcat, $idscat)
+		function addSubCategoryCls($idcat, $idscat)
 			{
 			global $babDB;
 			$this->subcat = bab_translate("Sub category");
@@ -825,7 +829,7 @@ function addSubCategory($idcat, $idscat)
 			}
 		}
 
-	$temp = new temp($idcat, $idscat);
+	$temp = new addSubCategoryCls($idcat, $idscat);
 	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admsubcatcreate"));
 	}
 
@@ -839,7 +843,7 @@ function modifyQuestion($item, $idscat, $idq)
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid question !!");
 		return;
 		}
-	class temp
+	class modifyQuestionCls
 		{
 		var $questiontxt;
 		var $responsetxt;
@@ -850,7 +854,7 @@ function modifyQuestion($item, $idscat, $idq)
 		var $arr = array();
 		var $res;
 
-		function temp($idcat, $idscat, $idq)
+		function modifyQuestionCls($idcat, $idscat, $idq)
 			{
 			global $babDB;
 			$this->questiontxt = bab_translate("Question");
@@ -908,7 +912,7 @@ function modifyQuestion($item, $idscat, $idq)
 				return false;
 			}
 		}
-	$temp = new temp($item, $idscat, $idq);
+	$temp = new modifyQuestionCls($item, $idscat, $idq);
 	$babBody->babecho(	bab_printTemplate($temp,"faq.html", "admquestionmodify"));
 	}
 
@@ -916,7 +920,7 @@ function deleteQuestion($item, $idq)
 	{
 	global $babBody;
 	
-	class temp
+	class deleteQuestionCls
 		{
 		var $warning;
 		var $message;
@@ -928,7 +932,7 @@ function deleteQuestion($item, $idq)
 		var $topics;
 		var $article;
 
-		function temp($item, $idq)
+		function deleteQuestionCls($item, $idq)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this question");
 			$this->title = "";
@@ -940,14 +944,14 @@ function deleteQuestion($item, $idq)
 			}
 		}
 
-	$temp = new temp($item, $idq);
+	$temp = new deleteQuestionCls($item, $idq);
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
 function modifySubCategory($idcat, $idscat, $ids)
 	{
 	global $babBody;
-	class temp
+	class modifySubCategoryCls
 		{
 		var $question;
 		var $response;
@@ -955,7 +959,7 @@ function modifySubCategory($idcat, $idscat, $ids)
 		var $idcat;
 		var $del;
 
-		function temp($idcat, $idscat, $ids)
+		function modifySubCategoryCls($idcat, $idscat, $ids)
 			{
 			global $babDB;
 			$this->subcat = bab_translate("Sub category");
@@ -979,7 +983,7 @@ function modifySubCategory($idcat, $idscat, $ids)
 			}
 		}
 
-	$temp = new temp($idcat, $idscat, $ids);
+	$temp = new modifySubCategoryCls($idcat, $idscat, $ids);
 	$babBody->babecho( bab_printTemplate($temp,"faq.html", "admsubcatmodify"));
 	}
 
