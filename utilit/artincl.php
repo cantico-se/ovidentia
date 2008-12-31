@@ -465,7 +465,7 @@ class bab_PublicationImageUploader
 	 * @return bool							True if the file exceeds, false otherwise
 	 * 										To get the error call the method getError().
 	 */
-	private function mimeSupported(bab_fileHandler $oFileHandler)
+	private function mimeSupported($sMime)
 	{
 		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
 		if(!array_key_exists($oFileHandler->mime, $aSupportedMime))
@@ -533,6 +533,48 @@ class bab_PublicationImageUploader
 		}
 		return true;		
 	}
+	
+	public function importCategoryImageFromTemp($sTempFileName, $sImageName, $iIdDelegation, $iIdCategory, $sFunctionName)
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
+		
+		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		{
+			return false;
+		}
+		
+		$sPathName = $oPubPathEnv->$sFunctionName($iIdObject);
+		if(!is_dir($sPathName))
+		{
+			if(false === bab_mkdir($sPathName))
+			{
+				$this->addError(bab_translate("Can't create directory: ") . $sPathName);
+				return false;
+			}
+		}
+		
+		if(false === $oPubPathEnv->checkDirAccess($sPathName))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+		
+		$sFullPathName = $oPubPathEnv->getTempPath() . $sTempFileName;
+		if(true === $this->isfile($sFullPathName))
+		{
+			return false;
+		}
+		
+		$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sFullPathName); 
+		if(!($oFileHandler instanceof bab_fileHandler))
+		{
+			return false;
+		}
+		
+		
+	}
+	
 	
 	private function getFileExtention($sFileName)
 	{

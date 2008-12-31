@@ -1,0 +1,10 @@
+#statusLine {
+	background-color:#FDF9F1;
+	border:2px solid #E7DAC5; 
+	color:#C26400;
+}
+
+.imgPreviewButton {
+	vertical-align:bottom;
+	margin-left:5px;
+}

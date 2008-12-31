@@ -139,12 +139,12 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 	
 
 function topcatCreate($idp)
-	{
+{
 	global $babBody;
 	class temp
-		{
-		var $name;
-		var $description;
+	{
+		var $sNameCaption;
+		var $sDescriptionCaption;
 		var $enabled;
 		var $no;
 		var $yes;
@@ -163,122 +163,203 @@ function topcatCreate($idp)
 		var $nonetxt;
 		var $idp;
 		var $selected;
-
+		var $iMaxImgFileSize;
+		var $bImageUploadEnable = false;
+		
+		var $sSelectImageCaption;
+		var $sImagePreviewCaption;
+		var $sImageLoadCaption;
+		
+		var $sName;
+		var $sDescription;
+		
+		var $aPrivSection; 
+		var $sPrivSecValue;
+		var $sPrivSecCaption;
+		var $sSelectedPrivSec;
+		var $sPostedPrivSec;
+		
+		var $sSelectedTmpl;
+		var $sPostedTmpl;
+		
+		var $sSelectedDispTmpl;
+		var $sPostedDispTmpl;
+		
+		var $sTempImgName;
+		var $sImgName;
+		
 		function temp($idp)
-			{
+		{
 			global $babBody, $babDB;
-
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->enabled = bab_translate("Section enabled");
-			$this->no = bab_translate("No");
-			$this->yes = bab_translate("Yes");
-			$this->add = bab_translate("Add");
-			$this->templatetxt = bab_translate("Section template");
-			$this->disptmpltxt = bab_translate("Display template");
-			$this->topcattxt = bab_translate("Topics category parent");
-			$this->nonetxt = "--- ".bab_translate("None")." ---";
-			$this->idp = $idp;
-			$file = "topicssection.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-			if( !file_exists( $filepath ) )
+			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize);
+			$this->sNameCaption			= bab_translate("Name");
+			$this->sDescriptionCaption	= bab_translate("Description");
+			$this->enabled				= bab_translate("Section enabled");
+			$this->add					= bab_translate("Add");
+			$this->templatetxt			= bab_translate("Section template");
+			$this->disptmpltxt			= bab_translate("Display template");
+			$this->topcattxt			= bab_translate("Topics category parent");
+			$this->nonetxt				= '--- ' . bab_translate("None") . ' ---';
+			$this->idp					= bab_rp('topcatid', $idp);
+			$this->aPrivSection			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));
+			$this->sName				= bab_rp('name', '');
+			$this->sDescription			= bab_rp('description', '');
+			$this->sPostedPrivSec		= bab_rp('benabled', 'N');
+			$this->sPostedTmpl			= bab_rp('template', 'template');
+			$this->sPostedDispTmpl		= bab_rp('disptmpl', 'default');
+			$this->sSelectImageCaption	= bab_translate('Select a picture');
+			$this->sImagePreviewCaption	= bab_translate('Preview image');
+			$this->sImageLoadCaption	= bab_translate('Load');
+			$this->sTempImgName			= bab_rp('sTempName', '');
+			$this->sImgName				= bab_rp('sFileName', '');
+			
+			$file		= 'topicssection.html';
+			$filepath	= 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+			if(!file_exists( $filepath ))
+			{
+				$filepath = $GLOBALS['babSkinPath'] . 'templates/' . $file;
+				if(!file_exists($filepath))
 				{
-				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
-				if( !file_exists( $filepath ) )
-					{
-					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
-					}
+					$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/' . $file;
 				}
-			if( file_exists( $filepath ) )
-				{
+			}
+			
+			if(file_exists($filepath))
+			{
 				$tpl = new babTemplate();
 				$this->arrtmpl = $tpl->getTemplates($filepath);
-				}
+			}
 			$this->counttmpl = count($this->arrtmpl);
 
-			$file = "topcatdisplay.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-			if( !file_exists( $filepath ) )
+			$file		= 'topcatdisplay.html';
+			$filepath	= 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+			if(!file_exists($filepath))
+			{
+				$filepath = $GLOBALS['babSkinPath'] . 'templates/' . $file;
+				if(!file_exists($filepath))
 				{
-				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
-				if( !file_exists( $filepath ) )
-					{
-					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
-					}
+					$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/' . $file;
 				}
-			if( file_exists( $filepath ) )
-				{
+			}
+				
+			if(file_exists($filepath))
+			{
 				$tpl = new babTemplate();
 				$this->arrdisptmpl = $tpl->getTemplates($filepath);
-				}
+			}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'");
 
 			$this->arrtopcats = array();
-			if( $babBody->isSuperAdmin)
-				{
-				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
-				}
-			while( $arr = $babDB->db_fetch_array($res ))
-				{
-				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
-				}
+			if($babBody->isSuperAdmin)
+			{
+				$this->arrtopcats[] = array('id'=> 0, 'title' => $this->nonetxt);
+			}
+			
+			while($arr = $babDB->db_fetch_array($res))
+			{
+				$this->arrtopcats[] = array('id'=> $arr['id'], 'title' => $arr['title']);
+			}
 			$this->topcatscount = count($this->arrtopcats);
 
-			}
+		}
 
-		function getnexttemplate()
-			{
-			static $i = 0;
-			if($i < $this->counttmpl)
+		function getNextPrivateSectionInfo()
+		{
+			$this->sSelectedPrivSec = '';
+			
+			$aDatas = each($this->aPrivSection);
+			if(false !== $aDatas)
+			{			 
+				$this->sPrivSecValue = $aDatas['key'];
+				$this->sPrivSecCaption = $aDatas['value'];
+				if($this->sPostedPrivSec == $this->sPrivSecValue)
 				{
+					$this->sSelectedPrivSec = 'selected="selected"';
+				}
+				return true;
+			}
+			return false;
+		}
+		
+		function getnexttemplate()
+		{
+			static $i = 0;
+			
+			$this->sSelectedTmpl = '';
+			
+			if($i < $this->counttmpl)
+			{
 				$this->templateid = $this->arrtmpl[$i];
 				$this->templateval = $this->arrtmpl[$i];
+				if($this->sPostedTmpl == $this->templateid)
+				{
+					$this->sSelectedTmpl = 'selected="selected"';
+				}
 				$i++;
 				return true;
-				}
-			return false;
 			}
+			return false;
+		}
 
 		function getnextdisptemplate()
-			{
+		{
 			static $i = 0;
+			
+			$this->sSelectedDispTmpl = '';
+			
 			if($i < $this->countdisptmpl)
-				{
+			{
 				$this->templateid = $this->arrdisptmpl[$i];
 				$this->templateval = $this->arrdisptmpl[$i];
+				if($this->sPostedDispTmpl == $this->templateid)
+				{
+					$this->sSelectedDispTmpl = 'selected="selected"';
+				}
 				$i++;
 				return true;
-				}
-			return false;
 			}
+			return false;
+		}
 
 		function getnexttopcat()
-			{
+		{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->topcatscount)
-				{
+			if($i < $this->topcatscount)
+			{
 				$arr = $this->arrtopcats[$i];
 				$this->topcatid = $arr['id'];
 				$this->topcatval = $arr['title'];
-				if( $this->idp == $this->topcatid)
-					$this->selected = "selected";
+				if($this->idp == $this->topcatid)
+				{
+					$this->selected = 'selected="selected"';
+				}
 				else
+				{
 					$this->selected = "";
+				}
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
-
 			}
 		}
-
-	$temp = new temp($idp);
-	$babBody->babecho( bab_printTemplate($temp,"topcats.html", "topcatcreate"));
 	}
+	
+	$babBody->addStyleSheet('publication.css');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
+		
+	$temp = new temp($idp);
+	$babBody->babecho(bab_printTemplate($temp, 'topcats.html', 'topcatcreate'));
+}
+
+
+
 
 function topcatsList($idp)
 	{
@@ -310,7 +391,7 @@ function topcatsList($idp)
 		var $parenturl;
 		var $burl;
 		var $altbg = true;
-
+		
 		function temp($idp)
 			{
 			global $babBody;
@@ -322,6 +403,8 @@ function topcatsList($idp)
 			$this->update = bab_translate("Update");
 			$this->topics = bab_translate("Number of topics");
 			$this->topcats = bab_translate("Number of topics categories");
+			
+			
 			$this->db = $GLOBALS['babDB'];
 			$req = "select c.* 
 				FROM 
@@ -472,23 +555,89 @@ function orderTopcat($idp)
 	return $temp->count;
 	}
 
+function getHiddenUpload()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/hiddenUpload.class.php';
+	
+	$oHiddenForm = new bab_HiddenUploadForm();
+	
+	$oHiddenForm->addHiddenField('tg', 'topcats');
+	$oHiddenForm->addHiddenField('MAX_FILE_SIZE', $GLOBALS['babMaxImgFileSize']);
+	$oHiddenForm->addHiddenField('idx', 'uploadCategoryImg');
+	
+	header('Cache-control: no-cache');
+	die($oHiddenForm->getHtml());
+}
+	
 function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid)
-	{
+{
 	global $babBody;
-	if( empty($name))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+	if(empty($name))
+	{
+		$babBody->addError(bab_translate("ERROR: You must provide a name !!"));
 		return false;
-		}
-
-	if( $babBody->currentAdmGroup && $topcatid == 0 )
-		{
-		$babBody->msgerror = bab_translate("Access denied");
-		return false;
-		}
-	return bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $babBody->currentAdmGroup);
-
 	}
+
+	if($babBody->currentAdmGroup && $topcatid == 0)
+	{
+		$babBody->addError(bab_translate("Access denied"));
+		return false;
+	}
+	
+	$iIdCategory = bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $babBody->currentAdmGroup);
+	if(false === $iIdCategory)
+	{
+		return false;
+	}
+
+	$sTempName = (string) bab_rp('sTempName', '');
+	$sImageName = (string) bab_rp('sFileName', '');
+	
+	if('' === $sTempName && '' === $sImageName)
+	{
+		$sKeyOfPhpFile = 'categoryPicture';
+		{//Si aucune image n'a été associée
+			if(!array_key_exists($sKeyOfPhpFile, $_FILES) || (array_key_exists($sKeyOfPhpFile, $_FILES) && '' == $_FILES[$sKeyOfPhpFile]['tmp_name']))
+			{
+				return $iIdCategory;
+			}
+		}
+	
+		{//Upload de l'image
+			require_once dirname(__FILE__) . '/../utilit/artincl.php';
+			$oPubImpUpl		= bab_getInstance('bab_PublicationImageUploader');
+			$sFullPathName	= $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
+			if(false === $sFullPathName)
+			{
+				global $babDB;
+				list($iIdParent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCategory)."'"));
+				//Si la catégorie n'a pas été créée lors de la création d'une délégation
+				if(!(!$iIdParent && $babBody->currentAdmGroup))
+				{
+					require_once dirname(__FILE__) . '/../utilit/delincl.php';
+					bab_deleteTopicCategory($iIdCategory);
+				}
+				
+				foreach($oPubImpUpl->getError() as $sError)
+				{
+					$babBody->addError($sError);
+				}
+				return false;
+			}
+		}
+	}
+	else
+	{
+		
+	}
+	
+	
+	
+	{
+		//Insérer l'image en base
+	}
+	return $iIdCategory;
+}
 
 function disableTopcats($topcats, $idp)
 	{
@@ -527,6 +676,87 @@ function saveOrderTopcats($idp, $listtopcats)
 		$babDB->db_query("update ".BAB_TOPCAT_ORDER_TBL." set ordering='".($i+1)."' where id='".$listtopcats[$i]."'");
 		}
 	}
+	
+function getImage()
+{	
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/gdiincl.php';
+
+	$iWidth		= (int) bab_rp('iWidth', 120);
+	$iHeight	= (int) bab_rp('iHeight', 90);
+	$sImage		= (string) bab_rp('sImage', '');
+	$sOldImage	= (string) bab_rp('sOldImage', '');
+	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
+
+	global $babBody;
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$sPath = $oEnvObj->getTempPath();
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
+
+	if(file_exists($sPath . $sOldImage))
+	{
+		@unlink($sPath . $sOldImage);
+	}
+}
+	
+function uploadCategoryImg()
+{
+	global $babBody;
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/hiddenUpload.class.php';
+	
+	$sJSon			= '';
+	$sKeyOfPhpFile	= 'categoryPicture';
+	$oPubImpUpl		= new bab_PublicationImageUploader();
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	
+	if(false === $aFileInfo)
+	{
+		$sMessage = implode(',', $oPubImpUpl->getError());
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"  => false,
+				"failure"  => true,
+				"sMessage" => $sMessage));
+	}
+	else
+	{
+		$sMessage = implode(',', $aFileInfo);
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"	=> true,
+				"failure"	=> false,
+				"sMessage"	=> $sMessage));
+	}
+				
+	header('Cache-control: no-cache');
+	print bab_HiddenUploadForm::getHiddenIframeHtml($sJSon);		
+}
+
+function deleteTempImage()
+{
+	$sImage		= bab_rp('sImage', '');
+	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$sPath = $oEnvObj->getTempPath();
+	
+	if(file_exists($sPath . $sImage))
+	{
+		@unlink($sPath . $sImage);
+	}
+	die('');
+}
 
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
@@ -543,8 +773,11 @@ if( !isset($idp))
 
 if( isset($add))
 	{
-	addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid);
 	$idp = $topcatid;
+	if(false === addTopCat($name, $description, $benabled, $template, $disptmpl, $topcatid))
+		{
+			$idx = 'Create';
+		}
 	}
 elseif( isset($update))
 	{
@@ -558,8 +791,27 @@ elseif( isset($update))
 		}
 	}
 
+	
+//$idx = 'Create';
+	
 switch($idx)
 	{
+	case 'getImage':
+		getImage(); // called by ajax
+		exit;
+		
+	case 'getHiddenUpload': // called by ajax
+		getHiddenUpload();
+		exit;
+	
+	case 'uploadCategoryImg': // called by ajax
+		uploadCategoryImg();
+		exit;	
+	
+	case 'deleteTempImage': // called by ajax
+		deleteTempImage();
+		exit;
+		
 	case "Order":
 		orderTopcat($idp);
 		$babBody->title = bab_translate("Order a topic category");

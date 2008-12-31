@@ -2577,7 +2577,7 @@
 <string id="Your password has been reset">Votre mot de passe a été réinitialisé</string>
 <string id="Login ID of the account">Identifiant du compte</string>
 <string id="The uploaded file exceeds the upload_max_filesize directive.">Le fichier à télécharger excède la taille maximale autorisée par le serveur.</string>
-<string id="The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.">Le fichier à téléchargé excède la taille maximale autorisée par le formulaire.</string>
+<string id="The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.">Le fichier à télécharger excède la taille maximale autorisée par le formulaire.</string>
 <string id="The uploaded file was only partially uploaded.">Le fichier n'a été que partielement téléchargé.</string>
 <string id="No file was uploaded.">Aucun fichier n'a été téléchargé vers le serveur.</string>
 <string id="Missing a temporary folder.">Le fichier temporaire est manquant.</string>
@@ -2712,4 +2712,7 @@
 <string id="The directory %directory% is not readable">The directory %directory% n'est pas accessible en lecture</string>
 <string id="Mime type %mime% is not supported, supported types are %supportedMime%">Le type mime %mime% n'est pas supporté, les types supportés sont %supportedMime%</string>
 <string id="The file size(%filesize%) exceeds the maximum allowed(%maxsize%)">The file size(%filesize%) exceeds the maximum allowed(%maxsize%)</string>
+<string id="Select a picture">Sélectionnez une image</string>
+<string id="Preview image">Prévisualisation de l'image</string>
+<string id="Load">Charger</string>
 </fr>
