@@ -154,6 +154,11 @@ class bab_PublicationPathsEnv
 		return $this->sTempPath;
 	}
 	
+	public function getUploadPath()
+	{
+		return $this->sUploadPath;
+	}
+	
 	/**
 	 * Return a value that indicate if the directory is accessible.
 	 * To be accessible the $sFullPathName must be a directory,
@@ -465,7 +470,7 @@ class bab_PublicationImageUploader
 	 * @return bool							True if the file exceeds, false otherwise
 	 * 										To get the error call the method getError().
 	 */
-	private function mimeSupported($sMime)
+	private function mimeSupported(bab_fileHandler $oFileHandler)
 	{
 		$aSupportedMime = array('image/gif' => 'image/gif', 'image/jpeg' => 'image/jpeg', 'image/png' => 'image/png');
 		if(!array_key_exists($oFileHandler->mime, $aSupportedMime))
@@ -534,9 +539,15 @@ class bab_PublicationImageUploader
 		return true;		
 	}
 	
-	public function importCategoryImageFromTemp($sTempFileName, $sImageName, $iIdDelegation, $iIdCategory, $sFunctionName)
+	public function importCategoryImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName)
 	{
-		require_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
+		$sFunctionName = 'getCategoryImgPath';
+		return $this->importImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName, $sFunctionName);
+	}
+	
+	private function importImageFromTemp($iIdDelegation, $iIdObject, $sTempImageName, $sImageName, $sFunctionName)
+	{
+		require_once dirname(__FILE__) . '/uploadincl.php';
 		
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
 		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
@@ -560,11 +571,13 @@ class bab_PublicationImageUploader
 			return false;
 		}
 		
-		$sFullPathName = $oPubPathEnv->getTempPath() . $sTempFileName;
+		$sFullPathName = $oPubPathEnv->getTempPath() . $sTempImageName;
+		/*
 		if(true === $this->isfile($sFullPathName))
 		{
 			return false;
 		}
+		//*/
 		
 		$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sFullPathName); 
 		if(!($oFileHandler instanceof bab_fileHandler))
@@ -572,9 +585,14 @@ class bab_PublicationImageUploader
 			return false;
 		}
 		
+		$sFullPathName = $sPathName . $sImageName;
+		if(false === $this->importFile($oFileHandler, $sFullPathName))
+		{
+			return false;
+		}
 		
+		return $sFullPathName;
 	}
-	
 	
 	private function getFileExtention($sFileName)
 	{
