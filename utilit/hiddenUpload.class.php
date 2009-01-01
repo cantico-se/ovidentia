@@ -83,7 +83,10 @@ class bab_HiddenUploadForm
 					<meta http-equiv="Content-type" content="text/html; charset=' . bab_charset::getIso() . '" />
 					<script type="text/javascript">
 						function init() {
-							if(top.uploadDone) top.uploadDone(); //top means parent frame.
+							if(top.uploadDone)
+							{ 
+								top.uploadDone(); //top means parent frame.
+							}
 						}
 						window.onload=init;
 					</script>
