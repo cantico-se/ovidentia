@@ -604,3 +604,107 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false) {
 	return false;
 }
 
+
+// Associated image
+
+
+/**
+ * This function insert a record in the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader.
+ * For now only one image can be attached
+ *
+ * @param int		$iIdCategory	Category identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise 
+ */
+function bab_addImageToCategory($iIdCategory, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_CATEGORIES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> '',
+		'idCategory'	=> $iIdCategory,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	$bSkipFirst = false;
+	return $oTblWr->save($aAttribut, $bSkipFirst);
+}
+
+/**
+ * This function update a record from the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader
+ * For now only one image can be attached
+ *
+ * @param int 		$iIdImage		Identifier of the record to update
+ * @param int 		$iIdCategory	Category identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise
+ */
+function bab_updateImageCategory($iIdImage, $iIdCategory, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_CATEGORIES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> $iIdImage,
+		'idCategory'	=> $iIdCategory,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	return $oTblWr->update($aAttribut);
+}
+
+/**
+ * Get a record from the database
+ * For now only one image can be attached
+ *
+ * @param int $iIdCategory	Category identifier
+ * @return Array|bool	Array on success, false otherwise
+ */
+function bab_getImageCategory($iIdCategory)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_CATEGORIES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idCategory'	=> $iIdCategory,
+		'id'			=> -1,
+		'name'			=> '',
+		'relativePath'	=> ''
+	);
+	
+	return $oTblWr->load($aAttribut, 1, 3, 1, 1);
+}
+
+/**
+ * Delete a record
+ * For now only one image can be attached 
+ *
+ * @param int $iIdCategory
+ * @return bool
+ */
+function bab_deleteImageCategory($iIdCategory)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_CATEGORIES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idCategory' => $iIdCategory
+	);
+	
+	return $oTblWr->delete($aAttribut);
+}
