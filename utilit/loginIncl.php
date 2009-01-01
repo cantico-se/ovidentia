@@ -963,7 +963,7 @@ function displayAuthenticationForm($title, $errorMessages)
 		$babBody->addError($errorMessage);
 	}
 	$babBody->addItemMenu('signon', bab_translate("Login"), $GLOBALS['babUrlScript'].'?tg=login&cmd=signon');
-	bab_debug($babBody->babsite);
+//	bab_debug($babBody->babsite);
 	if($babBody->babsite['registration'] == 'Y') {
 		$babBody->addItemMenu('register', bab_translate("Register"), $GLOBALS['babUrlScript'].'?tg=login&cmd=register');
 	}
