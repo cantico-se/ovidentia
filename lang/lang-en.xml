@@ -1586,4 +1586,8 @@
 <string id="Select a picture">Select a picture</string>
 <string id="Preview image">Preview image</string>
 <string id="Load">Load</string>
+<string id="Remove image">Remove image</string>
+<string id="Loading image is not active because">Loading image is not active because</string>
+<string id="The maximum size for a defined image is zero byte">The maximum size for a defined image is zero byte</string>
+<string id="Changes affecting the image will be taken into account after having saved">Changes affecting the image will be taken into account after having saved</string>
 </en>
