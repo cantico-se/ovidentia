@@ -21,10 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/topincl.php";
-require_once $babInstallPath . 'utilit/tree.php';
+require_once 'base.php';
+require_once dirname(__FILE__) . '/acl.php';
+require_once dirname(__FILE__) . '/../utilit/topincl.php';
+require_once dirname(__FILE__) . '/../utilit/tree.php';
 
 
 class bab_AdmArticleTreeView extends bab_ArticleTreeView
@@ -168,7 +168,6 @@ function topcatCreate($idp)
 		
 		var $sSelectImageCaption;
 		var $sImagePreviewCaption;
-		var $sImageLoadCaption;
 		
 		var $sName;
 		var $sDescription;
@@ -187,12 +186,16 @@ function topcatCreate($idp)
 		
 		var $sTempImgName;
 		var $sImgName;
+		var $sAltImagePreview;
+		var $bUploadPathValid = false;
+		var $sDisabledUploadReason;
 		
 		function temp($idp)
 		{
 			global $babBody, $babDB;
 			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
-			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize);
+			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
 			$this->sNameCaption			= bab_translate("Name");
 			$this->sDescriptionCaption	= bab_translate("Description");
 			$this->enabled				= bab_translate("Section enabled");
@@ -210,9 +213,11 @@ function topcatCreate($idp)
 			$this->sPostedDispTmpl		= bab_rp('disptmpl', 'default');
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
-			$this->sImageLoadCaption	= bab_translate('Load');
-			$this->sTempImgName			= bab_rp('sTempName', '');
-			$this->sImgName				= bab_rp('sFileName', '');
+			$this->sTempImgName			= bab_rp('sTempImgName', '');
+			$this->sImgName				= bab_rp('sImgName', '');
+			$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+			
+			$this->processDisabledUploadReason();
 			
 			$file		= 'topicssection.html';
 			$filepath	= 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
@@ -266,6 +271,31 @@ function topcatCreate($idp)
 
 		}
 
+		function processDisabledUploadReason()
+		{
+			$this->sDisabledUploadReason = '';
+			if(false == $this->bImageUploadEnable)
+			{
+				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
+				$this->sDisabledUploadReason .= '<UL>';
+				
+				if('' == $GLOBALS['babUploadPath'])
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
+				}
+				else if(!is_dir($GLOBALS['babUploadPath']))
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
+				}
+				
+				if(0 == $this->iMaxImgFileSize)
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
+				}
+				$this->sDisabledUploadReason .= '</UL>';
+			}
+		}
+		
 		function getNextPrivateSectionInfo()
 		{
 			$this->sSelectedPrivSec = '';
@@ -590,52 +620,80 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 		return false;
 	}
 
-	$sTempName = (string) bab_rp('sTempName', '');
-	$sImageName = (string) bab_rp('sFileName', '');
+	$sKeyOfPhpFile			= 'categoryPicture';
+	$bHaveAssociatedImage	= false;
+	$bFromTempPath			= false;
+	$sTempName				= (string) bab_rp('sTempImgName', '');
+	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	if('' === $sTempName && '' === $sImageName)
+	//Si image chargée par ajax
+	if('' !== $sTempName && '' !== $sImageName)
 	{
-		$sKeyOfPhpFile = 'categoryPicture';
-		{//Si aucune image n'a été associée
-			if(!array_key_exists($sKeyOfPhpFile, $_FILES) || (array_key_exists($sKeyOfPhpFile, $_FILES) && '' == $_FILES[$sKeyOfPhpFile]['tmp_name']))
-			{
-				return $iIdCategory;
-			}
-		}
-	
-		{//Upload de l'image
-			require_once dirname(__FILE__) . '/../utilit/artincl.php';
-			$oPubImpUpl		= bab_getInstance('bab_PublicationImageUploader');
-			$sFullPathName	= $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
-			if(false === $sFullPathName)
-			{
-				global $babDB;
-				list($iIdParent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCategory)."'"));
-				//Si la catégorie n'a pas été créée lors de la création d'une délégation
-				if(!(!$iIdParent && $babBody->currentAdmGroup))
-				{
-					require_once dirname(__FILE__) . '/../utilit/delincl.php';
-					bab_deleteTopicCategory($iIdCategory);
-				}
-				
-				foreach($oPubImpUpl->getError() as $sError)
-				{
-					$babBody->addError($sError);
-				}
-				return false;
-			}
-		}
+		$bHaveAssociatedImage	= true;
+		$bFromTempPath			= true;
 	}
 	else
+	{//Si image chargée par la voie normal
+		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
+		{
+			$bHaveAssociatedImage = true;
+		}
+	}	
+	
+	if(false === $bHaveAssociatedImage)
 	{
-		
+		return $iIdCategory;
 	}
+		
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';	
 	
+	$oPubImpUpl	= bab_getInstance('bab_PublicationImageUploader');
 	
+	if(false === $bFromTempPath)
+	{
+		$sFullPathName = $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
+	}
+	else
+	{		
+		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp($babBody->currentAdmGroup, $iIdCategory, $sTempName, $sImageName);
+	}
+
+	if(false === $sFullPathName)
+	{
+		global $babDB;
+		list($iIdParent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCategory)."'"));
+		//Si la catégorie n'a pas été créée lors de la création d'une délégation
+		if(!(!$iIdParent && $babBody->currentAdmGroup))
+		{
+			require_once dirname(__FILE__) . '/../utilit/delincl.php';
+			bab_deleteTopicCategory($iIdCategory);
+		}
+		
+		foreach($oPubImpUpl->getError() as $sError)
+		{
+			$babBody->addError($sError);
+		}
+		return false;
+	}
 	
 	{
 		//Insérer l'image en base
+		$aPathParts		= pathinfo($sFullPathName);
+		$sName			= $aPathParts['basename'];
+		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+		
+		/*
+		bab_debug(
+			'sName         ' . $sName . "\n" .
+			'sRelativePath ' . $sRelativePath
+		);
+		//*/
+		
+		bab_addImageToCategory($iIdCategory, $sName, $sRelativePath);
 	}
+	
 	return $iIdCategory;
 }
 
@@ -791,8 +849,6 @@ elseif( isset($update))
 		}
 	}
 
-	
-//$idx = 'Create';
 	
 switch($idx)
 	{

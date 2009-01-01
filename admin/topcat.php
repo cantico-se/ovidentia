@@ -21,20 +21,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";
-include_once $babInstallPath."admin/acl.php";
-include_once $babInstallPath."utilit/topincl.php";
+require_once "base.php";
+require_once dirname(__FILE__) . '/acl.php';
+require_once dirname(__FILE__) . '/../utilit/topincl.php';
 
 function topcatModify($id)
-	{
+{
 	global $babBody;
-	if( !isset($id))
-		{
+	if(!isset($id))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid topic category !!");
 		return;
-		}
+	}
+	
 	class tempa
-		{
+	{
 		var $name;
 		var $description;
 		var $no;
@@ -43,7 +44,7 @@ function topcatModify($id)
 		var $yesselected;
 		var $modify;
 		var $delete;
-
+		
 		var $db;
 		var $arr = array();
 		var $res;
@@ -60,80 +61,147 @@ function topcatModify($id)
 		var $topcatval;
 		var $nonetxt;
 
+		var $iMaxImgFileSize;
+		var $bImageUploadEnable = false;
+		var $bHaveAssociatedImage = false;
+		var $bUploadPathValid = false;
+		var $sDeleteImageChecked = '';
+		
+		var $sPostedTmpl;
+		var $sPostedDispTmpl;
+		
+		var $sSelectImageCaption;
+		var $sImagePreviewCaption;
+		
+		var $sTempImgName;
+		var $sImgName;
+		var $sImageUrl;
+		var $sAltImagePreview;
+		var $sDeleteImageCaption;
+		var $sDisabledUploadReason;
+		var $sImageModifyMessage;
+		
 		function tempa($id)
-			{
+		{
 			global $babBody, $babDB;
-			$this->name = bab_translate("Name");
-			$this->description = bab_translate("Description");
-			$this->enabled = bab_translate("Section enabled");
-			$this->no = bab_translate("No");
-			$this->yes = bab_translate("Yes");
-			$this->modify = bab_translate("Modify");
-			$this->delete = bab_translate("Delete");
-			$this->templatetxt = bab_translate("Section template");
-			$this->disptmpltxt = bab_translate("Display template");
-			$this->topcattxt = bab_translate("Topics category parent");
-			$this->nonetxt = "--- ".bab_translate("None")." ---";
-			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='$id'";
-			$this->res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($this->res);
-			$this->arr['title'] = bab_toHtml($this->arr['title']);
-			$this->arr['description'] = bab_toHtml($this->arr['description']);
-			$this->idp = $this->arr['id_parent'];
-
-			if( $this->idp == 0 && $babBody->currentAdmGroup )
+			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
+			$this->name					= bab_translate("Name");
+			$this->description			= bab_translate("Description");
+			$this->enabled				= bab_translate("Section enabled");
+			$this->no					= bab_translate("No");
+			$this->yes					= bab_translate("Yes");
+			$this->modify				= bab_translate("Modify");
+			$this->delete				= bab_translate("Delete");
+			$this->templatetxt			= bab_translate("Section template");
+			$this->disptmpltxt			= bab_translate("Display template");
+			$this->topcattxt			= bab_translate("Topics category parent");
+			$this->nonetxt				= "--- ".bab_translate("None")." ---";
+			$this->db					= $GLOBALS['babDB'];
+			$req						= 'SELECT * FROM ' . BAB_TOPICS_CATEGORIES_TBL . ' WHERE id= \'' . $id . '\'';
+			$this->res					= $this->db->db_query($req);
+			$this->arr					= $this->db->db_fetch_array($this->res);
+			$this->arr['title']			= bab_toHtml(bab_rp('title', $this->arr['title']));
+			$this->arr['description']	= bab_toHtml(bab_rp('description', $this->arr['description']));
+			$this->idp					= bab_rp('topcatid', $this->arr['id_parent']);
+			$this->sPostedTmpl			= bab_rp('template', $this->arr['template']);
+			$this->sPostedDispTmpl		= bab_rp('disptmpl', $this->arr['display_tmpl']);
+			$this->sSelectImageCaption	= bab_translate('Select a picture');
+			$this->sImagePreviewCaption	= bab_translate('Preview image');
+			$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+			$this->sTempImgName			= bab_rp('sTempImgName', '');
+			$this->sImgName				= bab_rp('sImgName', '');
+			$this->sDeleteImageChecked	= (bab_rp('deleteImageChk', 0) == 0) ? '' : 'checked="checked"';
+			$this->sDeleteImageCaption	= bab_translate('Remove image');
+			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
+			
+			
+			//Si on ne vient pas d'un post alors récupérer l'image
+			if(!array_key_exists('sImgName', $_POST))
+			{
+				$aImageInfo	= bab_getImageCategory($id);
+				if(false !== $aImageInfo)
 				{
+					$this->sImgName = $aImageInfo['name'];
+					$this->bHaveAssociatedImage = true;
+				}
+			}
+			
+			$this->processDisabledUploadReason();
+			
+			if('' != $this->sTempImgName)
+			{
+				$this->sImageUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=' . 
+					$this->sTempImgName;
+			}
+			else if('' != $this->sImgName)
+			{
+				$this->sImageUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=' . 
+					$this->sImgName . '&iIdCategory=' . $id;
+			}
+			else
+			{
+				$this->sImageUrl = '#';
+			}
+			
+			
+			if($this->idp == 0 && $babBody->currentAdmGroup)
+			{
 				$this->bdelete = false;
-				}
+			}
 			else
-				{
+			{
 				$this->bdelete = true;
-				}
+			}
 
-			if( $this->arr['enabled'] == "Y")
-				{
+			$sEnabled = bab_rp('benabled', $this->arr['enabled']);
+			if($sEnabled == "Y")
+			{
 				$this->noselected = "";
-				$this->yesselected = "selected";
-				}
+				$this->yesselected = 'selected="selected"';
+			}
 			else
-				{
-				$this->noselected = "selected";
+			{
+				$this->noselected = 'selected="selected"';
 				$this->yesselected = "";
-				}
+			}
 
-			$file = "topicssection.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-			if( !file_exists( $filepath ) )
+			$file		= 'topicssection.html';
+			$filepath	= 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+			if(!file_exists($filepath))
+			{
+				$filepath = $GLOBALS['babSkinPath'] . 'templates/' . $file;
+				if(!file_exists($filepath))
 				{
-				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
-				if( !file_exists( $filepath ) )
-					{
-					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
-					}
+					$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/' . $file;
 				}
-			if( file_exists( $filepath ) )
-				{
+			}
+			
+			if(file_exists($filepath))
+			{
 				$tpl = new babTemplate();
 				$this->arrtmpl = $tpl->getTemplates($filepath);
-				}
+			}
 			$this->counttmpl = count($this->arrtmpl);
 
-			$file = "topcatdisplay.html";
-			$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-			if( !file_exists( $filepath ) )
+			$file		= 'topcatdisplay.html';
+			$filepath	= 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+			if(!file_exists($filepath))
+			{
+				$filepath = $GLOBALS['babSkinPath'] . 'templates/' . $file;
+				if(!file_exists($filepath))
 				{
-				$filepath = $GLOBALS['babSkinPath']."templates/". $file;
-				if( !file_exists( $filepath ) )
-					{
-					$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
-					}
+					$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/' . $file;
 				}
-			if( file_exists( $filepath ) )
-				{
+			}
+			
+			if(file_exists($filepath))
+			{
 				$tpl = new babTemplate();
 				$this->arrdisptmpl = $tpl->getTemplates($filepath);
-				}
+			}
+			
 			$this->countdisptmpl = count($this->arrdisptmpl);
 
 			$arr_exclude = $this->arr_child($id);
@@ -141,91 +209,136 @@ function topcatModify($id)
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
 
 			$this->arrtopcats = array();
-			if( $this->idp == 0 || ($this->idp != 0 && $babBody->isSuperAdmin))
-				{
-				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
-				}
-			while( $arr = $babDB->db_fetch_array($res ))
-				{
-				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
-				}
-			$this->topcatscount = count($this->arrtopcats);
-
-			}
-
-		function arr_child($id)
+			if($this->idp == 0 || ($this->idp != 0 && $babBody->isSuperAdmin))
 			{
+				$this->arrtopcats[] = array( 'id'=> 0, 'title' => $this->nonetxt);
+			}
+			
+			while($arr = $babDB->db_fetch_array($res))
+			{
+				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
+			}
+			$this->topcatscount = count($this->arrtopcats);
+		}
+
+		function processDisabledUploadReason()
+		{
+			$this->sDisabledUploadReason = '';
+			if(false == $this->bImageUploadEnable)
+			{
+				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
+				$this->sDisabledUploadReason .= '<UL>';
+				
+				if('' == $GLOBALS['babUploadPath'])
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
+					$this->bHaveAssociatedImage = false;
+				}
+				else if(!is_dir($GLOBALS['babUploadPath']))
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
+					$this->bHaveAssociatedImage = false;
+				}
+				
+				if(0 == $this->iMaxImgFileSize)
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
+				}
+				$this->sDisabledUploadReason .= '</UL>';
+			}
+		}
+		
+		function arr_child($id)
+		{
 			$out[] = $id;
 			global $babDB;
 			$res = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL." WHERE id_parent='".$id."'");
-			while ($arr = $babDB->db_fetch_array($res))
+			while($arr = $babDB->db_fetch_array($res))
+			{
+				$add = $this->arr_child($arr['id']);
+				if(is_array($add))
 				{
-				$add =  $this->arr_child($arr['id']);
-				if (is_array($add))
 					$out = array_merge($out, $add);
 				}
-			return $out;
 			}
+			return $out;
+		}
 
 		function getnexttemplate()
-			{
+		{
 			static $i = 0;
 			if($i < $this->counttmpl)
-				{
+			{
 				$this->templateid = $this->arrtmpl[$i];
 				$this->templateval = $this->arrtmpl[$i];
-				if( $this->templateid == $this->arr['template'])
-					$this->tmplselected = "selected";
+				if($this->templateid == $this->sPostedTmpl)
+				{
+					$this->tmplselected = 'selected="selected"';
+				}
 				else
+				{
 					$this->tmplselected = "";
+				}
 				$i++;
 				return true;
-				}
-			return false;
 			}
+			return false;
+		}
 
 		function getnextdisptemplate()
-			{
+		{
 			static $i = 0;
 			if($i < $this->countdisptmpl)
-				{
+			{
 				$this->templateid = $this->arrdisptmpl[$i];
 				$this->templateval = $this->arrdisptmpl[$i];
-				if( $this->templateid == $this->arr['display_tmpl'])
-					$this->tmplselected = "selected";
+				if($this->templateid == $this->sPostedDispTmpl)
+				{
+					$this->tmplselected = 'selected="selected"';
+				}
 				else
+				{
 					$this->tmplselected = "";
+				}
 				$i++;
 				return true;
-				}
-			return false;
 			}
+			return false;
+		}
 
 		function getnexttopcat()
-			{
+		{
 			global $babDB;
 			static $i = 0;
-			if( $i < $this->topcatscount)
-				{
+			if($i < $this->topcatscount)
+			{
 				$arr = $this->arrtopcats[$i];
 				$this->topcatid = $arr['id'];
 				$this->topcatval = $arr['title'];
-				if( $this->topcatid == $this->arr['id_parent'])
-					$this->tmplselected = "selected";
+				if($this->topcatid == $this->arr['id_parent'])
+				{
+					$this->tmplselected = 'selected="selected"';
+				}
 				else
+				{
 					$this->tmplselected = "";
+				}
 				$i++;
 				return true;
-				}
+			}
 			else
+			{
 				return false;
-
 			}
 		}
-
-	$temp = new tempa($id);
-	$babBody->babecho(	bab_printTemplate($temp,"topcats.html", "topcatmodify"));
 	}
+	
+	$babBody->addStyleSheet('publication.css');
+	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
+		
+	$temp = new tempa($id);
+	$babBody->babecho(	bab_printTemplate($temp, 'topcats.html', 'topcatmodify'));
+}
 
 
 function topcatDelete($id, $idp)
@@ -273,6 +386,112 @@ function topcatDelete($id, $idp)
 	return true;
 	}
 
+function getHiddenUpload()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/hiddenUpload.class.php';
+	
+	$oHiddenForm = new bab_HiddenUploadForm();
+	
+	$oHiddenForm->addHiddenField('tg', 'topcat');
+	$oHiddenForm->addHiddenField('idx', 'uploadCategoryImg');
+	$oHiddenForm->addHiddenField('MAX_FILE_SIZE', $GLOBALS['babMaxImgFileSize']);
+	$oHiddenForm->addHiddenField('iIdCategory', bab_rp('iIdCategory', 0));
+	
+	die($oHiddenForm->getHtml());
+}
+	
+function getImage()
+{	
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/gdiincl.php';
+
+	$iWidth			= (int) bab_rp('iWidth', 120);
+	$iHeight		= (int) bab_rp('iHeight', 90);
+	$sImage			= (string) bab_rp('sImage', '');
+	$sOldImage		= (string) bab_rp('sOldImage', '');
+	$iIdCategory	= (int) bab_rp('iIdCategory', 0);
+	
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+
+	global $babBody;
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	
+	$sPath = '';
+	if(0 !== $iIdCategory)
+	{
+		$sPath = $oEnvObj->getCategoryImgPath($iIdCategory);
+	}
+	else
+	{
+		$sPath = $oEnvObj->getTempPath();
+	}
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
+
+	if(file_exists($sPath . $sOldImage))
+	{
+		@unlink($sPath . $sOldImage);
+	}
+}
+	
+function uploadCategoryImg()
+{
+	global $babBody;
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/hiddenUpload.class.php';
+	
+	$sJSon			= '';
+	$sKeyOfPhpFile	= 'categoryPicture';
+	$oPubImpUpl		= new bab_PublicationImageUploader();
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	
+	if(false === $aFileInfo)
+	{
+		$sMessage = implode(',', $oPubImpUpl->getError());
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"  => false,
+				"failure"  => true,
+				"sMessage" => $sMessage));
+	}
+	else
+	{
+		$sMessage = implode(',', $aFileInfo);
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"	=> true,
+				"failure"	=> false,
+				"sMessage"	=> $sMessage));
+	}
+				
+	header('Cache-control: no-cache');
+	print bab_HiddenUploadForm::getHiddenIframeHtml($sJSon);		
+}
+
+function deleteTempImage()
+{
+	$sImage		= bab_rp('sImage', '');
+	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$sPath = $oEnvObj->getTempPath();
+	
+	if(file_exists($sPath . $sImage))
+	{
+		@unlink($sPath . $sImage);
+	}
+	die('');
+}
+
 function howToUseDefaultRights($id)
 	{
 	global $babBody;
@@ -299,14 +518,14 @@ function howToUseDefaultRights($id)
 	}
 	
 function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, $disptmpl, $topcatid)
-	{
+{
 	global $babBody;
 
-	if( empty($name))
-		{
+	if(empty($name))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return;
-		}
+		return false;
+	}
 
 	$db = $GLOBALS['babDB'];
 	$query = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where 
@@ -315,13 +534,13 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		and id_parent='".$db->db_escape_string($topcatid)."' 
 		and id_dgowner='".$db->db_escape_string($babBody->currentAdmGroup)."'";
 	$res = $db->db_query($query);
-	if( $db->db_num_rows($res) > 0)
-		{
+	if($db->db_num_rows($res) > 0)
+	{
 		$babBody->msgerror = bab_translate("This topic category already exists");
 		return false;
-		}
+	}
 	else
-		{
+	{
 		$arr = $db->db_fetch_array($db->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id ='".$db->db_escape_string($id)."'"));
 
 		$query = "update ".BAB_TOPICS_CATEGORIES_TBL." set 
@@ -335,8 +554,8 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 		";
 		$db->db_query($query);
 
-		if( $arr['id_parent'] != $topcatid )
-			{
+		if($arr['id_parent'] != $topcatid)
+		{
 			$res = $db->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$db->db_escape_string($topcatid)."'");
 			$arr = $db->db_fetch_array($res);
 			if( isset($arr[0]))
@@ -344,11 +563,91 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 			else
 				$ord = 1;
 			$db->db_query("update ".BAB_TOPCAT_ORDER_TBL." set id_parent='".$db->db_escape_string($topcatid)."', ordering='".$db->db_escape_string($ord)."' where id_topcat='".$db->db_escape_string($id)."' and type='1'");
-			}
-
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$topcatid);
 	}
+
+	//Image
+
+	$iIdCategory			= $id;
+	$sKeyOfPhpFile			= 'categoryPicture';
+	$bHaveAssociatedImage	= false;
+	$bFromTempPath			= false;
+	$sTempName				= (string) bab_rp('sTempImgName', '');
+	$sImageName				= (string) bab_rp('sImgName', '');
+	
+	//Si image chargée par ajax
+	if('' !== $sTempName && '' !== $sImageName)
+	{
+		$bHaveAssociatedImage	= true;
+		$bFromTempPath			= true;
+	}
+	else
+	{//Si image chargée par la voie normal
+		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
+		{
+			$bHaveAssociatedImage = true;
+		}
+	}	
+
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	
+	$oPubPathsEnv = new bab_PublicationPathsEnv();
+	
+	if(false === $bHaveAssociatedImage)
+	{
+		//Aucune image n'est associée alors on supprime celle qui était associée avant
+		//si on a cliqué sur supprimé(ajax) ou coché supprimer (javascript désactivé)
+		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
+		{
+			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+			{
+				require_once dirname(__FILE__) . '/../utilit/delincl.php';
+				bab_deleteUploadDir($oPubPathsEnv->getCategoryImgPath($iIdCategory));
+				bab_deleteImageCategory($iIdCategory);
+			}
+		}
+		return $iIdCategory;
+	}
+	
+	
+	//Une image est associée alors on supprime l'ancienne
+	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
+	{
+		require_once dirname(__FILE__) . '/../utilit/delincl.php';
+		bab_deleteUploadDir($oPubPathsEnv->getCategoryImgPath($iIdCategory));
+		bab_deleteImageCategory($iIdCategory);
+	}
+	
+	$oPubImpUpl	= bab_getInstance('bab_PublicationImageUploader');
+	if(false === $bFromTempPath)
+	{
+		$sFullPathName = $oPubImpUpl->uploadCategoryImage($babBody->currentAdmGroup, $iIdCategory, $sKeyOfPhpFile);
+	}
+	else
+	{		
+		$sFullPathName = $oPubImpUpl->importCategoryImageFromTemp($babBody->currentAdmGroup, $iIdCategory, $sTempName, $sImageName);
+	}
+	
+	{
+		//Insérer l'image en base
+		$aPathParts		= pathinfo($sFullPathName);
+		$sName			= $aPathParts['basename'];
+		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+		
+		/*
+		bab_debug(
+			'sName         ' . $sName . "\n" .
+			'sRelativePath ' . $sRelativePath
+		);
+		//*/
+		
+		bab_addImageToCategory($iIdCategory, $sName, $sRelativePath);
+	}
+	
+	return $iIdCategory;
+}
 
 
 function confirmDeleteTopcat($id)
@@ -362,7 +661,7 @@ function confirmDeleteTopcat($id)
 		return false;
 		}
 
-	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
+	require_once dirname(__FILE__) . '/../utilit/delincl.php';
 	$idp = bab_deleteTopicCategory($id);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
 	}
@@ -473,9 +772,15 @@ if( isset($modify))
 	{
 	if( isset($submit))
 	{
-		modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid);
-		bab_sitemap::clearAll();
-		Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
+		if(false !== modifyTopcat($oldname, $title, $description, $benabled, $item, $template, $disptmpl, $topcatid))
+		{
+			bab_sitemap::clearAll();
+			Header("Location: ". $GLOBALS['babUrlScript'] . '?tg=topcats');
+		}
+		else
+		{
+			$idx = 'Modify';
+		}
 	}
 	else if( isset($catdel))
 		$idx = "Delete";
@@ -504,9 +809,26 @@ if( isset($aclview) )
 	updateAclGroups();
 	}
 
-
+	
 switch($idx)
 	{
+	case 'getImage':
+		getImage(); // called by ajax
+		exit;
+		
+	case 'getHiddenUpload': // called by ajax
+		getHiddenUpload();
+		break;
+	
+	case 'uploadCategoryImg': // called by ajax
+		uploadCategoryImg();
+		exit;	
+	
+	case 'deleteTempImage': // called by ajax
+		deleteTempImage();
+		exit;
+		
+		break;
 	case 'crights':
 		howToUseDefaultRights($item);
 		$babBody->title = bab_translate("Default rights for").": ".bab_getTopicCategoryTitle($item);

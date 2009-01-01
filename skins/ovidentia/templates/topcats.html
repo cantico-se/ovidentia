@@ -3,24 +3,21 @@
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
 
-function bab_onImageSelected(oEvent)
+function bab_onImageSelected()
 {
-	var oFile = document.getElementById('categoryPicture');
-	if(null !== oFile && oFile.value.length > 0)
+	oOldInput = $('categoryPicture');
+	if(oOldInput && oOldInput.value.length > 0)
 	{
-		oFile.style.visibility = 'hidden';
-		$(oFile).id = '';
+		oOldInput.setStyle({visibility:'hidden'});
+		oOldInput.writeAttribute({id:''});
 		
-		var oInput		= document.createElement("input");
-		oInput.type		= 'file';
-		oInput.id		= 'categoryPicture';
-		oInput.name		= 'categoryPicture';
+		var oNewInput = new Element('input', { type: 'file', id: 'categoryPicture', name: 'categoryPicture' })
 		
-		oFile.parentNode.replaceChild(oInput, oFile);
+		oOldInput.parentNode.replaceChild(oNewInput, oOldInput);
 
-		$('hiddenFrom').appendChild(oFile);
+		$('hiddenFrom').appendChild(oOldInput);
 
-		$('categoryPicture').observe('change', bab_onImageSelected);
+		$(oNewInput).observe('change', bab_onImageSelected);
 		
 		$('hiddenFrom').submit();
 		
@@ -32,15 +29,15 @@ function bab_onDeletePicture(oEvent)
 {
 	Event.stop(oEvent);
 
-	var sImage = $('topCatCreate').sTempName.value;
-	$('topCatCreate').sTempName.value = '';
-	$('topCatCreate').sFileName.value = '';
+	var sImage = $('topCatCreate').sTempImgName.value;
+	$('topCatCreate').sTempImgName.value = '';
+	$('topCatCreate').sImgName.value = '';
 
 	var sUrl = '{ babUrlScript }?tg=topcats&idx=deleteTempImage&sImage=' + sImage + '&t=' + (new Date()).getTime();
 	new Ajax.Request(sUrl, 
 		{
 			method: "get",
-			onSuccess: onDeleteImageResponse
+			onComplete: onDeleteImageResponse
 		}
 	);
 
@@ -49,8 +46,9 @@ function bab_onDeletePicture(oEvent)
 
 function onDeleteImageResponse()
 {
-	$('sTempImg').src = '#';
+	$('tempImg').src = '#';
 	bab_hide('imagePreviewTR');
+	bab_hide('messageTR');
 	bab_enableForm();
 }
 
@@ -75,13 +73,12 @@ function uploadDone()
 	
 			var aImg = sJSon.sMessage.split(',');
 			
-			var sOldImage = $('topCatCreate').sTempName.value;
-			$('topCatCreate').sTempName.value = aImg[0];
-			$('topCatCreate').sFileName.value = aImg[1];
+			var sOldImage = $('topCatCreate').sTempImgName.value;
+			$('topCatCreate').sTempImgName.value = aImg[0];
+			$('topCatCreate').sImgName.value = aImg[1];
 	
-			$('sTempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			$('tempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
 			
-			//bab_show('imagePreviewTR');
 			bab_hide('messageTR');
 		}
 		else if(sJSon.failure) 
@@ -147,20 +144,22 @@ function bab_hide(sIdElement)
 
 function bab_disableForm()
 {
-	$('mainFormSubmit').disable();
+	$('mainFormSubmit').setAttribute('disabled', 'disabled');
 	if($('categoryPicture'))
 	{
-		$('categoryPicture').disable();
+		$('categoryPicture').setAttribute('disabled', 'disabled');
 	}
+	$('deletePicture').hide();
 }
 
 function bab_enableForm()
 {
-	$('mainFormSubmit').enable();
+	$('mainFormSubmit').removeAttribute('disabled');
 	if($('categoryPicture'))
 	{
-		$('categoryPicture').enable();
+		$('categoryPicture').removeAttribute('disabled');
 	}
+	$('deletePicture').show();
 }
 
 //]]>
@@ -171,8 +170,8 @@ function bab_enableForm()
 	<input type="hidden" name="tg" value="topcats" />
 	<input type="hidden" name="idx" value="List" />
 	<input type="hidden" name="add" value="add" />
-	<input type="hidden" name="sTempName" value="{ sTempImgName }" />
-	<input type="hidden" name="sFileName" value="{ sImgName }" />
+	<input type="hidden" name="sTempImgName" value="{ sTempImgName }" />
+	<input type="hidden" name="sImgName" value="{ sImgName }" />
 	
 	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
@@ -248,8 +247,16 @@ function bab_enableForm()
 					<tr id="imagePreviewTR" style="display:none"> 
 						<td align="right">{ sImagePreviewCaption }</td>
 						<td>
-							<img id="sTempImg" border="0" src="#" />
+							<img id="tempImg" border="0" src="#" alt="{ sAltImagePreview }" />
 							<input type="image" id="deletePicture" src="{ babInstallPath }skins/ovidentia/images/22x22/stop.png" />
+						</td>
+					</tr>
+					<!--#else bImageUploadEnable -->
+					<tr>
+						<td colspan="2">
+							<div class="error">
+								{ sDisabledUploadReason }
+							</div>
 						</td>
 					</tr>
 					<!--#endif bImageUploadEnable -->
@@ -285,17 +292,16 @@ if('undefined' != typeof document.observe)
 			$('deletePicture').observe('click', bab_onDeletePicture);
 		}
 		
-		if($('sTempImg'))
+		if($('tempImg'))
 		{
-			$('sTempImg').observe('load', bab_onLoadImagePreview);
+			$('tempImg').observe('load', bab_onLoadImagePreview);
 			
-			var sImage = $('topCatCreate').sTempName.value;
-			var sFileName = $('topCatCreate').sFileName.value;
+			var sTempImgName = $('topCatCreate').sTempImgName.value;
+			var sImgName = $('topCatCreate').sImgName.value;
 			
-			if(sImage.length > 0 && sFileName.length > 0)
+			if(sTempImgName.length > 0 && sImgName.length > 0)
 			{
-				$('sTempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + sImage;
-				//bab_show('imagePreviewTR');
+				$('tempImg').src = "{ babUrlScript }?tg=topcats&idx=getImage&iWidth=120&iHeight=90&sImage=" + sTempImgName;
 			}
 		}
 	});
@@ -389,68 +395,103 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
 
-var g_oHiddenForm = null;
-
-function bab_onPictureChange()
+function bab_onImageSelected()
 {
-	var oFile = document.getElementById('sFile');
-	if(null !== oFile)
+	oOldInput = $('categoryPicture');
+	if(oOldInput && oOldInput.value.length > 0)
 	{
-		oFile.style.visibility = 'hidden';
+		oOldInput.setStyle({visibility:'hidden'});
+		oOldInput.writeAttribute({id:''});
 		
-		var oInput		= document.createElement("input");
-		oInput.type		= 'file';
-		oInput.id		= 'sFile';
-		oInput.name		= 'sFile';
+		var oNewInput = new Element('input', { type: 'file', id: 'categoryPicture', name: 'categoryPicture' })
 		
-		$(oInput).observe('change', bab_onPictureChange);
+		oOldInput.parentNode.replaceChild(oNewInput, oOldInput);
+
+		$('hiddenFrom').appendChild(oOldInput);
+
+		$(oNewInput).observe('change', bab_onImageSelected);
 		
-		oFile.parentNode.replaceChild(oInput, oFile);
+		$('hiddenFrom').submit();
 		
-		$('topcatModify').appendChild(oFile);
-		
-		g_oHiddenForm.submit();
+		bab_disableForm();
 	}
+}
+
+function bab_onDeletePicture(oEvent)
+{
+	Event.stop(oEvent);
+
+	var sImage = $('topCatModify').sTempImgName.value;
+	$('topCatModify').sTempImgName.value = '';
+	$('topCatModify').sImgName.value = '';
+
+	var sUrl = '{ babUrlScript }?tg=topcats&idx=deleteTempImage&sImage=' + sImage + '&t=' + (new Date()).getTime();
+	new Ajax.Request(sUrl, 
+		{
+			method: "get",
+			onComplete: onDeleteImageResponse
+		}
+	);
+
+	bab_disableForm();
+}
+
+function onDeleteImageResponse()
+{
+	$('tempImg').src = '#';
+	bab_hide('imagePreviewTR');
+	bab_hide('messageTR');
+	bab_enableForm();
+}
+
+function bab_onLoadImagePreview()
+{
+	if(this.src != '#')
+	{
+		bab_show('imagePreviewTR');
+	}
+	bab_enableForm();
 }
 
 function uploadDone()
 {
-	var ret = frames['hiddenIFrame'].document.getElementsByTagName("body")[0].innerHTML;
-	
-	if(ret.length == 0)
-		return;
-	
-	var data = eval("("+ret+")"); //Parse JSON // Read the below explanations before passing judgment on me
-	
-	if(data.success) { //This part happens when the image gets uploaded.
-		//document.getElementById("image_details").innerHTML = "<img src='image_uploads/" + data.file_name + "' /><br />Size: " + data.size + " KB";
-//		alert("Upload success: " + data.file_name);
-	}
-	else if(data.failure) { //Upload failed - show user the reason.
-//		alert("Upload Failed: " + data.failure);
-	}	
+	var sBodyContent = frames['hiddenIFrame'].document.getElementsByTagName("body")[0].innerHTML;
 
-	var oMessage = document.getElementById('sMessage');
-	if(null !== oMessage)
+	if(sBodyContent.length != 0)
 	{
-		oMessage.innerHTML = data.file_name;
+		var sJSon = eval("(" + sBodyContent + ")"); //Parse JSON
+		
+		if(sJSon.success) 
+		{ //This part happens when the image gets uploaded.
+	
+			var aImg = sJSon.sMessage.split(',');
+			
+			var sOldImage = $('topCatModify').sTempImgName.value;
+			$('topCatModify').sTempImgName.value = aImg[0];
+			$('topCatModify').sImgName.value = aImg[1];
+	
+			$('tempImg').src = "{ babUrlScript }?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0] + '&sOldImage=' + sOldImage;
+			
+			bab_hide('messageTR');
+		}
+		else if(sJSon.failure) 
+		{ //Upload failed - show user the reason.
+			bab_displayMessage(sJSon.sMessage);
+		}	
 	}
+	
+	bab_enableForm();
 }
-
-
 
 function bab_getHiddenUpload()
 {
-	if(null === g_oHiddenForm)
-	{
-		var sUrl = '{ babUrlScript }?tg=topcat&idx=GetHiddenUpload&iIdCategory=' + { arr[id] };
-		new Ajax.Request(sUrl, 
-			{
-				method: "get",
-				onSuccess: onHiddenUploadResponse
-			}
-		);
-	}
+	var sUrl = '{ babUrlScript }?tg=topcat&idx=getHiddenUpload&iIdCategory=' + { arr[id] };
+	new Ajax.Request(sUrl, 
+		{
+			method: "get",
+			onSuccess: onHiddenUploadResponse
+		}
+	);
 }
 
 
@@ -458,34 +499,112 @@ function onHiddenUploadResponse(oTransport)
 {
 	try
 	{
-		if(null === g_oHiddenForm)
-		{
-			$($('topcatModify').parentNode).insert({'bottom' : oTransport.responseText});
-			g_oHiddenForm = $('hiddenFrom');
-		}
+		$($('topCatModify').parentNode).insert({'bottom' : oTransport.responseText});
 	}
 	catch(e)
 	{
-		var oMessage = document.getElementById('sMessage');
-		if(null !== oMessage)
-		{
-			oMessage.innerHTML = e.message;
-		}
+		bab_displayMessage(e.message);
 	}
 }
 
+function bab_displayMessage(message)
+{
+	if(bab_show('messageTR'))
+	{
+		$('statusLine').update(message);
+	}
+}
 
+function bab_show(sIdElement)
+{
+	if($(sIdElement))
+	{
+		$(sIdElement).show();
+		return true;
+	}
+	return false;
+}
+
+function bab_hide(sIdElement)
+{
+	if($(sIdElement))
+	{
+		$(sIdElement).hide();
+		return true;
+	}
+	return false;
+}
+
+function bab_disableForm()
+{
+	$('mainModifySubmit').setAttribute('disabled', 'disabled');
+	
+	if($('mainDeleteSubmit'))
+	{
+		$('mainDeleteSubmit').setAttribute('disabled', 'disabled');
+	}
+	
+	$('deletePicture').hide();
+		
+	if($('categoryPicture'))
+	{
+		$('categoryPicture').setAttribute('disabled', 'disabled');
+	}
+}
+
+function bab_enableForm()
+{
+	$('mainModifySubmit').removeAttribute('disabled');
+	
+	if($('mainDeleteSubmit'))
+	{
+		$('mainDeleteSubmit').removeAttribute('disabled');
+	}
+	
+	$('deletePicture').show();
+	
+	if($('categoryPicture'))
+	{
+		$('categoryPicture').removeAttribute('disabled');
+	}
+}
+
+function bab_createImagePreviewTR()
+{
+	var oTr = new Element('tr', {id:'imagePreviewTR'});
+	$(oTr).setStyle({display:'none'});
+	
+	var oTd1 = new Element('td', {align:'right'});
+	$(oTd1).update("{ sImagePreviewCaption }");
+	
+	var oTd2 = new Element('td');
+	
+	var oImg = new Element('img', {id:'tempImg', src:'{ sImageUrl }', alt:'{ sAltImagePreview }'});
+	
+	var oInput = new Element('input', { type:'image', id:'deletePicture', src:'{ babInstallPath }skins/ovidentia/images/22x22/stop.png'});
+	$(oInput).setStyle({display:'none'});
+	
+	oTd2.appendChild(oImg);
+	oTd2.appendChild(oInput);
+	oTr.appendChild(oTd1);
+	oTr.appendChild(oTd2);
+	
+	$('messageTR').parentNode.insertBefore(oTr, $('messageTR'));
+}
 //]]>
 </script>
 
 
-<form method="post" id="topcatModify" name="topcatModify" action="{ babPhpSelf }">
+<form method="post" id="topCatModify" name="topCatModify" enctype="multipart/form-data" action="{ babPhpSelf }">
+	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="topcat" />
 	<input type="hidden" name="idx" value="Modify" />
 	<input type="hidden" name="item" value="{ arr[id] }" />
 	<input type="hidden" name="idp" value="{ arr[id_parent] }" />
 	<input type="hidden" name="oldname" value="{ arr[title] }" />
 	<input type="hidden" name="modify" value="modify" />
+	<input type="hidden" name="sTempImgName" value="{ sTempImgName }" />
+	<input type="hidden" name="sImgName" value="{ sImgName }" />
 	
 	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
@@ -543,32 +662,64 @@ function onHiddenUploadResponse(oTransport)
 							</select>
 						</td>
 					</tr>
-
-<tr> 
-	<td align="right">Image</td>
-	<td>
-		<input type="file" id="sFile" name="sFile" />
-	</td>
-</tr>
-<tr> 
-	<td colspan="2">
-		<div id="sMessage" style="background-color:#FDF9F1; border:2px solid #E7DAC5; color:#C26400;">
-			Les filles vous êtes NULL de chez NULL
-			<div id="imageDetail"></div>
-		</div>
-	</td>
-</tr>
+					
+				<!--#if bImageUploadEnable  -->
+					<tr> 
+						<td align="right">{ sSelectImageCaption }</td>
+						<td>
+							<input type="file" id="categoryPicture" name="categoryPicture" />
+						</td>
+					</tr>
+				<!--#else bImageUploadEnable -->
+					<tr>
+						<td colspan="2">
+							<div class="error">
+								{ sDisabledUploadReason }
+							</div>
+						</td>
+					</tr>
+				<!--#endif bImageUploadEnable -->
+				
+					<tr id="messageTR" style="display:none">
+						<td colspan="2">
+							<div id="statusLine">
+							</div>
+						</td>
+					</tr>
+					
+				<!--#if bHaveAssociatedImage  -->
+					<tr id="deleteImageTR"> 
+						<td align="right">{ sDeleteImageCaption }</td>
+						<td>
+							<input type="checkbox" name="deleteImageChk" { sDeleteImageChecked } value="1" />
+						</td>
+					</tr>
+					<tr id="imagePreviewTR"> 
+						<td align="right">{ sImagePreviewCaption }</td>
+						<td>
+							<img id="tempImg" border="0" src="{ sImageUrl }" alt="{ sAltImagePreview }" />
+						</td>
+					</tr>
+				<!--#endif bHaveAssociatedImage -->
 
 					<tr> 
-						<td>&nbsp;</td>
-						<td> 
-							<input type="submit" name="submit" value="{ modify }" />&nbsp;&nbsp;
+						<td colspan="2" align="center"> 
+							<input type="submit" name="submit" id="mainModifySubmit" value="{ modify }" />&nbsp;&nbsp;
 							<!--#if bdelete -->
-							<input type="submit" name="catdel" value="{ delete }" />
+							<input type="submit" name="catdel" id="mainDeleteSubmit" value="{ delete }" />
 							<!--#endif bdelete -->
 							<br />
 						</td>
 					</tr>
+					<!--#if bImageUploadEnable  -->
+					<tr id="imageModifyInfoTR" style="display:none"> 
+						<td colspan="2" align="center"> 
+							<div class="info">
+							{ sImageModifyMessage }
+							</div>
+						</td>
+					</tr>
+					<!--#endif bImageUploadEnable -->
 				</table>
 			</td>
 		</tr>
@@ -578,11 +729,60 @@ function onHiddenUploadResponse(oTransport)
 
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
-document.observe("dom:loaded", function bab_init() {
-	bab_getHiddenUpload();
+if('undefined' != typeof document.observe)
+{
+	var bUploadPathValid = Boolean({ bUploadPathValid });
 	
-	$('sFile').observe('change', bab_onPictureChange);
-});
+	if(bUploadPathValid)
+	{
+		document.observe("dom:loaded", function bab_init() {
+		
+			if($('imagePreviewTR'))
+			{
+				$('messageTR').parentNode.removeChild($('imagePreviewTR'));
+			}
+		
+			if($('imageModifyInfoTR'))
+			{
+				$('imageModifyInfoTR').show();
+			}
+			
+			if($('deleteImageTR'))
+			{
+				$('deleteImageTR').hide();
+			}
+			
+			bab_createImagePreviewTR();
+	
+			bab_getHiddenUpload();
+			
+			var sTempImgName	= $('topCatModify').sTempImgName.value;
+			var sImgName		= $('topCatModify').sImgName.value;
+	
+			bab_disableForm();
+			
+			if($('categoryPicture'))
+			{
+				$('categoryPicture').observe('change', bab_onImageSelected);
+			}
+			
+			if($('deletePicture'))
+			{
+				$('deletePicture').observe('click', bab_onDeletePicture);
+			}
+			
+			if($('tempImg'))
+			{
+				$('tempImg').observe('load', bab_onLoadImagePreview);
+			}
+	
+			if(sImgName.length == 0)
+			{
+				bab_enableForm();
+			}
+		});
+	}
+}
 //]]>
 </script>
 <!--#end topcatmodify -->
