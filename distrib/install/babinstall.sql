@@ -460,12 +460,12 @@ CREATE TABLE bab_topics (
 #
 
 CREATE TABLE bab_topics_images (
-   iId int(11) unsigned NOT NULL auto_increment,
-   iIdTopic int(11) unsigned NOT NULL,
-   sName varchar(255),
-   sRelativePath text NOT NULL,
-   PRIMARY KEY (iId),
-   KEY iIdCategory (iIdTopic)
+   id int(11) unsigned NOT NULL auto_increment,
+   idTopic int(11) unsigned NOT NULL,
+   name varchar(255),
+   relativePath text NOT NULL,
+   PRIMARY KEY (id),
+   KEY idTopic (idTopic)
 );
 
 # --------------------------------------------------------
@@ -495,12 +495,12 @@ INSERT INTO bab_topics_categories VALUES ('1', 'Default category', 'Default cate
 #
 
 CREATE TABLE bab_topics_categories_images (
-   iId int(11) unsigned NOT NULL auto_increment,
-   iIdCategory int(11) unsigned NOT NULL,
-   sName varchar(255),
-   sRelativePath text NOT NULL,
-   PRIMARY KEY (iId),
-   KEY iIdCategory (iIdCategory)
+   id int(11) unsigned NOT NULL auto_increment,
+   idCategory int(11) unsigned NOT NULL,
+   name varchar(255),
+   relativePath text NOT NULL,
+   PRIMARY KEY (id),
+   KEY idCategory (idCategory)
 );
 
 # --------------------------------------------------------
