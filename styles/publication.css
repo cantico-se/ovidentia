@@ -4,6 +4,18 @@
 	color:#C26400;
 }
 
+.info {
+	background-color:#FDF9F1;
+	border:2px solid #E7DAC5; 
+	color:#C26400;
+}
+
+.error {
+	background-color:#FFD0D0;
+	border:2px solid #FF0000; 
+	color:#FF0000;
+}
+
 .imgPreviewButton {
 	vertical-align:bottom;
 	margin-left:5px;
