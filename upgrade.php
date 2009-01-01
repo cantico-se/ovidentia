@@ -5638,12 +5638,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("	
 			CREATE TABLE ".BAB_TOPICS_CATEGORIES_IMAGES_TBL." (
-				iId int(11) unsigned NOT NULL auto_increment,
-				iIdCategory int(11) unsigned NOT NULL,
-				sName varchar(255),
-				sRelativePath text NOT NULL,
-				PRIMARY KEY (iId),
-				KEY iIdCategory (iIdCategory))
+				id int(11) unsigned NOT NULL auto_increment,
+				idCategory int(11) unsigned NOT NULL,
+				name varchar(255),
+				relativePath text NOT NULL,
+				PRIMARY KEY (id),
+				KEY idCategory (idCategory))
 			");
 	}
 	
@@ -5651,12 +5651,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("	
 			CREATE TABLE ".BAB_TOPICS_IMAGES_TBL." (
-				iId int(11) unsigned NOT NULL auto_increment,
-				iIdTopic int(11) unsigned NOT NULL,
-				sName varchar(255),
-				sRelativePath text NOT NULL,
-				PRIMARY KEY (iId),
-				KEY iIdTopic (iIdTopic))
+				id int(11) unsigned NOT NULL auto_increment,
+				idTopic int(11) unsigned NOT NULL,
+				name varchar(255),
+				relativePath text NOT NULL,
+				PRIMARY KEY (id),
+				KEY idTopic (idTopic))
 			");
 	}
 	
