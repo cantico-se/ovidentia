@@ -78,9 +78,19 @@ function bab_deleteTopicCategory($id)
 	$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL."  set id_parent='".$babDB->db_escape_string($idparent)."' where id_parent='".$babDB->db_escape_string($id)."'");
 
 	// delete topic category
+	list($iIdDelegation) = $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	$req = "delete from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($req);
 
+	
+	require_once dirname(__FILE__) . '/artincl.php';
+	
+	$oPubPathsEnv = new bab_PublicationPathsEnv();
+	if($oPubPathsEnv->setEnv($iIdDelegation))
+	{
+		bab_deleteUploadDir($oPubPathsEnv->getCategoryImgPath($id));
+		bab_deleteImageCategory($id);
+	}
 	return $idparent;
 }
 
