@@ -686,7 +686,7 @@ function bab_getImageCategory($iIdCategory)
 		'relativePath'	=> ''
 	);
 	
-	return $oTblWr->load($aAttribut, 1, 3, 1, 1);
+	return $oTblWr->load($aAttribut, 1, 3, 0, 1);
 }
 
 /**
