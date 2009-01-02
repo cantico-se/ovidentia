@@ -803,6 +803,8 @@ function uploadCategoryImg()
 
 function deleteTempImage()
 {
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	
 	$sImage		= bab_rp('sImage', '');
 	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
 	
