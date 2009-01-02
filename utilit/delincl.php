@@ -95,8 +95,7 @@ function bab_deleteTopicCategory($id)
 }
 
 function bab_confirmDeleteTopic($id)
-	{
-
+{
 	global $babDB;
 	$req = "select id from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($req);
@@ -131,9 +130,20 @@ function bab_confirmDeleteTopic($id)
 	$req = "delete from ".BAB_TOPCAT_ORDER_TBL." where id_topcat='".$babDB->db_escape_string($id)."' and type='2'";
 	$res = $babDB->db_query($req);	
 
+	list($iIdCat) = $babDB->db_fetch_array($babDB->db_query("SELECT id_cat from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'"));
+	list($iIdDelegation) = $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCat)."'"));
 	$req = "delete from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($req);
+
+	require_once dirname(__FILE__) . '/artincl.php';
+	
+	$oPubPathsEnv = new bab_PublicationPathsEnv();
+	if($oPubPathsEnv->setEnv($iIdDelegation))
+	{
+		bab_deleteUploadDir($oPubPathsEnv->getTopicImgPath($id));
+		bab_deleteImageTopic($id);
 	}
+}
 
 
 function bab_deleteDraft($idart)
