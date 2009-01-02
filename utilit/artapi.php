@@ -708,3 +708,107 @@ function bab_deleteImageCategory($iIdCategory)
 	
 	return $oTblWr->delete($aAttribut);
 }
+
+
+/**
+ * This function insert a record in the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader.
+ * For now only one image can be attached
+ *
+ * @param int		$iIdTopic		Topic identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise 
+ */
+function bab_addImageToTopic($iIdTopic, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> '',
+		'idTopic'		=> $iIdTopic,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	$bSkipFirst = false;
+	return $oTblWr->save($aAttribut, $bSkipFirst);
+}
+
+/**
+ * This function update a record from the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader
+ * For now only one image can be attached
+ *
+ * @param int 		$iIdImage		Identifier of the record to update
+ * @param int 		$iIdTopic		Topic identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise
+ */
+function bab_updateImageTopic($iIdImage, $iIdTopic, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> $iIdImage,
+		'idTopic'		=> $iIdTopic,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	return $oTblWr->update($aAttribut);
+}
+
+/**
+ * Get a record from the database
+ * For now only one image can be attached
+ *
+ * @param int $iIdTopic	Topic identifier
+ * @return Array|bool	Array on success, false otherwise
+ */
+function bab_getImageTopic($iIdTopic)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idTopic'		=> $iIdTopic,
+		'id'			=> -1,
+		'name'			=> '',
+		'relativePath'	=> ''
+	);
+	
+	return $oTblWr->load($aAttribut, 1, 3, 0, 1);
+}
+
+/**
+ * Delete a record
+ * For now only one image can be attached 
+ *
+ * @param int $iIdTopic
+ * @return bool
+ */
+function bab_deleteImageTopic($iIdTopic)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_TOPICS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idTopic' => $iIdTopic
+	);
+	
+	return $oTblWr->delete($aAttribut);
+}
+
+

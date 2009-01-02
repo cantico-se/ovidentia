@@ -545,6 +545,12 @@ class bab_PublicationImageUploader
 		return $this->importImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName, $sFunctionName);
 	}
 	
+	public function importTopicImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName)
+	{
+		$sFunctionName = 'getTopicImgPath';
+		return $this->importImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName, $sFunctionName);
+	}
+	
 	private function importImageFromTemp($iIdDelegation, $iIdObject, $sTempImageName, $sImageName, $sFunctionName)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
