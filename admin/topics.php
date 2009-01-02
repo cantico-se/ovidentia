@@ -76,46 +76,86 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 		var $manmodysel;
 		var $manmodnsel;
 
-
+		var $bImageUploadEnable = false;
+		var $iMaxImgFileSize;
+		var $sTempImgName;
+		var $sImgName;
+		var $sAltImagePreview;
+		var $bUploadPathValid = false;
+		var $bDisplayDelImgChk = false; 
+		var $bDisplayImgModifyTr = false; 
+		var $bHaveAssociatedImage = false;
+		var $sDisabledUploadReason;
+		
+		var $sSelectImageCaption;
+		var $sImagePreviewCaption;
+		
+		var $sHiddenUploadUrl;
+		var $sImageUrl = '#';
+		
 		function temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 			{
 			global $babBody, $babDB;
-			$this->topcat = bab_translate("Topic category");
-			$this->title = bab_translate("Topic name");
-			$this->desctitle = bab_translate("Description");
-			$this->approver = bab_translate("Topic manager");
-			$this->modcom = bab_translate("Approbation schema for comments");
-			$this->modart = bab_translate("Approbation schema for articles");
-			$this->modupd = bab_translate("Approbation schema for articles modification");
-			$this->notiftxt = bab_translate("Allow author to notify group members by mail");
-			$this->arttmpltxt = bab_translate("Article's model");
-			$this->disptmpltxt = bab_translate("Display template");
-			$this->restricttxt = bab_translate("Articles's authors can restrict access to articles");
-			$this->hpagestxt = bab_translate("Allow author to propose articles for homes pages");
-			$this->pubdatestxt = bab_translate("Allow author to specify dates of publication");
-			$this->attachmenttxt = bab_translate("Allow author to attach files to articles");
-			$this->artupdatetxt = bab_translate("Allow author to modify their articles");
-			$this->manmodtxt = bab_translate("Allow managers to modify articles");
-			$this->artmaxtxt = bab_translate("Max articles on the archives page");
-			$this->yeswithapprobation = bab_translate("Yes with approbation");
-			$this->yesnoapprobation = bab_translate("Yes without approbation");
-			$this->tagstxt = bab_translate("Use tags");
-			$this->yes = bab_translate("Yes");
-			$this->no = bab_translate("No");
-			$this->add = bab_translate("Add");
-			$this->none = bab_translate("None");
-			$this->autoapprobationtxt = bab_translate("Automatically approve author if he belongs to approbation schema");
-			$this->tgval = "topics";
-			$this->langLabel = bab_translate("Language");
-			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
-			$this->countLangFiles = count($this->langFiles);
-			$this->item = "";
-			$this->cat = $cat;
-			$this->bhpages = $bhpages;
-			$this->bpubdates = $bpubdates;
-			$this->battachment = $battachment;
-			$this->bartupdate = $bartupdate;
+			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
+			$this->topcat				= bab_translate("Topic category");
+			$this->title 				= bab_translate("Topic name");
+			$this->desctitle 			= bab_translate("Description");
+			$this->approver 			= bab_translate("Topic manager");
+			$this->modcom 				= bab_translate("Approbation schema for comments");
+			$this->modart 				= bab_translate("Approbation schema for articles");
+			$this->modupd 				= bab_translate("Approbation schema for articles modification");
+			$this->notiftxt 			= bab_translate("Allow author to notify group members by mail");
+			$this->arttmpltxt 			= bab_translate("Article's model");
+			$this->disptmpltxt 			= bab_translate("Display template");
+			$this->restricttxt 			= bab_translate("Articles's authors can restrict access to articles");
+			$this->hpagestxt 			= bab_translate("Allow author to propose articles for homes pages");
+			$this->pubdatestxt 			= bab_translate("Allow author to specify dates of publication");
+			$this->attachmenttxt 		= bab_translate("Allow author to attach files to articles");
+			$this->artupdatetxt 		= bab_translate("Allow author to modify their articles");
+			$this->manmodtxt 			= bab_translate("Allow managers to modify articles");
+			$this->artmaxtxt 			= bab_translate("Max articles on the archives page");
+			$this->yeswithapprobation	= bab_translate("Yes with approbation");
+			$this->yesnoapprobation 	= bab_translate("Yes without approbation");
+			$this->tagstxt				= bab_translate("Use tags");
+			$this->yes					= bab_translate("Yes");
+			$this->no					= bab_translate("No");
+			$this->add					= bab_translate("Add");
+			$this->none					= bab_translate("None");
+			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->tgval				= "topics";
+			$this->langLabel			= bab_translate("Language");
+			$this->langFiles			= $GLOBALS['babLangFilter']->getLangFiles();
+			$this->countLangFiles		= count($this->langFiles);
+			$this->item					= "";
+			$this->cat					= $cat;
+			$this->bhpages				= $bhpages;
+			$this->bpubdates			= $bpubdates;
+			$this->battachment			= $battachment;
+			$this->bartupdate			= $bartupdate;
 
+			$this->sSelectImageCaption	= bab_translate('Select a picture');
+			$this->sImagePreviewCaption	= bab_translate('Preview image');
+			$this->sTempImgName			= bab_rp('sTempImgName', '');
+			$this->sImgName				= bab_rp('sImgName', '');
+			$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+			
+			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topics&idx=getHiddenUpload&cat=' . $cat;
+			
+			if('' != $this->sTempImgName)
+			{
+				$this->bHaveAssociatedImage = true;
+				$this->sImageUrl = $GLOBALS['babUrlScript'] . '?tg=topics&idx=getImage&iWidth=120&iHeight=90&sImage=' . 
+					$this->sTempImgName . '&cat=' . $cat;
+			}
+			else
+			{
+				$this->sImageUrl = '#';
+			}
+			
+			$this->processDisabledUploadReason();
+			
 			if(empty($description))
 				{
 				$this->description = "";
@@ -185,13 +225,13 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 
 			if( $bautoapp == "N")
 				{
-				$this->autoappnsel = "selected";
+				$this->autoappnsel = 'selected="selected"';
 				$this->autoappysel = "";
 				}
 			else
 				{
 				$this->autoappnsel = "";
-				$this->autoappysel = "selected";
+				$this->autoappysel = 'selected="selected"';
 				}
 
 			if(empty($bnotif))
@@ -201,13 +241,13 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 
 			if( $bnotif == "N")
 				{
-				$this->notifnsel = "selected";
+				$this->notifnsel = 'selected="selected"';
 				$this->notifysel = "";
 				}
 			else
 				{
 				$this->notifnsel = "";
-				$this->notifysel = "selected";
+				$this->notifysel = 'selected="selected"';
 				}
 
 			if(empty($restrict))
@@ -217,53 +257,53 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 
 			if( $restrict == "N")
 				{
-				$this->restrictnsel = "selected";
+				$this->restrictnsel = 'selected="selected"';
 				$this->restrictysel = "";
 				}
 			else
 				{
 				$this->restrictnsel = "";
-				$this->restrictysel = "selected";
+				$this->restrictysel = 'selected="selected"';
 				}
 
 			if( $bhpages == "N")
 				{
-				$this->hpagesnsel = "selected";
+				$this->hpagesnsel = 'selected="selected"';
 				$this->hpagesysel = "";
 				}
 			else
 				{
-				$this->hpagesysel = "selected";
+				$this->hpagesysel = 'selected="selected"';
 				$this->hpagesnsel = "";
 				}
 
 			if( $busetags == "N")
 				{
-				$this->tagsnsel = "selected";
+				$this->tagsnsel = 'selected="selected"';
 				$this->tagsysel = "";
 				}
 			else
 				{
 				$this->tagsnsel = "";
-				$this->tagsysel = "selected";
+				$this->tagsysel = 'selected="selected"';
 				}
 
 			switch($bartupdate)
 				{
 				case '1':
-					$this->artupdateyasel = "selected";
+					$this->artupdateyasel = 'selected="selected"';
 					$this->artupdateysel = "";
 					$this->artupdatensel = "";
 					break;
 				case '2':
 					$this->artupdateyasel = "";
-					$this->artupdateysel = "selected";
+					$this->artupdateysel = 'selected="selected"';
 					$this->artupdatensel = "";
 					break;
 				default:
 					$this->artupdateyasel = "";
 					$this->artupdateysel = "";
-					$this->artupdatensel = "selected";
+					$this->artupdatensel = 'selected="selected"';
 					break;
 					break;
 				}
@@ -271,42 +311,42 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			switch($bmanmod)
 				{
 				case '1':
-					$this->manmodyasel = "selected";
+					$this->manmodyasel = 'selected="selected"';
 					$this->manmodysel = "";
 					$this->manmodnsel = "";
 					break;
 				case '2':
 					$this->manmodyasel = "";
-					$this->manmodysel = "selected";
+					$this->manmodysel = 'selected="selected"';
 					$this->manmodnsel = "";
 					break;
 				default:
 					$this->manmodyasel = "";
 					$this->manmodysel = "";
-					$this->manmodnsel = "selected";
+					$this->manmodnsel = 'selected="selected"';
 					break;
 					break;
 				}
 
 			if( $battachment == "N")
 				{
-				$this->attachmentnsel = "selected";
+				$this->attachmentnsel = 'selected="selected"';
 				$this->attachmentysel = "";
 				}
 			else
 				{
-				$this->attachmentysel = "selected";
+				$this->attachmentysel = 'selected="selected"';
 				$this->attachmentnsel = "";
 				}
 
 			if( $bpubdates == "N")
 				{
-				$this->pubdatesnsel = "selected";
+				$this->pubdatesnsel = 'selected="selected"';
 				$this->pubdatesysel = "";
 				}
 			else
 				{
-				$this->pubdatesysel = "selected";
+				$this->pubdatesysel = 'selected="selected"';
 				$this->pubdatesnsel = "";
 				}
 
@@ -328,13 +368,14 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				}
 
 			$this->bdel = false;
+			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_topic');
 			$editor->setContent($this->description);
 			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
-
+			
 			$this->idcat = $cat;
 
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
@@ -399,6 +440,34 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->countdisptmpl = count($this->arrdisptmpl);
 			}
 
+		function processDisabledUploadReason()
+		{
+			$this->sDisabledUploadReason = '';
+			if(false == $this->bImageUploadEnable)
+			{
+				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
+				$this->sDisabledUploadReason .= '<UL>';
+				
+				if('' == $GLOBALS['babUploadPath'])
+				{
+					$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
+				}
+				else if(!is_dir($GLOBALS['babUploadPath']))
+				{
+					$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
+				}
+				
+				if(0 == $this->iMaxImgFileSize)
+				{
+					$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
+				}
+				$this->sDisabledUploadReason .= '</UL>';
+			}
+		}
+			
 		function getnextcat()
 			{
 			global $babDB;
@@ -409,7 +478,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->toptitle = $this->arr['title'];
 				$this->topid = $this->arr['id'];
 				if( $this->arr['id'] == $this->ncat )
-					$this->topselected = "selected";
+					$this->topselected = 'selected="selected"';
 				else
 					$this->topselected = "";
 				$i++;
@@ -430,7 +499,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->said = $arr['id'];
 				if( $this->said == $this->currentsa )
 					{
-					$this->sasel = "selected";
+					$this->sasel = 'selected="selected"';
 					}
 				else
 					{
@@ -467,7 +536,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->langValue = $this->langFiles[$i];
 				if($this->langValue == $GLOBALS['babLanguage'])
 					{
-					$this->langselected = 'selected';
+					$this->langselected = 'selected="selected"';
 					}
 				else
 					{
@@ -487,7 +556,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->arttmplid = $this->arrarttmpl[$i];
 				$this->arttmplval = $this->arrarttmpl[$i];
 				if( $this->arttmplid == $this->atid )
-					$this->arttmplselected = "selected";
+					$this->arttmplselected = 'selected="selected"';
 				else
 					$this->arttmplselected = "";
 				$i++;
@@ -504,7 +573,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->disptmplid = $this->arrdisptmpl[$i];
 				$this->disptmplval = $this->arrdisptmpl[$i];
 				if( $this->disptmplid == $this->disptid )
-					$this->disptmplselected = "selected";
+					$this->disptmplselected = 'selected="selected"';
 				else
 					$this->disptmplselected = "";
 				$i++;
@@ -513,7 +582,9 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			return false;
 			}
 		}
-
+	
+	$babBody->addStyleSheet('publication.css');
+		
 	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
 	}
@@ -593,63 +664,233 @@ function listCategories($cat)
 	}
 
 function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
-	{
+{
 	global $babBody, $babDB;
-	if( empty($category))
-		{
+	if(empty($category))
+	{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a topic name !!");
 		return false;
-		}
+	}
 
-	if( $busetags == 'Y' )
-		{
+	if($busetags == 'Y')
+	{
 		list($count) = $babDB->db_fetch_array($babDB->db_query("select count(id) from ".BAB_TAGS_TBL.""));
-		if( $count == 0 )
-			{
+		if($count == 0)
+		{
 			$babBody->msgerror = bab_translate("ERROR: You can't use tags. List tags is empty");
 			return false;
-			}
 		}
+	}
 	else
-		{
+	{
 		$busetags = 'N';
-		}
+	}
 
 	$arrTopic = array(	'idsaart'=> $saart, 
-							'idsacom'=> $sacom, 
-							'idsa_update'=> $saupd, 
-							'notify'=> $bnotif, 
-							'lang'=>$lang, 
-							'article_tmpl'=>$atid, 
-							'display_tmpl'=>$disptid, 
-							'restrict_access'=>$restrict, 
-							'allow_hpages'=>$bhpages,
-							'allow_pubdates'=>$bpubdates,
-							'allow_attachments'=>$battachment,
-							'allow_update'=>$bartupdate,
-							'allow_manupdate'=>$bmanmod,
-							'max_articles'=>$maxarts,
-							'auto_approbation'=>$bautoapp,
-							'busetags'=>$busetags
-							);
+						'idsacom'=> $sacom, 
+						'idsa_update'=> $saupd, 
+						'notify'=> $bnotif, 
+						'lang'=>$lang, 
+						'article_tmpl'=>$atid, 
+						'display_tmpl'=>$disptid, 
+						'restrict_access'=>$restrict, 
+						'allow_hpages'=>$bhpages,
+						'allow_pubdates'=>$bpubdates,
+						'allow_attachments'=>$battachment,
+						'allow_update'=>$bartupdate,
+						'allow_manupdate'=>$bmanmod,
+						'max_articles'=>$maxarts,
+						'auto_approbation'=>$bautoapp,
+						'busetags'=>$busetags
+					);
 	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	require_once dirname(__FILE__) . '/../utilit/editorincl.php';
 	$editor = new bab_contentEditor('bab_topic');
 	$description = $editor->getContent();
 	$error = '';
-	if(bab_addTopic($category, $description, $cat, $error, $arrTopic))	
-		{
-		return true;
-		}
-	else
-		{
+	$iIdTopic = bab_addTopic($category, $description, $cat, $error, $arrTopic);
+
+	if(false === $iIdTopic)
+	{
 		$babBody->addError($error);
 		return false;
-		}
 	}
 
+
+	$sKeyOfPhpFile			= 'topicPicture';
+	$bHaveAssociatedImage	= false;
+	$bFromTempPath			= false;
+	$sTempName				= (string) bab_rp('sTempImgName', '');
+	$sImageName				= (string) bab_rp('sImgName', '');
+	
+	//Si image chargée par ajax
+	if('' !== $sTempName && '' !== $sImageName)
+	{
+		$bHaveAssociatedImage	= true;
+		$bFromTempPath			= true;
+	}
+	else
+	{//Si image chargée par la voie normal
+		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
+		{
+			$bHaveAssociatedImage = true;
+		}
+	}
+	
+	if(false === $bHaveAssociatedImage)
+	{
+		return $iIdTopic;
+	}
+		
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';	
+	
+	$oPubImpUpl	= bab_getInstance('bab_PublicationImageUploader');
+	
+	if(false === $bFromTempPath)
+	{
+		$sFullPathName = $oPubImpUpl->uploadTopicImage($babBody->currentAdmGroup, $iIdTopic, $sKeyOfPhpFile);
+	}
+	else
+	{		
+		$sFullPathName = $oPubImpUpl->importTopicImageFromTemp($babBody->currentAdmGroup, $iIdTopic, $sTempName, $sImageName);
+	}
+
+	if(false === $sFullPathName)
+	{
+		require_once dirname(__FILE__) . '/../utilit/delincl.php';
+		bab_confirmDeleteTopic($iIdTopic);
+		
+		foreach($oPubImpUpl->getError() as $sError)
+		{
+			$babBody->addError($sError);
+		}
+		return false;
+	}
+	
+	{
+		//Insérer l'image en base
+		$aPathParts		= pathinfo($sFullPathName);
+		$sName			= $aPathParts['basename'];
+		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+		
+		/*
+		bab_debug(
+			'sName         ' . $sName . "\n" .
+			'sRelativePath ' . $sRelativePath
+		);
+		//*/
+		
+		bab_addImageToTopic($iIdTopic, $sName, $sRelativePath);
+	}
+	
+	return $iIdTopic;
+}
+
+function getHiddenUpload()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/hiddenUpload.class.php';
+	
+	$oHiddenForm = new bab_HiddenUploadForm();
+	
+	$oHiddenForm->addHiddenField('cat', bab_rp('cat', 0));
+	$oHiddenForm->addHiddenField('tg', 'topics');
+	$oHiddenForm->addHiddenField('MAX_FILE_SIZE', $GLOBALS['babMaxImgFileSize']);
+	$oHiddenForm->addHiddenField('idx', 'uploadTopicImg');
+	
+	header('Cache-control: no-cache');
+	die($oHiddenForm->getHtml());
+}
+
+	
+function uploadTopicImg()
+{
+	global $babBody;
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/hiddenUpload.class.php';
+	
+	$sJSon			= '';
+	$sKeyOfPhpFile	= 'topicPicture';
+	$oPubImpUpl		= new bab_PublicationImageUploader();
+	$aFileInfo		= $oPubImpUpl->uploadImageToTemp($babBody->currentAdmGroup, $sKeyOfPhpFile);
+	
+	
+	if(false === $aFileInfo)
+	{
+		$sMessage = implode(',', $oPubImpUpl->getError());
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"  => false,
+				"failure"  => true,
+				"sMessage" => $sMessage));
+	}
+	else
+	{
+		$sMessage = implode(',', $aFileInfo);
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"	=> true,
+				"failure"	=> false,
+				"sMessage"	=> $sMessage));
+	}
+				
+	header('Cache-control: no-cache');
+	print bab_HiddenUploadForm::getHiddenIframeHtml($sJSon);		
+}
+	
+function getImage()
+{	
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	require_once dirname(__FILE__) . '/../utilit/gdiincl.php';
+
+	$iWidth		= (int) bab_rp('iWidth', 120);
+	$iHeight	= (int) bab_rp('iHeight', 90);
+	$sImage		= (string) bab_rp('sImage', '');
+	$sOldImage	= (string) bab_rp('sOldImage', '');
+	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
+
+	global $babBody;
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$sPath = $oEnvObj->getTempPath();
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
+
+	if(file_exists($sPath . $sOldImage))
+	{
+		@unlink($sPath . $sOldImage);
+	}
+}
+	
+function deleteTempImage()
+{
+	require_once dirname(__FILE__) . '/../utilit/artincl.php';
+	
+	$sImage		= bab_rp('sImage', '');
+	$oEnvObj	= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$sPath = $oEnvObj->getTempPath();
+	
+	if(file_exists($sPath . $sImage))
+	{
+		@unlink($sPath . $sImage);
+	}
+	die('');
+}
+
+
 /* main */
-if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -658,15 +899,19 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 $idx = bab_rp('idx', 'list');
 $cat = intval(bab_rp('cat', 0));
 
-if( isset($_POST['add']) )
-	{
+if(isset($_POST['add']))
+{
 	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
-		{
-//		$idx = 'addtopic';
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
-		}
-	$cat = $ncat;
+	{
+		$idx = 'addtopic';
 	}
+	else
+	{
+		$cat = $ncat;
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+		exit;
+	}
+}
 
 if( !$cat )
 {
@@ -681,6 +926,22 @@ if( !isset($idp))
 
 switch($idx)
 	{
+	case 'getImage':
+		getImage(); // called by ajax
+		exit;
+		
+	case 'getHiddenUpload': // called by ajax
+		getHiddenUpload();
+		exit;
+	
+	case 'uploadTopicImg': // called by ajax
+		uploadTopicImg();
+		exit;	
+	
+	case 'deleteTempImage': // called by ajax
+		deleteTempImage();
+		exit;
+
 	case "addtopic":
 		$babBody->title = bab_translate("Create new topic");
 		$ncat = bab_pp('ncat');
