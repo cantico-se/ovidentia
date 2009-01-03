@@ -295,7 +295,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->countLangFiles 		= count($this->langFiles);
 
 			$this->aAllowAddImg			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));
-			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article: Yes/No");
+			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article");
 			
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');

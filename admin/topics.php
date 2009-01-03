@@ -144,7 +144,7 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 
 			$this->aAllowAddImg			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));
 			$this->sPostedAllowAddImg	= bab_rp('sAllowAddImg', 'N');
-			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article: Yes/No");
+			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article");
 			
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
