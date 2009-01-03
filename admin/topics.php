@@ -75,7 +75,14 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 		var $manmodtxt;
 		var $manmodysel;
 		var $manmodnsel;
-
+		
+		var $sAllowAddImg;
+		var $aAllowAddImg; 
+		var $sAllowAddImgItemValue;
+		var $sAllowAddImgItemCaption;
+		var $sSelectedAllowAddImg;
+		var $sPostedAllowAddImg;
+		
 		var $bImageUploadEnable = false;
 		var $iMaxImgFileSize;
 		var $sTempImgName;
@@ -135,6 +142,10 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->battachment			= $battachment;
 			$this->bartupdate			= $bartupdate;
 
+			$this->aAllowAddImg			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));
+			$this->sPostedAllowAddImg	= bab_rp('sAllowAddImg', 'N');
+			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article: Yes/No");
+			
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
 			$this->sTempImgName			= bab_rp('sTempImgName', '');
@@ -439,7 +450,25 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				}
 			$this->countdisptmpl = count($this->arrdisptmpl);
 			}
-
+			
+		function getNextAllowAddImgItem()
+		{
+			$this->sSelectedAllowAddImg = '';
+			
+			$aDatas = each($this->aAllowAddImg);
+			if(false !== $aDatas)
+			{			 
+				$this->sAllowAddImgItemValue = $aDatas['key'];
+				$this->sAllowAddImgItemCaption = $aDatas['value'];
+				if($this->sAllowAddImgItemValue == $this->sPostedAllowAddImg)
+				{
+					$this->sSelectedAllowAddImg = 'selected="selected"';
+				}
+				return true;
+			}
+			return false;
+		}
+			
 		function processDisabledUploadReason()
 		{
 			$this->sDisabledUploadReason = '';
@@ -663,7 +692,7 @@ function listCategories($cat)
 	return $temp->count;
 	}
 
-function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg)
 {
 	global $babBody, $babDB;
 	if(empty($category))
@@ -701,7 +730,8 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 						'allow_manupdate'=>$bmanmod,
 						'max_articles'=>$maxarts,
 						'auto_approbation'=>$bautoapp,
-						'busetags'=>$busetags
+						'busetags'=>$busetags,
+						'allow_addImg'=>$sAllowAddImg
 					);
 	
 	require_once dirname(__FILE__) . '/../utilit/editorincl.php';
@@ -901,7 +931,8 @@ $cat = intval(bab_rp('cat', 0));
 
 if(isset($_POST['add']))
 {
-	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
+	$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
+	if(!saveCategory($category, $ncat, $sacom, $saart, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg))
 	{
 		$idx = 'addtopic';
 	}

@@ -5660,5 +5660,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			");
 	}
 	
+	if(!bab_isTableField(BAB_TOPICS_TBL, 'allow_addImg')) 
+	{
+		$babDB->db_query('ALTER TABLE ' . BAB_TOPICS_TBL . ' ADD allow_addImg enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER busetags');
+	}
+	
 	return true;
 }

@@ -229,7 +229,14 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $manmodtxt;
 		var $manmodysel;
 		var $manmodnsel;
-
+		
+		var $sAllowAddImg;
+		var $aAllowAddImg; 
+		var $sAllowAddImgItemValue;
+		var $sAllowAddImgItemCaption;
+		var $sSelectedAllowAddImg;
+		var $sPostedAllowAddImg;
+		
 		var $bImageUploadEnable = false;
 		var $iMaxImgFileSize;
 		var $sTempImgName;
@@ -287,6 +294,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->langFiles 			= $GLOBALS['babLangFilter']->getLangFiles();
 			$this->countLangFiles 		= count($this->langFiles);
 
+			$this->aAllowAddImg			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));
+			$this->sAllowAddImg			= bab_translate("Allow authors to attach an image to an article: Yes/No");
+			
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
 			$this->sTempImgName			= bab_rp('sTempImgName', '');
@@ -337,6 +347,10 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$res = $this->db->db_query($req);
 			$this->arr = $this->db->db_fetch_array($res);
 
+			
+			$this->sPostedAllowAddImg = bab_rp('sAllowAddImg', $this->arr['allow_addImg']);
+			
+			
 			$this->cat = $this->arr['id_cat'];
 
 			if(empty($cat))
@@ -680,7 +694,25 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				$this->sDisabledUploadReason .= '</UL>';
 			}
 		}
-
+			
+		function getNextAllowAddImgItem()
+		{
+			$this->sSelectedAllowAddImg = '';
+			
+			$aDatas = each($this->aAllowAddImg);
+			if(false !== $aDatas)
+			{			 
+				$this->sAllowAddImgItemValue = $aDatas['key'];
+				$this->sAllowAddImgItemCaption = $aDatas['value'];
+				if($this->sAllowAddImgItemValue == $this->sPostedAllowAddImg)
+				{
+					$this->sSelectedAllowAddImg = 'selected="selected"';
+				}
+				return true;
+			}
+			return false;
+		}
+		
 		function getnextcat()
 			{
 			static $i = 0;
@@ -913,7 +945,7 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	global $babBody;
@@ -1094,7 +1126,8 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		allow_manupdate='".$db->db_escape_string($bmanmod)."', 
 		max_articles='".$db->db_escape_string($maxarts)."', 
 		auto_approbation='".$db->db_escape_string($bautoapp)."', 
-		busetags='".$db->db_escape_string($busetags)."' 
+		busetags='".$db->db_escape_string($busetags)."',
+		allow_addImg='".$db->db_escape_string($sAllowAddImg)."' 
 	WHERE 
 		id = '".$id."'";
 	$db->db_query($query);
@@ -1371,7 +1404,8 @@ if( isset($add) )
 	{
 	if( isset($submit))
 	{
-		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags))
+		$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
+		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg))
 		{
 			$idx = "Modify";
 		}

@@ -473,6 +473,17 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 		                    		</td>
 		                		</tr>
 		                		
+		                		<tr> 
+		                  			<td align="right">{ sAllowAddImg }:</td>
+		                  			<td nowrap="nowrap">
+		                  				<select name="sAllowAddImg">
+											<!--#in getNextAllowAddImgItem -->
+											<option value="{ sAllowAddImgItemValue }" { sSelectedAllowAddImg }>{ sAllowAddImgItemCaption }</option>
+											<!--#endin getNextAllowAddImgItem -->
+		                    			</select>
+		                    		</td>
+		                		</tr>
+		                		
 							<!--#if bImageUploadEnable -->
 								<tr> 
 									<td align="right">{ sSelectImageCaption }</td>

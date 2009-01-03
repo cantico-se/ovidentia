@@ -288,7 +288,8 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'allow_manupdate'=>0,
 							'max_articles'=>10,
 							'auto_approbation'=>'N',
-							'busetags'=>'N'
+							'busetags'=>'N',
+							'allow_addImg'=>'N'
 							);
 	
 	if( empty($name))
