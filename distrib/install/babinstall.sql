@@ -35,6 +35,21 @@ CREATE TABLE bab_articles (
 
 # --------------------------------------------------------
 #
+# Structure de la table 'bab_articles_images'
+#
+
+CREATE TABLE bab_articles_images (
+   id int(11) unsigned NOT NULL auto_increment,
+   idArticle int(11) unsigned NOT NULL,
+   name varchar(255),
+   relativePath text NOT NULL,
+   PRIMARY KEY (id),
+   KEY idArticle (idArticle)
+);
+
+
+# --------------------------------------------------------
+#
 # Structure de la table 'bab_comments'
 #
 
@@ -2027,6 +2042,22 @@ CREATE TABLE bab_art_drafts (
   KEY id_author (id_author),
   KEY trash (trash),
   KEY result (result)
+);
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_art_drafts_images'
+#
+
+CREATE TABLE bab_art_drafts_images (
+   id int(11) unsigned NOT NULL auto_increment,
+   idDraft int(11) unsigned NOT NULL,
+   name varchar(255),
+   tempName varchar(255),
+   relativePath text NOT NULL,
+   PRIMARY KEY (id),
+   KEY idDraft (idDraft)
 );
 
 #
