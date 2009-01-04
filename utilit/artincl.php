@@ -37,14 +37,15 @@ require_once dirname(__FILE__) . '/artapi.php';
  */
 class bab_PublicationPathsEnv
 {
-	private $sUploadPath		= null;
-	private $sRootImgPath		= null;
-	private $sCategoriesImgPath	= null;
-	private $sTopicsImgPath		= null;
-	private $sArticlesImgPath	= null;
-	private $sTempPath			= null;
-	private $iIdDelegation		= null;
-	private $aError				= array();
+	private $sUploadPath			= null;
+	private $sRootImgPath			= null;
+	private $sCategoriesImgPath		= null;
+	private $sTopicsImgPath			= null;
+	private $sArticlesImgPath		= null;
+	private $sDraftsArticlesImgPath	= null;
+	private $sTempPath				= null;
+	private $iIdDelegation			= null;
+	private $aError					= array();
 
 	
 	public function __construct()
@@ -77,6 +78,7 @@ class bab_PublicationPathsEnv
 			'categories'	=> 'articles/DG' . $this->iIdDelegation . '/categoriesImg',
 			'topics'		=> 'articles/DG' . $this->iIdDelegation . '/topicsImg',
 			'articles'		=> 'articles/DG' . $this->iIdDelegation . '/articlesImg',
+			'draftArticles'	=> 'articles/draftsImg',
 			'temp'			=> 'articles/temp',
 		);
 		
@@ -85,16 +87,18 @@ class bab_PublicationPathsEnv
 			BAB_FmFolderHelper::makeDirectory($this->sUploadPath, $sRelativePath);
 		}
 		
-		$this->sRootImgPath			= $this->sUploadPath . $aPath['root'] . '/';
-		$this->sCategoriesImgPath	= $this->sUploadPath . $aPath['categories'] . '/';
-		$this->sTopicsImgPath		= $this->sUploadPath . $aPath['topics'] . '/';
-		$this->sArticlesImgPath		= $this->sUploadPath . $aPath['articles'] . '/';
-		$this->sTempPath			= $this->sUploadPath . $aPath['temp'] . '/';
+		$this->sRootImgPath				= $this->sUploadPath . $aPath['root'] . '/';
+		$this->sCategoriesImgPath		= $this->sUploadPath . $aPath['categories'] . '/';
+		$this->sTopicsImgPath			= $this->sUploadPath . $aPath['topics'] . '/';
+		$this->sArticlesImgPath			= $this->sUploadPath . $aPath['articles'] . '/';
+		$this->sDraftsArticlesImgPath	= $this->sUploadPath . $aPath['draftArticles'] . '/';
+		$this->sTempPath				= $this->sUploadPath . $aPath['temp'] . '/';
 		
 		$this->checkDirAccess($this->sRootImgPath);
 		$this->checkDirAccess($this->sCategoriesImgPath);
 		$this->checkDirAccess($this->sTopicsImgPath);
 		$this->checkDirAccess($this->sArticlesImgPath);
+		$this->checkDirAccess($this->sDraftsArticlesImgPath);
 		$this->checkDirAccess($this->sTempPath);
 		
 		return (0 === count($this->aError));
@@ -133,13 +137,25 @@ class bab_PublicationPathsEnv
 	 * the path is based on the identifier of delegation.
 	 * The path is terminated with a '/'. 
 	 *
-	 * @param int $iIdCategory The identifier of the article to which the path must be returned 
+	 * @param int $iIdArticle The identifier of the article to which the path must be returned 
 	 * 
 	 * @return string The path to the image of the article
 	 */
 	public function getArticleImgPath($iIdArticle)
 	{
 		return $this->sArticlesImgPath . $iIdArticle . '/';
+	}
+	
+	/**
+	 * Returns the path to the image(s) associated with article, 
+	 * the path is based on the identifier of delegation.
+	 * The path is terminated with a '/'. 
+	 * 
+	 * @return string The path to the draft image of the article
+	 */
+	public function getDraftArticleImgPath()
+	{
+		return $this->sDraftsArticlesImgPath;
 	}
 	
 	
@@ -289,10 +305,70 @@ class bab_PublicationImageUploader
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
+	/*
 	public function uploadArticleImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile)
 	{
 		$sFunctionName = 'getArticleImgPath';
 		return $this->uploadImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile, $sFunctionName);
+	}
+	//*/
+	
+	/**
+	 * Upload an image to an draft article, this function does not
+	 * test the validity of the article identifier.
+	 * The identifier is used to determine the upload path
+	 * 
+	 * @param int $sKeyOfPhpFile	The index of the $_FILES
+	 * 
+	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
+	 * 								To get the error call the method getError().
+	 */
+	public function uploadDraftArticleImage($sKeyOfPhpFile)
+	{
+		require_once dirname(__FILE__) . '/uploadincl.php';
+		require_once dirname(__FILE__) . '/uuid.php';
+		
+		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
+		if(!($oFileHandler instanceof bab_fileHandler))
+		{
+			return false;
+		}
+		
+		if(true === $this->fileSizeToLarge($oFileHandler))
+		{
+			return false;
+		}
+		
+		if(false === $this->mimeSupported($oFileHandler))
+		{
+			return false;
+		}
+		
+		$iIdDelegation = 0;
+		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		{
+			return false;
+		}
+		
+		$sFileName		= $oFileHandler->filename;
+		$sFullPathName	= $oPubPathEnv->getDraftArticleImgPath() . bab_uuid();
+		if(true === $this->isfile($sFullPathName))
+		{
+			return false;
+		}
+		
+		$sFileExtention = $this->getFileExtention($sFileName);
+		if(false !== $sFileExtention)
+		{
+			$sFullPathName .= $sFileExtention;
+		}
+		
+		if(false === $this->importFile($oFileHandler, $sFullPathName))
+		{
+			return false;
+		}
+		return array('sTempName' => basename($sFullPathName), 'sFileName' => $sFileName);
 	}
 	
 	/**
@@ -599,6 +675,94 @@ class bab_PublicationImageUploader
 		
 		return $sFullPathName;
 	}
+	
+	/**
+	 * For now only one file is supported
+	 *
+	 * @param unknown_type $iIdDelegation
+	 * @param unknown_type $iIdDraft
+	 * @param unknown_type $iIdArticle
+	 * @return unknown
+	 */
+	public function importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle)
+	{
+/*		
+		require_once dirname(__FILE__) . '/uploadincl.php';
+		
+		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		{
+			return false;
+		}
+		
+		$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
+		if(!is_dir($sArticlePathName))
+		{
+			if(false === bab_mkdir($sArticlePathName))
+			{
+				$this->addError(bab_translate("Can't create directory: ") . $sArticlePathName);
+				return false;
+			}
+		}
+		
+		$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
+		if(!is_dir($sDraftArticlePathName))
+		{
+				$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
+				return false;
+		}
+		
+		if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+		
+		if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
+		{
+			$this->addErrors($oPubPathEnv->getError());
+			return false;
+		}
+	
+		//For now only one file is supported
+		try
+		{
+			$sFullPathName	= null;
+			$oDirIterator	= new DirectoryIterator($sDraftArticlePathName);
+			
+			foreach($oDirIterator as $oIterator)
+			{
+				if($oIterator->isFile())
+				{
+					$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $oIterator->getPathname()); 
+					if(!($oFileHandler instanceof bab_fileHandler))
+					{
+						return false;
+					}
+					
+					if(!$this->mimeSupported($oFileHandler))
+					{
+						@unlink($oIterator->getPathname());
+						return false;
+					}
+					
+					$sFullPathName = $sArticlePathName . $oIterator->getFilename();
+					if(false === $this->importFile($oFileHandler, $sFullPathName))
+					{
+						return false;
+					}
+					return $sFullPathName;
+				}
+			}
+		}
+		catch(Exception $e)
+		{
+			$this->addErrors($e->getMessage());
+			return false;
+		}
+//*/
+	}
+	
 	
 	private function getFileExtention($sFileName)
 	{
@@ -1289,7 +1453,7 @@ function acceptWaitingArticle($idart)
 					}
 				}
 
-			bab_debug($files_to_index);
+			//bab_debug($files_to_index);
 
 			$index_status = bab_indexOnLoadFiles($files_to_index , 'bab_art_files');
 

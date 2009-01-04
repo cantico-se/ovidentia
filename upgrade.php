@@ -5665,5 +5665,33 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('ALTER TABLE ' . BAB_TOPICS_TBL . ' ADD allow_addImg enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER busetags');
 	}
 	
+	if(!bab_isTable(BAB_ARTICLES_IMAGES_TBL)) 
+	{
+		$babDB->db_query("	
+			CREATE TABLE ".BAB_ARTICLES_IMAGES_TBL." (
+				id int(11) unsigned NOT NULL auto_increment,
+				idArticle int(11) unsigned NOT NULL,
+				name varchar(255),
+				relativePath text NOT NULL,
+				PRIMARY KEY (id),
+				KEY idArticle (idArticle))
+			");
+	}
+	
+	if(!bab_isTable(BAB_ART_DRAFTS_IMAGES_TBL)) 
+	{
+		$babDB->db_query("	
+			CREATE TABLE ".BAB_ART_DRAFTS_IMAGES_TBL." (
+				id int(11) unsigned NOT NULL auto_increment,
+				idDraft int(11) unsigned NOT NULL,
+				name varchar(255),
+				tempName varchar(255),
+				relativePath text NOT NULL,
+				PRIMARY KEY (id),
+				KEY idDraft (idDraft))
+			");
+	}
+	
+	
 	return true;
 }

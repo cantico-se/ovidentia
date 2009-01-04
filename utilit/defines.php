@@ -117,10 +117,12 @@ define('BAB_UNREGISTERED_SITEMAP_PROFILE'	,1);
 
 define("BAB_ADDONS_GROUPS_TBL", "bab_addons_groups");
 define("BAB_ADDONS_TBL", "bab_addons");
+define("BAB_ARTICLES_IMAGES_TBL", "bab_articles_images");
 define("BAB_ARTICLES_TBL", "bab_articles");
 define("BAB_ART_FILES_TBL", "bab_art_files");
 define("BAB_ART_DRAFTS_NOTES_TBL", "bab_art_drafts_notes");
 define("BAB_ART_DRAFTS_TBL", "bab_art_drafts");
+define("BAB_ART_DRAFTS_IMAGES_TBL", "bab_art_drafts_images");
 define("BAB_ART_DRAFTS_FILES_TBL", "bab_art_drafts_files");
 define("BAB_ART_DRAFTS_TAGS_TBL", "bab_art_drafts_tags");
 define("BAB_ART_LOG_TBL", "bab_art_log");

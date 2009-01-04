@@ -812,4 +812,182 @@ function bab_deleteImageTopic($iIdTopic)
 	return $oTblWr->delete($aAttribut);
 }
 
+//////-----------------------
+
+
+/**
+ * This function insert a record in the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader.
+ * For now only one image can be attached
+ *
+ * @param int		$iIdDraft		Draft article identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise 
+ */
+function bab_addImageToDraftArticle($iIdDraft, $sName, $sTempName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ART_DRAFTS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> '',
+		'idDraft'		=> $iIdDraft,
+		'name'			=> $sName,
+		'tempName'		=> $sTempName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	$bSkipFirst = false;
+	return $oTblWr->save($aAttribut, $bSkipFirst);
+}
+
+/**
+ * Get a record from the database
+ * For now only one image can be attached
+ *
+ * @param int	$iIdDraft	Draft article identifier
+ * @return Array|bool	Array on success, false otherwise
+ */
+function bab_getImageDraftArticle($iIdDraft)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ART_DRAFTS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idDraft'		=> $iIdDraft,
+		'id'			=> -1,
+		'name'			=> '',
+		'tempName'		=> '',
+		'relativePath'	=> ''
+	);
+	
+	return $oTblWr->load($aAttribut, 1, 4, 0, 1);
+}
+
+/**
+ * Delete a record
+ * For now only one image can be attached 
+ *
+ * @param int $iIdCategory
+ * @return bool
+ */
+function bab_deleteImageDraftArticle($iIdDraft)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ART_DRAFTS_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idDraft' => $iIdDraft
+	);
+	
+	return $oTblWr->delete($aAttribut);
+}
+
+
+/**
+ * This function insert a record in the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader.
+ * For now only one image can be attached
+ *
+ * @param int		$iIdArticle		Article identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise 
+ */
+function bab_addImageToArticle($iIdArticle, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ARTICLES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> '',
+		'idArticle'		=> $iIdDraft,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	$bSkipFirst = false;
+	return $oTblWr->save($aAttribut, $bSkipFirst);
+}
+
+/**
+ * This function update a record from the database.
+ * Before using this function, upload the file using 
+ * class bab_PublicationImageUploader
+ * For now only one image can be attached
+ *
+ * @param int 		$iIdImage		Identifier of the record to update
+ * @param int		$iIdArticle		Article identifier
+ * @param string	$sName			Name of the image
+ * @param string	$sRelativePath	Relative path of the image.
+ * 									The relative path should be completed by the character '/'.
+ * @return bool						True on success, false otherwise
+ */
+function bab_updateImageArticle($iIdImage, $iIdArticle, $sName, $sRelativePath)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ARTICLES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'id'			=> $iIdImage,
+		'idArticle'		=> $iIdArticle,
+		'name'			=> $sName,
+		'relativePath'	=> $sRelativePath
+	);
+	
+	return $oTblWr->update($aAttribut);
+}
+
+/**
+ * Get a record from the database
+ * For now only one image can be attached
+ *
+ * @param int		$iIdArticle		Article identifier
+ * @return Array|bool	Array on success, false otherwise
+ */
+function bab_getImageArticle($iIdArticle)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ARTICLES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idArticle'		=> $iIdArticle,
+		'id'			=> -1,
+		'name'			=> '',
+		'relativePath'	=> ''
+	);
+	
+	return $oTblWr->load($aAttribut, 1, 3, 0, 1);
+}
+
+/**
+ * Delete a record
+ * For now only one image can be attached 
+ *
+ * @param int $iIdCategory
+ * @return bool
+ */
+function bab_deleteImageArticle($iIdArticle)
+{
+	require_once dirname(__FILE__) . '/tableWrapperClass.php';
+	
+	$oTblWr = new BAB_TableWrapper(BAB_ARTICLES_IMAGES_TBL);
+	
+	$aAttribut = array(
+		'idArticle' => $iIdArticle
+	);
+	
+	return $oTblWr->delete($aAttribut);
+}
 

@@ -856,9 +856,27 @@ function showSetArticleProperties($idart)
 
 		var $altbg = true;
 
+		var $bUploadPathValid		= false;
+		var $bImageUploadPossible	= false;
+		var $bImageUploadEnable		= false;
+		var $bHaveAssociatedImage	= false;
+		var $bDisplayDelImgChk		= false;
+
+		var $iMaxImgFileSize		= 0;
+		var $sImageTitle			= '';
+		var $sSelectImageCaption	= '';
+		var $sDeleteImageCaption	= '';
+		var $sImagePreviewCaption	= '';
+		var $sDisabledUploadReason	= '';
+		var $sImageUrl				= '#';
+		var $sAltImagePreview		= '';
+		var $sImgName				= '';
+		var $sImageSubmitCaption	= '';
+		
 		function temp($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
+			
 			$this->access = false;
 			$this->rfurl = $rfurl;
 
@@ -1008,6 +1026,23 @@ function showSetArticleProperties($idart)
 					{
 					$this->topicpath = viewCategoriesHierarchy_txt($this->drafttopic);
 					$arrtop = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($this->drafttopic)."'"));
+
+
+					$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+					$this->bImageUploadEnable	= ('Y' === (string) $arrtop['allow_addImg']);
+					$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+					$this->bImageUploadPossible	= (0 < $this->iMaxImgFileSize && $this->bUploadPathValid);
+					
+					$this->sImageTitle			= bab_translate('Associated picture');
+					$this->sSelectImageCaption	= bab_translate('Select a picture');
+					$this->sDeleteImageCaption	= bab_translate('Remove image');
+					$this->sImagePreviewCaption = bab_translate('Preview image');
+					$this->sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&iWidth=120&iHeight=90&sImage=';
+					$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+					$this->sImageSubmitCaption	= bab_translate("Update");
+					
+					$this->processDisabledUploadReason();
+
 
 					if( $arrtop['busetags'] == 'Y')
 						{
@@ -1273,6 +1308,34 @@ function showSetArticleProperties($idart)
 
 			}
 
+		function processDisabledUploadReason()
+		{
+			$this->sDisabledUploadReason = '';
+			//if(false == $this->bImageUploadEnable)
+			{
+				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
+				$this->sDisabledUploadReason .= '<UL>';
+				
+				if('' == $GLOBALS['babUploadPath'])
+				{
+					//$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
+				}
+				else if(!is_dir($GLOBALS['babUploadPath']))
+				{
+					//$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
+				}
+				
+				if(0 == $this->iMaxImgFileSize)
+				{
+					//$this->bHaveAssociatedImage = false;
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
+				}
+				$this->sDisabledUploadReason .= '</UL>';
+			}
+		}
+			
 		function getnexttopic()
 			{
 			global $babDB;
@@ -1484,7 +1547,8 @@ function showSetArticleProperties($idart)
 
 			}
 		}
-
+	$babBodyPopup->addStyleSheet('publication.css');
+	
 	$temp = new temp($idart);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "propertiesarticlestep"));
 	}
@@ -2169,6 +2233,140 @@ function artedit_init()
 }
 
 
+function getHiddenUpload()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/hiddenUpload.class.php';
+	
+	$oHiddenForm = new bab_HiddenUploadForm();
+	
+	$oHiddenForm->addHiddenField('iIdDraft', bab_rp('iIdDraft', 0));
+	$oHiddenForm->addHiddenField('tg', 'artedit');
+	$oHiddenForm->addHiddenField('MAX_FILE_SIZE', $GLOBALS['babMaxImgFileSize']);
+	$oHiddenForm->addHiddenField('idx', 'uploadDraftArticleImg');
+	
+	header('Cache-control: no-cache');
+	die($oHiddenForm->getHtml());
+}
+
+	
+function uploadDraftArticleImg()
+{
+	require_once dirname(__FILE__) . '/utilit/artincl.php';
+	require_once dirname(__FILE__) . '/utilit/hiddenUpload.class.php';
+	
+	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
+	$sJSon			= '';
+	$sKeyOfPhpFile	= 'articlePicture';
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	$oPubImpUpl		= new bab_PublicationImageUploader();
+	$aFileInfo		= false;
+	$iIdDelegation	= 0; //Dummy value, i dont need this here
+	
+	$oEnvObj->setEnv($iIdDelegation);
+	$sPath = $oEnvObj->getDraftArticleImgPath();
+	
+	if(0 < $iIdDraft)
+	{
+		$aImageInfo = bab_getImageDraftArticle($iIdDraft);
+		if(false !== $aImageInfo)
+		{
+			bab_deleteImageDraftArticle($iIdDraft);
+			
+			if(file_exists($sPath . $aImageInfo['tempName']))
+			{
+				@unlink($sPath . $aImageInfo['tempName']);
+			}
+		}
+		
+		$aFileInfo = $oPubImpUpl->uploadDraftArticleImage($sKeyOfPhpFile);
+	}
+	
+	if(false === $aFileInfo)
+	{
+		$sMessage = implode(',', $oPubImpUpl->getError());
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"  => false,
+				"failure"  => true,
+				"sMessage" => $sMessage));
+	}
+	else
+	{
+		//Insérer l'image en base
+		$sFullPathName	= $sPath . $aFileInfo['sTempName'];
+		$aPathParts		= pathinfo($sFullPathName);
+		$sName			= $aPathParts['basename'];
+		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+		
+		bab_addImageToDraftArticle($iIdDraft, $aFileInfo['sFileName'], $aFileInfo['sTempName'], $sRelativePath);
+		
+		$sMessage = implode(',', $aFileInfo);
+		if('utf8' != bab_charset::getDatabase())
+		{
+			$sMessage = utf8_encode($sMessage);
+		}
+			
+		$sJSon = json_encode(array(
+				"success"	=> true,
+				"failure"	=> false,
+				"sMessage"	=> $sMessage));
+		
+		//bab_debug(bab_HiddenUploadForm::getHiddenIframeHtml($sJSon));		
+	}
+				
+	header('Cache-control: no-cache');
+	print bab_HiddenUploadForm::getHiddenIframeHtml($sJSon);		
+}
+
+
+function getImage()
+{	
+	require_once dirname(__FILE__) . '/utilit/artincl.php';
+	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
+
+	$iWidth			= (int) bab_rp('iWidth', 120);
+	$iHeight		= (int) bab_rp('iHeight', 90);
+	$sImage			= (string) bab_rp('sImage', '');
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	$iIdDelegation	= 0; //Dummy value, i dont need this here
+	
+	global $babBody;
+	$oEnvObj->setEnv($iIdDelegation);
+	$sPath = $oEnvObj->getDraftArticleImgPath();
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
+}
+
+
+function deleteDraftImage()
+{
+	require_once dirname(__FILE__) . '/utilit/artincl.php';
+	
+	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
+	$sImage			= bab_rp('sImage', '');
+	$iIdDelegation	= 0; //Dummy value, i dont need this here
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$oEnvObj->setEnv($iIdDelegation);
+	$sPath = $oEnvObj->getDraftArticleImgPath();
+	
+	bab_deleteImageDraftArticle($iIdDraft);
+	
+	if(file_exists($sPath . $sImage))
+	{
+		@unlink($sPath . $sImage);
+	}
+	die('');
+}
+
+
 /* main */
 $artedit = array();
 if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
@@ -2532,10 +2730,24 @@ if($idx == 'movet')
 }
 }
 
-
-
 switch($idx)
 	{
+	case 'getImage':
+		getImage(); // called by ajax
+		exit;
+		
+	case 'getHiddenUpload': // called by ajax
+		getHiddenUpload();
+		exit;
+	
+	case 'uploadDraftArticleImg': // called by ajax
+		uploadDraftArticleImg();
+		exit;	
+	
+	case 'deleteDraftImage': // called by ajax
+		deleteDraftImage();
+		exit;
+
 	case 'denied':
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
