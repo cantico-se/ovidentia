@@ -820,15 +820,288 @@ window.onload = function()
 }
 <!--#endif busetags -->
 
+
+
+var g_oXHR = bab_createXHR();
+
+function bab_onImageSelected()
+{
+	oOldInput = _$('articlePicture');
+	if(oOldInput && oOldInput.value.length > 0)
+	{
+		oOldInput.style.visibility = 'hidden';
+		oOldInput.id = '';
+		
+		oNewInput = document.createElement('input');
+		oNewInput.type = 'file';
+		oNewInput.id = 'articlePicture';
+		oNewInput.name = 'articlePicture';
+		
+		oOldInput.parentNode.replaceChild(oNewInput, oOldInput);
+
+		_$('hiddenFrom').appendChild(oOldInput);
+
+		oNewInput.onchange = bab_onImageSelected;
+		
+		_$('hiddenFrom').submit();
+		
+		bab_disableForm();
+	}
+}
+
+function bab_onDeletePicture(oEvent)
+{
+	if(!oEvent)
+	{
+		oEvent = event;
+	}
+	
+	oEvent.cancelBubble = true;
+	if(oEvent.stopPropagation)
+	{
+		oEvent.stopPropagation();
+	}
+	
+	if(oEvent.preventDefault)
+	{
+		oEvent.preventDefault();
+	}
+	
+	oEvent.returnValue = false;
+	
+	var sImage = _$('propForm').sImgName.value;
+	_$('propForm').sImgName.value = '';
+
+	var sUrl = '{ babUrlScript }?tg=artedit&idx=deleteDraftImage&sImage=' + sImage + 
+		'&iIdDraft=' + _$('propForm').idart.value + '&t=' + (new Date()).getTime();
+	
+	g_oXHR.open("GET", sUrl, true);
+	g_oXHR.onreadystatechange = onDeleteImageResponse;
+	g_oXHR.send(null);
+
+	bab_disableForm();
+}
+
+function onDeleteImageResponse()
+{
+	if(g_oXHR.readyState == 4)
+	{
+		_$('tempImg').src = '#';
+		bab_hide('imagePreviewTR');
+		bab_hide('messageTR');
+		bab_enableForm();
+	}
+}
+
+function bab_onLoadImagePreview()
+{
+	if(this.src != '#')
+	{
+		bab_show('imagePreviewTR');
+		bab_show('deletePicture');
+	}
+	bab_enableForm();
+}
+
+function uploadDone()
+{
+	var sBodyContent = frames['hiddenIFrame'].document.getElementsByTagName("body")[0].innerHTML;
+
+	if(sBodyContent.length != 0)
+	{
+		var sJSon = eval("(" + sBodyContent + ")"); //Parse JSON
+		
+		if(sJSon.success) 
+		{ //This part happens when the image gets uploaded.
+			var aImg = sJSon.sMessage.split(',');
+			_$('propForm').sImgName.value = aImg[0];
+			_$('tempImg').src = "{ babUrlScript }?tg=artedit&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
+			bab_hide('messageTR');
+		}
+		else if(sJSon.failure) 
+		{ //Upload failed - show user the reason.
+			bab_displayMessage(sJSon.sMessage);
+		}	
+	}
+	
+	bab_enableForm();
+}
+
+function bab_getHiddenUpload()
+{
+	var sHiddenUploadUrl = "{ babUrlScript }?tg=artedit&idx=getHiddenUpload&iIdDraft=" + _$('propForm').idart.value; 
+	g_oXHR.open("GET", sHiddenUploadUrl, true);
+	g_oXHR.onreadystatechange = onHiddenUploadResponse;
+	g_oXHR.send(null);
+}
+
+
+function onHiddenUploadResponse()
+{
+	if(g_oXHR.readyState == 4)
+	{
+		try
+		{
+			var oDiv = document.createElement('div');
+			oDiv.innerHTML = g_oXHR.responseText;
+			_$('propForm').parentNode.appendChild(oDiv);
+		}
+		catch(e)
+		{
+			bab_displayMessage(e.message);
+		}
+	}
+}
+
+function bab_displayMessage(message)
+{
+	if(bab_show('messageTR'))
+	{
+		_$('statusLine').innerHTML = message;
+	}
+}
+
+function bab_show(sIdElement)
+{
+	if(_$(sIdElement))
+	{
+		_$(sIdElement).style.display = '';
+		return true;
+	}
+	return false;
+}
+
+function bab_hide(sIdElement)
+{
+	if(_$(sIdElement))
+	{
+		_$(sIdElement).style.display = 'none';
+		return true;
+	}
+	return false;
+}
+
+function bab_disableForm()
+{
+return;
+
+	_$('mainSubmit').setAttribute('disabled', 'disabled');
+	
+	if(_$('mainDeleteSubmit'))
+	{
+		_$('mainDeleteSubmit').setAttribute('disabled', 'disabled');
+	}
+	
+	bab_hide('deletePicture');
+		
+	if(_$('topicPicture'))
+	{
+		_$('topicPicture').setAttribute('disabled', 'disabled');
+	}
+}
+
+function bab_enableForm()
+{
+return;
+
+	_$('mainSubmit').removeAttribute('disabled');
+	
+	if(_$('mainDeleteSubmit'))
+	{
+		_$('mainDeleteSubmit').removeAttribute('disabled');
+	}
+	
+	bab_show('deletePicture');
+	
+	if(_$('topicPicture'))
+	{
+		_$('topicPicture').removeAttribute('disabled');
+	}
+}
+
+function bab_createImagePreviewTR()
+{
+	var oTr = document.createElement('tr');
+	oTr.id = 'imagePreviewTR';
+	oTr.style.display = 'none';
+
+	var oTd = document.createElement('td');
+	oTd.setAttribute('colspan', '2');
+	
+	var oTextNode = document.createTextNode("{ sImagePreviewCaption }");
+	var oBr = document.createElement('br');
+	
+	var oImg = document.createElement('img');
+	oImg.id = 'tempImg';
+	oImg.alt = "{ sAltImagePreview }";
+	oImg.src = '{ sImageUrl }';
+
+	var oInput = document.createElement('input');
+	oInput.type = 'image';
+	oInput.id = 'deletePicture';
+	oInput.src = '{ babInstallPath }skins/ovidentia/images/22x22/stop.png';
+	oInput.style.display = 'none';
+	
+	oTd.appendChild(oTextNode);
+	oTd.appendChild(oBr);
+	oTd.appendChild(oImg);
+	oTd.appendChild(oInput);
+	oTr.appendChild(oTd);
+	
+	_$('messageTR').parentNode.insertBefore(oTr, _$('messageTR'));
+}
+
+function bab_createXHR() 
+{
+	if(typeof XMLHttpRequest == 'undefined')
+	{
+		var aVersions = ['MSXML2.XMLHttp.6.0', 'MSXML2.XMLHttp.3.0'];
+		for(var i = 0; i < aVersions.length; i++)
+		{
+			try
+			{
+				var oXHR = new ActiveXObject(aVersions[i]);
+				return oXHR;
+			} 
+			catch (oError) 
+			{
+				//Do nothing
+			}
+		}
+		throw new Error('MSXML is not installed.');
+	}
+	else
+	{
+		return new XMLHttpRequest();
+	}
+}
+
+function _$(sId)
+{
+	return document.getElementById(sId);
+}
+
+function bab_addEventHandler(oTarget, sEventType, fnHandler) 
+{
+	if(oTarget.addEventListener) { //for DOM-compliant browsers
+		oTarget.addEventListener(sEventType, fnHandler, false);
+	} else if (oTarget.attachEvent) { //for IE
+		oTarget.attachEvent('on' + sEventType, fnHandler);
+	} else { //for all others
+		oTarget['on' + sEventType] = fnHandler;
+	}
+};
+
+
 //-->
 </script>
 
 <!--#if allowattachments -->
-<form name="propform" method="post" action="{ babPhpSelf }"  enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
+<form name="propform" id="propForm" method="post" action="{ babPhpSelf }"  enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
 <input type="hidden" name="files_fields" value="1">
 <!--#else allowattachments -->
-<form name="propform" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('propform');">
+<form name="propform" id="propForm" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('propform');">
 <!--#endif allowattachments -->
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s3">
@@ -836,6 +1109,7 @@ window.onload = function()
 <input type="hidden" name="rfurl" value="{ rfurl }">
 <input type="hidden" name="sfiles" value="">
 <input type="hidden" name="updstep3" value="">
+<input type="hidden" name="sImgName" value="{ sImgName }" />
 
 <p>{ steptitle }</p>
 
@@ -1107,6 +1381,76 @@ window.onload = function()
 </table>
 <br />
 
+<!--#if bImageUploadEnable -->
+<!--#if bImageUploadPossible -->
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+				<tr> 
+					<td colspan="2">
+						<b>{ sImageTitle }: &nbsp;{ iMaxImgFileSize }&nbsp;</b>
+					</td>
+				</tr>
+				<tr> 
+					<td colspan="2">{ sSelectImageCaption }<br />
+						<input type="file" id="articlePicture" name="articlePicture" />
+					</td>
+				</tr>
+
+				<tr id="messageTR" style="display:none">
+					<td colspan="2">
+						<div id="statusLine">
+						</div>
+					</td>
+				</tr>
+
+			<!--#if bHaveAssociatedImage -->
+			<!--#if bDisplayDelImgChk -->					
+				<tr id="deleteImageTR"> 
+					<td>{ sDeleteImageCaption }</td>
+					<td>
+						<input type="checkbox" name="deleteImageChk" value="1" />
+					</td>
+				</tr>
+			<!--#endif bDisplayDelImgChk -->
+			<!--#endif bHaveAssociatedImage -->
+				
+				<tr id="imagePreviewTR" style="display:none"> 
+					<td colspan="2">{ sImagePreviewCaption }<br />
+						<img id="tempImg" border="0" src="{ sImageUrl }" alt="{ sAltImagePreview }" />
+					</td>
+				</tr>
+				
+				<tr> 
+	            	<td colspan="2" align="center"> 
+						<input type="submit" id="imageSubmit" name="imageSubmit" value="{ sImageSubmitCaption }" />
+	              	</td>
+				</tr>
+        	</table>
+		</td>
+	</tr>
+</table>
+<!--#else bImageUploadPossible -->
+<table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+				<tr>
+					<td>
+						<div class="error">
+							{ sDisabledUploadReason }
+						</div>
+					</td>
+				</tr>
+         	</table>
+		</td>
+	</tr>
+</table>
+<!--#endif bImageUploadPossible -->
+<!--#endif bImageUploadEnable -->
+<br />
+
 <!--#endif allowattachments -->
 <!--#if notifymembers -->
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -1208,6 +1552,63 @@ window.onload = function()
 </table>
 
 </form>
+
+
+<script type="text/javascript" language="JavaScript1.5">
+//<![CDATA[
+	var bImageUploadEnable = Boolean({ bImageUploadEnable });
+	var bImageUploadPossible = Boolean({ bImageUploadPossible });
+	
+	if(bImageUploadEnable && bImageUploadPossible)
+	{
+		bab_addEventHandler(window, 'load', function bab_init() {
+			if(_$('imagePreviewTR'))
+			{
+				_$('messageTR').parentNode.removeChild(_$('imagePreviewTR'));
+			}
+		
+			if(_$('imageModifyInfoTR'))
+			{
+				bab_show('imageModifyInfoTR');
+			}
+			
+			if(_$('deleteImageTR'))
+			{
+				bab_hide('deleteImageTR');
+			}
+			
+			bab_createImagePreviewTR();
+	
+			bab_getHiddenUpload();
+			
+			var sImgName = _$('propForm').sImgName.value;
+	
+			bab_disableForm();
+			
+			if(_$('articlePicture'))
+			{
+				_$('articlePicture').onchange = bab_onImageSelected;
+			}
+			
+			if(_$('deletePicture'))
+			{
+				_$('deletePicture').onclick = bab_onDeletePicture;
+			}
+			
+			if(_$('tempImg'))
+			{
+				_$('tempImg').onload = bab_onLoadImagePreview;
+			}
+	
+			if(sImgName.length == 0)
+			{
+				bab_enableForm();
+			}
+		});
+	}
+//]]>
+</script>
+
 <!--#endif access -->
 <!--#if countfiles -->
 <script type="text/javascript">
