@@ -2720,4 +2720,5 @@
 <string id="The maximum size for a defined image is zero byte">La taille maximale définie pour une image est de zéro octet</string>
 <string id="Changes affecting the image will be taken into account after having saved">Les modifications concernant l'image associée ne seront pris en comptes qu'après avoir sauvegardé</string>
 <string id="Allow authors to attach an image to an article">Permettre aux auteurs d'associer une image à un article</string>
+<string id="Associated picture">Image associée</string>
 </fr>
