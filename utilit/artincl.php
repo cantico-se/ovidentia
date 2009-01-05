@@ -151,11 +151,13 @@ class bab_PublicationPathsEnv
 	 * the path is based on the identifier of delegation.
 	 * The path is terminated with a '/'. 
 	 * 
+	 * @param int $iIdDraft The identifier of the draft article to which the path must be returned
+	 * 
 	 * @return string The path to the draft image of the article
 	 */
-	public function getDraftArticleImgPath()
+	public function getDraftArticleImgPath($iIdDraft)
 	{
-		return $this->sDraftsArticlesImgPath;
+		return $this->sDraftsArticlesImgPath . $iIdDraft . '/';
 	}
 	
 	
@@ -318,57 +320,17 @@ class bab_PublicationImageUploader
 	 * test the validity of the article identifier.
 	 * The identifier is used to determine the upload path
 	 * 
+	 * @param int $iIdDraft			The identifier of the draft article
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
 	 * 
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
-	public function uploadDraftArticleImage($sKeyOfPhpFile)
+	public function uploadDraftArticleImage($iIdDraft, $sKeyOfPhpFile)
 	{
-		require_once dirname(__FILE__) . '/uploadincl.php';
-		require_once dirname(__FILE__) . '/uuid.php';
-		
-		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
-		if(!($oFileHandler instanceof bab_fileHandler))
-		{
-			return false;
-		}
-		
-		if(true === $this->fileSizeToLarge($oFileHandler))
-		{
-			return false;
-		}
-		
-		if(false === $this->mimeSupported($oFileHandler))
-		{
-			return false;
-		}
-		
-		$iIdDelegation = 0;
-		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
-		{
-			return false;
-		}
-		
-		$sFileName		= $oFileHandler->filename;
-		$sFullPathName	= $oPubPathEnv->getDraftArticleImgPath() . bab_uuid();
-		if(true === $this->isfile($sFullPathName))
-		{
-			return false;
-		}
-		
-		$sFileExtention = $this->getFileExtention($sFileName);
-		if(false !== $sFileExtention)
-		{
-			$sFullPathName .= $sFileExtention;
-		}
-		
-		if(false === $this->importFile($oFileHandler, $sFullPathName))
-		{
-			return false;
-		}
-		return array('sTempName' => basename($sFullPathName), 'sFileName' => $sFileName);
+		$sFunctionName	= 'getDraftArticleImgPath';
+		$iIdDelegation	= 0;
+		return $this->uploadImage($iIdDelegation, $iIdDraft, $sKeyOfPhpFile, $sFunctionName);
 	}
 	
 	/**
@@ -707,7 +669,7 @@ class bab_PublicationImageUploader
 				}
 			}
 			
-			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath();
+			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
 			if(!is_dir($sDraftArticlePathName))
 			{
 					$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
@@ -726,7 +688,7 @@ class bab_PublicationImageUploader
 				return false;
 			}
 	
-			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sDraftArticlePathName . $aImageInfo['tempName']); 
+			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sDraftArticlePathName . $aImageInfo['name']); 
 			if(!($oFileHandler instanceof bab_fileHandler))
 			{
 				return false;
@@ -734,7 +696,7 @@ class bab_PublicationImageUploader
 			
 			if(!$this->mimeSupported($oFileHandler))
 			{
-				@unlink($oIterator->getPathname());
+				@unlink($sDraftArticlePathName . $aImageInfo['name']);
 				return false;
 			}
 			
@@ -748,6 +710,62 @@ class bab_PublicationImageUploader
 		return false;
 	}
 	
+	public function copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft)
+	{
+		require_once dirname(__FILE__) . '/uploadincl.php';
+		
+		$aImageInfo = bab_getImageArticle($iIdArticle);
+		if(false !== $aImageInfo)
+		{
+			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+			if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+			{
+				return false;
+			}
+			
+			$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
+			if(!is_dir($sArticlePathName))
+			{
+				$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
+			}
+			
+			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
+			if(!is_dir($sDraftArticlePathName))
+			{
+				if(false === bab_mkdir($sDraftArticlePathName))
+				{
+					$this->addError(bab_translate("Can't create directory: ") . $sDraftArticlePathName);
+					return false;
+				}
+			}
+			
+			if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
+			{
+				$this->addErrors($oPubPathEnv->getError());
+				return false;
+			}
+			
+			if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
+			{
+				$this->addErrors($oPubPathEnv->getError());
+				return false;
+			}
+			
+			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_COPY, $sArticlePathName . $aImageInfo['name']); 
+			if(!($oFileHandler instanceof bab_fileHandler))
+			{
+				return false;
+			}
+			
+			$sFullPathName = $sDraftArticlePathName . $aImageInfo['name'];
+			if(false === $this->importFile($oFileHandler, $sFullPathName))
+			{
+				return false;
+			}
+			return $sFullPathName;
+		}
+		return false;
+	}
 	
 	private function getFileExtention($sFileName)
 	{
@@ -1417,6 +1435,24 @@ function acceptWaitingArticle($idart)
 			$iIdDraft	= $idart;	
 			$iIdArticle	= $articleid;
 			
+			$oPubPathsEnv	= new bab_PublicationPathsEnv();
+			$iIdDelegation	= 0; //Dummy value
+			if($oPubPathsEnv->setEnv($iIdDelegation))
+			{
+				$sPathName = $oPubPathsEnv->getArticleImgPath($iIdArticle);
+				$aImageInfo = bab_getImageArticle($iIdArticle);
+				if(false !== $aImageInfo)
+				{
+					$sFullPathName = $sPathName . $aImageInfo['name'];
+					if(file_exists($sFullPathName))
+					{
+						@unlink($sFullPathName);
+					}
+				}
+				bab_deleteImageArticle($iIdArticle);
+			}
+			
+			
 			$oPubImpUpl	= new bab_PublicationImageUploader();
 			$sFullPathName = $oPubImpUpl->importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle);
 			if(false !== $sFullPathName)
@@ -1432,6 +1468,7 @@ function acceptWaitingArticle($idart)
 				if(false !== $aImageInfo)
 				{
 					bab_deleteImageDraftArticle($iIdDraft);
+					@rmdir($sPathName);
 				}
 			}
 		}

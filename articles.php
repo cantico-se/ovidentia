@@ -1257,7 +1257,26 @@ function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 			{
 				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");		
 
-
+				$iIdArticle				= $article;
+				$iIdDraft				= $idart;
+				$iIdDelegation			= 0;
+				list($iIdDelegation)	= $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($topics)."'"));
+				
+				require_once dirname(__FILE__) . '/utilit/artincl.php';
+				
+				$oPubImpUpl	= new bab_PublicationImageUploader();
+				$sFullPathName = $oPubImpUpl->copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft);
+				if(false !== $sFullPathName)
+				{
+					$aPathParts		= pathinfo($sFullPathName);
+					$sName			= $aPathParts['basename'];
+					$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+					$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+					$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+					
+					bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
+				}
+				
 				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($article)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;

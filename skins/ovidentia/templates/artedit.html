@@ -913,9 +913,9 @@ function uploadDone()
 		
 		if(sJSon.success) 
 		{ //This part happens when the image gets uploaded.
-			var aImg = sJSon.sMessage.split(',');
-			_$('propForm').sImgName.value = aImg[0];
-			_$('tempImg').src = "{ babUrlScript }?tg=artedit&idx=getImage&iWidth=120&iHeight=90&sImage=" + aImg[0];
+			_$('propForm').sImgName.value = sJSon.sMessage;
+			_$('tempImg').src = "{ babUrlScript }?tg=artedit&idx=getImage&iWidth=120&iHeight=90&sImage=" + _$('propForm').sImgName.value +
+				'&iIdDraft=' + _$('propForm').idart.value;
 			bab_hide('messageTR');
 		}
 		else if(sJSon.failure) 

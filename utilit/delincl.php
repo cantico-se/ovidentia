@@ -163,6 +163,16 @@ function bab_deleteDraft($idart)
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+
+		require_once dirname(__FILE__) . '/artincl.php';
+		
+		$oPubPathsEnv = new bab_PublicationPathsEnv();
+		$iIdDelegation = 0; //Dummy value
+		if($oPubPathsEnv->setEnv($iIdDelegation))
+			{
+			bab_deleteUploadDir($oPubPathsEnv->getDraftArticleImgPath($idart));
+			bab_deleteImageDraftArticle($idart);
+			}
 		}
 	}
 
@@ -203,6 +213,16 @@ function bab_confirmDeleteArticle($article)
 	// delete article
 	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 	$res = $babDB->db_query($req);
+
+	require_once dirname(__FILE__) . '/artincl.php';
+	
+	$oPubPathsEnv = new bab_PublicationPathsEnv();
+	$iIdDelegation = 0; //Dummy value
+	if($oPubPathsEnv->setEnv($iIdDelegation))
+		{
+		bab_deleteUploadDir($oPubPathsEnv->getArticleImgPath($article));
+		bab_deleteImageArticle($article);
+		}
 	}
 
 function bab_deleteComments($com)

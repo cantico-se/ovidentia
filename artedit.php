@@ -834,7 +834,6 @@ function showPreviewArticle($idart)
 					{
 					$this->bupprobchoice = false;
 					}
-
 				$this->content = bab_previewArticleDraft($idart, 0);
 				}
 			else
@@ -1030,7 +1029,8 @@ function showSetArticleProperties($idart)
 				{//Image
 					$this->sDeleteImageChecked	= (bab_rp('deleteImageChk', 0) == 0) ? '' : 'checked="checked"';
 					$this->sImgName				= bab_rp('sImgName', '');
-					$this->sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&iWidth=120&iHeight=90&sImage=';
+					$this->sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&iWidth=120&iHeight=90' . 
+						'&iIdDraft=' . $idart . '&sImage=';
 									
 					//Si on ne vient pas d'un post alors récupérer l'image
 					if(!array_key_exists('sImgName', $_POST))
@@ -1038,7 +1038,7 @@ function showSetArticleProperties($idart)
 						$aImageInfo	= bab_getImageDraftArticle($idart);
 						if(false !== $aImageInfo)
 						{
-							$this->sImgName				= $aImageInfo['tempName'];
+							$this->sImgName				= $aImageInfo['name'];
 							$this->sImageUrl			.= $this->sImgName;
 							$this->bHaveAssociatedImage = true;
 						}
@@ -1060,19 +1060,19 @@ function showSetArticleProperties($idart)
 					$this->topicpath = viewCategoriesHierarchy_txt($this->drafttopic);
 					$arrtop = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($this->drafttopic)."'"));
 
-$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
-$this->bImageUploadEnable	= ('Y' === (string) $arrtop['allow_addImg']);
-$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
-$this->bImageUploadPossible	= (0 < $this->iMaxImgFileSize && $this->bUploadPathValid);
-
-$this->sImageTitle			= bab_translate('Associated picture');
-$this->sSelectImageCaption	= bab_translate('Select a picture');
-$this->sDeleteImageCaption	= bab_translate('Remove image');
-$this->sImagePreviewCaption = bab_translate('Preview image');
-$this->sAltImagePreview		= bab_translate("Previlualization of the image");
-$this->sImageSubmitCaption	= bab_translate("Update");
-
-$this->processDisabledUploadReason();
+					$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+					$this->bImageUploadEnable	= ('Y' === (string) $arrtop['allow_addImg']);
+					$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+					$this->bImageUploadPossible	= (0 < $this->iMaxImgFileSize && $this->bUploadPathValid);
+					
+					$this->sImageTitle			= bab_translate('Associated picture');
+					$this->sSelectImageCaption	= bab_translate('Select a picture');
+					$this->sDeleteImageCaption	= bab_translate('Remove image');
+					$this->sImagePreviewCaption = bab_translate('Preview image');
+					$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+					$this->sImageSubmitCaption	= bab_translate("Update");
+					
+					$this->processDisabledUploadReason();
 					
 					if( $arrtop['busetags'] == 'Y')
 						{
@@ -2283,11 +2283,10 @@ function uploadDraftArticleImg()
 	$sKeyOfPhpFile	= 'articlePicture';
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
 	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$aFileInfo		= false;
 	$iIdDelegation	= 0; //Dummy value, i dont need this here
 	
 	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath();
+	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
 	
 	if(0 < $iIdDraft)
 	{
@@ -2296,16 +2295,15 @@ function uploadDraftArticleImg()
 		{
 			bab_deleteImageDraftArticle($iIdDraft);
 			
-			if(file_exists($sPath . $aImageInfo['tempName']))
+			if(file_exists($sPath . $aImageInfo['name']))
 			{
-				@unlink($sPath . $aImageInfo['tempName']);
+				@unlink($sPath . $aImageInfo['name']);
 			}
 		}
-		
-		$aFileInfo = $oPubImpUpl->uploadDraftArticleImage($sKeyOfPhpFile);
+		$sFullPathName = $oPubImpUpl->uploadDraftArticleImage($iIdDraft, $sKeyOfPhpFile);
 	}
 	
-	if(false === $aFileInfo)
+	if(false === $sFullPathName)
 	{
 		$sMessage = implode(',', $oPubImpUpl->getError());
 		if('utf8' != bab_charset::getDatabase())
@@ -2321,16 +2319,15 @@ function uploadDraftArticleImg()
 	else
 	{
 		//Insérer l'image en base
-		$sFullPathName	= $sPath . $aFileInfo['sTempName'];
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
 		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
 		
-		bab_addImageToDraftArticle($iIdDraft, $aFileInfo['sFileName'], $aFileInfo['sTempName'], $sRelativePath);
+		bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
 		
-		$sMessage = implode(',', $aFileInfo);
+		$sMessage = $sName;
 		if('utf8' != bab_charset::getDatabase())
 		{
 			$sMessage = utf8_encode($sMessage);
@@ -2354,7 +2351,9 @@ function getImage()
 	require_once dirname(__FILE__) . '/utilit/artincl.php';
 	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
 
+	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
 	$iWidth			= (int) bab_rp('iWidth', 120);
+	$iHeight		= (int) bab_rp('iHeight', 90);
 	$iHeight		= (int) bab_rp('iHeight', 90);
 	$sImage			= (string) bab_rp('sImage', '');
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
@@ -2362,7 +2361,7 @@ function getImage()
 	
 	global $babBody;
 	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath();
+	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
@@ -2378,7 +2377,7 @@ function deleteDraftImage()
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
 	
 	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath();
+	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
 	
 	deleteDraftArticleImage($iIdDraft, $sPath);
 	die('');
@@ -2392,12 +2391,14 @@ function deleteDraftArticleImage($iIdDraft, $sPathName)
 	{
 		bab_deleteImageDraftArticle($iIdDraft);
 		
-		if(file_exists($sPathName . $aImageInfo['tempName']))
+		if(file_exists($sPathName . $aImageInfo['name']))
 		{
-			@unlink($sPathName . $aImageInfo['tempName']);
+			@unlink($sPathName . $aImageInfo['name']);
+			@rmdir($sPathName);
 		}
 	}
 }
+
 
 
 /* main */
@@ -2726,28 +2727,25 @@ if(array_key_exists('imageSubmit', $_POST))
 	$iIdDelegation	= 0; //Dummy value, i dont need this here
 	
 	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath();
+	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
 
 	if(0 < $iIdDraft)
 	{
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
-			$aFileInfo = $oPubImpUpl->uploadDraftArticleImage($sKeyOfPhpFile);
-			if(false !== $aFileInfo)
+			$sFullPathName = $oPubImpUpl->uploadDraftArticleImage($sKeyOfPhpFile);
+			if(false !== $sFullPathName)
 			{
 				deleteDraftArticleImage($iIdDraft, $sPath);
 				
-				$sFullPathName	= $sPath . $aFileInfo['sTempName'];
 				$aPathParts		= pathinfo($sFullPathName);
-				$sName			= $aFileInfo['sTempName'];
+				$sName			= $aPathParts['basename'];
 				$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
 				$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 				$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
 				
-				$sTempName	= $aFileInfo['sTempName'];
-				$sName		= $aFileInfo['sFileName'];
-				bab_addImageToDraftArticle($iIdDraft, $sName, $sTempName, $sRelativePath);
-				$_POST['sImgName'] = $aFileInfo['sTempName'];
+				bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
+				$_POST['sImgName'] = $sName;
 				if((array_key_exists('deleteImageChk', $_POST)))
 				{
 					unset($_POST['deleteImageChk']);

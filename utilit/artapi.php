@@ -827,7 +827,7 @@ function bab_deleteImageTopic($iIdTopic)
  * 									The relative path should be completed by the character '/'.
  * @return bool						True on success, false otherwise 
  */
-function bab_addImageToDraftArticle($iIdDraft, $sName, $sTempName, $sRelativePath)
+function bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath)
 {
 	require_once dirname(__FILE__) . '/tableWrapperClass.php';
 	
@@ -837,7 +837,6 @@ function bab_addImageToDraftArticle($iIdDraft, $sName, $sTempName, $sRelativePat
 		'id'			=> '',
 		'idDraft'		=> $iIdDraft,
 		'name'			=> $sName,
-		'tempName'		=> $sTempName,
 		'relativePath'	=> $sRelativePath
 	);
 	
@@ -862,11 +861,10 @@ function bab_getImageDraftArticle($iIdDraft)
 		'idDraft'		=> $iIdDraft,
 		'id'			=> -1,
 		'name'			=> '',
-		'tempName'		=> '',
 		'relativePath'	=> ''
 	);
 	
-	return $oTblWr->load($aAttribut, 1, 4, 0, 1);
+	return $oTblWr->load($aAttribut, 1, 3, 0, 1);
 }
 
 /**

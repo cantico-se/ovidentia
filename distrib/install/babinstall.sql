@@ -2054,7 +2054,6 @@ CREATE TABLE bab_art_drafts_images (
    id int(11) unsigned NOT NULL auto_increment,
    idDraft int(11) unsigned NOT NULL,
    name varchar(255),
-   tempName varchar(255),
    relativePath text NOT NULL,
    PRIMARY KEY (id),
    KEY idDraft (idDraft)
