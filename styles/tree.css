@@ -125,7 +125,7 @@
 }
 
 .bab_ul_tree_leaf ul {
-	display: none;
+	display: default;
 }
 
 .bab_treeToolbar {
