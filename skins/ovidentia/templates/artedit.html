@@ -1097,12 +1097,22 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 </script>
 
 <!--#if allowattachments -->
-<form name="propform" id="propForm" method="post" action="{ babPhpSelf }"  enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
-<input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }">
+<form name="propform" id="propForm" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxFileSize }">
 <input type="hidden" name="files_fields" value="1">
 <!--#else allowattachments -->
+
+<!--#if bImageUploadEnable -->
+<!--#if bImageUploadPossible -->
+<form name="propform" id="propForm" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxFileSize }">
+<!--#else bImageUploadPossible -->
 <form name="propform" id="propForm" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('propform');">
+<!--#endif bImageUploadEnable -->
+<!--#endif bImageUploadPossible -->
+
 <!--#endif allowattachments -->
+
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s3">
 <input type="hidden" name="idart" value="{ idart }">
@@ -1380,7 +1390,7 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 </tr>
 </table>
 <br />
-
+<!--#endif allowattachments -->
 <!--#if bImageUploadEnable -->
 <!--#if bImageUploadPossible -->
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
@@ -1404,23 +1414,20 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 						</div>
 					</td>
 				</tr>
-
+								
 			<!--#if bHaveAssociatedImage -->
-			<!--#if bDisplayDelImgChk -->					
 				<tr id="deleteImageTR"> 
-					<td>{ sDeleteImageCaption }</td>
-					<td>
-						<input type="checkbox" name="deleteImageChk" value="1" />
+					<td colspan="2">
+						<input type="checkbox" name="deleteImageChk" { sDeleteImageChecked } value="1" />&nbsp;
+						{ sDeleteImageCaption }
 					</td>
 				</tr>
-			<!--#endif bDisplayDelImgChk -->
-			<!--#endif bHaveAssociatedImage -->
-				
-				<tr id="imagePreviewTR" style="display:none"> 
+				<tr id="imagePreviewTR"> 
 					<td colspan="2">{ sImagePreviewCaption }<br />
 						<img id="tempImg" border="0" src="{ sImageUrl }" alt="{ sAltImagePreview }" />
 					</td>
 				</tr>
+			<!--#endif bHaveAssociatedImage -->
 				
 				<tr> 
 	            	<td colspan="2" align="center"> 
@@ -1448,10 +1455,9 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 	</tr>
 </table>
 <!--#endif bImageUploadPossible -->
-<!--#endif bImageUploadEnable -->
 <br />
+<!--#endif bImageUploadEnable -->
 
-<!--#endif allowattachments -->
 <!--#if notifymembers -->
 <table class="BabLoginCadreBackground" width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -1564,18 +1570,12 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 		bab_addEventHandler(window, 'load', function bab_init() {
 			if(_$('imagePreviewTR'))
 			{
-				_$('messageTR').parentNode.removeChild(_$('imagePreviewTR'));
+				_$('imagePreviewTR').parentNode.removeChild(_$('imagePreviewTR'));
 			}
 		
-			if(_$('imageModifyInfoTR'))
-			{
-				bab_show('imageModifyInfoTR');
-			}
-			
-			if(_$('deleteImageTR'))
-			{
-				bab_hide('deleteImageTR');
-			}
+			bab_show('imageModifyInfoTR');
+			bab_hide('deleteImageTR');
+			bab_hide('imageSubmit');
 			
 			bab_createImagePreviewTR();
 	

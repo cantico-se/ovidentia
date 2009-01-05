@@ -910,7 +910,7 @@ function bab_addImageToArticle($iIdArticle, $sName, $sRelativePath)
 	
 	$aAttribut = array(
 		'id'			=> '',
-		'idArticle'		=> $iIdDraft,
+		'idArticle'		=> $iIdArticle,
 		'name'			=> $sName,
 		'relativePath'	=> $sRelativePath
 	);

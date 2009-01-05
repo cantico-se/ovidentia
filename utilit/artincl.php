@@ -686,81 +686,66 @@ class bab_PublicationImageUploader
 	 */
 	public function importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle)
 	{
-/*		
 		require_once dirname(__FILE__) . '/uploadincl.php';
 		
-		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		$aImageInfo = bab_getImageDraftArticle($iIdDraft);
+		if(false !== $aImageInfo)
 		{
-			return false;
-		}
-		
-		$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
-		if(!is_dir($sArticlePathName))
-		{
-			if(false === bab_mkdir($sArticlePathName))
+			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+			if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
 			{
-				$this->addError(bab_translate("Can't create directory: ") . $sArticlePathName);
 				return false;
 			}
-		}
-		
-		$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
-		if(!is_dir($sDraftArticlePathName))
-		{
-				$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
-				return false;
-		}
-		
-		if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
-		{
-			$this->addErrors($oPubPathEnv->getError());
-			return false;
-		}
-		
-		if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
-		{
-			$this->addErrors($oPubPathEnv->getError());
-			return false;
-		}
-	
-		//For now only one file is supported
-		try
-		{
-			$sFullPathName	= null;
-			$oDirIterator	= new DirectoryIterator($sDraftArticlePathName);
 			
-			foreach($oDirIterator as $oIterator)
+			$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
+			if(!is_dir($sArticlePathName))
 			{
-				if($oIterator->isFile())
+				if(false === bab_mkdir($sArticlePathName))
 				{
-					$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $oIterator->getPathname()); 
-					if(!($oFileHandler instanceof bab_fileHandler))
-					{
-						return false;
-					}
-					
-					if(!$this->mimeSupported($oFileHandler))
-					{
-						@unlink($oIterator->getPathname());
-						return false;
-					}
-					
-					$sFullPathName = $sArticlePathName . $oIterator->getFilename();
-					if(false === $this->importFile($oFileHandler, $sFullPathName))
-					{
-						return false;
-					}
-					return $sFullPathName;
+					$this->addError(bab_translate("Can't create directory: ") . $sArticlePathName);
+					return false;
 				}
 			}
+			
+			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath();
+			if(!is_dir($sDraftArticlePathName))
+			{
+					$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
+					return false;
+			}
+			
+			if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
+			{
+				$this->addErrors($oPubPathEnv->getError());
+				return false;
+			}
+			
+			if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
+			{
+				$this->addErrors($oPubPathEnv->getError());
+				return false;
+			}
+	
+			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sDraftArticlePathName . $aImageInfo['tempName']); 
+			if(!($oFileHandler instanceof bab_fileHandler))
+			{
+				return false;
+			}
+			
+			if(!$this->mimeSupported($oFileHandler))
+			{
+				@unlink($oIterator->getPathname());
+				return false;
+			}
+			
+			$sFullPathName = $sArticlePathName . $aImageInfo['name'];
+			if(false === $this->importFile($oFileHandler, $sFullPathName))
+			{
+				return false;
+			}
+			return $sFullPathName;
 		}
-		catch(Exception $e)
-		{
-			$this->addErrors($e->getMessage());
-			return false;
-		}
-//*/
+		return false;
 	}
 	
 	
@@ -1386,6 +1371,8 @@ function acceptWaitingArticle($idart)
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
 		$arr = $babDB->db_fetch_array($res);
 
+		$iIdDelegation = (int) $arr['id_dgowner'];
+		
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
@@ -1425,6 +1412,31 @@ function acceptWaitingArticle($idart)
 		$req = "update ".BAB_ARTICLES_TBL." set head='".$babDB->db_escape_string($head)."', body='".$babDB->db_escape_string($body)."', title='".$babDB->db_escape_string($arr['title'])."' where id='".$babDB->db_escape_string($articleid)."'";
 		$res = $babDB->db_query($req);
 
+	
+		{//Image
+			$iIdDraft	= $idart;	
+			$iIdArticle	= $articleid;
+			
+			$oPubImpUpl	= new bab_PublicationImageUploader();
+			$sFullPathName = $oPubImpUpl->importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle);
+			if(false !== $sFullPathName)
+			{
+				$aPathParts		= pathinfo($sFullPathName);
+				$sName			= $aPathParts['basename'];
+				$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+				$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+				$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+				
+				bab_addImageToArticle($iIdArticle, $sName, $sRelativePath);
+				$aImageInfo = bab_getImageDraftArticle($iIdDraft);
+				if(false !== $aImageInfo)
+				{
+					bab_deleteImageDraftArticle($iIdDraft);
+				}
+			}
+		}
+		
+		
 		/* move attachements */
 		if( $arr['allow_attachments'] ==  'Y' )
 			{
