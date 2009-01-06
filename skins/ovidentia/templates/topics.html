@@ -79,6 +79,7 @@ function bab_onLoadImagePreview()
 	if(this.src != '#')
 	{
 		bab_show('imagePreviewTR');
+		bab_show('deletePicture');
 	}
 	bab_enableForm();
 }
@@ -215,7 +216,8 @@ function bab_createImagePreviewTR()
 	var oImg = document.createElement('img');
 	oImg.id = 'tempImg';
 	oImg.alt = "{ sAltImagePreview }";
-	oImg.src = '{ sImageUrl }';
+//	oImg.src = '{ sImageUrl }';
+	oImg.src = '#';//Pour avoir l'evenement onload qui activera le formulaire lorsque dans la fonction bab_init le src de l'image sera initialisé
 
 	var oInput = document.createElement('input');
 	oInput.type = 'image';
@@ -566,10 +568,7 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 	if(bUploadPathValid)
 	{
 		bab_addEventHandler(window, 'load', function bab_init() {
-			if(_$('imagePreviewTR'))
-			{
-				_$('messageTR').parentNode.removeChild(_$('imagePreviewTR'));
-			}
+			bab_getHiddenUpload();
 		
 			if(_$('imageModifyInfoTR'))
 			{
@@ -581,13 +580,16 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 				bab_hide('deleteImageTR');
 			}
 			
+			if(_$('imagePreviewTR'))
+			{
+				_$('imagePreviewTR').parentNode.removeChild(_$('imagePreviewTR'));
+			}
+
 			bab_createImagePreviewTR();
-	
-			bab_getHiddenUpload();
 			
 			var sTempImgName	= _$('topicCreateModify').sTempImgName.value;
 			var sImgName		= _$('topicCreateModify').sImgName.value;
-	
+			
 			bab_disableForm();
 			
 			if(_$('topicPicture'))
@@ -608,6 +610,10 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 			if(sImgName.length == 0)
 			{
 				bab_enableForm();
+			}
+			else
+			{
+				_$('tempImg').src = '{ sImageUrl }';
 			}
 		});
 	}
