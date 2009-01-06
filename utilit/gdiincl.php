@@ -331,7 +331,7 @@ class bab_ImageResize
     	}
 	}
 	
-	function scale($sFullPathname, $iScale) 
+	public function scale($sFullPathname, $iScale) 
 	{
 		if(!bab_ImageResize::gdLoaded())
 		{
@@ -357,6 +357,23 @@ class bab_ImageResize
     	$this->resize($oImgRes, $iWidth, $iHeight);
 	}
  
+	
+	public function resizeImageAuto($sFullPathname, $iWidth, $iHeight)
+	{
+		if(0 === (int) $iWidth && 0 < (int) $iHeight)
+		{
+			$this->resizeToHeight($sFullPathname, $iHeight);
+		}
+		else if(0 < (int) $iWidth && 0 === (int) $iHeight)
+		{
+			$this->resizeImageToWidth($sFullPathname, $iWidth);
+		}
+		else
+		{
+			$this->resizeImage($sFullPathname, $iWidth, $iHeight);
+		}
+	}
+	
 	public function resizeImageToWidth($sFullPathname, $iWidth)
 	{
 		if(!bab_ImageResize::gdLoaded())

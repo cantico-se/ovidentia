@@ -405,8 +405,8 @@ function getImage()
 	require_once dirname(__FILE__) . '/../utilit/artincl.php';
 	require_once dirname(__FILE__) . '/../utilit/gdiincl.php';
 
-	$iWidth			= (int) bab_rp('iWidth', 120);
-	$iHeight		= (int) bab_rp('iHeight', 90);
+	$iWidth			= (int) bab_rp('iWidth', 0);
+	$iHeight		= (int) bab_rp('iHeight', 0);
 	$sImage			= (string) bab_rp('sImage', '');
 	$sOldImage		= (string) bab_rp('sOldImage', '');
 	$iIdCategory	= (int) bab_rp('iIdCategory', 0);
@@ -427,7 +427,7 @@ function getImage()
 	}
 	
 	$oImageResize = new bab_ImageResize();
-	$oImageResize->resizeImage($sPath . $sImage, $iWidth, $iHeight);
+	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
 
 	if(file_exists($sPath . $sOldImage))
 	{
