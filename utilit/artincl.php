@@ -368,7 +368,7 @@ class bab_PublicationImageUploader
 		}
 		
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		if(false === $this->setEnv($iIdDelegation))
 		{
 			return false;
 		}
@@ -435,7 +435,7 @@ class bab_PublicationImageUploader
 		}
 		
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		if(false === $this->setEnv($iIdDelegation))
 		{
 			return false;
 		}
@@ -594,7 +594,7 @@ class bab_PublicationImageUploader
 		require_once dirname(__FILE__) . '/uploadincl.php';
 		
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+		if(false === $this->setEnv($iIdDelegation))
 		{
 			return false;
 		}
@@ -654,7 +654,7 @@ class bab_PublicationImageUploader
 		if(false !== $aImageInfo)
 		{
 			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-			if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+			if(false === $this->setEnv($iIdDelegation))
 			{
 				return false;
 			}
@@ -718,7 +718,7 @@ class bab_PublicationImageUploader
 		if(false !== $aImageInfo)
 		{
 			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
-			if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
+			if(false === $this->setEnv($iIdDelegation))
 			{
 				return false;
 			}
@@ -796,6 +796,12 @@ class bab_PublicationImageUploader
 	private function addErrors($aError)
 	{
 		$this->aError = array_merge($this->aError, $aError);
+	}
+
+	
+	public function deleteOutDatedTempImage($iNbDay)
+	{
+		
 	}
 	
 	/**
