@@ -855,6 +855,8 @@ function showSetArticleProperties($idart)
 
 		var $altbg = true;
 
+		var $bHaveWarningMessage	= false;
+		
 		var $bUploadPathValid		= false;
 		var $bImageUploadPossible	= false;
 		var $bImageUploadEnable		= false;
@@ -880,8 +882,9 @@ function showSetArticleProperties($idart)
 			
 			$this->iMaxFileSize = max($GLOBALS['babMaxImgFileSize'], $babBody->babsite['maxfilesize']);
 			
-			$this->access = false;
-			$this->rfurl = $rfurl;
+			$this->warnfilemessage	= '';
+			$this->access			= false;
+			$this->rfurl			= $rfurl;
 
 			$req = "select * from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id='".$babDB->db_escape_string($idart)."'";
 			$res = $babDB->db_query($req);
@@ -1040,6 +1043,7 @@ function showSetArticleProperties($idart)
 						{
 							$this->sImgName				= $aImageInfo['name'];
 							$this->sImageUrl			.= $this->sImgName;
+							$this->warnfilemessage 		= bab_translate("Warning! If you change topic, you can lost associated documents");
 							$this->bHaveAssociatedImage = true;
 						}
 					}
@@ -1047,6 +1051,7 @@ function showSetArticleProperties($idart)
 					{
 						$this->sImageUrl 			.= $this->sImgName;
 						$this->bHaveAssociatedImage = true;
+						$this->warnfilemessage 		= bab_translate("Warning! If you change topic, you can lost associated documents");
 					}
 					else
 					{
@@ -1315,12 +1320,10 @@ function showSetArticleProperties($idart)
 							$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
 							$this->warnfilemessage = bab_translate("Warning! If you change topic, you can lost associated documents");
 							}
-						else
-							{
-							$this->warnfilemessage = '';
-							}
 						}
 					}
+					
+					$this->bHaveWarningMessage = ('' != $this->warnfilemessage);
 				}
 			else
 				{
@@ -2399,6 +2402,8 @@ function deleteDraftArticleImage($iIdDraft, $sPathName)
 	}
 }
 
+
+//bab_debug($_REQUEST);
 
 
 /* main */

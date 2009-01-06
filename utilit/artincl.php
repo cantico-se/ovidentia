@@ -1383,7 +1383,7 @@ function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$babDB->db_escape_string($idart)."'");
+	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.allow_addImg, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
@@ -1453,22 +1453,25 @@ function acceptWaitingArticle($idart)
 			}
 			
 			
-			$oPubImpUpl	= new bab_PublicationImageUploader();
-			$sFullPathName = $oPubImpUpl->importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle);
-			if(false !== $sFullPathName)
+			if('Y' == $arr['allow_addImg'])
 			{
-				$aPathParts		= pathinfo($sFullPathName);
-				$sName			= $aPathParts['basename'];
-				$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
-				$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-				$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
-				
-				bab_addImageToArticle($iIdArticle, $sName, $sRelativePath);
-				$aImageInfo = bab_getImageDraftArticle($iIdDraft);
-				if(false !== $aImageInfo)
+				$oPubImpUpl	= new bab_PublicationImageUploader();
+				$sFullPathName = $oPubImpUpl->importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle);
+				if(false !== $sFullPathName)
 				{
-					bab_deleteImageDraftArticle($iIdDraft);
-					@rmdir($sPathName);
+					$aPathParts		= pathinfo($sFullPathName);
+					$sName			= $aPathParts['basename'];
+					$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+					$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+					$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
+					
+					bab_addImageToArticle($iIdArticle, $sName, $sRelativePath);
+					$aImageInfo = bab_getImageDraftArticle($iIdDraft);
+					if(false !== $aImageInfo)
+					{
+						bab_deleteImageDraftArticle($iIdDraft);
+						@rmdir($sPathName);
+					}
 				}
 			}
 		}

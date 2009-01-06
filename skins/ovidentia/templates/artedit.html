@@ -553,14 +553,15 @@ return true;
 
 function stepChangeTopic(cmd, fmname) 
 { 
-<!--#if warnfilemessage -->
-//}
-if (!confirm('{ warnfilemessage }'))
-	return false;
-if( typeof document.forms[fmname] != "object" ) return;
-	document.forms[fmname].submit();
-<!--#endif warnfilemessage -->
-return true;
+<!--#if bHaveWarningMessage -->
+	if(!confirm('{ warnfilemessage }'))
+	{
+		return false;
+	}
+<!--#endif bHaveWarningMessage -->
+	
+	document.propform.submit();
+	return true;
 }
 
 function updateDates(elemDay, elemMonth, elemYear)
@@ -1096,23 +1097,9 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 //-->
 </script>
 
-<!--#if allowattachments -->
 <form name="propform" id="propForm" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
 <input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxFileSize }">
 <input type="hidden" name="files_fields" value="1">
-<!--#else allowattachments -->
-
-<!--#if bImageUploadEnable -->
-<!--#if bImageUploadPossible -->
-<form name="propform" id="propForm" method="post" action="{ babPhpSelf }" enctype="multipart/form-data" onSubmit="return confirmForm('propform');">
-<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxFileSize }">
-<!--#else bImageUploadPossible -->
-<form name="propform" id="propForm" method="post" action="{ babPhpSelf }" onSubmit="return confirmForm('propform');">
-<!--#endif bImageUploadEnable -->
-<!--#endif bImageUploadPossible -->
-
-<!--#endif allowattachments -->
-
 <input type="hidden" name="tg" value="artedit">
 <input type="hidden" name="idx" value="s3">
 <input type="hidden" name="idart" value="{ idart }">
