@@ -2407,6 +2407,13 @@ function deleteDraftArticleImage($iIdDraft, $sPathName)
 
 
 /* main */
+
+
+$iNbSeconds = 2 * 86400; //2 jours
+require_once dirname(__FILE__) . '/utilit/artincl.php';
+bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
+
+
 $artedit = array();
 if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
 {

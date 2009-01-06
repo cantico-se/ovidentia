@@ -799,9 +799,39 @@ class bab_PublicationImageUploader
 	}
 
 	
-	public function deleteOutDatedTempImage()
+	public static function deleteOutDatedTempImage($iNbSeconds)
 	{
+		$iIdDelegation	= 0;
+		$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
 		
+		$oEnvObj->setEnv($iIdDelegation);
+		$sPath = $oEnvObj->getTempPath();
+		
+		require_once dirname(__FILE__) . '/dateTime.php';
+		
+		$oEndDate = BAB_DateTime::now();
+		$oEndDate->add(-$iNbSeconds, BAB_DATETIME_SECOND);
+		
+		if(is_dir($sPath))
+		{
+			$oDirIterator = new DirectoryIterator($sPath);
+			foreach($oDirIterator as $oItem)
+			{
+				if($oItem->isFile())
+				{
+					$oFileDate = BAB_DateTime::fromTimeStamp(filectime($oItem->getPathname()));
+					$iIsEqual	= 0;
+					$iIsBefore	= -1;
+					$iIsAfter	= 1;
+					
+					//Supprimer tous les fichiers qui ont été créés avant $oEndDate
+					if($iIsBefore == BAB_DateTime::compare($oFileDate, $oEndDate))
+					{
+						@unlink($oItem->getPathname());
+					}
+				}
+			}
+		}
 	}
 	
 	/**

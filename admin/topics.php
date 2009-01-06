@@ -926,6 +926,12 @@ if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 	return;
 }
 
+
+$iNbSeconds = 2 * 86400; //2 jours
+require_once dirname(__FILE__) . '/../utilit/artincl.php';
+bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
+
+
 $idx = bab_rp('idx', 'list');
 $cat = intval(bab_rp('cat', 0));
 

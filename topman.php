@@ -1410,6 +1410,13 @@ function topman_init($item)
 }
 
 /* main */
+
+
+$iNbSeconds = 2 * 86400; //2 jours
+require_once dirname(__FILE__) . '/utilit/artincl.php';
+bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
+
+
 if(!isset($idx))
 	{
 	$idx = "list";
