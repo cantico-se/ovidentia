@@ -777,6 +777,11 @@ function bab_debug_print_backtrace($echo = false)
 					if ($vars) {
 						$param_str .= 'public properties :'."\n";
 						foreach($vars as $key => $val) {
+
+							if (is_object($val)) {
+								$val = get_class($val);
+							}
+
 							$param_str .= $key.' = '.((string) $val)."\n";
 						}
 					}
