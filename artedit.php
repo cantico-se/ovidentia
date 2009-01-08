@@ -2355,6 +2355,7 @@ function getImage()
 	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
 
 	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
+	$iIdArticle		= (int) bab_rp('iIdArticle', 0);
 	$iWidth			= (int) bab_rp('iWidth', 0);
 	$iHeight		= (int) bab_rp('iHeight', 0);
 	$sImage			= (string) bab_rp('sImage', '');
@@ -2363,7 +2364,16 @@ function getImage()
 	
 	global $babBody;
 	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
+	$sPath = '';
+	
+	if(0 < $iIdDraft)
+	{
+		$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
+	}
+	else
+	{
+		$sPath = $oEnvObj->getArticleImgPath($iIdArticle);
+	}
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
