@@ -856,8 +856,11 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
-			$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id']) )
+			{
+				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			}
 			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
 			{
 				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
@@ -929,8 +932,11 @@ class bab_ArticleTopic extends bab_handler
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
-			$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
-			$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id']) )
+			{
+				$this->ctx->curctx->push('TopicSubmitUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$arr['id']);
+				$this->ctx->curctx->push('TopicSubmitName', bab_translate("Submit"));
+			}
 			if( bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id']) )
 			{
 				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
