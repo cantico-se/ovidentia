@@ -19,12 +19,18 @@
         <!--#in getnext -->
 		<!-- idtopiccategory: id of the category if this item is a topics category. blank otherwise -->
 		<!-- idtopic: id of the topic if this item is an articles topic. blank otherwise -->
-        <li><a href="{ childurl }">{ childname }</a>
-			
+        <li>
+        	<a href="{ childurl }">{ childname }</a>
 		</li>
 		<!--#if childdescription -->
 		<ul>
-			<li>{ childdescription }</li>
+			<li>
+	        <!--#if bHaveAssociatedImage -->
+	        	<img src="{ sImageUrl }" style="float:left;margin:4px" />
+	        <!--#endif bHaveAssociatedImage -->
+				<p>{ childdescription }</p>
+	        	<div style="clear:both"></div>
+			</li>
 		</ul>
 		<!--#endif childdescription -->
         <!--#endin getnext -->
