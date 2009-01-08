@@ -459,7 +459,10 @@ class bab_ArticlesHomePages extends bab_handler
 	var $index;
 	var $count;
 	var $idgroup;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ArticlesHomePages( &$ctx)
 	{
 		global $babBody, $babDB;
@@ -470,7 +473,10 @@ class bab_ArticlesHomePages extends bab_handler
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
 			$order = "asc";
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		switch(mb_strtoupper($order))
 		{
 			case "DESC": $order = "ht.ordering DESC"; break;
@@ -519,7 +525,29 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id left join ".BAB_ART_FILES_TBL." aft on aft.id_article=at.id where ht.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$babDB->db_escape_string($order));
+			$sQuery = 
+				'SELECT 
+					at.*, 
+					count(aft.id) as nfiles, 
+					topicCategory.id_dgowner iIdDelegation  
+				FROM ' . 
+					BAB_ARTICLES_TBL . ' at ' . 
+				'LEFT JOIN ' . 
+					BAB_HOMEPAGES_TBL . ' ht on ht.id_article=at.id ' . 
+				'LEFT JOIN ' . 
+					BAB_ART_FILES_TBL . ' aft on aft.id_article=at.id ' . 
+				'LEFT JOIN ' . 
+					BAB_TOPICS_TBL . ' topic on topic.id = at.id_topic ' . 
+				'LEFT JOIN ' . 
+					BAB_TOPICS_CATEGORIES_TBL . ' topicCategory on topicCategory.id = topic.id_cat ' . 
+				'WHERE 
+					ht.id IN (' . $babDB->quote($this->IdEntries) . ') ' . 
+				'GROUP BY ' . 
+					'at.id order by ' . $babDB->db_escape_string($order);
+					
+//			bab_debug($sQuery);
+					
+			$this->res = $babDB->db_query($sQuery);
 			}
 
 		$this->count = isset($this->res) ? $babDB->db_num_rows($this->res) : 0;
@@ -532,6 +560,9 @@ class bab_ArticlesHomePages extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -589,13 +620,19 @@ class bab_ArticleCategories extends bab_handler
 	var $IdEntries = array();
 	var $index;
 	var $count;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ArticleCategories( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$parentid = $ctx->get_value('parentid');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $parentid === false || $parentid === '' )
 			$parentid[] = 0;
 		else
@@ -621,6 +658,9 @@ class bab_ArticleCategories extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -647,13 +687,19 @@ class bab_ParentsArticleCategory extends bab_handler
 	var $res;
 	var $index;
 	var $count;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ParentsArticleCategory( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$categoryid = $ctx->get_value('categoryid');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $categoryid === false || $categoryid === '' )
 			$this->count = 0;
 		else
@@ -683,6 +729,9 @@ class bab_ParentsArticleCategory extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -708,14 +757,20 @@ class bab_ArticleCategory extends bab_handler
 	var $index;
 	var $count;
 	var $res;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ArticleCategory( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->count = 0;
 		$this->bab_handler($ctx);
 		$catid = $ctx->get_value('categoryid');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
@@ -735,6 +790,9 @@ class bab_ArticleCategory extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -804,14 +862,20 @@ class bab_ArticleTopics extends bab_handler
 	var $ctx;
 	var $index;
 	var $count;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ArticleTopics( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$catid = $ctx->get_value('categoryid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
@@ -835,6 +899,9 @@ class bab_ArticleTopics extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setTopicAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id_cat'], $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
@@ -874,14 +941,20 @@ class bab_ArticleTopic extends bab_handler
 	var $topicid;
 	var $count;
 	var $index;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_ArticleTopic( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->topicid = $ctx->get_value('topicid');
 		$this->topicname = $ctx->get_value('topicname');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $this->topicid === false || $this->topicid === '' )
 			$this->IdEntries = array_keys($babBody->topview);
 		else
@@ -911,6 +984,9 @@ class bab_ArticleTopic extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setTopicAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id_cat'], $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->replace_ref($arr['description'], 'bab_topic');
@@ -991,14 +1067,20 @@ class bab_Articles extends bab_handler
 	var $index;
 	var $count;
 	var $res;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_Articles( &$ctx)
 	{
 		global $babDB, $babBody;
 		$this->bab_handler($ctx);
 		$topicid = $ctx->get_value('topicid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		$sDelegation = ' ';
 		$sLeftJoin = ' ';
 		if(0 != $delegationid)
@@ -1136,6 +1218,9 @@ class bab_Articles extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -1187,12 +1272,19 @@ class bab_Article extends bab_handler
 	var $res;
 	var $index;
 	var $count;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_Article( &$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
 		$articleid = $ctx->get_value('articleid');
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		if( $articleid === false || $articleid === '' )
 			$this->count = 0;
 		else
@@ -1222,6 +1314,9 @@ class bab_Article extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -2456,7 +2551,10 @@ class bab_RecentArticles extends bab_handler
 	var $nbdays;
 	var $last;
 	var $topicid;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+	
 	function bab_RecentArticles($ctx)
 		{
 		global $babBody, $babDB;
@@ -2467,6 +2565,9 @@ class bab_RecentArticles extends bab_handler
 		$this->topcatid = $ctx->get_value('categoryid');
 		$lang = $ctx->get_value('lang');
 		$delegationid = (int) $ctx->get_value('delegationid');
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 		
 		if ( $this->topcatid === false || $this->topcatid === '' )
 			{
@@ -2618,6 +2719,9 @@ class bab_RecentArticles extends bab_handler
 		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -3208,12 +3312,18 @@ class bab_WaitingArticles extends bab_handler
 	var $index;
 	var $count;
 	var $topicid;
-
+	
+	var $imageheightmax;
+	var $imagewidthmax;
+		
 	function bab_WaitingArticles($ctx)
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-
+			
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
+			
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
 			{
@@ -3284,6 +3394,9 @@ class bab_WaitingArticles extends bab_handler
 		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->res);
+			
+			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -5371,6 +5484,199 @@ class bab_context
 
 }
 
+
+function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdArticle)
+{
+	require_once dirname(__FILE__) . '/gdiincl.php';
+	require_once dirname(__FILE__) . '/artapi.php';
+	require_once dirname(__FILE__) . '/pathUtil.class.php';
+
+	$bProcessed		= false;
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+	
+	if(is_dir($sUploadPath))
+	{
+		$aImgInfo = bab_getImageArticle($iIdArticle);
+		if(false !== $aImgInfo)
+		{
+			$iHeight			= $iMaxImageHeight;
+			$iWidth				= $iMaxImageWidth;
+			$sName				= $aImgInfo['name'];
+			$sRelativePath		= $aImgInfo['relativePath'];
+			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&sImage=' . $sName;
+
+			$oImageResize = new bab_ImageResize();
+			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
+			{
+				$sImageUrl .= '&iIdArticle=' . $iIdArticle;
+				$sImageUrl .= '&iWidth=' . $iWidth;
+				$sImageUrl .= '&iHeight=' . $iHeight;
+				
+				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('ImageUrl', $sImageUrl);
+				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				
+				$bProcessed = true;
+				
+				/*
+				bab_debug(
+					'AssociatedImage	' . 1 . "\n" .
+					'sFullPathName		' . $sFullPathName . "\n" .
+					'ImageUrl			' . $sImageUrl . "\n" .
+					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
+					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
+					'ResizedImageWidth	' . $iWidth . "\n" .
+					'ResizedImageHeight	' . $iHeight
+				);
+				//*/
+			}
+		}
+	}
+	
+	if(false === $bProcessed)
+	{
+		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageWidth', 0);
+		$oCtx->curctx->push('ImageHeight', 0);
+		$oCtx->curctx->push('ResizedImageWidth', 0);
+		$oCtx->curctx->push('ResizedImageHeight', 0);
+	}
+}
+
+function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdCategory)
+{
+	require_once dirname(__FILE__) . '/gdiincl.php';
+	require_once dirname(__FILE__) . '/artapi.php';
+	require_once dirname(__FILE__) . '/pathUtil.class.php';
+
+	$bProcessed		= false;
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+	
+	if(is_dir($sUploadPath))
+	{
+		$aImgInfo = bab_getImageCategory($iIdCategory);
+		if(false !== $aImgInfo)
+		{
+			$iHeight			= $iMaxImageHeight;
+			$iWidth				= $iMaxImageWidth;
+			$sName				= $aImgInfo['name'];
+			$sRelativePath		= $aImgInfo['relativePath'];
+			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topcat&idx=getImage&sImage=' . $sName;
+
+			$oImageResize = new bab_ImageResize();
+			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
+			{
+				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
+				$sImageUrl .= '&iWidth=' . $iWidth;
+				$sImageUrl .= '&iHeight=' . $iHeight;
+				
+				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('ImageUrl', $sImageUrl);
+				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				
+				$bProcessed = true;
+				
+				/*
+				bab_debug(
+					'AssociatedImage	' . 1 . "\n" .
+					'sFullPathName		' . $sFullPathName . "\n" .
+					'ImageUrl			' . $sImageUrl . "\n" .
+					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
+					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
+					'ResizedImageWidth	' . $iWidth . "\n" .
+					'ResizedImageHeight	' . $iHeight
+				);
+				//*/
+			}
+		}
+	}
+	
+	if(false === $bProcessed)
+	{
+		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageWidth', 0);
+		$oCtx->curctx->push('ImageHeight', 0);
+		$oCtx->curctx->push('ResizedImageWidth', 0);
+		$oCtx->curctx->push('ResizedImageHeight', 0);
+	}
+}
+
+
+function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdCategory, $iIdTopic)
+{
+	require_once dirname(__FILE__) . '/gdiincl.php';
+	require_once dirname(__FILE__) . '/artapi.php';
+	require_once dirname(__FILE__) . '/pathUtil.class.php';
+
+	$bProcessed		= false;
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+	
+	if(is_dir($sUploadPath))
+	{
+		$aImgInfo = bab_getImageTopic($iIdTopic);
+		if(false !== $aImgInfo)
+		{
+			$iHeight			= $iMaxImageHeight;
+			$iWidth				= $iMaxImageWidth;
+			$sName				= $aImgInfo['name'];
+			$sRelativePath		= $aImgInfo['relativePath'];
+			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getImage&sImage=' . $sName;
+
+			$oImageResize = new bab_ImageResize();
+			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
+			{
+				$sImageUrl .= '&iIdTopic=' . $iIdTopic;
+				$sImageUrl .= '&item=' . $iIdTopic;
+				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
+				$sImageUrl .= '&iWidth=' . $iWidth;
+				$sImageUrl .= '&iHeight=' . $iHeight;
+				
+				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('ImageUrl', $sImageUrl);
+				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				
+				$bProcessed = true;
+				
+				/*
+				bab_debug(
+					'AssociatedImage	' . 1 . "\n" .
+					'sFullPathName		' . $sFullPathName . "\n" .
+					'ImageUrl			' . $sImageUrl . "\n" .
+					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
+					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
+					'ResizedImageWidth	' . $iWidth . "\n" .
+					'ResizedImageHeight	' . $iHeight
+				);
+				//*/
+			}
+		}
+	}
+	
+	if(false === $bProcessed)
+	{
+		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageWidth', 0);
+		$oCtx->curctx->push('ImageHeight', 0);
+		$oCtx->curctx->push('ResizedImageWidth', 0);
+		$oCtx->curctx->push('ResizedImageHeight', 0);
+	}
+}
+	
 
 class babOvTemplate
 {
