@@ -577,18 +577,48 @@ class bab_PublicationImageUploader
 		return true;		
 	}
 	
+	/**
+	 * Move a picture category from the temporary directory to the directory of the category.
+	 *
+	 * @param int $iIdDelegation		Identifier of the delegation
+	 * @param int $iIdCategory			Identifier of the category
+	 * @param string $sTempImageName	Temporary name of the image
+	 * @param string $sImageName		Name of the image
+	 * 
+	 * @return string|bool The full path name of the moved image, false otherwise
+	 */
 	public function importCategoryImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName)
 	{
 		$sFunctionName = 'getCategoryImgPath';
 		return $this->importImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName, $sFunctionName);
 	}
 	
+	/**
+	 * Move a picture topic from the temporary directory to the directory of the topic.
+	 *
+	 * @param int $iIdDelegation		Identifier of the delegation
+	 * @param int $iIdTopic				Identifier of the topic
+	 * @param string $sTempImageName	Temporary name of the image
+	 * @param string $sImageName		Name of the image
+	 * 
+	 * @return string|bool The full path name of the moved image, false otherwise
+	 */
 	public function importTopicImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName)
 	{
 		$sFunctionName = 'getTopicImgPath';
 		return $this->importImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName, $sFunctionName);
 	}
 	
+	/**
+	 * Move a picture from the temporary directory to the directory of the $iIdObject.
+	 *
+	 * @param int $iIdDelegation		Identifier of the delegation
+	 * @param int $iIdObject			Identifier of the object (category, topic)
+	 * @param string $sTempImageName	Temporary name of the image
+	 * @param string $sImageName		Name of the image
+	 * 
+	 * @return string|bool The full path name of the moved image, false otherwise
+	 */
 	private function importImageFromTemp($iIdDelegation, $iIdObject, $sTempImageName, $sImageName, $sFunctionName)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
@@ -639,12 +669,13 @@ class bab_PublicationImageUploader
 	}
 	
 	/**
-	 * For now only one file is supported
-	 *
-	 * @param unknown_type $iIdDelegation
-	 * @param unknown_type $iIdDraft
-	 * @param unknown_type $iIdArticle
-	 * @return unknown
+	 * Move an article picture from the draft directory to the directory of the article.
+	 * 
+	 * @param int $iIdDelegation	Delegation identifier
+	 * @param int $iIdDraft			Draft article identifier
+	 * @param int $iIdArticle		Article identifier
+	 * 
+	 * @return string|bool The full path name of the moved image, false otherwise
 	 */
 	public function importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle)
 	{
@@ -710,6 +741,16 @@ class bab_PublicationImageUploader
 		return false;
 	}
 	
+	
+	/**
+	 * Copy an article picture from the article directory to the draft directory of the article.
+	 * 
+	 * @param int $iIdDelegation	Delegation identifier
+	 * @param int $iIdArticle		Article identifier
+	 * @param int $iIdDraft			Draft article identifier
+	 *  
+	 * @return string|bool The full path name of the copied image, false otherwise
+	 */
 	public function copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
@@ -767,6 +808,13 @@ class bab_PublicationImageUploader
 		return false;
 	}
 	
+	/**
+	 * Return the file extention of a filename
+	 *
+	 * @param string $sFileName
+	 * 
+	 * @return string|bool The file extention on success, false on error
+	 */
 	private function getFileExtention($sFileName)
 	{
 		$iOffset = mb_strpos($sFileName, '.');
@@ -798,7 +846,11 @@ class bab_PublicationImageUploader
 		$this->aError = array_merge($this->aError, $aError);
 	}
 
-	
+	/**
+	 * Delete the out dated image from the temporary directory
+	 *
+	 * @param int $iNbSeconds The delay in seconds
+	 */
 	public static function deleteOutDatedTempImage($iNbSeconds)
 	{
 		$iIdDelegation	= 0;
