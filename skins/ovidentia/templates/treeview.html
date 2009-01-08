@@ -68,7 +68,7 @@
 
 
 <!--#begin treeview -->
-<div id="{ t_treeViewId }" class="bab_tree { t_classes } BabLoginCadreBackground">
+<div id="{ t_treeViewId }" class="bab_tree { t_classes } <!--#if t_showToolbar -->bab-show-toolbar<!--#endif t_showToolbar --> BabLoginCadreBackground">
 	<div class="tree BabLoginMenuBackground" style="position: relative">
 		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
 		{ t_subtree }
@@ -166,6 +166,38 @@ if (tree) {
 
 
 
+<!--#begin simple_treeview -->
+
+<div id="{ t_treeViewId }" class="bab_tree { t_classes } <!--#if t_showToolbar -->bab-show-toolbar<!--#endif t_showToolbar -->">
+	<div class="tree" style="position: relative">
+		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
+		{ t_subtree }
+	</div>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display=''
+//]]>
+</script>
+
+<script type="text/javascript" src="{ babSkinPath }templates/tree.js"></script>
+
+<script type="text/javascript"><!--
+//<![CDATA[
+
+var tree = bab_initTree(document.getElementById("{ t_treeViewId }"));
+
+if (tree) {
+	<!--#if t_memorizeOpenNodes -->
+	tree.memorizeOpenNodes = true;
+	<!--#endif t_memorizeOpenNodes -->
+	tree.loadState();
+}
+
+//]]>
+--></script>
+<!--#end simple_treeview -->
 
 
 

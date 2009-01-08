@@ -241,32 +241,35 @@ function bab_initTree(div)
 	tree.expandMatchingItemsSubTree = hasClass(div, 'bab-expand-matching-items-sub-tree');
 
 	window.setTimeout('document.getElementById("' + div.id + '").tree.initSearch();', 800);
-			
-	var toolbar = document.createElement('DIV');
-	toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
-	toolbar.tree = tree;
-	div.insertBefore(toolbar, div.firstChild);
 
-	var expand = document.createElement('A');
-	txt = document.createTextNode(bab_translate('Expand'));
-	expand.onclick = bab_treeExpand;
-	expand.className = 'bab_expandAll';
-	expand.appendChild(txt);
-	toolbar.appendChild(expand);
-			
-	var collapse = document.createElement('A');
-	txt = document.createTextNode(bab_translate('Collapse'));
-	collapse.onclick = bab_treeCollapse;
-	collapse.className = 'bab_collapseAll';
-	collapse.appendChild(txt);
-	toolbar.appendChild(collapse);
-			
-	var search = document.createElement('INPUT');
-	search.type = 'text';
-	search.className = 'bab_searchField';
-	search.onkeyup = bab_delaySearch;
-	toolbar.appendChild(search);
-	window.bab_searchContext = new bab_SearchContext(tree, search);
+	var showToolbar = hasClass(div, 'bab-show-toolbar');
+	if (showToolbar) {
+		var toolbar = document.createElement('DIV');
+		toolbar.className = 'bab_treeToolbar BabSiteAdminTitleFontBackground';
+		toolbar.tree = tree;
+		div.insertBefore(toolbar, div.firstChild);
+	
+		var expand = document.createElement('A');
+		txt = document.createTextNode(bab_translate('Expand'));
+		expand.onclick = bab_treeExpand;
+		expand.className = 'bab_expandAll';
+		expand.appendChild(txt);
+		toolbar.appendChild(expand);
+				
+		var collapse = document.createElement('A');
+		txt = document.createTextNode(bab_translate('Collapse'));
+		collapse.onclick = bab_treeCollapse;
+		collapse.className = 'bab_collapseAll';
+		collapse.appendChild(txt);
+		toolbar.appendChild(collapse);
+				
+		var search = document.createElement('INPUT');
+		search.type = 'text';
+		search.className = 'bab_searchField';
+		search.onkeyup = bab_delaySearch;
+		toolbar.appendChild(search);
+		window.bab_searchContext = new bab_SearchContext(tree, search);
+	}
 
 	div.initialized = true;
 	

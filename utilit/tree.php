@@ -280,8 +280,19 @@ define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 define('BAB_TREE_VIEW_COLLAPSED',			1);
 define('BAB_TREE_VIEW_EXPANDED',			2);
 
+/*
+ * The treeview will offer the selection of multiple nodes.
+ */
 define('BAB_TREE_VIEW_MULTISELECT',			1024);
+/**
+ * Will store the state of open/closed nodes in a cookie.
+ */
 define('BAB_TREE_VIEW_MEMORIZE_OPEN_NODES',	2048);
+/**
+ * A toolbar with expand / collapse and a search field will be added a the top of the treeview.
+ */
+define('BAB_TREE_VIEW_SHOW_TOOLBAR',		4096);
+
 
 /**
  * A TreeView widget used to display hierarchical data.
@@ -343,6 +354,7 @@ class bab_TreeView
 
 	var $t_isMultiSelect;
 	var $t_memorizeOpenNodes;
+	var $t_showToolbar;
 	
 	var $t_subtree;
 
@@ -368,6 +380,8 @@ class bab_TreeView
 		$this->_id = $id;
 		$this->_rootNode = new bab_OrphanRootNode();
 		$this->_iterator = null;
+		
+		$this->_attributes = BAB_TREE_VIEW_SHOW_TOOLBAR;
 		
 		$this->_highlightedElements = array();
 
@@ -399,6 +413,7 @@ class bab_TreeView
 		$this->_upToDate = false;
 
 		$this->t_memorizeOpenNodes = true;
+		$this->t_showToolbar = true;
 		$this->t_isMultiSelect = false;
 		$this->t_fetchContentScript = false;
 	}
@@ -427,6 +442,7 @@ class bab_TreeView
 		$this->_invalidateCache();
 		$this->t_isMultiSelect = (($attributes & BAB_TREE_VIEW_MULTISELECT) !== 0);
 		$this->t_memorizeOpenNodes = (($attributes & BAB_TREE_VIEW_MEMORIZE_OPEN_NODES) !== 0);
+		$this->t_showToolbar = (($attributes & BAB_TREE_VIEW_SHOW_TOOLBAR) !== 0);
 	}
 
 	/**
@@ -458,7 +474,7 @@ class bab_TreeView
 	 * @access public
 	 */
 	function removeAttributes($attributes)
-	{		
+	{
 		$this->setAttributes($this->getAttributes() & ~$attributes);
 	}
 
