@@ -26,10 +26,14 @@
 		<ul>
 			<li>
 	        <!--#if bHaveAssociatedImage -->
-	        	<img src="{ sImageUrl }" style="float:left;margin:4px" />
+	        	<span style="float:left;margin:4px" >
+	        		<img src="{ sImageUrl }" />
+	        	</span>
 	        <!--#endif bHaveAssociatedImage -->
-				<p>{ childdescription }</p>
-	        	<div style="clear:both"></div>
+	        	<span style="float:left;">
+					{ childdescription }
+	        	</span>
+				<div style="clear:both"></div>
 			</li>
 		</ul>
 		<!--#endif childdescription -->
