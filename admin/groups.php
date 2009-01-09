@@ -488,27 +488,36 @@ function saveGroupsOptions($mailgrpids, $notgrpids, $congrpids, $pdsgrpids, $pca
 
 	for( $i=0; $i < count($mailgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id='".$mailgrpids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set mail='Y' where id=".$db->quote($mailgrpids[$i]).""); 
 	}
 
 	for( $i=0; $i < count($notgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set notes='Y' where id='".$notgrpids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set notes='Y' where id=".$db->quote($notgrpids[$i]).""); 
 	}
 
 	for( $i=0; $i < count($congrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id='".$congrpids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set contacts='Y' where id=".$db->quote($congrpids[$i]).""); 
 	}
 
 	for( $i=0; $i < count($pdsgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id='".$pdsgrpids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set ustorage='Y' where id=".$db->quote($pdsgrpids[$i]).""); 
 	}
 
+	$db->db_query("update ".BAB_CALENDAR_TBL." set actif='N' where type='".BAB_CAL_USER_TYPE."'"); 
 	for( $i=0; $i < count($pcalgrpids); $i++)
 	{
-		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id='".$pcalgrpids[$i]."'"); 
+		$db->db_query("update ".BAB_GROUPS_TBL." set pcalendar='Y' where id=".$db->quote($pcalgrpids[$i])."");
+		if( $pcalgrpids[$i] == BAB_REGISTERED_GROUP)
+		{
+			$db->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where type='".BAB_CAL_USER_TYPE."'"); 
+		}
+		else
+		{
+			$db->db_query("update ".BAB_CALENDAR_TBL." ct, ".BAB_USERS_GROUPS_TBL." ugt set ct.actif='Y' where ct.type='".BAB_CAL_USER_TYPE."' and ct.owner=ugt.id_object and ugt.id_group=".$db->quote($pcalgrpids[$i]).""); 
+		}
 	}
 	
 	bab_siteMap::clearAll();

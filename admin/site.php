@@ -516,7 +516,11 @@ function site_menu6($id)
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			
 			$this->t_defaultCalAccess = bab_translate("Default calendar access for new user");
-
+			$this->t_personalCalAccess = bab_translate("Users that doesn't have personal agenda can view other personal agendas");
+			
+			$this->ypcalaccess = 'selected';
+			$this->npcalaccess = '';
+			
 			$this->aCalAccess = array(
 				BAB_CAL_ACCESS_NONE => bab_translate("None"),
 				BAB_CAL_ACCESS_VIEW => bab_translate("Consultation"), 
@@ -533,6 +537,17 @@ function site_menu6($id)
 				{
 					$this->iSelectedCalAccess = $this->row['iDefaultCalendarAccess'];
 					//bab_debug('iDefaultCalendarAccess ==> ' . $this->iSelectedCalAccess);
+					if( $this->row['iPersonalCalendarAccess'] ==  'Y')
+					{
+						$this->ypcalaccess = 'selected';
+						$this->npcalaccess = '';
+					}
+					else
+					{
+						$this->ypcalaccess = '';
+						$this->npcalaccess = 'selected';
+					}
+					
 				}
 			}
 			
@@ -1943,6 +1958,11 @@ function siteUpdate_menu6($item)
 		$reqarr[] = "iDefaultCalendarAccess='".$babDB->db_escape_string($_POST['iDefaultCalendarAccess'])."'";
 		}
 
+	if (isset($_POST['iPersonalCalendarAccess']) )
+		{
+		$reqarr[] = "iPersonalCalendarAccess='".$babDB->db_escape_string($_POST['iPersonalCalendarAccess'])."'";
+		}
+		
 	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");
 
 	if (isset($_POST['nonworking']) && count($_POST['nonworking']))

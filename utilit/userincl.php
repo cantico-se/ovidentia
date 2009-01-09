@@ -720,7 +720,13 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 			$babBody->usergroups[] = $idgroup;
 			}
 		}
-
+		
+	list($pcalendar) = $babDB->db_fetch_row($babDB->db_query("select pcalendar as pcal from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($idgroup)."'"));
+	if( $pcalendar == 'Y')
+	{
+		$babDB->db_query("update ".BAB_CALENDAR_TBL." set actif='Y' where type='".BAB_CAL_USER_TYPE."' and owner=$babDB->quote($iduser)"); 
+	}
+		
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	
 	require_once($GLOBALS['babInstallPath']."utilit/eventdirectory.php");

@@ -143,7 +143,8 @@ class bab_userModify {
 		if ($result)
 			{
 			$id = $babDB->db_insert_id();
-			$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($id)."', '1')");
+			list($pcalendar) = $babDB->db_fetch_row($babDB->db_query("select pcalendar as pcal from ".BAB_GROUPS_TBL." where id='".BAB_REGISTERED_GROUP."'"));
+			$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type, actif) values ('".$babDB->db_escape_string($id)."', '1', '".$pcalendar."')");
 			$idusercal = $babDB->db_insert_id();
 			$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_TBL." 
 				(givenname, mn, sn, email, id_directory, id_user) 

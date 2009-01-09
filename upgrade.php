@@ -5691,6 +5691,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			");
 	}
 	
+	if (!bab_isTableField(BAB_SITES_TBL, 'iPersonalCalendarAccess')) {
+
+		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD iPersonalCalendarAccess enum('Y','N') NOT NULL default 'N' AFTER iDefaultCalendarAccess");
+	}
 	
 	return true;
 }
