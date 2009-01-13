@@ -540,8 +540,12 @@ function babBody()
 	$this->substitutes[1] = array(); /* fonctionnel */
 
 
-	if (!isset($GLOBALS['REMOTE_ADDR'])) $GLOBALS['REMOTE_ADDR'] = '0.0.0.0';
-	if (!isset($GLOBALS['HTTP_X_FORWARDED_FOR'])) $GLOBALS['HTTP_X_FORWARDED_FOR'] = '0.0.0.0';
+	if (isset($_SERVER['REMOTE_ADDR'])) {
+		$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+	} else {
+		$REMOTE_ADDR = '0.0.0.0';
+	}
+
 
 	$idx = isset($GLOBALS['idx']) ? $GLOBALS['idx'] : '';
 	
@@ -551,7 +555,7 @@ function babBody()
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_assoc($res);
-			if ((!isset($GLOBALS['babCheckIpAddress']) || $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $GLOBALS['REMOTE_ADDR'])
+			if ((!isset($GLOBALS['babCheckIpAddress']) || $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $REMOTE_ADDR)
 				{
 				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
 				}
@@ -1431,7 +1435,8 @@ function bab_updateUserSettings()
 		$GLOBALS['babSkin'] = bab_skin::getDefaultSkin()->getName(); 
 	}
 	
-	
+	$HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '0.0.0.0';
+	$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
 	
 	$res = $babDB->db_query("select id, id_dg, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'");
@@ -1456,7 +1461,7 @@ function bab_updateUserSettings()
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$GLOBALS['REMOTE_ADDR']."', forwarded_for='".$GLOBALS['HTTP_X_FORWARDED_FOR']."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$REMOTE_ADDR."', forwarded_for='".$HTTP_X_FORWARDED_FOR."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
 		{
@@ -1474,7 +1479,7 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($GLOBALS['REMOTE_ADDR'])."', '".$babDB->db_escape_string($GLOBALS['HTTP_X_FORWARDED_FOR'])."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);

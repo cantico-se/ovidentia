@@ -569,6 +569,10 @@ function bab_shortDate($time, $hour=true)
 		}
 	}
 
+
+/**
+ * @deprecated
+ */
 function bab_strftime($time, $hour=true)
 	{
 	return bab_longDate($time, $hour);
@@ -661,10 +665,18 @@ function bab_editor_record(&$str)
 		}
 	}
 
-
+/**
+ * get browser OS from windows, macos, linux
+ * @return string
+ */
 function bab_browserOS()
 	{
-	global $HTTP_USER_AGENT;
+	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+		return '';
+		}
+
+	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+
 	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "windows"))
 		{
 	 	return "windows";
@@ -680,9 +692,19 @@ function bab_browserOS()
 	return "";
 	}
 
+
+/**
+ * get browser name from konqueror, opera, msie, nn6, nn4
+ * @return string
+ */
 function bab_browserAgent()
 	{
-	global $HTTP_USER_AGENT;
+	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+		return '';
+		}
+
+	$HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+
 	if (false !== mb_strrpos(mb_strtolower($HTTP_USER_AGENT), "konqueror"))
 		{
 		return "konqueror";
@@ -705,10 +727,18 @@ function bab_browserAgent()
 	return "";
 	}
 
+
+/**
+ * get browser version with format X.XX or X.X or 0
+ * @return string | 0
+ */
 function bab_browserVersion()
 	{
-	global $HTTP_USER_AGENT;
-	$tab = explode(";", $HTTP_USER_AGENT);
+	if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+		return 0;
+		}
+
+	$tab = explode(";", $_SERVER['HTTP_USER_AGENT']);
 	if( ereg("([^(]*)([0-9].[0-9]{1,2})",$tab[1],$res))
 		{
 		return trim($res[2]);
