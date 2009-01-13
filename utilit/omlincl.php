@@ -594,7 +594,7 @@ class bab_ArticlesHomePages extends bab_handler
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
@@ -927,6 +927,11 @@ class bab_ArticleTopics extends bab_handler
 				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
 				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
 			}
+			else
+			{
+				$this->ctx->curctx->push('TopicManageUrl', '');
+				$this->ctx->curctx->push('TopicManageName', '');
+			}
 			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
@@ -1017,6 +1022,11 @@ class bab_ArticleTopic extends bab_handler
 			{
 				$this->ctx->curctx->push('TopicManageUrl', $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".$arr['id']);
 				$this->ctx->curctx->push('TopicManageName', bab_translate("Articles management"));
+			}
+			else
+			{
+				$this->ctx->curctx->push('TopicManageUrl', '');
+				$this->ctx->curctx->push('TopicManageName', '');
 			}
 			list($cattitle, $iddgowner) = $babDB->db_fetch_array($babDB->db_query("select title, id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
@@ -1263,7 +1273,7 @@ class bab_Articles extends bab_handler
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
@@ -1356,7 +1366,7 @@ class bab_Article extends bab_handler
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
@@ -2765,7 +2775,7 @@ class bab_RecentArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleDelegationId', $arr['id_dgowner']);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
@@ -3436,7 +3446,7 @@ class bab_WaitingArticles extends bab_handler
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			$this->ctx->curctx->push('ArticleUrl', $GLOBALS['babUrlScript']."?tg=approb");
 			$this->ctx->curctx->push('ArticlePopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewart&idart=".$arr['id']."&topics=".$arr['id_topic']);
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']) )
+			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) )
 			{
 				$this->ctx->curctx->push('ArticleEditUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic'].'&article='.$arr['id']);
 				$this->ctx->curctx->push('ArticleEditName', bab_translate("Modify"));
