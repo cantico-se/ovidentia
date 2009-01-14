@@ -217,12 +217,11 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	var $propagation_status = true;
 
 	/**
-	 * Get item object
-	 * @public
+	 * Get new item object
 	 * @param	string	$uid	(64 characters)
 	 * @return 	bab_siteMap_item
 	 */
-	function createItem($uid) {
+	public function createItem($uid) {
 		
 		return new bab_siteMap_item($uid);
 	}
@@ -231,11 +230,10 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * Add item as function into sitemap
 	 * item should be unique
 	 * 
-	 * @public
 	 * @param	bab_siteMap_item
 	 * @return	boolean
 	 */
-	function addFunction(&$obj) {
+	public function addFunction(&$obj) {
 
 		/*
 		if (isset($this->nodes[$obj->uid])) {
@@ -253,11 +251,10 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	/**
 	 * Add folder into sitemap
 	 * Folder must be unique
-	 * @public
 	 * @param	bab_siteMap_item	&$obj
 	 * @return	boolean
 	 */
-	function addFolder(&$obj) {
+	public function addFolder(&$obj) {
 		if (isset($this->nodes[$obj->uid])) {
 			trigger_error(sprintf('The node %s is allready in the sitemap',$obj->uid));
 			$this->propagation_status = false;
@@ -269,13 +266,28 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		
 		return true;
 	}
+
+	/**
+	 * Get insert entry or false
+	 * @param	string	$uid
+	 * @return 	bab_siteMap_item
+	 */
+	public function getById($uid) {
+
+		if (!isset($this->nodes[$uid])) {
+			return false;
+		}
+
+		return $this->nodes[$uid];
+	}
+
 	
 	
 	/**
-	 * @private
+	 * 
 	 * @param	bab_siteMap_item	&$obj
 	 */
-	function buidtree(&$obj) {
+	public function buidtree(&$obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			
 			// reference vers le parent
@@ -299,9 +311,8 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * Insert nodes in multiples delegations branchs
 	 * @param	bab_siteMap_item	&$parent_node
 	 * @param	bab_siteMap_item	&$obj
-	 * @private
 	 */
-	function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
+	private function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
 		
 		if ($obj->copy_to_all_delegations) {
 			$parents = $obj->getParentsFromDelegation();
@@ -361,7 +372,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @param	string	$uid
 	 * @param	int		[$deep]
 	 */
-	function displayAsText($uid, $deep = 0) {
+	public function displayAsText($uid, $deep = 0) {
 	
 		$node = & $this->nodes[$uid];
 		

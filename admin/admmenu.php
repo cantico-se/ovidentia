@@ -29,7 +29,7 @@ include_once "base.php";
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
 function bab_sitemap_adminSection(&$event) {
-	global $babBody;
+	global $babBody, $babDB;
 	
 	$item = $event->createItem('babAdmin');
 	$item->setLabel(bab_translate("Administration"));
@@ -66,12 +66,6 @@ function bab_sitemap_adminSection(&$event) {
 				'label' => bab_translate("Delegation"),
 				'url' => $GLOBALS['babUrlScript']."?tg=delegat",
 				'uid' => 'babAdminDelegations'
-			);
-			
-		$array_urls[] = array(
-				'label' => bab_translate("Sites"),
-				'url' => $GLOBALS['babUrlScript']."?tg=sites",
-				'uid' => 'babAdminSites'
 			);
 		}
 
@@ -283,6 +277,47 @@ function bab_sitemap_adminSection(&$event) {
 			$link->setLink($arr['url']);
 			$link->setPosition(array('root', 'DGAll', 'babAdmin','babAdminSectionAddons'));
 			$event->addFunction($link);
+		}
+	}
+
+
+
+
+	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) {
+
+		$item = $event->createItem('babAdminSites');
+		$item->setLabel(bab_translate("Sites"));
+		$item->setLink($GLOBALS['babUrlScript']."?tg=sites");
+		$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection'));
+		$event->addFolder($item);
+		
+		
+		// sub menu for "Sites"
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
+		$res = bab_getSitesRes();
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+
+			$siteUid = 'babAdminSite'.$arr['id'];
+
+			$item = $event->createItem($siteUid);
+			$item->setLabel($arr['name']);
+			$item->setLink($GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$arr['id']);
+			$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection', 'babAdminSites'));
+			if (!empty($arr['description'])) {
+				$item->setDescription($arr['description']);
+			}
+			$event->addFolder($item);
+
+
+			foreach(bab_getSitesConfigurationMenus() as $number => $label) {
+
+				$item = $event->createItem($siteUid.'Menu'.$number);
+				$item->setLabel($label);
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=site&idx=menu'.$number.'&item='.$arr['id']);
+				$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection', 'babAdminSites', $siteUid));
+				$event->addFunction($item);
+			}
 		}
 	}
 }

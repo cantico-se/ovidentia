@@ -22,22 +22,9 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath.'utilit/sitesincl.php';
 
-function getSiteName($id)
-	{
-	$db = $GLOBALS['babDB'];
-	$query = "select * from ".BAB_SITES_TBL." where id='$id'";
-	$res = $db->db_query($query);
-	if( $res && $db->db_num_rows($res) > 0)
-		{
-		$arr = $db->db_fetch_array($res);
-		return $arr['name'];
-		}
-	else
-		{
-		return "";
-		}
-	}
+
 
 function sitesList()
 	{
@@ -71,8 +58,7 @@ function sitesList()
 			$this->homepages = bab_translate("Home pages");
 			$this->hmanagement = bab_translate("Managers");
 			$this->db = &$GLOBALS['babDB'];
-			$req = "select * from ".BAB_SITES_TBL."";
-			$this->res = $this->db->db_query($req);
+			$this->res = bab_getSitesRes();
 			$this->count = $this->db->db_num_rows($this->res);
 			}
 

@@ -25,25 +25,11 @@ include_once 'base.php';
 include_once $babInstallPath.'admin/acl.php';
 include_once $babInstallPath.'utilit/dirincl.php';
 include_once $babInstallPath.'utilit/nwdaysincl.php';
+include_once $babInstallPath.'utilit/sitesincl.php';
 
 $bab_ldapAttributes = array('uid', 'cn', 'sn', 'givenname', 'mail', 'telephonenumber', 'mobile', 'homephone', 'facsimiletelephonenumber', 'title', 'o', 'street', 'l', 'postalcode', 'st', 'homepostaladdress', 'jpegphoto', 'departmentnumber');
 
 
-function getSiteName($id)
-	{
-	global $babDB;
-	$query = "select * from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['name'];
-		}
-	else
-		{
-		return '';
-		}
-	}
 
 
 class site_configuration_cls
@@ -58,25 +44,7 @@ class site_configuration_cls
 	$this->no = bab_translate("No");
 
 	$this->item = $id_site;
-
-	$this->menu = array(
-			1 => bab_translate('Site configuration'),
-			2 => bab_translate('Mail configuration'),
-			3 => bab_translate('User options and login configuration'),
-			4 => bab_translate('File upload configuration'),
-			5 => bab_translate('Date format configuration'),
-			6 => bab_translate('Calendar and vacations configuration'),
-			7 => bab_translate('Home page managers'),
-			8 => bab_translate('Authentification configuration'),
-			9 => bab_translate('Inscription configuration'),
-			10=> bab_translate('WYSIWYG editor configuration')
-		);
-
-	if (bab_searchEngineInfos())
-		{
-		$this->menu[11] = bab_translate('Search engine configuration');
-		}
-	$this->menu[12] = bab_translate('Web services');
+	$this->menu = bab_getSitesConfigurationMenus();
 
 	if (false !== $id_site)
 		{
