@@ -2145,7 +2145,9 @@ function confirmDeleteSite($id)
 	$babDB->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete site
 	$babDB->db_query("delete from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'");
+	bab_siteMap::clearAll();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+	exit;
 	}
 
 function siteUpdateDisclaimer($item)
