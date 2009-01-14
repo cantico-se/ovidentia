@@ -469,12 +469,6 @@ if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAd
 
 $idx = bab_rp('idx','list');
 
-
-if( isset($create))
-	{
-	if(!siteSave($name, $description, $lang, $siteemail, $skin, $style, $register, $statlog, $mailfunc, $server, $serverport, $imgsize, $smtpuser, $smtppass, $smtppass2, $babLangFilter->convertFilterToInt($langfilter),$total_diskspace, $user_diskspace, $folder_diskspace, $maxfilesize, $uploadpath, $babslogan, $remember_login, $email_password, $change_password, $change_nickname, $name_order, $adminname, $user_workdays))
-		$idx = "create";
-	}
 	
 if (isset($_FILES['zipfile'])) {
 	if (unzipcore()) {

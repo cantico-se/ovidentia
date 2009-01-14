@@ -2207,8 +2207,13 @@ switch ($_POST['action'])
 		$menu1 = siteUpdate_menu1();
 		if (!$menu1)
 			$idx = 'menu1';
-		else 
-			$_REQUEST['item'] = $menu1;
+		else {
+			
+			bab_siteMap::clearAll();
+
+			header('location:'.$GLOBALS['babUrlScript']."?tg=site&item=".$menu1);
+			exit;
+		}
 		break;
 
 	case 'menu2':
