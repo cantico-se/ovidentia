@@ -440,6 +440,12 @@ function hideDelegationSubmitBtn()
 							<!--#if bDownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bDownload -->
 							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
 							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
+<!--#if bUnZip -->
+<a href="#">
+	<img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
+<a/>
+<!--#endif bUnZip -->
+							
 							</td>
 							<td align="center"><!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;</td>
 						</tr>
