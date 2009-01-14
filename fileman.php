@@ -1312,6 +1312,8 @@ function listFiles()
 		
 		var $sWaitingFileTitle = '';
 		
+		var $bUnZip = false;
+		
 		function temp()
 		{
 			$this->listFiles();
@@ -1598,7 +1600,24 @@ function listFiles()
 				$this->fileid	= $arr['id'];
 				
 				$this->updateFileInfo($arr);
-				
+/*				
+	$sFullPathName = '';
+	
+	if($this->oFileManagerEnv->userIsInCollectiveFolder())
+	{
+		$sPathName = $this->oFileManagerEnv->getCollectivePath($arr['iIdDgOwner']) . $arr['path'];
+		$sFullPathName = $sPathName . $arr['name'];
+		$this->bUnZip = ('application/zip' == bab_getFileMimeType($sFullPathName));
+		if($this->bUnZip)
+		{
+			bab_canUnCompressedZipFile($sFullPathName, $sPathName);
+		}
+	}
+	else
+	{
+	
+	}
+//*/				
 				if($this->bVersion)
 				{
 					$sUrlBase		= $GLOBALS['babUrlScript'] . '?tg=filever&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath;

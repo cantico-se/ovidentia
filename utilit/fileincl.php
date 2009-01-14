@@ -37,6 +37,92 @@ define('BAB_FACTION_INITIAL_UPLOAD',	4);
 $babFileActions = array(bab_translate("Other"), bab_translate("Edit file"),
 bab_translate("Unedit file"), bab_translate("Commit file"));
 
+
+
+
+/**
+ * For test purpose not finished
+ *
+ * @param unknown_type $sFullPathName
+ * @param unknown_type $sPathName
+ */
+function bab_canUnCompressedZipFile($sFullPathName, $sPathName)
+{
+	require_once dirname(__FILE__) . '/iterator/zipIterator.class.php';
+	
+	$oBabZipIterator = new bab_ZipIterator();
+	$oBabZipIterator->setFullPathName('D:/Temp/Creating%20Managed%20Cards.zip');
+//	$oBabZipIterator->setFullPathName($sFullPathName);
+	
+	$aPath = array();
+	foreach($oBabZipIterator as $oZipEntry)
+	{
+		//bab_debug(
+		//	'sName              ==> ' . $oZipEntry->getName() . "\n" .
+		//	'iSize              ==> ' . $oZipEntry->getSize() . "\n" .
+		//	'iCompressedSize    ==> ' . $oZipEntry->getCompressedSize() . "\n" .
+		//	'sCompressionMethod ==> ' . $oZipEntry->getCompressionMethod()
+		//);
+		
+		/*
+		bab_debug(
+			'sName     ==> ' . $oZipEntry->getName() . "\n" .
+			'sBaseName ==> ' . basename($oZipEntry->getName())
+		);
+		//*/
+		
+		$iZise = 0;
+		
+		$sBaseName = basename($oZipEntry->getName());
+		if(mb_strtolower(BAB_FVERSION_FOLDER) == mb_strtolower($sBaseName))
+		{
+			bab_debug(BAB_FVERSION_FOLDER . ' Detected !!!');	
+		}
+		
+		if(!isStringSupportedByFileSystem($sBaseName))
+		{
+			bab_debug($sBaseName . ' NOT SUPPORTED');	
+		}
+		
+		$sFileName = $oZipEntry->getName();
+		$iPos = mb_strpos($sFileName, '/');
+		if(false !== $iPos)	
+		{	
+			$sFileName = mb_substr($sFileName, 0, $iPos);
+		}
+		
+		if(!array_key_exists($sFileName, $aPath))
+		{
+			$aPath[$sFileName] = 0;
+			
+			if(file_exists($sPathName . $sFileName))
+			{
+				bab_debug($sFileName . ' Already exist !!!');
+			}
+		}
+		
+		
+		$iZise += $oZipEntry->getSize();
+	}
+
+	$oFileManagerEnv =& getEnvObject();
+	if($iZise + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
+	{
+		$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the file manager"), 'file'=>$sFullPathName);
+	}
+
+	$sGr = 'Y';
+	$totalsize = getDirSize($sPathName);
+	if($iZise + $totalsize > ($sGr == 'Y' ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+	{
+		$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the current type of folder"), 'file'=>$sFullPathName);
+	}
+	
+}
+
+
+
+
 function getDirSize( $dir )
 {
 	if( !is_dir($dir))
