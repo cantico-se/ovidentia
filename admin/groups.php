@@ -246,39 +246,35 @@ function moveGroup()
 	$babBody->babecho(bab_printTemplate($temp, "groups.html", "moveGroup"));
 	}
 
-
 function groupDelete($id)
 	{
 	global $babBody;
 	
-	class temp
+	class groupDeleteCls
 		{
-		var $warning;
-		var $message;
-		var $title;
-		var $urlyes;
-		var $urlno;
-		var $yes;
-		var $no;
-		var $topics;
-		var $article;
 
-		function temp($id)
+		function groupDeleteCls($id)
 			{
-			$this->message = bab_translate("Are you sure you want to delete this group");
+			$this->idgroup = $id;
+			$this->message = bab_translate("Are you sure you want to delete");
 			$this->title = bab_getGroupName($id);
-			$this->warning = bab_translate("WARNING: This operation will delete the group with all references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=Delete&group=".$id."&action=Yes";
-			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=groups";
-			$this->no = bab_translate("No");
+			$this->warning = bab_translate("WARNING: This operation will delete the group(s) with all references"). "!";
+
+			$this->t_deletethisgroup = bab_translate("This group only");
+			$this->t_deletegroupwithchilds = bab_translate("This group with all childs");
+			$this->t_deleteonlyfirstchilds = bab_translate("Only childs of the first level");
+			$this->t_deleteonlychilds = bab_translate("Only childs");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_yes = bab_translate("Yes");
+			$this->t_no = bab_translate("No");
+			
 			}
 		}
 
-	$temp = new temp($id);
-	$babBody->babecho( bab_printTemplate($temp,"warning.html", "warningyesno"));
+	$temp = new groupDeleteCls($id);
+	$babBody->babecho( bab_printTemplate($temp,"groups.html", "confirmdeletegroup"));
 	}
-
+	
 function groupsOptions()
 	{
 	global $babBody;

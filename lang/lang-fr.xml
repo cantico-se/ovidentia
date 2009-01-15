@@ -2721,4 +2721,11 @@
 <string id="Changes affecting the image will be taken into account after having saved">Les modifications concernant l'image associée ne seront pris en compte qu'après avoir sauvegardé</string>
 <string id="Allow authors to attach an image to an article">Permettre aux auteurs d'associer une image à un article</string>
 <string id="Associated picture">Image associée</string>
-<string id="Users that doesn't have personal agenda can view other personal agendas">Les utilisateurs n'ayant pas d'agenda personnel peuvent visualiser, s'ils ont le droit, les autres agendas personnels</string></fr>
+<string id="Users that doesn't have personal agenda can view other personal agendas">Les utilisateurs n'ayant pas d'agenda personnel peuvent visualiser, s'ils ont le droit, les autres agendas personnels</string>
+<string id="Are you sure you want to delete">Êtes-vous certain de vouloir supprimer</string>
+<string id="WARNING: This operation will delete the group(s) with all references">ATTENTION : cette opération supprimera le ou les groupe(s) et tous les éléments qui y font référence</string>
+<string id="This group only">Ce groupe uniquement</string>
+<string id="This group with all childs">Ce groupe et ses descendants</string>
+<string id="Only childs of the first level">Uniquement les descendants de premier niveau</string>
+<string id="Only childs">Uniquement les descendants</string>
+</fr>

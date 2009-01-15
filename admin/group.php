@@ -201,12 +201,6 @@ if( !isset($idx))
 
 if( isset($action) && $action == "Yes")
 	{
-	if($idx == "Delete")
-		{
-		confirmDeleteGroup($group);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
-		exit;
-		}
 	if($idx == "Deletem")
 		{
 		confirmDeleteMembers($item, $names);
@@ -214,7 +208,52 @@ if( isset($action) && $action == "Yes")
 		exit;
 		}
 	}
-
+elseif(isset($action) && $action=="DeleteG")
+{
+	if( isset($byes))
+	{
+		$dgwhat = bab_pp('dgwhat', 0);
+		$idgroup = bab_pp('idgroup', '');
+		$bdelself = false;
+		if( !empty($idgroup))
+		{
+			switch($dgwhat)
+			{
+				case 0: //delete only this group
+					$bdelself = true;
+					break;
+				case 1: // delete this group with all childs
+					$bdelself = true;
+					$arrgrp = bab_getGroups($idgroup, true);
+					break;
+				case 2: // delete only childs
+					$bdelself = false;
+					$arrgrp = bab_getGroups($idgroup, true);
+					break;
+				case 3: // delete only childs of the first level
+					$bdelself = false;
+					$arrgrp = bab_getGroups($idgroup, false);
+					break;
+			}
+		}
+	}
+	if( $bdelself)
+	{
+		confirmDeleteGroup($idgroup);
+	}
+	if( isset($arrgrp) && count($arrgrp['id']))
+	{
+		//print_r($arrgrp);
+		for($k=0; $k < count($arrgrp['id']); $k++)
+		{
+			confirmDeleteGroup($arrgrp['id'][$k]);
+		}
+			
+	}
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List");
+	exit;
+}
 
 switch($idx)
 	{

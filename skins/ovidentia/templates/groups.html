@@ -459,3 +459,38 @@ function load_clear()
 </table>
 </form>
 <!--#end moveGroup -->
+
+<!--#begin confirmdeletegroup -->
+<form method="post" action="{ babPhpSelf }" name="listform">
+<input type="hidden" name="tg" value="group" />
+<input type="hidden" name="idx" value="DeleteGrroup" />
+<input type="hidden" name="idgroup" value="{ idgroup }" />
+<input type="hidden" name="action" value="DeleteG" />
+<table border="0" width="55%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
+<tr>
+<td> 
+	<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
+	<tr>
+		<td align="center">
+			<p><strong>{ title }</strong></p>
+			<p><font color="red"><strong>{ warning }</strong></font></p>
+			<p><strong>{ message }</strong></p>
+			<p>
+			<select name="dgwhat">
+				<option value="0">{ t_deletethisgroup }</option>
+				<option value="1">{ t_deletegroupwithchilds }</option>
+				<option value="2">{ t_deleteonlychilds }</option>
+				<option value="3">{ t_deleteonlyfirstchilds }</option>
+			</select>
+			</p>
+			<p>
+			<input type="submit" name="byes" value="{ t_yes }" />&nbsp;&nbsp;<input type="submit" name="bno" value="{ t_no }" />
+			</p>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end confirmdeletegroup -->
