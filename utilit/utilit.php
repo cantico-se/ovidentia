@@ -162,6 +162,7 @@ function bab_getRegionalFormats() {
 		'shortDate'	=> array(
 			'M/d/yyyy',
 			'dd/MM/yyyy',
+			'dd/MM/yy',
 			'M/d/yy',
 			'MM/dd/yy',
 			'MM/dd/yyyy',
