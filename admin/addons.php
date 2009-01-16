@@ -742,7 +742,9 @@ function import()
 		bab_addonsInfos::clear();
 
 		$addon = bab_getAddonInfosInstance($addon_name);
-		$addon->upgrade();
+		if ($addon) {
+			$addon->upgrade();
+			}
 		}
 	}
 
