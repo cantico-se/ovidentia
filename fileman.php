@@ -1601,21 +1601,13 @@ function listFiles()
 				
 				$this->updateFileInfo($arr);
 /*				
-	$sFullPathName = '';
-	
-	if($this->oFileManagerEnv->userIsInCollectiveFolder())
+	$oCompressedFileHelper = new bab_CompressedFileHelper();
+	if($oCompressedFileHelper->setUp($arr))
 	{
-		$sPathName = $this->oFileManagerEnv->getCollectivePath($arr['iIdDgOwner']) . $arr['path'];
-		$sFullPathName = $sPathName . $arr['name'];
-		$this->bUnZip = ('application/zip' == bab_getFileMimeType($sFullPathName));
-		if($this->bUnZip)
+		if(!$oCompressedFileHelper->canUnCompressFile())
 		{
-			bab_canUnCompressedZipFile($sFullPathName, $sPathName);
+			bab_debug($oCompressedFileHelper->getError());
 		}
-	}
-	else
-	{
-	
 	}
 //*/				
 				if($this->bVersion)
