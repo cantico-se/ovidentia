@@ -40,85 +40,241 @@ bab_translate("Unedit file"), bab_translate("Commit file"));
 
 
 
+
 /**
  * For test purpose not finished
+ * The purpose of this class is to handle 
+ * all supported compressed file by php
  *
- * @param unknown_type $sFullPathName
- * @param unknown_type $sPathName
+ * Futur Unpack functionality
+ * 
+ * NOT FINISHED
+ * 
+ * @author Zébina Samuel
  */
-function bab_canUnCompressedZipFile($sFullPathName, $sPathName)
+class bab_CompressedFileHelper
 {
-	require_once dirname(__FILE__) . '/iterator/zipIterator.class.php';
+	private $sFullPathName		= null;
+	private $sRootPathName		= null;
+	private $sMimeType			= null;
+	private $bIsCompressedFile	= false; 
+	private $aSuppotedFormat	= null;
 	
-	$oBabZipIterator = new bab_ZipIterator();
-	$oBabZipIterator->setFullPathName('D:/Temp/Creating%20Managed%20Cards.zip');
-//	$oBabZipIterator->setFullPathName($sFullPathName);
+	private $aError				= array(); 
+	private $aPath				= array();
 	
-	$aPath = array();
-	foreach($oBabZipIterator as $oZipEntry)
+	public function __construct()
 	{
-		//bab_debug(
-		//	'sName              ==> ' . $oZipEntry->getName() . "\n" .
-		//	'iSize              ==> ' . $oZipEntry->getSize() . "\n" .
-		//	'iCompressedSize    ==> ' . $oZipEntry->getCompressedSize() . "\n" .
-		//	'sCompressionMethod ==> ' . $oZipEntry->getCompressionMethod()
-		//);
+		$this->aSuppotedFormat = array('application/zip' => 1);
+	}
+	
+	public function setUp(array $aFileInfo)
+	{
+		require_once dirname(__FILE__) .'/pathUtil.class.php';
+		
+		$this->reset();
+		
+		$oFileManagerEnv =& getEnvObject();
+		
+		$this->sFirstPath		= getFirstPath($aFileInfo['path']);
+		$this->sRootPathName	= '';
+		
+		if($oFileManagerEnv->userIsInCollectiveFolder())
+		{
+			$this->sRootPathName = $oFileManagerEnv->getCollectivePath($aFileInfo['iIdDgOwner']) . $this->sFirstPath;
+			$this->sFullPathName = $oFileManagerEnv->getCollectivePath($aFileInfo['iIdDgOwner']) . $aFileInfo['path'] . $aFileInfo['name'];
+		}
+		else if($oFileManagerEnv->userIsInPersonnalFolder())
+		{
+			$this->sRootPathName = $oFileManagerEnv->getRootFmPath() . $this->sFirstPath;
+			$this->sFullPathName = $oFileManagerEnv->getRootFmPath() . $aFileInfo['path'] . $aFileInfo['name'];
+		}
+		else
+		{
+			//Error
+		}
+		
+		$this->sRootPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->getRootFmPath() . $this->sFirstPath));
 		
 		/*
 		bab_debug(
-			'sName     ==> ' . $oZipEntry->getName() . "\n" .
-			'sBaseName ==> ' . basename($oZipEntry->getName())
+			'sRootPathName ==> ' . $this->sRootPathName . "\n" .
+			'sFullPathName ==> ' . $this->sFullPathName . "\n" .
+			'sMimeType     ==> ' . bab_getFileMimeType($this->sFullPathName)
 		);
 		//*/
 		
-		$iZise = 0;
-		
-		$sBaseName = basename($oZipEntry->getName());
-		if(mb_strtolower(BAB_FVERSION_FOLDER) == mb_strtolower($sBaseName))
+		if(is_file($this->sFullPathName))
 		{
-			bab_debug(BAB_FVERSION_FOLDER . ' Detected !!!');	
+			$this->processFileMimeType();
+			return $this->isCompressedFile();
 		}
 		
-		if(!isStringSupportedByFileSystem($sBaseName))
-		{
-			bab_debug($sBaseName . ' NOT SUPPORTED');	
+		return false;
+	}
+	
+	public function isCompressedFile()
+	{
+		return $this->bIsCompressedFile;
+	}
+	
+	public function canUnCompressFile()
+	{
+		$oIterator = $this->getIterator();
+		if(isset($oIterator))
+		{		
+			$iZise = 0;
+			$oIterator->setFullPathName($this->sFullPathName);
+			foreach($oIterator as $oEntry)
+			{
+				//bab_debug(
+				//	'sName              ==> ' . $oEntry->getName() . "\n" .
+				//	'iSize              ==> ' . $oEntry->getSize() . "\n" .
+				//	'iCompressedSize    ==> ' . $oEntry->getCompressedSize() . "\n" .
+				//	'sCompressionMethod ==> ' . $oEntry->getCompressionMethod()
+				//);
+				
+				$this->fileNameReserved($oEntry);
+				$this->fileNameSupportedByFileSystem($oEntry);
+				$this->fileExists($oEntry);
+				$iZise += $oEntry->getSize();
+			}
+			$this->uncompressedfileSizeExceedFmLimit($iZise);
+			$this->uncompressedfileSizeExceedFolderLimit($iZise);
+			
+			return (0 == count($this->aError));
 		}
-		
-		$sFileName = $oZipEntry->getName();
+		return false;
+	}
+	
+	public function getError()
+	{
+		return $this->aError;
+	}
+	
+	//Private Tools function
+	
+	private function reset()
+	{
+		$this->sFullPathName		= null;
+		$this->sRootPathName		= null;
+		$this->sMimeType			= null;
+		$this->bIsCompressedFile	= false; 
+		$this->aError				= array();
+		$this->aPath				= array();
+	}
+	
+	private function fileNameReserved($oEntry)
+	{
+		if(mb_strtolower(BAB_FVERSION_FOLDER) == mb_strtolower($oEntry->getBaseName()))
+		{
+			$aSearch		= array('%compressedFile%');
+			$aReplace		= array(basename($this->sFullPathName));
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %compressedFile% can not be unpacked because it contains an entry named OVF. OVF is a name reserved."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function fileNameSupportedByFileSystem($oEntry)
+	{
+		if(!isStringSupportedByFileSystem($oEntry->getBaseName()))
+		{
+			$aSearch		= array('%compressedFile%', '%compressedEntry%');
+			$aReplace		= array(basename($this->sFullPathName), $oEntry->getBaseName());
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %compressedFile% can not be unpacked because the file name %compressedEntry% contains characters supported by the file system."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function uncompressedfileSizeExceedFmLimit($iZise)
+	{
+		$oFileManagerEnv =& getEnvObject();
+		if($iZise + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
+		{
+			$aSearch		= array('%compressedFile%');
+			$aReplace		= array(basename($this->sFullPathName));
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set by the file manager."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function uncompressedfileSizeExceedFolderLimit($iZise)
+	{
+		$oFileManagerEnv =& getEnvObject();
+		$sGr = $oFileManagerEnv->userIsInCollectiveFolder() ? 'Y' : 'N';
+		$iTotalSize = getDirSize($this->sRootPathName);
+		if($iZise + $iTotalSize > ($sGr == 'Y' ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
+		{
+			$aSearch		= array('%compressedFile%');
+			$aReplace		= array(basename($this->sFullPathName));
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set for the folder."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function fileExists($oEntry)
+	{
+		$sFileName = $oEntry->getName();
 		$iPos = mb_strpos($sFileName, '/');
 		if(false !== $iPos)	
 		{	
 			$sFileName = mb_substr($sFileName, 0, $iPos);
 		}
 		
-		if(!array_key_exists($sFileName, $aPath))
+		if(!array_key_exists($sFileName, $this->aPath))
 		{
-			$aPath[$sFileName] = 0;
+			$this->aPath[$sFileName] = 0;
 			
-			if(file_exists($sPathName . $sFileName))
+			if(file_exists($this->sRootPathName . $sFileName))
 			{
-				bab_debug($sFileName . ' Already exist !!!');
+				$aSearch		= array('%compressedFile%', '%compressedEntry%');
+				$aReplace		= array(basename($this->sFullPathName), $oEntry->getBaseName());
+				$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %compressedFile% can not be unpacked because the file %compressedEntry% already exists."));
+				$this->aError[]	= $sMessage;
+				return true;
 			}
 		}
-		
-		
-		$iZise += $oZipEntry->getSize();
-	}
-
-	$oFileManagerEnv =& getEnvObject();
-	if($iZise + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
-	{
-		$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the file manager"), 'file'=>$sFullPathName);
-	}
-
-	$sGr = 'Y';
-	$totalsize = getDirSize($sPathName);
-	if($iZise + $totalsize > ($sGr == 'Y' ? $GLOBALS['babMaxGroupSize']: $GLOBALS['babMaxUserSize']))
-	{
-		$errfiles[] = array('error' => bab_translate("The file size exceed the limit configured for the current type of folder"), 'file'=>$sFullPathName);
+		return false;
 	}
 	
+	private function processFileMimeType()
+	{
+		$this->sMimeType = bab_getFileMimeType($this->sFullPathName);
+		if(array_key_exists($this->sMimeType, $this->aSuppotedFormat))
+		{
+			$this->bIsCompressedFile = true;
+			return true;
+		}
+		
+		$this->reset();
+		return false;
+	}
+	
+	private function getIterator()
+	{
+		$oIterator = null;
+		
+		switch($this->sMimeType)
+		{
+			case 'application/zip':
+				require_once dirname(__FILE__) . '/iterator/zipIterator.class.php';
+				$oIterator = new bab_ZipIterator();
+				return $oIterator;
+				
+			default:
+				return $oIterator;
+		}
+	}
 }
+
 
 
 
