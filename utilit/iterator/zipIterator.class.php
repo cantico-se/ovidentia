@@ -26,6 +26,7 @@ require_once 'base.php';
 class bab_ZipEntry
 {
 	private $sName				= null;
+	private $sBaseName			= null;
 	private $iSize				= null;
 	private $iCompressedSize	= null;
 	private $sCompressionMethod	= null;
@@ -35,6 +36,7 @@ class bab_ZipEntry
 		if(zip_entry_open($oZip, $oZipEntry))
 		{
 			$this->sName				= zip_entry_name($oZipEntry);
+			$this->sBaseName			= basename($this->sName);
 			$this->iSize				= zip_entry_filesize($oZipEntry);
 			$this->iCompressedSize		= zip_entry_compressedsize($oZipEntry); 
 			$this->sCompressionMethod	= zip_entry_compressionmethod($oZipEntry);
@@ -45,6 +47,11 @@ class bab_ZipEntry
 	public function __destruct()
 	{
 		
+	}
+	
+	public function getBaseName()
+	{
+		return $this->sBaseName;
 	}
 	
 	public function getName()
