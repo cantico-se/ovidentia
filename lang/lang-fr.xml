@@ -2728,4 +2728,9 @@
 <string id="This group with all childs">Ce groupe et ses descendants</string>
 <string id="Only childs of the first level">Uniquement les descendants de premier niveau</string>
 <string id="Only childs">Uniquement les descendants</string>
+<string id="The file %compressedFile% can not be unpacked because it contains an entry named OVF. OVF is a name reserved.">Le fichier %compressedFile% ne peut pas être décompréssé car il est nommé OVF. OVF est un nom réservé.</string>
+<string id="The file %compressedFile% can not be unpacked because the file name %compressedEntry% contains characters supported by the file system.">Le fichier %compressedFile% ne peut pas être décompréssé car le nom du fichier %compressedEntry% contient des caractères non supportés par le système de fichier.</string>
+<string id="The file %compressedFile% can not be unpacked because the file %compressedEntry% already exists.">Le fichier %compressedFile% ne peut pas être décompréssé car le fichier %compressedEntry% existe déjà</string>
+<string id="The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set by the file manager.">Le fichier %compressedFile% ne peut pas être décompréssé car la taille du fichier décompréssé dépasse la limite configurée par le gestionnaire de fichier.</string>
+<string id="The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set for the folder.">Le fichier %compressedFile% ne peut pas être décompréssé car la taille du fichier décompréssé dépasse la limite configurée pour le dossier.</string>
 </fr>
