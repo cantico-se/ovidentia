@@ -644,6 +644,13 @@ class cal_wmdbaseCls
 	}
 
 
+	/**
+	 * Update access rights for an event and a calendar
+	 * 
+	 * @param  	object	&$calPeriod		period (event) informations
+	 * @param	array	&$calinfo		calendar informations
+	 * @param	array	&$result		result may contain access rights informations for other calendars on the same event
+	 */
 	function updateAccessCalendar(&$calPeriod, &$calinfo, &$result)
 	{
 		global $babBody;
@@ -717,7 +724,11 @@ class cal_wmdbaseCls
 				$viewtitle = 1;
 				break;
 			case BAB_CAL_RES_TYPE:
-				if( $calinfo['manager'] || ( $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] && $calinfo['upd']) )
+
+				$no_approbation_instance = 0 === (int) $evtarr['idfai'];
+				$is_creator = $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] && $calinfo['upd'];
+
+				if( $no_approbation_instance && ($calinfo['manager'] || $is_creator) )
 					{
 					$modify = 1;
 					}

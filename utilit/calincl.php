@@ -921,9 +921,12 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		$arr['alert'] = false;
 		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
 		$arr['iduser_owners'] = array();
+
+
+
 		$resco = $babDB->db_query("
 		
-			SELECT o.id_cal, c.type, c.owner  
+			SELECT o.id_cal, c.type, c.owner, o.idfai   
 			FROM 
 				".BAB_CAL_EVENTS_OWNERS_TBL." o, 
 				".BAB_CALENDAR_TBL." c  
@@ -939,6 +942,11 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 			
 			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
 				$arr['iduser_owners'][$arr2['owner']] = $arr2['owner'];
+			}
+
+			if (0 !== (int) $arr2['idfai']) {
+				// overright idfai because the idfai is 0 when the event is linked to others calendars
+				$arr['idfai'] = (int) $arr2['idfai'];
 			}
 		}
 
