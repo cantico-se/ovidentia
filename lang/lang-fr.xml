@@ -2733,4 +2733,5 @@
 <string id="The file %compressedFile% can not be unpacked because the file %compressedEntry% already exists.">Le fichier %compressedFile% ne peut pas être décompréssé car le fichier %compressedEntry% existe déjà</string>
 <string id="The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set by the file manager.">Le fichier %compressedFile% ne peut pas être décompréssé car la taille du fichier décompréssé dépasse la limite configurée par le gestionnaire de fichier.</string>
 <string id="The %compressedFile% can not be unpacked because the size of uncompressed files exceeds the limit set for the folder.">Le fichier %compressedFile% ne peut pas être décompréssé car la taille du fichier décompréssé dépasse la limite configurée pour le dossier.</string>
+<string id="disabled">désactivé</string>
 </fr>

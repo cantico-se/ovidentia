@@ -37,7 +37,7 @@ class bab_userModify {
 	/**
 	 * @static
 	 */
-	function testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2,  &$error) {
+	public static function testBeforeCreate($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2,  &$error) {
 		
 		global $babDB;
 		
@@ -99,7 +99,7 @@ class bab_userModify {
 	/**
 	 * @static
 	 */
-	function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
+	public static function addUser($firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $isconfirmed, &$error, $bgroup) {
 		
 		global $BAB_HASH_VAR, $babBody, $babLanguage, $babDB;
 
@@ -215,7 +215,7 @@ class bab_userModify {
 	 * @param	string	&$error
 	 * @return 	boolean
 	 */
-	function updateUserById($id, $info, &$error) {
+	public static function updateUserById($id, $info, &$error) {
 
 	
 		global $babDB;

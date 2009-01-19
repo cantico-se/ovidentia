@@ -831,69 +831,46 @@ function bab_isUserGroupManager($grpid="")
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
-	global $babDB;
+	include_once dirname(__FILE__).'/userinfosincl.php';
 
-	$sQuery = 
-		'SELECT 
-			firstname, 
-			lastname 
-		FROM ' . 
-			BAB_USERS_TBL . ' 
-		WHERE 
-			id = ' . $babDB->quote($iIdUser);
-
-	$aUserName[$iIdUser] = '';
-			
-	$oResult = $babDB->db_query($sQuery);
-	if(false !== $oResult && $babDB->db_num_rows($oResult) > 0)
-	{
-		$aDatas = $babDB->db_fetch_assoc($oResult);
-		if(false !== $aDatas)
-		{
-			if(true === $bComposeUserName)
-			{
-				$aUserName[$iIdUser] = bab_composeUserName($aDatas['firstname'], $aDatas['lastname']);
-			}
-			else
-			{
-				$aUserName[$iIdUser] = $aDatas;
-			}
-		}
+	if (true === $bComposeUserName) {
+		return bab_userInfos::composeName($iIdUser);
+	} else {
+		return bab_userInfos::arrName($iIdUser);
 	}
-	return $aUserName[$iIdUser];
 }
 
+
+/**
+ * Get Email address
+ * @param	int	$id
+ * @return string
+ */
 function bab_getUserEmail($id)
 	{
-	global $babDB;
-	$query = "select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['email'];
+
+	include_once dirname(__FILE__).'/userinfosincl.php';
+	if ($row = bab_userInfos::getRow($id)) {
+		return $row['email'];
 		}
-	else
-		{
-		return "";
-		}
+	
+	return '';
 	}
 
+/**
+ * @return string
+ */
 function bab_getUserNickname($id)
 	{
-	global $babDB;
-	$query = "select nickname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['nickname'];
+	include_once dirname(__FILE__).'/userinfosincl.php';
+	if ($row = bab_userInfos::getRow($id)) {
+		return $row['nickname'];
 		}
-	else
-		{
-		return "";
-		}
+	
+	return '';
 	}
+
+
 
 function bab_getUserSetting($id, $what)
 	{
@@ -1790,28 +1767,25 @@ function bab_detachUserFromGroup($iduser, $idgroup)
  * return all infos necessary to use bab_updateUserById()
  * warning, password is not returned, $info['password_md5'] is returned instead
  *
- *
  * @param	int		$id_user
+ *
  * @return 	false|array
  */
 function bab_getUserInfos($id_user) {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
+
 	$directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
 	
 	if (!$directory) {
 		return false;
 	}
 	
-	global $babDB;
-	$res = $babDB->db_query('
-	SELECT 
-		disabled, 
-		password password_md5, 
-		changepwd,
-		is_confirmed  
-		
-	FROM '.BAB_USERS_TBL.' WHERE id='.$babDB->quote($id_user));
-	$infos = $babDB->db_fetch_assoc($res);
+	$infos = bab_userInfos::getForDirectoryEntry($id_user);
+
+	if (!$infos) {
+		return false;
+	}
 	
 	foreach($directory as $field => $arr) {
 		$infos[$field] = $arr['value'];

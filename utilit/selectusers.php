@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-
+include_once dirname(__FILE__).'/userinfosincl.php';
 
 /**
  * @package selectusers
@@ -113,7 +113,7 @@ class bab_selectUsersBase
 			$aUserList = array();
 			foreach($_SESSION[$sSessionKey] as $iIdUser) 
 			{
-				$aUserList[$iIdUser] = bab_getUserName($iIdUser);
+				$aUserList[$iIdUser] = bab_userInfos::composeNameAndStatus($iIdUser);
 			}
 			bab_sort::natcasesort($aUserList);
 		}
