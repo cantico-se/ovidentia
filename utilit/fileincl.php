@@ -65,7 +65,8 @@ class bab_CompressedFileHelper
 	
 	public function __construct()
 	{
-		$this->aSuppotedFormat = array('application/zip' => 1);
+		$this->aSuppotedFormat = array(
+			'application/zip' => 1);
 	}
 	
 	public function setUp(array $aFileInfo)
@@ -81,8 +82,8 @@ class bab_CompressedFileHelper
 		
 		if($oFileManagerEnv->userIsInCollectiveFolder())
 		{
-			$this->sRootPathName = $oFileManagerEnv->getCollectivePath($aFileInfo['iIdDgOwner']) . $this->sFirstPath;
-			$this->sFullPathName = $oFileManagerEnv->getCollectivePath($aFileInfo['iIdDgOwner']) . $aFileInfo['path'] . $aFileInfo['name'];
+			$this->sRootPathName = BAB_FileManagerEnv::getCollectivePath($aFileInfo['iIdDgOwner']) . $this->sFirstPath;
+			$this->sFullPathName = BAB_FileManagerEnv::getCollectivePath($aFileInfo['iIdDgOwner']) . $aFileInfo['path'] . $aFileInfo['name'];
 		}
 		else if($oFileManagerEnv->userIsInPersonnalFolder())
 		{
@@ -248,6 +249,7 @@ class bab_CompressedFileHelper
 	private function processFileMimeType()
 	{
 		$this->sMimeType = bab_getFileMimeType($this->sFullPathName);
+
 		if(array_key_exists($this->sMimeType, $this->aSuppotedFormat))
 		{
 			$this->bIsCompressedFile = true;
@@ -260,12 +262,13 @@ class bab_CompressedFileHelper
 	
 	private function getIterator()
 	{
+		require_once dirname(__FILE__) . '/iterator/archiveIterator.class.php';
+
 		$oIterator = null;
 		
 		switch($this->sMimeType)
 		{
 			case 'application/zip':
-				require_once dirname(__FILE__) . '/iterator/zipIterator.class.php';
 				$oIterator = new bab_ZipIterator();
 				return $oIterator;
 				
