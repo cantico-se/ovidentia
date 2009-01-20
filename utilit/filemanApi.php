@@ -330,6 +330,9 @@ class bab_Directory
 			}
 			else
 			{//Si '' == $this->sRelativePath on ne fait rien 
+				$oFmEnv->sGr		= '';					
+				$oFmEnv->sPath		= '';		
+				$oFmEnv->iIdObject	= 0;
 				$bSuccess = true;
 			}
 		}
