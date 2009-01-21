@@ -254,7 +254,7 @@ function listArticles($topics)
 				/* template variables */
 				$this->babtpl_authorid = bab_toHtml($this->arr['id_author']);
 				$this->babtpl_articleid = $this->arr['id'];
-				$this->babtpl_topicidid = $this->arr['id_topic'];
+				$this->babtpl_topicid = $this->arr['id_topic'];
 				$this->babtpl_head = $this->content;
 				
 				$editor = new bab_contentEditor('bab_article_body');
