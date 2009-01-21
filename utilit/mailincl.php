@@ -249,7 +249,7 @@ class babMail
 	}
 
 	/**
-	 * Requests a read receipt for the email (i.e if the recipient has a complient email reader,
+	 * Requests a read receipt for the email (i.e if the recipient has a compliant email reader,
 	 * he will be prompted to acknowledge the receipt of the message).
 	 * 
 	 * @param string $email		The email address where the reading confirmation will be sent.		
