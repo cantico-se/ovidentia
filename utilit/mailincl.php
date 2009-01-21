@@ -107,6 +107,11 @@ class babMailTemplate
 		}
 	}
 
+
+
+
+
+
 class babMail
 {
 	var $mail;
@@ -120,77 +125,91 @@ class babMail
 
 	function babMail()
 	{
-		include_once $GLOBALS['babInstallPath']."utilit/class.phpmailer.php";
-		include_once $GLOBALS['babInstallPath']."utilit/class.smtp.php";
+		include_once $GLOBALS['babInstallPath'].'utilit/class.phpmailer.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
 		
 		$this->mail = new phpmailer();
 		$this->mail->CharSet = bab_charset::getIso();
-		$this->mail->PluginDir = $GLOBALS['babInstallPath']."utilit/";
+		$this->mail->PluginDir = $GLOBALS['babInstallPath'].'utilit/';
 		$this->mail->From = $GLOBALS['babAdminEmail'];
 		$this->mail->FromName = $GLOBALS['babAdminName'];
 		$this->mail->Sender = $GLOBALS['babAdminEmail'];
-		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath']."utilit/");
+		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 	}
 
-	function mailFrom($email, $name='')
+	function mailFrom($email, $name = '')
 	{
 		$this->mail->From = $email;
 		$this->mail->FromName = $name;
 	}
 
-	function mailTo($email, $name="")
+	/**
+	 * Adds a recipient (TO) to the email message.
+	 * 
+	 * @param string	$email			The email address of the recipient.
+	 * @param string	$name			The (optional) name of the recipient.
+	 */
+	function mailTo($email, $name = '')
 	{
 		$this->mail->AddAddress($email, $name);
 		$this->mailTo[] = array($email, $name);
 	}
 
+	/**
+	 * Removes all currently added recipients (TO) for the email message.
+	 */
 	function clearTo()
 	{
 		$this->mail->ClearAddresses();
 		$this->mailTo = array();
 	}
 
-	function mailCc($email, $name="")
+	/**
+	 * Adds a recipient (CC) to the email message.
+	 * 
+	 * @param string	$email			The email address of the recipient.
+	 * @param string	$name			The (optional) name of the recipient.
+	 */
+	function mailCc($email, $name = '')
 	{
 		$this->mail->AddCC($email, $name);
 		$this->mailCc[] = array($email, $name);
 	}
 	
+	/**
+	 * Removes all currently added recipients (CC) for the email message.
+	 */
 	function clearCc()
 	{
 		$this->mail->ClearCcs();
 		$this->mailCc = array();
 	}
-	
-	function mailBcc($email, $name="")
+
+	/**
+	 * Adds a recipient (BCC) to the email message.
+	 * 
+	 * @param string	$email			The email address of the recipient.
+	 * @param string	$name			The (optional) name of the recipient.
+	 */
+	function mailBcc($email, $name = '')
 	{
 		$this->mail->AddBCC($email, $name);
 		$this->mailBcc[] = array($email, $name);
 	}
 
+	/**
+	 * Removes all currently added recipients (BCC) for the email message.
+	 */
 	function clearBcc()
 	{
 		$this->mail->ClearBccs();
 		$this->mailBcc = array();
 	}
 
-	function mailReplyTo($email, $name="")
-	{
-		$this->mail->AddReplyTo($email, $name);
-		$this->replyTo[] = array($email, $name);
-	}
 
-	function clearReplyTo()
-	{
-		$this->mail->clearReplyTos();
-		$this->replyTo = array();
-	}
-	
-	function mailSender($email)
-	{
-		$this->mail->Sender = $email;
-	}
-
+	/**
+	 * Removes all currently added recipients (TO, CC and BCC) for the email message.
+	 */
 	function clearAllRecipients()
 	{
 		$this->mail->clearAllRecipients();
@@ -199,11 +218,62 @@ class babMail
 		$this->mailBcc = array();
 	}
 
+	
+    /**
+     * Adds a "Reply-to" address.  
+     * @param string	$email			The reply-to address.
+     * @param string	$name			Optional name of reply-to.
+     */
+ 	function mailReplyTo($email, $name = '')
+	{
+		$this->mail->AddReplyTo($email, $name);
+		$this->replyTo[] = array($email, $name);
+	}
+
+	/**
+	 * Removes all currently added reply-to addresses for the email message.
+	 */
+	function clearReplyTo()
+	{
+		$this->mail->clearReplyTos();
+		$this->replyTo = array();
+	}
+
+	/**
+	 * Sets the Sender email address (Return-Path) of the message.  If not empty,
+     * will be sent via -f to sendmail or as 'MAIL FROM' in smtp mode.
+     */
+	function mailSender($email)
+	{
+		$this->mail->Sender = $email;
+	}
+
+	/**
+	 * Requests a read receipt for the email (i.e if the recipient has a complient email reader,
+	 * he will be prompted to acknowledge the receipt of the message).
+	 * 
+	 * @param string $email		The email address where the reading confirmation will be sent.		
+	 */
+	function confirmReadingTo($email)
+	{
+		$this->mail->ConfirmReadingTo = $email;
+	}
+
+	/**
+	 * Sets the subject of the message.
+	 * 
+	 * @param string $subject
+	 */
 	function mailSubject($subject)
 	{
 		$this->mail->Subject = $subject;
 	}
 
+	/**
+	 * Sets the email priority (1 = High, 3 = Normal, 5 = low).
+	 * 
+	 * @param int	$priority
+	 */
 	function setPriority($priority)
 	{
 		$this->mail->Priority = $priority;
@@ -215,19 +285,33 @@ class babMail
 		$this->mail->Port = $port;
 	}
 
-	function mailBody($babBody, $format="plain")
+	/**
+	 * Sets the Body of the message.  This can be either an HTML or text body.
+	 * 
+	 * @param string	$body
+	 * @param string	$format
+	 */
+	function mailBody($body, $format = 'plain')
 	{
 		$this->format = $format;
-		$this->mail->Body = $babBody;
-		if( $format == "plain" )
+		$this->mail->Body = $body;
+		if( $format == 'plain' )
 			$this->mail->IsHTML(false);
 		else
 			$this->mail->IsHTML(true);
 	}
 
-	function mailAltBody($babAltBody)
+	/**
+	 * Sets the text-only body of the message.  This automatically sets the
+     * email to multipart/alternative.  This body can be read by mail
+     * clients that do not have HTML email capability such as mutt. Clients
+     * that can read HTML will view the normal Body.
+     * 
+     * @param string	$altBody
+     */
+	function mailAltBody($altBody)
 	{
-		$this->mail->AltBody = $babAltBody;
+		$this->mail->AltBody = $altBody;
 	}
 
 	function mailFileAttach( $fname, $realname, $type )
@@ -357,6 +441,9 @@ class babMail
 			");
 	}
 }
+
+
+
 
 
 class babMailSmtp extends babMail
