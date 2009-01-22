@@ -277,7 +277,7 @@ class bab_Addon extends bab_handler
 		$name = $ctx->get_value('name');
 		$addon = bab_getAddonInfosInstance($name);
 
-		if($addon->isAccessValid())
+		if($addon && $addon->isAccessValid())
 			{
 			if( is_file($addon->getPhpPath()."ovml.php" ))
 				{
