@@ -233,6 +233,7 @@ class="BabFaqLink" href="{ urlcategory }">{ namecategory }</a> </td>
 </table>
 <br />
 <!--#end viewquestion -->
+
 <!--#begin popupquestion -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -270,7 +271,7 @@ window.focus();
 <!--#begin tableofcontents -->
 <table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 <tr><td>
-	<h3>{ faqname }</h3>
+	<h3 class="BabFaqName">{ faqname }</h3>
 	<dl>
 	<!--#in getnextchild -->
 		<dt>
@@ -280,8 +281,8 @@ window.focus();
 					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
 				<!--#endin getnextpad -->
 					<td>
-						<h4>
-							<!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update -->&nbsp;&nbsp;<!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq -->
+						<h4 class="BabFaqSubCategoryName">
+							<!--#if update --><!--#if burl --><a class="BabTopicsFooterLink" href="{ modifycurl }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else burl --><!--#endif burl --><!--#else update --><!--#endif update -->&nbsp;&nbsp;<!--#if countq --><a href="{ subcaturl }">{ subcatname }</a><!--#else countq -->{ subcatname }<!--#endif countq -->
 						</h4>
 					</td>
 				</tr>
@@ -296,7 +297,7 @@ window.focus();
 					<td width="12"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="12" height="1" border="0" alt=""></td>
 					<!--#endin getnextpad -->
 					<td>
-						<h5>
+						<h5 class="BabFaqQuestionName">
 							<!--#if update --><a class="BabTopicsFooterLink" href="{ modifyqurl }"><IMG src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="8" height="1" border="0" alt=""><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ modifytxt }" align="absmiddle"></a><!--#else update --><!--#endif update -->&nbsp;&nbsp;<a href="{ questionurl }#{ idq }">{ questionname }</a>
 						</h5>
 					</td>
@@ -317,10 +318,10 @@ window.focus();
 <td>
 <a name="top"></a>
 	<dl>
-		<dt><h3>{ subcatname }</h3></dt>
+		<dt><h3 class="BabFaqSubCategoryName">{ subcatname }</h3></dt>
 
 		   <!--#in getnext -->
-			<dd><h5><a href="#{ idq }">{ question }</a></h5></dd>
+			<dd><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ question }</a></h5></dd>
 			<!--#endin getnext -->
 	</dl>
 
@@ -329,7 +330,7 @@ window.focus();
 	<dl>
 	<!--#in getnextbis -->
 		 <dt><a name="{ idq }"></a><h4>{ question }</h4></dt>
-			<dd>
+			<dd class="BabFaqResponse">
 				{ response }
 				<p align="right"><a href="#top">{ return }</a></p>
 			</dd>
