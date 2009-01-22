@@ -783,12 +783,14 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 
 			if (
-				empty($item)  
-				|| !in_array($item, array(
-					'articles', 
-					'directories',
-					'calendars',
-					'files'
+				(
+					empty($item)  
+					|| !in_array($item, array(
+						'articles', 
+						'directories',
+						'calendars',
+						'files'
+						)
 					)
 				)
 				&& empty($this->primary_search)
@@ -2367,12 +2369,12 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					{
 					case 'sn':
 						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
+						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$this->dir['id']."&w=".$this->what);
 						$this->popup = true;
 						break;
 					case 'givenname':
 						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=g&id=".$this->dir['id']."&w=".$this->what);
+						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$this->dir['id']."&w=".$this->what);
 						$this->popup = true;
 						break;
 					case 'email':
