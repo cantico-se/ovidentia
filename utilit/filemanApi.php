@@ -25,6 +25,177 @@ require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
 
+/*
+class bab_Path extends ArrayIterator
+{
+	private $sRawPath	= '';
+	private $aPathItem	= array();
+	
+	public function __construct($sPath)
+	{
+//		parent::__construct($this->aPathItem, ArrayObject::ARRAY_AS_PROPS);
+//		parent::__construct(array('1', '1.1', '1.1.1'), ArrayObject::ARRAY_AS_PROPS);
+		$this->setUp($sPath);		
+	}
+
+
+	public function __toString() 
+	{
+		$sFirstChar = mb_substr($this->sRawPath, 0, 1);
+		return (($sFirstChar == '/') ? '/' : '') . implode('/', $this->aPathItem);
+    }	
+	
+    //-- ArrayAccess Interface implementation
+    public function offsetSet($iOffset, $sValue)
+    {
+    	if(is_numeric($iOffset))
+    	{
+    		$this->aPathItem[$iOffset] = (string) $sValue;
+    	}
+    }
+    
+    
+    public function offsetGet($iOffset)
+    {
+    	if(array_key_exists($iOffset, $this->aPathItem))
+    	{
+    		return $this->aPathItem[$iOffset];
+    	}
+    	return null;
+    }
+    
+    
+    public function offsetUnset($iOffset)
+    {
+    	if(array_key_exists($iOffset, $this->aPathItem))
+    	{
+    		unset($this->aPathItem[$iOffset]);
+    	}
+    }
+    
+    
+    public function offsetExists($iOffset)
+    {
+    	return array_key_exists($iOffset, $this->aPathItem);
+    }
+    
+    
+    
+    
+	// Private
+	private function setUp($sPath)
+	{
+		$this->sRawPath = trim($sPath);
+		if(0 < mb_strlen($this->sRawPath))
+		{
+			bab_Path::canonize();
+		}
+	}
+
+
+	private function canonize()
+	{
+		$this->sRawPath	= str_replace('\\', '/', $this->sRawPath);
+
+		$sDrive	= '';
+		$sPath	= ''; 
+		if(0 !== preg_match("/(^[a-zA-z0-9]){1}(\:){1}(\/){1}.*$/", $this->sRawPath, $aMatch))
+		{
+			//$sDrive = $aMatch[1] . $aMatch[2] . $aMatch[3];
+			$sDrive = $aMatch[1] . $aMatch[2];
+			$sPath = mb_substr($this->sRawPath, mb_strlen($sDrive));
+		}
+		
+		$sPath	= bab_Path::removeEndSlashes($sPath);
+		$aPaths	= explode('/', $sPath);
+		
+		if(is_array($aPaths) && count($aPaths) > 0)
+		{
+			foreach($aPaths as $iKey => $sPathItem)
+			{
+				if(mb_strlen(trim($sPathItem)) !== 0)
+				{
+					$this->aPathItem[] = BAB_Path::sanitizePathItem($sPathItem);
+				}
+			}
+		}
+		
+		if('' != $sDrive && count($this->aPathItem) > 0)
+		{
+			$this->aPathItem[0] = $sDrive . '/' . $this->aPathItem[0]; 
+		}
+	}
+	
+	private static function addEndSlash($sPath)
+	{
+		if(is_string($sPath))
+		{
+			$iLength = mb_strlen(trim($sPath));
+			if($iLength > 0)
+			{
+				$sLastChar = mb_substr($sPath, -1);
+				if($sLastChar !== '/')
+				{
+					$sPath .= '/';
+				}
+			}
+		}
+		return $sPath;
+	}
+	
+	private static function removeEndSlah($sPath)
+	{
+		if(is_string($sPath))
+		{
+			$iLength = mb_strlen(trim($sPath));
+			if($iLength > 0)
+			{
+				$sLastChar = mb_substr($sPath, -1);
+				if($sLastChar === '/')
+				{
+					return mb_substr($sPath, 0, -1);
+				}
+			}
+		}
+		return $sPath;
+	}
+	
+	private static function haveEndSlash($sPath)
+	{
+		$iLength = mb_strlen(trim($sPath));
+		if($iLength > 0)
+		{
+			$sLastChar = mb_substr($sPath, -1);
+			return ($sLastChar === '/');
+		}
+		return false;	
+	}
+	
+	private static function removeEndSlashes($sPath)
+	{
+		while(BAB_Path::haveEndSlash($sPath))
+		{
+			$sPath = BAB_Path::removeEndSlah($sPath);
+		}
+		return $sPath;
+	}
+	
+	private static function sanitizePathItem($sPathItem)
+	{
+		if(is_string($sPathItem) && mb_strlen(trim($sPathItem)) > 0)
+		{
+			if(isset($GLOBALS['babFileNameTranslation']))
+			{
+				$sPathItem = strtr($sPathItem, $GLOBALS['babFileNameTranslation']);
+			}
+			
+			static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_', '"' => '_');
+			$sPathItem = strtr($sPathItem, $aTranslation);
+		}
+		return $sPathItem;
+	}
+}
+//*/
 
 class bab_FileInfo extends SplFileInfo
 {
@@ -149,7 +320,7 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
     {
     	$bSuccess = false; 
 		$iIdOldDelegation = bab_getCurrentUserDelegation();
-		
+ 		
 		bab_setCurrentUserDelegation($this->iIdObject);
 		
 		$this->oFolder = $this->getCollectiveFolder($oIterator->getFilename(), $this->sRelativePath); 
@@ -186,65 +357,24 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 		$oCriteria = $this->oNameField->in($sFolderName);
 		$oCriteria = $oCriteria->_and($this->oRelativePathField->in($sRelativePath));
 		$oCriteria = $oCriteria->_and($this->oIdDgOwnerField->in($this->iIdObject));
+		//bab_debug($this->oFolderSet->getSelectQuery($oCriteria));
 		return $this->oFolderSet->get($oCriteria);
     }
 
     
 	private function getFirstCollectiveParentFolder($sRelativePath)
 	{
-		$sRelPath = $sRelativePath;
-		if(!array_key_exists($sRelPath, $this->aPathCache))
+		if(!array_key_exists($sRelativePath, $this->aPathCache))
 		{	
-			$this->aPathCache[$sRelPath] = null;
+			$this->aPathCache[$sRelativePath] = null;
 			
-			global $babBody;
-			
-			$aPath = explode('/', $sRelativePath);
-			if(is_array($aPath))
+			$oFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			if(!is_null($oFolder))
 			{
-				$iLength = count($aPath);
-				if($iLength >= 1)
-				{
-					$bStop		= false;
-					$iIndex		= $iLength - 1;
-					$bFinded	= false;
-					global $babDB;
-	
-					do
-					{
-						$sFolderName = $aPath[$iIndex];
-						unset($aPath[$iIndex]);
-						$sRelativePath	= implode('/', $aPath);
-	
-						if('' !== $sRelativePath)
-						{
-							$sRelativePath .= '/';
-						}
-						
-						$oCriteria	= $this->oNameField->in($sFolderName);
-						$oCriteria	= $oCriteria->_and($this->oRelativePathField->like($babDB->db_escape_like($sRelativePath)));
-						$oCriteria	= $oCriteria->_and($this->oIdDgOwnerField->in($this->iIdObject));
-						$oFolder	= $this->oFolderSet->get($oCriteria);
-						if(!is_null($oFolder))
-						{
-							$this->aPathCache[$sRelPath] = $oFolder; 
-							$bStop = true;
-						}
-	
-						if($iIndex > 0)
-						{
-							$iIndex--;
-						}
-						else
-						{
-							$bStop = true;
-						}
-					}
-					while(false === $bStop);
-				}
+				$this->aPathCache[$sRelativePath] = $oFolder;
 			}
 		}
-		return $this->aPathCache[$sRelPath];
+		return $this->aPathCache[$sRelativePath];
 	}
 }
 
@@ -283,6 +413,28 @@ class bab_Directory
 		$oBabDirIt->setRelativePath($this->sRelativePath);
 		$oBabDirIt->setObjectId($this->iIdObject);
 		return $oBabDirIt; 
+	}
+	
+	
+	public function createSubdirectory($sPathName, $sSubDirectory)
+	{
+		if(!$this->initPaths($sPathName))
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->pathValid())
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not valid');
+			return false;
+		}
+		
+		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		if(canCreateFolder($oFmEnv->sRelativePath))
+		{
+			$sFullPathName = $this->sRootFmPath;
+		}
 	}
 	
 	
