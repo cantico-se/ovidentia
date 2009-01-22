@@ -67,7 +67,7 @@ function addCategory()
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_faq');
-			$editor->setParameters(array('height' => 150));
+			$editor->setParameters(array('height' => 300));
 			$this->editor = $editor->getEditor();
 			
 			$this->item = "";

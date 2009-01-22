@@ -88,7 +88,7 @@ function modifyCategory($id)
 			$editor = new bab_contentEditor('bab_faq');
 			$editor->setContent($this->arr['description']);
 			$editor->setFormat('html');
-			$editor->setParameters(array('height' => 150));
+			$editor->setParameters(array('height' => 300));
 			$this->editor = $editor->getEditor();
 			
 			
