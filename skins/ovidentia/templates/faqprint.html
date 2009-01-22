@@ -16,10 +16,10 @@ window.focus();
 
 	<a name="top"></a>
 	<dl>
-		<dt><h3>{ subcatname }</h3></dt>
+		<dt><h3 class="BabFaqSubCategoryName">{ subcatname }</h3></dt>
 
 		   <!--#in getnext -->
-			<dd><h5><a href="#{ idq }">{ question }</a></h5></dd>
+			<dd><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ question }</a></h5></dd>
 			<!--#endin getnext -->
 	</dl>
 
@@ -27,8 +27,8 @@ window.focus();
 
 	<dl>
 	<!--#in getnextbis -->
-		 <dt><a name="{ idq }"></a><h4>{ question }</h4></dt>
-			<dd>
+		 <dt><a name="{ idq }"></a><h4 class="BabFaqQuestionName">{ question }</h4></dt>
+			<dd class="BabFaqResponse">
 				{ response }
 				<p align="right"><a href="#top">{ return }</a></p>
 			</dd>
@@ -47,7 +47,7 @@ window.focus();
 <table class="BabTopicsBackground" border="0" width="99%" cellpadding="2" cellspacing="0" align="center">
 	<tr>
 	<td>
-	<h3>{ faqname }</h3>
+	<h3 class="BabFaqName">{ faqname }</h3>
 
 	<dl>
 	<!--#in getnextchild -->
@@ -58,7 +58,7 @@ window.focus();
 			<td width="12">&nbsp;</td>
 			<!--#endin getnextpad -->
 			
-			<td><h4>{ subcatname }</h4></td>
+			<td><h4 class="BabFaqSubCategoryName">{ subcatname }</h4></td>
 		</tr>
 		</table>
 	</dt>
@@ -69,7 +69,7 @@ window.focus();
 			<!--#in getnextpad -->
 			<td width="12">&nbsp;</td>
 			<!--#endin getnextpad -->
-			<td><h5><a href="#{ idq }">{ questionname }</a></h5></td>
+			<td><h5 class="BabFaqQuestionName"><a href="#{ idq }">{ questionname }</a></h5></td>
 		</tr>
 		</table>
 	</dd>
@@ -80,11 +80,11 @@ window.focus();
 <hr />
 
 	<!--#in getnextchild -->
-	<h4>{ subcatname }</h4>
+	<h4 class="BabFaqSubCategoryName">{ subcatname }</h4>
 	<dl>
 	<!--#in getnextquestion -->
-	<dt><a name="{ idq }"></a><h5>{ questionname }</h5></dt>
-	<dd>
+	<dt><a name="{ idq }"></a><h5 class="BabFaqQuestionName">{ questionname }</h5></dt>
+	<dd class="BabFaqResponse">
 		{ response }
 		<div align="right"><a href="#top">{ return }</a></div>
 	</dd>
