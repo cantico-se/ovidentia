@@ -25,16 +25,17 @@ require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
 
-/*
-class bab_Path extends ArrayIterator
+//*
+class bab_Path extends ArrayObject
 {
-	private $sRawPath	= '';
-	private $aPathItem	= array();
+	private $sDrive = '';
+	private $sRawPath = '';
+	
 	
 	public function __construct($sPath)
 	{
-//		parent::__construct($this->aPathItem, ArrayObject::ARRAY_AS_PROPS);
-//		parent::__construct(array('1', '1.1', '1.1.1'), ArrayObject::ARRAY_AS_PROPS);
+		parent::__construct(array(), ArrayObject::ARRAY_AS_PROPS);
+		
 		$this->setUp($sPath);		
 	}
 
@@ -42,44 +43,15 @@ class bab_Path extends ArrayIterator
 	public function __toString() 
 	{
 		$sFirstChar = mb_substr($this->sRawPath, 0, 1);
-		return (($sFirstChar == '/') ? '/' : '') . implode('/', $this->aPathItem);
+		return (($sFirstChar == '/') ? '/' : '') . implode('/', $this);
     }	
-	
-    //-- ArrayAccess Interface implementation
-    public function offsetSet($iOffset, $sValue)
+
+    
+    //--
+    function offsetGet($iIndex)
     {
-    	if(is_numeric($iOffset))
-    	{
-    		$this->aPathItem[$iOffset] = (string) $sValue;
-    	}
+    	
     }
-    
-    
-    public function offsetGet($iOffset)
-    {
-    	if(array_key_exists($iOffset, $this->aPathItem))
-    	{
-    		return $this->aPathItem[$iOffset];
-    	}
-    	return null;
-    }
-    
-    
-    public function offsetUnset($iOffset)
-    {
-    	if(array_key_exists($iOffset, $this->aPathItem))
-    	{
-    		unset($this->aPathItem[$iOffset]);
-    	}
-    }
-    
-    
-    public function offsetExists($iOffset)
-    {
-    	return array_key_exists($iOffset, $this->aPathItem);
-    }
-    
-    
     
     
 	// Private
@@ -97,13 +69,13 @@ class bab_Path extends ArrayIterator
 	{
 		$this->sRawPath	= str_replace('\\', '/', $this->sRawPath);
 
-		$sDrive	= '';
+		$this->sDrive	= '';
 		$sPath	= ''; 
 		if(0 !== preg_match("/(^[a-zA-z0-9]){1}(\:){1}(\/){1}.*$/", $this->sRawPath, $aMatch))
 		{
-			//$sDrive = $aMatch[1] . $aMatch[2] . $aMatch[3];
-			$sDrive = $aMatch[1] . $aMatch[2];
-			$sPath = mb_substr($this->sRawPath, mb_strlen($sDrive));
+			//$this->sDrive = $aMatch[1] . $aMatch[2] . $aMatch[3];
+			$this->sDrive = $aMatch[1] . $aMatch[2];
+			$sPath = mb_substr($this->sRawPath, mb_strlen($this->sDrive));
 		}
 		
 		$sPath	= bab_Path::removeEndSlashes($sPath);
@@ -115,15 +87,17 @@ class bab_Path extends ArrayIterator
 			{
 				if(mb_strlen(trim($sPathItem)) !== 0)
 				{
-					$this->aPathItem[] = BAB_Path::sanitizePathItem($sPathItem);
+					$this->append(BAB_Path::sanitizePathItem($sPathItem));
 				}
 			}
 		}
-		
-		if('' != $sDrive && count($this->aPathItem) > 0)
+
+		/*
+		if('' != $sDrive && $this->count() > 0)
 		{
-			$this->aPathItem[0] = $sDrive . '/' . $this->aPathItem[0]; 
+			$this[0] = $sDrive . '/' . $this[0]; 
 		}
+		//*/
 	}
 	
 	private static function addEndSlash($sPath)
