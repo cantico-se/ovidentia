@@ -29,6 +29,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/imgincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 
 function bab_deleteSection($id)
