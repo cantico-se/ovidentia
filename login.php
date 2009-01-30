@@ -652,6 +652,19 @@ function addNewUser( $nickname, $password1, $password2)
 
 
 
+function login_signon()
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
+	$sAuthType = (string) bab_rp('sAuthType', '');
+	if (false === bab_requireCredential(bab_translate("Login"), $sAuthType)) {
+		$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
+	}
+	
+}
+	
+
+
+
 
 
 /* main */
@@ -756,18 +769,7 @@ switch($cmd)
 			$babBody->msgerror = bab_translate("Acces denied");
 		}
 		break;
-
-	case "confirm":
-		confirmUser( $hash, $name );
-		/* no break; */
 		
-	case 'detect':
-		if ($GLOBALS['BAB_SESS_LOGGED']) {
-			header( "location:".bab_rp('referer') );
-			exit;
-		}
-		/* no break; */
-
 	case "authform":
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 		$loginMessage = bab_rp('msg', '');
@@ -775,15 +777,27 @@ switch($cmd)
 		displayAuthenticationForm($loginMessage, $errorMessage);
 		$cmd = 'signon';
 		break;
+		
+	case "confirm":
+		confirmUser( $hash, $name );
+		login_signon();
+		break;
+				
+	case 'detect':
+		if ($GLOBALS['BAB_SESS_LOGGED']) {
+			header( "location:".bab_rp('referer') );
+			exit;
+		}
+		else
+		{
+			login_signon();
+		}
+		break;
 
 	case "signon":
 	default:
-		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
-		$sAuthType = (string) bab_rp('sAuthType', '');
-		if (false === bab_requireCredential(bab_translate("Login"), $sAuthType)) {
-			$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
-		}
+		login_signon();
 		break;
-		
+				
 	}
 $babBody->setCurrentItemMenu($cmd);
