@@ -1035,6 +1035,8 @@ class bab_ArticleTreeView extends bab_TreeView
 	var $_action;
 	var $_link;
 	
+	var $_ignoredCategories = array();
+	
 	/**
 	 * Datas on which the appendElement work
 	 * After the function call the $_datas is
@@ -1061,6 +1063,18 @@ class bab_ArticleTreeView extends bab_TreeView
 		$this->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	}
 
+
+	/**
+	 * Ignore the specified categories when creating the treeview.
+	 * 
+	 * @param array	$categoryIds		The array of ids to ignore.
+	 */
+	public function ignoreCategories($categoryIds)
+	{
+		foreach ($categoryIds as $categoryId) {
+			$this->_ignoredCategories[$categoryId] = $categoryId;
+		}
+	}
 	
 	/**
 	 * Defines the action for which the article tree is displayed.
@@ -1218,6 +1232,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 	}
 
+
 	/**
 	 * Add article categories to the tree.
 	 * @access private
@@ -1256,6 +1271,9 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		$categories = $babDB->db_query($sql);
 		while ($category = $babDB->db_fetch_array($categories)) {
+			if (isset($this->_ignoredCategories[$category['id']])) {
+				continue;
+			}
 			$element =& $this->createElement('c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
