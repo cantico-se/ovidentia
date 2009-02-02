@@ -512,6 +512,26 @@ class bab_TreeView
 		$this->onElementAppended($element, $parentId);
 	}
 
+	
+	/**
+	 * Removes the selected element and its descendants from the treeview.
+	 * 
+	 * @param string			$id		The id of the element to remove.
+	 * @return	bool
+	 */
+	function removeElement($id)
+	{
+		$node =& $this->_rootNode->getNodeById($id);
+		if (!isset($node)) {
+			return false;
+		}
+		$parentNode =& $node->parentNode();
+		if (!isset($parentNode)) {
+			return false;
+		}
+		return $parentNode->removeChild($node);
+	}
+
 	/**
 	 * Sorts the TreeView.
 	 * 
