@@ -47,12 +47,16 @@ function selectArticles()
 	if (bab_rp('selectable_articles', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
 
+	$ignoredCategories = bab_rp('ignored_categories', '');
+	$ignoredCategories = explode(',', $ignoredCategories);
+		
 //	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 //	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
 //	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 
 	$treeView = new bab_ArticleTreeView('bab_tv_article');
 	$treeView->setAttributes($attributes);
+	$treeView->ignoreCategories($ignoredCategories);
 	$treeView->order();
 	$treeView->sort();
 	
