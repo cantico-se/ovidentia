@@ -169,7 +169,7 @@ class bab_sort
  * @param string $sStringIsoCharset	Iso charset of the input string to compare.
  * 									If this parameter is null strings are then 
  * 									considered in the same format as the database
- * 
+ *
  * @return							1 if $sStr1 is greater than $sStr2
  * 									0 if $sStr1 is equal to $sStr2
  * 									-1 if $sStr1 is less than $sStr2
@@ -177,19 +177,20 @@ class bab_sort
  */
 function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 {
-	if(!isset($sInputStringIsoCharset))
+	if (!isset($sInputStringIsoCharset))
 	{
 		$sInputStringIsoCharset = bab_charset::getIso();
 	}
-	
-	if('UTF-8' != $sInputStringIsoCharset)
+
+
+	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
 		$sStr1 = mb_convert_encoding($sStr1, 'UTF-8', $sInputStringIsoCharset);
 		$sStr2 = mb_convert_encoding($sStr2, 'UTF-8', $sInputStringIsoCharset);	
 	}
 
 	$oCollator = bab_getCollatorInstance();
-	
+
 	return $oCollator->compare($sStr1, $sStr2);
 }
 
@@ -197,7 +198,7 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 
 /**
- * Get a string according to the charset of the databese
+ * Get a string according to the charset of the database
  *
  * @param string | array $input			String(s) to convert
  * @param string $sStringIsoCharset		Iso charset of the string to convert
@@ -325,10 +326,14 @@ function bab_removeDiacritics($sString)
 	return str_replace($aSearch, $aReplace, $sString);
 }
 
+
 class bab_charset 
 {
 	private static $sCharset = null;
-	 
+
+	const	UTF_8 = 'UTF-8';
+	const	ISO_8859_15 = 'ISO-8859-15';
+
 	/**
 	 * Returns the database charset
 	 * @static
@@ -367,6 +372,11 @@ class bab_charset
 		return self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
 	}
 
+	/**
+	 * 
+	 * @param string $sCharset
+	 * @return string
+	 */
 	public static function getIsoCharsetFromDataBaseCharset($sCharset)
 	{
 		switch($sCharset) 
