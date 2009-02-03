@@ -873,36 +873,35 @@ onClick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 
 <!--#begin howtousedefaultrights -->
 <form method="post" action="{ babPhpSelf }" name="listform">
-<input type="hidden" name="tg" value="topcat" />
-<input type="hidden" name="idx" value="Modify" />
-<input type="hidden" name="item" value="{ item }" />
-<input type="hidden" name="action" value="updrights" />
-<table border="0" width="70%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
-<tr>
-<td> 
-<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
-<tr>
-<td align="center">
-<p>{ t_with_selected } : </p>
-</td>
-</tr>
-<tr>
-<td>
-<p><input type="checkbox" name="opt[]" value="1" />{ t_topics }</p>
-<p><input type="checkbox" name="opt[]" value="2" />{ t_subcategories }</p>
-<p><input type="checkbox" name="opt[]" value="3" />{ t_topicssubcategories }</p>
-<p><input type="checkbox" name="opt[]" value="4" />{ t_all }</p>
-</td>
-</tr>
-<tr>
-<td align="center">
-<input type="submit" value="{ t_update }" />
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-
+	<input type="hidden" name="tg" value="topcat" />
+	<input type="hidden" name="idx" value="Modify" />
+	<input type="hidden" name="item" value="{ item }" />
+	<input type="hidden" name="action" value="updrights" />
+	<table border="0" width="70%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
+		<tr>
+			<td> 
+				<table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="6" cellspacing="0">
+					<tr>
+						<td align="center">
+							<p>{ t_with_selected } : </p>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<p><input type="checkbox" name="opt[]" value="1" />{ t_topics }</p>
+							<p><input type="checkbox" name="opt[]" value="2" />{ t_subcategories }</p>
+							<p><input type="checkbox" name="opt[]" value="3" />{ t_topicssubcategories }</p>
+							<p><input type="checkbox" name="opt[]" value="4" />{ t_all }</p>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+							<input type="submit" value="{ t_update }" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
 <!--#end howtousedefaultrights -->
