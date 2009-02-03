@@ -129,7 +129,7 @@ class bab_CompressedFileHelper
 			foreach($oIterator as $oEntry)
 			{
 				//bab_debug(
-				//	'sName              ==> ' . $oEntry->getName() . "\n" .
+				//	'sName              ==> ' . iconv("CP850", "ISO-8859-1", $oEntry->getName()) . "\n" .
 				//	'iSize              ==> ' . $oEntry->getSize() . "\n" .
 				//	'iCompressedSize    ==> ' . $oEntry->getCompressedSize() . "\n" .
 				//	'sCompressionMethod ==> ' . $oEntry->getCompressionMethod()
