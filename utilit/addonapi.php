@@ -185,8 +185,7 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
-		$sStr1 = mb_convert_encoding($sStr1, 'UTF-8', $sInputStringIsoCharset);
-		$sStr2 = mb_convert_encoding($sStr2, 'UTF-8', $sInputStringIsoCharset);	
+		return strnatcmp($sStr1, $sStr2);		
 	}
 
 	$oCollator = bab_getCollatorInstance();
