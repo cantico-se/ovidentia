@@ -173,6 +173,7 @@ bab_dialog.selectuser = function(action) {
  * <li>selectable_categories: categories can be selected</li>
  * <li>selectable_topics: topics can be selected</li>
  * <li>selectable_articles: articles can be selected</li>
+ * <li>ignored_categories: followed a by comma separated list of categories id that should not be displayed.
  * </ul>
  * @param function action	receiving an associative array with keys "id", "type" and "content" as parameter.
  * @param string attributes	list of '&' separated attributes for the articles/topics/categories tree selector.
