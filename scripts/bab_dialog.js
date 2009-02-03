@@ -184,7 +184,7 @@ bab_dialog.selectarticle = function(action, attributes) {
 		'width'		: 700,
 		'height'	: 500
 	};
-	url = '?tg=selector&idx=articles';
+	var url = '?tg=selector&idx=articles';
 	if (attributes != '')
 		url += '&' + attributes;
 	bab_dialog(url, useparam, action);

@@ -2520,7 +2520,7 @@ function bab_getTargetElement(ev)
 // This gets called when the user presses a mouse button anywhere in the
 // document, if the calendar is shown.  If the click was outside the open
 // calendar this function closes it.
-bab_checkMenu = function(ev)
+var bab_checkMenu = function(ev)
 {
 	var menu = window.bab_currentMenu;
 	if (!menu) {
