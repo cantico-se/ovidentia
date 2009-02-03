@@ -46,7 +46,9 @@ function selectArticles()
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS;
 	if (bab_rp('selectable_articles', false))
 		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
-
+	if (bab_rp('hide_delegations', false))
+		$attributes |= BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS;
+		
 	$ignoredCategories = bab_rp('ignored_categories', '');
 	$ignoredCategories = explode(',', $ignoredCategories);
 		
