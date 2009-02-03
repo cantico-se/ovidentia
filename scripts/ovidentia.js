@@ -216,4 +216,5 @@ function bab_getInstallPath()
 			}
 		}
 	}
+	return '';
 }

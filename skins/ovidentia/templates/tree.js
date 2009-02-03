@@ -12,9 +12,10 @@ Array.prototype.contains = function(val) {
 }
 
 function hasClass(element, className) {
-	if (element.className == undefined)
+	if (element.className == undefined) {
 		return false;
-	classes = element.className.split(' ');
+	}
+	var classes = element.className.split(' ');
 	return classes.contains(className);
 }
 
@@ -542,7 +543,7 @@ bab_Tree.prototype.saveState = function()
 		}
 	}
 	
-	cookieString = nodes.join('/');
+	var cookieString = nodes.join('/');
 	if (cookieString.length > MAX_COOKIE_SIZE) {
 		cookieString = cookieString.substr(0, MAX_COOKIE_SIZE);	
 	}
