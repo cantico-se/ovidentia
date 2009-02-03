@@ -604,7 +604,7 @@ function ovidentia_popuptreeviewselectparentcategory() {
 		function(selectedTopic) {
 			document.getElementById('ovidentia_field_topcatid').value = selectedTopic['id'];
 			document.getElementById('ovidentia_field_topcatname').innerHTML = selectedTopic['content'];
-		}, 'show_categories=1&selectable_categories=1&ignored_categories={ idcategory }'
+		}, 'show_categories=1&selectable_categories=1&ignored_categories={ idcategory }&hide_delegations=1'
 	);
 }
 

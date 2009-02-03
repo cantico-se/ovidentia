@@ -221,11 +221,12 @@ function topcatModify($id)
 			}
 			$this->topcatscount = count($this->arrtopcats);
 			
-			/* Tree view popup when javascript is activated */
+			/* Tree view popup when javascript is activated
+			   !!!!! : it's the same popup when we are in delegation's administration */
 			global $babSkinPath;
 			$this->idcategory = $id;
 			$this->urlimgselectcategory = $babSkinPath.'images/nodetypes/category.png';
-			$this->idcurrentparentcategory = $id;
+			$this->idcurrentparentcategory = $this->idp;
 			$this->namecurrentparentcategory = '';
 			for ($i=0;$i<=count($this->arrtopcats)-1;$i++) {
 				if ($this->arrtopcats[$i]['id'] == $this->idp) {
