@@ -149,6 +149,14 @@ function evtSetColor(color)
 	document.getElementById('evtColor').style.backgroundColor = '#'+color;
 	}
 
+function ovidentia_optionsdelegations_onCheckAll(state){
+	for (i = 0; i < document.forms.dgcreate.elements.length; i++) {
+		if (document.forms.dgcreate.elements[i].name == 'delegitems[]' || document.forms.dgcreate.elements[i].name == 'battach') {
+			document.forms.dgcreate.elements[i].checked = state;
+		}
+	}
+}
+
 //]]>
 </script>
 <form name="dgcreate" method="post" action="{ babPhpSelf }">
@@ -212,6 +220,13 @@ function evtSetColor(color)
 						<td>{ delegitemdesc }</td>
 					</tr>
 				<!--#endin getnext -->
+					<tr>
+						<td align="right">
+							<a href="#" onclick="ovidentia_optionsdelegations_onCheckAll(true);return false;"><img src="{ babSkinPath }images/Puces/Pucecheked.gif" alt="{ tcheck }" border="0"></a>
+							<a href="#" onclick="ovidentia_optionsdelegations_onCheckAll(false);return false;"><img src="{ babSkinPath }images/Puces/PuceUncheked.gif" alt="{ tuncheck }"  border="0"></a>
+						</td>
+						<td align="left">&nbsp;</td>
+					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
