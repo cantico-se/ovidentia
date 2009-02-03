@@ -68,7 +68,10 @@ abstract class bab_ArchiveEntry
 
 class bab_ZipEntry extends bab_ArchiveEntry
 {
-	public function __construct(/* $oZip, $oZipEntry */)
+	private $oZipArchive = null;
+	private $iIndex = null;
+	
+	public function __construct(/* $oZipArchive, $aInfo */)
 	{
 		parent::__construct();
 		
@@ -78,18 +81,28 @@ class bab_ZipEntry extends bab_ArchiveEntry
 			return;
 		}
 		
-		$oZip = func_get_arg(0);
-		$oZipEntry = func_get_arg(1);
+		$this->oZipArchive = func_get_arg(0);
+		$aInfo = func_get_arg(1);
 		
-		if(zip_entry_open($oZip, $oZipEntry))
-		{
-			$this->sName				= zip_entry_name($oZipEntry);
-			$this->sBaseName			= basename($this->sName);
-			$this->iSize				= zip_entry_filesize($oZipEntry);
-			$this->iCompressedSize		= zip_entry_compressedsize($oZipEntry); 
-			$this->sCompressionMethod	= zip_entry_compressionmethod($oZipEntry);
-			zip_entry_close($oZipEntry);
-		}
+		/*
+		Array
+		(
+		    [name] => foobar/baz
+		    [index] => 3
+		    [crc] => 499465816
+		    [size] => 27
+		    [mtime] => 1123164748
+		    [comp_size] => 24
+		    [comp_method] => 8
+		)
+		//*/
+		
+		$this->sName				= $aInfo['name'];
+		$this->sBaseName			= basename($aInfo['name']);
+		$this->iSize				= $aInfo['size'];
+		$this->iCompressedSize		= $aInfo['comp_size']; 
+		$this->sCompressionMethod	= $aInfo['comp_method'];
+		$this->iIndex				= $aInfo['index'];
 	}
 }
 
@@ -143,13 +156,13 @@ abstract class bab_ArchiveIterator implements Iterator
 
 	public function next()
 	{
-		if(is_resource($this->oRessource))
+		if(is_object($this->oRessource))
 		{
-			$oEntry = $this->nextEntry();
-			if(is_resource($oEntry))
+			$aInfo = $this->nextEntry();
+			if(isset($aInfo))
 			{
 				$this->iKey++;
-				$this->oObject = $this->getObject($oEntry);
+				$this->oObject = $this->getObject($aInfo);
 				return;
 			}
 		}
@@ -196,6 +209,8 @@ abstract class bab_ArchiveIterator implements Iterator
 
 class bab_ZipIterator extends bab_ArchiveIterator
 {
+	private $iCount = 0;
+	
 	public function __contruct()
 	{
 		parent::__contruct();
@@ -209,29 +224,46 @@ class bab_ZipIterator extends bab_ArchiveIterator
 
 	protected function openArchive()
 	{
-		if(function_exists('zip_open'))
+		if(class_exists('ZipArchive'))
 		{
-			$this->oRessource = zip_open($this->sFullPathName);
+			$this->oRessource = new ZipArchive();
+			if(!$this->oRessource->open($this->sFullPathName))
+			{
+				unset($this->oRessource);
+				$this->oRessource = null;
+				$this->iCount = 0;
+				return;	
+			}
+			
+			$this->iCount = $this->oRessource->numFiles;
 		}
 	}
 
 	protected function closeArchive()
 	{
-		if(is_resource($this->oRessource))
+		if(is_object($this->oRessource))
 		{
-			zip_close($this->oRessource);
-			$this->oRessource = null;
+			if($this->oRessource->close())
+			{
+				unset($this->oRessource);
+				$this->oRessource = null;
+			}
 		}
 	}
 	
 	protected function nextEntry()
 	{
-		return zip_read($this->oRessource);
+		$aInfo = $this->oRessource->statIndex($this->iKey);
+		if(false !== $aInfo)
+		{	
+			return $aInfo;
+		}
+		return null;
 	}
 	
-	protected function getObject($oEntry)
+	protected function getObject($aInfo)
 	{
-		return new bab_ZipEntry($this->oRessource, $oEntry);
+		return new bab_ZipEntry($this->oRessource, $aInfo);
 	}
 }
 ?>
