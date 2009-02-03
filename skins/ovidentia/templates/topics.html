@@ -1,5 +1,5 @@
-
-<!--#begin categorycreate -->
+!!!!! : this following template is use in more file PHP (topic.php and topics.php)
+<!--#begin topiccreate -->
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
 
@@ -273,6 +273,26 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 		oTarget['on' + sEventType] = fnHandler;
 	}
 };
+
+/* Hide the list of parent category because javascript is activated and there is a better method
+   to select the parent category */
+function ovidentia_hideselectparentcategory_topic() {
+	document.getElementById('ovidentia_listparentcategories').style.display = 'none';
+	document.getElementById('ovidentia_ancientfield_ncat').name = 'ancientncat';
+	document.getElementById('ovidentia_listparentcategories_bettermethod').style.display = 'block';
+	document.getElementById('ovidentia_field_ncat').name = 'ncat';
+}
+
+/* Open the tree view popup of categories for choose the parent category : method used only if javascript is activated */
+function ovidentia_popuptreeviewselectparentcategory_topic() {
+	bab_dialog.selectarticle (
+		function(selectedTopic) {
+			document.getElementById('ovidentia_field_ncat').value = selectedTopic['id'];
+			document.getElementById('ovidentia_field_topcatname').innerHTML = selectedTopic['content'];
+		}, 'show_categories=1&selectable_categories=1&hide_delegations=1'
+	);
+}
+
 //]]>
 </script>
 
@@ -298,12 +318,31 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
                   						{ title }: &nbsp; <input type="text" name="category" size="30" maxlength="60" value="{ category }" />
                   					</td>
                   					<td align="right">
-                  						{ topcat }:&nbsp;
-                  						<select name="ncat">
-											<!--#in getnextcat -->
-											<option value="{ topid }" { topselected }>{ toptitle }</option>
-											<!--#endin getnextcat -->
-										</select>
+                  						<table>
+                  							<tr valign="top">
+                  								<td>
+		                  							{ topcat }:&nbsp;
+		                  						</td>
+		                  						<td>
+													<div id="ovidentia_listparentcategories">
+														<select name="ncat" id="ovidentia_ancientfield_ncat">
+															<!--#in getnextcat -->
+															<option value="{ topid }" { topselected }>{ toptitle }</option>
+															<!--#endin getnextcat -->
+														</select>
+													</div>
+												</td>
+												<td>
+													<div id="ovidentia_listparentcategories_bettermethod" style="display: none">
+														<input type="hidden" name="ncat_2" value="{ idcurrentparentcategory }" id="ovidentia_field_ncat">
+														<span id="ovidentia_field_topcatname">{ namecurrentparentcategory }</span>&nbsp;&nbsp;
+														<a href="#" onclick="ovidentia_popuptreeviewselectparentcategory_topic();return false;">
+															<img title="" alt="" src="{ urlimgselectcategory }" class="icon"/>
+														</a>
+													</div>
+												</td>
+											</tr>
+										</table>
 									</td>
                					</tr>
               				</table>
@@ -563,6 +602,9 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
+
+	bab_initFunctions.push(ovidentia_hideselectparentcategory_topic());
+
 	var bUploadPathValid = Boolean({ bUploadPathValid });
 	
 	if(bUploadPathValid)
@@ -619,8 +661,8 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 	}
 //]]>
 </script>
-<!--#end categorycreate -->
-<br><br><br><br><br>
+<!--#end topiccreate -->
+
 
 
 
@@ -660,10 +702,10 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 </td>
 </tr>
 </table>
-<br>
+<br />
 <!--#endin getnext -->
 <!--#end categorylist -->
-<br>
+<br />
 <!--#begin articleslist -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topic">
@@ -705,7 +747,7 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 </tr>
 </table>
 </form>
-<br>
+<br />
 <table border="0" width="95%" cellpadding="2" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
@@ -726,11 +768,11 @@ function bab_addEventHandler(oTarget, sEventType, fnHandler)
 </td>
 </tr>
 </table>
-<br>
+<br />
 <!--#if bshowhpg -->
 <center><a class="BabSectionsLinkColor" href="{ homepagesurl }">{ homepages }</a></center>
 <!--#endif bshowhpg -->
-<br>
+<br />
 <!--#end articleslist -->
 
 <!--#begin articleview -->
@@ -748,7 +790,7 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
-<br>
+<br />
 <table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
 <tr>
 <td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] 
@@ -761,9 +803,9 @@ window.focus();
 <tr><td>{ content }</td></tr>
 <tr>
 <td colspan="2" align="center">
-<br>
+<br />
 <a href="javascript:this.close()">{ close }</a>
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -773,7 +815,7 @@ window.focus();
 
 <!--#begin articlewarning -->
 <!--#if wdisplay -->
-<br>
+<br />
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 

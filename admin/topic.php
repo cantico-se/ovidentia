@@ -353,14 +353,11 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			
 			$this->cat = $this->arr['id_cat'];
 
-			if(empty($cat))
-				{
+			if (empty($cat)) {
 				$this->ncat = $this->arr['id_cat'];
-				}
-			else
-				{
+			} else {
 				$this->ncat = $cat;
-				}
+			}
 			if(empty($description))
 				{
 				$this->description = $this->arr['description'];
@@ -596,9 +593,26 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				}
 			$this->bdel = true;
 			
+			/* Parent category */
+			global $babDB;
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
-			$this->res = $this->db->db_query($req);
-			$this->count = $this->db->db_num_rows($this->res);
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
+			$this->array_parent_categories = array();
+			for ($i=0;$i<=$this->count-1;$i++) {
+				$this->array_parent_categories[] = $babDB->db_fetch_assoc($this->res);
+			}
+			
+			/* Tree view popup when javascript is activated */
+			global $babSkinPath;
+			$this->urlimgselectcategory = $babSkinPath.'images/nodetypes/category.png';
+			$this->idcurrentparentcategory = $this->ncat;
+			$this->namecurrentparentcategory = '';
+			for ($i=0;$i<=count($this->array_parent_categories)-1;$i++) {
+				if ($this->array_parent_categories[$i]['id'] == $this->cat) {
+					$this->namecurrentparentcategory = $this->array_parent_categories[$i]['title'];
+				}
+			}
 
 			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->sares = $this->db->db_query($req);
@@ -718,10 +732,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr2 = $this->db->db_fetch_array($this->res);
-				$this->toptitle = $this->arr2['title'];
-				$this->topid = $this->arr2['id'];
-				if( $this->arr2['id'] == $this->ncat )
+				$this->toptitle = $this->array_parent_categories[$i]['title'];
+				$this->topid = $this->array_parent_categories[$i]['id'];
+				if( $this->array_parent_categories[$i]['id'] == $this->ncat )
 					$this->topselected = "selected";
 				else
 					$this->topselected = "";
@@ -831,7 +844,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 	$babBody->addStyleSheet('publication.css');
 		
 	$temp = new temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
+	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "topiccreate"));
 	}
 
 function deleteCategory($id, $cat)

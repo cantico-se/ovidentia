@@ -28,7 +28,7 @@ include_once 'base.php';
 include_once $babInstallPath.'admin/acl.php';
 include_once $babInstallPath.'utilit/topincl.php';
 
-function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
 	{
 	global $babBody;
 	class temp
@@ -360,15 +360,13 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 				$this->pubdatesysel = 'selected="selected"';
 				$this->pubdatesnsel = "";
 				}
-
-			if(empty($ncat))
-				{
+			
+			/* ncat : parent category */
+			if(empty($ncat)) {
 				$this->ncat = $cat;
-				}
-			else
-				{
+			} else {
 				$this->ncat = $ncat;
-				}
+			}
 			if(empty($maxarts))
 				{
 				$this->maxarticlesval = 10;
@@ -388,10 +386,27 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			$this->editor = $editor->getEditor();
 			
 			$this->idcat = $cat;
-
+			
+			/* Parent category */
 			$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."'";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
+			$this->array_parent_categories = array();
+			for ($i=0;$i<=$this->count-1;$i++) {
+				$this->array_parent_categories[] = $babDB->db_fetch_assoc($this->res);
+			}
+			
+			/* Tree view popup when javascript is activated */
+			global $babSkinPath;
+			$this->urlimgselectcategory = $babSkinPath.'images/nodetypes/category.png';
+			$this->idcurrentparentcategory = $this->ncat;
+			$this->namecurrentparentcategory = '';
+			for ($i=0;$i<=count($this->array_parent_categories)-1;$i++) {
+				if ($this->array_parent_categories[$i]['id'] == $this->cat) {
+					$this->namecurrentparentcategory = $this->array_parent_categories[$i]['title'];
+				}
+			}
+			
 			$req = "select * from ".BAB_FLOW_APPROVERS_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by name asc";
 			$this->sares = $babDB->db_query($req);
 			if( !$this->sares )
@@ -503,10 +518,9 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			static $i = 0;
 			if( $i < $this->count)
 				{
-				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->toptitle = $this->arr['title'];
-				$this->topid = $this->arr['id'];
-				if( $this->arr['id'] == $this->ncat )
+				$this->toptitle = $this->array_parent_categories[$i]['title'];
+				$this->topid = $this->array_parent_categories[$i]['id'];
+				if( $this->array_parent_categories[$i]['id'] == $this->ncat )
 					$this->topselected = 'selected="selected"';
 				else
 					$this->topselected = "";
@@ -612,10 +626,12 @@ function addCategory($cat, $ncat, $category, $description, $saart, $sacom, $saup
 			}
 		}
 	
+	global $babBody, $babScriptPath;
+	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
 	$babBody->addStyleSheet('publication.css');
-		
+	
 	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "categorycreate"));
+	$babBody->babecho(bab_printTemplate($temp,"topics.html", "topiccreate"));
 	}
 
 function listCategories($cat)
@@ -999,7 +1015,7 @@ switch($idx)
 		$bmanmod = bab_pp('bmanmod', 'N');
 		$maxarts = bab_pp('maxarts', 10);
 		$busetags = bab_pp('busetags', 'N');
-		addCategory($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
+		addTopic($cat, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
 		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats&idx=List&idp=".$idp);
 		$babBody->addItemMenu("addtopic", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=topics&idx=addtopic&cat=".$cat);
 		break;
