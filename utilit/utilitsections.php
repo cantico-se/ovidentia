@@ -674,27 +674,22 @@ var $dayurl;
 var $babCalendarStartDay;
 
 
-function babMonthA($month = "", $year = "")
+function babMonthA($month='', $year='')
 	{
 	global $babDB,$babBody, $BAB_SESS_USERID;
 
 	$this->babSection("","");
 
-	if(empty($month))
-		$this->currentMonth = Date("n");
-	else
-		{
+	if(empty($month)) {
+		$this->currentMonth = date("n");
+	} else {
 		$this->currentMonth = $month;
-		}
-	
-	if(empty($year))
-		{
-		$this->currentYear = Date("Y");
-		}
-	else
-		{
+	}
+	if(empty($year)) {
+		$this->currentYear = date("Y");
+	} else {
 		$this->currentYear = $year;
-		}
+	}
 
 	$this->babCalendarStartDay = $babBody->icalendars->startday;
 	$this->curDay = 0;
@@ -747,7 +742,11 @@ function printout()
 
 	$this->htmlid = 'montha';
 	
-	$this->title = $this->curmonth.' '.$this->curyear;
+	$nbweek = date('W');
+	if (substr($nbweek,0,1) == 0) {
+		$nbweek = substr($nbweek,1,strlen($nbweek)-1);
+	}
+	$this->title = $this->curmonth.' '.$this->curyear.'&nbsp;&nbsp;'.bab_translate("W.").$nbweek;
 
 	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
 		{

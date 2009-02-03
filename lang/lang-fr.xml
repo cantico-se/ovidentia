@@ -2736,7 +2736,7 @@
 <string id="disabled">désactivé</string>
 <string id="One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.">Un ou plusieurs skins ne sont pas compatibles avec le charset d'Ovidentia, ou les droits d'accès sur ces skins ne sont pas définis correctement.</string>
 <string id="Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value">Ovidentia est en mode UTF-8, les skins doivent être réalisés sous la forme de modules et leurs fichiers addonini.php doit contenir la variable mysql_character_set_database.</string>
-<string id=""></string>
+<string id="W.">S.</string>
 <string id=""></string>
 <string id=""></string>
 </fr>

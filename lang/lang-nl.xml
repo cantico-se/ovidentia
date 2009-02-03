@@ -1417,7 +1417,7 @@
 <string id="Messages">Messages</string>
 <string id="One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.">One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.</string>
 <string id="Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value">Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value</string>
-<string id=""></string>
+<string id="W.">W.</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
