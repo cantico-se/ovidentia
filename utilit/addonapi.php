@@ -143,7 +143,7 @@ class bab_sort
 	 */
 	private static function getStringAccordingToCase($sString)
 	{
-		if(bab_sort::CASE_INSENSITIVE == self::$iCase)
+		if (bab_sort::CASE_INSENSITIVE == self::$iCase)
 		{
 			$str = mb_strtolower($sString);
 		}
@@ -152,7 +152,7 @@ class bab_sort
 			$str = $sString;
 		}
 
-		if('UTF-8' !== bab_charset::getIso()) 
+		if (bab_charset::UTF_8 !== bab_charset::getIso()) 
 		{
 			$str = utf8_encode($str);
 		}
@@ -275,10 +275,10 @@ function bab_sprintf($sFormat)
 
 
 /**
- * This function remove diacritics 
+ * This function removes diacritics from the string. 
  *
- * @param string $sString The string to process
- * @return string The prcessed string
+ * @param string $sString The (latin1 encoded) string to process.
+ * @return string The processed string (in ascii).
  */	
 function bab_removeDiacritics($sString)
 {
@@ -330,11 +330,23 @@ class bab_charset
 {
 	private static $sCharset = null;
 
+	/**
+	 * UTF-8 encoding.
+	 * 
+	 * @var string
+	 */
 	const	UTF_8 = 'UTF-8';
+
+	/**
+	 * ISO-8859-15 (latin1) encoding.
+	 * 
+	 * @var string
+	 */
 	const	ISO_8859_15 = 'ISO-8859-15';
 
 	/**
 	 * Returns the database charset
+	 * 
 	 * @static
 	 * @return   string	The database charset
 	 */
@@ -366,12 +378,20 @@ class bab_charset
 		bab_charset::getDatabase();
 	}
 	
+
+	/**
+	 * Returns the ISO code of the database encoding.
+	 * 
+	 * @param string $sCharset
+	 * @return string
+	 */
 	public static function getIso() 
 	{
 		return self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
 	}
 
 	/**
+	 * Converts the code of the database encoding to the ISO code.
 	 * 
 	 * @param string $sCharset
 	 * @return string
@@ -381,10 +401,10 @@ class bab_charset
 		switch($sCharset) 
 		{
 			case 'utf8':
-				return 'UTF-8';
+				self::UTF_8;
 				
 			case 'latin1':
-				return 'ISO-8859-15';
+				self::ISO_8859_15;
 		
 			default:
 				return '';
