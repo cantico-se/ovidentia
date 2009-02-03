@@ -181,7 +181,7 @@ window.focus();
 </script>
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
-<br>
+<br />
 <table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0">
 <tr>
 <td class="BabSiteAdminTitleFontBackground" align="center" nowrap><b>{ arr[title] }</b></td>
@@ -241,9 +241,9 @@ window.focus();
 
 <tr>
 <td colspan="2" align="center">
-<br>
+<br />
 <a href="javascript:this.close()">{ close }</a>
-<br>
+<br />
 </td>
 </tr>
 </table>
@@ -283,7 +283,7 @@ window.focus();
 </tr>
 </table>
 </form>
-<br>
+<br />
 <table border="0" width="95%" cellpadding="1" cellspacing="0" align="center" class="BabLoginCadreBackground">
 <tr>
 <td> 
@@ -318,15 +318,15 @@ window.focus();
 </td>
 <td valign="middle" align="center"><a 
 href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
-width="22" height="18" border=0 alt="{ moveup }"></a> <br>
-<br>
+width="22" height="18" border=0 alt="{ moveup }"></a> <br />
+<br />
 <a href="Javascript:move(false, document.ordform.elements[4])"> 
 <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-<br><br>
+<br /><br />
 <a href="Javascript:sortList('sortAA', document.ordform.elements[4])">
 <img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
 </a>
-<br><br>
+<br /><br />
 <a href="Javascript:sortList('sortAD', document.ordform.elements[4])">
 <img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
 </a>
@@ -335,8 +335,8 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 <tr> 
 <td align="center"> 
 <input type="submit" name="Submit" value="{ create }" onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()" />
-<br>
-<br>
+<br />
+<br />
 </td>
 <td>&nbsp; </td>
 </tr>
@@ -435,209 +435,248 @@ if( ret == false)
 
 return true;
 }
+
+/* Hide the list of parent topic because javascript is activated and there is a better method
+   to select the parent topic */
+function ovidentia_hideselectparenttopic() {
+	document.getElementById('ovidentia_listparenttopics').style.display = 'none';
+	document.getElementById('ovidentia_ancientfield_topicid').name = 'ancienttopicid';
+	document.getElementById('ovidentia_listparenttopics_bettermethod').style.display = 'block';
+	document.getElementById('ovidentia_field_topicid').name = 'topicid';
+}
+
+/* Open the tree view popup of topics for choose the parent topic : method used only if javascript is activated */
+function ovidentia_popuptreeviewselectparenttopic() {
+	bab_dialog.selectarticle (
+		function(selectedTopic) {
+			document.getElementById('ovidentia_field_topicid').value = selectedTopic['id'];
+			document.getElementById('ovidentia_field_topicname').innerHTML = selectedTopic['content'];
+		}, 'show_topics=1&selectable_topics=1&hide_delegations=1'
+	);
+}
+
 //-->
 </script>
 <form name="propform" method="post" action="{ babPhpSelf }" >
-<input type="hidden" name="tg" value="topman">
-<input type="hidden" name="idx" value="unload">
-<input type="hidden" name="item" value="{ item }">
-<input type="hidden" name="idart" value="{ idart }">
-<input type="hidden" name="ymax" value="{ yearmax }">
-<input type="hidden" name="ymin" value="{ yearmin }">
-<input type="hidden" name="update" value="propa">
-<br>
-<table width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td> 
-<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
-</td>
-</tr>
-</table>
-<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
-<tr> 
-<td>
-<br>
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="center" valign="right">{ titletxt }:</td>
-<td valign="left"><b>{ draftname }</b></td>
-</tr>
-</table>
-</td>
-</tr>
-</table><table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<!--#if bshowtopics -->
-<tr> 
-<td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
-<select name="topicid">
-<!--#in getnexttopic -->
-<option value="{ idtopic }" { selected }>{ topicname }</option>
-<!--#endin getnexttopic -->
-</select>
-</td>
-</tr>
-<!--#if warnfilemessage -->
-<tr>
-<td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
-</td>
-</tr>
-<!--#endif warnfilemessage -->
-<!--#endif bshowtopics -->
-</table>
-</td>
-</tr>
-</table>
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
-<td valign="middle"> 
-<input type="checkbox" id="idcdp" name="cdatep" value="Y" { cdatepcheck }></td>
-<td valign="middle"> 
-<select name="daypub">
-  <!--#in getnextday -->
-  <option value="{ dayid }" { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="monthpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }" { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="yearpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }"  { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select>
-</td>
-<td valign="middle"> 
-<select name="timepub">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-<tr> 
-<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
-<td valign="middle"> 
-<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
-<td valign="middle"> 
-<select name="dayend">
-  <!--#in getnextday -->
-  <option value="{ dayid }"  { selected }>{ dayid }</option>
-  <!--#endin getnextday -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextmonth -->
-  <option value="{ monthid }"  { selected }>{ monthname }</option>
-  <!--#endin getnextmonth -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
-  <!--#in getnextyear -->
-  <option value="{ yearid }" { selected }>{ yearidval }</option>
-  <!--#endin getnextyear -->
-</select >
-</td>
-<td valign="middle"> 
-<select name="timeend">
-<!--#in getnexttime -->
-<option value="{ timeval }" { selected }>{ time }</option>
-<!--#endin getnexttime -->
-</select >
-</td>
-</tr>
-<tr> 
-<td colspan="6" valign="middle" align="right"> 
-&nbsp;<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<!--#if restrictaccess -->
-<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td > 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-<tr> 
-<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ restrictiontxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="restriction">
-<option value="" { norestrictsel }>{ norestricttxt }</option>
-<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ operatortxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="operator">
-<option value="," { operatororysel }>{ ortxt }</option>
-<option value="&" { operatorornsel }>{ andtxt }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupstxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<!--#in getnextgroup -->
-<br><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
-<!--#endin getnextgroup -->
-</td>
-</tr>
-<tr> 
-<td colspan="2" class="BabLoginMenuBackground" valign="middle" align="right"> 
-&nbsp;</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<!--#endif restrictaccess -->
-<br>
-<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground">
-<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="4" align="right">
-<input type="submit" name="bupdate" value="{ submittxt }" onclick="validateForm(document.forms['propform']);"></td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-<br>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="topman">
+	<input type="hidden" name="idx" value="unload">
+	<input type="hidden" name="item" value="{ item }">
+	<input type="hidden" name="idart" value="{ idart }">
+	<input type="hidden" name="ymax" value="{ yearmax }">
+	<input type="hidden" name="ymin" value="{ yearmin }">
+	<input type="hidden" name="update" value="propa">
+	<br />
+	<table width="95%" cellpadding="0" cellspacing="0" align="center">
+		<tr> 
+			<td> 
+				<span style="background-color:#D1D1D9">&nbsp;{ steptitle }&nbsp;</span>
+			</td>
+		</tr>
+	</table>
+	<table style="border:2px #D1D1D9 solid" width="95%" cellpadding="0" cellspacing="0" align="center">
+	<tr> 
+	<td>
+	<br />
+	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+				<tr> 
+					<td align="center" valign="right">{ titletxt }:</td>
+					<td valign="left"><b>{ draftname }</b></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+		<!--#if bshowtopics -->
+		<tr> 
+			<td align="center" valign="middle"><b>{ topictxt }:</b>&nbsp;&nbsp;
+				<div id="ovidentia_listparenttopics">
+					<select name="topicid" id="ovidentia_ancientfield_topicid">
+						<!--#in getnexttopic -->
+						<option value="{ idtopic }" { selected }>{ topicname }</option>
+						<!--#endin getnexttopic -->
+					</select>
+				</div>
+				<div id="ovidentia_listparenttopics_bettermethod" style="display: none">
+					<input type="hidden" name="topicid_2" value="{ idcurrentparenttopic }" id="ovidentia_field_topicid">
+					<span id="ovidentia_field_topicname">{ namecurrentparenttopic }</span>&nbsp;&nbsp;
+					<a href="#" onclick="ovidentia_popuptreeviewselectparenttopic();return false;">
+						<img title="" alt="" src="{ urlimgselecttopic }" class="icon"/>
+					</a>
+				</div>
+			</td>
+		</tr>
+			<!--#if warnfilemessage -->
+			<tr>
+			<td class="BabErrorMessage" align="center" valign="middle">{ warnfilemessage }
+			</td>
+			</tr>
+			<!--#endif warnfilemessage -->
+		<!--#endif bshowtopics -->
+	</table>
+	</td>
+	</tr>
+	</table>
+	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle" colspan="6"><b>{ datepubtitle }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ datepuburl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datepubtxt }</a>: </td>
+	<td valign="middle"> 
+	<input type="checkbox" id="idcdp" name="cdatep" value="Y" { cdatepcheck }></td>
+	<td valign="middle"> 
+	<select name="daypub">
+	  <!--#in getnextday -->
+	  <option value="{ dayid }" { selected }>{ dayid }</option>
+	  <!--#endin getnextday -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="monthpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+	  <!--#in getnextmonth -->
+	  <option value="{ monthid }" { selected }>{ monthname }</option>
+	  <!--#endin getnextmonth -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="yearpub" onChange="updateDates(this.form.daypub, this.form.monthpub, this.form.yearpub);">
+	  <!--#in getnextyear -->
+	  <option value="{ yearid }"  { selected }>{ yearidval }</option>
+	  <!--#endin getnextyear -->
+	</select>
+	</td>
+	<td valign="middle"> 
+	<select name="timepub">
+	<!--#in getnexttime -->
+	<option value="{ timeval }" { selected }>{ time }</option>
+	<!--#endin getnexttime -->
+	</select >
+	</td>
+	</tr>
+	<tr> 
+	<td align="right" valign="middle"><a class="BabSiteAdminListLink" href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ dateendtxt }</a>: </td>
+	<td valign="middle"> 
+	<input type="checkbox"  id="idcde" name="cdatee" value="Y" { cdateecheck }></td>
+	<td valign="middle"> 
+	<select name="dayend">
+	  <!--#in getnextday -->
+	  <option value="{ dayid }"  { selected }>{ dayid }</option>
+	  <!--#endin getnextday -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="monthend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+	  <!--#in getnextmonth -->
+	  <option value="{ monthid }"  { selected }>{ monthname }</option>
+	  <!--#endin getnextmonth -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="yearend" onChange="updateDates(this.form.dayend, this.form.monthend, this.form.yearend);">
+	  <!--#in getnextyear -->
+	  <option value="{ yearid }" { selected }>{ yearidval }</option>
+	  <!--#endin getnextyear -->
+	</select >
+	</td>
+	<td valign="middle"> 
+	<select name="timeend">
+	<!--#in getnexttime -->
+	<option value="{ timeval }" { selected }>{ time }</option>
+	<!--#endin getnexttime -->
+	</select >
+	</td>
+	</tr>
+	<tr> 
+	<td colspan="6" valign="middle" align="right"> 
+	&nbsp;<br />
+	</td>
+	</tr>
+	</table>
+	</td>
+	</tr>
+	</table>
+	<!--#if restrictaccess -->
+	<table class="BabLoginCadreBackground" width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td > 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+	<tr> 
+	<td align="left" valign="middle" colspan="2"><b>{ restrictiontitletxt }:</b></td>
+	</td>
+	</tr>
+	<tr> 
+	<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ restrictiontxt }:</td>
+	<td class="BabLoginMenuBackground" valign="middle"> 
+	<select name="restriction">
+	<option value="" { norestrictsel }>{ norestricttxt }</option>
+	<option value="1" { yesrestrictsel }>{ yesrestricttxt }</option>
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ operatortxt }:</td>
+	<td class="BabLoginMenuBackground" valign="middle"> 
+	<select name="operator">
+	<option value="," { operatororysel }>{ ortxt }</option>
+	<option value="&" { operatorornsel }>{ andtxt }</option>
+	</select>
+	</td>
+	</tr>
+	<tr> 
+	<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ groupstxt }:</td>
+	<td class="BabLoginMenuBackground" valign="middle"> 
+	<!--#in getnextgroup -->
+	<br /><input type="checkbox" name="grpids[]" value="{ grpid }" { grpcheck } >&nbsp;{ grpname }
+	<!--#endin getnextgroup -->
+	</td>
+	</tr>
+	<tr> 
+	<td colspan="2" class="BabLoginMenuBackground" valign="middle" align="right"> 
+	&nbsp;</td>
+	</tr>
+	</table>
+	</td>
+	</tr>
+	</table>
+	<!--#endif restrictaccess -->
+	<br />
+	<table width="97%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr>
+	<td class="BabLoginCadreBackground">
+	<table class="BabSiteAdminFontBackground" border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+	<td colspan="4" align="right">
+	<input type="submit" name="bupdate" value="{ submittxt }" onclick="validateForm(document.forms['propform']);"></td>
+	</tr>
+	</table>
+	</td>
+	</tr>
+	</table>
+	<br />
+	</td>
+	</tr>
+	</table>
 </form>
+
+<script type="text/javascript">
+//<![CDATA[
+
+	bab_initFunctions.push(ovidentia_hideselectparenttopic());
+
+//]]>
+</script>
+
 <!--#endif access -->
 <!--#end propertiesarticle -->
 

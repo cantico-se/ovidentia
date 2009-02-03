@@ -1112,8 +1112,7 @@ class bab_ArticleTreeView extends bab_TreeView
 	 */
 	function getQueryByRight($tablename) {
 	
-		global $babDB;
-	
+		global $babDB, $babBody;
 	
 		$where = array();
 		$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';

@@ -36,7 +36,8 @@ function listCategories()
 	$topicTree = new bab_ArticleTreeView('article_topics_tree' . BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
 	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
 							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES);
+							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES
+							| BAB_TREE_VIEW_SHOW_TOOLBAR);
 	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
 	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
 	$topicTree->order();
@@ -575,9 +576,26 @@ function viewArticleProperties($item, $idart)
 
 				if( count($babBody->topman) > 0 )
 					{
+					/* Parent topics */
 					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys($babBody->topman)).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
-
+					$this->array_parent_topics = array();
+					for ($i=0;$i<=$this->counttopics-1;$i++) {
+						$this->array_parent_topics[] = $babDB->db_fetch_assoc($this->restopics);
+					}
+					
+					/* Tree view popup when javascript is activated */
+					global $babSkinPath;
+					$this->urlimgselecttopic = $babSkinPath.'images/nodetypes/topic.png';
+					$this->idcurrentparenttopic = $this->idtopicsel;
+					$this->namecurrentparenttopic = '';
+					for ($i=0;$i<=count($this->array_parent_topics)-1;$i++) {
+						if ($this->array_parent_topics[$i]['id'] == $this->idtopicsel) {
+							$this->namecurrentparenttopic = $this->array_parent_topics[$i]['category'];
+						}
+					}
+					
+					
 					if( $arrart['totalf'] > 0 )
 						{
 						$this->warnfilemessage = bab_translate("Warning! If you change topic, you can lost associated documents");
@@ -720,11 +738,10 @@ function viewArticleProperties($item, $idart)
 			static $i = 0;
 			if( $i < $this->counttopics)
 				{
-				$arr = $babDB->db_fetch_array($this->restopics);
-				$this->topicname = $arr['category'];
-				$this->categoryname = $arr['title'];
-				$this->idtopic = $arr['id'];
-				if( $this->idtopicsel == $arr['id'] )
+				$this->topicname = $this->array_parent_topics[$i]['category'];
+				$this->categoryname = $this->array_parent_topics[$i]['title'];
+				$this->idtopic = $this->array_parent_topics[$i]['id'];
+				if( $this->idtopicsel == $this->array_parent_topics[$i]['id'] )
 					{
 					$this->selected = 'selected';
 					}
@@ -905,6 +922,9 @@ function viewArticleProperties($item, $idart)
 			}
 		}
 
+	global $babBody, $babScriptPath;
+	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');	
+	
 	$temp = new temp($item, $idart);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "topman.html", "propertiesarticle"));
 	}
