@@ -312,10 +312,9 @@ if('undefined' != typeof document.observe)
 
 
 
-<br><br><br><br>
 <!--#begin topcatslist -->
 <!--#if countparents -->
-<br>
+<br />
 <table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -335,7 +334,7 @@ if('undefined' != typeof document.observe)
 </table>
 </td></tr>
 </table>
-<br>
+<br />
 <!--#endif countparents -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="topcats">
@@ -379,18 +378,16 @@ valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" 
 </table>
 
 </td></tr></table>
-<br>
+<br />
 <div align="center">
 <input type="submit" name="submit" value="{ update }"></div>
-<br>
+<br />
 </form>
 <!--#end topcatslist -->
 
 
 
 
-
-<br><br><br><br>
 <!--#begin topcatmodify -->
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
@@ -591,6 +588,26 @@ function bab_createImagePreviewTR()
 	
 	$('messageTR').parentNode.insertBefore(oTr, $('messageTR'));
 }
+
+/* Hide the list of parent category because javascript is activated and there is a better method
+   to select the parent category */
+function ovidentia_hideselectparentcategory() {
+	document.getElementById('ovidentia_listparentcategories').style.display = 'none';
+	document.getElementById('ovidentia_ancientfield_topcatid').name = 'ancienttopcatid';
+	document.getElementById('ovidentia_listparentcategories_bettermethod').style.display = 'block';
+	document.getElementById('ovidentia_field_topcatid').name = 'topcatid';
+}
+
+/* Open the tree view popup of categories for choose the parent category : method used only if javascript is activated */
+function ovidentia_popuptreeviewselectparentcategory() {
+	bab_dialog.selectarticle (
+		function(selectedTopic) {
+			document.getElementById('ovidentia_field_topcatid').value = selectedTopic['id'];
+			document.getElementById('ovidentia_field_topcatname').innerHTML = selectedTopic['content'];
+		}, 'show_categories=1&selectable_categories=1&ignored_categories={ idcategory }'
+	);
+}
+
 //]]>
 </script>
 
@@ -655,11 +672,20 @@ function bab_createImagePreviewTR()
 					<tr> 
 						<td align="right">{ topcattxt }:</td>
 						<td> 
-							<select name="topcatid">
-								<!--#in getnexttopcat -->
-								<option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
-								<!--#endin getnexttopcat -->
-							</select>
+							<div id="ovidentia_listparentcategories">
+								<select name="topcatid" id="ovidentia_ancientfield_topcatid">
+									<!--#in getnexttopcat -->
+									<option value="{ topcatid }" { tmplselected }>{ topcatval }</option>
+									<!--#endin getnexttopcat -->
+								</select>
+							</div>
+							<div id="ovidentia_listparentcategories_bettermethod" style="display: none">
+								<input type="hidden" name="topcatid_2" value="{ idcurrentparentcategory }" id="ovidentia_field_topcatid">
+								<span id="ovidentia_field_topcatname">{ namecurrentparentcategory }</span>&nbsp;&nbsp;
+								<a href="#" onclick="ovidentia_popuptreeviewselectparentcategory();return false;">
+									<img title="" alt="" src="{ urlimgselectcategory }" class="icon"/>
+								</a>
+							</div>
 						</td>
 					</tr>
 					
@@ -729,6 +755,9 @@ function bab_createImagePreviewTR()
 
 <script type="text/javascript" language="JavaScript1.5">
 //<![CDATA[
+
+bab_initFunctions.push(ovidentia_hideselectparentcategory());
+
 if('undefined' != typeof document.observe)
 {
 	var bUploadPathValid = Boolean({ bUploadPathValid });
@@ -788,7 +817,7 @@ if('undefined' != typeof document.observe)
 <!--#end topcatmodify -->
 
 
-<br><br><br><br>
+<br /><br /><br /><br />
 <!--#begin topcatorder -->
 <form method="post" name="ordform" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="topcats">
@@ -811,15 +840,15 @@ if('undefined' != typeof document.observe)
 </td>
 <td valign="middle" align="center"><a 
 href="Javascript:move(true, document.ordform.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
-width="22" height="18" border=0 alt="{ moveup }"></a> <br>
-<br>
+width="22" height="18" border=0 alt="{ moveup }"></a> <br />
+<br />
 <a href="Javascript:move(false, document.ordform.elements[4])"> 
 <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-<br><br>
+<br /><br />
 <a href="Javascript:sortList('sortAA', document.ordform.elements[4])">
 <img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
 </a>
-<br><br>
+<br /><br />
 <a href="Javascript:sortList('sortAD', document.ordform.elements[4])">
 <img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
 </a>
@@ -829,8 +858,8 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 <td align="center"> 
 <input type="submit" name="Submit" value="{ create }" 
 onClick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
-<br>
-<br>
+<br />
+<br />
 </td>
 <td>&nbsp; </td>
 </tr>

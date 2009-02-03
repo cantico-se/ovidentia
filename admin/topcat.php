@@ -203,7 +203,8 @@ function topcatModify($id)
 			}
 			
 			$this->countdisptmpl = count($this->arrdisptmpl);
-
+			
+			/* Parent category */
 			$arr_exclude = $this->arr_child($id);
 
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' and id NOT IN(".implode(',',$arr_exclude).") order by title asc");
@@ -219,6 +220,18 @@ function topcatModify($id)
 				$this->arrtopcats[] = array( 'id'=> $arr['id'], 'title' => $arr['title']);
 			}
 			$this->topcatscount = count($this->arrtopcats);
+			
+			/* Tree view popup when javascript is activated */
+			global $babSkinPath;
+			$this->idcategory = $id;
+			$this->urlimgselectcategory = $babSkinPath.'images/nodetypes/category.png';
+			$this->idcurrentparentcategory = $id;
+			$this->namecurrentparentcategory = '';
+			for ($i=0;$i<=count($this->arrtopcats)-1;$i++) {
+				if ($this->arrtopcats[$i]['id'] == $this->idp) {
+					$this->namecurrentparentcategory = $this->arrtopcats[$i]['title'];
+				}
+			}
 		}
 
 		function processDisabledUploadReason()
@@ -333,11 +346,13 @@ function topcatModify($id)
 		}
 	}
 	
+	global $babBody, $babScriptPath;
 	$babBody->addStyleSheet('publication.css');
-	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
-		
+	$babBody->addJavascriptFile($babScriptPath.'prototype/prototype.js');
+	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
+	
 	$temp = new tempa($id);
-	$babBody->babecho(	bab_printTemplate($temp, 'topcats.html', 'topcatmodify'));
+	$babBody->babecho(bab_printTemplate($temp, 'topcats.html', 'topcatmodify'));
 }
 
 
