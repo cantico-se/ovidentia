@@ -196,7 +196,7 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
-		return strnatcmp($sStr1, $sStr2);		
+		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));		
 	}
 
 	$oCollator = bab_getCollatorInstance();
@@ -285,6 +285,46 @@ function bab_sprintf($sFormat)
 
 
 
+$aSearch = array(
+	chr(192), chr(193), chr(194), chr(195), chr(196), chr(197),
+	chr(197),
+	chr(200), chr(201), chr(202), chr(203),
+	chr(204), chr(205), chr(206), chr(207),
+	chr(208),
+	chr(209),
+	chr(210), chr(211), chr(212), chr(213), chr(214), chr(216),
+	chr(217), chr(218), chr(219), chr(220),
+	chr(221),
+	chr(224), chr(225), chr(226), chr(227), chr(228), chr(229),
+	chr(231),
+	chr(232), chr(233), chr(234), chr(235),
+	chr(236), chr(237), chr(238), chr(239),
+	chr(241),
+	chr(242), chr(243), chr(244), chr(245), chr(246), chr(248),
+	chr(249), chr(250), chr(251), chr(252),
+	chr(253), chr(255)
+);
+
+$aReplace = array(
+	'A', 'A', 'A', 'A', 'A', 'A',
+	'C',
+	'E', 'E', 'E', 'E',
+	'I', 'I', 'I', 'I',
+	'D',
+	'N',
+	'O', 'O', 'O', 'O', 'O', 'O',
+	'U', 'U', 'U', 'U',
+	'Y',
+	'a', 'a', 'a', 'a', 'a', 'a',
+	'c',
+	'e', 'e', 'e', 'e',
+	'i', 'i', 'i', 'i',
+	'n',
+	'o', 'o', 'o', 'o', 'o', 'o',
+	'u', 'u', 'u', 'u',
+	'y', 'y'
+);
+
 /**
  * This function removes diacritics from the string. 
  *
@@ -293,46 +333,7 @@ function bab_sprintf($sFormat)
  */	
 function bab_removeDiacritics($sString)
 {
-	$aSearch = array(
-		chr(192), chr(193), chr(194), chr(195), chr(196), chr(197), 
-		chr(197),
-		chr(200), chr(201), chr(202), chr(203),  
-		chr(204), chr(205), chr(206), chr(207),  
-		chr(208),
-		chr(209),
-		chr(210), chr(211), chr(212), chr(213), chr(214), chr(216),  
-		chr(217), chr(218), chr(219), chr(220),  
-		chr(221),
-		chr(224), chr(225), chr(226), chr(227), chr(228), chr(229),  
-		chr(231),
-		chr(232), chr(233), chr(234), chr(235),  
-		chr(236), chr(237), chr(238), chr(239),  
-		chr(241),
-		chr(242), chr(243), chr(244), chr(245), chr(246), chr(248),  
-		chr(249), chr(250), chr(251), chr(252),
-		chr(253), chr(255)  
-		);
-		
-	$aReplace = array(
-		chr(65), chr(65), chr(65), chr(65), chr(65), chr(65), 
-		chr(67), 
-		chr(69), chr(69), chr(69), chr(69),  
-		chr(73), chr(73), chr(73), chr(73),  
-		chr(68),
-		chr(78),
-		chr(79), chr(79), chr(79), chr(79), chr(79), chr(79),  
-		chr(85), chr(85), chr(85), chr(85),  
-		chr(89),
-		chr(97), chr(97), chr(97), chr(97), chr(97), chr(97),  
-		chr(99),
-		chr(101), chr(101), chr(101), chr(101),  
-		chr(105), chr(105), chr(105), chr(105),  
-		chr(110),
-		chr(111), chr(111), chr(111), chr(111), chr(111), chr(111),  
-		chr(117), chr(117), chr(117), chr(117),  
-		chr(121), chr(121)  
-		);
-	
+
 	return str_replace($aSearch, $aReplace, $sString);
 }
 
