@@ -287,7 +287,8 @@ function bab_sprintf($sFormat)
 
 
 /**
- * This function removes diacritics from the string. 
+ * This function replaces characters with diacritics from a ISO-8859-1/latin1
+ * encoded string by their corresponding ascii characters.
  *
  * @param string $sString The (latin1 encoded) string to process.
  * @return string The processed string (in ascii).
