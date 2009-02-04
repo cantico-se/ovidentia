@@ -103,6 +103,17 @@ class bab_sort
 		
 		return uksort($aToSort, array('bab_sort', 'uksortCallback'));
 	}
+
+	private static function insensitiveCaseCompare($sStr1, $sStr2)
+	{
+		
+	}
+
+	private static function sensitiveCaseCompare($sStr1, $sStr2)
+	{
+		bab_compare($sStr1, $sStr2);
+	}
+
 	
 	private static function uksortCallback($sStr1, $sStr2)
 	{
@@ -401,10 +412,10 @@ class bab_charset
 		switch($sCharset) 
 		{
 			case 'utf8':
-				self::UTF_8;
+				return self::UTF_8;
 				
 			case 'latin1':
-				self::ISO_8859_15;
+				return self::ISO_8859_15;
 		
 			default:
 				return '';
