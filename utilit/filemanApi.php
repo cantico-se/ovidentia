@@ -25,151 +25,7 @@ require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
 
-//*
-class bab_Path extends ArrayObject
-{
-	private $sDrive = '';
-	private $sRawPath = '';
-	
-	
-	public function __construct($sPath)
-	{
-		parent::__construct(array(), ArrayObject::ARRAY_AS_PROPS);
-		
-		$this->setUp($sPath);		
-	}
 
-
-	public function __toString() 
-	{
-		$sFirstChar = mb_substr($this->sRawPath, 0, 1);
-		return (($sFirstChar == '/') ? '/' : '') . implode('/', $this);
-    }	
-
-    
-    //--
-    function offsetGet($iIndex)
-    {
-    	
-    }
-    
-    
-	// Private
-	private function setUp($sPath)
-	{
-		$this->sRawPath = trim($sPath);
-		if(0 < mb_strlen($this->sRawPath))
-		{
-			bab_Path::canonize();
-		}
-	}
-
-
-	private function canonize()
-	{
-		$this->sRawPath	= str_replace('\\', '/', $this->sRawPath);
-
-		$this->sDrive	= '';
-		$sPath	= ''; 
-		if(0 !== preg_match("/(^[a-zA-z0-9]){1}(\:){1}(\/){1}.*$/", $this->sRawPath, $aMatch))
-		{
-			//$this->sDrive = $aMatch[1] . $aMatch[2] . $aMatch[3];
-			$this->sDrive = $aMatch[1] . $aMatch[2];
-			$sPath = mb_substr($this->sRawPath, mb_strlen($this->sDrive));
-		}
-		
-		$sPath	= bab_Path::removeEndSlashes($sPath);
-		$aPaths	= explode('/', $sPath);
-		
-		if(is_array($aPaths) && count($aPaths) > 0)
-		{
-			foreach($aPaths as $iKey => $sPathItem)
-			{
-				if(mb_strlen(trim($sPathItem)) !== 0)
-				{
-					$this->append(BAB_Path::sanitizePathItem($sPathItem));
-				}
-			}
-		}
-
-		/*
-		if('' != $sDrive && $this->count() > 0)
-		{
-			$this[0] = $sDrive . '/' . $this[0]; 
-		}
-		//*/
-	}
-	
-	private static function addEndSlash($sPath)
-	{
-		if(is_string($sPath))
-		{
-			$iLength = mb_strlen(trim($sPath));
-			if($iLength > 0)
-			{
-				$sLastChar = mb_substr($sPath, -1);
-				if($sLastChar !== '/')
-				{
-					$sPath .= '/';
-				}
-			}
-		}
-		return $sPath;
-	}
-	
-	private static function removeEndSlah($sPath)
-	{
-		if(is_string($sPath))
-		{
-			$iLength = mb_strlen(trim($sPath));
-			if($iLength > 0)
-			{
-				$sLastChar = mb_substr($sPath, -1);
-				if($sLastChar === '/')
-				{
-					return mb_substr($sPath, 0, -1);
-				}
-			}
-		}
-		return $sPath;
-	}
-	
-	private static function haveEndSlash($sPath)
-	{
-		$iLength = mb_strlen(trim($sPath));
-		if($iLength > 0)
-		{
-			$sLastChar = mb_substr($sPath, -1);
-			return ($sLastChar === '/');
-		}
-		return false;	
-	}
-	
-	private static function removeEndSlashes($sPath)
-	{
-		while(BAB_Path::haveEndSlash($sPath))
-		{
-			$sPath = BAB_Path::removeEndSlah($sPath);
-		}
-		return $sPath;
-	}
-	
-	private static function sanitizePathItem($sPathItem)
-	{
-		if(is_string($sPathItem) && mb_strlen(trim($sPathItem)) > 0)
-		{
-			if(isset($GLOBALS['babFileNameTranslation']))
-			{
-				$sPathItem = strtr($sPathItem, $GLOBALS['babFileNameTranslation']);
-			}
-			
-			static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_', '"' => '_');
-			$sPathItem = strtr($sPathItem, $aTranslation);
-		}
-		return $sPathItem;
-	}
-}
-//*/
 
 class bab_FileInfo extends SplFileInfo
 {
@@ -292,6 +148,11 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
     
     protected function acceptDir($oIterator)
     {
+    	if(strtolower(BAB_FVERSION_FOLDER) == strtolower($oIterator->getFilename()))
+    	{
+    		return false;
+    	}
+    	
     	$bSuccess = false; 
 		$iIdOldDelegation = bab_getCurrentUserDelegation();
  		
@@ -352,68 +213,622 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 	}
 }
 
-
+/*
+ * For collective folder.
+ */
 class bab_Directory
 {
-	private $sUploadPath	= null;
-	private $sRootFmPath	= null;
-	private $sRelativePath	= null;
-	private $sFullPath		= null;
-	private $iIdObject		= 0;
+	private $sUploadPath		= null;
+	private $sRootFmPath		= null;
+	private $sRelativePath		= null;
+	private $iIdObject			= 0;
+	private $sPathName			= null;
+	
 	
 	public function __construct()
 	{
 		
 	}
 	
-
+	public function getUploadPath()
+	{
+		return $this->sUploadPath;
+	}
+	
+	public function getRootFmPath()
+	{
+		return $this->sRootFmPath;
+	}
+	
+	public function getRelativePath()
+	{
+		return $this->sRelativePath;
+	}
+	
+	public function getPathName()
+	{
+		return $this->sPathName;
+	}
+	
 	public function getEntries($sPathName, $iFilter)
 	{
-		if(!$this->initPaths($sPathName))
-		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
-			return false;
-		}
-		
-		if(!$this->pathValid())
+		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
 			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
+		if(!$this->setEnv($sPathName))
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not valid');
+			return false;
+		}
+		
+		//$this->displayInfo();
+		
 		$iFilter |= bab_DirectoryFilter::DOT;
-		$oBabDirIt = new bab_CollectiveDirIterator($this->sFullPath);
+		$oBabDirIt = new bab_CollectiveDirIterator($this->getRootFmPath() . $this->getPathName());
 		$oBabDirIt->setFilter($iFilter);
 		$oBabDirIt->setRelativePath($this->sRelativePath);
 		$oBabDirIt->setObjectId($this->iIdObject);
 		return $oBabDirIt; 
 	}
 	
-	
-	public function createSubdirectory($sPathName, $sSubDirectory)
+	public function createSubdirectory($sPathName)
 	{
-		if(!$this->initPaths($sPathName))
-		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
-			return false;
-		}
-		
-		if(!$this->pathValid())
+		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
 			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
-		if(canCreateFolder($oFmEnv->sRelativePath))
+		if(!$this->setEnv($sPathName))
 		{
-			$sFullPathName = $this->sRootFmPath;
+			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not valid');
+			return false;
+		}
+			
+		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		if(!canCreateFolder($oFmEnv->sRelativePath))
+		{
+			bab_debug('Error');
+			return false;
+		}
+		
+		if(!$this->isPathNameCreatable())
+		{
+			bab_debug('Error pathName not creatable');
+			return false;
+		}
+		
+		$sFullPathName = $this->getRootFmPath() . $this->getPathName();
+		if(!BAB_FmFolderHelper::createDirectory($sFullPathName))
+		{
+			bab_debug('Error');
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public function deleteSubdirectory($sPathName)
+	{
+		if(!$this->processPathName($sPathName, $this->sPathName))
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not valid');
+			return false;
+		}
+		
+		if(!$this->setEnv($sPathName))
+		{
+			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
+			return false;
+		}
+	
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $sPathName . ' access not valid');
+			return false;
+		}
+				
+		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		if(!canCreateFolder($oFmEnv->sRelativePath))
+		{
+			bab_debug('Error !!!!!');
+			return false;
+		}
+		
+		$sFullPathName = $this->getRootFmPath() . $this->getPathName();
+		if(!is_dir($sFullPathName))
+		{
+			bab_debug("Please give a valid folder name " . $sFullPathName);
+			return false;
+		}
+
+		//Just to be sure that the folder DGx is not deleted
+		if($sFullPathName == $this->getRootFmPath())
+		{
+			bab_debug("The folder is not deletable " . $sFullPathName);
+			return false;
+		}
+		
+		$sPathName		= $this->getPathName($sPathName);
+		$sName			= getLastPath($sPathName);
+		$sRelativePath	= removeLastPath($sPathName); 
+		if('' != $sRelativePath)
+		{
+			$sRelativePath = BAB_PathUtil::addEndSlash($sRelativePath); 
+		}
+		
+		/*
+		$this->displayInfo();
+				
+		bab_debug(
+			'sName         ==> ' . $sName . "\n" . 
+			'sRelativePath ==> ' . $sRelativePath
+		);
+		//*/
+
+		$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+		$oNameField			= $oFolderSet->aField['sName'];
+		$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria	= $oNameField->in($sName);
+		$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
+		$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->iIdObject));
+		$oFolder	= $oFolderSet->get($oCriteria);
+		
+		if($oFolder instanceof BAB_FmFolder)
+		{
+			require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+			bab_deleteFolder($oFolder->getId());
+		}
+		else
+		{
+			$oFolderSet->removeSimpleCollectiveFolder($sRelativePath . $sName . '/');
+		}
+//		$this->displayInfo();
+	}
+	
+	public function renameSubDirectory($sSrcPathName, $sTrgPathName)
+	{
+		$sSrcPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sSrcPathName));
+		$sTrgPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sTrgPathName));
+		
+		$sSanitizedTrgPathName = '';
+		if(!$this->processPathName($sTrgPathName, $sSanitizedTrgPathName))
+		{
+			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			return false;
+		}
+		
+		$sSanitizedSrcPathName = '';
+		if(!$this->processPathName($sSrcPathName, $sSanitizedSrcPathName))
+		{
+			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			return false;
+		}
+		
+		$sSrcName		= (string) getLastPath($sSanitizedSrcPathName);
+		$sSrcPath		= (string) removeLastPath($sSanitizedSrcPathName);
+$sSrcPath		= (string) addEndSlash($sSrcPath);
+		$sTrgName		= (string) getLastPath($sSanitizedTrgPathName);
+		$sTrgPath		= (string) removeLastPath($sSanitizedTrgPathName);
+$sTrgPath		= (string) addEndSlash($sTrgPath);
+		
+		$aBuffer		= array();
+		
+		if(0 === mb_strlen($sSrcName))
+		{
+			bab_debug('sSrcName ==> ' . $sSrcName . ' is not valid');
+			return false;
+		}
+		
+		if(0 === mb_strlen($sTrgName))
+		{
+			bab_debug('sTrgName ==> ' . $sTrgName . ' is not valid');
+			return false;
+		}
+		
+		if(1 !== preg_match('#^DG(\d+)(/)#', $sTrgPathName, $aBuffer))
+		{
+			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			return false;
+		}
+		
+		$iIdTrgDelegation	= (int) $aBuffer[1];
+		$sFullTrgPathName	= BAB_FileManagerEnv::getCollectivePath($iIdTrgDelegation);
+		$sFullTrgPathName	.= 	$sSanitizedTrgPathName;
+		
+		if(1 !== preg_match('#^DG(\d+)(/)#', $sSrcPathName, $aBuffer))
+		{
+			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			return false;
+		}
+		
+		$iIdSrcDelegation = (int) $aBuffer[1];
+		
+		if($iIdTrgDelegation !== $iIdSrcDelegation)
+		{
+			bab_debug('$iIdTrgDelegation !== $iIdSrcDelegation');
+			return false;
+		}
+		
+		$oDirRenContext = new bab_directoryRenameContext();
+	
+		$oDirRenContext->setSrcPathName($sSrcPathName);
+		$oDirRenContext->setSanitizedSrcPathName($sSanitizedSrcPathName);
+		$oDirRenContext->setSrcName($sSrcName);
+		$oDirRenContext->setSrcPath($sSrcPath);
+		$oDirRenContext->setSrcDelegationId($iIdSrcDelegation);
+		
+		$oDirRenContext->setTrgDelegationId($iIdTrgDelegation);
+		
+		/*
+		bab_debug(
+			'sSrcName         ==> ' . $sSrcName . "\n" .
+			'sSrcPath         ==> ' . $sSrcPath . "\n" .
+			'sTrgName         ==> ' . $sTrgName . "\n" .
+			'sTrgPath         ==> ' . $sTrgPath . "\n" .
+			'sFullTrgPathName ==> ' . $sFullTrgPathName
+		);		
+		//*/
+
+		if(!file_exists($sFullTrgPathName))
+		{
+			if($sSrcPath === $sTrgPath)
+			{
+				$oDirRenContext->setTrgPathName($sTrgPathName);
+				$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+				$oDirRenContext->setTrgName($sTrgName);
+				$oDirRenContext->setTrgPath($sTrgPath);
+				
+				$this->renameDirectory($oDirRenContext);
+			}
+			else
+			{
+				$sPath = canonizePath(removeLastPath($sSanitizedTrgPathName));
+				$oDirRenContext->setTrgPathName(canonizePath('DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName));
+				$oDirRenContext->setSanitizedTrgPathName($sPath . $sSrcName . '/');
+				$oDirRenContext->setTrgName($sSrcName);
+				$oDirRenContext->setTrgPath($sPath);
+				
+				$this->moveDirectory($oDirRenContext);
+				if($sSrcName !== $sTrgName)
+				{
+					$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName;
+					$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sTrgName;
+
+					/*
+					bab_debug(
+						'sSrcPathName ==> ' . $sSrcPathName . "\n" .
+						'sTrgPathName ==> ' . $sTrgPathName
+					);
+					//*/
+					
+					$this->renameSubDirectory($sSrcPathName, $sTrgPathName);
+				}
+			}
+		}
+		else
+		{
+			if(is_dir($sFullTrgPathName))
+			{
+				$oDirRenContext->setTrgPathName($sTrgPathName);
+				$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+				$oDirRenContext->setTrgName($sTrgName);
+				$oDirRenContext->setTrgPath($sTrgPath);
+				
+				$this->moveDirectory($oDirRenContext);
+			}
+			else
+			{
+				bab_debug('Looser lamer !!!');
+				return false;
+			}
 		}
 	}
 	
+	private function renameDirectory(bab_directoryRenameContext $oDirRenContext)
+	{
+		$this->sPathName = $oDirRenContext->getSanitizedSrcPathName();
+		
+		if(!$this->setEnv($oDirRenContext->getSrcPathName()))
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not valid');
+			return false;
+		}
+		
+		if(canCreateFolder($this->getRelativePath()))
+		{
+			$sSanitizedSrcPathName	= (string) $oDirRenContext->getSanitizedSrcPathName();
+			$sSanitizedTrgPathName	= (string) $oDirRenContext->getSanitizedTrgPathName();
+			$sSrcName				= (string) $oDirRenContext->getSrcName();
+			$sSrcPath				= (string) $oDirRenContext->getSrcPath();
+			$sTrgName				= (string) $oDirRenContext->getTrgName();
+			$sTrgPath				= (string) $oDirRenContext->getTrgPath();
+			$sRelativePath			= (string) addEndSlash($sSrcPath);
+
+			$bSuccess = BAB_FmFolderSet::rename($this->getRootFmPath(), $sRelativePath, $sSrcName, $sTrgName);
+			if(false !== $bSuccess)
+			{
+				BAB_FolderFileSet::renameFolder($sRelativePath . $sSrcName . '/', $sTrgName, 'Y');
+				BAB_FmFolderCliboardSet::rename($sRelativePath, $sSrcName, $sTrgName, 'Y');
+				
+				$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+				$oNameField			= $oFolderSet->aField['sName'];
+				$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
+				$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
+				
+				$oCriteria	= $oNameField->in($sSrcName);
+				$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
+				$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->iIdObject));
+				$oFolder	= $oFolderSet->get($oCriteria);
+				
+				if($oFolder instanceof BAB_FmFolder)
+				{
+					$oFolderSet->setName($sTrgName);
+					$oFolderSet->save();
+				}
+			}
+		}
+		else
+		{
+			bab_debug('Looser lamer !!!');
+		}
+	}
+	
+	private function moveDirectory(bab_directoryRenameContext $oDirRenContext)
+	{
+		$this->sPathName = $oDirRenContext->getSanitizedTrgPathName();
+		
+		if(!$this->setEnv($oDirRenContext->getTrgPathName()))
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not valid');
+			return false;
+		}
+		
+		$sSanitizedSrcPathName	= $oDirRenContext->getSanitizedSrcPathName();
+		$sSanitizedTrgPathName	= $oDirRenContext->getSanitizedTrgPathName();
+		
+		$oFmEnv					= bab_getInstance('BAB_FileManagerEnv');
+		$iIdSrcRootFolder		= 0;
+		$sSrcPath				= BAB_PathUtil::removeEndSlashes($sSanitizedSrcPathName);
+		$bSrcPathIsCollective	= true;
+		$iIdTrgRootFolder		= 0;
+		$sTrgPath				= BAB_PathUtil::removeEndSlashes($oDirRenContext->getTrgPath());
+		
+		$oSrcRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($sSanitizedSrcPathName);
+		$oTrgRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($oDirRenContext->getTrgPath());
+
+		$iIdSrcRootFolder = $oSrcRootFolder->getId();
+		$iIdTrgRootFolder = $oTrgRootFolder->getId();
+		
+		$oFmFolder = null;
+
+		if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
+		{
+			//Nom du répertoire à coller
+			$sName = getLastPath($sSrcPath); 
+			
+			//Emplacement du répertoire à coller
+			$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
+	
+			$bSrcPathHaveVersioning = false;
+			$bTrgPathHaveVersioning = false;
+			$bSrcPathCollective		= false;
+			
+			//Récupération des informations concernant le répertoire source (i.e le répertoire à déplacer)
+			{
+				$oSrcFmFolder			= BAB_FmFolderSet::getFirstCollectiveFolder($sSanitizedSrcPathName);
+				$iSrcIdOwner			= $oSrcFmFolder->getId();
+				$bSrcPathHaveVersioning = ('Y' === $oSrcFmFolder->getVersioning());
+				$bSrcPathCollective		= ((string) $sSrcPath . '/' === (string) $oSrcFmFolder->getRelativePath() . $oSrcFmFolder->getName() . '/');
+			}
+			
+			$oFolderSet	= bab_getInstance('BAB_FmFolderSet');
+			if($oFmEnv->userIsInCollectiveFolder())
+			{
+				//Récupération des informations concernant le répertoire cible (i.e le répertoire dans lequel le source est déplacé)
+				$oTrgFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($this->getPathName());
+				$iTrgIdOwner = $oTrgFmFolder->getId();
+				$bTrgPathHaveVersioning = ('Y' === $oTrgFmFolder->getVersioning());
+			}
+			else if($oFmEnv->userIsInRootFolder())
+			{
+				$oIdDgOwner		= $oFolderSet->aField['iIdDgOwner'];
+				$oName			= $oFolderSet->aField['sName'];
+				$oRelativePath	= $oFolderSet->aField['sRelativePath'];
+	
+				$oCriteria = $oIdDgOwner->in($this->iIdObject);
+				$oCriteria = $oCriteria->_and($oName->in($sName));
+				$oCriteria = $oCriteria->_and($oRelativePath->in($sSrcPathRelativePath));
+	
+				$bSrcPathCollective = true;
+	
+				//bab_debug($oFolderSet->getSelectQuery($oCriteria));
+				$oFmFolder = $oFolderSet->get($oCriteria);
+				if(!is_null($oFmFolder))
+				{
+					//Le répertoire à coller est collectif
+					$bTrgPathHaveVersioning = ('Y' === $oFmFolder->getVersioning());
+				}
+				else 
+				{
+					//Le répertoire à coller n'est pas collectif
+					//comme on colle dans la racine il faut le faire 
+					//devenir un répertoire collectif
+					
+					$oFmFolder = bab_getInstance('BAB_FmFolder');
+					$oFmFolder->setName($sName);
+					$oFmFolder->setRelativePath('');
+					$oFmFolder->setActive('Y');
+					$oFmFolder->setApprobationSchemeId(0);
+					$oFmFolder->setDelegationOwnerId($this->iIdObject);
+					$oFmFolder->setFileNotify('N');
+					$oFmFolder->setHide('N');
+					$oFmFolder->setAddTags('Y');
+					$oFmFolder->setVersioning('N');
+					$oFmFolder->setAutoApprobation('N');
+				}
+			}
+	
+			$sUploadPath = BAB_FileManagerEnv::getCollectivePath($this->iIdObject);
+			
+			$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
+			$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
+			
+			//bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
+			//bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
+	
+			//$sPath = mb_substr($sFullTrgPath, 0, mb_strlen($sFullSrcPath));
+			//if($sPath !== $sFullSrcPath)
+			{
+				$bSrcValid = ((realpath(mb_substr($sFullSrcPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
+				$bTrgValid = ((realpath(mb_substr($sFullTrgPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
+				
+				//bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
+				//bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
+				
+				if($bSrcValid && $bTrgValid)
+				{
+					if(!is_null($oFmFolder))
+					{
+						if(true !== $oFmFolder->save())
+						{
+							$babBody->msgerror = bab_translate("Error");
+							return;
+						}
+						$bTrgPathHaveVersioning = false;
+						$iTrgIdOwner			= $oFmFolder->getId();
+					}
+					
+					global $babDB, $babBody;
+					$oFolderFileSet	= bab_getInstance('BAB_FolderFileSet');
+					$oIdDgOwnerFile	= $oFolderFileSet->aField['iIdDgOwner'];
+					$oGroup			= $oFolderFileSet->aField['sGroup'];
+					$oPathName		= $oFolderFileSet->aField['sPathName'];
+					
+					$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+					$oIdDgOwnerFolder	= $oFolderSet->aField['iIdDgOwner'];
+					$oRelativePath		= $oFolderSet->aField['sRelativePath'];
+					
+					$sLastRelativePath = $sSrcPath . '/';
+					$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ? 
+						$sTrgPath . '/' : '') . getLastPath($sSrcPath) . '/';
+						
+					if(false === $bSrcPathCollective)
+					{
+						 if(false === $bTrgPathHaveVersioning)
+						 {
+							global $babDB;
+							
+							//Suppression des versions des fichiers pour les répertoires qui ne sont pas contenus dans des 
+							//répertoires collectifs
+							{
+								//Sélection de tous les fichiers qui contiennent dans leurs chemins le répertoire à déplacer
+								$oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
+								$oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
+								$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in($this->iIdObject));
+								
+								//Sélection des répertoires collectifs
+								$oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
+								$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in($this->iIdObject));
+								$oFolderSet->select($oCriteriaFolder);
+								while(null !== ($oFmFolder = $oFolderSet->next()))
+								{
+									//exclusion des répertoires collectif (on ne touche pas à leurs versions)
+									$oCriteriaFile = $oCriteriaFile->_and($oPathName->notLike(
+										$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
+								}
+								$oFolderFileSet->removeVersions($oCriteriaFile);
+								
+								$oFolderFileSet->select($oCriteriaFile);
+								while(null !== ($oFolderFile = $oFolderFileSet->next()))
+								{
+									$oFolderFile->setMajorVer(1);
+									$oFolderFile->setMinorVer(0);
+									$oFolderFile->save();
+								}
+							}
+						 }
+					}								
+	
+					if(BAB_FmFolderSet::move($sUploadPath, $sLastRelativePath, $sNewRelativePath))
+					{
+						BAB_FolderFileSet::move($sLastRelativePath, $sNewRelativePath, 'Y');
+						
+						$oFmFolderCliboardSet = bab_getInstance('BAB_FmFolderCliboardSet');
+						$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, 'Y');
+						$oFmFolderCliboardSet->move($sLastRelativePath, $sNewRelativePath, 'Y');
+					}
+				}			
+			}
+			
+			//$this->displayInfo();
+		}
+		else
+		{
+			//bab_debug('Looser lamer !!!');
+		}
+	}
 	
 	//Private tools function
-	private function initPaths($sPathName)
+	private function initRelativePath()
+	{
+		$aPathItem = explode('/', $this->sRelativePath);
+		if(!is_array($aPathItem))
+		{
+			return;
+		}
+		
+		$iCount = count($aPathItem);
+		$iIndex = 0;
+		
+		while($iIndex < $iCount && !is_dir($this->sRootFmPath . $this->sRelativePath))
+		{
+			$iIndex++;
+			$this->sRelativePath = BAB_PathUtil::addEndSlash(removeLastPath($this->sRelativePath));
+		}
+		
+		$sRealPath = realpath($this->sRootFmPath . $this->sRelativePath);
+		if(false === $sRealPath)
+		{
+			$this->sRelativePath = '';
+			return;
+		}
+		
+		$sRealPath = BAB_PathUtil::addEndSlash(str_replace('\\', '/', $sRealPath));
+		
+		$this->sRelativePath = mb_substr($sRealPath, mb_strlen($this->sRootFmPath));
+	}
+	
+	private function setEnv($sPathName)
 	{
 		$iIdDelegation		= 0;
 		$bSuccess			= false;	
@@ -428,10 +843,12 @@ class bab_Directory
 			$iIdDelegation			= (int) $aBuffer[1];
 			$sPath					= 'DG' . $iIdDelegation . '/';
 			$this->iIdObject		= $iIdDelegation; 
+			
 			$this->sRelativePath	= mb_substr($sPathName, mb_strlen($sPath));
 			$this->sUploadPath		= BAB_FmFolderHelper::getUploadPath();
 			$this->sRootFmPath		= BAB_FileManagerEnv::getCollectivePath($iIdDelegation);
-			$this->sFullPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($this->sRootFmPath . $this->sRelativePath));
+			
+			$this->initRelativePath();
 			
 			if('' != $this->sRelativePath)
 			{
@@ -462,27 +879,6 @@ class bab_Directory
 				$bSuccess = true;
 			}
 		}
-		/*
-		else if(preg_match('#^U(\d+)(/)#', $sPathName, $aBuffer))
-		{
-			$iIdUser = (int) $aBuffer[1];
-			if($iIdUser > 0)
-			{
-				$sPath					= 'U' . $iIdUser . '/'; 
-				$this->iIdObject		= $iIdUser; 
-				$this->sRelativePath	= mb_substr($sPathName, mb_strlen($sPath));
-				$this->sUploadPath		= BAB_FmFolderHelper::getUploadPath();
-				$this->sRootFmPath		= $this->getPersonnalPath($iIdUser);
-				$this->sFullPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($this->sRootFmPath . $this->sRelativePath));
-				return true;
-			}
-			else
-			{
-				//error	
-				bab_debug('ERROR ==> ' . $sPathName);
-			}
-		}
-		//*/
 		else
 		{
 			//error	
@@ -499,16 +895,245 @@ class bab_Directory
 	}
 	
 	/**
-	 * Must be called after the function initPaths
+	 * Must be called after the function setEnv
 	 * because the function initPaths initialize
 	 * the BAB_FileManagerEnv object
 	 *
 	 * @return bool
 	 */
-	private function pathValid()
+	private function accessValid()
 	{
 		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
 		return $oFmEnv->accessValid();
+	}
+		
+	private function isDot($sName)
+	{
+		return ('.' === (string) $sName || '..' === (string) $sName);
+	}
+	
+	private function isReservedName($sName)
+	{
+		return (strtolower(BAB_FVERSION_FOLDER) == strtolower($sName));
+	}
+	
+	private function processPathName($sPathName, &$sSanitizedPathName)
+	{
+		if(0 === mb_strlen(trim($sPathName)))
+		{
+			return false;
+		}
+		
+		$aBuffer = array();
+		if(false === preg_match('#^DG(\d+)(/)#', $sPathName, $aBuffer))
+		{
+			return false;
+		}
+		
+		$sPathName			= BAB_PathUtil::addEndSlash($sPathName);
+		$sPathName			= str_replace('\\', '/', $sPathName);
+		$sPathName			= removeFirstPath($sPathName);//Remove DGx
+		$aPaths				= explode('/', $sPathName);
+		$sSanitizedPathName	= '';
+		
+		if(is_array($aPaths) && count($aPaths) > 0)
+		{
+			$sPath = removeEndSlah($this->sRootFmPath);
+			foreach($aPaths as $sPathItem)
+			{
+				if(0 === mb_strlen(trim($sPathItem)))
+				{
+					continue;	
+				}
+				
+				$sPathItem = replaceInvalidFolderNameChar($sPathItem);
+				
+				if($this->isDot($sPathItem))
+				{
+					return false;
+				}
+				
+				if($this->isReservedName($sPathItem))
+				{
+					return false;
+				}
+				
+				$sSanitizedPathName .= $sPathItem . '/';
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	private function isPathNameCreatable()
+	{
+		if(0 === mb_strlen(trim($this->sPathName)))
+		{
+			return false;
+		}
+		
+		$sPathName	= '';
+		$aPaths		= explode('/', $this->sPathName);
+		
+		if(is_array($aPaths) && count($aPaths) > 0)
+		{
+			$sPath = removeEndSlah($this->sRootFmPath);
+			foreach($aPaths as $sPathItem)
+			{
+				if(0 === mb_strlen(trim($sPathItem)))
+				{
+					continue;	
+				}
+				
+				$sPathName	.= $sPathItem . '/';
+				$sPath		.= '/' . $sPathItem;
+				
+				if(!is_dir($sPath))
+				{
+					if(!isStringSupportedByFileSystem($sPathItem))
+					{
+						return false;
+					}
+				}
+			}
+			return (0 !== mb_strlen($sPathName));
+		}
+		return false;
+	}
+	
+	private function displayInfo()
+	{
+		bab_debug(
+			'sUploadPath   ==> ' . $this->sUploadPath	. "\n" .
+			'sRootFmPath   ==> ' . $this->sRootFmPath	. "\n" .
+			'sRelativePath ==> ' . $this->sRelativePath	. "\n" .
+			'sPathName     ==> ' . $this->sPathName	. "\n" .
+			'iIdObject     ==> ' . $this->iIdObject
+		);
+	}
+}
+
+
+
+
+class bab_directoryRenameContext
+{
+	private $sTrgPathName			= null;
+	private $sSanitizedTrgPathName	= null;
+	private $sTrgName				= null;
+	private $sTrgPath				= null;
+	private $iIdTrgDelegation		= null;
+	
+	private $sSrcPathName			= null;
+	private $sSanitizedSrcPathName	= null;
+	private $sSrcName				= null;
+	private $sSrcPath				= null;
+	private $iIdSrcDelegation		= null;
+	
+	public function __construct()
+	{
+		
+	}
+
+
+	public function getTrgPathName()
+	{
+		return $this->sTrgPathName;	
+	}
+	
+	public function setTrgPathName($sTrgPathName)
+	{
+		$this->sTrgPathName = $sTrgPathName;
+	}
+	
+	public function getSanitizedTrgPathName()
+	{
+		return $this->sSanitizedTrgPathName;	
+	}
+	
+	public function setSanitizedTrgPathName($sSanitizedTrgPathName)
+	{
+		$this->sSanitizedTrgPathName = $sSanitizedTrgPathName;
+	}
+	
+	public function getTrgName()
+	{
+		return $this->sTrgName;	
+	}
+	
+	public function setTrgName($sTrgName)
+	{
+		$this->sTrgName = $sTrgName;
+	}
+	
+	public function getTrgPath()
+	{
+		return $this->sTrgPath;	
+	}
+	
+	public function setTrgPath($sTrgPath)
+	{
+		$this->sTrgPath = $sTrgPath;
+	}
+	
+	public function getTrgDelegationId()
+	{
+		return $this->iIdTrgDelegation;	
+	}
+	
+	public function setTrgDelegationId($iIdTrgDelegation)
+	{
+		$this->iIdTrgDelegation = $iIdTrgDelegation;
+	}
+
+	public function getSrcPathName()
+	{
+		return $this->sSrcPathName;	
+	}
+	
+	public function setSrcPathName($sSrcPathName)
+	{
+		$this->sSrcPathName = $sSrcPathName;
+	}
+	
+	public function getSanitizedSrcPathName()
+	{
+		return $this->sSanitizedSrcPathName;	
+	}
+	
+	public function setSanitizedSrcPathName($sSanitizedSrcPathName)
+	{
+		$this->sSanitizedSrcPathName = $sSanitizedSrcPathName;
+	}
+	
+	public function getSrcName()
+	{
+		return $this->sSrcName;	
+	}
+	
+	public function setSrcName($sSrcName)
+	{
+		$this->sSrcName = $sSrcName;
+	}
+	
+	public function getSrcPath()
+	{
+		return $this->sSrcPath;	
+	}
+	
+	public function setSrcPath($sSrcPath)
+	{
+		$this->sSrcPath = $sSrcPath;
+	}
+	
+	public function getSrcDelegationId()
+	{
+		return $this->iIdSrcDelegation;	
+	}
+	
+	public function setSrcDelegationId($iIdSrcDelegation)
+	{
+		$this->iIdSrcDelegation = $iIdSrcDelegation;
 	}
 }
 ?>
