@@ -268,7 +268,7 @@ define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 define('BAB_TREE_VIEW_COLLAPSED',			1);
 define('BAB_TREE_VIEW_EXPANDED',			2);
 
-/*
+/**
  * The treeview will offer the selection of multiple nodes.
  */
 define('BAB_TREE_VIEW_MULTISELECT',			1024);
@@ -290,10 +290,26 @@ class bab_TreeView extends bab_Template
 	const VIEW_COLLAPSED		=    1;
 	const VIEW_EXPANDED			=    2;
 	
+	// Constants used for add/set/get/removeAttributes methods.
+	/**
+	 * The treeview will offer the selection of multiple nodes.
+	 */
 	const MULTISELECT			= 1024;
-	const MEMORIZE_OPEN_NODES	= 2048;
-	const SHOW_TOOLBAR			= 4096;
 	
+	/**
+	 * Will store the state of open/closed nodes in a cookie.
+	 */
+	const MEMORIZE_OPEN_NODES	= 2048;
+
+	/**
+	 * A toolbar with expand / collapse and a search field will be added a the top of the treeview.
+	 */
+	const SHOW_TOOLBAR			= 4096;
+
+
+	/**
+	 * The separator string use to separate type and id in an html id.
+	 */
 	const ID_SEPARATOR			= '__';
 	
 	/**
@@ -320,6 +336,9 @@ class bab_TreeView extends bab_Template
 	 */
 	private $_upToDate;
 
+	/**
+	 * @var int
+	 */
 	private $_attributes;
 
 	private $_currentElement;
@@ -376,7 +395,7 @@ class bab_TreeView extends bab_Template
 
 	protected $t_subtree;
 
-	
+
 	/**
 	 * @param string $id	A unique treeview id in the page.
 	 * 						Must begin with a letter ([A-Za-z]) and may be followed by any
@@ -422,7 +441,7 @@ class bab_TreeView extends bab_Template
 
 		$this->_upToDate = false;
 
-		$this->setAttributes(BAB_TREE_VIEW_SHOW_TOOLBAR | BAB_TREE_VIEW_MEMORIZE_OPEN_NODES);
+		$this->setAttributes(self::SHOW_TOOLBAR | self::MEMORIZE_OPEN_NODES);
 
 		$this->t_fetchContentScript = false;
 	}
@@ -483,8 +502,8 @@ class bab_TreeView extends bab_Template
 		$this->_attributes = $attributes;
 		$this->_invalidateCache();
 		$this->t_isMultiSelect = (($attributes & self::MULTISELECT) !== 0);
-		$this->t_memorizeOpenNodes = (($attributes & BAB_TREE_VIEW_MEMORIZE_OPEN_NODES) !== 0);
-		$this->t_showToolbar = (($attributes & BAB_TREE_VIEW_SHOW_TOOLBAR) !== 0);
+		$this->t_memorizeOpenNodes = (($attributes & self::MEMORIZE_OPEN_NODES) !== 0);
+		$this->t_showToolbar = (($attributes & self::SHOW_TOOLBAR) !== 0);
 	}
 
 	/**
@@ -505,7 +524,7 @@ class bab_TreeView extends bab_Template
 	 */
 	public function removeAttributes($attributes)
 	{
-		$this->setAttributes($this->getAttributes() & ~$attributes);
+		$this->setAttributes($this->_attributes & ~$attributes);
 	}
 
 
@@ -783,35 +802,124 @@ class bab_TreeView extends bab_Template
 
 
 
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES',						 0);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS',							 1);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES',			 			 2);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES',	 4);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES',				 8);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS',					16);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES',					32);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE',						64);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS',				   128);
 
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_READ_ARTICLES',						 1);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES',						 2);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_MODIFY_ARTICLES',						 3);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS',						 4);
+/**
+ * @deprecated Use corresponding bab_ArticleTreeView constant.
+ */
 define('BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC',						 5);
 
+
+/**
+ * A Treeview populated with categories/topics/articles.
+ */
 class bab_ArticleTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
-	const SHOW_CATEGORIES					=    0;
-	const SHOW_TOPICS						=    1;
-	const SHOW_ARTICLES						=    2;
-	const HIDE_EMPTY_TOPICS_AND_CATEGORIES	=    4;
-	const SELECTABLE_CATEGORIES				=    8;
-	const SELECTABLE_TOPICS					=   16;
-	const SELECTABLE_ARTICLES				=   32;
-	const SHOW_ROOT_NODE					=   64;
-	const HIDE_DELEGATIONS					=  128;
 	
+	/**
+	 * Show article category nodes in the treeview.
+	 */
+	const SHOW_CATEGORIES					=    0;
+
+	/**
+	 * Show article topic nodes in the treeview.
+	 */
+	const SHOW_TOPICS						=    1;
+	
+	/**
+	 * Show article nodes in the treeview (implies SHOW_TOPICS)
+	 */
+	const SHOW_ARTICLES						=    2;
+	
+	/**
+	 * Hide topic / category nodes containing zero article
+	 * (for the current user and purpose).
+	 */
+	const HIDE_EMPTY_TOPICS_AND_CATEGORIES	=    4;
+	
+	/**
+	 * Make article category nodes selectable.
+	 */
+	const SELECTABLE_CATEGORIES				=    8;
+
+	/**
+	 * Make article topic nodes selectable.
+	 */
+	const SELECTABLE_TOPICS					=   16;
+	
+	/**
+	 * Make article nodes selectable.
+	 */
+	const SELECTABLE_ARTICLES				=   32;
+	
+	/**
+	 * Show a root node.
+	 */
+	const SHOW_ROOT_NODE					=   64;
+	
+	/**
+	 * DEPRECATED ** Only show administered delegations.
+	 * @see SHOW_ONLY_ADMINISTERED_DELEGATION
+	 * @deprecated
+	 */
+	const HIDE_DELEGATIONS					=  128;
+	/**
+	 * Only show administered delegations.
+	 */
+	const SHOW_ONLY_ADMINISTERED_DELEGATION =  128;
+
 	// Constants used for set/getAction methods.
 	const READ_ARTICLES						=    1;
 	const SUBMIT_ARTICLES					=    2;
@@ -849,7 +957,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 		$this->setLink('');
 
-		$this->addAttributes(self::SHOW_ARTICLES | self::READ_ARTICLES | self::SHOW_ROOT_NODE);
+		$this->addAttributes(self::SHOW_ARTICLES | self::SHOW_ROOT_NODE);
 		$this->setAction(self::READ_ARTICLES);
 	}
 
@@ -933,7 +1041,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		$where = array();
 		$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
 		$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
-		if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
+		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 			$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
@@ -998,7 +1106,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';
-				if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
+				if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 					$sql .= ' WHERE categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 				}
@@ -1074,7 +1182,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		
 		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
-		if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
+		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION)) {
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'category';
@@ -1259,27 +1367,91 @@ class bab_ArticleTreeView extends bab_TreeView
 
 
 
-
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES',		 0);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES',				 1);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SHOW_FILES',							 2);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES',		 	 4);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES',	 8);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',	 		16);
+/**
+ * @deprecated Use corresponding bab_FileTreeView constant.
+ */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',					32);
-define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',				64);
+/**
+ *  DEPRECATED ** Use bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION
+ *  @deprecated
+ */
+define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',			   128);
 
+/**
+ * A Treeview populated with folders/files from the file manager.
+ */
 class bab_FileTreeView extends bab_TreeView
 {
-	// Constants used for add/set/get/removeAttributes methods.
+	/**#@+
+	 * Constant used for add/set/get/removeAttributes methods.
+	 */
+	/**
+	 * Show collective folder node in the treeview.
+	 */
 	const SHOW_COLLECTIVE_DIRECTORIES		=    0;
+
+	/**
+	 * Show sub-folders (i.e. not first-level collective folders) nodes
+	 * in the treeview.
+	 */
 	const SHOW_SUB_DIRECTORIES				=    1;
+	
+	/**
+	 * Show file nodes in the treeview.
+	 */
 	const SHOW_FILES						=    2;
+	
+	/**
+	 * Show the user personal folder node in the treeview.
+	 */
 	const SHOW_PERSONAL_DIRECTORIES			=    4;
+	
+	/**
+	 * Make collective folders selectable.
+	 */
 	const SELECTABLE_COLLECTIVE_DIRECTORIES	=    8;
+
+	/**
+	 * Make sub-folders selectable.
+	 */
 	const SELECTABLE_SUB_DIRECTORIES		=   16;
+	
+	/**
+	 * Make files selectable.
+	 */
 	const SELECTABLE_FILES					=   32;
-	const SHOW_ONLY_DELEGATION				=   64;
+	
+	/**
+	 * When the tree is displayed for administrative purpose and this
+	 * attribute is set the treeview will only display the currently
+	 * administered delegation.
+	 */
+	const SHOW_ONLY_ADMINISTERED_DELEGATION	=  128;
+	/**#@-*/
 
 	/**#@+
 	 * @access private
@@ -1343,7 +1515,7 @@ class bab_FileTreeView extends bab_TreeView
 		
 		// When the tree is displayed for administrative purpose, we only
 		// display the currently administered delegation.
-		if ($this->hasAttributes(self::SHOW_ONLY_DELEGATION))
+		if ($this->hasAttributes(self::SHOW_ONLY_ADMINISTERED_DELEGATION))
 		{
 			$this->_visibleDelegations = array($babBody->currentAdmGroup => $this->_visibleDelegations[$babBody->currentAdmGroup]);
 		}

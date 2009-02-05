@@ -55,7 +55,8 @@ function selectArticles()
 		'selectable_categories' => bab_ArticleTreeView::SELECTABLE_CATEGORIES,
 		'selectable_topics' => bab_ArticleTreeView::SELECTABLE_TOPICS,
 		'selectable_articles' => bab_ArticleTreeView::SELECTABLE_ARTICLES,
-		'hide_delegations' => bab_ArticleTreeView::HIDE_DELEGATIONS,
+		'hide_delegations' => bab_ArticleTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION, // DEPRECATED
+		'show_only_administered_delegation' => bab_ArticleTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION,
 		'multi' => bab_TreeView::MULTISELECT,
 		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
@@ -157,10 +158,11 @@ function selectFiles($folderId = null, $path = '')
 		'show_personal_directories' => bab_FileTreeView::SHOW_PERSONAL_DIRECTORIES,
 		'show_sub_directories' => bab_FileTreeView::SHOW_SUB_DIRECTORIES,
 		'show_files' => bab_FileTreeView::SHOW_FILES,
-		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_DELEGATION,
 		'selectable_collective_directories' => bab_FileTreeView::SELECTABLE_COLLECTIVE_DIRECTORIES,
 		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_DIRECTORIES,
 		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
+		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_DELEGATION, // DEPRECATED
+		'show_only_administered_delegation' => bab_ArticleTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION,
 		'multi' => bab_TreeView::MULTISELECT,
 		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
