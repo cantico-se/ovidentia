@@ -65,10 +65,7 @@ class categoriesHierarchyPopup
 			{
 			if( $i == $this->parentscount - 1 )
 				{
-				$this->pare/**
- * @deprecated
- */
-				ntname = bab_getCategoryTitle($this->arrparents[$i]);
+				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
 				$this->parenturl = '';
 				$this->burl = false;
 				}
