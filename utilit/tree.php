@@ -464,6 +464,17 @@ class bab_TreeView
 
 
 	/**
+     * Checks if all the specified attributes are set.
+     * 
+     * @param int	$attributes		A bitset of attributes.
+     * @return bool		True if all specified attributes are set.
+	 */
+	public function hasAttributes($attributes)
+	{
+		return (($this->_attributes & $attributes) === $attributes);
+	}
+
+	/**
 	 * @param string $id			A unique element id in the treeview.
 	 * @param string $type			Will be used as a css class to style the element.
 	 * @param string $title			The title (label) of the node.
@@ -772,7 +783,7 @@ class bab_ArticleTreeView extends bab_TreeView
 
 		$this->setLink('');
 
-		$this->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_READ_ARTICLES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE);
+		$this->addAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_READ_ARTICLES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE);
 		$this->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	}
 
@@ -1197,8 +1208,8 @@ class bab_FileTreeView extends bab_TreeView
 		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 		parent::__construct($id);
 
-		$this->_attributes = BAB_FILE_TREE_VIEW_SHOW_FILES;
-
+		$this->addAttributes(BAB_FILE_TREE_VIEW_SHOW_FILES);
+		
 		$this->_adminView = $adminView;
 
 		$this->setStartPath(null, '');
@@ -1391,8 +1402,7 @@ class bab_FileTreeView extends bab_TreeView
 			{
 				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
 												 $elementType,
-bab_toHtml($folder->getName()),
-//												 $folder->getName(),
+												 bab_toHtml($folder->getName()),
 												 '',
 												 '');
 				if ($this->_updateBaseUrl)
@@ -1493,7 +1503,6 @@ bab_toHtml($folder->getName()),
             'ORDER BY ' .
                 'file.path ASC, file.name ASC';
 
-		//bab_debug($sQuery);
         $files = $babDB->db_query($sQuery);
 
 
@@ -1672,7 +1681,8 @@ class bab_ForumTreeView extends bab_TreeView
 	{
 		parent::__construct($id);
 		
-		$this->_attributes = BAB_FORUM_TREE_VIEW_SHOW_POSTS;
+//		$this->_attributes = BAB_FORUM_TREE_VIEW_SHOW_POSTS;
+		$this->addAttributes(BAB_FORUM_TREE_VIEW_SHOW_POSTS);
 	}
 
 	/**
@@ -1876,7 +1886,8 @@ class bab_FaqTreeView extends bab_TreeView
 	{
 		parent::__construct($id);
 
-		$this->_attributes = BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
+//		$this->_attributes = BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
+		$this->addAttributes(BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS);
 	}
 
 	/**
