@@ -2737,6 +2737,13 @@
 <string id="One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.">Un ou plusieurs skins ne sont pas compatibles avec le charset d'Ovidentia, ou les droits d'accès sur ces skins ne sont pas définis correctement.</string>
 <string id="Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value">Ovidentia est en mode UTF-8, les skins doivent être réalisés sous la forme de modules et leurs fichiers addonini.php doit contenir la variable mysql_character_set_database.</string>
 <string id="W.">S.</string>
+<string id="Deactivate a folder allows to archive it: it and its contents will not be visible in the file manager">Désactiver un répertoire permet de l'archiver : lui et son contenu ne seront pas visibles dans le gestionnaire de fichiers</string>
+<string id="Activate the management of the versions allows to keep a history of all the modifications brought to the same file">Activer la gestion des versions permet de garder un historique de toutes les modifications apportées à un même fichier</string>
+<string id="If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)">Si le répertoire est caché, il ne sera pas visible dans le gestionnaire de fichiers, son contenu reste accessible en dehors du gestionnaire de fichiers (lien depuis un article, fichier OVML...)</string>
+<string id="If this option is activated, the keywords of files will be seized freely by their authors and automatically added in the thesaurus. If the option is deactivated, only the keywords seized by the managers of the thesaurus can be selected by the authors of files">Si cette option est activée, les mots-clés des fichiers seront saisis librement par leurs auteurs et automatiquement ajoutés dans le thesaurus. Si l'option est désactivée, seuls les mots-clés saisis par les gestionnaires du thesaurus pourront être sélectionnés par les auteurs des fichiers</string>
+<string id=""></string>
+<string id=""></string>
+<string id=""></string>
 <string id=""></string>
 <string id=""></string>
 </fr>

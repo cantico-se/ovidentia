@@ -14,7 +14,7 @@
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ active }:</td>
+						<td align="right">{ active } <span style="color: red;">(1)</span>:</td>
 						<td> 
 							<select name="active">
 								<option value="Y" selected="selected">{ yes }</option>
@@ -52,7 +52,7 @@
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ version }:</td>
+						<td align="right">{ version } <span style="color: red;">(2)</span>:</td>
 						<td> 
 							<select name="version">
 								<option value="Y">{ yes }</option>
@@ -61,7 +61,7 @@
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ display }:</td>
+						<td align="right">{ display } <span style="color: red;">(3)</span>:</td>
 						<td> 
 							<select name="bhide">
 								<option value="N" selected="selected">{ yes }</option>
@@ -70,7 +70,7 @@
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ addtags_txt }:</td>
+						<td align="right">{ addtags_txt } <span style="color: red;">(4)</span>:</td>
 						<td> 
 							<select name="baddtags">
 								<option value="Y" selected="selected">{ yes }</option>
@@ -83,6 +83,16 @@
 						<td>
 							<input type="submit" name="Submit" value="{ add }" />
 							<br />
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<ul style="list-style: none;margin: 0px;padding: 0px;">
+								<li style="margin: 4px;"><span style="color: red;">(1)</span> { thelp1 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(2)</span> { thelp2 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(3)</span> { thelp3 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(4)</span> { thelp4 }</li>
+							</ul>
 						</td>
 					</tr>
 				</table>
