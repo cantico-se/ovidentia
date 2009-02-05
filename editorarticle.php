@@ -1,29 +1,32 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
+ */
 include 'base.php';
 include_once $babInstallPath.'utilit/topincl.php';
 
+/**
+ * @deprecated
+ */
 class categoriesHierarchyPopup
 {
 	var $parentscount;
@@ -62,7 +65,10 @@ class categoriesHierarchyPopup
 			{
 			if( $i == $this->parentscount - 1 )
 				{
-				$this->parentname = bab_getCategoryTitle($this->arrparents[$i]);
+				$this->pare/**
+ * @deprecated
+ */
+				ntname = bab_getCategoryTitle($this->arrparents[$i]);
 				$this->parenturl = '';
 				$this->burl = false;
 				}
@@ -84,7 +90,9 @@ class categoriesHierarchyPopup
 }
 
 
-
+/**
+ * @deprecated
+ */
 function browse($topics,$cat)
 	{
 	global $babBody, $babDB;
@@ -219,8 +227,8 @@ function browse($topics,$cat)
 
 
 
-function browseTopicsTree() {
-
+function browseTopicsTree()
+{
 	global $babBody;
 	
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
@@ -228,7 +236,10 @@ function browseTopicsTree() {
 	$topicTree = new bab_ArticleTreeView('article_topics_tree' . BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
 							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES);
+							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES
+							| BAB_TREE_VIEW_SHOW_TOOLBAR
+							| BAB_TREE_VIEW_MEMORIZE_OPEN_NODES
+							);
 	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=editorarticle&idx=articles&id_topic=%s");
 	$topicTree->order();
@@ -338,40 +349,19 @@ function browseArticles() {
 
 
 
-
-
-
-
-
-
 	
 $idx = bab_rp('idx', 'browse');
 
-/*
-if(!isset($cat))
-	{
-	$cat = 0;
-	}
-
-if(!isset($topics))
-	{
-	$topics = 0;
-	}
-
-*/
 
 
 switch($idx)
-	{
-	
+{
 	case 'articles':
 		browseArticles();
 		break;
-	
+
 	default:
 	case 'browse':
-		// browse($topics,$cat);
 		browseTopicsTree();
 		exit;
-	}
-?>
+}
