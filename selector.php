@@ -19,13 +19,26 @@
 //-------------------------------------------------------------------------
 /**
  * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
- * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
-include_once "base.php";
+include_once 'base.php';
 
 require_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 
+
+function getAttributesFromRp(array $params, &$attributes, &$urlAttributes)
+{
+	$attributes = 0;
+	$urlAttributes = '';
+
+	foreach ($params as $paramName => $attributeValue) {
+		if (bab_rp($paramName, false)) {
+			$attributes |= $attributeValue;
+			$urlAttributes .= '&' . $paramName . '=1';
+		}
+	}
+} 
 
 
 /**
@@ -33,28 +46,25 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
  */
 function selectArticles()
 {
-	$attributes = 0;
-	if (bab_rp('show_categories', false))
-		$attributes |= bab_ArticleTreeView::SHOW_CATEGORIES;
-	if (bab_rp('show_topics', false))
-		$attributes |= bab_ArticleTreeView::SHOW_TOPICS;
-	if (bab_rp('show_articles', false))
-		$attributes |= bab_ArticleTreeView::SHOW_ARTICLES;
-	if (bab_rp('selectable_categories', false))
-		$attributes |= bab_ArticleTreeView::SELECTABLE_CATEGORIES;
-	if (bab_rp('selectable_topics', false))
-		$attributes |= bab_ArticleTreeView::SELECTABLE_TOPICS;
-	if (bab_rp('selectable_articles', false))
-		$attributes |= bab_ArticleTreeView::SELECTABLE_ARTICLES;
-	if (bab_rp('hide_delegations', false))
-		$attributes |= bab_ArticleTreeView::HIDE_DELEGATIONS;
-		
+	global $babBody;
+
+	$params = array(
+		'show_categories' => bab_ArticleTreeView::SHOW_CATEGORIES,
+		'show_topics' => bab_ArticleTreeView::SHOW_TOPICS,
+		'show_articles' => bab_ArticleTreeView::SHOW_ARTICLES,
+		'selectable_categories' => bab_ArticleTreeView::SELECTABLE_CATEGORIES,
+		'selectable_topics' => bab_ArticleTreeView::SELECTABLE_TOPICS,
+		'selectable_articles' => bab_ArticleTreeView::SELECTABLE_ARTICLES,
+		'hide_delegations' => bab_ArticleTreeView::HIDE_DELEGATIONS,
+		'multi' => bab_TreeView::MULTISELECT,
+		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
+		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
+	);
+
+	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+
 	$ignoredCategories = bab_rp('ignored_categories', '');
 	$ignoredCategories = explode(',', $ignoredCategories);
-		
-//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
 
 	$treeView = new bab_ArticleTreeView('bab_tv_article');
 	$treeView->setAttributes($attributes);
@@ -62,7 +72,7 @@ function selectArticles()
 	$treeView->order();
 	$treeView->sort();
 	
-	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
+	$babBody->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -72,29 +82,26 @@ function selectArticles()
  */
 function selectFaqs()
 {
-	$attributes = 0;
-	if (bab_rp('show_categories', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES;
-	if (bab_rp('show_sub_categories', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_SUB_CATEGORIES;
-	if (bab_rp('show_questions', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
+	global $babBody;
 
-	if (bab_rp('selectable_categories', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES;
-	if (bab_rp('selectable_sub_categories', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES;
-	if (bab_rp('selectable_questions', false))
-		$attributes |= BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS;
+	$params = array(
+		'show_categories' => bab_FaqTreeView::SHOW_CATEGORIES,
+		'show_sub_categories' => bab_FaqTreeView::SHOW_SUB_CATEGORIES,
+		'show_questions' => bab_FaqTreeView::SHOW_QUESTIONS,
+		'selectable_categories' => bab_FaqTreeView::SELECTABLE_CATEGORIES,
+		'selectable_sub_categories' => bab_FaqTreeView::SELECTABLE_SUB_CATEGORIES,
+		'selectable_questions' => bab_FaqTreeView::SELECTABLE_QUESTIONS,
+		'multi' => bab_TreeView::MULTISELECT,
+		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
+		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
+	);
 
-//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
-	
+	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+
 	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
 
-	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
+	$babBody->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -104,29 +111,26 @@ function selectFaqs()
  */
 function selectForums()
 {
-	$attributes = 0;
-	if (bab_rp('show_forums', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_FORUMS;
-	if (bab_rp('show_threads', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_THREADS;
-	if (bab_rp('show_posts', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SHOW_POSTS;
+	global $babBody;
 
-	if (bab_rp('selectable_forums', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS;
-	if (bab_rp('selectable_threads', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS;
-	if (bab_rp('selectable_posts', false))
-		$attributes |= BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS;
-	
-//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
-	
+	$params = array(
+		'show_forums' => bab_ForumTreeView::SHOW_FORUMS,
+		'show_threads' => bab_ForumTreeView::SHOW_THREADS,
+		'show_posts' => bab_ForumTreeView::SHOW_POSTS,
+		'selectable_forums' => bab_ForumTreeView::SELECTABLE_FORUMS,
+		'selectable_threads' => bab_ForumTreeView::SELECTABLE_THREADS,
+		'selectable_posts' => bab_ForumTreeView::SELECTABLE_POSTS,
+		'multi' => bab_TreeView::MULTISELECT,
+		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
+		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
+	);
+
+	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+
 	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
 
-	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
+	$babBody->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -146,50 +150,24 @@ function selectForums()
  */
 function selectFiles($folderId = null, $path = '')
 {
-	$attributes = 0;
-	$urlAttributes = '';
-	if (bab_rp('show_collective_directories', false)) {
-		$urlAttributes .= '&show_collective_directories=1';
-		$attributes |= bab_FileTreeView::SHOW_COLLECTIVE_DIRECTORIES;
-	}
-	if (bab_rp('show_personal_directories', false)) {
-		$urlAttributes .= '&show_personal_directories=1';
-		$attributes |= bab_FileTreeView::SHOW_PERSONAL_DIRECTORIES;
-	}
-	if (bab_rp('show_sub_directories', false)) {
-		$urlAttributes .= '&show_sub_directories=1';
-		$attributes |= bab_FileTreeView::SHOW_SUB_DIRECTORIES;
-	}
-	if (bab_rp('show_files', false)) {
-		$urlAttributes .= '&show_files=1';
-		$attributes |= bab_FileTreeView::SHOW_FILES;
-	}
-	if (bab_rp('show_only_delegation', false)) {
-		$urlAttributes .= '&show_only_delegation=1';
-		$attributes |= bab_FileTreeView::SHOW_ONLY_DELEGATION;
-	}
-	if (bab_rp('selectable_collective_directories', false)) {
-		$urlAttributes .= '&selectable_collective_directories=1';
-		$attributes |= bab_FileTreeView::SELECTABLE_COLLECTIVE_DIRECTORIES;
-	}
-	if (bab_rp('selectable_sub_directories', false)) {
-		$urlAttributes .= '&selectable_sub_directories=1';
-		$attributes |= bab_FileTreeView::SELECTABLE_SUB_DIRECTORIES;
-	}
-	if (bab_rp('selectable_files', false)) {
-		$urlAttributes .= '&selectable_files=1';
-		$attributes |= bab_FileTreeView::SELECTABLE_FILES;
-	}
-	
-	if (bab_rp('multi', false)) {
-		$urlAttributes .= '&multi=1';
-		$attributes |= bab_FileTreeView::MULTISELECT;
-	}
+	global $babBody;
 
-//	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-//	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-//	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
-	
+	$params = array(
+		'show_collective_directories' => bab_FileTreeView::SHOW_COLLECTIVE_DIRECTORIES,
+		'show_personal_directories' => bab_FileTreeView::SHOW_PERSONAL_DIRECTORIES,
+		'show_sub_directories' => bab_FileTreeView::SHOW_SUB_DIRECTORIES,
+		'show_files' => bab_FileTreeView::SHOW_FILES,
+		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_DELEGATION,
+		'selectable_collective_directories' => bab_FileTreeView::SELECTABLE_COLLECTIVE_DIRECTORIES,
+		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_DIRECTORIES,
+		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
+		'multi' => bab_TreeView::MULTISELECT,
+		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
+		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
+	);
+
+	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+
 	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
 
 	$treeView->setUpdateBaseUrl('?tg=selector&idx=files' . $urlAttributes);
@@ -207,7 +185,7 @@ function selectFiles($folderId = null, $path = '')
 	// (the sub folders will be loaded when the user opens one of these)
 	$attributes &= ~(bab_FileTreeView::SHOW_SUB_DIRECTORIES | bab_FileTreeView::SHOW_FILES);
 	$treeView->setAttributes($attributes);
-	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
+	$babBody->babPopup($treeView->printTemplate());
 	die();
 }
 
@@ -217,18 +195,22 @@ function selectFiles($folderId = null, $path = '')
  */
 function selectGroups()
 {
-	$attributes = 0;
-	if (bab_rp('selectable_groups', false) !== false) {
-		$attributes |= bab_GroupTreeView::SELECTABLE_GROUPS;
-	}
-	if (bab_rp('multi', false) !== false) {
-		$attributes |= bab_GroupTreeView::MULTISELECT;
-	}
+	global $babBody;
+
+	$params = array(
+		'selectable_groups' => bab_GroupTreeView::SELECTABLE_GROUPS,
+		'multi' => bab_TreeView::MULTISELECT,
+		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
+		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	
+	);
+
+	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
 	$treeView->setAttributes($attributes);
 	$treeView->sort();
-	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
+	$babBody->babPopup($treeView->printTemplate());
 }
 
 
@@ -240,15 +222,15 @@ switch ($idx) {
 	case 'articles':
 		selectArticles();
 		break;
-		
+
 	case 'faqs':
 		selectFaqs();
 		break;
-		
+
 	case 'forums':
 		selectForums();
 		break;
-		
+
 	case 'files':
 		$start = bab_rp('start', null);
 		if (!is_null($start)) {
@@ -265,7 +247,7 @@ switch ($idx) {
 	case 'groups':
 		selectGroups();
 		break;
-		
+
 	default:
 		break;
 }
