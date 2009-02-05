@@ -186,7 +186,7 @@ function bab_getSelf() {
 
 $babPhpSelf		= bab_getSelf();
 $babUrlScript	= $babUrl.$babPhpSelf;
-$babAddonsPath	= $GLOBALS['babInstallPath']."addons/";
+$babAddonsPath	= $GLOBALS['babInstallPath'].'addons/';
 $babSiteName	= mb_substr($babSiteName, 0, 30);
 
 
@@ -196,17 +196,17 @@ $babSiteName	= mb_substr($babSiteName, 0, 30);
 if( !isset($tg))
 	$tg = '';
 
-include_once $babInstallPath."utilit/defines.php";
-include_once $babInstallPath."utilit/dbutil.php";
+include_once $babInstallPath.'utilit/defines.php';
+include_once $babInstallPath.'utilit/dbutil.php';
 $babDB = new babDatabase();
 $babDB->db_setCharset();
-include_once $babInstallPath."utilit/statincl.php";
+include_once $babInstallPath.'utilit/statincl.php';
 $babWebStat =& new bab_WebStatEvent();
 
-include $babInstallPath."utilit/utilit.php";
+include $babInstallPath.'utilit/utilit.php';
 unset($BAB_SESS_LOGGED);
 
-if( $tg != "version" || !isset($idx) || $idx != "upgrade")
+if( $tg != 'version' || !isset($idx) || $idx != 'upgrade')
 	{
 	bab_updateSiteSettings();
 	if ($GLOBALS['babCookieIdent'] === true) include $babInstallPath."utilit/cookieident.php";
