@@ -285,74 +285,97 @@ define('BAB_TREE_VIEW_SHOW_TOOLBAR',		4096);
 /**
  * A TreeView widget used to display hierarchical data.
  */
-class bab_TreeView
+class bab_TreeView extends bab_Template
 {
-	/**#@+
-	 * @access private
+	const VIEW_COLLAPSED		=    1;
+	const VIEW_EXPANDED			=    2;
+	
+	const MULTISELECT			= 1024;
+	const MEMORIZE_OPEN_NODES	= 2048;
+	const SHOW_TOOLBAR			= 4096;
+	
+	const ID_SEPARATOR			= '__';
+	
+	/**
+	 * @var string
 	 */
-	var $_id;
+	protected $_id;
 	/**
 	 * @var bab_OrphanRootNode
 	 */
-	var $_rootNode;
-	var $_iterator;
+	protected $_rootNode;
 	
-	var $_highlightedElements;
+	/**
+	 * @var bab_NodeIterator
+	 */
+	protected $_iterator;
 
-	var $_upToDate;
+	/**
+	 * @var array		Array of boolean for which keys are highlighted elements ids.
+	 */
+	private $_highlightedElements;
+
+	/**
+	 * @var bool
+	 */
+	private $_upToDate;
+
+	private $_attributes;
+
+	private $_currentElement;
+
+
+	public $_templateFile;
+	public $_templateSection;
+	public $_templateCss;
+	public $_templateScripts;
+	public $_templateCache;
+
 	
-	var $_attributes;
+	// Template properties.
+	protected $t_treeViewId;
+	protected $t_id;
+	protected $t_previousId;
+	protected $t_type;
+	protected $t_title;
+	protected $t_description;
+	protected $t_link;
+	protected $t_levelVariation;
+	protected $t_level;
+	protected $t_previousLevel;
+	protected $t_offsetLevel;
+	protected $t_offsetPreviousLevel;
+	protected $t_baseLevel;
 
-	var $t_treeViewId;
-	var $t_id;
-	var $t_previousId;
-	var $t_type;
-	var $t_title;
-	var $t_description;
-	var $t_link;
-	var $t_levelVariation;
-	var $t_level;
-	var $t_previousLevel;
-	var $t_offsetLevel;
-	var $t_offsetPreviousLevel;
-	var $t_baseLevel;
-	
-	var $t_isFirstChild;
-	var $t_isMiddleChild;
-	var $t_isSingleChild;
-	var $t_isLastChild;
-	
-	var $t_info;
-	var $t_tooltip;
-	var $t_showRightElements;
+	protected $t_isFirstChild;
+	protected $t_isMiddleChild;
+	protected $t_isSingleChild;
+	protected $t_isLastChild;
 
-	var $t_nodeIcon;
+	protected $t_info;
+	protected $t_tooltip;
+	protected $t_showRightElements;
 
-	var $t_classes;
+	protected $t_nodeIcon;
 
-	var $t_expand;
-	var $t_collapse;
-	var $t_submit;
-	
-	var $t_highlighted;
-	
-	var $t_loading;
+	protected $t_classes;
 
-	var $t_id_separator;
+	protected $t_expand;
+	protected $t_collapse;
+	protected $t_submit;
 
-	var $t_isMultiSelect;
-	var $t_memorizeOpenNodes;
-	var $t_showToolbar;
-	
-	var $t_subtree;
+	protected $t_highlighted;
 
-	var $_currentElement;
+	protected $t_loading;
 
-	var $_templateFile;
-	var $_templateSection;
-	var $_templateCss;
-	var $_templateScripts;
-	var $_templateCache;
+	protected $t_id_separator;
+
+	protected $t_isMultiSelect;
+	protected $t_memorizeOpenNodes;
+	protected $t_showToolbar;
+
+	protected $t_subtree;
+
 	
 	/**
 	 * @param string $id	A unique treeview id in the page.
@@ -393,7 +416,7 @@ class bab_TreeView
 		$this->_templateScripts = 'treeview_scripts';
 		$this->_templateCache = null;
 
-		$this->t_id_separator = BAB_TREE_VIEW_ID_SEPARATOR;
+		$this->t_id_separator = self::ID_SEPARATOR;
 
 		$this->t_subtree = null;
 
@@ -413,6 +436,28 @@ class bab_TreeView
 	public function setClasses($classes)
 	{
 		$this->t_classes = $classes;
+	}
+
+
+	/**
+	 * Returns the root node of the treeview
+	 * 
+	 * @return bab_OrphanRootNode
+	 */
+	public function getRootNode()
+	{
+		return $this->_rootNode;
+	}
+
+
+	/**
+	 * Returns whether the treeview is up to date.
+	 * 
+	 * @return bool
+	 */
+	public function isUpToDate()
+	{
+		return $this->_upToDate;
 	}
 
 
@@ -437,7 +482,7 @@ class bab_TreeView
 	{
 		$this->_attributes = $attributes;
 		$this->_invalidateCache();
-		$this->t_isMultiSelect = (($attributes & BAB_TREE_VIEW_MULTISELECT) !== 0);
+		$this->t_isMultiSelect = (($attributes & self::MULTISELECT) !== 0);
 		$this->t_memorizeOpenNodes = (($attributes & BAB_TREE_VIEW_MEMORIZE_OPEN_NODES) !== 0);
 		$this->t_showToolbar = (($attributes & BAB_TREE_VIEW_SHOW_TOOLBAR) !== 0);
 	}
@@ -451,6 +496,7 @@ class bab_TreeView
 	{		
 		$this->setAttributes($this->getAttributes() | $attributes);
 	}
+
 
 	/**
 	 * Adds attributes to the treeview.
@@ -473,6 +519,7 @@ class bab_TreeView
 	{
 		return (($this->_attributes & $attributes) === $attributes);
 	}
+
 
 	/**
 	 * @param string $id			A unique element id in the treeview.
@@ -686,7 +733,7 @@ class bab_TreeView
 	public function printTemplate()
 	{
 		if (is_null($this->_templateCache)) {
-			if (!$this->_upToDate) {
+			if (!$this->isUpToDate()) {
 				$this->_updateTree();
 			}
 			$this->t_subtree = bab_printTemplate($this, $this->_templateFile, 'subtree');
@@ -703,8 +750,9 @@ class bab_TreeView
 	 */
 	public function printSubTree()
 	{
-		if (!$this->_upToDate)
+		if (!$this->isUpToDate()) {
 			$this->_updateTree();
+		}
 		$this->_templateCache .= bab_printTemplate($this, $this->_templateFile, 'subtree');
 		return $this->_templateCache;
 	}
@@ -753,13 +801,31 @@ define('BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC',						 5);
 
 class bab_ArticleTreeView extends bab_TreeView
 {
+	// Constants used for add/set/get/removeAttributes methods.
+	const SHOW_CATEGORIES					=    0;
+	const SHOW_TOPICS						=    1;
+	const SHOW_ARTICLES						=    2;
+	const HIDE_EMPTY_TOPICS_AND_CATEGORIES	=    4;
+	const SELECTABLE_CATEGORIES				=    8;
+	const SELECTABLE_TOPICS					=   16;
+	const SELECTABLE_ARTICLES				=   32;
+	const SHOW_ROOT_NODE					=   64;
+	const HIDE_DELEGATIONS					=  128;
+	
+	// Constants used for set/getAction methods.
+	const READ_ARTICLES						=    1;
+	const SUBMIT_ARTICLES					=    2;
+	const MODIFY_ARTICLES					=    3;
+	const SUBMIT_COMMENTS					=    4;
+	const MANAGE_TOPIC						=    5;
+
 	/**#@+
 	 * @access private
 	 */	
-	var $_action;
+	private $_action;
 	var $_link;
 	
-	var $_ignoredCategories = array();
+	private $_ignoredCategories = array();
 	
 	/**
 	 * Datas on which the appendElement work
@@ -783,8 +849,8 @@ class bab_ArticleTreeView extends bab_TreeView
 
 		$this->setLink('');
 
-		$this->addAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES | BAB_ARTICLE_TREE_VIEW_READ_ARTICLES | BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE);
-		$this->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
+		$this->addAttributes(self::SHOW_ARTICLES | self::READ_ARTICLES | self::SHOW_ROOT_NODE);
+		$this->setAction(self::READ_ARTICLES);
 	}
 
 
@@ -799,33 +865,59 @@ class bab_ArticleTreeView extends bab_TreeView
 			$this->_ignoredCategories[$categoryId] = $categoryId;
 		}
 	}
-	
+
+
+	/**
+	 * Returns the array of ignored categories.
+	 * 
+	 * @return array		An array containing the ids of categories (as key and value).
+	 */
+	public function getIgnoredCategories()
+	{
+		return $this->_ignoredCategories;
+	}
+
+
 	/**
 	 * Defines the action for which the article tree is displayed.
 	 * 
 	 * The treeview will only display the topics for which the
 	 * current user is allowed to perform the selected action.
 	 * Possible values for $action are:
-	 *  - BAB_ARTICLE_TREE_VIEW_READ_ARTICLES
-	 *  - BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES
-	 *  - BAB_ARTICLE_TREE_VIEW_MODIFY_ARTICLES
-	 *  - BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS
-	 *  - BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC
+	 *  - self::READ_ARTICLES
+	 *  - self::SUBMIT_ARTICLES
+	 *  - self::MODIFY_ARTICLES
+	 *  - self::SUBMIT_COMMENTS
+	 *  - self::MANAGE_TOPIC
 	 *
 	 * @param int $action
-	 * @access public
 	 */
-	function setAction($action)
+	public function setAction($action)
 	{
 		$this->_action = $action;
 	}
 
 	/**
-	 * Defines the script that will be called 
-	 * @param int $link
-	 * @access public
+	 * Returns the action for which the article tree is displayed.
+	 * 
+	 * Possible returned values are:
+	 *  - self::READ_ARTICLES
+	 *  - self::SUBMIT_ARTICLES
+	 *  - self::MODIFY_ARTICLES
+	 *  - self::SUBMIT_COMMENTS
+	 *  - self::MANAGE_TOPIC
+	 * @return int
 	 */
-	function setLink($link)
+	public function getAction()
+	{
+		return $this->_action;	
+	}
+
+	/**
+	 * Defines the script that will be called 
+	 * @param string $link
+	 */
+	public function setLink($link)
 	{
 		$this->_link = $link;
 	}
@@ -834,20 +926,20 @@ class bab_ArticleTreeView extends bab_TreeView
 	/**
 	 * @return string	SQL query
 	 */
-	function getQueryByRight($tablename) {
-	
+	private function _getQueryByRight($tablename)
+	{
 		global $babDB, $babBody;
-	
+
 		$where = array();
 		$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category';
 		$sql .= ' FROM ' . BAB_TOPICS_TBL . ' topics';
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
+		if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
 			$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 			$where[] = 'categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$where[] = 'topics.id IN (' . $babDB->quote(array_keys(bab_getUserIdObjects($tablename))) . ')';
 		$sql .= ' WHERE ' . implode(' AND ', $where);
-		
+
 		return $sql;
 	}
 	
@@ -855,16 +947,15 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Add article topics to the tree.
-	 * @access private
 	 */
-	function _addTopics()
+	private function _addTopics()
 	{
 		global $babDB, $babBody;
 
 		$sql = '';
 		switch ($this->_action)
 		{
-			case BAB_ARTICLE_TREE_VIEW_MODIFY_ARTICLES:
+			case self::MODIFY_ARTICLES:
 			
 				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
 				$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
@@ -885,21 +976,21 @@ class bab_ArticleTreeView extends bab_TreeView
 				}
 				break;
 
-			case BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES:
-				$sql = $this->getQueryByRight(BAB_TOPICSSUB_GROUPS_TBL);
+			case self::SUBMIT_ARTICLES:
+				$sql = $this->_getQueryByRight(BAB_TOPICSSUB_GROUPS_TBL);
 				break;
 				
-			case BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC:
-				$sql = $this->getQueryByRight(BAB_TOPICSMAN_GROUPS_TBL);
+			case self::MANAGE_TOPIC:
+				$sql = $this->_getQueryByRight(BAB_TOPICSMAN_GROUPS_TBL);
 				break;
 
 
-			case BAB_ARTICLE_TREE_VIEW_READ_ARTICLES:
-				$sql = $this->getQueryByRight(BAB_TOPICSVIEW_GROUPS_TBL);
+			case self::READ_ARTICLES:
+				$sql = $this->_getQueryByRight(BAB_TOPICSVIEW_GROUPS_TBL);
 				break;
 				
 			// list topic by submit comments right seem to be not very usefull
-			// case BAB_ARTICLE_TREE_VIEW_SUBMIT_COMMENTS:
+			// case self::SUBMIT_COMMENTS:
 				
 				
 				
@@ -907,7 +998,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
 				    . ' FROM ' . BAB_TOPICS_TBL . ' AS topics';
-				if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
+				if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
 					$sql .= ' LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS categories ON topics.id_cat=categories.id';
 					$sql .= ' WHERE categories.id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 				}
@@ -917,8 +1008,8 @@ class bab_ArticleTreeView extends bab_TreeView
 		if ($sql !== '')
 		{
 			$elementType = 'topic';
-			if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS) {
+			if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_TOPICS)) {
 				$elementType .= ' clickable';
 			}
 			$topics = $babDB->db_query($sql);
@@ -928,14 +1019,14 @@ class bab_ArticleTreeView extends bab_TreeView
 				} else {
 					$link = '';
 				}
-				$element =& $this->createElement('t' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id'],
+				$element =& $this->createElement('t' . self::ID_SEPARATOR . $topic['id'],
 												 $elementType,
 												 bab_toHtml($topic['category']),
 												 ''/*$topic['description']*/,
 												 $link);
 				
 				
-				if (BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC === $this->_action) {
+				if (self::MANAGE_TOPIC === $this->_action) {
 				
 					list($nbarticles)= $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='N'"));
 				
@@ -947,7 +1038,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
 				$parentId = ($topic['id_cat'] === '0' ? null :
-													'c' . BAB_TREE_VIEW_ID_SEPARATOR . $topic['id_cat']);
+													'c' . self::ID_SEPARATOR . $topic['id_cat']);
 				$this->_datas = $topic;
 				$this->appendElement($element, $parentId);
 				$this->_datas = null;
@@ -958,22 +1049,21 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Add article categories to the tree.
-	 * @access private
 	 */
-	function _addCategories()
+	private function _addCategories()
 	{
 		global $babBody;
 		global $babDB;
 
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE) {
-			if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES) {
+		if ($this->hasAttributes(self::SHOW_ROOT_NODE)) {
+			if ($this->hasAttributes(self::SHOW_ARTICLES)) {
 				$label = bab_translate("Categories, topics and articles");
-			} else if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS) {
+			} else if ($this->hasAttributes(self::SHOW_TOPICS)) {
 				$label = bab_translate("Categories and topics");
 			} else {
 				$label = bab_translate("Categories");
 			}
-			$element =& $this->createElement('c' . BAB_TREE_VIEW_ID_SEPARATOR . '0',
+			$element =& $this->createElement('c' . self::ID_SEPARATOR . '0',
 											 'categoryroot',
 											 $label,
 											 '',
@@ -984,12 +1074,12 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		
 		$sql = 'SELECT id, title, description, id_parent, enabled FROM ' . BAB_TOPICS_CATEGORIES_TBL;
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS) {
+		if ($this->hasAttributes(self::HIDE_DELEGATIONS)) {
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'category';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_CATEGORIES)) {
 			$elementType .= ' clickable';
 		}
 		$categories = $babDB->db_query($sql);
@@ -997,17 +1087,17 @@ class bab_ArticleTreeView extends bab_TreeView
 			if (isset($this->_ignoredCategories[$category['id']])) {
 				continue;
 			}
-			$element =& $this->createElement('c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
+			$element =& $this->createElement('c' . self::ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
 											 '',
 											 '');
 			$element->setInfo('');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
-			if (!($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE) && $category['id_parent'] === '0') {
+			if (!($this->hasAttributes(self::SHOW_ROOT_NODE)) && $category['id_parent'] === '0') {
 				$parentId = null;
 			} else {
-				$parentId = 'c' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id_parent'];
+				$parentId = 'c' . self::ID_SEPARATOR . $category['id_parent'];
 			}
 			$this->_datas = $category;
 			$this->appendElement($element, $parentId);
@@ -1017,9 +1107,8 @@ class bab_ArticleTreeView extends bab_TreeView
 
 	/**
 	 * Add articles to the tree.
-	 * @access private
 	 */
-	function _addArticles()
+	private function _addArticles()
 	{
 		global $babDB, $babBody;
 		
@@ -1030,20 +1119,20 @@ class bab_ArticleTreeView extends bab_TreeView
 			$sql .= ' WHERE id_dgowner=' . $babDB->quote($babBody->currentAdmGroup);
 		}
 		$elementType = 'article';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_ARTICLES)) {
 			$elementType .= ' clickable';
 		}
 		$rs = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($rs)) {
-			$element =& $this->createElement('a' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id'],
+			$element =& $this->createElement('a' . self::ID_SEPARATOR . $article['id'],
 											 $elementType,
 											 bab_toHtml($article['title']),
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/article.png');
 			$this->_datas = $article;
-			$this->appendElement($element, 't' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id_topic']);
+			$this->appendElement($element, 't' . self::ID_SEPARATOR . $article['id_topic']);
 			$this->_datas = null;
 		}
 	}
@@ -1055,10 +1144,8 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * 
 	 * A call to this method does not actually reorder the tree. It should be
 	 * followed by a call to {@link sort} in order to do so.
-	 * 
-	 * @access public
 	 */
-	function order()
+	public function order()
 	{
 		global $babDB;
 
@@ -1068,9 +1155,9 @@ class bab_ArticleTreeView extends bab_TreeView
 		$orders = $babDB->db_query($sql);
 		while ($order = $babDB->db_fetch_array($orders)) {
 			if ($order['type'] == 2) {
-				$node =& $this->_rootNode->getNodeById('t' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
+				$node =& $this->getRootNode()->getNodeById('t' . self::ID_SEPARATOR . $order['id_topcat']);
 			} else {
-				$node =& $this->_rootNode->getNodeById('c' . BAB_TREE_VIEW_ID_SEPARATOR . $order['id_topcat']);
+				$node =& $this->getRootNode()->getNodeById('c' . self::ID_SEPARATOR . $order['id_topcat']);
 			}
 			if (!is_null($node)) {
 				$element =& $node->getData();
@@ -1080,13 +1167,13 @@ class bab_ArticleTreeView extends bab_TreeView
 	}
 
 
-	function addStatistics($start, $end)
+	public function addStatistics($start, $end)
 	{
 		global $babDB;
 
 		$this->_updateTree();
 		// Init stats at 0
-		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 		$iterator->nextNode();
 		while ($node = $iterator->nextNode()) {
 			(!is_null($node)) && $node->_data->setInfo('0');
@@ -1104,7 +1191,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		
 		$articles = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($articles)) {
-			$node =& $this->_rootNode->getNodeById('a' . BAB_TREE_VIEW_ID_SEPARATOR . $article['id']);
+			$node =& $this->getRootNode()->getNodeById('a' . self::ID_SEPARATOR . $article['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($article['hits']);
@@ -1126,22 +1213,22 @@ class bab_ArticleTreeView extends bab_TreeView
 	/**
 	 * @access private
 	 */
-	function _updateTree()
+	protected function _updateTree()
 	{
-		if ($this->_upToDate) {
+		if ($this->isUpToDate()) {
 			return;
 		}
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
-			|| $this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES)
+		if ($this->hasAttributes(self::SHOW_TOPICS)
+			|| $this->hasAttributes(self::SHOW_ARTICLES))
 			$this->_addTopics();
 
 
 		$this->_addCategories();
 
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES) {
+		if ($this->hasAttributes(self::HIDE_EMPTY_TOPICS_AND_CATEGORIES)) {
 			// Here we remove empty categories
 			do {
-				$iterator =& $this->_rootNode->createNodeIterator($this->_rootNode);
+				$iterator =& $this->getRootNode()->createNodeIterator($this->getRootNode());
 				$deadBranches = array();
 				while ($node =& $iterator->nextNode()) {
 					$element =& $node->getData();
@@ -1160,7 +1247,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			} while ($modified);
 		}
 
-		if ($this->_attributes & BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES)
+		if ($this->hasAttributes(self::SHOW_ARTICLES))
 			$this->_addArticles();
 			
 		parent::_updateTree();
@@ -1184,6 +1271,16 @@ define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',				64);
 
 class bab_FileTreeView extends bab_TreeView
 {
+	// Constants used for add/set/get/removeAttributes methods.
+	const SHOW_COLLECTIVE_DIRECTORIES		=    0;
+	const SHOW_SUB_DIRECTORIES				=    1;
+	const SHOW_FILES						=    2;
+	const SHOW_PERSONAL_DIRECTORIES			=    4;
+	const SELECTABLE_COLLECTIVE_DIRECTORIES	=    8;
+	const SELECTABLE_SUB_DIRECTORIES		=   16;
+	const SELECTABLE_FILES					=   32;
+	const SHOW_ONLY_DELEGATION				=   64;
+
 	/**#@+
 	 * @access private
 	 */
@@ -1202,13 +1299,14 @@ class bab_FileTreeView extends bab_TreeView
 	/**#@-*/
 
 
-	function __construct($id, $adminView = true)
+
+	public function __construct($id, $adminView = true)
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 		parent::__construct($id);
 
-		$this->addAttributes(BAB_FILE_TREE_VIEW_SHOW_FILES);
+		$this->addAttributes(self::SHOW_FILES);
 		
 		$this->_adminView = $adminView;
 
@@ -1220,14 +1318,14 @@ class bab_FileTreeView extends bab_TreeView
 
 	
 	
-	function setStartPath($folderId, $path)
+	public function setStartPath($folderId, $path)
 	{
 		$this->_startFolderId = $folderId;
 		$this->_startPath = $path;
 	}
 
 
-	function setUpdateBaseUrl($url)
+	public function setUpdateBaseUrl($url)
 	{
 		$this->_updateBaseUrl = $url;
 	}
@@ -1235,9 +1333,8 @@ class bab_FileTreeView extends bab_TreeView
 
 	/**
 	 * 
-	 * @access private
 	 */
-	function _addVisibleDelegations()
+	protected function _addVisibleDelegations()
 	{
 		global $babBody;
 
@@ -1246,7 +1343,7 @@ class bab_FileTreeView extends bab_TreeView
 		
 		// When the tree is displayed for administrative purpose, we only
 		// display the currently administered delegation.
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)
+		if ($this->hasAttributes(self::SHOW_ONLY_DELEGATION))
 		{
 			$this->_visibleDelegations = array($babBody->currentAdmGroup => $this->_visibleDelegations[$babBody->currentAdmGroup]);
 		}
@@ -1267,9 +1364,8 @@ class bab_FileTreeView extends bab_TreeView
 
 	/**
 	 * Add files and subdirectories for the personal folder.
-	 * @access private
 	 */
-	function _addPersonalFiles()
+	protected function _addPersonalFiles()
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		global $babDB, $babBody;
@@ -1283,13 +1379,13 @@ class bab_FileTreeView extends bab_TreeView
 			 . ' ORDER BY file.name';
 
 		$directoryType = 'folder';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-		&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+		&& $this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES)) {
 			$directoryType .= ' clickable';
 		}
 		$personalFileType = 'pfile';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-		&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+		&& $this->hasAttributes(self::SELECTABLE_FILES)) {
 			$personalFileType .= ' clickable';
 		}
 		$files = $babDB->db_query($sql);
@@ -1305,10 +1401,10 @@ class bab_FileTreeView extends bab_TreeView
 			$filePath = $file['path'];
 			$subdirs = explode('/', $filePath);
 				
-			$fileId = 'p' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
+			$fileId = 'p' . self::ID_SEPARATOR . $file['id'];
 			$fileType =& $personalFileType;
-			$rootId = 'pd' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id_owner'];
-			if (is_null($this->_rootNode->getNodeById($rootId))) {
+			$rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
+			if (is_null($this->getRootNode()->getNodeById($rootId))) {
 				$element =& $this->createElement($rootId,
 												 'foldercategory',
 												 bab_translate("Personal folders"),
@@ -1322,15 +1418,15 @@ class bab_FileTreeView extends bab_TreeView
 
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
-					if (is_null($this->_rootNode->getNodeById($rootId . $parentId . ':' . $subdir))) {
+					if (is_null($this->getRootNode()->getNodeById($rootId . $parentId . ':' . $subdir))) {
 						$element =& $this->createElement($rootId . $parentId . ':' . $subdir,
 														 $directoryType,
 														 $subdir,
 														 '',
 														 '');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-						if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
-						&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+						if (($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))
+						&& ($this->hasAttributes(self::MULTISELECT))) {
 							$element->addCheckBox('select');
 						}
 						$this->appendElement($element, $rootId . $parentId);
@@ -1344,24 +1440,20 @@ class bab_FileTreeView extends bab_TreeView
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
-			if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)
-			&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+			if (($this->hasAttributes(self::SELECTABLE_FILES))
+			&& ($this->hasAttributes(self::MULTISELECT))) {
 				$element->addCheckBox('select');
 			}
 			$this->appendElement($element, $rootId . $parentId);
 		}
 	}
 
-	function _getFolderIdDgOwner($folderId)
-	{
-		
-	}
+
 
 	/**
 	 * Add collective folders.
-	 * @access private
 	 */
-	function _addCollectiveDirectories($folderId = null)
+	protected function _addCollectiveDirectories($folderId = null)
 	{
 		global $babDB, $babBody;
 
@@ -1388,8 +1480,8 @@ class bab_FileTreeView extends bab_TreeView
 		$folders->select($oCriteria, array('sName' => 'ASC'));
 
 		$elementType = 'folder';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-		&& $this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+		&& $this->hasAttributes(self::SELECTABLE_COLLECTIVE_DIRECTORIES)) {
 			$elementType .= ' clickable';
 		}
 
@@ -1400,7 +1492,7 @@ class bab_FileTreeView extends bab_TreeView
 
 			if($this->_adminView || $bManager || $bDownload)
 			{
-				$element =& $this->createElement('d' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(),
+				$element =& $this->createElement('d' . self::ID_SEPARATOR . $folder->getId(),
 												 $elementType,
 												 bab_toHtml($folder->getName()),
 												 '',
@@ -1410,8 +1502,8 @@ class bab_FileTreeView extends bab_TreeView
 					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
 				}
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-				if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES)
-				&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+				if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_DIRECTORIES))
+				&& ($this->hasAttributes(self::MULTISELECT))) {
 					$element->addCheckBox('select');
 				}
 				$this->appendElement($element, 'd' . $folder->getDelegationOwnerId());
@@ -1424,9 +1516,8 @@ class bab_FileTreeView extends bab_TreeView
 
     /**
      * Add files and subdirectories for a specific collective folder.
-     * @access private
      */
-    function _addCollectiveFiles($folderId = null, $path = '')
+    protected function _addCollectiveFiles($folderId = null, $path = '')
     {
         global $babDB, $babBody;
 
@@ -1443,7 +1534,7 @@ class bab_FileTreeView extends bab_TreeView
                 $rootPath .= $oFolder->getName() . '/';
                 $idDgOwner = $oFolder->getDelegationOwnerId();
             }
-        } elseif ($babBody->currentAdmGroup != 0 && ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION)) {
+        } elseif ($babBody->currentAdmGroup != 0 && ($this->hasAttributes(self::SHOW_ONLY_DELEGATION))) {
         	$idDgOwner = $babBody->currentAdmGroup;
         } else {
         	$idDgOwner = null;
@@ -1472,13 +1563,13 @@ class bab_FileTreeView extends bab_TreeView
 
         
         $directoryType = 'folder';
-        if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-        	&& ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)) {
+        if (!($this->hasAttributes(self::MULTISELECT))
+        	&& ($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))) {
             $directoryType .= ' clickable';
         }
         $groupFileType = 'gfile';
-        if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-       		&& ($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)) {
+        if (!($this->hasAttributes(self::MULTISELECT))
+       		&& ($this->hasAttributes(self::SELECTABLE_FILES))) {
             $groupFileType .= ' clickable';
         }
         
@@ -1515,7 +1606,7 @@ class bab_FileTreeView extends bab_TreeView
             $filePath = removeFirstPath($file['path']);
             $subdirs = explode('/', $filePath);
 
-            $fileId = 'g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id'];
+            $fileId = 'g' . self::ID_SEPARATOR . $file['id'];
             $rootFolderName = getFirstPath($file['path']);
             if (is_null($folderId)) {
 	            $oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
@@ -1525,9 +1616,9 @@ class bab_FileTreeView extends bab_TreeView
 	            if (!$folder) {
 	                continue;
 	            }
-            	$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
+            	$rootId = 'd' . self::ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
             } else {
-            	$rootId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $folderId; // $file['id_owner'];
+            	$rootId = 'd' . self::ID_SEPARATOR . $folderId; // $file['id_owner'];
             }
             $fileType =& $groupFileType;
 
@@ -1535,15 +1626,15 @@ class bab_FileTreeView extends bab_TreeView
 
             foreach ($subdirs as $subdir) {
                 if (trim($subdir) !== '') {
-                    if (is_null($this->_rootNode->getNodeById($parentId . ':' . bab_toHtml($subdir)))) {
+                    if (is_null($this->getRootNode()->getNodeById($parentId . ':' . bab_toHtml($subdir)))) {
                         $element =& $this->createElement($parentId . ':' . bab_toHtml($subdir),
                                                          $directoryType,
                                                          bab_toHtml($subdir),
                                                          '',
                                                          '');
                         $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-                        if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES)
-                        && ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+                        if (($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))
+                        && ($this->hasAttributes(self::MULTISELECT))) {
                             $element->addCheckBox('select');
                         }
                         $this->appendElement($element, $parentId);
@@ -1551,15 +1642,15 @@ class bab_FileTreeView extends bab_TreeView
                     $parentId .= ':' . bab_toHtml($subdir);
                 }
             }
-            if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES) {
+            if ($this->hasAttributes(self::SHOW_FILES)) {
                 $element =& $this->createElement($fileId,
                                                  $fileType,
                                                  bab_toHtml($file['name']),
                                                  '',
                                                  '');
                 $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/file.png');
-                if (($this->_attributes & BAB_FILE_TREE_VIEW_SELECTABLE_FILES)
-                		&& ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+                if (($this->hasAttributes(self::SELECTABLE_FILES))
+                		&& ($this->hasAttributes(self::MULTISELECT))) {
                     $element->addCheckBox('select');
                 }
                 $this->appendElement($element, $parentId);
@@ -1576,15 +1667,14 @@ class bab_FileTreeView extends bab_TreeView
 	 *
 	 * @param string $start		An iso formatted date 'yyyy-mm-dd'.
 	 * @param string $end		An iso formatted date 'yyyy-mm-dd'.
-	 * @access public
 	 */
-	function addStatistics($start, $end)
+	public function addStatistics($start, $end)
 	{
 		global $babDB;
 
 		$this->_updateTree();
 		// Init stats at 0
-		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 		$iterator->nextNode();
 		while ($node = $iterator->nextNode()) {
 			(!is_null($node)) && $node->_data->setInfo('0');
@@ -1602,7 +1692,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		$files = $babDB->db_query($sql);
 		while ($file = $babDB->db_fetch_array($files)) {
-			$node =& $this->_rootNode->getNodeById('g' . BAB_TREE_VIEW_ID_SEPARATOR . $file['id']);
+			$node =& $this->getRootNode()->getNodeById('g' . self::ID_SEPARATOR . $file['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($file['hits']);
@@ -1620,12 +1710,10 @@ class bab_FileTreeView extends bab_TreeView
 		}
 	}
 
-	/**
-	 * @access private
-	 */
-	function _updateTree()
+
+	protected function _updateTree()
 	{
-		if ($this->_upToDate) {
+		if ($this->isUpToDate()) {
 			return;
 		}
 
@@ -1633,25 +1721,25 @@ class bab_FileTreeView extends bab_TreeView
 
 		$this->_addCollectiveDirectories($this->_startFolderId);
 
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_FILES
-				|| $this->_attributes & BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES) {
-			$attributes = $this->_attributes;
-			$this->_attributes &= ~BAB_FILE_TREE_VIEW_SHOW_FILES;
+		if ($this->hasAttributes(self::SHOW_FILES)
+				|| $this->hasAttributes(self::SHOW_SUB_DIRECTORIES)) {
+			$attributes = $this->getAttributes();
+			$this->removeAttributes(self::SHOW_FILES);
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
-			$this->_attributes = $attributes;
+			$this->setAttributes($attributes);
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
 		}
 
-		if ($this->_attributes & BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES
+		if ($this->hasAttributes(self::SHOW_PERSONAL_DIRECTORIES)
 				&& is_null($this->_startFolderId)) {
 			$this->_addPersonalFiles();
 		}
 
 		if (!is_null($this->_startFolderId))
 		{
-			$nodeId = 'd' . BAB_TREE_VIEW_ID_SEPARATOR . $this->_startFolderId;
-			$node =& $this->_rootNode->getNodeById($nodeId);
-			$this->_iterator = $this->_rootNode->createNodeIterator($node);
+			$nodeId = 'd' . self::ID_SEPARATOR . $this->_startFolderId;
+			$node =& $this->getRootNode()->getNodeById($nodeId);
+			$this->_iterator = $this->getRootNode()->createNodeIterator($node);
 			$this->_iterator->nextNode();
 			$this->t_baseLevel = $this->_iterator->level() + 1;
 			$this->t_level = 1;
@@ -1675,21 +1763,25 @@ define('BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS',			16);
 
 class bab_ForumTreeView extends bab_TreeView
 {
-
-
-	function __construct($id)
+	// Constants used for add/set/get/removeAttributes methods.
+	const SHOW_FORUMS			=    0;
+	const SHOW_THREADS			=    1;
+	const SHOW_POSTS			=    2;
+	const SELECTABLE_FORUMS		=    4;
+	const SELECTABLE_THREADS	=    8;
+	const SELECTABLE_POSTS		=   16;
+	
+	public function __construct($id)
 	{
 		parent::__construct($id);
 		
-//		$this->_attributes = BAB_FORUM_TREE_VIEW_SHOW_POSTS;
-		$this->addAttributes(BAB_FORUM_TREE_VIEW_SHOW_POSTS);
+		$this->addAttributes(self::SHOW_POSTS);
 	}
 
 	/**
 	 * Add forums to the tree.
-	 * @access private
 	 */
-	function _addForums()
+	protected function _addForums()
 	{
 		global $babDB, $babBody;
 
@@ -1700,13 +1792,13 @@ class bab_ForumTreeView extends bab_TreeView
 		$sql .= ' ORDER BY ordering';
 		
 		$forumType = 'forum';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_FORUMS)) {
 			$forumType .= ' clickable';
 		}
 		$rs = $babDB->db_query($sql);
 		while ($forum = $babDB->db_fetch_array($rs)) {
-			$element =& $this->createElement('forum' . BAB_TREE_VIEW_ID_SEPARATOR . $forum['id'],
+			$element =& $this->createElement('forum' . self::ID_SEPARATOR . $forum['id'],
 											 $forumType,
 											 bab_translate('Forum: ') . bab_toHtml($forum['name']),
 											 '',
@@ -1719,9 +1811,8 @@ class bab_ForumTreeView extends bab_TreeView
 
 	/**
 	 * Add threads and posts to the tree.
-	 * @access private
 	 */
-	function _addThreads()
+	protected function _addThreads()
 	{
 		global $babDB, $babBody;
 
@@ -1733,13 +1824,13 @@ class bab_ForumTreeView extends bab_TreeView
 		$sql .= ' ORDER BY tt.date';
 		
 		$threadType = 'thread';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_THREADS)) {
 			$threadType .= ' clickable';
 		}
 		$postType = 'post';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_POSTS)) {
 			$postType .= ' clickable';
 		}
 		$threads = $babDB->db_query($sql);
@@ -1752,17 +1843,17 @@ class bab_ForumTreeView extends bab_TreeView
 			$firstPost = true;
 			while ($post = $babDB->db_fetch_array($posts)) {
 				if ($post['id_parent'] === '0') {
-					$parentId = 'forum' . BAB_TREE_VIEW_ID_SEPARATOR . $thread['forum'];
+					$parentId = 'forum' . self::ID_SEPARATOR . $thread['forum'];
 					$elementType = $threadType;
 					$iconUrl = $GLOBALS['babSkinPath'] . 'images/nodetypes/thread.png';
 				} else {
-					$parentId = 'post' . BAB_TREE_VIEW_ID_SEPARATOR . $post['id_parent'];
+					$parentId = 'post' . self::ID_SEPARATOR . $post['id_parent'];
 					$elementType = $postType;
 					$iconUrl = $GLOBALS['babSkinPath'] . 'images/nodetypes/post.png';
 				}
-				if (($this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_POSTS) && $post['id_parent'] !== '0'
+				if (($this->hasAttributes(self::SHOW_POSTS)) && $post['id_parent'] !== '0'
 				    || $post['id_parent'] === '0') {
-					$element =& $this->createElement('post' . BAB_TREE_VIEW_ID_SEPARATOR . $post['id'],
+					$element =& $this->createElement('post' . self::ID_SEPARATOR . $post['id'],
 													 $elementType,
 													 bab_toHtml($post['subject']),
 													 '',
@@ -1774,13 +1865,13 @@ class bab_ForumTreeView extends bab_TreeView
 		}
 	}
 
-	function addStatistics($start, $end)
+	public function addStatistics($start, $end)
 	{
 		global $babDB;
 
 		$this->_updateTree();
 		// Init stats at 0
-		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 		$iterator->nextNode();
 		while ($node = $iterator->nextNode()) {
 			if (!is_null($node)) {
@@ -1800,7 +1891,7 @@ class bab_ForumTreeView extends bab_TreeView
 
 		$posts = $babDB->db_query($sql);
 		while ($post = $babDB->db_fetch_array($posts)) {
-			$node =& $this->_rootNode->getNodeById('post' . BAB_TREE_VIEW_ID_SEPARATOR . $post['id']);
+			$node =& $this->getRootNode()->getNodeById('post' . self::ID_SEPARATOR . $post['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($post['hits']);
@@ -1811,12 +1902,12 @@ class bab_ForumTreeView extends bab_TreeView
 		// For each forum we calculate the total number of hits for all the posts in the forum.
 
 		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
-		for ($forumNode =& $this->_rootNode->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
+		for ($forumNode =& $this->getRootNode()->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
 			
 			if (!is_null($forumNode->_firstChild)) {
 				
 				$total = 0;
-				$iterator = $this->_rootNode->createNodeIterator($forumNode->_firstChild);
+				$iterator = $this->getRootNode()->createNodeIterator($forumNode->_firstChild);
 				// We iterate all the nodes under the current forum node and calculate the total hits.
 				while ($node =& $iterator->nextNode()) {
 					if (!is_null($node)) {
@@ -1830,17 +1921,15 @@ class bab_ForumTreeView extends bab_TreeView
 		}
 	}
 
-	/**
-	 * @access private
-	 */
-	function _updateTree()
+
+	protected function _updateTree()
 	{
-		if ($this->_upToDate) {
+		if ($this->isUpToDate()) {
 			return;
 		}
 		$this->_addForums();
-		if ($this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_THREADS
-			|| $this->_attributes & BAB_FORUM_TREE_VIEW_SHOW_POSTS) {
+		if ($this->hasAttributes(self::SHOW_THREADS)
+			|| $this->hasAttributes(self::SHOW_POSTS)) {
 			$this->_addThreads();
 		}
 		parent::_updateTree();
@@ -1876,25 +1965,31 @@ define('BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS',		16);
 
 class bab_FaqTreeView extends bab_TreeView
 {
+	// Constants used for add/set/get/removeAttributes methods.
+	const SHOW_CATEGORIES				=    0;
+	const SHOW_SUB_CATEGORIES			=    1;
+	const SHOW_QUESTIONS				=    2;
+	const SELECTABLE_CATEGORIES			=    4;
+	const SELECTABLE_SUB_CATEGORIES		=    8;
+	const SELECTABLE_QUESTIONS			=   16;
+	
 	/**#@+
 	 * @access private
 	 */	
 	var $_categories;
 	/**#@-*/
 
-	function __construct($id)
+	public function __construct($id)
 	{
 		parent::__construct($id);
 
-//		$this->_attributes = BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
-		$this->addAttributes(BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS);
+		$this->addAttributes(self::SHOW_QUESTIONS);
 	}
 
 	/**
 	 * Add FAQ categories to the tree.
-	 * @access private
 	 */
-	function _addCategories()
+	protected function _addCategories()
 	{
 		global $babDB, $babBody;
 
@@ -1905,13 +2000,13 @@ class bab_FaqTreeView extends bab_TreeView
 		$sql .= ' order by category asc';
 
 		$faqcategoryType = 'faqcategory';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_CATEGORIES)) {
 			$faqcategoryType .= ' clickable';
 		}
 		$categories = $babDB->db_query($sql);
 		while ($category = $babDB->db_fetch_array($categories)) {
-			$element =& $this->createElement('category' . BAB_TREE_VIEW_ID_SEPARATOR . $category['id'],
+			$element =& $this->createElement('category' . self::ID_SEPARATOR . $category['id'],
 											 $faqcategoryType,
 											 bab_translate('Category: ') . bab_toHtml($category['category']),
 											 '',
@@ -1933,9 +2028,8 @@ class bab_FaqTreeView extends bab_TreeView
 
 	/**
 	 * Add FAQ sub-categories to the tree.
-	 * @access private
 	 */
-	function _addSubCategories()
+	protected function _addSubCategories()
 	{
 		global $babDB, $babBody;
 
@@ -1952,20 +2046,20 @@ class bab_FaqTreeView extends bab_TreeView
 		$sql .= ' ORDER BY ftt.id';
 		
 		$faqsubcategoryType = 'faqsubcategory';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_SUB_CATEGORIES)) {
 			$faqsubcategoryType .= ' clickable';
 		}		
 		$subCategories = $babDB->db_query($sql);
 		while ($subCategory = $babDB->db_fetch_array($subCategories)) {
-			$element =& $this->createElement('subcat' . BAB_TREE_VIEW_ID_SEPARATOR . $subCategory['id'],
+			$element =& $this->createElement('subcat' . self::ID_SEPARATOR . $subCategory['id'],
 											 $faqsubcategoryType,
 											 bab_toHtml($subCategory['name']),
 											 '',
 											 '');
 			$parentId = isset($this->_categories[$subCategory['id_parent']])
-								? 'category' . BAB_TREE_VIEW_ID_SEPARATOR . $this->_categories[$subCategory['id_parent']]
-								: 'subcat' . BAB_TREE_VIEW_ID_SEPARATOR . $subCategory['id_parent'];
+								? 'category' . self::ID_SEPARATOR . $this->_categories[$subCategory['id_parent']]
+								: 'subcat' . self::ID_SEPARATOR . $subCategory['id_parent'];
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			$this->appendElement($element, $parentId);
 		}
@@ -1973,9 +2067,8 @@ class bab_FaqTreeView extends bab_TreeView
 
 	/**
 	 * Add FAQ questions-answers to the tree.
-	 * @access private
 	 */
-	function _addQuestions()
+	protected function _addQuestions()
 	{
 		global $babDB, $babBody;
 
@@ -1985,33 +2078,33 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 
 		$questionType = 'faqquestion';
-		if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS) {
+		if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_QUESTIONS)) {
 			$questionType .= ' clickable';
 		}
 		$questions = $babDB->db_query($sql);
 		while ($question = $babDB->db_fetch_array($questions)) {
-			$element =& $this->createElement('question' . BAB_TREE_VIEW_ID_SEPARATOR . $question['id'],
+			$element =& $this->createElement('question' . self::ID_SEPARATOR . $question['id'],
 											 $questionType,
 											 bab_toHtml($question['question']),
 											 '',
 											 '');
 			$parentId = isset($this->_categories[$question['id_subcat']])
-								? 'category' . BAB_TREE_VIEW_ID_SEPARATOR . $this->_categories[$question['id_subcat']]
-								: 'subcat' . BAB_TREE_VIEW_ID_SEPARATOR . $question['id_subcat'];
+								? 'category' . self::ID_SEPARATOR . $this->_categories[$question['id_subcat']]
+								: 'subcat' . self::ID_SEPARATOR . $question['id_subcat'];
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/faq.png');
 			$this->appendElement($element, $parentId);
 		}
 	}
 
 
-	function addStatistics($start, $end)
+	public function addStatistics($start, $end)
 	{
 		global $babDB;
 
 		$this->_updateTree();
 		// Init stats at 0
-		$iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
+		$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 		$iterator->nextNode();
 		while ($node = $iterator->nextNode())
 			(!is_null($node)) && $node->_data->setInfo('0');		
@@ -2028,7 +2121,7 @@ class bab_FaqTreeView extends bab_TreeView
 
 		$faqs = $babDB->db_query($sql);
 		while ($faq = $babDB->db_fetch_array($faqs)) {
-			$node =& $this->_rootNode->getNodeById('question' . BAB_TREE_VIEW_ID_SEPARATOR . $faq['id']);
+			$node =& $this->getRootNode()->getNodeById('question' . self::ID_SEPARATOR . $faq['id']);
 			if (!is_null($node)) {
 				$element =& $node->getData();
 				$element->setInfo($faq['hits']);
@@ -2046,157 +2139,23 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 	}
 
-	/**
-	 * @access private
-	 */
-	function _updateTree()
+
+	protected function _updateTree()
 	{
-		if ($this->_upToDate)
+		if ($this->isUpToDate())
 			return;
 		$this->_categories = array();
 		$this->_addCategories();
-		if (($this->_attributes & BAB_FAQ_TREE_VIEW_SHOW_SUB_CATEGORIES)
-			|| ($this->_attributes & BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS)) {
+		if (($this->hasAttributes(self::SHOW_SUB_CATEGORIES))
+			|| ($this->hasAttributes(self::SHOW_QUESTIONS))) {
 			$this->_addSubCategories();
 		}
-		if ($this->_attributes & BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS) {
+		if ($this->hasAttributes(self::SHOW_QUESTIONS)) {
 			$this->_addQuestions();
 		}
 		parent::_updateTree();
 	}
 }
-
-
-
-//class bab_OvidentiaOrgChart extends bab_OrgChart 
-//{
-//	var $_orgChartId; // Ovidentia org chart id
-//	var $_startEntityId;
-//	var $_userId;
-//	var $_adminMode;
-//	
-//	var $t_orgChartId;
-//	var $t_entityId;
-//	var $t_adminMode;
-//	var $t_userId;
-//	
-//	function bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
-//	{
-//		parent::bab_OrgChart($id, $startLevel);
-//
-//		$this->_orgChartId = $this->t_orgChartId = $orgChartId;
-//		$this->_startEntityId = $this->t_entityId = $startEntityId;
-//		$this->_userId = $this->t_userId = $userId;
-//		$this->_adminMode = $this->t_adminMode = $adminMode;
-//	}
-//
-//	/**
-//	 * Returns a record set containing the child entities of $startEntityId, $startEntityId included. 
-//	 *
-//	 * @param int $startEntityId
-//	 * @access private
-//	 */
-//	function _selectEntities($startEntityId)
-//	{
-//		global $babDB;
-//
-//		$where = array('trees.id_user = ' . $babDB->quote($this->_orgChartId));
-//		
-//		if ($this->_startEntityId != 0) {
-//			$sql = 'SELECT trees.id, trees.lf, trees.lr ';
-//			$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
-//			$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities on entities.id_node=trees.id';
-//			$sql .= ' WHERE trees.id_user = ' . $babDB->quote($this->_orgChartId);
-//			$sql .= ' AND entities.id = ' . $babDB->quote($startEntityId);
-//			$trees = $babDB->db_query($sql);
-//			$tree = $babDB->db_fetch_array($trees);
-//
-//			$where[] = '(trees.id = ' . $babDB->quote($tree['id']) .
-//						' OR (trees.lf > ' . $babDB->quote($tree['lf']) .
-//							' AND trees.lr < '  . $babDB->quote($tree['lr']) . '))';
-//		}
-//
-//		
-//		$sql = 'SELECT entities.*, entities2.id as id_parent ';
-//		$sql .= ' FROM ' . BAB_OC_TREES_TBL . ' AS trees';
-//		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id';
-//		$sql .= ' LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities2 ON entities2.id_node = trees.id_parent';
-//
-//		$sql .= ' WHERE ' . implode(' AND ', $where);
-//		$sql .= ' ORDER BY trees.lf ASC';
-//
-//		$entities = $babDB->db_query($sql);
-//		
-//		return $entities;
-//	}
-//
-//	/**
-//	 * Adds entities starting at entity id $startNode in the orgchart.
-//	 * The entity with id $startNode will be the root of the orgchart. 
-//	 * 
-//	 * @param int $entityId
-//	 * @access private
-//	 */
-//	function _addEntities($startEntityId)
-//	{
-//		require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-//		global $babDB;
-//
-//		$entityType = 'entity';
-//		$elementIdPrefix = 'ENT';
-//		
-//		$entities = $this->_selectEntities($startEntityId);
-//		while ($entity = $babDB->db_fetch_array($entities)) {
-//			$element =& $this->createElement($elementIdPrefix . $entity['id'],
-//											 $entityType,
-//											 bab_toHtml($entity['name']),
-//											 '',
-//											 '');
-//			$members = bab_OCselectEntityCollaborators($entity['id']);
-//			while ($member = $babDB->db_fetch_array($members)) {
-//				if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
-//					$memberDirectoryEntryId = $member['id_dir_entry'];
-//					$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID);
-//					$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
-//					if ($member['role_type'] == 1) {
-//						if (isset($dirEntry['jpegphoto'])) {
-//							$element->setIcon($dirEntry['jpegphoto']['value']);
-//						}
-//						$element->setInfo($memberName);
-//						$element->setLink("javascript:flbhref('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&idx=detr&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&iduser=" . $memberDirectoryEntryId . "');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');");
-//					}
-//					$element->addMember($memberName, $member['role_name']);
-//				}
-//			}
-//			$element->setLinkEntity("javascript:updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=detr');updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');changestyle('ENT" . $entity['id'] . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
-//
-//			if ($entity['id'] != $startEntityId) {
-//				$element->addAction('show_from_here', bab_translate("Show from here"), $GLOBALS['babSkinPath'] . 'images/Puces/bottom.png', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id'] . '&disp=disp3', '');
-//			} else if ($entity['id_parent'] != 0) {
-//				$element->addAction('show_from_parent', bab_translate("Show from parent"), $GLOBALS['babSkinPath'] . 'images/Puces/parent.gif', $GLOBALS['babUrlScript'] . '?tg=' . bab_rp('tg') . '&idx' . bab_rp('idx') . '&ocid=' . $this->_orgChartId . '&oeid=' . $entity['id_parent'] . '&disp=disp3', '');
-//			}
-//			$element->addAction('toggle_members', bab_translate("Members"), $GLOBALS['babSkinPath'] . 'images/Puces/members.png', '', 'toggleMembers');
-//			if ($this->_adminMode) {
-//				$element->addAction('edit', bab_translate("Roles"), $GLOBALS['babSkinPath'] . 'images/Puces/edit.gif', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');", '');
-//				$element->addAction('delete', bab_translate("Delete"), $GLOBALS['babSkinPath'] . 'images/Puces/delete.png', "javascript:updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=listr');updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=flbchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entity['id'] . "&idx=dele');", '');
-//			}
-//			$this->appendElement($element, ($entity['id_parent'] == 0 || $entity['id'] == $this->_startEntityId) ? null : $elementIdPrefix . $entity['id_parent']);		
-//		}
-//	}
-//
-//	/**
-//	 * @access private
-//	 */
-//	function _updateTree()
-//	{
-//		if ($this->_upToDate)
-//			return;
-//		$this->_addEntities($this->_startEntityId);
-//		parent::_updateTree();
-//	}
-//}
-
-
 
 
 
@@ -2221,19 +2180,19 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 	 * @param string $link			A link when clicking the node title.
 	 * @return bab_GroupTreeViewElement
 	 */
-	function __construct($groupId, $type, $title, $description, $link)
+	public function __construct($groupId, $type, $title, $description, $link)
 	{
 		parent::__construct($groupId,  $type, $title, $description, $link);
 		$this->_groupId = $groupId;
 	}
 
+
 	/**
 	 * Returns the group id of the element.
 	 *
 	 * @return string		The group id of the element.
-	 * @access public
 	 */
-	function getGroupId()
+	public function getGroupId()
 	{
 		return $this->_groupId;
 	}
@@ -2249,18 +2208,19 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 define('BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS',		 4);
 
 /**
- * Enter description here...
+ * 
  *
  */
 class bab_GroupTreeView extends bab_TreeView
 {
-	/**#@+
-	 * @access private
-	 */	
-	var $_selectedGroups;
-	/**#@-*/
+	// Constants used for add/set/get/removeAttributes methods.
+	const SELECTABLE_GROUPS		=    4;
 
-	function __construct($id)
+
+	private $_selectedGroups;
+
+
+	public function __construct($id)
 	{
 		parent::__construct($id);
 		$this->t_isMultiSelect = true;
@@ -2276,9 +2236,8 @@ class bab_GroupTreeView extends bab_TreeView
 	 * @param string $link			A link when clicking the node title.
 	 * 
 	 * @return bab_GroupTreeViewElement
-	 * @access public
 	 */
-	function &createElement($id, $type, $title, $description, $link)
+	public function &createElement($id, $type, $title, $description, $link)
 	{
 		$element =& new bab_GroupTreeViewElement($id, $type, $title, $description, $link);
 		return $element;
@@ -2295,31 +2254,29 @@ class bab_GroupTreeView extends bab_TreeView
 	 * @param string 				$parentId	The id of the parent element.
 	 * @access public
 	 */
-	function appendElement(&$element, $parentId)
+	public function appendElement(&$element, $parentId)
 	{
 		parent::appendElement($element, $parentId);
 		$groupId = $element->getGroupId();
-		if ($groupId !== '' && ($this->_attributes & BAB_TREE_VIEW_MULTISELECT)) {
+		if ($groupId !== '' && ($this->hasAttributes(self::MULTISELECT))) {
 			$element->addCheckBox('select[' . $groupId . ']', isset($this->_selectedGroups[$groupId]));
 		}
 	}
 
 
-	
+
 	/**
 	 * Preselect groups in the treeview.
 	 *
 	 * @param array $groups		An array indexed by group ids (group ids are in the key)
 	 */
-	function selectGroups($groups)
+	public function selectGroups($groups)
 	{
 		$this->_selectedGroups = $groups;
 	}
 
-	/**
-	 * @access private
-	 */
-	function _addGroups()
+
+	protected function _addGroups()
 	{
 		include_once $GLOBALS['babInstallPath']. 'utilit/grptreeincl.php';
 
@@ -2333,30 +2290,28 @@ class bab_GroupTreeView extends bab_TreeView
 				$groupName = $group['name'];
 			}
 			$groupType = 'group';
-			if (!($this->_attributes & BAB_TREE_VIEW_MULTISELECT)
-					&& $this->_attributes & BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS) {
+			if (!($this->hasAttributes(self::MULTISELECT))
+					&& $this->hasAttributes(self::SELECTABLE_GROUPS)) {
 				$groupType .= ' clickable';
 			}
-			
-			$element =& $this->createElement('group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id'],
+
+			$element =& $this->createElement('group' . self::ID_SEPARATOR . $group['id'],
 											 $groupType,
 											 bab_toHtml($groupName),
 											 '',
 											 '');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . BAB_TREE_VIEW_ID_SEPARATOR . $group['id_parent']);
+			$parentId = (BAB_REGISTERED_GROUP === (int) $group['id'] ? NULL : 'group' . self::ID_SEPARATOR . $group['id_parent']);
 			
 			$this->appendElement($element, $parentId);
 		}
 
 	}
 
-	/**
-	 * @access private
-	 */
-	function _updateTree()
+
+	protected function _updateTree()
 	{
-		if ($this->_upToDate) {
+		if ($this->isUpToDate()) {
 			return;
 		}
 		$this->_addGroups();
