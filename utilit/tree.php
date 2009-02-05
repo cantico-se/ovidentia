@@ -263,21 +263,28 @@ class bab_TreeViewElement
 
 
 
+/**
+ * DEPRECATED ** Use corresponding bab_TreeView constant.
+ * @deprecated
+ */
 define('BAB_TREE_VIEW_ID_SEPARATOR',	'__');
 
-define('BAB_TREE_VIEW_COLLAPSED',			1);
-define('BAB_TREE_VIEW_EXPANDED',			2);
+//define('BAB_TREE_VIEW_COLLAPSED',			1);
+//define('BAB_TREE_VIEW_EXPANDED',			2);
 
 /**
- * The treeview will offer the selection of multiple nodes.
+ * DEPRECATED ** Use corresponding bab_TreeView constant.
+ * @deprecated
  */
 define('BAB_TREE_VIEW_MULTISELECT',			1024);
 /**
- * Will store the state of open/closed nodes in a cookie.
+ * DEPRECATED ** Use corresponding bab_TreeView constant.
+ * @deprecated
  */
 define('BAB_TREE_VIEW_MEMORIZE_OPEN_NODES',	2048);
 /**
- * A toolbar with expand / collapse and a search field will be added a the top of the treeview.
+ * DEPRECATED ** Use corresponding bab_TreeView constant.
+ * @deprecated
  */
 define('BAB_TREE_VIEW_SHOW_TOOLBAR',		4096);
 
@@ -287,8 +294,8 @@ define('BAB_TREE_VIEW_SHOW_TOOLBAR',		4096);
  */
 class bab_TreeView extends bab_Template
 {
-	const VIEW_COLLAPSED		=    1;
-	const VIEW_EXPANDED			=    2;
+//	const VIEW_COLLAPSED		=    1;
+//	const VIEW_EXPANDED			=    2;
 	
 	// Constants used for add/set/get/removeAttributes methods.
 	/**
@@ -781,6 +788,8 @@ class bab_TreeView extends bab_Template
 	 */
 
 	/**
+	 * DEPRECATED ** DO NOT USE ** Instead override the appendElement method of bab_TreeView.
+	 * 
 	 * This method is called after the bab_TreeViewElement $element has been appended to the treeview. 
 	 *
 	 * @param bab_TreeViewElement $element
@@ -905,14 +914,15 @@ class bab_ArticleTreeView extends bab_TreeView
 	const SELECTABLE_ARTICLES				=   32;
 	
 	/**
-	 * Show a root node.
+	 * Show a root node (Named "Categories, topics and articles",
+	 * "Categories and topics" or "Categories" depending on the
+	 * visible nodes).
 	 */
 	const SHOW_ROOT_NODE					=   64;
 	
 	/**
 	 * DEPRECATED ** Only show administered delegations.
-	 * @see SHOW_ONLY_ADMINISTERED_DELEGATION
-	 * @deprecated
+	 * @deprecated by SHOW_ONLY_ADMINISTERED_DELEGATION
 	 */
 	const HIDE_DELEGATIONS					=  128;
 	/**
@@ -992,11 +1002,11 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * The treeview will only display the topics for which the
 	 * current user is allowed to perform the selected action.
 	 * Possible values for $action are:
-	 *  - self::READ_ARTICLES
-	 *  - self::SUBMIT_ARTICLES
-	 *  - self::MODIFY_ARTICLES
-	 *  - self::SUBMIT_COMMENTS
-	 *  - self::MANAGE_TOPIC
+	 *  - bab_ArticleTreeView::READ_ARTICLES
+	 *  - bab_ArticleTreeView::SUBMIT_ARTICLES
+	 *  - bab_ArticleTreeView::MODIFY_ARTICLES
+	 *  - bab_ArticleTreeView::SUBMIT_COMMENTS
+	 *  - bab_ArticleTreeView::MANAGE_TOPIC
 	 *
 	 * @param int $action
 	 */
@@ -1009,11 +1019,11 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * Returns the action for which the article tree is displayed.
 	 * 
 	 * Possible returned values are:
-	 *  - self::READ_ARTICLES
-	 *  - self::SUBMIT_ARTICLES
-	 *  - self::MODIFY_ARTICLES
-	 *  - self::SUBMIT_COMMENTS
-	 *  - self::MANAGE_TOPIC
+	 *  - bab_ArticleTreeView::READ_ARTICLES
+	 *  - bab_ArticleTreeView::SUBMIT_ARTICLES
+	 *  - bab_ArticleTreeView::MODIFY_ARTICLES
+	 *  - bab_ArticleTreeView::SUBMIT_COMMENTS
+	 *  - bab_ArticleTreeView::MANAGE_TOPIC
 	 * @return int
 	 */
 	public function getAction()
@@ -1064,7 +1074,7 @@ class bab_ArticleTreeView extends bab_TreeView
 		switch ($this->_action)
 		{
 			case self::MODIFY_ARTICLES:
-			
+
 				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
 				$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
 				$topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
@@ -1099,9 +1109,9 @@ class bab_ArticleTreeView extends bab_TreeView
 				
 			// list topic by submit comments right seem to be not very usefull
 			// case self::SUBMIT_COMMENTS:
-				
-				
-				
+
+
+
 			// admin rights view of topics (view all topics by delegation)
 			default:
 				$sql = 'SELECT topics.id, topics.id_cat, topics.description, topics.category'
@@ -1140,8 +1150,7 @@ class bab_ArticleTreeView extends bab_TreeView
 				
 					list($nbarcharticles) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topic['id'])."' and archive='Y'"));
 				
-					$element->setInfo(sprintf(bab_translate('%d Online article(s) | %d Old article(s)'), $nbarticles, $nbarcharticles));
-					
+					$element->setInfo(sprintf(bab_translate('%d Online article(s) | %d Old article(s)'), $nbarticles, $nbarcharticles));	
 				}
 				
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
@@ -1397,7 +1406,7 @@ define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',	 		16);
 define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',					32);
 /**
  *  DEPRECATED ** Use bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION
- *  @deprecated
+ *  @deprecated by bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION
  */
 define('BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION',			   128);
 
@@ -1925,24 +1934,73 @@ class bab_FileTreeView extends bab_TreeView
 
 
 
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SHOW_FORUMS',				 0);
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SHOW_THREADS',				 1);
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SHOW_POSTS',				 2);
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SELECTABLE_FORUMS',	 		 4);
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SELECTABLE_THREADS',	 	 8);
+/**
+ * @deprecated Use corresponding bab_ForumTreeView constant.
+ */
 define('BAB_FORUM_TREE_VIEW_SELECTABLE_POSTS',			16);
 
 
 class bab_ForumTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
-	const SHOW_FORUMS			=    0;
-	const SHOW_THREADS			=    1;
-	const SHOW_POSTS			=    2;
-	const SELECTABLE_FORUMS		=    4;
-	const SELECTABLE_THREADS	=    8;
-	const SELECTABLE_POSTS		=   16;
 	
+	/**
+	 * Show forum nodes.
+	 */
+	const SHOW_FORUMS			=    0;
+
+	/**
+	 * Show thread nodes (implies SHOW_FORUM).
+	 */
+	const SHOW_THREADS			=    1;
+
+	/**
+	 * Show post nodes (implies SHOW_THREADS).
+	 */
+	const SHOW_POSTS			=    2;
+
+	/**
+	 * Make forum nodes selectable.
+	 */
+	const SELECTABLE_FORUMS		=    4;
+
+	/**
+	 * Make thread nodes selectable.
+	 */
+	const SELECTABLE_THREADS	=    8;
+
+	/**
+	 * Make post nodes selectable.
+	 */
+	const SELECTABLE_POSTS		=   16;
+
+	/**
+	 * Only show administered delegations.
+	 * TODO : Has currently no effect
+	 */
+	const SHOW_ONLY_ADMINISTERED_DELEGATION =  128;
+	
+
 	public function __construct($id)
 	{
 		parent::__construct($id);
@@ -2110,27 +2168,27 @@ class bab_ForumTreeView extends bab_TreeView
 
 
 /**
- * Display FAQ categories.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SHOW_CATEGORIES',				 0);
 /**
- * Display FAQ sub-categories.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SHOW_SUB_CATEGORIES',			 1);
 /**
- * Display FAQ questions-answers.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS',				 2);
 /**
- * Make FAQ categories selectable.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SELECTABLE_CATEGORIES',		 4);
 /**
- * Make FAQ sub-categories selectable.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SELECTABLE_SUB_CATEGORIES',	 8);
 /**
- * Make FAQ questions-answers selectable.
+ * @deprecated Use corresponding bab_FaqTreeView constant.
  */
 define('BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS',		16);
 
@@ -2138,13 +2196,45 @@ define('BAB_FAQ_TREE_VIEW_SELECTABLE_QUESTIONS',		16);
 class bab_FaqTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
-	const SHOW_CATEGORIES				=    0;
-	const SHOW_SUB_CATEGORIES			=    1;
-	const SHOW_QUESTIONS				=    2;
-	const SELECTABLE_CATEGORIES			=    4;
-	const SELECTABLE_SUB_CATEGORIES		=    8;
-	const SELECTABLE_QUESTIONS			=   16;
-	
+
+	/**
+	 * Show FAQ category nodes.
+	 */
+	const SHOW_CATEGORIES					=    0;
+
+	/**
+	 * Show FAQ sub-category nodes (implies SHOW_CATEGORIES).
+	 */
+	const SHOW_SUB_CATEGORIES				=    1;
+
+	/**
+	 * Show FAQ question nodes (implies SHOW_SUB_CATEGORIES).
+	 */
+	const SHOW_QUESTIONS					=    2;
+
+	/**
+	 * Make FAQ category nodes selectable.
+	 */
+	const SELECTABLE_CATEGORIES				=    4;
+
+	/**
+	 * Make FAQ sub-category nodes selectable.
+	 */
+	const SELECTABLE_SUB_CATEGORIES			=    8;
+
+	/**
+	 * Make FAQ question nodes selectable.
+	 */
+	const SELECTABLE_QUESTIONS				=   16;
+
+	/**
+	 * Only show administered delegations.
+	 * TODO : Has currently no effect
+	 */
+	const SHOW_ONLY_ADMINISTERED_DELEGATION =  128;
+
+
+
 	/**#@+
 	 * @access private
 	 */	
@@ -2190,7 +2280,7 @@ class bab_FaqTreeView extends bab_TreeView
 		$sql = 'SELECT ftt.id_parent, fst.* FROM ' . BAB_FAQ_TREES_TBL . ' ftt ,' . BAB_FAQ_SUBCAT_TBL
 			. ' fst WHERE ftt.id = fst.id_node AND ftt.id_parent = 0'
 			. ' ORDER BY ftt.id';
-		
+
 		$subCategories = $babDB->db_query($sql);
 		while ($subCategory = $babDB->db_fetch_array($subCategories)) {
 			$this->_categories[$subCategory['id']] = $subCategory['id_cat'];
@@ -2216,7 +2306,7 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 		$sql .= ' ftt.id = fst.id_node AND ftt.id_parent <> 0';
 		$sql .= ' ORDER BY ftt.id';
-		
+
 		$faqsubcategoryType = 'faqsubcategory';
 		if (!($this->hasAttributes(self::MULTISELECT))
 					&& $this->hasAttributes(self::SELECTABLE_SUB_CATEGORIES)) {
@@ -2375,17 +2465,20 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 
 
 /**
- * Make group nodes selectable.
+ * @deprecated Use corresponding bab_GroupTreeView constant.
  */
 define('BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS',		 4);
 
 /**
- * 
- *
+ * A treeview populated by ovidentia groups.
  */
 class bab_GroupTreeView extends bab_TreeView
 {
 	// Constants used for add/set/get/removeAttributes methods.
+
+	/**
+	 * Make group nodes selectable.
+	 */
 	const SELECTABLE_GROUPS		=    4;
 
 

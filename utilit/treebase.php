@@ -387,10 +387,13 @@ class bab_Node
 
 
 	/**
+	 * DO NOT USE ** BROKEN
+	 * 
+	 * This method has to be finished
+	 * 
 	 * Swaps the nodes $firstNode and $secondNode.
 	 * @param bab_Node $firstNode
 	 * @param bab_Node $secondNode
-	 * @access private
 	 */
 	private function _swapNodes(bab_Node &$second, bab_Node &$secondNode)
 	{

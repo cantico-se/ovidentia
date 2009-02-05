@@ -95,7 +95,7 @@ class bab_Sort
 	 *
 	 * @param array		$aToSort	array to sort
 	 * @param string	$sKeyName	If $aToSort is an array of array $sKeyName is the sort key
-	 * @param int		$iCase		Case used in compare
+	 * @param int		$iCase		Case sensitivity used in comparison
 	 * @return bool
 	 */
 	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_Sort::CASE_SENSITIVE)
@@ -125,7 +125,7 @@ class bab_Sort
 	 * Sort an array by key
 	 *
 	 * @param array		$aToSort	array to sort
-	 * @param int		$iCase		Case used in compare
+	 * @param int		$iCase		Case sensitivity used in comparison
 	 * @return bool
 	 */
 	public static function ksort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
@@ -153,9 +153,9 @@ class bab_Sort
 	private static function compareStringsSensitive($sStr1, $sStr2)
 	{
 		return bab_compare($sStr1, $sStr2);
-	}	
-	
-	
+	}
+
+
 	/**
 	 * Compare case-insensitively two strings.
 	 * 
@@ -173,7 +173,8 @@ class bab_Sort
 
 	/**
 	 * Compare case-sensitively two arrays according to the specified key (self::$sKeyName).
-	 * 
+	 *
+	 * @see bab_compare
 	 * @param array $array1
 	 * @param array $array2
 	 * @return int
@@ -187,7 +188,8 @@ class bab_Sort
 
 	/**
 	 * Compare case-insensitively two arrays according to the specified key (self::$sKeyName).
-	 * 
+	 *
+	 * @see bab_compare
 	 * @param array $array1
 	 * @param array $array2
 	 * @return int
