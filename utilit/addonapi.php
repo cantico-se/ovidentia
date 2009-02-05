@@ -24,36 +24,72 @@ require_once 'base.php';
 
 
 /**
- * Helper class for sort
+ * Helper class for sorting arrays.
  *
  */
-class bab_sort
+class bab_Sort
 {
 	private static $sKeyName	= null;
 	private static $iCase		= 0;
-	
+
 	const CASE_SENSITIVE		= 0;
 	const CASE_INSENSITIVE		= 1;
-	
-	public function __construct()
-	{
-		
-	}
-	
+
+
+
 	/**
-	 * Sort an array using a case insensitive "natural order" algorithm
+	 * Sort an array
 	 *
 	 * @param array		$aToSort	array to sort
+	 * @param int		$iCase		Case used in compare
+	 * @return bool
+	 */
+	public static function sort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
+	{
+		self::$iCase = $iCase;
+
+		if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+			$sortCallback = 'compareStringsInsensitive';
+		} else {
+			$sortCallback = 'compareStringsSensitive';
+		}
+		return usort($aToSort, array('bab_sort', $sortCallback));
+	}
+
+
+
+	/**
+	 * Sort an array using a case insensitive "natural order" algorithm.
+	 *
+	 * @param array		$aToSort	The array to sort
 	 * @return bool
 	 */
 	public static function natcasesort(array &$aToSort)
 	{
-		self::$sKeyName = null;
-		self::$iCase	= bab_sort::CASE_INSENSITIVE;
-		
-		return uasort($aToSort, array('bab_sort', 'uasortCallback'));
+		self::$iCase	= bab_Sort::CASE_INSENSITIVE;
+
+		$sortCallback = 'compareStringsInsensitive';
+		return uasort($aToSort, array('bab_sort', $sortCallback));
 	}
-	
+
+
+
+	/**
+	 * Sort an array using a case sensitive "natural order" algorithm.
+	 *
+	 * @param array		$aToSort	The array to sort
+	 * @return bool
+	 */
+	public static function natsort(array &$aToSort)
+	{
+		self::$iCase	= bab_Sort::CASE_SENSITIVE;
+
+		$sortCallback = 'compareStringsSensitive';
+		return uasort($aToSort, array('bab_sort', $sortCallback));
+	}
+
+
+
 	/**
 	 * Sort an array and maintain index association
 	 *
@@ -62,34 +98,29 @@ class bab_sort
 	 * @param int		$iCase		Case used in compare
 	 * @return bool
 	 */
-	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_sort::CASE_SENSITIVE)
+	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_Sort::CASE_SENSITIVE)
 	{
 		self::$sKeyName = $sKeyName;
 		self::$iCase	= $iCase;
-		
-		return uasort($aToSort, array('bab_sort', 'uasortCallback'));
-	}
-	
-	private static function uasortCallback($mixedParam1, $mixedParam2)
-	{
-		$oCollator = bab_getCollatorInstance();
 
-		if(isset(self::$sKeyName))
-		{
-			return $oCollator->compare(
-				bab_sort::getStringAccordingToCase($mixedParam1[self::$sKeyName]), 
-				bab_sort::getStringAccordingToCase($mixedParam2[self::$sKeyName])
-			);
+		if(isset(self::$sKeyName)) {
+			if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+				$sortCallback = 'compareKeysInsensitive';
+			} else {
+				$sortCallback = 'compareKeysSensitive';
+			}			
+		} else {
+			if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+				$sortCallback = 'compareStringsInsensitive';
+			} else {
+				$sortCallback = 'compareStringsSensitive';
+			}			
 		}
-		else
-		{
-			return $oCollator->compare(
-				bab_sort::getStringAccordingToCase($mixedParam1), 
-				bab_sort::getStringAccordingToCase($mixedParam2)
-			);
-		}
-	}	
-	
+		return uasort($aToSort, array('bab_sort', $sortCallback));
+	}
+
+
+
 	/**
 	 * Sort an array by key
 	 *
@@ -97,80 +128,77 @@ class bab_sort
 	 * @param int		$iCase		Case used in compare
 	 * @return bool
 	 */
-	public static function ksort(array &$aToSort, $iCase = 0)
-	{
-		$oCollator = bab_getCollatorInstance();
-		
-		return uksort($aToSort, array('bab_sort', 'uksortCallback'));
-	}
-
-	private static function insensitiveCaseCompare($sStr1, $sStr2)
-	{
-		
-	}
-
-	private static function sensitiveCaseCompare($sStr1, $sStr2)
-	{
-		bab_compare($sStr1, $sStr2);
-	}
-
-	
-	private static function uksortCallback($sStr1, $sStr2)
-	{
-		$oCollator = bab_getCollatorInstance();
-		
-		return $oCollator->compare(
-			bab_sort::getStringAccordingToCase($sStr1), 
-			bab_sort::getStringAccordingToCase($sStr2)
-		);
-	}	
-	
-	/**
-	 * Sort an array
-	 *
-	 * @param array		$aToSort	array to sort
-	 * @param int		$iCase		Case used in compare
-	 * @return bool
-	 */
-	public static function sort(array &$aToSort, $iCase = 0)
+	public static function ksort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
 	{
 		self::$iCase = $iCase;
-		
-		return usort($aToSort, array('bab_sort', 'sortCallback'));
+
+		if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+			$sortCallback = 'compareStringsInsensitive';
+		} else {
+			$sortCallback = 'compareStringsSensitive';
+		}
+		return uksort($aToSort, array('bab_sort', $sortCallback));
 	}
-	
-	private static function sortCallback($sStr1, $sStr2)
+
+
+
+	/**
+	 * Compare case-sensitively two strings.
+	 * 
+	 * @see bab_compare
+	 * @param string $string1
+	 * @param string $string2
+	 * @return int		Same values as bab_compare
+	 */
+	private static function compareStringsSensitive($sStr1, $sStr2)
 	{
-		$oCollator = bab_getCollatorInstance();
-		
-		return $oCollator->compare(
-			bab_sort::getStringAccordingToCase($sStr1), 
-			bab_sort::getStringAccordingToCase($sStr2)
-		);
+		return bab_compare($sStr1, $sStr2);
 	}	
 	
+	
 	/**
-	 * @return string	UTF-8 string
+	 * Compare case-insensitively two strings.
+	 * 
+	 * @see bab_compare
+	 * @param string $string1
+	 * @param string $string2
+	 * @return int		Same values as bab_compare
 	 */
-	private static function getStringAccordingToCase($sString)
+	private static function compareStringsInsensitive($sStr1, $sStr2)
 	{
-		if (bab_sort::CASE_INSENSITIVE == self::$iCase)
-		{
-			$str = mb_strtolower($sString);
-		}
-		else
-		{
-			$str = $sString;
-		}
+		return bab_compare(mb_strtolower($sStr1), mb_strtolower($sStr2));
+	}	
+	
 
-		if (bab_charset::UTF_8 !== bab_charset::getIso()) 
-		{
-			$str = utf8_encode($str);
-		}
-		
-		return $str;
+
+	/**
+	 * Compare case-sensitively two arrays according to the specified key (self::$sKeyName).
+	 * 
+	 * @param array $array1
+	 * @param array $array2
+	 * @return int
+	 */
+	private static function compareKeysSensitive(array $array1, array $array2)
+	{
+		return bab_compare($array1[self::$sKeyName], $array2[self::$sKeyName]);
+	}
+
+
+
+	/**
+	 * Compare case-insensitively two arrays according to the specified key (self::$sKeyName).
+	 * 
+	 * @param array $array1
+	 * @param array $array2
+	 * @return int
+	 */
+	private static function compareKeysInsensitive(array $array1, array $array2)
+	{
+		return bab_compare(mb_strtolower($array1[self::$sKeyName]), mb_strtolower($array2[self::$sKeyName]));
 	}
 }
+
+
 
 /**
  * Compare strings
@@ -193,10 +221,9 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 		$sInputStringIsoCharset = bab_charset::getIso();
 	}
 
-
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
-		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));		
+		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 	}
 
 	$oCollator = bab_getCollatorInstance();
