@@ -35,19 +35,19 @@ function selectArticles()
 {
 	$attributes = 0;
 	if (bab_rp('show_categories', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_CATEGORIES;
+		$attributes |= bab_ArticleTreeView::SHOW_CATEGORIES;
 	if (bab_rp('show_topics', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS;
+		$attributes |= bab_ArticleTreeView::SHOW_TOPICS;
 	if (bab_rp('show_articles', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES;
+		$attributes |= bab_ArticleTreeView::SHOW_ARTICLES;
 	if (bab_rp('selectable_categories', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES;
+		$attributes |= bab_ArticleTreeView::SELECTABLE_CATEGORIES;
 	if (bab_rp('selectable_topics', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS;
+		$attributes |= bab_ArticleTreeView::SELECTABLE_TOPICS;
 	if (bab_rp('selectable_articles', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES;
+		$attributes |= bab_ArticleTreeView::SELECTABLE_ARTICLES;
 	if (bab_rp('hide_delegations', false))
-		$attributes |= BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS;
+		$attributes |= bab_ArticleTreeView::HIDE_DELEGATIONS;
 		
 	$ignoredCategories = bab_rp('ignored_categories', '');
 	$ignoredCategories = explode(',', $ignoredCategories);
@@ -150,40 +150,40 @@ function selectFiles($folderId = null, $path = '')
 	$urlAttributes = '';
 	if (bab_rp('show_collective_directories', false)) {
 		$urlAttributes .= '&show_collective_directories=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES;
+		$attributes |= bab_FileTreeView::SHOW_COLLECTIVE_DIRECTORIES;
 	}
 	if (bab_rp('show_personal_directories', false)) {
 		$urlAttributes .= '&show_personal_directories=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES;
+		$attributes |= bab_FileTreeView::SHOW_PERSONAL_DIRECTORIES;
 	}
 	if (bab_rp('show_sub_directories', false)) {
 		$urlAttributes .= '&show_sub_directories=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES;
+		$attributes |= bab_FileTreeView::SHOW_SUB_DIRECTORIES;
 	}
 	if (bab_rp('show_files', false)) {
 		$urlAttributes .= '&show_files=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SHOW_FILES;
+		$attributes |= bab_FileTreeView::SHOW_FILES;
 	}
 	if (bab_rp('show_only_delegation', false)) {
 		$urlAttributes .= '&show_only_delegation=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SHOW_ONLY_DELEGATION;
+		$attributes |= bab_FileTreeView::SHOW_ONLY_DELEGATION;
 	}
 	if (bab_rp('selectable_collective_directories', false)) {
 		$urlAttributes .= '&selectable_collective_directories=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES;
+		$attributes |= bab_FileTreeView::SELECTABLE_COLLECTIVE_DIRECTORIES;
 	}
 	if (bab_rp('selectable_sub_directories', false)) {
 		$urlAttributes .= '&selectable_sub_directories=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES;
+		$attributes |= bab_FileTreeView::SELECTABLE_SUB_DIRECTORIES;
 	}
 	if (bab_rp('selectable_files', false)) {
 		$urlAttributes .= '&selectable_files=1';
-		$attributes |= BAB_FILE_TREE_VIEW_SELECTABLE_FILES;
+		$attributes |= bab_FileTreeView::SELECTABLE_FILES;
 	}
 	
 	if (bab_rp('multi', false)) {
 		$urlAttributes .= '&multi=1';
-		$attributes |= BAB_TREE_VIEW_MULTISELECT;
+		$attributes |= bab_FileTreeView::MULTISELECT;
 	}
 
 //	$GLOBALS['babBodyPopup'] = new babBodyPopup();
@@ -205,7 +205,7 @@ function selectFiles($folderId = null, $path = '')
 	}
 	// Here we are in the case where $folderId is not set, so we only want to display the root folders
 	// (the sub folders will be loaded when the user opens one of these)
-	$attributes &= ~(BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES | BAB_FILE_TREE_VIEW_SHOW_FILES);
+	$attributes &= ~(bab_FileTreeView::SHOW_SUB_DIRECTORIES | bab_FileTreeView::SHOW_FILES);
 	$treeView->setAttributes($attributes);
 	$GLOBALS['babBody']->babPopup($treeView->printTemplate());
 	die();
@@ -219,10 +219,10 @@ function selectGroups()
 {
 	$attributes = 0;
 	if (bab_rp('selectable_groups', false) !== false) {
-		$attributes |= BAB_GROUP_TREE_VIEW_SELECTABLE_GROUPS;
+		$attributes |= bab_GroupTreeView::SELECTABLE_GROUPS;
 	}
 	if (bab_rp('multi', false) !== false) {
-		$attributes |= BAB_TREE_VIEW_MULTISELECT;
+		$attributes |= bab_GroupTreeView::MULTISELECT;
 	}
 	
 	$treeView = new bab_GroupTreeView('bab_tv_groups');

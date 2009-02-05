@@ -406,7 +406,7 @@ function showTopicTree($actionType, $selectedTopicId)
 		function FormTemplate($actionType)
 		{
 			$this->idart = bab_rp('idart');
-			if ($actionType == BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES) {
+			if ($actionType == bab_ArticleTreeView::SUBMIT_ARTICLES) {
 				$this->t_no_topic = bab_translate('No topic');
 				$this->next_idx = bab_toHtml('s1');
 			} else {
@@ -428,15 +428,18 @@ function showTopicTree($actionType, $selectedTopicId)
 	$html = bab_printTemplate($template, 'artedit.html', 'topictreeform');
 
 	$topicTree = new bab_ArticleTreeView('article_topics_tree' . $actionType);
-	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES);
+	$topicTree->setAttributes(bab_ArticleTreeView::SHOW_TOPICS
+							| bab_ArticleTreeView::SELECTABLE_TOPICS
+							| bab_ArticleTreeView::HIDE_EMPTY_TOPICS_AND_CATEGORIES
+							| bab_ArticleTreeView::SHOW_TOOLBAR
+							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
+							);
 	$topicTree->setAction($actionType);
 	$topicTree->setLink('javascript:selectTopic(%s);');
-	$topicTree->highlightElement('topic' . BAB_TREE_VIEW_ID_SEPARATOR . $selectedTopicId);
+	$topicTree->highlightElement('topic' . bab_ArticleTreeView::ID_SEPARATOR . $selectedTopicId);
 	$topicTree->order();
 	$topicTree->sort();
-	
+
 	$html .= $topicTree->printTemplate();
 
 	return $html; 

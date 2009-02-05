@@ -1,26 +1,26 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+//
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once 'base.php';
 include_once $babInstallPath.'utilit/statutil.php';
 include_once $babInstallPath.'utilit/uiutil.php';
@@ -1015,24 +1015,25 @@ function showStatTopicCategory($idtopcat, $date)
 		}
 	else
 		{
-		$babBodyPopup->babecho(bab_printTemplate($temp, "statart.html", "summaryarticle"));
+		$babBodyPopup->babecho(bab_printTemplate($temp, 'statart.html', 'summaryarticle'));
 		}
 }
 
 
 function displayArticleTree($startDay, $endDay)
 {
+	global $babBody;
+
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_ArticleTreeView('article');
-	$treeView->setAttributes(
-							BAB_ARTICLE_TREE_VIEW_SHOW_ARTICLES
-							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
-							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES
+	$treeView->setAttributes( bab_ArticleTreeView::SHOW_ARTICLES
+							| bab_ArticleTreeView::SELECTABLE_TOPICS
+							| bab_ArticleTreeView::SELECTABLE_ARTICLES
+							| bab_ArticleTreeView::SHOW_TOOLBAR
+							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
 							);
+							
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
-	$GLOBALS['babBody']->babecho($treeView->printTemplate());
+	$babBody->babEcho($treeView->printTemplate());
 }
-
-
-?>
