@@ -25,20 +25,6 @@
 
 
 
-if (!function_exists('is_a'))
-{
-    function is_a($object, $class)
-    {
-        if (!is_object($object))
-            return false;
-        if (mb_strtolower(get_class($object)) === mb_strtolower($class))
-            return true;
-        return is_subclass_of($object, $class);
-    }
-}
-
-
-
 
 /**
  * An ordered collection of nodes.
@@ -53,7 +39,7 @@ class bab_NodeList
 	var $_firstNode;
 /**#@-*/
 	
-	function bab_NodeList(&$firstNode)
+	public function __construct(&$firstNode)
 	{
 		$this->_length = null;
 		$this->_firstNode =& $firstNode;
@@ -63,7 +49,7 @@ class bab_NodeList
 	 * Returns the number of nodes in the node list.
 	 * @return int
 	 */
-	function length()
+	public function length()
 	{
 		$length = 0;
 		$node =& $this->_firstNode;
@@ -80,7 +66,7 @@ class bab_NodeList
 	 * @param int $n index of the node to fetch the node list (starting at 0).
 	 * @return bab_Node
 	 */
-	function &item($n)
+	public function &item($n)
 	{
 		$i = 0;
 		$node =& $this->_firstNode;
@@ -123,7 +109,7 @@ class bab_Node
 	 * @param string $id
 	 * @return bab_Node
 	 */
-	function bab_Node(&$rootNode, $id = null)
+	function __construct(&$rootNode, $id = null)
 	{
 		$this->_id = $id;
 		$this->_data = null;
@@ -141,7 +127,7 @@ class bab_Node
 	 * @static 
 	 * @return null
 	 */
-	function &NULL_NODE()
+	public function &NULL_NODE()
 	{
 		return $GLOBALS['BAB_NODE_NULL'];
 	}
@@ -151,7 +137,7 @@ class bab_Node
 	 * Sets the data associated to the node.
 	 * @param mixed $data
 	 */
-	function setData(&$data)
+	public function setData(&$data)
 	{
 		$this->_data =& $data;
 	}
@@ -160,7 +146,7 @@ class bab_Node
 	 * Returns the data associated to the node.
 	 * @return mixed
 	 */
-	function &getData()
+	public function &getData()
 	{
 		return $this->_data;
 	}
@@ -169,7 +155,7 @@ class bab_Node
 	 * Returns the id of the node.
 	 * @return string
 	 */
-	function getId()
+	public function getId()
 	{
 		return $this->_id;
 	}
@@ -178,7 +164,7 @@ class bab_Node
 	 * Returns the previous sibling of the node or null.
 	 * @return bab_Node
 	 */
-	function &previousSibling()
+	public function &previousSibling()
 	{
 		return $this->_previousSibling;
 	}
@@ -187,7 +173,7 @@ class bab_Node
 	 * Returns the next sibling of the node or null.
 	 * @return bab_Node
 	 */
-	function &nextSibling()
+	public function &nextSibling()
 	{
 		return $this->_nextSibling;
 	}
@@ -196,7 +182,7 @@ class bab_Node
 	 * Returns the parent of the node or null.
 	 * @return bab_Node
 	 */
-	function &parentNode()
+	public function &parentNode()
 	{
 		return $this->_parent;
 	}
@@ -205,7 +191,7 @@ class bab_Node
 	 * Returns the first child of the node or null.
 	 * @return bab_Node
 	 */
-	function &firstChild()
+	public function &firstChild()
 	{
 		return $this->_firstChild;
 	}
@@ -214,7 +200,7 @@ class bab_Node
 	 * Returns the last child of the node or null.
 	 * @return bab_Node
 	 */
-	function &lastChild()
+	public function &lastChild()
 	{
 		return $this->_lastChild;
 	}
@@ -223,7 +209,7 @@ class bab_Node
 	 * Returns whether the node is the first child of its parent.
 	 * @return boolean
 	 */
-	function isFirstChild()
+	public function isFirstChild()
 	{
 		return is_null($this->previousSibling());
 	}
@@ -232,7 +218,7 @@ class bab_Node
 	 * Returns whether the node is the last child of its parent.
 	 * @return boolean
 	 */
-	function isLastChild()
+	public function isLastChild()
 	{
 		return is_null($this->nextSibling());
 	}
@@ -241,7 +227,7 @@ class bab_Node
 	 * Returns whether the node has children.
 	 * @return boolean
 	 */
-	function hasChildNodes()
+	public function hasChildNodes()
 	{
 		return (!is_null($this->firstChild()));
 	}
@@ -250,7 +236,7 @@ class bab_Node
 	 * Returns the list of child nodes.
 	 * @return bab_NodeList
 	 */
-	function childNodes()
+	public function childNodes()
 	{
 		$nodeList = new bab_NodeList($this->firstChild());
 		return $nodeList;
@@ -261,7 +247,7 @@ class bab_Node
 	 * @param bab_Node $newNode
 	 * @return boolean
 	 */
-	function appendChild(&$newNode)
+	public function appendChild(&$newNode)
 	{
 		if ($this->hasChildNodes()) {
 			$this->_lastChild->_nextSibling =& $newNode;
@@ -281,7 +267,7 @@ class bab_Node
 	 * @param bab_Node $refNode
 	 * @return boolean
 	 */
-	function insertBefore(&$newNode, &$refNode)
+	public function insertBefore(&$newNode, &$refNode)
 	{
 		if ($refNode->isFirstChild()) {
 			$this->_firstChild =& $newNode;
@@ -306,7 +292,7 @@ class bab_Node
 	 * @param bab_Node $node
 	 * @return boolean
 	 */
-	function removeChild(&$node)
+	public function removeChild(&$node)
 	{
 		$node->_parent =& bab_Node::NULL_NODE();
 
@@ -341,7 +327,7 @@ class bab_Node
 	 * @param bab_Node $oldNode
 	 * @return bab_Node The node replaced.
 	 */
-	function &replaceChild(&$newNode, &$oldNode)
+	public function &replaceChild(&$newNode, &$oldNode)
 	{
 		$newNode->_parent =& $this;
 
@@ -380,7 +366,7 @@ class bab_Node
 	 * @param bab_Node $firstNode
 	 * @access private
 	 */
-	function _swapConsecutiveNodes(&$firstNode)
+	private function _swapConsecutiveNodes(&$firstNode)
 	{
 		$secondNode =& $firstNode->_nextSibling;
 		if ($firstNode->isFirstChild()) {
@@ -399,6 +385,38 @@ class bab_Node
 		$firstNode->_previousSibling =& $secondNode;
 	}
 
+
+	/**
+	 * Swaps the nodes $firstNode and $secondNode.
+	 * @param bab_Node $firstNode
+	 * @param bab_Node $secondNode
+	 * @access private
+	 */
+	private function _swapNodes(bab_Node &$second, bab_Node &$secondNode)
+	{
+		if ($firstNode->nextSibling() === $secondNode) {
+			$this->_swapConsecutiveNodes($firstNode);
+		} else if ($secondNode->nextSibling() === $firstNode) {
+			$this->_swapConsecutiveNodes($secondNode);
+		} else {
+			$firstNodeParent =& $firstNode->_parent;
+			$firstNodePreviousSibling =& $firstNode->_previousSibling;
+			$firstNodeNextSibling =& $firstNode->_nextSibling;
+
+			$secondNodeParent =& $firstNode->_parent;
+			$secondNodePreviousSibling =& $secondNode->_previousSibling;
+			$secondNodeNextSibling =& $secondNode->_nextSibling;
+			
+			$firstNode->_parent =& $secondNodeParent;
+			$firstNode->_previousSibling =& $secondNodeNextSibling;
+			$firstNode->_nextSibling =& $secondNodeNextSibling;
+
+			$secondNode->_parent =& $firstNodeParent;
+			$secondNode->_previousSibling =& $firstNodePreviousSibling;
+			$secondNode->_nextSibling =& $firstNodeNextSibling;
+		}
+	}
+
 	/**
 	 * Sorts the child nodes.
 	 * The data associated to the nodes must be an object implementing a 'compare'
@@ -411,7 +429,7 @@ class bab_Node
 	 * 
 	 * @see bab_Node::sortSubTree()
 	 */
-	function sortChildNodes(/*$comparisonFunction = 'bab_Node_defaultNodeComparison'*/)
+	public function sortChildNodes(/*$comparisonFunction = 'bab_Node_defaultNodeComparison'*/)
 	{
 		$nodes = array();
 		$node =& $this->firstChild();
@@ -420,7 +438,7 @@ class bab_Node
 		}
 		if ($i === 0)
 			return;
-		$elementClass = get_class($nodes[0]);
+//		$elementClass = get_class($nodes[0]);
 		$changed = true;
 		for ($end = count($nodes) - 1; $changed && $end > 0; $end--) {
 			$changed = false;
@@ -442,7 +460,7 @@ class bab_Node
 	 * Recursively sorts the descendants of the node.
 	 * @see bab_Node::sortChildNodes()
 	 */
-	function sortSubTree()
+	public function sortSubTree()
 	{
 		if ($this->hasChildNodes()) {
 			$node =& $this->firstChild();
@@ -454,18 +472,21 @@ class bab_Node
 		}
 	}
 	
+
 	
 	
 	
-	
-	
-	
-	
+	public function __toString()
+	{
+		return $this->displayAsText();
+	}
+
+
 	/**
 	 * Display as text
 	 * @param	int		[$deep]
 	 */
-	function displayAsText($deep = 0) {
+	public function displayAsText($deep = 0) {
 	
 		$title = '';
 		$mixed = $this->getData();
@@ -511,9 +532,9 @@ class bab_RootNode extends bab_Node
 	var $_ids;
 	/**#@-*/
 	
-	function bab_RootNode()
+	public function __construct()
 	{
-		parent::bab_Node(bab_Node::NULL_NODE());
+		parent::__construct(bab_Node::NULL_NODE());
 		$this->_ids = array();
 	}
 
@@ -587,7 +608,7 @@ class bab_NodeIterator
 	/**
 	 * @param bab_Node $node	The starting node for the iterator.
 	 */
-	function bab_NodeIterator(&$node)
+	public function __construct(&$node)
 	{
 		$this->_tree =& $node->_tree;
 		$this->_currentNode =& $node;
@@ -601,16 +622,17 @@ class bab_NodeIterator
 	 * starting node of the iterator is considered level 0.
 	 * @return int
 	 */
-	function level()
+	public function level()
 	{
 		return $this->_level;
 	}
 
 	/**
 	 * Returns the next node in the tree.
+	 * 
 	 * @return bab_Node
 	 */
-	function &nextNode()
+	public function &nextNode()
 	{
 		$node =& $this->_currentNode;
 
@@ -642,21 +664,18 @@ class bab_NodeIterator
  * The class bab_OrphanRootNode provides the ability to insert nodes before their parents
  * are inserted. When the parents are inserted later, their children will
  * automatically be appended to their list of child nodes.
+ * 
  * @package Utilities
  * @subpackage Types
  */
 class bab_OrphanRootNode extends bab_RootNode
 {
-	/**#@+
-	 * @access private
-	 */	
-	var $_orphansByParent;
-	var $_orphans;
-	/**#@-*/
+	private $_orphansByParent;
+	private $_orphans;
 	
-	function bab_OrphanRootNode()
+	public function __construct()
 	{
-		parent::bab_RootNode();
+		parent::__construct();
 		$this->_orphansByParent = array();
 		$this->_orphans = array();
 	}
@@ -664,10 +683,9 @@ class bab_OrphanRootNode extends bab_RootNode
 
 	/**
 	 * Checks if the node $newNodeId has orphans waiting for it and
-	 * append them to its list of child nodes.
-	 * @access private
+	 * appends them to its list of child nodes.
 	 */
-	function _update($newNodeId)
+	private function _update($newNodeId)
 	{
 		if (!isset($this->_orphansByParent[$newNodeId])) {
 			return;
@@ -685,11 +703,12 @@ class bab_OrphanRootNode extends bab_RootNode
 
 	/**
 	 * Creates a node.
+	 *
 	 * @param mixed $data
 	 * @param string $id
 	 * @return bab_Node
 	 */
-	function &createNode(&$data, $id = null)
+	public function &createNode(&$data, $id = null)
 	{
 		$newNode =& parent::createNode($data, $id);
 		if (is_null($newNode)) {
@@ -709,9 +728,9 @@ class bab_OrphanRootNode extends bab_RootNode
 	 * @param string $id
 	 * @return boolean
 	 */
-	function appendChild(&$newNode, $id = null)
+	public function appendChild(&$newNode, $id = null)
 	{
-		if (!is_a($newNode, 'bab_Node'))
+		if (!($newNode instanceof bab_Node))
 			return false;
 
 		if (is_null($id)) {
@@ -740,7 +759,3 @@ class bab_OrphanRootNode extends bab_RootNode
 		return true;
 	}
 }
-
-
-
-?>

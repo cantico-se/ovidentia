@@ -67,7 +67,7 @@ class bab_TreeViewElement
 	 * @param string $description	An additional description that will appear as a tooltip.
 	 * @param string $link			A link when clicking the node title.
 	 */
-	function bab_TreeViewElement($id, $type, $title, $description, $link)
+	public function __construct($id, $type, $title, $description, $link)
 	{
 		$this->_id = $id;
 		$this->_type = $type;
@@ -91,9 +91,8 @@ class bab_TreeViewElement
 	 * the subtree of an element.
 	 *
 	 * @param string $url
-	 * @access public
 	 */
-	function setFetchContentScript($url)
+	public function setFetchContentScript($url)
 	{
 		$this->_fetchContentScript = $url;
 	}
@@ -108,9 +107,8 @@ class bab_TreeViewElement
 	 * @param string	$link
 	 * @param string	$script
 	 * @param array		$scriptArgs
-	 * @access public 
 	 */
-	function addAction($name, $caption, $icon, $link, $script, $scriptArgs = array('this'))
+	public function addAction($name, $caption, $icon, $link, $script, $scriptArgs = array('this'))
 	{
 		$this->_actions[] = array('name' => $name,
 								  'caption' => $caption,
@@ -127,9 +125,8 @@ class bab_TreeViewElement
 	 * @param string $name
 	 * @param string $caption
 	 * @param string $icon
-	 * @access public 
 	 */
-	function addMenu($name, $caption, $icon)
+	public function addMenu($name, $caption, $icon)
 	{
 		$this->_menus[$name] = array('name' => $name,
 									 'caption' => $caption,
@@ -147,9 +144,8 @@ class bab_TreeViewElement
 	 * @param string $icon
 	 * @param string $link
 	 * @param string $script
-	 * @access public
 	 */
-	function addMenuAction($menuName, $actionName, $caption, $icon, $link, $script)
+	public function addMenuAction($menuName, $actionName, $caption, $icon, $link, $script)
 	{
 		$this->_menus[$menuName]['actions'][] = array('name' => $actionName,
 													  'caption' => $caption,
@@ -163,9 +159,8 @@ class bab_TreeViewElement
 	 * Adds a separator (typically an horizontal line) in the specified menu.
 	 *
 	 * @param string $menuName
-	 * @access public
 	 */
-	function addMenuSeparator($menuName)
+	public function addMenuSeparator($menuName)
 	{
 		$this->_menus[$menuName]['actions'][] = array('name' => '-');
 	}
@@ -176,9 +171,8 @@ class bab_TreeViewElement
 	 * @param string $name
 	 * @param boolean $check		True to check the box.
 	 * @param string $script		The script to execute on click.
-	 * @access public
 	 */
-	function addCheckBox($name, $check = false, $script = '')
+	public function addCheckBox($name, $check = false, $script = '')
 	{
 		$this->_checkBoxes[] = array('name' => $name, 'checked' => $check, 'script' => $script);
 	}
@@ -187,9 +181,8 @@ class bab_TreeViewElement
 	 * Defines an info text that will appear on the right of the treeview element title.
 	 * 
 	 * @param string $text
-	 * @access public
 	 */
-	function setInfo($text)
+	public function setInfo($text)
 	{
 		$this->_info = $text;
 	}
@@ -198,9 +191,8 @@ class bab_TreeViewElement
 	 * Defines a tooltip text that will appear when hovering the icon and label of the element.
 	 * 
 	 * @param string $text
-	 * @access public
 	 */
-	function setTooltip($text)
+	public function setTooltip($text)
 	{
 		$this->_tooltip = $text;
 	}
@@ -209,9 +201,8 @@ class bab_TreeViewElement
 	 * Defines the rank of the treeview element (that can be used by the compare and sort methods).
 	 * 
 	 * @param int $rank
-	 * @access public
 	 */
-	function setRank($rank)
+	public function setRank($rank)
 	{
 		$this->_rank = $rank;
 	}
@@ -220,9 +211,8 @@ class bab_TreeViewElement
 	 * Defines the url link when the element is clicked.
 	 * 
 	 * @param string $url
-	 * @access public
 	 */
-	function setLink($url)
+	public function setLink($url)
 	{
 		$this->_link = $url;
 	}
@@ -231,9 +221,8 @@ class bab_TreeViewElement
 	 * Defines the url of the treeview element icon.
 	 * 
 	 * @param string $url
-	 * @access public
 	 */
-	function setIcon($url)
+	public function setIcon($url)
 	{
 		$this->_icon = $url;
 	}
@@ -243,9 +232,8 @@ class bab_TreeViewElement
 	 * The url will be called when the TreeViewElement is expanded.
 	 * 
 	 * @param string $url
-	 * @access public
 	 */
-	function setSubTree($url)
+	public function setSubTree($url)
 	{
 		$this->_subTree = $url;
 	}
@@ -262,7 +250,7 @@ class bab_TreeViewElement
 	 * @param bab_TreeViewElement $element
 	 * @return int
 	 */
-	function compare(&$element)
+	public function compare(&$element)
 	{
 		$diff = (int)$element->_rank - (int)$this->_rank;
 		if ($diff === 0) {
@@ -375,14 +363,12 @@ class bab_TreeView
 	 * @return bab_TreeView
 	 * @access public
 	 */
-	function bab_TreeView($id)
+	public function __construct($id)
 	{
 		$this->_id = $id;
 		$this->_rootNode = new bab_OrphanRootNode();
 		$this->_iterator = null;
-		
-		$this->_attributes = BAB_TREE_VIEW_SHOW_TOOLBAR;
-		
+
 		$this->_highlightedElements = array();
 
 		$this->t_treeViewId= $this->_id;
@@ -400,6 +386,7 @@ class bab_TreeView
 
 		$this->t_layout = 'horizontal';
 
+		// Default template files.
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'treeview';
 		$this->_templateCss = 'treeview_css';
@@ -412,9 +399,8 @@ class bab_TreeView
 
 		$this->_upToDate = false;
 
-		$this->t_memorizeOpenNodes = true;
-		$this->t_showToolbar = true;
-		$this->t_isMultiSelect = false;
+		$this->setAttributes(BAB_TREE_VIEW_SHOW_TOOLBAR | BAB_TREE_VIEW_MEMORIZE_OPEN_NODES);
+
 		$this->t_fetchContentScript = false;
 	}
 
@@ -424,19 +410,30 @@ class bab_TreeView
 	 *
 	 * @param string $classes		Space separated list of classes.
 	 */
-	function setClasses($classes)
+	public function setClasses($classes)
 	{
 		$this->t_classes = $classes;
 	}
 
 
 	/**
+	 * Returns the attributes of the treeview.
+	 * 
+	 * @return int
+	 * @access public
+	 */
+	public function getAttributes()
+	{
+		return $this->_attributes;
+	}
+	
+	/**
 	 * Defines the attributes of the treeview.
 	 * 
 	 * @param int $attributes
 	 * @access public
 	 */
-	function setAttributes($attributes)
+	public function setAttributes($attributes)
 	{
 		$this->_attributes = $attributes;
 		$this->_invalidateCache();
@@ -446,23 +443,11 @@ class bab_TreeView
 	}
 
 	/**
-	 * Returns the attributes of the treeview.
-	 * 
-	 * @return int
-	 * @access public
-	 */
-	function getAttributes()
-	{
-		return $this->_attributes;
-	}
-	
-	/**
 	 * Adds attributes to the treeview.
 	 * 
 	 * @param int $attributes
-	 * @access public
 	 */
-	function addAttributes($attributes)
+	public function addAttributes($attributes)
 	{		
 		$this->setAttributes($this->getAttributes() | $attributes);
 	}
@@ -471,9 +456,8 @@ class bab_TreeView
 	 * Adds attributes to the treeview.
 	 * 
 	 * @param int $attributes
-	 * @access public
 	 */
-	function removeAttributes($attributes)
+	public function removeAttributes($attributes)
 	{
 		$this->setAttributes($this->getAttributes() & ~$attributes);
 	}
@@ -487,9 +471,8 @@ class bab_TreeView
 	 * @param string $link			A link when clicking the node title.
 	 * 
 	 * @return bab_TreeViewElement
-	 * @access public
 	 */
-	function &createElement($id, $type, $title, $description, $link)
+	public function &createElement($id, $type, $title, $description, $link)
 	{
 		$element =& new bab_TreeViewElement($id, $type, $title, $description, $link);
 		return $element;
@@ -502,9 +485,8 @@ class bab_TreeView
 	 * 
 	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
 	 * @param string 				$parentId	The id of the parent element.
-	 * @access public
 	 */
-	function appendElement(&$element, $parentId)
+	public function appendElement(&$element, $parentId)
 	{
 		$node =& $this->_rootNode->createNode($element, $element->_id);
 		$this->_rootNode->appendChild($node, $parentId);
@@ -519,7 +501,7 @@ class bab_TreeView
 	 * @param string			$id		The id of the element to remove.
 	 * @return	bool
 	 */
-	function removeElement($id)
+	public function removeElement($id)
 	{
 		$node =& $this->_rootNode->getNodeById($id);
 		if (!isset($node)) {
@@ -537,10 +519,8 @@ class bab_TreeView
 	 * 
 	 * Siblings of the same branch are ordered.
 	 * Ordering is performed using the bab_TreeViewElement::compare() method.
-	 *
-	 * @access public
 	 */
-	function sort()
+	public function sort()
 	{
 //		$this->_updateTree();
 		$this->_invalidateCache();
@@ -548,7 +528,7 @@ class bab_TreeView
 	}
 
 	
-	function highlightElement($id)
+	public function highlightElement($id)
 	{
 		$this->_highlightedElements[$id] = true;
 	}
@@ -557,7 +537,7 @@ class bab_TreeView
 	 * Template methods.
 	 * @ignore
 	 */	
-	function getNextElement()
+	public function getNextElement()
 	{
 		if (is_null($this->_iterator)) {
 			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
@@ -569,19 +549,13 @@ class bab_TreeView
 		}
 		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
 		if ($this->t_levelVariation < -1) {
-//			$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			$this->t_previousLevel--;
 			$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
-//			$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 			return true;
 		}
 
-//		$this->t_previousLayout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
-		
 		$this->t_previousLevel = $this->t_level;
 		$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
-
-//		$this->t_layout = ($this->t_previousLevel >= 3 ? 'vertical' : 'horizontal');
 
 		if ($node =& $this->_iterator->nextNode()) {
 			$this->t_isFirstChild = $node->isFirstChild();
@@ -621,7 +595,7 @@ class bab_TreeView
 		return false;
 	}
 	
-	function getNextAction()
+	public function getNextAction()
 	{
 		if (list(,$action) = each($this->_currentElement->_actions)) {
 			$this->action_name = $action['name'];
@@ -636,7 +610,7 @@ class bab_TreeView
 		return false;
 	}
 
-	function getNextMenu()
+	public function getNextMenu()
 	{
 		if (list(,$menu) = each($this->_currentElement->_menus)) {
 			$this->menuActions = $menu['actions'];
@@ -649,7 +623,7 @@ class bab_TreeView
 		return false;
 	}
 
-	function getNextMenuAction()
+	public function getNextMenuAction()
 	{
 		if (list(,$action) = each($this->menuActions)) {
 			$this->action_name = $action['name'];
@@ -665,7 +639,7 @@ class bab_TreeView
 		return false;
 	}
 
-	function getNextCheckBox()
+	public function getNextCheckBox()
 	{
 		if (list(,$checkBox) = each($this->_currentElement->_checkBoxes)) {
 			$this->checkbox_name = $checkBox['name'];
@@ -681,7 +655,7 @@ class bab_TreeView
 	/**
 	 * @access private
 	 */
-	function _invalidateCache()
+	protected function _invalidateCache()
 	{
 		$this->_templateCache = null;
 	}
@@ -689,7 +663,7 @@ class bab_TreeView
 	/**
 	 * @access protected
 	 */
-	function _updateTree()
+	protected function _updateTree()
 	{
 		$this->_upToDate = true;
 	}
@@ -698,7 +672,7 @@ class bab_TreeView
 	 * 
 	 * @return string
 	 */
-	function printTemplate()
+	public function printTemplate()
 	{
 		if (is_null($this->_templateCache)) {
 			if (!$this->_upToDate) {
@@ -716,7 +690,7 @@ class bab_TreeView
 	 * 
 	 * @return string
 	 */
-	function printSubTree()
+	public function printSubTree()
 	{
 		if (!$this->_upToDate)
 			$this->_updateTree();
@@ -733,276 +707,15 @@ class bab_TreeView
 	 *
 	 * @param bab_TreeViewElement $element
 	 * @param string $parentId
+	 * @deprecated
  	 */
-	function onElementAppended(&$element, $parentId)
+	public function onElementAppended(&$element, $parentId)
 	{
 	}
 
 	/**#@-*/
 
 }
-
-
-
-
-
-
-
-//class bab_OrgChartElement extends bab_TreeViewElement
-//{
-//	/**#@+
-//	 * @access private
-//	 */	
-//	var $_members;
-//	var $_linkEntity;
-//	/**#@-*/
-//	
-//	/**
-//	 * @param string $id			A unique element id in the treeview.
-//	 * @param string $type			Will be used as a css class to style the element.
-//	 * @param string $title			The title (label) of the node.
-//	 * @param string $description	An additional description that will appear as a tooltip.
-//	 * @param string $link			A link when clicking the node title.
-//	 */
-//	function bab_OrgChartElement($id, $type, $title, $description, $link)
-//	{
-//		parent::bab_TreeViewElement($id, $type, $title, $description, $link);
-//		$this->_members = array();
-//	}
-//
-//	
-//	function addMember($memberName, $role = '')
-//	{
-//		if (!isset($this->_members[$role])) {
-//			$this->_members[$role] = array();
-//		}
-//		$this->_members[$role][] = $memberName;
-//	}
-//
-//	/**
-//	 * Defines the url link when the entity is clicked.
-//	 * @param string $url
-//	 */
-//	function setLinkEntity($url)
-//	{
-//		$this->_linkEntity = $url;
-//	}
-//
-//}
-//
-//
-//
-//
-//
-//
-//class bab_OrgChart extends bab_TreeView
-//{
-//	/**#@+
-//	 * @access private
-//	 */	
-//	var $_verticalThreshold;
-//	var $_startLevel;
-//	
-//	var $_openNodes;
-//	var $_openMembers;
-//
-//	var $t_zoomFactor;
-//	
-//	var $t_nodeId;
-//	var $t_layout;
-//	var $t_previousLayout;
-//	
-//	var $t_nbMembers;
-//	var $t_memberName;
-//
-//	var $t_linkEntity;
-//	/**#@-*/
-//	
-//	
-//	/**
-//	 * @param string 	$id		A unique treeview id in the page.
-//	 * 							Must begin with a letter ([A-Za-z]) and may be followed
-//	 * 							by any number of letters, digits ([0-9]), hyphens ("-"),
-//	 * 							underscores ("_"), colons (":"), and periods (".").
-//	 * @param int		$startLevel
-//	 * @return bab_OrgChart
-//	 * @access public
-//	 */
-//	function bab_OrgChart($id, $startLevel = 0)
-//	{
-//		parent::bab_TreeView($id);
-//		$this->_verticalThreshold = 4;
-//		$this->_startLevel = $startLevel;
-//		$this->_templateFile = 'treeview.html';
-//		$this->_templateSection = 'orgchart';
-//		$this->_templateCss = 'orgchart_css';
-//		$this->_templateScripts = 'orgchart_scripts';
-//		$this->_openNodes = array();
-//		$this->_openMembers = array();
-//		$this->_zoomFactor = 1.0;
-//
-//		$this->t_fit_width = bab_translate('Fit width');
-//		$this->t_visible_levels = bab_translate('Visible levels');
-//		$this->t_visible_levels_tip = bab_translate('Only show n first levels of the org chart');
-//		$this->t_zoom_in = bab_translate('Zoom in');
-//		$this->t_zoom_out = bab_translate('Zoom out');
-//		$this->t_default_view = bab_translate('Default view');
-//		$this->t_save_default_view = bab_translate('Save default view');
-//		$this->t_print = bab_translate('Print');
-//		$this->t_help = bab_translate('Help');
-//	}
-//
-//	/**
-//	 * @param string $id			A unique element id in the treeview.
-//	 * @param string $type			Will be used as a css class to style the element.
-//	 * @param string $title			The title (label) of the node.
-//	 * @param string $description	An additional description that will appear as a tooltip.
-//	 * @param string $link			A link when clicking the node title.
-//	 * @return bab_OrgChartElement
-//	 */
-//	function &createElement($id, $type, $title, $description, $link)
-//	{
-//		$element =& new bab_OrgChartElement($id, $type, $title, $description, $link);
-//		return $element;
-//	}
-//
-//	
-//	function setOpenNodes($openNodes)
-//	{
-//		$this->_openNodes = $openNodes;
-//		reset($this->_openNodes);
-//	}
-//
-//
-//	function setOpenMembers($openMembers)
-//	{
-//		$this->_openMembers = $openMembers;
-//		reset($this->_openMembers);
-//	}
-//
-//	function setZoomFactor($zoomFactor)
-//	{
-//		$this->t_zoomFactor = $zoomFactor;
-//	}
-//	/**
-//	 * Defines the depth level from which the org chart branches are displayed vertically.
-//	 * @access public
-//	 */
-//	function setVerticalThreshold($threshold)
-//	{
-//		$this->_verticalThreshold = $threshold;		
-//	}
-//
-//	/**#@+
-//	 * Template methods.
-//	 * @ignore
-//	 */	
-//	
-//	function getNextOpenNode()
-//	{
-//		while (list(, $nodeId) = each($this->_openNodes)) {
-//			$this->t_nodeId = $nodeId;
-//			return true;	
-//		}
-//		reset($this->_openNodes);
-//		return false;
-//	}
-//
-//	function getNextOpenMember()
-//	{
-//		while (list(, $nodeId) = each($this->_openMembers)) {
-//			$this->t_memberId = $nodeId;
-//			return true;	
-//		}
-//		reset($this->_openMembers);
-//		return false;
-//	}
-//
-//	function getNextElement()
-//	{
-//		$verticalThreshold = $this->_verticalThreshold - $this->_startLevel;
-//		
-//		if (is_null($this->_iterator)) {
-//			$this->_iterator = $this->_rootNode->createNodeIterator($this->_rootNode);
-//			$this->_iterator->nextNode();
-//			$this->t_level = $this->_iterator->level();
-//			$this->t_previousLevel = $this->t_level - 1;
-//		}
-//		$this->t_levelVariation = $this->t_level - $this->t_previousLevel;
-//		if ($this->t_levelVariation < -1) {
-//			$this->t_previousLayout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
-//			$this->t_previousLevel--;
-//			$this->t_layout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
-//			return true;
-//		}
-//
-//		$this->t_previousLayout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
-//		
-//		$this->t_previousLevel = $this->t_level;
-//
-//		$this->t_layout = ($this->t_previousLevel >= $verticalThreshold ? 'vertical' : 'horizontal');
-//
-//		if ($node =& $this->_iterator->nextNode()) {
-//			$this->t_isFirstChild = $node->isFirstChild();
-//			$this->t_isLastChild = $node->isLastChild();
-//			$this->t_isMiddleChild = (!$node->isFirstChild() && !$node->isLastChild());
-//			$this->t_isSingleChild = ($node->isFirstChild() && $node->isLastChild());
-//			
-//				
-//			$this->t_level = $this->_iterator->level();
-//			$this->t_total_level = $this->t_level + $this->_startLevel;
-//			$element =& $node->getData();
-//			$this->t_id = $this->_id . '.' . $element->_id;
-//			$this->t_type =& $element->_type;
-//			$this->t_title =& $element->_title;
-//			$this->t_description =& $element->_description;
-//			$this->t_link =& $element->_link;
-//			$this->t_linkEntity =& $element->_linkEntity;
-//			$this->t_info =& $element->_info;
-//			$this->t_nodeIcon =& $element->_icon;
-//			$this->_currentElement =& $element;
-//			reset($this->_currentElement->_actions);
-//			reset($this->_currentElement->_members);
-//			$this->t_nbMembers = count($this->_currentElement->_members);
-//			
-//			$this->t_showRightElements = ($element->_info != '')
-//							|| (count($this->_currentElement->_actions) > 0)
-//							|| (count($this->_currentElement->_checkBoxes) > 0);
-//			return true;
-//		}
-//		if ($this->t_level > -1) {
-//			$this->t_level = -1;
-//			return $this->getNextElement();
-//		}
-//		$this->_iterator = null;
-//		return false;
-//	}
-//
-//	function getNextMemberRole()
-//	{
-//		if (list($memberRole, ) = each($this->_currentElement->_members)) {
-//			$this->t_memberRole = $memberRole;
-//			$this->_members =& $this->_currentElement->_members[$memberRole];
-//			reset($this->_members);
-//			return true;
-//		}
-//		reset($this->_currentElement->_members);
-//		return false;
-//	}
-//
-//	function getNextMemberName()
-//	{
-//		if (list(,$memberName) = each($this->_members)) {
-//			$this->t_memberName = $memberName;
-//			return true;
-//		}
-//		reset($this->_members);
-//		return false;
-//	}
-//	/**#@-*/
-//}
-
-
 
 
 
@@ -1019,7 +732,7 @@ define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_CATEGORIES',				 8);
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS',					16);
 define('BAB_ARTICLE_TREE_VIEW_SELECTABLE_ARTICLES',					32);
 define('BAB_ARTICLE_TREE_VIEW_SHOW_ROOT_NODE',						64);
-define('BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS',					128);
+define('BAB_ARTICLE_TREE_VIEW_HIDE_DELEGATIONS',				   128);
 
 define('BAB_ARTICLE_TREE_VIEW_READ_ARTICLES',						 1);
 define('BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES',						 2);
@@ -1049,9 +762,9 @@ class bab_ArticleTreeView extends bab_TreeView
 	/**#@-*/
 
 
-	function bab_ArticleTreeView($id)
+	public function __construct($id)
 	{
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 
 		$this->_templateFile = 'treeview.html';
 		$this->_templateSection = 'treeview';
@@ -1478,11 +1191,11 @@ class bab_FileTreeView extends bab_TreeView
 	/**#@-*/
 
 
-	function bab_FileTreeView($id, $adminView = true)
+	function __construct($id, $adminView = true)
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 
 		$this->_attributes = BAB_FILE_TREE_VIEW_SHOW_FILES;
 
@@ -1955,9 +1668,9 @@ class bab_ForumTreeView extends bab_TreeView
 {
 
 
-	function bab_ForumTreeView($id)
+	function __construct($id)
 	{
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 		
 		$this->_attributes = BAB_FORUM_TREE_VIEW_SHOW_POSTS;
 	}
@@ -2159,9 +1872,9 @@ class bab_FaqTreeView extends bab_TreeView
 	var $_categories;
 	/**#@-*/
 
-	function bab_FaqTreeView($id)
+	function __construct($id)
 	{
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 
 		$this->_attributes = BAB_FAQ_TREE_VIEW_SHOW_QUESTIONS;
 	}
@@ -2497,9 +2210,9 @@ class bab_GroupTreeViewElement extends bab_TreeViewElement
 	 * @param string $link			A link when clicking the node title.
 	 * @return bab_GroupTreeViewElement
 	 */
-	function bab_GroupTreeViewElement($groupId, $type, $title, $description, $link)
+	function __construct($groupId, $type, $title, $description, $link)
 	{
-		parent::bab_TreeViewElement($groupId,  $type, $title, $description, $link);
+		parent::__construct($groupId,  $type, $title, $description, $link);
 		$this->_groupId = $groupId;
 	}
 
@@ -2536,9 +2249,9 @@ class bab_GroupTreeView extends bab_TreeView
 	var $_selectedGroups;
 	/**#@-*/
 
-	function bab_GroupTreeView($id)
+	function __construct($id)
 	{
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 		$this->t_isMultiSelect = true;
 	}
 
