@@ -230,7 +230,7 @@ class listFiles
 		{
 			$this->addCollectiveDirectory($oFmFolder, $oFmFolder->getId());
 		}
-		bab_sort::asort($this->aFolders, 'sName');
+		bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
 		
 		if(userHavePersonnalStorage())
 		{
@@ -259,7 +259,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'simpleDirectoryCallback');
 		}
-		bab_sort::asort($this->aFolders, 'sName');
+		bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
 	}
 
 	function listCollectiveFolder()
@@ -270,7 +270,7 @@ class listFiles
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
 		}
-		bab_sort::asort($this->aFolders, 'sName');
+		bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
 	}
 	
 	function walkDirectory($sPathName, $sCallbackFunction)
