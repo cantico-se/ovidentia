@@ -2668,7 +2668,7 @@
 <string id="Messages">Messages</string>
 <string id="Writable functionalities directory">Répertoire "functionalities" accessible en écriture</string>
 <string id="Include disabled users">Inclure les utilisateurs désactivés</string>
-<string id="The directory name contains characters not supported by the file system">Le nom du répertoire contient des caractères non supportés par le système de fichier</string>
+<string id="The directory name contains characters not supported by the file system">Le nom du répertoire contient des caractères non supportés par le système de fichiers</string>
 <string id="Warning">Attention</string>
 <string id="Before continuing, it is strongly advised to make a copy of the database and directory storage">Avant de continuer, il est fortement conseiller d'effectuer une copie de la base de données et du répertoire de stockage</string>
 <string id="Your site is in %fromCharset% and it will be converted to %toCharset%">Votre site est en %fromCharset% et il sera converti en %toCharset%</string>
