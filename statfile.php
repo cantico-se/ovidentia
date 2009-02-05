@@ -839,7 +839,7 @@ function displayFileTree($startDay, $endDay)
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	$treeView = new bab_FileTreeView('file', 'N', '0');
-	$treeView->addAttributes(bab_FileTreeView::SHOW_ONLY_DELEGATION);
+	$treeView->addAttributes(bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION);
 	$treeView->addStatistics($startDay, $endDay);
 	$treeView->sort();
 	$babBody->babecho($treeView->printTemplate());
