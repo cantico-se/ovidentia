@@ -33,7 +33,7 @@ function getAttributesFromRp(array $params, &$attributes, &$urlAttributes)
 	$urlAttributes = '';
 
 	foreach ($params as $paramName => $attributeValue) {
-		if (bab_rp($paramName, false)) {
+		if (bab_rp($paramName, '0') !== '0') {
 			$attributes |= $attributeValue;
 			$urlAttributes .= '&' . $paramName . '=1';
 		}
@@ -162,7 +162,7 @@ function selectFiles($folderId = null, $path = '')
 		'show_sub_folders' => bab_FileTreeView::SHOW_SUB_FOLDERS,
 		'show_files' => bab_FileTreeView::SHOW_FILES,
 /* DEPRECATED */		'selectable_collective_directories' => bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS, /* DEPRECATED */
-/* DEPRECATED */		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_DIRECTORIES, /* DEPRECATED */
+/* DEPRECATED */		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS, /* DEPRECATED */
 		'selectable_collective_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_sub_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
@@ -190,7 +190,7 @@ function selectFiles($folderId = null, $path = '')
 	}
 	// Here we are in the case where $folderId is not set, so we only want to display the root folders
 	// (the sub folders will be loaded when the user opens one of these)
-	$attributes &= ~(bab_FileTreeView::SHOW_SUB_DIRECTORIES | bab_FileTreeView::SHOW_FILES);
+	$attributes &= ~(bab_FileTreeView::SHOW_SUB_FOLDERS | bab_FileTreeView::SHOW_FILES);
 	$treeView->setAttributes($attributes);
 	$babBody->babPopup($treeView->printTemplate());
 	die();
