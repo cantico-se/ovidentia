@@ -43,6 +43,9 @@ class bab_addonsInfos {
 	 * @return boolean
 	 */
 	public static function isAccessible($id_addon, $title, $version) {
+
+		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+		global $babDB;
 		
 		$ini = new bab_inifile();
 		$ini->inifileGeneral($GLOBALS['babAddonsPath'].$title.'/addonini.php');
@@ -76,7 +79,6 @@ class bab_addonsInfos {
 	
 		if (!$this->indexById || !$this->indexByName) {
 		
-			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			global $babDB;
 	
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
