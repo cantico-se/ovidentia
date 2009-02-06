@@ -378,7 +378,8 @@ function bab_removeDiacritics($sString)
 class bab_charset 
 {
 	private static $sCharset = null;
-
+	private static $sIsoCharset = null;
+	
 	/**
 	 * UTF-8 encoding.
 	 * 
@@ -436,7 +437,10 @@ class bab_charset
 	 */
 	public static function getIso() 
 	{
-		return self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
+		if(!isset(self::$sIsoCharset)) {
+			 self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
+		}
+		return self::$sIsoCharset;
 	}
 
 	/**
