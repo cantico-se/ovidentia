@@ -175,7 +175,8 @@ class babMail
 		$this->mail->AddCC($email, $name);
 		$this->mailCc[] = array($email, $name);
 	}
-	
+
+
 	/**
 	 * Removes all currently added recipients (CC) for the email message.
 	 */
@@ -184,6 +185,7 @@ class babMail
 		$this->mail->ClearCcs();
 		$this->mailCc = array();
 	}
+
 
 	/**
 	 * Adds a recipient (BCC) to the email message.
@@ -218,7 +220,7 @@ class babMail
 		$this->mailBcc = array();
 	}
 
-	
+
     /**
      * Adds a "Reply-to" address.  
      * @param string	$email			The reply-to address.
@@ -230,6 +232,7 @@ class babMail
 		$this->replyTo[] = array($email, $name);
 	}
 
+
 	/**
 	 * Removes all currently added reply-to addresses for the email message.
 	 */
@@ -238,6 +241,7 @@ class babMail
 		$this->mail->clearReplyTos();
 		$this->replyTo = array();
 	}
+
 
 	/**
 	 * Sets the Sender email address (Return-Path) of the message.  If not empty,
@@ -248,16 +252,18 @@ class babMail
 		$this->mail->Sender = $email;
 	}
 
+
 	/**
 	 * Requests a read receipt for the email (i.e if the recipient has a compliant email reader,
 	 * he will be prompted to acknowledge the receipt of the message).
 	 * 
-	 * @param string $email		The email address where the reading confirmation will be sent.		
+	 * @param string $email		The email address where the reading confirmation will be sent.
 	 */
 	function confirmReadingTo($email)
 	{
 		$this->mail->ConfirmReadingTo = $email;
 	}
+
 
 	/**
 	 * Sets the subject of the message.
@@ -269,6 +275,7 @@ class babMail
 		$this->mail->Subject = $subject;
 	}
 
+
 	/**
 	 * Sets the email priority (1 = High, 3 = Normal, 5 = low).
 	 * 
@@ -279,11 +286,13 @@ class babMail
 		$this->mail->Priority = $priority;
 	}
 
+
 	function setSmtpServer($server, $port)
 	{
 		$this->mail->Host = $server;
 		$this->mail->Port = $port;
 	}
+
 
 	/**
 	 * Sets the Body of the message.  This can be either an HTML or text body.
@@ -301,6 +310,7 @@ class babMail
 			$this->mail->IsHTML(true);
 	}
 
+
 	/**
 	 * Sets the text-only body of the message.  This automatically sets the
      * email to multipart/alternative.  This body can be read by mail
@@ -314,16 +324,31 @@ class babMail
 		$this->mail->AltBody = $altBody;
 	}
 
-	function mailFileAttach( $fname, $realname, $type )
+
+	/**
+	 * Adds an attachment from a path on the filesystem.
+     * Returns false if the file could not be found
+     * or accessed.
+	 *
+	 * @param string	$path		Path to the attachment.
+	 * @param string	$realname	Overrides the attachment name.
+	 * @param string	$type		File extension (MIME) type.
+	 * 
+	 * @return bool
+	 */
+	function mailFileAttach($fname, $realname, $type)
 	{
-		$this->mail->AddAttachment($fname, $realname);
+		$result = $this->mail->AddAttachment($fname, $realname);
 		$this->attachements[] = array($fname, $realname, $type);
+		return $result;
 	}
+
 
 	function mailClearAttachments()
 	{
 		$this->mail->ClearAttachments();
 	}
+
 
 	function send()
 	{
@@ -354,22 +379,26 @@ class babMail
 		return $this->sent_status; 
 	}
 
+
 	function mailTemplate($msg)
 	{
 		$mtmpl = new babMailTemplate($msg);
-		return bab_printTemplate($mtmpl,"mailtemplate.html", "default");
+		return bab_printTemplate($mtmpl, 'mailtemplate.html', 'default');
 	}
+
 
 	function ErrorInfo()
 	{
 		return empty($this->mail->ErrorInfo) ? false : $this->mail->ErrorInfo;
 	}
 
+
 	function addMail(&$mail, $list) {
 		foreach($list as $arr) {
 			$mail[] = $arr[0];
 		}
 	}
+
 
 	/**
 	 * Record a mail in the database
