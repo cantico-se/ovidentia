@@ -252,14 +252,19 @@ bab_dialog.selectforum = function(action, attributes) {
  * <ul>
  * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
  * <li>memorize: the treeview will memorize open nodes in a cookie</li>
- * <li>show_collective_directories: show collective directories</li>
+ * <li>show_collective_directories: show collective folders (first level folders)</li>
+ * <li>show_collective_folders: show collective folders (first level folders)</li>
  * <li>show_personal_directories: show personal directories</li>
+ * <li>show_personal_folders: show the personal folder</li>
  * <li>show_sub_directories: show sub-directories</li>
- * <li>show_files: show files (implies show_sub_directories)</li>
+ * <li>show_sub_folders: show sub-folders</li>
+ * <li>show_files: show files (implies show_sub_folders)</li>
  * <li>selectable_collective_directories: collective directories can be selected</li>
+ * <li>selectable_collective_folders: collective folders can be selected</li>
  * <li>selectable_sub_directories: sub-directories can be selected</li>
+ * <li>selectable_sub_folders: sub-folders can be selected</li>
  * <li>selectable_files: files can be selected</li>
- * <li>multi: more than 1 item can be selected (there will be a checkboxes and a "select" button)</li>
+ * <li>multi: more than 1 item can be selected (there will be checkboxes and a "select" button)</li>
  * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter.
  * @param string attributes	list of '&' separated attributes for the folders/files tree selector.
@@ -282,7 +287,7 @@ bab_dialog.selectfile = function(action, attributes) {
  * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
  * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>selectable_groups: groups can be selected</li>
- * <li>multi: more than 1 item can be selected (there will be a checkboxes and a "select" button)</li>
+ * <li>multi: more than 1 item can be selected (there will be checkboxes and a "select" button)</li>
  * </ul>
  * @param action  function receiving an associative array with keys "id", "type" and "content" as parameter. 
  * @param string attributes	list of '&' separated attributes for the groups tree selector.
@@ -317,16 +322,16 @@ bab_dialog.field = function(field, label, onclickEvt, icon) {
 	oldwidth = field.offsetWidth;
 	oldheight = field.offsetHeight;
 	field.style.display = 'none';
-	
+
 	contener = document.createElement('div');
-	
+
 
 	if ('' == field.className) {
-	
+
 		if (null == icon) {
 			icon = 'Puces/reload.png';
 		}
-	
+
 		contener.style.width 		= oldwidth+'px';
 		contener.style.minHeight 	= oldheight+'px';
 		contener.style.cursor 		= 'pointer';
@@ -334,13 +339,12 @@ bab_dialog.field = function(field, label, onclickEvt, icon) {
 		contener.style.background 	= '#fff url('+bab_getInstallPath()+'skins/ovidentia/images/'+icon+') no-repeat 99% 50%';
 		contener.style.color 		= '#444';
 		contener.style.padding 		= '.2em 1em .2em .6em';
-	
-		
+
 	} else {
 		contener.className = field.className;
 	}
 
-	
+
 	field.parentNode.insertBefore(contener, field);
 	while(contener.lastChild) {
 		contener.lastChild.removeNode(true);

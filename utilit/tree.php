@@ -1377,31 +1377,38 @@ class bab_ArticleTreeView extends bab_TreeView
 
 
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS
+ * @deprecated by bab_FileTreeView::SHOW_COLLECTIVE_FOLDERS
  */
 define('BAB_FILE_TREE_VIEW_SHOW_COLLECTIVE_DIRECTORIES',		 0);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SHOW_SUB_FOLDERS
+ * @deprecated by bab_FileTreeView::SHOW_SUB_FOLDERS
  */
 define('BAB_FILE_TREE_VIEW_SHOW_SUB_DIRECTORIES',				 1);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SHOW_FILES
+ * @deprecated by bab_FileTreeView::SHOW_FILES
  */
 define('BAB_FILE_TREE_VIEW_SHOW_FILES',							 2);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SHOW_PERSONAL_FOLDERS
+ * @deprecated by bab_FileTreeView::SHOW_PERSONAL_FOLDERS
  */
 define('BAB_FILE_TREE_VIEW_SHOW_PERSONAL_DIRECTORIES',		 	 4);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS
+ * @deprecated by bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS
  */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_COLLECTIVE_DIRECTORIES',	 8);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_SUB_FOLDERS
+ * @deprecated by bab_FileTreeView::SELECTABLE_SUB_FOLDERS
  */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_SUB_DIRECTORIES',	 		16);
 /**
- * @deprecated Use corresponding bab_FileTreeView constant.
+ * DEPRECATED ** Use bab_FileTreeView::SELECTABLE_FILES
+ * @deprecated by bab_FileTreeView::SELECTABLE_FILES
  */
 define('BAB_FILE_TREE_VIEW_SELECTABLE_FILES',					32);
 /**
@@ -1421,34 +1428,34 @@ class bab_FileTreeView extends bab_TreeView
 	/**
 	 * Show collective folder node in the treeview.
 	 */
-	const SHOW_COLLECTIVE_DIRECTORIES		=    0;
+	const SHOW_COLLECTIVE_FOLDERS			=    0;
 
 	/**
 	 * Show sub-folders (i.e. not first-level collective folders) nodes
 	 * in the treeview.
 	 */
-	const SHOW_SUB_DIRECTORIES				=    1;
-	
+	const SHOW_SUB_FOLDERS					=    1;
+
 	/**
 	 * Show file nodes in the treeview.
 	 */
 	const SHOW_FILES						=    2;
-	
+
 	/**
 	 * Show the user personal folder node in the treeview.
 	 */
-	const SHOW_PERSONAL_DIRECTORIES			=    4;
-	
+	const SHOW_PERSONAL_FOLDERS				=    4;
+
 	/**
 	 * Make collective folders selectable.
 	 */
-	const SELECTABLE_COLLECTIVE_DIRECTORIES	=    8;
+	const SELECTABLE_COLLECTIVE_FOLDERS		=    8;
 
 	/**
 	 * Make sub-folders selectable.
 	 */
-	const SELECTABLE_SUB_DIRECTORIES		=   16;
-	
+	const SELECTABLE_SUB_FOLDERS			=   16;
+
 	/**
 	 * Make files selectable.
 	 */
