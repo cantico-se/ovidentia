@@ -31,7 +31,6 @@ require_once $GLOBALS['babInstallPath'].'utilit/baseFormProcessingClass.php';
 require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
 
 
-
 /*
  * Called by ajax in the the upload fileform
  */
@@ -3618,16 +3617,6 @@ function editFolderForCollectiveDir()
 				{
 					//To rebuild sitemap
 					$bRedirect = true;
-/* NA: See BugM 1688 					
-					
-					require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
-					
-					aclDuplicateRights(BAB_FMUPLOAD_GROUPS_TBL, $iIdOwner, BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
-					aclDuplicateRights(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner, BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
-					aclDuplicateRights(BAB_FMUPDATE_GROUPS_TBL, $iIdOwner, BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId());
-					aclDuplicateRights(BAB_FMMANAGERS_GROUPS_TBL, $iIdOwner, BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
-					aclDuplicateRights(BAB_FMNOTIFY_GROUPS_TBL, $iIdOwner, BAB_FMNOTIFY_GROUPS_TBL, $oFmFolder->getId());
-*/
 				}
 				
 				if($bChangeFileIdOwner)
@@ -3641,8 +3630,6 @@ function editFolderForCollectiveDir()
 					$soFmFolderCliboardSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
 				}
 				
-				//bab_siteMap::build();
-
 				if(true === $bRedirect)
 				{
 					$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
@@ -3743,33 +3730,49 @@ function deleteFolderForCollectiveDir()
 {
 	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
-
-	$sDirName = (string) bab_pp('sDirName', '');
-	if(false === mb_strpos($sDirName, '..'))
+	
+	if(!canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
-		if(mb_strlen(trim($sDirName)) > 0 && canCreateFolder($oFileManagerEnv->sRelativePath))
-		{
-			$iIdFld	= (int) bab_pp('iIdFolder', 0); 
-			if(0 !== $iIdFld)
-			{
-				require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
-				bab_deleteFolder($iIdFld);
-			}
-			else 
-			{
-				$oFmFolderSet = new BAB_FmFolderSet();
-				$oFmFolderSet->removeSimpleCollectiveFolder($oFileManagerEnv->sRelativePath . $sDirName . '/');
-			}						
-		}
-		else 
-		{
-			$babBody->msgerror = bab_translate("Access denied");
-		}
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
 	}
-	else
+	
+	$sDirName = (string) bab_pp('sDirName', '');
+	if(false !== mb_strpos($sDirName, '..'))
 	{
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
+		return false;
 	}
+	
+	if(false !== mb_strpos($sDirName, '/'))
+	{
+		$babBody->msgerror = bab_translate("Please give a valid folder name");
+		return false;
+	}
+	
+	if(false !== mb_strpos($sDirName, '\\'))
+	{
+		$babBody->msgerror = bab_translate("Please give a valid folder name");
+		return false;
+	}
+	
+	if(0 === mb_strlen(trim($sDirName)))
+	{
+		$babBody->msgerror = bab_translate("Please give a valid folder name");
+		return false;
+	}
+	
+	$iIdFld	= (int) bab_pp('iIdFolder', 0); 
+	if(0 !== $iIdFld)
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+		bab_deleteFolder($iIdFld);
+	}
+	else 
+	{
+		$oFmFolderSet = new BAB_FmFolderSet();
+		$oFmFolderSet->removeSimpleCollectiveFolder($oFileManagerEnv->sRelativePath . $sDirName . '/');
+	}						
 }
 
 
