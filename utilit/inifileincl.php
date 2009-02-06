@@ -343,6 +343,15 @@ class bab_inifile_requirements {
 			'result'		=> !ini_get('register_globals')
 		);
 	}
+
+	function require_magic_quotes_gpc($value) {
+	
+		return array(
+			'description'	=> 'magic_quotes_gpc (php.ini)',
+			'current'		=> get_magic_quotes_gpc() ? 'On' : 'Off',
+			'result'		=> !get_magic_quotes_gpc()
+		);
+	}
 	
 	
 	function require_mod_mbstring($value) {

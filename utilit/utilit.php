@@ -1201,17 +1201,27 @@ function get_newfiles() {
 	}
 
 
-function & get_icalendars() {
-
-	if (!isset($this->priv_icalendars)) {
-		include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
-		$this->priv_icalendars = & new bab_icalendars();
-	}
-
-	return $this->priv_icalendars;
-	}
 
 }  /* end of class babBody */
+
+
+
+
+/**
+ * Load calendars
+ */
+function bab_getICalendars() {
+
+	static $calendars = null;
+
+	if (null === $calendars) {
+		include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+		$calendars = new bab_icalendars();
+	}
+
+	return $calendars;
+}
+
 
 
 
@@ -1290,8 +1300,8 @@ function bab_updateUserSettings()
 	
 	// The babBody->babaddons variable is deprecated
 	// Use bab_addonsInfos::getRows(); instead
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	$babBody->babaddons = bab_addonsInfos::getRows();
+	// include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	// $babBody->babaddons = bab_addonsInfos::getRows();
 	
 
 	
@@ -1303,8 +1313,7 @@ function bab_updateUserSettings()
 	$babBody->topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
 	$babBody->topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
-	$babBody->icalendars = $babBody->get_icalendars();
-
+	
 	$babBody->isSuperAdmin = false;
 
 	if( !empty($BAB_SESS_USERID))

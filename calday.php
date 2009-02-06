@@ -39,9 +39,9 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->cal_wmdbaseCls("calday", $idx, $calids, $date);
 
 		$this->w = 0;
-		$this->elapstime = $babBody->icalendars->elapstime;
-		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
-		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
+		$this->elapstime = bab_getICalendars()->elapstime;
+		list($this->startwtime, , ) = sscanf(bab_getICalendars()->starttime, "%d:%d:%d");
+		list($this->endwtime, , ) = sscanf(bab_getICalendars()->endtime, "%d:%d:%d");
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
@@ -268,7 +268,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 $idx = bab_rp('idx','view');
 $date = bab_rp('date', date("Y,n,j"));
-$calid =bab_rp('calid',$babBody->icalendars->getUserCalendars());
+$calid =bab_rp('calid',bab_getICalendars()->getUserCalendars());
 
 
 switch($idx)

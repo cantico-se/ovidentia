@@ -67,7 +67,7 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 	foreach($idcals as $id_cal)
 		{
 		$add = false;
-		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		$arr = bab_getICalendars()->getCalendarInfo($id_cal);
 
 		switch($arr['type'])
 			{
@@ -190,7 +190,7 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 				AND id_cal='".$babDB->db_escape_string($id_cal)."'
 			");
 			
-		$arr = $babBody->icalendars->getCalendarInfo($id_cal);
+		$arr = bab_getICalendars()->getCalendarInfo($id_cal);
 		$exclude[] = $id_cal;
 		cal_notify(
 			$event['title'], 
@@ -642,7 +642,7 @@ function bab_createEvent($args, &$msgerror, $action_function = 'createEvent')
 function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
-	$arr = $babBody->icalendars->getCalendarInfo($idcal);
+	$arr = bab_getICalendars()->getCalendarInfo($idcal);
 	
 	$arrevtids = array();
 	if( $bupdrec == 1)
@@ -691,7 +691,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 				{
-				$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+				$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
 				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal)." and idfai != '0'");
 				while( $row = $babDB->db_fetch_array($res))
 					{
@@ -1296,7 +1296,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner']);
 		if($arrusers && !in_array($arr['id_cal'], $exclude))
 			{
-			$calinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+			$calinfo = bab_getICalendars()->getCalendarInfo($arr['id_cal']);
 			$tempc->calendar = $calinfo['name'];
 			$tempc->asHtml();
 			$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
@@ -1564,7 +1564,7 @@ class bab_event_posted {
 		if (isset($_POST['timebegin'])) {
 			$timebegin = $_POST['timebegin'];
 		} else {
-			$timebegin = $babBody->icalendars->starttime;
+			$timebegin = bab_getICalendars()->starttime;
 		}
 		
 		$tb = explode(':',$timebegin);
@@ -1578,8 +1578,8 @@ class bab_event_posted {
 		if (isset($_POST['timeend'])) {
 			$timeend = $_POST['timeend'];
 		} else {
-			if ($babBody->icalendars->endtime > $timebegin) {
-				$timeend = $babBody->icalendars->endtime;
+			if (bab_getICalendars()->endtime > $timebegin) {
+				$timeend = bab_getICalendars()->endtime;
 			} else {
 				$timeend = '23:59:59';
 			}
@@ -1619,7 +1619,7 @@ class bab_event_posted {
 	
 		$id_owner = $GLOBALS['BAB_SESS_USERID'];
 	
-		if (isset($_POST['event_owner']) && isset($babBody->icalendars->usercal[$_POST['event_owner']]) )
+		if (isset($_POST['event_owner']) && isset(bab_getICalendars()->usercal[$_POST['event_owner']]) )
 			{
 			$arr = $babDB->db_fetch_array(
 				$babDB->db_query("
@@ -1798,7 +1798,7 @@ class bab_event_posted {
 				if( 
 					(
 						'PUBLIC' !== $calPeriod->getProperty('CLASS') 
-						&& $event['id_cal'] == $babBody->icalendars->id_percal
+						&& $event['id_cal'] == bab_getICalendars()->id_percal
 					) 
 					|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
 				{

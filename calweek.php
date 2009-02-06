@@ -40,23 +40,23 @@ class cal_weekCls extends cal_wmdbaseCls
 
 		$this->w = 0;
 
-		$dispdays = explode(',', $babBody->icalendars->dispdays);
+		$dispdays = explode(',', bab_getICalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,$this->day,$this->year);
 		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
 		$this->totaldays = date("t", $time);
 
-		$this->elapstime = $babBody->icalendars->elapstime;
-		list($this->startwtime, , ) = sscanf($babBody->icalendars->starttime, "%d:%d:%d");
-		list($this->endwtime, , ) = sscanf($babBody->icalendars->endtime, "%d:%d:%d");
+		$this->elapstime = bab_getICalendars()->elapstime;
+		list($this->startwtime, , ) = sscanf(bab_getICalendars()->starttime, "%d:%d:%d");
+		list($this->endwtime, , ) = sscanf(bab_getICalendars()->endtime, "%d:%d:%d");
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
-		$b = date("w", $time) - $babBody->icalendars->startday;
+		$b = date("w", $time) - bab_getICalendars()->startday;
 		if( $b < 0)
 			$b += 7;
 
 		for( $i = 0; $i < 7; $i++ )
 			{
-			$a = $i + $babBody->icalendars->startday;
+			$a = $i + bab_getICalendars()->startday;
 			if( $a > 6)
 				$a -=  7;
 			if( in_array($a, $dispdays ))
@@ -383,7 +383,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 $idx = bab_rp('idx','view');
 $date = bab_rp('date',date('Y,n,j'));
-$calid =bab_rp('calid',$babBody->icalendars->getUserCalendars());
+$calid =bab_rp('calid',bab_getICalendars()->getUserCalendars());
 
 
 

@@ -69,8 +69,8 @@ function upComingEvents()
 			$mktime = $mktime + 518400;
 			$this->daymax = sprintf("%04d-%02d-%02d 23:59:59", date("Y", $mktime), Date("n", $mktime), Date("j", $mktime));
 
-			$babBody->icalendars->initializeCalendars();
-			if (!empty($babBody->icalendars->id_percal))
+			bab_getICalendars()->initializeCalendars();
+			if (!empty(bab_getICalendars()->id_percal))
 				{
 				$this->resevent = $babDB->db_query(
 					"select 
@@ -78,7 +78,7 @@ function upComingEvents()
 						ceo.id_cal 
 					from ".BAB_CAL_EVENTS_TBL." ce 
 					left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ce.id=ceo.id_event 
-					where ceo.id_cal='".$babDB->db_escape_string($babBody->icalendars->id_percal)."' 
+					where ceo.id_cal='".$babDB->db_escape_string(bab_getICalendars()->id_percal)."' 
 						and ce.start_date < '".$babDB->db_escape_string($this->daymax)."' 
 						and ce.end_date > '".$babDB->db_escape_string($this->daymin)."'
 					order by ce.start_date
@@ -91,8 +91,8 @@ function upComingEvents()
 				}
 
 			$idpubcals = array();
-			reset($babBody->icalendars->pubcal);
-			while( $row=each($babBody->icalendars->pubcal) ) 
+			reset(bab_getICalendars()->pubcal);
+			while( $row=each(bab_getICalendars()->pubcal) ) 
 				{
 				$idpubcals[] = $row[0];
 				}
@@ -341,7 +341,7 @@ switch($idx)
 	case "view":
 		$babBody->title = bab_translate("Summary");
 		showOthers();
-		if( $babBody->icalendars->calendarAccess())
+		if( bab_getICalendars()->calendarAccess())
 		{
 			upComingEvents();
 		}

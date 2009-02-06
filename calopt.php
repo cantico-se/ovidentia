@@ -788,13 +788,13 @@ switch($idx)
 		}
 		
 		$babBody->title = bab_translate("Calendar Options");
-		if( $babBody->icalendars->id_percal != 0 )
+		if( bab_getICalendars()->id_percal != 0 )
 		{
-			accessCalendar($babBody->icalendars->id_percal, bab_rp('urla'));
+			accessCalendar(bab_getICalendars()->id_percal, bab_rp('urla'));
 			
 			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 			
-			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$babBody->icalendars->id_percal);
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".bab_getICalendars()->id_percal);
 			
 			if( isset($urla) && !empty($urla) )
 				{
@@ -813,7 +813,7 @@ switch($idx)
 		}
 	
 		$babBody->title = bab_translate("Calendar and Vacations Options");
-		$idcal = $babBody->icalendars->id_percal;
+		$idcal = bab_getICalendars()->id_percal;
 
 		calendarOptions($idcal, $urla);
 
@@ -825,7 +825,7 @@ switch($idx)
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));	
 			}
 
-		if( isset($urla) && !empty($urla) && $babBody->icalendars->calendarAccess() )
+		if( isset($urla) && !empty($urla) && bab_getICalendars()->calendarAccess() )
 			{
 			$babBody->addItemMenu("cal", bab_translate("Calendar"), $urla);
 			}

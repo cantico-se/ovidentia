@@ -41,17 +41,17 @@ class cal_monthCls extends cal_wmdbaseCls
 		global $babBody, $babMonths;
 		$this->cal_wmdbaseCls("calmonth", $idx, $calids, $date);
 		$this->w = 0;
-		$dispdays = explode(',', $babBody->icalendars->dispdays);
+		$dispdays = explode(',', bab_getICalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
 		$this->monthname = bab_toHtml($babMonths[date("n", $time)]."  ".$this->year);
 		$this->totaldays = date("t", $time);
-		$b = date("w", $time) - $babBody->icalendars->startday;
+		$b = date("w", $time) - bab_getICalendars()->startday;
 		if( $b < 0)
 			$b += 7;
 
 		for( $i = 0; $i < 7; $i++ )
 			{
-			$a = $i + $babBody->icalendars->startday;
+			$a = $i + bab_getICalendars()->startday;
 			if( $a > 6)
 				$a -=  7;
 			if( in_array($a, $dispdays ))
@@ -276,7 +276,7 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 
 /* main */
 
-$calid =bab_rp('calid',$babBody->icalendars->getUserCalendars());
+$calid =bab_rp('calid',bab_getICalendars()->getUserCalendars());
 $idx = bab_rp('idx', 'view');
 $date = bab_rp('date', date("Y,n,j"));
 

@@ -64,7 +64,7 @@ function displayAttendees($evtid, $idcal)
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 				while( $arr = $babDB->db_fetch_array($res))
 					{
-					$icalinfo = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+					$icalinfo = bab_getICalendars()->getCalendarInfo($arr['id_cal']);
 					if( $icalinfo === false)
 					{
 						$tmp = bab_getCalendarOwnerAndType($arr['id_cal']);
@@ -256,7 +256,7 @@ function displayEventDetail($evtid, $idcal)
 					$this->access = true;
 					$this->idcal = $idcal;
 					$arr = $babDB->db_fetch_array($res);
-					$iarr = $babBody->icalendars->getCalendarInfo($idcal);
+					$iarr = bab_getICalendars()->getCalendarInfo($idcal);
 					$this->begindatetxt = bab_translate("Begin date");
 					$this->enddatetxt = bab_translate("End date");
 					$this->titletxt = bab_translate("Title");
@@ -826,9 +826,9 @@ function bab_gotoCalendarView() {
 
 	global $babBody;
 
-	if( $babBody->icalendars->calendarAccess()) {
+	if( bab_getICalendars()->calendarAccess()) {
 		$babBody->calaccess = true;
-		switch($babBody->icalendars->defaultview)
+		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $view='calweek'; break;

@@ -117,7 +117,7 @@ class bab_cal_event
 		$this->ymin = 2;
 		$this->ymax = 5;
 
-		$this->icalendar = $babBody->icalendars;
+		$this->icalendar = bab_getICalendars();
 		$this->icalendar->initializeCalendars();
 
 		
@@ -187,8 +187,8 @@ function newEvent()
 			
 				$date = $this->curyear.'-'.$this->curmonth.'-'.$this->curday;
 			
-				$date0 = bab_mktime($date.' '.$babBody->icalendars->starttime);
-				$endtime = $babBody->icalendars->endtime > $babBody->icalendars->starttime ? $babBody->icalendars->endtime : '23:00:00';
+				$date0 = bab_mktime($date.' '.bab_getICalendars()->starttime);
+				$endtime = bab_getICalendars()->endtime > bab_getICalendars()->starttime ? bab_getICalendars()->endtime : '23:00:00';
 				$date1 = bab_mktime($date.' '.$endtime);
 			} 
 		
@@ -641,7 +641,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			
 			$this->evtarr = $babDB->db_fetch_array($res);
 			
-			$iarr = $babBody->icalendars->getCalendarInfo($this->calid);
+			$iarr = bab_getICalendars()->getCalendarInfo($this->calid);
 			switch( $iarr['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
@@ -799,7 +799,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 
-			$this->elapstime = $babBody->icalendars->elapstime;
+			$this->elapstime = bab_getICalendars()->elapstime;
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
 			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
@@ -1353,7 +1353,7 @@ function confirmDeleteEvent()
 		
 		
 	foreach($calendars as $id_cal) {
-		$cal = $babBody->icalendars->getCalendarInfo($id_cal);
+		$cal = bab_getICalendars()->getCalendarInfo($id_cal);
 			
 		cal_notify(
 			$event['title'], 
@@ -1407,8 +1407,8 @@ function eventAvariabilityCheck()
 		// one event or multiple event in creation
 		
 
-		$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : $babBody->icalendars->starttime;
-		$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : $babBody->icalendars->endtime;
+		$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : bab_getICalendars()->starttime;
+		$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : bab_getICalendars()->endtime;
 		
 		$tb = explode(':',$timebegin);
 		$te = explode(':',$timeend);

@@ -691,7 +691,7 @@ function babMonthA($month='', $year='')
 		$this->currentYear = $year;
 	}
 
-	$this->babCalendarStartDay = $babBody->icalendars->startday;
+	$this->babCalendarStartDay = bab_getICalendars()->startday;
 	$this->curDay = 0;
 	}
 
@@ -707,7 +707,7 @@ function printout()
 	$todaymonth = date("n");
 	$todayyear = date("Y");
 	
-	$icalendars = $babBody->icalendars;
+	$icalendars = bab_getICalendars();
 	$icalendars->initializeCalendars();
 	
 	$this->idcals = array();

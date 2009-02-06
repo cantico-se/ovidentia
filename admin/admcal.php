@@ -298,7 +298,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 			{
 			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
@@ -354,7 +354,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 			{
 			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = $babBody->icalendars->getCalendarInfo($idcal);
+			$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");

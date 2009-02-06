@@ -1406,7 +1406,7 @@ switch($idx)
 			}
 		changeProfiles();
 		$babBody->addItemMenu('global', bab_translate("Options"), $GLOBALS['babUrlScript'].'?tg=options&idx=global');
-		if( $babBody->icalendars->calendarAccess())
+		if( bab_getICalendars()->calendarAccess())
 			{
 			$babBody->addItemMenu('calendar', bab_translate("Calendar Options"), $GLOBALS['babUrlScript'].'?tg=calopt&idx=options');
 			}

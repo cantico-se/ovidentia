@@ -2437,7 +2437,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->agedescription = put_text($arr['description'],400);
 				$this->agestart_date = $this->dateformat(bab_mktime($arr['start_date']));
 				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
-				$iarr = $babBody->icalendars->getCalendarInfo($arr['id_cal']);
+				$iarr = bab_getICalendars()->getCalendarInfo($arr['id_cal']);
 				$this->agecreator = $iarr['name'];
 				$this->private = $arr['bprivate'] == 'Y' && $arr['owner'] != bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']);
 				switch ($iarr['type'])

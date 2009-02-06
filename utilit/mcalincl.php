@@ -338,10 +338,10 @@ class bab_icalendar
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-		$babBody->icalendars->initializeCalendars();
+		bab_getICalendars()->initializeCalendars();
 
 		
-		$this->cal_type = $babBody->icalendars->getCalendarType($calid);
+		$this->cal_type = bab_getICalendars()->getCalendarType($calid);
 
 		$this->whObj = new bab_userWorkingHours(
 			BAB_dateTime::fromIsoDateTime($startdate), 
@@ -352,9 +352,9 @@ class bab_icalendar
 
 		if( $this->cal_type !== false )
 			{
-			$this->cal_name = $babBody->icalendars->getCalendarName($calid);
+			$this->cal_name = bab_getICalendars()->getCalendarName($calid);
 			$this->idcalendar = $calid;
-			if( $calid == $babBody->icalendars->id_percal ) /* user's calendar */
+			if( $calid == bab_getICalendars()->id_percal ) /* user's calendar */
 				{
 				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
 				$this->whObj->addCalendar($this->idcalendar);
@@ -365,13 +365,13 @@ class bab_icalendar
 				switch($this->cal_type)
 					{
 					case BAB_CAL_USER_TYPE:
-						$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($calid));
+						$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($calid));
 						$this->whObj->addCalendar($this->idcalendar);
-						$this->access = $babBody->icalendars->usercal[$calid]['access'];
+						$this->access = bab_getICalendars()->usercal[$calid]['access'];
 						break;
 					case BAB_CAL_PUB_TYPE:
 						$this->whObj->addCalendar($this->idcalendar);
-						if( $babBody->icalendars->pubcal[$calid]['manager'] )
+						if( bab_getICalendars()->pubcal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
 							}
@@ -382,7 +382,7 @@ class bab_icalendar
 						break;
 					case BAB_CAL_RES_TYPE:
 						$this->whObj->addCalendar($this->idcalendar);
-						if( $babBody->icalendars->rescal[$calid]['manager'] )
+						if( bab_getICalendars()->rescal[$calid]['manager'] )
 							{
 							$this->access = BAB_CAL_ACCESS_FULL;							
 							}
@@ -707,7 +707,7 @@ class cal_wmdbaseCls
 					}
 				}
 
-				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && ($GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] && ( count($evtarr['idcal_owners']) == 0 || !in_array($babBody->icalendars->id_percal, $evtarr['idcal_owners']))))
+				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && ($GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] && ( count($evtarr['idcal_owners']) == 0 || !in_array(bab_getICalendars()->id_percal, $evtarr['idcal_owners']))))
 					{
 					$viewtitle = 0;
 					}
@@ -783,7 +783,7 @@ class cal_wmdbaseCls
 			{
 			for($i = 0; $i < $nbcoals; $i++)
 				{
-				$iarr = $babBody->icalendars->getCalendarInfo($evtarr['idcal_owners'][$i]);
+				$iarr = bab_getICalendars()->getCalendarInfo($evtarr['idcal_owners'][$i]);
 				if( $iarr['type'] != BAB_CAL_USER_TYPE )
 					{
 					$this->updateAccessCalendar($calPeriod, $iarr, $result);
@@ -822,7 +822,7 @@ class cal_wmdbaseCls
 		global $babBody;
 		foreach ($this->idcals as $cal)
 			{
-			$calinfo = $babBody->icalendars->getCalendarInfo($cal);
+			$calinfo = bab_getICalendars()->getCalendarInfo($cal);
 			switch( $calinfo['type'] )
 				{
 				case BAB_CAL_USER_TYPE:
@@ -908,13 +908,13 @@ class cal_wmdbaseCls
 			{
 			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator)); 
 			}
-		$iarr = $babBody->icalendars->getCalendarInfo($this->idcal);
+		$iarr = bab_getICalendars()->getCalendarInfo($this->idcal);
 		$this->updateAccess($calPeriod, $iarr);
 
 		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
 
 
-		if ($babBody->icalendars->usebgcolor == 'Y' && !empty($calPeriod->color)) {
+		if (bab_getICalendars()->usebgcolor == 'Y' && !empty($calPeriod->color)) {
 			$this->bgcolor = $calPeriod->color;
 		}
 
@@ -1013,7 +1013,7 @@ class calendarchoice
 		{
 		global $babBody, $babDB;
 		$this->formname = $formname;
-		$icalendars = $babBody->icalendars;
+		$icalendars = bab_getICalendars();
 		$icalendars->initializeCalendars();
 		if (isset($_POST['selected_calendars']))
 			{
@@ -1150,16 +1150,16 @@ $selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] :
 
 if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
 	{
-	$babBody->icalendars->user_calendarids = implode(',',$selected);
+	bab_getICalendars()->user_calendarids = implode(',',$selected);
 	
 	list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 	if ($n > 0)
 		{
-		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babDB->db_escape_string($babBody->icalendars->user_calendarids)."' WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."' WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
 		}
 	else
 		{
-		$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, week_numbers, user_calendarids) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', 'N', '".$babDB->db_escape_string($babBody->icalendars->user_calendarids)."')");
+		$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, week_numbers, user_calendarids) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', 'N', '".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."')");
 		}
 	}
 

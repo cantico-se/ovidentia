@@ -4319,8 +4319,8 @@ class bab_Calendars extends bab_handler
 		$type = $ctx->get_value('type');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		$babBody->icalendars->initializeCalendars();
-		switch($babBody->icalendars->defaultview)
+		bab_getICalendars()->initializeCalendars();
+		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
@@ -4329,27 +4329,27 @@ class bab_Calendars extends bab_handler
 
 		if( $type === false || $type === '' )
 			{
-			if( $babBody->icalendars->id_percal )
+			if( bab_getICalendars()->id_percal )
 				{
-				$this->IdEntries[] = $babBody->icalendars->id_percal;
+				$this->IdEntries[] = bab_getICalendars()->id_percal;
 				}
 
-			reset($babBody->icalendars->usercal);
-			while( $row=each($babBody->icalendars->usercal) ) 
+			reset(bab_getICalendars()->usercal);
+			while( $row=each(bab_getICalendars()->usercal) ) 
 				{ 
 				$this->IdEntries[] = $row[0];
 				}
 			
-			reset($babBody->icalendars->pubcal);
-			while( $row=each($babBody->icalendars->pubcal) ) 
+			reset(bab_getICalendars()->pubcal);
+			while( $row=each(bab_getICalendars()->pubcal) ) 
 				{ 
 				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 					continue;
 				$this->IdEntries[] = $row[0];
 				}
 
-			reset($babBody->icalendars->rescal);
-			while( $row=each($babBody->icalendars->rescal) ) 
+			reset(bab_getICalendars()->rescal);
+			while( $row=each(bab_getICalendars()->rescal) ) 
 				{ 
 				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 					continue;
@@ -4370,21 +4370,21 @@ class bab_Calendars extends bab_handler
 			switch($type)
 				{
 				case BAB_CAL_USER_TYPE:
-					if( $babBody->icalendars->id_percal )
+					if( bab_getICalendars()->id_percal )
 						{
-						$this->IdEntries[] = $babBody->icalendars->id_percal;
+						$this->IdEntries[] = bab_getICalendars()->id_percal;
 						}
 
-					reset($babBody->icalendars->usercal);
-					while( $row=each($babBody->icalendars->usercal) ) 
+					reset(bab_getICalendars()->usercal);
+					while( $row=each(bab_getICalendars()->usercal) ) 
 						{ 
 						$this->IdEntries[] = $row[0];
 						}
 					break;
 				
 				case BAB_CAL_PUB_TYPE:
-					reset($babBody->icalendars->pubcal);
-					while( $row=each($babBody->icalendars->pubcal) ) 
+					reset(bab_getICalendars()->pubcal);
+					while( $row=each(bab_getICalendars()->pubcal) ) 
 						{ 
 						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 							continue;
@@ -4393,8 +4393,8 @@ class bab_Calendars extends bab_handler
 					break;
 
 				case BAB_CAL_RES_TYPE:
-					reset($babBody->icalendars->rescal);
-					while( $row=each($babBody->icalendars->rescal) ) 
+					reset(bab_getICalendars()->rescal);
+					while( $row=each(bab_getICalendars()->rescal) ) 
 						{ 
 						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 							continue;
@@ -4424,7 +4424,7 @@ class bab_Calendars extends bab_handler
 			$calendarid = current($this->IdEntries);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CalendarId', $calendarid);
-			$iarr = $babBody->icalendars->getCalendarInfo($calendarid);
+			$iarr = bab_getICalendars()->getCalendarInfo($calendarid);
 			$this->ctx->curctx->push('CalendarName', $iarr['name']);
 			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
@@ -4507,12 +4507,12 @@ class bab_CalendarEvents extends bab_handler
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-		$babBody->icalendars->initializeCalendars();
+		bab_getICalendars()->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO"; 
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO"; 
-		switch($babBody->icalendars->defaultview)
+		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
@@ -4632,9 +4632,9 @@ class bab_CalendarEvents extends bab_handler
 		global $babBody;
 		$rr = empty($calendarid) ? false : array_flip(explode(',', $calendarid));
 
-		if( $babBody->icalendars->id_percal && $this->cal_users) {
-			if (false === $rr || isset($rr[$babBody->icalendars->id_percal])) {
-				$this->whObj->addCalendar($babBody->icalendars->id_percal);
+		if( bab_getICalendars()->id_percal && $this->cal_users) {
+			if (false === $rr || isset($rr[bab_getICalendars()->id_percal])) {
+				$this->whObj->addCalendar(bab_getICalendars()->id_percal);
 				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
 			}
 		}
@@ -4643,9 +4643,9 @@ class bab_CalendarEvents extends bab_handler
 			
 			if ($rr || (false === $rr && $this->cal_default_users)) {
 			
-				foreach( $babBody->icalendars->usercal as $key => $val ) {
+				foreach( bab_getICalendars()->usercal as $key => $val ) {
 					if (false === $rr || isset($rr[$key])) {
-						$this->whObj->addIdUser($babBody->icalendars->getCalendarOwner($key));
+						$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($key));
 						$this->whObj->addCalendar($key);
 					}
 				}
@@ -4653,7 +4653,7 @@ class bab_CalendarEvents extends bab_handler
 		}
 
 		if ($this->cal_resources) {
-			foreach( $babBody->icalendars->rescal as $key => $val ) {
+			foreach( bab_getICalendars()->rescal as $key => $val ) {
 				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
 					continue;
 				if (false === $rr || isset($rr[$key])) {
@@ -4663,7 +4663,7 @@ class bab_CalendarEvents extends bab_handler
 		}
 
 		if ($this->cal_groups) {
-			foreach( $babBody->icalendars->pubcal as $key => $val ) {
+			foreach( bab_getICalendars()->pubcal as $key => $val ) {
 				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
 					continue;
 				if (false === $rr || isset($rr[$key])) {

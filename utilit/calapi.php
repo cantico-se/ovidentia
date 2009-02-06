@@ -119,7 +119,7 @@ function bab_calGetEvents(&$params)
 			
 			global $babBody;
 			
-			$infos = $babBody->icalendars->getCalendarInfo($id_cal);
+			$infos = bab_getICalendars()->getCalendarInfo($id_cal);
 		
 			if ($infos) {
 				$whObj->addCalendar($id_cal);

@@ -1316,7 +1316,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			);
 		}
 
-	if( $babBody->icalendars->calendarAccess())
+	if( bab_getICalendars()->calendarAccess())
 		{	
 		$array_urls[] = array(
 			'label' => bab_translate("Calendar"),

@@ -50,7 +50,7 @@ function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	$this->current_year = date('Y');
 
 
-	$this->startday = isset($babBody->icalendars->startday) ? $babBody->icalendars->startday : 1;
+	$this->startday = isset(bab_getICalendars()->startday) ? bab_getICalendars()->startday : 1;
 	}
 
 

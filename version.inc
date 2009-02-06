@@ -59,6 +59,7 @@ encoding="UTF-8"
 
 [recommendations]
 register_globals="Off"
+magic_quotes_gpc="Off"
 lang_directory="Available" 
 upload_directory="Available"
 images_directory="Available" 

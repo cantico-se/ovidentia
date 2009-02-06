@@ -36,6 +36,37 @@ class bab_addonsInfos {
 	private $fullIndexById		= array();
 	private $fullIndexByName	= array();
 
+
+
+	/**
+	 * Get accessible status and update table if necessary
+	 * @return boolean
+	 */
+	public static function isAccessible($id_addon, $title, $version) {
+		
+		$ini = new bab_inifile();
+		$ini->inifileGeneral($GLOBALS['babAddonsPath'].$title.'/addonini.php');
+		$arr_ini = $ini->inifile;
+
+		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
+	
+		$access = false;
+		if (0 === $access_control || bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $id_addon)) {
+			if($ini->getVersion()) {
+				if ($ini->getVersion() == $version) {
+					$access = true;
+				}
+				else {
+					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
+				}
+			}
+		}
+		return $access;
+	}
+
+
+
+
 	/**
 	 * Create indexes with access rights verification
 	 * @return boolean
@@ -49,27 +80,9 @@ class bab_addonsInfos {
 			global $babDB;
 	
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
-			while( $arr = $babDB->db_fetch_array($res)) {
-				
-				$ini = new bab_inifile();
-				$ini->inifileGeneral($GLOBALS['babAddonsPath'].$arr['title'].'/addonini.php');
-				$arr_ini = $ini->inifile;
+			while( $arr = $babDB->db_fetch_assoc($res)) {
 
-				$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
-			
-				$arr['access'] = false;
-				if (0 === $access_control || bab_isAccessValid(BAB_ADDONS_GROUPS_TBL, $arr['id']))
-					{
-					if($ini->getVersion())
-						{
-						if ($ini->getVersion() == $arr['version']) {
-							$arr['access'] = true;
-							}
-						else {
-							$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
-							}
-						}
-					}
+				$arr['access'] = self::isAccessible($arr['id'], $arr['title'], $arr['version']);
 					
 				$this->indexById[$arr['id']] 		= $arr;
 				$this->indexByName[$arr['title']] 	= $arr;
@@ -129,15 +142,17 @@ class bab_addonsInfos {
 	 */
 	public static function getRow($id_addon) {
 		
-
-		$arr = bab_addonsInfos::getRows();
-
+		$arr = bab_addonsInfos::getDbRows();
+		
 		if (!isset($arr[$id_addon])) {
-			// include_once $GLOBALS['babInstallPath'].'utilit/devtools.php';
-			// bab_debug_print_backtrace();
-			// trigger_error(sprintf('No addon id %d',$id_addon));
 			return false;
 		}
+		
+		if (!self::isAccessible($id_addon, $arr[$id_addon]['title'], $arr[$id_addon]['version'])) {
+			return false;
+		}
+
+		$arr[$id_addon]['access'] = true;
 		
 		return $arr[$id_addon];
 	}
@@ -232,26 +247,19 @@ class bab_addonsInfos {
 		
 		
 		$obj = bab_getInstance('bab_addonsInfos');
+		$obj->createFullIndex();
 		
-		if ($access_rights) {
-			$obj->createIndex();
-			
-			if (!isset($obj->indexByName[$name])) {
-				return false;
-			}
-			
-			return (int) $obj->indexByName[$name]['id'];
-		} else {
-		
-			$obj->createFullIndex();
-			
-			if (!isset($obj->fullIndexByName[$name])) {
-				return false;
-			}
-			
-			return (int) $obj->fullIndexByName[$name]['id'];
-		
+		if (!isset($obj->fullIndexByName[$name])) {
+			return false;
 		}
+
+		$arr = $obj->fullIndexByName[$name];
+
+		if ($access_rights && !bab_addonsInfos::isAccessible($arr['id'], $arr['title'], $arr['version'])) {
+			return false;
+		}
+		
+		return (int) $arr['id'];
 	}
 	
 	
