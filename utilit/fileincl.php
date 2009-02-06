@@ -21,9 +21,11 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
 * USA.																	*
 ************************************************************************/
-include_once 'base.php';
-require_once $GLOBALS['babInstallPath'] . 'utilit/criteria.class.php';
-require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+require_once 'base.php';
+require_once dirname(__FILE__) . '/criteria.class.php';
+require_once dirname(__FILE__) . '/delegincl.php';
+require_once dirname(__FILE__) . '/pathUtil.class.php';
+
 
 define('BAB_FVERSION_FOLDER', 'OVF');
 
@@ -36,9 +38,6 @@ define('BAB_FACTION_INITIAL_UPLOAD',	4);
 
 $babFileActions = array(bab_translate("Other"), bab_translate("Edit file"),
 bab_translate("Unedit file"), bab_translate("Commit file"));
-
-
-
 
 
 /**
@@ -71,8 +70,6 @@ class bab_CompressedFileHelper
 	
 	public function setUp(array $aFileInfo)
 	{
-		require_once dirname(__FILE__) .'/pathUtil.class.php';
-		
 		$this->reset();
 		
 		$oFileManagerEnv =& getEnvObject();
@@ -2645,6 +2642,16 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			}
 			$oDir->close();
 			rmdir($sUplaodPath . $sRelativePath);
+			
+			$sName			= getLastPath($sRelativePath);
+			$sRelativePath	= removeLastPath($sRelativePath); 
+			if('' != $sRelativePath)
+			{
+				$sRelativePath = BAB_PathUtil::addEndSlash($sRelativePath); 
+			}
+				
+			$oFmFolderCliboardSet = bab_getInstance('BAB_FmFolderCliboardSet');
+			$oFmFolderCliboardSet->deleteFolder($sName, $sRelativePath, 'Y');
 		}
 	}
 		
@@ -2682,7 +2689,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
 				$sRelPath = $sNewRelativePath . mb_substr($oFmFolder->getRelativePath(), mb_strlen($sOldRelativePath));
-				bab_debug('sRelPath ==> ' . $sRelPath);
+				//bab_debug('sRelPath ==> ' . $sRelPath);
 				$oFmFolder->setRelativePath($sRelPath);
 				$oFmFolder->save();
 			}
@@ -4355,17 +4362,13 @@ class BAB_FmFolderHelper
 	
 	function getUploadPath()
 	{
-		$iLength = mb_strlen(trim($GLOBALS['babUploadPath']));
+		$sUploadPath = $GLOBALS['babUploadPath'];
+		$iLength = mb_strlen(trim($sUploadPath));
 		if($iLength > 0)
 		{
-			$sUploadPath = $GLOBALS['babUploadPath'];
-			if('/' !== mb_substr($sUploadPath, - 1))
-			{
-				$sUploadPath .= '/';
-				return $sUploadPath;
-			}
+			return BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sUploadPath));
 		}
-		return $GLOBALS['babUploadPath'];
+		return $sUploadPath;
 	}
 
 	function createDirectory($sFullPathName)
@@ -4422,6 +4425,9 @@ class BAB_FmFolderHelper
 		return false;
 	}
 	
+	/**
+	 * The $sPathName must be canonized before calling this function
+	 */
 	function sanitizePathname(&$sPathname)
 	{
 		$sPathname	= removeEndSlashes($sPathname);
@@ -5407,9 +5413,9 @@ function canDelFile($sPath)
 
 function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath)
 {
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//		' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' sSrcPath ==> ' . $sSrcPath .
-//		' iIdTrgRootFolder ==> ' . $iIdTrgRootFolder . ' sTrgPath ==> ' . $sTrgPath);
+	//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+	//	' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' sSrcPath ==> ' . $sSrcPath .
+	//	' iIdTrgRootFolder ==> ' . $iIdTrgRootFolder . ' sTrgPath ==> ' . $sTrgPath);
 	
 	$oFileManagerEnv		= getEnvObject();
 	$bHaveRightOnSrc		= false;
@@ -5445,17 +5451,17 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 				}
 				else 
 				{
-//					bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//						' Bad root folder id iIdRootFolder ==> ' . $iIdLocalSrcRootFolder .
-//						' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder);
+					//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+					//	' Bad root folder id iIdRootFolder ==> ' . $iIdLocalSrcRootFolder .
+					//	' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder);
 					return false;
 				}
 			}
 			else 
 			{
-//				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
-//					' Cannot get info for  iIdSrcRootFolder ==> ' . $iIdSrcRootFolder .
-//					' sSrcPath ==> ' . $sSrcPath);
+				//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . 
+				//	' Cannot get info for  iIdSrcRootFolder ==> ' . $iIdSrcRootFolder .
+				//	' sSrcPath ==> ' . $sSrcPath);
 				return false;
 			}
 		}
@@ -5510,27 +5516,46 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		$bHaveRightOnTrg = isUserFolder($sTrgPath);
 	}	
 	
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' bHaveRightOnSrc ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . ' bHaveRightOnTrg ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No'));
+	//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' bHaveRightOnSrc ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . ' bHaveRightOnTrg ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No'));
 	
 	if($bHaveRightOnSrc && $bHaveRightOnTrg)
 	{
-		$sFullCurrFolder	= removeEndSlah(realpath($sRootFmPath . $sTrgPath));
-		$sFullPathToPaste	= removeEndSlah(realpath($sRootFmPath . $sSrcPath));
-		$sFullParentPath	= mb_substr($sFullCurrFolder, 0, mb_strlen($sFullPathToPaste));
+		$sFullCurrFolder = realpath($sRootFmPath . $sTrgPath);
+		/*
+		$sFullCurrFolder = realpath($sRootFmPath . $sTrgPath);
+		if(false === $sFullCurrFolder)
+		{
+			bab_debug("False sTrg ==> " . $sRootFmPath . $sTrgPath);
+			return false;
+		}
+		//*/
+		
+		$sFullPathToPaste = realpath($sRootFmPath . $sSrcPath);
+		if(false === $sFullPathToPaste)
+		{
+			bab_debug("False sSrc ==> " . $sRootFmPath . $sSrcPath);
+			return false;
+		}
+		
+		$sFullCurrFolder	= removeEndSlah($sFullCurrFolder);
+		$sFullPathToPaste	= removeEndSlah($sFullPathToPaste);
+		$sFullParentPath 	= mb_substr($sFullCurrFolder, 0, mb_strlen($sFullPathToPaste));
 		
 		/*
-		bab_debug('sRootFmPath ==> ' . $sRootFmPath);
-		bab_debug('sSrcPath ==> ' . $sSrcPath);
-		bab_debug('sTrgPath ==> ' . $sTrgPath);
-		bab_debug('sFullCurrFolder ==> ' . $sFullCurrFolder);
-		bab_debug('sFullPathToPaste ==> ' . $sFullPathToPaste);
-		bab_debug('sFullParentPath ==> ' . $sFullParentPath);
+		bab_debug(
+			'sRootFmPath      ==> ' . $sRootFmPath . "\n" .
+			'sSrcPath         ==> ' . $sSrcPath . "\n" .
+			'sTrgPath         ==> ' . $sTrgPath . "\n" .
+			'sFullCurrFolder  ==> ' . $sFullCurrFolder . "\n" .
+			'sFullPathToPaste ==> ' . $sFullPathToPaste . "\n" .
+			'sFullParentPath  ==> ' . $sFullParentPath);
 		//*/
 		
 		//Est ce que dans le répertoire courant il y a un répertoire de même nom ?
 		$bSameDir = true;
-		$sTrgFullPathName = $sRootFmPath . $sTrgPath . getLastPath($sSrcPath);
+		$sTrgFullPathName = $sRootFmPath . addEndSlash($sTrgPath) . getLastPath($sSrcPath);
 		$sSrcFullPathName = $sRootFmPath . removeEndSlah($sSrcPath);
+		
 		if(is_dir($sTrgFullPathName))
 		{
 			$bSameDir = ($sSrcFullPathName === $sTrgFullPathName);
@@ -5538,11 +5563,11 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		
 		/*
 		bab_debug(
-			'bRetVal ==> ' .  (($sFullParentPath !== $sFullPathToPaste && $bSameDir) ? 'Yes' : 'No') . 
-			' bSameDir ==> ' .  (($bSameDir) ? 'Yes' : 'No') . 
-			' sSrcFullPathName ==> ' .  $sSrcFullPathName . 
-			' sTrgFullPathName ==> ' .  $sTrgFullPathName . 
-			' sFullParentPath !== sFullPathToPaste ==> ' .  (($sFullParentPath !== $sFullPathToPaste) ? 'Yes' : 'No'));
+			'bRetVal                              ==> ' . (($sFullParentPath !== $sFullPathToPaste && $bSameDir) ? 'Yes' : 'No') . "\n" .
+			'bSameDir                             ==> ' . (($bSameDir) ? 'Yes' : 'No') . "\n" .
+			'sSrcFullPathName                     ==> ' . $sSrcFullPathName . "\n" .
+			'sTrgFullPathName                     ==> ' . $sTrgFullPathName . "\n" .
+			'sFullParentPath !== sFullPathToPaste ==> ' . (($sFullParentPath !== $sFullPathToPaste) ? 'Yes' : 'No'));
 		//*/
 		return ($sFullParentPath !== $sFullPathToPaste && $bSameDir);
 	}
