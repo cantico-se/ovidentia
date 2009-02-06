@@ -27,7 +27,7 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 
 
-function getAttributesFromRp(array $params, &$attributes, &$urlAttributes)
+function getAttributesFromRp(array $params)
 {
 	$attributes = 0;
 	$urlAttributes = '';
@@ -38,6 +38,7 @@ function getAttributesFromRp(array $params, &$attributes, &$urlAttributes)
 			$urlAttributes .= '&' . $paramName . '=1';
 		}
 	}
+	return array($attributes, $urlAttributes);
 } 
 
 
@@ -62,7 +63,7 @@ function selectArticles()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
 	$ignoredCategories = bab_rp('ignored_categories', '');
 	$ignoredCategories = explode(',', $ignoredCategories);
@@ -97,7 +98,7 @@ function selectFaqs()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
 	$treeView = new bab_FaqTreeView('bab_tv_faq');
 	$treeView->setAttributes($attributes);
@@ -126,7 +127,7 @@ function selectForums()
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
 	$treeView = new bab_ForumTreeView('bab_tv_forum');
 	$treeView->setAttributes($attributes);
@@ -173,7 +174,7 @@ function selectFiles($folderId = null, $path = '')
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
 	);
 
-	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
 	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
 
@@ -212,7 +213,7 @@ function selectGroups()
 	
 	);
 
-	getAttributesFromRp($params, &$attributes, &$urlAttributes);
+	list($attributes, $urlAttributes) = getAttributesFromRp($params);
 
 	$treeView = new bab_GroupTreeView('bab_tv_groups');
 	$treeView->setAttributes($attributes);
