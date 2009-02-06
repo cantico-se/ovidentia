@@ -75,6 +75,10 @@ function modifyFolder($fid)
 			$this->addtags_txt			= bab_translate("Users can add new tags");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->none					= bab_translate("None");
+			$this->thelp1				= bab_translate("Deactivate a folder allows to archive it: it and its contents will not be visible in the file manager");
+			$this->thelp2				= bab_translate("Activate the management of the versions allows to keep a history of all the modifications brought to the same file");
+			$this->thelp3				= bab_translate("If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)");
+			$this->thelp4				= bab_translate("If this option is activated, the keywords of files will be seized freely by their authors and automatically added in the thesaurus. If the option is deactivated, only the keywords seized by the managers of the thesaurus can be selected by the authors of files");
 			$this->fid					= $fid;
 			
 			$sFolderName = '';
