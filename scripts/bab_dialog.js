@@ -167,6 +167,8 @@ bab_dialog.selectuser = function(action) {
  * An articles/topics/categories tree dialog.
  * Possible values for 'attributes' are:
  * <ul>
+ * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
+ * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>show_categories: show article categories</li>
  * <li>show_topics: show article topics (implies show_categories)</li>
  * <li>show_articles: show articles (implies show_topics and show_categories)</li>
@@ -194,6 +196,8 @@ bab_dialog.selectarticle = function(action, attributes) {
  * A faq tree dialog.
  * Possible values for 'attributes' are:
  * <ul>
+ * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
+ * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>show_categories: show faq categories</li>
  * <li>show_sub_categories: show faq sub-categories (implies show_categories)</li>
  * <li>show_questions: show faq questions-answers (implies show_sub_categories and show_categories)</li>
@@ -219,6 +223,8 @@ bab_dialog.selectfaq = function(action, attributes) {
  * A forum tree dialog.
  * Possible values for 'attributes' are:
  * <ul>
+ * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
+ * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>show_forums: show forums</li>
  * <li>show_threads: show threads (implies show_posts)</li>
  * <li>show_posts: show posts (implies show_threads and show_posts)</li>
@@ -244,6 +250,8 @@ bab_dialog.selectforum = function(action, attributes) {
  * A file tree dialog.
  * Possible values for 'attributes' are:
  * <ul>
+ * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
+ * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>show_collective_directories: show collective directories</li>
  * <li>show_personal_directories: show personal directories</li>
  * <li>show_sub_directories: show sub-directories</li>
@@ -271,6 +279,8 @@ bab_dialog.selectfile = function(action, attributes) {
 /**
  * A groups selector dialog.
  * <ul>
+ * <li>toolbar: show a toolbar with collapse/expand and a search field</li>
+ * <li>memorize: the treeview will memorize open nodes in a cookie</li>
  * <li>selectable_groups: groups can be selected</li>
  * <li>multi: more than 1 item can be selected (there will be a checkboxes and a "select" button)</li>
  * </ul>
