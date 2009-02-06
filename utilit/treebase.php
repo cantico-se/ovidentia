@@ -290,7 +290,7 @@ class bab_Node
 	 * Remove $node from the child nodes.
 	 *
 	 * @param bab_Node $node
-	 * @return boolean
+	 * @return bab_Node
 	 */
 	public function removeChild(&$node)
 	{
@@ -317,7 +317,7 @@ class bab_Node
 				$node->_nextSibling =& bab_Node::NULL_NODE();
 			}			
 		}
-        return true;
+        return $node;
 	}
 
 
@@ -432,7 +432,7 @@ class bab_Node
 	 * 
 	 * @see bab_Node::sortSubTree()
 	 */
-	public function sortChildNodes(/*$comparisonFunction = 'bab_Node_defaultNodeComparison'*/)
+	public function sortChildNodes_deprecated()
 	{
 		$nodes = array();
 		$node =& $this->firstChild();
@@ -458,6 +458,41 @@ class bab_Node
 			}
 		}
 	}
+
+
+	/**
+	 * Sorts the child nodes.
+	 * The data associated to the nodes must be an object implementing a 'compare'
+	 * method. This method must compare the object with a similar object passed in
+	 * parameter and return a scalar value.
+	 * The value returned by $a->compare($b) must be:
+	 * - 0 if "$a == $b"
+	 * - > 0 if "$a > $b"
+	 * - < 0 if "$a < $b"
+	 * 
+	 * @see bab_Node::sortSubTree()
+	 */
+	public function sortChildNodes()
+	{
+		$nodes = array();
+		while (!is_null($node = &$this->firstChild())) {
+			$nodes[] = &$this->removeChild($node);
+		}
+
+		usort($nodes, array($this, 'sortChildNodes_compare'));
+		foreach($nodes as &$node) {
+			$this->appendChild($node);
+		}
+	}
+
+
+	public function sortChildNodes_compare($a, $b)
+	{
+		return $a->getData()->compare($b->getData());
+	}
+
+
+
 	
 	/**
 	 * Recursively sorts the descendants of the node.

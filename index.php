@@ -316,9 +316,9 @@ function printBody()
 		var $menukeys = array();
 		var $menuvals = array();
 		var $arrsectleft = array();
-		var $nbsectleft;
+		var $nbsectleft = null;
 		var $arrsectright = array();
-		var $nbsectright;
+		var $nbsectright = null;
 		var $content;
 		var $message;
 		var $version;
@@ -326,7 +326,7 @@ function printBody()
 		var $searchurl;
 		var $sContent;
 		 
-		function tpl()
+		public function __construct()
 			{
 			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle;
 			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
@@ -394,24 +394,7 @@ function printBody()
 				$this->menuitems = count($this->menukeys);
 				}
 
-			$this->nbsectleft = 0;
-			$this->nbsectright = 0;
-			foreach($babBody->sections as $sec)
-				{
-				if(  $sec->isVisible())
-					{
-					if( $sec->getPosition() == 0 )
-						{
-						$this->arrsectleft[$this->nbsectleft] = $sec;
-						$this->nbsectleft++;
-						}
-					else
-						{
-						$this->arrsectright[$this->nbsectright] = $sec;
-						$this->nbsectright++;
-						}
-					}
-				}
+			
 
 			$debug = bab_getDebug();
 			if (false === $debug)
@@ -423,7 +406,7 @@ function printBody()
 			$this->msgerror = $babBody->msgerror;
 			}
 
-		function getNextMenu()
+		public function getNextMenu()
 			{
 			global $babBody;
 			static $i = 0;
@@ -459,9 +442,42 @@ function printBody()
 				return false;
 			}
 
-		function getNextSectionLeft()
-			{
+
+
+		private function loadsections() {
 			global $babBody;
+
+			if (null !== $this->nbsectleft) {
+				return;
+			}
+
+
+			$babBody->loadSections();
+
+			$this->nbsectleft = 0;
+			$this->nbsectright = 0;
+			foreach($babBody->sections as $sec)
+				{
+				if(  $sec->isVisible())
+					{
+					if( $sec->getPosition() == 0 )
+						{
+						$this->arrsectleft[$this->nbsectleft] = $sec;
+						$this->nbsectleft++;
+						}
+					else
+						{
+						$this->arrsectright[$this->nbsectright] = $sec;
+						$this->nbsectright++;
+						}
+					}
+				}
+		}
+
+
+		public function getNextSectionLeft()
+			{
+			$this->loadsections();
 			static $i = 0;
 			if( $i < $this->nbsectleft)
 				{
@@ -474,9 +490,9 @@ function printBody()
 				return false;
 			}
 
-		function getNextSectionRight()
+		public function getNextSectionRight()
 			{
-			global $babBody;
+			$this->loadsections();
 			static $i = 0;
 			if( $i < $this->nbsectright)
 				{
@@ -1177,9 +1193,6 @@ if( !empty($incl))
 class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event);
-
-$babBody->loadSections();
-
 
 printBody();
 unset($tg);

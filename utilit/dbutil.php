@@ -408,11 +408,10 @@ class babDatabase extends bab_database
 		{
 			if (is_array($param)) {
 
-				$keys = array_keys($param); 
-			
-				foreach($keys as $key) {
-					$param[$key] = $this->db_escape_string($param[$key]);
+				foreach($param as &$value) {
+					$value = $this->db_escape_string($value);
 				}
+				unset($value);
 
 				return "'".implode("','",$param)."'";
 			} else {
