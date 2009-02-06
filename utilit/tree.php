@@ -1568,7 +1568,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		$directoryType = 'folder';
 		if (!($this->hasAttributes(self::MULTISELECT))
-		&& $this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES)) {
+		&& $this->hasAttributes(self::SELECTABLE_SUB_FOLDERS)) {
 			$directoryType .= ' clickable';
 		}
 		$personalFileType = 'pfile';
@@ -1613,7 +1613,7 @@ class bab_FileTreeView extends bab_TreeView
 														 '',
 														 '');
 						$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-						if (($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))
+						if (($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))
 						&& ($this->hasAttributes(self::MULTISELECT))) {
 							$element->addCheckBox('select');
 						}
@@ -1669,7 +1669,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		$elementType = 'folder';
 		if (!($this->hasAttributes(self::MULTISELECT))
-		&& $this->hasAttributes(self::SELECTABLE_COLLECTIVE_DIRECTORIES)) {
+		&& $this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS)) {
 			$elementType .= ' clickable';
 		}
 
@@ -1690,7 +1690,7 @@ class bab_FileTreeView extends bab_TreeView
 					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
 				}
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-				if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_DIRECTORIES))
+				if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS))
 				&& ($this->hasAttributes(self::MULTISELECT))) {
 					$element->addCheckBox('select');
 				}
@@ -1752,7 +1752,7 @@ class bab_FileTreeView extends bab_TreeView
         
         $directoryType = 'folder';
         if (!($this->hasAttributes(self::MULTISELECT))
-        	&& ($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))) {
+        	&& ($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))) {
             $directoryType .= ' clickable';
         }
         $groupFileType = 'gfile';
@@ -1821,7 +1821,7 @@ class bab_FileTreeView extends bab_TreeView
                                                          '',
                                                          '');
                         $element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
-                        if (($this->hasAttributes(self::SELECTABLE_SUB_DIRECTORIES))
+                        if (($this->hasAttributes(self::SELECTABLE_SUB_FOLDERS))
                         && ($this->hasAttributes(self::MULTISELECT))) {
                             $element->addCheckBox('select');
                         }
@@ -1910,7 +1910,7 @@ class bab_FileTreeView extends bab_TreeView
 		$this->_addCollectiveDirectories($this->_startFolderId);
 
 		if ($this->hasAttributes(self::SHOW_FILES)
-				|| $this->hasAttributes(self::SHOW_SUB_DIRECTORIES)) {
+				|| $this->hasAttributes(self::SHOW_SUB_FOLDERS)) {
 			$attributes = $this->getAttributes();
 			$this->removeAttributes(self::SHOW_FILES);
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
@@ -1918,7 +1918,7 @@ class bab_FileTreeView extends bab_TreeView
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
 		}
 
-		if ($this->hasAttributes(self::SHOW_PERSONAL_DIRECTORIES)
+		if ($this->hasAttributes(self::SHOW_PERSONAL_FOLDERS)
 				&& is_null($this->_startFolderId)) {
 			$this->_addPersonalFiles();
 		}
