@@ -26,188 +26,6 @@ require_once dirname(__FILE__) . '/fileincl.php';
 
 
 
-/**
- * This must not be used directly because
- * she use BAB_FileManagerEnv and the 
- * BAB_FileManagerEnv is set by the class 
- * bab_Directory.
- */
-class bab_FileInfoValidator
-{
-	private $oFileInfo	= null;
-	private $aError		= array();
-	
-	public function __construct()
-	{
-	}
-	
-	public function __destruct()
-	{
-	}
-	
-	public function getError()
-	{
-		return $this->aError;
-	}
-	
-	private function resetError()
-	{
-		$this->aError = array();
-	}
-	
-	/**
-	 * This function return a value that indicate if a file can be imported to
-	 * a collective folder of the file manager.
-	 *
-	 * @param string	$sFullPathName		The full path name of the source file (ex: d:/Temp/Upload/readme.txt). 
-	 * @param string	$sRelativePath		The relative destination path in the file manager.
-	 * 										If the full path is d:/Temp/Upload/fileManager/collectives/DG0/Folder/
-	 * 										so the relative path is Folder/
-	 * @param int		$iIdDelegation		The delegation identifier.
-	 * 
-	 * @return bool							True on success, false on error. To get the error call the function getError() of this class
-	 */
-	public function canImportCollectiveFile($sFullPathName, $iIdDelegation, $sRelativePath)
-	{
-		$oFileInfo	= new SplFileInfo($sFullPathName);
-		$sPathName	= BAB_FileManagerEnv::getCollectivePath($iIdDelegation);
-		$oDestPath	= new SplFileInfo($sPathName . $sRelativePath);
-		
-		$this->setFileInfo($oFileInfo);
-		if(!$this->sourceFileExist())
-		{
-			return false;
-		}
-		
-		$oFile = new SplFileInfo(addEndSlash($oDestPath->getPath()) . basename($this->oFileInfo->getPathname()));
-		
-		$this->destinationFolderExist($oDestPath);
-		$this->destinationFileExist($oFile);
-		
-		$this->fileNameReserved();
-		$this->fileNameSupportedByFileSystem();
-		
-		$iFileSize = $oFileInfo->getSize();
-		$this->fileSizeExceedFmLimit($iFileSize);
-		
-		$bCollective		= true;
-		$sName				= getFirstPath($sRelativePath);
-		$sRootFolderPath	= $sPathName . $sName;
-		$iFolderSize		= getDirSize($sRootFolderPath);
-		$iTotalSize			= $iFolderSize + $iFileSize; 
-		$this->fileSizeExceedFolderLimit($iTotalSize, $bCollective);
-		
-		return (0 === count($this->getError()));
-	}
-	
-	
-	
-	
-	
-	private function setFileInfo(SplFileInfo $oFileInfo)
-	{
-		$this->oFileInfo = $oFileInfo;
-	}
-	
-	private function isFile(SplFileInfo $oFileInfo)
-	{
-		return $oFileInfo->isFile();
-	}
-	
-	private function sourceFileExist()
-	{
-		if(false === $this->isFile($this->oFileInfo))
-		{
-			$aSearch		= array('%fileName%');
-			$aReplace		= array(basename($this->oFileInfo->getPathname()));
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% does not exist."));
-			$this->aError[]	= $sMessage;
-			return false;
-		}
-		return true;
-	}
-	
-	private function destinationFileExist(SplFileInfo $oFileInfo)
-	{
-		if(true === $this->isFile($oFileInfo))
-		{
-			$aSearch		= array('%fileName%', '%folder%');
-			$aReplace		= array(basename($oFileInfo->getPathname()), $oFileInfo->getPath());
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% already exist in %folder%."));
-			$this->aError[]	= $sMessage;
-			return true;
-		}
-		return false;
-	}
-	
-	private function destinationFolderExist(SplFileInfo $oFileInfo)
-	{
-		if(false === $oFileInfo->isDir())
-		{
-			$aSearch		= array('%folder%');
-			$aReplace		= array($oFileInfo->getPath());
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder %folder% does not exist."));
-			$this->aError[]	= $sMessage;
-			return false;
-		}
-		return true;
-	}
-	
-	private function fileNameReserved()
-	{
-		if(mb_strtolower(BAB_FVERSION_FOLDER) == mb_strtolower($this->oFileInfo->getFilename()))
-		{
-			$aSearch		= array('%name%');
-			$aReplace		= array(basename($this->oFileInfo->getPathname()));
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The name %name% is reserved."));
-			$this->aError[]	= $sMessage;
-			return true;
-		}
-		return false;
-	}
-	
-	private function fileNameSupportedByFileSystem()
-	{
-		$sFileName = basename($this->oFileInfo->getPathname());
-		if(!isStringSupportedByFileSystem($sFileName))
-		{
-			$aSearch		= array('%name%');
-			$aReplace		= array($sFileName);
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file named %name% contains characters that are not supported by the file system."));
-			$this->aError[]	= $sMessage;
-			return false;
-		}
-		return true;
-	}
-	
-	private function fileSizeExceedFmLimit($iZise)
-	{
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
-		if($iZise + $oFmEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
-		{
-			$aSearch		= array('%name%');
-			$aReplace		= array(basename($this->oFileInfo->getPathname()));
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The size of the file %name% exceeds the limit set by the file manager."));
-			$this->aError[]	= $sMessage;
-			return true;
-		}
-		return false;
-	}
-	
-	private function fileSizeExceedFolderLimit($iTotalSize, $bCollective)
-	{
-		if($iTotalSize > ($bCollective ? $GLOBALS['babMaxGroupSize'] : $GLOBALS['babMaxUserSize']))
-		{
-			$aSearch		= array('%name%');
-			$aReplace		= array(basename($this->oFileInfo->getPathname()));
-			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The size of the file %name% exceeds the limit set for the folder."));
-			$this->aError[]	= $sMessage;
-			return true;
-		}
-		return false;
-	}
-}
-
 
 class bab_FileInfo extends SplFileInfo
 {
@@ -402,16 +220,27 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
  */
 class bab_Directory
 {
-	private $sUploadPath		= null;
-	private $sRootFmPath		= null;
-	private $sRelativePath		= null;
-	private $iIdDelegation		= 0;
-	private $sPathName			= null;
+	private $sUploadPath	= null;
+	private $sRootFmPath	= null;
+	private $sRelativePath	= null;
+	private $iIdDelegation	= 0;
+	private $sPathName		= null;
 	
+	private $aError			= array();
 	
 	public function __construct()
 	{
 		
+	}
+	
+	public function getError()
+	{
+		return $this->aError;
+	}
+	
+	public function resetError()
+	{
+		$this->aError = array();
 	}
 	
 	/**
@@ -437,9 +266,10 @@ class bab_Directory
 	}
 	
 	/**
-	 * This function return the relative path.
-	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/
-	 * so the relative path will be Développement/1/
+	 * This function return the real relative path.
+	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/1.1/1.1.1/
+	 * so the relative path will be Développement/1/1.1/1.1.1/ if the folder 1.1.1 exists
+	 * and Développement/1/1.1/ if the folder 1.1.1 does not exists and so on
 	 * 
 	 * @return string
 	 */
@@ -450,8 +280,9 @@ class bab_Directory
 	
 	/**
 	 * This function return the path name.
-	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/
-	 * so the path name will be DG0/Développement/1/
+	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/1.1/1.1.1/
+	 * so the path name will be Développement/1/1.1/1.1.1/
+	 * 
 	 * 
 	 * @return string
 	 */
@@ -535,7 +366,7 @@ class bab_Directory
 			return false;
 		}
 			
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv	= &getEnvObject();
 		if(!canCreateFolder($oFmEnv->sRelativePath))
 		{
 			bab_debug('Error');
@@ -585,7 +416,7 @@ class bab_Directory
 			return false;
 		}
 				
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv	= &getEnvObject();
 		if(!canCreateFolder($oFmEnv->sRelativePath))
 		{
 			bab_debug('Error !!!!!');
@@ -675,10 +506,10 @@ class bab_Directory
 		
 		$sSrcName		= (string) getLastPath($sSanitizedSrcPathName);
 		$sSrcPath		= (string) removeLastPath($sSanitizedSrcPathName);
-$sSrcPath		= (string) addEndSlash($sSrcPath);
+		$sSrcPath		= (string) addEndSlash($sSrcPath);
 		$sTrgName		= (string) getLastPath($sSanitizedTrgPathName);
 		$sTrgPath		= (string) removeLastPath($sSanitizedTrgPathName);
-$sTrgPath		= (string) addEndSlash($sTrgPath);
+		$sTrgPath		= (string) addEndSlash($sTrgPath);
 		
 		$aBuffer		= array();
 		
@@ -809,6 +640,12 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 			return false;
 		}
 		
+		if(0 === mb_strlen($this->sPathName))
+		{
+			bab_debug('A file must be in a folder');
+			return false;
+		}
+		
 		if(!$this->setEnv($sPathName))
 		{
 			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
@@ -821,17 +658,23 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 			return false;
 		}
 			
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv	= &getEnvObject();
 		if(!canManage($oFmEnv->sRelativePath) && !canDownload($oFmEnv->sRelativePath))
 		{
 			bab_debug('Access denied');
 			return false;
 		}
-
-		$oFileValidator = bab_getInstance('bab_FileInfoValidator');
-		if(!$oFileValidator->canImportCollectiveFile($sFullSrcFileName, $this->getDelegationId(), $this->getPathName()))
+		
+		if(!$this->canImportFile($sFullSrcFileName, $this->getDelegationId(), $this->getPathName()))
 		{
-			bab_debug($oFileValidator->getError());
+			bab_debug($this->getError());
+			return false;
+		}
+		
+		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($this->getPathName());
+		if(!($oFmFolder instanceof BAB_FmFolder))
+		{
+			bab_debug("Cannot get the first collective parent folder");
 			return false;
 		}
 		
@@ -841,28 +684,37 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 			return false;
 		}
 		
-		$sFullPathName = $this->getRootFmPath() . $this->getPathName() . basename($sFullSrcFileName);
+		/*
+		$aPathParts		= pathinfo($sFullSrcFileName);
+		$sFileName		= replaceInvalidFolderNameChar($aPathParts['basename']);
+		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
+		//*/
+		
+		//*
+		$sFileName		= basename($sFullSrcFileName);
+		$sFullPathName	= $this->getRootFmPath() . $this->getPathName() . $sFileName;
 		if(false === $oFileHandler->import($sFullPathName))
 		{
-			$this->addError(bab_translate("Cannot import file"));
+			bab_debug("Cannot import file");
 			return false;
 		}
+		//*/
 		
-		$confirmed = 'N';
+		//$this->displayInfo();
 		
-		//Ne pas oublier les mots clef au niveau du répertoire 
+		require_once dirname(__FILE__) . '/indexincl.php';
+		$iIndexStatus = bab_indexOnLoadFiles(array($sFullPathName), 'bab_files');
+
+		$oFolderFile = bab_getInstance('BAB_FolderFile');
+		$oFolderFile->setName($sFileName);
+		$oFolderFile->setPathName($this->getPathName());
 		
-		/*
-		BAB_FolderFile
-		$oFolderFile->setName($dir_file);
-		$oFolderFile->setPathName($this->oFileManagerEnv->sRelativePath);
-		
-		$oFolderFile->setOwnerId($iIdOwner);
-		$oFolderFile->setGroup($this->oFileManagerEnv->sGr);
+		$oFolderFile->setOwnerId($oFmFolder->getId());
+		$oFolderFile->setGroup('Y');
 		$oFolderFile->setCreationDate(date("Y-m-d H:i:s"));
-		$oFolderFile->setAuthorId($GLOBALS['babAutoAddFilesAuthorId']);
+		$oFolderFile->setAuthorId($GLOBALS['BAB_SESS_USERID']);
 		$oFolderFile->setModifiedDate(date("Y-m-d H:i:s"));
-		$oFolderFile->setModifierId($GLOBALS['babAutoAddFilesAuthorId']);
+		$oFolderFile->setModifierId($GLOBALS['BAB_SESS_USERID']);
 		$oFolderFile->setConfirmed('Y');
 		
 		$oFolderFile->setDescription('');
@@ -875,36 +727,186 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 		$oFolderFile->setMajorVer(1);
 		$oFolderFile->setMinorVer(0);
 		$oFolderFile->setCommentVer('');
-		$oFolderFile->setStatusIndex(0);
-		$oFolderFile->setDelegationOwnerId(bab_getCurrentUserDelegation());
+		$oFolderFile->setStatusIndex($iIndexStatus);
+		$oFolderFile->setDelegationOwnerId($this->getDelegationId());
 		
-		$oFolderFile->save();
-		//*/
+		if(false === $oFolderFile->save())
+		{
+			bab_debug('Error on save file');
+			unlink($sFullPathName);
+			return false;
+		}
 		
-		/*
-		require_once dirname(__FILE__) . '/indexincl.php';
-		$iIndexStatus = bab_indexOnLoadFiles(array($sFullPathName), 'bab_files');
-		//*/
+		$iIdFile = $oFolderFile->getId();
+		$oFolderFile->setId(null); //bab_getInstance
 		
-		/*
 		$oFolderFileLog = new BAB_FolderFileLog();
-		$oFolderFileLog->setIdFile($idf);
+		$oFolderFileLog->setIdFile($iIdFile);
 		$oFolderFileLog->setCreationDate(date("Y-m-d H:i:s"));
 		$oFolderFileLog->setAuthorId($GLOBALS['BAB_SESS_USERID']);
 		$oFolderFileLog->setAction(BAB_FACTION_INITIAL_UPLOAD);
 		$oFolderFileLog->setComment(bab_translate("Initial upload"));
 		$oFolderFileLog->setVersion('1.0');
 		$oFolderFileLog->save();
-		//*/
 		
-		/*
-		if(BAB_INDEX_STATUS_INDEXED === $index_status)
+		if(BAB_INDEX_STATUS_INDEXED === $iIndexStatus)
 		{
 			$obj = new bab_indexObject('bab_files');
-			$obj->setIdObjectFile($pathx.$osfname, $idf, $iIdOwner);
+			$obj->setIdObjectFile($sFullPathName, $iIdFile, $oFmFolder->getId());
 		}
-		*/
+		return true;
 	}
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $sSrcPathName
+	 * @param unknown_type $sTrgPathName
+	 */
+	public function renameFile($sSrcPathName, $sTrgPathName)
+	{
+		//Récupération des noms de fichiers
+		$sSrcName = (string) getLastPath($sSrcPathName);
+		$sTrgName = (string) getLastPath($sTrgPathName);
+		
+		//Récupération des chemins sans les noms de fichiers
+		$sSrcPathName = (string) addEndSlash(removeLastPath($sSrcPathName));
+		$sTrgPathName = (string) addEndSlash(removeLastPath($sTrgPathName));
+		
+		$sSrcPathName = BAB_PathUtil::sanitize($sSrcPathName);
+		$sTrgPathName = BAB_PathUtil::sanitize($sTrgPathName);
+
+		/*
+		bab_debug(
+			'sSrcPathName ==> ' . $sSrcPathName . "\n" .
+			'sTrgPathName ==> ' . $sTrgPathName
+		);
+		//*/
+		
+		$sSanitizedTrgPathName = '';
+		if(!$this->processPathName($sTrgPathName, $sSanitizedTrgPathName))
+		{
+			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			return false;
+		}
+		
+		$sSanitizedSrcPathName = '';
+		if(!$this->processPathName($sSrcPathName, $sSanitizedSrcPathName))
+		{
+			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			return false;
+		}
+		
+		if(0 === mb_strlen($sSrcName))
+		{
+			bab_debug('sSrcName ==> ' . $sSrcName . ' is not valid');
+			return false;
+		}
+		
+		if(0 === mb_strlen($sTrgName))
+		{
+			bab_debug('sTrgName ==> ' . $sTrgName . ' is not valid');
+			return false;
+		}
+		
+		$aBuffer = array();		
+		if(1 !== preg_match('#^DG(\d+)(/)#', $sTrgPathName, $aBuffer))
+		{
+			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			return false;
+		}
+		
+		$iIdTrgDelegation = (int) $aBuffer[1];
+		
+		if(1 !== preg_match('#^DG(\d+)(/)#', $sSrcPathName, $aBuffer))
+		{
+			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			return false;
+		}
+		
+		$iIdSrcDelegation = (int) $aBuffer[1];
+		
+		if($iIdTrgDelegation !== $iIdSrcDelegation)
+		{
+			bab_debug('$iIdTrgDelegation !== $iIdSrcDelegation');
+			return false;
+		}
+		
+		$sSrcPath = $sSanitizedSrcPathName;
+		$sTrgPath = $sSanitizedTrgPathName;
+		
+		$oDirRenContext = new bab_directoryRenameContext();
+	
+		$oDirRenContext->setSrcPathName($sSrcPathName);
+		$oDirRenContext->setSanitizedSrcPathName($sSanitizedSrcPathName);
+		$oDirRenContext->setSrcName($sSrcName);
+		$oDirRenContext->setSrcPath($sSrcPath);
+		$oDirRenContext->setSrcDelegationId($iIdSrcDelegation);
+		
+		$oDirRenContext->setTrgDelegationId($iIdTrgDelegation);
+		
+		/*
+		bab_debug(
+			'sSrcPathName     ==> ' . $sSrcPathName . "\n" .
+			'sTrgPathName     ==> ' . $sTrgPathName . "\n" .
+			'sSrcName         ==> ' . $sSrcName . "\n" .
+			'sSrcPath         ==> ' . $sSrcPath . "\n" .
+			'sTrgName         ==> ' . $sTrgName . "\n" .
+			'sTrgPath         ==> ' . $sTrgPath
+		);		
+		//*/
+		
+		//$this->displayInfo();
+		
+		if($sSrcPath === $sTrgPath)
+		{
+			if($sSrcName !== $sTrgName)
+			{
+				$oDirRenContext->setTrgPathName($sTrgPathName);
+				$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+				$oDirRenContext->setTrgName($sTrgName);
+				$oDirRenContext->setTrgPath($sTrgPath);
+				
+				//bab_debug('RenameFile');
+				//bab_debug($oDirRenContext);
+				
+				$this->fileRename($oDirRenContext);
+			}
+		}
+		else
+		{
+			$oDirRenContext->setTrgPathName(canonizePath('DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName) . $sSrcName);
+			$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+			$oDirRenContext->setTrgName($sSrcName);
+			$oDirRenContext->setTrgPath($sSanitizedTrgPathName);
+			
+			//bab_debug('MoveFile');
+			//bab_debug($oDirRenContext);
+			
+			$this->fileMove($oDirRenContext);
+
+			if($sSrcName !== $sTrgName)
+			{
+				$oDirRenContext->setTrgPathName($sTrgPathName);
+				$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+				$oDirRenContext->setTrgName($sTrgName);
+				$oDirRenContext->setTrgPath($sTrgPath);
+				
+				$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sSrcName;
+				$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sTrgName;
+
+				/*
+				bab_debug(
+					'sSrcPathName ==> ' . $sSrcPathName . "\n" .
+					'sTrgPathName ==> ' . $sTrgPathName
+				);
+				//*/
+					
+				//$this->renameFile($sSrcPathName, $sTrgPathName);
+			}
+		}
+	}
+	
 	
 	//Private tools function
 	private function renameDirectory(bab_directoryRenameContext $oDirRenContext)
@@ -981,7 +983,7 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 		$sSanitizedSrcPathName	= $oDirRenContext->getSanitizedSrcPathName();
 		$sSanitizedTrgPathName	= $oDirRenContext->getSanitizedTrgPathName();
 		
-		$oFmEnv					= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv					= &getEnvObject();
 		$iIdSrcRootFolder		= 0;
 		$sSrcPath				= BAB_PathUtil::removeEndSlashes($sSanitizedSrcPathName);
 		$bSrcPathIsCollective	= true;
@@ -1162,6 +1164,226 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 			//bab_debug('Looser lamer !!!');
 		}
 	}
+
+	/**
+	 * This function return a value that indicate if a file can be imported to
+	 * a collective folder of the file manager.
+	 *
+	 * @param string	$sFullPathName		The full path name of the source file (ex: d:/Temp/Upload/readme.txt). 
+	 * @param string	$sRelativePath		The relative destination path in the file manager.
+	 * 										If the full path is d:/Temp/Upload/fileManager/collectives/DG0/Folder/
+	 * 										so the relative path is Folder/
+	 * @param int		$iIdDelegation		The delegation identifier.
+	 * 
+	 * @return bool							True on success, false on error. To get the error call the function getError() of this class
+	 */
+	private function canImportFile($sFullPathName, $iIdDelegation, $sRelativePath)
+	{
+		$oFileInfo	= new SplFileInfo($sFullPathName);
+		$sPathName	= BAB_FileManagerEnv::getCollectivePath($iIdDelegation);
+		$oDestPath	= new SplFileInfo($sPathName . $sRelativePath);
+		
+		if(!$this->sourceFileExist($oFileInfo))
+		{
+			return false;
+		}
+		
+		$sBaseName = basename($oFileInfo->getPathname());
+		$oFile = new SplFileInfo(addEndSlash($oDestPath->getPath()) . $sBaseName);
+		
+		$this->destinationFolderExist($oDestPath);
+		$this->destinationFileExist($oFile);
+		
+		$this->nameReserved($oFileInfo);
+		$this->nameSupportedByFileSystem($oFileInfo);
+		
+		$iFileSize = $oFileInfo->getSize();
+		$this->sizeExceedFmLimit($iFileSize, $sBaseName);
+		
+		$sName				= getFirstPath($sRelativePath);
+		$sRootFolderPath	= $sPathName . $sName;
+		$iFolderSize		= getDirSize($sRootFolderPath);
+		$iTotalSize			= $iFolderSize + $iFileSize; 
+		$this->sizeExceedFolderLimit($iTotalSize, $sBaseName);
+		
+		return (0 === count($this->getError()));
+	}
+	
+	private function fileRename(bab_directoryRenameContext $oDirRenContext)
+	{
+		$this->sPathName = $oDirRenContext->getSanitizedSrcPathName();
+		
+		if(!$this->setEnv($oDirRenContext->getSrcPathName()))
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not valid');
+			return false;
+		}
+		
+		$oFmEnv			= &getEnvObject();
+		$oFolderFileSet	= bab_getInstance('BAB_FolderFileSet');
+		$oName			= $oFolderFileSet->aField['sName'];
+		$oPathName		= $oFolderFileSet->aField['sPathName'];
+		$oGroup			= $oFolderFileSet->aField['sGroup'];
+		$oIdOwner		= $oFolderFileSet->aField['iIdOwner'];
+		$oIdDgOwner		= $oFolderFileSet->aField['iIdDgOwner'];
+		
+		$oCriteria		= $oName->in($oDirRenContext->getSrcName());
+		$oCriteria		= $oCriteria->_and($oPathName->in($this->sPathName));
+		$oCriteria		= $oCriteria->_and($oGroup->in('Y'));
+		$oCriteria		= $oCriteria->_and($oIdOwner->in($oFmEnv->oFmFolder->getId()));
+		$oCriteria		= $oCriteria->_and($oIdDgOwner->in($this->getDelegationId()));
+
+		//bab_debug($oFolderFileSet->getSelectQuery($oCriteria));
+		
+		$oFolderFile = $oFolderFileSet->get($oCriteria);
+		if(!($oFolderFile instanceof BAB_FolderFile))
+		{
+			bab_debug('cannot get file');
+			return false;
+		}
+		
+		$bManager	= bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFolderFile->getOwnerId());
+		$bUpdate	= bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFolderFile->getOwnerId());
+		if(!($bManager || $bUpdate))
+		{
+			$aSchi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+			if(!(count($aSchi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $aSchi)))
+			{
+				bab_debug(bab_translate("Access denied"));
+				return false;
+			}
+		}
+		
+		$sTrgName	= replaceInvalidFolderNameChar($oDirRenContext->getTrgName());
+		$sPathName	= BAB_FileManagerEnv::getCollectivePath($this->getDelegationId());
+		$oSrcFile	= new SplFileInfo($sPathName . $oDirRenContext->getSanitizedSrcPathName() . $oDirRenContext->getSrcName());
+		$oTrgFile	= new SplFileInfo($sPathName . $oDirRenContext->getSanitizedTrgPathName() . $sTrgName);
+		$oDestPath	= new SplFileInfo($sPathName . $oDirRenContext->getSanitizedTrgPathName());
+		
+		$this->sourceFileExist($oSrcFile);
+		$this->destinationFileExist($oTrgFile);
+		$this->destinationFolderExist($oDestPath);
+		$this->nameReserved($oTrgFile);
+		$this->nameSupportedByFileSystem($oTrgFile);
+		
+		//A faire dans le move
+		/*
+		//Si on ne copie pas dans le même rootFolder
+		$sFirstSrcPath = (string) getFirstPath($oDirRenContext->getSrcPath());
+		$sFirstTrgPath = (string) getFirstPath($oDirRenContext->getTrgPath());
+		
+		if($sFirstSrcPath !== $sFirstTrgPath)
+		{
+			$sBaseName = basename($oSrcFile->getPathname());
+			$iFileSize = $oSrcFile->getSize();
+			$this->sizeExceedFmLimit($iFileSize, $sBaseName);
+			
+			$sRootFolderPath	= $sPathName . $sFirstTrgPath;
+			$iFolderSize		= getDirSize($sRootFolderPath);
+			$iTotalSize			= $iFolderSize + $iFileSize; 
+			$this->sizeExceedFolderLimit($iTotalSize, $sBaseName);
+		}
+		///*/
+		
+		//Je pense qu'il manque le renommage dans le presse papier
+		
+		if(0 < count($this->getError()))
+		{
+			bab_debug($this->getError());
+			return false;			
+		}
+		
+		$sTrgName			= replaceInvalidFolderNameChar($oDirRenContext->getTrgName());
+		$sFullSrcPathName	= $this->getRootFmPath() . $oDirRenContext->getSanitizedSrcPathName() . $oDirRenContext->getSrcName();
+		$sFullTrgPathName	= $this->getRootFmPath() . $oDirRenContext->getSanitizedTrgPathName() . $sTrgName;
+		
+		if(rename($sFullSrcPathName, $sFullTrgPathName))
+		{
+			$oFolderFile->setName($sTrgName);
+			$oFolderFile->save();
+			
+			if(is_dir($this->getRootFmPath() . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/'))
+			{
+				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+				$oIdFile = $oFolderFileVersionSet->aField['iIdFile'];
+				$oFolderFileVersionSet->select($oIdFile->in($oFolderFile->getId()));
+
+				while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
+				{
+					$sSrc = $this->getRootFmPath() . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/' .
+					$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() .
+					',' . $oDirRenContext->getSrcName();
+
+					$sTrg = $this->getRootFmPath() . $oDirRenContext->getSanitizedTrgPathName() . BAB_FVERSION_FOLDER . '/' .
+					$oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() .
+					',' . $sTrgName;
+					
+					if(file_exists($sSrc))
+					{
+						rename($sSrc, $sTrg);
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	private function fileMove(bab_directoryRenameContext $oDirRenContext)
+	{
+		$this->sPathName = $oDirRenContext->getSanitizedTrgPathName();
+		
+		if(!$this->setEnv($oDirRenContext->getTrgPathName()))
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not initialized');
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not valid');
+			return false;
+		}
+		
+		$sSanitizedSrcPathName	= $oDirRenContext->getSanitizedSrcPathName();
+		$sSanitizedTrgPathName	= $oDirRenContext->getSanitizedTrgPathName();
+		
+		$oFmEnv					= &getEnvObject();
+		$iIdSrcRootFolder		= 0;
+		$sSrcPath				= BAB_PathUtil::removeEndSlashes($sSanitizedSrcPathName);
+		$bSrcPathIsCollective	= true;
+		$iIdTrgRootFolder		= 0;
+		$sTrgPath				= BAB_PathUtil::removeEndSlashes($oDirRenContext->getTrgPath());
+		
+		$oSrcRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($sSanitizedSrcPathName);
+		$oTrgRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($oDirRenContext->getTrgPath());
+
+		$iIdSrcRootFolder = $oSrcRootFolder->getId();
+		$iIdTrgRootFolder = $oTrgRootFolder->getId();
+		
+		/*
+		bab_debug(
+			'iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . "\n" .
+			'iIdTrgRootFolder ==> ' . $iIdTrgRootFolder . "\n" .
+			'sSrcPath         ==> ' . $sSrcPath . "\n" .
+			'sTrgPath         ==> ' . $sTrgPath . "\n" .
+			'sFileName        ==> ' . $oDirRenContext->getSrcName()
+		);
+		//*/
+		
+		if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $oDirRenContext->getSrcName()))
+		{
+			$this->displayInfo();
+			return true;
+		}
+		return false;
+	}
 	
 	private function initRelativePath()
 	{
@@ -1197,7 +1419,7 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 		$iIdDelegation		= 0;
 		$bSuccess			= false;	
 		$iIdOldDelegation	= bab_getCurrentUserDelegation();
-		$oFmEnv				= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv				= &getEnvObject();
 		
 		$sPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sPathName));
 		
@@ -1274,7 +1496,7 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 	 */
 	private function accessValid()
 	{
-		$oFmEnv	= bab_getInstance('BAB_FileManagerEnv');
+		$oFmEnv	= &getEnvObject();
 		return $oFmEnv->accessValid();
 	}
 		
@@ -1371,6 +1593,108 @@ $sTrgPath		= (string) addEndSlash($sTrgPath);
 		}
 		return false;
 	}
+	
+	
+	
+	//-----------------------------------------
+	private function isFile(SplFileInfo $oFileInfo)
+	{
+		return $oFileInfo->isFile();
+	}
+	
+	private function sourceFileExist(SplFileInfo $oFileInfo)
+	{
+		if(false === $this->isFile($oFileInfo))
+		{
+			$aSearch		= array('%fileName%');
+			$aReplace		= array(basename($oFileInfo->getPathname()));
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% does not exist."));
+			$this->aError[]	= $sMessage;
+			return false;
+		}
+		return true;
+	}
+	
+	private function destinationFileExist(SplFileInfo $oFileInfo)
+	{
+		if(true === $this->isFile($oFileInfo))
+		{
+			$aSearch		= array('%fileName%', '%folder%');
+			$aReplace		= array(basename($oFileInfo->getPathname()), $oFileInfo->getPath());
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% already exist in %folder%."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function destinationFolderExist(SplFileInfo $oFileInfo)
+	{
+		if(false === $oFileInfo->isDir())
+		{
+			$aSearch		= array('%folder%');
+			$aReplace		= array($oFileInfo->getPath());
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder %folder% does not exist."));
+			$this->aError[]	= $sMessage;
+			return false;
+		}
+		return true;
+	}
+	
+	private function nameReserved(SplFileInfo $oFileInfo)
+	{
+		if(mb_strtolower(BAB_FVERSION_FOLDER) == mb_strtolower($oFileInfo->getFilename()))
+		{
+			$aSearch		= array('%name%');
+			$aReplace		= array(basename($oFileInfo->getPathname()));
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The name %name% is reserved."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function nameSupportedByFileSystem(SplFileInfo $oFileInfo)
+	{
+		$sFileName = basename($oFileInfo->getPathname());
+		if(!isStringSupportedByFileSystem($sFileName))
+		{
+			$aSearch		= array('%name%');
+			$aReplace		= array($sFileName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file named %name% contains characters that are not supported by the file system."));
+			$this->aError[]	= $sMessage;
+			return false;
+		}
+		return true;
+	}
+	
+	private function sizeExceedFmLimit($iZise, $sBaseName)
+	{
+		$oFmEnv	= &getEnvObject();
+		if($iZise + $oFmEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
+		{
+			$aSearch		= array('%name%');
+			$aReplace		= array($sBaseName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The size of the file %name% exceeds the limit set by the file manager."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	
+	private function sizeExceedFolderLimit($iTotalSize, $sBaseName)
+	{
+		if($iTotalSize > $GLOBALS['babMaxGroupSize'])
+		{
+			$aSearch		= array('%name%');
+			$aReplace		= array($sBaseName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The size of the file %name% exceeds the limit set for the folder."));
+			$this->aError[]	= $sMessage;
+			return true;
+		}
+		return false;
+	}
+	//-----------------------------------------
 	
 	private function displayInfo()
 	{
