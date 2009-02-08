@@ -5634,12 +5634,19 @@ function canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath
 		$sTrgPath = mb_substr($sTrgPath, 0, -1);
 	}
 	
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' bHaveRightOnSrc ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . ' bHaveRightOnTrg ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No'));
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sUpLoadPath ==> ' . $sUpLoadPath);
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' file_exists ==> ' . (($bFileExistOnTrgPath) ? 'Yes' : 'No'));
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' iIdSrcRootFolder ==> ' . $iIdSrcRootFolder . ' iIdTrgRootFolder ==> ' . $iIdTrgRootFolder);
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sSrcPath ==> ' . $sSrcPath . ' sTrgPath ==> ' . $sTrgPath);
-//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sFullPathname ==> ' . $sFullPathname);
+	/*
+	bab_debug(
+		'bHaveRightOnSrc     ==> ' . (($bHaveRightOnSrc) ? 'Yes' : 'No') . "\n" .
+		'bHaveRightOnTrg     ==> ' . (($bHaveRightOnTrg) ? 'Yes' : 'No') . "\n" .
+		'sUpLoadPath         ==> ' . $sUpLoadPath . "\n" .
+		'bFileExistOnTrgPath ==> ' . (($bFileExistOnTrgPath) ? 'Yes' : 'No') . "\n" .
+		'iIdSrcRootFolder    ==> ' . $iIdSrcRootFolder . "\n" .
+		'iIdTrgRootFolder    ==> ' . $iIdTrgRootFolder . "\n" .
+		'sSrcPath            ==> ' . $sSrcPath . "\n" . 
+		'sTrgPath            ==> ' . $sTrgPath . "\n" .
+		'sFullPathname       ==> ' . $sFullPathname
+	);
+	//*/
 	
 	return ($bHaveRightOnSrc && $bHaveRightOnTrg && (!$bFileExistOnTrgPath || ($iIdSrcRootFolder === $iIdTrgRootFolder && $sSrcPath === $sTrgPath)));
 }
