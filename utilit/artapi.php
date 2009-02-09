@@ -178,12 +178,12 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
-   	false : administrator access (the user must be an administrator)
-	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
-	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
-	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
-	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
-	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 	false : administrator access (the user must be an administrator)
+ *  BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+ *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+ *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+ *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+ *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  *
  * @return 	ressource|false : first childs of $parentid
  */
@@ -264,12 +264,12 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
-   	false : administrator access (the user must be an administrator)
-	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
-	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
-	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
-	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
-	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ *   	false : administrator access (the user must be an administrator)
+ *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+ *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+ *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+ *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+ *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  *
  * @return 	array : array indexed by id categories, categories are childs of $parentid
  */
@@ -395,12 +395,12 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
-   	false : administrator access (the user must be an administrator)
-	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
-	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
-	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
-	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
-	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 	false : administrator access (the user must be an administrator)
+ *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+ *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+ *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+ *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+ *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  * 
  * @return 	ressource|false
  */
@@ -461,12 +461,12 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
-   	false : administrator access (the user must be an administrator)
-	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
-	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
-	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
-	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
-	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 	false : administrator access (the user must be an administrator)
+ *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+ *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+ *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+ *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+ *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  * 
  * @return 	array
  */
@@ -541,12 +541,12 @@ function bab_getArticleArray($article,$fullpath = false)
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, articles are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
-   	false : all rights (the user must be an administrator)
-	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
-	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
-	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
-	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
-	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 	false : all rights (the user must be an administrator)
+ *	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+ *	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+ *	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+ *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+ *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  * 
  * @return 	array
  */
