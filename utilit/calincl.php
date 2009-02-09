@@ -825,7 +825,7 @@ function bab_deleteCalendar($idcal)
 function bab_getCalendarTitle($calid) {
 
 	if ((string) $calid === (string) ((int) $calid)) {
-		return $GLOBALS['babBody']->icalendars->getCalendarName($calid);
+		return bab_getICalendars()->getCalendarName($calid);
 	}
 
 
@@ -916,7 +916,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		unset($arr['color']);
 		unset($arr['bgcolor']);
 
-		$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($arr['id_cal']);
+		$iarr = bab_getICalendars()->getCalendarInfo($arr['id_cal']);
 
 		$arr['alert'] = false;
 		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
@@ -991,7 +991,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		while( $arr = $babDB->db_fetch_array($res)) {
 			
 			$data = & $events[$arr['id_event']]->getData();
-			if ($GLOBALS['babBody']->icalendars->id_percal == $data['id_cal']) {
+			if (bab_getICalendars()->id_percal == $data['id_cal']) {
 				$data['note'] = $arr['note'];
 			}
 		}

@@ -255,7 +255,7 @@ class bab_mcalendars
 		);
 
 		foreach($idcals as $idcal) {
-			$iarr = $GLOBALS['babBody']->icalendars->getCalendarInfo($idcal);
+			$iarr = bab_getICalendars()->getCalendarInfo($idcal);
 
 			switch($iarr['type']) {
 				case BAB_CAL_USER_TYPE:
