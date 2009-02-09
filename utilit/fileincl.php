@@ -5533,7 +5533,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		$sFullPathToPaste = realpath($sRootFmPath . $sSrcPath);
 		if(false === $sFullPathToPaste)
 		{
-			bab_debug("False sSrc ==> " . $sRootFmPath . $sSrcPath);
+			//bab_debug("False sSrc ==> " . $sRootFmPath . $sSrcPath);
 			return false;
 		}
 		
