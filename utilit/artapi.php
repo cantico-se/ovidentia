@@ -27,6 +27,14 @@
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 
+
+
+
+/* CATEGORIES API */
+
+
+
+
 /**
  * @deprecated
  * @see	bab_getTopicTitle
@@ -47,17 +55,6 @@ function bab_getCategoryTitle($id)
 		}
 	}
 
-
-/**
- * Get topic title
- * @param	int		$id
- * @return	string
- */
-function bab_getTopicTitle($id)
-	{
-		return bab_getCategoryTitle($id);
-	}
-	
 /**
  * @deprecated
  * @see	bab_getTopicDescription
@@ -76,14 +73,9 @@ function bab_getCategoryDescription($id)
 		{
 		return "";
 		}
-	}
+	}	
 
-function bab_getTopicDescription($id)
-	{
-		return bab_getCategoryDescription($id);
-	}
-	
-function bab_getTopicCategoryTitle($id)
+	function bab_getTopicCategoryTitle($id)
 	{
 	global $babDB;
 	$query = "select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
@@ -113,99 +105,8 @@ function bab_getTopicCategoryDescription($id)
 		{
 		return "";
 		}
-	}
-
-function bab_getArticleTitle($article)
-	{
-	global $babDB;
-	$query = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['title'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-// used in add-ons since 4.09
-function bab_getArticleArray($article,$fullpath = false)
-	{
-	global $babDB;
-	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$babDB->db_escape_string($article)."' AND t.id=a.id_topic";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		if ($fullpath) $arr['CategoriesHierarchy'] = viewCategoriesHierarchy_txt($arr['id_topic']);
-		return $arr;
-		}
-	else
-		{
-		return array();
-		}
-	}
-
-function bab_getArticleDate($article)
-	{
-	global $babDB;
-	$query = "select date from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return bab_strftime(bab_mktime($arr['date']));
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-function bab_getArticleAuthor($article)
-	{
-	global $babDB;
-	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'";
-		$res = $babDB->db_query($query);
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			return bab_composeUserName($arr['firstname'], $arr['lastname']);
-			}
-		else
-			return bab_translate("Anonymous");
-		}
-	else
-		{
-		return bab_translate("Anonymous");
-		}
-	}
-
-function bab_getCommentTitle($com)
-	{
-	global $babDB;
-	$query = "select subject from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['subject'];
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-
+	}	
+	
 function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
 	{
 	global $babBody, $babDB;
@@ -269,6 +170,152 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		}
 	}
 
+/**
+ * Get first children articles categories (in db_query ressource )
+ *
+ * @param	array		$parentid		: list of id of the parent category
+ * @param	int|false	$delegationid	: if delegationid is false, categories are not filtered
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
+ * 
+ * Values of $rightsaccesstable :
+   	false : administrator access (the user must be an administrator)
+	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ *
+ * @return 	ressource|false : first childs of $parentid
+ */
+function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
+	global $babBody, $babDB;
+	
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			return false;
+		}
+	}
+
+	$sDelegation = ' ';
+	if(false !== $delegationid) {
+		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+	}
+	
+	/* List of id categories */
+	$IdEntries = array();
+	if( count($parentid) > 0 ) {
+		/* All categories, childs of $parentid */
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
+		/* Specifics rights or all rights ? */
+		if (false === $rightaccesstable) {
+			/* Administrator rights */
+			if ($babDB->db_num_rows($res) > 0) {
+				while ($row = $babDB->db_fetch_array($res)) {
+					if (!in_array($row['id'], $IdEntries)) {
+						array_push($IdEntries, $row['id']);
+					}
+				}
+			}
+		} else {
+			/* Specific right */
+			$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable); /* all id topics with right */
+			
+			$idcategoriesbyrights = array();
+			
+			/* All id categories, parents of topics with right */
+			$res2 = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($idtopicsbyrights)).")");
+			if ($babDB->db_num_rows($res2) > 0) {
+				while ($row2 = $babDB->db_fetch_array($res2)) {
+					if (!in_array($row2['id_cat'], $idcategoriesbyrights)) {
+						$idcategoriesbyrights[$row2['id_cat']] = $row2['id_cat'];
+					}
+				}
+			}
+			
+			if ($babDB->db_num_rows($res) > 0) {
+				while ($row = $babDB->db_fetch_array($res)) {
+					if (isset($idcategoriesbyrights[$row['id']]) ) {
+						if (!in_array($row['id'], $IdEntries)) {
+							array_push($IdEntries, $row['id']);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/* All fields and values of categories */
+	if($IdEntries) {
+		$req = "SELECT tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc 
+			LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
+			WHERE tc.id IN (".$babDB->quote($IdEntries).") and tot.type='1' " . $sDelegation .  " order by tot.ordering asc";
+		
+		return $babDB->db_query($req);
+	}
+	
+	return false;
+}
+
+/**
+ * Get first children articles categories information (id, title, description)
+ *
+ * @param	array		$parentid		: list of id of the parent category (0 )
+ * @param	int|false	$delegationid	: if delegationid is false, categories are not filtered
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
+ * 
+ * Values of $rightsaccesstable :
+   	false : administrator access (the user must be an administrator)
+	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ *
+ * @return 	array : array indexed by id categories, categories are childs of $parentid
+ */
+function bab_getChildrenArticleCategoriesInformation($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
+	global $babBody, $babDB;
+	
+	$categories = array();
+	
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			return $categories;
+		}
+	}
+	
+	$res = bab_getArticleCategoriesRes($parentid, $delegationid, $rightaccesstable);
+	if ($babDB->db_num_rows($res) > 0) {
+		while ($row = $babDB->db_fetch_array($res)) {
+			$categories[$row['id']] = array('id' => $row['id'], 'title' => $row['title'], 'description' => $row['description']);
+		}
+	}
+	
+	return $categories;
+}
+
+
+
+
+/* TOPICS API */
+	
+
+
+
+/**
+ * Get topic title
+ * @param	int		$id
+ * @return	string
+ */
+function bab_getTopicTitle($id)
+	{
+		return bab_getCategoryTitle($id);
+	}
+
+function bab_getTopicDescription($id)
+	{
+		return bab_getCategoryDescription($id);
+	}
 
 function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = array())
 {
@@ -341,6 +388,258 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 	return $id;
 }
 
+/**
+ * Get articles topics (in db_query ressource )
+ * @param	array		$categoryid		: list of articles categories
+ * @param	int|false	$delegationid	: if delegationid is false, topics are not filtered
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
+ * 
+ * Values of $rightsaccesstable :
+   	false : administrator access (the user must be an administrator)
+	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 
+ * @return 	ressource|false
+ */
+function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
+	global $babBody, $babDB;
+	
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			return false;
+		}
+	}
+	
+	$sDelegation = ' ';
+	$sLeftJoin = ' ';
+	/* Request with delegation */
+	if (false !== $delegationid) {
+		$sLeftJoin = 
+			'LEFT JOIN ' .
+				BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
+			'LEFT JOIN ' .
+				BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
+		
+		$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+	}
+
+	$IdEntries = array();
+	
+	if (count($categoryid) > 0 ) {
+		/* Add topics in $IdEntries in order */
+		$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".$babDB->quote($categoryid).")" . $sDelegation . " order by tco.ordering asc";
+		$res = $babDB->db_query($req);
+		while ($row = $babDB->db_fetch_array($res)) {
+			if (false === $rightaccesstable) {
+				/* No right specified : administrator rights */
+				array_push($IdEntries, $row['id_topcat']);
+			} else {
+				/* Specific right */
+				$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable); /* all id topics with right */
+				if (isset($idtopicsbyrights[$row['id_topcat']])) {
+					array_push($IdEntries, $row['id_topcat']);
+				}
+			}
+		}
+	}
+
+	if (count($IdEntries) > 0) {
+		$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' order by tot.ordering asc";
+		return $babDB->db_query($req);
+	}
+		
+	return false;
+}
+
+/**
+ * Get articles topics information, first children of categories (id, title, description)
+ * @param	array		$categoryid		: list of articles categories
+ * @param	int|false	$delegationid	: if delegationid is false, topics are not filtered
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
+ * 
+ * Values of $rightsaccesstable :
+   	false : administrator access (the user must be an administrator)
+	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 
+ * @return 	array
+ */
+function bab_getChildrenArticleTopicsInformation($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
+	global $babBody, $babDB;
+	
+	$topics = array();
+	
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			return $topics;
+		}
+	}
+	
+	$res = bab_getArticleTopicsRes($categoryid, $delegationid, $rightaccesstable);
+	if ($babDB->db_num_rows($res) > 0) {
+		while ($row = $babDB->db_fetch_array($res)) {
+			$topics[$row['id']] = array('id' => $row['id'], 'title' => $row['category'], 'description' => $row['description']);
+		}
+	}
+	
+	return $topics;
+}
+
+
+
+
+/* ARTICLES API */	
+
+
+
+	
+function bab_getArticleTitle($article)
+	{
+	global $babDB;
+	$query = "select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['title'];
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+// used in add-ons since 4.09
+function bab_getArticleArray($article,$fullpath = false)
+	{
+	global $babDB;
+	$query = "select a.*,t.category topic from ".BAB_ARTICLES_TBL." a,".BAB_TOPICS_TBL." t where a.id='".$babDB->db_escape_string($article)."' AND t.id=a.id_topic";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		if ($fullpath) $arr['CategoriesHierarchy'] = viewCategoriesHierarchy_txt($arr['id_topic']);
+		return $arr;
+		}
+	else
+		{
+		return array();
+		}
+	}
+
+/**
+ * Get articles information, first children of a topic (id, idtopic, title, head, body, idauthor, author, sqldate, date, archive (boolean))
+ * @param	int		    $topicid		: id parent topic
+ * @param   boolean     $fullpath       : add CategoriesHierarchy in results
+ * @param   int     	$articlestype   : if 1 : articles & articles archives are added, if 2 : only articles are added, if 3 : only articles archives are added
+ * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, articles are not filtered by user's rights 
+ * 
+ * Values of $rightsaccesstable :
+   	false : all rights (the user must be an administrator)
+	BAB_TOPICSCOM_GROUPS_TBL : right submit comments
+	BAB_TOPICSMAN_GROUPS_TBL : right manage topic
+	BAB_TOPICSMOD_GROUPS_TBL : right modify articles
+	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
+	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
+ * 
+ * @return 	array
+ */
+function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articlestype = 2, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
+	global $babDB;
+	
+	$articles = array();
+	
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			return $articles;
+		}
+	}
+	
+	if (!is_numeric($topicid)) {
+		return $articles;
+	}
+	
+	/* Verify rights */
+	if (false !== $rightaccesstable) {
+		/* Specific right */
+		$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable); /* all id topics with right */
+		if (!isset($idtopicsbyrights[$topicid])) {
+			return $articles; /* return nothing */
+		}
+	}
+	
+	$query = "select * from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topicid)."'";
+	if ($articlestype === 2) {
+		/* only articles, no archives */
+		$query .= " AND archive='N'";
+	}
+	if ($articlestype === 3) {
+		/* only archives */
+		$query .= " AND archive='Y'";
+	}
+	$res = $babDB->db_query($query);
+	if ($babDB->db_num_rows($res) > 0) {
+		while ($row = $babDB->db_fetch_array($res)) {
+			$articles[$row['id']] = array('id' => $row['id'], 'title' => $row['title'], 'head' => $row['head'], 'body' => $row['body'], 'idauthor' => $row['id_author'], 'author' => bab_getArticleAuthor($row['id']), 'sqldate' => $row['date'], 'date' => bab_getArticleDate($row['id']));
+			if ($fullpath) {
+				$articles[$row['id']]['CategoriesHierarchy'] = viewCategoriesHierarchy_txt($row['id_topic']);
+			}
+			if ($row['archive'] == 'N') {
+				$articles[$row['id']]['archive'] = false;
+			} else {
+				$articles[$row['id']]['archive'] = true;
+			}
+		}
+	}
+	
+	return $articles;
+}
+	
+function bab_getArticleDate($article)
+	{
+	global $babDB;
+	$query = "select date from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return bab_strftime(bab_mktime($arr['date']));
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getArticleAuthor($article)
+	{
+	global $babDB;
+	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
+			{
+			$arr = $babDB->db_fetch_array($res);
+			return bab_composeUserName($arr['firstname'], $arr['lastname']);
+			}
+		else
+			return bab_translate("Anonymous");
+		}
+	else
+		{
+		return bab_translate("Anonymous");
+		}
+	}
 
 function bab_submitArticleDraft($idart)
 {
@@ -415,6 +714,7 @@ function bab_submitArticleDraft($idart)
 		}
 	return true;
 }
+
 function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleArr=array())
 {
 	global $babBody, $babDB;
@@ -505,109 +805,34 @@ function bab_addArticle( $title, $head, $body, $idTopic, &$error, $articleArr=ar
 
 
 
-/**
- * Get articles topic categories
- *
- * @param	array		$parentid		: list of id of the parent category
- * @param	false|int	$delegationid	: if delegationid is false, categories are not filtered
- *
- * @return 	ressource|false
- */
-function bab_getArticleCategoriesRes($parentid, $delegationid = false) {
-	global $babBody, $babDB;
-
-	$sDelegation = ' ';
-	if(0 != $delegationid)
-	{
-		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-	}
+/* COMMENTS API */	
 	
-	$IdEntries = array();
+
 
 	
-	if( count($parentid) > 0 )
+function bab_getCommentTitle($com)
 	{
-	$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
-	$topcatview = $babBody->get_topcatview();
-	while( $row = $babDB->db_fetch_array($res))
+	global $babDB;
+	$query = "select subject from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		if( isset($topcatview[$row['id']]) )
-			{
-			if( count($IdEntries) == 0 || !in_array($row['id'], $IdEntries))
-				{
-				array_push($IdEntries, $row['id']);
-				}
-			}
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['subject'];
 		}
-	}
-	
-
-	if($IdEntries)
+	else
 		{
-		$req = "SELECT tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc 
-			LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
-			WHERE tc.id IN (".$babDB->quote($IdEntries).") and tot.type='1' " . $sDelegation .  " order by tot.ordering asc";
-		
-		return $babDB->db_query($req);
-		}
-		
-	return false;
-}
-
-/**
- * Get articles topics
- * @param	array		$categoryid		: list of articles categories
- * @param	false|int	$delegationid	: if delegationid is false, topics are not filtered
- * @return 	ressource|false
- */
-function bab_getArticleTopicsRes($categoryid, $delegationid = false) {
-	global $babBody, $babDB;
-	
-
-	$sDelegation = ' ';
-	$sLeftJoin = ' ';
-	if(false !== $delegationid)
-	{
-		$sLeftJoin = 
-			'LEFT JOIN ' .
-				BAB_TOPICS_TBL . ' tc ON tc.id = id_topcat ' .
-			'LEFT JOIN ' .
-				BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = tc.id_cat ';
-		
-		$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-	}
-	
-
-	$IdEntries = array();
-
-	if( count($categoryid) > 0 )
-	{
-	$req = "select * from ".BAB_TOPCAT_ORDER_TBL. " tco " . $sLeftJoin . " where tco.type='2' and tco.id_parent IN (".$babDB->quote($categoryid).")" . $sDelegation . " order by tco.ordering asc";
-	
-	
-
-	$res = $babDB->db_query($req);
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if(isset($babBody->topview[$row['id_topcat']]))
-			{
-			array_push($IdEntries, $row['id_topcat']);
-			}
+		return "";
 		}
 	}
 
-	if( $IdEntries)
-		{
-		$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' order by tot.ordering asc";
-		return $babDB->db_query($req);
-	}
-		
-	return false;
-}
+	
+	
 
+/* ASSOCIATED IMAGES API */
 
-// Associated image
-
+	
+	
 
 /**
  * This function insert a record in the database.
