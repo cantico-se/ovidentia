@@ -35,19 +35,13 @@ require_once dirname(__FILE__) . '/../utilit/tree.php';
  */
 class bab_AdmArticleTreeView extends bab_ArticleTreeView
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param $sId		A unique id 
-	 */
-	function bab_AdmArticleTreeView($sId)
-	{
-		parent::__construct($sId);
-	}
 
-	function onElementAppended(&$oElement, $sIdParent)
+
+	public function appendElement(&$oElement, $sParentId)
 	{
 		global $babBody;
+
+		parent::appendElement($oElement, $sParentId);
 
 		if('categoryroot' == $oElement->_type)
 		{
@@ -66,7 +60,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 		}
 		else if('category' == $oElement->_type)
 		{
-			$iIdParent = $this->getId($sIdParent);
+			$iIdParent = $this->getId($sParentId);
 			$iId = $this->getId($oElement->_id);
 			
 			$sAddCategUrl = $GLOBALS['babUrlScript'] . '?tg=topcats&idx=Create&idp=' . $iId;
@@ -115,7 +109,7 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 		}
 		else if('topic' == $oElement->_type)
 		{
-			$iIdParent = $this->getId($sIdParent);
+			$iIdParent = $this->getId($sParentId);
 			$iId = $this->getId($oElement->_id);
 			
 			$sDelTopicUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=Delete&topdel=dummy&item=' . $iId . '&cat=' . $iIdParent;
@@ -130,9 +124,9 @@ class bab_AdmArticleTreeView extends bab_ArticleTreeView
 
 			$oElement->setLink($GLOBALS['babUrlScript'] . '?tg=topic&idx=Modify&item=' . $iId . '&cat=' . $iIdParent);
 		}
-
 	}
-	
+
+
 	function getId($sId)
 	{
 		static $iIdIdx = 1;
