@@ -25,8 +25,6 @@ require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
 
-
-
 class bab_FileInfo extends SplFileInfo
 {
 	public function __construct($sFilename)
@@ -228,16 +226,264 @@ class bab_Directory
 	
 	private $aError			= array();
 	
+	const RIGHT_DEPOSIT				= 1;
+	const RIGHT_DEPOSIT_AND_CHILD	= 2;
+	const RIGHT_DOWNLOAD			= 4;
+	const RIGHT_DOWNLOAD_AND_CHILD	= 8;
+	const RIGHT_UPDATE				= 16;
+	const RIGHT_UPDATE_AND_CHILD	= 32;
+	const RIGHT_MANAGE				= 64;
+	const RIGHT_MANAGE_AND_CHILD	= 128;
+	const RIGHT_NOTIFY				= 256;
+	const RIGHT_NOTIFY_AND_CHILD	= 512;
+	
 	public function __construct()
 	{
 		
 	}
 	
+	/**
+	 * This function set right on a collective folder.
+	 * If the folder is not in the database the function
+	 * do nothing
+	 *
+	 * @param string	$sPathName  The path of the folder (ex: DG0:/Développement/2/)
+	 * @param int		$iBits		Field of bits to implement the rights
+	 * @param int		$iIdGroup	The group identifier to which the rights apply
+	 * 
+	 * @return bool					True on success, false otherwise
+	 */
+	public function setRight($sPathName, $iBits, $iIdGroup)
+	{
+		$this->resetError();
+		
+		if(!$this->processPathName($sPathName, $this->sPathName))
+		{
+			return false;
+		}
+		
+		if(!$this->setEnv($sPathName))
+		{
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			return false;
+		}
+		
+		if(!canManage($this->sPathName))
+		{
+			$this->aError[] = bab_translate("Access denied");
+			return false;
+		}
+		
+		if($iIdGroup > BAB_ACL_GROUP_TREE)
+		{
+			$this->aError[]	= bab_translate('The specified group identifier is not valid.');
+			return false;
+		}
+		
+		require_once dirname(__FILE__) . '/grpincl.php';
+		
+		if(false === bab_isGroup($iIdGroup))
+		{
+			$this->aError[]	= bab_translate('The specified group identifier do not represent a group.');
+			return false;
+		}
+		
+		$sRelativePath	= '';
+		$sName			= (string) getFirstPath($this->sPathName);
+		if($sName . '/' !== (string) $this->sPathName)
+		{
+			$sRelativePath = (string) removeFirstPath($this->sPathName);
+		}
+
+		$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+		$oNameField			= $oFolderSet->aField['sName'];
+		$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria	= $oNameField->in($sName);
+		$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
+		$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->getDelegationId()));
+		$oFolder	= $oFolderSet->get($oCriteria);
+
+		//bab_debug($oFolderSet->getSelectQuery($oCriteria));
+		
+		if(!($oFolder instanceof BAB_FmFolder))
+		{
+			$aSearch		= array('%name%', '%path%');
+			$aReplace		= array($sName, $sRelativePath);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder named %name% with path %path% is not collective."));
+			$this->aError[]	= $sMessage;
+			return false;
+		}
+		
+		require_once dirname(__FILE__) . '/../admin/acl.php';
+		
+		static $aRightsChild = null;
+		if(!isset($aRightsChild))
+		{
+			$aRightsChild = array(
+				bab_Directory::RIGHT_DEPOSIT_AND_CHILD => BAB_FMUPLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_DOWNLOAD_AND_CHILD => BAB_FMDOWNLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_UPDATE_AND_CHILD => BAB_FMUPDATE_GROUPS_TBL,
+				bab_Directory::RIGHT_MANAGE_AND_CHILD => BAB_FMMANAGERS_GROUPS_TBL,
+				bab_Directory::RIGHT_NOTIFY_AND_CHILD => BAB_FMNOTIFY_GROUPS_TBL
+			);
+		}
+				
+		foreach($aRights as $iBit => $sTable)
+		{
+			if($iBits & $iBit)
+			{
+				aclAdd($sTable, $iIdGroup, $oFolder->getId());
+			}
+		}
+		
+		static $aRights = null;
+		if(!isset($aRights))
+		{
+			$aRights = array(
+				bab_Directory::RIGHT_DEPOSIT => BAB_FMUPLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_DOWNLOAD => BAB_FMDOWNLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_UPDATE => BAB_FMUPDATE_GROUPS_TBL,
+				bab_Directory::RIGHT_MANAGE => BAB_FMMANAGERS_GROUPS_TBL,
+				bab_Directory::RIGHT_NOTIFY => BAB_FMNOTIFY_GROUPS_TBL,
+			);
+		}
+
+		foreach($aRightsChild as $iBit => $sTable)
+		{
+			if($iBits & $iBit)
+			{
+				aclAdd($sTable, $iIdGroup + BAB_ACL_GROUP_TREE, $oFolder->getId());
+			}
+		}
+	}
+
+	/**
+	 * This function unset right on a collective folder.
+	 * If the folder is not in the database the function
+	 * do nothing
+	 *
+	 * @param string	$sPathName  The path of the folder (ex: DG0:/Développement/2/)
+	 * @param int		$iBits		Field of bits to implement the rights
+	 * @param int		$iIdGroup	The group identifier to which the rights apply
+	 * 
+	 * @return bool					True on success, false otherwise
+	 */
+	public function unsetRight($sPathName, $iBits, $iIdGroup)
+	{
+		$this->resetError();
+		
+		if(!$this->processPathName($sPathName, $this->sPathName))
+		{
+			return false;
+		}
+		
+		if(!$this->setEnv($sPathName))
+		{
+			return false;
+		}
+		
+		if(!$this->accessValid())
+		{
+			return false;
+		}
+		
+		if(!canManage($this->sPathName))
+		{
+			$this->aError[] = bab_translate("Access denied");
+			return false;
+		}
+		
+		if($iIdGroup > BAB_ACL_GROUP_TREE)
+		{
+			$this->aError[]	= bab_translate('The specified group identifier is not valid.');
+			return false;
+		}
+		
+		require_once dirname(__FILE__) . '/grpincl.php';
+		
+		if(false === bab_isGroup($iIdGroup))
+		{
+			$this->aError[]	= bab_translate('The specified group identifier do not represent a group.');
+			return false;
+		}
+		
+		$sRelativePath	= '';
+		$sName			= (string) getFirstPath($this->sPathName);
+		if($sName . '/' !== (string) $this->sPathName)
+		{
+			$sRelativePath = (string) removeFirstPath($this->sPathName);
+		}
+
+		$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+		$oNameField			= $oFolderSet->aField['sName'];
+		$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria	= $oNameField->in($sName);
+		$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
+		$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->getDelegationId()));
+		$oFolder	= $oFolderSet->get($oCriteria);
+
+		//bab_debug($oFolderSet->getSelectQuery($oCriteria));
+		
+		if(!($oFolder instanceof BAB_FmFolder))
+		{
+			$aSearch		= array('%name%', '%path%');
+			$aReplace		= array($sName, $sRelativePath);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder named %name% with path %path% is not collective."));
+			$this->aError[]	= $sMessage;
+			return false;
+		}
+		
+		require_once dirname(__FILE__) . '/../admin/acl.php';
+
+		static $aRights = null;
+		
+		if(!isset($aRights))
+		{
+			$aRights = array(
+				bab_Directory::RIGHT_DEPOSIT => BAB_FMUPLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_DOWNLOAD => BAB_FMDOWNLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_UPDATE => BAB_FMUPDATE_GROUPS_TBL,
+				bab_Directory::RIGHT_MANAGE => BAB_FMMANAGERS_GROUPS_TBL,
+				bab_Directory::RIGHT_NOTIFY => BAB_FMNOTIFY_GROUPS_TBL,
+				bab_Directory::RIGHT_DEPOSIT_AND_CHILD => BAB_FMUPLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_DOWNLOAD_AND_CHILD => BAB_FMDOWNLOAD_GROUPS_TBL,
+				bab_Directory::RIGHT_UPDATE_AND_CHILD => BAB_FMUPDATE_GROUPS_TBL,
+				bab_Directory::RIGHT_MANAGE_AND_CHILD => BAB_FMMANAGERS_GROUPS_TBL,
+				bab_Directory::RIGHT_NOTIFY_AND_CHILD => BAB_FMNOTIFY_GROUPS_TBL
+			);
+		}
+
+		foreach($aRights as $iBit => $sTable)
+		{
+			if($iBits & $iBit)
+			{
+				aclDelete($sTable, $oFolder->getId());
+			}
+		}
+	}
+	
+	/**
+	 * This function return the last error(s) 
+	 *
+	 * @return array
+	 */
 	public function getError()
 	{
 		return $this->aError;
 	}
 	
+	/**
+	 * This function reset the last error(s)
+	 *
+	 */
 	public function resetError()
 	{
 		$this->aError = array();
@@ -283,7 +529,6 @@ class bab_Directory
 	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/1.1/1.1.1/
 	 * so the path name will be Développement/1/1.1/1.1.1/
 	 * 
-	 * 
 	 * @return string
 	 */
 	public function getPathName()
@@ -304,8 +549,8 @@ class bab_Directory
 	/**
 	 * This function return the content of a folder
 	 *
-	 * @param string $sPathName
-	 * @param int $iFilter (bab_DirectoryFilter value)
+	 * @param string	$sPathName	The path of the folder (ex: DG0:/Développement/2/)
+	 * @param int		$iFilter	(bab_DirectoryFilter value)
 	 * 
 	 * @return bab_CollectiveDirIterator
 	 */
@@ -313,19 +558,16 @@ class bab_Directory
 	{
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
 		if(!$this->setEnv($sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
@@ -348,44 +590,67 @@ class bab_Directory
 	 */
 	public function createSubdirectory($sPathName)
 	{
+		$this->resetError();
+		
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
 		if(!$this->setEnv($sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 			
 		$oFmEnv	= &getEnvObject();
 		if(!canCreateFolder($oFmEnv->sRelativePath))
 		{
-			bab_debug('Error');
+			$this->aError[] = bab_translate("Access denied");
 			return false;
 		}
 		
 		if(!$this->isPathNameCreatable())
 		{
-			bab_debug('Error pathName not creatable');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %name% is not creatable."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
 		$sFullPathName = $this->getRootFmPath() . $this->getPathName();
 		if(!BAB_FmFolderHelper::createDirectory($sFullPathName))
 		{
-			bab_debug('Error');
+			$this->aError[]	= bab_translate("Error in folder creation process.");
 			return false;
 		}
-		
+
+		if($oFmEnv->userIsInRootFolder())
+		{
+			$oFmFolder = new BAB_FmFolder();
+			$oFmFolder->setActive('Y');
+			$oFmFolder->setApprobationSchemeId(0);
+			$oFmFolder->setAutoApprobation('N');
+			$oFmFolder->setDelegationOwnerId($this->getDelegationId());
+			$oFmFolder->setFileNotify('N');
+			$oFmFolder->setHide('N');
+			$oFmFolder->setName(removeEndSlashes($this->getPathName()));
+			$oFmFolder->setAddTags('Y');
+			$oFmFolder->setRelativePath('');
+			$oFmFolder->setVersioning('N');
+			$oFmFolder->setAutoApprobation('N');
+			if(false === $oFmFolder->save())
+			{
+				rmdir($sFullPathName);
+				$this->aError[]	= bab_translate("The folder can not be created in the database.");
+				return false;
+			}
+		}
 		return true;
 	}
 	
@@ -398,42 +663,47 @@ class bab_Directory
 	 */
 	public function deleteSubdirectory($sPathName)
 	{
+		$this->resetError();
+		
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
 		if(!$this->setEnv($sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
 			return false;
 		}
 	
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $sPathName . ' access not valid');
 			return false;
 		}
 				
 		$oFmEnv	= &getEnvObject();
 		if(!canCreateFolder($oFmEnv->sRelativePath))
 		{
-			bab_debug('Error !!!!!');
+			$this->aError[] = bab_translate("Access denied");
 			return false;
 		}
 		
 		$sFullPathName = $this->getRootFmPath() . $this->getPathName();
 		if(!is_dir($sFullPathName))
 		{
-			bab_debug("Please give a valid folder name " . $sFullPathName);
+			$aSearch		= array('%folder%');
+			$aReplace		= array($sPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder %folder% does not exist."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 
 		//Just to be sure that the folder DGx is not deleted
 		if($sFullPathName == $this->getRootFmPath())
 		{
-			bab_debug("The folder is not deletable " . $sFullPathName);
+			$aSearch		= array('%folder%');
+			$aReplace		= array($sPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The folder %folder% is not deletable."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -487,20 +757,20 @@ class bab_Directory
 	 */
 	public function renameSubDirectory($sSrcPathName, $sTrgPathName)
 	{
+		$this->resetError();
+		
 		$sSrcPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sSrcPathName));
 		$sTrgPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sTrgPathName));
 		
 		$sSanitizedTrgPathName = '';
 		if(!$this->processPathName($sTrgPathName, $sSanitizedTrgPathName))
 		{
-			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
 			return false;
 		}
 		
 		$sSanitizedSrcPathName = '';
 		if(!$this->processPathName($sSrcPathName, $sSanitizedSrcPathName))
 		{
-			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
 			return false;
 		}
 		
@@ -515,19 +785,22 @@ class bab_Directory
 		
 		if(0 === mb_strlen($sSrcName))
 		{
-			bab_debug('sSrcName ==> ' . $sSrcName . ' is not valid');
+			$this->aError[]	= bab_translate("The source folder name is empty.");
 			return false;
 		}
 		
 		if(0 === mb_strlen($sTrgName))
 		{
-			bab_debug('sTrgName ==> ' . $sTrgName . ' is not valid');
+			$this->aError[]	= bab_translate("The target folder name is empty.");
 			return false;
 		}
 		
 		if(1 !== preg_match('#^DG(\d+)(/)#', $sTrgPathName, $aBuffer))
 		{
-			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sTrgPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -537,7 +810,10 @@ class bab_Directory
 		
 		if(1 !== preg_match('#^DG(\d+)(/)#', $sSrcPathName, $aBuffer))
 		{
-			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sSrcPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -545,7 +821,7 @@ class bab_Directory
 		
 		if($iIdTrgDelegation !== $iIdSrcDelegation)
 		{
-			bab_debug('$iIdTrgDelegation !== $iIdSrcDelegation');
+			$this->aError[]	= bab_translate("The source and the target folders are not not in the same delegation.");
 			return false;
 		}
 		
@@ -578,7 +854,7 @@ class bab_Directory
 				$oDirRenContext->setTrgName($sTrgName);
 				$oDirRenContext->setTrgPath($sTrgPath);
 				
-				$this->renameDirectory($oDirRenContext);
+				return $this->renameDirectory($oDirRenContext);
 			}
 			else
 			{
@@ -588,20 +864,23 @@ class bab_Directory
 				$oDirRenContext->setTrgName($sSrcName);
 				$oDirRenContext->setTrgPath($sPath);
 				
-				$this->moveDirectory($oDirRenContext);
-				if($sSrcName !== $sTrgName)
+				if($this->moveDirectory($oDirRenContext))
 				{
-					$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName;
-					$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sTrgName;
-
-					/*
-					bab_debug(
-						'sSrcPathName ==> ' . $sSrcPathName . "\n" .
-						'sTrgPathName ==> ' . $sTrgPathName
-					);
-					//*/
-					
-					$this->renameSubDirectory($sSrcPathName, $sTrgPathName);
+					if($sSrcName !== $sTrgName)
+					{
+						$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName;
+						$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sPath . $sTrgName;
+	
+						/*
+						bab_debug(
+							'sSrcPathName ==> ' . $sSrcPathName . "\n" .
+							'sTrgPathName ==> ' . $sTrgPathName
+						);
+						//*/
+						
+						return $this->renameSubDirectory($sSrcPathName, $sTrgPathName);
+					}
+					return true;
 				}
 			}
 		}
@@ -614,14 +893,10 @@ class bab_Directory
 				$oDirRenContext->setTrgName($sTrgName);
 				$oDirRenContext->setTrgPath($sTrgPath);
 				
-				$this->moveDirectory($oDirRenContext);
-			}
-			else
-			{
-				bab_debug('Looser lamer !!!');
-				return false;
+				return $this->moveDirectory($oDirRenContext);
 			}
 		}
+		return false;
 	}
 	
 	/**
@@ -634,53 +909,52 @@ class bab_Directory
 	 */
 	public function importFile($sFullSrcFileName, $sPathName)
 	{
+		$this->resetError();
+		
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
 		if(0 === mb_strlen($this->sPathName))
 		{
-			bab_debug('A file must be in a folder');
+			$this->aError[]	= bab_translate("The pathName is empty");
 			return false;
 		}
 		
 		if(!$this->setEnv($sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 			
 		$oFmEnv	= &getEnvObject();
 		if(!canManage($oFmEnv->sRelativePath) && !canDownload($oFmEnv->sRelativePath))
 		{
-			bab_debug('Access denied');
+			$this->aError[]	= bab_translate("Access denied");
 			return false;
 		}
 		
 		if(!$this->canImportFile($sFullSrcFileName, $this->getDelegationId(), $this->getPathName()))
 		{
-			bab_debug($this->getError());
 			return false;
 		}
 		
 		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($this->getPathName());
 		if(!($oFmFolder instanceof BAB_FmFolder))
 		{
-			bab_debug("Cannot get the first collective parent folder");
+			$this->aError[]	= bab_translate("Error: Unable to retrieve the first parent collective folder");
 			return false;
 		}
 		
 		$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sFullSrcFileName); 
 		if(!($oFileHandler instanceof bab_fileHandler))
 		{
+			$this->aError[]	= bab_translate("Error: Unable to instance bab_fileHandler");
 			return false;
 		}
 		
@@ -695,7 +969,7 @@ class bab_Directory
 		$sFullPathName	= $this->getRootFmPath() . $this->getPathName() . $sFileName;
 		if(false === $oFileHandler->import($sFullPathName))
 		{
-			bab_debug("Cannot import file");
+			$this->aError[]	= bab_translate("Error: Unable to import the file");
 			return false;
 		}
 		//*/
@@ -732,7 +1006,7 @@ class bab_Directory
 		
 		if(false === $oFolderFile->save())
 		{
-			bab_debug('Error on save file');
+			$this->aError[]	= bab_translate("Error: Unable to create the file in the database");
 			unlink($sFullPathName);
 			return false;
 		}
@@ -758,13 +1032,17 @@ class bab_Directory
 	}
 	
 	/**
-	 * Enter description here...
+	 * This function rename a file
 	 *
-	 * @param unknown_type $sSrcPathName
-	 * @param unknown_type $sTrgPathName
+	 * @param string $sSrcPathName	The source pathName (ex: DG0/Développement/readme.txt)
+	 * @param string $sTrgPathName	The target pathName (ex: DG0/Développement/readme1.txt)
+	 * 
+	 * @return bool
 	 */
 	public function renameFile($sSrcPathName, $sTrgPathName)
 	{
+		$this->resetError();
+		
 		//Récupération des noms de fichiers
 		$sSrcName = (string) getLastPath($sSrcPathName);
 		$sTrgName = (string) getLastPath($sTrgPathName);
@@ -786,33 +1064,34 @@ class bab_Directory
 		$sSanitizedTrgPathName = '';
 		if(!$this->processPathName($sTrgPathName, $sSanitizedTrgPathName))
 		{
-			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
 			return false;
 		}
 		
 		$sSanitizedSrcPathName = '';
 		if(!$this->processPathName($sSrcPathName, $sSanitizedSrcPathName))
 		{
-			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
 			return false;
 		}
 		
 		if(0 === mb_strlen($sSrcName))
 		{
-			bab_debug('sSrcName ==> ' . $sSrcName . ' is not valid');
+			$this->aError[]	= bab_translate("The source file name is empty.");
 			return false;
 		}
 		
 		if(0 === mb_strlen($sTrgName))
 		{
-			bab_debug('sTrgName ==> ' . $sTrgName . ' is not valid');
+			$this->aError[]	= bab_translate("The target file name is empty.");
 			return false;
 		}
 		
 		$aBuffer = array();		
 		if(1 !== preg_match('#^DG(\d+)(/)#', $sTrgPathName, $aBuffer))
 		{
-			bab_debug('Path ==> ' . $sTrgPathName . ' is not valid');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sTrgPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -820,7 +1099,10 @@ class bab_Directory
 		
 		if(1 !== preg_match('#^DG(\d+)(/)#', $sSrcPathName, $aBuffer))
 		{
-			bab_debug('Path ==> ' . $sSrcPathName . ' is not valid');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sSrcPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -828,7 +1110,7 @@ class bab_Directory
 		
 		if($iIdTrgDelegation !== $iIdSrcDelegation)
 		{
-			bab_debug('$iIdTrgDelegation !== $iIdSrcDelegation');
+			$this->aError[]	= bab_translate("The source and the target file are not not in the same delegation.");
 			return false;
 		}
 		
@@ -870,7 +1152,7 @@ class bab_Directory
 				//bab_debug('RenameFile');
 				//bab_debug($oDirRenContext);
 				
-				$this->fileRename($oDirRenContext);
+				return $this->fileRename($oDirRenContext);
 			}
 		}
 		else
@@ -883,32 +1165,44 @@ class bab_Directory
 			//bab_debug('MoveFile');
 			//bab_debug($oDirRenContext);
 			
-			$this->fileMove($oDirRenContext);
-
-			if($sSrcName !== $sTrgName)
+			if($this->fileMove($oDirRenContext))
 			{
-				$oDirRenContext->setTrgPathName($sTrgPathName);
-				$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
-				$oDirRenContext->setTrgName($sTrgName);
-				$oDirRenContext->setTrgPath($sTrgPath);
-				
-				$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sSrcName;
-				$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sTrgName;
-
-				/*
-				bab_debug(
-					'sSrcPathName ==> ' . $sSrcPathName . "\n" .
-					'sTrgPathName ==> ' . $sTrgPathName
-				);
-				//*/
+				if($sSrcName !== $sTrgName)
+				{
+					$oDirRenContext->setTrgPathName($sTrgPathName);
+					$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
+					$oDirRenContext->setTrgName($sTrgName);
+					$oDirRenContext->setTrgPath($sTrgPath);
 					
-				$this->renameFile($sSrcPathName, $sTrgPathName);
+					$sSrcPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sSrcName;
+					$sTrgPathName = 'DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName . $sTrgName;
+	
+					/*
+					bab_debug(
+						'sSrcPathName ==> ' . $sSrcPathName . "\n" .
+						'sTrgPathName ==> ' . $sTrgPathName
+					);
+					//*/
+						
+					return $this->renameFile($sSrcPathName, $sTrgPathName);
+				}
+				return true;
 			}
 		}
+		return false;
 	}
 	
+	/**
+	 * This function delete a file
+	 *
+	 * @param string $sPathName	The pathName (ex: DG0/Développement/readme.txt)
+	 * 
+	 * @return bool
+	 */
 	public function deleteFile($sPathName)
 	{
+		$this->resetError();
+		
 		//Récupération du noms du fichier
 		$sFileName = (string) getLastPath($sPathName);
 		
@@ -918,19 +1212,16 @@ class bab_Directory
 		
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
 		if(!$this->setEnv($sPathName))
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $sPathName . ' is not valid');
 			return false;
 		}
 		
@@ -939,7 +1230,10 @@ class bab_Directory
 		
 		if(!$oSrcFile->isFile())
 		{
-			bab_debug('Not a file');
+			$aSearch		= array('%path%');
+			$aReplace		= array($sFullPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% does not exist."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -962,19 +1256,20 @@ class bab_Directory
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
 		if(!($oFolderFile instanceof BAB_FolderFile))
 		{
-			bab_debug('cannot get file');
+			$this->aError[]	= bab_translate("Error: cannot get the file from the database");
 			return false;
 		}
 		
 		if(!bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFolderFile->getOwnerId()))
 		{
-			bab_debug(bab_translate("Access denied"));
+			$this->aError[]	= bab_translate("Access denied");
 			return false;
 		}
 		
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oId = $oFolderFileSet->aField['iId'];
 		$oFolderFileSet->remove($oId->in($oFolderFile->getId()));
+		return true;
 	}
 	
 	//Private tools function
@@ -984,53 +1279,54 @@ class bab_Directory
 		
 		if(!$this->setEnv($oDirRenContext->getSrcPathName()))
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not valid');
 			return false;
 		}
 		
-		if(canCreateFolder($this->getRelativePath()))
+		if(!canCreateFolder($this->getRelativePath()))
 		{
-			$sSanitizedSrcPathName	= (string) $oDirRenContext->getSanitizedSrcPathName();
-			$sSanitizedTrgPathName	= (string) $oDirRenContext->getSanitizedTrgPathName();
-			$sSrcName				= (string) $oDirRenContext->getSrcName();
-			$sSrcPath				= (string) $oDirRenContext->getSrcPath();
-			$sTrgName				= (string) $oDirRenContext->getTrgName();
-			$sTrgPath				= (string) $oDirRenContext->getTrgPath();
-			$sRelativePath			= (string) addEndSlash($sSrcPath);
+			$this->aError[]	= bab_translate("Access denied");
+			return false;
+		}
+		
+		$sSanitizedSrcPathName	= (string) $oDirRenContext->getSanitizedSrcPathName();
+		$sSanitizedTrgPathName	= (string) $oDirRenContext->getSanitizedTrgPathName();
+		$sSrcName				= (string) $oDirRenContext->getSrcName();
+		$sSrcPath				= (string) $oDirRenContext->getSrcPath();
+		$sTrgName				= (string) $oDirRenContext->getTrgName();
+		$sTrgPath				= (string) $oDirRenContext->getTrgPath();
+		$sRelativePath			= (string) addEndSlash($sSrcPath);
 
-			$bSuccess = BAB_FmFolderSet::rename($this->getRootFmPath(), $sRelativePath, $sSrcName, $sTrgName);
-			if(false !== $bSuccess)
-			{
-				BAB_FolderFileSet::renameFolder($sRelativePath . $sSrcName . '/', $sTrgName, 'Y');
-				BAB_FmFolderCliboardSet::rename($sRelativePath, $sSrcName, $sTrgName, 'Y');
-				
-				$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
-				$oNameField			= $oFolderSet->aField['sName'];
-				$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
-				$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
-				
-				$oCriteria	= $oNameField->in($sSrcName);
-				$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
-				$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->getDelegationId()));
-				$oFolder	= $oFolderSet->get($oCriteria);
-				
-				if($oFolder instanceof BAB_FmFolder)
-				{
-					$oFolderSet->setName($sTrgName);
-					$oFolderSet->save();
-				}
-			}
-		}
-		else
+		$bSuccess = BAB_FmFolderSet::rename($this->getRootFmPath(), $sRelativePath, $sSrcName, $sTrgName);
+		if(false === $bSuccess)
 		{
-			bab_debug('Looser lamer !!!');
+			$this->aError[]	= bab_translate("Error in the rename directory process.");
+			return false;
 		}
+		
+		BAB_FolderFileSet::renameFolder($sRelativePath . $sSrcName . '/', $sTrgName, 'Y');
+		BAB_FmFolderCliboardSet::rename($sRelativePath, $sSrcName, $sTrgName, 'Y');
+		
+		$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
+		$oNameField			= $oFolderSet->aField['sName'];
+		$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
+		
+		$oCriteria	= $oNameField->in($sSrcName);
+		$oCriteria	= $oCriteria->_and($oRelativePathField->in($sRelativePath));
+		$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($this->getDelegationId()));
+		$oFolder	= $oFolderSet->get($oCriteria);
+		
+		if($oFolder instanceof BAB_FmFolder)
+		{
+			$oFolderSet->setName($sTrgName);
+			$oFolderSet->save();
+		}
+		return true;
 	}
 	
 	private function moveDirectory(bab_directoryRenameContext $oDirRenContext)
@@ -1039,13 +1335,11 @@ class bab_Directory
 		
 		if(!$this->setEnv($oDirRenContext->getTrgPathName()))
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not valid');
 			return false;
 		}
 		
@@ -1062,8 +1356,15 @@ class bab_Directory
 		$oSrcRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($sSanitizedSrcPathName);
 		$oTrgRootFolder = BAB_FmFolderSet::getRootCollectiveFolder($oDirRenContext->getTrgPath());
 
-		$iIdSrcRootFolder = $oSrcRootFolder->getId();
-		$iIdTrgRootFolder = $oTrgRootFolder->getId();
+		if($oSrcRootFolder instanceof BAB_FmFolder)
+		{
+			$iIdSrcRootFolder = $oSrcRootFolder->getId();
+		}
+		
+		if($oTrgRootFolder instanceof BAB_FmFolder)
+		{
+			$iIdTrgRootFolder = $oTrgRootFolder->getId();
+		}
 		
 		$oFmFolder = null;
 
@@ -1226,12 +1527,10 @@ class bab_Directory
 				}			
 			}
 			
+			return true;
 			//$this->displayInfo();
 		}
-		else
-		{
-			//bab_debug('Looser lamer !!!');
-		}
+		return false;
 	}
 
 	/**
@@ -1284,13 +1583,11 @@ class bab_Directory
 		
 		if(!$this->setEnv($oDirRenContext->getSrcPathName()))
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getSrcPathName() . ' is not valid');
 			return false;
 		}
 		
@@ -1313,7 +1610,7 @@ class bab_Directory
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
 		if(!($oFolderFile instanceof BAB_FolderFile))
 		{
-			bab_debug('cannot get file');
+			$this->aError[]	= bab_translate("Error: cannot get the file from the database");
 			return false;
 		}
 		
@@ -1324,7 +1621,7 @@ class bab_Directory
 			$aSchi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if(!(count($aSchi) > 0 && in_array($oFolderFile->getFlowApprobationInstanceId(), $aSchi)))
 			{
-				bab_debug(bab_translate("Access denied"));
+				$this->aError[]	= bab_translate("Access denied");
 				return false;
 			}
 		}
@@ -1343,7 +1640,6 @@ class bab_Directory
 		
 		if(0 < count($this->getError()))
 		{
-			bab_debug($this->getError());
 			return false;			
 		}
 		
@@ -1389,13 +1685,11 @@ class bab_Directory
 		
 		if(!$this->setEnv($oDirRenContext->getTrgPathName()))
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not initialized');
 			return false;
 		}
 		
 		if(!$this->accessValid())
 		{
-			bab_debug('Path ==> ' . $oDirRenContext->getTrgPathName() . ' is not valid');
 			return false;
 		}
 		
@@ -1442,7 +1736,7 @@ class bab_Directory
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
 			if(!($oFolderFile instanceof BAB_FolderFile))
 			{
-				bab_debug('cannot get file');
+				$this->aError[]	= bab_translate("Error: cannot get the file from the database");
 				return false;
 			}
 			
@@ -1482,7 +1776,6 @@ class bab_Directory
 			
 			if(0 < count($this->getError()))
 			{
-				bab_debug($this->getError());
 				return false;			
 			}
 			
@@ -1567,7 +1860,7 @@ class bab_Directory
 			
 			if(!array_key_exists($this->iIdDelegation, $aVisibleFmDelegation))
 			{
-				bab_debug('Invalid delegation identifier ' . $iIdDelegation);
+				$this->aError[]	= bab_translate("Access denied");
 				return false;
 			}
 			
@@ -1608,8 +1901,10 @@ class bab_Directory
 		}
 		else
 		{
-			//error	
-			bab_debug('ERROR ==> ' . $sPathName);
+			$aSearch		= array('%path%');
+			$aReplace		= array($sTrgPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 		}
 		
 		if($bSuccess)
@@ -1631,7 +1926,12 @@ class bab_Directory
 	private function accessValid()
 	{
 		$oFmEnv	= &getEnvObject();
-		return $oFmEnv->accessValid();
+		if(!$oFmEnv->accessValid())
+		{
+			$this->aError[]	= bab_translate('Access denied');
+			return false;
+		}
+		return true;
 	}
 		
 	private function isDot($sName)
@@ -1648,12 +1948,17 @@ class bab_Directory
 	{
 		if(0 === mb_strlen(trim($sPathName)))
 		{
+			$this->aError[]	= bab_translate('The pathName is empty');
 			return false;
 		}
 		
 		$aBuffer = array();
 		if(false === preg_match('#^DG(\d+)(/)#', $sPathName, $aBuffer))
 		{
+			$aSearch		= array('%path%');
+			$aReplace		= array($sPathName);
+			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid, it should start with DGx/."));
+			$this->aError[]	= $sMessage;
 			return false;
 		}
 		
@@ -1677,11 +1982,13 @@ class bab_Directory
 				
 				if($this->isDot($sPathItem))
 				{
+					$this->aError[]	= bab_translate('Dot are not allowed in pathName.');
 					return false;
 				}
 				
 				if($this->isReservedName($sPathItem))
 				{
+					$this->aError[]	= bab_translate('The pathName contains a reserved name.');
 					return false;
 				}
 				
@@ -1689,6 +1996,11 @@ class bab_Directory
 			}
 			return true;
 		}
+		
+		$aSearch		= array('%path%');
+		$aReplace		= array($sPathName);
+		$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The pathName %path% is not valid."));
+		$this->aError[]	= $sMessage;
 		return false;
 	}
 	
