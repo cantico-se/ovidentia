@@ -469,11 +469,14 @@ function uploadCategoryImg()
 		{
 			$sMessage = utf8_encode($sMessage);
 		}
-			
+		
+		/*	
 		$sJSon = json_encode(array(
 				"success"  => false,
 				"failure"  => true,
 				"sMessage" => $sMessage));
+		//*/
+		$sJSon = '{"success":"false", "failure":"true", "sMessage":"' . $sMessage . '"}';
 	}
 	else
 	{
@@ -482,11 +485,14 @@ function uploadCategoryImg()
 		{
 			$sMessage = utf8_encode($sMessage);
 		}
-			
+
+		/*
 		$sJSon = json_encode(array(
 				"success"	=> true,
 				"failure"	=> false,
 				"sMessage"	=> $sMessage));
+		//*/
+		$sJSon = '{"success":"true", "failure":"false", "sMessage":"' . $sMessage . '"}';
 	}
 				
 	header('Cache-control: no-cache');
