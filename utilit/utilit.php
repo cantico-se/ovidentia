@@ -1297,20 +1297,9 @@ function bab_updateUserSettings()
 			}
 		}
 
-	
-	// The babBody->babaddons variable is deprecated
-	// Use bab_addonsInfos::getRows(); instead
-	// include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	// $babBody->babaddons = bab_addonsInfos::getRows();
-	
-
-	
-
-
-	$babBody->topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
-	$babBody->topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
-	$babBody->topcom = bab_getUserIdObjects(BAB_TOPICSCOM_GROUPS_TBL);
-	$babBody->topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
+	/** 
+	 * @deprecated 
+	 */
 	$babBody->topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
 	

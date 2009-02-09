@@ -476,7 +476,7 @@ function babTopicsSection($cat, $close)
 	$topcatview = $babBody->get_topcatview();
 	while( $arr = $babDB->db_fetch_array($res))
 		{
-		if( $arr['type'] == 2 && isset($babBody->topview[$arr['id']]))
+		if( $arr['type'] == 2 && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id']))
 			{
 			if( $close )
 				{

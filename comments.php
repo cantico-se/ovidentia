@@ -256,7 +256,7 @@ $article = bab_rp('article', 0);
 $msgerror = '';
 $popupmessage = '';
 
-if( count($babBody->topview) == 0 || !isset($babBody->topview[$topics]))
+if(!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $topics))
 {
 	$idx = 'denied';
 }

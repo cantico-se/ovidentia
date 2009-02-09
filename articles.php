@@ -1342,13 +1342,13 @@ $arrtop = array();
 $idx = bab_rp('idx', 'Articles');
 $topics = bab_rp('topics', false);
 
-if( !$topics && count($babBody->topview) > 0)
+if( !$topics && count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0)
 	{
-	$rr = array_keys($babBody->topview);
+	$rr = array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL));
 	$topics = $rr[0];
 	}
 
-if( $topics === false || (!isset($babBody->topview[$topics]) && !isset($babBody->topmod[$topics])))
+if( $topics === false || (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$topics) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics)))
 	{
 	$babBody->msgerror = bab_translate("Access denied");
 	$idx = 'denied';

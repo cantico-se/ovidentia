@@ -476,14 +476,16 @@ function showChoiceArticleModify($topicid)
 			global $babBodyPopup, $babBody, $babDB, $topicid, $articleid, $rfurl;
 			$this->count = 0;
 			$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'");
+
+			
 			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
 				$arr = $babDB->db_fetch_array($res);
-				if( (count($babBody->topmod) && isset($babBody->topmod[$topicid])) || ($arr['allow_manupdate'] != '0' && count($babBody->topman) && isset($babBody->topman[$topicid])) )
+				if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicid) || ($arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL,$topicid)) )
 					{
 					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$babDB->db_escape_string($topicid)."' and at.archive='N' order by at.ordering asc";
 					}
-				elseif( $arr['allow_update'] && count($babBody->topsub) && isset($babBody->topsub[$topicid]))
+				elseif( $arr['allow_update'] && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topicid))
 					{
 					$req = "select at.id, at.title, adt.id_author, adt.id as id_draft from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id_topic='".$babDB->db_escape_string($topicid)."' and at.archive='N' and at.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' order by at.ordering asc";
 					}
@@ -633,7 +635,7 @@ function showEditArticle()
 					if( $res && $babDB->db_num_rows($res) == 1 )
 						{
 						$arr = $babDB->db_fetch_array($res);
-						if( ($arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] ) || (count($babBody->topmod) > 0 && isset($babBody->topmod[$arr['id_topic']] )) || ($arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
+						if( ($arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] ) || bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic'])  || ($arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 							{
 							$topicid = $arr['id_topic'];
 							$this->access = true;
@@ -646,7 +648,7 @@ function showEditArticle()
 					}
 				elseif( $topicid != 0 )
 					{
-					if( count($babBody->topsub) > 0 && isset($babBody->topsub[$topicid] ))
+					if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topicid))
 						{
 						$res = $babDB->db_query("select tt.article_tmpl,tt.lang from ".BAB_TOPICS_TBL." tt  where id='".$babDB->db_escape_string($topicid)."'");
 						if( $res && $babDB->db_num_rows($res) == 1 )
@@ -663,7 +665,7 @@ function showEditArticle()
 				}
 			else
 				{
-				if( count($babBody->topsub) > 0 )
+				if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0 )
 					{
 					if( empty($this->content))
 						{
@@ -968,9 +970,9 @@ function showSetArticleProperties($idart)
 
 				$this->draftname = bab_toHtml($arr['title']);
 
-				if( count($babBody->topsub) > 0 )
+				if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0 )
 					{
-					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys($babBody->topsub)).")");
+					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL))).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
 					}
 				else
@@ -1025,7 +1027,8 @@ function showSetArticleProperties($idart)
 
 				$this->drafttopic = $topicid == '' ? $arr['id_topic']: $topicid;
 				/* Traiter le cas de modification d'article */
-				if( count($babBody->topsub) == 0 || !isset($babBody->topsub[$this->drafttopic]))
+				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
+				if( count($topsub) == 0 || !isset($topsub[$this->drafttopic]))
 					{
 					$this->drafttopic = 0;
 					}
@@ -2427,7 +2430,7 @@ bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
 $artedit = array();
-if( count($babBody->topsub) == 0  && count($babBody->topmod) == 0)
+if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
 {
 	$idx = 'denied';
 }

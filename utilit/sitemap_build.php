@@ -1241,7 +1241,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		if( count($babBody->topsub) > 0  || count($babBody->topmod) > 0 )
+		if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0  || count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) > 0 )
 			{
 			$array_urls[] = array(
 				'label' => bab_translate("Publication"),
@@ -1262,7 +1262,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			}
 		}
 
-	if( count($babBody->topman) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
+	if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
 		{
 		$array_urls[] = array(
 				'label' => bab_translate("Articles management"),

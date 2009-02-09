@@ -156,7 +156,7 @@ function browse($topics,$cat)
 			if( $i < $this->counttop)
 				{
 				$arr = $babDB->db_fetch_array($this->restop);
-				if (isset($babBody->topview[$arr['id']]) && $this->topics == 0 )
+				if (bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id']) && $this->topics == 0 )
 					{
 					$this->displaytop = true;
 					$this->title = bab_toHtml($arr['category']);
@@ -187,7 +187,7 @@ function browse($topics,$cat)
 					return true;
 					}
 
-				if (isset($babBody->topview[$arr['id_topic']]))
+				if (bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']))
 					{
 					$this->display = true;
 					if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ''))

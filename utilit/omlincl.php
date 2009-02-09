@@ -2833,11 +2833,11 @@ class bab_RecentComments extends bab_handler
 				
 			if( count($arrid) > 0 )
 				{
-				$topview = "where id_article IN (".$babDB->quote($arrid).") and confirmed='Y' and id_topic IN (".$babDB->quote(array_keys($babBody->topview)).")";
+				$topview = "where id_article IN (".$babDB->quote($arrid).") and confirmed='Y' and id_topic IN (".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL))).")";
 				}
 			else
 				{
-				$topview = "where confirmed='Y' and id_topic IN (".$babDB->quote(array_keys($babBody->topview)).")";
+				$topview = "where confirmed='Y' and id_topic IN (".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL))).")";
 				}
 
 			$sDelegation = ' ';	

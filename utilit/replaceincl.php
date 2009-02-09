@@ -176,7 +176,7 @@ class bab_replace {
 								if( $res && $babDB->db_num_rows($res) > 0)
 									$arr = $babDB->db_fetch_array($res);
 								}
-							if(isset($babBody->topview[$arr['id_topic']]) && bab_articleAccessByRestriction($arr['restriction']))
+							if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && bab_articleAccessByRestriction($arr['restriction']))
 								{
 								$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
 								}

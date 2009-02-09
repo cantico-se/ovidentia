@@ -80,15 +80,7 @@ function bab_toAmPm($str)
 
 function bab_isUserTopicManager($topics)
 	{
-	global $babBody, $BAB_SESS_USERID;
-	if( count($babBody->topman) > 0 && isset($babBody->topman[$topics]))
-		{
-		return true;
-		}
-	else
-		{
-		return false;
-		}
+	return bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics);
 	}
 
 function bab_isUserArticleApprover($topics)

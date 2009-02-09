@@ -1081,11 +1081,11 @@ class bab_ArticleTreeView extends bab_TreeView
 			
 				if (count($topsub) > 0  || count($topman) > 0 || count($topmod) > 0)
 				{
-					if (count($babBody->topsub) > 0)
+					if (count($topsub) > 0)
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topsub)) . ") AND topics.allow_update != '0')";
-					if( count($babBody->topman) > 0 )
+					if( count($topman) > 0 )
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topman)) . ") AND topics.allow_manupdate != '0')";
-					if( count($babBody->topmod) > 0 )
+					if( count($topmod) > 0 )
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topmod)) . '))';
 					$sql = 'SELECT DISTINCT topics.id, topics.id_cat, topics.description, topics.category'
 						. ' FROM ' . BAB_ARTICLES_TBL . ' AS articles'

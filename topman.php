@@ -574,10 +574,10 @@ function viewArticleProperties($item, $idart)
 
 				$this->draftname = $arrart['title'];
 
-				if( count($babBody->topman) > 0 )
+				if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 )
 					{
 					/* Parent topics */
-					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys($babBody->topman)).")");
+					$this->restopics = $babDB->db_query("select tt.id, tt.category, tt.restrict_access, tct.title, tt.notify from ".BAB_TOPICS_TBL." tt LEFT JOIN ".BAB_TOPICS_CATEGORIES_TBL." tct on tct.id=tt.id_cat where tt.id IN(".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL))).")");
 					$this->counttopics = $babDB->db_num_rows($this->restopics);
 					$this->array_parent_topics = array();
 					for ($i=0;$i<=$this->counttopics-1;$i++) {
