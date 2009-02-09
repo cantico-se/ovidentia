@@ -1028,6 +1028,12 @@ class bab_Directory
 			$obj = new bab_indexObject('bab_files');
 			$obj->setIdObjectFile($sFullPathName, $iIdFile, $oFmFolder->getId());
 		}
+		
+		if(notifyApprovers($iIdFile, $oFmFolder->getId()) && 'Y' == $oFmFolder->getFileNotify())
+		{
+			fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), 
+				$oFmFolder->getId(), bab_translate("A new file has been uploaded"));
+		}
 		return true;
 	}
 	
@@ -1230,7 +1236,7 @@ class bab_Directory
 		
 		if(!$oSrcFile->isFile())
 		{
-			$aSearch		= array('%path%');
+			$aSearch		= array('%fileName%');
 			$aReplace		= array($sFullPathName);
 			$sMessage		= str_replace($aSearch, $aReplace, bab_translate("The file %fileName% does not exist."));
 			$this->aError[]	= $sMessage;
