@@ -659,4 +659,17 @@ function aclGetAccessUsers($table, $id_object) {
 	aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject);
 }
 
+/**
+ * Set right for an object identifier
+ *
+ * @param string	$sTable		Table name
+ * @param int 		$iIdGroup	Group identifier
+ * @param int 		$iIdObject	Identifier of the object on which the right applies
+ */
+function aclAdd($sTable, $iIdGroup, $iIdObject)
+{
+	global $babDB;
+	return $babDB->db_query('INSERT INTO ' . $babDB->db_escape_string($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
+}
+
 ?>
