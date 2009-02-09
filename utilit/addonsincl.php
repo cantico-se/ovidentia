@@ -60,7 +60,7 @@ class bab_addonsInfos {
 					$access = true;
 				}
 				else {
-					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($arr['id'])."'");
+					$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE id='".$babDB->db_escape_string($id_addon)."'");
 				}
 			}
 		}
