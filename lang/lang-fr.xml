@@ -2772,7 +2772,7 @@
 <string id="The target file name is empty.">Le fichier cible n'est pas spécifié.</string>
 <string id="The source and the target file are not not in the same delegation.">Les fichiers source et destination ne sont pas dans la même délégation.</string>
 <string id="Error: cannot get the file from the database">Erreur: Impossible de récupérer le fichier depuis la base de données</string>
-<string id=""></string>
+<string id="Addon requirements">Conditions d'utilisation du module</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
