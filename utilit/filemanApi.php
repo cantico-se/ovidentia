@@ -24,14 +24,30 @@
 require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
-
+/**
+ * For now only for collective
+ *
+ */
 class bab_FileInfo extends SplFileInfo
 {
 	public function __construct($sFilename)
 	{
 		parent::__construct($sFilename);
 	}
+	
+	public function getFmPathname()
+	{
+		$aBuffer = 0;
+		if(preg_match('#(DG\d+.*)#', $this->getPath(), $aBuffer))
+		{
+			return BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($aBuffer[1]));
+		}		
+		return '';
+	}
 }
+
+
+
 
 
 class bab_DirectoryFilter
@@ -210,25 +226,6 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 		return $this->aPathCache[$sRelativePath];
 	}
 }
-
-
-class bab_CollectiveRecursiveDirIterator extends bab_CollectiveDirIterator
-{
-    public function __construct($sFullPathName) 
-    {
-        parent::__construct(new DirectoryIterator($sFullPathName));
-    }
-    
-    public function hasChildren() 
-    {
-        return is_dir($this->getInnerIterator()->getPathname());
-    }
-    
-    public function getChildren() 
-    {
-    	return new RecursiveDirIterator($this->getInnerIterator()->getPathname());
-    }
-} 
 
 
 /*
