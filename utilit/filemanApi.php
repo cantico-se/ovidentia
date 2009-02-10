@@ -212,6 +212,25 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 }
 
 
+class bab_CollectiveRecursiveDirIterator extends bab_CollectiveDirIterator
+{
+    public function __construct($sFullPathName) 
+    {
+        parent::__construct(new DirectoryIterator($sFullPathName));
+    }
+    
+    public function hasChildren() 
+    {
+        return is_dir($this->getInnerIterator()->getPathname());
+    }
+    
+    public function getChildren() 
+    {
+    	return new RecursiveDirIterator($this->getInnerIterator()->getPathname());
+    }
+} 
+
+
 /*
  * This class is for collective folder.
  * 
