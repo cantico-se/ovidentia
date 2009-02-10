@@ -67,7 +67,7 @@ class BAB_GetHtmlUploadBlock
 		
 		$oFmEnv	= &getEnvObject();
 		
-		if(!$oFmEnv->userIsInCollectiveFolder())
+		if($oFmEnv->userIsInCollectiveFolder())
 		{
 			if($oFmEnv->oFmFolder instanceof Bab_FmFolder)
 			{
