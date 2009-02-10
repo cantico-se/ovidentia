@@ -62,9 +62,18 @@ class BAB_GetHtmlUploadBlock
 		$this->sAttribute		= bab_translate("Read only");
 		$this->sYes				= bab_translate("Yes");
 		$this->sNo				= bab_translate("No");
-		$this->bUseKeyword		= ('Y' == $sGr);
 		
 		global $babDB;
+		
+		$oFmEnv	= &getEnvObject();
+		
+		if(!$oFmEnv->userIsInCollectiveFolder())
+		{
+			if($oFmEnv->oFmFolder instanceof Bab_FmFolder)
+			{
+				$this->bUseKeyword = ('Y' == $oFmEnv->oFmFolder->getAddTags());
+			}
+		}
 		
 		if($sGr == 'Y')
 		{
