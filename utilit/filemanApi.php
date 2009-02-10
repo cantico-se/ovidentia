@@ -1,26 +1,25 @@
 <?php
-/************************************************************************
-* OVIDENTIA http://www.ovidentia.org                                   *
-************************************************************************
-* Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
-*                                                                      *
-* This file is part of Ovidentia.                                      *
-*                                                                      *
-* Ovidentia is free software; you can redistribute it and/or modify    *
-* it under the terms of the GNU General Public License as published by *
-* the Free Software Foundation; either version 2, or (at your option)  *
-* any later version.													*
-*																		*
-* This program is distributed in the hope that it will be useful, but  *
-* WITHOUT ANY WARRANTY; without even the implied warranty of			*
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
-* See the  GNU General Public License for more details.				*
-*																		*
-* You should have received a copy of the GNU General Public License	*
-* along with this program; if not, write to the Free Software			*
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
-* USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 require_once 'base.php';
 require_once dirname(__FILE__) . '/fileincl.php';
 
@@ -35,23 +34,62 @@ class bab_FileInfo extends SplFileInfo
 	{
 		parent::__construct($sFilename);
 	}
-	
+
+
+	/**
+	 * Returns the FM pathname i.e. "DG0/Folder1/DubFolder1/file.txt".
+	 * 
+	 * @return string
+	 */
 	public function getFmPathname()
 	{
 		$aBuffer = 0;
 		if(preg_match('#(DG\d+.*)#', $this->getPathname(), $aBuffer))
 		{
-			$sPathName = BAB_PathUtil::sanitize($aBuffer[1]);
-			if($this->isFile())
-			{
-				return $sPathName;
-			}
-			else
-			{
-				return BAB_PathUtil::addEndSlash($sPathName);
-			}
-		}		
+			return BAB_PathUtil::sanitize($aBuffer[1]);
+		}
 		return '';
+	}
+
+
+	/**
+	 * Checks whether the user has write access on the file.
+	 * 
+	 * For a plain file, it means that the user can modify or delete the file.
+	 * For a folder it means that the user can create files in the folder.
+	 * 
+	 * @return bool
+	 */
+	public function isWritable()
+	{
+		if ($isWritable = parent::isWritable()) {
+			$pathname = removeFirstPath($this->getFmPathname());
+			$path = dirname($pathname);
+			if ($this->isDir()) {
+				$isWritable = ($isWritable && (canManage($path) || canUpload($path)));
+			} else {
+				$isWritable = ($isWritable && canManage($path));
+			}
+		}
+		return $isWritable;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isReadable()
+	{
+		if ($isReadable = parent::isReadable()) {
+			$pathname = removeFirstPath($this->getFmPathname());
+			$path = dirname($pathname);
+			if ($this->isDir()) {
+				$isReadable = ($isReadable && canBrowse($path));
+			} else {
+				$isReadable = ($isReadable&& (canManage($path) || canDownload($path)));
+			}
+		}
+		return $isReadable;
 	}
 }
 
@@ -79,10 +117,10 @@ abstract class bab_FilteredDirectoryIterator extends FilterIterator
     
     public function setFilter($iBit)
     {
-		$this->iFilterBits |= $iBit;		
+		$this->iFilterBits |= $iBit;
     }
 
-    
+
     public function accept()
     {
     	$oIterator = $this->getInnerIterator();
@@ -572,7 +610,7 @@ class bab_Directory
 	/**
 	 * This function return the content of a folder
 	 *
-	 * @param string	$sPathName	The path of the folder (ex: DG0:/Développement/2/)
+	 * @param string	$sPathName	The path of the folder (ex: DG0/Développement/2/)
 	 * @param int		$iFilter	(bab_DirectoryFilter value)
 	 * 
 	 * @return bab_CollectiveDirIterator
@@ -593,8 +631,6 @@ class bab_Directory
 		{
 			return false;
 		}
-		
-		//$this->displayInfo();
 		
 		$iFilter |= bab_DirectoryFilter::DOT;
 		$oBabDirIt = new bab_CollectiveDirIterator($this->getRootFmPath() . $this->getPathName());
