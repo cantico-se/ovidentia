@@ -542,7 +542,7 @@
 <string id="Notes">Notes</string>
 <string id="Nothing Changed">Rien n'a été modifié</string>
 <string id="Notification">Notification</string>
-<string id="Allow author to notify group members by mail">Les auteurs peuvent notifier les membres du groupe par email</string>
+<string id="Allow author to notify group members by mail">Les auteurs peuvent notifier les lecteurs par email</string>
 <string id="Notify me whenever someone replies ( only valid for registered users )">Me prévenir par email quand quelqu'un contribue (uniquement pour les utilisateurs enregistrés)</string>
 <string id="Notify members group">Notifier les membres du groupe</string>
 <string id="Notify moderator">Notifier le modérateur</string>
