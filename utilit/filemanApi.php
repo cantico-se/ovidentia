@@ -41,7 +41,15 @@ class bab_FileInfo extends SplFileInfo
 		$aBuffer = 0;
 		if(preg_match('#(DG\d+.*)#', $this->getPathname(), $aBuffer))
 		{
-			return BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($aBuffer[1]));
+			$sPathName = BAB_PathUtil::sanitize($aBuffer[1]);
+			if($this->isFile())
+			{
+				return $sPathName;
+			}
+			else
+			{
+				return BAB_PathUtil::addEndSlash($sPathName);
+			}
 		}		
 		return '';
 	}
