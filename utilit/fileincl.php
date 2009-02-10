@@ -803,9 +803,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 		else if('Y' === $gr)
 		{
-			$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($iIdOwner)."'"));
-			$baddtags = $rr['baddtags'];
-			
 			$oFmFolder = null;
 			$access = BAB_FmFolderHelper::getInfoFromCollectivePath($oFileManagerEnv->sPath, $iIdRootFolder, $oFmFolder);
 			if($access)
@@ -819,6 +816,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					$access = true;
 				}
 			}
+			
+			$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($iIdOwner)."'"));
+			$baddtags = $rr['baddtags'];
 		}
 	}
 //	bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sFullUploadPath ==> ' . $sFullUploadPath);
@@ -829,14 +829,20 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		return false;
 	}
 
-
 	$pathx = $sFullUploadPath;
 	$okfiles = array();
 	$errfiles = array();
 
-	$count = 0;
+	//Avant le count était initialiser à zéro puis incrémenté
+	//à la fin de la boucle for, mais cela posait un problème
+	//car en cas d'érreur on appel continue, ce qui fait que 
+	//l'on passe à l'itération suivante sans incrémenter la 
+	//variable count
+	$count = -1;
 	foreach($fmFiles as $fmFile)
 	{
+		$count++;
+		
 		$otags = array();
 
 		$file = array(
@@ -901,7 +907,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 			if($res && $babDB->db_num_rows($res) > 0)
 			{
-				
 				$arr = $babDB->db_fetch_array($res);
 				if($arr['state'] == "D")
 				{
@@ -919,15 +924,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 
 		bab_setTimeLimit(0);
-
-		if(!$fmFile->import($pathx.$osfname))
-		{
-			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
-			continue;
-		}
-
-
-		if( !is_array($keywords))
+		
+		if(!is_array($keywords))
 		{
 			$tags = trim($keywords);
 		}
@@ -935,15 +933,16 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$tags = trim($keywords[$count]);
 		}
-
-		if( !empty($tags))
+		
+		if(!empty($tags))
 		{
-			$atags = explode(',', $tags);
-			$message = '';
-			for( $k = 0; $k < count($atags); $k++ )
+			$atags		= explode(',', $tags);
+			$message	= null;
+		
+			for($k = 0; $k < count($atags); $k++)
 			{
 				$tag = trim($atags[$k]);
-				if( !empty($tag) )
+				if(!empty($tag))
 				{
 					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
 					if( $res && $babDB->db_num_rows($res))
@@ -953,7 +952,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 						{
 						$otags[$arr['id']] = $arr['id'];
 						}
-
 					}
 					else
 					{
@@ -966,17 +964,23 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 						else
 						{
 						$message = bab_translate("Some tags doesn't exist");
-						break;
 						}
 					}
 				}
 			}
-
-			if( $message )
+			
+			if( isset($message) )
 			{
-			$errfiles[] = array('error'=> $message, 'file' => $file['name']);
-			continue;
+				$errfiles[] = array('error'=> $message, 'file' => $file['name']);
+				$message = null;
+				continue;
 			}
+		}
+				
+		if(!$fmFile->import($pathx.$osfname))
+		{
+			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
+			continue;
 		}
 
 		if(empty($BAB_SESS_USERID))
@@ -1021,8 +1025,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		{
 			$readonly[$count] = 'N';
 		}
-
-
 
 		if($bexist)
 		{
@@ -1112,7 +1114,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				fileNotifyMembers($osfname, $path, $iIdOwner, bab_translate("A new file has been uploaded"));
 			}
 		}
-	$count++;
 	}
 
 	if(count($errfiles))
