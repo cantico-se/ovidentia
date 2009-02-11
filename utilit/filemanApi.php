@@ -27,8 +27,7 @@ require_once dirname(__FILE__) . '/fileincl.php';
 /**
  * An extension of the SplFileInfo corresponding to ovidentia's filemanager files.
  * Standard isWritable and isReadable file are mapped to corresponding ACL.
- * 
- * 
+ *
  * For now only work for collective folders.
  * 
  * Does *NOT* work for personal folders.
@@ -140,6 +139,28 @@ class bab_FileInfo extends SplFileInfo
 		return $this->fmFile;
 	}
 
+
+	/**
+	 * @param open_mode[optional]
+	 * @param use_include_path[optional]
+	 * @param context[optional]
+	 * 
+	 * @return SplFileObject
+	 */
+	public function openFile($mode = 'r', $use_include_path = false)
+	{
+		if ($mode === 'r'
+				&& $this->isReadable()) {
+			return parent::openFile($mode, $use_include_path);
+		}
+		if (($mode === 'r+'
+				|| $mode === 'w' || $mode === 'w+'
+				|| $mode === 'a' || $mode === 'a+')
+				&& $this->isWritable()) {
+			return parent::openFile($mode, $use_include_path);
+		}
+		throw new RuntimeException();
+	}
 
 	/**
 	 * Checks whether the user has write access on the file.
