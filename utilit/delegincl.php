@@ -55,6 +55,8 @@ function bab_setCurrentUserDelegation($iIdDelegation)
  */
 function bab_getCurrentUserDelegation()
 {
+	require_once dirname(__FILE__) . '/fileincl.php';
+	
 	if(!array_key_exists('babCurrentDelegation', $_SESSION))
 	{
 		$_SESSION['babCurrentDelegation'] = 0;
