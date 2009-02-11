@@ -319,6 +319,7 @@ function modifyFieldFolder($fid, $ffid, $fname, $defval)
 			{
 			global $babDB;
 			$this->fid = $fid;
+			$this->ffid = $ffid;
 			$this->field = bab_translate("Field name");
 			$this->default = bab_translate("Default value");
 			$this->add = bab_translate("Modify");
