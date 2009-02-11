@@ -25,30 +25,119 @@ require_once dirname(__FILE__) . '/fileincl.php';
 
 
 /**
- * For now only for collective
- *
+ * An extension of the SplFileInfo corresponding to ovidentia's filemanager files.
+ * Standard isWritable and isReadable file are mapped to corresponding ACL.
+ * 
+ * 
+ * For now only work for collective folders.
+ * 
+ * Does *NOT* work for personal folders.
+ * 
+ * @since 7.0.0
  */
 class bab_FileInfo extends SplFileInfo
 {
-	public function __construct($sFilename)
-	{
-		parent::__construct($sFilename);
-	}
-
+	/**
+	 * @var BAB_FmFolderFile
+	 */
+	private $fmFile = null;
 
 	/**
-	 * Returns the FM pathname i.e. "DG0/Folder1/DubFolder1/file.txt".
-	 * 
+	 * @var string
+	 */
+	private $fmPathname = null;
+
+	/**
+	 * Returns the FM pathname i.e. "DG0/Folder1/SubFolder1/file.txt".
+	 *
 	 * @return string
 	 */
 	public function getFmPathname()
 	{
-		$aBuffer = 0;
-		if(preg_match('#(DG\d+.*)#', $this->getPathname(), $aBuffer))
-		{
-			return BAB_PathUtil::sanitize($aBuffer[1]);
+		if (!isset($this->fmPathname)) {
+			$collectivePath = BAB_FmFolderHelper::getUploadPath() . BAB_FileManagerEnv::relativeFmCollectivePath;
+			$aBuffer = 0;
+	
+			$fmPathname = substr($this->getPathname(), strlen($collectivePath));
+	
+			$this->fmPathname = BAB_PathUtil::sanitize($fmPathname);
 		}
-		return '';
+		return $this->fmPathname;
+	}
+
+
+	/**
+	 * Returns the corresponding BAB_FmFolder object.
+	 *
+	 * You should preferably use bab_FileInfo::getFmFile() which is cached.
+	 * @see bab_FileInfo::getFmFile()
+	 *
+	 * @return BAB_FmFolder
+	 */
+	private function getFmFolder()
+	{
+		$fmPathname = $this->getFmPathname();
+		list($delegation) = explode('/', $fmPathname);
+		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix));
+
+		$oFmFolderSet		= bab_getInstance('BAB_FmFolderSet');
+
+		$oNameField			= $oFolderFileSet->aField['sName'];
+		$oRelativePathField = $oFolderFileSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFolderFileSet->aField['iIdDgOwner'];
+
+		$oCriteria = $oNameField->in($this->getFilename());
+		$oCriteria = $oCriteria->_and($oRelativePathField->in(dirname($this->getFmPathname() . '/')));
+		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
+
+		return $oFmFolderSet->get($oCriteria);
+	}
+
+
+	/**
+	 * Returns the corresponding bab_FolderFile object
+	 *
+	 * You should preferably use bab_FileInfo::getFmFile() which is cached.
+	 * @see bab_FileInfo::getFmFile()
+	 *
+	 * @return BAB_FolderFile
+	 */
+	private function getFolderFile()
+	{
+		$fmPathname = $this->getFmPathname();
+		list($delegation) = explode('/', $fmPathname);
+		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix));
+
+		$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
+
+		$oNameField			= $oFolderFileSet->aField['sName'];
+		$oPathName			= $oFolderFileSet->aField['sPathName'];
+		$oIdDgOwnerField	= $oFolderFileSet->aField['iIdDgOwner'];
+		$oGroup				= $oFolderFileSet->aField['sGroup'];
+
+		$oCriteria = $oNameField->in($this->getFilename());
+		$oCriteria = $oCriteria->_and($oPathName->in(dirname($this->getFmPathname() . '/')));
+		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
+
+		return $oFolderFileSet->get($oCriteria);
+	}
+
+
+	/**
+	 * Returns the corresponding BAB_FmFolderFile object.
+	 * 
+	 * @return BAB_FmFolderFile
+	 */
+	protected function getFmFile()
+	{
+		if (!isset($this->fmFile)) {
+			if ($this->isDir()) {
+				$this->fmFile = $this->getFmFolder();
+			} else {
+				$this->fmFile = $this->getFolderFile();
+			}
+		}
+		return $this->fmFile;
 	}
 
 
@@ -62,7 +151,8 @@ class bab_FileInfo extends SplFileInfo
 	 */
 	public function isWritable()
 	{
-		if ($isWritable = parent::isWritable()) {
+		$isWritable = parent::isWritable();
+		if ($isWritable) {
 			$pathname = removeFirstPath($this->getFmPathname());
 			$path = dirname($pathname);
 			if ($this->isDir()) {
@@ -76,11 +166,17 @@ class bab_FileInfo extends SplFileInfo
 
 
 	/**
+	 * Checks whether the user has read access on the file.
+	 * 
+	 * For a plain file, it means that the user can download the file.
+	 * For a folder it means that the user can browse files contained by the folder.
+	 * 
 	 * @return bool
 	 */
 	public function isReadable()
 	{
-		if ($isReadable = parent::isReadable()) {
+		$isReadable = parent::isReadable();
+		if ($isReadable) {
 			$pathname = removeFirstPath($this->getFmPathname());
 			$path = dirname($pathname);
 			if ($this->isDir()) {
@@ -91,7 +187,39 @@ class bab_FileInfo extends SplFileInfo
 		}
 		return $isReadable;
 	}
+
+
+	/**
+	 * Checks whether the file is versioned.
+	 * 
+	 * @return bool
+	 */
+	public function isVersioned()
+	{
+		if ($this->isDir()) {
+			return false;
+		}
+		$fmFile = $this->getFmFile();
+		return ($fmFile->getMajorVer() > 1 || $fmFile->getMinorVer() > 0);
+	}
+
+
+	/**
+	 * Returns the version of the file.
+	 * Version is '1.0' for not versioned files.
+	 * 
+	 * @return string			The version in the form '2.3'.
+	 */
+	public function getVersion()
+	{
+		if ($this->isDir()) {
+			return false;
+		}
+		return $fmFile->getMajorVer() . '.' . $fmFile->getMinorVer();
+	}
 }
+
+
 
 
 
