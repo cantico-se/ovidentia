@@ -167,7 +167,7 @@ function selectFiles($folderId = null, $path = '')
 		'selectable_collective_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_sub_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
-		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION, /* DEPRECATED */
+/* DEPRECATED */		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION, /* DEPRECATED */
 		'show_only_administered_delegation' => bab_ArticleTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION,
 		'multi' => bab_TreeView::MULTISELECT,
 		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
