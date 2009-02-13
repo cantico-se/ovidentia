@@ -75,7 +75,7 @@ function bab_getCategoryDescription($id)
 		}
 	}	
 
-	function bab_getTopicCategoryTitle($id)
+function bab_getTopicCategoryTitle($id)
 	{
 	global $babDB;
 	$query = "select title from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
@@ -288,6 +288,47 @@ function bab_getChildrenArticleCategoriesInformation($parentid, $delegationid = 
 	if ($babDB->db_num_rows($res) > 0) {
 		while ($row = $babDB->db_fetch_array($res)) {
 			$categories[$row['id']] = array('id' => $row['id'], 'title' => $row['title'], 'description' => $row['description']);
+		}
+	}
+	
+	return $categories;
+}
+
+/*
+ * Get parents articles categories information (for each category : id, title, description)
+ * @param	int		$categoryid		: id of the category
+ * @param   boolean $reverse : reverse results
+ * @return 	array : array indexed by id categories, categories are parents of $categoryid
+ */
+function bab_getParentsArticleCategory($categoryid, $reverse=false) {
+	global $babBody, $babDB;
+	
+	$categories = array();
+	
+	if (!is_numeric($categoryid)) {
+		return $categories;
+	}
+	
+	/* List of all categories */
+	$topcats = $babBody->get_topcats();
+	/* Id categories */
+	$idcategories = array();
+	if (isset($topcats[$categoryid])) {
+		while ($topcats[$categoryid]['parent'] != 0) {
+			$idcategories[] = $topcats[$categoryid]['parent'];
+			$categoryid = $topcats[$categoryid]['parent'];
+		}
+	}
+	
+	if (count($idcategories) > 0) {
+		if ($reverse) {
+			$idcategories = array_reverse($idcategories);
+		}
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($idcategories).")");
+		if ($babDB->db_num_rows($res) > 0) {
+			while ($row = $babDB->db_fetch_array($res)) {
+				$categories[$row['id']] = array('id' => $row['id'], 'title' => $row['title'], 'description' => $row['description']);
+			}
 		}
 	}
 	
