@@ -4429,7 +4429,7 @@ class bab_Calendars extends bab_handler
 			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
 			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
 			$this->ctx->curctx->push('CalendarType', $iarr['type']);
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$this->IdEntries[$this->idx]);
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendarid);
 			$this->idx++;
 			$this->index = $this->idx;
 			next($this->IdEntries);
