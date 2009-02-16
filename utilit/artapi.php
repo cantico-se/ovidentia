@@ -330,6 +330,15 @@ function bab_getParentsArticleCategory($categoryid, $reverse=false) {
 				$categories[$row['id']] = array('id' => $row['id'], 'title' => $row['title'], 'description' => $row['description']);
 			}
 		}
+		/* order by $idcategories */
+		$categoriestmp = array();
+		for ($i=0;$i<=count($idcategories)-1;$i++) {
+			$idcat = $idcategories[$i];
+			if (isset($categories[$idcat])) {
+				$categoriestmp[$idcat] = $categories[$idcat];
+			}
+		}
+		$categories = $categoriestmp;
 	}
 	
 	return $categories;
