@@ -601,7 +601,9 @@ function bab_getArticleArray($article,$fullpath = false)
  * @return 	array
  */
 function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articlestype = 2, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
-	global $babDB;
+	global $babDB, $babInstallPath;
+	
+	include_once $babInstallPath.'utilit/topincl.php';
 	
 	$articles = array();
 	
