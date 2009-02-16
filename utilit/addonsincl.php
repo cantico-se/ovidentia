@@ -483,7 +483,7 @@ class bab_addonInfos {
 	 */
 	function getIni() {
 		if (null === $this->ini) {
-	
+			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->ini = new bab_inifile();
 			$this->ini->inifileGeneral($this->getPhpPath().'addonini.php');
 		}
