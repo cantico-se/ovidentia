@@ -5487,5 +5487,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 
 	 // nothing todo
+	 
+	/**
+	 * Upgrade to 6.7.5
+	 */
+
+	 // nothing todo
+	/**
+	 * Upgrade to 6.7.6
+	 */
+	$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." CHANGE `nb_set` `nb_set` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'"); 
 	return true;
 }
