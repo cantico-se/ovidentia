@@ -248,7 +248,7 @@ CREATE TABLE `bab_groups` (
   `id_parent` int(10) unsigned default NULL,
   `lf` int(10) unsigned NOT NULL default '0',
   `lr` int(10) unsigned NOT NULL default '0',
-  `nb_set` int(10) unsigned default NULL,
+  `nb_set` int(10) unsigned NOT NULL default '0',
   `nb_groups` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `manager` (`manager`),
