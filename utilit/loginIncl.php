@@ -215,7 +215,7 @@ class Func_PortalAuthentication extends bab_functionality
 			{
 				$sUserdn = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_userdn']);
 				$sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
-				if (false === $ldap->bind($sUserdn, $sPassword))
+				if (false === $oLdap->bind($sUserdn, $sPassword))
 				{
 					$aError[] = bab_translate("LDAP bind failed. Please contact your administrator");
 					$bLdapOk = false;
