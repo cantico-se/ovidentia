@@ -494,7 +494,7 @@ if (!isset($message)) {
 
 
 switch($idx)
-	{
+{
 	case 'phpinfo':
 		phpinfo();
 		exit;
@@ -504,17 +504,17 @@ switch($idx)
 		$babBody->title = bab_translate("Ovidentia info");
 
 		viewVersion($message);
-		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
-		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
+		$babBody->addItemMenu('list', bab_translate("Sites"),$GLOBALS['babUrlScript'].'?tg=sites&idx=list');
+		$babBody->addItemMenu('version', bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
+		$babBody->addItemMenu('zipupgrade', bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
+		$babBody->addItemMenu('database', bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
 		break;
 		
 	case 'zipupgrade':
-		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
-		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
+		$babBody->addItemMenu('list', bab_translate("Sites"),$GLOBALS['babUrlScript'].'?tg=sites&idx=list');
+		$babBody->addItemMenu('version', bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
+		$babBody->addItemMenu('zipupgrade', bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
+		$babBody->addItemMenu('database', bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
 		$babBody->title = bab_translate("Upgrade");
 		if (!function_exists('gzopen')) {
 			$babBody->msgerror = bab_translate("Zlib php module missing");
@@ -525,32 +525,30 @@ switch($idx)
 	case 'zipupgrade_message':
 		zipupgrade_message($message);
 		break;
-		
+
 	case 'database':
-		$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
-		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
+		$babBody->addItemMenu('list', bab_translate("Sites"),$GLOBALS['babUrlScript'].'?tg=sites&idx=list');
+		$babBody->addItemMenu('version', bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
+		$babBody->addItemMenu('zipupgrade', bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
+		$babBody->addItemMenu('database', bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
 		$babBody->title = bab_translate("Database management");
 		database();
 		break;
 
-
 	case 'list':
 	default:
 		$babBody->title = bab_translate("Sites list");
-		if( sitesList() > 0 )
-			{
-			$babBody->addItemMenu("list", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
-			}
-		else
+		if (sitesList() > 0) {
+			$babBody->addItemMenu('list', bab_translate("Sites"), $GLOBALS['babUrlScript'] . '?tg=sites&idx=list');
+		} else {
 			$babBody->title = bab_translate("There is no site");
+		}
 
-		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript']."?tg=site&idx=create");
-		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript']."?tg=sites&idx=version");
-		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript']."?tg=sites&idx=zipupgrade");
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript']."?tg=sites&idx=database");
+		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript'].'?tg=site&idx=create');
+		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
+		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
+		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database'');
 		break;
-	}
+}
 
 $babBody->setCurrentItemMenu($idx);
