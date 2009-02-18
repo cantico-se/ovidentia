@@ -1,26 +1,25 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 include_once 'base.php';
 
 class bab_WebStatEvent
@@ -54,30 +53,30 @@ class bab_WebStatEvent
 		$this->idevt = 0;
 		$this->info = array();
 
-		if ($_SERVER["REMOTE_ADDR"])
+		if ($_SERVER['REMOTE_ADDR'])
 			{
-			$this->ip = $_SERVER["REMOTE_ADDR"];
+			$this->ip = $_SERVER['REMOTE_ADDR'];
 			}
-		else if (getenv("HTTP_X_FORWARDED_FOR"))
+		else if (getenv('HTTP_X_FORWARDED_FOR'))
 			{
-			$this->ip = getenv("HTTP_X_FORWARDED_FOR");
+			$this->ip = getenv('HTTP_X_FORWARDED_FOR');
 			}
 		else
 			{
-			$this->ip = "unknown";
+			$this->ip = 'unknown';
 			}
 		
-		if (getenv("REMOTE_HOST"))
+		if (getenv('REMOTE_HOST'))
 			{
-			$this->host = getenv("REMOTE_HOST");
+			$this->host = getenv('REMOTE_HOST');
 			}
 		else
 			{
-			$this->host = "unknown";
+			$this->host = 'unknown';
 			}
 
-		$this->referer = isset($_SERVER["HTTP_REFERER"])? $_SERVER["HTTP_REFERER"]: '';
-		$this->client = isset($_SERVER["HTTP_USER_AGENT"])? $_SERVER["HTTP_USER_AGENT"]: '';
+		$this->referer = isset($_SERVER['HTTP_REFERER'])? $_SERVER['HTTP_REFERER']: '';
+		$this->client = isset($_SERVER['HTTP_USER_AGENT'])? $_SERVER['HTTP_USER_AGENT']: '';
 
 		// Fix for IIS, which doesn't set REQUEST_URI 
 		if ( !isset($_SERVER['REQUEST_URI']) || empty( $_SERVER['REQUEST_URI'] ) )
@@ -88,15 +87,16 @@ class bab_WebStatEvent
 				$_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
 			}
 
-		$this->url = $_SERVER["REQUEST_URI"];
+		$this->url = $_SERVER['REQUEST_URI'];
 		
 		if( $this->tg != 'version' )
 			{
 			$this->logEvent();
 			}
 		$this->module($this->tg); 
-		$GLOBALS['babUrlStatInfo'] = $GLOBALS['babUrlScript']."?tg=statinfo&statevt=".$this->idevt."";
+		$GLOBALS['babUrlStatInfo'] = $GLOBALS['babUrlScript'].'?tg=statinfo&statevt='.$this->idevt;
 	}
+
 
 	function logEvent()
 	{
@@ -108,9 +108,18 @@ class bab_WebStatEvent
 
 		bab_logUserActionTime($BAB_SESS_USERID, session_id());
 
-		$babDB->db_query("insert into ".BAB_STATS_EVENTS_TBL." (evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser) values (now(), '".$babDB->db_escape_string($this->tg)."', '0', '".$babDB->db_escape_string($this->referer)."', '".$babDB->db_escape_string($this->ip)."', '".$babDB->db_escape_string($this->host)."', '".$babDB->db_escape_string($this->client)."', '".$babDB->db_escape_string($this->url)."', '".session_id()."', '0')");
+		$referer = substr($this->referer, 0, 255);
+		$client = substr($this->client, 0, 255);
+		$url = substr($this->url, 0, 255);
+		$host = substr($this->host, 0, 255);
+		$tg = substr($this->tg, 0, 255);
+		
+		$babDB->db_query('INSERT INTO '.BAB_STATS_EVENTS_TBL. '
+							(evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser)
+							VALUES (now(), '.$babDB->quote($tg).', 0, '.$babDB->quote($referer).', '.$babDB->quote($this->ip).', '.$babDB->quote($host).', '.$babDB->quote($client).', '.$babDB->quote($url).', '.session_id().', 0)');
 		$this->idevt = $babDB->db_insert_id();
 	}
+
 
 	function addNewArticle($id_dgowner)
 	{
@@ -425,8 +434,8 @@ function bab_logUserConnectionTime($userId, $sessionId)
 		'login_time' => 'NOW()', 
 		'last_action_time' => 'NOW()'
 	);
-	$sql = 'INSERT INTO ' . BAB_STATS_CONNECTIONS_TBL . '(' . implode(',', array_keys($data)) . ')';
-	$sql .= ' VALUES (' . implode(',', $data) . ')';
+	$sql = 'INSERT INTO ' . BAB_STATS_CONNECTIONS_TBL . '(' . implode(',', array_keys($data)) . ')
+			VALUES (' . implode(',', $data) . ')';
 
 	$babDB->db_query($sql);
 }
@@ -441,9 +450,9 @@ function bab_logUserActionTime($userId, $sessionId)
 {
 	global $babDB;
 
-	$sql = 'UPDATE ' . BAB_STATS_CONNECTIONS_TBL . ' SET last_action_time = NOW()';
-	$sql .= ' WHERE id_user = ' . $babDB->quote($userId);
-	$sql .= ' AND id_session = ' . $babDB->quote($sessionId);
+	$sql = 'UPDATE ' . BAB_STATS_CONNECTIONS_TBL . ' SET last_action_time = NOW()
+			WHERE id_user = ' . $babDB->quote($userId) . '
+			AND id_session = ' . $babDB->quote($sessionId);
 	
 	$babDB->db_query($sql);
 }
@@ -451,17 +460,14 @@ function bab_logUserActionTime($userId, $sessionId)
 
 /**
  * Delete connection logs for which 'login_time' is prior to $before.
- * @param string before  A SQL formatted datetime.
+ * @param string before  A SQL /ISO formatted datetime (YYYY-MM-DD).
  */
 function bab_deleteConnectionLog($before)
 {
 	global $babDB;
 
-	$sql = 'DELETE FROM ' . BAB_STATS_CONNECTIONS_TBL;
-	$sql .= ' WHERE login_time < ' . $babDB->quote($before);
+	$sql = 'DELETE FROM ' . BAB_STATS_CONNECTIONS_TBL . '
+			WHERE login_time < ' . $babDB->quote($before);
 	
 	$babDB->db_query($sql);
 }
-
-
-?>
