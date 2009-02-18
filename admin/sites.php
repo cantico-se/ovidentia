@@ -42,7 +42,7 @@ function getSiteName($id)
 function sitesList()
 	{
 	global $babBody;
-	class temp
+	class SitesListTpl
 		{
 		var $name;
 		var $urlname;
@@ -62,7 +62,7 @@ function sitesList()
 		var $count;
 		var $res;
 
-		function temp()
+		function SitesListTpl()
 			{
 			$this->name = bab_translate("Site name");
 			$this->description = bab_translate("Description");
@@ -94,7 +94,7 @@ function sitesList()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new SitesListTpl();
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "siteslist"));
 	return $temp->count;
 	}
@@ -104,7 +104,7 @@ function sitesList()
 function viewVersion($message)
 	{
 	global $babBody;
-	class temp
+	class ViewVersionTpl
 		{
 		var $urlphpinfo;
 		var $phpinfo;
@@ -115,7 +115,7 @@ function viewVersion($message)
 		var $phpversiontxt;
 		var $phpversion;
 
-		function temp()
+		function ViewVersionTpl()
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->srcversiontxt = bab_translate("Ovidentia version");
@@ -162,7 +162,7 @@ function viewVersion($message)
 
 	}
 
-	$temp = new temp();
+	$temp = new ViewVersionTpl();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
 	$temp->set_message();
 	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
@@ -173,12 +173,12 @@ function viewVersion($message)
 function zipupgrade($message)
 	{
 	global $babBody;
-	class temp
+	class ZipUpgradeTpl
 		{
 		var $db;
 		var $altbg = false;
 
-		function temp()
+		function ZipUpgradeTpl()
 			{
 			$this->t_file = bab_translate("File");
 			$this->t_new_core_name = bab_translate("New core name");
@@ -235,7 +235,7 @@ function zipupgrade($message)
 			}
 		}
 
-	$temp = new temp();
+	$temp = new ZipUpgradeTpl();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
 	$babBody->babecho(bab_printTemplate($temp, "sites.html", "zipupgrade"));
 	}
@@ -262,10 +262,10 @@ function zipupgrade_message($message)
 function database()
 	{
 	global $babBody;
-	class temp
+	class DatabaseTpl
 		{
 
-		function temp()
+		function DatabaseTpl()
 			{
 			$this->db = &$GLOBALS['babDB'];
 			$this->t_submit = bab_translate("Export database");
@@ -301,7 +301,7 @@ function database()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new DatabaseTpl();
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "database"));
 	}
 	
@@ -583,5 +583,3 @@ switch($idx)
 
 $babBody->setCurrentItemMenu($idx);
 
-
-?>
