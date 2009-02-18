@@ -116,7 +116,7 @@ class bab_WebStatEvent
 		
 		$babDB->db_query('INSERT INTO '.BAB_STATS_EVENTS_TBL. '
 							(evt_time, evt_tg, evt_id_site, evt_referer, evt_ip, evt_host, evt_client, evt_url, evt_session_id, evt_iduser)
-							VALUES (now(), '.$babDB->quote($tg).', 0, '.$babDB->quote($referer).', '.$babDB->quote($this->ip).', '.$babDB->quote($host).', '.$babDB->quote($client).', '.$babDB->quote($url).', '.session_id().', 0)');
+							VALUES (now(), '.$babDB->quote($tg).', 0, '.$babDB->quote($referer).', '.$babDB->quote($this->ip).', '.$babDB->quote($host).', '.$babDB->quote($client).', '.$babDB->quote($url).', '.$babDB->quote(session_id()).', 0)');
 		$this->idevt = $babDB->db_insert_id();
 	}
 
