@@ -1,36 +1,36 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-include_once "base.php";
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
+include_once 'base.php';
 include_once $babInstallPath.'utilit/sitesincl.php';
 
 
 
 function sitesList()
-	{
+{
 	global $babBody;
-	class temp
-		{
+
+	class SitesListTpl
+	{
 		var $name;
 		var $urlname;
 		var $url;
@@ -42,15 +42,15 @@ function sitesList()
 		var $hpublic;
 		var $hprivurl;
 		var $hpuburl;
-		
+
 		var $id;
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
 
-		function temp()
-			{
+		function __construct()
+		{
 			$this->name = bab_translate("Site name");
 			$this->description = bab_translate("Description");
 			$this->lang = bab_translate("Lang");
@@ -60,37 +60,35 @@ function sitesList()
 			$this->db = &$GLOBALS['babDB'];
 			$this->res = bab_getSitesRes();
 			$this->count = $this->db->db_num_rows($this->res);
-			}
+		}
 
 		function getnext()
-			{
+		{
 			static $i = 0;
 			if( $i < $this->count)
-				{
+			{
 				$this->arr = $this->db->db_fetch_array($this->res);
 				$this->url = $GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$this->arr['id'];
 				$this->hmanagementurl = $GLOBALS['babUrlScript']."?tg=site&idx=menu7&item=".$this->arr['id'];
 				$this->urlname = $this->arr['name'];
 				$i++;
 				return true;
-				}
-			else
-				return false;
-
 			}
+			return false;
 		}
-
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "siteslist"));
-	return $temp->count;
 	}
+
+	$temp = new SitesListTpl();
+	$babBody->babecho(	bab_printTemplate($temp, 'sites.html', 'siteslist'));
+	return $temp->count;
+}
 
 
 
 function viewVersion($message)
 	{
 	global $babBody;
-	class temp
+	class ViewVersionTpl
 		{
 		var $urlphpinfo;
 		var $phpinfo;
@@ -101,7 +99,7 @@ function viewVersion($message)
 		var $phpversiontxt;
 		var $phpversion;
 
-		function temp()
+		function __construct()
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->srcversiontxt = bab_translate("Ovidentia version");
@@ -137,7 +135,8 @@ function viewVersion($message)
 	
 			}
 
-		function set_message() {
+		function set_message()
+		{
 			if( $this->srcversion != $this->dbversion ) {
 				$GLOBALS['babBody']->msgerror = bab_translate("The database is not up-to-date");
 
@@ -148,24 +147,24 @@ function viewVersion($message)
 
 	}
 
-	$temp = new temp();
+	$temp = new ViewVersionTpl();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
 	$temp->set_message();
-	$babBody->babecho(	bab_printTemplate($temp,"sites.html", "versions"));
-	}
+	$babBody->babEcho(bab_printTemplate($temp, 'sites.html', 'versions'));
+}
 
 
 	
 function zipupgrade($message)
-	{
+{
 	global $babBody;
-	class temp
+	class ZipUpgradeTpl
 		{
 		var $db;
 		var $altbg = false;
 
-		function temp()
-			{
+		function __construct()
+		{
 			$this->t_file = bab_translate("File");
 			$this->t_new_core_name = bab_translate("New core name");
 			$this->t_submit = bab_translate("Submit");
@@ -223,7 +222,7 @@ function zipupgrade($message)
 
 	$temp = new temp();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
-	$babBody->babecho(bab_printTemplate($temp, "sites.html", "zipupgrade"));
+	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'zipupgrade'));
 	}
 
 
@@ -240,19 +239,19 @@ function zipupgrade_message($message)
 
 	$temp = new zipupgrade_message_temp();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
-	$babBody->babecho(bab_printTemplate($temp, "sites.html", "zipupgrade_message"));
+	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'zipupgrade_message'));
 	}
 
 
 	
 function database()
-	{
+{
 	global $babBody;
-	class temp
-		{
+	class DatabaseTpl
+	{
 
-		function temp()
-			{
+		function __construct()
+		{
 			$this->db = &$GLOBALS['babDB'];
 			$this->t_submit = bab_translate("Export database");
 			
@@ -261,38 +260,35 @@ function database()
 			$this->t_drop_table = bab_translate("Add 'DROP TABLE' instructions");
 			$this->t_tables = bab_translate("Tables");
 			
-			if (isset($_POST) && count($_POST) > 0)
+			if (isset($_POST) && count($_POST) > 0) {
 				$this->val = $_POST;
-			else
-				{
-				$el_to_init = array('structure','data','drop_table');
-				foreach($el_to_init as $el)
-					{
+			} else {
+				$el_to_init = array('structure', 'data', 'drop_table');
+				foreach($el_to_init as $el) {
 					$this->val[$el] = true;
-					}
 				}
-
-			$this->restable = $this->db->db_query("SHOW TABLES");
 			}
+
+			$this->restable = $this->db->db_query('SHOW TABLES');
+		}
 
 
 		function getnexttable()
-			{
+		{
 			if (list($this->table) = $this->db->db_fetch_array($this->restable))
-				{
+			{
 				return true;
-				}
-			else
-				return false;
 			}
+			return false;
 		}
-
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "database"));
 	}
+
+	$temp = new DatabaseTpl();
+	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'database'));
+}
 	
 function unzipcore() 
-	{
+{
 	global $babBody;
 	
 	$core = 'ovidentia/';
@@ -302,8 +298,9 @@ function unzipcore()
 
 	$tmpdir = $GLOBALS['babUploadPath'].'/tmp/';
 	
-	if (!is_dir($tmpdir))
-		bab_mkdir($tmpdir,$GLOBALS['babMkdirMode']);
+	if (!is_dir($tmpdir)) {
+		bab_mkdir($tmpdir, $GLOBALS['babMkdirMode']);
+	}
 
 	$ul = $_FILES['zipfile']['name'];
 	move_uploaded_file($_FILES['zipfile']['tmp_name'],$tmpdir.$ul);
@@ -330,9 +327,6 @@ function unzipcore()
 				$babBody->msgerror = bab_translate("Directory allready exists");
 				return false;
 				}
-
-			
-			
 
 			if (!bab_mkdir($new_dir,$GLOBALS['babMkdirMode']))
 				{
@@ -454,12 +448,10 @@ function unzipcore()
 		}
 
 	return true;
-	}
-	
-	
+}
 
-	
-	
+
+
 /* main */
 if( !isset($BAB_SESS_LOGGED) || empty($BAB_SESS_LOGGED) ||  !$babBody->isSuperAdmin)
 {
@@ -503,12 +495,12 @@ if (!isset($message)) {
 
 switch($idx)
 	{
-	case "phpinfo":
+	case 'phpinfo':
 		phpinfo();
 		exit;
 		break;
 
-	case "version":
+	case 'version':
 		$babBody->title = bab_translate("Ovidentia info");
 
 		viewVersion($message);
@@ -544,7 +536,7 @@ switch($idx)
 		break;
 
 
-	case "list":
+	case 'list':
 	default:
 		$babBody->title = bab_translate("Sites list");
 		if( sitesList() > 0 )
@@ -562,6 +554,3 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
-
-
-?>
