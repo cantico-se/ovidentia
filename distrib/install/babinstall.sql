@@ -2333,7 +2333,7 @@ CREATE TABLE bab_stats_events (
   evt_url varchar(255) NOT NULL default '',
   evt_session_id varchar(32) NOT NULL default '',
   evt_iduser int(11) unsigned NOT NULL default '0',
-  evt_info text NOT NULL,
+  evt_info text NOT NULL default '',
   PRIMARY KEY  (id)
 );
 
