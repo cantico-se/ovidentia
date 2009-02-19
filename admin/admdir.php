@@ -923,6 +923,8 @@ function displayDb($id)
 	$temp = new temp($id);
 	$babBody->babecho(	bab_printTemplate($temp, 'admdir.html', 'dbscripts'));
 	$babBody->babecho( bab_printTemplate($temp,'admdir.html', 'dbdisplay'));
+	
+	
 	}
 
 
@@ -1899,6 +1901,7 @@ switch($idx)
 
 	case 'dispdb':
 		$babBody->title = bab_translate("Modify directory");
+		$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
 		displayDb($id);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
