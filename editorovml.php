@@ -36,10 +36,10 @@ function dire_ext($rep,$ext )
 	
 	while($dir = readdir($reper))
 	{
-		if(($dir != ".") && ($dir != "..")) 
+		if(($dir != '.') && ($dir != '..')) 
 		{
 			$iPos = mb_strpos($dir, '.');
-			if(false !== $iPos && in_array(mb_substr($dir, $iPos+1), $ext))
+			if(false !== $iPos && in_array(mb_substr($dir, $iPos), $ext))
 			{
 				$fichier[$i] = $dir ; 
 				$i++;
@@ -57,7 +57,7 @@ function dire_dir($rep )
 	$fichier = array();
 	while($dir = readdir($reper))
 		{
-		if (($dir != ".") && ($dir != "..") && is_dir($rep."/".$dir) ) 
+		if (($dir != '.') && ($dir != '..') && is_dir($rep.'/'.$dir) ) 
 			{
 			$fichier[$i] = $dir ; 
 			$i++;
@@ -91,6 +91,7 @@ function browse($url)
 			$this->url = $url;
 			$this->ext = array (".ovml", ".html", ".htm", ".oml",".ovm");
 			$this->tablo_dir = dire_dir($GLOBALS['babOvmlPath'].$this->path.$this->url);
+			
 			$this->tablo_files = dire_ext($GLOBALS['babOvmlPath'].$this->path.$this->url,$this->ext);
 			$this->count_dir = count($this->tablo_dir);
 		
