@@ -71,6 +71,8 @@ class macl
 		$this->tree = & new bab_arraytree(BAB_GROUPS_TBL, null);
 		
 		$this->iIdDelegation = (!is_null($iIdDelegation)) ? $iIdDelegation : $babBody->currentAdmGroup;
+		$aDelegation = reset(bab_getDelegationById($this->iIdDelegation));
+		$this->iIdDelegationGroup = $aDelegation['id_group'];
 		
 		if ($this->iIdDelegation > 0)
 			{
@@ -83,7 +85,7 @@ class macl
 
 			if( count($this->aclgroups) == 0 )
 				{
-				$this->aclgroups[$babBody->currentDGGroup['id_group']+BAB_ACL_GROUP_TREE] = true;
+				$this->aclgroups[$this->iIdDelegationGroup + BAB_ACL_GROUP_TREE] = true;
 				}
 			
 			if ( !isset($this->aclgroups[BAB_ALLUSERS_GROUP]) && !isset($this->aclgroups[BAB_UNREGISTERED_GROUP]))
