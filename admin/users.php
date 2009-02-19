@@ -611,18 +611,10 @@ switch($idx)
 			{
 			$babBody->setTitle(bab_translate("Users list"));
 			$cnt = listUsers($pos, $grp);
-
+			
+			$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
 			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
-			/*
-			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y')
-				{
-				$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos."&grp=".$grp);
-				}
-			if( $babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['battach'] == 'Y' && isset($_REQUEST['bupd']) && $_REQUEST['bupd'] == 0)
-				{
-				$babBody->addItemMenu("Attach", bab_translate("Attach"),$GLOBALS['babUrlScript']."?tg=users&idx=List&grp=".$grp."&bupd=1");
-				}
-			//*/
+			
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{
 				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
