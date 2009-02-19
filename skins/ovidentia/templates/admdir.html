@@ -629,13 +629,15 @@ document.forms.ovmldbf.ovmllist.value = txt;
 
 <tr> 
 <td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmllisttxt }:<br /><br />
-<input type="text" name="ovmllist" value="{ ovmllistval }" size="70" />&nbsp;&nbsp;<a href="javascript:Start('{ browseurl }&cb=OnInsertOvmlList','bab_ovml','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes')">{ browsetxt }</a>
+<input type="text" id="ovmllist" name="ovmllist" value="{ ovmllistval }" size="70" />&nbsp;&nbsp;
+<a onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmllist').value = ret.filename; }); return false;" href="http://lau-cho/ovidentia/index.php?tg=editorovml&cb=OnInsertOvmlList">Lister</a>
 </td>
 </tr>
 
 <tr> 
 <td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmldetailtxt }:<br /><br />
-<input type="text" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;<a href="javascript:Start('{ browseurl }&cb=OnInsertOvmlDetail','bab_ovml','toolbar=no,menubar=no,personalbar=no,width=350,height=470,scrollbars=yes,resizable=yes')">{ browsetxt }</a>
+<input type="text" id="ovmldetail" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;
+<a onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmldetail').value = ret.filename; }); return false;" href="http://lau-cho/ovidentia/index.php?tg=editorovml&cb=OnInsertOvmlDetail">Lister</a>
 </td>
 </tr>
 <tr> 
