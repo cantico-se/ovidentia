@@ -2184,13 +2184,19 @@ function bab_getFileContentDisposition() {
 function bab_printOvmlTemplate($file, $args=array())
 {
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
-
+	
+	$filepath = $babOvmlPath.$file;
+	
+	if ($file == '') {
+		bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
+		return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
+	}
+	
 	if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http')
 	{
 		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
 	}
-
-	$filepath = $babOvmlPath.$file;
+	
 	if (!file_exists($filepath))
 	{
 		$filepath = $babSkinPath.'ovml/'.$file;
@@ -2198,11 +2204,8 @@ function bab_printOvmlTemplate($file, $args=array())
 		{
 			$filepath = $babInstallPath.'skins/ovidentia/ovml/'.$file;
 		}
-	}
-
-	if (!file_exists($filepath))
-	{
-		return '<!-- ERROR filename: '.bab_toHtml($filepath).' -->';
+		bab_debug(bab_translate("Error: OVML file don't exist").' : '.bab_toHtml($file));
+		return '<!-- '.bab_translate("Error: OVML file don't exist").' : '.bab_toHtml($file).' -->';
 	}
 
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
