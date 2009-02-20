@@ -45,6 +45,8 @@ class macl
 	
 	function macl($target, $index,$id_object, $return, $bsetofgroups=true, $iIdDelegation=NULL)
 		{
+		require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+		
 		global $babBody, $babDB;
 		$this->target = &$target;
 		$this->index = &$index;
