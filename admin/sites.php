@@ -467,7 +467,7 @@ if (isset($_FILES['zipfile'])) {
 		$idx = "zipupgrade_message";
 	}
 }
-		
+
 if (isset($_POST['action']))
 	switch($_POST['action'])
 		{
@@ -509,7 +509,7 @@ switch($idx)
 		$babBody->addItemMenu('zipupgrade', bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
 		$babBody->addItemMenu('database', bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
 		break;
-		
+
 	case 'zipupgrade':
 		$babBody->addItemMenu('list', bab_translate("Sites"),$GLOBALS['babUrlScript'].'?tg=sites&idx=list');
 		$babBody->addItemMenu('version', bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
@@ -547,7 +547,7 @@ switch($idx)
 		$babBody->addItemMenu("create", bab_translate("Create"),$GLOBALS['babUrlScript'].'?tg=site&idx=create');
 		$babBody->addItemMenu("version", bab_translate("Versions"),$GLOBALS['babUrlScript'].'?tg=sites&idx=version');
 		$babBody->addItemMenu("zipupgrade", bab_translate("Upgrade"),$GLOBALS['babUrlScript'].'?tg=sites&idx=zipupgrade');
-		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database'');
+		$babBody->addItemMenu("database", bab_translate("Database"),$GLOBALS['babUrlScript'].'?tg=sites&idx=database');
 		break;
 }
 
