@@ -5701,7 +5701,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." CHANGE `nb_set` `nb_set` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'"); 
 	
-	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL."CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
+	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
 
 	return true;
 }
