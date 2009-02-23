@@ -995,6 +995,7 @@ switch($idx)
 		display_addons_menu();
 		$babBody->addItemMenu("functionalities", bab_translate("Libraries administration"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		functionalities();
+		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		break;
 
 	case "upgrade":
@@ -1020,13 +1021,12 @@ switch($idx)
 
 		$babBody->title = bab_translate('Shared Libraries');
 		display_addons_menu();
-
-		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
-	
+		
 		if (haveFunctionalities()) {
 			$babBody->addItemMenu("functionalities", bab_translate("Libraries administration"), $GLOBALS['babUrlScript']."?tg=addons&idx=functionalities");
 		}
-
+		
+		$babBody->addItemMenu("upload", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=addons&idx=upload");
 		break;
 
 		
