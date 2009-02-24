@@ -642,7 +642,9 @@ function calview()
 	<tr>
 		<td align="center">
 			{ calendars }<br />
+			<!--#if BAB_SESS_LOGGED -->
 			<input type="submit" value="{ t_record }" />
+			<!--#endif BAB_SESS_LOGGED -->
 			<input type="button" value="{ t_view }" onclick="calview()" />
 		</td>
 	</tr>

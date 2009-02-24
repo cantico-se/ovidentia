@@ -767,11 +767,6 @@ switch($idx)
 
 	case "unload":
 	
-		if (!bab_isUserLogged()) {
-			$babBody->addError('Access denied');
-			break;
-		}
-	
 		record_calendarchoice();
 		include_once $babInstallPath."utilit/uiutil.php";
 		$babBodyPopup = new babBodyPopup();
