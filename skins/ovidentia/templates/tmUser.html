@@ -2367,7 +2367,7 @@ function bab_selectOption(sControlId, sAction)
 
 
 <!--#begin treeview -->
-<div id="{ t_treeViewId }" class="bab_tree BabLoginCadreBackground">
+<div id="{ t_treeViewId }" class="bab_tree { t_classes } <!--#if t_showToolbar -->bab-show-toolbar<!--#endif t_showToolbar --> BabLoginCadreBackground">
 	<div class="tree BabLoginMenuBackground" style="position: relative">
 		<script type="text/javascript">document.getElementById("{ t_treeViewId }").getElementsByTagName('DIV')[0].style.display='none'</script>
 		{ t_subtree }
