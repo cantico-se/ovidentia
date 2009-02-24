@@ -722,6 +722,12 @@ function printout()
 			$this->idcals[] = $id;
 		}
 
+	foreach($icalendars->rescal as $id => $rescal)
+		{
+		if ($rescal['view'])
+			$this->idcals[] = $id;
+		}
+
 	$mktime = mktime(0,0,0,$this->currentMonth, 1,$this->currentYear);
 	$daymin = date('Y-m-d', $mktime);
 	$mktime = mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear);
