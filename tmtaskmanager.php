@@ -252,7 +252,7 @@ function displayProjectsSpacesList()
 		
 		function BAB_TM_List()
 		{
-			parent::bab_TreeView('myTreeView');
+			parent::__construct('myTreeView');
 			
 			$this->_templateFile = 'tmUser.html';
 			
@@ -1133,7 +1133,7 @@ function displayTaskList($sIdx)
 			$this->set_data('sTaskFilterName', '');
 
 			$this->m_aTasksFilter = array(
-				array('value' => -1, 'text' => bab_translate("All")));
+				array('value' => -1, 'text' => bab_translate("All"), 'manager' => false));
 			
 			//Task type filter	
 			$this->set_caption('sTaskType', bab_translate("Task type"));
