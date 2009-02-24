@@ -2142,7 +2142,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->archive = 'Y' == $arr['archive'];
 				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
 				$this->arttopicid = $arr['id_topic'];
-				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id']."&w=".$this->what);
+				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=articles&id=".$arr['id']."&w=".$this->what);
 				if (mb_strlen(trim(stripslashes($arr['body']))) > 0)
 					{
 					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
@@ -2229,7 +2229,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->forumurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic']);
 				$this->intro = put_text($arr['message'],300);
 				$this->posturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0");
-				$this->posturlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=b&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what);
+				$this->posturlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=forums&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what);
 				$i++;
 				return true;
 				}
@@ -2251,7 +2251,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$this->faqtopic = bab_toHtml($arr['topic']);
 				$this->faqtopicid = $arr['idcat'];
 				$this->topicurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']);
-				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=c&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
+				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=faqs&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
 				$this->questionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
 				$this->intro = put_text($arr['response'],300);
 				$i++;
@@ -2775,7 +2775,7 @@ function viewPost($thread, $post, $w)
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_forum_post');
-			$editor->setContent($this->arr['message']);
+			$editor->setContent($arr['message']);
 			$this->postmessage = highlightWord( $w, $editor->getHtml());
 
 			if ($this->files && bab_searchEngineInfos()) {
