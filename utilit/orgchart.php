@@ -32,7 +32,7 @@ class bab_OrgChartElement extends bab_TreeViewElement
 	var $_members;
 	var $_linkEntity;
 	/**#@-*/
-	
+
 	/**
 	 * @param string $id			A unique element id in the treeview.
 	 * @param string $type			Will be used as a css class to style the element.
@@ -40,9 +40,9 @@ class bab_OrgChartElement extends bab_TreeViewElement
 	 * @param string $description	An additional description that will appear as a tooltip.
 	 * @param string $link			A link when clicking the node title.
 	 */
-	function bab_OrgChartElement($id, $type, $title, $description, $link)
+	function __construct($id, $type, $title, $description, $link)
 	{
-		parent::bab_TreeViewElement($id, $type, $title, $description, $link);
+		parent::__construct($id, $type, $title, $description, $link);
 		$this->_members = array();
 	}
 
@@ -106,9 +106,9 @@ class bab_OrgChart extends bab_TreeView
 	 * @return bab_OrgChart
 	 * @access public
 	 */
-	function bab_OrgChart($id, $startLevel = 0)
+	function __construct($id, $startLevel = 0)
 	{
-		parent::bab_TreeView($id);
+		parent::__construct($id);
 
 		$this->_verticalThreshold = 3;
 		$this->_relativeThreshold = true;
@@ -361,9 +361,9 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 * @return bab_OrgChart
 	 * @access public
 	 */
-	function bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false, $relative = true)
+	function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false, $relative = true)
 	{
-		parent::bab_OrgChart($id, $startLevel);
+		parent::__construct($id, $startLevel);
 
 		$this->_orgChartId = $this->t_orgChartId = $orgChartId;
 		$this->_startEntityId = $this->t_entityId = $startEntityId;
@@ -481,12 +481,12 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		global $babDB;
 
 		$entityTypes = bab_OCGetEntityTypes($entityId);
-		
+
 		$types = array();
 		while ($entityType = $babDB->db_fetch_assoc($entityTypes)) {
 			$types[] = $entityType;
 		}
-		
+
 		return $types;
 	}
 
@@ -494,16 +494,15 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 
 	function &_addEntity($entityId, $entityParentId, $entityType, $entityName)
 	{
-
 		$elementIdPrefix = 'ENT';
-		
+
 		$element =& $this->createElement($elementIdPrefix . $entityId,
 										 $entityType,
 										 bab_toHtml($entityName),
 										 '',
 										 '');
 		$this->_addMembers($element, $entityId);
-		
+
 		$element->setLinkEntity('javascript:'
 								. "bab_updateFlbFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=detr');"
 								. "bab_updateFltFrame('" . $GLOBALS['babUrlScript'] . "?tg=fltchart&rf=0&ocid=" . $this->_orgChartId . "&oeid=" . $entityId . "&idx=listr');changestyle('ENT" . $entityId . "','BabLoginMenuBackground','BabTopicsButtonBackground');");
@@ -643,7 +642,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	 */
 	function _updateTree()
 	{
-		if ($this->_upToDate)
+		if ($this->isUpToDate())
 			return;
 		$this->_addEntities($this->_startEntityId);
 		parent::_updateTree();
