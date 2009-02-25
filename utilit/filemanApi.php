@@ -56,9 +56,9 @@ class bab_FileInfo extends SplFileInfo
 		if (!isset($this->fmPathname)) {
 			$collectivePath = BAB_FmFolderHelper::getUploadPath() . BAB_FileManagerEnv::relativeFmCollectivePath;
 			$aBuffer = 0;
-	
+
 			$fmPathname = substr($this->getPathname(), strlen($collectivePath));
-	
+
 			$this->fmPathname = BAB_PathUtil::sanitize($fmPathname);
 		}
 		return $this->fmPathname;
@@ -243,13 +243,82 @@ class bab_FileInfo extends SplFileInfo
 
 
 
+class bab_DirectorySortFlag
+{
+	/**
+	 * Do not sort
+	 * @var int
+	 */
+	const UNSORTED		=   0;
+	/**
+	 * Sort by name
+	 * @var int
+	 */
+	const NAME			=   1;
+	/**
+	 * Sort by modification time.
+	 * @var int
+	 */
+	const TIME			=   2;
+	/**
+	 * Sort by file size.
+	 * @var int
+	 */
+	const SIZE			=   4;
+	/**
+	 * Sort by file mimetype.
+	 * @var int
+	 */
+	const MIMETYPE		=   8;
+	/**
+	 * Sort directories first.
+	 * @var int
+	 */
+	const DIRS_FIRST	=  16;
+	/**
+	 * Sort directories last.
+	 * @var int
+	 */
+	const DIRS_LAST		=  32;
+	/**
+	 * Reverse sort order.
+	 * @var int
+	 */
+	const REVERSED		=  64;
+	/**
+	 * Sort case-insensitively.
+	 * @var int
+	 */
+	const IGNORE_CASE	= 128;	
+}
+
 
 class bab_DirectoryFilter
 {
-	const DOT	= 1;
-	const FILE	= 2;
-	const DIR	= 4;
+	/**
+	 * Files '.' and '..'.
+	 * @var int
+	 */
+	const DOT		= 1;
+	/**
+	 * Filter files
+	 * @var int
+	 */
+	const FILE		= 2;
+	/**
+	 * Filter dirs
+	 * @var int
+	 */
+	const DIR		= 4;
+	/**
+	 * Filter hidden files
+	 * TODO Not functional yet
+	 * @var int
+	 */
+	const HIDDEN	= 8;
 }
+
+
 
 
 abstract class bab_FilteredDirectoryIterator extends FilterIterator
@@ -257,13 +326,13 @@ abstract class bab_FilteredDirectoryIterator extends FilterIterator
 	protected $iFilterBits		= 0;
 	protected $sRelativePath	= null; 
 	protected $iIdObject		= 0;
-	
+
 	public function __construct($sFullPathName)
     {
         parent::__construct(new DirectoryIterator($sFullPathName));
     }
 
-    
+
     public function setFilter($iBit)
     {
 		$this->iFilterBits |= $iBit;
@@ -278,52 +347,51 @@ abstract class bab_FilteredDirectoryIterator extends FilterIterator
     	{
     		return false;
     	}
-    	
+
     	if($oIterator->isFile())
     	{
 	    	if($this->bitActivated(bab_DirectoryFilter::FILE))
 	    	{
 	    		return false;
 	    	}
-	    	
+
 	    	return $this->acceptFile($oIterator);
     	}
-    	
-    	if($oIterator->isDir())
-    	{
-	    	if($this->bitActivated(bab_DirectoryFilter::DIR))
-	    	{
-	    		return false;
-	    	}
-	    	
+
+		if($oIterator->isDir())
+		{
+			if($this->bitActivated(bab_DirectoryFilter::DIR))
+			{
+				return false;
+			}
+
 	    	return $this->acceptDir($oIterator);
 	    }
     	return true;
     }
-    
-    
-    public function setRelativePath($sRelativePath)
-    {
-    	$this->sRelativePath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sRelativePath));
-    }
-    
-    
-    public function setObjectId($iIdObject)
-    {
-    	$this->iIdObject = (int) $iIdObject;
-    }
-    
-    
-    private function bitActivated($iBit)
-    {
-    	return ($this->iFilterBits & $iBit);
-    }
-    
-    
-    abstract protected function acceptFile($oIterator);
-    
-    
-    abstract protected function acceptDir($oIterator);
+
+
+	public function setRelativePath($sRelativePath)
+	{
+		$this->sRelativePath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sRelativePath));
+	}
+
+
+	public function setObjectId($iIdObject)
+	{
+		$this->iIdObject = (int) $iIdObject;
+	}
+
+
+	private function bitActivated($iBit)
+	{
+		return ($this->iFilterBits & $iBit);
+	}
+
+
+	abstract protected function acceptFile($oIterator);
+
+	abstract protected function acceptDir($oIterator);
 }
 
 
@@ -334,38 +402,39 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 	private $oRelativePathField	= null;
 	private $oIdDgOwnerField	= null;
 	private $oFolder			= null;
-    
+
 	private $aPathCache			= array();
-	
+
+
 	public function __construct($sFullPathName)
     {
         parent::__construct($sFullPathName);
-        
+
         $this->oFolderSet			= bab_getInstance('BAB_FmFolderSet');
 		$this->oNameField			= $this->oFolderSet->aField['sName'];
 		$this->oRelativePathField	= $this->oFolderSet->aField['sRelativePath'];
 		$this->oIdDgOwnerField		= $this->oFolderSet->aField['iIdDgOwner'];
     }
-    
-    
-    protected function acceptFile($oIterator)
-    {
-    	return true;
-    }
-    
-    
+
+
+	protected function acceptFile($oIterator)
+	{
+		return true;
+	}
+
+
     protected function acceptDir($oIterator)
     {
     	if(strtolower(BAB_FVERSION_FOLDER) == strtolower($oIterator->getFilename()))
     	{
     		return false;
     	}
-    	
+
     	$bSuccess = false; 
 		$iIdOldDelegation = bab_getCurrentUserDelegation();
- 		
+
 		bab_setCurrentUserDelegation($this->iIdObject);
-		
+
 		$this->oFolder = $this->getCollectiveFolder($oIterator->getFilename(), $this->sRelativePath); 
     	if(!($this->oFolder instanceof BAB_FmFolder))
 		{
@@ -377,24 +446,24 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 			$sRelativePath	= $this->sRelativePath . $oIterator->getFilename() . '/';
 			$bCanManage		= canManage($sRelativePath);
 			$bCanBrowse		= canBrowse($sRelativePath);
-			
+
 			if($bCanManage || canUpload($sRelativePath) || canUpdate($sRelativePath) || ($bCanBrowse && 'N' === $this->oFolder->getHide()))
 			{
 				$bSuccess = true;
 			}
 		}
-		
+
 		bab_setCurrentUserDelegation($iIdOldDelegation);
 		return $bSuccess;
     }
-    
-    
+
+
     public function current()
     {
     	return new bab_FileInfo(parent::current()->getPathname());
     }
-    
-    
+
+
     private function getCollectiveFolder($sFolderName, $sRelativePath)
     {
 		$oCriteria = $this->oNameField->in($sFolderName);
@@ -404,7 +473,7 @@ class bab_CollectiveDirIterator extends bab_FilteredDirectoryIterator
 		return $this->oFolderSet->get($oCriteria);
     }
 
-    
+
 	private function getFirstCollectiveParentFolder($sRelativePath)
 	{
 		if(!array_key_exists($sRelativePath, $this->aPathCache))
@@ -446,11 +515,7 @@ class bab_Directory
 	const RIGHT_MANAGE_AND_CHILD	= 128;
 	const RIGHT_NOTIFY				= 256;
 	const RIGHT_NOTIFY_AND_CHILD	= 512;
-	
-	public function __construct()
-	{
-		
-	}
+
 	
 	/**
 	 * This function set right on a collective folder.
@@ -760,11 +825,11 @@ class bab_Directory
 	 * This function return the content of a folder
 	 *
 	 * @param string	$sPathName	The path of the folder (ex: DG0/Développement/2/)
-	 * @param int		$iFilter	(bab_DirectoryFilter value)
+	 * @param int		$iExcludeFilter	(bab_DirectoryFilter value)
 	 * 
 	 * @return bab_CollectiveDirIterator
 	 */
-	public function getEntries($sPathName, $iFilter)
+	public function getEntries($sPathName, $iExcludeFilter)
 	{
 		if(!$this->processPathName($sPathName, $this->sPathName))
 		{
@@ -954,7 +1019,7 @@ class bab_Directory
 		
 		return (!is_dir($sFullPathName));
 	}
-	
+
 	/**
 	 * This function rename a sub directory
 	 *
