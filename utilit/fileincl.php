@@ -4800,7 +4800,13 @@ class BAB_FileManagerEnv
 	}
 
 
-	function getCollectivePath($iIdDelegation)
+	static public function getPersonalPath($iIdUser)
+	{
+		return BAB_FmFolderHelper::getUploadPath() . self::relativeFmPersonalPath . self::userPrefix . $iIdUser . '/';
+	}
+
+	
+	static public function getCollectivePath($iIdDelegation)
 	{
 		return BAB_FmFolderHelper::getUploadPath() . self::relativeFmCollectivePath . self::delegationPrefix . $iIdDelegation . '/';
 	}
