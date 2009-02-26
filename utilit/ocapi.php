@@ -515,7 +515,12 @@ define('BAB_OC_MOVE_TYPE_AS_NEXT_SIBLING', '2');
 define('BAB_OC_MOVE_TYPE_AS_CHILD', '0');
 
 
-
+/**
+ * Checks whether the entity $iIdEntity is a child of the root entity.
+ * 
+ * @param int	$iIdEntity
+ * @return bool		True if $iIdEntity is a child of the root entity.
+ */
 function bab_OCIsEntityChildOfRoot($iIdEntity)
 {
 	global $babDB;
@@ -543,6 +548,13 @@ function bab_OCIsEntityChildOfRoot($iIdEntity)
 }
 
 
+/**
+ * Checks whether the entity $iIdParentEntity is the parent of $iIdEntity.
+ * 
+ * @param int	$iIdParentEntity
+ * @param int	$iIdEntity
+ * @return bool		True if $iIdParentEntity is the parent of $iIdEntity.
+ */
 function bab_OCIsEntityParentOf($iIdParentEntity, $iIdEntity)
 {
 	global $babDB;
@@ -573,6 +585,9 @@ function bab_OCIsEntityParentOf($iIdParentEntity, $iIdEntity)
 }
 
 
+/**
+ * @deprecated
+ */
 function bab_OCGetNodeRank($iIdNode)
 {
 	global $babDB;
@@ -651,6 +666,12 @@ function bab_OCGetChildNodeByPosition($iIdParentEntity, $iPosition)
 }
 
 
+/**
+ * Returns the number of children entities of the specified entity.
+ *
+ * @param string	$iIdEntity
+ * @return int		The number of children entities of the entity.
+ */
 function bab_OCGetChildCount($iIdEntity)
 {
 	global $babDB;
@@ -683,6 +704,12 @@ function bab_OCGetChildCount($iIdEntity)
 }
 
 
+/**
+ * Returns the id of the specified entity's last child.
+ * 
+ * @param $iIdEntity
+ * @return int	The id of the entity's last child or false.
+ */
 function bab_OCGetLastChild($iIdEntity)
 {
 	global $babDB;
@@ -805,6 +832,10 @@ function bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity = false, $sOrder =
 	//bab_debug($sQuery);
 	return $sQuery;
 }
+
+
+
+
 
 
 class bab_OrgChartUtil
