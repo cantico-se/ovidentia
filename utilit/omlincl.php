@@ -5594,7 +5594,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topcat&idx=getImage&sImage=' . $sName;
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getImage&sImage=' . $sName;
 
 			$oImageResize = new bab_ImageResize();
 			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
