@@ -2373,15 +2373,22 @@ function getImage()
 	$iIdDelegation	= 0; //Dummy value, i dont need this here
 	
 	global $babBody;
-	$oEnvObj->setEnv($iIdDelegation);
 	$sPath = '';
 	
 	if(0 < $iIdDraft)
 	{
+		$oEnvObj->setEnv($iIdDelegation);
 		$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
 	}
 	else
 	{
+		$iIdDelegation = bab_getArticleDelegationId($iIdArticle);
+		if(false === $iIdDelegation)
+		{
+			return '???';
+		}
+		
+		$oEnvObj->setEnv($iIdDelegation);
 		$sPath = $oEnvObj->getArticleImgPath($iIdArticle);
 	}
 	
@@ -2434,9 +2441,12 @@ bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
 $artedit = array();
-if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
+if('getImage' != bab_rp('idx', 'getImage'))
 {
-	$idx = 'denied';
+	if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
+	{
+		$idx = 'denied';
+	}
 }
 else 
 {
