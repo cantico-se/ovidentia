@@ -921,7 +921,7 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
  *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
  * </ul>
  *
- * @param	bool			$accessCtrl		test access rights on directories, right by default
+ * @param	bool			$accessCtrl		test access rights on directories, true by default
  * @param	int | false		$delegationid	filter the result by delegation
  * @return array							each key of the returned array is an id_directory
  */
