@@ -784,7 +784,7 @@ function updateAclGroups()
 }
 
 /* main */
-if('getImage' != bab_rp('idx', 'getImage') && !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
+if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
