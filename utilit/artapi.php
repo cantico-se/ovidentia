@@ -89,7 +89,7 @@ function bab_getTopicCategoryTitle($id)
 		{
 		return "";
 		}
-	}
+}
 
 function bab_getTopicCategoryDescription($id)
 	{
@@ -104,6 +104,22 @@ function bab_getTopicCategoryDescription($id)
 	else
 		{
 		return "";
+		}
+	}	
+
+function bab_getTopicCategoryDelegationId($id)
+	{
+	global $babDB;
+	$query = "select id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return $arr['id_dgowner'];
+		}
+	else
+		{
+		return false;
 		}
 	}	
 	
@@ -170,6 +186,32 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		}
 	}
 
+function bab_getArticleDelegationId($iIdArticle)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT 
+			topicCategories.id_dgowner iIdDelegation
+		FROM ' . 
+			BAB_ARTICLES_TBL . ' articles, ' .
+			BAB_TOPICS_TBL . ' topics, ' .
+			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories 
+		WHERE 
+			articles.id=' . $babDB->quote($iIdArticle) . ' AND
+			topics.id = articles.id_topic AND
+			topicCategories.id = topics.id_cat';
+	
+	$oResult = $babDB->db_query($sQuery);
+	if($oResult && $babDB->db_num_rows($oResult) > 0)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		return $aData['iIdDelegation'];
+	}
+	return false;
+}
+	
+	
 /**
  * Get first children articles categories (in db_query ressource )
  *
