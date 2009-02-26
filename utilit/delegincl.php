@@ -49,31 +49,44 @@ function bab_setCurrentUserDelegation($iIdDelegation)
 }
 
 
+
+/**
+ * Returns a valid delegation for the current user.
+ *
+ * @return int
+ */
+function bab_getCurrentUserDefaultDelegation()
+{
+	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
+	if (count($aCurrUsrDg) > 0) {
+		$aItem = each($aCurrUsrDg);
+		if (false !== $aItem) {
+			return $aItem['key'];
+		}
+	}
+	return 0;
+}
+
+
 /**
  * Get current user delegation
- * @return 	int
+ * 
+ * @param bool	$useDefault		true to initialize current delegation with a valid delegation if it was not set before.
+ * @return 	int					or null if no current delegation.
  */
-function bab_getCurrentUserDelegation()
+function bab_getCurrentUserDelegation($useDefault = true)
 {
 	require_once dirname(__FILE__) . '/fileincl.php';
-	
-	if(!array_key_exists('babCurrentDelegation', $_SESSION))
-	{
-		$_SESSION['babCurrentDelegation'] = 0;
 
-		global $babBody;
-		$aCurrUsrDg = bab_getUserFmVisibleDelegations();
-		if(count($aCurrUsrDg) > 0)
-		{
-			$aItem = each($aCurrUsrDg);
-			if(false !== $aItem)
-			{
-				$_SESSION['babCurrentDelegation'] = $aItem['key'];
-			}
-		}
-
+	if (array_key_exists('babCurrentDelegation', $_SESSION)) {
+		return (int) $_SESSION['babCurrentDelegation'];
 	}
-	return (int) $_SESSION['babCurrentDelegation'];
+	if ($useDefault) {
+		$currentDelegation = bab_getCurrentUserDefaultDelegation();
+		bab_setCurrentUserDelegation($currentDelegation);
+		return $currentDelegation;
+	}
+	return null;
 }
 
 
