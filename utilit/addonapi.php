@@ -1688,7 +1688,7 @@ function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_dire
  * @param	int		[$id_directory]		the id of the directory
  * @param	array	[$likefields]		array of filed/like string ( array('sn' => 'admin', 'email'=> '%cantico.fr', 'babdirf27'=>'123') for example )
  * @param	bool	[$and]				true to use AND operator / false for OR operator
- * @return 	string
+ * @return 	array
  */
 function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
@@ -1708,12 +1708,15 @@ function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
  *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
  * </ul>
  *
- * @return array					each key of the returned array is an id_directory
+ * @param	bool				$accessCtrl		test access rights on directories, true by default
+ * @param	int | false			$delegationid	filter the result by delegation
+ * @return array				Each key of the returned array is an id_directory
  */ 
-function bab_getUserDirectories() {
-	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-	return getUserDirectories();
-	}
+function bab_getUserDirectories($accessCtrl = true, $delegationId = false)
+{
+	include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+	return getUserDirectories($accessCtrl, $delegationId);
+}
 
 /**
  * return a link to the popup of the directory entry
@@ -1722,10 +1725,11 @@ function bab_getUserDirectories() {
  * @param	int		[$id_directory]		if $id is a directory entry
  * @return 	string
  */
-function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false) {
+function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false)
+{
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getUserDirEntryLink($id, $type, $id_directory);
-	}
+}
 
 
 /* API Groups */
