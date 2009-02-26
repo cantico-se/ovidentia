@@ -681,6 +681,8 @@ class bab_TreeView extends bab_Template
 	
 	public function getNextAction()
 	{
+		if (!isset($this->_currentElement->_actions))
+			return false;
 		if (list(,$action) = each($this->_currentElement->_actions)) {
 			$this->action_name = $action['name'];
 			$this->action_caption = $action['caption'];
