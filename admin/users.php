@@ -93,7 +93,7 @@ function listUsers($pos, $grp)
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
-			$this->grp		= $grp;
+			$this->grp		= bab_toHtml($grp);
 
 			switch ($babBody->nameorder[0]) {
 				case "L":
@@ -377,7 +377,7 @@ function listUsers($pos, $grp)
 	return $temp->count;
 	}
 
-function userCreate()
+function userCreate($grp = '')
 	{
 	global $babBody;
 	class temp
@@ -397,9 +397,11 @@ function userCreate()
 		var $sendpassword;
 		var $yes;
 		var $no;
+		var $grp;
 
-		function temp()
+		function temp($grp)
 			{
+			$this->grp = bab_toHtml($grp);
 			$this->firstnameval 	= bab_toHtml(bab_pp('firstname'));
 			$this->middlenameval 	= bab_toHtml(bab_pp('middlename'));
 			$this->lastnameval 		= bab_toHtml(bab_pp('lastname'));
@@ -420,18 +422,18 @@ function userCreate()
 			}
 		}
 
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp,"users.html", "usercreate"));
+	$temp = new temp($grp);
+	$babBody->babecho(bab_printTemplate($temp, 'users.html', 'usercreate'));
 	}
 
 
-function utilit()
+function utilit($grp = '')
 	{
 	global $babBody;
 	class temp
 		{
 
-		function temp()
+		function temp($grp)
 			{
 			global $babDB;
 			$this->t_nb_total_users = bab_translate('Total users');
@@ -441,14 +443,16 @@ function utilit()
 			$this->t_ok = bab_translate('Ok');
 			$this->js_alert = bab_translate('Day number must be 1 at least');
 			
+			$this->grp = bab_toHtml($grp);
+			
 			list($this->arr['nb_total_users']) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL.""));
 
 			list($this->arr['nb_unconfirmed_users']) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL." WHERE is_confirmed='0'"));
 			}
 		}
 
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp,"users.html", "utilit"));
+	$temp = new temp($grp);
+	$babBody->babecho(bab_printTemplate($temp, 'users.html', 'utilit'));
 	}
 	
 function delete_unconfirmed()
@@ -506,14 +510,19 @@ $grp = bab_rp('grp');
 $idx = bab_rp('idx','List');
 
 if( !isset($grp) || empty($grp))
-	{
+{
+	$displayMembersItemMenu = false;
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
-		$grp = 3;
-	else if( $babBody->currentAdmGroup != 0 )
-		{
-		$grp = $babBody->currentDGGroup['id_group'];
-		}
+	{
+		$grp = BAB_ADMINISTRATOR_GROUP;
 	}
+	else if( $babBody->currentAdmGroup != 0 )
+	{
+		$grp = $babBody->currentDGGroup['id_group'];
+	}
+} else {
+	$displayMembersItemMenu = true;
+}
 
 
 
@@ -584,7 +593,7 @@ switch($idx)
 	{
 	case "dirv": 
 
-		 dir_view($_GET['id_user']);
+		dir_view($_GET['id_user']);
 		exit;
 		break;
 
@@ -602,9 +611,13 @@ switch($idx)
 	case "Create":
 		$babBody->title = bab_translate("Create a user");
 
-		userCreate();
-		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".$pos);
+		userCreate($grp);
+		if ($displayMembersItemMenu)
+			{
+			$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
+			}
+		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
+		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".bab_rp('grp'));
 		break;
 	case "List":
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
@@ -612,12 +625,15 @@ switch($idx)
 			$babBody->setTitle(bab_translate("Users list"));
 			$cnt = listUsers($pos, $grp);
 			
-			$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$grp);
-			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List");
+			if ($displayMembersItemMenu)
+				{
+				$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
+				}
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
 			
 			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 				{
-				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
+				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
 				}
 			}
 		else
@@ -629,12 +645,18 @@ switch($idx)
 		if ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
 			{
 			if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
+				{
 				delete_unconfirmed();
+				}
 				
-			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-			$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit");
+			if ($displayMembersItemMenu)
+				{
+				$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
+				}
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
+			$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
 			$babBody->setTitle(bab_translate("Utilities"));
-			utilit();
+			utilit($grp);
 			}
 		break;
 	default:
