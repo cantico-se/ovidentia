@@ -413,7 +413,7 @@ function showTopicTree($actionType, $selectedTopicId)
 				$this->t_no_topic = false;
 				$this->next_idx = bab_toHtml('s01');
 			}
-			$this->rfurl = bab_toHtml($GLOBALS['rfurl']);
+			$this->rfurl = bab_toHtml(isset($GLOBALS['rfurl']) ? $GLOBALS['rfurl'] : '');
 
 			$this->bcontent = false;
 			$this->title = bab_pp('title', '');
@@ -2439,14 +2439,16 @@ $iNbSeconds = 2 * 86400; //2 jours
 require_once dirname(__FILE__) . '/utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
+if('getImage' == bab_rp('idx', 'getImage'))
+{
+	getImage(); // called by ajax
+	exit;
+}
 
 $artedit = array();
-if('getImage' != bab_rp('idx', 'getImage'))
+if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
 {
-	if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
-	{
-		$idx = 'denied';
-	}
+	$idx = 'denied';
 }
 else 
 {
@@ -2857,10 +2859,6 @@ if($idx == 'movet')
 
 switch($idx)
 	{
-	case 'getImage':
-		getImage(); // called by ajax
-		exit;
-		
 	case 'getHiddenUpload': // called by ajax
 		getHiddenUpload();
 		exit;
