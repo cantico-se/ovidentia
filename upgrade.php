@@ -5703,5 +5703,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
 
+	/**
+	 * Upgrade to 6.7.100
+	 */
 	return true;
 }
