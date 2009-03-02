@@ -2439,7 +2439,7 @@ $iNbSeconds = 2 * 86400; //2 jours
 require_once dirname(__FILE__) . '/utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
-if('getImage' == bab_rp('idx', 'getImage'))
+if('getImage' == bab_rp('idx', ''))
 {
 	getImage(); // called by ajax
 	exit;
