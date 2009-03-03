@@ -882,13 +882,18 @@ function showSetArticleProperties($idart)
 		var $iMaxFileSize			= 0;
 		var $sMaxImgFileSizeMsg		= '';
 		
+		
 		function temp($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
 			
-			$iMaxImgFileSizeInMo = $GLOBALS['babMaxImgFileSize'] / (1024 * 1024);
-			$this->iMaxFileSize = max($iMaxImgFileSizeInMo, $babBody->babsite['maxfilesize']);
-			
+			$this->iMaxFileSize = max($GLOBALS['babMaxImgFileSize'], $GLOBALS['babMaxFileSize']);
+/*			
+echo 
+	'babMaxImgFileSize ==> ' . $GLOBALS['babMaxImgFileSize'] . 
+	' babMaxFileSize ==> ' . $GLOBALS['babMaxFileSize'] . 
+	'<br/>';
+//*/			
 			$this->warnfilemessage	= '';
 			$this->access			= false;
 			$this->rfurl			= $rfurl;
@@ -1075,17 +1080,15 @@ function showSetArticleProperties($idart)
 
 					$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
 					$this->bImageUploadEnable	= ('Y' === (string) $arrtop['allow_addImg']);
-					$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
-					
 					$this->sMaxImgFileSizeMsg	= '';
+					
+					
 					if($this->bImageUploadEnable)
 					{
-						$this->sMaxImgFileSizeMsg = '('.bab_translate("File size must not exceed")." ".$GLOBALS['babMaxImgFileSize']. " ". bab_translate("Ko").')';
+						$this->sMaxImgFileSizeMsg = '('.bab_translate("File size must not exceed")." ".(int) ($GLOBALS['babMaxImgFileSize'] / 1024). " ". bab_translate("Ko").')';
 					}
 					
-					
-					
-					$this->bImageUploadPossible	= (0 < $this->iMaxImgFileSize && $this->bUploadPathValid);
+					$this->bImageUploadPossible	= (0 < $GLOBALS['babMaxImgFileSize'] && $this->bUploadPathValid);
 					
 					$this->sImageTitle			= bab_translate('Associated picture');
 					$this->sSelectImageCaption	= bab_translate('Select a picture');
@@ -1324,7 +1327,7 @@ function showSetArticleProperties($idart)
 						
 						if( $babBody->babsite['maxfilesize'] != 0 )
 							{
-							$this->maxsizetxt = '('.bab_translate("File size must not exceed")." ".$this->iMaxFileSize. " ". bab_translate("Mb").')';
+							$this->maxsizetxt = '('.bab_translate("File size must not exceed")." ".$babBody->babsite['maxfilesize']. " ". bab_translate("Mb").')';
 							}
 						else
 							{
@@ -1373,7 +1376,7 @@ function showSetArticleProperties($idart)
 				$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
 			}
 			
-			if(0 == $this->iMaxImgFileSize)
+			if(0 == $GLOBALS['babMaxImgFileSize'])
 			{
 				$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
 			}
