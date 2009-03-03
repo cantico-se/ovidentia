@@ -41,6 +41,7 @@ $GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
 
 /**
  * Set current user delegation
+ * 
  * @param	int		$iIdDelegation
  */
 function bab_setCurrentUserDelegation($iIdDelegation)
@@ -58,7 +59,8 @@ function bab_setCurrentUserDelegation($iIdDelegation)
 function bab_getCurrentUserDefaultDelegation()
 {
 	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
-	if (count($aCurrUsrDg) > 0) {
+	if (count($aCurrUsrDg) > 1) {
+		$aItem = each($aCurrUsrDg);
 		$aItem = each($aCurrUsrDg);
 		if (false !== $aItem) {
 			return $aItem['key'];
