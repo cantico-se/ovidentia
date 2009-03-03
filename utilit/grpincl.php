@@ -179,7 +179,6 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
-	
 	global $babBody, $babDB;
 	
 	if( empty($name))
@@ -221,13 +220,22 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 			WHERE
 				id='".$babDB->db_escape_string($id)."'
 			");
-
+		
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 		bab_callAddonsFunction('onGroupCreate', $id);
 		return $id;
 		}
 	}
 
+/**
+ * Checks whether $iIdGroup is the id of an existing group.
+ * If $iIdParent is specified it will also check that $iIdGroup is a
+ * descendant of $iIdParent.
+ * 
+ * @param int	$iIdGroup			The group to check for existence.
+ * @param int	$iIdParent			
+ * @return bool
+ */
 function bab_isGroup($iIdGroup, $iIdParent = null)
 {
 	global $babDB;
