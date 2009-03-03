@@ -328,7 +328,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			else if('' != $this->sImgName)
 			{
 				$this->sImageUrl = $GLOBALS['babUrlScript'] . '?tg=topic&idx=getImage&iWidth=120&iHeight=90&sImage=' . 
-					$this->sImgName . '&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
+					bab_toHtml($this->sImgName) . '&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
 			}
 			else
 			{

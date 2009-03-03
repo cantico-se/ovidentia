@@ -1050,14 +1050,14 @@ function showSetArticleProperties($idart)
 						if(false !== $aImageInfo)
 						{
 							$this->sImgName				= $aImageInfo['name'];
-							$this->sImageUrl			.= $this->sImgName;
+							$this->sImageUrl			.= bab_toHtml($this->sImgName);
 							$this->warnfilemessage 		= bab_translate("Warning! If you change topic, you can lost associated documents");
 							$this->bHaveAssociatedImage = true;
 						}
 					}
 					else if('' != $this->sImgName)
 					{
-						$this->sImageUrl 			.= $this->sImgName;
+						$this->sImageUrl 			.= bab_toHtml($this->sImgName);
 						$this->bHaveAssociatedImage = true;
 						$this->warnfilemessage 		= bab_translate("Warning! If you change topic, you can lost associated documents");
 					}

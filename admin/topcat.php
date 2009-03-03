@@ -138,7 +138,7 @@ function topcatModify($id)
 			else if('' != $this->sImgName)
 			{
 				$this->sImageUrl = $GLOBALS['babUrlScript'] . '?tg=topcat&idx=getImage&iWidth=120&iHeight=90&sImage=' . 
-					$this->sImgName . '&iIdCategory=' . $id;
+					bab_toHtml($this->sImgName) . '&iIdCategory=' . $id;
 			}
 			else
 			{
