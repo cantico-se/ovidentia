@@ -880,12 +880,14 @@ function showSetArticleProperties($idart)
 		var $sImageSubmitCaption	= '';
 		var $sDeleteImageChecked	= '';
 		var $iMaxFileSize			= 0;
+		var $sMaxImgFileSizeMsg		= '';
 		
 		function temp($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
 			
-			$this->iMaxFileSize = max($GLOBALS['babMaxImgFileSize'], $babBody->babsite['maxfilesize']);
+			$iMaxImgFileSizeInMo = $GLOBALS['babMaxImgFileSize'] / (1024 * 1024);
+			$this->iMaxFileSize = max($iMaxImgFileSizeInMo, $babBody->babsite['maxfilesize']);
 			
 			$this->warnfilemessage	= '';
 			$this->access			= false;
@@ -1074,6 +1076,15 @@ function showSetArticleProperties($idart)
 					$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
 					$this->bImageUploadEnable	= ('Y' === (string) $arrtop['allow_addImg']);
 					$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+					
+					$this->sMaxImgFileSizeMsg	= '';
+					if($this->bImageUploadEnable)
+					{
+						$this->sMaxImgFileSizeMsg = '('.bab_translate("File size must not exceed")." ".$GLOBALS['babMaxImgFileSize']. " ". bab_translate("Ko").')';
+					}
+					
+					
+					
 					$this->bImageUploadPossible	= (0 < $this->iMaxImgFileSize && $this->bUploadPathValid);
 					
 					$this->sImageTitle			= bab_translate('Associated picture');
