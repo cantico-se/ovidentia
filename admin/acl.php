@@ -1,27 +1,25 @@
 <?php
-/************************************************************************
- * OVIDENTIA http://www.ovidentia.org                                   *
- ************************************************************************
- * Copyright (c) 2003 by CANTICO ( http://www.cantico.fr )              *
- *                                                                      *
- * This file is part of Ovidentia.                                      *
- *                                                                      *
- * Ovidentia is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by *
- * the Free Software Foundation; either version 2, or (at your option)  *
- * any later version.													*
- *																		*
- * This program is distributed in the hope that it will be useful, but  *
- * WITHOUT ANY WARRANTY; without even the implied warranty of			*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.					*
- * See the  GNU General Public License for more details.				*
- *																		*
- * You should have received a copy of the GNU General Public License	*
- * along with this program; if not, write to the Free Software			*
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
- * USA.																	*
-************************************************************************/
-
+//-------------------------------------------------------------------------
+// OVIDENTIA http://www.ovidentia.org
+// Ovidentia is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2, or (at your option)
+// any later version.
+// 
+// This program is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+// USA.
+//-------------------------------------------------------------------------
+/**
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
+ */
 
 /**
 * @internal SEC1 PR 16/02/2007 FULL
@@ -522,7 +520,7 @@ function aclUpdate($table, $id, $groups, $what)
 function aclDelete($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$babDB->db_query("DELETE FROM ".$babDB->backTick($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
 	}
@@ -535,13 +533,13 @@ function aclDelete($table, $id_object)
  */
 function aclDeleteGroup($table, $id_group) {
 	global $babDB;
-	$babDB->db_query("DELETE FROM ".$babDB->db_escape_string($table)." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
+	$babDB->db_query("DELETE FROM ".$babDB->backTick($table)." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
 }
 
 function aclSetGroups_all($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->backTick($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_ALLUSERS_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
 	}
@@ -549,7 +547,7 @@ function aclSetGroups_all($table, $id_object)
 function aclSetGroups_registered($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->backTick($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_REGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
 	}
@@ -557,7 +555,7 @@ function aclSetGroups_registered($table, $id_object)
 function aclSetGroups_unregistered($table, $id_object)
 	{
 	global $babDB;
-	$babDB->db_query("INSERT INTO ".$babDB->db_escape_string($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
+	$babDB->db_query("INSERT INTO ".$babDB->backTick($table)."  (id_object, id_group) VALUES ('".$babDB->db_escape_string($id_object)."', '".BAB_UNREGISTERED_GROUP."')");
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
 	}
@@ -569,7 +567,7 @@ function aclGetAccessUsers($table, $id_object) {
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $babDB->db_query("SELECT id_group FROM ".$babDB->db_escape_string($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$res = $babDB->db_query("SELECT id_group FROM ".$babDB->backTick($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
@@ -631,10 +629,10 @@ function aclGetAccessUsers($table, $id_object) {
  * 
  */function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
 	global $babDB;
-	
-	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->db_escape_string($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
+
+	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->backTick($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$babDB->db_query('INSERT INTO ' . $babDB->db_escape_string($trgTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
+		$babDB->db_query('INSERT INTO ' . $babDB->backTick($trgTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($trgIdObject) . ', ' . $babDB->quote($arr['id_group']) . ')');
 	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
@@ -658,7 +656,7 @@ function aclGetAccessUsers($table, $id_object) {
  */function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
 	global $babDB;
 	
-	$babDB->db_query('delete from '.$babDB->db_escape_string($trgTable).' where id_object='.$babDB->quote($trgIdObject));
+	$babDB->db_query('DELETE FROM '.$babDB->backTick($trgTable).' WHERE id_object='.$babDB->quote($trgIdObject));
 
 	aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject);
 }
@@ -673,7 +671,5 @@ function aclGetAccessUsers($table, $id_object) {
 function aclAdd($sTable, $iIdGroup, $iIdObject)
 {
 	global $babDB;
-	return $babDB->db_query('INSERT INTO ' . $babDB->db_escape_string($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
+	return $babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
 }
-
-?>
