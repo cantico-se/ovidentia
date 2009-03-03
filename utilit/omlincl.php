@@ -5567,7 +5567,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
-		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
 		$oCtx->curctx->push('ResizedImageWidth', 0);
@@ -5630,7 +5630,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
-		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
 		$oCtx->curctx->push('ResizedImageWidth', 0);
@@ -5696,7 +5696,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
-		$oCtx->curctx->push('ImageUrl', '#');
+		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
 		$oCtx->curctx->push('ResizedImageWidth', 0);
