@@ -2204,9 +2204,8 @@ function bab_printOvmlTemplate($file, $args=array())
 		$filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
 		
 		if (!file_exists($filepath)) {
-			$filepath = $babInstallPath.'skins/ovidentia/ovml/'.$file;
-			bab_debug(bab_translate("Error: OVML file don't exist").' : '.bab_toHtml($file));
-			return '<!-- '.bab_translate("Error: OVML file don't exist").' : '.bab_toHtml($file).' -->';
+			bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
+			return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
 		}
 	}
 
