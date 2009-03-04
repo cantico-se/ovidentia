@@ -220,7 +220,7 @@ function zipupgrade($message)
 			}
 		}
 
-	$temp = new temp();
+	$temp = new ZipUpgradeTpl();
 	$temp->message = bab_toHtml($message, BAB_HTML_ALL);
 	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'zipupgrade'));
 	}
