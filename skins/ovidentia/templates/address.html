@@ -50,9 +50,9 @@ window.focus();
 <form method="post" name="listcontact" action="{ babPhpSelf }">
 <center><a href="{ closeurl }">{ closename }</a><br><br><a class="BabToChoiceMailPopupToLink"  href="{ totourl }">{ totoname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ toccurl }">{ toccname }</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="BabToChoiceMailPopupToLink"  href="{ tobccurl }">{ tobccname }</a>
 </center><br>
-<table border="0" width="95%" cellpadding="1" cellspacing="0" align="center">
+<table border="0" width="95%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
-<td class="BabContentBackground"> 
+<td class="BabLoginCadreBackground"> 
 	<table border="0" width="100%" cellpadding="2" cellspacing="0">
 	<tr> 
 		<td class="BabContentBackground" colspan="7"> 
@@ -77,7 +77,7 @@ window.focus();
 		<td>{ email }</td>
 	</tr>
 	 <!--#in getnextcontact -->
-	<tr class="BabSiteAdminFontBackground"> 
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td width="1%"> 
 		<input type="checkbox" name="tocheck[]" value="{ checkval }">
 		</td>
@@ -90,7 +90,7 @@ window.focus();
 		<td >{ emailval }&nbsp;</td>
 	</tr>
 	<!--#endin getnextcontact --><!--#in getnextgroupmember -->
-	<tr class="BabSiteAdminFontBackground"> 
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td  width="1%"> 
 		<input type="checkbox" name="tocheck[]" value="{ checkval }">
 		</td>
@@ -99,7 +99,7 @@ window.focus();
 		<td >{ emailval }&nbsp;</td>
 	</tr>
 	<!--#endin getnextgroupmember --><!--#in getnextgroup -->
-	<tr class="BabSiteAdminFontBackground"> 
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td width="0%"> 
 		<input type="checkbox" name="tocheck[]" value="{ checkval }">
 		</td>

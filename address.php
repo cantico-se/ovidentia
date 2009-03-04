@@ -31,44 +31,46 @@ function listAddress($pos)
 	global $babBody;
 	class temp
 		{
-		var $fullname;
-		var $nameval;
-		var $url;
-		var $email;
-		var $emailval;
-		var $checkval;
-		var $status;
+		public $fullname;
+		public $nameval;
+		public $url;
+		public $email;
+		public $emailval;
+		public $checkval;
+		public $status;
 				
-		var $fullnameval;
+		public $fullnameval;
+		public $arr = array();
+// 
+		private $count;
+		private $res;
+		private $countgrpm;
+		private $resgrpm;
+		private $resgrp;
 
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $countgrpm;
-		var $resgrpm;
+		public $pos;
+		public $selected;
+		public $allselected;
+		public $allurl;
+		public $allname;
+		public $urlmail;
+		public $babCss;
 
-		var $pos;
-		var $selected;
-		var $allselected;
-		var $allurl;
-		var $allname;
-		var $urlmail;
-		var $babCss;
+		public $totourl;
+		public $toccurl;
+		public $tobccurl;
+		public $totoname;
+		public $toccname;
+		public $tobccname;
 
-		var $totourl;
-		var $toccurl;
-		var $tobccurl;
-		var $totoname;
-		var $toccname;
-		var $tobccname;
+		public $checkall;
+		public $uncheckall;
 
-		var $checkall;
-		var $uncheckall;
+		public $closeurl;
 
-		var $closeurl;
+		public $altbg = true;
 
-		function temp($pos)
+		public function __construct($pos)
 			{
 			global $BAB_SESS_USERID,$babDB, $babBody;
 			$this->fullname = bab_translate("Contact")." / ".bab_translate("List");
@@ -96,7 +98,11 @@ function listAddress($pos)
 			default:
 				$this->namesearch = 'firstname';
 				$this->namesearch2 = 'lastname';
-			break;}
+			break;
+			}
+
+
+			// personal contacts
 
 			$req = "select * from ".BAB_CONTACTS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' and ".$this->namesearch." like '".$babDB->db_escape_like($pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 			$this->res = $babDB->db_query($req);
@@ -109,24 +115,94 @@ function listAddress($pos)
 			else
 				$this->allselected = 0;
 			$this->allurl = $GLOBALS['babUrlScript']."?tg=address&idx=list&pos=";
-			$req = "select distinct p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email from ".BAB_USERS_TBL." as p3, ".BAB_DBDIR_ENTRIES_TBL." as p4, ".BAB_USERS_GROUPS_TBL." as p1,  ".BAB_USERS_GROUPS_TBL." as p2 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p3.id=p4.id_user and p1.id_group = p2.id_group and p3.id=p2.id_object and ".$this->namesearch." like '".$babDB->db_escape_like($pos)."%' order by ".$this->namesearch.", ".$this->namesearch2." asc";
 
-			$this->resgrpm = $babDB->db_query($req);
-			$this->countgrpm = $babDB->db_num_rows($this->resgrpm);
-
+			// group members
+			if( !bab_isUserAdministrator() && $babBody->babsite['browse_users'] == 'N')
+			{
+				$this->loadGroupsMembers();
+			} else {
+				$this->loadUsers();
+			}
+			
+			// groups
 			$req = "select ".BAB_GROUPS_TBL.".id, ".BAB_GROUPS_TBL.".name from  ".BAB_GROUPS_TBL.", ".BAB_USERS_GROUPS_TBL." as p1 where p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and p1.id_group = ".BAB_GROUPS_TBL.".id and ".BAB_GROUPS_TBL.".name like '".$babDB->db_escape_like($pos)."%' order by ".BAB_GROUPS_TBL.".name asc";
 			$this->resgrp = $babDB->db_query($req);
 			$this->countgrp = $babDB->db_num_rows($this->resgrp);
 
 			}
 
-		function getnextcontact()
+
+		/**
+		 * load all users
+		 */
+		private function loadUsers()
+			{
+
+			global $babDB;
+
+			$req = "
+				SELECT DISTINCT p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email 
+				FROM 
+					".BAB_USERS_TBL." as p3, 
+					".BAB_DBDIR_ENTRIES_TBL." as p4 
+				WHERE 
+					p3.id=p4.id_user 
+					AND ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' 
+					AND p3.disabled = '0' 
+
+				ORDER BY ".$this->namesearch.", ".$this->namesearch2." asc
+			";
+
+			$this->resgrpm = $babDB->db_query($req);
+			$this->countgrpm = $babDB->db_num_rows($this->resgrpm);
+
+			}
+
+
+
+		/**
+		 * load groups member where the user is member of
+		 */
+		private function loadGroupsMembers()
+			{
+			global $babDB;
+			global $BAB_SESS_USERID;
+
+			$req = "
+				SELECT DISTINCT p3.id, p4.mn, p3.".$this->namesearch.", p3.".$this->namesearch2.", p3.email 
+				FROM 
+					".BAB_USERS_TBL." as p3, 
+					".BAB_DBDIR_ENTRIES_TBL." as p4, 
+					".BAB_USERS_GROUPS_TBL." as p1,  
+					".BAB_USERS_GROUPS_TBL." as p2 
+				WHERE 
+					p1.id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' 
+					AND p3.id=p4.id_user 
+					AND p1.id_group = p2.id_group 
+					AND p3.id=p2.id_object 
+					AND ".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' 
+					AND p3.disabled = '0' 
+
+				ORDER BY ".$this->namesearch.", ".$this->namesearch2." asc
+			";
+
+			$this->resgrpm = $babDB->db_query($req);
+			$this->countgrpm = $babDB->db_num_rows($this->resgrpm);
+
+			}
+
+
+
+
+
+		public function getnextcontact()
 			{
 			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
 				$this->arr = $babDB->db_fetch_array($this->res);
+				$this->altbg = !$this->altbg;
 				$this->nameval = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 				$this->emailval = $this->arr['email'];
 				$this->checkval = $this->nameval;
@@ -140,13 +216,14 @@ function listAddress($pos)
 
 			}
 
-		function getnextgroupmember()
+		public function getnextgroupmember()
 			{
 			global $babDB;
 			static $j = 0;
 			if( $j < $this->countgrpm)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrpm);
+				$this->altbg = !$this->altbg;
 				$this->nameval = bab_composeUserName($arr['firstname'],$arr['lastname']);
 				$this->emailval = $arr['email'];
 				$this->checkval = $arr['firstname'].' '.$arr['mn'].' '.$arr['lastname']."(g)";
@@ -160,13 +237,14 @@ function listAddress($pos)
 
 			}
 
-		function getnextgroup()
+		public function getnextgroup()
 			{
 			global $babDB;
 			static $j = 0;
 			if( $j < $this->countgrp)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
+				$this->altbg = !$this->altbg;
 				$this->nameval = $arr['name'];
 				$this->emailval = '';
 				$this->checkval = $this->nameval.'(g)';
@@ -180,7 +258,7 @@ function listAddress($pos)
 
 			}
 
-		function getnextselect()
+		public function getnextselect()
 			{
 			global $BAB_SESS_USERID, $babDB;
 			static $k = 0;
