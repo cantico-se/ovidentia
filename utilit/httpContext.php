@@ -39,7 +39,7 @@ function bab_haveHttpContext()
  */
 function bab_storeHttpContext()
 {
-	if('login' == bab_rp('tg', '') && 'signon' == bab_rp('cmd', ''))
+	if('login' == bab_rp('tg', '') && 'signon' == bab_rp('cmd', 'signon'))
 	{
 		$tabreferer = array();
 
