@@ -71,9 +71,9 @@ class bab_functionalities {
 	 */
 	function onInsertNode($location) {
 		if (is_dir($location)) {
-			chmod($location, 0777);
+			chmod($location, 0770);
 		} else {
-			chmod($location, 0666);
+			chmod($location, 0660);
 		}
 	}
 	
