@@ -618,7 +618,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->curview = $view;
 			$this->curdate = $date;
 			
-			$this->bupdrec = bab_rp('bupdrec', 1);
+			$this->bupdrec = bab_rp('bupdrec', 2);
 
 			$this->sCopyCaption = bab_translate("Copy event");
 			
