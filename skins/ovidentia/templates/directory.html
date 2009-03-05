@@ -464,7 +464,7 @@ function selectAll(list)
 
 <tr> 
 <td align="center" nowrap valign="middle"> 
-<select name="listfields1"  size="12" multiple="multiple">
+<select id="directory_list_available_fields" name="listfields1" size="12" multiple="multiple">
   <option value="0">{ listftxt }</option>
   <!--#in getnextf --> 
   <option value="{ fid }">{ fieldval }</option>
@@ -472,11 +472,14 @@ function selectAll(list)
 </select>
 </td>
 
-<td align="center"><a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
+<td align="center">
+<a href="javascript:moveOptions(document.getElementById('directory_list_available_fields'),document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a>
+<br /><br />
+<a href="javascript:moveOptions(document.getElementById('directory_list_selected_fields'),document.getElementById('directory_list_available_fields'))" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
 </td>
 
 <td align="center"> 
-<select name="listfd[]"  size="12" multiple="multiple">
+<select  id="directory_list_selected_fields" name="listfd[]"  size="12" multiple="multiple">
   <option value="0">{ listdftxt }</option>
   <!--#in getnextdf --> 
   <option value="{ fid }">{ fieldval }</option>
@@ -484,10 +487,10 @@ function selectAll(list)
 </select>
 </td>
 
-<td align="center" ><a href="Javascript:move(true, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+<td align="center" ><a href="javascript:move(true, document.getElementById('directory_list_selected_fields'))"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
 <br>
 <br>
-<a href="Javascript:move(false, document.dispdbf.elements[7])"> 
+<a href="javascript:move(false, document.getElementById('directory_list_selected_fields'))"> 
 <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
 </td>
 </tr>
@@ -495,7 +498,7 @@ function selectAll(list)
 
 	<tr>
 	<td valign="middle" align="center" colspan="4"> 
-	<input type="submit" name="expfile" value="{ export }" onClick="selectAll(document.dispdbf.elements[7]); document.dispdbf.submit()">
+	<input type="submit" name="expfile" value="{ export }" onClick="selectAll(document.getElementById('directory_list_selected_fields')); document.dispdbf.submit()">
 	<br>
 	</td>
 	</tr>
