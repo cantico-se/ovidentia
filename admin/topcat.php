@@ -465,7 +465,7 @@ function uploadCategoryImg()
 	if(false === $aFileInfo)
 	{
 		$sMessage = implode(',', $oPubImpUpl->getError());
-		if('utf8' != bab_charset::getDatabase())
+		if('utf8' == bab_charset::getDatabase())
 		{
 			$sMessage = utf8_encode($sMessage);
 		}
@@ -481,7 +481,7 @@ function uploadCategoryImg()
 	else
 	{
 		$sMessage = implode(',', $aFileInfo);
-		if('utf8' != bab_charset::getDatabase())
+		if('utf8' == bab_charset::getDatabase())
 		{
 			$sMessage = utf8_encode($sMessage);
 		}

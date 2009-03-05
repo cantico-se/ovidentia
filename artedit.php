@@ -2329,7 +2329,7 @@ function uploadDraftArticleImg()
 	if(false === $sFullPathName)
 	{
 		$sMessage = implode(',', $oPubImpUpl->getError());
-		if('utf8' != bab_charset::getDatabase())
+		if('utf8' == bab_charset::getDatabase())
 		{
 			$sMessage = utf8_encode($sMessage);
 		}
@@ -2353,7 +2353,7 @@ function uploadDraftArticleImg()
 		bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
 		
 		$sMessage = $sName;
-		if('utf8' != bab_charset::getDatabase())
+		if('utf8' == bab_charset::getDatabase())
 		{
 			$sMessage = utf8_encode($sMessage);
 		}
