@@ -46,6 +46,28 @@ class bab_FileInfo extends SplFileInfo
 	 */
 	private $fmPathname = null;
 
+
+	/**
+	 * Returns the number of files (directory or regular files) contained in the 
+	 * this file (the file is not a directory 0 is returned).
+	 * The number does not include the '.' and '..' directories.
+	 * 
+	 * @return int
+	 */
+	public function getItemCount()
+	{
+		if (!$this->isDir()) {
+			return 0;
+		}
+		
+		$oIt = new DirectoryIterator($this->getPathname());
+		$iCount = 0;
+		foreach ($oIt as $oFile) {
+			$iCount++;
+		}
+		return $iCount - 2; // We do not count '.' and '..'.
+	}
+
 	/**
 	 * Returns the FM pathname i.e. "DG0/Folder1/SubFolder1/file.txt".
 	 *
