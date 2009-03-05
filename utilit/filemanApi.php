@@ -1182,6 +1182,8 @@ class bab_Directory
 	 */
 	public function importFile($sFullSrcFileName, $sPathName)
 	{
+		require_once dirname(__FILE__) . '/uploadincl.php';
+
 		$this->resetError();
 		
 		if(!$this->processPathName($sPathName, $this->sPathName))
