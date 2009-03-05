@@ -348,7 +348,7 @@ class bab_TreeView extends bab_Template
 	 */
 	private $_attributes;
 
-	private $_currentElement;
+	protected $_currentElement;
 
 
 	public $_templateFile;

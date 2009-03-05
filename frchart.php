@@ -469,9 +469,9 @@ function displayChartTree($ocid, $oeid, $iduser, $adminMode)
 
 class bab_OvidentiaOrgChartTreeView extends bab_OvidentiaOrgChart 
 {
-	function bab_OvidentiaOrgChartTreeView($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
+	function __construct($id, $orgChartId, $startEntityId = 0, $userId = 0, $startLevel = 0, $adminMode = false)
 	{
-		parent::bab_OvidentiaOrgChart($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
+		parent::__construct($id, $orgChartId, $startEntityId, $userId, $startLevel, $adminMode);
 	}
 	
 	
