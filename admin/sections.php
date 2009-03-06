@@ -81,7 +81,7 @@ function sectionsList()
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
 			$this->update = bab_translate("Update");
-			$this->access = bab_translate("Access");
+			$this->access = bab_translate("Rights");
 			$this->groups = bab_translate("View");
 			$this->opttxt = bab_translate("Optional(fem)");
 			$this->db = &$GLOBALS['babDB'];
