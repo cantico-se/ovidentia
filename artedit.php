@@ -1236,7 +1236,7 @@ echo
 								}
 							}
 
-						if( $arr['hpage_private'] == 'Y' )
+						if( $arr['hpage_public'] == 'Y' )
 							{
 							$this->chpage0check = "checked";
 							}
@@ -1245,7 +1245,7 @@ echo
 							$this->chpage0check = "";
 							}
 
-						if( $arr['hpage_public'] == 'Y' )
+						if( $arr['hpage_private'] == 'Y' )
 							{
 							$this->chpage1check = "checked";
 							}
