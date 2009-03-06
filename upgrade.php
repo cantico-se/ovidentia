@@ -154,8 +154,8 @@ function fmUpgrade()
 				{
 					$sOldPath = $sUploadPath . 'G' . $aDatas['iId'];
 					
-					//Dans les anciennes versions tant que l'on avait pas accédé au répertoire
-					//il n'était pas créé
+					//Dans les anciennes versions tant que l'on avait pas accï¿½dï¿½ au rï¿½pertoire
+					//il n'ï¿½tait pas crï¿½ï¿½
 					if(!is_dir($sOldPath))
 					{
 						if(false === @mkdir($sOldPath, 0777))
@@ -888,7 +888,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 {
 	global $babDB;
 	
-	//Pour chaque projet création de la table avec la liste des champs additionnels
+	//Pour chaque projet crï¿½ation de la table avec la liste des champs additionnels
 	$sQuery = 
 		'SELECT ' .
 			'idProjectSpace iIdProjectSpace, ' .
@@ -903,7 +903,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 	{
 		while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
 		{
-			//Liste des champs additionnels avec leurs valeurs par défaut et création de la table
+			//Liste des champs additionnels avec leurs valeurs par dï¿½faut et crï¿½ation de la table
 			$sQuery = 
 				'SELECT ' .
 					'fb.id iIdFldClass, ' . 
@@ -965,7 +965,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 			}
 			
 			
-			//Pour chaque tâche insertion des champs avec leurs valeurs si il y en a
+			//Pour chaque tï¿½che insertion des champs avec leurs valeurs si il y en a
 			$sQuery = 
 				'SELECT ' .
 					'id iIdTask ' . 
@@ -981,7 +981,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 			{
 				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
 				{
-					//Pour chaque tâche du projet créer une entré dans la table des champs additionnels
+					//Pour chaque tï¿½che du projet crï¿½er une entrï¿½ dans la table des champs additionnels
 					$sQuery = 
 						'SELECT ' .
 							'id iIdSpecificFieldInstance, ' . 
@@ -1016,7 +1016,7 @@ function tskMgrCreateProjectAdditionalFieldContext()
 						}
 					}
 					
-					//Mettre la valeur par défaut
+					//Mettre la valeur par dï¿½faut
 					foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
 					{
 						if(!array_key_exists($iIdSpFldClass, $aProcessed))
@@ -1065,7 +1065,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 {
 	global $babDB;
 	
-	//Pour chaque utilisateur ayant des tâches perso création de la table avec la liste des champs additionnels
+	//Pour chaque utilisateur ayant des tï¿½ches perso crï¿½ation de la table avec la liste des champs additionnels
 	$sQuery = 
 		'SELECT ' .
 			'DISTINCT t0.idUser iIdUser ' .
@@ -1082,7 +1082,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 		while(false !== ($aDatasUser = $babDB->db_fetch_assoc($oResultUser)))
 		{
 			
-			//Liste des champs additionnels avec leurs valeurs par défaut et création de la table
+			//Liste des champs additionnels avec leurs valeurs par dï¿½faut et crï¿½ation de la table
 			$sQuery = 
 				'SELECT ' .
 					'fb.id iIdFldClass, ' . 
@@ -1141,7 +1141,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 				$babDB->db_query($sQuery);
 			}
 			
-			//Pour chaque tâche insertion des champs avec leurs valeurs si il y en a
+			//Pour chaque tï¿½che insertion des champs avec leurs valeurs si il y en a
 			$sQuery = 
 				'SELECT ' .
 					'idTask iIdTask ' . 
@@ -1159,7 +1159,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 			{
 				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
 				{
-					//Pour chaque tâche perso créer une entré dans la table des champs additionnels
+					//Pour chaque tï¿½che perso crï¿½er une entrï¿½ dans la table des champs additionnels
 					$sQuery = 
 						'SELECT ' .
 							'id iIdSpecificFieldInstance, ' . 
@@ -1194,7 +1194,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 						}
 					}
 
-					//Mettre la valeur par défaut
+					//Mettre la valeur par dï¿½faut
 					foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
 					{
 						if(!array_key_exists($iIdSpFldClass, $aProcessed))
@@ -1266,7 +1266,7 @@ function tskMgrFieldOrderUpgrade()
 		tskMgrCreateUsersAdditionalFieldContext();
 		
 		//A la fin il faut supprimer la table des instances de champs car elle ne sert plus
-		//par défaut lorsqu'une tâche est créée tous les champs sont créés aussi.
+		//par dï¿½faut lorsqu'une tï¿½che est crï¿½ï¿½e tous les champs sont crï¿½ï¿½s aussi.
 	}
 }
 
@@ -3902,7 +3902,7 @@ function upgrade601to602()
 	if (bab_isTableField(BAB_VAC_ENTRIES_TBL, 'day_begin')) {
 
 		// transformer bab_vac_entries
-		// 1 = journée entière
+		// 1 = journï¿½e entiï¿½re
 		// 2 = matin
 		// 3 = apres-midi
 
@@ -4114,9 +4114,9 @@ function upgrade602to603()
 		/**
 		 * remove trigger_inperiod
 		 * 
-		 *	0 : Sur toute la période du droit
-		 *  1 : Dans la période de la règle
-		 *  2 : En dehors de la période de la règle et dans la période du droit
+		 *	0 : Sur toute la pï¿½riode du droit
+		 *  1 : Dans la pï¿½riode de la rï¿½gle
+		 *  2 : En dehors de la pï¿½riode de la rï¿½gle et dans la pï¿½riode du droit
 		 */
 
 		 $res = $db->db_query("
@@ -4798,7 +4798,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	}
 
-	if (!bab_isTable(BAB_FILES_TAGS_TBL)) {
+	if (!bab_isTable(BAB_FILES_TAGS_TBL) && bab_isTableField(BAB_FILES_TBL, 'keywords')) {
 
 		$babDB->db_query("
 		
@@ -5221,8 +5221,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		{
 			$iIndex++;
 			
-			//Avant le gestionnaire de projet n'utilisait jamais les dates de début et de fin plannifiée, ce qui fait que si elles sont vides toutes
-			//les deux c'est que l'on utilise l'ancien système
+			//Avant le gestionnaire de projet n'utilisait jamais les dates de dï¿½but et de fin plannifiï¿½e, ce qui fait que si elles sont vides toutes
+			//les deux c'est que l'on utilise l'ancien systï¿½me
 			if('0000-00-00 00:00:00' == $aDatas['sPlannedStartDate'] && '0000-00-00 00:00:00' == $aDatas['sPlannedEndDate'])
 			{
 				$sQuery = 

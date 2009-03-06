@@ -2240,6 +2240,10 @@ function bab_abbr($text, $type, $max_length) {
 	$mots = preg_split('/[\s,]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
 
 	if (BAB_ABBR_FULL_WORDS === $type) {
+		if (1 === count($mots)) {
+			return mb_substr($text,0,$max_length).'...';
+		}
+
 		for ($i = count($mots)-1; $i >= 0; $i--) {
 			if ($mots[$i][1] < $max_length) {
 				return mb_substr($text,0,$mots[$i][1]).'...';

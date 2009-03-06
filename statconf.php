@@ -514,6 +514,9 @@ function statPages($url, $page)
 	
 	class temp
 		{
+
+		var $altbg = true;
+
 		function temp($url, $page)
 			{
 			global $babBody, $babDB;
@@ -536,9 +539,10 @@ function statPages($url, $page)
 			static $k=0;
 			if( $k < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->page = $arr['page_name'];
-				$this->url = $arr['page_url'];
+				$this->page = bab_toHtml($arr['page_name']);
+				$this->url = bab_toHtml(bab_abbr($arr['page_url'], BAB_ABBR_FULL_WORDS, 50));
 				$this->pageid = $arr['id'];
 				$k++;
 				return true;

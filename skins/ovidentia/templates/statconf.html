@@ -1,66 +1,66 @@
 <!--#begin pages -->
 <form name="accform" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="statconf">
-<input type="hidden" name="idx" value="pages">
-<input type="hidden" name="action" value="dpages">
+<input type="hidden" name="tg" value="statconf" />
+<input type="hidden" name="idx" value="pages" />
+<input type="hidden" name="action" value="dpages" />
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr class="BabSiteAdminTitleFontBackground" align="center" > 
-<td nowrap><b>{ pagetxt }</b></td>
-<td><b>{ urltxt }</b></td>
-<td>{ deletetxt }</td>
-</tr>
-<!--#in getnext -->
-<tr class="BabSiteAdminFontBackground"> 
-<td nowrap>{ page }</td>
-<td nowrap>{ url }</td>
-<td align="center"><input type="checkbox" name="pages[]" value="{ pageid }"></td>
-</tr>
-<!--#endin getnext -->
-<tr class="BabSiteAdminTitleFontBackground"> 
-<td colspan="5">&nbsp;</td>
-</tr>
-</table>
+	<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr class="BabSiteAdminTitleFontBackground" align="center" > 
+	<td nowrap><b>{ pagetxt }</b></td>
+	<td><b>{ urltxt }</b></td>
+	<td>{ deletetxt }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->	
+	<td nowrap>{ page }</td>
+	<td nowrap>{ url }</td>
+	<td align="center"><input type="checkbox" name="pages[]" value="{ pageid }" /></td>
+	</tr>
+	<!--#endin getnext -->
+	<tr class="BabSiteAdminTitleFontBackground"> 
+	<td colspan="5">&nbsp;</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
-<center><br><input type="submit" name="submit" value="{ updatetxt }"></center>
+<center><br><input type="submit" name="submit" value="{ updatetxt }" /></center>
 </form>
 <br />
 <br />
 <form name="gcreate" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="statconf">
-<input type="hidden" name="idx" value="pages">
-<input type="hidden" name="action" value="apage">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ urltxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="url" size="60" value="{ urlval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="desc" size="60" value="{ descval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="submit" name="submit" value="{ addtxt }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="statconf" />
+	<input type="hidden" name="idx" value="pages" />
+	<input type="hidden" name="action" value="apage" />
+	<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+		<tr> 
+		<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ urltxt }:</td>
+		<td class="BabLoginMenuBackground" valign="middle"> 
+		<input type="text" name="url" size="60" value="{ urlval }">
+		</td>
+		</tr>
+		<tr> 
+		<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ desctxt }:</td>
+		<td class="BabLoginMenuBackground" valign="middle"> 
+		<input type="text" name="desc" size="60" value="{ descval }">
+		</td>
+		</tr>
+		<tr> 
+		<td class="BabLoginMenuBackground">&nbsp;</td>
+		<td class="BabLoginMenuBackground" valign="middle"> 
+		<input type="submit" name="submit" value="{ addtxt }">
+		<br>
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
 </form>
 <!--#end pages -->
 
