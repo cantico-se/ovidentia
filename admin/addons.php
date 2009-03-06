@@ -689,13 +689,24 @@ function import()
 		
 		foreach ($zipcontents as $k => $arr)
 			{
+			if ($arr['folder'] != 0) 
+				{
+				continue;
+				}
+
+
+
 			$tmppath = mb_substr($arr['filename'],0,mb_strrpos($arr['filename'],'/'));
 			if (!empty($tmppath))
 				{
-				if (!isset($path_file[$tmppath])) $path_file[$tmppath] = array();
+				if (!isset($path_file[$tmppath])) 
+					{
+					$path_file[$tmppath] = array();
+					}
+
 				foreach ($loc_out as $key => $zippath)
 					{
-					if ($arr['folder'] == 0 && mb_substr_count($arr['filename'],$zippath))
+					if ($zippath === mb_substr($arr['filename'],0,strlen($zippath)))
 						{
 						$file_zipid[] = array($key,$arr['index'],$k);
 						}
@@ -732,6 +743,7 @@ function import()
 			$path = $loc_in[$arr[0]].'/'.$addon_name;
 			$subdir = dirname(mb_substr($zipcontents[$arr[2]]['filename'],mb_strlen($loc_out[$arr[0]])+1));
 			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
+
 			create_directory($path.$subdir);
 			$zip->Extract($ul,$path.$subdir,$arr[1],false );
 			}
