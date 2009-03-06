@@ -735,13 +735,13 @@ class bab_userWorkingHours {
 
 				
 				if ($nb_unAvailable > 0 && NULL === $previous) {
-					// autoriser la creation d'une nouvelle periode à partir de $test_begin
+					// autoriser la creation d'une nouvelle periode ï¿½ partir de $test_begin
 					$previous = $test_begin;
 				}
 				
 				
 				if (0 === $nb_unAvailable) {
-					// autoriser la creation d'une nouvelle periode à partir de $ts
+					// autoriser la creation d'une nouvelle periode ï¿½ partir de $ts
 					$previous = $ts;
 				}
 				
@@ -755,12 +755,12 @@ class bab_userWorkingHours {
 				}
 			}
 			
-			// si $previous est encore = à NULL, il n'y a aucun evenements qui genere de la non disponibilité
+			// si $previous est encore = ï¿½ NULL, il n'y a aucun evenements qui genere de la non disponibilitï¿½
 			if (NULL === $previous) {
 			
 				$availabilityReply->status = true;
 		
-				// autoriser la creation d'une nouvelle periode à partir de $test_begin
+				// autoriser la creation d'une nouvelle periode ï¿½ partir de $test_begin
 				$previous = $test_begin;
 
 			}
@@ -806,11 +806,11 @@ class bab_userWorkingHours {
 						$working_period = true;
 						
 					} elseif (!empty($data['iduser_owners'])) {
-						// evenement, liste des utilisateurs associés
+						// evenement, liste des utilisateurs associï¿½s
 						$id_users = $data['iduser_owners'];
 						
 					} else {
-						// autres : (ex jours feriés, agenda de ressource) considérer l'utilisateur courrant comme associé à l'evenement
+						// autres : (ex jours feriï¿½s, agenda de ressource) considï¿½rer l'utilisateur courrant comme associï¿½ ï¿½ l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
 					}
 					
@@ -859,7 +859,7 @@ class bab_userWorkingHours {
 
 
 			if ($boundary_free_for_all && NULL === $previous) {
-				// tout les utilisateurs sont dispo sur tout les evenements du boundary, démarrer la periode de dispo
+				// tout les utilisateurs sont dispo sur tout les evenements du boundary, dï¿½marrer la periode de dispo
 				$previous = $ts; 
 				// bab_debug('free '.bab_shortDate($ts));
 			}
@@ -905,7 +905,7 @@ class bab_userWorkingHours {
 			}
 				
 
-			if ($event->ts_end > $start && $event->ts_begin < $end && ($event->ts_end - $event->ts_begin) > $gap) {
+			if ($event->ts_end > $start && $event->ts_begin < $end && ($event->ts_end - $event->ts_begin) >= $gap) {
 				$r[] = $event;
 			}
 		}
