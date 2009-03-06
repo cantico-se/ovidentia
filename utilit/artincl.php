@@ -1058,8 +1058,14 @@ function bab_newArticleDraft($idtopic, $idarticle)
 	$error = '';
 	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error);
 
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='".$babDB->db_escape_string($idarticle)."' where id='".$id."'");
-
+	$sDatePublication = '0000-00-00 00:00:00'; 
+	$oRes = $babDB->db_query("select date_publication from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
+	if($oRes && $babDB->db_num_rows($oRes) == 1)
+	{
+		list($sDatePublication) = $babDB->db_fetch_array($oRes);
+	}
+	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='".$babDB->db_escape_string($idarticle). "', date_publication='".$babDB->db_escape_string($sDatePublication). "' where id='".$id."'");
+	
 	if( $idarticle != 0 )
 		{
 		$res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
