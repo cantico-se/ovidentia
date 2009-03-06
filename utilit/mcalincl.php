@@ -1260,7 +1260,6 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$this->gaparr[] = array("name" => bab_translate("Six hours"), "val" => 21600);
 			$this->gaparr[] = array("name" => bab_translate("Seven hours"), "val" => 25200);
 			$this->gaparr[] = array("name" => bab_translate("Eight hours"), "val" => 28800);
-
 			$this->gaparr[] = array("name" => bab_translate("One day"), "val" => 86400);
 			$this->gaparr[] = array("name" => bab_translate("Two days"), "val" => 172800);
 			$this->countgap = count($this->gaparr);

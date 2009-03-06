@@ -371,7 +371,6 @@ function searchAvailability($calid, $date, $date0, $date1, $gap, $bopt)
 	if( empty($date0) || empty($date1))
 	{
 		$rr = explode(',', $date);
-		$time = 
 
 		$date0 = date("Y,n,j", mktime(0,0,0, $rr[1], 1, $rr[0]));
 		$date1 = date("Y,n,j", mktime(0,0,0, (int)($rr[1])+1, 0, $rr[0]));
