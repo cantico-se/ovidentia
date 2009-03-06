@@ -258,7 +258,7 @@ function searchKeyword($item , $option = "OR")
 			$this->htmlfields = $this->fields;
 			foreach($this->htmlfields as $key=>$val)
 				{
-				$this->fields[$key] = bab_toHTML($val);
+				$this->htmlfields[$key] = bab_toHTML($val);
 				}
 			$this->what = stripslashes($this->fields['what']);
 			$this->fields['what'] = bab_toHtml(stripslashes($this->fields['what']));
@@ -1711,7 +1711,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
 				
 				
-				// champs a afficher en résultats
+				// champs a afficher en rï¿½sultats
 				$this->dirfields = array('name'=>array(),'description'=>array());
 
 				if ('' == $id_directory)
@@ -1762,7 +1762,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				
 				
-				// Critères spécifiques
+				// Critï¿½res spï¿½cifiques
 				
 				$crit_fields_reg = array();
 				$crit_fields_add = array();
@@ -1775,7 +1775,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 						{
 						if (0 === mb_strpos($dirselect, 'babdirf'))
 							{
-							// champ supplémentaire
+							// champ supplï¿½mentaire
 							$crit_fields_add[] = "t.id_fieldx = '".$babDB->db_escape_string(mb_substr($dirselect,7))."' AND t.field_value LIKE '%".$babDB->db_escape_like($dirfield)."%'";
 							}
 						else
@@ -1788,7 +1788,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 
 				
 
-				// critères toutes colonnes
+				// critï¿½res toutes colonnes
 
 				$crit_fields = $this->searchInAllCols(BAB_DBDIR_ENTRIES_TBL);
 				
@@ -1802,7 +1802,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					}
 
 
-				// Liste des annuaires base de donnés
+				// Liste des annuaires base de donnï¿½s
 
 				$arr_dir = array();
 				$res = $babDB->db_query("SELECT id FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' AND id IN(".$babDB->quote($arrview).")");
@@ -1828,7 +1828,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$crit_fields_add_str = '('.$crit_fields_add_str.') AND ';
 					}
 
-				// recherche dans les champs supplémentaires avec la recherche principale + recherche avancée
+				// recherche dans les champs supplï¿½mentaires avec la recherche principale + recherche avancï¿½e
 				$additional = finder($this->secondary_search,'t.field_value',$this->option,$this->primary_search);
 				if (!empty($additional))
 					{
@@ -1843,7 +1843,7 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 					$crit_fields = '('.$crit_fields.') AND ';
 					}
 
-				// Si un annuaire spécifique est choisit
+				// Si un annuaire spï¿½cifique est choisit
 
 				if (!empty($id_directory))
 					{
