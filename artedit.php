@@ -1109,10 +1109,13 @@ echo
 						$babBodyPopup->addStyleSheet('ajax.css');
 						if( empty($this->tagsvalue))
 							{
-							$res = $babDB->db_query("select tt.tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_DRAFTS_TAGS_TBL." adtt on adtt.id_tag=tt.id where adtt.id_draft='".$babDB->db_escape_string($idart)."'");
-							while( $rr = $babDB->db_fetch_array($res))
+							require_once dirname(__FILE__) . '/utilit/tagApi.php';
+							$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+							$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart));
+							$oIterator->orderAsc('tag_name');
+							foreach($oIterator as $oTag)
 								{
-								$this->tagsvalue .= $rr['tag_name'].', ';
+								$this->tagsvalue .= $oTag->getName() . ', ';
 								}
 							}
 						}
@@ -2118,7 +2121,10 @@ function updatePropertiesArticleDraft(&$message)
 		}
 	if( $busetags == 'N' )
 		{
-		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+		require_once dirname(__FILE__) . '/utilit/tagApi.php';
+		$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
+		$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
+		$oReferenceMgr->removeByReference($oReference);
 		}
 	}
 	else
@@ -2129,11 +2135,19 @@ function updatePropertiesArticleDraft(&$message)
 
 	if( count($otags))
 	{
-		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+		require_once dirname(__FILE__) . '/utilit/tagApi.php';
+		$oTagMgr		= bab_getInstance('bab_TagMgr');
+		$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
+		$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
+		$oReferenceMgr->removeByReference($oReference);
 
 		for( $k = 0; $k < count($otags); $k++ )
 			{
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($otags[$k])."')");
+			$oTag = $oTagMgr->getById($otags[$k]);
+			if($oTag instanceof bab_Tag)
+				{
+				$oReferenceMgr->add($oTag->getName(), $oReference);
+				}
 			}
 	}
 
@@ -2202,7 +2216,11 @@ function submitArticleDraft( $idart, &$message, $force=false)
 
 		if( $busetags == 'Y' )
 			{
-			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
+			require_once dirname(__FILE__) . '/utilit/tagApi.php';
+			$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
+			$oIterator = $oReferenceMgr->getTagsByReference($oReferenceDraft);
+			$nbtags = $oIterator->count();
 
 			if( !$nbtags )
 				{
@@ -2222,8 +2240,12 @@ function submitArticleDraft( $idart, &$message, $force=false)
 
 		if( $busetags == 'Y' )
 			{
-			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
-
+			require_once dirname(__FILE__) . '/utilit/tagApi.php';
+			$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
+			$oIterator = $oReferenceMgr->getTagsByReference($oReferenceDraft);
+			$nbtags = $oIterator->count();
+			
 			if( !$nbtags )
 				{
 				$message = bab_translate("You must specify at least one tag in article properties page");
@@ -2460,6 +2482,7 @@ if('getImage' == bab_rp('idx', ''))
 }
 
 $artedit = array();
+
 if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
 {
 	$idx = 'denied';

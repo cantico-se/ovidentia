@@ -792,5 +792,83 @@ class BAB_DateTimeUtil
 		}
 		return 0;
 	}
+
+
+
+
+
+	/**
+	 * Date display in relatives forms, for dates older than now
+	 * @param	string	$datetime	ISO datetime
+	 * @return string
+	 */
+	public static function relativePastDate($datetime) {
+		$ts = bab_mktime($datetime);
+		$sec = (time() - $ts);
+		
+		if ($sec > 0 && $sec < 3600) {
+			if ($sec < 60) {
+				return bab_sprintf(bab_translate('%d seconds ago'), $sec);
+			} else {
+				$minutes = (int) round($sec/60);
+				if (1 === $minutes) {
+					$str = bab_translate('%d minute ago');
+				} else {
+					$str = bab_translate('%d minutes ago');
+				}
+				return bab_sprintf($str, $minutes);
+			}
+		}
+		
+		
+		if (date('Ymd', $ts) == date('Ymd')) {
+			return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+		}
+		
+		$yesterday = mktime(0, 0, 0, date('n'), (date('j') - 1), date('Y'));
+		if (date('Ymd', $ts) == date('Ymd', $yesterday)) {
+			return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
+		}
+		
+		return bab_shortDate($ts, false);
+	}
+
+
+	/**
+	 * Date display in relatives forms, for dates newer than now
+	 * @param	string	$datetime	ISO datetime
+	 * @return string
+	 */
+	public static function relativeFutureDate($datetime) {
+		$ts = bab_mktime($datetime);
+		$sec = ($ts - time());
+		
+		if ($sec > 0 && $sec < 3600) {
+			if ($sec < 60) {
+				return bab_sprintf(bab_translate('in %d seconds'), $sec);
+			} else {
+				$minutes = (int) round($sec/60);
+				if (1 === $minutes) {
+					$str = bab_translate('in %d minute');
+				} else {
+					$str = bab_translate('in %d minutes');
+				}
+				return bab_sprintf($str, $minutes);
+			}
+		}
+		
+		
+		if (date('Ymd', $ts) == date('Ymd')) {
+			return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+		}
+		
+		$towmorrow = mktime(0, 0, 0, date('n'), (date('j') + 1), date('Y'));
+		if (date('Ymd', $ts) == date('Ymd', $towmorrow)) {
+			return bab_sprintf(bab_translate('Towmorrow at %s'), date('H:i',$ts));
+		}
+		
+		return bab_shortDate($ts, false);
+	}
+
 }
 ?>

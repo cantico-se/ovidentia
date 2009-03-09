@@ -184,6 +184,27 @@ function bab_isCalendarAccessValid($calid)
 	}
 
 
+
+
+/**
+ * Get a list of available calendar ID
+ * @return array
+ */
+function bab_getAvailableCalendars()
+{
+	$return = array();
+
+	$tmp =  array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+	foreach ($tmp as $arr) {
+		$return[] = $arr['idcal'];
+	}
+
+	return $return;
+}
+
+
+
+
 function getAvailableUsersCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;

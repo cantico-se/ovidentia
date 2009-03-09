@@ -152,6 +152,7 @@ function selectForums()
  */
 function selectFiles($folderId = null, $path = '')
 {
+
 	global $babBody;
 
 	$params = array(

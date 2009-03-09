@@ -1903,13 +1903,13 @@ function getFile()
 	
 	$iIdFile = (int) bab_rp('idf', 0);
 	
-	//OVML ne positionne pas la délégation
+	//OVML ne positionne pas la dï¿½lï¿½gation
 	$oFolderFileSet = new BAB_FolderFileSet();
 	$oId = $oFolderFileSet->aField['iId'];
 	$oFolderFile = $oFolderFileSet->get($oId->in($iIdFile));
 	if(!is_null($oFolderFile))
 	{
-		//Peut être vient-on de l'OVML
+		//Peut ï¿½tre vient-on de l'OVML
 		$iCurrentDelegation = bab_getCurrentUserDelegation();
 		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
 	
@@ -2284,13 +2284,18 @@ function viewFile()
 				$this->descval = $oFolderFile->getDescription();
 				$this->descvalhtml = bab_toHtml($oFolderFile->getDescription());
 
+				require_once dirname(__FILE__) . '/utilit/tagApi.php';
+				
 				$this->keysval = '';
-				$res = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id=ftt.id_tag where id_file=".$babDB->quote($this->idf)." order by tag_name asc");
-				while( $rr = $babDB->db_fetch_array($res))
-					{
-					$this->keysval .= $rr['tag_name'].', ';
-					}
-
+				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+				
+				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'files', 'file', $oFolderFile->getId()));
+				$oIterator->orderAsc('tag_name');
+				foreach($oIterator as $oTag)
+				{
+					$this->keysval .= $oTag->getName() . ', ';
+				}
+				
 				$this->keysvalhtml = bab_toHtml($this->keysval);
 
 				$this->fsizetxt = bab_translate("Size");
@@ -3066,17 +3071,17 @@ function pasteCollectiveDir()
 	 
 	if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 	{
-		//Nom du répertoire à coller
+		//Nom du rï¿½pertoire ï¿½ coller
 		$sName = getLastPath($sSrcPath); 
 		
-		//Emplacement du répertoire à coller
+		//Emplacement du rï¿½pertoire ï¿½ coller
 		$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 
 		$bSrcPathHaveVersioning = false;
 		$bTrgPathHaveVersioning = false;
 		$bSrcPathCollective		= false;
 		
-		//Récupération des informations concernant le répertoire source (i.e le répertoire à déplacer)
+		//Rï¿½cupï¿½ration des informations concernant le rï¿½pertoire source (i.e le rï¿½pertoire ï¿½ dï¿½placer)
 		{
 			$iIdRootFolder	= 0;
 			$oSrcFmFolder	= null;
@@ -3090,7 +3095,7 @@ function pasteCollectiveDir()
 		$oFmFolderSet = new BAB_FmFolderSet();
 		if($oFileManagerEnv->userIsInCollectiveFolder())
 		{
-			//Récupération des informations concernant le répertoire cible (i.e le répertoire dans lequel le source est déplacé)
+			//Rï¿½cupï¿½ration des informations concernant le rï¿½pertoire cible (i.e le rï¿½pertoire dans lequel le source est dï¿½placï¿½)
 			$oTrgFmFolder = null;
 			BAB_FmFolderHelper::getInfoFromCollectivePath($sTrgPath, $iIdRootFolder, $oTrgFmFolder);
 			$iTrgIdOwner = $oTrgFmFolder->getId();
@@ -3112,15 +3117,15 @@ function pasteCollectiveDir()
 			$oFmFolder = $oFmFolderSet->get($oCriteria);
 			if(!is_null($oFmFolder))
 			{
-				//Le répertoire à coller est collectif
+				//Le rï¿½pertoire ï¿½ coller est collectif
 				
 				$bTrgPathHaveVersioning = ('Y' === $oFmFolder->getVersioning());
 			}
 			else 
 			{
-				//Le répertoire à coller n'est pas collectif
+				//Le rï¿½pertoire ï¿½ coller n'est pas collectif
 				//comme on colle dans la racine il faut le faire 
-				//devenir un répertoire collectif
+				//devenir un rï¿½pertoire collectif
 				
 				$oFmFolder = new BAB_FmFolder();
 				$oFmFolder->setName($sName);
@@ -3186,21 +3191,21 @@ function pasteCollectiveDir()
 					 {
 						global $babDB;
 						
-						//Suppression des versions des fichiers pour les répertoires qui ne sont pas contenus dans des 
-						//répertoires collectifs
+						//Suppression des versions des fichiers pour les rï¿½pertoires qui ne sont pas contenus dans des 
+						//rï¿½pertoires collectifs
 						{
-							//Sélection de tous les fichiers qui contiennent dans leurs chemins le répertoire à déplacer
+							//Sï¿½lection de tous les fichiers qui contiennent dans leurs chemins le rï¿½pertoire ï¿½ dï¿½placer
 							$oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
 							$oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
 							$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
 							
-							//Sélection des répertoires collectifs
+							//Sï¿½lection des rï¿½pertoires collectifs
 							$oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
 							$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in(bab_getCurrentUserDelegation()));
 							$oFmFolderSet->select($oCriteriaFolder);
 							while(null !== ($oFmFolder = $oFmFolderSet->next()))
 							{
-								//exclusion des répertoires collectif (on ne touche pas à leurs versions)
+								//exclusion des rï¿½pertoires collectif (on ne touche pas ï¿½ leurs versions)
 								$oCriteriaFile = $oCriteriaFile->_and($oPathName->notLike(
 									$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 							}
@@ -3260,10 +3265,10 @@ function pasteUserFolder()
 //		bab_debug($sFullSrcPath);
 //		bab_debug($sFullTrgPath);
 
-		//Nom du répertoire à coller
+		//Nom du rï¿½pertoire ï¿½ coller
 		$sName = getLastPath($sSrcPath); 
 		
-		//Emplacement du répertoire à coller
+		//Emplacement du rï¿½pertoire ï¿½ coller
 		$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 		
 		if($sFullSrcPath === realpath((string) $sFullTrgPath . '/' . getLastPath($sSrcPath)))
@@ -3503,7 +3508,7 @@ function editFolderForCollectiveDir()
 
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{	
-//bab_debug('Rajouter un test qui permet d\'être que c\'est répertoire collectif ou pas');
+//bab_debug('Rajouter un test qui permet d\'ï¿½tre que c\'est rï¿½pertoire collectif ou pas');
 		$sDirName = (string) bab_pp('sDirName', '');
 		if(mb_strlen(trim($sDirName)) > 0)
 		{
@@ -3526,8 +3531,8 @@ function editFolderForCollectiveDir()
 					//changer les iIdOwner
 					//supprimer les droits
 					//supprimer les versions de fichiers
-					//supprimer les instances de schémas d'approbations
-					//supprimer l'entrée dans fmfolders
+					//supprimer les instances de schï¿½mas d'approbations
+					//supprimer l'entrï¿½e dans fmfolders
 					$bDbRecordOnly = true;
 					$oFmFolderSet = new BAB_FmFolderSet();
 					$oFmFolderSet->delete($oFmFolder, $bDbRecordOnly);
@@ -3543,7 +3548,7 @@ function editFolderForCollectiveDir()
 				if('collective' === $sType)
 				{
 					//changer les iIdOwner
-					//créer l'entrée dans fmfolders
+					//crï¿½er l'entrï¿½e dans fmfolders
 					$bChangeFileIdOwner = true;
 					$oFmFolder = new BAB_FmFolder();
 				}
@@ -3739,6 +3744,7 @@ function deleteFolderForCollectiveDir()
 {
 	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
+
 	
 	if(!canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
@@ -3776,12 +3782,13 @@ function deleteFolderForCollectiveDir()
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
 		bab_deleteFolder($iIdFld);
+
 	}
 	else 
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oFmFolderSet->removeSimpleCollectiveFolder($oFileManagerEnv->sRelativePath . $sDirName . '/');
-	}						
+	}
 }
 
 

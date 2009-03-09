@@ -24,11 +24,13 @@ CREATE TABLE bab_articles (
   restriction varchar(255) NOT NULL default '',
   ordering int(11) unsigned NOT NULL default '0',
   id_modifiedby int(11) unsigned NOT NULL default '0',
+  index_status tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_topic (id_topic),
   KEY id_author (id_author),
   KEY date_publication (date_publication),
   KEY date_archiving (date_archiving),
+  KEY index_status (index_status),
   KEY date (date)
 );
 
@@ -1062,6 +1064,9 @@ INSERT INTO bab_mime_types VALUES ('ott', 'application/vnd.oasis.opendocument.te
 INSERT INTO bab_mime_types VALUES ('ots', 'application/vnd.oasis.opendocument.spreadsheet-template');
 INSERT INTO bab_mime_types VALUES ('otp', 'application/vnd.oasis.opendocument.presentation-template');
 INSERT INTO bab_mime_types VALUES ('otg', 'application/vnd.oasis.opendocument.graphics-template');
+INSERT INTO bab_mime_types VALUES ('docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+INSERT INTO bab_mime_types VALUES ('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+INSERT INTO bab_mime_types VALUES ('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
 
 
 # --------------------------------------------------------
@@ -2961,9 +2966,10 @@ CREATE TABLE `bab_index_files` (
 );
 
 
-INSERT INTO `bab_index_files` VALUES (1, 'File manager', 'bab_files', 1, 0);
-INSERT INTO `bab_index_files` VALUES (2, 'Articles files', 'bab_art_files', 1, 0);
-INSERT INTO `bab_index_files` VALUES (3, 'Forum post files', 'bab_forumsfiles', 1, 0);
+INSERT INTO `bab_index_files` VALUES (1, 'File manager'			, 'bab_files'		, 1, 0);
+INSERT INTO `bab_index_files` VALUES (2, 'Articles files'		, 'bab_art_files'	, 1, 0);
+INSERT INTO `bab_index_files` VALUES (3, 'Forum post files'		, 'bab_forumsfiles'	, 1, 0);
+INSERT INTO `bab_index_files` VALUES (4, 'Articles'				, 'bab_articles'	, 1, 0);
 
 
 CREATE TABLE bab_index_access (
@@ -4007,6 +4013,7 @@ CREATE TABLE bab_sitemap_functions (
    `url` varchar(255) NOT NULL,
    `onclick` varchar(255) NOT NULL,
    `folder` tinyint(1) unsigned NOT NULL default '0',
+   `icon` varchar(255) NOT NULL default '',
    PRIMARY KEY (`id_function`)
 );
 
@@ -4051,4 +4058,17 @@ CREATE TABLE bab_dbdirfieldupdate_groups (
   PRIMARY KEY  (id),
   KEY id_object (id_object),
   KEY id_group (id_group)
+);
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_tags_references'
+#
+
+CREATE TABLE bab_tags_references (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_tag int(11) unsigned NOT NULL,
+  reference TEXT NOT NULL,
+  PRIMARY KEY (id),
+  KEY id_tag (id_tag)
 );

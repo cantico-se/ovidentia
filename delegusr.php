@@ -114,7 +114,7 @@ function updateAdmGroup($grpdg)
 if( count($babBody->dgAdmGroups) < 1)
 	{
 	$babBody->title = bab_translate("Access denied");
-	exit;
+	return;
 	}
 	
 $idx = bab_rp('idx', 'chgdg');

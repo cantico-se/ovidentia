@@ -414,6 +414,41 @@ function bab_uploadPostFiles($postid, $id_forum) {
 	return true;
 }
 
+
+
+
+
+
+
+/**
+ * get parts of a forum file as stored in upload directory
+ * @param	string	$file	full path name or file name	
+ * @return array | false if the file is not compliant
+ */
+function bab_getForumFileParts($file) {
+
+	$filename = basename($file);
+
+	
+	$iOffset = mb_strpos($filename,',');
+
+	if(false !== $iOffset)
+	{
+		$id_post = (int) mb_substr($filename, 0, $iOffset);
+		$name = mb_substr($filename, $iOffset + 1);
+		
+		return array($id_post, $name);
+	}
+
+	return false;
+}
+
+
+
+
+
+
+
 /**
  * Get files associated with a forum post
  * clean files if not in databases
@@ -432,13 +467,15 @@ function bab_getPostFiles($forum,$postid)
 
 	if (is_dir($baseurl) && $h = opendir($baseurl)) {
 		while (false !== ($file = readdir($h))) {
-			if (mb_substr($file,0,mb_strpos($file,',')) == $postid) {
-				$iOffset = mb_strpos($file,',');
-				if(false !== $iOffset)
-				{
-					$name = mb_substr($file, $iOffset + 1);
-					$filedirectory[$name] = $baseurl.$file;
-				}
+
+			$arr = bab_getForumFileParts($file);
+			if (!$arr) {
+				continue;
+			}
+
+			list($id_post, $name) = $arr;
+			if ($id_post === (int) $postid) {
+				$filedirectory[$name] = $baseurl.$file;
 			}
 		}
 	}

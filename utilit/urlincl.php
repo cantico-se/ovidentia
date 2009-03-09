@@ -45,8 +45,8 @@ class bab_url {
 			$keyval = urlencode($param).'='.urlencode($value);
 		}
 	
-		$newurl = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/','\\1'.$keyval,$url,1);
-		if ($newurl !== $url) {
+		$newurl = preg_replace('/(&|\?)'.preg_quote($param, '/').'=[^&]*/', '\\1'.$keyval, $url, 1, $count);
+		if ($count > 0) {
 			return $newurl;
 		}
 		

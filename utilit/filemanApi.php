@@ -36,6 +36,7 @@ require_once dirname(__FILE__) . '/fileincl.php';
  */
 class bab_FileInfo extends SplFileInfo
 {
+
 	/**
 	 * @var BAB_FmFolderFile
 	 */
@@ -538,6 +539,7 @@ class bab_Directory
 	const RIGHT_NOTIFY				= 256;
 	const RIGHT_NOTIFY_AND_CHILD	= 512;
 
+
 	
 	/**
 	 * This function set right on a collective folder.
@@ -581,13 +583,16 @@ class bab_Directory
 			return false;
 		}
 		
+
 		require_once dirname(__FILE__) . '/grpincl.php';
+
 		
 		if(false === bab_isGroup($iIdGroup))
 		{
 			$this->aError[]	= bab_translate('The specified group identifier do not represent a group.');
 			return false;
 		}
+
 		
 		$sRelativePath	= '';
 		$sName			= (string) getFirstPath($this->sPathName);
@@ -2175,17 +2180,8 @@ class bab_Directory
 			
 			if('' != $this->sRelativePath)
 			{
-				$sFolderName		= getFirstPath($this->sRelativePath);
-				$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
-				$oNameField			= $oFolderSet->aField['sName'];
-				$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
-				$oIdDgOwnerField	= $oFolderSet->aField['iIdDgOwner'];
-				
-				$oCriteria	= $oNameField->in($sFolderName);
-				$oCriteria	= $oCriteria->_and($oRelativePathField->in(''));
-				$oCriteria	= $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
-				$oFolder	= $oFolderSet->get($oCriteria);
-				
+				$oFolder = BAB_FolderFile::getRootFolder($this->sRelativePath, $iIdDelegation);
+
 				if($oFolder instanceof BAB_FmFolder)
 				{
 					$oFmEnv->sGr		= 'Y';					

@@ -131,10 +131,16 @@ class BAB_Criterion extends BAB_Criteria
 		return new BAB_LikeCriterion($aArgList[0], $aArgList[1]);
 	}
 	
-	function notLike()
+	function contain()
 	{
 		$aArgList = func_get_args();
-		return new BAB_NotLikeCriterion($aArgList[0], $aArgList[1]);
+		return new BAB_ContainCriterion($aArgList[0], $aArgList[1]);
+	}
+	
+	function regExp()
+	{
+		$aArgList = func_get_args();
+		return new BAB_FilteredCriterion($aArgList[0], $aArgList[1]);
 	}
 }
 
@@ -189,7 +195,8 @@ class BAB_LikeCriterionBase extends BAB_Criterion
 	
 	function toString()
 	{
-		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $this->sValue . '\' ';
+		global $babDB;
+		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
 	}
 }
 
@@ -209,6 +216,35 @@ class BAB_NotLikeCriterion extends BAB_LikeCriterionBase
 	{
 		parent::BAB_LikeCriterionBase($oField, $sValue);
 		$this->sLike = 'NOT LIKE';
+	}
+}
+
+class BAB_ContainCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_ContainCriterion($oField, $sValue)
+	{
+		parent::BAB_Criterion($oField, $sValue);
+		$this->sLike = 'LIKE';
+	}
+	
+	function toString()
+	{
+		global $babDB;
+		return $this->oField->getName() . ' ' . $this->sLike . ' \'%' .  $babDB->db_escape_like($this->sValue) . '%\' ';
+	}
+}
+
+class BAB_FilteredCriterion extends BAB_LikeCriterionBase
+{
+	function BAB_ContainCriterion($oField, $sRegExp)
+	{
+		parent::BAB_LikeCriterionBase($oField, $sRegExp);
+	}
+	
+	function toString()
+	{
+		global $babDB;
+		return $this->oField->getName() . ' REGEXP ' .  $babDB->quote($this->sValue);
 	}
 }
 
@@ -245,10 +281,22 @@ class BAB_Field
 		return call_user_func_array(array('BAB_LikeCriterion', 'like'), array($this, $aArgList[0]));
 	}
 	
+	function contain()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_ContainCriterion', 'contain'), array($this, $aArgList[0]));
+	}
+	
 	function notLike()
 	{
 		$aArgList = func_get_args();
 		return call_user_func_array(array('BAB_NotLikeCriterion', 'notLike'), array($this, $aArgList[0]));
+	}
+	
+	function regExp()
+	{
+		$aArgList = func_get_args();
+		return call_user_func_array(array('BAB_FilteredCriterion', 'regExp'), array($this, $aArgList[0]));
 	}
 }
 

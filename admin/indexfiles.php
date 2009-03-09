@@ -131,7 +131,8 @@ function status() {
 			$this->t_record = bab_translate("Record");
 
 			$this->db = $GLOBALS['babDB'];
-			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE  object  IN('bab_files','bab_art_files','bab_forumsfiles')");
+			$this->res = $this->db->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE  
+				object  IN('bab_files','bab_art_files','bab_forumsfiles', 'bab_articles')");
 			$this->indexstatus = array(
 					BAB_INDEX_STATUS_NOINDEX => bab_getIndexStatusLabel(BAB_INDEX_STATUS_NOINDEX),
 					BAB_INDEX_STATUS_INDEXED => bab_getIndexStatusLabel(BAB_INDEX_STATUS_INDEXED),
@@ -183,6 +184,10 @@ function record_status() {
 
 				case 'bab_forumsfiles':
 					$db->db_query("UPDATE ".BAB_FORUMSFILES_TBL." SET index_status='".$db->db_escape_string($status)."'");
+					break;
+
+				case 'bab_articles':
+					$db->db_query("UPDATE ".BAB_ARTICLES_TBL." SET index_status='".$db->db_escape_string($status)."'");
 					break;
 			}
 		}

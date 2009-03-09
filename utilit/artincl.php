@@ -1614,17 +1614,25 @@ function acceptWaitingArticle($idart)
 				}
 			}
 
-		$babDB->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($articleid)."'");
+		require_once dirname(__FILE__) . '/tagApi.php';
+		
+		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+		
+		$oReference = bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $articleid);
+		$oReferenceMgr->removeByReference($oReference);
+		
+		$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
 		if( $arr['busetags'] ==  'Y' )
 			{
-			$res = $babDB->db_query("select id_tag from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
-			while($rr = $babDB->db_fetch_array($res))
+			$oIterator = $oReferenceMgr->getTagsByReference($oReferenceDraft);
+			$oIterator->orderAsc('tag_name');
+			foreach($oIterator as $oTag)
 				{
-				$babDB->db_query("insert into ".BAB_ART_TAGS_TBL." (id_art ,id_tag) values ('".$babDB->db_escape_string($articleid)."','".$babDB->db_escape_string($rr['id_tag'])."')");
+				$oReferenceMgr->add($oTag->getName(), $oReference);
 				}
 			}
-		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");		
-
+		$oReferenceMgr->removeByReference($oReferenceDraft);
+		
 		if( $arr['id_author'] == 0 || (($artauthor = bab_getUserName($arr['id_author'])) == ''))
 			{
 			$artauthor = bab_translate("Anonymous");
@@ -2015,10 +2023,18 @@ function bab_newArticleDraft($idtopic, $idarticle)
 					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description, ordering) values ('".$id."','".$babDB->db_escape_string($rr['name'])."','".$babDB->db_escape_string($rr['description'])."','".$babDB->db_escape_string($rr['ordering'])."')");
 					}
 				}
-			$res = $babDB->db_query("select * from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($idarticle)."'");
-			while($rr = $babDB->db_fetch_array($res))
+				
+				
+			require_once dirname(__FILE__) . '/tagApi.php';
+		
+			$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+		
+			$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $idarticle));
+			$oIterator->orderAsc('tag_name');
+			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $id);
+			foreach($oIterator as $oTag)
 				{
-				$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft, id_tag) values ('".$id."','".$babDB->db_escape_string($rr['id_tag'])."')");
+				$oReferenceMgr->add($oTag->getName(), $oReferenceDraft);
 				}
 			}
 		}
@@ -2111,7 +2127,9 @@ function indexAllArtFiles($status, $prepare)
 }
 
 
-
+/**
+ * 
+ */
 function indexAllArtFiles_end($param) {
 	
 	global $babDB;
@@ -2135,4 +2153,178 @@ function indexAllArtFiles_end($param) {
 }
 
 
-?>
+
+
+
+
+
+/**
+ * Create a temporary file for indexation
+ *
+ * @param	int		$id_topic
+ * @param	int		$id_article
+ * @param	string	$title
+ * @param	string	$head
+ * @param	string	$body
+ * @param	string	$author
+ *
+ * @return 	string				path to temporary file
+ */
+function bab_createArticleFile($id_topic, $id_article, $title, $head, $body, $author) {
+
+	include_once dirname(__FILE__).'/searcharticlesincl.php';
+
+	$path = $GLOBALS['babUploadPath'].'/tmp/';
+
+	if (!is_dir($path)) {
+		bab_mkdir($path);
+	}
+
+	$filecontent = bab_sprintf('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html>
+			<head>
+				<title>%s</title>
+				<meta http-equiv="Content-type" content="text/html; charset=%s" />
+				<meta name="Author" content="%s" />
+			</head>
+
+			<body>
+				<h1>%s</h1>
+				<p>%s</p>
+				<div class="head">
+					%s
+				</div>
+				<hr />
+				<div  class="body">
+					%s
+				</div>
+				<p align="right">%s</p>
+			</body>
+		</html>
+	', $title, bab_charset::getISO(), $author, $title, bab_SearchRealmTopic::categoriesHierarchy($id_topic), $head, $body, $author);
+
+	$filename = bab_sprintf('top%d_art%d.html', $id_topic, $id_article);
+
+	if (file_put_contents($path.$filename, $filecontent)) {
+		return $path.$filename;
+	}
+
+	return false;
+}
+
+
+
+
+
+
+/**
+ * Index all articles
+ * @param array $status
+ * @return object bab_indexReturn
+ */
+function indexAllArticles($status, $prepare) 
+	{
+
+	
+	
+	global $babDB;
+
+	$res = $babDB->db_query("
+	
+		SELECT 
+			a.id,
+			a.title,
+			a.head, 
+			a.body,
+			a.id_topic, 
+			a.id_author 
+		FROM 
+			".BAB_ARTICLES_TBL." a 
+		WHERE 
+			a.index_status IN(".$babDB->quote($status).")
+		
+	");
+	
+	$files = array();
+	$rights = array();
+
+
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+		$file = bab_createArticleFile(
+			$arr['id_topic'], 
+			$arr['id'], 
+			$arr['title'], 
+			$arr['head'], 
+			$arr['body'], 
+			bab_getUserName($arr['id_author'])
+		);
+
+
+		$files[] = $file;
+
+		$rights[$file] = array(
+				'id_article'	=> $arr['id'],
+				'id_topic'		=> $arr['id_topic']
+			);
+	}
+
+	if (!$files) {
+		$r = new bab_indexReturn;
+		$r->addError(bab_translate("No files to index in the articles"));
+		$r->result = false;
+		return $r;
+	}
+
+
+	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
+	$obj = new bab_indexObject('bab_articles');
+
+
+	$param = array(
+			'status' => $status,
+			'rights' => $rights
+		);
+
+	if (in_array(BAB_INDEX_STATUS_INDEXED, $status)) {
+		if ($prepare) {
+			return $obj->prepareIndex($files, $GLOBALS['babInstallPath'].'utilit/artincl.php', 'indexAllArticles_end', $param );
+		} else {
+			$r = $obj->resetIndex($files);
+		}
+	} else {
+		$r = $obj->addFilesToIndex($files);
+	}
+
+	if (true === $r->result) {
+		indexAllArticles_end($param);
+	}
+
+	return $r;
+}
+
+
+/**
+ * clean article indexation temporary files and update indexation status
+ */
+function indexAllArticles_end($param) {
+
+	global $babDB;
+
+	$babDB->db_query("
+	
+		UPDATE ".BAB_ARTICLES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
+		WHERE 
+			index_status IN('".implode("','",$param['status'])."')
+		
+	");
+
+	foreach($param['rights'] as $f => $arr) {
+		unlink($f);
+	}
+
+	return true;
+}
+
+
+

@@ -22,49 +22,48 @@
  */
 require_once 'base.php';
 
-DEFINE('BAB_EOF', -1);
 
-
-class BAB_MySqlResultIterator
+abstract class BAB_MySqlResultIterator implements SeekableIterator, Countable
 {
- 	/**
-	 * mysql resource
-	 * 
-	 * @access  private 
-	 * @var  mysql resource
-	 */
-	var $_oResult = null;
+	public	  $_oResult				= null;
+	protected $_oObject				= null;
+	protected $_iKey				= 0;
+	protected $_oDataBaseAdapter	= null;
 	
- 	/**
-	 * 
-	 * 
-	 * @access  private 
-	 * @var  mixed Used in the Iterator implementation
-	 */
-	var $_oObject = null;
+	const EOF = -1;
 	
- 	/**
-	 * Index position of the mysql resource
-	 * 
-	 * @access  private 
-	 * @var  integer Used in the Iterator implementation
-	 */
-	var $_iKey = 0;
-
-	
-	function BAB_MySqlResultIterator()
+	function BAB_MySqlResultIterator($oDataBaseAdapter = null)
 	{
+		if(!isset($oDataBaseAdapter))
+		{
+			global $babDB;
+			$oDataBaseAdapter = $babDB;
+		}
+		$this->setDataBaseAdapter($oDataBaseAdapter);
+	}
+	
+	
+	//Helper function
+
+	function setDataBaseAdapter($oDataBaseAdapter)
+	{
+		$this->_oDataBaseAdapter = $oDataBaseAdapter;
+	}
+	
+	function getDataBaseAdapter()
+	{
+		return $this->_oDataBaseAdapter;
 	}
 
-
+	
 	//Iterator interface function implementation
 
 	/**
      * Return the current element 
      *
-     * @return ATS_Contact The contact or null
+     * @return 
      */
-	function current()
+	public function current()
 	{
 		if(is_null($this->_oObject))
 		{
@@ -73,7 +72,6 @@ class BAB_MySqlResultIterator
 		
 		return $this->_oObject;
 	}
-	
 	
 	/**
      * Return the key of the current element  
@@ -85,7 +83,6 @@ class BAB_MySqlResultIterator
 		return $this->_iKey;
 	}
 
-
 	/**
      * Return the next element 
      *
@@ -93,8 +90,9 @@ class BAB_MySqlResultIterator
      */
 	function next()
 	{
-		global $babDB;
-		if(false != ($aDatas = $babDB->db_fetch_assoc($this->_oResult)))
+		$this->executeQuery();
+	
+		if(false !== ($aDatas = $this->getDataBaseAdapter()->db_fetch_assoc($this->_oResult)))
 		{
 			$this->_iKey++;
 			$this->_oObject = $this->getObject($aDatas);
@@ -102,12 +100,11 @@ class BAB_MySqlResultIterator
 		else 
 		{
 			$this->_oObject = null;
-			$this->_iKey = BAB_EOF;
+			$this->_iKey = self::EOF;
 		}
 		
 		return $this->_oObject;
 	}
-
 
 	/**
      * Rewind the Iterator to the first element. 
@@ -115,29 +112,13 @@ class BAB_MySqlResultIterator
      */
 	function rewind()
 	{
-		global $babDB;
-		if ($babDB->db_num_rows($this->_oResult) > 0)
+		$this->executeQuery();
+		if($this->getDataBaseAdapter()->db_num_rows($this->_oResult) > 0)
 		{
-			$babDB->db_data_seek($this->_oResult, 0);
+			$this->getDataBaseAdapter()->db_data_seek($this->_oResult, 0);
 		}
 		$this->reset();
 	}
-
-	
-	/**
-	 * Place the Iterator on the $iRowNumberth element.
-	 *@
-	 */
-	function seek($iRowNumber)
-	{
-		global $babDB;
-		if ($babDB->db_num_rows($this->_oResult) > $iRowNumber)
-		{
-			$result = $babDB->db_data_seek($this->_oResult, $iRowNumber);
-			$this->reset($iRowNumber);
-		}
-	}
-
 
 	/**
      * Check if there is a current element after calls to rewind() or next(). 
@@ -146,7 +127,7 @@ class BAB_MySqlResultIterator
     */
 	function valid()
 	{
-		if(0 !== $this->_iKey && BAB_EOF !== $this->_iKey)
+		if(0 !== $this->_iKey && self::EOF !== $this->_iKey)
 		{
 			return true;
 		}
@@ -155,18 +136,37 @@ class BAB_MySqlResultIterator
 			$this->next();
 			return $this->valid();
 		}
-		else if(BAB_EOF === $this->_iKey)
+		else if(self::EOF === $this->_iKey)
 		{
 			return false;
 		}
 		return false;
 	}
+	
+	
+	//SeekableIterator interface function implementation
 
-
+	/**
+	 * Place the Iterator on the $iRowNumberth element.
+	 *
+	 */
+	function seek($iRowNumber)
+	{
+		$this->executeQuery();
+		if($this->getDataBaseAdapter()->db_num_rows($this->_oResult) > $iRowNumber)
+		{
+			$result = $this->getDataBaseAdapter()->db_data_seek($this->_oResult, $iRowNumber);
+			$this->reset($iRowNumber);
+		}
+	}
+	
+	
+	//Countable interface function implementation
+	
 	function count()
 	{
-		global $babDB;
-		return $babDB->db_num_rows($this->_oResult);
+		$this->executeQuery();
+		return $this->getDataBaseAdapter()->db_num_rows($this->_oResult);
 	}
 
 
@@ -181,16 +181,110 @@ class BAB_MySqlResultIterator
 		$this->_iKey	= $iRowNumber;
 	}
 	
-	
 	function setMySqlResult($oResult)
 	{
 		$this->_oResult = $oResult;
 	}
 
-	
-	function getObject($aDatas)
+	//Hack
+	function executeQuery()
 	{
-		return null;
+	
+	}
+	
+	abstract public function getObject($aDatas);
+}
+
+
+/**
+ * 
+ *
+ */
+abstract class bab_MySqlIterator extends BAB_MySqlResultIterator
+{
+	protected $sQuery		= null;
+	protected $oCriteria	= null;
+	protected $aOrder		= array();
+	protected $aGroupBy		= array();
+
+	public function __construct($oDataBaseAdapter = null)
+	{
+		parent::BAB_MySqlResultIterator($oDataBaseAdapter);
+	}
+
+	public function setQuery($sQuery)
+	{
+		$this->sQuery = $sQuery;
+		return $this;
+	}
+	
+	public function orderAsc($sField)
+	{
+		$this->aOrder[$sField] = 'ASC';
+		return $this;
+	}
+
+	public function orderDesc($sField)
+	{
+		$this->aOrder[$sField] = 'DESC';
+		return $this;
+	}
+
+	function processOrder()
+	{
+		$sOrder = '';
+		if(count($this->aOrder) > 0)
+		{
+			$aValue = array();
+			foreach($this->aOrder as $sField => $sOrder)
+			{
+				$aValue[] = $sField . ' ' . $sOrder;
+			}
+			$sOrder = 'ORDER BY ' . implode(', ', $aValue);
+		}
+		return $sOrder;
+	}
+	
+	public function setCriteria(BAB_Criteria $oCriteria = null)
+	{
+		$this->oCriteria = $oCriteria;
+		return $this;
+	}
+	
+	public function getCriteria()
+	{
+		if(is_null($this->oCriteria))
+		{
+			$this->oCriteria = new BAB_Criteria();
+		}
+		return $this->oCriteria;
+	}
+	
+	function executeQuery()
+	{
+		if(is_null($this->_oResult))
+		{
+			$sWhereClause	= '';
+			$sCriteria		= $this->getCriteria()->toString();
+			if('' != $sCriteria)
+			{
+				$sWhereClause = 'WHERE ' . $sCriteria;
+			}
+			$sQuery	= $this->sQuery . ' ' . $sWhereClause . ' ' . $this->processOrder();
+			// bab_debug($sQuery);
+			$this->setMySqlResult($this->getDataBaseAdapter()->db_query($sQuery));
+		}
+	}
+	
+	public function clear()
+	{
+		$this->_oObject		= null;
+		$this->_oResult		= null;
+		$this->_iKey		= 0;
+		$this->sQuery		= null;
+		$this->oCriteria	= null;
+		$this->aOrder		= array();
+		$this->aGroupBy		= array();
 	}
 }
-?>
+

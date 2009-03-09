@@ -92,6 +92,76 @@ function bab_getCurrentUserDelegation($useDefault = true)
 }
 
 
+
+
+/**
+ * @return array
+ */
+function bab_getDelegationsFromRessource($res) {
+	
+	global $babDB;
+
+	$allobjects = array();
+	foreach($GLOBALS['babDG'] as $arr) {
+		$allobjects[$arr[0]] = $arr[1];
+	}
+
+
+
+	
+	$return = array(
+		'DGAll' => array(
+			'id' 			=> false,
+			'name' 			=> bab_translate('Home'),
+			'description' 	=> bab_translate('All site'),
+			'color' 		=> 'FFFFFF',
+			'homePageUrl' 	=> '?',
+			'objects' 		=> $allobjects
+		)
+	);
+	
+	
+
+	$return['DG0'] = array(
+		'id' 			=> 0,
+		'name' 			=> bab_translate('Common content'),
+		'description' 	=> bab_translate('Common content created in the main delegation'),
+		'color' 		=> 'FFFFFF',
+		'homePageUrl' 	=> '?tg=oml&file=DG0.html',
+		'objects' 		=> $allobjects
+	);
+
+	
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+
+		$objects = array();
+
+		foreach($allobjects as $key => $value) {
+			if (isset($arr[$key]) && 'Y' === $arr[$key]) {
+				$objects[$key] = $value;
+			}
+		}
+
+		$return['DG'.$arr['id']] = array(
+			'id' 			=> (int) $arr['id'],
+			'name' 			=> $arr['name'],
+			'description' 	=> $arr['description'],
+			'color' 		=> $arr['color'],
+			'homePageUrl' 	=> '?tg=oml&file=DG'.$arr['id'].'.html',
+			'objects' 		=> $objects
+		);
+	}
+
+	return $return;
+}
+
+
+
+
+
+
+
+
 /**
  * Get the delegation where the user is a member of the delgation group
  * @param	int	$id_user
@@ -110,10 +180,7 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 	
 	$res = $babDB->db_query('
 		SELECT 
-			d.id,
-			d.name,
-			d.description, 
-			d.color  
+			d.*   
 		
 		FROM 
 			'.BAB_USERS_GROUPS_TBL.' ug,
@@ -128,41 +195,53 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 		
 		ORDER BY name 
 	');
+
 	
-	$return = array(
-		'DGAll' => array(
-			'id' => false,
-			'name' => bab_translate('Home'),
-			'description' => bab_translate('All site'),
-			'color' => 'FFFFFF',
-			'homePageUrl' => '?'
-		)
-	);
-	
-	
-	if (0 < $babDB->db_num_rows($res)) {
-		$return['DG0'] = array(
-			'id' => 0,
-			'name' => bab_translate('Common content'),
-			'description' => bab_translate('Common content created in the main delegation'),
-			'color' => 'FFFFFF',
-			'homePageUrl' => '?tg=oml&file=DG0.html'
-		);
-	}
-	
-	while ($arr = $babDB->db_fetch_assoc($res)) {
-		$return['DG'.$arr['id']] = array(
-			'id' => (int) $arr['id'],
-			'name' => $arr['name'],
-			'description' => $arr['description'],
-			'color' => $arr['color'],
-			'homePageUrl' => '?tg=oml&file=DG'.$arr['id'].'.html'
-		);
-	}
-	
-	
-	return $return;
+	return bab_getDelegationsFromRessource($res);
 }
+
+
+
+
+/**
+ * Get the delegation where the user is administrator
+ * @param	int	$id_user
+ * @since	6.7.0
+ *
+ * @return 	array
+ */
+function bab_getUserAdministratorDelegations($id_user = NULL) {
+
+	global $babDB;
+	
+	if (NULL === $id_user) {
+		$id_user = $GLOBALS['BAB_SESS_USERID'];
+	}
+	
+	
+	$res = $babDB->db_query('
+		SELECT 
+			d.*   
+		
+		FROM 
+			'.BAB_DG_ADMIN_TBL.' a,
+			'.BAB_DG_GROUPS_TBL.' d 
+		WHERE 
+			d.id = a.id_dg 
+			AND a.id_user = '.$babDB->quote($id_user).'
+		
+		ORDER BY d.name 
+	');
+
+	
+	return bab_getDelegationsFromRessource($res);
+}
+
+
+
+
+
+
 
 
 /**

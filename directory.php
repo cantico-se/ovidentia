@@ -290,6 +290,19 @@ function browseLdapDirectory($id, $pos)
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adldapbrowse"));
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 function browseDbDirectory($id, $pos, $xf, $badd)
 {
 	global $babBody;
@@ -2153,14 +2166,20 @@ function processImportDbFile( $pfile, $id, $separ )
 		exit;
 	}
 
-function getDbContactImage($id, $idu)
+
+
+/**
+ * Display directory entry image
+ * @param	int	$idu	directory entry ID
+ * @see bab_dirEntryPhoto::getUrl()
+ */
+function getDbContactImage($idu)
 	{
 	global $babDB;
-	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-	$res = $babDB->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'");
+	$res = $babDB->db_query("select photo_data, photo_type from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
-		$arr = $babDB->db_fetch_array($res);
+		$arr = $babDB->db_fetch_assoc($res);
 		if( $arr['photo_data'] != "" )
 			{
 			header("Content-type: ".$arr['photo_type']);
@@ -3023,7 +3042,7 @@ switch($idx)
 		exit;
 		break;
 	case 'getimg':
-		getDbContactImage($id, bab_gp('idu'));
+		getDbContactImage(bab_gp('idu'));
 		exit;
 		break;
 	case 'getimgl':

@@ -631,14 +631,14 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	//Si image chargée par ajax
+	//Si image chargï¿½e par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image chargée par la voie normal
+	{//Si image chargï¿½e par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -667,7 +667,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 	{
 		global $babDB;
 		list($iIdParent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($iIdCategory)."'"));
-		//Si la catégorie n'a pas été créée lors de la création d'une délégation
+		//Si la catï¿½gorie n'a pas ï¿½tï¿½ crï¿½ï¿½e lors de la crï¿½ation d'une dï¿½lï¿½gation
 		if(!(!$iIdParent && $babBody->currentAdmGroup))
 		{
 			require_once dirname(__FILE__) . '/../utilit/delincl.php';
@@ -682,7 +682,7 @@ function addTopCat($name, $description, $benabled, $template, $disptmpl, $topcat
 	}
 	
 	{
-		//Insérer l'image en base
+		//Insï¿½rer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);

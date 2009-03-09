@@ -24,217 +24,27 @@
 ************************************************************************/
 include_once "base.php";
 
+
+
+
+
+
+
+
 /**
  * Create links in sitemap for admin section
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
 function bab_sitemap_adminSection(&$event) {
 	global $babBody, $babDB;
-	
-	$item = $event->createItem('babAdmin');
-	$item->setLabel(bab_translate("Administration"));
-	$item->setPosition(array('root', 'DGAll'));
-	$event->addFolder($item);
-	
-	$item = $event->createItem('babAdminSection');
-	$item->setLabel(bab_translate("Ovidentia functions"));
-	$item->setPosition(array('root', 'DGAll','babAdmin'));
-	$event->addFolder($item);
 
-	
-	
-	
-	$array_urls = array();
 
-	if( ($dgcnt = count($babBody->dgAdmGroups)) > 0 )
-		{
-		if( $babBody->isSuperAdmin || $dgcnt > 1 )
-			{
-			$array_urls[] = array(
-				'label' => bab_translate("Change administration"),
-				'url' => $GLOBALS['babUrlScript']."?tg=delegusr",
-				'uid' => 'babAdminDelegChange',
-				'desc' => bab_translate("Change administration delegation")
-				);
-			
-			}
-		}
 
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
-		{
-		$array_urls[] = array(
-				'label' => bab_translate("Delegation"),
-				'url' => $GLOBALS['babUrlScript']."?tg=delegat",
-				'uid' => 'babAdminDelegations'
-			);
-		}
+	// collect url from addons
 
-	$array_urls[] = array(
-		'label' => bab_translate("Users"),
-		'url' => $GLOBALS['babUrlScript']."?tg=users&bupd=0",
-		'uid' => 'babAdminUsers',
-		'desc' => bab_translate("Users management")
-	);
-			
-	$array_urls[] = array(
-		'label' => bab_translate("Groups"),
-		'url' => $GLOBALS['babUrlScript']."?tg=groups",
-		'uid' => 'babAdminGroups'
-	);
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['sections'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Sections"),
-			'url' => $GLOBALS['babUrlScript']."?tg=sections",
-			'uid' => 'babAdminSections' 
-		);
-	}
-		
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['faqs'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Faq"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admfaqs",
-			'uid' => 'babAdminFaqs', 
-			'desc' => bab_translate("Frequently Asked Questions")
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['articles'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Articles"),
-			'url' => $GLOBALS['babUrlScript']."?tg=topcats",
-			'uid' => 'babAdminArticles', 
-			'desc' => bab_translate("Categories and topics management")
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['forums'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Forums"),
-			'url' => $GLOBALS['babUrlScript']."?tg=forums",
-			'uid' => 'babAdminForums'
-		);
-	}
-	
-	
-	
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
-		$array_urls[] = array(
-			'label' => bab_translate("Vacations"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admvacs",
-			'uid' => 'babAdminVacations'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['calendars'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Calendar"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admcals",
-			'uid' => 'babAdminCalendars'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['mails'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Mail"),
-			'url' => $GLOBALS['babUrlScript']."?tg=maildoms&userid=0&bgrp=y",
-			'uid' => 'babAdminMail'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['filemanager'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("File manager"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admfms",
-			'uid' => 'babAdminFm'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['approbations'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Approbations"),
-			'url' => $GLOBALS['babUrlScript']."?tg=apprflow",
-			'uid' => 'babAdminApprob'
-		);
-	}
-	
-
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['directories'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Directories"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admdir",
-			'uid' => 'babAdminDir'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || (isset($babBody->currentDGGroup['orgchart']) && $babBody->currentDGGroup['orgchart'] == 'Y')) {
-		$array_urls[] = array(
-			'label' => bab_translate("Charts"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admocs",
-			'uid' => 'babAdminCharts'
-		);
-	}
-	
-	if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['taskmanager'] == 'Y') {
-		$array_urls[] = array(
-			'label' => bab_translate("Task Manager"),
-			'url' => $GLOBALS['babUrlScript'].'?tg=admTskMgr',
-			'uid' => 'babAdminTm'
-		);
-	}
-	
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
-		$array_urls[] = array(
-			'label' => bab_translate("Add-ons"),
-			'url' => $GLOBALS['babUrlScript']."?tg=addons",
-			'uid' => 'babAdminAddons'
-		);
-	}
-		
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
-		$array_urls[] = array(
-			'label' => bab_translate("Statistics"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admstats",
-			'uid' => 'babAdminStats'
-		);
-	}
-
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 ) {
-		$array_urls[] = array(
-			'label' => bab_translate("Thesaurus"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admthesaurus",
-			'uid' => 'babAdminThesaurus'
-		);
-	}
-	
-	
-	$engine = bab_searchEngineInfos();
-
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 && false !== $engine && $engine['indexes'] ) {
-		$array_urls[] = array(
-			'label' => bab_translate("Search indexes"),
-			'url' => $GLOBALS['babUrlScript']."?tg=admindex",
-			'uid' => 'babAdminSearchIndex' 
-		);
-	}
-	
-	foreach($array_urls as $arr) {
-
-		$link = $event->createItem($arr['uid']);
-		$link->setLabel($arr['label']);
-		$link->setLink($arr['url']);
-		$link->setPosition(array('root','DGAll', 'babAdmin','babAdminSection'));
-		if (isset($arr['desc'])) {
-			$link->setDescription($arr['desc']);
-		}
-		$event->addFunction($link);
-	}
-
-	
 	$addon_urls = array();
 	
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+	if( $babBody->isSuperAdmin )
 		{
 		$addons = bab_addonsInfos::getRows();
 		foreach($addons as $row)
@@ -262,63 +72,370 @@ function bab_sitemap_adminSection(&$event) {
 				}
 			}
 		}
-		
+
+
+
+
+
+
+
+
+
+	// add nodes to delegations
+
 
 	
-	if (0 < count($addon_urls)) {
-		$item = $event->createItem('babAdminSectionAddons');
-		$item->setLabel(bab_translate("Add-ons links"));
-		$item->setPosition(array('root','DGAll','babAdmin'));
-		$event->addFolder($item);
+	$delegations = bab_getUserAdministratorDelegations();
 
-		foreach($addon_urls as $arr) {
-			$link = $event->createItem($arr['uid']);
-			$link->setLabel($arr['label']);
-			$link->setLink($arr['url']);
-			$link->setPosition(array('root', 'DGAll', 'babAdmin','babAdminSectionAddons'));
-			$event->addFunction($link);
+	foreach( $delegations as $key => $deleg ) {
+
+		$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
+		$position = array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSection');
+
+		$item = $event->createItem($dg_prefix.'Admin');
+		$item->setLabel(bab_translate("Administration"));
+		$item->setPosition(array('root', $key));
+		$item->copy_to_all_delegations = false;
+		$event->addFolder($item);
+		
+		$item = $event->createItem($dg_prefix.'AdminSection');
+		$item->setLabel(bab_translate("Ovidentia functions"));
+		$item->setPosition(array('root', 'DGAll', $dg_prefix.'Admin'));
+		$item->copy_to_all_delegations = false;
+		$event->addFolder($item);
+		
+		if( count($babBody->dgAdmGroups) > 0) {
+
+			$item = $event->createItem('babAdminDelegChange');
+			$item->setLabel(bab_translate("Change administration"));
+			$item->setDescription(bab_translate("Change administration delegation"));
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=delegusr');
+			$item->setPosition($position);
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
 		}
-	}
+
+
+		if (isset($deleg['objects']['sections'])) {
+
+			$item = $event->createItem('babAdminSections');
+			$item->setLabel($deleg['objects']['sections']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=sections');
+			$item->setPosition($position);
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
 
 
 
+		if (isset($deleg['objects']['faqs'])) {
 
-	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) {
+			$item = $event->createItem('babAdminFaqs');
+			$item->setLabel($deleg['objects']['faqs']);
+			$item->setDescription(bab_translate("Frequently Asked Questions"));
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admfaqs');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-faqs');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
 
-		$item = $event->createItem('babAdminSites');
-		$item->setLabel(bab_translate("Sites"));
-		$item->setLink($GLOBALS['babUrlScript']."?tg=sites");
-		$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection'));
-		$event->addFolder($item);
 		
 		
-		// sub menu for "Sites"
-		
-		include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
-		$res = bab_getSitesRes();
-		while ($arr = $babDB->db_fetch_assoc($res)) {
+		if (isset($deleg['objects']['articles'])) {
+				
+			$item = $event->createItem('babAdminArticles');
+			$item->setLabel($deleg['objects']['articles']);
+			$item->setDescription(bab_translate("Categories and topics management"));
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=topcats');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-articles'); 
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
 
-			$siteUid = 'babAdminSite'.$arr['id'];
 
-			$item = $event->createItem($siteUid);
-			$item->setLabel($arr['name']);
-			$item->setLink($GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$arr['id']);
-			$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection', 'babAdminSites'));
-			if (!empty($arr['description'])) {
-				$item->setDescription($arr['description']);
-			}
+		if (isset($deleg['objects']['forums'])) {
+
+			$item = $event->createItem('babAdminForums');
+			$item->setLabel($deleg['objects']['forums']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=forums');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-forums');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+
+
+
+
+		if (isset($deleg['objects']['calendars'])) {
+
+			$item = $event->createItem('babAdminCalendars');
+			$item->setLabel($deleg['objects']['calendars']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admcals');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-calendar');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+
+
+		if (isset($deleg['objects']['mails'])) {
+
+			$item = $event->createItem('babAdminMail');
+			$item->setLabel($deleg['objects']['mails']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=maildoms&userid=0&bgrp=y');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-mail');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+
+
+
+
+		if (isset($deleg['objects']['filemanager'])) {
+
+			$item = $event->createItem('babAdminFm');
+			$item->setLabel($deleg['objects']['filemanager']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admfms');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-file-manager');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+
+
+		if (isset($deleg['objects']['approbations'])) {
+
+			$item = $event->createItem('babAdminApprob');
+			$item->setLabel($deleg['objects']['approbations']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=apprflow');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-approbations');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+			
+
+			
+		if (isset($deleg['objects']['directories'])) {
+
+			$item = $event->createItem('babAdminDir');
+			$item->setLabel($deleg['objects']['directories']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admdir');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-directories');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+
+		}
+			
+		if (isset($deleg['objects']['orgchart'])) {
+
+			$item = $event->createItem('babAdminCharts');
+			$item->setLabel($deleg['objects']['orgchart']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admocs');
+			$item->setPosition($position);
+			$item->addIconClassname('apps-orgcharts');
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+
+		}
+			
+		if (isset($deleg['objects']['taskmanager'])) {
+
+			$item = $event->createItem('babAdminTm');
+			$item->setLabel($deleg['objects']['taskmanager']);
+			$item->setLink($GLOBALS['babUrlScript'].'?tg=admTskMgr');
+			$item->setPosition($position);
+			$item->copy_to_all_delegations = false;
+			$event->addFunction($item);
+		}
+
+		if (0 < count($addon_urls)) {
+			$item = $event->createItem($dg_prefix.'AdminSectionAddons');
+			$item->setLabel(bab_translate("Add-ons links"));
+			$item->setPosition(array('root',$key, $dg_prefix.'Admin'));
+			$item->copy_to_all_delegations = false;
 			$event->addFolder($item);
 
-
-			foreach(bab_getSitesConfigurationMenus() as $number => $label) {
-
-				$item = $event->createItem($siteUid.'Menu'.$number);
-				$item->setLabel($label);
-				$item->setLink($GLOBALS['babUrlScript'].'?tg=site&idx=menu'.$number.'&item='.$arr['id']);
-				$item->setPosition(array('root','DGAll', 'babAdmin','babAdminSection', 'babAdminSites', $siteUid));
+			foreach($addon_urls as $arr) {
+				$item = $event->createItem($arr['uid']);
+				$item->setLabel($arr['label']);
+				$item->setLink($arr['url']);
+				$item->setPosition(array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSectionAddons'));
+				$item->copy_to_all_delegations = false;
 				$event->addFunction($item);
 			}
 		}
 	}
+
+	if( $babBody->isSuperAdmin )
+		{
+
+			// add nodes without control on delegations
+
+			$superadminDelegations = array(
+				'DGAll' => $delegations['DGAll'],
+				'DG0' => $delegations['DG0']
+			);
+
+			foreach( $superadminDelegations as $key => $deleg )
+			{
+				$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
+				$position = array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSection');
+				
+
+				$item = $event->createItem('babAdminDelegations');
+				$item->setLabel(bab_translate("Delegation"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=delegat');
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$item = $event->createItem('babAdminUsers');
+				$item->setLabel(bab_translate("Users"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=users&bupd=0');
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$item = $event->createItem('babAdminGroups');
+				$item->setLabel(bab_translate("Groups"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=groups');
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$item = $event->createItem('babAdminVacations');
+				$item->setLabel(bab_translate("Vacations"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=admvacs');
+				$item->setPosition($position);
+				$item->addIconClassname('apps-vacations');
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+
+				$item = $event->createItem('babAdminAddons');
+				$item->setLabel(bab_translate("Add-ons"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=addons');
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$item = $event->createItem('babAdminStats');
+				$item->setLabel(bab_translate("Statistics"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=admstats');
+				$item->setPosition($position);
+				$item->addIconClassname('apps-statistics');
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$item = $event->createItem('babAdminThesaurus');
+				$item->setLabel(bab_translate("Thesaurus"));
+				$item->setLink($GLOBALS['babUrlScript'].'?tg=admthesaurus');
+				$item->setPosition($position);
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+
+				$engine = bab_searchEngineInfos();
+
+				if( false !== $engine && $engine['indexes'] ) {
+
+					$item = $event->createItem('AdminSearchIndex');
+					$item->setLabel(bab_translate("Search indexes"));
+					$item->setLink($GLOBALS['babUrlScript'].'?tg=admindex');
+					$item->setPosition($position);
+					$item->copy_to_all_delegations = false;
+					$event->addFunction($item);
+				}
+
+
+				$item = $event->createItem($dg_prefix.'AdminSites');
+				$item->setLabel(bab_translate("Sites"));
+				$item->setLink($GLOBALS['babUrlScript']."?tg=sites");
+				$item->setPosition($position);
+				$item->addIconClassname('apps-preferences-site');
+				$item->copy_to_all_delegations = false;
+				$event->addFunction($item);
+			
+				
+				// sub menu for "Sites"
+				
+				include_once $GLOBALS['babInstallPath'].'utilit/sitesincl.php';
+				$res = bab_getSitesRes();
+				while ($arr = $babDB->db_fetch_assoc($res)) {
+
+					$siteUid = $dg_prefix.'AdminSite'.$arr['id'];
+					$siteposition = $position;
+					$siteposition[] = $dg_prefix.'AdminSites';
+
+					$item = $event->createItem($siteUid);
+					$item->setLabel($arr['name']);
+					$item->setLink($GLOBALS['babUrlScript']."?tg=site&idx=menusite&item=".$arr['id']);
+					$item->setPosition($siteposition);
+					$item->copy_to_all_delegations = false;
+					if (!empty($arr['description'])) {
+						$item->setDescription($arr['description']);
+					}
+					$event->addFolder($item);
+
+
+					foreach(bab_getSitesConfigurationMenus() as $number => $label) {
+
+						$itemposition = $siteposition;
+						$itemposition[] = $siteUid;
+
+						$item = $event->createItem($siteUid.'Menu'.$number);
+						$item->setLabel($label);
+						$item->setLink($GLOBALS['babUrlScript'].'?tg=site&idx=menu'.$number.'&item='.$arr['id']);
+						$item->setPosition($itemposition);
+						$item->copy_to_all_delegations = false;
+
+						switch($number) {
+					
+							case 1:	// site
+								$item->addIconClassname('apps-preferences-site');
+								break;
+
+							case 2: // mail
+								$item->addIconClassname('apps-preferences-mail-server');
+								break;
+
+							case 5: 
+								$item->addIconClassname('apps-preferences-date-time-format');
+								break;
+
+							case 6: 
+								$item->addIconClassname('apps-preferences-calendar');
+								break;
+
+							case 8:
+								$item->addIconClassname('apps-preferences-authentication');
+								break;	
+
+							case 10:
+								$item->addIconClassname('apps-preferences-wysiwyg-editor');
+								break;	
+
+							case 11:
+								$item->addIconClassname('apps-preferences-search-engine');
+								break;	
+
+							case 12:
+								$item->addIconClassname('apps-preferences-web-services');
+								break;
+
+						}
+
+
+						$event->addFunction($item);
+					}
+				}
+			}
+		}
+
 }
 

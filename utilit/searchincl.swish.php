@@ -23,13 +23,33 @@
 ************************************************************************/
 include_once "base.php";
 
-
+/**
+ * Search with Swish-e search engine on system
+ *
+ * @package 	search
+ * @subpackage 	swish-e
+ */
 class swishCls
 {
-	var $msgerror = false;
+	public $msgerror = false;
 
-	function swishCls($object)
+	protected $system_charset;
+	private $uploadDir;
+
+	public function __construct($object)
 	{
+
+	$registry = bab_getRegistryInstance();
+	$registry->changeDirectory('/bab/indexfiles/');
+
+	if ('windows' === bab_browserOS()) {
+		$default_charset = 'ISO-8859-1';
+	} else {
+		$default_charset = 'UTF-8';
+	}
+
+	$this->system_charset = $registry->getValue('system_charset', $default_charset);
+	
 	$this->uploadDir = $GLOBALS['babBody']->babsite['uploadpath'];
 
 	if (!is_dir($this->uploadDir.'/tmp/'))
@@ -133,6 +153,10 @@ class swishCls
 	 */
 	function execCmd($cmd)
 	{
+
+	
+
+
 	$r = new bab_indexReturn;
 	$r->addDebug($cmd);
 
@@ -147,6 +171,8 @@ class swishCls
 	   $buffer .= fgets($handle, 1024);
 	}
 	pclose($handle);
+
+	$buffer = bab_getStringAccordingToDataBase($buffer, $this->system_charset);
 
 	$r->addDebug($buffer);
 
@@ -212,13 +238,18 @@ class bab_batchFile {
 
 class bab_indexFilesCls extends swishCls
 	{
-		function bab_indexFilesCls($arr_files, $object)
+		public function __construct($arr_files, $object)
 		{
-		parent::swishCls($object);
+		parent::__construct($object);
 		$this->arr_files = $arr_files;
 		}
 
-		function getnextfile()
+
+		/**
+		 * template method
+		 * @return bool
+		 */
+		public function getnextfile()
 		{
 		if (list(,$this->file) = each($this->arr_files))
 			{
@@ -231,9 +262,9 @@ class bab_indexFilesCls extends swishCls
 		}
 
 		/**
-		 * @return object bab_indexReturn
+		 * @return bab_indexReturn
 		 */
-		function setTempConfigFile($indexFile) {
+		public function setTempConfigFile($indexFile) {
 
 			$r = new bab_indexReturn;
 		
@@ -261,9 +292,9 @@ class bab_indexFilesCls extends swishCls
 		}
 
 		/**
-		 * @return object bab_indexReturn
+		 * @return bab_indexReturn
 		 */
-		function checkTimeout() {
+		public function checkTimeout() {
 			global $babDB;
 		
 			$r = new bab_indexReturn;
@@ -328,9 +359,9 @@ class bab_indexFilesCls extends swishCls
 		 * @param string $require_once file to include
 		 * @param string|array $function callback
 		 * @param mixed $function_parameter
-		 * @return object bab_indexReturn
+		 * @return bab_indexReturn
 		 */
-		function prepareIndex($require_once, $function, $function_parameter) {
+		public function prepareIndex($require_once, $function, $function_parameter) {
 
 			global $babDB;
 			
@@ -383,12 +414,17 @@ class bab_indexFilesCls extends swishCls
 		 * wget http://users.ugent.be/~bpuype/wget/
 		 * @since 6.5.91
 		 */
-		function addEOF() {
+		public function addEOF() {
 			$bat = new bab_batchFile($this->batchFile);
 			$bat->init();
 
 			if (!defined('BAB_SWISHE_WGET_URL')) {
-				define('BAB_SWISHE_WGET_URL', 'wget -q --spider %s');
+			
+				$registry = bab_getRegistryInstance();
+				$registry->changeDirectory('/bab/indexfiles/');
+				$default_command = $registry->getValue('http_query_command', 'wget -q --spider %s');
+
+				define('BAB_SWISHE_WGET_URL', $default_command);
 			}
 			
 			$bat->addCmd(sprintf(BAB_SWISHE_WGET_URL, escapeshellarg($GLOBALS['babUrlScript'].'?tg=usrindex&cmd=EOF')));
@@ -400,12 +436,12 @@ class bab_indexFilesCls extends swishCls
 		 * Index files
 		 * @return object bab_indexReturn
 		 */
-		function indexFiles()
+		public function indexFiles()
 		{
 			$r = $this->checkTimeout();
 			
 			if (BAB_INDEX_FREE === $r->result) {
-				$this->setTempConfigFile($this->mainIndex);			
+				$this->setTempConfigFile($this->mainIndex);	
 				$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 				unlink($this->tmpCfgFile);
 				$r->result = true;
@@ -422,7 +458,7 @@ class bab_indexFilesCls extends swishCls
 		 * Add file into index
 		 * @return object bab_indexReturn
 		 */
-		function addFilesToIndex() {
+		public function addFilesToIndex() {
 
 			if (!is_file($this->mainIndex)) {
 				return $this->indexFiles();
@@ -467,9 +503,36 @@ class bab_indexFilesCls extends swishCls
 
 class bab_searchFilesCls extends swishCls
 	{
-	function bab_searchFilesCls($query1, $query2, $option, $object)
+
+	private $query;
+
+	public function __construct($object) {
+		parent::__construct($object);
+	}
+
+
+	/**
+	 * set query for swish-e
+	 * @see bab_Search
+	 */
+	public function setQuery($query) {
+		$this->query = $query;
+	}
+
+
+
+	/**
+	 * create query for swish-e
+	 * @deprecated since new search API
+	 *
+	 * @param	string	$query1
+	 * @param	string	$query2
+	 * @param	string	$option		'AND'|'OR'|'NOT'
+	 * @param	string	$object
+	 */
+	public function setQueryOperator($query1, $query2, $option)
 		{
-		parent::swishCls($object);
+		
 		$query1 = preg_replace_callback("/\s(OR|NOT|AND|or|not|and)\s/", create_function('$v','return \' "\'.$v[1].\'" \';'), $query1);
 
 		//space = OR in ovidentia
@@ -484,33 +547,102 @@ class bab_searchFilesCls extends swishCls
 			}
 		}
 
-	function searchFiles()
+
+	/**
+	 * Execute swish-e command
+	 * @return array
+	 */
+	public function searchFiles()
 		{
 		if (empty($this->swishCmd)) {
 			return array();
 		}
+			
+		bab_debug($this->query, DBG_INFO ,'swish-e');
+
+
+		// try with php extension
+		$return  = $this->searchFilesPecl();
+
+		if (false !== $return) {
+			return $return;
+		}
+
+
+		$cmd_query = bab_convertStringFromDatabase($this->query, $this->system_charset);
 		
-		
-		$r = $this->execCmd($this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($this->query));
+		// set a locale for escapeshellarg
+		bab_locale();
+		$system = $this->swishCmd.' -f '.escapeshellarg($this->mainIndex).' -w '.escapeshellarg($cmd_query);
+
+		$r = $this->execCmd($system);
 		$str = $r->debuginfos[1];
 
 		$files = array();
+		$debug = '';
 		
 		if (preg_match_all('/(\d+)\s+(.*)\s+\"(.*)\"\s+\d+/', $str, $matches))
 			{
 			for( $j = 0; $j< count($matches[1]); $j++)
 				{
 				$files[] = array(
-								'file' => $matches[2][$j],
-								'title' => $matches[3][$j] // , 'mark' => $matches[1][$j]
-								
-								);
+						'file' 		=> $matches[2][$j],
+						'title' 	=> $matches[3][$j], 
+						'relevance' => (int) $matches[1][$j]
+					);
+
+				$debug .= $matches[2][$j]."\n";
 				}
 			}
-		
+		bab_debug('swish-e query : \''.$this->query."'\n\n".$debug, DBG_INFO ,'swish-e');
 		return $files;
 		}
+
+
+	/**
+	 * Search with PECL library
+	 * @link http://www.php.net/swish
+	 * @return array
+	 */
+	public function searchFilesPecl() {
+		if (!class_exists('Swish')) {
+			return false;
+		}
+
+		try {
+
+			$swish = new Swish($this->mainIndex);
+			$results = $swish->query($this->query);
+			$files = array();
+			
+			while($result = $results->nextResult()) {
+	
+				bab_debug($result, DBG_INFO, 'swish-e');
+
+				$files[] = array(
+					'file' 		=> (string)	$result->swishdocpath,
+					'title' 	=> (string) @$result->swishtitle, 
+					'relevance' => (int) 	$result->swishrank
+				);
+			}
+
+			$files = bab_getStringAccordingToDataBase($files, $this->system_charset);
+
+			return $files;
+
+		} catch (SwishException $e) {
+			return false;
+		}
 	}
+
+
+
+}
+
+
+
+
+
 
 
 
@@ -544,11 +676,11 @@ class bab_indexFileCls extends swishCls {
 
 class searchEngineInfosObjCls {
 
-	function getDescription() {
+	public function getDescription() {
 		return 'Swish-e';
 	}
 
-	function getAvailableMimeTypes() {
+	public function getAvailableMimeTypes() {
 		return array(
 			'text/plain',
 			'application/pdf',

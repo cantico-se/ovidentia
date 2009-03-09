@@ -163,7 +163,11 @@ function bab_deleteDraft($idart)
 		bab_deleteDraftFiles($idart);
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
+
+		require_once dirname(__FILE__) . '/tagApi.php';
+		$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
+		$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
+		$oReferenceMgr->removeByReference($oReference);
 
 		require_once dirname(__FILE__) . '/artincl.php';
 		
@@ -210,7 +214,11 @@ function bab_confirmDeleteArticle($article)
 
 	bab_deleteArticleFiles($article);
 
-	$babDB->db_query("delete from ".BAB_ART_TAGS_TBL." where id_art='".$babDB->db_escape_string($article)."'");
+	require_once dirname(__FILE__) . '/tagApi.php';
+	$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
+	$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $article);
+	$oReferenceMgr->removeByReference($oReference);
+	
 	// delete article
 	$req = "delete from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
 	$res = $babDB->db_query($req);

@@ -157,6 +157,9 @@ function bab_indexFiles($arr_files, $object = false)
 
 /**
  * Search in indexed files
+ * @deprecated	since the new search api
+ * @see bab_Search
+ *
  * @param string $query1
  * @param string $query2
  * @param 'AND'|'OR'|'NOT' $option
@@ -180,9 +183,49 @@ function bab_searchIndexedFiles($query1, $query2, $option, $object = false)
 			break;
 		}
 
-	$obj = new bab_searchFilesCls($query1, $query2, $option, $object);
+	$obj = new bab_searchFilesCls($object);
+	$obj->setQueryOperator($query1, $query2, $option);
 	return $obj->searchFiles();
 }
+
+
+
+/**
+ * return indexed files without upload path
+ * @param	bab_SearchCriteria	$criteria		search criteria
+ * @param 	string 				$object 		(if not specified, the name of the addon will be used)
+ * @return array
+ */
+function bab_searchIndexedFilesFromCriteria(bab_SearchCriteria $criteria, $object = false) {
+
+	$engine = bab_searchEngineInfos();
+
+	if (!$object && isset($GLOBALS['babAddonFolder']))
+		$object = $GLOBALS['babAddonFolder'];
+
+	if (false === $engine)
+		return false;
+
+	switch($engine['name'])
+		{
+		case 'swish':
+			include_once $GLOBALS['babInstallPath'].'utilit/searchincl.swish.php';
+			include_once $GLOBALS['babInstallPath'].'utilit/searchbackend.swish.php';
+			break;
+		}
+
+	$backend = new bab_SearchSwishBackEnd;
+
+	$obj = new bab_searchFilesCls($object);
+	$query = trim($criteria->toString($backend));
+	$obj->setQuery($query);
+
+	return $obj->searchFiles();
+
+}
+
+
+
 
 
 
@@ -319,4 +362,259 @@ function bab_removeFmUploadPath($str) {
 	return implode('/', $arr);
 }
 
-?>
+
+
+
+
+
+/**
+ * @package search
+ */
+class bab_SearchDefaultForm {
+
+
+
+	/**
+	 * default search form
+	 * @return string
+	 */
+	public static function getHTML() {
+
+		$options = array(
+			'OR' 	=> bab_translate('Or'),
+			'AND'	=> bab_translate('And'),
+			'NOT'	=> bab_translate('Exclude')
+		);
+
+		$htmloptions = '';
+
+		foreach($options as $key => $value) {
+			if ($key === bab_rp('option')) {
+				$option = '<option value="%option%" selected="selected">%title%</option>';
+			} else {
+				$option = '<option value="%option%">%title%</option>';
+			}
+
+			$htmloptions .= str_replace(
+				array('%option%'	, '%title%'),
+				array($key			, $value),
+				$option
+			);
+		}
+
+		global $babBody;
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'search.js');
+
+		return str_replace(
+			array('%labelprimary%'			, '%labelsecondary%'				, '%primary%'					, '%htmloptions%'	, '%secondary%'),
+			array(bab_translate("Search")	, bab_translate("Advanced search")	, bab_toHtml(bab_rp('what'))	, $htmloptions		, bab_toHtml(bab_rp('what2'))),
+			'
+			<p>
+				<label for="bab_search_primary">%labelprimary% :</label>
+				<input type="text" id="bab_search_primary" name="what" size="40" value="%primary%" />
+			</p>
+
+			<p id="bab_search_secondary_bloc">
+				<label for="bab_search_secondary">%labelsecondary% :</label>
+
+				<select name="option">
+					%htmloptions%
+				</select>
+				<input type="text" id="bab_search_secondary" name="what2" size="30" value="%secondary%" />
+			</p>
+			'
+		);
+	}
+
+
+	/**
+	 * Add criterions from default search form
+	 * @return bab_SearchCriteria
+	 */
+	private static function addFromCriterions(bab_SearchCriteria $crit, bab_SearchTestable $testable) {
+
+		$primary_search = bab_rp('what');
+		$secondary_search = bab_rp('what2');
+		$option = bab_rp('option');
+
+		if ($primary_search) {
+			$crit = $crit->_AND_(self::searchStringToCriteria($testable, $primary_search));
+		}
+
+		if ($secondary_search) {
+			switch($option) {
+
+				case 'AND':
+					$crit = $crit->_AND_(self::searchStringToCriteria($testable, $secondary_search));
+					break;
+
+				case 'NOT':
+					$crit = $crit->_AND_(self::searchStringToCriteria($testable, $secondary_search)->_NOT_());
+					break;
+
+				case 'OR':
+				default:
+					$crit = $crit->_OR_(self::searchStringToCriteria($testable, $secondary_search));
+					break;
+			}
+		}
+		
+		return $crit;
+	}
+
+
+	/**
+	 * Get array of tags references found using default form
+	 * @return array
+	 */
+	public static function getTagsReferences() {
+		
+		$option = bab_rp('option');
+
+		require_once dirname(__FILE__) . '/tagApi.php';
+		$oRefMgr = new bab_ReferenceMgr();
+
+		$primary = array();
+		$secondary = array();
+		
+
+		if (bab_rp('what')) {
+			$primary_search 	= $oRefMgr->get(bab_rp('what'));
+			if ($primary_search) {
+				foreach($primary_search as $ref) {
+					$primary[(string) $ref] = $ref;
+				}
+			}
+		}
+
+		
+		if (bab_rp('what2')) {
+			$secondary_search 	= $oRefMgr->get(bab_rp('what2'));
+			if ($secondary_search) {
+				foreach($secondary_search as $ref) {
+					$secondary[(string) $ref] = $ref;
+				}
+			}
+		} else {
+			$option = 'OR';
+		}
+
+		switch($option) {
+			case 'AND':
+				return array_intersect($primary, $secondary);
+
+			case 'NOT':
+				return ($primary - $secondary);
+
+			case 'OR':
+			default:
+				return ($primary + $secondary);
+		}
+	}
+
+
+
+	/**
+	 * add default search form criteria to testable object
+	 * the criteria is generated from the default form search
+	 * 
+	 * @param	bab_SearchTestable $testable		search realm or search field
+	 * @return 	bab_SearchCriteria
+	 */
+	public static function getCriteria(bab_SearchTestable $testable) {
+
+		if ($testable instanceOf bab_SearchRealm) {
+			$crit = $testable->getDefaultCriteria();
+		} else {
+			$crit = new bab_SearchInvariant;
+		}
+
+		return self::addFromCriterions($crit, $testable);
+	}
+
+
+
+
+
+
+	/**
+	 * create a criteria for search queries without fields (search file content)
+	 * the criteria is generated from the default form search
+	 *
+	 * @param	bab_SearchRealm 	$realm
+	 * @return 	bab_SearchCriteria
+	 */
+	public static function getFieldLessCriteria(bab_SearchRealm $realm) {
+
+		$crit = new bab_SearchInvariant;
+
+		if (!isset($realm->search)) {
+			return $crit;
+		}
+		
+		return self::addFromCriterions($crit, $realm->search);
+	}
+
+
+
+
+
+	/**
+	 * Create a <code>bab_searchCriteria</code> from a string of the search form
+	 * used for primary_search and secondary_search
+	 * 
+	 * @param	bab_searchTestable	$testable
+	 * @param	string				$search
+	 * @param	string				$operator
+	 * @return bab_searchCriteria
+	 */
+	public static function searchStringToCriteria($testable, $search, $operator = '_OR_') {
+
+		$criteria = new bab_SearchInvariant;
+		
+		if (preg_match_all('/(?:([^"][^\s]+)|(?:"([^"]+)")|(\w))\s*/', $search, $matchs)) {
+		
+			$arr = array();
+			
+			foreach($matchs[1] as $key => $match) {
+				if (trim($match)) {
+					$arr[] = trim($match);
+				}
+				if (trim($matchs[2][$key])) {
+					$arr[] = trim($matchs[2][$key]);
+				}
+				
+				if (trim($matchs[3][$key])) {
+					$arr[] = trim($matchs[3][$key]);
+				}
+			}
+
+			
+			foreach($arr as $keyword) {
+			
+				$keyword = trim($keyword, ' ,;.');
+			
+				if ($keyword) {
+					$criteria = $criteria->$operator($testable->contain($keyword));
+				}
+			}
+		}
+		
+		return $criteria;
+	}
+
+
+
+
+	public function highlightKeyword() {
+		$primary_search = bab_rp('what');
+		$secondary_search = bab_rp('what2');
+
+		if ($secondary_search) {
+			return $primary_search.' '.$secondary_search;
+		}
+
+		return $primary_search;
+	}
+}
+

@@ -143,4 +143,29 @@ class bab_userInfos {
 
 		return $name;
 	}
+
+
+
+
+	/**
+	 * Get firstname and lastname sorted with ovidentia parameters the result is HTML with a link to directory entry if available
+	 * @link	http://www.gmpg.org/xfn/11
+	 * @param	int		$id_user
+	 * 
+	 * @return 	string
+	 */
+	public static function composeHtml($id_user) {
+
+		$url = bab_getUserDirEntryLink($id_user, BAB_DIR_ENTRY_ID_USER);
+
+		if (false === $url) {
+			return bab_toHtml(self::composeName($id_user));
+		}
+
+		return bab_sprintf(
+			'<a rel="contact" href="%s" onclick="bab_popup(this.href);return false;">%s</a>', 
+			bab_toHtml($url),
+			bab_toHtml(self::composeName($id_user))
+		);
+	}
 }

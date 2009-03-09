@@ -2246,15 +2246,21 @@ class bab_Files extends bab_handler
 					$aLimit = array($offset, $rows);
 				}
 				
+				require_once dirname(__FILE__) . '/tagApi.php';
+				
+				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+				
 				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'), $aLimit);
 				while(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 				{
 					$this->IdEntries[] = $oFolderFile->getId();
 					$this->tags[$oFolderFile->getId()] = array();
-					$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$oFolderFile->getId()."'");
-					while( $rr = $babDB->db_fetch_array($rs))
+					
+					$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $oFolderFile->getId()));
+					$oIterator->orderAsc('tag_name');
+					foreach($oIterator as $oTag)
 					{
-						$this->tags[$oFolderFile->getId()][] = $rr['tag_name'];
+						$this->tags[$oFolderFile->getId()][] = $oTag->getName();
 					}
 				}
 				$this->oFolderFileSet->rewind() ;
@@ -2400,10 +2406,16 @@ class bab_File extends bab_handler
 			if(true === $bHaveFileAcess)
 			{
 				global $babBody, $babDB;
-				$rs = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id = ftt.id_tag WHERE id_file='".$this->oFolderFile->getId()."'");
-				while( $rr = $babDB->db_fetch_array($rs))
+				
+				require_once dirname(__FILE__) . '/tagApi.php';
+				
+				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+				
+				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $this->oFolderFile->getId()));
+				$oIterator->orderAsc('tag_name');
+				foreach($oIterator as $oTag)
 				{
-					$this->tags[] = $rr['tag_name'];
+					$this->tags[] = $oTag->getName();
 				}
 				
 				$iIdAuthor = (0 === $this->oFolderFile->getModifierId() ? $this->oFolderFile->getAuthorId() : $this->oFolderFile->getModifierId());

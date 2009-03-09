@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+include_once $babInstallPath."utilit/searchapi.php";
 include_once $babInstallPath."utilit/topincl.php";
 include_once $babInstallPath."utilit/forumincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
@@ -40,185 +41,11 @@ function highlightWord( $w, $text)
 	}
 	
 	
-function unhtmlentities($string)
-{
-    // replace numeric entities
-    $string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-    $string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-    // replace literal entities
-    $trans_tbl = get_html_translation_table(HTML_ENTITIES);
-    $trans_tbl = array_flip($trans_tbl);
-    return strtr($string, $trans_tbl);
-}
-	
-/**
- * text from WYSIWYG
- */
-function put_text($txt, $limit = 60, $limitmot = 30 )
-	{
-	$obj = bab_replace_get();
-	$obj->ref($txt);
-	
-	if (mb_strlen($txt) > $limit)
-		$out = mb_substr(unhtmlentities(strip_tags($txt)),0,$limit)."...";
-	else
-		$out = unhtmlentities(strip_tags($txt));
-	$arr = explode(" ",$out);
-	foreach($arr as $key => $mot)
-		$arr[$key] = mb_substr($mot,0,$limitmot);
-	$txt = implode(" ",$arr);
-	
-	return bab_toHtml($txt);
-	}
-
-
-function finder($req2,$tablename,$option = "OR",$req1="")
-	{
-	return bab_sql_finder($req2,$tablename,$option,$req1);
-	}
-
-function returnCategoriesHierarchy($topics)
-	{
-	$article_path = new categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
-	$out = bab_printTemplate($article_path,"search.html", "article_path");
-	return $out;
-	}
 
 
 
-class bab_addonsSearch
-	{
-	var $tabSearchAddons = array();
-	var $tabLinkAddons = array();
-	var $titleAddons = array();
-
-	function bab_addonsSearch()
-		{
-		global $babDB;
-		
-		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-		
-		$searchinfos = bab_callAddonsFunction('searchinfos');
-		
-		foreach($searchinfos as $id => $arr) {
-			
-			$title = $arr['addon_name'];
-		
-			$func_results = $arr['return_value'];
-
-			$this->titleAddons[$id] = $title;
-			
-
-			if (is_array($arr['return_value'])) {
-				list($text,$link) = $arr['return_value'];
-				}
-			else {
-				$text = $arr['return_value'];
-				}
-
-			if (is_string($text))
-				{
-				$func_results = $title."_searchresults";
-				if (function_exists($func_results))
-					{
-					$this->func_results[$id] = $func_results;
-					$this->tabSearchAddons[$id] = $text;
-					}
-				if (isset($link))
-					{
-					$this->tabLinkAddons[$id] = $text;
-					$this->querystring[$id] = $link;
-					}
-				}
-			}
-		}
-
-	/**
-	 * item definition for searching in an addon
-	 * @param	int		$id_addon
-	 * @return string
-	 */
-	public static function getItemFromAddon($id_addon) {
-		return 'addon/'.$id_addon;
-	}
-
-	/**
-	 * get addon from item or false if item is not an addon
-	 * @return int		id_addon
-	 */
-	public static function getAddonFromItem($item) {
-
-		if (empty($item)) {
-			return false;
-		}
-
-		if (false === mb_strpos($item, 'addon/')) {
-			return false;
-		}
-
-		$trail = mb_substr($item, mb_strlen('addon/'));
-
-		if (!is_numeric($trail)) {
-			$addon = bab_getAddonInfosInstance($trail);
-
-			if (false === $addon) {
-				return false;
-			}
-
-			return $addon->getId();
-		}
-
-		return (int) $trail;
-	}
 
 
-	function getmenuarray()
-		{
-		foreach ($this->tabLinkAddons as $key => $value)
-			$out[self::getItemFromAddon($key)] = $value;
-		foreach ($this->tabSearchAddons as $key => $value)
-			if (!isset($out[self::getItemFromAddon($key)])) $out[self::getItemFromAddon($key)] = $value;
-		
-		return isset($out) ? $out : array();
-		}
-
-	function getsearcharray($item)
-		{
-		if (empty($item))
-			{
-			return $this->tabSearchAddons;
-			}
-		elseif ($id = self::getAddonFromItem($item))
-			{
-			if (isset($this->tabSearchAddons[$id])) {
-				return array($id => $this->tabSearchAddons[$id]);	
-				}
-			}
-		}
-
-	function setSearchParam($q1, $q2, $option, $nb_result)
-		{
-		$this->q1 = $q1;
-		$this->q2 = $q2;
-		$this->option = $option;
-		$this->nb_result = $nb_result;
-		}
-
-
-	function callSearchFunction($id)
-		{
-		if (!isset($this->i[$id]))
-			$this->i[$id] = 0;
-
-		if ($this->i[$id] >= $this->nb_result)
-			return false;
-		$this->i[$id]++;
-
-		bab_setAddonGlobals($id);
-		$func = $this->func_results[$id];
-		return $func($this->q1, $this->q2, $this->option, $this->pos[$id], $this->nb_result);
-		}
-	}
 
 
 function searchKeyword($item , $option = "OR")
@@ -234,427 +61,145 @@ function searchKeyword($item , $option = "OR")
 		var $itemvalue;
 		var $itemname;
 		var $arr = array();
-		var $sfaq;
-		var $sart;
-		var $snot;
-		var $sfor;
-		var $sfil;
 		var $what;
 		var $what2;
 		var $dirarr = array();
 
-		function tempb($item ,$option )
+		public function __construct($item ,$option )
 			{
 
 			global  $babDB,$babBody;
+
+			$this->t_in = bab_translate('In');
+			$this->t_all = bab_translate('All');
+			$this->t_search = bab_translate('Search');
+
 			$this->item = $item;
 			$this->fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
-			$this->search = bab_translate("Search");
-			$this->all = bab_translate("All");
-			$this->in = bab_translate("in");
+
 			if (!isset($this->fields['what'])) $this->fields['what'] = '';
 			if (!isset($this->fields['what2'])) $this->fields['what2'] = '';
 			if (!isset($this->fields['advenced'])) $this->fields['advenced'] = '';
-			$this->htmlfields = $this->fields;
-			foreach($this->htmlfields as $key=>$val)
+
+			$this->htmlfields = array();
+			foreach($this->fields as $key=>$val)
 				{
-				$this->htmlfields[$key] = bab_toHTML($val);
+				if (is_string($val))
+					$this->htmlfields[$key] = bab_toHtml($val);
 				}
-			$this->what = stripslashes($this->fields['what']);
-			$this->fields['what'] = bab_toHtml(stripslashes($this->fields['what']));
-			$this->fields['what2'] = bab_toHtml(stripslashes($this->fields['what2']));
-			$this->reset = bab_translate("Reset");
-			$this->Topic = bab_translate("Topic");
-			$this->Author = bab_translate("Author");
-			$this->Date = bab_translate("Date");
-			$this->option_or = bab_translate("or");
-			$this->option_and = bab_translate("and");
-			$this->option_not = bab_translate("exclude");
-			$this->switch = bab_translate("Advanced search"); 
-			$this->before = bab_translate("before date");
-			$this->after = bab_translate("after date");
-			$this->t_search_files_only = bab_translate("Search attached files only");
-			$this->t_index_priority = bab_translate("Give priority to file content for order");
-			$this->tags_txt = bab_translate("Keywords of the thesaurus");
 			
-			$this->pat = bab_toHtml(bab_rp('pat'));
+			$this->what = $this->fields['what'];
+			$this->htmlfields['what'] = bab_toHtml($this->fields['what']);
+			$this->htmlfields['what2'] = bab_toHtml($this->fields['what2']);
+
 			$this->field = bab_rp('field');
 			$this->order = bab_toHtml(bab_rp('order'));
-			$this->atleastone_txt = bab_translate("Or");
-			$this->all_txt = bab_translate("And");
-
 			$this->index = bab_searchEngineInfos();
-			$this->search_files_only = isset($_REQUEST['search_files_only']);
+			
 
-			$this->beforelink = $GLOBALS['babUrlScript']."?tg=month&callback=beforeJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
-			$this->afterlink = $GLOBALS['babUrlScript']."?tg=month&callback=afterJs&ymin=100&ymax=10&month=".date('m')."&year=".date('Y');
+			foreach (bab_Search::getRealms() as $realm)
+				{
+				$name = $realm->getName();
 
-			$this->author_url = $GLOBALS['babUrlScript']."?tg=search&idx=browauthor&cb=";
+				if ($realm->displayInSearchEngine() && $realm->isAccessValid()) {
+					$this->searchItems[$name] = $realm;
+					}
+				}
+
+			bab_sort::natcasesort($this->searchItems);
 
 			
-			$this->or_selected = "";
-			$this->and_selected = "";
-			$this->not_selected = "";
+			// get html form for current item
 
-			switch ($option)
+			if (isset($this->searchItems[$this->item])) 
 				{
-				case "OR": $this->or_selected = "selected"; break;
-				case "AND": $this->and_selected = "selected"; break;
-				case "NOT": $this->not_selected = "selected"; break;
+				$this->search_form = $this->searchItems[$this->item]->getSearchFormHtml();
+				}
+			else
+				{
+				$this->search_form = bab_SearchDefaultForm::getHTML();
 				}
 
-			$this->addons = new bab_addonsSearch;
-
-			$this->el_to_init = Array ( 'a_author', 'a_author_memo', 'a_authorid','a_dd','a_mm','a_yyyy','before','after','before_display' ,'after_display','before_memo','after_memo','what2','what','advenced', 'tagsname');
-
-			for ($i =0 ;$i < FIELDS_TO_SEARCH ; $i++)
-				$this->el_to_init[] = "dirfield_".$i;
-
-			
-			if ((isset($this->fields['idx']) && $this->fields['idx'] != "find")||((!isset($this->fields['a_mm']))&&(!isset($this->fields['g_mm'])))) 
-				{
-				foreach($this->el_to_init as  $value)
-					{
-					if (! isset($this->fields[$value]))
-						{
-						$this->fields[$value] = "";
-						$this->htmlfields[$value] = "";
-						}
-					}
-				}
-
-			$this->busetags = false;
-
-			$this->arrtopicscategories = bab_getArticleTopicsAsTextTree();
-			$this->busetags = bab_userTopicsUseTags();
-
-			if( $item == 'files') // Files
-				{
-				$this->busetags = true;
-				}
-
-			if( $this->busetags )
-				{
-				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
-				$babBody->addJavascriptFile($GLOBALS['babScriptPath']."scriptaculous/scriptaculous.js");
-				$babBody->addStyleSheet('ajax.css');
-				}
-
-			$req = "select D.id, D.name, D.id_group id_group from ".BAB_DB_DIRECTORIES_TBL." D,".BAB_GROUPS_TBL." G where D.id_group = '0' OR (D.id_group = G.id AND G.directory='Y') order by D.name";
-			$this->resdirs = $babDB->db_query($req);
-			$i = 0;
-			while ($arr = $babDB->db_fetch_array($this->resdirs) )
-				{
-				$prevname = $i >= 1 && is_array($this->dirarr[$i-1]) ? $this->dirarr[$i-1]['name'] : '';
-				if ($arr['name'] != $prevname && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']))
-					{
-					$this->dirarr[$i] = $arr;
-					$i++;
-					}
-				}
-			$this->countdirs = $i;
-
-			$req = "select name,description from ".BAB_DBDIR_FIELDS_TBL." WHERE name != 'jpegphoto' order by description";
-			$this->resfields = $babDB->db_query($req);
-			$this->countfields = $babDB->db_num_rows($this->resfields);
-			$i = 0;
-			while ($arr = $babDB->db_fetch_array($this->resfields))
-				{
-				$this->tbln[$i] = $arr['name'];
-				$this->tbld[$i] = translateDirectoryField($arr['description']);
-				$i++;
-				}
-			$fliped = array_flip($this->tbld);
-			bab_sort::ksort($fliped);
-			$i = 0;
-			foreach($fliped as $value => $key)
-				{
-				$this->tblfields[$i]['name'] = $this->tbln[$key];
-				$this->tblfields[$i]['description'] = $value;
-				$i++;
-				}
-
-			if ($item == 'calendars')
-				{
-				$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
-				
-				foreach ($this->rescal as $k => $arr)
-					{
-					$this->rescal[$arr['name']] = $arr;
-					unset($this->rescal[$k]);
-					}
-				bab_sort::ksort($this->rescal);
-				$this->rescal = array_values($this->rescal);
-				
-				$this->countcal = count($this->rescal);
-				}
-
-			$this->acces['articles'] = true;
-			$this->acces['forums'] = false;
-			$this->acces['faqs'] = false;
-			$this->acces['notes'] = false;
-			$this->acces['files'] = false;
-			$this->acces['contacts'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_contactsAccess();
-			$this->acces['directories'] = $this->countdirs;
-			$this->acces['calendars'] = bab_calendarAccess();
-
-			$res = $babDB->db_query("select id from ".BAB_FORUMS_TBL);
-			while( $row = $babDB->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
-					{
-					$this->acces['forums'] = true;
-					break;
-					}
-				}
-
-			$res = $babDB->db_query("select id from ".BAB_FAQCAT_TBL);
-			while( $row = $babDB->db_fetch_array($res))
-				{
-				if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
-					{
-					$this->acces['faqs'] = true;
-					break;
-					}
-				}
-			$this->acces['notes'] = $GLOBALS['BAB_SESS_LOGGED'] && bab_notesAccess();
-			
-			if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
-			{
-				$this->acces['files'] = true;
 			}
 
-			$babSearchItems = array (
-				'articles' => bab_translate("Articles"), 
-				'forums' => bab_translate("Forums"), 
-				'faqs' => bab_translate("Faq"), 
-				'notes' => bab_translate("Notes"), 
-				'files' => bab_translate("File manager"), 
-				'contacts' => bab_translate("Contacts"), 
-				'directories' => bab_translate("Directories"), 
-				'calendars' => bab_translate("Calendar")
-			);  
 
-
-			foreach ($babSearchItems as $key => $value)
-				{
-				if ($this->acces[$key])
-					$this->searchItems[$key] = $value;
-				}
-
-			$menuarray = $this->addons->getmenuarray();
-			$this->searchItems = array_merge($this->searchItems,$menuarray);
-			bab_sort::asort($this->searchItems);
-			}
-
-		function getnextitem()
+		
+		/**
+		 * Template method
+		 */
+		public function getnextitem()
 			{
 			$flag = list($this->itemvalue,$this->itemname) = each($this->searchItems);
 			$this->selected = $this->itemvalue == $this->item ? 'selected' : '';
 			return $flag;
 			}
-
-
-		
-		function getnexttopiccategory() 
-			{
-
-			if (list(,$arr) = each($this->arrtopicscategories))
-				{
-
-				$type = $arr['category'] ? 'category-' : 'topic-';
-				$value = $type.$arr['id_object'];
-
-				$this->option 	= bab_toHtml(str_repeat(bab_nbsp(),3).$arr['name']);
-				$this->value 	= bab_toHtml($value);
-
-				if (isset($this->fields['a_topiccategory'])) {
-					$this->selected = $value === $this->fields['a_topiccategory'];
-				} else {
-					$this->selected = false;
-				}
-
-				return true;
-				}
-
-			return false;
-			}
-
-		function getnextdir() 
-			{
-			global $babDB;
-			static $l = 0;
-			if( $l < $this->countdirs)
-				{
-				
-                $arr = $this->dirarr[$l];
-				
-				$this->topicid = $arr['id'];
-				$this->selected = isset($this->fields['g_directory']) && $this->fields['g_directory'] == $arr['id'];
-
-				$this->topictitle = bab_toHtml($arr['name']);
-
-				$req = "select df.id, dfd.name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." dfd left join ".BAB_DBDIR_FIELDSEXTRA_TBL." df ON df.id_directory=dfd.id_directory and df.id_field = ( ".BAB_DBDIR_MAX_COMMON_FIELDS." + dfd.id ) where df.id_directory='".(($arr['id_group']==0) ? $arr['id'] : 0)."'";
-				$res = $babDB->db_query($req);
-
-				$lk = 0;
-				while ($arr = $babDB->db_fetch_array($res))
-					{
-					$tblxn[$lk] = $arr['id'];
-					$tblxd[$lk] = translateDirectoryField($arr['name']);
-					$lk++;
-					}
-
-				$this->tblxfields = array();
-				$this->countfieldsfromdir = 0;
-				if( $lk > 0 )
-					{
-					
-					$fliped = array_flip($tblxd);
-					bab_sort::ksort($fliped);
-					$lk= 0;
-					foreach($fliped as $value => $key)
-						{
-						$this->tblxfields[$lk]['name'] = $tblxn[$key];
-						$this->tblxfields[$lk]['description'] = $value;
-						$lk++;
-						}
-					$this->countfieldsfromdir = count($this->tblxfields);
-					}
-				
-				$l++;
-				return true;
-				}
-			else
-				{
-				$l = 0;
-				return false;
-				}
-			}
-		
-		function selectname() 
-			{
-			static $i = 0;
-			if( $i < $this->countfields)
-				{
-				$this->selindex = $i;
-                $arr = $this->tblfields[$i];
-				$this->name = $arr['name'];
-				$this->description = $arr['description'];
-				$this->descriptionJs = addslashes($arr['description']);
-				$this->fieldvalue = isset($this->htmlfields[$arr['name']])?$this->htmlfields[$arr['name']]:'';
-				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $arr['name'])
-					$this->selected = "selected";
-				else	
-					$this->selected = false;
-				$i++;
-				return true;
-				}
-			else
-				{$i = 0;
-				return false;}
-			}
-
-		function getnextfield()
-			{
-			static $k = 0;
-			if( $k < $this->countfieldsfromdir)
-				{
-				$this->fieldnamefromdir = "babdirf".$this->tblxfields[$k]['name'] ;
-				$this->name = "babdirf".$this->tblxfields[$k]['name'];
-				$this->description = $this->tblxfields[$k]['description'];
-				$this->fieldindex = $k;
-				if ( isset($this->fields['dirselect_'.$this->j]) && $this->fields['dirselect_'.$this->j] == $this->name)
-					{
-					
-					$this->selected = "selected";
-					}
-				else	
-					$this->selected = false;
-				$k++;
-				return true;
-				}
-			else
-				{
-				$k = 0;
-				return false;}
-			}
-
-		function getnextfieldtosearch() 
-			{
-			static $j = 0;
-			if( $j < FIELDS_TO_SEARCH)
-				{
-				$this->fieldcounter = $j;
-				
-				$this->value = isset($this->htmlfields['dirfield_'.$j]) ? $this->htmlfields['dirfield_'.$j] : '';
-				$this->j = $j;
-				$j++;
-				return true;
-				}
-			else
-				{
-				$j = 0;
-				return false;}
-			}
-
-		function getnextcal() 
-			{
-			static $i = 0;
-			if( $i < $this->countcal)
-				{
-				$this->calendarid = $this->rescal[$i]['idcal'];
-				$this->caltitle = bab_toHtml($this->rescal[$i]['name']);
-				$this->selected = isset($this->fields['h_calendar']) && $this->rescal[$i]['idcal'] == $this->fields['h_calendar'];
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
 		}
 	$tempb = new tempb($item ,$option);
-	$babBody->babecho(	bab_printTemplate($tempb,"search.html", "search"));
+	$babBody->addStyleSheet('search.css');
+	$babBody->babecho(	bab_printTemplate($tempb,"search.html", "searchform"));
 	}
 
+
+
+
+
+/**
+ * Navigation
+ */
 class temp_nav
 	{
-	function temp_nav($babLimit,$nbrows,$navitem,$navpos)
+
+	private $baseurl = null;
+
+
+	public function __construct($nbrows,$navpos, $navitem, $limit)
 		{
 		global $navbaritems;
 		$this->navbaritems = $navbaritems;
-		$this->babLimit = $babLimit;
-		$this->nbrows = $nbrows;
+		$this->limit = $limit;
+		$this->nbrows = (string) $nbrows;
 		$this->navitem = $navitem;
+
+
+		if ($this->navitem !== bab_rp('navitem')) {
+			$navpos = 0;
+		}
+		
+
 		$this->navpos = $navpos;
-		if (($navpos+$babLimit) > $nbrows ) $this->navposend = $navpos+($nbrows - $navpos);
-		else $this->navposend = $navpos+$babLimit;
+		if (($navpos+$this->limit) > $nbrows ) $this->navposend = $navpos+($nbrows - $navpos);
+		else $this->navposend = $navpos+$this->limit;
 		$this->results = bab_translate("Results");
 		$this->pages = bab_translate("Pages");
 		$this->to = bab_translate("To");
 		$this->from = bab_translate("From");
-		$this->countpages = ceil($nbrows/$babLimit);
+		$this->countpages = ceil($nbrows/$this->limit);
 		
 		if (1 === $this->countpages) {
 			$this->pages = bab_translate("Page");
 		}
 		
+
+		$this->baseurl = bab_url::request_gp();
+		$this->baseurl = bab_url::mod($this->baseurl, 'navitem', $this->navitem);
 		
 		if ( $navpos <= 0 ) $this->previous = false;
 		else 
 			{ 
 			$this->previous = bab_translate("Previous");
-			$this->urlprev ="javascript:navsearch(".($this->navpos - $this->babLimit).",'".$this->navitem."')"; 
+			$previous_pos = $this->navpos - $this->limit;
+			$this->urlprev = bab_url::mod($this->baseurl, 'navpos', $previous_pos); 
 			}
 
-		if ( $navpos + $babLimit >= $nbrows ) $this->next = false;
+		if ( $navpos + $this->limit >= $nbrows ) $this->next = false;
 		else 
 			{
 			$this->next = bab_translate("Next");
-			$this->urlnext = "javascript:navsearch(".($this->navpos + $this->babLimit).",'".$this->navitem."')"; 
+			$next_pos = $this->navpos + $this->limit;
+			$this->urlnext = bab_url::mod($this->baseurl, 'navpos', $next_pos); 
 			}
 		
-		$this->count = ceil($nbrows/$babLimit);
+		$this->count = ceil($nbrows/$this->limit);
 		if ( $this->count > $this->navbaritems )
 			$this->count = $this->navbaritems;
 			
@@ -662,19 +207,25 @@ class temp_nav
 			$this->results = bab_translate("Result");
 		}
 
-		if ((ceil($this->navpos/$babLimit) - ($this->navbaritems/2)) < 0 ) $this->start = 0;
-		else $this->start = ceil($this->navpos/$babLimit) - ($this->navbaritems/2);
+		if ((ceil($this->navpos/$this->limit) - ($this->navbaritems/2)) < 0 ) $this->start = 0;
+		else $this->start = ceil($this->navpos/$this->limit) - ($this->navbaritems/2);
 		$this->page = $this->start + 1;
 		}
-		
-	function getnext()
+
+
+
+	/**
+	 * Template method
+	 */
+	public function getnext()
 		{
 		static $i = 0;
 		if( $i < $this->count && $this->page < $this->countpages)
 			{
 			$this->page = $this->start + $i + 1;
-			$this->urlpage = "javascript:navsearch(".$this->babLimit*($this->start+$i).",'".$this->navitem."')"; 
-			if ( (ceil($this->navpos/$this->babLimit) == $this->start + $i) ) 
+			$pos = $this->limit*($this->start+$i);
+			$this->urlpage = bab_url::mod($this->baseurl, 'navpos', $pos); 
+			if ( (ceil($this->navpos/$this->limit) == $this->start + $i) ) 
 				$this->selected = true;
 			else
 				$this->selected = false;
@@ -689,13 +240,11 @@ class temp_nav
 		}
 	}
 
-function navbar($babLimit,$nbrows,$navitem,$navpos)
-	{
-	$temp = new temp_nav($babLimit,$nbrows,$navitem,$navpos);
-	return bab_printTemplate($temp,"search.html","navbar");
-	}
 
-function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
+/**
+ * Display search results
+ */
+function startSearch( $item, $what, $option, $navpos )
 	{
 	global $babBody;
 	
@@ -703,58 +252,22 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 		{
 		var $what;
 		var $search;
-		var $arttitle;
-		var $comtitle;
-		var $fortitle;
-		var $faqtitle;
-		var $nottitle;
-		var $filtitle;
-		var $contitle;
-		var $dirtitle;
-		var $countart;
-		var $countfor;
-		var $countnot;
-		var $countfaq;
-		var $countcom;
-		var $countfil;
-		var $countcon;
-		var $countdir;
 		var $counttot;
-		var $nbresult = 0;
 		var $altbg = true;
 
-		function temp( $item, $what, $order, $option ,$navitem ,$navpos )
+		public $primary_search;
+		public $secondary_search;
+
+
+		function temp( $item, $what, $option ,$navpos )
 			{
 			global $BAB_SESS_USERID, $babLimit, $babBody, $babDB;
 			
 			$this->search = bab_translate("Search");
-			$this->arttitle = bab_translate("Articles");
-			$this->comtitle = bab_translate("Comments");
-			$this->fortitle = bab_translate("Forums");
-			$this->faqtitle = bab_translate("Faq");
-			$this->nottitle = bab_translate("Notes");
-			$this->filtitle = bab_translate("File manager");
-			$this->contitle = bab_translate("Contacts");
-			$this->dirtitle = bab_translate("Directories");
-			$this->agebigtitle = bab_translate("Calendar");
+			
 			$this->total = bab_translate("Number of results in research");
 			$this->popup = bab_translate("Open in a popup");
-			$this->t_popup_help = bab_translate("The result of your search stay in current window");
-			$this->lastname= bab_translate("Lastname");
-			$this->firstname= bab_translate("Firstname");
-			$this->email = bab_translate("Email");
-			$this->company= bab_translate("Company");
-			$this->filename=bab_translate("Filename");
-			$this->description=bab_translate("Description");
-			$this->folder=bab_translate("Folder");
-			$this->author=bab_translate("Author");
-			$this->datem=bab_translate("Last update");
-			$this->directory=bab_translate("Site directory");
-			$this->department=bab_translate("Department");
-			$this->t_archive = bab_translate("archive");
-			$this->t_from = bab_translate("date_from");
-			$this->t_to = bab_translate("date_to");
-			$this->t_private = bab_translate("Private");
+
 
 			$navpos = (int) $navpos;
 			$this->fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
@@ -764,24 +277,13 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 			$this->secondary_search = isset($this->fields['what2']) ? trim($this->fields['what2']) : '';
 		
 
-			$this->option = &$option;
+			$this->option = $option;
 
 			
-			$this->what = urlencode($what." ".$this->secondary_search);
-			$this->countart = 0;
-			$this->countfor = 0;
-			$this->countnot = 0;
-			$this->countfaq = 0;
-			$this->countcom = 0;
-			$this->countfil = 0;
-			$this->countcon = 0;
-			$this->countdir = 0;
-			$this->countage = 0;
-			$this->counttot = false;
-			$this->navitem = $navitem;
+			$this->what = urlencode(trim($what." ".$this->secondary_search));
 			$this->navpos = $navpos;
-
-
+			
+			
 			if (
 				(
 					empty($item)  
@@ -796,1716 +298,166 @@ function startSearch( $item, $what, $order, $option ,$navitem, $navpos )
 				&& empty($this->primary_search)
 				&& empty($this->secondary_search)
 				) {
-
 				$babBody->addError(bab_translate('Your search is empty'));
 				return;
 			}
 
 
+			
 
+
+			// number of results lines
+
+			$limit = $babLimit;
+			if (!empty($item)) {
+				$limit = 15;
+			}
 
 
 
 			
 
-// ---------------------------------------- SEARCH ARTICLES AND ARTICLES COMMENTS ---------
-			if( empty($item) || $item == 'articles')
-				{
-				$req = "create temporary table artresults SELECT a.id, a.id_topic, a.archive, a.title, a.head, a.body, a.restriction, T.category topic, concat( U.lastname, ' ', U.firstname ) author,U.email, UNIX_TIMESTAMP(a.date) date from ".BAB_TOPICS_TBL." T, ".BAB_ARTICLES_TBL." a LEFT JOIN ".BAB_USERS_TBL." U ON a.id_author = U.id WHERE a.id_topic = T.id and 0";
-				$babDB->db_query($req);
-				$req = "alter table artresults add unique (id)";
-				$babDB->db_query($req);
+			// initialize addons context for old API
+			$addons = bab_getInstance('bab_addonsSearch');
+			$addons->setSearchParam($this->primary_search, $this->secondary_search, $option, $limit);
 
-				$req = "create temporary table comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name,email, C.id_author, a.title arttitle, a.body,a.restriction, T.category topic from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id and 0";
-				$babDB->db_query($req);
-				$req = "alter table comresults add unique (id)";
-				$babDB->db_query($req); 
-				
-				$crit_art = "";
-				$crit_com = "";
-				if (isset($this->fields['a_author_memo']) && trim($this->fields['a_author_memo']) != "")
-					{
-					if( $GLOBALS['BAB_SESS_USERID'])
-						{
-						$crit_art = " and (U.id='".$babDB->db_escape_string($this->fields['a_authorid'])."')";
-						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option)." OR C.id_author='".$babDB->db_escape_string($this->fields['a_authorid'])."')";
-						}
-					else
-						{					
-						$crit_art = " and (".finder($this->fields['a_author_memo'],"concat(U.lastname,U.firstname)",$option).")";
-						$crit_com = " and (".finder($this->fields['a_author_memo'],"name",$option).")";
-						}
-					}
 
-				if (isset($this->fields['a_topiccategory']) && trim($this->fields['a_topiccategory']) != "")
-					{
 
-					$id_category = false;
-					$id_topic = false;
-
-					if (false !== mb_strpos($this->fields['a_topiccategory'], 'category-')) {
-						$id_category = (int) mb_substr($this->fields['a_topiccategory'], strlen('category-'));
-						}
-
-					if (false !== mb_strpos($this->fields['a_topiccategory'], 'topic-')) {
-						$id_topic = (int) mb_substr($this->fields['a_topiccategory'], strlen('topic-'));
-						}
-
-					if ($id_topic) {
-						$crit_art .= " and id_topic = ".$babDB->quote($id_topic);
-						$crit_com .= " and C.id_topic = ".$babDB->quote($id_topic);
-						}
-
-
-					if ($id_category) {
-						
-						$topics = bab_getTopicsFromCategory($id_category);
-
-						$crit_art .= " and id_topic IN(".$babDB->quote($topics).')';
-						$crit_com .= " and C.id_topic IN(".$babDB->quote($topics).')';
-						}
-
-					}
-
-				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
-					{
-					$crit_art .= " and a.date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
-					$crit_com .= " and C.date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
-					}
-				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
-					{
-					$crit_art .= " and a.date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
-					$crit_com .= " and C.date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
-					}
-
-				$inart = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and id_topic in (".$babDB->quote(array_keys($babBody->topview)).")" : "and id_topic ='0'";
-				$incom = (is_array($babBody->topview) && count($babBody->topview) > 0 ) ? "and C.id_topic in (".$babDB->quote(array_keys($babBody->topview)).")" : "and C.id_topic ='0'";
-
-				$reqsup = '';
-				if (!empty($inart))
-					{
-					$arrids = array();
-					$restrictedart = '';
-					if( isset($this->fields['tagsname']) && !empty($this->fields['tagsname']))
-						{
-						$incom = ''; /* don't display comments in search result */
-						$this->fields['tagsname'] = trim($this->fields['tagsname']);
-						if( !empty($this->fields['tagsname']))
-							{
-							$maptags = array();
-							$tags = array();
-							$atags = explode(',', $this->fields['tagsname']);
-							for( $k = 0; $k < count($atags); $k++ )
-							{
-								$atags[$k] = trim($atags[$k]);
-								if( !empty($atags[$k]))
-									{
-									$tags[] = "'".$babDB->db_escape_string($atags[$k])."'";
-									}
-
-							}
-							if( count($tags))
-								{
-								$res = $babDB->db_query("select id_art, tag_name from ".BAB_ART_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
-								while( $rr = $babDB->db_fetch_array($res))
-									{
-									$maptags[$rr['tag_name']][] = $rr['id_art'];
-									$arrids[] = $rr['id_art'];
-									}
-								$optags = intval(bab_rp('optags', 1));
-								if( $optags == 0 && count($maptags))
-									{
-									list(,$arrids) = each($maptags);
-									while( list(,$t) = each($maptags) )
-										{
-										$arrids = array_intersect($arrids, $t);
-										}
-									}
-								}
-
-							if( $arrids )
-								{
-								$restrictedart = ' AND a.id in ('.$babDB->quote($arrids).')';
-								}
-							else
-								{
-								$restrictedart = ' AND 0';
-								}
-							}
-						}
-
-					if (!isset($_REQUEST['search_files_only'])) {
-
-						if ($this->secondary_search || $this->primary_search)
-							$reqsup = "AND (
-						".finder($this->secondary_search,"title",$option,$this->primary_search)." OR 
-						".finder($this->secondary_search,"head",$option,$this->primary_search)." OR 
-						".finder($this->secondary_search,"body",$option,$this->primary_search)." OR 
-						".finder($this->secondary_search,"f.name",$option,$this->primary_search)." OR 
-						".finder($this->secondary_search,"f.description",$option,$this->primary_search)." 
-						)";
-						
-						$req = "
-						
-						INSERT INTO artresults 
-						SELECT 
-							a.id, 
-							a.id_topic, 
-							a.archive, 
-							a.title title,
-							a.head, 
-							LEFT(a.body,100) body, 
-							a.restriction, 
-							T.category topic, 
-							concat( U.lastname, ' ', U.firstname ) author, 
-							U.email, UNIX_TIMESTAMP(a.date) date  
-						FROM 
-							".BAB_TOPICS_TBL." T, 
-							".BAB_ARTICLES_TBL." a 
-						LEFT JOIN 
-							".BAB_USERS_TBL." U ON a.id_author = U.id 
-						LEFT JOIN 
-							".BAB_ART_FILES_TBL." f ON f.id_article = a.id 
-
-						WHERE 
-							a.id_topic = T.id ".$reqsup." ".$inart." ".$crit_art.$restrictedart."  
-							GROUP BY a.id 
-							";
-
-						bab_debug($req);
-						$babDB->db_query($req);
-					}
-
-					// indexation
-
-					if ($engine = bab_searchEngineInfos()) {
-						if (!$engine['indexes']['bab_art_files']['index_disabled']) {
-							$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_art_files');
-
-
-							$file_path = array();
-							foreach($found_files as $arr) {
-								$file_path[] = bab_removeUploadPath($arr['file']);
-							}
-
-							
-
-							$this->tmptable_inserted_id('artresults');
-
-							$req = "
-					
-							INSERT INTO artresults 
-							SELECT 
-								a.id, 
-								a.id_topic, 
-								a.archive, 
-								a.title title,
-								a.head, 
-								LEFT(a.body,100) body, 
-								a.restriction, 
-								T.category topic, 
-								concat( U.lastname, ' ', U.firstname ) author, 
-								U.email, UNIX_TIMESTAMP(a.date) date  
-							FROM 
-								".BAB_TOPICS_TBL." T, 
-								".BAB_ARTICLES_TBL." a
-								LEFT JOIN 
-								".BAB_USERS_TBL." U ON a.id_author = U.id , 
-								".BAB_ART_FILES_TBL." f, 
-								".BAB_INDEX_ACCESS_TBL." i 
-							
-							WHERE 
-								f.id_article = a.id AND 
-								f.id = i.id_object AND 
-								i.id_object_access = T.id AND 
-								i.file_path IN(".$babDB->quote($file_path).") AND 
-								a.id NOT IN(".$babDB->quote($this->tmp_inserted_id).") AND 
-								a.id_topic = T.id ".$inart." ".$crit_art.$restrictedart." 
-							GROUP BY a.id ORDER BY ".$babDB->db_escape_string($order)."  
-								";
-
-							bab_debug($req);
-
-							$babDB->db_query($req);
-						}
-					}
-
-					$res = $babDB->db_query("select id, restriction from artresults where restriction!=''");
-					while( $rr = $babDB->db_fetch_array($res))
-						{
-						if( !bab_articleAccessByRestriction($rr['restriction']))
-							{
-							$babDB->db_query("delete from artresults where id=".$babDB->quote($rr['id']));
-							}
-						}
-					}
-
-				if (!empty($incom))
-					{
-					if ($this->secondary_search || $this->primary_search)
-						$reqsup = "and (".finder($this->secondary_search,"subject",$option,$this->primary_search)." or ".finder($this->secondary_search,"message",$option,$this->primary_search).")";
-
-					$req = "insert into comresults select C.id, C.id_article, C.id_topic, C.subject,C.message, UNIX_TIMESTAMP(C.date) date, name author,email,C.id_author,  a.title arttitle,LEFT(a.body,100) body, a.restriction, T.category topic  from ".BAB_COMMENTS_TBL." C, ".BAB_ARTICLES_TBL." a, ".BAB_TOPICS_TBL." T where C.id_article=a.id and a.id_topic = T.id ".$reqsup." and C.confirmed='Y' ".$incom." ".$crit_com." order by ".$babDB->db_escape_string($order);
-					$babDB->db_query($req);
-					$res = $babDB->db_query("select id, restriction from comresults where restriction!=''");
-					while( $rr = $babDB->db_fetch_array($res))
-						{
-						if( !bab_articleAccessByRestriction($rr['restriction']))
-							$babDB->db_query("delete from comresults where id=".$babDB->quote($rr['id']));
-						}
-					}
-
-				$req = "select count(*) from artresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$this->nbresult += $nbrows;
-
-				if ($navitem != 'articles') $navpos=0;
-				$req = "select * from artresults ORDER BY ".$babDB->db_escape_string($order)." limit ".$navpos.", ".$babLimit;
-
-				$this->resart = $babDB->db_query($req);
-				$this->countart = $babDB->db_num_rows($this->resart);
-				if( !$this->counttot && $this->countart > 0 )
-					$this->counttot = true;
-				$this->navbar_a = navbar($babLimit,$nbrows,'articles',$navpos);
-
-				$navpos=$this->navpos;
-				if ($navitem != 'ac') $navpos=0;
-				$req = "select count(*) from comresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-
-				$this->navbar_ac = navbar($babLimit,$nbrows,'ac',$navpos);
-				$req = "select * from comresults limit ".$navpos.", ".$babLimit;
-
-				$this->rescom = $babDB->db_query($req);
-				$this->countcom = $babDB->db_num_rows($this->rescom);
-				if( !$this->counttot && $this->countcom > 0 )
-					$this->counttot = true;
-				}
-				if (!isset($nbrows)) $nbrows = 0;
-				$this->nbresult += $nbrows;
-
-			// ------------------------------------------------- POSTS
-			if( empty($item) || $item == 'forums')
-				{
-				$req = "create temporary table forresults select id, id_thread, subject topic, id id_topic, subject title,message, author, 'dd-mm-yyyy' date from ".BAB_POSTS_TBL." where 0";
-				$babDB->db_query($req);
-				$req = "alter table forresults add unique (id)";
-				$babDB->db_query($req);
-				$req = "select id from ".BAB_FORUMS_TBL."";
-				$res = $babDB->db_query($req);
-				$idthreads = array();
-				while( $row = $babDB->db_fetch_array($res))
-					{
-					if(bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $row['id']))
-						{
-						$req = "select id from ".BAB_THREADS_TBL." where forum=".$babDB->quote($row['id']);
-						$res2 = $babDB->db_query($req);
-						while( $r = $babDB->db_fetch_array($res2))
-							{
-							$idthreads[] = $r['id'];
-							}
-						}
-					}
-				$temp1 = finder($this->secondary_search,"b.subject",$option,$this->primary_search);
-				$temp2 = finder($this->secondary_search,"b.message",$option,$this->primary_search);
-				if ($temp1 != "" && $temp2 != "")
-					$plus = "( ".$temp1." or ".$temp2.") and";
-				else $plus = "";
-				if (0 < count($idthreads)) { 
-					$req = "
-					
-					INSERT INTO 
-						forresults 
-					SELECT 
-						b.id, 
-						b.id_thread, 
-						F.name topic, 
-						F.id id_topic, 
-						b.subject title,
-						b.message, 
-						author, 
-						UNIX_TIMESTAMP(b.date) date 
-					FROM 
-						".BAB_POSTS_TBL." b, 
-						".BAB_THREADS_TBL." T, 
-						".BAB_FORUMS_TBL." F 
-					WHERE 
-						b.id_thread=T.id 
-						AND T.forum=F.id 
-						AND ".$plus." b.confirmed='Y' 
-						AND b.id_thread IN (".$babDB->quote($idthreads).")";
-
-					$babDB->db_query($req);
-				}
-
-
-
-				// indexation
-
-				if ($idthreads != "" && $engine = bab_searchEngineInfos()) {
-					if (!$engine['indexes']['bab_forumsfiles']['index_disabled']) {
-						$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_forumsfiles');
-
-
-						$file_path = array();
-						foreach($found_files as $arr) {
-							$file_path[] = bab_removeUploadPath($arr['file']);
-						}
-
-						$this->tmptable_inserted_id('forresults');
-						
-						
-
-
-						$req = "
-					
-							INSERT INTO 
-								forresults 
-							SELECT 
-								b.id, 
-								b.id_thread, 
-								F.name topic, 
-								F.id id_topic, 
-								b.subject title,
-								b.message, 
-								author, 
-								UNIX_TIMESTAMP(b.date) date 
-							FROM 
-								".BAB_POSTS_TBL." b,  
-								".BAB_THREADS_TBL." T, 
-								".BAB_FORUMS_TBL." F, 
-								".BAB_FORUMSFILES_TBL." fi,
-								".BAB_INDEX_ACCESS_TBL." i 
-							WHERE 
-								b.id_thread=T.id 
-								AND T.forum=F.id 
-								AND fi.id_post = b.id 
-								AND i.id_object_access = F.id 
-								AND i.id_object = fi.id 
-								AND i.file_path IN(".$babDB->quote($file_path).") 
-								AND b.confirmed='Y' 
-								AND b.id_thread IN (".$babDB->quote($idthreads).")";
-
-						if ($this->tmp_inserted_id) {
-							$req .= "AND b.id NOT IN(".$babDB->quote($this->tmp_inserted_id).") ";
-						}
-
-						$req .= " GROUP BY b.id";
-
-						$babDB->db_query($req);
-
-						bab_debug($req);
-
-						}
-					}
-
-
-
-
-
-
-				$req = "SELECT count(*) FROM forresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$navpos = $this->navpos;
-				if ($navitem != 'forums') $navpos = 0;
-				$this->navbar_b = navbar($babLimit,$nbrows,'forums',$navpos);
-			
-				$req = "select * from forresults ORDER BY ".$babDB->db_escape_string($order)." LIMIT ".$navpos.", ".$babLimit;
-				$this->resfor = $babDB->db_query($req);
-				$this->countfor = $babDB->db_num_rows($this->resfor);
-				if( !$this->counttot && $this->countfor > 0 )
-					$this->counttot = true;
-				}
-				$this->nbresult += $nbrows;
-
-			// ---------------------------------------------- FAQ
-			if( empty($item) || $item == 'faqs')
-				{
-				$req = "create temporary table faqresults select id, idcat, question title, response, question topic from ".BAB_FAQQR_TBL." where 0";
-				$babDB->db_query($req);
-				$req = "alter table faqresults add unique (id)";
-				$babDB->db_query($req);
-				$req = "select id from ".BAB_FAQCAT_TBL."";
-				$res = $babDB->db_query($req);
-
-				$idcat = "";
-				while( $row = $babDB->db_fetch_array($res))
-					{
-					if(bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $row['id']))
-						{
-						$idcat .= $row['id'].",";
-						}
-					}
-				$temp1 = finder($this->secondary_search,"question",$option,$this->primary_search);
-				$temp2 = finder($this->secondary_search,"response",$option,$this->primary_search);
-				if ($temp1 != "" && $temp2 != "")
-					$plus = "( ".$temp1." or ".$temp2.") and";
-				else $plus = "";
-
-				if ($idcat != "") {
-					$req = "insert into faqresults select T.id, idcat, question title, response, category topic from ".BAB_FAQQR_TBL." T, ".BAB_FAQCAT_TBL." C where idcat=C.id and ".$plus." idcat in (".mb_substr($idcat,0,-1).") order by ".$babDB->db_escape_string($order);
-					$babDB->db_query($req);
-				}
-
-
-				$req = "select count(*) from faqresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$navpos = $this->navpos;
-				if ($navitem != 'faqs') $navpos = 0;
-				$this->navbar_c = navbar($babLimit,$nbrows,'faqs',$navpos);
-
-				$req = "select * from faqresults limit ".$navpos.", ".$babLimit;
-				$this->resfaq = $babDB->db_query($req);
-				$this->countfaq = $babDB->db_num_rows($this->resfaq);
-				if( !$this->counttot && $this->countfaq > 0 )
-					$this->counttot = true;
-				}
-				$this->nbresult += $nbrows;
-
-			// ------------------------------------------------------------------------ PERSONAL NOTES
-			if( (empty($item) || $item == 'notes') && !empty($BAB_SESS_USERID))
-				{
-
-				$plus = finder($this->secondary_search,"content",$option,$this->primary_search);
-				if ($plus != "") $plus = "($plus) and";
-				$req = "select count(*) from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID);
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$navpos = $this->navpos;
-				if ($navitem != 'notes') $navpos = 0;
-				$this->navbar_d = navbar($babLimit,$nbrows,'notes',$navpos);
-
-				$req = "select id, content, UNIX_TIMESTAMP(date) date from ".BAB_NOTES_TBL." where ".$plus." id_user=".$babDB->quote($BAB_SESS_USERID)." limit ".$navpos.", ".$babLimit;
-				$this->resnot = $babDB->db_query($req);
-				$this->countnot = $babDB->db_num_rows($this->resnot);
-				if( !$this->counttot && $this->countnot > 0 )
-					$this->counttot = true;
-				}
-				$this->nbresult += $nbrows;
-
-			// ------------------------------------- FILES
-			if( empty($item) || $item == 'files')
-				{
-
-				define('BAB_TYPE_MATCH_DATABASE'	, 1);
-				define('BAB_TYPE_MATCH_VERSION'		, 2);
-				define('BAB_TYPE_MATCH_FILE'		, 3);
-				
-
-
-				$req = "
-					
-					CREATE TEMPORARY TABLE filresults 
-					
-					SELECT 
-						id, 
-						name title, 
-						id_owner, 
-						description, 
-						'dd-mm-yyyy' datec, 
-						'dd-mm-yyyy' datem, 
-						path, 
-						bgroup, 
-						name author, 
-						path folder, 
-						'".BAB_TYPE_MATCH_DATABASE."' type_match, 
-						'0' version_count 
-					FROM 
-						".BAB_FILES_TBL." 
-					WHERE 0
-				";
-				$babDB->db_query($req);
-				$req = "ALTER TABLE filresults add unique (id)";
-				$babDB->db_query($req);
-				$private = false;
-
-				$sFolderWhereClauseItem = '';
-				{
-					$aCollectiveFolderRelativePath = array();
-					$aCollectiveFolderId = array();
-					$aUserFolderRelativePath = array();
-					{
-						$aIdFolder = array();
-						$aDownload = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
-						if(is_array($aDownload) && count($aDownload) > 0)
-						{
-							$aIdFolder = $aDownload;
-						}
-						
-						$aManager = bab_getUserIdObjects(BAB_FMMANAGERS_GROUPS_TBL);
-						if(is_array($aManager) && count($aManager) > 0)
-						{
-							$aIdFolder += $aManager;
-						}
-						
-						foreach($aIdFolder as $iIdFolder)
-						{
-							$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
-							if(!is_null($oFmFolder))
-							{
-								$sRelativePath = (mb_strlen(trim($oFmFolder->getRelativePath())) > 0 ? $oFmFolder->getRelativePath() : $oFmFolder->getName() . '/');
-								$aCollectiveFolderId[$iIdFolder] = $iIdFolder;
-								$aCollectiveFolderRelativePath[$sRelativePath] = 'F.path LIKE \'' . $babDB->db_escape_like($sRelativePath) . '%\'';
-							}
-						}
-						
-						if(userHavePersonnalStorage())
-						{
-							$aUserFolderRelativePath[$BAB_SESS_USERID] = 'U' . $BAB_SESS_USERID . '/';
-						}
-					}
-					
-					$aFolderWhereClauseItem = array();
-					if(count($aCollectiveFolderRelativePath) > 0)
-					{
-						$aFolderWhereClauseItem[] = '(F.id_owner in (' . $babDB->quote($aCollectiveFolderId) . 
-							') AND (' . implode(' OR ', $aCollectiveFolderRelativePath) . '))';
-					}
-					
-					if(count($aUserFolderRelativePath) > 0)
-					{
-						$aFolderWhereClauseItem[] = '(F.id_owner in (' . $babDB->quote(array_keys($aUserFolderRelativePath)) . 
-							') AND (F.path LIKE \'' . $babDB->db_escape_like($aUserFolderRelativePath[$BAB_SESS_USERID]) . '%\'' . '))';
-					}
-					
-					if(count($aFolderWhereClauseItem) > 0)
-					{
-						$sFolderWhereClauseItem = 'AND (' . implode(' OR ', $aFolderWhereClauseItem) . ')';
-					}
-				}
-
-				$plus = "";
-				$temp1 = finder($this->secondary_search, "F.name",		$option,$this->primary_search);
-				$temp2 = finder($this->secondary_search, "description", $option,$this->primary_search);
-				$temp3 = finder($this->secondary_search, "F.path",		$option,$this->primary_search);
-				$temp4 = finder($this->secondary_search, "R.folder",	$option,$this->primary_search);
-				$temp5 = finder($this->secondary_search, "M.fvalue",	$option,$this->primary_search);
-				//$temp6 = finder($this->secondary_search, "tag_name",	$option,$this->primary_search);
-				$this->fields['tagsname'] = isset($this->fields['tagsname'])?trim($this->fields['tagsname']):'';
-				$tidfiles = array();
-				if( !empty($this->fields['tagsname']))
-					{
-					$maptags = array();
-					$tags = array();
-					$atags = explode(',', $this->fields['tagsname']);
-					for( $k = 0; $k < count($atags); $k++ )
-					{
-						$atags[$k] = trim($atags[$k]);
-						if( !empty($atags[$k]))
-							{
-							$maptags[$atags[$k]] = array();
-							$tags[] = "'".$babDB->db_escape_string($atags[$k])."'";
-							}
-
-					}
-					if( count($tags))
-						{
-						$res = $babDB->db_query("select id_file, tag_name from ".BAB_FILES_TAGS_TBL." att left join ".BAB_TAGS_TBL." tt on tt.id = att.id_tag WHERE tag_name = ".implode(' or tag_name = ', $tags));
-						while( $rr = $babDB->db_fetch_array($res))
-							{
-							$maptags[$rr['tag_name']][] = $rr['id_file'];
-							$tidfiles[] = $rr['id_file'];
-							}
-						$optags = intval(bab_rp('optags', 1));
-						if( $optags == 0 && count($maptags))
-							{
-							list(,$tidfiles) = each($maptags);
-							while( list(,$t) = each($maptags) )
-								{
-								$tidfiles = array_intersect($tidfiles, $t);
-								}
-							}
-						}
-
-					}
-
-				$idfiles = '';
-				if( count($tidfiles ))
-					{
-					$idfiles = implode(',', $tidfiles);
-					}
-				else
-					{
-					$idfiles = '';
-					}
-				if (($temp1 != '' ) || $idfiles != '')
-				{
-					if( $temp1 )
-						{
-						$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4."";
-						if( $idfiles )
-							{
-							$plus .= " or F.id in(".$idfiles.")";
-							}
-						$plus .= ") ";
-						}
-					else
-						{
-						$plus = "(F.id in(".$idfiles."))";
-						}
-				}
-				else
-				{ 
-					$plus = '';
-				}
-
-                if ($plus && $sFolderWhereClauseItem != "") 
-					{
-
-					// indexation
-
-					if ($engine = bab_searchEngineInfos()) { 
-						if (!$engine['indexes']['bab_files']['index_disabled']) {
-
-							$found_files = bab_searchIndexedFiles($this->primary_search, $this->secondary_search, $option, 'bab_files');
-							$current_version = array();
-							$old_version = array();
-							foreach($found_files as $arr) {
-								$fullpath = bab_removeFmUploadPath($arr['file']);
-
-								$name = basename($fullpath);
-								$path = dirname($fullpath);
-								if( !empty($path) && '/' !== $path{mb_strlen($path) - 1}) 
-								{
-									$path .='/';
-								}
-								
-								$current_version[] = '(F.path=\''.$babDB->db_escape_string($path).'\' AND F.name=\''. $babDB->db_escape_string($name)."')";
-
-								if (preg_match( "/OVF\/\d,\d,(.*)/", $fullpath)) {
-									$old_version[] = $babDB->db_escape_string($fullpath);
-								}
-							}
-
-
-							if ($current_version) {
-								// match found in last version
-								$req = "INSERT INTO filresults 
-										SELECT 
-											F.id, 
-											F.name title, 
-											F.id_owner, 
-											description, 
-											UNIX_TIMESTAMP(created) datec, 
-											UNIX_TIMESTAMP(modified) datem, 
-											F.path, 
-											bgroup, 
-											concat( U.lastname, ' ', U.firstname ) author, 
-											folder, 
-											'".BAB_TYPE_MATCH_FILE."', 
-											'0'
-										FROM ".BAB_FM_FOLDERS_TBL." R, 
-											".BAB_FILES_TBL." F 
-										LEFT JOIN ".BAB_USERS_TBL." U 
-											ON F.author=U.id 
-										WHERE 
-											(F.id_owner=R.id OR F.bgroup='N') 
-											AND (".implode(' OR ',$current_version).")  
-											$sFolderWhereClauseItem 
-											and state='' and confirmed='Y' 
-										GROUP BY F.id";
-
-								bab_debug($req);
-
-								$babDB->db_query($req);
-
-								}
-
-
-							// $this->tmptable_inserted_id('filresults');
-						
-
-							// match found in old version
-							
-							$req = "REPLACE INTO filresults 
-									SELECT 
-										F.id, 
-										F.name title, 
-										F.id_owner, 
-										description, 
-										UNIX_TIMESTAMP(created) datec, 
-										UNIX_TIMESTAMP(modified) datem, 
-										F.path, 
-										bgroup, 
-										concat( U.lastname, ' ', U.firstname ) author, 
-										folder, 
-										'".BAB_TYPE_MATCH_VERSION."', 
-										COUNT(R.id)  
-									FROM ".BAB_FM_FOLDERS_TBL." R, 
-										".BAB_FILES_TBL." F 
-									LEFT JOIN ".BAB_USERS_TBL." U 
-										ON F.author=U.id, 
-										".BAB_FM_FILESVER_TBL." v, 
-										".BAB_INDEX_ACCESS_TBL." a 
-									WHERE 
-										(F.id_owner=R.id OR F.bgroup='N') 
-										AND v.id_file = F.id 
-										AND a.id_object = v.id 
-										AND a.file_path IN('".implode("', '",$old_version)."') 
-										$sFolderWhereClauseItem 
-										and state='' 
-										and F.confirmed='Y' 
-										
-									GROUP BY F.id 
-									";
-
-							bab_debug($req);
-
-							$babDB->db_query($req);
-
-						}
-					}
-
-					$this->tmptable_inserted_id('filresults');
-					
-					$sPlus = (mb_strlen($plus) > 0) ? 'and ' . $plus . ' ' : ' ';
-					
-					$req = "INSERT INTO filresults 
-						SELECT 
-							F.id, 
-							F.name title, 
-							F.id_owner, 
-							description, 
-							UNIX_TIMESTAMP(created) datec, 
-							UNIX_TIMESTAMP(modified) datem, 
-							path, 
-							bgroup, 
-							concat( U.lastname, ' ', U.firstname ) author, 
-							folder, 
-							'".BAB_TYPE_MATCH_DATABASE."',
-							'0'
-						FROM ".BAB_FM_FOLDERS_TBL." R, 
-							".BAB_FILES_TBL." F 
-						LEFT JOIN ".BAB_USERS_TBL." U 
-							ON F.author=U.id 
-						WHERE 
-							(F.id_owner=R.id OR F.bgroup='N') 
-							$sPlus $sFolderWhereClauseItem 
-							AND state='' and confirmed='Y' 
-							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
-						GROUP BY 
-							F.id ";
-					bab_debug($req);
-                    $babDB->db_query($req);
-					
-					// additional fields
-					if ($temp5 != "")
-						{
-						$this->tmptable_inserted_id('filresults');
-
-						$req = "
-						INSERT INTO filresults 
-							SELECT 
-								F.id, 
-								F.name title, 
-								F.id_owner, 
-								description, 
-								UNIX_TIMESTAMP(created) datec, 
-								UNIX_TIMESTAMP(modified) datem, 
-								path, 
-								bgroup, 
-								concat( U.lastname, ' ', U.firstname ) author, 
-								folder,
-								'".BAB_TYPE_MATCH_DATABASE."',
-								'0'
-							FROM ".BAB_FM_FIELDSVAL_TBL." M, 
-							".BAB_FM_FOLDERS_TBL." R, 
-							".BAB_FILES_TBL." F 
-							LEFT JOIN ".BAB_USERS_TBL." U 
-							ON F.author=U.id 
-						WHERE 
-							".$temp5." 
-							AND M.id_file=F.id 
-							AND (F.id_owner=R.id OR F.bgroup='N') 
-							$sFolderWhereClauseItem 
-							AND state='' and confirmed='Y' 
-							AND F.id NOT IN('".implode("','",$this->tmp_inserted_id)."') 
-						GROUP BY 
-							F.id ";
-
-						bab_debug($req);
-						$babDB->db_query($req);
-						}
-
-
-                    }
-
-
-				$req = "select count(*) from filresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-
-
-
-				$navpos = $this->navpos;
-				if ($navitem != 'files') $navpos = 0;
-				$this->navbar_e = navbar($babLimit,$nbrows,'files',$navpos);
-
-				$req = "SELECT * FROM filresults ";
-
-				if (false !== bab_rp('index_priority',false)) {
-					$req .= " ORDER BY type_match DESC,".$babDB->db_escape_string($order);
-				} else {
-					$req .= " ORDER BY ".$babDB->db_escape_string($order);
-				}
-
-				$req .= " LIMIT ".$navpos.", ".$babLimit;
-		
-
-				$this->resfil = $babDB->db_query($req);
-				$this->countfil = $babDB->db_num_rows($this->resfil);
-				if( !$this->counttot && $this->countfil > 0 )
-					$this->counttot = true;
-				}
-				$this->nbresult += $nbrows;
-				$nbrows = null;
+			// trouver les criteres en fonction du formulaire affich�
 
 			
-			// ------------------------------------------------ PERSONAL CONTACTS
-			if( empty($item) || $item == 'contacts')
+			$nbresult = 0;
+			$html = '';
+
+			foreach (bab_Search::getRealms() as $realm)
 				{
-				$req = "create temporary table conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where 0";
-				$babDB->db_query($req);
-				$req = "alter table conresults add unique (id)";
-				$babDB->db_query($req);
-
-				$plus = "";
-				$temp1 = finder($this->secondary_search,"firstname",$option,$this->primary_search);
-				$temp2 = finder($this->secondary_search,"lastname",$option,$this->primary_search);
-				$temp3 = finder($this->secondary_search,"email",$option,$this->primary_search);
-				$temp4 = finder($this->secondary_search,"compagny",$option,$this->primary_search);
-				$temp5 = finder($this->secondary_search,"jobtitle",$option,$this->primary_search);
-				$temp6 = finder($this->secondary_search,"businessaddress",$option,$this->primary_search);
-				$temp7 = finder($this->secondary_search,"homeaddress",$option,$this->primary_search);
-
-				if ($temp1 != "" && $temp2 != "" && $temp3 != "" && $temp4 != "" && $temp5 != "" && $temp6 != "" && $temp7 != "")
-					$plus = "( ".$temp1." or ".$temp2." or ".$temp3." or ".$temp4." or ".$temp5." or ".$temp6." or ".$temp7.") and";
-				else $plus = "";
-
-				$req = "insert into conresults select lastname title, firstname, compagny, email, id from ".BAB_CONTACTS_TBL." where ".$plus." owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' order by ".$babDB->db_escape_string($order);
-				$babDB->db_query($req);
-
-				$req = "select count(*) from conresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$navpos = $this->navpos;
-				if ($navitem != 'contacts') $navpos = 0;
-				$this->navbar_f = navbar($babLimit,$nbrows,'contacts',$navpos);
-
-				$req = "select * from conresults limit ".$navpos.", ".$babLimit;
-				$this->rescon = $babDB->db_query($req);
-				$this->countcon = $babDB->db_num_rows($this->rescon);
-				if( !$this->counttot && $this->countcon > 0 )
-					$this->counttot = true;
-				}
-				$this->nbresult += $nbrows;
-			// --------------------------------------------- DIRECTORIES
-			$arrview = bab_getUserIdObjects(BAB_DBDIRVIEW_GROUPS_TBL);
-			
-			if( count($arrview) && (empty($item) || $item == 'directories'))
-				{
-				$id_directory = isset($this->fields['g_directory']) ? $this->fields['g_directory'] : '';
-				
-				
-				// champs a afficher en r�sultats
-				$this->dirfields = array('name'=>array(),'description'=>array());
-
-				if ('' == $id_directory)
+				if (empty($item) && $realm->displayInSearchEngine())
 					{
-					// tout les annuaires
-
-					list($search_view_fields) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
-
-					if (empty($search_view_fields))
-						$search_view_fields = '2,4';
-						
-					$search_view_fields = explode(',',$search_view_fields);
-
-					$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$babDB->quote($search_view_fields).")");
-					while( $row3 = $babDB->db_fetch_array($rescol))
-						{
-						$this->dirfields['name'][] = $row3['name'];
-						$this->dirfields['description'][] = $row3['description'];
-						}
-					}
-				else
-					{
-					// un seul annuaire
-					$row = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
-					
-					if (BAB_REGISTERED_GROUP === (int) $row['id_group']) {
-						$registered_directory = 1;
+					$criteria 			= bab_SearchDefaultForm::getCriteria($realm);
+					$fieldlesscriteria 	= bab_SearchDefaultForm::getFieldLessCriteria($realm);
 					}
 
-					$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' order by ordering asc");
-					while( $row3 = $babDB->db_fetch_array($rescol))
-						{
-						if( $row3['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-							{
-							$rr = $babDB->db_fetch_array($babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id=".$babDB->quote($row3['id_field'])));
-							$this->dirfields['name'][] = $rr['name'];
-							$this->dirfields['description'][] = translateDirectoryField($rr['description']);
-							}
-						else
-							{
-							$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id=".$babDB->quote($row3['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS).""));
-							$this->arrcols[] = array("babdirf".$row3['id'], translateDirectoryField($rr['name']), 1);
-							$this->dirfields['name'][] = "babdirf".$row3['id'];
-							$this->dirfields['description'][] = translateDirectoryField($rr['name']);
-							}					
-						}
-					}
-
-				
-				
-				// Crit�res sp�cifiques
-				
-				$crit_fields_reg = array();
-				$crit_fields_add = array();
-
-				for($i = 0 ; $i < FIELDS_TO_SEARCH ; $i++)
+				elseif ($item === $realm->getName())
 					{
-					$dirselect = isset($this->fields['dirselect_'.$i]) ? $this->fields['dirselect_'.$i] : '';
-					$dirfield = isset($this->fields['dirfield_'.$i]) ? $this->fields['dirfield_'.$i] : '';
-					if ($dirfield !="") 
-						{
-						if (0 === mb_strpos($dirselect, 'babdirf'))
-							{
-							// champ suppl�mentaire
-							$crit_fields_add[] = "t.id_fieldx = '".$babDB->db_escape_string(mb_substr($dirselect,7))."' AND t.field_value LIKE '%".$babDB->db_escape_like($dirfield)."%'";
-							}
-						else
-							{
-							$crit_fields_reg[] = "e.".$babDB->db_escape_string($dirselect)." LIKE '%".$babDB->db_escape_like($dirfield)."%'";
-							//finder($dirfield, 'e.'.$dirselect);
-							}
-						}
-					}
-
-				
-
-				// crit�res toutes colonnes
-
-				$crit_fields = $this->searchInAllCols(BAB_DBDIR_ENTRIES_TBL);
-				
-				// Liste des groupe des annuaires
-
-				$arr_grp = array();
-				$res = $babDB->db_query("SELECT g.id FROM ".BAB_GROUPS_TBL." g, ".BAB_DB_DIRECTORIES_TBL." d WHERE g.directory='Y' AND d.id_group=g.id AND d.id IN(".$babDB->quote($arrview).")");
-				while ($arr = $babDB->db_fetch_array($res))
-					{
-					$arr_grp[] = $arr['id'];
-					}
-
-
-				// Liste des annuaires base de donn�s
-
-				$arr_dir = array();
-				$res = $babDB->db_query("SELECT id FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id_group='0' AND id IN(".$babDB->quote($arrview).")");
-				while ($arr = $babDB->db_fetch_array($res))
-					{
-					$arr_dir[] = $arr['id'];
-					}
-
-				$crit_fields_reg_str = implode(' AND ', $crit_fields_reg);
-				
-				if (!empty($crit_fields_reg_str))
-					{
-				if (!empty($crit_fields))
-						$crit_fields .= ' AND '.$crit_fields_reg_str;
-					else
-						$crit_fields = $crit_fields_reg_str;
-					}
-
-
-				$crit_fields_add_str = implode(' AND ', $crit_fields_add);
-				if (!empty($crit_fields_add_str))
-					{
-					$crit_fields_add_str = '('.$crit_fields_add_str.') AND ';
-					}
-
-				// recherche dans les champs suppl�mentaires avec la recherche principale + recherche avanc�e
-				$additional = finder($this->secondary_search,'t.field_value',$this->option,$this->primary_search);
-				if (!empty($additional))
-					{
-					if( !empty($crit_fields))
-						$crit_fields .= ' OR '.$additional;
-					else
-						$crit_fields = $additional;
-					}
-
-				if (!empty($crit_fields))
-					{
-					$crit_fields = '('.$crit_fields.') AND ';
-					}
-
-				// Si un annuaire sp�cifique est choisit
-
-				if (!empty($id_directory))
-					{
-					$chosen_dir = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
-					
-					if ($chosen_dir['id_group'] == BAB_REGISTERED_GROUP)
-						{
-						$option_dir = " AND e.id_directory='0'";
-						}
-					elseif ($chosen_dir['id_group'] > 0)
-						{
-						$option_dir = " AND u.id_group=".$babDB->quote($chosen_dir['id_group'])." ";
-						}
-					else
-						{
-						$option_dir = " AND e.id_directory =".$babDB->quote($id_directory)." ";
-						}
-					} else $option_dir = '';
-
-
-				if ($arr_dir) {
-					$db_arr_dir = "e.id_directory IN (".$babDB->quote($arr_dir).") OR ";
-				}
-				else
-					{
-					$db_arr_dir = '';
-					}
-					
-					
-				// $registered_directory
-				
-
-				$req = "SELECT 
-					e.id, ABS(STRCMP(e.sn,". $babDB->quote($this->primary_search) .")) AS relevance
-				FROM `".BAB_DBDIR_ENTRIES_TBL."` e
-				LEFT JOIN 
-						".BAB_DBDIR_ENTRIES_EXTRA_TBL." t 
-						ON t.id_entry = e.id";
-				if( count($arr_grp) && in_array(BAB_REGISTERED_GROUP, $arr_grp) && ( empty($id_directory) || isset($registered_directory)))
-					{
-					$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' ";
-					}
-				else
-					{
-					$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user AND u.id_group IN  (".$babDB->quote($arr_grp).") LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' ";
-					}
-					
-				$req .= " WHERE 
-				".$crit_fields." 
-				".$crit_fields_add_str." 
-					(
-						".$db_arr_dir." 
-						(e.id_directory = '0' AND dis.id IS NOT NULL )
-					) ".$option_dir." 
-				GROUP BY e.id ";
-
-
-				$this->countdirfields = count($this->dirfields['name']);
-
-				$res = $babDB->db_query($req);
-				$nbrows = $babDB->db_num_rows($res);
-
-				$navpos = $this->navpos;
-				if ($navitem != 'directories') $navpos = 0;
-				$this->navbar_g = navbar($babLimit,$nbrows,'directories',$navpos);
-				$tmp = explode(" ",$order);
-				if (in_array("`title`",$tmp)) $order_tmp = "order by relevance ASC, sn ASC, givenname ASC";
-				else $order_tmp = "order by ".$babDB->db_escape_string($order);
-
-				$req .= " ".$order_tmp." LIMIT ".$navpos.", ".$babLimit;
-
-				//print_r($req);
-				
-				$this->resdir = $babDB->db_query($req);
-				$this->countdir = $babDB->db_num_rows($this->resdir);
-
-				if( !$this->counttot && $this->countdir > 0 )
-					$this->counttot = true;
-				
-				$this->nbresult += $nbrows;
-
-				}
-								
-		
-		// --------------------------------------------- AGENDA
-
-		if( empty($item) || $item == 'calendars')
-				{
-				$crit_date = '';
-				$select_idcal = '';
-				if (isset($this->fields['after']) && trim($this->fields['after']) != "")
-					{
-					$crit_date = " ce.start_date >= '".$babDB->db_escape_string($this->fields['after'])." 00:00:00'";
-					}
-				if (isset($this->fields['before']) && trim($this->fields['before']) != "")
-					{
-					if (!empty($crit_date))
-						$crit_date .= " and ";
-					$crit_date .= "ce.end_date <= '".$babDB->db_escape_string($this->fields['before'])." 23:59:59'";
-					}
-				if (isset($this->fields['h_calendar']) && trim($this->fields['h_calendar']) != "")
-					{
-					$select_idcal = " and ceo.id_cal = '".$babDB->db_escape_string($this->fields['h_calendar'])."'";
-					}
-
-
-				$req = "create temporary table ageresults 
-				select 
-					ceo.id_cal owner, 
-					ce.id id, 
-					ce.title, 
-					ce.description, 
-					ce.location, 
-					ce.start_date, 
-					ce.end_date, 
-					ceo.id_cal id_cal, 
-					cct.name categorie, 
-					cct.description catdesc, 
-					ce.bprivate 
-				from 
-					".BAB_CAL_EVENTS_OWNERS_TBL." ceo, 
-					".BAB_CAL_EVENTS_TBL." ce, 
-					".BAB_CAL_CATEGORIES_TBL." cct 
-				where 0";
-				$babDB->db_query($req);
-				
-				$list_id_cal = array();
-				$tmp =  array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
-				foreach ($tmp as $arr)
-					$list_id_cal[] = $arr['idcal'];
-				
-				if ($this->secondary_search || $this->primary_search)
-					{
-					$reqsup = "(ceo.id_cal=".$babDB->quote(bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']))." OR ce.bprivate='N') AND (".
-						finder($this->secondary_search,"ce.title",$option,$this->primary_search)." or ".
-						finder($this->secondary_search,"ce.description",$option,$this->primary_search)." or ".
-						finder($this->secondary_search,"cct.description",$option,$this->primary_search)." or ".
-						finder($this->secondary_search,"cct.name",$option,$this->primary_search)." or ".
-						finder($this->secondary_search,"ce.location",$option,$this->primary_search)
-						.")";
+					$criteria 			= $realm->getSearchFormCriteria();
+					$fieldlesscriteria 	= $realm->getSearchFormFieldLessCriteria();
 					}
 				else 
 					{
-					$reqsup = "";
+					$criteria 			= NULL;
+					$fieldlesscriteria 	= NULL;
 					}
 
-				if (count($list_id_cal) > 0) 
-					{
-					if (!empty($reqsup))
-						{
-						$reqsup .= ' and ';
-						}
-					if (!empty($crit_date))
-						$crit_date .= ' and ';
 
-					$req = "insert into ageresults 
-					select 
-						ceo.id_cal owner, 
-						ce.id id, ce.title, 
-						ce.description, 
-						ce.location, 
-						ce.start_date, 
-						ce.end_date, 
-						ceo.id_cal id_cal, 
-						cct.name categorie, 
-						cct.description catdesc, 
-						ce.bprivate 
-					from 
-						".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
-						left join ".BAB_CAL_EVENTS_TBL." ce on ceo.id_event=ce.id 
-						left join ".BAB_CAL_CATEGORIES_TBL." cct on cct.id=ce.id_cat 
-					where 
-						".$reqsup." ".$crit_date." 
-						ceo.id_cal in(".$babDB->quote($list_id_cal).") ".$select_idcal." order by ce.start_date";
-					$babDB->db_query($req);
+				if ($fieldlesscriteria) 
+					{
+					$realm->setFieldLessCriteria($fieldlesscriteria);
 					}
 
-				$req = "select count(*) from ageresults";
-				$res = $babDB->db_query($req);
-				list($nbrows) = $babDB->db_fetch_row($res);
-				$navpos = $this->navpos;
-				if ($navitem != 'calendars') $navpos = 0;
-				$this->navbar_h = navbar($babLimit,$nbrows,'calendars',$navpos);
-
-				$req = "select * from ageresults limit ".$navpos.", ".$babLimit;
-				$this->resage = $babDB->db_query($req);
-				$this->countage = $babDB->db_num_rows($this->resage);
-				if( !$this->counttot && $this->countage > 0 )
-					$this->counttot = true;
-				$this->nbresult += $nbrows;
-				}
-				
-			// --------------------------------------------- ADDONS
-			
-			$nbrows = 0;
-			$this->addons = new bab_addonsSearch;
-			$this->addonSearchArray = $this->addons->getsearcharray($item);
-			$this->countaddons = count($this->addonSearchArray);
-			$this->addons->setSearchParam($this->primary_search, $this->secondary_search, $option, $babLimit);
-
-			$this->addonsdata = array();
-			$first_addon_searchresults = array();
-
-			if (is_array($this->addonSearchArray))
-				while (list($addon_id,$addon_title) = each($this->addonSearchArray))
+				if($criteria)
 					{
-					if (isset($addon_id) && is_numeric($addon_id))
-						{
-						$navpos = $this->navitem == bab_addonsSearch::getItemFromAddon($addon_id) ? $this->navpos : 0;
-						$this->addons->pos[$addon_id] = $navpos;
+					$this->setRequestSort($realm);
 
-						$first_addon_searchresults[$addon_id] = $this->addons->callSearchFunction($addon_id);
-						$nbrows = $first_addon_searchresults[$addon_id][1];
-						
-						$navbar_i = navbar($GLOBALS['babLimit'], $nbrows, bab_addonsSearch::getItemFromAddon($addon_id),$navpos);
-						if ($nbrows > 0)
+
+					$search_res = $realm->search($criteria);
+	
+					if ($search_res instanceOf bab_SearchResultCollection) {
+						$res_collection = $search_res;
+					} else {
+						$res_collection = array($search_res);
+					}
+
+
+					foreach($res_collection as $res) {
+
+						$navpos = (int) bab_rp('navpos');
+						$count = $res->count();
+
+						if ($count) 
 							{
-							$this->addonsdata[] = array($addon_id, $addon_title, $navbar_i, $first_addon_searchresults);
-							$this->nbresult += $nbrows;
-							}
+							if ($realm->getName() === bab_rp('navitem')) 
+								{
+								$res->seek($navpos);
+								}
+							
+							$html .= '<div class="bab_SearchRealm '.get_class($realm).'">';
+							$html .= '<h5>'.bab_toHtml($res->getRealm()->getDescription()).'</h5>';
+							$html .= '<div class="bab_SearchRecords">';
+							$html .= $res->getHtml($limit);
+							$html .= '</div>';
+							$html .= $this->navbar($count, $res->getRealm()->getName(), $limit);
+							$html .= '</div>';
+
+							$nbresult += $count;
 						}
 					}
+				}
+			}
 
+			if (1 === $nbresult) {
+				$babBody->setTitle(bab_translate('Search page with one result'));
+			} else {
+				$babBody->setTitle(bab_sprintf(bab_translate('Search page with %d results'), $nbresult));
+			}
 			
+			$babBody->babEcho('<div class="bab_SearchResults">'.$html.'</div>');
 
-			if( !$this->counttot && count($this->addonsdata) > 0 )
-					$this->counttot = true;
-
-			
 			// end
 
-			if( !$this->counttot)
+			if( !$nbresult)
 				{
 				$babBody->msgerror = bab_translate("Search result is empty");
 				}
 
 			}
 
-		function tmptable_inserted_id($tablename)
+
+		/**
+		 * Get navigation bar HTML
+		 * @param	int		$nbrows
+		 * @param	string	$navitem
+		 * @param	int		$limit
+		 * @return 	string
+		 */
+		private function navbar($nbrows, $navitem, $limit) {
+			$temp = new temp_nav($nbrows,$this->navpos, $navitem, $limit);
+			return bab_printTemplate($temp,"search.html","navbar");
+		}
+
+
+	
+
+
+
+		/**
+		 * Search in realm with default fields
+		 * @param	string	$realm
+		 * 
+		 */
+		private function setRequestSort(bab_SearchRealm $realm) 
 			{
-			global $babDB;
-			$res = $babDB->db_query("SELECT id FROM ".$babDB->db_escape_string($tablename));
-			$this->tmp_inserted_id = array();
-			while ($arr = $babDB->db_fetch_assoc($res))
-				{
-				$this->tmp_inserted_id[] = $arr['id'];
-				}
-			}
+				// apply requested ordering
 
-		function dateformat($time)
-			{
-			return bab_shortDate($time, true);
-			}
-
-		function searchInAllCols($table)
-			{
-			global $babDB;
-
-			if (!$this->secondary_search && !$this->primary_search)
-				{
-				return '';
-				}
-
-
-			$res = $babDB->db_query("DESCRIBE ".$babDB->db_escape_string($table));
-			$like = "(";
-			while (list($colname) = $babDB->db_fetch_array($res))
-				{
-				if ($colname != 'id' && $colname != 'photo_data' && $colname != 'photo_type')
-					{
-						if ($like != "(") {
-							$like .= " or ";
-						}
-						
-						$like .= finder($this->secondary_search, 'e.'.$colname, $this->option, $this->primary_search);
-					}
-				}
-			$like .= ") ";
-
-			return $like;
-			}
-
-		
-
-		function getnextart()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countart)
-				{
-				$arr = $babDB->db_fetch_array($this->resart);
-				$this->articleid = $arr['id'];
-				$this->article = bab_toHtml($arr['title']);
-				$this->artdate = bab_shortDate($arr['date'], true);
-				$this->artauthor = empty($arr['author']) ? bab_translate("Anonymous") : bab_toHtml($arr['author']);
-				$this->archive = 'Y' == $arr['archive'];
-				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
-				$this->arttopicid = $arr['id_topic'];
-				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=articles&id=".$arr['id']."&w=".$this->what);
-				if (mb_strlen(trim(stripslashes($arr['body']))) > 0)
-					{
-					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
-					}
-				else
-					{
-					if( $arr['archive'] ==  'Y' )
-						{
-						$urlidx = "larch";
-						}
-					else
-						{
-						$urlidx = "Articles";
-						}
-					$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=".$urlidx."&topics=".$arr['id_topic']."#art".$arr['id']);
-					}
-				$this->authormail = isset($arr['email']) ? bab_toHtml($arr['email']) : '';
-				$this->intro = put_text($arr['head'],300);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists artresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextcom()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countcom)
-				{
-				$arr = $babDB->db_fetch_array($this->rescom);
-				$this->artdate = bab_toHtml(bab_shortDate($arr['date'], true));
-				if( $arr['id_author'] )
-					{
-					$this->artauthor = bab_toHtml(bab_getUserName($arr['id_author']));
-					$this->authormail = bab_toHtml(bab_getUserEmail($arr['id_author']));
-					}
-				else
-					{
-					$this->artauthor = bab_toHtml($arr['name']);
-					$this->authormail = bab_toHtml($arr['email']);
-					}
-				$this->arttopic = returnCategoriesHierarchy($arr['id_topic']);
-				$this->article = bab_toHtml($arr['arttitle']);
-				$this->arttopicid = $arr['id_topic'];
-				$this->com = bab_toHtml($arr['subject']);
-				if (mb_strlen(trim(stripslashes($arr['body']))) > 0)
-					$this->urlok = true;
-				else
-					$this->urlok = false;
-				$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id_article']);
-				$this->articleurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=a&id=".$arr['id_article']."&w=".$this->what);
-				$this->comurl = $this->articleurl;
-				$this->comurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=ac&idt=".$arr['id_topic']."&ida=".$arr['id_article']."&idc=".$arr['id']."&w=".$this->what);
-				$this->intro = put_text($arr['message'],300);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists comresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextfor()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfor)
-				{
-				$arr = $babDB->db_fetch_array($this->resfor);
-				$this->postid = $arr['id'];
-				$this->post = bab_toHtml($arr['title']);
-				$this->postauthor = bab_toHtml($arr['author']);
-				$this->postdate = bab_toHtml(bab_shortDate($arr['date'], true));
-				$this->forum = bab_toHtml($arr['topic']);
-				$this->forumurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id_topic']);
-				$this->intro = put_text($arr['message'],300);
-				$this->posturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['id_topic']."&thread=".$arr['id_thread']."&post=".$arr['id']."&flat=0");
-				$this->posturlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=forums&idt=".$arr['id_thread']."&idp=".$arr['id']."&w=".$this->what);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists forresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-		function getnextfaq()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfaq)
-				{
-				$arr = $babDB->db_fetch_array($this->resfaq);
-				$this->question = bab_toHtml($arr['title']);
-				$this->faqtopic = bab_toHtml($arr['topic']);
-				$this->faqtopicid = $arr['idcat'];
-				$this->topicurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$arr['idcat']);
-				$this->questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=faqs&idc=".$arr['idcat']."&idq=".$arr['id']."&w=".urlencode($this->what));
-				$this->questionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idq=".$arr['id']);
-				$this->intro = put_text($arr['response'],300);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists faqresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextfil()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countfil)
-				{
-				$this->altbg = !$this->altbg;
-				$arr = $babDB->db_fetch_array($this->resfil);
-				$this->file = bab_toHtml($arr['title']);
-				$this->fileid = $arr['id'];
-				$this->update = bab_toHtml(bab_shortDate($arr['datem'], true));
-				$this->created = bab_toHtml(bab_shortDate($arr['datec'], true));
-                $this->artauthor = bab_toHtml($arr['author']);
-				$this->filedesc = bab_toHtml($arr['description']);
-				$this->path = bab_toHtml($arr['path']);
+				$sortmethods = $realm->getSortMethods();
+				$sortrequest = bab_rp('field');
 				
-				if ($arr['bgroup'] == 'N')
-					$this->arttopic = bab_translate("Private folder")."/".bab_toHtml($arr['path']);
-				else
-					$this->arttopic = bab_toHtml($arr['path']);
+				$order = mb_strtoupper(bab_rp('order', 'ASC'));
 
-				$this->arttopicid = $arr['id_owner'];
-				$this->bgroup = $arr['bgroup'];
-				$this->filedesc = bab_toHtml($arr['description']);
-				$this->fileurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=e&id=".$arr['id']."&w=".$this->what);
-				$this->type_match = bab_toHtml($arr['type_match']);
-				if (0 != $arr['version_count']) {
-					$this->version_count = sprintf(bab_translate('There are matches in %d older versions'),$arr['version_count']);
+				if ('DESC' === $order) {
+					$sortrequest .= 'desc';
+				}
+
+				if (isset($sortmethods[$sortrequest])) {
+					$realm->setSortMethod($sortrequest);
 				} else {
-					$this->version_count = false;
-				}
-				
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists filresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextcon()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countcon)
-				{
-				$arr = $babDB->db_fetch_array($this->rescon);
-				$arr['firstname'] = isset($arr['firstname']) ? $arr['firstname']: '';
-				$arr['lastname'] = isset($arr['lastname']) ? $arr['lastname']: '';
-				$this->fullname = bab_toHtml(bab_composeUserName( $arr['firstname'], $arr['lastname']));
-				$this->confirstname = bab_toHtml($arr['firstname']);
-				$this->conlastname = bab_toHtml($arr['title']);
-				$this->conemail = bab_toHtml($arr['email']);
-				$this->concompany = bab_toHtml($arr['compagny']);
-				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=search&idx=f&id=".$arr['id']."&w=".$this->what;
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists conresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextnot()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countnot)
-				{
-				$arr = $babDB->db_fetch_array($this->resnot);
-				$this->content = put_text($arr['content'],400);
-				$this->notauthor = $GLOBALS['BAB_SESS_USER'];
-				$this->notauthormail = bab_toHtml(bab_getUserEmail($GLOBALS['BAB_SESS_USERID']));
-                $this->notdate = bab_toHtml(bab_shortDate($arr['date'], true));
-				$this->read_more = bab_translate("Edit");
-				$this->noteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$arr['id']);
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-			}
-
-		function getnextdirfield()
-			{
-			static $i = 0;
-			if( $i < $this->countdirfields)
-				{
-				$this->name = $this->dirfields['name'][$i];
-				$this->ordercmd = $this->name == 'sn' ? 'sn, givenname':($this->name == 'givenname' ? 'givenname, sn' : $this->name);
-				$this->t_name = translateDirectoryField($this->dirfields['description'][$i]);
-				if (isset($this->dir))
-				switch ($this->name)
-					{
-					case 'sn':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$this->dir['id']."&w=".$this->what);
-						$this->popup = true;
-						break;
-					case 'givenname':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=directories&id=".$this->dir['id']."&w=".$this->what);
-						$this->popup = true;
-						break;
-					case 'email':
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = 'mailto:'.$this->dirvalue;
-						$this->popup = false;
-						break;
-					default:
-						$this->dirvalue = isset($this->dir[$this->name]) ? bab_toHtml($this->dir[$this->name])  : '';
-						$this->dirurl = false;
-						$this->popup = false;
-						break;
+					if (!empty($sortrequest)) {
+						bab_debug('This sort request ('.$sortrequest.') is not compatible with the search realm ('.get_class($realm).')', DBG_WARNING, 'Search');
 					}
-
-				$this->alloworder = 0 !== mb_strpos($this->name,'babdirf');
-
-				$i++;
-				return true;
 				}
-			else
-				{
-				$i = 0;
-				return false;
-				}
-			}
-
-		function getnextdir()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countdir)
-				{
-				list($id) = $babDB->db_fetch_array($this->resdir);
-				$this->dir = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_TBL." where id=".$babDB->quote($id).""));
-
-				$res = $babDB->db_query("select * from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_entry=".$babDB->quote($id)."");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					$this->dir['babdirf'.$arr['id_fieldx']] = $arr['field_value'];
-					}
-
-				
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-			}
-
-		function getnextage()
-			{
-			global $babDB,$babBody;
-			static $i = 0;
-			if( $i < $this->countage)
-				{
-				$arr = $babDB->db_fetch_array($this->resage);
-				$this->agetitle = bab_toHtml($arr['title']);
-				$this->agedescription = put_text($arr['description'],400);
-				$this->agestart_date = $this->dateformat(bab_mktime($arr['start_date']));
-				$this->ageend_date = $this->dateformat(bab_mktime($arr['end_date']));
-				$iarr = bab_getICalendars()->getCalendarInfo($arr['id_cal']);
-				$this->agecreator = $iarr['name'];
-				$this->private = $arr['bprivate'] == 'Y' && $arr['owner'] != bab_getPersonalCalendar($GLOBALS['BAB_SESS_USERID']);
-				switch ($iarr['type'])
-					{
-					case BAB_CAL_USER_TYPE:
-						$this->agecreatormail = bab_toHtml(bab_getUserEmail($iarr['idowner']));
-						break;
-					case BAB_CAL_PUB_TYPE:
-					case BAB_CAL_RES_TYPE:
-						$this->agecreatormail = "";
-						break;
-					}
-				$this->agecat = bab_toHtml($arr['categorie']);
-				$this->agecatdesc = bab_toHtml($arr['catdesc']);
-				$this->ageurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$arr['id']."&idcal=".$arr['id_cal']);
-				$i++;
-				return true;
-				}
-			else
-				{
-				$req = "drop table if exists ageresults";
-				$babDB->db_query($req);
-				return false;
-				}
-			}
-
-		function getnextaddon()
-			{
-			if (!isset($this->addonsdata)) {
-				return false;
-			}
-
-
-			return list($key,list($this->addon_id, $this->addon_title, $this->navbar_i, $this->first_addon_searchresults)) = each($this->addonsdata);
-			}
-
-		function getnextaddonrow()
-			{
-			if (isset($this->addon_id) && is_numeric($this->addon_id))
-				{
-				if (isset($this->first_addon_searchresults[$this->addon_id]))
-					{
-					$addon_searchresults = $this->first_addon_searchresults[$this->addon_id];
-					unset($this->first_addon_searchresults[$this->addon_id]);
-					}
-				else
-					$addon_searchresults = $this->addons->callSearchFunction($this->addon_id);
-					
-				// this text is given by the addon as a html string.
-				$this->text = isset($addon_searchresults[0]) ? $addon_searchresults[0]  : '';
-				
-				list( $this->url, $this->urltxt ) = isset($addon_searchresults[2]) && is_array($addon_searchresults[2]) && !empty($addon_searchresults[2][0]) && !empty($addon_searchresults[2][1]) ? $addon_searchresults[2] : array(false,false);
-				
-				$this->url = bab_toHtml($this->url);
-				$this->urltxt = bab_toHtml($this->urltxt);
-				
-				list( $this->urlpopup, $this->urlpopuptxt ) = isset($addon_searchresults[3]) && is_array($addon_searchresults[3]) && !empty($addon_searchresults[3][0]) && !empty($addon_searchresults[3][1]) ? $addon_searchresults[3] : array(false,false);
-				
-				$this->urlpopup = bab_toHtml($this->urlpopup);
-				$this->urlpopuptxt = bab_toHtml($this->urlpopuptxt);
-				
-				} 
-			return isset($addon_searchresults) && is_array($addon_searchresults) ? true : false;
 			}
 		}
 
-	$temp = new temp($item, $what, $order, $option,$navitem,$navpos);
-	$babBody->babecho(	bab_printTemplate($temp,"search.html", "searchresult"));
+	$temp = new temp($item, $what, $option,$navpos);
 	}
 
 
@@ -2616,9 +568,14 @@ function viewArticle($article,$w)
 
 				$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article=".$babDB->quote($article)." and confirmed='Y' order by date desc");
 				$this->countcom = $babDB->db_num_rows($this->rescom);
-
-				$this->restags = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_TAGS_TBL." att on tt.id=att.id_tag where id_art=".$babDB->quote($article)."");
-				$this->counttags = $babDB->db_num_rows($this->restags);
+				
+				require_once dirname(__FILE__) . '/utilit/tagApi.php';
+				
+				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $article));
+				$oIterator->orderAsc('tag_name');
+				$this->restags = $oIterator;
+				$this->counttags = $oIterator->count();
 				}
 			else
 				{
@@ -2677,20 +634,17 @@ function viewArticle($article,$w)
 			}
 		function getnexttag()
 			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->counttags)
+			if($this->restags instanceof bab_TagIterator)
 				{
-				$arr = $babDB->db_fetch_array($this->restags);
-				$this->tagname = bab_toHtml($arr['tag_name']);
-				$i++;
-				return true;
+				if($this->restags->valid())
+					{
+					$oTag = $this->restags->current();
+					$this->tagname = bab_toHtml($oTag->getName());
+					$this->restags->next();
+					return true;
+					}
 				}
-			else
-				{
-				$i=0;
-				return false;
-				}
+			return false;
 			}
 		}
 	
@@ -2894,13 +848,19 @@ function viewFile($id, $w)
 				{
 				$GLOBALS['babBody']->title = bab_toHtml($this->arr['name']);
 				$this->arr['description'] = highlightWord( $w, bab_toHtml($this->arr['description']));
-				$res = $babDB->db_query("select tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_FILES_TAGS_TBL." ftt on tt.id=ftt.id_tag where id_file=".$babDB->quote($id)." order by tag_name asc");
+				
+				
+				require_once dirname(__FILE__) . '/utilit/tagApi.php';
+				
 				$this->arr['keywords'] = '';
-				while( $rr = $babDB->db_fetch_array($res))
-					{
-					$this->arr['keywords'] .= $rr['tag_name'].', ';
-					}
-
+				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+				
+				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'files', 'file', $id));
+				$oIterator->orderAsc('tag_name');
+				foreach($oIterator as $oTag)
+				{
+					$this->arr['keywords'] .= $oTag->getName() . ', ';
+				}
 				$this->arr['keywords'] = highlightWord( $w, bab_toHtml($this->arr['keywords']));
 				$this->modified = bab_toHtml(bab_shortDate(bab_mktime($this->arr['modified']), true));
 				$this->created = bab_toHtml(bab_shortDate(bab_mktime($this->arr['created']), true));
@@ -3175,46 +1135,30 @@ function viewDirectoryUser($id, $what)
  */
 function bab_gotoAddonIfRedirect($item)
 	{
-
+	require_once dirname(__FILE__).'/utilit/searchaddonincl.php';
 	$id_addon = bab_addonsSearch::getAddonFromItem($item);
 	
 	if (false === $id_addon) {
 		return false;
 	}
 
-	$addons = new bab_addonsSearch;
+	$addons = bab_getInstance('bab_addonsSearch');
 
 	if (isset($addons->tabLinkAddons[$id_addon])) {
-		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id."/".$addons->querystring[$id]);
+		header('location:'.$GLOBALS['babUrlScript']."?tg=addon/".$id_addon."/".$addons->querystring[$id_addon]);
 		exit;
 		}
 	}
 
 
-if( !isset($what))
-	$what = "";
-
-if( !isset($idx))
-	$idx = "";
-
-if( !isset($item))
-	$item = '';
-
-if( !isset($option))
-	$option = '';
-
-if ((!isset($navpos)) || ($navpos == ""))
-	$navpos = 0;
-
-if((!isset($field)) || ($field==""))
-	$field = " title ";
-
-if((!isset($order)) || ($order == ""))
-	$order = " ASC";
+$what = bab_rp('what');
+$idx = bab_rp('idx');
+$item = bab_rp('item');
+$option = bab_rp('option');
+$navpos = (int) bab_rp('navpos');
 
 
-
-bab_gotoAddonIfRedirect(bab_rp('item'));
+bab_gotoAddonIfRedirect($item);
 
 
 
@@ -3265,24 +1209,9 @@ switch($idx)
 	case "find":
 		$babBody->title = bab_translate("Search");
 		searchKeyword($item, $option);
-		$order = mb_strtoupper(bab_rp($order, 'ASC'));
-		if ($order !== 'ASC' && $order !== 'DESC')
-		{
-			$order = 'ASC';
-		}
-
-		// $fields contains a string of comma separated column identifiers
-		// that should be used to order the list of results.
-		$orderedFieldNames = explode(',', $field);
-		for ($i = 0; $i < count($orderedFieldNames); $i++)
-		{
-			$orderedFieldNames[$i] = $babDB->backTick(trim($orderedFieldNames[$i])) . ' ' . $order;
-		}
-		$order = implode(', ', $orderedFieldNames);
 		
-		if( !isset($navitem)) { $navitem = '';}
 		$GLOBALS['babWebStat']->addSearchWord($what);
-		startSearch($item, $what, $order, $option, $navitem, $navpos);
+		startSearch($item, $what, $option, $navpos);
 		break;
 
 	default:
@@ -3291,4 +1220,4 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-?>
+

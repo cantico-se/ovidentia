@@ -120,7 +120,6 @@ class bab_Sort
 	}
 
 
-
 	/**
 	 * Sort an array by key
 	 *
@@ -259,6 +258,30 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 
 	return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
 }
+
+
+
+/**
+ * Get a string according to the charset of the databese
+ *
+ * @param string 	$input			String(s) to convert (in database charset)
+ * @param string 	$sIsoCharset	Iso charset of the output string
+ * @return string					The converted string(s)
+ */
+function bab_convertStringFromDatabase($input, $sIsoCharset)
+{
+	if (bab_charset::getIso() === $sIsoCharset) {
+		return $input;
+	}
+
+	return mb_convert_encoding($input, $sIsoCharset, bab_charset::getIso());
+}
+
+
+
+
+
+
 
 /**
  * Get a instance of the collator object
@@ -1685,6 +1708,8 @@ function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_dire
 
 /**
  * return an array of directory entries using a search on fields
+ * The access rights are not tested but directory entries linked to a disabled user will be ignored
+ *
  * @param	int		[$id_directory]		the id of the directory
  * @param	array	[$likefields]		array of filed/like string ( array('sn' => 'admin', 'email'=> '%cantico.fr', 'babdirf27'=>'123') for example )
  * @param	bool	[$and]				true to use AND operator / false for OR operator
@@ -1723,7 +1748,7 @@ function bab_getUserDirectories($accessCtrl = true, $delegationId = false)
  * @param	int		[$id]				id_user or id_entry
  * @param	int		[$type]				the type of the $id parameter BAB_DIR_ENTRY_ID_USER | BAB_DIR_ENTRY_ID
  * @param	int		[$id_directory]		if $id is a directory entry
- * @return 	string
+ * @return 	string | false				return false if directory entry is not accessible
  */
 function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directory = false)
 {
@@ -2188,6 +2213,7 @@ function bab_getFileContentDisposition() {
 function bab_printOvmlTemplate($file, $args=array())
 {
 	global $babInstallPath, $babSkinPath, $babOvmlPath;
+
 	/* Skin local path */
 	$filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
 	
@@ -2197,8 +2223,10 @@ function bab_printOvmlTemplate($file, $args=array())
 	}
 	
 	if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
+
 		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
 	}
+
 	
 	if (!file_exists($filepath)) {
 		$filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
@@ -2554,3 +2582,23 @@ function bab_setTimeLimit($seconds)
 	}
 }
 
+
+
+/**
+ * Construct a reference string for an ovidentia object
+ * the result will have the form : ovidentia://location/module/type/identifier
+ * exemple : <code>ovidentia:///articles/article/12</code>
+ *
+ * @param	string	$module			addon name or core functionality name
+ * @param	string	$type			type of object
+ * @param	mixed	$identifier		numeric or string to identify object in the type of object
+ * @param	string	$location		optional string, 
+ *									empty string or another domain 'ovidentia.org' 
+ *									or a domain an a path 'ovidentia.org/dev', empty string is the default value it mean the local site
+ * @return bab_reference
+ */
+function bab_buildReference($module, $type, $identifier, $location = '') 
+{
+	require_once dirname(__FILE__) . '/reference.class.php';
+	return bab_Reference::makeReference('ovidentia', $location, $module, $type, $identifier);
+}

@@ -571,7 +571,7 @@ function bab_display_addon_requirements($id_addon)
 			$this->t_export = bab_translate("Download");
 			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"));
 			
-			$this->call_upgrade = isset($_COOKIE['bab_debug']);
+			$this->call_upgrade = true;
 			$this->t_call_upgrade = bab_translate("Launch addon installation program");
 
 			$this->allok = $ini->isValid();

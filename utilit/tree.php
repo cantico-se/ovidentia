@@ -328,6 +328,7 @@ class bab_TreeView extends bab_Template
 	 */
 	protected $_rootNode;
 	
+
 	/**
 	 * @var bab_NodeIterator
 	 */

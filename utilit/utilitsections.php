@@ -198,7 +198,9 @@ function babAdminSection($close)
 		return;
 
 	$rootNode = bab_siteMap::get();
-	$this->babAdminSection = $rootNode->getDgNodeById('babAdminSection');
+	$nodename = 'babDG'.$babBody->currentAdmGroup.'AdminSection';
+
+	$this->babAdminSection = $rootNode->getDgNodeById($nodename);
 	
 	$this->head = '';
 	$this->foot = '';

@@ -251,20 +251,26 @@ function search_options()
 
 		function temp()
 			{
-			global $babBody;
+			global $babBody, $babDB;
 			$this->listftxt = '---- '.bab_translate("Fields").' ----';
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
 
 			$this->db = & $GLOBALS['babDB'];
-			list($tmp) = $this->db->db_fetch_array($this->db->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+
+			list($tmp) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
 			
 			if (empty($tmp))
 				$tmp = '2,4';
+
+			$this->arrdf = array_flip(explode(',', $tmp));
 			
-			$this->resdb = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL."");
-			$this->resdf = $this->db->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$this->db->db_escape_string($tmp).")");
+			$this->resdb = $babDB->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL."");
+			$resdf = $babDB->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$babDB->db_escape_string($tmp).")");
+			while ($arr = $babDB->db_fetch_assoc($resdf)) {
+					$this->arrdf[$arr['id']] = $arr['description'];
+				}
 			}
 
 		function getnext()
@@ -280,13 +286,13 @@ function search_options()
 
 		function getnextdf()
 			{
-			if ($this->arr = $this->db->db_fetch_array($this->resdf))
+			if (list($id, $description) = each($this->arrdf))
 				{
-				$this->arr['description'] = translateDirectoryField($this->arr['description']);
+				$this->arr['id'] = bab_toHtml($id);
+				$this->arr['description'] = bab_toHtml(translateDirectoryField($description));
 				return true;
 				}
-			else
-				return false;
+			return false;
 			}
 		}
 

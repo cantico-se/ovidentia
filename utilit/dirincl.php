@@ -610,23 +610,37 @@ function summaryDbContactWithOvml($args)
 
 
 /**
- * Object to retreive photo data
+ * Object to retreive photo data or display photo
  * useable from a directory entry
- * @see getDirEntry
+ *
+ * @package directories
+ * @see getDirEntry()
+ * @see	bab_SearchRealmDirectories
  */
 class bab_dirEntryPhoto {
 
-	var $id_entry = NULL;
+	private $id_entry = NULL;
 	
-	var $photo_data = NULL;
-	var $last_update = NULL;
+	private $photo_data = NULL;
+	private $last_update = NULL;
 
-	function bab_dirEntryPhoto($id_entry) {
+	public function __construct($id_entry) {
 		$this->id_entry = $id_entry;
+	}
+
+	/**
+	 * Get Url to display image
+	 */
+	public function getUrl() {
+		return $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&idu=".$this->id_entry;
+	}
+
+	public function __tostring() {
+		return $this->getUrl();
 	}
 	
 
-	function setDataByFile($file) {
+	public function setDataByFile($file) {
 		global $babDB;
 		if( !is_file($file))
 		{
@@ -656,7 +670,7 @@ class bab_dirEntryPhoto {
 		return true;
 	}
 
-	function setData($data, $type) {
+	public function setData($data, $type) {
 		global $babDB;
 		$babDB->db_query('
 			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
@@ -668,7 +682,7 @@ class bab_dirEntryPhoto {
 		return true;
 	}
 	
-	function getData() {
+	public function getData() {
 		global $babDB;
 		
 		if (NULL === $this->photo_data) {
@@ -697,7 +711,7 @@ class bab_dirEntryPhoto {
 	 * Last photo update date and time
 	 * @return string	ISO datetime
 	 */
-	function lastUpdate() {
+	public function lastUpdate() {
 		if (NULL === $this->last_update) {
 			$this->getData();
 		}
@@ -712,7 +726,15 @@ class bab_dirEntryPhoto {
 
 
 
-
+/**
+ * get a directory entry
+ * @see bab_getUserInfos()
+ * @see bab_admGetDirEntry()
+ * @see bab_getDirEntry()
+ *
+ * @package directories
+ * @return array | false
+ */
 function getDirEntry($id, $type, $id_directory, $accessCtrl) 
 	{
 	global $babDB;
@@ -900,8 +922,11 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
 			$return[$arr['id_user']][$name]['value'] = $arr[$name];
 			}
 		elseif ('jpegphoto' == $name && $arr['photo_data'] > 0) {
-			$return[$arr['id_user']][$name]['value'] = $GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id_directory."&idu=".$arr['id'];
-			$return[$arr['id_user']][$name]['photo'] = new bab_dirEntryPhoto($arr['id']);
+
+			$photo = new bab_dirEntryPhoto($arr['id']);
+
+			$return[$arr['id_user']][$name]['value'] = $photo->getUrl();
+			$return[$arr['id_user']][$name]['photo'] = $photo;
 			}
 		}
 	}
@@ -920,8 +945,8 @@ function getDirEntry($id, $type, $id_directory, $accessCtrl)
  *  <li>entry_id_directory : each entry in this directory will contain the value in the id_directory column, > 0 if the directory is not a group directory</li>
  *  <li>id_group : each entry in this directory will contain the value in the id_group column, > 0 if the directory is a group directory</li>
  * </ul>
- *
- * @param	bool			$accessCtrl		test access rights on directories, true by default
+ * @package directories
+ * @param	bool			$accessCtrl		test access rights on directories, right by default
  * @param	int | false		$delegationid	filter the result by delegation
  * @return array							each key of the returned array is an id_directory
  */
@@ -982,9 +1007,9 @@ function getUserDirectories($accessCtrl = true, $delegationid = false)
  *  <li>name</li>
  *  <li>description</li>
  * </ul>
- *
+ * @package directories
  * @param	bool			$accessCtrl		test access rights on directories, right by default
-  * @param	int | false		$delegationid	filter the result by delegation
+ * @param	int | false		$delegationid	filter the result by delegation
  * @return array							each key of the returned array is an id_ldap_directory (same as the id key)
  */
 function getUserLdapDirectories($accessCtrl = true, $delegationid = false)
@@ -1030,9 +1055,9 @@ function getUserLdapDirectories($accessCtrl = true, $delegationid = false)
  *  <li>url : for directory visualisation</li>
  *  <li>uid : sitemap UID</li>
  * </ul>
- *
+ * @package directories
  * @param	bool			$accessCtrl		test access rights on directories, right by default
-  * @param	int | false		$delegationid	filter the result by delegation
+ * @param	int | false		$delegationid	filter the result by delegation
  * @return array							
  */
 function getUserDirectoriesMixed($accessCtrl = true, $delegationid = false) {
@@ -1078,7 +1103,11 @@ function getUserDirectoriesMixed($accessCtrl = true, $delegationid = false) {
 
 
 
-
+/**
+ * @see bab_getUserDirEntryLink
+ * @package directories
+ * @return string | false
+ */
 function getUserDirEntryLink($id, $type, $id_directory) {
 
 	if (BAB_DIR_ENTRY_ID_USER === $type && false === $id) {
@@ -1112,133 +1141,262 @@ function getUserDirEntryLink($id, $type, $id_directory) {
 
 
 
-function searchDirEntriesByField($id_directory, $likefields, $and = true)
-	{
-	global $babDB;
 
-	$result = array();
-	$res = $babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id=".$babDB->quote($id_directory)."");
-	if( $res && $babDB->db_num_rows($res ) > 0 )
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$idgroup = $arr['id_group'];
 
-		$res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory=".($idgroup != 0? 0: $babDB->quote($id_directory))." order by list_ordering asc");
+/**
+ * return an array of directory entries using a search on fields
+ * @see bab_searchDirEntriesByField
+ *
+ * @param	int		[$id_directory]		the id of the directory
+ * @param	array	[$likefields]		array of filed/like string ( array('sn' => 'admin', 'email'=> '%cantico.fr', 'babdirf27'=>'123') for example )
+ * @param	bool	[$and]				true to use AND operator / false for OR operator
+ * @return 	array
+ */
+function searchDirEntriesByField($id_directory, $likefields, $and = true) {
 
-		$nfields = array();
-		$xfields = array();
-		$leftjoin = array();
-		$select = array();
+	include_once dirname(__FILE__).'/searchapi.php';
+	$realm = bab_Search::getRealm('bab_SearchRealmDirectories');
+	$realm->setDirectory($id_directory);
 
-		while( $arr = $babDB->db_fetch_array($res))
-			{
-			if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-				{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select description, name from ".BAB_DBDIR_FIELDS_TBL." where id='".$arr['id_field']."'"));
-				$nfields[] = $rr['name'];
-				$IdEntries[] = array('name' => translateDirectoryField($rr['description']) , 'xname' => $rr['name']);
-				$select[] = 'e.'.$rr['name'];
-				}
-			else
-				{
-				$rr = $babDB->db_fetch_array($babDB->db_query("select name from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
-				$xfields[] = "babdirf".$arr['id'];
-				$IdEntries[] = array('name' => translateDirectoryField($rr['name']) , 'xname' => "babdirf".$arr['id']);
+	$operator = $and ? '_AND_' : '_OR_';
+	$criteria = new bab_SearchInvariant;
 
-				$leftjoin[] = 'LEFT JOIN '.BAB_DBDIR_ENTRIES_EXTRA_TBL.' lj'.$arr['id']." ON lj".$arr['id'].".id_fieldx='".$arr['id']."' AND e.id=lj".$arr['id'].".id_entry";
-				$select[] = "lj".$arr['id'].'.field_value '."babdirf".$arr['id']."";
-				}
-			}
-		
-		$count = 0;
+	// add filters
+	foreach($likefields as $fieldname => $filter) {
+		$first = mb_substr($filter, 0,1);
+		$last = mb_substr($filter, -1);
 
-		if( count($nfields) > 0 || count($xfields) > 0)
-			{
-			$nfields[] = "id";
-			$select[] = 'e.id';
-			$nfields[] = "id_user";
-			$select[] = 'e.id_user';
-			$select[] = 'e.date_modification';
-			$select[] = 'e.id_modifiedby';
-			if( !in_array('email', $select))
-				{
-				$select[] = 'e.email';
-				}
+		if ('%' === $first && '%' === $last) {
+			$new_criterion = $realm->$fieldname->contain(mb_substr($filter, 1, -1));
 
-			$alike = array();
-			foreach( $likefields as $fid => $str )
-				{
-				if ( false === mb_strpos($fid, 'babdirf'))
-					$alike[] = $fid." LIKE '".$babDB->db_escape_string($str)."'";
-				elseif (0 === mb_strpos($fid, 'babdirf'))
-					{
-					$idfield = mb_substr($fid,7);
-					$alike[] = "lj".$idfield.".field_value LIKE '".$babDB->db_escape_string($str)."'";
-					}
-				}
-			if( count($alike))
-				{
-				$like = 'AND ( ';
-				$like .= $and? implode( ' AND ', $alike): implode( ' OR ', $alike);
-				$like .= ' )';
-				}
-			else
-				{
-				$like = '';
-				}
+		} else if ('%' === $first) {
+			$new_criterion = $realm->$fieldname->endWith(mb_substr($filter, 1));
+			
+		} else if ('%' === $last) {
+			$new_criterion = $realm->$fieldname->startWith(mb_substr($filter,0, -1));
 
-			if( $idgroup > 1 )
-				{
-				$req = " ".BAB_USERS_TBL." u2,
-						".BAB_USERS_GROUPS_TBL." u,
-						".BAB_DBDIR_ENTRIES_TBL." e 
-							".implode(' ',$leftjoin)." 
-							WHERE u.id_group='".$idgroup."' 
-							AND u2.id=e.id_user 
-							AND u2.disabled='0' 
-							AND u.id_object=e.id_user 
-							AND e.id_directory='0'";
-				}
-			elseif (1 == $idgroup) {
-				$req = " ".BAB_USERS_TBL." u,
-				".BAB_DBDIR_ENTRIES_TBL." e 
-				".implode(' ',$leftjoin)." 
-				WHERE 
-					u.id=e.id_user 
-					AND u.disabled='0' 
-					AND e.id_directory='0'";
-				}
-			else
-				{
-				$req = " ".BAB_DBDIR_ENTRIES_TBL." e ".implode(' ',$leftjoin)." WHERE e.id_directory='".$babDB->db_escape_string($id_directory) ."'";
-				}
-
-		
-			$req = "select ".implode(',', $select)." from ".$req." ".$like;
-			$res = $babDB->db_query($req);
-			$result = array();
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$entry = array();
-				for( $k = 0; $k < count($IdEntries); $k++ )
-					{
-					if( $IdEntries[$k]['xname'] == 'jpegphoto')
-						{
-						$entry[$IdEntries[$k]['xname']]= array('name'=> $IdEntries[$k]['name'], 'value'=>$GLOBALS['babUrlScript']."?tg=directory&idx=getimg&id=".$id_directory."&idu=".$arr['id']);
-						}
-					else
-						{
-						$entry[$IdEntries[$k]['xname']]= array('name'=> $IdEntries[$k]['name'], 'value'=>$arr[$IdEntries[$k]['xname']]);
-						}
-					}
-				$result[$arr['id']] = $entry;
-				}
-			}
+		} else {
+			$new_criterion = $realm->$fieldname->like($filter);
 		}
 
-		return $result;
+		$criteria = $criteria->$operator($new_criterion);
+	}
+
+	$return = array();
+
+	foreach($realm->search($criteria) as $record) {
+		$return[$record->id] = array();
+		foreach($realm->getFields() as $field) {
+			if ($field->searchable()) {
+				$fieldname = $field->getName();
+				$return[$record->id][$fieldname] = array(
+					'name' => $field->getDescription(),
+					'value' => $record->$fieldname
+				);
+			}
+		}
+	}
+
+	return $return;
+}
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Get a list of id field used as default for search result headers
+ * @return array
+ */
+function bab_getDirectorySearchDefaultHeaders() {
+
+	global $babDB;
+
+	list($search_view_fields) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+
+	if (empty($search_view_fields))
+		$search_view_fields = '2,4';
+		
+	return explode(',',$search_view_fields);
+}
+
+
+
+
+
+
+
+/**
+ * Get fields for multiple directories, return only enabled fields
+ * @param	array	$directories
+ * @package directories
+ * @return array
+ */
+function bab_getDirectoriesFields($directories) {
+
+	global $babDB;
+	$return = array();
+
+	$groups_directories = array();
+	$filter = array();
+	$all = getUserDirectories(false);
+
+		
+
+	foreach($directories as $id) {
+		if (isset($all[$id])) {
+			$entry_id_directory = $all[$id]['entry_id_directory'];
+			$filter[$entry_id_directory] = $entry_id_directory;
+
+			if (0 === $entry_id_directory) {
+				$groups_directories[] = $id;
+			}
+		}
+	}
+
+
+	$req = "select id, id_field, id_directory from ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+			WHERE disabled='N' AND id_directory IN(".$babDB->quote($filter).")";
+
+	$rescol = $babDB->db_query($req);
+
+	while( $row = $babDB->db_fetch_assoc($rescol))
+		{
+
+		
+		
+		$id_directory 	= (int) $row['id_directory'];
+		$id_field 		= (int) $row['id_field'];
+
+		// if field exists, just add link to directory
+
+		if (isset($return[$id_field])) {
+			if ($id_directory) {
+				$return[$id_field]['directories'][] = $id_directory;
+			} else {
+				$return[$id_field]['directories'] += $groups_directories;
+			}
+			continue;
+		}
+
+
+
+
+		if($id_field < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $babDB->db_fetch_array(
+				$babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." 
+					where id=".$babDB->quote($id_field))
+			);
+			$return[$id_field] = array(
+				'id'			=> $row['id'],
+				'name' 			=> $rr['name'],
+				'description'	=> translateDirectoryField($rr['description']),
+				'table'			=> BAB_DBDIR_ENTRIES_TBL
+				);
+		}
+		else
+			{
+			$rr = $babDB->db_fetch_array(
+				$babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." 
+					where id=".$babDB->quote($id_field - BAB_DBDIR_MAX_COMMON_FIELDS)."")
+			);
+			
+			$return[$id_field] = array(
+				'id'			=> $row['id'],
+				'name' 			=> 'babdirf'.$row['id'],
+				'description'	=> translateDirectoryField($rr['name']),
+				'table'			=> BAB_DBDIR_ENTRIES_EXTRA_TBL
+				);
+				
+		}
+
+		if ($id_directory) {
+			$return[$id_field]['directories'] = array(0 => $id_directory);
+		} else {
+			$return[$id_field]['directories'] = $groups_directories;
+		}
+	}
+
+	return $return;
+}
+
+
+
+
+
+/**
+ * Get search list headers for a directory or default settings
+ * @param	int	$id_directory
+ * @package directories
+ * @return array
+ */
+function bab_getDirectorySearchHeaders($id_directory = null) {
+		
+	global $babDB;
+	
+	$return = array();
+
+	if (null === $id_directory)
+		{
+		// all directories
+
+		$ids = bab_getDirectorySearchDefaultHeaders();
+
+		$names = array();
+		$descriptions = array();
+		$rescol = $babDB->db_query("select * from ".BAB_DBDIR_FIELDS_TBL." where id IN(".$babDB->quote($ids).")");
+		while( $row3 = $babDB->db_fetch_array($rescol)) {
+			$names[$row3['id']] = $row3['name'];
+			$descriptions[$row3['id']] = translateDirectoryField($row3['description']);	
+		}
+
+		foreach($ids as $id) {
+			$return[$names[$id]] = $descriptions[$id];
+		}
+
+		return $return;
 	}
 
 
 
-?>
+
+	// un seul annuaire
+	$row = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DB_DIRECTORIES_TBL." WHERE id=".$babDB->quote($id_directory).""));
+	$req = "
+		select * 
+			from ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+
+		where 
+			id_directory='".($row['id_group'] != 0? 0: $row['id'])."' and ordering!='0' 
+		order by ordering asc
+	";
+	$rescol = $babDB->db_query($req);
+
+	while( $row3 = $babDB->db_fetch_array($rescol))
+		{
+		if( $row3['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+			{
+			$rr = $babDB->db_fetch_array(
+				$babDB->db_query("select name, description from ".BAB_DBDIR_FIELDS_TBL." where id=".$babDB->quote($row3['id_field']))
+			);
+			$return[$rr['name']] = translateDirectoryField($rr['description']);
+		}
+		else
+			{
+			$rr = $babDB->db_fetch_array(
+				$babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id=".$babDB->quote($row3['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."")
+			);
+			
+			$return["babdirf".$row3['id']] = translateDirectoryField($rr['name']);
+		}					
+	}
+
+	return $return;
+}

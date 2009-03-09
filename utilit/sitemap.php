@@ -26,6 +26,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
 
 /**
  * Sitemap rootNode
+ * @package sitemap
  */
 class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
@@ -37,8 +38,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	function getDgNodeById($sId) {
 	
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-		//$idDg = bab_getCurrentUserDelegation();
+
 		$idDg = 'All';
+		
+		if (preg_match('/^babDG(\d+)/', $sId, $m)) {
+			$idDg = $m[1];
+		}
+
+		
 		return parent::getNodeById('DG'.$idDg.'-'.$sId);
 	}
 }
@@ -46,6 +53,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 /**
  * Sitemap item contener
  * the sitemap is a tre of items, each items is a bab_siteMapItem object
+ * @package sitemap
  */
 class bab_siteMapItem {
 
@@ -85,6 +93,13 @@ class bab_siteMapItem {
 	 */
 	public $folder; 
 
+
+	/**
+	 * Icon classnames
+	 */
+	public $iconClassnames;
+
+
 	/**
 	 * Compare sitemap items
 	 * @see bab_Node::sortSubTree()
@@ -99,16 +114,16 @@ class bab_siteMapItem {
 
 
 /**
- * 
+ * Sitemap manipulation and access
+ * @package sitemap
  */
 class bab_siteMap {
 
 	/**
 	 * Delete sitemap for current user or id_user
 	 * @param	int		$id_user
-	 * @static
 	 */
-	function clear($id_user = false) {
+	public static function clear($id_user = false) {
 	
 		global $babDB;
 		
@@ -145,9 +160,8 @@ class bab_siteMap {
 	
 	/**
 	 * Delete sitemap for all users
-	 * @static
 	 */
-	function clearAll() {
+	public static function clearAll() {
 		global $babDB;
 		
 		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
@@ -167,10 +181,9 @@ class bab_siteMap {
 	
 	/**
 	 * Get sitemap for current user
-	 * @static
 	 * @return bab_OrphanRootNode
 	 */
-	function get() {
+	public static function get() {
 	
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 	
@@ -191,7 +204,8 @@ class bab_siteMap {
 				fl.description,
 				f.url,
 				f.onclick,
-				f.folder  
+				f.folder,
+				f.icon 
 			FROM 
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' f, 
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
@@ -229,15 +243,17 @@ class bab_siteMap {
 				';
 		}
 		
+		/*
 		$viewable_delegations = array();
+		
 		$delegations = bab_getUserVisiblesDelegations();
 		foreach($delegations as $arr) {
 			$viewable_delegations[$arr['id']] = $arr['id'];
 		}
-		
+		*/
 		// $query .= ' AND (s.id_dgowner IS NULL OR s.id_dgowner IN('.$babDB->quote($viewable_delegations).') )';
 		// tenir compte que de DGAll pour le moment
-		$query .= ' AND s.id_dgowner IS NULL ';
+		// $query .= ' AND s.id_dgowner IS NULL ';
 		
 		$query .= 'ORDER BY s.lf';
 		
@@ -278,12 +294,13 @@ class bab_siteMap {
 			
 		
 			$data = & new bab_siteMapItem();
-			$data->id_function 	= $arr['id_function'];
-			$data->name 		= $arr['name'];
-			$data->description 	= $arr['description'];
-			$data->url 			= $arr['url'];
-			$data->onclick 		= $arr['onclick'];
-			$data->folder 		= 1 == $arr['folder'];
+			$data->id_function 		= $arr['id_function'];
+			$data->name 			= $arr['name'];
+			$data->description 		= $arr['description'];
+			$data->url 				= $arr['url'];
+			$data->onclick 			= $arr['onclick'];
+			$data->folder 			= 1 == $arr['folder'];
+			$data->iconClassnames	= $arr['icon'];
 			
 			// in tree, uniques id are dynamicaly generated from the id in table and the id_function
 			// the id_function is duplicated if the tree contain multiples delegations
@@ -298,8 +315,47 @@ class bab_siteMap {
 
 		// each level will be sorted individually if needed before each usage
 		// $rootNode->sortSubTree();
+
+		bab_debug((string) $rootNode);
 		
 		return $rootNode;
+	}
+
+	/**
+	 * Get the url of a sitemap node or null if the node does not exists or if there is no url
+	 * @param	string	$sId
+	 */
+	public static function getUrlById($sId) {
+
+		$notesNode = self::get()->getDgNodeById($sId);
+	
+		if (!isset($notesNode)) {
+			return null;
+		}
+
+		$sitemapItem = $notesNode->getData();
+		return $sitemapItem->url;
+	}
+
+	/**
+	 * Get the name of a sitemap node or null if the node does not exists or if there is no url
+	 * @param	string	$sId
+	 * @return string
+	 */
+	public static function getNameById($sId) {
+
+		$notesNode = self::get()->getDgNodeById($sId);
+	
+		if (!isset($notesNode)) {
+			return null;
+		}
+
+		$sitemapItem = $notesNode->getData();
+		if (!$sitemapItem->title) {
+			throw new Exception('Missing title on node '.$sId);
+		}
+
+		return $sitemapItem->title;
 	}
 	
 	
@@ -307,7 +363,7 @@ class bab_siteMap {
 	 * Build sitemap for current user
 	 * @return boolean
 	 */
-	function build() {
+	public static function build() {
 		include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
 		return bab_siteMap_build();
 	}

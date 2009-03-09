@@ -123,6 +123,7 @@ function bab_getTopicCategoryDelegationId($id)
 		}
 	}	
 	
+
 function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
 	{
 	global $babBody, $babDB;
@@ -185,6 +186,7 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		return $id;
 		}
 	}
+
 
 function bab_getArticleDelegationId($iIdArticle)
 {
@@ -409,6 +411,7 @@ function bab_getTopicDescription($id)
 		return bab_getCategoryDescription($id);
 	}
 
+
 function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = array())
 {
 	global $babBody, $babDB;
@@ -479,6 +482,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 	
 	return $id;
 }
+
 
 /**
  * Get articles topics (in db_query ressource )
@@ -625,6 +629,52 @@ function bab_getArticleArray($article,$fullpath = false)
 		}
 	}
 
+function bab_getArticleDate($article)
+	{
+	global $babDB;
+	$query = "select date from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		return bab_strftime(bab_mktime($arr['date']));
+		}
+	else
+		{
+		return "";
+		}
+	}
+
+function bab_getArticleAuthor($article)
+	{
+	global $babDB;
+	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_array($res);
+		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'";
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
+			{
+			$arr = $babDB->db_fetch_array($res);
+			return bab_composeUserName($arr['firstname'], $arr['lastname']);
+			}
+		else
+			return bab_translate("Anonymous");
+		}
+	else
+		{
+		return bab_translate("Anonymous");
+		}
+	}
+
+
+
+
+/* ARTICLES API */	
+
+
 /**
  * Get articles information, first children of a topic (id, idtopic, title, head, body, idauthor, author, sqldate, date, archive (boolean))
  * @param	int		    $topicid		: id parent topic
@@ -695,46 +745,6 @@ function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articl
 	return $articles;
 }
 	
-function bab_getArticleDate($article)
-	{
-	global $babDB;
-	$query = "select date from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return bab_strftime(bab_mktime($arr['date']));
-		}
-	else
-		{
-		return "";
-		}
-	}
-
-function bab_getArticleAuthor($article)
-	{
-	global $babDB;
-	$query = "select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		$query = "select firstname, lastname from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['id_author'])."'";
-		$res = $babDB->db_query($query);
-		if( $res && $babDB->db_num_rows($res) > 0)
-			{
-			$arr = $babDB->db_fetch_array($res);
-			return bab_composeUserName($arr['firstname'], $arr['lastname']);
-			}
-		else
-			return bab_translate("Anonymous");
-		}
-	else
-		{
-		return bab_translate("Anonymous");
-		}
-	}
-
 function bab_submitArticleDraft($idart)
 {
 	

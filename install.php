@@ -28,3 +28,10 @@ include_once "base.php";
  * This script is included once in case of a new install
  * after the prerequisites tests
  */
+
+
+
+require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
+$functionalities = new bab_functionalities();
+$functionalities->register('Icons', $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Icons/Default', $GLOBALS['babInstallPath'].'utilit/icons.php');

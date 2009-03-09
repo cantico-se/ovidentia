@@ -58,6 +58,11 @@ function bab_indexJobs($idx, $object) {
 				$r = indexAllFmFiles($status, $prepare);
 				break;
 
+			case 'bab_articles':
+				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+				$r = indexAllArticles($status, $prepare);
+				break;
+
 			case 'bab_art_files':
 				include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
 				$r = indexAllArtFiles($status, $prepare);
@@ -93,7 +98,7 @@ function bab_indexJobs($idx, $object) {
 		$babBody->addError(sprintf(bab_translate("Access denied, your current IP address (%s) is not allowed"),$_SERVER['REMOTE_ADDR']));
 	}
 
-	$babBody->babPopup('');
+	
 	
 }
 
@@ -123,13 +128,18 @@ if (isset($_GET['idx'])) {
 	if (isset($_GET['obj'])) {
 		bab_indexJobs($_GET['idx'], $_GET['obj']);
 	} else {
+		
 		$engine = bab_searchEngineInfos();
+		
+
 		foreach($engine['indexes'] as $object => $index) {
 			if (!$index['index_disabled']) {
 				bab_indexJobs($_GET['idx'], $object);
 			}
 		}
 	}
+
+	$babBody->babPopup('');
 }
 
 

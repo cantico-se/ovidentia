@@ -88,3 +88,43 @@ function bab_getFaqDgNumber($id_delegation) {
 
 	return $babDB->db_num_rows($res);
 }
+
+
+
+/**
+ * @param	int		$id_question_response
+ * @return 	array
+ */
+function bab_getFaqCategoryHierarchy($id_question_response) {
+	global $babDB;
+
+	$return = array();
+
+	// find ID_NODE of parent sub category
+
+	$res = $babDB->db_query('SELECT c.id_node FROM '.BAB_FAQQR_TBL.' q, '.BAB_FAQ_SUBCAT_TBL.' c WHERE q.id_subcat = c.id AND q.id='.$babDB->quote($id_question_response));
+	$arr = $babDB->db_fetch_assoc($res);
+
+	$id_node = $arr['id_node'];
+
+	while (0 !== $id_node) {
+
+		$res = $babDB->db_query('SELECT t.id_parent, c.id_cat, c.name FROM '.BAB_FAQ_SUBCAT_TBL.' c, '.BAB_FAQ_TREES_TBL.' t WHERE t.id = '.$babDB->quote($id_node).' AND c.id_node = t.id');
+		$arr = $babDB->db_fetch_assoc($res);
+
+		$id_node = (int) $arr['id_parent'];
+
+		if (0 === $id_node) {
+			$res = $babDB->db_query('SELECT category FROM '.BAB_FAQCAT_TBL.' WHERE id='.$babDB->quote($arr['id_cat']));
+			$row = $babDB->db_fetch_assoc($res);
+			$nodename = $row['category'];
+		} else {
+			$nodename = $arr['name'];
+		}
+
+		array_unshift($return, $nodename);
+	}
+
+	return $return;
+}
+
