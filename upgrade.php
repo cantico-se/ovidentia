@@ -5706,6 +5706,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
 
 	
+	/**
+	 * Upgrade to 6.7.100
+	 */
+
+			
+
 
 
 	/**
@@ -5724,10 +5730,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 	$functionalities = new bab_functionalities();
-	$functionalities->register('Icons', $GLOBALS['babInstallPath'].'utilit/icons.php');
-	$functionalities->register('Icons/Default', $GLOBALS['babInstallPath'].'utilit/icons.php');
-
-
+	$functionalities->register('Icons'					, $GLOBALS['babInstallPath'].'utilit/icons.php');
+	$functionalities->register('Icons/Default'			, $GLOBALS['babInstallPath'].'utilit/icons.php');
+	$functionalities->register('Archive'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+	$functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+	$functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+	$functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 	
 
 	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='docx'");
@@ -5792,6 +5800,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			'bab_art_drafts_tags'	=> array('sTagReference' => $sDraftArticleTagRef,	'sColumnName' => 'id_draft'),
 			'bab_files_tags'		=> array('sTagReference' => $sFileTagRef, 			'sColumnName' => 'id_file')
 		);
+
+
+		global $babDB;
 	
 		foreach($aTable as $sTable => $aItem)
 		{
@@ -5804,20 +5815,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 					'id_tag iIdTag ' .
 				'FROM ' .
 					$sTable;
-	
-
-	/**
-	 * Upgrade to 6.7.95
-	 */
-	$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." CHANGE `nb_set` `nb_set` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'"); 
-	
-	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
-
-	/**
-	 * Upgrade to 6.7.100
-	 */
-
-			global $babDB;
 			
 			//bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
@@ -5847,6 +5844,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				}
 			}
 		}
+
 		$babDB->db_query('DROP TABLE `bab_files_tags`');
 		$babDB->db_query('DROP TABLE `bab_art_tags`');
 		$babDB->db_query('DROP TABLE `bab_art_drafts_tags`');	
@@ -5854,6 +5852,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
 	bab_addEventListener('bab_eventReference', 'bab_onReference', 'utilit/eventReference.php', BAB_ADDON_CORE_NAME, 100);
+
+
+	
 
 
 	return true;

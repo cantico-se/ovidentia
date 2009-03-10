@@ -850,4 +850,37 @@ function bab_tskmgr_deleteUserContext($iIdUser)
 		$babDB->db_query($sQuery);
 	}
 }
-?>
+
+
+
+
+
+
+/**
+ * Delete a folder recursively
+ * return true on success
+ * @param	string	$dir		folder to delete
+ * @param	string	&$msgerror	this string will be empty on succes and not empty on failure
+ * @return	bool
+ */
+function bab_deldir($dir, &$msgerror) {
+	$current_dir = opendir($dir);
+	while($entryname = readdir($current_dir)){
+		if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
+			if (false === bab_deldir($dir.'/'.$entryname, $msgerror)) {
+				return false;
+			}
+		} elseif ($entryname != "." and $entryname!="..") {
+			if (false === unlink($dir.'/'.$entryname)) {
+				$msgerror = bab_sprintf(bab_translate('The file is not deletable : %s'), $dir.'/'.$entryname);
+				return false;
+			}
+		}
+	}
+	closedir($current_dir);
+	if (false === rmdir($dir)) {
+		$msgerror = bab_sprintf(bab_translate('The folder is not deletable : %s'), $dir.'/'.$entryname);
+		return false;
+	}
+	return true;
+}

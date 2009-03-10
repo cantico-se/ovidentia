@@ -885,7 +885,7 @@ class bab_addonInfos {
 	function delete(&$msgerror) {
 	
 		global $babDB;
-	
+		include_once dirname(__FILE__).'/delincl.php';
 		
 		if (false === $this->isDeletable()) {
 			$msgerror = bab_translate('This addon is not deletable');
@@ -908,30 +908,6 @@ class bab_addonInfos {
 		
 		
 		$tbllist = $this->getTablesNames();
-
-		
-		if (!function_exists('bab_deldir')) {
-			
-			function bab_deldir($dir, &$msgerror) {
-				$current_dir = opendir($dir);
-				while($entryname = readdir($current_dir)){
-					if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-						if (false === bab_deldir($dir.'/'.$entryname, $msgerror)) {
-							return false;
-						}
-					} elseif ($entryname != "." and $entryname!="..") {
-						if (false === unlink($dir.'/'.$entryname)) {
-							$msgerror = sprintf(bab_translate('The addon file is not deletable : %s'), $dir.'/'.$entryname);
-							return false;
-						}
-					}
-				}
-				closedir($current_dir);
-				rmdir($dir);
-				return true;
-			}
-		}
-		
 		$addons_files_location = bab_getAddonsFilePath();
 		
 		$loc_in = $addons_files_location['loc_in'];	
