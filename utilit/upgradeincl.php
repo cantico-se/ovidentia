@@ -99,8 +99,15 @@ function bab_recursive_cp_ls_a($wh){
     }
 
 
-
-function bab_recursive_cp($wf, $wto){ 
+/**
+ * Recursive copy of a folder
+ *
+ * @param	string	$wf		origin folder
+ * @param	string	$wto	destination folder
+ *
+ * @return	true | string	if the function return a string, this is the error message
+ */
+function bab_recursive_cp($wf, $wto) { 
 	  if (!is_dir($wto)) { 
 		  if (!bab_mkdir($wto)) {
 			return sprintf(bab_translate("Error : can't create directory : %s"), $wto);

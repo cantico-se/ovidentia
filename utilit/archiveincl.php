@@ -30,7 +30,10 @@ include_once 'base.php';
  * Archive toolkit container
  */
 class Func_Archive extends bab_functionality {
-
+	
+	public function getDescription() {
+		return bab_translate('Archive manager');
+	}
 }
 
 
@@ -42,10 +45,21 @@ class Func_Archive extends bab_functionality {
  */
 class Func_Archive_Zip extends Func_Archive {
 
+	public function getDescription() {
+		return bab_translate('Zip archive manager');
+	}
+
+	/**
+	 * Open file, if the file does not exists it will be overwriten
+	 * @return bool
+	 */
 	public function open($filename) {
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function close() {
 
 	}
@@ -83,14 +97,19 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 	private $zip 			= null;
 	private $filename 		= null;
 	private $add	 		= array();
-	
+
 	public function __construct() {
 		include_once dirname(__FILE__)."/zip.lib.php";
 		$this->zip = new Zip;
 	}
 
+	public function getDescription() {
+		return bab_translate('Zip archive manager with the zlib php extension');
+	}
+
 	public function open($filename) {
 		$this->filename = $filename;
+		return true;
 	}
 
 	/**
@@ -99,8 +118,11 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 	public function close() {
 		if ($this->add) {
 			// write files to archive
-			$zip->Add($this->add,1);
+			$this->zip->Add($this->add,1);
 		}
+
+		// record to file
+		return file_put_contents($this->filename, $this->zip->get_file());
 	}
 
 
@@ -132,15 +154,19 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 		$this->zip = new ZipArchive;
 	}
 
+	public function getDescription() {
+		return bab_translate('Zip archive manager with the zip php extension');
+	}
+
 	public function open($filename) {
-		$this->zip->open($filename);
+		return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
 	}
 
 	/**
 	 * Commit added files
 	 */
 	public function close() {
-		$this->zip->close();
+		return $this->zip->close();
 	}
 
 

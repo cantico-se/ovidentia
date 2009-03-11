@@ -339,6 +339,13 @@ function export($id)
 	
 	
 	if (!function_exists('bab_addon_export_rd')) {
+
+
+		/**
+		 * Get the list of files to export in a particular folder
+		 * @param	string	$d		folder
+		 * @return	array
+		 */
 		function bab_addon_export_rd($d) {
 			$res = array();
 			$d = mb_substr($d,-1) != '/' ? $d.'/' : $d;
@@ -356,8 +363,10 @@ function export($id)
 			return $res;
 		}
 	}
-	
+
+
 	$row = bab_addonsInfos::getDbRow($id);
+	
 
 	if (!callSingleAddonFunction($row['id'], $row['title'], 'onPackageAddon'))
 		{
@@ -370,40 +379,39 @@ function export($id)
 	$loc_in = $addons_files_location['loc_in'];
 	$loc_out = $addons_files_location['loc_out'];
 			
-	include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
-	$zip = new Zip;
+
+	$zip = bab_functionality::get('Archive/Zip');
+
+	$version = str_replace('.','-',$row['version']);
+	$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$row['title'].'-'.$version.'.zip';
+
+	$zip->open($tmpfile);
+
 	$res = array();
 	foreach ($loc_in as $k => $path)
 		{
 		$res = bab_addon_export_rd($path.'/'.$row['title']);
 		$len = mb_strlen($path.'/'.$row['title']);
+
 		foreach ($res as $file)
 			{
 			if (is_file($file))
 				{
-				$rec_into = $loc_out[$k].mb_substr($file,$len);
-				$size = filesize($file);
-				if ($size > 0)
-					{
-					$fp=fopen($file,"r");
-					$contents = fread($fp, $size);
-					fclose($fp);
-					}
-				else
-					$contents = '';			
-				$addarr[] = array($rec_into,$contents);
+				$rec_into = $loc_out[$k].mb_substr($file, $len);
+
+				$zip->addFile($file, $rec_into);
 				}
 			}
 		}
-	$zip->Add($addarr,1);
-	
-	
-	$version = str_replace('.','-',$row['version']);
-	
+	$zip->close();
+
 
 	header("Content-Type:application/zip");
-	header("Content-Disposition: attachment; filename=".$row['title'].'-'.$version.".zip");
-	die($zip->get_file());
+	header("Content-Disposition: attachment; filename=".basename($tmpfile));
+	echo file_get_contents($tmpfile);
+
+	@unlink($tmpfile);
+	exit;
 	}
 	
 	
@@ -619,146 +627,41 @@ function bab_display_addon_requirements($id_addon)
  */
 function import()
 	{
+	include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
 	bab_setTimeLimit(0);
 	
-	global $babBody;
-	
+	global $babBody, $babDB;
 
-	if( !empty($_POST['tmpfile']))
-		{
-
+	if( !empty($_POST['tmpfile'])) {
 		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_POST['tmpfile'];
-
+		
 		if (!is_file($ul))
 			return false;
-
 		
-
-		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
-		$ini = new bab_inifile();
-		$ini->getfromzip($ul, 'programs/addonini.php');
+		$install = new bab_InstallSource;
+		$install->setArchive($ul);
+		$ini = $install->getIni();
 		
 		if (false === $ini->isValid()) {
 			return false;
 		}
-
-
+		
 		$addon_name = $ini->getName();
+		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 
-		if (false === $addon_name) {
-
-			$fn = mb_substr($_POST['tmpfile'],0,mb_strrpos($_POST['tmpfile'],'.'));
-			$arr = explode('-',$fn);
-			$i = 0;
-			while(isset($arr[$i]) && !is_numeric($arr[$i]))
-				{
-				if (isset($addon_name) && false != $addon_name)
-					$addon_name .= '-'.$arr[$i];
-				else $addon_name = $arr[$i];
-				$i++;
-				}
-		}
-
-		$db = $GLOBALS['babDB'];
-		$db->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$db->quote($addon_name));
-
-		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
-		$zip = new Zip;
-		$zipcontents = $zip->get_List($ul);
+		$install->install($ini);
 		
-		$addons_files_location = bab_getAddonsFilePath();
-		
-		$loc_in = $addons_files_location['loc_in'];
-		$loc_out = $addons_files_location['loc_out'];
-		
-		foreach ($loc_in as $directory) {
-			if (!is_dir($directory)) {
-				if (!bab_mkdir($directory, 0777)) {
-					return false;
-				}
-			}
-				
-			if (!is_writable($directory)) {
-				$babBody->addError(sprintf(bab_translate('The directory %s is not writable'), $directory));
-				return false;
-			}
-		}
-		
-		$path_file = array();
-		$file_zipid = array();
-		
-		foreach ($zipcontents as $k => $arr)
-			{
-			if ($arr['folder'] != 0) 
-				{
-				continue;
-				}
-
-
-
-			$tmppath = mb_substr($arr['filename'],0,mb_strrpos($arr['filename'],'/'));
-			if (!empty($tmppath))
-				{
-				if (!isset($path_file[$tmppath])) 
-					{
-					$path_file[$tmppath] = array();
-					}
-
-				foreach ($loc_out as $key => $zippath)
-					{
-					if ($zippath === mb_substr($arr['filename'],0,strlen($zippath)))
-						{
-						$file_zipid[] = array($key,$arr['index'],$k);
-						}
-					}
-				}
-			}
-
-		
-			
-		if (empty($addon_name) || count($path_file) == 0) 
-			return false;
-
-
-		function create_directory($str) {
-			$path = explode('/',$str);
-			$created = '';
-			foreach($path as $d) {
-			
-				if (!empty($created)) {
-					$created .= '/';
-				}
-			
-				$created.= $d;
-				if (!is_dir($created)) {
-					if (!bab_mkdir($created, 0777)) {
-						return false;
-					}
-				}
-			}
-		}
-		
-		foreach ($file_zipid as $arr)
-			{
-			$path = $loc_in[$arr[0]].'/'.$addon_name;
-			$subdir = dirname(mb_substr($zipcontents[$arr[2]]['filename'],mb_strlen($loc_out[$arr[0]])+1));
-			$subdir = isset($subdir) && $subdir != '.' ? '/'.$subdir : '';
-
-			create_directory($path.$subdir);
-			$zip->Extract($ul,$path.$subdir,$arr[1],false );
-			}
-
-		@unlink($ul);
+		unlink($ul);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
-
+		
 		$addon = bab_getAddonInfosInstance($addon_name);
 		if ($addon) {
 			$addon->upgrade();
-			}
 		}
 	}
+}
 
 
 function history($item)

@@ -977,6 +977,7 @@ switch ($_POST['action'])
 				header("Location: ". $GLOBALS['babUrlScript'].'?tg=vacchart&idx=entity_members&ide='.$_POST['ide']);
 				exit;
 			}
+
 			header("Location: ". $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 			exit;
 			}

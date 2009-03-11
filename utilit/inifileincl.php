@@ -1257,3 +1257,18 @@ class bab_inifile {
 }
 
 
+
+
+
+class bab_AddonIniFile extends bab_inifile {
+
+}
+
+
+class bab_AddonCollectionIniFile extends bab_inifile {
+
+}
+
+class bab_CoreIniFile extends bab_inifile {
+
+}
