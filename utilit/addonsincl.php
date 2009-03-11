@@ -40,9 +40,14 @@ class bab_addonsInfos {
 
 	/**
 	 * Get accessible status and update table if necessary
+	 * @param	int		$id_addon
+	 * @param	string	$title		Addon name
+	 * @param	string	$version	Database addon version
+	 * @param	string	$installed	Y|N
+	 * @param	string	$enabled	Y|N
 	 * @return boolean
 	 */
-	public static function isAccessible($id_addon, $title, $version) {
+	private static function isAccessible($id_addon, $title, $version, $installed, $enabled) {
 
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		global $babDB;
@@ -69,7 +74,6 @@ class bab_addonsInfos {
 
 
 
-
 	/**
 	 * Create indexes with access rights verification
 	 * @return boolean
@@ -84,7 +88,7 @@ class bab_addonsInfos {
 			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL." where enabled='Y' AND installed='Y'");
 			while( $arr = $babDB->db_fetch_assoc($res)) {
 
-				$arr['access'] = self::isAccessible($arr['id'], $arr['title'], $arr['version']);
+				$arr['access'] = self::isAccessible($arr['id'], $arr['title'], $arr['version'],'Y', 'Y');
 					
 				$this->indexById[$arr['id']] 		= $arr;
 				$this->indexByName[$arr['title']] 	= $arr;
@@ -150,7 +154,7 @@ class bab_addonsInfos {
 			return false;
 		}
 		
-		if (!self::isAccessible($id_addon, $arr[$id_addon]['title'], $arr[$id_addon]['version'])) {
+		if (!self::isAccessible($id_addon, $arr[$id_addon]['title'], $arr[$id_addon]['version'], $arr[$id_addon]['installed'], $arr[$id_addon]['enabled'])) {
 			return false;
 		}
 
@@ -257,7 +261,7 @@ class bab_addonsInfos {
 
 		$arr = $obj->fullIndexByName[$name];
 
-		if ($access_rights && !bab_addonsInfos::isAccessible($arr['id'], $arr['title'], $arr['version'])) {
+		if ($access_rights && !bab_addonsInfos::isAccessible($arr['id'], $arr['title'], $arr['version'], $arr['installed'], $arr['enabled'])) {
 			return false;
 		}
 		
