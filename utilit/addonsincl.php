@@ -49,6 +49,11 @@ class bab_addonsInfos {
 	 */
 	private static function isAccessible($id_addon, $title, $version, $installed, $enabled) {
 
+		if ('Y' !== $installed || 'Y' !== $enabled) {
+			return false;
+		}
+
+
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		global $babDB;
 		
