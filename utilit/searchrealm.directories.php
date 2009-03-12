@@ -262,12 +262,14 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		$this->access_rights = true;
 
 		$entry_directories = array();
-		foreach($this->getSearchableDirectories() as $arr) {
+		foreach($this->getSearchableDirectories() as $arr) { 
 			$entry_directories[$arr['entry_id_directory']] = $arr['entry_id_directory'];
 		}
 
-		$crit = $this->id_directory->in($entry_directories);
+		
 
+		$crit = $this->id_directory->in($entry_directories);
+		
 		return $crit;
 	}
 
@@ -283,12 +285,13 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 		$searchable = $this->getSearchableDirectories();
 
-		if (null !== $this->search_id_directory && isset($searchable[$this->search_id_directory]['id_group'])) {
+
+		if (null !== $this->search_id_directory && 0 !== (int) $searchable[$this->search_id_directory]['id_group']) {
 			return BAB_REGISTERED_GROUP === (int) $searchable[$this->search_id_directory]['id_group'];
 		}
 
 		foreach($searchable as $arr) {
-			if (BAB_REGISTERED_GROUP == $arr['id_group']) {
+			if (BAB_REGISTERED_GROUP === (int) $arr['id_group']) {
 				return true;
 			}
 		}
@@ -464,7 +467,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		else
 			{
 			$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user 
-					AND u.id_group IN  (".$babDB->quote($this->getSearchableGroups()).") 
+					AND u.id_group IN (".$babDB->quote($this->getSearchableGroups()).") 
 					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' 
 				";
 			}
@@ -475,11 +478,8 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		}
 		
 		$req .= $mysql->getWhereClause($criteria);
-
-		if(false === $this->containAllRegisteredUsers()) {
-			$req .= ' AND dis.id IS NOT NULL';
-		}
-
+		$req .= ' AND (e.id_user=\'0\' OR dis.id IS NOT NULL)';
+		
 
 		if (null !== $this->primary_search) {
 			$sort = 'relevance ASC, sn ASC, givenname ASC';
@@ -536,13 +536,14 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 * @return bab_SearchCriteria
 	 */
 	public function getSearchFormCriteria() {
-		// default serach fields
-		$criteria = bab_SearchDefaultForm::getCriteria($this);
 
 		$g_directory = (int) bab_rp('g_directory');
 		if ($g_directory) {
 			$this->setDirectory($g_directory);
 		}
+
+		// default serach fields
+		$criteria = bab_SearchDefaultForm::getCriteria($this);
 
 		$select = bab_rp('dirselect');
 		$values = bab_rp('dirfield');
