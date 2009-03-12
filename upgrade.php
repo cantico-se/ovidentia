@@ -5747,7 +5747,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		VALUES 
 			('docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
 			('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-			('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
+			('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'),
+			('mpg', 'video/mpeg'),
+			('wmv', 'video/x-ms-wmv'),
+			('flv', 'video/x-flv'),
+			('mp4', 'video/mp4'),
+			('mov', 'video/quicktime')
 		");
 	}
 
