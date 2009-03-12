@@ -42,7 +42,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 * @see bab_SearchRealmDirectories::getDefaultCriteria()
 	 * @var bool
 	 */
-	private $access_rights = false;
+	private $access_rights = true;
 
 	/**
 	 * 
@@ -62,14 +62,24 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 * @return	bab_SearchRealmDirectories
 	 */
 	public function setDirectory($id_directory) {
-		
-		$arr = bab_getUserDirectories();
+
+		include_once dirname(__FILE__).'/dirincl.php';
+		$arr = getUserDirectories($this->access_rights);
 
 		if (!isset($arr[$id_directory])) {
 			throw new Exception('This directory is not accessible');
 		}
 
 		$this->search_id_directory = (int) $id_directory;
+		return $this;
+	}
+
+	/**
+	 * set if verification of access rights is activ
+	 * @return bab_SearchRealmDirectories
+	 */
+	public function setAccessRightsVerification($bool) {
+		$this->access_rights = $bool;
 		return $this;
 	}
 

@@ -1156,10 +1156,11 @@ function searchDirEntriesByField($id_directory, $likefields, $and = true) {
 
 	include_once dirname(__FILE__).'/searchapi.php';
 	$realm = bab_Search::getRealm('bab_SearchRealmDirectories');
+	$realm->setAccessRightsVerification(false);
 	$realm->setDirectory($id_directory);
 
 	$operator = $and ? '_AND_' : '_OR_';
-	$criteria = new bab_SearchInvariant;
+	$criteria = $realm->getDefaultCriteria();
 
 	// add filters
 	foreach($likefields as $fieldname => $filter) {
