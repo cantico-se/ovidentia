@@ -93,6 +93,12 @@ function listUsers($pos, $grp)
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
 
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
+			if( $this->group === '' )
+				{
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&bupd=0");
+				exit;
+				}
+
 			$this->grp		= bab_toHtml($grp);
 
 			switch ($babBody->nameorder[0]) {
@@ -466,6 +472,24 @@ function delete_unconfirmed()
 
 function updateGroup( $grp, $users, $userst)
 {
+	global $babBody;
+	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
+
+	$id_parent = false;
+
+	if( $babBody->currentAdmGroup )
+		{
+		$id_parent = $babBody->currentDGGroup['id_group'];
+		}
+	elseif( $babBody->isSuperAdmin )
+		{
+		$id_parent = BAB_REGISTERED_GROUP;
+		}
+
+	if( false === $id_parent  || false === bab_isGroup($grp, $id_parent) )
+	{
+		return;
+	}
 
 	if( !empty($userst))
 		$tab = explode(",", $userst);
