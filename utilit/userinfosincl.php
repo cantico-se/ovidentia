@@ -169,3 +169,42 @@ class bab_userInfos {
 		);
 	}
 }
+
+
+
+
+
+/**
+ * bab_UserName object is a tool to get the username at the last time
+ * the query to ovidentia user database will be done whene the object is displayed (in the __tostring() method)
+ */
+class bab_UserName {
+	
+	private $id_user = null;
+	private $method = 'composeNameAndStatus';
+
+	public function __construct($id_user) {
+		$this->id_user = $id_user;
+	}
+
+	/**
+	 * Set method used
+	 * @see bab_userInfos
+	 * @param string $method
+	 *		possibles values are :
+	 *		<ul>
+	 *			<li>composeNameAndStatus (default)</li>
+	 *			<li>composeName</li>
+	 *			<li>composeHtml</li>
+	 *		</ul>
+	 * @return	bab_UserName
+	 */
+	public function setMethod($method) {
+		$this->method = $method;
+	}
+
+	public function __tostring() {
+		$method = $this->method;
+		return (string) bab_userInfos::$method($this->id_user);
+	}
+}

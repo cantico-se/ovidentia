@@ -645,6 +645,45 @@ class cal_wmdbaseCls
 
 
 	/**
+	 * Get access shared users for a personal calendars
+	 * @param	int		$id_cal
+	 * @param	int		$access_type
+	 *		possibles types are :
+	 *			<ul>
+	 *				<li>BAB_CAL_ACCESS_SHARED_UPDATE</li>
+	 *				<li>BAB_CAL_ACCESS_SHARED_FULL</li>
+	 *			</ul>
+	 *
+	 * @return array	keys and values are (int) id_user
+	 */
+	function getAccessShared($id_cal, $access_type) {
+		global $babDB;
+		$access_shared = array();
+		
+
+		$rs = $babDB->db_query("
+			select 
+				cut.id_user, bwrite 
+			from 
+				".BAB_CALACCESS_USERS_TBL." cut 
+			where 
+				id_cal='".$babDB->db_escape_string($id_cal)."' 
+				AND bwrite=".$babDB->quote($access_type)."
+		");
+
+		while( $row =  $babDB->db_fetch_assoc($rs))
+		{
+			$access_shared[$row['id_user']] = $row['id_user'];
+		}
+
+		return $access_shared;
+	}
+
+
+
+
+
+	/**
 	 * Update access rights for an event and a calendar
 	 * 
 	 * @param  	object	&$calPeriod		period (event) informations
@@ -679,7 +718,8 @@ class cal_wmdbaseCls
 						}
 						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL )
 						{
-						if( count($calinfo['asf_users']) && in_array($evtarr['id_creator'], $calinfo['asf_users']) )
+						$access_shared_full = $this->getAccessShared($calinfo['id_cal'], BAB_CAL_ACCESS_SHARED_FULL);
+						if( isset($access_shared_full[$evtarr['id_creator']]) )
 							{
 							$modify = 1;
 							}
@@ -694,7 +734,8 @@ class cal_wmdbaseCls
 						}
 						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE )
 						{
-						if( count($calinfo['asu_users']) && in_array($evtarr['id_creator'], $calinfo['asu_users']) )
+						$access_shared_update = $this->getAccessShared($calinfo['id_cal'], BAB_CAL_ACCESS_SHARED_UPDATE);
+						if( isset($access_shared_update[$evtarr['id_creator']]) )
 							{
 							$modify = 1;
 							}

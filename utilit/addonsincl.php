@@ -535,6 +535,11 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	function getAddonType() {
+
+		$ini = $this->getIni();
+		if (isset($ini->inifile['addon_type'])) {
+			return $ini->inifile['addon_type'];
+		}
 	
 		if (is_dir('skins/'.$this->getName())) {
 			return 'THEME';

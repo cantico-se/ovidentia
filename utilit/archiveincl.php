@@ -53,16 +53,12 @@ class Func_Archive_Zip extends Func_Archive {
 	 * Open file, if the file does not exists it will be overwriten
 	 * @return bool
 	 */
-	public function open($filename) {
-
-	}
+	public function open($filename) {}
 
 	/**
 	 * @return bool
 	 */
-	public function close() {
-
-	}
+	public function close() {}
 
 	/**
 	 * Add file to zip
@@ -70,9 +66,7 @@ class Func_Archive_Zip extends Func_Archive {
 	 * @param	string	$localname		File in zip archive
 	 * 
 	 */
-	public function addFile($filename, $localname) {
-
-	}
+	public function addFile($filename, $localname) {}
 
 
 	/**
@@ -80,9 +74,7 @@ class Func_Archive_Zip extends Func_Archive {
 	 * This function, maintains/forces the directory structure within the ZIP file.
 	 * @param	string	$destination		full path
 	 */
-	public function extractTo($destination) {
-		
-	}
+	public function extractTo($destination) {}
 }
 
 

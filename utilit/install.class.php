@@ -153,7 +153,7 @@ class bab_InstallSource {
 	 * @return bab_inifile | false
 	 */
 	private function getAddonIni() {
-		return $this->getIni('bab_AddonIniFile', 'programs/addonini.php');
+		return $this->getIniObject('bab_AddonIniFile', 'programs/addonini.php');
 	}
 
 	/**
@@ -161,7 +161,7 @@ class bab_InstallSource {
 	 * @return bab_inifile | false
 	 */
 	private function getAddonCollectionIni() {
-		return $this->getIni('bab_AddonCollectionIniFile', 'install/addons/addons.ini');
+		return $this->getIniObject('bab_AddonCollectionIniFile', 'install/addons/addons.ini');
 	}
 
 	/**
@@ -169,7 +169,7 @@ class bab_InstallSource {
 	 * @return bab_inifile | false
 	 */
 	private function getCoreIni() {
-		return $this->getIni('bab_CoreIniFile', 'ovidentia/version.inc');
+		return $this->getIniObject('bab_CoreIniFile', 'ovidentia/version.inc');
 	}
 
 
@@ -228,17 +228,19 @@ class bab_InstallSource {
 		include_once dirname(__FILE__).'/upgradeincl.php';
 		global $babBody;
 
-		$path 	= $this->getFolder();
+		$path 	= $this->getFolder().'/';
 		$map 	= bab_getAddonsFilePath();
 
 		// browse source path
 		foreach ($map['loc_out'] as $key => $source) {
 
-			$destination = $map['loc_in'][$key].'/';
+			if (is_dir($path.$source)) {
+				$destination = $map['loc_in'][$key].'/';
 
-			if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName())) {
-				$babBody->addError($result);
-				return false;
+				if (true !== $result = bab_recursive_cp($path.$source, $destination.$ini->getName())) {
+					$babBody->addError($result);
+					return false;
+				}
 			}
 		}
 

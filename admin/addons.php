@@ -318,7 +318,7 @@ function upgrade($id) {
 	$addon = bab_getAddonInfosInstance($row['title']);
 	
 	if (!$addon->isValid()) {
-		bab_display_addon_requirements($id);
+		bab_display_addon_requirements();
 	}
 	
 	if (!$addon->upgrade()) {
@@ -442,7 +442,7 @@ function del($id)
 		global $babBody;
 		$babBody->addError($msgerror);
 		
-		bab_display_addon_requirements($id);
+		bab_display_addon_requirements();
 		return;
 	}
 
@@ -465,7 +465,10 @@ function upload()
 	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "upload"));
 }
 
-
+/**
+ * Upload file to tmp folder
+ * @return string	temporary file path to addon package
+ */
 function upload_tmpfile() {
 	if( !empty($_FILES['uploadf']['name'])) {
 		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize']) {
@@ -494,7 +497,7 @@ function upload_tmpfile() {
 }
 
 
-function bab_display_addon_requirements($id_addon)
+function bab_display_addon_requirements()
 {
 	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
@@ -503,13 +506,16 @@ function bab_display_addon_requirements($id_addon)
 	
 		var $altbg = false;
 	
-		function temp($id_addon)
+		function temp()
 			{
-			$this->item = $id_addon;
+			
 			$this->installed = false;
 			
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
+				// display requirements from temporary addon package into installation process
+				$this->item = '';
+
 				$ul = upload_tmpfile();
 
 				if (false === $ul) {
@@ -527,7 +533,11 @@ function bab_display_addon_requirements($id_addon)
 
 			} elseif (isset($_GET['item'])) {
 
-				$row = bab_addonsInfos::getDbRow($_GET['item']);
+				// display requirements of currently installed addon
+
+				$this->item = (int) bab_rp('item');
+
+				$row = bab_addonsInfos::getDbRow($this->item);
 				$addon = bab_getAddonInfosInstance($row['title']);
 				$this->installed = $addon->isInstalled();
 				$this->dependences = $addon->getDependences();
@@ -538,12 +548,9 @@ function bab_display_addon_requirements($id_addon)
 				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
-				
 				$this->t_install = bab_translate("Upgrade");
 				
 				$name = $addon->getName();
-				
-
 
 				$this->imagepath = bab_toHtml($addon->getImagePath());
 				if ($addon->isDeletable()) {
@@ -618,7 +625,7 @@ function bab_display_addon_requirements($id_addon)
 		
 	}
 
-	$temp = new temp($id_addon);
+	$temp = new temp();
 	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "requirements"));
 }
 
@@ -635,18 +642,33 @@ function import()
 	if( !empty($_POST['tmpfile'])) {
 		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_POST['tmpfile'];
 		
-		if (!is_file($ul))
+		if (!is_file($ul)) {
+			$babBody->addError(bab_translate('The file is missing'));
 			return false;
+		}
 		
 		$install = new bab_InstallSource;
 		$install->setArchive($ul);
 		$ini = $install->getIni();
+
+		bab_debug($ini);
 		
 		if (false === $ini->isValid()) {
+			$babBody->addError(bab_translate('The addon is not valid'));
+			unlink($ul);
 			return false;
 		}
 		
 		$addon_name = $ini->getName();
+
+		if (empty($addon_name)) {
+			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
+			unlink($ul);
+			return false;
+		}
+
+
+
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 
 		$install->install($ini);
@@ -899,7 +921,7 @@ switch($idx)
 		display_addons_menu();
 		$babBody->addItemMenu("requirements", bab_translate("Requirements"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
 		$babBody->title = bab_translate("Addon requirements");
-		bab_display_addon_requirements(bab_rp('item'));
+		bab_display_addon_requirements();
 		break;
 
 	case "history":

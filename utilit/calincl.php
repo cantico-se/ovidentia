@@ -501,37 +501,34 @@ class bab_icalendars
 	function initializeUserCalendars()
 	{
 		global $babDB, $babBody;
+		include_once dirname(__FILE__).'/userinfosincl.php';
 		$this->busercal = true;
 
 		if( $this->iduser && ($this->id_percal || $babBody->babsite['iPersonalCalendarAccess'] == 'Y'))
 		{
-			$res = $babDB->db_query("select cut.*, ct.owner from ".BAB_CALACCESS_USERS_TBL." cut left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal left join ".BAB_USERS_TBL." u on u.id=ct.owner where id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y' and disabled='0'");
+			$res = $babDB->db_query("
+				select 
+					cut.*, ct.owner 
+
+				from ".BAB_CALACCESS_USERS_TBL." cut 
+					left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
+					left join ".BAB_USERS_TBL." u on u.id=ct.owner 
+				where 
+					id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y' and disabled='0'
+			");
 	
-			while( $arr = $babDB->db_fetch_array($res))
+			while( $arr = $babDB->db_fetch_assoc($res))
 			{
-				$this->usercal[$arr['id_cal']]['name'] = bab_getUserName($arr['owner']);
+				$this->usercal[$arr['id_cal']]['id_cal'] = $arr['id_cal'];
+				$this->usercal[$arr['id_cal']]['name'] = new bab_UserName($arr['owner']);
 				$this->usercal[$arr['id_cal']]['description'] = '';
 				$this->usercal[$arr['id_cal']]['type'] = BAB_CAL_USER_TYPE;
 				$this->usercal[$arr['id_cal']]['idowner'] = $arr['owner'];
 				$this->usercal[$arr['id_cal']]['access'] = $arr['bwrite'];
-				$this->usercal[$arr['id_cal']]['asu_users'] = array();
-				$this->usercal[$arr['id_cal']]['asf_users'] = array();
-	
-				$rs = $babDB->db_query("select cut.id_user, bwrite from ".BAB_CALACCESS_USERS_TBL." cut where id_cal='".$babDB->db_escape_string($arr['id_cal'])."'");
-	
-				while( $row =  $babDB->db_fetch_array($rs))
-				{
-					if( $row['bwrite'] == BAB_CAL_ACCESS_SHARED_UPDATE )
-					{
-						$this->usercal[$arr['id_cal']]['asu_users'][] = $row['id_user'];
-					}
-					elseif( $row['bwrite'] == BAB_CAL_ACCESS_SHARED_FULL )
-					{
-						$this->usercal[$arr['id_cal']]['asf_users'][] = $row['id_user'];
-					}
-				}
+				
 			}
 		}
+
 		
 		if( empty($this->user_calendarids) && count($this->usercal) > 0)
 			{
@@ -729,16 +726,9 @@ class bab_icalendars
 					}
 			}
 
-			if( count($this->usercal) > 0 )
+			if( isset($this->usercal[$idcal]))
 			{
-				reset($this->usercal);
-				while( $row=each($this->usercal) ) 
-					{ 
-					if( $row[0] == $idcal)
-						{
-						return $row[1]['idowner'];
-						}
-					}
+				return $this->usercal[$idcal]['idowner'];
 			}
 		}
 	return false;
