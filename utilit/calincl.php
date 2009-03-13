@@ -129,45 +129,58 @@ function bab_isCalendarAccessValid($calid)
 	$ret = array();
 	bab_getICalendars()->initializeCalendars();
 
-	$calid = explode(',', $calid);
+	$arr = explode(',', $calid);
+	$calid = array();
+	foreach($arr as $tmpidcal) {
+		$intidcal = (int) $tmpidcal;
+		$calid[$intidcal] = $intidcal;
+	}
 
-	if( bab_getICalendars()->id_percal != 0 && in_array(bab_getICalendars()->id_percal, $calid))
+	$id_percal = (int) bab_getICalendars()->id_percal;
+
+	if( $id_percal !== 0 && isset($calid[$id_percal]))
 		{
-		$ret[] = bab_getICalendars()->id_percal;
+		$ret[$id_percal] = $id_percal;
 		}
 
-	if( count(bab_getICalendars()->usercal) > 0 )
+	$usercal = bab_getICalendars()->usercal;
+
+	if( count($usercal) > 0 )
 		{
-		reset(bab_getICalendars()->usercal);
-		while( $row=each(bab_getICalendars()->usercal) ) 
+		reset($usercal);
+		while( $row = each($usercal) ) 
 			{
-			if( in_array($row[0], $calid))
+			if( isset($calid[$row[0]]))
 				{
-				$ret[] = $row[0];
+				$ret[$row[0]] = $row[0];
 				}
 			}
 		}
 
-	if( count(bab_getICalendars()->pubcal) > 0 )
+	$pubcal = bab_getICalendars()->pubcal;
+
+	if( count($pubcal) > 0 )
 		{
-		reset(bab_getICalendars()->pubcal);
-		while( $row=each(bab_getICalendars()->pubcal) ) 
+		reset($pubcal);
+		while( $row = each($pubcal) ) 
 			{
-			if( in_array($row[0], $calid))
+			if( isset($calid[$row[0]]))
 				{
-				$ret[] = $row[0];
+				$ret[$row[0]] = $row[0];
 				}
 			}
 		}
 		
-	if( count(bab_getICalendars()->rescal) > 0 )
+	$rescal = bab_getICalendars()->rescal;
+
+	if( count($rescal) > 0 )
 		{
-		reset(bab_getICalendars()->rescal);
-		while( $row=each(bab_getICalendars()->rescal) ) 
+		reset($rescal);
+		while( $row = each($rescal) ) 
 			{
-			if( in_array($row[0], $calid))
+			if( isset($calid[$row[0]]))
 				{
-				$ret[] = $row[0];
+				$ret[$row[0]] = $row[0];
 				}
 			}
 		}
@@ -501,26 +514,29 @@ class bab_icalendars
 	function initializeUserCalendars()
 	{
 		global $babDB, $babBody;
-		include_once dirname(__FILE__).'/userinfosincl.php';
 		$this->busercal = true;
 
 		if( $this->iduser && ($this->id_percal || $babBody->babsite['iPersonalCalendarAccess'] == 'Y'))
 		{
-			$res = $babDB->db_query("
+			$query = "
 				select 
-					cut.*, ct.owner 
+					cut.*, 
+					ct.owner, 
+					u.firstname,
+					u.lastname 
 
 				from ".BAB_CALACCESS_USERS_TBL." cut 
 					left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
 					left join ".BAB_USERS_TBL." u on u.id=ct.owner 
 				where 
 					id_user='".$babDB->db_escape_string($this->iduser)."' and ct.actif='Y' and disabled='0'
-			");
+			";
+			$res = $babDB->db_query($query);
 	
 			while( $arr = $babDB->db_fetch_assoc($res))
 			{
 				$this->usercal[$arr['id_cal']]['id_cal'] = $arr['id_cal'];
-				$this->usercal[$arr['id_cal']]['name'] = new bab_UserName($arr['owner']);
+				$this->usercal[$arr['id_cal']]['name'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
 				$this->usercal[$arr['id_cal']]['description'] = '';
 				$this->usercal[$arr['id_cal']]['type'] = BAB_CAL_USER_TYPE;
 				$this->usercal[$arr['id_cal']]['idowner'] = $arr['owner'];
@@ -529,12 +545,14 @@ class bab_icalendars
 			}
 		}
 
+
 		
 		if( empty($this->user_calendarids) && count($this->usercal) > 0)
 			{
 			$keys = array_keys($this->usercal);
 			$this->user_calendarids = $keys[0];
 			}
+
 	}
 
 	function calendarAccess()

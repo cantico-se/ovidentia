@@ -4524,6 +4524,7 @@ class bab_CalendarEvents extends bab_handler
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO"; 
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO"; 
+
 		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
@@ -4581,12 +4582,14 @@ class bab_CalendarEvents extends bab_handler
 			$this->whObj->category = $categoryid;
 		}
 
-		$options = BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT;
+
+		$options = BAB_PERIOD_CALEVENT;
 		if( $holiday )
 		{
-			$options |= BAB_PERIOD_NWDAY;
+			$options |= BAB_PERIOD_VACATION;
+		//	$options |= BAB_PERIOD_NWDAY;
 		}
-		$this->whObj->createPeriods(BAB_PERIOD_WORKING | $options);
+		$this->whObj->createPeriods($options);
 		$this->whObj->orderBoundaries();
 		
 		$this->events = $this->whObj->getEventsBetween(
