@@ -349,10 +349,6 @@ class bab_functionalities {
 
 		$childClassname = bab_Functionalities::getClassname($childPath);
 		$child = new $childClassname();
-		
-		if (false === $child) {
-			return false;
-		}
 
 		if (!is_subclass_of($child, get_class($parent))) {
 			return false;
