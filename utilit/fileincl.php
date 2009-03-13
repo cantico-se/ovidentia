@@ -763,6 +763,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 		else if('Y' === $gr)
 		{
+			$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($iIdOwner)."'"));
+			$baddtags = $rr['baddtags'];
+			
 			$oFmFolder = null;
 			$access = BAB_FmFolderHelper::getInfoFromCollectivePath($oFileManagerEnv->sPath, $iIdRootFolder, $oFmFolder);
 			if($access)
@@ -776,9 +779,6 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 					$access = true;
 				}
 			}
-			
-			$rr = $babDB->db_fetch_array($babDB->db_query("select baddtags from ".BAB_FM_FOLDERS_TBL." where id='".$babDB->db_escape_string($iIdOwner)."'"));
-			$baddtags = $rr['baddtags'];
 		}
 	}
 //	bab_debug('iIdOwner ==> ' . $iIdOwner . ' sRelativePath ==> ' . $sRelativePath . ' sFullUploadPath ==> ' . $sFullUploadPath);
@@ -789,24 +789,16 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		return false;
 	}
 
+
 	$pathx = $sFullUploadPath;
 	$okfiles = array();
 	$errfiles = array();
 
-
-	//Avant le count était initialiser à zéro puis incrémenté
-	//à la fin de la boucle for, mais cela posait un problème
-	//car en cas d'érreur on appel continue, ce qui fait que 
-	//l'on passe à l'itération suivante sans incrémenter la 
-	//variable count
-	$count = -1;
-
+	$count = 0;
 	foreach($fmFiles as $fmFile)
 	{
-		$count++;
+		$aTags = array();
 		
-		$otags = array();
-
 		$file = array(
 		'name' => trim($fmFile->filename),
 		'size' => $fmFile->size
@@ -869,6 +861,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 
 			if($res && $babDB->db_num_rows($res) > 0)
 			{
+				
 				$arr = $babDB->db_fetch_array($res);
 				if($arr['state'] == "D")
 				{
@@ -886,8 +879,15 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		}
 
 		bab_setTimeLimit(0);
-		
-		if(!is_array($keywords))
+
+		if(!$fmFile->import($pathx.$osfname))
+		{
+			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
+			continue;
+		}
+
+
+		if( !is_array($keywords))
 		{
 			$tags = trim($keywords);
 		}
@@ -896,58 +896,34 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$tags = trim($keywords[$count]);
 		}
 
-		
 		if(!empty($tags))
 		{
-
 			$atags		= explode(',', $tags);
-			$message	= null;
-		
+			$message	= '';
 			for($k = 0; $k < count($atags); $k++)
 			{
-				$tag = trim($atags[$k]);
-				if(!empty($tag))
+				$sTagName = trim($atags[$k]);
+				if(!empty($sTagName))
 				{
-					$res = $babDB->db_query("select id from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
-					if( $res && $babDB->db_num_rows($res))
-
+					$oTagMgr	= bab_getInstance('bab_TagMgr');
+					$oTag		= $oTagMgr->getByName($sTagName);
+					if($oTag instanceof bab_Tag)
 					{
-						$arr = $babDB->db_fetch_array($res);
-						if( !isset($otags[$arr['id']]))
-						{
-						$otags[$arr['id']] = $arr['id'];
-						}
+						$aTags[] = $oTag;
 					}
 					else
 					{
 						if($baddtags == 'Y')
 						{
-
-						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
-						$iidtag = $babDB->db_insert_id();
-						$otags[$iidtag] = $iidtag;
-						}
-						else
-						{
-						$message = bab_translate("Some tags doesn't exist");
+							$oTag = $oTagMgr->create($sTagName);
+							if($oTag instanceof bab_Tag)
+							{
+								$aTags[] = $oTag;
+							}
 						}
 					}
 				}
 			}
-
-			
-			if( isset($message) )
-			{
-				$errfiles[] = array('error'=> $message, 'file' => $file['name']);
-				$message = null;
-				continue;
-			}
-		}
-				
-		if(!$fmFile->import($pathx.$osfname))
-		{
-			$errfiles[] = array('error'=> bab_translate("The file could not be uploaded"), 'file' => $file['name']);
-			continue;
 		}
 
 		if(empty($BAB_SESS_USERID))
@@ -993,6 +969,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$readonly[$count] = 'N';
 		}
 
+
+
 		if($bexist)
 		{
 			$req = "
@@ -1011,7 +989,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			$idf = $arr['id'];
 			
 			$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
-			$oReference		= bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $idf);
+			$oReference		= bab_Reference::makeReference('ovidentia', '', 'files', 'file', $idf);
 			$oReferenceMgr->removeByReference($oReference);
 		}
 		else
@@ -1038,7 +1016,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			
 			foreach($aTags as $k => $oTag)
 			{
-				$oReferenceMgr->add($oTag->getName(), bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $idf));
+				$oReferenceMgr->add($oTag->getName(), bab_Reference::makeReference('ovidentia', '', 'files', 'file', $idf));
 			}
 		}
 
@@ -1086,6 +1064,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 				fileNotifyMembers($osfname, $path, $iIdOwner, bab_translate("A new file has been uploaded"));
 			}
 		}
+	$count++;
 	}
 
 	if(count($errfiles))
@@ -1321,7 +1300,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			$tmp[] = "description='".$babDB->db_escape_string($description)."'";
 			
 			$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
-			$oReference		= bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $idf);
+			$oReference		= bab_Reference::makeReference('ovidentia', '', 'files', 'file', $idf);
 			
 			$oReferenceMgr->removeByReference($oReference);
 			if(count($aTags))
