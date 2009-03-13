@@ -25,6 +25,36 @@ include_once "base.php";
 include_once $babInstallPath."admin/register.php";
 
 
+function canUpdateUser($user)
+{
+	global $babBody;
+	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+	
+	if( $babBody->currentAdmGroup )
+		{
+		$dg = $babBody->currentAdmGroup;
+		}
+	elseif( $babBody->isSuperAdmin )
+		{
+		$dg = 0;
+		}
+
+	if( !isset($dg))
+		{
+		return false;
+		}
+
+	$delegations = bab_getUserVisiblesDelegations($user);
+	foreach($delegations as $delegation => $arr) 
+		{
+			if( $arr['id'] == $dg )
+			{
+				return true;
+			}
+		}
+	return false;
+}
+
 function modifyUser($id, $pos, $grp)
 	{
 	global $babBody;
@@ -371,6 +401,10 @@ function updateGroups()
 	include_once $GLOBALS['babInstallPath']."admin/mgroup.php";
 
 	$id_user = $_POST['item'];
+	if(!canUpdateUser($id_user))
+		{
+		return;
+		}
 	$selected_groups = mgroups_getSelected();
 	$arr = bab_getUserGroups($_REQUEST['item']);
 	$user_groups = &$arr['id'];
@@ -399,6 +433,10 @@ function updateGroups()
 function updateUser($id, $changepwd, $is_confirmed, $disabled, $authtype, $group)
 	{
 	global $babBody;
+	if(!canUpdateUser($id))
+	{
+	return;
+	}
 
 	$db = $GLOBALS['babDB'];
 	$res = $db->db_query("select firstname, lastname, email, is_confirmed from ".BAB_USERS_TBL." where id='$id'");
@@ -438,6 +476,10 @@ function updateUser($id, $changepwd, $is_confirmed, $disabled, $authtype, $group
 function confirmDeleteUser($id)
 	{
 	global $babBody;
+	if(!canUpdateUser($id))
+	{
+	return;
+	}
 	
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 		{
@@ -450,6 +492,10 @@ function confirmDeleteUser($id)
 function updateNickname($item, $newnick)
 	{
 	global $babBody, $BAB_HASH_VAR;
+	if(!canUpdateUser($item))
+	{
+	return;
+	}
 
 	if ( !empty($newnick) && mb_strpos($newnick, ' ') !== false )
 		{
@@ -485,6 +531,10 @@ function updateNickname($item, $newnick)
 function updatePassword($item, $newpwd1, $newpwd2)
 	{
 	global $babBody, $babDB, $BAB_HASH_VAR;
+	if(!canUpdateUser($item))
+	{
+	return;
+	}
 
 	$newpwd1 = trim($newpwd1);
 	$newpwd2 = trim($newpwd2);
