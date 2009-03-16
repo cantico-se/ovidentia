@@ -69,10 +69,16 @@ class bab_InstallSource {
 	}
 
 	/**
-	 * Remove folder install source
+	 * Remove folder install source if exists
 	 * @return bool
 	 */
-	public function deleteFolder() {
+	private function deleteFolder() {
+
+		if (null === $this->folderpath) {
+			return true;
+		}
+
+
 		global $babBody;
 		include_once dirname(__FILE__).'/delincl.php';
 		$error = '';
@@ -303,6 +309,15 @@ class bab_InstallSource {
 
 		return true;
 	}
+
+
+
+	/**
+	 * Remove temporary folder if exists
+	 */
+	function __destruct() {
+		$this->deleteFolder();
+    }
 }
 
 

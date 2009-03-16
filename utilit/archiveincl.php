@@ -108,13 +108,18 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 	 * Commit added files
 	 */
 	public function close() {
+
+		$result = true;
+
 		if ($this->add) {
 			// write files to archive
 			$this->zip->Add($this->add,1);
+
+			// record to file
+			$result = file_put_contents($this->filename, $this->zip->get_file());
 		}
 
-		// record to file
-		return file_put_contents($this->filename, $this->zip->get_file());
+		return $result;
 	}
 
 

@@ -651,8 +651,6 @@ function import()
 		$install->setArchive($ul);
 		$ini = $install->getIni();
 
-		bab_debug($ini);
-		
 		if (false === $ini->isValid()) {
 			$babBody->addError(bab_translate('The addon is not valid'));
 			unlink($ul);
@@ -668,11 +666,9 @@ function import()
 		}
 
 
-
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 
 		$install->install($ini);
-		
 		unlink($ul);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
@@ -990,5 +986,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
-?>

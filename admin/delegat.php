@@ -367,12 +367,12 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->attachdesc		= bab_translate("Assign/unassign a user");
 			$this->none				= bab_translate("None");
 			$this->sCategoryCaption	= bab_translate("Category");
-			$this->tcheck			= bab_translate("Check");
-			$this->tuncheck			= bab_translate("Uncheck");
+			$this->tcheck			= bab_translate("Check all");
+			$this->tuncheck			= bab_translate("Uncheck all");
 			
 			$db			= $GLOBALS['babDB'];
 			$this->db	= $db;
-			$res		= $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id='".$id."'");
+			$res		= $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id=".$db->quote($id));
 			$this->arr	= $db->db_fetch_array($res);
 			$this->id	= $id;
 			

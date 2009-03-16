@@ -1112,7 +1112,7 @@ switch($tg)
 		/* no break; */
 	case "entry":
 		$babLevelOne = bab_translate("Home");
-		$babLevelTwo = bab_translate("");
+		$babLevelTwo = '';
 		$incl = "entry";
 		break;
 	case 'admTskMgr':

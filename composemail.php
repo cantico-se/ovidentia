@@ -252,7 +252,7 @@ class bab_MailDispatcher
 		$this->mail = bab_mail();
 
 		if (!$this->mail) {
-			$GLOBALS['babBody']->addError(bab_translate(""));
+			$GLOBALS['babBody']->addError(bab_translate("Mail is not accessible"));
 			return false;
 		}
 

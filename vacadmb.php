@@ -132,7 +132,7 @@ function listVacationRequestsb()
 
 			$this->t_position = '';
 
-			$this->statarr = array(bab_translate(""), bab_translate("Accepted"), bab_translate("Refused"));
+			$this->statarr = array('', bab_translate("Accepted"), bab_translate("Refused"));
 			$this->statarr = array(bab_translate("Waiting"), bab_translate("Accepted"), bab_translate("Refused"));
 			$this->dateb = $dateb;
 			$this->datee = $datee;

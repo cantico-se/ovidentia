@@ -331,7 +331,7 @@ class zip
 		}
 		if (substr($header['filename'],-1) == '/')
 		{
-			bab_mkdir($to.$header['filename'], $GLOBALS['babMkdirMode']);
+			bab_mkdir($to.$header['filename']);
 			return +2;
 		}
 
@@ -344,7 +344,7 @@ class zip
 			}
 			if (!is_dir($to.$tmp.$pth[$i]))
 			{
-				bab_mkdir($to.$pth[$i],$GLOBALS['babMkdirMode']);
+				bab_mkdir($to.$tmp.$pth[$i]);
 			}
 			$tmp .= $pth[$i].'/';
 		}
