@@ -48,7 +48,7 @@ function displayProjectsSpacesList()
 			
 			function BAB_TM_List()
 			{
-				parent::bab_TreeView('myTreeView');
+				parent::__construct('myTreeView');
 			
 				$this->_templateFile = 'tmUser.html';
 				
