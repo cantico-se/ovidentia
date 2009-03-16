@@ -367,8 +367,8 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->attachdesc		= bab_translate("Assign/unassign a user");
 			$this->none				= bab_translate("None");
 			$this->sCategoryCaption	= bab_translate("Category");
-			$this->tcheck	= bab_translate("");
-			$this->tuncheck	= bab_translate("");
+			$this->tcheck			= bab_translate("Check");
+			$this->tuncheck			= bab_translate("Uncheck");
 			
 			$db			= $GLOBALS['babDB'];
 			$this->db	= $db;
