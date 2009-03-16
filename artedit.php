@@ -35,7 +35,7 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 function listDrafts()
 	{
 	global $babBody;
-	class temp
+	class listDraftsCls
 		{
 		var $name;
 		var $nametxt;
@@ -59,7 +59,7 @@ function listDrafts()
 		var $bsubmit;
 		var $bsubmiturl;
 
-		function temp()
+		public function __construct()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
@@ -81,7 +81,7 @@ function listDrafts()
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
-		function getnext()
+		public function getnext()
 			{
 			global $babDB;
 			static $i = 0;
@@ -135,7 +135,7 @@ function listDrafts()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new listDraftsCls();
 	$babBody->babecho( bab_printTemplate($temp, "artedit.html", "draftslist"));
 	}
 
