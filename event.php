@@ -62,7 +62,12 @@ class bab_cal_event
 		list($this->curyear,$this->curmonth,$this->curday) = explode(',', $this->curdate);
 
 		$this->curview = !empty($_REQUEST['view']) ? $_REQUEST['view'] : 'viewm';
-		$this->calid = isset($_REQUEST['calid']) ? $_REQUEST['calid']  : $_POST['curcalids'];
+
+		if (bab_pp('curcalids')) {
+			$this->calid = bab_pp('curcalids');
+		} else {
+			$this->calid = bab_rp('calid');
+		}
 
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("Until date");
