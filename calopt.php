@@ -228,8 +228,7 @@ function calendarOptions($calid, $urla)
 					$this->iSelectedCalAccess = $this->arr['iDefaultCalendarAccess'];
 				}
 			}
-				
-			$this->halfday = bab_rp('halfday',1);
+			
 			
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			$this->arrdvw = array(bab_translate("Columns"), bab_translate("Rows"));
@@ -286,22 +285,13 @@ function calendarOptions($calid, $urla)
 				$this->dayid = $i;
 				$this->shortday = bab_toHtml($babDays[$i]);
 
-
-				if ($this->halfday) {
-				
-					$arr = cal_half_working_days($i);
-					$this->work_am = $arr['am'];
-					$this->work_pm = $arr['pm'];
-
-				} else {
-					$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
-					$tmp = array();
-					foreach($arr as $p) {
-						unset($p['weekDay']);
-						$tmp[] = implode('-',$p);
-					}
-					$this->workinghours = implode(',',$tmp);
+				$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
+				$tmp = array();
+				foreach($arr as $p) {
+					unset($p['weekDay']);
+					$tmp[] = implode('-',$p);
 				}
+				$this->workinghours = implode(',',$tmp);
 
 				$i++;
 				return true;
@@ -471,13 +461,10 @@ function calendarOptions($calid, $urla)
 
 	$temp = new temp($calid, $urla);
 	
-		if ($temp->halfday) {
-			$babBody->babecho(	bab_printTemplate($temp, "calopt.html", "caloptions"));
-		} else {
-	
-			$babBody->addStyleSheet('calopt.css');
-			$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions2"));
-		}
+
+		$babBody->addStyleSheet('calopt.css');
+		$babBody->babecho(bab_printTemplate($temp, "calopt.html", "caloptions"));
+
 	}
 
 
@@ -629,94 +616,44 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	}
 	
 
-	if (1 == bab_rp('halfday')) {
 
-		$am_startHour	= '00:00:00';
-		$am_endHour		= '12:00:00';
+	$change = true;
+
+	$req = "
+		DELETE FROM ".BAB_WORKING_HOURS_TBL." 
+		WHERE 
+			idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+	";
+	$babDB->db_query($req);
 	
-		$pm_startHour	= '12:00:00';
-		$pm_endHour		= '24:00:00';
-	
-	
-		list($tmp) = explode(':', $starttime);
-		if ($tmp < 12) {
-			$am_startHour = $starttime;
-		}
-	
-		list($tmp) = explode(':', $endtime);
-		if ($tmp > 12) {
-			$pm_endHour = $endtime;
-		}
+	$workinghours = bab_pp('workinghours');
+	foreach($workinghours as $weekDay => $periods) {
+		if (!empty($periods)) {
+		$arr = explode(',',$periods); 
 		
-	
-		$res = $babDB->db_query("
-					SELECT COUNT(*) FROM ".BAB_WORKING_HOURS_TBL." 
-						WHERE idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
-					");
-	
-		list($user_nb_rows) = $babDB->db_fetch_array($res);
-	
-	
-		$change = false; 
+		foreach($arr as $period) {
+		
+			$tmp = explode('-',$period);
+			
+			$begin = setHourFormat($tmp[0]);
+			$end = setHourFormat($tmp[1]);
 		
 		
-		
-		for ($i = 0 ; $i < 7 ; $i++) {
-			$arr = cal_half_working_days($i);
-			
-			$am = isset($_POST['work'][$i]['am']);
-			$pm = isset($_POST['work'][$i]['pm']);
-	
-			if ($arr['am'] != $am || 0 == $user_nb_rows) {
-				setUserPeriod($i, 'am', $am_startHour, $am_endHour, $am);
-				$change = true;
-			}
-	
-			if ($arr['pm'] != $pm || 0 == $user_nb_rows) {
-				setUserPeriod($i, 'pm', $pm_startHour, $pm_endHour, $pm);
-				$change = true;
-			}
-		}
-	} else {
-	
-		$change = true;
-	
-		$req = "
-			DELETE FROM ".BAB_WORKING_HOURS_TBL." 
-			WHERE 
-				idUser=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
-		";
-		$babDB->db_query($req);
-		
-		$workinghours = bab_pp('workinghours');
-		foreach($workinghours as $weekDay => $periods) {
-			if (!empty($periods)) {
-			$arr = explode(',',$periods); 
-			
-			foreach($arr as $period) {
-			
-				$tmp = explode('-',$period);
-				
-				$begin = setHourFormat($tmp[0]);
-				$end = setHourFormat($tmp[1]);
-			
-			
-				$babDB->db_query("
-					INSERT INTO ".BAB_WORKING_HOURS_TBL." 
-						(weekDay, idUser, startHour, endHour) 
-					VALUES 
-						(".$babDB->quote($weekDay).",
-						".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
-						".$babDB->quote($begin).", 
-						".$babDB->quote($end).") 
-					");
-				}
+			$babDB->db_query("
+				INSERT INTO ".BAB_WORKING_HOURS_TBL." 
+					(weekDay, idUser, startHour, endHour) 
+				VALUES 
+					(".$babDB->quote($weekDay).",
+					".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+					".$babDB->quote($begin).", 
+					".$babDB->quote($end).") 
+				");
 			}
 		}
 	}
 
+
 	if ($change) {
-		bab_debug('modification');
 		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 		
 		$event = new bab_eventPeriodModified(false, false, $GLOBALS['BAB_SESS_USERID']);
@@ -724,9 +661,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		bab_fireEvent($event);
 	}
 	
-	$url = $GLOBALS['babUrlScript'].'?tg=calopt&idx=options&halfday='.bab_rp('halfday');
-	
-	
+	$url = $GLOBALS['babUrlScript'].'?tg=calopt&idx=options';
 	header('location:'.$url);
 	exit;
 }

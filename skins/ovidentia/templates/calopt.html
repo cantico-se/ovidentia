@@ -1,4 +1,3 @@
-
 <!--#begin caloptions -->
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="calopt" />
@@ -6,187 +5,6 @@
 <input type="hidden" name="urla" value="{ urla }" />
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="modify" value="options" />
-<input type="hidden" name="halfday" value="{ halfday }" />
-<center>
-<table  width="80%"  border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-
-	<table  width="100%" border="0" cellspacing="0" cellpadding="10" class="BabLoginMenuBackground">
-	<tr valign="top"> 
-		<td>
-		<!--#if calweekwork -->
-		
-		<p><a href="{ babUrlScript }?tg=calopt&amp;idx=options&amp;halfday=0">{ t_working_hours }</a></p>
-		
-		<table border="0" cellspacing="0" cellpadding="4" width="80%">
-			<thead>
-			<tr>
-				<td width="33%">&nbsp;</td>
-				<th colspan="2" width="33%">{ calweekworktxt }</th>
-				<th rowspan="2" width="33%">{ calweekdisptxt }</th>
-			</tr>
-
-			<tr>
-				<td>&nbsp;</td>
-				<td>{ t_am }</td>
-				<td>{ t_pm }</td>
-			</tr>
-			</thead>
-			<tbody>
-			<!--#in getnextshortday -->
-			<tr align="center">
-				<td align="right">{ shortday }</td>
-				<td><input  type="checkbox" name="work[{ dayid }][am]" value="1"  <!--#if work_am --> checked="checked"<!--#endif work_am --> />
-				</td>
-				<td><input  type="checkbox" name="work[{ dayid }][pm]" value="1"  <!--#if work_pm --> checked="checked"<!--#endif work_pm --> />
-				</td>
-
-				<td>
-					<input  type="checkbox" name="dispdays[]" id="{ dayid }" value="{ dayid }"  { disp_selected } />
-				</td>
-			</tr>
-			<!--#endin getnextshortday -->
-			</tbody>
-		</table>
-		<br />
-		<!--#endif calweekwork -->
-		<br />
-		</td>
-	</tr>
-
-	<tr align="center"> 
-		<td colspan="2">
-			<table border="1" cellspacing="0" cellpadding="5" >
-				<tr align="center">
-				<td nowrap>{ startdaytxt }</td>
-				<td nowrap>{ starttimetxt }</td>
-				<td nowrap>{ endtimetxt }</td>
-				</tr>
-				<tr align="center">
-				<td>
-				<select name="startday">
-				<!--#in getnextday -->
-				<option value="{ dayid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ dayname }</option>
-				<!--#endin getnextday -->
-				</select>
-				</td>
-				<td>
-				<select name="starttime">
-				<!--#in getnexttime -->
-				<option value="{ timeid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ timeval }</option>
-				<!--#endin getnexttime -->
-				</select>
-				</td>
-				<td>
-				<select name="endtime">
-				<!--#in getnexttime -->
-				<option value="{ timeid }" <!--#if selected --> selected="selected" <!--#endif selected --> >{ timeval }</option>
-				<!--#endin getnexttime -->
-				</select>
-				</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-
-<br>
-<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-	<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-	<tr align="center" > 
-	<td  colspan="2" nowrap><h5>{ caloptionstxt }</h5></td>
-	</tr>
-	<tr> 
-		<td align="right">{ allday }</td>
-		<td> 
-			<select name="allday">
-				<option value="Y" <!--#if arr[allday] "== Y" -->selected<!--#endif arr[allday] -->>{ yes }</option>
-				<option value="N" <!--#if arr[allday] "== N" -->selected<!--#endif arr[allday] -->>{ no }</option>
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ usebgcolor }</td>
-		<td> 
-			<select name="usebgcolor">
-				<option value="Y" <!--#if arr[usebgcolor] "== Y" -->selected<!--#endif arr[usebgcolor] -->>{ yes }</option>
-				<option value="N" <!--#if arr[usebgcolor] "== N" -->selected<!--#endif arr[usebgcolor] -->>{ no }</option>
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ showupdateinfo }</td>
-		<td> 
-			<select name="showupdateinfo">
-				<option value="Y" <!--#if arr[show_update_info] "== Y" -->selected<!--#endif arr[show_update_info] -->>{ yes }</option>
-				<option value="N" <!--#if arr[show_update_info] "== N" -->selected<!--#endif arr[show_update_info] -->>{ no }</option>
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right">{ elapstime }</td>
-		<td> 
-			<select name="elapstime">
-			<!--#in getnextet -->
-			<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
-			<!--#endin getnextet -->
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" valign="middle">{ defaultview }</td>
-		<td> 
-			<select name="defaultview">
-			<!--#in getnextdv -->
-			<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
-			<!--#endin getnextdv -->
-			</select>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right" valign="middle">{ t_defaultCalAccess }</td>
-		<td> 
-			<select name="iDefaultCalendarAccess">
-				<!--#in getNextCalAccess -->
-				<option value="{ iCalAccess }" { sCalAccessSelected } /> { sCalAccess }</option>
-				<!--#endin getNextCalAccess -->
-			</select>
-		</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-<br>
-<input type="submit" name="submit" value="{ modify }" />
-</center>
-</form>
-<!--#end caloptions -->
-
-
-
-
-
-
-
-
-
-
-
-<!--#begin caloptions2 -->
-<form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="calopt" />
-<input type="hidden" name="idx" value="options" />
-<input type="hidden" name="urla" value="{ urla }" />
-<input type="hidden" name="calid" value="{ calid }" />
-<input type="hidden" name="modify" value="options" />
-<input type="hidden" name="halfday" value="{ halfday }" />
 
 <table  width="80%"  border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -199,7 +17,6 @@
 			<div id="bab_calopt_days">
 			
 				<h4>{ t_working_hours }</h4>
-				<p><a href="{ babUrlScript }?tg=calopt&amp;idx=options&amp;halfday=1">{ t_define_working_halfdays }</a></p>
 				
 				<!--#in getnextshortday -->
 				<div class="bab_calopt_day">
@@ -546,7 +363,7 @@
 	<input type="submit" name="submit" value="{ modify }" />
 </div>
 </form>
-<!--#end caloptions2 -->
+<!--#end caloptions -->
 
 
 
