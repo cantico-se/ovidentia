@@ -47,6 +47,7 @@ function bab_sitemap_adminSection(&$event) {
 	if( $babBody->isSuperAdmin )
 		{
 		$addons = bab_addonsInfos::getRows();
+
 		foreach($addons as $row)
 			{
 			if($row['access'])
@@ -72,9 +73,6 @@ function bab_sitemap_adminSection(&$event) {
 				}
 			}
 		}
-
-
-
 
 
 
@@ -262,7 +260,7 @@ function bab_sitemap_adminSection(&$event) {
 			$event->addFolder($item);
 
 			foreach($addon_urls as $arr) {
-				$item = $event->createItem($arr['uid']);
+				$item = $event->createItem($dg_prefix.$arr['uid']);
 				$item->setLabel($arr['label']);
 				$item->setLink($arr['url']);
 				$item->setPosition(array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSectionAddons'));

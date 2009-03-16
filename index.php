@@ -1194,5 +1194,7 @@ class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event);
 
+bab_debug((string) bab_siteMap::get());
+
 printBody();
 unset($tg);

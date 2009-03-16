@@ -257,7 +257,7 @@ class bab_siteMap {
 		
 		$query .= 'ORDER BY s.lf';
 		
-		//bab_debug($query);
+		bab_debug($query);
 		
 		$res = $babDB->db_query($query);
 		
@@ -316,7 +316,7 @@ class bab_siteMap {
 		// each level will be sorted individually if needed before each usage
 		// $rootNode->sortSubTree();
 
-		bab_debug((string) $rootNode);
+		// bab_debug((string) $rootNode);
 		
 		return $rootNode;
 	}

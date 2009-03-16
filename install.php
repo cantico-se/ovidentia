@@ -33,5 +33,9 @@ include_once "base.php";
 
 require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 $functionalities = new bab_functionalities();
-$functionalities->register('Icons', $GLOBALS['babInstallPath'].'utilit/icons.php');
-$functionalities->register('Icons/Default', $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Icons'					, $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Icons/Default'			, $GLOBALS['babInstallPath'].'utilit/icons.php');
+$functionalities->register('Archive'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+$functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
