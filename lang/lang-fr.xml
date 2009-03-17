@@ -2980,4 +2980,10 @@
 <string id="Add a user">Ajouter un utilisateur</string>
 <string id="Level at which org chart branchs will be displayed vertically">Niveau à partir duquel les branches d'organigramme serons affichées verticalement</string>
 <string id="Mail is not accessible">La messagerie n'est pas accessible</string>
+
+<string id="Ovidentia upgrade">Mise à jour d'Ovidentia</string>
+<string id="Upload a new library">Charger une nouvelle librairies partagée</string>
+<string id="Upload a new skin">Charger un nouveau skin</string>
+<string id="Upload a new add-on">Charger un nouveau module</string>
+<string id="Add/remove programs">Ajouter/supprimer des programmes</string>
 </fr>

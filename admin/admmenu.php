@@ -1,4 +1,3 @@
-
 <?php
 /************************************************************************
  * OVIDENTIA http://www.ovidentia.org                                   *
@@ -316,8 +315,8 @@ function bab_sitemap_adminSection(&$event) {
 				$event->addFunction($item);
 
 
-				$item = $event->createItem($dg_prefix.'AdminAddons');
-				$item->setLabel(bab_translate("Add-ons"));
+				$item = $event->createItem($dg_prefix.'AdminInstall');
+				$item->setLabel(bab_translate("Add/remove programs"));
 				$item->setLink($GLOBALS['babUrlScript'].'?tg=addons');
 				$item->setPosition($position);
 				
