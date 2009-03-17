@@ -26,7 +26,7 @@ include_once "base.php";
 $GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
 				array("groups", bab_translate("Groups")),
 				array("sections", bab_translate("Sections")),
-				array("articles", bab_translate("Topics categories")),
+				array("articles", bab_translate("Articles")),
 				array("faqs", bab_translate("Faq")),
 				array("forums", bab_translate("Forums")),
 				array("calendars", bab_translate("Calendar")),
