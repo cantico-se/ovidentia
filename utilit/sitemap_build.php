@@ -32,46 +32,45 @@ include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
  */
 class bab_siteMap_item {
 
-	public  $uid;
-	public  $label;
-	public  $description 		= '';
-	public  $href 				= '';
-	public  $onclick 			= '';
-	public  $position 			= array();
-	public  $lang;
-	public  $parentNode;	// ref bab_siteMap_item
-	public  $parentNode_str;
-	public 	$childNodes 		= array();
-	private	$icon_classnames	= array();
+	var $uid;
+	var $label;
+	var $description 	= '';
+	var $href 			= '';
+	var $onclick 		= '';
+	var $position = array();
+	var $lang;
+	var $parentNode;	// ref bab_siteMap_item
+	var $parentNode_str;
+	var $childNodes = array();
 	
-	public 	$id_dgowner = false;
+	var $id_dgowner = false;
 	
 	
 	/**
 	 * sitemap item is a folder
 	 * @access public
 	 */
-	public  $folder = false;
+	var $folder = false;
 	
 	/**
 	 * sitemap item is a delegation folder
 	 * @access public
 	 */
-	public  $delegation = false;
+	var $delegation = false;
 	
 	/**
 	 * by default, an item is viewable in all delegation, this status is set to true to copy the node in the others branchs
 	 * If the node must be present in only one delegation, the variable can be overwriten to false
 	 * @access public
 	 */
-	public  $copy_to_all_delegations = true;
+	var $copy_to_all_delegations = true;
 	
 	/**
 	 * constructor
 	 * The uid parameter must be unique within the sitemap tree
 	 * @param	string	$uid	[A-z0-9]
 	 */
-	public function __construct($uid) {
+	function bab_siteMap_item($uid) {
 		$this->uid = $uid;
 		$this->lang = $GLOBALS['babLanguage'];
 	}
@@ -81,7 +80,7 @@ class bab_siteMap_item {
 	 * stored as VARCHAR(255)
 	 * @param	string	$label
 	 */
-	public function setLabel($label) {
+	function setLabel($label) {
 		$this->label = $label;
 	}
 	
@@ -90,7 +89,7 @@ class bab_siteMap_item {
 	 * stored as a TEXT
 	 * @param	string	$description
 	 */
-	public function setDescription($description) {
+	function setDescription($description) {
 		$this->description = $description;
 	}
 	
@@ -101,12 +100,10 @@ class bab_siteMap_item {
 	 * @param	string	$href
 	 * @param	string	$onclick
 	 */
-	public function setLink($href, $onclick = '') {
-
-		$self = bab_getSelf();
+	function setLink($href, $onclick = '') {
 	
-		if (0 === mb_strpos($href, $GLOBALS['babUrl'].$self)) {
-			$href = mb_substr($href, mb_strlen($GLOBALS['babUrl'].$self));
+		if (0 === mb_strpos($href, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
+			$href = mb_substr($href, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 		}
 	
 		$this->href = $href;
@@ -118,49 +115,49 @@ class bab_siteMap_item {
 	 * $position is an array of sitemap node uid
 	 * @param	array	$position
 	 */
-	public function setPosition($position) {
+	function setPosition($position) {
 		$this->parentNode_str = end($position);
 		$this->position = $position;
 	}
 	
+	/**
+	 * set position with sibblings
+	 * @param	string	$before		: node uid
+	 */ 
+	function insertBefore($before) {
+		$this->insertBefore = $before;
+	}
+	
+	/**
+	 * set position with sibblings
+	 * @param	string	$after		: node uid
+	 */ 
+	function insertAfter($after) {
+		$this->insertAfter = $after;
+	}
 	
 	/**
 	 * @param	string	$lang
 	 */
-	public function setLanguage($lang) {
+	function setLanguage($lang) {
 		$this->lang = $lang;
 	}
 
 	/**
 	 * @param	bab_siteMap_item	$obj
 	 */
-	public function addChildNode(&$obj) {
+	function addChildNode(&$obj) {
 		$this->childNodes[$obj->uid] = $obj;
 	}
 	
-	/**
-	 * Add Icon classname
-	 * @param	string	$classname
-	 * @return	bab_siteMap_item
-	 */
-	public function addIconClassname($classname) {
-		$this->icon_classnames[] = $classname;
-		return $this;
-	}
-
-	/**
-	 * Icon information to record in database
-	 * @return	string
-	 */
-	public function getIcon() {
-		return implode(' ', $this->icon_classnames);
-	}
+	
+	
 	
 	
 	/**
 	 * @return false|array
 	 */
-	public function getParentsFromDelegation($parents = NULL) {
+	function getParentsFromDelegation($parents = NULL) {
 	
 		if (NULL === $parents) {
 			$parents = array();
@@ -192,7 +189,7 @@ class bab_siteMap_item {
 	/**
 	 * Create a clone
 	 */
-	public function cloneNode() {
+	function cloneNode() {
 		$clone = new bab_siteMap_item($this->uid);
 
 		$clone->label					= $this->label;
@@ -292,10 +289,10 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 */
 	public function buidtree(&$obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
-
+			
 			// reference vers le parent
 			$obj->parentNode = & $this->nodes[$obj->parentNode_str];
-
+			
 			// inserer la meme reference dans la node list , important pour php 4
 			$this->nodes[$obj->uid]->parentNode = & $this->nodes[$obj->parentNode_str];
 			
@@ -316,7 +313,6 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @param	bab_siteMap_item	&$obj
 	 */
 	private function insertChildNodeWithDelegationSupport(&$parent_node, &$obj) {
-
 		
 		if ($obj->copy_to_all_delegations) {
 			$parents = $obj->getParentsFromDelegation();
@@ -622,7 +618,7 @@ class bab_siteMap_insertFunctionObj {
 				$href		= isset($node->href)	?	$node->href		: '';
 			
 				$folder = $node->folder ? '1' : '0';
-				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).')';
+				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).')';
 			}
 			
 			$babDB->db_query('
@@ -631,8 +627,7 @@ class bab_siteMap_insertFunctionObj {
 						id_function,
 						url,
 						onclick,
-						folder,
-						icon 
+						folder
 					)
 				VALUES 
 					'.implode(",\n ",$values).'
@@ -927,7 +922,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 	
 	$profile_stop_time = bab_getMicrotime();
 	
-	/*
+	
 	bab_debug(
 		sprintf('
 	insert function, function label : %s s
@@ -939,7 +934,6 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 		DBG_TRACE,
 		'Sitemap'
 	);
-	*/
 }
 
 
@@ -1096,8 +1090,7 @@ function bab_siteMap_build() {
 	$rootNode->setLink('?');
 	$rootNode->id_dgowner = false;
 	$rootNode->folder = 1;
-	$rootNode->addIconClassname('action-go-home');
-
+	
 	$event->nodes[$rootNode->uid] = $rootNode;
 	
 	// create delegations nodes
@@ -1131,9 +1124,6 @@ function bab_siteMap_build() {
 		$newNode->folder = 1;
 		$newNode->setLabel($missing_node);
 		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
-
-		bab_debug($newNode, DBG_TRACE, 'Sitemap');
-
 		$event->nodes[$newNode->uid] = $newNode;
 		$event->buidtree($newNode);
 	}
@@ -1142,7 +1132,8 @@ function bab_siteMap_build() {
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
 
-	// bab_debug($textview, DBG_TRACE, 'Sitemap');
+
+	bab_debug($textview, DBG_TRACE, 'Sitemap');
 
 	 $insert_time = bab_getMicrotime();
 
@@ -1154,7 +1145,7 @@ function bab_siteMap_build() {
 
 
     $stop_time = bab_getMicrotime();
-    /*
+    
     bab_debug(sprintf("
     
     tree : %s s
@@ -1164,7 +1155,6 @@ function bab_siteMap_build() {
     ($insert_time - $start_time),
     ($stop_time - $insert_time),
     ($stop_time - $start_time) ), DBG_TRACE, 'Sitemap');
-	*/
 
 	return $event->propagation_status;
 }
@@ -1256,7 +1246,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			$array_urls[] = array(
 				'label' => bab_translate("Publication"),
 				'url' => $GLOBALS['babUrlScript']."?tg=artedit",
-				'uid' => 'babUserPublication'
+				'uid' => $dg_prefix.'UserPublication'
 				);
 			}
 
@@ -1266,9 +1256,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			$array_urls[] = array(
 				'label' => bab_translate("Approbations"),
 				'url' => $GLOBALS['babUrlScript']."?tg=approb",
-				'uid' => 'babUserApprob',
-				'desc' => bab_translate("Validate waiting items"),
-				'icon' => 'apps-approbations' 
+				'uid' => $dg_prefix.'UserApprob',
+				'desc' => bab_translate("Validate waiting items")
 				);
 			}
 		}
@@ -1278,9 +1267,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 				'label' => bab_translate("Articles management"),
 				'url' 	=> $GLOBALS['babUrlScript']."?tg=topman",
-				'uid' 	=> 'babUserArticlesMan',
-				'desc' 	=> bab_translate("List article topics where i am manager"),
-				'icon'	=> 'apps-articles'
+				'uid' 	=> $dg_prefix.'UserArticlesMan',
+				'desc' 	=> bab_translate("List article topics where i am manager")
 				);
 		}
 
@@ -1289,22 +1277,21 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Summary"),
 			'url' => $GLOBALS['babUrlScript']."?tg=calview",
-			'uid' => 'babUserSummary',
+			'uid' => $dg_prefix.'UserSummary',
 			'desc' => bab_translate("Last published items")
 		);
 		
 		$array_urls[] = array(
 			'label' => bab_translate("Options"),
 			'url' => $GLOBALS['babUrlScript']."?tg=options",
-			'uid' => 'babUserOptions'
+			'uid' => $dg_prefix.'UserOptions'
 		);
 		
 		if( bab_notesAccess())
 			$array_urls[] = array(
 				'label' => bab_translate("Notes"),
 				'url' => $GLOBALS['babUrlScript']."?tg=notes",
-				'uid' => 'babUserNotes',
-				'icon'	=> 'apps-notes'
+				'uid' => $dg_prefix.'UserNotes'
 			);
 		}
 
@@ -1315,8 +1302,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'label' => bab_translate("Faq"),
 			'url' => $GLOBALS['babUrlScript']."?tg=faq",
 			'uid' => $dg_prefix.'UserFaq',
-			'desc' => bab_translate("Frequently Asked Questions"),
-			'icon' => 'apps-faqs'
+			'desc' => bab_translate("Frequently Asked Questions")
 			);
 		}
 
@@ -1326,8 +1312,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Vacation"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=vacuser",
-			'uid' => 'babUserVac',
-			'icon' => 'apps-vacations'
+			'uid' => $dg_prefix.'UserVac'
 			);
 		}
 
@@ -1336,8 +1321,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Calendar"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
-			'uid' => 'babUserCal',
-			'icon' => 'apps-calendar'
+			'uid' => $dg_prefix.'UserCal'
 			);
 		}
 
@@ -1346,7 +1330,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Mail"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=inbox",
-			'uid' => 'babUserMail'
+			'uid' => $dg_prefix.'UserMail'
 			);
 		}
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
@@ -1354,8 +1338,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Contacts"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=contacts",
-			'uid' => 'babUserContacts',
-			'icon'	=> 'apps-contacts'
+			'uid' => $dg_prefix.'UserContacts'
 			);
 		}
 		
@@ -1366,9 +1349,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' 	=> bab_translate("File manager"),
 			'url' 		=>  $GLOBALS['babUrlScript']."?tg=fileman",
-			'uid' 		=> 'babUserFm',
-			'desc' 		=> bab_translate("Access to file manager"),
-			'icon'		=> 'apps-file-manager'
+			'uid' 		=> $dg_prefix.'UserFm',
+			'desc' 		=> bab_translate("Access to file manager")
 			);
 		}
 
@@ -1382,8 +1364,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'label' 	=> bab_translate("Directories"),
 			'url' 		=>  $GLOBALS['babUrlScript']."?tg=directory",
 			'uid' 		=> $dg_prefix.'UserDir',
-			'folder' 	=> true,
-			'icon' 		=> 'apps-directories'
+			'folder' 	=> true
 			);
 
 
@@ -1404,8 +1385,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Charts"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=charts",
-			'uid' => 'babUserCharts',
-			'icon'	=> 'apps-orgcharts'
+			'uid' => $dg_prefix.'UserCharts'
 			);
 		}
 
@@ -1414,8 +1394,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Statistics"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=stat",
-			'uid' => 'babUserStats',
-			'icon'	=> 'apps-statistics' 
+			'uid' => $dg_prefix.'UserStats'
 			);
 		}
 
@@ -1461,7 +1440,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 				$array_urls[] = array(
 					'label' => $project['name'],
 					'url' =>  $GLOBALS['babUrlScript'].'?tg=usrTskMgr&idx=displayMyTaskList&iIdProjectSpace='.$project['idProjectSpace'].'&isProject=1&iIdProject='.$project['id'],
-					'uid' => 'babUserTm'.$project['id'],
+					'uid' => $dg_prefix.'UserTm'.$project['id'],
 					'desc' => $project['description'],
 					'position' => array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection', $dg_prefix.'UserTm')
 				);
@@ -1479,8 +1458,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'url' 	=> $GLOBALS['babUrlScript'].'?tg=forumsuser',
 			'uid' 	=> $dg_prefix.'UserForums',
 			'desc' 	=> bab_translate('Discussion forums'),
-			'folder' => true,
-			'icon'	=> 'apps-forums'
+			'folder' => true
 		);
 
 		while ($forum = $babDB->db_fetch_assoc($res)) {
@@ -1501,7 +1479,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Thesaurus"),
 			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
-			'uid' 	=> 'babUserThesaurus'
+			'uid' 	=> $dg_prefix.'UserThesaurus'
 			);
 		}
 
@@ -1566,10 +1544,6 @@ function bab_sitemap_userSection(&$event) {
 					} else {
 						$event->addFunction($item);
 					}
-
-					if (isset($arr['icon'])) {
-						$item->addIconClassname($arr['icon']);
-					}
 				}
 				
 			}
@@ -1588,7 +1562,7 @@ function bab_sitemap_userSection(&$event) {
 				
 
 				foreach($addon_urls as $arr) {
-					$link = $event->createItem($arr['uid']);
+					$link = $event->createItem($dg_prefix.$arr['uid']);
 					$link->setLabel($arr['label']);
 					$link->setLink($arr['url']);
 					$link->setPosition(array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSectionAddons'));
@@ -1631,7 +1605,6 @@ function bab_sitemap_articles(&$event) {
 				$item->setPosition($position);
 				$item->copy_to_all_delegations = false;
 				$item->setLink($GLOBALS['babUrlScript']."?tg=topusr&cat=".$arr['id']);
-				$item->addIconClassname('apps-articles');
 				$event->addFolder($item);
 				
 				array_push($position, $uid);
@@ -1736,7 +1709,6 @@ function bab_sitemap_faq(&$event) {
 				$item->setPosition($position);
 				$item->copy_to_all_delegations = false;
 				$item->setLink("?tg=faq&idx=Print&item=".$faq['id']);
-				$item->addIconClassname('apps-faqs');
 				$event->addFunction($item);
 			}
 		}
@@ -1760,8 +1732,8 @@ function bab_onBeforeSiteMapCreated(&$event) {
 	// build user node
 	bab_sitemap_userSection($event);
 
-	// $logged_status = empty($BAB_SESS_LOGGED) ? 'FALSE' : 'TRUE';
-	// $isSuperAdmin  =  $babBody->isSuperAdmin ? 'TRUE'  : 'FALSE';
+	$logged_status = empty($BAB_SESS_LOGGED) ? 'FALSE' : 'TRUE';
+	$isSuperAdmin  =  $babBody->isSuperAdmin ? 'TRUE'  : 'FALSE';
 
 	// build admin node
 	if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0)) {
