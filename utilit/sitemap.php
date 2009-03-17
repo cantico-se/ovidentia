@@ -257,7 +257,7 @@ class bab_siteMap {
 		
 		$query .= 'ORDER BY s.lf';
 		
-		bab_debug($query);
+		// bab_debug($query);
 		
 		$res = $babDB->db_query($query);
 		
