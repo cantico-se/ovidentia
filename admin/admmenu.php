@@ -85,8 +85,6 @@ function bab_sitemap_adminSection(&$event) {
 	
 	$delegations = bab_getUserAdministratorDelegations();
 
-	bab_debug($delegations);
-
 	foreach( $delegations as $key => $deleg ) {
 
 		$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
