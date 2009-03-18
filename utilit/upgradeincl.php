@@ -138,9 +138,6 @@ function bab_recursive_cp($wf, $wto) {
 
 function bab_cpaddons($from, $to, &$message)
 	{
-	
-
-
 
 	function create($path)
 	{
@@ -148,7 +145,7 @@ function bab_cpaddons($from, $to, &$message)
 	$memo = '';
 	foreach ($el as $rep)
 		{
-		if (!is_dir($memo.$rep)) { 
+		if (!is_dir($memo.$rep) && !empty($rep)) { 
 			if (!bab_mkdir($memo.$rep)) {
 				return 	sprintf(bab_translate("Error : can't create directory : %s"), $memo.$rep);
 			}

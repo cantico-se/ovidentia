@@ -1059,6 +1059,36 @@ changetype(document.forms['formsite_bloc4'].nonworking_day_type);
 
 { requirementsHtml }
 
+
+
+<br />
+<br />
+
+<p align="center">{ t_version_directories }</p>
+
+<table width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
+		<tr class="BabSiteAdminTitleFontBackground"> 
+			<td width="1%">&nbsp;</td>
+			<td>{ t_name } </td>
+		</tr>
+		<!--#in getnextdir --> 
+		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+			<!--#if current_core -->
+			<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_current_core }" /></td>
+			<!--#else current_core -->
+			<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_not_used }" /></td>
+			<!--#endif current_core -->
+			<td>{ name }</td>
+		</tr>
+		<!--#endin getnextdir -->
+		</table>
+	</td>
+</tr>
+</table>
+
 <!--#end versions -->
 
 
@@ -1578,33 +1608,6 @@ hideShowCnx();
 </table>
 </form>
 
-<br />
-<br />
-
-<p align="center">{ t_version_directories }</p>
-
-<table width="30%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-	<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-		<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
-		<tr class="BabSiteAdminTitleFontBackground"> 
-			<td width="1%">&nbsp;</td>
-			<td>{ t_name } </td>
-		</tr>
-		<!--#in getnextdir --> 
-		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-			<!--#if current_core -->
-			<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_current_core }" /></td>
-			<!--#else current_core -->
-			<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_not_used }" /></td>
-			<!--#endif current_core -->
-			<td>{ name }</td>
-		</tr>
-		<!--#endin getnextdir -->
-		</table>
-	</td>
-</tr>
-</table>
 <!--#end zipupgrade -->
 
 <!--#begin zipupgrade_message -->

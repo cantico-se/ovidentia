@@ -153,7 +153,7 @@ function site_menu1()
 
 			if (0 < count($ignoredskins)) {
 					$this->skinerror = bab_translate('One or more skins are not compatible with the ovidentia charset or access rights are not defined correctly.');
-					if (bab_charset::getIso()) {
+					if ('UTF-8' === bab_charset::getIso()) {
 						$this->skinerror .= '<br /> '.bab_translate('Ovidentia is in UTF-8, all skins must be embeded in addons and the addonini file must contain the parameter mysql_character_set_database with supported character sets as value');
 					}
 				} else {

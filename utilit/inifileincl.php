@@ -24,6 +24,8 @@
 include_once "base.php";
 
 /**
+ * @package inifile
+ *
  * Each method in this class is related to a keyword of the inifile
  * the return value for all the methods is the same :
  *		array(
@@ -625,7 +627,9 @@ class bab_inifile_requirements {
 
 
 
-
+/**
+ * @package inifile
+ */
 class bab_inifile_requirements_html
 	{
 	var $requirements;
@@ -675,7 +679,9 @@ class bab_inifile_requirements_html
 
 
 
-
+/**
+ * @package inifile
+ */
 class bab_inifile {
 
 	var $addons;
@@ -707,6 +713,11 @@ class bab_inifile {
 				break;
 			}
 		}
+
+		if (!isset($inifileindex)) {
+			throw new Exception(bab_sprintf('The file %s could not be found in archive', $inifile));
+		}
+
 		
 		$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
 		$this->inifile( $GLOBALS['babUploadPath'].'/tmp/'.$filename);
@@ -908,26 +919,14 @@ class bab_inifile {
 		}
 		return '';
 	}
+
+
+
 	
-	/**
-	 * @param	string	$version (x.y.z)
-	 * @return boolean
-	 */
-	function is_upgrade_allowed($version) {
-		if (!isset($this->inifile['forbidden_upgrades'])) {
-			return true;
-		}
-		
-		$forbidden = explode(',',$this->inifile['forbidden_upgrades']);
-		foreach($forbidden as $fn) {
-			if ($version === trim($fn)) {
-				return false;
-			}
-		}
-		
-		return true;
-	}
+
+
 	
+
 	
 	
 	/**
@@ -1259,16 +1258,89 @@ class bab_inifile {
 
 
 
-
+/**
+ * Ini file for addon
+ * addonini.php
+ * @package inifile
+ */
 class bab_AddonIniFile extends bab_inifile {
 
 }
 
 
+
+
+
+/**
+ * Ini file for collections of addons
+ * addons.ini
+ * @package inifile
+ */
 class bab_AddonCollectionIniFile extends bab_inifile {
 
+
+	/**
+	 * Get package collection of subfolders to install
+	 * @return array
+	 */
+	function getPackageCollection() {
+
+		if (!isset($this->inifile['package_collection'])) {
+			return null;
+		}
+
+		$collection = $this->inifile['package_collection'];
+		$return = array();
+
+		foreach(explode(',', $collection) as $folder) {
+
+			$value = trim($folder);
+
+			if (!empty($value)) {
+				$return[] = $value;
+			}
+		}
+
+		return $return;
+	}
+
 }
 
+
+
+
+
+
+
+
+
+/**
+ * Ini file for distibutions versions
+ * version.inc
+ * @package inifile
+ */
 class bab_CoreIniFile extends bab_inifile {
 
+	/**
+	 * @param	string	$version (x.y.z)
+	 * @return boolean
+	 */
+	function is_upgrade_allowed($version) {
+		if (!isset($this->inifile['forbidden_upgrades'])) {
+			return true;
+		}
+		
+		$forbidden = explode(',',$this->inifile['forbidden_upgrades']);
+		foreach($forbidden as $fn) {
+			if ($version === trim($fn)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+
 }
+
+

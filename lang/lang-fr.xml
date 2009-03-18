@@ -2980,10 +2980,19 @@
 <string id="Add a user">Ajouter un utilisateur</string>
 <string id="Level at which org chart branchs will be displayed vertically">Niveau à partir duquel les branches d'organigramme serons affichées verticalement</string>
 <string id="Mail is not accessible">La messagerie n'est pas accessible</string>
-
 <string id="Ovidentia upgrade">Mise à jour d'Ovidentia</string>
 <string id="Upload a new library">Charger une nouvelle librairies partagée</string>
 <string id="Upload a new skin">Charger un nouveau skin</string>
 <string id="Upload a new add-on">Charger un nouveau module</string>
 <string id="Add/remove programs">Ajouter/supprimer des programmes</string>
+<string id="The package is not reconized as an Ovidentia package">L'archive n'est pas reconnue comme une archive pour Ovidentia</string>
+<string id="The path %s is not writable">Le chemin %s n'est pas accessible en écriture</string>
+<string id="The core directory is missing (%s)">Le répertoire du noyau est manquant (%s)</string>
+<string id="The folder %s allready exists">Le répertoire %s existe déjà</string>
+<string id="The version is not valid, requirements are not fullfilled">La version n'est pas valide, les prérequis ne sont pas remplits</string>
+<string id="Unexpected error, the archive could not be created in temporary folder">Erreur inattendue, l'archive ne peut pas être créée dans le répertoire temporaire</string>
+<string id="Archive">Archive</string>
+<string id="Requirements to install the new archive">Prérequis pour installer la nouvelle archive</string>
+<string id="The package is not valid">L'archive n'est pas valide</string>
+
 </fr>

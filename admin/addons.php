@@ -204,7 +204,6 @@ function goto_list($addon) {
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=list');
 			break;
 		
-		
 		case 'THEME':
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=theme');
 			break;
@@ -310,7 +309,10 @@ function disableAddons($addons) {
 
 
 
-
+/**
+ * Database upgrade for one addon
+ * @param	int	$id
+ */
 function upgrade($id) {
 	global $babDB;
 	
@@ -331,7 +333,10 @@ function upgrade($id) {
 }
 
 
-
+/**
+ * Get a zip archive for one addon
+ * @param	int	$id
+ */
 function export($id)
 	{
 
@@ -429,10 +434,10 @@ function export($id)
 	
 	
 /**
- * delete addons
+ * Delete addon
  * @param	int	$id
  */
-function del($id)
+function bab_AddonDel($id)
 	{
 	
 	$row = bab_addonsInfos::getDbRow($id);
@@ -450,6 +455,10 @@ function del($id)
 }
 
 
+
+/**
+ * Upload form for new package
+ */
 function upload()
 {
 	global $babBody;
@@ -457,6 +466,7 @@ function upload()
 		{
 		function temp()
 			{
+			$this->t_wait = bab_translate("Loading, please wait...");
 			$this->t_button = bab_translate("Upload");
 			}
 		}
@@ -470,36 +480,37 @@ function upload()
  * @return string	temporary file path to addon package
  */
 function upload_tmpfile() {
-	if( !empty($_FILES['uploadf']['name'])) {
-		if( $_FILES['uploadf']['size'] > $GLOBALS['babMaxFileSize']) {
-			$babBody->msgerror = bab_translate("The file was larger than the maximum allowed size") ." :". $GLOBALS['babMaxFileSize'];
-			return false;
-		}
-		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
-		$totalsize = getDirSize('addons');
-		if( $_FILES['uploadf']['size'] + $totalsize > $GLOBALS['babMaxTotalSize']) {
-			$babBody->msgerror = bab_translate("There is not enough free space");
-			return false;
-		}
+	global $babBody;
+	include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 
-		bab_setTimeLimit(0);
+	$upload = bab_fileHandler::upload('uploadf');
 
-		if (!is_dir($GLOBALS['babUploadPath'].'/tmp/')) {
-			bab_mkdir($GLOBALS['babUploadPath'].'/tmp/',$GLOBALS['babMkdirMode']);
-		}
-
-		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_FILES['uploadf']['name'];
-		if (move_uploaded_file($_FILES['uploadf']['tmp_name'],$ul))
-			return $ul;
+	if ($upload->error) {
+		$babBody->addError($upload->error);
+		return false;
 	}
 
-	return false;
+	$tmpfile = $upload->importTemporary();
+
+	if (false === $tmpfile) {
+		$babBody->addError(bab_translate('Unexpected error, the archive could not be created in temporary folder'));
+		return false;
+	}
+
+	return $tmpfile;
 }
 
 
+
+
+
+
+/**
+ * Display requirement for an addon or for a new package to install
+ */
 function bab_display_addon_requirements()
 {
-	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	global $babBody;
 	class temp {
@@ -508,32 +519,36 @@ function bab_display_addon_requirements()
 	
 		function temp()
 			{
-			
+			global $babBody;
 			$this->installed = false;
 			
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
-				// display requirements from temporary addon package into installation process
+				// display requirements from temporary package into installation process
 				$this->item = '';
 
 				$ul = upload_tmpfile();
-
-				if (false === $ul) {
-					$GLOBALS['babBody']->msgerror = bab_translate("Upload error");
-				}
-
-				$name = $filename = mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
-				$this->tmpfile = bab_toHtml($filename);
-				$this->action = 'import';
-				$ini->getfromzip($ul, 'programs/addonini.php');
 				
+				$name 			= mb_substr( $ul,(mb_strrpos( $ul,'/')+2+strlen(session_id())));
+				$filename 		= mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
+				$this->tmpfile 	= bab_toHtml($filename);
+				$this->action 	= 'import';
+
+				$install = new bab_InstallSource;
+				$install->setArchive($ul);
+				$ini = $install->getIni();
+
 				$this->imagepath = false;
 				
+				$this->t_addon = bab_translate("Archive");
 				$this->t_install = bab_translate("Install");
+				$babBody->setTitle(bab_translate("Requirements to install the new archive"));
 
 			} elseif (isset($_GET['item'])) {
 
 				// display requirements of currently installed addon
+				$babBody->setTitle(bab_translate("Addon requirements"));
+				$this->t_addon = bab_translate("Addon");
 
 				$this->item = (int) bab_rp('item');
 
@@ -568,15 +583,14 @@ function bab_display_addon_requirements()
 			$this->adescription = bab_toHtml($ini->getDescription());
 			$this->version = bab_toHtml($ini->getVersion());
 			
-			$this->requirements = $ini->getRequirements();
-
+			$this->requirementsHtml = $ini->getRequirementsHtml();
 			
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
 			$this->t_dependencies = bab_translate("Dependencies");
 			$this->t_required = bab_translate("Required value");
 			$this->t_current = bab_translate("Current value");
-			$this->t_addon = bab_translate("Addon");
+			
 			$this->t_description = bab_translate("Description");
 			$this->t_version = bab_translate("Version");
 			$this->t_ok = bab_translate("Ok");
@@ -592,19 +606,6 @@ function bab_display_addon_requirements()
 			$this->allok = $ini->isValid();
 		}
 
-		function getnextreq() {
-			if (list(,$arr) = each($this->requirements)) {
-				$this->altbg = !$this->altbg;
-				$this->description = bab_toHtml($arr['description']);
-				$this->recommended = bab_toHtml($arr['recommended']);
-				$this->required = bab_toHtml($arr['required']);
-				$this->current = bab_toHtml($arr['current']);
-				$this->result = $arr['result']; 
-				return true;
-			}
-			return false;
-		}
-		
 		
 		function getnextdependence() {
 			if (!isset($this->dependences)) {
@@ -631,11 +632,12 @@ function bab_display_addon_requirements()
 
 /**
  * Unzip temporary file
+ * Install package of any type
  */
 function import()
 	{
 	include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
-	bab_setTimeLimit(0);
+	bab_setTimeLimit(1200);
 	
 	global $babBody, $babDB;
 
@@ -651,35 +653,24 @@ function import()
 		$install->setArchive($ul);
 		$ini = $install->getIni();
 
+		if (!$ini) {
+			$babBody->addError(bab_translate("This file is not a well formated Ovidentia package"));
+			return false;
+		}
+
 		if (false === $ini->isValid()) {
-			$babBody->addError(bab_translate('The addon is not valid'));
+			$babBody->addError(bab_translate('The package is not valid'));
 			unlink($ul);
 			return false;
 		}
 		
-		$addon_name = $ini->getName();
-
-		if (empty($addon_name)) {
-			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
-			unlink($ul);
-			return false;
-		}
-
-
-		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
-
 		$install->install($ini);
 		unlink($ul);
-		
-		bab_addonsInfos::insertMissingAddonsInTable();
-		bab_addonsInfos::clear();
-		
-		$addon = bab_getAddonInfosInstance($addon_name);
-		if ($addon) {
-			$addon->upgrade();
-		}
 	}
 }
+
+
+
 
 
 function history($item)
@@ -853,6 +844,8 @@ function viewVersion()
 		var $phpversiontxt;
 		var $phpversion;
 
+		var $altbg = true;
+
 		function __construct()
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
@@ -886,7 +879,25 @@ function viewVersion()
 			$this->t_version = bab_translate("Version");
 			$this->t_ok = bab_translate("Ok");
 			$this->t_error = bab_translate("Error");
-	
+			$this->t_name = bab_translate("Name");
+			$this->t_version_directories = bab_translate("List of version directories");
+			$this->t_current_core = bab_translate("Current core");
+			$this->t_not_used = bab_translate("Not used");
+
+
+			$basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+			$dh = opendir($basedir);
+			
+			$this->dirs = array();
+			
+			while (($file = readdir($dh)) !== false) {
+				if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+					$this->dirs[] = $file;
+				} 
+			}
+			
+			bab_sort::natcasesort($this->dirs);
+
 			}
 
 		function set_message()
@@ -897,6 +908,20 @@ function viewVersion()
 				$this->message = sprintf(bab_translate("The database has not been updated since version %s"),$this->dbversion);
 				$this->upgrade = bab_translate("Update database");
 			}
+		}
+
+
+
+		function getnextdir() {
+			if (list(,$file) = each($this->dirs)) {
+				
+				$this->altbg = !$this->altbg;
+				$this->name = $file;
+				$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
+				
+				return true;
+			}
+			return false;
 		}
 
 	}
@@ -947,294 +972,6 @@ function bab_addonUploadToolbar($message, $func = null) {
 	$babBody->addStyleSheet('toolbar.css');
 	$babBody->babEcho($oToolbar->printTemplate());
 }
-
-
-
-
-	
-function unzipcore() 
-{
-	global $babBody;
-	
-	$core = 'ovidentia/';
-	$files_to_extract = array();
-	$directory_to_create = array();
-	ini_set('max_execution_time',1200);
-
-	$tmpdir = $GLOBALS['babUploadPath'].'/tmp/';
-	
-	if (!is_dir($tmpdir)) {
-		bab_mkdir($tmpdir);
-	}
-
-	$ul = $_FILES['zipfile']['name'];
-	move_uploaded_file($_FILES['zipfile']['tmp_name'],$tmpdir.$ul);
-	
-	if (isset($_POST['core_name_switch']) && $_POST['core_name_switch'] == 'specify' && !empty($_POST['dir_name']))
-		{
-		$new_dir = $_POST['dir_name'];
-		}
-	else
-		{
-		$new_dir = mb_substr($ul,0,-4);
-		}
-	
-	if (is_file($tmpdir.$ul))
-		{
-		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
-		$zip = new Zip;
-		$zipcontents = $zip->get_List($tmpdir.$ul);
-		if (count($zipcontents) > 0)
-			{
-			if (is_dir($new_dir))
-				{
-				unlink($tmpdir.$ul);
-				$babBody->msgerror = bab_translate("Directory allready exists");
-				return false;
-				}
-
-			if (!bab_mkdir($new_dir,$GLOBALS['babMkdirMode']))
-				{
-				$babBody->msgerror = bab_translate("Can't create directory: ").$new_dir;
-				return false;
-				}
-
-			$ini_file = false;
-
-			foreach ($zipcontents as $key => $value)
-				{
-				if (mb_substr($value['filename'],0,mb_strlen($core)) == $core)
-					{
-					$subdir = mb_substr($value['filename'],mb_strlen($core));
-					$where = isset($subdir) && $subdir != '.' ? $new_dir.'/'.$subdir : $new_dir;
-					if ($value['size'] == 0) // directory
-						{
-						if (!is_dir($where))
-							$directory_to_create[] = $where;
-						}
-					else // file
-						{
-						$files_to_extract[$value['index']] = dirname($where);
-						}
-
-					if ('ovidentia/version.inc' == $value['filename']) {
-							$ini_file = $value['index'];
-						}
-					}
-				}
-
-			if (false === $ini_file) {
-				$babBody->msgerror = bab_translate("This file is not a well formated Ovidentia package");
-				return false;
-			}
-
-			
-			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
-			
-			$ini = new bab_inifile();
-			$ini->getfromzip($tmpdir.$ul, 'ovidentia/version.inc');
-
-			$zipversion = $ini->getVersion();
-			if (empty($zipversion)) {
-				$babBody->msgerror = bab_translate("This file is not a well formated Ovidentia package");
-				return false;
-			}
-
-			$current_version_ini = new bab_inifile();
-			$current_version_ini->inifile($GLOBALS['babInstallPath'].'version.inc');
-			$current_version = $current_version_ini->getVersion();
-
-
-			if ( 1 !== version_compare($zipversion, $current_version)) {
-				$babBody->msgerror = bab_translate("The installed version is newer than the package");
-				return false;
-			}
-			
-			
-			if (false === $current_version_ini->is_upgrade_allowed($zipversion)) {
-				$babBody->msgerror = bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled");
-				return false;
-			}
-			
-
-			if (!$ini->isValid()) {
-				$requirements = $ini->getRequirements();
-				foreach($requirements as $req) {
-					if (false === $req['result']) {
-						$babBody->msgerror = bab_translate("This version can't be installed because of the missing requirement").' '.$req['description'].' '.$req['required'];
-						return false;
-					}
-				}
-			}
-
-			foreach($directory_to_create as $where) {
-				if (!bab_mkdir($where)) {
-					$babBody->msgerror = bab_translate("Can't create directory: ").$where;
-					return false;
-				}
-			}
-			
-			foreach ($files_to_extract as $key => $value) {
-				$zip->Extract($tmpdir.$ul, $value, $key, false);
-			}
-			
-			unlink($tmpdir.$ul);
-			
-			include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
-			if (isset($_POST['copy_addons'])) {
-				if (!bab_cpaddons($GLOBALS['babInstallPath'], $new_dir, $babBody->msgerror)) {
-					return false;
-				}
-			}
-				
-			if (isset($_POST['upgrade']))
-				{
-				$new_dir .= '/';
-
-				if (!bab_writeConfig(array('babInstallPath' => $new_dir))) {
-						return false;
-					}
-
-
-				header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
-				exit;
-				}
-			}
-		else
-			{
-			$babBody->msgerror = bab_translate("Zipfile reading error");
-			return false;
-			}
-		}
-	else
-		{
-		$babBody->msgerror = bab_translate("Upload error");
-		return false;
-		}
-
-	return true;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-function zipupgrade()
-{
-	global $babBody;
-	class ZipUpgradeTpl
-		{
-		var $db;
-		var $altbg = false;
-
-		function __construct()
-		{
-			if (!function_exists('gzopen')) {
-				$babBody->msgerror = bab_translate("Zlib php module missing");
-			}
-
-
-			$this->t_file = bab_translate("File");
-			$this->t_new_core_name = bab_translate("New core name");
-			$this->t_submit = bab_translate("Submit");
-			$this->t_file_name = bab_translate("Name of the archive without extension");
-			$this->t_upgrade = bab_translate("Upgrade");
-			$this->t_copy_addons = bab_translate("Copy addons");
-			$this->t_wait = bab_translate("Loading, please wait...");
-			$this->t_name = bab_translate("Name");
-			$this->t_current_core = bab_translate("Current core");
-			$this->t_not_used = bab_translate("Not used");
-			$this->t_version_directories = bab_translate("List of version directories");
-
-			if (!empty($_POST)) {
-				$this->val = $_POST;
-			} else {
-				$this->val = array(
-					'upgrade' => true,
-					'copy_addons' => true
-					);
-			}
-			
-			$el_to_init = array('dir_name');
-			foreach($el_to_init as $value) {
-				$this->val[$value] = isset($this->val[$value]) ? $this->val[$value] : '';
-			}
-
-			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
-			$basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
-			$dh = opendir($basedir);
-			
-			$this->dirs = array();
-			
-			while (($file = readdir($dh)) !== false) {
-				if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
-					$this->dirs[] = $file;
-				} 
-			}
-			
-			bab_sort::natcasesort($this->dirs);
-		}
-
-
-			function getnextdir() {
-				if (list(,$file) = each($this->dirs)) {
-					
-					$this->altbg = !$this->altbg;
-					$this->name = $file;
-					$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
-					
-					return true;
-				}
-				return false;
-			}
-		}
-
-
-		
-	if (isset($_FILES['zipfile'])) {
-		if (unzipcore()) {
-			zipupgrade_message();
-			return;
-		}
-	}
-
-
-
-
-
-
-	$temp = new ZipUpgradeTpl();
-	$temp->message = bab_toHtml(bab_rp('message'), BAB_HTML_ALL);
-	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'zipupgrade'));
-	}
-
-
-function zipupgrade_message()
-	{
-	global $babBody;
-	class zipupgrade_message_temp
-		{
-		function zipupgrade_message_temp()
-			{
-			$this->t_next = bab_translate('Next');
-			}
-		}
-
-	$temp = new zipupgrade_message_temp();
-	$temp->message = bab_toHtml(bab_rp('message'), BAB_HTML_ALL);
-	$babBody->babecho(bab_printTemplate($temp, 'sites.html', 'zipupgrade_message'));
-	}
-
-
-
-
 
 
 
@@ -1303,8 +1040,8 @@ switch($idx)
 
 	case 'zipupgrade':
 		display_addons_menu();
-		$babBody->title = bab_translate("Upgrade");
-		zipupgrade();
+		$babBody->setTitle(bab_translate("Upgrade"));
+		upload();
 		$idx = 'version';
 		break;
 
@@ -1330,7 +1067,6 @@ switch($idx)
 	case 'requirements':
 		display_addons_menu();
 		$babBody->addItemMenu("requirements", bab_translate("Requirements"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
-		$babBody->title = bab_translate("Addon requirements");
 		bab_display_addon_requirements();
 		break;
 
@@ -1355,7 +1091,7 @@ switch($idx)
 		$babBody->setTitle(bab_translate('Delete addon'));
 		display_addons_menu();
 		$babBody->addItemMenu("del", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=addons&idx=del");
-		del($item);
+		bab_AddonDel($item);
 		break;
 
 	case "export":
@@ -1373,9 +1109,6 @@ switch($idx)
 
 		
 	case 'theme':
-	
-		
-
 		$babBody->title = bab_translate('Skins');
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new skin'));

@@ -128,6 +128,7 @@ class bab_InstallSource {
 	}
 
 	/**
+	 * Get the ini file as an object
 	 * @param	string	$classname
 	 * @param	string	$iniRelativePath
 	 * @return bab_inifile
@@ -138,6 +139,11 @@ class bab_InstallSource {
 		$ini = new $classname();
 
 		if (null !== $this->folderpath) {
+
+			if (!file_exists($this->folderpath.'/'.$iniRelativePath)) {
+				return false;
+			}
+
 			// archive allready unziped
 			$ini->inifile($this->folderpath.'/'.$iniRelativePath);
 			return $ini;
@@ -145,8 +151,13 @@ class bab_InstallSource {
 		
 		if (null !== $this->archive) {
 			// archive exist
-			$ini->getfromzip($this->archive, $iniRelativePath);
-			return $ini;
+			try{
+				$ini->getfromzip($this->archive, $iniRelativePath);
+				return $ini;
+
+			} catch(Exception $e) {
+				return false;
+			}
 		}
 
 		return false;
@@ -181,6 +192,7 @@ class bab_InstallSource {
 
 	/**
 	 * Get Ini file of folder or archive
+	 * @return	bab_inifile
 	 */
 	public function getIni() {
 		
@@ -192,6 +204,7 @@ class bab_InstallSource {
 			}
 		}
 
+		throw new Exception(bab_translate('The package is not reconized as an Ovidentia package'));
 		return false;
 	}
 
@@ -232,7 +245,18 @@ class bab_InstallSource {
 	 */
 	private function installAddon(bab_AddonIniFile $ini) {
 		include_once dirname(__FILE__).'/upgradeincl.php';
-		global $babBody;
+		include_once dirname(__FILE__).'/addonsincl.php';
+
+		global $babBody, $babDB;
+
+		$addon_name = $ini->getName();
+
+		if (empty($addon_name)) {
+			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
+			return false;
+		}
+
+		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 
 		$path 	= $this->getFolder().'/';
 		$map 	= bab_getAddonsFilePath();
@@ -247,6 +271,17 @@ class bab_InstallSource {
 					$babBody->addError($result);
 					return false;
 				}
+			}
+		}
+
+		bab_addonsInfos::insertMissingAddonsInTable();
+		bab_addonsInfos::clear();
+		
+		$addon = bab_getAddonInfosInstance($addon_name);
+		if ($addon) {
+			if (!$addon->upgrade()) {
+				$babBody->addError(bab_sprintf(bab_translate('Upgrade of addon %s failed'), $ini->getName()));
+				return false;
 			}
 		}
 
@@ -293,6 +328,32 @@ class bab_InstallSource {
 	 */
 	private function installAddonCollection(bab_AddonCollectionIniFile $ini) {
 
+		$collection = $ini->getPackageCollection();
+
+		if (null === $collection) {
+			$babBody->addError(bab_translate('The package_collection key is missing in the ini file'));
+			return false;
+		}
+
+
+		if (false === $ini->isValid()) {
+			$babBody->addError(bab_translate('Requirements are not fullfilled'));
+			$babBody->babEcho($ini->getRequirementsHtml());
+			return false;
+		}
+
+
+		$path = $this->getFolder().'/install/addons/';
+
+		foreach($collection as $folder) {
+
+			$install = new bab_InstallSource;
+			$install->setFolder($path.$folder);
+			$ini = $install->getIni();
+			if (!$install->install($ini)) {
+				return false;
+			}
+		}
 
 		return true;
 	}
@@ -300,14 +361,99 @@ class bab_InstallSource {
 
 
 	/**
-	 * Install multiple addons
+	 * Install a Ovidentia upgrade
+	 * Unzip the core folder too ovidentia root folder
 	 * @param	bab_CoreIniFile $ini
 	 * @return	bool
 	 */
 	private function installCore(bab_CoreIniFile $ini) {
 
+		include_once dirname(__FILE__).'/upgradeincl.php';
+		global $babBody;
 
-		return true;
+		$path 	= $this->getFolder().'/';
+		$map 	= bab_getAddonsFilePath();
+		$core 	= 'ovidentia';
+
+		$destination = realpath('.');
+
+		if (!is_writable($destination)) {
+			$babBody->addError(bab_sprintf(bab_translate('The path %s is not writable'), $destination));
+			return false;
+		}
+
+
+		if (!is_dir($path.$core)) {
+			$babBody->addError(bab_sprintf(bab_translate('The core directory is missing (%s)'), $path.$core));
+			return false;
+		}
+
+		$version = explode('.', $ini->getVersion());
+		$destination .= '/ovidentia-'.implode('-', $version);
+
+		// stop if the folder allready exists
+
+		if (is_dir($destination)) {
+			$babBody->addError(bab_sprintf(bab_translate('The folder %s allready exists'), $destination));
+			return false;
+		}
+
+		if (false === $ini->isValid()) {
+			$babBody->addError(bab_translate('The version is not valid, requirements are not fullfilled'));
+			$babBody->babEcho($ini->getRequirementsHtml());
+			return false;
+		}
+
+
+		$zipversion = $ini->getVersion();
+
+		$current_version_ini = new bab_CoreIniFile();
+		$current_version_ini->inifile($GLOBALS['babInstallPath'].'version.inc');
+		$current_version = $current_version_ini->getVersion();
+
+
+		if ( 1 !== version_compare($zipversion, $current_version)) {
+			$babBody->addError(bab_translate("The installed version is newer than the package"));
+			return false;
+		}
+		
+		
+		if (false === $current_version_ini->is_upgrade_allowed($zipversion)) {
+			$babBody->addError(bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled"));
+			return false;
+		}
+
+
+		if (true !== $result = bab_recursive_cp($path.$core, $destination)) {
+			$babBody->addError($result);
+
+			if (is_dir($destination)) {
+				$msgerror = '';
+				include_once dirname(__FILE__).'/delincl.php';
+				bab_deldir($destination, $msgerror);
+			}
+
+			return false;
+		}
+
+
+		// copy addons from old core
+		
+		if (!bab_cpaddons($GLOBALS['babInstallPath'], $destination, $babBody->msgerror)) {
+			return false;
+		}
+		
+
+		// Change config
+
+		if (!bab_writeConfig(array('babInstallPath' => basename($destination).'/'))) {
+			return false;
+		}
+
+		// redirect to upgrade page
+
+		header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
+		exit;
 	}
 
 

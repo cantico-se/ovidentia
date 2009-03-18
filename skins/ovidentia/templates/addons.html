@@ -97,7 +97,20 @@ function deladdon(id)
 
 
 <!--#begin upload -->
-<form method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
+
+<script type="text/javascript">
+<!--
+ function wait_upload() {
+	obj = document.forms['formupgrade'].submitbtn;
+ //}
+	obj.value = '{ t_wait }';
+	obj.disabled = true;
+ }
+//-->
+</script>
+
+
+<form method="post" name="formupgrade" action="{ babPhpSelf }" enctype="multipart/form-data" onsubmit="wait_upload()">
 <input type="hidden" name="tg" value="addons" />
 <input type="hidden" name="idx" value="requirements" />
 <input type="hidden" name="MAX_FILE_SIZE" value="{ babMaxFileSize }" />
@@ -110,7 +123,7 @@ function deladdon(id)
 			<td class="BabLoginMenuBackground" align="center">
 			<input type="file" name="uploadf" size="40" maxlength="255" value="">
 			<br /><br />
-			<input name="" type="submit" value="{ t_button }" />
+			<input name="submitbtn" type="submit" value="{ t_button }" />
 			</td>
 		</tr>
 		</table>
@@ -136,11 +149,13 @@ function deladdon(id)
 		<td class="BabLoginCadreBackground" align="center"> 
 		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
 			<tr valign="top"> 
-				<td colspan="2">
+				<td>
 					<ul>
 						<li>{ t_addon } : { name }</li>
 						<li>{ t_description } : { adescription }</li>
+						<!--#if version -->
 						<li>{ t_version } : { version }</li>
+						<!--#endif version -->
 					</ul>
 
 					<br />
@@ -165,40 +180,25 @@ function deladdon(id)
 					</p>
 				</td>
 				
-				<td  colspan="3" style="text-align:right">
+				<td style="text-align:right">
 					<!--#if imagepath -->
 					<img src="{ imagepath }" style="margin:.5em;border:#333 1px solid;padding:3px;background:white;" />
 					<!--#endif imagepath -->
 				</td>
 			</tr>
+			<tr>
+				<td colspan="2">
 			
-			<tr> 
-				<td>{ t_requirements } :<br /><br /></td>
+					{ t_requirements } :<br /><br />
+
+					{ requirementsHtml }
+				
+				</td>
 			</tr>
-			<tr class="BabSiteAdminTitleFontBackground"> 
-				<td>&nbsp;</td>
-				<td>{ t_recommended }</td>
-				<td>{ t_required }</td>
-				<td>{ t_current }</td>
-				<td>&nbsp;</td>
-			</tr>
-			<!--#in getnextreq -->
-			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-				<td>&nbsp;{ description }</td>
-				<td>{ recommended }</td>
-				<td>{ required }</td>
-				<td>{ current }</td>
-				<!--#if result -->
-				<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_ok }" /></td>
-				<!--#else result -->
-				<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_error }" /></td>
-				<!--#endif result -->
-			</tr>
-			<!--#endin getnextreq -->
 			
 			<!--#if dependences -->
 			<tr>
-				<td colspan="5">
+				<td colspan="2">
 				
 					<br />{ t_dependencies } :<br />
 					
@@ -219,7 +219,7 @@ function deladdon(id)
 			<!--#endif dependences -->
 			
 			<tr> 
-				<td colspan="5" align="center">
+				<td colspan="2" align="center">
 				
 				
 				<br /><br />
