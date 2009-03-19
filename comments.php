@@ -157,7 +157,11 @@ function addComment($topics, $article, $subject, $message, $com="")
 				}
 			}
 		}
-
+	if(!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics))
+		{
+		return;
+		}
+		
 	$temp = new addCommentCls($topics, $article, $subject, $message, $com);
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"comments.html", "commentcreate"));
 	}
