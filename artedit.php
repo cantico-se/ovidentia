@@ -35,7 +35,7 @@ require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 function listDrafts()
 	{
 	global $babBody;
-	class temp
+	class listDraftsCls
 		{
 		var $name;
 		var $nametxt;
@@ -59,7 +59,7 @@ function listDrafts()
 		var $bsubmit;
 		var $bsubmiturl;
 
-		function temp()
+		function listDraftsCls()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
@@ -135,7 +135,7 @@ function listDrafts()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new listDraftsCls();
 	$babBody->babecho( bab_printTemplate($temp, "artedit.html", "draftslist"));
 	}
 
@@ -143,7 +143,7 @@ function listDrafts()
 function listSubmitedArticles()
 	{
 	global $babBody;
-	class temp
+	class listSubmitedArticlesCls
 		{
 		var $name;
 		var $nametxt;
@@ -162,7 +162,7 @@ function listSubmitedArticles()
 		var $previewurl;
 		var $statustxt;
 
-		function temp()
+		function listSubmitedArticlesCls()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
@@ -242,14 +242,14 @@ function listSubmitedArticles()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new listSubmitedArticlesCls();
 	$babBody->babecho( bab_printTemplate($temp, "artedit.html", "submitedarticleslist"));
 	}
 
 function listDraftsInTrash()
 	{
 	global $babBody;
-	class temp
+	class listDraftsInTrashCls
 		{
 		var $name;
 		var $nametxt;
@@ -267,7 +267,7 @@ function listDraftsInTrash()
 		var $previewtxt;
 		var $previewurl;
 
-		function temp()
+		function listDraftsInTrashCls()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
@@ -305,7 +305,7 @@ function listDraftsInTrash()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new listDraftsInTrashCls();
 	$babBody->babecho( bab_printTemplate($temp, "artedit.html", "trashlist"));
 	}
 
@@ -314,12 +314,12 @@ function listDraftsInTrash()
 function propertiesArticle($idart)
 {
 	global $babBody;
-	class temp
+	class propertiesArticleCls
 		{
 		var $arttxt;
 		var $sContent;
 		
-		function temp($idart)
+		function propertiesArticleCls($idart)
 			{
 			global $babDB;
 			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
@@ -380,7 +380,7 @@ function propertiesArticle($idart)
 
 		}
 
-	$temp = new temp($idart);
+	$temp = new propertiesArticleCls($idart);
 	echo bab_printTemplate($temp, "artedit.html", "propertiesarticles");
 }
 
@@ -451,7 +451,7 @@ function showTopicTree($actionType, $selectedTopicId)
 function showChoiceArticleModify($topicid)
 {
 	global $babBodyPopup;
-	class temp
+	class showChoiceArticleModifyCls
 		{
 		var $res;
 		var $count;
@@ -471,7 +471,7 @@ function showChoiceArticleModify($topicid)
 		var $altbg = true;
 		var $nbartmodify = 0;
 
-		function temp($topicid)
+		function showChoiceArticleModifyCls($topicid)
 			{
 			global $babBodyPopup, $babBody, $babDB, $topicid, $articleid, $rfurl;
 			$this->count = 0;
@@ -564,19 +564,19 @@ function showChoiceArticleModify($topicid)
 			}
 
 		}
-	$temp = new temp($topicid);
+	$temp = new showChoiceArticleModifyCls($topicid);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "modarticlechoicestep"));
 }
 
 function showEditArticle()
 {
 	global $babBodyPopup;
-	class temp
+	class showEditArticleCls
 		{
 		var $topicname;
 		var $topicpath;
 
-		function temp()
+		function showEditArticleCls()
 			{
 			global $babBodyPopup, $babBody, $babDB, $rfurl;
 
@@ -759,16 +759,16 @@ function showEditArticle()
 			}
 		}
 
-	$temp = new temp();
+	$temp = new showEditArticleCls();
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "editarticlestep"));
 }
 
 function showPreviewArticle($idart)
 {
 	global $babBodyPopup;
-	class temp
+	class showPreviewArticleCls
 		{
-		function temp($idart)
+		function showPreviewArticleCls($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $rfurl;
 			$babBodyPopup->title = bab_translate("Preview article");
@@ -847,7 +847,7 @@ function showPreviewArticle($idart)
 				}
 			}
 		}
-	$temp = new temp($idart);
+	$temp = new showPreviewArticleCls($idart);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "previewarticlestep"));
 }
 
@@ -855,7 +855,7 @@ function showPreviewArticle($idart)
 function showSetArticleProperties($idart)
 	{
 	global $babBodyPopup;
-	class temp
+	class showSetArticlePropertiesCls
 		{
 
 		var $altbg = true;
@@ -883,7 +883,7 @@ function showSetArticleProperties($idart)
 		var $sMaxImgFileSizeMsg		= '';
 		
 		
-		function temp($idart)
+		function showSetArticlePropertiesCls($idart)
 			{
 			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID, $topicid, $rfurl;
 			
@@ -1109,13 +1109,10 @@ echo
 						$babBodyPopup->addStyleSheet('ajax.css');
 						if( empty($this->tagsvalue))
 							{
-							require_once dirname(__FILE__) . '/utilit/tagApi.php';
-							$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-							$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart));
-							$oIterator->orderAsc('tag_name');
-							foreach($oIterator as $oTag)
+							$res = $babDB->db_query("select tt.tag_name from ".BAB_TAGS_TBL." tt left join ".BAB_ART_DRAFTS_TAGS_TBL." adtt on adtt.id_tag=tt.id where adtt.id_draft='".$babDB->db_escape_string($idart)."'");
+							while( $rr = $babDB->db_fetch_array($res))
 								{
-								$this->tagsvalue .= $oTag->getName() . ', ';
+								$this->tagsvalue .= $rr['tag_name'].', ';
 								}
 							}
 						}
@@ -1599,7 +1596,7 @@ echo
 		}
 	$babBodyPopup->addStyleSheet('publication.css');
 	
-	$temp = new temp($idart);
+	$temp = new showSetArticlePropertiesCls($idart);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "propertiesarticlestep"));
 	}
 
@@ -2121,10 +2118,7 @@ function updatePropertiesArticleDraft(&$message)
 		}
 	if( $busetags == 'N' )
 		{
-		require_once dirname(__FILE__) . '/utilit/tagApi.php';
-		$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
-		$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
-		$oReferenceMgr->removeByReference($oReference);
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 		}
 	}
 	else
@@ -2135,19 +2129,11 @@ function updatePropertiesArticleDraft(&$message)
 
 	if( count($otags))
 	{
-		require_once dirname(__FILE__) . '/utilit/tagApi.php';
-		$oTagMgr		= bab_getInstance('bab_TagMgr');
-		$oReferenceMgr	= bab_getInstance('bab_ReferenceMgr');
-		$oReference		= bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
-		$oReferenceMgr->removeByReference($oReference);
+		$babDB->db_query("delete from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'");
 
 		for( $k = 0; $k < count($otags); $k++ )
 			{
-			$oTag = $oTagMgr->getById($otags[$k]);
-			if($oTag instanceof bab_Tag)
-				{
-				$oReferenceMgr->add($oTag->getName(), $oReference);
-				}
+			$babDB->db_query("insert into ".BAB_ART_DRAFTS_TAGS_TBL." (id_draft ,id_tag) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($otags[$k])."')");
 			}
 	}
 
@@ -2216,11 +2202,7 @@ function submitArticleDraft( $idart, &$message, $force=false)
 
 		if( $busetags == 'Y' )
 			{
-			require_once dirname(__FILE__) . '/utilit/tagApi.php';
-			$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
-			$oIterator = $oReferenceMgr->getTagsByReference($oReferenceDraft);
-			$nbtags = $oIterator->count();
+			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
 
 			if( !$nbtags )
 				{
@@ -2240,12 +2222,8 @@ function submitArticleDraft( $idart, &$message, $force=false)
 
 		if( $busetags == 'Y' )
 			{
-			require_once dirname(__FILE__) . '/utilit/tagApi.php';
-			$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
-			$oIterator = $oReferenceMgr->getTagsByReference($oReferenceDraft);
-			$nbtags = $oIterator->count();
-			
+			list($nbtags) = $babDB->db_fetch_array($babDB->db_query("select count(id_tag) from ".BAB_ART_DRAFTS_TAGS_TBL." where id_draft='".$babDB->db_escape_string($idart)."'"));
+
 			if( !$nbtags )
 				{
 				$message = bab_translate("You must specify at least one tag in article properties page");
@@ -2482,7 +2460,6 @@ if('getImage' == bab_rp('idx', ''))
 }
 
 $artedit = array();
-
 if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
 {
 	$idx = 'denied';
