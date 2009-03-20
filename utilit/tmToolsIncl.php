@@ -45,54 +45,54 @@ class BAB_TM_ConfirmForm
 	var	$sCancel			= '';
 	var	$bDisplayCancel		= false;
 	
-	public function BAB_TM_ConfirmForm()
+	function BAB_TM_ConfirmForm()
 	{
 	}
 	
-	public function setOkInfo($sIdx, $sCaption)
+	function setOkInfo($sIdx, $sCaption)
 	{
 		$this->sOk			= $sIdx;
 		$this->sOkCaption	= $sCaption;
 	}
 	
-	public function setCancelInfo($sIdx, $sCaption)
+	function setCancelInfo($sIdx, $sCaption)
 	{
 		$this->sCancel			= $sIdx;
 		$this->sCancelCaption	= $sCaption;
 		$this->bDisplayCancel	= (0 != strlen($sCaption));
 	}
 	
-	public function setWarning($sWarning)
+	function setWarning($sWarning)
 	{
 		$this->sWarning = $sWarning;
 	}
 		
-	public function setMessage($sMessage)
+	function setMessage($sMessage)
 	{
 		$this->sMessage = $sMessage;
 	}
 		
-	public function setQuestion($sQuestion)
+	function setQuestion($sQuestion)
 	{
 		$this->sQuestion = $sQuestion;
 	}
 	
-	public function setTitle($sTitle)
+	function setTitle($sTitle)
 	{
 		$this->sTitle = $sTitle;
 	}
 	
-	public function setTg($sTg)
+	function setTg($sTg)
 	{
 		$this->sTg = $sTg;
 	}
 	
-	public function addHiddenField($sName, $sValue)
+	function addHiddenField($sName, $sValue)
 	{
 		$this->aHiddenField[] = array('sName' => $sName, 'sValue' => $sValue);
 	}
 	
-	public function getNextHiddenField()
+	function getNextHiddenField()
 	{
 		$this->sHiddenFieldName = '';
 		$this->sHiddenFieldValue = '';
@@ -111,7 +111,7 @@ class BAB_TM_ConfirmForm
 		}
 	}
 
-	public function printTemplate()
+	function printTemplate()
 	{
 		return bab_printTemplate($this, 'tmCommon.html', 'confirm');
 	}
