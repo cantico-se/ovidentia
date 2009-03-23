@@ -32,9 +32,8 @@ include_once "base.php";
  */
 function bab_getLdapEncoding() {
 	return array(
-		0 => '', 
-		BAB_LDAP_UTF8 => 'UTF-8', 
-		BAB_LDAP_T61 => 'T61'
+		BAB_LDAP_ISO8859 	=> 'ISO-8859-1', 
+		BAB_LDAP_UTF8 		=> 'UTF-8'
 	);
 }
 
@@ -45,6 +44,7 @@ function bab_getLdapEncoding() {
 function bab_ldapDecode($str, $type)
 {
 	$ovCharset = bab_charset::getDatabase();
+	$type = (int) $type;
 
 	switch($type)
 	{
@@ -56,15 +56,12 @@ function bab_ldapDecode($str, $type)
 			}
 			break;
 
-		case BAB_LDAP_T61:
-			if ('utf8' === $ovCharset) {
-				return utf8_encode(ldap_t61_to_8859($str)); // t61 to utf8
-			} else {
-				return ldap_t61_to_8859($str); //t61 to latin1
-			}
+		case BAB_LDAP_ISO8859:
+			return $str;
 			break;
 
 		default:
+			trigger_error('Unsupported Charset');
 			return $str;
 			break;
 	}
@@ -79,6 +76,7 @@ function bab_ldapEncode($str, $type)
 {
 
 	$ovCharset = bab_charset::getDatabase();
+	$type = (int) $type;
 
 	switch($type)
 	{
@@ -90,15 +88,12 @@ function bab_ldapEncode($str, $type)
 			}
 			break;
 
-		case BAB_LDAP_T61:
-			if ('utf8' === $ovCharset) {
-				return ldap_8859_to_t61(utf8_decode($str)); // utf8 to t61
-			} else {
-				return ldap_8859_to_t61($str); // latin1 to t61
-			}
+		case BAB_LDAP_ISO8859:
+			return $str;
 			break;
 
 		default:
+			trigger_error('Unsupported Charset');
 			return $str;
 			break;
 	}
