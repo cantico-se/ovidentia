@@ -148,7 +148,9 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	private $zip = null;
 	
 	public function __construct() {
-		$this->zip = new ZipArchive;
+		if (class_exists('ZipArchive')) {
+			$this->zip = new ZipArchive;
+		}
 	}
 
 	public function getDescription() {
@@ -156,23 +158,36 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	}
 
 	public function open($filename) {
-		return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+		if (class_exists('ZipArchive')) {
+			return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+		} else {
+			trigger_error('The zip extension is not available');
+			return false;
+		}
 	}
 
 	/**
 	 * Commit added files
 	 */
 	public function close() {
-		return $this->zip->close();
+		if (class_exists('ZipArchive')) {
+			return $this->zip->close();
+		} else {
+			return true;
+		}
 	}
 
 
 	public function addFile($filename, $localname) {
-		$this->zip->addFile($filename, $localname);
+		if (class_exists('ZipArchive')) {
+			$this->zip->addFile($filename, $localname);
+		}
 	}
 
 	
 	public function extractTo($destination) {
-		$this->zip->extractTo($destination);
+		if (class_exists('ZipArchive')) {
+			$this->zip->extractTo($destination);
+		}
 	}
 }
