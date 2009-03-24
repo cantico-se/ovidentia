@@ -2994,5 +2994,8 @@
 <string id="Archive">Archive</string>
 <string id="Requirements to install the new archive">Prérequis pour installer la nouvelle archive</string>
 <string id="The package is not valid">L'archive n'est pas valide</string>
-
+<string id="Upgrade of addon %s failed">La mise à jour du module %s à échoué</string>
+<string id="The package_collection key is missing in the ini file">La clef package_collection est manquante dans le fichier ini</string>
+<string id="Requirements are not fullfilled">Les prérequis ne sont pas respectés</string>
+<string id="The php zip extension is not available">L'extention php zip n'est pas disponible</string>
 </fr>
