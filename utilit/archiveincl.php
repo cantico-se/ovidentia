@@ -161,7 +161,7 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 		if (class_exists('ZipArchive')) {
 			return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
 		} else {
-			trigger_error('The zip extension is not available');
+			throw new Exception(bab_translate('The php zip extension is not available'));
 			return false;
 		}
 	}

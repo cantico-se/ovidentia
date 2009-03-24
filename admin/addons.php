@@ -339,7 +339,7 @@ function upgrade($id) {
  */
 function export($id)
 	{
-
+	global $babBody;
 	bab_setTimeLimit(0);
 	
 	
@@ -390,7 +390,12 @@ function export($id)
 	$version = str_replace('.','-',$row['version']);
 	$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$row['title'].'-'.$version.'.zip';
 
-	$zip->open($tmpfile);
+	try {
+		$zip->open($tmpfile);
+	} catch (Exception $e) {
+		$babBody->addError($e->getMessage());
+		return;
+	}
 
 	$res = array();
 	foreach ($loc_in as $k => $path)

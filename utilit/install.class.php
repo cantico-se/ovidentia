@@ -100,6 +100,8 @@ class bab_InstallSource {
 	 */
 	private function temporaryExtractArchive() {
 
+		global $babBody;
+
 		if (null === $this->archive) {
 			return null;
 		}
@@ -115,13 +117,24 @@ class bab_InstallSource {
 		if (is_dir($temp)) {
 			include_once dirname(__FILE__).'/delincl.php';
 			$error = '';
-			bab_deldir($temp, $error);
+			if (!bab_deldir($temp, $error)) {
+				$babBody->addError($error);
+				return null;
+			}
 		}
 
 		bab_mkdir($temp);
 
 		$zip = bab_functionality::get('Archive/Zip');
-		$zip->open($this->archive);
+
+		try {
+			$zip->open($this->archive);
+		} catch (Exception $e) {
+			$babBody->addError($e->getMessage());
+			return null;
+		}
+
+
 		$zip->extractTo($temp);
 
 		return $temp;
