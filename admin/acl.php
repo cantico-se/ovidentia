@@ -583,7 +583,7 @@ function aclGetAccessUsers($table, $id_object) {
 			}
 		else
 			{
-			if( $arr['nb_groups'] >= 0)
+			if( $arr['nb_groups'] !== null )
 				{
 				$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($arr['id_group']));
 				while( $rr = $babDB->db_fetch_array($rs))
