@@ -567,7 +567,7 @@ function aclGetAccessUsers($table, $id_object) {
 	$tree = & new bab_grptree();
 	$groups = array();
 	
-	$res = $babDB->db_query("SELECT id_group FROM ".$babDB->backTick($table)." WHERE id_object='".$babDB->db_escape_string($id_object)."'");
+	$res = $babDB->db_query("SELECT t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group WHERE t.id_object='".$babDB->db_escape_string($id_object)."'");
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if ($arr['id_group'] >= BAB_ACL_GROUP_TREE )
 			{
@@ -583,7 +583,18 @@ function aclGetAccessUsers($table, $id_object) {
 			}
 		else
 			{
-			$groups[$arr['id_group']] = $arr['id_group'];
+			if( $arr['nb_groups'] >= 0)
+				{
+				$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($arr['id_group']));
+				while( $rr = $babDB->db_fetch_array($rs))
+					{
+					$groups[$rr['id_group']] = $rr['id_group'];
+					}
+				}
+			else
+				{
+				$groups[$arr['id_group']] = $arr['id_group'];
+				}
 			}
 		}
 
