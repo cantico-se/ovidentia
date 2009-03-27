@@ -551,7 +551,25 @@ function getWaitingApprobations($iduser, $update=false)
 		return $_SESSION['bab_waitingApprobations'][$iduser];
 	}
 
-	$res = $babDB->db_query("select frit.*, fit.idsch, fat.satype, fat.id_oc, fit.iduser as fit_iduser from ".BAB_FAR_INSTANCES_TBL." frit left join ".BAB_FA_INSTANCES_TBL." fit on frit.idschi=fit.id left join ".BAB_FLOW_APPROVERS_TBL." fat on fit.idsch=fat.id where frit.result='' and frit.notified='Y'");
+	$res = $babDB->db_query("select 
+		
+			frit.*, 
+			fit.idsch, 
+			fat.satype, 
+			fat.id_oc, 
+			fit.iduser as fit_iduser 
+
+		from ".BAB_FAR_INSTANCES_TBL." frit, 
+		".BAB_FA_INSTANCES_TBL." fit,
+		".BAB_FLOW_APPROVERS_TBL." fat 
+
+		where 
+			frit.idschi=fit.id 
+			AND fit.idsch=fat.id 
+			AND frit.result='' 
+			AND frit.notified='Y'
+	");
+
 	$result['idsch'] = array();
 	$result['idschi'] = array();
 	while( $row = $babDB->db_fetch_array($res))
@@ -561,7 +579,7 @@ function getWaitingApprobations($iduser, $update=false)
 			{
 			case 0:
 				if( $row['iduser'] == $iduser && (count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi'])))
-					{
+					{bab_debug($row);
 					$result['idsch'][] = $row['idsch'];
 					$result['idschi'][] = $row['idschi'];
 					}
