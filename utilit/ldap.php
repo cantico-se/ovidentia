@@ -57,7 +57,12 @@ function bab_ldapDecode($str, $type)
 			break;
 
 		case BAB_LDAP_ISO8859:
-			return $str;
+
+			if ('utf8' === $ovCharset) {
+				return utf8_encode($str); // latin1 to utf8
+			} else {
+				return $str; // latin1 to latin1
+			}
 			break;
 
 		default:
@@ -89,7 +94,11 @@ function bab_ldapEncode($str, $type)
 			break;
 
 		case BAB_LDAP_ISO8859:
-			return $str;
+			if ('utf8' === $ovCharset) {
+				return utf8_decode($str); // utf8 to latin1
+			} else {
+				return $str; // latin1 to latin1
+			}
 			break;
 
 		default:
