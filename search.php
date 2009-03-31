@@ -96,7 +96,7 @@ function searchKeyword($item , $option = "OR")
 			$this->order = bab_toHtml(bab_rp('order'));
 			$this->index = bab_searchEngineInfos();
 			
-
+			$this->searchItems = array();
 			foreach (bab_Search::getRealms() as $realm)
 				{
 				$name = $realm->getName();
