@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__) . '/utilit/tagApi.php';
+
 
 
 function displayTags()
@@ -30,33 +30,33 @@ function displayTags()
 	global $babBody;
 	class displayTagsCls
 		{
-		var $oTagIterator = null;
+
 		function displayTagsCls()
 			{
 			global $babDB;
 
-			$this->tags_txt		= bab_translate("Tags to add ( Comma separated: tag1, tag2, etc )");
-			$this->update_txt	= bab_translate("Update");
-			$this->add_txt		= bab_translate("Add");
-			$this->tag_txt		= bab_translate("Tag to update ( empty = delete )");
-			
-			$oTagMgr = bab_getInstance('bab_TagMgr');
-			$this->oTagIterator = $oTagMgr->select()->orderAsc('tag_name');
-			
-			$this->tagsvalue	= isset($GLOBALS['tagsvalue'])?$GLOBALS['tagsvalue']: '';
-			$this->tagvalue		= isset($GLOBALS['tagvalue'])?$GLOBALS['tagvalue']: '';
-			$this->tagidvalue	= isset($GLOBALS['tagidvalue'])?$GLOBALS['tagidvalue']: '';
+			$this->tags_txt = bab_translate("Tags to add ( Comma separated: tag1, tag2, etc )");
+			$this->update_txt = bab_translate("Update");
+			$this->add_txt = bab_translate("Add");
+			$this->tag_txt = bab_translate("Tag to update ( empty = delete )");
+
+			$this->res = $babDB->db_query("select * from ".BAB_TAGS_TBL." order by tag_name asc");
+			$this->count = $babDB->db_num_rows($this->res);
+			$this->tagsvalue= isset($GLOBALS['tagsvalue'])?$GLOBALS['tagsvalue']: '';
+			$this->tagvalue= isset($GLOBALS['tagvalue'])?$GLOBALS['tagvalue']: '';
+			$this->tagidvalue= isset($GLOBALS['tagidvalue'])?$GLOBALS['tagidvalue']: '';
 			}
 
 		function getnexttag()
 			{
-			$this->oTagIterator->next();
-			if($this->oTagIterator->valid())
+			global $babDB;
+			static $k = 0;
+			if( $k < $this->count )
 				{
-				$oTag			= $this->oTagIterator->current();
-				$this->tagname	= $oTag->getName();
-				$this->tagid	= $oTag->getId();
-				if(isset($GLOBALS['lasttags']) && in_array($this->tagid, $GLOBALS['lasttags']))
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->tagname = $arr['tag_name'];
+				$this->tagid = $arr['id'];
+				if( isset($GLOBALS['lasttags']) && in_array($this->tagid, $GLOBALS['lasttags']) )
 					{
 					$this->big = true;
 					}
@@ -64,10 +64,11 @@ function displayTags()
 					{
 					$this->big = false;
 					}
-				
+				$k++;
 				return true;
 				}
-			return false;
+			else
+				return false;
 			}
 		}
 
@@ -184,23 +185,16 @@ function mapTagsImportFile($file, $tmpfile, $wsepar, $separ)
 
 function outPutTagsToJson()
 {
-	$like		= bab_rp('like', '');
-	$ret		= array();
-	$oName		= new BAB_Field('tag_name');
-	$oTagMgr	= bab_getInstance('bab_TagMgr');
-	
-	$oTagIterator = $oTagMgr->select();
-	$oTagIterator->setCriteria($oName->contain($like))->orderAsc('tag_name');
-	
-	while($oTagIterator->next())
+	global $babBody, $babDB;
+	$like = bab_rp('like', '');
+	$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name like '%".$babDB->db_escape_like($like)."%' order by tag_name asc");
+
+	$ret = array();
+	while( $arr = $babDB->db_fetch_array($res))
 	{
-		if($oTagIterator->valid())
-		{
-			$oTag = $oTagIterator->current();
-			$ret[] = '{"id": "'.$oTag->getId().'", "tagname": "'.bab_toHtml($oTag->getName()).'"}';	
-		}
+		$ret[] = '{"id": "'.$arr['id'].'", "tagname": "'.bab_toHtml($arr['tag_name']).'"}';		
 	}
-	
+
 	print '['.join(',', $ret).']';
 }
 
@@ -211,8 +205,6 @@ function updateTags()
 	$GLOBALS['tagvalue'] = '';
 	$GLOBALS['tagidvalue'] = 0;
 
-	$oTagMgr = bab_getInstance('bab_TagMgr'); 
-	
 	$tags = trim(bab_rp('tagsname', ''));
 	if( !empty($tags))
 	{
@@ -222,10 +214,11 @@ function updateTags()
 			$tag = trim($arr[$k]);
 			if( !empty($tag) )
 			{
-				$iId = $oTagMgr->create($tag);
-				if(false !== $iId)
+				$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+				if( !$res || $babDB->db_num_rows($res) == 0 )
 				{
-					$GLOBALS['lasttags'][] = $iId;
+					$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
+					$GLOBALS['lasttags'][] = $babDB->db_insert_id();
 				}
 			}
 		}
@@ -236,14 +229,16 @@ function updateTags()
 
 	if( !empty($tag) && $tagid )
 	{
-		if(false !== $oTagMgr->update($tagid, $tag))
+		$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where id !='".$babDB->db_escape_string($tagid)."' and tag_name='".$babDB->db_escape_string($tag)."'");
+		if( !$res || $babDB->db_num_rows($res) == 0 )
 		{
+			$babDB->db_query("update ".BAB_TAGS_TBL." set tag_name='".$babDB->db_escape_string($tag)."' where id='".$babDB->db_escape_string($tagid)."'");
 			$GLOBALS['lasttags'][] = $tagid;
 		}
 	}
 	elseif( $tagid )
 	{
-		$oTagMgr->delete($tagid);
+		$babDB->db_query("delete from ".BAB_TAGS_TBL." where id='".$babDB->db_escape_string($tagid)."'");
 	}
 	else
 	{
@@ -264,16 +259,18 @@ function processImportTagsFile()
 	if( $fd )
 		{
 		$arr = fgetcsv($fd, 4096, $separ);
-
+		$oTagMgr = bab_getInstance('bab_TagMgr'); 
+		
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
 				$tag = trim($arr[$tagcol]);
 				if( !empty($tag) )
 				{
-					$iId = $oTagMgr->create($tag);
-					if(false !== $iId)
+					$res = $babDB->db_query("select * from ".BAB_TAGS_TBL." where tag_name='".$babDB->db_escape_string($tag)."'");
+					if( !$res || $babDB->db_num_rows($res) == 0 )
 					{
-						$GLOBALS['lasttags'][] = $iId;
+						$babDB->db_query("insert into ".BAB_TAGS_TBL." (tag_name) values ('".$babDB->db_escape_string($tag)."')");
+						$GLOBALS['lasttags'][] = $babDB->db_insert_id();
 					}
 				}
 			}
