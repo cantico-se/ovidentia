@@ -264,7 +264,8 @@ function processImportTagsFile()
 	if( $fd )
 		{
 		$arr = fgetcsv($fd, 4096, $separ);
-
+		$oTagMgr = bab_getInstance('bab_TagMgr'); 
+		
 		while ($arr = fgetcsv($fd, 4096, $separ))
 			{
 				$tag = trim($arr[$tagcol]);
