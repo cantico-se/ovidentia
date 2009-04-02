@@ -69,7 +69,7 @@ class BAB_GetHtmlUploadBlock
 		
 		if($oFmEnv->userIsInCollectiveFolder())
 		{
-			if($oFmEnv->oFmFolder instanceof Bab_FmFolder)
+			if(isset($oFmEnv->oFmFolder) && 'Bab_FmFolder' == get_class($oFmEnv->oFmFolder))
 			{
 				$this->bUseKeyword = ('Y' == $oFmEnv->oFmFolder->getAddTags());
 			}
