@@ -142,10 +142,13 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 
 /**
  * zip toolkit based on php ZipArchive from php ZIP extension
+ * close an reopen zip file when limit execeded
  */
 class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 
-	private $zip = null;
+	private $zip 				= null;
+	private $opened_filename 	= null;
+	private $add_file_limit 	= 128;
 	
 	public function __construct() {
 		if (class_exists('ZipArchive')) {
@@ -159,18 +162,41 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 
 	public function open($filename) {
 		if (class_exists('ZipArchive')) {
-			return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
+			$this->opened_filename = $filename;
+			return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE );
 		} else {
 			throw new Exception(bab_translate('The php zip extension is not available'));
 			return false;
 		}
 	}
 
+
+	/**
+	 * Close and open the zip archive
+	 */
+	private function reopen() {
+		if (null === $this->opened_filename) {
+			return null;
+		}
+
+		$filename = $this->opened_filename;
+
+		if ( !$this->close() ) {
+            return false;
+        }
+		
+		$this->opened_filename = $filename;
+		return $this->zip->open($filename, ZIPARCHIVE::CREATE);
+	}
+
+
 	/**
 	 * Commit added files
 	 */
 	public function close() {
 		if (class_exists('ZipArchive')) {
+			$this->opened_filename = null;
+			$this->add_file_limit = 128;
 			return $this->zip->close();
 		} else {
 			return true;
@@ -180,7 +206,13 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 
 	public function addFile($filename, $localname) {
 		if (class_exists('ZipArchive')) {
+
+			if ($this->add_file_limit <= 0) {
+				$this->reopen();
+			}
+
 			$this->zip->addFile($filename, $localname);
+			$this->add_file_limit--;
 		}
 	}
 

@@ -333,6 +333,53 @@ function upgrade($id) {
 }
 
 
+
+
+
+/**
+ * Get the list of files to export in a particular folder
+ * @param	string	$d		folder
+ * @return	array
+ */
+function bab_addon_export_rd($d) {
+	$res = array();
+	$d = mb_substr($d,-1) != '/' ? $d.'/' : $d;
+	if (is_dir($d)) {
+
+		$subdir = array();
+		$handle=opendir($d);
+
+		if (!$handle) {
+			return false;
+		}
+
+		while ($file = readdir($handle)) {
+			if ($file != "." && $file != "..") {
+				if (is_dir($d.$file) && 'CVS' != $file && '.CVS' != $file ) {
+					$subdir[] = $d.$file;
+				} elseif (is_file($d.$file)) {
+					$res[] = $d.$file;
+				}
+			}
+		}
+		closedir($handle);
+
+		foreach($subdir as $directory) {
+			$res = array_merge($res, bab_addon_export_rd($directory));
+		}
+	}
+	return $res;
+}
+
+
+
+
+
+
+
+
+
+
 /**
  * Get a zip archive for one addon
  * @param	int	$id
@@ -341,37 +388,8 @@ function export($id)
 	{
 	global $babBody;
 	bab_setTimeLimit(0);
-	
-	
-	if (!function_exists('bab_addon_export_rd')) {
-
-
-		/**
-		 * Get the list of files to export in a particular folder
-		 * @param	string	$d		folder
-		 * @return	array
-		 */
-		function bab_addon_export_rd($d) {
-			$res = array();
-			$d = mb_substr($d,-1) != '/' ? $d.'/' : $d;
-			if (is_dir($d)) {
-				$handle=opendir($d);
-				while ($file = readdir($handle)) {
-					if ($file != "." && $file != "..") {
-						if (is_dir($d.$file) && 'CVS' != $file && '.CVS' != $file ) {
-							$res = array_merge($res, bab_addon_export_rd($d.$file));
-						} elseif (is_file($d.$file)) $res[] = $d.$file;
-					}
-				}
-				closedir($handle);
-			}
-			return $res;
-		}
-	}
-
 
 	$row = bab_addonsInfos::getDbRow($id);
-	
 
 	if (!callSingleAddonFunction($row['id'], $row['title'], 'onPackageAddon'))
 		{
@@ -400,20 +418,31 @@ function export($id)
 	$res = array();
 	foreach ($loc_in as $k => $path)
 		{
-		$res = bab_addon_export_rd($path.'/'.$row['title']);
-		$len = mb_strlen($path.'/'.$row['title']);
+		$path = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$path.'/'.$row['title'];
+		$res = bab_addon_export_rd($path);
+
+		if (false === $res) {
+			die(sprintf(bab_translate('Error reading directory %s'), $path));
+			return;
+		}
+
+		$len = mb_strlen($path);
 
 		foreach ($res as $file)
 			{
 			if (is_file($file))
 				{
 				$rec_into = $loc_out[$k].mb_substr($file, $len);
-
 				$zip->addFile($file, $rec_into);
 				}
 			}
 		}
 	$zip->close();
+
+	if (!file_exists($tmpfile)) {
+		$babBody->addError(bab_translate('Error in zip creation'));
+		return;
+	}
 
 
 	header("Content-Type:application/zip");
