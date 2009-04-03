@@ -2398,13 +2398,15 @@ function bab_getInstance($classname) {
 class bab_functionality {
 
 	/**
-	 * Constructor
-	 *
-	 * @return bab_functionality
+	 * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
 	 */
-	function bab_functionality()
-	{
+	public function bab_functionality() {}
+
+
+	public static function getRootPath() {
+		return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
 	}
+
 
 	/**
 	 * Include php file with the functionality class
@@ -2414,8 +2416,8 @@ class bab_functionality {
 	 * @param	string	$path		path to functionality
 	 * @return string | false		the object class name or false if the file allready included or false if the include failed
 	 */
-	function includefile($path) {
-		$include_result = /*@*/include dirname($_SERVER['SCRIPT_FILENAME']).'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
+	public function includefile($path) {
+		$include_result = /*@*/include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
 		
 		if (false === $include_result) {
 			trigger_error(sprintf('The functionality %s is not available', $path));
@@ -2438,7 +2440,7 @@ class bab_functionality {
 	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
 	 * @return	object				The functionality object or false on error.
 	 */
-	function get($path, $singleton = true) {
+	public function get($path, $singleton = true) {
 		$classname = bab_functionality::includefile($path);
 		if (!$classname) {
 			return false;
@@ -2456,7 +2458,7 @@ class bab_functionality {
 	 * @param	string	$path
 	 * @return array
 	 */
-	function getFunctionalities($path) {
+	public function getFunctionalities($path) {
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$obj = new bab_functionalities();
 		return $obj->getChildren($path);
@@ -2467,7 +2469,7 @@ class bab_functionality {
 	 * @access protected
 	 * @return string
 	 */
-	function getDescription() {
+	public function getDescription() {
 		return '';
 	}
 	
@@ -2476,7 +2478,7 @@ class bab_functionality {
 	 * Get path to functionality at this node which is the current path or a reference to a childnode
 	 * @return string
 	 */
-	function getPath() {
+	public function getPath() {
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		return bab_Functionalities::getPath(get_class($this));
 	}

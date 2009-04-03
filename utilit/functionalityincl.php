@@ -55,7 +55,7 @@ class bab_functionalities {
 		$this->filename = BAB_FUNCTIONALITY_LINK_FILENAME;
 		$this->original = BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
 		$this->rootDirName = BAB_FUNCTIONALITY_ROOT_DIRNAME;
-		$this->treeRootPath = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$this->rootDirName.'/';
+		$this->treeRootPath = bab_functionality::getRootPath().'/';
 		
 		if (!is_dir($this->treeRootPath)) {
 			bab_mkdir($this->treeRootPath);
@@ -371,7 +371,7 @@ class bab_functionalities {
 	function register($func_path, $include_file) {
 
 		// verify parent functionality
-		$parent_original = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$this->rootDirName.'/'.dirname($func_path).'/'.$this->original;
+		$parent_original = $this->treeRootPath.'/'.dirname($func_path).'/'.$this->original;
 		
 		if ('.' !== dirname($func_path) && !file_exists($parent_original)) {
 			trigger_error(sprintf('The functionality "%s" cannot be registered because parent functionality does not exists', $func_path));
