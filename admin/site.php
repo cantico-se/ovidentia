@@ -1724,17 +1724,53 @@ function siteUpdate_menu3()
 }
 
 
-function siteUpdate_menu4()
+/**
+ * Checks whether the path is an absolute path.
+ * On Windows something like C:/example/path or C:\example\path or C:/example\path
+ * On unix something like /example/path
+ * 
+ * @return bool
+ */
+function isAbsolutePath($path)
 {
-	global $babDB;
-	if( !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace']))
-		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide all file manager size limits !!");
+	if (DIRECTORY_SEPARATOR === '\\') {
+		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+		$regexp = '#^[a-zA-Z]\:/#';
+	} else {
+		$regexp = '#^/#';
+	}
+
+	if (0 !== preg_match($regexp, $path)) {
+		return true;
+	}
+	return false;
+}
+
+
+function siteUpdate_menuUpload()
+{
+	global $babDB, $babBody;
+
+	$errors = false;
+	if (!isAbsolutePath($_POST['uploadpath'])) {
+		$babBody->addError(bab_translate("ERROR: The upload path must be an absolute path."));
+		$errors = true;
+	}
+	
+	
+	if (!is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace'])) {
+		$babBody->addError(bab_translate("ERROR: You must provide all file manager size limits."));
+		$errors = true;
+	}
+
+	if ($errors) {
 		return false;
-		}
+	}
 
 	$imgsize = is_numeric($_POST['imgsize']) ? $_POST['imgsize'] : 25;
 	$uploadpath = rtrim($_POST['uploadpath'],'/\\ ');
+	
+	
 
 	$req = "UPDATE ".BAB_SITES_TBL." set 
 		imgsize='".$babDB->db_escape_string($imgsize)."', 
@@ -2229,7 +2265,7 @@ switch ($_POST['action'])
 		break;
 
 	case 'menu4':
-		if (!siteUpdate_menu4())
+		if (!siteUpdate_menuUpload())
 			$idx = 'menu4';
 		break;
 

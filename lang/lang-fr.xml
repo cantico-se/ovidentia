@@ -1182,7 +1182,8 @@
 <string id="File manager max group directory size">Espace maximum occupé par un répertoire partagé</string>
 <string id="File manager max user directory size">Espace maximum occupé par un répertoire utilisateur</string>
 <string id="File manager max total size">Espace maximum occupé par le gestionnaire de fichiers</string>
-<string id="ERROR: You must provide all file manager size limits !!">ERREUR : vous devez fournir toutes les tailles limites pour le gestionnaire de fichiers !</string>
+<string id="ERROR: You must provide all file manager size limits.">ERREUR : vous devez fournir toutes les tailles limites pour le gestionnaire de fichiers.</string>
+<string id="ERROR: The upload path must be an absolute path.">ERREUR : Le chemin du répertoire de stockage des fichiers à télécharger doit être absolu.</string>
 <string id="Access restriction">Restriction d'accès</string>
 <string id="Are you sure you want to delete this event category">Voulez-vous vraiment effacer cette catégorie d'événement</string>
 <string id="Delete event category">Effacer la catégorie d'événement</string>

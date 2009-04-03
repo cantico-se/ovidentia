@@ -330,7 +330,7 @@ function renameFile()
 	return false;
 	}
 	
-	
+
 function _createFmDirectories()
 {
 	global $error, $succes, $trans;
@@ -400,24 +400,54 @@ function _createFmDirectories()
 	return ($bCollDirCreated && $bUserDirCreated);
 }
 	
-	
+
+/**
+ * Checks whether the path is an absolute path.
+ * On Windows something like C:/example/path or C:\example\path or C:/example\path
+ * On unix something like /example/path
+ * 
+ * @return bool
+ */
+function isAbsolutePath($path)
+{
+	if (DIRECTORY_SEPARATOR === '\\') {
+		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+		$regexp = '#^[a-zA-Z]\:/#';
+	} else {
+		$regexp = '#^/#';
+	}
+
+	if (0 !== preg_match($regexp, $path)) {
+		return true;
+	}
+	return false;
+}
+
+
 function testVars()
 	{
 	global $error,$succes,$trans;
 	
 	if (!is_file($_POST['babInstallPath'].VERSION_FILE))
 		{
-		$error = $trans->str('No acces to core, Relative path to ovidentia core is wrong');
+		$error = $trans->str('No access to core. Relative path to ovidentia core is wrong.');
 		return false;
 		}
 
 	$GLOBALS['babInstallPath'] = $_POST['babInstallPath'];
 
+	// Checking validity of the selected upload path.
 	if (!empty($_POST['babUploadPath']) )
 		{
+		// The upload path should be an absolute path.
+		if (!isAbsolutePath($_POST['babUploadPath'])) {
+			$error = $trans->str('The upload directory path must be an absolute path.');
+			return false;
+		}
+
 		if ( !is_dir($_POST['babUploadPath']) && !@mkdir($_POST['babUploadPath']))
 			{
-			$error = $trans->str('can\'t create upload directory');
+			$error = $trans->str('Can\'t create upload directory');
 			return false;
 			}
 
@@ -467,7 +497,7 @@ function getIni() {
 		
 		return $ini;
 	}
-	$error = $trans->str('can\'t get ini file');
+	$error = $trans->str('Can\'t get ini file');
 	return false;
 }
 
