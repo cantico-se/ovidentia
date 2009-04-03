@@ -579,7 +579,7 @@ function getWaitingApprobations($iduser, $update=false)
 			{
 			case 0:
 				if( $row['iduser'] == $iduser && (count($result['idschi']) == 0 || !in_array($row['idschi'], $result['idschi'])))
-					{bab_debug($row);
+					{
 					$result['idsch'][] = $row['idsch'];
 					$result['idschi'][] = $row['idschi'];
 					}
