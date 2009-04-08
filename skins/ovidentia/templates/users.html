@@ -118,6 +118,9 @@ function bab_userListShowHideFilter()
 </form>
 <!--#end userslist -->
 
+
+
+
 <!--#begin usercreate -->
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="users">
@@ -179,6 +182,25 @@ function bab_userListShowHideFilter()
 
 
 <!--#begin usersmodify -->
+
+<script type="text/javascript" src="{ babInstallPath }scripts/bab_dialog.js"></script>
+
+<script type="text/javascript">
+<!--
+
+function setStartDateValue(date)
+{
+	document.getElementById('validity_start').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
+}
+
+function setEndDateValue(date)
+{
+	document.getElementById('validity_end').value =  (date.day < 10 ? '0' : '') + date.day + '-' + (date.month < 10 ? '0' : '') + date.month + '-' + date.year;
+}
+
+//-->
+</script>
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
@@ -186,112 +208,98 @@ function bab_userListShowHideFilter()
 <input type="hidden" name="modify" value="modify">
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
-<table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
+
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
-<tr valign="middle"> 
-<td align="right">{ changepassword } </td>
-<td> 
-<select name="changepwd"><option value="0"  
-                  
-<!--#if arr[changepwd] "== 0" -->
-                  selected 
-                  
-<!--#endif arr[changepwd] -->>{ no }</option>
-<option value="1" 
-                  
-<!--#if arr[changepwd] "== 1" -->
-                  selected 
-                  
-<!--#endif arr[changepwd] -->>{ yes }</option>
-</select>
-</td>
+<col width="40%">
+<tr valign="middle">
+  <td align="right">{ changepassword }</td>
+  <td>
+    <select name="changepwd">
+      <option value="0" <!--#if arr[changepwd] "== 0" -->selected="selected"<!--#endif arr[changepwd] --> >{ no }</option>
+      <option value="1" <!--#if arr[changepwd] "== 1" -->selected="selected"<!--#endif arr[changepwd] --> >{ yes }</option>
+    </select>
+  </td>
 </tr>
-<tr valign="middle"> 
-<td align="right">{ isconfirmed }</td>
-<td> 
-<select name="is_confirmed"><option value="0" 
-                  
-<!--#if arr[is_confirmed] "== 0" -->
-                  selected 
-                  
-<!--#endif arr[is_confirmed] -->>{ no }</option>
-<option value="1"  
-                  
-<!--#if arr[is_confirmed] "== 1" -->
-                  selected 
-                  
-<!--#endif arr[is_confirmed] -->>{ yes }</option>
-</select>
-</td>
+
+<tr valign="middle">
+  <td align="right">{ isconfirmed }</td>
+  <td>
+    <select name="is_confirmed">
+      <option value="0" <!--#if arr[is_confirmed] "== 0" -->selected="selected"<!--#endif arr[is_confirmed] --> >{ no }</option>
+      <option value="1" <!--#if arr[is_confirmed] "== 1" -->selected="selected"<!--#endif arr[is_confirmed] --> >{ yes }</option>
+    </select>
+  </td>
 </tr>
-<tr> 
-<td  align="right">{ isdisabled } </td>
-<td> 
-<select name="disabled"><option value="0"
-                  
-<!--#if arr[disabled] "== 0" -->
-                  selected 
-                  
-<!--#endif arr[disabled] -->>{ no }</option>
-<option value="1" 
-                  
-<!--#if arr[disabled] "== 1" -->
-                  selected 
-                  
-<!--#endif arr[disabled] -->>{ yes }</option>
-</select>
-</td>
+
+<tr>
+  <td align="right">{ isdisabled }</td>
+  <td>
+    <select name="disabled">
+      <option value="0" <!--#if arr[disabled] "== 0" -->selected="selected"<!--#endif arr[disabled] --> >{ no }</option>
+      <option value="1" <!--#if arr[disabled] "== 1" -->selected="selected"<!--#endif arr[disabled] --> >{ yes }</option>
+    </select>
+  </td>
+</tr>
+
+<tr>
+  <td align="right">{ validity_period }</td>
+  <td>
+  { from } <input id="validity_start" type="text" size="10" name="validity_start" value="{ validity_start }" /><img src="{ babSkinPath }images/Puces/calendar.gif" onclick="bab_dialog.selectdate(setStartDateValue);" alt="" style="cursor: pointer; vertical-align: middle" />
+  { to } <input id="validity_end" type="text" size="10" name="validity_end" value="{ validity_end }" /><img src="{ babSkinPath }images/Puces/calendar.gif" onclick="bab_dialog.selectdate(setEndDateValue)" alt="" style="cursor: pointer; vertical-align: middle" />
+  </td>
 </tr>
 
 <!--#if bshowauthtype -->
 <tr> 
-<td align="right">{ authentificationtxt } ?</td>
-<td> 
-<select name="authtype">
-<option value="Y" { yselected }>{ ovidentiaauthtxt }</option>
-<option value="N" { nselected }>{ siteauthtxt }</option>
-</select>
-</td>
+  <td align="right">{ authentificationtxt } ?</td>
+  <td> 
+    <select name="authtype">
+      <option value="Y" { yselected }>{ ovidentiaauthtxt }</option>
+      <option value="N" { nselected }>{ siteauthtxt }</option>
+    </select>
+  </td>
 </tr>
 <!--#endif bshowauthtype -->
 
 <!--#if showprimary -->
 <tr> 
-<td align="right">{ primarygroup } </td>
-<td> 
-<select name="group">
-<option value="" >{ none }</option>
-<!--#in getnext -->
-<option value="{ groupid }" { selected }>{ groupname }</option>
-<!--#endin getnext -->
-</select>
-</td>
+  <td align="right">{ primarygroup }</td>
+  <td> 
+    <select name="group">
+      <option value="" >{ none }</option>
+      <!--#in getNextGroup -->
+      <option value="{ groupid }" { selected }>{ groupname }</option>
+      <!--#endin getNextGroup -->
+    </select>
+  </td>
 </tr>
 <!--#endif showprimary -->
-<tr align="center"> 
-<td colspan="2"> 
-<input type="submit" name="bupdate" value="{ modify }"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 
-<!--#if bdelete -->
-<input type="submit" name="bdelete" value="{ delete }">
-<!--#endif bdelete -->
-
-            </td>
+<tr> 
+  <td colspan="2" align="center"> 
+    <input type="submit" name="bupdate" value="{ modify }">
+    <!--#if bdelete -->
+    <input type="submit" name="bdelete" value="{ delete }">
+    <!--#endif bdelete -->
+  </td>
 </tr>
+
 </table>
 </td>
 </tr>
 </table>
 </form>
-<br>
+<br />
+
 <!--#end usersmodify -->
 
 
 
-
 <!--#begin changenickname -->
+
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="user">
 <input type="hidden" name="idx" value="Modify">
@@ -299,31 +307,36 @@ function bab_userListShowHideFilter()
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
 <input type="hidden" name="update" value="nickname">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
+<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
-<tr valign="middle"> 
-<td align="right">{ newnickname }:</td>
-<td> 
-<input type="text" name="newnick" size="40" maxlength="255" value="{ nicknameval }">
-</td>
+<col width="40%">
+<tr valign="middle">
+  <td align="right">{ newnickname }:</td>
+  <td>
+    <input type="text" name="newnick" size="40" maxlength="255" value="{ nicknameval }">
+  </td>
 </tr>
-<tr> 
-<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td> 
-<input type="submit" name="submit" value="{ update }">
-</td>
+<tr>
+  <td colspan="2" align="center">
+    <input type="submit" name="submit" value="{ update }">
+  </td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
 </form>
-<br>
+<br />
+
 <!--#end changenickname -->
 
+
+
+
 <!--#begin changepassword -->
+
 <!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="user">
@@ -332,44 +345,46 @@ function bab_userListShowHideFilter()
 <input type="hidden" name="pos" value="{ pos }">
 <input type="hidden" name="grp" value="{ grp }">
 <input type="hidden" name="update" value="password">
-<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
 <table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="6" align="center" class="BabLoginMenuBackground">
-<tr > 
-<td align="right">{ newpwd }:</td>
-<td> 
-<input type="password" name="newpwd1" size="20" maxlength="15">
-</td>
+<col width="40%">
+<tr> 
+  <td align="right">{ newpwd }:</td>
+  <td> 
+    <input type="password" name="newpwd1" size="20" maxlength="15">
+  </td>
 </tr>
 <tr > 
-<td align="right">{ renewpwd }:</td>
-<td> 
-<input type="password" name="newpwd2" size="20" maxlength="15">
-</td>
+  <td align="right">{ renewpwd }:</td>
+  <td> 
+    <input type="password" name="newpwd2" size="20" maxlength="15">
+  </td>
 </tr>
 <tr> 
-<td><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
-<td> 
-<input type="submit" name="submit" value="{ update }">
-            </td>
+  <td align="center" colspan="2">
+    <input type="submit" name="submit" value="{ update }">
+  </td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
 </form>
-<br>
+<br />
 <!--#endif bshowform -->
+
 <!--#end changepassword -->
 
 
 
+
 <!--#begin utilit -->
+
 <script type="text/javascript">
 <!--
-function submitCtrl()
-	{
+function submitCtrl() {
 	var f = document.forms.utilit;
 	if (isNaN(f.nb_days.value) || f.nb_days.value < 1)
 		{
@@ -378,9 +393,10 @@ function submitCtrl()
 		return false;
 		}
 	return true;
-	}
+}
 //-->
 </script>
+
 <form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
 <input type="hidden" name="tg" value="users">
 <input type="hidden" name="idx" value="utilit">
@@ -412,7 +428,9 @@ function submitCtrl()
 </tr>
 </table>
 </form>
+
 <!--#end utilit -->
+
 
 
 <!--#begin viewgroups -->
@@ -435,4 +453,6 @@ function submitCtrl()
 	</td>
 </tr>
 </table>
+
 <!--#end viewgroups -->
+

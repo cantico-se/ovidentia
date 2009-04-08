@@ -5859,7 +5859,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_addEventListener('bab_eventReference', 'bab_onReference', 'utilit/eventReference.php', BAB_ADDON_CORE_NAME, 100);
 
 
+	/**
+	 * Upgrade to 7.0.92
+	 */
 	
+	if (!bab_isTableField(BAB_USERS_TBL, 'validity_start')) {
+		$babDB->db_query('ALTER TABLE '.BAB_USERS_TBL." ADD validity_start date DEFAULT '0000-00-00' NOT NULL AFTER disabled");
+	}
+	if (!bab_isTableField(BAB_USERS_TBL, 'validity_end')) {
+		$babDB->db_query('ALTER TABLE '.BAB_USERS_TBL." ADD validity_end date DEFAULT '0000-00-00' NOT NULL AFTER validity_start");
+	}	
 
 
 	return true;

@@ -585,17 +585,16 @@ class BAB_DateTime
 	 */
 	function fromDateStr($value)
 	{
-		$tsDate = mktime(0, 0, 0, 12, 31, 2000);
+		$tsDate = mktime(0, 0, 0, 11, 31, 2000);
 		$strDate = bab_shortDate($tsDate, false);
 		$strPattern = $strDate;
 		$strPattern = str_replace('31', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('12', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('Dec', '([0-9]{1,2})', $strPattern);
-		$strPattern = str_replace('Déc', '([0-9]{1,2})', $strPattern);
+		$strPattern = str_replace('11', '([0-9]{1,2})', $strPattern);
+		$strPattern = str_replace('Nov', '([0-9]{1,2})', $strPattern);
 		$strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
 		$strPattern = str_replace('00', '([0-9]{2})', $strPattern);
 		$indexDay = mb_strpos($strDate, '31');
-		$indexMonth = mb_strpos($strDate, '12');
+		$indexMonth = mb_strpos($strDate, '11');
 		if($indexMonth === false)
 		{
 			$indexMonth = mb_strpos($strDate, 'D');
@@ -632,7 +631,7 @@ class BAB_DateTime
 	function fromUserInput($sDate)
 	{
 		$aMatch = array();
-		if(0 !== preg_match("#([0-9]{1,2})-([0-9]{1,2})-([0-9]{4})#", $sDate, $aMatch))
+		if (0 !== preg_match("#([0-9]{1,2})[-/]([0-9]{1,2})[-/]([0-9]{4})#", $sDate, $aMatch))
 		{
 			$iYear	= (int) $aMatch[3];
 			$iMonth	= (int) $aMatch[2];

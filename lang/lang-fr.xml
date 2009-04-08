@@ -21,6 +21,8 @@
 <string id="Access">Accès</string>
 <string id="Account confirmed ?">Compte confirmé ?</string>
 <string id="Account disabled ?">Compte désactivé ?</string>
+<string id="Invalid validity start date">La date de début de validité est incorrecte</string>
+<string id="Invalid validity end date">La date de fin de validité est incorrecte</string>
 <string id="Accounts">Comptes</string>
 <string id="Action">Action</string>
 <string id="Activate Registration">Activer l'inscription</string>
@@ -1948,7 +1950,8 @@
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
 <string id="Would you like to assign this user to the current directory">Voulez-vous attacher cet utilisateur à l'annuaire courant</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>
-<string id="For is this user which method of authentification necessary must be used">Quelle est la méthode d'authentification à utiliser pour cet utilisateur</string>
+<string id="Account validity period:">Période de validité du compte :</string>
+<string id="Which authentication method must be used for this user">Quelle est la méthode d'authentification à utiliser pour cet utilisateur</string>
 <string id="As defined in site configuration">Celle définie au niveau site</string>
 <string id="Install">Installer</string>
 <string id="Requirements">Configuration requise</string>
