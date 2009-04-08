@@ -579,6 +579,9 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	}
 
 
+
+
+
 	/**
 	 * get access rights verification criteria for folders
 	 * @return	bab_SearchCriteria
@@ -595,8 +598,11 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		}
 
 		foreach($this->getFolders() as $iIdFolder) {
-			$criteria = $criteria
-				->_OR_($this->getCollectiveFolderCriteria($iIdFolder));
+			$criterion = $this->getCollectiveFolderCriteria($iIdFolder);
+			if ($criterion) {
+				$criteria = $criteria
+				->_OR_($criterion);
+			}
 		}
 
 		return $criteria;
@@ -619,10 +625,17 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				->_AND_($this->id_owner->is($iIdFolder)
 				->_AND_($this->path->startWith($sRelativePath)
 			));
+		} else {
+			return false;
 		}	
 
 		return $criteria;
 	}
+
+
+
+
+
 
 
 

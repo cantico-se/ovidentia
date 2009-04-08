@@ -165,7 +165,7 @@ class bab_Sort
 	 */
 	private static function compareStringsInsensitive($sStr1, $sStr2)
 	{
-		return bab_compare(mb_strtolower($sStr1), mb_strtolower($sStr2));
+		return bab_compare(mb_strtolower((string) $sStr1), mb_strtolower((string) $sStr2));
 	}	
 	
 
