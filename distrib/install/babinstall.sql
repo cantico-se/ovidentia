@@ -1,7 +1,7 @@
 # phpMyAdmin MySQL-Dump
 # http://phpwizard.net/phpMyAdmin/
 #
-# Serveur: localhost Base de donn�es: ovidentia
+# Serveur: localhost Base de donnees: ovidentia
 
 # --------------------------------------------------------
 #
@@ -602,6 +602,8 @@ CREATE TABLE bab_users (
    confirm_hash text,
    is_confirmed tinyint(1) unsigned DEFAULT '0' NOT NULL,
    disabled tinyint(1) unsigned DEFAULT '0' NOT NULL,
+   validity_start date DEFAULT '0000-00-00' NOT NULL,
+   validity_end date DEFAULT '0000-00-00' NOT NULL,
    lang varchar(10) NOT NULL,
    skin text,
    style text,
