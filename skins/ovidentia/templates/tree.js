@@ -306,16 +306,20 @@ bab_Tree.prototype.nodeLineHoverClass = 'line hover';
 
 function bab_onItemMouseOver()
 {
+/*
 	try {
 		this.className = bab_Tree.prototype.nodeLineHoverClass;
 	} catch(e) {}
+*/
 }
 
 function bab_onItemMouseOut()
 {
+/*
 	try {
 		this.className = bab_Tree.prototype.nodeLineClass;
 	} catch(e) {}
+*/
 }
 
 
@@ -579,12 +583,12 @@ bab_Tree.prototype.loadState = function()
 function cleanStringDiacritics(text)
 {
 	try {
-		text = text.replace(/à|â|ä/g, "a");
-		text = text.replace(/é|è|ê|ë/g, "e");
-		text = text.replace(/ì|î|ï/g, "i");
-		text = text.replace(/ò|ô|ö/g, "o");
-		text = text.replace(/ù|û|ü/g, "u");
-		text = text.replace(/ç/g, "c");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "a");
+		text = text.replace(/ï¿½|ï¿½|ï¿½|ï¿½/g, "e");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "i");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "o");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "u");
+		text = text.replace(/ï¿½/g, "c");
 	} catch (e) {
 		text = '';
 	}
