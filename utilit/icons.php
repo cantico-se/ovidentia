@@ -57,6 +57,213 @@ class Func_Icons extends bab_Functionality
 	{
 		return '';
 	}
+
+
+	// Stock icon names.
+
+	//-----------------------------------------------------------------------
+	// Actions
+	//-----------------------------------------------------------------------
+	const ACTIONS_HELP							= 'actions-help';
+	/**
+	 * The icon for creating a new folder. 
+	 */
+	const ACTIONS_FOLDER_NEW					= 'actions-folder-new';
+	/**
+	 * The icon for creating a new document. 
+	 */
+	const ACTIONS_DOCUMENT_NEW					= 'actions-document-new';
+	/**
+	 * The icon for printing a document. 
+	 */
+	const ACTIONS_DOCUMENT_PRINT				= 'actions-document-print';
+	/**
+	 * The icon for accessing document properties. 
+	 */
+	const ACTIONS_DOCUMENT_PROPERTIES			= 'actions-document-properties';
+	/**
+	 * The icon for saving a document. 
+	 */
+	const ACTIONS_DOCUMENT_SAVE					= 'actions-document-save';
+	/**
+	 * The icon for creating a new article category. 
+	 */
+	const ACTIONS_ARTICLE_CATEGORY_NEW			= 'actions-article-category-new';
+	/**
+	 * The icon for creating a new article topic. 
+	 */
+	const ACTIONS_ARTICLE_TOPIC_NEW				= 'actions-article-topic-new';
+	/**
+	 * The icon for creating a new article. 
+	 */
+	const ACTIONS_ARTICLE_NEW					= 'actions-article-new';
+	/**
+	 * The icon for creating a new event. 
+	 */
+	const ACTIONS_EVENT_NEW						= 'actions-event-new';
+	/**
+	 * The icon for creating a new note. 
+	 */
+	const ACTIONS_NOTE_NEW						= 'actions-note-new';
+	/**
+	 * The icon for creating a new user. 
+	 */
+	const ACTIONS_USER_NEW						= 'actions-user-new';
+	/**
+	 * The icon for creating a new user group. 
+	 */
+	const ACTIONS_USER_GROUP_NEW				= 'actions-user-group-new';
+	/**
+	 * The icon for searching.
+	 */
+	const ACTIONS_EDIT_FIND						= 'actions-edit-find';
+	/**
+	 * The icon for copying.
+	 */
+	const ACTIONS_EDIT_COPY						= 'actions-edit-copy';
+	/**
+	 * The icon for cutting.
+	 */
+	const ACTIONS_EDIT_CUT						= 'actions-edit-cut';
+	/**
+	 * The icon for pasting.
+	 */
+	const ACTIONS_EDIT_PASTE					= 'actions-edit-paste';
+	/**
+	 * The icon for deleting.
+	 */
+	const ACTIONS_EDIT_DELETE					= 'actions-edit-delete';
+	/**
+	 * The icon for accessing user properties.
+	 */
+	const ACTIONS_USER_PROPERTIES				= 'actions-user-properties';
+	/**
+	 * The icon for accessing user group properties.
+	 */
+	const ACTIONS_USER_GROUP_PROPERTIES			= 'actions-user-group-properties';
+	
+	
+	const ACTIONS_MAIL_SEND						= 'actions-mail-send';
+	const ACTIONS_SET_ACCESS_RIGHTS				= 'actions-set-access-rights';
+	
+	const ACTIONS_LIST_ADD						= 'actions-list-add';
+	const ACTIONS_LIST_ADD_USER					= 'actions-list-add-user';
+	const ACTIONS_LIST_REMOVE					= 'actions-list-remove';
+	const ACTIONS_LIST_REMOVE_USER				= 'actions-list-remove-user';
+	
+	const ACTIONS_GO_HOME						= 'actions-go-home';
+	const ACTIONS_GO_UP							= 'actions-go-up';
+	const ACTIONS_GO_DOWN						= 'actions-go-down';
+	const ACTIONS_GO_FIRST						= 'actions-go-first';
+	const ACTIONS_GO_LAST						= 'actions-go-last';
+	const ACTIONS_GO_NEXT						= 'actions-go-next';
+	const ACTIONS_GO_PREVIOUS					= 'actions-go-previous';
+	
+	const ACTIONS_ARROW_DOWN					= 'actions-arrow-down';
+	const ACTIONS_ARROW_UP						= 'actions-arrow-up';
+	const ACTIONS_ARROW_LEFT					= 'actions-arrow-left';
+	const ACTIONS_ARROW_RIGHT					= 'actions-arrow-right';
+	const ACTIONS_ARROW_DOWN_DOUBLE				= 'actions-arrow-down-double';
+	const ACTIONS_ARROW_UP_DOUBLE				= 'actions-arrow-up-double';
+	const ACTIONS_ARROW_LEFT_DOUBLE				= 'actions-arrow-left-double';
+	const ACTIONS_ARROW_RIGHT_DOUBLE			= 'actions-arrow-right-double';
+	
+	const ACTIONS_VIEW_LIST_DETAILS				= 'actions-view-list-details';
+	const ACTIONS_VIEW_LIST_TEXT				= 'actions-view-list-text';
+	const ACTIONS_VIEW_LIST_TREE				= 'actions-view-list-tree';
+
+	const ACTIONS_VIEW_CALENDAR_LIST			= 'actions-view-calendar-list';
+	const ACTIONS_VIEW_CALENDAR_DAY				= 'actions-view-calendar-day';
+	const ACTIONS_VIEW_CALENDAR_WEEK			= 'actions-view-calendar-week';
+	const ACTIONS_VIEW_CALENDAR_WORKWEEK		= 'actions-view-calendar-workweek';
+	const ACTIONS_VIEW_CALENDAR_MONTH			= 'actions-view-calendar-month';
+	const ACTIONS_VIEW_CALENDAR_TIMELINE		= 'actions-view-calendar-timeline';
+
+	const ACTIONS_VIEW_PIM_CALENDAR				= 'actions-view-pim-calendar';
+	const ACTIONS_VIEW_PIM_JOURNAL				= 'actions-view-pim-journal';
+	const ACTIONS_VIEW_PIM_MAIL					= 'actions-view-pim-mail';
+	const ACTIONS_VIEW_PIM_NEWS					= 'actions-view-pim-news';
+	const ACTIONS_VIEW_PIM_NOTES				= 'actions-view-pim-notes';
+	const ACTIONS_VIEW_PIM_SUMMARY				= 'actions-view-pim-summary';
+	const ACTIONS_VIEW_PIM_TASKS				= 'actions-view-pim-tasks';
+
+	const ACTIONS_VIEW_HISTORY					= 'actions-view-history';
+	const ACTIONS_VIEW_REFRESH					= 'actions-view-refresh';
+	
+	const ACTIONS_ZOOM_IN						= 'actions-zoom-in';
+	const ACTIONS_ZOOM_OUT						= 'actions-zoom-out';
+	const ACTIONS_ZOOM_ORIGINAL					= 'actions-zoom-original';
+	const ACTIONS_ZOOM_FIT_BEST					= 'actions-zoom-fit-best';
+	const ACTIONS_ZOOM_FIT_WIDTH				= 'actions-zoom-fit-width';
+	const ACTIONS_ZOOM_FIT_HEIGHT				= 'actions-zoom-fit-height';
+
+	const ACTIONS_DIALOG_OK						= 'actions-dialog-ok';
+	const ACTIONS_DIALOG_CANCEL					= 'actions-dialog-cancel';
+	//-----------------------------------------------------------------------
+	// Applications
+	//-----------------------------------------------------------------------
+	
+	const APPS_CALCULATOR						= 'apps-calculator';
+	const APPS_CALENDAR							= 'apps-calendar';
+	const APPS_DIRECTORIES						= 'apps-directories';
+	const APPS_FILE_MANAGER						= 'apps-file-manager';
+	const APPS_NOTES							= 'apps-notes';
+	const APPS_STATISTICS						= 'apps-statistics';
+
+	const APPS_USERS							= 'apps-users';
+	const APPS_GROUPS							= 'apps-groups';
+
+	const APPS_PREFERENCES_SITE					= 'apps-preferences-site';
+	const APPS_PREFERENCES_USER					= 'apps-preferences-user';
+	const APPS_PREFERENCES_AUTHENTICATION		= 'apps-preferences-authentication';
+	const APPS_PREFERENCES_SEARCH_ENGINE		= 'apps-preferences-search-engine';
+	const APPS_PREFERENCES_WEBSERVICES			= 'apps-preferences-webservices';
+	const APPS_PREFERENCES_DATE_TIME_FORMAT		= 'apps-preferences-date-time-format';
+	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
+	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
+	//-----------------------------------------------------------------------
+	// Categories
+	//-----------------------------------------------------------------------
+	
+	//-----------------------------------------------------------------------
+	// Mimetypes	
+	//-----------------------------------------------------------------------
+	/**
+	 * The icon for a pdf document.
+	 */
+	const MIMETYPES_APPLICATION_PDF				= 'mimetypes-application-pdf';
+	const MIMETYPES_AUDIO_X_GENERIC				= 'mimetypes-audio-x-generic';
+	const MIMETYPES_TEXT_X_GENERIC				= 'mimetypes-text-x-generic';
+	const MIMETYPES_IMAGE_X_GENERIC				= 'mimetypes-image-x-generic';
+	const MIMETYPES_VIDEO_X_GENERIC				= 'mimetypes-video-x-generic';
+	const MIMETYPES_PACKAGE_X_GENERIC			= 'mimetypes-package-x-generic';
+	const MIMETYPES_TEXT_HTML					= 'mimetypes-text-html';
+	const MIMETYPES_UNKNOWN						= 'mimetypes-unknown';
+	const MIMETYPES_SIGNATURE					= 'mimetypes-signature';
+	const MIMETYPES_OFFICE_DOCUMENT				= 'mimetypes-x-office-document';
+	const MIMETYPES_OFFICE_PRESENTATION			= 'mimetypes-x-office-presentation';
+	const MIMETYPES_OFFICE_SPREADSHEET			= 'mimetypes-x-office-spreadsheet';
+
+	//-----------------------------------------------------------------------
+	// Places	
+	//-----------------------------------------------------------------------
+	/**
+	 * The icon for a generic folder.
+	 */
+	const PLACES_FOLDER							= 'places-folder';
+	const PLACES_FOLDER_RED						= 'places-folder-red';
+	const PLACES_FOLDER_BOOKMARKS				= 'places-folder-bookmarks';
+	const PLACES_USER_HOME						= 'places-user-home';
+	const PLACES_USER_TRASH						= 'places-user-trash';
+	const PLACES_MAIL_FOLDER_INBOX				= 'places-mail-folder-inbox';
+	
+	//-----------------------------------------------------------------------
+	// Categories
+	//-----------------------------------------------------------------------
+	const CATEGORIES_APPLICATIONS_EDUCATION		= 'categories-applications-education';
+	const CATEGORIES_PREFERENCES_DESKTOP		= 'categories-preferences-desktop';
+	const CATEGORIES_PREFERENCES_OTHER			= 'categories-preferences-other';
+
 }
 
 
