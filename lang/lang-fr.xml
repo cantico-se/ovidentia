@@ -2757,6 +2757,7 @@
 <string id="The file named %name% contains characters that are not supported by the file system.">Le fichier nommé %name% contient des caractères non supportés par le système de fichier.</string>
 <string id="The size of the file %name% exceeds the limit set by the file manager.">La taille du fichier %name% dépasse la limite positionnée par le gestionnaire de fichier.</string>
 <string id="The size of the file %name% exceeds the limit set for the folder.">La taille du fichier %name% dépasse la limite autorisé pour le répertoire.</string>
+<string id="Maximum number of downloads">Nombre maximum de téléchargements</string>
 <string id="The specified group identifier is not valid.">L'identifiant du groupe n'est pas valide.</string>
 <string id="The specified group identifier do not represent a group.">L'identifiant du groupe spécifié ne correspond pas à un groupe.</string>
 <string id="The folder named %name% with path %path% is not collective.">Le répertoire nommé %name% avec le chemin %path% n'est pas collectif.</string>
