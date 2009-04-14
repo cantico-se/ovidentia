@@ -5862,7 +5862,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.0.92
 	 */
-	
+
+	// Add columns for period of validity for a user account.
 	if (!bab_isTableField(BAB_USERS_TBL, 'validity_start')) {
 		$babDB->db_query('ALTER TABLE '.BAB_USERS_TBL." ADD validity_start date DEFAULT '0000-00-00' NOT NULL AFTER disabled");
 	}
@@ -5870,6 +5871,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('ALTER TABLE '.BAB_USERS_TBL." ADD validity_end date DEFAULT '0000-00-00' NOT NULL AFTER validity_start");
 	}	
 
+	// Add column for number of downloads of a file.
+	if (!bab_isTableField(BAB_FILES_TBL, 'downloads')) {
+		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD downloads int(11) unsigned DEFAULT '0' NOT NULL AFTER hits");
+	}
 
 	return true;
 }
