@@ -5882,7 +5882,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			CREATE TABLE `bab_fm_files_download_history` (
 			  `id` int(11) NOT NULL auto_increment,
 			  `id_file` int(11) unsigned NOT NULL default 0,
-			  id_user int(11) unsigned NOT NULL default 0,
+			  `id_user` int(11) unsigned NOT NULL default 0,
 			  `date` datetime NOT NULL default \'0000-00-00 00:00:00\',
 			  PRIMARY KEY  (id),
 			  KEY id_file (id_file)
