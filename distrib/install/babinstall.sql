@@ -1192,6 +1192,9 @@ CREATE TABLE bab_fm_folders (
   bhide enum('N','Y') NOT NULL default 'N',
   auto_approbation enum('N','Y') NOT NULL default 'N',
   baddtags enum('Y','N') NOT NULL default 'Y',
+  bcap_downloads enum('Y','N') NOT NULL default 'N',
+  max_downloads int(11) unsigned NOT NULL default '0',
+  bdownload_history enum('Y','N') NOT NULL default 'N'
   PRIMARY KEY  (id),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
