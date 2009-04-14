@@ -546,7 +546,7 @@ class bab_Directory
 	 * If the folder is not in the database the function
 	 * do nothing
 	 *
-	 * @param string	$sPathName  The path of the folder (ex: DG0:/Développement/2/)
+	 * @param string	$sPathName  The path of the folder (ex: DG0:/Developpement/2/)
 	 * @param int		$iBits		Field of bits to implement the rights
 	 * @param int		$iIdGroup	The group identifier to which the rights apply
 	 * 
@@ -670,7 +670,7 @@ class bab_Directory
 	 * If the folder is not in the database the function
 	 * do nothing
 	 *
-	 * @param string	$sPathName  The path of the folder (ex: DG0:/Développement/2/)
+	 * @param string	$sPathName  The path of the folder (ex: DG0:/Developpement/2/)
 	 * @param int		$iBits		Field of bits to implement the rights
 	 * @param int		$iIdGroup	The group identifier to which the rights apply
 	 * 
@@ -815,9 +815,9 @@ class bab_Directory
 	
 	/**
 	 * This function return the real relative path.
-	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/1.1/1.1.1/
-	 * so the relative path will be Développement/1/1.1/1.1.1/ if the folder 1.1.1 exists
-	 * and Développement/1/1.1/ if the folder 1.1.1 does not exists and so on
+	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Developpement/1/1.1/1.1.1/
+	 * so the relative path will be Developpement/1/1.1/1.1.1/ if the folder 1.1.1 exists
+	 * and Developpement/1/1.1/ if the folder 1.1.1 does not exists and so on
 	 * 
 	 * @return string
 	 */
@@ -828,8 +828,8 @@ class bab_Directory
 	
 	/**
 	 * This function return the path name.
-	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Développement/1/1.1/1.1.1/
-	 * so the path name will be Développement/1/1.1/1.1.1/
+	 * If the current path is d:/Temp/Upload/fileManager/collectives/DG0/Developpement/1/1.1/1.1.1/
+	 * so the path name will be Developpement/1/1.1/1.1.1/
 	 * 
 	 * @return string
 	 */
@@ -851,7 +851,7 @@ class bab_Directory
 	/**
 	 * This function return the content of a folder
 	 *
-	 * @param string	$sPathName	The path of the folder (ex: DG0/Développement/2/)
+	 * @param string	$sPathName	The path of the folder (ex: DG0/Developpement/2/)
 	 * @param int		$iExcludeFilter	(bab_DirectoryFilter value)
 	 * 
 	 * @return bab_CollectiveDirIterator
@@ -873,9 +873,9 @@ class bab_Directory
 			return false;
 		}
 		
-		$iFilter |= bab_DirectoryFilter::DOT;
+		$iExcludeFilter |= bab_DirectoryFilter::DOT;
 		$oBabDirIt = new bab_CollectiveDirIterator($this->getRootFmPath() . $this->getPathName());
-		$oBabDirIt->setFilter($iFilter);
+		$oBabDirIt->setFilter($iExcludeFilter);
 		$oBabDirIt->setRelativePath($this->sRelativePath);
 		$oBabDirIt->setObjectId($this->getDelegationId());
 		return $oBabDirIt; 
@@ -884,7 +884,7 @@ class bab_Directory
 	/**
 	 * This function create a sub directory
 	 *
-	 * @param string $sPathName (ex: DG0/Développement/1/1.1/)
+	 * @param string $sPathName (ex: DG0/Developpement/1/1.1/)
 	 * 
 	 * @return bool
 	 */
@@ -957,7 +957,7 @@ class bab_Directory
 	/**
 	 * This function delete a sub directory
 	 *
-	 * @param string $sPathName (ex: DG0/Développement/1/1.1/)
+	 * @param string $sPathName (ex: DG0/Developpement/1/1.1/)
 	 * 
 	 * @return bool
 	 */
@@ -1050,8 +1050,8 @@ class bab_Directory
 	/**
 	 * This function rename a sub directory
 	 *
-	 * @param string $sSrcPathName (ex: DG0/Développement/1/1.1/)
-	 * @param string $sTrgPathName (ex: DG0/Développement/1/1.2/)
+	 * @param string $sSrcPathName (ex: DG0/Developpement/1/1.1/)
+	 * @param string $sTrgPathName (ex: DG0/Developpement/1/1.2/)
 	 * 
 	 * @return bool
 	 */
@@ -1342,8 +1342,8 @@ class bab_Directory
 	/**
 	 * This function rename a file
 	 *
-	 * @param string $sSrcPathName	The source pathName (ex: DG0/Développement/readme.txt)
-	 * @param string $sTrgPathName	The target pathName (ex: DG0/Développement/readme1.txt)
+	 * @param string $sSrcPathName	The source pathName (ex: DG0/Developpement/readme.txt)
+	 * @param string $sTrgPathName	The target pathName (ex: DG0/Developpement/readme1.txt)
 	 * 
 	 * @return bool
 	 */
@@ -1351,11 +1351,11 @@ class bab_Directory
 	{
 		$this->resetError();
 		
-		//Récupération des noms de fichiers
+		//Recuperation des noms de fichiers
 		$sSrcName = (string) getLastPath($sSrcPathName);
 		$sTrgName = (string) getLastPath($sTrgPathName);
 		
-		//Récupération des chemins sans les noms de fichiers
+		//Recuperation des chemins sans les noms de fichiers
 		$sSrcPathName = (string) addEndSlash(removeLastPath($sSrcPathName));
 		$sTrgPathName = (string) addEndSlash(removeLastPath($sTrgPathName));
 		
@@ -1503,7 +1503,7 @@ class bab_Directory
 	/**
 	 * This function delete a file
 	 *
-	 * @param string $sPathName	The pathName (ex: DG0/Développement/readme.txt)
+	 * @param string $sPathName	The pathName (ex: DG0/Dï¿½veloppement/readme.txt)
 	 * 
 	 * @return bool
 	 */
@@ -1511,10 +1511,10 @@ class bab_Directory
 	{
 		$this->resetError();
 		
-		//Récupération du noms du fichier
+		//Recuperation du nom du fichier
 		$sFileName = (string) getLastPath($sPathName);
 		
-		//Récupération du chemins sans le noms de fichier
+		//Recuperation du chemin sans le nom de fichier
 		$sPathName = (string) addEndSlash(removeLastPath($sPathName));
 		$sPathName = BAB_PathUtil::sanitize($sPathName);
 		
@@ -1678,17 +1678,17 @@ class bab_Directory
 
 		if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 		{
-			//Nom du répertoire à coller
+			//Nom du repertoire a coller
 			$sName = getLastPath($sSrcPath); 
 			
-			//Emplacement du répertoire à coller
+			//Emplacement du repertoire a coller
 			$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 	
 			$bSrcPathHaveVersioning = false;
 			$bTrgPathHaveVersioning = false;
 			$bSrcPathCollective		= false;
 			
-			//Récupération des informations concernant le répertoire source (i.e le répertoire à déplacer)
+			//Recuperation des informations concernant le repertoire source (i.e le repertoire a deplacer)
 			{
 				$oSrcFmFolder			= BAB_FmFolderSet::getFirstCollectiveFolder($sSanitizedSrcPathName);
 				$iSrcIdOwner			= $oSrcFmFolder->getId();
@@ -1699,7 +1699,7 @@ class bab_Directory
 			$oFolderSet	= bab_getInstance('BAB_FmFolderSet');
 			if($oFmEnv->userIsInCollectiveFolder())
 			{
-				//Récupération des informations concernant le répertoire cible (i.e le répertoire dans lequel le source est déplacé)
+				//Recuperation des informations concernant le repertoire cible (i.e le repertoire dans lequel le source est deplace)
 				$oTrgFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($this->getPathName());
 				$iTrgIdOwner = $oTrgFmFolder->getId();
 				$bTrgPathHaveVersioning = ('Y' === $oTrgFmFolder->getVersioning());
@@ -1720,14 +1720,14 @@ class bab_Directory
 				$oFmFolder = $oFolderSet->get($oCriteria);
 				if(!is_null($oFmFolder))
 				{
-					//Le répertoire à coller est collectif
+					//Le repertoire a coller est collectif
 					$bTrgPathHaveVersioning = ('Y' === $oFmFolder->getVersioning());
 				}
 				else 
 				{
-					//Le répertoire à coller n'est pas collectif
+					//Le repertoire a coller n'est pas collectif
 					//comme on colle dans la racine il faut le faire 
-					//devenir un répertoire collectif
+					//devenir un repertoire collectif
 					
 					$oFmFolder = bab_getInstance('BAB_FmFolder');
 					$oFmFolder->setName($sName);
@@ -1793,21 +1793,21 @@ class bab_Directory
 						 {
 							global $babDB;
 							
-							//Suppression des versions des fichiers pour les répertoires qui ne sont pas contenus dans des 
-							//répertoires collectifs
+							//Suppression des versions des fichiers pour les repertoires qui ne sont pas contenus dans des 
+							//repertoires collectifs
 							{
-								//Sélection de tous les fichiers qui contiennent dans leurs chemins le répertoire à déplacer
+								//Selection de tous les fichiers qui contiennent dans leurs chemins le repertoire a deplacer
 								$oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
 								$oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
 								$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in($this->getDelegationId()));
 								
-								//Sélection des répertoires collectifs
+								//Selection des repertoires collectifs
 								$oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
 								$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in($this->getDelegationId()));
 								$oFolderSet->select($oCriteriaFolder);
 								while(null !== ($oFmFolder = $oFolderSet->next()))
 								{
-									//exclusion des répertoires collectif (on ne touche pas à leurs versions)
+									//exclusion des repertoires collectif (on ne touche pas a leurs versions)
 									$oCriteriaFile = $oCriteriaFile->_and($oPathName->notLike(
 										$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 								}
@@ -2066,7 +2066,7 @@ class bab_Directory
 			//$this->nameReserved($oTrgFile);
 			//$this->nameSupportedByFileSystem($oTrgFile);
 			
-			//Si on ne copie pas dans le même rootFolder
+			//Si on ne copie pas dans le meme rootFolder
 			$sFirstSrcPath = (string) getFirstPath($oDirRenContext->getSrcPath());
 			$sFirstTrgPath = (string) getFirstPath($oDirRenContext->getTrgPath());
 			
@@ -2579,4 +2579,3 @@ class bab_directoryRenameContext
 		$this->iIdSrcDelegation = $iIdSrcDelegation;
 	}
 }
-?>
