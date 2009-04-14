@@ -5876,5 +5876,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD downloads int(11) unsigned DEFAULT '0' NOT NULL AFTER hits");
 	}
 
+	// Add table to keep track of downloads (users / date & time) from the filemanager for files in a collective folder with download history activated.
+	if (!bab_isTable('bab_fm_files_download_history')) {
+		$babDB->db_query('
+			CREATE TABLE `bab_fm_files_download_history` (
+			  `id` int(11) NOT NULL auto_increment,
+			  `id_file` int(11) unsigned NOT NULL default 0,
+			  id_user int(11) unsigned NOT NULL default 0,
+			  `date` datetime NOT NULL default \'0000-00-00 00:00:00\',
+			  PRIMARY KEY  (id),
+			  KEY id_file (id_file)
+			)
+		');
+	}
+	
 	return true;
 }
