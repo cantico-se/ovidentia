@@ -995,6 +995,7 @@ CREATE TABLE bab_files (
   modifiedby int(11) unsigned NOT NULL default '0',
   confirmed enum('N','Y') NOT NULL default 'N',
   hits int(11) unsigned NOT NULL default '0',
+  max_downloads int(11) unsigned NOT NULL default '0',
   downloads int(11) unsigned NOT NULL default '0',
   idfai int(11) unsigned NOT NULL default '0',
   edit int(11) unsigned NOT NULL default '0',

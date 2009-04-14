@@ -5873,9 +5873,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	// Add column for number of downloads of a file.
 	if (!bab_isTableField(BAB_FILES_TBL, 'downloads')) {
-		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD downloads int(11) unsigned DEFAULT '0' NOT NULL AFTER hits");
+		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD downloads int(11) unsigned DEFAULT 0 NOT NULL AFTER hits");
 	}
-
+	// Add column for maximum number of downloads of a file.
+	if (!bab_isTableField(BAB_FILES_TBL, 'max_downloads')) {
+		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD max_downloads int(11) unsigned DEFAULT 0 NOT NULL AFTER hits");
+	}
+	
+	
 	// Add table to keep track of downloads (users / date & time) from the filemanager for files in a collective folder with download history activated.
 	if (!bab_isTable('bab_fm_files_download_history')) {
 		$babDB->db_query('
