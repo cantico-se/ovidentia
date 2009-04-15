@@ -5882,15 +5882,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	// Add column for download history activation on a folder.
 	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'bdownload_history')) {
-		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD bdownload_history enum('Y','N') NOT NULL default 'N' AFTER baddtags");
+		$babDB->db_query('ALTER TABLE '.BAB_FM_FOLDERS_TBL." ADD bdownload_history enum('Y','N') NOT NULL default 'N' AFTER baddtags");
 	}
 	// Add column for default maximum number of downloads on a folder.
 	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'max_downloads')) {
-		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD max_downloads int(11) unsigned NOT NULL default '0' AFTER baddtags");
+		$babDB->db_query('ALTER TABLE '.BAB_FM_FOLDERS_TBL." ADD max_downloads int(11) unsigned NOT NULL default '0' AFTER baddtags");
 	}
 	// Add column for maximum number of downloads activation on a folder.
 	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'bcap_downloads')) {
-		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD bcap_downloads enum('Y','N') NOT NULL default 'N' AFTER baddtags");
+		$babDB->db_query('ALTER TABLE '.BAB_FM_FOLDERS_TBL." ADD bcap_downloads enum('Y','N') NOT NULL default 'N' AFTER baddtags");
 	}
 	
 	// Add table to keep track of downloads (users / date & time) from the filemanager for files in a collective folder with download history activated.
