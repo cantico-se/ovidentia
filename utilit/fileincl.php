@@ -2287,7 +2287,10 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			'iIdDgOwner' => new BAB_IntField('`id_dgowner`'),
 			'sHide' => new BAB_StringField('`bhide`'),
 			'sAddTags' => new BAB_StringField('`baddtags`'),
-			'sAutoApprobation' => new BAB_StringField('`auto_approbation`')
+			'sAutoApprobation' => new BAB_StringField('`auto_approbation`'),
+			'sDownloadsCapping' => new BAB_StringField('`bcap_downloads`'),
+			'iMaxDownloads' => new BAB_IntField('`max_downloads`'),
+			'sDownloadHistory' => new BAB_StringField('`bdownload_history`')
 		);
 	}
 
@@ -2518,10 +2521,10 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
 			
-		//1 Chercher tous les r�pertoires collectifs
-		//2 Supprimer les r�pertoires collectifs
-		//3 Lister le contenu du r�pertoire � supprimer
-		//4 Pour chaque r�pertoire rappeler la fonction deleteSimpleCollectiveFolder
+		//1 Chercher tous les repertoires collectifs
+		//2 Supprimer les repertoires collectifs
+		//3 Lister le contenu du repertoire a supprimer
+		//4 Pour chaque repertoire rappeler la fonction deleteSimpleCollectiveFolder
 		//5 Supprimer le repertoire
 		
 		global $babBody, $babDB;
@@ -2643,7 +2646,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			$oName			=& $oFmFolderSet->aField['sName'];
 			$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
 
-			//1 changer le r�pertoire
+			//1 changer le repertoire
 			$sName = getLastPath($sOldRelativePath);
 			$sRelativePath = removeLastPath($sOldRelativePath);
 			$sRelativePath .= (mb_strlen(trim($sRelativePath)) !== 0 ) ? '/' : '';
@@ -2661,7 +2664,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$oFmFolder->save();
 			}
 			
-			//2 changer les sous r�pertoires
+			//2 changer les sous repertoires
 			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
 			
@@ -2888,6 +2891,8 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			'iIdModifier' => new BAB_IntField('`modifiedby`'),
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iHits' => new BAB_IntField('`hits`'),
+			'iMaxDownloads' => new BAB_IntField('`max_downloads`'),
+			'iDownloads' => new BAB_IntField('`downloads`'),
 			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),
 			'iIdFolderFileVersion' => new BAB_IntField('`edit`'),
 			'iVerMajor' => new BAB_IntField('`ver_major`'),
@@ -3203,6 +3208,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		parent::BAB_FmFolderFile();
 	}
 
+
+
 	function setId($iId)
 	{
 		$this->_set('iId', $iId);
@@ -3213,6 +3220,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_iGet('iId');
 	}
 
+
+
 	function setName($sName)
 	{
 		$this->_set('sName', $sName);
@@ -3222,6 +3231,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('sName');
 	}
+
+
 
 	function setRelativePath($sRelativePath)
 	{
@@ -3234,6 +3245,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_sGet('sRelativePath');
 	}
 
+
+
 	function setApprobationSchemeId($iId)
 	{
 		$this->_set('iIdApprobationScheme', $iId);
@@ -3243,6 +3256,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_iGet('iIdApprobationScheme');
 	}
+
+
 
 	function setFileNotify($sFileNotify)
 	{
@@ -3254,6 +3269,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_sGet('sFileNotify');
 	}
 
+
+
 	function setActive($sActive)
 	{
 		$this->_set('sActive', $sActive);
@@ -3263,6 +3280,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('sActive');
 	}
+
+
 
 	function setState($sState)
 	{
@@ -3274,6 +3293,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_sGet('sState');
 	}
 
+
+
 	function setVersioning($sVersioning)
 	{
 		$this->_set('sVersioning', $sVersioning);
@@ -3283,6 +3304,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('sVersioning');
 	}
+
+
 
 	function setDelegationOwnerId($iId)
 	{
@@ -3294,6 +3317,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_iGet('iIdDgOwner');
 	}
 
+
+
 	function setHide($sHide)
 	{
 		$this->_set('sHide', $sHide);
@@ -3304,6 +3329,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 		return $this->_sGet('sHide');
 	}
 
+
+
 	function setAddTags($sAddTags)
 	{
 		$this->_set('sAddTags', $sAddTags);
@@ -3313,6 +3340,72 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('sAddTags');
 	}
+
+
+
+	/**
+	 * Activates or deactivates the download capping for this folder.
+	 * If capping is activated, the maximum number of downloads is set through setMaxDownloads
+	 * 
+	 * @see setMaxDownloads
+	 * @param string	$sMaximumDownloads	'Y' to activate download capping for this folder, 'N' otherwise.
+	 */
+	function setDownloadsCapping($sDownloadsCapping)
+	{
+		$this->_set('sDownloadsCapping', $sDownloadsCapping);
+	}
+
+	/**
+	 * Returns the download capping status for this folder.
+	 * 
+	 * @return string 	'Y' if download capping is activated for this folder, 'N' otherwise.
+	 */
+	function getDownloadsCapping()
+	{
+		return $this->_sGet('sDownloadsCapping');
+	}
+
+	/**
+	 * Setss the default maximum number of downloads for this folder.
+	 * 
+	 * @param int	$iMaxDownloads	The default maximum number of downloads for this folder. 
+	 */
+	function setMaxDownloads($iMaxDownloads)
+	{
+		$this->_set('iMaxDownloads', $iMaxDownloads);
+	}
+
+	/**
+	 * Returns the default maximum number of downloads for this folder.
+	 * 
+	 * @return int		The default maximum number of downloads for this folder. 
+	 */
+	function getMaxDownloads()
+	{
+		return $this->_sGet('iMaxDownloads');
+	}
+
+	/**
+	 * Activates or deactivates the download history for this folder.
+	 * 
+	 * @param string	$sDownloadHistory	'Y' to activate download history for this folder, 'N' otherwise.
+	 */
+	function setDownloadHistory($sDownloadHistory)
+	{
+		$this->_set('sDownloadHistory', $sDownloadHistory);
+	}
+
+	/**
+	 * Returns the download history activation status for this folder.
+	 * 
+	 * @return string	'Y' if download history is activated for this folder, 'N' otherwise.
+	 */
+	function getDownloadHistory()
+	{
+		return $this->_sGet('sDownloadHistory');
+	}
+
+
 
 	function setAutoApprobation($sAutoApprobation)
 	{
