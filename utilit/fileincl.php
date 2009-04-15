@@ -3548,10 +3548,10 @@ class BAB_FmFolderCliboard extends BAB_DbRecord
  */
 class BAB_FolderFile extends BAB_FmFolderFile
 {
-	function BAB_FolderFile()
-	{
-		parent::BAB_FmFolderFile();
-	}
+//	function BAB_FolderFile()
+//	{
+//		parent::BAB_FmFolderFile();
+//	}
 
 	/**
 	 * Set the file identifier
@@ -3840,6 +3840,46 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	function getHits()
 	{
 		return $this->_iGet('iHits');
+	}
+
+	/**
+	 * Set the number of downloads for the file
+	 *
+	 * @param int $iDownloads The number of downloads
+	 */
+	function setDownloads($iDownloads)
+	{
+		$this->_set('iDownloads', $iDownloads);
+	}
+
+	/**
+	 * Get the number of downloads of the file
+	 *
+	 * @return int The number of downloads of the file
+	 */
+	function getDownloads()
+	{
+		return $this->_iGet('iDownloads');
+	}
+
+	/**
+	 * Set the maximum number of downloads for the file
+	 *
+	 * @param int $iMaxDownloads The maximum number of downloads
+	 */
+	function setMaxDownloads($iMaxDownloads)
+	{
+		$this->_set('iMaxDownloads', $iMaxDownloads);
+	}
+
+	/**
+	 * Get the maximum number of downloads of the file
+	 *
+	 * @return int The maximum number of downloads of the file
+	 */
+	function getMaxDownloads()
+	{
+		return $this->_iGet('iMaxDownloads');
 	}
 
 	/**
