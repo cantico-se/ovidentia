@@ -215,10 +215,18 @@ function remove_field()
 		</td>
 	</tr>
 	<tr> 
+		<td align="right">{ sMaxDownloads }</td>
+		<td> 
+			<input type="text" size="4" name="maxdownloads[]" value="{ maxdownloadsval }" />
+		</td>
+	</tr>
+	<tr> 
 		<td  colspan="2">&nbsp;</td>
 	</tr>
 </table>
 <!--#end uploadBlock -->
+
+
 
 <!--#begin fileslist -->
 <script type="text/javascript">
@@ -373,7 +381,7 @@ function hideDelegationSubmitBtn()
 						<!--#endin getNextCuttedFolder -->
 	
 						
-						<!--#in getnextfile -->
+				<!--#in getnextfile -->
 					<!--#if altbg -->
 						<tr class="BabSiteAdminFontBackground">
 					<!--#else altbg -->
@@ -437,19 +445,23 @@ function hideDelegationSubmitBtn()
 							<td align="center">{ modified }</td>
 							<td align="center">{ postedby }</td>
 							<td align="left" nowrap="nowrap">
-							<!--#if bDownload --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif bDownload -->
+							<!--#if bDownload -->
+							<!--#if urlget "== " --><img title="{ download_limit_reached }" src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ download_limit_reached }" border="0" align="middle" />&nbsp;<!--#else urlget --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif urlget -->
+								
+							<!--#endif bDownload -->
 							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
 							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
-<!--#if bUnZip -->
-<a href="#">
-	<img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
-<a/>
-<!--#endif bUnZip -->
+
+							<!--#if bUnZip -->
+							<a href="#">
+								<img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
+							<a/>
+							<!--#endif bUnZip -->
 							
 							</td>
 							<td align="center"><!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;</td>
 						</tr>
-						<!--#endin getnextfile -->
+				<!--#endin getnextfile -->
 						
 						<!--#in getnextwfile -->
 					<!--#if altbg -->
@@ -548,6 +560,8 @@ function hideDelegationSubmitBtn()
 </form>
 <!--#end fileslist -->
 
+
+
 <!--#begin trashfiles -->
 
 <form method="post" action="{ babPhpSelf }" name="listform">
@@ -589,6 +603,8 @@ function hideDelegationSubmitBtn()
 </table>
 </form>
 <!--#end trashfiles -->
+
+
 
 <!--#begin diskspace -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -657,10 +673,9 @@ window.focus();
 </HTML>
 <!--#end diskspace -->
 
+
+
 <!--#begin viewfile -->
-
-
-
 
 <!--#if access -->
 <br>
@@ -890,6 +905,7 @@ if(null != $('idtags'))
 <!--#end viewfile -->
 
 
+
 <!--#begin fileunload -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -932,6 +948,8 @@ close }</a> </td>
 </BODY>
 </HTML>
 <!--#end fileunload -->
+
+
 
 
 <!--#begin displayFolderForm -->
@@ -997,6 +1015,9 @@ function ovidentia_fileman_hide()
 //]]>
 </script>
 <!--#end displayFolderForm -->
+
+
+
 
 <!--#begin collectiveDir -->
 <table border="0" width="90%" cellspacing="0" cellpadding="2" align="center">
@@ -1126,6 +1147,43 @@ function ovidentia_fileman_hide()
 						</select>
 					</td>
 				</tr>
+
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sDownloadsCapping] }
+					</td>
+					<td>
+						<select name="sDownloadsCapping"> 
+						<!--#if m_datas[isDownloadsCapping] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isDownloadsCapping] -->
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+						<!--#endif m_datas[isDownloadsCapping] -->
+						</select>
+						&nbsp;{ m_captions[sMaxDownloads] }
+						<input style="text-align: right" type="text" size="4" name="iMaxDownloads" value="{ m_datas[iMaxDownloads] }"
+					</td>
+				</tr>
+
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sDownloadHistory] }
+					</td>
+					<td>
+						<select name="sDownloadHistory"> 
+						<!--#if m_datas[isDownloadHistory] -->
+							<option value="{ m_datas[sYes] }" selected="selected">{ m_captions[sYes] }</option>
+							<option value="{ m_datas[sNo] }">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isDownloadHistory] -->
+							<option value="{ m_datas[sNo] }" selected="selected">{ m_captions[sNo] }</option>
+							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
+						<!--#endif m_datas[isDownloadHistory] -->
+						</select>
+					</td>
+				</tr>
+
 				<tr> 
 					<td colspan="2">
 						<br />

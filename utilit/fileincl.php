@@ -2903,6 +2903,22 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		);
 	}
 
+	/**
+	 * Loads a file using its id.
+	 * 
+	 * @param int $iFileId
+	 * @return BAB_FolderFile
+	 */
+	function getById($iFileId)
+	{
+		$oFolderFileSet = new BAB_FolderFileSet();
+		$oId = $oFolderFileSet->aField['iId'];
+		$oCriteria = $oId->in($iFileId);
+		$file = $oFolderFileSet->get($oCriteria);
+
+		return $file;
+	}
+
 	function remove($oCriteria)
 	{
 		$oFileManagerEnv =& getEnvObject();
@@ -3881,6 +3897,31 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	{
 		return $this->_iGet('iMaxDownloads');
 	}
+
+	
+	/**
+	 * Checks if the file maximum download number has been reached.
+	 * 
+	 * @return bool
+	 */
+	function downloadLimitReached()
+	{
+		if ($this->getMaxDownloads() == 0) {
+			return false;
+		}
+
+		$filePathname = $this->getPathName();
+		$firstCollectiveFolder = BAB_FmFolderSet::getFirstCollectiveFolder($filePathname);
+
+		// Checks that downloads capping is active on the file's owner folder.
+		if ($firstCollectiveFolder->getDownloadsCapping() == 'Y'
+				&& $this->getMaxDownloads() <= $this->getDownloads()) {
+			return true;
+		}
+
+		return false;		
+	}
+
 
 	/**
 	 * Set the identifier of the approbation scheme

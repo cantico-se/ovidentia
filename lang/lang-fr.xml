@@ -1947,6 +1947,10 @@
 <string id="WARNING: User with this login ID already exist">ATTENTION: Un utilisateur avec le même identifiant existe déjà</string>
 <string id="WARNING: User with this fullname already exist">ATTENTION: Un utilisateur avec les mêmes nom et prénom existe déjà</string>
 <string id="Automatically approve author if he belongs to approbation schema">Approuver automatiquement le contributeur s'il fait partie de la première étape du schéma d'approbation</string>
+<string id="Manage maximum number of downloads per file">Gestion du nombre maximum de téléchargements par fichier</string>
+<string id="Manage downloads history">Gestion des historiques de téléchargements</string>
+<string id="The download limit (%s) has been reached for file '%s'">Le nombre maximum de téléchargements (%s) a été atteint pour le fichier '%s'</string>
+<string id="Download limit reached">Limite du nombre de téléchargements atteinte</string>
 <string id="Display the date and the author of update">Afficher la date et l'auteur de la mise à jour dans la fiche annuaire</string>
 <string id="Would you like to assign this user to the current directory">Voulez-vous attacher cet utilisateur à l'annuaire courant</string>
 <string id="Your contacts has been assigned">Vos contacts ont été attachés à l'annuaire</string>

@@ -2483,47 +2483,47 @@ class bab_directoryRenameContext
 	{
 		return $this->sTrgPathName;	
 	}
-	
+
 	public function setTrgPathName($sTrgPathName)
 	{
 		$this->sTrgPathName = $sTrgPathName;
 	}
-	
+
 	public function getSanitizedTrgPathName()
 	{
 		return $this->sSanitizedTrgPathName;	
 	}
-	
+
 	public function setSanitizedTrgPathName($sSanitizedTrgPathName)
 	{
 		$this->sSanitizedTrgPathName = $sSanitizedTrgPathName;
 	}
-	
+
 	public function getTrgName()
 	{
 		return $this->sTrgName;	
 	}
-	
+
 	public function setTrgName($sTrgName)
 	{
 		$this->sTrgName = $sTrgName;
 	}
-	
+
 	public function getTrgPath()
 	{
 		return $this->sTrgPath;	
 	}
-	
+
 	public function setTrgPath($sTrgPath)
 	{
 		$this->sTrgPath = $sTrgPath;
 	}
-	
+
 	public function getTrgDelegationId()
 	{
 		return $this->iIdTrgDelegation;	
 	}
-	
+
 	public function setTrgDelegationId($iIdTrgDelegation)
 	{
 		$this->iIdTrgDelegation = $iIdTrgDelegation;
@@ -2533,47 +2533,47 @@ class bab_directoryRenameContext
 	{
 		return $this->sSrcPathName;	
 	}
-	
+
 	public function setSrcPathName($sSrcPathName)
 	{
 		$this->sSrcPathName = $sSrcPathName;
 	}
-	
+
 	public function getSanitizedSrcPathName()
 	{
 		return $this->sSanitizedSrcPathName;	
 	}
-	
+
 	public function setSanitizedSrcPathName($sSanitizedSrcPathName)
 	{
 		$this->sSanitizedSrcPathName = $sSanitizedSrcPathName;
 	}
-	
+
 	public function getSrcName()
 	{
 		return $this->sSrcName;	
 	}
-	
+
 	public function setSrcName($sSrcName)
 	{
 		$this->sSrcName = $sSrcName;
 	}
-	
+
 	public function getSrcPath()
 	{
 		return $this->sSrcPath;	
 	}
-	
+
 	public function setSrcPath($sSrcPath)
 	{
 		$this->sSrcPath = $sSrcPath;
 	}
-	
+
 	public function getSrcDelegationId()
 	{
 		return $this->iIdSrcDelegation;	
 	}
-	
+
 	public function setSrcDelegationId($iIdSrcDelegation)
 	{
 		$this->iIdSrcDelegation = $iIdSrcDelegation;
