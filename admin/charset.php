@@ -607,10 +607,6 @@ class DisplayMessage extends BAB_BaseFormProcessing
 
 class MessageIterator extends BAB_MySqlResultIterator
 {
-	public function __construct()
-	{
-		
-	}
 	
 	public function getObject($aDatas)
 	{
@@ -781,7 +777,7 @@ function convertFileManager()
 		$aReplace		= array($sFromCharset, $sToCharset);
 		$sMessage		= str_replace($aSearch, $aReplace, bab_translate('The site may not be converted %convertFrom% in %convertTo% because of errors below'));
 		$sUploadPath	= (string) getUploadPathFromDataBase();
-		
+
 		$sDbCharset		= (string) bab_charset::getDatabase();
 		$sFsCharset		= ($sDbCharset == 'utf8') ? 'latin1' : 'utf8';
 
@@ -793,13 +789,13 @@ function convertFileManager()
 			$babBody->babecho($oForm->printTemplate());
 			return;
 		}
-		
+
 		$sIsoFrom		= (string) bab_charset::getIsoCharsetFromDataBaseCharset($sFromCharset); 
 		$sIsoTo			= (string) bab_charset::getIsoCharsetFromDataBaseCharset($sToCharset);
 		$oFolderFileSet	= bab_getInstance('BAB_FolderFileSet');
-		
+
 		$oFolderFileSet->select();
-	
+
 		// Filename convertion
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
