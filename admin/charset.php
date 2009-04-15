@@ -382,14 +382,14 @@ function getUploadPathFromDataBase()
 
 
 /**
- * This function convert the database to latin1
+ * Convert the database to the specified character set.
  *
- * @param string $sCharset		Character set
+ * @param string $sCharset		The character set : 'utf8' or 'latin1'
  *
  * @param string $sDataBaseName Name of the database, if null the database
- * 								name will be retreived from the global variable
+ * 								name will be retrieved from the global variable
  * 
- * @return array				Empty array on success,
+ * @return array				An array containing error messages, empty on success.
  */	
 function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 {
@@ -402,7 +402,7 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 
 	$sCollate	= '';
 	$aCharset	= array('utf8' => 'utf8_general_ci', 'latin1' => 'latin1_swedish_ci');
-	
+
 	if(!array_key_exists($sCharset, $aCharset))
 	{
 		$aSearch	= array('%unsupportedCharset%', '%supportedCharset%');
@@ -411,9 +411,9 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 		$aError[]	= $sMessage;
 		return $aError;
 	}
-	
+
 	$sCollate = $aCharset[$sCharset];
-	
+
 	global $babDB;
 
 	$sToCharset		= $sCharset;
@@ -421,7 +421,7 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 	$aSearch		= array('%fromCharset%', '%toCharset%');
 	$aReplace		= array($sFromCharset, $sToCharset);
 	
-	$sQuery = 'ALTER DATABASE ' . $sDataBaseName . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
+	$sQuery = 'ALTER DATABASE ' . $babDB->backTick($sDataBaseName) . ' CHARACTER SET ' . $sCharset . ' DEFAULT CHARACTER SET ' . $sCharset . ' COLLATE ' . $sCollate . ' DEFAULT COLLATE ' . $sCollate;
 	if(false === $babDB->db_query($sQuery))
 	{
 		$sMessage	= str_replace($aSearch, $aReplace, bab_translate('The database could not be converted from %fromCharset% to %toCharset% because the command ALTER DATABASE on database %database% has failed'));
@@ -429,7 +429,7 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 		return $aError;
 	}
 	
-	$sQuery		= 'SHOW TABLES FROM ' . $sDataBaseName;
+	$sQuery		= 'SHOW TABLES FROM ' . $babDB->backTick($sDataBaseName);
 	$oResult	= $babDB->db_query($sQuery);
 	
 	if(false === $oResult)
@@ -441,7 +441,7 @@ function convertDataBaseToCharset($sCharset, $sDataBaseName = null)
 	
 	while(false !== ($aData = $babDB->db_fetch_array($oResult)))
 	{
-		$sQuery = 'ALTER TABLE ' . $aData[0] . ' CONVERT TO CHARACTER SET DEFAULT';
+		$sQuery = 'ALTER TABLE ' . $babDB->backTick($aData[0]) . ' CONVERT TO CHARACTER SET DEFAULT';
 		if(false === $babDB->db_query($sQuery))
 		{
 			$aSearch[]	= '%table%';
@@ -800,7 +800,7 @@ function convertFileManager()
 		
 		$oFolderFileSet->select();
 	
-		//Convertion des noms des fichiers
+		// Filename convertion
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
 		{
 			$sRoot = $sUploadPath;
@@ -882,8 +882,8 @@ function convertFileManager()
 			if(0 == count($aError))
 			{
 				$sIdx = 'displaySuccessMessage';
-				//La convertion du système de fichier intervient aprés celle de la base de donnée
-				//donc il faut invertir car au début de la fonction on inverse
+				//La convertion du systeme de fichier intervient apres celle de la base de donnee
+				//donc il faut invertir car au debut de la fonction on inverse
 				$aReplace = array($sToCharset, $sFromCharset);
 				$sMessage = str_replace($aSearch, $aReplace, bab_translate('The site have been successfully converted from %convertFrom% to %convertTo%'));
 				logToCharsetTable($sMessage);
@@ -994,5 +994,3 @@ switch($sIdx)
 		displaySuccessMessage();
 		break;
 }
-
-?>
