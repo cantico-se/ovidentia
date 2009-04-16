@@ -1921,7 +1921,7 @@ function getUploadBlock()
 	$sGr			= (string) bab_rp('gr', '');
 	
 	$oGetHtmlUploadBlock = new BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr);
-	header('Content-type: text/html; charset=' . bab_charset::getIso());
+//	header('Content-type: text/html; charset=' . bab_charset::getIso());
 	die($oGetHtmlUploadBlock->getHtml());
 }
 

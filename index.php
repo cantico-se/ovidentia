@@ -206,6 +206,9 @@ $babWebStat =& new bab_WebStatEvent();
 include $babInstallPath.'utilit/utilit.php';
 unset($BAB_SESS_LOGGED);
 
+
+ini_set('default_charset', bab_charset::getIso());
+
 if( $tg != 'version' || !isset($idx) || $idx != 'upgrade')
 	{
 	bab_updateSiteSettings();
