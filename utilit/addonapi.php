@@ -1442,33 +1442,39 @@ function bab_isMagicQuotesGpcOn()
 function bab_getAvailableLanguages()
 	{
 	$langs = array();
-	$h = opendir($GLOBALS['babInstallPath']."lang/"); 
+	if( is_dir($GLOBALS['babInstallPath'].'lang/'))
+	{
+	$h = opendir($GLOBALS['babInstallPath'].'lang/'); 
 	while ( $file = readdir($h))
 		{ 
 		if ($file != "." && $file != "..")
 			{
 			if( eregi("lang-([^.]*)", $file, $regs))
 				{
-				if( $file == "lang-".$regs[1].".xml")
+				if( $file == 'lang-'.$regs[1].'.xml')
 					$langs[] = $regs[1]; 
 				}
 			} 
 		}
 	closedir($h);
+	}
 
-	$h = opendir("lang/"); 
+	if( is_dir('lang/'))
+	{
+	$h = opendir('lang/'); 
 	while ( $file = readdir($h))
 		{ 
 		if ($file != "." && $file != "..")
 			{
-			if( eregi("lang-([^.]*)", $file, $regs))
+			if( eregi('lang-([^.]*)', $file, $regs))
 				{
-				if( $file == "lang-".$regs[1].".xml" && !in_array($regs[1], $langs))
+				if( $file == 'lang-'.$regs[1].'.xml' && !in_array($regs[1], $langs))
 					$langs[] = $regs[1]; 
 				}
 			} 
 		}
 	closedir($h);
+	}
 	return $langs;
 	}
 
