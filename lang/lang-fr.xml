@@ -265,6 +265,11 @@
 <string id="Domain">Domaine</string>
 <string id="Domains">Domaines</string>
 <string id="Download">Télécharger</string>
+<string id="View download history">Voir l'historique de téléchargements</string>
+<string id="Download history for %s">Historique de téléchargements pour %s</string>
+<string id="Date/time">Date/heure</string>
+<string id="Nb downloads">Nombre de téléchargements</string>
+<string id="Current downloads: %s">Nombre de téléchargements actuels : %s</string>
 <string id="ERROR - Login ID is required">ERREUR : l'identifiant est nécessaire</string>
 <string id="ERROR">ERREUR</string>
 <string id="ERROR: End date must be older">ERREUR : la date de fin doit être postérieure</string>

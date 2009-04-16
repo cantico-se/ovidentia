@@ -8,8 +8,7 @@ aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
 function aR(idx)
 {
 var rAjax = new Ajax.Request(
-'index.php?tg=thesaurus&idx=tagsjson',
-{
+{ 
   method: 'get',
   onSuccess: function(xhr)
   {
@@ -562,6 +561,33 @@ function hideDelegationSubmitBtn()
 
 
 
+<!--#begin download_history -->
+
+<br />
+<br />
+<table align="center" width="80%" border="1" style="border-collapse: collapse; border: 1px solid #888">
+<tr>
+<th width="60%">{ t_user }</th>
+<th width="20%" align="center">{ t_nb_downloads }</th>
+<th width="20%" align="center">{ t_date_time }</th>
+</tr>
+<!--#in getNextUser -->
+<tr>
+<td valign="top">{ user_name }</td>
+<td valign="top" align="center">{ nb_downloads }</td>
+<td valign="top" align="center">
+<br />
+<!--#in getNextDownload -->
+{ download_date }<br />
+<!--#endin getNextDownload -->
+</td>
+</tr>
+<!--#endin getNextUser -->
+</table>
+<!--#end download_history -->
+
+
+
 <!--#begin trashfiles -->
 
 <form method="post" action="{ babPhpSelf }" name="listform">
@@ -720,8 +746,15 @@ window.focus();
 <td>{ fpostedby }</td>
 </tr>
 </table>
-<!--#if bdownload --><a class="BabFaqLink" href="{ geturl }"><br>
-{ download }</a> <br><!--#endif bdownload -->
+<br>
+<!--#if bdownload -->
+<a class="actions-document-save" href="{ geturl }">{ download }</a>
+<!--#endif bdownload -->
+&nbsp;
+<!--#if bmanager -->
+<a class="actions-view-history" href="{ download_history_url }">{ download_history }</a>
+<!--#endif bmanager -->
+<br>
 </td>
 </tr>
 </table>
@@ -798,6 +831,16 @@ window.focus();
 </td>
 </tr>
 <!--#endif bviewnf -->
+
+
+	<tr> 
+		<td align="right">{ maxDownloads }</td>
+		<td> 
+			<input type="text" size="4" name="maxdownloads" value="{ maxdownloadsval }" />
+			{ current_downloads }
+		</td>
+	</tr>
+
 <!--#endif bmanager -->
 <!--#if bconfirm -->
 <tr> 

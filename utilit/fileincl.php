@@ -730,11 +730,12 @@ function notifyFileAuthor($subject, $version, $author, $filename)
  * @param	string	$path
  * @param	string	$description
  * @param	string	$keywords
- * @param	Y|N		$readonly
+ * @param	string	$readonly		Y|N
+ * @param	int		$maxdownloads
  *
  * @return	boolean
  */
-function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
+function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly, $maxdownloads)
 {
 	require_once dirname(__FILE__) . '/tagApi.php';
 	
@@ -977,6 +978,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 			UPDATE ".BAB_FILES_TBL." set 
 				description='".$babDB->db_escape_string($description[$count])."', 
 				readonly='".$babDB->db_escape_string($readonly[$count])."', 
+				max_downloads='".$babDB->db_escape_string($maxdownloads[$count])."', 
 				confirmed='".$babDB->db_escape_string($confirmed)."', 
 				modified=now(), 
 				hits='0', 
@@ -995,8 +997,8 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
 		else
 		{
 			$req = "insert into ".BAB_FILES_TBL."
-			(name, description, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
+			(name, description, max_downloads, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
+			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '" . $babDB->db_escape_string($maxdownloads[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 			
@@ -1100,8 +1102,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly)
  * @param	Y|N|false	$bnotify
  * @param	int			$newfolder
  * @param	boolean		$descup			Update description & keywords
+ * @param	int			$maxdownloads
  */
-function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $descup)
+function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonly, $confirm, $bnotify, $descup, $maxdownloads)
 {
 	require_once dirname(__FILE__) . '/tagApi.php';
 	
@@ -1334,7 +1337,11 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			}
 			$tmp[] = "readonly='".$babDB->db_escape_string($readonly)."'";
 		}
-		
+
+		if (!empty($maxdownloads)) {
+			$tmp[] = 'max_downloads=' . $babDB->quote($maxdownloads);
+		}
+
 		if(count($tmp) > 0)
 		{
 			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");
