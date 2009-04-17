@@ -113,18 +113,19 @@ class Func_PortalAuthentication extends bab_functionality
 		}
 
 		$aUser = bab_getUserById($iIdUser);
-		if (!is_null($aUser))
-		{
-			if ($aUser['disabled'] == '1')
-			{
+		if (!is_null($aUser)) {
+			$today = date('Y-m-d');
+			if ($aUser['disabled'] == '1') {
 				$this->addError(bab_translate("Sorry, your account is disabled. Please contact your administrator"));
 				return false;
-			}
-			else if ($aUser['is_confirmed'] != '1')
-			{
+			} elseif ($aUser['is_confirmed'] != '1') {
 				$this->addError(bab_translate("Sorry - You haven't confirmed your account yet"));
 				return false;
-			}
+			} elseif (($aUser['validity_start'] != '0000-00-00' && $today < $aUser['validity_start'])
+					||  ($aUser['validity_end'] != '0000-00-00' && $today > $aUser['validity_end'])) {
+				$this->addError(bab_translate("Sorry - Your account is not valid"));
+				return false;
+      		} 
 			return true;
 		}
 		return false;
