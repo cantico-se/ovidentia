@@ -196,6 +196,7 @@ function remove_field()
 		</td>
 	</tr>
 <!--#endif bUseKeyword -->
+
 	<!--#in getNextField -->
 	<tr> 
 		<td align="right">{ sFieldname }</td>
@@ -213,12 +214,14 @@ function remove_field()
 			</select>
 		</td>
 	</tr>
+<!--#if bManageMaxDownloads -->
 	<tr> 
 		<td align="right">{ sMaxDownloads }</td>
 		<td> 
 			<input type="text" size="4" name="maxdownloads[]" value="{ maxdownloadsval }" />
 		</td>
 	</tr>
+<!--#endif bManageMaxDownloads -->
 	<tr> 
 		<td  colspan="2">&nbsp;</td>
 	</tr>
@@ -752,7 +755,9 @@ window.focus();
 <!--#endif bdownload -->
 &nbsp;
 <!--#if bmanager -->
+<!--#if bdownloadhistory -->
 <a class="actions-view-history" href="{ download_history_url }">{ download_history }</a>
+<!--#endif bdownloadhistory -->
 <!--#endif bmanager -->
 <br>
 </td>
@@ -832,7 +837,7 @@ window.focus();
 </tr>
 <!--#endif bviewnf -->
 
-
+<!--#if bdownloadscapping -->
 	<tr> 
 		<td align="right">{ maxDownloads }</td>
 		<td> 
@@ -840,6 +845,7 @@ window.focus();
 			{ current_downloads }
 		</td>
 	</tr>
+<!--#endif bdownloadscapping -->
 
 <!--#endif bmanager -->
 <!--#if bconfirm -->

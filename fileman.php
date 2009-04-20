@@ -74,6 +74,8 @@ class BAB_GetHtmlUploadBlock
 		if ($oFmEnv->userIsInCollectiveFolder()) {
 			if ($oFmEnv->oFmFolder instanceof Bab_FmFolder) {
 				$this->bUseKeyword = ('Y' == $oFmEnv->oFmFolder->getAddTags());
+				$this->bManageMaxDownloads = ($oFmEnv->oFmFolder->getDownloadsCapping() == 'Y');
+				$this->maxdownloadsval = $oFmEnv->oFmFolder->getMaxDownloads();
 			}
 		}
 
@@ -127,16 +129,16 @@ class listFiles
 
 	var $aCuttedDir = array();
 
-	var $sProcessedIdx = '';	
+	var $sProcessedIdx = '';
 	var $sListFunctionName = '';
-	
+
 	var $bParentUrl = false;
 	var $sParentTitle = '';
 	var $sParent = '. .';
 	var $bVersion = false;
 
 	var $oFileManagerEnv = null;
-	
+
 	var $sRootFolderPath = '';
 	/**
 	 * Files extracted by readdir
@@ -144,29 +146,29 @@ class listFiles
 	var $files_from_dir = array();
 
 	var $aFolders = array();
-	
+
 	function listFiles($what="list")
 	{
 		$this->sParentTitle = bab_translate("Parent");
-		
+
 		global $babBody, $babDB, $BAB_SESS_USERID;
 		include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-		
+
 		$this->oFolderFileSet = new BAB_FolderFileSet();
-		
+
 		$this->sProcessedIdx = $what;
 		$this->initEnv();
-	
+
 		$this->{$this->sListFunctionName}();
-		
+
 		$this->prepare();
 //		$this->autoadd_files();
 	}
-	
+
 	function initEnv()
 	{
 		global $BAB_SESS_USERID;
-		
+
 		$this->oFileManagerEnv =& getEnvObject();
 		$this->countwf = 0;
 
@@ -177,14 +179,14 @@ class listFiles
 		else if($this->oFileManagerEnv->userIsInCollectiveFolder())
 		{
 			$this->sListFunctionName = 'listCollectiveFolder';
-			
+
 			if(0 !== $this->oFileManagerEnv->iPathLength)
 			{
 				if('list' === $this->sProcessedIdx)
 				{
 					$oFmFolder = $this->oFileManagerEnv->oFmFolder;
 					if(!is_null($oFmFolder))
-					{			
+					{
 						if(0 !== $oFmFolder->getApprobationSchemeId())
 						{
 							$this->buaf = isUserApproverFlow($oFmFolder->getApprobationSchemeId(), $BAB_SESS_USERID);
@@ -203,52 +205,52 @@ class listFiles
 		}
 		$this->getClipboardFolder();
 
-		$this->sParentUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=' . urlencode($this->sProcessedIdx) . '&id=' . $this->oFileManagerEnv->iId . 
+		$this->sParentUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=' . urlencode($this->sProcessedIdx) . '&id=' . $this->oFileManagerEnv->iId .
 			'&gr=' . $this->oFileManagerEnv->sGr . '&path=';
 		$this->bParentUrl = $this->oFileManagerEnv->setParentPath($this->sParentUrl);
 		$this->sParentUrl = bab_toHtml($this->sParentUrl);
-		
+
 		$sPath = $this->oFileManagerEnv->sPath;
 		$this->path = $sPath;
 		$this->id = $this->oFileManagerEnv->iId;
 		$this->gr = $this->oFileManagerEnv->sGr;
-		
+
 		$this->jpath = bab_toHtml($sPath, BAB_HTML_JS);
 	}
-	
+
 
 	function listRootFolders()
 	{
 		global $BAB_SESS_USERID;
-		
+
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-		
+
 		$oCriteria = $oRelativePath->in('');
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
+
 //		bab_debug($oFmFolderSet->getSelectQuery($oCriteria));
 		$oFmFolderSet->select($oCriteria);
-		
+
 		while(null !== ($oFmFolder = $oFmFolderSet->next()))
 		{
 			$this->addCollectiveDirectory($oFmFolder, $oFmFolder->getId());
 		}
 		bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
-		
+
 		if(userHavePersonnalStorage())
 		{
 			$aItem = array(
-				'iId' => 0, 
+				'iId' => 0,
 				'bCanManageFolder' => false,
 				'bCanBrowseFolder' => true,
-				'bCanEditFolder' => false, 
+				'bCanEditFolder' => false,
 				'bCanSetRightOnFolder' => false,
-				'bCanCutFolder' => false, 
-				'sName' => bab_translate("Personal Folder"), 
-				'sGr' => 'N', 
-				'sCollective' => 'N', 
+				'bCanCutFolder' => false,
+				'sName' => bab_translate("Personal Folder"),
+				'sGr' => 'N',
+				'sCollective' => 'N',
 				'sHide' => 'N',
 				'sUrlPath' => '',
 				'iIdUrl' => $BAB_SESS_USERID);
@@ -256,7 +258,7 @@ class listFiles
 			$this->aFolders[] = $aItem;
 		}
 	}
-	
+
 	function listPersonnalFolder()
 	{
 		$sFullPathname = (string) $this->oFileManagerEnv->getPersonnalFolderPath();
@@ -270,23 +272,23 @@ class listFiles
 	function listCollectiveFolder()
 	{
 		$sFullPathname = (string) $this->oFileManagerEnv->getCollectiveFolderPath();
-		
+
 		if(is_dir(realpath($sFullPathname)))
 		{
 			$this->walkDirectory($sFullPathname, 'collectiveDirectoryCallback');
 		}
 		bab_sort::asort($this->aFolders, 'sName', bab_Sort::CASE_INSENSITIVE);
 	}
-	
+
 	function walkDirectory($sPathName, $sCallbackFunction)
 	{
 		if(is_dir($sPathName))
 		{
 			$oDir = dir($sPathName);
-			while(false !== ($sEntry = $oDir->read())) 
+			while(false !== ($sEntry = $oDir->read()))
 			{
 				// Skip pointers
-				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER) 
+				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER)
 				{
 					continue;
 				}
@@ -295,10 +297,10 @@ class listFiles
 			$oDir->close();
 		}
 	}
-	
+
 	function simpleDirectoryCallback($sPathName, $sEntry)
 	{
-		if(is_dir($sPathName . $sEntry)) 
+		if(is_dir($sPathName . $sEntry))
 		{
 			$sGr				= '';
 			$sRootFmPath		= '';
@@ -307,7 +309,7 @@ class listFiles
 			$bCanBrowse			= canBrowse($sRelativePath);
 			$bAccessValid		= false;
 			$bCanBrowseFolder	= false;
-						
+
 			if($this->oFileManagerEnv->userIsInCollectiveFolder() || $this->oFileManagerEnv->userIsInRootFolder())
 			{
 				$sRootFmPath		= $this->oFileManagerEnv->getCollectiveRootFmPath();
@@ -322,37 +324,37 @@ class listFiles
 				$bAccessValid		= $bCanManage || $bCanBrowse;
 				$bCanBrowseFolder	= $bCanBrowse;
 			}
-			else 
+			else
 			{
 				return;
 			}
-				
+
 			$sFullPathName	= $sRootFmPath . $this->oFileManagerEnv->sRelativePath . $sEntry;
 			$bInClipBoard	= (bool) array_key_exists($sFullPathName, $this->aCuttedDir);
-			
+
 			if(false === $bInClipBoard)
 			{
 				if($bAccessValid)
 				{
 					$aItem = array(
-						'iId' => 0, 
+						'iId' => 0,
 						'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 						'bCanBrowseFolder' => $bCanBrowseFolder,
-						'bCanEditFolder' => canEdit($sRelativePath), 
+						'bCanEditFolder' => canEdit($sRelativePath),
 						'bCanSetRightOnFolder' => false,
-						'bCanCutFolder' => (!$bInClipBoard && canCutFolder($sRelativePath)), 
-						'sName' => $sEntry, 
-						'sGr' => $sGr, 
-						'sCollective' => 'N', 
+						'bCanCutFolder' => (!$bInClipBoard && canCutFolder($sRelativePath)),
+						'sName' => $sEntry,
+						'sGr' => $sGr,
+						'sCollective' => 'N',
 						'sHide' => 'N',
 						'sUrlPath' => $this->oFileManagerEnv->sRelativePath . $sEntry,
 						'iIdUrl' => $this->oFileManagerEnv->iId);
-						
+
 					$this->aFolders[] = $aItem;
 				}
 			}
-		} 
-		else 
+		}
+		else
 		{
 			$this->files_from_dir[] = $sEntry;
 		}
@@ -361,12 +363,12 @@ class listFiles
 	function collectiveDirectoryCallback($sPathName, $sEntry)
 	{
 		global $babBody;
-		
+
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oName =& $oFmFolderSet->aField['sName'];
 		$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-		
+
 		$oCriteria = $oName->in($sEntry);
 		$oCriteria = $oCriteria->_and($oRelativePath->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
@@ -377,129 +379,129 @@ class listFiles
 			$sUrlPath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 			$this->addCollectiveDirectory($oFmFolder, $this->oFileManagerEnv->iId);
 		}
-		else 
+		else
 		{
 			$this->simpleDirectoryCallback($sPathName, $sEntry);
 		}
 	}
 
-	
+
 	function addCollectiveDirectory($oFmFolder, $iIdRootFolder)
 	{
 		$sRelativePath = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
-		
+
 		$sRootFmPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
 		$sFullPathName = $sRootFmPath . $oFmFolder->getRelativePath() . $oFmFolder->getName();
-		
+
 		$bInClipBoard = (bool) array_key_exists($sFullPathName, $this->aCuttedDir);
-		
+
 		if(false === $bInClipBoard)
 		{
 			$bCanManage = canManage($sRelativePath);
 			$bCanBrowse = canBrowse($sRelativePath);
-			
+
 			if($bCanManage || canUpload($sRelativePath) || canUpdate($sRelativePath) || ($bCanBrowse && 'N' === $oFmFolder->getHide()))
 			{
 				$aItem = array(
-					'iId' => $oFmFolder->getId(), 
+					'iId' => $oFmFolder->getId(),
 					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 					'bCanBrowseFolder' => (canBrowse($sRelativePath) && 'Y' === $oFmFolder->getActive()),
-					'bCanEditFolder' => canEdit($sRelativePath), 
+					'bCanEditFolder' => canEdit($sRelativePath),
 					'bCanSetRightOnFolder' => canSetRight($sRelativePath),
-					'bCanCutFolder' => canCutFolder($sRelativePath), 
-					'sName' => $oFmFolder->getName(), 
-					'sGr' => 'Y', 
-					'sCollective' => 'Y', 
+					'bCanCutFolder' => canCutFolder($sRelativePath),
+					'sName' => $oFmFolder->getName(),
+					'sGr' => 'Y',
+					'sCollective' => 'Y',
 					'sHide' => $oFmFolder->getHide(),
 					'sUrlPath' => $oFmFolder->getRelativePath() . $oFmFolder->getName(),
 					'iIdUrl' => $iIdRootFolder);
-					
+
 				$this->aFolders[] = $aItem;
 			}
 		}
 	}
-		
-	
+
+
 	function getClipboardFolder()
 	{
 		global $babBody;
-		
+
 		$sRootFmPath = '';
 		$sGr = '';
-		
+
 		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 		$oIdDgOwner = $oFmFolderCliboardSet->aField['iIdDgOwner'];
 		$oIdOwner = $oFmFolderCliboardSet->aField['iIdOwner'];
 		$oGroup = $oFmFolderCliboardSet->aField['sGroup'];
-		
+
 		$oCriteria = null;
-		
+
 		if($this->oFileManagerEnv->userIsInCollectiveFolder() || $this->oFileManagerEnv->userIsInRootFolder())
 		{
 			$sGr = 'Y';
 			$sRootFmPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
-			
+
 			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		}
 		else if($this->oFileManagerEnv->userIsInPersonnalFolder())
 		{
 			$sGr = 'N';
 			$sRootFmPath = $this->oFileManagerEnv->getPersonnalFolderPath();
-			
+
 			$oCriteria = $oIdDgOwner->in(0);
 		}
-		else 
+		else
 		{
 			return;
 		}
-		
-		
+
+
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		$aOrder = array('sName' => 'ASC');
 		$oFmFolderCliboardSet->select($oCriteria, $aOrder);
-		
+
 		$bSrcPathIsCollective = true;
 		$iIdTrgRootFolder = $this->oFileManagerEnv->iId;
 		$sTrgPath = $this->oFileManagerEnv->sPath;
-		
+
 		while(null !== ($oFmFolderCliboard = $oFmFolderCliboardSet->next()))
 		{
 			$sSrcPath = $oFmFolderCliboard->getRelativePath() . $oFmFolderCliboard->getName();
 			$iIdSrcRootFolder = $oFmFolderCliboard->getRootFolderId();
-			
+
 			$sRelativePath =  $sSrcPath . '/';
-			
+
 			if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 			{
 				$aItem = array(
-					'iId' => $oFmFolderCliboard->getFolderId(), 
-					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL), 
+					'iId' => $oFmFolderCliboard->getFolderId(),
+					'bCanManageFolder' => haveRight($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL),
 					'bCanBrowseFolder' => canBrowse($sRelativePath),
-					'bCanEditFolder' => false, 
+					'bCanEditFolder' => false,
 					'bCanSetRightOnFolder' => false,
-					'bCanCutFolder' => false, 
-					'sName' => $oFmFolderCliboard->getName(), 
-					'sGr' => $sGr, 
-					'sCollective' => $oFmFolderCliboard->getCollective(), 
+					'bCanCutFolder' => false,
+					'sName' => $oFmFolderCliboard->getName(),
+					'sGr' => $sGr,
+					'sCollective' => $oFmFolderCliboard->getCollective(),
 					'sUrlPath' => $sTrgPath,
 					'iIdUrl' => $this->oFileManagerEnv->iId,
 					'iIdSrcRootFolder' => $iIdSrcRootFolder,
 					'sSrcPath' => $sSrcPath);
-					
+
 				$sFullPathName = $sRootFmPath . $sSrcPath;
 				$this->aCuttedDir[$sFullPathName] = $aItem;
 			}
 		}
-	}			
+	}
 
-	
+
 	function selectWaitingFile()
 	{
 		$aWaitingAppInstanceId = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if(count($aWaitingAppInstanceId) > 0)
 		{
 			global $babBody;
-			
+
 			$this->oFolderFileSet->bUseAlias = false;
 			$oIdOwner =& $this->oFolderFileSet->aField['iIdOwner'];
 			$oGroup =& $this->oFolderFileSet->aField['sGroup'];
@@ -508,9 +510,9 @@ class listFiles
 			$oConfirmed =& $this->oFolderFileSet->aField['sConfirmed'];
 			$oIdFlowApprobationInstance = $this->oFolderFileSet->aField['iIdFlowApprobationInstance'];
 			$oIdDgOwner =& $this->oFolderFileSet->aField['iIdDgOwner'];
-			
+
 			$iIdOwner = $this->oFileManagerEnv->iIdObject;
-			
+
 			$oCriteria = $oIdOwner->in($iIdOwner);
 			$oCriteria = $oCriteria->_and($oGroup->in('Y'));
 			$oCriteria = $oCriteria->_and($oState->in(''));
@@ -518,18 +520,18 @@ class listFiles
 			$oCriteria = $oCriteria->_and($oConfirmed->in('N'));
 			$oCriteria = $oCriteria->_and($oIdFlowApprobationInstance->in($aWaitingAppInstanceId));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-			
+
 			$this->oFolderFileSet->select($oCriteria);
 			$this->reswf = $this->oFolderFileSet->_oResult;
 			$this->countwf = $this->oFolderFileSet->count();
 			$this->oFolderFileSet->bUseAlias = true;
 		}
 	}
-		
-	function prepare() 
+
+	function prepare()
 	{
 		global $babBody;
-			
+
 		$this->oFolderFileSet->bUseAlias = false;
 		$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
 		$oGroup = $this->oFolderFileSet->aField['sGroup'];
@@ -537,69 +539,69 @@ class listFiles
 		$oPathName = $this->oFolderFileSet->aField['sPathName'];
 		$oConfirmed = $this->oFolderFileSet->aField['sConfirmed'];
 		$oIdDgOwner =& $this->oFolderFileSet->aField['iIdDgOwner'];
-			
+
 		$iIdOwner = $this->oFileManagerEnv->iIdObject;
-		
+
 		$oCriteria = $oIdOwner->in($iIdOwner);
 		$oCriteria = $oCriteria->_and($oGroup->in($this->oFileManagerEnv->sGr));
 		$oCriteria = $oCriteria->_and($oState->in(''));
 		$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
+
 		$aOrder = array('sName' => 'ASC');
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
-		
+
 		$this->res = $this->oFolderFileSet->_oResult;
 		$this->count = $this->oFolderFileSet->count();
 		$this->oFolderFileSet->bUseAlias = true;
 	}
 
 
-	/** 
+	/**
 	 * if there is file not presents in database, add and recreate $this->res
 	 */
-/*	
-	function autoadd_files() 
+/*
+	function autoadd_files()
 	{
 		global $babDB, $babBody;
 		if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
 		{
 			return;
 		}
-	
+
 		$res = $babDB->db_query('select id from '.BAB_USERS_TBL.' where id='.$babDB->quote($GLOBALS['babAutoAddFilesAuthorId']));
 		if(0 == $babDB->db_num_rows($res))
 		{
 			return;
 		}
 
-		if($this->count < count($this->files_from_dir)) 
+		if($this->count < count($this->files_from_dir))
 		{
 			$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
 			$oGroup = $this->oFolderFileSet->aField['sGroup'];
 			$oPathName = $this->oFolderFileSet->aField['sPathName'];
 			$oName = $this->oFolderFileSet->aField['sName'];
 			$oIdDgOwner =& $this->oFolderFileSet->aField['iIdDgOwner'];
-			
+
 			$iIdOwner = $this->oFileManagerEnv->iIdObject;
-			
+
 			$oFolderFile = new BAB_FolderFile();
-			foreach($this->files_from_dir as $dir_file) 
+			foreach($this->files_from_dir as $dir_file)
 			{
 				$oCriteria = $oPathName->in($this->oFileManagerEnv->sRelativePath);
 				$oCriteria = $oCriteria->_and($oGroup->in($this->oFileManagerEnv->sGr));
 				$oCriteria = $oCriteria->_and($oName->in($dir_file));
 				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 				$oCriteria = $oCriteria->_and($oIdOwner->in($iIdOwner));
-				
+
 				$this->oFolderFileSet->select($oCriteria);
-				
+
 				if(0 === $this->oFolderFileSet->count())
 				{
 					$oFolderFile->setName($dir_file);
 					$oFolderFile->setPathName($this->oFileManagerEnv->sRelativePath);
-					
+
 					$oFolderFile->setOwnerId($iIdOwner);
 					$oFolderFile->setGroup($this->oFileManagerEnv->sGr);
 					$oFolderFile->setCreationDate(date("Y-m-d H:i:s"));
@@ -607,7 +609,7 @@ class listFiles
 					$oFolderFile->setModifiedDate(date("Y-m-d H:i:s"));
 					$oFolderFile->setModifierId($GLOBALS['babAutoAddFilesAuthorId']);
 					$oFolderFile->setConfirmed('Y');
-					
+
 					$oFolderFile->setDescription('');
 					$oFolderFile->setLinkId(0);
 					$oFolderFile->setReadOnly('N');
@@ -620,7 +622,7 @@ class listFiles
 					$oFolderFile->setCommentVer('');
 					$oFolderFile->setStatusIndex(0);
 					$oFolderFile->setDelegationOwnerId(bab_getCurrentUserDelegation());
-					
+
 					$oFolderFile->save();
 					$oFolderFile->setId(null);
 				}
@@ -632,39 +634,39 @@ class listFiles
 }
 
 
-class DisplayFolderFormBase extends BAB_BaseFormProcessing 
+class DisplayFolderFormBase extends BAB_BaseFormProcessing
 {
 	function DisplayFolderFormBase()
 	{
 		parent::BAB_BaseFormProcessing();
-		
+
 		$sFunction 	= (string) bab_gp('sFunction', '');
 		$sDirName	= (string) bab_gp('sDirName', '');
 		$iIdFolder 	= (int) bab_gp('iIdFolder', 0);
-		
+
 		$this->set_data('sIdx', 'list');
 		$this->set_data('sAction', $sFunction);
 		$this->set_data('sTg', 'fileman');
-		
+
 		$this->setCaption();
-		
+
 		$oFileManagerEnv =& getEnvObject();
 		$this->set_data('iId', $oFileManagerEnv->iId);
 		$this->set_data('sPath', $oFileManagerEnv->sPath);
 		$this->set_data('sGr', $oFileManagerEnv->sGr);
-		
+
 		$this->set_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', '');
 		$this->set_data('iIdFolder', 0);
-		
+
 		$this->set_data('sSimple', 'simple');
 		$this->set_data('sCollective', 'collective');
 		$this->set_data('sHtmlTable', '');
-		
+
 		$this->set_data('iIdFolder', $iIdFolder);
-		
+
 		$this->set_data('bDelete', false);
-		
+
 		if('createFolder' === $sFunction)
 		{
 			$this->handleCreation();
@@ -674,29 +676,29 @@ class DisplayFolderFormBase extends BAB_BaseFormProcessing
 			$this->handleEdition();
 		}
 	}
-	
+
 	function setCaption()
 	{
 		$this->set_caption('sDirName', bab_translate("Name") . ': ');
 		$this->set_caption('sDelete', bab_translate("Delete"));
 		$this->set_caption('sSubmit', bab_translate("Submit"));
 	}
-	
+
 	function handleCreation()
 	{
-		
+
 	}
-	
+
 	function handleEdition()
 	{
 		$this->get_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', $sDirName);
 	}
-	
+
 	function printTemplate()
 	{
 	}
-}	
+}
 
 class DisplayUserFolderForm extends DisplayFolderFormBase
 {
@@ -704,22 +706,22 @@ class DisplayUserFolderForm extends DisplayFolderFormBase
 	{
 		parent::DisplayFolderFormBase();
 	}
-	
+
 	function handleEdition()
 	{
 		parent::handleEdition();
-		
+
 		global $BAB_SESS_USERID;
 		$this->get_data('iId', $iId);
 		$this->set_data('bDelete', (((int) $iId === (int) $BAB_SESS_USERID) ? true : false));
 	}
-	
+
 	function printTemplate()
 	{
 		global $babBody;
-		
+
 		$this->set_data('sHtmlTable', bab_printTemplate($this, 'fileman.html', 'userDir'));
-		
+
 		$this->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 		return bab_printTemplate($this, 'fileman.html', 'displayFolderForm');
 	}
@@ -730,23 +732,23 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 {
 	var $iApprobationSchemeId = null;
 	var $oAppSchemeRes = false;
-	
+
 	function DisplayCollectiveFolderForm()
 	{
 		parent::DisplayFolderFormBase();
-		
+
 		$this->setCaption();
 		$this->set_data('sYes', 'Y');
 		$this->set_data('sNo', 'N');
 		$this->set_data('iNone', 0);
-		
+
 		$this->set_data('iAppSchemeId', 0);
 		$this->set_data('iAppSchemeName', '');
-		
+
 		global $babDB;
 		$this->oAppSchemeRes = $babDB->db_query("select * from ".BAB_FLOW_APPROVERS_TBL." order by name asc");
 	}
-	
+
 	function setCaption()
 	{
 		parent::setCaption();
@@ -768,9 +770,9 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
 		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
-		
+
 	}
-	
+
 	function handleCreation()
 	{
 		$sActive				= 'Y';
@@ -786,7 +788,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 
 		$oFileManagerEnv =& getEnvObject();
 		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
-		if (!is_null($oFirstCollectiveParent)) {		
+		if (!is_null($oFirstCollectiveParent)) {
 			$sActive				= (string) $oFirstCollectiveParent->getActive();
 			$iIdApprobationScheme	= (int) $oFirstCollectiveParent->getApprobationSchemeId();
 			$sAutoApprobation		= (string) $oFirstCollectiveParent->getAutoApprobation();
@@ -796,9 +798,9 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sAddTags				= (string) $oFirstCollectiveParent->getAddTags();
 			$sDownloadsCapping		= (string) $oFirstCollectiveParent->getDownloadsCapping();
 			$iMaxDownloads			= (int) $oFirstCollectiveParent->getMaxDownloads();
-			$sDownloadHistory		= (string) $oFirstCollectiveParent->getDownloadHistory();			
+			$sDownloadHistory		= (string) $oFirstCollectiveParent->getDownloadHistory();
 		}
-		
+
 		$this->iApprobationSchemeId = $iIdApprobationScheme;
 		$this->set_data('isCollective', false);
 		$this->set_data('isActive', ('Y' === $sActive) ? true : false);
@@ -812,7 +814,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('iMaxDownloads', $iMaxDownloads);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
-		
+
 		$oFileManagerEnv =& getEnvObject();
 		if ($oFileManagerEnv->userIsInRootFolder()) {
 			$this->set_data('isCollective', true);
@@ -837,7 +839,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->get_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', $sDirName);
 		$this->get_data('iIdFolder', $iIdFolder);
-		
+
 		$oFileManagerEnv =& getEnvObject();
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
@@ -851,7 +853,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sAddTags				= (string) $oFmFolder->getAddTags();
 			$sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
 			$sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
-			
+
 			$this->iApprobationSchemeId = $iIdApprobationScheme;
 			$this->set_data('isCollective', true);
 			$this->set_data('isActive', ('Y' === $sActive) ? true : false);
@@ -866,14 +868,14 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
-			
+
 			if ($oFileManagerEnv->userIsInRootFolder()) {
 				$this->set_data('sDisabled', 'disabled');
 			}
 		}
 		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
 	}
-	
+
 	function getNextApprobationScheme()
 	{
 		if (false !== $this->oAppSchemeRes) {
@@ -892,17 +894,17 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		}
 		return false;
 	}
-	
+
 	function printTemplate()
 	{
 		global $babBody;
 		$this->set_data('sHtmlTable', bab_printTemplate($this, 'fileman.html', 'collectiveDir'));
-		
+
 		$this->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
 		return bab_printTemplate($this, 'fileman.html', 'displayFolderForm');
 	}
-}	
+}
 
 
 function listTrashFiles()
@@ -912,26 +914,26 @@ function listTrashFiles()
 	$oFileManagerEnv =& getEnvObject();
 
 	$babBody->title = bab_translate("Trash");
-	
-	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
 		'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
-	
+
 	if(canUpload($oFileManagerEnv->sRelativePath))
 	{
-		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . 
-			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
-	}
-	
-	if(canManage($oFileManagerEnv->sRelativePath))
-	{
-		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId . 
+		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
 			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	}
 
-	
+	if(canManage($oFileManagerEnv->sRelativePath))
+	{
+		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId .
+			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
+	}
+
+
 	class temp
 	{
 		var $db;
@@ -953,7 +955,7 @@ function listTrashFiles()
 		function temp()
 		{
 			$this->oFileManagerEnv =& getEnvObject();
-			
+
 			$this->id = $this->oFileManagerEnv->iId;
 			$this->gr = $this->oFileManagerEnv->sGr;
 			$this->sPath = $this->oFileManagerEnv->sPath;
@@ -971,7 +973,7 @@ function listTrashFiles()
 
 		function selectTrashFile()
 		{
-			
+
 			global $babDB, $babBody;
 			$this->oFolderFileSet = new BAB_FolderFileSet();
 			$oState =& $this->oFolderFileSet->aField['sState'];
@@ -979,17 +981,17 @@ function listTrashFiles()
 			$oIdOwner =& $this->oFolderFileSet->aField['iIdOwner'];
 			$oGroup =& $this->oFolderFileSet->aField['sGroup'];
 			$oIdDgOwner =& $this->oFolderFileSet->aField['iIdDgOwner'];
-			
+
 			$oCriteria = $oState->in('D');
 			$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($this->oFileManagerEnv->sRelativePath)));
 			$oCriteria = $oCriteria->_and($oIdOwner->in($this->oFileManagerEnv->iIdObject));
 			$oCriteria = $oCriteria->_and($oGroup->in($this->oFileManagerEnv->sGr));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-			
+
 			$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'));
 		}
-		
-		
+
+
 		function getnextfile()
 		{
 			if(!is_null($this->oFolderFileSet) && $this->oFolderFileSet->count() > 0)
@@ -1005,14 +1007,14 @@ function listTrashFiles()
 					}
 					if(empty($this->arrext[$ext]))
 					{
-						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");				
+						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");
 					}
-					
+
 					$this->fileimage = $this->arrext[$ext];
 					$this->name = bab_toHtml($oFolderFile->getName());
 					$this->idfile = $oFolderFile->getId();
 
-					
+
 					if(file_exists($this->oFileManagerEnv->getCurrentFmPath() . $oFolderFile->getName()))
 					{
 						$fstat = stat($this->oFileManagerEnv->getCurrentFmPath() . $oFolderFile->getName());
@@ -1022,7 +1024,7 @@ function listTrashFiles()
 					{
 						$this->sizef = "???";
 					}
-	
+
 					$this->modified = bab_toHtml(bab_shortDate(bab_mktime($oFolderFile->getModifiedDate()), true));
 					$this->postedby = bab_toHtml(bab_getUserName($oFolderFile->getModifierId() == 0 ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId()));
 					return true;
@@ -1043,27 +1045,27 @@ function showDiskSpace()
 	$oFileManagerEnv =& getEnvObject();
 
 	$babBody->title = bab_translate("Trash");
-	
-	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
 		'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
-	
+
 	if(canUpload($oFileManagerEnv->sRelativePath))
 	{
-		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . 
+		$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId .
 			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	}
-	
+
 	if(canManage($oFileManagerEnv->sRelativePath))
 	{
-		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId . 
+		$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId .
 			'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 	}
-			
-			
-			
+
+
+
 	class temp
 		{
 		var $id;
@@ -1088,16 +1090,16 @@ function showDiskSpace()
 		var $remainingspacetxt;
 		var $oFileManagerEnv;
 		var $sContent;
-		
+
 		function temp()
 			{
 			global $babBody;
 			$oFileManagerEnv =& getEnvObject();
-			
+
 			$this->id = $oFileManagerEnv->iId;
 			$this->gr = $oFileManagerEnv->sGr;
 			$this->path = $oFileManagerEnv->sPath;
-			
+
 			$this->grouptxt = bab_translate("Name");
 			$this->diskspacetxt = bab_translate("Used");
 			$this->allowedspacetxt = bab_translate("Allowed");
@@ -1107,20 +1109,20 @@ function showDiskSpace()
 			$this->kilooctet = " ".bab_translate("Kb");
 			$this->babCss = bab_printTemplate($this,"config.html", "babCss");
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
-			
+
 			$this->oFileManagerEnv =& getEnvObject();
 
 			$oFmFolderSet = new BAB_FmFolderSet();
 			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 			$oFmFolderSet->select($oRelativePath->in(''));
-			
+
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
 				if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()))
 				{
 					$this->arrmgrp[] = 	$oFmFolder->getId();
 				}
-				else 
+				else
 				{
 					$sRelativePath = $oFmFolder->getName() . '/';
 					if(canUpload($sRelativePath) || canUpdate($sRelativePath) || canDownload($sRelativePath))
@@ -1129,7 +1131,7 @@ function showDiskSpace()
 					}
 				}
 			}
-				
+
 			$oFileManagerEnv =& getEnvObject();
 			if(!empty($GLOBALS['BAB_SESS_USERID']) && userHavePersonnalStorage())
 				$this->diskp = 1;
@@ -1218,7 +1220,7 @@ function showDiskSpace()
 					$bSkip = true;
 					return true;
 				}
-					
+
 				$this->groupname = $oFmFolder->getName();
 				$pathx = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $oFmFolder->getName();
 				$size = getDirSize($pathx);
@@ -1286,16 +1288,16 @@ function listFiles()
 		var $sFolderFormUrl;
 		var $sAddFolderFormUrl;
 		var $bFolderUrl;
-		
+
 		var $sRight;
 		var $sRightUrl;
 		var $bRightUrl;
-		
+
 		var $sCutFolder;
 		var $sCutFolderUrl;
 		var $bCutFolderUrl;
 
-		
+
 		var $bCollectiveFolder = false;
 		var $bCanBrowseFolder;
 		var $bCanEditFolder;
@@ -1303,8 +1305,8 @@ function listFiles()
 		var $bCanCutFolder;
 		var $bCanCreateFolder;
 		var $bCanManageFolder;
-		
-		
+
+
 		var $altfilelog;
 		var $altfilelock;
 		var $altfileunlock;
@@ -1316,7 +1318,7 @@ function listFiles()
 		var $bUpdate = false;
 
 		var $sUploadPath = '';
-		
+
 		var $iCurrentUserDelegation = 0;
 		var $bDisplayDelegationSelect = false;
 		var $aVisibleDelegation = array();
@@ -1324,11 +1326,11 @@ function listFiles()
 		var $sDelegationName = '';
 		var $sDelegationSelected = '';
 		var $sSubmit = 'Soumettre';
-		
+
 		var $sWaitingFileTitle = '';
-		
+
 		var $bUnZip = false;
-		
+
 		function temp()
 		{
 			$this->listFiles();
@@ -1352,45 +1354,45 @@ function listFiles()
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
             $this->altreadonly =  bab_translate("Read only");
-            $this->sFolderFormAdd = bab_translate("Create a folder"); 
-            $this->sFolderFormEdit = bab_translate("Edit folder"); 
-            $this->sRight = bab_translate("Rights"); 
-            $this->sCutFolder = bab_translate("Cut"); 
+            $this->sFolderFormAdd = bab_translate("Create a folder");
+            $this->sFolderFormEdit = bab_translate("Edit folder");
+            $this->sRight = bab_translate("Rights");
+            $this->sCutFolder = bab_translate("Cut");
             $this->altfilelog =  bab_translate("View log");
             $this->altfilelock =  bab_translate("Edit file");
             $this->altfileunlock =  bab_translate("Unedit file");
             $this->altfilewrite =  bab_translate("Commit file");
 			$this->sWaitingFileTitle = bab_translate("This file is awaiting approval");
-            
+
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
-            
+
 			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
-			
+
 			$this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sFunction=createFolder&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
-			$this->sCutFolderUrl = '#'; 
+			$this->sCutFolderUrl = '#';
 			$this->bCutFolderUrl = false;
 
 			$this->upfolderimg = bab_printTemplate($this, "config.html", "parentfolder");
 			$this->usrfolderimg = bab_printTemplate($this, "config.html", "userfolder");
 			$this->grpfolderimg = bab_printTemplate($this, "config.html", "groupfolder");
 			$this->manfolderimg = bab_printTemplate($this, "config.html", "managerfolder");
-			
+
 			$sRelativePath = $this->oFileManagerEnv->sRelativePath;
 			$this->bCanManageCurrentFolder = haveRightOn($sRelativePath, BAB_FMMANAGERS_GROUPS_TBL);
 
 
-			$this->bDownload = canDownload($sRelativePath); 
-			$this->bUpdate = canUpdate($sRelativePath);  
+			$this->bDownload = canDownload($sRelativePath);
+			$this->bUpdate = canUpdate($sRelativePath);
 			$this->bCanCreateFolder = canCreateFolder($sRelativePath);
 
 
 			$this->bVersion = (!is_null($this->oFileManagerEnv->oFmFolder) && 'Y' === $this->oFileManagerEnv->oFmFolder->getVersioning());
-			
-			
+
+
 			if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
 				$this->sUploadPath = $this->oFileManagerEnv->getRootFmPath();
@@ -1399,19 +1401,19 @@ function listFiles()
 			{
 				$this->sUploadPath = $this->oFileManagerEnv->getCollectiveRootFmPath();
 			}
-			
+
 			$this->xcount = 0;
 			if($this->bCanManageCurrentFolder)
 			{
 				$this->selectCuttedFiles();
 			}
-			
+
 			$this->aVisibleDelegation = bab_getUserFmVisibleDelegations();
 			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
 		}
-		
-		
+
+
 		function getNextUserFmVisibleDelegation()
 		{
 			$aItem = each($this->aVisibleDelegation);
@@ -1421,49 +1423,49 @@ function listFiles()
 				$this->sDelegationName = $aItem['value'];
 				$this->sDelegationSelected = '';
 				global $babBody;
-				
+
 				if((int) $this->iCurrentUserDelegation === (int) $this->iIdDelegation)
 				{
 					$this->sDelegationSelected = 'selected="selected"';
 				}
-				
+
 				return true;
 			}
 			return false;
 		}
-		
-		
+
+
 		function selectCuttedFiles()
 		{
 			global $babBody;
-		
+
 			$this->oFolderFileSet->bUseAlias = false;
 			$oState = $this->oFolderFileSet->aField['sState'];
 			$oGroup = $this->oFolderFileSet->aField['sGroup'];
 			$oIdDgOwner = $this->oFolderFileSet->aField['iIdDgOwner'];
 			$oIdOwner = $this->oFolderFileSet->aField['iIdOwner'];
-			
+
 			global $babDB;
 			$oCriteria = $oGroup->in($this->oFileManagerEnv->sGr);
 			$oCriteria = $oCriteria->_and($oState->in('X'));
-			
+
 			if($this->oFileManagerEnv->userIsInPersonnalFolder())
 			{
 				$oCriteria = $oCriteria->_and($oIdOwner->in($this->oFileManagerEnv->iId));
 				$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 			}
-			else 
+			else
 			{
 				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 			}
-			
+
 			$this->oFolderFileSet->select($oCriteria);
-//			bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria)); 
+//			bab_debug($this->oFolderFileSet->getSelectQuery($oCriteria));
 			$this->xres = $this->oFolderFileSet->_oResult;
 			$this->xcount = $this->oFolderFileSet->count();
 			$this->oFolderFileSet->bUseAlias = true;
 		}
-		
+
 		function getNextFolder()
 		{
 			$aItem = each($this->aFolders);
@@ -1478,24 +1480,24 @@ function listFiles()
 				$sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
 				$sGr						= $aItem['sGr'];
 				$sCollective				= $aItem['sCollective'];
-				
+
 				$this->bCanBrowseFolder		= $aItem['bCanBrowseFolder'];
 				$this->bCanEditFolder		= $aItem['bCanEditFolder'];
 				$this->bCanSetRightOnFolder	= $aItem['bCanSetRightOnFolder'];
 				$this->bCanCutFolder		= $aItem['bCanCutFolder'];
 				$this->bCanManageFolder		= $aItem['bCanManageFolder'];
 
-				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder . 
+				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&iIdFolder=' . $iIdFolder);
 
-				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder . 
+				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
-					
-				$this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=cutFolder&id=' . $iIdRootFolder . 
+
+				$this->sCutFolderUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=cutFolder&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName);
-				
+
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr . '&path=' . $sUrlEncodedPath);
-				
+
 				$this->altbg = !$this->altbg;
 				$this->name = $aItem['sName'];
 				return true;
@@ -1517,40 +1519,40 @@ function listFiles()
 				$sUrlEncodedPath			= urlencode($aItem['sUrlPath']);
 				$sGr						= $aItem['sGr'];
 				$sCollective				= $aItem['sCollective'];
-				
+
 				$iIdSrcRootFolder			= $aItem['iIdSrcRootFolder'];
 				$sEncodedSrcPath			= urlencode($aItem['sSrcPath']);
-				
+
 				$this->bCanBrowseFolder		= $aItem['bCanBrowseFolder'];
 				$this->bCanEditFolder		= $aItem['bCanEditFolder'];
 				$this->bCanSetRightOnFolder	= $aItem['bCanSetRightOnFolder'];
 				$this->bCanCutFolder		= $aItem['bCanCutFolder'];
 				$this->bCanManageFolder		= $aItem['bCanManageFolder'];
 
-				
-				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder . 
+
+				$this->sRightUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayRightForm&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&iIdFolder=' . $iIdFolder);
-					
-				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder . 
+
+				$this->sFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=displayFolderForm&sFunction=editFolder&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . $sEncodedPath . '&sDirName=' . $sEncodedName . '&iIdFolder=' . $iIdFolder);
-				
-				$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=pasteFolder&id=' . $iIdRootFolder . 
-					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) . 
+
+				$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=pasteFolder&id=' . $iIdRootFolder .
+					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
 					'&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
-				
+
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath);
-				
+
 				$this->altbg = !$this->altbg;
 				$this->name = $aItem['sName'];
 				return true;
 			}
 			return false;
 		}
-		
+
 		function updateFileInfo($arr)
 		{
 			$this->fileimage = '';
-			
+
 			$iOffset = mb_strpos($arr['name'], '.');
 			if(false !== $iOffset)
 			{
@@ -1559,20 +1561,20 @@ function listFiles()
 					{
 					$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".".$ext);
 					if( empty($this->arrext[$ext]))
-						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");						
+						$this->arrext[$ext] = bab_printTemplate($this, "config.html", ".unknown");
 					$this->fileimage = $this->arrext[$ext];
 					}
 				else if( empty($ext))
 					{
-					$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");				
+					$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");
 					}
 				else
 					$this->fileimage = $this->arrext[$ext];
 			}
-				
-				
+
+
 			$this->name = $arr['name'];
-			
+
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
 			if( file_exists($sFullPathName))
 				{
@@ -1616,12 +1618,12 @@ function listFiles()
 				} else {
 					$this->urlget = bab_toHtml($sUrlFile . '&sAction=getFile');
 				}
-				
+
 				$this->viewurl	= bab_toHtml($sUrlFile . '&idx=viewFile');
 				$this->cuturl	= bab_toHtml($sUrlFile . '&sAction=cutFile');
 				$this->delurl	= bab_toHtml($sUrlFile . '&sAction=delFile');
 				$this->fileid	= $arr['id'];
-				
+
 				$this->updateFileInfo($arr);
 
 				if ($this->bVersion) {
@@ -1629,11 +1631,11 @@ function listFiles()
 					$sUrlFileId		= $sUrlBase . '&idf=' . $arr['id'];
 					$sUrlFileName	= $sUrlBase . '&file=' . $ufile;
 					$sUrlFile		= $sUrlBase . '&idf=' . $arr['id'] . '&file=' . $ufile;
-				
+
 					$this->lastversion	= bab_toHtml($arr['ver_major'] . '.' . $arr['ver_minor']);
 					$this->ovfhisturl	= bab_toHtml($sUrlFileId . '&idx=hist');
 					$this->ovfversurl	= bab_toHtml($sUrlFileId . '&idx=lvers');
-				
+
 					$this->bfvwait = false;
 					$this->blockauth = false;
 					if ($arr['edit']) {
@@ -1647,7 +1649,7 @@ function listFiles()
 							$this->bfvwait = true;
 							$this->bupdate = true;
 						}
-						
+
 						$this->ovfurl = bab_toHtml($sUrlFileId . '&idx=unlock');
 						if ($this->bfvwait) {
 							$this->ovfcommiturl = bab_toHtml($sUrlFileId . '&idx=conf');
@@ -1671,7 +1673,7 @@ function listFiles()
 			if ($i < $this->countwf) {
 				$iId = $this->oFileManagerEnv->iId;
 				$sGr = $this->oFileManagerEnv->sGr;
-					
+
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->reswf);
 				$this->bconfirmed = 1;
@@ -1699,11 +1701,11 @@ function listFiles()
 			{
 				$iId = $this->oFileManagerEnv->iId;
 				$sGr = $this->oFileManagerEnv->sGr;
-					
+
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->xres);
 				$this->bconfirmed = 0;
-	
+
 				$iIdSrcRootFolder = 0;
 				if($this->oFileManagerEnv->userIsInCollectiveFolder())
 				{
@@ -1714,12 +1716,12 @@ function listFiles()
 				{
 					$iIdSrcRootFolder = $iId;
 				}
-				
+
 //				bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sSrcPath ==> ' . $arr['path'] . ' sTrgPath ==> ' . $this->path);
-				
+
 				$bCanPaste = canPasteFile($iIdSrcRootFolder, $arr['path'], $iId, $this->path, $arr['name']);
-				$bSkip = !$bCanPaste;	
-				if($bCanPaste)				
+				$bSkip = !$bCanPaste;
+				if($bCanPaste)
 				{
 					$this->updateFileInfo($arr);
 					$this->description = bab_toHTML($arr['description']);
@@ -1731,8 +1733,8 @@ function listFiles()
 					}
 					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile.'&idf='.$arr['id']);
-					
-					$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&sAction=pasteFile&id=' . $iId . '&gr=' . $sGr . 
+
+					$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&sAction=pasteFile&id=' . $iId . '&gr=' . $sGr .
 						'&path=' . urlencode($this->path) . '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $upath . '&file=' . $ufile);
 				}
 				$i++;
@@ -1749,7 +1751,7 @@ function listFiles()
 	$temp = new temp();
 	$babBody->title = bab_translate("File manager");
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
-	
+
 	if('Y' === $oFileManagerEnv->sGr)
 	{
 		if(0 !== $oFileManagerEnv->iId)
@@ -1757,20 +1759,20 @@ function listFiles()
 			$GLOBALS['babWebStat']->addFolder($oFileManagerEnv->iId);
 		}
 	}
-	
+
 	$sParentPath = $oFileManagerEnv->sRelativePath;
-	
+
 	if(canUpload($sParentPath)) {
 		$babBody->addItemMenu('add', bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
-	
+
 	if (haveRightOn($sParentPath, BAB_FMMANAGERS_GROUPS_TBL)) {
 		$babBody->addItemMenu('trash', bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 	}
 
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
-	
+
 	$babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
 	return $temp->count;
 }
@@ -1797,7 +1799,7 @@ function displayDownloadHistory()
 
 			$this->folderFileSet = new BAB_FolderFileSet();
 			$this->idField = $this->folderFileSet->aField['iId'];
-			
+
 			$sql = 'SELECT id_user, id_file, COUNT(*) AS nb_downloads
 					FROM bab_fm_files_download_history
 					WHERE id_file=' . $babDB->quote($file->getId()) . '
@@ -1807,10 +1809,10 @@ function displayDownloadHistory()
 
 			$this->downloads = array();
 			while ($download = $babDB->db_fetch_assoc($downloads)) {
-				$download['user_name'] = bab_getUserName($download['id_user'], true); 
+				$download['user_name'] = bab_getUserName($download['id_user'], true);
 				$this->downloads[] = $download;
 			}
-			
+
 			bab_Sort::asort($this->downloads, 'user_name', bab_Sort::CASE_INSENSITIVE);
 		}
 
@@ -1827,7 +1829,7 @@ function displayDownloadHistory()
 					WHERE id_file=' . $babDB->quote($download['id_file']) . '
 					AND id_user=' . $babDB->quote($download['id_user']) . '
 					ORDER BY `date` DESC';
-				
+
 				$this->downloadDates = $babDB->db_query($sql);
 
 				return true;
@@ -1838,7 +1840,7 @@ function displayDownloadHistory()
 		function getNextDownload()
 		{
 			global $babDB;
-	
+
 			if ($download = $babDB->db_fetch_assoc($this->downloadDates)) {
 				$this->download_date = bab_toHtml(bab_shortDate(bab_mktime($download['date'])));
 				return true;
@@ -1885,20 +1887,20 @@ function displayAddFileForm()
 		return;
 	}
 
-	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
+	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr .
 		'&path=' . urlencode($oFileManagerEnv->sPath));
-	
-	$babBody->addItemMenu('displayAddFileForm', bab_translate("Upload"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
+
+	$babBody->addItemMenu('displayAddFileForm', bab_translate("Upload"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=displayAddFileForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr .
 		'&path=' . urlencode($oFileManagerEnv->sPath));
-		
+
 	if (canManage($oFileManagerEnv->sRelativePath)) {
-		$babBody->addItemMenu('trash', bab_translate("Trash"), $GLOBALS['babUrlScript'] . 
-			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr . 
+		$babBody->addItemMenu('trash', bab_translate("Trash"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman&idx=trash&id=' . $oFileManagerEnv->iId . "&gr=" . $oFileManagerEnv->sGr .
 			'&path=' . urlencode($oFileManagerEnv->sPath));
 	}
-		
+
 	class temp_displayAddFileForm
 	{
 		var $add;
@@ -1961,15 +1963,15 @@ function displayAddFileForm()
 function getUploadBlock()
 {
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if(!canUpload($oFileManagerEnv->sRelativePath))
 	{
 		die();
 	}
-	
-	$iIdRootFolder	= (int) bab_rp('id', 0); 
+
+	$iIdRootFolder	= (int) bab_rp('id', 0);
 	$sGr			= (string) bab_rp('gr', '');
-	
+
 	$oGetHtmlUploadBlock = new BAB_GetHtmlUploadBlock($iIdRootFolder, $sGr);
 //	header('Content-type: text/html; charset=' . bab_charset::getIso());
 	die($oGetHtmlUploadBlock->getHtml());
@@ -1979,7 +1981,7 @@ function getUploadBlock()
 
 /**
  * Updates the download history for the specified file.
- * 
+ *
  * @param BAB_FolderFile $file
  */
 function updateDownloadHistory(BAB_FolderFile $file)
@@ -1991,17 +1993,17 @@ function updateDownloadHistory(BAB_FolderFile $file)
 
 	// Checks that download history is active on the file's owner folder.
 	if ($firstCollectiveFolder->getDownloadHistory() == 'Y') {
-		$sql = 'INSERT INTO bab_fm_files_download_history(id_file, id_user, `date`) 
+		$sql = 'INSERT INTO bab_fm_files_download_history(id_file, id_user, `date`)
 				VALUES(' . $babDB->quote($file->getId()) . ', ' . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . ', NOW())';
 
 		$babDB->db_query($sql);
 	}
-	
+
 }
 
 
 /**
- * Outputs the specified file. 
+ * Outputs the specified file.
  */
 function getFile()
 {
@@ -2011,9 +2013,9 @@ function getFile()
 	if (false === $inl) {
 		$inl = bab_getFileContentDisposition() == 1 ? 1 : '';
 	}
-	
+
 	$iIdFile = (int) bab_rp('idf', 0);
-	
+
 	//OVML ne positionne pas la delegation
 	$oFolderFileSet = new BAB_FolderFileSet();
 	$oId = $oFolderFileSet->aField['iId'];
@@ -2028,7 +2030,7 @@ function getFile()
 										$oFolderFile->getMaxDownloads(), $oFolderFile->getName());
 		return;
 	}
-	
+
 	//Peut etre vient-on de l'OVML
 	$iCurrentDelegation = bab_getCurrentUserDelegation();
 	bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
@@ -2037,11 +2039,11 @@ function getFile()
 
 	if (!canDownload($oFileManagerEnv->sRelativePath)) {
 		bab_setCurrentUserDelegation($iCurrentDelegation);
-	
+
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
 	}
-	
+
 	$oFolderFile->setHits($oFolderFile->getHits() + 1);
 	$oFolderFile->setDownloads($oFolderFile->getDownloads() + 1);
 	$oFolderFile->save();
@@ -2049,7 +2051,7 @@ function getFile()
 	updateDownloadHistory($oFolderFile);
 
 	$GLOBALS['babWebStat']->addFilesManagerFile($oFolderFile->getId());
-	
+
 	$sUploadPath = '';
 	if (!$oFileManagerEnv->userIsInPersonnalFolder()) {
 		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
@@ -2068,7 +2070,7 @@ function getFile()
 	$fp = fopen($sFullPathName, 'rb');
 	if ($fp) {
 		bab_setTimeLimit(3600);
-		
+
 		if (mb_strtolower(bab_browserAgent()) == 'msie') {
 			header('Cache-Control: public');
 		}
@@ -2078,7 +2080,7 @@ function getFile()
 		} else {
 			header('Content-Disposition: attachment; filename="'.$sName.'"'."\n");
 		}
-		
+
 		$mime = bab_getFileMimeType($sFullPathName);
 		$fsize = filesize($sFullPathName);
 		header('Content-Type: '.$mime."\n");
@@ -2102,7 +2104,7 @@ function getFile()
 function cutFile()
 {
 	global $babBody, $babDB;
-	
+
 	$oFileManagerEnv =& getEnvObject();
 
 	if(!canCutFile($oFileManagerEnv->sRelativePath))
@@ -2112,23 +2114,23 @@ function cutFile()
 	}
 
 	$file = bab_gp('file');
-	
+
 	$oFolderFileSet = new BAB_FolderFileSet();
-	
+
 	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
 	$oGroup =& $oFolderFileSet->aField['sGroup'];
 	$oState =& $oFolderFileSet->aField['sState'];
 	$oPathName =& $oFolderFileSet->aField['sPathName'];
 	$oName =& $oFolderFileSet->aField['sName'];
 	$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
-	
+
 	$oCriteria = $oIdOwner->in($oFileManagerEnv->iIdObject);
 	$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
 	$oCriteria = $oCriteria->_and($oState->in(''));
 	$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
 	$oCriteria = $oCriteria->_and($oName->in($file));
 	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-	
+
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 	if(!is_null($oFolderFile))
 	{
@@ -2142,7 +2144,7 @@ function cutFile()
 function delFile()
 {
 	global $babBody, $babDB;
-	
+
 //	bab_rp('file'), $id, $gr, $path, $bmanager
 
 	$oFileManagerEnv =& getEnvObject();
@@ -2154,21 +2156,21 @@ function delFile()
 	}
 
 	$sFilename = (string) bab_gp('file', '');
-	
+
 	$oFolderFileSet = new BAB_FolderFileSet();
-	
+
 	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
 	$oGroup =& $oFolderFileSet->aField['sGroup'];
 	$oState =& $oFolderFileSet->aField['sState'];
 	$oPathName =& $oFolderFileSet->aField['sPathName'];
 	$oName =& $oFolderFileSet->aField['sName'];
-	
+
 	$oCriteria = $oIdOwner->in($oFileManagerEnv->iIdObject);
 	$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
 	$oCriteria = $oCriteria->_and($oState->in(''));
 	$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
 	$oCriteria = $oCriteria->_and($oName->in($sFilename));
-	
+
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 	if(!is_null($oFolderFile))
 	{
@@ -2183,58 +2185,58 @@ function delFile()
 function pasteFile()
 {
 	global $babBody, $babDB;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$iIdSrcRootFolder	= (int) bab_gp('iIdSrcRootFolder', 0);
-	$iIdTrgRootFolder	= $oFileManagerEnv->iId;				
+	$iIdTrgRootFolder	= $oFileManagerEnv->iId;
 	$sSrcPath			= (string) bab_gp('sSrcPath', '');
-	$sTrgPath			= $oFileManagerEnv->sPath; 
+	$sTrgPath			= $oFileManagerEnv->sPath;
 	$sFileName			=  (string) bab_gp('file', '');
 	$sUpLoadPath		= $oFileManagerEnv->getRootFmPath();
-	
+
 	if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFileName))
 	{
-//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Paste OK');	
-		
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Paste OK');
+
 		$iOldIdOwner		= $iIdSrcRootFolder;
 		$iNewIdOwner		= $iIdTrgRootFolder;
 		$sOldRelativePath	= '';
 		$sNewRelativePath	= '';
-	
+
 		if($oFileManagerEnv->userIsInPersonnalFolder())
 		{
 			$sOldEndPath = (mb_strlen(trim($sSrcPath)) > 0) ? '/' : '';
 			$sNewEndPath = (mb_strlen(trim($sTrgPath)) > 0) ? '/' : '';
-			
+
 			$sOldRelativePath = $sSrcPath . $sOldEndPath;
 			$sNewRelativePath = $sTrgPath . $sNewEndPath;
 		}
-		else if($oFileManagerEnv->userIsInCollectiveFolder()) 
+		else if($oFileManagerEnv->userIsInCollectiveFolder())
 		{
 			$oFmFolder = null;
 			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdSrcRootFolder, $sSrcPath, $iOldIdOwner, $sOldRelativePath, $oFmFolder);
 			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdTrgRootFolder, $sTrgPath, $iNewIdOwner, $sNewRelativePath, $oFmFolder);
 		}
-		
+
 		$sOldFullPathName = $sUpLoadPath . $sOldRelativePath . $sFileName;
 		$sNewFullPathName = $sUpLoadPath . $sNewRelativePath . $sFileName;
-		
-//		bab_debug('sFileName ==> ' . $sFileName . ' iOldIdOwner ==> ' . $iOldIdOwner . 
+
+//		bab_debug('sFileName ==> ' . $sFileName . ' iOldIdOwner ==> ' . $iOldIdOwner .
 //			' sOldRelativePath ==> ' . $sOldRelativePath . ' iNewIdOwner ==> ' . $iNewIdOwner .
-//			' sNewRelativePath ==> ' . $sNewRelativePath);	
-//			
+//			' sNewRelativePath ==> ' . $sNewRelativePath);
+//
 //		bab_debug('sOldFullPathName ==> ' . $sUpLoadPath . $sOldRelativePath . $sFileName);
 //		bab_debug('sNewFullPathName ==> ' . $sUpLoadPath . $sNewRelativePath . $sFileName);
 //		bab_debug('sUpLoadPath ==> ' . $sUpLoadPath);
-		
+
 		$oFolderFileSet	= new BAB_FolderFileSet();
 		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
 		$oGroup			=& $oFolderFileSet->aField['sGroup'];
 		$oPathName		=& $oFolderFileSet->aField['sPathName'];
 		$oName			=& $oFolderFileSet->aField['sName'];
 		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
-		
+
 		if($sOldFullPathName === $sNewFullPathName)
 		{
 			$oCriteria = $oIdOwner->in($iOldIdOwner);
@@ -2242,7 +2244,7 @@ function pasteFile()
 			$oCriteria = $oCriteria->_and($oPathName->in($sOldRelativePath));
 			$oCriteria = $oCriteria->_and($oName->in($sFileName));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-			
+
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
 			if(!is_null($oFolderFile))
 			{
@@ -2259,7 +2261,7 @@ function pasteFile()
 			$oCriteria = $oCriteria->_and($oPathName->in($sOldRelativePath));
 			$oCriteria = $oCriteria->_and($oName->in($sFileName));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-			
+
 			$oFolderFile = $oFolderFileSet->get($oCriteria);
 			if(!is_null($oFolderFile))
 			{
@@ -2267,7 +2269,7 @@ function pasteFile()
 				$oFolderFile->setOwnerId($iNewIdOwner);
 				$oFolderFile->setPathName($sNewRelativePath);
 				$oFolderFile->save();
-				
+
 				if(is_dir($sUpLoadPath . $sOldRelativePath . BAB_FVERSION_FOLDER . '/'))
 				{
 					if(!is_dir($sUpLoadPath . $sNewRelativePath . BAB_FVERSION_FOLDER . '/'))
@@ -2275,11 +2277,11 @@ function pasteFile()
 						bab_mkdir($sUpLoadPath . $sNewRelativePath . BAB_FVERSION_FOLDER, $GLOBALS['babMkdirMode']);
 					}
 				}
-				
+
 				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 				$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
 
-				$sFn = $sFileName;			
+				$sFn = $sFileName;
 				$oFolderFileVersionSet->select($oIdFile->in($oFolderFile->getId()));
 				while(null !== ($oFolderFileVersion = $oFolderFileVersionSet->next()))
 				{
@@ -2292,9 +2294,9 @@ function pasteFile()
 			return true;
 		}
 	}
-	else 
+	else
 	{
-		//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Cannot Paste');	
+		//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Cannot Paste');
 		$babBody->msgerror = bab_translate("Cannot paste file");
 		return false;
 	}
@@ -2390,10 +2392,10 @@ function viewFile()
 			$GLOBALS['babBody']->setTitle($oFolderFile->getName() . (($bversion == 'Y') ? ' (' . $oFolderFile->getMajorVer() . '.' . $oFolderFile->getMinorVer() . ')' : '' ));
 			$this->descval = $oFolderFile->getDescription();
 			$this->descvalhtml = bab_toHtml($oFolderFile->getDescription());
-			
+
 			$this->maxdownloadsval = $oFolderFile->getMaxDownloads();
 			$this->current_downloads = bab_toHtml(sprintf(bab_translate("Current downloads: %s"), $oFolderFile->getDownloads()));
-			
+
 
 			require_once dirname(__FILE__) . '/utilit/tagApi.php';
 
@@ -2417,13 +2419,13 @@ function viewFile()
 			} else {
 				$sUploadPath = $oFileManagerEnv->getRootFmPath();
 			}
-			
+
 			$fullpath = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
-			if (file_exists($fullpath)) 
+			if (file_exists($fullpath))
 			{
 				$fstat = stat($fullpath);
 				$this->fsize = bab_toHtml(bab_formatSizeFile($fstat[7]) . ' ' . bab_translate("Kb") . ' ( ' . bab_formatSizeFile($fstat[7], false) . ' ' . bab_translate("Bytes") . ' )');
-			
+
 			} else {
 				$this->fsize = '???';
 			}
@@ -2442,7 +2444,7 @@ function viewFile()
 
 			$this->download = bab_translate("Download");
 			$this->download_history = bab_translate("View download history");
-			
+
 			$this->file = bab_translate("File");
 			$this->name = bab_translate("Name");
 			$this->nameval = bab_toHtml($oFolderFile->getName());
@@ -2492,7 +2494,11 @@ function viewFile()
 					}
 
 					$this->bviewnf = true;
+
 				}
+
+				$this-> bdownloadscapping = ($oFileManagerEnv->oFmFolder->getDownloadsCapping() == 'Y');
+				$this-> bdownloadhistory = ($oFileManagerEnv->oFmFolder->getDownloadHistory() == 'Y');
 
 				if ('Y' === $oFolderFile->getGroup()) {
 					$this->resff = $babDB->db_query('SELECT * FROM '.BAB_FM_FIELDS_TBL.' WHERE id_folder='.$babDB->quote($oFolderFile->getOwnerId()));
@@ -2505,7 +2511,7 @@ function viewFile()
 
 			if (bab_isFileIndex($fullpath) && bab_isUserAdministrator()) {
 				$engine = bab_searchEngineInfos();
-				
+
 				$this->index = true;
 				$this->index_status = $oFolderFile->getStatusIndex();
 				$this->t_index_status = bab_translate("Index status");
@@ -2592,7 +2598,7 @@ function viewFile()
 				$this->disabled=false;
 				$this->option = bab_toHtml(bab_getIndexStatusLabel($this->value));
 				$this->selected = $this->index_status == $this->value;
-				if(BAB_INDEX_STATUS_INDEXED == $this->value && !$this->index_onload) 
+				if(BAB_INDEX_STATUS_INDEXED == $this->value && !$this->index_onload)
 				{
 					$this->disabled=true;
 				}
@@ -2611,7 +2617,7 @@ function viewFile()
 	$bdownload = false;
 	$arr = array();
 	$bversion = '';
-	
+
 	$idf = (int) bab_rp('idf');
 
 	$oFolderFileSet = new BAB_FolderFileSet();
@@ -2621,7 +2627,7 @@ function viewFile()
 
 	$oCriteria = $oId->in($idf);
 	$oCriteria = $oCriteria->_and($oState->in(''));
-	
+
 	$oFolderFile = $oFolderFileSet->get($oCriteria);
 
 	if(!is_null($oFolderFile))
@@ -2629,7 +2635,7 @@ function viewFile()
 		//A cause de OVML
 		bab_setCurrentUserDelegation($oFolderFile->getDelegationOwnerId());
 		$oFileManagerEnv =& getEnvObject();
-		
+
 		if('N' === $oFolderFile->getGroup())
 		{
 			if(userHavePersonnalStorage() && $BAB_SESS_USERID == $oFolderFile->getOwnerId())
@@ -2650,26 +2656,26 @@ function viewFile()
 					$bconfirm = true;
 				}
 			}
-			
+
 			$sParentPath = $oFileManagerEnv->sRelativePath;
-			
+
 			$access = (!is_null($oFileManagerEnv->oFmFolder));
 			$bdownload = canDownload($sParentPath);
 			$bmanager = canManage($sParentPath);
 			$bupdate = canUpdate($sParentPath);
-			
+
 			if ($bconfirm) {
 				$bupdate = false;
 				$bmanager = false;
 			}
-			
+
 			$bversion = $oFileManagerEnv->oFmFolder->getVersioning();
 			if (0 !== $oFolderFile->getFolderFileVersionId() || $bversion ==  'Y') {
 				$bupdate = false;
 			}
 		}
 	}
-	
+
 	if ($access) {
 		$temp = new temp_ViewFile($oFileManagerEnv->oFmFolder, $oFolderFile, $bmanager, $access, $bconfirm, $bupdate, $bdownload, $bversion);
 	} else {
@@ -2684,41 +2690,41 @@ function displayRightForm()
 	global $babBody;
 
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$iIdFolder = (int) bab_gp('iIdFolder', 0);
-	
+
 	$sFolderName = '';
 	$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 	if(!is_null($oFmFolder))
 	{
 		$sFolderName = $oFmFolder->getName();
-	
+
 		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
-		if(canUpload($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/')) 
+		if(canUpload($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'))
 		{
 			$babBody->addItemMenu("add", bab_translate("Upload"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayAddFileForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		}
-		if(canManage($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/')) 
+		if(canManage($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'))
 		{
 			$babBody->addItemMenu("trash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=fileman&idx=trash&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 		}
 		$babBody->addItemMenu("displayRightForm", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=fileman&idx=displayRightForm&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".
 			urlencode($oFileManagerEnv->sPath) . '&iIdFolder=' . $iIdFolder);
-		
+
 		$babBody->title = bab_translate("Rights of directory") . ' ' . $sFolderName;
-	
+
 		if(canSetRight($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'))
 		{
 			require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 			$macl = new macl("fileman", 'list', $iIdFolder, 'setRight', true, $oFmFolder->getDelegationOwnerId());
-			
+
 			$macl->set_hidden_field('path', $oFileManagerEnv->sPath);
 			$macl->set_hidden_field('sAction', 'setRight');
 			$macl->set_hidden_field('sPathName', $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/');
 			$macl->set_hidden_field('id', $oFileManagerEnv->iId);
 			$macl->set_hidden_field('gr', $oFileManagerEnv->sGr);
 			$macl->set_hidden_field('iIdFolder', $iIdFolder);
-			
+
 			$macl->addtable( BAB_FMUPLOAD_GROUPS_TBL,bab_translate("Upload"));
 			$macl->filter(0,0,1,0,1);
 			$macl->addtable( BAB_FMDOWNLOAD_GROUPS_TBL,bab_translate("Download"));
@@ -2730,12 +2736,12 @@ function displayRightForm()
 			$macl->filter(0,0,1,0,1);
 			$macl->babecho();
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Invalid directory");
 	}
@@ -2803,13 +2809,13 @@ function setRight()
 {
 	global $babBody;
 	$sPathName = (string) bab_rp('sPathName', '');
-	
+
 	if(canSetRight($sPathName))
 	{
 		require_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 		maclGroups();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -2848,15 +2854,15 @@ function deleteFiles($items)
 function restoreFiles($items)
 {
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$sPathName = $oFileManagerEnv->getCurrentFmPath();
-	
+
 //	bab_debug($sPathName);
-	
+
 	$oFolderFileSet = new BAB_FolderFileSet();
 	$oId =& $oFolderFileSet->aField['iId'];
-	
-	global $babDB;	
+
+	global $babDB;
 	for($i = 0; $i < count($items); $i++)
 	{
 		$oFolderFile = $oFolderFileSet->get($oId->in($items[$i]));
@@ -2883,24 +2889,24 @@ function restoreFiles($items)
 
 
 /**
- * 
+ *
  * @return unknown_type
  */
 function displayFolderForm()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
-	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . 
+
+	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
 		$oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
-		
-	$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript'] . 
-		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . 
+
+	$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr .
 		'&path=' . urlencode($oFileManagerEnv->sPath));
-	
+
 	$babBody->title = bab_translate("Add a new folder");
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
@@ -2908,7 +2914,7 @@ function displayFolderForm()
 			$oDspFldForm = new DisplayCollectiveFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
@@ -2920,7 +2926,7 @@ function displayFolderForm()
 			$oDspFldForm = new DisplayUserFolderForm();
 			$babBody->babecho($oDspFldForm->printTemplate());
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
@@ -2931,23 +2937,23 @@ function displayFolderForm()
 function displayDeleteFolderConfirm()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sPath		= (string) bab_rp('path', '');
 		$sDirName	= (string) bab_rp('sDirName', '');
-		$iIdFld		= (int) bab_rp('iIdFolder', 0); 
-		
+		$iIdFld		= (int) bab_rp('iIdFolder', 0);
+
 		$oBfp = new BAB_BaseFormProcessing();
-		
+
 		$oBfp->set_caption('yes', bab_translate("Yes"));
 		$oBfp->set_caption('no', bab_translate("No"));
 		$oBfp->set_caption('warning', bab_translate("CAUTION: This will permanently remove this directory and all subdirectories files on it !"));
 		$oBfp->set_caption('message', bab_translate("You sure you want to delete this directory ?"));
 		$oBfp->set_caption('title', $sDirName);
-		
+
 		$oBfp->set_data('sTg', 'fileman');
 		$oBfp->set_data('sIdx', 'list');
 		$oBfp->set_data('sAction', 'deleteFolder');
@@ -2957,7 +2963,7 @@ function displayDeleteFolderConfirm()
 		$oBfp->set_data('sPath', $sPath);
 		$oBfp->set_data('sPathName', $oFileManagerEnv->sRelativePath);
 		$oBfp->set_data('sGr', $oFileManagerEnv->sGr);
-		
+
 		$babBody->babecho(bab_printTemplate($oBfp, 'fileman.html', 'warningyesno'));
 	}
 	else
@@ -2967,7 +2973,7 @@ function displayDeleteFolderConfirm()
 	}
 }
 
-	
+
 function cutFolder()
 {
 	$oFileManagerEnv =& getEnvObject();
@@ -2979,7 +2985,7 @@ function cutFolder()
 	{
 		cutUserFolder();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -2990,9 +2996,9 @@ function cutCollectiveDir()
 {
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$sDirName = (string) bab_gp('sDirName', '');
-	
+
 	if(mb_strlen(trim($sDirName)) > 0)
 	{
 		if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
@@ -3000,32 +3006,32 @@ function cutCollectiveDir()
 			$babBody->msgerror = bab_translate("Access denied");
 			return;
 		}
-		
+
 		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 		$sFullPathName = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
-		
+
 		if(!is_dir($sFullPathName))
 		{
 			$babBody->msgerror = bab_translate("Invalid directory");
 			return;
 		}
-		
+
 		$iIdRootFolder	= $oFileManagerEnv->iId;
 		$iIdFolder		= 0;
 		$sGroup			= 'Y';
 		$sCollective	= 'N';
 		$iIdOwner		= $oFileManagerEnv->iIdObject;
 		$sCheckSum		= md5($sDirName);
-		
+
 		$oFmFolderSet	= new BAB_FmFolderSet();
 		$oName			=& $oFmFolderSet->aField['sName'];
 		$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
-		
+
 		$oCriteria = $oName->in($sDirName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in($oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
+
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
 		{
@@ -3033,7 +3039,7 @@ function cutCollectiveDir()
 			$sCollective	= 'Y';
 			$iIdOwner		= $oFmFolder->getId();
 		}
-		
+
 		$oFmFolderCliboard = new BAB_FmFolderCliboard();
 		$oFmFolderCliboard->setRootFolderId($iIdRootFolder);
 		$oFmFolderCliboard->setFolderId($iIdFolder);
@@ -3046,7 +3052,7 @@ function cutCollectiveDir()
 		$oFmFolderCliboard->setRelativePath($oFileManagerEnv->sRelativePath);
 		$oFmFolderCliboard->save();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3059,32 +3065,32 @@ function cutUserFolder()
 
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$sDirName = (string) bab_gp('sDirName', '');
-	
+
 	if(!canCutFolder($oFileManagerEnv->sRelativePath . $sDirName . '/'))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return;
 	}
-	
+
 	if(mb_strlen(trim($sDirName)) > 0)
 	{
 		$sUploadPath = $oFileManagerEnv->getRootFmPath();
 		$sFullPathName = realpath($sUploadPath . $oFileManagerEnv->sRelativePath . $sDirName);
-		
+
 		if(!is_dir($sFullPathName))
 		{
 			$babBody->msgerror = bab_translate("Invalid directory");
 			return;
 		}
-		
+
 		$iIdRootFolder	= $oFileManagerEnv->iId;
 		$iIdFolder		= 0;
 		$sGroup			= 'N';
 		$sCollective	= 'N';
 		$sCheckSum		= md5($sDirName);
-		
+
 		$oFmFolderCliboard = new BAB_FmFolderCliboard();
 		$oFmFolderCliboard->setRootFolderId($iIdRootFolder);
 		$oFmFolderCliboard->setFolderId($iIdFolder);
@@ -3097,7 +3103,7 @@ function cutUserFolder()
 		$oFmFolderCliboard->setRelativePath($oFileManagerEnv->sRelativePath);
 		$oFmFolderCliboard->save();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3110,7 +3116,7 @@ function pasteFolder()
 
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		pasteCollectiveDir();
@@ -3119,7 +3125,7 @@ function pasteFolder()
 	{
 		pasteUserFolder();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3132,7 +3138,7 @@ function pasteCollectiveDir()
 
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
 	$sSrcPath				= (string) bab_gp('sSrcPath', '');
 	$bSrcPathIsCollective	= true;
@@ -3140,30 +3146,30 @@ function pasteCollectiveDir()
 	$sTrgPath				= (string) bab_gp('path', '');
 
 	$oFmFolder				= null;
-	 
+
 	if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 	{
 		//Nom du r�pertoire � coller
-		$sName = getLastPath($sSrcPath); 
-		
+		$sName = getLastPath($sSrcPath);
+
 		//Emplacement du r�pertoire � coller
 		$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
 
 		$bSrcPathHaveVersioning = false;
 		$bTrgPathHaveVersioning = false;
 		$bSrcPathCollective		= false;
-		
+
 		//R�cup�ration des informations concernant le r�pertoire source (i.e le r�pertoire � d�placer)
 		{
 			$iIdRootFolder	= 0;
 			$oSrcFmFolder	= null;
 			BAB_FmFolderHelper::getInfoFromCollectivePath($sSrcPath, $iIdRootFolder, $oSrcFmFolder);
-			
+
 			$iSrcIdOwner			= $oSrcFmFolder->getId();
 			$bSrcPathHaveVersioning = ('Y' === $oSrcFmFolder->getVersioning());
 			$bSrcPathCollective		= ((string) $sSrcPath . '/' === (string) $oSrcFmFolder->getRelativePath() . $oSrcFmFolder->getName() . '/');
 		}
-		
+
 		$oFmFolderSet = new BAB_FmFolderSet();
 		if($oFileManagerEnv->userIsInCollectiveFolder())
 		{
@@ -3190,15 +3196,15 @@ function pasteCollectiveDir()
 			if(!is_null($oFmFolder))
 			{
 				//Le r�pertoire � coller est collectif
-				
+
 				$bTrgPathHaveVersioning = ('Y' === $oFmFolder->getVersioning());
 			}
-			else 
+			else
 			{
 				//Le r�pertoire � coller n'est pas collectif
-				//comme on colle dans la racine il faut le faire 
+				//comme on colle dans la racine il faut le faire
 				//devenir un r�pertoire collectif
-				
+
 				$oFmFolder = new BAB_FmFolder();
 				$oFmFolder->setName($sName);
 				$oFmFolder->setRelativePath('');
@@ -3214,10 +3220,10 @@ function pasteCollectiveDir()
 		}
 
 		$sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
-		
+
 		$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
 		$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
-		
+
 //		bab_debug('sFullSrcPath ==> ' . $sFullSrcPath . ' versioning ' . (($bSrcPathHaveVersioning) ? 'Yes' : 'No') . ' bSrcPathCollective ' . (($bSrcPathCollective) ? 'Yes' : 'No'));
 //		bab_debug('sFullTrgPath ==> ' . $sFullTrgPath . ' versioning ' . (($bTrgPathHaveVersioning) ? 'Yes' : 'No'));
 
@@ -3226,10 +3232,10 @@ function pasteCollectiveDir()
 		{
 			$bSrcValid = ((realpath(mb_substr($sFullSrcPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_readable($sFullSrcPath));
 			$bTrgValid = ((realpath(mb_substr($sFullTrgPath, 0, mb_strlen(realpath($sUploadPath)))) === (string) realpath($sUploadPath)) && is_writable($sFullTrgPath));
-			
+
 //			bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
 //			bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
-			
+
 			if($bSrcValid && $bTrgValid)
 			{
 				if(!is_null($oFmFolder))
@@ -3242,35 +3248,35 @@ function pasteCollectiveDir()
 					$bTrgPathHaveVersioning = false;
 					$iTrgIdOwner			= $oFmFolder->getId();
 				}
-				
+
 				global $babDB, $babBody;
 				$oFolderFileSet = new BAB_FolderFileSet();
 				$oIdDgOwnerFile =& $oFolderFileSet->aField['iIdDgOwner'];
 				$oGroup =& $oFolderFileSet->aField['sGroup'];
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
-				
+
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oIdDgOwnerFolder =& $oFmFolderSet->aField['iIdDgOwner'];
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
-				
+
 				$sLastRelativePath = $sSrcPath . '/';
-				$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ? 
+				$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ?
 					$sTrgPath . '/' : '') . getLastPath($sSrcPath) . '/';
-					
+
 				if(false === $bSrcPathCollective)
 				{
 					 if(false === $bTrgPathHaveVersioning)
 					 {
 						global $babDB;
-						
-						//Suppression des versions des fichiers pour les r�pertoires qui ne sont pas contenus dans des 
+
+						//Suppression des versions des fichiers pour les r�pertoires qui ne sont pas contenus dans des
 						//r�pertoires collectifs
 						{
 							//S�lection de tous les fichiers qui contiennent dans leurs chemins le r�pertoire � d�placer
 							$oCriteriaFile = $oPathName->like($babDB->db_escape_like($sLastRelativePath) . '%');
 							$oCriteriaFile = $oCriteriaFile->_and($oGroup->in('Y'));
 							$oCriteriaFile = $oCriteriaFile->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
-							
+
 							//S�lection des r�pertoires collectifs
 							$oCriteriaFolder = $oRelativePath->like($babDB->db_escape_like($sLastRelativePath) . '%');
 							$oCriteriaFolder = $oCriteriaFolder->_and($oIdDgOwnerFolder->in(bab_getCurrentUserDelegation()));
@@ -3282,7 +3288,7 @@ function pasteCollectiveDir()
 									$babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 							}
 							$oFolderFileSet->removeVersions($oCriteriaFile);
-							
+
 							$oFolderFileSet->select($oCriteriaFile);
 							while(null !== ($oFolderFile = $oFolderFileSet->next()))
 							{
@@ -3292,20 +3298,20 @@ function pasteCollectiveDir()
 							}
 						}
 					 }
-				}								
+				}
 
 				if(BAB_FmFolderSet::move($sUploadPath, $sLastRelativePath, $sNewRelativePath))
 				{
 					BAB_FolderFileSet::move($sLastRelativePath, $sNewRelativePath, 'Y');
-					
+
 					$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 					$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, 'Y');
 					$oFmFolderCliboardSet->move($sLastRelativePath, $sNewRelativePath, 'Y');
 				}
-			}			
+			}
 		}
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3318,7 +3324,7 @@ function pasteUserFolder()
 
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
 	$sSrcPath				= (string) bab_gp('sSrcPath', '');
 	$bSrcPathIsCollective	= true;
@@ -3326,29 +3332,29 @@ function pasteUserFolder()
 	$sTrgPath				= (string) bab_gp('path', '');
 	$oFmFolder				= null;
 	$bSrcPathIsCollective	= false;
-	
+
 	if(canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iIdTrgRootFolder, $sTrgPath))
 	{
 		$sUploadPath = $oFileManagerEnv->getRootFmPath();
-		
+
 		$sFullSrcPath = realpath((string) $sUploadPath . $sSrcPath);
 		$sFullTrgPath = realpath((string) $sUploadPath . $sTrgPath);
-		
+
 //		bab_debug($sFullSrcPath);
 //		bab_debug($sFullTrgPath);
 
 		//Nom du r�pertoire � coller
-		$sName = getLastPath($sSrcPath); 
-		
+		$sName = getLastPath($sSrcPath);
+
 		//Emplacement du r�pertoire � coller
 		$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
-		
+
 		if($sFullSrcPath === realpath((string) $sFullTrgPath . '/' . getLastPath($sSrcPath)))
 		{
 			$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 			$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, 'N');
 		}
-		else 
+		else
 		{
 //			$sPath = mb_substr($sFullTrgPath, 0, mb_strlen($sFullSrcPath));
 //			if($sPath !== $sFullSrcPath)
@@ -3358,16 +3364,16 @@ function pasteUserFolder()
 
 //				bab_debug('bSrcValid ' . (($bSrcValid) ? 'Yes' : 'No'));
 //				bab_debug('bTrgValid ' . (($bTrgValid) ? 'Yes' : 'No'));
-			
+
 				if($bSrcValid && $bTrgValid)
 				{
 					$sLastRelativePath = $sSrcPath . '/';
-					$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ? 
+					$sNewRelativePath = ((mb_strlen(trim($sTrgPath)) > 0) ?
 						$sTrgPath . '/' : '') . getLastPath($sSrcPath) . '/';
-					
+
 					$sSrc = removeEndSlah($sUploadPath . $sLastRelativePath);
 					$sTrg = removeEndSlah($sUploadPath . $sNewRelativePath);
-					
+
 //					bab_debug($sSrc);
 //					bab_debug($sTrg);
 
@@ -3376,8 +3382,8 @@ function pasteUserFolder()
 						$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 						$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, 'N');
 						$oFmFolderCliboardSet->move($sLastRelativePath, $sNewRelativePath, 'N');
-						
-						
+
+
 						global $babBody, $babDB, $BAB_SESS_USERID;
 						// update database files
 						$oFolderFileSet = new BAB_FolderFileSet();
@@ -3390,7 +3396,7 @@ function pasteUserFolder()
 						$oCriteria = $oCriteria->_and($oGroup->in('N'));
 						$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 						$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
-						
+
 						$oFolderFileSet->select($oCriteria);
 						$iL = mb_strlen($sLastRelativePath);
 						while(null !== ($oFolderFile = $oFolderFileSet->next()))
@@ -3406,13 +3412,13 @@ function pasteUserFolder()
 	}
 }
 
-	
+
 function createFolder()
 {
 	global $babBody;
 
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		createFolderForCollectiveDir();
@@ -3421,7 +3427,7 @@ function createFolder()
 	{
 		createFolderForUserDir();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3431,10 +3437,10 @@ function createFolder()
 function createFolderForCollectiveDir()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
-	{	
+	{
 		$sDirName = (string) bab_pp('sDirName', '');
 		if(mb_strlen(trim($sDirName)) > 0)
 		{
@@ -3449,7 +3455,7 @@ function createFolderForCollectiveDir()
 			$sPath					= (string) bab_pp('path', '');
 			$sPathName				= (string) '';
 			$iIdFolder				= (int) $oFileManagerEnv->iId;
-			
+
 			$sRelativePath = '';
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 			if(!is_null($oFmFolder) || $oFileManagerEnv->userIsInRootFolder())
@@ -3457,14 +3463,14 @@ function createFolderForCollectiveDir()
 				$sRelativePath	= $oFileManagerEnv->sRelativePath;
 				$sUploadPath	= BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
 				$sDirName		= replaceInvalidFolderNameChar($sDirName);
-	
+
 				if(!isStringSupportedByFileSystem($sDirName))
 				{
 					$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
 					return ;
 				}
-				
-				
+
+
 				$sFullPathName	= $sUploadPath . $sRelativePath . $sDirName;
 
 //				bab_debug('sFullPathName ==> ' .  $sFullPathName);
@@ -3494,12 +3500,12 @@ function createFolderForCollectiveDir()
 				}
 			}
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
-	}	
-	else 
+	}
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3509,13 +3515,13 @@ function createFolderForCollectiveDir()
 function createFolderForUserDir()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
@@ -3526,22 +3532,22 @@ function createFolderForUserDir()
 
 			$sUploadPath	= $oFileManagerEnv->getCurrentFmPath();
 			$sDirName		= replaceInvalidFolderNameChar($sDirName);
-	
+
 			if(!isStringSupportedByFileSystem($sDirName))
 			{
 				$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
 				return ;
 			}
-			
+
 			$sFullPathName	= $sUploadPath . $sDirName;
 			BAB_FmFolderHelper::createDirectory($sFullPathName);
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3553,7 +3559,7 @@ function editFolder()
 	global $babBody;
 
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		editFolderForCollectiveDir();
@@ -3562,41 +3568,41 @@ function editFolder()
 	{
 		editFolderForUserDir();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
-	
+
 }
 
 
 function editFolderForCollectiveDir()
 {
 	global $babBody, $babDB;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 //	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sRelativePath ==> ' . $oFileManagerEnv->sRelativePath);
 
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
-	{	
+	{
 //bab_debug('Rajouter un test qui permet d\'etre que c\'est repertoire collectif ou pas');
 		$sDirName = (string) bab_pp('sDirName', '');
 		if(mb_strlen(trim($sDirName)) > 0)
 		{
 			$sType				= (string) bab_pp('sType', 'collective');
-			$iIdFld				= (int) bab_pp('iIdFolder', 0); 
+			$iIdFld				= (int) bab_pp('iIdFolder', 0);
 			$bFolderRenamed		= false;
 			$bChangeFileIdOwner = false;
 			$sRelativePath		= $oFileManagerEnv->sRelativePath;
-			
+
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFld);
 			if(!is_null($oFmFolder))
 			{
 				$bFolderRenamed	= ($sDirName !== $oFmFolder->getName()) ? true : false;
 				$sOldDirName	= $oFmFolder->getName();
 				$sRelativePath	= $oFmFolder->getRelativePath();
-				
+
 				//collectiveToSimple
 				if('simple' === $sType)
 				{
@@ -3611,11 +3617,11 @@ function editFolderForCollectiveDir()
 					$oFmFolder = null;
 				}
 			}
-			else 
+			else
 			{
 				$sOldDirName	= (string) bab_pp('sOldDirName', '');
 				$bFolderRenamed	= ($sDirName !== $sOldDirName) ? true : false;
-				
+
 				//simpleToCollective
 				if('collective' === $sType)
 				{
@@ -3639,13 +3645,13 @@ function editFolderForCollectiveDir()
 				if(mb_strlen(trim($sOldDirName)) > 0)
 				{
 					$sLocalDirName = replaceInvalidFolderNameChar($sDirName);
-	
+
 					if(!isStringSupportedByFileSystem($sLocalDirName))
 					{
 						$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
 						return ;
 					}
-					
+
 					$bSuccess = BAB_FmFolderSet::rename($sRootFmPath, $sRelativePath, $sOldDirName, $sLocalDirName);
 					if(false !== $bSuccess)
 					{
@@ -3663,7 +3669,7 @@ function editFolderForCollectiveDir()
 					bab_debug(__FUNCTION__ . ' ERROR invalid sOldDirName');
 				}
 			}
-		
+
 			if(!is_null($oFmFolder))
 			{
 				$sActive				= (string) bab_pp('sActive', 'Y');
@@ -3718,25 +3724,25 @@ function editFolderForCollectiveDir()
 					$oFolderFileSet = new BAB_FolderFileSet();
 					$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 					$oFolderFileSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
-					
+
 					$soFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 					$soFmFolderCliboardSet->setOwnerId($sPathName, $oFirstFmFolder->getId(), $oFmFolder->getId());
 				}
-				
+
 				if (true === $bRedirect) {
-					$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+					$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
 						'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath);
-					
+
 					header('Location: ' . $sUrl);
 				}
 			}
 		}
-		else 
+		else
 		{
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3748,10 +3754,10 @@ function editFolderForCollectiveDir()
 function editFolderForUserDir()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
 	$sRelativePath = $oFileManagerEnv->sRelativePath;
-	
+
 //	if(canEdit($sRelativePath))
 	if(canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
@@ -3762,24 +3768,24 @@ function editFolderForUserDir()
 		{
 			$sPathName = $sRelativePath . $sOldDirName . '/';
 			$sRootFmPath = $oFileManagerEnv->getRootFmPath();
-			
+
 //			bab_debug('sRootFmPath ==> ' . $sRootFmPath);
 //			bab_debug('sRelativePath ==> ' . $sRelativePath);
 //			bab_debug('sOldDirName ==> ' . $sOldDirName);
 //			bab_debug('sDirName ==> ' . $sDirName);
 //			bab_debug('sPathName ==> ' . $sPathName);
 			$bFolderRenamed	= ($sDirName !== $sOldDirName) ? true : false;
-			
+
 			if($bFolderRenamed)
 			{
 				$sDirName = replaceInvalidFolderNameChar($sDirName);
-	
+
 				if(!isStringSupportedByFileSystem($sDirName))
 				{
 					$babBody->addError(bab_translate("The directory name contains characters not supported by the file system"));
 					return ;
 				}
-				
+
 				if(BAB_FmFolderHelper::renameDirectory($sRootFmPath, $sRelativePath, $sOldDirName, $sDirName))
 				{
 					BAB_FolderFileSet::renameFolder($sPathName, $sDirName, 'N');
@@ -3787,12 +3793,12 @@ function editFolderForUserDir()
 				}
 			}
 		}
-		else 
+		else
 		{
 			$babBody->addError(bab_translate("Access denied"));
 		}
 	}
-	else 
+	else
 	{
 		$babBody->addError(bab_translate("Access denied"));
 	}
@@ -3804,7 +3810,7 @@ function deleteFolder()
 	global $babBody;
 
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		deleteFolderForCollectiveDir();
@@ -3813,7 +3819,7 @@ function deleteFolder()
 	{
 		deleteFolderForUserDir();
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3825,46 +3831,46 @@ function deleteFolderForCollectiveDir()
 	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
 
-	
+
 	if(!canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
 	}
-	
+
 	$sDirName = (string) bab_pp('sDirName', '');
 	if(false !== mb_strpos($sDirName, '..'))
 	{
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
 		return false;
 	}
-	
+
 	if(false !== mb_strpos($sDirName, '/'))
 	{
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
 		return false;
 	}
-	
+
 	if(false !== mb_strpos($sDirName, '\\'))
 	{
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
 		return false;
 	}
-	
+
 	if(0 === mb_strlen(trim($sDirName)))
 	{
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
 		return false;
 	}
-	
-	$iIdFld	= (int) bab_pp('iIdFolder', 0); 
+
+	$iIdFld	= (int) bab_pp('iIdFolder', 0);
 	if(0 !== $iIdFld)
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
 		bab_deleteFolder($iIdFld);
 
 	}
-	else 
+	else
 	{
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oFmFolderSet->removeSimpleCollectiveFolder($oFileManagerEnv->sRelativePath . $sDirName . '/');
@@ -3875,9 +3881,9 @@ function deleteFolderForCollectiveDir()
 function deleteFolderForUserDir()
 {
 	global $babBody;
-	
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
@@ -3886,19 +3892,19 @@ function deleteFolderForUserDir()
 			if(mb_strlen(trim($sDirName)) > 0)
 			{
 				$sUploadPath = $oFileManagerEnv->getRootFmPath();
-				
+
 				global $babDB;
-			
+
 				$sPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->sRelativePath . '/' . $sDirName . '/'));
 				$sFullPathName = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sUploadPath . $sPathName));
-							
+
 				$oFolderFileSet = new BAB_FolderFileSet();
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
 				$oFolderFileSet->remove($oPathName->like($babDB->db_escape_like($sPathName) . '%'));
-				
+
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oFmFolderSet->removeDir($sFullPathName);
-				
+
 				$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 				$oFmFolderCliboardSet->deleteFolder($sDirName, $oFileManagerEnv->sRelativePath, 'N');
 			}
@@ -3908,7 +3914,7 @@ function deleteFolderForUserDir()
 			$babBody->msgerror = bab_translate("Please give a valid folder name");
 		}
 	}
-	else 
+	else
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 	}
@@ -3918,7 +3924,7 @@ function changeDelegation()
 {
 	$aVisibleDelegation = bab_getUserFmVisibleDelegations();
 	$iDelegation = (int) bab_pp('iDelegation', 0);
-	
+
 	if(array_key_exists($iDelegation, $aVisibleDelegation))
 	{
 		bab_setCurrentUserDelegation($iDelegation);
@@ -3934,13 +3940,13 @@ $oFileManagerEnv =& getEnvObject();
 if(false === $oFileManagerEnv->accessValid())
 {
 	$babBody->addError(bab_translate("Access denied"));
-	return;	
+	return;
 }
 
 $idx = bab_rp('idx','list');
 
-$sAction = isset($_POST['sAction']) ? $_POST['sAction'] : 
-	(isset($_GET['sAction']) ? $_GET['sAction'] :  
+$sAction = isset($_POST['sAction']) ? $_POST['sAction'] :
+	(isset($_GET['sAction']) ? $_GET['sAction'] :
 	(isset($_POST['setRight']) ? 'setRight' : '???')
 	);
 
@@ -3950,18 +3956,18 @@ switch($sAction)
 	case 'createFolder':
 		createFolder();
 		break;
-		
+
 	case 'editFolder':
 		if(!isset($_POST['sDeleteFolder']))
 		{
 			editFolder();
 		}
-		else 
+		else
 		{
 			$idx = 'displayDeleteFolderConfirm';
 		}
 		break;
-		
+
 	case 'cutFolder':
 		cutFolder();
 		break;
@@ -3973,13 +3979,13 @@ switch($sAction)
 	case 'deleteFolder':
 		deleteFolder();
 		break;
-	
+
 	case 'deleteRestoreFile':
-		if(!empty($_REQUEST['delete'])) 
+		if(!empty($_REQUEST['delete']))
 		{
 			deleteFiles(bab_rp('items'));
 		}
-		else 
+		else
 		{
 			restoreFiles(bab_rp('items'));
 		}
@@ -3991,13 +3997,13 @@ switch($sAction)
 
 	case 'saveFile':
 		$aFiles = array();
-		foreach($_FILES as $sFieldname => $file) 
+		foreach($_FILES as $sFieldname => $file)
 		{
 			$aFiles[] = bab_fmFile::upload($sFieldname);
 		}
-	
+
 		$bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
-				$oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'), 
+				$oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'),
 				bab_pp('readonly'), bab_pp('maxdownloads'));
 		if(false === $bSuccess)
 		{
@@ -4006,18 +4012,18 @@ switch($sAction)
 		else
 		{
 			//Pour faire apparaitre le lien approbation de la section utulisateur
-			$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId . 
+			$sUrl = $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $oFileManagerEnv->iId .
 				'&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath);
-			
+
 			header('Location: ' . $sUrl);
 			exit;
 		}
 		break;
-		
+
 	case 'updateFile':
-		$bSuccess = saveUpdateFile(bab_pp('idf'), bab_fmFile::upload('uploadf'), 
-			bab_pp('fname'), bab_pp('description'), bab_pp('keywords'), 
-			bab_pp('readonly'), bab_pp('confirm'), bab_pp('bnotify'), 
+		$bSuccess = saveUpdateFile(bab_pp('idf'), bab_fmFile::upload('uploadf'),
+			bab_pp('fname'), bab_pp('description'), bab_pp('keywords'),
+			bab_pp('readonly'), bab_pp('confirm'), bab_pp('bnotify'),
 			isset($_POST['description']), bab_pp('maxdownloads'));
 		if(false === $bSuccess)
 		{
@@ -4028,7 +4034,7 @@ switch($sAction)
 			$idx = 'unload';
 		}
 		break;
-		
+
 	case 'getFile':
 		getFile();
 		break;
@@ -4036,15 +4042,15 @@ switch($sAction)
 	case 'cutFile':
 		cutFile();
 		break;
-		
+
 	case 'pasteFile':
 		pasteFile();
 		break;
-		
+
 	case 'delFile':
 		delFile();
 		break;
-		
+
 	case 'changeDelegation':
 		changeDelegation();
 		break;
@@ -4057,11 +4063,11 @@ switch($idx)
 	case 'displayFolderForm':
 		displayFolderForm();
 		break;
-		
+
 	case 'displayDeleteFolderConfirm':
 		displayDeleteFolderConfirm();
 		break;
-		
+
 	case 'unload':
 		fileUnload();
 		exit;
@@ -4075,7 +4081,7 @@ switch($idx)
 	case 'displayRightForm':
 		displayRightForm();
 		break;
-		
+
 	case 'displayAddFileForm':
 		displayAddFileForm();
 		break;
@@ -4099,12 +4105,12 @@ switch($idx)
 
 	case 'getOrphanFileList':
 		getOrphanFileList();
-		break;		
-		
+		break;
+
 	case 'deleteOrphanFile':
 		deleteOrphanFile();
 		break;
-		
+
 	default:
 	case 'list':
 		listFiles();
