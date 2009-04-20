@@ -571,7 +571,7 @@ class bab_ArticleReferenceDescription extends bab_ReferenceDescriptionImpl
 	/**
 	 * @return array
 	 */
-	private function getArticle()
+	protected function getArticle()
 	{
 		$arr = $this->getObjArray();
 
