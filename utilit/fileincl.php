@@ -338,8 +338,8 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 					$oFolderFileVersionSet->select($oIdFile->in($oFolderFile->getId()), array('iVerMajor' => 'DESC', 'iVerMinor' => 'DESC'));
 					if(null !== ($oFolderFileVersion = $oFolderFileVersionSet->get()))
 					{
-						$this->author = bab_getUserName($oFolderFileVersion->getAuthorId());
-						$this->authoremail = bab_getUserEmail($oFolderFileVersion->getAuthorId());
+						$this->author = bab_getUserName($GLOBALS['BAB_SESS_USERID']);
+						$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
 					}
 					else
 					{
