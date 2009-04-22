@@ -526,14 +526,17 @@ function aclDelete($table, $id_object)
 	}
 
 /**
+ * Removes all the ACL information stored for a group in the specified table.
+ * 
  * @since	6.1.0
  * 
- * @param	string	$table
- * @param	int		$id_group
+ * @param	string	$table			The acl table name.
+ * @param	int		$id_group		The group for which acl should be removed.
  */
-function aclDeleteGroup($table, $id_group) {
+function aclDeleteGroup($table, $id_group)
+{
 	global $babDB;
-	$babDB->db_query("DELETE FROM ".$babDB->backTick($table)." WHERE id_group='".$babDB->db_escape_string($id_group)."' OR id_group='".$babDB->db_escape_string($id_group + BAB_ACL_GROUP_TREE)."'");
+	$babDB->db_query('DELETE FROM ' . $babDB->backTick($table) . ' WHERE id_group=' . $babDB->quote($id_group) . ' OR id_group=' . $babDB->quote($id_group + BAB_ACL_GROUP_TREE));
 }
 
 function aclSetGroups_all($table, $id_object)
@@ -638,7 +641,9 @@ function aclGetAccessUsers($table, $id_object) {
  * @param   string	$trgTable		duplicated rights table
  * @param   int		$trgIdObject	new affected rights id_object 
  * 
- */function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
+ */
+function aclDuplicateRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
+{
 	global $babDB;
 
 	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->backTick($srcTable).' WHERE id_object='.$babDB->quote($srcIdObject));
@@ -664,7 +669,9 @@ function aclGetAccessUsers($table, $id_object) {
  * @param   string	$trgTable		duplicated rights table
  * @param   int		$trgIdObject	new affected rights id_object 
  * 
- */function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject) {
+ */
+function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
+{
 	global $babDB;
 	
 	$babDB->db_query('DELETE FROM '.$babDB->backTick($trgTable).' WHERE id_object='.$babDB->quote($trgIdObject));
@@ -683,7 +690,8 @@ function aclGetAccessUsers($table, $id_object) {
 function aclAdd($sTable, $iIdGroup, $iIdObject)
 {
 	global $babDB;
-	return $babDB->db_query('INSERT INTO ' . $babDB->db_escape_string($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
+
+	return $babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
 }
 
 
