@@ -1634,10 +1634,10 @@ function bab_getFileMimeType($file)
 {
 	global $babDB;
 	$mime = "application/octet-stream";
-	$end = mb_strrchr($file, '.');
-	if (false !== $end)
-		{
-		$ext = mb_substr($end,1);
+	$iPos = mb_strrpos($file, ".");
+    if (false !== $iPos)
+        {
+        $ext = mb_substr($file,$iPos+1);
 		$res = $babDB->db_query("select * from ".BAB_MIME_TYPES_TBL." where ext='".$babDB->db_escape_string($ext)."'");
 		if( $res && $babDB->db_num_rows($res) > 0)
 			{
