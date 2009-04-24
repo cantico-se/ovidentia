@@ -196,6 +196,15 @@ function bab_confirmDeleteArticles($items)
 	}
 }
 
+/**
+ * Deletes the specified article and the associated data:
+ *  - files
+ *  - tags
+ *  - images and associated folder
+ * Existing drafts are unlinked form the article but are not deleted. 
+ *
+ * @param int	$article		The article id.
+ */
 function bab_confirmDeleteArticle($article)
 	{
 	// delete comments
@@ -289,6 +298,12 @@ function bab_deletePostFiles($idforum, $idpost)
 		}
 }
 
+/**
+ * Deletes a forum thread and all the posts and files linked to it.
+ *
+ * @param int	$idforum
+ * @param int	$idthread
+ */
 function bab_deleteThread($idforum, $idthread)
 {
 	global $babDB;
