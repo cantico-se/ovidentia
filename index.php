@@ -297,213 +297,226 @@ function printBody()
 	{
 	class tpl
 	{
-		var $babLogoLT;
-		var $babLogoRT;
-		var $babBanner;
-		var $sitename;
-		var $style;
-		var $script;
-		var $babSlogan;
-		var $login;
-		var $logurl;
-		var $babLogoLB;
-		var $babLogoRB;
-		var $enabled;
-		var $menuclass;
-		var $menuattribute;
-		var $menuurl;
-		var $menutext;
-		var $menukeys = array();
-		var $menuvals = array();
-		var $arrsectleft = array();
-		var $nbsectleft = null;
-		var $arrsectright = array();
-		var $nbsectright = null;
-		var $content;
-		var $message;
-		var $version;
-		var $search;
-		var $searchurl;
-		var $sContent;
-		 
+		public $babLogoLT;
+		public $babLogoRT;
+		public $babBanner;
+		public $sitename;
+		public $style;
+		public $script;
+		public $babSlogan;
+		public $login;
+		public $logurl;
+		public $babLogoLB;
+		public $babLogoRB;
+		public $enabled;
+		public $menuclass;
+		public $menuattribute;
+		public $menuurl;
+		public $menutext;
+		public $menukeys = array();
+		public $menuvals = array();
+		public $arrsectleft = array();
+		private $nbsectleft = null;
+		public $arrsectright = array();
+		private $nbsectright = null;
+		public $content;
+		public $message;
+		public $version;
+		public $search;
+		public $searchurl;
+		public $sContent;
+
 		public function __construct()
-			{
+		{
 			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle;
 			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
-			$this->babLogoLT	= "";
-			$this->babLogoRT	= "";
-			$this->babLogoLB	= "";
-			$this->babLogoRB	= "";
-			$this->babBanner	= "";
+			$this->babLogoLT	= '';
+			$this->babLogoRT	= '';
+			$this->babLogoLB	= '';
+			$this->babLogoRB	= '';
+			$this->babBanner	= '';
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();	
 			
 			$this->style = $babStyle;
 
-			$this->babLogoLT = bab_printTemplate($this, "config.html", "babLogoLT");
-			$this->babLogoRT = bab_printTemplate($this, "config.html", "babLogoRT");
-			$this->babLogoLB = bab_printTemplate($this, "config.html", "babLogoLB");
-			$this->babLogoRB = bab_printTemplate($this, "config.html", "babLogoRB");
-			$this->babBanner = bab_printTemplate($this, "config.html", "babBanner");
+			$this->babLogoLT = bab_printTemplate($this, 'config.html', "babLogoLT");
+			$this->babLogoRT = bab_printTemplate($this, 'config.html', "babLogoRT");
+			$this->babLogoLB = bab_printTemplate($this, 'config.html', "babLogoLB");
+			$this->babLogoRB = bab_printTemplate($this, 'config.html', "babLogoRB");
+			$this->babBanner = bab_printTemplate($this, 'config.html', "babBanner");
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
 			$this->tpowered = bab_translate("Powered by Ovidentia,");
 			$this->tgroupware = bab_translate("Groupware Portal");
 			$this->ttrademark = bab_translate('Ovidentia is a registered trademark by');
-			if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true )
-				{
+			if (isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED == true) {
 				$this->login = bab_translate("Logout");
-				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&amp;cmd=signoff";
-				}
-			else
-				{
+				$this->logurl = $GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signoff';
+			} else {
 				// Variables redeclarations for IIS (bug or default config)
-				if (!isset($GLOBALS['BAB_SESS_FIRSTNAME'])) $GLOBALS['BAB_SESS_FIRSTNAME'] = "";
-				if (!isset($GLOBALS['BAB_SESS_LASTNAME'])) $GLOBALS['BAB_SESS_LASTNAME'] = "";
+				if (!isset($GLOBALS['BAB_SESS_FIRSTNAME'])) $GLOBALS['BAB_SESS_FIRSTNAME'] = '';
+				if (!isset($GLOBALS['BAB_SESS_LASTNAME'])) $GLOBALS['BAB_SESS_LASTNAME'] = '';
 				$this->login = bab_translate("Login");
-				$this->logurl = $GLOBALS['babUrlScript']."?tg=login&amp;cmd=signon";
-				}
+				$this->logurl = $GLOBALS['babUrlScript'].'?tg=login&amp;cmd=signon';
+			}
 
 			$this->search = bab_translate("Search");
 			$this->searchurl = $GLOBALS['babUrlScript'].'?tg=search';
-			
 
-			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '')
+			if (!isset($GLOBALS['babMarquee']) || $GLOBALS['babMarquee'] == '') {
 				$this->babSlogan = $babSlogan;
-			else
+			} else {
 				$this->babSlogan = $GLOBALS['babMarquee'];
+			}
 			$this->menukeys = array_keys($babBody->menu->items);
 			$this->menuvals = array_values($babBody->menu->items);
 
-			if( isset($GLOBALS['babHideMenu'])) 
-				{
+			if (isset($GLOBALS['babHideMenu'])) {
 				$tg = bab_rp('tg', '');
 				$idx = bab_rp('idx', '');
 
-				if( $tg && isset($GLOBALS['babHideMenu'][$tg]) && (count($GLOBALS['babHideMenu'][$tg]) == 0  || in_array($idx, $GLOBALS['babHideMenu'][$tg])))
-					{
+				if ($tg && isset($GLOBALS['babHideMenu'][$tg]) && (count($GLOBALS['babHideMenu'][$tg]) == 0  || in_array($idx, $GLOBALS['babHideMenu'][$tg]))) {
 					$this->menuitems = 0;
-					}
-				else
-					{
+				} else {
 					$this->menuitems = count($this->menukeys);
-					}
 				}
-			else
-				{
+			} else {
 				$this->menuitems = count($this->menukeys);
-				}
-
-			
+			}
 
 			$debug = bab_getDebug();
-			if (false === $debug)
+			if (false === $debug) {
 				$debug = '';
+			}
 
 			$this->content = $debug.$babBody->printout();
 			$this->message = $babBody->message;
 			$this->title = $babBody->title;
 			$this->msgerror = $babBody->msgerror;
+		}
+
+
+		public function __get($propertyName)
+		{
+			switch ($propertyName) {
+
+				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
+				case 'nbsectleft':
+				case 'nbsectright':
+					$this->loadsections();
+
+				default:
+					return $this->$propertyName;
 			}
+		}
+
+
+		public function __isset($propertyName)
+		{
+			switch ($propertyName) {
+
+				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
+				case 'nbsectleft':
+				case 'nbsectright':
+					return true;
+			}
+			return false;
+		}
+
 
 		public function getNextMenu()
-			{
+		{
 			global $babBody;
+
 			static $i = 0;
-			if( $i < $this->menuitems)
-				{
-				if(!strcmp($this->menukeys[$i], $babBody->menu->curItem))
-					{
-					$this->menuclass = "BabMenuCurArea";
-					}
-				else
-					$this->menuclass = "BabMenuArea";
+			if ($i < $this->menuitems) {
+				if (!strcmp($this->menukeys[$i], $babBody->menu->curItem)) {
+					$this->menuclass = 'BabMenuCurArea';
+				} else {
+					$this->menuclass = 'BabMenuArea';	
+				}
 					 
-				$this->menutext = $this->menuvals[$i]["text"];
-				if( $this->menuvals[$i]["enabled"] == false)
+				$this->menutext = $this->menuvals[$i]['text'];
+				if( $this->menuvals[$i]['enabled'] == false) {
 					$this->enabled = 0;
-				else
-					{
+				} else {
 					$this->enabled = 1;
-					if( !empty($this->menuvals[$i]["attributes"]))
-						{
-						$this->menuattribute = $this->menuvals[$i]["attributes"];
-						}
-					else
-						{
+					if (!empty($this->menuvals[$i]['attributes'])) {
+						$this->menuattribute = $this->menuvals[$i]['attributes'];
+					} else {
 						$this->menuattribute = "";
-						}
-					$this->menuurl = bab_toHtml($this->menuvals[$i]["url"]);
 					}
+					$this->menuurl = bab_toHtml($this->menuvals[$i]['url']);
+				}
 				$i++;
 				return true;
-				}
-			else
+			} else {
 				return false;
 			}
+		}
 
 
-
-		private function loadsections() {
+		private function loadsections()
+		{
 			global $babBody;
 
 			if (null !== $this->nbsectleft) {
 				return;
 			}
 
-
 			$babBody->loadSections();
 
 			$this->nbsectleft = 0;
 			$this->nbsectright = 0;
 			foreach($babBody->sections as $sec)
+			{
+				if ($sec->isVisible())
 				{
-				if(  $sec->isVisible())
+					if ($sec->getPosition() == 0)
 					{
-					if( $sec->getPosition() == 0 )
-						{
 						$this->arrsectleft[$this->nbsectleft] = $sec;
 						$this->nbsectleft++;
-						}
+					}
 					else
-						{
+					{
 						$this->arrsectright[$this->nbsectright] = $sec;
 						$this->nbsectright++;
-						}
 					}
 				}
+			}
 		}
 
 
 		public function getNextSectionLeft()
-			{
+		{
 			$this->loadsections();
 			static $i = 0;
 			if( $i < $this->nbsectleft)
-				{
+			{
 				$sec = $this->arrsectleft[$i];
 				$this->sectionleft = $sec->printout();
 				$i++;
 				return true;
-				}
+			}
 			else
 				return false;
-			}
+		}
 
 		public function getNextSectionRight()
-			{
+		{
 			$this->loadsections();
 			static $i = 0;
 			if( $i < $this->nbsectright)
-				{
+			{
 				$sec = $this->arrsectright[$i];
 				$this->sectionright = $sec->printout();
 				$i++;
 				return true;
-				}
+			}
 			else
 				return false;
-			}
+		}
 	}
 
 	$temp = new tpl();
