@@ -162,7 +162,11 @@ class listFiles
 		$this->{$this->sListFunctionName}();
 
 		$this->prepare();
-//		$this->autoadd_files();
+		
+		if('latin1' == bab_charset::getDatabase())
+		{
+			$this->autoadd_files();
+		}
 	}
 
 	function initEnv()
@@ -561,8 +565,7 @@ class listFiles
 	/**
 	 * if there is file not presents in database, add and recreate $this->res
 	 */
-/*
-	function autoadd_files()
+	function autoadd_files() 
 	{
 		global $babDB, $babBody;
 		if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
@@ -630,7 +633,6 @@ class listFiles
 			$this->prepare();
 		}
 	}
-//*/
 }
 
 
