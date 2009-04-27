@@ -688,10 +688,10 @@ function group_delete_selected() {
 						
 						<p>{ t_trigger_nbdays }</p>
 						
-						<p><br />
-						{ t_between }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_min" size="5" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days } 
+						<p>
+						{ t_at_least }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_min" size="5" maxlength="10" value="{ arr[trigger_nbdays_min] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days } 
 						
-						{ t_and }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
+						{ t_but_less_than }&nbsp;:&nbsp;<input type="text" name="trigger_nbdays_max" size="5" maxlength="10" value="{ arr[trigger_nbdays_max] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }</p>
 						
 						<br />
 						

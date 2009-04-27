@@ -542,7 +542,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 
 					$access = false;
-					if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays <= $arr['trigger_nbdays_max'] ) {
+					if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays < $arr['trigger_nbdays_max'] ) {
 
 						bab_debug(
 							"Attribution du droit en fonction des jours demandés et validés\n".

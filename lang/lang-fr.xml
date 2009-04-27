@@ -3012,4 +3012,10 @@
 <string id="The package_collection key is missing in the ini file">La clef package_collection est manquante dans le fichier ini</string>
 <string id="Requirements are not fullfilled">Les prérequis ne sont pas respectés</string>
 <string id="The php zip extension is not available">L'extention php zip n'est pas disponible</string>
+<string id="Collective">Collectif</string>
+<string id="The file is not specified">Le fichier n'est pas spécifié</string>
+<string id="at least">au moins</string>
+<string id="but less than">mais moins de</string>
+<string id="Error reading directory %s">Erreur lors de la lecture du répertoire %s</string>
+<string id="Error in zip creation">Erreur lors de la création du zip</string>
 </fr>

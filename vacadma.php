@@ -634,6 +634,10 @@ function addModifyVacationRigths($id = false)
 			$this->t_trigger_nbdays = bab_translate("The right is displayed if the user has requested");
 			$this->t_between = bab_translate("between");
 			$this->t_and = bab_translate("and");
+
+			$this->t_at_least = bab_translate("at least");
+			$this->t_but_less_than = bab_translate("but less than");
+
 			$this->t_vacation_type = bab_translate("vacation of type");
 			$this->t_zoneapplication = bab_translate("Zone of application of the rule");
 			$this->t_validoverlap = bab_translate("Allow overlap between the request period and the test periods");
