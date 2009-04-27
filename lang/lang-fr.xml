@@ -3018,4 +3018,5 @@
 <string id="but less than">mais moins de</string>
 <string id="Error reading directory %s">Erreur lors de la lecture du répertoire %s</string>
 <string id="Error in zip creation">Erreur lors de la création du zip</string>
+<string id="Error, the files of addon are missing, please delete the addon or restore the orginal addon folders">Erreur, les fichiers du module sont manquants, Il faut supprimer le module ou restorer les fichiers originaux du module</string>
 </fr>

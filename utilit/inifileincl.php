@@ -869,7 +869,9 @@ class bab_inifile {
 	}
 	
 	
-	
+	function fileExists() {
+		return !empty($this->inifile);
+	}
 	
 
 	function getName() {

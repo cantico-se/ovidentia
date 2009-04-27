@@ -308,26 +308,7 @@ class bab_addonsInfos {
 	}
 	
 	
-	/**
-	 * Browse addons table and remove obsolete lines
-	 */
-	public static function deleteObsoleteAddonsInTable() {
-		global $babDB;
-		include_once $GLOBALS['babInstallPath']."admin/acl.php";
-
-		$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL."");
-		
-		while($row = $babDB->db_fetch_array($res)) {
-		
-			if (!is_dir($GLOBALS['babAddonsPath'].$row['title']) || !is_file($GLOBALS['babAddonsPath'].$row['title']."/init.php")) {
-				
-				$babDB->db_query("delete from ".BAB_ADDONS_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
-				aclDelete(BAB_ADDONS_GROUPS_TBL, $row['id']);
-				$babDB->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$babDB->db_escape_string($row['id'])."' and type='4'");
-				$babDB->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$babDB->db_escape_string($row['id'])."' and type='4'");
-			}
-		}
-	}
+	
 }
 
 
@@ -520,6 +501,12 @@ class bab_addonInfos {
 	 */
 	function hasAccessControl() {
 		$ini = $this->getIni();
+
+		if (!$ini->fileExists()) {
+			return false;
+		}
+
+
 		return !isset($ini->inifile['addon_access_control']) || 
 			(isset($ini->inifile['addon_access_control']) && 1 === (int) $ini->inifile['addon_access_control']);
 	}
@@ -537,6 +524,12 @@ class bab_addonInfos {
 	function getAddonType() {
 
 		$ini = $this->getIni();
+
+		if (!$ini->fileExists()) {
+			return 'EXTENSION';
+		}
+
+
 		if (isset($ini->inifile['addon_type'])) {
 			return $ini->inifile['addon_type'];
 		}
@@ -560,7 +553,7 @@ class bab_addonInfos {
 	 */
 	function isDeletable() {
 		$ini = $this->getIni();
-		return isset($ini->inifile['delete']) && 1 === (int) $ini->inifile['delete'];
+		return !$ini->fileExists() || (isset($ini->inifile['delete']) && 1 === (int) $ini->inifile['delete']);
 	}
 	
 	/**
@@ -640,6 +633,11 @@ class bab_addonInfos {
 	function getDescription() {
 		
 		$ini = $this->getIni();
+
+		if (false === $ini->fileExists()) {
+			return bab_translate('Error, the files of addon are missing, please delete the addon or restore the orginal addon folders');
+		}
+
 		return $ini->getDescription();
 	}
 	
@@ -660,8 +658,15 @@ class bab_addonInfos {
 	
 	/**
 	 * Test if the addon need an upgrade of the database
+	 * @return bool
 	 */
 	function isUpgradable() {
+
+		$ini = $this->getIni();
+
+		if (!$ini->fileExists()) {
+			return false;
+		}
 	
 		$vini 	= $this->getIniVersion();
 		$vdb 	= $this->getDbVersion();
@@ -690,6 +695,8 @@ class bab_addonInfos {
 		
 		
 		if (!is_file($this->getPhpPath().'init.php')) {
+			$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set installed='N' WHERE id=".$babDB->quote($this->id_addon));
+			bab_addonsInfos::clear();
 			return false;	
 		}
 		
@@ -889,6 +896,36 @@ class bab_addonInfos {
 		return false;
 	}
 
+
+
+
+
+
+
+	/**
+	 * remove obsolete lines in tables
+	 * @return bool
+	 */
+	private function deleteInTables() {
+		global $babDB;
+		include_once $GLOBALS['babInstallPath']."admin/acl.php";
+
+		$babDB->db_query("delete from ".BAB_ADDONS_TBL." where id='".$babDB->db_escape_string($this->getId())."'");
+		aclDelete(BAB_ADDONS_GROUPS_TBL, $this->getId());
+		$babDB->db_query("delete from ".BAB_SECTIONS_ORDER_TBL." where id_section='".$babDB->db_escape_string($this->getId())."' and type='4'");
+		$babDB->db_query("delete from ".BAB_SECTIONS_STATES_TBL." where id_section='".$babDB->db_escape_string($this->getId())."' and type='4'");
+
+		return true;
+	}
+
+
+
+
+
+
+
+
+
 	
 	
 	/**
@@ -909,6 +946,12 @@ class bab_addonInfos {
 		if ($this->getDependences()) {
 			$msgerror = bab_translate('This addon has dependences from other addons');
 			return false;
+		}
+
+		$ini = $this->getIni();
+
+		if (!$ini->fileExists()) {
+			return $this->deleteInTables();
 		}
 	
 	
@@ -940,7 +983,8 @@ class bab_addonInfos {
 			}
 		}
 		
-		return true;
+		// si la suppression des fichiers c'est bien passee, supprimer rellement
+		return $this->deleteInTables();
 	}
 	
 	

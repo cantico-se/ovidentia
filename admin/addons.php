@@ -74,7 +74,6 @@ class bab_addons_list
 		$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
-		bab_addonsInfos::deleteObsoleteAddonsInTable();
 		bab_addonsInfos::clear();
 		
 		$this->res = $this->getRes();
@@ -578,6 +577,9 @@ function bab_display_addon_requirements()
 				$this->t_install = bab_translate("Install");
 				$babBody->setTitle(bab_translate("Requirements to install the new archive"));
 
+
+				$description = $ini->getDescription();
+
 			} elseif (isset($_GET['item'])) {
 
 				// display requirements of currently installed addon
@@ -590,16 +592,14 @@ function bab_display_addon_requirements()
 				$addon = bab_getAddonInfosInstance($row['title']);
 				$this->installed = $addon->isInstalled();
 				$this->dependences = $addon->getDependences();
-				
-				
-				if (!is_file($addon->getPhpPath()."addonini.php"))
-					return;
+
 				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
 				$this->t_install = bab_translate("Upgrade");
 				
 				$name = $addon->getName();
+				$description = $addon->getDescription();
 
 				$this->imagepath = bab_toHtml($addon->getImagePath());
 				if ($addon->isDeletable()) {
@@ -610,11 +610,13 @@ function bab_display_addon_requirements()
 					$this->historyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
 				}		
 
-				$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
+				if ($ini->fileExists()) {
+					$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
+				}
 			}
 
 			$this->name = bab_toHtml($name);
-			$this->adescription = bab_toHtml($ini->getDescription());
+			$this->adescription = bab_toHtml($description);
 			$this->version = bab_toHtml($ini->getVersion());
 			
 			$this->requirementsHtml = $ini->getRequirementsHtml();
@@ -637,7 +639,7 @@ function bab_display_addon_requirements()
 			$this->call_upgrade = true;
 			$this->t_call_upgrade = bab_translate("Launch addon installation program");
 
-			$this->allok = $ini->isValid();
+			$this->allok = $ini->fileExists() && $ini->isValid();
 		}
 
 		
