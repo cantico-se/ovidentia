@@ -23,98 +23,11 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."utilit/vacincl.php";
+include_once $babInstallPath."utilit/vacfixedincl.php";
 
 define("VAC_MAX_RIGHTS_LIST", 20);
 
 
-function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $remarks, $total)
-{
-	global $babBody, $babDB;
-
-
-	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
-	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
-
-	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." 
-	(id_user, date_begin, date_end, comment, date, idfai, status) 
-		values  
-			(
-				".$babDB->quote($id_user).", 
-				".$babDB->quote($datebegin).", 
-				".$babDB->quote($dateend).", 
-				".$babDB->quote($remarks).", 
-				curdate(), 
-				'0', 
-				'Y'
-			)
-		");
-
-	$identry = $babDB->db_insert_id();
-
-	$babDB->db_query("INSERT INTO ".BAB_VAC_ENTRIES_ELEM_TBL." 
-		(id_entry, id_right, quantity) 
-		values  
-			(
-				" .$babDB->quote($identry). ",
-				" .$babDB->quote($id_right). ",
-				" .$babDB->quote($total). "
-			)
-		");
-
-	bab_vac_updateEventCalendar($identry);
-
-	
-	
-
-
-}
-
-function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $total)
-{
-	global $babBody, $babDB;
-
-	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
-	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
-
-	$res = $babDB->db_query("select vet.id as entry, veet.id as entryelem 
-	from ".BAB_VAC_ENTRIES_ELEM_TBL." veet 
-		left join ".BAB_VAC_ENTRIES_TBL." vet 
-		on veet.id_entry=vet.id 
-		where veet.id_right=".$babDB->quote($id_right)." 
-			and vet.id_user=".$babDB->quote($id_user)."
-	");
-
-	while( $arr = $babDB->db_fetch_array($res))
-	{
-		$babDB->db_query("
-		UPDATE ".BAB_VAC_ENTRIES_TBL." 
-			SET 
-			date_begin	=".$babDB->quote($datebegin).", 
-			date_end	=".$babDB->quote($dateend)." 
-			
-		WHERE 
-			id=".$babDB->quote($arr['entry'])."
-		");
-
-		$babDB->db_query("update ".BAB_VAC_ENTRIES_ELEM_TBL." 
-		set 
-		quantity=".$babDB->quote($total)." 
-			where id=".$babDB->quote($arr['entryelem']));
-
-		bab_vac_updateEventCalendar($arr['entry']);
-	}
-
-}
-
-function removeFixedVacation($id_entry)
-{
-	global $babBody, $babDB;
-
-	bab_vac_clearCalendars();
-	
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id_entry)."'");
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($id_entry)."'");
-	}
 
 function browsePersonnelByType($pos, $cb, $idtype)
 	{

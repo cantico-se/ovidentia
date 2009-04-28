@@ -2115,6 +2115,7 @@ function updateVacationPersonnel($iduser, $idsa)
 
 function saveVacationPersonnel($userid,  $idcol, $idsa)
 	{
+	include_once $GLOBALS['babInstallPath']."utilit/vacfixedincl.php";
 	global $babBody, $babDB;
 	if( empty($userid) )
 		{
@@ -2154,6 +2155,11 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 		{
 		$babDB->db_query("INSERT INTO ".BAB_VAC_USERS_RIGHTS_TBL." ( id_user,  id_right ) VALUES ('".$babDB->db_escape_string($userid)."','".$babDB->db_escape_string($r['id'])."')");
 		}
+
+
+	// update fixed vacation right
+	bab_vac_updateFixedRightsOnUser($userid);
+
 	
 	return true;
 	}
