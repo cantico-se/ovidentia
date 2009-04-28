@@ -777,6 +777,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 
 	function handleCreation()
 	{
+//		echo __METHOD__;
 		$sActive				= 'Y';
 		$iIdApprobationScheme	= 0;
 		$sAutoApprobation		= 'N';
@@ -842,6 +843,8 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('sOldDirName', $sDirName);
 		$this->get_data('iIdFolder', $iIdFolder);
 
+		
+
 		$oFileManagerEnv =& getEnvObject();
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
@@ -854,6 +857,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sDisplay				= (string) $oFmFolder->getHide();
 			$sAddTags				= (string) $oFmFolder->getAddTags();
 			$sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
+			$iMaxDownloads			= (int) $oFmFolder->getMaxDownloads();
 			$sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
 
 			$this->iApprobationSchemeId = $iIdApprobationScheme;
@@ -874,6 +878,16 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			if ($oFileManagerEnv->userIsInRootFolder()) {
 				$this->set_data('sDisabled', 'disabled');
 			}
+		}
+		else
+		{
+			$sDownloadsCapping		= (string) $oFileManagerEnv->oFmFolder->getDownloadsCapping();
+			$iMaxDownloads			= (int) $oFileManagerEnv->oFmFolder->getMaxDownloads();
+			$sDownloadHistory		= (string) $oFileManagerEnv->oFmFolder->getDownloadHistory();
+
+			$this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
+			$this->set_data('isDownloadHistory', $oFileManagerEnv->oFmFolder->getMaxDownloads());
+			$this->set_data('iMaxDownloads', $oFileManagerEnv->oFmFolder->getMaxDownloads());
 		}
 		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
 	}
