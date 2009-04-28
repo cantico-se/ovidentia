@@ -4737,8 +4737,8 @@ class BAB_FileManagerEnv
 
 
  	/**
-	 * If $sGr == 'Y' so this variable is the identifier of the first collective folder
-	 * If $sGr == 'N' so this variable is the identifier of the user
+	 * If $sGr == 'Y', $iId is the identifier of the first collective folder.
+	 * If $sGr == 'N', $iId is the user id.
 	 * 
 	 * @access private 
 	 * @var integer
