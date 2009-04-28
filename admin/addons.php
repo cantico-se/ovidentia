@@ -417,7 +417,7 @@ function export($id)
 	$res = array();
 	foreach ($loc_in as $k => $path)
 		{
-		$path = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$path.'/'.$row['title'];
+		$path = realpath('.').'/'.$path.'/'.$row['title'];
 		$res = bab_addon_export_rd($path);
 
 		if (false === $res) {
@@ -921,7 +921,7 @@ function viewVersion()
 			$this->t_not_used = bab_translate("Not used");
 
 
-			$basedir = dirname($_SERVER['SCRIPT_FILENAME']).'/';
+			$basedir = realpath('.').'/';
 			$dh = opendir($basedir);
 			
 			$this->dirs = array();

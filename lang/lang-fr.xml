@@ -3019,4 +3019,19 @@
 <string id="Error reading directory %s">Erreur lors de la lecture du répertoire %s</string>
 <string id="Error in zip creation">Erreur lors de la création du zip</string>
 <string id="Error, the files of addon are missing, please delete the addon or restore the orginal addon folders">Erreur, les fichiers du module sont manquants, Il faut supprimer le module ou restorer les fichiers originaux du module</string>
+<string id="Your version of PHP is too low, version %version% is required">Votre version de PHP est trop faible, la version %version% est nécessaire</string>
+<string id="The mysql version could not be found">La version de mysql n'a pas pu être récupérée</string>
+<string id="Your version of MySQL is too low, version %version% is required">Votre version de MySQL est trop faible, la version %version% est nécessaire</string>
+<string id="The charset of the database must be one of the following charsets : %charsets%">L'encodage de la base de données doit être l'un des codes de caractères suivants: %charsets%</string>
+<string id="The max_allowed_packet variable must be greater than %val%">La variable max_allowed_packet doit être supérieure à %val% dans la configuration de mysql</string>
+<string id="The variable sql_mode must be : %val%">La variable sql_mode doit être : %val%</string>
+<string id="The folder %s does not exists">Le répertoire %s n'existe pas</string>
+<string id="test can only be done on a directory">Le test ne peut se faire que sur un répertoire</string>
+<string id="The folder %s is not writable, please check the access rights">Le dossier %s n'est pas accessible en écriture, il faut vérifier les droits d'accès</string>
+<string id="The folder %s is not writable, it is probably in read-only mode, please check the access rights">Le dossier %s n'est pas accessible en écriture, il est probablement en mode lecture seule, il faut vérifier les droits d'accès</string>
+<string id="The folder %s has been writable in the past (%s) but the current access rights will not allow a delete operation">Le dossier %s a été accessible en écriture dans le passé (%s), mais les droits d'accès actuel ne permettrons pas la suppression</string>
+<string id="The folder %s is not writable, the file creation test failed, please check the access rights">Le dossier %s n'est pas accessible en écriture, le test de création de fichier a échoué, il faut vérifier les droits d'accès</string>
+<string id="The folder %s is not writable, files can be created but not deleted, please check the access rights">Le dossier %s n'est pas accessible en écriture, les fichiers peuvent être créés, mais pas supprimé, il faut vérifier les droits d'accès</string>
+<string id="The folder %s is not writable, the folder creation test failed, please check the access rights">Le dossier %s n'est pas accessible en écriture, le test de création de répertoire a échoué, il faut vérifier les droits d'accès</string>
+<string id="The folder %s is not writable, folders can be created but not deleted, please check the access rights">Le dossier %s n'est pas accessible en écriture, les répertoires peuvent être créés, mais pas supprimé, il faut vérifier les droits d'accès</string>
 </fr>

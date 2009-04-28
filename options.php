@@ -479,6 +479,7 @@ function changeSkin($skin)
 			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
 			$this->arrskins = bab_skin::getList();
 			$this->cntskins = count($this->arrskins);
+			bab_sort::natcasesort($this->arrskins);
 
 			$this->skselectedindex = 0;
             $this->stselectedindex = 0;
@@ -487,10 +488,8 @@ function changeSkin($skin)
 		function getnextskin()
 			{
 			static $i = 0;
-			if( $i < $this->cntskins)
+			if(list(,$obj) = each($this->arrskins))
 				{
-				$obj = $this->arrskins[$i];
-
 				$this->iindex = $i;
                 $this->skinname = bab_toHtml($obj->getName());
                 $this->skinval = bab_toHtml($obj->getName());
@@ -510,6 +509,7 @@ function changeSkin($skin)
 			else
 				{
 				$i = 0;
+				reset($this->arrskins);
 				return false;
 				}
 			}

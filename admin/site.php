@@ -149,6 +149,8 @@ function site_menu1()
 			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
 			$this->arrskins = bab_skin::getList();
 			$this->cntskins = count($this->arrskins);
+			bab_sort::natcasesort($this->arrskins);
+
 			$ignoredskins = bab_skin::getNotAccessibles();
 
 			if (0 < count($ignoredskins)) {
@@ -192,10 +194,8 @@ function site_menu1()
 		function getnextskin()
 			{
 			static $i = 0;
-			if( $i < $this->cntskins)
+			if( list(,$obj) = each($this->arrskins))
 				{
-
-				$obj = $this->arrskins[$i];
 
 				$this->iindex = $i;
                 $this->skinname = bab_toHtml($obj->getName());
@@ -216,6 +216,7 @@ function site_menu1()
 			else
 				{
 				$i = 0;
+				reset($this->arrskins);
 				return false;
 				}
 			}

@@ -411,7 +411,7 @@ function bab_newInstall() {
 
 
 	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	$sInstallDir = dirname($_SERVER['SCRIPT_FILENAME']).'/install/addons';
+	$sInstallDir = realpath('.').'/install/addons';
 	if(is_dir($sInstallDir))
 	{
 		$aAddonsFilePath	= bab_getAddonsFilePath();
@@ -430,7 +430,7 @@ function bab_newInstall() {
 					foreach($aLocIn as $iKey2 => $sPathName)
 					{
 						$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
-						$sNewName = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
+						$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
 	
 						if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
 							return false;

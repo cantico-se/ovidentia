@@ -23,6 +23,8 @@
 ************************************************************************/
 include_once "base.php";
 
+require_once dirname(__FILE__).'/path.class.php';
+
 /**
  * @package inifile
  *
@@ -32,6 +34,7 @@ include_once "base.php";
  *			'description'	=> (string)	Interationalized keyword description,
  *			'current'		=> (mixed) the current value
  *			'result'		=> (boolean) requirement fullfiled or not
+ * 			'error'			=> (string) optional error message, may be null or unset
  *			)
  *
  * If a method return NULL, the requirement will be ignored
@@ -68,44 +71,60 @@ class bab_inifile_requirements {
 	}
 
 	function require_php_version($value) {
+
+		$error = null;
+		$status = version_compare($value, PHP_VERSION, '<=');
+
+		if (!$status) {
+			$error = str_replace('%version%', $value, bab_translate('Your version of PHP is too low, version %version% is required'));
+		}
+
 		return array(
 			'description'	=> bab_translate("Php version"),
 			'current'		=> PHP_VERSION,
-			'result'		=> version_compare($value, PHP_VERSION, '<=')
+			'result'		=> $status,
+			'error'			=> $error
 		);
+
+		
 	}
 
 	function require_mysql_version($value) {
 		
 		
 		$db = &$GLOBALS['babDB'];
-		
+		$error = null;
+
 		$res = $db->db_queryWem("show variables like 'version'");
 		
 		if (!$res) {
 		
 			$mysql = '0.0';
+			$status = false;
+			$error = bab_translate('The mysql version could not be found');
+		} else {
 		
-			return array(
-				'description'	=> bab_translate("MySQL version (error, version not found)"),
-				'current'		=> $mysql,
-				'result'		=> version_compare($value, $mysql, '<=')
-			);
+		
+			$arr = $db->db_fetch_assoc($res);
+			
+			$mysql = 'Undefined';
+			
+			if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
+				$mysql = $matches[1];
+			}
+
+			$status = version_compare($value, $mysql, '<=');
+			if (!$status) {
+				$error = str_replace('%version%', $value, bab_translate('Your version of MySQL is too low, version %version% is required'));
+			}
 		}
-		
-		
-		$arr = $db->db_fetch_assoc($res);
-		
-		$mysql = 'Undefined';
-		
-		if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
-			$mysql = $matches[1];
-		}
+
 
 		return array(
 			'description'	=> bab_translate("MySQL version"),
 			'current'		=> $mysql,
-			'result'		=> version_compare($value, $mysql, '<=')
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 
@@ -138,6 +157,7 @@ class bab_inifile_requirements {
 	function require_upload_max_file_size($value) {
 	
 		global $babDB;
+		$error = null;
 
 		$current = bab_inifile_requirements::getIniMaxUpload();
 		$current_display = sprintf("%dM",$current/1024/1024);
@@ -160,27 +180,41 @@ class bab_inifile_requirements {
 			$ov_upload = ((int) $babsite['maxfilesize'])*1024*1024;
 
 			if ($current < $ov_upload) {
-				$current_display = sprintf(bab_translate("You must configure ovidentia with a limit smaller or equal to the server limit : %s"),$current_display);
 				$result = false;
 			}
 		}
 
+		if (!$result) {
+			$error = sprintf(bab_translate("You must configure ovidentia with a limit smaller or equal to the server limit : %s"),$current_display);
+		}
+
+
+
 		return array(
 			'description'	=> bab_translate("Maximum upload file size"),
 			'current'		=> $current_display,
-			'result'		=> $result
+			'result'		=> $result,
+			'error' 		=> $error
 		);
 	}
 
 	function require_images_directory($value) {
 
-		$images = dirname($_SERVER['SCRIPT_FILENAME']).'/images/';
-		$status = is_dir($images) && is_writable($images);
+		$images = new bab_Path(realpath('.'), 'images');
+		$error = null;
+
+		try {
+			$status = $images->isFolderWriteable();
+		} catch(Exception $e) {
+			$status = false;
+			$error = $e->getMessage();
+		}
 		
 		return array(
 			'description'	=> bab_translate("Images directory for articles"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -189,13 +223,24 @@ class bab_inifile_requirements {
 	 */
 	function require_functionalities_directory($value) {
 
-		$functionalities = dirname($_SERVER['SCRIPT_FILENAME']).'/functionalities/';
-		$status = (is_dir($functionalities) && is_writable($functionalities)) || is_writable(dirname($_SERVER['SCRIPT_FILENAME']));
+		$functionalities = new bab_Path(realpath('.'), 'functionalities');
+		$root = new bab_Path(realpath('.'));
+		$error = null;
+
+		try {
+			$status = $functionalities->isFolderWriteable() || $root->isFolderWriteable();
+		} catch(Exception $e) {
+			$status = false;
+			$error = $e->getMessage();
+		}
+
+		
 		
 		return array(
 			'description'	=> bab_translate("Writable functionalities directory"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -204,25 +249,41 @@ class bab_inifile_requirements {
 
 	function require_versions_directory($value) {
 
-		$core = dirname($_SERVER['SCRIPT_FILENAME']).'/';
-		$status = is_writable($core);
+		$core = new bab_Path(realpath('.'));
+		$error = null;
+
+		try {
+			$status = $core->isFolderWriteable($core);
+		} catch(Exception $e) {
+			$status = false;
+			$error = $e->getMessage();
+		}
 
 		return array(
 			'description'	=> bab_translate("Writable directory for upgrades"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 
 	function require_lang_directory($value) {
 
-		$core = dirname($_SERVER['SCRIPT_FILENAME']).'/lang/';
-		$status = is_writable($core);
+		$core = new bab_Path(realpath('.'),'lang');
+		$error = null;
+
+		try {
+			$status = $core->isFolderWriteable();
+		} catch(Exception $e) {
+			$status = false;
+			$error = $e->getMessage();
+		}
 
 		return array(
 			'description'	=> bab_translate("Writable lang directory"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -250,17 +311,26 @@ class bab_inifile_requirements {
 		include_once dirname(__FILE__).'/addonsincl.php';
 		$folders = bab_getAddonsFilePath();
 		
+		$error = null;
 		$status = true;
 		foreach($folders['loc_in'] as $folder) {
-			if (!is_writable($folder)) {
+
+			$folder = new bab_Path(realpath('.'), $folder);
+
+			try {
+				$status = $folder->isFolderWriteable();
+			} catch(Exception $e) {
 				$status = false;
+				$error = $e->getMessage();
+				break;
 			}
 		}
 
 		return array(
 			'description'	=> sprintf(bab_translate("Writable addons subfolders (%s)"), implode(', ',$folders['loc_in'])),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -290,6 +360,7 @@ class bab_inifile_requirements {
 	
 		$current =  bab_translate("Unavailable");
 		$status = false;
+		$error = null;
 		
 		// $babBody->babsite not available in upgrade
 		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
@@ -308,31 +379,45 @@ class bab_inifile_requirements {
 		}
 		
 		$babsite = $babDB->db_fetch_assoc($res);
-		$ul = $babsite['uploadpath'];
+		$ul = new bab_Path($babsite['uploadpath']);
+
+		try {
+			$status = $ul->isFolderWriteable();
+		} catch(Exception $e) {
+			$status = false;
+			$error = $e->getMessage();
+		}
 		
 
-		if (is_writable($ul)) {
-			$current = bab_translate("The directory is writable but this is not the full pathname");
+		if ($status) {
 
 			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
-				$current = bab_translate("The addons directory is not writable");
 				
-				$addons = $ul.'/addons';
+				
+				$addons = new bab_Path($ul.'/addons');
 				if (!is_dir($addons)) {
 					bab_mkdir($addons);
 				}
-				
-				if (is_writable($addons)) {
-					$current = bab_translate("Available");
-					$status = true;
+
+				try {
+					$status = $addons->isFolderWriteable();
+				} catch(Exception $e) {
+					$status = false;
+					$error = $e->getMessage();
 				}
+				
+			} else {
+
+				$status = false;
+				$error = bab_translate("The directory is writable but this is not the full pathname");
 			}
 		}
 
 		return array(
 			'description'	=> bab_translate("Writable upload directory, absolute path"),
 			'current'		=> $current,
-			'result'		=> $status
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -523,6 +608,7 @@ class bab_inifile_requirements {
 	function require_mysql_character_set_database($value) {
 
 		$value = mb_strtolower($value);
+		$error = null;
 		
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'character_set_database'");
@@ -538,11 +624,20 @@ class bab_inifile_requirements {
 		}
 		
 		$arr_values = preg_split('/[\s,]+/', $value);
+		$status = in_array($charset, $arr_values);
+
+		if (!$status) {
+			$error = str_replace('%charsets%', $value, bab_translate('The charset of the database must be one of the following charsets : %charsets%'));
+		}
+
+		
+
 
 		return array(
 			'description'	=> bab_translate("MySQL database charset"),
 			'current'		=> $charset,
-			'result'		=> in_array($charset, $arr_values)
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -550,6 +645,7 @@ class bab_inifile_requirements {
 	function require_mysql_collation_database($value) {
 
 		$value = mb_strtolower($value);
+		$error = null;
 		
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'collation_database'");
@@ -566,10 +662,18 @@ class bab_inifile_requirements {
 		
 		$arr_values = preg_split('/[\s,]+/', $value);
 
+
+		$status = in_array($collation, $arr_values);
+
+		if (!$status) {
+			$error = str_replace('%charsets%', $value, bab_translate('The charset of the database must be one of the following charsets : %charsets%'));
+		}
+
 		return array(
 			'description'	=> bab_translate("MySQL database collation"),
 			'current'		=> $collation,
-			'result'		=> in_array($collation, $arr_values)
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 	
@@ -577,6 +681,7 @@ class bab_inifile_requirements {
 	function require_mysql_max_allowed_packet($value) {
 
 		$value = $this->return_bytes($value);
+		$error = null;
 		
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'max_allowed_packet'");
@@ -588,10 +693,17 @@ class bab_inifile_requirements {
 			$max_allowed_packet = (int) $arr[1];
 		}
 
+		$status = $value <= $max_allowed_packet;
+
+		if (!$status) {
+			$error = str_replace('%val%', $value, bab_translate('The max_allowed_packet variable must be greater than %val%'));
+		}
+
 		return array(
 			'description'	=> bab_translate("MySQL server variable max_allowed_packet"),
 			'current'		=> sprintf("%dM",$max_allowed_packet/1024/1024),
-			'result'		=> $value <= $max_allowed_packet
+			'result'		=> $value <= $max_allowed_packet,
+			'error'			=> $error
 		);
 	}
 	
@@ -600,6 +712,7 @@ class bab_inifile_requirements {
 
 		
 		global $babDB;
+		$error = null;
 		$res = $babDB->db_queryWem("show variables like 'sql_mode'");
 		
 		if (!$res) {
@@ -614,10 +727,27 @@ class bab_inifile_requirements {
 			}
 		}
 
+		$status = $value === $current;
+
+
+		if ('Undefined' === $value) {
+			$value_display = bab_translate('Undefined');
+		}
+
+		if (!$status) {
+			$error = str_replace('%val%', $value_display, bab_translate('The variable sql_mode must be : %val%'));
+		}
+		
+		if ('Undefined' === $current) {
+			$current = bab_translate('Undefined');
+		}
+
+
 		return array(
 			'description'	=> bab_translate("MySQL server variable : sql_mode"),
-			'current'		=> bab_translate($current),
-			'result'		=> $value === $current
+			'current'		=> $current,
+			'result'		=> $status,
+			'error'			=> $error
 		);
 	}
 }
@@ -661,6 +791,13 @@ class bab_inifile_requirements_html
 			$this->required = bab_toHtml($arr['required']);
 			$this->current = bab_toHtml($arr['current']);
 			$this->result = $arr['result']; 
+
+			if (isset($arr['error'])) {
+				$this->error = bab_toHtml($arr['error']);
+			} else {
+				$this->error = null;
+			}
+
 			return true;
 		}
 		return false;
@@ -1234,7 +1371,13 @@ class bab_inifile {
 		$requirements = $this->getRequirements();
 		foreach($requirements as $arr) {
 			if (false === $arr['result'] && false !== $arr['required']) {
-				$error = sprintf('error, %s is "%s" but "%s" is required', $arr['description'], $arr['current'], $arr['required']);
+
+				if (isset($arr['error'])) {
+					$error = $arr['error'];
+				} else {
+					$error = sprintf('error, %s is "%s" but "%s" is required', $arr['description'], $arr['current'], $arr['required']);
+				}
+
 				return false;
 			}
 		}

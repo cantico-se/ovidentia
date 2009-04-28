@@ -2610,3 +2610,8 @@ function bab_buildReference($module, $type, $identifier, $location = '')
 	require_once dirname(__FILE__) . '/reference.class.php';
 	return bab_Reference::makeReference('ovidentia', $location, $module, $type, $identifier);
 }
+
+
+
+
+
