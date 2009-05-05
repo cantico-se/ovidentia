@@ -33,9 +33,40 @@ class bab_skin {
 
 	const SKINS_PATH = 'skins/';
 	const STYLES_PATH = 'styles/';
+	const OVML_PATH = 'ovml/';
 	private static $skins = array();
 	private $skinname = null;
-
+	
+	/**
+	 * Get a skin with or without access rights verification
+	 * @param   string $skinname
+	 * @param	boolean	$access_verification
+	 * @return bab_skin, NULL
+	 */
+	public static function get($skinname, $access_verification = true) {
+		$return = NULL;
+		foreach(self::getAllSkins() as $skin) {
+			if ((false === $access_verification || $skin->isAccessValid()) && $skin->skinname === $skinname) {
+				$return[] = $skin;
+			}
+		}
+		
+		return $return;
+	}
+	
+	/**
+	 * Apply a skin to the current page (no modification in database)
+	 * @param   string $skinname
+	 * @param   string $stylesname
+	 */
+	public static function applyOnCurrentPage($skinname, $stylesname) {
+		global $babSkin, $babStyle, $babCssPath, $babOvmlPath;
+		$babSkin = $skinname;
+		$babStyle = $stylesname;
+		$babCssPath = self::SKINS_PATH . $babSkin . '/' . self::STYLES_PATH . $babStyle;
+		$babOvmlPath = self::SKINS_PATH . $babSkin . '/' . self::OVML_PATH;
+	}
+	
 	/**
 	 * Get the list of available skins with or without access rights verification
 	 * @param	boolean	$access_verification
