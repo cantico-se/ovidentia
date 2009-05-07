@@ -568,7 +568,7 @@ class bab_SearchDefaultForm {
 	 * @param	string				$operator
 	 * @return bab_searchCriteria
 	 */
-	public static function searchStringToCriteria($testable, $search, $operator = '_OR_') {
+	public static function searchStringToCriteria($testable, $search, $operator = '_AND_') {
 
 		$criteria = new bab_SearchInvariant;
 		
