@@ -391,7 +391,7 @@ class bab_inifile_requirements {
 
 		if ($status) {
 
-			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', $ul)) {
+			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', (string) $ul)) {
 				
 				
 				$addons = new bab_Path($ul.'/addons');
