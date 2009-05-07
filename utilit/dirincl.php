@@ -657,7 +657,7 @@ class bab_dirEntryPhoto {
 			}
 		fclose($fp);
 
-		$type = mime_content_type($file);
+		$type = bab_getFileMimeType($file);
 
 		$babDB->db_query('
 			UPDATE '.BAB_DBDIR_ENTRIES_TBL.' 
