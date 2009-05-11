@@ -53,11 +53,7 @@
 }
 
 .icon-left-64 .icon {
-	padding: 32px 4px 32px 74px;
-}
-
-.icon-left-96 .icon {
-	padding: 48px 4px 48px 106px;
+	padding: 32px 4px 32px 58px;
 }
 
 .icon-left-128 .icon {
@@ -88,11 +84,6 @@
 .icon-top-64 .icon {
 	min-width: 68px;
 	padding: 68px 4px 4px 4px;
-}
-
-.icon-top-96 .icon {
-	min-width: 100px;
-	padding: 100px 4px 4px 4px;
 }
 
 .icon-top-128 .icon {
@@ -167,6 +158,7 @@
 .icon-16x16 .apps-preferences-webservices { background-image: url('../skins/ovidentia/images/Puces/internet.png'); }
 .icon-16x16 .apps-preferences-wysiwyg-editor { background-image: url('../skins/ovidentia/images/Puces/html.gif'); }
 .icon-16x16 .apps-statistics { background-image: url('../skins/ovidentia/images/Puces/kwikdisk.png'); }
+
 .icon-16x16 .mimetypes-application-pdf { background-image: url('../skins/ovidentia/images/Puces/pdf.gif'); }
 .icon-16x16 .mimetypes-audio-x-generic { background-image: url('../skins/ovidentia/images/Puces/mp3.gif'); }
 .icon-16x16 .mimetypes-image-x-generic { background-image: url('../skins/ovidentia/images/Puces/image.gif'); }
