@@ -113,7 +113,7 @@ div.entity .members .member {
 	cursor: pointer;
 }
 
-.orgchart div.entity img.icon {
+.orgchart div.entity img.treeview-icon {
 	width: 5em;
 	margin: 0 0.3em 0 0;
 	border: 1px solid black;

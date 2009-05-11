@@ -14,7 +14,7 @@
 			<!--#else t_fetchContentScript -->
 			<img class="bullet" src="{ babSkinPath }images/Puces/Space1PxTrans.gif" width="20" height="17" alt="" />
 			<!--#endif t_fetchContentScript -->
-			<span style="vertical-align: middle; width: 16px; display: -moz-inline-stack; display: inline-block; text-align: center"><!--#if t_nodeIcon --><img class="icon" src="{ t_nodeIcon }" alt="" title="{ t_tooltip }" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" title="{ t_tooltip }" /><!--#endif t_nodeIcon --></span>
+			<span style="vertical-align: middle; width: 16px; display: -moz-inline-stack; display: inline-block; text-align: center"><!--#if t_nodeIcon --><img class="treeview-icon" src="{ t_nodeIcon }" alt="" title="{ t_tooltip }" /><!--#else t_nodeIcon --><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" title="{ t_tooltip }" /><!--#endif t_nodeIcon --></span>
 			<!--#if t_link -->
 			<a href="{ t_link }"><span class="level{ t_offsetPreviousLevel } { t_type }" title="{ t_tooltip }">{ t_title }</span></a>
 			<!--#else t_link -->
@@ -523,7 +523,7 @@ document.write('</div>');
   <!--#if t_nodeIcon -->
    <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0">
    <tr>
-   <td valign="top" width="1%"><a  <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> ><img class="icon" src="{ t_nodeIcon }" alt="" /></a></td>
+   <td valign="top" width="1%"><a  <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> ><img class="treeview-icon" src="{ t_nodeIcon }" alt="" /></a></td>
    <td valign="top"><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
    </tr>
    </table>
@@ -574,7 +574,7 @@ document.write('</div>');
   <div class="{ t_type }" id="{ t_id }">
   <!--#if t_nodeIcon -->
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 0; padding: 0"><tr>
-  <td width="1%"><img class="icon" src="{ t_nodeIcon }" alt="" /></td>
+  <td width="1%"><img class="treeview-icon" src="{ t_nodeIcon }" alt="" /></td>
   <td><b><a <!--#if t_linkEntity --> href="{ t_linkEntity }" <!--#endif t_linkEntity --> >{ t_title }</a></b><br /><a name="{ t_id }" <!--#if t_link --> href="{ t_link }" <!--#endif t_link --> ><!--#if t_info -->{ t_info }<!--#else t_info -->&nbsp;<!--#endif t_info --></a></td>
   </tr></table>
   <!--#else t_nodeIcon -->
