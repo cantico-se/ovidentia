@@ -150,7 +150,7 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_LIST_ADD_USER					= 'actions-list-add-user';
 	const ACTIONS_LIST_REMOVE					= 'actions-list-remove';
 	const ACTIONS_LIST_REMOVE_USER				= 'actions-list-remove-user';
-	
+
 	const ACTIONS_GO_HOME						= 'actions-go-home';
 	const ACTIONS_GO_UP							= 'actions-go-up';
 	const ACTIONS_GO_DOWN						= 'actions-go-down';
@@ -158,7 +158,7 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_GO_LAST						= 'actions-go-last';
 	const ACTIONS_GO_NEXT						= 'actions-go-next';
 	const ACTIONS_GO_PREVIOUS					= 'actions-go-previous';
-	
+
 	const ACTIONS_ARROW_DOWN					= 'actions-arrow-down';
 	const ACTIONS_ARROW_UP						= 'actions-arrow-up';
 	const ACTIONS_ARROW_LEFT					= 'actions-arrow-left';
@@ -167,7 +167,7 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_ARROW_UP_DOUBLE				= 'actions-arrow-up-double';
 	const ACTIONS_ARROW_LEFT_DOUBLE				= 'actions-arrow-left-double';
 	const ACTIONS_ARROW_RIGHT_DOUBLE			= 'actions-arrow-right-double';
-	
+
 	const ACTIONS_VIEW_LIST_DETAILS				= 'actions-view-list-details';
 	const ACTIONS_VIEW_LIST_TEXT				= 'actions-view-list-text';
 	const ACTIONS_VIEW_LIST_TREE				= 'actions-view-list-tree';
@@ -189,7 +189,7 @@ class Func_Icons extends bab_Functionality
 
 	const ACTIONS_VIEW_HISTORY					= 'actions-view-history';
 	const ACTIONS_VIEW_REFRESH					= 'actions-view-refresh';
-	
+
 	const ACTIONS_ZOOM_IN						= 'actions-zoom-in';
 	const ACTIONS_ZOOM_OUT						= 'actions-zoom-out';
 	const ACTIONS_ZOOM_ORIGINAL					= 'actions-zoom-original';
@@ -199,17 +199,32 @@ class Func_Icons extends bab_Functionality
 
 	const ACTIONS_DIALOG_OK						= 'actions-dialog-ok';
 	const ACTIONS_DIALOG_CANCEL					= 'actions-dialog-cancel';
+
+
+
 	//-----------------------------------------------------------------------
 	// Applications
 	//-----------------------------------------------------------------------
-	
-	const APPS_CALCULATOR						= 'apps-calculator';
+
 	const APPS_CALENDAR							= 'apps-calendar';
 	const APPS_DIRECTORIES						= 'apps-directories';
 	const APPS_FILE_MANAGER						= 'apps-file-manager';
 	const APPS_NOTES							= 'apps-notes';
 	const APPS_STATISTICS						= 'apps-statistics';
-
+	const APPS_MAIL								= 'apps-mail';
+	const APPS_VACATIONS						= 'apps-vacations';
+	const APPS_ARTICLES							= 'apps-articles';
+	const APPS_FORUMS							= 'apps-forums';
+	const APPS_ORGCHARTS						= 'apps-orgcharts';
+	const APPS_SUMMARY							= 'apps-summary';
+	const APPS_FAQS								= 'apps-faqs';
+	const APPS_TASK_MANAGER						= 'apps-task-manager';
+	const APPS_APPROBATIONS						= 'apps-approbations';
+	
+	const APPS_CALCULATOR						= 'apps-calculator';
+	const APPS_EDITOR							= 'apps-editor';
+	const APPS_PHOTO							= 'apps-photo';
+	
 	const APPS_USERS							= 'apps-users';
 	const APPS_GROUPS							= 'apps-groups';
 
@@ -219,6 +234,7 @@ class Func_Icons extends bab_Functionality
 	const APPS_PREFERENCES_SEARCH_ENGINE		= 'apps-preferences-search-engine';
 	const APPS_PREFERENCES_WEBSERVICES			= 'apps-preferences-webservices';
 	const APPS_PREFERENCES_DATE_TIME_FORMAT		= 'apps-preferences-date-time-format';
+	const APPS_PREFERENCES_CALENDAR				= 'apps-preferences-calendar';
 	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
 	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
 	//-----------------------------------------------------------------------
