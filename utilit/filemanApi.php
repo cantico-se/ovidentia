@@ -919,7 +919,7 @@ class bab_Directory
 			return false;
 		}
 
-//		$oFmEnv	= &getEnvObject();
+		$oFmEnv	= &getEnvObject();
 //		if(!canCreateFolder($oFmEnv->sRelativePath))
 //		{
 //			$this->aError[] = bab_translate("Access denied");
