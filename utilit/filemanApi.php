@@ -540,7 +540,13 @@ class bab_Directory
 	const RIGHT_NOTIFY_AND_CHILD	= 512;
 
 
-	
+
+	public function canManage($sPathName)
+	{
+		$this->initFromPathName($sPathName);
+		return canManage($this->getPathName());
+	}
+
 	/**
 	 * This function set right on a collective folder.
 	 * If the folder is not in the database the function
@@ -880,7 +886,24 @@ class bab_Directory
 		$oBabDirIt->setObjectId($this->getDelegationId());
 		return $oBabDirIt; 
 	}
-	
+
+	private function initFromPathName($sPathName)
+	{
+		if(!$this->processPathName($sPathName, $this->sPathName))
+		{
+			return false;
+		}
+		if(!$this->setEnv($sPathName))
+		{
+			return false;
+		}
+		if(!$this->accessValid())
+		{
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * This function create a sub directory
 	 *
@@ -891,24 +914,18 @@ class bab_Directory
 	public function createSubdirectory($sPathName)
 	{
 		$this->resetError();
-		
-		if(!$this->processPathName($sPathName, $this->sPathName))
-		{
+
+		if (!$this->initFromPathName($sPathName)) {
 			return false;
 		}
-		
-		if(!$this->setEnv($sPathName))
-		{
-			return false;
-		}
-		
-		if(!$this->accessValid())
-		{
-			return false;
-		}
-			
-		$oFmEnv	= &getEnvObject();
-		if(!canCreateFolder($oFmEnv->sRelativePath))
+
+//		$oFmEnv	= &getEnvObject();
+//		if(!canCreateFolder($oFmEnv->sRelativePath))
+//		{
+//			$this->aError[] = bab_translate("Access denied");
+//			return false;
+//		}
+		if(!canCreateFolder($this->getPathName()))
 		{
 			$this->aError[] = bab_translate("Access denied");
 			return false;
@@ -965,23 +982,17 @@ class bab_Directory
 	{
 		$this->resetError();
 		
-		if(!$this->processPathName($sPathName, $this->sPathName))
-		{
-			return false;
-		}
-		
-		if(!$this->setEnv($sPathName))
-		{
-			return false;
-		}
-	
-		if(!$this->accessValid())
-		{
+		if (!$this->initFromPathName($sPathName)) {
 			return false;
 		}
 				
-		$oFmEnv	= &getEnvObject();
-		if(!canCreateFolder($oFmEnv->sRelativePath))
+//		$oFmEnv	= &getEnvObject();
+//		if(!canCreateFolder($oFmEnv->sRelativePath))
+//		{
+//			$this->aError[] = bab_translate("Access denied");
+//			return false;
+//		}
+		if(!canCreateFolder($this->getPathName()))
 		{
 			$this->aError[] = bab_translate("Access denied");
 			return false;
@@ -1163,7 +1174,7 @@ class bab_Directory
 				$oDirRenContext->setSanitizedTrgPathName($sPath . $sSrcName . '/');
 				$oDirRenContext->setTrgName($sSrcName);
 				$oDirRenContext->setTrgPath($sPath);
-				
+
 				if($this->moveDirectory($oDirRenContext))
 				{
 					if($sSrcName !== $sTrgName)
@@ -1234,8 +1245,13 @@ class bab_Directory
 			return false;
 		}
 			
-		$oFmEnv	= &getEnvObject();
-		if(!canManage($oFmEnv->sRelativePath) && !canDownload($oFmEnv->sRelativePath))
+//		$oFmEnv	= &getEnvObject();
+//		if(!canManage($oFmEnv->sRelativePath) && !canDownload($oFmEnv->sRelativePath))
+//		{
+//			$this->aError[]	= bab_translate("Access denied");
+//			return false;
+//		}
+		if(!canManage($this->getPathName()) && !canDownload($this->getPathName()))
 		{
 			$this->aError[]	= bab_translate("Access denied");
 			return false;
@@ -1503,7 +1519,7 @@ class bab_Directory
 	/**
 	 * This function delete a file
 	 *
-	 * @param string $sPathName	The pathName (ex: DG0/D�veloppement/readme.txt)
+	 * @param string $sPathName	The pathName (ex: DG0/Developpement/readme.txt)
 	 * 
 	 * @return bool
 	 */
@@ -1518,18 +1534,7 @@ class bab_Directory
 		$sPathName = (string) addEndSlash(removeLastPath($sPathName));
 		$sPathName = BAB_PathUtil::sanitize($sPathName);
 		
-		if(!$this->processPathName($sPathName, $this->sPathName))
-		{
-			return false;
-		}
-		
-		if(!$this->setEnv($sPathName))
-		{
-			return false;
-		}
-		
-		if(!$this->accessValid())
-		{
+		if (!$this->initFromPathName($sPathName)) {
 			return false;
 		}
 		
@@ -1884,7 +1889,7 @@ class bab_Directory
 		
 		return (0 === count($this->getError()));
 	}
-	
+
 	private function fileRename(bab_directoryRenameContext $oDirRenContext)
 	{
 		$this->sPathName = $oDirRenContext->getSanitizedSrcPathName();
