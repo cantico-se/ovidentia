@@ -111,7 +111,7 @@ class bab_addonsSearch
 					}
 
 					public function getDescription() {
-						return \''.$this->titleAddons[$id_addon].'\';
+						return \''.addslashes($this->titleAddons[$id_addon]).'\';
 					}
 
 					public function getSortMethods() {
@@ -146,6 +146,7 @@ class bab_addonsSearch
 
 						$obj = bab_getInstance(\'bab_addonsSearch\');
 						$result = array();
+						$total = 0;
 
 						while($arr = $obj->callSearchFunction(\''.$id_addon.'\')) {
 
@@ -156,7 +157,18 @@ class bab_addonsSearch
 								\'popuptitle\' 	=> !empty($arr[3]) ? $arr[3][1] : null,
 								\'popupurl\' 	=> !empty($arr[3]) ? $arr[3][0] : null
 							);
+
+							$total = $arr[1];
 						}
+
+						$navpos = bab_rp(\'navitem\') == \''.addslashes(bab_addonsSearch::getItemFromAddon($id_addon)).'\' ? bab_rp(\'navpos\', 0) : 0;
+
+						if ($navpos > 0) {
+							$new_size = -1 * ($navpos + count($result));
+							$result = array_pad($result, $new_size, array());
+						}
+
+						$result = array_pad($result, $total, array());
 
 						$result = new bab_SearchAddonResult($result);
 						$result->setRealm($this);
@@ -289,11 +301,17 @@ class bab_SearchAddonResult extends bab_searchArrayResult {
 	 * @return string
 	 */
 	public function getHtml($count) {
-
+		$i = 0;
 		$return = '';
 
 		while ($this->valid()) {
 
+			if ($i >= $count) {
+				break;
+			}
+
+			$i++;
+	
 			$record = $this->current();
 
 			if ($record->linkurl) {
@@ -315,6 +333,8 @@ class bab_SearchAddonResult extends bab_searchArrayResult {
 				</div>', 
 				$record->content, $link, $popup
 			);
+
+			
 
 			$this->next();
 		}
