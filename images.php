@@ -227,11 +227,19 @@ function iframe($editor,$path="")
 			$this->del				= bab_translate("Delete");
 			$this->editor			= $editor;
 			
-			if( mb_substr($path, -1) == "/" )
+			if( mb_substr($path, -1) == "/" ) {
 				$path = mb_substr($path, 0, -1);
-			$this->prevpath = mb_substr( $path,0, mb_strrpos($path,"/") );
-			if( $path != "" && mb_substr($path, -1) != "/" )
-				$path .="/";
+			}
+
+			$this->prevpath = '';
+
+			if ($path != '') {
+				$this->prevpath = mb_substr( $path,0, mb_strrpos($path,"/") );
+				if( mb_substr($path, -1) != "/" ) {
+					$path .="/";
+				}
+			}
+
 			$this->path = $path;
 			
 			$this->badmin = bab_isUserAdministrator();
