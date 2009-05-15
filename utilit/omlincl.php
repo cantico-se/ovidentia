@@ -1533,6 +1533,14 @@ class bab_Forums extends bab_handler
 			$this->ctx->curctx->push('ForumDescription', $arr['description']);
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
+			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $arr['id']))
+			{
+				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$arr['id']);
+			}
+			else
+			{
+				$this->ctx->curctx->push('ForumNewThreadUrl', '');
+			}
 			$this->ctx->curctx->push('ForumDelegationId', $arr['id_dgowner']);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -1576,6 +1584,14 @@ class bab_Forum extends bab_handler
 			$this->ctx->curctx->push('ForumId', $arr['id']);
 			$this->ctx->curctx->push('ForumUrl', $GLOBALS['babUrlScript']."?tg=threads&forum=".$arr['id']);
 			$this->ctx->curctx->push('ForumDelegationId', $arr['id_dgowner']);
+			if( bab_isAccessValid(BAB_FORUMSPOST_GROUPS_TBL, $arr['id']))
+			{
+				$this->ctx->curctx->push('ForumNewThreadUrl', $GLOBALS['babUrlScript']."?tg=threads&idx=newthread&forum=".$arr['id']);
+			}
+			else
+			{
+				$this->ctx->curctx->push('ForumNewThreadUrl', '');
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1649,9 +1665,24 @@ class bab_Post extends bab_handler
 		else
 			$arr = explode(',', $this->postid);
 
+		$this->confirmed = $ctx->get_value('confirmed');
+		if( $this->confirmed === false )
+			$this->confirmed = "yes";
+			
+		switch(mb_strtoupper($this->confirmed))
+		{
+			case "YES": $this->confirmed = 'Y'; break;
+			case "NO": $this->confirmed = 'N'; break;
+			default: $this->confirmed = ''; break;
+		}
+
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".$babDB->quote($arr).") AND p.confirmed =  'Y'";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".$babDB->quote($arr).")";			
+			if($this->confirmed)
+			{
+				$req .= " AND p.confirmed =  '".$this->confirmed."'";			
+			}
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
 				{
@@ -1668,6 +1699,7 @@ class bab_Post extends bab_handler
 
 			$req .= " order by ".$order;
 
+
 			$res = $babDB->db_query($req);
 
 			while( $row = $babDB->db_fetch_array($res))
@@ -1679,11 +1711,10 @@ class bab_Post extends bab_handler
 					}
 				}
 			}
-
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select * from ".BAB_POSTS_TBL." p where id IN (".$babDB->quote($this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("select p.*, f.bupdatemoderator, f.bupdateauthor, t.active from ".BAB_POSTS_TBL." p left join ".BAB_THREADS_TBL." t on t.id=p.id_thread left join ".BAB_FORUMS_TBL." f on f.id=t.forum where p.id IN (".$babDB->quote($this->arrid).") order by ".$order);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 
@@ -1704,9 +1735,36 @@ class bab_Post extends bab_handler
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
 			$this->ctx->curctx->push('PostAuthor', $arr['author']);
+			$this->ctx->curctx->push('PostAuthorId', $arr['id_author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
 			$this->ctx->curctx->push('PostPopupUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			if( bab_isAccessValid(BAB_FORUMSREPLY_GROUPS_TBL, $this->arrfid[$this->idx]))
+			{
+				$this->ctx->curctx->push('PostReplyUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=reply&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
+			}
+			else
+			{
+				$this->ctx->curctx->push('PostReplyUrl', '');
+			}
+			if( ( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arrfid[$this->idx]) && $arr['bupdatemoderator'] == 'Y') || ($arr["active"] == 'Y' && $BAB_SESS_USERID && $arr['bupdateauthor'] == 'Y' && $BAB_SESS_USERID == $arr['id_author']))
+			{
+				$this->ctx->curctx->push('PostModifyUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			}
+			else
+			{
+				$this->ctx->curctx->push('PostModifyUrl', '');
+			}
+			if( bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $this->arrfid[$this->idx]) && $arr['confirmed'] == 'N')
+			{
+				$this->ctx->curctx->push('PostConfirmUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Modify&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+				$this->ctx->curctx->push('PostDeleteUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=Delete&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id']);
+			}
+			else
+			{
+				$this->ctx->curctx->push('PostConfirmUrl', '');
+				$this->ctx->curctx->push('PostDeleteUrl', '');
+			}
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1851,6 +1909,7 @@ class bab_Thread extends bab_handler
 			$this->ctx->curctx->push('ThreadLastPostId', $arr['lastpost']);
 			$this->ctx->curctx->push('ThreadDate',  bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ThreadStarter',  $arr['starter']);
+			$this->ctx->curctx->push('ThreadStarterId',  $arr['starter']);
 			$this->ctx->curctx->push('ThreadUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id']."&views=1");
 			$this->idx++;
 			$this->index = $this->idx;
