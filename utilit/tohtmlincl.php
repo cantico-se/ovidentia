@@ -87,9 +87,26 @@ function bab_f_toHtml($pee, $opt) {
 
 	if ('ISO-8859-15' === bab_charset::getIso()) {
 		$pee = str_replace(chr(0x80), chr(0xA4)	, $pee);	// euro
-		$pee = str_replace(chr(0x91), "'"		, $pee);	// word apostrophe
-		$pee = str_replace(chr(0x92), "'"		, $pee);	// word apostrophe
-		$pee = str_replace(chr(0xB4), "'"		, $pee);	// word apostrophe
+		$pee = str_replace(chr(0x91), "'"		, $pee);	// apostrophe CP1252
+		$pee = str_replace(chr(0x92), "'"		, $pee);	// apostrophe CP1252
+		$pee = str_replace(chr(0xB4), "'"		, $pee);	// apostrophe ISO-8859-1
+		$pee = str_replace(chr(0x9C), chr(0xBD) , $pee);	// oe 
+		$pee = str_replace(chr(0x8C), chr(0xBD) , $pee);	// OE
+		$pee = str_replace(chr(0x93), '"' 		, $pee);
+		$pee = str_replace(chr(0x94), '"' 		, $pee);
+		$pee = str_replace(chr(0x85), '...' 	, $pee);
+		$pee = str_replace(chr(0x96), '-' 		, $pee);
+		$pee = str_replace(chr(0x97), '-' 		, $pee);
+		$pee = str_replace(chr(0x88), '^'		, $pee);
+		$pee = str_replace(chr(0x99), '<sup>TM<sup>', $pee);
+
+		$pee = str_replace(chr(0x8B), '&lsaquo;', $pee);
+		$pee = str_replace(chr(0x9B), '&rsaquo;', $pee);
+		$pee = str_replace(chr(0x84), '&bdquo;'	, $pee);
+		$pee = str_replace(chr(0x95), '&bull;'	, $pee);
+		$pee = str_replace(chr(0x89), '&permil;', $pee);
+		$pee = str_replace(chr(0x83), '&fnof;'	, $pee);
+		$pee = str_replace(chr(0x86), '&dagger;', $pee);
 	}
 
 
