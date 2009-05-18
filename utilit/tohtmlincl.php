@@ -84,6 +84,15 @@ function bab_f_toHtml($pee, $opt) {
 		$pee = preg_replace("/\t/", "&nbsp; &nbsp; &nbsp; ", $pee);
 	}
 
+
+	if ('ISO-8859-15' === bab_charset::getIso()) {
+		$pee = str_replace(chr(0x80), chr(0xA4)	, $pee);	// euro
+		$pee = str_replace(chr(0x91), "'"		, $pee);	// word apostrophe
+		$pee = str_replace(chr(0x92), "'"		, $pee);	// word apostrophe
+		$pee = str_replace(chr(0xB4), "'"		, $pee);	// word apostrophe
+	}
+
+
 	return $pee;
 	}
 
