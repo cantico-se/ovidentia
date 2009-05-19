@@ -441,7 +441,7 @@ class bab_indexFilesCls extends swishCls
 			$r = $this->checkTimeout();
 			
 			if (BAB_INDEX_FREE === $r->result) {
-				$this->setTempConfigFile($this->mainIndex);	
+				$r->merge($this->setTempConfigFile($this->mainIndex));	
 				$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 				unlink($this->tmpCfgFile);
 				$r->result = true;
@@ -466,7 +466,7 @@ class bab_indexFilesCls extends swishCls
 
 			$r = new bab_indexReturn;
 			
-			$this->setTempConfigFile($this->mergeIndex);
+			$r->merge($this->setTempConfigFile($this->mergeIndex));
 			$r->merge($this->execCmd($this->swishCmd.' -c '.escapeshellarg($this->tmpCfgFile)));
 
 			
