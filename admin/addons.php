@@ -826,9 +826,12 @@ function functionalities() {
 			if (0 < mb_substr_count($funcpath, '/')) {
 			
 				$parent_path = $func->getParentPath($funcpath);
-				$parent_obj = bab_functionality::get($parent_path);
+				$parent_obj = @bab_functionality::get($parent_path);
+
+				// quand $parent_obj est false c'est que l'enfant sélectionné par défaut n'existe plus, 
+				// ici on permet de définir un enfant a partir de ceux disponibles
 				
-				if (false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) {
+				if ((false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) || (false === $parent_obj)) {
 
 					$element->addAction('moveup',
 									bab_translate('Move Up'),
