@@ -538,7 +538,7 @@ function setselects(obj)
 
 	<!--#in getnextfieldtosearch -->
 	var j,k,h = 0;
-	var currentselect = sf.elements['dirselect[{ fieldcounter }]'];
+	var currentselect = sf.elements['f[{ fieldcounter }]'];
 
 	for (j=currentselect.options.length-1;j>=0;j--)
 		currentselect.options[j]=null;
@@ -595,13 +595,13 @@ function setselects(obj)
 
  <!--#in getnextfieldtosearch -->
 <p>
-	<select name="dirselect[{ fieldcounter }]">
+	<select name="f[{ fieldcounter }]">
 	<!--#in selectname -->
 		<option { selected } value="{ name }">{ description }</option>
 	<!--#endin selectname -->
 	</select>
 
-	<input type="text" name="dirfield[{ fieldcounter }]" value="{ value }" size="30" />
+	<input type="text" name="v[{ fieldcounter }]" value="{ value }" size="30" />
 </p>
  <!--#endin getnextfieldtosearch -->
 

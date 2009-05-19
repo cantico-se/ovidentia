@@ -537,20 +537,22 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 	 */
 	public function getSearchFormCriteria() {
 
-		$g_directory = (int) bab_rp('g_directory');
-		if ($g_directory) {
-			$this->setDirectory($g_directory);
+		$directoryid = (int) bab_rp('directoryid');
+		if ($directoryid) {
+			$this->setDirectory($directoryid);
 		}
 
 		// default serach fields
 		$criteria = bab_SearchDefaultForm::getCriteria($this);
 
-		$select = bab_rp('dirselect');
-		$values = bab_rp('dirfield');
+		$select = bab_rp('f');
+		$values = bab_rp('v');
 
-		foreach($select as $key => $customfield) {
-			if (isset($this->$customfield) && !empty($values[$key])) {
-				$criteria = $criteria->_AND_($this->$customfield->contain($values[$key]));
+		if ($select && is_array($select)) {
+			foreach($select as $key => $customfield) {
+				if (isset($this->$customfield) && !empty($values[$key])) {
+					$criteria = $criteria->_AND_($this->$customfield->contain($values[$key]));
+				}
 			}
 		}
 
@@ -658,8 +660,8 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 
 			$this->isnotcustom = 0 !== mb_strpos($field->getName(), 'babdirf');
 
-			$dirselect = bab_rp('dirselect');
-			$dirfield = bab_rp('dirfield');
+			$dirselect = bab_rp('f');
+			$dirfield = bab_rp('v');
 
 			$this->fieldvalue = isset($dirfield[$this->j]) ? bab_toHtml($dirfield[$this->j]) : '';
 			if ( isset($dirselect[$this->j]) && $dirselect[$this->j] == $field->getName())
@@ -693,7 +695,7 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 			$this->name = "babdirf".$this->tblxfields[$k]['name'];
 			$this->description = $this->tblxfields[$k]['description'];
 			$this->fieldindex = $k;
-			if ( isset($this->fields['dirselect['.$this->j.']']) && $this->fields['dirselect['.$this->j.']'] == $this->name)
+			if ( isset($this->fields['f['.$this->j.']']) && $this->fields['f['.$this->j.']'] == $this->name)
 				{
 				$this->selected = "selected";
 				}
@@ -722,7 +724,7 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 			{
 			$this->fieldcounter = $j;
 
-			$dirfield = bab_rp('dirfield');
+			$dirfield = bab_rp('v');
 			
 			$this->value = isset($dirfield[$j]) ? $dirfield[$j] : '';
 			$this->j = $j;
@@ -746,7 +748,7 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 			{
 			
 			$this->topicid = $arr['id'];
-			$this->selected = bab_rp('g_directory') == $arr['id'];
+			$this->selected = bab_rp('directoryid') == $arr['id'];
 
 			$this->topictitle = bab_toHtml($arr['name']);
 
