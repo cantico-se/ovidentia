@@ -5695,9 +5695,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD iPersonalCalendarAccess enum('Y','N') NOT NULL default 'N' AFTER iDefaultCalendarAccess");
 	}
-
-
-
+	
 	/**
 	 * Upgrade to 6.7.95
 	 */
@@ -5705,157 +5703,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
 
-	
 	/**
 	 * Upgrade to 6.7.100
 	 */
-
-			
-
-
-
 	/**
-	 * Upgrade to 7.0.90
+	 * Upgrade to 6.7.101
 	 */
-
-	// Search API
-
-	include_once dirname(__FILE__).'/utilit/eventincl.php';
-	bab_addEventListener('bab_eventSearchRealms', 'bab_onSearchRealms', 'utilit/searchincl.php');
-	
-	// ICONS in sitemap
-	if (!bab_isTableField(BAB_SITEMAP_FUNCTIONS_TBL, 'icon')) {
-		$babDB->db_query("ALTER TABLE ".BAB_SITEMAP_FUNCTIONS_TBL." ADD icon varchar(255) NOT NULL default ''");
-	}
-
-	require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
-	$functionalities = new bab_functionalities();
-	$functionalities->register('Icons'					, $GLOBALS['babInstallPath'].'utilit/icons.php');
-	$functionalities->register('Icons/Default'			, $GLOBALS['babInstallPath'].'utilit/icons.php');
-	$functionalities->register('Archive'				, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-	$functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-	$functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-	$functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-	
-
-	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='docx'");
-	if (0 == $babDB->db_num_rows($res)) {
-	
-		$babDB->db_query("
-		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
-			(`ext`, `mimetype`) 
-		VALUES 
-			('docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
-			('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-			('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
-		");
-	}
-
-
-
-
-
-
-	$res = $babDB->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE object='bab_articles'");
-	if (0 == $babDB->db_num_rows($res)) {
-	
-		$babDB->db_query("
-		INSERT INTO `".BAB_INDEX_FILES_TBL."` 
-			(`name`, `object`) 
-		VALUES 
-			('Articles'	, 'bab_articles')
-		");
-	}
-
-
-
-	if (!bab_isTableField(BAB_ARTICLES_TBL, 'index_status')) {
-		$babDB->db_query("
-			ALTER TABLE ".BAB_ARTICLES_TBL." ADD index_status tinyint(3) unsigned NOT NULL default '0'
-		");
-	}
-
-
-	
-	
-	$sTableName = 'bab_tags_references';
-	if(!bab_isTable($sTableName))
-	{
-		$babDB->db_query('
-			CREATE TABLE `'.$sTableName.'` (
-			  `id` int(11) NOT NULL auto_increment,
-			  `id_tag` int(11) unsigned NOT NULL,
-			  `reference` text NOT NULL,
-			  PRIMARY KEY  (`id`),
-			  KEY `id_tag` (`id_tag`)
-			)
-		');
-		
-		$sFileTagRef			= 'ovidentia:///filemanager/file/';
-		$sArticleTagRef			= 'ovidentia:///articles/article/';
-		$sDraftArticleTagRef	= 'ovidentia:///articles/draft/';
-		
-		$aTable = array(
-			'bab_art_tags'			=> array('sTagReference' => $sArticleTagRef,		'sColumnName' => 'id_art'),
-			'bab_art_drafts_tags'	=> array('sTagReference' => $sDraftArticleTagRef,	'sColumnName' => 'id_draft'),
-			'bab_files_tags'		=> array('sTagReference' => $sFileTagRef, 			'sColumnName' => 'id_file')
-		);
-
-
-		global $babDB;
-	
-		foreach($aTable as $sTable => $aItem)
-		{
-			$sTagReference	= $aItem['sTagReference'];
-			$sColumnName	= $aItem['sColumnName'];
-			
-			$sQuery = 
-				'SELECT ' .
-					$sColumnName . ' iIdObject, ' . 
-					'id_tag iIdTag ' .
-				'FROM ' .
-					$sTable;
-			
-			//bab_debug($sQuery);
-			$oResult = $babDB->db_query($sQuery);
-			if(false !== $oResult)
-			{
-				if($babDB->db_num_rows($oResult) > 0)
-				{
-					while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
-					{
-						$iIdObject	= (int) $aDatas['iIdObject'];
-						$iIdTag		= (int) $aDatas['iIdTag'];
-						
-						$sQuery = 
-							'INSERT INTO ' . $sTableName . ' ' .
-								'(' .
-									'`id`, ' .
-									'`id_tag`, `reference`' .
-								') ' .
-							'VALUES ' . 
-								'(\'\', ' . 
-									$babDB->quote($iIdTag) . ', ' . 
-									$babDB->quote($sTagReference . $iIdObject) . 
-								')'; 
-								
-						$babDB->db_query($sQuery);
-					}
-				}
-			}
-		}
-
-		$babDB->db_query('DROP TABLE `bab_files_tags`');
-		$babDB->db_query('DROP TABLE `bab_art_tags`');
-		$babDB->db_query('DROP TABLE `bab_art_drafts_tags`');	
-	}
-	
-	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
-	bab_addEventListener('bab_eventReference', 'bab_onReference', 'utilit/eventReference.php', BAB_ADDON_CORE_NAME, 100);
-
-
-	
-
-
+	/**
+	 * Upgrade to 6.7.102
+	 */
 	return true;
 }
