@@ -577,7 +577,7 @@
 <string id="Outgoing mail server port">Port pour le serveur 'sortant'</string>
 <string id="Outgoing mail server">Serveur de messagerie 'sortant' (SMTP)</string>
 <string id="Ovidentia Administrator">Administrateur d'Ovidentia</string>
-<string id="Ovidentia info">Ovidentia informations</string>
+<string id="Ovidentia informations">Informations sur Ovidentia</string>
 <string id="Ovidentia version">Version d'Ovidentia</string>
 <string id="Ovidentia version for upgrade">Version d'Ovidentia nécessaire pour la mise à jour</string>
 <string id="PHP script">Script PHP</string>

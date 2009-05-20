@@ -546,9 +546,24 @@ function bab_display_addon_requirements()
 	include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	global $babBody;
+
+
+	/**
+	 * template
+	 */
 	class temp {
-	
-		var $altbg = false;
+
+
+		/**
+		 * @var bool
+		 * If null, the interface is not displayed
+		 * if true, dependencies are fullfiled
+		 * if false, conflict
+		 */
+		public $allok = null;
+
+		
+		public $altbg = false;
 	
 		function temp()
 			{
@@ -569,7 +584,13 @@ function bab_display_addon_requirements()
 
 				$install = new bab_InstallSource;
 				$install->setArchive($ul);
-				$ini = $install->getIni();
+
+				try {
+					$ini = $install->getIni();
+				} catch(Exception $e) {
+					$babBody->addError($e->getMessage());
+					return;
+				}
 
 				$this->imagepath = false;
 				
@@ -663,7 +684,9 @@ function bab_display_addon_requirements()
 	}
 
 	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "addons.html", "requirements"));
+	if (null !== $temp->allok) {
+		$babBody->babecho(bab_printTemplate($temp, "addons.html", "requirements"));
+	}
 }
 
 /**
@@ -974,7 +997,7 @@ function viewVersion()
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
 	
 	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem(bab_translate("Ovidentia upgrade"), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade', 
+		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade', 
 			$sImgPath . 'package_settings.png', '', '', '')
 	);
 
@@ -1073,7 +1096,7 @@ switch($idx)
 	{
 	case 'version':
 		display_addons_menu();
-		$babBody->title = bab_translate("Ovidentia info");
+		$babBody->title = bab_translate("Ovidentia informations");
 		viewVersion();
 		break;
 

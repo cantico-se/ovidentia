@@ -833,6 +833,13 @@ class bab_inifile {
 	 * @param $inifile path to the ini file in the zip archive
 	 */
 	function getfromzip($zipfile, $inifile) {
+
+		if (empty($zipfile)) {
+			throw new Exception(bab_translate('The archive does not exists'));
+			return false;
+		}
+
+
 		include_once $GLOBALS['babInstallPath']."utilit/zip.lib.php";
 		include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
 
@@ -844,15 +851,19 @@ class bab_inifile {
 
 		$zip = new Zip;
 		$zipcontents = $zip->get_List($zipfile);
-		foreach ($zipcontents as $k => $arr) {
-			if ($inifile === $arr['filename']) {
-				$inifileindex = $arr['index'];
-				break;
+
+		if ($zipcontents) {
+			foreach ($zipcontents as $k => $arr) {
+				if ($inifile === $arr['filename']) {
+					$inifileindex = $arr['index'];
+					break;
+				}
 			}
 		}
 
 		if (!isset($inifileindex)) {
-			throw new Exception(bab_sprintf('The file %s could not be found in archive', $inifile));
+			throw new Exception(bab_sprintf(bab_translate('The file %s could not be found in archive'), $inifile));
+			return false;
 		}
 
 		

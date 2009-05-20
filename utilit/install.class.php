@@ -362,7 +362,14 @@ class bab_InstallSource {
 
 			$install = new bab_InstallSource;
 			$install->setFolder($path.$folder);
-			$ini = $install->getIni();
+
+			try {
+				$ini = $install->getIni();
+			} catch(Exception $e) {
+				$babBody->addError($e->getMessage());
+				return false;
+			}
+
 			if (!$install->install($ini)) {
 				return false;
 			}
