@@ -277,18 +277,41 @@ foreach($babMonths as $key => $val )
 		}
 	}
 
-$babDays = array(bab_translate("Sunday"), bab_translate("Monday"),
-				bab_translate("Tuesday"), bab_translate("Wednesday"), bab_translate("Thursday"),
-				bab_translate("Friday"), bab_translate("Saturday"));
+$babDays = array(bab_translate('Sunday'), bab_translate('Monday'),
+				bab_translate('Tuesday'), bab_translate('Wednesday'), bab_translate('Thursday'),
+				bab_translate('Friday'), bab_translate('Saturday'));
 
 
 $babJs = $GLOBALS['babScriptPath']."ovidentia.js";
 $babCssPath = bab_getCssUrl();
-class babDummy { var $duumy; }
+
+/*
+ * Empty class used with template config.html
+ */
+class babDummy {
+	var $duumy;
+}
 $babDummy = new babDummy();
 
+/*
+ * Class used in section babMeta in template config.html
+ */
+class bab_configTemplate_sectionBabmeta {
+	
+	/*
+	 * Text used as a value to the html meta tag : <meta http-equiv="Content-type" content="{ sContent }" />
+	 * @var string
+	 */
+	public $sContent;
+	
+	public function __construct() {
+		$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+	}
+}
+$bab_configTemplate_sectionBabmeta_object = new bab_configTemplate_sectionBabmeta();
+
 $babCss = bab_printTemplate($babDummy, "config.html", "babCss");
-$babMeta = bab_printTemplate($babDummy, "config.html", "babMeta");
+$babMeta = bab_printTemplate($bab_configTemplate_sectionBabmeta_object, "config.html", "babMeta");
 $babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
 $babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
 if(( mb_strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
