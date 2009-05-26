@@ -250,71 +250,75 @@ valign="middle">{ password }:</td>
 
 <!--#begin changeskin -->
 <form name="formskin" method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="options">
-<input type="hidden" name="update" value="skin">
-<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-<tr> 
-<td align="center" nowrap valign="middle"> 
-	<p>{ title }</p>
-	<p>{ title_style }</p>
-</td>
-</tr>
-<tr> 
-<td align="center" nowrap valign="middle"> 
-<select name="skin" onChange="mm(document.forms.formskin.skin.selectedIndex)">
-<!--#in getnextskin -->
-<option value="{ skinval }" { skinselected }>{ skinname }</option>
-<!--#endin getnextskin -->
-</select>
-<select name="style">
-</select>
-</td>
-</tr>
-<tr> 
-<td align="center"> 
-<input type="submit" name="submit" value="{ update }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+	<input type="hidden" name="tg" value="options">
+	<input type="hidden" name="update" value="skin">
+	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground"> 
+				<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
+					<tr> 
+						<td align="center" nowrap valign="middle"> 
+							<p>{ title }</p>
+							<p>{ title_style }</p>
+						</td>
+					</tr>
+					<tr> 
+						<td align="center" nowrap valign="middle"> 
+							<select name="skin" onChange="bab_showskinstyles(document.forms.formskin.skin.selectedIndex)">
+								<option value="">{ tsiteskin }</option>
+								<!--#in getnextskin -->
+								<option value="{ skinval }" { skinselected }>{ skinname }</option>
+								<!--#endin getnextskin -->
+							</select>
+							<select name="style">
+							</select>
+						</td>
+					</tr>
+					<tr> 
+						<td align="center"> 
+							<input type="submit" name="submit" value="{ update }">
+							<br />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br />
-<script type="text/javascript">
-<!--
-var sksel = { skselectedindex };
-var stsel = { stselectedindex };
-var tab = new Array({ cntskins });
-<!--#in getnextskin -->
-tab[{ iindex }] = new Array();
-<!--#in getnextstyle -->
-tab[{ iindex }][tab[{ iindex }].length] = "{ styleval }";
-<!--#endin getnextstyle -->
-<!--#endin getnextskin -->
 
-function mm(index)
-{
-	for (i = document.forms.formskin.style.length; i >= 0; i--) {
-		document.forms.formskin.style.options[i] = null; 
-	}
-	if (tab[index]) {
-		for (var i = 0; i < tab[index].length; i++)
-		{
-		document.forms.formskin.style.options[i] = new Option(tab[index][i],tab[index][i]);
+<br />
+
+<script type="text/javascript">
+	<!--
+	var sksel = { skselectedindex };
+	var stsel = { stselectedindex };
+	var tab = new Array({ cntskins });
+	<!--#in getnextskin -->
+	tab[{ iindex }] = new Array();
+	<!--#in getnextstyle -->
+	tab[{ iindex }][tab[{ iindex }].length] = "{ styleval }";
+	<!--#endin getnextstyle -->
+	<!--#endin getnextskin -->
+	
+	function bab_showskinstyles(index) {
+		for (i = document.forms.formskin.style.length; i >= 0; i--) {
+			document.forms.formskin.style.options[i] = null; 
 		}
-		if( index == sksel )
-			document.forms.formskin.style.options[stsel].selected = true;
+		if (tab[index]) {
+			for (var i = 0; i < tab[index].length; i++) {
+				document.forms.formskin.style.options[i] = new Option(tab[index][i],tab[index][i]);
+			}
+			if ( index == sksel ) {
+				document.forms.formskin.style.options[stsel].selected = true;
+			}
+		}
 	}
-}
-mm(sksel);
-//-->
+	bab_showskinstyles(sksel);
+	//-->
 </script>
 <!--#end changeskin -->
+
+
 
 <!--#begin profileslist -->
 <form name="listform" method="post" action="{ babPhpSelf }">

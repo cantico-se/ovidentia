@@ -409,7 +409,7 @@ function changeLanguage()
 
     }
 
-function changeSkin($skin)
+function changeSkin()
 	{
 	global $babBody;
 
@@ -431,12 +431,13 @@ function changeSkin($skin)
 		var $cntstyles;
 		var $skin;
 
-		function tempc($skin)
+		function tempc()
 			{
         	global $babDB, $BAB_SESS_USERID;
 			$this->title = bab_translate("Prefered skin");
 			$this->title_style = bab_translate("Prefered style");
 			$this->update = bab_translate("Update Skin");
+			$this->tsiteskin = bab_translate("Skin of the site");
             $this->cntskins = 0;
             $this->cntstyles = 0;
 
@@ -463,18 +464,11 @@ function changeSkin($skin)
 				{
 				$this->userstyle = $GLOBALS['babStyle'];
 				}
+				
+			$this->skin_in_bdd = $arr['skin'];
 
 			$this->title .= ' : '.bab_toHtml($this->userskin);
 			$this->title_style .= " : ".bab_toHtml(mb_substr($this->userstyle,0,mb_strrpos($this->userstyle, ".")));
-			
-			if(!isset($skin) || empty($skin))
-				{
-				$this->skin = $this->userskin;
-				}
-			else
-				{
-				$this->skin = $skin;
-				}
 
 			include_once $GLOBALS['babInstallPath'].'utilit/skinincl.php';
 			$this->arrskins = bab_skin::getList();
@@ -485,62 +479,51 @@ function changeSkin($skin)
             $this->stselectedindex = 0;
 			}
 
-		function getnextskin()
-			{
+		function getnextskin() {
 			static $i = 0;
-			if(list(,$obj) = each($this->arrskins))
-				{
-				$this->iindex = $i;
+			if (list(,$obj) = each($this->arrskins)) {
+				$this->iindex = $i+1; /* 0 is the skin of the site (not referenced in $this->arrskins) */
                 $this->skinname = bab_toHtml($obj->getName());
                 $this->skinval = bab_toHtml($obj->getName());
-                if( $this->skinname == $this->skin )
-					{
-	                $this->skselectedindex = $i;
+                if ($this->skinname == $this->skin_in_bdd) {
+	                $this->skselectedindex = $i+1; /* 0 is the skin of the site (not referenced in $this->arrskins) */
                     $this->skinselected = "selected";
-					}
-                else
+				} else {
                     $this->skinselected = "";
-
+				}
+                
 				$this->arrstyles = array_values($obj->getStyles());
 				$this->cntstyles = count($this->arrstyles);
 				$i++;
 				return true;
-				}
-			else
-				{
+			} else {
 				$i = 0;
 				reset($this->arrskins);
 				return false;
-				}
 			}
-
-		function getnextstyle()
-			{
-			static $j = 0;
-			if( $j < $this->cntstyles)
-				{
-                $this->stylename = bab_toHtml($this->arrstyles[$j]);
-                $this->styleval = bab_toHtml($this->arrstyles[$j]);
-                if( $this->skinname == $this->skin && $this->userstyle == $this->styleval)
-					{
-					$this->stselectedindex = $j;
-					}
-				$j++;
-				return true;
-				}
-			else
-				{
-				$j = 0;
-				return false;
-				}
-			}
-		
 		}
 
+		function getnextstyle() {
+			static $j = 0;
+			if ($j < $this->cntstyles) {
+                $this->stylename = bab_toHtml($this->arrstyles[$j]);
+                $this->styleval = bab_toHtml($this->arrstyles[$j]);
+                if ($this->skinname == $this->skin && $this->userstyle == $this->styleval) {
+					$this->stselectedindex = $j;
+				}
+				$j++;
+				return true;
+			} else {
+				$j = 0;
+				return false;
+			}
+		}
+		
+	}
 
-    $tempc = new tempc($skin);
-    $babBody->babecho(	bab_printTemplate($tempc,"options.html", "changeskin"));
-    }
+    $tempc = new tempc();
+    $babBody->babecho(bab_printTemplate($tempc,"options.html", "changeskin"));
+}
 
 
 function changeProfiles()
@@ -1016,20 +999,29 @@ function updateLanguage($lang, $langfilter)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
 
-function updateSkin($skin, $style)
-	{
+/*
+ * Update the skin to a user's options
+ * Remark : $skin can be empty : it's the skin of the site
+ * 
+ * @param $skin string
+ * @param $style string
+ */
+function updateSkin($skin, $style) {
     global $babDB, $BAB_SESS_USERID;
-	if( !empty($skin) && !empty($BAB_SESS_USERID))
-		{
+    if(empty($skin)) {
+    	$style = ''; /* style of skin of the site */
+    }
+    
+	if(!empty($BAB_SESS_USERID)) {
         $req = "update ".BAB_USERS_TBL." set skin='".$babDB->db_escape_string($skin)."', style='".$babDB->db_escape_string($style)."' where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
         $res = $babDB->db_query($req);
         
         if (0 < $babDB->db_affected_rows($res)) {
 			bab_siteMap::clear();
-			}
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
 	}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=options&idx=global");
+}
 
 
 
@@ -1245,7 +1237,6 @@ if( !isset($BAB_SESS_LOGGED) || !$BAB_SESS_LOGGED)
 }
 
 $idx = bab_rp('idx', 'global');
-$skin = bab_rp('skin');
 
 $babBody->msgerror = '';
 
@@ -1394,7 +1385,7 @@ switch($idx)
 		changeNickname($nickname);
 		if ('Y' == $babBody->babsite['change_skin'])
 			{
-			changeSkin($skin);
+			changeSkin();
 			}
 		if ('Y' == $babBody->babsite['change_lang'])
 			{
