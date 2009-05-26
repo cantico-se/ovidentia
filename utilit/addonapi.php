@@ -1490,6 +1490,8 @@ function bab_getAvailableLanguages()
  */
 function bab_printTemplate( &$class, $file, $section="")
 	{
+	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
+	
 	global $babInstallPath, $babSkinPath;
 	$tplfound = false;
 	
