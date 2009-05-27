@@ -358,7 +358,7 @@ class bab_inifile_requirements {
 	
 		global $babDB;
 	
-		$current =  bab_translate("Unavailable");
+
 		$status = false;
 		$error = null;
 		
@@ -391,12 +391,11 @@ class bab_inifile_requirements {
 
 		if ($status) {
 
-			if (preg_match('/^(\/|[a-zA-Z]{1}\:\\\\)/', (string) $ul)) {
+			if ($ul->isAbsolute()) {
 				
-				
-				$addons = new bab_Path($ul.'/addons');
-				if (!is_dir($addons)) {
-					bab_mkdir($addons);
+				$addons = new bab_Path($ul->toString(), 'addons');
+				if (!is_dir($addons->toString())) {
+					bab_mkdir($addons->toString());
 				}
 
 				try {
@@ -409,13 +408,13 @@ class bab_inifile_requirements {
 			} else {
 
 				$status = false;
-				$error = bab_translate("The directory is writable but this is not the full pathname");
+				$error = bab_translate("The directory is writable but is not an absolute pathname");
 			}
 		}
 
 		return array(
 			'description'	=> bab_translate("Writable upload directory, absolute path"),
-			'current'		=> $current,
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status,
 			'error'			=> $error
 		);
@@ -873,7 +872,7 @@ class bab_inifile {
 		unlink($GLOBALS['babUploadPath'].'/tmp/'.$filename);
 
 		
-		// si le ini contiens un preinstall script, le chercher dans le même repertoire
+		// si le ini contiens un preinstall script, le chercher dans le mï¿½me repertoire
 		
 		if (isset($this->inifile['preinstall_script'])) {
 		
