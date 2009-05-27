@@ -78,6 +78,8 @@ class bab_Path {
 	 * On Windows something like C:/example/path or C:\example\path or C:/example\path
 	 * On unix something like /example/path
 	 * 
+	 * see bab_Path::isAbsolute
+	 * @param string	$path
 	 * @return bool
 	 */
 	public static function isAbsolutePath($path)
@@ -97,10 +99,26 @@ class bab_Path {
 	}
 
 
+	/**
+	 * Checks whether the path is an absolute path.
+	 * On Windows something like C:/example/path or C:\example\path or C:/example\path
+	 * On unix something like /example/path
+	 * 
+	 * @see bab_Path::isAbsolutePath
+	 * @return bool
+	 */
+	public function isAbsolute()
+	{
+		return self::isAbsolutePath($this->toString());
+	}
 
 
-
-	public function __tostring() {
+	/**
+	 * Return the path as a string.
+	 * 
+	 * @return string
+	 */
+	public function tostring() {
 
 		$path = implode('/', $this->allElements);
 		if ($this->absolute && DIRECTORY_SEPARATOR === '/') {
@@ -120,7 +138,7 @@ class bab_Path {
 	 */
 	public function isFolderWriteable() {
 
-		$dir = $this->__tostring();
+		$dir = $this->tostring();
 
 		if (!file_exists($dir)) {
 			throw new Exception(sprintf(bab_translate('The folder %s does not exists'), $dir));
