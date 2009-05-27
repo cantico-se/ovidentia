@@ -26,6 +26,12 @@ include_once "base.php";
 * @internal SEC1 PR 18/01/2007 FULL
 */
 
+/*
+ * Security : destroy primary globals variables of Ovidentia (function used in index.php)
+ * to avoid the modification of globals variables by GET, POST...
+ * 
+ * @param $arr Array
+ */
 function bab_unset(&$arr)
 {
 	unset($arr['babInstallPath'], $arr['babDBHost'], $arr['babDBLogin'], $arr['babDBPasswd'], $arr['babDBName']);
@@ -33,7 +39,11 @@ function bab_unset(&$arr)
 	unset($GLOBALS['babTmp']);
 }
 
-
+/*
+ * Return the URL of the site
+ * 
+ * @return string (url)
+ */
 function bab_getBabUrl() {
 	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']),'/');
 	if (!empty($babWebRoot)) {
@@ -93,54 +103,56 @@ function bab_cleanGpc() {
 	}
 }
 
-
+/* Remove escapes if magic quotes is on */
 bab_cleanGpc();
 
+/* URL of the site */
 if (!isset($babUrl)) {
 	$babUrl = bab_getBabUrl();
 }
 
 
-
-if( isset($_REQUEST['WSSESSIONID']))
-{
-		session_name(sprintf("OV%u", crc32($babUrl)));
-		session_id($_REQUEST['WSSESSIONID']);
-		session_start();
-		if( !isset($_SESSION['BAB_SESS_WSUSER']) || !$_SESSION['BAB_SESS_WSUSER'])
-			{
-			die('Access denied');
-			}
-}
-elseif(!session_id())
-	{
-		session_name(sprintf("OV%u", crc32($babUrl)));
-		session_start();
+/* Management of WSSESSIONID for Web Services */
+if (isset($_REQUEST['WSSESSIONID'])) {
+	session_name(sprintf("OV%u", crc32($babUrl)));
+	session_id($_REQUEST['WSSESSIONID']);
+	session_start();
+	if (!isset($_SESSION['BAB_SESS_WSUSER']) || !$_SESSION['BAB_SESS_WSUSER']) {
+		die('Access denied');
 	}
+} elseif (!session_id()) {
+	session_name(sprintf("OV%u", crc32($babUrl)));
+	session_start();
+}
 	
-	
-if(isset($_GET['babHttpContext'])) 
-{
+/* Restore the REQUEST, POST, GET from the session */
+if (isset($_GET['babHttpContext'])) {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
 	bab_restoreHttpContext();	
 	bab_cleanGpc();
 }
 	
-
-if (!empty($_GET))
+/* The old code of Ovidentia used PHP configuration register_globals to On.
+ * To remain compatible, we add all received data as globals variables.
+ * Security : primary globals variables of Ovidentia are destroyed
+ */
+if (!empty($_GET)) {
 	$babTmp =& $_GET;
-else  if (!empty($HTTP_GET_VARS)) 
-	$babTmp =& $HTTP_GET_VARS;
-if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
+}
+if (isset($babTmp)) {
+	extract($babTmp, EXTR_SKIP);
+	bab_unset($babTmp);
+}
 unset($babTmp);
 
-if (!empty($_POST))
+if (!empty($_POST)) {
 	$babTmp =& $_POST;
-else  if (!empty($HTTP_POST_VARS)) 
-	$babTmp =& $HTTP_POST_VARS;
-if( isset($babTmp)) { extract($babTmp, EXTR_SKIP); bab_unset($babTmp); }
+}
+if( isset($babTmp)) {
+	extract($babTmp, EXTR_SKIP);
+	bab_unset($babTmp);
+}
 unset($babTmp);
-
 
 bab_unset($_REQUEST);
 bab_unset($_COOKIE);
@@ -163,17 +175,27 @@ $BAB_SESS_WSUSER 		= isset($_SESSION['BAB_SESS_WSUSER']) 		? $_SESSION['BAB_SESS
 $babUserPassword = '';
 $incl = '';
 
-if( !isset($GLOBALS['babMkdirMode']))
-	{
+/* Define the value of chmod used when we create folders
+ * babMkdirMode can be defined in config.php
+ * default value : 0770
+ */
+if (!isset($GLOBALS['babMkdirMode'])) {
 	$GLOBALS['babMkdirMode'] = 0770;
-	}
+}
 
-if( !isset($GLOBALS['babUmaskMode']))
-	{
+/* Define the value of Umask used when we create files (mask of creation of file by the user)
+ * babUmaskMode can be defined in config.php
+ * default value : 0
+ */
+if (!isset($GLOBALS['babUmaskMode'])) {
 	$GLOBALS['babUmaskMode'] = 0;
-	}
+}
 
-
+/*
+ * Get the name of the PHP file of script curently executed (default : index.php)
+ * 
+ * @return string
+ */
 function bab_getSelf() {
 	$pos = mb_strrpos($_SERVER['PHP_SELF'], '/');
 
@@ -191,10 +213,10 @@ $babSiteName	= mb_substr($babSiteName, 0, 30);
 
 
 
-
-
-if( !isset($tg))
+/* Controler */
+if (!isset($tg)) {
 	$tg = '';
+}
 
 include_once $babInstallPath.'utilit/defines.php';
 include_once $babInstallPath.'utilit/dbutil.php';
@@ -206,46 +228,42 @@ $babWebStat =& new bab_WebStatEvent();
 include $babInstallPath.'utilit/utilit.php';
 unset($BAB_SESS_LOGGED);
 
-
+/* Set the charset of the current page (ISO-8859-15, UTF-8...)
+ * This configuration prevails on the meta tag (meta http-equiv="Content-type" content="text/html; charset=ISO-8859-15"/>)
+ */
 ini_set('default_charset', bab_charset::getIso());
 
-if( $tg != 'version' || !isset($idx) || $idx != 'upgrade')
-	{
-	bab_updateSiteSettings();
-	if ($GLOBALS['babCookieIdent'] === true) include $babInstallPath."utilit/cookieident.php";
-	if ( isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth )
-		{
+if ($tg != 'version' || !isset($idx) || $idx != 'upgrade') {
+	bab_updateSiteSettings(); /* Get the site settings */
+	if ($GLOBALS['babCookieIdent'] === true) {
+		include $babInstallPath."utilit/cookieident.php";
+	}
+	if (isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) {
 		// We force the cache about groups to reload to avoid problems when
 		// using the NT auto login.
 		$babDB->db_query('UPDATE ' . BAB_USERS_LOG_TBL . ' SET grp_change=\'1\'');
 		unset($_SESSION['bab_groupAccess']['acltables']);
 		unset($_SESSION['bab_groupAccess']['usergroups']);
 		include $babInstallPath."utilit/ntident.php";
-		}
+	}
 	bab_isUserLogged();
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
 	
-
-	
 	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();
-		}
-	
-	
-	
 	}
-else
-	{
-	if (!isset($babLanguage))
+} else {
+	if (!isset($babLanguage)) {
 		$babLanguage = 'en';
-
-	if (!isset($babStyle))
+	}
+	if (!isset($babStyle)) {
 		$babStyle = 'ovidentia.css';
-
-	if (!isset($babSkin))
+	}	
+	if (!isset($babSkin)) {
 		$babSkin = 'ovidentia';
 	}
+}
 
 $babSkinPath = bab_getSkinPath();
 $babScriptPath = $babInstallPath."scripts/";
@@ -253,29 +271,25 @@ $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = "skins/".$GLOBALS['babSkin']."/ovml/";
 
+/* Definition of globals variables $babMonths, $babShortMonths, $babDays */
 $babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_translate("March"), bab_translate("April"),
                         bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
                         bab_translate("September"), bab_translate("October"), bab_translate("November"), bab_translate("December"));
 
 $babShortMonths = array();
-foreach($babMonths as $key => $val )
-	{
+foreach($babMonths as $key => $val) {
 	$sm = mb_substr($val, 0 , 3);
-	if( count($babShortMonths) == 0 || !in_array($sm, $babShortMonths))
-		{
+	if (count($babShortMonths) == 0 || !in_array($sm, $babShortMonths)) {
 		$babShortMonths[$key] = $sm;
-		}
-	else
-		{
+	} else {
 		$m=4;
-		while( in_array($sm, $babShortMonths) && $m < mb_strlen($val))
-			{
+		while(in_array($sm, $babShortMonths) && $m < mb_strlen($val)) {
 			$sm = mb_substr($val, 0 , $m++);
-			}
+		}
 
 		$babShortMonths[$key] = $sm;			
-		}
 	}
+}
 
 $babDays = array(bab_translate('Sunday'), bab_translate('Monday'),
 				bab_translate('Tuesday'), bab_translate('Wednesday'), bab_translate('Thursday'),
@@ -319,6 +333,9 @@ if(( mb_strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windo
 else
 	$babIE = 0;
 
+/*
+ * Display the current page : head, métas, sections, body...
+ */
 function printBody()
 {
 	class tpl
@@ -431,7 +448,6 @@ function printBody()
 				case 'nbsectleft':
 				case 'nbsectright':
 					$this->loadsections();
-
 				default:
 					return $this->$propertyName;
 			}
@@ -549,7 +565,7 @@ function printBody()
 	echo bab_printTemplate($temp, 'page.html', '');
 }
 
-
+/* Controler */
 switch($tg)
 	{
 	case "login":
@@ -1233,5 +1249,5 @@ class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event);
 
-printBody();
+printBody(); /* Display the current page : head, métas, sections, body... */
 unset($tg);

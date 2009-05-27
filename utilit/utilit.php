@@ -1542,8 +1542,8 @@ function bab_getSkinPath() {
 
 
 /**
- * first function called from index to get the site setings
- *
+ * Get the site settings and set globals variables : $babSkin, $babUploadPath...
+ * This function is called from index.php
  */ 
 function bab_updateSiteSettings()
 {

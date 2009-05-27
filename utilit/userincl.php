@@ -267,7 +267,9 @@ function bab_deleteArticleDraft($id)
 	bab_deleteDraft($id);
 }
 
-/* for all users */
+/* Test if the current user is logged and set the global variable $BAB_SESS_LOGGED
+ * @return boolean
+ */
 function bab_isUserLogged($iduser = "")
 {
 	global $BAB_SESS_NICKNAME, $BAB_HASH_VAR, $BAB_SESS_HASHID,$BAB_SESS_LOGGED, $babDB;
