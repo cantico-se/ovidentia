@@ -565,6 +565,15 @@ function printBody()
 	echo bab_printTemplate($temp, 'page.html', '');
 }
 
+/**
+ * Event : Before Page Created
+ * Event intervenes just before the inclusion of code PHP which manages the current page:
+ * the body of the page is not prepared, the template of the page is not treated.
+ */
+class bab_eventBeforePageCreated extends bab_event { }
+$event = new bab_eventBeforePageCreated;
+bab_fireEvent($event); /* Fire all event registered as listeners */
+
 /* Controler */
 switch($tg)
 	{
@@ -1247,7 +1256,7 @@ if( !empty($incl))
  */
 class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
-bab_fireEvent($event);
+bab_fireEvent($event); /* Fire all event registered as listeners */
 
 printBody(); /* Display the current page : head, métas, sections, body... */
 unset($tg);
