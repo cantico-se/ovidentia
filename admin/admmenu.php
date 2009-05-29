@@ -251,22 +251,7 @@ function bab_sitemap_adminSection(&$event) {
 			$event->addFunction($item);
 		}
 
-		if (0 < count($addon_urls)) {
-			$item = $event->createItem($dg_prefix.'AdminSectionAddons');
-			$item->setLabel(bab_translate("Add-ons links"));
-			$item->setPosition(array('root',$key, $dg_prefix.'Admin'));
-			
-			$event->addFolder($item);
-
-			foreach($addon_urls as $arr) {
-				$item = $event->createItem($dg_prefix.$arr['uid']);
-				$item->setLabel($arr['label']);
-				$item->setLink($arr['url']);
-				$item->setPosition(array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSectionAddons'));
-				
-				$event->addFunction($item);
-			}
-		}
+		
 	}
 
 	if( $babBody->isSuperAdmin )
@@ -428,6 +413,24 @@ function bab_sitemap_adminSection(&$event) {
 						}
 
 
+						$event->addFunction($item);
+					}
+				}
+
+
+				if (0 < count($addon_urls)) {
+					$item = $event->createItem($dg_prefix.'AdminSectionAddons');
+					$item->setLabel(bab_translate("Add-ons links"));
+					$item->setPosition(array('root',$key, $dg_prefix.'Admin'));
+					
+					$event->addFolder($item);
+
+					foreach($addon_urls as $arr) {
+						$item = $event->createItem($dg_prefix.$arr['uid']);
+						$item->setLabel($arr['label']);
+						$item->setLink($arr['url']);
+						$item->setPosition(array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSectionAddons'));
+						
 						$event->addFunction($item);
 					}
 				}

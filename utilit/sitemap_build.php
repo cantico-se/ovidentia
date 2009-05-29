@@ -1070,7 +1070,7 @@ function bab_siteMap_build() {
 	// add orphans nodes to tree
 	foreach($event->queue as $missing_node => $orphan) {
 		$newNode = new bab_siteMap_item($missing_node);
-		$newNode->setPosition(array('root', 'DGAll'));
+		$newNode->setPosition(array('root'));
 		$newNode->folder = 1;
 		$newNode->setLabel($missing_node);
 		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));

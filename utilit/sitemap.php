@@ -316,7 +316,7 @@ class bab_siteMap {
 		// each level will be sorted individually if needed before each usage
 		// $rootNode->sortSubTree();
 
-		// bab_debug((string) $rootNode);
+		die((string) $rootNode);
 		
 		return $rootNode;
 	}
