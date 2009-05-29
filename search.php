@@ -273,7 +273,7 @@ function startSearch( $item, $what, $option, $navpos )
 			$this->fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
 
 
-			$this->primary_search = trim($what);
+			$this->primary_search 	= trim($what);
 			$this->secondary_search = isset($this->fields['what2']) ? trim($this->fields['what2']) : '';
 		
 
@@ -323,8 +323,8 @@ function startSearch( $item, $what, $option, $navpos )
 
 
 
-			// trouver les criteres en fonction du formulaire affich�
-
+			// trouver les criteres en fonction du formulaire affichee
+			
 			
 			$nbresult = 0;
 			$html = '';
@@ -348,6 +348,14 @@ function startSearch( $item, $what, $option, $navpos )
 					$fieldlesscriteria 	= NULL;
 					}
 
+
+				if (!empty($this->primary_search) && method_exists($realm, 'setPrimarySearch')) 
+					{
+					$realm->setPrimarySearch($this->primary_search);
+					}
+
+				// $fieldlesscriteria is a criteria for swish-e
+				// 
 
 				if ($fieldlesscriteria) 
 					{
