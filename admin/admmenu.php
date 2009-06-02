@@ -251,6 +251,22 @@ function bab_sitemap_adminSection(&$event) {
 			$event->addFunction($item);
 		}
 
+		$item = $event->createItem($dg_prefix.'AdminUsers');
+		$item->setLabel(bab_translate("Users"));
+		$item->setLink($GLOBALS['babUrlScript'].'?tg=users&bupd=0');
+		$item->setPosition($position);
+		
+		$event->addFunction($item);
+	
+
+	
+		$item = $event->createItem($dg_prefix.'AdminGroups');
+		$item->setLabel(bab_translate("Groups"));
+		$item->setLink($GLOBALS['babUrlScript'].'?tg=groups');
+		$item->setPosition($position);
+		
+		$event->addFunction($item);
+		
 		
 	}
 
@@ -277,19 +293,6 @@ function bab_sitemap_adminSection(&$event) {
 				
 				$event->addFunction($item);
 
-				$item = $event->createItem($dg_prefix.'AdminUsers');
-				$item->setLabel(bab_translate("Users"));
-				$item->setLink($GLOBALS['babUrlScript'].'?tg=users&bupd=0');
-				$item->setPosition($position);
-				
-				$event->addFunction($item);
-
-				$item = $event->createItem($dg_prefix.'AdminGroups');
-				$item->setLabel(bab_translate("Groups"));
-				$item->setLink($GLOBALS['babUrlScript'].'?tg=groups');
-				$item->setPosition($position);
-				
-				$event->addFunction($item);
 
 				$item = $event->createItem($dg_prefix.'AdminVacations');
 				$item->setLabel(bab_translate("Vacations"));

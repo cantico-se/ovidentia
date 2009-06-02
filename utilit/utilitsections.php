@@ -221,7 +221,7 @@ function babAdminSection($close)
 		$this->babAdminSection = $this->babAdminSection->firstChild();
 	}
 	
-	$this->babAdminSectionAddons = $rootNode->getDgNodeById('babAdminSectionAddons');
+	$this->babAdminSectionAddons = $rootNode->getDgNodeById('babDG'.$babBody->currentAdmGroup.'AdminSectionAddons');
 
 	
 
