@@ -127,7 +127,7 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 		FROM 
 			'.BAB_FAQQR_TBL.' '.$mysql->getWhereClause($criteria).' 
 
-		ORDER BY `question` DESC';
+		ORDER BY `question` ASC';
 
 		bab_debug($req, DBG_INFO, 'Search');
 
