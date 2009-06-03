@@ -234,9 +234,10 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
  * 
  * @param int	$iIdGroup			The group to check for existence.
  * @param int	$iIdParent			
+ * @param bool	$bStrict		If true check if the specified group is really descendant ( differnet from parent ) 			
  * @return bool
  */
-function bab_isGroup($iIdGroup, $iIdParent = null)
+function bab_isGroup($iIdGroup, $iIdParent = null, $bStrict = true)
 {
 	global $babDB;
 	
@@ -247,7 +248,14 @@ function bab_isGroup($iIdGroup, $iIdParent = null)
 	{
 		$aFromItem[]		= BAB_GROUPS_TBL . ' parentGrp';
 		$aWhereClauseItem[] = 'parentGrp.id = ' . $babDB->quote((int)$iIdParent);
-		$aWhereClauseItem[] = 'childGrp.lf > parentGrp.lf AND childGrp.lr < parentGrp.lr';
+		if ($bStrict)
+		{
+			$aWhereClauseItem[] = 'childGrp.lf > parentGrp.lf AND childGrp.lr < parentGrp.lr';
+		}
+		else
+		{
+			$aWhereClauseItem[] = 'childGrp.lf >= parentGrp.lf AND childGrp.lr <= parentGrp.lr';
+		}
 	}
 	
 	$aFromItem[]		= BAB_GROUPS_TBL . ' childGrp';
