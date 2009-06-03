@@ -1448,7 +1448,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Thesaurus"),
 			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
-			'uid' 	=> $dg_prefix.'UserThesaurus'
+			'uid' 	=> $dg_prefix.'UserThesaurus',
+			'icon'	=> 'apps-thesaurus'	
 			);
 		}
 
