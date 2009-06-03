@@ -229,6 +229,10 @@ class Func_Icons extends bab_Functionality
 	const APPS_FAQS								= 'apps-faqs';
 	const APPS_TASK_MANAGER						= 'apps-task-manager';
 	const APPS_APPROBATIONS						= 'apps-approbations';
+	const APPS_CONTACTS							= 'apps-contacts';
+	const APPS_THESAURUS						= 'apps-thesaurus';
+	const APPS_SECTIONS							= 'apps-sections';
+	const APPS_DELEGATIONS						= 'apps-delegations';
 	
 	const APPS_CALCULATOR						= 'apps-calculator';
 	const APPS_EDITOR							= 'apps-editor';
@@ -246,6 +250,7 @@ class Func_Icons extends bab_Functionality
 	const APPS_PREFERENCES_CALENDAR				= 'apps-preferences-calendar';
 	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
 	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
+	const APPS_PREFERENCES_UPLOAD				= 'apps-preferences-upload';
 	//-----------------------------------------------------------------------
 	// Categories
 	//-----------------------------------------------------------------------

@@ -751,7 +751,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 	
 			switch($val) {
 				case true:
-					// la fonction n'est pas liée à l'arbre
+					// la fonction n'est pas liï¿½e ï¿½ l'arbre
 					if (isset($nodeList[$id_function])) {
 					
 						if ('root' != $id_function) {
@@ -769,7 +769,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 					break;
 					
 				case false:
-					// la fonction est liée à l'arbre
+					// la fonction est liï¿½e ï¿½ l'arbre
 					if (isset($missing_profile[$id_function]) && isset($nodeList[$id_function])) {
 						// mais n'est pas dans le profile
 						$addFuncToProfile->add($id_function, $id_profile);
@@ -847,7 +847,7 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 		
 		foreach($functions as $id_function => $val) {
 
-			// la fonction n'est pas liée à l'arbre
+			// la fonction n'est pas liï¿½e ï¿½ l'arbre
 			if (isset($nodeList[$id_function])) {
 				$addFuncToProfile->add($id_function, $id_profile);
 			}
@@ -1199,7 +1199,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			$array_urls[] = array(
 				'label' => bab_translate("Publication"),
 				'url' => $GLOBALS['babUrlScript']."?tg=artedit",
-				'uid' => $dg_prefix.'UserPublication'
+				'uid' => $dg_prefix.'UserPublication',
+				'icon'	=> 'apps-articles'
 				);
 			}
 
@@ -1233,13 +1234,15 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'label' => bab_translate("Summary"),
 			'url' => $GLOBALS['babUrlScript']."?tg=calview",
 			'uid' => $dg_prefix.'UserSummary',
+			'icon' => 'apps-summary',
 			'desc' => bab_translate("Last published items")
 		);
 		
 		$array_urls[] = array(
 			'label' => bab_translate("Options"),
 			'url' => $GLOBALS['babUrlScript']."?tg=options",
-			'uid' => $dg_prefix.'UserOptions'
+			'uid' => $dg_prefix.'UserOptions',
+			'icon' => 'categories-preferences-desktop'
 		);
 		
 		if( bab_notesAccess())
@@ -1377,6 +1380,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 				'label' => bab_translate("Task Manager"),
 				'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
 				'uid' 	=> $dg_prefix.'UserTm',
+				'icon'	=> 'apps-task-manager', 
 				'folder' => true
 			);
 

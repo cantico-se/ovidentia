@@ -108,6 +108,7 @@ function bab_sitemap_adminSection(&$event) {
 			$item->setDescription(bab_translate("Change administration delegation"));
 			$item->setLink($GLOBALS['babUrlScript'].'?tg=delegusr');
 			$item->setPosition($position);
+			$item->addIconClassname('apps-delegations');
 			
 			$event->addFunction($item);
 		}
@@ -119,6 +120,7 @@ function bab_sitemap_adminSection(&$event) {
 			$item->setLabel($deleg['objects']['sections']);
 			$item->setLink($GLOBALS['babUrlScript'].'?tg=sections');
 			$item->setPosition($position);
+			$item->addIconClassname('apps-sections');
 			
 			$event->addFunction($item);
 		}
@@ -247,6 +249,7 @@ function bab_sitemap_adminSection(&$event) {
 			$item->setLabel($deleg['objects']['taskmanager']);
 			$item->setLink($GLOBALS['babUrlScript'].'?tg=admTskMgr');
 			$item->setPosition($position);
+			$item->addIconClassname('apps-task-manager');
 			
 			$event->addFunction($item);
 		}
@@ -255,6 +258,7 @@ function bab_sitemap_adminSection(&$event) {
 		$item->setLabel(bab_translate("Users"));
 		$item->setLink($GLOBALS['babUrlScript'].'?tg=users&bupd=0');
 		$item->setPosition($position);
+		$item->addIconClassname('apps-users');
 		
 		$event->addFunction($item);
 	
@@ -264,6 +268,7 @@ function bab_sitemap_adminSection(&$event) {
 		$item->setLabel(bab_translate("Groups"));
 		$item->setLink($GLOBALS['babUrlScript'].'?tg=groups');
 		$item->setPosition($position);
+		$item->addIconClassname('apps-groups');
 		
 		$event->addFunction($item);
 		
@@ -290,6 +295,7 @@ function bab_sitemap_adminSection(&$event) {
 				$item->setLabel(bab_translate("Delegation"));
 				$item->setLink($GLOBALS['babUrlScript'].'?tg=delegat');
 				$item->setPosition($position);
+				$item->addIconClassname('apps-delegations');
 				
 				$event->addFunction($item);
 
@@ -307,6 +313,7 @@ function bab_sitemap_adminSection(&$event) {
 				$item->setLabel(bab_translate("Add/remove programs"));
 				$item->setLink($GLOBALS['babUrlScript'].'?tg=addons');
 				$item->setPosition($position);
+				$item->addIconClassname('actions-list-add');
 				
 				$event->addFunction($item);
 
@@ -322,6 +329,7 @@ function bab_sitemap_adminSection(&$event) {
 				$item->setLabel(bab_translate("Thesaurus"));
 				$item->setLink($GLOBALS['babUrlScript'].'?tg=admthesaurus');
 				$item->setPosition($position);
+				$item->addIconClassname('apps-thesaurus');
 				
 				$event->addFunction($item);
 
@@ -389,6 +397,14 @@ function bab_sitemap_adminSection(&$event) {
 								$item->addIconClassname('apps-preferences-mail-server');
 								break;
 
+							case 3: // user
+								$item->addIconClassname('apps-preferences-user');
+								break;
+
+							case 4: // upload
+								$item->addIconClassname('apps-preferences-upload');
+								break;	
+
 							case 5: 
 								$item->addIconClassname('apps-preferences-date-time-format');
 								break;
@@ -410,7 +426,7 @@ function bab_sitemap_adminSection(&$event) {
 								break;	
 
 							case 12:
-								$item->addIconClassname('apps-preferences-web-services');
+								$item->addIconClassname('apps-preferences-webservices');
 								break;
 
 						}
