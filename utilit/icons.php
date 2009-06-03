@@ -78,6 +78,10 @@ class Func_Icons extends bab_Functionality
 	 */
 	const ACTIONS_DOCUMENT_PRINT				= 'actions-document-print';
 	/**
+	 * The icon for editing a document. 
+	 */
+	const ACTIONS_DOCUMENT_EDIT					= 'actions-document-edit';
+	/**
 	 * The icon for accessing document properties. 
 	 */
 	const ACTIONS_DOCUMENT_PROPERTIES			= 'actions-document-properties';
@@ -118,6 +122,10 @@ class Func_Icons extends bab_Functionality
 	 */
 	const ACTIONS_EDIT_FIND						= 'actions-edit-find';
 	/**
+	 * The icon for searching a user.
+	 */
+	const ACTIONS_EDIT_FIND_USER				= 'actions-edit-find-user';
+	/**
 	 * The icon for copying.
 	 */
 	const ACTIONS_EDIT_COPY						= 'actions-edit-copy';
@@ -142,6 +150,7 @@ class Func_Icons extends bab_Functionality
 	 */
 	const ACTIONS_USER_GROUP_PROPERTIES			= 'actions-user-group-properties';
 	
+	const ACTIONS_USER_GROUP_DELETE				= 'actions-user-group-delete';
 	
 	const ACTIONS_MAIL_SEND						= 'actions-mail-send';
 	const ACTIONS_SET_ACCESS_RIGHTS				= 'actions-set-access-rights';
