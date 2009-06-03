@@ -1292,7 +1292,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		$array_urls[] = array(
 			'label' => bab_translate("Mail"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=inbox",
-			'uid' => $dg_prefix.'UserMail'
+			'uid' => $dg_prefix.'UserMail',
+			'icon'	=> 'apps-mail'
 			);
 		}
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
