@@ -280,6 +280,15 @@ class Func_Icons extends bab_Functionality
 	const CATEGORIES_PREFERENCES_DESKTOP		= 'categories-preferences-desktop';
 	const CATEGORIES_PREFERENCES_OTHER			= 'categories-preferences-other';
 
+	//-----------------------------------------------------------------------
+	// Status
+	//-----------------------------------------------------------------------
+	const STATUS_DIALOG_ERROR					= 'status-dialog-error';
+	const STATUS_DIALOG_INFORMATION				= 'status-dialog-information';
+	const STATUS_DIALOG_PASSWORD				= 'status-dialog-password';
+	const STATUS_DIALOG_QUESTION				= 'status-dialog-question';
+	const STATUS_DIALOG_WARNING					= 'status-dialog-warning';
+	const STATUS_CONTENT_LOADING				= 'status-content-loading';
 }
 
 
