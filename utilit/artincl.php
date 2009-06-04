@@ -876,7 +876,7 @@ class bab_PublicationImageUploader
 					$iIsBefore	= -1;
 					$iIsAfter	= 1;
 					
-					//Supprimer tous les fichiers qui ont été créés avant $oEndDate
+					//Supprimer tous les fichiers qui ont ï¿½tï¿½ crï¿½ï¿½s avant $oEndDate
 					if($iIsBefore == BAB_DateTime::compare($oFileDate, $oEndDate))
 					{
 						@unlink($oItem->getPathname());
@@ -1762,9 +1762,10 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 					}
 				if( file_exists( $filepath ) )
 					{
-					$tp = new babTemplate();
-					$this->headval = $tp->printTemplate($this, $filepath, "head_".$template);
-					$this->bodyval = $tp->printTemplate($this, $filepath, "body_".$template);
+					require_once dirname(__FILE__) . '/template.php';
+					$tp = new bab_Template();
+					$this->headval = $tp->_loadTemplate($filepath, 'head_' . $template);
+					$this->bodyval = $tp->_loadTemplate($filepath, 'body_' . $template);
 					}
 				}
 				
