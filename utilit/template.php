@@ -274,7 +274,7 @@ class bab_Template
 	 * @param	string	$section	The section name in the template file.
 	 * 								If empty, the whole template file is loaded.
 	 * @return	string				The template content or false if not found.
-	 * @access private
+	 * @access public
 	 */
 	function _loadTemplate($pathname, $section)
 	{
