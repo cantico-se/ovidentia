@@ -847,10 +847,6 @@ class bab_addonInfos {
 	 * @return boolean
 	 */
 	function upgrade() {
-
-		if (!$this->isValid()) {
-			return false;
-		}
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		
