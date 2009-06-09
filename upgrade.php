@@ -5918,5 +5918,20 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.0.102
 	 */
+
+	/**
+	 * Upgrade to 7.0.103
+	 */
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='svg'");
+	if (0 == $babDB->db_num_rows($res)) {
+	
+		$babDB->db_query("
+		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
+			(`ext`, `mimetype`) 
+		VALUES 
+			('svg', 'image/svg+xml')
+		");
+	}
+
 	return true;
 }
