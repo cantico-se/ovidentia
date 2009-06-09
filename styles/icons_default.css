@@ -209,13 +209,35 @@
 .icon-16x16 .actions-view-pim-tasks { background-image: url('../skins/ovidentia/images/Puces/schedule.png'); }
 .icon-16x16 .actions-view-history { background-image: url('../skins/ovidentia/images/Puces/file-manager.png'); }
 
-.icon-16x16 .apps-directories { background-image: url('../skins/ovidentia/images/Puces/members.png'); }
+.icon-16x16 .apps-directories { background-image: url('../skins/ovidentia/images/Puces/contact.png'); }
 .icon-16x16 .apps-mail { background-image: url('../skins/ovidentia/images/Puces/mail.png'); }
 .icon-16x16 .apps-vacations { background-image: url('../skins/ovidentia/images/Puces/PuceAdmin.gif'); }
 .icon-16x16 .apps-orgcharts { background-image: url('../skins/ovidentia/images/Puces/tree.gif'); }
 .icon-16x16 .apps-summary { background-image: url('../skins/ovidentia/images/Puces/schedule.png'); }
-.icon-16x16 .apps-faqs { background-image: url('../skins/ovidentia/images/Puces/properties.gif'); }
-
+.icon-16x16 .apps-faqs { background-image: url('../skins/ovidentia/images/Puces/help.png'); }
+.icon-16x16 .apps-task-manager { background-image: url('../skins/ovidentia/images/Puces/list.png'); }
+.icon-16x16 .apps-approbations { background-image: url('../skins/ovidentia/images/Puces/agent.png'); }
+.icon-16x16 .apps-contacts { background-image: url('../skins/ovidentia/images/Puces/contact.png'); }
+.icon-16x16 .apps-thesaurus { background-image: url('../skins/ovidentia/images/Puces/open_oc.gif'); }
+.icon-16x16 .apps-sections { background-image: url('../skins/ovidentia/images/Puces/windowlist.png'); }
+.icon-16x16 .apps-delegations { background-image: url('../skins/ovidentia/images/Puces/folder_group_d.gif'); }
+.icon-16x16 .apps-editor { background-image: url('../skins/ovidentia/images/Puces/edit.gif'); }
+.icon-16x16 .apps-photo { background-image: url('../skins/ovidentia/images/Puces/jpg.gif'); }
+.icon-16x16 .apps-users { background-image: url('../skins/ovidentia/images/Puces/head.gif'); }
+.icon-16x16 .apps-groups { background-image: url('../skins/ovidentia/images/Puces/members.png'); }
+.icon-16x16 .apps-preferences-calendar { background-image: url('../skins/ovidentia/images/Puces/schedule.png'); }
+.icon-16x16 .apps-preferences-upload { background-image: url('../skins/ovidentia/images/Puces/manager.gif'); }
+.icon-16x16 .apps-articles { background-image: url('../skins/ovidentia/images/Puces/txt.gif'); }
+.icon-16x16 .mimetypes-text-x-generic { background-image: url('../skins/ovidentia/images/Puces/txt.gif'); }
+.icon-16x16 .mimetypes-unknown { background-image: url('../skins/ovidentia/images/Puces/defaut.gif'); }
+.icon-16x16 .places-folder-bookmarks { background-image: url('../skins/ovidentia/images/Puces/folder.gif'); }
+.icon-16x16 .places-mail-folder-inbox { background-image: url('../skins/ovidentia/images/Puces/mail.png'); }
+.icon-16x16 .status-dialog-error { background-image: url('../skins/ovidentia/images/Puces/action_fail.gif'); }
+.icon-16x16 .status-dialog-information { background-image: url('../skins/ovidentia/images/Puces/properties.gif'); }
+.icon-16x16 .status-dialog-password { background-image: url('../skins/ovidentia/images/Puces/head.gif'); }
+.icon-16x16 .status-dialog-question { background-image: url('../skins/ovidentia/images/Puces/help.gif'); }
+.icon-16x16 .status-dialog-warning { background-image: url('../skins/ovidentia/images/Puces/PuceFileWaitConfirm.gif'); }
+.icon-16x16 .status-content-loading { background-image: url('../skins/ovidentia/images/Puces/reload.png'); }
 
 
 .icon-24x24 .actions-article-category-new { background-image: url('../skins/ovidentia/images/nodetypes/category.png'); }
