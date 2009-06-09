@@ -177,7 +177,7 @@
 .icon-16x16 .mimetypes-x-office-document { background-image: url('../skins/ovidentia/images/Puces/doc.gif'); }
 .icon-16x16 .mimetypes-x-office-presentation { background-image: url('../skins/ovidentia/images/Puces/ppt.gif'); }
 .icon-16x16 .mimetypes-x-office-spreadsheet { background-image: url('../skins/ovidentia/images/Puces/xls.gif'); }
-.icon-16x16 .places-folder { background-image: url('../skins/ovidentia/images/Puces/internet.png'); }
+.icon-16x16 .places-folder { background-image: url('../skins/ovidentia/images/Puces/folder.gif'); }
 .icon-16x16 .places-folder-red { background-image: url('../skins/ovidentia/images/Puces/folder_group_set.gif'); }
 .icon-16x16 .places-user-home { background-image: url('../skins/ovidentia/images/Puces/root.gif'); }
 .icon-16x16 .places-user-trash { background-image: url('../skins/ovidentia/images/Puces/del.gif'); }
@@ -313,7 +313,7 @@
 .icon-24x24 .mimetypes-x-office-document { background-image: url('../skins/ovidentia/images/Puces/doc.gif'); }
 .icon-24x24 .mimetypes-x-office-presentation { background-image: url('../skins/ovidentia/images/Puces/ppt.gif'); }
 .icon-24x24 .mimetypes-x-office-spreadsheet { background-image: url('../skins/ovidentia/images/Puces/xls.gif'); }
-.icon-24x24 .places-folder { background-image: url('../skins/ovidentia/images/Puces/internet.png'); }
+.icon-24x24 .places-folder { background-image: url('../skins/ovidentia/images/Puces/folder.gif'); }
 .icon-24x24 .places-folder-red { background-image: url('../skins/ovidentia/images/Puces/folder_group_set.gif'); }
 .icon-24x24 .places-user-home { background-image: url('../skins/ovidentia/images/Puces/root.gif'); }
 .icon-24x24 .places-user-trash { background-image: url('../skins/ovidentia/images/Puces/del.gif'); }
@@ -393,7 +393,7 @@
 .icon-32x32 .mimetypes-x-office-document { background-image: url('../skins/ovidentia/images/Puces/doc.gif'); }
 .icon-32x32 .mimetypes-x-office-presentation { background-image: url('../skins/ovidentia/images/Puces/ppt.gif'); }
 .icon-32x32 .mimetypes-x-office-spreadsheet { background-image: url('../skins/ovidentia/images/Puces/xls.gif'); }
-.icon-32x32 .places-folder { background-image: url('../skins/ovidentia/images/Puces/internet.png'); }
+.icon-32x32 .places-folder { background-image: url('../skins/ovidentia/images/Puces/folder.gif'); }
 .icon-32x32 .places-folder-red { background-image: url('../skins/ovidentia/images/Puces/folder_group_set.gif'); }
 .icon-32x32 .places-user-home { background-image: url('../skins/ovidentia/images/Puces/root.gif'); }
 .icon-32x32 .places-user-trash { background-image: url('../skins/ovidentia/images/Puces/del.gif'); }
@@ -473,7 +473,7 @@
 .icon-48x48 .mimetypes-x-office-document { background-image: url('../skins/ovidentia/images/Puces/doc.gif'); }
 .icon-48x48 .mimetypes-x-office-presentation { background-image: url('../skins/ovidentia/images/Puces/ppt.gif'); }
 .icon-48x48 .mimetypes-x-office-spreadsheet { background-image: url('../skins/ovidentia/images/Puces/xls.gif'); }
-.icon-48x48 .places-folder { background-image: url('../skins/ovidentia/images/Puces/internet.png'); }
+.icon-48x48 .places-folder { background-image: url('../skins/ovidentia/images/Puces/folder.gif'); }
 .icon-48x48 .places-folder-red { background-image: url('../skins/ovidentia/images/Puces/folder_group_set.gif'); }
 .icon-48x48 .places-user-home { background-image: url('../skins/ovidentia/images/Puces/root.gif'); }
 .icon-48x48 .places-user-trash { background-image: url('../skins/ovidentia/images/Puces/del.gif'); }
