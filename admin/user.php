@@ -717,7 +717,7 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 			break;
 	}
 
-	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SER password=' . $babDB->quote(md5(mb_strtolower($newpwd1))) . ' WHERE id=' . $babDB->quote($userId);
+	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newpwd1))) . ' WHERE id=' . $babDB->quote($userId);
 	$babDB->db_query($sql);
 	$error = '';
 
