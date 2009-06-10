@@ -366,7 +366,7 @@ function viewgroups()
 
 	}
 	
-	$tempb = new temp();
+	$tempb = new ViewGroups_Temp();
 	$html = bab_printTemplate($tempb, 'users.html', 'viewgroups');
 	if (false === bab_rp('popup', false)) {
 		$babBody->babecho($html);
