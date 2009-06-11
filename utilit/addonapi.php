@@ -1389,13 +1389,34 @@ function bab_getAccessibleObjects($table, $userId)
 
 	$sql = 'SELECT id_object, id_group FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).') OR id_group >= '.BAB_ACL_GROUP_TREE;
 	$res = $babDB->db_query($sql);
-	
+
 	while ($object = $babDB->db_fetch_assoc($res)) {
+
 		if ($object['id_group'] >= BAB_ACL_GROUP_TREE ) {
+
 			$object['id_group'] -= BAB_ACL_GROUP_TREE;
-			if (bab_isMemberOfTree($object['id_group'])) {
-				$objects[$object['id_object']] = $object['id_object'];
+			
+			
+			$groupId = $object['id_group'];
+			
+			if ($groupId == 0 || $groupId == 1) {
+					$objects[$object['id_object']] = $object['id_object'];
+			} else {
+				$lf = &$babBody->ovgroups[$groupId]['lf'];
+				$lr = &$babBody->ovgroups[$groupId]['lr'];			
+				$sql = 'SELECT COUNT(g.id)
+						  FROM ' .BAB_GROUPS_TBL.' AS g, '.BAB_USERS_GROUPS_TBL. ' AS u
+						  WHERE u.id_group = g.id
+						  	AND u.id_object = '.$babDB->quote($userId).'
+						  	AND g.lf >= '.$babDB->quote($babBody->ovgroups[$groupId]['lf']).'
+						  	AND g.lr <= '.$babDB->quote($babBody->ovgroups[$groupId]['lr']); 
+				$res = $babDB->db_query($sql);
+				list($n) = $babDB->db_fetch_assoc($res);
+				if ($n > 0) {
+					$objects[$object['id_object']] = $object['id_object'];
+				}
 			}
+	
 		} else {
 			$objects[$object['id_object']] = $object['id_object'];
 		}
