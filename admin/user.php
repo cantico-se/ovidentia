@@ -292,15 +292,16 @@ function changePassword($item, $pos, $grp)
 	
 	
 	
-function viewgroups() {
-	
-		global $babBody,$BAB_SESS_USERID;
-		class temp
+function viewgroups() 
+{
+		global $babBody;
+		
+		class ViewGroups_Temp
 			{
 			
 			var $altbg = true;
 
-			function temp()
+			function ViewGroups_Temp()
 				{
 				global $babDB;
 				$this->t_name = bab_translate("Name");
@@ -320,7 +321,7 @@ function viewgroups() {
 						AND g.id=u.id_group 
 					ORDER BY g.name
 				';
-				bab_debug($req);
+				//bab_debug($req);
 				$this->res = $babDB->db_query($req);
 				}
 				
@@ -337,7 +338,7 @@ function viewgroups() {
 				}
 			}
 	
-		$tempb = new temp();
+		$tempb = new ViewGroups_Temp();
 		$html = bab_printTemplate($tempb,"users.html", "viewgroups");
 		if (false === bab_rp('popup', false)) {
 			$babBody->babecho($html);
