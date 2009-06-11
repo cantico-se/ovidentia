@@ -1379,7 +1379,7 @@ function bab_getAccessibleObjects($table, $userId)
 {
 	global $babBody, $babDB;
 	$objects = array();
-	
+
 	if (empty($userId)) {
 		$userGroupIds = array(BAB_UNREGISTERED_GROUP);
 	} else {
@@ -1395,20 +1395,20 @@ function bab_getAccessibleObjects($table, $userId)
 		if ($object['id_group'] >= BAB_ACL_GROUP_TREE ) {
 
 			$object['id_group'] -= BAB_ACL_GROUP_TREE;
-			
+
 			$groupId = $object['id_group'];
-			
+
 			if ($groupId == BAB_ALLUSERS_GROUP
 					|| ($groupId == BAB_REGISTERED_GROUP && !empty($userId))
 					|| ($groupId == BAB_UNREGISTERED_GROUP && empty($userId))) {
 					$objects[$object['id_object']] = $object['id_object'];
 			} else {
-				
-				$sql = 'SELECT FROM ' .BAB_GROUPS_TBL.' AS g
+
+				$sql = 'SELECT * FROM ' .BAB_GROUPS_TBL.' AS g
 							WHERE g.id = ' . $babDB->quote($groupId);
 				$grps = $babDB->db_query($sql);
 				$grp = $babDB->db_fetch_assoc($grps);
-				
+
 				$lf = $grp['lf'];
 				$lr = $grp['lr'];
 				$sql = 'SELECT COUNT(g.id)
@@ -1423,7 +1423,7 @@ function bab_getAccessibleObjects($table, $userId)
 					$objects[$object['id_object']] = $object['id_object'];
 				}
 			}
-	
+
 		} else {
 			$objects[$object['id_object']] = $object['id_object'];
 		}
