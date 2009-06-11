@@ -42,7 +42,22 @@ function highlightWord( $w, $text)
 	
 	
 
+function bab_getSearchItems() {
 
+	$searchItems = array();
+	foreach (bab_Search::getRealms() as $realm)
+		{
+		$name = $realm->getName();
+
+		if ($realm->displayInSearchEngine() && $realm->isAccessValid()) {
+			$searchItems[$name] = $realm;
+			}
+		}
+
+	bab_sort::sortObjects($searchItems, 'getSortKey');
+
+	return $searchItems;
+}
 
 
 
@@ -96,18 +111,7 @@ function searchKeyword($item , $option = "OR")
 			$this->order = bab_toHtml(bab_rp('order'));
 			$this->index = bab_searchEngineInfos();
 			
-			$this->searchItems = array();
-			foreach (bab_Search::getRealms() as $realm)
-				{
-				$name = $realm->getName();
-
-				if ($realm->displayInSearchEngine() && $realm->isAccessValid()) {
-					$this->searchItems[$name] = $realm;
-					}
-				}
-
-			bab_sort::natcasesort($this->searchItems);
-
+			$this->searchItems = bab_getSearchItems();
 			
 			// get html form for current item
 
@@ -129,9 +133,13 @@ function searchKeyword($item , $option = "OR")
 		 */
 		public function getnextitem()
 			{
-			$flag = list($this->itemvalue,$this->itemname) = each($this->searchItems);
-			$this->selected = $this->itemvalue == $this->item ? 'selected' : '';
-			return $flag;
+			
+			if (list($this->itemvalue, $realm) = each($this->searchItems)) {
+				$this->itemname = bab_toHtml($realm->getDescription());
+				$this->selected = $this->itemvalue == $this->item ? 'selected' : '';
+				return true;
+				}
+			return false;
 			}
 		}
 	$tempb = new tempb($item ,$option);
@@ -329,7 +337,10 @@ function startSearch( $item, $what, $option, $navpos )
 			$nbresult = 0;
 			$html = '';
 
-			foreach (bab_Search::getRealms() as $realm)
+			$realms = bab_getSearchItems();
+			bab_sort::sortObjects($realms, 'getSortKey');
+
+			foreach ($realms as $realm)
 				{
 				if (empty($item) && $realm->displayInSearchEngine())
 					{

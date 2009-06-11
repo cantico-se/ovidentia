@@ -119,6 +119,10 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		return bab_translate('Directories');
 	}
 
+	public function getSortKey() {
+		return '0070';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null

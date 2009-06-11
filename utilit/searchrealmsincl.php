@@ -75,10 +75,10 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 
 
 	/**
-	 * Display the title of the realm is case of a string representation of the object
+	 * Get a string used to sort the search realms in a result list
 	 * @return string
 	 */
-	final public function __tostring() {
+	public function getSortKey() {
 		return $this->getDescription();
 	}
 

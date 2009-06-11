@@ -48,6 +48,11 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 		return bab_translate('Articles');
 	}
 
+	
+	public function getSortKey() {
+		return '0010';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null

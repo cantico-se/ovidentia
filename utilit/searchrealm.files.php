@@ -76,6 +76,10 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		return bab_translate('File manager');
 	}
 
+	public function getSortKey() {
+		return '0050';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null

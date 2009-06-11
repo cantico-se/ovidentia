@@ -45,6 +45,10 @@ class bab_SearchRealmContacts extends bab_SearchRealm {
 		return bab_translate('Contacts');
 	}
 
+	public function getSortKey() {
+		return '0060';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null

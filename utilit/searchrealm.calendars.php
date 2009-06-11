@@ -46,6 +46,10 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		return bab_translate('Calendar');
 	}
 
+	public function getSortKey() {
+		return '0080';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null

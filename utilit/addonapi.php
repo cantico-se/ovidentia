@@ -29,11 +29,11 @@ require_once 'base.php';
  */
 class bab_Sort
 {
-	private static $sKeyName	= null;
-	private static $iCase		= 0;
+	private static $sKeyName		= null;
+	private static $sortKeyMethod	= null;
 
-	const CASE_SENSITIVE		= 0;
-	const CASE_INSENSITIVE		= 1;
+	const CASE_SENSITIVE			= 0;
+	const CASE_INSENSITIVE			= 1;
 
 
 
@@ -46,15 +46,17 @@ class bab_Sort
 	 */
 	public static function sort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
 	{
-		self::$iCase = $iCase;
-
-		if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
 			$sortCallback = 'compareStringsInsensitive';
 		} else {
 			$sortCallback = 'compareStringsSensitive';
 		}
 		return usort($aToSort, array('bab_sort', $sortCallback));
 	}
+
+
+
+	
 
 
 
@@ -66,10 +68,68 @@ class bab_Sort
 	 */
 	public static function natcasesort(array &$aToSort)
 	{
-		self::$iCase	= bab_Sort::CASE_INSENSITIVE;
+		return uasort($aToSort, array('bab_sort', 'compareStringsInsensitive'));
+	}
 
-		$sortCallback = 'compareStringsInsensitive';
+	/**
+	 * Sort an array of objects according to a value returned by a method of the objects in the array
+	 *
+	 * @param	array	$aToSort			The array of objects to sort
+	 * @param	string	$sortKeyMethod		method of objects of the array to get a sortable value (string, int, float)
+	 *										the default value is __tostring, it will be really called as a method.
+	 *										the __tostring method is usable for object string casting since php 5.2
+	 * @param	int		$iCase				Case used in compare
+	 * @return	bool
+	 */
+	public static function sortObjects(array &$aToSort, $sortKeyMethod = '__tostring', $iCase = bab_Sort::CASE_INSENSITIVE) {
+
+		self::$sortKeyMethod = $sortKeyMethod;
+
+		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
+			$sortCallback = 'compareObjectsInsensitive';
+		} else {
+			$sortCallback = 'compareObjectsSensitive';
+		}
+
 		return uasort($aToSort, array('bab_sort', $sortCallback));
+	}
+
+
+	/**
+	 * Compare case-sensitively two objects.
+	 * 
+	 * @see 	bab_compare
+	 * @param 	object 	$obj1
+	 * @param 	object 	$obj2
+	 * @return 	int		Same values as bab_compare
+	 */
+	private static function compareObjectsSensitive($obj1, $obj2)
+	{
+		$method = self::$sortKeyMethod;
+
+		$str1 = $obj1->$method();
+		$str2 = $obj2->$method();
+
+		return self::compareStringsSensitive($str1, $str2);
+	}
+
+
+	/**
+	 * Compare case-insensitively two objects.
+	 * 
+	 * @see 	bab_compare
+	 * @param 	object 	$obj1
+	 * @param 	object 	$obj2
+	 * @return 	int		Same values as bab_compare
+	 */
+	private static function compareObjectsInsensitive($obj1, $obj2)
+	{
+		$method = self::$sortKeyMethod;
+
+		$str1 = $obj1->$method();
+		$str2 = $obj2->$method();
+
+		return self::compareStringsInsensitive($str1, $str2);
 	}
 
 
@@ -82,10 +142,7 @@ class bab_Sort
 	 */
 	public static function natsort(array &$aToSort)
 	{
-		self::$iCase	= bab_Sort::CASE_SENSITIVE;
-
-		$sortCallback = 'compareStringsSensitive';
-		return uasort($aToSort, array('bab_sort', $sortCallback));
+		return uasort($aToSort, array('bab_sort', 'compareStringsSensitive'));
 	}
 
 
@@ -101,16 +158,15 @@ class bab_Sort
 	public static function asort(array &$aToSort, $sKeyName = null, $iCase = bab_Sort::CASE_SENSITIVE)
 	{
 		self::$sKeyName = $sKeyName;
-		self::$iCase	= $iCase;
 
 		if(isset(self::$sKeyName)) {
-			if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+			if (bab_Sort::CASE_INSENSITIVE == $iCase) {
 				$sortCallback = 'compareKeysInsensitive';
 			} else {
 				$sortCallback = 'compareKeysSensitive';
 			}			
 		} else {
-			if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+			if (bab_Sort::CASE_INSENSITIVE == $iCase) {
 				$sortCallback = 'compareStringsInsensitive';
 			} else {
 				$sortCallback = 'compareStringsSensitive';
@@ -129,9 +185,8 @@ class bab_Sort
 	 */
 	public static function ksort(array &$aToSort, $iCase = bab_Sort::CASE_SENSITIVE)
 	{
-		self::$iCase = $iCase;
 
-		if (bab_Sort::CASE_INSENSITIVE == self::$iCase) {
+		if (bab_Sort::CASE_INSENSITIVE == $iCase) {
 			$sortCallback = 'compareStringsInsensitive';
 		} else {
 			$sortCallback = 'compareStringsSensitive';

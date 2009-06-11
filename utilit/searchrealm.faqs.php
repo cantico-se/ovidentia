@@ -45,6 +45,10 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 		return bab_translate('FAQs');
 	}
 
+	public function getSortKey() {
+		return '0030';
+	}
+
 	/**
 	 * Get Url of functionality throw sitemap API
 	 * @return 	string | null
