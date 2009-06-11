@@ -1308,24 +1308,51 @@ function bab_userIsloggedin()
     return $BAB_SESS_LOGGED;
 	}
 
+
+
+/**
+ * Checks that the specified user can access the object $idobject according to the acl table $table.
+ * If $iduser is empty, the check is performed for anonymous users.
+ * 
+ * @param string	$table		The acl table.
+ * @param int		$idobject	The id of the object for which the access is checked.
+ * @param mixed		$userId		The user id or '' for anonymous users.	
+ *
+ * @return bool
+ */
 function bab_isAccessValidByUser($table, $idobject, $iduser)
 {
-	include_once $GLOBALS['babInstallPath']."admin/acl.php";
-
-	$users = aclGetAccessUsers($table, $idobject);
-
-	if( isset($users[ $iduser]))
-	{
-		return true;
-	}
-	return false;
+	$objects = bab_getAccessibleObjects($table, $iduser);
+	return array_key_exists($idobject, $objects);
 }
 
+
+
+
+/**
+ * Checks that the specified user can access the object $idobject according to the acl table $table.
+ * If $iduser is empty, the check is performed for the current user.
+ * 
+ * @param string	$table		The acl table.
+ * @param int		$idobject	The id of the object for which the access is checked.
+ * @param mixed		$userId		The user id or '' for the current user.
+ * 
+ * @return bool
+ */
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
 	if( $iduser != '')
 		{
-		return bab_isAccessValidByUser($table, $idobject, $iduser);
+			include_once $GLOBALS['babInstallPath']."admin/acl.php";
+		
+			$users = aclGetAccessUsers($table, $idobject);
+		
+			if( isset($users[ $iduser]))
+			{
+				return true;
+			}
+			return false;
+//		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
 	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
@@ -1336,6 +1363,46 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 	return isset($_SESSION['bab_groupAccess']['acltables'][$table][$idobject]);
 }
 
+
+
+
+/**
+ * Get the list of id_object accessible by the specified user.
+ * If $userId is empty, the check is performed for anonymous users.
+ * The id_object is returned in key and in the value of the result array.
+ *
+ * @param string	$table		The acl table.
+ * @param mixed		$userId		The user id or '' for anonymous users.	
+ * @return array
+ */
+function bab_getAccessibleObjects($table, $userId)
+{
+	global $babBody, $babDB;
+	$objects = array();
+	
+	if (empty($userId)) {
+		$userGroupIds = array(BAB_UNREGISTERED_GROUP);
+	} else {
+		$userGroups = bab_getUserGroups($userId);
+		$userGroupIds = $groups['id'];
+	}
+
+	$sql = 'SELECT id_object, id_group FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).') OR id_group >= '.BAB_ACL_GROUP_TREE;
+	$res = $babDB->db_query($sql);
+	
+	while ($object = $babDB->db_fetch_assoc($res)) {
+		if ($object['id_group'] >= BAB_ACL_GROUP_TREE ) {
+			$object['id_group'] -= BAB_ACL_GROUP_TREE;
+			if (bab_isMemberOfTree($object['id_group'])) {
+				$objects[$object['id_object']] = $object['id_object'];
+			}
+		} else {
+			$objects[$object['id_object']] = $object['id_object'];
+		}
+	}
+
+	return $objects;
+}
 
 
 /**
