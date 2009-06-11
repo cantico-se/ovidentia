@@ -1381,54 +1381,26 @@ function bab_getAccessibleObjects($table, $userId)
 	$objects = array();
 
 	if (empty($userId)) {
+		// For anonymous users, we just fetch objects accessible to all users or unregistered users.
 		$userGroupIds = array(BAB_ALLUSERS_GROUP, BAB_UNREGISTERED_GROUP);
-	} else {
-		$userGroups = bab_getUserGroups($userId);
-		$userGroupIds = $groups['id'];
+		$sql = 'SELECT id_object FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).')';
+		$res = $babDB->db_query($sql);
+		while ($object = $babDB->db_fetch_assoc($res)) {
+			$objects[$object['id_object']] = $object['id_object'];
+		}
+		return $objects;
 	}
+
+	$userGroups = bab_getUserGroups($userId);
+	$userGroupIds = $groups['id'];
 
 	$sql = 'SELECT id_object, id_group FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).') OR id_group >= '.BAB_ACL_GROUP_TREE;
 	$res = $babDB->db_query($sql);
 
 	while ($object = $babDB->db_fetch_assoc($res)) {
-
-		if ($object['id_group'] >= BAB_ACL_GROUP_TREE ) {
-
-			$object['id_group'] -= BAB_ACL_GROUP_TREE;
-
-			$groupId = $object['id_group'];
-
-			if ($groupId == BAB_ALLUSERS_GROUP
-					|| ($groupId == BAB_REGISTERED_GROUP && !empty($userId))
-					|| ($groupId == BAB_UNREGISTERED_GROUP && empty($userId))) {
-
-				$objects[$object['id_object']] = $object['id_object'];
-
-			} else {
-
-				$sql = 'SELECT * FROM ' .BAB_GROUPS_TBL.' AS g
-							WHERE g.id = ' . $babDB->quote($groupId);
-				$grps = $babDB->db_query($sql);
-				$grp = $babDB->db_fetch_assoc($grps);
-
-				$lf = $grp['lf'];
-				$lr = $grp['lr'];
-				$sql = 'SELECT COUNT(g.id)
-						  FROM ' .BAB_GROUPS_TBL.' AS g, '.BAB_USERS_GROUPS_TBL. ' AS u
-						  WHERE u.id_group = g.id
-						  	AND u.id_object = '.$babDB->quote($userId).'
-						  	AND g.lf >= '.$babDB->quote($lf).'
-						  	AND g.lr <= '.$babDB->quote($lr); 
-				$res = $babDB->db_query($sql);
-				list($n) = $babDB->db_fetch_assoc($res);
-				if ($n > 0) {
-					$objects[$object['id_object']] = $object['id_object'];
-				}
-			}
-
-		} else {
+		if ($object['id_group'] < BAB_ACL_GROUP_TREE || bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId)) {
 			$objects[$object['id_object']] = $object['id_object'];
-		}
+		}		
 	}
 
 	return $objects;
