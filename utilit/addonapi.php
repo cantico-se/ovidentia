@@ -1396,20 +1396,27 @@ function bab_getAccessibleObjects($table, $userId)
 
 			$object['id_group'] -= BAB_ACL_GROUP_TREE;
 			
-			
 			$groupId = $object['id_group'];
 			
-			if ($groupId == 0 || $groupId == 1) {
+			if ($groupId == BAB_ALLUSERS_GROUP
+					|| ($groupId == BAB_REGISTERED_GROUP && !empty($userId))
+					|| ($groupId == BAB_UNREGISTERED_GROUP && empty($userId))) {
 					$objects[$object['id_object']] = $object['id_object'];
 			} else {
-				$lf = &$babBody->ovgroups[$groupId]['lf'];
-				$lr = &$babBody->ovgroups[$groupId]['lr'];			
+				
+				$sql = 'SELECT FROM ' .BAB_GROUPS_TBL.' AS g
+							WHERE g.id = ' . $babDB->quote($groupId);
+				$grps = $babDB->db_query($sql);
+				$grp = $babDB->db_fetch_assoc($grps);
+				
+				$lf = $grp['lf'];
+				$lr = $grp['lr'];
 				$sql = 'SELECT COUNT(g.id)
 						  FROM ' .BAB_GROUPS_TBL.' AS g, '.BAB_USERS_GROUPS_TBL. ' AS u
 						  WHERE u.id_group = g.id
 						  	AND u.id_object = '.$babDB->quote($userId).'
-						  	AND g.lf >= '.$babDB->quote($babBody->ovgroups[$groupId]['lf']).'
-						  	AND g.lr <= '.$babDB->quote($babBody->ovgroups[$groupId]['lr']); 
+						  	AND g.lf >= '.$babDB->quote($lf).'
+						  	AND g.lr <= '.$babDB->quote($lr); 
 				$res = $babDB->db_query($sql);
 				list($n) = $babDB->db_fetch_assoc($res);
 				if ($n > 0) {
