@@ -167,57 +167,87 @@ return false;
 
 
 class bab_synchronizeSql
-	{
+{
 	var $fileContent = '';
+
+	/**
+	 * @var array( table => action )
+	 * action == 0 : nothing done on the table
+	 * action == 1 : table has been created
+	 * action == 2 : fields in the table has been updated
+	 */
 	var $tables = array();
 	var $create = array();
 	var $insert = array();
 	var $return = array();
 
-	/*
 
-	return array( table => action )
-
-	action == 0 : nothing done on the table
-	action == 1 : table has been created
-	action == 2 : fields in the table has been updated
-
-	*/
-
-	function bab_synchronizeSql($file)
-		{
-		$this->file = $file;
+	/**
+	 * @param string 	$file		The sql filename. Note: it is preferable to call the constructor without parameters and then call fromSqlFile($filename).
+	 */
+	function bab_synchronizeSql($file = null)
+	{
 		$this->db = &$GLOBALS['babDB'];
 
-		if ($this->getFileContent())
-			{
+		if (isset($file)) {
+			$this->fromSqlFile($file);
+		}
+	}
+
+
+	/**
+	 * @param string	$filename	The pathname of the file containing the sql structure of the tables to synchronize.
+	 */
+	function fromSqlFile($filename)
+	{
+		$this->file = $filename;
+		$this->getFileContent();
+
+		$this->updateDatabase();
+	}
+
+
+	/**
+	 * @param string	$filename	A string containing the sql structure of the tables to synchronize.
+	 */
+	function fromSqlString($sql)
+	{
+		$this->fileContent = $sql;
+
+		$this->updateDatabase();
+	}
+
+
+	function updateDatabase()
+	{
+		if (!empty($this->fileContent)) {
 			if ($this->getCreateQueries())
-				{
+			{
 				unset($this->fileContent);
 				$this->showTables();
 				$this->checkTables();
-				}
 			}
-		}
-
+		}		
+	}
+	
 	function getFileContent()
-		{
+	{
 		$f = @fopen($this->file,'r');
 		if ($f === false)
-			{
+		{
 			trigger_error('There is an error into synchronizeSql function, can\'t read sql dump file '.$this->file);
 			return false;
-			}
+		}
 		while (!feof($f)) 
-			{
+		{
 			$this->fileContent .= fread($f, 1024);
-			}
+		}
 		fclose($f);
 		return true;
-		}
+	}
 
 	function getCreateQueries()
-		{
+	{
 		if (preg_match_all("/CREATE\s+TABLE\s+`(.*?)`\s+\((.*?)\;/s", $this->fileContent, $m))
 			{
 			for ($k = 0; $k < count($m[1]); $k++ )
@@ -265,7 +295,7 @@ class bab_synchronizeSql
 			}
 
 		return true;
-		}
+	}
 
 
 	function showTables()
@@ -539,7 +569,7 @@ class bab_synchronizeSql
 		{
 		return 0 == $this->return[$table];
 		}
-	}
+}
 
 /**
  * Get sql file
