@@ -1381,7 +1381,7 @@ function bab_getAccessibleObjects($table, $userId)
 	$objects = array();
 
 	if (empty($userId)) {
-		$userGroupIds = array(BAB_UNREGISTERED_GROUP);
+		$userGroupIds = array(BAB_ALLUSERS_GROUP, BAB_UNREGISTERED_GROUP);
 	} else {
 		$userGroups = bab_getUserGroups($userId);
 		$userGroupIds = $groups['id'];
@@ -1401,7 +1401,9 @@ function bab_getAccessibleObjects($table, $userId)
 			if ($groupId == BAB_ALLUSERS_GROUP
 					|| ($groupId == BAB_REGISTERED_GROUP && !empty($userId))
 					|| ($groupId == BAB_UNREGISTERED_GROUP && empty($userId))) {
-					$objects[$object['id_object']] = $object['id_object'];
+
+				$objects[$object['id_object']] = $object['id_object'];
+
 			} else {
 
 				$sql = 'SELECT * FROM ' .BAB_GROUPS_TBL.' AS g
