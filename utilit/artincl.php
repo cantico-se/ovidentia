@@ -1021,6 +1021,11 @@ function notifyArticleDraftApprovers($id, $users)
 					$this->author = bab_translate("Unknown user");
 					$this->authoremail = "";
 					}
+				/* template variables used in customized file mailinfo.html */
+				$this->babtpl_topicname = $this->categoryname;
+				$this->babtpl_authorname = $this->author;
+				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articletitle = $this->articletitle;
 				}
 			}
 		}
@@ -1040,9 +1045,13 @@ function notifyArticleDraftApprovers($id, $users)
 			}
 		}
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-	$mail->mailSubject(bab_translate("New waiting article"));
-
 	$tempa = new tempa($id);
+	$subject = bab_printTemplate($tempa,'mailinfo.html', 'articlewait_subject');
+	if( empty($subject) )
+		$mail->mailSubject(bab_translate("New waiting article"));
+	else
+		$mail->mailSubject($subject);
+
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "articlewait"));
 	$mail->mailBody($message, "html");
 
@@ -1096,6 +1105,13 @@ function notifyArticleDraftAuthor($idart, $what)
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				$this->author = $authorname;
+
+				/* template variables used in customized file mailinfo.html */
+				$this->babtpl_topicname = $this->categoryname;
+				$this->babtpl_authorname = $this->author;
+				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articletitle = $this->title;
+				
 				}
 			}
 		}
@@ -1115,7 +1131,18 @@ function notifyArticleDraftAuthor($idart, $what)
 
 		$tempc = new clsNotifyArticleDraftAuthor($idart, $what, $arr['title'], $arr['id_topic'], $authorname);
 		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "confirmarticle"));
-		$mail->mailSubject($tempc->about);
+		if( $what == 0 )
+		{
+			$subject = bab_printTemplate($tempc,'mailinfo.html', 'confirmarticle_refused_subject');
+		}
+		else
+		{
+			$subject = bab_printTemplate($tempc,'mailinfo.html', 'confirmarticle_accepted_subject');
+		}
+		if( empty($subject) )
+			$mail->mailSubject($tempc->about);
+		else
+			$mail->mailSubject($subject);
 		$mail->mailBody($message, "html");
 
 		$message = bab_printTemplate($tempc,"mailinfo.html", "confirmarticletxt");
@@ -1261,6 +1288,12 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$this->message = $msg;
 				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=articles&topics=".$topics);
 				$this->linkname = viewCategoriesHierarchy_txt($topics);
+				
+				/* template variables used in customized file mailinfo.html */
+				$this->babtpl_topicname = $this->topicname;
+				$this->babtpl_authorname = $this->authorname;
+				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articletitle = $this->titlename;
 				}
 			}
 		}	
@@ -1271,15 +1304,31 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	if( $what == 'mod' )
+	{
 		$msg = bab_translate("An article has been modified");
+	}
 	else
+	{
 		$msg = bab_translate("An article has been published");
-
-
-    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-    $mail->mailSubject($msg);
-
+	}
 	$tempc = new tempcc($topicname, $title, $author, $msg,$topics);
+
+	$subject = '';
+	if( $what == 'mod' )
+	{
+		$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_update_subject');
+	}
+	else
+	{
+		$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_new_subject');
+	}
+	
+	if( empty($subject) )
+		$mail->mailSubject($msg);
+	else
+		$mail->mailSubject($subject);
+    $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
+
 	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "notifyarticle"));
 
 	$messagetxt = bab_printTemplate($tempc,"mailinfo.html", "notifyarticletxt");
@@ -1389,6 +1438,13 @@ function notifyCommentApprovers($idcom, $nfusers)
 					$this->authoremail = $BAB_SESS_EMAIL;
 				else
 					$this->authoremail = "";
+					
+				/* template variables used in customized file mailinfo.html */
+				$this->babtpl_topicname = $this->categoryname;
+				$this->babtpl_authorname = $this->author;
+				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articletitle = $this->articlename;
+				$this->babtpl_commentsubject = $this->subjectname;
 				}
 			}
 		
@@ -1409,9 +1465,14 @@ function notifyCommentApprovers($idcom, $nfusers)
 				}
 			}
 		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
-		$mail->mailSubject(bab_translate("New waiting comment"));
-
 		$tempa = new tempca($idcom);
+		
+		$subject = bab_printTemplate($tempa,'mailinfo.html', 'commentwait_subject');
+		if( empty($subject) )
+			$mail->mailSubject(bab_translate("New waiting comment"));
+		else
+			$mail->mailSubject($subject);
+			
 		$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "commentwait"));
 		$mail->mailBody($message, "html");
 
