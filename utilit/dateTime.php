@@ -585,15 +585,15 @@ class BAB_DateTime
 	 */
 	function fromDateStr($value)
 	{
-		$tsDate = mktime(0, 0, 0, 11, 31, 2000);
+		$tsDate = mktime(0, 0, 0, 11, 30, 2000);
 		$strDate = bab_shortDate($tsDate, false);
 		$strPattern = $strDate;
-		$strPattern = str_replace('31', '([0-9]{1,2})', $strPattern);
+		$strPattern = str_replace('30', '([0-9]{1,2})', $strPattern);
 		$strPattern = str_replace('11', '([0-9]{1,2})', $strPattern);
 		$strPattern = str_replace('Nov', '([0-9]{1,2})', $strPattern);
 		$strPattern = str_replace('2000', '([0-9]{4})', $strPattern);
 		$strPattern = str_replace('00', '([0-9]{2})', $strPattern);
-		$indexDay = mb_strpos($strDate, '31');
+		$indexDay = mb_strpos($strDate, '30');
 		$indexMonth = mb_strpos($strDate, '11');
 		if($indexMonth === false)
 		{
