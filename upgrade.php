@@ -5920,7 +5920,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 
 	/**
-	 * Upgrade to 7.0.103
+	 * Upgrade to 7.1.0
 	 */
 	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='svg'");
 	if (0 == $babDB->db_num_rows($res)) {
