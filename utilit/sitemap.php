@@ -30,24 +30,6 @@ include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
  */
 class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
-	/**
-	 * Get a folder node by ID in the correct delegation branch
-	 * @param	string	$sId
-	 * @return bab_Node | null
-	 */
-	function getDgNodeById($sId) {
-	
-		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-
-		$idDg = 'All';
-		
-		if (preg_match('/^babDG(\d+)/', $sId, $m)) {
-			$idDg = $m[1];
-		}
-
-		
-		return parent::getNodeById('DG'.$idDg.'-'.$sId);
-	}
 }
 
 /**
@@ -302,9 +284,8 @@ class bab_siteMap {
 			$data->folder 			= 1 == $arr['folder'];
 			$data->iconClassnames	= $arr['icon'];
 			
-			// in tree, uniques id are dynamicaly generated from the id in table and the id_function
-			// the id_function is duplicated if the tree contain multiples delegations
-			$node_list[$arr['id']] = $data->folder ? $current_delegation_node.'-'.$arr['id_function'] : $arr['id'].'-'.$arr['id_function'];
+
+			$node_list[$arr['id']] = $arr['id_function'];
 			
 			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
@@ -327,7 +308,7 @@ class bab_siteMap {
 	 */
 	public static function getUrlById($sId) {
 
-		$notesNode = self::get()->getDgNodeById($sId);
+		$notesNode = self::get()->getNodeById($sId);
 	
 		if (!isset($notesNode)) {
 			return null;
@@ -344,7 +325,7 @@ class bab_siteMap {
 	 */
 	public static function getNameById($sId) {
 
-		$notesNode = self::get()->getDgNodeById($sId);
+		$notesNode = self::get()->getNodeById($sId);
 	
 		if (!isset($notesNode)) {
 			return null;
