@@ -1230,13 +1230,6 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		$array_urls[] = array(
-			'label' => bab_translate("Summary"),
-			'url' => $GLOBALS['babUrlScript']."?tg=calview",
-			'uid' => $dg_prefix.'UserSummary',
-			'icon' => 'apps-summary',
-			'desc' => bab_translate("Last published items")
-		);
 		
 		$array_urls[] = array(
 			'label' => bab_translate("Options"),
