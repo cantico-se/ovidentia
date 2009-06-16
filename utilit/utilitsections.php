@@ -200,7 +200,7 @@ function babAdminSection($close)
 	$rootNode = bab_siteMap::get();
 	$nodename = 'babDG'.$babBody->currentAdmGroup.'AdminSection';
 
-	$this->babAdminSection = $rootNode->getDgNodeById($nodename);
+	$this->babAdminSection = $rootNode->getNodeById($nodename);
 	
 	$this->head = '';
 	$this->foot = '';
@@ -221,7 +221,7 @@ function babAdminSection($close)
 		$this->babAdminSection = $this->babAdminSection->firstChild();
 	}
 	
-	$this->babAdminSectionAddons = $rootNode->getDgNodeById('babDG'.$babBody->currentAdmGroup.'AdminSectionAddons');
+	$this->babAdminSectionAddons = $rootNode->getNodeById('babDG'.$babBody->currentAdmGroup.'AdminSectionAddons');
 
 	
 
@@ -315,13 +315,13 @@ function babUserSection($close) {
 	}
 	
 	$rootNode = bab_siteMap::get();
-	$this->babUserSection = $rootNode->getDgNodeById('babUserSection');
+	$this->babUserSection = $rootNode->getNodeById('babUserSection');
 	if ($this->babUserSection) {
 		$this->babUserSection->sortChildNodes();
 		$this->babUserSection = $this->babUserSection->firstChild();
 	}
 	
-	$this->babUserSectionAddons = $rootNode->getDgNodeById('babUserSectionAddons');
+	$this->babUserSectionAddons = $rootNode->getNodeById('babUserSectionAddons');
 	if ($this->babUserSectionAddons) {
 		$this->babUserSectionAddons->sortChildNodes();
 		$this->babUserSectionAddons = $this->babUserSectionAddons->firstChild();
