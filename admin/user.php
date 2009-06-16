@@ -594,7 +594,7 @@ function updateNickname($userId, $newNickname)
 	}
 
 	$db = $GLOBALS['babDB'];
-	if (!empty($newnick)) {
+	if (!empty($newNickname)) {
 		$query = 'SELECT * FROM ' . BAB_USERS_TBL . '
 					WHERE nickname=' . $babDB->quote($newNickname) . '
 					AND id!=' . $babDB->quote($userId);
@@ -613,6 +613,11 @@ function updateNickname($userId, $newNickname)
 		require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
 		$event = new bab_eventUserModified((int)$userId);
 		bab_fireEvent($event);
+	}
+	else
+	{
+		$babBody->msgerror = bab_translate("You must provide a nickname");
+		return false;
 	}
 
 	return true;
@@ -656,7 +661,7 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 	}
 
 	$sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-	list($nickname, $dbauth) = $babDB->db_fetch_row($sql);
+	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
 
 	$authentification = $babBody->babsite['authentification'];
 	if ($dbauth == 'Y') {
