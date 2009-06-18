@@ -1943,8 +1943,11 @@ class bab_Folders extends bab_handler
 		$oIdDgOwner = $this->oFmFolderSet->aField['iIdDgOwner'];
 		$oActive = $this->oFmFolderSet->aField['sActive'];
 		$oId = $this->oFmFolderSet->aField['iId'];
-
+		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
+		
 		$oCriteria = $oActive->in('Y');
+		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+
 		if(0 !== $iIdDelegation)
 		{
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($iIdDelegation));
@@ -1979,6 +1982,11 @@ class bab_Folders extends bab_handler
 			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
 			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
 			$this->ctx->curctx->push('FolderDelegationId', $oFmFolder->getDelegationOwnerId());
+			$this->ctx->curctx->push('FolderPath', $oFmFolder->getRelativePath());
+			$this->ctx->curctx->push('FolderPathname', $oFmFolder->getName());
+			$url = $GLOBALS['babUrl']
+					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' .$oFmFolder->getName();			
+			$this->ctx->curctx->push('FolderBrowseUrl', $url);
 			$iIndex++;
 			$this->index = $iIndex;
 			return true;
@@ -2030,10 +2038,19 @@ class bab_Folder extends bab_handler
 		
 		if(0 != $this->oFmFolderSet->count() && null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
+			$path = $oFmFolder->getRelativePath();
+			$name = $oFmFolder->getName();
+			$pathname = $path . $name;
 			$this->ctx->curctx->push('CIndex', $iIndex);
-			$this->ctx->curctx->push('FolderName', $oFmFolder->getName());
+			$this->ctx->curctx->push('FolderName', $name);
 			$this->ctx->curctx->push('FolderId', $oFmFolder->getId());
 			$this->ctx->curctx->push('FolderDelegationId', $oFmFolder->getDelegationOwnerId());
+			$this->ctx->curctx->push('FolderPath', $path);
+			$this->ctx->curctx->push('FolderPathname', $pathname);
+			$url = $GLOBALS['babUrl']
+					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' . $pathname;			
+			$this->ctx->curctx->push('FolderBrowseUrl', $url);
+			
 			$iIndex++;
 			$this->index = $iIndex;
 			return true;
@@ -2098,17 +2115,24 @@ class bab_SubFolders extends bab_handler
 	var $count;
 	
 	var $oFmFolderSet = null;
+	
+	var $rootFolderPath;
+	var $folderId;
+	var $path;
 
 	function bab_SubFolders(&$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$folderid = (int) $ctx->get_value('folderid');
+		$this->folderId = $folderid;
 		$this->count = 0;
 
+		
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$sPath = (string) $path = $ctx->get_value('path');
+		$this->path = $sPath;
 
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 		$oId = $this->oFmFolderSet->aField['iId'];
@@ -2124,6 +2148,7 @@ class bab_SubFolders extends bab_handler
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 				
+				$this->rootFolderPath = $sRelativePath;
 //				bab_debug('sRelativePath ==> ' . $sRelativePath . 
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
 	
@@ -2169,6 +2194,11 @@ class bab_SubFolders extends bab_handler
 		{
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('SubFolderName', $this->IdEntries[$this->idx]);
+			$this->ctx->curctx->push('SubFolderPath', $this->path);
+			$this->ctx->curctx->push('SubFolderPathname', $this->path . (empty($this->path) ? '' : '/') . $this->IdEntries[$this->idx]);
+			$url = $GLOBALS['babUrl']
+					.  '?tg=fileman&idx=list&id='. $this->folderId . '&gr=Y&path=' . $this->rootFolderPath . (empty($this->path) ? '' : '/' . $this->path);			
+			$this->ctx->curctx->push('SubFolderBrowseUrl', $url);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -5388,7 +5418,7 @@ class bab_SitemapEntries extends bab_handler
 		$node = $ctx->get_value('node');
 
 		$rootNode = bab_siteMap::get();
-		$node = $rootNode->getNodeById($node);
+		$node = $rootNode->getDgNodeById($node);
 		if ($node) {
 			$node = $node->firstChild();
 			while($node)
