@@ -1943,8 +1943,11 @@ class bab_Folders extends bab_handler
 		$oIdDgOwner = $this->oFmFolderSet->aField['iIdDgOwner'];
 		$oActive = $this->oFmFolderSet->aField['sActive'];
 		$oId = $this->oFmFolderSet->aField['iId'];
-
+		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
+		
 		$oCriteria = $oActive->in('Y');
+		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
+
 		if(0 !== $iIdDelegation)
 		{
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($iIdDelegation));
