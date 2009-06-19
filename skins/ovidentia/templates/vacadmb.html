@@ -203,19 +203,27 @@ function updateDates(elemDay, elemMonth, elemYear)
 	elemDay.options[daysInMonth-1].selected = true;
 }
 
-function dateBegin(day, month, year)
+function dateBegin(param)
 {
+	day 	= param.day;
+	month 	= param.month;
+	year 	= param.year;
+
 	document.vacform.elements['daybegin'].options[day-1].selected = true;
 	document.vacform.elements['monthbegin'].options[month-1].selected = true;
-	document.vacform.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
+	document.vacform.elements['yearbegin'].options[year-{ startyear }].selected = true;
 	updateDates(document.vacform.elements['daybegin'], document.vacform.elements['monthbegin'], document.vacform.elements['yearbegin']);
 }
 
-function dateEnd(day, month, year)
+function dateEnd(param)
 {
+	day 	= param.day;
+	month 	= param.month;
+	year 	= param.year;
+
 	document.vacform.elements['dayend'].options[day-1].selected = true;
 	document.vacform.elements['monthend'].options[month-1].selected = true;
-	document.vacform.elements['yearend'].options[year-{ yearbegin }].selected = true;
+	document.vacform.elements['yearend'].options[year-{ startyear }].selected = true;
 	updateDates(document.vacform.elements['dayend'], document.vacform.elements['monthend'], document.vacform.elements['yearend']);
 
 }
@@ -275,7 +283,7 @@ return true;
 <td> 
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
-<td align="right"><a href="javascript: Start('{ datebegin }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');">{ datebegintxt }</a>: </td>
+<td align="right"><a href="" onclick="bab_dialog.selectdate(dateBegin);return false;">{ datebegintxt }</a>: </td>
 <td valign="middle"> 
 <select name="daybegin">
   <!--#in getnextday -->
@@ -306,7 +314,7 @@ return true;
 </td>
 </tr>
 <tr> 
-<td width="45%" align="right" valign="middle"><a href="javascript: Start('{ dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"">{ dateendtxt }</a>: </td>
+<td width="45%" align="right" valign="middle"><a href="" onclick="bab_dialog.selectdate(dateEnd);return false;">{ dateendtxt }</a>: </td>
 <td valign="middle"> 
 <select name="dayend">
   <!--#in getnextday -->

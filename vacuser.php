@@ -700,6 +700,8 @@ function addNewVacation()
 
 	if (empty($id_request))
 		{
+		// event creation
+
 		$babDB->db_query("
 			INSERT INTO 
 				".BAB_VAC_ENTRIES_TBL." 
@@ -715,15 +717,34 @@ function addNewVacation()
 				)
 		");
 		$id = $babDB->db_insert_id();
+
+		bab_vac_updateEventCalendar($id);
 		}
 	else
 		{
+		// event modification
+
+
 		$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$babDB->db_escape_string($id_request)."'");
 
-		list($idfai) = $babDB->db_fetch_array($babDB->db_query("SELECT idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE id='".$babDB->db_escape_string($id_request)."'"));
+		$rescurrent = $babDB->db_query("
+			SELECT 
+				idfai, 
+				date_begin, 
+				date_end 
+			FROM 
+				".BAB_VAC_ENTRIES_TBL." 
+			WHERE 
+				id='".$babDB->db_escape_string($id_request)."'
+		");
+		list($idfai, $old_date_begin, $old_date_end) = $babDB->db_fetch_array($rescurrent);
+
 		
-		if ($idfai > 0)
+
+		
+		if ($idfai > 0) {
 			deleteFlowInstance($idfai);
+		}
 
 		$babDB->db_query("
 			UPDATE ".BAB_VAC_ENTRIES_TBL." 
@@ -738,7 +759,25 @@ function addNewVacation()
 			");
 
 		$id = $id_request;
+
+		$old_date_begin = bab_mktime($old_date_begin);
+		$old_date_end = bab_mktime($old_date_end);
+
+		$new_date_begin = $date_begin->getTimeStamp();
+		$new_date_end = $date_end->getTimeStamp();
+
+		$period_begin	= $old_date_begin 	< $new_date_begin 	? $old_date_begin 	: $new_date_begin;
+		$period_end 	= $old_date_end 	> $new_date_end 	? $old_date_end 	: $new_date_end;
+
+		include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";
+		$event = new bab_eventPeriodModified($period_begin, $period_end, $id_user);
+		$event->types = BAB_PERIOD_VACATION;
+		bab_fireEvent($event);
+
 		}
+
+
+	// insert rights
 
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
@@ -753,7 +792,7 @@ function addNewVacation()
 			");
 		}
 
-	bab_vac_updateEventCalendar($id);
+	
 
 	if ($id_user == $GLOBALS['BAB_SESS_USERID'] || $rfrom == 1)
 		{
