@@ -674,7 +674,12 @@ function bab_f_getDebug() {
 			reset($this->categories);
 		}
 
-		function color_query(&$str) {
+		/**
+		 * Add colors on a query
+		 * or do nothing if the string is not an SQL query
+		 * @param	string	&$str
+		 */
+		private function color_query(&$str) {
 
 			if (preg_match('/UPDATE|INSERT|SELECT|DELETE/', $str)) {
 
@@ -683,14 +688,135 @@ function bab_f_getDebug() {
 				$str = preg_replace("/(UPDATE|SET|INSERT|INTO|VALUES|SELECT|ORDER BY|GROUP BY|ASC|DESC|LEFT JOIN|ON|WHERE|FROM|AND|OR|MIN|IN|LIKE|CONCAT|SUM|MAX|UNIX_TIMESTAMP|MONTH|DAY|YEAR)/","<span style=\"color:red\">\\1</span>",$str);
 				$str = preg_replace("/('(\w|%|\s)+')/","<span style=\"color:orange\">\\1</span>",$str);
 				$str = preg_replace("/(CASE|WHEN|THEN|END)/","<span style=\"color:blue\">\\1</span>",$str);
+
+				return true;
 			}
+
+			return false;
 		}
 
+
+
+		private function getIterableProperties($i) {
+			if (is_array($i)) {
+				return array_keys($i);
+			}
+
+			if (is_object($i)) {
+				return array_keys(get_class_vars($i));
+			}
+
+			return null;
+		}
+
+
+		private function display_iterable($i) {
+
+			if (2 > count($i)) {
+				return print_r($i, true);
+			}
+
+			// if keys are duplicated in all values
+			$previous = null;
+			foreach($i as $key => $row) {
+				if (!is_array($row) && !is_object($row)) {
+					return print_r($i, true);
+				}
+
+				if (!is_null($previous) && $previous !== $this->getIterableProperties($row)) {
+					return print_r($i, true);
+				}
+
+				$previous = $this->getIterableProperties($row);
+			}
+
+	
+			if (30 < count($previous) || empty($previous)) {
+				return print_r($i, true);
+			}
+
+
+			// visualisation as a table
+
+
+			$table = '<table class="itterable">';
+			$table .= '<thead><tr>';
+			$table .= '<th></th>';
+			foreach($previous as $hkey) {
+				$table .= '<td>'.bab_toHtml($hkey).'</td>';
+			}
+			$table .= '</tr></thead>';
+
+			$table .= '<tbody>';
+
+			foreach($i as $key => $row) {
+				$table .= '<tr>';
+				$table .= '<th>'.bab_toHtml($key).'</th>';
+				foreach($row as $value) {
+					$table .= '<td>'.bab_toHtml(print_r($value, true)).'</td>';
+				}
+				$table .= '</tr>';
+			}
+
+			$table .= '</tbody>';
+			$table .= '</table>';
+
+			return $table;
+		}
+
+
+		private function transform($data) {
+
+			if (is_string($data)) {
+
+				// SQL
+				if ($this->color_query($data)) {
+					return $data;
+				}
+			}
+
+			if (is_array($data)) {
+				return $this->display_iterable($data);
+			}
+		
+			if (is_object($data)) {
+				return print_r($data, true);
+			}
+			
+			return $data;
+		}
+
+
+
 		function getNextMessage() {
-			if (list(, $this->message) = each($this->messages)) {
-				//$this->text = htmlspecialchars($this->text);
-				$this->message['file'] = basename($this->message['file']);
-				$this->color_query($this->message['text']);
+			if (list(, $arr) = each($this->messages)) {
+				$this->message['category']	= bab_toHtml($arr['category']);
+				$this->message['severity']	= bab_toHtml($arr['severity']);
+				$this->message['file'] 		= bab_toHtml(basename($arr['file']));
+				$this->message['line'] 		= bab_toHtml($arr['line']);
+				$this->message['function'] 	= bab_toHtml($arr['function']);
+				$this->message['text'] 		= $this->transform($arr['data']);
+
+				if (false === $arr['data']) {
+					$this->message['type'] = 'FALSE';
+				} elseif (true === $arr['data']) {
+					$this->message['type'] = 'TRUE';
+				} else {
+					$this->message['type'] = bab_toHtml(gettype($arr['data']));
+				}
+
+				$size = 0;
+		
+				if (is_array($arr['data']) || is_object($arr['data'])) {
+					$size = count($arr['data']);
+				}
+
+				if (is_string($arr['data'])) {
+					$size = mb_strlen($arr['data']);
+				}
+
+				$this->message['size'] 		= bab_toHtml($size);
+				
 				return true;
 			}
 			reset($this->messages);

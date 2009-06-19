@@ -4,20 +4,32 @@
 
 <div id="BAB_DEBUG">
 	{ t_categories }:
-	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showAllDebugCategories(); return false;">{ t_all_categories }</a>
+	<a class="bab_dbg_category" href="#" onclick="bab_showAllDebugCategories(); return false;">{ t_all_categories }</a>
 	<!--#in getNextCategory -->
 	<!--#if category "== " -->
-	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">Default</a>
+	<a class="bab_dbg_category" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">Default</a>
 	<!--#else category -->
-	<a class="bab_dbg_category" style="display:block;float:left;margin:.5em;padding:4px;border:1px solid #cccccc;text-decoration:none;" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">{ category }</a>
+	<a class="bab_dbg_category" href="#" onclick="bab_showDebugCategory('{ category }'); return false;">{ category }</a>
 	<!--#endif category -->
 	<!--#endin getNextCategory -->
 	<br style="clear: both" />
+
+	<div id="BAB_DEBUG_messages">
 	<!--#in getNextMessage -->
-	<pre class="bab_dbg_category_{ message[category] } bab_dbg_severity_{ message[severity] }">
-		<div style="padding-bottom:1em;font-weight:bold;font-style:italic" class="bab_dbg_call_info"><span class="bab_dbg_call_file">{ message[file] }</span> <span class="bab_dbg_call_line">({ message[line] })</span> <span class="bab_dbg_call_function">{ message[function] }</span></div>{ message[text] }
-	</pre>
+
+		<div class="bab_dbg_category_{ message[category] } bab_dbg_severity_{ message[severity] }">
+			<div class="bab_dbg_call_info">
+				<span class="bab_dbg_call_file">{ message[file] }</span> 
+				<span class="bab_dbg_call_line">({ message[line] })</span> &nbsp; &nbsp; &nbsp;
+				<span class="bab_dbg_call_function">{ message[function] }</span> &nbsp; &nbsp; &nbsp; 
+				<span class="bab_dbg_call_type">{ message[type] }({ message[size] })</span>
+			</div>
+			<pre>
+{ message[text] }
+			</pre>
+		</div>
 	<!--#endin getNextMessage -->
+	</div>
 </div>
 
 
@@ -35,28 +47,35 @@ function show_hide_debug()
 }
 function bab_showDebugCategory(category)
 {
-	var obj = document.getElementById('BAB_DEBUG');
-	var messages = obj.getElementsByTagName('PRE');
+	var obj = document.getElementById('BAB_DEBUG_messages');
+	var messages = obj.childNodes;
 	var categoryClassName = 'bab_dbg_category_' + category;
 	var nbMessages = messages.length;
 	for (var i = 0; i < nbMessages; i++) {
+
 		var message = messages[i];
-		var messageCategoryClassName = message.className.split(' ')[0];
-		if (categoryClassName  == messageCategoryClassName) {
-			message.style.display = '';
-		} else {
-			message.style.display = 'none';
+
+		if (message.nodeName == 'DIV') {
+			
+			var messageCategoryClassName = message.className.split(' ')[0];
+			if (categoryClassName  == messageCategoryClassName) {
+				message.style.display = '';
+			} else {
+				message.style.display = 'none';
+			}
 		}
 	}
 }
 function bab_showAllDebugCategories()
 {
-	var obj = document.getElementById('BAB_DEBUG');
-	var messages = obj.getElementsByTagName('PRE');
+	var obj = document.getElementById('BAB_DEBUG_messages');
+	var messages = obj.childNodes;
 	var nbMessages = messages.length;
 	for (var i = 0; i < nbMessages; i++) {
 		var message = messages[i];
-		message.style.display = '';
+		if (message.nodeName == 'DIV') {
+			message.style.display = '';
+		}
 	}
 }
 document.getElementById('BAB_DEBUG').style.display = 'none';

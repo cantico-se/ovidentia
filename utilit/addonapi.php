@@ -2114,26 +2114,9 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	$file = $line = $function = '';
 
 	
-	$size = 0;
-	
-	if (is_array($data) || is_object($data)) {
-		$size = count($data);
-	}
-
-	if (is_string($data)) {
-		$size = mb_strlen($data);
-	}
-	
-	$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
-	$htmlinfos = sprintf("<span style=\"color:blue\">type=%s, size=%d</span>\n\n", gettype($data), $size);
 	
 	
-	if (!is_string($data)) {
-		ob_start();
-		print_r($data);
-		$data = ob_get_contents();
-		ob_end_clean();
-	}
+	
 
 
 	// Here we find information about the file and line where bab_debug was called.
@@ -2150,12 +2133,14 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
 	}
 	
-	$message = array('category' => str_replace(' ', '_', $category),
-						'severity' => $severity,
-						'text' => $htmlinfos.$data,
-						'file' => $file,
-						'line' => $line,
-						'function' => $function);
+	$message = array(
+		'category' => str_replace(' ', '_', $category),
+		'severity' => $severity,
+		'data' => $data,
+		'file' => $file,
+		'line' => $line,
+		'function' => $function
+	);
 						 
 						 
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
@@ -2172,10 +2157,25 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	// We immediately log in the bab_debug.txt file.
 	if ( (!isset($GLOBALS['babDebugLogMinSeverity']) || ($GLOBALS['babDebugLogMinSeverity'] <= $severity))
 		 && file_exists($debugFilename) && is_writable($debugFilename)) {
-		$data = $textinfos.$data;
+
+		$size = 0;
+		
+		if (is_array($data) || is_object($data)) {
+			$size = count($data);
+		}
+
+		if (is_string($data)) {
+			$size = mb_strlen($data);
+		}
+
+		$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
+		if (!is_string($data)) {
+			$textinfos .= print_r($data, true);
+		}
+
 		$h = fopen($debugFilename, 'a');
 		$date = date('d/m/Y H:i:s');
-		$lines = explode("\n", $data);
+		$lines = explode("\n", $textinfos);
 		foreach ($lines as $text) {
 			fwrite($h, $date."\t".$severity."\t".$category."\t".basename($file).'('.$line.')'."\t".$function."\t".$text."\n");
 		}

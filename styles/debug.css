@@ -23,3 +23,60 @@
 	text-decoration:none;
 	outline: none;
 }
+
+
+#BAB_DEBUG .bab_dbg_call_info {
+	padding:.2em .8em;
+	border:#eee 1px solid;
+	background:#f8f8f8;
+	margin:.2em;
+}
+
+
+#BAB_DEBUG .bab_dbg_call_file {
+	color:blue;
+}
+
+#BAB_DEBUG .bab_dbg_call_line {
+	color:green;
+}
+
+#BAB_DEBUG .bab_dbg_call_function {
+	color:grey;
+}
+
+#BAB_DEBUG .bab_dbg_call_type {
+	color:red;
+}
+
+
+
+#BAB_DEBUG .bab_dbg_category {
+	display:block;
+	float:left;
+	margin:.5em .5em 0 .5em;
+	padding:1px 5px;
+	border:1px solid #cccccc;
+	text-decoration:none;
+	background:#eee;
+	-moz-border-radius:4px 4px 0 0;
+	color:#000;
+	font-weight:bold;
+}
+
+
+
+#BAB_DEBUG .itterable {
+	background:#eee;
+	border-collapse:collapse;
+}
+
+#BAB_DEBUG .itterable th, #BAB_DEBUG .itterable td {
+	border:#aaa 1px solid;
+	padding:.2em .5em;
+}
+
+#BAB_DEBUG .itterable tbody td {
+	font-weight:normal;
+	background:#fff;
+}
