@@ -181,6 +181,8 @@ class bab_synchronizeSql
 	var $insert = array();
 	var $return = array();
 
+	private $differences = array();
+
 
 	/**
 	 * @param string 	$file		The sql filename. Note: it is preferable to call the constructor without parameters and then call fromSqlFile($filename).
@@ -498,7 +500,7 @@ class bab_synchronizeSql
 		
 		
 	function trimall($str) {
-	  	return mb_strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B"), '', $str));
+	  	return mb_strtolower(str_replace(array(' ', "\t", "\n", "\r", "\0", "\x0B", "'", '\\'), '', $str));
 	}
 		
 		
@@ -511,10 +513,21 @@ class bab_synchronizeSql
 		$option_file = $this->create[$table]['fields'][$field];
 		
 		$null = $this->tables[$table][$field]['Null'] != 'YES' ? ' NOT NULL' : '';
-		$default = $this->tables[$table][$field]['Default'] != '' || false !== mb_strpos($this->tables[$table][$field]['Type'],'char') ? " default '".$this->tables[$table][$field]['Default']."'" : '';
+
+		$default = '';
+
+		if ($this->tables[$table][$field]['Default'] != '' || false !== mb_strpos($this->tables[$table][$field]['Type'],'char')) {
+			$default = " default '".$this->tables[$table][$field]['Default']."'";
+		}
+
+		if (NULL === $this->tables[$table][$field]['Default'] && $this->tables[$table][$field]['Null'] === 'YES') {
+			$default = ' default NULL';
+		}
+
 		$extra = !empty($this->tables[$table][$field]['Extra']) ? ' '.$this->tables[$table][$field]['Extra'] : '';
 		$comment = !empty($this->tables[$table][$field]['Comment']) ? " COMMENT '".$this->tables[$table][$field]['Comment']."'" : '';
 		$option_table = $this->tables[$table][$field]['Type'].$null.$default.$extra.$comment;
+
 		
 		$old = $this->trimall($option_table);
 		$new = $this->trimall($option_file);
@@ -522,6 +535,14 @@ class bab_synchronizeSql
 		
 		if ($old != $new)
 			{
+
+			$this->differences[] = array(
+				'Table' => $table,
+				'Field' => $field,
+				'Database' => $option_table,
+				'SQL file' => $option_file
+			);
+
 			$this->db->db_query("ALTER TABLE `".$this->db->db_escape_string($table)."` CHANGE `".$this->db->db_escape_string($field)."` `".$this->db->db_escape_string($field)."` ".$option_file);
 			return true;
 			}
@@ -542,7 +563,15 @@ class bab_synchronizeSql
 		$new = $this->trimall($new_key);
 		
 		if ($old != $new) {
-			
+
+			$this->differences[] = array(
+				'Table' => $table,
+				'Field' => $key_name,
+				'Database' => $existing_key,
+				'SQL file' => $new_key
+			);
+
+
 			global $babDB;
 			$babDB->db_query('ALTER TABLE '.$babDB->backTick($table).' DROP KEY '.$babDB->backTick($key_name));
 			$this->addKey($table, $key_name, $new_key);
@@ -568,6 +597,11 @@ class bab_synchronizeSql
 	function isUnmodifiedTable($table)
 		{
 		return 0 == $this->return[$table];
+		}
+
+	public function getDifferences() 
+		{
+		return $this->differences;
 		}
 }
 
