@@ -136,8 +136,11 @@ class babMail
 
 	function mailTo($email, $name="")
 	{
-		$this->mail->AddAddress($email, $name);
-		$this->mailTo[] = array($email, $name);
+		/* Add email only if it's not empty */
+		if (!empty($email)) {
+			$this->mail->AddAddress($email, $name);
+			$this->mailTo[] = array($email, $name);
+		}
 	}
 
 	function clearTo()
@@ -148,8 +151,11 @@ class babMail
 
 	function mailCc($email, $name="")
 	{
-		$this->mail->AddCC($email, $name);
-		$this->mailCc[] = array($email, $name);
+		/* Add email only if it's not empty */
+		if (!empty($email)) {
+			$this->mail->AddCC($email, $name);
+			$this->mailCc[] = array($email, $name);
+		}
 	}
 	
 	function clearCc()
@@ -160,8 +166,11 @@ class babMail
 	
 	function mailBcc($email, $name="")
 	{
-		$this->mail->AddBCC($email, $name);
-		$this->mailBcc[] = array($email, $name);
+		/* Add email only if it's not empty */
+		if (!empty($email)) {
+			$this->mail->AddBCC($email, $name);
+			$this->mailBcc[] = array($email, $name);
+		}
 	}
 
 	function clearBcc()
@@ -172,8 +181,11 @@ class babMail
 
 	function mailReplyTo($email, $name="")
 	{
-		$this->mail->AddReplyTo($email, $name);
-		$this->replyTo[] = array($email, $name);
+		/* Add email only if it's not empty */
+		if (!empty($email)) {
+			$this->mail->AddReplyTo($email, $name);
+			$this->replyTo[] = array($email, $name);
+		}
 	}
 
 	function clearReplyTo()
