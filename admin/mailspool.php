@@ -77,10 +77,16 @@ function addRecipient(&$mail, $type, $arr) {
 	$function = 'mail'.$type;
 
 	foreach($arr as $recipient) {
-		if (isset($recipient[1])) {
-			$mail->$function($recipient[0], $recipient[1]);
+		if (isset($recipient[1])) { /* name of recipient */
+			/* Add email only if it's not empty */
+			if (!empty($recipient[0])) {
+				$mail->$function($recipient[0], $recipient[1]);
+			}
 		} else {
-			$mail->$function($recipient[0]);
+			/* Add email only if it's not empty */
+			if (!empty($recipient[0])) {
+				$mail->$function($recipient[0]);
+			}
 		}
 	}
 }
@@ -127,7 +133,18 @@ function send_checked_mail() {
 			
 			$mail_obj->clearAllRecipients();
 			$mail_obj->clearReplyTo();
-
+			
+			/* $arr['mail_data'] was serialized : 
+			 * $data = array(
+					'from'		=> array($this->mail->From, $this->mail->FromName),
+					'sender'	=> $this->mail->Sender,
+					'to'		=> $this->mailTo,
+					'cc'		=> $this->mailCc,
+					'bcc'		=> $this->mailBcc,
+					'files'		=> $this->attachements
+				); 
+				$data = serialize($data);
+			 */
 			$data = unserialize($arr['mail_data']);
 
 			if (isset($data['from'])) {
