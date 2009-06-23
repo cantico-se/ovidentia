@@ -744,21 +744,33 @@ function bab_f_getDebug() {
 		}
 
 
+		/**
+		 * Get object or array structure as html
+		 * @param	mixed $data
+		 * @return string
+		 */
+		private function html_print_r($data) {
+			return bab_toHtml(print_r($data, true));
+		}
+
+
+
+
 		private function display_iterable($i) {
 
 			if (2 > count($i)) {
-				return print_r($i, true);
+				return $this->html_print_r($i);
 			}
 
 			// if keys are duplicated in all values
 			$previous = null;
 			foreach($i as $key => $row) {
 				if (!is_array($row) && !is_object($row)) {
-					return print_r($i, true);
+					return $this->html_print_r($i);
 				}
 
 				if (!is_null($previous) && $previous !== $this->getIterableProperties($row)) {
-					return print_r($i, true);
+					return $this->html_print_r($i);
 				}
 
 				$previous = $this->getIterableProperties($row);
@@ -766,7 +778,7 @@ function bab_f_getDebug() {
 
 	
 			if (30 < count($previous) || empty($previous)) {
-				return print_r($i, true);
+				return $this->html_print_r($i);
 			}
 
 
@@ -787,7 +799,7 @@ function bab_f_getDebug() {
 				$table .= '<tr>';
 				$table .= '<th>'.bab_toHtml($key).'</th>';
 				foreach($row as $value) {
-					$table .= '<td>'.bab_toHtml(print_r($value, true)).'</td>';
+					$table .= '<td>'.$this->transform($value).'</td>';
 				}
 				$table .= '</tr>';
 			}
@@ -807,18 +819,23 @@ function bab_f_getDebug() {
 				if ($this->color_query($data)) {
 					return $data;
 				}
+
+				// user may input HTML
+				return $data;
 			}
 
-			if (is_array($data)) {
+			if (is_array($data) || (is_object($data) && in_array('Iterator', class_implements($data)))) {
 				return $this->display_iterable($data);
 			}
-		
+
 			if (is_object($data)) {
-				return print_r($data, true);
+				return $this->html_print_r($data);
 			}
-			
+			 
+			// int, float, boolean
 			return $data;
 		}
+
 
 
 
