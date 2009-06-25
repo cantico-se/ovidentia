@@ -715,7 +715,7 @@ function bab_f_getDebug() {
 		 */
 		private function color_query(&$str) {
 
-			if (preg_match('/UPDATE|INSERT|SELECT|DELETE/', $str)) {
+			if (preg_match('/^\s*(UPDATE|INSERT|SELECT|DELETE)/', $str)) {
 
 				$str = preg_replace("/(\(|\)|=|\<|\>)/","<span style=\"color:blue\">\\1</span>",$str);
 				$str = preg_replace("/(form_tbl_\d{4})/","<span style=\"color:green\">\\1</span>",$str);
