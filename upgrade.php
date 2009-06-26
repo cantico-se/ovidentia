@@ -23,6 +23,9 @@
 ************************************************************************/
 
 
+
+
+
 /**
  * Recursively deletes a filesystem directory.
  *
@@ -5933,5 +5936,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		");
 	}
 
+	/**
+	 * Upgrade to 7.1.90
+	 */
+	// Adding Ogg Theora, Ogg Vorbis, Speex and Flac mimetypes.
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='ogv'");
+	if (0 == $babDB->db_num_rows($res)) {
+		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('ogv', 'video/ogg')");
+	}
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='ogg'");
+	if (0 == $babDB->db_num_rows($res)) {
+		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('ogg', 'audio/ogg')");
+	}
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='ogg'");
+	if (0 == $babDB->db_num_rows($res)) {
+		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('spx', 'audio/ogg')");
+	}
+	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='flac'");
+	if (0 == $babDB->db_num_rows($res)) {
+		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('flac', 'audio/flac')");
+	}
+	
+
+	
 	return true;
 }

@@ -1043,12 +1043,16 @@ INSERT INTO bab_mime_types VALUES ('js', 'application/x-javascript');
 INSERT INTO bab_mime_types VALUES ('mid', 'audio/midi');
 INSERT INTO bab_mime_types VALUES ('midi', 'audio/midi');
 INSERT INTO bab_mime_types VALUES ('mp3', 'audio/mpeg');
+INSERT INTO bab_mime_types VALUES ('ogg', 'audio/ogg');
+INSERT INTO bab_mime_types VALUES ('spx', 'audio/ogg');
+INSERT INTO bab_mime_types VALUES ('flac', 'audio/flac');
 INSERT INTO bab_mime_types VALUES ('mpg', 'video/mpeg');
 INSERT INTO bab_mime_types VALUES ('mpeg', 'video/mpeg');
 INSERT INTO bab_mime_types VALUES ('mp4', 'video/mp4');
 INSERT INTO bab_mime_types VALUES ('flv', 'video/x-flv');
 INSERT INTO bab_mime_types VALUES ('wmv', 'video/x-ms-wmv');
 INSERT INTO bab_mime_types VALUES ('mov', 'video/quicktime');
+INSERT INTO bab_mime_types VALUES ('ogv', 'video/ogg');
 INSERT INTO bab_mime_types VALUES ('png', 'image/png');
 INSERT INTO bab_mime_types VALUES ('ppt', 'application/vnd.ms-powerpoint');
 INSERT INTO bab_mime_types VALUES ('ps', 'application/postscript');
@@ -1076,6 +1080,7 @@ INSERT INTO bab_mime_types VALUES ('otg', 'application/vnd.oasis.opendocument.gr
 INSERT INTO bab_mime_types VALUES ('docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 INSERT INTO bab_mime_types VALUES ('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 INSERT INTO bab_mime_types VALUES ('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+INSERT INTO bab_mime_types VALUES ('svg', 'image/svg+xml');
 
 
 # --------------------------------------------------------
