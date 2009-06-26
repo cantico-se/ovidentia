@@ -1010,7 +1010,8 @@ function notifyArticleDraftApprovers($id, $users)
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
+				$timestamp = mktime();
+				$this->dateval = bab_strftime($timestamp);
 				if( !empty($arr['id_author']) && $arr['id_author'] != 0)
 					{
 					$this->author = bab_getUserName($arr['id_author']);
@@ -1021,10 +1022,13 @@ function notifyArticleDraftApprovers($id, $users)
 					$this->author = bab_translate("Unknown user");
 					$this->authoremail = "";
 					}
+					
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
 				$this->babtpl_authorname = $this->author;
-				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articledatetime = $this->dateval;
+				$this->babtpl_articledate = bab_strftime($timestamp, false);
+				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->articletitle;
 				}
 			}
@@ -1103,13 +1107,16 @@ function notifyArticleDraftAuthor($idart, $what)
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
+				$timestamp = mktime();
+				$this->dateval = bab_strftime($timestamp);
 				$this->author = $authorname;
 
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
 				$this->babtpl_authorname = $this->author;
-				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articledatetime = $this->dateval;
+				$this->babtpl_articledate = bab_strftime($timestamp, false);
+				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->title;
 				
 				}
@@ -1284,7 +1291,8 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
+				$timestamp = mktime();
+				$this->dateval = bab_strftime($timestamp);
 				$this->message = $msg;
 				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=articles&topics=".$topics);
 				$this->linkname = viewCategoriesHierarchy_txt($topics);
@@ -1292,7 +1300,9 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->topicname;
 				$this->babtpl_authorname = $this->authorname;
-				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articledatetime = $this->dateval;
+				$this->babtpl_articledate = bab_strftime($timestamp, false);
+				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->titlename;
 				}
 			}
@@ -1428,7 +1438,8 @@ function notifyCommentApprovers($idcom, $nfusers)
 				$this->site = bab_translate("Web site");
 				$this->sitename = $babSiteName;
 				$this->date = bab_translate("Date");
-				$this->dateval = bab_strftime(mktime());
+				$timestamp = mktime();
+				$this->dateval = bab_strftime($timestamp);
 				if( !empty($BAB_SESS_USER))
 					$this->author = $BAB_SESS_USER;
 				else
@@ -1442,7 +1453,9 @@ function notifyCommentApprovers($idcom, $nfusers)
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
 				$this->babtpl_authorname = $this->author;
-				$this->babtpl_articledate = $this->dateval;
+				$this->babtpl_articledatetime = $this->dateval;
+				$this->babtpl_articledate = bab_strftime($timestamp, false);
+				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->articlename;
 				$this->babtpl_commentsubject = $this->subjectname;
 				}
