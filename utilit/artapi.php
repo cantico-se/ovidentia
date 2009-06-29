@@ -939,12 +939,12 @@ function bab_getCommentTitle($com)
  * 
  * The current user will be the author of the post.
  * 
- * @param int		$topicId
- * @param int		$articleId
- * @param string	$subject
- * @param string	$message
- * @param int		$parentId
- * @param int		$commentId
+ * @param int		$topicId		The article's topic id.
+ * @param int		$articleId		The article id.
+ * @param string	$subject		The comment title (plain text).
+ * @param string	$message		The comment body (in html)
+ * @param int		$parentId		The parent comment id.
+ * @param int		$commentId		If specified this comment will be updated otherwise a new comment is created.
  */
 function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $commentId = null)
 {
@@ -968,7 +968,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		 				last_update = NOW(),
 		 				subject = ' . $babDB->quote($subject) . ',
 		 				message = ' . $babDB->quote($message) . ')
-		 		WHERE id = ' . $babDB->quote($commentId);		
+		 		WHERE id = ' . $babDB->quote($commentId);
 		$babDB->db_query($req);
 	} else {
 		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (id_topic, id_article, id_parent, date, subject, message, id_author, name, email)
