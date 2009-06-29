@@ -1,5 +1,6 @@
 <!--#begin commentslist -->
-<!--#if count -->
+
+<!--#if nb_comments "> 0" -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
@@ -23,8 +24,9 @@
 </td>
 </tr>
 </table>
-<!--#endif count -->
+<!--#endif nb_comments -->
 <br />
+
 <!--#end commentslist -->
 
 
@@ -39,7 +41,27 @@
 <input type="hidden" name="article" value="{ article }">
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
+
 <table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<!--#if rate_articles -->
+<tr>
+<td>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	<tr>
+	<td class="BabLoginMenuBackground" align="left" nowrap>
+		{ t_rate_this_article }
+		<input type="radio" title="Très mauvais" value="1" name="newrate"/>1
+		<input type="radio" title="Mauvais" value="2" name="newrate"/>2
+		<input type="radio" title="Moyen" value="3" name="newrate"/>3
+		<input type="radio" title="Assez bon" value="4" name="newrate"/>4
+		<input type="radio" title="Bon" value="5" name="newrate"/>5
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<!--#endif rate_articles -->
+	
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -74,7 +96,7 @@
 	<tr>
 		<td align="center" valign="top">
 			{ captchaSecurityData }
-			<input type="text" name="captchaSecurityCode" size="10" value="" />
+			<input type="text" name="captchaSecurityCode" size="10" value="" style="vertical-align: top" />
 		</td>
 	</tr>
 	<!--#endif useCaptcha -->

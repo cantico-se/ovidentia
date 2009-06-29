@@ -31,87 +31,92 @@ include_once $babInstallPath.'utilit/artincl.php';
 
 function listComments($topics, $article)
 {
-	global $babBodyPopup;
-
 	class ListCommentsTemplate
 	{
-		var $subjecturl;
-		var $subjectname;
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $article;
-		var $altbg;
+		/**
+		 * @var ressource
+		 */
+		private $comments;
 
-		function ListCommentsTemplate($topics, $article)
+		// Template variables.
+		/**
+		 * @var int			The number of comments
+		 */
+		public $nb_comments;
+		public $altbg;
+		public $article;
+		public $topics;
+		public $commentdate;
+		public $authorname;
+		public $commenttitle;
+		public $commentbody;
+		
+		public function __construct($topicId, $articleId)
 		{
-			global $babBodyPopup, $babDB;
-			$req = "select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc";
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
-			$this->article = bab_toHtml($article);
-			$this->topics = bab_toHtml($topics);
+			global $babDB;
+			$req = 'SELECT * FROM ' . BAB_COMMENTS_TBL . ' WHERE id_article=' . $babDB->quote($articleId) . " AND confirmed='Y' ORDER BY date DESC";
+			$this->comments = $babDB->db_query($req);
+			$this->nb_comments = $babDB->db_num_rows($this->comments);
+			$this->article = bab_toHtml($articleId);
+			$this->topics = bab_toHtml($topicId);
 			$this->alternate = 0;
-			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y'");
 			$this->altbg = false;
 		}
 
-		function getnext()
+		public function getnext()
 		{
 			global $babDB;
-			static $i = 0;
-			if ($i < $this->count) {
+			if (($comment = $babDB->db_fetch_assoc($this->comments)) !== false) {
 				$this->altbg = !$this->altbg;
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
-				if ($arr['id_author']) {
-					$this->authorname = bab_toHtml(bab_getUserName($arr['id_author']));
+
+				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($comment['date'])));
+				if ($comment['id_author']) {
+					$this->authorname = bab_toHtml(bab_getUserName($comment['id_author']));
 				} else {
-					$this->authorname = bab_toHtml($arr['name']);
+					$this->authorname = bab_toHtml($comment['name']);
 				}
 
-				$this->commenttitle = bab_toHtml($arr['subject']);				
+				$this->commenttitle = bab_toHtml($comment['subject']);				
 
 				include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 				$editor = new bab_contentEditor('bab_article_comment');
-				$editor->setContent($arr['message']);
+				$editor->setContent($comment['message']);
 				$this->commentbody = $editor->getHtml();
-						
-				$i++;
+
 				return true;
 			}
 			return false;
 		}
 	}
 
+	global $babBodyPopup;
+	
 	$listCommentsTemplate = new ListCommentsTemplate($topics, $article);
 	$babBodyPopup->babecho(bab_printTemplate($listCommentsTemplate, 'comments.html', 'commentslist'));
 }
 
 
 
-function addComment($topics, $article, $subject, $message, $com='')
+function addComment($topics, $article, $subject, $message, $com = '')
 {
-	global $babBodyPopup;
-	
 	class AddCommentTemplate
 	{
-		var $subject;
-		var $subjectval;
-		var $name;
-		var $email;
-		var $message;
-		var $add;
-		var $article;
-		var $username;
-		var $anonyme;
-		var $title;
-		var $titleval;
-		var $com;
-		var $msie;
+		public	$subject;
+		public	$subjectval;
+		public	$name;
+		public	$email;
+		public	$message;
+		public	$add;
+		public	$article;
+		public	$username;
+		public	$anonyme;
+		public	$title;
+		public	$titleval;
+		public	$com;
+		
+		public	$rate_articles = true;
 
-		function AddCommentTemplate($topics, $article, $subject, $message, $com)
+		public function __construct($topics, $article, $subject, $message, $com)
 		{
 			global $BAB_SESS_USER, $babDB;
 			$this->subject = bab_translate("comments-Title");
@@ -124,7 +129,11 @@ function addComment($topics, $article, $subject, $message, $com='')
 			$this->topics = bab_toHtml($topics);
 			$this->subjectval = bab_toHtml($subject);
 
+			$this->t_rate_this_article = bab_translate('Rate this article:');
+			$this->t_rate = bab_translate('Rate!');
+			
 			$this->com = bab_toHtml($com);
+
 			$req = 'SELECT title FROM '.BAB_ARTICLES_TBL.' WHERE id=' . $babDB->quote($article);
 			$res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($res);
@@ -146,7 +155,7 @@ function addComment($topics, $article, $subject, $message, $com='')
 			}
 
 			// We use the captcha if it is available as a functionality.
-			if (!$GLOBALS['BAB_SESS_USERID']) {
+			if (!$GLOBALS['BAB_SESS_LOGGED']) {
 				$captcha = @bab_functionality::get('Captcha');
 				$this->useCaptcha = false;
 				if (false !== $captcha) {
@@ -164,6 +173,8 @@ function addComment($topics, $article, $subject, $message, $com='')
 		return;
 	}
 	
+	global $babBodyPopup;
+	
 	$addCommentTemplate = new AddCommentTemplate($topics, $article, $subject, $message, $com);
 	$babBodyPopup->babecho(bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate'));
 }
@@ -176,8 +187,10 @@ function addComment($topics, $article, $subject, $message, $com='')
  * @param string	$subject	The title of the comment.
  * @param int		$com		The comment id.
  * @param string	$msgerror	In case of error, this string will contain the error message to display.
+ * 
+ * @return	bool	True on success, false otherwise.
  */
-function saveComment($topics, $article, $subject, $com, &$msgerror)
+function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -186,7 +199,7 @@ function saveComment($topics, $article, $subject, $com, &$msgerror)
 		$captcha = @bab_functionality::get('Captcha');
 		if (false !== $captcha) {
 			$captchaSecurityCode = bab_pp('captchaSecurityCode', '');
-						
+
 			if (!$captcha->securityCodeValid($captchaSecurityCode)) {
 				$msgerror = bab_translate('The captcha value is incorrect');
 				return false;
@@ -199,11 +212,6 @@ function saveComment($topics, $article, $subject, $com, &$msgerror)
 		return false;
 	}
 	
-	include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
-		
-	$editor = new bab_contentEditor('bab_article_comment');
-	$message = $editor->getContent();
-
 	if (empty($message)) {
 		$msgerror = bab_translate('comments - ERROR: You must provide a comment');
 		return false;
@@ -213,7 +221,7 @@ function saveComment($topics, $article, $subject, $com, &$msgerror)
 		$com = 0;
 	}
 
-	bab_saveArticleComment($topics, $article, $subject , $message, $com);
+	bab_saveArticleComment($topics, $article, $subject, $message, $com);
 
 	return true;
 }
@@ -223,13 +231,22 @@ function saveComment($topics, $article, $subject, $com, &$msgerror)
 /* main */
 $topics = bab_rp('topics', 0);
 $article = bab_rp('article', 0);
+
+
 $msgerror = '';
 $popupmessage = '';
+
 
 if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 	$idx = 'denied';
 } elseif (isset($_POST['addcomment']) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
-	if (!saveComment($topics, $article, bab_pp('subject'), bab_pp('com'), $msgerror)) {
+	include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+	$editor = new bab_contentEditor('bab_article_comment');
+	$message = $editor->getContent();
+	$subject = bab_pp('subject');
+	$com = bab_pp('com');
+
+	if (!saveComment($topics, $article, $subject, $message, $com, $msgerror)) {
 		$idx = 'List';
 	} else {
 		$popupmessage = bab_translate('Update done');
@@ -241,13 +258,13 @@ switch ($idx)
 {
 	case 'denied':
 		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = bab_translate("Access denied");
+		$babBodyPopup->msgerror = bab_translate('Access denied');
 		printBabBodyPopup();
 		exit;
 		break;
 
 	case 'unload':
-		include_once $babInstallPath."utilit/uiutil.php";
+		include_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
 		$refreshurl = bab_rp('refreshurl');
 		popupUnload($popupmessage, $refreshurl, true);
 		exit;
@@ -262,7 +279,15 @@ switch ($idx)
 		$babBodyPopup->title = bab_translate("List of comments");
 		$babBodyPopup->msgerror = $msgerror;
 		listComments($topics, $article);
-		addComment($topics, $article, bab_pp('subject'), bab_pp('message'), '');
+
+		if (isset($editor)) {
+			$message = $editor->getContent();		
+		} else {
+			$message = '';
+		}
+		$subject = bab_pp('subject');
+
+		addComment($topics, $article, $subject, $message, '');
 		printBabBodyPopup();
 		exit;
 		break;

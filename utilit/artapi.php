@@ -945,6 +945,8 @@ function bab_getCommentTitle($com)
  * @param string	$message		The comment body (in html)
  * @param int		$parentId		The parent comment id.
  * @param int		$commentId		If specified this comment will be updated otherwise a new comment is created.
+ * 
+ * @return int		The comment id.
  */
 function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $commentId = null)
 {
@@ -1001,7 +1003,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 			notifyCommentApprovers($commentId, $nfusers);
 		}
 	}
-	return true;
+	return $commentId;
 }
 
 
