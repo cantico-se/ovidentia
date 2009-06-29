@@ -27,8 +27,11 @@
 <br />
 <!--#end commentslist -->
 
+
+
+
 <!--#begin commentcreate -->
-<br>
+
 <form name="comcreate" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="comments">
 <input type="hidden" name="idx" value="List">
@@ -36,7 +39,7 @@
 <input type="hidden" name="article" value="{ article }">
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
-<table class="BabLoginCadreBackground" width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -61,6 +64,21 @@
 			{ editor }
 		</td>
 	</tr>
+
+	<!--#if useCaptcha -->
+	<tr>
+		<td align="center">
+			{ captchaCaption2 }:
+		</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			{ captchaSecurityData }
+			<input type="text" name="captchaSecurityCode" size="10" value="" />
+		</td>
+	</tr>
+	<!--#endif useCaptcha -->
+
 	<tr> 
 		<td align="center">
 			<input type="submit" name="submit" value="{ add }" />
@@ -70,9 +88,11 @@
 	<tr> 
 		<td align="center">&nbsp;{ notcom } </td>
 	</tr>
+
 	</table>
 </td>
 </tr>
+
 </table>
 </form>
 
