@@ -930,8 +930,78 @@ function bab_getCommentTitle($com)
 		}
 	}
 
+
+/**
+ * Saves an article comment.
+ * 
+ * If $commentId is not specified, the comment will be created
+ * otherwise the specified comment will be updated.
+ * 
+ * The current user will be the author of the post.
+ * 
+ * @param int		$topicId
+ * @param int		$articleId
+ * @param string	$subject
+ * @param string	$message
+ * @param int		$parentId
+ * @param int		$commentId
+ */
+function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $commentId = null)
+{
+	if (empty($BAB_SESS_USER)) {
+		$authorName = bab_translate('Anonymous');
+		$authorEmail = '';
+		$authorId = 0;	
+	} else {
+		$authorName = $BAB_SESS_USER;
+		$authorEmail = $BAB_SESS_EMAIL;
+		$authorId = $BAB_SESS_USERID;
+	}
+
+	if (isset($commentId)) {
+		$req = 'UPDATE '.BAB_COMMENTS_TBL.'
+					SET id_topic = ' . $babDB->quote($topicId) . ',
+		 				id_article = ' . $babDB->quote($articleId) . ',
+		 				id_parent = ' . $babDB->quote($parentId) . ',
+		 				last_update = NOW(),
+		 				subject = ' . $babDB->quote($subject) . ',
+		 				message = ' . $babDB->quote($message) . ')
+		 		WHERE id = ' . $babDB->quote($commentId);		
+		$babDB->db_query($req);
+	} else {
+		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (id_topic, id_article, id_parent, date, subject, message, id_author, name, email)
+				VALUES (' . $babDB->quote($topicId). ', ' . $babDB->quote($articleId). ', ' . $babDB->quote($parentId). ', NOW(), ' . $babDB->quote($subject) . ', ' . $babDB->quote($message). ', ' . $babDB->quote($authorId) . ', ' . $babDB->quote($authorName). ', ' . $babDB->quote($authorEmail). ')';
 	
+		$babDB->db_query($req);
+		$commentId = $babDB->db_insert_id();
+	}
 	
+	// From here we check the approbation workflow for article comments.
+	$req = 'SELECT * FROM ' . BAB_TOPICS_TBL . ' WHERE id=' . $babDB->quote($topicId);
+	$res = $babDB->db_query($req);
+	if ($res && $babDB->db_num_rows($res) > 0) {
+		$topic = $babDB->db_fetch_assoc($res);
+
+		if ($topic['idsacom'] != 0) {
+			include_once $GLOBALS['babInstallPath'] . 'utilit/afincl.php';
+			if ($topic['auto_approbation'] == 'Y') {
+				$idfai = makeFlowInstance($topic['idsacom'], 'com-' . $commentId, $GLOBALS['BAB_SESS_USERID']);
+			} else {
+				$idfai = makeFlowInstance($topic['idsacom'], 'com-' . $commentId);
+			}
+		}
+
+		if ($topic['idsacom'] == 0 || $idfai === true) {
+			$babDB->db_query('UPDATE ' . BAB_COMMENTS_TBL . " SET confirmed='Y' WHERE id=" . $babDB->quote($commentId));
+		} elseif(!empty($idfai)) {
+			$babDB->db_query('UPDATE ' . BAB_COMMENTS_TBL. ' SET idfai=' . $babDB->quote($idfai) . ' WHERE id=' . $babDB->quote($commentId));
+			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+			notifyCommentApprovers($commentId, $nfusers);
+		}
+	}
+	return true;
+}
+
 
 /* ASSOCIATED IMAGES API */
 
