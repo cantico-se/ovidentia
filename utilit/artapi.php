@@ -948,6 +948,8 @@ function bab_getCommentTitle($com)
  */
 function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $commentId = null)
 {
+	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
+
 	if (empty($BAB_SESS_USER)) {
 		$authorName = bab_translate('Anonymous');
 		$authorEmail = '';
@@ -975,7 +977,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		$babDB->db_query($req);
 		$commentId = $babDB->db_insert_id();
 	}
-	
+
 	// From here we check the approbation workflow for article comments.
 	$req = 'SELECT * FROM ' . BAB_TOPICS_TBL . ' WHERE id=' . $babDB->quote($topicId);
 	$res = $babDB->db_query($req);
