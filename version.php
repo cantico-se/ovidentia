@@ -96,7 +96,8 @@ $str = "";
 switch($idx)
 	{
 	case "upgrade":
-		bab_upgrade($GLOBALS['babInstallPath'], $str);
+		$force = bab_rp('force', false);
+		bab_upgrade($GLOBALS['babInstallPath'], $str, $force);
 		break;
 
 	case "addons":
