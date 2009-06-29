@@ -244,9 +244,12 @@ function bab_writeConfig($replace)
 
 /**
  * Ovidentia upgrade
+ * 
+ * @param bool	$forceUpgrade		True to force upgrade process even if the database version is up-to-date.
+ * 
  * @return boolean
  */
-function bab_upgrade($core_dir, &$ret)
+function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 {
 
 	global $babBody;
@@ -323,14 +326,13 @@ function bab_upgrade($core_dir, &$ret)
 	}
 
 	list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
-	
-	if( $ver_from == $ini->getVersion() )
-		{
-			$ret = bab_translate("You site is already up to date");
-			return false;
-		}
 
-	include_once $core_dir."upgrade.php";
+	if (!$forceUpgrade && ($ver_from == $ini->getVersion())) {
+		$ret = bab_translate('You site is already up to date');
+		return false;
+	}
+
+	include_once $core_dir.'upgrade.php';
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
 	
 		putIniDbKey('ver_major', $bab_ver_major);
@@ -607,6 +609,3 @@ function bab_getUpgradeLogMsg($addon_name, $uid) {
 	
 	return false;
 }
-
-
-?>
