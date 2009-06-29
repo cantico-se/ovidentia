@@ -5957,7 +5957,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('flac', 'audio/flac')");
 	}
 	
-
+	
+	// Add column for last update on article comments table.
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'last_update')) {
+		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `last_update` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `date`");
+	}
+	
+	// Add column for article rating on article comments table.
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'article_rating')) {
+		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `article_rating` TINYINT DEFAULT 0 NOT NULL AFTER `lang`");
+	}
+	
 	
 	return true;
 }
