@@ -738,11 +738,14 @@ function readMore($topics, $article)
 				$this->authorname = bab_toHtml($arr['name']);
 
 				$this->commenttitle = bab_toHtml($arr['subject']);
+
+				$this->article_rating = bab_toHtml($arr['article_rating']);
+				$this->article_rating_percent = bab_toHtml($arr['article_rating'] * 20.0);
 				
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
 				$this->commentbody = $editor->getHtml();
-			
+
 				$i++;
 				return true;
 				}

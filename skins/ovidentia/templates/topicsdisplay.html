@@ -122,6 +122,20 @@ Variables in "body_default" :
 
 
 <!--#begin body_default -->
+
+<style type="text/css">
+.bab-rating-bar {
+  width: 55px;
+  background: url('{ babSkinPath }images/Puces/star_x_grey.gif') 0 0 repeat-x;
+  text-align: left;
+}
+
+.bab-rating-bar div {
+  height: 12px;
+  background: url('{ babSkinPath }images/Puces/star_x_orange.gif') 0 0 repeat-x;
+}
+</style>
+
 <!--#if parentscount -->
 <div id="BabCategTitleNavigation">
 	<table border="0" width="99%" cellpadding="1" cellspacing="0">
@@ -215,9 +229,9 @@ Variables in "body_default" :
 	<!--#else altbg -->
 	<tbody class="BabForumBackground1">
 	<!--#endif altbg -->
-		<tr class="bab_title">	
+		<tr class="bab_title">
 			<th align="left">{ commenttitle }</th>
-			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small></td>
+			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small><br /><!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating --></td>
 		</tr>
 		<tr class="bab_content">
 			<td colspan="2">{ commentbody }<br /><br /></td>

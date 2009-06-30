@@ -1,5 +1,18 @@
 <!--#begin commentslist -->
 
+<style type="text/css">
+.bab-rating-bar {
+  width: 55px;
+  background: url('{ babSkinPath }images/Puces/star_x_grey.gif') 0 0 repeat-x;
+  text-align: left;
+}
+
+.bab-rating-bar div {
+  height: 12px;
+  background: url('{ babSkinPath }images/Puces/star_x_orange.gif') 0 0 repeat-x;
+}
+</style>
+
 <!--#if nb_comments "> 0" -->
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -11,9 +24,9 @@
 	<!--#else altbg -->
 	<tbody class="BabForumBackground1">
 	<!--#endif altbg -->
-		<tr class="bab_title">	
+		<tr class="bab_title">
 			<th align="left">{ commenttitle }</th>
-			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small></td>
+			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small><br /><!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating --></td>
 		</tr>
 		<tr class="bab_content">
 			<td colspan="2">{ commentbody }<br /><br /></td>
@@ -48,13 +61,13 @@
 <td>
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
 	<tr>
-	<td class="BabLoginMenuBackground" align="left" nowrap>
+	<td class="BabLoginMenuBackground" align="left" nowrap="nowrap">
 		{ t_rate_this_article }
-		<input type="radio" title="Très mauvais" value="1" name="newrate"/>1
-		<input type="radio" title="Mauvais" value="2" name="newrate"/>2
-		<input type="radio" title="Moyen" value="3" name="newrate"/>3
-		<input type="radio" title="Assez bon" value="4" name="newrate"/>4
-		<input type="radio" title="Bon" value="5" name="newrate"/>5
+		<input type="radio" title="{ t_bad }" value="1" name="article_rating"/>1
+		<input type="radio" title="{ t_rather_bad }" value="2" name="article_rating"/>2
+		<input type="radio" title="{ t_average }" value="3" name="article_rating"/>3
+		<input type="radio" title="{ t_rather_good }" value="4" name="article_rating"/>4
+		<input type="radio" title="{ t_good }" value="5" name="article_rating"/>5
 	</td>
 	</tr>
 	</table>

@@ -76,7 +76,10 @@ function listComments($topics, $article)
 					$this->authorname = bab_toHtml($comment['name']);
 				}
 
-				$this->commenttitle = bab_toHtml($comment['subject']);				
+				$this->commenttitle = bab_toHtml($comment['subject']);
+
+				$this->article_rating = bab_toHtml($comment['article_rating']);
+				$this->article_rating_percent = bab_toHtml($comment['article_rating'] * 20.0);
 
 				include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 				$editor = new bab_contentEditor('bab_article_comment');
@@ -130,7 +133,12 @@ function addComment($topics, $article, $subject, $message, $com = '')
 			$this->subjectval = bab_toHtml($subject);
 
 			$this->t_rate_this_article = bab_translate('Rate this article:');
-			$this->t_rate = bab_translate('Rate!');
+
+			$this->t_bad = bab_translate('Bad');
+			$this->t_rather_bad = bab_translate('Rather bad');
+			$this->t_average = bab_translate('Average');
+			$this->t_rather_good = bab_translate('Rather good');
+			$this->t_good = bab_translate('Good');
 			
 			$this->com = bab_toHtml($com);
 
@@ -182,15 +190,16 @@ function addComment($topics, $article, $subject, $message, $com = '')
 
 
 /**
- * @param int		$topics		The article topic id.
- * @param int		$article	The article id.
- * @param string	$subject	The title of the comment.
- * @param int		$com		The comment id.
- * @param string	$msgerror	In case of error, this string will contain the error message to display.
+ * @param int		$topics			The article topic id.
+ * @param int		$article		The article id.
+ * @param string	$subject		The title of the comment.
+ * @param int		$com			The comment id.
+ * @param int		$articleRating	The rating attibuted to the related article.
+ * @param string	$msgerror		In case of error, this string will contain the error message to display.
  * 
  * @return	bool	True on success, false otherwise.
  */
-function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
+function saveComment($topics, $article, $subject, $message, $com, $articleRating, &$msgerror)
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -221,7 +230,7 @@ function saveComment($topics, $article, $subject, $message, $com, &$msgerror)
 		$com = 0;
 	}
 
-	bab_saveArticleComment($topics, $article, $subject, $message, $com);
+	bab_saveArticleComment($topics, $article, $subject, $message, $com, $articleRating);
 
 	return true;
 }
@@ -245,8 +254,9 @@ if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 	$message = $editor->getContent();
 	$subject = bab_pp('subject');
 	$com = bab_pp('com');
-
-	if (!saveComment($topics, $article, $subject, $message, $com, $msgerror)) {
+	$articleRating = bab_pp('article_rating', '0');
+	
+	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $msgerror)) {
 		$idx = 'List';
 	} else {
 		$popupmessage = bab_translate('Update done');
