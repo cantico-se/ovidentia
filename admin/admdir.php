@@ -1604,6 +1604,7 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='N'");
 		}
 
+	$dirids = array();
 	for( $i=0; $i < count($dirgrpids); $i++)
 	{
 		$babDB->db_query("update ".BAB_GROUPS_TBL." set directory='Y' where id='".$babDB->db_escape_string($dirgrpids[$i])."'");
@@ -1612,12 +1613,33 @@ function updateDirGroups($dirgrpids) // enregistrement des modifications aux ann
 		if( !$res || $babDB->db_num_rows($res) == 0 )
 		{
 			$babDB->db_query("insert into ".BAB_DB_DIRECTORIES_TBL." (name, description, id_group, id_dgowner) values ('".$babDB->db_escape_string(bab_getGroupName($dirgrpids[$i], false))."','','".$babDB->db_escape_string($dirgrpids[$i])."', '".$babBody->currentAdmGroup."')");
+			$id = $babDB->db_insert_id();
+			$dirids[$id] = $id;
 		}
 		else
 		{
-			$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner=".$babBody->currentAdmGroup." where id_group='".$babDB->db_escape_string($dirgrpids[$i])."'");
+			$arr = $babDB->db_fetch_array($res);
+			$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner=".$babDB->quote($babBody->currentAdmGroup)." where id_group='".$babDB->db_escape_string($dirgrpids[$i])."'");
+			$dirids[$arr['id']] = $arr['id'];
+		}
 		}
 		
+	$res = $babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group not in ('0', '".BAB_REGISTERED_GROUP."') and id_dgowner=".$babDB->quote($babBody->currentAdmGroup));
+	while($arr = $babDB->db_fetch_array($res))
+	{
+		if(!isset($dirids[$arr['id']]))
+		{
+		$babDB->db_query("delete from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
+		aclDelete(BAB_DBDIRVIEW_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRADD_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRUPDATE_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRDEL_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIREXPORT_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRIMPORT_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRBIND_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIRUNBIND_GROUPS_TBL, $arr['id']);
+		aclDelete(BAB_DBDIREMPTY_GROUPS_TBL, $arr['id']);
+		}
 	}
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admdir");
