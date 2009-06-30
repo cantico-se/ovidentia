@@ -948,7 +948,7 @@ function bab_getCommentTitle($com)
  * 
  * @return int		The comment id.
  */
-function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $commentId = null)
+function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $articleRating = 0, $commentId = null)
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -973,8 +973,9 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		 		WHERE id = ' . $babDB->quote($commentId);
 		$babDB->db_query($req);
 	} else {
-		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (id_topic, id_article, id_parent, date, subject, message, id_author, name, email)
-				VALUES (' . $babDB->quote($topicId). ', ' . $babDB->quote($articleId). ', ' . $babDB->quote($parentId). ', NOW(), ' . $babDB->quote($subject) . ', ' . $babDB->quote($message). ', ' . $babDB->quote($authorId) . ', ' . $babDB->quote($authorName). ', ' . $babDB->quote($authorEmail). ')';
+		
+		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (id_topic, id_article, id_parent, date, subject, message, article_rating, id_author, name, email)
+				VALUES (' . $babDB->quote($topicId). ', ' . $babDB->quote($articleId). ', ' . $babDB->quote($parentId). ', NOW(), ' . $babDB->quote($subject) . ', ' . $babDB->quote($message) . ', ' . $babDB->quote($articleRating) . ', ' . $babDB->quote($authorId) . ', ' . $babDB->quote($authorName). ', ' . $babDB->quote($authorEmail). ')';
 	
 		$babDB->db_query($req);
 		$commentId = $babDB->db_insert_id();
