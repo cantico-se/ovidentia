@@ -246,6 +246,12 @@ function listArticles($topics)
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". bab_toHtml($this->articleauthor). " - ". $this->articledate;
 				
+				$articleAverageRating = bab_getArticleAverageRating($this->arr['id']);
+				$articleNbRatings = bab_getArticleNbRatings($this->arr['id']);
+	
+				$this->article_rating = bab_toHtml($articleAverageRating);
+				$this->article_rating_percent = bab_toHtml($articleAverageRating * 20.0);
+				$this->article_nb_ratings = bab_toHtml($articleNbRatings);
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
@@ -333,8 +339,9 @@ function listArticles($topics)
 			}
 		}
 	
+	
 	$temp = new temp($topics);
-	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$temp->template));
+	$babBody->babecho(	bab_printTemplate($temp, 'topicsdisplay.html', 'head_'.$temp->template));
 	}
 
 
@@ -649,6 +656,13 @@ function readMore($topics, $article)
 				$sHead = '';
 				$sBody = '';
 				
+				$articleAverageRating = bab_getArticleAverageRating($this->arr['id']);
+				$articleNbRatings = bab_getArticleNbRatings($this->arr['id']);
+	
+				$this->article_rating = bab_toHtml($articleAverageRating);
+				$this->article_rating_percent = bab_toHtml($articleAverageRating * 20.0);
+				$this->article_nb_ratings = bab_toHtml($articleNbRatings);
+				
 				if( !empty($this->arr['body']))
 					{
 					$editor = new bab_contentEditor('bab_article_head');
@@ -705,6 +719,7 @@ function readMore($topics, $article)
 				$this->titlearticle = bab_toHtml($arr['title']); 
 				$this->urlview = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id']);
 				$this->urlreadmore = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id']);
+				
 				$i++;
 				return true;
 				}
