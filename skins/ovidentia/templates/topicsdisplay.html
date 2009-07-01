@@ -14,6 +14,20 @@ Variables in "body_default" :
 { babtpl_archiveurl } : archive url
 
 <!--#begin head_default -->
+
+<style type="text/css">
+.bab-rating-bar {
+  width: 55px;
+  background: url('{ babSkinPath }images/Puces/star_x_grey.gif') 0 0 repeat-x;
+  text-align: left;
+}
+
+.bab-rating-bar div {
+  height: 12px;
+  background: url('{ babSkinPath }images/Puces/star_x_orange.gif') 0 0 repeat-x;
+}
+</style>
+
 <!--#if parentscount -->
 <div id="BabCategTitleNavigation">
 	<table border="0" width="99%" cellpadding="1" cellspacing="0">
@@ -62,7 +76,10 @@ Variables in "body_default" :
 <div class="bab_repeat">
 <table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
   <tr> 
-    <td class="BabTopicsTitleBackground"><a name="art{ articleid }"></a>{ title }</td>
+    <td class="BabTopicsTitleBackground"><a name="art{ articleid }"></a>
+    { title }
+    <!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5 ({ article_nb_ratings } votes)"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating -->
+    </td>
   </tr>
   <tr> 
     <td class="BabTopicsBackground">{ content }</td>
@@ -168,7 +185,10 @@ Variables in "body_default" :
 <td width="99%" valign="top">
 	<table  border="0" width="100%" cellpadding="3" cellspacing="0" align="center">
 	<tr> 
-	<td class="BabTopicsTitleBackground" valign="middle">{ title }</td>
+	<td class="BabTopicsTitleBackground" valign="middle">
+	{ title }
+	<!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5 ({ article_nb_ratings } votes)"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating -->
+	</td>
 	</tr>
 
 	<tr>

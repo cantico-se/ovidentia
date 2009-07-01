@@ -931,6 +931,8 @@ function bab_getCommentTitle($com)
 	}
 
 
+	
+
 /**
  * Saves an article comment.
  * 
@@ -1005,6 +1007,51 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		}
 	}
 	return $commentId;
+}
+
+
+
+/**
+ * Returns the average rating of comments for this article.
+ * The average rating should be a floating point number between 1 and 5.
+ * If the returned value is 0, the article has not been rated yet.
+ *
+ * @param $articleId
+ * @return float			
+ */
+function bab_getArticleAverageRating($articleId)
+{
+	global $babDB;
+
+	$sql = 'SELECT AVG(article_rating) AS average_rating
+				FROM ' . BAB_COMMENTS_TBL . '
+				WHERE id_article = ' . $babDB->quote($articleId) . '
+					AND article_rating > 0
+				';
+	$res = $babDB->db_query($sql);
+	$articleComments = $babDB->db_fetch_assoc($res);
+	return (float)($articleComments['average_rating']);
+}
+
+
+/**
+ * Returns the number of ratings for this article.
+ *
+ * @param $articleId
+ * @return int			
+ */
+function bab_getArticleNbRatings($articleId)
+{
+	global $babDB;
+
+	$sql = 'SELECT COUNT(article_rating) AS nb_ratings
+				FROM ' . BAB_COMMENTS_TBL . '
+				WHERE id_article = ' . $babDB->quote($articleId) . '
+					AND article_rating > 0
+				';
+	$res = $babDB->db_query($sql);
+	$articleComments = $babDB->db_fetch_assoc($res);
+	return (int)($articleComments['nb_ratings']);
 }
 
 
