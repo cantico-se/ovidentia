@@ -1140,13 +1140,36 @@ class bab_Articles extends bab_handler
 
 			switch(mb_strtoupper($archive))
 			{
-				case 'NO': $archive = " and archive='N' "; break;
-				case 'YES': $archive = " and archive='Y' "; break;
-				default: $archive = ""; break;
+				case 'NO': $archive = " AND archive='N' "; break;
+				case 'YES': $archive = " AND archive='Y' "; break;
+				default: $archive = ''; break;
 
 			}
 
-			$req = "select at.id, at.restriction from " . BAB_ARTICLES_TBL . " at " . $sLeftJoin . "where at.id_topic IN (".$babDB->quote($topicid).") and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())" . $archive . $sDelegation;
+
+			$minRating = $ctx->get_value('minrating');
+			if (!is_numeric($minRating)) {
+				 $minRating = 0;
+				 $ratingGroupBy = ' GROUP BY at.id ';
+				 $ratingLeftJoin = 'LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0';
+				 $ratingSelect = ', AVG(c.article_rating) AS average_rating';
+			} else { 
+				 $ratingGroupBy = ' GROUP BY at.id HAVING average_rating >= ' . $babDB->quote($minRating) . ' ';
+				 $ratingLeftJoin = 'LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0';
+				 $ratingSelect = ', AVG(c.article_rating) AS average_rating';
+			};
+
+			$req = 'SELECT at.id, at.restriction, AVG(c.article_rating) AS average_rating
+					FROM ' . BAB_ARTICLES_TBL . ' AS at 
+					LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
+					' . $sLeftJoin . '
+						
+					WHERE at.id_topic IN (' . $babDB->quote($topicid) . ')
+					AND (at.date_publication=' . $babDB->quote('0000-00-00 00:00:00') . ' OR at.date_publication <= NOW())'
+					. $archive
+					. $sDelegation
+					. $ratingGroupBy
+					;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1168,6 +1191,7 @@ class bab_Articles extends bab_handler
 				{
 				switch(mb_strtolower($orderby))
 					{
+					case 'rating': $orderby = 'average_rating'; break;
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
 					case 'modification':
@@ -1205,7 +1229,7 @@ class bab_Articles extends bab_handler
 
 			}
 
-			$req .=  'order by '.$order;
+			$req .=  'ORDER BY '.$order;
 
 			$rows = $ctx->get_value('rows');
 			$offset = $ctx->get_value('offset');
@@ -1231,7 +1255,15 @@ class bab_Articles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select at.*, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
+				$req = 'SELECT at.*, COUNT(aft.id) AS nfiles, AVG(c.article_rating) AS average_rating
+							FROM ' . BAB_ARTICLES_TBL . ' AS at
+							LEFT JOIN ' . BAB_ART_FILES_TBL . ' AS aft ON at.id=aft.id_article
+							LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
+							WHERE at.id IN ('.$babDB->quote($this->IdEntries).')
+							' . $ratingGroupBy . '
+							ORDER BY ' . $order;
+				
+				$this->res = $babDB->db_query($req);
 			}
 		}
 		else
@@ -1281,6 +1313,8 @@ class bab_Articles extends bab_handler
 				$this->ctx->curctx->push('ArticleEditUrl', '');
 				$this->ctx->curctx->push('ArticleEditName', '');
 			}
+			$this->ctx->curctx->push('ArticleAverageRating', bab_getArticleAverageRating($arr['id']));
+			$this->ctx->curctx->push('ArticleNbRatings', bab_getArticleNbRatings($arr['id']));
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1374,6 +1408,8 @@ class bab_Article extends bab_handler
 				$this->ctx->curctx->push('ArticleEditUrl', '');
 				$this->ctx->curctx->push('ArticleEditName', '');
 			}
+			$this->ctx->curctx->push('ArticleAverageRating', bab_getArticleAverageRating($arr['id']));
+			$this->ctx->curctx->push('ArticleNbRatings', bab_getArticleNbRatings($arr['id']));
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -5418,7 +5454,7 @@ class bab_SitemapEntries extends bab_handler
 		$node = $ctx->get_value('node');
 
 		$rootNode = bab_siteMap::get();
-		$node = $rootNode->getNodeById($node);
+		$node = $rootNode->getDgNodeById($node);
 		if ($node) {
 			$node = $node->firstChild();
 			while($node)
