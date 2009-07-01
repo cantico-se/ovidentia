@@ -271,3 +271,62 @@ function deladdon(id)
 	</tr>
 	</table>
 <!--#end history -->
+
+
+
+
+
+<!--#begin upgrade -->
+
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10">
+			<tr valign="top"> 
+				<td>
+					<h5>{ t_upgrade }</h5>
+					<br /><br />
+					<iframe src="{ frameurl }" width="100%" border="0" id="BAB_ADDON_installframe">
+						
+					</iframe>
+					<p align="center"><input type="button" value="{ t_continue }" id="BAB_ADDON_continue_button" /></p>
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+
+function bab_addon_test_install() {
+	var btn = document.getElementById('BAB_ADDON_continue_button');
+	var frame = document.getElementById('BAB_ADDON_installframe');
+
+	if (btn) {
+		btn.value = '{ t_wait }';
+		btn.disabled = true;
+
+		if (frame.contentDocument && frame.contentDocument.getElementById) {
+			if (frame.contentDocument.getElementById('BAB_ADDON_INSTALL_END')) {
+				
+				btn.disabled = false;
+				btn.value = '{ t_continue }';
+				
+				btn.onclick = function() {
+					document.location.href='{ listurl }';
+				}
+
+				return;
+			}
+		}
+	}
+
+	setTimeout(bab_addon_test_install, 1000);
+}
+
+bab_addon_test_install();
+
+</script>
+
+<!--#end upgrade -->

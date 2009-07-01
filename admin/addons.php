@@ -309,27 +309,125 @@ function disableAddons($addons) {
 
 
 /**
- * Database upgrade for one addon
+ * Display upgrade page with iframe
  * @param	int	$id
  */
-function upgrade($id) {
-	global $babDB;
+function addon_display_upgrade($id) {
+
+	global $babBody;
 	
+	/**
+	 * template
+	 */
+	class addon_upgrade_page {
+
+		public function __construct($id) {
+
+			require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+
+			$row = bab_addonsInfos::getDbRow($id);
+			$addon = bab_getAddonInfosInstance($row['title']);
+			
+			$this->t_upgrade = sprintf(bab_translate('Upgrade of addon %s from version %s to version %s'), 
+				$addon->getName(), 
+				$addon->getDbVersion(),
+				$addon->getIniVersion() 
+			);
+
+			$this->t_wait = bab_toHtml(bab_translate('Installing, please wait...'), BAB_HTML_JS);
+			$this->t_continue = bab_toHtml(bab_translate('Back to list'), BAB_HTML_JS);
+
+			$url = bab_url::request();
+			$url = bab_url::mod($url, 'tg', 'addons');
+			$url = bab_url::mod($url, 'idx', 'call_upgrade');
+
+			$this->frameurl = bab_toHtml(bab_url::mod($url, 'item', $id));
+
+
+			$type = $addon->getAddonType();
+	
+			switch($type) {
+				case 'EXTENSION':
+					$url = bab_url::mod($url, 'idx', 'list');
+					break;
+				
+				case 'THEME':
+					$url = bab_url::mod($url, 'idx', 'theme');
+					break;
+				
+				case 'LIBRARY':
+					$url = bab_url::mod($url, 'idx', 'library');
+					break;
+			}
+
+			
+			$this->listurl = bab_toHtml(bab_url::mod($url, 'item', $id), BAB_HTML_JS);
+		}
+	}
+
+	$temp = new addon_upgrade_page($id);
+	$babBody->babecho(bab_printTemplate($temp, "addons.html", "upgrade"));
+
+}
+
+
+/**
+ * This function echo a message in displayed install log
+ * This function is usable in addons
+ * @see bab_setUpgradeLogMsg
+ * @since 7.1.90
+ * @param	string	$html
+ */
+function bab_install_message($html) {
+	echo '<div class="bab_install_message">'.$html.'</div>'."\n";
+}
+
+
+
+/**
+ * Upgrade frame
+ * Database upgrade for one addon
+ */
+function addon_call_upgrade($id) {
+
+	global $babBody;
+
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
 	
 	if (!$addon->isValid()) {
 		bab_display_addon_requirements();
 	}
+
+	@apache_setenv('no-gzip', 1);
+    @ini_set('zlib.output_compression', 0);
+    @ini_set('implicit_flush', 1);
+    for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
+    ob_implicit_flush(1);
+
+
+	echo '<html><head></head><body style="background:#fff;">'."\n";
+
+	bab_install_message(bab_translate('Install start'));
 	
-	if (!$addon->upgrade()) {
-		global $babBody;
-		$babBody->addError(bab_translate('There is an error in addon upgrade'));
-		return false;
+	$result = $addon->upgrade();
+
+	if ($babBody->msgerror) {
+		bab_install_message(bab_toHtml($babBody->msgerror, BAB_HTML_ALL));
 	}
-	
-	goto_list($addon);
+
+	if ($result) {
+		bab_install_message(bab_translate('The addon upgrade is successfull'));
+	} else {
+		bab_install_message(bab_translate('There is an error in addon upgrade'));
+	}
+
+	// javascript need a item to know this is the end
+	echo '<br id="BAB_ADDON_INSTALL_END" />';
+
+	die('</body></html>');
 }
+
 
 
 
@@ -346,7 +444,7 @@ function bab_addon_export_rd($d) {
 	if (is_dir($d)) {
 
 		$subdir = array();
-		$handle=opendir($d);
+		$handle = opendir($d);
 
 		if (!$handle) {
 			return false;
@@ -1087,7 +1185,7 @@ if (isset($_POST['action'])) {
 			break;
 
 		case 'upgrade':
-			upgrade($_POST['item']);
+			addon_display_upgrade($_POST['item']);
 			break;
 	}
 }
@@ -1144,11 +1242,17 @@ switch($idx)
 		break;
 
 	case "upgrade":
-		upgrade($_GET['item']);
+		display_addons_menu();
+		addon_display_upgrade($_GET['item']);
 		$babBody->addItemMenu("upgrade", bab_translate("Upgrade"), $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade");
 		$babBody->setTitle(bab_translate("Add-ons installation"));
 		break;
 		
+	case 'call_upgrade':
+		addon_call_upgrade($_GET['item']);
+		break;
+
+
 	case "del":
 		$babBody->setTitle(bab_translate('Delete addon'));
 		display_addons_menu();
