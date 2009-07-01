@@ -432,13 +432,12 @@ class bab_functionalities {
 				return false;
 			}
 
-			if (file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
-				unlink($this->treeRootPath.$func_path.'/'.$this->filename);
+			if (!file_exists($this->treeRootPath.$func_path.'/'.$this->filename)) {
+				if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
+					return false;
+				}
 			}
-
-			if (false === $this->recordLink($func_path, $func_path, $include_file, $this->filename)) {
-				return false;
-			}
+			
 		}
 
 		$this->normalizeNodeWithChild($this->getParentPath($func_path), $func_path);
