@@ -1151,15 +1151,11 @@ class bab_Articles extends bab_handler
 			if (!is_numeric($minRating)) {
 				 $minRating = 0;
 				 $ratingGroupBy = ' GROUP BY at.id ';
-				 $ratingLeftJoin = 'LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0';
-				 $ratingSelect = ', AVG(c.article_rating) AS average_rating';
 			} else { 
 				 $ratingGroupBy = ' GROUP BY at.id HAVING average_rating >= ' . $babDB->quote($minRating) . ' ';
-				 $ratingLeftJoin = 'LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0';
-				 $ratingSelect = ', AVG(c.article_rating) AS average_rating';
 			};
 
-			$req = 'SELECT at.id, at.restriction, AVG(c.article_rating) AS average_rating
+			$req = 'SELECT at.id, at.restriction, AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings 
 					FROM ' . BAB_ARTICLES_TBL . ' AS at 
 					LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
 					' . $sLeftJoin . '
@@ -1255,7 +1251,7 @@ class bab_Articles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 			{
-				$req = 'SELECT at.*, COUNT(aft.id) AS nfiles, AVG(c.article_rating) AS average_rating
+				$req = 'SELECT at.*, COUNT(aft.id) AS nfiles, AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings 
 							FROM ' . BAB_ARTICLES_TBL . ' AS at
 							LEFT JOIN ' . BAB_ART_FILES_TBL . ' AS aft ON at.id=aft.id_article
 							LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
@@ -1313,8 +1309,8 @@ class bab_Articles extends bab_handler
 				$this->ctx->curctx->push('ArticleEditUrl', '');
 				$this->ctx->curctx->push('ArticleEditName', '');
 			}
-			$this->ctx->curctx->push('ArticleAverageRating', bab_getArticleAverageRating($arr['id']));
-			$this->ctx->curctx->push('ArticleNbRatings', bab_getArticleNbRatings($arr['id']));
+			$this->ctx->curctx->push('ArticleAverageRating', (float)$arr['average_rating']);
+			$this->ctx->curctx->push('ArticleNbRatings', (float)$arr['nb_ratings']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -2766,13 +2762,25 @@ class bab_RecentArticles extends bab_handler
 
 			}
 
+			$minRating = $ctx->get_value('minrating');
+			if (!is_numeric($minRating)) {
+				 $minRating = 0;
+				 $ratingGroupBy = ' GROUP BY at.id ';
+			} else { 
+				 $ratingGroupBy = ' GROUP BY at.id HAVING average_rating >= ' . $babDB->quote($minRating) . ' ';
+			};
+
+
 			$req = 
 				'SELECT ' . 
 					'at.id, ' .
 					'at.restriction ' .
+					', AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings ' .
 				'FROM ' . 
-					BAB_ARTICLES_TBL . ' at ';
-					
+					BAB_ARTICLES_TBL . ' at ' .
+				'LEFT JOIN ' .
+					BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0 ';
+
 			$sDelegation = ' ';	
 			if(0 != $delegationid)	
 			{
@@ -2802,6 +2810,8 @@ class bab_RecentArticles extends bab_handler
 			}
 			
 			$req .= $archive;
+			
+			$req .= $ratingGroupBy;
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -2814,6 +2824,7 @@ class bab_RecentArticles extends bab_handler
 				{
 				switch(mb_strtolower($orderby))
 					{
+					case 'rating': $orderby = 'average_rating'; break;
 					case 'creation': $orderby = 'at.date'; break;
 					case 'publication': $orderby = 'at.date_publication'; break;
 					case 'modification':
@@ -2846,7 +2857,16 @@ class bab_RecentArticles extends bab_handler
 			$this->count = count($this->IdEntries);
 			if( $this->count > 0 )
 				{
-				$this->res = $babDB->db_query("select at.*, atc.id_dgowner, count(aft.id) as nfiles from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article left join ".BAB_TOPICS_TBL." att on at.id_topic=att.id left join ".BAB_TOPICS_CATEGORIES_TBL." atc on att.id_cat=atc.id where at.id IN (".$babDB->quote($this->IdEntries).") group by at.id order by ".$order);
+				$req = 'SELECT at.*, atc.id_dgowner, COUNT(aft.id) AS nfiles, AVG(c.article_rating) AS average_rating, COUNT(c.article_rating) AS nb_ratings
+							FROM ' . BAB_ARTICLES_TBL . ' AS at
+							LEFT JOIN ' . BAB_ART_FILES_TBL . ' AS aft ON at.id=aft.id_article
+							LEFT JOIN ' . BAB_TOPICS_TBL . ' AS att ON at.id_topic=att.id
+							LEFT JOIN ' . BAB_TOPICS_CATEGORIES_TBL . ' AS atc ON att.id_cat=atc.id
+							LEFT JOIN ' . BAB_COMMENTS_TBL . ' c ON c.id_article=at.id AND c.article_rating > 0
+							WHERE at.id IN ('.$babDB->quote($this->IdEntries).')
+							' . $ratingGroupBy . '
+							ORDER BY ' . $order; 
+				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 			}
@@ -2920,6 +2940,8 @@ class bab_RecentArticles extends bab_handler
 				$this->ctx->curctx->push('ArticleEditUrl', '');
 				$this->ctx->curctx->push('ArticleEditName', '');
 			}
+			$this->ctx->curctx->push('ArticleAverageRating', (float)$arr['average_rating']);
+			$this->ctx->curctx->push('ArticleNbRatings', (float)$arr['nb_ratings']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
