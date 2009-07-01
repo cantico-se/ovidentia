@@ -118,16 +118,17 @@ function addComment($topics, $article, $subject, $message, $com = '')
 		public	$com;
 		
 		public	$rate_articles = true;
+		public	$useCaptcha;
 
 		public function __construct($topics, $article, $subject, $message, $com)
 		{
 			global $BAB_SESS_USER, $babDB;
-			$this->subject = bab_translate("comments-Title");
-			$this->name = bab_translate("Name");
-			$this->email = bab_translate("Email");
-			$this->message = bab_translate("comments-Comment");
-			$this->add = bab_translate("Add comment");
-			$this->title = bab_translate("Article");
+			$this->subject = bab_translate('comments-Title');
+			$this->name = bab_translate('Name');
+			$this->email = bab_translate('Email');
+			$this->message = bab_translate('comments-Comment');
+			$this->add = bab_translate('Add comment');
+			$this->title = bab_translate('Article');
 			$this->article = bab_toHtml($article);
 			$this->topics = bab_toHtml($topics);
 			$this->subjectval = bab_toHtml($subject);
@@ -142,9 +143,14 @@ function addComment($topics, $article, $subject, $message, $com = '')
 			
 			$this->com = bab_toHtml($com);
 
-			$req = 'SELECT title FROM '.BAB_ARTICLES_TBL.' WHERE id=' . $babDB->quote($article);
+			$req = 'SELECT allow_article_rating FROM ' . BAB_TOPICS_TBL.' WHERE id=' . $babDB->quote($topics);
 			$res = $babDB->db_query($req);
-			$arr = $babDB->db_fetch_array($res);
+			$topic = $babDB->db_fetch_assoc($res);
+			$this->rate_articles = ($topic['allow_article_rating'] === 'Y');
+			
+			$req = 'SELECT title FROM ' . BAB_ARTICLES_TBL.' WHERE id=' . $babDB->quote($article);
+			$res = $babDB->db_query($req);
+			$arr = $babDB->db_fetch_assoc($res);
 			$this->titleval = bab_toHtml($arr['title']);
 			
 			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
@@ -155,17 +161,19 @@ function addComment($topics, $article, $subject, $message, $com = '')
 			$editor->setParameters(array('height' => 200));
 			$this->editor = $editor->getEditor();
 
-			$arr = $babDB->db_fetch_array($babDB->db_query("select idsacom from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query('SELECT idsacom FROM '.BAB_TOPICS_TBL.' WHERE id='.$babDB->quote($topics)));
 			if ($arr['idsacom'] != 0) {
 				$this->notcom = bab_translate('Note: for this topic, comments are moderated');
 			} else {
 				$this->notcom = '';
 			}
 
+			$this->useCaptcha = false;
+
 			// We use the captcha if it is available as a functionality.
 			if (!$GLOBALS['BAB_SESS_LOGGED']) {
+				$this->rate_articles = false;
 				$captcha = @bab_functionality::get('Captcha');
-				$this->useCaptcha = false;
 				if (false !== $captcha) {
 					$this->useCaptcha = true;
 					$this->captchaCaption1 = bab_translate('Word Verification');

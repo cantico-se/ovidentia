@@ -470,6 +470,7 @@ CREATE TABLE bab_topics (
   auto_approbation enum('N','Y') NOT NULL default 'N',
   busetags enum('N','Y') NOT NULL default 'N',
   allow_addImg enum('N','Y') NOT NULL default 'N',
+  allow_article_rating enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat)
 );

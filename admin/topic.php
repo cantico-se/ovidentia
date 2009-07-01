@@ -307,8 +307,10 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
 			
 			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getHiddenUpload&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
+
+			$this->allowarticlerating	= bab_translate("Allow commneters to rate articles");
 			
-			//Si on ne vient pas d'un post alors récupérer l'image
+			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
 				$aImageInfo	= bab_getImageTopic($id);
@@ -1168,14 +1170,14 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	//Si image chargée par ajax
+	//Si image chargï¿½e par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image chargée par la voie normal
+	{//Si image chargï¿½e par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -1188,8 +1190,8 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	
 	if(false === $bHaveAssociatedImage)
 	{
-		//Aucune image n'est associée alors on supprime celle qui était associée avant
-		//si on a cliqué sur supprimé(ajax) ou coché supprimer (javascript désactivé)
+		//Aucune image n'est associï¿½e alors on supprime celle qui ï¿½tait associï¿½e avant
+		//si on a cliquï¿½ sur supprimï¿½(ajax) ou cochï¿½ supprimer (javascript dï¿½sactivï¿½)
 		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
 		{
 			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
@@ -1203,7 +1205,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	}
 	
 	
-	//Une image est associée alors on supprime l'ancienne
+	//Une image est associï¿½e alors on supprime l'ancienne
 	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
 	{
 		require_once dirname(__FILE__) . '/../utilit/delincl.php';
@@ -1222,7 +1224,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	}
 	
 	{
-		//Insérer l'image en base
+		//Insï¿½rer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
