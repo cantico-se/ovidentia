@@ -1114,7 +1114,7 @@ class bab_Articles extends bab_handler
 		{
 			$sLeftJoin = 
 				'LEFT JOIN ' .
-					BAB_TOPICS_TBL . ' t ON t.id = id_topic ' .
+					BAB_TOPICS_TBL . ' t ON t.id = at.id_topic ' .
 				'LEFT JOIN ' .
 					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
 			
