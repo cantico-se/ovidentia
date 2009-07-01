@@ -217,7 +217,7 @@ function bab_createImagePreviewTR()
 	oImg.id = 'tempImg';
 	oImg.alt = "{ sAltImagePreview }";
 //	oImg.src = '{ sImageUrl }';
-	oImg.src = '#';//Pour avoir l'evenement onload qui activera le formulaire lorsque dans la fonction bab_init le src de l'image sera initialisé
+	oImg.src = '#';//Pour avoir l'evenement onload qui activera le formulaire lorsque dans la fonction bab_init le src de l'image sera initialisï¿½
 
 	var oInput = document.createElement('input');
 	oInput.type = 'image';
@@ -514,6 +514,16 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
 		                    		</td>
 		                		</tr>
 		                		
+		                		<tr> 
+		                  			<td align="right">{ allowarticleratingtxt }:</td>
+		                  			<td nowrap="nowrap">
+		                  				<select name="allowarticlerating">
+		                      				<option value="Y" { ratingysel }>{ yes }</option>
+		                      				<option value="N" { ratingnsel }>{ no }</option>
+		                    			</select>
+		                    		</td>
+		                		</tr>
+
 		                		<tr> 
 		                  			<td align="right">{ sAllowAddImg }:</td>
 		                  			<td nowrap="nowrap">

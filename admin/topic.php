@@ -173,7 +173,9 @@ function deleteArticles($art, $item)
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
 	}
 
-function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+
+
+function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating)
 	{
 	global $babBody;
 	if( !isset($id))
@@ -181,7 +183,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid category !!");
 		return;
 		}
-	class temp
+	class ModifyCategoryTpl
 		{
 		var $category;
 		var $description;
@@ -257,9 +259,10 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		var $sHiddenUploadUrl;
 		var $sImageUrl = '#';
 		
-		function temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags)
+		function __construct($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating)
 			{
-			global $babBody;
+			global $babBody, $babDB;
+
 			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
 			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
 			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
@@ -308,7 +311,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			
 			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getHiddenUpload&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
 
-			$this->allowarticlerating	= bab_translate("Allow commneters to rate articles");
+			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
 			
 			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
@@ -345,9 +348,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			
 			
 			$this->db = $GLOBALS['babDB'];
-			$req = "select * from ".BAB_TOPICS_TBL." where id='".$id."'";
-			$res = $this->db->db_query($req);
-			$this->arr = $this->db->db_fetch_array($res);
+			$req = 'SELECT * FROM ' . BAB_TOPICS_TBL . ' WHERE id=' . $babDB->quote($id);
+			$res = $babDB->db_query($req);
+			$this->arr = $babDB->db_fetch_array($res);
 
 			
 			$this->sPostedAllowAddImg = bab_rp('sAllowAddImg', $this->arr['allow_addImg']);
@@ -516,7 +519,17 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				$this->tagsysel = "selected";
 				}
 
-
+			if (empty($allowarticlerating)) {
+				$allowarticlerating = $this->arr['allow_article_rating'];
+			}
+			if ($allowarticlerating === 'N') {
+				$this->ratingnsel = 'selected';
+				$this->ratingysel = '';
+			} else {
+				$this->ratingnsel = '';
+				$this->ratingysel = 'selected';
+			}
+				
 			if(empty($bartupdate))
 				{
 				$bartupdate = $this->arr['allow_update'];
@@ -832,9 +845,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 				$this->disptmplid = $this->arrdisptmpl[$i];
 				$this->disptmplval = $this->arrdisptmpl[$i];
 				if( $this->disptmplid == $this->disptid )
-					$this->disptmplselected = "selected";
+					$this->disptmplselected = 'selected';
 				else
-					$this->disptmplselected = "";
+					$this->disptmplselected = '';
 				$i++;
 				return true;
 				}
@@ -844,9 +857,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 		}
 	
 	$babBody->addStyleSheet('publication.css');
-		
-	$temp = new temp($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-	$babBody->babecho(	bab_printTemplate($temp,"topics.html", "topiccreate"));
+
+	$template = new ModifyCategoryTpl($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating);
+	$babBody->babecho(bab_printTemplate($template, 'topics.html', 'topiccreate'));
 	}
 
 function deleteCategory($id, $cat)
@@ -960,9 +973,9 @@ function warnRestrictionArticle($topics)
 	$babBody->babecho( bab_printTemplate($temp,"topics.html", "articlewarning"));
 	}
 
-function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg)
+function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating)
 	{
-	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 	global $babBody;
 	if( empty($category))
 		{
@@ -1142,6 +1155,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		max_articles='".$db->db_escape_string($maxarts)."', 
 		auto_approbation='".$db->db_escape_string($bautoapp)."', 
 		busetags='".$db->db_escape_string($busetags)."',
+		allow_article_rating='".$db->db_escape_string($allowarticlerating)."', 
 		allow_addImg='".$db->db_escape_string($sAllowAddImg)."' 
 	WHERE 
 		id = '".$id."'";
@@ -1432,7 +1446,7 @@ if( isset($add) )
 	if( isset($submit))
 	{
 		$sAllowAddImg = bab_rp('sAllowAddImg', 'N');
-		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg))
+		if(!updateCategory($item, $category, $ncat, $saart, $sacom, $saupd, $bnotif, $lang, $atid, $disptid, $restrict, $bhpages, $bpubdates,$battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $sAllowAddImg, $allowarticlerating))
 		{
 			$idx = "Modify";
 		}
@@ -1542,28 +1556,30 @@ switch($idx)
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a topic");
-		if( !isset($ncat)) { $ncat='';}
-		if( !isset($category)) { $category='';}
-		if( !isset($topdesc)) { $topdesc='';}
-		if( !isset($saart)) { $saart='';}
-		if( !isset($sacom)) { $sacom='';}
-		if( !isset($saupd)) { $saupd='';}
-		if( !isset($bnotif)) { $bnotif='';}
-		if( !isset($atid)) { $atid='';}
-		if( !isset($disptid)) { $disptid='';}
-		if( !isset($restrict)) { $restrict='';}
-		if( !isset($bhpages)) { $bhpages='';}
-		if( !isset($bpubdates)) { $bpubdates='';}
-		if( !isset($battachment)) { $battachment='';}
-		if( !isset($bartupdate)) { $bartupdate='';}
-		if( !isset($bautoapp)) { $bautoapp='';}
-		if( !isset($bmanmod)) { $bmanmod='';}
-		if( !isset($maxarts)) { $maxarts='';}
-		if( !isset($busetags)) { $busetags='';}
-		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-		$babBody->addItemMenu("List", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=topcats");
-		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=topic&idx=Modify&item=".$item);
+
+		$ncat = bab_rp('ncat', '');
+		$category = bab_rp('category', '');
+		$topdesc = bab_rp('topdesc', '');
+		$saart = bab_rp('saart', '');
+		$sacom = bab_rp('sacom', '');
+		$saupd = bab_rp('saupd', '');
+		$bnotif = bab_rp('bnotif', '');
+		$atid = bab_rp('atid', '');
+		$disptid = bab_rp('disptid', '');
+		$restrict = bab_rp('restrict', '');
+		$bhpages = bab_rp('bhpages', '');
+		$bpubdates = bab_rp('bpubdates', '');
+		$battachment = bab_rp('battachment', '');
+		$bartupdate = bab_rp('bartupdate', '');
+		$bautoapp = bab_rp('bautoapp', '');
+		$bmanmod = bab_rp('bmanmod', '');
+		$maxarts = bab_rp('maxarts', '');
+		$busetags = bab_rp('busetags', '');
+		$allowarticlerating = bab_rp('allowarticlerating', '');
+
+		modifyCategory($item, $ncat, $category, $topdesc, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating);
+		$babBody->addItemMenu('List', bab_translate('Categories'), $GLOBALS['babUrlScript'].'?tg=topcats');
+		$babBody->addItemMenu('Modify', bab_translate('Modify'), $GLOBALS['babUrlScript'].'?tg=topic&idx=Modify&item='.$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-?>

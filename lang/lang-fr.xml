@@ -2444,7 +2444,7 @@
 <string id="You must sepcify at least one tag">Vous devez spécifier au moins un mot-clé</string>
 <string id="Add selected users">Ajouter les utilisateurs sélectionnés</string>
 <string id="The file is not on the server">Le fichier n'est pas sur le serveur</string>
-<string id="The directory is writable but this is not the full pathname">Le répertoire est accessible en écriture, mais ce n'est pas le chemin complet</string>
+<string id="The directory is writable but is not an absolute pathname">Le répertoire est accessible en écriture, mais n'est un chemin absolu</string>
 <string id="The addons directory is not writable">Le répertoire addons n'est pas accessible en écriture</string>
 <string id="Loading...">En cours de chargement...</string>
 <string id="Fit width">Ajuster à la largeur de la fenêtre</string>
@@ -2732,6 +2732,7 @@
 <string id="Loading image is not active because">Le chargement d'image n'est pas actif car</string>
 <string id="The maximum size for a defined image is zero byte">La taille maximale définie pour une image est de zéro octet</string>
 <string id="Changes affecting the image will be taken into account after having saved">Les modifications concernant l'image associée ne seront prises en compte qu'après avoir sauvegardé</string>
+<string id="Allow commenters to rate articles">Permettre aux auteurs de commentaires de noter les articles</string>
 <string id="Allow authors to attach an image to an article">Permettre aux auteurs d'associer une image à un article</string>
 <string id="Associated picture">Image associée</string>
 <string id="Users that doesn't have personal agenda can view other personal agendas">Les utilisateurs n'ayant pas d'agenda personnel peuvent visualiser, s'ils ont le droit, les autres agendas personnels</string>
