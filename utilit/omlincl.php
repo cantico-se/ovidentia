@@ -5476,7 +5476,7 @@ class bab_SitemapEntries extends bab_handler
 		$node = $ctx->get_value('node');
 
 		$rootNode = bab_siteMap::get();
-		$node = $rootNode->getDgNodeById($node);
+		$node = $rootNode->getNodeById($node);
 		if ($node) {
 			$node = $node->firstChild();
 			while($node)
