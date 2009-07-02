@@ -489,3 +489,136 @@ class bab_InstallSource {
 
 
 
+
+
+
+
+
+/**
+ * template
+ */
+class bab_installWindowTpl {
+
+	public 	$t_upgrade 	= null;
+	public	$t_wait		= null;
+	public 	$t_continue = null;
+	public 	$frameurl	= null;
+	public 	$listurl	= null;
+
+	public function __construct() {
+
+		$this->t_wait = bab_toHtml(bab_translate('Installing, please wait...'), BAB_HTML_JS);
+		$this->t_continue = bab_toHtml(bab_translate('Back to list'), BAB_HTML_JS);
+	}
+}
+
+
+
+
+
+
+/**
+ * Frame used to install or upgrade
+ * @since 7.1.90
+ */
+class bab_installWindow {
+
+	private $startMessage 	= null;
+	private $successMessage = null;
+	private $failureMessage	= null;
+
+
+	/**
+	 * Get the page with installation process
+	 * @param	string	$title			Iframe title
+	 * @param	string	$frameurl		The url to iframe content (a page with a call to startInstall method)
+	 * @param	string	$nextpagetitle	button label
+	 * @param	string	$nextpageurl	action for button when installation finished
+	 */
+	public static function getPage($title, $frameurl, $nextpagetitle, $nextpageurl) {
+
+		global $babBody;
+		
+		$page = new bab_installWindowTpl();
+
+		$page->t_upgrade 	= bab_toHtml($title);
+		$page->frameurl 	= bab_toHtml($frameurl);
+		$page->t_continue 	= bab_toHtml($nextpagetitle	, BAB_HTML_JS);
+		$page->listurl	 	= bab_toHtml($nextpageurl	, BAB_HTML_JS);
+
+		$babBody->babecho(bab_printTemplate($page, "addons.html", "upgrade"));
+
+	}
+
+
+
+	public function setStartMessage($message) {
+		$this->startMessage = $message;
+	}
+
+	public function setStopMessage($message1, $message2) {
+		$this->successMessage = $message1;
+		$this->failureMessage = $message2;
+	}
+
+	/**
+	 * The method will display a frame and call the callback
+	 * Output buffering is disabled to allow install messages throw the message static method
+	 * @param	mixed	$callback		array or string			the function must return a boolean
+	 */
+	public function startInstall($callback) {
+		global $babBody;
+
+		@apache_setenv('no-gzip'			, 1);
+		@ini_set('zlib.output_compression'	, 0);
+		@ini_set('implicit_flush'			, 1);
+		for ($i = 0; $i < ob_get_level(); $i++) { ob_end_flush(); }
+		ob_implicit_flush(1);
+
+		echo '<html><head></head><body style="background:#fff;">'."\n";
+		define('BAB_INSTALL_SCRIPT_BEGIN', 1);
+		
+		if (null === $this->startMessage) {
+			$this->startMessage = bab_translate('Install start');
+		}
+		self::message($this->startMessage);
+		
+		$result = call_user_func($callback);
+
+		if ($babBody->msgerror) {
+			self::message(bab_toHtml($babBody->msgerror, BAB_HTML_ALL));
+		}
+
+		if ($result) {
+			if (null === $this->successMessage) {
+				$this->successMessage = bab_translate('The install is successfull');
+			}
+			self::message($this->successMessage);
+		} else {
+			if (null === $this->failureMessage) {
+				$this->failureMessage = bab_translate('There is an error in install');
+			}
+			self::message($this->failureMessage);
+		}
+
+		// javascript need an item to know this is the end
+		echo '<br id="BAB_ADDON_INSTALL_END" />'."\n";
+		echo '</body></html>';
+	}
+
+
+	/**
+	 * This function echo a message in displayed install log
+	 * This function is usable in addons
+	 * @see bab_setUpgradeLogMsg
+	 * 
+	 * @param	string	$html
+	 */
+	public static function message($html) {
+		if (defined('BAB_INSTALL_SCRIPT_BEGIN')) {
+			echo '<div class="bab_install_message">'.$html.'</div>'."\n";
+		}
+	}
+}
+
+
