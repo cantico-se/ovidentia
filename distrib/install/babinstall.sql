@@ -61,6 +61,7 @@ CREATE TABLE bab_comments (
    id_article int(11) unsigned DEFAULT '0' NOT NULL,
    id_topic int(11) unsigned DEFAULT '0' NOT NULL,
    id_author int(11) unsigned DEFAULT '0' NOT NULL,
+   id_last_editor int(11) unsigned DEFAULT '0' NOT NULL,
    `date` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    `last_update` datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
    subject tinytext NOT NULL,

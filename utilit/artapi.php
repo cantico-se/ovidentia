@@ -969,6 +969,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 					SET id_topic = ' . $babDB->quote($topicId) . ',
 		 				id_article = ' . $babDB->quote($articleId) . ',
 		 				id_parent = ' . $babDB->quote($parentId) . ',
+		 				id_last_editor = ' . $babDB->quote($authorId) . ',
 		 				last_update = NOW(),
 		 				subject = ' . $babDB->quote($subject) . ',
 		 				message = ' . $babDB->quote($message) . '

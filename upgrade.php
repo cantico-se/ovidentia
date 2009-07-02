@@ -5962,7 +5962,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_COMMENTS_TBL, 'last_update')) {
 		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `last_update` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `date`");
 	}
-	
+	// Add column for last editor user id on article comments table.
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_last_editor')) {
+		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `id_last_editor` int(11) unsigned DEFAULT '0' NOT NULL AFTER `id_author`");
+	}
 	// Add column for article rating on article comments table.
 	if (!bab_isTableField(BAB_COMMENTS_TBL, 'article_rating')) {
 		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `article_rating` TINYINT DEFAULT 0 NOT NULL AFTER `lang`");
