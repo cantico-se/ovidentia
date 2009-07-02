@@ -2722,7 +2722,7 @@
 <string id="Encoding">Encodage</string>
 <string id="The registration will not be effective while the LDAP authentication is active">L'inscription ne sera pas visible tant que l'authentification LDAP est active</string>
 <string id="Writable addons subfolders (%s)">Sous-répertoires des modules accessibles en écriture (%s)</string>
-<string id="There is an error in addon upgrade">Une erreur s'est produite lors de la mise à jour du module</string>
+<string id="An error occurred during the addon upgrade">Une erreur s'est produite lors de la mise à jour du module</string>
 <string id="Your search is empty">Votre recherche est vide</string>
 <string id="The directory %directory% does not exits">Le répertoire %directory% n'existe pas</string>
 <string id="The directory %directory% is not writeable">The directory %directory% n'est pas accessible en écriture</string>
@@ -3052,5 +3052,5 @@
 <string id="Upgrade of addon %s from version %s to version %s">Mise à jour du module %s à partir de la version %s vers la version %s</string>
 <string id="Installing, please wait...">Installation, patientez s'il vous plaît ...</string>
 <string id="Install start">Début de l'installation</string>
-<string id="The addon upgrade is successfull">la mise a jour du module à été effectuée avec succès</string>
+<string id="The addon upgrade was successful">La mise à jour du module a été effectuée avec succès</string>
 </fr>

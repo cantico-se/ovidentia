@@ -385,8 +385,8 @@ function addon_call_upgrade($id) {
 	$frame = new bab_installWindow;
 	$frame->setStartMessage(bab_translate('Install start'));
 	$frame->setStopMessage(
-		bab_translate('The addon upgrade is successfull'), 
-		bab_translate('There is an error in addon upgrade')
+		bab_translate('The addon upgrade was successful'), 
+		bab_translate('An error occurred during the addon upgrade')
 	);
 
 	$frame->startInstall(array($addon, 'upgrade'));
@@ -914,8 +914,8 @@ function functionalities() {
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = @bab_functionality::get($parent_path);
 
-				// quand $parent_obj est false c'est que l'enfant sélectionné par défaut n'existe plus, 
-				// ici on permet de définir un enfant a partir de ceux disponibles
+				// quand $parent_obj est false c'est que l'enfant sï¿½lectionnï¿½ par dï¿½faut n'existe plus, 
+				// ici on permet de dï¿½finir un enfant a partir de ceux disponibles
 				
 				if ((false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) || (false === $parent_obj)) {
 
