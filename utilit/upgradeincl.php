@@ -327,7 +327,11 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 	list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
 
-	if (!($forceUpgrade && bab_isUserAdministrator()) && ($ver_from == $ini->getVersion())) {
+
+	//TODO Should be replaced with a proper function.
+	$isUserAdministrator = $_SESSION['bab_groupAccess']['usergroups'][BAB_ADMINISTRATOR_GROUP];
+
+	if (!($forceUpgrade && $isUserAdministrator) && ($ver_from == $ini->getVersion())) {
 		$ret = bab_translate('You site is already up to date');
 		return false;
 	}
