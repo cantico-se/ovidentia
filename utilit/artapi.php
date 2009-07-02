@@ -931,7 +931,7 @@ function bab_getCommentTitle($com)
 	}
 
 
-	
+
 
 /**
  * Saves an article comment.
@@ -957,7 +957,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 	if (empty($BAB_SESS_USER)) {
 		$authorName = bab_translate('Anonymous');
 		$authorEmail = '';
-		$authorId = 0;	
+		$authorId = 0;
 	} else {
 		$authorName = $BAB_SESS_USER;
 		$authorEmail = $BAB_SESS_EMAIL;
@@ -971,7 +971,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		 				id_parent = ' . $babDB->quote($parentId) . ',
 		 				last_update = NOW(),
 		 				subject = ' . $babDB->quote($subject) . ',
-		 				message = ' . $babDB->quote($message) . ')
+		 				message = ' . $babDB->quote($message) . '
 		 		WHERE id = ' . $babDB->quote($commentId);
 		$babDB->db_query($req);
 	} else {
