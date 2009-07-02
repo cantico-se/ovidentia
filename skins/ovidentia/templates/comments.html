@@ -27,6 +27,7 @@
 		<tr class="bab_title">
 			<th align="left">{ commenttitle }</th>
 			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small><br /><!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating --></td>
+			<a href="{ commentid }">Edit</a>
 		</tr>
 		<tr class="bab_content">
 			<td colspan="2">{ commentbody }<br /><br /></td>
@@ -55,7 +56,7 @@
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
 
-<table class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table id="bab_edit_comment" class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <!--#if rate_articles -->
 <tr>
 <td>
@@ -132,3 +133,53 @@
 </form>
 
 <!--#end commentcreate -->
+
+
+
+<!--#begin commentedit -->
+
+<form name="comcreate" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="comments">
+<input type="hidden" name="idx" value="List">
+<input type="hidden" name="topics" value="{ topics }">
+<input type="hidden" name="article" value="{ article }">
+<input type="hidden" name="comment_id" value="{ comment_id }">
+<input type="hidden" name="action" value="save">
+
+<table id="bab_edit_comment" class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	<tr> 
+		<td align="center" nowrap>{ t_subject }:</td>
+	</tr>
+	<tr>
+		<td align="center" nowrap> 
+			<input type="text" name="subject" size="60" maxlength="60" value="{ subject }">
+		</td>
+	</tr>
+	<tr> 
+		<td align="center">
+		{ t_message }:
+		</td>
+	</tr>
+	<tr>
+		<td align="center"> 
+			{ editor }
+		</td>
+	</tr>
+
+	<tr> 
+		<td align="center">
+			<input type="submit" name="submit" value="{ t_save }" />
+
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+
+</table>
+</form>
+
+<!--#end commentedit -->

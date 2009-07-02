@@ -285,6 +285,7 @@ function listArticles($topics)
 				if( $totalc > 0 || $this->bcomment)
 					{
 					$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
 					if( $totalc > 0 )
 						{
 						$this->commentstxt = bab_translate("Comments")."&nbsp;(".$totalc.")";
@@ -296,8 +297,9 @@ function listArticles($topics)
  					}
 				else
 					{
-					$this->commentsurl = "";
-					$this->commentstxt = "";
+					$this->commentsurl = '';
+					$this->editcommentsurl = '';
+					$this->commentstxt = '';
 					}
 
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."' order by ordering asc");
@@ -460,12 +462,14 @@ function listArchiveArticles($topics, $pos)
 				if( $total > 0)
 					{
 					$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
 					$this->commentstxt = bab_translate("Comments")."&nbsp;(".$total.")";
 					}
 				else
 					{
-					$this->commentsurl = "";
-					$this->commentstxt = "";
+					$this->commentsurl = '';
+					$this->editcommentsurl = '';
+					$this->commentstxt = '';
 					}
 
 				$this->moreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$this->arr['id']);
@@ -603,12 +607,14 @@ function readMore($topics, $article)
 			if( $this->arr['archive'] == 'N' && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $this->topics))
 				{
 				$this->commentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id']);
+				$this->editcommentsurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=comments&idx=List&topics=".$this->topics."&article=".$this->arr['id'] . '#bab_edit_comment');
 				$this->commentstxt = bab_translate("Add Comment");
 				}
 			else
 				{
-				$this->commentsurl = "";
-				$this->commentstxt = "";
+				$this->commentsurl = '';
+				$this->editcommentsurl = '';
+				$this->commentstxt = '';
 				}
 
 			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))

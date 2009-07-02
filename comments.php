@@ -69,6 +69,7 @@ function listComments($topics, $article)
 			if (($comment = $babDB->db_fetch_assoc($this->comments)) !== false) {
 				$this->altbg = !$this->altbg;
 
+				$this->commentid = bab_toHtml($comment['id']);
 				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($comment['date'])));
 				if ($comment['id_author']) {
 					$this->authorname = bab_toHtml(bab_getUserName($comment['id_author']));
@@ -98,6 +99,63 @@ function listComments($topics, $article)
 	$babBodyPopup->babecho(bab_printTemplate($listCommentsTemplate, 'comments.html', 'commentslist'));
 }
 
+
+function editComment($topics, $article, $commentId)
+{
+	class EditCommentTemplate
+	{
+		public	$subject;
+		public	$subjectval;
+		public	$name;
+		public	$email;
+		public	$message;
+		public	$add;
+		public	$article;
+		public	$username;
+		public	$anonyme;
+		public	$title;
+		public	$titleval;
+		public	$com;
+		
+		public	$rate_articles = true;
+		public	$useCaptcha;
+
+		public function __construct($topics, $article, $commentId)
+		{
+			global $BAB_SESS_USER, $babDB;
+			$this->comment_id = bab_toHtml($commentId);
+
+			$req = 'SELECT * FROM ' . BAB_COMMENTS_TBL.' WHERE id=' . $babDB->quote($commentId);
+			$res = $babDB->db_query($req);
+			$comment = $babDB->db_fetch_assoc($res);
+
+			$this->t_subject = bab_translate('comments-Title');
+			$this->t_message = bab_translate('comments-Comment');
+			$this->t_save = bab_translate('Save comment');
+			$this->t_title = bab_translate('Article');
+			$this->article = bab_toHtml($article);
+			$this->topics = bab_toHtml($topics);
+			$this->subject = bab_toHtml($comment['subject']);
+			
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
+
+			$editor = new bab_contentEditor('bab_article_comment');
+			$editor->setContent($comment['message']);
+			$editor->setFormat('html');
+			$editor->setParameters(array('height' => 200));
+			$this->editor = $editor->getEditor();
+		}
+	}
+
+	if (!bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
+		return;
+	}
+	
+	global $babBodyPopup;
+	
+	$editCommentTemplate = new EditCommentTemplate($topics, $article, $commentId);
+	$babBodyPopup->babecho(bab_printTemplate($editCommentTemplate, 'comments.html', 'commentedit'));
+}
 
 
 function addComment($topics, $article, $subject, $message, $com = '')
@@ -289,6 +347,17 @@ switch ($idx)
 		break;
 
 	case 'delete':
+		break;
+
+	case 'edit':
+		$babBodyPopup = new babBodyPopup();
+		$babBodyPopup->title = bab_translate('Edit comment');
+		$babBodyPopup->msgerror = $msgerror;
+	
+		$commentId = bab_rp('comment_id', null);
+		editComment($topics, $article, $commentId);
+		printBabBodyPopup();
+		exit;
 		break;
 
 	case 'List':
