@@ -251,7 +251,12 @@ Variables in "body_default" :
 	<!--#endif altbg -->
 		<tr class="bab_title">
 			<th align="left">{ commenttitle }</th>
-			<td align="right"><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small><br /><!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating --></td>
+			<td align="right">
+				<div><small>{ authorname }&nbsp;|&nbsp;{ commentdate }</small></div>
+				<!--#if article_is_edited --><div><b><small>{ t_edited } { lasteditorname }&nbsp;|&nbsp;{ last_update }</small></b></div><!--#endif article_is_edited -->
+				<!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating -->
+				<!--#if user_is_topic_manager --><div><a class="BabTopicsFooterLink" href="{ editcommenturl }" onclick="bab_popup(this.href, 6);return false;"><img src="{ babSkinPath }images/Puces/edit.gif"  border="0" alt="{ t_edit_comment }" align="absmiddle">&nbsp;{ t_edit_comment }</a></div><!--#endif user_is_topic_manager -->
+			</td>
 		</tr>
 		<tr class="bab_content">
 			<td colspan="2">{ commentbody }<br /><br /></td>

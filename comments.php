@@ -50,6 +50,7 @@ function listComments($topics, $article)
 		public $authorname;
 		public $commenttitle;
 		public $commentbody;
+		public $user_is_topic_manager;
 		
 		public function __construct($topicId, $articleId)
 		{
@@ -61,6 +62,8 @@ function listComments($topics, $article)
 			$this->topics = bab_toHtml($topicId);
 			$this->alternate = 0;
 			$this->altbg = false;
+			$this->t_edit_comment = bab_toHtml(bab_translate('Edit this comment'));
+			$this->user_is_topic_manager = bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId);
 		}
 
 		public function getnext()
@@ -70,6 +73,7 @@ function listComments($topics, $article)
 				$this->altbg = !$this->altbg;
 
 				$this->commentid = bab_toHtml($comment['id']);
+				$this->editcommenturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=comments&idx=edit&comment_id=' . $comment['id'] . '&topics=' . $this->topics . '&article=' . $this->article);
 				$this->commentdate = bab_toHtml(bab_strftime(bab_mktime($comment['date'])));
 				if ($comment['id_author']) {
 					$this->authorname = bab_toHtml(bab_getUserName($comment['id_author']));
@@ -265,7 +269,7 @@ function addComment($topics, $article, $subject, $message, $com = '')
  * 
  * @return	bool	True on success, false otherwise.
  */
-function saveComment($topics, $article, $subject, $message, $com, $articleRating, &$msgerror)
+function saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, &$msgerror)
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -296,7 +300,7 @@ function saveComment($topics, $article, $subject, $message, $com, $articleRating
 		$com = 0;
 	}
 
-	bab_saveArticleComment($topics, $article, $subject, $message, $com, $articleRating);
+	bab_saveArticleComment($topics, $article, $subject, $message, $com, $articleRating, $commentId);
 
 	return true;
 }
@@ -311,18 +315,20 @@ $article = bab_rp('article', 0);
 $msgerror = '';
 $popupmessage = '';
 
+$action = bab_rp('action', null);
 
 if (!bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, '')) {
 	$idx = 'denied';
-} elseif (isset($_POST['addcomment']) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
+} elseif (($action == 'save' || isset($_POST['addcomment'])) && bab_isAccessValid(BAB_TOPICSCOM_GROUPS_TBL, $topics)) {
 	include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 	$editor = new bab_contentEditor('bab_article_comment');
 	$message = $editor->getContent();
 	$subject = bab_pp('subject');
 	$com = bab_pp('com');
 	$articleRating = bab_pp('article_rating', '0');
+	$commentId = bab_pp('comment_id', null);
 	
-	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $msgerror)) {
+	if (!saveComment($topics, $article, $subject, $message, $com, $articleRating, $commentId, $msgerror)) {
 		$idx = 'List';
 	} else {
 		$popupmessage = bab_translate('Update done');

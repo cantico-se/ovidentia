@@ -548,7 +548,7 @@ function readMore($topics, $article)
 
 		var $babtpl_head = '';
 		var $babtpl_body = '';
-		
+
 		function temp($topics, $article)
 			{
 			global $babDB, $arrtop;
@@ -572,8 +572,13 @@ function readMore($topics, $article)
 			$this->countart = $babDB->db_num_rows($this->resart);
 			$this->topictxt = bab_translate("In the same topic");
 			$this->commenttxt = bab_translate("Comments");
+			$this->t_edit_comment = bab_translate("Edit this comment");
+			$this->t_edited = bab_translate("Edited by ");
 			$this->article = bab_toHtml($article);
 			$this->artcount = 0;
+			
+			$this->user_is_topic_manager = bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics);
+			
 
 			$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
 			$this->countcom = $babDB->db_num_rows($this->rescom);
@@ -757,9 +762,16 @@ function readMore($topics, $article)
 					$this->authorname = $arr['name'];
 					}
 				$this->authorname = bab_toHtml($arr['name']);
-
+				if ($arr['id_last_editor']) {
+					$this->article_is_edited = true;
+					$this->lasteditorname = bab_toHtml(bab_getUserName($arr['id_last_editor'], true));
+					$this->last_update = bab_toHtml(bab_strftime(bab_mktime($arr['last_update'])));
+				} else {
+					$this->article_is_edited = false;
+				}
 				$this->commenttitle = bab_toHtml($arr['subject']);
-
+				$this->editcommenturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=comments&idx=edit&comment_id=' . $arr['id'] . '&topics=' . $arr['id_topic'] . '&article=' . $arr['id_article']);
+				
 				$this->article_rating = bab_toHtml($arr['article_rating']);
 				$this->article_rating_percent = bab_toHtml($arr['article_rating'] * 20.0);
 				

@@ -31,6 +31,10 @@
 <string id="Add Article">Ajouter un article</string>
 <string id="Add Category">Ajouter une catégorie</string>
 <string id="Add Comment">Ajouter un commentaire</string>
+<string id="Edit comment">Modifier le commentaire</string>
+<string id="Edit this comment">Modifier ce commentaire</string>
+<string id="Edited by ">Modifié par </string>
+<string id="Save comment">Enregistrer le commentaire</string>
 <string id="Add Contact">Ajouter un contact</string>
 <string id="Add Domain">Ajouter le domaine</string>
 <string id="Add Event">Ajouter un événement</string>
