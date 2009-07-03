@@ -3046,11 +3046,17 @@
 <string id="Bad">Mauvais</string>
 <string id="Rather bad">Plutôt mauvais</string>
 <string id="Average">Moyen</string>
-<string id="Rather good">Plutôt une bon</string>
+<string id="Rather good">Plutôt bon</string>
 <string id="Good">Bon</string>
 <string id="Note: for this topic, comments are moderated">Note: pour ce thème, les commentaires sont modérés</string>
 <string id="Upgrade of addon %s from version %s to version %s">Mise à jour du module %s à partir de la version %s vers la version %s</string>
 <string id="Installing, please wait...">Installation, patientez s'il vous plaît ...</string>
 <string id="Install start">Début de l'installation</string>
 <string id="The addon upgrade was successful">La mise à jour du module a été effectuée avec succès</string>
+<string id="Install of addon %s">Installation du module %s</string>
+<string id="Install script failed in addon %s">Le programme d'installation du module %s a échoué</string>
+<string id="The install is successfull">L'installation c'est effectuée correctement</string>
+<string id="There is an error in install">Il ya une erreur dans l'installation</string>
+<string id="Installation of the package">Installation de l'archive</string>
+
 </fr>

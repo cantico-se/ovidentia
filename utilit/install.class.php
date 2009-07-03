@@ -47,6 +47,13 @@ class bab_InstallSource {
 	}
 
 	/**
+	 * @return string | null
+	 */
+	public function getArchive() {
+		return $this->archive;
+	}
+
+	/**
 	 * Set the install source from an allready unziped folder
 	 * @param	string	$folderpath
 	 */
@@ -360,6 +367,8 @@ class bab_InstallSource {
 
 		foreach($collection as $folder) {
 
+			bab_installWindow::message(sprintf(bab_translate('Install of addon %s'), $folder));
+
 			$install = new bab_InstallSource;
 			$install->setFolder($path.$folder);
 
@@ -371,6 +380,7 @@ class bab_InstallSource {
 			}
 
 			if (!$install->install($ini)) {
+				bab_installWindow::message(sprintf(bab_translate('Install script failed in addon %s'), $folder));
 				return false;
 			}
 		}

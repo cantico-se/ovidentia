@@ -756,38 +756,105 @@ function bab_display_addon_requirements()
  * Unzip temporary file
  * Install package of any type
  */
-function import()
-	{
-	include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
-	bab_setTimeLimit(1200);
-	
-	global $babBody, $babDB;
+class bab_import_package {
 
-	if( !empty($_POST['tmpfile'])) {
-		$ul = $GLOBALS['babUploadPath'].'/tmp/'.$_POST['tmpfile'];
-		
-		if (!is_file($ul)) {
-			$babBody->addError(bab_translate('The file is missing'));
-			return false;
+	private static function getInstallSource() {
+
+		include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
+
+		if(bab_rp('tmpfile')) {
+			$ul = $GLOBALS['babUploadPath'].'/tmp/'.bab_rp('tmpfile');
+			
+			if (is_file($ul)) {
+				$install = new bab_InstallSource;
+				$install->setArchive($ul);
+				return $install;
+			}
 		}
-		
-		$install = new bab_InstallSource;
-		$install->setArchive($ul);
+
+		throw new Exception(bab_translate('The file is missing'));
+	}
+
+
+	private static function getIni(bab_InstallSource $install) {
 		$ini = $install->getIni();
 
 		if (!$ini) {
-			$babBody->addError(bab_translate("This file is not a well formated Ovidentia package"));
-			return false;
+			throw new Exception(bab_translate("This file is not a well formated Ovidentia package"));
 		}
 
 		if (false === $ini->isValid()) {
-			$babBody->addError(bab_translate('The package is not valid'));
 			unlink($ul);
+			throw new Exception(bab_translate('The package is not valid'));
+		}
+
+		return $ini;
+	}
+
+
+	/**
+	 * unzip and install package
+	 */
+	public static function install() {
+		
+		bab_setTimeLimit(1200);
+
+		try {
+			$install = self::getInstallSource();
+			$ini = self::getIni($install);
+
+		} catch(Exception $e) {
+			bab_installWindow::message($e->getMessage());
 			return false;
 		}
 		
-		$install->install($ini);
-		unlink($ul);
+		if ($install->install($ini)) {
+			if (unlink($install->getArchive())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Display page for installation
+	 * 
+	 */
+	public static function page() {
+		
+		try {
+			$install = self::getInstallSource();
+			$ini = self::getIni($install);
+
+		} catch(Exception $e) {
+			global $babBody;
+			$babBody->addError($e->getMessage());
+			return false;
+		}
+
+		
+		require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
+
+		$t_upgrade = bab_translate('Installation of the package');
+		$t_continue = bab_translate('Back to list');
+
+		$url = bab_url::request();
+		$url = bab_url::mod($url, 'tg', 'addons');
+		$frameurl = bab_url::mod($url, 'idx', 'import_frame');
+		$listurl = bab_url::mod($url, 'idx', 'list');
+
+		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile'));
+
+		bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $listurl);
+	}
+
+	public static function frame() {
+		require_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
+
+		$frame = new bab_installWindow;
+		$frame->startInstall(array('bab_import_package', 'install'));
+		die();
 	}
 }
 
@@ -1145,10 +1212,7 @@ if( isset($acladd))
 
 if (isset($_POST['action'])) {
 	switch($_POST['action']) {
-		case 'import':
-			import();
-			break;
-
+		
 		case 'upgrade':
 			addon_display_upgrade($_POST['item']);
 			break;
@@ -1193,6 +1257,16 @@ switch($idx)
 		display_addons_menu();
 		$babBody->addItemMenu("requirements", bab_translate("Requirements"), $GLOBALS['babUrlScript']."?tg=addons&idx=requirements");
 		bab_display_addon_requirements();
+		break;
+
+	case 'import':
+		display_addons_menu();
+		$babBody->addItemMenu("import", bab_translate("Install"), $GLOBALS['babUrlScript']."?tg=addons&idx=import");
+		bab_import_package::page();
+		break;
+
+	case 'import_frame':
+		bab_import_package::frame();
 		break;
 
 	case "history":
