@@ -2003,10 +2003,11 @@ function bab_previewComment($com)
 			$this->close	= bab_translate("Close");
 			$req			= "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
 			$this->res		= $babDB->db_query($req);
-			$this->arr		= $babDB->db_fetch_array($this->res);
+			$this->arr		= $babDB->db_fetch_assoc($this->res);
 			$this->title	= bab_toHtml($this->arr['subject']);
 			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
-			
+			$this->article_rating = bab_toHtml($this->arr['article_rating']);
+			$this->article_rating_percent = bab_toHtml($this->arr['article_rating'] * 20.0);
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
 			$editor = new bab_contentEditor('bab_article_comment');

@@ -133,6 +133,21 @@
 window.focus();
 //-->
 </script>
+
+<style type="text/css">
+.bab-rating-bar {
+  width: 55px;
+  background: url('{ babSkinPath }images/Puces/star_x_grey.gif') 0 0 repeat-x;
+  text-align: left;
+}
+
+.bab-rating-bar div {
+  height: 12px;
+  background: url('{ babSkinPath }images/Puces/star_x_orange.gif') 0 0 repeat-x;
+}
+</style>
+
+
 </HEAD>
 <BODY class="BabTopicsAdminArticleViewFontBackground">
 <br>
@@ -141,7 +156,10 @@ window.focus();
 <td class="BabLoginMenuBackground"> 
 <table class="BabMailBackground" border="0" width="100%" cellpadding="5" cellspacing="0" align="center">
 <tr> 
-<td class="BabTopicsTitleBackground" align="center" nowrap><b>{ title }</b></td>
+<td class="BabTopicsTitleBackground" align="center" nowrap>
+<h3>{ title }</h3>
+<!--#if article_rating "> 0" --><div class="bab-rating-bar" title="{ article_rating } / 5"><div style="width:{ article_rating_percent }%"></div></div><!--#endif article_rating -->
+</td>
 </tr>
 <tr>
 <td class="BabTopicsBackground">{ content }</td>
