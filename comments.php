@@ -234,7 +234,7 @@ function addComment($topics, $article, $subject, $message, $com = '')
 
 			// We use the captcha if it is available as a functionality.
 			if (!$GLOBALS['BAB_SESS_LOGGED']) {
-				$this->rate_articles = false;
+//				$this->rate_articles = false;
 				$captcha = @bab_functionality::get('Captcha');
 				if (false !== $captcha) {
 					$this->useCaptcha = true;
