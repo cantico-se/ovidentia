@@ -353,22 +353,44 @@ class bab_synchronizeSql
 		{
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		include_once $GLOBALS['babInstallPath'].'utilit/install.class.php';
+
+		$nb_modified = 0;
+		$nb_created = 0;
 		
 		foreach($this->create as $table => $arr)
 			{
 			if (bab_isTable($table))
 				{
-				if ($this->checkFields($table))
+				if ($this->checkFields($table)) {
 					$this->return[$table] = 2;
-				else
+					$nb_modified++;
+					}
+				else {
 					$this->return[$table] = 0;
+					}
 				}
 			else
 				{
 				$this->db->db_query(trim($this->create[$table]['create']," ;"));
 				$this->return[$table] = 1;
+				$nb_created++;
 				}
 			}
+
+		if (1 === $nb_created) {
+			$message = sprintf(bab_translate('%d table has been created'), $nb_created);
+		} else {
+			$message = sprintf(bab_translate('%d tables has been created'), $nb_created);
+		}
+
+		if (1 === $nb_modified) {
+			$message .= ' '.sprintf(bab_translate('and %d table has been modified in MySql database'), $nb_modified);
+		} else {
+			$message .= ' '.sprintf(bab_translate('and %d tables has been modified in MySql database'), $nb_modified);
+		}
+
+		bab_installWindow::message($message);
 		}
 		
 		
@@ -467,11 +489,10 @@ class bab_synchronizeSql
 			
 		$keys = $this->getTableKeysDetail($table);
 		
+		
 			
 		foreach($this->create[$table]['keys'] as $key => $keydetail) 
 			{
-			
-			
 			if (isset($keys[$key]))
 				{
 				if ($this->checkKeyDetail($table, $key, $keys[$key], $keydetail)) {
@@ -484,7 +505,7 @@ class bab_synchronizeSql
 				$return = true;
 				}
 			}
-
+		
 		foreach($this->tables[$table] as $field => $arr)
 			{
 			if (!isset($this->create[$table]['fields'][$field]))
@@ -493,7 +514,7 @@ class bab_synchronizeSql
 				$return = true;
 				}
 			}
-
+		
 		return $return;
 		}
 		
