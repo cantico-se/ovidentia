@@ -3069,6 +3069,7 @@ class bab_RecentComments extends bab_handler
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=read&topics=".$arr['id_topic']."&article=".$arr['id_article']."&com=".$arr['id']);
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=comments&idx=viewc&com=".$arr['id']."&article=".$arr['id_article']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('CommentArticleRating', $arr['article_rating']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -3716,6 +3717,7 @@ class bab_WaitingComments extends bab_handler
 			$this->ctx->curctx->push('CommentLanguage', $arr['lang']);
 			$this->ctx->curctx->push('CommentUrl', $GLOBALS['babUrlScript']."?tg=approb");
 			$this->ctx->curctx->push('CommentPopupUrl', $GLOBALS['babUrlScript']."?tg=approb&idx=viewcom&idcom=".$arr['id']."&idart=".$arr['id_article']."&topics=".$arr['id_topic']);
+			$this->ctx->curctx->push('CommentArticleRating', $arr['article_rating']);
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
