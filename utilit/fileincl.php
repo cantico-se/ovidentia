@@ -996,9 +996,40 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 		}
 		else
 		{
-			$req = "insert into ".BAB_FILES_TBL."
-			(name, description, max_downloads, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '" . $babDB->db_escape_string($maxdownloads[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
+			$req = 'INSERT INTO ' . BAB_FILES_TBL . '(
+						name,
+						description, '
+						. (isset($maxdownloads) ? 'max_downloads,' : '') . '
+						path,
+						id_owner,
+						bgroup,
+						link,
+						readonly,
+						state,
+						created,
+						author,
+						modified,
+						modifiedby,
+						confirmed,
+						index_status,
+						iIdDgOwner)
+					VALUES (';
+			$req .= $babDB->quote($name). ',
+						' . $babDB->quote($description[$count]) . ',
+						' . (isset($maxdownloads) ? $babDB->quote($maxdownloads[$count]) . ', ' : '') . 
+						$babDB->quote($sRelativePath) . ',
+						' . $babDB->quote($iIdOwner). ',
+						' . $babDB->quote($gr). ',
+						0,
+						' . $babDB->quote($readonly[$count]). ',
+						\'\',
+						NOW(),
+						' . $babDB->quote($idcreator) . ',
+						NOW(),
+						' . $babDB->quote($idcreator) . ',
+						' . $babDB->quote($confirmed) . ',
+						' . $babDB->quote($index_status) . ',
+						' . $babDB->quote(bab_getCurrentUserDelegation()) . ')';
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 			
@@ -2257,6 +2288,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 //		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
+
 		global $babDB;
 		$oResult = $babDB->db_query($sQuery);
 		$this->setMySqlResult($oResult);
