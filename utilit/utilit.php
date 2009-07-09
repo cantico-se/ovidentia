@@ -254,9 +254,13 @@ function bab_getTimeFormat($format)
  */
 function bab_convertToDatabaseEncoding($sString)
 {
-	$sDetectedEncoding	= mb_detect_encoding($sString, 'UTF-8, ISO-8859-15');
+	/* An ending 'é' (and probably other accentuated chars) mislead mb_detect_encoding
+	 * Adding a character will suppress the situation where the error occurs and will not modify our variable. 
+	 * And it will still work if the error in the function will be fixed one day.
+	 */
+	$sDetectedEncoding	= mb_detect_encoding($sString.'a', 'UTF-8, ISO-8859-15');
 	$sEncoding			= bab_charset::getIso(); 
-	
+		
 	if($sEncoding != $sDetectedEncoding)
 	{
 		return mb_convert_encoding($sString, $sEncoding, $sDetectedEncoding);
