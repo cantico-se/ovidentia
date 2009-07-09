@@ -71,6 +71,7 @@ class bab_addons_list
 		$this->t_delete = bab_translate("Delete");
 		$this->t_historic = bab_translate("Historic");
 		$this->t_download = bab_translate("Download");
+		$this->t_configure = bab_translate("Configuration");
 		$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
@@ -132,6 +133,7 @@ class bab_addons_list
 			$this->addversion 		= bab_toHtml($addon->getDbVersion());
 			$this->description 		= bab_toHtml($addon->getDescription(), BAB_HTML_ALL);
 			$this->iconpath			= bab_toHtml($addon->getIconPath());
+			$this->configurationurl	= bab_toHtml($addon->getConfigurationUrl());
 			
 			if ($addon->isUpgradable()) {
 				$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());

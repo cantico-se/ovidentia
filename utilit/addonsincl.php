@@ -493,6 +493,22 @@ class bab_addonInfos {
 		return $ini->isValid();
 	}
 	
+
+	/**
+	 * Get configuration url or null if no configuration page defined
+	 * @return string
+	 */
+	public function getConfigurationUrl() {
+
+		$ini = $this->getIni();
+
+		if (!isset($ini->inifile['configuration_page'])) {
+			return null;
+		}
+
+		return $this->getUrl().$ini->inifile['configuration_page'];
+	}
+
 	
 	
 	/**

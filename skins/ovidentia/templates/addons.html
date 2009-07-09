@@ -43,7 +43,13 @@ function deladdon(id)
 			<td align="center">
 				<!--#if upgradeurl -->
 				<a href="{ upgradeurl }"><img border="0" src="{ babSkinPath }images/Puces/exe.gif"></a>
-				<!--#else upgradeurl -->&nbsp;<!--#endif upgradeurl -->
+				<!--#else upgradeurl -->
+					<!--#if configurationurl -->
+					<a href="{ configurationurl }">{ t_configure }</a>
+					<!--#else configurationurl -->
+					&nbsp;
+					<!--#endif configurationurl -->
+				<!--#endif upgradeurl -->
 			</td>
 			<td align="center">{ addversion }</td>
 
