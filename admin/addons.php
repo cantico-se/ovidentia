@@ -323,6 +323,7 @@ function addon_display_upgrade($id) {
 
 	if (!$addon->isValid()) {
 		bab_display_addon_requirements();
+		return;
 	}
 
 	

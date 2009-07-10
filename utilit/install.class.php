@@ -524,6 +524,57 @@ class bab_installWindowTpl {
 
 
 
+/**
+ * Progress bar
+ */
+class bab_installProgressBar {
+
+	private static $count = 0;
+	private $uid = null;
+	private $title = null;
+
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+
+	/**
+	 * @param	int		$percent	number beetween 0 and 100
+	 */
+	public function setProgression($percent) {
+		if (null === $this->uid) {
+			$this->draw();
+		}
+
+		bab_installWindow::message(sprintf('<script type="text/javascript">document.getElementById(\'%s\').style.width = \'%d%%\'</script>', $this->uid, $percent));
+	}
+
+	private function draw() {
+		$this->uid = __CLASS__.'_'.self::$count;
+		self::$count++;
+
+		$html = '
+			<div style="margin:.5em; padding:.3em; border:#ccc 1px solid; background:#eee; text-align:center; width:80%">';
+
+		if (null !== $this->title) {
+			$html .= '<div><small>'.bab_toHtml($this->title).'</small></div>';
+		}
+
+		$html .= '
+				<div style="width:100%; height:10px; border:#999 1px solid; background:white; ">
+					<div style="width:0%;height:10px;background:lightblue;" id="'.$this->uid.'"></div>
+				</div>
+			</div>
+		';
+
+		bab_installWindow::message($html);
+	}
+
+}
+
+
+
+
 
 
 
