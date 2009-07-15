@@ -59,19 +59,20 @@
 <input type="hidden" name="com" value="{ com }">
 <input type="hidden" name="addcomment" value="add">
 
-<table id="bab_edit_comment" class="BabLoginCadreBackground" width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<table id="bab_edit_comment" class="BabLoginCadreBackground" width="95%" border="0" cellspacing="2" cellpadding="0" align="center">
 <!--#if rate_articles -->
 <tr>
 <td>
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="3">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="8" cellpadding="3">
 	<tr>
-	<td class="BabLoginMenuBackground" align="left" nowrap="nowrap">
-		{ t_rate_this_article }
+	<td class="BabLoginMenuBackground" align="right" nowrap="nowrap">
+		<b style="vertical-align: middle">{ t_rate_this_article }
 		<input type="radio" title="{ t_bad }" value="1" name="article_rating"/>1
 		<input type="radio" title="{ t_rather_bad }" value="2" name="article_rating"/>2
 		<input type="radio" title="{ t_average }" value="3" name="article_rating"/>3
 		<input type="radio" title="{ t_rather_good }" value="4" name="article_rating"/>4
 		<input type="radio" title="{ t_good }" value="5" name="article_rating"/>5
+		</b>
 	</td>
 	</tr>
 	</table>
