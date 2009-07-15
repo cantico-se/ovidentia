@@ -1285,7 +1285,7 @@ switch($idx)
 
 	case "upgrade":
 		display_addons_menu();
-		addon_display_upgrade($_GET['item']);
+		addon_display_upgrade(bab_rp('item', null));
 		$babBody->addItemMenu("upgrade", bab_translate("Upgrade"), $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade");
 		$babBody->setTitle(bab_translate("Add-ons installation"));
 		break;
