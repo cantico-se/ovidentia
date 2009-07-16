@@ -1393,7 +1393,9 @@ function bab_getAccessibleObjects($table, $userId)
 
 	$userGroups = bab_getUserGroups($userId);
 	$userGroupIds = $userGroups['id'];
-
+	$userGroupIds[] = BAB_REGISTERED_GROUP;
+	$userGroupIds[] = BAB_ALLUSERS_GROUP;
+	
 	$sql = 'SELECT id_object, id_group FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).') OR id_group >= '.BAB_ACL_GROUP_TREE;
 	$res = $babDB->db_query($sql);
 
