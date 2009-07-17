@@ -4528,7 +4528,8 @@ class BAB_FmFolderHelper
 		global $babBody;
 		$bSuccess = true;
 		
-		if(mb_strlen(trim($sFullPathName)) > 0 && false === mb_strpos($sFullPathName, '..'))
+		bab_debug('(' . $sFullPathName . ')');
+		if(mb_strlen(trim($sFullPathName)) > 0 && preg_match('#^(|.*[/\\\\])\.\.(|[/\\\\].*)$#', $sFullPathName) === 0)
 		{
 			if(!is_dir($sFullPathName))
 			{
