@@ -5173,10 +5173,9 @@ class BAB_FileManagerEnv
 			}
 		}
 
-		if(false !== mb_strpos($this->sPath, '..'))
-		{
-			$babBody->addError(bab_translate("Access denied"));
-			return false;
+		if (preg_match('#^(|.*[/\\\\])\.\.(|[/\\\\].*)$#', $this->sPath) !== 0) {
+			$babBody->addError(bab_translate("Invalid path. Should not contain '..'"));
+			return false;		
 		}
 
 		if(false === $this->userIsInRootFolder())
