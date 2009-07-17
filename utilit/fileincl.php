@@ -4577,8 +4577,8 @@ class BAB_FmFolderHelper
 		$bSuccess = true;
 
 		$bOldNameValid = (mb_strlen(trim($sOldName)) > 0);
-		$bNewNameValid = (mb_strlen(trim($sNewName)) > 0 && false === mb_strpos($sNewName, '..'));
-		
+		$bNewNameValid = (mb_strlen(trim($sNewName)) > 0 && ($sNewName !== '..'));
+
 		if($bOldNameValid && $bNewNameValid)
 		{
 			$sOldPathName = '';
