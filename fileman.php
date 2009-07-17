@@ -3709,9 +3709,6 @@ function editFolderForCollectiveDir()
 					}
 				}
 
-				bab_debug($sDownloadsCapping, 1, __METHOD__);
-				bab_debug($sDownloadHistory, 1, __METHOD__);
-
 				$oFmFolder->setName($sDirName);
 				$oFmFolder->setActive($sActive);
 				$oFmFolder->setApprobationSchemeId($iIdApprobationScheme);
@@ -3855,11 +3852,6 @@ function deleteFolderForCollectiveDir()
 	}
 
 	$sDirName = (string) bab_pp('sDirName', '');
-	if(false !== mb_strpos($sDirName, '..'))
-	{
-		$babBody->msgerror = bab_translate("Please give a valid folder name");
-		return false;
-	}
 
 	if(false !== mb_strpos($sDirName, '/'))
 	{
@@ -3878,7 +3870,13 @@ function deleteFolderForCollectiveDir()
 		$babBody->msgerror = bab_translate("Please give a valid folder name");
 		return false;
 	}
+	if($sDirName === '..')
+	{
+		$babBody->msgerror = bab_translate("Please give a valid folder name");
+		return false;
+	}
 
+	
 	$iIdFld	= (int) bab_pp('iIdFolder', 0);
 	if(0 !== $iIdFld)
 	{
@@ -3903,7 +3901,7 @@ function deleteFolderForUserDir()
 	if(userHavePersonnalStorage() && canCreateFolder($oFileManagerEnv->sRelativePath))
 	{
 		$sDirName = (string) bab_pp('sDirName', '');
-		if(false === mb_strpos($sDirName, '..'))
+		if(preg_match('#^(|.*[/\\\\])\.\.(|[/\\\\].*)$#', $sDirName) === 0)
 		{
 			if(mb_strlen(trim($sDirName)) > 0)
 			{
@@ -4020,7 +4018,7 @@ switch($sAction)
 
 		$bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
 				$oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'),
-				bab_pp('readonly'), bab_pp('maxdownloads'));
+				bab_pp('readonly'), bab_pp('maxdownloads', null));
 		if(false === $bSuccess)
 		{
 			$idx = "displayAddFileForm";
