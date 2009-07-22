@@ -390,7 +390,7 @@ class bab_ReferenceMgr
 			FROM 
 				bab_tags_references 
 			WHERE 
-				reference = ' . $babDB->quote((string) $oReference);
+				reference = ' . $babDB->quote($oReference->__tostring());
 		
 		//bab_debug($sQuery);
 
@@ -439,7 +439,7 @@ class bab_ReferenceMgr
 			'INSERT INTO bab_tags_references
 				(`id`, `id_tag`, `reference`) 
 			VALUES
-				(\'\', ' . $babDB->quote($oTag->getId()) . ',' . $babDB->quote((string) $oReference) . ')'; 
+				(\'\', ' . $babDB->quote($oTag->getId()) . ',' . $babDB->quote($oReference->__tostring()) . ')'; 
 	
 		//bab_debug($sQuery);
 		$oResult = $babDB->db_query($sQuery);
@@ -470,7 +470,7 @@ class bab_ReferenceMgr
 		global $babDB;
 		$aWhereClauseItem = array();
 		$aWhereClauseItem[] = 'id_tag = ' . $babDB->quote($oTag->getId());
-		$aWhereClauseItem[] = 'reference = ' . $babDB->quote((string) $oReference);
+		$aWhereClauseItem[] = 'reference = ' . $babDB->quote($oReference->__tostring());
 	
 		return $this->executeDeleteQuery($aWhereClauseItem);
 	}
@@ -509,7 +509,7 @@ class bab_ReferenceMgr
 	{
 		global $babDB;
 		$aWhereClauseItem = array();
-		$aWhereClauseItem[] = 'reference = ' . $babDB->quote((string) $oReference);
+		$aWhereClauseItem[] = 'reference = ' . $babDB->quote($oReference->__tostring());
 	
 		return $this->executeDeleteQuery($aWhereClauseItem);
 	}
