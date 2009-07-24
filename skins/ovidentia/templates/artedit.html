@@ -280,38 +280,43 @@ document.forms[fmname].updstep02.value = cmd;
 <!--#end modarticlechoicestep -->
 
 
-<!--#begin topictreeform -->
-
+<!--#begin showTopicsTreeForCreationOfAnArticle -->
 <script type="text/javascript">
-
-function selectTopic(topicId)
-{
-	document.getElementById('topicid').value = topicId;
-	document.getElementById('step0form').submit();
-}
-
+	function selectTopic(topicId) {
+		document.getElementById('topicid').value = topicId;
+		document.getElementById('step0form').submit();
+	}
 </script>
 
 <form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
- <input type="hidden" name="tg" value="artedit">
- <input type="hidden" name="idx" value="{ next_idx }">
- <input type="hidden" name="idart" value="{ idart }">
- <!--#if bcontent -->
- <input type="hidden" name="title" value="{ title }">
- <input type="hidden" name="headtext" value="{ headtext }">
- <input type="hidden" name="bodytext" value="{ bodytext }">
- <input type="hidden" name="lang" value="{ lang }">
- <!--#endif bcontent -->
- <input type="hidden" name="rfurl" value="{ rfurl }">
- <input type="hidden" name="updstep0" value="">
- <input id="topicid" type="hidden" name="topicid" value="">
+	 <input type="hidden" name="tg" value="artedit">
+	 <input type="hidden" name="idx" value="s1">
+	 <input type="hidden" name="rfurl" value="{ rfurl }">
+	 <input type="hidden" name="updstep0" value="">
+	 <input id="topicid" type="hidden" name="topicid" value="">
 </form>
 
-<!--#if t_no_topic -->
 <p style="padding-left: 20px"><a href="#" onclick="selectTopic('');return false;">{ t_no_topic }</a></p>
-<!--#endif t_no_topic -->
+<!--#end showTopicsTreeForCreationOfAnArticle -->
 
-<!--#end topictreeform -->
+
+<!--#begin showTopicsTreeForModificationOfAnArticle -->
+<script type="text/javascript">
+	function selectTopic(topicId) {
+		document.getElementById('topicid').value = topicId;
+		document.getElementById('step0form').submit();
+	}
+</script>
+
+<form id="step0form" name="step0form" method="post" action="{ babPhpSelf }">
+	 <input type="hidden" name="tg" value="artedit">
+	 <input type="hidden" name="idx" value="s01">
+	 <input type="hidden" name="idart" value="{ idarticle }">
+	 <input type="hidden" name="rfurl" value="{ rfurl }">
+	 <input type="hidden" name="updstep0" value="">
+	 <input id="topicid" type="hidden" name="topicid" value="{ idtopic }">
+</form>
+<!--#end showTopicsTreeForModificationOfAnArticle -->
 
 
 <!--#begin editarticlestep -->

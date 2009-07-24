@@ -387,35 +387,25 @@ function propertiesArticle($idart)
 
 
 
-
-function showTopicTree($actionType, $selectedTopicId)
+/**
+ * Display a tree with topics selectables for the step 1 of the publication when we create an article
+ */
+function bab_showTopicsTreeForCreationOfAnArticle()
 {
 	class FormTemplate
 	{
-		var $idart;
 		var $rfurl;
-		var $next_idx;
 		var $t_no_topic;
 
-		var $bcontent;
 		var $title;
 		var $headtext;
 		var $bodytext;
 		var $lang;
 
-		function FormTemplate($actionType)
+		function FormTemplate()
 		{
-			$this->idart = bab_rp('idart');
-			if ($actionType == bab_ArticleTreeView::SUBMIT_ARTICLES) {
-				$this->t_no_topic = bab_translate('No topic');
-				$this->next_idx = bab_toHtml('s1');
-			} else {
-				$this->t_no_topic = false;
-				$this->next_idx = bab_toHtml('s01');
-			}
+			$this->t_no_topic = bab_translate('No topic');
 			$this->rfurl = bab_toHtml(isset($GLOBALS['rfurl']) ? $GLOBALS['rfurl'] : '');
-
-			$this->bcontent = false;
 			$this->title = bab_pp('title', '');
 			$this->headtext = bab_pp('headtext', '');
 			$this->bodytext = bab_pp('bodytext', '');
@@ -423,20 +413,75 @@ function showTopicTree($actionType, $selectedTopicId)
 		}
 	};
 
-	$template = new FormTemplate($actionType);
+	$template = new FormTemplate();
 
 	$html = bab_printTemplate($template, 'artedit.html', 'topictreeform');
 
-	$topicTree = new bab_ArticleTreeView('article_topics_tree' . $actionType);
+	$topicTree = new bab_ArticleTreeView('article_topics_tree');
 	$topicTree->setAttributes(bab_ArticleTreeView::SHOW_TOPICS
 							| bab_ArticleTreeView::SELECTABLE_TOPICS
 							| bab_ArticleTreeView::HIDE_EMPTY_TOPICS_AND_CATEGORIES
 							| bab_ArticleTreeView::SHOW_TOOLBAR
 							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
 							);
-	$topicTree->setAction($actionType);
+	$topicTree->setAction(bab_ArticleTreeView::SUBMIT_ARTICLES);
 	$topicTree->setLink('javascript:selectTopic(%s);');
-	$topicTree->highlightElement('topic' . bab_ArticleTreeView::ID_SEPARATOR . $selectedTopicId);
+	$topicTree->order();
+	$topicTree->sort();
+
+	$html .= $topicTree->printTemplate();
+
+	return $html; 
+}
+
+/**
+ * Display a tree with topics selectables for the step 1 of the publication when we modify an article
+ * 
+ * @param $topicId : used when we click on the PREV button
+ * @param $articleId : used when we click on the PREV button
+ */
+function bab_showTopicsTreeForModificationOfAnArticle($topicId, $articleId)
+{
+	class FormTemplate
+	{
+		var $topicId;
+		var $articleId;
+		var $rfurl;
+
+		var $title;
+		var $headtext;
+		var $bodytext;
+		var $lang;
+
+		function FormTemplate($topicId, $articleId)
+		{
+			$this->idtopic = $topicId;
+			$this->idarticle = $articleId;
+			$this->rfurl = bab_toHtml(isset($GLOBALS['rfurl']) ? $GLOBALS['rfurl'] : '');
+			
+			$this->title = bab_pp('title', '');
+			$this->headtext = bab_pp('headtext', '');
+			$this->bodytext = bab_pp('bodytext', '');
+			$this->lang = bab_pp('lang', '');
+		}
+	};
+
+	$template = new FormTemplate($topicId, $articleId);
+
+	$html = bab_printTemplate($template, 'artedit.html', 'showTopicsTreeForModificationOfAnArticle');
+
+	$topicTree = new bab_ArticleTreeView('article_topics_tree');
+	$topicTree->setAttributes(bab_ArticleTreeView::SHOW_TOPICS
+							| bab_ArticleTreeView::SELECTABLE_TOPICS
+							| bab_ArticleTreeView::HIDE_EMPTY_TOPICS_AND_CATEGORIES
+							| bab_ArticleTreeView::SHOW_TOOLBAR
+							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
+							);
+	$topicTree->setAction(bab_ArticleTreeView::MODIFY_ARTICLES);
+	$topicTree->setLink('javascript:selectTopic(%s);');
+	if ($topicId != '') {
+		$topicTree->highlightElement('topic' . bab_ArticleTreeView::ID_SEPARATOR . $topicId);
+	}
 	$topicTree->order();
 	$topicTree->sort();
 
@@ -2276,6 +2321,11 @@ function savePreviewDraft($idart, $approbid)
 		}
 }
 
+/**
+ * Return booleans : test if articles drafts exists for the current user : in trash or, not in trash and in approbation (the user can't modify an article in approbation)
+ * 
+ * @return array indexed by trash and articles
+ */
 function artedit_init()
 {
 	global $babDB;
@@ -2286,12 +2336,14 @@ function artedit_init()
 
 	if( $GLOBALS['BAB_SESS_USERID'] )
 	{
+		/* Test if there are articles drafts in trash for the current user */
 		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and trash='Y'"));
 		if( $arr['total'] != 0 )
 		{
 			$aredit['trash'] = true;
 		}
 
+		/* Test if there are articles drafts not in trash and in approbation (the user can't modify an article in approbation) */
 		$arr = $babDB->db_fetch_array($babDB->db_query("select count(id) as total from ".BAB_ART_DRAFTS_TBL." where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and result!='".BAB_ART_STATUS_DRAFT."' and trash='N'"));
 		if( $arr['total'] != 0 )
 		{
@@ -2912,11 +2964,18 @@ switch($idx)
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
 
-	case "s00": // Selection of a topic for the modification of an article.
-		$topicid = bab_rp('topicid');
+	case "s00": /* Selection of a topic for the modification of an article : display in popup */
+		$articleId = bab_rp('idart');
+		if (!is_numeric($articleId)) {
+			$articleId = '';
+		}
+		$topicId = bab_rp('topicid'); /* topicid appears when we click on the PREV button */
+		if (!is_numeric($topicId)) {
+			$topicId = '';
+		}
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		$html = showTopicTree(BAB_ARTICLE_TREE_VIEW_MODIFY_ARTICLES, $topicid);
+		$html = bab_showTopicsTreeForModificationOfAnArticle($topicId, $articleId);
 		$babBodyPopup->babecho($html);
 		printBabBodyPopup();
 		exit;
@@ -2931,11 +2990,14 @@ switch($idx)
 		exit;
 		break;
 
-	case "s0": // Selection of a topic for the publication of an article.
+	case "s0": /* Selection of a topic for the publication of an article : display in popup */
 		$topicid = bab_rp('topicid');
+		if (!is_numeric($topicid)) {
+			$topicid = '';
+		}
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Choose the topic");
-		$html = showTopicTree(BAB_ARTICLE_TREE_VIEW_SUBMIT_ARTICLES, $topicid);
+		$html = bab_showTopicsTreeForCreationOfAnArticle();
 		$babBodyPopup->babecho($html);
 		printBabBodyPopup();
 		exit;
@@ -3054,19 +3116,21 @@ switch($idx)
 			}
 		$idx = "list";
 		/* break; */
-	case "list":
+	case "list": /* List of articles drafts */
 	default:
-		$arrinit = artedit_init();
+		$arrinit = artedit_init(); /* Test if articles drafts exists for the current user : in trash or, not in trash and in approbation (the user can't modify an article in approbation) */
 		$babBody->title = bab_translate("List of articles");
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		listDrafts();
 		if( $arrinit['trash'] )
 		{
-		$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
+			/* There are articles in trash */
+			$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
 		}
 		if( $arrinit['articles'] )
 		{
-		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+			/* There are articles in approbation */
+			$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
 		}
 		break;
 	}
