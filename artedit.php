@@ -415,7 +415,7 @@ function bab_showTopicsTreeForCreationOfAnArticle()
 
 	$template = new FormTemplate();
 
-	$html = bab_printTemplate($template, 'artedit.html', 'topictreeform');
+	$html = bab_printTemplate($template, 'artedit.html', 'showTopicsTreeForCreationOfAnArticle');
 
 	$topicTree = new bab_ArticleTreeView('article_topics_tree');
 	$topicTree->setAttributes(bab_ArticleTreeView::SHOW_TOPICS
