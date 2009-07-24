@@ -425,7 +425,7 @@ function bab_showTopicsTreeForCreationOfAnArticle()
 							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
 							);
 	$topicTree->setAction(bab_ArticleTreeView::SUBMIT_ARTICLES);
-	$topicTree->setLink('javascript:selectTopic(%s);');
+	$topicTree->setTopicsLinks('javascript:selectTopic(%s);');
 	$topicTree->order();
 	$topicTree->sort();
 

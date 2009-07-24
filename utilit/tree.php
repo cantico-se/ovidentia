@@ -944,7 +944,14 @@ class bab_ArticleTreeView extends bab_TreeView
 	 * @access private
 	 */	
 	private $_action;
+	/**
+	 * @var $_link
+	 * @deprecated (see setLink())
+	 */
 	var $_link;
+	var $_categoriesLinks;
+	var $_topicsLinks;
+	var $_articlesLinks;
 	
 	private $_ignoredCategories = array();
 	
@@ -969,6 +976,9 @@ class bab_ArticleTreeView extends bab_TreeView
 		$this->_templateCache = null;
 
 		$this->setLink('');
+		$this->setCategoriesLinks('');
+		$this->setTopicsLinks('');
+		$this->setArticlesLinks('');
 
 		$this->addAttributes(self::SHOW_ARTICLES | self::SHOW_ROOT_NODE);
 		$this->setAction(self::READ_ARTICLES);
@@ -1035,12 +1045,40 @@ class bab_ArticleTreeView extends bab_TreeView
 	}
 
 	/**
-	 * Defines the script that will be called 
+	 * Defines the link (can be javascript:...) that will be called when we click on a element (this has an effect only on topics)
+	 * @deprecated Use setCategoriesLinks, setTopicsLinks, setArticlesLinks
 	 * @param string $link
 	 */
 	public function setLink($link)
 	{
 		$this->_link = $link;
+	}
+	
+	/**
+	 * Defines the link (can be javascript:...) that will be called when we click to a category element, SELECTABLE_CATEGORIES must be activated
+	 * @param string $links
+	 */
+	public function setCategoriesLinks($links)
+	{
+		$this->_categoriesLinks = $links;
+	}
+	
+	/**
+	 * Defines the link (can be javascript:...) that will be called when we click to a topic element, SELECTABLE_TOPICS must be activated
+	 * @param string $links
+	 */
+	public function setTopicsLinks($links)
+	{
+		$this->_topicsLinks = $links;
+	}
+	
+	/**
+	 * Defines the link (can be javascript:...) that will be called when we click to a article element, SELECTABLE_ARTICLES must be activated
+	 * @param string $links
+	 */
+	public function setArticlesLinks($links)
+	{
+		$this->_articlesLinks = $links;
 	}
 	
 	
@@ -1135,10 +1173,19 @@ class bab_ArticleTreeView extends bab_TreeView
 			}
 			$topics = $babDB->db_query($sql);
 			while ($topic = $babDB->db_fetch_array($topics)) {
+				/* _link is deprecated but used in ancient script */				
 				if ($this->_link !== '') {
 					$link = sprintf($this->_link, $topic['id']);
 				} else {
 					$link = '';
+				}
+				/* Topic link : set with the function setTopicsLinks() ; SELECTABLE_TOPICS must be activated */
+				if ($this->hasAttributes(self::SELECTABLE_TOPICS)) {
+					if ($this->_topicsLinks !== '') {
+						$link = sprintf($this->_topicsLinks, $topic['id']);
+					} else {
+						$link = '';
+					}
 				}
 				$element =& $this->createElement('t' . self::ID_SEPARATOR . $topic['id'],
 												 $elementType,
@@ -1207,11 +1254,20 @@ class bab_ArticleTreeView extends bab_TreeView
 			if (isset($this->_ignoredCategories[$category['id']])) {
 				continue;
 			}
+			/* Category link : set with the function setCategoriesLinks() ; SELECTABLE_CATEGORIES must be activated */
+			$link = '';
+			if ($this->hasAttributes(self::SELECTABLE_CATEGORIES)) {
+				if ($this->_categoriesLinks !== '') {
+					$link = sprintf($this->_categoriesLinks, $category['id']);
+				} else {
+					$link = '';
+				}
+			}
 			$element =& $this->createElement('c' . self::ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
 											 '',
-											 '');
+											 $link);
 			$element->setInfo('');
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 			if (!($this->hasAttributes(self::SHOW_ROOT_NODE)) && $category['id_parent'] === '0') {
@@ -1231,7 +1287,6 @@ class bab_ArticleTreeView extends bab_TreeView
 	private function _addArticles()
 	{
 		global $babDB, $babBody;
-		
 		$sql = 'SELECT articles.id, articles.title, articles.id_topic FROM ' . BAB_ARTICLES_TBL.' articles';
 		if ($babBody->currentAdmGroup != 0) {
 			$sql .= ' LEFT JOIN '.BAB_TOPICS_TBL.' topics ON articles.id_topic=topics.id';
@@ -1245,11 +1300,20 @@ class bab_ArticleTreeView extends bab_TreeView
 		}
 		$rs = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($rs)) {
+			/* Article link : set with the function setArticlesLinks() ; SELECTABLE_ARTICLES must be activated */
+			$link = '';
+			if ($this->hasAttributes(self::SELECTABLE_ARTICLES)) {
+				if ($this->_articlesLinks !== '') {
+					$link = sprintf($this->_articlesLinks, $article['id']);
+				} else {
+					$link = '';
+				}
+			}
 			$element =& $this->createElement('a' . self::ID_SEPARATOR . $article['id'],
 											 $elementType,
 											 bab_toHtml($article['title']),
 											 '',
-											 '');
+											 $link);
 			$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/article.png');
 			$this->_datas = $article;
 			$this->appendElement($element, 't' . self::ID_SEPARATOR . $article['id_topic']);
@@ -1342,18 +1406,42 @@ class bab_ArticleTreeView extends bab_TreeView
 			|| $this->hasAttributes(self::SHOW_ARTICLES))
 			$this->_addTopics();
 
-
 		$this->_addCategories();
 
 		if ($this->hasAttributes(self::HIDE_EMPTY_TOPICS_AND_CATEGORIES)) {
-			// Here we remove empty categories
+			/* Here we remove empty topics if we show articles and if we don't want to select the topics */
+//			if ($this->hasAttributes(self::SHOW_ARTICLES) && $this->hasAttributes(self::SELECTABLE_TOPICS)) {
+//				do {
+//					$iterator =& $this->getRootNode()->createNodeIterator($this->getRootNode());
+//					$deadBranches = array();
+//					while ($node =& $iterator->nextNode()) {
+//						$element =& $node->getData();
+//						if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'topic') !== false) { /* mb_strpos used because _type can be topic, topic clickable... */
+//							bab_debug($element);
+//							$deadBranches[] =& $node;
+//						}
+//					}
+//					$modified = (count($deadBranches) > 0);
+//					reset($deadBranches);
+//					foreach (array_keys($deadBranches) as $deadBranchKey) {
+//						$deadBranch =& $deadBranches[$deadBranchKey];
+//						$parentNode =& $deadBranch->parentNode();
+//						if ($parentNode) {
+//							$parentNode->removeChild($deadBranch);
+//						}
+//					}
+//				} while ($modified);
+//			}
+			
+			/* Here we remove empty categories */
 			do {
 				$iterator =& $this->getRootNode()->createNodeIterator($this->getRootNode());
 				$deadBranches = array();
 				while ($node =& $iterator->nextNode()) {
 					$element =& $node->getData();
-					if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'category'))
+					if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'category') !== false) { /* mb_strpos used because _type can be ctegory, category clickable... */
 						$deadBranches[] =& $node;
+					}
 				}
 				$modified = (count($deadBranches) > 0);
 				reset($deadBranches);
