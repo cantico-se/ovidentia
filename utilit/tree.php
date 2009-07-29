@@ -26,7 +26,6 @@
 
 
 include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
-include_once $GLOBALS['babInstallPath'].'utilit/orgchart.php';
 
 
 
