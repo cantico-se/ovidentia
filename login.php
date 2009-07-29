@@ -679,12 +679,16 @@ if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 	}
 	elseif(2 == $babBody->babsite['email_confirm'])
 	{
+		// Confirm account without address email validation
+		
 		$sLogin		= (string) bab_pp('nickname');
 		$sPassword	= (string) bab_pp('password1');
 		$iLifeTime	= (int) bab_pp('lifetime', 0);
 		
-		$iIdUser = authenticateUserByLoginPassword($sLogin, $sPassword);
-		if(!is_null($iIdUser) && bab_userCanLogin($iIdUser))
+		$AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
+		
+		$iIdUser = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
+		if(!is_null($iIdUser) && $AuthOvidentia->userCanLogin($iIdUser))
 		{
 			bab_setUserSessionInfo($iIdUser);
 			bab_logUserConnectionToStat($iIdUser);
