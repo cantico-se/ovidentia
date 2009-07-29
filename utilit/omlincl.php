@@ -3161,29 +3161,46 @@ class bab_RecentThreads extends bab_handler
 			$arr = array();
 		else
 			$arr = explode(',', $this->forumid);
+			
+		$req = "
+			SELECT p.id, p.id_thread, f.id id_forum 
+			FROM 
+				".BAB_POSTS_TBL." p 
+				LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id 
+				LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum 
+				LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost 
+				
+			WHERE 
+				f.active='Y'" . $sDelegation . " 
+				and p.confirmed='Y' 
+				and p.id_parent='0' 
+		";			
+				
+		
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y' and p.id_parent='0'";			
-			}
-		else
-			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and p.confirmed='Y' and p.id_parent='0'";			
+			$req .= " and t.forum IN (".$babDB->quote($arr).")";			
 			}
 
-		if( $this->nbdays !== false)
+
+		if( $this->nbdays !== false) {
 			$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
-
+		}
+		
 		$order = $ctx->get_value('order');
-		if( $order === false || $order === '' )
+		
+		if( $order === false || $order === '' ) {
 			$order = "desc";
+		}
 
 		switch(mb_strtoupper($order))
 		{
-			case "ASC": $order = "p.date ASC"; break;
-			case "RAND": $order = "rand()"; break;
+			case "POST": 	$order = "lp.date DESC"; break;
+			case "ASC": 	$order = "p.date ASC"; break;
+			case "RAND": 	$order = "rand()"; break;
 			case "DESC":
-			default: $order = "p.date DESC"; break;
+			default: 		$order = "p.date DESC"; break;
 		}
 
 		$req .= " order by ".$order;
@@ -3204,7 +3221,17 @@ class bab_RecentThreads extends bab_handler
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("select p.*, f.id_dgowner from ".BAB_POSTS_TBL." p LEFT JOIN bab_threads t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum where p.id IN (".$babDB->quote($this->arrid).") order by ".$order);
+			$this->res = $babDB->db_query("
+				select p.*, f.id_dgowner 
+				from 
+					".BAB_POSTS_TBL." p 
+					LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id 
+					LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum 
+					LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost 
+				where 
+					p.id IN (".$babDB->quote($this->arrid).") order by ".$order
+				);
+			
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
