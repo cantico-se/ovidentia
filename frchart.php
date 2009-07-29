@@ -23,7 +23,7 @@
 include_once 'base.php';
 include_once $babInstallPath.'utilit/orgincl.php';
 include_once $babInstallPath.'utilit/treeincl.php';
-include_once $babInstallPath.'utilit/tree.php';
+include_once $babInstallPath.'utilit/orgchart.php';
 
 define('ORG_MAX_REQUESTS_LIST', 100);
 
