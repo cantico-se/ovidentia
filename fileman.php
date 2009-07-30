@@ -2008,7 +2008,7 @@ function updateDownloadHistory(BAB_FolderFile $file)
 	$firstCollectiveFolder = BAB_FmFolderSet::getFirstCollectiveFolder($filePathname);
 
 	// Checks that download history is active on the file's owner folder.
-	if ($firstCollectiveFolder->getDownloadHistory() == 'Y') {
+	if (!is_null($firstCollectiveFolder) && $firstCollectiveFolder->getDownloadHistory() == 'Y') {
 		$sql = 'INSERT INTO bab_fm_files_download_history(id_file, id_user, `date`)
 				VALUES(' . $babDB->quote($file->getId()) . ', ' . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . ', NOW())';
 
