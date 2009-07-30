@@ -486,7 +486,7 @@ function updateGroup( $grp, $users, $userst)
 		$id_parent = BAB_REGISTERED_GROUP;
 		}
 
-	if( false === $id_parent  || false === bab_isGroup($grp, $id_parent) )
+	if( false === $id_parent  || false === bab_isGroup($grp, $id_parent, false) )
 	{
 		return;
 	}
