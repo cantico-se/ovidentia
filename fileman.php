@@ -2917,12 +2917,19 @@ function displayFolderForm()
 	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
 		$oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr . '&path=' . urlencode($oFileManagerEnv->sPath));
 
-	$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript'] .
+	$sFunction 	= (string) bab_gp('sFunction', '');
+	if ($sFunction == 'createFolder') {
+		$babBody->addItemMenu('displayFolderForm', bab_translate("Create a folder"), $GLOBALS['babUrlScript'] .
 		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr .
 		'&path=' . urlencode($oFileManagerEnv->sPath));
-
-	$babBody->title = bab_translate("Add a new folder");
-
+		$babBody->title = bab_translate("Add a new folder");
+	} else {
+		$babBody->addItemMenu('displayFolderForm', bab_translate("Edit folder"), $GLOBALS['babUrlScript'] .
+		'?tg=fileman&idx=displayFolderForm&id=' . $oFileManagerEnv->iId . '&gr=' . $oFileManagerEnv->sGr .
+		'&path=' . urlencode($oFileManagerEnv->sPath));
+		$babBody->title = bab_translate("Edit folder");
+	}
+		
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
