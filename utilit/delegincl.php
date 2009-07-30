@@ -23,7 +23,8 @@
 ************************************************************************/
 include_once "base.php";		
 
-$GLOBALS['babDG'] = array(	array("users", bab_translate("Users")),
+$GLOBALS['babDG'] = array(
+				array("users", bab_translate("Users")),
 				array("groups", bab_translate("Groups")),
 				array("sections", bab_translate("Sections")),
 				array("articles", bab_translate("Articles")),
@@ -163,7 +164,7 @@ function bab_getDelegationsFromRessource($res) {
 
 
 /**
- * Get the delegation where the user is a member of the delgation group
+ * Get the delegation where the user is a member of the delegation group
  * @param	int	$id_user
  * @since	6.7.0
  *
@@ -249,7 +250,7 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 *
 * @param mixed $name Array of name or name of the delegation to return
 * @since 6.7.0
-* @author Zébina Samuel
+* @author Zï¿½bina Samuel
 * 
 * @return array The matching delegation
 */
@@ -282,7 +283,7 @@ function bab_getDelegationByName($name)
 *
 * @param mixed $id Array of id or id of the delegation to return
 * @since 6.7.0
-* @author Zébina Samuel
+* @author Zï¿½bina Samuel
 * 
 * @return array The matching delegation
 */
