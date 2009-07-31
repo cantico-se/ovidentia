@@ -157,14 +157,15 @@ function send_checked_mail() {
 			foreach($data['files'] as $file) {
 				$mail_obj->mailFileAttach($file[0], $file[1], $file[2]);
 			}
-			
-			
-			deleteEmail($arr);
-			
+
 			
 			if (!$mail_obj->send()) {
 				$GLOBALS['babBody']->msgerror = bab_translate("Mail server error");
 			}
+			
+			$mail_obj->mailClearAttachments();
+			
+			deleteEmail($arr);
 		}
 	}
 }
