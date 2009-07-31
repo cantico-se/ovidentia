@@ -3960,6 +3960,9 @@ initEnvObject();
 $oFileManagerEnv =& getEnvObject();
 if(false === $oFileManagerEnv->accessValid())
 {
+	if (!$GLOBALS['BAB_SESS_LOGGED']) {
+		bab_requireCredential('You must be logged in to access this page.');
+	}
 	$babBody->addError(bab_translate("Access denied"));
 	return;
 }
