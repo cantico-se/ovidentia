@@ -573,6 +573,7 @@ switch($idx)
 	case "listr":
 	default:
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']: '';
+		$babLittleBody->subtitle = isset($oeinfo['description'])? $oeinfo['description']: '';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		if( $oeid )

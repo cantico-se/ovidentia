@@ -42,9 +42,16 @@
 			<!--#endif msgerror -->
 			<!--#if title -->
 			<table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
-			  <tr>
+			<tr>
 				<td class="BabLoginMenuBackground" align="center" >{ title }</td>
-			</tr></table><br>
+			</tr>
+			<!--#if subtitle -->
+			<tr>
+				<td>{ subtitle }</td>
+			</tr>
+			<!--#endif subtitle -->
+			</table>
+			<br>
 			<!--#endif title --> 
 			{ content }
 		</td>

@@ -29,6 +29,7 @@ class babLittleBody
 	var $msgerror;
 	var $content;
 	var $title;
+	var $subtitle;
 	var $message;
 	var $frrefresh;
 	
@@ -38,6 +39,7 @@ class babLittleBody
 		$this->menu = new babMenu();
 		$this->message = "";
 		$this->title = "";
+		$this->subtitle = "";
 		$this->msgerror = "";
 		$this->content = "";
 		$this->frrefresh = false;
@@ -95,6 +97,7 @@ function printFlbChartPage()
 		var $menuvals = array();
 		var $content;
 		var $title;
+		var $subtitle;
 		var $msgerror;
 		var $frrefresh;
 		var $fltrefresh;
@@ -109,6 +112,7 @@ function printFlbChartPage()
 
 			$this->content = $babLittleBody->printout();
 			$this->title = $babLittleBody->title;
+			$this->subtitle = $babLittleBody->subtitle;
 			$this->msgerror = $babLittleBody->msgerror;
 			$this->frrefresh = isset($babLittleBody->frrefresh)? $babLittleBody->frrefresh: false;
 			$this->fltrefresh = isset($babLittleBody->fltrefresh)? $babLittleBody->fltrefresh: false;
