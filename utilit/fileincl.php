@@ -541,33 +541,25 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 						$this->author = bab_getUserName($GLOBALS['BAB_SESS_USERID']);
 						$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
 					}
-					else
-					{
-						$this->author = bab_translate("Unknown user");
-						$this->authoremail = "";
-					}
-				}
-				else
-				{
-					$this->author = bab_translate("Unknown user");
-					$this->authoremail = "";
 				}
 			}
 		}
 	}
 
 	$mail = bab_mail();
-	if( $mail == false )
+	if ($mail == false) {
 		return;
+	}
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
-	if( $bnew )
-	$mail->mailSubject(bab_translate("New file"));
-	else
-	$mail->mailSubject(bab_translate("File has been updated"));
+	if ($bnew) {
+		$mail->mailSubject(bab_translate("New file"));
+	} else {
+		$mail->mailSubject(bab_translate("File has been updated"));
+	}
 
 	$tempa = new fileNotifyMembersCls($file, $path, $idgrp, $msg);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "fileuploaded"));
