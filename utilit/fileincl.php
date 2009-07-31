@@ -49,7 +49,7 @@ bab_translate("Unedit file"), bab_translate("Commit file"));
  * 
  * NOT FINISHED
  * 
- * @author Z�bina Samuel
+ * @author Zebina Samuel
  */
 class bab_CompressedFileHelper
 {
@@ -541,16 +541,6 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 						$this->author = bab_getUserName($GLOBALS['BAB_SESS_USERID']);
 						$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
 					}
-					else
-					{
-						$this->author = bab_translate("Unknown user");
-						$this->authoremail = "";
-					}
-				}
-				else
-				{
-					$this->author = bab_translate("Unknown user");
-					$this->authoremail = "";
 				}
 			}
 		}
