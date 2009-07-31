@@ -153,12 +153,13 @@ function send_checked_mail() {
 			}
 			
 			
-			deleteEmail($arr);
-			
-			
 			if (!$mail_obj->send()) {
 				$GLOBALS['babBody']->msgerror = bab_translate("Mail server error");
 			}
+			
+			$mail_obj->mailClearAttachments();
+			
+			deleteEmail($arr);
 		}
 	}
 }
