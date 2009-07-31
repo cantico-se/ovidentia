@@ -2304,7 +2304,7 @@ function pasteFile()
 					$sFileName = $oFolderFileVersion->getMajorVer() . ',' . $oFolderFileVersion->getMinorVer() . ',' . $sFn;
 					$sSrc = $sUpLoadPath . $sOldRelativePath . BAB_FVERSION_FOLDER . '/' . $sFileName;
 					$sTrg = $sUpLoadPath . $sNewRelativePath . BAB_FVERSION_FOLDER . '/' . $sFileName;
-					rename($sSrc, $sTrg);
+					@rename($sSrc, $sTrg);
 				}
 			}
 			return true;
