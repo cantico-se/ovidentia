@@ -137,22 +137,25 @@ function bab_recursive_cp($wf, $wto) {
 
 
 function bab_cpaddons($from, $to, &$message)
-	{
+{
 
-	function create($path)
+	// Creates the specified directory. No error if $path already exists, make parent directories as needed.
+	function createDirectoryAndParents($path)
 	{
-	$el = explode("/",$path);
-	$memo = '';
-	foreach ($el as $rep)
-		{
-		if (!is_dir($memo.$rep) && !empty($rep)) { 
-			if (!bab_mkdir($memo.$rep)) {
-				return 	sprintf(bab_translate("Error : can't create directory : %s"), $memo.$rep);
+		if (is_dir($path)) {
+			return true;
+		}
+		$parentPath = dirname($path);
+		if (!is_dir($parentPath)) {
+			$parentPathCreated = createDirectoryAndParents($parentPath);
+			if ($parentPathCreated !== true) {
+				return $parentPathCreated;
 			}
 		}
-		$memo = $memo.$rep."/";
+		if (!bab_mkdir($path)) {
+			return sprintf(bab_translate("Error : can't create directory : %s"), $path);
 		}
-	return true;
+		return true;
 	}
 
 	if (mb_substr($from,-1) != "/") $from.="/";
@@ -167,7 +170,7 @@ function bab_cpaddons($from, $to, &$message)
 			);
 
 	foreach ($loc as $path) {
-		$creation = create($to.$path);
+		$creation = createDirectoryAndParents($to.$path);
 
 		if (true !== $creation) {
 			$message = $creation;
