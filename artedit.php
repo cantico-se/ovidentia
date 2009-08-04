@@ -478,7 +478,7 @@ function bab_showTopicsTreeForModificationOfAnArticle($topicId, $articleId)
 							| bab_ArticleTreeView::MEMORIZE_OPEN_NODES
 							);
 	$topicTree->setAction(bab_ArticleTreeView::MODIFY_ARTICLES);
-	$topicTree->setLink('javascript:selectTopic(%s);');
+	$topicTree->setTopicsLinks('javascript:selectTopic(%s);');
 	if ($topicId != '') {
 		$topicTree->highlightElement('topic' . bab_ArticleTreeView::ID_SEPARATOR . $topicId);
 	}
