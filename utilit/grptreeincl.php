@@ -225,6 +225,13 @@ class bab_grp_node
 	$this->t_members = bab_translate("Members");
 	$this->childs = $this->tree->getChilds($id_group);
 	$this->bupdate = $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
+	
+	/* Icons functionality */
+	$icons = bab_functionality::get('Icons');
+	if ($icons != false) {
+		$icons->includeCss();
+	}
+	$this->iconCssClass_Members = Func_Icons::APPS_USERS;
 	}
 
 	function getnextgroup()

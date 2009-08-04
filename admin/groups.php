@@ -185,6 +185,15 @@ function groupList()
 			$this->t_create_group = bab_translate("Create group");
 			$this->t_edit_group = bab_translate("Edit group");
 			$this->t_members = bab_translate("Members");
+			$this->t_group_members = bab_translate("Group's members");
+			
+			/* Icons functionality */
+			$icons = bab_functionality::get('Icons');
+			if ($icons != false) {
+				$icons->includeCss();
+			}
+			$this->iconCssClass_Members = Func_Icons::APPS_USERS;
+			
 			$tree = & new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);

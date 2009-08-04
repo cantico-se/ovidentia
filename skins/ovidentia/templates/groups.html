@@ -256,7 +256,7 @@ else
 			<!--#endif bupdate -->
 	</p>
 	
-<div class="tree"  style="position: relative">
+<div class="tree icon-left-16 icon-left icon-16x16" style="position: relative">
 	<ul>
 	<li id="bab_ovgroup_{ arr[id] }">
 		<div class="line">
@@ -274,7 +274,7 @@ else
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 		<!--#if arr[id] "> 2" -->
 		<span class="right_elements">
-			<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>
+			<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><span class="icon { iconCssClass_Members }">{ t_members }</span></a>
 		</span>
 		<!--#endif arr[id] -->
 		</div>
@@ -376,7 +376,7 @@ function load_clear()
 <!--#end grp_maintree -->
 
 <!--#begin grp_childs -->
-	<ul>
+	<ul class="icon-left-16 icon-left icon-16x16">
 		<!--#in getnextgroup -->
 		<li id="bab_ovgroup_{ arr[id] }">
 			<div>
@@ -402,7 +402,7 @@ function load_clear()
 			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
 			<!--#if arr[id] "> 2" -->
 			<span class="right_elements">
-				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ t_group_members }" /> { t_members }</a>
+				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><span class="icon { iconCssClass_Members }">{ t_members }</span></a>
 			</span>
 			<!--#endif arr[id] -->
 			</div>
