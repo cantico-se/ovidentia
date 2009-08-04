@@ -29,49 +29,53 @@
 <!--#end categorieshierarchy_txt -->
 
 <!--#begin modifyarticle -->
-<br>
+<br />
 <!--#if bmodify -->
 <form method="post" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="articles" />
-<input type="hidden" name="idx" value="unload" />
-<input type="hidden" name="conf" value="mod" />
-<input type="hidden" name="article" value="{ article }" />
-<input type="hidden" name="topics" value="{ topics }" />
-<input type="hidden" name="rfurl" value="{ rfurl }" />
+	<input type="hidden" name="tg" value="articles" />
+	<input type="hidden" name="idx" value="unload" />
+	<input type="hidden" name="conf" value="mod" />
+	<input type="hidden" name="article" value="{ article }" />
+	<input type="hidden" name="topics" value="{ topics }" />
+	<input type="hidden" name="rfurl" value="{ rfurl }" />
 <!--#endif bmodify -->
-<br>
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr>
-<td align="right" width="30%"><b>{ arttxt }:</b></td><td>{ arttitle }</td>
-</tr>
-<tr>
-<td align="right" width="30%"><b>{ pathtxt }:</b></td><td>{ pathname }</td>
-</tr>
-<!--#if bmodify -->
-<tr>
-<td align="right" width="30%"><b>{ commenttxt }:</b></td><td><textarea cols="40" rows="10" name="comment"></textarea>
-</td>
-</tr>
-<tr>
-<td align="right" width="30%">&nbsp;</td>
-<td>
-<input type="checkbox" name="bupdmod" value="N" />&nbsp;{ updatemodtxt }
-</td>
-</tr>
-<tr>
-<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="bupdate" value="{ updatetxt }" />&nbsp;&nbsp;<input type="submit" name="bcancel" value="{ canceltxt }" />
-</td>
-</tr>
-<!--#endif bmodify -->
-</table>
-</td>
-</tr>
-</table>
+	<br />
+	<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr>
+			<td class="BabLoginCadreBackground"> 
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					<tr>
+						<td align="right" width="30%"><b>{ arttxt }:</b></td><td>{ arttitle }</td>
+					</tr>
+					<tr>
+						<td align="right" width="30%"><b>{ pathtxt }:</b></td><td>{ pathname }</td>
+					</tr>
+					<!--#if bmodify -->
+					<tr>
+						<td align="right" width="30%"><b>{ commenttxt }:</b></td><td><textarea cols="40" rows="10" name="comment"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="30%">&nbsp;</td>
+						<td>
+							<input type="checkbox" name="bupdmod" value="N" />&nbsp;{ updatemodtxt }
+						</td>
+					</tr>
+					<tr>
+						<td align="right" width="30%">&nbsp;</td>
+						<td align="left">
+							<input type="submit" name="bupdate" value="{ updatetxt }" />
+							&nbsp;&nbsp;
+							<input type="submit" name="bcancel" value="{ canceltxt }" />
+						</td>
+					</tr>
+				<!--#endif bmodify -->
+				</table>
+			</td>
+		</tr>
+	</table>
 </form>
-<br>
+<br />
 <!--#end modifyarticle -->
 
 <!--#begin articlehistoric -->
@@ -142,7 +146,7 @@ window.focus();
 </script>
 </head>
 <body>
-<br>
+<br />
 <table border="0" width="100%" cellpadding="5" cellspacing="0">
 	<tr>
 		<td class="BabSiteAdminTitleFontBackground" align="center" nowrap>{ article_title }</td>

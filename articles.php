@@ -907,92 +907,81 @@ function articlePrint($topics, $article)
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
 
-
-function modifyArticle($topics, $article)
-{
+/**
+ * Display the screen 'Reason to modification of an article' when we want to modify an article
+ * 
+ * @param $topicId
+ * @param $articleId
+ * @return int the number of modifications of the article (historic)
+ */
+function modifyArticle($topicId, $articleId) {
 	global $babBodyPopup;
-	class temp
-		{
+	class temp {
 		var $arttxt;
 
-		function temp($topics, $article)
-			{
-			global $babBodyPopup, $babBody, $babDB, $arrtop, $rfurl;
-
+		function temp($topicId, $articleId) {
+			global $babBodyPopup, $babBody, $babDB, $arrtop, $rfurl; /* $arrtop contains information of the topic */
+			/* Verify if the current user has right to modify an article in the topic */
 			$access = false;
-			if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) )
-				{
+			if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicId) ) {
 				$access = true;
-				}
-			else
-				{
-				if( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics))
-					{
+			} else {
+				/* The current user has not right to modify an article in the topic, but we permit if he is a manager and if the option is selected in topic options */
+				if ($arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId)) {
 					$access = true;
-					}
-				else
-					{
-					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
-					if( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'] )
-						{
+				} else {
+					/* The current user has not right to modify an article in the topic, but we permit if he is the author of teh article and if the option (allow_update) is selected in topic options */
+					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($articleId)."'"));
+					if ($arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'] ) {
 						$access = true;
-						}
 					}
 				}
+			}
 
-			if(!isset($rfurl))
-				{
-				$this->rfurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".urlencode($topics));
-				}
-			else
-				{
+			if(!isset($rfurl)) {
+				$this->rfurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".urlencode($topicId));
+			} else {
 				$this->rfurl = bab_toHtml($rfurl);
-				}
+			}
+			
+			if ($access) {
+				/* Calculate the number of article modifications (historic) */
+				list($this->numberOfModificationsOfTheArticle) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($articleId)."'"));
+				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($articleId)."'");
 				
-			if( $access )
-				{
-				list($this->blog) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."'"));
-				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($article)."'");
-				$this->bmodiy = false;
-
-				if( $access && $res && $babDB->db_num_rows($res) > 0 )
-					{
+				/* If there is a draft, the article is locked. The current user can't modify the article */
+				$this->bmodify = false; /* The current user can't modify the article */
+				if ($res && $babDB->db_num_rows($res) > 0) {
 					$arr = $babDB->db_fetch_array($res);
-					$this->article = bab_toHtml($article);
-					$this->topics = bab_toHtml($topics);
+					$this->article = bab_toHtml($articleId);
+					$this->topics = bab_toHtml($topicId);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
 					$this->arttitle = bab_toHtml($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
-					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) )
-						{
+					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) ) {
 						$this->commenttxt = bab_translate("Reason of the modification");
 						$this->canceltxt = bab_translate("Cancel");
 						$this->updatetxt = bab_translate("Next");
 						$this->updatemodtxt = bab_translate("Don't update article modification date");
-						$this->bmodify = true;
-						}
-					else
-						{
+						$this->bmodify = true; /* The current user can modify the article, because there is no draft */
+					} else {
 						$babBodyPopup->msgerror = bab_translate("Article in modification by ").bab_getUsername($arr['id_modifier']);
-						}
 					}
-				else
-					{
+				} else {
 					$babBodyPopup->msgerror = bab_translate("Access denied");
-					}
 				}
-			else
-				{
+			} else {
 				$babBodyPopup->msgerror = bab_translate("Access denied");
-				}
+				bab_debug("The current user has not rights to modify an article in the topic");
 			}
-
 		}
 
-	$temp = new temp($topics, $article);
+	}
+
+	$temp = new temp($topicId, $articleId);
 	$babBodyPopup->babecho(bab_printTemplate($temp, "articles.html", "modifyarticle"));
-	return $temp->blog;
+	return $temp->numberOfModificationsOfTheArticle;
 }
 
 
@@ -1274,29 +1263,30 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"articles.html", "articleview");
 	}
 
-
-function confirmModifyArticle($topics, $article, $comment, $bupdmod)
-{
+/* This function is called after we submit the form 'reason to modification of the article'
+ * This function create a new article draft
+ * When the draft is created, the function go in ?tg=artedit&idx=s1 */
+function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 	global $babBody, $babDB, $arrtop, $rfurl;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-	{
+	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($articleId)."'");
+	if ($res && $babDB->db_num_rows($res) > 0 ) {
 		echo bab_translate("This article is in modification");
-	}
-	else
-	{
-		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
-		if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topics) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics)))
-		{
-			$idart = bab_newArticleDraft($topics, $article);
-			if( $idart != 0 )
-			{
+		bab_debug("The article has a draft : it is in modification by a user");
+	} else {
+		/* Author of the article */
+		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($articleId)."'"));
+		
+		/* The current user can modify the article */
+		if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicId) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId))) {
+			/* Create a new article draft */
+			$idart = bab_newArticleDraft($topicId, $articleId);
+			if( $idart != 0 ) {
 				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");		
 
-				$iIdArticle				= $article;
+				$iIdArticle				= $articleId;
 				$iIdDraft				= $idart;
 				$iIdDelegation			= 0;
-				list($iIdDelegation)	= $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($topics)."'"));
+				list($iIdDelegation)	= $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($topicId)."'"));
 				
 				require_once dirname(__FILE__) . '/utilit/artincl.php';
 				
@@ -1313,19 +1303,19 @@ function confirmModifyArticle($topics, $article, $comment, $bupdmod)
 					bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
 				}
 				
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($article)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($articleId)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;
+			} else {
+				echo bab_translate("Draft creation failed");
+				bab_debug("Article draft creation failed in function confirmModifyArticle() : bab_newArticleDraft() don't want to create teh article draft");
+				echo '<br />'.bab_getDebug();
+				exit;
 			}
-			else
-			{
-			echo bab_translate("Draft creation failed");
-			exit;
-			}
-		}
-		else
-		{
+		} else {
 			echo bab_translate("Access denied");
+			bab_debug("Article draft creation failed in function confirmModifyArticle() : the current user can modify the article");
+			echo '<br />'.bab_getDebug();
 			exit;
 		}
 	}
@@ -1376,32 +1366,30 @@ function getDocumentArticle($idf, $topics)
 $arrtop = array();
 
 $idx = bab_rp('idx', 'Articles');
-$topics = bab_rp('topics', false);
+$topics = bab_rp('topics', false); /* Topic Id */
 
-if( !$topics && count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0)
-	{
+/* Topic id don't exist, we search a topic id that the current user has rights to view */
+if (!$topics && count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0) {
 	$rr = array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL));
-	$topics = $rr[0];
-	}
+	$topics = $rr[0]; /* Topic Id */
+}
 
-if( $topics === false || (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$topics) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics)))
-	{
+if ($topics === false || (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$topics) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics))) {
+	/* The current user has not rights to view or modification articles in the topic, or there is no topic id */
 	$babBody->msgerror = bab_translate("Access denied");
+	bab_debug("The current user has not rights to view or modification articles in the topic, or there is no topic id");
 	$idx = 'denied';
-	}
-else 
-	{
+} else {
 	$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topics)."'");
-	$arrtop = $babDB->db_fetch_array($res);
-	}
+	$arrtop = $babDB->db_fetch_array($res); /* !!! $arrtop is a global variable : it contains information from the topic */
+}
 
-
-if( 'mod' == bab_pp('conf') )
-{
-	if( isset($_POST['bupdate']))
-		{
+/* conf=mod is received when the form 'reason of modification of the article' is submitted (See the function modifyarticle()) */
+if ('mod' == bab_pp('conf')) {
+	if (isset($_POST['bupdate'])) { /* bupdate is the name of the button submitted in the form (bcancel the other button) */
+		/* Create a new article draft and go to ?tg=artedit&idx=s1 */
 		confirmModifyArticle(bab_pp('topics'), bab_pp('article'), bab_pp('comment'), bab_pp('bupdmod'));
-		}
+	}
 }
 
 $supp_rfurl = isset($_REQUEST['rfurl']) ? '&rfurl='.urlencode($_REQUEST['rfurl']) : '';
@@ -1457,17 +1445,17 @@ switch($idx)
 		exit;
 		break;
 
-	case "Modify":
+	case "Modify": /* Screen 'Reason of the modification' when we want to modify an article */
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Reason of the modification");
 		
 		$article = bab_rp('article');
-		$blog = modifyArticle($topics, $article);
+		$numberOfModificationsOfTheArticle = modifyArticle($topics, $article); /* Return if  */
 		
 		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
-		if( $blog )
-		{
-		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
+		if ($numberOfModificationsOfTheArticle > 0) {
+			/* Add item menu : Historic of the modifications of the article */
+			$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
 		}
 		$babBodyPopup->setCurrentItemMenu($idx);
 		printBabBodyPopup();

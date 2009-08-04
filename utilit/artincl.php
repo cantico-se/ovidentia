@@ -2065,41 +2065,43 @@ function bab_getDocumentArticle( $idf )
 	fclose($fp);
 	}
 
-
-function bab_newArticleDraft($idtopic, $idarticle)
-	{
+/**
+ * Create a new article draft
+ * 
+ * @param $idtopic
+ * @param $idarticle
+ * @return int return the id of the article draft created
+ */
+function bab_newArticleDraft($idtopic, $idarticle) {
 	global $babDB, $BAB_SESS_USERID;
 	
 	$error = '';
 	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error);
+	if ($id === 0) {
+		bab_debug("Error in bab_newArticleDraft() function : the function bab_addArticleDraft() can't add an article draft : ".$error);
+	}
 
 	$sDatePublication = '0000-00-00 00:00:00'; 
 	$oRes = $babDB->db_query("select date_publication from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
-	if($oRes && $babDB->db_num_rows($oRes) == 1)
-	{
+	if ($oRes && $babDB->db_num_rows($oRes) == 1) {
 		list($sDatePublication) = $babDB->db_fetch_array($oRes);
 	}
 	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='".$babDB->db_escape_string($idarticle). "', date_publication='".$babDB->db_escape_string($sDatePublication). "' where id='".$id."'");
 	
-	if( $idarticle != 0 )
-		{
+	if( $idarticle != 0 ) {
 		$res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
-		if( $res && $babDB->db_num_rows($res) == 1 )
-			{
+		if ($res && $babDB->db_num_rows($res) == 1 ) {
 			$arr = $babDB->db_fetch_array($res);
 			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set head='".$babDB->db_escape_string($arr['head'])."', body='".$babDB->db_escape_string($arr['body'])."', title='".$babDB->db_escape_string($arr['title'])."', date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', lang='".$babDB->db_escape_string($arr['lang'])."', restriction='".$babDB->db_escape_string($arr['restriction'])."' where id='".$babDB->db_escape_string($id)."'");
 
 			$res = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($idarticle)."'");
 			$pathorg = bab_getUploadArticlesPath();
 			$pathdest = bab_getUploadDraftsPath();
-			while($rr = $babDB->db_fetch_array($res))
-				{
-				if( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name']))
-					{
+			while ($rr = $babDB->db_fetch_array($res)) {
+				if ( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name'])) {
 					$babDB->db_query("insert into ".BAB_ART_DRAFTS_FILES_TBL." (id_draft, name, description, ordering) values ('".$id."','".$babDB->db_escape_string($rr['name'])."','".$babDB->db_escape_string($rr['description'])."','".$babDB->db_escape_string($rr['ordering'])."')");
-					}
 				}
-				
+			}	
 				
 			require_once dirname(__FILE__) . '/tagApi.php';
 		
@@ -2108,15 +2110,14 @@ function bab_newArticleDraft($idtopic, $idarticle)
 			$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $idarticle));
 			$oIterator->orderAsc('tag_name');
 			$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $id);
-			foreach($oIterator as $oTag)
-				{
+			foreach($oIterator as $oTag) {
 				$oReferenceMgr->add($oTag->getName(), $oReferenceDraft);
-				}
 			}
 		}
+	}
 
 	return $id;
-	}
+}
 
 
 
