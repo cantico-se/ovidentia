@@ -852,12 +852,15 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 	}
 	
 	/* Id topic can not be empty */
+	$informationTopic = array();
 	if(!empty($idTopic)) {
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($idTopic)."'");
-		if( !$res || $babDB->db_num_rows($res) == 0) {
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($idTopic)."'");
+		if (!$res || $babDB->db_num_rows($res) == 0) {
 			$error = bab_translate("Unknown topic");
 			bab_debug("Error in function bab_addArticleDraft() : id topic can not be empty");
 			return 0;
+		} else {
+			$informationTopic = $babDB->db_fetch_array($res);
 		}
 	}
 	
@@ -869,7 +872,8 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 	}
 	
 	/* Verify if the current user can create the article draft */
-	if( !bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $idTopic, $arrdefaults['id_author']) && !bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])) {
+	if (bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])     ||    ( $informationTopic['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'])      ||      ( $informationTopic['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))) {
+	} else {
 		$error = bab_translate("Access denied");
 		bab_debug("Error in function bab_addArticleDraft() : the current user has no rights to create the article draft. Verify the rights access of the topic ".$idTopic);
 		return 0;

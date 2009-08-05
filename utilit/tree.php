@@ -1114,17 +1114,23 @@ class bab_ArticleTreeView extends bab_TreeView
 		switch ($this->_action)
 		{
 			case self::MODIFY_ARTICLES:
-
+				/* !!! Only one possibility is not managed : the user has no rights in the topic but the option 'the author can modify his article' is activated */
+				
+				/* All id topics as which the current user has rights */
 				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
 				$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
 				$topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
 			
 				if (count($topsub) > 0  || count($topman) > 0 || count($topmod) > 0)
 				{
-					if (count($topsub) > 0)
+					if (count($topsub) > 0) {
+						/* allow_update != 0 : authors can modify their articles */
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topsub)) . ") AND topics.allow_update != '0')";
-					if( count($topman) > 0 )
+					}
+					if( count($topman) > 0 ) {
+						/* allow_manupdate != 0 : managers can modify articles */
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topman)) . ") AND topics.allow_manupdate != '0')";
+					}
 					if( count($topmod) > 0 )
 						$tmp[] = '(topics.id IN (' . $babDB->quote(array_keys($topmod)) . '))';
 					$sql = 'SELECT DISTINCT topics.id, topics.id_cat, topics.description, topics.category'
