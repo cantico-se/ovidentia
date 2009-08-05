@@ -1940,7 +1940,7 @@
 <string id="Right period">Période théorique du droit</string>
 <string id="Allow managers to create vacation requests for users in chart">Autoriser les gestionnaires délégués à créer des demandes de congé pour les membres de l'organigramme</string>
 <string id="Distribution on request">Répartition lors de la demande</string>
-<string id="The read access on the topic must be defined with a list of groups to use the group restriction">Le droit d'accès en lecture sur le thème d'article doit être défini avec une liste de groupe pour utiliser la restriction par groupe (les sélections "groupe avec enfants" ou "utilisateurs enregistrés" ne peuvent fonctionner)</string>
+<string id="The read access on the topic must be defined with a list of groups to use the group restriction">Le droit d'accès en lecture sur le thème d'articles doit être défini avec une liste de groupes afin d'utiliser la restriction par groupes (les sélections "groupe avec enfants" ou "utilisateurs enregistrés" ne peuvent fonctionner)</string>
 <string id="Who is notified when a new post is registered?">Qui est notifié lors de la publication d'une contribution</string>
 <string id="Number of recipients per sending">Nombre de destinataires par envoi</string>
 <string id="is member of the following directories">est membre des annuaires suivants</string>
