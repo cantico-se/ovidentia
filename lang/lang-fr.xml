@@ -3061,6 +3061,6 @@
 <string id="Installation of the package">Installation de l'archive</string>
 <string id="%d table has been created">%d table a été créée</string>
 <string id="%d tables has been created">%d tables ont été créés</string>
-<string id="and %d table has been modified in MySql database">et %d table a été modifié dans la base de données MySql</string>
+<string id="and %d table has been modified in MySql database">et %d table a été modifiée dans la base de données MySql</string>
 <string id="and %d tables has been modified in MySql database">et %d tables ont été modifiées dans la base de données MySql</string>
 </fr>
