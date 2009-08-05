@@ -819,9 +819,20 @@ function bab_submitArticleDraft($idart)
 	return true;
 }
 
-function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleArr=array())
-{
+/**
+ * Add an article draft
+ * 
+ * @param $title title of the new article draft
+ * @param $head head of the new article draft
+ * @param $body body of the new article draft
+ * @param $idTopic id of the topic where we create the article draft
+ * @param $error return the error message
+ * @param $articleArr an array which contains options for the new article draft : date_submission, notify_members...
+ * @return int return id of the new article draft
+ */
+function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleArr=array()) {
 	global $babBody, $babDB;
+	/* Options by default */
 	$arrdefaults = array(	'id_author'=>$GLOBALS['BAB_SESS_USERID'],
 							'lang'=>$GLOBALS['babLanguage'], 
 							'date_submission'=> '0000-00-00 00:00:00', 
@@ -833,54 +844,52 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 							'update_datemodif'=> 'N',
 							'restriction'=>''
 						);
-							
-	if( empty($title))
-	{
+	/* The title can't be empty */
+	if( empty($title)) {
 		$error = bab_translate("The title of the article should not be empty");
+		bab_debug("Error in function bab_addArticleDraft() : the title of the article can not be empty");
 		return 0;
 	}
-
-	if(!empty($idTopic))
-	{
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($idTopic)."'");
-		if( !$res || $babDB->db_num_rows($res) == 0)
-		{
+	
+	/* Id topic can not be empty */
+	$informationTopic = array();
+	if(!empty($idTopic)) {
+		$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($idTopic)."'");
+		if (!$res || $babDB->db_num_rows($res) == 0) {
 			$error = bab_translate("Unknown topic");
+			bab_debug("Error in function bab_addArticleDraft() : id topic can not be empty");
 			return 0;
+		} else {
+			$informationTopic = $babDB->db_fetch_array($res);
 		}
 	}
 	
-	foreach($arrdefaults as $k=>$v)
-	{
-		if( isset($articleArr[$k]))
-		{
+	/* Crush the options by default by the options passed in parameters of the function ($articleArr) */
+	foreach($arrdefaults as $k=>$v) {
+		if( isset($articleArr[$k])) {
 			$arrdefaults[$k]=$articleArr[$k];
 		}
 	}
 	
-	if( !bab_isAccessValidByUser(BAB_TOPICSSUB_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])  && !bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))
-	{
+	/* Verify if the current user can create the article draft */
+	if (bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])     ||    ( $informationTopic['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'])      ||      ( $informationTopic['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))) {
+	} else {
 		$error = bab_translate("Access denied");
+		bab_debug("Error in function bab_addArticleDraft() : the current user has no rights to create the article draft. Verify the rights access of the topic ".$idTopic);
 		return 0;
 	}
 	
-	if( empty($arrdefaults['id_author']) )
-		{
+	if( empty($arrdefaults['id_author']) ) {
 		$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."' and id_user='0'");
-		if( $res && $babDB->db_num_rows($res) == 1 )
-			{
+		if( $res && $babDB->db_num_rows($res) == 1 ) {
 			$arr = $babDB->db_fetch_array($res);
 			$idanonymous = $arr['id'];
-			}
-		else
-			{
+		} else {
 			return 0;
-			}
 		}
-	else
-		{
+	} else {
 		$idanonymous = 0;
-		}
+	}
 			
 	$arrdefaults['title'] = $title;
 	$arrdefaults['body'] = $body;
