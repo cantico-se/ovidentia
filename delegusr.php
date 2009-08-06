@@ -53,7 +53,7 @@ function changeAdmGroup()
 				$this->delegat[0] = bab_translate("All site");
 				}
 
-			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($babBody->dgAdmGroups).")");
+			$res = $babDB->db_query("SELECT id,name FROM ".BAB_DG_GROUPS_TBL." WHERE id IN(".$babDB->quote($babBody->dgAdmGroups).") ORDER BY name ASC");
 			while ($arr = $babDB->db_fetch_assoc($res))
 				{
 				$this->delegat[$arr['id']] = $arr['name'];
