@@ -585,8 +585,8 @@ function orderTopcat($idp)
 			}
 		}
 	$temp = new temp($idp);
-	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
-	$babBody->babecho(	bab_printTemplate($temp,"topcats.html", "topcatorder"));
+	$babBody->babecho(bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(bab_printTemplate($temp,"topcats.html", "topcatorder"));
 	return $temp->count;
 	}
 
@@ -828,6 +828,46 @@ function deleteTempImage()
 	die('');
 }
 
+/* Control datas (in database) recorded by categories : it's just a display, if there are errors they are not corrected
+ * First test: prove that id of the delegation of a category is the same that id of the delegation of its category parent */
+function bab_controlDatasRecordedByCategories() {
+	global $babBody, $babDB;
+	
+	$html = '';
+	
+	/* Selection of all datas in table bab_topics_categories (id, title, id_parent, id_dgowner) */
+	$categories = array();
+	$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL;
+	$res = $babDB->db_query($req);
+	while ($row = $babDB->db_fetch_array($res)) {
+		$categories[] = $row;
+	}
+	
+	/* Selection of all datas in table bab_topcat_order (id, id_topcat, type, id_parent) */
+	$categoriesOrder = array();
+	$req = "select * from ".BAB_TOPCAT_ORDER_TBL;
+	$res = $babDB->db_query($req);
+	while ($row = $babDB->db_fetch_array($res)) {
+		$categoriesOrder[] = $row;
+	}
+	
+	/* First test : prove that id of the delegation of a category is the same that id of the delegation of its category parent */
+	foreach($categories as $category) {
+		if ($category['id_parent'] != 0) { /* the category is a parent category */
+			foreach ($categories as $categoryparent) {
+				if ($categoryparent['id'] == $category['id_parent']) {
+					if ($categoryparent['id_dgowner'] != $category['id_dgowner']) {
+						$html .= 'ERROR with ID delegations : The category "<b>'.$category['title'].'</b>" (ID '.$category['id'].', Delegation '.$category['id_dgowner'].') has the category "<b>'.$categoryparent['title'].'</b>" (ID '.$categoryparent['id'].', Delegation '.$categoryparent['id_dgowner'].') as parent<br /><br />';
+					}
+					bab_debug('The category "<b>'.$category['title'].'</b>" (ID '.$category['id'].', Delegation '.$category['id_dgowner'].') has the category "<b>'.$categoryparent['title'].'</b>" (ID '.$categoryparent['id'].', Delegation '.$categoryparent['id_dgowner'].') as parent');
+				}
+			}
+		}
+	}
+	
+	$babBody->babecho($html);
+}
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['articles'] != 'Y')
 {
@@ -870,6 +910,16 @@ elseif( isset($update))
 	
 switch($idx)
 	{
+	case 'controlCategories':
+	case 'controlcategories':
+		/* Control datas (in database) recorded by categories : it's just a display, if there are errors they are not corrected */
+		if (bab_isUserAdministrator()) {
+			bab_controlDatasRecordedByCategories();
+		} else {
+			exit;
+		}
+		break;
+		
 	case 'getImage':
 		getImage(); // called by ajax
 		exit;
