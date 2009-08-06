@@ -234,6 +234,11 @@ function bab_getArticleDelegationId($iIdArticle)
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
 	
+	/* Verify the type array of $parentid */
+	if (!is_array($parentid)) {
+		$parentid = array($parentid);
+	}
+	
 	if (false === $rightaccesstable) {
 		if (!bab_isUserAdministrator()) {
 			return false;
@@ -272,6 +277,16 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 				while ($row2 = $babDB->db_fetch_array($res2)) {
 					if (!in_array($row2['id_cat'], $idcategoriesbyrights)) {
 						$idcategoriesbyrights[$row2['id_cat']] = $row2['id_cat'];
+					}
+				}
+			}
+			/* All parents of categories accessibles */
+			$idcategoriesbyrightstmp = $idcategoriesbyrights;
+			foreach($idcategoriesbyrightstmp as $idcategory) {
+				$idParents = bab_getParentsArticleCategory($idcategory);
+				foreach($idParents as $idParent) {
+					if (!in_array($idParent['id'], $idcategoriesbyrights)) {
+						$idcategoriesbyrights[$idParent['id']] = $idParent['id'];
 					}
 				}
 			}
