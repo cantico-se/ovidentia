@@ -86,9 +86,9 @@ class bab_handler
 	{
 		return false;
 	}
-	
+
 	/**
-	 * transform editor content to html 
+	 * transform editor content to html
 	 * @param	string	&$txt
 	 * @param	string	$editor
 	 */
@@ -459,10 +459,10 @@ class bab_ArticlesHomePages extends bab_handler
 	var $index;
 	var $count;
 	var $idgroup;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ArticlesHomePages( &$ctx)
 	{
 		global $babBody, $babDB;
@@ -473,10 +473,10 @@ class bab_ArticlesHomePages extends bab_handler
 		$order = $ctx->get_value('order');
 		if( $order === false || $order === '' )
 			$order = "asc";
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		switch(mb_strtoupper($order))
 		{
 			case "DESC": $order = "ht.ordering DESC"; break;
@@ -502,10 +502,10 @@ class bab_ArticlesHomePages extends bab_handler
 					}
 				break;
 			}
-	
+
 		$filter = $ctx->get_value('filter');
 
-		if (($filter == "")||(mb_strtoupper($filter) == "NO")) 
+		if (($filter == "")||(mb_strtoupper($filter) == "NO"))
 			$filter = false;
 		else
 			$filter = true;
@@ -525,28 +525,28 @@ class bab_ArticlesHomePages extends bab_handler
 		$this->count = count($this->IdEntries);
 		if( $this->count > 0 )
 			{
-			$sQuery = 
-				'SELECT 
-					at.*, 
-					count(aft.id) as nfiles, 
-					topicCategory.id_dgowner iIdDelegation  
-				FROM ' . 
-					BAB_ARTICLES_TBL . ' at ' . 
-				'LEFT JOIN ' . 
-					BAB_HOMEPAGES_TBL . ' ht on ht.id_article=at.id ' . 
-				'LEFT JOIN ' . 
-					BAB_ART_FILES_TBL . ' aft on aft.id_article=at.id ' . 
-				'LEFT JOIN ' . 
-					BAB_TOPICS_TBL . ' topic on topic.id = at.id_topic ' . 
-				'LEFT JOIN ' . 
-					BAB_TOPICS_CATEGORIES_TBL . ' topicCategory on topicCategory.id = topic.id_cat ' . 
-				'WHERE 
-					ht.id IN (' . $babDB->quote($this->IdEntries) . ') ' . 
-				'GROUP BY ' . 
+			$sQuery =
+				'SELECT
+					at.*,
+					count(aft.id) as nfiles,
+					topicCategory.id_dgowner iIdDelegation
+				FROM ' .
+					BAB_ARTICLES_TBL . ' at ' .
+				'LEFT JOIN ' .
+					BAB_HOMEPAGES_TBL . ' ht on ht.id_article=at.id ' .
+				'LEFT JOIN ' .
+					BAB_ART_FILES_TBL . ' aft on aft.id_article=at.id ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_TBL . ' topic on topic.id = at.id_topic ' .
+				'LEFT JOIN ' .
+					BAB_TOPICS_CATEGORIES_TBL . ' topicCategory on topicCategory.id = topic.id_cat ' .
+				'WHERE
+					ht.id IN (' . $babDB->quote($this->IdEntries) . ') ' .
+				'GROUP BY ' .
 					'at.id order by ' . $babDB->db_escape_string($order);
-					
+
 //			bab_debug($sQuery);
-					
+
 			$this->res = $babDB->db_query($sQuery);
 			}
 
@@ -560,9 +560,9 @@ class bab_ArticlesHomePages extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -590,7 +590,7 @@ class bab_ArticlesHomePages extends bab_handler
 			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
-			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);			
+			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
 			list($topictitle) = $babDB->db_fetch_array($babDB->db_query("select category from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arr['id_topic'])."'"));
 			$this->ctx->curctx->push('ArticleTopicTitle', $topictitle);
 
@@ -620,35 +620,35 @@ class bab_ArticleCategories extends bab_handler
 	var $IdEntries = array();
 	var $index;
 	var $count;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ArticleCategories( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$parentid = $ctx->get_value('parentid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $parentid === false || $parentid === '' )
 			$parentid[] = 0;
 		else
 			$parentid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $parentid));
 
 		$delegationid = (int) $ctx->get_value('delegationid');
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 		$this->res = bab_getArticleCategoriesRes($parentid, $delegationid);
-		
+
 		if (false === $this->res) {
 			$this->count = 0;
 		} else {
 			$this->count = $babDB->db_num_rows($this->res);
 		}
-		
+
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -658,9 +658,9 @@ class bab_ArticleCategories extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -687,19 +687,19 @@ class bab_ParentsArticleCategory extends bab_handler
 	var $res;
 	var $index;
 	var $count;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ParentsArticleCategory( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$categoryid = $ctx->get_value('categoryid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $categoryid === false || $categoryid === '' )
 			$this->count = 0;
 		else
@@ -729,9 +729,9 @@ class bab_ParentsArticleCategory extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -757,25 +757,25 @@ class bab_ArticleCategory extends bab_handler
 	var $index;
 	var $count;
 	var $res;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ArticleCategory( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->count = 0;
 		$this->bab_handler($ctx);
 		$catid = $ctx->get_value('categoryid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
 			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
-		
+
 		if( count($catid) > 0 )
 		{
 		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($catid).")");
@@ -790,9 +790,9 @@ class bab_ArticleCategory extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setCategoryAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('CategoryName', $arr['title']);
 			$this->ctx->curctx->push('CategoryDescription', $arr['description']);
@@ -862,20 +862,20 @@ class bab_ArticleTopics extends bab_handler
 	var $ctx;
 	var $index;
 	var $count;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ArticleTopics( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$catid = $ctx->get_value('categoryid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $catid === false || $catid === '' )
 			$catid = array_keys($babBody->get_topcatview());
 		else
@@ -883,13 +883,13 @@ class bab_ArticleTopics extends bab_handler
 
 		include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 		$this->res = bab_getArticleTopicsRes($catid, $delegationid);
-		
+
 		if (false === $this->res) {
 			$this->count = 0;
 		} else {
 			$this->count = $babDB->db_num_rows($this->res);
 		}
-	
+
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -899,15 +899,15 @@ class bab_ArticleTopics extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setTopicAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id_cat'], $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
-			
+
 			$this->replace_ref($arr['description'], 'bab_topic');
-			
+
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
@@ -954,20 +954,20 @@ class bab_ArticleTopic extends bab_handler
 	var $topicid;
 	var $count;
 	var $index;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_ArticleTopic( &$ctx)
 	{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->topicid = $ctx->get_value('topicid');
 		$this->topicname = $ctx->get_value('topicname');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $this->topicid === false || $this->topicid === '' )
 			$this->IdEntries = array_keys($babBody->topview);
 		else
@@ -997,9 +997,9 @@ class bab_ArticleTopic extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setTopicAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id_cat'], $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 			$this->replace_ref($arr['description'], 'bab_topic');
@@ -1094,30 +1094,30 @@ class bab_Articles extends bab_handler
 	var $index;
 	var $count;
 	var $res;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_Articles( &$ctx)
 	{
 		global $babDB, $babBody;
 		$this->bab_handler($ctx);
 		$topicid = $ctx->get_value('topicid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		$sDelegation = ' ';
 		$sLeftJoin = ' ';
 		if(0 != $delegationid)
 		{
-			$sLeftJoin = 
+			$sLeftJoin =
 				'LEFT JOIN ' .
 					BAB_TOPICS_TBL . ' t ON t.id = id_topic ' .
 				'LEFT JOIN ' .
 					BAB_TOPICS_CATEGORIES_TBL . ' tpc ON tpc.id = t.id_cat ';
-			
+
 			$sDelegation = ' AND tpc.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
 
@@ -1181,21 +1181,21 @@ class bab_Articles extends bab_handler
 				case 'ASC':
 					if( $forder )
 					{
-						$order = 'at.ordering asc, at.date_modification desc'; 
+						$order = 'at.ordering asc, at.date_modification desc';
 					}
 					else
 					{
 						$order = $orderby.' asc';
 					}
 					break;
-				case 'RAND': 
-					$order = 'rand()'; 
+				case 'RAND':
+					$order = 'rand()';
 					break;
 				case 'DESC':
 				default:
 					if( $forder )
 					{
-						$order = 'at.ordering desc, at.date_modification asc'; 
+						$order = 'at.ordering desc, at.date_modification asc';
 					}
 					else
 					{
@@ -1245,9 +1245,9 @@ class bab_Articles extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -1299,19 +1299,19 @@ class bab_Article extends bab_handler
 	var $res;
 	var $index;
 	var $count;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_Article( &$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
 		$articleid = $ctx->get_value('articleid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		if( $articleid === false || $articleid === '' )
 			$this->count = 0;
 		else
@@ -1331,7 +1331,7 @@ class bab_Article extends bab_handler
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
-		
+
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -1341,9 +1341,9 @@ class bab_Article extends bab_handler
 		if( $this->idx < $this->count)
 		{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -1418,7 +1418,7 @@ class bab_ArticleFiles extends bab_handler
 				$this->count = $babDB->db_num_rows($this->res);
 				}
 		}
-		
+
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -1499,13 +1499,13 @@ class bab_Forums extends bab_handler
 		$forumid = $ctx->get_value('forumid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		if (0 === $delegationid) 
+		if (0 === $delegationid)
 			{
 			$delegationid = false;
 			}
-	
-		
-		if( $forumid === '' ) 
+
+
+		if( $forumid === '' )
 			{
 			$forumid = false;
 			}
@@ -1513,7 +1513,7 @@ class bab_Forums extends bab_handler
 			{
 			$forumid = explode(',', $forumid);
 			}
-		
+
 		include_once dirname(__FILE__).'/forumincl.php';
 		$this->res = bab_getForumsRes($forumid, $delegationid);
 		$this->count = $babDB->db_num_rows($this->res);
@@ -1668,7 +1668,7 @@ class bab_Post extends bab_handler
 		$this->confirmed = $ctx->get_value('confirmed');
 		if( $this->confirmed === false )
 			$this->confirmed = "yes";
-			
+
 		switch(mb_strtoupper($this->confirmed))
 		{
 			case "YES": $this->confirmed = 'Y'; break;
@@ -1678,10 +1678,10 @@ class bab_Post extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".$babDB->quote($arr).")";			
+			$req = "SELECT p.id, p.id_thread, f.id id_forum FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y' and p.id IN (".$babDB->quote($arr).")";
 			if($this->confirmed)
 			{
-				$req .= " AND p.confirmed =  '".$this->confirmed."'";			
+				$req .= " AND p.confirmed =  '".$this->confirmed."'";
 			}
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
@@ -1726,7 +1726,7 @@ class bab_Post extends bab_handler
 		global $babBody, $babDB;
 		if( $this->idx < $this->count)
 			{
-			$arr = $babDB->db_fetch_array($this->res);	
+			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
 			$this->replace_ref($arr['message'], 'bab_forum_post');
@@ -1801,9 +1801,9 @@ class bab_PostFiles extends bab_handler
 				list($forum) = $babDB->db_fetch_array($babDB->db_query($req));
 
 				$this->arr = array();
-				while (false !== ($file = readdir($h))) 
+				while (false !== ($file = readdir($h)))
 					{
-					$iOffset = mb_strpos($file,',');	
+					$iOffset = mb_strpos($file,',');
 					if(false !== $iOffset && mb_substr($file, 0, $iOffset) == $postid)
 						{
 						$name = mb_substr($file, $iOffset+1);
@@ -1816,7 +1816,7 @@ class bab_PostFiles extends bab_handler
 				$this->count = count($this->arr);
 				}
 		}
-		
+
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -1930,21 +1930,21 @@ class bab_Folders extends bab_handler
 	var $count = 0;
 	var $IdEntries = array();
 	var $oFmFolderSet = null;
-	
+
 	function bab_Folders(&$ctx)
 	{
 		global $babDB;
 		$this->bab_handler($ctx);
 		$folderid = $ctx->get_value('folderid');
 		$iIdDelegation = (int) $ctx->get_value('delegationid');
-		
+
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 		$oIdDgOwner = $this->oFmFolderSet->aField['iIdDgOwner'];
 		$oActive = $this->oFmFolderSet->aField['sActive'];
 		$oId = $this->oFmFolderSet->aField['iId'];
 		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
-		
+
 		$oCriteria = $oActive->in('Y');
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 
@@ -1959,7 +1959,7 @@ class bab_Folders extends bab_handler
 		}
 
 		$this->oFmFolderSet->select($oCriteria);
-		
+
 		while(null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
 			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
@@ -1975,7 +1975,7 @@ class bab_Folders extends bab_handler
 	function getnext()
 	{
 		static $iIndex = 0;
-		
+
 		if(null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
 			$this->ctx->curctx->push('CIndex', $iIndex);
@@ -1985,7 +1985,7 @@ class bab_Folders extends bab_handler
 			$this->ctx->curctx->push('FolderPath', $oFmFolder->getRelativePath());
 			$this->ctx->curctx->push('FolderPathname', $oFmFolder->getName());
 			$url = $GLOBALS['babUrl']
-					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' .$oFmFolder->getName();			
+					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' .$oFmFolder->getName();
 			$this->ctx->curctx->push('FolderBrowseUrl', $url);
 			$iIndex++;
 			$this->index = $iIndex;
@@ -2015,18 +2015,18 @@ class bab_Folder extends bab_handler
 		$this->bab_handler($ctx);
 		$folderid = (int) $ctx->get_value('folderid');
 		$this->count = 0;
-		
+
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 		$oId = $this->oFmFolderSet->aField['iId'];
-		
+
 		if(0 !== $folderid && bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $folderid))
 		{
 			$this->oFmFolderSet->select($oId->in($folderid));
 			$this->count = $this->oFmFolderSet->count();
 			$this->ctx->curctx->push('CCount', $this->count);
 		}
-		else 
+		else
 		{
 			$this->ctx->curctx->push('CCount', 0);
 		}
@@ -2035,7 +2035,7 @@ class bab_Folder extends bab_handler
 	function getnext()
 	{
 		static $iIndex = 0;
-		
+
 		if(0 != $this->oFmFolderSet->count() && null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
 			$path = $oFmFolder->getRelativePath();
@@ -2048,9 +2048,9 @@ class bab_Folder extends bab_handler
 			$this->ctx->curctx->push('FolderPath', $path);
 			$this->ctx->curctx->push('FolderPathname', $pathname);
 			$url = $GLOBALS['babUrl']
-					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' . $pathname;			
+					.  '?tg=fileman&idx=list&id='. $oFmFolder->getId() . '&gr=Y&path=' . $pathname;
 			$this->ctx->curctx->push('FolderBrowseUrl', $url);
-			
+
 			$iIndex++;
 			$this->index = $iIndex;
 			return true;
@@ -2070,7 +2070,7 @@ class bab_FolderPrevious extends bab_Folder
 	function bab_FolderPrevious( &$ctx)
 	{
 		$this->handler = $ctx->get_handler('bab_Folders');
-		
+
 		if( $this->handler !== false && $this->handler !== '' )
 			{
 			if( $this->handler->index > 1)
@@ -2113,9 +2113,9 @@ class bab_SubFolders extends bab_handler
 	var $IdEntries = array();
 	var $index;
 	var $count;
-	
+
 	var $oFmFolderSet = null;
-	
+
 	var $rootFolderPath;
 	var $folderId;
 	var $path;
@@ -2128,7 +2128,7 @@ class bab_SubFolders extends bab_handler
 		$this->folderId = $folderid;
 		$this->count = 0;
 
-		
+
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$sPath = (string) $path = $ctx->get_value('path');
@@ -2144,33 +2144,33 @@ class bab_SubFolders extends bab_handler
 			if(!is_null($oFmFolder))
 			{
 
-				
+
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
-				
+
 				$this->rootFolderPath = $sRelativePath;
-//				bab_debug('sRelativePath ==> ' . $sRelativePath . 
+//				bab_debug('sRelativePath ==> ' . $sRelativePath .
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
-	
+
 				$sRootFolderName = getFirstPath($sRelativePath);
 				if($this->accessValid($sRootFolderName, $oFmFolder->getName() . '/' . $sPath))
-				{				
+				{
 					$sRelativePath = $sRootFolderName . '/' . $sPath . '/';
-					
+
 //					$oFileManagerEnv =& getEnvObject();
 					$sUploadPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
-					
+
 					$sFullPathName = realpath($sUploadPath . $sRelativePath);
-					
+
 					$this->walkDirectory($sFullPathName);
-					
+
 					$this->count = count($this->IdEntries);
 					$order = $ctx->get_value('order');
 					if($order === false || $order === '')
 					{
 						$order = 'asc';
 					}
-					
+
 					switch(mb_strtolower($order))
 					{
 						case 'desc':
@@ -2197,7 +2197,7 @@ class bab_SubFolders extends bab_handler
 			$this->ctx->curctx->push('SubFolderPath', $this->path);
 			$this->ctx->curctx->push('SubFolderPathname', $this->path . (empty($this->path) ? '' : '/') . $this->IdEntries[$this->idx]);
 			$url = $GLOBALS['babUrl']
-					.  '?tg=fileman&idx=list&id='. $this->folderId . '&gr=Y&path=' . $this->rootFolderPath . (empty($this->path) ? '' : '/' . $this->path);			
+					.  '?tg=fileman&idx=list&id='. $this->folderId . '&gr=Y&path=' . $this->rootFolderPath . (empty($this->path) ? '' : '/' . $this->path);
 			$this->ctx->curctx->push('SubFolderBrowseUrl', $url);
 			$this->idx++;
 			$this->index = $this->idx;
@@ -2209,15 +2209,15 @@ class bab_SubFolders extends bab_handler
 			return false;
 		}
 	}
-	
+
 	function accessValid($sName, $sPath)
 	{
 		$oName = $this->oFmFolderSet->aField['sName'];
 		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
-		
+
 		$oCriteria = $oName->in($sName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
-		
+
 		//Get the root folder
 		$oFmFolder = $this->oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
@@ -2225,29 +2225,29 @@ class bab_SubFolders extends bab_handler
 			$iIdOwner = 0;
 			$sRelativePath = '';
 
-			BAB_FmFolderHelper::getFileInfoForCollectiveDir($oFmFolder->getId(), $sPath, 
-				$iIdOwner, $sRelativePath, $oFmFolder);		
+			BAB_FmFolderHelper::getFileInfoForCollectiveDir($oFmFolder->getId(), $sPath,
+				$iIdOwner, $sRelativePath, $oFmFolder);
 
-				
+
 			return 	bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $iIdOwner);
 		}
 		return false;
 	}
-	
+
 	function walkDirectory($sFullPathName)
 	{
 //		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' sPathName ==> ' . $sFullPathName);
 		if(is_dir($sFullPathName))
 		{
 			$oDir = dir($sFullPathName);
-			while(false !== $sEntry = $oDir->read()) 
+			while(false !== $sEntry = $oDir->read())
 			{
 				// Skip pointers
-				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER) 
+				if($sEntry == '.' || $sEntry == '..' || $sEntry == BAB_FVERSION_FOLDER)
 				{
 					continue;
 				}
-				
+
 				if(is_dir($sFullPathName . '/' . $sEntry))
 				{
 					$this->IdEntries[] = $sEntry;
@@ -2281,14 +2281,14 @@ class bab_Files extends bab_handler
 		$folderid		= (int) $ctx->get_value('folderid');
 		$this->sPath	= (string) $ctx->get_value('path');
 		$iLength		= mb_strlen(trim($this->sPath));
-		
+
 		if($iLength && '/' === $this->sPath{$iLength - 1})
 		{
-			$this->sPath = mb_substr($sEncodedPath, 0, -1); 
+			$this->sPath = mb_substr($sEncodedPath, 0, -1);
 		}
 
 		$this->sEncodedPath = urlencode($this->sPath);
-		
+
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 		$this->oFolderFileSet = new BAB_FolderFileSet();
@@ -2302,49 +2302,49 @@ class bab_Files extends bab_handler
 			if(!is_null($oFmFolder))
 			{
 				$this->iIdDelegation = $oFmFolder->getDelegationOwnerId();
-				
+
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
-				
-//				bab_debug('sRelativePath ==> ' . $sRelativePath . 
+
+//				bab_debug('sRelativePath ==> ' . $sRelativePath .
 //					' sRootFolderName ==> ' . getFirstPath($sRelativePath));
-	
+
 				$sRootFolderName = getFirstPath($sRelativePath);
 				$sRelativePath = $sRootFolderName . '/' . ($iLength? $this->sPath . '/': '');
-				
+
 				$this->initRootFolderId($sRootFolderName);
-				
+
 				$rows	= (int) $ctx->get_value('rows');
 				$offset	= (int) $ctx->get_value('offset');
-				
+
 				$oGroup		= $this->oFolderFileSet->aField['sGroup'];
 				$oState		= $this->oFolderFileSet->aField['sState'];
 				$oPathName	= $this->oFolderFileSet->aField['sPathName'];
 				$oConfirmed	= $this->oFolderFileSet->aField['sConfirmed'];
 				$oIdDgOwner	= $this->oFolderFileSet->aField['iIdDgOwner'];
-				
+
 				$oCriteria = $oGroup->in('Y');
 				$oCriteria = $oCriteria->_and($oState->in(''));
 				$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
 				$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 				$oCriteria = $oCriteria->_and($oIdDgOwner->in($oFmFolder->getDelegationOwnerId()));
-				
+
 				$aLimit = array();
 				if(0 !== $rows)
 				{
 					$aLimit = array($offset, $rows);
 				}
-				
+
 				require_once dirname(__FILE__) . '/tagApi.php';
-				
+
 				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-				
+
 				$this->oFolderFileSet->select($oCriteria, array('sName' => 'ASC'), $aLimit);
 				while(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 				{
 					$this->IdEntries[] = $oFolderFile->getId();
 					$this->tags[$oFolderFile->getId()] = array();
-					
+
 					$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $oFolderFile->getId()));
 					$oIterator->orderAsc('tag_name');
 					foreach($oIterator as $oTag)
@@ -2364,11 +2364,11 @@ class bab_Files extends bab_handler
 		$oName = $this->oFmFolderSet->aField['sName'];
 		$oRelativePath = $this->oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner	= $this->oFmFolderSet->aField['iIdDgOwner'];
-		
+
 		$oCriteria = $oName->in($sRootFolderName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in($this->iIdDelegation));
-		
+
 		//Get the root folder
 		$oFmFolder = $this->oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
@@ -2376,7 +2376,7 @@ class bab_Files extends bab_handler
 			$this->iIdRootFolder = $oFmFolder->getId();
 		}
 	}
-	
+
 	function getnext()
 	{
 		global $babDB;
@@ -2385,7 +2385,7 @@ class bab_Files extends bab_handler
 			if(null !== ($oFolderFile = $this->oFolderFileSet->next()))
 			{
 				$iIdAuthor = (0 === $oFolderFile->getModifierId() ? $oFolderFile->getAuthorId() : $oFolderFile->getModifierId());
-				
+
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $oFolderFile->getDescription());
@@ -2394,30 +2394,30 @@ class bab_Files extends bab_handler
 				$this->ctx->curctx->push('FileFolderId', $oFolderFile->getOwnerId());
 				$this->ctx->curctx->push('FileDate', bab_mktime($oFolderFile->getModifiedDate()));
 				$this->ctx->curctx->push('FileAuthor', $iIdAuthor);
-				
+
 /*
 bab_debug(
-	'FileName ==> ' . $oFolderFile->getName() . 
+	'FileName ==> ' . $oFolderFile->getName() .
 	' FileAuthorId ==> ' . $iIdAuthor . ' ' .
 	' FileAuthor ==> ' . bab_getUserName($iIdAuthor));
 //*/
-				
+
 				$sGroup	= $oFolderFile->getGroup();
 
 				$sEncodedPath = urlencode(removeEndSlashes($oFolderFile->getPathName()));
 
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' . 
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath);
-				
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $oFolderFile->getId() . 
+
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $oFolderFile->getId() .
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()));
-					
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $oFolderFile->getOwnerId() . '&gr=' . 
+
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $oFolderFile->getOwnerId() . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($oFolderFile->getName()) . '&idf=' . $oFolderFile->getId());
-					
+
 				$oFileManagerEnv =& getEnvObject();
 				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
-				
+
 				$sFullPathName = $sUploadPath . $oFolderFile->getPathName() . $oFolderFile->getName();
 				if(file_exists($sFullPathName))
 				{
@@ -2450,7 +2450,7 @@ class bab_File extends bab_handler
 	var $iIdRootFolder = 0;
 	var $tags = array();
 	var $oFolderFileSet = null;
-	
+
 	function bab_File(&$ctx)
 	{
 		global $babBody, $babDB;
@@ -2474,11 +2474,11 @@ class bab_File extends bab_handler
 	function getnext()
 	{
 		static $iIndex = 0;
-		
+
 		if($iIndex < $this->count)
 		{
 			$bHaveFileAcess = false;
-			
+
 			while($iIndex < $this->count &&  false === $bHaveFileAcess)
 			{
 				$iIndex++;
@@ -2491,24 +2491,24 @@ class bab_File extends bab_handler
 					}
 				}
 			}
-			
+
 			if(true === $bHaveFileAcess)
 			{
 				global $babBody, $babDB;
-				
+
 				require_once dirname(__FILE__) . '/tagApi.php';
-				
+
 				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-				
+
 				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $this->oFolderFile->getId()));
 				$oIterator->orderAsc('tag_name');
 				foreach($oIterator as $oTag)
 				{
 					$this->tags[] = $oTag->getName();
 				}
-				
+
 				$iIdAuthor = (0 === $this->oFolderFile->getModifierId() ? $this->oFolderFile->getAuthorId() : $this->oFolderFile->getModifierId());
-				
+
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileName', $this->oFolderFile->getName());
 				$this->ctx->curctx->push('FileDescription', $this->oFolderFile->getDescription());
@@ -2520,20 +2520,20 @@ class bab_File extends bab_handler
 
 				$sRootFolderName = getFirstPath($this->oFolderFile->getPathName());
 				$this->initRootFolderId($sRootFolderName);
-				
+
 				$sEncodedPath = urlencode(removeEndSlashes($this->oFolderFile->getPathName()));
-				
+
 				$sGroup	= $this->oFolderFile->getGroup();
-				
-				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' . 
+
+				$this->ctx->curctx->push('FileUrl', $GLOBALS['babUrlScript'] .'?tg=fileman&idx=list&id=' . $this->iIdRootFolder . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath);
-				
-				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $this->oFolderFile->getId() . 
+
+				$this->ctx->curctx->push('FilePopupUrl', $GLOBALS['babUrlScript'] . '?tg=fileman&idx=viewFile&idf=' . $this->oFolderFile->getId() .
 					'&id=' . $this->iIdRootFolder . '&gr=' . $sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()));
-					
-				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' . 
+
+				$this->ctx->curctx->push('FileUrlGet', $GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $this->oFolderFile->getOwnerId() . '&gr=' .
 					$sGroup . '&path=' . $sEncodedPath . '&file=' . urlencode($this->oFolderFile->getName()) . '&idf=' . $this->oFolderFile->getId());
-					
+
 				$sFullPathName = BAB_FileManagerEnv::getCollectivePath($this->oFolderFile->getDelegationOwnerId()) . $this->oFolderFile->getPathName() . $this->oFolderFile->getName();
 				if(file_exists($sFullPathName))
 				{
@@ -2558,11 +2558,11 @@ class bab_File extends bab_handler
 		$oName = $oFmFolderSet->aField['sName'];
 		$oRelativePath = $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner	= $oFmFolderSet->aField['iIdDgOwner'];
-		
+
 		$oCriteria = $oName->in($sRootFolderName);
 		$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
+
 		//Get the root folder
 		$oFmFolder = $oFmFolderSet->get($oCriteria);
 		if(!is_null($oFmFolder))
@@ -2679,10 +2679,10 @@ class bab_RecentArticles extends bab_handler
 	var $nbdays;
 	var $last;
 	var $topicid;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-	
+
 	function bab_RecentArticles($ctx)
 		{
 		global $babBody, $babDB;
@@ -2693,10 +2693,10 @@ class bab_RecentArticles extends bab_handler
 		$this->topcatid = $ctx->get_value('categoryid');
 		$lang = $ctx->get_value('lang');
 		$delegationid = (int) $ctx->get_value('delegationid');
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-		
+
 		if ( $this->topcatid === false || $this->topcatid === '' )
 			{
 			if( $this->topicid === false || $this->topicid === '' )
@@ -2730,26 +2730,26 @@ class bab_RecentArticles extends bab_handler
 
 			}
 
-			$req = 
-				'SELECT ' . 
+			$req =
+				'SELECT ' .
 					'at.id, ' .
 					'at.restriction ' .
-				'FROM ' . 
+				'FROM ' .
 					BAB_ARTICLES_TBL . ' at ';
-					
-			$sDelegation = ' ';	
-			if(0 != $delegationid)	
+
+			$sDelegation = ' ';
+			if(0 != $delegationid)
 			{
-				$req .= 
+				$req .=
 					'LEFT JOIN ' .
 						BAB_TOPICS_TBL . ' tp ON tp.id = at.id_topic ' .
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
-						
+
 				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
-					
-			$req .= 
+
+			$req .=
 				'WHERE ' .
 					'at.id_topic IN (' . $babDB->quote($this->topicid). ') AND ' .
 					'(at.date_publication = \'0000-00-00 00:00:00\' OR at.date_publication <= now()) ' .
@@ -2760,16 +2760,30 @@ class bab_RecentArticles extends bab_handler
 				$req .= " AND at.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 				}
 
-			
+
 			if ($lang !== false ) {
 				$req .= " AND at.lang='".$babDB->db_escape_string($lang)."'";
 			}
-			
+
 			$req .= $archive;
 
 			$order = $ctx->get_value('order');
-			if( $order === false || $order === '' )
+			if( $order === false || $order === '' ) {
 				$order = 'desc';
+			}
+
+			/* topicorder=yes : order defined by managers */
+			$forder = $ctx->get_value('topicorder');
+			switch(mb_strtoupper($forder))
+			{
+				case 'YES':
+					$forder = true;
+					break;
+				case 'NO': /* no break */
+				default:
+					$forder = false;
+					break;
+			}
 
 			$orderby = $ctx->get_value('orderby');
 			if( $orderby === false || $orderby === '' )
@@ -2788,10 +2802,24 @@ class bab_RecentArticles extends bab_handler
 
 			switch(mb_strtoupper($order))
 			{
-				case 'ASC': $order = $orderby.' ASC'; break;
-				case 'RAND': $order = 'rand()'; break;
+				case 'ASC':
+					if ($forder) { /* topicorder=yes : order defined by managers */
+						$order = 'at.ordering ASC, at.date_modification DESC';
+					} else {
+						$order = $orderby.' ASC';
+					}
+					break;
+				case 'RAND':
+					$order = 'rand()';
+					break;
 				case 'DESC':
-				default: $order = $orderby.' DESC'; break;
+				default:
+					if($forder) { /* topicorder=yes : order defined by managers */
+						$order = 'at.ordering DESC, at.date_modification ASC';
+					} else {
+						$order = $orderby.' DESC';
+					}
+					break;
 			}
 
 			$req .= ' ORDER BY ' . $order;
@@ -2847,9 +2875,9 @@ class bab_RecentArticles extends bab_handler
 		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -2925,13 +2953,13 @@ class bab_RecentComments extends bab_handler
 		$topview = ' ';
 		if( count($babBody->topview) > 0 )
 			{
-				
-				$req = 
+
+				$req =
 					'SELECT ' .
 						'* ' .
 					'FROM ' .
 						BAB_COMMENTS_TBL . ' ';
-				
+
 			if( count($arrid) > 0 )
 				{
 				$topview = "where id_article IN (".$babDB->quote($arrid).") and confirmed='Y' and id_topic IN (".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL))).")";
@@ -2941,22 +2969,22 @@ class bab_RecentComments extends bab_handler
 				$topview = "where confirmed='Y' and id_topic IN (".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL))).")";
 				}
 
-			$sDelegation = ' ';	
-			if(0 != $delegationid)	
+			$sDelegation = ' ';
+			if(0 != $delegationid)
 			{
-				$req .= 
+				$req .=
 					'LEFT JOIN ' .
 						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
-						
+
 				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
-				
+
 			$req .= $topview . $sDelegation;
 			}
-		
-			
+
+
 		if( $req != '' )
 			{
 			if( $this->nbdays !== false)
@@ -3057,14 +3085,14 @@ class bab_RecentPosts extends bab_handler
 
 		if( count($arr) > 0 )
 			{
-			$sDelegation = ' ';	
-			if(0 != $delegationid)	
+			$sDelegation = ' ';
+			if(0 != $delegationid)
 			{
 				$sDelegation = ' AND f.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
 
-		
-			$req = "SELECT p.*, f.id id_forum, f.id_dgowner FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";	
+
+			$req = "SELECT p.*, f.id id_forum, f.id_dgowner FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";
 
 			if( $this->nbdays !== false)
 				{
@@ -3085,7 +3113,7 @@ class bab_RecentPosts extends bab_handler
 			}
 
 			$req .= " order by ".$order;
-			
+
 			if( $this->last !== false)
 				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
 
@@ -3151,8 +3179,8 @@ class bab_RecentThreads extends bab_handler
 		$this->forumid = $ctx->get_value('forumid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
+		$sDelegation = ' ';
+		if(0 != $delegationid)
 		{
 			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
@@ -3161,35 +3189,35 @@ class bab_RecentThreads extends bab_handler
 			$arr = array();
 		else
 			$arr = explode(',', $this->forumid);
-			
+
 		$req = "
-			SELECT p.id, p.id_thread, f.id id_forum 
-			FROM 
-				".BAB_POSTS_TBL." p 
-				LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id 
-				LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum 
-				LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost 
-				
-			WHERE 
-				f.active='Y'" . $sDelegation . " 
-				and p.confirmed='Y' 
-				and p.id_parent='0' 
-		";			
-				
-		
+			SELECT p.id, p.id_thread, f.id id_forum
+			FROM
+				".BAB_POSTS_TBL." p
+				LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id
+				LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum
+				LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost
+
+			WHERE
+				f.active='Y'" . $sDelegation . "
+				and p.confirmed='Y'
+				and p.id_parent='0'
+		";
+
+
 
 		if( count($arr) > 0 )
 			{
-			$req .= " and t.forum IN (".$babDB->quote($arr).")";			
+			$req .= " and t.forum IN (".$babDB->quote($arr).")";
 			}
 
 
 		if( $this->nbdays !== false) {
 			$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
 		}
-		
+
 		$order = $ctx->get_value('order');
-		
+
 		if( $order === false || $order === '' ) {
 			$order = "desc";
 		}
@@ -3222,16 +3250,16 @@ class bab_RecentThreads extends bab_handler
 		if( $this->count > 0 )
 			{
 			$this->res = $babDB->db_query("
-				select p.*, f.id_dgowner 
-				from 
-					".BAB_POSTS_TBL." p 
-					LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id 
-					LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum 
-					LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost 
-				where 
+				select p.*, f.id_dgowner
+				from
+					".BAB_POSTS_TBL." p
+					LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id
+					LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum
+					LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost
+				where
 					p.id IN (".$babDB->quote($this->arrid).") order by ".$order
 				);
-			
+
 			$this->count = $babDB->db_num_rows($this->res);
 			}
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -3285,7 +3313,7 @@ class bab_RecentFiles extends bab_handler
 		{
 		global $babBody, $BAB_SESS_USERID, $babDB;
 		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
-		
+
 		$this->bab_handler($ctx);
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
@@ -3293,9 +3321,9 @@ class bab_RecentFiles extends bab_handler
 		$delegationid = (int) $ctx->get_value('delegationid');
 
 		$this->oFmFolderSet = new BAB_FmFolderSet();
-		
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
+
+		$sDelegation = ' ';
+		if(0 != $delegationid)
 		{
 			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 		}
@@ -3308,7 +3336,7 @@ class bab_RecentFiles extends bab_handler
 			{
 			$arr = explode(',', $this->folderid);
 			}
-		
+
 		if( count($arr) == 0 )
 			{
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'" . $sDelegation;
@@ -3363,7 +3391,7 @@ class bab_RecentFiles extends bab_handler
 			$req .= ' group by f.id';
 
 			$req .= ' order by '.$order;
-			
+
 			if( $this->last !== false)
 				{
 				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
@@ -3391,7 +3419,7 @@ class bab_RecentFiles extends bab_handler
 			$sName = getFirstPath($arr['path']);
 			$sRelativePath = '';
 			$iIdDgOwner = 0;
-			
+
 			$oName =& $this->oFmFolderSet->aField['sName'];
 			$oRelativePath =& $this->oFmFolderSet->aField['sRelativePath'];
 			$oIdDgOwner =& $this->oFmFolderSet->aField['iIdDgOwner'];
@@ -3399,12 +3427,12 @@ class bab_RecentFiles extends bab_handler
 			$oCriteria = $oName->in($sName);
 			$oCriteria = $oCriteria->_and($oRelativePath->in(''));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($arr['iIdDgOwner']));
-			
+
 			$oFmFolder = $this->oFmFolderSet->get($oCriteria);
 			if(!is_null($oFmFolder))
 			{
 				$iId = $oFmFolder->getId();
-	
+
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileId', $arr['id']);
 				$this->ctx->curctx->push('FileName', $arr['name']);
@@ -3416,7 +3444,7 @@ class bab_RecentFiles extends bab_handler
 				$this->ctx->curctx->push('FileAuthor', $arr['author']);
 				$this->ctx->curctx->push('FileModifiedBy', $arr['modifiedby']);
 				$this->ctx->curctx->push('FileDate', bab_mktime($arr['modified']));
-				
+
 				$sFullPathname = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId()) . $arr['path'] . $arr['name'];
 				if (file_exists($sFullPathname))
 				{
@@ -3428,7 +3456,7 @@ class bab_RecentFiles extends bab_handler
 				}
 				$this->ctx->curctx->push('FileDelegationId', $arr['iIdDgOwner']);
 			}
-			else 
+			else
 			{
 				$this->ctx->curctx->push('CIndex', $this->idx);
 				$this->ctx->curctx->push('FileId', 0);
@@ -3447,7 +3475,7 @@ class bab_RecentFiles extends bab_handler
 			$this->ctx->curctx->push('FileFolderId', $arr['id_owner']);
 			$this->idx++;
 			$this->index = $this->idx;
-			
+
 			return true;
 			}
 		else
@@ -3467,18 +3495,18 @@ class bab_WaitingArticles extends bab_handler
 	var $index;
 	var $count;
 	var $topicid;
-	
+
 	var $imageheightmax;
 	var $imagewidthmax;
-		
+
 	function bab_WaitingArticles($ctx)
 		{
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
-			
+
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
-			
+
 		$userid = $ctx->get_value('userid');
 		if( $userid === false || $userid === '' )
 			{
@@ -3490,29 +3518,29 @@ class bab_WaitingArticles extends bab_handler
 			$this->topicid = $ctx->get_value('topicid');
 			$delegationid = (int) $ctx->get_value('delegationid');
 
-			$req = 
+			$req =
 				'select ' .
 					'adt.id, ' .
 					'adt.id_topic ' .
 				'FROM ' .
 					BAB_ART_DRAFTS_TBL . ' adt ';
-			
-			$sDelegation = ' ';	
-			if(0 != $delegationid)	
+
+			$sDelegation = ' ';
+			if(0 != $delegationid)
 			{
-				$req .= 
+				$req .=
 					'LEFT JOIN ' .
 						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
-						
+
 				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
-			
-					
+
+
 			$req .= "where adt.result='".BAB_ART_STATUS_WAIT."'" . $sDelegation;
 
-			
+
 			if( $this->topicid !== false && $this->topicid !== '' )
 				{
 				$req .= " and adt.id_topic IN (".$babDB->quote(explode(',', $this->topicid)).")";
@@ -3549,9 +3577,9 @@ class bab_WaitingArticles extends bab_handler
 		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->res);
-			
+
 			setArticleAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
 			$this->replace_ref($arr['head'], 'bab_article_head');
@@ -3618,22 +3646,22 @@ class bab_WaitingComments extends bab_handler
 			$delegationid = (int) $ctx->get_value('delegationid');
 
 			$req = "select c.id, c.id_topic from ".BAB_COMMENTS_TBL." c ";
-			
-			$sDelegation = ' ';	
-			if(0 != $delegationid)	
+
+			$sDelegation = ' ';
+			if(0 != $delegationid)
 			{
-				$req .= 
+				$req .=
 					'LEFT JOIN ' .
 						BAB_TOPICS_TBL . ' tp ON tp.id = id_topic ' .
 					'LEFT JOIN ' .
 						BAB_TOPICS_CATEGORIES_TBL . ' tpCat ON tpCat.id = tp.id_cat ';
-						
+
 				$sDelegation = ' AND tpCat.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 			}
-					
+
 			$req .= "where c.confirmed='N'" . $sDelegation;
 
-			
+
 			if( $this->articleid !== false && $this->articleid !== '' )
 				{
 				$req .= " and c.id_article IN (".$babDB->quote(explode(',', $this->articleid)).")";
@@ -3712,9 +3740,9 @@ class bab_WaitingFiles extends bab_handler
 		$this->bab_handler($ctx);
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		$sDelegation = ' ';	
+		$sDelegation = ' ';
 		$sLeftJoin = ' ';
-		if(0 != $delegationid)	
+		if(0 != $delegationid)
 		{
 			$sLeftJoin = 'LEFT JOIN ' .
 				BAB_FM_FOLDERS_TBL . ' fld ON fld.id = id_owner ';
@@ -3820,11 +3848,11 @@ class bab_WaitingPosts extends bab_handler
 			}
 
 		$delegationid = (int) $ctx->get_value('delegationid');
-		$sDelegation = ' ';	
-		if(0 != $delegationid)	
+		$sDelegation = ' ';
+		if(0 != $delegationid)
 		{
 			$req .= ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
-			
+
 		}
 
 		$res = $babDB->db_query($req);
@@ -3897,19 +3925,19 @@ class bab_Faqs extends bab_handler
 		$this->bab_handler($ctx);
 		$faqid = $ctx->get_value('faqid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-		
+
 		if (empty($faqid)) {
 			$faqid = false;
 		} else {
 			$faqid = explode(',', $faqid);
 		}
-		
+
 		if (empty($delegationid)) {
 			$delegationid = false;
 		}
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
-		
+
 		$this->res = bab_getFaqRes($faqid, $delegationid);
 		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -4345,7 +4373,7 @@ class bab_RecentFaqQuestions extends bab_handler
 
 		$req = "select ft.id, ft.idcat from ".BAB_FAQQR_TBL." ft";
 		$where = array();
-		if(0 != $delegationid)	
+		if(0 != $delegationid)
 		{
 			$req .= " left join ".BAB_FAQCAT_TBL." fct on fct.id=ft.idcat";
 			$where[] = 'fct.id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
@@ -4369,7 +4397,7 @@ class bab_RecentFaqQuestions extends bab_handler
 			{
 			$req .= " where ".implode(' AND ', $where);
 			}
-		
+
 		if( $this->last !== false)
 			{
 			$req .= ' LIMIT 0, ' . $babDB->db_escape_string($this->last);
@@ -4453,7 +4481,7 @@ class bab_Calendars extends bab_handler
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
 			default: $this->view='calmonth'; break;
-			}		
+			}
 
 		if( $type === false || $type === '' )
 			{
@@ -4463,25 +4491,25 @@ class bab_Calendars extends bab_handler
 				}
 
 			reset(bab_getICalendars()->usercal);
-			while( $row=each(bab_getICalendars()->usercal) ) 
-				{ 
+			while( $row=each(bab_getICalendars()->usercal) )
+				{
 				$this->IdEntries[] = $row[0];
 				}
-			
+
 			reset(bab_getICalendars()->pubcal);
-			while( $row=each(bab_getICalendars()->pubcal) ) 
-				{ 
+			while( $row=each(bab_getICalendars()->pubcal) )
+				{
 				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 					continue;
 				$this->IdEntries[] = $row[0];
 				}
 
 			reset(bab_getICalendars()->rescal);
-			while( $row=each(bab_getICalendars()->rescal) ) 
-				{ 
+			while( $row=each(bab_getICalendars()->rescal) )
+				{
 				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 					continue;
-					
+
 				$this->IdEntries[] = $row[0];
 				}
 			}
@@ -4504,16 +4532,16 @@ class bab_Calendars extends bab_handler
 						}
 
 					reset(bab_getICalendars()->usercal);
-					while( $row=each(bab_getICalendars()->usercal) ) 
-						{ 
+					while( $row=each(bab_getICalendars()->usercal) )
+						{
 						$this->IdEntries[] = $row[0];
 						}
 					break;
-				
+
 				case BAB_CAL_PUB_TYPE:
 					reset(bab_getICalendars()->pubcal);
-					while( $row=each(bab_getICalendars()->pubcal) ) 
-						{ 
+					while( $row=each(bab_getICalendars()->pubcal) )
+						{
 						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 							continue;
 						$this->IdEntries[] = $row[0];
@@ -4522,8 +4550,8 @@ class bab_Calendars extends bab_handler
 
 				case BAB_CAL_RES_TYPE:
 					reset(bab_getICalendars()->rescal);
-					while( $row=each(bab_getICalendars()->rescal) ) 
-						{ 
+					while( $row=each(bab_getICalendars()->rescal) )
+						{
 						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
 							continue;
 						$this->IdEntries[] = $row[0];
@@ -4617,7 +4645,7 @@ class bab_CalendarCategories extends bab_handler
 
 /**
  * OCCalendarEvents
- * 
+ *
  */
 class bab_CalendarEvents extends bab_handler
 {
@@ -4638,15 +4666,15 @@ class bab_CalendarEvents extends bab_handler
 		bab_getICalendars()->initializeCalendars();
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
-		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO"; 
-		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO"; 
+		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
+		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
 
 		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
 			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
 			default: $this->view='calmonth'; break;
-			}		
+			}
 
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -4707,11 +4735,11 @@ class bab_CalendarEvents extends bab_handler
 		}
 		$this->whObj->createPeriods($options);
 		$this->whObj->orderBoundaries();
-		
+
 		$this->events = $this->whObj->getEventsBetween(
-			$startdate->getTimeStamp(), 
-			$enddate->getTimeStamp(), 
-			$options 
+			$startdate->getTimeStamp(),
+			$enddate->getTimeStamp(),
+			$options
 		);
 
 		$this->count = count($this->events);
@@ -4724,7 +4752,7 @@ class bab_CalendarEvents extends bab_handler
 	 */
 	function getCalendars($calendarid) {
 		global $babDB;
-		
+
 		if (empty($calendarid)) {
 			trigger_error('filter=NO must be used with calendarid');
 			return;
@@ -4740,7 +4768,7 @@ class bab_CalendarEvents extends bab_handler
 						$this->whObj->addIdUser($arr['owner']);
 					}
 					break;
-				
+
 				case BAB_CAL_PUB_TYPE:
 					if ($this->cal_groups) {
 						$this->whObj->addCalendar($arr['id']);
@@ -4771,9 +4799,9 @@ class bab_CalendarEvents extends bab_handler
 		}
 
 		if ($this->cal_users) {
-			
+
 			if ($rr || (false === $rr && $this->cal_default_users)) {
-			
+
 				foreach( bab_getICalendars()->usercal as $key => $val ) {
 					if (false === $rr || isset($rr[$key])) {
 						$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($key));
@@ -4822,7 +4850,7 @@ class bab_CalendarEvents extends bab_handler
 		$ctx->curctx->push('calendarid', implode(',',$calendars));
 	}
 
-	
+
 	function getnext()
 	{
 		global $babBody,$babDB;
@@ -4845,7 +4873,7 @@ class bab_CalendarEvents extends bab_handler
 			$date = explode(' ', $p->getProperty('DTSTART'));
 			$date = explode('-', $date[0]);
 			$date = $date[0].",".$date[1].",".$date[2];
-			
+
 			$color = isset($p->color) ? $p->color : '';
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
@@ -4860,16 +4888,16 @@ class bab_CalendarEvents extends bab_handler
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
 			$this->ctx->curctx->push('EventCategoryName'		, $p->getProperty('CATEGORIES'));
-			
+
 			$EventOwner = isset($arr['id_cal']) ? bab_getCalendarOwner($arr['id_cal']) : '';
-			
+
 			$this->ctx->curctx->push('EventOwner'				, $EventOwner);
 			if( isset($arr['id_creator']) && $arr['id_creator'] )
 			{
 			$this->ctx->curctx->push('EventUpdateDate', bab_mktime($arr['date_modification']));
 			$this->ctx->curctx->push('EventUpdateAuthor', $arr['id_creator']);
 			}
-				
+
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -4954,7 +4982,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 		global $babBody, $babDB;
 		$this->bab_handler($ctx);
 		$this->count = 0;
-		
+
 		$userid = $ctx->get_value('userid');
 		if( $userid === false  )
 		{
@@ -4966,7 +4994,7 @@ class bab_IfUserMemberOfGroups extends bab_handler
 			{
 			$all = $ctx->get_value('all');
 
-			if ( $all !== false && mb_strtoupper($all) == "YES") 
+			if ( $all !== false && mb_strtoupper($all) == "YES")
 				$all = true;
 			else
 				$all = false;
@@ -5190,7 +5218,7 @@ class bab_OvmlSoap extends bab_handler
 			$args['container'] = $vars['container']; unset($vars['container']);
 			if( isset($vars['debug']))
 				{
-				$debug = $vars['debug']; 
+				$debug = $vars['debug'];
 				unset($vars['debug']);
 				}
 			else
@@ -5200,11 +5228,11 @@ class bab_OvmlSoap extends bab_handler
 
 			if( isset($vars['proxyhost']))
 				{
-				$proxyhost = $vars['proxyhost']; 
+				$proxyhost = $vars['proxyhost'];
 				unset($vars['proxyhost']);
 				if( isset($vars['proxyport']))
 					{
-					$proxyport = $vars['proxyport']; 
+					$proxyport = $vars['proxyport'];
 					unset($vars['proxyport']);
 					}
 				else
@@ -5213,7 +5241,7 @@ class bab_OvmlSoap extends bab_handler
 					}
 				if( isset($vars['proxyusername']))
 					{
-					$proxyusername = $vars['proxyusername']; 
+					$proxyusername = $vars['proxyusername'];
 					unset($vars['proxyusername']);
 					}
 				else
@@ -5222,7 +5250,7 @@ class bab_OvmlSoap extends bab_handler
 					}
 				if( isset($vars['proxypassword']))
 					{
-					$proxypassword = $vars['proxypassword']; 
+					$proxypassword = $vars['proxypassword'];
 					unset($vars['proxypassword']);
 					}
 				else
@@ -5241,7 +5269,7 @@ class bab_OvmlSoap extends bab_handler
 				$args['args'][] = array( 'name'=>$key, 'value' => $val);
 				}
 
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/nusoap/nusoap.php";
 
 			if( !empty($proxyhost))
@@ -5316,7 +5344,7 @@ class bab_Soap extends bab_handler
 			$apicall = $vars['apicall']; unset($vars['apicall']);
 			if( isset($vars['debug']))
 				{
-				$debug = $vars['debug']; 
+				$debug = $vars['debug'];
 				unset($vars['debug']);
 				}
 			else
@@ -5325,7 +5353,7 @@ class bab_Soap extends bab_handler
 				}
 			if( isset($vars['apinamespace']))
 				{
-				$apinamespace = $vars['apinamespace']; 
+				$apinamespace = $vars['apinamespace'];
 				unset($vars['apinamespace']);
 				}
 			else
@@ -5335,11 +5363,11 @@ class bab_Soap extends bab_handler
 
 			if( isset($vars['proxyhost']))
 				{
-				$proxyhost = $vars['proxyhost']; 
+				$proxyhost = $vars['proxyhost'];
 				unset($vars['proxyhost']);
 				if( isset($vars['proxyport']))
 					{
-					$proxyport = $vars['proxyport']; 
+					$proxyport = $vars['proxyport'];
 					unset($vars['proxyport']);
 					}
 				else
@@ -5348,7 +5376,7 @@ class bab_Soap extends bab_handler
 					}
 				if( isset($vars['proxyusername']))
 					{
-					$proxyusername = $vars['proxyusername']; 
+					$proxyusername = $vars['proxyusername'];
 					unset($vars['proxyusername']);
 					}
 				else
@@ -5357,7 +5385,7 @@ class bab_Soap extends bab_handler
 					}
 				if( isset($vars['proxypassword']))
 					{
-					$proxypassword = $vars['proxypassword']; 
+					$proxypassword = $vars['proxypassword'];
 					unset($vars['proxypassword']);
 					}
 				else
@@ -5462,7 +5490,7 @@ class bab_SitemapEntries extends bab_handler
 				$node = $node->nextSibling();
 				}
 		}
-		
+
 		$this->count = count($this->IdEntries);
 		$this->ctx->curctx->push('CCount', $this->count);
 
@@ -5651,7 +5679,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-	
+
 	if(is_dir($sUploadPath))
 	{
 		$aImgInfo = bab_getImageArticle($iIdArticle);
@@ -5670,16 +5698,16 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				$sImageUrl .= '&iIdArticle=' . $iIdArticle;
 				$sImageUrl .= '&iWidth=' . $iWidth;
 				$sImageUrl .= '&iHeight=' . $iHeight;
-				
+
 				$oCtx->curctx->push('AssociatedImage', 1);
 				$oCtx->curctx->push('ImageUrl', $sImageUrl);
 				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
 				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
 				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
-				
+
 				$bProcessed = true;
-				
+
 				/*
 				bab_debug(
 					'AssociatedImage	' . 1 . "\n" .
@@ -5694,7 +5722,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			}
 		}
 	}
-	
+
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
@@ -5714,7 +5742,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-	
+
 	if(is_dir($sUploadPath))
 	{
 		$aImgInfo = bab_getImageCategory($iIdCategory);
@@ -5733,16 +5761,16 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
 				$sImageUrl .= '&iWidth=' . $iWidth;
 				$sImageUrl .= '&iHeight=' . $iHeight;
-				
+
 				$oCtx->curctx->push('AssociatedImage', 1);
 				$oCtx->curctx->push('ImageUrl', $sImageUrl);
 				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
 				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
 				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
-				
+
 				$bProcessed = true;
-				
+
 				/*
 				bab_debug(
 					'AssociatedImage	' . 1 . "\n" .
@@ -5757,7 +5785,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			}
 		}
 	}
-	
+
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
@@ -5778,7 +5806,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-	
+
 	if(is_dir($sUploadPath))
 	{
 		$aImgInfo = bab_getImageTopic($iIdTopic);
@@ -5799,16 +5827,16 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
 				$sImageUrl .= '&iWidth=' . $iWidth;
 				$sImageUrl .= '&iHeight=' . $iHeight;
-				
+
 				$oCtx->curctx->push('AssociatedImage', 1);
 				$oCtx->curctx->push('ImageUrl', $sImageUrl);
 				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
 				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
 				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
-				
+
 				$bProcessed = true;
-				
+
 				/*
 				bab_debug(
 					'AssociatedImage	' . 1 . "\n" .
@@ -5823,7 +5851,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			}
 		}
 	}
-	
+
 	if(false === $bProcessed)
 	{
 		$oCtx->curctx->push('AssociatedImage', 0);
@@ -5834,7 +5862,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 		$oCtx->curctx->push('ResizedImageHeight', 0);
 	}
 }
-	
+
 
 class babOvTemplate
 {
@@ -5977,7 +6005,7 @@ function cast($str)
 function getArgs($str)
 	{
 	$args = array();
-	
+
 	if(preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/", $this->vars_replace($str), $mm))
 		{
 		for( $j = 0; $j< count($mm[1]); $j++)
@@ -6104,7 +6132,7 @@ function format_output($val, $matches)
 						break;
 					case '3':
 						$lhtmlentities = true;
-						
+
 						require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 						$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
 						break;
@@ -6187,7 +6215,7 @@ function format_output($val, $matches)
 		$this->gctx->push($varname, $val);
 		}
 
-	if( !$lhtmlentities && $ghtmlentities ) 
+	if( !$lhtmlentities && $ghtmlentities )
 		{
 		return bab_toHtml($val);
 		}
@@ -6316,7 +6344,7 @@ function bab_Translate($args)
 					$lang = $v;
 					break;
 				}
-			}					
+			}
 		return $this->format_output(bab_translate($text, "", $lang), $args);
 		}
 	return '';
@@ -6344,7 +6372,7 @@ function bab_WebStat($args)
 		if( !empty($name) && !empty($value))
 			{
 			if( mb_substr($name, 0, 4) == "bab_" )
-				{	
+				{
 				$arr = explode(',', $value);
 				for( $k = 0; $k < count($arr); $k++ )
 					{
@@ -6383,7 +6411,7 @@ function bab_SetCookie($args)
 					break;
 				}
 			}
-			
+
 		if( !empty($name))
 			{
 			if( !isset($expire))
@@ -6413,7 +6441,7 @@ function bab_GetCookie($args)
 					$name = $v;
 					break;
 				}
-			}					
+			}
 
 		if( !empty($name) && isset($_COOKIE[$name]))
 			{
@@ -6421,7 +6449,7 @@ function bab_GetCookie($args)
 			}
 		}
 	}
-	
+
 function bab_SetSessionVar($args)
 	{
 	global $babBody;
@@ -6532,14 +6560,14 @@ function bab_PutVar($args)
 						case 'babSlogan': $GLOBALS['babSlogan'] = $value; break;
 						case 'babTitle': $babBody->title = $value; break;
 						case 'babError': $babBody->msgerror = $value; break;
-						default: 
+						default:
 							$value = $this->cast($value);
 							break;
 					}
-					
+
 					break;
 				}
-			}					
+			}
 		if( $global && isset($GLOBALS[$name]) )
 			{
 			$value = $GLOBALS[$name];
@@ -6564,7 +6592,7 @@ function bab_GetVar($args)
 					$name = $v;
 					break;
 				}
-			}					
+			}
 
 		if( !empty($name))
 			{
@@ -6662,11 +6690,11 @@ function bab_rgp($args, $method)
 	$saveas = false;
 	$saveasname = '';
 
-	if (count($args)) 
+	if (count($args))
 		{
-		foreach( $args as $p => $v) 
+		foreach( $args as $p => $v)
 			{
-			switch(mb_strtolower(trim($p))) 
+			switch(mb_strtolower(trim($p)))
 				{
 				case 'name':
 					$name = $v;
@@ -6675,7 +6703,7 @@ function bab_rgp($args, $method)
 					$default = $v;
 					break;
 				case 'saveas':
-					if (!empty($v)) 
+					if (!empty($v))
 						{
 						$saveas = true;
 						$saveasname = $v;
@@ -6683,14 +6711,14 @@ function bab_rgp($args, $method)
 					break;
 				}
 			}
-		
-		if (!empty($name)) 
+
+		if (!empty($name))
 			{
-			if ($saveas) 
+			if ($saveas)
 				{
 				$this->gctx->push($saveasname, $method($name, $default));
 				}
-			else 
+			else
 				{
 				$this->gctx->push($name, $method($name, $default));
 				}
@@ -6716,10 +6744,10 @@ function bab_Get($args)
 
 /**
  * Experimental ( can be changed in futur )
- * Returns an HTTP Request javascript call 
- * 
- * @access  public 
- * @return  string	javascript call to bab_ajaxRequest() 
+ * Returns an HTTP Request javascript call
+ *
+ * @access  public
+ * @return  string	javascript call to bab_ajaxRequest()
  * @param   url	http request
  * @param   output	elem:property like mydiv:innerHTML where to put ajax response
  * @param   action	GET|POST default GET
@@ -6764,7 +6792,7 @@ function bab_Ajax($args)
 					$params[] = $p.'='.$v;
 					break;
 				}
-			}					
+			}
 		return "bab_ajaxRequest('".$url."','".$action."','".$output."','".$indicator."','".implode('&',$params)."')";
 		}
 	return '';
@@ -6880,7 +6908,7 @@ function bab_Header($args)
 
 function bab_Recurse($args) {
 	$handler = mb_substr($this->curctx->getname(), 4);
-	return $this->handle_tag($handler, $this->curctx->getcontent(), $args);	
+	return $this->handle_tag($handler, $this->curctx->getcontent(), $args);
 }
 
 
@@ -6898,7 +6926,7 @@ function bab_Addon($args)
 				case 'name':
 					$addon = bab_getAddonInfosInstance($v);
 					break;
-				
+
 				case 'function':
 					$function = $v;
 					break;
@@ -6908,7 +6936,7 @@ function bab_Addon($args)
 				}
 			}
 
-		
+
 
 		if ($addon && $addon->isAccessValid())
 			{
