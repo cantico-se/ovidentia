@@ -261,19 +261,24 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 			$this->contentCriteria = $this->criteria;
 		}
 
-		$this->index_result = array(
-			'versions' => array(),
-			'currents' => array()
-		);
-
-
 		$engine = bab_searchEngineInfos();
 		if ($engine['indexes']['bab_files']['index_disabled']) {
+			
+			$this->index_result = array(
+				'versions' => array(),
+				'currents' => array()
+			);
+			
 			return $this->index_result;
 		}
 
 		
 		if (null === $this->index_result) {
+			
+			$this->index_result = array(
+				'versions' => array(),
+				'currents' => array()
+			);
 
 			$found_files = bab_searchIndexedFilesFromCriteria($this->contentCriteria, 'bab_files');
 
@@ -292,6 +297,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 		return $this->index_result;
 	}
+
 
 
 	/**
