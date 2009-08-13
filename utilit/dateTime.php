@@ -311,13 +311,13 @@ class BAB_DateTime
 				$this->init($this->_iYear, $this->_iMonth, ($this->_iDay - $iNbUnits), $this->_iHours, $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_HOUR:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($iNbUnits - $this->_iHours), $this->_iMinutes, $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, ($this->_iHours - $iNbUnits), $this->_iMinutes, $this->_iSeconds);
 				break;
 			case BAB_DATETIME_MINUTE:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($iNbUnits - $this->_iMinutes), $this->_iSeconds);
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, ($this->_iMinutes - $iNbUnits), $this->_iSeconds);
 				break;
 			case BAB_DATETIME_SECOND:
-				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits - $this->_iSeconds));
+				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($this->_iSeconds - $iNbUnits));
 				break;
 		}
 	}
