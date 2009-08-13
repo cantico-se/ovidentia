@@ -275,7 +275,7 @@ class bab_siteMap {
 
 			
 		
-			$data = new bab_siteMapItem();
+			$data = & new bab_siteMapItem();
 			$data->id_function 		= $arr['id_function'];
 			$data->name 			= $arr['name'];
 			$data->description 		= $arr['description'];
