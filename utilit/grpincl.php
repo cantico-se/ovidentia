@@ -142,7 +142,7 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
-	$tree = & new bab_grptree();
+	$tree = new bab_grptree();
 	$node = $tree->getNodeInfo($id);
 
 	global $babDB;
@@ -201,7 +201,7 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
-		$tree = & new bab_grptree();
+		$tree = new bab_grptree();
 		$id = $tree->addAlpha($parent, $name);
 		unset($tree);
 

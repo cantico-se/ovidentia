@@ -71,7 +71,7 @@ class mgroups
 
 	function babecho()
 	{
-	$tree = & new bab_grptree();
+	$tree = new bab_grptree();
 	if (false === $this->id_parent)
 		{
 		$this->id_parent = $tree->firstnode;

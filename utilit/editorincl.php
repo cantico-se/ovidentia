@@ -531,7 +531,7 @@ function bab_editor_text_toolbar($editname,$uid)
 	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/text_toolbar.js');
 	$babBody->addStyleSheet('text_toolbar.css');
 
-	$tmp = & new text_toolbar($uid);
+	$tmp = new text_toolbar($uid);
 	$tmp->editname = $editname;
 	return bab_printTemplate($tmp,"uiutil.html", "babtexttoolbartemplate");
 }

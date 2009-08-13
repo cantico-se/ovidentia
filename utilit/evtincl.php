@@ -1262,7 +1262,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 
 	$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 
-	$tempc =& new clsnotifyEventUpdate($evtinfo);
+	$tempc =new clsnotifyEventUpdate($evtinfo);
 
 	if( $bdelete )
 		{
@@ -1787,7 +1787,7 @@ class bab_event_posted {
 		
 		
 		
-		$mcals = & new bab_mcalendars($sdate, $edate, $calid);
+		$mcals = new bab_mcalendars($sdate, $edate, $calid);
 		foreach($AvaReply->conflicts_events as $calPeriod) {
 		
 			$event = $calPeriod->getData();

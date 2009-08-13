@@ -68,7 +68,7 @@ class macl
 			$this->ov_groups[$arr['id']] = $arr;
 			}
 
-		$this->tree = & new bab_arraytree(BAB_GROUPS_TBL, null);
+		$this->tree = new bab_arraytree(BAB_GROUPS_TBL, null);
 		
 		$this->iIdDelegation = (!is_null($iIdDelegation)) ? $iIdDelegation : $babBody->currentAdmGroup;
 		$aDelegation = reset(bab_getDelegationById($this->iIdDelegation));
@@ -406,7 +406,7 @@ class acl_grp_node extends macl
 
 function acl_grp_node_html(&$acl, $id_group)
 {
-	$obj = & new acl_grp_node($acl, $id_group);
+	$obj = new acl_grp_node($acl, $id_group);
 	return $obj->get();
 }
 
@@ -567,7 +567,7 @@ function aclSetGroups_unregistered($table, $id_object)
 function aclGetAccessUsers($table, $id_object) {
 	global $babBody, $babDB;
 	
-	$tree = & new bab_grptree();
+	$tree = new bab_grptree();
 	$groups = array();
 	
 	$res = $babDB->db_query("SELECT t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group WHERE t.id_object='".$babDB->db_escape_string($id_object)."'");

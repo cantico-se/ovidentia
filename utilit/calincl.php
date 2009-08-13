@@ -913,7 +913,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 	
 	while( $arr = $babDB->db_fetch_assoc($res))
 		{
-		$events[$arr['id']] = & new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
+		$events[$arr['id']] = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']), BAB_PERIOD_CALEVENT);
 		$xCtoPuid = & $events[$arr['id']]->getProperty('X-CTO-PUID');
 		$xCtoPuid .= '.'.$arr['id'];
 		

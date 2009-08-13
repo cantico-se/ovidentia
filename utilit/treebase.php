@@ -590,7 +590,7 @@ class bab_RootNode extends bab_Node
 			bab_debug(sprintf('Node id "%s" already exists.', $id));
 			return bab_Node::NULL_NODE();
 		}
-		$newNode =& new bab_Node($this, $id);
+		$newNode =new bab_Node($this, $id);
 		$newNode->setData($data);
 		if (!is_null($newNode->getId())) {
 			$this->_ids[$newNode->getId()] =& $newNode;
@@ -605,7 +605,7 @@ class bab_RootNode extends bab_Node
 	 */
 	function &createNodeIterator(&$root)
 	{
-		$nodeIterator =& new bab_NodeIterator($root);
+		$nodeIterator =new bab_NodeIterator($root);
 		return $nodeIterator;
 	}
 

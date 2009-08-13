@@ -139,7 +139,7 @@ function displaySpecificFieldList()
 		add_item_menu($itemMenu);
 		$babBody->title = bab_toHtml(bab_translate("Specific field list"));
 	
-		$list = & new BAB_List(bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject));
+		$list = new BAB_List(bab_getSpecificFieldListQuery($iIdProjectSpace, $iIdProject));
 		$list->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 		$list->raw_2_html(BAB_RAW_2_HTML_DATA);
 		
@@ -235,7 +235,7 @@ function displayDeleteSpecificFieldForm()
 	$sDeletableField = '\'' . implode('\',\'', array_unique($aDeletableObjects)) . '\'';
 
 //	bab_debug('sDeletableField ==> ' . $sDeletableField);
-	$bf = & new BAB_BaseFormProcessing();
+	$bf = new BAB_BaseFormProcessing();
 	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_SPECIFIC_FIELD_LIST);
 	$oTmCtx =& getTskMgrContext();
 	$bf->set_data('iIdProjectSpace', $oTmCtx->getIdProjectSpace());

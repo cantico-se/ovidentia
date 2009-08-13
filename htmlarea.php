@@ -121,7 +121,7 @@ function editor_js($uid)
 
 	header("Content-type: application/x-javascript");
 	
-	$temp = & new temp($uid);
+	$temp = new temp($uid);
 	die(bab_printTemplate($temp, 'editor.js'));
 
 	}
