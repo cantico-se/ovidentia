@@ -553,7 +553,7 @@ class bab_userWorkingHours {
 	 */
 	function & setUserPeriod($id_user, $beginDate, $endDate, $type) {
 		
-		$p = & new bab_calendarPeriod($beginDate->getTimeStamp(), $endDate->getTimeStamp(), $type);
+		$p = new bab_calendarPeriod($beginDate->getTimeStamp(), $endDate->getTimeStamp(), $type);
 		if (false !== $id_user) {
 			$xCtoPuid = & $p->getProperty('X-CTO-PUID');
 			$xCtoPuid .= '.'.$id_user;

@@ -67,7 +67,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 
 		function prepare_events() {
-			$this->mcals = & new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
+			$this->mcals = new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
 			$this->harray = array();
 			for( $i = 0; $i < count($this->idcals); $i++ )
 				{

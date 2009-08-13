@@ -564,7 +564,7 @@ function bab_deleteGroup($id)
 	// delete group
 	
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
-	$tree = & new bab_grptree();
+	$tree = new bab_grptree();
 	$tree->remove($id);
 
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";

@@ -57,7 +57,7 @@ function editorfunctions()
 	
 	$babBody->addStyleSheet('text_toolbar.css');
 
-	$temp = & new temp();
+	$temp = new temp();
 	$babBody->babPopup(bab_printTemplate($temp, 'editorfunctions.html'));
 
 }

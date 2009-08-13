@@ -194,7 +194,7 @@ function groupList()
 			}
 			$this->iconCssClass_Members = Func_Icons::APPS_USERS;
 			
-			$tree = & new bab_grptree();
+			$tree = new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));

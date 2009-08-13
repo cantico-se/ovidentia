@@ -602,7 +602,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$this->from = sprintf("%04s-%02s-%02s 00:00:00", $fyear, $fmonth, $fday);
 			$this->to = sprintf("%04s-%02s-%02s 00:00:00", $tyear, $tmonth, $tday);
 
-			$this->mcals = & new bab_mcalendars($this->from, $this->to, $idcals);
+			$this->mcals = new bab_mcalendars($this->from, $this->to, $idcals);
 			$this->mcals->loadCategories();
 			$this->resevent = array();
 

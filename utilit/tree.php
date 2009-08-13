@@ -558,7 +558,7 @@ class bab_TreeView extends bab_Template
 	 */
 	public function &createElement($id, $type, $title, $description, $link)
 	{
-		$element =& new bab_TreeViewElement($id, $type, $title, $description, $link);
+		$element =new bab_TreeViewElement($id, $type, $title, $description, $link);
 		return $element;
 	}
 
@@ -2607,7 +2607,7 @@ class bab_GroupTreeView extends bab_TreeView
 	 */
 	public function &createElement($id, $type, $title, $description, $link)
 	{
-		$element =& new bab_GroupTreeViewElement($id, $type, $title, $description, $link);
+		$element =new bab_GroupTreeViewElement($id, $type, $title, $description, $link);
 		return $element;
 	}
 
