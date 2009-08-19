@@ -15,7 +15,7 @@
 <string id="About your article">Au sujet de votre article</string>
 <string id="About your comment">A propos de votre commentaire</string>
 <string id="Accepted">Accepté</string>
-<string id="You must be logged in to access this page.">Vous devez vous authentifier pour accédeer à cette page.</string>
+<string id="You must be logged in to access this page.">Vous devez vous authentifier pour accéder à cette page.</string>
 <string id="Access denied">Accès refusé</string>
 <string id="Access method">Méthode d'accès</string>
 <string id="Access to Add-on">Accès au module</string>
@@ -3057,7 +3057,7 @@
 <string id="Install of addon %s">Installation du module %s</string>
 <string id="Install script failed in addon %s">Le programme d'installation du module %s a échoué</string>
 <string id="The install is successfull">L'installation c'est effectuée correctement</string>
-<string id="There is an error in install">Il ya une erreur dans l'installation</string>
+<string id="There is an error in install">Il y a une erreur dans l'installation</string>
 <string id="Installation of the package">Installation de l'archive</string>
 <string id="%d table has been created">%d table a été créée</string>
 <string id="%d tables has been created">%d tables ont été créés</string>
