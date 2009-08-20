@@ -218,7 +218,7 @@ function displayDeleteProjectsSpacesForm()
 	
 		if(0 != $iIdProjectSpace)
 		{
-			$bf = new BAB_BaseFormProcessing();
+			$bf =& new BAB_BaseFormProcessing();
 			$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$bf->set_data('iIdProject', $iIdProject);
 			$bf->set_data('tg', 'admTskMgr');
@@ -434,7 +434,7 @@ function displayProjectsConfigurationForm()
 			add_item_menu($itemMenu);
 			$babBody->title = bab_toHtml(bab_translate("Default projects configuration"));
 		
-			$pjc = new BAB_TM_Configuration($iIdProjectSpace, $iIdProject);
+			$pjc =& new BAB_TM_Configuration($iIdProjectSpace, $iIdProject);
 			
 			$pjc->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 			$pjc->raw_2_html(BAB_RAW_2_HTML_DATA);

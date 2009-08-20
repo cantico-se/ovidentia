@@ -134,7 +134,7 @@ function displayCategoriesList($iIdProjectSpace, $iIdProject, $iIdUser)
 	
 		
 		//bab_debug($query);	
-		$list = new BAB_List(bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser));
+		$list =& new BAB_List(bab_getCategoriesListQuery($iIdProjectSpace, $iIdProject, $iIdUser));
 		$list->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 		$list->raw_2_html(BAB_RAW_2_HTML_DATA);
 		
@@ -274,7 +274,7 @@ function displayDeleteCategoryForm()
 
 	$aDeletableObjects = bab_rp('aDeletableObjects', array());
 
-	$bf = new BAB_BaseFormProcessing();
+	$bf =& new BAB_BaseFormProcessing();
 	$bf->set_data('idx', BAB_TM_IDX_DISPLAY_CATEGORIES_LIST);
 	$oTmCtx =& getTskMgrContext();
 	$bf->set_data('iIdProjectSpace', (int) $oTmCtx->getIdProjectSpace());

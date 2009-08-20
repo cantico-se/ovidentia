@@ -1048,7 +1048,7 @@ function viewVacationCalendar($users, $period = false )
 		temp::printhtml(false);
 		}
 
-	$temp = new temp($users, $period);
+	$temp =& new temp($users, $period);
 	$temp->printhtml();
 	}
 

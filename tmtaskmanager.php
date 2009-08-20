@@ -556,7 +556,7 @@ function displayDeleteProjectForm()
 	
 			if(false !== $bSuccess)
 			{
-				$bf = new BAB_BaseFormProcessing();
+				$bf =& new BAB_BaseFormProcessing();
 				$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECTS_SPACES_LIST);
 				$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT);
 				$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
@@ -815,7 +815,7 @@ function displayProjectPropertiesForm()
 				}
 			}				
 			
-			$oPrjP = new BAB_ProjectProperties($iIdProjectSpace, $iIdProject);
+			$oPrjP =& new BAB_ProjectProperties($iIdProjectSpace, $iIdProject);
 			$oPrjP->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 			$oPrjP->raw_2_html(BAB_RAW_2_HTML_DATA);
 			$babBody->babecho(bab_printTemplate($oPrjP, 'tmUser.html', 'projectProperties'));
@@ -989,7 +989,7 @@ function displayDeleteProjectCommentary()
 	
 			if(false !== $bSuccess)
 			{
-				$bf = new BAB_BaseFormProcessing();
+				$bf =& new BAB_BaseFormProcessing();
 				$bf->set_data('idx', BAB_TM_IDX_DISPLAY_PROJECT_COMMENTARY_LIST);
 				$bf->set_data('action', BAB_TM_ACTION_DELETE_PROJECT_COMMENTARY);
 				$bf->set_data('iIdProjectSpace', $iIdProjectSpace);
@@ -2338,7 +2338,7 @@ function displayTaskForm()
 		global $babInstallPath;
 		require_once($babInstallPath . 'tmTaskClasses.php');
 		
-		$oTaskForm = new BAB_TaskForm();
+		$oTaskForm =& new BAB_TaskForm();
 		
 		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 //		$oTaskForm->raw_2_html(BAB_RAW_2_HTML_DATA);
@@ -2545,7 +2545,7 @@ function displayPersonnalTaskConfigurationForm()
 		
 		add_item_menu($itemMenu);
 		$babBody->title = bab_toHtml(bab_translate("Personnals tasks configuration"));
-		$pjc = new BAB_TM_Configuration();
+		$pjc =& new BAB_TM_Configuration();
 		$pjc->raw_2_html(BAB_RAW_2_HTML_CAPTION);
 		$pjc->raw_2_html(BAB_RAW_2_HTML_DATA);
 		$babBody->babecho(bab_printTemplate($pjc, 'tmUser.html', 'PersonnalTaskConfiguration'));
@@ -3169,15 +3169,15 @@ function addModifyTask()
 	
 	if(0 == $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-		$oTaskValidator =new BAB_TM_MgrTaskCreatorValidator();
+		$oTaskValidator =& new BAB_TM_MgrTaskCreatorValidator();
 	}
 	else if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
 	{
-		$oTaskValidator =new BAB_TM_TaskUpdaterValidator();
+		$oTaskValidator =& new BAB_TM_TaskUpdaterValidator();
 	}
 	else if(0 != $oTmCtx->m_iIdTask && BAB_TM_TASK_RESPONSIBLE == $iUserProfil)
 	{
-		$oTaskValidator =new BAB_TM_TaskUpdateByTaskResponsible();
+		$oTaskValidator =& new BAB_TM_TaskUpdateByTaskResponsible();
 	}
 	else
 	{

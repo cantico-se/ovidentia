@@ -185,7 +185,7 @@ function groupList()
 			$this->t_create_group = bab_translate("Create group");
 			$this->t_edit_group = bab_translate("Edit group");
 			$this->t_members = bab_translate("Members");
-			$tree = new bab_grptree();
+			$tree =& new bab_grptree();
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));

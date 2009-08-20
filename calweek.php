@@ -85,11 +85,11 @@ class cal_weekCls extends cal_wmdbaseCls
 
 
 	function prepare_events() {
-		$this->mcals = new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
+		$this->mcals =& new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 
 	function prepare_free_events() {
-		$this->mcals = new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
+		$this->mcals =& new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
 		$this->whObj = bab_mcalendars::create_events($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 

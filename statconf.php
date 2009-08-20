@@ -879,7 +879,7 @@ switch($idx)
 
 	case 'bcbrowse':
 		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-		$babBodyPopup =new babBodyPopup();
+		$babBodyPopup =& new babBodyPopup();
 		statBrowseBasketItem();
 		printBabBodyPopup();
 		exit;

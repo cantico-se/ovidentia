@@ -223,7 +223,7 @@ include_once $babInstallPath.'utilit/dbutil.php';
 $babDB = new babDatabase();
 $babDB->db_setCharset();
 include_once $babInstallPath.'utilit/statincl.php';
-$babWebStat =new bab_WebStatEvent();
+$babWebStat =& new bab_WebStatEvent();
 
 include $babInstallPath.'utilit/utilit.php';
 unset($BAB_SESS_LOGGED);

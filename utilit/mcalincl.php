@@ -44,7 +44,7 @@ class bab_mcalendars
 		$this->idcals = $idcals;
 		for( $i = 0; $i < count($this->idcals); $i++ )
 			{
-			$this->objcals[$this->idcals[$i]] =new bab_icalendar($startdate, $enddate, $this->idcals[$i]);
+			$this->objcals[$this->idcals[$i]] =& new bab_icalendar($startdate, $enddate, $this->idcals[$i]);
 			}
 		}
 

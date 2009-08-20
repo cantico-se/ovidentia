@@ -164,7 +164,7 @@ if (isset($_POST['action']))
 				$drop_table = !empty($_POST['drop_table']) ? 1 : 0;
 				$data = !empty($_POST['data']) ? 1 : 0;
 
-				$bab_sqlExport = new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
+				$bab_sqlExport =& new bab_sqlExport($_POST['tables'], $structure, $drop_table, $data);
 				$bab_sqlExport->exportFile();
 				}
 			break;

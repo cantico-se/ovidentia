@@ -653,7 +653,7 @@
 
 		function getTaskInfo()
 		{
-			$this->m_oTask =new BAB_TM_Task();
+			$this->m_oTask =& new BAB_TM_Task();
 			
 			if($this->m_oTask->m_isPersonnal)
 			{
@@ -1357,7 +1357,7 @@ $this->set_data('iSpFldInstanceId', $aItem['value']['iIdFieldClass']);
 			$this->m_iIdProject			= $oTmCtx->getIdProject();
 			$this->m_iIdTask			= $oTmCtx->getIdTask();
 			$this->m_iUserProfil		= $oTmCtx->getUserProfil();
-			$this->m_oTask				=new BAB_TM_Task();
+			$this->m_oTask				=& new BAB_TM_Task();
 
 			$this->m_sTaskNumber = trim(bab_rp('sTaskNumber', ''));
 

@@ -148,7 +148,7 @@ class bab_OrgChart extends bab_TreeView
 	 */
 	function &createElement($id, $type, $title, $description, $link)
 	{
-		$element =new bab_OrgChartElement($id, $type, $title, $description, $link);
+		$element =& new bab_OrgChartElement($id, $type, $title, $description, $link);
 		return $element;
 	}
 

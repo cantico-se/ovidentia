@@ -263,7 +263,7 @@ class bab_grp_node
 
 function bab_grp_node_html(&$tree, $id_group, $file, $template, $options = array())
 {
-	$obj = new bab_grp_node($tree, $id_group);
+	$obj =& new bab_grp_node($tree, $id_group);
 	$obj->file = &$file;
 	$obj->template = &$template;
 	$obj->options = &$options;
