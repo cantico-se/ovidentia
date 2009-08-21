@@ -27,40 +27,35 @@
 include_once 'base.php';
 
 function sectionsList()
-	{
+{
 	global $babBody;
-	class temp
-		{
-		var $title;
-		var $description;
+
+	class SectionsList_template
+	{
+		public $title;
+		public $description;
 		
-		var $id;
-		var $arr = array();
-		var $db;
-		var $count;
-		var $res;
-		var $counta;
-		var $resa;
-		var $countcat;
-		var $rescat;
-		var $secchecked;
-		var $enabled;
-		var $checkall;
-		var $uncheckall;
-		var $update;
-		var $idvalue;
-		var $access;
-		var $accessurl;
+		public $enabled;
+		public $checkall;
+		public $uncheckall;
+		public $update;
+		public $idvalue;
+		public $access;
+		public $accessurl;
 
-		var $descval;
-		var $titleval;
-		var $arrcatid = array();
+		public $descval;
+		public $titleval;
+		public $arrcatid = array();
 
-		var $maxallowedsectxt;
+		public $maxallowedsectxt;
 
-		function temp()
-			{
+		public $sections = array();
+
+
+		public function __construct()
+		{
 			global $babBody, $babDB;
+
 			$this->title = bab_translate("Title");
 			$this->description = bab_translate("Description");
 			$this->enabled = bab_translate("Enabled");
@@ -70,119 +65,70 @@ function sectionsList()
 			$this->access = bab_translate("Access");
 			$this->groups = bab_translate("View");
 			$this->maxallowedsectxt = bab_translate("The maximum number of authorized optional sections was reached");
-			$req = "select distinct s.* from ".BAB_SECTIONS_TBL." s, ".BAB_USERS_GROUPS_TBL." ug, ".BAB_SECTIONS_GROUPS_TBL." sg where s.enabled='Y' AND s.optional='Y' and s.id=sg.id_object and ( (ug.id_group=sg.id_group and ug.id_object='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."') or sg.id_group='0' or sg.id_group='1')";
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
+
+
+			$req = 'SELECT DISTINCT s.* FROM '.BAB_SECTIONS_TBL.' s, '.BAB_USERS_GROUPS_TBL.' ug, '.BAB_SECTIONS_GROUPS_TBL.' sg WHERE s.enabled=\'Y\' AND s.optional=\'Y\' AND s.id=sg.id_object AND ( (ug.id_group=sg.id_group AND ug.id_object='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).') OR sg.id_group=0 or sg.id_group=1)';
+			$publicSections = $babDB->db_query($req);
+
+			while ($public = $babDB->db_fetch_assoc($publicSections)) {
+				list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'2\' AND id_section='.$babDB->quote($public['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
+				$checked = (isset($hidden) && $hidden != 'Y');
+				$this->sections[$public['id'] . '-2'] = array('title' => $public['title'], 'description' => $public['description'], 'checked' => $checked);
+			}				
 
 			// don't get Administrator section and User's section
-			$this->resa = $babDB->db_query("select * from ".BAB_PRIVATE_SECTIONS_TBL." where enabled='Y' AND optional='Y' and id !='1' and id!='5'");
-			$this->counta = $babDB->db_num_rows($this->resa);
+			$privateSections = $babDB->db_query('SELECT * FROM '.BAB_PRIVATE_SECTIONS_TBL.' WHERE enabled=\'Y\' AND optional=\'Y\' AND id !=1 AND id!=5');
 
-			$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." c where ".BAB_TOPICS_TBL.".id_cat=c.id and c.optional='Y' AND c.enabled='Y'");
-			while( $row = $babDB->db_fetch_array($res))
-				{
-				if( isset($babBody->topview[$row['id']]) )
-					{
-					if( !in_array($row['id_cat'], $this->arrcatid))
-						array_push($this->arrcatid, $row['id_cat']);
-					}
+			while ($private = $babDB->db_fetch_assoc($privateSections)) {
+				list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'1\' AND id_section='.$babDB->quote($private['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
+				$checked = (isset($hidden) && $hidden != 'Y');
+				$this->sections[$private['id'] . '-1'] = array('title' => $private['title'], 'description' => $private['description'], 'checked' => $checked);
+			}				
+
+			// Add sections from article categories.
+			$res = $babDB->db_query('SELECT '.BAB_TOPICS_TBL.'.id,'.BAB_TOPICS_TBL.'.id_cat FROM '.BAB_TOPICS_TBL.' JOIN '.BAB_TOPICS_CATEGORIES_TBL.' c WHERE '.BAB_TOPICS_TBL.'.id_cat=c.id AND c.optional=\'Y\' AND c.enabled=\'Y\'');
+			while ($row = $babDB->db_fetch_assoc($res)) {
+				if (isset($babBody->topview[$row['id']]) && !in_array($row['id_cat'], $this->arrcatid)) {
+					array_push($this->arrcatid, $row['id_cat']);
+					$category = $babDB->db_fetch_assoc($babDB->db_query('SELECT * FROM '.BAB_TOPICS_CATEGORIES_TBL.' WHERE id='.$babDB->quote($row['id_cat'])));
+					list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'3\' AND id_section='.$babDB->quote($category['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
+					$checked = (isset($hidden) && $hidden != 'Y');
+					$this->sections[$row['id_cat'] . '-3'] = array('title' => $category['title'], 'description' => $category['description'], 'checked' => $checked);
 				}
+			}
 
-			if( isset($GLOBALS['babMaxOptionalSections']))
-				{
+			if (isset($GLOBALS['babMaxOptionalSections'])) {
 				$this->babMaxOptionalSections = $GLOBALS['babMaxOptionalSections'];
-				}
-			else
-				{
+			} else {
 				$this->babMaxOptionalSections = 0;
-				}
+			}
 			$this->countcat = count($this->arrcatid);
 			$this->altbg = false;
-			}
-
-		function getnextp()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->counta)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $babDB->db_fetch_array($this->resa);
-				$this->titleval = bab_toHtml(bab_translate($this->arr['title']));
-				$this->descval = bab_toHtml(bab_translate($this->arr['description']));
-				$this->idvalue = bab_toHtml($this->arr['id'])."-1";
-				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='1' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-				if( !isset($hidden) || $hidden == 'Y')
-					{
-					$this->secchecked = '';
-					}
-				else
-					{
-					$this->secchecked = 'checked';
-					}
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnextcat()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countcat)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($this->arrcatid[$i])."'"));
-				$this->titleval = bab_toHtml($this->arr['title']);
-				$this->descval = bab_toHtml($this->arr['description']);
-				$this->idvalue = bab_toHtml($this->arr['id'])."-3";
-				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='3' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-				if( !isset($hidden) || $hidden == "Y")
-					$this->secchecked = "";
-				else
-					$this->secchecked = "checked";
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-
-		function getnext()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$this->altbg = $this->altbg ? false : true;
-				$this->arr = $babDB->db_fetch_array($this->res);
-				$this->titleval = bab_toHtml($this->arr['title']);
-				$this->descval = bab_toHtml($this->arr['description']);
-				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=section&idx=Modify&item=".$this->arr['id']);
-				$this->accessurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=section&idx=Groups&item=".$this->arr['id']);
-				$this->idvalue = bab_toHtml($this->arr['id'])."-2";
-				list($hidden) = $babDB->db_fetch_row($babDB->db_query("select hidden from ".BAB_SECTIONS_STATES_TBL." where type='2' and id_section='".$babDB->db_escape_string($this->arr['id'])."' and  id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-				if( !isset($hidden) || $hidden == "Y")
-					$this->secchecked = "";
-				else
-					$this->secchecked = "checked";
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
+			
+			bab_Sort::asort($this->sections, 'title');
 		}
 
-	$temp = new temp();
-	$babBody->babecho(	bab_printTemplate($temp, "sectopt.html", "sectionslist"));
-	return $temp->count + $temp->countcat + $temp->counta;
+
+		public function getNextSection()
+		{
+			if (list($sectionId, $section) = each($this->sections)) {
+				$this->altbg = $this->altbg ? false : true;
+				$this->titleval = bab_toHtml($section['title']);
+				$this->descval = bab_toHtml($section['description']);
+				$this->idvalue = bab_toHtml($sectionId);
+				$this->secchecked = $section['checked'] ? 'checked' : '';
+				return true;
+			}
+			reset($this->sections);
+			return false;
+		}
 	}
+
+
+	$temp = new SectionsList_template();
+	$babBody->babecho(bab_printTemplate($temp, 'sectopt.html', 'sectionslist'));
+	return count($temp->sections);
+}
 
 
 function enableOptionalSections($sections)

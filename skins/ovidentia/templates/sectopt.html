@@ -41,22 +41,17 @@ function checkmax(obj)
 <td nowrap valign="middle">{ title }</td>
 <td valign="middle">{ description }</td>
 <td width="1%" align="center" nowrap>{ enabled }</td>
-</tr><!--#in getnextp -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td nowrap valign="middle">{ titleval }</td>
-<td valign="middle">{ descval }</td>
-<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
-</tr><!--#endin getnextp --><!--#in getnextcat -->
+</tr>
+
+<!--#in getNextSection -->
 <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 <td nowrap valign="middle">{ titleval }</td>
 <td valign="middle">{ descval  }</td>
 <td valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
-</tr><!--#endin getnextcat --><!--#in getnext -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td nowrap valign="middle">{ titleval }</td>
-<td valign="middle">{ descval }</td>
-<td valign="middle" width="0%" align="center" nowrap><input type="checkbox" OnClick="checkmax(this)" name="sections[]" { secchecked } value="{ idvalue }"></td>
-</tr><!--#endin getnext -->
+</tr>
+<!--#endin getNextSection -->
+
+
 <tr> 
 <td class="BabSiteAdminTitleFontBackground" nowrap valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
 <td class="BabSiteAdminTitleFontBackground" valign="middle"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="1" height="1" border="0"></td>
