@@ -195,6 +195,7 @@ class BAB_LikeCriterionBase extends BAB_Criterion
 	
 	function toString()
 	{
+		global $babDB;
 		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
 	}
 }
