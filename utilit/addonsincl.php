@@ -475,7 +475,15 @@ class bab_addonInfos {
 		if (null === $this->ini) {
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->ini = new bab_inifile();
-			$this->ini->inifileGeneral($this->getPhpPath().'addonini.php');
+			$inifile = $this->getPhpPath().'addonini.php';
+			
+			if (!is_readable($inifile)) {
+				throw new Exception(sprintf('Error, the file %s must be readable', $inifile));
+			}
+			
+			if (!$this->ini->inifileGeneral($inifile)) {
+				throw new Exception(sprintf('Error, the file %s is missing or has syntax errors', $inifile));
+			}
 		}
 		
 		return $this->ini;
