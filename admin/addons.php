@@ -133,7 +133,13 @@ class bab_addons_list
 			$this->addversion 		= bab_toHtml($addon->getDbVersion());
 			$this->description 		= bab_toHtml($addon->getDescription(), BAB_HTML_ALL);
 			$this->iconpath			= bab_toHtml($addon->getIconPath());
-			$this->configurationurl	= bab_toHtml($addon->getConfigurationUrl());
+			
+			$confurl = $addon->getConfigurationUrl();
+			if (null !== $confurl && $addon->isAccessValid()) {
+				$this->configurationurl	= bab_toHtml($confurl);
+			} else {
+				$this->configurationurl	= false;
+			}
 			
 			if ($addon->isUpgradable()) {
 				$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());
