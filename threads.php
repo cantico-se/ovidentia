@@ -198,7 +198,7 @@ function listThreads($forum, $active, $pos)
 				$res = $babDB->db_query($req);
 				$row = $babDB->db_fetch_array($res);
 				$this->replies = bab_toHtml(($row['total'] > 0 ? ($row['total'] -1): 0));
-				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'N' || ($BAB_SESS_USERID && $BAB_SESS_USERID != $this->arrthread['starter']) )  )
+				if( $row['total'] == 0 && $this->moderator == false && ($this->bupdateauthor == 'Y' && $BAB_SESS_USERID != $this->arrthread['starter']) ) 
 					{
 					$this->disabled = 1;
 					$skip = true;
