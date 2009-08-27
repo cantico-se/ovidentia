@@ -5975,5 +5975,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_TOPICS_TBL, 'allow_article_rating')) {
 		$babDB->db_query('ALTER TABLE '.BAB_TOPICS_TBL." ADD `allow_article_rating` enum('N','Y') NOT NULL default 'N' AFTER `allow_addImg`");
 	}	
+
+	/**
+	 * Upgrade to 7.1.91
+	 */
+	// Add table to keep track of fields to display when displaying forum's post.
+	if (!bab_isTable(BAB_FORUMS_FIELDS_TBL)) {
+		$babDB->db_query('
+			CREATE TABLE '.BAB_FORUMS_FIELDS_TBL.' (                       
+            	`id` int(11) unsigned NOT NULL auto_increment,         
+                `id_forum` int(11) unsigned NOT NULL,                  
+                `id_field` int(11) unsigned NOT NULL,                  
+                `field_order` tinyint(2) unsigned default NULL,        
+				PRIMARY KEY  (id),
+				KEY id_forum (id_forum),
+				KEY id_field (id_field)
+				)
+		');
+		
+		
+	}
+	
+	
+	
 	return true;
 }

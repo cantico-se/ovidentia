@@ -198,6 +198,7 @@ define("BAB_FMNOTIFY_GROUPS_TBL", "bab_fmnotify_groups");
 define("BAB_FILES_TBL", "bab_files");
 define("BAB_FILES_TAGS_TBL", "bab_files_tags");
 define("BAB_FORUMS_TBL", "bab_forums");
+define("BAB_FORUMS_FIELDS_TBL", "bab_forums_fields");
 define("BAB_FORUMSFILES_TBL", "bab_forumsfiles");
 define("BAB_FORUMSMAN_GROUPS_TBL", "bab_forumsman_groups");
 define("BAB_FORUMSPOST_GROUPS_TBL", "bab_forumspost_groups");

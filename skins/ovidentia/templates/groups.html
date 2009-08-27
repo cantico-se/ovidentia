@@ -90,6 +90,26 @@ else
 
 <!--#begin memberslist -->
 <!--#if bshowform -->
+<script type="text/javascript">
+	<!--
+function ovidentia_hidegroupselect(select) {
+		var selection = select.options.selectedIndex;
+		switch(select.options[selection].value) {
+			case '2':
+				document.getElementById('groupselect').style.display = '';
+				//document.getElementById('groupselect').disabled = false;
+				break;
+			case '3':
+				document.getElementById('groupselect').style.display = '';
+				break;
+			default:
+				document.getElementById('groupselect').style.display = 'none';
+				break;
+		}
+	}
+	
+	// -->
+</script>
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="group">
 <input type="hidden" name="idx" value="Deletem">
@@ -104,8 +124,7 @@ else
 		
 		<td width="30%">{ t_lastname }</td>
 		<td>{ t_firstname }</td>
-		<td width="2%">
-			<!--#if bshowform -->{ t_delete }<!--#endif bshowform -->
+		<td width="2%">&nbsp;
 		</td>
 	</tr>
 	<!--#in getnext -->
@@ -138,11 +157,30 @@ else
 	</table>
 </td></tr></table>
 <br /><!--#if bshowform -->
-<div align="center">
-	<input type="submit" value="{ t_upgrade }" />
-</div><!--#endif bshowform -->
+<div align="center">{ withselected }:&nbsp;
+<select name="wchoice" onchange="ovidentia_hidegroupselect(this);">
+<option value="1" { w1selected }>{ deleteonly }</option>
+<option value="2" { w2selected }>{ copytogroup }</option>
+<option value="3" { w3selected }>{ movetogroup }</option>
+</select>&nbsp;
+<select name="id_group" id="groupselect">
+<option value=""></option>
+<!--#in getnextgroup -->
+<option value="{ id }" { groupselected }>{ name }</option>
+<!--#endin getnextgroup -->
+</select>
+<input type="submit" value="{ t_upgrade }" />
+</div>
 </form>
-
+<script type="text/javascript">
+	<!--
+	
+	/* Hide smtp functions when onload page */
+	ovidentia_hidegroupselect(document.getElementById('groupselect'));
+	
+	// -->
+</script>
+<!--#endif bshowform -->
 <!--#end memberslist -->
 
 

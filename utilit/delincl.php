@@ -336,7 +336,9 @@ function bab_deleteForum($id)
 	aclDelete(BAB_FORUMSREPLY_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSMAN_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSNOTIFY_GROUPS_TBL, $id);
-
+	
+	$babDB->db_query("delete from ".BAB_FORUMS_FIELDS_TBL." where id_forum='".$babDB->db_escape_string($id)."'");
+	
 	$req = "delete from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($id)."'";
 	$res = $babDB->db_query($req);
 }

@@ -24,6 +24,7 @@
 include_once "base.php";
 include_once $babInstallPath."utilit/grpincl.php";
 include_once $babInstallPath."utilit/fileincl.php";
+include_once $babInstallPath."utilit/grptreeincl.php";
 
 
 function groupMembers($id)
@@ -55,11 +56,15 @@ function groupMembers($id)
 			$this->grpid = $id;
 			$this->t_lastname = bab_translate("Lastname");
 			$this->t_firstname = bab_translate("Firstname");
-			$this->t_upgrade = bab_translate("Upgrade");
+			$this->t_upgrade = bab_translate("Ok");
 			$this->t_delete = bab_translate("Delete");
 			$this->deletealt = bab_translate("Delete group's members");
 			$this->uncheckall = bab_translate("Uncheck all");
 			$this->checkall = bab_translate("Check all");
+			$this->withselected = bab_translate("With selected");
+			$this->deleteonly = bab_translate("Delete from group only");
+			$this->copytogroup = bab_translate("Copy to group");
+			$this->movetogroup = bab_translate("Move to group");
 			$this->idgroup = $id;
 			
 			$this->db = &$GLOBALS['babDB'];
@@ -85,7 +90,30 @@ function groupMembers($id)
 				{
 				$this->bshowform = true;
 				}
+				
+			$tree = new bab_grptree();
+			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
+			if (isset($this->groups[$this->idgroup]))
+				{
+				unset($this->groups[$this->idgroup]);
+				}
 
+			$this->w1selected = $this->w2selected = $this->w3selected = '';
+			$wchoice = bab_rp('wchoice', 1);
+			switch($wchoice)
+				{
+					case 2:
+						$this->w2selected = 'selected';
+						break;	
+					case 3:
+						$this->w3selected = 'selected';
+						break;	
+					case 1:
+					default:
+						$this->w1selected = 'selected';
+						break;	
+				}
+			$this->idgroup = bab_rp('id_group', '');
 			}
 
 		function getnext()
@@ -104,6 +132,28 @@ function groupMembers($id)
 				return false;
 
 			}
+
+		function getnextgroup()
+			{
+			if (list($this->id, $arr) = each($this->groups))
+				{
+				$this->name = bab_toHtml($arr['name']);
+				if( $this->idgroup == $this->id)
+				{
+					$this->groupselected = 'selected';
+				}
+				else
+				{
+					$this->groupselected = '';
+				}
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}			
+			
 		}
 
 	$temp = new temp($id);
@@ -129,13 +179,29 @@ function deleteMembers($users, $item)
 		function tempa($users, $item)
 			{
 			global $BAB_SESS_USERID;
-			$this->message = bab_translate("Are you sure you want to delete those members");
+			$wchoice = bab_rp('wchoice', 1);
+			$id_group = bab_rp('id_group', '');
+			$name_group = empty($id_group)? '': bab_getGroupName($id_group);
+			switch($wchoice)
+			{
+				case 2:
+					$this->warning = bab_translate("WARNING: This operation will attach those users to group ").'['.$name_group. ']!';
+					break;
+				case 3:
+					$this->warning = bab_translate("WARNING: This operation will move those users to group ").'['.$name_group. ']!';
+					break;
+				case 1:
+				default:
+					$this->warning = bab_translate("WARNING: This operation will delete members and their references"). '!';
+					break;
+					
+			}
 			$this->title = "";
 			$names = "";
 			$db = $GLOBALS['babDB'];
 			for($i = 0; $i < count($users); $i++)
 				{
-				$req = "select * from ".BAB_USERS_TBL." where id='".$users[$i]."'";	
+				$req = 'select * from '.BAB_USERS_TBL.' where id='.$db->quote($users[$i]);	
 				$res = $db->db_query($req);
 				if( $db->db_num_rows($res) > 0)
 					{
@@ -146,35 +212,55 @@ function deleteMembers($users, $item)
 				if( $i < count($users) -1)
 					$names .= ",";
 				}
-			$this->warning = bab_translate("WARNING: This operation will delete members and their references"). "!";
-			$this->urlyes = $GLOBALS['babUrlScript']."?tg=group&idx=Deletem&item=".$item."&action=Yes&names=".$names;
+			$this->message = bab_translate("Are you sure you want to continue");
+			$this->urlyes = $GLOBALS['babUrlScript'].'?tg=group&idx=Deletem&item='.$item.'&action=Yes&names='.$names.'&wchoice='.$wchoice.'&idgroup='.$id_group;
 			$this->yes = bab_translate("Yes");
-			$this->urlno = $GLOBALS['babUrlScript']."?tg=groups";
+			$this->urlno = $GLOBALS['babUrlScript'].'?tg=groups';
 			$this->no = bab_translate("No");
 			}
 		}
-
-	if( count($item) <= 0)
+	if( count($users) <= 0)
 		{
 		$babBody->msgerror = bab_translate("Please select at least one item");
-		groupMembers($pos);
-		$idx = "Members";
-		return;
+		return false;
 		}
+	$wchoice = bab_rp('wchoice', 1);
+	$id_group = bab_rp('id_group', '');
+	if( $wchoice != 1 && empty($id_group))
+	{
+		$babBody->msgerror = bab_translate("You must select one group");
+		return false;
+	}
+	
 	$tempa = new tempa($users, $item);
 	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
+	return true;
 	}
 
 function confirmDeleteMembers($item, $names)
 {
-	if( !empty($names))
+	$wchoice = bab_rp('wchoice', '');
+	$id_group = bab_rp('idgroup', '');
+	if( !empty($names) && !empty($wchoice))
 	{
 		$arr = explode(",", $names);
 		$cnt = count($arr);
 		$db = $GLOBALS['babDB'];
 		for($i = 0; $i < $cnt; $i++)
 			{
-			bab_removeUserFromGroup($arr[$i], $item);
+			if( $wchoice == 1 ) // delete
+				{
+				bab_removeUserFromGroup($arr[$i], $item);
+				}
+			elseif($wchoice == 2) // copy
+				{
+					bab_addUserToGroup($arr[$i], $id_group);
+				}
+			elseif($wchoice == 3) // move
+				{
+					bab_removeUserFromGroup($arr[$i], $item);
+					bab_addUserToGroup($arr[$i], $id_group);
+				}
 			}
 	}
 }
@@ -267,9 +353,9 @@ switch($idx)
 		$babBody->addItemMenu("deldg", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=group&idx=deldg&item=".$item);
 		break;
 	case "Deletem":
-		if( isset($users) && count($users) > 0)
+			if(!isset($users)) { $users = array();}
+			if(deleteMembers($users, $item))
 			{
-			deleteMembers($users, $item);
 			$babBody->title = bab_translate("Delete group's members");
 			$babBody->addItemMenu("List", bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=groups&idx=List");
 			$babBody->addItemMenu("Members", bab_translate("Members"), $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);

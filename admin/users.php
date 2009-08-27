@@ -30,7 +30,7 @@ require_once $babInstallPath . 'utilit/toolbar.class.php';
 include_once $babInstallPath . 'admin/register.php';
 include_once $babInstallPath . 'utilit/lusersincl.php';
 
-function listUsers($pos, $grp)
+function listUsers($pos, $grp, $deleteAction)
 	{
 	global $babBody;
 	class temp
@@ -74,14 +74,14 @@ function listUsers($pos, $grp)
 			
 		var $sContent;
 		
-		function temp($pos, $grp)
+		function temp($pos, $grp, $deleteAction)
 			{
 			global $babBody;
 			global $babDB;
 
 			$this->email			= bab_translate("Email");
 			$this->allname			= bab_translate("All");
-			$this->update			= bab_translate("Update");
+			$this->updategroup			= bab_translate("Update group");
 			$this->nickname			= bab_translate("Login ID");
 			$this->t_online			= bab_translate("Online");
 			$this->t_unconfirmed	= bab_translate("Unconfirmed");
@@ -91,13 +91,12 @@ function listUsers($pos, $grp)
 			$this->checkall			= bab_translate("Check all");
 			$this->uncheckall		= bab_translate("Uncheck all");
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
-
+			$this->t_or				= bab_translate("Or");
+			$this->t_delete			= bab_translate("Delete");
+			$this->withselected 	= bab_translate("With selected");
+			
 			$this->group	= bab_toHtml(bab_getGroupName($grp));
-			if( $this->group === '' )
-				{
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&bupd=0");
-				exit;
-				}
+			$this->deleteAction = $deleteAction;	
 
 			$this->grp		= bab_toHtml($grp);
 
@@ -114,12 +113,15 @@ function listUsers($pos, $grp)
 
 			// group members
 			$this->group_members = array();
-			$res = $babDB->db_query("SELECT id_object FROM ".BAB_USERS_GROUPS_TBL." WHERE id_group='".$babDB->db_escape_string($this->grp)."'");
-			while (list($id_user) = $babDB->db_fetch_array($res))
-				{
-				$this->group_members[$id_user] = $id_user;
-				}
-
+			if( !$this->deleteAction)
+			{
+				$res = $babDB->db_query("SELECT id_object FROM ".BAB_USERS_GROUPS_TBL." WHERE id_group='".$babDB->db_escape_string($this->grp)."'");
+				while (list($id_user) = $babDB->db_fetch_array($res))
+					{
+					$this->group_members[$id_user] = $id_user;
+					}
+			}
+			
 			// User login status
 			$this->users_logged = array();
 			$res = $babDB->db_query("SELECT id_user FROM ".BAB_USERS_LOG_TBL."");
@@ -378,11 +380,67 @@ function listUsers($pos, $grp)
 
 			}
 		}
-	$temp = new temp($pos, $grp);
+	$temp = new temp($pos, $grp, $deleteAction);
 	$babBody->babecho(	bab_printTemplate($temp, "users.html", "userslist"));
 	return $temp->count;
 	}
 
+	
+function deleteUsers($users)
+	{
+	global $babBody, $idx;
+
+	class tempa
+		{
+		var $warning;
+		var $message;
+		var $title;
+		var $urlyes;
+		var $urlno;
+		var $yes;
+		var $no;
+
+		function tempa($users)
+			{
+			global $BAB_SESS_USERID;
+			$pos = bab_rp('pos', '');
+			$grp = bab_rp('grp', '');
+			
+			$this->warning = bab_translate("WARNING: This operation will remove users and their references"). '!';
+			$this->title = "";
+			$names = "";
+			$db = $GLOBALS['babDB'];
+			for($i = 0; $i < count($users); $i++)
+				{
+				$req = 'select * from '.BAB_USERS_TBL.' where id='.$db->quote($users[$i]);	
+				$res = $db->db_query($req);
+				if( $db->db_num_rows($res) > 0)
+					{
+					$arr = $db->db_fetch_array($res);
+					$this->title .= "<br>". bab_composeUserName($arr['firstname'], $arr['lastname']);
+					$names .= $arr['id'];
+					}
+				if( $i < count($users) -1)
+					$names .= ",";
+				}
+			$this->message = bab_translate("Are you sure you want to continue");
+			$this->urlyes = $GLOBALS['babUrlScript'].'?tg=users&idx=Deleteu&pos='.$pos.'&action=Yes&grp='.$grp.'&names='.$names;
+			$this->yes = bab_translate("Yes");
+			$this->urlno = $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&action=Yes&grp='.$grp;
+			$this->no = bab_translate("No");
+			}
+		}
+	if( count($users) <= 0)
+		{
+		$babBody->msgerror = bab_translate("Please select at least one item");
+		return false;
+		}
+	
+	$tempa = new tempa($users);
+	$babBody->babecho(	bab_printTemplate($tempa,"warning.html", "warningyesno"));
+	return true;
+	}	
+	
 function userCreate($grp = '')
 	{
 	global $babBody;
@@ -526,6 +584,21 @@ Header("Location: ". $GLOBALS['babUrlScript']."?tg=directory&idx=ddb&id=".$iddir
 
 }
 
+function confirmDeleteUsers($names)
+{
+	global $babBody, $babDB;
+	
+	if( !empty($names) && $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+	{
+		include_once $GLOBALS['babInstallPath'] . 'utilit/delincl.php';
+		$arr = explode(",", $names);
+		$cnt = count($arr);
+		for($i = 0; $i < $cnt; $i++)
+			{
+			bab_deleteUser($arr[$i]);
+			}
+	}
+}
 
 /* main */
 
@@ -533,12 +606,14 @@ $pos = bab_rp('pos','A');
 $grp = bab_rp('grp');
 $idx = bab_rp('idx','List');
 
+$displayDeleteAction = false;
 if( !isset($grp) || empty($grp))
 {
 	$displayMembersItemMenu = false;
 	if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
 	{
-		$grp = BAB_ADMINISTRATOR_GROUP;
+		$displayDeleteAction = true;
+		$grp = '';//BAB_ADMINISTRATOR_GROUP;
 	}
 	else if( $babBody->currentAdmGroup != 0 )
 	{
@@ -605,6 +680,20 @@ if( isset($Updateg) && ($babBody->isSuperAdmin || $babBody->currentAdmGroup != 0
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp."&bupd=".$_REQUEST['bupd']);
 	exit;
 }
+elseif(isset($Deleteg) && $babBody->isSuperAdmin)
+{
+	$idx = 'deletem';
+}
+
+if( isset($action) && $action == 'Yes')
+	{
+	if($idx == "Deleteu" && $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0)
+		{
+		confirmDeleteUsers($names);
+		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
+		exit;
+		}
+	}
 
 if( $idx == "Create" && !$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y')
 {
@@ -643,11 +732,40 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
 		$babBody->addItemMenu("Create", bab_translate("Create"), $GLOBALS['babUrlScript']."?tg=users&idx=Create&pos=".bab_rp('grp'));
 		break;
+		
+	case 'deletem':
+		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+			{
+			$babBody->setTitle(bab_translate("Delete users"));
+			
+			if ($displayMembersItemMenu)
+				{
+				$babBody->addItemMenu("Members", bab_translate("Members"),$GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".bab_rp('grp'));
+				}
+			$babBody->addItemMenu("List", bab_translate("Users"),$GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".bab_rp('grp'));
+			if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
+				{
+					$users = isset($_POST['users']) ? $_POST['users'] : array();
+					deleteUsers($users);
+				}
+			
+
+			if( $babBody->isSuperAdmin && $babBody->currentAdmGroup == 0 )
+				{
+				$babBody->addItemMenu("utilit", bab_translate("Utilities"), $GLOBALS['babUrlScript']."?tg=users&idx=utilit&grp=".bab_rp('grp'));
+				}
+			}
+		else
+			{
+			$babBody->msgerror = bab_translate("Access denied");
+			}
+		break;
+			
 	case "List":
 		if( $babBody->isSuperAdmin || $babBody->currentAdmGroup != 0 )
 			{
 			$babBody->setTitle(bab_translate("Users list"));
-			$cnt = listUsers($pos, $grp);
+			$cnt = listUsers($pos, $grp, $displayDeleteAction);
 			
 			if ($displayMembersItemMenu)
 				{

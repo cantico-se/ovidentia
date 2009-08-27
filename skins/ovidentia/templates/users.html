@@ -80,7 +80,13 @@ function bab_userListShowHideFilter()
 			<td><a class="BabSiteAdminListLink" href="{ fullnameurl }">{ fullname }</a></td>
 			<td>{ nickname }</td>
 			<td>{ email }</td>
-			<td align="center"><!--#if bshowform --><a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a><!--#endif bshowform --></td>
+			<td align="center"><!--#if bshowform -->
+			<!--#if deleteAction  -->
+			{ t_delete }
+			<!--#else deleteAction  -->
+			<a class="BabSiteAdminListLink" href="{ groupurl }">{ group }</a>
+			<!--#endif deleteAction  -->
+			<!--#endif bshowform --></td>
 		</tr>
 		<!--#in getnext -->
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
@@ -114,7 +120,13 @@ function bab_userListShowHideFilter()
 </tr>
 </table>
 <!--#if bshowform --><input type="hidden" name="userst" value="{ userst }" />
-<div align="center"><br /><input type="submit" name="Updateg" value="{ update }" /></div><!--#endif bshowform -->
+<div align="center"><br />
+<!--#if deleteAction  -->
+<input type="submit" name="Deleteg" value="{ t_delete }" />
+<!--#else deleteAction  -->
+<input type="submit" name="Updateg" value="{ updategroup }" />
+<!--#endif deleteAction  -->
+</div><!--#endif bshowform -->
 </form>
 <!--#end userslist -->
 
