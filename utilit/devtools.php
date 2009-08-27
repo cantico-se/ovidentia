@@ -758,7 +758,7 @@ function bab_f_getDebug() {
 			}
 
 			if (is_object($i)) {
-				return array_keys(get_class_vars($i));
+				return array_keys(get_class_vars(get_class($i)));
 			}
 
 			return null;
