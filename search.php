@@ -744,6 +744,7 @@ function viewPost($thread, $post, $w)
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
+			$this->author = bab_getForumContributor($arr['forum'], $arr['id_author'], $this->author);
 			$this->postsubject = highlightWord( $w, bab_toHtml($arr['subject']));
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

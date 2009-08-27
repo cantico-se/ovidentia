@@ -137,6 +137,8 @@ function listPosts($forum, $thread, $post)
 				$GLOBALS['babWebStat']->addForumPost($this->postid);
 				$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 				$this->postauthor = $arr['id_author']? bab_getUserName($arr['id_author']):$arr['author'];
+				$this->postauthor = bab_getForumContributor($this->forum, $arr['id_author'], $this->postauthor);
+				
 				$this->postauthor = bab_toHtml($this->postauthor);
 				$this->postsubject = bab_toHtml($arr['subject']);
 				
@@ -320,6 +322,7 @@ function listPosts($forum, $thread, $post)
 				$arr = $babDB->db_fetch_array($res);
 				$this->replydate = bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
 				$this->replyauthor = $arr['id_author']? bab_getUserName($arr['id_author']):$arr['author'];
+				$this->replyauthor = bab_getForumContributor($this->forum, $arr['id_author'], $this->replyauthor);
 				$this->replyauthor = bab_toHtml($this->replyauthor);
 				$this->replysubject = bab_toHtml($arr['subject']);
 
@@ -579,6 +582,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				if( $arr['id_author'] )
 					{
 					$this->postauthor = bab_getUserName($arr['id_author']);
+					$this->postauthor = bab_getForumContributor($this->forum, $arr['id_author'], $this->postauthor);
 					}
 				else
 					{
@@ -761,7 +765,7 @@ function newReply($forum, $thread, $post)
 
 		function newReplyCls($forum, $thread, $post)
 			{
-			global $babBody, $BAB_SESS_USER, $babDB, $flat;
+			global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID, $babDB, $flat;
 			$this->subject = bab_translate("Subject");
 			$this->name = bab_translate("Your Name");
 			$this->message = bab_translate("Message");
@@ -794,6 +798,7 @@ function newReply($forum, $thread, $post)
 				{
 				$this->anonyme = 0;
 				$this->username = $BAB_SESS_USER;
+				$this->username = bab_getForumContributor($this->forum, $BAB_SESS_USERID, $this->username);
 				}
 
 			$this->username = bab_toHtml($this->username);
@@ -893,6 +898,7 @@ function editPost($forum, $thread, $post)
 				
 				$this->access = 1;
 				$this->author = bab_toHtml($this->arr['author']);
+				$this->author = bab_getForumContributor($forum, $this->arr['id_author'], $this->author);
 				$this->subjectval = bab_toHtml($this->arr['subject']);
 
 				$this->maxfilesize = $GLOBALS['babMaxFileSize'];
@@ -1035,6 +1041,7 @@ function viewPost($thread, $post)
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postauthor = bab_getForumContributor($arr['forum'], $arr['id_author'], $this->postauthor);
 			$this->postsubject = bab_toHtml($arr['subject']);
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

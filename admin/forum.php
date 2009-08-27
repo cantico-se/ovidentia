@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 include_once $babInstallPath.'admin/acl.php';
+include_once $babInstallPath.'utilit/dirincl.php';
 include_once $babInstallPath.'utilit/forumincl.php';
 
 function modifyForum($id)
@@ -115,6 +116,86 @@ function deleteForum($id)
 	$babBody->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
 
+function displayForumFields($id)
+	{
+	global $babBody;
+	class temp
+		{
+		function temp($id)
+			{
+			global $babDB, $babBody;
+			$this->id = $id;
+			$this->infotxt = bab_translate("Specify which fields will be displayed instead of full name");
+			$this->listftxt = '---- '.bab_translate("Fields").' ----';
+			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
+
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->update = bab_translate("Update");
+			
+			$iddir = 0;
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' AND id_field>6");
+			$this->countf = $babDB->db_num_rows($this->resf);
+			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_FORUMS_FIELDS_TBL." where id_forum='".$babDB->db_escape_string($id)."' order by field_order asc");
+			$this->countfd = $babDB->db_num_rows($this->resfd);
+			}
+
+		function getnextf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $babDB->db_fetch_array($this->resf);
+				$this->fid = $arr['id_field'];
+				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$this->fieldval = translateDirectoryField($arr['description']);
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$this->fieldval = translateDirectoryField($rr['name']);
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+
+		function getnextdf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countfd)
+				{
+				$arr = $babDB->db_fetch_array($this->resfd);
+				$this->fid = $arr['id_field'];
+				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$this->fieldval = translateDirectoryField($arr['description']);
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$this->fieldval = translateDirectoryField($rr['name']);
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+		}
+
+	$temp = new temp($id);
+	$babBody->babecho( bab_printTemplate($temp,'forums.html', 'forumdisplay'));
+	}
+	
+	
 function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
 	{
 	global $babBody, $babDB;
@@ -184,6 +265,16 @@ function confirmDeleteForum($id)
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums");
 	}
 
+function updateForumFields($id, $listfd)
+	{
+	global $babDB;
+	$babDB->db_query("delete from ".BAB_FORUMS_FIELDS_TBL." where id_forum='".$babDB->db_escape_string($id)."'");
+	for($i=0; $i < count($listfd); $i++)
+		{
+		$babDB->db_query('insert '.BAB_FORUMS_FIELDS_TBL.' (id_forum, id_field, field_order ) values ('.$babDB->quote($id).','.$babDB->quote($listfd[$i]).','.$babDB->quote($i + 1).')');
+		}
+	}	
+	
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
 {
@@ -207,6 +298,13 @@ if( isset($update) && $update == "updateforum")
 		$idx = "Delete";
 		}
 	}
+
+if( isset($update) && $update == "displayfield")
+	{
+	updateForumFields($item, $listfd);
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+	}
+	
 
 if( isset($aclview))
 	{
@@ -238,6 +336,7 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
+		$babBody->addItemMenu("displaydf", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=forum&idx=displaydf&item=".$item);
 		break;
 
 	case "Delete":
@@ -246,8 +345,18 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
+		$babBody->addItemMenu("displaydf", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=forum&idx=displaydf&item=".$item);
 		break;
 
+	case "displaydf":
+		$babBody->title = bab_translate("Delete a forum");
+		displayForumFields($item);
+		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
+		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
+		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
+		$babBody->addItemMenu("displaydf", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=forum&idx=displaydf&item=".$item);
+		break;
+	
 	default:
 	case "Modify":
 		$babBody->title = bab_translate("Modify a forum");
@@ -255,6 +364,7 @@ switch($idx)
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
 		$babBody->addItemMenu("rights", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=forum&idx=rights&item=".$item);
+		$babBody->addItemMenu("displaydf", bab_translate("Display"), $GLOBALS['babUrlScript']."?tg=forum&idx=displaydf&item=".$item);
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

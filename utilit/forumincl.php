@@ -687,4 +687,69 @@ function bab_deletePost($forum, $post)
 
 	}
 
+/**
+ * Return fields to display for a forum.
+ *  
+ * @param int	$forum		The forum id.
+ */
+function bab_getForumFields($forum)
+	{
+		global $babDB;
+		static $forums_fields = array();
+		
+		if( isset($forums_fields[$forum]))
+		{
+			return $forums_fields[$forum];
+		}
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+		$ret = array();
+		list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+		$fields = bab_getDirectoriesFields(array($iddir));
+		$res = $babDB->db_query("select * from ".BAB_FORUMS_FIELDS_TBL." where id_forum=".$babDB->quote($forum));
+		while($arr = $babDB->db_fetch_array($res))
+		{
+			if( isset($fields[$arr['id_field']]))
+			{
+				$ret[$arr['id_field']] = $fields[$arr['id_field']];
+			}
+		}
+		$forums_fields[$forum] = $ret;
+		return $ret;
+	}
+
+/**
+ * Return name to display instead of full name.
+ *  
+ * @param int		$id_author		The author id.
+ * @param array		$fields			fields to fetch.
+ * @param string	$author			return value if not found
+ */	
+function bab_getForumContributor($id_forum, $id_author, $author)
+{
+	static $forums_contributors = array();
+	
+	if( isset($forums_contributors[$id_forum]) && isset($forums_contributors[$id_forum][$id_author]))
+	{
+		$author = $forums_contributors[$id_forum][$id_author];
+	}
+	
+	$fields = bab_getForumFields($id_forum);
+	
+	if( $id_author && count($fields))
+	{
+		$author = '';
+		$entries = bab_getDirEntry($id_author, BAB_DIR_ENTRY_ID_USER);
+		foreach($fields as $idf => $info )
+		{
+			if( isset($entries[$info['name']]))
+			{
+				$author .= ' '.bab_toHTML($entries[$info['name']]['value']);
+			}
+		}
+		$forums_contributors[$id_forum][$id_author] = $author;
+	}
+	
+	return $author;
+}
 ?>

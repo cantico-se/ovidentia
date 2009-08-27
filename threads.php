@@ -165,6 +165,8 @@ function listThreads($forum, $active, $pos)
 				$this->subjecturlflat  = $this->subjecturl.'&flat='.$this->flat;
 
 				$this->threadauthor = bab_toHtml(bab_getUserName($this->arrthread['starter']));
+				$this->threadauthor = bab_getForumContributor($this->forum, $this->arrthread['starter'], $this->threadauthor);
+				
 
 				$this->threadauthordetailsurl = '';
 				if( $this->arrthread['starter'] != 0 && $this->bdisplayauhtordetails == 'Y')
@@ -289,6 +291,7 @@ function listThreads($forum, $active, $pos)
 				if( $this->arrthread['id_author'] )
 					{
 					$this->lastpostauthor = bab_getUserName($this->arrthread['id_author']);
+					$this->lastpostauthor = bab_getForumContributor($this->forum, $this->arrthread['id_author'], $this->lastpostauthor);
 					}
 				else
 					{
@@ -393,7 +396,7 @@ function newThread($forum)
 
 		function temp($forum)
 			{
-			global $babBody, $BAB_SESS_USER;
+			global $babBody, $BAB_SESS_USER, $BAB_SESS_USERID;
 			$this->subject = bab_translate("Subject");
 			$this->name = bab_translate("Your Name");
 			$this->notifyme = bab_translate("Notify me whenever someone replies ( only valid for registered users )");
@@ -423,6 +426,7 @@ function newThread($forum)
 				{
 				$this->anonyme = 0;
 				$this->username = bab_toHtml($BAB_SESS_USER);
+				$this->username = bab_getForumContributor($this->forum, $BAB_SESS_USERID, $this->username);
 				}
 			$message = isset($_POST['message']) ? $_POST['message'] : '';
 			

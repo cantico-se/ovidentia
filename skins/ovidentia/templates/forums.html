@@ -423,3 +423,148 @@ onclick="selectAll(document.ordform.elements[3]); document.ordform.submit()" />
 </table>
 </form>
 <!--#end forumsorder -->
+
+<!--#begin forumdisplay -->
+<script language="JavaScript">
+<!--
+function move(bDir, el)
+	{
+	var idx = el.selectedIndex
+	if (idx !=-1 && idx != 0) 
+	{
+		if( idx == 1 && bDir == true)
+			return;
+		if( idx == el.options.length-1 && bDir == false)
+			return;
+		var nxidx = idx + ( bDir ? - 1 : 1)
+		if ( nxidx<0 )
+			nxidx=el.length-1
+		if ( nxidx>=el.length) nxidx=0
+		var oldVal = el[idx].value
+		var oldText = el[idx].text
+		el[idx].value = el[nxidx].value
+		el[idx].text = el[nxidx].text
+		el[nxidx].value = oldVal
+		el[nxidx].text = oldText
+		el.selectedIndex = nxidx
+	}
+}
+
+function moveOptions(src,dest)
+{	 
+	srclen = src.options.length;
+	reslen = dest.options.length + srclen;
+	resopt = new Array(reslen);
+	destcnt = 1;
+	rescnt = 1;
+	nbsel = 0;
+	resopt[0] = new Option(dest.options[0].text,dest.options[0].value);
+	while(destcnt < dest.options.length)
+	{
+		resopt[rescnt] = new Option(dest.options[destcnt].text,dest.options[destcnt].value);
+		destcnt++;
+		rescnt++;
+	}
+	for(i = 1; i < srclen; i++)
+	{
+		while((i < srclen) && (src.options[i].selected == false))
+			i++;
+		if(i < srclen)
+		{
+			if(src.options[i].value != src.options[0].value)
+			{
+				nbsel++;
+				resopt[rescnt] = new Option(src.options[i].text,src.options[i].value);
+				src.options[i] = null;
+				i--;
+				srclen--;
+				rescnt++;
+			}
+		}
+	}
+	dest.options[0] = null;
+	dest.options[0] = resopt[0];
+	
+	for(i=0; i < nbsel;i++)
+	{
+		dest.options[i+1] = null;
+		dest.options[i+1] = resopt[rescnt - nbsel + i];
+	}
+
+	for(i=0; i < rescnt - nbsel - 1; i++)
+	{
+		dest.options[nbsel + 1 + i] = null;
+		dest.options[nbsel + 1 + i] = resopt[i + 1];
+	}
+}
+
+function selectAll(list)
+{
+	list.options[0].selected = false;
+	for(i=1; i < list.options.length; i++)
+	{
+		list.options[i].selected = true;
+	}
+}
+//-->
+</script>
+<form method="post" name="dispforumfield" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="forum">
+<input type="hidden" name="idx" value="dispfield">
+<input type="hidden" name="item" value="{ id }">
+<input type="hidden" name="update" value="displayfield">
+<table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+<tr> 
+<td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
+</tr>
+
+<tr> 
+<td align="center" nowrap valign="middle"> 
+<select name="listfields1"  size="12" multiple="multiple">
+  <option value="0">{ listftxt }</option>
+  <!--#in getnextf --> 
+  <option value="{ fid }">{ fieldval }</option>
+  <!--#endin getnextf --> 
+</select>
+</td>
+
+<td align="center"><a href="Javascript:moveOptions(document.dispforumfield.listfields1,document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispforumfield.elements[5],document.dispforumfield.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
+</td>
+
+<td align="center"> 
+<select name="listfd[]"  size="12" multiple="multiple">
+  <option value="0">{ listdftxt }</option>
+  <!--#in getnextdf --> 
+  <option value="{ fid }">{ fieldval }</option>
+  <!--#endin getnextdf --> 
+</select>
+</td>
+
+<td align="center" ><a href="Javascript:move(true, document.dispforumfield.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+<br>
+<br>
+<a href="Javascript:move(false, document.dispforumfield.elements[5])"> 
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+</td>
+
+</tr>
+<tr valign="middle"> 
+<td align="center" colspan="4"> 
+<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispforumfield.elements[5]); document.dispforumfield.submit()">
+<br>
+<br>
+</td>
+<td>&nbsp; 
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end forumdisplay -->

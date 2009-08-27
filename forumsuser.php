@@ -106,6 +106,11 @@ function listForums()
 						list($iddbuser) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($arr['id_author'])."' and id_directory='0'"));
 						$val['lastpostauthordetails'] = $GLOBALS['babUrlScript']."?tg=directory&idx=ddbovml&directoryid=".$iddir."&userid=".$iddbuser;
 						}
+						
+					if( $arr['id_author'] != 0 )
+						{
+							$val['author'] = bab_getForumContributor($key, $arr['id_author'], $val['author']);
+						}
 					}
 				else
 					{
@@ -340,6 +345,7 @@ function displaySearchResultsForums()
 				if( $arr['id_author'] )
 					{
 					$this->author_name = bab_toHtml(bab_getUserName($arr['id_author']));
+					$this->author_name = bab_getForumContributor($arr['forum'], $arr['id_author'], $this->author_name);
 					}
 				else
 					{
@@ -472,6 +478,7 @@ function viewSearchResultForums()
 						if( $arr['id_author'] )
 							{
 							$this->postauthor = bab_toHtml(bab_getUserName($arr['id_author']));
+							$this->postauthor = bab_getForumContributor($this->forum, $arr['id_author'], $this->postauthor);
 							}
 						else
 							{

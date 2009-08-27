@@ -168,6 +168,7 @@ class bab_SearchRealmForumPosts extends bab_SearchRealm {
 				p.subject,
 				p.message, 
 				p.author, 
+				p.id_author, 
 				p.date,
 				p.confirmed 
 			FROM 
@@ -269,7 +270,9 @@ class bab_SearchForumsResult extends bab_SearchSqlResult {
 			$author			= '';
 
 			if ($record->author) {
-				$author		= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Author'), $record->author);
+				$author = $record->author;
+				$author = bab_getForumContributor($record->id_forum, $record->id_author, $author);
+				$author	= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Author'), $author);
 			}
 
 			$posturl		= $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$record->id_forum.'&thread='.$record->id_thread.'&flat=1#p'.$record->id;

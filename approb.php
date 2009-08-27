@@ -475,7 +475,8 @@ function listWaitingPosts()
 				$this->postdate = $arr['date'] == '0000-00-00 00:00:00'? '':bab_toHtml(bab_shortDate(bab_mktime($arr['date']), true));
 				$this->postpath = bab_toHtml($arr['forumname'].' / '.$arr['threadtitle']);
 				$this->posttitle = bab_toHtml($arr['subject']);
-				$this->author = bab_toHtml($arr['author']);
+				$this->author = bab_getForumContributor($arr['forumid'], $arr['id_author'], $arr['author']);
+				$this->author = bab_toHtml($this->author);
 				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confpost&idpost=".$arr['id']."&thread=".$arr['threadid']);
 				$this->postviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=viewp&forum=".$arr['forumid']."&thread=".$arr['threadid']."&post=".$arr['id']);
 				$this->altbg = !$this->altbg;
@@ -966,13 +967,14 @@ function confirmWaitingPost($thread, $post)
 			$this->idpost = bab_toHtml($post);
 			$this->thread = bab_toHtml($thread);
 
-			$req = "select pt.*, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$babDB->db_escape_string($post)."'";
+			$req = "select pt.*, ft.id as forumid, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$babDB->db_escape_string($post)."'";
 			
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
 			
 			$GLOBALS['babBody']->title = $arr['forumname'];
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
-			$this->postauthor = bab_toHtml($arr['author']);
+			$this->postauthor = bab_getForumContributor($arr['forumid'], $arr['id_author'], $arr['author']);
+			$this->postauthor = bab_toHtml($this->postauthor);
 			$this->postsubject = bab_toHtml($arr['subject']);
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";

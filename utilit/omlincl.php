@@ -1688,6 +1688,7 @@ class bab_Post extends bab_handler
 	function bab_Post($ctx)
 		{
 		global $babBody, $babDB;
+		include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
 		$this->bab_handler($ctx);
 		$this->postid = $ctx->get_value('postid');
 		if( $this->postid === false || $this->postid === '' )
@@ -1764,7 +1765,8 @@ class bab_Post extends bab_handler
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
-			$this->ctx->curctx->push('PostAuthor', $arr['author']);
+			$author = bab_getForumContributor($this->arrfid[$this->idx], $arr['id_author'], $arr['author']);
+			$this->ctx->curctx->push('PostAuthor', $author);
 			$this->ctx->curctx->push('PostAuthorId', $arr['id_author']);
 			$this->ctx->curctx->push('PostDate', bab_mktime($arr['date']));
 			$this->ctx->curctx->push('PostUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$this->arrfid[$this->idx]."&thread=".$arr['id_thread']."&post=".$arr['id'].'&views=1');
@@ -1881,6 +1883,7 @@ class bab_Thread extends bab_handler
 	function bab_Thread($ctx)
 		{
 		global $babBody, $babDB;
+		include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
 		$this->bab_handler($ctx);
 		$this->threadid = $ctx->get_value('threadid');
 		if( $this->threadid === false || $this->threadid === '' )
@@ -1938,7 +1941,8 @@ class bab_Thread extends bab_handler
 			$this->ctx->curctx->push('ThreadPostId', $arr['post']);
 			$this->ctx->curctx->push('ThreadLastPostId', $arr['lastpost']);
 			$this->ctx->curctx->push('ThreadDate',  bab_mktime($arr['date']));
-			$this->ctx->curctx->push('ThreadStarter',  $arr['starter']);
+			$starter = bab_getForumContributor($arr['forum'], $arr['starter'], bab_getUserName($arr['starter']));
+			$this->ctx->curctx->push('ThreadStarter',  $starter);
 			$this->ctx->curctx->push('ThreadStarterId',  $arr['starter']);
 			$this->ctx->curctx->push('ThreadUrl', $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$arr['forum']."&thread=".$arr['id']."&views=1");
 			$this->idx++;
