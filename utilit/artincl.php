@@ -1022,7 +1022,6 @@ function notifyArticleDraftApprovers($id, $users)
 					$this->author = bab_translate("Unknown user");
 					$this->authoremail = "";
 					}
-					
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
 				$this->babtpl_authorname = $this->author;
@@ -1259,7 +1258,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 	}
 
 
-function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, $restriction)
+function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, $restriction, $articleid)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
@@ -1279,7 +1278,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 			var $dateval;
 
 
-			function tempcc($topicname, $title, $author, $msg,$topics)
+			function tempcc($topicname, $title, $author, $msg,$topics, $articleid)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->topic = bab_translate("Topic");
@@ -1304,6 +1303,8 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 				$this->babtpl_articledate = bab_strftime($timestamp, false);
 				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->titlename;
+				$this->babtpl_articleid = $articleid;
+				$this->babtpl_articletopicid = $topics;
 				}
 			}
 		}	
@@ -1321,7 +1322,7 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 	{
 		$msg = bab_translate("An article has been published");
 	}
-	$tempc = new tempcc($topicname, $title, $author, $msg,$topics);
+	$tempc = new tempcc($topicname, $title, $author, $msg,$topics, $articleid);
 
 	$subject = '';
 	if( $what == 'mod' )
@@ -1713,7 +1714,7 @@ function acceptWaitingArticle($idart)
 			}
 		if( $arr['notify_members'] == "Y" && bab_mktime($arr['date_publication']) <= mktime())
 			{
-			notifyArticleGroupMembers($arr['topicname'], $arr['id_topic'], $arr['title'], $artauthor, 'add', $arr['restriction']);
+			notifyArticleGroupMembers($arr['topicname'], $arr['id_topic'], $arr['title'], $artauthor, 'add', $arr['restriction'], $articleid);
 			}
 
 		if( $arr['hpage_private'] == "Y" || $arr['hpage_public'] == "Y" )
