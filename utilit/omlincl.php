@@ -5361,6 +5361,31 @@ class bab_Soap extends bab_handler
 				$apinamespace = '';
 				}
 
+			$soapAction = '';
+			$headers=false;
+			$style='rpc';
+			$use='encoded';
+			if( isset($vars['soapaction']))
+				{
+				$soapAction = $vars['soapaction'];
+				unset($vars['soapaction']);
+				}
+			if( isset($vars['headers']))
+				{
+				$headers = $vars['headers'];
+				unset($vars['soapaction']);
+				}
+			if( isset($vars['style']))
+				{
+				$style = $vars['style'];
+				unset($vars['style']);
+				}
+			if( isset($vars['use']))
+				{
+				$use = $vars['use'];
+				unset($vars['use']);
+				}
+				
 			if( isset($vars['proxyhost']))
 				{
 				$proxyhost = $vars['proxyhost'];
@@ -5414,7 +5439,7 @@ class bab_Soap extends bab_handler
 				{
 			$soapclient = new soapclient_b($apiserver);
 				}
-			$this->IdEntries = $soapclient->call($apicall, $args, $apinamespace);
+			$this->IdEntries = $soapclient->call($apicall, $args, $apinamespace,$soapAction,$headers,null,$style,$use);
 			$err = $soapclient->getError();
 			if( $debug )
 				{
