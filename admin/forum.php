@@ -134,7 +134,7 @@ function displayForumFields($id)
 			$this->update = bab_translate("Update");
 			
 			$iddir = 0;
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' AND id_field>6");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' AND id_field!=5");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_FORUMS_FIELDS_TBL." where id_forum='".$babDB->db_escape_string($id)."' order by field_order asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
