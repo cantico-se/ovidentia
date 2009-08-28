@@ -366,10 +366,12 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			if(empty($description))
 				{
 				$this->description = $this->arr['description'];
+				$this->descriptionFormat = $this->arr['description_format'];
 				}
 			else
 				{
 				$this->description = $description;
+				$this->descriptionFormat = null;
 				}
 			if(empty($category))
 				{
@@ -645,7 +647,9 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_topic');
 			$editor->setContent($this->description);
-			$editor->setFormat('html');
+			if (isset($this->descriptionFormat)) {
+				$editor->setFormat($this->descriptionFormat);
+			}
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 
@@ -928,10 +932,12 @@ function viewArticle($article)
 			
 			$editor = new bab_contentEditor('bab_article_body');
 			$editor->setContent($this->arr['body']);
+			$editor->setFormat($this->arr['body_format']);
 			$this->content = $editor->getHtml();
 			
 			$editor = new bab_contentEditor('bab_article_head');
 			$editor->setContent($this->arr['head']);
+			$editor->setFormat($this->arr['head_format']);
 			$this->head = $editor->getHtml();
 
 			}

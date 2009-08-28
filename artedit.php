@@ -638,12 +638,13 @@ function showEditArticle()
 
 				$editorhead = new bab_contentEditor('bab_article_head');
 				$headtext = $editorhead->getContent();
-				
-				
+				$headFormat = $editorhead->getFormat();
+
 				$editorbody = new bab_contentEditor('bab_article_body');
 				$bodytext = $editorbody->getContent();
-				
-				$this->content = bab_editArticle(bab_pp('title'), $headtext, $bodytext, bab_pp('lang'), '');
+				$bodyFormat = $editorbody->getFormat();
+
+				$this->content = bab_editArticle(bab_pp('title'), $headtext, $bodytext, bab_pp('lang'), '', $headFormat, $bodyFormat);
 				}
 			else
 				{
@@ -671,7 +672,7 @@ function showEditArticle()
 						$arr = $babDB->db_fetch_array($res);
 						$topicid = $arr['id_topic'];
 						$articleid = $arr['id_article'];
-						$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], $arr['lang'], "");
+						$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], $arr['lang'], '', $arr['head_format'], $arr['body_format']);
 						}
 					}
 				elseif( $articleid != 0 )
@@ -687,7 +688,7 @@ function showEditArticle()
 							}
 						if( empty($this->content))
 							{
-							$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], $arr['lang'], "");
+							$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], $arr['lang'], '', $arr['head_format'], $arr['body_format']);
 							}
 						}
 					}
@@ -1093,7 +1094,7 @@ echo
 					$this->sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&iWidth=120&iHeight=90' . 
 						'&iIdDraft=' . $idart . '&sImage=';
 									
-					//Si on ne vient pas d'un post alors récupérer l'image
+					//Si on ne vient pas d'un post alors rï¿½cupï¿½rer l'image
 					if(!array_key_exists('sImgName', $_POST))
 					{
 						$aImageInfo	= bab_getImageDraftArticle($idart);
@@ -1838,17 +1839,19 @@ function editArticleDraft($idart, $title, $lang, $message)
 
 					$editorhead = new bab_contentEditor('bab_article_head');
 					$headtext = $editorhead->getContent();
+					$headFormat = $editorhead->getFormat();
 					
 					
 					$editorbody = new bab_contentEditor('bab_article_body');
 					$bodytext = $editorbody->getContent();
+					$bodyFormat = $editorbody->getFormat();
 					
-					$this->content = bab_editArticle($title, $headtext, $bodytext, $lang, '');
+					$this->content = bab_editArticle($title, $headtext, $bodytext, $lang, '', $headFormat, $bodyFormat);
 					}
 				else
 					{
 					$arr = $babDB->db_fetch_array($res);
-					$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], '', '');
+					$this->content = bab_editArticle($arr['title'], $arr['head'], $arr['body'], '', '', $arr['head_format'], $arr['body_format']);
 					}
 				}
 			else
@@ -2417,7 +2420,7 @@ function uploadDraftArticleImg()
 	}
 	else
 	{
-		//Insérer l'image en base
+		//Insï¿½rer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);

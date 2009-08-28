@@ -5974,8 +5974,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// Add column for activating article rating on topics table.
 	if (!bab_isTableField(BAB_TOPICS_TBL, 'allow_article_rating')) {
 		$babDB->db_query('ALTER TABLE '.BAB_TOPICS_TBL." ADD `allow_article_rating` enum('N','Y') NOT NULL default 'N' AFTER `allow_addImg`");
-	}	
-
+	}
+	
 	/**
 	 * Upgrade to 7.1.91
 	 */
@@ -5995,7 +5995,68 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		
 		
 	}
+
+
+
+	// All the following changes add xxxx_format columns corresponding to xxxx columns having content
+	// originating from a wysiwyg editor.
+
+	// Add column for head and body format on article table.
+	if (!bab_isTableField(BAB_ARTICLES_TBL, 'head_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_ARTICLES_TBL." ADD `head_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `head`");
+	}
+	if (!bab_isTableField(BAB_ARTICLES_TBL, 'body_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_ARTICLES_TBL." ADD `body_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `body`");
+	}
 	
+	// Add column for head and body format on article draft table.
+	if (!bab_isTableField(BAB_ART_DRAFTS_TBL, 'head_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_ART_DRAFTS_TBL." ADD `head_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `head`");
+	}
+	if (!bab_isTableField(BAB_ART_DRAFTS_TBL, 'body_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_ART_DRAFTS_TBL." ADD `body_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `body`");
+	}
+
+	// Add column for message format on article comment table.
+	if (!bab_isTableField(BAB_COMMENTS_TBL, 'message_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `message_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `message`");
+	}
+
+	// Add column for description format on event table.
+	if (!bab_isTableField(BAB_CAL_EVENTS_TBL, 'description_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_CAL_EVENTS_TBL." ADD `description_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `description`");
+	}
+	
+	// Add column for description format on faq category table.
+	if (!bab_isTableField(BAB_FAQCAT_TBL, 'description_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_FAQCAT_TBL." ADD `description_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `description`");
+	}	
+
+	// Add column for description format on faq question-response table.
+	if (!bab_isTableField(BAB_FAQQR_TBL, 'response_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_FAQQR_TBL." ADD `response_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `response`");
+	}
+
+	// Add column for content format on note table.
+	if (!bab_isTableField(BAB_NOTES_TBL, 'content_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_NOTES_TBL." ADD `content_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `content`");
+	}
+
+	// Add column for description format on section table.
+	if (!bab_isTableField(BAB_SECTIONS_TBL, 'content_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_SECTIONS_TBL." ADD `content_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `content`");
+	}
+
+	// Add column for description format on topics table.
+	if (!bab_isTableField(BAB_TOPICS_TBL, 'description_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_TOPICS_TBL." ADD `description_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `description`");
+	}
+
+	// Add column for message format on posts table.
+	if (!bab_isTableField(BAB_POSTS_TBL, 'message_format')) {
+		$babDB->db_query('ALTER TABLE '.BAB_POSTS_TBL." ADD `message_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `message`");
+	}
+
 	
 	
 	return true;

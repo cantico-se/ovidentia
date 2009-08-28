@@ -89,6 +89,7 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 			$this->createField('idcat'				, bab_translate('Category numeric identifier'))		->searchable(false),
 			$this->createField('question'			, bab_translate('Question')),
 			$this->createField('response'			, bab_translate('Response')),
+			$this->createField('response_format'	, bab_translate('Response format'))					->searchable(false),
 			$this->createField('date_modification'	, bab_translate('Modification date'))
 		);
 	}
@@ -198,6 +199,7 @@ class bab_SearchFaqsResult extends bab_SearchSqlResult {
 
 			$editor = new bab_contentEditor('bab_faq_response');
 			$editor->setContent($record->response);
+			$editor->setContent($record->response_format);
 			$record->response = $editor->getHtml();
 
 		}

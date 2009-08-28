@@ -96,7 +96,9 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 			$this->createField('id_author'			, bab_translate('Author numeric identifier'))	->searchable(false),
 			$this->createField('title'				, bab_translate('Title')),
 			$this->createField('head'				, bab_translate('Head')),
+			$this->createField('head_format'		, bab_translate('Head format'))->searchable(false),
 			$this->createField('body'				, bab_translate('Body')),
+			$this->createField('body_format'		, bab_translate('Body format'))->searchable(false),
 			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')->searchable(false),
 			$this->createField('archive'			, bab_translate('Archived article'))->searchable(false),
 			$this->createField('relevance'			, bab_translate('Relevance'))->searchable(false),
@@ -384,14 +386,16 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 		if ($record instanceOf bab_SearchRecord) {
 			$record->ov_reference = bab_buildReference('articles', 'article', $record->id);
 
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 
 			$editor = new bab_contentEditor('bab_article_head');
 			$editor->setContent($record->head);
+			$editor->setFormat($record->head_format);
 			$record->head = $editor->getHtml();
 
 			$editor = new bab_contentEditor('bab_article_body');
 			$editor->setContent($record->body);
+			$editor->setFormat($record->body_format);
 			$record->body = $editor->getHtml();
 
 		}

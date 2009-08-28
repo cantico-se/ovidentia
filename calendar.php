@@ -281,6 +281,7 @@ function displayEventDetail($evtid, $idcal)
 						include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 						$editor = new bab_contentEditor('bab_calendar_event');
 						$editor->setContent($arr['description']);
+						$editor->setFormat($arr['description_format']);
 						$this->description = $editor->getHtml();
 				
 						$this->location= bab_toHtml($arr['location']);

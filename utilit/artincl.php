@@ -1740,19 +1740,31 @@ function acceptWaitingArticle($idart)
 	}
 }
 
-function bab_editArticle($title, $head, $body, $lang, $template)
-	{
+
+/**
+ * 
+ * @param string	$title
+ * @param string	$head
+ * @param string	$body
+ * @param string	$lang
+ * @param string	$template		The template section name that will be used to fill in the editor if $head and $body are empty.
+ * @param string	$headFormat
+ * @param string	$bodyFormat
+ * @return string
+ */
+function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = null, $bodyFormat = null)
+{
 	global $babBody;
 
 	class clsEditArticle
-		{
+	{
 	
 		var $title;
 		var $head;
 		var $body;
 
-		function clsEditArticle($title, $head, $body, $lang, $template)
-			{
+		function clsEditArticle($title, $head, $body, $lang, $template, $headFormat, $bodyFormat)
+		{
 			global $babDB;
 
 			$this->mode = 1;
@@ -1764,126 +1776,105 @@ function bab_editArticle($title, $head, $body, $lang, $template)
 			$this->t_bab_ovml = bab_translate("Insert OVML file");
 			$this->t_bab_contdir = bab_translate("Insert contact link");
 
-		
 
-
-			if( empty($title))
-				{
-				$this->titleval = "";
-				}
-			else
-				{
-				$this->titleval = bab_toHtml($title);
-				}
-
-			if( empty($head))
-				{
-				$this->headval = "";
-				}
-			else
-				{
-				$this->headval = $head;
-				}
-			if( empty($body))
-				{
-				$this->bodyval = "";
-				}
-			else
-				{
-				$this->bodyval = $body;
-				}
-
-			if( empty($lang))
-				{
-				$this->lang = $GLOBALS['babLanguage'];
-				}
-			else
-				{
-				$this->lang = $lang;
-				}
+			$this->headval = empty($head) ? '' : $head;
+			$this->bodyval = empty($body) ? '' : $body;
+			$this->titleval = empty($title) ? '' : bab_toHtml($title);
+			$this->lang = empty($body) ? $GLOBALS['babLanguage'] : $lang;
 
 
 			$this->head = bab_translate("Head");
 			$this->body = bab_translate("Body");
 			$this->title = bab_translate("Title");
 			$this->ok = bab_translate("Ok");
-			
-			
+
+
 			$this->langLabel = bab_translate("Language");
 			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
-			if(isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose')
-			{
-				if($lang != '*')
-				{
+			if (isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') {
+				if($lang != '*') {
 					$this->langFiles = array();
 					$this->langFiles[] = '*';
 				}
 			}
 			$this->countLangFiles = count($this->langFiles);
 
-			
 
-			if( $template != '' && $this->headval == '' && $this->bodyval == '')
-				{
-				$file = "articlestemplate.html";
-				$filepath = "skins/".$GLOBALS['babSkin']."/templates/". $file;
-				if( !file_exists( $filepath ) )
-					{
-					$filepath = $GLOBALS['babSkinPath']."templates/". $file;
-					if( !file_exists( $filepath ) )
-						{
-						$filepath = $GLOBALS['babInstallPath']."skins/ovidentia/templates/". $file;
-						}
+			if ($template != '' && $this->headval == '' && $this->bodyval == '') {
+				
+				// We fetch the template corresponding to the correct format (html, text...)
+				// of the article head.
+				$file = 'articlestemplate.' . $headFormat;
+				$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+				if (!file_exists($filepath)) {
+					$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
+					if (!file_exists($filepath)) {
+						$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
 					}
-				if( file_exists( $filepath ) )
-					{
+				}
+				if (file_exists($filepath)) {
 					require_once dirname(__FILE__) . '/template.php';
 					$tp = new bab_Template();
 					$this->headval = $tp->_loadTemplate($filepath, 'head_' . $template);
-					$this->bodyval = $tp->_loadTemplate($filepath, 'body_' . $template);
+				}
+
+				// We fetch the template corresponding to the correct format (html, text...)
+				// of the article body.
+				$file = 'articlestemplate.' . $bodyFormat;
+				$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+				if (!file_exists($filepath)) {
+					$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
+					if (!file_exists($filepath)) {
+						$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
 					}
 				}
+				if (file_exists($filepath)) {
+					require_once dirname(__FILE__) . '/template.php';
+					$tp = new bab_Template();
+					$this->bodyval = $tp->_loadTemplate($filepath, 'body_' . $template);
+				}
+			}
+
 				
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 				// l'ordre des appels est important
 			$editorhead = new bab_contentEditor('bab_article_head');
 			$editorhead->setContent($this->headval);
-			$editorhead->setFormat('html');
+			if (isset($headFormat)) {
+				$editorhead->setFormat($headFormat);
+			}
 			
 			$editorbody = new bab_contentEditor('bab_article_body');
 			$editorbody->setContent($this->bodyval);
-			$editorbody->setFormat('html');
+			if (isset($bodyFormat)) {
+				$editorbody->setFormat($bodyFormat);
+			}
 			
 			$this->editorhead = $editorhead->getEditor();
 			$this->editorbody = $editorbody->getEditor();
+		}
 
+		function getnextlang()
+		{
+			static $i = 0;
+			if ($i < $this->countLangFiles) {
+				$this->langValue = $this->langFiles[$i];
+				if ($this->langValue == $this->lang) {
+					$this->langSelected = 'selected';
+				} else {
+					$this->langSelected = '';
+				}
+				$i++;
+				return true;
 			}
-			
-			function getnextlang()
-			{
-				static $i = 0;
-				if($i < $this->countLangFiles)
-					{
-					$this->langValue = $this->langFiles[$i];
-					if($this->langValue == $this->lang)
-						{
-						$this->langSelected = 'selected';
-						}
-					else
-						{
-						$this->langSelected = '';
-						}
-					$i++;
-					return true;
-					}
-				return false;
-			} // function getnextlang
+			return false;
+		} // function getnextlang
 
-		} // class temp
+	} // class temp
 	
-	$temp = new clsEditArticle($title, $head, $body, $lang, $template);
-	return bab_printTemplate($temp,"artincl.html", "editarticle");
-	}
+	$temp = new clsEditArticle($title, $head, $body, $lang, $template, $headFormat, $bodyFormat);
+	return bab_printTemplate($temp, 'artincl.html', 'editarticle');
+}
 
 
 function bab_previewArticleDraft($idart, $echo=0)
@@ -1915,10 +1906,12 @@ function bab_previewArticleDraft($idart, $echo=0)
 			
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($arr['body']);
+				$editor->setFormat($arr['body_format']);
 				$this->bodyval = $editor->getHtml();
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($arr['head']);
+				$editor->setFormat($arr['head_format']);
 				$this->headval = $editor->getHtml();
 				
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
@@ -2013,6 +2006,7 @@ function bab_previewComment($com)
 			
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($this->arr['message']);
+			$editor->setFormat($this->arr['message_format']);
 			$this->content = $editor->getHtml();
 			}
 		}

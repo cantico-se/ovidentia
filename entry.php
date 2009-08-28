@@ -48,7 +48,7 @@ function ListArticles($idgroup)
 			{
 			global $babBody, $babDB;
 			$this->idgroup = $idgroup;
-			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head , LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($idgroup)."' and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'  and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and ht.ordering!='0' order by ht.ordering asc";
+			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head, at.head_format, LENGTH(at.body) as blen, at.restriction   from ".BAB_HOMEPAGES_TBL." ht left join ".BAB_ARTICLES_TBL." at on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($idgroup)."' and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'  and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and ht.ordering!='0' order by ht.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->countres = $babDB->db_num_rows($this->res);
 			$this->morename = bab_translate("Read More");
@@ -80,6 +80,7 @@ function ListArticles($idgroup)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($arr['head']);
+				$editor->setFormat($arr['head_format']);
 				$this->content = $editor->getHtml();
 				
 				if( $arr['id_author'] != 0 && (($author = bab_getUserName($arr['id_author'])) != ""))
@@ -167,10 +168,12 @@ function readMore($article, $idg)
 			if( empty($arr['body']))
 				{
 				$editor->setContent($arr['head']);
+				$editor->setFormat($arr['head_format']);
 				}
 			else
 				{
 				$editor->setContent($arr['body']);
+				$editor->setFormat($arr['body_format']);
 				}
 			$this->content = $editor->getHtml();
 			
@@ -259,10 +262,12 @@ function articlePrint($topics, $article)
 					
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
 				
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
 				
 				$this->title = bab_toHtml($this->arr['title']);

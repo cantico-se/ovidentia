@@ -89,6 +89,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 			$this->createField('id'					, bab_translate('Event numeric identifier'))	->searchable(false)->setTableAlias('e'),
 			$this->createField('title'				, bab_translate('Title'))->setTableAlias('e'),
 			$this->createField('description'		, bab_translate('Description'))->setTableAlias('e'),
+			$this->createField('description_format'	, bab_translate('Description format'))->setTableAlias('e')	->searchable(false),
 			$this->createField('location'			, bab_translate('Location'))->setTableAlias('e'),
 			$this->createField('start_date'			, bab_translate('Start date'))->setTableAlias('e'),
 			$this->createField('end_date'			, bab_translate('End date'))->setTableAlias('e'),
@@ -273,6 +274,7 @@ class bab_SearchCalendarsResult extends bab_SearchSqlResult {
 
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($record->description);
+			$editor->setFormat($record->description_format);
 			$record->description = $editor->getHtml();
 
 		}

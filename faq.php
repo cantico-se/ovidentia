@@ -75,6 +75,7 @@ function listCategories()
 					$this->arr = $babDB->db_fetch_array($res);
 					$editor = new bab_contentEditor('bab_faq');
 					$editor->setContent($this->arr['description']);
+					$editor->setFormat($this->arr['description_format']);
 					$this->description = $editor->getHtml();
 					$this->urlcategory = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$this->arr['id']);
 					$this->namecategory = bab_toHtml($this->arr['category']);
@@ -420,6 +421,7 @@ function FaqPrintContents($idcat)
 
 					$editor = new bab_contentEditor('bab_faq_response');
 					$editor->setContent($row['response']);
+					$editor->setFormat($row['response_format']);
 					$this->response = $editor->getHtml();
 
 					}
@@ -519,6 +521,7 @@ function listSubCategoryQuestions($idcat, $idscat)
 
 				$editor = new bab_contentEditor('bab_faq_response');
 				$editor->setContent($arr['response']);
+				$editor->setFormat($arr['response_format']);
 				$this->response = $editor->getHtml();
 					
 				$this->idq = bab_toHtml($arr['id']);
@@ -559,6 +562,7 @@ function viewQuestion($idcat, $idscat, $id)
 			
 			$editor = new bab_contentEditor('bab_faq_response');
 			$editor->setContent($this->arr['response']);
+			$editor->setFormat($this->arr['response_format']);
 			$this->arr['response'] = $editor->getHtml();
 			
 			$this->returnurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$idcat."&idscat=".$idscat);
@@ -603,6 +607,7 @@ function viewPopupQuestion($id)
 			
 				$editor = new bab_contentEditor('bab_faq_response');
 				$editor->setContent($this->arr['response']);
+				$editor->setFormat($this->arr['response_format']);
 				$this->arr['response'] = $editor->getHtml();
 				}
 			else
@@ -697,6 +702,7 @@ function faqPrint($idcat, $idscat)
 					
 				$editor = new bab_contentEditor('bab_faq_response');
 				$editor->setContent($arr['response']);
+				$editor->setFormat($arr['response_format']);
 				$this->response = $editor->getHtml();
 				
 				$i++;
@@ -873,7 +879,7 @@ function modifyQuestion($item, $idscat, $idq)
 			
 			$editor = new bab_contentEditor('bab_faq_response');
 			$editor->setContent($arr['response']);
-			$editor->setFormat('html');
+			$editor->setFormat($arr['response_format']);
 			$editor->setParameters(array('height' => 400));
 			$this->editor = $editor->getEditor();
 
@@ -993,10 +999,11 @@ function saveQuestion($item, $idscat, $question)
 	global $babDB, $faqinfo;
 	
 	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 			
 	$editor = new bab_contentEditor('bab_faq_response');
 	$response = $editor->getContent();
+	$responseFormat = $editor->getFormat();
 	
 
 	if( empty($question) || empty($response))
@@ -1020,7 +1027,7 @@ function saveQuestion($item, $idscat, $question)
 		
 	$response = imagesReplace($response, $id."_faq_", $ar);
 
-	$query = "update ".BAB_FAQQR_TBL." set response='".$babDB->db_escape_string($response)."' where id='".$babDB->db_escape_string($id)."'";
+	$query = "update ".BAB_FAQQR_TBL." set response='".$babDB->db_escape_string($response)."', response_format='".$babDB->db_escape_string($responseFormat)."' where id='".$babDB->db_escape_string($id)."'";
 	$babDB->db_query($query);
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 	}

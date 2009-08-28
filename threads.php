@@ -433,7 +433,7 @@ function newThread($forum)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_forum_post');
 			$editor->setContent($message);
-			$editor->setFormat('html');
+//			$editor->setFormat('html');
 			$this->editor = $editor->getEditor();
 
 			$this->allow_post_files = bab_isAccessValid(BAB_FORUMSFILES_GROUPS_TBL,$forum);

@@ -78,7 +78,8 @@ function sendReminders()
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setParameters(array('email' => true));
 			$editor->setContent($arr['description']);
-
+			$editor->setFormat($arr['description_format']);
+			
 			$tempc = new clsCalEventReminder(
 				$arr['title'], 
 				$editor->getHtml(), 
@@ -144,6 +145,7 @@ function updatePopupNotifier()
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_calendar_event');
 				$editor->setContent($arr['description']);
+				$editor->setFormat($arr['description_format']);
 				$this->eventdesc = $editor->getHtml();
 				
 				$time = bab_mktime($arr['start_date']);

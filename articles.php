@@ -142,7 +142,7 @@ function listArticles($topics)
 			$babDB = $GLOBALS['babDB'];
 			$this->bmanager = bab_isUserTopicManager($this->topics);
 
-			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, at.body, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
+			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, at.body, at.head_format, at.body_format, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
 			switch($langFilterValue)
 				{
@@ -255,6 +255,7 @@ function listArticles($topics)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->content = $editor->getHtml();
 				
 				/* template variables */
@@ -265,6 +266,7 @@ function listArticles($topics)
 				
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				$this->babtpl_body = $editor->getHtml();
 
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
@@ -407,7 +409,7 @@ function listArchiveArticles($topics, $pos)
 				$this->bnavigation = false;
 
 
-			$req = "select id, id_topic, id_author, date, title, head, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y' order by date desc";
+			$req = "select id, id_topic, id_author, date, title, head, head_format, LENGTH(body) as blen, restriction from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."' and archive='Y' order by date desc";
 			if( $total > $maxarticles)
 				{
 				$req .= " limit ".$babDB->db_escape_string($pos).",".$maxarticles;
@@ -441,6 +443,7 @@ function listArchiveArticles($topics, $pos)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->content = $editor->getHtml();
 				
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
@@ -678,16 +681,19 @@ function readMore($topics, $article)
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
+					$editor->setFormat($this->arr['head_format']);
 					$sHead = $this->head = $editor->getHtml();
 					
 					$editor = new bab_contentEditor('bab_article_body');
 					$editor->setContent($this->arr['body']);
+					$editor->setFormat($this->arr['body_format']);
 					$sBody = $this->content = $editor->getHtml();
 					}
 				else
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
+					$editor->setFormat($this->arr['head_format']);
 					$sHead = $this->content = $editor->getHtml();
 					}
 				
@@ -777,6 +783,7 @@ function readMore($topics, $article)
 				
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->commentbody = $editor->getHtml();
 
 				$i++;
@@ -889,10 +896,12 @@ function articlePrint($topics, $article)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
 				
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
 				
 				$this->title = bab_toHtml($this->arr['title']);
@@ -1172,10 +1181,12 @@ function viewArticle($article)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
 				
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
 
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
@@ -1242,6 +1253,7 @@ function viewArticle($article)
 				
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->commentbody = $editor->getHtml();
 				
 				$i++;

@@ -839,18 +839,21 @@ function bab_submitArticleDraft($idart)
 	return true;
 }
 
+
+
 /**
- * Add an article draft
+ * Adds an article draft
  * 
- * @param $title title of the new article draft
- * @param $head head of the new article draft
- * @param $body body of the new article draft
- * @param $idTopic id of the topic where we create the article draft
- * @param $error return the error message
- * @param $articleArr an array which contains options for the new article draft : date_submission, notify_members...
- * @return int return id of the new article draft
+ * @param string	$title		Title of the new article draft
+ * @param string	$head		Head of the new article draft
+ * @param string	$body		Body of the new article draft
+ * @param int		$idTopic	Id of the topic where we create the article draft
+ * @param string	$error 		Returned error message
+ * @param array		$articleArr	An array which contains options for the new article draft : date_submission, notify_members...
+ * @return int 		Id of the new article draft
  */
-function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleArr=array()) {
+function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html')
+{
 	global $babBody, $babDB;
 	/* Options by default */
 	$arrdefaults = array(	'id_author'=>$GLOBALS['BAB_SESS_USERID'],
@@ -892,7 +895,9 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 	}
 	
 	/* Verify if the current user can create the article draft */
-	if (bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])     ||    ( $informationTopic['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'])      ||      ( $informationTopic['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))) {
+	if (bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $idTopic, $arrdefaults['id_author'])
+			|| ($informationTopic['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'])
+			|| ($informationTopic['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $idTopic, $arrdefaults['id_author']))) {
 	} else {
 		$error = bab_translate("Access denied");
 		bab_debug("Error in function bab_addArticleDraft() : the current user has no rights to create the article draft. Verify the rights access of the topic ".$idTopic);
@@ -910,30 +915,43 @@ function bab_addArticleDraft( $title, $head, $body, $idTopic, &$error, $articleA
 	} else {
 		$idanonymous = 0;
 	}
-			
+
 	$arrdefaults['title'] = $title;
 	$arrdefaults['body'] = $body;
 	$arrdefaults['head'] = $head;
-	$arrdefaults['id_topic'] = $idTopic;	
-	$arrdefaults['id_anonymous'] = $idanonymous;	
-	
-	$babDB->db_query("insert into ".BAB_ART_DRAFTS_TBL." (".implode(',', array_keys($arrdefaults)).") values (".$babDB->quote($arrdefaults).")");
+	$arrdefaults['body_format'] = $bodyFormat;
+	$arrdefaults['head_format'] = $headFormat;
+	$arrdefaults['id_topic'] = $idTopic;
+	$arrdefaults['id_anonymous'] = $idanonymous;
+
+	$babDB->db_query('INSERT INTO '.BAB_ART_DRAFTS_TBL.' ('.implode(',', array_keys($arrdefaults)).') VALUES ('.$babDB->quote($arrdefaults).')');
 	$iddraft = $babDB->db_insert_id();
-	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set date_creation=now(), date_modification=now() where id='".$iddraft."'");
+	$babDB->db_query('UPDATE '.BAB_ART_DRAFTS_TBL.' SET date_creation=NOW(), date_modification=now() WHERE id=' . $babDB->quote($iddraft));
 	return $iddraft;
 }
 
-function bab_addArticle( $title, $head, $body, $idTopic, &$error, $articleArr=array())
+
+
+
+/**
+ * Adds an article
+ * 
+ * @param string	$title		Title of the new article
+ * @param string	$head		Head of the new article
+ * @param string	$body		Body of the new article
+ * @param int		$idTopic	Id of the topic where we create the article
+ * @param string	$error 		Returned error message
+ * @param array		$articleArr	An array which contains options for the new article: date_submission, notify_members...
+ * 
+ * @return bool
+ */
+function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html')
 {
-	$iddraft = bab_addArticleDraft($title, $head, $body, $idTopic, $error, $articleArr);
-	if( $iddraft)
-	{
+	$iddraft = bab_addArticleDraft($title, $head, $body, $idTopic, $error, $articleArr, $headFormat, $bodyFormat);
+	if ($iddraft) {
 		return bab_submitArticleDraft($iddraft);
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
 
@@ -942,44 +960,44 @@ function bab_addArticle( $title, $head, $body, $idTopic, &$error, $articleArr=ar
 	
 
 
-	
+/**
+ * @param int	$com	The comment id
+ * @return string
+ */
 function bab_getCommentTitle($com)
-	{
+{
 	global $babDB;
-	$query = "select subject from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($com)."'";
+	$query = 'SELECT subject FROM '.BAB_COMMENTS_TBL.' WHERE id='.$babDB->quote($com);
 	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
+	if ($res && $babDB->db_num_rows($res) > 0) {
+		$arr = $babDB->db_fetch_assoc($res);
 		return $arr['subject'];
-		}
-	else
-		{
-		return "";
-		}
+	} else {
+		return '';
 	}
+}
 
 
 
 
 /**
  * Saves an article comment.
- * 
+ *
  * If $commentId is not specified, the comment will be created
  * otherwise the specified comment will be updated.
- * 
+ *
  * The current user will be the author of the post.
- * 
+ *
  * @param int		$topicId		The article's topic id.
  * @param int		$articleId		The article id.
  * @param string	$subject		The comment title (plain text).
  * @param string	$message		The comment body (in html)
  * @param int		$parentId		The parent comment id.
  * @param int		$commentId		If specified this comment will be updated otherwise a new comment is created.
- * 
+ *
  * @return int		The comment id.
  */
-function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $articleRating = 0, $commentId = null)
+function bab_saveArticleComment($topicId, $articleId, $subject, $message, $parentId = 0, $articleRating = 0, $commentId = null, $messageFormat= 'html')
 {
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID;
 
@@ -1005,10 +1023,31 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 		 		WHERE id = ' . $babDB->quote($commentId);
 		$babDB->db_query($req);
 	} else {
-		
-		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (id_topic, id_article, id_parent, date, subject, message, article_rating, id_author, name, email)
-				VALUES (' . $babDB->quote($topicId). ', ' . $babDB->quote($articleId). ', ' . $babDB->quote($parentId). ', NOW(), ' . $babDB->quote($subject) . ', ' . $babDB->quote($message) . ', ' . $babDB->quote($articleRating) . ', ' . $babDB->quote($authorId) . ', ' . $babDB->quote($authorName). ', ' . $babDB->quote($authorEmail). ')';
-	
+
+		$req = 'INSERT INTO '.BAB_COMMENTS_TBL.' (
+						id_topic,
+						id_article,
+						id_parent,
+						date,
+						subject,
+						message,
+						message_format,
+						article_rating,
+						id_author,
+						name,
+						email)
+				VALUES (' . $babDB->quote($topicId). ',
+						' . $babDB->quote($articleId). ',
+						' . $babDB->quote($parentId). ',
+						NOW(),
+						' . $babDB->quote($subject) . ',
+						' . $babDB->quote($message) . ', 
+						' . $babDB->quote($messageFormat) . ', 
+						' . $babDB->quote($articleRating) . ',
+						' . $babDB->quote($authorId) . ',
+						' . $babDB->quote($authorName). ',
+						' . $babDB->quote($authorEmail). ')';
+
 		$babDB->db_query($req);
 		$commentId = $babDB->db_insert_id();
 	}
@@ -1041,6 +1080,7 @@ function bab_saveArticleComment($topicId, $articleId, $subject, $message, $paren
 
 
 
+
 /**
  * Returns the average rating of comments for this article.
  * The average rating should be a floating point number between 1 and 5.
@@ -1062,6 +1102,8 @@ function bab_getArticleAverageRating($articleId)
 	$articleComments = $babDB->db_fetch_assoc($res);
 	return (float)($articleComments['average_rating']);
 }
+
+
 
 
 /**

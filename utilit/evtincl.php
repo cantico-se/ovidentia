@@ -1550,6 +1550,7 @@ class bab_event_posted {
 				
 		$editor = new bab_contentEditor('bab_calendar_event');
 		$this->args['description'] = $editor->getContent();
+		$this->args['descriptionformat'] = $editor->getFormat();
 		
 		$this->args['title'] = bab_pp('title');
 		$this->args['location'] = bab_pp('location');
@@ -1776,7 +1777,7 @@ class bab_event_posted {
 			
 			if ($evtid) {
 				if ((int) $data['id_event'] === (int) $evtid) {
-					// considérer l'evenement modifie comme disponible
+					// considï¿½rer l'evenement modifie comme disponible
 					$whObj->setAvailability($event, true);
 				}
 			}

@@ -90,12 +90,14 @@ class bab_handler
 	/**
 	 * transform editor content to html
 	 * @param	string	&$txt
+	 * @param	string	$txtFormat			The text format (html, text...) corresponding to the format of the wysiwyg editor.
 	 * @param	string	$editor
 	 */
-	function replace_ref(&$txt, $editor) {
+	function replace_ref(&$txt, $txtFormat, $editor) {
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor($editor);
 		$editor->setContent($txt);
+		$editor->setFormat($txtFormat);
 		$txt = $editor->getHtml();
 	}
 
@@ -565,8 +567,8 @@ class bab_ArticlesHomePages extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], 'bab_article_head');
-			$this->replace_ref($arr['body'], 'bab_article_body');
+			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
 			$this->ctx->curctx->push('ArticleHead', $arr['head']);
 			$this->ctx->curctx->push('ArticleBody', $arr['body']);
 			if( empty($arr['body']))
@@ -906,7 +908,7 @@ class bab_ArticleTopics extends bab_handler
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 
-			$this->replace_ref($arr['description'], 'bab_topic');
+			$this->replace_ref($arr['description'], $arr['description_format'], 'bab_topic');
 
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
@@ -1002,7 +1004,7 @@ class bab_ArticleTopic extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
-			$this->replace_ref($arr['description'], 'bab_topic');
+			$this->replace_ref($arr['description'], $arr['description_format'], 'bab_topic');
 			$this->ctx->curctx->push('TopicDescription', $arr['description']);
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
@@ -1276,8 +1278,8 @@ class bab_Articles extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], 'bab_article_head');
-			$this->replace_ref($arr['body'], 'bab_article_body');
+			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
 			$this->ctx->curctx->push('ArticleHead', $arr['head']);
 			$this->ctx->curctx->push('ArticleBody', $arr['body']);
 			if( empty($arr['body']))
@@ -1374,8 +1376,8 @@ class bab_Article extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], 'bab_article_head');
-			$this->replace_ref($arr['body'], 'bab_article_body');
+			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
 			$this->ctx->curctx->push('ArticleHead', $arr['head']);
 			$this->ctx->curctx->push('ArticleBody', $arr['body']);
 			if( empty($arr['body']))
@@ -1760,7 +1762,7 @@ class bab_Post extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], 'bab_forum_post');
+			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
@@ -2937,8 +2939,8 @@ class bab_RecentArticles extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], 'bab_article_head');
-			$this->replace_ref($arr['body'], 'bab_article_body');
+			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
 			$this->ctx->curctx->push('ArticleHead', $arr['head']);
 			$this->ctx->curctx->push('ArticleBody', $arr['body']);
 			if( empty($arr['body']))
@@ -3196,7 +3198,7 @@ class bab_RecentPosts extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], 'bab_forum_post');
+			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
@@ -3334,7 +3336,7 @@ class bab_RecentThreads extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], 'bab_forum_post');
+			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
@@ -3643,8 +3645,8 @@ class bab_WaitingArticles extends bab_handler
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], 'bab_article_head');
-			$this->replace_ref($arr['body'], 'bab_article_body');
+			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
 			$this->ctx->curctx->push('ArticleHead', $arr['head']);
 			$this->ctx->curctx->push('ArticleBody', $arr['body']);
 			if( empty($arr['body']))
@@ -3952,7 +3954,7 @@ class bab_WaitingPosts extends bab_handler
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], 'bab_forum_post');
+			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostText', $arr['message']);
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
@@ -4292,7 +4294,7 @@ class bab_FaqQuestions extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], 'bab_faq_response');
+			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqResponse', $arr['response']);
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
@@ -4346,7 +4348,7 @@ class bab_FaqQuestion extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], 'bab_faq_response');
+			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqResponse', $arr['response']);
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
@@ -4496,7 +4498,7 @@ class bab_RecentFaqQuestions extends bab_handler
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], 'bab_faq_response');
+			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqResponse', $arr['response']);
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
@@ -4931,7 +4933,7 @@ class bab_CalendarEvents extends bab_handler
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$description = $p->getProperty('DESCRIPTION');
-			$this->replace_ref($description, 'bab_calendar_event');
+			$this->replace_ref($description, 'html', 'bab_calendar_event');
 			$date = explode(' ', $p->getProperty('DTSTART'));
 			$date = explode('-', $date[0]);
 			$date = $date[0].",".$date[1].",".$date[2];

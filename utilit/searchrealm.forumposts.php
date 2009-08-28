@@ -100,6 +100,7 @@ class bab_SearchRealmForumPosts extends bab_SearchRealm {
 				$this->createField('forum_name'		, bab_translate('Forum name'))					->setTableAlias('f')->setRealName('name'),
 				$this->createField('subject'		, bab_translate('Subject'))						->setTableAlias('p'),
 				$this->createField('message'		, bab_translate('Message'))						->setTableAlias('p'),
+				$this->createField('message_format'	, bab_translate('Message format'))				->searchable(false)->setTableAlias('p'),
 				$this->createField('author'			, bab_translate('Author'))						->setTableAlias('p'),
 				$this->createField('date'			, bab_translate('Publication date')) 			->setTableAlias('p'),
 				$this->createField('confirmed'		, bab_translate('Post approbation status'))		->setTableAlias('p')
@@ -235,6 +236,7 @@ class bab_SearchForumsResult extends bab_SearchSqlResult {
 
 			$editor = new bab_contentEditor('bab_forum_post');
 			$editor->setContent($record->message);
+			$editor->setFormat($record->message_format);
 			$record->message = $editor->getHtml();
 		}
 

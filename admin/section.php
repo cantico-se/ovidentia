@@ -130,7 +130,7 @@ function sectionModify($id)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_section');
 				$editor->setContent($this->arr['content']);
-				$editor->setFormat('html');
+				$editor->setFormat($this->arr['content_format']);
 				$this->editor = $editor->getEditor();
 				
 				}
@@ -259,7 +259,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_section');
 		$content = $editor->getContent();
-
+		$contentFormat = $editor->getFormat();
 	}
 	
 
@@ -270,6 +270,7 @@ function sectionUpdate($id, $title, $desc, $template, $lang, $opt)
 		title='".$babDB->db_escape_string($title)."', 
 		description='".$babDB->db_escape_string($desc)."', 
 		content='".$babDB->db_escape_string($content)."', 
+		content_format='".$babDB->db_escape_string($contentFormat)."', 
 		script='".$babDB->db_escape_string($php)."', 
 		template='".$babDB->db_escape_string($template)."', 
 		lang='".$babDB->db_escape_string($lang)."', 

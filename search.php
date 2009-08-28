@@ -547,11 +547,13 @@ function viewArticle($article,$w)
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				
 				$this->content = highlightWord($w, $editor->getHtml());
 				
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				
 				$this->head = highlightWord($w, $editor->getHtml());
 
@@ -639,8 +641,9 @@ function viewArticle($article,$w)
 				
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->commentbody = highlightWord($this->w,$editor->getHtml());
-				
+
 				$i++;
 				return true;
 				}
@@ -701,9 +704,10 @@ function viewComment($topics, $article, $com, $w)
 			$this->arr['date'] = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 			$this->arr['subject'] = highlightWord( $w, bab_toHtml($this->arr['subject']));
 
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($this->arr['message']);
+			$editor->setFormat($this->arr['message_format']);
 			$this->arr['message'] = highlightWord( $w, $editor->getHtml());
 			}
 		}
@@ -747,9 +751,10 @@ function viewPost($thread, $post, $w)
 			$this->author = bab_getForumContributor($arr['forum'], $arr['id_author'], $this->author);
 			$this->postsubject = highlightWord( $w, bab_toHtml($arr['subject']));
 			
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 			$editor = new bab_contentEditor('bab_forum_post');
 			$editor->setContent($arr['message']);
+			$editor->setFormat($arr['message_format']);
 			$this->postmessage = highlightWord( $w, $editor->getHtml());
 
 			if ($this->files && bab_searchEngineInfos()) {
@@ -802,9 +807,10 @@ function viewQuestion($idcat, $id, $w)
 			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->arr['question'] = highlightWord( $w, bab_toHtml($this->arr['question']));
 			
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 			$editor = new bab_contentEditor('bab_faq_response');
 			$editor->setContent($this->arr['response']);
+			$editor->setFormat($this->arr['response_format']);
 			$this->arr['response'] = highlightWord( $w, $editor->getHtml());
 			
 			$req = "select category from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($idcat);

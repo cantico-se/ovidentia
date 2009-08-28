@@ -87,7 +87,7 @@ function modifyCategory($id)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_faq');
 			$editor->setContent($this->arr['description']);
-			$editor->setFormat('html');
+			$editor->setFormat($this->arr['description_format']);
 			$editor->setParameters(array('height' => 300));
 			$this->editor = $editor->getEditor();
 			

@@ -223,7 +223,7 @@ function newEvent()
 			
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($editor->getContent());
-			$editor->setFormat('html');
+//			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 
@@ -603,7 +603,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		var $sCopyCaption;
 		
 		function temp($idcal, $evtid, $cci, $view, $date, $res)
-			{
+		{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
 
 			$this->delete = bab_translate("Delete");
@@ -670,44 +670,37 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				}
 			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']));
 
-			if( !empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R')
-				{
+			if (!empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R') {
 				$this->brecevt = true;
 				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-				}
-			else
-				{
+			} else {
 				$this->brecevt = false;
-				}
+			}
 
 			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-			if( empty($bshowui))
-				{
+			if (empty($bshowui)) {
 				$bshowui = $babBody->babsite['show_update_info'];
-				}
+			}
 
 			$this->bshowupadetinfo = false;
-			if( $bshowui == 'Y' && $this->evtarr['id_modifiedby'] )
-				{
+			if ($bshowui == 'Y' && $this->evtarr['id_modifiedby']) {
 				$this->bshowupadetinfo = true;
 				$this->modifiedontxt = bab_translate("Created/Updated on");
 				$this->bytxt = bab_translate("By");
 				$this->updatedate = bab_toHtml(bab_shortDate(bab_mktime($this->evtarr['date_modification']), true));
 				$this->updateauthor = bab_toHtml(bab_getUserName($this->evtarr['id_modifiedby']));
-				}
+			}
 				
 			
 			
 			$this->ymin = 2;
 			$this->ymax = 5;
-			if (isset($_POST) && count($_POST) > 0)
-				{
-				foreach($_POST as $k => $v)
-					{
+			if (isset($_POST) && count($_POST) > 0) {
+				foreach($_POST as $k => $v) {
 					$this->evtarr[$k] = bab_pp($k);
-					}
-				$this->evtarr['id_cat'] = bab_pp('category');
 				}
+				$this->evtarr['id_cat'] = bab_pp('category');
+			}
 				
 			if (isset($this->evtarr['yearbegin'])) {	
 				$this->yearbegin = $this->evtarr['yearbegin'];
@@ -785,22 +778,19 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->category = bab_translate("Category");
 			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid);
 
-			
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 
 			$editor = new bab_contentEditor('bab_calendar_event');
 			
-			
+
 			$tmp = $editor->getContent();
-			if (!empty($tmp)) {
-				$editor->setContent($tmp);
-			} else {
+			if ($tmp == '') {
 				$editor->setContent($this->evtarr['description']);
+				$editor->setFormat($this->evtarr['description_format']);
 			}
-			
-			
-			$editor->setFormat('html');
+
+
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 
@@ -808,18 +798,16 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->ampm = $babBody->ampm;
 			$this->colorvalue = isset($_POST['color']) ? $_POST['color'] : $this->evtarr['color'] ;
 			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
-			
 
 			$this->rescat = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 			$this->rescount = $babDB->db_num_rows($this->rescat);
-			
-			
+
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
 			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory();
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
-			}
+		}
 
 		function getNextRule()
 		{

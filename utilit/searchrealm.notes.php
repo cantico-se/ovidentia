@@ -88,6 +88,7 @@ class bab_SearchRealmNotes extends bab_SearchRealm {
 			$this->createField('id'				, bab_translate('Id'))					->searchable(false),
 			$this->createField('id_user'		, bab_translate('Owner'))				->searchable(false),
 			$this->createField('content'		, bab_translate('Note content')),
+			$this->createField('content_format'	, bab_translate('Content format'))		->searchable(false),
 			$this->createField('date'			, bab_translate('Creation date'))
 		);
 	}
@@ -191,12 +192,12 @@ class bab_SearchNotesResult extends bab_SearchSqlResult {
 		if ($record instanceOf bab_SearchRecord) {
 			$record->ov_reference = bab_buildReference('notes', 'note', $record->id);
 
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 
 			$editor = new bab_contentEditor('bab_note');
 			$editor->setContent($record->content);
+			$editor->setFormat($record->content_format);
 			$record->content = $editor->getHtml();
-
 		}
 
 		return $record;

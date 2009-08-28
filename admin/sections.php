@@ -531,10 +531,12 @@ function sectionSave($title, $pos, $desc, $script, $js, $template, $lang, $opt)
 
 	if( $js == 1) {
 		$content = bab_rp('content');
+		$contentFormat = 'html';
 	} else {
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_section');
 		$content = $editor->getContent();
+		$contentFormat = $editor->getFormat();
 	}
 
 	$db = &$GLOBALS['babDB'];
@@ -560,7 +562,7 @@ function sectionSave($title, $pos, $desc, $script, $js, $template, $lang, $opt)
 			$js = "Y";
 		else
 			$js = "N";
-		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
+		$query = "insert into ".BAB_SECTIONS_TBL." (title, position, description, content, content_format, script, jscript, template, lang, id_dgowner, optional) VALUES ('" .$title. "', '" . $pos. "', '" . $desc. "', '" . $content. "', '" . $contentFormat. "', '" . $php. "', '" . $js."', '". $template."', '" .$lang."', '" .$babBody->currentAdmGroup."', '" .$opt. "')";
 		$db->db_query($query);
 		$id = $db->db_insert_id();
 		if( $babBody->currentAdmGroup == 0 )

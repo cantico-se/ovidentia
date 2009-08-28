@@ -609,6 +609,7 @@ function listWaitingEvents()
 					$tmp = array();
 					$tmp['title'] = $arr['title'];
 					$tmp['description'] = $arr['description'];
+					$tmp['description_format'] = $arr['description_format'];
 					$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
 					$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
 					$tmp['author'] = bab_getUserName($arr['id_creator']);
@@ -643,6 +644,7 @@ function listWaitingEvents()
 				
 				$editor = new bab_contentEditor('bab_calendar_event');
 				$editor->setContent($this->arrevts[$i]['description']);
+				$editor->setFormat($this->arrevts[$i]['description_format']);
 				$this->eventdescription = $editor->getHtml();
 				
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
@@ -1070,6 +1072,7 @@ function confirmWaitingEvent($idevent, $idcal)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($arr['description']);
+			$editor->setFormat($arr['description_format']);
 			$this->eventdescription = $editor->getHtml();
 
 			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )

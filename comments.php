@@ -89,6 +89,7 @@ function listComments($topics, $article)
 				include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($comment['message']);
+				$editor->setFormat($comment['message_format']);
 				$this->commentbody = $editor->getHtml();
 
 				return true;
@@ -145,7 +146,7 @@ function editComment($topics, $article, $commentId)
 
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($comment['message']);
-			$editor->setFormat('html');
+			$editor->setFormat($comment['message_format']);
 			$editor->setParameters(array('height' => 200));
 			$this->editor = $editor->getEditor();
 		}
@@ -162,7 +163,7 @@ function editComment($topics, $article, $commentId)
 }
 
 
-function addComment($topics, $article, $subject, $message, $com = '')
+function addComment($topics, $article, $subject, $message, $com = '', $messageFormat = null)
 {
 	class AddCommentTemplate
 	{
@@ -182,7 +183,7 @@ function addComment($topics, $article, $subject, $message, $com = '')
 		public	$rate_articles = true;
 		public	$useCaptcha;
 
-		public function __construct($topics, $article, $subject, $message, $com)
+		public function __construct($topics, $article, $subject, $message, $com, $messageFormat)
 		{
 			global $BAB_SESS_USER, $babDB;
 			$this->subject = bab_translate('comments-Title');
@@ -219,7 +220,9 @@ function addComment($topics, $article, $subject, $message, $com = '')
 			
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($message);
-			$editor->setFormat('html');
+			if (isset($messageFormat)) {
+				$editor->setFormat($messageFormat);
+			}
 			$editor->setParameters(array('height' => 200));
 			$this->editor = $editor->getEditor();
 
@@ -253,7 +256,7 @@ function addComment($topics, $article, $subject, $message, $com = '')
 	
 	global $babBodyPopup;
 	
-	$addCommentTemplate = new AddCommentTemplate($topics, $article, $subject, $message, $com);
+	$addCommentTemplate = new AddCommentTemplate($topics, $article, $subject, $message, $com, $messageFormat);
 	$babBodyPopup->babecho(bab_printTemplate($addCommentTemplate, 'comments.html', 'commentcreate'));
 }
 
@@ -374,13 +377,15 @@ switch ($idx)
 		listComments($topics, $article);
 
 		if (isset($editor)) {
-			$message = $editor->getContent();		
+			$message = $editor->getContent();
+			$messageFormat = $editor->getFormat();
 		} else {
 			$message = '';
+			$messageFormat = null;
 		}
 		$subject = bab_pp('subject');
 
-		addComment($topics, $article, $subject, $message, '');
+		addComment($topics, $article, $subject, $message, '', $messageFormat);
 		printBabBodyPopup();
 		exit;
 		break;

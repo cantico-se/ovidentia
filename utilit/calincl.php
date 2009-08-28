@@ -920,6 +920,7 @@ function bab_cal_setEventsPeriods(&$obj, $id_calendars, $begin, $end, $category 
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');
 		$editor->setContent($arr['description']);
+		$editor->setFormat($arr['description_format']);
 		$arr['description']	= $editor->getHtml();
 
 		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);

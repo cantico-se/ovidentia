@@ -89,6 +89,7 @@ class bab_SearchRealmArticlesComments extends bab_SearchRealmTopic {
 			$this->createField('id_article'			, bab_translate('Article numeric identifier'))	->searchable(false),
 			$this->createField('subject'			, bab_translate('Subject')),
 			$this->createField('message'			, bab_translate('Message')),
+			$this->createField('message_format'		, bab_translate('Message format'))				->searchable(false),
 			$this->createField('confirmed'			, bab_translate('Approbation status'))			->searchable(false),
 			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date') 
 		);
@@ -194,12 +195,12 @@ class bab_SearchArticlesCommentsResult extends bab_SearchSqlResult {
 		if ($record instanceOf bab_SearchRecord) {
 			$record->ov_reference = bab_buildReference('articles', 'comment', $record->id);
 
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($record->message);
+			$editor->setFormat($record->message_format);
 			$record->message = $editor->getHtml();
-
 		}
 
 		return $record;

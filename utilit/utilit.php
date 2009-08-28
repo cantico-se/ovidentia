@@ -254,7 +254,7 @@ function bab_getTimeFormat($format)
  */
 function bab_convertToDatabaseEncoding($sString)
 {
-	/* An ending 'é' (and probably other accentuated chars) mislead mb_detect_encoding
+	/* An ending 'ï¿½' (and probably other accentuated chars) mislead mb_detect_encoding
 	 * Adding a character will suppress the situation where the error occurs and will not modify our variable. 
 	 * And it will still work if the error in the function will be fixed one day.
 	 */
@@ -909,9 +909,10 @@ function loadSections()
 											}
 										else 
 											{
-												include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+												include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 												$editor = new bab_contentEditor('bab_section');
 												$editor->setContent($arr2['content']);
+												$editor->setFormat($arr2['content_format']);
 												$arr2['content'] = $editor->getHtml();
 											}
 										$sec = new babSection($arr2['title'], $arr2['content']);

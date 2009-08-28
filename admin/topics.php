@@ -380,8 +380,8 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_topic');
-			$editor->setContent($this->description);
-			$editor->setFormat('html');
+			$editor->setContent($this->description); 
+//			$editor->setFormat('html');
 			$editor->setParameters(array('height' => 150));
 			$this->editor = $editor->getEditor();
 			
@@ -685,6 +685,7 @@ function listCategories($cat)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_topic');
 				$editor->setContent($this->arr['description']);
+				$editor->setFormat($this->arr['description_format']);
 				$this->description = $editor->getHtml();
 				
 				$this->urlrights = $GLOBALS['babUrlScript']."?tg=topic&idx=rights&item=".$this->arr['id']."&cat=".$this->idcat;
@@ -769,14 +770,14 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	//Si image chargée par ajax
+	//Si image chargï¿½e par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image chargée par la voie normal
+	{//Si image chargï¿½e par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -814,7 +815,7 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	}
 	
 	{
-		//Insérer l'image en base
+		//Insï¿½rer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);

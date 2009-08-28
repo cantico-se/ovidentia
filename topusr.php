@@ -120,6 +120,7 @@ function listTopicCategory($cat)
 							include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 							$editor = new bab_contentEditor('bab_topic');
 							$editor->setContent($arr['description']);
+							$editor->setFormat($arr['description_format']);
 							$this->arrid[$i]['description'] = $editor->getHtml();
 								
 							$this->arrid[$i]['confirmed'] = 0;

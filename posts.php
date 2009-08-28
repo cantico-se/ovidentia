@@ -145,6 +145,7 @@ function listPosts($forum, $thread, $post)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_forum_post');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->postmessage = $editor->getHtml();
 				
 				$dateupdate = bab_mktime($arr['dateupdate']);
@@ -594,6 +595,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 				
 				$editor = new bab_contentEditor('bab_forum_post');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->postmessage = $editor->getHtml();
 				
 				$this->more = "";
@@ -813,6 +815,7 @@ function newReply($forum, $thread, $post)
 			$this->postsubject = bab_toHtml($arr['subject']);
 
 			$editor->setContent($arr['message']);
+			$editor->setFormat($arr['message_format']);
 			$this->postmessage = $editor->getHtml();
 			
 			if( bab_isForumModerated($forum))
@@ -893,6 +896,7 @@ function editPost($forum, $thread, $post)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_forum_post');
 				$editor->setContent($this->arr['message']);
+				$editor->setFormat($thsi->arr['message_format']);
 				$editor->setFormat('html');
 				$this->editor = $editor->getEditor();
 				
@@ -1047,6 +1051,7 @@ function viewPost($thread, $post)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_forum_post');
 			$editor->setContent($arr['message']);
+			$editor->setFormat($arr['message_format']);
 			$this->postmessage = $editor->getHtml();
 			$this->close = bab_translate("Close");
 			$GLOBALS['babWebStat']->addForumPost($post);
@@ -1063,11 +1068,12 @@ function saveReply($forum, $thread, $post, $name, $subject)
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_USERID, $babBody;
 	
 	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
+	include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
+
 	$editor = new bab_contentEditor('bab_forum_post');
 	$message = $editor->getContent();
-
+	$messageFormat = $editor->getFormat();
+	
 	if( empty($message))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a content for your message")." !";
@@ -1101,9 +1107,9 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		$confirmed = 'Y';
 
 
-	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, id_author, author, confirmed, id_parent) values ";
+	$req = "insert into ".BAB_POSTS_TBL." (id_thread, date, subject, message, message_format, id_author, author, confirmed, id_parent) values ";
 	$req .= "('" .$babDB->db_escape_string($thread). "', now(), '";
-	$req .= $babDB->db_escape_string($subject). "', '" . $babDB->db_escape_string($message). "', '" . $babDB->db_escape_string($idauthor). "', '". $babDB->db_escape_string($name);
+	$req .= $babDB->db_escape_string($subject). "', '" . $babDB->db_escape_string($message). "', '" . $babDB->db_escape_string($messageFormat). "', '" . $babDB->db_escape_string($idauthor). "', '". $babDB->db_escape_string($name);
 	$req .= "', '". $confirmed."', '". $babDB->db_escape_string($post). "')";
 	$res = $babDB->db_query($req);
 	$idpost = $babDB->db_insert_id();
@@ -1156,6 +1162,7 @@ function updateReply($forum, $thread, $subject, $post)
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	$editor = new bab_contentEditor('bab_forum_post');
 	$message = $editor->getContent();
+	$messageFormat = $editor->getFormat();
 	
 	if( empty($message))
 		{
@@ -1169,7 +1176,7 @@ function updateReply($forum, $thread, $subject, $post)
 	$arr = $babDB->db_fetch_array($res);
 	if( ($moderator && $forums[$forum]['bupdatemoderator'] == 'Y' )|| ( $forums[$forum]['bupdateauthor'] == 'Y' && $BAB_SESS_USERID && $BAB_SESS_USERID == $arr['id_author']  ))
 		{
-		$req = "UPDATE ".BAB_POSTS_TBL." set message='".$babDB->db_escape_string($message)."', subject='".$babDB->db_escape_string($subject)."', dateupdate=now() where id='".$babDB->db_escape_string($post)."'";
+		$req = "UPDATE ".BAB_POSTS_TBL." set message='".$babDB->db_escape_string($message)."', message_format='".$babDB->db_escape_string($messageFormat)."', subject='".$babDB->db_escape_string($subject)."', dateupdate=now() where id='".$babDB->db_escape_string($post)."'";
 
 		$res = $babDB->db_query($req);
 

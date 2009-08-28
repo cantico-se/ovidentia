@@ -104,6 +104,7 @@ function notesList($id)
 				
 				$editor = new bab_contentEditor('bab_note');
 				$editor->setContent($this->arr['content']);
+				$editor->setFormat($this->arr['content_format']);
 				$this->note_content = $editor->getHtml();
 				
 				$this->note_date = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
@@ -142,13 +143,15 @@ function saveNotes()
 		(
 			id_user, 
 			date, 
-			content
+			content,
+			content_format
 		) 
 	VALUES 
 		(
 			'". $babDB->db_escape_string($BAB_SESS_USERID). "',
 			now(), 
-			'" . $babDB->db_escape_string($content). "'
+			'" . $babDB->db_escape_string($content). "',
+			'" . $babDB->db_escape_string($format). "'
 		)
 	";
 	

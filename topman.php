@@ -355,19 +355,21 @@ function viewArticle($article)
 			
 			if( bab_isUserTopicManager($this->arr['id_topic']))
 				{
-				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
+				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
 				
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
+				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
 				
 				}
 			else
 				{
-				$this->content = "";
+				$this->content = '';
 				$this->head = bab_translate("Access denied");
 				}
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
@@ -427,6 +429,7 @@ function viewArticle($article)
 				
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
+				$editor->setFormat($arr['message_format']);
 				$this->commentbody = $editor->getHtml();
 				
 				$this->delcomurl = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&delc=com&item=".$this->arr['id_topic']."&art=".$this->arr['id']."&idc=".$arr['id'];

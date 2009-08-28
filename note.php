@@ -55,7 +55,7 @@ function notesModify($id)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_note');
 			$editor->setContent($arr['content']);
-			$editor->setFormat('html');
+			$editor->setFormat($arr['content_format']);
 			$this->editor = $editor->getEditor();
 			}
 		}
