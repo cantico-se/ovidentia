@@ -1685,7 +1685,7 @@
 <string id="Date type">Type de date</string>
 <string id="Rule">Règle</string>
 <string id="Remain">Reste</string>
-<string id="Account user is already confirmed">Le compte de l'utilisateur a déja été confirmé</string>
+<string id="Account user is already confirmed">Le compte de l'utilisateur a déjà été confirmé</string>
 <string id="Confirm account by validating address email">Confirmer le compte avec validation de l'adresse électronique</string>
 <string id="Manual confirmation by administrators">Confirmation manuelle par les administrateurs</string>
 <string id="Confirm account without address email validation">Confirmer le compte sans validation de l'adresse électronique</string>
@@ -2004,7 +2004,7 @@
 <string id="Archived article">Articles archivés</string>
 <string id="Attached files">Fichiers attachés</string>
 <string id="Empty password">Mot de passe vide</string>
-<string id="Ovidentia debug informations">Informations de dégogage Ovidentia</string>
+<string id="Ovidentia debug informations">Informations de débogage Ovidentia</string>
 <string id="Do you really want to unassign this contact from the directory?">Voulez-vous vraiment retirer le contact de cet annuaire ?</string>
 <string id="No indexation">Pas d'indexation</string>
 <string id="Indexed">Indexé</string>
@@ -2699,7 +2699,7 @@
 <string id="The file %oldFile% cannot be renamed to %newFile%">Le fichier %oldFile% n'a pas pu être renommé en %newFile%</string>
 <string id="The directory %oldDirectory% cannot be renamed to %newDirectory%">Le répertoire %oldDirectory% ne peut pas être renommé en %newDirectory%</string>
 <string id="The charset are not supported">Les jeux de caractères ne sont pas supportés</string>
-<string id="The site is not completely converted due to the errors below, please restore your backup. Fix the error and try again.">Le site n'a pas été complétement converti, à cause des erreurs ci-dessous. Restaurez votre sauvegarde, corrigez les erreurs et essayez à nouveau.</string>
+<string id="The site is not completely converted due to the errors below, please restore your backup. Fix the error and try again.">Le site n'a pas été complètement converti, à cause des erreurs ci-dessous. Restaurez votre sauvegarde, corrigez les erreurs et essayez à nouveau.</string>
 <string id="The database could not be converted in %unsupportedCharset% because this character set is not valid. The good values are %supportedCharset%">La base de données n'a pas pu être convertie en %unsupportedCharset% parce que ce jeu de caractères n'est pas valide. Les bonnes valeurs sont %supportedCharset%</string>
 <string id="Convertion result">Résultat de la conversion</string>
 <string id="The site have been successfully converted from %convertFrom% to %convertTo%">Le site a été converti de %convertFrom% à %convertTo% avec succès</string>
@@ -2887,7 +2887,7 @@
 <string id="The file is attached to post :">Le fichier est joint à la contribution :</string>
 <string id="Unexpected error : cannot write to upload directory">Erreur inattendue : Impossible d'écrire dans le répertoire des téléchargements</string>
 <string id="Object title">Titre de l'objet</string>
-<string id="All objects associated to tag">Tous les objets associés au mot-cléf</string>
+<string id="All objects associated to tag">Tous les objets associés au mot-clé</string>
 <string id="Object description">Description de l'objet</string>
 <string id="Object url">Url de l'objet</string>
 <string id="Object type">Type de l'objet</string>
@@ -3007,7 +3007,7 @@
 <string id="The path %s is not writable">Le chemin %s n'est pas accessible en écriture</string>
 <string id="The core directory is missing (%s)">Le répertoire du noyau est manquant (%s)</string>
 <string id="The folder %s allready exists">Le répertoire %s existe déjà</string>
-<string id="The version is not valid, requirements are not fullfilled">La version n'est pas valide, les prérequis ne sont pas remplis</string>
+<string id="The version is not valid, requirements are not fullfilled">La version n'est pas valide, les pré requis ne sont pas remplis</string>
 <string id="Unexpected error, the archive could not be created in temporary folder">Erreur inattendue, l'archive ne peut pas être créée dans le répertoire temporaire</string>
 <string id="Archive">Archive</string>
 <string id="Requirements to install the new archive">Prérequis pour installer la nouvelle archive</string>
@@ -3060,7 +3060,7 @@
 <string id="%d tables has been created">%d tables ont été créés</string>
 <string id="and %d table has been modified in MySql database">et %d table a été modifiée dans la base de données MySql</string>
 <string id="and %d tables has been modified in MySql database">et %d tables ont été modifiées dans la base de données MySql</string>
-<string id="With selected">Pour la selection</string>
+<string id="With selected">Pour la sélection</string>
 <string id="Delete from group only">Détacher du groupe seulement</string>
 <string id="Copy to group">Attacher au groupe...</string>
 <string id="Move to group">Déplacer vers le groupe...</string>
