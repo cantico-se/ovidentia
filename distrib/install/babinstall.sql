@@ -4121,3 +4121,13 @@ CREATE TABLE bab_tags_references (
   PRIMARY KEY (id),
   KEY id_tag (id_tag)
 );
+
+CREATE TABLE bab_forums_fields (                       
+	`id` int(11) unsigned NOT NULL auto_increment,         
+    `id_forum` int(11) unsigned NOT NULL,                  
+    `id_field` int(11) unsigned NOT NULL,                  
+    `field_order` tinyint(2) unsigned default NULL,        
+	PRIMARY KEY  (id),
+	KEY id_forum (id_forum),
+	KEY id_field (id_field)
+);
