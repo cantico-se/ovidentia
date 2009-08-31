@@ -94,7 +94,15 @@
         <tr class="BabSiteAdminTitleFontBackground"> 
           <td colspan="3">&nbsp;</td>
           <!--#in getnextcol -->
-          <td><a href="{ colurl }">{ coltxt }</a></td>
+          <td><a href="{ colurl }">{ coltxt }</a>
+          <!--#if border  -->
+          <!--#if ord  -->
+          <img src="{ babSkinPath }images/Puces/sortasc.gif" border="0" alt="" />
+          <!--#else ord  -->
+          <img src="{ babSkinPath }images/Puces/sortdesc.gif" border="0" alt="" />
+          <!--#endif ord  -->
+          <!--#endif border  -->
+          </td>
           <!--#endin getnextcol -->
         </tr>
         <!--#in getnext -->

@@ -1,4 +1,5 @@
 <?php
+
 /************************************************************************
  * OVIDENTIA http://www.ovidentia.org                                   *
  ************************************************************************
@@ -424,7 +425,10 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					$tmp[] = $filedname;
 					$this->select[] = "lj".$arr['id'].'.field_value '.$filedname."";
 					}
-
+				if( $this->xf == '' )
+					{
+					$this->xf = $tmp[0];
+					}
 				if ($_GET['idx'] == 'sdbovml')
 					{
 					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
@@ -433,6 +437,14 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					{
 					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
 					}
+				if( $this->xf == $filedname )
+				{
+					$this->border = true;
+				}
+				else
+				{
+					$this->border = false;
+				}
 				$i++;
 				return true;
 				}
