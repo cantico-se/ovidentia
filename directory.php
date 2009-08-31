@@ -424,7 +424,10 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					$tmp[] = $filedname;
 					$this->select[] = "lj".$arr['id'].'.field_value '.$filedname."";
 					}
-
+				if( $this->xf == '' )
+					{
+					$this->xf = $tmp[0];
+					}
 				if ($_GET['idx'] == 'sdbovml')
 					{
 					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdbovml&directoryid=".urlencode($this->id)."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
@@ -433,6 +436,14 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 					{
 					$this->colurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=sdb&id=".$this->id."&pos=".urlencode($this->ord.$this->pos)."&xf=".urlencode($filedname));
 					}
+				if( $this->xf == $filedname )
+				{
+					$this->border = true;
+				}
+				else
+				{
+					$this->border = false;
+				}
 				$i++;
 				return true;
 				}
@@ -1873,6 +1884,10 @@ function processImportDbFile( $pfile, $id, $separ )
 	global $babBody, $babDB;
 
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+	if($idgroup > 0)
+	{
+		list($pcalendar) = $babDB->db_fetch_row($babDB->db_query("select pcalendar as pcal from ".BAB_GROUPS_TBL." where id='".$idgroup."'"));
+	}
 
 	$arridfx = array();
 	$arrnamef = array();
@@ -2136,7 +2151,7 @@ function processImportDbFile( $pfile, $id, $separ )
 
 							$babDB->db_query("insert into ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$hashname."', password='".$babDB->db_escape_string($pwd)."', confirm_hash='".$babDB->db_escape_string($hash)."', date=now(), is_confirmed='1', changepwd='1', lang=''");
 							$iduser = $babDB->db_insert_id();
-							$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type) values ('".$babDB->db_escape_string($iduser)."', '1')");
+							$babDB->db_query("insert into ".BAB_CALENDAR_TBL." (owner, type, actif) values ('".$babDB->db_escape_string($iduser)."', '1', ".$babDB->quote($pcalendar).")");
 							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set id_user='".$babDB->db_escape_string($iduser)."' where id='".$babDB->db_escape_string($idu)."'");
 							if( $idgroup > 1 )
 								{
