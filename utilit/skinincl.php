@@ -180,13 +180,19 @@ class bab_skin {
 			if ('latin1' === $charset) {
 				return true;
 			} else {
-				// trigger_error(bab_sprintf('The skin "%s" is not accessible, since ovidentia is in UTF-8, all skins must be embeded in addons',$this->skinname));
+				bab_debug(bab_sprintf('The skin "%s" is not accessible, since ovidentia is in UTF-8, all skins must be embeded in addons',$this->skinname));
 				return false;
 			}
 		}
+		
+		try {
 
-		if ('THEME' === $addon->getAddonType()) {
-			return $addon->isValid() && $addon->isAccessValid();
+			if ('THEME' === $addon->getAddonType()) {
+				return $addon->isValid() && $addon->isAccessValid();
+			}
+			
+		} catch(Exception $e) {
+			bab_debug(bab_sprintf("Skin %s is not accessible\n ", $this->skinname).$e->getMessage());
 		}
 
 		return false;
