@@ -4956,12 +4956,16 @@ class bab_CalendarEvents extends bab_handler
 			$EventOwner = isset($arr['id_cal']) ? bab_getCalendarOwner($arr['id_cal']) : '';
 
 			$this->ctx->curctx->push('EventOwner'				, $EventOwner);
-			if( isset($arr['id_creator']) && $arr['id_creator'] )
+			if( isset($arr['id_modifiedby']) && $arr['id_modifiedby'] )
 			{
 			$this->ctx->curctx->push('EventUpdateDate', bab_mktime($arr['date_modification']));
-			$this->ctx->curctx->push('EventUpdateAuthor', $arr['id_creator']);
+			$this->ctx->curctx->push('EventUpdateAuthor', $arr['id_modifiedby']);
 			}
-
+			if( isset($arr['id_creator']) && $arr['id_creator'] )
+			{
+			$this->ctx->curctx->push('EventAuthor', $arr['id_creator']);
+			}
+			
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
