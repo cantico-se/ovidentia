@@ -4131,3 +4131,13 @@ CREATE TABLE bab_forums_fields (
 	KEY id_forum (id_forum),
 	KEY id_field (id_field)
 );
+
+CREATE TABLE bab_forumsnotify_users (                       
+	`id` int(11) unsigned NOT NULL auto_increment,         
+    `id_forum` int(11) unsigned NOT NULL,                  
+    `id_user` int(11) unsigned NOT NULL,                  
+    `forum_notification` tinyint(2) unsigned default NULL,        
+	PRIMARY KEY  (id),
+	KEY id_forum (id_forum),
+	KEY id_user (id_user)
+);

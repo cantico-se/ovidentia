@@ -75,6 +75,11 @@ define("BAB_PERIOD_TSKMGR"		, 16);
 define("BAB_PERIOD_VACATION"	, 32);
 
 
+define("BAB_FORUMNOTIF_NONE"		, 0);
+define("BAB_FORUMNOTIF_ALL"			, 1);
+define("BAB_FORUMNOTIF_NEWTHREADS"	, 2);
+
+
 /* calendars */
 define("BAB_CAL_USER_TYPE"		, 1);
 define("BAB_CAL_PUB_TYPE"		, 2);
@@ -206,6 +211,7 @@ define("BAB_FORUMSREPLY_GROUPS_TBL", "bab_forumsreply_groups");
 define("BAB_FORUMSVIEW_GROUPS_TBL", "bab_forumsview_groups");
 define("BAB_FORUMSFILES_GROUPS_TBL", "bab_forumsfiles_groups");
 define("BAB_FORUMSNOTIFY_GROUPS_TBL", "bab_forumsnotify_groups");
+define("BAB_FORUMSNOTIFY_USERS_TBL", "bab_forumsnotify_users");
 define("BAB_GROUPS_TBL", "bab_groups");
 define("BAB_GROUPS_SET_ASSOC_TBL", "bab_groups_set_assoc");
 define("BAB_HOMEPAGES_TBL", "bab_homepages");

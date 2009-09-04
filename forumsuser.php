@@ -548,15 +548,123 @@ function viewSearchResultForums()
 	echo bab_printTemplate($temp,"forumsuser.html", "viewpost");
 	}
 
+function optionsForums()
+	{
+	global $babBody;
+
+	class optionsForumsCls
+		{
+
+		public $altBg = true;
+
+		function optionsForumsCls()
+			{
+			global $babBody, $babDB;
+
+			$this->forums_txt = bab_translate("Forums");
+			$this->nonotif_txt = bab_translate("No notifications");
+			$this->allnotif_txt = bab_translate("All notifications");
+			$this->onlynewthreadsnotif_txt = bab_translate("Only for new threads");
+			$this->update_txt = bab_translate("Update");
+			$this->forums = bab_get_forums();
+			
+			$this->forumnotif_none = BAB_FORUMNOTIF_NONE;
+			$this->forumnotif_all = BAB_FORUMNOTIF_ALL;
+			$this->forumnotif_newthreads = BAB_FORUMNOTIF_NEWTHREADS;
+			
+			}
+
+		function getNextForum()
+			{
+			global $babDB, $BAB_SESS_USERID;
+			static $i=0;
+			if( list($key, $val) = each($this->forums))
+				{
+				$this->altBg = !$this->altBg;
+					
+				$this->forumid = bab_toHtml($key);
+				$this->forumname = bab_toHtml($val['name']);
+				$this->forumdescription = bab_toHtml($val['description']);
+				$this->forumurl = $GLOBALS['babUrlScript']."?tg=threads&forum=".urlencode($this->forumid);
+				$fnotif = BAB_FORUMNOTIF_ALL; 
+				if( $BAB_SESS_USERID )
+				{
+					$res = $babDB->db_query("select forum_notification 
+										from ".BAB_FORUMSNOTIFY_USERS_TBL." 
+										where id_forum=".$babDB->quote($this->forumid)." 
+										and id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+					if( $res && $babDB->db_num_rows($res))
+					{
+						$arr = $babDB->db_fetch_array($res);
+						$fnotif = $arr['forum_notification'];
+					}
+				}
+				$this->checked_forumnotif_none = '';
+				$this->checked_forumnotif_all = '';
+				$this->checked_forumnotif_newthreads = '';
+				switch($fnotif)
+				{
+					case BAB_FORUMNOTIF_NONE:
+						$this->checked_forumnotif_none = 'checked="checked"';
+						break;
+					case BAB_FORUMNOTIF_NEWTHREADS:
+						$this->checked_forumnotif_newthreads = 'checked="checked"';
+						break;
+					default:
+						$this->checked_forumnotif_all = 'checked="checked"';
+						break;
+				}
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+		}
+
+	$temp = new optionsForumsCls();
+	$babBody->babecho(	bab_printTemplate($temp,"forumsuser.html", "forumsoptions"));
+	}	
+
+function saveForumsOptions()
+{
+	global $babDB;
+	$babDB->db_query("delete from ".BAB_FORUMSNOTIFY_USERS_TBL." where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."");
+	$forums = bab_get_forums();
+	if( $GLOBALS['BAB_SESS_USERID'] )
+	{
+		foreach( $forums as $forumid => $info )
+			{
+				$sopt = bab_pp('sopt-'.$forumid, 1);
+				$babDB->db_query("insert into ".BAB_FORUMSNOTIFY_USERS_TBL." ( id_forum, id_user, forum_notification ) values (".$babDB->quote($forumid).",".$babDB->quote($GLOBALS['BAB_SESS_USERID']).", ".$babDB->quote($sopt).")");
+			}
+	}
+}	
+	
 /* main */
 if(!isset($idx))
 	{
 	$idx = "list";
 	}
 
+$action = bab_pp('action', '');
+if( $action == 'options')
+{
+	saveForumsOptions();
+}
 
 switch($idx)
 	{
+	case "options":
+		optionsForums();
+		$babBody->title = bab_translate("Choose how you would like to be notified");
+		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
+		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
+		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=options");
+		break;
+	
 	case "viewr":
 		viewSearchResultForums();
 		exit;
@@ -567,17 +675,20 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
 		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
 		$babBody->addItemMenu("searchr", bab_translate("Results"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search");
+		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=options");
 		break;
 	case "search":
 		searchForums();
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
 		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
+		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=options");
 		break;
 	default:
 	case "list":
 		listForums();
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
 		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
+		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=options");
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);

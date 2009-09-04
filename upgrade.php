@@ -6057,6 +6057,25 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('ALTER TABLE '.BAB_POSTS_TBL." ADD `message_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `message`");
 	}
 
+	/**
+	 * Upgrade to 7.1.92
+	 */
+	/**
+	 * Upgrade to 7.1.93
+	 */
+	if (!bab_isTable(BAB_FORUMSNOTIFY_USERS_TBL)) {
+		$babDB->db_query('
+			CREATE TABLE '.BAB_FORUMSNOTIFY_USERS_TBL.' (                       
+            	`id` int(11) unsigned NOT NULL auto_increment,         
+                `id_forum` int(11) unsigned NOT NULL,                  
+                `id_user` int(11) unsigned NOT NULL,                  
+                `forum_notification` tinyint(2) unsigned default NULL,        
+				PRIMARY KEY  (id),
+				KEY id_forum (id_forum),
+				KEY id_user (id_user)
+				)
+		');
+	}
 	
 	
 	return true;

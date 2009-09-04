@@ -552,7 +552,7 @@ function saveThread()
 		{
 		$flat = $arr['bflatview'] == 'Y'? 1: 0;
 		$url = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$idthread.'&flat='.$flat.'&views=1';
-		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url);
+		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url, true);
 		}
 
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&forum='.urlencode($forum));

@@ -175,7 +175,7 @@ function bab_getForumThreadTitle($id)
 		}
 	}
 
-function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $url = '')
+function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $url, $bthread = false)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
@@ -262,15 +262,42 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 		$users = aclGetAccessUsers($tables[$mk], $forum);
 		$arrusers = array();
 		$count = 0;
+		$uexclude = array();
+		if( $tables[$mk] == BAB_FORUMSNOTIFY_GROUPS_TBL )
+		{
+			$res = $babDB->db_query("select id_user, forum_notification from ".BAB_FORUMSNOTIFY_USERS_TBL." where id_forum=".$babDB->quote($forum));
+			while($arr = $babDB->db_fetch_array($res))
+			{
+				switch($arr['forum_notification'])
+				{
+					case BAB_FORUMNOTIF_NONE:
+						$uexclude[$arr['id_user']] = $arr['id_user'];
+						break;
+					case BAB_FORUMNOTIF_NEWTHREADS:
+						if( !$bthread )
+						{
+							$uexclude[$arr['id_user']] = $arr['id_user'];
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
 
 		foreach($users as $id => $arr)
 			{
+			if( isset($uexclude[$id]))
+				{
+					continue;
+				}
 			if( count($arrusers) == 0 || !in_array($id, $arrusers))
 				{
 				$arrusers[] = $id;
+				echo $arr['email'].'  '.$arr['name'];
 				if( $nbrecipients == 1 )
 					{
-					$mail->$mailTo($arr['email'], $arr['name']);
+					$mail->$mailBCT($arr['email'], $arr['name']);
 					}
 				else
 					{
@@ -640,7 +667,8 @@ function bab_confirmPost($forum, $thread, $post)
 		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
 		}
 	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1&views=1";
-	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url);
+	$bthread = ($arr['post'] == $arr['lastpost'] ? true: false);
+	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url, $bthread);
 	}
 
 /**

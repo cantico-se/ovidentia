@@ -1148,7 +1148,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 	if( count($tables) > 0 )
 		{
 		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".urlencode($forum)."&thread=".urlencode($thread)."&flat=".$flat."&views=1";
-		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url);
+		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url, false);
 		}
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
 	exit;

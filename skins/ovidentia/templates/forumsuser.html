@@ -318,3 +318,39 @@ window.focus();
 </BODY>
 </HTML>
 <!--#end viewpost -->
+
+<!--#begin forumsoptions -->
+<form name="foptions" method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="forumsuser">
+<input type="hidden" name="idx" value="list">
+<input type="hidden" name="action" value="options">
+<table width="99%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr>
+<td class="BabLoginCadreBackground">
+	<table border="0" width="100%" cellpadding="5" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"  align="center"> 
+		<td>{ forums_txt }</td>
+		<td>{ allnotif_txt }</td>                  
+		<td>{ onlynewthreadsnotif_txt }</td>
+		<td>{ nonotif_txt }</td>
+	</tr>
+	<!--#in getNextForum -->
+	<!--#if altBg --><tr class="BabSiteAdminFontBackground"><!--#else altBg --><tr class="BabForumBackground1"><!--#endif altBg -->
+		<td align="left" valign="top"><b><a href="{ forumurl }">{ forumname }</a></b><br />{ forumdescription }</td>
+
+		<td align="center">	<input type="radio" name="sopt-{ forumid }" value="{ forumnotif_all }" { checked_forumnotif_all } /></td>
+		<td align="center">	<input type="radio" name="sopt-{ forumid }" value="{ forumnotif_newthreads }" { checked_forumnotif_newthreads } /></td>
+		<td align="center">	<input type="radio" name="sopt-{ forumid }" value="{ forumnotif_none }" { checked_forumnotif_none } /></td>
+	</tr>
+	<!--#endin getNextForum -->
+	</table>
+</td>
+</tr>
+<tr>
+<td align="center"">
+<input type="submit" name="submit" value="{ update_txt }" /><br /><br />
+</td>
+</tr>
+</table>
+</form>
+<!--#end forumsoptions -->
