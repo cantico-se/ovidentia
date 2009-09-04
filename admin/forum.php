@@ -349,7 +349,7 @@ switch($idx)
 		break;
 
 	case "displaydf":
-		$babBody->title = bab_translate("Delete a forum");
+		$babBody->title = bab_getForumName($item) . ": ".bab_translate("display of the identity of the contributor");
 		displayForumFields($item);
 		$babBody->addItemMenu("List", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forums&idx=List");
 		$babBody->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=forum&idx=Modify&item=".$item);
