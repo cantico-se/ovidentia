@@ -239,6 +239,7 @@ function browseTopicsTree()
 							);
 	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_READ_ARTICLES);
 	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=editorarticle&idx=articles&id_topic=%s");
+	$topicTree->setTopicsLinks($GLOBALS['babUrlScript']."?tg=editorarticle&idx=articles&id_topic=%s");
 	$topicTree->order();
 	$topicTree->sort();
 	
