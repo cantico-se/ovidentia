@@ -602,6 +602,34 @@ function bab_getChildrenArticleTopicsInformation($categoryid, $delegationid = fa
 	return $topics;
 }
 
+/**
+ * Returns the id of the delegation of the topic
+ * @param $idTopic id of the topic
+ * @return int|false
+ */
+function bab_getTopicDelegationId($idTopic)
+{
+	global $babDB;
+	
+	$sQuery = 
+		'SELECT 
+			topicCategories.id_dgowner iIdDelegation
+		FROM ' . 
+			BAB_TOPICS_TBL . ' topics, ' .
+			BAB_TOPICS_CATEGORIES_TBL . ' topicCategories 
+		WHERE 
+			topics.id = ' . $babDB->quote($idTopic) . ' AND
+			topicCategories.id = topics.id_cat';
+	
+	$oResult = $babDB->db_query($sQuery);
+	if($oResult && $babDB->db_num_rows($oResult) > 0)
+	{
+		$aData = $babDB->db_fetch_array($oResult);
+		return $aData['iIdDelegation'];
+	}
+	return false;
+}
+
 
 
 

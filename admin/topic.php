@@ -1291,8 +1291,12 @@ function getImage()
 	
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
 
-	global $babBody;
 	$oEnvObj->setEnv($babBody->currentAdmGroup);
+	$iIdDelegation = bab_getTopicDelegationId($iIdTopic);
+	if(false === $iIdDelegation)
+	{
+		return false;
+	}
 	
 	$sPath = '';
 	if(0 !== $iIdTopic)

@@ -283,7 +283,7 @@ function getImage()
 	$iIdDelegation = bab_getTopicCategoryDelegationId($iIdCategory);
 	if(false === $iIdDelegation)
 	{
-		return '???';
+		return false;
 	}
 
 	global $babBody;
