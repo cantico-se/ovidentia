@@ -39,7 +39,8 @@ function listCategories()
 							| BAB_ARTICLE_TREE_VIEW_HIDE_EMPTY_TOPICS_AND_CATEGORIES
 							| BAB_TREE_VIEW_SHOW_TOOLBAR);
 	$topicTree->setAction(BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
-	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
+//	$topicTree->setLink($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
+	$topicTree->setTopicsLinks($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
 	$topicTree->order();
 	$topicTree->sort();
 	
