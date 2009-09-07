@@ -461,6 +461,7 @@ function export($id)
 	bab_setTimeLimit(0);
 
 	$row = bab_addonsInfos::getDbRow($id);
+	$addon = bab_getAddonInfosInstance($row['title']);
 
 	if (!callSingleAddonFunction($row['id'], $row['title'], 'onPackageAddon'))
 		{
@@ -476,7 +477,7 @@ function export($id)
 
 	$zip = bab_functionality::get('Archive/Zip');
 
-	$version = str_replace('.','-',$row['version']);
+	$version = str_replace('.','-',$addon->getIniVersion());
 	$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$row['title'].'-'.$version.'.zip';
 
 	try {
