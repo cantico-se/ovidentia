@@ -462,7 +462,7 @@ function bab_onEditorFunctions(&$event) {
 	
 	$event->addFunction(
 		bab_translate('Files'), 
-		bab_translate('Insert files or folders from ovidentia files manager'), 
+		bab_translate('Insert a link to file or folder in ovidentia files manager'), 
 		'?tg=selector&idx=files&show_personal_directories=1&show_files=1&selectable_files=1&selectable_collective_directories=1&selectable_sub_directories=1&multi=1',
 		'scripts/htmlarea/images/ed_bab_file.gif'
 	);
