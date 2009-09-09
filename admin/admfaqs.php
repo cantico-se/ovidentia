@@ -127,7 +127,8 @@ function listCategories()
 		function temp()
 			{
 			global $babBody;
-
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
 			$this->access = bab_translate("Rights");
 			$this->db = $GLOBALS['babDB'];
 			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
@@ -166,7 +167,10 @@ function listCategories()
 				else
 					$this->checked = "";
 				$this->arr = $this->db->db_fetch_array($this->res);
-				$this->description = $this->arr['description'];
+				$editor = new bab_contentEditor('bab_faq');
+				$editor->setContent($this->arr['description']);
+				$editor->setFormat($this->arr['description_format']);
+				$this->description = $editor->getHtml();
 				$this->urlcategory = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Modify&item=".$this->arr['id'];
 				$this->accessurl = $GLOBALS['babUrlScript']."?tg=admfaq&idx=Groups&item=".$this->arr['id'];
 				$this->namecategory = $this->arr['category'];
