@@ -488,13 +488,16 @@ function bab_onEditorFunctions(&$event) {
 		'scripts/htmlarea/images/ed_bab_ovml.gif'
 	);
 	
-	$event->addFunction(
-		bab_translate('Contacts'), 
-		bab_translate('Insert a link to a personnal contact'), 
-		'?tg=editorcontdir',
-		'scripts/htmlarea/images/ed_bab_contdir.gif'
-	);
-	
+	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
+		{
+			$event->addFunction(
+				bab_translate('Contacts'), 
+				bab_translate('Insert a link to a personnal contact'), 
+				'?tg=editorcontdir',
+				'scripts/htmlarea/images/ed_bab_contdir.gif'
+			);
+		}
+		
 	$event->addFunction(
 		bab_translate('Directories'), 
 		bab_translate('Insert link to a directory entry'), 
