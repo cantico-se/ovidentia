@@ -341,7 +341,7 @@ class bab_inifile_requirements {
 	function require_headers_not_sent($value) {
 
 		
-		$status = headers_sent();
+		$status = !defined('BAB_INSTALL_SCRIPT_BEGIN') && headers_sent();
 
 		return array(
 			'description'	=> bab_translate("The scripts files must not output data before the end of the script, this error may appear if some of the php files have been modified"),

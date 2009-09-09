@@ -793,11 +793,6 @@ class bab_import_package {
 			throw new Exception(bab_translate("This file is not a well formated Ovidentia package"));
 		}
 
-		if (false === $ini->isValid()) {
-			unlink($ul);
-			throw new Exception(bab_translate('The package is not valid'));
-		}
-
 		return $ini;
 	}
 

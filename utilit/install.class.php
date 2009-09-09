@@ -408,13 +408,13 @@ class bab_InstallSource {
 		$destination = realpath('.');
 
 		if (!is_writable($destination)) {
-			$babBody->addError(bab_sprintf(bab_translate('The path %s is not writable'), $destination));
+			bab_installWindow::message(bab_sprintf(bab_translate('The path %s is not writable'), $destination));
 			return false;
 		}
 
 
 		if (!is_dir($path.$core)) {
-			$babBody->addError(bab_sprintf(bab_translate('The core directory is missing (%s)'), $path.$core));
+			bab_installWindow::message(bab_sprintf(bab_translate('The core directory is missing (%s)'), $path.$core));
 			return false;
 		}
 
@@ -424,13 +424,13 @@ class bab_InstallSource {
 		// stop if the folder allready exists
 
 		if (is_dir($destination)) {
-			$babBody->addError(bab_sprintf(bab_translate('The folder %s allready exists'), $destination));
+			bab_installWindow::message(bab_sprintf(bab_translate('The folder %s allready exists'), $destination));
 			return false;
 		}
 
 		if (false === $ini->isValid()) {
-			$babBody->addError(bab_translate('The version is not valid, requirements are not fullfilled'));
-			$babBody->babEcho($ini->getRequirementsHtml());
+			bab_installWindow::message(bab_translate('The version is not valid, requirements are not fullfilled'));
+			bab_installWindow::message($ini->getRequirementsHtml());
 			return false;
 		}
 
@@ -443,19 +443,19 @@ class bab_InstallSource {
 
 
 		if ( 1 !== version_compare($zipversion, $current_version)) {
-			$babBody->addError(bab_translate("The installed version is newer than the package"));
+			bab_installWindow::message(bab_translate("The installed version is newer than the package"));
 			return false;
 		}
 		
 		
 		if (false === $current_version_ini->is_upgrade_allowed($zipversion)) {
-			$babBody->addError(bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled"));
+			bab_installWindow::message(bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled"));
 			return false;
 		}
 
 
 		if (true !== $result = bab_recursive_cp($path.$core, $destination)) {
-			$babBody->addError($result);
+			bab_installWindow::message($result);
 
 			if (is_dir($destination)) {
 				$msgerror = '';

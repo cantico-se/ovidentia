@@ -49,7 +49,7 @@ mysql_sql_mode="Undefined"
 ; available since 6.7.91
 
 functionalities_directory="Available"
-headers_not_sent="Success"
+; headers_not_sent="Success"
 mod_mbstring="Available"
 addons_directory="Available"
 
