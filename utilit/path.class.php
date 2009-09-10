@@ -36,7 +36,7 @@ class bab_Path {
 
 	/**
 	 * Concats all strings to form a path.
-	 * Eg. spaces_path('a/b', 'c', 'd/e/', 'f/') => 'a/b/c/d/e/f'
+	 * Eg. new bab_Path('a/b', 'c', 'd/e/', 'f/') => 'a/b/c/d/e/f'
 	 *
 	 * @param       string  $subPath...             On or more sub paths.
 	 * @return      string
@@ -133,6 +133,9 @@ class bab_Path {
 	/**
 	 * Test if a folder is accessible to create, update, delete files
 	 * aditionals tests are made for Windows IIS
+	 * 
+	 * @throw bab_FolderAccessRightsException | Exception
+	 * 
 	 * @param	string	$fullpath	folder to test
 	 * @return	bool
 	 */
@@ -140,12 +143,12 @@ class bab_Path {
 
 		$dir = $this->tostring();
 
-		if (!file_exists($dir)) {
+		if (!@file_exists($dir)) {
 			throw new Exception(sprintf(bab_translate('The folder %s does not exists'), $dir));
 			return false;
 		}
 
-		if (!is_dir($dir)) {
+		if (!@is_dir($dir)) {
 			throw new Exception(bab_translate('test can only be done on a directory'));
 			return false;
 		}
@@ -213,6 +216,81 @@ class bab_Path {
 			return false;
 		}
 
+		return true;
+	}
+	
+	
+	
+	
+	/**
+	 * pop the last folder of the path
+	 * @return string | null
+	 * 
+	 */ 
+	public function pop() {
+		
+		return array_pop($this->allElements);
+	}
+	
+	/**
+	 * push a folder at the end of the path
+	 * 
+	 * @param	string		$folder
+	 * 
+	 * @return bab_Path
+	 */ 
+	public function push($folder) {
+		
+		array_push($this->allElements, $folder);
+		
+		return $this;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Create the folder if not exists
+	 * @return boolean
+	 * 
+	 */ 
+	public function createDir() {
+		
+		if (@is_dir($this->tostring())) {
+			// the folder allready exists
+			return true;
+		}
+
+		$removed = array();
+		
+		do {
+			
+			$pop = $this->pop();
+			
+			if (!$pop) {
+				break;
+			}
+			
+			$removed[] = $pop;
+			
+			try {
+				$accessible = true;
+				$this->isFolderWriteable();
+			} catch(Exception $e) {
+				$accessible = false;
+			}
+			
+		} while(!$accessible);
+		
+		
+		while ($folder = array_pop($removed)) {
+			$this->push($folder);
+			if (!bab_mkdir($this->tostring())) {
+				return false;
+			}
+		}
+		
 		return true;
 	}
 }

@@ -123,6 +123,14 @@ function bab_recursive_cp($wf, $wto) {
 						return $return;
 					}
 				} else {
+					
+					// ignore file if broken symlink
+					if (function_exists('readlink') && false !== $destination = @readlink($fl)) {
+						if (!@file_exists($destination)) {
+							continue;
+						}
+					}
+					
 					if (!copy($fl,$flto)) {
 						return sprintf(bab_translate("Error : can't copy the file %s to the directory %s"), basename($fl), dirname($flto) );
 					}
@@ -134,28 +142,18 @@ function bab_recursive_cp($wf, $wto) {
   }
 
 
-
+/**
+ * Copy addons forlders from one core to another
+ * 
+ * @param	string		$from	source core folder
+ * @param	string		$to		destination core folder
+ * 
+ * @return boolean
+ */ 
 function bab_cpaddons($from, $to, &$message)
 {
+	require_once dirname(__FILE__).'/path.class.php';
 
-	// Creates the specified directory. No error if $path already exists, make parent directories as needed.
-	function createDirectoryAndParents($path)
-	{
-		if (is_dir($path)) {
-			return true;
-		}
-		$parentPath = dirname($path);
-		if (!is_dir($parentPath)) {
-			$parentPathCreated = createDirectoryAndParents($parentPath);
-			if ($parentPathCreated !== true) {
-				return $parentPathCreated;
-			}
-		}
-		if (!bab_mkdir($path)) {
-			return sprintf(bab_translate("Error : can't create directory : %s"), $path);
-		}
-		return true;
-	}
 
 	if (mb_substr($from,-1) != "/") $from.="/";
 	if (mb_substr($to,-1) != "/") $to.="/";
@@ -169,10 +167,10 @@ function bab_cpaddons($from, $to, &$message)
 			);
 
 	foreach ($loc as $path) {
-		$creation = createDirectoryAndParents($to.$path);
+		$pathObj = new bab_Path($to.$path);
 
-		if (true !== $creation) {
-			$message = $creation;
+		if (!$pathObj->createDir()) {
+			$message = sprintf(bab_translate("Error : can't create directory : %s"), $path);
 			return false;
 		}
 
