@@ -734,12 +734,12 @@ function bab_getForumFields($forum)
 		$ret = array();
 		list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
 		$fields = bab_getDirectoriesFields(array($iddir));
-		$res = $babDB->db_query("select * from ".BAB_FORUMS_FIELDS_TBL." where id_forum=".$babDB->quote($forum));
+		$res = $babDB->db_query("select * from ".BAB_FORUMS_FIELDS_TBL." where id_forum=".$babDB->quote($forum)." order by field_order asc");
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( isset($fields[$arr['id_field']]))
 			{
-				$ret[$arr['id_field']] = $fields[$arr['id_field']];
+				$ret[] = $fields[$arr['id_field']];
 			}
 		}
 		$forums_fields[$forum] = $ret;
@@ -768,7 +768,7 @@ function bab_getForumContributor($id_forum, $id_author, $author)
 	{
 		$author = '';
 		$entries = bab_getDirEntry($id_author, BAB_DIR_ENTRY_ID_USER);
-		foreach($fields as $idf => $info )
+		foreach($fields as $key => $info )
 		{
 			if( isset($entries[$info['name']]))
 			{
