@@ -147,7 +147,7 @@ function notifyOnRequestChange($id, $delete = false)
 	$message = $mail->mailTemplate(bab_printTemplate($tempb,"mailinfo.html", "newvacation"));
 	$mail->mailBody($message, "html");
 
-	$message = bab_printTemplate($tempa,"mailinfo.html", "newvacationtxt");
+	$message = bab_printTemplate($tempb,"mailinfo.html", "newvacationtxt");
 	$mail->mailAltBody($message);
 	
 	$mail->send();
