@@ -23,12 +23,14 @@
 ************************************************************************/
 include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
+include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 /**
  * Sitemap rootNode
  * @package sitemap
  */
 class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
+	
 	
 }
 
@@ -100,6 +102,46 @@ class bab_siteMapItem {
  * @package sitemap
  */
 class bab_siteMap {
+	
+	
+	private $siteMapName 		= '';
+	private $siteMapDescription = '';
+	
+	
+	/**
+	 * set sitemap informations
+	 * @return bab_siteMapOrphanRootNode
+	 */ 
+	public function __construct($name, $description) {
+		
+		$this->siteMapName 			= $name;
+		$this->siteMapDescription	= $description;
+		
+		return $this;
+	}
+	
+	/**
+	 * Sitemap name
+	 * @return string
+	 */ 
+	public function getSiteMapName() {
+		return $this->siteMapName;
+	}
+	
+	
+	/**
+	 * Sitemap description
+	 * @return string
+	 */
+	public function getSiteMapDescription() {
+		return $this->siteMapDescription;
+	}
+	
+	
+	public function getRootNode() {
+		return bab_siteMap::get();
+	}
+	
 
 	/**
 	 * Delete sitemap for current user or id_user
@@ -162,7 +204,7 @@ class bab_siteMap {
 	
 	
 	/**
-	 * Get sitemap for current user
+	 * Get sitemap default for current user
 	 * @return bab_OrphanRootNode
 	 */
 	public static function get() {
@@ -253,6 +295,7 @@ class bab_siteMap {
 		
 		
 		$rootNode = new bab_siteMapOrphanRootNode();
+		
 
 		$node_list = array();
 		
@@ -348,7 +391,80 @@ class bab_siteMap {
 		include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
 		return bab_siteMap_build();
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Get the list of available sitemap
+	 * This method collect all sitemap by fireing an event
+	 * 
+	 * @see bab_eventBeforeSitemapList
+	 * @see bab_siteMapOrphanRootNode
+	 * 
+	 * @return array	of bab_siteMap
+	 */ 
+	public static function getList() {
+		
+		$event = new bab_eventBeforeSiteMapList;
+		$core = new bab_siteMap(bab_translate('Default'), bab_translate('Default sitemap proposed by Ovidentia'));
+		
+		$event->addSiteMap('core', $core);
+		
+		bab_fireEvent($event);
+		
+		return $event->getAvailable();
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @return bab_siteMapOrphanRootNode
+	 */ 
+	public static function getByUid($uid) {
+		$list = self::getList();
+		
+		if (!isset($list[$uid])) {
+			return null;
+		}
+		
+		return $list[$uid]->getRootNode();
+	}
 
 }
 
-?>
+
+
+/**
+ * Collect available sitemap
+ * @package sitemap
+ * @see bab_siteMap::getList()
+ */
+class bab_eventBeforeSiteMapList extends bab_event {
+	
+	private $available = array();
+	
+	/**
+	 * @param	string				$uid		ASCII string, unique identifier
+	 * @param	bab_siteMap			$siteMap	sitemap
+	 * 
+	 * 
+	 * @return bab_eventBeforeSiteMapList
+	 */ 
+	public function addSiteMap($uid, bab_siteMap $siteMap) {
+		$this->available[$uid] = $siteMap;
+		
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @return array
+	 */ 
+	public function getAvailable() {
+		return $this->available;
+	}
+}
