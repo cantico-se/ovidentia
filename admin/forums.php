@@ -150,6 +150,8 @@ function orderForum()
 			$this->forumtxt = "---- ".bab_translate("Forums order")." ----";
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$req = "select id, id_dgowner from ".BAB_FORUMS_TBL." order by ordering asc";
 			$this->res = $babDB->db_query($req);
