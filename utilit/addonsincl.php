@@ -547,7 +547,11 @@ class bab_addonInfos {
 	 */
 	function getAddonType() {
 
-		$ini = $this->getIni();
+		try {
+			$ini = $this->getIni();
+		} catch(Exception $e) {
+			return 'EXTENSION';
+		}
 
 		if (!$ini->fileExists()) {
 			return 'EXTENSION';
