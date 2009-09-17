@@ -102,6 +102,11 @@ function htmlarea_onContentToEditor(&$event) {
 
 function htmlarea_onRequestToContent(&$event) {
 	
+	
+	if ('html' !== bab_pp($event->fieldname.'_format')) {
+		return;
+	}
+	
 	$content = bab_pp($event->fieldname);
 	bab_editor_record($content);
 	$event->setOutputContent($content, 'html');
