@@ -906,15 +906,9 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 	
 		// create node, test if exists
 		
-		$child = $tree->getFirstChild($id_parent);
-		if ($child) {
-		
-			if ($node_uid == $child['id_function']) {
-				return false;
-			}
-		
-			while ($child = $tree->getNextSibling($child['id'])) {
-				if ($node_uid == $child['id_function']) {
+		if ($childs = $tree->getChilds($id_parent)) {
+			foreach($childs as $row) {
+				if ($node->uid == $row['id_function']) {
 					return false;
 				}
 			}
