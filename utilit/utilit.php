@@ -254,7 +254,7 @@ function bab_getTimeFormat($format)
  */
 function bab_convertToDatabaseEncoding($sString)
 {
-	/* An ending 'é' (and probably other accentuated chars) mislead mb_detect_encoding
+	/* An ending 'ï¿½' (and probably other accentuated chars) mislead mb_detect_encoding
 	 * Adding a character will suppress the situation where the error occurs and will not modify our variable. 
 	 * And it will still work if the error in the function will be fixed one day.
 	 */
@@ -1024,11 +1024,7 @@ function addJavascriptFile($file)
  */
 function addJavascript($code)
 {
-	global $babOvidentiaJs;
-
-	$babOvidentiaJs .= '"></script><script type="text/javascript">';
-	$babOvidentiaJs .= $code;
-	$babOvidentiaJs .= '</script><script src="'; 
+	$this->script .= "\n" . $code;
 }
 
 
