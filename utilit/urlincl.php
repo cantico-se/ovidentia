@@ -150,7 +150,7 @@ class bab_url {
 		
 		$url = $_SERVER['PHP_SELF'];
 		foreach($arr as $param) {
-			$url = bab_url::mod($url, $param, (string) bab_rp($param));
+			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
 		return $url;
 	}
