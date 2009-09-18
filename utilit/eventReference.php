@@ -69,7 +69,7 @@ function bab_onReference(bab_eventReference $oEvent)
 
 function handleFilesRequest(bab_eventReference $oEvent)
 {
-	$sModule			= 'filemanager.file';
+	$sModule			= 'files.file';
 	$sClassName			= 'bab_FileReferenceDescription';
 	handlePublicationRequest($oEvent, $sModule, $sClassName);
 }
