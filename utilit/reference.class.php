@@ -275,7 +275,7 @@ class bab_Reference implements IGuid
 	 * 
 	 * @param bab_Reference	$oReference	The name of the tag
 	 * 
-	 * @return bab_StorageMap|null An iterator that old all the reference description on sucess, null otherwise
+	 * @return bab_StorageMap|null An iterator that hold all the reference description on sucess, null otherwise
 	 */
 	public static function getReferenceDescription(bab_Reference $oReference)
 	{
@@ -286,9 +286,13 @@ class bab_Reference implements IGuid
 		
 		$oRefMapStorage->createStorage($sKey);
 		$oRefDescMapStorage->createStorage($sKey);
+		
 		$oRefMapStorage->get($sKey)->attach($oReference);
 		
 		$oEventReference = new bab_eventReference($oRefMapStorage, $oRefDescMapStorage);
+		
+		
+		
 		bab_fireEvent($oEventReference);
 		$oIt = $oEventReference->getReferenceDescriptionStorage()->getIterator();
 		
@@ -297,6 +301,7 @@ class bab_Reference implements IGuid
 		{
 			return $oIt->current();
 		}
+		
 		return null;
 	}
 
@@ -496,7 +501,9 @@ class bab_FileReferenceDescription extends bab_ReferenceDescriptionImpl
 	 * @return BAB_FolderFile
 	 */
 	private function getFile() {
+		
 		if (null === $this->oFile) {
+			
 			$oFolderFileSet = bab_getInstance('BAB_FolderFileSet');
 			$oId			= $oFolderFileSet->aField['iId'];
 			$this->oFile	= $oFolderFileSet->get($oId->in($this->getReference()->getObjectId()));
@@ -573,6 +580,7 @@ class bab_ArticleReferenceDescription extends bab_ReferenceDescriptionImpl
 	 */
 	protected function getArticle()
 	{
+		
 		$arr = $this->getObjArray();
 
 		if (!$arr) {

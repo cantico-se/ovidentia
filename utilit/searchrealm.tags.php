@@ -148,10 +148,16 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 
 				}
 					
+			} else {
+				bab_debug(sprintf('Result found in thesaurus "%s" but no reference description', $reference->__toString()));
+				
 			}
 
 			
 		}
+		
+		
+		
 		
 		$result = new bab_SearchTagsResult($result);
 		$result->setRealm($this);

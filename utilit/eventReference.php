@@ -61,15 +61,16 @@ class bab_eventReference extends bab_event
 
 function bab_onReference(bab_eventReference $oEvent)
 {
-	handleFilesRequest($oEvent);
+	
 	handleArticlesRequest($oEvent);
 	handleDraftArticlesRequest($oEvent);
+	handleFilesRequest($oEvent);
 }
 
 
 function handleFilesRequest(bab_eventReference $oEvent)
 {
-	$sModule			= 'filemanager.file';
+	$sModule			= 'files.file';
 	$sClassName			= 'bab_FileReferenceDescription';
 	handlePublicationRequest($oEvent, $sModule, $sClassName);
 }
