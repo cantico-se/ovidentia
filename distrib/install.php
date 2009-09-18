@@ -752,7 +752,19 @@ a:hover {
 					<dt><label for="babUrl"><?php echo $trans->str('Base url') ?> :</label><input type="text" id="babUrl" name="babUrl" value="<?php echo $babUrl ?>" /></dt>
 					-->
 					<dt><label for="babUploadPath"><?php echo $trans->str('Upload directory') ?> :</label><input type="text" id="babUploadPath" name="babUploadPath" value="<?php if(isset($_POST['babUploadPath'])) echo $_POST['babUploadPath']; else echo '/home/upload';?>" /></dt>
-						<dd><?php echo $trans->str('Full path to upload the files (example : c:\\path-to\\upload-directory\\ for Windows, /home/upload for linux)') ?></dd>
+						<dd><?php 
+						
+							echo $trans->str('Full path to upload the files, ');
+						
+							if ('/' === DIRECTORY_SEPARATOR) {
+								echo $trans->str('example : "/home/upload"');
+							} else {
+								echo $trans->str('example : "c:\\path-to\\upload-directory\\"');
+							}
+						
+							echo sprintf($trans->str(' (current directory is "%s")'), dirname(__FILE__));
+						
+						?></dd>
 				</fieldset>
 			</dl>
 			<input type="submit" value="<?php echo $trans->str('Submit') ?>" />
