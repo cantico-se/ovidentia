@@ -676,6 +676,23 @@ function bab_getArticleArray($article,$fullpath = false)
 		return array();
 		}
 	}
+	
+function bab_getDraftArticleArray($id_draft)
+	{
+	global $babDB;
+	$query = "select a.*,t.category topic from ".BAB_ART_DRAFTS_TBL." a LEFT JOIN ".BAB_TOPICS_TBL." t ON t.id=a.id_topic where a.id='".$babDB->db_escape_string($id_draft)."'";
+	$res = $babDB->db_query($query);
+	if( $res && $babDB->db_num_rows($res) > 0)
+		{
+		$arr = $babDB->db_fetch_assoc($res);
+		return $arr;
+		}
+	else
+		{
+		return array();
+		}
+	}
+	
 
 function bab_getArticleDate($article)
 	{

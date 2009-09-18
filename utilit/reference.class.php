@@ -601,8 +601,9 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 	 */
 	public function getUrl() 
 	{
-		$arr = $this->getArticle();
-		return $GLOBALS['babUrlScript'] . '?tg=artedit&idx=preview&idart='.$arr['id'];
+		// $arr = $this->getArticle();
+		// return $GLOBALS['babUrlScript'] . '?tg=artedit&idx=preview&idart='.$arr['id'];
+		return $GLOBALS['babUrlScript'] . '?tg=artedit';
 	}
 
 
@@ -614,7 +615,7 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 	public function isAccessValid() 
 	{
 		$arr = $this->getArticle();
-		return $GLBOALS['BAB_SESS_LOGGED'] && ($arr['id_author'] === ((int) $GLBOALS['BAB_SESS_USERID']));
+		return $GLOBALS['BAB_SESS_LOGGED'] && (((int) $arr['id_author']) === ((int) $GLOBALS['BAB_SESS_USERID']));
 	}
 
 	protected function getObjArray()
