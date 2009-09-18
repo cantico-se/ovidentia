@@ -25,7 +25,8 @@
 				<span class="bab_dbg_call_type">{ message[type] }({ message[size] })</span>
 			</div>
 			<pre>
-{ message[text] }
+<!--#if message[text] -->{ message[text] }
+<!--#endif message[text] -->
 			</pre>
 		</div>
 	<!--#endin getNextMessage -->
