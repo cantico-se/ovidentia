@@ -190,6 +190,12 @@ class bab_skin {
 	 * @return boolean
 	 */
 	public function isAccessValid() {
+		
+		if (!file_exists('skins/'.$this->skinname)) {
+			return false;
+		}
+		
+		
 		$charset = bab_charset::getDatabase();
 		$addon = bab_getAddonInfosInstance($this->skinname);
 
