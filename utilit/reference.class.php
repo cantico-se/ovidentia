@@ -593,8 +593,7 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 	 */
 	public function getUrl() 
 	{
-		$arr = $this->getArticle();
-		return $GLOBALS['babUrlScript'] . '?tg=artedit&idx=preview&idart='.$arr['id'];
+		return '';
 	}
 
 
@@ -605,13 +604,12 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 
 	public function isAccessValid() 
 	{
-		$arr = $this->getArticle();
-		return $GLBOALS['BAB_SESS_LOGGED'] && ($arr['id_author'] === ((int) $GLBOALS['BAB_SESS_USERID']));
+		return false;
 	}
 
 	protected function getObjArray()
 	{
-		require_once dirname(__FILE__) . '/artapi.php';
-		return bab_getDraftArticleArray($this->getReference()->getObjectId());
+		
+		return array();
 	}
 }
