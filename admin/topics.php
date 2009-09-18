@@ -131,6 +131,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->add					= bab_translate("Add");
 			$this->none					= bab_translate("None");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
+			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
 			$this->tgval				= "topics";
 			$this->langLabel			= bab_translate("Language");
 			$this->langFiles			= $GLOBALS['babLangFilter']->getLangFiles();
@@ -631,7 +632,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 	$babBody->addStyleSheet('publication.css');
 	
 	$temp = new temp($cat, $ncat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags);
-	$babBody->babecho(bab_printTemplate($temp,"topics.html", "topiccreate"));
+	$babBody->babecho(bab_printTemplate($temp, 'topics.html', 'topiccreate'));
 	}
 
 function listCategories($cat)
