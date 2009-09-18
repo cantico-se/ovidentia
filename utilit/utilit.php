@@ -1025,11 +1025,7 @@ function addJavascriptFile($file)
  */
 function addJavascript($code)
 {
-	global $babOvidentiaJs;
-
-	$babOvidentiaJs .= '"></script><script type="text/javascript">';
-	$babOvidentiaJs .= $code;
-	$babOvidentiaJs .= '</script><script src="'; 
+	$this->script .= "\n" . $code;
 }
 
 
