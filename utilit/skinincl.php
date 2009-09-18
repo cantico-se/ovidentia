@@ -47,7 +47,7 @@ class bab_skin {
 		$return = NULL;
 		foreach(self::getAllSkins() as $skin) {
 			if ((false === $access_verification || $skin->isAccessValid()) && $skin->skinname === $skinname) {
-				$return[] = $skin;
+				$return = $skin;
 			}
 		}
 		
@@ -144,17 +144,34 @@ class bab_skin {
 	 * @return bab_skin 
 	 */
 	public static function getDefaultSkin() {
+		
+		if (isset($GLOBALS['babSiteName'])) {
+			
+			global $babDB;
+			
+			$res = $babDB->db_query('SELECT skin FROM bab_sites WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
+			if ($arr = $babDB->db_fetch_assoc($res)) {
+		
+				// if site skin is accessible use it
+				if (null !== $skin = self::get($arr['skin'])) {
+					return $skin;
+				}
+			}
+		}
+		
+		// if ovidentia is accessible use it
+		if (null !== $skin = self::get('ovidentia')) {
+			return $skin;
+		}
 
 		$accessibles = self::getList();
 
-		if (in_array('ovidentia', $accessibles)) {
-			return new bab_skin('ovidentia');
-		}
-
+		// if no accessibles skins, use ovidentia anyway
 		if (empty($accessibles)) {
 			return new bab_skin('ovidentia');
 		}
 
+		// use the first accessible skin
 		return reset($accessibles);
 	}
 
