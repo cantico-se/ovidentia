@@ -563,11 +563,10 @@ function aclSetGroups_unregistered($table, $id_object)
 	bab_siteMap::clearAll();
 	}
 
-
-function aclGetAccessUsers($table, $id_object) {
+function aclGetAccessGroups($table, $id_object) {
 	global $babBody, $babDB;
 	
-	$tree =& new bab_grptree();
+	$tree = new bab_grptree();
 	$groups = array();
 	
 	$res = $babDB->db_query("SELECT t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group WHERE t.id_object='".$babDB->db_escape_string($id_object)."'");
@@ -601,6 +600,14 @@ function aclGetAccessUsers($table, $id_object) {
 			}
 		}
 
+	return $groups;
+	}
+	
+
+function aclGetAccessUsers($table, $id_object) {
+	global $babBody, $babDB;
+	
+	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = "SELECT id, firstname, lastname ,email 
