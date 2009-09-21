@@ -922,7 +922,7 @@ echo
 				$this->t_deletemessage_user = bab_translate("To delete files use checkboxes");
 				$this->t_index_status = bab_translate("Indexation");
 
-				if( $arr['id_topic'] != 0 && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic']))
+				if( $arr['id_topic'] != 0 && ( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $arr['id_topic'])|| bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic'])))
 					{
 					$this->steptitle = viewCategoriesHierarchy_txt($arr['id_topic']);
 					}
@@ -1035,7 +1035,8 @@ echo
 				$this->drafttopic = $topicid == '' ? $arr['id_topic']: $topicid;
 				/* Traiter le cas de modification d'article */
 				$topsub = bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL);
-				if( count($topsub) == 0 || !isset($topsub[$this->drafttopic]))
+				$topmod = bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL);
+				if( (count($topsub) == 0 || !isset($topsub[$this->drafttopic])) && (count($topmod) == 0 || !isset($topmod[$this->drafttopic])))
 					{
 					$this->drafttopic = 0;
 					}
