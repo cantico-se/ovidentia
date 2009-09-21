@@ -1396,11 +1396,21 @@ function bab_getAccessibleObjects($table, $userId)
 	$userGroupIds[] = BAB_REGISTERED_GROUP;
 	$userGroupIds[] = BAB_ALLUSERS_GROUP;
 	
-	$sql = 'SELECT id_object, id_group FROM '.$babDB->backTick($table).' WHERE id_group IN('.$babDB->quote($userGroupIds).') OR id_group >= '.BAB_ACL_GROUP_TREE;
-	$res = $babDB->db_query($sql);
+	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
 
 	while ($object = $babDB->db_fetch_assoc($res)) {
-		if ($object['id_group'] < BAB_ACL_GROUP_TREE || bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId)) {
+		if( $object['nb_groups'] !== null )
+		{
+		$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($object['id_group']));
+		while( $rr = $babDB->db_fetch_array($rs))
+			{
+			if( in_array($rr['id_group'], $userGroupIds))
+				{
+					$objects[$object['id_object']] = $object['id_object'];
+				}
+			}
+		}
+		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) || bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId)) {
 			$objects[$object['id_object']] = $object['id_object'];
 		}		
 	}
@@ -1421,19 +1431,24 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	{
 	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
 	
-	$res = $babDB->db_query("select id_object, id_group from ".$babDB->db_escape_string($table)." WHERE id_group IN(".$babDB->quote($babBody->usergroups).") OR id_group>='".BAB_ACL_GROUP_TREE."'");
-	
-	while( $row = $babDB->db_fetch_assoc($res))
+	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
+
+	while ($row = $babDB->db_fetch_assoc($res)) {
+		if( $row['nb_groups'] !== null )
 		{
-		if ($row['id_group'] >= BAB_ACL_GROUP_TREE )
+		$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
+		while( $rr = $babDB->db_fetch_array($rs))
 			{
-			$row['id_group'] -= BAB_ACL_GROUP_TREE;
-			if (bab_isMemberOfTree($row['id_group']))
-				$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
+			if( in_array($rr['id_group'], $babBody->usergroups))
+				{
+					$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
+				}
 			}
-		else
-			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
 		}
+		elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && in_array($row['id_group'], $babBody->usergroups)) || bab_isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE)) {
+			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
+		}		
+	}		
 	}
 
 	return $_SESSION['bab_groupAccess']['acltables'][$table];
@@ -1473,28 +1488,9 @@ function bab_getGroupsAccess($table, $idobject)
 {
 	global $babBody, $babDB;
 
-	$ret = array();
-
-	$res = $babDB->db_query("select id_group from ".$babDB->db_escape_string($table)." where id_object='".$babDB->db_escape_string($idobject)."'");
-	while( $row = $babDB->db_fetch_array($res))
-		{
-		if ($row['id_group'] >= BAB_ACL_GROUP_TREE)
-			{
-			$row['id_group'] -= BAB_ACL_GROUP_TREE;
-			foreach($babBody->ovgroups as $arr)
-				{
-				if ($arr['lf'] >= $babBody->ovgroups[$row['id_group']]['lf'] && $arr['lr'] <= $babBody->ovgroups[$row['id_group']]['lr'])
-					{
-					$ret[] = $arr['id'];
-					}
-				}
-			}
-		else
-			{
-			$ret[] = $row['id_group'];
-			}
-		}
-	return $ret;
+	include_once $GLOBALS['babInstallPath']."admin/acl.php";
+	$groups = aclGetAccessGroups($table, $id_object);
+	return array_keys($groups);
 }
 
 

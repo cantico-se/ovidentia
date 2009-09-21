@@ -563,8 +563,7 @@ function aclSetGroups_unregistered($table, $id_object)
 	bab_siteMap::clearAll();
 	}
 
-
-function aclGetAccessUsers($table, $id_object) {
+function aclGetAccessGroups($table, $id_object) {
 	global $babBody, $babDB;
 	
 	$tree = new bab_grptree();
@@ -601,6 +600,14 @@ function aclGetAccessUsers($table, $id_object) {
 			}
 		}
 
+	return $groups;
+	}
+	
+
+function aclGetAccessUsers($table, $id_object) {
+	global $babBody, $babDB;
+	
+	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = "SELECT id, firstname, lastname ,email 
