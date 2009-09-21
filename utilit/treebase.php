@@ -675,9 +675,10 @@ class bab_NodeIterator
 		$node =& $this->_currentNode;
 
 		if (!is_null($node)) {
+			
 			if ($node->hasChildNodes()) {
 				$sibling =& $node->nextSibling();
-				if (!is_null($sibling) /* && $this->_level !== 0 */) {
+				if (!is_null($sibling) && $this->_level !== 0) {
 					$this->_nodeStack[] =& $sibling;
 					array_push($this->_levelStack, $this->_level);
 				}
