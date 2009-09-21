@@ -91,7 +91,7 @@ function bab_f_toHtml($pee, $opt) {
 		$pee = str_replace(chr(0x92), "'"		, $pee);	// apostrophe CP1252
 		$pee = str_replace(chr(0xB4), "'"		, $pee);	// apostrophe ISO-8859-1
 		$pee = str_replace(chr(0x9C), chr(0xBD) , $pee);	// oe 
-		$pee = str_replace(chr(0x8C), chr(0xBD) , $pee);	// OE
+		$pee = str_replace(chr(0x8C), chr(0xBC) , $pee);	// OE
 		$pee = str_replace(chr(0x93), '"' 		, $pee);
 		$pee = str_replace(chr(0x94), '"' 		, $pee);
 		$pee = str_replace(chr(0x85), '...' 	, $pee);
