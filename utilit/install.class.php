@@ -399,6 +399,8 @@ class bab_InstallSource {
 	private function installCore(bab_CoreIniFile $ini) {
 
 		include_once dirname(__FILE__).'/upgradeincl.php';
+		include_once dirname(__FILE__).'/path.class.php';
+		
 		global $babBody;
 
 		$path 	= $this->getFolder().'/';
@@ -406,9 +408,20 @@ class bab_InstallSource {
 		$core 	= 'ovidentia';
 
 		$destination = realpath('.');
-
-		if (!is_writable($destination)) {
-			bab_installWindow::message(bab_sprintf(bab_translate('The path %s is not writable'), $destination));
+		
+		
+		if (!is_writable($destination.'/config.php')) {
+			bab_installWindow::message(bab_sprintf(bab_translate('The config.php file is not writable'), $destination));
+			return false;
+		}
+		
+		$destpath = new bab_Path($destination);
+		
+		try {
+			$destpath->isFolderWriteable();
+			
+		} catch(bab_FolderAccessRightsException $e) {
+			bab_installWindow::message($e->getMessage());
 			return false;
 		}
 

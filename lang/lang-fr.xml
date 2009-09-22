@@ -2476,7 +2476,7 @@
 <string id="Approbation schemas instances list">Liste des instances des schémas d'approbation</string>
 <string id="Insert content links">Insérer du contenu dynamique</string>
 <string id="There is no directory available">Il n'y a pas d'annuaire disponible</string>
-<string id="Insert files or folders from ovidentia files manager">Insérer un lien vers un fichier ou un répertoire du gestionnaire de fichiers</string>
+<string id="Insert a link to file or folder in ovidentia files manager">Insérer un lien vers un fichier ou un répertoire du gestionnaire de fichiers</string>
 <string id="Insert a dynamic link to an article from ovidentia">Insérer un lien dynamique vers un article</string>
 <string id="Insert a link to question/response from ovidentia FAQ">Insérer un lien vers une question/réponse d'une FAQ</string>
 <string id="Insert an ovml file">Insérer un fichier ovml</string>
@@ -3075,4 +3075,5 @@
 <string id="All notifications">Toutes les notifications</string>
 <string id="Only for new threads">Nouveaux sujets seulement</string>
 <string id="display of the identity of the contributor">affichage de l'identité du contributeur</string>
+<string id="The config.php file is not writable">Le fichier config.php n'est pas accessible en écriture</string>
 </fr>
