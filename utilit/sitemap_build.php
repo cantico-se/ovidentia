@@ -30,7 +30,7 @@ include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
  * Sitemap node as object
  * 
  */
-class bab_siteMap_item {
+class bab_siteMap_buildItem {
 
 	public  $uid;
 	public  $label;
@@ -39,7 +39,7 @@ class bab_siteMap_item {
 	public  $onclick 			= '';
 	public  $position 			= array();
 	public  $lang;
-	public  $parentNode;	// ref bab_siteMap_item
+	public  $parentNode;		// ref bab_siteMap_buildItem
 	public  $parentNode_str;
 	public 	$childNodes 		= array();
 	private	$icon_classnames	= array();
@@ -126,16 +126,16 @@ class bab_siteMap_item {
 	}
 
 	/**
-	 * @param	bab_siteMap_item	$obj
+	 * @param	bab_siteMap_buildItem	$obj
 	 */
-	public function addChildNode(&$obj) {
+	public function addChildNode($obj) {
 		$this->childNodes[$obj->uid] = $obj;
 	}
 	
 	/**
 	 * Add Icon classname
 	 * @param	string	$classname
-	 * @return	bab_siteMap_item
+	 * @return	bab_siteMap_buildItem
 	 */
 	public function addIconClassname($classname) {
 		$this->icon_classnames[] = $classname;
@@ -187,7 +187,7 @@ class bab_siteMap_item {
 	 * Create a clone
 	 */
 	public function cloneNode() {
-		$clone = new bab_siteMap_item($this->uid);
+		$clone = new bab_siteMap_buildItem($this->uid);
 
 		$clone->label					= $this->label;
 		$clone->description 			= $this->description;
@@ -216,21 +216,21 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	/**
 	 * Get new item object
 	 * @param	string	$uid	(64 characters)
-	 * @return 	bab_siteMap_item
+	 * @return 	bab_siteMap_buildItem
 	 */
 	public function createItem($uid) {
 		
-		return new bab_siteMap_item($uid);
+		return new bab_siteMap_buildItem($uid);
 	}
 	
 	/**
 	 * Add item as function into sitemap
 	 * item must be unique in one delegation
 	 * 
-	 * @param	bab_siteMap_item	&$obj
+	 * @param	bab_siteMap_buildItem	$obj
 	 * @return	boolean
 	 */
-	public function addFunction(&$obj) {
+	public function addFunction($obj) {
 
 		if (isset($this->nodes[$obj->uid])) {
 			trigger_error(sprintf('The node %s is allready in the sitemap',$obj->uid));
@@ -248,10 +248,10 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	/**
 	 * Add folder into sitemap
 	 * Folder must be unique
-	 * @param	bab_siteMap_item	&$obj
+	 * @param	bab_siteMap_buildItem	$obj
 	 * @return	boolean
 	 */
-	public function addFolder(&$obj) {
+	public function addFolder($obj) {
 		if (isset($this->nodes[$obj->uid])) {
 			trigger_error(sprintf('The node %s is allready in the sitemap',$obj->uid));
 			$this->propagation_status = false;
@@ -267,7 +267,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	/**
 	 * Get insert entry or false
 	 * @param	string	$uid
-	 * @return 	bab_siteMap_item
+	 * @return 	bab_siteMap_buildItem
 	 */
 	public function getById($uid) {
 
@@ -282,9 +282,9 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	
 	/**
 	 * 
-	 * @param	bab_siteMap_item	&$obj
+	 * @param	bab_siteMap_buildItem	$obj
 	 */
-	public function buidtree(&$obj) {
+	public function buidtree($obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			$this->nodes[$obj->parentNode_str]->addChildNode($obj);
 		} else {
@@ -363,10 +363,10 @@ class bab_sitemap_tree extends bab_dbtree
 	/**
 	 * Get childnodes from this node with collumn to insert
 	 *
-	 * @param	bab_siteMap_item	$node
-	 * @param	int					&$id
-	 * @param	int					$id_parent
-	 * @param	array				&$insertlist		(id, id_parent, lf, lr, id_function)
+	 * @param	bab_siteMap_buildItem	$node
+	 * @param	int						&$id
+	 * @param	int						$id_parent
+	 * @param	array					&$insertlist		(id, id_parent, lf, lr, id_function)
 	 *
 	 */
 	function getLevelToInsert($node, &$id, $id_parent, &$insertlist) {
@@ -521,7 +521,7 @@ class bab_siteMap_insertFunctionObj {
 
 	/**
 	 * Insert function into database
-	 * @param	bab_siteMap_item	$node
+	 * @param	bab_siteMap_buildItem	$node
 	 */
 	function insertFunction($node) {
 	
@@ -532,7 +532,7 @@ class bab_siteMap_insertFunctionObj {
 	
 	/**
 	 * Insert function label for current language into database
-	 * @param	bab_siteMap_item	$node
+	 * @param	bab_siteMap_buildItem	$node
 	 */
 	function insertFunctionLabel($node) {
 		$this->labels[] = $node;
@@ -619,11 +619,11 @@ function bab_siteMap_setUserProfile($id_profile) {
 
 /**
  * Insert node and childs into database
- * @param	bab_siteMap_item	$rootNode
- * @param	array				$nodeList
- * @param	$crc				$crc		sitemap uid_functions
+ * @param	bab_siteMap_buildItem	$rootNode
+ * @param	array					$nodeList
+ * @param	$crc					$crc		sitemap uid_functions
  */
-function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
+function bab_siteMap_insertTree(bab_siteMap_buildItem $rootNode, $nodeList, $crc) {
 
 
 	
@@ -878,12 +878,12 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 
 /**
  * insert a node into tree
- * @param	bab_sitemap_tree	&$tree
- * @param	bab_siteMap_item	$node
- * @param	int					$id_parent
- * @param	int					$deep		profondeur dans l'arbre
+ * @param	bab_sitemap_tree		$tree
+ * @param	bab_siteMap_buildItem	$node
+ * @param	int						$id_parent
+ * @param	int						$deep		profondeur dans l'arbre
  */
-function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
+function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 
 	global $babDB;
 
@@ -982,8 +982,11 @@ function bab_siteMap_delegationsRecord() {
 
 /**
  * Recursive childs count
- * @param	bab_siteMap_item	$node
- * @param	int					[$n]
+ * @param	bab_siteMap_buildItem	$node
+ * @param	int						[$n]
+ * 
+ * 
+ * @return int
  */
 function bab_sitemap_countChilds($node, $n = 0) {
 	foreach($node->childNodes as $child) {
@@ -1028,7 +1031,7 @@ function bab_siteMap_build() {
 	
 	// insert rootnode
 	
-	$rootNode = new bab_siteMap_item('root');
+	$rootNode = new bab_siteMap_buildItem('root');
 	$rootNode->setLabel($GLOBALS['babSiteName']);
 	$rootNode->setDescription($babBody->babsite['babslogan']);
 	$rootNode->setLink('?');
@@ -1043,7 +1046,7 @@ function bab_siteMap_build() {
 	$delgations = bab_getUserVisiblesDelegations();
 	foreach($delgations as $dgid => $arr) {
 		
-		$dgNode = new bab_siteMap_item($dgid);
+		$dgNode = new bab_siteMap_buildItem($dgid);
 		$dgNode->setLabel($arr['name']);
 		$dgNode->setDescription($arr['description']);
 		$dgNode->setPosition(array('root'));
@@ -1063,7 +1066,7 @@ function bab_siteMap_build() {
 	
 	// add orphans nodes to tree
 	foreach($event->queue as $missing_node => $orphan) {
-		$newNode = new bab_siteMap_item($missing_node);
+		$newNode = new bab_siteMap_buildItem($missing_node);
 		$newNode->setPosition(array('root'));
 		$newNode->folder = 1;
 		$newNode->setLabel($missing_node);
@@ -1452,9 +1455,9 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 
 /**
- * @param	bab_eventBeforeSiteMapCreated &$event
+ * @param	bab_eventBeforeSiteMapCreated $event
  */
-function bab_sitemap_userSection(&$event) {
+function bab_sitemap_userSection($event) {
 
 	global $babBody, $babDB;
 
@@ -1537,14 +1540,14 @@ function bab_sitemap_userSection(&$event) {
 
 
 /**
- * @param	bab_eventBeforeSiteMapCreated &$event
+ * @param	bab_eventBeforeSiteMapCreated $event
  */
-function bab_sitemap_articles(&$event) {
+function bab_sitemap_articles($event) {
 	global $babDB;
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
 	
-	function bab_sitemap_articlesCategoryLevel($id_category, $position, &$event, $id_delegation) {
+	function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_delegation) {
 		
 		global $babDB;
 		$res = bab_getArticleCategoriesRes(array($id_category), $id_delegation);
@@ -1623,9 +1626,9 @@ function bab_sitemap_articles(&$event) {
 
 
 /**
- * @param	bab_eventBeforeSiteMapCreated &$event
+ * @param	bab_eventBeforeSiteMapCreated $event
  */
-function bab_sitemap_faq(&$event) {
+function bab_sitemap_faq($event) {
 
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
@@ -1679,7 +1682,7 @@ function bab_sitemap_faq(&$event) {
  * Registred function
  * @param	bab_eventBeforeSiteMapCreated	$event
  */
-function bab_onBeforeSiteMapCreated(&$event) {
+function bab_onBeforeSiteMapCreated($event) {
 
 	global $babBody, $BAB_SESS_LOGGED;
 	
