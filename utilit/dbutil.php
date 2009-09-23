@@ -289,14 +289,21 @@ function db_free_result($result)
 
 } /* end of class bab_database */
 
+
+
+
+/**
+ * Database object
+ * Use $babDB, global babDatabase instance
+ */ 
 class babDatabase extends bab_database
 {
-	function babDatabase()
+	public function __construct()
 		{
 		$this->bab_database(true);
 		}
 
-	function db_connect()
+	public function db_connect()
 		{
 		static $idlink = false;
 		if( $idlink == false)
@@ -306,12 +313,12 @@ class babDatabase extends bab_database
 		return $idlink;
 		}
 
-	function db_close()
+	public function db_close()
 		{
 		return parent::db_close($this->db_connect());
 		}
 
-	function db_setCharset()
+	public function db_setCharset()
 		{
 			require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 			if('utf8' == bab_charset::getDatabase())
@@ -320,12 +327,12 @@ class babDatabase extends bab_database
 			}			
 		}
 
-	function db_create_db($dbname)
+	public function db_create_db($dbname)
 		{
 		return parent::db_create_db($dbname, $this->db_connect());
 		}
 
-	function db_drop_db($dbname)
+	public function db_drop_db($dbname)
 		{
 		return parent::db_drop_db($dbname, $this->db_connect());
 		}
@@ -335,22 +342,22 @@ class babDatabase extends bab_database
 	 * @param	string	$query
 	 * @return	resource|false
 	 */
-	function db_query($query)
+	public function db_query($query)
 		{
 		return parent::db_query($this->db_connect(), $query, true);
 		}
 
-	function db_num_rows($result)
+	public function db_num_rows($result)
 		{
 		return parent::db_num_rows($result);
 		}
 
-	function db_fetch_array($result)
+	public function db_fetch_array($result)
 		{
 		return parent::db_fetch_array($result);
 		}
 
-	function db_fetch_assoc($result)
+	public function db_fetch_assoc($result)
 		{
 		return parent::db_fetch_assoc($result);
 		}
@@ -360,27 +367,27 @@ class babDatabase extends bab_database
 		return parent::db_fetch_row($result);
 		}
 
-	function db_result($result, $row, $field)
+	public function db_result($result, $row, $field)
 		{
 		return parent::db_result($result, $row, $field);
 		}
 
-	function db_affected_rows()
+	public function db_affected_rows()
 		{
 		return parent::db_affected_rows($this->db_connect());
 		}
 
-	function db_insert_id()
+	public function db_insert_id()
 		{
 		return parent::db_insert_id($this->db_connect());
 		}
 
-	function db_data_seek($res, $row)
+	public function db_data_seek($res, $row)
 		{
 		return parent::db_data_seek($res, $row);
 		}
 
-	function db_escape_string($str)
+	public function db_escape_string($str)
 		{
 		return parent::db_escape_string($str);
 		//return parent::db_real_escape_string($str, $this->db_connect());
@@ -391,7 +398,7 @@ class babDatabase extends bab_database
 	 * @param	string $str
 	 * @return	string
 	 */
-	function db_escape_like($str)
+	public function db_escape_like($str)
 		{
 		$str = str_replace('\\','\\\\',$str);
 		$str = str_replace('%','\%',$str);
@@ -404,7 +411,7 @@ class babDatabase extends bab_database
 	 * @param	array|string	$param
 	 * @return	string
 	 */
-	function quote($param) 
+	public function quote($param) 
 		{
 			if (is_array($param)) {
 
@@ -418,6 +425,24 @@ class babDatabase extends bab_database
 				return "'".parent::db_escape_string($param)."'";
 			}
 		}
+		
+	/**
+	 * Encode array or string for query and add quotes or if the value is NULL, return the NULL string
+	 * 
+	 * @since 7.1.94
+	 * 
+	 * @param	array|string|null	$param
+	 * @return	string
+	 */ 
+	public function quoteOrNull($param)
+		{
+			if (null === $param) {
+				return 'NULL';
+			}
+			
+			return $this->quote($param);
+		}
+		
 
 	/**
 	 * Adds backticks (`) to an SQL identifier (database, table or column name). 
@@ -426,7 +451,7 @@ class babDatabase extends bab_database
 	 * @param	string	$identifier
 	 * @return	string	The backticked identifier.
 	 */
-	function backTick($identifier) 
+	public function backTick($identifier) 
 		{
 			// Backticks are allowed in an identifier but should be backticked.
 			$identifier = '`' . str_replace('`', '``', $identifier) . '`';
@@ -434,7 +459,7 @@ class babDatabase extends bab_database
 			return $identifier;
 		}
 
-	function db_free_result($result)
+	public function db_free_result($result)
 		{
 		return parent::db_free_result($result);
 		}
@@ -447,7 +472,7 @@ class babDatabase extends bab_database
 	 * @since	6.4.95
 	 * @return 	false|string
 	 */
-	function db_error()
+	public function db_error()
 		{
 		return parent::db_error();
 		}
@@ -459,7 +484,7 @@ class babDatabase extends bab_database
 	 * @param	boolean	[$status]
 	 * @return 	boolean
 	 */
-	function errorManager($status = NULL) {
+	public function errorManager($status = NULL) {
 		if (NULL === $status) {
 			return $this->db_die_on_fail;
 		}
@@ -473,7 +498,7 @@ class babDatabase extends bab_database
 	 * @param	string	$query
 	 * @return	resource|false
 	 */
-	function db_queryWem($query) {
+	public function db_queryWem($query) {
 		return parent::db_query($this->db_connect(), $query, false);
 	}
 }
