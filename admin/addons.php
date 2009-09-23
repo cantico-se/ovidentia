@@ -72,6 +72,7 @@ class bab_addons_list
 		$this->t_historic = bab_translate("Historic");
 		$this->t_download = bab_translate("Download");
 		$this->t_configure = bab_translate("Configuration");
+		$this->t_install = bab_translate("Install");
 		$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
