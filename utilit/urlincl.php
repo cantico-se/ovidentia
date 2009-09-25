@@ -115,7 +115,7 @@ class bab_url {
 	 */
 	function request() {
 		$arr = func_get_args();
-		$url = $_SERVER['PHP_SELF'];
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
@@ -130,7 +130,7 @@ class bab_url {
 	 * @return 	string url
 	 */
 	function request_array($arr) {
-		$url = $_SERVER['PHP_SELF'];
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
@@ -148,7 +148,7 @@ class bab_url {
 		$arr = isset($_GET) && is_array($_GET) ? array_keys($_GET) : array();
 		$arr += isset($_POST) && is_array($_POST) ? array_keys($_POST) : array();
 		
-		$url = $_SERVER['PHP_SELF'];
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
