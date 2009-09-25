@@ -28,16 +28,20 @@ include_once 'base.php';
  * Url utilities
  */
 class bab_url {
+	
+	
+	private $url = null;
+	
 
 	/**
 	 * Add or modify a parameter value into an URL
-	 * @static
+	 * 
 	 * @param string 	$url
 	 * @param string 	$param 	name of the variable
 	 * @param mixed 	$value
 	 * @return string $url
 	 */
-	function mod($url, $param, $value) {
+	public static function mod($url, $param, $value) {
 	
 		if (is_array($value)) {
 			$keyval = bab_url::urlAsArray($param, $value);
@@ -49,7 +53,7 @@ class bab_url {
 		if ($count > 0) {
 			return $newurl;
 		}
-		
+
 		 
 		if (false === mb_strpos($url,'?')) {
 			$url .= '?'.$keyval;
@@ -67,25 +71,19 @@ class bab_url {
 	 * 							or an array of arrays (who in turn may contain other arrays).
 	 * @return string
 	 */
-	function buildQuery($data) {
-		if (function_exists('http_build_query')) {
-			// Only available in php >= 5
-			$url = http_build_query($data);
-		} else {
-			// For php < 5 compatibility.
-			$url = '';
-			foreach ($data as $param => $value)	 {
-				$url = self::mod($url, $param, $value);
-			}
-		}
-		
-		return $url;
+	public static function buildQuery($data) {
+		return http_build_query($data);
 	}
 	
 	/**
-	 * @access private
+	 * Convert an array as query string
+	 * 
+	 * @param	string	$name
+	 * @param	array	$arr
+	 * 
+	 * @return	string
 	 */
-	function urlAsArray($name, $arr) {
+	private static function urlAsArray($name, $arr) {
 		
 		$params = array();
 		
@@ -109,13 +107,13 @@ class bab_url {
 	/**
 	 * Create url from the previous request
 	 * Variables parameters for the name of the parameters allowed in the url
-	 * @static
+	 * 
 	 * @param string [...]
 	 * @return string url
 	 */
-	function request() {
+	public static function request() {
 		$arr = func_get_args();
-		$url = $_SERVER['PHP_SELF'];
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
@@ -125,12 +123,12 @@ class bab_url {
 	
 	/**
 	 * Create url from the previous request
-	 * @static
+	 * 
 	 * @param 	array	$arr	 : array with the name of the parameters allowed in the url
 	 * @return 	string url
 	 */
-	function request_array($arr) {
-		$url = $_SERVER['PHP_SELF'];
+	public static function request_array($arr) {
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
@@ -141,20 +139,86 @@ class bab_url {
 	/**
 	 * Create url from the previous request
 	 * All keys found in get and post
-	 * @static
+	 *
 	 * @return string url
 	 */
-	function request_gp() {
+	public static function request_gp() {
 		$arr = isset($_GET) && is_array($_GET) ? array_keys($_GET) : array();
 		$arr += isset($_POST) && is_array($_POST) ? array_keys($_POST) : array();
 		
-		$url = $_SERVER['PHP_SELF'];
+		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
 			$url = bab_url::mod($url, $param, bab_rp($param));
 		}
 		return $url;
 	}
+	
+	/**
+	 * Create url object from the previous request
+	 * Variables parameters for the name of the parameters allowed in the url
+	 * @since 7.1.94
+	 * 
+	 * @param string [...]
+	 * @return bab_url
+	 */
+	public static function get_request() {
+		
+		$arr = func_get_args();
+		$url = basename($_SERVER['PHP_SELF']);
+		foreach($arr as $param) {
+			$url = bab_url::mod($url, $param, bab_rp($param));
+		}
+		
+		return new bab_url($url);
+	}
 
+	/**
+	 * Create url object from the previous request
+	 * All keys found in get and post
+	 * @since 7.1.94
+	 * 
+	 * @return bab_url
+	 */
+	public static function get_request_gp() {
+		return new bab_url(self::request_gp());
+	}
+
+	/**
+	 * Create bab_url object
+	 * @param	string	$url	initialize object with url, if no parameter, current url without parameters will be used
+	 * @since 7.1.94
+	 * 
+	 */ 
+	public function __construct($url) {
+		$this->url = $url;
+	}
+	
+	/**
+	 * Property overloading to set an url parameter
+	 * 
+	 * 
+	 * @param	string	$param
+	 * @param mixed 	$value
+	 * 
+	 * @since 7.1.94
+	 */ 
+	public function __set($param, $value) {
+		$this->url = self::mod($this->url, $param, $value);
+	}
+	
+	
+	
+	/**
+	 * Url as String
+	 * The method is NOT __toString because the beaviour is not as expexted before php 5.2.0
+	 * 
+	 * @since 7.1.94
+	 * 
+	 * @return string
+	 */ 
+	public function toString() {
+		return $this->url;
+	}
 }
 
 
