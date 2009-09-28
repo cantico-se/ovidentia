@@ -28,7 +28,7 @@ include_once "base.php";
 
 /*
  * Security : destroy primary globals variables of Ovidentia (function used in index.php)
- * to avoid the modification of globals variables by GET, POST...
+ * to avoid the modification of global variables by GET, POST...
  * 
  * @param $arr Array
  */
@@ -45,21 +45,19 @@ function bab_unset(&$arr)
  * @return string (url)
  */
 function bab_getBabUrl() {
-	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']),'/');
+	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 	if (!empty($babWebRoot)) {
 		$babWebRoot .= '/';
 	}
+
 	$babHost = isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST'];
 
-	
-	$babProtocol = 'http://';
-
-	if( (isset($_SERVER['HTTPS']) && 'on' == strtolower($_SERVER['HTTPS'])) ||
-	    (isset($_SERVER['SCRIPT_URI']) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) 
-	{
+	if ( (isset($_SERVER['HTTPS']) && 'on' == strtolower($_SERVER['HTTPS']))
+	  || (isset($_SERVER['SCRIPT_URI']) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) {
 		$babProtocol = 'https://';
+	} else {
+		$babProtocol = 'http://';
 	}
-
 
 	return $babProtocol . $babHost . '/' . $babWebRoot ;
 }
@@ -110,7 +108,6 @@ bab_cleanGpc();
 if (!isset($babUrl)) {
 	$babUrl = bab_getBabUrl();
 }
-
 
 /* Management of WSSESSIONID for Web Services */
 if (isset($_REQUEST['WSSESSIONID'])) {
@@ -324,7 +321,7 @@ class bab_configTemplate_sectionBabmeta {
 }
 $bab_configTemplate_sectionBabmeta_object = new bab_configTemplate_sectionBabmeta();
 
-$babCss = bab_printTemplate($babDummy, "config.html", "babCss");
+$babCss =  bab_printTemplate($babDummy, "config.html", "babCss");
 $babMeta = bab_printTemplate($bab_configTemplate_sectionBabmeta_object, "config.html", "babMeta");
 $babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
 $babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
@@ -334,7 +331,7 @@ else
 	$babIE = 0;
 
 /*
- * Display the current page : head, métas, sections, body...
+ * Display the current page : head, metas, sections, body...
  */
 function printBody()
 {
@@ -440,6 +437,13 @@ function printBody()
 		}
 
 
+		/**
+		 * These getter are used to do some initialization stuff when some variables are
+		 * accessed for the first time.
+		 * 
+		 * @param string $propertyName
+		 * @return mixed
+		 */
 		public function __get($propertyName)
 		{
 			switch ($propertyName) {
@@ -454,6 +458,12 @@ function printBody()
 		}
 
 
+		/**
+		 * Isset has to be overriden as well for some variables.
+		 * 
+		 * @param string $propertyName
+		 * @return bool
+		 */
 		public function __isset($propertyName)
 		{
 			switch ($propertyName) {
@@ -1258,5 +1268,5 @@ class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event); /* Fire all event registered as listeners */
 
-printBody(); /* Display the current page : head, métas, sections, body... */
+printBody(); /* Display the current page : head, mï¿½tas, sections, body... */
 unset($tg);
