@@ -45,21 +45,19 @@ function bab_unset(&$arr)
  * @return string (url)
  */
 function bab_getBabUrl() {
-	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']),'/');
+	$babWebRoot = trim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 	if (!empty($babWebRoot)) {
 		$babWebRoot .= '/';
 	}
+
 	$babHost = isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $_SERVER['HTTP_HOST'];
 
-	
-	$babProtocol = 'http://';
-
-	if( (isset($_SERVER['HTTPS']) && 'on' == strtolower($_SERVER['HTTPS'])) ||
-	    (isset($_SERVER['SCRIPT_URI']) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) 
-	{
+	if ( (isset($_SERVER['HTTPS']) && 'on' == strtolower($_SERVER['HTTPS']))
+	  || (isset($_SERVER['SCRIPT_URI']) && strtolower(substr($_SERVER['SCRIPT_URI'], 0, 5)) == 'https')) {
 		$babProtocol = 'https://';
+	} else {
+		$babProtocol = 'http://';
 	}
-
 
 	return $babProtocol . $babHost . '/' . $babWebRoot ;
 }
@@ -334,7 +332,7 @@ else
 	$babIE = 0;
 
 /*
- * Display the current page : head, métas, sections, body...
+ * Display the current page : head, mï¿½tas, sections, body...
  */
 function printBody()
 {
@@ -1258,5 +1256,5 @@ class bab_eventPageRefreshed extends bab_event { }
 $event = new bab_eventPageRefreshed;
 bab_fireEvent($event); /* Fire all event registered as listeners */
 
-printBody(); /* Display the current page : head, métas, sections, body... */
+printBody(); /* Display the current page : head, mï¿½tas, sections, body... */
 unset($tg);
