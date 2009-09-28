@@ -419,6 +419,8 @@ function editVacationRequest($vrid)
 			
 			$this->yearbegin 	= $date_begin->getYear();
 			$this->yearsel 		= $this->yearbegin;
+			$this->timestampbegin	= $date_begin->getTimeStamp();
+			$this->timestampsel	= $this->timestampbegin;
 			
 			
 			$this->dayend		= $date_end->getDayOfMonth();
@@ -427,6 +429,7 @@ function editVacationRequest($vrid)
 			
 			$this->yearend 		= $date_end->getYear();
 			$this->yearendsel 	= $this->yearend;
+			$this->timestampend	= $date_end->getTimeStamp();
 
 
 			$this->halfdaybegin	= 'am' === date('a', $date_begin->getTimeStamp()) ? 0 : 1;
@@ -492,7 +495,7 @@ function editVacationRequest($vrid)
 			{
 			static $i = 1;
 
-			if( $i <= date("t"))
+			if( $i <= date('t', $this->timestampsel))
 				{
 				$this->dayid = $i;
 				if( $this->daysel == $i)
@@ -508,6 +511,7 @@ function editVacationRequest($vrid)
 			else
 				{
 				$this->daysel = $this->dayend;
+				$this->timestampsel = $this->timestampend;
 				$i = 1;
 				return false;
 				}
@@ -968,7 +972,9 @@ function doExportVacationRequests($dateb, $datee, $idstatus, $wsepar, $separ, $s
 
 		if( $dateb != "" && $datee != "" )
 			{
-			$aaareq[] = "((e.date_end >= '".$dateb."' AND e.date_begin < '".$dateb."') OR (e.date_begin <= '".$datee."' AND e.date_end > '".$datee."') OR (e.date_end <= '".$datee."' AND e.date_begin >= '".$dateb."'))";
+			$aaareq[] = "((e.date_end >= '".$dateb."' AND e.date_begin < '".$dateb."') 
+						OR (e.date_begin <= '".$datee."' AND e.date_end > '".$datee."') 
+						OR (e.date_end <= '".$datee." 23:59:59' AND e.date_begin >= '".$dateb."'))";
 			}
 		}
 
