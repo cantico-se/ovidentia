@@ -4,12 +4,12 @@
 <!--
 
 
-function func(txt)
+function bab_ovml_func(txt)
 	{
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
 		'param'		: '$OVML('+txt+')',
-		'filename'	: txt,
+		'filename'	: txt
 	});
 	
 	window.close();
@@ -29,7 +29,7 @@ function func(txt)
 <!--#endin getnext_dir -->
 <!--#in getnext_file -->
 	<li>
-	<a href="javascript:func('{ urlfile }')"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { file }</a>
+		<a href="#" onclick="bab_ovml_func('{ urlfile }'); return false;"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { file }</a>
 	</li>
 <!--#endin getnext_file -->
 </ul>
