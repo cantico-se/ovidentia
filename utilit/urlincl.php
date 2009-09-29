@@ -219,6 +219,19 @@ class bab_url {
 	public function toString() {
 		return $this->url;
 	}
+	
+	
+	
+	
+	/**
+	 * add a header "location" for this URL and exit program
+	 * 
+	 * @since 7.1.94
+	 */ 
+	public function goto() {
+		header('location:'.$this->url);
+		exit;
+	}
 }
 
 
