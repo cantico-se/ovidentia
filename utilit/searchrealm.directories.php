@@ -238,7 +238,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				}
 
 				if ('jpegphoto' === $field->getName()) {
-					$field->virtual(false);
+					$field->virtual(true);
 				}
 
 				$return[] = $field;
