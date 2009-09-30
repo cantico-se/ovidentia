@@ -279,7 +279,8 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
-		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
+		return strnatcmp($sStr1, $sStr2);
+		// return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 	}
 
 	$oCollator = bab_getCollatorInstance();
