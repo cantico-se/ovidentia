@@ -886,21 +886,6 @@ function bab_siteMap_insertTree($rootNode, $nodeList, $crc) {
 function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 
 	global $babDB;
-
-	$parent = $tree->getNodeInfo($id_parent);
-
-	// the node UID contain a delegation identifier before the first - if the node type si function
-
-	if ($node->folder) {
-		$node_uid = $node->uid;
-	} else {
-		$pos = mb_strpos($node->uid, '-');
-		if (false !== $pos) {
-			$node_uid = mb_substr($node->uid, 1+$pos);
-		} else {
-			$node_uid = $node->uid;
-		}
-	}
 	
 	if (!isset($node->position[$deep])) {
 	
@@ -919,7 +904,7 @@ function bab_sitemap_insertNode(&$tree, $node, $id_parent, $deep) {
 		$id_node = $tree->add($id_parent);
 
 		if ($id_node) {
-			$tree->setFunction($id_node, $node_uid);
+			$tree->setFunction($id_node, $node->uid);
 		}
 		
 		return $id_node;

@@ -234,7 +234,7 @@ function bab_getArticleDelegationId($iIdArticle)
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
 	
-	/* Verify the type array of $parentid */
+	// Verify the type array of $parentid 
 	if (!is_array($parentid)) {
 		$parentid = array($parentid);
 	}
@@ -250,70 +250,111 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
 	}
 	
-	/* List of id categories */
+	// List of id categories 
 	$IdEntries = array();
+	
+	
+	
 	if( count($parentid) > 0 ) {
-		/* All categories, childs of $parentid */
+		
+		// All categories, childs of $parentid
 		$res = $babDB->db_query("select id from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent IN (".$babDB->quote($parentid).")");
-		/* Specifics rights or all rights ? */
+		
+		// Specifics rights or all rights ? 
 		if (false === $rightaccesstable) {
-			/* Administrator rights */
-			if ($babDB->db_num_rows($res) > 0) {
-				while ($row = $babDB->db_fetch_array($res)) {
-					if (!in_array($row['id'], $IdEntries)) {
-						array_push($IdEntries, $row['id']);
-					}
-				}
-			}
-		} else {
-			/* Specific right */
-			$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable); /* all id topics with right */
+			// Administrator rights 
 			
+			while ($row = $babDB->db_fetch_assoc($res)) {
+				$IdEntries[$row['id']] = $row['id'];
+			}
+			
+		} else {
+			// Accessibles topics
+			$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable);
+			
+			// categories with accessibles topics
 			$idcategoriesbyrights = array();
 			
-			/* All id categories, parents of topics with right */
-			$res2 = $babDB->db_query("select id_cat from ".BAB_TOPICS_TBL." where id in(".$babDB->quote(array_keys($idtopicsbyrights)).")");
-			if ($babDB->db_num_rows($res2) > 0) {
+			if (BAB_TOPICSVIEW_GROUPS_TBL === $rightaccesstable) {
+				// if tested access is topic view use cached values
+				$idcategoriesbyrights = $babBody->get_topcatview();
+			} else {
+			
+				$res2 = $babDB->db_query("
+					select id_cat 
+					from ".BAB_TOPICS_TBL." 
+					where id in(".$babDB->quote($idtopicsbyrights).") AND id_cat NOT IN(".$babDB->quote($idcategoriesbyrights).")
+				");
+				
 				while ($row2 = $babDB->db_fetch_array($res2)) {
-					if (!in_array($row2['id_cat'], $idcategoriesbyrights)) {
-						$idcategoriesbyrights[$row2['id_cat']] = $row2['id_cat'];
-					}
+					$idcategoriesbyrights[$row2['id_cat']] = 1;
 				}
-			}
-			/* All parents of categories accessibles */
-			$idcategoriesbyrightstmp = $idcategoriesbyrights;
-			foreach($idcategoriesbyrightstmp as $idcategory) {
-				$idParents = bab_getParentsArticleCategory($idcategory);
-				foreach($idParents as $idParent) {
-					if (!in_array($idParent['id'], $idcategoriesbyrights)) {
-						$idcategoriesbyrights[$idParent['id']] = $idParent['id'];
+				
+				
+				// All parents of categories accessibles 
+				$idcategoriesbyrightstmp = $idcategoriesbyrights;
+				
+				foreach($idcategoriesbyrightstmp as $idcategory => $dummy) {
+					$idParents = bab_getParentsArticleCategory($idcategory);
+					foreach($idParents as $idParent) {
+						$idcategoriesbyrights[$idParent['id']] = 1;
 					}
 				}
 			}
 			
+			// add accessibles categories
 			if ($babDB->db_num_rows($res) > 0) {
 				while ($row = $babDB->db_fetch_array($res)) {
 					if (isset($idcategoriesbyrights[$row['id']]) ) {
-						if (!in_array($row['id'], $IdEntries)) {
-							array_push($IdEntries, $row['id']);
-						}
+						$IdEntries[$row['id']] = $row['id'];
 					}
 				}
 			}
 		}
 	}
 
-	/* All fields and values of categories */
+	// All fields and values of categories 
 	if($IdEntries) {
-		$req = "SELECT tc.* from ".BAB_TOPICS_CATEGORIES_TBL." tc 
-			LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
-			WHERE tc.id IN (".$babDB->quote($IdEntries).") and tot.type='1' " . $sDelegation .  " order by tot.ordering asc";
+		$req = "SELECT 
+				tc.* 
+				
+			from ".BAB_TOPICS_CATEGORIES_TBL." tc 
+				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
+				
+			WHERE 
+				tc.id IN (".$babDB->quote($IdEntries).") 
+				and tot.type='1' " . $sDelegation .  " 
+				
+			order by tot.ordering asc
+		";
 		
 		return $babDB->db_query($req);
 	}
 	
 	return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Get first children articles categories information (id, title, description)
