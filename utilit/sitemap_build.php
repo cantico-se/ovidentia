@@ -891,17 +891,7 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 
 	// the node UID contain a delegation identifier before the first - if the node type si function
 
-	if ($node->folder) {
-		$node_uid = $node->uid;
-	} else {
-		$pos = mb_strpos($node->uid, '-');
-		if (false !== $pos) {
-			$node_uid = mb_substr($node->uid, 1+$pos);
-		} else {
-			$node_uid = $node->uid;
-		}
-	}
-	
+
 	if (!isset($node->position[$deep])) {
 	
 		// create node, test if exists
@@ -921,7 +911,7 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 		$id_node = $tree->add($id_parent);
 
 		if ($id_node) {
-			$tree->setFunction($id_node, $node_uid);
+			$tree->setFunction($id_node, $node->uid);
 		}
 		
 		return $id_node;
