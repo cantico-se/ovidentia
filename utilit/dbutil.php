@@ -160,6 +160,9 @@ class babDatabase
 
 	public function db_num_rows($result)
 		{
+		if (!$result) {
+			return 0;
+			}
 		return mysql_num_rows($result);
 		}
 
