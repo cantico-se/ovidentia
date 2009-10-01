@@ -47,6 +47,14 @@ class babDatabase
 		$this->db_die_on_fail = true;
 		}
 		
+	/**
+	 * @deprectated		old contructor from removed object bab_database 
+	 */ 
+	public function bab_database($error_manager, $dummy)
+		{
+			$this->errorManager($error_manager);
+		}
+	
 		
 	private static function connect($host, $login, $password, $dbname)
 		{
