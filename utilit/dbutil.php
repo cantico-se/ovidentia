@@ -202,8 +202,7 @@ class babDatabase
 
 	public function db_escape_string($str)
 		{
-		return mysql_escape_string($str);
-		//return mysql_real_escape_string($str, $this->db_connect());
+		return mysql_real_escape_string($str);
 		}
 
 	/**
