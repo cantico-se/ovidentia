@@ -1550,10 +1550,7 @@ function bab_updateSiteSettings()
 {
 	global $babDB, $babBody;
 	
-	if (NULL === bab_getDbVersion()) {
-		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
-		bab_newInstall();
-	}
+	
 	
 
 	$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
@@ -1710,6 +1707,11 @@ function bab_updateSiteSettings()
 		$babBody->babsite['change_nickname'] ='N';
 		}
 
+
+	if (NULL === bab_getDbVersion()) {
+		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
+		bab_newInstall();
+	}
 	
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
@@ -1764,6 +1766,9 @@ function bab_updateSiteSettings()
 		{
 		$babDB->db_query("update ".BAB_ARTICLES_TBL." set archive='Y' where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
+		
+		
+	
 }
 
 class babLanguageFilter
