@@ -2170,6 +2170,8 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		$textinfos = sprintf("type=%s, size=%d\n", gettype($data), $size);
 		if (!is_string($data)) {
 			$textinfos .= print_r($data, true);
+		} else {
+			$textinfos .= $data;
 		}
 
 		$h = fopen($debugFilename, 'a');
