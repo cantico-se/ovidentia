@@ -488,6 +488,11 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 
 			function fileNotifyMembersCls($file, $path, $idgrp, $msg)
 			{
+				if( mb_substr($path, -1) == "/" )
+					{
+					$path = substr($path, 0, -1);
+					}
+				
 				$this->filename = $file;
 				$this->message = $msg;
 				$this->from = bab_translate("Author");
@@ -508,7 +513,7 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 					BAB_FmFolderHelper::getInfoFromCollectivePath($oFmFolder->getRelativePath() . $oFmFolder->getName(), $iIdRootFolder, $oRootFmFolder);
 					if(null !== $oRootFmFolder)
 					{
-						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($oFmFolder->getRelativePath() . $oFmFolder->getName()));
+						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($path));
 					}
 				}
 				$this->site = bab_translate("Web site");
