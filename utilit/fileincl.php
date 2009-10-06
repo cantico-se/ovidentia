@@ -393,6 +393,11 @@ function notifyFileApprovers($id, $users, $msg)
 			{
 				global $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL;
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FILES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+				if( mb_substr($arr['path'], -1) == "/" )
+					{
+					$arr['path'] = substr($arr['path'], 0, -1);
+					}
+				
 				$this->filename = $arr['name'];
 				$this->message = $msg;
 				$this->from = bab_translate("Author");
@@ -415,7 +420,7 @@ function notifyFileApprovers($id, $users, $msg)
 					BAB_FmFolderHelper::getInfoFromCollectivePath($oFmFolder->getRelativePath() . $oFmFolder->getName(), $iIdRootFolder, $oRootFmFolder);
 					if(null !== $oRootFmFolder)
 					{
-						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($oFmFolder->getRelativePath() . $oFmFolder->getName()));
+						$this->pathname = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=Y&path=' . urlencode($arr['path']));
 					}
 				}
 				
