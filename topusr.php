@@ -266,8 +266,47 @@ function listTopicCategory($cat)
 	return isset($temp->topicscount) ? $temp->topicscount : '';
 }
 
+function getTopicImage()
+{	
+	require_once dirname(__FILE__) . '/utilit/artincl.php';
+	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
 	
-function getImage()
+	$iWidth			= (int) bab_rp('iWidth', 0);
+	$iHeight		= (int) bab_rp('iHeight', 0);
+	$sImage			= (string) bab_rp('sImage', '');
+	$sOldImage		= (string) bab_rp('sOldImage', '');
+	$iIdTopic		= (int) bab_rp('iIdTopic', 0);
+	
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$iIdDelegation = bab_getTopicDelegationId($iIdTopic);
+	if(false === $iIdDelegation)
+	{
+		return false;
+	}
+	$oEnvObj->setEnv($iIdDelegation);
+	
+	
+	$sPath = '';
+	if(0 !== $iIdTopic)
+	{
+		$sPath = $oEnvObj->getTopicImgPath($iIdTopic);
+	}
+	else
+	{
+		$sPath = $oEnvObj->getTempPath();
+	}
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
+
+	if(file_exists($sPath . $sOldImage))
+	{
+		@unlink($sPath . $sOldImage);
+	}
+}
+
+	
+function getCategoryImage()
 {	
 	require_once dirname(__FILE__) . '/utilit/artapi.php';
 	require_once dirname(__FILE__) . '/utilit/artincl.php';
@@ -279,7 +318,7 @@ function getImage()
 	$sOldImage		= (string) bab_rp('sOldImage', '');
 	$iIdCategory	= (int) bab_rp('iIdCategory', 0);
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-
+	
 	$iIdDelegation = bab_getTopicCategoryDelegationId($iIdCategory);
 	if(false === $iIdDelegation)
 	{
@@ -315,8 +354,11 @@ $cat = bab_rp('cat', 0);
 
 switch($idx)
 {
-	case 'getImage':
-		getImage(); // called by ajax
+	case 'getTopicImage':
+		getTopicImage(); // called by ajax
+		exit;
+	case 'getCategoryImage':
+		getCategoryImage(); // called by ajax
 		exit;
 		
 	default:

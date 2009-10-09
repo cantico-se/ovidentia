@@ -5778,7 +5778,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getImage&sImage=' . bab_toHtml($sName);
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 
 			$oImageResize = new bab_ImageResize();
 			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
@@ -5842,7 +5842,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getImage&sImage=' . bab_toHtml($sName);
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 
 			$oImageResize = new bab_ImageResize();
 			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
