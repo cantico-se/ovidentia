@@ -230,6 +230,11 @@ class bab_OrgChart extends bab_TreeView
 		return false;
 	}
 
+	function getNextLocationElement()
+	{
+		return false;
+	}
+	
 	function getNextElement()
 	{
 		$this->t_tooltip = '';
@@ -280,7 +285,10 @@ class bab_OrgChart extends bab_TreeView
 			$this->t_total_level = $this->t_level + $this->_startLevel;
 			$element =& $node->getData();
 			$this->t_id = $this->_id . '.' . $element->_id;
-			$this->t_type =& $element->_type;
+			$this->t_type = $element->_type;
+			if ($this->_highlightedElements[$this->_id]) {
+				$this->t_type .= ' highlighted';
+			}
 			$this->t_title =& $element->_title;
 			$this->t_description =& $element->_description;
 			$this->t_link =& $element->_link;
