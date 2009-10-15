@@ -2337,6 +2337,57 @@ function bab_getFileContentDisposition() {
 }
 
 
+
+
+/**
+ * Convert ovml to html.
+ * Similar to @see bab_printOvmlTemplate but caches the parsed result and uses
+ * this cache if available.
+ * The maximum duration of a cached ovml is 3600s by default but the value can
+ * be overridden by the optional '_ovml_cache_duration' parameter passed when
+ * calling the ovml file.
+ * Eg.: $OVMLCACHE(example.ovml,param1=12,_ovml_cache_duration=86400) for a
+ * cache duration of 24h.
+ * 
+ * The actual caching is done in $_SESSION so it will be lost after the session
+ * is destroyed. The cache is stored in a $_SESSION['ovml_cache'] array. It has
+ * the following structure:
+ * 
+ * ['ovml_cache']
+ * 		['example.ovml:param1=12&_ovml_cache_duration=86400'] : unique id
+ * 			['timestamp'] => timestamp of cached content creation
+ * 			['content'] => parsed ovml content
+ *      ['example2.ovml:] : unique id
+ * 			['timestamp'] => timestamp of cached content creation
+ * 			['content'] => parsed ovml content
+ *      ...
+ * 
+ * @param	string	$file
+ * @param	array	$args
+ * @return	string	html
+ */ 
+function bab_printCachedOvmlTemplate($file, $args = array())
+{
+	// We create a unique id based on the filename and named arguments.
+	$ovmlId = $file . ':' . http_build_query($args);
+	
+	if (!isset($_SESSION['ovml_cache'][$ovmlId])) {
+		$_SESSION['ovml_cache'][$ovmlId] = array();
+	}
+	$ovmlCache =& $_SESSION['ovml_cache'][$ovmlId];
+
+	// We check if there the specified ovml is in the cache and the cache is
+	// less than 1 hour (or the specified duration) old.
+	if (!isset($ovmlCache['timestamp'])
+	|| (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))) {
+		$ovmlCache['timestamp'] = time();
+		$ovmlCache['content'] = bab_printOvmlTemplate($file, $args);
+	}
+	return $ovmlCache['content'];
+}
+
+
+
 /**
  * Convert ovml to html
  * @param	string	$file
