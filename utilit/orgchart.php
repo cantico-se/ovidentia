@@ -286,8 +286,8 @@ class bab_OrgChart extends bab_TreeView
 			$element =& $node->getData();
 			$this->t_id = $this->_id . '.' . $element->_id;
 			$this->t_type = $element->_type;
-			if (isset($this->_highlightedElements[$this->_id])
-			&& $this->_highlightedElements[$this->_id]) {
+			if (isset($this->_highlightedElements[$element->_id])
+			&& $this->_highlightedElements[$element->_id]) {
 				$this->t_type .= ' highlighted';
 			}
 			$this->t_title =& $element->_title;
