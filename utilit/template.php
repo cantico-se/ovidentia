@@ -546,6 +546,7 @@ class bab_Template
 						'/<!--#in\s+(\w+)\s+-->/',
 						'/<!--#endin\s+(?:(?:\w+)\s+)?-->/',
 						'/\{\s+\$OVML\(([^)]+)\)\s+\}/',
+						'/\{\s+\$OVMLCACHE\(([^)]+)\)\s+\}/',
 						'/\{\s+(\w+)\s+\}/',
 						'/\{\s+(\w+)\[((?:\w+\s*)+)\]\s+\}/');
 		$replace = array('<?php if (' . bab_Template::lvalue($templateObjectName, '$1') . '): ?>',
@@ -557,6 +558,7 @@ class bab_Template
 						 '<?php $$1skip = false; while (' . $templateObjectName . '->$1($$1skip)): if ($$1skip) { $$1skip = false; continue; } ?>',
 						 '<?php endwhile; ?>',
 						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printOvmlTemplate($ovml, $args)); ?>',
+						 '<?php $params = explode(\',\', \'$1\'); $ovml = array_shift($params); $args = array(); foreach ($params as $param) { $tmp = explode(\'=\', $param); if (is_array($tmp) && count($tmp) == 2) { $var = trim($tmp[1], \'"\'); $var = isset(' . $templateObjectName . '->$var) ? ' . $templateObjectName . '->$var : $var; $args[trim($tmp[0])] = $var; } } print(bab_printCachedOvmlTemplate($ovml, $args)); ?>',
 						 '<?php @print(' . bab_Template::value($templateObjectName, '$1') . '); ?>',
 						 '<?php @print(' . bab_Template::valueArray($templateObjectName, '$1', '$2') . '); ?>');
 		$templatePhp = preg_replace($search, $replace, $templateString);
