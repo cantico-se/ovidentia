@@ -26,23 +26,6 @@
 include_once 'base.php';
 
 
-// The function debug_backtrace is only available since PHP 4.3.0
-if (version_compare(phpversion(), '4.3.0') >= 0)
-{
-	function bab_debug_backtrace()
-	{
-		return debug_backtrace();
-	}
-}
-else
-{
-	function bab_debug_backtrace()
-	{
-		return array(0 => array('line' => 0));
-	}
-}
-
-
 
 
 function &bab_TemplateCache_getStore()
@@ -188,31 +171,6 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 
 
 
-if (function_exists('file_get_contents')) {
-
-	/**
-	 * Returns the content of a file as a string
-	 *
-	 * @param string	$pathname
-	 * @return string	The file content or false if the file could not be read.
-	 */
-	function bab_getFileContents($pathname)
-	{
-		return file_get_contents($pathname);
-	}
-	
-} else {
-
-	function bab_getFileContents($pathname)
-	{
-		if (!is_readable($pathname)) {
-			return false;
-		}
-		return implode('', @file($pathname));
-	}
-
-}
-
 /**
  * This class implements the template engine of Ovidentia. It compiles the templates to
  * php and caches them in memory.
@@ -281,7 +239,7 @@ class bab_Template
 		if (!empty($section)) {
 			return $this->_loadSection($pathname, $section);
 		}
-		return bab_getFileContents($pathname);
+		return file_get_contents($pathname);
 	}
 
 	
@@ -521,7 +479,7 @@ class bab_Template
 			return '';
 		}
 		
-		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '';
 	}
@@ -551,7 +509,7 @@ class bab_Template
 			return $tr;
 		}
 
-		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
 	}
@@ -565,7 +523,7 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
-		$call = reset(bab_debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
+		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '{ ' . $propertyName . '[' . $index . '] }';
 	}
@@ -620,7 +578,7 @@ class bab_Template
 	 */
 	function getTemplates($pathname)
 	{
-		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', bab_getFileContents($pathname), $m)) {
+		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', file_get_contents($pathname), $m)) {
 			return $m[1];
 		}
 		return array();
