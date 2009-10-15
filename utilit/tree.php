@@ -336,7 +336,7 @@ class bab_TreeView extends bab_Template
 	/**
 	 * @var array		Array of boolean for which keys are highlighted elements ids.
 	 */
-	private $_highlightedElements;
+	protected $_highlightedElements;
 
 	/**
 	 * @var bool
