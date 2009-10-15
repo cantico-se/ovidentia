@@ -172,25 +172,26 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 
 
 /**
- * This class implements the template engine of Ovidentia. It compiles the templates to
+ * The bab_Template class implements the template engine of Ovidentia. It compiles the templates to
  * php and caches them in memory.
  * It can be used statically by calling bab_Template::printTemplate(), or it can be used
  * as the base class of a template and then be called on objects of this class, eg. $tpl->process();
  */
 class bab_Template
 {
-	var $_templateString;
-	var $_parsedTemplate;
-	var $_errors;
+	private $_templateString;
+	private $_parsedTemplate;
+	private $_errors;
 
-	
+
 	/**
+	 * Extracts a template section from the specified template file.
+	 * 
 	 * @param string	$pathname	The pathname to the template file.
 	 * @param string	$section	The section name in the template file.
 	 * @return string				The content of the section or false if not found.
-	 * @access private
 	 */
-	function _loadSection($pathname, $section)
+	private function _loadSection($pathname, $section)
 	{
 		$templateFile = @fopen($pathname, 'r');
 		if ($templateFile === false) {
@@ -228,13 +229,14 @@ class bab_Template
 
 
 	/**
+	 * Returns the (unparsed) content of a template file or template section.
+	 * 
 	 * @param	string	$pathname	The pathname to the template file.
 	 * @param	string	$section	The section name in the template file.
 	 * 								If empty, the whole template file is loaded.
 	 * @return	string				The template content or false if not found.
-	 * @access public
 	 */
-	function _loadTemplate($pathname, $section)
+	public function _loadTemplate($pathname, $section)
 	{
 		if (!empty($section)) {
 			return $this->_loadSection($pathname, $section);
@@ -242,7 +244,7 @@ class bab_Template
 		return file_get_contents($pathname);
 	}
 
-	
+
 	/**
 	 * Format a template so that it can be displayed for debugging purpose.
 	 * 
@@ -251,10 +253,8 @@ class bab_Template
 	 * @param	string	$templateString			The Ovidentia template.
 	 * @param	int		$highlightLineNumber	The line number to highlight or -1 if no line to hightlight.
 	 * @return	string							The formatted template.
-	 * @access public
-	 * @static
 	 */
-	function highlightSyntax($templateString, $highlightLineNumbers = array())
+	public static function highlightSyntax($templateString, $highlightLineNumbers = array())
 	{
 		$lines = preg_split('/\n|\r\n|\r/', $templateString);
 		
@@ -274,17 +274,17 @@ class bab_Template
 		return $highlightedTemplateString;
 	}
 
+
 	/**
 	 * Removes all errors associated to the template $templateObject
 	 * 
 	 * @param	object	$templateObject		The template object.
-	 * @access private
-	 * @static
 	 */
-	function resetErrors(&$templateObject)
+	private static function resetErrors(&$templateObject)
 	{
 		$templateObject->_errors = array();
 	}
+
 
 	/**
 	 * Adds an error to the template $templateObject
@@ -293,10 +293,8 @@ class bab_Template
 	 * @param	string	$errorMessage		The message associated to the error
 	 * @param	int		$lineNumber			The line number where the error occured in the template
 	 * 										or -1 for no specific line number
-	 * @access private
-	 * @static
 	 */
-	function addError(&$templateObject, $errorMessage, $lineNumber = -1)
+	private static function addError(&$templateObject, $errorMessage, $lineNumber = -1)
 	{
 		if (!isset($templateObject->_errors)) {
 			$templateObject->_errors = array();
@@ -304,6 +302,7 @@ class bab_Template
 		$error = array('message' => $errorMessage, 'line' => $lineNumber);
 		$templateObject->_errors[] = $error;
 	}
+
 
 	/**
 	 * Returns a string containing the processed template.
@@ -314,10 +313,8 @@ class bab_Template
 	 * 								If not specified or empty, the whole template file is
 	 * 								processed.
 	 * @return	string				The processed template or null.
-	 * @access public
-	 * @static
 	 */
-	function printTemplate(&$template, $filename, $section = '')
+	public function printTemplate(&$template, $filename, $section = '')
 	{
 		bab_Template::resetErrors($template);
 		$this->_parsedTemplate = bab_TemplateCache::get($filename, $section);
@@ -360,6 +357,7 @@ class bab_Template
 		return $processedTemplate;
 	}
 
+
 	/**
 	 * Returns a string containing the processed template.
 	 * 
@@ -368,9 +366,8 @@ class bab_Template
 	 * 								If not specified or empty, the whole template file is
 	 * 								processed.
 	 * @return	string			The processed template or null.
-	 * @access public
 	 */
-	function process($filename, $section = '')
+	public function process($filename, $section = '')
 	{
 		return bab_Template::printTemplate($this, $filename, $section);
 	}
@@ -381,78 +378,77 @@ class bab_Template
 	 * 
 	 * This method is used during template parsing.
 	 * 
-	 * @access private
-	 * @static
+	 * @return string
 	 */
-	function value($templateObjectName, $propertyName)
+	private static function value($templateObjectName, $propertyName)
 	{
 		return 'bab_Template::getValue(' . $templateObjectName . ', "' .  $propertyName . '")';
 	}
+
 
 	/**
 	 * Returns the php code to get the value of the indexed array property.
 	 * 
 	 * This method is used during template parsing.
 	 * 
-	 * @access private
-	 * @static
+	 * @return string
 	 */
-	function valueArray($templateObjectName, $propertyName, $indexValue)
+	private static function valueArray($templateObjectName, $propertyName, $indexValue)
 	{
 		return 'bab_Template::getValueArray(' . $templateObjectName . ', "' .  $propertyName . '", "' . $indexValue . '")';
 	}
 
+
 	/**
 	 * This method is used during template parsing.
 	 * 
-	 * @access private
-	 * @static
+	 * @return string
 	 */
-	function lvalue($templateObjectName, $propertyName)
+	private static function lvalue($templateObjectName, $propertyName)
 	{
 		return 'bab_Template::getLValue(' . $templateObjectName . ', "' .  $propertyName . '")';
 	}
 
+
 	/**
 	 * This method is used during template parsing.
 	 * 
-	 * @access private
-	 * @static
+	 * @return string
 	 */
-	function lvalueArray($templateObjectName, $propertyName, $indexValue)
+	private static function lvalueArray($templateObjectName, $propertyName, $indexValue)
 	{
 		return 'bab_Template::getLValueArray(' . $templateObjectName . ', "' .  $propertyName . '", "' . $indexValue . '")';
 	}
 
+
 	/**
 	 * This method is used during template parsing.
 	 * 
-	 * @access private
-	 * @static
+	 * @return string
 	 */
-	function rvalue($templateObjectName, $propertyName)
+	private static function rvalue($templateObjectName, $propertyName)
 	{
 		return 'bab_Template::getRValue(' . $templateObjectName . ', "' .  $propertyName . '")';
 	}
 
-	/**
-	 * This method is used during template execution.
-	 * 
-	 * @access private
-	 * @static
-	 */
-	function getRValue(&$templateObject, $propertyName)
-	{
-		return (@isset($templateObject->{$propertyName}) ? $templateObject->{$propertyName} : $propertyName);
-	}
 
 	/**
 	 * This method is used during template execution.
 	 * 
-	 * @access private
-	 * @static
+	 * @return mixed
 	 */
-	function getLValue(&$templateObject, $propertyName)
+	private static function getRValue(&$templateObject, $propertyName)
+	{
+		return (@isset($templateObject->{$propertyName}) ? $templateObject->{$propertyName} : $propertyName);
+	}
+
+
+	/**
+	 * This method is used during template execution.
+	 * 
+	 * @return mixed
+	 */
+	private static function getLValue(&$templateObject, $propertyName)
 	{
 		if (@isset($templateObject->{$propertyName})) {
 			return $templateObject->{$propertyName};
@@ -463,13 +459,13 @@ class bab_Template
 		return '';
 	}
 
+
 	/**
 	 * This method is used during template execution.
 	 * 
-	 * @access private
-	 * @static
+	 * @return mixed
 	 */
-	function getLValueArray(&$templateObject, $propertyName, $index)
+	private static function getLValueArray(&$templateObject, $propertyName, $index)
 	{
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
@@ -488,10 +484,9 @@ class bab_Template
 	/**
 	 * This method is used during template execution.
 	 * 
-	 * @access private
-	 * @static
+	 * @return mixed
 	 */
-	function getValue(&$templateObject, $propertyName)
+	private static function getValue(&$templateObject, $propertyName)
 	{
 		// We check if the property exists in the template object. 
 		if (@isset($templateObject->{$propertyName})) {
@@ -513,12 +508,14 @@ class bab_Template
 		bab_Template::addError($templateObject, 'Unknown property or global variable (' . $propertyName . ')', $call['line']);
 		return '{ ' . $propertyName . ' }';
 	}
-	
+
+
 	/**
-	 * @access private
-	 * @static
+	 * This method is used during template execution.
+	 * 
+	 * @return mixed
 	 */
-	function getValueArray(&$templateObject, $propertyName, $index)
+	private static function getValueArray(&$templateObject, $propertyName, $index)
 	{
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
@@ -528,7 +525,7 @@ class bab_Template
 		return '{ ' . $propertyName . '[' . $index . '] }';
 	}
 
-	
+
 
 	/**
 	 * Parses an Ovidentia template string and returns the equivalent php code in a string.
@@ -537,10 +534,8 @@ class bab_Template
 	 * @param	string $templateObjectName	The name of the template object that will be used
 	 * 										in the php generated code.
 	 * @return	string						The equivalent php code.
-	 * @access private
-	 * @static
 	 */
-	function _parseTemplate($templateString, $templateObjectName)
+	private static function _parseTemplate($templateString, $templateObjectName)
 	{
 		$search = array('/<!--#if\s+(\w+)\s+-->/',
 						'/<!--#if\s+(\w+)(?:\s+"(?:\s*(== |\!= |<= |>= |< |> )\s*([^"]*))")\s+-->/',
@@ -568,15 +563,14 @@ class bab_Template
 		return $templatePhp;
 	}
 
+
 	/**
 	 * Returns an array of strings containing the names of the sections in the template file.
 	 * 
 	 * @param	string	$pathname	The pathname of the template file.
 	 * @return	array				The sections names.
-	 * @access public
-	 * @static
 	 */
-	function getTemplates($pathname)
+	public static function getTemplates($pathname)
 	{
 		if (preg_match_all('/<\!--#begin\s+(.*?)\s+-->/', file_get_contents($pathname), $m)) {
 			return $m[1];
