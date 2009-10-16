@@ -926,9 +926,24 @@ echo
 					{
 					$this->steptitle = viewCategoriesHierarchy_txt($arr['id_topic']);
 					}
-				else
+				elseif( $arr['id_topic'] != 0 )
 					{
-					$arr['id_topic'] = 0;
+					//Try to verify if current user can update article as manager or author 
+					$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, adt.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where adt.id='".$babDB->db_escape_string($idart)."'");
+					$rr = $babDB->db_fetch_array($res);				
+					if(( $rr['allow_update'] != '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'])      
+					|| ( $rr['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $GLOBALS['BAB_SESS_USERID']))) 
+						{
+						$this->steptitle = viewCategoriesHierarchy_txt($arr['id_topic']);
+						}
+					else
+						{
+						$arr['id_topic'] = 0;
+						}
+					}
+					
+				if($arr['id_topic'] == 0 ) 
+					{
 					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='0' where id='".$babDB->db_escape_string($idart)."'");
 					$this->steptitle = bab_translate("No topic");
 					}
@@ -2025,11 +2040,12 @@ function updatePropertiesArticleDraft(&$message)
 	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
 
 	list($topicid) = $babDB->db_fetch_array($babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'"));
-	$topicid = bab_pp('topicid', $topicid );
+	$topicidnew = bab_pp('topicid', 0 );
+	$topicid = $topicidnew == 0 ? $topicid: $topicidnew;
 	
 	if( $topicid != 0 )
 	{
-	list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'"));
+		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($topicid)."'"));
 	}
 	else
 	{
@@ -2106,12 +2122,19 @@ function updatePropertiesArticleDraft(&$message)
 	if( !isset($hpage1)) { $hpage1 = 'N';} 
 	if( !isset($notifm)) { $notifm = 'N';} 
 	if( !isset($approbid)) { $approbid = '0';} 
-
+	
 	if( !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topicid) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicid))
 		{
-		$topicid= 0;
+		//Try to verify if current user can update article as manager or author 
+		$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, adt.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where adt.id='".$babDB->db_escape_string($idart)."'");
+		$rr = $babDB->db_fetch_array($res);				
+		if(( $rr['allow_update'] == '0' || $rr['id_author'] != $GLOBALS['BAB_SESS_USERID'])      
+		&& ( $rr['allow_manupdate'] == '0' || !bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $GLOBALS['BAB_SESS_USERID']))) 
+			{
+				$topicid= 0;
+			}
 		}
-
+		
 	if( $topicid != 0 )
 	{
 	$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_topic='".$babDB->db_escape_string($topicid)."', restriction='".$babDB->db_escape_string($restriction)."', notify_members='".$babDB->db_escape_string($notifm)."', hpage_public='".$babDB->db_escape_string($hpage0)."', hpage_private='".$babDB->db_escape_string($hpage1)."', date_submission='".$babDB->db_escape_string($date_sub)."', date_publication='".$babDB->db_escape_string($date_pub)."', date_archiving='".$babDB->db_escape_string($date_arch)."', approbation='".$babDB->db_escape_string($approbid)."'  where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
@@ -2185,7 +2208,7 @@ function submitArticleDraft( $idart, &$message, $force=false)
 					$access = true;
 					}
 				}
-
+				
 			if( !$access )
 				{
 				$message = bab_translate("You don't have rights to modify this article");
@@ -2484,11 +2507,32 @@ if('getImage' == bab_rp('idx', ''))
 
 $artedit = array();
 
+$baccess = false;
 if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
 {
-	$idx = 'denied';
+	$ida = bab_rp('idart', 0);
+	//Try to verify if current user can update article as manager or author 
+	if( $ida )
+	{
+	$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, adt.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where adt.id='".$babDB->db_escape_string($ida)."'");
+	if( $res && $babDB->db_num_rows($res) == 1 )
+		{
+		$rr = $babDB->db_fetch_array($res);
+		if(( $rr['allow_update'] != '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'])      
+		|| ( $rr['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $GLOBALS['BAB_SESS_USERID']))) {
+			{
+				$baccess = true;
+			}
+		}
+		}
+	}
 }
-else 
+else
+{
+	$baccess = true;
+}
+
+if( $baccess ) 
 {
 $idx = bab_rp('idx', 'list');
 
@@ -2893,6 +2937,10 @@ if($idx == 'movet')
 		$idx = 'lsub';
 		}
 }
+}
+else
+{
+	$idx = 'denied';
 }
 
 switch($idx)
