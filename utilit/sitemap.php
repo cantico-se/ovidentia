@@ -388,8 +388,11 @@ class bab_siteMap {
 	 * @return boolean
 	 */
 	public static function build() {
+		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
 		return bab_siteMap_build();
+		
 	}
 	
 	

@@ -2217,7 +2217,7 @@ function bab_getDebug() {
  * @return string html
  */
 function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
-	include_once $GLOBALS['babInstallPath'].'utilit/tohtmlincl.php';
+	include_once dirname(__FILE__).'/tohtmlincl.php';
 	return bab_f_toHtml($str, $option);
 }
 

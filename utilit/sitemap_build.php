@@ -637,7 +637,7 @@ function bab_siteMap_insertTree(bab_siteMap_buildItem $rootNode, $nodeList, $crc
 	// create new profile
 	
 	if ($GLOBALS['BAB_SESS_USERID']) {
-		$res = $babDB->db_query('SELECT id FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE uid_functions = '.$babDB->quote($crc));
+		$res = $babDB->db_query('SELECT id FROM '.BAB_SITEMAP_PROFILES_TBL.' p WHERE p.uid_functions = '.$babDB->quote($crc));
 		if ($arr = $babDB->db_fetch_assoc($res)) {
 			$id_profile = $arr['id'];
 			
@@ -660,7 +660,7 @@ function bab_siteMap_insertTree(bab_siteMap_buildItem $rootNode, $nodeList, $crc
 		
 		
 	} else {
-		$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL.' SET uid_functions='.$babDB->quote($crc).' WHERE id=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
+		$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL.' p SET uid_functions='.$babDB->quote($crc).' WHERE p.id=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
 		$id_profile = BAB_UNREGISTERED_SITEMAP_PROFILE;
 	}
 	
@@ -673,13 +673,13 @@ function bab_siteMap_insertTree(bab_siteMap_buildItem $rootNode, $nodeList, $crc
 		f.id_function, 
 		IFNULL(s.id,\'noref\') id, 
 		fl.lang,
-		p.id_profile  
+		fp.id_profile  
 	FROM 
 		'.BAB_SITEMAP_FUNCTIONS_TBL.' f 
 		LEFT JOIN '.BAB_SITEMAP_TBL.' s ON s.id_function = f.id_function 
 		LEFT JOIN '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl 
 			ON f.id_function = fl.id_function AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).' 
-		LEFT JOIN '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' p ON p.id_function = f.id_function AND p.id_profile='.$babDB->quote($id_profile).'
+		LEFT JOIN '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp ON fp.id_function = f.id_function AND fp.id_profile='.$babDB->quote($id_profile).'
 	');
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 	
@@ -1011,7 +1011,7 @@ function bab_siteMap_build() {
     $start_time = bab_getMicrotime();
 
 
-	global $babBody;
+	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
@@ -1075,12 +1075,35 @@ function bab_siteMap_build() {
 	// bab_debug($textview, DBG_TRACE, 'Sitemap');
 
 	 $insert_time = bab_getMicrotime();
+	 
+	 
+	 
+	 
+	$babDB->db_query('
+			LOCK TABLES 
+				'.BAB_SITEMAP_PROFILES_TBL.' 				 	WRITE,
+				'.BAB_SITEMAP_PROFILES_TBL.' 			AS p 	WRITE, 
+				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 		 	WRITE,
+				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 	AS fp 	WRITE,
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 				 	WRITE, 
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 			AS f 	WRITE, 
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 		 	WRITE,
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 	AS fl 	WRITE, 
+				'.BAB_USERS_TBL.' 							 	WRITE, 
+				'.BAB_SITEMAP_TBL.' 						 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS s 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS p1 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE  
+		');
+
 
 	// insert tree into database
 	bab_siteMap_insertTree($rootNode, $event->nodes, $crc);
 	
 	// write id_dgowner for delegation branchs
 	bab_siteMap_delegationsRecord();
+	
+	$babDB->db_query('UNLOCK TABLES');
 
 
     $stop_time = bab_getMicrotime();
