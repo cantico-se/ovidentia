@@ -47,7 +47,7 @@ class babDatabase
 		}
 		
 		
-	private static function connect($host, $login, $password, $dbname)
+	private function connect($host, $login, $password, $dbname)
 		{
 
 		$dblink = mysql_connect($host, $login, $password);
@@ -109,7 +109,7 @@ class babDatabase
 		static $idlink = false;
 		if( $idlink == false)
 			{
-			$idlink = self::connect($GLOBALS['babDBHost'], $GLOBALS['babDBLogin'], $GLOBALS['babDBPasswd'], $GLOBALS['babDBName']);
+			$idlink = $this->connect($GLOBALS['babDBHost'], $GLOBALS['babDBLogin'], $GLOBALS['babDBPasswd'], $GLOBALS['babDBName']);
 			}
 		return $idlink;
 		}
