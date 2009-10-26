@@ -1432,6 +1432,7 @@ switch($idx)
 		$babBody->title = bab_getCategoryTitle($topics);
 		$article = bab_gp('article');
 		readMore($topics, $article);
+		bab_siteMap::setPosition('babArticleTopic_'.$topics);
 		$arr = articles_init($topics);
 		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 		$babBody->addItemMenu("More",bab_translate("Article"),$GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$topics."&article=".$article);
@@ -1499,6 +1500,7 @@ switch($idx)
 	default:
 	case "Articles":
 		$babBody->title = bab_getCategoryTitle($topics);
+		bab_siteMap::setPosition('babArticleTopic_'.$topics);
 		listArticles($topics);
 		$arr = articles_init($topics);
 		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);

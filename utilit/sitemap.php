@@ -103,6 +103,12 @@ class bab_siteMapItem {
  */
 class bab_siteMap {
 	
+	/**
+	 * node UID of current page, used for breadCrumb
+	 * @see bab_siteMap::setPosition()
+	 * @var string
+	 */ 
+	private static $current_page = null;
 	
 	private $siteMapName 		= '';
 	private $siteMapDescription = '';
@@ -205,7 +211,7 @@ class bab_siteMap {
 	
 	/**
 	 * Get sitemap default for current user
-	 * @return bab_OrphanRootNode
+	 * @return bab_siteMapOrphanRootNode
 	 */
 	public static function get() {
 	
@@ -424,7 +430,7 @@ class bab_siteMap {
 	
 	
 	/**
-	 * 
+	 * Get sitemap tree by unique UID from sitemap list
 	 * @return bab_siteMapOrphanRootNode
 	 */ 
 	public static function getByUid($uid) {
@@ -435,6 +441,61 @@ class bab_siteMap {
 		}
 		
 		return $list[$uid]->getRootNode();
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Set position in sitemap for current page
+	 * @param	string	$uid	sitemap node UID
+	 * 
+	 */ 
+	public static function setPosition($uid) {
+		
+		self::$current_page = $uid;
+	}
+	
+	/**
+	 * get position in the sitemap from homepage (delegation node) to current position
+	 * If position is not set, the method return an empty array
+	 * 
+	 * @see bab_sitemap::setPosition()
+	 * 
+	 * @param	string	$sitemap_uid	ID of sitemap tree, default is core sitemap
+	 * 
+	 * @return array					Array of bab_Node
+	 */ 
+	public static function getBreadCrumb($sitemap_uid = 'core') {
+		
+		if (!isset(self::$current_page)) {
+			return array();
+		}
+		
+		$sitemap = self::getByUid($sitemap_uid);
+		$page_node = $sitemap->getNodeById(self::$current_page);
+		
+		if (!isset($page_node)) {
+			bab_debug(sprintf('The node %s does not exists in sitemap %s', self::$current_page, $sitemap_uid), DBG_ERROR);
+			return array();
+		}
+		
+		
+		$breadcrumb = array($page_node);
+		
+		while (($page_node instanceOf bab_Node) && $page_node = $page_node->parentNode()) {
+			
+			if ('root' === $page_node->getId()) {
+				break;
+			}
+			
+			array_unshift($breadcrumb, $page_node);
+		}
+		
+		return $breadcrumb;
 	}
 
 }

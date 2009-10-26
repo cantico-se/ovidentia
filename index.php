@@ -1232,6 +1232,7 @@ switch($tg)
 			}
 		else
 		{
+			bab_siteMap::setPosition('DGAll');
 			if( $BAB_SESS_LOGGED)
 				{
 				$file = "private.html";
