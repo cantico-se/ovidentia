@@ -279,8 +279,10 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
-		return strnatcmp($sStr1, $sStr2);
-		// return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
+		// warning, characters with diacritics in ISO-8859-15 are not ordered correctly with strnatcmp
+		
+		// return strnatcmp($sStr1, $sStr2);
+		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 	}
 
 	$oCollator = bab_getCollatorInstance();
