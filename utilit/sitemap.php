@@ -451,12 +451,23 @@ class bab_siteMap {
 	
 	/**
 	 * Set position in sitemap for current page
-	 * @param	string	$uid	sitemap node UID
+	 * 
+	 * 
+	 * @param	string	$uid_prefix	sitemap node UID prefix before delegation identification
+	 * @param	string	$uid_suffix sitemap node UID suffix after delegation identification
 	 * 
 	 */ 
-	public static function setPosition($uid) {
+	public static function setPosition($uid_prefix, $uid_suffix = null) {
 		
-		self::$current_page = $uid;
+		if (null === $uid_suffix) {
+			
+			self::$current_page = $uid_prefix;
+		} else {
+
+			// for now current delegation is allways DGAll, suffix is just appended
+			
+			self::$current_page = $uid_prefix.$uid_suffix;
+		}
 	}
 	
 	/**

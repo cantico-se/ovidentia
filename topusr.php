@@ -366,7 +366,7 @@ switch($idx)
 	case 'list':
 		$babLevelTwo = bab_getTopicCategoryTitle($cat);
 		$babBody->title = '';
-		bab_siteMap::setPosition('babArticleCategory_'.$cat);
+		bab_siteMap::setPosition('bab', 'ArticleCategory_'.$cat);
 		listTopicCategory($cat);
 		break;
 }
