@@ -2330,6 +2330,13 @@ if( isset($aclman) || isset($acluws))
 
 $babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?tg=sites&idx=list");
 
+
+
+if (0 === mb_strpos($idx, 'menu')) {
+	bab_siteMap::setPosition('bab', 'AdminSite'.bab_rp('item').ucfirst($idx));
+}
+
+
 switch($idx)
 	{
 	case "unload":
@@ -2455,6 +2462,7 @@ switch($idx)
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
 		$babBody->title = getSiteName($_REQUEST['item']);
 		siteMenu($_REQUEST['item']);
+		bab_siteMap::setPosition('bab','AdminSite'.bab_rp('item'));
 		break;
 	}
 

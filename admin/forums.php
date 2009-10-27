@@ -396,5 +396,5 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
+bab_siteMap::setPosition('bab','AdminForums');
 ?>

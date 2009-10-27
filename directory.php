@@ -595,6 +595,9 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 	$temp = new temp($id, $pos, $xf, $badd);
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adbrowse"));
+	
+	bab_siteMap::setPosition('bab', 'UserDbDirId'.$id);
+	
 	return $temp->idgroup;
 
 }
@@ -3248,6 +3251,7 @@ switch($idx)
 		$babBody->title = '';
 		listUserAds();
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript']."?tg=directory&idx=list");
+		bab_siteMap::setPosition('bab','UserDir');
 		break;
 	}
 

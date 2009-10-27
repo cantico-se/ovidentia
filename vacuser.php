@@ -1190,5 +1190,5 @@ if ( bab_isPlanningAccessValid())
 
 
 $babBody->setCurrentItemMenu($idx);
-
+bab_siteMap::setPosition('bab','UserVac');
 ?>

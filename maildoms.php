@@ -366,6 +366,7 @@ if( $bgrp == "y")
 			$babBody->msgerror = bab_translate("Access denied");
 			return;
 			}
+		bab_siteMap::setPosition('bab','AdminMail');
 		array_push($grpid, 1);
 		}
 	else

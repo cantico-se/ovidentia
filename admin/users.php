@@ -807,4 +807,5 @@ switch($idx)
 	}
 
 $babBody->setCurrentItemMenu($idx);
+bab_siteMap::setPosition('bab','AdminUsers');
 ?>
