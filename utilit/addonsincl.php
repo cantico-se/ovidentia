@@ -376,7 +376,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonFolder
 	 * @return string
 	 */
-	function getName() {
+	public function getName() {
 		return $this->addonname;
 	}
 	
@@ -384,7 +384,7 @@ class bab_addonInfos {
 	 * get the addon ID
 	 * @return int
 	 */
-	function getId() {
+	public function getId() {
 		return (int) $this->id_addon;
 	}
 	
@@ -393,7 +393,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonTarget
 	 * @return string
 	 */
-	function getTarget() {
+	public function getTarget() {
 		return "addon/".$this->id_addon;
 	}
 	
@@ -401,7 +401,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonUrl
 	 * @return string
 	 */
-	function getUrl() {
+	public function getUrl() {
 		return $GLOBALS['babUrlScript'].'?tg=addon%2F'.$this->id_addon.'%2F';
 	}
 
@@ -410,7 +410,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonHtmlPath
 	 * @return string
 	 */
-	function getRelativePath() {
+	public function getRelativePath() {
 		return 'addons/'.$this->addonname.'/';
 	}
 	
@@ -418,7 +418,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonPhpPath
 	 * @return string
 	 */
-	function getPhpPath() {
+	public function getPhpPath() {
 		return $GLOBALS['babInstallPath'].$this->getRelativePath();
 	}
 	
@@ -427,7 +427,7 @@ class bab_addonInfos {
 	 * a replacement for $babAddonUpload
 	 * @return string
 	 */
-	function getUploadPath() {
+	public function getUploadPath() {
 		return $GLOBALS['babUploadPath'].'/'.$this->getRelativePath();
 	}
 	
@@ -435,7 +435,7 @@ class bab_addonInfos {
 	 * Get path to template directory
 	 * @return string
 	 */
-	function getTemplatePath() {
+	public function getTemplatePath() {
 		return $GLOBALS['babInstallPath'].'skins/ovidentia/templates/'.$this->getRelativePath();
 	}
 	
@@ -444,7 +444,7 @@ class bab_addonInfos {
 	 * Get path to images directory
 	 * @return string
 	 */
-	function getImagesPath() {
+	public function getImagesPath() {
 		return $GLOBALS['babInstallPath'].'skins/ovidentia/images/'.$this->getRelativePath();
 	}
 	
@@ -453,7 +453,7 @@ class bab_addonInfos {
 	 * Get path to ovml directory
 	 * @return string
 	 */
-	function getOvmlPath() {
+	public function getOvmlPath() {
 		return $GLOBALS['babInstallPath'].'skins/ovidentia/ovml/'.$this->getRelativePath();
 	}
 	
@@ -462,8 +462,16 @@ class bab_addonInfos {
 	 * Get path to css stylesheets directory
 	 * @return string
 	 */
-	function getStylePath() {
+	public function getStylePath() {
 		return $GLOBALS['babInstallPath'].'styles/'.$this->getRelativePath();
+	}
+	
+	/**
+	 * Get path to translation files directory
+	 * @return string
+	 */
+	public function getLangPath() {
+		return $GLOBALS['babInstallPath'].'lang/'.$this->getRelativePath();
 	}
 	
 	
