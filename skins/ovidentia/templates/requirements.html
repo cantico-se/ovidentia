@@ -16,7 +16,13 @@
 				<td <!--#if error --> title="{ error }"<!--#endif error -->>&nbsp;{ description }</td>
 				<td>{ recommended }</td>
 				<td>{ required }</td>
-				<td>{ current }</td>
+				<td>
+					{ current }
+				
+					<!--#if upgradeurl -->
+					<a href="{ upgradeurl }"><img src="{ babSkinPath }images/Puces/exe.gif" alt="" /></a>
+					<!--#endif upgradeurl -->
+				</td>
 				<!--#if result -->
 				<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_ok }" /></td>
 				<!--#else result -->

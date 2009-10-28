@@ -714,7 +714,7 @@ function bab_display_addon_requirements()
 			$this->adescription = bab_toHtml($description);
 			$this->version = bab_toHtml($ini->getVersion());
 			
-			$this->requirementsHtml = $ini->getRequirementsHtml();
+			$this->requirementsHtml = $ini->getRequirementsHtml(true);
 			
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");

@@ -761,8 +761,9 @@ class bab_inifile_requirements {
  */
 class bab_inifile_requirements_html
 	{
-	var $requirements;
-	var $altbg = false;
+	public $propose_upgrades = false;
+	public $requirements;
+	public $altbg = false;
 
 	function bab_inifile_requirements_html()
 		{
@@ -784,6 +785,19 @@ class bab_inifile_requirements_html
 
 	function getnextreq() {
 		if (list(,$arr) = each($this->requirements)) {
+			
+			$this->upgradeurl = false;
+			
+			
+			if ($this->propose_upgrades && isset($arr['name']) && function_exists('bab_getAddonInfosInstance')) {
+				$addon = bab_getAddonInfosInstance($arr['name']);
+				
+				if ($addon && $addon->isUpgradable()) {
+					bab_debug($addon);
+					$this->upgradeurl = $GLOBALS['babUrlScript'].'?tg=addons&idx=upgrade&item='.$addon->getId();
+				}
+			}
+			
 			$this->altbg = !$this->altbg;
 			$this->description = bab_toHtml($arr['description']);
 			$this->recommended = bab_toHtml($arr['recommended']);
@@ -1399,11 +1413,15 @@ class bab_inifile {
 	
 	/**
 	 * The list of requirements specified in the ini file
+	 * 
+	 * @param	bool	$propose_upgrades		propose addon upgrades link if possible
+	 * 
 	 * @return string
 	 */
-	function getRequirementsHtml() {
+	function getRequirementsHtml($propose_upgrades = false) {
 
 		$temp = new bab_inifile_requirements_html();
+		$temp->propose_upgrades = $propose_upgrades;
 		$temp->requirements = $this->getRequirements();
 		return bab_printTemplate($temp,"requirements.html");
 	}
