@@ -561,7 +561,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		//Active directory
 		{
 
-			if (false === $oLdap->bind($sLogin."@".$babBody->babsite['ldap_domainname'], $sPassword))
+			if (false === $oLdap->bind(bab_ldapEncode($sLogin."@".$babBody->babsite['ldap_domainname']), bab_ldapEncode($sPassword)))
 			{
 				$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
 				$bLdapOk = false;
@@ -577,7 +577,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				{
 					$sFilter = "(|(samaccountname=".ldap_escapefilter($sLogin)."))";
 				}
-				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], bab_ldapEncode($sFilter), $aAttributes);
 			}
 		}
 

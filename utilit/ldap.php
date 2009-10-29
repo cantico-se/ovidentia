@@ -73,14 +73,24 @@ function bab_ldapDecode($str, $type)
 
 }
 
-
 /**
  * Return a string of ovidentia according to ldap charset
+ * 
+ * @param	string	$str		string to decode
+ * @param	int		$type		BAB_LDAP_UTF8 or BAB_LDAP_ISO8859	charset of ldap directory, 
+ * 								if the parmater is null, ovidentia iste configuration will be used if available
+ * 
+ * @return 	string
  */
-function bab_ldapEncode($str, $type)
+function bab_ldapEncode($str, $type = null)
 {
-
+	global $babBody;
 	$ovCharset = bab_charset::getDatabase();
+	
+	if (null === $type && isset($babBody->babsite['ldap_decoding_type'])) {
+		$type = $babBody->babsite['ldap_decoding_type'];
+	}
+	
 	$type = (int) $type;
 
 	switch($type)
@@ -107,6 +117,7 @@ function bab_ldapEncode($str, $type)
 			break;
 	}
 }
+
 
 
 /**
