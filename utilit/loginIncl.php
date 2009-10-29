@@ -349,7 +349,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				$sUserdn = str_replace('%NICKNAME', ldap_escapefilter($sLogin), $sUserdn);
 				
 
-				if (false === $oLdap->bind($sUserdn, $sPassword))
+				if (false === $oLdap->bind(bab_ldapEncode($sUserdn), bab_ldapEncode($sPassword)))
 				{
 
 					$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
@@ -357,7 +357,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				}
 				else
 				{
-					$aEntries = $oLdap->search($sUserdn, '(objectclass=*)', $aAttributes);
+					$aEntries = $oLdap->search(bab_ldapEncode($sUserdn), '(objectclass=*)', $aAttributes);
 					if ($aEntries === false || $aEntries['count'] == 0)
 					{
 						$this->addError(bab_translate("LDAP search failed"));
@@ -378,12 +378,12 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 					$sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
 				}
 				
-				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+				$aEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), $aAttributes);
 	
 				if($aEntries !== false && $aEntries['count'] > 0 && isset($aEntries[0]['dn']))
 				{
 
-					if(false === $oLdap->bind($aEntries[0]['dn'], $sPassword))
+					if(false === $oLdap->bind($aEntries[0]['dn'], bab_ldapEncode($sPassword)))
 					{
 						$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
 						$bLdapOk = false;
@@ -424,7 +424,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
 					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
 					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+					notifyAdminRegistration(bab_composeUserName(bab_ldapDecode($sGivenname), bab_ldapDecode($sSn)), bab_ldapDecode($sMail), "");
 				}
 			}
 		}	
@@ -458,12 +458,12 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 */
 	private function registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes, &$isNew)
 	{
-
 		$iIdUser = false;
 		$aUser = bab_getUserByNickname($sNickname);
 
 		if(is_null($aUser))
 		{
+			
 			$isNew = true;
 
 			if (isset($aUpdateAttributes['givenname'])) {
@@ -505,15 +505,22 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 
 			$iIdUser = registerUser(
-				auth_decode($sGivenname), 
-				auth_decode($sSn), 
-				auth_decode($sMn), 
-				auth_decode($sMail), 
-				auth_decode($sNickname), 
+				bab_ldapDecode($sGivenname), 
+				bab_ldapDecode($sSn), 
+				bab_ldapDecode($sMn), 
+				bab_ldapDecode($sMail), 
+				$sNickname, 
 				$sPassword, 
 				$sPassword, 
 				true
 			);
+			
+			if (!$iIdUser) {
+				// msgerror should be set by the registerUser function 
+				global $babBody;
+				$this->addError($babBody->msgerror);
+				return false;
+			}
 		}
 		else 
 		{
@@ -561,7 +568,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		//Active directory
 		{
 
-			if (false === $oLdap->bind($sLogin."@".$babBody->babsite['ldap_domainname'], $sPassword))
+			if (false === $oLdap->bind(bab_ldapEncode($sLogin."@".$babBody->babsite['ldap_domainname']), bab_ldapEncode($sPassword)))
 			{
 				$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
 				$bLdapOk = false;
@@ -577,12 +584,12 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				{
 					$sFilter = "(|(samaccountname=".ldap_escapefilter($sLogin)."))";
 				}
-				$aEntries = $oLdap->search($babBody->babsite['ldap_searchdn'], $sFilter, $aAttributes);
+				$aEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), $aAttributes);
 			}
 		}
 
 		$iIdUser = false;
-		if (!isset($aEntries) || $aEntries === false)
+		if (!isset($aEntries) || $aEntries === false || (isset($aEntries['count']) && 0 === (int) $aEntries['count']))
 		{
 			$this->addError(bab_translate("LDAP authentification failed. Please verify your login ID and your password"));
 			$bLdapOk = false;
@@ -609,7 +616,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 					$sGivenname	= isset($aUpdateAttributes['givenname'])?$aEntries[0][$aUpdateAttributes['givenname']][0]:$aEntries[0]['givenname'][0];
 					$sSn		= isset($aUpdateAttributes['sn'])?$aEntries[0][$aUpdateAttributes['sn']][0]:$aEntries[0]['sn'][0];
 					$sMail		= isset($aUpdateAttributes['email'])?$aEntries[0][$aUpdateAttributes['email']][0]:$aEntries[0]['mail'][0];
-					notifyAdminRegistration(bab_composeUserName(auth_decode($sGivenname), auth_decode($sSn)), $sMail, "");
+					notifyAdminRegistration(bab_composeUserName(bab_ldapDecode($sGivenname), bab_ldapDecode($sSn)), bab_ldapDecode($sMail), "");
 				}
 
 			}
@@ -815,7 +822,11 @@ function bab_getUserByNickname($sNickname)
 	return null;		
 }
 
-
+/**
+ * Test user connexion and return true if the user with the correct password is administrator
+ * 
+ * @return bool
+ */ 
 function bab_haveAdministratorRight($sLogin, $sPassword, &$iIdUser)
 {
 	global $babDB;
@@ -831,7 +842,7 @@ function bab_haveAdministratorRight($sLogin, $sPassword, &$iIdUser)
 	
 	if( $iIdUser )
 	{
-		$oRes = $babDB->db_query('select id from ' . BAB_USERS_GROUPS_TBL . ' where id_object=\'' . $babDB->db_escape_string($iIdUser) . '\' and id_group=\'3\'');
+		$oRes = $babDB->db_query('select id from ' . BAB_USERS_GROUPS_TBL . ' where id_object=\'' . $babDB->db_escape_string($iIdUser) . '\' and id_group=\''.BAB_ADMINISTRATOR_GROUP.'\'');
 		return ($babDB->db_num_rows($oRes) !== 0);
 	}
 	else
@@ -1062,13 +1073,13 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 		switch($key)
 		{
 			case 'sn':
-				$sQuery .= ', lastname=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\'';
+				$sQuery .= ', lastname=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
 				break;
 			case 'givenname':
-				$sQuery .= ', firstname=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\'';
+				$sQuery .= ', firstname=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
 				break;
 			case 'mail':
-				$sQuery .= ', email=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\'';
+				$sQuery .= ', email=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
 				break;
 			default:
 				break;
@@ -1103,7 +1114,7 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 					break;
 					
 				case 'mail':
-					$sQuery .= ', email=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\'';
+					$sQuery .= ', email=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
 					break;
 					
 				default:
@@ -1113,16 +1124,16 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 						$rs = $babDB->db_query('select id from ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and  id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						if($rs && $babDB->db_num_rows($rs) > 0)
 						{
-							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
+							$babDB->db_query('update ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' set field_value=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\' where id_fieldx=\'' . $babDB->db_escape_string($arridfx[$tmp]) . '\' and id_entry=\'' . $babDB->db_escape_string($idu) . '\'');
 						}
 						else
 						{
-							$babDB->db_query('insert into ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' ( field_value, id_fieldx, id_entry) values (\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\', \'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\', \'' . $babDB->db_escape_string($idu) . '\')');
+							$babDB->db_query('insert into ' . BAB_DBDIR_ENTRIES_EXTRA_TBL . ' ( field_value, id_fieldx, id_entry) values (\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\', \'' . $babDB->db_escape_string($aExtraFieldId[$tmp]) . '\', \'' . $babDB->db_escape_string($idu) . '\')');
 						}
 					}
 					else
 					{
-						$sQuery .= ', ' . $val . '=\'' . $babDB->db_escape_string(auth_decode($aEntries[0][$key][0])) . '\'';
+						$sQuery .= ', ' . $val . '=\'' . $babDB->db_escape_string(bab_ldapDecode($aEntries[0][$key][0])) . '\'';
 					}
 					break;
 			}
