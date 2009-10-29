@@ -585,7 +585,8 @@ if( isset($add) && $add == 'addthread' && bab_isAccessValid(BAB_FORUMSPOST_GROUP
 		}
 	}
 
-$babLevelTwo = bab_getForumName($forum);
+
+
 
 switch($idx)
 	{
@@ -635,5 +636,5 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-
+bab_siteMap::setPosition('bab', 'UserForum'.$forum);
 ?>

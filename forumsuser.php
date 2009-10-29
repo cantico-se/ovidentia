@@ -689,6 +689,7 @@ switch($idx)
 		$babBody->addItemMenu("list", bab_translate("Forums"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=list");
 		$babBody->addItemMenu("search", bab_translate("Search"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=search&sword=".urlencode(bab_rp('sword', '')));
 		$babBody->addItemMenu("options", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=forumsuser&idx=options");
+		bab_siteMap::setPosition('bab', 'UserForums');
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
