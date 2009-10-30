@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+require_once dirname(__FILE__).'/eventincl.php';
 
 function bab_getMimeType($type, $subtype)
 	{ 
@@ -109,21 +109,160 @@ class babMailTemplate
 
 
 
+/**
+ * Mail event
+ * Main mail event object to transport mail informations
+ * 
+ * 
+ * @see bab_eventBeforeMailSent
+ * @see bab_eventAfterMailSent
+ */ 
+class bab_eventMail extends bab_event {
+	
+	
+	
+	/**
+	 * 
+	 * @var array
+	 */ 
+	public $from = null;		// array($this->mail->From, $this->mail->FromName),
+	
+	/**
+	 * 
+	 * @var string
+	 */ 
+	public $sender = null;
+	
+	/**
+	 * List of recipient for TO field
+	 * @var array
+	 */ 
+	public $to = null;
+	
+	
+	/**
+	 * List of recipient for CC field
+	 * @var array
+	 */ 
+	public $cc = null;
+	
+	
+	
+	/**
+	 * List of recipient for BCC field
+	 * @var array
+	 */ 
+	public $bcc = null;
+	
+	
+	
+	/**
+	 * List of mail attachements
+	 * @var array
+	 */ 
+	public $attachements = null;
+	
+	
+	/**
+	 * @var string
+	 */ 
+	public $subject = null;
+	
+	/**
+	 * @var string
+	 */ 
+	public $body = null;
+	
+	
+	public function setMailInfos(babMail $babMail) {
+		
+		$this->from 		= array($babMail->mail->From, $babMail->mail->FromName);
+		$this->sender 		= $babMail->mail->Sender;
+		
+		$this->to 			= $babMail->mailTo;
+		$this->cc 			= $babMail->mailCc;
+		$this->bcc 			= $babMail->mailBcc;
+		$this->attachements = $babMail->attachements;
+		
+		$this->subject		= $babMail->mail->Subject;
+		$this->body			= $babMail->mail->Body;
+	}
+
+}
+
+
+/**
+ * Event fired before mail sent
+ * this event allow to cancel an email
+ */ 
+class bab_eventBeforeMailSent extends bab_eventMail {
+	
+	/**
+	 * continue to next operation
+	 * @var bool
+	 */ 
+	private $propagation_status = true;
+	
+	/**
+	 * @see bab_eventBeforeMailSent::cancel()
+	 * @var bool
+	 */ 
+	public $return_value = null;
+	
+	/**
+	 * Cancel the sending 
+	 * The message will not be sent and will not be recorded as a mail not sent in the list
+	 * 
+	 * @see babMail::send()
+	 * 
+	 * @param	bool	$returnvalue	when the message is canceled, 
+	 * 									the send method of the babMail object will return false by default
+	 * 									this parameter can be set to true to "simulate" a correct mailing
+	 * 
+	 * @return bab_eventBeforeMailSent
+	 */ 
+	public function cancel($returnvalue = false) {
+		$this->propagation_status = false;
+		$this->return_value = $returnvalue;
+		return $this;
+	}
+	
+	/**
+	 * @return bool
+	 */ 
+	public function sendAllowed() {
+		return $this->propagation_status;
+	}
+}
+
+
+/**
+ * Event fired after mail sent
+ * this event allow to get the sent status
+ */ 
+class bab_eventAfterMailSent extends bab_eventMail {
+	
+	public $sent_status	= null;
+}
 
 
 
+/**
+ * Class API used to send mail via php mailer and ovidentia configuration
+ * 
+ */ 
 class babMail
 {
-	var $mail;
-	var $mailTo = array();
-	var $mailCc = array();
-	var $mailBcc = array();
-	var $attachements = array();
-	var $format;
-	var $sent_status;
+	public $mail;
+	public $mailTo = array();
+	public $mailCc = array();
+	public $mailBcc = array();
+	public $attachements = array();
+	public $format;
+	public $sent_status;
 
 
-	function babMail()
+	public function __construct()
 	{
 		include_once $GLOBALS['babInstallPath'].'utilit/class.phpmailer.php';
 		include_once $GLOBALS['babInstallPath'].'utilit/class.smtp.php';
@@ -137,7 +276,7 @@ class babMail
 		$this->mail->SetLanguage('en', $GLOBALS['babInstallPath'].'utilit/');
 	}
 
-	function mailFrom($email, $name = '')
+	public function mailFrom($email, $name = '')
 	{
 		$this->mail->From = $email;
 		$this->mail->FromName = $name;
@@ -149,7 +288,7 @@ class babMail
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
-	function mailTo($email, $name = '')
+	public function mailTo($email, $name = '')
 	{
 		/* Add email only if it's not empty */
 		if (!empty($email)) {
@@ -161,7 +300,7 @@ class babMail
 	/**
 	 * Removes all currently added recipients (TO) for the email message.
 	 */
-	function clearTo()
+	public function clearTo()
 	{
 		$this->mail->ClearAddresses();
 		$this->mailTo = array();
@@ -173,7 +312,7 @@ class babMail
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
-	function mailCc($email, $name = '')
+	public function mailCc($email, $name = '')
 	{
 		/* Add email only if it's not empty */
 		if (!empty($email)) {
@@ -186,7 +325,7 @@ class babMail
 	/**
 	 * Removes all currently added recipients (CC) for the email message.
 	 */
-	function clearCc()
+	public function clearCc()
 	{
 		$this->mail->ClearCcs();
 		$this->mailCc = array();
@@ -199,7 +338,7 @@ class babMail
 	 * @param string	$email			The email address of the recipient.
 	 * @param string	$name			The (optional) name of the recipient.
 	 */
-	function mailBcc($email, $name = '')
+	public function mailBcc($email, $name = '')
 	{
 		/* Add email only if it's not empty */
 		if (!empty($email)) {
@@ -211,7 +350,7 @@ class babMail
 	/**
 	 * Removes all currently added recipients (BCC) for the email message.
 	 */
-	function clearBcc()
+	public function clearBcc()
 	{
 		$this->mail->ClearBccs();
 		$this->mailBcc = array();
@@ -221,7 +360,7 @@ class babMail
 	/**
 	 * Removes all currently added recipients (TO, CC and BCC) for the email message.
 	 */
-	function clearAllRecipients()
+	public function clearAllRecipients()
 	{
 		$this->mail->clearAllRecipients();
 		$this->mailTo = array();
@@ -235,7 +374,7 @@ class babMail
      * @param string	$email			The reply-to address.
      * @param string	$name			Optional name of reply-to.
      */
- 	function mailReplyTo($email, $name = '')
+ 	public function mailReplyTo($email, $name = '')
 	{
 		/* Add email only if it's not empty */
 		if (!empty($email)) {
@@ -248,7 +387,7 @@ class babMail
 	/**
 	 * Removes all currently added reply-to addresses for the email message.
 	 */
-	function clearReplyTo()
+	public function clearReplyTo()
 	{
 		$this->mail->clearReplyTos();
 		$this->replyTo = array();
@@ -259,7 +398,7 @@ class babMail
 	 * Sets the Sender email address (Return-Path) of the message.  If not empty,
      * will be sent via -f to sendmail or as 'MAIL FROM' in smtp mode.
      */
-	function mailSender($email)
+	public function mailSender($email)
 	{
 		$this->mail->Sender = $email;
 	}
@@ -271,7 +410,7 @@ class babMail
 	 * 
 	 * @param string $email		The email address where the reading confirmation will be sent.
 	 */
-	function confirmReadingTo($email)
+	public function confirmReadingTo($email)
 	{
 		$this->mail->ConfirmReadingTo = $email;
 	}
@@ -282,7 +421,7 @@ class babMail
 	 * 
 	 * @param string $subject
 	 */
-	function mailSubject($subject)
+	public function mailSubject($subject)
 	{
 		$this->mail->Subject = $subject;
 	}
@@ -293,13 +432,13 @@ class babMail
 	 * 
 	 * @param int	$priority
 	 */
-	function setPriority($priority)
+	public function setPriority($priority)
 	{
 		$this->mail->Priority = $priority;
 	}
 
 
-	function setSmtpServer($server, $port)
+	public function setSmtpServer($server, $port)
 	{
 		$this->mail->Host = $server;
 		$this->mail->Port = $port;
@@ -312,7 +451,7 @@ class babMail
 	 * @param string	$body
 	 * @param string	$format
 	 */
-	function mailBody($body, $format = 'plain')
+	public function mailBody($body, $format = 'plain')
 	{
 		$this->format = $format;
 		$this->mail->Body = $body;
@@ -331,7 +470,7 @@ class babMail
      * 
      * @param string	$altBody
      */
-	function mailAltBody($altBody)
+	public function mailAltBody($altBody)
 	{
 		$this->mail->AltBody = $altBody;
 	}
@@ -348,7 +487,7 @@ class babMail
 	 * 
 	 * @return bool
 	 */
-	function mailFileAttach($fname, $realname, $type)
+	public function mailFileAttach($fname, $realname, $type)
 	{
 		$result = $this->mail->AddAttachment($fname, $realname);
 		$this->attachements[] = array($fname, $realname, $type);
@@ -356,56 +495,57 @@ class babMail
 	}
 
 
-	function mailClearAttachments()
+	public function mailClearAttachments()
 	{
 		$this->mail->ClearAttachments();
 	}
 
-
-	function send()
+	/**
+	 * Send message
+	 * @return	bool
+	 */ 
+	public function send()
 	{
-		static $send_immediately = NULL;
+		$event = new bab_eventBeforeMailSent;
+		$event->setMailInfos($this);
 		
-		if (NULL === $send_immediately) {
+		bab_fireEvent($event);
 		
-			$reg = bab_getRegistryInstance();
-			$reg->changeDirectory('/bab/mail_spooler/');
-			$send_immediately = $reg->getValue('send_immediately');
-			if (NULL === $send_immediately) {
-				$reg->setKeyValue('send_immediately', true);
-				$send_immediately = true;
-			}
+		if (!$event->sendAllowed()) {
+			return $event->return_value;
 		}
 		
+		$this->sent_status = $this->mail->Send();
 		
-		if (true === $send_immediately) {
-			$this->sent_status = $this->mail->Send();
-			if (!$this->sent_status) {
-				$this->recordMail();
-			}
-		} else {
-			$this->sent_status = false;
+		$event = new bab_eventAfterMailSent;
+		$event->setMailInfos($this);
+		$event->sent_status = $this->sent_status;
+		
+		bab_fireEvent($event);
+		
+		
+		if (!$this->sent_status) {
 			$this->recordMail();
 		}
-		
+
 		return $this->sent_status; 
 	}
 
 
-	function mailTemplate($msg)
+	public function mailTemplate($msg)
 	{
 		$mtmpl = new babMailTemplate($msg);
 		return bab_printTemplate($mtmpl, 'mailtemplate.html', 'default');
 	}
 
 
-	function ErrorInfo()
+	public function ErrorInfo()
 	{
 		return empty($this->mail->ErrorInfo) ? false : $this->mail->ErrorInfo;
 	}
 
 
-	function addMail(&$mail, $list) {
+	private function addMail(&$mail, $list) {
 		foreach($list as $arr) {
 			$mail[] = $arr[0];
 		}
@@ -415,7 +555,7 @@ class babMail
 	/**
 	 * Record a mail in the database
 	 */
-	function recordMail() {
+	private function recordMail() {
 
 		if ($this->attachements) {
 
