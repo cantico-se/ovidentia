@@ -503,11 +503,14 @@ function utilit($grp = '')
 			$this->t_nb_total_users = bab_translate('Total users');
 			$this->t_nb_unconfirmed_users = bab_translate('Unconfirmed users');
 			$this->t_delete_unconfirmed = bab_translate('Delete unconfirmed users from');
+			$this->t_delete_since = bab_translate('Delete all users created since');
 			$this->t_days = bab_translate('Days');
 			$this->t_ok = bab_translate('Ok');
 			$this->js_alert = bab_translate('Day number must be 1 at least');
 			
 			$this->grp = bab_toHtml($grp);
+			
+			$this->today = bab_toHtml(date('d/m/Y'));
 			
 			list($this->arr['nb_total_users']) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_USERS_TBL.""));
 
@@ -527,6 +530,27 @@ function delete_unconfirmed()
 	while (list($id) = $babDB->db_fetch_array($res))
 		bab_deleteUser($id);
 	}
+	
+	
+function delete_since()
+	{
+		
+	$creation_date = explode('/', bab_pp('creation_date'));
+	
+	if (3 !== count($creation_date)) {
+		return false;
+	}
+	
+	$isodate = $creation_date[2].'-'.$creation_date[1].'-'.$creation_date[0];
+		
+	include $GLOBALS['babInstallPath']."utilit/delincl.php";
+	global $babDB;
+	$res = $babDB->db_query("SELECT id FROM ".BAB_USERS_TBL." WHERE `date`>=".$babDB->quote($isodate));
+	while (list($id) = $babDB->db_fetch_array($res))
+		bab_deleteUser($id);
+	}
+	
+	
 
 function updateGroup( $grp, $users, $userst)
 {
@@ -790,6 +814,11 @@ switch($idx)
 			if (isset($_POST['action']) && $_POST['action'] == 'delete_unconfirmed')
 				{
 				delete_unconfirmed();
+				}
+				
+			if (isset($_POST['action']) && $_POST['action'] == 'delete_since')
+				{
+				delete_since();
 				}
 				
 			if ($displayMembersItemMenu)

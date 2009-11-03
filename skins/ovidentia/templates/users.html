@@ -409,19 +409,16 @@ function submitCtrl() {
 //-->
 </script>
 
-<form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
-<input type="hidden" name="tg" value="users">
-<input type="hidden" name="idx" value="utilit">
-<input type="hidden" name="action" value="delete_unconfirmed">
+
 <table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr>
 <td class="BabLoginCadreBackground" align="center" valign="middle">
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td align="right">{ t_nb_total_users }&nbsp;:</td>
+		<td align="right" width="50%">{ t_nb_total_users }&nbsp;:</td>
 		<td>{ arr[nb_total_users] }</td>
 	</tr>
 	<tr>
@@ -429,8 +426,26 @@ function submitCtrl() {
 		<td>{ arr[nb_unconfirmed_users] }</td>
 	</tr>
 	<tr>
-		<td align="right">{ t_delete_unconfirmed }</td>
-		<td nowrap><input type="text" name="nb_days" value="30" size="4" maxlength="4">&nbsp;{ t_days }&nbsp;<input type="submit" value="{ t_ok }"></td>
+		<td colspan="2" align="center">
+		
+			<form name="utilit" method="post" action="{ babPhpSelf }" onSubmit="return(submitCtrl())">
+			<input type="hidden" name="tg" value="users" />
+			<input type="hidden" name="idx" value="utilit" />
+			<input type="hidden" name="action" value="delete_unconfirmed" />
+			{ t_delete_unconfirmed }&nbsp;<input type="text" name="nb_days" value="30" size="4" maxlength="4" />&nbsp;{ t_days }&nbsp;<input type="submit" value="{ t_ok }" />
+			</form>
+			
+			<br />
+			<br />
+			
+			<form name="utilit" method="post" action="{ babPhpSelf }">
+			<input type="hidden" name="tg" value="users" />
+			<input type="hidden" name="idx" value="utilit" />
+			<input type="hidden" name="action" value="delete_since" />
+			{ t_delete_since }&nbsp;<input type="text" name="creation_date" value="{ today }" size="10" maxlength="10" />&nbsp;&nbsp;<input type="submit" value="{ t_ok }" />
+			</form>
+			
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
