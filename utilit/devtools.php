@@ -657,6 +657,7 @@ function bab_export_tables($tables, $file = false)
  * Exec sql file with semi-columns separated queries
  * Used by addons
  * @param	string	$file
+ * @param	string	$fileEncoding  null, bab_charset::UTF_8 or bab_charset::ISO_8859_15
  * @return 	boolean
  * @since	6.4.94
  */
@@ -680,7 +681,7 @@ function bab_execSqlFile($file, $fileEncoding = null) {
 	}
 	
 	if (isset($fileEncoding)) {
-		$content = bab_getStringAccordingToDataBase($sql, $fileEncoding);
+		$content = bab_getStringAccordingToDataBase($content, $fileEncoding);
 	}
 	
 	// match sql query, split with ; but ignore ; in content strings
