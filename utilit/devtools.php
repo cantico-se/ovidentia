@@ -660,7 +660,7 @@ function bab_export_tables($tables, $file = false)
  * @return 	boolean
  * @since	6.4.94
  */
-function bab_execSqlFile($file) {
+function bab_execSqlFile($file, $fileEncoding = null) {
 	
 	global $babDB;
 	$content = '';
@@ -677,6 +677,10 @@ function bab_execSqlFile($file) {
 	
 	if (!$content) {
 		return false;
+	}
+	
+	if (isset($fileEncoding)) {
+		$content = bab_getStringAccordingToDataBase($sql, $fileEncoding);
 	}
 	
 	// match sql query, split with ; but ignore ; in content strings
