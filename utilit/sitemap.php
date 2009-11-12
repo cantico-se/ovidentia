@@ -487,6 +487,12 @@ class bab_siteMap {
 		}
 		
 		$sitemap = self::getByUid($sitemap_uid);
+		
+		if (!isset($sitemap)) {
+			return array();
+		}
+		
+		
 		$page_node = $sitemap->getNodeById(self::$current_page);
 		
 		if (!isset($page_node)) {
