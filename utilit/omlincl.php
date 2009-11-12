@@ -3124,6 +3124,7 @@ class bab_RecentPosts extends bab_handler
 	var $nbdays;
 	var $last;
 	var $forumid;
+	var $threadid;
 
 	function bab_RecentPosts($ctx)
 		{
@@ -3132,6 +3133,7 @@ class bab_RecentPosts extends bab_handler
 		$this->nbdays = $ctx->get_value('from_lastlog');
 		$this->last = $ctx->get_value('last');
 		$this->forumid = $ctx->get_value('forumid');
+		$this->threadid = $ctx->get_value('threadid');
 		$access = array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL));
 		$delegationid = (int) $ctx->get_value('delegationid');
 
@@ -3155,7 +3157,10 @@ class bab_RecentPosts extends bab_handler
 
 
 			$req = "SELECT p.*, f.id id_forum, f.id_dgowner FROM ".BAB_POSTS_TBL." p LEFT JOIN ".BAB_THREADS_TBL." t on p.id_thread = t.id LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum WHERE f.active='Y'" . $sDelegation . "and t.forum IN (".$babDB->quote($arr).") and p.confirmed='Y'";
-
+			if ($this->threadid !== false && is_numeric($this->threadid)) {
+				$req .= " and p.id_thread = '".$this->threadid."'";
+			}
+			
 			if( $this->nbdays !== false)
 				{
 				$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
