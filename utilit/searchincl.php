@@ -438,24 +438,35 @@ class bab_SearchDefaultForm {
 		$option = bab_rp('option');
 
 		if ($primary_search) {
-			$crit = $crit->_AND_(self::searchStringToCriteria($testable, $primary_search));
+			
+			$primary_search_criteria = self::searchStringToCriteria($testable, $primary_search);
+			
+			if (!($primary_search_criteria instanceOf bab_SearchInvariant)) {
+				$crit = $crit->_AND_($primary_search_criteria);
+			}
 		}
 
 		if ($secondary_search) {
-			switch($option) {
+			
+			
+			$secondary_search_criteria = self::searchStringToCriteria($testable, $secondary_search);
+			
+			if (!($secondary_search_criteria instanceOf bab_SearchInvariant)) {
+				switch($option) {
 
-				case 'AND':
-					$crit = $crit->_AND_(self::searchStringToCriteria($testable, $secondary_search));
-					break;
+					case 'AND':
+						$crit = $crit->_AND_($secondary_search_criteria);
+						break;
 
-				case 'NOT':
-					$crit = $crit->_AND_(self::searchStringToCriteria($testable, $secondary_search)->_NOT_());
-					break;
+					case 'NOT':
+						$crit = $crit->_AND_($secondary_search_criteria->_NOT_());
+						break;
 
-				case 'OR':
-				default:
-					$crit = $crit->_OR_(self::searchStringToCriteria($testable, $secondary_search));
-					break;
+					case 'OR':
+					default:
+						$crit = $crit->_OR_($secondary_search_criteria);
+						break;
+				}
 			}
 		}
 		
