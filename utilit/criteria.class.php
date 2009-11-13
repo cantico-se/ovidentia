@@ -193,10 +193,14 @@ class BAB_LikeCriterionBase extends BAB_Criterion
 		$this->sValue = $sValue;
 	}
 	
+	/**
+	 * In this method, the value is not encoded
+	 * the file manager use this tu rename folders, wildcards may be set in the value
+	 * the value need a db_escape_string before use for like and not like criterion
+	 */ 
 	function toString()
 	{
-		global $babDB;
-		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $babDB->db_escape_like($this->sValue) . '\' ';
+		return $this->oField->getName() . ' ' . $this->sLike . ' \'' .  $this->sValue . '\' ';
 	}
 }
 

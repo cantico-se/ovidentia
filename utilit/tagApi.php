@@ -248,10 +248,12 @@ class bab_TagMgr
 	 */
 	public function exist($sName, $iId = 0)
 	{
+		global $babDB;
+		
 		$this->initIterator();
 		
 		$oName = new BAB_Field('tag_name');
-		$oCriteria = $oName->like($sName);
+		$oCriteria = $oName->like($babDB->db_escape_like($sName));
 		
 		if(0 < (int) $iId)
 		{
@@ -284,6 +286,7 @@ class bab_TagMgr
 	 */
 	private function get($mixedValue)
 	{
+		global $babDB;
 		$this->initIterator();
 		
 		if(is_int($mixedValue))
@@ -294,7 +297,7 @@ class bab_TagMgr
 		else
 		{
 			$oName = new BAB_Field('tag_name');
-			$this->oIterator->setCriteria($oName->like($mixedValue));
+			$this->oIterator->setCriteria($oName->like($babDB->db_escape_like($mixedValue)));
 		}
 		
 		$this->oIterator->next();
