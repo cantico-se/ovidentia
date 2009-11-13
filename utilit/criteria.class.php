@@ -240,7 +240,7 @@ class BAB_ContainCriterion extends BAB_LikeCriterionBase
 
 class BAB_FilteredCriterion extends BAB_LikeCriterionBase
 {
-	function BAB_ContainCriterion($oField, $sRegExp)
+	function BAB_FilteredCriterion($oField, $sRegExp)
 	{
 		parent::BAB_LikeCriterionBase($oField, $sRegExp);
 	}
