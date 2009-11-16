@@ -131,12 +131,14 @@ class bab_Path {
 
 
 	/**
+	 * Tests if the path is accessible to create, update, delete files.
+	 * Additional tests are made for Windows IIS.
+	 *
 	 * Test if a folder is accessible to create, update, delete files
 	 * aditionals tests are made for Windows IIS
 	 * 
 	 * @throw bab_FolderAccessRightsException | Exception
 	 * 
-	 * @param	string	$fullpath	folder to test
 	 * @return	bool
 	 */
 	public function isFolderWriteable() {
@@ -162,7 +164,7 @@ class bab_Path {
 
 			return true;
 		}
-		
+
 
 		// Windows specifics tests
 
@@ -209,7 +211,7 @@ class bab_Path {
 			throw new bab_FolderAccessRightsException(sprintf($message, $dir));
 			return false;
 		}
-		
+
 		if (false === @rmdir($folder_to_test)) {
 			$message = bab_translate('The folder %s is not writable, folders can be created but not deleted, please check the access rights');
 			throw new bab_FolderAccessRightsException(sprintf($message, $dir));
