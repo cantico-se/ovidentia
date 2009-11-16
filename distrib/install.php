@@ -684,7 +684,7 @@ if ($install->getFromUser())
 			$dump = new bab_dumpToDb();
 			if ($dump->db_connect())
 				{
-				if ($ini->isInstallValid($dump, $error)) 
+				if ($ini->isInstallValid($dump, $strerror)) 
 					{
 					$succes->add($trans->str('Configuration requirements tests successful'));
 					
@@ -708,6 +708,8 @@ if ($install->getFromUser())
 								}
 							}
 						}
+					} else {
+						$error->add($strerror);
 					}
 				}
 			}
