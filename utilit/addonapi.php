@@ -1489,7 +1489,7 @@ function bab_getGroupsAccess($table, $idobject)
 	global $babBody, $babDB;
 
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
-	$groups = aclGetAccessGroups($table, $id_object);
+	$groups = aclGetAccessGroups($table, $idobject);
 	return array_keys($groups);
 }
 
