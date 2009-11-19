@@ -302,15 +302,15 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
  */
 function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 {
+	if (bab_charset::getIso() === $sStringIsoCharset) {
+		return $input;
+	}
+
 	if (is_array($input)) {
 		foreach($input as $k => $data) {
 			$input[$k] = bab_getStringAccordingToDataBase($data, $sStringIsoCharset);
 		}
 			
-		return $input;
-	}
-
-	if (bab_charset::getIso() === $sStringIsoCharset) {
 		return $input;
 	}
 
