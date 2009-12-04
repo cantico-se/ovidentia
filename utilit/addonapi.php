@@ -1228,6 +1228,32 @@ function bab_getUserId( $name )
 	else
 		return 0;
 	}
+
+/**
+ * Récupère $nb utilisateur contenant $name dans leur nom.
+ * @param $name , $nb
+ * @return array { int | id , string | lastname , string | firstname }
+ */
+function bab_getUsersByName( $name, $nb = 5 )
+	{
+	global $babDB;
+	$name = "%".trim($name)."%" ;
+	$query = "select id, lastname, firstname from ".BAB_USERS_TBL." where lastname LIKE '".$babDB->db_escape_string($name)."' LIMIT 0,".$nb;
+	$res = $babDB->db_query($query);
+	if( $babDB->db_num_rows($res) > 0)
+		{
+		$i = 0;
+		while ($arr = $babDB->db_fetch_assoc($res)){
+			$resArr[$i]['id'] = $arr['id'];
+			$resArr[$i]['lastname'] = $arr['lastname'];
+			$resArr[$i]['firstname'] = $arr['firstname'];
+			$i++;
+		}
+		return $resArr;
+		}
+	else
+		return 0;
+	}
 	
 function bab_getUserGroups($id = "")
 	{
