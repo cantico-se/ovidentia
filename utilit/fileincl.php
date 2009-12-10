@@ -3254,7 +3254,9 @@ class BAB_DbRecord
  */
 class BAB_FmFolderFile extends BAB_DbRecord
 {
-	
+	function BAB_FmFolderFile() {
+		
+	}
 }
 
 class BAB_FmFolder extends BAB_FmFolderFile
