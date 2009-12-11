@@ -295,6 +295,28 @@ class bab_Path {
 		
 		return true;
 	}
+	
+	
+	
+	/**
+	 * Delete the directory recusively
+	 * 
+	 * @throw bab_FolderAccessRightsException
+	 * 
+	 * @return bool
+	 */
+	public function deleteDir() {
+		include_once dirname(__FILE__).'/delincl.php';
+		
+		$msgerror = '';
+		$result = bab_delDir($this->toString(), $msgerror);
+		
+		if (false === $result) {
+			throw new bab_FolderAccessRightsException($msgerror);
+		}
+		
+		return $result;
+	}
 }
 
 
