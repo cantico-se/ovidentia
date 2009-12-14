@@ -887,7 +887,7 @@ function displayCommentaryForm()
 	$iIdTask = (int) $oTmCtx->getIdTask();
 	$iUserProfil = (int) $oTmCtx->getUserProfil();
 
-	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
+	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil || BAB_TM_TASK_RESPONSIBLE == $iUserProfil)
 	{
 		$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 		$isPopUp = (int) bab_rp('isPopUp', 0);
@@ -3101,7 +3101,7 @@ function addModifyTaskCommentary()
 	$iIdTask = (int) $oTmCtx->getIdTask();
 	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
-	if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil))
+	if(0 != $oTmCtx->m_iIdTask && (BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil || BAB_TM_TASK_RESPONSIBLE == $iUserProfil))
 	{
 		$sCommentary = trim(bab_rp('sCommentary', ''));
 		
@@ -3139,7 +3139,7 @@ function deleteTaskCommentary()
 	
 	$iIdCommentary = (int) bab_rp('iIdCommentary', 0);
 
-	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil)
+	if(BAB_TM_PROJECT_MANAGER == $iUserProfil || BAB_TM_PERSONNAL_TASK_OWNER == $iUserProfil || BAB_TM_TASK_RESPONSIBLE == $iUserProfil)
 	{
 		bab_deleteTaskCommentary($iIdCommentary);
 	}
