@@ -309,7 +309,7 @@ class bab_Path {
 		include_once dirname(__FILE__).'/delincl.php';
 		
 		$msgerror = '';
-		$result = bab_delDir($this->toString(), $msgerror);
+		$result = @bab_delDir($this->toString(), $msgerror);
 		
 		if (false === $result) {
 			throw new bab_FolderAccessRightsException($msgerror);
