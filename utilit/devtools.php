@@ -1000,6 +1000,8 @@ function bab_debug_print_backtrace($echo = false)
 			$nbParam = 0;
 			foreach ($call['args'] as $param)
 			{
+				$param_str = '';	
+			
 				if (is_string($param) || is_numeric($param)) {
 					$param_str = (string) $param;
 				} elseif (is_array($param)) {
