@@ -1230,7 +1230,7 @@ function bab_getUserId( $name )
 	}
 
 /**
- * Récupère $nb utilisateur contenant $name dans leur nom.
+ * Rï¿½cupï¿½re $nb utilisateur contenant $name dans leur nom.
  * @param $name , $nb
  * @return array { int | id , string | lastname , string | firstname }
  */
@@ -2477,7 +2477,7 @@ function bab_abbr($text, $type, $max_length) {
 		return $text;
 	}
 	
-	$mots = preg_split('/[\s,]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
+	$mots = preg_split('/[\s,\.]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
 
 	if (BAB_ABBR_FULL_WORDS === $type) {
 		if (1 === count($mots)) {
