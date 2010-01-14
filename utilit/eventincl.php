@@ -159,13 +159,16 @@ class bab_fireEvent_Obj {
 	
 	
 	function restoreAddonCtx() {
-	
-		list($old_addon_id, $old_addon_name) = bab_fireEvent_addonCtxStack();
-	
-		$this->setAddonCtx(
-			$old_addon_id, 
-			$old_addon_name
-		);
+		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+		
+		$arr = bab_fireEvent_addonCtxStack();
+		if (null === $arr) {
+			bab_setAddonGlobals(null);
+			return;
+		}
+		
+		list($old_addon_id, $old_addon_name) = $arr;
+		bab_setAddonGlobals($old_addon_id);
 	}
 }
 
@@ -257,7 +260,6 @@ function bab_fireEvent(&$event_obj) {
 	
 	
 	foreach($calls[$classkey] as $arr) {
-
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
 		
 		require_once $GLOBALS['babInstallPath'].$arr['require_file'];

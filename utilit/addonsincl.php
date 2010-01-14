@@ -1119,9 +1119,24 @@ function bab_isAddonAccessValid($id_addon) {
  */
 function bab_setAddonGlobals($id_addon) {
 	
+	if (null === $id_addon) {
+		
+		if (isset($GLOBALS['babAddonFolder'])) unset($GLOBALS['babAddonFolder']);
+		if (isset($GLOBALS['babAddonTarget'])) unset($GLOBALS['babAddonTarget']);
+		if (isset($GLOBALS['babAddonUrl'])) unset($GLOBALS['babAddonUrl']);
+		if (isset($GLOBALS['babAddonPhpPath'])) unset($GLOBALS['babAddonPhpPath']);
+		if (isset($GLOBALS['babAddonHtmlPath'])) unset($GLOBALS['babAddonHtmlPath']);
+		if (isset($GLOBALS['babAddonUpload'])) unset($GLOBALS['babAddonUpload']);
+		
+		return true;
+	}
+	
 	$arr = bab_addonsInfos::getDbRow($id_addon); 
 	
 	if (!$arr) {
+		
+		
+		
 		return false;
 	}
 	
