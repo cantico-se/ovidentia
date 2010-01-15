@@ -394,7 +394,7 @@ function startSearch( $item, $what, $option, $navpos )
 
 						if ($count) 
 							{
-							if ($realm->getName() === bab_rp('navitem')) 
+							if ($res->getRealm()->getName() === bab_rp('navitem')) 
 								{
 								$res->seek($navpos);
 								}
