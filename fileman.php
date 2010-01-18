@@ -1569,7 +1569,7 @@ function listFiles()
 		{
 			$this->fileimage = '';
 
-			$iOffset = mb_strpos($arr['name'], '.');
+			$iOffset = mb_strrpos($arr['name'], '.');
 			if(false !== $iOffset)
 			{
 				$ext = mb_strtolower(mb_substr($arr['name'], $iOffset+1));
