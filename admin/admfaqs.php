@@ -187,6 +187,12 @@ function listCategories()
 	}
 
 
+/**
+ * 
+ * @param $category
+ * @param $lang
+ * @return int 		The new category id
+ */
 function saveCategory($category, $lang)
 	{
 	global $babBody;
@@ -218,6 +224,7 @@ function saveCategory($category, $lang)
 	$idscat = $db->db_insert_id();
 	$db->db_query("update ".BAB_FAQCAT_TBL." set id_root='".$db->db_escape_string($idscat)."' where id='".$db->db_escape_string($idcat)."'");
 
+	return $idcat;
 	}  // saveCategory
 
 /* main */
@@ -234,7 +241,8 @@ if(!isset($idx))
 
 if( isset($add))
 	{
-	saveCategory($category, $lang);
+	$faqCategoryId = saveCategory($category, $lang);
+	header('location:'.$GLOBALS['babUrlScript'].'?tg=admfaqs&idx=Categories#bab_faq_' . $faqCategoryId);
 	}
 
 switch($idx)
@@ -244,6 +252,7 @@ switch($idx)
 		addCategory();
 		$babBody->addItemMenu("Categories", bab_translate("Faqs"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Categories");
 		$babBody->addItemMenu("Add", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfaqs&idx=Add");
+		
 		break;
 
 	default:
