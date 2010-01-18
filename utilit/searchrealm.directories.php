@@ -832,8 +832,16 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 		if( list($name , $description) = each($fields))
 			{
 			$this->t_name = bab_toHtml($description);
-			$this->ordercmd = bab_toHtml($name);
 			$this->alloworder = 'jpegphoto' !== $name;
+			
+			$order = 'DESC' === bab_rp('order') ? 'ASC' : 'DESC';
+			
+			$url = bab_url::request_gp();
+			$url = bab_url::mod($url, 'field', $name);
+			$url = bab_url::mod($url, 'order', $order);
+			
+			$this->orderurl = bab_toHtml($url);
+			
 			return true;
 			}
 
