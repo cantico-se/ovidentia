@@ -12,7 +12,7 @@ var rAjax = new Ajax.Request(
   method: 'get',
   onSuccess: function(xhr)
   {
-	aConfiguration.afterUpdateElement = function() { $('idtags'+idx).value += ', ' };
+	aConfiguration.afterUpdateElement = function() { document.getElementById('idtags'+idx).value += ', ' };
 	eval("var tags = " + xhr.responseText);
 	atags = [];
 	for(i=0;i<tags.length;i++) {
@@ -43,7 +43,7 @@ function urlencode(str)
 
 function bab_onAjaxGetUploadBlock()
 {
-	var oForm = $("ffileupload");
+	var oForm = document.getElementById("ffileupload");
 	if(null != oForm)
 	{
 		var sAddOnUrl		= '{ babUrlScript }?tg=';
@@ -55,10 +55,10 @@ function bab_onAjaxGetUploadBlock()
 		var sUrl = sAddOnUrl + "fileman&idx=GetUploadBlock&id=" + iIdRootFolder + 
 			"&path=" + urlencode(sPath) + "&gr=" + sGr + "&iBlockNbr=" + iBlockNbr;
 		
-		var oOnAjaxGetUploadBlock = $("onAjaxGetUploadBlock");
+		var oOnAjaxGetUploadBlock = document.getElementById("onAjaxGetUploadBlock");
 		oOnAjaxGetUploadBlock.style.display = 'none';
 			
-		var oUrlremovefile = $("urlremovefile");
+		var oUrlremovefile = document.getElementById("urlremovefile");
 		oUrlremovefile.style.display = 'none';
 		
 		new Ajax.Request(sUrl, 
@@ -72,28 +72,28 @@ function bab_onAjaxGetUploadBlock()
 
 function ajaxResponse(oTransport)
 {
-	var oForm = $("ffileupload");
+	var oForm = document.getElementById("ffileupload");
 	if(null != oForm)
 	{
 		var iBlockNbr	= parseInt(oForm.files_fields.value - 1);
-		var oLastChild	= $("tupload" + iBlockNbr);
+		var oLastChild	= document.getElementById("tupload" + iBlockNbr);
 		if(null != oLastChild)
 		{
 			new Insertion.After(oLastChild, oTransport.responseText);
 			
-			if(null != $("idtags" + oForm.files_fields.value))
+			if(null != document.getElementById("idtags" + oForm.files_fields.value))
 			{
 				aR(parseInt(oForm.files_fields.value));
 			}
 			
 			oForm.files_fields.value = parseInt(oForm.files_fields.value) + 1;
 		
-			var oOnAjaxGetUploadBlock = $("onAjaxGetUploadBlock");
+			var oOnAjaxGetUploadBlock = document.getElementById("onAjaxGetUploadBlock");
 			oOnAjaxGetUploadBlock.style.display = '';
 			
 			if(oForm.files_fields.value > 1)
 			{
-				var oUrlremovefile = $("urlremovefile");
+				var oUrlremovefile = document.getElementById("urlremovefile");
 				oUrlremovefile.style.display = '';
 			}
 		}
@@ -164,7 +164,7 @@ function remove_field()
 </form>
 <script type="text/javascript">
 <!--
-	if(null != $("idtags0"))
+	if(null != document.getElementById("idtags0"))
 	{
 		aR(0);
 	}
@@ -925,7 +925,7 @@ window.focus();
 <script type="text/javascript">
 <!--
 
-if(null != $('idtags'))
+if(null != document.getElementById('idtags'))
 {
   aTokens = [','];
   aConfiguration = {tokens: aTokens, minChars: 1, fullSearch: false, choices: 10};
@@ -937,7 +937,7 @@ if(null != $('idtags'))
       onSuccess: function(xhr)
       {
 		atags = [];
-		aConfiguration.afterUpdateElement = function() { $('idtags').value += ', ' };
+		aConfiguration.afterUpdateElement = function() { document.getElementById('idtags').value += ', ' };
 		eval("var tags = " + xhr.responseText);
 		for(i=0;i<tags.length;i++) {
 			atags.push(tags[i].tagname + '');
