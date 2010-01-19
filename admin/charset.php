@@ -746,6 +746,8 @@ function convertSite()
 			emptyCharsetLogTable();
 			logToCharsetTable($sMessage);
 			
+			bab_siteMap::clearAll();
+			
 			$sUrl = $GLOBALS['babUrl'] . 'index.php?tg=charset&idx=displaySuccessMessage';
 			header('Location: ' . $sUrl);
 			exit;			
@@ -896,6 +898,8 @@ function convertFileManager()
 				}
 			}
 			
+			bab_siteMap::clearAll();
+			
 			$sUrl = $GLOBALS['babUrl'] . 'index.php?tg=charset&idx=' . urlencode($sIdx);
 			header('Location: ' . $sUrl);
 			exit;			
@@ -910,6 +914,8 @@ function convertFileManager()
 			{
 				logToCharsetTable($sErrorItem);
 			}
+			
+			bab_siteMap::clearAll();
 			
 			$sUrl = $GLOBALS['babUrl'] . 'index.php?tg=charset&idx=displayErrorMessage';
 			header('Location: ' . $sUrl);
