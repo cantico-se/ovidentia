@@ -965,7 +965,7 @@ function siteHomePage0($id)
 			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='2' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' and at.date_publication <= now()";
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='2' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' order by ht.ordering asc";
 
 			$this->reshome0 = $babDB->db_query($req);
 			$this->counthome0 = $babDB->db_num_rows($this->reshome0);
@@ -1045,7 +1045,7 @@ function siteHomePage1($id)
 			$this->create = bab_translate("Modify");
 			$this->id = $id;
 
-			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' and at.date_publication <= now()";
+			$req = "select at.title, ht.id_article from ".BAB_ARTICLES_TBL." at left join ".BAB_HOMEPAGES_TBL." ht on at.id=ht.id_article where ht.id_group='1' and ht.id_site='".$babDB->db_escape_string($id)."' and ht.ordering='0' order by ht.ordering asc";
 
 			$this->reshome1 = $babDB->db_query($req);
 			$this->counthome1 = $babDB->db_num_rows($this->reshome1);
