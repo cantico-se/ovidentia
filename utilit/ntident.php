@@ -57,7 +57,8 @@ function NTuserLogin($nickname)
 				$_SESSION['BAB_SESS_EMAIL'] = $GLOBALS['BAB_SESS_EMAIL'];
 				$_SESSION['BAB_SESS_USERID'] = $GLOBALS['BAB_SESS_USERID'];
 				$_SESSION['BAB_SESS_HASHID'] = $GLOBALS['BAB_SESS_HASHID'];
-			} 
+			}
+			bab_logUserConnectionToStat($GLOBALS['BAB_SESS_USERID']);
 			return true;
 		}
 		else
@@ -132,4 +133,3 @@ if ($_SESSION['BAB_SESS_NTREGISTER2'] && $GLOBALS['BAB_SESS_USERID'])
 {
 	$babCnxLink = 0;
 }
-?>
