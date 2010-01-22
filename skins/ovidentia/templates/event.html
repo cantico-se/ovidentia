@@ -783,6 +783,12 @@ function category_switch(obj)
 	document.getElementById('color_tr').style.display  = obj.value != '' ? 'none' : '';
 	}
 
+
+bab_initFunctions.push(function() { 
+	category_switch(document.forms[0].category); 
+});
+
+
 function evtSetColor(color)
 	{
 	var f = document.forms['vacform'];
