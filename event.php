@@ -314,7 +314,7 @@ function newEvent()
 
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
-			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory();
+			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory($this->mcals);
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to create this event");
 			}
@@ -804,7 +804,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
-			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory();
+			
+			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(explode(',', $this->calid));
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
 		}
@@ -1095,7 +1096,7 @@ function addEvent(&$message)
 	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
 		
 		// if availability is NOT mandatory
-		if (!bab_event_posted::availabilityIsMandatory()) {
+		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
 			return bab_createEvent($posted->args, $message);
 		}
 	}
@@ -1443,7 +1444,7 @@ function eventAvariabilityCheck()
 		false === $available_status 
 		&& isset($_POST['availability_displayed']) 
 		&& !isset($_POST['test_conflicts']) 
-		&& !bab_event_posted::availabilityIsMandatory()
+		&& !bab_event_posted::availabilityIsMandatory($calid)
 		) {
 		
 		$available_status = true;

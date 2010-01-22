@@ -1777,7 +1777,7 @@ class bab_event_posted {
 			
 			if ($evtid) {
 				if ((int) $data['id_event'] === (int) $evtid) {
-					// consid�rer l'evenement modifie comme disponible
+					// considerer l'evenement modifie comme disponible
 					$whObj->setAvailability($event, true);
 				}
 			}
@@ -1893,14 +1893,17 @@ class bab_event_posted {
 	 * Test if availablity is mandatory after the availablity test
 	 * this method use the calendars in conflicts list
 	 * @see bab_event_posted::availabilityConflictsStore()
+	 * 
+	 * @param	array	$calid 		Calendars of the request
+	 * 
 	 * @return boolean
 	 */
-	function availabilityIsMandatory() {
+	public static function availabilityIsMandatory($calid) {
 	
 		$calendars = bab_event_posted::availabilityConflictsStore('CAL');
 		$calendars = array_unique($calendars);
 		
-		return bab_event_availabilityMandatory($calendars);
+		return bab_event_availabilityMandatory($calendars) && bab_event_availabilityMandatory($calid);
 	}
 }
 

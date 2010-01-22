@@ -785,7 +785,9 @@ function category_switch(obj)
 
 
 bab_initFunctions.push(function() { 
-	category_switch(document.forms[0].category); 
+	if (document.forms[0].category) {
+		category_switch(document.forms[0].category); 
+	}
 });
 
 
