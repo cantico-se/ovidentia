@@ -78,6 +78,43 @@
 						</select>
 					</td>
 					</tr>
+
+					<tr> 
+						<td align="right">
+							{ downloadscappingtxt }
+						</td>
+						<td>
+							<select name="bdownloadscapping"> 
+							<!--#if isdownloadscapping -->
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N">{ no }</option>
+							<!--#else isdownloadscapping -->
+								<option value="N" selected="selected">{ no }</option>
+								<option value="Y">{ yes }</option>
+							<!--#endif isdownloadscapping -->
+							</select>
+							&nbsp;{ maxdownloadstxt }
+							<input style="text-align: right" type="text" size="4" name="maxdownloads" value="0"
+						</td>
+					</tr>
+	
+					<tr> 
+						<td align="right">
+							{ downloadhistorytxt }
+						</td>
+						<td>
+							<select name="bdownloadhistory"> 
+							<!--#if isdownloadhistory -->
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N">{ no }</option>
+							<!--#else isdownloadhistory -->
+								<option value="N" selected="selected">{ no }</option>
+								<option value="Y">{ yes }</option>
+							<!--#endif isdownloadhistory -->
+							</select>
+						</td>
+					</tr>
+
 					<tr> 
 						<td>&nbsp;</td>
 						<td>
@@ -254,6 +291,43 @@ function submitCtr()
 							</select>
 						</td>
 					</tr>
+
+					<tr> 
+						<td align="right">
+							{ downloadscappingtxt }
+						</td>
+						<td>
+							<select name="bdownloadscapping"> 
+							<!--#if isdownloadscapping -->
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N">{ no }</option>
+							<!--#else isdownloadscapping -->
+								<option value="N" selected="selected">{ no }</option>
+								<option value="Y">{ yes }</option>
+							<!--#endif isdownloadscapping -->
+							</select>
+							&nbsp;{ maxdownloadstxt }
+							<input style="text-align: right" type="text" size="4" name="maxdownloads" value="{ maxdownloads }"
+						</td>
+					</tr>
+	
+					<tr> 
+						<td align="right">
+							{ downloadhistorytxt }
+						</td>
+						<td>
+							<select name="bdownloadhistory"> 
+							<!--#if isdownloadhistory -->
+								<option value="Y" selected="selected">{ yes }</option>
+								<option value="N">{ no }</option>
+							<!--#else isdownloadhistory -->
+								<option value="N" selected="selected">{ no }</option>
+								<option value="Y">{ yes }</option>
+							<!--#endif isdownloadhistory -->
+							</select>
+						</td>
+					</tr>
+
 					<tr> 
 						<td>&nbsp;</td>
 						<td>

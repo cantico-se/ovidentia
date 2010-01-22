@@ -64,6 +64,11 @@ function addFolder()
 			$this->display				= bab_translate("Visible in file manager?");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->addtags_txt			= bab_translate("Users can add new tags");
+	
+			$this->downloadscappingtxt	= bab_translate("Manage maximum number of downloads per file");
+			$this->maxdownloadstxt		= bab_translate("Default value");
+			$this->downloadhistorytxt	= bab_translate("Manage downloads history");
+
 			$this->thelp1				= bab_translate("Deactivate a folder allows to archive it: it and its contents will not be visible in the file manager");
 			$this->thelp2				= bab_translate("Activate the management of the versions allows to keep a history of all the modifications brought to the same file");
 			$this->thelp3				= bab_translate("If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)");
