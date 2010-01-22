@@ -524,6 +524,11 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				
+				$this->author = bab_getUserName($GLOBALS['BAB_SESS_USERID']);
+				$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
+				
+				/*
+				
 				$oFolderFileSet				= new BAB_FolderFileSet();
 				$oFolderFileSet->bUseAlias	= false;
 				$oIdOwner					= $oFolderFileSet->aField['iIdOwner'];
@@ -551,6 +556,8 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 						$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
 					}
 				}
+				
+				*/
 			}
 		}
 	}
