@@ -277,14 +277,19 @@ function bab_calSortOptGroup(current_optgroup) {
 	for (var i = 0; i < current_optgroup.childNodes.length; i++) {
 		lvl1node = current_optgroup.childNodes[i];
 		if ('OPTION' == lvl1node.nodeName) {
-			for (var j = i; j < current_optgroup.childNodes.length -1; j++) {
+
+			for (var j = 0; j < current_optgroup.childNodes.length; j++) {
 				lvl2node1 = current_optgroup.childNodes[j];
 				lvl2node2 = current_optgroup.childNodes[j + 1];
+				while (lvl2node2 && lvl2node2.nodeName != 'OPTION') {
+					lvl2node2 = lvl2node2.nextSibling;
+				}
 
-				if (lvl2node1.innerHTML.toLowerCase() > lvl2node2.innerHTML.toLowerCase()) {
+				if (lvl2node2 && lvl2node1.innerHTML.toLowerCase() > lvl2node2.innerHTML.toLowerCase()) {
 					current_optgroup.insertBefore(lvl2node2, lvl2node1);
 				}
 			}
+			
 		}
 	}
 	
