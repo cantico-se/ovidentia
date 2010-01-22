@@ -75,21 +75,33 @@ function bab_createDefaultWorkingHours($iIdUser)
 
 
 /**
+ * Get working hours parameters for user and weekday
+ * 
  * @param int $id_user
  * @param int $weekday
  */
 function bab_getWHours($id_user, $weekday, $db_id_user = NULL) {
 
 	static $result = array();
+	
+	global $babBody;
+	
+	if (0 != $id_user && isset($babBody->babsite['user_workdays']) && 'N' === $babBody->babsite['user_workdays']) {
+		$id_user = 0;
+	}
+	
+	
 	if (isset($result[$id_user.','.$weekday])) {
 		return $result[$id_user.','.$weekday];
 	}
 
-	$db = $GLOBALS['babDB'];
+	
 
 	if (NULL === $db_id_user) {
 		$db_id_user = $id_user;
 	}
+	
+	$db = $GLOBALS['babDB'];
 
 	$res = $db->db_query("
 		SELECT  

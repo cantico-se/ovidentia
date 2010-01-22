@@ -1312,36 +1312,50 @@ function bab_updateUserSettings()
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
 			$arr = $babDB->db_fetch_array($res);
-			if( $arr['lang'] != '')
-				{
-				$GLOBALS['babLanguage'] = $arr['lang'];
+			
+			if('Y' === $babBody->babsite['change_lang']) {
+			
+				if( $arr['lang'] != '')
+					{
+					$GLOBALS['babLanguage'] = $arr['lang'];
+					}
+				
+				if($arr['langfilter'] != '') {
+					$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
 				}
 			
-			if($arr['langfilter'] != '')
-				$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
+			}
 			
-			if($arr['skin'] !== $GLOBALS['babSkin'] && !empty($arr['skin']))
-				{
-				$GLOBALS['babSkin'] = $arr['skin'];
+			
+			
+			if('Y' === $babBody->babsite['change_skin']) {
+				
+				if ($arr['skin'] !== $GLOBALS['babSkin'] && !empty($arr['skin']))
+					{
+					$GLOBALS['babSkin'] = $arr['skin'];
 				}
-
-			if(!empty($arr['style']) && is_file('skins/'.$GLOBALS['babSkin'].'/styles/'.$arr['style']))
-				{
-				$GLOBALS['babStyle'] = $arr['style'];
+	
+				if(!empty($arr['style']) && is_file('skins/'.$GLOBALS['babSkin'].'/styles/'.$arr['style']))
+					{
+					$GLOBALS['babStyle'] = $arr['style'];
 				}
+			}
+			
+			
+			if('Y' === $babBody->babsite['change_date']) {
 
-			if( $arr['date_shortformat'] != '') {
-				$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ;
-				}
-
-			if( $arr['date_longformat'] != '') {
-				$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ;
-				}
-
-			if( $arr['time_format'] != '') {
-				$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ;
-				}
-
+				if( $arr['date_shortformat'] != '') {
+					$GLOBALS['babShortDateFormat'] = bab_getDateFormat($arr['date_shortformat']) ;
+					}
+	
+				if( $arr['date_longformat'] != '') {
+					$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ;
+					}
+	
+				if( $arr['time_format'] != '') {
+					$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ;
+					}
+			}
 			
 
 			$babBody->lastlog = $arr['lastlog'];
@@ -1364,62 +1378,67 @@ function bab_updateUserSettings()
 			}
 			
 		}
-
-		$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
-		if( $res && $babDB->db_num_rows($res) > 0 )
+		
+		
+		if('Y' === $babBody->babsite['change_unavailability']) 
 			{
-			unset($_SESSION['bab_waitingApprobations'][$BAB_SESS_USERID]);
-			include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-			$superiors = array();
-			$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
-			if( count($entities['temporary']) > 0 )
-				{
-				for( $i=0; $i < count($entities['temporary']); $i++ )
-					{
-					$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
-					if( $idsup )
-						{
-						$superiors[] =  $idsup['id_user'];
-						}
-					}
-				}		
 
-			while($arr = $babDB->db_fetch_array($res))
+			$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
+			if( $res && $babDB->db_num_rows($res) > 0 )
 				{
-				$idsup = 0;
-				if( count($superiors) && in_array($arr['id_user'], $superiors))
+				unset($_SESSION['bab_waitingApprobations'][$BAB_SESS_USERID]);
+				include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
+				$superiors = array();
+				$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
+				if( count($entities['temporary']) > 0 )
 					{
-					if( count($babBody->substitutes[1]) == 0 ||  !in_array($arr['id_user'], $babBody->substitutes[1]) )
+					for( $i=0; $i < count($entities['temporary']); $i++ )
 						{
-						$babBody->substitutes[1][] = $arr['id_user'];
-						}
-					}
-
-				if( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0])))
-					{
-					$add = true;
-					$entities = bab_OCGetUserEntities($arr['id_user']);
-					if( count($entities['superior']) > 0 )
-						{
-						for( $i=0; $i < count($entities['superior']); $i++ )
+						$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
+						if( $idsup )
 							{
-							$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
-							if( $idte && $idte['id_user'] != $BAB_SESS_USERID)
-								{
-								$add = false;
-								break;
-								}
+							$superiors[] =  $idsup['id_user'];
 							}
 						}
-
-					if( count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0]) )
+					}		
+	
+				while($arr = $babDB->db_fetch_array($res))
+					{
+					$idsup = 0;
+					if( count($superiors) && in_array($arr['id_user'], $superiors))
 						{
-						$babBody->substitutes[0][] = $arr['id_user'];
+						if( count($babBody->substitutes[1]) == 0 ||  !in_array($arr['id_user'], $babBody->substitutes[1]) )
+							{
+							$babBody->substitutes[1][] = $arr['id_user'];
+							}
 						}
-
-					if( $add && (count($babBody->substitutes[1]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[1]) ))
+	
+					if( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0])))
 						{
-						$babBody->substitutes[1][] = $arr['id_user'];
+						$add = true;
+						$entities = bab_OCGetUserEntities($arr['id_user']);
+						if( count($entities['superior']) > 0 )
+							{
+							for( $i=0; $i < count($entities['superior']); $i++ )
+								{
+								$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
+								if( $idte && $idte['id_user'] != $BAB_SESS_USERID)
+									{
+									$add = false;
+									break;
+									}
+								}
+							}
+	
+						if( count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0]) )
+							{
+							$babBody->substitutes[0][] = $arr['id_user'];
+							}
+	
+						if( $add && (count($babBody->substitutes[1]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[1]) ))
+							{
+							$babBody->substitutes[1][] = $arr['id_user'];
+							}
 						}
 					}
 				}

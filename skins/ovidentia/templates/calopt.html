@@ -6,6 +6,9 @@
 <input type="hidden" name="calid" value="{ calid }" />
 <input type="hidden" name="modify" value="options" />
 
+
+<!--#if calweekwork -->
+
 <table  width="80%"  border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
@@ -13,7 +16,7 @@
 	<table  width="100%" border="0" cellspacing="0" cellpadding="10" class="BabLoginMenuBackground">
 	<tr valign="top"> 
 		<td>
-		<!--#if calweekwork -->
+		
 			<div id="bab_calopt_days">
 			
 				<h4>{ t_working_hours }</h4>
@@ -242,7 +245,7 @@
 				bab_calopt_init();
 			</script>
 		
-		<!--#endif calweekwork -->
+		
 		</td>
 	</tr>
 
@@ -251,8 +254,11 @@
 </td>
 </tr>
 </table>
+<br />
 
-<br>
+<!--#endif calweekwork -->
+
+
 <table  width="80%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
