@@ -263,6 +263,31 @@ function UBrowseDbDirectory($id, $pos, $xf, $cb)
 	echo bab_printTemplate($temp, "directory.html", "uadbrowse");
 }
 
+
+/**
+ * Checks if the photo field is disabled.
+ * 
+ * @param int	$directoryId
+ * @return bool
+ */
+function isPhotoDisabled($directoryId)
+{
+	global $babDB;
+
+	list($groupId) = $babDB->db_fetch_array($babDB->db_query('SELECT id_group FROM '.BAB_DB_DIRECTORIES_TBL.' WHERE id=' . $babDB->quote($directoryId)));
+	
+	$directoryId = $groupId != 0 ? 0 : $directoryId;
+
+	$fields = $babDB->db_query('SELECT e.disabled FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' e LEFT JOIN ' . BAB_DBDIR_FIELDS_TBL . ' f ON f.id=e.id_field WHERE f.name=\'jpegphoto\' AND e.id_directory=' . $babDB->quote($directoryId));
+	$photoField = $babDB->db_fetch_assoc($fields);
+	
+	if ($photoField && $photoField['disabled'] == 'N') {
+		return false;
+	} 
+	return true;
+}
+
+
 class bab_viewDirectoryUser
 {
 
@@ -314,7 +339,7 @@ function bab_viewDirectoryUser($id)
 		if( $this->access )
 			{
 			$this->name = bab_toHtml($arr['givenname']). " ". bab_toHtml($arr['sn']);
-			if( $arr['plen'] > 0 )
+			if( $arr['plen'] > 0 && !isPhotoDisabled($arr['id_directory']))
 				{
 				$this->showph = true;
 				}
@@ -388,7 +413,7 @@ function summaryDbContact($id, $idu, $update=true)
 				{
 				$this->count = 0;
 				}
-
+			
 			$res = $babDB->db_query("select *, LENGTH(photo_data) as plen from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'");
 			$this->showph = false;
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -402,7 +427,7 @@ function summaryDbContact($id, $idu, $update=true)
 				
 				$this->name = stripslashes($this->arr['givenname']). " ". stripslashes($this->arr['sn']);
 				$this->name = bab_toHtml($this->name);
-				if( $this->arr['plen'] > 0 )
+				if( $this->arr['plen'] > 0 && !isPhotoDisabled($id) )
 					{
 					$this->showph = true;
 					}
