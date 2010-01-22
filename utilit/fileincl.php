@@ -525,6 +525,11 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 				$this->date = bab_translate("Date");
 				$this->dateval = bab_strftime(mktime());
 				
+				$this->author = bab_getUserName($GLOBALS['BAB_SESS_USERID']);
+				$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
+				
+				/*
+				
 				$oFolderFileSet				= new BAB_FolderFileSet();
 				$oFolderFileSet->bUseAlias	= false;
 				$oIdOwner					= $oFolderFileSet->aField['iIdOwner'];
@@ -552,6 +557,8 @@ function fileNotifyMembers($file, $path, $idgrp, $msg, $bnew = true)
 						$this->authoremail = bab_getUserEmail($GLOBALS['BAB_SESS_USERID']);
 					}
 				}
+				
+				*/
 			}
 		}
 	}
@@ -969,6 +976,9 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 		{
 			$readonly[$count] = 'N';
 		}
+		
+		
+		$maxdl = isset($maxdownloads[$count]) ? $maxdownloads[$count] : '0';
 
 
 
@@ -978,7 +988,7 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 			UPDATE ".BAB_FILES_TBL." set 
 				description='".$babDB->db_escape_string($description[$count])."', 
 				readonly='".$babDB->db_escape_string($readonly[$count])."', 
-				max_downloads='".$babDB->db_escape_string($maxdownloads[$count])."', 
+				max_downloads='".$babDB->db_escape_string($maxdl)."', 
 				confirmed='".$babDB->db_escape_string($confirmed)."', 
 				modified=now(), 
 				hits='0', 
@@ -998,7 +1008,25 @@ function saveFile($fmFiles, $id, $gr, $path, $description, $keywords, $readonly,
 		{
 			$req = "insert into ".BAB_FILES_TBL."
 			(name, description, max_downloads, path, id_owner, bgroup, link, readonly, state, created, author, modified, modifiedby, confirmed, index_status, iIdDgOwner) values ";
-			$req .= "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description[$count]). "', '" . $babDB->db_escape_string($maxdownloads[$count]). "', '".$babDB->db_escape_string($sRelativePath). "', '" . $babDB->db_escape_string($iIdOwner). "', '" . $babDB->db_escape_string($gr). "', '0', '" . $babDB->db_escape_string($readonly[$count]). "', '', now(), '" . $babDB->db_escape_string($idcreator). "', now(), '" . $babDB->db_escape_string($idcreator). "', '". $babDB->db_escape_string($confirmed)."', '".$babDB->db_escape_string($index_status)."', '".$babDB->db_escape_string(bab_getCurrentUserDelegation())."')";
+			$req .= "(
+				'" .$babDB->db_escape_string($name). "', 
+				'" . $babDB->db_escape_string($description[$count]). "', 
+				'" . $babDB->db_escape_string($maxdl). "', 
+				'".$babDB->db_escape_string($sRelativePath). "', 
+				'" . $babDB->db_escape_string($iIdOwner). "', 
+				'" . $babDB->db_escape_string($gr). "', 
+				'0', 
+				'" . $babDB->db_escape_string($readonly[$count]). "', 
+				'', 
+				now(), 
+				'" . $babDB->db_escape_string($idcreator). "', 
+				now(), 
+				'" . $babDB->db_escape_string($idcreator). "', 
+				'". $babDB->db_escape_string($confirmed)."', 
+				'".$babDB->db_escape_string($index_status)."', 
+				'".$babDB->db_escape_string(bab_getCurrentUserDelegation())."'
+			)";
+			
 			$babDB->db_query($req);
 			$idf = $babDB->db_insert_id();
 			
