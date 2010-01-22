@@ -228,7 +228,7 @@ function listFolders()
 }
 
 
-function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags)
+function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory)
 {
 	global $babBody, $babDB;
 	if(empty($fname))
@@ -286,6 +286,11 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$oFmFolder->setVersioning($version);
 			$oFmFolder->setHide($bhide);
 			$oFmFolder->setAutoApprobation($bautoapp);
+
+			$oFmFolder->setDownloadsCapping($bdownloadscapping);
+			$oFmFolder->setMaxDownloads($maxdownloads);
+			$oFmFolder->setDownloadHistory($bdownloadhistory);
+
 			return $oFmFolder->save();
 		}
 		return false;
@@ -372,7 +377,7 @@ if(!isset($idx))
 
 if(isset($add) && $add == "addfolder")
 {
-	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags))
+	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory))
 	{
 		$idx = "addf";
 	}
