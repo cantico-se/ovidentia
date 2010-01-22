@@ -6060,6 +6060,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.1.92
 	 */
+	
+	
+	
 	/**
 	 * Upgrade to 7.1.93
 	 */
@@ -6076,6 +6079,20 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				)
 		');
 	}
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 7.1.95
+	 */
+	
+	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Start Date,Planned start date' WHERE `sLegend`='Start Date,Planned'");
+	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'End Date,Planned end date' WHERE `sLegend`='End Date,Planned'");
+	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Time,Planned time' WHERE `sLegend`='Time,Planned'");
+	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Cost,Planned cost' WHERE `sLegend`='Cost,Planned'");
+	
 	
 	
 	return true;
