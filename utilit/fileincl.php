@@ -6035,13 +6035,63 @@ function userHavePersonnalStorage()
 	return $bHavePersonnalStorage;
 }
 
+
+/**
+ * return accessibles ACL id object
+ * @param string $table
+ * @param bool $ignore_hidden_folders
+ * @return array
+ */
+function bab_getUserFmIdObjects($table, $ignore_hidden_folders)
+{
+	static $ignore = null;
 	
-function userHaveRightOnCollectiveFolder()
+	if (null === $ignore) {
+		
+		$ignore = array();
+	
+		if ($ignore_hidden_folders) {
+			global $babDB;
+			
+			$res = $babDB->db_query('SELECT id FROM '.BAB_FM_FOLDERS_TBL.' WHERE bhide='.$babDB->quote('Y'));
+			while($arr = $babDB->db_fetch_assoc($res)) {
+				$id = (int) $arr['id'];
+				$ignore[$id] = $id;
+			}
+		}
+	}
+	
+	
+	$arr = bab_getUserIdObjects($table);
+	
+	
+	foreach($ignore as $id_object) {
+		if (isset($arr[$id_object])) {
+			unset($arr[$id_object]);
+		}
+	}
+	
+	return $arr;
+}
+
+
+
+
+/**
+ * Test if the user have right on one collective folder
+ * @param	bool	$ignore_hidden_folders	 hidden folders are ignored only for download right
+ * @return 	bool
+ */	
+function userHaveRightOnCollectiveFolder($ignore_hidden_folders = false)
 {
 	static $bHaveRightOnCollectiveFolder = null;
 
 	if(is_null($bHaveRightOnCollectiveFolder))	
 	{
+		$bHaveRightOnCollectiveFolder = false;
+		
+		
+		
 		$aIdObject = bab_getUserIdObjects(BAB_FMUPLOAD_GROUPS_TBL);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
@@ -6049,7 +6099,7 @@ function userHaveRightOnCollectiveFolder()
 			return true;
 		}
 		
-		$aIdObject = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
+		$aIdObject = bab_getUserFmIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL, $ignore_hidden_folders);
 		if(is_array($aIdObject) && count($aIdObject) > 0)
 		{
 			$bHaveRightOnCollectiveFolder = true;

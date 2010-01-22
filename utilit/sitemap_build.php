@@ -1311,7 +1311,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		
 		
 	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder())
+	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder(true))
 		{
 		$array_urls[] = array(
 			'label' 	=> bab_translate("File manager"),
