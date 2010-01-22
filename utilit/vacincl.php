@@ -2899,7 +2899,7 @@ class bab_vacationRequestDetail
 			}
 		}
 
-		$this->daterequest = bab_toHtml(bab_longDate(bab_mktime($row['date']), false));
+		$this->daterequest = bab_toHtml(bab_longDate(bab_mktime($row['date'])));
 		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
 		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
 		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
