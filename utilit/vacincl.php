@@ -203,7 +203,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 				
 				break;
 			
-			case 1: // Dans la période de la règle
+			case 1: // Dans la pï¿½riode de la rï¿½gle
 				if ($period_start <= $beginp && $period_end >= $endp) {
 						$access_include |= 1;
 						$debug_result = 'TRUE';
@@ -213,7 +213,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					}
 					
 					bab_debug(
-							"Disponibilité en fonction de la période de congés demandée\n".
+							"Disponibilitï¿½ en fonction de la pï¿½riode de congï¿½s demandï¿½e\n".
 							"Dans l'intervale\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' <= '.bab_shortDate($beginp). 
@@ -224,7 +224,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					
 				break;
 			
-			case 2: // En dehors de la période de la règle
+			case 2: // En dehors de la pï¿½riode de la rï¿½gle
 				if ($period_end <= $beginp || $period_start >= $endp) {
 						$access_exclude &= 1;
 						$debug_result = 'TRUE';
@@ -235,7 +235,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					
 					
 					bab_debug(
-							"Disponibilité en fonction de la période de congés demandée\n".
+							"Disponibilitï¿½ en fonction de la pï¿½riode de congï¿½s demandï¿½e\n".
 							"En dehors de l'intervale\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_end).' <= '.bab_shortDate($beginp). 
@@ -244,7 +244,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 							);
 				break;
 				
-			case 11: // Dans la période de la règle mais peut dépasser à l'exterieur
+			case 11: // Dans la pï¿½riode de la rï¿½gle mais peut dï¿½passer ï¿½ l'exterieur
 				
 				if ($period_start < $endp && $period_end > $beginp ) {
 						$access_include |= 1;
@@ -256,8 +256,8 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					
 					
 					bab_debug(
-							"Disponibilité en fonction de la période de congés demandée\n".
-							"Dans l'intervale mais peut dépasser à l'exterieur\n".
+							"Disponibilitï¿½ en fonction de la pï¿½riode de congï¿½s demandï¿½e\n".
+							"Dans l'intervale mais peut dï¿½passer ï¿½ l'exterieur\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
 							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
@@ -265,7 +265,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 							);
 				break;
 
-			case 12: // En dehors de la période de la règle mais peut dépasser à l'intérieur
+			case 12: // En dehors de la pï¿½riode de la rï¿½gle mais peut dï¿½passer ï¿½ l'intï¿½rieur
 				if ($period_start > $beginp || $period_end < $endp) {
 						$access_exclude &= 1;
 						$debug_result = 'TRUE';
@@ -275,8 +275,8 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					}
 					
 					bab_debug(
-							"acces sur la période, en fonction de la période de la demande\n".
-							"En dehors de l'intervale mais peut dépasser à l'intérieur\n".
+							"acces sur la pï¿½riode, en fonction de la pï¿½riode de la demande\n".
+							"En dehors de l'intervale mais peut dï¿½passer ï¿½ l'intï¿½rieur\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
 							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
@@ -289,7 +289,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 	$debug_include = $access_include ? 'TRUE' : 'FALSE';
 	$debug_exclude = $access_exclude ? 'TRUE' : 'FALSE';
 
-	bab_debug(sprintf("id = %d \ntests de périodes d'inclusion %s \ntests de périodes d'exclusion %s\n",$id_right, $debug_include, $debug_exclude));
+	bab_debug(sprintf("id = %d \ntests de pï¿½riodes d'inclusion %s \ntests de pï¿½riodes d'exclusion %s\n",$id_right, $debug_include, $debug_exclude));
 	
 	return $access_include && $access_exclude;
 }
@@ -429,7 +429,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 			
 
-			// acces sur la période, en fonction de la période de la demande
+			// acces sur la pï¿½riode, en fonction de la pï¿½riode de la demande
 			
 			
 			
@@ -443,7 +443,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			
 
 			
-			// Attribution du droit en fonction des jours demandés et validés
+			// Attribution du droit en fonction des jours demandï¿½s et validï¿½s
 			if ( $access ) {
 
 				
@@ -467,7 +467,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 				}
 
 
-				if ($req) { // une requete valide a pu être crée a partir des période
+				if ($req) { // une requete valide a pu ï¿½tre crï¿½e a partir des pï¿½riode
 
 					
 				
@@ -545,8 +545,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays < $arr['trigger_nbdays_max'] ) {
 
 						bab_debug(
-							"Attribution du droit en fonction des jours demandés et validés\n".
-							"Le droit est accordé si l'utilisateur a pris entre ".$arr['trigger_nbdays_min']." et ".$arr['trigger_nbdays_max']." jours\n".
+							"Attribution du droit en fonction des jours demandï¿½s et validï¿½s\n".
+							"Le droit est accordï¿½ si l'utilisateur a pris entre ".$arr['trigger_nbdays_min']." et ".$arr['trigger_nbdays_max']." jours\n".
 							$arr['description']."\n".
 							"nb de jours pris : ".$nbdays
 						);
@@ -1977,7 +1977,7 @@ function changeucol($id_user,$newcol)
 			$this->tg = $_REQUEST['tg'];
 
 
-			// Les droits de l'ancien régime sont les même que ceux afficher sur la première page d'une demande de congé pour l'utilisateur.
+			// Les droits de l'ancien rï¿½gime sont les mï¿½me que ceux afficher sur la premiï¿½re page d'une demande de congï¿½ pour l'utilisateur.
 
 			$old_rights = bab_getRightsOnPeriod(false, false, $id_user);
 
@@ -2877,6 +2877,7 @@ class bab_vacationRequestDetail
 
 	function bab_vacationRequestDetail($id)
 		{
+		$this->daterequesttxt = bab_translate("Request date");
 		$this->datebegintxt = bab_translate("Begin date");
 		$this->dateendtxt = bab_translate("End date");
 		$this->nbdaystxt = bab_translate("Quantities");
@@ -2898,7 +2899,7 @@ class bab_vacationRequestDetail
 			}
 		}
 
-
+		$this->daterequest = bab_toHtml(bab_vac_longDate(bab_mktime($row['date'])));
 		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
 		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
 		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
