@@ -409,7 +409,7 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 						FROM ' . BAB_OC_TREES_TBL . ' AS trees
 						LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS entities ON entities.id_node = trees.id
 						LEFT JOIN ' . BAB_OC_ENTITIES_TBL . ' AS parents ON parents.id_node = trees.id_parent
-						WHERE entities.id_node = ' . $babDB->quote($entityId) . '
+						WHERE entities.id = ' . $babDB->quote($entityId) . '
 						AND trees.id_user = ' . $babDB->quote($this->_orgChartId) . '
 						LIMIT 1';
 				$entities = $babDB->db_query($sql);
