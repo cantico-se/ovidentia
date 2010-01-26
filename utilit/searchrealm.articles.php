@@ -110,7 +110,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 	 * @return bool
 	 */
 	public function isAccessValid() {
-		return bab_isUserLogged();
+		return 0 < count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL));
 	}
 
 
