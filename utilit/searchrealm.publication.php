@@ -96,12 +96,12 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 	 * @return bool
 	 */
 	public function isAccessValid() {
-		return bab_isUserLogged();
+		return 0 < count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL));
 	}
 
 
 	/**
-	 * Get default criteria for notes
+	 * Get default criteria
 	 * @return	bab_SearchCriteria
 	 */
 	public function getDefaultCriteria() {
