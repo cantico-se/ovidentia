@@ -575,7 +575,7 @@ function aclGetAccessGroups($table, $id_object) {
 			{
 			$arr['id_group'] -= BAB_ACL_GROUP_TREE;
 			$groups[$arr['id_group']] = $arr['id_group'];
-			$tmp = $tree->getChilds($arr['id_group']);
+			$tmp = $tree->getChilds($arr['id_group'], true);
 			if( $tmp && is_array($tmp ))
 				{
 				foreach($tmp as $child) {
