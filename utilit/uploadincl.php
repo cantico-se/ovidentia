@@ -34,28 +34,22 @@ define('BAB_FILEHANDLER_COPY'	, 3);
  */
 class bab_fileHandler {
 
-	/**#@+
-	 * @private
-	 */
-	var $type;
-	var $source;
-	/**#@-*/
-	
-	/**#@+
-	 * @public
-	 */
-	var $filename;
-	var $size;
-	var $error;
-	var $mime;
-	/**#@-*/
+
+	private $type;
+	private $source;
+
+	public $filename;
+	public $size;
+	public $error;
+	public $mime;
+
 	
 	/**
-	 * @private
 	 * Create object with specified type
 	 * @param	int		$type		BAB_FILEHANDLER_UPLOAD, BAB_FILEHANDLER_MOVE, BAB_FILEHANDLER_COPY
+	 * @param	string	$source		Filename
 	 */
-	function bab_fileHandler($type, $source) {
+	private function __construct($type, $source) {
 		$this->type		= $type;
 		$this->source	= $source;
 		$this->mime		= bab_getFileMimeType($source);
@@ -64,50 +58,55 @@ class bab_fileHandler {
 	
 	
 	/**
-	 * @static
-	 * @public
 	 * Prepare file for upload
-	 * @param	string	$fieldname
+	 * 
+	 * @param	string | array	$input		name of the field of input array from $_FILES
+	 * 
+	 * @return bab_fileHandler
 	 */
-	function upload($fieldname) {
-		if (!isset($_FILES[$fieldname])) {
-			return false;
+	static public function upload($input) {
+		if (is_string($input)) {
+			if (!isset($_FILES[$input])) {
+				return false;
+			} else {
+				$input = $_FILES[$input];
+			}
 		}
 		
 		$tmp_error = false;
 		
-		if (isset($_FILES[$fieldname]['error'])) {
+		if (isset($input['error'])) {
 		
 			/**
 			 * ['error'] is defined since php 4.2.0
 			 * constants are defined since php 4.3.0
 			 */
 		
-			switch($_FILES[$fieldname]['error']) {
-				case 0 : // UPLOAD_ERR_OK
+			switch($input['error']) {
+				case UPLOAD_ERR_OK:
 					break;
 					
-				case 1 : // UPLOAD_ERR_INI_SIZE
+				case UPLOAD_ERR_INI_SIZE:
 					$tmp_error = bab_translate('The uploaded file exceeds the upload_max_filesize directive.');
 					break;
 					
-				case 2 : // UPLOAD_ERR_FORM_SIZE
+				case UPLOAD_ERR_FORM_SIZE:
 					$tmp_error = bab_translate('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.');
 					break;
 					
-				case 3 : // UPLOAD_ERR_PARTIAL
+				case UPLOAD_ERR_PARTIAL:
 					$tmp_error = bab_translate('The uploaded file was only partially uploaded.');
 					break;
 					
-				case 4 : // UPLOAD_ERR_NO_FILE
+				case UPLOAD_ERR_NO_FILE:
 					$tmp_error = bab_translate('No file was uploaded.');
 					break;	
 						
-				case 6 : // UPLOAD_ERR_NO_TMP_DIR since PHP 4.3.10 and PHP 5.0.3
+				case UPLOAD_ERR_NO_TMP_DIR: //  since PHP 4.3.10 and PHP 5.0.3
 					$tmp_error = bab_translate('Missing a temporary folder.');
 					break;	
 					
-				case 7 : // UPLOAD_ERR_CANT_WRITE since php 5.1.0
+				case UPLOAD_ERR_CANT_WRITE: //  since php 5.1.0
 					$tmp_error = bab_translate('Failed to write file to disk.');
 					break;
 					
@@ -117,21 +116,19 @@ class bab_fileHandler {
 			}
 		}
 		
-		$obj = new bab_fileHandler(BAB_FILEHANDLER_UPLOAD, $_FILES[$fieldname]['tmp_name']);
-		$obj->filename 	= $_FILES[$fieldname]['name'];
-		$obj->size	 	= $_FILES[$fieldname]['size'];
+		$obj = new bab_fileHandler(BAB_FILEHANDLER_UPLOAD, $input['tmp_name']);
+		$obj->filename 	= $input['name'];
+		$obj->size	 	= $input['size'];
 		$obj->error		= $tmp_error;
 		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
 	
 	/**
-	 * @static
-	 * @public
 	 * Prepare file for copy
 	 * @param	string	$sourcefile
 	 */
-	function copy($sourcefile) {
+	static public function copy($sourcefile) {
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_COPY, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
@@ -140,12 +137,10 @@ class bab_fileHandler {
 	}
 	
 	/**
-	 * @static
-	 * @public
 	 * Prepare file for move
 	 * @param	string	$sourcefile
 	 */
-	function move($sourcefile) {
+	static public function move($sourcefile) {
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sourcefile);
 		$obj->filename 	= basename($sourcefile);
 		$obj->size	 	= filesize($sourcefile);
@@ -158,7 +153,7 @@ class bab_fileHandler {
 	 * @param	string	$destination 	(destination full path and file name)
 	 * @return	boolean
 	 */
-	function import($destination) {
+	public function import($destination) {
 	
 		bab_setTimeLimit(0);
 	
@@ -184,7 +179,7 @@ class bab_fileHandler {
 	 *
 	 * @return false|string		temporaryPathToFile
 	 */
-	function importTemporary() {
+	public function importTemporary() {
 	
 		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
 		if ($this->import($temporaryPathToFile)) {
