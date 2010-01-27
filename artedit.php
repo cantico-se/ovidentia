@@ -1590,8 +1590,8 @@ echo
 			}
 		function getnextyear()
 			{
-			static $i = 0, $p;
-			if( $i < 3)
+			static $i = -6, $p;
+			if( $i < 6)
 				{
 				$this->yearid = $i+1;
 				$this->yearidval = date("Y") + $i;
@@ -1613,7 +1613,7 @@ echo
 					{
 					$this->yearsel = $this->yearend - date("Y") + 1;
 					}
-				$i = 0;
+				$i = -6;
 				return false;
 				}
 
