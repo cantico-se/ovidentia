@@ -488,7 +488,7 @@ class installInfos {
 	
 	public $babDBHost 		= 'localhost';
 	public $babDBName 		= 'ovidentia';
-	public $babDBCharset 	= 'utf8';
+	public $babDBCharset 	= 'latin1';
 	public $clearDb 		= null;
 	public $babDBLogin		= 'root';
 	public $babDBPasswd		= '';
