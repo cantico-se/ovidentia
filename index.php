@@ -206,7 +206,7 @@ function bab_getSelf() {
 $babPhpSelf		= bab_getSelf();
 $babUrlScript	= $babUrl.$babPhpSelf;
 $babAddonsPath	= $GLOBALS['babInstallPath'].'addons/';
-$babSiteName	= mb_substr($babSiteName, 0, 30);
+$babSiteName	= mb_substr($babSiteName, 0, 255);
 
 
 
