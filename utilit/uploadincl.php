@@ -40,7 +40,23 @@ class bab_fileHandler {
 
 	public $filename;
 	public $size;
+	
+	/**
+	 * Error string
+	 * @var string
+	 */
 	public $error;
+	
+	/**
+	 * Error code
+	 * @var int
+	 */
+	public $code;
+	
+	/**
+	 * Mime type
+	 * @var unknown_type
+	 */
 	public $mime;
 
 	
@@ -52,7 +68,6 @@ class bab_fileHandler {
 	private function __construct($type, $source) {
 		$this->type		= $type;
 		$this->source	= $source;
-		$this->mime		= bab_getFileMimeType($source);
 		$this->error	= false;
 	}
 	
@@ -68,10 +83,10 @@ class bab_fileHandler {
 		if (is_string($input)) {
 			if (!isset($_FILES[$input])) {
 				return false;
-			} else {
-				$input = $_FILES[$input];
-			}
-		}
+			} 
+			
+			$input = $_FILES[$input];
+		} 
 		
 		$tmp_error = false;
 		
@@ -119,6 +134,7 @@ class bab_fileHandler {
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_UPLOAD, $input['tmp_name']);
 		$obj->filename 	= $input['name'];
 		$obj->size	 	= $input['size'];
+		$obj->code		= $input['error'];
 		$obj->error		= $tmp_error;
 		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
@@ -147,6 +163,8 @@ class bab_fileHandler {
 		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
+	
+	
 	
 	/**
 	 * install the prepared file into destination
