@@ -495,8 +495,16 @@ class bab_InstallSource {
 
 		// redirect to upgrade page
 
-		header('location:'.$GLOBALS['babUrlScript'].'?tg=version&idx=upgrade');
-		exit;
+		$upgrade_page = $GLOBALS['babUrlScript'].'?tg=version&idx=upgrade&iframe=1';
+
+		bab_installWindow::message(sprintf('
+			
+			<script type="text/javascript">
+				document.location.href = \'%s\'
+			</script>
+
+			<a href="%s">Install</a>
+		', $upgrade_page, bab_toHtml($upgrade_page)));
 	}
 
 

@@ -843,16 +843,25 @@ class bab_import_package {
 		require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 		$t_upgrade = bab_translate('Installation of the package');
-		$t_continue = bab_translate('Back to list');
+		
 
 		$url = bab_url::request();
 		$url = bab_url::mod($url, 'tg', 'addons');
 		$frameurl = bab_url::mod($url, 'idx', 'import_frame');
-		$listurl = bab_url::mod($url, 'idx', 'list');
+		
 
 		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile'));
-
-		bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $listurl);
+		
+		
+		if ($ini instanceOf bab_CoreIniFile) {
+			$t_continue = bab_translate('Home');
+			$continueurl = bab_url::request();
+		} else {
+			$t_continue = bab_translate('Back to list');
+			$continueurl = bab_url::mod($url, 'idx', 'list');
+		}
+		
+		bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $continueurl);
 	}
 
 	public static function frame() {

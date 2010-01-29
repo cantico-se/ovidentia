@@ -180,16 +180,32 @@ switch($idx)
 <META NAME="Description" CONTENT="">
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-	<center>
+	
+		
+	<?php
+
+	if (bab_rp('iframe')) {
+		
+		echo bab_toHtml($str, BAB_HTML_ALL);
+		?>
+		<br id="BAB_ADDON_INSTALL_END" />
+		<?php 
+	} else {
+		?>
+		<center>
 		<h1>Ovidentia</h1>
+		
 		<?php
 		echo $babSiteName . "<br>";
 		echo bab_toHtml($str, BAB_HTML_ALL);
-		?>
+	?>
 		<br>
-		<p><a href="?"><?php echo bab_translate("Home") ?></a></p>
+		<p><a href="?"><?php echo bab_translate("Home");  ?></a></p>
 		<p class="copyright">&copy; 2001, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</p>
 	</center>
+	
+	<?php } ?>
+		
 </BODY>
 </HTML>
 
