@@ -1976,6 +1976,7 @@ class bab_Folders extends bab_handler
 
 		require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 		$this->oFmFolderSet = new BAB_FmFolderSet();
+
 		$oIdDgOwner = $this->oFmFolderSet->aField['iIdDgOwner'];
 		$oActive = $this->oFmFolderSet->aField['sActive'];
 		$oId = $this->oFmFolderSet->aField['iId'];
@@ -1994,7 +1995,9 @@ class bab_Folders extends bab_handler
 			$oCriteria = $oCriteria->_and($oId->in(explode(',', $folderid)));
 		}
 
+		
 		$this->oFmFolderSet->select($oCriteria);
+		
 
 		while(null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
@@ -2003,7 +2006,7 @@ class bab_Folders extends bab_handler
 				array_push($this->IdEntries, $oFmFolder->getId());
 			}
 		}
-		$this->oFmFolderSet->select($oId->in($this->IdEntries));
+		$this->oFmFolderSet->select($oId->in($this->IdEntries), array('sName' => 'ASC'));
 		$this->count = $this->oFmFolderSet->count();
 		$this->ctx->curctx->push('CCount', $this->oFmFolderSet->count());
 	}

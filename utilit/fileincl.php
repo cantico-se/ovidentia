@@ -2296,7 +2296,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 //		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
-
+		
 		global $babDB;
 		$oResult = $babDB->db_query($sQuery);
 		$this->setMySqlResult($oResult);
