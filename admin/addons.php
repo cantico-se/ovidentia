@@ -1060,12 +1060,14 @@ function viewVersion()
 			$this->phpversiontxt = bab_translate("Php version");
 			$this->phpversion = phpversion();
 			$this->baseversiontxt = bab_translate("Database server version");
+			$this->basedirtxt = bab_translate("Web server base directory");
 			$db = $GLOBALS['babDB'];
 			$arr = $db->db_fetch_array($db->db_query("show variables like 'version'"));
 			$this->baseversion = $arr['Value'];
 			$this->urlphpinfo = $GLOBALS['babUrlScript']."?tg=sites&idx=phpinfo";
 			$this->phpinfo = "phpinfo";
 			$this->currentyear = date("Y");
+			$this->basedir = realpath('');
 			
 
 			$ini = new bab_inifile();
