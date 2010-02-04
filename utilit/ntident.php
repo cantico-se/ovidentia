@@ -87,6 +87,7 @@ if (!isset($_SESSION['BAB_SESS_NTREGISTER']))
 	$_SESSION['BAB_SESS_NTREGISTER2'] = false;
 	$_SESSION['BAB_SESS_NTREGISTER'] = true;
 	header('location:' . $GLOBALS['babUrl'] . $babPhpSelf);
+	exit;
 }
 
 if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == 'connexion')
