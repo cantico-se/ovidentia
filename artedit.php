@@ -1931,6 +1931,16 @@ function updateDocumentsArticleDraft($idart, &$message)
 		include_once $GLOBALS['babInstallPath']."utilit/fileincl.php";
 
 		$okfiles = 0;
+		$sfiles = bab_pp('sfiles', '');
+		if( !empty($sfiles))
+		{
+			$asfiles = explode(',', $sfiles );
+			for( $k = 0; $k < count($asfiles); $k++ )
+			{
+				$babDB->db_query("update ".BAB_ART_DRAFTS_FILES_TBL." set ordering='".$k."' where id='".$babDB->db_escape_string($asfiles[$k])."'");
+				$okfiles++;
+			}
+		}
 		$dfiles = bab_pp('dfiles', array());
 		if( count($dfiles))
 			{
