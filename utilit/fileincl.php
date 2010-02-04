@@ -1817,7 +1817,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 
 			if('Y' === $oFmFolder->getFileNotify())
 			{
-				fileNotifyMembers($filename, $oFolderFile->getPathName(), $oFolderFile->getOwnerId(),
+				fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), $oFolderFile->getOwnerId(),
 				bab_translate("A new version file has been uploaded"));
 			}
 
