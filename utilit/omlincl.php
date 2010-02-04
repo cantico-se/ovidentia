@@ -6124,7 +6124,7 @@ function format_output($val, $matches)
 				if( mb_strlen($val) > $arr[0] )
 					{
 					if (isset($arr[1])) {
-						$val = mb_substr($val, 0, $v).$arr[1];
+						$val = mb_substr($val, 0, $arr[0]).$arr[1];
 					} else {
 						$val = mb_substr($val, 0, $v);
 					}
