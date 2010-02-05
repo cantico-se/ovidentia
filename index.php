@@ -359,12 +359,13 @@ function printBody()
 		private $nbsectleft = null;
 		public $arrsectright = array();
 		private $nbsectright = null;
-		public $content;
+//		public $content;
 		public $message;
 		public $version;
 		public $search;
 		public $searchurl;
 		public $sContent;
+		public $styleSheet;
 
 		public function __construct()
 		{
@@ -425,12 +426,12 @@ function printBody()
 				$this->menuitems = count($this->menukeys);
 			}
 
-			$debug = bab_getDebug();
-			if (false === $debug) {
-				$debug = '';
-			}
-
-			$this->content = $debug.$babBody->printout();
+//			$debug = bab_getDebug();
+//			if (false === $debug) {
+//				$debug = '';
+//			}
+//
+//			$this->content = $debug.$babBody->printout();
 			$this->message = $babBody->message;
 			$this->title = $babBody->title;
 			$this->msgerror = $babBody->msgerror;
@@ -446,12 +447,27 @@ function printBody()
 		 */
 		public function __get($propertyName)
 		{
+			global $babBody;
+
 			switch ($propertyName) {
 
 				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
+				case 'content':
+					$debug = bab_getDebug();
+					if (false === $debug) {
+						$debug = '';
+					}
+					$this->content = $debug.$babBody->printout();
+					return $this->content;
+					
 				case 'nbsectleft':
+					$this->loadsections();
+					return $this->nbsectleft;
+
 				case 'nbsectright':
 					$this->loadsections();
+					return $this->nbsectright;
+
 				default:
 					return $this->$propertyName;
 			}
@@ -469,6 +485,7 @@ function printBody()
 			switch ($propertyName) {
 
 				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
+				case 'content':
 				case 'nbsectleft':
 				case 'nbsectright':
 					return true;
@@ -568,6 +585,19 @@ function printBody()
 			}
 			else
 				return false;
+		}
+	
+
+		public function getNextStyleSheet()
+		{
+			global $babBody;
+
+			list(,$this->styleSheet) = $babBody->getnextstylesheet();
+			if ($this->styleSheet) {
+				$this->styleSheet = $GLOBALS['babInstallPath'] . 'styles/' . $this->styleSheet;
+				return true;
+			}
+			return false;
 		}
 	}
 
