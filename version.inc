@@ -28,6 +28,7 @@ name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
 version="7.2.0"
+mod_xml="Available"
 
 ; forbidden_upgrades="6.3.0,6.3.1"
 
@@ -57,6 +58,10 @@ addons_directory="Available"
 
 encoding="UTF-8"
 
+;available since 7.2.90
+
+mod_dom="Available"
+
 
 [recommendations]
 register_globals="Off"
@@ -64,7 +69,6 @@ magic_quotes_gpc="Off"
 lang_directory="Available" 
 upload_directory="Available"
 images_directory="Available" 
-mod_xml="Available"
 mod_calendar="Available"
 mod_ldap="Available"
 versions_directory="Available"

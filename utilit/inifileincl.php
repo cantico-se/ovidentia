@@ -471,6 +471,16 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	function require_mod_dom($value) {
+		
+		$status = extension_loaded('dom');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'dom'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
 	function require_mod_soap($value) {
 		
 		$status = extension_loaded('soap');
