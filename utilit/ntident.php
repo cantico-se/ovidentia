@@ -58,6 +58,7 @@ function NTuserLogin($nickname)
 				$_SESSION['BAB_SESS_USERID'] = $GLOBALS['BAB_SESS_USERID'];
 				$_SESSION['BAB_SESS_HASHID'] = $GLOBALS['BAB_SESS_HASHID'];
 			}
+			require_once dirname(__FILE__).'/loginIncl.php';
 			bab_logUserConnectionToStat($GLOBALS['BAB_SESS_USERID']);
 			return true;
 		}
