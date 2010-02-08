@@ -6095,5 +6095,35 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
+	/**
+	 * Upgrade to 7.2.90
+	 */
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/omlincl.php');
+	}
+	
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlChart.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlChart.php');
+	}
+	
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldeleg.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldeleg.php');
+	}
+	
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldir.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldir.php');
+	}
+	
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmltm.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
+	}
+	
+	
+	
 	return true;
 }

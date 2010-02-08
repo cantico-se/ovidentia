@@ -39,3 +39,28 @@ $functionalities->register('Archive'				, $GLOBALS['babInstallPath'].'utilit/arc
 $functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 $functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/omlincl.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/omlincl.php');
+}
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlChart.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlChart.php');
+}
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldeleg.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldeleg.php');
+}
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldir.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldir.php');
+}
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmltm.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
+}

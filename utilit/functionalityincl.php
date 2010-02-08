@@ -448,6 +448,29 @@ class bab_functionalities {
 		return true;
 	}
 
+	/**
+	 * find Func classes in php file with a preg_match_all
+	 * @since 7.2.90
+	 * 
+	 * @param	string	$file	full absolute path to php file
+	 * @return array
+	 */
+	public function parseFile($file)
+	{
+		$return = array();
+		$contents = file_get_contents($file);
+		
+		if (preg_match_all('/class\s+Func_([_\w]+)\s+extends\s+/', $contents, $matches)) {
+			foreach($matches[1] as $func) {
+				$arr = explode('_', $func);
+				$return[] = implode('/', $arr);
+			}
+		}
+		
+		return $return;
+	}
+	
+	
 
 	/**
 	 * Registers the specified functionality class into the functionality tree.

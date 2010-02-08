@@ -128,7 +128,7 @@ class bab_inifile_requirements {
 		);
 	}
 
-	function return_bytes($val) {
+	public static function return_bytes($val) {
 	   $val = trim($val);
 	   $last = mb_strtolower($val{mb_strlen($val)-1});
 	   switch($last) {
@@ -145,7 +145,7 @@ class bab_inifile_requirements {
 	
 	
 	
-	function getIniMaxUpload() {
+	public static function getIniMaxUpload() {
 		$upload_max_filesize = bab_inifile_requirements::return_bytes(ini_get('upload_max_filesize'));
 		$post_max_size = bab_inifile_requirements::return_bytes(ini_get('post_max_size'));
 		return $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size; 
@@ -161,7 +161,7 @@ class bab_inifile_requirements {
 
 		$current = bab_inifile_requirements::getIniMaxUpload();
 		$current_display = sprintf("%dM",$current/1024/1024);
-		$result = $current >= $this->return_bytes($value);
+		$result = $current >= self::return_bytes($value);
 		
 		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
 		
@@ -679,7 +679,7 @@ class bab_inifile_requirements {
 	
 	function require_mysql_max_allowed_packet($value) {
 
-		$value = $this->return_bytes($value);
+		$value = self::return_bytes($value);
 		$error = null;
 		
 		global $babDB;

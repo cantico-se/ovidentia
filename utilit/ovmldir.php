@@ -25,17 +25,17 @@ include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
 
 
-class bab_DbDirectories extends bab_handler
+class Func_Ovml_Container_DbDirectories extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
 	var $IdEntries = array();
 	var $res;
 
-	function bab_DbDirectories( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$directoryid = $ctx->get_value('directoryid');
 		$directorytype = mb_strtolower($ctx->get_value('type'));
 		$delegationid = (int) $ctx->get_value('delegationid');
@@ -89,7 +89,7 @@ class bab_DbDirectories extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -114,19 +114,19 @@ class bab_DbDirectories extends bab_handler
 }
 
 
-class bab_DbDirectory extends bab_DbDirectories
+class Func_Ovml_Container_DbDirectory extends Func_Ovml_Container_DbDirectories
 {
 
-	function bab_DbDirectory( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$directoryid = $ctx->get_value('directoryid');
 		if( $directoryid !== false && !empty($directoryid) )
 			{
-			$this->bab_DbDirectories($ctx);
+			parent::setOvmlContext($ctx);
 			}
 		else
 			{
-			$this->bab_handler($ctx);
+			parent::setOvmlContext($ctx);
 			$this->count = 0;
 			$this->ctx->curctx->push('CCount', $this->count);
 			}
@@ -135,17 +135,17 @@ class bab_DbDirectory extends bab_DbDirectories
 }
 
 
-class bab_DbDirectoryFields extends bab_handler
+class Func_Ovml_Container_DbDirectoryFields extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
 	var $IdEntries = array();
 	var $res;
 
-	function bab_DbDirectoryFields( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$directoryid = $ctx->get_value('directoryid');
 		if( $directoryid !== false && !empty($directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $directoryid) )
 			{
@@ -188,7 +188,7 @@ class bab_DbDirectoryFields extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -211,7 +211,7 @@ class bab_DbDirectoryFields extends bab_handler
 
 
 
-class bab_DbDirectoryMembers extends bab_handler
+class Func_Ovml_Container_DbDirectoryMembers extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -221,10 +221,10 @@ class bab_DbDirectoryMembers extends bab_handler
 	var $dirfields = array();
 	var $accountid;
 
-	function bab_DbDirectoryMembers( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$this->directoryid = $ctx->get_value('directoryid');
 		if( $this->directoryid !== false && !empty($this->directoryid) && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $this->directoryid) )
 			{
@@ -393,7 +393,7 @@ class bab_DbDirectoryMembers extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -447,14 +447,14 @@ class bab_DbDirectoryMembers extends bab_handler
 }
 
 
-class bab_DbDirectoryMemberFields extends bab_handler
+class Func_Ovml_Container_DbDirectoryMemberFields extends Func_Ovml_Container
 {
 	var $handler;
 
-	function bab_DbDirectoryMemberFields( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$this->bab_handler($ctx);
-		$this->handler = $ctx->get_handler('bab_DbDirectoryMembers');
+		parent::setOvmlContext($ctx);
+		$this->handler = $ctx->get_handler('Func_Ovml_Container_DbDirectoryMembers');
 		if( $this->handler !== false && $this->handler !== '' )
 			{
 			$this->count = count($this->handler->IdEntries);
@@ -466,7 +466,7 @@ class bab_DbDirectoryMemberFields extends bab_handler
 
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -499,7 +499,7 @@ class bab_DbDirectoryMemberFields extends bab_handler
 }
 
 
-class bab_DbDirectoryEntry extends bab_handler
+class Func_Ovml_Container_DbDirectoryEntry extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -509,10 +509,10 @@ class bab_DbDirectoryEntry extends bab_handler
 	var $userid;
 
 
-	function bab_DbDirectoryEntry( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$this->directoryid = $ctx->get_value('directoryid');
 		$this->count = 0;
 
@@ -582,7 +582,7 @@ class bab_DbDirectoryEntry extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -622,14 +622,14 @@ class bab_DbDirectoryEntry extends bab_handler
 }
 
 
-class bab_DbDirectoryEntryFields extends bab_handler
+class Func_Ovml_Container_DbDirectoryEntryFields extends Func_Ovml_Container
 {
 	var $handler;
 
-	function bab_DbDirectoryEntryFields( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$this->bab_handler($ctx);
-		$this->handler = $ctx->get_handler('bab_DbDirectoryEntry');
+		parent::setOvmlContext($ctx);
+		$this->handler = $ctx->get_handler('Func_Ovml_Container_DbDirectoryEntry');
 		if( $this->handler !== false && $this->handler !== '' )
 			{
 			$this->count = count($this->handler->IdEntries);
@@ -641,7 +641,7 @@ class bab_DbDirectoryEntryFields extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -679,7 +679,7 @@ class bab_DbDirectoryEntryFields extends bab_handler
 }
 
 
-class bab_DbDirectoryAcl extends bab_handler
+class Func_Ovml_Container_DbDirectoryAcl extends Func_Ovml_Container
 {
 	var $IdEntries = array();
 	var $ctx;
@@ -687,10 +687,10 @@ class bab_DbDirectoryAcl extends bab_handler
 	var $idx = 0;
 	var $count = 0;
 
-	function bab_DbDirectoryAcl( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babBody, $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$directoryid = $ctx->get_value('directoryid');
 
 		if( $directoryid !== false && $directoryid !== '' )
@@ -744,7 +744,7 @@ class bab_DbDirectoryAcl extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 		if( $this->idx < $this->count)
@@ -765,4 +765,3 @@ class bab_DbDirectoryAcl extends bab_handler
 	}
 }
 
-?>

@@ -27,7 +27,7 @@ include 'base.php';
 
 class BAB_PathUtil
 {
-	function sanitize($sPath)
+	public static function sanitize($sPath)
 	{
 		$sPath = str_replace('\\', '/', $sPath);
 		
@@ -61,7 +61,7 @@ class BAB_PathUtil
 		return $sPath;
 	}
 	
-	function addEndSlash($sPath)
+	public static function addEndSlash($sPath)
 	{
 		if(is_string($sPath))
 		{
@@ -78,7 +78,7 @@ class BAB_PathUtil
 		return $sPath;
 	}
 	
-	function removeEndSlah($sPath)
+	public static function removeEndSlah($sPath)
 	{
 		if(is_string($sPath))
 		{
@@ -95,7 +95,7 @@ class BAB_PathUtil
 		return $sPath;
 	}
 	
-	function haveEndSlash($sPath)
+	public static function haveEndSlash($sPath)
 	{
 		$iLength = mb_strlen(trim($sPath));
 		if($iLength > 0)
@@ -106,7 +106,7 @@ class BAB_PathUtil
 		return false;	
 	}
 	
-	function removeEndSlashes($sPath)
+	public static function removeEndSlashes($sPath)
 	{
 		while(BAB_PathUtil::haveEndSlash($sPath))
 		{
@@ -115,7 +115,7 @@ class BAB_PathUtil
 		return $sPath;
 	}
 	
-	function sanitizePathItem($sPathItem)
+	public static function sanitizePathItem($sPathItem)
 	{
 		if(is_string($sPathItem) && mb_strlen(trim($sPathItem)) > 0)
 		{
@@ -130,4 +130,3 @@ class BAB_PathUtil
 		return $sPathItem;
 	}
 }
-?>

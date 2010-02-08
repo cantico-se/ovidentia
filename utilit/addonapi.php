@@ -2608,11 +2608,12 @@ function bab_getInstance($classname) {
  * @since 6.6.90
  */
 class bab_functionality {
+	
 
 	/**
 	 * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
 	 */
-	public function bab_functionality() {}
+	public function bab_functionality() { }
 
 
 	public static function getRootPath() {
@@ -2623,12 +2624,10 @@ class bab_functionality {
 	/**
 	 * Include php file with the functionality class
 	 * @see bab_functionality::get()
-	 * @access public
-	 * @static
 	 * @param	string	$path		path to functionality
 	 * @return string | false		the object class name or false if the file allready included or false if the include failed
 	 */
-	public function includefile($path) {
+	public static function includefile($path) {
 		$include_result = /*@*/include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
 		
 		if (false === $include_result) {
@@ -2646,13 +2645,11 @@ class bab_functionality {
 	 * a singleton, i.e. there will be at most one instance of the functionality
 	 * at a given time.
 	 * 
-	 * @access public
-	 * @static
 	 * @param	string	$path		The functionality path.
 	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
 	 * @return	object				The functionality object or false on error.
 	 */
-	public function get($path, $singleton = true) {
+	public static function get($path, $singleton = true) {
 		$classname = bab_functionality::includefile($path);
 		if (!$classname) {
 			return false;
@@ -2665,12 +2662,10 @@ class bab_functionality {
 	
 	/**
 	 * get functionalities compatible with the interface
-	 * @access public
-	 * @static
 	 * @param	string	$path
 	 * @return array
 	 */
-	public function getFunctionalities($path) {
+	public static function getFunctionalities($path) {
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$obj = new bab_functionalities();
 		return $obj->getChildren($path);

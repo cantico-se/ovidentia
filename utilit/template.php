@@ -101,7 +101,7 @@ class bab_TemplateCache
 	 * @access public
 	 * @static
 	 */
-	function get($filename, $section)
+	public static function get($filename, $section)
 	{
 		$cache =& bab_TemplateCache_getStore();
 		if (isset($cache[$filename . '/' . $section])) {
@@ -119,7 +119,7 @@ class bab_TemplateCache
 	 * @access public
 	 * @static
 	 */
-	function set($filename, $section, $parsedTemplate)
+	public static function set($filename, $section, $parsedTemplate)
 	{
 		$cache =& bab_TemplateCache_getStore();
 		$cache[$filename . '/' . $section] = $parsedTemplate;

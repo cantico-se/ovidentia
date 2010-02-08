@@ -29,12 +29,9 @@ class bab_CategoryCache
 {
 	var $aCache = array();
 	
-	function bab_CategoryCache()
-	{
-		
-	}
+
 	
-	function getCategory($iIdCategory)
+	public function getCategory($iIdCategory)
 	{
 		if(!array_key_exists($iIdCategory, $this->aCache))
 		{
@@ -51,7 +48,7 @@ class bab_CategoryCache
 		return $aCache[$iIdCategory];
 	}
 	
-	function getCategoryInfo($iIdCategory)
+	public function getCategoryInfo($iIdCategory)
 	{
 		global $babDB;
 		$oResult = $babDB->db_query('select * from ' . BAB_DG_CATEGORIES_TBL . ' WHERE id IN( ' . $babDB->quote($iIdCategory) . ')');
@@ -69,7 +66,7 @@ class bab_CategoryCache
 }
 
 
-class bab_Delegations extends bab_handler
+class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -77,10 +74,10 @@ class bab_Delegations extends bab_handler
 
 	var $oCategoryCache = null;
 	
-	function bab_Delegations( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		
 		$this->oCategoryCache = new bab_CategoryCache();
 		
@@ -139,7 +136,7 @@ class bab_Delegations extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 	
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -181,19 +178,19 @@ class bab_Delegations extends bab_handler
 	}
 }
 
-class bab_Delegation extends bab_Delegations
+class Func_Ovml_Container_Delegation extends Func_Ovml_Container_Delegations
 {
 
-	function bab_Delegation( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$delegationid = $ctx->get_value('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
-			$this->bab_Delegations($ctx);
+			parent::setOvmlContext($ctx);
 			}
 		else
 			{
-			$this->bab_handler($ctx);
+			parent::setOvmlContext($ctx);
 			$this->count = 0;
 			$this->ctx->curctx->push('CCount', $this->count);
 			}
@@ -201,7 +198,7 @@ class bab_Delegation extends bab_Delegations
 
 }
 
-class bab_DelegationsManaged extends bab_handler
+class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -209,10 +206,10 @@ class bab_DelegationsManaged extends bab_handler
 
 	var $oCategoryCache = null;
 	
-	function bab_DelegationsManaged( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		
 		$this->oCategoryCache = new bab_CategoryCache();
 		
@@ -245,7 +242,7 @@ class bab_DelegationsManaged extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -285,19 +282,19 @@ class bab_DelegationsManaged extends bab_handler
 	}
 }
 
-class bab_DelegationManaged extends bab_Delegations
+class Func_Ovml_Container_DelegationManaged extends Func_Ovml_Container_Delegations
 {
 
-	function bab_DelegationManaged( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$delegationid = $ctx->get_value('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
-			$this->bab_Delegations($ctx);
+			parent::setOvmlContext($ctx);
 			}
 		else
 			{
-			$this->bab_handler($ctx);
+			parent::setOvmlContext($ctx);
 			$this->count = 0;
 			$this->ctx->curctx->push('CCount', $this->count);
 			}
@@ -306,16 +303,16 @@ class bab_DelegationManaged extends bab_Delegations
 }
 
 
-class bab_DelegationItems extends bab_handler
+class Func_Ovml_Container_DelegationItems extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
 	var $arr;
 
-	function bab_DelegationItems( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babDG;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$delegationid = $ctx->get_value('delegationid');
 
 		if( $delegationid !== false && $delegationid !== '' )
@@ -332,7 +329,7 @@ class bab_DelegationItems extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB, $babDG;
 
@@ -362,16 +359,16 @@ class bab_DelegationItems extends bab_handler
 	}
 }
 
-class bab_DelegationAdministrators extends bab_handler
+class Func_Ovml_Container_DelegationAdministrators extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
 	var $arr;
 
-	function bab_DelegationAdministrators( &$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babDG;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$delegationid = $ctx->get_value('delegationid');
 
 		if( $delegationid !== false && $delegationid !== '' )
@@ -386,7 +383,7 @@ class bab_DelegationAdministrators extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		global $babDB, $babDG;
 
@@ -410,16 +407,16 @@ class bab_DelegationAdministrators extends bab_handler
 
 
 
-class bab_DelegationsCategories extends bab_handler
+class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 {
 	var $iIndex		= 0;
 	var $iCount		= 0;
 	var $oResult	= null;
 
-	function bab_DelegationsCategories(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$this->iCount	= 0;
 		$categoryid		= $ctx->get_value('categoryid');
 		
@@ -443,7 +440,7 @@ class bab_DelegationsCategories extends bab_handler
 		$this->ctx->curctx->push('CCount', $this->iCount);
 	}
 	
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -480,22 +477,21 @@ class bab_DelegationsCategories extends bab_handler
 }
 
 
-class bab_DelegationsCategory extends bab_DelegationsCategories
+class Func_Ovml_Container_DelegationsCategory extends Func_Ovml_Container_DelegationsCategories
 {
 
-	function bab_DelegationsCategory(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$categoryid = $ctx->get_value('categoryid');
 		if($categoryid !== false && !empty($categoryid) )
 		{
-			$this->bab_DelegationsCategories($ctx);
+			parent::setOvmlContext($ctx);
 		}
 		else
 		{
-			$this->bab_handler($ctx);
+			parent::setOvmlContext($ctx);
 			$this->count = 0;
 			$this->ctx->curctx->push('CCount', $this->count);
 		}
 	}
 }
-?>

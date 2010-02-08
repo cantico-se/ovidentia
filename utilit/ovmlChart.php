@@ -38,20 +38,20 @@ require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
  * - OVEntityName
  * - OVEntityDescription
  */
-class bab_OrgUserEntities extends bab_handler
+class Func_Ovml_Container_OrgUserEntities extends Func_Ovml_Container
 {
 	var $aEntity = array();
 	
 	var $iIndex = 0;
 	var $iCount = 0;
 	
-	function bab_OrgUserEntities(&$context)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		parent::bab_handler($context);
+		parent::setOvmlContext($ctx);
 		
-		$iIdOrgChart	= (int) $context->get_value('orgChartId');
-		$iIdUser		= (int) $context->get_value('userId');
-		$sRoleType		= (string) $context->get_value('roleType');
+		$iIdOrgChart	= (int) $ctx->get_value('orgChartId');
+		$iIdUser		= (int) $ctx->get_value('userId');
+		$sRoleType		= (string) $ctx->get_value('roleType');
 		
 		if(0 === $iIdOrgChart)
 		{
@@ -87,7 +87,7 @@ class bab_OrgUserEntities extends bab_handler
 		}
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		$this->ctx->curctx->push('CIndex', $this->idx);
 		$this->ctx->curctx->push('EntityId', 0);
@@ -125,20 +125,20 @@ class bab_OrgUserEntities extends bab_handler
  * - OVEntityName
  * - OVEntityDescription
  */
-class bab_OrgPathToEntity extends bab_handler
+class Func_Ovml_Container_OrgPathToEntity extends Func_Ovml_Container
 {
 	var $aEntity	= array();
 	var $iIndex		= 0;
 	var $iCount		= 0;
 	var $oResult	= false;
 	
-	function bab_OrgPathToEntity(&$context)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		parent::bab_handler($context);
+		parent::setOvmlContext($ctx);
 		
-		$iIdEntity		= (int) $context->get_value('entityId');
-		$bIncludeEntity	= ('1' == (int) $context->get_value('includeEntity'));
-		$sOrder			= (string) $context->get_value('order');
+		$iIdEntity		= (int) $ctx->get_value('entityId');
+		$bIncludeEntity	= ('1' == (int) $ctx->get_value('includeEntity'));
+		$sOrder			= (string) $ctx->get_value('order');
 
 		$sQuery = bab_OCGetPathToNodeQuery($iIdEntity, $bIncludeEntity, $sOrder);		
 		//bab_debug($sQuery);
@@ -156,7 +156,7 @@ class bab_OrgPathToEntity extends bab_handler
 		}
 	}
 
-	function getnext()
+	public function getnext()
 	{
 		$this->ctx->curctx->push('CIndex', $this->idx);
 		$this->ctx->curctx->push('EntityId', 0);

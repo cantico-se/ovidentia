@@ -38,14 +38,14 @@ require_once $GLOBALS['babInstallPath'] . 'tmContext.php';
  * - OVSpaceName
  * - OVSpaceDescription
  */
-class bab_TmSpaces extends bab_handler
+class Func_Ovml_Container_TmSpaces extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
 	var $res;
 
 
-	function getProjectSpaces()
+	public function getProjectSpaces()
 	{
 		global $babDB;
 
@@ -71,11 +71,11 @@ class bab_TmSpaces extends bab_handler
 	 * @param bab_Context	$ctx
 	 * @return bab_TmSpaces
 	 */
-	function bab_TmSpaces(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babBody;
 
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$this->res = $this->getProjectSpaces();
 		$this->count = $babDB->db_num_rows($this->res);
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -87,7 +87,7 @@ class bab_TmSpaces extends bab_handler
 	 *
 	 * @return bool		FALSE if there are no more elements.
 	 */
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -122,7 +122,7 @@ class bab_TmSpaces extends bab_handler
  * - OVProjectName
  * - OVProjectDescription
  */
-class bab_TmProjects extends bab_handler
+class Func_Ovml_Container_TmProjects extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -134,11 +134,11 @@ class bab_TmProjects extends bab_handler
 	 * @param bab_Context	$ctx
 	 * @return bab_TmProjects
 	 */
-	function bab_TmProjects(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babBody;
 
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$spaceId = $ctx->get_value('spaceid');
 
 		// We look for all the project for which the user has visualisation rights.
@@ -177,7 +177,7 @@ class bab_TmProjects extends bab_handler
 	 *
 	 * @return bool		FALSE if there are no more elements.
 	 */
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -242,7 +242,7 @@ class bab_TmProjects extends bab_handler
  * - OVPlannedCost 
  * - OVPriority
  */
-class bab_TmTasks extends bab_handler
+class Func_Ovml_Container_TmTasks extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -252,7 +252,7 @@ class bab_TmTasks extends bab_handler
 	 * @param bab_context	$ctx
 	 * @return bab_TmTasks
 	 */
-	function bab_TmTasks(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babBody;
 
@@ -274,7 +274,7 @@ class bab_TmTasks extends bab_handler
 						'TaskClass' => 'iClass'
 						);
 
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$aFilter = array();
 
 		if ($idProject = $ctx->get_value('projectid'))
@@ -339,7 +339,7 @@ class bab_TmTasks extends bab_handler
 	 *
 	 * @return bool		FALSE if there are no more elements.
 	 */
-	function getnext()
+	public function getnext()
 	{
 		global $babDB;
 
@@ -419,7 +419,7 @@ class bab_TmTasks extends bab_handler
  * - OVTaskFieldType			The additionnal field type in integer value
  * - OVTaskFieldTypeName		The additionnal field type in string
  */
-class bab_TmTaskFields extends bab_handler
+class Func_Ovml_Container_TmTaskFields extends Func_Ovml_Container
 {
 	var $index;
 	var $count;
@@ -429,11 +429,11 @@ class bab_TmTaskFields extends bab_handler
 	 * @param bab_context	$ctx
 	 * @return bab_TmTasks
 	 */
-	function bab_TmTaskFields(&$ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB, $babBody;
 
-		$this->bab_handler($ctx);
+		parent::setOvmlContext($ctx);
 		$aTask		= array();
 		$iIdTask	= (int) $ctx->get_value('taskid');
 
@@ -460,7 +460,7 @@ class bab_TmTaskFields extends bab_handler
 	 *
 	 * @return bool		FALSE if there are no more elements.
 	 */
-	function getnext()
+	public function getnext()
 	{
 		if($this->idx < $this->count)
 		{
