@@ -6210,12 +6210,12 @@ var $gctx; /* global context */
 		
 		$cls = @bab_functionality::get('Ovml/Container/'.$handler);
 		
-		if (null === $cls) {
+		if (false === $cls) {
 			if( $fprint == 'object' )
 				{
 				return null;
 				}
-			return $txt;
+			return sprintf(bab_translate("OVML : the container %s does not exists"), BAB_TAG_CONTAINER.$handler);
 		}
 
 		
@@ -6456,11 +6456,10 @@ var $gctx; /* global context */
 							}
 						}
 						
-					$cls = bab_functionality::get('Ovml/Function/'.$handler);
+					$cls = @bab_functionality::get('Ovml/Function/'.$handler);
 					
 					if (false === $cls) {
-						bab_debug(sprintf('the function %s is missing', BAB_TAG_FUNCTION.$handler));
-						$val = '';
+						$val = sprintf(bab_translate("OVML : the function %s does not exists"), BAB_TAG_FUNCTION.$handler);
 					} else {
 						
 						$cls->setTemplate($this);
