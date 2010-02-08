@@ -7293,7 +7293,7 @@ class Func_Ovml_Function_Recurse extends Func_Ovml_Function {
 }
 	
 	
-class Func_Ovml_Function_Addons extends Func_Ovml_Function {
+class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 	
 	
 	
