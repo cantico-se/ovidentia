@@ -128,7 +128,33 @@ window.onload = function() {
 
 var bab_currentTooltip = null;
 
-
+/**
+ * Show or Hide an html element (with bab_tooltipPosition(), the html element will be displayed in a tooltip : it follows the mouse).
+ * This function can be called in this situation :
+ * 									<div id="myId">
+ * 									<div id="myElement" onmouseover="bab_showOnMouse("myId", true);" onmouseout="bab_showOnMouse("myId", false);">My datas</div>
+ * 
+ * Don't forget to call bab_tooltipPosition() before the call of bab_showOnMouse() :
+ * 									document.onmousemove = bab_tooltipPosition;
+ * 
+ * Example with jQuery framework :
+ * 		jQuery(document).ready(function() {
+ * 			jQuery(document).mousemove(function(e){
+ * 		    	bab_tooltipPosition(e);
+ * 		    });
+ * 					    
+ * 		    jQuery("#myElement").hover(function(e){
+ * 		    	bab_showOnMouse("myId", true);
+ * 		    });
+ * 			    
+ * 		    jQuery("#myElement").mouseout(function(e){
+ * 		    	bab_showOnMouse("myId", false);
+ * 		    });
+ * 		});
+ * 
+ * @param string tooltipId Identifiant of the html element (Example : myId <div id="myId"></div>)
+ * @param boolean on If true the html element will be displayed
+ */
 function bab_showOnMouse(tooltipId, on)
 {
 	var tooltip = document.getElementById(tooltipId);
@@ -157,7 +183,23 @@ function bab_showOnMouse(tooltipId, on)
 	}
 }
 
-
+/**
+ * Set the position of the mouse cursor (with bab_showOnMouse(), an html element will be displayed in a tooltip : it follows the mouse).
+ * This function can be called before the call of bab_showOnMouse() :
+ * 								document.onmousemove = bab_tooltipPosition;
+ * 
+ * Example with jQuery framework :
+ * 		jQuery(document).ready(function() {
+ * 			jQuery(document).mousemove(function(e){
+ * 		    	bab_tooltipPosition(e);
+ * 		    });
+ * 		});
+ * 
+ * See bab_showOnMouse() for more information
+ * 
+ * @param string tooltipId Identifiant of the html element (Example : myId <div id="myId"></div>)
+ * @param boolean on If true the html element will be displayed
+ */
 function bab_tooltipPosition(e)
 {
 	e = e || window.event;
