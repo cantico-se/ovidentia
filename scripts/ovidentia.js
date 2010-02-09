@@ -137,6 +137,9 @@ var bab_currentTooltip = null;
  * Don't forget to call bab_tooltipPosition() before the call of bab_showOnMouse() :
  * 									document.onmousemove = bab_tooltipPosition;
  * 
+ * Don't forget to import the javascript file :
+ * 				$GLOBALS['babBody']->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
+ * 
  * Example with jQuery framework :
  * 		jQuery(document).ready(function() {
  * 			jQuery(document).mousemove(function(e){
@@ -194,6 +197,9 @@ function bab_showOnMouse(tooltipId, on)
  * 		    	bab_tooltipPosition(e);
  * 		    });
  * 		});
+ * 
+ * Don't forget to import the javascript file :
+ * 				$GLOBALS['babBody']->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
  * 
  * See bab_showOnMouse() for more information
  * 
