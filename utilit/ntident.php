@@ -23,114 +23,119 @@
  */
 include_once 'base.php';
 
-function NTuserLogin($nickname)
-{
-	global $babBody, $babDB;
+require_once dirname(__FILE__).'/loginIncl.php';
+require_once dirname(__FILE__).'/urlincl.php';
 
-	$sql = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE nickname=' . $babDB->quote($nickname);
+
+/**
+ * Authenticate user by nickname
+ * @param string	$nickname
+ * @return bool
+ */
+function NTuserLoginAuth($nickname)
+{
+	global $babDB;
+	
+	if (empty($nickname)) {
+		// not supported
+		return false;
+	}
+	
+
+	$oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
+	if (false === $oAuthObject)
+	{
+		// ovidentia is not installed correctly
+		return false;
+	}
+
+	$sql = 'SELECT id FROM ' . BAB_USERS_TBL . ' WHERE nickname=' . $babDB->quote($nickname);
 
 	$result = $babDB->db_query($sql);
 	if ($babDB->db_num_rows($result) < 1)
 	{
-		$_SESSION['BAB_SESS_NTREGISTER'] = false;
+		// user not found
 		return false;
 	}
-	else
+	
+	
+	list($id_user) = $babDB->db_fetch_array($result);
+	
+	
+	if (!$oAuthObject->userCanLogin($id_user))
 	{
-		$arr = $babDB->db_fetch_array($result);
-		if ($arr['disabled'] != '1' && $arr['is_confirmed'] == '1')
-		{
-			$GLOBALS['BAB_SESS_NICKNAME'] = $arr['nickname'];
-			$GLOBALS['BAB_SESS_FIRSTNAME'] = $arr['firstname'];
-			$GLOBALS['BAB_SESS_LASTNAME'] = $arr['lastname'];
-			$GLOBALS['BAB_SESS_USER'] = bab_composeUserName($arr['firstname'], $arr['lastname']);
-			$GLOBALS['BAB_SESS_EMAIL'] = $arr['email'];
-			$GLOBALS['BAB_SESS_USERID'] = $arr['id'];
-			$GLOBALS['BAB_SESS_HASHID'] = $arr['confirm_hash'];
-			if (isset($_SESSION))
-			{
-				$_SESSION['BAB_SESS_NTREGISTER'] = true;
-				$_SESSION['BAB_SESS_NICKNAME'] = $GLOBALS['BAB_SESS_NICKNAME'];
-				$_SESSION['BAB_SESS_FIRSTNAME'] = $GLOBALS['BAB_SESS_FIRSTNAME'];
-				$_SESSION['BAB_SESS_LASTNAME'] = $GLOBALS['BAB_SESS_LASTNAME'];
-				$_SESSION['BAB_SESS_USER'] = $GLOBALS['BAB_SESS_USER'];
-				$_SESSION['BAB_SESS_EMAIL'] = $GLOBALS['BAB_SESS_EMAIL'];
-				$_SESSION['BAB_SESS_USERID'] = $GLOBALS['BAB_SESS_USERID'];
-				$_SESSION['BAB_SESS_HASHID'] = $GLOBALS['BAB_SESS_HASHID'];
-			}
-			require_once dirname(__FILE__).'/loginIncl.php';
-			bab_logUserConnectionToStat($GLOBALS['BAB_SESS_USERID']);
-			return true;
-		}
-		else
-		{
-			$_SESSION['BAB_SESS_NTREGISTER'] = false;
-			return false;
-		}
+		// disabled account
+		return false;
 	}
+	
+	bab_setUserSessionInfo($id_user);
+	bab_logUserConnectionToStat($id_user);
+	bab_updateUserConnectionDate($id_user);
+	return true;
 }
 
-if (mb_substr($GLOBALS['babPhpSelf'], 0, 1) == '/')
-{
-	$babPhpSelf = mb_substr($GLOBALS['babPhpSelf'], 1);
-}
-else
-{
-	$babPhpSelf = $GLOBALS['babPhpSelf'];
-}
 
-if (!isset($_SESSION['BAB_SESS_NTREGISTER']))
+
+
+/**
+ * Redirect to same page with nickname in parameter
+ * @return unknown_type
+ */
+function NTuserLoginRedirect()
 {
-	if (!isset($_COOKIE['ntident']))
-	{
-		setcookie('ntident', 'connexion');
+	global $babBody;
+	
+	if (isset($_GET['NTidUser'])) {
+		return;
 	}
-	$_SESSION['BAB_SESS_NTREGISTER2'] = false;
-	$_SESSION['BAB_SESS_NTREGISTER'] = true;
-	header('location:' . $GLOBALS['babUrl'] . $babPhpSelf);
-}
-
-if (isset($NTidUser) && $_SESSION['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == 'connexion')
-{
-	if (NTuserLogin($NTidUser))
-	{
-		$_SESSION['BAB_SESS_NTREGISTER2'] = true;
-		$_SESSION['BAB_SESS_NTREGISTER'] = false;
-		$res = $babDB->db_query('SELECT datelog FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']));
-		if ($res && $babDB->db_num_rows($res) > 0)
-		{
-			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query('UPDATE ' . BAB_USERS_TBL . ' SET datelog=now(), lastlog=' . $babDB->quote($arr['datelog']) . ' WHERE id=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']));
-		}
-
-		$res = $babDB->db_query('SELECT * FROM ' . BAB_USERS_LOG_TBL . ' WHERE id_user=0 AND sessid=' . $babDB->quote(session_id()));
-		if ($res && $babDB->db_num_rows($res) > 0)
-		{
-			$arr = $babDB->db_fetch_array($res);
-			$babDB->db_query('UPDATE ' . BAB_USERS_LOG_TBL . ' SET id_user=' . $babDB->quote($GLOBALS['BAB_SESS_USERID']) . ' WHERE id=' . $babDB->quote($arr['id']));
-		}
-	}
-}
-
-
-if ($_SESSION['BAB_SESS_NTREGISTER'] && isset($_COOKIE['ntident']) && $_COOKIE['ntident'] == 'connexion')
-{
-	// This script must be included in the page.html template with a { script } template variable.
+	
+	$GLOBALS['babMeta'] = '';
+	$GLOBALS['babCss'] = '';
+	$GLOBALS['babOvidentiaJs'] = $GLOBALS['babInstallPath']."scripts/ovidentia.js";
+	
+	
 	// It will redirect here with the variable NTidUser set to the Windows(TM) user name.
-    $babBody->script .= '
-	try {
-		var WshShell = new ActiveXObject("WScript.Network");
-		var query = \'\' + this.location;
-		if (query.indexOf(\'?\') != -1 && query.indexOf (\'NTidUser\') == -1) {
-			window.location.href = query+"&NTidUser="+escape(WshShell.Username);
-		} else if (query.indexOf(\'NTidUser\') == -1) {
-			window.location.href = "'.$babPhpSelf.'?NTidUser="+escape(WshShell.Username);
+    $babBody->babPopup('
+	    <script type="text/javascript">
+	    //<![CDATA[
+	    
+	    function NTuserLoginRedirect(nickname) {
+	    	var query = \'\' + this.location;
+	    	if (query.indexOf(\'?\') != -1) {
+				window.location.href = query+"&NTidUser="+escape(nickname);
+			} else {
+				window.location.href = query+"?NTidUser="+escape(nickname);
+			}
+	    }
+	    
+		try {
+			var WshShell = new ActiveXObject("WScript.Network");
+			NTuserLoginRedirect(WshShell.Username);
+			
+	    } catch(e) { 
+	    	NTuserLoginRedirect(\'\');
 		}
-    } catch(e) { window.status = e.message; }
-    ';
+		
+		//]]>
+	    </script>
+    ');
 }
 
-if ($_SESSION['BAB_SESS_NTREGISTER2'] && $GLOBALS['BAB_SESS_USERID'])
+
+
+
+
+if (isset($_GET['NTidUser']) && empty($_SESSION['BAB_SESS_USERID']))
 {
-	$babCnxLink = 0;
+	// prevent more login redirect on login failure 
+	// or with manual disconnect
+	setcookie('BAB_NTLOGIN', 1);
+	
+	NTuserLoginAuth($_GET['NTidUser']);
+}
+
+
+if (empty($_SESSION['BAB_SESS_USERID']) && !isset($_COOKIE['BAB_NTLOGIN']))
+{
+	NTuserLoginRedirect();
 }
