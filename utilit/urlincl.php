@@ -226,9 +226,9 @@ class bab_url {
 	/**
 	 * add a header "location" for this URL and exit program
 	 * 
-	 * @since 7.1.94
+	 * @since 7.2.2
 	 */ 
-	public function goto() {
+	public function location() {
 		header('location:'.$this->url);
 		exit;
 	}
