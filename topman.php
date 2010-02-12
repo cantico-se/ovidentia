@@ -1696,8 +1696,8 @@ switch($idx)
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 			{
 			siteHomePage1($ids);
-			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-			$babBody->addItemMenu("hpub", bab_translate("Public2"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpriv", bab_translate("Private home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
 		}
 		else
@@ -1715,8 +1715,8 @@ switch($idx)
 		if( bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']) )
 			{
 			siteHomePage0($ids);
-			$babBody->addItemMenu("hpriv", bab_translate("Private"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
-			$babBody->addItemMenu("hpub", bab_translate("Public2"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpriv", bab_translate("Private home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpriv&ids=".$babBody->babsite['id']);
+			$babBody->addItemMenu("hpub", bab_translate("Public home page"),$GLOBALS['babUrlScript']."?tg=topman&idx=hpub&ids=".$babBody->babsite['id']);
 			}
 		}
 		else
