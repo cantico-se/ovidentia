@@ -324,7 +324,7 @@ class bab_siteMap {
 
 			
 		
-			$data = & new bab_siteMapItem();
+			$data = new bab_siteMapItem();
 			$data->id_function 		= $arr['id_function'];
 			$data->name 			= $arr['name'];
 			$data->description 		= $arr['description'];
@@ -339,7 +339,7 @@ class bab_siteMap {
 			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
 			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
 		
-			$node = & $rootNode->createNode($data, $node_list[$arr['id']]);
+			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
 			$rootNode->appendChild($node, $id_parent);
 		}
 

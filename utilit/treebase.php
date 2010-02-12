@@ -39,10 +39,10 @@ class bab_NodeList
 	var $_firstNode;
 /**#@-*/
 	
-	public function __construct(&$firstNode)
+	public function __construct(bab_Node $firstNode)
 	{
 		$this->_length = null;
-		$this->_firstNode =& $firstNode;
+		$this->_firstNode = $firstNode;
 	}
 
 	/**
@@ -52,9 +52,9 @@ class bab_NodeList
 	public function length()
 	{
 		$length = 0;
-		$node =& $this->_firstNode;
+		$node = $this->_firstNode;
 		while (!is_null($node)) {
-			$node =& $node->nextSibling();
+			$node = $node->nextSibling();
 			$length++;
 		}
 		return $length;
@@ -66,12 +66,12 @@ class bab_NodeList
 	 * @param int $n index of the node to fetch the node list (starting at 0).
 	 * @return bab_Node
 	 */
-	public function &item($n)
+	public function item($n)
 	{
 		$i = 0;
-		$node =& $this->_firstNode;
+		$node = $this->_firstNode;
 		while (!is_null($node) && $i < $n) {
-			$node =& $node->nextSibling();
+			$node = $node->nextSibling();
 			$i++;
 		}
 		return ($i === $n) ? $node : bab_Node::NULL_NODE();
@@ -105,20 +105,20 @@ class bab_Node
 /**#@-*/
 	
 	/**
-	 * @param bab_RootNode $rootNode
+	 * @param bab_RootNode | null $rootNode
 	 * @param string $id
 	 * @return bab_Node
 	 */
-	function __construct(&$rootNode, $id = null)
+	function __construct($rootNode, $id = null)
 	{
 		$this->_id = $id;
 		$this->_data = null;
-		$this->_nextSibling =& bab_Node::NULL_NODE();
-		$this->_previousSibling =& bab_Node::NULL_NODE();
-		$this->_parent =& bab_Node::NULL_NODE();
-		$this->_firstChild =& bab_Node::NULL_NODE();
-		$this->_lastChild =& bab_Node::NULL_NODE();
-		$this->_tree =& $rootNode;
+		$this->_nextSibling = bab_Node::NULL_NODE();
+		$this->_previousSibling = bab_Node::NULL_NODE();
+		$this->_parent = bab_Node::NULL_NODE();
+		$this->_firstChild = bab_Node::NULL_NODE();
+		$this->_lastChild = bab_Node::NULL_NODE();
+		$this->_tree = $rootNode;
 	}
 
 
@@ -127,7 +127,7 @@ class bab_Node
 	 * @static 
 	 * @return null
 	 */
-	public function &NULL_NODE()
+	public function NULL_NODE()
 	{
 		return $GLOBALS['BAB_NODE_NULL'];
 	}
@@ -137,16 +137,16 @@ class bab_Node
 	 * Sets the data associated to the node.
 	 * @param mixed $data
 	 */
-	public function setData(&$data)
+	public function setData($data)
 	{
-		$this->_data =& $data;
+		$this->_data = $data;
 	}
 
 	/**
 	 * Returns the data associated to the node.
 	 * @return mixed
 	 */
-	public function &getData()
+	public function getData()
 	{
 		return $this->_data;
 	}
@@ -164,7 +164,7 @@ class bab_Node
 	 * Returns the previous sibling of the node or null.
 	 * @return bab_Node
 	 */
-	public function &previousSibling()
+	public function previousSibling()
 	{
 		return $this->_previousSibling;
 	}
@@ -173,7 +173,7 @@ class bab_Node
 	 * Returns the next sibling of the node or null.
 	 * @return bab_Node
 	 */
-	public function &nextSibling()
+	public function nextSibling()
 	{
 		return $this->_nextSibling;
 	}
@@ -182,7 +182,7 @@ class bab_Node
 	 * Returns the parent of the node or null.
 	 * @return bab_Node
 	 */
-	public function &parentNode()
+	public function parentNode()
 	{
 		return $this->_parent;
 	}
@@ -191,7 +191,7 @@ class bab_Node
 	 * Returns the first child of the node or null.
 	 * @return bab_Node
 	 */
-	public function &firstChild()
+	public function firstChild()
 	{
 		return $this->_firstChild;
 	}
@@ -200,7 +200,7 @@ class bab_Node
 	 * Returns the last child of the node or null.
 	 * @return bab_Node
 	 */
-	public function &lastChild()
+	public function lastChild()
 	{
 		return $this->_lastChild;
 	}
@@ -247,16 +247,16 @@ class bab_Node
 	 * @param bab_Node $newNode
 	 * @return boolean
 	 */
-	public function appendChild(&$newNode)
+	public function appendChild(bab_Node $newNode)
 	{
 		if ($this->hasChildNodes()) {
-			$this->_lastChild->_nextSibling =& $newNode;
+			$this->_lastChild->_nextSibling = $newNode;
 		} else {
-			$this->_firstChild =& $newNode;
+			$this->_firstChild = $newNode;
 		}
-		$newNode->_previousSibling =& $this->_lastChild;
-		$this->_lastChild =& $newNode;
-		$newNode->_parent =& $this;
+		$newNode->_previousSibling = $this->_lastChild;
+		$this->_lastChild = $newNode;
+		$newNode->_parent = $this;
 		return true;
 	}
 
@@ -267,22 +267,22 @@ class bab_Node
 	 * @param bab_Node $refNode
 	 * @return boolean
 	 */
-	public function insertBefore(&$newNode, &$refNode)
+	public function insertBefore(bab_Node $newNode, bab_Node $refNode)
 	{
 		if ($refNode->isFirstChild()) {
-			$this->_firstChild =& $newNode;
+			$this->_firstChild = $newNode;
 		} elseif ($refNode->isLastChild()) {
-			$this->_lastChild =& $newNode;
-			$refNode->_previousSibling->_nextSibling =& $newNode;
+			$this->_lastChild = $newNode;
+			$refNode->_previousSibling->_nextSibling = $newNode;
 		} else {
-			$newNode->_previousSibling =& $refNode->_previousSibling;
-			$refNode->_previousSibling->_nextSibling =& $newNode;			
+			$newNode->_previousSibling = $refNode->_previousSibling;
+			$refNode->_previousSibling->_nextSibling = $newNode;			
 		}
 
-		$newNode->_parent =& $this;
+		$newNode->_parent = $this;
 
-		$refNode->_previousSibling =& $newNode;
-		$newNode->_nextSibling =& $refNode;
+		$refNode->_previousSibling = $newNode;
+		$newNode->_nextSibling = $refNode;
 		return true;
 	}
 
@@ -292,29 +292,29 @@ class bab_Node
 	 * @param bab_Node $node
 	 * @return bab_Node
 	 */
-	public function removeChild(&$node)
+	public function removeChild(bab_Node $node)
 	{
-		$node->_parent =& bab_Node::NULL_NODE();
+		$node->_parent = bab_Node::NULL_NODE();
 
 		if ($node->isFirstChild()) {
 			if ($node->isLastChild()) {
-				$this->_firstChild =& bab_Node::NULL_NODE();
-				$this->_lastChild =& bab_Node::NULL_NODE();
+				$this->_firstChild = bab_Node::NULL_NODE();
+				$this->_lastChild = bab_Node::NULL_NODE();
 			} else {
-				$this->_firstChild =& $node->_nextSibling;
-				$this->_firstChild->_previousSibling =& bab_Node::NULL_NODE();
-				$node->_nextSibling =& bab_Node::NULL_NODE();
+				$this->_firstChild = $node->_nextSibling;
+				$this->_firstChild->_previousSibling = bab_Node::NULL_NODE();
+				$node->_nextSibling = bab_Node::NULL_NODE();
 			}
 		} else {
 			if ($node->isLastChild()) {
-				$this->_lastChild =& $node->_previousSibling;
-				$node->_previousSibling->_nextSibling =& bab_Node::NULL_NODE();
-				$node->_previousSibling =& bab_Node::NULL_NODE();
+				$this->_lastChild = $node->_previousSibling;
+				$node->_previousSibling->_nextSibling = bab_Node::NULL_NODE();
+				$node->_previousSibling = bab_Node::NULL_NODE();
 			} else {
-				$node->_previousSibling->_nextSibling =& $node->_nextSibling;
-				$node->_nextSibling->_previousSibling =& $node->_previousSibling;
-				$node->_previousSibling =& bab_Node::NULL_NODE();
-				$node->_nextSibling =& bab_Node::NULL_NODE();
+				$node->_previousSibling->_nextSibling = $node->_nextSibling;
+				$node->_nextSibling->_previousSibling = $node->_previousSibling;
+				$node->_previousSibling = bab_Node::NULL_NODE();
+				$node->_nextSibling = bab_Node::NULL_NODE();
 			}			
 		}
         return $node;
@@ -327,36 +327,36 @@ class bab_Node
 	 * @param bab_Node $oldNode
 	 * @return bab_Node The node replaced.
 	 */
-	public function &replaceChild(&$newNode, &$oldNode)
+	public function replaceChild(bab_Node $newNode, bab_Node $oldNode)
 	{
-		$newNode->_parent =& $this;
+		$newNode->_parent = $this;
 
 		if ($oldNode->isFirstChild()) {
 			if ($oldNode->isLastChild()) {
-				$this->_firstChild =& $newNode;
-				$this->_lastChild =& $newNode;
+				$this->_firstChild = $newNode;
+				$this->_lastChild = $newNode;
 			} else {
-				$this->_firstChild =& $newNode;
-				$newNode->_nextSibling =& $oldNode->_nextSibling;
-				$newNode->_nextSibling->_previousSibling =& $newNode;
+				$this->_firstChild = $newNode;
+				$newNode->_nextSibling = $oldNode->_nextSibling;
+				$newNode->_nextSibling->_previousSibling = $newNode;
 			}
 		} else {
 			if ($node->isLastChild()) {
-				$this->_lastChild =& $newNode;
-				$oldNode->_previousSibling->_nextSibling =& $newNode;
-				$newNode->_previousSibling =& $oldNode->_previousSibling;
+				$this->_lastChild = $newNode;
+				$oldNode->_previousSibling->_nextSibling = $newNode;
+				$newNode->_previousSibling = $oldNode->_previousSibling;
 			} else {
-				$newNode->_previousSibling =& $oldNode->_previousSibling;
-				$oldNode->_previousSibling->_nextSibling =& $newNode;
-				$newNode->_nextSibling =& $oldNode->_nextSibling;
-				$oldNode->_nextSibling->_previousSibling =& $newNode;
+				$newNode->_previousSibling = $oldNode->_previousSibling;
+				$oldNode->_previousSibling->_nextSibling = $newNode;
+				$newNode->_nextSibling = $oldNode->_nextSibling;
+				$oldNode->_nextSibling->_previousSibling = $newNode;
 			}
 		}
-		$oldNode->_nextSibling =& bab_Node::NULL_NODE();
-		$oldNode->_previousSibling =& bab_Node::NULL_NODE();
-		$oldNode->_parent =& bab_Node::NULL_NODE();
-		$oldNode->_firstChild =& bab_Node::NULL_NODE();
-		$oldNode->_lastChild =& bab_Node::NULL_NODE();
+		$oldNode->_nextSibling = bab_Node::NULL_NODE();
+		$oldNode->_previousSibling = bab_Node::NULL_NODE();
+		$oldNode->_parent = bab_Node::NULL_NODE();
+		$oldNode->_firstChild = bab_Node::NULL_NODE();
+		$oldNode->_lastChild = bab_Node::NULL_NODE();
 
 		return $oldNode;
 	}
@@ -366,23 +366,23 @@ class bab_Node
 	 * @param bab_Node $firstNode
 	 * @access private
 	 */
-	private function _swapConsecutiveNodes(&$firstNode)
+	private function _swapConsecutiveNodes(bab_Node $firstNode)
 	{
-		$secondNode =& $firstNode->_nextSibling;
+		$secondNode = $firstNode->_nextSibling;
 		if ($firstNode->isFirstChild()) {
-			$firstNode->_parent->_firstChild =& $secondNode;
+			$firstNode->_parent->_firstChild = $secondNode;
 		} else {
-			$firstNode->_previousSibling->_nextSibling =& $secondNode;
+			$firstNode->_previousSibling->_nextSibling = $secondNode;
 		}
 		if ($secondNode->isLastChild()) {
-			$secondNode->_parent->_lastChild =& $firstNode;
+			$secondNode->_parent->_lastChild = $firstNode;
 		} else {
-			$secondNode->_nextSibling->_previousSibling =& $firstNode;
+			$secondNode->_nextSibling->_previousSibling = $firstNode;
 		}
-		$firstNode->_nextSibling =& $secondNode->_nextSibling;
-		$secondNode->_nextSibling =& $firstNode;
-		$secondNode->_previousSibling =& $firstNode->_previousSibling;
-		$firstNode->_previousSibling =& $secondNode;
+		$firstNode->_nextSibling = $secondNode->_nextSibling;
+		$secondNode->_nextSibling = $firstNode;
+		$secondNode->_previousSibling = $firstNode->_previousSibling;
+		$firstNode->_previousSibling = $secondNode;
 	}
 
 
@@ -395,28 +395,28 @@ class bab_Node
 	 * @param bab_Node $firstNode
 	 * @param bab_Node $secondNode
 	 */
-	private function _swapNodes(bab_Node &$second, bab_Node &$secondNode)
+	private function _swapNodes(bab_Node $second, bab_Node $secondNode)
 	{
 		if ($firstNode->nextSibling() === $secondNode) {
 			$this->_swapConsecutiveNodes($firstNode);
 		} else if ($secondNode->nextSibling() === $firstNode) {
 			$this->_swapConsecutiveNodes($secondNode);
 		} else {
-			$firstNodeParent =& $firstNode->_parent;
-			$firstNodePreviousSibling =& $firstNode->_previousSibling;
-			$firstNodeNextSibling =& $firstNode->_nextSibling;
+			$firstNodeParent = $firstNode->_parent;
+			$firstNodePreviousSibling = $firstNode->_previousSibling;
+			$firstNodeNextSibling = $firstNode->_nextSibling;
 
-			$secondNodeParent =& $firstNode->_parent;
-			$secondNodePreviousSibling =& $secondNode->_previousSibling;
-			$secondNodeNextSibling =& $secondNode->_nextSibling;
+			$secondNodeParent = $firstNode->_parent;
+			$secondNodePreviousSibling = $secondNode->_previousSibling;
+			$secondNodeNextSibling = $secondNode->_nextSibling;
 			
-			$firstNode->_parent =& $secondNodeParent;
-			$firstNode->_previousSibling =& $secondNodeNextSibling;
-			$firstNode->_nextSibling =& $secondNodeNextSibling;
+			$firstNode->_parent = $secondNodeParent;
+			$firstNode->_previousSibling = $secondNodeNextSibling;
+			$firstNode->_nextSibling = $secondNodeNextSibling;
 
-			$secondNode->_parent =& $firstNodeParent;
-			$secondNode->_previousSibling =& $firstNodePreviousSibling;
-			$secondNode->_nextSibling =& $firstNodeNextSibling;
+			$secondNode->_parent = $firstNodeParent;
+			$secondNode->_previousSibling = $firstNodePreviousSibling;
+			$secondNode->_nextSibling = $firstNodeNextSibling;
 		}
 	}
 
@@ -435,9 +435,9 @@ class bab_Node
 	public function sortChildNodes_deprecated()
 	{
 		$nodes = array();
-		$node =& $this->firstChild();
-		for ($i = 0; !is_null($node); $node =& $node->nextSibling()) {
-			$nodes[$i++] =& $node;
+		$node = $this->firstChild();
+		for ($i = 0; !is_null($node); $node = $node->nextSibling()) {
+			$nodes[$i++] = $node;
 		}
 		if ($i === 0)
 			return;
@@ -446,14 +446,14 @@ class bab_Node
 		for ($end = count($nodes) - 1; $changed && $end > 0; $end--) {
 			$changed = false;
 			for ($current = 0; $current < $end; $current++) {
-				$currentElement =& $nodes[$current]->getData();
-				$nextElement =& $nodes[$current + 1]->getData();
+				$currentElement = $nodes[$current]->getData();
+				$nextElement = $nodes[$current + 1]->getData();
 				if ($currentElement->compare($nextElement) > 0) {
 					$changed = true;
 					bab_Node::_swapConsecutiveNodes($nodes[$current]);
-					$temp =& $nodes[$current];
-					$nodes[$current] =& $nodes[$current + 1];
-					$nodes[$current + 1] =& $temp;
+					$temp = $nodes[$current];
+					$nodes[$current] = $nodes[$current + 1];
+					$nodes[$current + 1] = $temp;
 				}
 			}
 		}
@@ -475,12 +475,12 @@ class bab_Node
 	public function sortChildNodes()
 	{
 		$nodes = array();
-		while (!is_null($node = &$this->firstChild())) {
-			$nodes[] = &$this->removeChild($node);
+		while (!is_null($node = $this->firstChild())) {
+			$nodes[] = $this->removeChild($node);
 		}
 
 		usort($nodes, array($this, 'sortChildNodes_compare'));
-		foreach($nodes as &$node) {
+		foreach($nodes as $node) {
 			$this->appendChild($node);
 		}
 	}
@@ -501,10 +501,10 @@ class bab_Node
 	public function sortSubTree()
 	{
 		if ($this->hasChildNodes()) {
-			$node =& $this->firstChild();
+			$node = $this->firstChild();
 			while (!is_null($node)) {
 				$node->sortSubTree();
-				$node =& $node->_nextSibling;				
+				$node = $node->_nextSibling;				
 			}
 			$this->sortChildNodes();
 		}
@@ -584,7 +584,7 @@ class bab_RootNode extends bab_Node
 	 * @param string $id
 	 * @return bab_Node
 	 */
-	function &createNode(&$data, $id = null)
+	function createNode($data, $id = null)
 	{
 		if (!is_null($id) && array_key_exists($id, $this->_ids)) {
 			bab_debug(sprintf('Node id "%s" already exists.', $id));
@@ -593,7 +593,7 @@ class bab_RootNode extends bab_Node
 		$newNode =new bab_Node($this, $id);
 		$newNode->setData($data);
 		if (!is_null($newNode->getId())) {
-			$this->_ids[$newNode->getId()] =& $newNode;
+			$this->_ids[$newNode->getId()] = $newNode;
 		}
 		return $newNode;
 	}
@@ -603,7 +603,7 @@ class bab_RootNode extends bab_Node
 	 * @param bab_Node $root
 	 * @return bab_NodeIterator
 	 */
-	function &createNodeIterator(&$root)
+	function createNodeIterator($root)
 	{
 		$nodeIterator =new bab_NodeIterator($root);
 		return $nodeIterator;
@@ -616,7 +616,7 @@ class bab_RootNode extends bab_Node
 	 * @param string $id
 	 * @return bab_Node | null
 	 */
-	function &getNodeById($id)
+	function getNodeById($id)
 	{
 		if (array_key_exists($id, $this->_ids)) {
 			return $this->_ids[$id];
@@ -646,10 +646,10 @@ class bab_NodeIterator
 	/**
 	 * @param bab_Node $node	The starting node for the iterator.
 	 */
-	public function __construct(&$node)
+	public function __construct(bab_Node $node)
 	{
-		$this->_tree =& $node->_tree;
-		$this->_currentNode =& $node;
+		$this->_tree = $node->_tree;
+		$this->_currentNode = $node;
 		$this->_nodeStack = array();
 		$this->_levelStack = array();
 		$this->_level = 0;
@@ -670,25 +670,25 @@ class bab_NodeIterator
 	 * 
 	 * @return bab_Node
 	 */
-	public function &nextNode()
+	public function nextNode()
 	{
-		$node =& $this->_currentNode;
+		$node = $this->_currentNode;
 
 		if (!is_null($node)) {
 			
 			if ($node->hasChildNodes()) {
-				$sibling =& $node->nextSibling();
+				$sibling = $node->nextSibling();
 				if (!is_null($sibling) && $this->_level !== 0) {
-					$this->_nodeStack[] =& $sibling;
+					$this->_nodeStack[] = $sibling;
 					array_push($this->_levelStack, $this->_level);
 				}
-				$this->_currentNode =& $node->firstChild();
+				$this->_currentNode = $node->firstChild();
 				$this->_level++;
 			} else {
-				$this->_currentNode =& $node->nextSibling();
+				$this->_currentNode = $node->nextSibling();
 				if (is_null($this->_currentNode) && count($this->_nodeStack) > 0) {
 					end($this->_nodeStack);
-					$this->_currentNode =& $this->_nodeStack[key($this->_nodeStack)];
+					$this->_currentNode = $this->_nodeStack[key($this->_nodeStack)];
 					unset($this->_nodeStack[key($this->_nodeStack)]);
 					$this->_level = array_pop($this->_levelStack);
 				}
@@ -729,10 +729,10 @@ class bab_OrphanRootNode extends bab_RootNode
 		if (!isset($this->_orphansByParent[$newNodeId])) {
 			return;
 		}
-		$newNodeChildNodes =& $this->_orphansByParent[$newNodeId];
-		$newNode =& $this->getNodeById($newNodeId);	
+		$newNodeChildNodes = $this->_orphansByParent[$newNodeId];
+		$newNode = $this->getNodeById($newNodeId);	
 		foreach (array_keys($newNodeChildNodes) as $childId) {
-			$childNode =& $newNodeChildNodes[$childId];
+			$childNode = $newNodeChildNodes[$childId];
 			unset($newNodeChildNodes[$childId]);
 			unset($this->_orphans[$childNode->getId()]);
 			$newNode->appendChild($childNode);
@@ -747,9 +747,9 @@ class bab_OrphanRootNode extends bab_RootNode
 	 * @param string $id
 	 * @return bab_Node
 	 */
-	public function &createNode(&$data, $id = null)
+	public function createNode($data, $id = null)
 	{
-		$newNode =& parent::createNode($data, $id);
+		$newNode = parent::createNode($data, $id);
 		if (is_null($newNode)) {
 			return bab_Node::NULL_NODE();
 		}
@@ -767,7 +767,7 @@ class bab_OrphanRootNode extends bab_RootNode
 	 * @param string $id
 	 * @return boolean
 	 */
-	public function appendChild(&$newNode, $id = null)
+	public function appendChild(bab_Node $newNode, $id = null)
 	{
 		if (!($newNode instanceof bab_Node))
 			return false;
@@ -780,20 +780,20 @@ class bab_OrphanRootNode extends bab_RootNode
 			return false;
 		}
 
-		$parentNode =& $this->getNodeById($id);
+		$parentNode = $this->getNodeById($id);
 		if (!is_null($parentNode)) {
 			return $parentNode->appendChild($newNode);
 		}
 		if (array_key_exists($id, $this->_orphans)) {
-			$parentNode =& $this->_orphans[$id];
+			$parentNode = $this->_orphans[$id];
 			return $parentNode->appendChild($newNode);
 		}
 		
 		if (!array_key_exists($id, $this->_orphansByParent)) {
 			$this->_orphansByParent[$id] = array();
 		}
-		$this->_orphans[$newNodeId] =& $newNode;
-		$this->_orphansByParent[$id][] =& $newNode;
+		$this->_orphans[$newNodeId] = $newNode;
+		$this->_orphansByParent[$id][] = $newNode;
 		
 		return true;
 	}

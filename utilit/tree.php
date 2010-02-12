@@ -249,7 +249,7 @@ class bab_TreeViewElement
 	 * @param bab_TreeViewElement $element
 	 * @return int
 	 */
-	public function compare(&$element)
+	public function compare($element)
 	{
 		$diff = (int)$element->_rank - (int)$this->_rank;
 		if ($diff === 0) {
@@ -556,7 +556,7 @@ class bab_TreeView extends bab_Template
 	 * 
 	 * @return bab_TreeViewElement
 	 */
-	public function &createElement($id, $type, $title, $description, $link)
+	public function createElement($id, $type, $title, $description, $link)
 	{
 		$element =new bab_TreeViewElement($id, $type, $title, $description, $link);
 		return $element;
@@ -570,9 +570,9 @@ class bab_TreeView extends bab_Template
 	 * @param bab_TreeViewElement	$element	An element created by the method createElement.
 	 * @param string 				$parentId	The id of the parent element.
 	 */
-	public function appendElement(&$element, $parentId)
+	public function appendElement($element, $parentId)
 	{
-		$node =& $this->_rootNode->createNode($element, $element->_id);
+		$node = $this->_rootNode->createNode($element, $element->_id);
 		$this->_rootNode->appendChild($node, $parentId);
 		$this->_upToDate = false;
 		$this->onElementAppended($element, $parentId);
@@ -587,11 +587,11 @@ class bab_TreeView extends bab_Template
 	 */
 	public function removeElement($id)
 	{
-		$node =& $this->_rootNode->getNodeById($id);
+		$node = $this->_rootNode->getNodeById($id);
 		if (!isset($node)) {
 			return false;
 		}
-		$parentNode =& $node->parentNode();
+		$parentNode = $node->parentNode();
 		if (!isset($parentNode)) {
 			return false;
 		}
@@ -641,7 +641,7 @@ class bab_TreeView extends bab_Template
 		$this->t_previousLevel = $this->t_level;
 		$this->t_offsetPreviousLevel = $this->t_previousLevel + $this->t_baseLevel;
 
-		if ($node =& $this->_iterator->nextNode()) {
+		if ($node = $this->_iterator->nextNode()) {
 			$this->t_isFirstChild = $node->isFirstChild();
 			$this->t_isLastChild = $node->isLastChild();
 			$this->t_isMiddleChild = (!$node->isFirstChild() && !$node->isLastChild());
@@ -649,19 +649,19 @@ class bab_TreeView extends bab_Template
 
 			$this->t_level = $this->_iterator->level();
 			$this->t_offsetLevel = $this->t_level + $this->t_baseLevel;
-			$element =& $node->getData();
+			$element = $node->getData();
 			$this->t_fetchContentScript = $element->_fetchContentScript;
 			$this->t_highlighted = isset($this->_highlightedElements[$element->_id]);
 			$this->t_previousId = isset($this->t_id) ? $this->t_id : '';
 			$this->t_id = $this->_id . '.' . $element->_id;
-			$this->t_type =& $element->_type;
-			$this->t_title =& $element->_title;
-			$this->t_description =& $element->_description;
-			$this->t_link =& $element->_link;
-			$this->t_info =& $element->_info;
-			$this->t_tooltip =& $element->_tooltip;
-			$this->t_nodeIcon =& $element->_icon;
-			$this->_currentElement =& $element;
+			$this->t_type = $element->_type;
+			$this->t_title = $element->_title;
+			$this->t_description = $element->_description;
+			$this->t_link = $element->_link;
+			$this->t_info = $element->_info;
+			$this->t_tooltip = $element->_tooltip;
+			$this->t_nodeIcon = $element->_icon;
+			$this->_currentElement = $element;
 			reset($this->_currentElement->_actions);
 
 			$this->t_showRightElements = ($element->_info != '')
@@ -798,7 +798,7 @@ class bab_TreeView extends bab_Template
 	 * @param string $parentId
 	 * @deprecated
  	 */
-	public function onElementAppended(&$element, $parentId)
+	public function onElementAppended($element, $parentId)
 	{
 	}
 
@@ -1192,7 +1192,7 @@ class bab_ArticleTreeView extends bab_TreeView
 						$link = '';
 					}
 				}
-				$element =& $this->createElement('t' . self::ID_SEPARATOR . $topic['id'],
+				$element = $this->createElement('t' . self::ID_SEPARATOR . $topic['id'],
 												 $elementType,
 												 bab_toHtml($topic['category']),
 												 ''/*$topic['description']*/,
@@ -1235,7 +1235,7 @@ class bab_ArticleTreeView extends bab_TreeView
 			} else {
 				$label = bab_translate("Categories");
 			}
-			$element =& $this->createElement('c' . self::ID_SEPARATOR . '0',
+			$element = $this->createElement('c' . self::ID_SEPARATOR . '0',
 											 'categoryroot',
 											 $label,
 											 '',
@@ -1268,7 +1268,7 @@ class bab_ArticleTreeView extends bab_TreeView
 					$link = '';
 				}
 			}
-			$element =& $this->createElement('c' . self::ID_SEPARATOR . $category['id'],
+			$element = $this->createElement('c' . self::ID_SEPARATOR . $category['id'],
 											 $elementType,
 											 bab_toHtml($category['title']),
 											 '',
@@ -1314,7 +1314,7 @@ class bab_ArticleTreeView extends bab_TreeView
 					$link = '';
 				}
 			}
-			$element =& $this->createElement('a' . self::ID_SEPARATOR . $article['id'],
+			$element = $this->createElement('a' . self::ID_SEPARATOR . $article['id'],
 											 $elementType,
 											 bab_toHtml($article['title']),
 											 '',
@@ -1344,12 +1344,12 @@ class bab_ArticleTreeView extends bab_TreeView
 		$orders = $babDB->db_query($sql);
 		while ($order = $babDB->db_fetch_array($orders)) {
 			if ($order['type'] == 2) {
-				$node =& $this->getRootNode()->getNodeById('t' . self::ID_SEPARATOR . $order['id_topcat']);
+				$node = $this->getRootNode()->getNodeById('t' . self::ID_SEPARATOR . $order['id_topcat']);
 			} else {
-				$node =& $this->getRootNode()->getNodeById('c' . self::ID_SEPARATOR . $order['id_topcat']);
+				$node = $this->getRootNode()->getNodeById('c' . self::ID_SEPARATOR . $order['id_topcat']);
 			}
 			if (!is_null($node)) {
-				$element =& $node->getData();
+				$element = $node->getData();
 				$element->setRank(0x7FFFFFFF - $order['ordering']);
 			}
 		}
@@ -1380,19 +1380,19 @@ class bab_ArticleTreeView extends bab_TreeView
 		
 		$articles = $babDB->db_query($sql);
 		while ($article = $babDB->db_fetch_array($articles)) {
-			$node =& $this->getRootNode()->getNodeById('a' . self::ID_SEPARATOR . $article['id']);
+			$node = $this->getRootNode()->getNodeById('a' . self::ID_SEPARATOR . $article['id']);
 			if (!is_null($node)) {
-				$element =& $node->getData();
+				$element = $node->getData();
 				$element->setInfo($article['hits']);
 				$element->setRank((int)$article['hits']);
-				$node =& $node->parentNode();
+				$node = $node->parentNode();
 				while (!is_null($node)) {
-					$element =& $node->getData();
+					$element = $node->getData();
 					if ($element) {
 						$element->setInfo((int)$element->_info + (int)$article['hits']);
 						$element->setRank((int)$element->_rank + (int)$article['hits']);
 					}
-					$node =& $node->parentNode();			
+					$node = $node->parentNode();			
 				}
 			}
 		}
@@ -1417,20 +1417,20 @@ class bab_ArticleTreeView extends bab_TreeView
 			/* Here we remove empty topics if we show articles and if we don't want to select the topics */
 //			if ($this->hasAttributes(self::SHOW_ARTICLES) && $this->hasAttributes(self::SELECTABLE_TOPICS)) {
 //				do {
-//					$iterator =& $this->getRootNode()->createNodeIterator($this->getRootNode());
+//					$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 //					$deadBranches = array();
-//					while ($node =& $iterator->nextNode()) {
-//						$element =& $node->getData();
+//					while ($node = $iterator->nextNode()) {
+//						$element = $node->getData();
 //						if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'topic') !== false) { /* mb_strpos used because _type can be topic, topic clickable... */
 //							bab_debug($element);
-//							$deadBranches[] =& $node;
+//							$deadBranches[] = $node;
 //						}
 //					}
 //					$modified = (count($deadBranches) > 0);
 //					reset($deadBranches);
 //					foreach (array_keys($deadBranches) as $deadBranchKey) {
-//						$deadBranch =& $deadBranches[$deadBranchKey];
-//						$parentNode =& $deadBranch->parentNode();
+//						$deadBranch = $deadBranches[$deadBranchKey];
+//						$parentNode = $deadBranch->parentNode();
 //						if ($parentNode) {
 //							$parentNode->removeChild($deadBranch);
 //						}
@@ -1440,19 +1440,19 @@ class bab_ArticleTreeView extends bab_TreeView
 			
 			/* Here we remove empty categories */
 			do {
-				$iterator =& $this->getRootNode()->createNodeIterator($this->getRootNode());
+				$iterator = $this->getRootNode()->createNodeIterator($this->getRootNode());
 				$deadBranches = array();
-				while ($node =& $iterator->nextNode()) {
-					$element =& $node->getData();
+				while ($node = $iterator->nextNode()) {
+					$element = $node->getData();
 					if (!$node->hasChildNodes() && isset($element->_type) && mb_strpos($element->_type, 'category') !== false) { /* mb_strpos used because _type can be ctegory, category clickable... */
-						$deadBranches[] =& $node;
+						$deadBranches[] = $node;
 					}
 				}
 				$modified = (count($deadBranches) > 0);
 				reset($deadBranches);
 				foreach (array_keys($deadBranches) as $deadBranchKey) {
-					$deadBranch =& $deadBranches[$deadBranchKey];
-					$parentNode =& $deadBranch->parentNode();
+					$deadBranch = $deadBranches[$deadBranchKey];
+					$parentNode = $deadBranch->parentNode();
 					if ($parentNode) {
 						$parentNode->removeChild($deadBranch);
 					}
@@ -1635,7 +1635,7 @@ class bab_FileTreeView extends bab_TreeView
 		// We create a first-level node for each visible delegation.
 		foreach ($this->_visibleDelegations as $delegationId => $delegationName)
 		{
-			$element =& $this->createElement('d' . $delegationId,
+			$element = $this->createElement('d' . $delegationId,
 											 'foldercategory',
 											 $delegationName,
 											 '',
@@ -1677,8 +1677,8 @@ class bab_FileTreeView extends bab_TreeView
 
 		$folders = new BAB_FmFolderSet();
 
-		$oRelativePath =& $folders->aField['sRelativePath'];
-		$oName =& $folders->aField['sName'];
+		$oRelativePath = $folders->aField['sRelativePath'];
+		$oName = $folders->aField['sName'];
 
 		while ($file = $babDB->db_fetch_array($files)) {
 
@@ -1686,10 +1686,10 @@ class bab_FileTreeView extends bab_TreeView
 			$subdirs = explode('/', $filePath);
 				
 			$fileId = 'p' . self::ID_SEPARATOR . $file['id'];
-			$fileType =& $personalFileType;
+			$fileType = $personalFileType;
 			$rootId = 'pd' . self::ID_SEPARATOR . $file['id_owner'];
 			if (is_null($this->getRootNode()->getNodeById($rootId))) {
-				$element =& $this->createElement($rootId,
+				$element = $this->createElement($rootId,
 												 'foldercategory',
 												 bab_translate("Personal folders"),
 												 '',
@@ -1703,7 +1703,7 @@ class bab_FileTreeView extends bab_TreeView
 			foreach ($subdirs as $subdir) {
 				if (trim($subdir) !== '') {
 					if (is_null($this->getRootNode()->getNodeById($rootId . $parentId . ':' . $subdir))) {
-						$element =& $this->createElement($rootId . $parentId . ':' . $subdir,
+						$element = $this->createElement($rootId . $parentId . ':' . $subdir,
 														 $directoryType,
 														 $subdir,
 														 '',
@@ -1718,7 +1718,7 @@ class bab_FileTreeView extends bab_TreeView
 					$parentId .= ':' . $subdir;
 				}
 			}
-			$element =& $this->createElement($fileId,
+			$element = $this->createElement($fileId,
 											 $fileType,
 											 bab_toHtml($file['name']),
 											 '',
@@ -1743,11 +1743,11 @@ class bab_FileTreeView extends bab_TreeView
 
 		$folders = new BAB_FmFolderSet();
 
-		$oRelativePath =& $folders->aField['sRelativePath'];
-		$oIdDgOwner =& $folders->aField['iIdDgOwner'];
-		$oActive =& $folders->aField['sActive'];
-		$oHide =& $folders->aField['sHide'];
-		$oId =& $folders->aField['iId'];
+		$oRelativePath = $folders->aField['sRelativePath'];
+		$oIdDgOwner = $folders->aField['iIdDgOwner'];
+		$oActive = $folders->aField['sActive'];
+		$oHide = $folders->aField['sHide'];
+		$oId = $folders->aField['iId'];
 
 		$oCriteria = $oRelativePath->in($babDB->db_escape_like(''));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(array_keys($this->_visibleDelegations)));
@@ -1776,7 +1776,7 @@ class bab_FileTreeView extends bab_TreeView
 
 			if($this->_adminView || $bManager || $bDownload)
 			{
-				$element =& $this->createElement('d' . self::ID_SEPARATOR . $folder->getId(),
+				$element = $this->createElement('d' . self::ID_SEPARATOR . $folder->getId(),
 												 $elementType,
 												 bab_toHtml($folder->getName()),
 												 '',
@@ -1810,7 +1810,7 @@ class bab_FileTreeView extends bab_TreeView
         $rootPath = '';
 
         $folders = new BAB_FmFolderSet();
-        $oId =& $folders->aField['iId'];
+        $oId = $folders->aField['iId'];
         
         if ($folderId !== null) {
             $oFolder = $folders->get($oId->in($folderId));
@@ -1883,8 +1883,8 @@ class bab_FileTreeView extends bab_TreeView
 
         $folders = new BAB_FmFolderSet();
 
-        $oRelativePath =& $folders->aField['sRelativePath'];
-        $oName =& $folders->aField['sName'];
+        $oRelativePath = $folders->aField['sRelativePath'];
+        $oName = $folders->aField['sName'];
 
         while ($file = $babDB->db_fetch_array($files)) {
             $filePath = removeFirstPath($file['path']);
@@ -1904,14 +1904,14 @@ class bab_FileTreeView extends bab_TreeView
             } else {
             	$rootId = 'd' . self::ID_SEPARATOR . $folderId; // $file['id_owner'];
             }
-            $fileType =& $groupFileType;
+            $fileType = $groupFileType;
 
             $parentId = $rootId;
 
             foreach ($subdirs as $subdir) {
                 if (trim($subdir) !== '') {
                     if (is_null($this->getRootNode()->getNodeById($parentId . ':' . bab_toHtml($subdir)))) {
-                        $element =& $this->createElement($parentId . ':' . bab_toHtml($subdir),
+                        $element = $this->createElement($parentId . ':' . bab_toHtml($subdir),
                                                          $directoryType,
                                                          bab_toHtml($subdir),
                                                          '',
@@ -1927,7 +1927,7 @@ class bab_FileTreeView extends bab_TreeView
                 }
             }
             if ($this->hasAttributes(self::SHOW_FILES)) {
-                $element =& $this->createElement($fileId,
+                $element = $this->createElement($fileId,
                                                  $fileType,
                                                  bab_toHtml($file['name']),
                                                  '',
@@ -1976,19 +1976,19 @@ class bab_FileTreeView extends bab_TreeView
 
 		$files = $babDB->db_query($sql);
 		while ($file = $babDB->db_fetch_array($files)) {
-			$node =& $this->getRootNode()->getNodeById('g' . self::ID_SEPARATOR . $file['id']);
+			$node = $this->getRootNode()->getNodeById('g' . self::ID_SEPARATOR . $file['id']);
 			if (!is_null($node)) {
-				$element =& $node->getData();
+				$element = $node->getData();
 				$element->setInfo($file['hits']);
 				$element->setRank((int)$file['hits']);
-				$node =& $node->parentNode();
+				$node = $node->parentNode();
 				while (!is_null($node)) {
-					$element =& $node->getData();
+					$element = $node->getData();
 					if ($element) {
 						$element->setInfo((int)$element->_info + (int)$file['hits']);
 						$element->setRank((int)$element->_rank + (int)$file['hits']);
 					}
-					$node =& $node->parentNode();
+					$node = $node->parentNode();
 				}
 			}
 		}
@@ -2022,7 +2022,7 @@ class bab_FileTreeView extends bab_TreeView
 		if (!is_null($this->_startFolderId))
 		{
 			$nodeId = 'd' . self::ID_SEPARATOR . $this->_startFolderId;
-			$node =& $this->getRootNode()->getNodeById($nodeId);
+			$node = $this->getRootNode()->getNodeById($nodeId);
 			$this->_iterator = $this->getRootNode()->createNodeIterator($node);
 			$this->_iterator->nextNode();
 			$this->t_baseLevel = $this->_iterator->level() + 1;
@@ -2131,7 +2131,7 @@ class bab_ForumTreeView extends bab_TreeView
 		}
 		$rs = $babDB->db_query($sql);
 		while ($forum = $babDB->db_fetch_array($rs)) {
-			$element =& $this->createElement('forum' . self::ID_SEPARATOR . $forum['id'],
+			$element = $this->createElement('forum' . self::ID_SEPARATOR . $forum['id'],
 											 $forumType,
 											 bab_translate('Forum: ') . bab_toHtml($forum['name']),
 											 '',
@@ -2186,7 +2186,7 @@ class bab_ForumTreeView extends bab_TreeView
 				}
 				if (($this->hasAttributes(self::SHOW_POSTS)) && $post['id_parent'] !== '0'
 				    || $post['id_parent'] === '0') {
-					$element =& $this->createElement('post' . self::ID_SEPARATOR . $post['id'],
+					$element = $this->createElement('post' . self::ID_SEPARATOR . $post['id'],
 													 $elementType,
 													 bab_toHtml($post['subject']),
 													 '',
@@ -2224,9 +2224,9 @@ class bab_ForumTreeView extends bab_TreeView
 
 		$posts = $babDB->db_query($sql);
 		while ($post = $babDB->db_fetch_array($posts)) {
-			$node =& $this->getRootNode()->getNodeById('post' . self::ID_SEPARATOR . $post['id']);
+			$node = $this->getRootNode()->getNodeById('post' . self::ID_SEPARATOR . $post['id']);
 			if (!is_null($node)) {
-				$element =& $node->getData();
+				$element = $node->getData();
 				$element->setInfo($post['hits']);
 				$element->setRank((int)$post['hits']);
 			}
@@ -2235,14 +2235,14 @@ class bab_ForumTreeView extends bab_TreeView
 		// For each forum we calculate the total number of hits for all the posts in the forum.
 
 		// We loop over the forum nodes (ie. the siblings of the root node's first child).		
-		for ($forumNode =& $this->getRootNode()->firstChild(); !is_null($forumNode); $forumNode =& $forumNode->nextSibling()) {
+		for ($forumNode = $this->getRootNode()->firstChild(); !is_null($forumNode); $forumNode = $forumNode->nextSibling()) {
 			
 			if (!is_null($forumNode->_firstChild)) {
 				
 				$total = 0;
 				$iterator = $this->getRootNode()->createNodeIterator($forumNode->_firstChild);
 				// We iterate all the nodes under the current forum node and calculate the total hits.
-				while ($node =& $iterator->nextNode()) {
+				while ($node = $iterator->nextNode()) {
 					if (!is_null($node)) {
 						$total += (int)($node->_data->_info);
 					}
@@ -2371,7 +2371,7 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 		$categories = $babDB->db_query($sql);
 		while ($category = $babDB->db_fetch_array($categories)) {
-			$element =& $this->createElement('category' . self::ID_SEPARATOR . $category['id'],
+			$element = $this->createElement('category' . self::ID_SEPARATOR . $category['id'],
 											 $faqcategoryType,
 											 bab_translate('Category: ') . bab_toHtml($category['category']),
 											 '',
@@ -2417,7 +2417,7 @@ class bab_FaqTreeView extends bab_TreeView
 		}		
 		$subCategories = $babDB->db_query($sql);
 		while ($subCategory = $babDB->db_fetch_array($subCategories)) {
-			$element =& $this->createElement('subcat' . self::ID_SEPARATOR . $subCategory['id'],
+			$element = $this->createElement('subcat' . self::ID_SEPARATOR . $subCategory['id'],
 											 $faqsubcategoryType,
 											 bab_toHtml($subCategory['name']),
 											 '',
@@ -2449,7 +2449,7 @@ class bab_FaqTreeView extends bab_TreeView
 		}
 		$questions = $babDB->db_query($sql);
 		while ($question = $babDB->db_fetch_array($questions)) {
-			$element =& $this->createElement('question' . self::ID_SEPARATOR . $question['id'],
+			$element = $this->createElement('question' . self::ID_SEPARATOR . $question['id'],
 											 $questionType,
 											 bab_toHtml($question['question']),
 											 '',
@@ -2486,19 +2486,19 @@ class bab_FaqTreeView extends bab_TreeView
 
 		$faqs = $babDB->db_query($sql);
 		while ($faq = $babDB->db_fetch_array($faqs)) {
-			$node =& $this->getRootNode()->getNodeById('question' . self::ID_SEPARATOR . $faq['id']);
+			$node = $this->getRootNode()->getNodeById('question' . self::ID_SEPARATOR . $faq['id']);
 			if (!is_null($node)) {
-				$element =& $node->getData();
+				$element = $node->getData();
 				$element->setInfo($faq['hits']);
 				$element->setRank((int)$faq['hits']);
-				$node =& $node->parentNode();
+				$node = $node->parentNode();
 				while (!is_null($node)) {
-					$element =& $node->getData();
+					$element = $node->getData();
 					if ($element) {
 						$element->setInfo((int)$element->_info + (int)$faq['hits']);
 						$element->setRank((int)$element->_rank + (int)$faq['hits']);
 					}
-					$node =& $node->parentNode();			
+					$node = $node->parentNode();			
 				}
 			}
 		}
@@ -2622,7 +2622,7 @@ class bab_GroupTreeView extends bab_TreeView
 	 * @param string 				$parentId	The id of the parent element.
 	 * @access public
 	 */
-	public function appendElement(&$element, $parentId)
+	public function appendElement($element, $parentId)
 	{
 		parent::appendElement($element, $parentId);
 		$groupId = $element->getGroupId();
@@ -2663,7 +2663,7 @@ class bab_GroupTreeView extends bab_TreeView
 				$groupType .= ' clickable';
 			}
 
-			$element =& $this->createElement('group' . self::ID_SEPARATOR . $group['id'],
+			$element = $this->createElement('group' . self::ID_SEPARATOR . $group['id'],
 											 $groupType,
 											 bab_toHtml($groupName),
 											 '',
