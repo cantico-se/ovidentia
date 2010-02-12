@@ -115,7 +115,7 @@ class BAB_DateTime
 	 * @return string
      * 
 	 */
-	public static function getIsoDateTime()
+	public function getIsoDateTime()
 	{
 		return date("Y-m-d H:i:s", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
@@ -127,7 +127,7 @@ class BAB_DateTime
 	 * @return string
      * 
 	 */
-	public static function getIsoDate()
+	public function getIsoDate()
 	{
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
