@@ -415,7 +415,7 @@ class Func_Ovml_Container_Addon extends Func_Ovml_Container
 				$call = $addon->getName()."_ovml";
 				if( !empty($call)  && function_exists($call) )
 					{
-					$args = $ctx->get_variables('Func_Ovml_Container_Addon');
+					$args = $ctx->get_variables('Addon');
 					$this->IdEntries = $call($args);
 					}
 				}
