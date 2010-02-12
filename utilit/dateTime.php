@@ -51,12 +51,12 @@ class BAB_DateTime
 	 * @return BAB_DateTime
      * @access public
 	 */
-	function BAB_DateTime($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
+	public function __construct($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
 	{
 		$this->init($iYear, $iMonth, $iDay, $iHours, $iMinutes, $iSeconds);
 	}
 	
-	function init($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
+	public function init($iYear, $iMonth, $iDay, $iHours = 0, $iMinutes = 0, $iSeconds = 0)
 	{
 		$this->_aDate = getdate(mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear));
 
@@ -73,9 +73,9 @@ class BAB_DateTime
 	 *
 	 * @param int $iTimeStamp	A unix timestamp
 	 * @return BAB_DateTime
-     * @access public
+     * 
 	 */
-	function fromTimeStamp($iTimeStamp)
+	public static function fromTimeStamp($iTimeStamp)
 	{
 		$aDate = getdate($iTimeStamp);
 		
@@ -88,9 +88,9 @@ class BAB_DateTime
 	 *
 	 * @param string $sIsoDateTime	Iso-formatted datetime string (eg. '2006-12-25 17:35:17')
 	 * @return BAB_DateTime
-     * @access public
+     * 
 	 */
-	function fromIsoDateTime($sIsoDateTime)
+	public static function fromIsoDateTime($sIsoDateTime)
 	{
 		$aDate = getdate(strtotime($sIsoDateTime));
 		
@@ -102,9 +102,9 @@ class BAB_DateTime
 	 * Returns a new BAB_DateTime corresponding to the present date and time.
 	 *
 	 * @return BAB_DateTime
-     * @access public
+     * 
 	 */
-	function now()
+	public static function now()
 	{
 		return BAB_DateTime::fromIsoDateTime(date("Y-m-d H:i:s"));
 	}
@@ -113,9 +113,9 @@ class BAB_DateTime
 	 * Returns an iso-formatted datetime string (YYYY-MM-DD HH:MM:SS) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * @access public
+     * 
 	 */
-	function getIsoDateTime()
+	public static function getIsoDateTime()
 	{
 		return date("Y-m-d H:i:s", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
@@ -125,9 +125,9 @@ class BAB_DateTime
 	 * Returns an iso-formatted date string (YYYY-MM-DD) corresponding to the BAB_DateTime.
 	 *
 	 * @return string
-     * @access public
+     * 
 	 */
-	function getIsoDate()
+	public static function getIsoDate()
 	{
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
@@ -135,72 +135,72 @@ class BAB_DateTime
 	
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getYear()
+	public function getYear()
 	{
 		return $this->_iYear;
 	}
 	
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getMonth()
+	public function getMonth()
 	{
 		return $this->_iMonth;
 	}
 	
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getDayOfMonth()
+	public function getDayOfMonth()
 	{
 		return $this->_aDate['mday'];
 	}
 	
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getDayOfYear()
+	public function getDayOfYear()
 	{
 		return $this->_aDate['yday'];
 	}
 
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getDayOfWeek()
+	public function getDayOfWeek()
 	{
 		return $this->_aDate['wday'];
 	}
 
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getHour() 
+	public function getHour() 
 	{
 		return $this->_iHours;
 	}
 
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getMinute() 
+	public function getMinute() 
 	{
 		return $this->_iMinutes;
 	}
 
 	/**
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getSecond() 
+	public function getSecond() 
 	{
 		return $this->_iSeconds;
 	}
@@ -208,9 +208,9 @@ class BAB_DateTime
 	/**
 	 * Elapsed time in the current day
 	 * @return int (seconds)
-     * @access public
+     * 
 	 */
-	function getDayTime()
+	public function getDayTime()
 	{
 		return $this->_iSeconds + (60*$this->_iMinutes) + (3600*$this->_iHours);
 	}
@@ -219,9 +219,9 @@ class BAB_DateTime
 	 * Returns a unix timestamp corresponding to the BAB_DateTime.
 	 *
 	 * @return int
-     * @access public
+     * 
 	 */
-	function getTimeStamp()  
+	public function getTimeStamp()  
 	{
 		if (!is_null($this->_aDate) && isset($this->_aDate[0])) {
 			return $this->_aDate[0];
@@ -238,10 +238,9 @@ class BAB_DateTime
      *
      * @return int  the number of the week in the year
      *
-     * @access public
-     * @static
+     * 
      */
-    function getWeekOfYear($day = 0, $month = 0, $year = 0)
+    public static function getWeekOfYear($day = 0, $month = 0, $year = 0)
     {
         if (empty($year)) {
             $year = strftime('%Y', time());
@@ -271,7 +270,7 @@ class BAB_DateTime
      * 							- BAB_DATETIME_SECOND
      * @access public
      */
-    function add($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
+    public function add($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
 	{
 		switch($iUnitType)
 		{
@@ -297,7 +296,7 @@ class BAB_DateTime
 	}
 
 
-	function less($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
+	public function less($iNbUnits, $iUnitType = BAB_DATETIME_DAY)
 	{
 		switch($iUnitType)
 		{
@@ -328,13 +327,13 @@ class BAB_DateTime
      *
      * Compares two dates.  Suitable for use in sorting functions.
      *
-     * @access public
+     * 
      * @param object BAB_DateTime $d1 the first date
      * @param object BAB_DateTime $d2 the second date
      * @return int 0 if the dates are equal, -1 if d1 is before d2, 1 if d1 is after d2
-     * @static
+     * 
      */
-    function compare($d1, $d2)
+    public static function compare($d1, $d2)
     {
         $iDays1 = BAB_DateTime::dateToDays($d1->_iDay, $d1->_iMonth, $d1->_iYear);
         $iDays2 = BAB_DateTime::dateToDays($d2->_iDay, $d2->_iMonth, $d2->_iYear);
@@ -367,10 +366,8 @@ class BAB_DateTime
      * @return int  the absolute number of days between the two dates.
      *               If an error occurs, -1 is returned.
      *
-     * @access public
-     * @static
      */
-    function dateDiff($day1, $month1, $year1, $day2, $month2, $year2)
+    public static function dateDiff($day1, $month1, $year1, $day2, $month2, $year2)
     {
         if (!BAB_DateTime::isValidDate($day1, $month1, $year1)) {
             return -1;
@@ -388,10 +385,8 @@ class BAB_DateTime
 	 * @param	string	ISO date
 	 * @return int  the absolute number of days between the two dates.
      *               If an error occurs, -1 is returned.
-	 * @access public
-	 * @static
 	 */
-	function dateDiffIso($date1, $date2) {
+	public static function dateDiffIso($date1, $date2) {
 
 		list($year1, $month1, $day1) = explode('-',$date1);
 		list($year2, $month2, $day2) = explode('-',$date2);
@@ -412,10 +407,9 @@ class BAB_DateTime
      *
      * @return integer  the number of days since the Date_Calc epoch
      *
-     * @access public
-     * @static
+     * 
      */
-    function dateToDays($iDay, $iMonth, $iYear)
+    public static function dateToDays($iDay, $iMonth, $iYear)
     {
         $iCentury = (int)mb_substr($iYear, 0, 2);
         $iYear = (int)mb_substr($iYear, 2, 2);
@@ -458,10 +452,8 @@ class BAB_DateTime
      *
      * @return string  the date in ISO Year-WeekNumber-WeekDay format
      *
-     * @access public
-     * @static
      */
-    function gregorianToISO($day, $month, $year) {
+    public static function gregorianToISO($day, $month, $year) {
         $mnth = array (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
         $y_isleap = isLeapYear($year);
         $y_1_isleap = isLeapYear($year - 1);
@@ -524,10 +516,8 @@ class BAB_DateTime
      *
      * @return boolean
      *
-     * @access public
-     * @static
      */
-    function isLeapYear($year = 0)
+    public static function isLeapYear($year = 0)
     {
         if(empty($year)) {
             $year = strftime('%Y', time());
@@ -558,10 +548,8 @@ class BAB_DateTime
      *
      * @return boolean
      *
-     * @access public
-     * @static
      */
-    function isValidDate($day, $month, $year)
+    public static function isValidDate($day, $month, $year)
     {
         if ($year < 0 || $year > 9999) {
             return false;
@@ -580,10 +568,8 @@ class BAB_DateTime
 	 * string according to the short date output format of the function bab_shortDate.
 	 * @param string $value
 	 * @return BAB_DateTime
-	 * @access public
-	 * @static
 	 */
-	function fromDateStr($value)
+	public static function fromDateStr($value)
 	{
 		$tsDate = mktime(0, 0, 0, 11, 30, 2000);
 		$strDate = bab_shortDate($tsDate, false);
@@ -627,8 +613,12 @@ class BAB_DateTime
 		return new BAB_DateTime($year, $month, $day);
 	}
     
-	
-	function fromUserInput($sDate)
+	/**
+	 * 
+	 * @param string $sDate
+	 * @return BAB_DateTime
+	 */
+	public static function fromUserInput($sDate)
 	{
 		$aMatch = array();
 		if (0 !== preg_match("#([0-9]{1,2})[-/]([0-9]{1,2})[-/]([0-9]{4})#", $sDate, $aMatch))
@@ -653,9 +643,9 @@ class BAB_DateTime
 	 * @param	string		$p2_begin
 	 * @param	string		$p2_end
 	 * @return	array|false
-	 * @static
+	 * 
 	 */
-	function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
+	public static function periodIntersect($p1_begin, $p1_end, $p2_begin, $p2_end) {
 		if ($p1_begin >= $p2_end || $p1_end <= $p2_begin) {
 			return false;
 		}
@@ -683,9 +673,9 @@ class BAB_DateTime
 	 * Creates a copy
 	 * 
 	 * @return BAB_DateTime
-	 * @access public
+	 * 
 	 */
-	function cloneDate() {
+	public function cloneDate() {
 
 		return new BAB_DateTime(
 			$this->_iYear,
@@ -703,12 +693,14 @@ class BAB_DateTime
 
 class BAB_DateTimeUtil
 {
-	function BAB_DateTimeUtil()
-	{
 
-	}
-
-	function getNumberOfWorkingDays($sStartIsoDate, $sEndIsoDate)
+	/**
+	 * 
+	 * @param string $sStartIsoDate
+	 * @param string $sEndIsoDate
+	 * @return int
+	 */
+	public static function getNumberOfWorkingDays($sStartIsoDate, $sEndIsoDate)
 	{
 		$iNWorkingDays = 0;
 
@@ -763,7 +755,13 @@ class BAB_DateTimeUtil
 		return $iNWorkingDays;
 	}
 
-	function getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate)
+	/**
+	 * 
+	 * @param string $sStartIsoDate
+	 * @param string $sEndIsoDate
+	 * @return int
+	 */
+	public static function getNoWorkingDaysBetween($sStartIsoDate, $sEndIsoDate)
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/nwdaysincl.php';
 		
@@ -870,4 +868,4 @@ class BAB_DateTimeUtil
 	}
 
 }
-?>
+
