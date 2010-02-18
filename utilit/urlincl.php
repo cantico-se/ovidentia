@@ -143,8 +143,9 @@ class bab_url {
 	 * @return string url
 	 */
 	public static function request_gp() {
-		$arr = isset($_GET) && is_array($_GET) ? array_keys($_GET) : array();
-		$arr += isset($_POST) && is_array($_POST) ? array_keys($_POST) : array();
+		$arr1 = isset($_GET) && is_array($_GET) ? array_keys($_GET) : array();
+		$arr2 = isset($_POST) && is_array($_POST) ? array_keys($_POST) : array();
+		$arr = array_merge($arr1, $arr2);
 		
 		$url = basename($_SERVER['PHP_SELF']);
 		foreach($arr as $param) {
