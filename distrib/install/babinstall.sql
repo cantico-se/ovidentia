@@ -4041,6 +4041,7 @@ CREATE TABLE bab_sitemap (
    `lr` int(11) unsigned DEFAULT '0' NOT NULL,
    `id_function` varchar(64) NOT NULL,
    `id_dgowner` int(11) unsigned DEFAULT NULL,
+   `progress` tinyint(1) unsigned DEFAULT '0' NOT NULL,
    PRIMARY KEY (`id`),
    KEY `id_function` (`id_function`),
    KEY `lf` (`lf`),
@@ -4080,6 +4081,17 @@ CREATE TABLE bab_sitemap_profiles (
    `id` int(11) unsigned NOT NULL auto_increment,
    `uid_functions` int(11) unsigned NOT NULL,
    PRIMARY KEY (`id`)
+);
+
+
+CREATE TABLE bab_sitemap_profile_versions (
+   `id` int(11) unsigned NOT NULL auto_increment,
+   `id_profile` int(11) unsigned NOT NULL default '0',
+   `uid_functions` int(11) unsigned NOT NULL,
+   `root_function` varchar(64) default NULL,
+   `levels` int(11) unsigned default NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `version` (`id_profile`,`root_function`,`levels`)
 );
 
 

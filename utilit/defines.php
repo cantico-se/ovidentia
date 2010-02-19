@@ -254,6 +254,7 @@ define("BAB_SITEMAP_FUNCTION_PROFILE_TBL", "bab_sitemap_function_profile");
 define("BAB_SITEMAP_FUNCTIONS_TBL", "bab_sitemap_functions");
 define("BAB_SITEMAP_FUNCTION_LABELS_TBL", "bab_sitemap_function_labels");
 define("BAB_SITEMAP_PROFILES_TBL", "bab_sitemap_profiles");
+define("BAB_SITEMAP_PROFILE_VERSIONS_TBL", "bab_sitemap_profile_versions");
 
 define("BAB_SITES_TBL", "bab_sites");
 define("BAB_SITES_HPMAN_GROUPS_TBL", "bab_sites_hpman_groups");

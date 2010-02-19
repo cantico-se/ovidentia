@@ -6123,6 +6123,24 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
 	}
 	
+	if (!bab_isTableField(BAB_SITEMAP_TBL, 'progress')) {
+		$babDB->db_query('ALTER TABLE '.BAB_SITEMAP_TBL." ADD `progress` tinyint(1) unsigned DEFAULT '0' NOT NULL");
+	}
+	
+	
+	if (!bab_isTable(BAB_SITEMAP_PROFILE_VERSIONS_TBL)) {
+		$babDB->db_query("
+		CREATE TABLE ".BAB_SITEMAP_PROFILE_VERSIONS_TBL." (
+		   `id` int(11) unsigned NOT NULL auto_increment,
+		   `id_profile` int(11) unsigned NOT NULL default '0',
+		   `uid_functions` int(11) unsigned NOT NULL,
+		   `root_function` varchar(64) default NULL,
+		   `levels` int(11) unsigned default NULL,
+		   PRIMARY KEY (`id`),
+		   UNIQUE KEY `version` (`id_profile`,`root_function`,`levels`)
+		)
+		");
+	}
 	
 	
 	return true;

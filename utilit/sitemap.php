@@ -143,9 +143,14 @@ class bab_siteMap {
 		return $this->siteMapDescription;
 	}
 	
-	
-	public function getRootNode() {
-		return bab_siteMap::get();
+	/**
+	 * 
+	 * @param array $path
+	 * @param int $levels
+	 * @return bab_siteMapOrphanRootNode
+	 */
+	public function getRootNode($path = null, $levels = null) {
+		return bab_siteMap::get($path, $levels);
 	}
 	
 
@@ -176,13 +181,11 @@ class bab_siteMap {
 			
 			// delete profile 
 			
-			$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL.' 
-			SET 
-				uid_functions=\'0\' 
-				WHERE id=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'"
+			$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
+				WHERE id_profile=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'"
 			);
 			
-			$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
+			$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 
 				WHERE id_profile=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'"
 			);
 		}
@@ -197,7 +200,7 @@ class bab_siteMap {
 		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
-		$babDB->db_query('UPDATE '.BAB_SITEMAP_PROFILES_TBL." SET uid_functions='0'");
+		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_PROFILE_VERSIONS_TBL);
 		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTION_PROFILE_TBL);
 		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTIONS_TBL);
 		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
@@ -209,21 +212,104 @@ class bab_siteMap {
 	}
 	
 	
+	
+	
 	/**
-	 * Get sitemap default for current user
+	 * 
+	 * @param 	ressource 	$res
+	 * 
 	 * @return bab_siteMapOrphanRootNode
 	 */
-	public static function get() {
+	private static function buildFromRessource($res)
+	{
+		global $babDB;
+		$rootNode = new bab_siteMapOrphanRootNode();
+
+		$node_list = array();
+		
+		// bab_debug(sprintf('bab_siteMap::get() %d nodes', $babDB->db_num_rows($res)));
+		
+		$current_delegation_node = NULL;
+		
+		
+		while ($arr = $babDB->db_fetch_assoc($res)) {
+		
+			if ('root' === $arr['parent_node']) {
+				$current_delegation_node = $arr['id_function'];
+			}
+			
+
+			if ('?' === @mb_substr($arr['url'],0,1)) {
+				// sitemap store URL without the php filename
+				$arr['url'] = $GLOBALS['babPhpSelf'].$arr['url'];
+			}
+		
+			$data = new bab_siteMapItem();
+			$data->id_function 		= $arr['id_function'];
+			$data->name 			= $arr['name'];
+			$data->description 		= $arr['description'];
+			$data->url 				= $arr['url'];
+			$data->onclick 			= $arr['onclick'];
+			$data->folder 			= 1 == $arr['folder'];
+			$data->iconClassnames	= $arr['icon'];
+			
+
+			$node_list[$arr['id']] = $arr['id_function'];
+			
+			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
+			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
+		
+			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
+			
+			if (null === $node) {
+				bab_debug((string) $rootNode);
+				return $rootNode;
+			}
+			
+			$rootNode->appendChild($node, $id_parent);
+		}
+
+		// each level will be sorted individually if needed before each usage
+		// $rootNode->sortSubTree();
+
+		// bab_debug((string) $rootNode);
+		
+		return $rootNode;
+	}
 	
+	
+	
+	
+	
+	
+	/**
+	 * Get sitemap default for current user
+	 * 
+	 * @param	array	$path
+	 * @param	int		$levels
+	 * 
+	 * @return bab_siteMapOrphanRootNode
+	 */
+	public static function get($path = null, $levels = null) {
+		
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-	
+		/*
 		static $rootNode = NULL;
 		
 		if (NULL !== $rootNode) {
 			return $rootNode;
 		}
-	
+		*/
+		
+		/** @var $babDB bab_Database */
 		global $babDB;
+		
+		
+		$root_function = null === $path ? null : end($path);
+		
+		$query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function='.$babDB->quote($root_function);
+		$query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels='.$babDB->quote($levels);
+		
 		
 		$query = 'SELECT 
 				s.id,
@@ -235,14 +321,20 @@ class bab_siteMap {
 				f.url,
 				f.onclick,
 				f.folder,
-				f.icon 
+				f.icon, 
+				s.progress,
+				pv.id profile_version  
 			FROM 
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' f, 
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl,
 				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp,
 				'.BAB_SITEMAP_TBL.' s
 					LEFT JOIN '.BAB_SITEMAP_TBL.' sp ON sp.id = s.id_parent,
-				'.BAB_SITEMAP_PROFILES_TBL.' p
+				'.BAB_SITEMAP_PROFILES_TBL.' p 
+					LEFT JOIN '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv 
+					ON p.id = pv.id_profile 
+					AND '.$query_root_function.' 
+					AND '.$query_levels.' 
 			'; 
 			
 	
@@ -254,11 +346,8 @@ class bab_siteMap {
 				s.id_function = f.id_function 
 				AND fp.id_function = f.id_function 
 				AND fp.id_profile = p.id 
-				AND p.uid_functions>\'0\'
 				AND p.id = u.id_sitemap_profile 
 				AND u.id = '.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' 
-				AND fl.id_function=f.id_function 
-				AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
 				';
 			
 		} else {
@@ -266,12 +355,16 @@ class bab_siteMap {
 				s.id_function = f.id_function 
 				AND fp.id_function = f.id_function 
 				AND fp.id_profile = p.id 
-				AND p.uid_functions>\'0\' 
 				AND p.id = \''.BAB_UNREGISTERED_SITEMAP_PROFILE.'\' 
-				AND fl.id_function=f.id_function 
-				AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
 				';
 		}
+		
+		
+		$query .= '
+			AND fl.id_function=f.id_function 
+			AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
+		';
+		
 		
 		/*
 		$viewable_delegations = array();
@@ -294,59 +387,28 @@ class bab_siteMap {
 		if (0 === $babDB->db_num_rows($res)) {
 			// no sitemap for user, build it
 
-			bab_siteMap::build();
+			self::build($path, $levels);
 			$res = $babDB->db_query($query);
 		}
 		
 		
+		$firstnode = $babDB->db_fetch_assoc($res);
 		
-		$rootNode = new bab_siteMapOrphanRootNode();
-		
-
-		$node_list = array();
-		
-		// bab_debug(sprintf('bab_siteMap::get() %d nodes', $babDB->db_num_rows($res)));
-		
-		$current_delegation_node = NULL;
-		
-		
-		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
-			if ('root' === $arr['parent_node']) {
-				$current_delegation_node = $arr['id_function'];
-			}
+		if (null === $firstnode['profile_version']) {
+			// the profile verion is missing, add version to profile
+			// the user have a correct profile and a correct sitemap but the sitemap is incomplete
+			// additional nodes need to be created in sitemap without deleting the profile
+			self::repair($path, $levels);
+			$res = $babDB->db_query($query);
 			
-
-			if ('?' === @mb_substr($arr['url'],0,1)) {
-				// sitemap store URL without the php filename
-				$arr['url'] = $GLOBALS['babPhpSelf'].$arr['url'];
-			}
-
-			
+		} else {
 		
-			$data = new bab_siteMapItem();
-			$data->id_function 		= $arr['id_function'];
-			$data->name 			= $arr['name'];
-			$data->description 		= $arr['description'];
-			$data->url 				= $arr['url'];
-			$data->onclick 			= $arr['onclick'];
-			$data->folder 			= 1 == $arr['folder'];
-			$data->iconClassnames	= $arr['icon'];
-			
-
-			$node_list[$arr['id']] = $arr['id_function'];
-			
-			// the id_parent is NULL if there is no parent, the items are allready ordered so the NULL is for root item only
-			$id_parent = isset($node_list[$arr['id_parent']]) ? $node_list[$arr['id_parent']] : NULL;
-		
-			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
-			$rootNode->appendChild($node, $id_parent);
+			$babDB->db_data_seek($res, 0);
 		}
-
-		// each level will be sorted individually if needed before each usage
-		// $rootNode->sortSubTree();
-
-		//die((string) $rootNode);
+		
+		
+		$rootNode = self::buildFromRessource($res);
+		
 		
 		return $rootNode;
 	}
@@ -393,16 +455,26 @@ class bab_siteMap {
 	 * Build sitemap for current user
 	 * @return boolean
 	 */
-	public static function build() {
+	public static function build($path, $levels) {
 		
 
 		include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
-		return bab_siteMap_build();
+		return bab_siteMap_build($path, $levels);
 		
 	}
 	
 	
-	
+	/**
+	 * Add missing node to current sitemap
+	 * @return boolean
+	 */
+	private static function repair($path, $levels) {
+		
+
+		include_once $GLOBALS['babInstallPath'].'utilit/sitemap_build.php';
+		return bab_siteMap_repair($path, $levels);
+		
+	}
 	
 	
 	

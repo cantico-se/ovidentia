@@ -197,7 +197,7 @@ function babAdminSection($close)
 	if( $close )
 		return;
 
-	$rootNode = bab_siteMap::get();
+	$rootNode = bab_siteMap::get(array('root', 'DGAll', 'babAdmin'));
 	$nodename = 'babDG'.$babBody->currentAdmGroup.'AdminSection';
 
 	$this->babAdminSection = $rootNode->getNodeById($nodename);
@@ -314,7 +314,7 @@ function babUserSection($close) {
 
 	}
 	
-	$rootNode = bab_siteMap::get();
+	$rootNode = bab_siteMap::get(array('root', 'DGAll', 'babUser'));
 	$this->babUserSection = $rootNode->getNodeById('babUserSection');
 	if ($this->babUserSection) {
 		$this->babUserSection->sortChildNodes();

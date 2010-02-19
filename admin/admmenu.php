@@ -34,7 +34,7 @@ include_once "base.php";
  * Create links in sitemap for admin section
  * @param	bab_eventBeforeSiteMapCreated &$event
  */
-function bab_sitemap_adminSection(&$event) {
+function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 	global $babBody, $babDB;
 
 
@@ -88,16 +88,21 @@ function bab_sitemap_adminSection(&$event) {
 
 		$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
 		$position = array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSection');
+		
+		
 
 		$item = $event->createItem($dg_prefix.'Admin');
 		$item->setLabel(bab_translate("Administration"));
 		$item->setPosition(array('root', $key));
+		$item->progress = true;
 		
 		$event->addFolder($item);
 		
+
 		$item = $event->createItem($dg_prefix.'AdminSection');
 		$item->setLabel(bab_translate("Ovidentia functions"));
 		$item->setPosition(array('root', $key, $dg_prefix.'Admin'));
+		$item->progress = true;
 		
 		$event->addFolder($item);
 		
@@ -271,8 +276,7 @@ function bab_sitemap_adminSection(&$event) {
 		$item->addIconClassname('apps-groups');
 		
 		$event->addFunction($item);
-		
-		
+
 	}
 
 	if( $babBody->isSuperAdmin )
@@ -289,7 +293,7 @@ function bab_sitemap_adminSection(&$event) {
 			{
 				$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
 				$position = array('root', $key, $dg_prefix.'Admin', $dg_prefix.'AdminSection');
-				
+
 
 				$item = $event->createItem($dg_prefix.'AdminDelegations');
 				$item->setLabel(bab_translate("Delegation"));
@@ -373,6 +377,8 @@ function bab_sitemap_adminSection(&$event) {
 					if (!empty($arr['description'])) {
 						$item->setDescription($arr['description']);
 					}
+					$item->progress = true;
+					
 					$event->addFolder($item);
 
 
@@ -441,6 +447,7 @@ function bab_sitemap_adminSection(&$event) {
 					$item = $event->createItem($dg_prefix.'AdminSectionAddons');
 					$item->setLabel(bab_translate("Add-ons links"));
 					$item->setPosition(array('root',$key, $dg_prefix.'Admin'));
+					$item->progress = true;
 					
 					$event->addFolder($item);
 
