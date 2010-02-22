@@ -552,6 +552,21 @@ class bab_Node
 		
 		return $str;
 	}
+	
+	
+	/**
+	 * call __destruct before unset 
+	 */
+	public function __destruct()
+	{
+		unset($this->_data);
+		$this->_nextSibling 	= null;
+		$this->_previousSibling = null;
+		$this->_parent 			= null;
+		$this->_firstChild 		= null;
+		$this->_lastChild 		= null;
+		$this->_tree 			= null;
+	}
 }
 
 
