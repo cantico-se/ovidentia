@@ -807,11 +807,16 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 
 	public function __construct($realm, $res, $count) {
 		
+		global $babBody;
+
 		$this->dirrealm = $realm;
 		$this->resdir = $res;
 		$this->count = $count;
 
 		$this->pos = $res->key();
+		
+		$this->mass_mailing	= ($babBody->babsite['mass_mailing'] == 'Y'); 
+		$this->t_copy_emails = bab_translate('Copy email addresses');
 	}
 
 
@@ -841,6 +846,11 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 			$url = bab_url::mod($url, 'order', $order);
 			
 			$this->orderurl = bab_toHtml($url);
+
+			$copyEmailsUrl = bab_url::request_gp();
+			$copyEmailsUrl = bab_url::mod($copyEmailsUrl, 'idx', 'emails');
+			
+			$this->copy_emails_url = bab_toHtml($copyEmailsUrl);
 			
 			return true;
 			}

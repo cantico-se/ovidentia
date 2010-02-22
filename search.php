@@ -1177,6 +1177,68 @@ function bab_gotoAddonIfRedirect($item)
 	}
 
 
+	
+	
+function bab_searchDirectoryEmails($what)
+{
+	global $babBody;
+
+	$fields = false !== bab_rp('what', false) ? ($_POST + $_GET) : array();
+	$primary_search = trim($what);
+	$secondary_search = isset($fields['what2']) ? trim($fields['what2']) : '';
+
+
+	$realms = bab_getSearchItems();
+	bab_sort::sortObjects($realms, 'getSortKey');
+	
+	$realm = null;
+	foreach ($realms as $arealm) {
+		if ($arealm->getName() === 'directories') {
+			$realm = $arealm;
+			break;
+		}
+	}
+
+//	$realm = bab_Search::getRealm('directories');
+
+	$criteria = $realm->getSearchFormCriteria();
+	$fieldlesscriteria = $realm->getSearchFormFieldLessCriteria();
+
+	if (!empty($primary_search) && method_exists($realm, 'setPrimarySearch')) {
+		$realm->setPrimarySearch($primary_search);
+	}
+
+	if ($fieldlesscriteria) {
+		$realm->setFieldLessCriteria($fieldlesscriteria);
+	}
+
+	if ($criteria) {
+
+		$search_res = $realm->search($criteria);
+
+		if ($search_res instanceOf bab_SearchResultCollection) {
+			$res_collection = $search_res;
+		} else {
+			$res_collection = array($search_res);
+		}
+
+
+		$emails = array();
+		foreach ($res_collection as $res) {
+
+			foreach ($res as $o) {
+				if (!empty($o->email)) {
+					$emails[$o->email] = $o->email;
+				}
+			}
+		}
+		echo(implode(', ', $emails));
+	}
+}
+	
+	
+	
+	
 $what = bab_rp('what');
 $idx = bab_rp('idx');
 $item = bab_rp('item');
@@ -1239,6 +1301,11 @@ switch($idx)
 		$GLOBALS['babWebStat']->addSearchWord($what);
 		startSearch($item, $what, $option, $navpos);
 		break;
+
+	case "emails":
+		$babBody->title = bab_translate("Emails");
+		bab_searchDirectoryEmails($what);
+		die;
 
 	default:
 		$babBody->title = bab_translate("Search");
