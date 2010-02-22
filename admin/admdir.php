@@ -256,22 +256,47 @@ function search_options()
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
+			$this->t_sort_fields = bab_translate("Sort results by");
 
 			$this->db = & $GLOBALS['babDB'];
 
-			list($tmp) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
+			list($view, $sort) = $babDB->db_fetch_array($babDB->db_query("SELECT search_view_fields, search_sort_fields FROM ".BAB_DBDIR_OPTIONS_TBL.""));
 			
-			if (empty($tmp))
-				$tmp = '2,4';
+			if (empty($view)) {
+				$view = array(2,4);
+			} else {
+				$view = explode(',', $view);
+			}
 
-			$this->arrdf = array_flip(explode(',', $tmp));
+			$this->arrdf = array_flip($view);
+			
+			if (empty($sort)) {
+				$sort = array(2,4);
+			} else {
+				$sort = explode(',', $sort);
+			}
+
+			$this->arrsortf = array_flip($sort);
+			
 			
 			$this->resdb = $babDB->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL."");
-			$resdf = $babDB->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$babDB->db_escape_string($tmp).")");
+			$resdf = $babDB->db_query("SELECT id,description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id IN(".$babDB->quote($view).")");
 			while ($arr = $babDB->db_fetch_assoc($resdf)) {
 					$this->arrdf[$arr['id']] = $arr['description'];
 				}
 			}
+			
+		function getDescription($id_field)
+		{
+			global $babDB;
+			$res = $babDB->db_query("SELECT description FROM ".BAB_DBDIR_FIELDS_TBL." WHERE id=".$babDB->quote(abs($id_field))."");
+			if ($arr = $babDB->db_fetch_assoc($res))
+			{
+				return $arr['description'];
+			}
+			
+			return '';
+		}
 
 		function getnext()
 			{
@@ -280,7 +305,32 @@ function search_options()
 				$this->arr['description'] = translateDirectoryField($this->arr['description']);
 				return true;
 				}
-			else
+			
+			if ($this->resdb && 0 < $this->db->db_num_rows($this->resdb)) {
+				$this->db->db_data_seek($this->resdb, 0);
+				} 
+			return false;
+			}
+			
+
+		function getnextsortfs()
+			{
+				if ($this->arr) {
+					$this->sortid = (int) $this->arr['id'];
+					if ($this->sortid > 0) {
+						
+						$this->description = bab_toHtml($this->arr['description'].' '.bab_translate('ascending'));
+						$this->arr['id'] = -1 * $this->arr['id'];
+						
+					} else {
+						$this->description = bab_toHtml($this->arr['description'].' '.bab_translate('descending'));
+						$this->arr['id'] = abs($this->sortid);
+						if (!$this->getnext()) return false;
+					}
+					
+					return true;
+				}
+				
 				return false;
 			}
 
@@ -290,6 +340,20 @@ function search_options()
 				{
 				$this->arr['id'] = bab_toHtml($id);
 				$this->arr['description'] = bab_toHtml(translateDirectoryField($description));
+				return true;
+				}
+			return false;
+			}
+			
+		function getnextsortf()
+			{
+			if (list($id) = each($this->arrsortf))
+				{
+					
+				$this->arr['id'] = bab_toHtml($id);
+				$description = translateDirectoryField($this->getDescription($id));
+				$way = $id > 0 ? bab_translate('ascending') : bab_translate('descending');
+				$this->arr['description'] = bab_toHtml($description.' '.$way);
 				return true;
 				}
 			return false;
@@ -851,6 +915,7 @@ function displayDb($id)
 			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
 			$this->ovmllisttxt = bab_translate("OVML file to be used for list");
 			$this->ovmldetailtxt = bab_translate("OVML file to be used for detail");
+			$this->t_sort_by = bab_translate("Sort search results by");
 			$this->browsetxt = bab_translate("Browse");
 			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
 
@@ -873,6 +938,8 @@ function displayDb($id)
 			$this->countf = $babDB->db_num_rows($this->resf);
 			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and ordering!='0' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
+			$this->ressortd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and sortfield!='0' AND id_field<>5 order by ordering asc");
+			$this->countsortd = $babDB->db_num_rows($this->ressortd);
 			}
 
 		function getnextf()
@@ -881,7 +948,7 @@ function displayDb($id)
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$arr = $babDB->db_fetch_array($this->resf);
+				$this->arr = $arr = $babDB->db_fetch_array($this->resf);
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
@@ -916,6 +983,54 @@ function displayDb($id)
 				else
 					{
 					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string(($this->fid - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
+					$this->fieldval = translateDirectoryField($rr['name']);
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
+			}
+			
+			
+		function getnextsortfs()
+			{
+				if ($this->arr) {
+					$this->sortid = (int) $this->arr['id'];
+					if ($this->sortid > 0) {
+						
+						$this->description = bab_toHtml($this->fieldval.' '.bab_translate('ascending'));
+						$this->arr['id'] = -1 * $this->arr['id'];
+						
+					} else {
+						$this->description = bab_toHtml($this->fieldval.' '.bab_translate('descending'));
+						$this->arr['id'] = abs($this->sortid);
+						if (!$this->getnextf()) return false;
+					}
+					
+					return true;
+				}
+				
+				return false;
+			}
+			
+			
+		function getnextsortf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countsortd)
+				{
+				$arr = $babDB->db_fetch_array($this->ressortd);
+				$this->fid = $arr['id_field'];
+				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string(abs($arr['id_field']))."'"));
+					$this->fieldval = translateDirectoryField($arr['description']);
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string((abs($this->fid) - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
 					$this->fieldval = translateDirectoryField($rr['name']);
 					}
 				$i++;
@@ -1571,19 +1686,22 @@ function record_search_options()
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
 
-	if (!isset($_POST['listfd']))
+	if (!isset($_POST['listfd']) || !isset($_POST['sortfd']) )
 	{
 		$babBody->msgerror = bab_translate("You must define one collumn at least");
 		return false;
 	}
 
 	$listfd = implode(',',$_POST['listfd']);
+	$sortfd = implode(',',$_POST['sortfd']);
 
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_DBDIR_OPTIONS_TBL));
-	if ($n > 0)
-		$db->db_query("UPDATE ".BAB_DBDIR_OPTIONS_TBL." SET search_view_fields='".$db->db_escape_string($listfd)."'");
-	else
-		$db->db_query("INSERT INTO ".BAB_DBDIR_OPTIONS_TBL." (search_view_fields) VALUES ('".$db->db_escape_string($listfd)."')");
+	if ($n > 0) {
+		$db->db_query("UPDATE ".BAB_DBDIR_OPTIONS_TBL." SET search_view_fields=".$db->quote($listfd).", search_sort_fields=".$db->quote($sortfd));
+	}
+	else {
+		$db->db_query("INSERT INTO ".BAB_DBDIR_OPTIONS_TBL." (search_view_fields, search_sort_fields) VALUES (".$db->quote($listfd).", ".$db->quote($sortfd).")");
+	}
 
 	return true;
 }

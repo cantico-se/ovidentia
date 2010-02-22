@@ -6143,5 +6143,26 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 7.2.91
+	 */
+	
+	
+	if (!bab_isTableField(BAB_DBDIR_OPTIONS_TBL, 'search_sort_fields')) {
+		$babDB->db_query('ALTER TABLE '.BAB_DBDIR_OPTIONS_TBL." ADD `search_sort_fields` varchar(255) NOT NULL default '2,4'");
+	}
+	
+	if (!bab_isTableField(BAB_DBDIR_FIELDSEXTRA_TBL, 'sortfield')) {
+		$babDB->db_query('ALTER TABLE '.BAB_DBDIR_FIELDSEXTRA_TBL." ADD `sortfield` int(11) NOT NULL default '0'");
+		$babDB->db_query('UPDATE '.BAB_DBDIR_FIELDSEXTRA_TBL." SET `sortfield`='1' WHERE id_field='2'");
+		$babDB->db_query('UPDATE '.BAB_DBDIR_FIELDSEXTRA_TBL." SET `sortfield`='2' WHERE id_field='4'");
+	}
+	
+	
 	return true;
 }

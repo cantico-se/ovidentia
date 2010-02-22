@@ -1417,6 +1417,7 @@ CREATE TABLE bab_dbdir_fieldsextra (
   disabled enum('N','Y') NOT NULL default 'N',
   multi_values enum('N','Y') NOT NULL default 'N',
   ordering int(11) unsigned NOT NULL default '0',
+  sortfield int(11) NOT NULL default '0',
   list_ordering int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_directory (id_directory)
@@ -1424,9 +1425,9 @@ CREATE TABLE bab_dbdir_fieldsextra (
 
 
 INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 1, 0, 'N', 'N', 'N', 0, 1);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 2, 0, 'Y', 'Y', 'N', 1, 2);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, sortfield, list_ordering) VALUES (0, 2, 0, 'Y', 'Y', 'N', 1, 1, 2);
 INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 3, 0, 'Y', 'N', 'N', 0, 3);
-INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 4, 0, 'Y', 'Y', 'N', 2, 4);
+INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, sortfield, list_ordering) VALUES (0, 4, 0, 'Y', 'Y', 'N', 2, 2, 4);
 INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 5, 0, 'Y', 'N', 'N', 0, 5);
 INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 6, 0, 'Y', 'Y', 'N', 3, 6);
 INSERT INTO bab_dbdir_fieldsextra (id_directory, id_field, default_value, modifiable, required, multilignes, ordering, list_ordering) VALUES (0, 7, 0, 'N', 'N', 'N', 0, 7);
@@ -1496,7 +1497,8 @@ CREATE TABLE bab_dbdirview_groups (
 #
 
 CREATE TABLE `bab_dbdir_options` (
-  `search_view_fields` varchar(255) NOT NULL default '2,4'
+  `search_view_fields` varchar(255) NOT NULL default '2,4',
+  `search_sort_fields` varchar(255) NOT NULL default '2,4'
 );
 
 

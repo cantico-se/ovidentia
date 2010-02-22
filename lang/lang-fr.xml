@@ -2867,6 +2867,7 @@
 <string id="Relative to org chart top">Relatif au premier niveau de l'organigramme</string>
 <string id="Display parameters">Paramètre d'affichage</string>
 <string id="descending">décroissant(e)</string>
+<string id="ascending">croissant(e)</string>
 <string id="Users groups directories">Annuaires des groupes d'utilisateurs</string>
 <string id="database directories">Annuaires de base de données</string>
 <string id="directory entry numeric identifier">Identifiant numérique d'une fiche d'annuaire</string>

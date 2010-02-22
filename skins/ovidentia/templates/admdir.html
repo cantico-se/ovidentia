@@ -568,47 +568,96 @@ document.forms.ovmldbf.ovmllist.value = txt;
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 
 <tr> 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle" colspan="4">{ infotxt }:</td>
+	<td align="center" nowrap valign="middle" colspan="4"><h5>{ infotxt }</h5></td>
 </tr>
 
 <tr> 
-<td align="center" nowrap valign="middle"> 
-<select name="listfields1"  size="12" multiple="multiple">
-  <option value="0">{ listftxt }</option>
-  <!--#in getnextf --> 
-  <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextf --> 
-</select>
-</td>
-
-<td align="center"><a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" width="20" height="24" border=0 alt="Down"></a><br /><br /><a href="Javascript:moveOptions(document.dispdbf.elements[5],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" width="20" height="24" border=0 alt="Up"></a>
-</td>
-
-<td align="center"> 
-<select name="listfd[]"  size="12" multiple="multiple">
-  <option value="0">{ listdftxt }</option>
-  <!--#in getnextdf --> 
-  <option value="{ fid }">{ fieldval }</option>
-  <!--#endin getnextdf --> 
-</select>
-</td>
-
-<td align="center" ><a href="Javascript:move(true, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
-<br>
-<br>
-<a href="Javascript:move(false, document.dispdbf.elements[5])"> 
-<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
-</td>
+	<td align="center" nowrap valign="middle"> 
+		<select name="listfields1"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnextf --> 
+		  <option value="{ fid }">{ fieldval }</option>
+		  <!--#endin getnextf --> 
+		</select>
+	</td>
+	
+	<td align="center">
+		<a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
+		<br /><br />
+		<a href="Javascript:moveOptions(document.dispdbf.elements[5],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
+	</td>
+	
+	<td align="center"> 
+		<select name="listfd[]"  size="12" multiple="multiple">
+		  <option value="0">{ listdftxt }</option>
+		  <!--#in getnextdf --> 
+		  <option value="{ fid }">{ fieldval }</option>
+		  <!--#endin getnextdf --> 
+		</select>
+	</td>
+	
+	<td align="center">
+		<a href="Javascript:move(true, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+		<br>
+		<br>
+		<a href="Javascript:move(false, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+	</td>
 
 </tr>
+
+<tr> 
+	<td align="center" colspan="4">
+		<br />
+		<br />
+		<h5>{ t_sort_by } :</h5>
+	</td>
+</tr>
+
+
+<tr> 
+	<td align="center" nowrap valign="middle"> 
+		<select name="listfields2"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnextsortfs --> 
+		  <option value="{ sortid }">{ description }</option>
+		  <!--#endin getnextsortfs --> 
+		</select>
+	</td>
+	
+	<td align="center">
+		<a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
+		<br /><br />
+		<a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
+	</td>
+	
+	<td align="center"> 
+		<select name="sortfd[]"  size="12" multiple="multiple">
+		  <option value="0">{ listdftxt }</option>
+		  <!--#in getnextsortf --> 
+		  <option value="{ fid }">{ fieldval }</option>
+		  <!--#endin getnextsortf --> 
+		</select>
+	</td>
+	
+	<td align="center">
+		<a href="Javascript:move(true, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" width="22" height="18" border=0 alt="{ moveup }"></a> 
+		<br>
+		<br>
+		<a href="Javascript:move(false, document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+	</td>
+
+</tr>
+
+
+
 <tr valign="middle"> 
-<td align="center" colspan="4"> 
-<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispdbf.elements[5]); document.dispdbf.submit()">
-<br>
-<br>
-</td>
-<td>&nbsp; 
-</td>
+	<td align="center" colspan="4">
+	<br />
+	<br /> 
+	<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispdbf.elements[5]); document.dispdbf.submit()" />
+	<br />
+	<br />
+	</td>
 </tr>
 
 </table>
@@ -628,21 +677,21 @@ document.forms.ovmldbf.ovmllist.value = txt;
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 
 <tr> 
-<td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmllisttxt }:<br /><br />
+<td>{ ovmllisttxt }:<br /><br />
 <input type="text" id="ovmllist" name="ovmllist" value="{ ovmllistval }" size="70" />&nbsp;&nbsp;
 <a onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmllist').value = ret.filename; }); return false;" href="index.php?tg=editorovml&cb=OnInsertOvmlList">Lister</a>
 </td>
 </tr>
 
 <tr> 
-<td class="BabLoginMenuBackground" nowrap valign="middle">{ ovmldetailtxt }:<br /><br />
+<td>{ ovmldetailtxt }:<br /><br />
 <input type="text" id="ovmldetail" name="ovmldetail" value="{ ovmldetailval }" size="70" />&nbsp;&nbsp;
 <a onclick="bab_dialog(this.href, { width: '800px', height: '500px' }, function(ret) { document.getElementById('ovmldetail').value = ret.filename; }); return false;" href="index.php?tg=editorovml&cb=OnInsertOvmlDetail">Lister</a>
 </td>
 </tr>
 <tr> 
 
-<td class="BabLoginMenuBackground" align="center" nowrap valign="middle"><input type="submit" name="Submit2" value="{ update }">
+<td align="center"><input type="submit" name="Submit2" value="{ update }" />
 </td>
 </tr>
 
@@ -906,43 +955,102 @@ onclick="selectAll(document.ordform.elements[4]); document.ordform.submit()">
 	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr> 
 	<td align="center" nowrap valign="middle"> 
-	<select name="listfields1"  size="12" multiple="multiple">
-	  <option value="0">{ listftxt }</option>
-	  <!--#in getnext --> 
-	  <option value="{ arr[id] }">{ arr[description] }</option>
-	  <!--#endin getnext --> 
-	</select>
+		<select name="listfields1"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnext --> 
+		  <option value="{ arr[id] }">{ arr[description] }</option>
+		  <!--#endin getnext --> 
+		</select>
 	</td>
-	<td>&nbsp;</td>
+	
+	
+	<td align="center">
+		<a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
+		<br />
+		<br />
+		<a href="Javascript:moveOptions(document.dispdbf.elements[3],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
+	</td>
+	
+	
+	<td align="center"> 
+		<select name="listfd[]"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnextdf --> 
+		  <option value="{ arr[id] }">{ arr[description] }</option>
+		  <!--#endin getnextdf --> 
+		</select>
+	</td>
+	<td align="center" width="10%">
+		<a href="Javascript:move(true, document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a> 
+		<br>
+		<br>
+		<a href="Javascript:move(false, document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a> 
+	</td>
 	</tr>
+	
+	<tr>
+		<td  colspan="4">
+			<br />
+			<br />
+			<h5 align="center">{ t_sort_fields } :</h5>
+		</td>
+	</tr>
+	
+	
+	
+	
 	<tr> 
-	<td align="center"><a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoHandDown.gif" border="0" alt="Down"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="Javascript:moveOptions(document.dispdbf.elements[3],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoHandTop.gif" border="0" alt="Up"></a></td>
-	<td>&nbsp;</td>
-	</tr>
-	<tr valign="middle"> 
+	<td align="center" nowrap valign="middle"> 
+		<select name="listfields2"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnextsortfs --> 
+		  <option value="{ sortid }">{ description }</option>
+		  <!--#endin getnextsortfs --> 
+		</select>
+	</td>
+	
+	
+	<td align="center">
+		<a href="Javascript:moveOptions(document.dispdbf.listfields2,document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border="0" alt=""></a>
+		<br />
+		<br />
+		<a href="Javascript:moveOptions(document.dispdbf.elements[5],document.dispdbf.listfields2)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border="0" alt=""></a>
+	</td>
+	
+	
 	<td align="center"> 
-	<select name="listfd[]"  size="12" multiple="multiple">
-	  <option value="0">{ listftxt }</option>
-	  <!--#in getnextdf --> 
-	  <option value="{ arr[id] }">{ arr[description] }</option>
-	  <!--#endin getnextdf --> 
-	</select>
+		<select name="sortfd[]"  size="12" multiple="multiple">
+		  <option value="0">{ listftxt }</option>
+		  <!--#in getnextsortf --> 
+		  <option value="{ arr[id] }">{ arr[description] }</option>
+		  <!--#endin getnextsortf --> 
+		</select>
 	</td>
-	<td align="center" width="10%"><a href="Javascript:move(true, document.dispdbf.elements[3])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a> 
-	<br>
-	<br>
-	<a href="Javascript:move(false, document.dispdbf.elements[3])"> 
-	<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a> 
+	<td align="center" width="10%">
+		<a href="Javascript:move(true, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" border=0 alt="{ moveup }"></a> 
+		<br>
+		<br>
+		<a href="Javascript:move(false, document.dispdbf.elements[5])"><img src="{ babSkinPath }images/Puces/PuceGoDown.gif" border="0" alt="{ movedown }"></a> 
 	</td>
 	</tr>
+	
+	
+	
+	
+	
+	
+	<tr>
+		<td  colspan="4"><br /></td>
+	</tr>
+	
+	
 	<tr valign="middle"> 
-	<td align="center"> 
-	<input type="submit" name="Submit" value="{ update }" onclick="selectAll(document.dispdbf.elements[3]); document.dispdbf.submit()">
-	<br>
-	<br>
-	</td>
-	<td>&nbsp; 
-	</td>
+		<td align="center" colspan="4"> 
+			<input type="submit" name="Submit" value="{ update }" onclick="selectAll(document.dispdbf.elements[3]);selectAll(document.dispdbf.elements[5]); document.dispdbf.submit()" />
+		<br>
+		<br>
+		</td>
+	
 	</tr>
 	</table>
 </td>
