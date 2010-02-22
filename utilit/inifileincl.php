@@ -305,7 +305,11 @@ class bab_inifile_requirements {
 		);
 	}
 	
-	
+	/**
+	 * addons folders tests, disabled in CVS mode
+	 * @param string $value
+	 * @return array
+	 */
 	function require_addons_directory($value) {
 
 		include_once dirname(__FILE__).'/addonsincl.php';
@@ -316,13 +320,23 @@ class bab_inifile_requirements {
 		foreach($folders['loc_in'] as $folder) {
 
 			$folder = new bab_Path(realpath('.'), $folder);
+			
+			$cvsfolder = clone $folder;
+			$cvsfolder->push('CVS');
 
-			try {
-				$status = $folder->isFolderWriteable();
-			} catch(Exception $e) {
-				$status = false;
-				$error = $e->getMessage();
+			if (file_exists($cvsfolder->toString())) {
+				
 				break;
+				
+			} else {
+
+				try {
+					$status = $folder->isFolderWriteable();
+				} catch(Exception $e) {
+					$status = false;
+					$error = $e->getMessage();
+					break;
+				}
 			}
 		}
 
