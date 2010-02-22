@@ -559,7 +559,7 @@ class bab_Node
 	 */
 	public function __destruct()
 	{
-		unset($this->_data);
+		$this->_data			= null;
 		$this->_nextSibling 	= null;
 		$this->_previousSibling = null;
 		$this->_parent 			= null;

@@ -262,7 +262,7 @@ class bab_siteMap {
 			$node = $rootNode->createNode($data, $node_list[$arr['id']]);
 			
 			if (null === $node) {
-				bab_debug((string) $rootNode);
+				// bab_debug((string) $rootNode);
 				return $rootNode;
 			}
 			
@@ -293,13 +293,19 @@ class bab_siteMap {
 	public static function get($path = null, $levels = null) {
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-		/*
-		static $rootNode = NULL;
 		
-		if (NULL !== $rootNode) {
-			return $rootNode;
+		static $cache = array();
+		
+		
+		$cachekey = null === $path ? '0' : end($path);
+		if (null !== $levels) {
+			$cachekey .= ','.$levels;
 		}
-		*/
+		
+		if (isset($cache[$cachekey])) {
+			return $cache[$cachekey];
+		}
+		
 		
 		/** @var $babDB bab_Database */
 		global $babDB;
@@ -409,6 +415,7 @@ class bab_siteMap {
 		
 		$rootNode = self::buildFromRessource($res);
 		
+		$cache[$cachekey] = $rootNode;
 		
 		return $rootNode;
 	}
