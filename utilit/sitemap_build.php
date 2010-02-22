@@ -1181,6 +1181,7 @@ class bab_siteMap_insertTree
 	
 	/**
 	 * Get profile
+	 * null : no profile
 	 * @return int
 	 */
 	private function getProfileFromUser()
@@ -1194,7 +1195,12 @@ class bab_siteMap_insertTree
 			
 			if ($arr = $babDB->db_fetch_assoc($res))
 			{
-				return (int) $arr['id_sitemap_profile'];
+				$id_sitemap_profile = (int) $arr['id_sitemap_profile'];
+				
+				if (0 !== $id_sitemap_profile && BAB_UNREGISTERED_SITEMAP_PROFILE !== $id_sitemap_profile)
+				{
+					return $id_sitemap_profile;
+				}
 			}
 			
 			return null;
