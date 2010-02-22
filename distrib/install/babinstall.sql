@@ -4083,7 +4083,7 @@ CREATE TABLE bab_sitemap_profiles (
    PRIMARY KEY (`id`)
 );
 
-INSERT INTO bab_sitemap_profiles ('1', '0');
+INSERT INTO bab_sitemap_profiles VALUES ('1', '0');
 
 
 CREATE TABLE bab_sitemap_profile_versions (
