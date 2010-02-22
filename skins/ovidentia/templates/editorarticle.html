@@ -28,6 +28,42 @@ function func(articleid,title)
 	
 	window.close();
 	}
+
+function updateEditor()
+{
+	var target = 1;
+	var checkb = document.getElementById('tg');
+	if (checkb.checked) {
+		target = 1;
+	}
+	else {
+		target = 0;
+	}
+
+	var param = '';
+	
+	for( i =0; i < document.editorarticle.length; i++)
+	{
+		
+	if( document.editorarticle.elements[i].type == "checkbox")
+		{
+		if( document.editorarticle.elements[i].name == 'artcheck[]' && document.editorarticle.elements[i].checked )
+			{
+			var title = document.getElementById('arttitle-'+document.editorarticle.elements[i].value);
+			param += ' $ARTICLEID('+document.editorarticle.elements[i].value+','+opener.bab_macroEncodeParam(title.value)+','+target+') ';
+			}
+		}
+	}
+
+	opener.bab_dialog._return({
+		'callback' 	: 'editorInsertText',
+		'param'		: param
+	});
+	
+	window.close();
+	
+}
+
 //-->
 </script>
 <p>
@@ -38,19 +74,24 @@ function func(articleid,title)
 <p style="text-align:center">
 	{ t_noarticles }
 </p>
-<!--#endif noarticles -->
+<!--#else noarticles -->
+<form method="post" name="editorarticle" action="{ babPhpSelf }">
 
 <ul id="bab_editor_functions">
 	<!--#in getnextarticle -->
 	<li>
-		<a href="#" title="{ content }" onclick="func({ articleid },'{ title }');return false;"><img src="{ babSkinPath }images/Puces/defaut.gif" alt="" align="absmiddle" /> { titledisp }</a>
+		<input type="checkbox" name="artcheck[]" value="{ articleid }" /> { titledisp }
+		<input type="hidden" id="arttitle-{ articleid }" value="{ title }" />
 	</li>
 	<!--#endin getnextarticle -->
 </ul>
-
 <p>
 	<input type="checkbox" id="tg" name="tg" checked="checked" /> { target_txt }
 </p>
-
+<p align="center">
+	<a href="#" onclick="javascript:updateEditor();return false;">{ t_update }</a>
+</p>
+</form>
+<!--#endif noarticles -->
 
 <!--#end editorarticle -->

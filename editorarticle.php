@@ -294,6 +294,7 @@ function browseArticles() {
 			$this->resart = $babDB->db_query($req);
 			$this->countarticles = $babDB->db_num_rows($this->resart);
 			
+			$this->t_update = bab_translate("Update");
 			$this->t_tree_view = bab_translate("Browse topics");
 			$this->target_txt = bab_translate("popup");
 			$this->t_noarticles = bab_translate("This topic is empty");
