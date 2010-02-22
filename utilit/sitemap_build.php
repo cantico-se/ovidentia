@@ -1133,7 +1133,7 @@ class bab_siteMap_insertTree
 				
 				bab_debug('found profile '.$id_profile, DBG_TRACE, 'Sitemap');
 				$this->setUserProfile($id_profile);
-				return;
+				return $id_profile;
 	
 			} else {
 				
