@@ -442,7 +442,7 @@ class bab_icalendar
 				if (empty($event->data['id_cal']) || $this->idcalendar == $event->data['id_cal'])
 					$arr[] = $event;
 			}
-
+			
 		return count($arr);
 		}
 
@@ -701,12 +701,11 @@ class cal_wmdbaseCls
 		switch( $calinfo['type'] )
 			{
 			case BAB_CAL_USER_TYPE:
-				if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
+				if( ($calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] && 'Y' !== $evtarr['block']) || $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] )
 				{
-					if( $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] )
-					{
-						$modify = 1;
-					}
+					// creator have access in modification
+					// owner have access in modification if event is not locked by creator
+					$modify = 1;
 				}
 				else
 				{
@@ -796,9 +795,18 @@ class cal_wmdbaseCls
 	
 	}
 
+	
+	/**
+	 * Set access rights for one event and one calendar
+	 * @param 	array	$calPeriod		Event infos
+	 * @param 	array	$calinfo		Calendar infos
+	 * @return null
+	 */
 	function updateAccess($calPeriod, $calinfo)
 	{
 		global $babBody;
+		
+		
 
 		$this->allow_view		= true;
 		$this->allow_modify		= true;

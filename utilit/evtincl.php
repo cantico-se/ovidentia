@@ -35,10 +35,10 @@ include_once "base.php";
  * Creation and modification
  *
  * @param	int		$id_event
- * @param	array	$idcals
- * @param	array	$exclude
+ * @param	array	$idcals			selected calendars in event modifcation or creation
+ * @param	array	$exclude		calendar id where the notification will not be sent
  * 
- * @return	array	calendar id were the event has been inserted
+ * @return	array					calendar id were the event has been inserted
  */
 function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 
@@ -145,6 +145,8 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 
 				if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
 					{
+						// if approbation, notify approvers
+						
 						include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 						$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
 						$babDB->db_query("
@@ -161,6 +163,9 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 					}
 				else 
 					{
+						// if new calenar in event, notify new appointement 
+						// and exlude in modification notification
+						
 						$exclude[] = $id_cal;
 						cal_notify(
 							$event['title'], 
@@ -1004,12 +1009,15 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 
 /**
  * Get users to notify for a calendar, do not notify a person twice in the same refresh
+ * 
+ * 
  * @param	int		$id_cal
  * @param	int		$cal_type
  * @param 	int 	$id_owner
+ * @param	int		$id_creator		notify creator of event
  * @return 	array
  */
-function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
+function cal_usersToNotiy($id_cal, $cal_type, $id_owner, $id_creator = null) {
 
 	include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
@@ -1041,6 +1049,13 @@ function cal_usersToNotiy($id_cal, $cal_type, $id_owner) {
 		
 	if (isset($GLOBALS['BAB_SESS_USERID'])) {
 		unset($arrusers[$GLOBALS['BAB_SESS_USERID']]);
+	}
+	
+	if (null !== $id_creator && !isset($arrusers[$id_creator])) {
+		$arrusers[$id_creator] = array(
+			'name' => bab_getUserName($id_creator),
+			'email' => bab_getUserEmail($id_creator)
+		);
 	}
 	
 	static $sent = NULL;
@@ -1222,43 +1237,47 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	
 	
 	
+class clsnotifyEventUpdate extends clsNotifyEvent
+	{
+	var $calendar;
+	
+	function clsnotifyEventUpdate(&$evtinfo)
+		{
+		$this->calendar = '';
+		
+		$this->vars['title'] 		= $evtinfo['title'];
+		$this->vars['description'] 	= $evtinfo['description'];
+		$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
+		$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
+		$this->vars['message'] 		= '';
+		$this->vars['location'] 	= $evtinfo['location'];
+		}
+	}
 	
 	
 	
-	
-
+/**
+ * Notifications in event modification
+ * 
+ * @param int 		$evtid
+ * @param bool 		$bdelete
+ * @param array 	$exclude
+ * @return null
+ */
 function notifyEventUpdate($evtid, $bdelete, $exclude)
 	{
 	global $babBody, $babDB, $babAdminEmail;
-
-	if(!class_exists("clsnotifyEventUpdate"))
-		{
-		class clsnotifyEventUpdate extends clsNotifyEvent
-			{
-			var $calendar;
-
-			function clsnotifyEventUpdate(&$evtinfo)
-				{
-				$this->calendar = '';
-				
-				$this->vars['title'] 		= $evtinfo['title'];
-				$this->vars['description'] 	= $evtinfo['description'];
-				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
-				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
-				$this->vars['message'] 		= '';
-				$this->vars['location'] 	= $evtinfo['location'];
-				}
-			}
-		}
 	
 
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
+		
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
 	$evtinfo=$babDB->db_fetch_array($babDB->db_query("select cet.* from ".BAB_CAL_EVENTS_TBL." cet where cet.id='".$babDB->db_escape_string($evtid)."'"));
+	
 
 	$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 
@@ -1293,7 +1312,8 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 
 	while( $arr = $babDB->db_fetch_array($res) )
 		{
-		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner']);
+		$arrusers = cal_usersToNotiy($arr['id_cal'], $arr['type'], $arr['owner'], $evtinfo['id_creator']);
+		
 		if($arrusers && !in_array($arr['id_cal'], $exclude))
 			{
 			$calinfo = bab_getICalendars()->getCalendarInfo($arr['id_cal']);

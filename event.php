@@ -1216,6 +1216,7 @@ function updateEvent(&$message)
 	
 	if (isset($_POST['event_owner']) && !empty($_POST['event_owner']) )
 		{
+		// owner update
 		$arr = $babDB->db_fetch_array($babDB->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$babDB->db_escape_string($_POST['event_owner'])."'"));
 		if( isset($arr['owner']))
 			{
@@ -1224,9 +1225,19 @@ function updateEvent(&$message)
 		}
 	
 	
+		
+	$modification = false;
+	
 	foreach($arrupdate as $key => $val)
 	{
-		$babDB->db_query($req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."" );
+		$query = $req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."";
+		$babDB->db_query($query);
+		
+		if (0 !== $babDB->db_affected_rows())
+		{
+			$modification = true;
+		}
+		
 		
 		$min = $val['start'] < $min ? $val['start'] : $min;
 		$max = $val['end']	 > $max ? $val['end'] 	: $max;
@@ -1243,6 +1254,10 @@ function updateEvent(&$message)
 	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
+	
+	
+	// the exlude array contain new calendar in event and removed calendars from event
+	// the do not need a notification
 
 	notifyEventUpdate(bab_pp('evtid'), false, $exclude);
 	return true;
