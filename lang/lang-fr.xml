@@ -1901,11 +1901,12 @@
 <string id="Create a set of groups">Créer un ensemble de groupes</string>
 <string id="Modify the set of groups">Modifier l\'ensemble de groupes</string>
 <string id="Do you really want to delete the set of groups ?">Voulez-vous vraiment supprimer l\'ensemble de groupes ?</string>
-<string id="Specify which fields will be displayed when browsing directory">Indiquez les champs à afficher lors de la consultation de l'annuaire</string>
+<string id="Specify which fields will be displayed when browsing and searching directory">Indiquez les champs à afficher lors de la consultation et la recherche de l'annuaire</string>
+<string id="Sort search results by">Ordonner les résultats de recherche par</string>
+<string id="Display and search">Affichage et recherche</string>
 <string id="OVML file to be used for list">Fichier OVML à utiliser lors de l'affichage de la liste</string>
 <string id="OVML file to be used for detail">Fichier OVML à utiliser lors de l'affichage d'une fiche</string>
 <string id="The request has been modified">La demande a été modifiée</string>
-
 <string id="Swish-e command (swish-e.exe)">Commande swish-e (swish-e.exe)</string>
 <string id="Command to transform pdf documents into text (pdftotext.exe)">Commande pour transformer les documents pdf en texte (pdftotext.exe)</string>
 <string id="Command to transform excel documents into csv (xls2csv.exe)">Commande pour transformer les documents excel en csv (xls2csv.exe)</string>

@@ -454,9 +454,22 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		}
 
 		$req .= implode(", \n", $fields);
+		
+		$defaultorder = $this->getDefaultOrder();
+		
 
 		if (null !== $this->primary_search) {
-			$req .= ", ABS(STRCMP(e.sn,". $babDB->quote($this->primary_search) .")) AS relevance ";
+			$first_orderfield = reset($defaultorder);
+			list($ordercol) = explode(' ', $first_orderfield);
+			
+			if (0 === mb_strpos($ordercol, 'babdirf')) {
+				$ordercol = 'extra_'.$ordercol.'.field_value';
+			} else {
+				$ordercol = 'e.'.$ordercol;
+			}
+			
+			
+			$req .= ", ABS(STRCMP(".$ordercol.",". $babDB->quote($this->primary_search) .")) AS relevance ";
 		}
 		
 		$req .= "	 
@@ -485,11 +498,9 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		$req .= ' AND (e.id_user=\'0\' OR dis.id IS NOT NULL)';
 		
 
-		if (null !== $this->primary_search) {
-			$sort = 'relevance ASC, sn ASC, givenname ASC';
-		} else {
-			$sort = 'sn ASC, givenname ASC';
-		}
+		
+		
+		
 
 		
 		if (null !== $this->sort_method) {
@@ -500,15 +511,20 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				$sortcol = mb_substr($sortcol, 0, -4);
 				$order_type = 'DESC';
 			}
-
-			switch($sortcol) {
-				case 'sn':
-					break;
-				default:
-					$sort = $babDB->backTick($sortcol).' '.$order_type;
+			
+			$sort = $babDB->backTick($sortcol).' '.$order_type;
+			
+		} else {
+			
+			// get back to default search
+			$sort = implode(', ', $defaultorder);
+			
+			if (null !== $this->primary_search) {
+				$sort = 'relevance ASC, '.$sort;
 			}
 		}
-
+		
+	
 
 		$req .= ' ORDER BY '.$sort;
 		
@@ -517,6 +533,54 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		$result->setRessource($babDB->db_query($req));
 		return $result;
 	}
+	
+	
+	
+	private function getDefaultOrder()
+	{
+		global $babDB;
+		
+		if (null === $this->search_id_directory) {
+			$res = $babDB->db_query('SELECT search_sort_fields FROM '.BAB_DBDIR_OPTIONS_TBL.'');
+			$arr = $babDB->db_fetch_assoc($res);
+			
+			$order = explode(',', $arr['search_sort_fields']);
+		} else {
+			
+			$order = array();
+			$res = $babDB->db_query('SELECT id_field, sortfield FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' WHERE `sortfield`<>\'0\' ORDER BY ABS(sortfield)');
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+				
+				if ($arr['sortfield'] < 0) {
+					$arr['id_field'] = -1 * $arr['id_field'];
+				}
+				
+				$order[] = $arr['id_field'];
+			}
+		}
+		
+		$sd = array_keys($this->getSearchableDirectories());
+		$all_fields = bab_getDirectoriesFields($sd);
+		
+		$return = array();
+		
+		foreach($order as $id_field) {
+			$type = $id_field > 0 ? 'ASC' : 'DESC';
+			$id_field = abs($id_field);
+			
+			if (isset($all_fields[$id_field])) {
+				$return[] = $all_fields[$id_field]['name'].' '.$type;
+			}
+		}
+		
+		return $return;
+	}
+	
+	
+	
+	
+	
+	
 
 
 	/**

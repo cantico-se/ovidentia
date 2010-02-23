@@ -256,7 +256,7 @@ function search_options()
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
-			$this->t_sort_fields = bab_translate("Sort results by");
+			$this->t_sort_fields = bab_translate("Sort search results by");
 
 			$this->db = & $GLOBALS['babDB'];
 
@@ -309,13 +309,22 @@ function search_options()
 			if ($this->resdb && 0 < $this->db->db_num_rows($this->resdb)) {
 				$this->db->db_data_seek($this->resdb, 0);
 				} 
+				
+			
 			return false;
 			}
 			
 
-		function getnextsortfs()
+		function getnextsortfs(&$skip)
 			{
 				if ($this->arr) {
+					
+					if (true === $this->arr) {
+						$this->getnext();
+						$skip = true;
+						return true;
+					}
+					
 					$this->sortid = (int) $this->arr['id'];
 					if ($this->sortid > 0) {
 						
@@ -325,7 +334,13 @@ function search_options()
 					} else {
 						$this->description = bab_toHtml($this->arr['description'].' '.bab_translate('descending'));
 						$this->arr['id'] = abs($this->sortid);
-						if (!$this->getnext()) return false;
+						if (!$this->getnext()) {
+							static $end = true;
+						}
+					}
+					
+					if (isset($end)) {
+						$this->arr = false;
 					}
 					
 					return true;
@@ -338,10 +353,13 @@ function search_options()
 			{
 			if (list($id, $description) = each($this->arrdf))
 				{
+				$this->arr = array();
 				$this->arr['id'] = bab_toHtml($id);
 				$this->arr['description'] = bab_toHtml(translateDirectoryField($description));
 				return true;
 				}
+				
+			$this->arr = true;
 			return false;
 			}
 			
@@ -910,7 +928,7 @@ function displayDb($id)
 			{
 			global $babDB;
 			$this->id = $id;
-			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing directory");
+			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing and searching directory");
 			$this->listftxt = '---- '.bab_translate("Fields").' ----';
 			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
 			$this->ovmllisttxt = bab_translate("OVML file to be used for list");
@@ -934,11 +952,11 @@ function displayDb($id)
 			$this->ovmllistval = $arr['ovml_list'];
 			$this->ovmldetailval = $arr['ovml_detail'];
 
-			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and ordering='0' AND id_field<>5");
+			$this->resf = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' AND id_field<>5 ");
 			$this->countf = $babDB->db_num_rows($this->resf);
 			$this->resfd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and ordering!='0' AND id_field<>5 order by ordering asc");
 			$this->countfd = $babDB->db_num_rows($this->resfd);
-			$this->ressortd = $babDB->db_query("select id, id_field from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and sortfield!='0' AND id_field<>5 order by ordering asc");
+			$this->ressortd = $babDB->db_query("select id, id_field, sortfield from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".$babDB->db_escape_string($iddir)."' and sortfield!='0' AND id_field<>5 order by ABS(sortfield) asc");
 			$this->countsortd = $babDB->db_num_rows($this->ressortd);
 			}
 
@@ -948,7 +966,7 @@ function displayDb($id)
 			static $i = 0;
 			if( $i < $this->countf)
 				{
-				$this->arr = $arr = $babDB->db_fetch_array($this->resf);
+				$arr = $babDB->db_fetch_array($this->resf);
 				$this->fid = $arr['id_field'];
 				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
 					{
@@ -963,8 +981,13 @@ function displayDb($id)
 				$i++;
 				return true;
 				}
-			else
-				return false;
+			
+			if ($this->resf && 0 < $babDB->db_num_rows($this->resf)) {
+				$babDB->db_data_seek($this->resf, 0);
+				$i = 0;
+			}	
+			
+			return false;
 			}
 
 		function getnextdf()
@@ -988,24 +1011,38 @@ function displayDb($id)
 				$i++;
 				return true;
 				}
-			else
-				return false;
+			
+			$this->fieldval = true;
+			$this->fid = -1;
+			return false;
 			}
 			
 			
-		function getnextsortfs()
+		function getnextsortfs(&$skip)
 			{
-				if ($this->arr) {
-					$this->sortid = (int) $this->arr['id'];
+				if ($this->fieldval) {
+					
+					if (true === $this->fieldval) {
+						$this->getnextf();
+						$skip = true;
+						return true;
+					}
+					
+					$this->sortid = (int) $this->fid;
 					if ($this->sortid > 0) {
-						
 						$this->description = bab_toHtml($this->fieldval.' '.bab_translate('ascending'));
-						$this->arr['id'] = -1 * $this->arr['id'];
+						$this->fid = -1 * $this->fid;
 						
 					} else {
 						$this->description = bab_toHtml($this->fieldval.' '.bab_translate('descending'));
-						$this->arr['id'] = abs($this->sortid);
-						if (!$this->getnextf()) return false;
+						$this->fid = abs($this->sortid);
+						if (!$this->getnextf()) {
+							static $end = true;
+						}
+					}
+					
+					if (isset($end)) {
+						$this->fieldval = false;
 					}
 					
 					return true;
@@ -1022,16 +1059,30 @@ function displayDb($id)
 			if( $i < $this->countsortd)
 				{
 				$arr = $babDB->db_fetch_array($this->ressortd);
-				$this->fid = $arr['id_field'];
-				if( $this->fid < BAB_DBDIR_MAX_COMMON_FIELDS )
+				
+				
+				
+				if ($arr['sortfield'] > 0)
 					{
-					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string(abs($arr['id_field']))."'"));
-					$this->fieldval = translateDirectoryField($arr['description']);
+					$this->fid = $arr['id_field'];
+					$type = bab_translate('ascending');
 					}
 				else
 					{
-					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string((abs($this->fid) - BAB_DBDIR_MAX_COMMON_FIELDS))."'"));
-					$this->fieldval = translateDirectoryField($rr['name']);
+					$this->fid = -1* $arr['id_field'];
+					$type = bab_translate('descending');
+					}
+				
+				
+				if( $arr['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+					{
+					$arr = $babDB->db_fetch_array($babDB->db_query("select description from ".BAB_DBDIR_FIELDS_TBL." where id='".$babDB->db_escape_string($arr['id_field'])."'"));
+					$this->fieldval = translateDirectoryField($arr['description']).' '.$type;
+					}
+				else
+					{
+					$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_DBDIR_FIELDS_DIRECTORY_TBL." where id='".$babDB->db_escape_string($arr['id_field'] - BAB_DBDIR_MAX_COMMON_FIELDS)."'"));
+					$this->fieldval = translateDirectoryField($rr['name']).' '.$type;
 					}
 				$i++;
 				return true;
@@ -1472,7 +1523,7 @@ function modifyAdDb($id, $name, $description, $displayiu, $rw, $rq, $ml, $dz, $a
 
 
 function confirmDeleteDirectory($id, $type)
-	{
+{
 	include_once $GLOBALS['babInstallPath'].'utilit/delincl.php';
 	
 	if( $type == 'd')
@@ -1484,18 +1535,62 @@ function confirmDeleteDirectory($id, $type)
 		bab_deleteLdapDirectory($id);
 		}
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
-	}
+	exit;
+}
+	
+	
+	
+	
 
-function dbUpdateDiplay($id, $listfd)
+function dbUpdateDiplay($id, $listfd, $sortfd)
 {
 	global $babDB;
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-	$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='0' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."'");
+	
+	$babDB->db_query("
+		update ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+		set 
+			ordering='0', 
+			sortfield='0' 
+		where 
+			id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."'
+	");
+	
 	for($i=0; $i < count($listfd); $i++)
 		{
-		$babDB->db_query("update ".BAB_DBDIR_FIELDSEXTRA_TBL." set ordering='".($i + 1)."' where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' and id_field='".$babDB->db_escape_string($listfd[$i])."'");
+			$babDB->db_query("
+				update ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+				set 
+					ordering='".($i + 1)."' 
+				where 
+					id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' 
+					and id_field='".$babDB->db_escape_string($listfd[$i])."'
+			");
+		}
+		
+		
+	for($i=0; $i < count($sortfd); $i++)
+		{
+			$sortfield = $i + 1;
+			
+			if ($sortfd[$i] < 0) {
+				$sortfield = -1 * $sortfield;
+			}
+			
+			
+			$babDB->db_query("
+				update ".BAB_DBDIR_FIELDSEXTRA_TBL." 
+				set 
+					sortfield='".$sortfield."' 
+				where 
+					id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' 
+					and id_field='".$babDB->db_escape_string(abs($sortfd[$i]))."'
+			");
 		}
 }
+
+
+
 
 function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail)
 {
@@ -1897,7 +1992,7 @@ if( isset($update) )
 	{
 	if( $update == 'displaydb' )
 		{
-		if(!dbUpdateDiplay($id, $listfd))
+		if(!dbUpdateDiplay(bab_pp('id'), bab_pp('listfd'), bab_pp('sortfd')))
 			$idx = 'list';
 		}
 	elseif( $update == 'ovmldb' )
@@ -2051,7 +2146,7 @@ switch($idx)
 		displayDb($id);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
-		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display and search"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
 		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 
@@ -2060,7 +2155,7 @@ switch($idx)
 		dbListOrder($id);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
-		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display and search"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
 		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 
@@ -2069,7 +2164,7 @@ switch($idx)
 		modifyDb($id);
 		$babBody->addItemMenu('list', bab_translate("Directories"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
 		$babBody->addItemMenu('mdb', bab_translate("Modify"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
-		$babBody->addItemMenu('dispdb', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
+		$babBody->addItemMenu('dispdb', bab_translate("Display and search"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=dispdb&id='.$id);
 		$babBody->addItemMenu('lorddb', bab_translate("Order"), $GLOBALS['babUrlScript'].'?tg=admdir&idx=lorddb&id='.$id);
 		break;
 

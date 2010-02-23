@@ -556,6 +556,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 //-->
 </script>
 <!--#end dbscripts -->
+
 <!--#begin dbdisplay -->
 <form method="post" name="dispdbf" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="admdir">
@@ -625,9 +626,9 @@ document.forms.ovmldbf.ovmllist.value = txt;
 	</td>
 	
 	<td align="center">
-		<a href="Javascript:moveOptions(document.dispdbf.listfields1,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
+		<a href="Javascript:moveOptions(document.dispdbf.listfields2,document.dispdbf.elements[7])"><img src="{ babSkinPath }images/Puces/PuceGoRight.gif" border=0 alt=""></a>
 		<br /><br />
-		<a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields1)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
+		<a href="Javascript:moveOptions(document.dispdbf.elements[7],document.dispdbf.listfields2)" ><img src="{ babSkinPath }images/Puces/PuceGoLeft.gif" border=0 alt=""></a>
 	</td>
 	
 	<td align="center"> 
@@ -654,7 +655,7 @@ document.forms.ovmldbf.ovmllist.value = txt;
 	<td align="center" colspan="4">
 	<br />
 	<br /> 
-	<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispdbf.elements[5]); document.dispdbf.submit()" />
+	<input type="submit" name="Submit" value="{ update }" onClick="selectAll(document.dispdbf.elements[5]); selectAll(document.dispdbf.elements[7]); document.dispdbf.submit()" />
 	<br />
 	<br />
 	</td>
