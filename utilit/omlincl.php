@@ -6208,7 +6208,7 @@ var $gctx; /* global context */
 	{
 		$out = '';
 		
-		$cls = @bab_functionality::get('Ovml/Container/'.$handler);
+		$cls = @bab_functionality::get('Ovml/Container/'.$handler, false);
 		
 		if (false === $cls) {
 			if( $fprint == 'object' )
