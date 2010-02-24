@@ -706,6 +706,7 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 			}
 		}
 
+		$this->t_advanced_search = bab_translate('Advanced search...');
 		$this->t_filter_by_directory = bab_translate('Filter search results by a directory :');
 		$this->t_all = bab_translate('All');
 		$this->t_search_in_specific_field = bab_translate('Search in a specific field :');

@@ -562,12 +562,29 @@ function setselects(obj)
 	}
 
 
+bab_initFunctions.push(function() {
 
+	var advancedSearch = document.getElementById('bab_advancedSearch');
+
+	var unfold = document.createElement("span");
+	unfold.className = 'bab_advancedSearchButton'
+	unfold.appendChild(document.createTextNode("{ t_advanced_search }"));
+
+	unfold.onclick = function () {
+		advancedSearch.style.display = (advancedSearch.style.display === 'none' ? 'block' : 'none');
+	};
+	
+	advancedSearch.parentNode.insertBefore(unfold, advancedSearch);
+	
+	advancedSearch.style.display = 'none';
+}
+); 
 
 </script>
 
 
 
+<div id="bab_advancedSearch">
 
 <p>
 	
@@ -604,7 +621,7 @@ function setselects(obj)
 	<input type="text" name="v[{ fieldcounter }]" value="{ value }" size="30" />
 </p>
  <!--#endin getnextfieldtosearch -->
-
+</div>
 
 <!--#end directories_form -->
 
