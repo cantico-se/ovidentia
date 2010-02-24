@@ -567,16 +567,33 @@ bab_initFunctions.push(function() {
 	var advancedSearch = document.getElementById('bab_advancedSearch');
 
 	var unfold = document.createElement("span");
-	unfold.className = 'bab_advancedSearchButton'
-	unfold.appendChild(document.createTextNode("{ t_advanced_search }"));
+
+	if ("{ more_options_folded }" == "0") {
+		advancedSearch.style.display = 'block';
+		unfold.className = 'bab_advancedSearchButton_open';
+		unfold.appendChild(document.createTextNode("{ t_less_options }"));
+	} else {
+		advancedSearch.style.display = 'none';
+		unfold.className = 'bab_advancedSearchButton';
+		unfold.appendChild(document.createTextNode("{ t_more_options }"));
+	}
 
 	unfold.onclick = function () {
-		advancedSearch.style.display = (advancedSearch.style.display === 'none' ? 'block' : 'none');
+		if (advancedSearch.style.display === 'none') {
+			advancedSearch.style.display = 'block';
+			unfold.className = 'bab_advancedSearchButton_open';
+			unfold.firstChild.nodeValue = "{ t_less_options }";
+			
+		} else {
+			advancedSearch.style.display = 'none';
+			unfold.className = 'bab_advancedSearchButton';
+			unfold.firstChild.nodeValue = "{ t_more_options }";
+		}
 	};
+		
 	
 	advancedSearch.parentNode.insertBefore(unfold, advancedSearch);
 	
-	advancedSearch.style.display = 'none';
 }
 ); 
 

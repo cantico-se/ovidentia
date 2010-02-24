@@ -415,7 +415,6 @@ class bab_SearchDefaultForm {
 			</p>
 
 			<p id="bab_search_secondary_bloc">
-				<label for="bab_search_secondary">%labelsecondary% :</label>
 
 				<select name="option">
 					%htmloptions%
