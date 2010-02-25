@@ -542,9 +542,13 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		
 		if (null === $this->search_id_directory) {
 			$res = $babDB->db_query('SELECT search_sort_fields FROM '.BAB_DBDIR_OPTIONS_TBL.'');
-			$arr = $babDB->db_fetch_assoc($res);
+			if ($arr = $babDB->db_fetch_assoc($res)) {
 			
-			$order = explode(',', $arr['search_sort_fields']);
+				$order = explode(',', $arr['search_sort_fields']);
+			} else {
+				$order = array();
+			}
+
 		} else {
 			
 			$order = array();
@@ -557,6 +561,11 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				
 				$order[] = $arr['id_field'];
 			}
+		}
+		
+		
+		if (empty($order)) {
+			$order = array(2,4);
 		}
 		
 		$sd = array_keys($this->getSearchableDirectories());
