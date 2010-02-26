@@ -493,7 +493,11 @@ function bab_newInstall() {
 
 
 
-
+/**
+ * Get addons list from folders
+ * @param unknown_type $sInstallDir
+ * @return unknown_type
+ */
 function bab_getAddonListFromInstall($sInstallDir)
 {
 	$aAddons = array();

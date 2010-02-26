@@ -392,7 +392,7 @@ class bab_InstallSource {
 
 	/**
 	 * Install a Ovidentia upgrade
-	 * Unzip the core folder too ovidentia root folder
+	 * Unzip the core folder to ovidentia root folder
 	 * @param	bab_CoreIniFile $ini
 	 * @return	bool
 	 */
