@@ -6670,10 +6670,12 @@ class Func_Ovml_Function_SetCookie extends Func_Ovml_Function {
 			if( !isset($expire))
 				{
 				setcookie($name, $value);
+				$_COOKIE[$name] = $value; /* It allows to recover in the same code OVML the value of the cookie (OFSeCookie then OFGetCookie will work) */
 				}
 			else
 				{
 				setcookie($name, $value, $expire);
+				$_COOKIE[$name] = $value; /* It allows to recover in the same code OVML the value of the cookie (OFSeCookie then OFGetCookie will work) */
 				}
 			}
 		}
