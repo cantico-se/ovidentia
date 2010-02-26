@@ -1274,7 +1274,7 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 		$deep++;
 		$id_node = $tree->add($id_parent);
 		if ($id_node) {
-			$tree->setFunction($id_node, $current);
+			$tree->setFunction($id_node, $current, $node->progress);
 		}
 		bab_sitemap_insertNode($tree, $node, $id_node, $deep);
 	}
