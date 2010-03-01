@@ -415,14 +415,14 @@ class bab_eventEditorFunctions extends bab_event {
 	var $func = array();
 
 	/**
-	 * Register an editor instance
-	 * @public
+	 * Register a function for editor
+	 * 
 	 * @param	string	$name
 	 * @param	string	$description
 	 * @param	string	$url
 	 * @param	string	$iconpath
 	 */
-    function addFunction($name, $description, $url, $iconpath) {
+    public function addFunction($name, $description, $url, $iconpath) {
 		$this->func[] = array(
 			'name' 			=> $name,
 			'description' 	=> $description,
@@ -433,10 +433,10 @@ class bab_eventEditorFunctions extends bab_event {
     
     
     /**
-     * Get the list of registed editors
-     * @public
+     * Get the list of registed functions
+     * 
      */
-    function getFunctions() {
+    public function getFunctions() {
     	return $this->func;
     }
 }
