@@ -35,8 +35,8 @@ define('BAB_FILEHANDLER_COPY'	, 3);
 class bab_fileHandler {
 
 
-	private $type;
-	private $source;
+	public $type;
+	public $source;
 
 	public $filename;
 	public $size;
