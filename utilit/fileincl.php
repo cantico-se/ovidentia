@@ -49,7 +49,7 @@ bab_translate("Unedit file"), bab_translate("Commit file"));
  * 
  * NOT FINISHED
  * 
- * @author Z�bina Samuel
+ * @author Zebina Samuel
  */
 class bab_CompressedFileHelper
 {
