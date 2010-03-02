@@ -552,7 +552,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		} else {
 			
 			$order = array();
-			$res = $babDB->db_query('SELECT id_field, sortfield FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' WHERE `sortfield`<>\'0\' ORDER BY ABS(sortfield)');
+			$res = $babDB->db_query('SELECT id_field, sortfield FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' WHERE `sortfield`<>\'0\' AND id_directory='.$babDB->quote($this->search_id_directory).' ORDER BY ABS(sortfield)');
 			while ($arr = $babDB->db_fetch_assoc($res)) {
 				
 				if ($arr['sortfield'] < 0) {
