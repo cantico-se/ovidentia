@@ -86,7 +86,11 @@ class Func_Archive_Zip extends Func_Archive {
 	{
 		
 		if (function_exists('iconv')) {
-			$filename = iconv(bab_charset::getDatabase(), 'IBM850//TRANSLIT', $filename);
+			// windows
+			// $filename = iconv(bab_charset::getDatabase(), 'IBM850//TRANSLIT', $filename);
+			
+			// linux
+			$filename = iconv(bab_charset::getDatabase(), 'UTF-8', $filename);
 		}
 		
 		return $filename;
