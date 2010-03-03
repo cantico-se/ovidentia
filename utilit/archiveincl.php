@@ -90,7 +90,8 @@ class Func_Archive_Zip extends Func_Archive {
 			// $filename = iconv(bab_charset::getDatabase(), 'IBM850//TRANSLIT', $filename);
 			
 			// linux
-			$filename = iconv(bab_charset::getDatabase(), 'UTF-8', $filename);
+			$filename = iconv(bab_charset::getDatabase(), 'IBM437//TRANSLIT', $filename);
+			
 		}
 		
 		return $filename;
