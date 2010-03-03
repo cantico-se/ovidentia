@@ -2031,7 +2031,7 @@ function getFile()
 
 	$inl = bab_rp('inl', false);
 	if (false === $inl) {
-		$inl = bab_getFileContentDisposition() == 1 ? 1 : '';
+		$inl = bab_getFileContentDisposition() == 1;
 	}
 
 	$iIdFile = (int) bab_rp('idf', 0);
@@ -2086,36 +2086,9 @@ function getFile()
 		$babBody->msgerror = bab_translate("The file is not on the server");
 		return;
 	}
-
-	$fp = fopen($sFullPathName, 'rb');
-	if ($fp) {
-		bab_setTimeLimit(3600);
-
-		if (mb_strtolower(bab_browserAgent()) == 'msie') {
-			header('Cache-Control: public');
-		}
-		$sName = $oFolderFile->getName();
-		if ($inl == '1') {
-			header('Content-Disposition: inline; filename="'.$sName.'"'."\n");
-		} else {
-			header('Content-Disposition: attachment; filename="'.$sName.'"'."\n");
-		}
-
-		$mime = bab_getFileMimeType($sFullPathName);
-		$fsize = filesize($sFullPathName);
-		header('Content-Type: '.$mime."\n");
-		header('Content-Length: '.$fsize."\n");
-		header('Content-transfert-encoding: binary'."\n");
-
-		while (!feof($fp)) {
-			print fread($fp, 8192);
-		}
-		fclose($fp);
-
-		bab_setCurrentUserDelegation($iCurrentDelegation);
-
-		exit;
-	}
+	
+	require_once dirname(__FILE__).'/utilit/path.class.php';
+	bab_downloadFile(new bab_Path($sFullPathName), null, $inl);
 
 }
 

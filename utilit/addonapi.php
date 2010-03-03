@@ -2813,6 +2813,50 @@ function bab_buildReference($module, $type, $identifier, $location = '')
 }
 
 
+/**
+ * Download a file
+ * @since 7.2.92
+ * 
+ * @param 	bab_Path 	$path			path to file
+ * @param	string		[$filename]	
+ * @param	bool		$inline	
+ * @return unknown_type
+ */
+function bab_downloadFile(bab_Path $path, $filename = null, $inline = true)
+{
+	if (null === $filename) 
+	{
+		$filename = $path->basename();
+	}
+	
+	$fp = fopen($path->toString(), 'rb');
+	if ($fp) 
+	{
+		bab_setTimeLimit(3600);
 
+		if (mb_strtolower(bab_browserAgent()) == 'msie') {
+			header('Cache-Control: public');
+		}
+		
+		if ($inline) {
+			header('Content-Disposition: inline; filename="'.$filename.'"'."\n");
+		} else {
+			header('Content-Disposition: attachment; filename="'.$filename.'"'."\n");
+		}
 
+		$mime = bab_getFileMimeType($path->toString());
+		$fsize = filesize($path->toString());
+		header('Content-Type: '.$mime."\n");
+		header('Content-Length: '.$fsize."\n");
+		header('Content-transfert-encoding: binary'."\n");
+
+		while (!feof($fp)) {
+			print fread($fp, 8192);
+		}
+		fclose($fp);
+		exit;
+	}
+	
+	return false;
+}
 

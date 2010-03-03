@@ -131,9 +131,6 @@ class bab_Path {
 
 
 	/**
-	 * Tests if the path is accessible to create, update, delete files.
-	 * Additional tests are made for Windows IIS.
-	 *
 	 * Test if a folder is accessible to create, update, delete files
 	 * aditionals tests are made for Windows IIS
 	 * 
@@ -222,6 +219,18 @@ class bab_Path {
 	}
 	
 	
+	/**
+	 * this function will return the base name of the file
+	 * @return string 		the last path element
+	 */
+	public function basename()
+	{
+		if (0 === count($this->allElements)) {
+			return null;
+		}
+		
+		return $this->allElements[count($this->allElements) -1];
+	}
 	
 	
 	/**
