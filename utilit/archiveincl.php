@@ -63,7 +63,7 @@ class Func_Archive_Zip extends Func_Archive {
 	/**
 	 * Add file to zip
 	 * @param	string	$filename		The path to the file to add. 
-	 * @param	string	$localname		File in zip archive
+	 * @param	string	$localname		File in zip archive, according to ovidentia database charset
 	 * 
 	 */
 	public function addFile($filename, $localname) {}
@@ -75,6 +75,22 @@ class Func_Archive_Zip extends Func_Archive {
 	 * @param	string	$destination		full path
 	 */
 	public function extractTo($destination) {}
+	
+	
+	/**
+	 * Encode filename before adding into zip archive
+	 * @param	string	$filename
+	 * @return string
+	 */
+	protected function encode($filename)
+	{
+		
+		if (function_exists('iconv')) {
+			$filename = iconv(bab_charset::getDatabase(), 'IBM850//TRANSLIT', $filename);
+		}
+		
+		return $filename;
+	}
 }
 
 
@@ -124,7 +140,7 @@ class Func_Archive_Zip_Zlib extends Func_Archive_Zip {
 
 
 	public function addFile($filename, $localname) {
-		$this->add[] = array($localname, file_get_contents($filename));
+		$this->add[] = array($this->encode($localname), file_get_contents($filename));
 	}
 
 	
@@ -211,7 +227,7 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 				$this->reopen();
 			}
 
-			$this->zip->addFile($filename, $localname);
+			$this->zip->addFile($filename, $this->encode($localname));
 			$this->add_file_limit--;
 		}
 	}
