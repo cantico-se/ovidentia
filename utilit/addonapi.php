@@ -2817,12 +2817,13 @@ function bab_buildReference($module, $type, $identifier, $location = '')
  * Download a file
  * @since 7.2.92
  * 
- * @param 	bab_Path 	$path			path to file
- * @param	string		[$filename]	
- * @param	bool		$inline	
+ * @param 	bab_Path 	$path			path to source file
+ * @param	string		[$filename]		downloaded filename
+ * @param	bool		$inline			inline or attachment mode
+ * @param	bool		$exit			exit after download
  * @return unknown_type
  */
-function bab_downloadFile(bab_Path $path, $filename = null, $inline = true)
+function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exit = true)
 {
 	if (null === $filename) 
 	{
@@ -2854,7 +2855,10 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true)
 			print fread($fp, 8192);
 		}
 		fclose($fp);
-		exit;
+		
+		if ($exit) {
+			exit;
+		}
 	}
 	
 	return false;
