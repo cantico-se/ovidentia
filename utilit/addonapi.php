@@ -2544,8 +2544,8 @@ function bab_locale() {
 			 * Some systems only require LANG, others (like Mandrake) seem to require
 			 * LANGUAGE also.
 			 */
-			putenv("LANG=${languageCode}");
-			putenv("LANGUAGE=${languageCode}");
+			// putenv("LANG=${languageCode}");
+			// putenv("LANGUAGE=${languageCode}");
 			
 			if ($locale = setLocale(LC_ALL, $languageCode)) {
 				return $locale;
