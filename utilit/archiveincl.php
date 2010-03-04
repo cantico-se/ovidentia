@@ -44,6 +44,14 @@ class Func_Archive extends bab_functionality {
  * Interface required for a zip functionality
  */
 class Func_Archive_Zip extends Func_Archive {
+	
+	/**
+	 * charset of files names added in archive
+	 * @see Func_Archive_Zip::setCharset()
+	 * @var string | null
+	 */
+	protected $charset = null;
+	
 
 	public function getDescription() {
 		return bab_translate('Zip archive manager');
@@ -62,6 +70,8 @@ class Func_Archive_Zip extends Func_Archive {
 
 	/**
 	 * Add file to zip
+	 * set charset of files names with the setCharset method, by default, the charset is deducted from the browser OS of the user, aproximatively with the user agent string
+	 * 
 	 * @param	string	$filename		The path to the file to add. 
 	 * @param	string	$localname		File in zip archive, according to ovidentia database charset
 	 * 
@@ -78,17 +88,44 @@ class Func_Archive_Zip extends Func_Archive {
 	
 	
 	/**
+	 * Set charset of new filenames added in archive
+	 * to accept different charset, the iconv function is needed
+	 * @param string | null $charset
+	 * @return Func_Archive_Zip
+	 */
+	public function setCharset($charset)
+	{
+		$this->charset = $charset;
+		return $this;
+	}
+	
+	
+	/**
 	 * Encode filename before adding into zip archive
+	 * 
 	 * @param	string	$filename
 	 * @return string
 	 */
 	protected function encode($filename)
 	{
-		
 		if (function_exists('iconv')) {
-			// windows compatible
-			$filename = iconv(bab_charset::getDatabase(), 'IBM437//TRANSLIT', $filename);
-		} 
+			
+			if (null === $this->charset) 
+			{
+				bab_locale();
+				
+				if ('windows' === bab_browserOS()) {
+					$this->charset = 'IBM437';
+				} else {
+					$this->charset = 'ASCII';
+				}
+			}
+			
+			$filename = iconv(bab_charset::getDatabase(), $this->charset.'//TRANSLIT', $filename);
+
+		} else {
+			$filename = bab_removeDiacritics($filename);
+		}
 		
 		return $filename;
 	}
