@@ -136,7 +136,7 @@ class bab_fileHandler {
 		$obj->size	 	= $input['size'];
 		$obj->code		= $input['error'];
 		$obj->error		= $tmp_error;
-		$obj->mime		= bab_getFileMimeType($obj->filename);
+		$obj->mime		= $obj->filename ? bab_getFileMimeType($obj->filename) : null;
 		return $obj;
 	}
 	
