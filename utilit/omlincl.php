@@ -4949,6 +4949,7 @@ class bab_CalendarEvents extends bab_handler
 			$color = isset($p->color) ? $p->color : '';
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
+			$this->ctx->curctx->push('EventId'					, $id_event);
 			$this->ctx->curctx->push('EventTitle'				, $p->getProperty('SUMMARY'));
 			$this->ctx->curctx->push('EventDescription'			, $description);
 			$this->ctx->curctx->push('EventLocation'			, $p->getProperty('LOCATION'));
