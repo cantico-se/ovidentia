@@ -1179,7 +1179,7 @@ function bab_gotoAddonIfRedirect($item)
 
 	
 	
-function bab_searchDirectoryEmails($what)
+function bab_searchDirectoryEmails($what, $emailSeparator = '; ')
 {
 	global $babBody;
 
@@ -1232,7 +1232,7 @@ function bab_searchDirectoryEmails($what)
 				}
 			}
 		}
-		echo(implode(', ', $emails));
+		echo(implode($emailSeparator, $emails));
 	}
 }
 	
