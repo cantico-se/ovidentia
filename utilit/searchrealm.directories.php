@@ -551,8 +551,14 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 		} else {
 			
+			$arr = getUserDirectories($this->access_rights);
+			$directory = $arr[$this->search_id_directory];
+			
 			$order = array();
-			$res = $babDB->db_query('SELECT id_field, sortfield FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' WHERE `sortfield`<>\'0\' AND id_directory='.$babDB->quote($this->search_id_directory).' ORDER BY ABS(sortfield)');
+			$res = $babDB->db_query('SELECT id_field, sortfield FROM '.BAB_DBDIR_FIELDSEXTRA_TBL.' 
+				WHERE `sortfield`<>\'0\' AND id_directory='.$babDB->quote($directory['entry_id_directory']).' 
+				ORDER BY ABS(sortfield)');
+			
 			while ($arr = $babDB->db_fetch_assoc($res)) {
 				
 				if ($arr['sortfield'] < 0) {
@@ -561,6 +567,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				
 				$order[] = $arr['id_field'];
 			}
+			
 		}
 		
 		
