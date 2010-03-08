@@ -4968,6 +4968,8 @@ class BAB_FileManagerEnv
 				$this->sFmRootPath		= self::getFmRealPersonalPath() . self::userPrefix . $BAB_SESS_USERID . '/';
 				$this->sFmPersonnalPath	= $this->sFmRootPath;
 
+				bab_setCurrentUserDelegation(0);
+
 				if(!is_dir($this->sFmPersonnalPath))
 				{
 					BAB_FmFolderHelper::createDirectory($this->sFmPersonnalPath);
