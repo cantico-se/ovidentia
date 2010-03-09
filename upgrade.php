@@ -6098,7 +6098,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * Upgrade to 7.2.2
 	 */
 	// Ensure that files in personal folders are associated to 'All site' delegation (0).
-	$babDB->db_query("UPDATE `".BAB_FILES_TBL ." SET iIdDgOwner = '0' WHERE bgroup='N' AND iIdDgOwner <> '0'");
+	$babDB->db_query("UPDATE `".BAB_FILES_TBL ."` SET iIdDgOwner = '0' WHERE bgroup='N' AND iIdDgOwner <> '0'");
 
 	
 	
