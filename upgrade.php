@@ -6092,14 +6092,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'End Date,Planned end date' WHERE `sLegend`='End Date,Planned'");
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Time,Planned time' WHERE `sLegend`='Time,Planned'");
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Cost,Planned cost' WHERE `sLegend`='Cost,Planned'");
-	
-	
+
+
 	/**
 	 * Upgrade to 7.2.2
 	 */
 	// Ensure that files in personal folders are associated to 'All site' delegation (0).
-	$babDB->db_query("UPDATE `".BAB_FILES_TBL ." SET iIdDgOwner = '0' WHERE bgroup='N' AND iIdDgOwner <> '0'");
+	$babDB->db_query("UPDATE `".BAB_FILES_TBL ."` SET iIdDgOwner = '0' WHERE bgroup='N' AND iIdDgOwner <> '0'");
 
-	
+
+
 	return true;
 }
