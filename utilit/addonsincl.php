@@ -1157,9 +1157,9 @@ function bab_setAddonGlobals($id_addon) {
 		
 		$req="SELECT uploadpath from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
 		$res = $babDB->db_query($req);
-		$arr = $babDB->db_fetch_assoc($res);
+		$row = $babDB->db_fetch_assoc($res);
 
-		$GLOBALS['babAddonUpload'] = $arr['uploadpath'];
+		$GLOBALS['babAddonUpload'] = $row['uploadpath'].'/addons/'.$arr['title'].'/';
 	}
 	
 	return true;
