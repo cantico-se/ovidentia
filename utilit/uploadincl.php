@@ -65,7 +65,7 @@ class bab_fileHandler {
 	 * @param	int		$type		BAB_FILEHANDLER_UPLOAD, BAB_FILEHANDLER_MOVE, BAB_FILEHANDLER_COPY
 	 * @param	string	$source		Filename
 	 */
-	private function __construct($type, $source) {
+	public function __construct($type, $source) {
 		$this->type		= $type;
 		$this->source	= $source;
 		$this->error	= false;
