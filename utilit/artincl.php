@@ -1799,6 +1799,17 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 			}
 			$this->countLangFiles = count($this->langFiles);
 
+			include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
+			$editorhead = new bab_contentEditor('bab_article_head');
+			$editorbody = new bab_contentEditor('bab_article_body');
+			if(is_null($headFormat))
+			{
+				$headFormat = $editorhead->getFormat();
+			}
+			if(is_null($bodyFormat))
+			{
+				$bodyFormat = $editorbody->getFormat();
+			}
 
 			if ($template != '' && $this->headval == '' && $this->bodyval == '') {
 				
@@ -1836,15 +1847,12 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 			}
 
 				
-			include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 				// l'ordre des appels est important
-			$editorhead = new bab_contentEditor('bab_article_head');
 			$editorhead->setContent($this->headval);
 			if (isset($headFormat)) {
 				$editorhead->setFormat($headFormat);
 			}
 			
-			$editorbody = new bab_contentEditor('bab_article_body');
 			$editorbody->setContent($this->bodyval);
 			if (isset($bodyFormat)) {
 				$editorbody->setFormat($bodyFormat);
