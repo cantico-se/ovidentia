@@ -653,7 +653,7 @@ class bab_PublicationImageUploader
 		}
 		//*/
 		
-		$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sFullPathName); 
+		$oFileHandler = bab_fileHandler::move($sFullPathName); 
 		if(!($oFileHandler instanceof bab_fileHandler))
 		{
 			return false;
@@ -718,8 +718,7 @@ class bab_PublicationImageUploader
 				$this->addErrors($oPubPathEnv->getError());
 				return false;
 			}
-	
-			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_MOVE, $sDraftArticlePathName . $aImageInfo['name']); 
+			$oFileHandler = bab_fileHandler::move($sDraftArticlePathName . $aImageInfo['name']); 
 			if(!($oFileHandler instanceof bab_fileHandler))
 			{
 				return false;
@@ -792,7 +791,7 @@ class bab_PublicationImageUploader
 				return false;
 			}
 			
-			$oFileHandler = new bab_fileHandler(BAB_FILEHANDLER_COPY, $sArticlePathName . $aImageInfo['name']); 
+			$oFileHandler = bab_fileHandler::copy($sArticlePathName . $aImageInfo['name']); 
 			if(!($oFileHandler instanceof bab_fileHandler))
 			{
 				return false;
