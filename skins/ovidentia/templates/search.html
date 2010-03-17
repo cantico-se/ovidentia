@@ -10,10 +10,37 @@ function bab_searchChangeRealm() {
 	sf.submit();
 }
 
+bab_initFunctions.push(function() {
+
+	var searchForm = document.getElementById('bab_searchForm');
+
+	var unfold = document.createElement("span");
+	unfold.className = 'bab_searchFormButton';
+
+	if ("{ search_form_folded }" == "0") {
+		searchForm.className = 'unfolded';
+		unfold.appendChild(document.createTextNode("{ t_hide_search_form }"));
+	} else {
+		searchForm.className = 'folded';
+		unfold.appendChild(document.createTextNode("{ t_show_search_form }"));
+	}
+
+	unfold.onclick = function () {
+		if (searchForm.className == 'folded') {
+			searchForm.className = 'unfolded';
+			unfold.firstChild.nodeValue = "{ t_hide_search_form }";
+		} else {
+			searchForm.className = 'folded';
+			unfold.firstChild.nodeValue = "{ t_show_search_form }";
+		}
+	};
+
+	searchForm.insertBefore(unfold, searchForm.firstChild);
+}
+); 
 
 // -->
 </script>
-
 
 
 <form name="searchForm" method="get" action="{ babPhpSelf }">
@@ -26,39 +53,38 @@ function bab_searchChangeRealm() {
 <input type="hidden" name="advenced" value="{ htmlfields[advenced] }" />
 
 
-<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+
+<div class="BabLoginMenuBackground">
+<div  id="bab_searchForm">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <tr>
-<td class="BabLoginCadreBackground" align="center">
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="2">
-	<tr valign="top"> 
-		<td width="200"> 
 
-			<div class="bab_searchChangeRealm">
-				<label for="">{ t_in } :</label> 
-				
-				<select name="item" onchange="bab_searchChangeRealm()">
-				  <option value="">{ t_all }</option>
-				  <!--#in getnextitem -->
-					<option { selected } value="{ itemvalue }">{ itemname }</option>
-				  <!--#endin getnextitem -->
-				</select>
-			<div>
-		</td>
+	<td valign="top">
+	<div id="bab_search_realm">
+		<label for="">{ t_in } :</label>
+		<select name="item" onchange="bab_searchChangeRealm()">
+		  <option value="">{ t_all }</option>
+		  <!--#in getnextitem -->
+			<option { selected } value="{ itemvalue }">{ itemname }</option>
+		  <!--#endin getnextitem -->
+		</select>
+	</div>
+	</td>
 
-		<td>
-			<div class="bab_searchForm">
-				{ search_form }
-				<p align="right">
-					<input type="submit" name="go" value="{ t_search }" />
-				</p>
-			<div>
-		</td>
 
-	</tr>
-	</table>
-</td>
+	<td id="bab_search_content">
+		{ search_form }
+	</td>
+
 </tr>
 </table>
+<div id="bab_search_button" >
+		<input type="submit" name="go" value="{ t_search }" />
+</div>
+
+
+</div>
+</div>
 
 
 </form>
@@ -540,51 +566,11 @@ function setselects(obj)
 	}
 
 
-
-
-
-
-
-bab_initFunctions.push(function() {
-
-	var advancedSearch = document.getElementById('bab_advancedSearch');
-
-	var unfold = document.createElement("span");
-
-	if ("{ more_options_folded }" == "0") {
-		advancedSearch.style.display = 'block';
-		unfold.className = 'bab_advancedSearchButton_open';
-		unfold.appendChild(document.createTextNode("{ t_less_options }"));
-	} else {
-		advancedSearch.style.display = 'none';
-		unfold.className = 'bab_advancedSearchButton';
-		unfold.appendChild(document.createTextNode("{ t_more_options }"));
-	}
-
-	unfold.onclick = function () {
-		if (advancedSearch.style.display === 'none') {
-			advancedSearch.style.display = 'block';
-			unfold.className = 'bab_advancedSearchButton_open';
-			unfold.firstChild.nodeValue = "{ t_less_options }";
-			
-		} else {
-			advancedSearch.style.display = 'none';
-			unfold.className = 'bab_advancedSearchButton';
-			unfold.firstChild.nodeValue = "{ t_more_options }";
-		}
-	};
-
-	advancedSearch.parentNode.insertBefore(unfold, advancedSearch);
-}); 
-
 </script>
 
 
 
-<div id="bab_advancedSearch">
-
-<p>
-	
+<p>	
 
 	<label for="bab_SearchDirectorySelect">{ t_filter_by_directory }</label> 
 
@@ -607,7 +593,7 @@ bab_initFunctions.push(function() {
 <p>{ t_search_in_specific_field }</p>
 
 
- <!--#in getnextfieldtosearch -->
+<!--#in getnextfieldtosearch -->
 <p>
 	<select name="f[{ fieldcounter }]">
 	<!--#in selectname -->
@@ -617,8 +603,8 @@ bab_initFunctions.push(function() {
 
 	<input type="text" name="v[{ fieldcounter }]" value="{ value }" size="30" />
 </p>
- <!--#endin getnextfieldtosearch -->
-</div>
+<!--#endin getnextfieldtosearch -->
+
 
 <!--#end directories_form -->
 

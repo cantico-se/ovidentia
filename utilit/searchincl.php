@@ -409,7 +409,7 @@ class bab_SearchDefaultForm {
 			array('%labelprimary%'			, '%labelsecondary%'				, '%primary%'					, '%htmloptions%'	, '%secondary%'),
 			array(bab_translate("Search")	, bab_translate("Advanced search")	, bab_toHtml(bab_rp('what'))	, $htmloptions		, bab_toHtml(bab_rp('what2'))),
 			'
-			<p>
+			<p id="bab_search_primary_bloc">
 				<label for="bab_search_primary">%labelprimary% :</label>
 				<input type="text" id="bab_search_primary" name="what" size="40" value="%primary%" />
 			</p>

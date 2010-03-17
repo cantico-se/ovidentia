@@ -4,16 +4,33 @@
 	font-weight:bold;
 }
 
-.bab_searchChangeRealm {
+#bab_searchForm #bab_search_realm {
 	margin:.9em;
 	padding:1em;
 	background:#fff url('../skins/ovidentia/images/Puces/search.gif') no-repeat top right;
 	border:#000 1px solid;
 }
 
+
+
+#bab_searchForm p {
+	margin: 0;
+}
+
+#bab_searchForm label {
+	margin:.4em;
+	display:block;
+}
+#bab_searchForm.folded label {
+	margin:0;
+	display: inline-block;
+	display: -moz-inline-block;
+}
+
 .bab_searchForm {
 	margin:.3em;
 	padding:0 1em 0 1em;
+
 }
 
 .bab_searchForm p {
@@ -21,39 +38,47 @@
 	line-height:1.4em;
 }
 
-.bab_searchForm label {
-	margin:.4em;
-	display:block;
+#bab_searchForm .bab_searchFormButton {
+	display: block;
+	vertical-align: top;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 4px 5px 4px 21px;
+	border: none;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	background-position: 1px center;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-image: url("../skins/ovidentia/images/Puces/minus.gif");
+}
+#bab_searchForm.folded .bab_searchFormButton {
+	background-image: url("../skins/ovidentia/images/Puces/plus.gif");
+}
+#bab_searchForm .bab_searchFormButton:hover {
+	padding: 3px 4px 3px 20px;
+	border: 1px solid #999;
+	background-position: 0px center;
 }
 
-.bab_searchForm .bab_advancedSearchButton {
-	cursor: pointer;
-	display: inline-block;
-	display: -moz-inline-block;
-	font-weight: bold;
-	margin-top: 0.5em;
-	padding: .3em .5em .3em 18px;
-	border:#ccc 1px solid;
-	border-radius: 6px;
-	-moz-border-radius:6px;
-	-webkit-border-radius:6px;
-	background:#eee;
-	background: url("../skins/ovidentia/images/Puces/plus.gif") no-repeat scroll left center transparent
+
+#bab_searchForm #bab_search_button {
+	display: block;
+	text-align: right;
+	padding: 1em;
+	
 }
-.bab_searchForm .bab_advancedSearchButton_open {
-	cursor: pointer;
-	display: inline-block;
-	display: -moz-inline-block;
-	font-weight: bold;
-	margin-top: 0.5em;
-	padding: .3em .5em .3em 18px;
-	border:#ccc 1px solid;
-	border-radius: 6px;
-	-moz-border-radius:6px;
-	-webkit-border-radius:6px;
-	background:#eee;
-	background: url("../skins/ovidentia/images/Puces/minus.gif") no-repeat scroll left center transparent
+
+#bab_searchForm #bab_search_content p {
+	margin-bottom: 0.3em;
 }
+
+#bab_searchForm.folded #bab_search_content,
+#bab_searchForm.folded #bab_search_realm,
+#bab_searchForm.folded #bab_search_button {
+	display: none;
+}
+
 
 
 .bab_SearchResults .bab_SearchRealm {
