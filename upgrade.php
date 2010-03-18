@@ -6170,6 +6170,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('UPDATE '.BAB_DBDIR_FIELDSEXTRA_TBL." SET `sortfield`='2' WHERE id_field='4'");
 	}
 	
+	/**
+	 * Upgrade to 7.2.92
+	 */
 	
 	return true;
 }
