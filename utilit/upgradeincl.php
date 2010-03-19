@@ -325,7 +325,13 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		}
 	}
 
-	list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = explode('.',$ini->getVersion());
+	$tmparr = explode('.',$ini->getVersion());
+	list($bab_ver_major, $bab_ver_minor, $bab_ver_build) = $tmparr;
+	if (isset($tmparr[3])) {
+		$bab_ver_nightly = $tmparr[3];
+	} else {
+		$bab_ver_nightly = 0;
+	}
 
 
 	//TODO Should be replaced with a proper function (at this stage bab_isUserAdministrator does not work).
@@ -342,6 +348,7 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		putIniDbKey('ver_major', $bab_ver_major);
 		putIniDbKey('ver_minor', $bab_ver_minor);
 		putIniDbKey('ver_build', $bab_ver_build);
+		putIniDbKey('ver_nightly', $bab_ver_nightly);
 	
 		putVersion($bab_ver_major.".".$bab_ver_minor);
 		
@@ -354,8 +361,11 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		} else {
 			$ret .= bab_translate("You site has been updated")." \n";
 			$ret .= bab_translate("From").' '. $ver_from. ' ';
-			$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build;
+			$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build.' ';
 			
+			if ($bab_ver_nightly) {
+				$ret .= bab_translate("Nightly build").' '. $bab_ver_nightly;
+			}
 		}
 		
 		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, $ret);
