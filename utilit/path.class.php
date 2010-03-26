@@ -26,12 +26,50 @@ require_once 'base.php';
 
 /**
  * Path object
+ * 
  */
-class bab_Path {
+class bab_Path implements SeekableIterator, Countable {
 
-
+	const ISDIR		= 'isDir';
+	const BASENAME	= 'getBasename';
+	const ATIME		= 'getATime';
+	const CTIME		= 'getCTime';
+	const MTIME		= 'getMTime';
+	
+	
+	/**
+	 * Path elements
+	 * @var array
+	 */
 	private $allElements = array();
+	
+	/**
+	 * 
+	 * @var bool
+	 */
 	private $absolute = null;
+	
+	/**
+	 * Iterator items
+	 * @var array
+	 */
+	private $content = null;
+	
+	
+	/**
+	 * Iterator items sort params (optional)
+	 * @see bab_Path::orderAsc()
+	 * @see bab_Path::orderDesc()
+	 * 
+	 * @var array
+	 */
+	private $contentSortParam = array();
+	
+	/**
+	 * Iterator key
+	 * @var int
+	 */
+	private $key = 0;
 
 
 	/**
@@ -45,6 +83,14 @@ class bab_Path {
 	{
 			$subPaths = func_get_args();
 			$this->concatPaths($subPaths);
+			
+			// bab_path can extends SplFileInfo but with php 5.1.2, ovidentia require only 5.1.0
+			// parent::__construct($this->toString());
+	}
+	
+	
+	public function __clone() {
+	    $this->content = null;
 	}
 
 
@@ -69,9 +115,152 @@ class bab_Path {
 					array_push($this->allElements, $element);
 				}
 			}
-		}	
+		}
 	}
+	
+	
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	private function getContent()
+	{
+		if (!isset($this->content)) 
+		{
+			$this->content = array();
+			
+			// load contents
+			
+			if ($this->isDir())
+			{
+				$d = dir($this->toString());
+		
+				while (false !== ($entry = $d->read())) {
+				   if ('.' !== $entry && '..' !== $entry) {
+				   		$path = new bab_Path($this->toString());
+				   		$this->content[] = $path->push($entry);
+				   }
+				}
+			}
+			
+			// apply sort parameters
+			
+			if ($this->contentSortParam) { 
+				usort($this->content, array($this, 'contentSort'));
+			}
+		}
+		
+		return $this->content;
+	}
+	
+	/**
+	 * @see	usort
+	 * @param bab_Path $a
+	 * @param bab_Path $b
+	 * @return int			0,-1,1
+	 */
+	private function contentSort(bab_Path $a, bab_Path $b)
+	{
+		foreach($this->contentSortParam as $method => $order) {
+			$va = $a->$method();
+			$vb = $b->$method();
+			
+			if ($va === $vb) {
+				continue;
+			}
+			
+			if (is_string($va)) {
+				return strcasecmp($va, $vb);
+			}
+			
+			if (is_bool($va)) {
+				$va = $va ? 1 : 0;
+				$vb = $vb ? 1 : 0;
+			}
+				
+			return ($va < $vb) ? (-1 * $order) : $order;
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * Sort result of iterator
+	 * @param string	$method		bab_Path::ISDIR | bab_Path::BASENAME | bab_Path::ATIME | bab_Path::CTIME | bab_Path::MTIME
+	 * @return bab_Path
+	 */
+	public function orderAsc($method)
+	{
+		$this->contentSortParam[$method] = 1;
+		return $this;
+	}
+	
+	/**
+	 * Sort result of iterator
+	 * @param string	$method		bab_Path::ISDIR | bab_Path::BASENAME | bab_Path::ATIME | bab_Path::CTIME | bab_Path::MTIME
+	 * @return bab_Path
+	 */
+	public function orderDesc($method)
+	{
+		$this->contentSortParam[$method] = -1;
+		return $this;
+	}
+	
+	
+	/**
+	 * @return int
+	 */
+	public function key()
+	{
+		return $this->key;
+	}
+	
+	public function next()
+	{
+		$this->key++;
+	}
+	
+	public function rewind()
+	{
+		$this->key = 0;
+	}
+	
+	public function seek($position)
+	{
+		$this->key = $position;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function valid()
+	{
+		$contents = $this->getContent();
+		
+		if (!isset($contents[$this->key]))
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return bab_Path
+	 */
+	public function current()
+    {
+    	return $this->content[$this->key];
+    }
 
+    
+    public function count()
+    {
+    	return count($this->content);
+    }
+    
 
 	/**
 	 * Checks whether the path is an absolute path.
@@ -126,7 +315,32 @@ class bab_Path {
 		}
 		return $path;
 	}
+	
+	/**
+	 * Test if file is a directory
+	 * warning parent::isDir() only available since php 5.1.2
+	 * @return bool
+	 */
+	public function isDir()
+	{
+		return is_dir($this->toString());
+	}
+	
+	
 
+	/**
+	 * Test if file or directory is writable
+	 * @return bool
+	 */
+	public function isWritable()
+	{
+		if ($this->isDir())
+		{
+			return $this->isFolderWriteable();
+		} else {
+			return is_writable($this->toString());
+		}
+	}
 
 
 
@@ -219,11 +433,14 @@ class bab_Path {
 	}
 	
 	
+	
+	
 	/**
 	 * this function will return the base name of the file
+	 * @since 7.3.0
 	 * @return string 		the last path element
 	 */
-	public function basename()
+	public function getBasename()
 	{
 		if (0 === count($this->allElements)) {
 			return null;
@@ -233,13 +450,20 @@ class bab_Path {
 	}
 	
 	
+	
+	public function getRealPath()
+	{
+		return realpath($this->toString());
+	}
+	
+	
+	
 	/**
 	 * pop the last folder of the path
 	 * @return string | null
 	 * 
 	 */ 
 	public function pop() {
-		
 		return array_pop($this->allElements);
 	}
 	
@@ -253,7 +477,6 @@ class bab_Path {
 	public function push($folder) {
 		
 		array_push($this->allElements, $folder);
-		
 		return $this;
 	}
 	
