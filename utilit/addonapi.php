@@ -717,9 +717,10 @@ function bab_shortDate($time, $hour=true)
 	if( $time < 0)
 		return "";
 
-	if( !isset($GLOBALS['babLongDateFormat']))
+	if( !isset($GLOBALS['babShortDateFormat']))
 		{
-		$GLOBALS['babLongDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
+		$GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
+		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
 		}
 
 	if( !$hour )
