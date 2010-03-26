@@ -152,7 +152,7 @@ class Func_Ovml_Container extends Func_Ovml
  */
 class Func_Ovml_Function extends Func_Ovml
 {
-	protected $template;
+	public $template;
 	protected $gctx;
 	protected $args = array();
 	
@@ -7288,8 +7288,8 @@ class Func_Ovml_Function_Recurse extends Func_Ovml_Function {
 
 	public function toString() 
 	{
-		$handler = mb_substr($this->curctx->getname(), 4);
-		return $this->handle_tag($handler, $this->curctx->getcontent(), $this->args);
+		$handler = $this->template->curctx->getname();
+		return $this->template->handle_tag($handler, $this->template->curctx->getcontent(), $this->args);
 	}
 
 }
