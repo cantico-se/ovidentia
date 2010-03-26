@@ -2828,7 +2828,7 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 {
 	if (null === $filename) 
 	{
-		$filename = $path->basename();
+		$filename = $path->getBasename();
 	}
 	
 	$fp = fopen($path->toString(), 'rb');
