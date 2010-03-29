@@ -24,28 +24,16 @@
 include_once 'base.php';
 include_once $babInstallPath.'admin/register.php';
 
-
+/**
+ * Verify if the current user can update the account (superadmin...) of the user specified by id
+ * @param $userId	id (int) of the user who must be updated
+ * @return bool		true if the current user has rights to update the user
+ */
 function canUpdateUser($userId)
 {
-	global $babBody;
-
-	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-
-	if ($babBody->currentAdmGroup) {
-		$dg = $babBody->currentAdmGroup;
-	} elseif ($babBody->isSuperAdmin) {
-		$dg = 0;
-	} else {
-		return false;
-	}
-
-	$delegations = bab_getUserVisiblesDelegations($userId);
-	foreach($delegations as $delegation) {
-		if ($delegation['id'] == $dg)	{
-			return true;
-		}
-	}
-	return false;
+	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+	
+	return bab_canCurrentUserUpdateUser($userId);
 }
 
 
@@ -573,7 +561,7 @@ function confirmDeleteUser($userId)
 
 
 /**
- * Updates the specified user's nickname
+ * Updates the specified user's nickname and add error in babBody
  * 
  * @param int		$userId			The user id		
  * @param string	$newNickname	The new user nickname
@@ -582,45 +570,17 @@ function confirmDeleteUser($userId)
  */
 function updateNickname($userId, $newNickname)
 {
-	global $babBody, $babDB, $BAB_HASH_VAR;
-
-	if (!canUpdateUser($userId)) {
-		return;
+	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+	
+	$error = '';
+	$res = bab_updateUserNicknameById($userId, $newNickname, false, &$error);
+	
+	if (!$res) {
+		global $babBody;
+		$babBody->msgerror = $error;
 	}
-
-	if (!empty($newNickname) && mb_strpos($newNickname, ' ') !== false) {
-		$babBody->msgerror = bab_translate("Login ID should not contain spaces");
-		return false;
-	}
-
-	$db = $GLOBALS['babDB'];
-	if (!empty($newNickname)) {
-		$query = 'SELECT * FROM ' . BAB_USERS_TBL . '
-					WHERE nickname=' . $babDB->quote($newNickname) . '
-					AND id!=' . $babDB->quote($userId);
-		$res = $babDB->db_query($query);
-		if ($babDB->db_num_rows($res) > 0) {
-			$babBody->msgerror = bab_translate("This login ID already exists !!");
-			return false;
-		}
-
-		$hash = md5($newNickname.$BAB_HASH_VAR);
-		$req = 'UPDATE ' . BAB_USERS_TBL . '
-				SET confirm_hash=' . $babDB->quote($hash) . ', nickname=' . $babDB->quote($newNickname) . '
-				WHERE id='. $babDB->quote($userId);
-		$res = $babDB->db_query($req);
-
-		require_once $GLOBALS['babInstallPath'] . 'utilit/eventdirectory.php';
-		$event = new bab_eventUserModified((int)$userId);
-		bab_fireEvent($event);
-	}
-	else
-	{
-		$babBody->msgerror = bab_translate("You must provide a nickname");
-		return false;
-	}
-
-	return true;
+	
+	return $res;
 }
 
 
