@@ -284,7 +284,9 @@ function opengroups() {
 				opt = new Option(group.content, group.id);
 				sel_groups.options[sel_groups.options.length] = opt;
 			}
-		}
+		},
+
+		'selectable_groups&multi'
 	);
 }
 
@@ -464,7 +466,7 @@ function group_delete_selected() {
 							<table>
 							<tr>
 								<td valign="top" align="right">
-									<p><a href="#" onclick="opengroups()">{ t_id_groups }</a> : </p>
+									<p><a href="#" onclick="opengroups();return false;">{ t_id_groups }</a> : </p>
 									<p>
 										<img src="{ babSkinPath }images/Puces/del.gif" onclick="group_delete_selected()" style="cursor:pointer" />
 									</p>
@@ -846,8 +848,6 @@ function openPopup(url)
 {
 	var f = document.forms['rightsedit'];
 	var id_type = '0';
-
-	console.debug(f.id_type.selectedIndex);
 
 	if (f.id_type.selectedIndex >= 0) {
 		id_type = f.id_type.options[f.id_type.selectedIndex].value;

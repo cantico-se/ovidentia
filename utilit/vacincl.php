@@ -857,6 +857,7 @@ function viewVacationCalendar($users, $period = false )
 					$key .= $arr['ampm'] ? 'pm' : 'am';
 					$this->periodIndex[$key] = $arr;
 				}
+				
 
 				$i++;
 				return true;
@@ -957,6 +958,7 @@ function viewVacationCalendar($users, $period = false )
 							} else {
 								$this->am_classname = 'used';
 							}
+							
 							$this->am_color = $period_am['color'];
 						}
 					}
@@ -2319,7 +2321,7 @@ function bab_getVacationOption($field) {
 
 
 /**
- * Push and get into a stack
+ * Push and shift into a stack
  * @param int	$id_entry
  * @param mixed $push
  *
@@ -2335,10 +2337,10 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
 	}
 	
 	if (false === $push) {
-		return array_pop($stack[$id_entry]);
+		return array_shift($stack[$id_entry]);
 	}
 
-	$stack[$id_entry][] = $push;
+	array_push($stack[$id_entry], $push);
 }
 
 
@@ -2361,7 +2363,9 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 		AND status!='N' 
 		AND date_end > ".$babDB->quote($begin->getIsoDateTime())." 
 		AND date_begin < ".$babDB->quote($end->getIsoDateTime())."");
-
+	
+	require_once dirname(__FILE__).'/nwdaysincl.php';
+	$nwdays = bab_getNonWorkingDaysBetween($begin->getIsoDate(), $end->getIsoDate());
 
 	while( $row = $babDB->db_fetch_assoc($res)) {
 
@@ -2393,7 +2397,9 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 				WHERE 
 					e.id_entry=".$babDB->quote($row['id'])." 
 					AND r.id=e.id_right 
-					AND t.id=r.id_type";
+					AND t.id=r.id_type 
+					
+				ORDER BY t.name";
 	
 			$res2 = $babDB->db_query($req);
 	
@@ -2401,26 +2407,47 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 	
 			$type_day       = $date_begin->cloneDate();
 			$type_day_end   = $date_begin->cloneDate();
+			$ignore 		= array();
 			
 			while ($arr = $babDB->db_fetch_assoc($res2))
 				{
 				$ventilation[] = $arr;
 				
-				$type_day_end->add(($arr['quantity']*86400), BAB_DATETIME_SECOND);
-				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
-					if ($type_day->getTimeStamp() >= $begin->getTimeStamp()) {
-							bab_vac_typeColorStack(
-									$row['id'], 
-									array(
-											'id_type'       => $arr['type'], 
-											'color'         => $arr['color']
-									)
-							);
+				for($d = 0; $d < $arr['quantity']; $d++) {
+
+					// si le jour est ferie ou non travaille , ajouter plus de jours
+					while (!$wh = bab_getWHours($row['id_user'], date('w', $type_day_end->getTimeStamp())) || isset($nwdays[$type_day_end->getIsoDate()])) {
+						$ignore[$type_day_end->getIsoDate()] = 1;
+						$type_day_end->add(1, BAB_DATETIME_DAY);
 					}
+					
+					$type_day_end->add(1, BAB_DATETIME_DAY);
+					
+				}
+				
+				//bab_debug('periode '.bab_longDate($type_day->getTimeStamp()).' - '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].' '.$arr['quantity'].'</div>');
+				
+				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
+					
+					if ($type_day->getTimeStamp() >= $begin->getTimeStamp() && !isset($ignore[$type_day->getIsoDate()])) {
+						
+						// bab_debug('push '.bab_longDate($type_day->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
+
+						bab_vac_typeColorStack(
+								$row['id'], 
+								array(
+										'id_type'       => $arr['type'], 
+										'color'         => $arr['color']
+								)
+						);	
+					}
+					
 					$type_day->add(12, BAB_DATETIME_HOUR);
 				}
 			}
 
+			
+			//bab_debug($ventilation);
 		}
 
 		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
@@ -2899,7 +2926,7 @@ class bab_vacationRequestDetail
 			}
 		}
 
-		$this->daterequest = bab_toHtml(bab_longDate(bab_mktime($row['date'])));
+		$this->daterequest = bab_toHtml(bab_longDate(bab_mktime($row['date']), false));
 		$this->datebegin = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_begin'])));
 		$this->dateend = bab_toHtml(bab_vac_longDate(bab_mktime($row['date_end'])));
 		$this->owner = bab_toHtml(bab_getUserName($row['id_user']));
