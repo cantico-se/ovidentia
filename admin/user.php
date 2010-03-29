@@ -573,7 +573,7 @@ function updateNickname($userId, $newNickname)
 	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 	
 	$error = '';
-	$res = bab_updateUserNicknameById($userId, $newNickname, false, &$error);
+	$res = bab_updateUserNicknameById($userId, $newNickname, false, $error);
 	
 	if (!$res) {
 		global $babBody;
