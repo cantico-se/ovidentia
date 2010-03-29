@@ -2191,6 +2191,7 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
  * 
  * @param int		$userId						The user id		
  * @param string	$newPassword				The new user password
+ * @param string	$newPassword2				The new user password (copy : used when we created 2 input fields in a form to confirm the password)
  * @param bool		$ignoreAccessRights			false (value by default) if you want to verify if the current user can update the account (superadmin...)
  * @param bool		$ignoreSixCharactersMinimum	false (value by default) if you want to verify if the password have at least 6 characters
  * @param string	&$error						Error message
