@@ -2067,6 +2067,8 @@ function bab_getUserInfos($id_user) {
 
 /**
  * Verify if the current user can update the account (superadmin...) of the user specified by id
+ * @since			ovidentia-7-2-92-20100329153357
+ * 
  * @param $userId	id (int) of the user who must be updated
  * @return bool		true if the current user has rights to update the user
  */
@@ -2124,6 +2126,7 @@ function bab_uppdateUserById($id, $info, &$error)
 
 /**
  * Updates the specified user's nickname
+ * @since			ovidentia-7-2-92-20100329153357
  * 
  * @param int		$userId					The user id		
  * @param string	$newNickname			The new user nickname
