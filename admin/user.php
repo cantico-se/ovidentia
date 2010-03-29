@@ -596,112 +596,17 @@ function updateNickname($userId, $newNickname)
  */
 function updatePassword($userId, $newpwd1, $newpwd2)
 {
-	global $babBody, $babDB, $BAB_HASH_VAR;
-
-	if (!canUpdateUser($userId)) {
-		return;
-	}
-
-	$newpwd1 = trim($newpwd1);
-	$newpwd2 = trim($newpwd2);
-
-	if (empty($newpwd1) && empty($newpwd2)) {
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-	}
-
-	if ((!empty($newpwd1) || !empty($newpwd2)) && $newpwd1 != $newpwd2) {
-		$babBody->msgerror = bab_translate("Passwords not match !!");
-		return false;
-	}
-
-	if (mb_strlen($newpwd1) < 6) {
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
-		return false;
-	}
-
-	$sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
-	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
-
-	$authentification = $babBody->babsite['authentification'];
-	if ($dbauth == 'Y') {
-		$authentification = ''; // force to default
-	}
-
-	switch ($authentification)
-	{
-		case BAB_AUTHENTIFICATION_AD: // Active Directory
-			$babBody->msgerror = bab_translate("Nothing Changed !!");
-			return false;
-			break;
-
-		case BAB_AUTHENTIFICATION_LDAP: // Active Directory
-			if (!empty($babBody->babsite['ldap_encryptiontype'])) {
-				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
-				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
-				$ret = $ldap->connect();
-				if ($ret === false) {
-					$babBody->msgerror = bab_translate("LDAP connection failed");
-					return false;
-				}
-
-				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
-				if (!$ret) {
-					$ldap->close();
-					$babBody->msgerror = bab_translate("LDAP bind failed");
-					return  false;
-				}
-
-				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter'])) {
-					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
-					$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
-				} else {
-					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
-				}
-
-				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
-				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
-
-				if ($entries === false) {
-					$ldap->close();
-					$babBody->msgerror = bab_translate("LDAP search failed");
-					return false;
-				}
-
-				$ldappw = ldap_encrypt($newpwd1, $babBody->babsite['ldap_encryptiontype']);
-				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
-				$ldap->close();
-				if (!$ret) {
-					$babBody->msgerror = bab_translate("Nothing Changed");
-					return false;
-				}
-			}
-			break;
-
-		default:
-			break;
-	}
-
-	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newpwd1))) . ' WHERE id=' . $babDB->quote($userId);
-	$babDB->db_query($sql);
+	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+	
 	$error = '';
-
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	bab_callAddonsFunctionArray('onUserChangePassword',
-		array(
-			'id' => $userId, 
-			'nickname' => $nickname, 
-			'password' => $newpwd1, 
-			'error' => &$error
-		)
-	);
-
-	if (!empty($error)) {
+	$res = bab_updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
+	
+	if (!$res) {
+		global $babBody;
 		$babBody->msgerror = $error;
-		return false;
 	}
-
-	return true;
+	
+	return $res;	
 }
 
 
