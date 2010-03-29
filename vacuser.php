@@ -967,6 +967,7 @@ function user_viewVacationCalendar($users, $period = false) {
 			}
 		}
 	}
+	
 		
 	viewVacationCalendar($users, $period);
 }

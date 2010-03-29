@@ -909,8 +909,8 @@ function addModifyVacationRigths($id = false)
 			}
 		function getnextyear()
 			{
-			static $i = 0;
-			if( $i < 3)
+			static $i = -10;
+			if( $i < 10)
 				{
 				$this->yearid = $i+1;
 				$this->t_yearidval = $this->year + $i;
@@ -924,7 +924,7 @@ function addModifyVacationRigths($id = false)
 			else
 				{
     			$this->yearsel = $this->yearend -$this->year +1;
-				$i = 0;
+				$i = -10;
 				return false;
 				}
 
