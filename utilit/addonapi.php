@@ -2074,9 +2074,22 @@ function bab_getUserInfos($id_user) {
  */
 function bab_canCurrentUserUpdateUser($userId) {
 	global $babBody;
-
 	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-
+	
+	/* The user must be authentified */
+	if (!bab_userIsloggedin()) {
+		return false;
+	}
+	
+	/* The current user can change his datas */
+	$idCurrentUser = $GLOBALS['BAB_SESS_USERID'];
+	if ($idCurrentUser !== false && $idCurrentUser != 0) {
+		if ($idCurrentUser == $userId) {
+			return true;
+		}
+	}
+	
+	/* Verify the right admin */
 	if ($babBody->currentAdmGroup) {
 		$dg = $babBody->currentAdmGroup;
 	} elseif ($babBody->isSuperAdmin) {
@@ -2084,10 +2097,10 @@ function bab_canCurrentUserUpdateUser($userId) {
 	} else {
 		return false;
 	}
-
+	
 	$delegations = bab_getUserVisiblesDelegations($userId);
 	foreach($delegations as $delegation) {
-		if ($delegation['id'] == $dg)	{
+		if ($delegation['id'] == $dg) {
 			return true;
 		}
 	}
