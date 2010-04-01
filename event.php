@@ -224,7 +224,7 @@ function newEvent()
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($editor->getContent());
 //			$editor->setFormat('html');
-			$editor->setParameters(array('height' => 150));
+			$editor->setParameters(array('height' => 300));
 			$this->editor = $editor->getEditor();
 
 
@@ -791,7 +791,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			}
 
 
-			$editor->setParameters(array('height' => 150));
+			$editor->setParameters(array('height' => 300));
 			$this->editor = $editor->getEditor();
 
 			$this->elapstime = bab_getICalendars()->elapstime;
