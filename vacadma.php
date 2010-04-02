@@ -747,6 +747,7 @@ function addModifyVacationRigths($id = false)
 			$this->daysel = $this->daybegin;
 			$this->monthsel = $this->monthbegin;
 			$this->yearsel = $this->yearbegin -$this->year +1;
+			$this->nbmonthdays = date( "j", mktime(0, 0, 0, $this->monthsel + 1, 1, $this->yearsel) - 1 );
 			
 			if( $id )
 				{
@@ -864,7 +865,7 @@ function addModifyVacationRigths($id = false)
 			{
 			static $i = 1;
 
-			if( $i <= date("t"))
+			if( $i <= $this->nbmonthdays)
 				{
 				$this->t_dayid = $i;
 				if( (int)($this->daysel) == $this->t_dayid )
@@ -876,6 +877,7 @@ function addModifyVacationRigths($id = false)
 				}
 			else
 				{
+				$this->nbmonthdays = date( "j", mktime(0, 0, 0, $this->monthend + 1, 1, $this->yearend) - 1 );;
 				$this->daysel = $this->dayend;
 				$i = 1;
 				return false;
