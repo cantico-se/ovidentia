@@ -2413,15 +2413,15 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 				{
 				$ventilation[] = $arr;
 				
-				for($d = 0; $d < $arr['quantity']; $d++) {
+				for($d = 0; $d < $arr['quantity']; $d += 0.5) {
 
 					// si le jour est ferie ou non travaille , ajouter plus de jours
 					while (!$wh = bab_getWHours($row['id_user'], date('w', $type_day_end->getTimeStamp())) || isset($nwdays[$type_day_end->getIsoDate()])) {
 						$ignore[$type_day_end->getIsoDate()] = 1;
-						$type_day_end->add(1, BAB_DATETIME_DAY);
+						$type_day_end->add(12, BAB_DATETIME_HOUR);
 					}
 					
-					$type_day_end->add(1, BAB_DATETIME_DAY);
+					$type_day_end->add(12, BAB_DATETIME_HOUR);
 					
 				}
 				
@@ -2431,7 +2431,7 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 					
 					if ($type_day->getTimeStamp() >= $begin->getTimeStamp() && !isset($ignore[$type_day->getIsoDate()])) {
 						
-						// bab_debug('push '.bab_longDate($type_day->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
+						// bab_debug('push '.bab_longDate($type_day->getTimeStamp()).'  end : '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
 
 						bab_vac_typeColorStack(
 								$row['id'], 
