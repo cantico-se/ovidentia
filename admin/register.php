@@ -381,7 +381,7 @@ function sendPassword ($nickname)
 
 	if (!empty($nickname))
 		{
-		$req="select id, email from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
+		$req="select id, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
 		$res = $babDB->db_query($req);
 		if (!$res || $babDB->db_num_rows($res) < 1)
 			{
@@ -391,6 +391,12 @@ function sendPassword ($nickname)
 		else
 			{
 			$arr = $babDB->db_fetch_array($res);
+			
+			if( $arr['changepwd'] != 1)
+			{
+				$babBody->msgerror = bab_translate("Sorry, You cannot change your password. Please contact administrator");
+				return false;
+			}
 			$new_pass=mb_strtolower(random_password(8));
 
 			switch($babBody->babsite['authentification'])
