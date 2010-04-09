@@ -6174,5 +6174,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * Upgrade to 7.2.92
 	 */
 	
+	/**
+	 * Upgrade to 7.2.93
+	 */
+	// Delete flow instance attached to personal calendars See Bug #2191
+	$res = $babDB->db_query("select ceo.* from ".BAB_CALENDAR_TBL." ct left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceo on ct.id=ceo.id_cal where ct.type='".BAB_CAL_USER_TYPE."' and ceo.idfai != 0");
+	while( $arr = $babDB->db_fetch_array($res))
+	{
+		deleteFlowInstance($arr['idfai']);
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='0' where id_event='".$arr['id_event']."' and id_cal='".$arr['id_cal']."'");
+	}
 	return true;
 }
