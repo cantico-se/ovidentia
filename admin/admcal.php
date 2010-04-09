@@ -282,7 +282,10 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 	if( $old_idsa != 0 && $old_idsa != $calidsa )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."' and status='".BAB_CAL_STATUS_NONE."'");
+	list($id_cal) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($idcal)."' and type='".BAB_CAL_RES_TYPE."'"));
+
+	
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($id_cal)."' and status='".BAB_CAL_STATUS_NONE."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['idfai'] != 0 )
@@ -296,12 +299,12 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 			}
 		else
 			{
-			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
+			$idfai = makeFlowInstance($calidsa, "cal-".$id_cal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
+			$calinfo = bab_getICalendars()->getCalendarInfo($id_cal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
 	
@@ -338,7 +341,9 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 	if( $old_idsa != 0 && $old_idsa != $calidsa )
 	{
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($idcal)."' and status='".BAB_CAL_STATUS_NONE."'");
+	list($id_cal) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($idcal)."' and type='".BAB_CAL_PUB_TYPE."'"));
+
+	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_cal='".$babDB->db_escape_string($id_cal)."' and status='".BAB_CAL_STATUS_NONE."'");
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		if( $arr['idfai'] != 0 )
@@ -352,12 +357,12 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 			}
 		else
 			{
-			$idfai = makeFlowInstance($calidsa, "cal-".$idcal."-".$arr['id_event']);
+			$idfai = makeFlowInstance($calidsa, "cal-".$id_cal."-".$arr['id_event']);
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
+			$calinfo = bab_getICalendars()->getCalendarInfo($id_cal);
 			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
 			}
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($idcal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
 
