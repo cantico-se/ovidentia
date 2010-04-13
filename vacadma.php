@@ -412,6 +412,11 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 					$available = false;
 				}
 
+				// vacations with fixed dates are not available when the dates are gone 
+				if( $arr['date_end_fixed'] != '0000-00-00' && $arr['date_end_fixed'] < date('Y-m-d')){
+					$available= false;
+				}
+
 				$this->available	= $available ? bab_translate('Available') : '';
 
 				if( $this->bclose )
