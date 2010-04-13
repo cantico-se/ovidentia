@@ -386,7 +386,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			$access= false;
 			}
 
-		
+		// dont't display vacations with fixed dates that are gone 
+		if( $arr['date_end_fixed'] != '0000-00-00' && (bab_mktime($arr['date_end_fixed']." 23:59:59") < mktime())){
+			$access= false;
+			}
+
 		$beginp = $begin;
 		$endp = $end;
 		
