@@ -1525,13 +1525,18 @@ function bab_getDbVersion() {
 	if (false === $dbVersion) {
 		global $babDB;
 		$dbver = array();
-		$res = $babDB->db_query("select foption, fvalue from ".BAB_INI_TBL." where foption IN('ver_major', 'ver_minor', 'ver_build')");
-		if (3 === $babDB->db_num_rows($res)) {
+		$res = $babDB->db_query("select foption, fvalue from ".BAB_INI_TBL." ");
+		if (3 <= $babDB->db_num_rows($res)) {
 			while ($rr = $babDB->db_fetch_array($res)) {
 				$dbver[$rr['foption']] = $rr['fvalue'];
 			}
 			
 			$dbVersion = $dbver['ver_major'].".".$dbver['ver_minor'].".".$dbver['ver_build'];
+			
+			if (isset($dbver['ver_nightly']) && '0' != $dbver['ver_nightly']) {
+				$dbVersion .= '.'.$dbver['ver_nightly'];
+			}
+			
 		} else {
 			$dbVersion = NULL;
 		}
