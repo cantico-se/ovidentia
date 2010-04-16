@@ -797,9 +797,11 @@ class BAB_DateTimeUtil
 	/**
 	 * Date display in relatives forms, for dates older than now
 	 * @param	string	$datetime	ISO datetime
+	 * @param	bool	$long		Display a long date format or not
+	 * @param	bool	$hours		always display hours or not
 	 * @return string
 	 */
-	public static function relativePastDate($datetime) {
+	public static function relativePastDate($datetime, $long = false, $hours = false) {
 		$ts = bab_mktime($datetime);
 		$sec = (time() - $ts);
 		
@@ -827,16 +829,22 @@ class BAB_DateTimeUtil
 			return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
 		}
 		
-		return bab_shortDate($ts, false);
+		if ($long) {
+			return bab_shortDate($ts, $hours);
+		} else {
+			return bab_longDate($ts, $hours);
+		}
 	}
 
 
 	/**
 	 * Date display in relatives forms, for dates newer than now
 	 * @param	string	$datetime	ISO datetime
+	 * @param	bool	$long		Display a long date format or not
+	 * @param	bool	$hours		always display hours or not
 	 * @return string
 	 */
-	public static function relativeFutureDate($datetime) {
+	public static function relativeFutureDate($datetime, $long = false, $hours = false) {
 		$ts = bab_mktime($datetime);
 		$sec = ($ts - time());
 		
@@ -864,7 +872,11 @@ class BAB_DateTimeUtil
 			return bab_sprintf(bab_translate('Towmorrow at %s'), date('H:i',$ts));
 		}
 		
-		return bab_shortDate($ts, false);
+		if ($long) {
+			return bab_shortDate($ts, $hours);
+		} else {
+			return bab_longDate($ts, $hours);
+		}
 	}
 
 }
