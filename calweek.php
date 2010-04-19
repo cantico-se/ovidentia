@@ -66,6 +66,15 @@ class cal_weekCls extends cal_wmdbaseCls
 				}
 			}
 
+		$mktime1 = mktime(0,0,0,$this->month, $this->dworkdays[$this->workdays[0]],$this->year);
+		$firstmonth = date("n", $mktime1);
+		$mktime2 = mktime(0,0,0,$this->month, $this->dworkdays[$this->workdays[count($this->workdays)-1]],$this->year);
+		$lastmont = date("n", $mktime2);
+		if($firstmonth != $lastmont)
+		{
+			$this->monthname = $babMonths[$firstmonth].' '.date("Y", $mktime1)." / ".$babMonths[$lastmont].' '.date("Y", $mktime2);
+		}
+		
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
 		$time2 = $time1 + 7*24*3600;
 
