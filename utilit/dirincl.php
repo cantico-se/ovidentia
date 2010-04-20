@@ -316,7 +316,7 @@ function bab_viewDirectoryUser($id)
 				list($bdir) = $babDB->db_fetch_array($babDB->db_query("select directory from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($row['id_group'])."'"));
 				if( $bdir == 'Y' && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $row['id']))
 					{
-					if( $row['id_group'] == 1 && $GLOBALS['BAB_SESS_USERID'] != "" )
+					if( $row['id_group'] == 1)
 						{
 						$this->access = true;
 						break;
