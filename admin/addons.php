@@ -504,7 +504,7 @@ class bab_addonPackage
 			$this->addAddon($dependence);
 			$ini = $dependence->getIni();
 			
-			$general += $ini->inifile;
+			// $general += $ini->inifile;
 		}
 		
 		

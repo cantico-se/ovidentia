@@ -349,7 +349,7 @@ class bab_addonInfos {
 	 * @param	boolean	$access_rights	: access rights verification on addon
 	 * @return boolean
 	 */
-	function setAddonName($addonname, $access_rights = true) {
+	public function setAddonName($addonname, $access_rights = true) {
 		
 		$id_addon = bab_addonsInfos::getAddonIdByName($addonname, $access_rights);
 		
@@ -477,9 +477,9 @@ class bab_addonInfos {
 	
 	/**
 	 * get INI object, general section only
-	 * @access private
+	 * @return bab_inifile
 	 */
-	function getIni() {
+	public function getIni() {
 		if (null === $this->ini) {
 			include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 			$this->ini = new bab_inifile();
@@ -502,7 +502,7 @@ class bab_addonInfos {
 	 * Check validity of addon INI file requirements
 	 * @return boolean
 	 */
-	function isValid() {
+	public function isValid() {
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		$ini = new bab_inifile();
 		$ini->inifile($this->getPhpPath().'addonini.php');
@@ -531,7 +531,7 @@ class bab_addonInfos {
 	 * addon has global access control 
 	 * @return boolean
 	 */
-	function hasAccessControl() {
+	public function hasAccessControl() {
 		$ini = $this->getIni();
 
 		if (!$ini->fileExists()) {
@@ -553,7 +553,7 @@ class bab_addonInfos {
 	 * 
 	 * @return string
 	 */
-	function getAddonType() {
+	public function getAddonType() {
 
 		try {
 			$ini = $this->getIni();
@@ -587,7 +587,7 @@ class bab_addonInfos {
 	 * addon is deletable by administrator
 	 * @return boolean
 	 */
-	function isDeletable() {
+	public function isDeletable() {
 		$ini = $this->getIni();
 		return !$ini->fileExists() || (isset($ini->inifile['delete']) && 1 === (int) $ini->inifile['delete']);
 	}
@@ -599,7 +599,7 @@ class bab_addonInfos {
 	 * if addon is not installed, addon is not accessible
 	 * @return boolean
 	 */
-	function isAccessValid() {
+	public function isAccessValid() {
 		if (bab_isAddonAccessValid($this->id_addon)) {
 			return true;
 		}
@@ -611,7 +611,7 @@ class bab_addonInfos {
 	 * is addon installed by administrator
 	 * @return boolean
 	 */
-	function isInstalled() {
+	public function isInstalled() {
 		$arr = bab_addonsInfos::getDbRow($this->id_addon);
 		return 'Y' === $arr['installed'];
 	}
@@ -621,7 +621,7 @@ class bab_addonInfos {
 	 * is addon disabled by administrator
 	 * @return boolean
 	 */
-	function isDisabled() {
+	public function isDisabled() {
 	
 		$arr = bab_addonsInfos::getDbRow($this->id_addon);
 		return 'N' === $arr['enabled'];
@@ -631,7 +631,7 @@ class bab_addonInfos {
 	 * Disable addon
 	 * @return bab_addonInfos
 	 */
-	function disable() {
+	public function disable() {
 		global $babDB;
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='N' WHERE id=".$babDB->quote($this->id_addon));
 		bab_addonsInfos::clear();
@@ -643,7 +643,7 @@ class bab_addonInfos {
 	 * Enable addon
 	 * @return bab_addonInfos
 	 */
-	function enable() {
+	public function enable() {
 		global $babDB;
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." set enabled='Y' WHERE id=".$babDB->quote($this->id_addon));
 		bab_addonsInfos::clear();
@@ -655,7 +655,7 @@ class bab_addonInfos {
 	 * Get version from ini file
 	 * @return string
 	 */
-	function getIniVersion() {
+	public function getIniVersion() {
 	
 		$ini = $this->getIni();
 		return $ini->getVersion();
@@ -666,7 +666,7 @@ class bab_addonInfos {
 	 * Get description from ini file
 	 * @return string
 	 */
-	function getDescription() {
+	public function getDescription() {
 		
 		$ini = $this->getIni();
 
@@ -687,7 +687,7 @@ class bab_addonInfos {
 	 * get version from database
 	 * @return string
 	 */
-	function getDbVersion() {
+	public function getDbVersion() {
 		$arr = bab_addonsInfos::getDbRow($this->id_addon);
 		return $arr['version'];
 	}
@@ -696,7 +696,7 @@ class bab_addonInfos {
 	 * Test if the addon need an upgrade of the database
 	 * @return bool
 	 */
-	function isUpgradable() {
+	public function isUpgradable() {
 
 		$ini = $this->getIni();
 
@@ -720,7 +720,7 @@ class bab_addonInfos {
 	 * after addon files has been modified, this method update the table with new installation status
 	 * @return boolean
 	 */
-	function updateInstallStatus() {
+	public function updateInstallStatus() {
 	
 		if (!$this->isUpgradable()) {
 			return false;
@@ -764,10 +764,10 @@ class bab_addonInfos {
 	
 	
 	/**
-	 * @access private
+	 * 
 	 * @return	boolean
 	 */
-	function setDbVersion($version) {
+	private function setDbVersion($version) {
 	
 		global $babDB;
 	
@@ -794,7 +794,7 @@ class bab_addonInfos {
 	 * from db_prefix in addon ini file
 	 * @return array
 	 */
-	function getTablesNames() {
+	public function getTablesNames() {
 		
 		global $babDB;
 		$ini = $this->getIni();
@@ -822,7 +822,7 @@ class bab_addonInfos {
 	 * a 200x150px png, jpg or gif image, representation of the addon
 	 * @return string|null
 	 */
-	function getImagePath() {
+	public function getImagePath() {
 		$ini = $this->getIni();
 		
 		if (!isset($ini->inifile['image'])) {
@@ -846,7 +846,7 @@ class bab_addonInfos {
 	 * a 48x48px png, jpg or gif image, representation of the addon
 	 * @return string|null
 	 */
-	function getIconPath() {
+	public function getIconPath() {
 		$ini = $this->getIni();
 		
 		switch ($this->getAddonType()) {
@@ -882,7 +882,7 @@ class bab_addonInfos {
 	 * Call upgrade function of addon
 	 * @return boolean
 	 */
-	function upgrade() {
+	public function upgrade() {
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		
@@ -965,7 +965,7 @@ class bab_addonInfos {
 	 * @param	string	&$msgerror
 	 * @return boolean
 	 */
-	function delete(&$msgerror) {
+	public function delete(&$msgerror) {
 	
 		global $babDB;
 		include_once dirname(__FILE__).'/delincl.php';
@@ -1025,7 +1025,7 @@ class bab_addonInfos {
 	 * list of addons used by the current addon
 	 * @return	array	in the key, the name of the addon, in the value a boolean for dependency satisfaction status
 	 */
-	function getDependencies() {
+	public function getDependencies() {
 		$ini = new bab_inifile();
 		$ini->inifile($this->getPhpPath().'addonini.php');
 		$addons = $ini->getAddonsRequirements();
@@ -1043,7 +1043,7 @@ class bab_addonInfos {
 	 * list of addons that use the current addon
 	 * @return	array	in the key, the name of the addon, in the value a boolean for dependency satisfaction status
 	 */
-	function getDependences() {
+	public function getDependences() {
 		$return = array();
 		foreach(bab_addonsInfos::getDbRows() as $arr) {
 			$addon = bab_getAddonInfosInstance($arr['title']);
@@ -1056,6 +1056,81 @@ class bab_addonInfos {
 		
 		return $return;
 	}
+	
+	/**
+	 * get all dependencies for addon
+	 * @param	bab_OrphanRootNode	$root
+	 * @param	string				$parent
+	 * @return bool
+	 */
+	private function getRecursiveDependencies(bab_OrphanRootNode $root, $nodeId = 'root', $parent = null)
+	{
+		include_once $GLOBALS['babInstallPath'].'utilit/treebase.php';
+		
+		$node = $root->createNode($this, $nodeId);
+			
+		if (null === $node) {
+			return false;
+		}
+		
+		$root->appendChild($node, $parent);
+		
+		$dependencies = $this->getDependencies();
+		foreach($dependencies as $addonname => $status)
+		{
+			if ($addon = bab_getAddonInfosInstance($addonname))
+			{
+				$childNodeId = $nodeId.'-'.$addon->getId();
+				$addon->getRecursiveDependencies($root, $childNodeId, $nodeId);
+			} 
+			else
+			{
+				throw new Exception('missing addon '.$addonname);
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	private function browseRecursiveDependencies(&$stack, bab_Node $node)
+	{
+		$addon = $node->getData();
+		
+		if ($node->hasChildNodes())
+		{
+			$child = $node->firstChild();
+			do {
+				$this->browseRecursiveDependencies($stack, $child);
+			} while($child = $child->nextSibling());
+		}
+			
+		if ($addon) {
+			$stack[$addon->getName()] = $addon->getName();
+		}
+	}
+	
+	
+	/**
+	 * Get all dependencies for addons sorted in install order
+	 * the value and key in array is the addon name
+	 * 
+	 * @return array
+	 */
+	public function getSortedDependencies()
+	{
+		$stack = array();
+		$root = new bab_OrphanRootNode;
+		if ($this->getRecursiveDependencies($root)) 
+		{
+			$this->browseRecursiveDependencies(&$stack, $root);
+			return $stack;
+		}
+		
+		return array();
+	}
+	
 
 
 	/**
@@ -1063,7 +1138,7 @@ class bab_addonInfos {
 	 * @param	string	$isoCharset
 	 * @boolean
 	 */
-	function isCharsetCompatible($isoCharset) {
+	public function isCharsetCompatible($isoCharset) {
 		$ini = $this->getIni();
 		$compatibles = array('latin1');
 		if (isset($ini->inifile['mysql_character_set_database'])) {

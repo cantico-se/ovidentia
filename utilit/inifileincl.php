@@ -863,6 +863,7 @@ class bab_inifile {
 	var $functionalities;
 	var $customscript = array();
 	
+	public $inifile;
 
 	/**
 	 * Use a ini file in a zip file
