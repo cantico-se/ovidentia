@@ -450,6 +450,148 @@ function bab_addon_export_rd($d) {
 
 
 
+class bab_addonPackage
+{
+	/**
+	 * 
+	 * @var bab_addonInfos
+	 */
+	protected $addon;
+	
+	/**
+	 * 
+	 * @var bool
+	 */
+	private $multiple = false;
+	
+	private $tmpfile;
+	private $zip;
+	
+	public function __construct($multiple, bab_addonInfos $addon)
+	{
+		$this->multiple = $multiple;
+		
+		
+		bab_setTimeLimit(0);
+		
+		$this->zip = bab_functionality::get('Archive/Zip');
+		
+		$version = str_replace('.','-',$addon->getIniVersion());
+		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.'.zip';
+		
+		try {
+			$this->zip->open($this->tmpfile);
+		} catch (Exception $e) {
+			$babBody->addError($e->getMessage());
+		}
+		
+		if ($this->multiple) {
+			$this->addAllAddons($addon);
+		} else {
+			$this->addAddon($addon);
+		}
+	}
+	
+	
+	private function addAllAddons(bab_addonInfos $addon)
+	{
+		$general = array();
+		$general['name'] = $addon->getName();
+		
+		$dependencies = $addon->getSortedDependencies();
+		foreach($dependencies as $addonname) {
+			$dependence = bab_getAddonInfosInstance($addonname);
+			$this->addAddon($dependence);
+			$ini = $dependence->getIni();
+			
+			$general += $ini->inifile;
+		}
+		
+		
+		$general['package_collection'] = implode(', ', $dependencies);
+		$general['encoding'] = bab_Charset::getIso();
+		
+		
+		$content = '; <?php/*'."\n";
+		$content .= "[general]\n";
+		
+		foreach($general as $key => $value) {
+			$content .= "$key=\"$value\"\n";
+		}
+		
+		$content .= ";*/ ?>";
+		
+		$tmpini = $GLOBALS['babUploadPath'].'/tmp/addons.ini';
+		
+		file_put_contents($tmpini, $content);
+		
+		$this->zip->addFile($tmpini, 'install/addons/addons.ini');
+	}
+	
+	
+	
+	
+	private function addAddon(bab_addonInfos $addon)
+	{
+		$addons_files_location = bab_getAddonsFilePath();
+		$loc_in = $addons_files_location['loc_in'];
+		$loc_out = $addons_files_location['loc_out'];
+		
+		if (!callSingleAddonFunction($addon->getId(), $addon->getName(), 'onPackageAddon'))
+		{
+			return;
+		}
+		
+		$res = array();
+		foreach ($loc_in as $k => $path)
+		{
+			$path = realpath('.').'/'.$path.'/'.$addon->getName();
+			$res = bab_addon_export_rd($path);
+
+			if (false === $res) {
+				die(sprintf(bab_translate('Error reading directory %s'), $path));
+				return;
+			}
+	
+			$len = mb_strlen($path);
+	
+			foreach ($res as $file)
+			{
+				if (is_file($file))
+				{
+					$rec_into = $loc_out[$k].mb_substr($file, $len);
+					if ($this->multiple) {
+						$rec_into = 'install/addons/'.$addon->getName().'/'.$rec_into;
+					}
+					$this->zip->addFile($file, $rec_into);
+				}
+			}
+		}
+	
+	}
+	
+	
+	public function download()
+	{
+		$this->zip->close();
+
+		if (!file_exists($this->tmpfile)) {
+			$babBody->addError(bab_translate('Error in zip creation'));
+			return;
+		}
+	
+	
+		header("Content-Type:application/zip");
+		header("Content-Disposition: attachment; filename=".basename($this->tmpfile));
+		echo file_get_contents($this->tmpfile);
+	
+		@unlink($this->tmpfile);
+		exit;
+	}
+}
+
+
+
 
 
 /**
@@ -458,75 +600,30 @@ function bab_addon_export_rd($d) {
  */
 function export($id)
 	{
-	global $babBody;
-	bab_setTimeLimit(0);
-
-	$row = bab_addonsInfos::getDbRow($id);
-	$addon = bab_getAddonInfosInstance($row['title']);
-
-	if (!callSingleAddonFunction($row['id'], $row['title'], 'onPackageAddon'))
-		{
-		return;
-		}
-
 		
-	$addons_files_location = bab_getAddonsFilePath();
-	
-	$loc_in = $addons_files_location['loc_in'];
-	$loc_out = $addons_files_location['loc_out'];
-			
-
-	$zip = bab_functionality::get('Archive/Zip');
-
-	$version = str_replace('.','-',$addon->getIniVersion());
-	$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$row['title'].'-'.$version.'.zip';
-
-	try {
-		$zip->open($tmpfile);
-	} catch (Exception $e) {
-		$babBody->addError($e->getMessage());
-		return;
-	}
-
-	$res = array();
-	foreach ($loc_in as $k => $path)
-		{
-		$path = realpath('.').'/'.$path.'/'.$row['title'];
-		$res = bab_addon_export_rd($path);
-
-		if (false === $res) {
-			die(sprintf(bab_translate('Error reading directory %s'), $path));
-			return;
-		}
-
-		$len = mb_strlen($path);
-
-		foreach ($res as $file)
-			{
-			if (is_file($file))
-				{
-				$rec_into = $loc_out[$k].mb_substr($file, $len);
-				$zip->addFile($file, $rec_into);
-				}
-			}
-		}
-	$zip->close();
-
-	if (!file_exists($tmpfile)) {
-		$babBody->addError(bab_translate('Error in zip creation'));
-		return;
-	}
-
-
-	header("Content-Type:application/zip");
-	header("Content-Disposition: attachment; filename=".basename($tmpfile));
-	echo file_get_contents($tmpfile);
-
-	@unlink($tmpfile);
-	exit;
+		$row = bab_addonsInfos::getDbRow($id);
+		$addon = bab_getAddonInfosInstance($row['title']);
+		
+		$package = new bab_addonPackage(false, $addon);
+		
+		$package->download();
 	}
 	
 	
+	
+/**
+ * Get a zip archive for one addon
+ * @param	int	$id
+ */
+function exportall($id)
+	{
+		$row = bab_addonsInfos::getDbRow($id);
+		$addon = bab_getAddonInfosInstance($row['title']);
+		
+		$package = new bab_addonPackage(true, $addon);
+		
+		$package->download();
+	}
 	
 	
 	
@@ -687,6 +784,8 @@ function bab_display_addon_requirements()
 				$addon = bab_getAddonInfosInstance($row['title']);
 				$this->installed = $addon->isInstalled();
 				$this->dependences = $addon->getDependences();
+				
+				bab_debug($addon->getSortedDependencies());
 
 				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
@@ -1318,6 +1417,10 @@ switch($idx)
 
 	case "export":
 		export($item);
+		break;
+		
+	case "exportall":
+		exportall($item);
 		break;
 		
 	case 'library':
