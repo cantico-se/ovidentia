@@ -785,8 +785,6 @@ function bab_display_addon_requirements()
 				$this->installed = $addon->isInstalled();
 				$this->dependences = $addon->getDependences();
 				
-				bab_debug($addon->getSortedDependencies());
-
 				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
