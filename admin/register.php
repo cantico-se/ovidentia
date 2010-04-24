@@ -361,7 +361,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
 
 	$mail->mailAltBody($message);
-    $mail->send();
+    return $mail->send();
 	}
 	
 	

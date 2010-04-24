@@ -1742,26 +1742,39 @@ function bab_printTemplate( &$class, $file, $section="")
  *	<li>login_date 			: login date of the current session as timestamp</li>
  *	<li>last_hit_date 		: last refresh date of the user as timestamp</li>
  * </ul>
+ * 
+ * @since 7.3.0 	the id_user parameter and tg result key
+ * 
+ * @param	int		$id_user
  *
  * @return array
  */
-function bab_getActiveSessions()
+function bab_getActiveSessions($id_user = null)
 {
 	global $babDB;
 	$output = array();
-	$res = $babDB->db_query("SELECT l.id_user,
-								l.sessid,
-								l.remote_addr,
-								l.forwarded_for,
-								UNIX_TIMESTAMP(l.dateact) dateact,
-								u.firstname,
-								u.lastname,
-								u.email,
-								UNIX_TIMESTAMP(u.lastlog) lastlog,
-								UNIX_TIMESTAMP(u.datelog) datelog,
-								UNIX_TIMESTAMP(u.date) registration  
-								FROM ".BAB_USERS_LOG_TBL." l 
-								LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user");
+	
+	$query = "SELECT l.id_user,
+			l.sessid,
+			l.remote_addr,
+			l.forwarded_for,
+			UNIX_TIMESTAMP(l.dateact) dateact,
+			u.firstname,
+			u.lastname,
+			u.email,
+			UNIX_TIMESTAMP(u.lastlog) lastlog,
+			UNIX_TIMESTAMP(u.datelog) datelog,
+			UNIX_TIMESTAMP(u.date) registration, 
+			l.tg  
+			FROM ".BAB_USERS_LOG_TBL." l 
+			LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user";
+	
+	if (null !== $id_user) {
+		$query .= " WHERE l.id_user=".$babDB->quote($id_user);
+	}
+	
+	
+	$res = $babDB->db_query($query);
 
 	while($arr = $babDB->db_fetch_array($res))
 		{
@@ -1776,7 +1789,8 @@ function bab_getActiveSessions()
 						'previous_login_date' => $arr['lastlog'],
 						'login_date' => $arr['datelog'],
 						'last_hit_date' => $arr['dateact'],
-							);
+						'tg' => $arr['tg']
+					);
 		}
 	return $output;
 }
@@ -1805,7 +1819,7 @@ function bab_getFileMimeType($file)
 /* API Directories */
 
 /**
- * @deprecated
+ * @deprecated this function does not return extra fields
  * @see bab_getDirEntry
  */
 function bab_getUserDirFields($id = false)
@@ -2022,11 +2036,44 @@ function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname
 	return bab_userModify::addUser( $firstname, $lastname, $middlename, $email, $nickname, $password1, $password2, $confirmed, $error, $bgroup);
 }
 
+/**
+ * Send a email notification to a  new registered account
+ * @see bab_registerUser()
+ * 
+ * @since 7.3.0
+ * 
+ * @param string $name			Full name of user
+ * @param string $email			email address to notifiy
+ * @param string $nickname		login ID
+ * @param string $pwd			if set, the password will readable in email
+ * 
+ * @return bool
+ */
+function bab_registerUserNotify($name, $email, $nickname, $pwd = null)
+{
+	require_once($GLOBALS['babInstallPath']."admin/register.php");
+	return notifyAdminUserRegistration($name, $email, $nickname, $pwd);
+}
+
+
+/**
+ * Attach a user to a group
+ * @param int 	$iduser
+ * @param int 	$idgroup
+ * 
+ */
 function bab_attachUserToGroup($iduser, $idgroup)
 {
 	bab_addUserToGroup($iduser, $idgroup);
 }
 
+
+/**
+ * Detacha a user from a group
+ * @param int	$iduser
+ * @param int	$idgroup
+ * 
+ */
 function bab_detachUserFromGroup($iduser, $idgroup)
 {
 	bab_removeUserFromGroup($iduser, $idgroup);
