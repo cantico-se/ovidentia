@@ -1609,7 +1609,13 @@
 <string id="Error: OVML file don't exist">Error: OVML file don't exist</string>
 <string id="Skin of the site">Skin of the site</string>
 <string id="You don't have access to update the user">You don't have access to update the user</string>
-<string id=""></string>
+<string id="Send an e-mail to the user with its new password">Send an e-mail to the user with its new password</string>
+<string id="Your password of connexion in the site">Your password of connexion in the site</string>
+<string id="your password of connexion in the site">your password of connexion in the site</string>
+<string id="was changed">was changed</string>
+<string id="Your nickname">Your nickname</string>
+<string id="Your new password">Your new password</string>
+<string id="Access to the site">Access to the site</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>

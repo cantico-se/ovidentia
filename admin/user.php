@@ -56,7 +56,12 @@ function formatInputDate($isoDate)
 }
 
 
-
+/* 
+ * Display the form for modify options of a user
+ * $userId : id of the user who must be modify
+ * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
+ * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
+ */
 function modifyUser($userId, $pos, $grp)
 {
 	global $babBody;
@@ -132,7 +137,8 @@ function modifyUser($userId, $pos, $grp)
 					$this->nselected = 'selected';
 				}
 			}
-
+	
+			/* If the current user is admin of a delegation, he can't delete the user */
 			if ($babBody->currentAdmGroup != 0) {
 				$this->bdelete = false;
 			} else {
@@ -206,7 +212,12 @@ function deleteUser($id)
 }
 
 
-
+/* 
+ * Display the form for modify nickname of a user
+ * $item : id of the user who must be modify
+ * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
+ * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
+ */
 function changeNickname($item, $pos, $grp)
 {
 	global $babBody,$BAB_SESS_USERID;
@@ -238,11 +249,11 @@ function changeNickname($item, $pos, $grp)
 
 
 
-/**
- * 
- * @param int	$userId		The user id
- * @param $pos
- * @param $grp
+/* 
+ * Display the form for modify password of a user
+ * $userId : id of the user who must be modify
+ * $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
+ * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
  */
 function changePassword($userId, $pos, $grp)
 {
@@ -295,6 +306,9 @@ function changePassword($userId, $pos, $grp)
 			$this->newpwd = bab_translate("New Password");
 			$this->renewpwd = bab_translate("Retype New Password");
 			$this->update = bab_translate("Update");
+			$this->tsendconfirmationemail = bab_translate("Send an e-mail to the user with its new password");
+			$this->tyes = bab_translate("Yes");
+			$this->tno = bab_translate("No");
 		}
 	}
 
@@ -649,7 +663,47 @@ if (isset($update) && $update == 'password') {
 	if(!updatePassword($item, $newpwd1, $newpwd2)) {
 		$idx = 'Modify';
 	} else {
-		header('Location: '. $GLOBALS['babUrlScript'] . '?tg=users&idx=List&pos=' . $pos . '&grp=' . $grp);
+		/* Send an e-mail to the user with its new password */
+		$vSendConfirmationEmail = bab_rp('sendconfirmationemail', 'no');
+		if ($vSendConfirmationEmail == 'yes') {
+			global $babInstallPath;
+			include_once $babInstallPath.'utilit/mailincl.php';
+			
+			$mail = bab_mail();
+			if ($mail !== false) {
+				global $babBody, $babAdminEmail, $babAdminName, $babInstallPath, $babSiteName;
+				
+				$userName = bab_getUserName($item);
+				$userEmail = bab_getUserEmail($item);
+				list($nickname) = $babDB->db_fetch_row($babDB->db_query("select nickname from ".BAB_USERS_TBL." where id='".$item."'"));
+				$newPassword = $newpwd1;
+				
+				$mail->mailTo($userEmail, $userName);
+				$mail->mailFrom($babAdminEmail, $babAdminName);
+				
+				$subject = bab_translate('Your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed');
+				$mail->mailSubject($subject);
+				
+				$HTMLmessage = $userName.', '.bab_translate('your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed').'.<br />';
+				$HTMLmessage .= '<br />';
+				$HTMLmessage .= bab_translate('Your nickname').' : '.$nickname.'<br />';
+				$HTMLmessage .= bab_translate('Your new password').' : '.$newPassword.'<br /><br />';
+				$HTMLmessage .= bab_translate('Access to the site').' : <a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'];
+				$mail->mailBody($mail->mailTemplate($HTMLmessage));
+				
+				$TEXTmessage = $userName.', '.bab_translate('your password of connexion in the site').' '.$babSiteName.' '.bab_translate('was changed').".\n";
+				$TEXTmessage .= "\n";
+				$TEXTmessage .= bab_translate('Your nickname').' : '.$nickname."\n";
+				$TEXTmessage .= bab_translate('Your new password').' : '.$newPassword."\n\n";
+				$TEXTmessage .= bab_translate('Access to the site').' : <a href="'.$GLOBALS['babUrl'].'">'.$GLOBALS['babUrl'];
+				$mail->mailAltBody($TEXTmessage);
+				
+				$mail->send();
+			}
+		}		
+		
+		/* Return to the list of the users */
+		header('Location: '.$GLOBALS['babUrlScript'].'?tg=users&idx=List&pos='.$pos.'&grp='.$grp);
 		return;
 	}
 }
@@ -738,15 +792,20 @@ switch($idx) {
 
 
 	case 'Modify':
-
-		$babBody->title = bab_getUserName($item);
-		modifyUser($item, $pos, $grp);
-		changeNickname($item, $pos, $grp);
-		changePassword($item, $pos, $grp);
-		$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
-		$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
+		/* $item : contains id of the user who must be modified */
+		if (is_numeric($item)) {
+			$babBody->title = bab_getUserName($item);
+			/* $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
+			 * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)
+			 */
+			modifyUser($item, $pos, $grp);
+			changeNickname($item, $pos, $grp);
+			changePassword($item, $pos, $grp);
+			$babBody->addItemMenu('List', bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=users&idx=List&pos=".$pos."&grp=".$grp);
+			$babBody->addItemMenu('Modify', bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=user&idx=Modify&item=".$item."&pos=".$pos."&grp=".$grp);
+			$babBody->addItemMenu('Groups', bab_translate("Groups"), $GLOBALS['babUrlScript']."?tg=user&idx=Groups&item=".$item."&pos=".$pos."&grp=".$grp);
+			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript']."?tg=options&idx=unav&iduser=".$item);
+		}
 		break;
 
 
