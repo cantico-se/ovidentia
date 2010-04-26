@@ -604,7 +604,22 @@ function aclGetAccessGroups($table, $id_object) {
 	}
 	
 
-function aclGetAccessUsers($table, $id_object) {
+/**
+ * Return the list of the users who have the access right specified (table and id object)
+ * @param $table string : name of the table
+ * @param $id_object int : id of the object
+ * @param $activeOrderByName boolean : if true, the resultats are ordered by names
+ * @return array :
+ * array
+   (
+    [154] =>
+        (
+            [name] => Guillaume André
+            [email] => test@test.com
+		)
+	)
+ */
+function aclGetAccessUsers($table, $id_object, $activeOrderByName=false) {
 	global $babBody, $babDB;
 	
 	$groups = aclGetAccessGroups($table, $id_object);
@@ -613,14 +628,18 @@ function aclGetAccessUsers($table, $id_object) {
 		$query = "SELECT id, firstname, lastname ,email 
 					FROM ".BAB_USERS_TBL." 
 						WHERE disabled='0' AND is_confirmed='1'";
+		if ($activeOrderByName) {
+			$query .= " ORDER by lastname";
 		}
-	else
-		{
+	} else {
 		$query = "SELECT u.id,u.firstname, u.lastname,u.email 
 					FROM ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g
 						WHERE g.id_object=u.id AND g.id_group IN(".$babDB->quote($groups).") 
 						AND u.disabled='0' AND u.is_confirmed='1'";
+		if ($activeOrderByName) {
+			$query .= " ORDER by u.lastname";
 		}
+	}
 	
 	$user = array();
 	if( !empty($query))
@@ -635,7 +654,7 @@ function aclGetAccessUsers($table, $id_object) {
 	}
 
 	return $user;
-	}
+}
 	
 	
 /**
