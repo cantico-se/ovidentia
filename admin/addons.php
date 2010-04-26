@@ -791,7 +791,11 @@ function bab_display_addon_requirements()
 				$this->t_install = bab_translate("Upgrade");
 				
 				$name = $addon->getName();
-				$description = $addon->getDescription();
+				try {
+					$description = $addon->getDescription();
+				} catch(Exception $e) {
+					$description = '';
+				}
 
 				$this->imagepath = bab_toHtml($addon->getImagePath());
 				if ($addon->isDeletable()) {

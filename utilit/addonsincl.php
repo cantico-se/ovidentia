@@ -588,7 +588,11 @@ class bab_addonInfos {
 	 * @return boolean
 	 */
 	public function isDeletable() {
-		$ini = $this->getIni();
+		try {
+			$ini = $this->getIni();
+		} catch (Exception $e) {
+			return true;
+		}
 		return !$ini->fileExists() || (isset($ini->inifile['delete']) && 1 === (int) $ini->inifile['delete']);
 	}
 	
