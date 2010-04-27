@@ -1128,7 +1128,7 @@ class bab_addonInfos {
 		$root = new bab_OrphanRootNode;
 		if ($this->getRecursiveDependencies($root)) 
 		{
-			$this->browseRecursiveDependencies(&$stack, $root);
+			$this->browseRecursiveDependencies($stack, $root);
 			return $stack;
 		}
 		
