@@ -134,6 +134,13 @@ if (isset($_GET['babHttpContext'])) {
 	bab_restoreHttpContext();	
 	bab_cleanGpc();
 }
+
+if (isset($_SERVER["argv"][1])) {
+	parse_str($_SERVER["argv"][1], $_GET);
+}
+
+
+
 	
 /* The old code of Ovidentia used PHP configuration register_globals to On.
  * To remain compatible, we add all received data as globals variables.
@@ -159,6 +166,10 @@ unset($babTmp);
 
 bab_unset($_REQUEST);
 bab_unset($_COOKIE);
+
+
+
+
 
 
 
