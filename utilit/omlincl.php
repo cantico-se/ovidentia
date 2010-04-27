@@ -5692,8 +5692,15 @@ class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
 		$this->count = 0;
 		parent::setOvmlContext($ctx);
 		$node = $ctx->get_value('node');
+		$sitemap = $ctx->get_value('sitemap');
+		
+		if (false === $sitemap) {
+			$rootNode = bab_siteMap::get();
+		} else {
+			$rootNode = bab_siteMap::getByUid($sitemap);
+		}
 
-		$rootNode = bab_siteMap::get();
+		
 		$node = $rootNode->getNodeById($node);
 		if ($node) {
 			$node = $node->firstChild();
