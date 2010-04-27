@@ -699,7 +699,8 @@ function viewVacationCalendar($users, $period = false )
 			$this->nbmonth = bab_rp('nbmonth',12);
 
 			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&amp;idx=".$_REQUEST['idx']."&amp;id=".$this->id_request;
-
+			$this->nwd_color = $GLOBALS['babBody']->babsite['non_workday_bgcolor'];
+			
 			
 
 
@@ -943,6 +944,7 @@ function viewVacationCalendar($users, $period = false )
 						$this->day_classname = 'nonworking';
 						$this->halfday = false;
 						$this->tdtext = bab_translate($period_am['nw_type']);
+						$this->am_color = $this->nwd_color;
 						$d++;
 						return true;
 

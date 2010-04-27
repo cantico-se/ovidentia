@@ -423,7 +423,7 @@ function rgroup_display(obj, str_dest) {
 		<!--#endif nbusers -->
 		<!--#in getday -->
 
-		<td class="{ day_classname }" <!--#if tdtext --> title="{ tdtext }"<!--#endif tdtext -->>
+		<td class="{ day_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color --> <!--#if tdtext --> title="{ tdtext }"<!--#endif tdtext -->>
 		
 			<!--#if halfday -->
 			<div id="d.{ date }.0" class="{ am_classname }" <!--#if am_color --> style="background-color:#{ am_color }"<!--#endif am_color -->  title="{ am_text }" <!--#if am_clickable --> onclick="setPeriod(this)"<!--#endif am_clickable -->></div>
@@ -447,7 +447,7 @@ function rgroup_display(obj, str_dest) {
 			<!--#in getnexttype -->
 			<li title="{ arr[description] }"><span class="used" style="background-color:#{ arr[color] }"> &nbsp; </span>{ arr[name] }</li>
 			<!--#endin getnexttype -->
-			<li><span class="nonworking"> &nbsp; </span>{ t_nonworking }</li>
+			<li><span class="nonworking" style="background-color:#{ nwd_color }"> &nbsp; </span>{ t_nonworking }</li>
 			<li><span class="weekend"> &nbsp; </span>{ t_weekend }</li>
 			<!--#if period -->
 			<li><span class="selected"> &nbsp; </span>{ t_selected }</li>
