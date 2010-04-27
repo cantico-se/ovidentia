@@ -360,6 +360,15 @@
 			</select>
 		</td>
 	</tr>
+	<tr> 
+		<td align="right">{ showonlydaysmonthinfo }</td>
+		<td> 
+			<select name="showonlydaysmonthinfo">
+				<option value="Y" <!--#if arr[show_onlydays_of_month] "== Y" -->selected<!--#endif arr[show_onlydays_of_month] -->>{ yes }</option>
+				<option value="N" <!--#if arr[show_onlydays_of_month] "== N" -->selected<!--#endif arr[show_onlydays_of_month] -->>{ no }</option>
+			</select>
+		</td>
+	</tr>
 	</table>
 </td>
 </tr>

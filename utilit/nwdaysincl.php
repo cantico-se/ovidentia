@@ -246,7 +246,7 @@ function bab_NWD_onCreatePeriods(&$obj) {
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
 		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
 		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
-		
+		$p->color = $GLOBALS['babBody']->babsite['non_workday_bgcolor'];
 	}
 }
 

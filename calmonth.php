@@ -61,6 +61,8 @@ class cal_monthCls extends cal_wmdbaseCls
 				}
 			}
 
+		$this->bshowonlydaysofmonth = bab_getICalendars()->bshowonlydaysofmonth ==  'Y';
+		
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
 		$time2 = $time1 + 41*24*3600;
 
@@ -72,6 +74,27 @@ class cal_monthCls extends cal_wmdbaseCls
 
 		$this->cindex = 0;
 		$this->evtidx = 0;
+		
+		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[count($this->workdays)-1]], $this->year);
+		if( date('n', $time1) != $this->month)
+			{
+				$this->w_start = 1;
+			}
+		else
+			{
+				$this->w_start = 0;
+			}
+		$this->w = $this->w_start;
+		
+		$time1 = mktime( 0,0,0, $this->month, (7 * 5) + $this->dworkdays[$this->workdays[0]], $this->year);
+		if( date('n', $time1) != $this->month)
+			{
+				$this->w_end = 5;
+			}
+		else
+			{
+				$this->w_end = 6;
+			}
 		
 		}
 
@@ -103,14 +126,14 @@ class cal_monthCls extends cal_wmdbaseCls
 	
 	function getnextweek()
 		{
-		if( $this->w < 6)
+		if( $this->w < $this->w_end)
 			{
 			$this->w++;
 			return true;
 			}
 		else
 			{
-			$this->w = 0;
+			$this->w = $this->w_start;
 			return false;
 			}
 		}
@@ -123,6 +146,14 @@ class cal_monthCls extends cal_wmdbaseCls
 			{
 			$this->mday = (7 * ($this->w-1)) + $this->dworkdays[$this->workdays[$d]];
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
+			if( $this->bshowonlydaysofmonth && $this->month != date("n", $mktime))
+			{
+				$this->bdayofcurmonth = false;
+			}
+			else
+			{
+				$this->bdayofcurmonth = true;
+			}
 			
 			if( $this->mday <= 0 || $this->mday > $this->totaldays)
 				{

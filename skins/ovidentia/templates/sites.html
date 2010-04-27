@@ -713,113 +713,6 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 
 <!--#begin menu6 -->
 
-<script type="text/javascript">
-<!--
-
-function getDateList()
-	{
-	return document.getElementById('snwid');
-	}
-
-function removesel()
-	{
-	var l = getDateList();
-	var srclen = l.options.length;
-	for(i = srclen; i > 0 ; i--)
-		{
-		if (l.options[i-1].selected)
-			{
-			l.options[i-1] = null;
-			}
-		}
-	}
-
-function selectAll()
-{
-	var l = getDateList();
-	for(i=0; i < l.options.length; i++)
-	{
-		l.options[i].selected = true;
-	}
-}
-
-function nonworking_add_day()
-	{
-	var f = document.forms['formsite_bloc4'];
-
-	var type = parseInt(f.nonworking_day_type.value);
-	if (type > 100 && f.nonworking_day_to_add.value == '')
-		return;
-
-	var date = f.nonworking_day_to_add.value;
-	var d = date.split('-');
-
-	var l = getDateList();
-	var srclen = l.options.length;
-
-	var text = f.nonworking_day_text.value;
-	
-	switch (type)
-		{
-		case 101:
-			var name = text == '' ? '{ t_type[101] } : '+date : text;
-			var opt = new Option(name, text+'#'+type+','+date);
-			break;
-		case 102:
-			var name = text == '' ? '{ t_type[102] } : '+d[0]+'-'+d[1] : text;
-			var opt = new Option(name, text+'#'+type+','+d[0]+'-'+d[1]);
-			break;
-
-		<!--#in getnextnonworking_type -->
-		case { type }:
-			var opt = new Option('{ txt }', type);
-			break;
-
-		<!--#endin getnextnonworking_type -->
-		}
-
-	for (var i = 0; i < srclen; i++ )
-		{
-		if (opt.text == l.options[i].text)
-			{
-			l.options[i].selected = true;
-			return;
-			}
-		}
-	
-	if (opt)
-		l.options[srclen] = opt;
-	}
-
-function nonworking_day_cb(d,m,y)
-	{
-	var f = document.forms['formsite_bloc4'];
-	f.nonworking_day_to_add.value = d+'-'+m+'-'+y;
-	}
-
-document.onkeypress = function(ev) { 
-	if (document.all) ev = window.event;
-	if (ev.keyCode == 46) 
-		removesel(); 
-	};
-
-function changetype(obj)
-	{
-	var f = document.forms['formsite_bloc4'];
-	if (obj.value > 100)
-		{
-		f.nonworking_day_text.disabled = false;
-		}
-	else
-		{
-		f.nonworking_day_text.disabled = true;
-		f.nonworking_day_text.value = '';
-		}
-	}
-
--->
-</script>
-
 <form name="formsite_bloc4" method="post" action="{ babPhpSelf }" onsubmit="selectAll()">
 	<input type="hidden" name="tg" value="site" />
 	<input type="hidden" name="idx" value="menusite" />
@@ -832,14 +725,6 @@ function changetype(obj)
 				<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
 					<tr>
 						<td valign="top">
-							<dl>
-								<dt><h5>{ t_workdays }</h5></dt>
-								<!--#in getnextworkday -->
-								<dd>
-									<input type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
-								</dd>
-								<!--#endin getnextworkday -->
-							</dl>
 							<dl>
 								<dt><h5>{ t_dispdays }</h5></dt>
 								<!--#in getnextdispday -->
@@ -880,93 +765,51 @@ function changetype(obj)
 									</tr>
 								</table>
 							</dl>
-							<dl>
-								<table width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
-									<tr> 
-										<td align="right">{ allday }</td>
-										<td> 
-											<select name="allday">
-												<option value="Y" { yallday }>{ yes }</option>
-												<option value="N" { nallday }>{ no }</option>
-											</select>
-										</td>
-									</tr>
-									<tr> 
-										<td align="right">{ usebgcolor }</td>
-										<td> 
-											<select name="usebgcolor">
-												<option value="Y" { yusebgcolor }>{ yes }</option>
-												<option value="N" { nusebgcolor }>{ no }</option>
-											</select>
-										</td>
-									</tr>
-									<tr> 
-										<td align="right">{ elapstime }</td>
-										<td> 
-											<select name="elapstime">
-											<!--#in getnextet -->
-												<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
-											<!--#endin getnextet -->
-											</select>
-										</td>
-									</tr>
-									<tr> 
-										<td align="right" valign="middle">{ defaultview }</td>
-										<td> 
-											<select name="defaultview">
-											<!--#in getnextdv -->
-												<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
-											<!--#endin getnextdv -->
-											</select>
-										</td>
-									</tr>
-									<tr> 
-										<td align="right">{ showupdateinfo }</td>
-										<td> 
-											<select name="showupdateinfo">
-												<option value="Y" { yshowupdateinfo }>{ yes }</option>
-												<option value="N" { nshowupdateinfo }>{ no }</option>
-											</select>
-										</td>
-									</tr>
-								</table>
-							</dl>
 						</td>
 						<td width="50%" valign="top">
-							<dl>
-								<h5>{ t_nonworking }</h5>
-								<select id="snwid" name="nonworking[]" multiple="multiple" size="4" style="width:100%">
-								<!--#in getnextnonworking -->
-									<option value="{ value }">{ text }</option>
-								<!--#endin getnextnonworking -->
-								</select>
-								<div align="right">
-									<a href="?" onclick="removesel();return false;">{ t_delete }</a>
-								</div>
-								<fieldset>
-									<legend>{ t_add }</legend>
-									<p>
-										<label for="nonworking_day_to_add">{ t_date }:</label>
-										<span style="white-space:nowrap">
-											<input type="text" name="nonworking_day_to_add" id="nonworking_day_to_add" disabled="disabled" size="14" />&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ t_load_date }" border="0" align="absmiddle"></a>
-										</span>
-									</p>
-									<p>
-										<label for="nonworking_day_text">{ t_text }:</label>
-										<input type="text" name="nonworking_day_text" id="nonworking_day_text" size="25" />
-									</p>
-									<p>
-										<label for="nonworking_day_type">{ t_type_date }:</label>
-										<select name="nonworking_day_type" id="nonworking_day_type" onchange="changetype(this)">
-											<option value="101" /> { t_type[101] }</option>
-											<option value="102" /> { t_type[102] }</option>
-											<!--#in getnextnonworking_type -->
-											<option value="{ type }" /> { txt }</option>
-											<!--#endin getnextnonworking_type -->
-										</select>
-									</p>
-									<input type="button" value="{ t_ok }" onclick="nonworking_add_day()" /><br />
-								</fieldset>
+							<dl> 
+								<h5>{ allday }</h5>
+									<select name="allday">
+										<option value="Y" { yallday }>{ yes }</option>
+										<option value="N" { nallday }>{ no }</option>
+									</select>
+							</dl>
+							<dl> 
+								<h5>{ usebgcolor }</h5>
+									<select name="usebgcolor">
+										<option value="Y" { yusebgcolor }>{ yes }</option>
+										<option value="N" { nusebgcolor }>{ no }</option>
+									</select>
+							</dl>
+							<dl> 
+								<h5>{ elapstime }</h5>
+									<select name="elapstime">
+									<!--#in getnextet -->
+										<option value="{ etval }" { etselected }>{ etval }&nbsp;{ minutes }</option>
+									<!--#endin getnextet -->
+									</select>
+							</dl>
+							<dl> 
+								<h5>{ defaultview }</h5>
+									<select name="defaultview">
+									<!--#in getnextdv -->
+										<option value="{ dvvalid }" { dvselected }>{ dvval }</option>
+									<!--#endin getnextdv -->
+									</select>
+							</dl>
+							<dl> 
+								<h5>{ showupdateinfo }</h5>
+									<select name="showupdateinfo">
+										<option value="Y" { yshowupdateinfo }>{ yes }</option>
+										<option value="N" { nshowupdateinfo }>{ no }</option>
+									</select>
+							</dl>
+							<dl> 
+								<h5>{ showonlydaysmonthinfo }</h5>
+									<select name="showonlydaysmonthinfo">
+										<option value="Y" { yshowonlydaysmonthinfo }>{ yes }</option>
+										<option value="N" { nshowonlydaysmonthinfo }>{ no }</option>
+									</select>
 							</dl>
 							<dl>
 								<h5>{ t_defaultCalAccess }</h5>
@@ -996,11 +839,6 @@ function changetype(obj)
 		</tr>
 	</table>
 </form>
-<script type="text/javascript">
-<!--
-changetype(document.forms['formsite_bloc4'].nonworking_day_type);
--->
-</script>
 <!--#end menu6 -->
 
 <!--#begin versions -->
@@ -1807,3 +1645,227 @@ function show_hide_el(obj)
 show_hide_el(document.forms['editor'].filter_html);
 </script>
 <!--#end menu10 -->
+
+<!--#begin menu13 -->
+
+<script type="text/javascript">
+<!--
+
+function getDateList()
+	{
+	return document.getElementById('snwid');
+	}
+
+function removesel()
+	{
+	var l = getDateList();
+	var srclen = l.options.length;
+	for(i = srclen; i > 0 ; i--)
+		{
+		if (l.options[i-1].selected)
+			{
+			l.options[i-1] = null;
+			}
+		}
+	}
+
+function selectAll()
+{
+	var l = getDateList();
+	for(i=0; i < l.options.length; i++)
+	{
+		l.options[i].selected = true;
+	}
+}
+
+function nonworking_add_day()
+	{
+	var f = document.forms['formsite_bloc13'];
+
+	var type = parseInt(f.nonworking_day_type.value);
+	if (type > 100 && f.nonworking_day_to_add.value == '')
+		return;
+
+	var date = f.nonworking_day_to_add.value;
+	var d = date.split('-');
+
+	var l = getDateList();
+	var srclen = l.options.length;
+
+	var text = f.nonworking_day_text.value;
+	
+	switch (type)
+		{
+		case 101:
+			var name = text == '' ? '{ t_type[101] } : '+date : text;
+			var opt = new Option(name, text+'#'+type+','+date);
+			break;
+		case 102:
+			var name = text == '' ? '{ t_type[102] } : '+d[0]+'-'+d[1] : text;
+			var opt = new Option(name, text+'#'+type+','+d[0]+'-'+d[1]);
+			break;
+
+		<!--#in getnextnonworking_type -->
+		case { type }:
+			var opt = new Option('{ txt }', type);
+			break;
+
+		<!--#endin getnextnonworking_type -->
+		}
+
+	for (var i = 0; i < srclen; i++ )
+		{
+		if (opt.text == l.options[i].text)
+			{
+			l.options[i].selected = true;
+			return;
+			}
+		}
+	
+	if (opt)
+		l.options[srclen] = opt;
+	}
+
+function nonworking_day_cb(d,m,y)
+	{
+	var f = document.forms['formsite_bloc13'];
+	f.nonworking_day_to_add.value = d+'-'+m+'-'+y;
+	}
+
+document.onkeypress = function(ev) { 
+	if (document.all) ev = window.event;
+	if (ev.keyCode == 46) 
+		removesel(); 
+	};
+
+function changetype(obj)
+	{
+	var f = document.forms['formsite_bloc13'];
+	if (obj.value > 100)
+		{
+		f.nonworking_day_text.disabled = false;
+		}
+	else
+		{
+		f.nonworking_day_text.disabled = true;
+		f.nonworking_day_text.value = '';
+		}
+	}
+
+function setColor(color)
+{
+document.forms.formsite_bloc13.bgcolor.value=color;
+if (color == '') color = 'fff';
+document.getElementById('evtColor').style.backgroundColor = '#'+color;
+}
+-->
+</script>
+
+<form name="formsite_bloc13" method="post" action="{ babPhpSelf }" onsubmit="selectAll()">
+	<input type="hidden" name="tg" value="site" />
+	<input type="hidden" name="idx" value="menusite" />
+	<input type="hidden" name="item" value="{ item }" />
+	<input type="hidden" name="action" value="menu13" />
+	
+	<table  width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+		<tr> 
+			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+				<table  width="100%" border="0" cellspacing="0" cellpadding="5" class="BabLoginMenuBackground">
+					<tr>
+						<td valign="top">
+							<dl>
+								<dt><h5>{ t_workdays }</h5></dt>
+								<!--#in getnextworkday -->
+								<dd>
+									<input type="checkbox" name="workdays[]" id="{ dayid }" value="{ dayid }"  { checked } /><label for="{ dayid }">{ shortday }</label>
+								</dd>
+								<!--#endin getnextworkday -->
+							</dl>
+							<dl>
+								<table border="1" cellspacing="0" cellpadding="5" >
+									<tr align="center">
+										<td nowrap><h5>{ t_starttimetxt }</h5></td>
+										<td nowrap><h5>{ t_endtimetxt }</h5></td>
+									</tr>
+									<tr align="center">
+										<td>
+											<select name="starttime">
+												<!--#in getnexttime -->
+												<option value="{ timeid }" { checked } />{ timeval }</option>
+												<!--#endin getnexttime -->
+											</select>
+										</td>
+										<td>
+											<select name="endtime">
+												<!--#in getnexttime -->
+												<option value="{ timeid }" { checked } />{ timeval }</option>
+												<!--#endin getnexttime -->
+											</select>
+										</td>
+									</tr>
+								</table>
+							</dl>
+								<dt><h5>{ t_bgcolor }</h5></dt>
+								<dd>
+								<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ bgcolor };float:left"></div>&nbsp;<a class="BabSiteAdminListLink" href="#" onclick="Start('{ selctorurl }', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a>
+								<input type="hidden" name="bgcolor" value="{ bgcolor }">
+								</dd>
+							<dl>
+							
+							</dl>
+						</td>
+						<td width="50%" valign="top">
+							<dl>
+								<h5>{ t_nonworking }</h5>
+								<select id="snwid" name="nonworking[]" multiple="multiple" size="4" style="width:100%">
+								<!--#in getnextnonworking -->
+									<option value="{ value }">{ text }</option>
+								<!--#endin getnextnonworking -->
+								</select>
+								<div align="right">
+									<a href="?" onclick="removesel();return false;">{ t_delete }</a>
+								</div>
+								<fieldset>
+									<legend>{ t_add }</legend>
+									<p>
+										<label for="nonworking_day_to_add">{ t_date }:</label>
+										<span style="white-space:nowrap">
+											<input type="text" name="nonworking_day_to_add" id="nonworking_day_to_add" disabled="disabled" size="14" />&nbsp;<a href="{ babUrlScript }?tg=month&callback=nonworking_day_cb" onclick="Start(this.href, 'calendar', 'width=250,height=250,status=no,resizable=no,top=200,left=200'); return false;" title="{ t_load_date }"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ t_load_date }" border="0" align="absmiddle"></a>
+										</span>
+									</p>
+									<p>
+										<label for="nonworking_day_text">{ t_text }:</label>
+										<input type="text" name="nonworking_day_text" id="nonworking_day_text" size="25" />
+									</p>
+									<p>
+										<label for="nonworking_day_type">{ t_type_date }:</label>
+										<select name="nonworking_day_type" id="nonworking_day_type" onchange="changetype(this)">
+											<option value="101" /> { t_type[101] }</option>
+											<option value="102" /> { t_type[102] }</option>
+											<!--#in getnextnonworking_type -->
+											<option value="{ type }" /> { txt }</option>
+											<!--#endin getnextnonworking_type -->
+										</select>
+									</p>
+									<input type="button" value="{ t_ok }" onclick="nonworking_add_day()" /><br />
+								</fieldset>
+							</dl>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+							<br />
+							<input type="submit" value="{ t_record }" />
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<script type="text/javascript">
+<!--
+changetype(document.forms['formsite_bloc13'].nonworking_day_type);
+-->
+</script>
+<!--#end menu13 -->

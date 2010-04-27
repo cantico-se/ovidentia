@@ -337,6 +337,7 @@ class bab_icalendars
 		$this->endtime = $babBody->babsite['end_time'];
 		$this->dispdays = $babBody->babsite['dispdays'];
 		$this->startday = $babBody->babsite['startday'];
+		$this->bshowonlydaysofmonth = $babBody->babsite['show_onlydays_of_month'];
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
 			{
@@ -366,6 +367,7 @@ class bab_icalendars
 				$this->usebgcolor = $arr['usebgcolor'];
 				$this->elapstime = $arr['elapstime'];
 				$this->defaultview = $arr['defaultview'];
+				$this->bshowonlydaysofmonth = $arr['show_onlydays_of_month'];
 				$this->starttime = $arr['start_time'];
 				$this->endtime = $arr['end_time'];
 				if( $this->endtime == '00:00:00')

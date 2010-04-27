@@ -462,27 +462,18 @@ function site_menu6($id)
 		function temp($id)
 			{
 			global $babDB;
-			$this->t_workdays = bab_translate("Working days (for all sites)");
 			$this->t_dispdays = bab_translate("Days to display");
-			$this->t_nonworking = bab_translate("Non-working days");
 			$this->t_startdaytxt = bab_translate("First day of week");
-			$this->t_add = bab_translate("Add");
-			$this->t_ok = bab_translate("Ok");
-			$this->t_delete = bab_translate("Delete");
-			$this->t_load_date = bab_translate("Load date");
-			$this->t_date = bab_translate("Date");
-			$this->t_text = bab_translate("Name");
-			$this->t_type_date = bab_translate("Date type");
-			$this->t_type = bab_getNonWorkingDayTypes(true);
 			$this->t_starttimetxt = bab_translate("Start time");
 			$this->t_endtimetxt = bab_translate("End time");
-			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
+			$this->allday = bab_translate("On create new event, check all day");
 			$this->usebgcolor = bab_translate("Use background color for events");
 			$this->weeknumberstxt = bab_translate("Show week numbers");
 			$this->elapstime = bab_translate("Time scale");
 			$this->defaultview = bab_translate("Calendar default view");
 			$this->minutes = bab_translate("Minutes");
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
+			$this->showonlydaysmonthinfo = bab_translate("In month view, display only the days of current month");
 			
 			$this->t_defaultCalAccess = bab_translate("Default calendar access for new user");
 			$this->t_personalCalAccess = bab_translate("Users that doesn't have personal agenda can view other personal agendas");
@@ -520,15 +511,9 @@ function site_menu6($id)
 				}
 			}
 			
-			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
-			$sWorkingDays = '';
-			bab_calGetWorkingDays(0, $sWorkingDays);
-
-			$this->workdays = array_flip(explode(',',$sWorkingDays));
 			$this->dispdays = array_flip(explode(',',$GLOBALS['babBody']->babsite['dispdays']));
 			$this->startday = $GLOBALS['babBody']->babsite['startday'];
 			$this->sttime = $GLOBALS['babBody']->babsite['start_time'];
-			$this->resnw = $babDB->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$babDB->db_escape_string($id)."'");
 			$this->arrdv = array(bab_translate("Month"), bab_translate("Week"),bab_translate("Day"));
 			if( $GLOBALS['babBody']->babsite['allday'] ==  'Y')
 				{
@@ -562,31 +547,16 @@ function site_menu6($id)
 				$this->nshowupdateinfo = 'selected';
 				$this->yshowupdateinfo = '';
 				}
-			}
-
-		function getnextworkday()
-			{
-			global $babDays;
-			static $i = 0;
-			if ($i < 7)
+			
+			if( $GLOBALS['babBody']->babsite['show_onlydays_of_month'] ==  'Y')
 				{
-				if( isset($this->workdays[$i] ))
-					{
-					$this->checked = "checked";
-					}
-				else
-					{
-					$this->checked = "";
-					}
-				$this->dayid = $i;
-				$this->shortday = $babDays[$i];
-				$i++;
-				return true;
+				$this->yshowonlydaysmonthinfo = 'selected';
+				$this->nshowonlydaysmonthinfo = '';
 				}
 			else
 				{
-				$i = 0;
-				return false;
+				$this->nshowonlydaysmonthinfo = 'selected';
+				$this->yshowonlydaysmonthinfo = '';
 				}
 			}
 
@@ -669,48 +639,6 @@ function site_menu6($id)
 
 			}
 
-		function getnextnonworking_type()
-			{
-			static $i = 1;
-			if ($i < 100 && isset($this->t_type[$i]))
-				{
-				$this->type = $i;
-				$this->txt = $this->t_type[$i];
-				$i++;
-				return true;
-				}
-			else
-				{
-				$i = 1;
-				return false;
-				}
-			}
-
-
-		function getnextnonworking()
-			{
-			global $babDB;
-			if ($arr = $babDB->db_fetch_array($this->resnw))
-				{
-				$this->value = $arr['nw_text'].'#';
-				$this->value .= $arr['nw_type'];
-				$this->value .= !empty($arr['nw_day']) ? ','.$arr['nw_day'] : '';
-				$this->nw_day = $arr['nw_day'];
-				if (!empty($arr['nw_text']))
-					$this->text = $arr['nw_text'];
-				else
-					{
-					$this->text = $this->t_type[$arr['nw_type']];
-					if (!empty($this->nw_day))
-						{
-						$this->text .= ' : '.$this->nw_day;
-						}
-					}
-				return true;
-				}
-			else
-				return false;
-			}
 
 		function getnextet()
 			{
@@ -799,7 +727,147 @@ function site_menu6($id)
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu6"));
 	}
 
+function site_menu13($id)
+	{
 
+	global $babBody;
+	class site_menu13_class extends site_configuration_cls
+		{
+			
+		function site_menu13_class($id)
+			{
+			global $babDB;
+			$this->t_workdays = bab_translate("Working days (for all sites)");
+			$this->t_nonworking = bab_translate("Non-working days");
+			$this->t_ok = bab_translate("Ok");
+			$this->t_add = bab_translate("Add");
+			$this->t_delete = bab_translate("Delete");
+			$this->t_load_date = bab_translate("Load date");
+			$this->t_date = bab_translate("Date");
+			$this->t_text = bab_translate("Name");
+			$this->t_type_date = bab_translate("Date type");
+			$this->t_type = bab_getNonWorkingDayTypes(true);
+			$this->t_starttimetxt = bab_translate("Start time");
+			$this->t_endtimetxt = bab_translate("End time");
+			$this->t_bgcolor = bab_translate("Background color to use for non working day");
+			
+			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
+			$this->bgcolor = empty($GLOBALS['babBody']->babsite['non_workday_bgcolor'])? 'FFFFFF': bab_toHTML($GLOBALS['babBody']->babsite['non_workday_bgcolor']);
+			
+			$this->sttime = $GLOBALS['babBody']->babsite['start_time'];
+			
+			$this->site_configuration_cls($id);
+
+			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+			$sWorkingDays = '';
+			bab_calGetWorkingDays(0, $sWorkingDays);
+
+			$this->workdays = array_flip(explode(',',$sWorkingDays));
+			$this->resnw = $babDB->db_query("SELECT * FROM ".BAB_SITES_NONWORKING_CONFIG_TBL." WHERE id_site='".$babDB->db_escape_string($id)."'");
+			}
+
+		function getnextworkday()
+			{
+			global $babDays;
+			static $i = 0;
+			if ($i < 7)
+				{
+				if( isset($this->workdays[$i] ))
+					{
+					$this->checked = "checked";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$this->dayid = $i;
+				$this->shortday = $babDays[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 0;
+				return false;
+				}
+			}
+
+
+		function getnextnonworking_type()
+			{
+			static $i = 1;
+			if ($i < 100 && isset($this->t_type[$i]))
+				{
+				$this->type = $i;
+				$this->txt = $this->t_type[$i];
+				$i++;
+				return true;
+				}
+			else
+				{
+				$i = 1;
+				return false;
+				}
+			}
+
+
+		function getnextnonworking()
+			{
+			global $babDB;
+			if ($arr = $babDB->db_fetch_array($this->resnw))
+				{
+				$this->value = $arr['nw_text'].'#';
+				$this->value .= $arr['nw_type'];
+				$this->value .= !empty($arr['nw_day']) ? ','.$arr['nw_day'] : '';
+				$this->nw_day = $arr['nw_day'];
+				if (!empty($arr['nw_text']))
+					$this->text = $arr['nw_text'];
+				else
+					{
+					$this->text = $this->t_type[$arr['nw_type']];
+					if (!empty($this->nw_day))
+						{
+						$this->text .= ' : '.$this->nw_day;
+						}
+					}
+				return true;
+				}
+			else
+				return false;
+			}
+		
+		function getnexttime()
+			{
+			static $i = 0;
+			if( $i < 24 )
+				{
+				$this->timeid = sprintf("%02s:00:00", $i);
+				$this->timeval = mb_substr($this->timeid, 0, 2);
+				if( $this->timeid == $this->sttime)
+					{
+					$this->checked = "selected";
+					}
+				else
+					{
+					$this->checked = "";
+					}
+				$i++;
+				return true;
+				}
+			else
+				{
+				$this->sttime = $GLOBALS['babBody']->babsite['end_time'];
+				$i = 0;
+				return false;
+				}
+
+			}
+		} // class site_menu13_class
+
+	$temp = new site_menu13_class($id);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "menu13"));
+	}
+	
 
 function siteAuthentification($id)
 	{
@@ -1897,25 +1965,6 @@ function siteUpdate_menu6($item)
 	{
 	global $babDB;
 
-	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
-	bab_deleteAllWorkingHours(0);
-
-	if (isset($_POST['workdays']) && count($_POST['workdays']))
-		{
-		$endtime = '00:00:00' == $_POST['endtime'] ? '24:00:00' : $_POST['endtime'];
-		
-		foreach($_POST['workdays'] as $day) {
-			bab_insertWorkingHours(0, $day, $_POST['starttime'], $endtime);
-		}
-	}
-	
-	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-				
-	$event = new bab_eventPeriodModified(false, false, false);
-	$event->types = BAB_PERIOD_NWDAY;
-	bab_fireEvent($event);
-
-
 	$reqarr = array("startday='".$_POST['startday']."'");
 
 	if (isset($_POST['dispdays']) && count($_POST['dispdays']))
@@ -1958,6 +2007,11 @@ function siteUpdate_menu6($item)
 		$reqarr[] = "show_update_info='".$babDB->db_escape_string($_POST['showupdateinfo'])."'";
 		}
 
+	if (isset($_POST['showonlydaysmonthinfo']) )
+		{
+		$reqarr[] = "show_onlydays_of_month='".$babDB->db_escape_string($_POST['showonlydaysmonthinfo'])."'";
+		}
+		
 	if (isset($_POST['iDefaultCalendarAccess']) )
 		{
 		$reqarr[] = "iDefaultCalendarAccess='".$babDB->db_escape_string($_POST['iDefaultCalendarAccess'])."'";
@@ -1969,6 +2023,31 @@ function siteUpdate_menu6($item)
 		}
 		
 	$babDB->db_query("update ".BAB_SITES_TBL." set ".implode(',',$reqarr)." where id='".$babDB->db_escape_string($item)."'");
+
+	}
+
+function siteUpdate_menu13($item)
+	{
+	global $babDB;
+
+	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+	bab_deleteAllWorkingHours(0);
+
+	if (isset($_POST['workdays']) && count($_POST['workdays']))
+		{
+		$endtime = '00:00:00' == $_POST['endtime'] ? '24:00:00' : $_POST['endtime'];
+		
+		foreach($_POST['workdays'] as $day) {
+			bab_insertWorkingHours(0, $day, $_POST['starttime'], $endtime);
+		}
+	}
+	
+	require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+				
+	$event = new bab_eventPeriodModified(false, false, false);
+	$event->types = BAB_PERIOD_NWDAY;
+	
+	bab_fireEvent($event);
 
 	if (isset($_POST['nonworking']) && count($_POST['nonworking']))
 		{
@@ -2005,8 +2084,11 @@ function siteUpdate_menu6($item)
 		}
 
 	bab_emptyNonWorkingDays($item);
+	
+	$babDB->db_query("update ".BAB_SITES_TBL." set non_workday_bgcolor=".$babDB->quote($_POST['bgcolor'])." where id='".$babDB->db_escape_string($item)."'");
+	
 	}
-
+		
 function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchkcnx, $searchdn)
 	{
 	global $babBody, $babDB, $bab_ldapAttributes;
@@ -2314,6 +2396,10 @@ switch ($_POST['action'])
 		call_record_site_menu11($_POST['item']);
 		break;
 
+	case 'menu13':
+		siteUpdate_menu13($_POST['item']);
+		break;
+	
 	case 'updisc':
 		siteUpdateDisclaimer($_POST['item']);
 		$popupmessage = bab_translate("Update done");
@@ -2404,7 +2490,6 @@ switch($idx)
 		site_menu6($_REQUEST['item']);
 		break;
 
-	
 	case "menu7":
 		$babBody->title = bab_translate("Home pages managers").": ".getSiteName($_REQUEST['item']);
 		$macl = new macl("site", "menusite", $_REQUEST['item'], "aclman");
@@ -2457,6 +2542,12 @@ switch($idx)
 		$babBody->addItemMenu("menu12", bab_translate("Web services"),'');
 		break;
 
+	case "menu13":
+		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);
+		$babBody->addItemMenu("menu13", bab_translate("Modify"),'');
+		site_menu13($_REQUEST['item']);
+		break;
+		
 	default:
 	case 'menusite':
 		$babBody->addItemMenu("menusite", bab_translate("Menu"),$GLOBALS['babUrlScript']."?tg=site&item=".$_REQUEST['item']);

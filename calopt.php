@@ -193,7 +193,7 @@ function calendarOptions($calid, $urla)
 			$this->startdaytxt = bab_translate("First day of week");
 			$this->starttimetxt = bab_translate("Start time");
 			$this->endtimetxt = bab_translate("End time");
-			$this->allday = bab_translate("On create new event, check")." ". bab_translate("All day");
+			$this->allday = bab_translate("On create new event, check all day");
 			$this->usebgcolor = bab_translate("Use background color for events");
 			$this->weeknumberstxt = bab_translate("Show week numbers");
 			$this->modify = bab_translate("Modify");
@@ -207,6 +207,7 @@ function calendarOptions($calid, $urla)
 			$this->t_dispday = bab_translate("Display this day in the calendar");
 			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
+			$this->showonlydaysmonthinfo = bab_translate("In month view, display only the days of current month");
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_assoc($res);
@@ -503,7 +504,7 @@ function unload()
 
 	}
 
-function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo, $iDefaultCalendarAccess)
+function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor, $elapstime, $defaultview, $showupdateinfo, $iDefaultCalendarAccess, $showonlydaysmonthinfo)
 	{
 	global $babDB, $BAB_SESS_USERID;
 
@@ -532,6 +533,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			dispdays	=".$babDB->quote($dispdays).", 
 			show_update_info =".$babDB->quote($showupdateinfo).", 
 			iDefaultCalendarAccess =".$babDB->quote($iDefaultCalendarAccess).", 
+			show_onlydays_of_month =".$babDB->quote($showonlydaysmonthinfo).", 
 			week_numbers='Y' 
 		WHERE 
 			id_user=".$babDB->quote($BAB_SESS_USERID)."
@@ -552,6 +554,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 				dispdays, 
 				show_update_info, 
 				iDefaultCalendarAccess,
+				show_onlydays_of_month,
 				week_numbers
 			) 
 		VALUES ";
@@ -568,6 +571,7 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 			".$babDB->quote($dispdays).",
 			".$babDB->quote($showupdateinfo).",
 			".$babDB->quote($iDefaultCalendarAccess).",
+			".$babDB->quote($showonlydaysmonthinfo).",
 			'Y'
 			)
 		";
@@ -684,7 +688,7 @@ if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERI
 	addAccessUsers($nuserid, $idcal, $urla);
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess']);
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
 	}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");

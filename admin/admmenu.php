@@ -416,6 +416,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 								break;
 
 							case 6: 
+							case 13: 
 								$item->addIconClassname('apps-preferences-calendar');
 								break;
 

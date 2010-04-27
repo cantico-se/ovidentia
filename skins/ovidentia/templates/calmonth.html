@@ -88,6 +88,7 @@ document.onmousemove = bab_tooltipPosition;
 		<!--#else currentmonth -->
 		<td <!--#if currentday "== 1" --> class="BabTodayEvent" <!--#endif currentday --> >
 		<!--#endif currentmonth -->
+		<!--#if bdayofcurmonth -->
 			<div class="HeaderDayCalendar">
 				<a class="day" title="{ week }" href="{ daynumberurl }">{ daynumbername }</a>
 				<a class="dayview" title="{ t_day_view }" href="{ dayviewurl }"><img src="{ babSkinPath }images/Puces/PuceMoreEvent.png" alt="{ t_day_view }" /></a>
@@ -155,6 +156,10 @@ document.onmousemove = bab_tooltipPosition;
 			</div>
 			<!--#endif countevent -->
 			<!--#endin getnextcal -->
+		<!--#else bdayofcurmonth -->
+			<div>
+			</div>
+		<!--#endif bdayofcurmonth -->
 		</td> 
 		<!--#endin getnextday -->
 	</tr>
