@@ -941,6 +941,8 @@ CREATE TABLE `bab_sites` (
   `usebgcolor` enum('Y','N') NOT NULL default 'Y',
   `stat_log` enum('Y','N') NOT NULL default 'N',
   `show_update_info` enum('Y','N') NOT NULL default 'Y',
+  `show_onlydays_of_month` enum('N','Y') NOT NULL default 'N',
+  `non_workday_bgcolor` varchar(6) NOT NULL default '',
   `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT '-1',
   `iPersonalCalendarAccess` enum('N','Y') NOT NULL default 'N',
   `mail_fieldaddress` char(3) NOT NULL default 'Bcc',
@@ -2526,6 +2528,7 @@ CREATE TABLE bab_cal_user_options (
   end_time time default NULL,
   user_calendarids varchar(255) NOT NULL default '',
   show_update_info enum('N','Y') NOT NULL default 'N',
+  show_onlydays_of_month enum('N','Y') NOT NULL default 'N',
   iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
   PRIMARY KEY  (id),
   KEY id_user (id_user)
@@ -4157,3 +4160,23 @@ CREATE TABLE bab_forumsnotify_users (
 	KEY id_forum (id_forum),
 	KEY id_user (id_user)
 );
+
+CREATE TABLE bab_fm_headers (
+		  id int(11) unsigned NOT NULL auto_increment,
+		  fmh_name varchar(255) NOT NULL default '',
+		  fmh_description tinytext NOT NULL,
+		  fmh_order tinyint(3) unsigned NOT NULL default '0',
+		  PRIMARY KEY  (id)
+		);
+
+INSERT INTO `bab_fm_headers` (`fmh_name`, `fmh_description`, fmh_order) VALUES 
+('name', 			'Name', 			'1'),
+('description', 	'Description', 		'0'),
+('path', 			'Path', 			'0'),
+('author', 			'Posted by', 		'0'),
+('date_creation', 	'Creation date', 	'0'),
+('updatedby', 		'Modified by', 		'4'),
+('date_update', 	'Modified', 		'3'),
+('version', 		'Version', 			'0'),
+('size', 			'Size', 			'2'),
+('hits', 			'Hits', 			'5');

@@ -200,6 +200,7 @@ define("BAB_FMDOWNLOAD_GROUPS_TBL", "bab_fmdownload_groups");
 define("BAB_FMUPDATE_GROUPS_TBL", "bab_fmupdate_groups");
 define("BAB_FMMANAGERS_GROUPS_TBL", "bab_fmmanagers_groups");
 define("BAB_FMNOTIFY_GROUPS_TBL", "bab_fmnotify_groups");
+define("BAB_FM_HEADERS_TBL", "bab_fm_headers");
 define("BAB_FILES_TBL", "bab_files");
 define("BAB_FILES_TAGS_TBL", "bab_files_tags");
 define("BAB_FORUMS_TBL", "bab_forums");

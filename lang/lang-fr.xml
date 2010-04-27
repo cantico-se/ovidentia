@@ -566,7 +566,7 @@
 <string id="Number of topics">Nombre de thèmes d'articles</string>
 <string id="October">Octobre</string>
 <string id="Old Password">Ancien mot de passe</string>
-<string id="On create new event, check">Lors de la création d'un nouvel événement, cocher</string>
+<string id="On create new event, check all day">Lors de la création d'un nouvel événement, cocher toute la journée</string>
 <string id="On site">Sur le site</string>
 <string id="Only valid if registration is actif">Valide seulement si l'inscription est active</string>
 <string id="Open thread">Ouvrir le sujet</string>
@@ -3084,6 +3084,10 @@
 <string id="Change search...">Modifier la recherche...</string>
 <string id="Hide search form">Cacher le formulaire de recherche</string>
 <string id="You don't have access to update the user">Vous n'avez pas les droits d'accès pour modifier l'utilisateur</string>
+<string id="In month view, display only the days of current month">Dans la vue mois, afficher que les jours du mois courant</string>
+<string id="Calendar configuration">Configuration des agendas</string>
+<string id="Working days and non-working day configuration">Configuration des jours travaillés et des jours fériés</string>
+<string id="Background color to use for non working day">Couleur de fond à utiliser pour les jours fériés</string>
 <string id="Send an e-mail to the user with its new password">Envoyer un e-mail à l'utilisateur avec son nouveau mot de passe</string>
 <string id="Your password of connexion in the site">Votre mot de passe de connexion au site</string>
 <string id="your password of connexion in the site">votre mot de passe de connexion au site</string>
