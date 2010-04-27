@@ -531,7 +531,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 		if(!is_null($oFmFolder))
 		{
 			$idsafolder = $oFmFolder->getApprobationSchemeId();
-			$bnotify = $oFmFolder->getFileNotify();
+			
 			if($idsafolder != $said)
 			{
 				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
@@ -617,7 +617,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 
 						if($said == 0 || $idfai === true)
 						{
-							acceptFileVersion($oFolderFile, $oFolderFileVersion, $bnotify);
+							acceptFileVersion($oFolderFile, $oFolderFileVersion);
 						}
 						else if(!empty($idfai))
 						{

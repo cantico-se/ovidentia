@@ -777,7 +777,7 @@ function confirmFile($idf, $bconfirm)
 						break;
 					case 1:
 						deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
-						acceptFileVersion($oFolderFile, $oFolderFileVersion, $oFmFolder->getFileNotify());
+						acceptFileVersion($oFolderFile, $oFolderFileVersion);
 						break;
 					default:
 						$nfusers = getWaitingApproversFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId(), true);

@@ -1347,10 +1347,18 @@ class bab_Directory
 			$obj->setIdObjectFile($sFullPathName, $iIdFile, $oFmFolder->getId());
 		}
 		
-		if(notifyApprovers($iIdFile, $oFmFolder->getId()) && 'Y' == $oFmFolder->getFileNotify())
+		if(notifyApprovers($iIdFile, $oFmFolder->getId()))
 		{
-			fileNotifyMembers($oFolderFile->getName(), $oFolderFile->getPathName(), 
-				$oFmFolder->getId(), bab_translate("A new file has been uploaded"));
+			require_once dirname(__FILE__).'/eventfm.php';
+			require_once dirname(__FILE__).'/reference.class.php';
+			
+			$filereference = bab_Reference::makeReference('ovidentia', '', 'files', 'file', $iIdFile);
+			
+			$eventfiles	= new bab_eventFmAfterFileUpload;
+			$eventfiles->setFolderId($oFmFolder->getId());
+			$eventfiles->addReference($filereference);
+			
+			bab_fireEvent($eventfiles);
 		}
 		return true;
 	}

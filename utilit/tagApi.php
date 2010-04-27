@@ -46,13 +46,14 @@ class bab_TagMgr
 	 * If the caller do not have manager right so this function return false.
 	 * If a tag with the same name already exit so this function return false.
 	 * 
-	 * @param string $sName The name of the tag
+	 * @param 	string 	$sName 			The name of the tag
+	 * @param	bool	$testManager	to disable manager access rights test
 	 * 
 	 * @return bab_Tag|false The new created tag on success, false otherwise
 	 */
-	public function create($sName)
+	public function create($sName, $testManager = true)
 	{
-		if(false === $this->haveManagerRight())
+		if($testManager && false === $this->haveManagerRight())
 		{
 			return false;
 		}
@@ -435,6 +436,8 @@ class bab_ReferenceMgr
 		{
 			return false;
 		}
+		
+		
 		
 		global $babDB;
 	
