@@ -280,26 +280,34 @@ function hideDelegationSubmitBtn()
 				<td class="BabLoginCadreBackground" align="center"> 
 					<table  width="100%" border="0" cellspacing="0" cellpadding="3" align="center">
 						<tr class="BabSiteAdminTitleFontBackground"> 
-							<td colspan="2" align="center">{ nametxt }</td>
-							<td>&nbsp;</td>
-							<td>{ sizetxt }</td>
-							<td align="center">{ modifiedtxt }</td>
-							<td align="center">{ postedtxt }</td>
-							<td width="10%" nowrap="nowrap">&nbsp;</td>
-							<td width="1%">
-							<!--#if bManager -->
-								{ hitstxt }
-							<!--#endif bManager -->&nbsp;
+							<td align="center">&nbsp;</td>
+							<!--#in getnextfmfield  -->
+							<td align="center">
+							<!--#if fmfieldname "== hits" -->
+							<!--#if bCanManageCurrentFolder -->
+							{ fmfielddesc }
+							<!--#endif bCanManageCurrentFolder -->
+							<!--#else fmfieldname -->
+							{ fmfielddesc }
+							<!--#endif fmfieldname -->
 							</td>
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones --></td>
+							<td width="10%" nowrap="nowrap">&nbsp;</td>
 						</tr>
 						
 					<!--#if bParentUrl -->
 						<tr class="BabSiteAdminFontBackground">
-							<td width="1%" align="center">{ upfolderimg }</td>
+							<td width="1%" align="center"><a href="{ sParentUrl }" title="{ sParentTitle }">{ upfolderimg }</a></td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
 							<td><a href="{ sParentUrl }" title="{ sParentTitle }">{ sParent }</a></td>
-							<td colspan="4">&nbsp;</td>
-							<td width="10%">&nbsp;</td>
+							<!--#else fmfieldname -->
 							<td>&nbsp;</td>
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones --></td>
+							<td width="10%">&nbsp;</td>
 						</tr>
 					<!--#endif bParentUrl -->
 						
@@ -312,25 +320,37 @@ function hideDelegationSubmitBtn()
 						<tr class="BabForumBackground1">
 					<!--#endif altbg -->
 					
-					<!--#if bCollectiveFolder -->
 							<td width="1%" align="center">
+							<!--#if bCanBrowseFolder -->
+							<a href="{ url }">
+							<!--#endif bCanBrowseFolder -->
+					<!--#if bCollectiveFolder -->
 						<!--#if bCanManageFolder -->
 							{ manfolderimg }
 						<!--#else bCanManageFolder -->
 							{ grpfolderimg }
 						<!--#endif bCanManageFolder -->
-							</td>
 					<!--#else bCollectiveFolder -->
-							<td width="1%" align="center">{ usrfolderimg }</td>
+							{ usrfolderimg }
 					<!--#endif bCollectiveFolder -->
-							<td align="left">
-						<!--#if bCanBrowseFolder -->
-								<a href="{ url }">{ name }</a>
-						<!--#else bCanBrowseFolder -->
-								{ name }
-						<!--#endif bCanBrowseFolder -->
+							<!--#if bCanBrowseFolder -->
+							</a>
+							<!--#endif bCanBrowseFolder -->
 							</td>
-							<td colspan="4">&nbsp;</td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
+							<td>
+							<!--#if bCanBrowseFolder -->
+							<a href="{ url }">{ fmfieldval }</a>
+							<!--#else bCanBrowseFolder -->
+							{ fmfieldval }
+							<!--#endif bCanBrowseFolder -->
+							</td>
+							<!--#else fmfieldname -->
+							<td>{ fmfieldval }</td>
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones --></td>
 							<td width="10%" nowrap="nowrap">
 						<!--#if bCanEditFolder -->
 							<a href="{ sFolderFormUrl }" title="{ sFolderFormEdit }"><img src="{ babSkinPath }images/Puces/edit.png" border="0" align="middle" alt="{ sFolderFormEdit }"  /></a>
@@ -342,7 +362,6 @@ function hideDelegationSubmitBtn()
 							<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
 						<!--#endif bCanCutFolder -->&nbsp;
 							</td>
-							<td>&nbsp;</td>
 						</tr>
 						<!--#endin getNextFolder -->
 					
@@ -350,7 +369,13 @@ function hideDelegationSubmitBtn()
 						<!--#in getNextCuttedFolder -->
 						<tr class="BabSiteAdminFontBackground"> 
 							<td width="1%" align="center"> 
+							<!--#if bCanBrowseFolder -->
+							<a href="{ url }">
+							<!--#endif bCanBrowseFolder -->
 						<!--#if bCollectiveFolder -->
+							<!--#if bCanBrowseFolder -->
+							<a href="{ url }">
+							<!--#endif bCanBrowseFolder -->
 							<!--#if bCanManageFolder -->
 								{ manfolderimg }
 							<!--#else bCanManageFolder -->
@@ -359,16 +384,24 @@ function hideDelegationSubmitBtn()
 						<!--#else bCollectiveFolder -->
 							{ usrfolderimg }
 						<!--#endif bCollectiveFolder -->
+							<!--#if bCanBrowseFolder -->
+							</a>
+							<!--#endif bCanBrowseFolder -->
 							</td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
 							<td>
-						<!--#if bCanBrowseFolder -->
-								<a href="{ url }">{ name }</a>
-						<!--#else bCanBrowseFolder -->
-								{ name }
-						<!--#endif bCanBrowseFolder -->
+							<!--#if bCanBrowseFolder -->
+							<a href="{ url }">{ fmfieldval }</a>
+							<!--#else bCanBrowseFolder -->
+							{ fmfieldval }
+							<!--#endif bCanBrowseFolder -->
 							</td>
-							<td colspan="4">&nbsp;</td>
-							
+							<!--#else fmfieldname -->
+							<td>{ fmfieldval }</td>
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones --></td>
 							<td width="10%" nowrap="nowrap">
 						<!--#if bCanSetRightOnFolder -->
 							<a href="{ sRightUrl }" title="{ sRight }"><img src="{ babSkinPath }images/Puces/access.png" border="0" align="middle" alt="{ sRight }"  /></a>
@@ -378,7 +411,6 @@ function hideDelegationSubmitBtn()
 						<!--#endif bCanEditFolder -->
 							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" align="middle" /></a>
 							</td>
-							<td>&nbsp;</td>
 						</tr>
 						<!--#endin getNextCuttedFolder -->
 	
@@ -389,15 +421,21 @@ function hideDelegationSubmitBtn()
 					<!--#else altbg -->
 						<tr class="BabForumBackground1">
 					<!--#endif altbg -->
-							<td width="1%" align="center">{ fileimage }</td>
-							<td><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
-						<!--#if bCanManageCurrentFolder -->
-							<!--#if bconfirmed "== 1" -->
-							<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle"></a> 
-							<!--#endif bconfirmed -->
-						<!--#endif bCanManageCurrentFolder -->
+							<td width="1%" align="center"><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ fileimage }</a></td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
+							<td><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ fmfieldval }</a></td>
+							<!--#else fmfieldname -->
+							<!--#if fmfieldname "== hits" -->
+							<td align="center">
+							<!--#if bCanManageCurrentFolder -->{ fmfieldval }<!--#endif bCanManageCurrentFolder -->&nbsp;
 							</td>
-							<td>
+							<!--#else fmfieldname -->
+							<td align="center">{ fmfieldval }</td>
+							<!--#endif fmfieldname -->
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones -->
 							
 						<!--#if readonly -->
 							<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
@@ -443,9 +481,6 @@ function hideDelegationSubmitBtn()
 							<!--#endif bVersion -->
 						<!--#endif readonly -->
 							</td>
-							<td>{ sizef }</td>
-							<td align="center">{ modified }</td>
-							<td align="center">{ postedby }</td>
 							<td align="left" nowrap="nowrap">
 							<!--#if bDownload -->
 							<!--#if urlget "== " --><img title="{ download_limit_reached }" src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ download_limit_reached }" border="0" align="middle" />&nbsp;<!--#else urlget --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif urlget -->
@@ -459,9 +494,7 @@ function hideDelegationSubmitBtn()
 								<img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
 							<a/>
 							<!--#endif bUnZip -->
-							
 							</td>
-							<td align="center"><!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;</td>
 						</tr>
 				<!--#endin getnextfile -->
 						
@@ -471,30 +504,34 @@ function hideDelegationSubmitBtn()
 					<!--#else altbg -->
 						<tr class="BabForumBackground1">
 					<!--#endif altbg -->
-							<td width="1%">{ fileimage }</td>
-							<td>
-								<a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ name }</a>
+							<td width="1%"><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ fileimage }</a></td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
+							<td><a href="{ viewurl }" title="{ description }" onclick="bab_popup(this.href,4);return false;">{ fmfieldval }</a></td>
+							<!--#else fmfieldname -->
+							<!--#if fmfieldname "== hits" -->
+							<td align="center">
+							<!--#if bCanManageCurrentFolder -->{ fmfieldval }<!--#endif bCanManageCurrentFolder -->&nbsp;
+							</td>
+							<!--#else fmfieldname -->
+							<td align="center">{ fmfieldval }</td>
+							<!--#endif fmfieldname -->
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones -->
+							<!--#if readonly -->
+								<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
+							<!--#endif readonly -->
 							<!--#if bconfirmed "== 1" --> 
 								<a href="{ viewurl }" onclick="bab_popup(this.href,4);return false;" title="{ sWaitingFileTitle }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle" title="{ sWaitingFileTitle }"></a>
 							<!--#endif bconfirmed -->
 							</td>
-							<td>
-							<!--#if readonly -->
-								<img src="{ babSkinPath }images/Puces/readonly.gif" alt="{ altreadonly }" border="0" align="middle" />
-							<!--#endif readonly -->
-							</td>
-							<td>{ sizef }</td>
-							<td align="center">{ modified }</td>
-							<td align="center">{ postedby }</td>
 							<td nowrap="nowrap">
 								<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
 							<!--#if bCanManageCurrentFolder -->
 								<a href="{ cuturl }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>
 								<a href="{ delurl }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a>
 							<!--#endif bCanManageCurrentFolder -->
-							</td>
-							<td>
-							<!--#if bCanManageCurrentFolder -->{ hits }<!--#endif bManager -->&nbsp;
 							</td>
 						</tr>
 						<!--#endin getnextwfile -->	
@@ -506,20 +543,26 @@ function hideDelegationSubmitBtn()
 						<tr class="BabForumBackground1">
 					<!--#endif altbg -->
 							<td width="1%">{ fileimage }</td>
+							<!--#in getnextfmfield  -->
+							<!--#if fmfieldname "== name" -->
 							<td>
 					<!--#if bCanManageCurrentFolder -->
-							{ name }
-						<!--#if bconfirmed "== 1" -->
-							<a href="{ url }"><img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" border="0" align="middle" /></a>
-						<!--#endif bconfirmed -->
+							{ fmfieldval }
 					<!--#else bCanManageCurrentFolder -->
-							{ name } 
+							{ fmfieldval }
 					<!--#endif bCanManageCurrentFolder -->
 							</td>
-							<td>&nbsp;</td>
-							<td>{ sizef }</td>
-							<td align="center">{ modified }</td>
-							<td align="center">{ postedby }</td>
+							<!--#else fmfieldname -->
+							<!--#if fmfieldname "== hits" -->
+							<td align="center">
+							<!--#if bCanManageCurrentFolder -->{ fmfieldval }<!--#endif bCanManageCurrentFolder -->&nbsp;
+							</td>
+							<!--#else fmfieldname -->
+							<td align="center">{ fmfieldval }</td>
+							<!--#endif fmfieldname -->
+							<!--#endif fmfieldname -->
+							<!--#endin getnextfmfield  -->
+							<td> <!-- icones --></td>
 							<td nowrap="nowrap">
 						<!--#if bDownload -->
 							<a href="{ urlget }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>
@@ -527,10 +570,6 @@ function hideDelegationSubmitBtn()
 						<!--#if bCanManageCurrentFolder -->
 							<a href="{ pasteurl }"><img src="{ babSkinPath }images/Puces/paste.gif" alt="{ paste }" border="0" align="middle" /></a>
 						<!--#endif bCanManageCurrentFolder -->
-							</td>
-							<td>
-						<!--#if bCanManageCurrentFolder -->
-								{ hits }<!--#endif bCanManageCurrentFolder -->&nbsp;
 							</td>
 						</tr>
 						<!--#endin getnextxfile -->

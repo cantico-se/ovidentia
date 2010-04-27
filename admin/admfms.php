@@ -24,6 +24,62 @@
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
+function DisplayFileManager()
+{
+	global $babBody;
+	
+	class DisplayFileManager_Class
+	{
+		function DisplayFileManager_Class()
+		{
+			global $babDB;
+			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing and searching directory");
+			$this->listftxt = '---- '.bab_translate("Fields").' ----';
+			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->update = bab_translate("Update");
+			$this->resfd = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order != '0' order by fmh_order asc");
+			$this->resf = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order = '0' order by fmh_description asc");
+			$this->countf = $babDB->db_num_rows($this->resf);
+			$this->countfd = $babDB->db_num_rows($this->resfd);
+		}
+		function getnextf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countf)
+				{
+				$arr = $babDB->db_fetch_array($this->resf);
+				$this->fid = $arr['id'];
+				$this->fieldval = bab_translate($arr['fmh_description']);
+				$i++;
+				return true;
+				}
+			return false;
+			}
+
+		function getnextdf()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->countfd)
+				{
+				$arr = $babDB->db_fetch_array($this->resfd);
+				$this->fid = $arr['id'];
+				$this->fid = $arr['id'];
+				$this->fieldval = bab_translate($arr['fmh_description']);
+				$i++;
+				return true;
+				}
+			return false;
+			}
+	}
+	
+	$dfm = new DisplayFileManager_Class();
+	$babBody->babecho(bab_printTemplate($dfm,"admfms.html", "displayfm"));
+}
+
 
 function addFolder()
 {
@@ -359,6 +415,17 @@ function updateFolders($notifies, $actives, $versions, $bhides)
 }
 
 
+function updateDisplayFileManager()
+{
+	global $babDB;
+
+	$babDB->db_query("update ".BAB_FM_HEADERS_TBL." set fmh_order='0'");
+	for($i=0; $i < count($_POST['listfd']); $i++)
+		{
+			$babDB->db_query("update ".BAB_FM_HEADERS_TBL." set fmh_order='".($i+1)."' where id=".$babDB->quote($_POST['listfd'][$i]));
+		}
+}
+
 /* main */
 if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 {
@@ -371,20 +438,20 @@ if(!$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 
 if(!isset($idx))
 {
-	$idx = "list";
+	$idx = 'list';
 }
 
 
-if(isset($add) && $add == "addfolder")
+if(isset($add) && $add == 'addfolder')
 {
 	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory))
 	{
-		$idx = "addf";
+		$idx = 'addf';
 	}
 }
 
 
-if(isset($update) && $update == "folders")
+if(isset($update) && $update == 'folders')
 {
 	if(!isset($notifies)) { $notifies= array();}
 	if(!isset($actives)) { $actives= array();}
@@ -392,22 +459,34 @@ if(isset($update) && $update == "folders")
 	if(!isset($bhides)) { $bhides= array();}
 	updateFolders($notifies, $actives, $versions, $bhides);
 }
+elseif(isset($update) && $update == 'displayfm')
+{
+	updateDisplayFileManager();
+}
 
 switch($idx)
 {
-	case "addf":
+	case 'addf':
 		$babBody->title = bab_translate("Add a new folder");
-		$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
-		$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
+		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+		$babBody->addItemMenu('addf', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=addf');
 		addFolder();
 		break;
 
+	case 'dispfm':
+		$babBody->title = bab_translate("File manager");
+		$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+		$babBody->addItemMenu('addf', bab_translate("Add"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=addf');
+		DisplayFileManager();
+		break;
+	
 	default:
-	case "list":
+	case 'list':
 		$babBody->title = bab_translate("File manager");
 		if(listFolders() > 0)
 		{
-			$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+			$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=list');
+			$babBody->addItemMenu('dispfm', bab_translate("Display"), $GLOBALS['babUrlScript'].'?tg=admfms&idx=dispfm');
 		}
 		break;
 }

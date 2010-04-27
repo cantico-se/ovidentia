@@ -167,6 +167,37 @@ class listFiles
 		{
 			$this->autoadd_files();
 		}
+		
+		$this->fmfields = array();
+		$res = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order != '0' order by fmh_order asc");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$this->fmfields[$arr['fmh_name']] = bab_translate($arr['fmh_description']);
+		}
+	}
+	
+	function getnextfmfield()
+	{
+		if( list($fhm_name,$fhm_text) = each($this->fmfields))
+		{
+			$this->fmfielddesc = $fhm_text;
+			$this->fmfieldname = $fhm_name;
+			$var = 'fmh_'.$fhm_name;
+			if( isset($this->{$var}))
+			{
+				$this->fmfieldval = bab_toHTML($this->{$var});
+			}
+			else
+			{
+				$this->fmfieldval = '';
+			}
+			return true;
+		}
+		else
+		{
+			reset($this->fmfields);
+			return false;
+		}
 	}
 
 	function initEnv()
@@ -1519,7 +1550,8 @@ function listFiles()
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdRootFolder . '&gr=' . $sGr . '&path=' . $sUrlEncodedPath);
 
 				$this->altbg = !$this->altbg;
-				$this->name = $aItem['sName'];
+				$this->fname = $aItem['sName'];
+				$this->fmh_name = $aItem['sName'];
 				return true;
 			}
 			return false;
@@ -1563,7 +1595,8 @@ function listFiles()
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath);
 
 				$this->altbg = !$this->altbg;
-				$this->name = $aItem['sName'];
+				$this->fname = $aItem['sName'];
+				$this->fmh_name = $aItem['sName'];
 				return true;
 			}
 			return false;
@@ -1591,10 +1624,15 @@ function listFiles()
 				else
 					$this->fileimage = $this->arrext[$ext];
 			}
+			else
+			{
+				$this->fileimage = bab_printTemplate($this, "config.html", ".unknown");
+			}
 
 
-			$this->name = $arr['name'];
-
+			$this->fname = $arr['name'];
+			$this->fmh_name = $arr['name'];
+			
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
 			if( file_exists($sFullPathName))
 				{
@@ -1602,11 +1640,21 @@ function listFiles()
 				$this->sizef = bab_toHtml(bab_formatSizeFile($fstat[7])." ".bab_translate("Kb"));
 				}
 			else
+				{
 				$this->sizef = "???";
+				}
+				
+			$this->fmh_size = $this->sizef;
 
 			$this->modified = bab_toHtml(bab_shortDate(bab_mktime($arr['modified']), true));
+			$this->fmh_date_update = $this->modified;
+			$this->fmh_date_creation = bab_toHtml(bab_shortDate(bab_mktime($arr['created']), true));
 			$this->postedby = bab_toHtml(bab_getUserName($arr['modifiedby'] == 0? $arr['author']: $arr['modifiedby']));
-			$this->hits = bab_toHtml($arr['hits']);
+			$this->fmh_updatedby = $this->postedby;
+			$this->fmh_author = bab_toHtml(bab_getUserName($arr['author']));
+			$this->fhits = bab_toHtml($arr['hits']);
+			$this->fmh_hits = $this->fhits;
+			$this->fmh_version = $this->bVersion? bab_toHtml($arr['ver_major'].'.'.$arr['ver_minor']):'';
 			if( $arr['readonly'] == "Y" )
 				$this->readonly = "R";
 			else
@@ -1622,8 +1670,10 @@ function listFiles()
 				$sGr				= $this->oFileManagerEnv->sGr;
 				$this->bconfirmed	= 0;
 				$this->description	= bab_toHTML($arr['description']);
+				$this->fmh_description	= $this->description;
 				$ufile				= urlencode($arr['name']);
 				$upath				= urlencode($this->path);
+				$this->fmh_path = bab_toHTML($this->path);
 
 				$sUrlBase		= $GLOBALS['babUrlScript'] . '?tg=fileman&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath;
 				$sUrlFileId		= $sUrlBase . '&idf=' . $arr['id'];
@@ -1699,8 +1749,10 @@ function listFiles()
 				$this->bconfirmed = 1;
 				$this->updateFileInfo($arr);
 				$this->description = bab_toHTML($arr['description']);
+				$this->fmh_description	= $this->description;
 				$ufile = urlencode($arr['name']);
 				$upath = urlencode($this->path);
+				$this->fmh_path = bab_toHTML($this->path);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 				$this->viewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 				$this->urlget = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=getFile&id=' . $iId . '&gr=' . $sGr . '&path=' . $upath . '&file=' . $ufile.'&idf='.$arr['id']);
@@ -1745,12 +1797,14 @@ function listFiles()
 				{
 					$this->updateFileInfo($arr);
 					$this->description = bab_toHTML($arr['description']);
+					$this->fmh_description	= $this->description;
 					$ufile = urlencode($arr['name']);
 					$upath = '';
 					if(mb_strlen(trim($arr['path'])) > 0)
 					{
 						$upath = urlencode((string) mb_substr($arr['path'], 0, -1));
 					}
+					$this->fmh_path = '';//bab_toHTML($upath);
 					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=upd&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile);
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile.'&idf='.$arr['id']);
 
