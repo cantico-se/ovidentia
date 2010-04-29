@@ -484,6 +484,10 @@ function printBody()
 				case 'nbsectright':
 					$this->loadsections();
 					return $this->nbsectright;
+					
+				case 'sitemapPosition':
+					$func = bab_functionality::get('Ovml/Function/SitemapPosition');
+					return $func->toString();
 
 				default:
 					return $this->$propertyName;
@@ -505,6 +509,7 @@ function printBody()
 				case 'content':
 				case 'nbsectleft':
 				case 'nbsectright':
+				case 'sitemapPosition':
 					return true;
 			}
 			return false;

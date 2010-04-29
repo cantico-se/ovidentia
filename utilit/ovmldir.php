@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 
 class Func_Ovml_Container_DbDirectories extends Func_Ovml_Container
 {

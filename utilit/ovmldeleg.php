@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
-
+include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 
 class bab_CategoryCache
 {

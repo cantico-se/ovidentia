@@ -6230,5 +6230,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	
+	if(!bab_isTableField(BAB_SITEMAP_FUNCTIONS_TBL, 'rewrite')) 
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_FUNCTIONS_TBL."` ADD `rewrite` varchar(255) NOT NULL default ''");
+	}
+	
+	if(!bab_isTableField(BAB_SITES_TBL, 'sitemap')) 
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `sitemap` varchar(255) NOT NULL default 'core'");
+	}
+	
+	
+	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlsitemap.php');
+	foreach($func_to_register as $path) {
+		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
+	}
+	
 	return true;
 }

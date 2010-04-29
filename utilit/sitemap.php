@@ -31,12 +31,84 @@ include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
  */
 class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
+	private $rewriteIndex_id = array();
+	private $rewriteIndex_rn = array();
 	
+	/**
+	 * @return bool
+	 */
+	public function appendChild(bab_Node $newNode, $id = null) {
+		$sitemapItem = $newNode->getData();
+		$rewriteName = $sitemapItem->getRewriteName();
+		
+		$rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName);
+		
+		if (isset($rewriteIndex_rn[$rewriteName])) {
+			$rewriteIndex_rn[$rewriteName][] = $newNode->getId();
+		} else {
+			$rewriteIndex_rn[$rewriteName] = array($newNode->getId());
+		}
+		
+		return parent::appendChild($newNode, $id);
+	}
+	
+	
+	/**
+	 * get sitemap node id from the rewrite string
+	 * a rewrite string is a path composed by rewrite names and slashes like Article/Category/topic
+	 * at each level, the rewrite name is used 
+	 * @see bab_sitemap
+	 * 
+	 * @param	string	$rewrite
+	 * @return string
+	 */
+	public function getNodeIdFromRewritePath($rewrite)
+	{
+		$arr = explode('/', trim($rewrite, ' /'));
+		if (0 === count($arr)) {
+			throw new Exception('Empty rewrite path');
+			return null;
+		}
+		
+		$first = array_shift($arr);
+		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+			if (isset($this->rewriteIndex_id[$nodeId]) && $first === $this->rewriteIndex_id[$nodeId][1]) {
+				return $this->getNextRewriteNode($arr, $nodeId);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param array $path
+	 * @param string $id_parent
+	 * @return string
+	 */
+	private function getNextRewriteNode(Array $path, $id_parent)
+	{
+		
+		$first = array_shift($path);
+		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+			if (isset($this->rewriteIndex_id[$nodeId]) && $id_parent === $this->rewriteIndex_id[$nodeId][0]) {
+				
+				if (0 === count($path))
+				{
+					return $nodeId;
+				}
+				
+				return $this->getNextRewriteNode($path, $nodeId);
+			}
+		}
+		
+		return null;
+	}
 }
 
 /**
  * Sitemap item contener
- * the sitemap is a tre of items, each items is a bab_siteMapItem object
+ * the sitemap is a tree of items, each items is a bab_siteMapItem object
  * @package sitemap
  */
 class bab_siteMapItem {
@@ -44,44 +116,88 @@ class bab_siteMapItem {
 	/**
 	 * Unique string in sitemap that identify the item
 	 * Mandatory
+	 * @var string
 	 */
 	public $id_function;
 
 	/**
 	 * Internationalized name of the item
 	 * Mandatory
+	 * @var string
 	 */
 	public $name;
 
 	/**
 	 * Internationalized description of the item
 	 * Optional
+	 * @var string
 	 */
 	public $description;
+	
+	/**
+	 * rewrite name
+	 * in each level of sitemap tree, the rewrite name must be unique
+	 * @see bab_siteMapItem::getRewriteName()
+	 * @var string
+	 */
+	public $rewriteName = null;
+	
+	
+	/**
+	 * Title of page used if not empty
+	 * @var string
+	 */
+	public $pageTitle;
+	
+	/**
+	 * Description of page used if not empty
+	 * @var string
+	 */
+	public $pageDescription;
+	
+	
+	/**
+	 * Keywords of page, used if not empty
+	 * @var string
+	 */
+	public $pageKeywords;
+	
+	
 
 	/**
 	 * Url 
 	 * Optional if folder si true or mandatory if folder is false
+	 * @var string
 	 */
 	public $url;
 
 	/**
 	 * Javascript string for the onclick attribute in html
-	 * Mandatory
+	 * Optional
+	 * @var string
 	 */
 	public $onclick;
 
 	/**
-	 * Boolean
+	 * node type folder yes/no
 	 * If true, the item may contain sub-items
+	 * @var bool
 	 */
 	public $folder; 
 
 
 	/**
 	 * Icon classnames
+	 * space separated classes
+	 * @var string
 	 */
 	public $iconClassnames;
+	
+	/**
+	 * symlink target
+	 * @var bab_siteMapItem
+	 */
+	public $target = null;
 
 
 	/**
@@ -91,6 +207,33 @@ class bab_siteMapItem {
 	 */
 	public function compare($node) {
 		return bab_compare($this->name, $node->name);
+	}
+	
+	/**
+	 * get symlink target or current node
+	 * @return bab_siteMapItem
+	 */
+	public function getTarget()
+	{
+		if (isset($this->target)) {
+			return $this->target;
+		}
+		
+		return $this;
+	}
+	
+	
+	/**
+	 * return rewrite name of node
+	 * @return string
+	 */
+	public function getRewriteName()
+	{
+		if (isset($this->rewriteName)) {
+			return $this->rewriteName;
+		}
+		
+		return $this->id_function;
 	}
 }
 
@@ -252,6 +395,7 @@ class bab_siteMap {
 			$data->onclick 			= $arr['onclick'];
 			$data->folder 			= 1 == $arr['folder'];
 			$data->iconClassnames	= $arr['icon'];
+			$data->rewriteName		= $arr['rewrite'];
 			
 
 			$node_list[$arr['id']] = $arr['id_function'];
@@ -328,6 +472,7 @@ class bab_siteMap {
 				f.onclick,
 				f.folder,
 				f.icon, 
+				f.rewrite, 
 				s.progress,
 				pv.id profile_version  
 			FROM 
@@ -401,7 +546,7 @@ class bab_siteMap {
 		$firstnode = $babDB->db_fetch_assoc($res);
 		
 		if (null === $firstnode['profile_version']) {
-			// the profile verion is missing, add version to profile
+			// the profile version is missing, add version to profile
 			// the user have a correct profile and a correct sitemap but the sitemap is incomplete
 			// additional nodes need to be created in sitemap without deleting the profile
 			self::repair($path, $levels);
@@ -529,7 +674,7 @@ class bab_siteMap {
 	
 	
 	/**
-	 * Set position in sitemap for current page
+	 * Set position in sitemap for current page, if the position is not allready defined by the URL
 	 * 
 	 * 
 	 * @param	string	$uid_prefix	sitemap node UID prefix before delegation identification
@@ -537,6 +682,11 @@ class bab_siteMap {
 	 * 
 	 */ 
 	public static function setPosition($uid_prefix, $uid_suffix = null) {
+		
+		if (null !== self::$current_page) {
+			return;
+		}
+		
 		
 		if (null === $uid_suffix) {
 			
@@ -546,8 +696,15 @@ class bab_siteMap {
 			// for now current delegation is allways DGAll, suffix is just appended
 			
 			self::$current_page = $uid_prefix.$uid_suffix;
+			
 		}
 	}
+	
+	
+	
+
+	
+	
 	
 	/**
 	 * get position in the sitemap from homepage (delegation node) to current position
@@ -555,22 +712,29 @@ class bab_siteMap {
 	 * 
 	 * @see bab_sitemap::setPosition()
 	 * 
-	 * @param	string	$sitemap_uid	ID of sitemap tree, default is core sitemap
+	 * @param	string	$sitemap_uid	ID of sitemap tree, default is sitemap selected in site options
 	 * 
 	 * @return array					Array of bab_Node
 	 */ 
-	public static function getBreadCrumb($sitemap_uid = 'core') {
+	public static function getBreadCrumb($sitemap_uid = null) {
 		
 		if (!isset(self::$current_page)) {
 			return array();
 		}
 		
-		$sitemap = self::getByUid($sitemap_uid);
-		
-		if (!isset($sitemap)) {
-			return array();
+		if (null === $sitemap_uid) {
+			$sitemap_uid = $babBody->site['sitemap'];
+			$sitemap = self::getByUid($sitemap_uid);
+			if (!isset($sitemap)) {
+				$sitemap = self::getByUid('core');
+			}
+		} else {
+			$sitemap = self::getByUid($sitemap_uid);
+			if (!isset($sitemap)) {
+				return array();
+			}
 		}
-		
+
 		
 		$page_node = $sitemap->getNodeById(self::$current_page);
 		

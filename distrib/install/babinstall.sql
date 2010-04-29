@@ -948,6 +948,7 @@ CREATE TABLE `bab_sites` (
   `mail_fieldaddress` char(3) NOT NULL default 'Bcc',
   `mail_maxperpacket` smallint(2) unsigned NOT NULL default '25',
   `mass_mailing` enum('Y','N') NOT NULL default 'N',
+  `sitemap` varchar(255) NOT NULL default 'core',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );
@@ -4070,6 +4071,7 @@ CREATE TABLE bab_sitemap_functions (
    `onclick` varchar(255) NOT NULL,
    `folder` tinyint(1) unsigned NOT NULL default '0',
    `icon` varchar(255) NOT NULL default '',
+   `rewrite` varchar(255) NOT NULL default '',
    PRIMARY KEY (`id_function`)
 );
 

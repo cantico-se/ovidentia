@@ -83,6 +83,7 @@ function site_menu1()
 			$this->description = bab_translate("Description");
 			$this->lang = bab_translate("Lang");
 			$this->skin = bab_translate("Skin");
+			$this->sitemap = bab_translate("Site map");
 			$this->confirmation = bab_translate("Send email confirmation")."?";
 			
 			$this->stattxt = bab_translate("Enable statistics recording")."?";
@@ -114,6 +115,7 @@ function site_menu1()
 						'adminname'		=> '',
 						'adminemail'	=> '',
 						'skin'			=> '',
+						'sitemap'		=> 'core',
 						'style'			=> '',
 						'babslogan'		=> '',
 						'langfilter'	=> '',
@@ -161,6 +163,9 @@ function site_menu1()
 				} else {
 					$this->skinerror = false;
 				}
+				
+				
+			$this->sitemaps = bab_siteMap::getList();
 
 			}
 
@@ -260,6 +265,20 @@ function site_menu1()
 			else
 				return false;
 			} //getnextlangfilter
+			
+			
+			
+		public function getnextsitemap()
+			{
+			if (list($uid,$sitemap) = each($this->sitemaps))
+				{
+					$this->uid = bab_toHtml($uid);
+					$this->name = bab_toHtml($sitemap->getSiteMapName());
+					$this->selected = $uid === $this->item['sitemap'];
+					return true;
+				}	
+				return false;
+			}
 
 
 		} // class temp
@@ -1606,11 +1625,45 @@ function record_editor_configuration($id_site)
 
 
 
-function siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog, $maxemail, $mfa)
+function siteSave($name)
 	{
 	global $babBody, $babDB;
+	
+	$description 	= bab_pp('description');
+	$babslogan 		= bab_pp('babslogan'); 
+	$lang 			= bab_pp('lang');
+	$siteemail 		= bab_pp('siteemail'); 
+	$skin 			= bab_pp('skin'); 
+	$style 			= bab_pp('style'); 
+	$sitemap		= bab_pp('sitemap'); 
+	$langfilter		= bab_pp('langfilter'); 
+	$adminname		= bab_pp('adminname');
+	$name_order		= bab_pp('name_order');
+	$statlog		= bab_pp('statlog');
+	$maxemail		= bab_pp('maxemail');
+	$mfa			= bab_pp('mfa');
+	
 
-	$query = "insert into ".BAB_SITES_TBL." (name, description, lang, adminemail, adminname, skin, style, stat_log,  langfilter, babslogan, name_order, mail_fieldaddress, mail_maxperpacket) VALUES ('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($lang). "', '" . $babDB->db_escape_string($siteemail). "', '" . $babDB->db_escape_string($adminname). "', '" . $babDB->db_escape_string($skin). "', '" . $babDB->db_escape_string($style). "', '" . $babDB->db_escape_string($statlog). "','".$babDB->db_escape_string($langfilter)."','". $babDB->db_escape_string($babslogan)."','". $babDB->db_escape_string($name_order)."','". $babDB->db_escape_string($mfa)."','". $babDB->db_escape_string($maxemail)."')";
+	$query = "insert into ".BAB_SITES_TBL." 
+		(name, description, lang, adminemail, adminname, skin, style, sitemap, stat_log,  langfilter, babslogan, name_order, mail_fieldaddress, mail_maxperpacket) 
+	VALUES 
+		(
+			'" .$babDB->db_escape_string($name). "', 
+			'" . $babDB->db_escape_string($description). "', 
+			'" . $babDB->db_escape_string($lang). "', 
+			'" . $babDB->db_escape_string($siteemail). "', 
+			'" . $babDB->db_escape_string($adminname). "', 
+			'" . $babDB->db_escape_string($skin). "', 
+			'" . $babDB->db_escape_string($style). "', 
+			'" . $babDB->db_escape_string($sitemap). "', 
+			'" . $babDB->db_escape_string($statlog). "',
+			'" . $babDB->db_escape_string($langfilter)."',
+			'" . $babDB->db_escape_string($babslogan)."',
+			'" . $babDB->db_escape_string($name_order)."',
+			'" . $babDB->db_escape_string($mfa)."',
+			'" . $babDB->db_escape_string($maxemail)."'
+		)";
+	
 	$babDB->db_query($query);
 	$idsite = $babDB->db_insert_id();
 
@@ -1643,6 +1696,7 @@ function siteUpdate_menu1()
 	$maxemail		= &$_POST['maxemail'];
 	$mfa			= &$_POST['mfa'];
 	$skin			= &$_POST['skin'];
+	$sitemap		= bab_pp('sitemap');
 	$langfilter		= &$babLangFilter->convertFilterToInt($_POST['langfilter']);
 	$name_order		= &$_POST['name_order'];
 	$statlog		= &$_POST['statlog'];
@@ -1660,6 +1714,8 @@ function siteUpdate_menu1()
 	if (empty($_POST['item']))
 		{
 		// create
+		
+		$name = bab_pp('name');
 
 		$query = "select * from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($name)."'";	
 		$res = $babDB->db_query($query);
@@ -1669,7 +1725,7 @@ function siteUpdate_menu1()
 			return false;
 			}
 
-		return siteSave($name, $description,$babslogan, $lang, $siteemail, $skin, $style, $langfilter, $adminname, $name_order, $statlog, $maxemail, $mfa);
+		return siteSave($name);
 		}
 	
 	$query = "select * from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($name)."' AND id<>'".$babDB->db_escape_string($_POST['item'])."'";	
@@ -1707,6 +1763,7 @@ function siteUpdate_menu1()
 			adminname='".$babDB->db_escape_string($adminname)."', 
 			skin='".$babDB->db_escape_string($skin)."', 
 			style='".$babDB->db_escape_string($style)."', 
+			sitemap=".$babDB->quote($sitemap).", 
 			stat_log='".$babDB->db_escape_string($statlog)."', 
 			langfilter='" .$babDB->db_escape_string($langfilter). "', 
 			name_order='".$babDB->db_escape_string($name_order)."', 
@@ -2418,7 +2475,7 @@ $babBody->addItemMenu("List", bab_translate("Sites"),$GLOBALS['babUrlScript']."?
 
 
 
-if (0 === mb_strpos($idx, 'menu')) {
+if (0 === mb_strpos($idx, 'menu') && is_numeric(mb_substr($idx, 4))) {
 	bab_siteMap::setPosition('bab', 'AdminSite'.bab_rp('item').ucfirst($idx));
 }
 

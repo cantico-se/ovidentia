@@ -23,7 +23,7 @@
 ************************************************************************/
 require_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-
+include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 
 
 

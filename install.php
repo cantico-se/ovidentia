@@ -64,3 +64,9 @@ $func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlt
 foreach($func_to_register as $path) {
 	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
 }
+
+
+$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlsitemap.php');
+foreach($func_to_register as $path) {
+	$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
+}

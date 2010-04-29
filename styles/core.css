@@ -154,6 +154,58 @@ h2.msgerror {
 	}
 
 
+
+
+
+
+
+
+#ovfx_head .sitemap-position {
+	display:block;
+	margin:0;
+	padding:0;
+	
+	position: absolute;
+	left:300px;
+	top:55px;
+	
+}
+
+
+#ovfx_head .sitemap-position li {
+	display:inline;
+}
+
+#ovfx_head .sitemap-position li a, 
+#ovfx_head .sitemap-position li span {
+	padding-left:13px;
+	padding-right:7px;
+	padding-top:3px;
+	padding-bottom:3px;
+	background:transparent url(../skins/ovidentia/images/Puces/PuceMoreEvent.png) no-repeat 0 60%;
+	text-decoration:none;
+	color:#4c5685;
+}
+
+
+#ovfx_head .sitemap-position .sitemap-DGAll a {
+	padding-left:25px;
+	background:transparent url(../skins/ovidentia/images/Puces/internet.png) no-repeat 5px 50%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ovfx_menu {
 	margin:0;
 	padding:0;
