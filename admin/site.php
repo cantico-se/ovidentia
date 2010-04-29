@@ -274,7 +274,7 @@ function site_menu1()
 				{
 					$this->uid = bab_toHtml($uid);
 					$this->name = bab_toHtml($sitemap->getSiteMapName());
-					$this->selected = $uid === $this->item['sitemap'];
+					$this->selected = $uid === $this->row['sitemap'];
 					return true;
 				}	
 				return false;
