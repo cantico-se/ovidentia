@@ -33,12 +33,13 @@ function DisplayFileManager()
 		function DisplayFileManager_Class()
 		{
 			global $babDB;
-			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing and searching directory");
+			$this->infotxt = bab_translate("Specify which fields will be displayed when browsing files");
 			$this->listftxt = '---- '.bab_translate("Fields").' ----';
 			$this->listdftxt = '---- '.bab_translate("Fields to display").' ----';
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
+			$this->thelp = bab_translate("Column hits will be visible only for users who can manage the folder");
 			$this->resfd = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order != '0' order by fmh_order asc");
 			$this->resf = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order = '0' order by fmh_description asc");
 			$this->countf = $babDB->db_num_rows($this->resf);

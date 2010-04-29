@@ -3096,6 +3096,8 @@
 <string id="Your new password">Votre nouveau mot de passe</string>
 <string id="Access to the site">Accès au site</string>
 <string id="Site map">Plan du site</string>
+<string id="Specify which fields will be displayed when browsing files">Indiquez les champs à afficher lors de la consultation du gestionnaire de fichiers</string>
+<string id="Column hits will be visible only for users who can manage the folder">La colonne Hits sera visible uniquement pour les utilisateurs ayant le droit de gérér le répertoire</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
