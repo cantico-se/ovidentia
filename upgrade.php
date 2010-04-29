@@ -6242,6 +6242,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	// the sitemapEntries contener has been moved to a new file
+	$functionalities->unregister('Ovml/Container/SitemapEntries');
+	
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlsitemap.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
