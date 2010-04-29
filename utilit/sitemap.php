@@ -723,7 +723,8 @@ class bab_siteMap {
 		}
 		
 		if (null === $sitemap_uid) {
-			$sitemap_uid = $babBody->site['sitemap'];
+			global $babBody;
+			$sitemap_uid = $babBody->babsite['sitemap'];
 			$sitemap = self::getByUid($sitemap_uid);
 			if (!isset($sitemap)) {
 				$sitemap = self::getByUid('core');

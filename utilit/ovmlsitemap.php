@@ -117,7 +117,7 @@ class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
 /**
  * Return the sitemap position in a html UL LI
  * <OFSitemapPosition sitemap="sitemapName">
- * the sitemap attribute is optional
+ * the sitemap attribute is optional, the default value is the sitemap selected in site options
  * 
  */
 class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
@@ -139,7 +139,6 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
 		if (empty($breadcrumb)) {
 			return '';
 		}
-		
 		
 		$html = '<ul class="sitemap-position">'."\n";
 		
@@ -203,10 +202,86 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
 /**
  * Return the sitemap menu tree in a html UL LI
  * <OFSitemapMenu sitemap="sitemapName" node="parentNode">
- * the sitemap attribute is optional
- * the node attribute is optional
+ * the sitemap attribute is optional, the default value is the sitemap selected in site options
+ * the node attribute is optional, the default value is babDgAll
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
+	
+	
+	
+	
+	private function getHtml(bab_Node $node, $mainmenuclass = null) {
+		
+		$return = '';
+		$classnames = array();
+	
+		$id = $node->getId();
+		$siteMapItem = $node->getData(); 	
+		/* @var $siteMapItem bab_siteMapItem */
+	
+		if (!empty($siteMapItem->iconClassnames)) {
+			$icon = 'icon '.$siteMapItem->iconClassnames;
+		} else {
+			$icon = 'icon';
+		}
+		
+		if (!empty($siteMapItem->description)) {
+			
+			$description = ' title="'.bab_toHtml($siteMapItem->description).'"';
+		} else {
+			$description = '';
+		}
+		
+	
+		if ($siteMapItem->url) {
+	
+			if ($siteMapItem->onclick) {
+				$onclick = ' onclick="'.bab_toHtml($siteMapItem->onclick).'"';
+			} else {
+				$onclick = '';
+			}
+	
+			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($siteMapItem->url).'" '.$onclick.''.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
+		} else {
+			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($siteMapItem->name).'</span>';
+		}
+	
+		
+	
+		$classnames[] = 'sitemap-'.$siteMapItem->id_function;
+	
+		if ($siteMapItem->folder) {
+			$classnames[] = 'sitemap-folder';
+		} 
+	
+	
+		if (null !== $mainmenuclass) {
+			$classnames[] = $mainmenuclass;
+			$return .= '<li class="'.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
+		} else {
+			$return .= '<li class="'.implode(' ', $classnames).'">'.$htmlData;
+		}
+	
+		//  icon-16x16 icon-left icon-left-16
+	
+		if ($node->hasChildNodes()) {
+			$return .= "<ul>\n";
+	
+			$node = $node->firstChild();
+			do {
+				$return .= $this->getHtml($node);
+			} while ($node = $node->nextSibling());
+	
+			$return .= "</ul>\n";
+		}
+	
+		$return .= "</li>\n";
+	
+		return $return;
+	}
+	
+	
+
 	
 	
 	/**
@@ -217,7 +292,49 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	{
 		$args = $this->args;
 		
-		return '';
+		if (isset($args['sitemap'])) {
+			$sitemap = bab_siteMap::getByUid($args['sitemap']);
+		} else {
+			global $babBody;
+			$sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
+			if (!isset($sitemap))
+			{
+				$sitemap = bab_siteMap::get();
+			}
+		}
+		
+		if (!isset($sitemap)) {
+			return '';
+		}
+		
+		$dg_node = $sitemap->firstChild();
+		
+		if (!($dg_node instanceOf bab_Node)) {
+			return '';
+		}
+		
+		
+		if (isset($args['node'])) {
+			$home = $sitemap->getNodeById($args['node']);
+		} else {
+			$home = $dg_node->firstChild();
+		}
+		
+		
+		$node = $home->firstChild();
+		$return = '';
+		
+		if ($node) {
+			
+			$return .= '<ul class="sitemap-menu-root">'."\n";
+			
+			do {
+				$return .= $this->getHtml($node, 'sitemap-main-menu');
+			} while ($node = $node->nextSibling());
+			
+			$return .= '</ul>'."\n";
+		}
+		return $return;
 	}
 }
 
