@@ -38,16 +38,27 @@ include_once "base.php";
  * - 'description' : description of the category.
  * - 'color' : background color of the category in hex format (eg. "FF0000").
  * 
- * @return array
+ * @param int or array $ids	Id of the category
+* @return array
  * @access public
  */
-function bab_calGetCategories()
+function bab_calGetCategories($ids = null)
 {
 	global $babDB;
 
 	$categ = array();
-
-	$res = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
+	if( $ids !== null )
+	{
+		if( !is_array($ids))
+		{
+			$ids = array($ids);
+		}
+		$res = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." where id = ".$babDB->quote($ids)." ORDER BY name");
+	}
+	else
+	{
+		$res = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
+	}
 	while($arr = $babDB->db_fetch_array($res))
 	{
 		$categ[] = array('id' => $arr['id'], 'name' => $arr['name'], 'description' => $arr['description'], 'color' => $arr['bgcolor']);

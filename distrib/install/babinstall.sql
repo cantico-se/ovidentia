@@ -942,7 +942,7 @@ CREATE TABLE `bab_sites` (
   `stat_log` enum('Y','N') NOT NULL default 'N',
   `show_update_info` enum('Y','N') NOT NULL default 'Y',
   `show_onlydays_of_month` enum('N','Y') NOT NULL default 'N',
-  `non_workday_bgcolor` varchar(6) NOT NULL default '',
+  `id_calendar_cat` int(11) unsigned NOT NULL default '0',
   `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT '-1',
   `iPersonalCalendarAccess` enum('N','Y') NOT NULL default 'N',
   `mail_fieldaddress` char(3) NOT NULL default 'Bcc',

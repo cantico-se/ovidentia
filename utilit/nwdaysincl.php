@@ -235,6 +235,17 @@ function bab_NWD_onCreatePeriods(&$obj) {
 	$end = $obj->periods->end->getIsoDate();
 
 	$arr = bab_getNonWorkingDaysBetween($begin, $end);
+	$nwd_color = 'FFFFFF';
+	
+	if( $GLOBALS['babBody']->babsite['id_calendar_cat'] != 0)
+	{
+		include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+		$idcat = bab_calGetCategories($GLOBALS['babBody']->babsite['id_calendar_cat']);
+		if( isset($idcat[0]['color']))
+		{
+			$nwd_color = $idcat[0]['color'];
+		}
+	}
 	
 	foreach($arr as $nw_day => $nw_type) {
 		$beginDate	= BAB_DateTime::fromIsoDateTime($nw_day.' 00:00:00');
@@ -246,7 +257,7 @@ function bab_NWD_onCreatePeriods(&$obj) {
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
 		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
 		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
-		$p->color = $GLOBALS['babBody']->babsite['non_workday_bgcolor'];
+		$p->color = $nwd_color;
 	}
 }
 

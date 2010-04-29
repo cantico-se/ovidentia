@@ -768,10 +768,13 @@ function site_menu13($id)
 			$this->t_type = bab_getNonWorkingDayTypes(true);
 			$this->t_starttimetxt = bab_translate("Start time");
 			$this->t_endtimetxt = bab_translate("End time");
-			$this->t_bgcolor = bab_translate("Background color to use for non working day");
+			$this->t_cal_category = bab_translate("Category to use in calendar for non working day");
 			
-			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
-			$this->bgcolor = empty($GLOBALS['babBody']->babsite['non_workday_bgcolor'])? 'FFFFFF': bab_toHTML($GLOBALS['babBody']->babsite['non_workday_bgcolor']);
+			$this->id_cal_category = empty($GLOBALS['babBody']->babsite['id_calendar_cat'])? 0: $GLOBALS['babBody']->babsite['id_calendar_cat'];
+			include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+			$this->categs = bab_calGetCategories();
+
+			$this->catcount = count($this->categs);
 			
 			$this->sttime = $GLOBALS['babBody']->babsite['start_time'];
 			
@@ -879,6 +882,28 @@ function site_menu13($id)
 				$i = 0;
 				return false;
 				}
+
+			}
+		function getnextcat()
+			{
+			static $i = 0;
+			if( $i < $this->catcount)
+				{
+				$this->categid = $this->categs[$i]['id'];
+				$this->categname = bab_toHtml($this->categs[$i]['name']);
+				if( $this->categid == $this->id_cal_category )
+					{
+					$this->selected = 'selected';
+					}
+				else
+					{
+					$this->selected = '';
+					}
+				$i++;
+				return true;
+				}
+			else
+				return false;
 
 			}
 		} // class site_menu13_class
@@ -2142,7 +2167,7 @@ function siteUpdate_menu13($item)
 
 	bab_emptyNonWorkingDays($item);
 	
-	$babDB->db_query("update ".BAB_SITES_TBL." set non_workday_bgcolor=".$babDB->quote($_POST['bgcolor'])." where id='".$babDB->db_escape_string($item)."'");
+	$babDB->db_query("update ".BAB_SITES_TBL." set id_calendar_cat=".$babDB->quote($_POST['category'])." where id='".$babDB->db_escape_string($item)."'");
 	
 	}
 		

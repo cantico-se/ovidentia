@@ -6196,9 +6196,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD show_onlydays_of_month ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
 	
-	if(!bab_isTableField(BAB_SITES_TBL, 'non_workday_bgcolor')) 
+	if(bab_isTableField(BAB_SITES_TBL, 'non_workday_bgcolor')) 
 	{
-		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD non_workday_bgcolor VARCHAR(6) NOT NULL");
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` DROP non_workday_bgcolor");
+	}
+	
+	if(!bab_isTableField(BAB_SITES_TBL, 'id_calendar_cat')) 
+	{
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD id_calendar_cat int(11) unsigned NOT NULL default '0'");
 	}
 	
 	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'show_onlydays_of_month')) 

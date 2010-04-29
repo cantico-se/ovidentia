@@ -699,8 +699,17 @@ function viewVacationCalendar($users, $period = false )
 			$this->nbmonth = bab_rp('nbmonth',12);
 
 			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&amp;idx=".$_REQUEST['idx']."&amp;id=".$this->id_request;
-			$this->nwd_color = $GLOBALS['babBody']->babsite['non_workday_bgcolor'];
+			$this->nwd_color = 'FFFFFF';
 			
+			if( $GLOBALS['babBody']->babsite['id_calendar_cat'] != 0)
+			{
+				include_once $GLOBALS['babInstallPath']."utilit/calapi.php";
+				$idcat = bab_calGetCategories($GLOBALS['babBody']->babsite['id_calendar_cat']);
+				if( isset($idcat[0]['color']))
+				{
+					$this->nwd_color = $idcat[0]['color'];
+				}
+			}
 			
 
 
