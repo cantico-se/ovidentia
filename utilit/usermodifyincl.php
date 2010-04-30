@@ -289,8 +289,8 @@ class bab_userModify {
 					if ('' === $info['jpegphoto']) {
 						// empty string to remove photo from table
 						
-						$info['photo_data'] = '';
-						$info['photo_type'] = '';
+						$arrdq[] = "photo_data=''";
+						$arrdq[] = "photo_type=''";
 					}
 					
 					unset($info['jpegphoto']);
