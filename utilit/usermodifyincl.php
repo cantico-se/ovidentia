@@ -286,10 +286,14 @@ class bab_userModify {
 						}
 					}
 					
-					if ('' !== $info['jpegphoto']) {
+					if ('' === $info['jpegphoto']) {
 						// empty string to remove photo from table
-						unset($info['jpegphoto']);
+						
+						$info['photo_data'] = '';
+						$info['photo_type'] = '';
 					}
+					
+					unset($info['jpegphoto']);
 				}
 				
 
