@@ -38,10 +38,10 @@ class bab_event {
  * The function return false if the event listener is allready created
  *
  * @param	string	$event_class_name
- * @param	string	$function_name		
- * @param	string	$require_file			file path relative to ovidentia core, the file where $function_name is declared
- * @param	string	[$addon_name]
- * @param	int		[$priority]
+ * @param	string	$function_name			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
+ * @param	string	$require_file			file path relative to ovidentia core, the file where $function_name is declared, this can be an empty string if function exists in global scope
+ * @param	string	[$addon_name]			if addon name is set, additional tests will be verified on access rights before the call, and environement varaibles of addon will be set correctly
+ * @param	int		[$priority]				for mutiple calls on one event, the calls will be ordered by priority descending
  *
  * @return boolean
  */
@@ -219,7 +219,8 @@ function bab_fireEvent(&$event_obj) {
 					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
 					bab_isAddonAccessValid($id_addon)) {
 						
-						if (is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
+						
+						if (empty($arr['require_file']) || is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
 							
 							$calls[$classkey][] = array(
 								'require_file' => $arr['require_file'],
@@ -235,6 +236,7 @@ function bab_fireEvent(&$event_obj) {
 							file : '.$arr['require_file'].'
 							');
 						}
+						
 					}
 					
 					if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
@@ -262,20 +264,45 @@ function bab_fireEvent(&$event_obj) {
 	foreach($calls[$classkey] as $arr) {
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
 		
-		require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+		if (!empty($arr['require_file'])) {
+			require_once $GLOBALS['babInstallPath'].$arr['require_file'];
+		}
+		
 		if (function_exists($arr['function_name'])) {
 			call_user_func_array($arr['function_name'], array(&$event_obj));
 		} else {
-			bab_debug('
-			Function unreachable
-			event : '.get_class($event_obj).'
-			file : '.$arr['require_file'].'
-			function : '.$arr['function_name'].'
-			');
+			
+			if ($pos = strrpos($arr['function_name'], '->')) {
+				$method = mb_substr($arr['function_name'], 2 + $pos);
+				$evalstr = 'return '.mb_substr($arr['function_name'], 0, $pos).';';
+				
+				// the object part need evaluation
+				
+				$object = eval($evalstr);
+				if (is_object($object)) {
+					call_user_func_array(array($object, $method), array(&$event_obj));
+				} else {
+					bab_debug('
+					Object evaluation failed
+					event : '.get_class($event_obj).'
+					file : '.$arr['require_file'].'
+					eval string : '.$evalstr.'
+					');
+				}
+				
+			} else {
+
+				bab_debug('
+				Function unreachable
+				event : '.get_class($event_obj).'
+				file : '.$arr['require_file'].'
+				function : '.$arr['function_name'].'
+				');
+			
+			}
 		}
 		
 		$obj->restoreAddonCtx();
 	}
 }
 
-?>
