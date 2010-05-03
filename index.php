@@ -135,7 +135,7 @@ if (isset($_GET['babHttpContext'])) {
 	bab_cleanGpc();
 }
 
-if (isset($_SERVER["argv"][1])) {
+if (!isset($_SERVER['SERVER_ADDR']) && isset($_SERVER["argv"][1])) {
 	parse_str($_SERVER["argv"][1], $_GET);
 }
 
