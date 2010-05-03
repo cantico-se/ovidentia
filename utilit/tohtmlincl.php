@@ -55,7 +55,7 @@ function bab_f_toHtml($pee, $opt) {
 		
 	if (BAB_HTML_LINKS === ($opt & BAB_HTML_LINKS)) {
 		$pee = preg_replace_callback('/(http|https|ftp):(\/\/){0,1}([^\"\s]*)/i','bab_parseUri',$pee);
-		$pee = ereg_replace("[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*\@[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*(\.[a-zA-Z]{1,5})+", "<a class=\"mailto\" href=\"mailto:\\0\">\\0</a>", $pee);
+		$pee = preg_replace("/[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*\@[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*(\.[a-zA-Z]{1,5})+/", "<a class=\"mailto\" href=\"mailto:\\0\">\\0</a>", $pee);
 	}
 
 	if (BAB_HTML_P === ($opt & BAB_HTML_P)) {
