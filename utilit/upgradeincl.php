@@ -264,11 +264,11 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		$file = @fopen($filename, "r");
 		$txt = fread($file, filesize($filename));
 		fclose($file);
-		$reg = "babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
-		$res = ereg($reg, $txt, $match);
+		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"([^\"]*)\"/";
+		$res = preg_match($reg, $txt, $match);
 
-		$reg = "babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
-		$out = ereg_replace($reg, "babVersion = \"".$version."\"", $txt);
+		$reg = "/babVersion[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
+		$out = preg_replace($reg, "babVersion = \"".$version."\"", $txt);
 		if (is_writable($filename)) {
 			$file = fopen($filename, "w");
 			fputs($file, $out);

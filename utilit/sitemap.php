@@ -336,9 +336,31 @@ class bab_siteMap {
 	
 	/**
 	 * Delete sitemap for all users
+	 * 
+	 * set same lock as sitemap building
+	 * 
 	 */
 	public static function clearAll() {
 		global $babDB;
+		
+		$babDB->db_query('
+			LOCK TABLES 
+				'.BAB_SITEMAP_PROFILES_TBL.' 				 	WRITE,
+				'.BAB_SITEMAP_PROFILES_TBL.' 			AS p 	WRITE, 
+				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 		 	WRITE, 
+				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 	AS pv 	WRITE, 
+				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 		 	WRITE,
+				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 	AS fp 	WRITE,
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 				 	WRITE, 
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 			AS f 	WRITE, 
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 		 	WRITE,
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 	AS fl 	WRITE, 
+				'.BAB_USERS_TBL.' 							 	WRITE, 
+				'.BAB_SITEMAP_TBL.' 						 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS s 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS p1 	WRITE,
+				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE  
+		');
 		
 		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
@@ -351,6 +373,9 @@ class bab_siteMap {
 		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_TBL);
 		
 		//bab_siteMap::build();
+		
+		
+		$babDB->db_query('UNLOCK TABLES');
 
 	}
 	
