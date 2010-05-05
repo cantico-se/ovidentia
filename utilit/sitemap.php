@@ -342,7 +342,7 @@ class bab_siteMap {
 	 */
 	public static function clearAll() {
 		global $babDB;
-		
+		/*
 		$babDB->db_query('
 			LOCK TABLES 
 				'.BAB_SITEMAP_PROFILES_TBL.' 				 	WRITE,
@@ -361,7 +361,7 @@ class bab_siteMap {
 				'.BAB_SITEMAP_TBL.' 					AS p1 	WRITE,
 				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE  
 		');
-		
+		*/
 		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
@@ -375,7 +375,7 @@ class bab_siteMap {
 		//bab_siteMap::build();
 		
 		
-		$babDB->db_query('UNLOCK TABLES');
+		//$babDB->db_query('UNLOCK TABLES');
 
 	}
 	
