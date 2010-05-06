@@ -337,45 +337,37 @@ class bab_siteMap {
 	/**
 	 * Delete sitemap for all users
 	 * 
-	 * set same lock as sitemap building
+	 * need lock table to prevent a sitemap build in the middle of delete process
+	 * truncate tables is not possible within a transaction.
 	 * 
 	 */
 	public static function clearAll() {
 		global $babDB;
-		/*
+		
 		$babDB->db_query('
 			LOCK TABLES 
 				'.BAB_SITEMAP_PROFILES_TBL.' 				 	WRITE,
-				'.BAB_SITEMAP_PROFILES_TBL.' 			AS p 	WRITE, 
 				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 		 	WRITE, 
-				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 	AS pv 	WRITE, 
 				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 		 	WRITE,
-				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 	AS fp 	WRITE,
 				'.BAB_SITEMAP_FUNCTIONS_TBL.' 				 	WRITE, 
-				'.BAB_SITEMAP_FUNCTIONS_TBL.' 			AS f 	WRITE, 
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 		 	WRITE,
-				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 	AS fl 	WRITE, 
 				'.BAB_USERS_TBL.' 							 	WRITE, 
-				'.BAB_SITEMAP_TBL.' 						 	WRITE,
-				'.BAB_SITEMAP_TBL.' 					AS s 	WRITE,
-				'.BAB_SITEMAP_TBL.' 					AS p1 	WRITE,
-				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE  
+				'.BAB_SITEMAP_TBL.' 						 	WRITE
 		');
-		*/
+		
 		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
 		
 		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
-		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_PROFILE_VERSIONS_TBL);
-		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTION_PROFILE_TBL);
-		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTIONS_TBL);
-		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTIONS_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
 		$babDB->db_query('UPDATE '.BAB_USERS_TBL." SET id_sitemap_profile='0'");
-		$babDB->db_query('TRUNCATE '.BAB_SITEMAP_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_TBL);
+		
+		$babDB->db_query('UNLOCK TABLES');
 		
 		//bab_siteMap::build();
-		
-		
-		//$babDB->db_query('UNLOCK TABLES');
 
 	}
 	

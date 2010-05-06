@@ -464,6 +464,16 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	function require_mod_iconv($value) {
+		
+		$status = extension_loaded('iconv');
+		return array(
+			'description'	=> sprintf(bab_translate("%s php module"),'iconv'),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
 
 	function require_mod_imap($value) {
 		

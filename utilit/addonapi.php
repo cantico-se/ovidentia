@@ -314,7 +314,11 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 		return $input;
 	}
 
-	return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
+	if (function_exists('iconv')) {
+		return iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT', $input);
+	} else {
+		return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
+	}
 }
 
 
@@ -332,7 +336,11 @@ function bab_convertStringFromDatabase($input, $sIsoCharset)
 		return $input;
 	}
 
-	return mb_convert_encoding($input, $sIsoCharset, bab_charset::getIso());
+	if (function_exists('iconv')) {
+		return iconv(bab_charset::getIso(), $sIsoCharset.'//TRANSLIT', $input);
+	} else {
+		return mb_convert_encoding($input, $sIsoCharset, bab_charset::getIso());
+	}
 }
 
 
