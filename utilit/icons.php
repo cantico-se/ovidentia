@@ -275,6 +275,24 @@ class Func_Icons extends bab_Functionality
 	const MIMETYPES_OFFICE_SPREADSHEET			= 'mimetypes-x-office-spreadsheet';
 
 	//-----------------------------------------------------------------------
+	// Objects
+	//-----------------------------------------------------------------------
+	const OBJECTS_USER							= 'objects-user';
+	const OBJECTS_GROUP							= 'objects-group';
+	const OBJECTS_PUBLICATION_ARTICLE			= 'objects-publication-article';
+	const OBJECTS_PUBLICATION_TOPIC				= 'objects-publication-topic';
+	const OBJECTS_PUBLICATION_CATEGORY			= 'objects-publication-category';
+	const OBJECTS_INVOICE						= 'objects-invoice';
+	const OBJECTS_CONTRACT						= 'objects-contract';
+	const OBJECTS_CONTACT						= 'objects-contact';
+	const OBJECTS_ORGANIZATION					= 'objects-organization';
+	const OBJECTS_TAG							= 'objects-tag';
+	const OBJECTS_NOTE							= 'objects-note';
+	const OBJECTS_EMAIL							= 'objects-email';
+	const OBJECTS_SHOPPING_CART					= 'objects-shopping-cart';
+	
+	
+	//-----------------------------------------------------------------------
 	// Places	
 	//-----------------------------------------------------------------------
 	/**
