@@ -600,29 +600,61 @@ class bab_synchronizeSql
 	}
 
 	
-	function isWorkedTable($table)
+	public function isWorkedTable($table)
 		{
 		return isset($this->return[$table]);
 		}
 
-	function isCreatedTable($table)
+	public function isCreatedTable($table)
 		{
 		return 1 == $this->return[$table];
 		}
 
-	function isModifiedTable($table)
+	public function isModifiedTable($table)
 		{
 		return 2 == $this->return[$table];
 		}
 
-	function isUnmodifiedTable($table)
+	public function isUnmodifiedTable($table)
 		{
 		return 0 == $this->return[$table];
 		}
 
+	/**
+	 * 
+	 * @return array
+	 */
 	public function getDifferences() 
 		{
 		return $this->differences;
+		}
+		
+	/**
+	 * Test if the table has been synchronized and if there is no rows
+	 * @param string $table
+	 * @return bool
+	 */
+	public function isEmpty($table)
+		{
+			if ($this->isCreatedTable($table))
+			{
+				return true;
+			}
+			
+			if (!$this->isWorkedTable($table))
+			{
+				return false;
+			}
+			
+			global $babDB;
+			
+			$res = $babDB->db_query('SELECT COUNT(*) FROM '.$babDB->backTick($table));
+			if ($arr = $babDB->db_fetch_array($res))
+			{
+				return 0 === (int) $arr[0];
+			}
+			
+			return false;
 		}
 }
 
