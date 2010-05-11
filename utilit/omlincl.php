@@ -4795,7 +4795,7 @@ class bab_CalendarEvents extends bab_handler
 		$categoryid = $ctx->get_value('categoryid');
 		if( $categoryid !== false && $categoryid !== '' )
 			{
-			$this->whObj->category = $categoryid;
+			$this->whObj->category = explode(",",$categoryid);
 		}
 
 
