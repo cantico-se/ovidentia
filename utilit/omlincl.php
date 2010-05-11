@@ -4914,7 +4914,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		$categoryid = $ctx->get_value('categoryid');
 		if( $categoryid !== false && $categoryid !== '' )
 			{
-			$this->whObj->category = $categoryid;
+			$this->whObj->category = explode(",",$categoryid);
 		}
 
 
