@@ -53,6 +53,12 @@ class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
 			$rootNode = bab_siteMap::get();
 		} else {
 			$rootNode = bab_siteMap::getByUid($sitemap);
+			
+			if (null === $rootNode)
+			{
+				trigger_error('incorrect sitemap attribute in OCSitemapEntries');
+				return;
+			}
 		}
 
 		
