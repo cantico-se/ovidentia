@@ -26,6 +26,61 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 
 
 
+
+/**
+ */
+abstract class AbstractFunc_Ovml_Container_Sitemap extends Func_Ovml_Container
+{
+	public $IdEntries = array();
+	public $index;
+	public $count;
+	public $data;
+	
+	/**
+	 * @var bab_siteMap $sitemap		The sitemap the container is working on.
+	 */
+	protected $sitemap;
+
+
+	public function setOvmlContext(babOvTemplate $ctx)
+	{
+		$this->count = 0;
+		parent::setOvmlContext($ctx);
+		$sitemap = $ctx->get_value('sitemap');
+
+		if (false === $sitemap) {
+			$this->sitemap = bab_siteMap::get();
+		} else {
+			$this->sitemap = bab_siteMap::getByUid($sitemap);
+			
+			if (null === $this->sitemap) {
+				trigger_error('incorrect sitemap attribute in OCSitemapEntries');
+				return;
+			}
+		}
+	}
+
+	public function getnext()
+	{
+		if ($this->idx >= $this->count) {
+			$this->idx = 0;
+			return false;
+		}
+		$this->ctx->curctx->push('CIndex', $this->idx);
+		$this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
+		$this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
+		$this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
+		$this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
+		$this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
+		$this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder']);
+		$this->idx++;
+		$this->index = $this->idx;
+		return true;
+	}
+}
+
+
+
 /**
  * Get one level of sitemap node
  * <OCSitemapEntries node="parentNode" sitemap="sitemapName">
@@ -35,38 +90,21 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
  * the sitemap attribute is optional
  *
  */
-class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
+class Func_Ovml_Container_SitemapEntries extends AbstractFunc_Ovml_Container_Sitemap
 {
-	var $IdEntries = array();
-	var $index;
-	var $count;
-	var $data;
+
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		$this->count = 0;
 		parent::setOvmlContext($ctx);
-		$node = $ctx->get_value('node');
-		$sitemap = $ctx->get_value('sitemap');
-		
-		if (false === $sitemap) {
-			$rootNode = bab_siteMap::get();
-		} else {
-			$rootNode = bab_siteMap::getByUid($sitemap);
-			
-			if (null === $rootNode)
-			{
-				trigger_error('incorrect sitemap attribute in OCSitemapEntries');
-				return;
-			}
-		}
 
-		
-		$node = $rootNode->getNodeById($node);
+		$node = $ctx->get_value('node');
+
+		$node = $this->sitemap->getNodeById($node);
+
 		if ($node) {
 			$node = $node->firstChild();
-			while($node)
-				{
+			while($node) {
 				$item = $node->getData();
 				$tmp = array();
 				$tmp['url'] = $item->url;
@@ -77,7 +115,7 @@ class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
 				$tmp['folder'] = $item->folder;
 				$this->IdEntries[] = $tmp;
 				$node = $node->nextSibling();
-				}
+			}
 		}
 
 		$this->count = count($this->IdEntries);
@@ -85,32 +123,52 @@ class Func_Ovml_Container_SitemapEntries extends Func_Ovml_Container
 
 	}
 
-	public function getnext()
-	{
-		if( $this->idx < $this->count )
-		{
-			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('SitemapEntryUrl', $this->IdEntries[$this->idx]['url']);
-			$this->ctx->curctx->push('SitemapEntryText', $this->IdEntries[$this->idx]['text']);
-			$this->ctx->curctx->push('SitemapEntryDescription', $this->IdEntries[$this->idx]['description']);
-			$this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
-			$this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
-			$this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder']);
-			$this->idx++;
-			$this->index = $this->idx;
-			return true;
-		}
-		else
-		{
-			$this->idx=0;
-			return false;
-		}
-	}
 }
 
 
 
 
+/**
+ * Get path starting from root to a specific sitemap node
+ * <OCSitemapPath node="node" sitemap="sitemapName">
+ * 
+ * </OCSitemapPath>
+ * 
+ * the sitemap attribute is optional
+ *
+ */
+class Func_Ovml_Container_SitemapPath extends AbstractFunc_Ovml_Container_Sitemap
+{
+	var $IdEntries = array();
+	var $index;
+	var $count;
+	var $data;
+
+	public function setOvmlContext(babOvTemplate $ctx)
+	{
+		parent::setOvmlContext($ctx);
+		$node = $ctx->get_value('node');
+
+		$node = $this->sitemap->getNodeById($node);
+
+		while ($node) {
+			$item = $node->getData();
+			$tmp = array();
+			$tmp['url'] = $item->url;
+			$tmp['text'] = $item->name;
+			$tmp['description'] = $item->description;
+			$tmp['id'] = $item->id_function;
+			$tmp['onclick'] = $item->onclick;
+			$tmp['folder'] = $item->folder;
+			array_unshift($this->IdEntries, $tmp);
+			$node = $node->parentNode();
+		}
+
+		$this->count = count($this->IdEntries);
+		$this->ctx->curctx->push('CCount', $this->count);
+	}
+
+}
 
 
 
