@@ -120,6 +120,11 @@ class Func_Ovml_Container extends Func_Ovml
 		return $res;
 	}
 
+	/**
+	 * Fetch the next container's element.
+	 * 
+	 * @return bool		True if an element has been fetched, false if the container has reached the end.
+	 */
 	public function getnext()
 	{
 		return false;
