@@ -90,6 +90,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		$this->h_start = '00:00';
 		$this->h_end = '00:00';
 		$this->bfirstevents = array();
+		$this->evtindex = 0;
 		}
 
 
@@ -304,6 +305,7 @@ class cal_weekCls extends cal_wmdbaseCls
 							$this->first=0;
 							}
 						$this->bevent = true;
+						$this->evtindex++;
 						
 						}
 					$i++;
