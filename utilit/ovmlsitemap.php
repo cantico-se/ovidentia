@@ -28,8 +28,10 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 
 
 /**
+ * Base class for all sitemap-related ovml containers.
+ * 
  */
-abstract class AbstractFunc_Ovml_Container_Sitemap extends Func_Ovml_Container
+abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 {
 	public $IdEntries = array();
 	public $index;
@@ -37,17 +39,36 @@ abstract class AbstractFunc_Ovml_Container_Sitemap extends Func_Ovml_Container
 	public $data;
 	
 	/**
-	 * @var bab_siteMap $sitemap		The sitemap the container is working on.
+	 * @var bab_siteMap $sitemap	The sitemap the container is working on.
 	 */
 	protected $sitemap;
-
+	
+	/**
+	 * @var int $limit				The max number of elements to return.
+	 */
+	protected $limitOffset = 0;
+	protected $limitRows = null;
+	
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$this->count = 0;
 		parent::setOvmlContext($ctx);
+		$limit = $ctx->get_value('limit');
+		if (is_string($limit)) {
+			$limits = explode(',', $limit);
+			if (count($limits) === 1) {
+				$this->limitRows = $limit;
+			} else {
+				$this->limitOffset = $limits[0];
+				$this->limitRows = $limits[1];
+			}
+		}
+		
+		$this->idx += $this->limitOffset;
+		
 		$sitemap = $ctx->get_value('sitemap');
-
+		
 		if (false === $sitemap) {
 			$this->sitemap = bab_siteMap::get();
 		} else {
@@ -58,12 +79,17 @@ abstract class AbstractFunc_Ovml_Container_Sitemap extends Func_Ovml_Container
 				return;
 			}
 		}
+
 	}
 
+	/**
+	 * (non-PHPdoc)
+	 * @see utilit/Func_Ovml_Container#getnext()
+	 */
 	public function getnext()
 	{
-		if ($this->idx >= $this->count) {
-			$this->idx = 0;
+		if ($this->idx >= $this->count || (isset($this->limitRows) && ($this->idx >= $this->limitRows + $this->limitOffset))) {
+			$this->idx = $this->limitOffset;
 			return false;
 		}
 		$this->ctx->curctx->push('CIndex', $this->idx);
@@ -90,7 +116,7 @@ abstract class AbstractFunc_Ovml_Container_Sitemap extends Func_Ovml_Container
  * the sitemap attribute is optional
  *
  */
-class Func_Ovml_Container_SitemapEntries extends AbstractFunc_Ovml_Container_Sitemap
+class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 {
 
 
@@ -137,7 +163,7 @@ class Func_Ovml_Container_SitemapEntries extends AbstractFunc_Ovml_Container_Sit
  * the sitemap attribute is optional
  *
  */
-class Func_Ovml_Container_SitemapPath extends AbstractFunc_Ovml_Container_Sitemap
+class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
 	var $IdEntries = array();
 	var $index;
@@ -151,8 +177,7 @@ class Func_Ovml_Container_SitemapPath extends AbstractFunc_Ovml_Container_Sitema
 
 		$node = $this->sitemap->getNodeById($node);
 
-		while ($node) {
-			$item = $node->getData();
+		while ($node && ($item = $node->getData())) {
 			$tmp = array();
 			$tmp['url'] = $item->url;
 			$tmp['text'] = $item->name;
