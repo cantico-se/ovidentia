@@ -409,6 +409,9 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$home = $dg_node->firstChild();
 		}
 		
+		if (!($home instanceOf bab_Node)) {
+			return '';
+		}
 		
 		$node = $home->firstChild();
 		$return = '';
