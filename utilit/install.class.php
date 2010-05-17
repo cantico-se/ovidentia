@@ -455,7 +455,7 @@ class bab_InstallSource {
 		$current_version = $current_version_ini->getVersion();
 
 
-		if ( 1 !== version_compare($zipversion, $current_version)) {
+		if ( -1 == version_compare($zipversion, $current_version)) {
 			bab_installWindow::message(bab_translate("The installed version is newer than the package"));
 			return false;
 		}
