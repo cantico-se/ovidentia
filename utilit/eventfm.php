@@ -101,7 +101,7 @@ class bab_eventFmFile extends bab_eventFm
 	 */
 	public function addInformedUser($id_user)
 	{
-		$this->informed_recipients[$id_user] = null;
+		$this->informed_recipients[$id_user] = $id_user;
 		return $this;
 	}
 	
