@@ -614,7 +614,7 @@ function aclGetAccessGroups($table, $id_object) {
    (
     [154] =>
         (
-            [name] => Guillaume André
+            [name] => Guillaume Andrï¿½
             [email] => test@test.com
 		)
 	)
@@ -712,12 +712,49 @@ function aclCloneRights($srcTable, $srcIdObject, $trgTable, $trgIdObject)
  * @param string	$sTable		Table name
  * @param int 		$iIdGroup	Group identifier
  * @param int 		$iIdObject	Identifier of the object on which the right applies
+ * @return bool
  */
 function aclAdd($sTable, $iIdGroup, $iIdObject)
 {
 	global $babDB;
 
-	return $babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')');
+	if ($babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')')) {
+		bab_siteMap::clearAll();
+		return true;
+	}
+	return false;
 }
 
+
+/**
+ * Remove right for an object identifier
+ *
+ * @param string	$table		Table name
+ * @param int 		$groupId	Group identifier
+ * @param int 		$objectId	Identifier of the object on which the right applies
+ * @return bool
+ */
+function aclRemove($table, $groupId, $objectId)
+{
+	global $babDB;
+
+	$tree = new bab_grptree();
+	$groups = array($groupId => $groupId);
+	if ($groupId >= BAB_ACL_GROUP_TREE ) {
+		$groupId -= BAB_ACL_GROUP_TREE;
+		$groups[$groupId] = $groupId;
+		$children = $tree->getChilds($groupId, true);
+		if ($children && is_array($children)) {
+			foreach($children as $child) {
+				$groups[$child['id']] = $child['id'];
+			}
+		}
+	}
+	
+	if ($babDB->db_query('DELETE FROM ' . $babDB->backTick($table) . ' WHERE `id_object` = ' . $babDB->quote($objectId) . ' AND `id_group` IN (' . $babDB->quote($groups) . ')')) {
+		bab_siteMap::clearAll();
+		return true;
+	}
+	return false;
+}
 
