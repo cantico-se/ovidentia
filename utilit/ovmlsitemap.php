@@ -126,27 +126,28 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 		$node = $ctx->get_value('node');
 
-		$node = $this->sitemap->getNodeById($node);
-
-		if ($node) {
-			$node = $node->firstChild();
-			while($node) {
-				$item = $node->getData();
-				$tmp = array();
-				$tmp['url'] = $item->url;
-				$tmp['text'] = $item->name;
-				$tmp['description'] = $item->description;
-				$tmp['id'] = $item->id_function;
-				$tmp['onclick'] = $item->onclick;
-				$tmp['folder'] = $item->folder;
-				$this->IdEntries[] = $tmp;
-				$node = $node->nextSibling();
+		if (isset($this->sitemap)) {				
+			$node = $this->sitemap->getNodeById($node);
+	
+			if ($node) {
+				$node = $node->firstChild();
+				while($node) {
+					$item = $node->getData();
+					$tmp = array();
+					$tmp['url'] = $item->url;
+					$tmp['text'] = $item->name;
+					$tmp['description'] = $item->description;
+					$tmp['id'] = $item->id_function;
+					$tmp['onclick'] = $item->onclick;
+					$tmp['folder'] = $item->folder;
+					$this->IdEntries[] = $tmp;
+					$node = $node->nextSibling();
+				}
 			}
+	
+			$this->count = count($this->IdEntries);
+			$this->ctx->curctx->push('CCount', $this->count);
 		}
-
-		$this->count = count($this->IdEntries);
-		$this->ctx->curctx->push('CCount', $this->count);
-
 	}
 
 }
@@ -175,22 +176,24 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 		parent::setOvmlContext($ctx);
 		$node = $ctx->get_value('node');
 
-		$node = $this->sitemap->getNodeById($node);
-
-		while ($node && ($item = $node->getData())) {
-			$tmp = array();
-			$tmp['url'] = $item->url;
-			$tmp['text'] = $item->name;
-			$tmp['description'] = $item->description;
-			$tmp['id'] = $item->id_function;
-			$tmp['onclick'] = $item->onclick;
-			$tmp['folder'] = $item->folder;
-			array_unshift($this->IdEntries, $tmp);
-			$node = $node->parentNode();
+		if (isset($this->sitemap)) {
+			$node = $this->sitemap->getNodeById($node);
+	
+			while ($node && ($item = $node->getData())) {
+				$tmp = array();
+				$tmp['url'] = $item->url;
+				$tmp['text'] = $item->name;
+				$tmp['description'] = $item->description;
+				$tmp['id'] = $item->id_function;
+				$tmp['onclick'] = $item->onclick;
+				$tmp['folder'] = $item->folder;
+				array_unshift($this->IdEntries, $tmp);
+				$node = $node->parentNode();
+			}
+	
+			$this->count = count($this->IdEntries);
+			$this->ctx->curctx->push('CCount', $this->count);
 		}
-
-		$this->count = count($this->IdEntries);
-		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
 }
@@ -209,8 +212,54 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
  * the sitemap attribute is optional, the default value is the sitemap selected in site options
  * 
  */
-class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
+class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
+{
 	
+	/**
+	 * 
+	 * @param bab_siteMap	$sitemap
+	 * @param string 		$baseNodeId
+	 */	
+	public function breadCrumbFromBaseNode($sitemap, $baseNodeId)
+	{
+		$pageId = bab_Sitemap::getPosition();
+		if (!isset($pageId)) {
+			return array();
+		}
+
+		$baseNode = $sitemap->getNodeById($baseNodeId);
+		if (!isset($baseNode)) {
+			return array();
+		}
+
+		$subNodes = new bab_NodeIterator($baseNode);
+		
+		$matchingNodes = array();
+		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
+			/* @var $node bab_Node */
+			if ($node->getId() === $pageId) {
+				$matchingNodes[] = $node;
+				continue;
+			}
+			/* @var $data bab_SitemapItem */
+			$data = $node->getData();
+			if ($data->getTarget() === $pageId) {
+				$matchingNodes[] = $node;
+			}
+		}
+
+		if (count($matchingNodes) !== 1) {
+			return array();			
+		}
+
+		$node = $matchingNodes[0];
+		$breadCrumbs = array();
+		while (($node = $node->parentNode()) && ($node->getId() !== $baseNodeId)) {
+			array_unshift($breadCrumbs, $node);
+		}
+
+		return $breadCrumbs;
+	}
 	
 	/**
 	 * 
@@ -219,16 +268,43 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
 	public function toString()
 	{
 		$args = $this->args;
-		if (isset($args['sitemap'])) {
+
+		if (isset($args['basenode'])) {
+
+			if (isset($args['sitemap'])) {
+				$sitemap = bab_siteMap::getByUid($args['sitemap']);
+			} else {
+				global $babBody;
+				$sitemapId = $babBody->babsite['sitemap'];
+				$sitemap = bab_siteMap::getByUid($sitemapId);
+				if (!isset($sitemap)) {
+					$sitemap = bab_siteMap::getByUid('core');
+				}
+			}
+			if (!isset($sitemap)) {
+				$breadcrumb = array();
+			} else {
+				$breadcrumb = $this->breadcrumbFromBaseNode($sitemap, $args['basenode']);
+			}
+
+ 		} else if (isset($args['sitemap'])) {
+
 			$breadcrumb = bab_siteMap::getBreadCrumb($args['sitemap']);
+
 		} else {
+
 			$breadcrumb = bab_siteMap::getBreadCrumb();
+
 		}
-		
+
+
 		if (empty($breadcrumb)) {
-			return '';
+			if (!isset($args['keeplastknown'])) {
+				return '';
+			}
+			return $_SESSION['bab_sitemap_lastknowposition'];
 		}
-		
+
 		$html = '<ul class="sitemap-position">'."\n";
 		
 		foreach($breadcrumb as $node) {
@@ -270,7 +346,10 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function {
 		
 		$html .= '</ul>';
 	
-		
+		if (isset($args['keeplastknown'])) {
+			$_SESSION['bab_sitemap_lastknowposition'] = $html;
+		}
+
 		return $html;
 	}
 }
