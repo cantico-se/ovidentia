@@ -253,7 +253,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		}
 
 		$node = $matchingNodes[0];
-		$breadCrumbs = array();
+		$breadCrumbs = array($node);
 		while (($node = $node->parentNode()) && ($node->getId() !== $baseNodeId)) {
 			array_unshift($breadCrumbs, $node);
 		}
