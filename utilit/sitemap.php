@@ -691,7 +691,7 @@ class bab_siteMap {
 	
 	
 	/**
-	 * Set position in sitemap for current page, if the position is not allready defined by the URL
+	 * Set position in sitemap for current page, if the position is not already defined by the URL
 	 * 
 	 * 
 	 * @param	string	$uid_prefix	sitemap node UID prefix before delegation identification
@@ -710,14 +710,22 @@ class bab_siteMap {
 			self::$current_page = $uid_prefix;
 		} else {
 
-			// for now current delegation is allways DGAll, suffix is just appended
+			// for now current delegation is always DGAll, suffix is just appended
 			
 			self::$current_page = $uid_prefix.$uid_suffix;
 			
 		}
 	}
 	
-	
+
+	/**
+	 * Returns the position in sitemap for current page.
+	 * 
+	 * @return string
+	 */
+	public static function getPosition() {
+		return self::$current_page;
+	}
 	
 
 	
@@ -725,7 +733,7 @@ class bab_siteMap {
 	
 	/**
 	 * get position in the sitemap from homepage (delegation node) to current position
-	 * If position is not set, the method return an empty array
+	 * If position is not set, the method returns an empty array
 	 * 
 	 * @see bab_sitemap::setPosition()
 	 * 
