@@ -487,10 +487,10 @@ class babMail
 	 * 
 	 * @return bool
 	 */
-	public function mailFileAttach($fname, $realname, $type)
+	public function mailFileAttach($path, $realname, $type)
 	{
-		$result = $this->mail->AddAttachment($fname, $realname);
-		$this->attachements[] = array($fname, $realname, $type);
+		$result = $this->mail->AddAttachment($path, $realname);
+		$this->attachements[] = array($path, $realname, $type);
 		return $result;
 	}
 
@@ -638,6 +638,12 @@ class babMailSmtp extends babMail
 	}
 }
 
+/**
+ * Instanciate a new babMail object initialized accordingly to the site
+ * configuration.
+ * 
+ * @return babMail
+ */
 function bab_mail()
 {
 	global $babBody;
@@ -648,21 +654,21 @@ function bab_mail()
 	$mail = false;
 	switch($babBody->babsite['mailfunc'])
 	{
-		case "mail":
+		case 'mail':
 			$mail = new babMail();
 			$mail->mail->IsMail();
 			break;
-		case "sendmail":
+		case 'sendmail':
 			$mail = new babMail();
 			$mail->mail->IsSendmail();
 			$mail->mail->Sendmail = $babBody->babsite['smtpserver'];
 			break;
-		case "smtp":
+		case 'smtp':
 			$mail = new babMail();
 			$mail->mail->IsSMTP();
 			$mail->mail->Host = $babBody->babsite['smtpserver'];
 			$mail->mail->Port = $babBody->babsite['smtpport'];
-			if( $babBody->babsite['smtpuser'] != "" ||  $babBody->babsite['smtppass'] != "")
+			if( $babBody->babsite['smtpuser'] != '' ||  $babBody->babsite['smtppass'] != '')
 				{
 				$mail->mail->SMTPAuth = true;
 				$mail->mail->Username = $babBody->babsite['smtpuser'];
@@ -672,5 +678,3 @@ function bab_mail()
 	}
 	return $mail;
 }
-
-?>
