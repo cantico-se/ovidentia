@@ -627,6 +627,26 @@ function printBody()
 	echo bab_printTemplate($temp, 'page.html', '');
 }
 
+
+
+
+
+if (isset($_GET['babrw']))
+{
+	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'])) 
+	{
+		$_GET += $arr;
+		extract($arr, EXTR_SKIP);
+	}
+	
+	bab_debug(bab_siteMap::rewritedUrl('babAdminArticles'));
+}
+
+
+
+
+
+
 /**
  * Event : Before Page Created
  * Event intervenes just before the inclusion of code PHP which manages the current page:
@@ -637,7 +657,7 @@ $event = new bab_eventBeforePageCreated;
 bab_fireEvent($event); /* Fire all event registered as listeners */
 
 /* Controler */
-switch($tg)
+switch(bab_rp('tg'))
 	{
 	case "login":
 		$babLevelOne = bab_translate("Home");
