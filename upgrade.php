@@ -6255,5 +6255,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
 	}
 	
+	/**
+	 * Upgrade to 7.2.94
+	 */
 	return true;
 }
