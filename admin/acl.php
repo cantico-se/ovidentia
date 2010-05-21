@@ -606,9 +606,9 @@ function aclGetAccessGroups($table, $id_object) {
 
 /**
  * Return the list of the users who have the access right specified (table and id object)
- * @param $table string : name of the table
- * @param $id_object int : id of the object
- * @param $activeOrderByName boolean : if true, the resultats are ordered by names
+ * @param string $table : name of the table
+ * @param int $id_object : id of the object
+ * @param string $activeOrderBy : 'lastname', 'firstname', NULL by default (since version ovidentia-7-2-94-20100522)
  * @return array :
  * array
    (
@@ -619,25 +619,33 @@ function aclGetAccessGroups($table, $id_object) {
 		)
 	)
  */
-function aclGetAccessUsers($table, $id_object, $activeOrderByName=false) {
+function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL) {
 	global $babBody, $babDB;
 	
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
-		$query = "SELECT id, firstname, lastname ,email 
-					FROM ".BAB_USERS_TBL." 
-						WHERE disabled='0' AND is_confirmed='1'";
-		if ($activeOrderByName) {
-			$query .= " ORDER by lastname";
+		$query = 'SELECT id, firstname, lastname ,email 
+					FROM '.BAB_USERS_TBL.' 
+						WHERE disabled=\'0\' AND is_confirmed=\'1\'';
+		if (isset($activeOrderBy)) {
+			if ($activeOrderBy == 'lastname') {
+				$query .= ' ORDER by lastname,firstname';
+			} else {
+				$query .= ' ORDER by firstname,lastname';
+			}
 		}
 	} else {
-		$query = "SELECT u.id,u.firstname, u.lastname,u.email 
-					FROM ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g
-						WHERE g.id_object=u.id AND g.id_group IN(".$babDB->quote($groups).") 
-						AND u.disabled='0' AND u.is_confirmed='1'";
-		if ($activeOrderByName) {
-			$query .= " ORDER by u.lastname";
+		$query = 'SELECT u.id,u.firstname, u.lastname,u.email 
+					FROM '.BAB_USERS_TBL.' u, '.BAB_USERS_GROUPS_TBL.' g
+						WHERE g.id_object=u.id AND g.id_group IN('.$babDB->quote($groups).') 
+						AND u.disabled=\'0\' AND u.is_confirmed=\'1\'';
+		if (isset($activeOrderBy)) {
+			if ($activeOrderBy == 'lastname') {
+				$query .= ' ORDER by u.lastname,u.firstname';
+			} else {
+				$query .= ' ORDER by u.firstname,u.lastname';
+			}
 		}
 	}
 	
@@ -648,6 +656,8 @@ function aclGetAccessUsers($table, $id_object, $activeOrderByName=false) {
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$user[$arr['id']] = array(
 					'name' => bab_composeUserName($arr['firstname'],$arr['lastname']),
+					'firstname' => $arr['firstname'],
+					'lastname' => $arr['lastname'],
 					'email' => isset($arr['email']) ? $arr['email'] : false
 				);
 		}
