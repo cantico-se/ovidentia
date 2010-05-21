@@ -1609,7 +1609,7 @@ function bab_getAvailableLanguages()
 		{ 
 		if ($file != "." && $file != "..")
 			{
-			if( eregi("lang-([^.]*)", $file, $regs))
+			if( preg_match("/lang-([^.]*)/", $file, $regs))
 				{
 				if( $file == 'lang-'.$regs[1].'.xml')
 					$langs[] = $regs[1]; 
@@ -1626,7 +1626,7 @@ function bab_getAvailableLanguages()
 		{ 
 		if ($file != "." && $file != "..")
 			{
-			if( eregi('lang-([^.]*)', $file, $regs))
+			if( preg_match('/lang-([^.]*)/', $file, $regs))
 				{
 				if( $file == 'lang-'.$regs[1].'.xml' && !in_array($regs[1], $langs))
 					$langs[] = $regs[1]; 
