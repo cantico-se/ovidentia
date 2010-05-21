@@ -638,8 +638,6 @@ if (isset($_GET['babrw']))
 		$_GET += $arr;
 		extract($arr, EXTR_SKIP);
 	}
-	
-	bab_debug(bab_siteMap::rewritedUrl('babAdminArticles'));
 }
 
 

@@ -190,7 +190,13 @@ class bab_url {
 	 * @since 7.1.94
 	 * 
 	 */ 
-	public function __construct($url) {
+	public function __construct($url = null) {
+		
+		if (null === $url)
+		{
+			$url = basename($_SERVER['PHP_SELF']);
+		}
+		
 		$this->url = $url;
 	}
 	

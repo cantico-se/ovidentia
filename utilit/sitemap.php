@@ -31,22 +31,38 @@ include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
  */
 class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	
+	/**
+	 * for each id_function the id parent is stored with the rewrite name
+	 * @var array
+	 */
 	private $rewriteIndex_id = array();
+	
+	/**
+	 * for each rewrite name, the all possibles id are stored as value
+	 * @var array
+	 */
 	private $rewriteIndex_rn = array();
 	
 	/**
-	 * @return bool
+	 * Tries to append the node $newNode as child of the node having the id $id.
+	 * If the node $id was not already created in the tree, $newNode is stored
+	 * as an orphan node and will be appended to its parent node when the later
+	 * will be created.
+	 * 
+	 * @param bab_Node $newNode
+	 * @param string $id
+	 * @return boolean
 	 */
 	public function appendChild(bab_Node $newNode, $id = null) {
 		$sitemapItem = $newNode->getData();
 		$rewriteName = $sitemapItem->getRewriteName();
 		
-		$rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName);
+		$this->rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName);
 		
-		if (isset($rewriteIndex_rn[$rewriteName])) {
-			$rewriteIndex_rn[$rewriteName][] = $newNode->getId();
+		if (isset($this->rewriteIndex_rn[$rewriteName])) {
+			$this->rewriteIndex_rn[$rewriteName][] = $newNode->getId();
 		} else {
-			$rewriteIndex_rn[$rewriteName] = array($newNode->getId());
+			$this->rewriteIndex_rn[$rewriteName] = array($newNode->getId());
 		}
 		
 		return parent::appendChild($newNode, $id);
@@ -71,12 +87,30 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		}
 		
 		$first = array_shift($arr);
+		
+		if (!isset($this->rewriteIndex_rn[$first]))
+		{
+			bab_debug('first node of rewrite path not found : '.$first);
+			return null;
+		}
+		
+		
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 			if (isset($this->rewriteIndex_id[$nodeId]) && $first === $this->rewriteIndex_id[$nodeId][1]) {
+				
+				if (0 === count($arr))
+				{
+					return $nodeId;
+				}
+				
 				return $this->getNextRewriteNode($arr, $nodeId);
+			} else {
+				bab_debug("the node $nodeId has no parent in index or parent is not $id_parent");
+				return null;
 			}
 		}
 		
+		bab_debug("the rewrite name $first has no id_function in index");
 		return null;
 	}
 	
@@ -99,9 +133,13 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				}
 				
 				return $this->getNextRewriteNode($path, $nodeId);
+			} else {
+				bab_debug("the node $nodeId has no parent in index or parent is not $id_parent");
+				return null;
 			}
 		}
 		
+		bab_debug("the rewrite name $first has no id_function in index");
 		return null;
 	}
 }
@@ -229,7 +267,7 @@ class bab_siteMapItem {
 	 */
 	public function getRewriteName()
 	{
-		if (isset($this->rewriteName)) {
+		if (null !== $this->rewriteName && '' !== $this->rewriteName) {
 			return $this->rewriteName;
 		}
 		
@@ -440,6 +478,23 @@ class bab_siteMap {
 	
 	
 	
+	/**
+	 * Get sitemap selected in site options
+	 * 
+	 * @return bab_siteMapOrphanRootNode
+	 */
+	public static function getFromSite()
+	{
+		global $babBody;
+		
+		$sitemapId = $babBody->babsite['sitemap'];
+		$sitemap = self::getByUid($sitemapId);
+		if (!isset($sitemap)) {
+			$sitemap = self::getByUid('core');
+		}
+		
+		return $sitemap;
+	}
 	
 	
 	
@@ -783,7 +838,76 @@ class bab_siteMap {
 		
 		return $breadcrumb;
 	}
-
+	
+	
+	
+	/**
+	 * Select current node from the rewrite url and extract sitemap node url parameters in an array 
+	 * @param	string	$rewrite
+	 * @return array
+	 */
+	public static function extractNodeUrlFromRewrite($rewrite)
+	{
+		$root = bab_siteMap::getFromSite();
+		$nodeId = $root->getNodeIdFromRewritePath($_GET['babrw']);
+		
+		if (null === $nodeId)
+		{
+			return false;	
+		}
+		
+		
+		$node = $root->getNodeById($nodeId);
+		if (!$node)
+		{
+			return false;
+		}
+		
+		$sitemapItem = $node->getData();
+		$tmp = explode('?', $sitemapItem->url);
+		
+		if (count($tmp) <= 1) {
+			return false;
+		}
+		
+		parse_str($tmp[1], $arr);
+		
+		return $arr;
+	}
+	
+	
+	/**
+	 * Get the rewrited url of a sitemap node
+	 * @param string $id_function
+	 * @return bab_url
+	 */
+	public static function rewritedUrl($id_function)
+	{
+		require_once dirname(__FILE__).'/urlincl.php';
+		$root = bab_siteMap::getFromSite();
+		$node = $root->getNodeById($id_function);
+		
+		if (!$node)
+		{
+			return null;
+		}
+		
+		$arr = array();
+		
+		do 
+		{
+			$sitemapItem = $node->getData();
+			if (!$sitemapItem)
+			{
+				break;
+			}
+			array_unshift($arr, $sitemapItem->getRewriteName());
+		} while ($node = $node->parentNode());
+		
+		$url = new bab_url;
+		$url->babrw = implode('/', $arr);
+		return $url;
+	}
 }
 
 
