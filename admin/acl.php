@@ -614,7 +614,9 @@ function aclGetAccessGroups($table, $id_object) {
    (
     [154] =>
         (
-            [name] => Guillaume Andr�
+            [name] => Guillaume Dupont
+            [firstname] => Guillaume
+            [lastname] => Dupont
             [email] => test@test.com
 		)
 	)
