@@ -47,7 +47,7 @@ class babDatabase
 		}
 		
 		
-	private function connect($host, $login, $password, $dbname)
+	protected function connect($host, $login, $password, $dbname)
 		{
 
 		$dblink = mysql_connect($host, $login, $password);
