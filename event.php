@@ -314,7 +314,7 @@ function newEvent()
 
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
-			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory($this->mcals);
+			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(bab_rp('selected_calendars', array()));
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to create this event");
 			}
