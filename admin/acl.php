@@ -603,23 +603,38 @@ function aclGetAccessGroups($table, $id_object) {
 	return $groups;
 	}
 	
-
+/**
+ * Return the list of the users who have the access right specified (table and id object)
+ * 		Users disabled, non confirmed or invalid (validity_start & validity_end) are not selected
+ * @param string $table : name of the table
+ * @param int $id_object : id of the object
+ * @return array :
+ * array
+   (
+    [154] =>
+        (
+            [name] => Guillaume Dupont
+            [email] => test@test.com
+		)
+	)
+ */
 function aclGetAccessUsers($table, $id_object) {
 	global $babBody, $babDB;
 	
 	$groups = aclGetAccessGroups($table, $id_object);
 	$query = '';
+	$today = date('Y-m-d');
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = "SELECT id, firstname, lastname ,email 
 					FROM ".BAB_USERS_TBL." 
-						WHERE disabled='0' AND is_confirmed='1'";
+						WHERE disabled='0' AND is_confirmed='1' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')";
 		}
 	else
 		{
 		$query = "SELECT u.id,u.firstname, u.lastname,u.email 
 					FROM ".BAB_USERS_TBL." u, ".BAB_USERS_GROUPS_TBL." g
 						WHERE g.id_object=u.id AND g.id_group IN(".$babDB->quote($groups).") 
-						AND u.disabled='0' AND u.is_confirmed='1'";
+						AND u.disabled='0' AND u.is_confirmed='1' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')";
 		}
 	
 	$user = array();
