@@ -427,19 +427,17 @@ function bab_onFmFile(bab_eventFmFile $event)
 		return;
 	}
 	
+	$itsANewFile = true;
 	
 	if ($event instanceOf bab_eventFmAfterAddVersion) {
 		$message = bab_translate("A new version file has been uploaded");
-		
+		$itsANewFile = false;
 	} elseif ($event instanceOf bab_eventFmAfterFileUpdate) {
 		$message = bab_translate("File has been updated");
-		
+		$itsANewFile = false;
 	} elseif ($event instanceOf bab_eventFmAfterFileUpload) {
 		$message = bab_translate("A new file has been uploaded");
-		
 	}
-	
-	
 	
 	
 	foreach($references as $reference) {
@@ -450,7 +448,7 @@ function bab_onFmFile(bab_eventFmFile $event)
 		$folderFile		= $oFolderFileSet->get($oId->in($reference->getObjectId()));
 		
 		if ($folderFile) {
-			if (!fileNotifyMembers($folderFile, $users, $message)) {
+			if (!fileNotifyMembers($folderFile, $users, $message, $itsANewFile)) {
 				return false;
 			}
 		}
