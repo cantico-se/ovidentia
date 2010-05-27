@@ -242,7 +242,7 @@ class bab_SearchFaqsResult extends bab_SearchSqlResult {
 			$title 			= implode(' <img src="'.$GLOBALS['babSkinPath'].'images/Puces/arrow_right.gif" alt="/" /> ', $cat);
 			$questionurlpop = bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=faqs&idc=".$record->idcat."&idq=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword()); 
 			$questionurl 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$record->idcat."#".$record->id);
-			$response		= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags($record->response)), BAB_ABBR_FULL_WORDS, 500);
+			$response		= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->response, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 
 			$date_modification = BAB_DateTimeUtil::relativePastDate($record->date_modification);
 
