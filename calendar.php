@@ -605,6 +605,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 			$this->mcals = new bab_mcalendars($this->from, $this->to, $idcals);
 			$this->mcals->loadCategories();
+			
 			$this->resevent = array();
 
 			$this->t_print = bab_translate('Print');
@@ -619,9 +620,11 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 			foreach ($idcals as $idcal)
 				{
+				//$this->mcals->getNextEvent return the event to the variable $calPeriod
 				while ($this->mcals->getNextEvent($idcal, $this->from, $this->to, $calPeriod))
 					{
-					$arr = $calPeriod->getData();
+					/* $calPeriod : object bab_calendarPeriod : see file workinghoursincl.php */
+					$arr = $calPeriod->getData(); /* $calPeriod->data can be NULL (non working days) */
 					$arr['color'] = $calPeriod->getColor();
 
 					$xCtoPuid = $calPeriod->getProperty('X-CTO-PUID');
@@ -646,10 +649,14 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						}
 					$evt['start_date'] = bab_toHtml(bab_longDate(bab_mktime($calPeriod->getProperty('DTSTART'))));
 					$evt['end_date'] = bab_toHtml(bab_longDate($ts));
-					$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
-					$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
+					$evt['categoryname'] = '';
+					$evt['categorydescription'] = '';
+					if (isset($arr['id_cat'])) {
+						$evt['categoryname'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['name']) : '';
+						$evt['categorydescription'] = !empty($this->mcals->categories[$arr['id_cat']]) ? bab_toHtml($this->mcals->categories[$arr['id_cat']]['description']) : '';
+					}
 					
-					if (!empty($this->mcals->categories[$arr['id_cat']])) {
+					if (isset($arr['id_cat']) && !empty($this->mcals->categories[$arr['id_cat']])) {
 						$evt['color'] = bab_toHtml($this->mcals->categories[$arr['id_cat']]['bgcolor']);
 					} elseif (!empty($arr['color'])) {
 						$evt['color'] = bab_toHtml($arr['color']);
@@ -666,16 +673,14 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 					$evt['location']=bab_toHtml($calPeriod->getProperty('LOCATION'));
 					global $babDB;
-					$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id'])."'");
-					if( $res_note && $babDB->db_num_rows($res_note) > 0 )
-						{
-						$arr_notes = $babDB->db_fetch_array($res_note);
-						$evt['notes'] = bab_toHtml($arr_notes['note'], BAB_HTML_ALL);
+					$evt['notes'] = ''; /* Annotations personnelles */
+					if (isset($arr['id'])) {
+						$res_note = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($arr['id'])."'");
+						if( $res_note && $babDB->db_num_rows($res_note) > 0 ) {
+							$arr_notes = $babDB->db_fetch_array($res_note);
+							$evt['notes'] = bab_toHtml($arr_notes['note'], BAB_HTML_ALL);
 						}
-					else
-						{
-						$evt['notes'] = '';
-						}
+					}
 
 					$sortvalue[$xCtoPuid] = $calPeriod->getProperty('DTSTART');
 					}
