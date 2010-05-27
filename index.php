@@ -354,17 +354,12 @@ function printBody()
 {
 	class tpl
 	{
-		public $babLogoLT;
-		public $babLogoRT;
-		public $babBanner;
 		public $sitename;
 		public $style;
 		public $script;
 		public $babSlogan;
 		public $login;
 		public $logurl;
-		public $babLogoLB;
-		public $babLogoRB;
 		public $enabled;
 		public $menuclass;
 		public $menuattribute;
@@ -376,7 +371,6 @@ function printBody()
 		private $nbsectleft = null;
 		public $arrsectright = array();
 		private $nbsectright = null;
-//		public $content;
 		public $message;
 		public $version;
 		public $search;
@@ -384,24 +378,20 @@ function printBody()
 		public $sContent;
 		public $styleSheet;
 
+		private	$babLogoLT = null;
+		private	$babLogoRT = null;
+		private	$babLogoLB = null;
+		private	$babLogoRB = null;
+		private	$babBanner = null;
+
 		public function __construct()
 		{
-			global $babBody, $BAB_SESS_LOGGED, $babSiteName,$babSlogan,$babStyle;
+			global $babBody, $BAB_SESS_LOGGED, $babSiteName, $babSlogan, $babStyle;
 			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
-			$this->babLogoLT	= '';
-			$this->babLogoRT	= '';
-			$this->babLogoLB	= '';
-			$this->babLogoRB	= '';
-			$this->babBanner	= '';
-			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();	
+			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 			
 			$this->style = $babStyle;
 
-			$this->babLogoLT = bab_printTemplate($this, 'config.html', "babLogoLT");
-			$this->babLogoRT = bab_printTemplate($this, 'config.html', "babLogoRT");
-			$this->babLogoLB = bab_printTemplate($this, 'config.html', "babLogoLB");
-			$this->babLogoRB = bab_printTemplate($this, 'config.html', "babLogoRB");
-			$this->babBanner = bab_printTemplate($this, 'config.html', "babBanner");
 			$this->script = $babBody->script;
 			$this->home = bab_translate("Home");
 			$this->homeurl = $GLOBALS['babUrlScript'];
@@ -443,12 +433,6 @@ function printBody()
 				$this->menuitems = count($this->menukeys);
 			}
 
-//			$debug = bab_getDebug();
-//			if (false === $debug) {
-//				$debug = '';
-//			}
-//
-//			$this->content = $debug.$babBody->printout();
 			$this->message = $babBody->message;
 			$this->title = $babBody->title;
 			$this->msgerror = $babBody->msgerror;
@@ -468,15 +452,15 @@ function printBody()
 
 			switch ($propertyName) {
 
-				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
 				case 'content':
 					$debug = bab_getDebug();
 					if (false === $debug) {
 						$debug = '';
 					}
-					$this->content = $debug.$babBody->printout();
+					$this->content = $debug . $babBody->printout();
 					return $this->content;
 					
+				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
 				case 'nbsectleft':
 					$this->loadsections();
 					return $this->nbsectleft;
@@ -484,10 +468,49 @@ function printBody()
 				case 'nbsectright':
 					$this->loadsections();
 					return $this->nbsectright;
+				
+				case 'babLogoLT':
+					if (!isset($this->babLogoLT)) {
+						$this->babLogoLT = bab_printTemplate($this, 'config.html', 'babLogoLT');	
+					}
+					return $this->babLogoLT;
+
+				case 'babLogoRT':
+					if (!isset($this->babLogoRT)) {
+						$this->babLogoRT = bab_printTemplate($this, 'config.html', 'babLogoRT');	
+					}
+					return $this->babLogoRT;
+
+				case 'babLogoLB':
+					if (!isset($this->babLogoLB)) {
+						$this->babLogoLB = bab_printTemplate($this, 'config.html', 'babLogoLB');	
+					}
+					return $this->babLogoLB;
+
+				case 'babLogoRB':
+					if (!isset($this->babLogoRB)) {
+						$this->babLogoRB = bab_printTemplate($this, 'config.html', 'babLogoRB');	
+					}
+					return $this->babLogoRB;
+
+				case 'babBanner':
+					if (!isset($this->babBanner)) {
+						$this->babBanner = bab_printTemplate($this, 'config.html', 'babBanner');	
+					}
+					return $this->babBanner;
 					
 				case 'sitemapPosition':
 					$func = bab_functionality::get('Ovml/Function/SitemapPosition');
 					return $func->toString();
+
+				case 'sitemapPageKeywords':
+					if ( ($rootNode = bab_siteMap::getFromSite())
+					  && ($currentNodeId = bab_Sitemap::getPosition())
+					  && ($currentNode = $rootNode->getNodeById($currentNodeId))
+					  && ($sitemapItem = $currentNode->getData()) ) {
+						return $sitemapItem->getPageKeywords();
+					}
+					return '';
 
 				default:
 					return $this->$propertyName;
@@ -505,11 +528,16 @@ function printBody()
 		{
 			switch ($propertyName) {
 
-				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
 				case 'content':
 				case 'nbsectleft':
 				case 'nbsectright':
+				case 'babLogoLT':
+				case 'babLogoRT':
+				case 'babLogoLB':
+				case 'babLogoRB':
+				case 'babBanner':
 				case 'sitemapPosition':
+				case 'sitemapPageKeywords':
 					return true;
 			}
 			return false;
