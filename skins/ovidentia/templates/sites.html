@@ -230,8 +230,6 @@
 </form>
 <script type="text/javascript">
 <!--
-var sksel = { skselectedindex };
-var stsel = { stselectedindex };
 var tab = new Array({ cntskins });
 <!--#in getnextskin -->
 tab[{ iindex }] = new Array();
@@ -239,6 +237,8 @@ tab[{ iindex }] = new Array();
 tab[{ iindex }][tab[{ iindex }].length] = "{ styleval }";
 <!--#endin getnextstyle -->
 <!--#endin getnextskin -->
+var sksel = { skselectedindex };
+var stsel = { stselectedindex };
 
 function mm(index)
 {
@@ -251,7 +251,9 @@ function mm(index)
 		document.forms.formsite.style.options[i] = new Option(tab[index][i],tab[index][i]);
 		}
 		if( index == sksel )
+		{
 			document.forms.formsite.style.options[stsel].selected = true;
+		}
 	}
 }
 mm(sksel);
