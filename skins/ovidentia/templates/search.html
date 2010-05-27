@@ -649,7 +649,9 @@ function setselects(obj)
 </table>
 <!--#if mass_mailing -->
 <div class="bab_SearchRecord"><p>
-<span class="bottom"><a href="{ copy_emails_url }" onclick="window.open(this.href); return false;">{ t_copy_emails }</a></span>
+{ t_copy_emails }:&nbsp;
+<span class="bottom"><a href="{ copy_emails_url }&sep=," onclick="window.open(this.href); return false;">{ t_separator_comma }</a></span>
+<span class="bottom"><a href="{ copy_emails_url }&sep=;" onclick="window.open(this.href); return false;">{ t_separator_semicolon }</a></span>
 </p>
 </div>
 <!--#endif mass_mailing -->

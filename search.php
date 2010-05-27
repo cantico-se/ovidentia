@@ -1304,7 +1304,7 @@ switch($idx)
 
 	case 'emails':
 		$babBody->title = bab_translate('Emails');
-		bab_searchDirectoryEmails($what);
+		bab_searchDirectoryEmails($what,bab_rp('sep', ';') );
 		die;
 
 	default:

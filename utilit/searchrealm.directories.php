@@ -898,6 +898,8 @@ class bab_SearchRealmDirectories_ResultTemplate extends bab_SearchTemplate {
 		
 		$this->mass_mailing	= ($babBody->babsite['mass_mailing'] == 'Y'); 
 		$this->t_copy_emails = bab_translate('Copy email addresses');
+		$this->t_separator_comma		= bab_translate("Comma separator");
+		$this->t_separator_semicolon	= bab_translate("Semicolon separator");
 	}
 
 
