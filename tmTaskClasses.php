@@ -1072,7 +1072,7 @@
 					$oDate = BAB_DateTime::fromIsoDateTime($sDate);
 					if(null !== $oDate)
 					{
-						$sDate = bab_shortDate($oDate->getTimeStamp(), false);
+						$sDate = bab_formatDate("%j-%n-%Y",$oDate->getTimeStamp(), false);
 						$sDate = str_replace('/', '-', $sDate);
 					}
 					$iHour	= $aExplodedDate[2];	
