@@ -294,7 +294,6 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 			if( count($arrusers) == 0 || !in_array($id, $arrusers))
 				{
 				$arrusers[] = $id;
-				echo $arr['email'].'  '.$arr['name'];
 				if( $nbrecipients == 1 )
 					{
 					$mail->$mailBCT($arr['email'], $arr['name']);
