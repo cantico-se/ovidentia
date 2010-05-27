@@ -287,7 +287,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			if (!isset($sitemap)) {
 				$breadcrumb = array();
 			} else {
-				$node = isset($args['node']) ? $args['node'] : null; 
+				$node = (isset($args['node']) && (!empty($args['node']))) ? $args['node'] : null; 
 				$breadcrumb = $this->breadcrumbFromBaseNode($sitemap, $args['basenode'], $node);
 			}
 
