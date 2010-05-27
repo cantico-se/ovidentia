@@ -1039,7 +1039,7 @@ function notifyArticleDraftApprovers($id, $users)
 
 	if( count($users) > 0 )
 		{
-		$sql = "select email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($users).")";
+		$sql = "select distinct email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($users).")";
 		$result=$babDB->db_query($sql);
 		while( $arr = $babDB->db_fetch_array($result))
 			{
@@ -1228,33 +1228,35 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	$arrusers = aclGetAccessUsers(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']);
+	
+	$alreadySendUser = array();
 			
-	if( $arrusers )
-		{
+	if( $arrusers ){
 		$count = 0;
-		while(list(,$arr) = each($arrusers))
-			{
-			$mail->$mailBCT($arr['email'], $arr['name']);
-			$count++;
-
-			if( $count > $babBody->babsite['mail_maxperpacket'] )
-				{
-				$mail->send();
-				$mail->$clearBCT();
-				$mail->clearTo();
-				$count = 0;
+		while(list(,$arr) = each($arrusers)){
+			if(!ISSET($alreadySendUser[$arr['email']])){
+				$mail->$mailBCT($arr['email'], $arr['name']);
+				$count++;
+	
+				if( $count > $babBody->babsite['mail_maxperpacket'] ){
+					$mail->send();
+					$mail->$clearBCT();
+					$mail->clearTo();
+					$count = 0;
 				}
+				
+				$alreadySendUser[$arr['email']] = true;
 			}
+		}
 
-		if( $count > 0 )
-			{
+		if( $count > 0 ){
 			$mail->send();
 			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
-			}
-		}	
-	}
+		}
+	}	
+}
 
 
 function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, $restriction, $articleid)
@@ -1359,43 +1361,44 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 
 	include_once $babInstallPath."admin/acl.php";
 	$users = aclGetAccessUsers(BAB_TOPICSVIEW_GROUPS_TBL, $topics);
+	
+	$alreadySendUser = array();
 
 	$arrusers = array();
 	$count = 0;
-	foreach($users as $id => $arr)
-		{
-		if( count($arrusers) == 0 || !in_array($id, $arrusers))
-			{
+	foreach($users as $id => $arr){
+		if( count($arrusers) == 0 || !in_array($id, $arrusers)){
 			$arrusers[] = $id;
-			if( !empty($restriction))
+			if( !empty($restriction)){
 				$add = bab_articleAccessByRestriction($restriction, $id);
-			else
+			}else{
 				$add = true;
-			if( $add )
-				{
-				$mail->$mailBCT($arr['email'], $arr['name']);
-				$count++;
+			}
+			if( $add ){
+				if(!ISSET($alreadySendUser[$arr['email']])){
+					$mail->$mailBCT($arr['email'], $arr['name']);
+					$count++;
+					$alreadySendUser[$arr['email']] = true;
 				}
 			}
+		}
 
-		if( $count > $babBody->babsite['mail_maxperpacket'] )
-			{
+		if( $count > $babBody->babsite['mail_maxperpacket'] ){
 			$mail->send();
 			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
-			}
-
 		}
 
-	if( $count > 0 )
-		{
+	}
+
+	if( $count > 0 ){
 		$mail->send();
 		$mail->$clearBCT();
 		$mail->clearTo();
 		$count = 0;
-		}
-	}		
+	}
+}		
 
 
 function notifyCommentApprovers($idcom, $nfusers)
@@ -1470,7 +1473,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 
 		if( count($nfusers) > 0 )
 			{
-			$sql = "select email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($nfusers).")";
+			$sql = "select distinct email from ".BAB_USERS_TBL." where id IN (".$babDB->quote($nfusers).")";
 			$result=$babDB->db_query($sql);
 			while( $arr = $babDB->db_fetch_array($result))
 				{
@@ -2404,6 +2407,3 @@ function indexAllArticles_end($param) {
 
 	return true;
 }
-
-
-
