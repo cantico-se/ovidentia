@@ -208,10 +208,7 @@ function remove_field()
 	<tr> 
 		<td align="right">{ sAttribute }</td>
 		<td> 
-			<select name="readonly[]">
-				<option value="N" selected>{ sNo }</option>
-				<option value="Y" >{ sYes }</option>
-			</select>
+			<input type="checkbox" name="readonly[]" value="Y" />
 		</td>
 	</tr>
 <!--#if bManageMaxDownloads -->
@@ -858,10 +855,11 @@ window.focus();
 <tr> 
 <td align="right">{ attribute }</td>
 <td>
-<select name="readonly">
-  <option value="N" { noselected }>{ no }</option>
-  <option value="Y" { yesselected }>{ yes }</option>
-</select>
+<!--#if readonlySelected -->
+<input type="checkbox" name="readonly" value="Y" checked="checked" />
+<!--#else readonlySelected -->
+<input type="checkbox" name="readonly" value="Y" />
+<!--#endif readonlySelected -->
 </td>
 </tr>
 <!--#if bviewnf -->

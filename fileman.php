@@ -2350,6 +2350,9 @@ function pasteFile()
 	return;
 }
 
+/**
+ * Form displayed when we clic on the name of a file in the filemanager
+ */
 function viewFile()
 {
 	global $babBody, $babDB, $BAB_SESS_USERID;
@@ -2497,14 +2500,12 @@ function viewFile()
 			$this->nameval = bab_toHtml($oFolderFile->getName());
 			$this->attribute = bab_translate("Read only");
 			if ('Y' === $oFolderFile->getReadOnly()) {
-				$this->yesselected = 'selected';
-				$this->noselected = '';
+				$this->readonlySelected = true;
 				if ($this->bupdate) {
 					$this->bupdate = false;
 				}
 			} else {
-				$this->noselected = 'selected';
-				$this->yesselected = '';
+				$this->readonlySelected = false;
 			}
 
 			$this->confirm = bab_translate("Confirm");
@@ -4059,7 +4060,7 @@ switch($sAction)
 
 		$bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
 				$oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'),
-				bab_pp('readonly'), bab_pp('maxdownloads', null));
+				bab_pp('readonly', 'N'), bab_pp('maxdownloads', null));
 		if(false === $bSuccess)
 		{
 			$idx = "displayAddFileForm";
@@ -4078,7 +4079,7 @@ switch($sAction)
 	case 'updateFile':
 		$bSuccess = saveUpdateFile(bab_pp('idf'), bab_fmFile::upload('uploadf'),
 			bab_pp('fname'), bab_pp('description'), bab_pp('keywords'),
-			bab_pp('readonly'), bab_pp('confirm'), bab_pp('bnotify'),
+			bab_pp('readonly', 'N'), bab_pp('confirm'), bab_pp('bnotify'),
 			isset($_POST['description']), bab_pp('maxdownloads'));
 		if(false === $bSuccess)
 		{

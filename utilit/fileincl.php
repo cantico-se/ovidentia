@@ -1437,6 +1437,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile)
 			$oFolderFile->setStatusIndex($index_status);
 			$oFolderFile->save();
 			
+			require_once dirname(__FILE__) . '/reference.class.php';
 			$oReference		= bab_Reference::makeReference('ovidentia', '', 'files', 'file', $idf);
 			
 			$event = new bab_eventFmAfterAddVersion;
