@@ -140,7 +140,9 @@
 </table>
 
 <!--#if mass_mailing -->
-<input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
+<div id="bab_copy_email_addresses" style="display: none">
+{ t_copy_email_addresses }:&nbsp;<a href="javascript:bab_showAddressesWindow(',');">{ t_separator_comma }</a>&nbsp;{ t_or_txt }&nbsp;<a href="javascript:bab_showAddressesWindow(';');">{ t_separator_semicolon }</a>
+</div>
 <!--#endif mass_mailing -->
 
 <script type="text/javascript">
@@ -164,10 +166,19 @@ function bab_initPage()
 	}
 };
 
-function bab_showAddressesWindow()
+function bab_showAddressesWindow(sep)
 {
 	var w = window.open();
-	w.document.writeln(window.bab_emailAddresses.join(', '));
+	window.bab_emailAddresses.sort();
+	var tab = [];
+	for (var i = 0; i < window.bab_emailAddresses.length; i++) {
+		if( i && window.bab_emailAddresses[i-1] == window.bab_emailAddresses[i] )
+		{
+			continue;
+		}
+		tab.push(window.bab_emailAddresses[i]);
+	}
+	w.document.writeln(tab.join(sep+' '));
 }
 
 bab_initFunctions.push(bab_initPage());

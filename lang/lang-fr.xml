@@ -3079,4 +3079,6 @@
 <string id="Allow commenters to rate articles">Permettre aux commentateurs de noter les articles</string>
 <string id="Delete all users created since">Supprimer tout les utilisateurs créés depuis le</string>
 <string id="Request date">Date de la demande</string>
+<string id="Comma separator">Séparateur virgule</string>
+<string id="Semicolon separator">Séparateur point virgule</string>
 </fr>

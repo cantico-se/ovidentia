@@ -584,6 +584,9 @@ function displayUsersList($ocid, $oeid, $update, $pos, $xf, $q, $entityId = null
 			$this->t_entity = bab_translate("Entity");
 			$this->t_name = bab_translate("Name");
 			$this->t_all_entities = bab_translate("All entities");
+			$this->t_or_txt					= strtolower(bab_translate("Or"));
+			$this->t_separator_comma		= bab_translate("Comma separator");
+			$this->t_separator_semicolon	= bab_translate("Semicolon separator");
 			$this->t_copy_email_addresses = bab_translate("Copy email addresses");
 			$this->t_send_email = bab_translate("Send email");
 

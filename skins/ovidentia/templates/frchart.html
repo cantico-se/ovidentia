@@ -601,11 +601,20 @@ function bab_initPage()
 
 bab_initFunctions.push(bab_initPage);
 
-function bab_showAddressesWindow()
+function bab_showAddressesWindow(sep)
 {
 	bab_dialog('', { width: '600px', height: '400px' });
 	var w = bab_dialog._modal;
-	w.document.writeln(window.bab_emailAddresses.join(', '));
+	window.bab_emailAddresses.sort();
+	var tab = [];
+	for (var i = 0; i < window.bab_emailAddresses.length; i++) {
+		if( i && window.bab_emailAddresses[i-1] == window.bab_emailAddresses[i] )
+		{
+			continue;
+		}
+		tab.push(window.bab_emailAddresses[i]);
+	}
+	w.document.writeln(tab.join(sep+' '));
 }
 
 </script>
@@ -718,7 +727,10 @@ function bab_showAddressesWindow()
 </table>
 
 <!--#if mass_mailing -->
-<input type="button" id="bab_copy_email_addresses" style="display: none" onclick="bab_showAddressesWindow()" value="{ t_copy_email_addresses }" />
+<div id="bab_copy_email_addresses" style="display: none">
+{ t_copy_email_addresses }:&nbsp;<a href="javascript:bab_showAddressesWindow(',');">{ t_separator_comma }</a>&nbsp;{ t_or_txt }&nbsp;<a href="javascript:bab_showAddressesWindow(';');">{ t_separator_semicolon }</a>
+</div>
+
 <input type="submit" id="bab_send_email" onclick="bab_dialog('', { width: '800px', height: '500px' }); document.getElementById('bab_member_list').target = bab_dialog._modal.name; return t;" value="{ t_send_email }" />
 <!--#endif mass_mailing -->
 
