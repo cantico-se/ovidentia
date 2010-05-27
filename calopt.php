@@ -626,7 +626,25 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	";
 	$babDB->db_query($req);
 	
-	$workinghours = bab_pp('workinghours');
+	$workinghours = bab_pp('workinghours', array());
+	/* $workinghours : array with periods selectionned
+	array(7) {
+	  [0]=>
+	  string(0) ""
+	  [1]=>
+	  string(4) "8-18"
+	  [2]=>
+	  string(4) "8-18"
+	  [3]=>
+	  string(4) "8-18"
+	  [4]=>
+	  string(4) "8-18"
+	  [5]=>
+	  string(4) "8-18"
+	  [6]=>
+	  string(0) ""
+	}
+	*/
 	foreach($workinghours as $weekDay => $periods) {
 		if (!empty($periods)) {
 		$arr = explode(',',$periods); 
