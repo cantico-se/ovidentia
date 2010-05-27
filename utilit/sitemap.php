@@ -68,7 +68,22 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		return parent::appendChild($newNode, $id);
 	}
 	
-	
+
+	/**
+	 * Creates a node containing a sitemapItem.
+	 *
+	 * @param bab_SitemapItem $sitemapItem
+	 * @param string $id
+	 * @return bab_Node
+	 */
+	public function createNode($sitemapItem, $id = null)
+	{
+		$newNode = parent::createNode($sitemapItem, $id);
+		$sitemapItem->node = $newNode;
+		return $newNode;
+	}
+
+
 	/**
 	 * get sitemap node id from the rewrite string
 	 * a rewrite string is a path composed by rewrite names and slashes like Article/Category/topic
@@ -237,6 +252,11 @@ class bab_siteMapItem {
 	 */
 	public $target = null;
 
+	/**
+	 * The containing bab_Node 
+	 * @var bab_Node
+	 */
+	public $node = null;
 
 	/**
 	 * Compare sitemap items
@@ -272,6 +292,69 @@ class bab_siteMapItem {
 		}
 		
 		return $this->id_function;
+	}
+	
+	
+	/**
+	 * Returns a list of comma separated keywords for an html meta/keywords tag.
+	 * 
+	 * @param bool		$inherit		If true and pageKeywords are not defined the method will return the pageKeywords of
+	 * 									the closest parent with pageKeywords defined.
+	 */	
+	public function getPageKeywords($inherit = true)
+	{
+		if (!empty($this->pageKeywords)) {
+			return $this->pageKeywords;
+		}
+		if ($inherit
+		  && $this->node
+		  && ($parentNode = $this->node->parentNode())
+		  && ($parentSitemapItem = $parentNode->getData())) {
+			return $parentSitemapItem->getPageKeywords();
+		}
+		return '';
+	}
+
+
+	/**
+	 * Returns the page title for the html title tag.
+	 * 
+	 * @param bool		$inherit		If true and pageTitle are not defined the method will return the pageTitle of
+	 * 									the closest parent with pageTitle defined.
+	 */	
+	public function getPageTitle($inherit = true)
+	{
+		if (!empty($this->pageTitle)) {
+			return $this->pageTitle;
+		}
+		if ($inherit
+		  && $this->node
+		  && ($parentNode = $this->node->parentNode())
+		  && ($parentSitemapItem = $parentNode->getData())) {
+			return $parentSitemapItem->getPageTitle();
+		}
+		return '';
+	}
+
+
+	/**
+	 * Returns the page description for an html meta/description tag.
+	 * 
+	 * @param bool		$inherit		If true and pageDescription are not defined the method will return the pageDescription of
+	 * 									the closest parent with pageDescription defined.
+	 */	
+	public function getPageDescription($inherit = true)
+	{
+		if (!empty($this->pageDescription)) {
+			return $this->pageDescription;
+		}
+		if ($inherit
+		  && $this->node
+		  && ($parentNode = $this->node->parentNode())
+		  && ($parentSitemapItem = $parentNode->getData())) {
+			return $parentSitemapItem->getPageDescription();
+		}
+		return '';
 	}
 }
 
