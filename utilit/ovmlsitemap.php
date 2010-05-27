@@ -219,12 +219,15 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 	 * 
 	 * @param bab_siteMap	$sitemap
 	 * @param string 		$baseNodeId
+	 * @param string		$pageId			Optional node id, use automatic kernel current node if not specified.		
 	 */	
-	public function breadCrumbFromBaseNode($sitemap, $baseNodeId)
+	public function breadCrumbFromBaseNode($sitemap, $baseNodeId, $pageId = null)
 	{
-		$pageId = bab_Sitemap::getPosition();
 		if (!isset($pageId)) {
-			return array();
+			$pageId = bab_Sitemap::getPosition();
+			if (!isset($pageId)) {
+				return array();
+			}
 		}
 
 		$baseNode = $sitemap->getNodeById($baseNodeId);
@@ -284,7 +287,8 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			if (!isset($sitemap)) {
 				$breadcrumb = array();
 			} else {
-				$breadcrumb = $this->breadcrumbFromBaseNode($sitemap, $args['basenode']);
+				$node = isset($args['node']) ? $args['node'] : null; 
+				$breadcrumb = $this->breadcrumbFromBaseNode($sitemap, $args['basenode'], $node);
 			}
 
  		} else if (isset($args['sitemap'])) {
