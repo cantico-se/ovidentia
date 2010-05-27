@@ -387,7 +387,10 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 
 	public function __construct() {
 		global $babDB;
+		global $babBody;
 		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+
+		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
 
 		$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
 		
