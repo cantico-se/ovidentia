@@ -319,7 +319,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			global $babBody;
 
 			$this->mass_mailing				= ($babBody->babsite['mass_mailing'] == 'Y'); 
-			$this->t_or_txt					= strtolower(bab_translate("Or"));
+			$this->t_or_txt					= mb_strtolower(bab_translate("Or"));
 			$this->t_separator_comma		= bab_translate("Comma separator");
 			$this->t_separator_semicolon	= bab_translate("Semicolon separator");
 			$this->t_copy_email_addresses	= bab_translate("Copy email addresses");
