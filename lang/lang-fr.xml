@@ -329,7 +329,7 @@
 <string id="ERROR: Your email is not valid !!">ERREUR : votre adresse de messagerie n'est pas correcte !</string>
 <string id="ERROR: Email message can't be sent !!">ERREUR : le message n'a pas pu être envoyé !</string>
 <string id="Edit request vacation">Modifier une demande de congé</string>
-<string id="Edit">Editer</string>
+<string id="Edit">Modifier</string>
 <string id="Email a new password">Envoyer un nouveau mot de passe par email</string>
 <string id="Email site">Adresse de messagerie du site</string>
 <string id="Email">Email</string>
@@ -1385,7 +1385,7 @@
 <string id="Draft creation failed">La création du brouillon a échoué</string>
 <string id="Write article">Rédaction de l'article</string>
 <string id="Set article properties">Mise en place des propriétés de l'article</string>
-<string id="Article edition">Edition de l'article</string>
+<string id="Article edition">Modification de l'article</string>
 <string id="Drafts">Brouillons</string>
 <string id="My Articles">Mes articles</string>
 <string id="In modification by">En modification par</string>
@@ -1461,7 +1461,7 @@
 <string id="Who can manage home pages for this site?">Qui peut gérer les pages d'accueil ?</string>
 <string id="Online">En Ligne</string>
 <string id="DF-">DF-</string>
-<string id="Edit draft">Editer le brouillon</string>
+<string id="Edit draft">Modifier le brouillon</string>
 <string id="You must be logged as administrator">Vous devez être connecté en tant qu'administrateur</string>
 <string id="Zlib php module missing">Le module php Zlib n'est pas installé</string>
 <string id="New core name">Nom du nouveau noyau</string>
@@ -2036,7 +2036,7 @@
 <string id="Task fields">Champs de tâche</string>
 <string id="Categories list">Liste des catégories</string>
 <string id="Notices">Notifications</string>
-<string id="Edition of a project space">Edition d'un espace de projets</string>
+<string id="Edition of a project space">Modification d'un espace de projets</string>
 <string id="Project space = ">Espace de projets = </string>
 <string id="This action will delete the project space and all references">Cette action supprime l'espace de projets et tous ses composants.</string>
 <string id="Continue ?">Voulez-vous continuer ?</string>
@@ -2070,7 +2070,7 @@
 <string id="Click here to delete">Cliquez ici pour supprimer</string>
 <string id="Projects list">Liste des projets</string>
 <string id="Add a category">Ajouter une catégorie</string>
-<string id="Edition of a category">Edition d'une catégorie</string>
+<string id="Edition of a category">Modification d'une catégorie</string>
 <string id="This action will delete those categories and all references">Cette action supprime ces catégories et toutes leurs références</string>
 <string id="This action will delete the category and all references">Cette action supprime la catégorie et toutes ses références</string>
 <string id="Delete category">Supprimer la catégorie</string>
@@ -2146,7 +2146,7 @@
 <string id="Add a project">Ajouter un projet</string>
 <string id="Display project commentaries list">Afficher la liste des commentaires du projet</string>
 <string id="Display tasks list">Afficher la liste des tâches</string>
-<string id="Edition of a project">Edition d'un projet</string>
+<string id="Edition of a project">Modification d'un projet</string>
 <string id="You do not have the right to create/modify a project">Vous n'avez pas les droits suffisants pour créer ou modifier le projet</string>
 <string id="This action will delete the project and all references">Cette action supprime le projet et toutes ses références</string>
 <string id="Project = ">Projet = </string>
@@ -2160,14 +2160,14 @@
 <string id="Projects configuration">Configuration des projets</string>
 <string id="Commentaries list">Liste des commentaires</string>
 <string id="You do not have the right to list the commentaries">Vous n'avez pas le droit de visualiser les commentaires</string>
-<string id="Edition of a commentary">Edition du commentaire</string>
+<string id="Edition of a commentary">Modification du commentaire</string>
 <string id="This action will delete the project commentary">Cette action supprime le commentaire du projet</string>
 <string id="Delete project commentary ">Supprimer le commentaire du projet </string>
 <string id="Task list">Liste de la tâche</string>
 <string id="Tasks list">Liste des tâches</string>
 <string id="Add a task">Ajouter une tâche</string>
 <string id="You do not have the right to list the tasks">Vous n'avez pas les droits suffisants pour lister les tâches</string>
-<string id="Edition of a task">Edition d'une tâche</string>
+<string id="Edition of a task">Modification d'une tâche</string>
 <string id="You do not have the right to create/edit task">Vous n'avez pas les droits suffisants pour créer ou modifier la tâche</string>
 <string id="The task is not delatable because it is not stopped">La tâche ne peut pas être supprimée parce qu'elle n'est pas arrêtée</string>
 <string id="Cannot retrieve task information">Impossible de récupérer les informations de la tâche</string>
@@ -2219,7 +2219,7 @@
 <string id="Who can view this statistic basket?">Qui peut consulter ce dossier ?</string>
 <string id="Delete basket">Supprimer le dossier</string>
 <string id="Modify basket">Modifier le dossier</string>
-<string id="Edit basket content">Editer le contenu du dossier</string>
+<string id="Edit basket content">Modifier le contenu du dossier</string>
 <string id="Add basket content">Ajouter du contenu au dossier</string>
 <string id="Basket content">Contenu du dossier</string>
 <string id="Dashboard from %s to %s">Tableau de bord du %s au %s</string>
@@ -2504,7 +2504,7 @@
 <string id="In progress">En cours</string>
 <string id="Ended">Achevées</string>
 <string id="Users can add new tags">Les utilisateurs peuvent ajouter de nouveaux mots-clés dans le thésaurus</string>
-<string id="Edit folder">Editer le répertoire</string>
+<string id="Edit folder">Modifier le répertoire</string>
 <string id="Unhandled action">Action non traitée</string>
 <string id="The root folder cannot be cutted">Le répertoire racine ne peut être coupé</string>
 <string id="This folder does not exists">Ce répertoire n'existe pas</string>
