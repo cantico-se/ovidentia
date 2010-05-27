@@ -99,6 +99,9 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryId', $this->IdEntries[$this->idx]['id']);
 		$this->ctx->curctx->push('SitemapEntryOnclick', $this->IdEntries[$this->idx]['onclick']);
 		$this->ctx->curctx->push('SitemapEntryFolder', $this->IdEntries[$this->idx]['folder']);
+		$this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
+		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
+		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
@@ -140,6 +143,9 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['id'] = $item->id_function;
 					$tmp['onclick'] = $item->onclick;
 					$tmp['folder'] = $item->folder;
+					$tmp['pageTitle'] = $item->getPageTitle();
+					$tmp['pageDescription'] = $item->getPageDescription();
+					$tmp['pageKeywords'] = $item->getPageKeywords();					
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
 				}
@@ -157,7 +163,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 /**
  * Get path starting from root to a specific sitemap node
- * <OCSitemapPath node="node" sitemap="sitemapName">
+ * <OCSitemapPath node="node" sitemap="sitemapName" [basenode="node"]>
  * 
  * </OCSitemapPath>
  * 
@@ -176,6 +182,8 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 		parent::setOvmlContext($ctx);
 		$node = $ctx->get_value('node');
 
+		$baseNode = $ctx->get_value('basenode');
+		
 		if (isset($this->sitemap)) {
 			$node = $this->sitemap->getNodeById($node);
 	
@@ -187,7 +195,13 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$tmp['id'] = $item->id_function;
 				$tmp['onclick'] = $item->onclick;
 				$tmp['folder'] = $item->folder;
+				$tmp['pageTitle'] = $item->getPageTitle();
+				$tmp['pageDescription'] = $item->getPageDescription();
+				$tmp['pageKeywords'] = $item->getPageKeywords();
 				array_unshift($this->IdEntries, $tmp);
+				if ($item->id_function === $baseNode) {
+					break;
+				}
 				$node = $node->parentNode();
 			}
 	
@@ -218,14 +232,14 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 	/**
 	 * 
 	 * @param bab_siteMap	$sitemap
-	 * @param string 		$baseNodeId
-	 * @param string		$pageId			Optional node id, use automatic kernel current node if not specified.		
+	 * @param string 		$baseNodeId		The node from which the breadcrumb will start.
+	 * @param string		$nodeId			Optional node id, use automatic kernel current node if not specified.		
 	 */	
-	public function breadCrumbFromBaseNode($sitemap, $baseNodeId, $pageId = null)
+	public function breadCrumbFromBaseNode($sitemap, $baseNodeId, $nodeId = null)
 	{
-		if (!isset($pageId)) {
-			$pageId = bab_Sitemap::getPosition();
-			if (!isset($pageId)) {
+		if (!isset($nodeId)) {
+			$nodeId = bab_Sitemap::getPosition();
+			if (!isset($nodeId)) {
 				return array();
 			}
 		}
@@ -240,13 +254,13 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		$matchingNodes = array();
 		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
 			/* @var $node bab_Node */
-			if ($node->getId() === $pageId) {
+			if ($node->getId() === $nodeId) {
 				$matchingNodes[] = $node;
 				continue;
 			}
 			/* @var $data bab_SitemapItem */
 			$data = $node->getData();
-			if ($data->getTarget() === $pageId) {
+			if ($data->getTarget() === $nodeId) {
 				$matchingNodes[] = $node;
 			}
 		}
