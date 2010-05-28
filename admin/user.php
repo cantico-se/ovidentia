@@ -610,10 +610,8 @@ function updateNickname($userId, $newNickname)
  */
 function updatePassword($userId, $newpwd1, $newpwd2)
 {
-	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
-	
 	$error = '';
-	$res = bab_updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
+	$res = updateUserPasswordById($userId, $newpwd1, $newpwd2, false, false, $error);
 	
 	if (!$res) {
 		global $babBody;

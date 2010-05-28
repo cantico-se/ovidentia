@@ -218,7 +218,7 @@ class bab_userModify {
 	public static function updateUserById($id, $info, &$error) {
 
 	
-		global $babDB;
+		global $babDB, $BAB_HASH_VAR;
 		$res = $babDB->db_query('select u.*, det.mn, det.id as id_entry from '.BAB_USERS_TBL.' u left join '.BAB_DBDIR_ENTRIES_TBL.' det on det.id_user=u.id where u.id=\''.$babDB->db_escape_string($id).'\'');
 		$arruq = array();
 		$arrdq = array();
@@ -230,6 +230,30 @@ class bab_userModify {
 			if( is_array($info) && count($info) /*&& isset($info['disabled'])*/)
 			{
 	
+				if( isset($info['nickname']) )
+				{
+					$info['nickname'] = trim($info['nickname']);
+					
+					if (empty($info['nickname'])) {
+						$error = bab_translate("You must provide a nickname");
+						return false;
+					}
+					if (mb_strpos($info['nickname'], ' ') !== false) {
+						$error = bab_translate("Login ID should not contain spaces");
+						return false;
+					}
+					
+					$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' where id !='".$arruinfo['id']."'");
+					if( $babDB->db_num_rows($res) > 0) {
+						$error = bab_translate("This login ID already exists !!");
+						return false;
+					}
+					
+					$hash = md5($info['nickname'].$BAB_HASH_VAR);
+					$arruq[] = 'confirm_hash=\''.$babDB->db_escape_string($hash).'\'';
+					$arruq[] = 'nickname=\''.$babDB->db_escape_string($info['nickname']).'\'';
+				}
+				
 				if( isset($info['password']) && empty($info['password']) )
 				{
 					$error = bab_translate("Empty password");
@@ -238,7 +262,11 @@ class bab_userModify {
 	
 				if( isset($info['password']) )
 				{
-					$arruq[] = 'password=\''.$babDB->db_escape_string(md5(mb_strtolower($info['password']))).'\'';
+					include_once $GLOBALS['babInstallPath'].'admin/register.php';
+					if(!updateUserPasswordById($arruinfo['id'], $info['password'], $info['password'], true, true, $error))
+					{
+						return false;
+					}
 				}
 				
 				if( isset($info['disabled']))
