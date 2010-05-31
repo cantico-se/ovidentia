@@ -221,7 +221,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 
 /**
- * Return the sitemap position in a html UL LI
+ * Return the sitemap position in a html LI
  * <OFSitemapPosition sitemap="sitemapName">
  * the sitemap attribute is optional, the default value is the sitemap selected in site options
  * 
@@ -323,8 +323,9 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			return $_SESSION['bab_sitemap_lastknowposition'];
 		}
 
-		$html = '<ul class="sitemap-position">'."\n";
-		
+//		$html = '<ul class="sitemap-position">'."\n";
+		$html = '';
+
 		foreach($breadcrumb as $node) {
 			
 			if (!($node instanceOf bab_Node)) {
@@ -362,7 +363,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			}
 		}
 		
-		$html .= '</ul>';
+//		$html .= '</ul>';
 	
 		if (isset($args['keeplastknown'])) {
 			$_SESSION['bab_sitemap_lastknowposition'] = $html;
