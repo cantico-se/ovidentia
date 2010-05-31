@@ -322,7 +322,7 @@ class bab_siteMapItem {
 	 * @param bool		$inherit		If true and pageTitle are not defined the method will return the pageTitle of
 	 * 									the closest parent with pageTitle defined.
 	 */	
-	public function getPageTitle($inherit = true)
+	public function getPageTitle($inherit = false)
 	{
 		if (!empty($this->pageTitle)) {
 			return $this->pageTitle;
@@ -332,6 +332,8 @@ class bab_siteMapItem {
 		  && ($parentNode = $this->node->parentNode())
 		  && ($parentSitemapItem = $parentNode->getData())) {
 			return $parentSitemapItem->getPageTitle();
+		} else {
+			return $GLOBALS['babBody']->title;
 		}
 		return '';
 	}

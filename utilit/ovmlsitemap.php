@@ -188,6 +188,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 			$node = $this->sitemap->getNodeById($node);
 	
 			while ($node && ($item = $node->getData())) {
+				/* @var $item bab_SitemapItem */
 				$tmp = array();
 				$tmp['url'] = $item->url;
 				$tmp['text'] = $item->name;
