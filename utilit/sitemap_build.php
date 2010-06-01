@@ -274,7 +274,12 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 			$this->propagation_status = false;
 			return false;
 		}
-
+		
+		
+		if (!$this->loadChildNodes($obj->position)) {
+			return false;
+		}
+		
 		$obj->progress = true;
 		$this->nodes[$obj->uid] = $obj;
 		$this->buidtree($obj);
@@ -295,6 +300,11 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 			$this->propagation_status = false;
 			return false;
 		}
+		
+		if (!$this->loadChildNodes($obj->position)) {
+			return false;
+		}
+
 		$obj->folder = true;
 		
 		if (null === $obj->progress) {
@@ -1373,26 +1383,13 @@ function bab_siteMap_loadNodes($path, $levels) {
 		$event->nodes[$dgid] = $dgNode;
 		$event->buidtree($dgNode);
 	}
-	
-	
-	
+
 	bab_fireEvent($event);
 	
-	
-	// add orphans nodes to tree
 	foreach($event->queue as $missing_node => $orphan) {
-		$newNode = new bab_siteMap_buildItem($missing_node);
-		$newNode->setPosition(array('root'));
-		$newNode->folder = 1;
-		$newNode->setLabel($missing_node);
-		$newNode->setLink('?tg=sitemap&node='.urlencode($missing_node));
-
-		bab_debug($newNode, DBG_TRACE, 'Sitemap');
-
-		$event->nodes[$newNode->uid] = $newNode;
-		$event->buidtree($newNode);
+		unset($event->nodes[$orphan]);
 	}
-	
+	$event->queue = array();
 	
 	return $event;
 	
@@ -1857,19 +1854,13 @@ function bab_sitemap_userSection($event) {
 				
 				}
 			
-			}
+			//}
 			
-		
-		
-		
-		
-		
-		
 	
-			$position = array('root', $id_delegation, $dg_prefix.'User');
+				$position = array('root', $id_delegation, $dg_prefix.'User');
 			
 			
-			if ($event->loadChildNodes($position)) {
+			//if ($event->loadChildNodes($position)) {
 				
 				$item = $event->createItem($dg_prefix.'UserSectionAddons');
 				$item->setLabel(bab_translate("Add-ons links"));
