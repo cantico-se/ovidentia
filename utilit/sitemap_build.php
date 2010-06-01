@@ -302,6 +302,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		}
 		
 		if (!$this->loadChildNodes($obj->position)) {
+			// bab_debug(sprintf('The node %s is not in the required subtree (%s)',implode('/', $obj->position).'/'.$obj->uid, implode('/', $this->path)), DBG_TRACE, 'Sitemap');
 			return false;
 		}
 

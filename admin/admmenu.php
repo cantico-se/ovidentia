@@ -43,7 +43,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 	$addon_urls = array();
 	
-	if( $babBody->isSuperAdmin )
+	if( $babBody->isSuperAdmin && ($event->loadChildNodes(array('root', 'DGAll', 'babAdmin')) || $event->loadChildNodes(array('root', 'DG0', 'babDG0Admin')))  )
 		{
 		$addons = bab_addonsInfos::getRows();
 
@@ -75,7 +75,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 
 
-
+	
 
 
 	// add nodes to delegations

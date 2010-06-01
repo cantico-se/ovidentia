@@ -196,9 +196,11 @@ function babAdminSection($close)
 	$this->title = bab_translate("Administration");
 	if( $close )
 		return;
+		
+	$dgPrefix = 'babDG'.$babBody->currentAdmGroup;
 
-	$rootNode = bab_siteMap::get(array('root', 'DGAll', 'babAdmin'));
-	$nodename = 'babDG'.$babBody->currentAdmGroup.'AdminSection';
+	$rootNode = bab_siteMap::get(array('root', 'DG'.$babBody->currentAdmGroup , $dgPrefix.'Admin'));
+	$nodename = $dgPrefix.'AdminSection';
 
 	$this->babAdminSection = $rootNode->getNodeById($nodename);
 	
@@ -221,7 +223,7 @@ function babAdminSection($close)
 		$this->babAdminSection = $this->babAdminSection->firstChild();
 	}
 	
-	$this->babAdminSectionAddons = $rootNode->getNodeById('babDG'.$babBody->currentAdmGroup.'AdminSectionAddons');
+	$this->babAdminSectionAddons = $rootNode->getNodeById($dgPrefix.'AdminSectionAddons');
 
 	
 
