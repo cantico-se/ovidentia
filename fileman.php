@@ -1592,6 +1592,10 @@ function listFiles()
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
 					'&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
 
+				$this->undopasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=undopasteFolder&id=' . $iIdRootFolder .
+					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
+					'&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
+				
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath);
 
 				$this->altbg = !$this->altbg;
@@ -1809,6 +1813,8 @@ function listFiles()
 					$this->urlget = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&sAction=getFile&id=".$iId."&gr=".$sGr."&path=".$upath."&file=".$ufile.'&idf='.$arr['id']);
 
 					$this->pasteurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&sAction=pasteFile&id=' . $iId . '&gr=' . $sGr .
+						'&path=' . urlencode($this->path) . '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $upath . '&file=' . $ufile);
+					$this->undopasteurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&sAction=undopasteFile&id=' . $iId . '&gr=' . $sGr .
 						'&path=' . urlencode($this->path) . '&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $upath . '&file=' . $ufile);
 				}
 				$i++;
@@ -2349,6 +2355,80 @@ function pasteFile()
 	}
 	return;
 }
+
+function undopasteFile()
+{
+	global $babBody, $babDB;
+
+	$oFileManagerEnv =& getEnvObject();
+
+	$iIdSrcRootFolder	= (int) bab_gp('iIdSrcRootFolder', 0);
+	$iIdTrgRootFolder	= $iIdSrcRootFolder;
+	$sSrcPath			= (string) bab_gp('sSrcPath', '');
+	$sTrgPath			= $sSrcPath;
+	$sFileName			=  (string) bab_gp('file', '');
+	$sUpLoadPath		= $oFileManagerEnv->getRootFmPath();
+
+	if(canPasteFile($iIdSrcRootFolder, $sSrcPath, $iIdTrgRootFolder, $sTrgPath, $sFileName))
+	{
+//		bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Paste OK');
+
+		$iOldIdOwner		= $iIdSrcRootFolder;
+		$iNewIdOwner		= $iIdTrgRootFolder;
+		$sOldRelativePath	= '';
+		$sNewRelativePath	= '';
+
+		if($oFileManagerEnv->userIsInPersonnalFolder())
+		{
+			$sOldEndPath = (mb_strlen(trim($sSrcPath)) > 0) ? '/' : '';
+			$sNewEndPath = (mb_strlen(trim($sTrgPath)) > 0) ? '/' : '';
+
+			$sOldRelativePath = $sSrcPath . $sOldEndPath;
+			$sNewRelativePath = $sTrgPath . $sNewEndPath;
+		}
+		else if($oFileManagerEnv->userIsInCollectiveFolder())
+		{
+			$oFmFolder = null;
+			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdSrcRootFolder, $sSrcPath, $iOldIdOwner, $sOldRelativePath, $oFmFolder);
+			BAB_FmFolderHelper::getFileInfoForCollectiveDir($iIdTrgRootFolder, $sTrgPath, $iNewIdOwner, $sNewRelativePath, $oFmFolder);
+		}
+
+		$sOldFullPathName = $sUpLoadPath . $sOldRelativePath . $sFileName;
+		$sNewFullPathName = $sUpLoadPath . $sNewRelativePath . $sFileName;
+
+		$oFolderFileSet	= new BAB_FolderFileSet();
+		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
+		$oGroup			=& $oFolderFileSet->aField['sGroup'];
+		$oPathName		=& $oFolderFileSet->aField['sPathName'];
+		$oName			=& $oFolderFileSet->aField['sName'];
+		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
+
+		if($sOldFullPathName === $sNewFullPathName)
+		{
+			$oCriteria = $oIdOwner->in($iOldIdOwner);
+			$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
+			$oCriteria = $oCriteria->_and($oPathName->in($sOldRelativePath));
+			$oCriteria = $oCriteria->_and($oName->in($sFileName));
+			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+
+			$oFolderFile = $oFolderFileSet->get($oCriteria);
+			if(!is_null($oFolderFile))
+			{
+				$oFolderFile->setState('');
+				$oFolderFile->save();
+				return true;
+			}
+		}
+	}
+	else
+	{
+		//bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__ . ' Cannot Paste');
+		$babBody->msgerror = bab_translate("Cannot undo paste file");
+		return false;
+	}
+	return false;
+}
+
 
 /**
  * Form displayed when we clic on the name of a file in the filemanager
@@ -3186,6 +3266,34 @@ function pasteFolder()
 	}
 }
 
+function undoPasteFolder()
+{
+//	bab_debug(__LINE__ . ' ' . basename(__FILE__) . ' ' . __FUNCTION__);
+
+	global $babBody;
+	$oFileManagerEnv =& getEnvObject();
+
+	$iIdSrcRootFolder		= (int) bab_gp('iIdSrcRootFolder', 0);
+	$sSrcPath				= (string) bab_gp('sSrcPath', '');
+	$iIdTrgRootFolder		= $iIdSrcRootFolder;
+	$sTrgPath				= $sSrcPath;
+
+	$oFmFolder				= null;
+	
+	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
+	{
+		$bSrcPathIsCollective	= true;
+	}
+	else
+	{
+		$bSrcPathIsCollective	= false;
+	}
+	$sName = getLastPath($sSrcPath);
+	$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
+	
+	$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
+	$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, $bSrcPathIsCollective == true ?'Y':'N');
+}
 
 function pasteCollectiveDir()
 {
@@ -4032,6 +4140,10 @@ switch($sAction)
 		pasteFolder();
 		break;
 
+	case 'undopasteFolder':
+		undoPasteFolder();
+		break;
+	
 	case 'deleteFolder':
 		deleteFolder();
 		break;
@@ -4099,6 +4211,10 @@ switch($sAction)
 		cutFile();
 		break;
 
+	case 'undopasteFile':
+		undoPasteFile();
+		break;
+	
 	case 'pasteFile':
 		pasteFile();
 		break;
