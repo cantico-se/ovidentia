@@ -182,6 +182,9 @@ class bab_synchronizeSql
 	var $return = array();
 
 	private $differences = array();
+	
+	
+	private $displayMessage = true;
 
 
 	/**
@@ -217,6 +220,17 @@ class bab_synchronizeSql
 		$this->fileContent = $sql;
 
 		$this->updateDatabase();
+	}
+	
+	/**
+	 * Disable or enable display of the message in install console
+	 * @param	bool	$status
+	 * @return	bab_synchronizeSql
+	 */ 
+	public function setDisplayMessage($status)
+	{
+		$this->displayMessage = $status;
+		return $this;
 	}
 
 
@@ -390,8 +404,10 @@ class bab_synchronizeSql
 			$message .= ' '.sprintf(bab_translate('and %d tables has been modified in MySql database'), $nb_modified);
 		}
 
-		bab_installWindow::message($message);
+		if ($this->displayMessage) {
+			bab_installWindow::message($message);
 		}
+	}
 		
 		
 	function getTableKeysDetail($tablename) {
