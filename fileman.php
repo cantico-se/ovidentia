@@ -2789,7 +2789,7 @@ function viewFile()
 
 			$access = (!is_null($oFileManagerEnv->oFmFolder));
 			$bdownload = canDownload($sParentPath);
-			$bmanager = canManage($sParentPath);
+			$bmanager = haveRight($sParentPath, BAB_FMMANAGERS_GROUPS_TBL);//canManage($sParentPath);
 			$bupdate = canUpdate($sParentPath);
 
 			if ($bconfirm) {
