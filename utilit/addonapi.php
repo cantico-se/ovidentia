@@ -315,7 +315,7 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 	}
 
 	if (function_exists('iconv')) {
-		return iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
+		return @iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
 	} else {
 		return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
 	}
