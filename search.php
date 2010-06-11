@@ -423,9 +423,13 @@ function startSearch( $item, $what, $option, $navpos )
 
 			// end
 
-			if( !$nbresult)
+			if( !$nbresult && $item == 'tags')
 			{
 				$babBody->msgerror = bab_translate("Search result is empty");
+			}
+			if( $item == 'tags')
+			{
+				$babBody->msgerror .= ' ('.bab_translate("You do not have access rights").')';
 			}
 
 		}
