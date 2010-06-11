@@ -73,7 +73,7 @@ class BAB_GetHtmlUploadBlock
 
 		if ($oFmEnv->userIsInCollectiveFolder()) {
 			if ($oFmEnv->oFmFolder instanceof Bab_FmFolder) {
-				$this->bUseKeyword = ('Y' == $oFmEnv->oFmFolder->getAddTags());
+				$this->bUseKeyword = true;
 				$this->bManageMaxDownloads = ($oFmEnv->oFmFolder->getDownloadsCapping() == 'Y');
 				$this->maxdownloadsval = $oFmEnv->oFmFolder->getMaxDownloads();
 			}
