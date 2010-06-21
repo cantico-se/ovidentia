@@ -102,6 +102,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
 		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
 		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
+		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['classnames']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
@@ -135,6 +136,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 			if ($node) {
 				$node = $node->firstChild();
 				while($node) {
+					/* @var $item bab_SitemapItem */
 					$item = $node->getData();
 					$tmp = array();
 					$tmp['url'] = $item->url;
@@ -146,6 +148,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['pageTitle'] = $item->getPageTitle();
 					$tmp['pageDescription'] = $item->getPageDescription();
 					$tmp['pageKeywords'] = $item->getPageKeywords();					
+					$tmp['classnames'] = $item->getIconClassnames();
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
 				}
@@ -199,6 +202,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$tmp['pageTitle'] = $item->getPageTitle();
 				$tmp['pageDescription'] = $item->getPageDescription();
 				$tmp['pageKeywords'] = $item->getPageKeywords();
+				$tmp['classnames'] = $item->getIconClassnames();
 				array_unshift($this->IdEntries, $tmp);
 				if ($item->id_function === $baseNode) {
 					break;
