@@ -102,7 +102,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
 		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
 		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
-		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['classnames']);
+		$this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
