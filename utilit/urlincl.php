@@ -65,7 +65,7 @@ class bab_url {
 
 
 	/**
-	 * Returns an URL-encoded query string form a (possibly multi-dimensional) array.
+	 * Returns an URL-encoded query string from a (possibly multi-dimensional) array.
 	 *
 	 * @param array	$data		The array may be a simple one-dimensional structure,
 	 * 							or an array of arrays (who in turn may contain other arrays).
