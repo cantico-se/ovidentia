@@ -131,11 +131,28 @@ var bab_currentTooltip = null;
 /**
  * Show or Hide an html element (with bab_tooltipPosition(), the html element will be displayed in a tooltip : it follows the mouse).
  * This function can be called in this situation :
- * 									<div id="myId">
- * 									<div id="myElement" onmouseover="bab_showOnMouse("myId", true);" onmouseout="bab_showOnMouse("myId", false);">My datas</div>
+ * 									<div id="myTooltip" class="allTooltip">Text displayed in tooltip</div>
+ * 									<div id="myElement" onmouseover="bab_showOnMouse("myTooltip", true);" onmouseout="bab_showOnMouse("myTooltip", false);">My datas</div>
+ * 
+ * CSS styles for tooltip :
+ * 		.allTooltip {
+ * 			position: absolute;
+ * 			border: 1px solid black;
+ * 			padding: .2em .5em;
+ * 			background-color: white;
+ * 			visibility: hidden;
+ * 			z-index: 100;
+ * 			text-align:left;
+ * 			font-size:11px;
+ * 			font-family:Verdana;
+ * 			color:#000;
+ * 			white-space:nowrap;
+ * 			top:-1000px;
+ * 			left:-1000px;
+ * 		}
  * 
  * Don't forget to call bab_tooltipPosition() before the call of bab_showOnMouse() :
- * 									document.onmousemove = bab_tooltipPosition;
+ * 				document.onmousemove = bab_tooltipPosition;
  * 
  * Don't forget to import the javascript file :
  * 				$GLOBALS['babBody']->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
@@ -147,11 +164,11 @@ var bab_currentTooltip = null;
  * 		    });
  * 					    
  * 		    jQuery("#myElement").hover(function(e){
- * 		    	bab_showOnMouse("myId", true);
+ * 		    	bab_showOnMouse("myTooltip", true);
  * 		    });
  * 			    
  * 		    jQuery("#myElement").mouseout(function(e){
- * 		    	bab_showOnMouse("myId", false);
+ * 		    	bab_showOnMouse("myTooltip", false);
  * 		    });
  * 		});
  * 
