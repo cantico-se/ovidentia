@@ -314,11 +314,11 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 		return $input;
 	}
 
-	if (function_exists('iconv')) {
-		return @iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
-	} else {
+	//if (function_exists('iconv')) {
+	//	return @iconv($sStringIsoCharset, bab_charset::getIso().'//TRANSLIT//IGNORE', $input);
+	//} else {
 		return mb_convert_encoding($input, bab_charset::getIso(), $sStringIsoCharset);
-	}
+	//}
 }
 
 
