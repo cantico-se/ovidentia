@@ -1719,11 +1719,17 @@ class Func_Ovml_Container_Forum extends Func_Ovml_Container
 	{
 		global $babBody, $babDB;
 		parent::setOvmlContext($ctx);
-		$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($ctx->get_value('forumid'))."' and active='Y'");
-		if( $this->res && $babDB->db_num_rows($this->res) == 1 )
-			$this->count = 1;
-		else
+		/* Valid access rights */
+		if( bab_isAccessValid(BAB_FORUMSVIEW_GROUPS_TBL, $ctx->get_value('forumid'))) {
+			$this->res = $babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($ctx->get_value('forumid'))."' and active='Y'");
+			if( $this->res && $babDB->db_num_rows($this->res) == 1 ) {
+				$this->count = 1;
+			} else {
+				$this->count = 0;
+			}
+		} else {
 			$this->count = 0;
+		}		
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
