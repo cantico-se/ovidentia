@@ -318,7 +318,7 @@ class bab_Path implements SeekableIterator, Countable {
 	
 	/**
 	 * Test if file is a directory
-	 * warning parent::isDir() only available since php 5.1.2
+	 * 
 	 * @return bool
 	 */
 	public function isDir()
@@ -450,7 +450,10 @@ class bab_Path implements SeekableIterator, Countable {
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @return string
+	 */
 	public function getRealPath()
 	{
 		return realpath($this->toString());
