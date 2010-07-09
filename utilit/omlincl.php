@@ -1810,7 +1810,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 	var $count;
 	var $postid;
 
-	public function bab_Post($ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 		{
 		global $babBody, $babDB;
 		include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
@@ -2005,7 +2005,7 @@ class Func_Ovml_Container_Thread extends Func_Ovml_Container
 	var $count;
 	var $postid;
 
-	public function bab_Thread($ctx)
+	public function setOvmlContext(babOvTemplate $ctx)
 		{
 		global $babBody, $babDB;
 		include_once $GLOBALS['babInstallPath'] . 'utilit/forumincl.php';
