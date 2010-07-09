@@ -471,15 +471,60 @@ class bab_Path implements SeekableIterator, Countable {
 	}
 	
 	/**
-	 * push a folder at the end of the path
+	 * push a folder or a relative path at the end of the path
 	 * 
-	 * @param	string		$folder
+	 * @param	string | bab_Path		$folder
 	 * 
 	 * @return bab_Path
 	 */ 
 	public function push($folder) {
 		
-		array_push($this->allElements, $folder);
+		if ($folder instanceOf bab_Path) {
+			
+			if ($folder->isAbsolute()) {
+				throw new Exception('the path must be relative');
+			}
+			
+			foreach($folder->allElements as $f) {
+				array_push($this->allElements, $f);
+			}
+		} else {
+			array_push($this->allElements, $folder);
+		}
+		return $this;
+	}
+	
+	
+	/**
+	 * Shift the first folder of the path
+	 * @return string | null
+	 * 
+	 */ 
+	public function shift() {
+		return array_shift($this->allElements);
+	}
+	
+	/**
+	 * unshift a folder or a path at the begining of the path
+	 * 
+	 * @param	string | bab_Path		$folder
+	 * 
+	 * @return bab_Path
+	 */ 
+	public function unshift($folder) {
+		
+		if ($folder instanceOf bab_Path) {
+			
+			if ($this->isAbsolute()) {
+				throw new Exception('the path must be relative');
+			}
+			
+			foreach($folder->allElements as $f) {
+				array_unshift($this->allElements, $f);
+			}
+		} else {
+			array_unshift($this->allElements, $folder);
+		}
 		return $this;
 	}
 	
