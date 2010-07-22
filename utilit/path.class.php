@@ -133,7 +133,7 @@ class bab_Path implements SeekableIterator, Countable {
 			// load contents
 			
 			if ($this->isDir())
-			{
+			{				
 				$d = dir($this->toString());
 		
 				while (false !== ($entry = $d->read())) {
@@ -258,6 +258,7 @@ class bab_Path implements SeekableIterator, Countable {
     
     public function count()
     {
+		$this->getContent();
     	return count($this->content);
     }
     
