@@ -396,7 +396,7 @@ class bab_siteMap {
 	 * 
 	 * @var string
 	 */
-	const REWRITING_ROOT_NODE	=	'REWRITING-ROOT-NODE';
+	const REWRITING_ROOT_NODE	=	'rewriting-root-node';
 	
 	/**
 	 * set sitemap informations
