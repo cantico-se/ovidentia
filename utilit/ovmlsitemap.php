@@ -126,6 +126,8 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
+		global $babUseRewrittenUrl;
+
 		parent::setOvmlContext($ctx);
 
 		$node = $ctx->get_value('node');
@@ -139,7 +141,12 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					/* @var $item bab_SitemapItem */
 					$item = $node->getData();
 					$tmp = array();
-					$tmp['url'] = $item->url;
+					if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
+						$tmp['url'] = bab_Sitemap::rewrittenUrl($item->id_function);
+					} else {
+						$tmp['url'] = $item->url;
+					}
+//					$tmp['url'] = $item->url;
 					$tmp['text'] = $item->name;
 					$tmp['description'] = $item->description;
 					$tmp['id'] = $item->id_function;
@@ -182,18 +189,25 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
+		global $babUseRewrittenUrl;
+
 		parent::setOvmlContext($ctx);
 		$node = $ctx->get_value('node');
-
+		
 		$baseNode = $ctx->get_value('basenode');
 		
 		if (isset($this->sitemap)) {
 			$node = $this->sitemap->getNodeById($node);
 	
+
 			while ($node && ($item = $node->getData())) {
 				/* @var $item bab_SitemapItem */
 				$tmp = array();
-				$tmp['url'] = $item->url;
+				if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
+					$tmp['url'] = bab_Sitemap::rewrittenUrl($item->id_function);
+				} else {
+					$tmp['url'] = $item->url;
+				}
 				$tmp['text'] = $item->name;
 				$tmp['description'] = $item->description;
 				$tmp['id'] = $item->id_function;
@@ -322,7 +336,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 
 		if (empty($breadcrumb)) {
-			if (!isset($args['keeplastknown'])) {
+			if ( (!isset($args['keeplastknown'])) || (!isset($_SESSION['bab_sitemap_lastknowposition'])) ) {
 				return '';
 			}
 			return $_SESSION['bab_sitemap_lastknowposition'];
@@ -399,11 +413,13 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
-	
+	protected	$sitemap; 
 	
 	
 	private function getHtml(bab_Node $node, $mainmenuclass = null) {
 		
+		global $babUseRewrittenUrl;
+
 		$return = '';
 		$classnames = array();
 	
@@ -423,17 +439,23 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		} else {
 			$description = '';
 		}
+
+
+		if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
+			$url = bab_Sitemap::rewrittenUrl($siteMapItem->id_function);
+		} else {
+			$url = $siteMapItem->url;
+		}
 		
-	
-		if ($siteMapItem->url) {
+		if ($url) {
 	
 			if ($siteMapItem->onclick) {
 				$onclick = ' onclick="'.bab_toHtml($siteMapItem->onclick).'"';
 			} else {
 				$onclick = '';
 			}
-	
-			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($siteMapItem->url).'" '.$onclick.''.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
+
+			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
 		} else {
 			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($siteMapItem->name).'</span>';
 		}
@@ -498,7 +520,9 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (!isset($sitemap)) {
 			return '';
 		}
-		
+
+		$this->sitemap = $sitemap;
+
 		$dg_node = $sitemap->firstChild();
 		
 		if (!($dg_node instanceOf bab_Node)) {
