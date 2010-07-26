@@ -390,6 +390,13 @@ class bab_siteMap {
 	private $siteMapName 		= '';
 	private $siteMapDescription = '';
 	
+	/**
+	 * This string in a rewritten url specifies that node url rewriting
+	 * should stop a this node.
+	 * 
+	 * @var string
+	 */
+	const REWRITING_ROOT_NODE	=	'REWRITING-ROOT-NODE';
 	
 	/**
 	 * set sitemap informations
@@ -973,18 +980,26 @@ class bab_siteMap {
 	
 	
 	/**
-	 * Get the rewrited url of a sitemap node
+	 * Get the rewritten url of a sitemap node
 	 * @param string $id_function
 	 * @return bab_url
 	 */
-	public static function rewritedUrl($id_function)
+	public static function rewrittenUrl($id_function)
 	{
-		require_once dirname(__FILE__).'/urlincl.php';
-		$root = bab_siteMap::getFromSite();
+		static $root = null;
+//		echo __METHOD__;
+//		echo '(' . $id_function . ')<br>';
+//		require_once dirname(__FILE__).'/urlincl.php';
+
+		if (!isset($root)) {
+			$root = bab_siteMap::getFromSite();
+		}
+
 		$node = $root->getNodeById($id_function);
 		
 		if (!$node)
 		{
+//			echo 'NULL';
 			return null;
 		}
 		
@@ -993,16 +1008,27 @@ class bab_siteMap {
 		do 
 		{
 			$sitemapItem = $node->getData();
-			if (!$sitemapItem)
-			{
+			if (!$sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
 				break;
 			}
+//			echo $sitemapItem->getRewriteName() . '<br> ';
 			array_unshift($arr, $sitemapItem->getRewriteName());
 		} while ($node = $node->parentNode());
 		
-		$url = new bab_url;
-		$url->babrw = implode('/', $arr);
-		return $url;
+//		$url = new bab_url;
+//		$url->babrw = implode('/', $arr);
+//		echo ' => ' . implode('/', $arr) . '<br>';
+		return implode('/', $arr);
+	}
+
+	
+	/**
+	 * @deprecated
+	 * @param string $id_function
+	 */
+	public static function rewritedUrl($id_function)
+	{
+		return self::rewrittenUrl($id_function);
 	}
 }
 
