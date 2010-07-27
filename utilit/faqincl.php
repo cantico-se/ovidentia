@@ -39,7 +39,7 @@ function bab_getFaqRes($faqid, $delegationid) {
 	$req = "select id from ".BAB_FAQCAT_TBL;
 	
 	if( false !== $faqid ) {
-		$req .= " where id IN (".$babDB->quote(explode(',', $faqid)).")";
+		$req .= " where id IN (".$babDB->quote(implode(',', $faqid)).")";
 	}
 
 	$sDelegation = ' ';	
