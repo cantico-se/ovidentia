@@ -6258,5 +6258,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.2.94
 	 */
+	
+	
+	bab_addEventListener('bab_eventBeforePeriodsCreated', 'bab_onBeforePeriodsCreated', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
+	bab_addEventListener('bab_eventCollectCalendarsBeforeDisplay', 'bab_onCollectCalendarsBeforeDisplay', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
+	
 	return true;
 }

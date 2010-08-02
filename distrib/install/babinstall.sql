@@ -3904,18 +3904,20 @@ CREATE TABLE `bab_event_listeners` (
 
 
 INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`, `priority`) VALUES 
-(1, 'bab_eventBeforePeriodsCreated'		, 'bab_NWD_onCreatePeriods'			, 'utilit/nwdaysincl.php'			, 'core', 0),
-(2, 'bab_eventPeriodModified'			, 'bab_vac_onModifyPeriod'			, 'utilit/vacincl.php'				, 'core', 0),
-(3, 'bab_eventEditors'					, 'bab_onEventEditors'				, 'utilit/editorincl.php'			, 'core', 0),
-(4, 'bab_eventEditorFunctions'			, 'bab_onEditorFunctions'			, 'utilit/editorincl.php'			, 'core', 0),
-(5, 'bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'		, 'utilit/htmlareaincl.php'			, 'core', 100),
-(6, 'bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'		, 'utilit/htmlareaincl.php'			, 'core', 100),
-(7, 'bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'		, 'utilit/htmlareaincl.php'			, 'core', 100),
-(8, 'bab_eventLogin'					, 'bab_onEventLogin'				, 'utilit/eventAuthentication.php'	, 'core', 0),
-(9, 'bab_eventLogout'					, 'bab_onEventLogout'				, 'utilit/eventAuthentication.php'	, 'core', 0),
-(10,'bab_eventBeforeSiteMapCreated'		, 'bab_onBeforeSiteMapCreated'		, 'utilit/sitemap_build.php'		, 'core', 0),
-(11,'bab_eventSearchRealms'				, 'bab_onSearchRealms'				, 'utilit/searchincl.php'			, 'core', 0),
-(12,'bab_eventFmFile'					, 'bab_onFmFile'					, 'utilit/filenotifyincl.php'		, 'core', 0);
+(1, 'bab_eventBeforePeriodsCreated'				, 'bab_NWD_onCreatePeriods'					, 'utilit/nwdaysincl.php'			, 'core', 0),
+(2, 'bab_eventPeriodModified'					, 'bab_vac_onModifyPeriod'					, 'utilit/vacincl.php'				, 'core', 0),
+(3, 'bab_eventEditors'							, 'bab_onEventEditors'						, 'utilit/editorincl.php'			, 'core', 0),
+(4, 'bab_eventEditorFunctions'					, 'bab_onEditorFunctions'					, 'utilit/editorincl.php'			, 'core', 0),
+(5, 'bab_eventEditorContentToEditor'			, 'htmlarea_onContentToEditor'				, 'utilit/htmlareaincl.php'			, 'core', 100),
+(6, 'bab_eventEditorRequestToContent'			, 'htmlarea_onRequestToContent'				, 'utilit/htmlareaincl.php'			, 'core', 100),
+(7, 'bab_eventEditorContentToHtml'				, 'htmlarea_onContentToHtml'				, 'utilit/htmlareaincl.php'			, 'core', 100),
+(8, 'bab_eventLogin'							, 'bab_onEventLogin'						, 'utilit/eventAuthentication.php'	, 'core', 0),
+(9, 'bab_eventLogout'							, 'bab_onEventLogout'						, 'utilit/eventAuthentication.php'	, 'core', 0),
+(10,'bab_eventBeforeSiteMapCreated'				, 'bab_onBeforeSiteMapCreated'				, 'utilit/sitemap_build.php'		, 'core', 0),
+(11,'bab_eventSearchRealms'						, 'bab_onSearchRealms'						, 'utilit/searchincl.php'			, 'core', 0),
+(12,'bab_eventFmFile'							, 'bab_onFmFile'							, 'utilit/filenotifyincl.php'		, 'core', 0),
+(13,'bab_eventBeforePeriodsCreated'				, 'bab_onBeforePeriodsCreated'				, 'utilit/eventperiod.php'			, 'core', 0),
+(14,'bab_eventCollectCalendarsBeforeDisplay'	, 'bab_onCollectCalendarsBeforeDisplay'		, 'utilit/eventperiod.php'			, 'core', 0);
 
 
 CREATE TABLE `bab_upgrade_messages` (

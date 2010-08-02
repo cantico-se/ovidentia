@@ -228,11 +228,17 @@ function bab_getNonWorkingDayLabel($dateObj) {
 
 
 /**
- * @param	object	$obj
+ * Add non working days to the periods objects for display on calendar
+ * @param	bab_eventBeforePeriodsCreated	$obj
  */
-function bab_NWD_onCreatePeriods(&$obj) {
-	$begin = $obj->periods->begin->getIsoDate();
-	$end = $obj->periods->end->getIsoDate();
+function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
+	
+	// create new collection
+	
+	$collection = new bab_NonWorkingDaysCollection;
+	
+	$begin = $obj->getBeginDate()->getIsoDate();
+	$end = $obj->getEndDate()->getIsoDate();
 
 	$arr = bab_getNonWorkingDaysBetween($begin, $end);
 	$nwd_color = 'FFFFFF';
@@ -252,13 +258,19 @@ function bab_NWD_onCreatePeriods(&$obj) {
 		$endDate	= $beginDate->cloneDate();
 		$endDate->add(1, BAB_DATETIME_DAY);
 		
-		$p = & $obj->periods->setUserPeriod(false, $beginDate, $endDate, BAB_PERIOD_NWDAY);
+		$p = new bab_calendarPeriod($beginDate, $endDate);
+		$p->setProperty('X-CTO-PUID'	,'NWD'.$nw_day);
+		$p->setProperty('CLASS'			,'PUBLIC');
 		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
 		$p->setProperty('DTSTART'		,$beginDate->getIsoDateTime());
 		$p->setProperty('DTEND'			,$endDate->getIsoDateTime());
-		$p->color = $nwd_color;
+		$p->setColor($nwd_color);
+		
+		// add period to collection
+		$collection->addPeriod($p);
+		
+		// add period to periods mixer
+		$obj->periods->addPeriod($p);
 	}
 }
-
-?>
