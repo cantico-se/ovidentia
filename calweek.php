@@ -33,10 +33,10 @@ include_once $babInstallPath."utilit/mcalincl.php";
 class cal_weekCls extends cal_wmdbaseCls
 	{
 
-	function cal_weekCls($idx, $calids, $date)
+	function __construct($idx, $calids, $date)
 		{
 		global $babBody, $babMonths;
-		$this->cal_wmdbaseCls("calweek", $idx, $calids, $date);
+		parent::__construct("calweek", $idx, $calids, $date);
 
 		$this->w = 0;
 

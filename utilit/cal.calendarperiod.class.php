@@ -43,7 +43,7 @@ class bab_calendarPeriod {
 	public 	$ts_end;
 	
 	/**
-	 * 
+	 * Can be set manually if an event is "free" to not interfere in availability search
 	 * @var bool
 	 */
 	public	$available;
@@ -160,7 +160,7 @@ class bab_calendarPeriod {
 	 * @param string $color
 	 * @return bab_calendarPeriod
 	 */
-	public public function setColor($color)
+	public function setColor($color)
 	{
 		$this->color = $color;
 		return $this;
@@ -291,6 +291,20 @@ class bab_calendarPeriod {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Get author of event
+	 * @return int
+	 */
+	public function getAuthorId()
+	{
+		$data = $this->getData();
+		if (isset($data['id_user'])) {
+			return (int) $data['id_user'];
+		}
+		
+		return null;
 	}
 
 }

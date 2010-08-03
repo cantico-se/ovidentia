@@ -235,6 +235,7 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 	
 	// create new collection
 	
+	require_once dirname(__FILE__).'/cal.periodcollection.class.php';
 	$collection = new bab_NonWorkingDaysCollection;
 	
 	$begin = $obj->getBeginDate()->getIsoDate();

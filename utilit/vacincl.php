@@ -2363,12 +2363,12 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
 
 /**
  * set vacation events into object  
- * @param bab_userWorkingHours	$obj
- * @param array					$id_users
- * @param BAB_DateTime			$begin
- * @param BAB_DateTime			$end
+ * @param bab_VacationPeriodCollection	$period_collection
+ * @param array							$id_users
+ * @param BAB_DateTime					$begin
+ * @param BAB_DateTime					$end
  */
-function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
+function bab_vac_setVacationPeriods($period_collection, $id_users, $begin, $end) {
 	global $babDB;
 
 	$res = $babDB->db_query("
@@ -2465,8 +2465,9 @@ function bab_vac_setVacationPeriods(&$obj, $id_users, $begin, $end) {
 			//bab_debug($ventilation);
 		}
 
-		$p = & $obj->setUserPeriod($row['id_user'], $date_begin, $date_end, BAB_PERIOD_VACATION);
-
+		$p = new bab_calendarPeriod($row['id_user'], $date_begin, $date_end);
+		$period_collection->addPeriod($p);
+		
 		list($id_cat, $category, $color) = $babDB->db_fetch_row($babDB->db_query("
 		
 			SELECT 

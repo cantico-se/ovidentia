@@ -494,19 +494,25 @@ function bab_articleAccessById($id, $iduser ='')
 	return bab_articleAccessByRestriction($restriction, $iduser);
 	}
 	
-function bab_getCalendarId($iduser, $type)
+	
+/**
+ * get calendar reference part "type/id"
+ * 
+ * @return string | null
+ */
+function bab_getDefaultCalendarId()
 {
-	global $babBody, $babDB;
-
-	if( empty($iduser))
-		return 0;
-	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($iduser)."' and type='".$babDB->db_escape_string($type)."'");
-	if( $res && $babDB->db_num_rows($res) == 1 )
-	{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['id'];
+	$calendar = bab_getICalendars()->getDefaultCalendar();
+	
+	if (!$calendar) {
+		return null;
 	}
-	return 0;
+	
+	$reference = $calendar->getReference();
+	$type = $reference->getType();
+	$idObject = $reference->getObjectId();
+	
+	return "$type/$idObject";
 }
 
 function bab_calendarAccess()

@@ -222,11 +222,22 @@ class bab_Reference implements IGuid
 	private $sModule	= null;
 	private $sType		= null;
 	private $iIdObject	= null;
-	private $sReference	= null; 
 	
-	public function __construct($sReference)
+	public function __construct($sReference = null)
 	{
-		$this->init($sReference);
+		if (null !== $sReference) {
+			// create reference from string
+			$this->init($sReference);
+		}
+	}
+	
+	public function initFromParts($protocol, $location, $module, $type, $idobject)
+	{
+		$this->sProtocol	= $protocol; 
+		$this->sLocation	= $location; 
+		$this->sModule		= $module; 
+		$this->sType		= $type;
+		$this->iIdObject	= $idobject;
 	}
 	
 	public function __toString()
@@ -264,9 +275,21 @@ class bab_Reference implements IGuid
 		return $this->iIdObject;
 	}
 	
+	/**
+	 * Build a reference
+	 * 
+	 * @param string $sProtocol
+	 * @param string $sLocation
+	 * @param string $sModule
+	 * @param string $sType
+	 * @param mixed $iIdObject
+	 * @return bab_Reference
+	 */
 	public static function makeReference($sProtocol, $sLocation, $sModule, $sType, $iIdObject)
 	{
-		return new bab_reference($sProtocol . '://' . $sLocation . '/' . $sModule . '/' . $sType . '/' . $iIdObject);
+		$reference = new bab_Reference();
+		$reference->initFromParts($sProtocol, $sLocation, $sModule, $sType, $iIdObject);
+		return $reference;
 	}
 
 
@@ -317,7 +340,6 @@ class bab_Reference implements IGuid
 			$this->sModule		= $aBuffer[3]; 
 			$this->sType		= $aBuffer[4];
 			$this->iIdObject	= $aBuffer[5];
-			$this->sReference	= $sReference;
 		}
 		else
 		{

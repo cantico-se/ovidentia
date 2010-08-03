@@ -36,12 +36,40 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
  */
 class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 {
-	private $calendars = array();
+
+	/**
+	 * 
+	 * @var bab_icalendars
+	 */
+	private $calendar_collection;
+	
+	public function __construct(bab_icalendars $calendar_collection)
+	{
+		$this->calendar_collection = $calendar_collection;
+	}
 	
 	
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
-		$this->calendars[] = $calendar;
+		$this->calendar_collection->addCalendar($calendar);
+	}
+	
+	/**
+	 * 
+	 * @return int
+	 */
+	public function getAccessUser()
+	{
+		return $this->calendar_collection->getAccessUser();
+	}
+	
+	/**
+	 * get personal calendar of access user or null if annonymous and no personal calendar
+	 * @return bab_PersonalCalendar
+	 */
+	public function getPersonalCalendar()
+	{
+		return $this->calendar_collection->getPersonalCalendar();
 	}
 }
 
@@ -92,12 +120,26 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	}
 	
 	/**
-	 * Add a filter by instance of event collection 
-	 * @param array $periodCollectionClassNames
+	 * Add a filter by classname of event collection 
+	 * @param array $periodCollectionClassNames <string>
 	 * @return bab_eventCollectPeriodsBeforeDisplay
 	 */
 	public function filterByPeriodCollection(array $periodCollectionClassNames) {
 		$this->periodCollectionClassNames = $periodCollectionClassNames;
+		return $this;
+	}
+	
+	/**
+	 * Add a filter by classname of event collection
+	 * @param string $periodCollectionClassName
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function addFilterByPeriodCollection($periodCollectionClassName) {
+		if (!isset($this->periodCollectionClassNames)) {
+			$this->periodCollectionClassNames = array();
+		}
+		
+		$this->periodCollectionClassNames[] = $periodCollectionClassName;
 		return $this;
 	}
 	
@@ -125,16 +167,17 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	/**
 	 * 
 	 * @param array $calendars	array of bab_EventCalendar
-	 * @return unknown_type
+	 * @return bab_eventCollectPeriodsBeforeDisplay
 	 */
 	public function filterByCalendar(array $calendars) {
 		$this->calendars = $calendars;
+		return $this;
 	}
 	
 	/**
 	 * Add a calendar to the list of displayable calendars
 	 * @param bab_EventCalendar $calendar
-	 * @return unknown_type
+	 * @return bab_eventCollectPeriodsBeforeDisplay
 	 */
 	public function addFilterByCalendar(bab_EventCalendar $calendar) {
 		if (!isset($this->calendars)) {
@@ -142,6 +185,7 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 		}
 		
 		$this->calendars[] = $calendar;
+		return $this;
 	}
 	
 	
@@ -195,6 +239,23 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	{
 		return $this->periods->end;
 	}
+	
+	/**
+	 * Get users id of calendars
+	 * @return array
+	 */
+	public function getUsers()
+	{
+		$return = array();
+		foreach($this->calendars as $calendar) {
+			$iduser = $calendar->getIdUser();
+			if ($iduser) {
+				$return[] = $iduser;
+			}
+		}
+		
+		return $return;
+	}
 }
 
 
@@ -242,10 +303,39 @@ class bab_eventPeriodModified extends bab_event {
  * @param bab_eventBeforePeriodsCreated $event
  * @return unknown_type
  */
-function bab_onCollectPeriodsBeforeDisplay(bab_eventBeforePeriodsCreated $event)
+function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 {
-	$wp_collection = new bab_WorkingPeriodCollection;
+	require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+	
+	$calendars = $event->getCalendars();
+	$users = $event->getUsers();
+	$begin = $event->getBeginDate();
+	$end = $event->getEndDate();
+	
+	$vac_collection	= new bab_VacationPeriodCollection;
+	$evt_collection = new bab_CalendarEventCollection;
+	$tsk_collection = new bab_TaskCollection;
+	$wp_collection 	= new bab_WorkingPeriodCollection;
 	$nwp_collection = new bab_NonWorkingPeriodCollection;
+	
+	
+		if ($event->isPeriodCollection($vac_collection) && $users) {
+			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
+			bab_vac_setVacationPeriods($vac_collection, $users, $begin, $end);
+		}
+
+		if ($event->isPeriodCollection($evt_collection)) {
+			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+			bab_cal_setEventsPeriods($evt_collection, $calendars, $begin, $end); // TODO add the filter by category
+		}
+
+		if ($event->isPeriodCollection($tsk_collection) && $users) {
+			include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
+			include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
+			bab_tskmgr_setPeriods($tsk_collection, $users, $begin, $end);
+		}
+
+	
 	
 	
 	
@@ -259,64 +349,66 @@ function bab_onCollectPeriodsBeforeDisplay(bab_eventBeforePeriodsCreated $event)
 	$nworking = $event->isPeriodCollection($nwp_collection);
 	$previous_end = NULL;
 
-	while ($loop->getTimeStamp() < $endts) {
-		
-		if ($working && $this->id_users) {
-			foreach($this->id_users as $id_user) {
-				$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
-
-				foreach($arr as $h) {
-					$startHour	= explode(':', $h['startHour']);
-					$endHour	= explode(':', $h['endHour']);
-					
-					$beginDate = new BAB_DateTime(
-						$loop->getYear(),
-						$loop->getMonth(),
-						$loop->getDayOfMonth(),
-						$startHour[0],
-						$startHour[1],
-						$startHour[2]
-						);
-
-					$endDate = new BAB_DateTime(
-						$loop->getYear(),
-						$loop->getMonth(),
-						$loop->getDayOfMonth(),
-						$endHour[0], 
-						$endHour[1], 
-						$endHour[2]
-						);
-
-					if ($nworking && NULL == $previous_end) {
-						$previous_end = $this->begin; // reference
-					}
-
-					// add non-working period between 2 working period and at the begining
-					if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
-
-						$p = new bab_calendarPeriod($previous_end, $beginDate);
-						$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-						$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-						$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+	if ($users) {
+		while ($loop->getTimeStamp() < $endts) {
+			
+			if ($working) {
+				foreach($users as $id_user) {
+					$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
+	
+					foreach($arr as $h) {
+						$startHour	= explode(':', $h['startHour']);
+						$endHour	= explode(':', $h['endHour']);
+						
+						$beginDate = new BAB_DateTime(
+							$loop->getYear(),
+							$loop->getMonth(),
+							$loop->getDayOfMonth(),
+							$startHour[0],
+							$startHour[1],
+							$startHour[2]
+							);
+	
+						$endDate = new BAB_DateTime(
+							$loop->getYear(),
+							$loop->getMonth(),
+							$loop->getDayOfMonth(),
+							$endHour[0], 
+							$endHour[1], 
+							$endHour[2]
+							);
+	
+						if ($nworking && NULL == $previous_end) {
+							$previous_end = $this->begin; // reference
+						}
+	
+						// add non-working period between 2 working period and at the begining
+						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+	
+							$p = new bab_calendarPeriod($previous_end, $beginDate);
+							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+							$p->setData(array('id_user' => $id_user));
+							
+							$nwp_collection->addPeriod($p);
+						}
+	
+						$p = new bab_calendarPeriod($beginDate, $endDate);
+	
+						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
+						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
+						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
 						$p->setData(array('id_user' => $id_user));
 						
-						$nwp_collection->addPeriod($p);
+						$wp_collection->addPeriod($p);
+	
+						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 					}
-
-					$p = new bab_calendarPeriod($beginDate, $endDate);
-
-					$p->setProperty('SUMMARY'		, bab_translate('Working period'));
-					$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
-					$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
-					$p->setData(array('id_user' => $id_user));
-					
-					$wp_collection->addPeriod($p);
-
-					$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 				}
 			}
+			$loop->add(1, BAB_DATETIME_DAY);
 		}
-		$loop->add(1, BAB_DATETIME_DAY);
 	}
 
 	// add final non-working period
@@ -336,10 +428,101 @@ function bab_onCollectPeriodsBeforeDisplay(bab_eventBeforePeriodsCreated $event)
 
 /**
  * Core function registered to collect calendars
+ * add all calendars from ovidentia core to the bab_icalendars collection
+ * 
  * @param bab_eventCollectCalendarsBeforeDisplay $event
  * @return unknown_type
  */
 function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisplay $event)
 {
+	require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
+	global $babDB, $babBody;
 	
+	// public calendars
+	
+	$visible_public_cal = bab_getAccessibleObjects(BAB_CAL_PUB_VIEW_GROUPS_TBL, $event->getAccessUser());
+	
+	$res = $babDB->db_query("
+		select cpt.*, ct.id as idcal
+		from 
+			".BAB_CAL_PUBLIC_TBL." cpt 
+				left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id 
+		where 
+			ct.type='".BAB_CAL_PUB_TYPE."' 
+			AND ct.actif='Y' 
+			AND ct.id IN(".$babDB->quote($visible_public_cal).")
+	");
+	
+	while( $arr = $babDB->db_fetch_assoc($res))
+	{	
+		$calendar = new bab_PublicCalendar($event->getAccessUser(), $arr);
+		$event->addCalendar($calendar);
+	}
+	
+	
+	
+	// ressource calendars
+	
+	$visible_ressource_cal = bab_getAccessibleObjects(BAB_CAL_RES_VIEW_GROUPS_TBL, $event->getAccessUser());
+	
+	$res = $babDB->db_query("
+		select crt.*, ct.id as idcal 
+		from 
+			".BAB_CAL_RESOURCES_TBL." crt 
+				left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id 
+		where 
+			ct.type='".BAB_CAL_RES_TYPE."' 
+			and ct.actif='Y' 
+			AND ct.id IN(".$babDB->quote($visible_ressource_cal).")
+	");
+	
+	while($arr = $babDB->db_fetch_assoc($res))
+	{
+		$calendar = new bab_RessourceCalendar($event->getAccessUser(), $arr);
+		$event->addCalendar($calendar);
+	}
+	
+	// personal calendars
+	
+	$personal_calendar = $event->getPersonalCalendar();
+	
+	if ($personal_calendar)
+	{
+		$event->addCalendar($personal_calendar);
+
+		if($babBody->babsite['iPersonalCalendarAccess'] == 'Y')
+		{
+			
+			$query = "
+				select 
+					cut.*, 
+					ct.owner, 
+					u.firstname,
+					u.lastname 
+	
+				from ".BAB_CALACCESS_USERS_TBL." cut 
+					left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
+					left join ".BAB_USERS_TBL." u on u.id=ct.owner 
+				where 
+					id_user='".$babDB->db_escape_string($event->getAccessUser())."' and ct.actif='Y' and disabled='0'
+			";
+			$res = $babDB->db_query($query);
+	
+			while( $arr = $babDB->db_fetch_assoc($res))
+			{
+				$data = array(
+				
+					'idcal' 		=> $arr['id_cal'],
+					'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
+					'description' 	=> '',
+					'idowner' 		=> $arr['owner'],
+					'access' 		=> $arr['bwrite']
+				
+				);
+				
+				$calendar = new bab_PersonalCalendar($event->getAccessUser(), $data);
+				$event->addCalendar($calendar);
+			}
+		}
+	}
 }

@@ -107,8 +107,14 @@ class bab_UserPeriods {
 
 	
 	/**
+	 * Get all periods by event
+	 * Filter by period collection is mandatory
+	 * Filter by calendar is mandatory
 	 * 
-	 * @param array $options	list of periodCollection classname
+	 * @see bab_eventBeforePeriodsCreated
+	 * 
+	 * 
+	 * @param array $options	list of periodCollection class name and calendar instances to filter
 	 * @return unknown_type
 	 */
 	public function createPeriods(Array $options) {
@@ -118,29 +124,21 @@ class bab_UserPeriods {
 		
 		// collect events
 
-/*
-		if (BAB_PERIOD_VACATION === ($this->options & BAB_PERIOD_VACATION) && $this->id_users) {
-			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-			bab_vac_setVacationPeriods($this, $this->id_users, $this->begin, $this->end);
-		}
-
-		if (BAB_PERIOD_CALEVENT === ($this->options & BAB_PERIOD_CALEVENT) && $this->id_calendars) {
-			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-			bab_cal_setEventsPeriods($this, $this->id_calendars, $this->begin, $this->end, $this->category);
-		}
-
-		if (BAB_PERIOD_TSKMGR === ($this->options & BAB_PERIOD_TSKMGR) && $this->id_users) {
-			include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
-			include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
-			bab_tskmgr_setPeriods($this, $this->id_users, $this->begin, $this->end);
-		}
-*/
-		
 		$event = new bab_eventBeforePeriodsCreated($this);
+		
+		
+		foreach($options as $option) {
+			if (is_string($option)) {
+				$event->addFilterByPeriodCollection($option);
+				
+			} elseif ($option instanceof bab_EventCalendar) {
+				$event->addFilterByCalendar($option);
+			}
+		}
+		
+		
 		bab_fireEvent($event);
 
-
-		
 	}
 
 

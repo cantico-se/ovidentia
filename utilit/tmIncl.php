@@ -3319,7 +3319,7 @@ function bab_getCategoriesName($aIdCategories, $bIsDeletable)
 	return array();
 }
 
-function bab_tskmgr_setPeriods(&$oUserWorkingHours, $aIdUsers, $oStartDate, $oEndDate)
+function bab_tskmgr_setPeriods($tsk_collection, $aIdUsers, $oStartDate, $oEndDate)
 {
 	foreach($aIdUsers as $iIdUser)
 	{
@@ -3338,13 +3338,14 @@ function bab_tskmgr_setPeriods(&$oUserWorkingHours, $aIdUsers, $oStartDate, $oEn
 				$date_begin = BAB_DateTime::fromIsoDateTime($datas['startDate']);
 				$date_end	= BAB_DateTime::fromIsoDateTime($datas['endDate']);
 
-				$oBabCalPeriod = $oUserWorkingHours->setUserPeriod($datas['idOwner'], $date_begin, $date_end, BAB_PERIOD_TSKMGR);
+				$oBabCalPeriod = new bab_calendarPeriod($date_begin, $date_end);
+				$tsk_collection->addPeriod($oBabCalPeriod);
 
 				$oBabCalPeriod->setProperty('SUMMARY', $datas['sShortDescription']);
 				$oBabCalPeriod->setProperty('DTSTART', $datas['startDate']);
 				$oBabCalPeriod->setProperty('DTEND', $datas['endDate']);
 				$oBabCalPeriod->setProperty('CATEGORIES', $datas['sCategoryName']);
-				$oBabCalPeriod->color = $datas['sBgColor'];
+				$oBabCalPeriod->setColor($datas['sBgColor']);
 			}
 		}
 	}

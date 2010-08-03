@@ -36,10 +36,10 @@ class cal_monthCls extends cal_wmdbaseCls
 	var $iso_time1;
 	var $iso_time2;
  
-	function cal_monthCls($idx, $calids, $date)
+	function __construct($idx, $calids, $date)
 		{
 		global $babBody, $babMonths;
-		$this->cal_wmdbaseCls("calmonth", $idx, $calids, $date);
+		parent::__construct("calmonth", $idx, $calids, $date);
 		$this->w = 0;
 		$dispdays = explode(',', bab_getICalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
@@ -367,7 +367,7 @@ switch($idx)
 		$calid = bab_isCalendarAccessValid($calid);
 		if (!$calid )
 			{
-			$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+			$calid = bab_getDefaultCalendarId();
 			}
 		
 		if( !$calid )

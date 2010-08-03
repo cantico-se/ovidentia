@@ -1209,7 +1209,9 @@ function get_newfiles() {
 
 
 /**
- * Load calendars
+ * Collection of calendars
+ * 
+ * @return bab_icalendars
  */
 function bab_getICalendars() {
 

@@ -254,23 +254,18 @@ class bab_mcalendars
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
 
+		$filter = array(
+			'bab_NonWorkingDaysCollection', 
+			'bab_WorkingPeriodCollection', 
+			'bab_VacationPeriodCollection', 
+			'bab_CalendarEventCollection'
+		);
+		
 		foreach($idcals as $idcal) {
-			$iarr = bab_getICalendars()->getCalendarInfo($idcal);
-
-			switch($iarr['type']) {
-				case BAB_CAL_USER_TYPE:
-					$whObj->addIdUser($iarr['idowner']);
-					$whObj->addCalendar($idcal);
-					break;
-
-				case BAB_CAL_PUB_TYPE:
-				case BAB_CAL_RES_TYPE:
-					$whObj->addCalendar($idcal);
-					break;
-			}
+			$filter[] = bab_getICalendars()->getEventCalendar($idcal);
 		}
 
-		$whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$whObj->createPeriods($filter);
 		$whObj->orderBoundaries();
 
 		return $whObj;
@@ -319,89 +314,104 @@ class bab_mcalendars
 
 }
 
+
+
+
+/**
+ * Query a calendar between two dates
+ */
 class bab_icalendar
 {
-	var $idcalendar = 0;
-	var $access = -1;
-	var $cal_type;
+	
+	public $cal_name;
+	
+	public $access = BAB_CAL_ACCESS_NONE;
+	
 	var $whObj;	// working hours object
+	
+	/**
+	 * @var bab_EventCalendar
+	 */
+	private $calendar;
 
 	/**
 	 * @param string	$startdate
 	 * @param string	$enddate
-	 * @param int		$calid
+	 * @param string	$calid
 	 */
-	function bab_icalendar($startdate, $enddate, $calid)
+	public function __construct($startdate, $enddate, $calid)
 		{
 		global $babBody, $babDB;
 
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-		bab_getICalendars()->initializeCalendars();
-
+		$this->calendar = bab_getICalendars()->getEventCalendar($calid);
+		$this->cal_name = $this->calendar->getName();
 		
-		$this->cal_type = bab_getICalendars()->getCalendarType($calid);
 
-		$this->whObj = new bab_userWorkingHours(
+		$this->whObj = new bab_UserPeriods(
 			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
 		
+		/*
 		
-
-		if( $this->cal_type !== false )
+		if( $calid == bab_getICalendars()->id_percal ) // user's calendar 
 			{
-			$this->cal_name = bab_getICalendars()->getCalendarName($calid);
-			$this->idcalendar = $calid;
-			if( $calid == bab_getICalendars()->id_percal ) /* user's calendar */
+			$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
+			$this->whObj->addCalendar($this->idcalendar);
+			$this->access = BAB_CAL_ACCESS_FULL;
+			}
+		else
+			{
+			switch($this->cal_type)
 				{
-				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
-				$this->whObj->addCalendar($this->idcalendar);
-				$this->access = BAB_CAL_ACCESS_FULL;
-				}
-			else
-				{
-				switch($this->cal_type)
-					{
-					case BAB_CAL_USER_TYPE:
-						$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($calid));
-						$this->whObj->addCalendar($this->idcalendar);
-						$this->access = bab_getICalendars()->usercal[$calid]['access'];
-						break;
-					case BAB_CAL_PUB_TYPE:
-						$this->whObj->addCalendar($this->idcalendar);
-						if( bab_getICalendars()->pubcal[$calid]['manager'] )
-							{
-							$this->access = BAB_CAL_ACCESS_FULL;							
-							}
-						else
-							{
-							$this->access = BAB_CAL_ACCESS_VIEW;							
-							}
-						break;
-					case BAB_CAL_RES_TYPE:
-						$this->whObj->addCalendar($this->idcalendar);
-						if( bab_getICalendars()->rescal[$calid]['manager'] )
-							{
-							$this->access = BAB_CAL_ACCESS_FULL;							
-							}
-						else
-							{
-							$this->access = BAB_CAL_ACCESS_VIEW;							
-							}
-						break;
-					}
+				case BAB_CAL_USER_TYPE:
+					$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($calid));
+					$this->whObj->addCalendar($this->idcalendar);
+					$this->access = bab_getICalendars()->usercal[$calid]['access'];
+					break;
+				case BAB_CAL_PUB_TYPE:
+					$this->whObj->addCalendar($this->idcalendar);
+					if( bab_getICalendars()->pubcal[$calid]['manager'] )
+						{
+						$this->access = BAB_CAL_ACCESS_FULL;							
+						}
+					else
+						{
+						$this->access = BAB_CAL_ACCESS_VIEW;							
+						}
+					break;
+				case BAB_CAL_RES_TYPE:
+					$this->whObj->addCalendar($this->idcalendar);
+					if( bab_getICalendars()->rescal[$calid]['manager'] )
+						{
+						$this->access = BAB_CAL_ACCESS_FULL;							
+						}
+					else
+						{
+						$this->access = BAB_CAL_ACCESS_VIEW;							
+						}
+					break;
 				}
 			}
 			
+			
+		*/
 		
+		$this->whObj->createPeriods(
+			array(
+				$this->calendar, 
+				'bab_NonWorkingDaysCollection', 
+				'bab_WorkingPeriodCollection', 
+				'bab_VacationPeriodCollection', 
+				'bab_CalendarEventCollection'
+			)
+		);
 		
-//		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
-		$this->whObj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 		$this->whObj->orderBoundaries();
-		
-		}
+	}
 
 	/**
 	 * @param	string	$startdate	ISO date time
@@ -409,9 +419,8 @@ class bab_icalendar
 	 * @param	object	$calPeriod
 	 * @return	boolean
 	 */
-	function getNextEvent($startdate, $enddate, &$calPeriod)
+	public function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-//		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR) )
 		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
 			{
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
@@ -432,10 +441,9 @@ class bab_icalendar
 	 * @param	array	$arr
 	 * @return	int
 	 */
-	function getEvents($startdate, $enddate, &$arr)
+	public function getEvents($startdate, $enddate, &$arr)
 		{
 		$arr = array();
-//		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT | BAB_PERIOD_TSKMGR);
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
 
 			foreach($events as $event) {
@@ -456,7 +464,7 @@ class bab_icalendar
 	 *
 	 * @return int
 	 */
-	function getHtmlArea($startdate, $enddate, &$harray)
+	public function getHtmlArea($startdate, $enddate, &$harray)
 		{
 		
 		$calPeriod = NULL;
@@ -498,9 +506,21 @@ class bab_icalendar
 		}
 }
 
+
+
+
+
+
 class cal_wmdbaseCls
 {
-	function cal_wmdbaseCls($tg, $idx, $calids, $date)
+	/**
+	 * Array of reference parts used in url ex "type/id"
+	 * @var array	<string>
+	 */
+	public $idcals;
+	
+	
+	public function __construct($tg, $idx, $calids, $date)
 	{
 		global $babBody;
 
@@ -866,38 +886,22 @@ class cal_wmdbaseCls
 	
 	}
 
+	/**
+	 * 
+	 * @return unknown_type
+	 */
 	function updateCreateAccess()
-		{
+	{
 		global $babBody;
 		foreach ($this->idcals as $cal)
-			{
-			$calinfo = bab_getICalendars()->getCalendarInfo($cal);
-			switch( $calinfo['type'] )
-				{
-				case BAB_CAL_USER_TYPE:
-					if( $calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_UPDATE || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
-						{
-						$this->allow_create = true;
-						return;
-						}
-					break;
-				case BAB_CAL_PUB_TYPE:
-					if ($calinfo['manager'] )
-						{
-						$this->allow_create = true;
-						return;
-						}
-					break;
-				case BAB_CAL_RES_TYPE:
-					if ($calinfo['manager'] || $calinfo['add'])
-						{
-						$this->allow_create = true;
-						return;
-						}
-					break;
-				}
+		{
+			$calendar = bab_getICalendars()->getEventCalendar($cal);
+			if ($calendar && $calendar->canAddEvent()) {
+				$this->allow_create = true;
+				return;
 			}
 		}
+	}
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 		{
@@ -1087,7 +1091,7 @@ class calendarchoice
 		$this->js_calnum = bab_translate("You must select one calendar");
 		
 
-		$this->resuser = $icalendars->usercal;
+		$this->resuser = $icalendars->getCalendars();
 		$this->respub = $icalendars->pubcal;
 		$this->resres = $icalendars->rescal;
 
@@ -1099,8 +1103,8 @@ class calendarchoice
 		$this->resuser_sort = array();
 		foreach($this->resuser as $k => $v)
 			{
-			if ($_REQUEST['tg'] != 'event' || $v['access'] > 0)
-				$this->resuser_sort[$k] = $v['name'];
+			if ($_REQUEST['tg'] != 'event' || $v->canAddEvent())
+				$this->resuser_sort[$k] = $v->getName();
 			}
 		bab_sort::natcasesort($this->resuser_sort);
 		
@@ -1128,7 +1132,7 @@ class calendarchoice
 		$out = list($this->id) = each($this->resuser_sort);
 		if ($out)
 			{
-			$this->name = isset($this->resuser[$this->id]['name']) ? bab_toHtml($this->resuser[$this->id]['name']) : '';
+			$this->name = bab_toHtml($this->resuser[$this->id]->getName());
 			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
 			}
 		return $out;

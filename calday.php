@@ -33,10 +33,10 @@ include_once $babInstallPath.'utilit/mcalincl.php';
 class cal_dayCls extends cal_wmdbaseCls
 	{
 
-	function cal_dayCls($idx, $calids, $date, $starttime)
+	function __construct($idx, $calids, $date, $starttime)
 		{
 		global $babBody, $babMonths;
-		$this->cal_wmdbaseCls("calday", $idx, $calids, $date);
+		parent::__construct("calday", $idx, $calids, $date);
 
 		$this->w = 0;
 		$this->elapstime = bab_getICalendars()->elapstime;
