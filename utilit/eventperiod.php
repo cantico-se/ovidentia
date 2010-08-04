@@ -319,21 +319,21 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 	$nwp_collection = new bab_NonWorkingPeriodCollection;
 	
 	
-		if ($event->isPeriodCollection($vac_collection) && $users) {
-			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-			bab_vac_setVacationPeriods($vac_collection, $users, $begin, $end);
-		}
+	if ($event->isPeriodCollection($vac_collection) && $users) {
+		include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
+		bab_vac_setVacationPeriods($vac_collection, $users, $begin, $end);
+	}
 
-		if ($event->isPeriodCollection($evt_collection)) {
-			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-			bab_cal_setEventsPeriods($evt_collection, $calendars, $begin, $end); // TODO add the filter by category
-		}
+	if ($event->isPeriodCollection($evt_collection)) {
+		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+		bab_cal_setEventsPeriods($evt_collection, $calendars, $begin, $end); // TODO add the filter by category
+	}
 
-		if ($event->isPeriodCollection($tsk_collection) && $users) {
-			include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
-			include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
-			bab_tskmgr_setPeriods($tsk_collection, $users, $begin, $end);
-		}
+	if ($event->isPeriodCollection($tsk_collection) && $users) {
+		include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
+		include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
+		bab_tskmgr_setPeriods($tsk_collection, $users, $begin, $end);
+	}
 
 	
 	
@@ -400,7 +400,6 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
 						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
 						$p->setData(array('id_user' => $id_user));
-						
 						$wp_collection->addPeriod($p);
 	
 						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period

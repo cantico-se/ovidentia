@@ -35,7 +35,7 @@ require_once dirname(__FILE__).'/cal.calendarperiod.class.php';
 abstract class bab_PeriodCollection
 {
 	/**
-	 * 
+	 * Optional calendar attached to collection
 	 * @var bab_EventCalendar
 	 */
 	private $calendar = null;
@@ -44,7 +44,7 @@ abstract class bab_PeriodCollection
 	/**
 	 * @var bab_UserPeriods
 	 */
-	private $periods = null;
+	//private $periods = null;
 	
 	
 	/**
@@ -63,6 +63,26 @@ abstract class bab_PeriodCollection
 		$event->setCollection($this);
 		$this->events[] = $event;
 		return $this;
+	}
+	
+	/**
+	 * Set relation to calendar
+	 * @param bab_EventCalendar $calendar
+	 * @return bab_PeriodCollection
+	 */
+	public function setCalendar(bab_EventCalendar $calendar)
+	{
+		$this->calendar = $calendar;
+		return $this;
+	}
+	
+	/**
+	 * Get related calendar
+	 * @return bab_EventCalendar
+	 */
+	public function getCalendar()
+	{
+		return $this->calendar;
 	}
 }
 

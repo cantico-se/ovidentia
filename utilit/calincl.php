@@ -633,7 +633,7 @@ function bab_getCalendarTitle($calid) {
 /**
  * set calendar events into object
  * 
- * @see bab_userWorkingHours
+ * @see bab_UserPeriods
  *  
  * @param bab_CalendarEventCollection	$evt_collection
  * @param array							$calendars	<bab_EventCalendar>
@@ -645,14 +645,19 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 
 	global $babDB;
 	
+	$ovi_calendars = array();
 	$id_calendars = array();
 	
 	foreach($calendars as $calendar) {
 		
 		if ($calendar instanceof bab_OviEventCalendar) {
-		
-			$reference = $calendar->getReference();
-			$id_calendars[] = $reference->getObjectId();
+			$id_calendars[] = $calendar->getUid();
+		}
+	}
+	
+	foreach(bab_getICalendars()->getCalendars() as $calendar) {
+		if ($calendar instanceof bab_OviEventCalendar) {
+			$ovi_calendars[$calendar->getUid()] = $calendar;
 		}
 	}
 
@@ -715,6 +720,8 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 		
 		if ('Y' == $arr['bprivate']) {
 			$events[$arr['id']]->setProperty('CLASS'	, 'PRIVATE');
+		} else {
+			$events[$arr['id']]->setProperty('CLASS'	, 'PUBLIC');
 		}
 
 		unset($arr['start_date']);
@@ -747,7 +754,11 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
 			if ($arr2['id_cal'] != $arr['id_cal']) {
-				$arr['idcal_owners'][] = $arr2['id_cal'];
+				if (isset($ovi_calendars[$arr2['id_cal']])) {
+					$arr['idcal_owners'][] = $ovi_calendars[$arr2['id_cal']]->getUrlIdentifier();
+				} else {
+					bab_debug('Error, missing calendar');
+				}
 			}
 			
 			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {

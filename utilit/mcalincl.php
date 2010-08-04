@@ -188,45 +188,59 @@ class bab_mcalendars
 		}
 		
 		
-	function getTypeLabel($type) {
-		switch($type)
-			{
-			case BAB_CAL_USER_TYPE:
-				return bab_translate('User');
-			case BAB_CAL_PUB_TYPE:
-				return bab_translate('Public');
-			case BAB_CAL_RES_TYPE:
-				return bab_translate('Resource');
-		}
-	}
-		
 		
 	/**
 	 * Get a list of calendars associated to the event
-	 * @param	object	$calPeriod
+	 * @param	bab_calendarPeriod	$calPeriod
 	 * @return 	array
 	 */
-	function getEventCalendars($calPeriod) {
+	public function getEventCalendars(bab_calendarPeriod $calPeriod) {
 	
 		$cals = array();
 		
+		$collection = $calPeriod->getCollection();
+		
+		if (!isset($collection))
+		{
+			throw new Exception('the period is not linked to a collection');
+			return;
+		}
+		
+		/*@var $collection bab_PeriodCollection */
+		
+		
+		$calendar = $collection->getCalendar();
+		
+		if (!isset($calendar))
+		{
+			throw new Exception('the period with the collection %s is not linked to a calendar');
+			return;
+		}
+		
+		
+		$cals[$calendar->getUrlIdentifier()] = array(
+			'name' => $calendar->getName(), 
+			'type' => $calendar->getType()
+		);
+
+		// ovidentia calendar specific
+		
 		$arr = $calPeriod->getData();
 		
-		if (isset($arr['id_cal'])) {
-			$cals[$arr['id_cal']] = array(
-				'name' => $this->getCalendarName($arr['id_cal']), 
-				'type' => $this->getTypeLabel($this->getCalendarType($arr['id_cal']))
-			);
-		}
-	
+		$allCalendars = bab_getICalendars()->getCalendars();
 		
 		if (isset($arr['idcal_owners'])) {
-			foreach($arr['idcal_owners'] as $id_cal) {	
-				$type = bab_getCalendarType($id_cal);
-				$cals[$id_cal] = array(
-					'name' => bab_getCalendarOwnerName($id_cal), 
-					'type' => $this->getTypeLabel($type)
-				);
+			foreach($arr['idcal_owners'] as $urlIdentifier) {	
+				
+				if (isset($allCalendars[$urlIdentifier])) {
+					
+					$calendar = $allCalendars[$urlIdentifier];
+				
+					$cals[$urlIdentifier] = array(
+						'name' => $calendar->getName(), 
+						'type' => $calendar->getType()
+					);
+				}
 			}
 		}
 		
@@ -240,16 +254,18 @@ class bab_mcalendars
 	/**
 	 * Create events object
 	 * for all calendars
-	 * @static
+	 * 
 	 * @param	string	$startdate	ISO datetime
 	 * @param	string	$enddate	ISO datetime
-	 * @return	bab_userWorkingHours
+	 * @param	array	$idcals		list of url identifier of calendars
+	 * 
+	 * @return	bab_UserPeriods
 	 */
-	function create_events($startdate, $enddate, $idcals) {
+	public static function create_events($startdate, $enddate, $idcals) {
 		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-		$whObj = new bab_userWorkingHours(
+		$whObj = new bab_UserPeriods(
 			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
@@ -281,18 +297,16 @@ class bab_mcalendars
 	 *
 	 * if $arr[2] == 0, this is a free event
 	 *
-	 * @param object	$whObj		
-	 * @param string	$startdate	ISO date
-	 * @param string	$startdate	ISO date
-	 * @param array		$arr		reference for event
-	 * @param int		$gap		minimum event duration in seconds
-	 * @static
+	 * @param bab_UserPeriods	$whObj		
+	 * @param string			$startdate	ISO date
+	 * @param string			$startdate	ISO date
+	 * @param array				$arr		reference for event
+	 * @param int				$gap		minimum event duration in seconds
+	 * 
+	 * @return bool
 	 */
-	function getNextFreeEvent($whObj, $startdate, $enddate, &$arr, $gap=0)
+	public static function getNextFreeEvent($whObj, $startdate, $enddate, &$arr, $gap=0)
 		{
-		
-		
-		
 		
 		static $freeevents = array();
 		if (!isset($freeevents[$startdate.$enddate])) {
@@ -706,108 +720,18 @@ class cal_wmdbaseCls
 	/**
 	 * Update access rights for an event and a calendar
 	 * 
-	 * @param  	object	&$calPeriod		period (event) informations
-	 * @param	array	&$calinfo		calendar informations
-	 * @param	array	&$result		result may contain access rights informations for other calendars on the same event
+	 * @param  	bab_CalendarPeriod	$calPeriod		period (event) informations
+	 * @param	bab_EventCalendar	$calendar		calendar associated to event
+	 * @param	array				&$result		result may contain access rights informations for other calendars on the same event
 	 */
-	function updateAccessCalendar(&$calPeriod, &$calinfo, &$result)
+	function updateAccessCalendar(bab_CalendarPeriod $calPeriod, bab_EventCalendar $calendar, &$result)
 	{
 		global $babBody;
+		
 		$view = 1;
-		$modify = 0;
-		$viewtitle = 0;
-		$evtarr = & $calPeriod->getData();
-
-		switch( $calinfo['type'] )
-			{
-			case BAB_CAL_USER_TYPE:
-				if( ($calinfo['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] && 'Y' !== $evtarr['block']) || $evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] )
-				{
-					// creator have access in modification
-					// owner have access in modification if event is not locked by creator
-					$modify = 1;
-				}
-				else
-				{
-					if( $calinfo['access'] == BAB_CAL_ACCESS_FULL || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL )
-					{
-						if( $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] || ($evtarr['id_creator'] ==  $calinfo['idowner'] && $evtarr['block'] == 'N') )
-						{
-							$modify = 1;
-						}
-						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_FULL )
-						{
-						$access_shared_full = $this->getAccessShared($calinfo['id_cal'], BAB_CAL_ACCESS_SHARED_FULL);
-						if( isset($access_shared_full[$evtarr['id_creator']]) )
-							{
-							$modify = 1;
-							}
-						}
-
-					}
-					elseif( $calinfo['access'] == BAB_CAL_ACCESS_UPDATE || $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE )
-					{
-						if( $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] )
-						{
-							$modify = 1;
-						}
-						elseif( $calinfo['access'] == BAB_CAL_ACCESS_SHARED_UPDATE )
-						{
-						$access_shared_update = $this->getAccessShared($calinfo['id_cal'], BAB_CAL_ACCESS_SHARED_UPDATE);
-						if( isset($access_shared_update[$evtarr['id_creator']]) )
-							{
-							$modify = 1;
-							}
-						}
-					}
-
-					if( $modify && 'PUBLIC' !== $calPeriod->getProperty('CLASS'))
-					{
-						$modify = 0;
-					}
-				}
-
-				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && ($GLOBALS['BAB_SESS_USERID'] != $calinfo['idowner'] && ( count($evtarr['idcal_owners']) == 0 || !in_array(bab_getICalendars()->id_percal, $evtarr['idcal_owners']))))
-					{
-					$viewtitle = 0;
-					}
-				else
-					{
-					$viewtitle = 1;
-					}
-				break;
-			case BAB_CAL_PUB_TYPE:
-				if( $calinfo['manager']  )
-					{
-					$modify = 1;
-					}
-				$viewtitle = 1;
-				break;
-			case BAB_CAL_RES_TYPE:
-
-				$no_approbation_instance = 0 === (int) $evtarr['idfai'];
-				$is_creator = $evtarr['id_creator'] == $GLOBALS['BAB_SESS_USERID'] && $calinfo['upd'];
-
-				if( $no_approbation_instance && ($calinfo['manager'] || $is_creator) )
-					{
-					$modify = 1;
-					}
-				if( 'PUBLIC' !== $calPeriod->getProperty('CLASS') && !$calinfo['manager']  && ($GLOBALS['BAB_SESS_USERID'] != $evtarr['id_creator'] ))
-					{
-					$viewtitle = 0;
-					}
-				else
-					{
-					$viewtitle = 1;
-					}
-				break;
-
-			default: // no calendar associated with event
-				$viewtitle	= 1;
-				$view		= 0;
-				$modify		= 0;
-				break;
-			}
+		$modify = (int) $calendar->canUpdateEvent($calPeriod);
+		$viewtitle = (int) $calendar->canViewEventDetails($calPeriod);
+		
 	
 		$result['view'][] = $view;
 		$result['modify'][] = $modify;
@@ -818,15 +742,27 @@ class cal_wmdbaseCls
 	
 	/**
 	 * Set access rights for one event and one calendar
-	 * @param 	array	$calPeriod		Event infos
-	 * @param 	array	$calinfo		Calendar infos
+	 * @param 	bab_CalendarPeriod	$calPeriod		Event infos
 	 * @return null
 	 */
-	function updateAccess($calPeriod, $calinfo)
+	function updateAccess(bab_CalendarPeriod $calPeriod)
 	{
 		global $babBody;
 		
+		$periodCollection = $calPeriod->getCollection();
 		
+		if (!$periodCollection)
+		{
+			throw new Exception('calendar period without collection');
+		}
+		
+		$calendar = $periodCollection->getCalendar();
+		
+		if (!$calendar)
+		{
+			// ignore event, no calendar
+			return;
+		}
 
 		$this->allow_view		= true;
 		$this->allow_modify		= true;
@@ -836,29 +772,27 @@ class cal_wmdbaseCls
 		$result['view']			= array();
 		$result['modify']		= array();
 		$result['viewtitle']	= array();
-		$this->updateAccessCalendar($calPeriod, $calinfo, $result);
+		$this->updateAccessCalendar($calPeriod, $calendar, $result);
 
 		
-		if (BAB_PERIOD_CALEVENT != $calPeriod->type) {
-			$this->allow_view	= false;
-			$this->allow_modify = false;
-			return;
-		}
-		
-		$evtarr = $calPeriod->getData();
-
-		$nbcoals = count($evtarr['idcal_owners']);
-		if( $nbcoals && $result['modify'][0] && $calinfo['type'] == BAB_CAL_USER_TYPE )
+		if ($calendar instanceof bab_OviEventCalendar) {
+			$evtarr = $calPeriod->getData();
+			$calendars = bab_getICalendars();
+			
+			$nbcoals = count($evtarr['idcal_owners']);
+			if( $nbcoals && $result['modify'][0] && $calendar instanceof bab_PersonalCalendar )
 			{
-			for($i = 0; $i < $nbcoals; $i++)
+				for($i = 0; $i < $nbcoals; $i++)
 				{
-				$iarr = bab_getICalendars()->getCalendarInfo($evtarr['idcal_owners'][$i]);
-				if( $iarr['type'] != BAB_CAL_USER_TYPE )
+					$urlIdentifier = $evtarr['idcal_owners'][$i];
+					$othercal = $calendars[$urlIdentifier];
+					if( !($othercal instanceof bab_PersonalCalendar) )
 					{
-					$this->updateAccessCalendar($calPeriod, $iarr, $result);
+						$this->updateAccessCalendar($calPeriod, $othercal, $result);
 					}
 				}
 			}
+		}
 
 		if( in_array(0, $result['view']) )
 			{
@@ -904,11 +838,8 @@ class cal_wmdbaseCls
 	}
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
-		{
-		if (mb_strlen($str) > $n && (!$this->print || 'calweek' === bab_rp('tg') ))
-			return bab_toHtml(mb_substr($str, 0, $n))."...";
-		else
-			return bab_toHtml($str);
+		{	
+		return bab_toHtml(bab_abbr($str, BAB_ABBR_FULL_WORDS, $n));
 		}
 
 	function createCommonEventVars($calPeriod)
@@ -961,8 +892,8 @@ class cal_wmdbaseCls
 			{
 			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator)); 
 			}
-		$iarr = bab_getICalendars()->getCalendarInfo($this->idcal);
-		$this->updateAccess($calPeriod, $iarr);
+		
+		$this->updateAccess($calPeriod);
 
 		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
 
@@ -1060,6 +991,11 @@ function calendarchoice($formname, $selected_calendars = NULL)
 {
 class calendarchoice
 	{
+	private $caltypes = array();
+	
+	private $calfromtype;
+		
+		
 	var $approb = array();
 
 	function calendarchoice($formname, $selected_calendars)
@@ -1091,80 +1027,76 @@ class calendarchoice
 		$this->js_calnum = bab_translate("You must select one calendar");
 		
 
-		$this->resuser = $icalendars->getCalendars();
-		$this->respub = $icalendars->pubcal;
-		$this->resres = $icalendars->rescal;
-
-		if (!empty($icalendars->id_percal))
-			{
-			$this->resuser[$icalendars->id_percal] = array('name'=>$GLOBALS['BAB_SESS_USER'],'access'=>2);
-			}
-
-		$this->resuser_sort = array();
-		foreach($this->resuser as $k => $v)
-			{
-			if ($_REQUEST['tg'] != 'event' || $v->canAddEvent())
-				$this->resuser_sort[$k] = $v->getName();
-			}
-		bab_sort::natcasesort($this->resuser_sort);
-		
-		$this->respub_sort = array();
-		foreach($this->respub as $k => $v)
-			{
-			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1)
-				$this->respub_sort[$k] = $v['name'];
-			}
-		bab_sort::natcasesort($this->respub_sort);
-		
-		$this->resres_sort = array();
-
-		foreach($this->resres as $k => $v)
-			{
-			if ($_REQUEST['tg'] != 'event' || $v['manager'] == 1 || $v['add'] == 1)
-				$this->resres_sort[$k] = $v['name'];
-			}
-		bab_sort::natcasesort($this->resres_sort);
-		
-		}
-
-	function getnextusrcal()
+		$calendars = $icalendars->getCalendars();
+		foreach($calendars as $key => $calendar)
 		{
-		$out = list($this->id) = each($this->resuser_sort);
-		if ($out)
-			{
-			$this->name = bab_toHtml($this->resuser[$this->id]->getName());
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			}
-		return $out;
-		}
-
-	function getnextpubcal()
-		{
-		$out = list($this->id) = each($this->respub_sort);
-		if ($out)
-			{
-			$this->name = bab_toHtml($this->respub[$this->id]['name']);
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			if (!empty($this->respub[$this->id]['idsa'])) {
-				$this->approb[] = $this->respub[$this->id]['name'];
+			if ($_REQUEST['tg'] != 'event' || $calendar->canAddEvent())
+			{	
+				$type = $calendar->getType();
+				if (!isset($this->caltypes[$type])) {
+					$this->caltypes[$type] = array();
 				}
+				
+				$this->caltypes[$type][$key] = $calendar;
 			}
-		return $out;
 		}
 
-	function getnextrescal()
+
+		bab_sort::ksort($this->caltypes, bab_Sort::CASE_INSENSITIVE);
+
+		foreach($this->caltypes as &$arr)
 		{
-		$out = list($this->id) = each($this->resres_sort);
-		if ($out)
-			{
-			$this->name = bab_toHtml($this->resres[$this->id]['name']);
-			$this->selected = in_array($this->id,$this->selectedCalendars) ? 'selected' : '';
-			if (!empty($this->resres[$this->id]['idsa'])) {
-				$this->approb[] = $this->resres[$this->id]['name'];
-				}
-			}
-		return $out;
+			bab_sort::sortObjects($arr, 'getName', bab_Sort::CASE_INSENSITIVE);
+			reset($arr);
 		}
+		
+		reset($this->caltypes);
+		
+	}
+
+	function getnexttype()
+		{
+		static $i = 0;
+		if (list($type, $this->calfromtype) = each($this->caltypes))
+			{
+			$this->type = bab_toHtml($type);
+			$this->number = $i;
+			reset($this->calfromtype);
+			$i++;
+			return true;
+			}
+		reset($this->caltypes);
+		$i = 0;
+		return false;
+		}
+
+	function getnextcal()
+	{
+		if (!isset($this->calfromtype))	
+		{
+			return false;
+		}
+			
+		if (list($key, $calendar) = each($this->calfromtype))
+			{
+			$this->id = bab_toHtml($key);
+			$this->name = bab_toHtml($calendar->getName());
+			$this->selected = in_array($key,$this->selectedCalendars);
+			
+			/*@var $calendar bab_EventCalendar */
+			
+			$idsa = $calendar->getApprobationSheme();
+			if (!empty($idsa)) {
+				$this->approb[] = $calendar->getName();
+				}
+			return true;
+			}
+			
+		$this->calfromtype = null;
+		return false;
+	}
+
+	
 
 	function getapprob()
 		{

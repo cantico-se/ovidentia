@@ -30,6 +30,13 @@ include_once 'base.php';
  */
 abstract class bab_EventCalendar
 {
+	/**
+	 * Calendar UID unique for one reference type
+	 * @see bab_EventCalendar::getReferenceType()
+	 * @var string
+	 */
+	protected $uid = null;
+	
 
 	/**
 	 * Name of calendar
@@ -85,11 +92,34 @@ abstract class bab_EventCalendar
 	 */
 	public function getReference() 
 	{
-		return bab_buildReference('calendar', $this->getReferenceType(), $this->id_calendar);
+		return bab_buildReference('calendar', $this->getReferenceType(), $this->uid);
 	}
 	
 	/**
-	 * Get the type part of the refernce
+	 * Get Url identifier of calendar, the type and uid part of the reference
+	 * the string is unique in all calendar application
+	 * @return unknown_type
+	 */
+	public function getUrlIdentifier()
+	{
+		$type = $this->getReferenceType();
+		return "$type/$this->uid";
+	}
+	
+	
+	/**
+	 * get calendar unique identifier for one reference type
+	 * exemple : id from database
+	 * @return string
+	 */
+	public function getUid()
+	{
+		return $this->uid;
+	}
+	
+	
+	/**
+	 * Get the type part of the reference
 	 * @return unknown_type
 	 */
 	abstract function getReferenceType();
@@ -234,11 +264,7 @@ abstract class bab_EventCalendar
 abstract class bab_OviEventCalendar extends bab_EventCalendar 
 {
 
-	/**
-	 * Calendar ID from database
-	 * @var int
-	 */
-	protected $id_calendar = null;
+	
 	
 	/**
 	 * @param	int		$access_user	id of user to test access for
@@ -248,7 +274,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	{
 		$this->access_user 	= $access_user;
 		
-		$this->id_calendar 	= $data['idcal'];
+		$this->uid		 	= $data['idcal'];
 		$this->name 		= $data['name'];
 		$this->description 	= $data['description'];	
 		
@@ -399,8 +425,8 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 	 * @return bool
 	 */
 	public function canAddEvent() {
-		return bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $this->id_calendar, $this->access_user) 
-			|| bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $this->uid, $this->access_user) 
+			|| bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
 	
@@ -415,7 +441,7 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 			return true;
 		}
 		
-		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
 	
@@ -430,7 +456,7 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 			return true;
 		}
 		
-		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 }
 
@@ -460,8 +486,8 @@ class bab_RessourceCalendar extends bab_OviEventCalendar
 	 * @return bool
 	 */
 	public function canAddEvent() {
-		return bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $this->id_calendar, $this->access_user)
-			|| bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $this->uid, $this->access_user)
+			|| bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
 	
@@ -476,8 +502,8 @@ class bab_RessourceCalendar extends bab_OviEventCalendar
 			return true;
 		}
 		
-		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user)
-			|| bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user)
+			|| bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
 	
@@ -492,6 +518,6 @@ class bab_RessourceCalendar extends bab_OviEventCalendar
 			return true;
 		}
 		
-		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->id_calendar, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 }

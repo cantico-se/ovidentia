@@ -83,6 +83,12 @@ class bab_UserPeriods {
 	public $category = NULL; 
 	
 	
+	/**
+	 * List of id_user after event initialization
+	 * @var array
+	 */
+	private $id_users;
+	
 	
 
 	/**
@@ -139,6 +145,7 @@ class bab_UserPeriods {
 		
 		bab_fireEvent($event);
 
+		$this->id_users = $event->getUsers();
 	}
 
 
@@ -182,6 +189,7 @@ class bab_UserPeriods {
 	 * @return unknown_type
 	 */
 	public function addPeriod(bab_calendarPeriod $p) {
+
 		$this->periods[] = $p;
 
 		$ts = $p->ts_begin;
@@ -250,11 +258,11 @@ class bab_UserPeriods {
 	
 	/**
 	 *
-	 * @param int $filter : events types to get
+	 * @param array $filter : events collections to get
 	 *
 	 * @return	object
 	 */
-	public function getNextEvent($filter) {
+	public function getNextEvent(array $filter) {
 
 		if (NULL === $this->gn_events) {
 			$this->gn_events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
@@ -290,12 +298,12 @@ class bab_UserPeriods {
 	/**
 	 * 
 	 *
-	 * @param	int		$start		timestamp
-	 * @param	int		$end		timestamp
-	 * @param	int		$filter		: events types to get
+	 * @param	int			$start		timestamp
+	 * @param	int			$end		timestamp
+	 * @param	array		$filter		: events collections to get
 	 * @return	array
 	 */
-	public function getEventsBetween($start, $end, $filter) {
+	public function getEventsBetween($start, $end, array $filter = null) {
 		reset($this->boundaries);
 
 		$r = array();
@@ -306,7 +314,31 @@ class bab_UserPeriods {
 			}
 				
 			foreach($this->boundaries[$ts] as $event) {
-				if ($event->ts_end > $start && $event->ts_begin < $end && $event->type === ($filter & $event->type)) {
+				
+				/*@var $event bab_CalendarPeriod */
+				
+				if ($event->ts_end > $start && $event->ts_begin < $end) {
+					
+					if (null !== $filter)
+					{
+						$collection = $event->getCollection();
+						$accepted = true;
+						foreach($filter as $allowedcollection)
+						{
+							if (!($collection instanceof $allowedcollection))
+							{
+								$accepted = false;
+								break;
+							}
+						}
+						
+						if (!$accepted)
+						{
+							continue;
+						}
+					
+					}
+					
 					$r[$event->getProperty('X-CTO-PUID')] = $event;
 				}
 			}
@@ -335,7 +367,6 @@ class bab_UserPeriods {
 		// si pas d'agenda utilisateur
 		if (!$this->id_users) {
 		
-
 			foreach($this->boundaries as $ts => $events) {
 				
 				$nb_unAvailable = 0;
@@ -352,7 +383,7 @@ class bab_UserPeriods {
 
 				
 				if ($nb_unAvailable > 0 && NULL === $previous) {
-					// autoriser la creation d'une nouvelle periode � partir de $test_begin
+					// autoriser la creation d'une nouvelle periode a partir de $test_begin
 					$previous = $test_begin;
 				}
 				
@@ -372,12 +403,12 @@ class bab_UserPeriods {
 				}
 			}
 			
-			// si $previous est encore = � NULL, il n'y a aucun evenements qui genere de la non disponibilit�
+			// si $previous est encore = a NULL, il n'y a aucun evenements qui genere de la non disponibilite
 			if (NULL === $previous) {
 			
 				$availabilityReply->status = true;
 		
-				// autoriser la creation d'une nouvelle periode � partir de $test_begin
+				// autoriser la creation d'une nouvelle periode a partir de $test_begin
 				$previous = $test_begin;
 
 			}
@@ -423,11 +454,11 @@ class bab_UserPeriods {
 						$working_period = true;
 						
 					} elseif (!empty($data['iduser_owners'])) {
-						// evenement, liste des utilisateurs associ�s
+						// evenement, liste des utilisateurs associes
 						$id_users = $data['iduser_owners'];
 						
 					} else {
-						// autres : (ex jours feri�s, agenda de ressource) consid�rer l'utilisateur courrant comme associ� � l'evenement
+						// autres : (ex jours feries, agenda de ressource) considerer l'utilisateur courrant comme associe a l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
 					}
 					
@@ -489,7 +520,7 @@ class bab_UserPeriods {
 		} else {
 			$availabilityReply->status = false;
 		}
-		
+
 		return $availabilityReply;
 	}
 

@@ -1788,11 +1788,10 @@ class bab_event_posted {
 	
 	
 		// working hours test
-	
 
 		$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
 		
-		while ($event = $whObj->getNextEvent(BAB_PERIOD_CALEVENT)) {
+		while ($event = $whObj->getNextEvent(array('bab_CalendarEventCollection'))) {
 			$data = $event->getData();
 			
 			if ($evtid) {

@@ -158,7 +158,7 @@ function optionInGroup(grp,optvalue)
 	return false;
 	}
 
-var assoc = new Array();
+var assoc = new Object();
 
 function moveOptions(src,dest,action)
 {	
@@ -166,21 +166,29 @@ function moveOptions(src,dest,action)
 	var srcoptgroup = src.getElementsByTagName('optgroup');
 
 	
-	var destgroups = new Array();
 	
-
-	if (assoc.length == 0)
+	var destgroups = new Object();
+	
+	assoclength = 0;
+	for(var i in assoc)
+	{
+		assoclength++;
+		break;
+	}
+	
+	if (assoclength == 0)
 		{
 		for (var i = 0; i < srcoptgroup.length ; i++)
 			{
 			var option = srcoptgroup[i].getElementsByTagName('option');
-
+	
 			for (var j = 0; j < option.length ; j++)
 				{
 				assoc[option.item(j).value] = srcoptgroup[i]['className'];
 				}
 			}
 		}
+
 
 	for (var i = 0; i < destoptgroup.length ; i++)
 		{
@@ -191,6 +199,8 @@ function moveOptions(src,dest,action)
 			assoc[option.item(j).value] = destoptgroup[i]['className'];
 			}
 		}
+
+	
 
 	srclen = src.options.length;
 	if (srclen == 0) return;
@@ -247,7 +257,6 @@ function moveOptions(src,dest,action)
 	// put option in correct optgroup with DOM
 
 	var sort = true;
-	
 	while (sort)
 		{
 		var loop = false;
@@ -357,21 +366,13 @@ function calendarChoice_selectAll(formname)
 		<td width="45%">
 		<h5>{ t_calendars1 }</h5>
 		<select name="calendars" multiple="multiple" size="10" style="width:100%">
-			<optgroup class="usr" label="{ usrcalendarstxt }">
-			<!--#in getnextusrcal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextusrcal -->
+			<!--#in getnexttype -->
+			<optgroup class="caltype{ number }" label="{ type }">
+				<!--#in getnextcal -->
+				<option value="{ id }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ name }</option>
+				<!--#endin getnextcal -->
 			</optgroup>
-			<optgroup class="grp" label="{ grpcalendarstxt }">
-			<!--#in getnextpubcal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextpubcal -->
-			</optgroup>
-			<optgroup class="res" label="{ rescalendarstxt }">
-			<!--#in getnextrescal -->
-				<option value="{ id }" { selected }>{ name }</option>
-			<!--#endin getnextrescal -->
-			</optgroup>
+			<!--#endin getnexttype -->
 		</select>
 		</td>
 
@@ -384,12 +385,10 @@ function calendarChoice_selectAll(formname)
 		<td width="45%">
 			<h5>{ t_calendars2 }</h5>
 			<select name="selected_calendars[]" multiple="multiple" size="10" style="width:100%">
-				<optgroup class="usr" label="{ usrcalendarstxt }">
+				<!--#in getnexttype -->
+				<optgroup class="caltype{ number }" label="{ type }">
 				</optgroup>
-				<optgroup class="grp" label="{ grpcalendarstxt }">
-				</optgroup>
-				<optgroup class="res" label="{ rescalendarstxt }">
-				</optgroup>
+				<!--#endin getnexttype -->
 			</select>
 		</td>
 	</tr>
