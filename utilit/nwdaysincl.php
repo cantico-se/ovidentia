@@ -260,7 +260,7 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 		$endDate->add(1, BAB_DATETIME_DAY);
 		
 		$p = new bab_calendarPeriod($beginDate, $endDate);
-		$p->setProperty('X-CTO-PUID'	,'NWD'.$nw_day);
+		$p->setProperty('UID'	,'NWD'.$nw_day);
 		$p->setProperty('CLASS'			,'PUBLIC');
 		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));

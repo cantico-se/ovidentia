@@ -28,7 +28,7 @@ include_once 'base.php';
  * Period object
  * 
  */
-class bab_calendarPeriod {
+class bab_CalendarPeriod {
 
 	/**
 	 * Timestamp begin date
@@ -86,14 +86,6 @@ class bab_calendarPeriod {
 
 		$this->ts_begin 	= $begin;
 		$this->ts_end		= $end;
-		
-		
-		/*
-		$this->properties = array(
-			'X-CTO-PUID'	=> $begin.'.'.$end,
-			'CLASS'			=> 'PUBLIC'
-		);
-		*/
 	}
 	
 	
@@ -103,12 +95,40 @@ class bab_calendarPeriod {
 	}
 	
 	/**
-	 * 
+	 * Get period collection
 	 * @return bab_PeriodCollection
 	 */
 	public function getCollection()
 	{
 		return $this->collection;
+	}
+	
+	
+	/**
+	 * Get identifier used in url to identify a period
+	 * for modification of a period, the read only event will not need url identifier, so attachment to eventCalendar object is only required for modifiable events
+	 * 
+	 * @return string
+	 */
+	public function getUrlIdentifier()
+	{
+		if (!isset($this->collection)) {
+			throw new Exception('Missing period collection on bab_calendarPeriod');
+		}
+		
+		$calendar = $this->collection->getCalendar();
+		
+		if (!isset($calendar)) {
+			throw new Exception('There is no calendar linked to the period, the url identifier cannot be generated');
+		}
+		
+		$uid = $this->getProperty('UID');
+		
+		if (empty($uid)) {
+			throw new Exception('The UID property of period is missing, the url identifier cannot be generated');
+		}
+		
+		return $calendar->getUrlIdentifier().'/'.$uid;
 	}
 	
 

@@ -67,62 +67,15 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 	foreach($idcals as $id_cal)
 		{
 		$add = false;
-		$arr = bab_getICalendars()->getCalendarInfo($id_cal);
+		$calendar = bab_getICalendars()->getEventCalendar($id_cal);
+		/*@var $calendar bab_EventCalendar */
 
-		switch($arr['type'])
-			{
-			case BAB_CAL_USER_TYPE:
-				if( $arr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] )
-					{
-					$add = true;
-					$ustatus = BAB_CAL_STATUS_ACCEPTED;
-					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_UPDATE || $arr['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
-					{
-					$add = true;
-					$ustatus = BAB_CAL_STATUS_NONE;
-					}
-				elseif( $arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL)
-					{
-					$add = true;
-					$ustatus = BAB_CAL_STATUS_ACCEPTED;
-					}
-				break;
-			case BAB_CAL_PUB_TYPE:
-				if( $arr['idsa'] != 0 )
-					{
-					$ustatus = BAB_CAL_STATUS_NONE;			
-					}
-				else
-					{
-					$ustatus = BAB_CAL_STATUS_ACCEPTED;
-					}
 
-				if( $arr['manager'] )
-					{
-					$add = true;
-					}
-				break;
-			case BAB_CAL_RES_TYPE:
-				if( $arr['idsa'] != 0 )
-					{
-					$ustatus = BAB_CAL_STATUS_NONE;			
-					}
-				else
-					{
-					$ustatus = BAB_CAL_STATUS_ACCEPTED;
-					}
-
-				if( $arr['manager'] || $arr['add'])
-					{
-					$add = true;
-					}
-				break;
-			}
-
-		if( $add )
+		if( $calendar->canAddEvent() )
 			{
 
+			$ustatus = $calendar->useApprobationSheme() ? BAB_CAL_STATUS_NONE : BAB_CAL_STATUS_ACCEPTED;
+				
 			if (!isset($associated[$id_cal])) {
 			
 				// add calendar to event
@@ -137,29 +90,29 @@ function bab_updateSelectedCalendars($id_event, $idcals, &$exclude) {
 					VALUES 
 						(
 							'".$babDB->db_escape_string($id_event)."',
-							'".$babDB->db_escape_string($id_cal)."', 
+							'".$babDB->db_escape_string($calendar->getUid())."', 
 							'".$babDB->db_escape_string($ustatus)."'
 						)
 					");
 					
 
-				if( ($arr['type'] == BAB_CAL_PUB_TYPE ||  $arr['type'] == BAB_CAL_RES_TYPE) && ($arr['idsa'] != 0) )
+				if( $calendar->getApprobationSheme() )
 					{
 						// if approbation, notify approvers
 						
 						include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-						$idfai = makeFlowInstance($arr['idsa'], "cal-".$id_cal."-".$id_event);
+						$idfai = makeFlowInstance($calendar->getApprobationSheme(), "cal-".$calendar->getUid()."-".$id_event);
 						$babDB->db_query("
 							UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
 							SET 
 								idfai='".$babDB->db_escape_string($idfai)."' 
 							where 
 								id_event='".$babDB->db_escape_string($id_event)."' 
-								AND id_cal='".$babDB->db_escape_string($id_cal)."'
+								AND id_cal='".$babDB->db_escape_string($calendar->getUid())."'
 							");
 							
 						$nfusers = getWaitingApproversFlowInstance($idfai, true);
-						notifyEventApprovers($id_event, $nfusers, $arr);
+						notifyEventApprovers($id_event, $nfusers, $calendar);
 					}
 				else 
 					{
@@ -1357,7 +1310,7 @@ function notifyEventUpdate($evtid, $bdelete, $exclude)
 	}
 
 
-function notifyEventApprovers($id_event, $users, $calinfo)
+function notifyEventApprovers($id_event, $users, bab_EventCalendar $calendar)
 	{
 	global $babDB, $babBody, $babAdminEmail;
 
@@ -1382,7 +1335,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 			var $tmp_calendar;
 
 
-			function notifyEventApproversCls($id_event, $calinfo)
+			function notifyEventApproversCls($id_event, bab_EventCalendar $calendar)
 				{
 				global $babDB;
 
@@ -1399,13 +1352,15 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 				$this->titletxt = bab_translate("Title");
 				$this->tmp_title = $evtinfo['title'];
 				$this->tmp_location = $evtinfo['location'];
-				if( $calinfo['type'] == BAB_CAL_PUB_TYPE )
+				if( $calendar instanceof bab_PublicCalendar ) {
 					$this->calendartxt = bab_translate("Public calendar");
-				else
+				} elseif ($calendar instanceof bab_RessourceCalendar) {
 					$this->calendartxt = bab_translate("Resource calendar");
-					
+				} else {
+					$this->calendartxt = bab_translate("calendar");
+				}	
 				
-				$this->tmp_calendar = $calinfo['name'];
+				$this->tmp_calendar = $calendar->getName();
 				}
 				
 			function asHtml() {
@@ -1441,7 +1396,7 @@ function notifyEventApprovers($id_event, $users, $calinfo)
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 	$mail->mailSubject(bab_translate("New waiting event"));
 
-	$tempa = new notifyEventApproversCls($id_event, $calinfo);
+	$tempa = new notifyEventApproversCls($id_event, $calendar);
 	$tempa->asHtml();
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "eventwait"));
 	$mail->mailBody($message, "html");
@@ -1836,7 +1791,7 @@ class bab_event_posted {
 				
 				
 
-				$availability_msg_list[$calPeriod->getProperty('X-CTO-PUID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+				$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
 
 			}
 		}

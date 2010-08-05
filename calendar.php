@@ -627,7 +627,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$arr = $calPeriod->getData(); /* $calPeriod->data can be NULL (non working days) */
 					$arr['color'] = $calPeriod->getColor();
 
-					$xCtoPuid = $calPeriod->getProperty('X-CTO-PUID');
+					$xCtoPuid = $calPeriod->getProperty('UID');
 					
 					if (!isset($this->resevent[$xCtoPuid]))
 						{

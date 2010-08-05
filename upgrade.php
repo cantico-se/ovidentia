@@ -6260,8 +6260,21 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	
 	
+	/**
+	 * Upgrade to 7.3.90
+	 */
+	
+	
 	bab_addEventListener('bab_eventBeforePeriodsCreated', 'bab_onBeforePeriodsCreated', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
 	bab_addEventListener('bab_eventCollectCalendarsBeforeDisplay', 'bab_onCollectCalendarsBeforeDisplay', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
+	
+	
+	if (!bab_isKeyExists(BAB_CAL_EVENTS_TBL, 'uuid')) {
+		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_TBL."` ADD INDEX ( `uuid` ) ");
+	}
+	
+	$functionalities->register('CalendarBackend'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
+	$functionalities->register('CalendarBackend/Ovi'	, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
 	
 	return true;
 }

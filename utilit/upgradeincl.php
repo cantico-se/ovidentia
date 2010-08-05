@@ -563,6 +563,31 @@ function bab_isTableField($table, $field) {
 }
 
 
+/**
+ * Test if a key exists on a table
+ * @param string $table
+ * @param string $keyname
+ * 
+ * @since 7.3.90
+ * 
+ * @return bool
+ */
+function bab_isKeyExists($table, $keyname) {
+	
+	global $babDB;
+	
+	$res = $babDB->db_query('SHOW KEYS FROM '.BAB_EVENT_LISTENERS_TBL.'');
+	while ($arr = $babDB->db_fetch_assoc($res)) {
+		if (isset($arr['Key_name']) && $keyname === $arr['Key_name']) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+
 /** 
  * Insert informations into message log
  * If the $uid is given, it must be unique for each $addon_name, the function will return false if the uid is allready inserted

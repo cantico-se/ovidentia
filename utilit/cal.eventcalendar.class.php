@@ -98,11 +98,16 @@ abstract class bab_EventCalendar
 	/**
 	 * Get Url identifier of calendar, the type and uid part of the reference
 	 * the string is unique in all calendar application
-	 * @return unknown_type
+	 * @return string
 	 */
 	public function getUrlIdentifier()
 	{
 		$type = $this->getReferenceType();
+		
+		if (empty($this->uid)) {
+			throw new Exception('the unique identifier of the calendar is missing');
+		}
+		
 		return "$type/$this->uid";
 	}
 	
@@ -251,6 +256,19 @@ abstract class bab_EventCalendar
 		
 		return true;
 	}
+	
+	
+	
+	/**
+	 * Test if the creation of the event require an approbation sheme instance validation
+	 * return true if the event must be created with a waiting status 
+	 * or return false if the event must be created with a approved status
+	 * 
+	 * @param	bab_calendarPeriod 	$event
+	 * 
+	 * @return bool
+	 */
+	abstract public function useApprobationSheme(bab_calendarPeriod $event);
 }
 
 
@@ -267,10 +285,12 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	
 	
 	/**
+	 * Initilization from database informations
+	 * 
 	 * @param	int		$access_user	id of user to test access for
 	 * @param	Array	$data			calendar infos from table
 	 */
-	public function __construct($access_user, Array $data)
+	public function init($access_user, Array $data)
 	{
 		$this->access_user 	= $access_user;
 		
@@ -316,9 +336,9 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * @param	int		$access_user	id of user to test access for
 	 * @param	Array	$data			calendar infos from table
 	 */
-	public function __construct($access_user, Array $data)
+	public function init($access_user, Array $data)
 	{
-		parent::__construct($access_user, $data);
+		parent::init($access_user, $data);
 		$this->id_user 			= $data['idowner'];
 		$this->sharing_access	= $data['access'];
 	}
@@ -329,7 +349,7 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	}
 	
 	/**
-	 * Get the type part of the refernce
+	 * Get the type part of the reference
 	 * @return unknown_type
 	 */
 	public function getReferenceType()
@@ -397,6 +417,33 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	}
 	
 	
+	
+	/**
+	 * Test if the creation of the event require an approbation sheme instance validation
+	 * return true if the event must be created with a waiting status 
+	 * or return false if the event must be created with a approved status
+	 * 
+	 * @param	bab_calendarPeriod 	$event
+	 * 
+	 * @return bool
+	 */
+	public function useApprobationSheme(bab_calendarPeriod $event) {
+		
+		if( $this->getIdUser() ==  $GLOBALS['BAB_SESS_USERID'] )
+			{
+			return false;
+			}
+		elseif($this->sharing_access == BAB_CAL_ACCESS_UPDATE || $this->sharing_access == BAB_CAL_ACCESS_SHARED_UPDATE)
+			{
+			return true;
+			}
+		elseif($this->sharing_access == BAB_CAL_ACCESS_FULL || $this->sharing_access == BAB_CAL_ACCESS_SHARED_FULL)
+			{
+			return false;
+			}
+		
+		return true;
+	}
 }
 
 
@@ -457,6 +504,26 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 		}
 		
 		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
+	}
+	
+	
+	
+	/**
+	 * Test if the creation of the event require an approbation sheme instance validation
+	 * return true if the event must be created with a waiting status 
+	 * or return false if the event must be created with a approved status
+	 * 
+	 * @param	bab_calendarPeriod 	$event
+	 * 
+	 * @return bool
+	 */
+	public function useApprobationSheme(bab_calendarPeriod $event) {
+		
+		if($this->getApprobationSheme()) {
+			return true;			
+		}
+		
+		return false;
 	}
 }
 
@@ -520,4 +587,25 @@ class bab_RessourceCalendar extends bab_OviEventCalendar
 		
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
+	
+	
+	
+	/**
+	 * Test if the creation of the event require an approbation sheme instance validation
+	 * return true if the event must be created with a waiting status 
+	 * or return false if the event must be created with a approved status
+	 * 
+	 * @param	bab_calendarPeriod 	$event
+	 * 
+	 * @return bool
+	 */
+	public function useApprobationSheme(bab_calendarPeriod $event) {
+		
+		if($this->getApprobationSheme()) {
+			return true;			
+		}
+		
+		return false;
+	}
+	
 }

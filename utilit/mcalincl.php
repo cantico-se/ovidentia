@@ -339,7 +339,7 @@ class bab_icalendar
 	
 	public $cal_name;
 	
-	public $access = BAB_CAL_ACCESS_NONE;
+	public $access = BAB_CAL_ACCESS_VIEW;
 	
 	var $whObj;	// working hours object
 	
@@ -369,50 +369,11 @@ class bab_icalendar
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
 		
-		/*
 		
-		if( $calid == bab_getICalendars()->id_percal ) // user's calendar 
-			{
-			$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
-			$this->whObj->addCalendar($this->idcalendar);
+		if ($this->calendar->canAddEvent()) {
 			$this->access = BAB_CAL_ACCESS_FULL;
-			}
-		else
-			{
-			switch($this->cal_type)
-				{
-				case BAB_CAL_USER_TYPE:
-					$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($calid));
-					$this->whObj->addCalendar($this->idcalendar);
-					$this->access = bab_getICalendars()->usercal[$calid]['access'];
-					break;
-				case BAB_CAL_PUB_TYPE:
-					$this->whObj->addCalendar($this->idcalendar);
-					if( bab_getICalendars()->pubcal[$calid]['manager'] )
-						{
-						$this->access = BAB_CAL_ACCESS_FULL;							
-						}
-					else
-						{
-						$this->access = BAB_CAL_ACCESS_VIEW;							
-						}
-					break;
-				case BAB_CAL_RES_TYPE:
-					$this->whObj->addCalendar($this->idcalendar);
-					if( bab_getICalendars()->rescal[$calid]['manager'] )
-						{
-						$this->access = BAB_CAL_ACCESS_FULL;							
-						}
-					else
-						{
-						$this->access = BAB_CAL_ACCESS_VIEW;							
-						}
-					break;
-				}
-			}
-			
-			
-		*/
+		} 
+		
 		
 		$this->whObj->createPeriods(
 			array(
@@ -435,7 +396,7 @@ class bab_icalendar
 	 */
 	public function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-		while( $p = & $this->whObj->getNextEvent(BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT) )
+		while( $p = & $this->whObj->getNextEvent(array('bab_NonWorkingDaysCollection', 'bab_VacationPeriodCollection', 'bab_CalendarEventCollection')) )
 			{
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
 				{
@@ -458,7 +419,7 @@ class bab_icalendar
 	public function getEvents($startdate, $enddate, &$arr)
 		{
 		$arr = array();
-		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), BAB_PERIOD_NWDAY | BAB_PERIOD_VACATION | BAB_PERIOD_CALEVENT);
+		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), array('bab_NonWorkingDaysCollection', 'bab_VacationPeriodCollection', 'bab_CalendarEventCollection'));
 
 			foreach($events as $event) {
 				if (empty($event->data['id_cal']) || $this->idcalendar == $event->data['id_cal'])
@@ -1003,7 +964,7 @@ class calendarchoice
 		global $babBody, $babDB;
 		$this->formname = $formname;
 		$icalendars = bab_getICalendars();
-		$icalendars->initializeCalendars();
+		
 		if (isset($_POST['selected_calendars']))
 			{
 			$this->selectedCalendars = $_POST['selected_calendars'];

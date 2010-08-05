@@ -434,8 +434,11 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
  */
 function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisplay $event)
 {
-	require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
+	
 	global $babDB, $babBody;
+	
+	$backend = bab_functionality::get('CalendarBackend/Ovi');
+	/*@var $backend Func_CalendarBackend_Ovi */
 	
 	// public calendars
 	
@@ -454,7 +457,8 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	while( $arr = $babDB->db_fetch_assoc($res))
 	{	
-		$calendar = new bab_PublicCalendar($event->getAccessUser(), $arr);
+		$calendar = $backend->PublicCalendar();
+		$calendar->init($event->getAccessUser(), $arr);
 		$event->addCalendar($calendar);
 	}
 	
@@ -477,7 +481,8 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	while($arr = $babDB->db_fetch_assoc($res))
 	{
-		$calendar = new bab_RessourceCalendar($event->getAccessUser(), $arr);
+		$calendar = $backend->RessourceCalendar();
+		$calendar->init($event->getAccessUser(), $arr);
 		$event->addCalendar($calendar);
 	}
 	
@@ -519,7 +524,8 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 				
 				);
 				
-				$calendar = new bab_PersonalCalendar($event->getAccessUser(), $data);
+				$calendar = $backend->PersonalCalendar();
+				$calendar->init($event->getAccessUser(), $data);
 				$event->addCalendar($calendar);
 			}
 		}

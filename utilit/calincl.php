@@ -416,7 +416,13 @@ class bab_icalendars
 					'access' 		=> BAB_CAL_ACCESS_FULL
 				);
 				
-				return new bab_PersonalCalendar($this->iduser, $data);
+				$backend = bab_functionality::get('CalendarBackend/Ovi');
+				/*@var $backend Func_CalendarBackend_Ovi */
+				
+				$calendar = $backend->PersonalCalendar();
+				$calendar->init($this->iduser, $data);
+				
+				return $calendar;
 			}
 		}
 		
@@ -434,11 +440,7 @@ class bab_icalendars
 	 */
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
-		$reference = $calendar->getReference();
-		$type = $reference->getType();
-		$idObject = $reference->getObjectId();
-		
-		$this->calendars["$type/$idObject"] = $calendar;
+		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
 		
 		if(empty($this->user_calendarids) && count($this->calendars) > 0)
 		{
@@ -558,6 +560,8 @@ class bab_icalendars
 	
 	public function getCalendars()
 	{
+		$this->initializeCalendars();
+		
 		return $this->calendars;
 	}
 }
@@ -700,8 +704,7 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 	while( $arr = $babDB->db_fetch_assoc($res))
 		{
 		$events[$arr['id']] = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
-		$xCtoPuid = & $events[$arr['id']]->getProperty('X-CTO-PUID');
-		$xCtoPuid .= '.'.$arr['id'];
+		
 		
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');
@@ -709,13 +712,16 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 		$editor->setFormat($arr['description_format']);
 		$arr['description']	= $editor->getHtml();
 
+		$events[$arr['id']]->setProperty('UID'	, $arr['uuid']);
 		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);
 		$events[$arr['id']]->setProperty('DTEND'		, $arr['end_date']);
 		$events[$arr['id']]->setProperty('SUMMARY'		, $arr['title']);
 		$events[$arr['id']]->setProperty('DESCRIPTION'	, $arr['description']);
 		$events[$arr['id']]->setProperty('LOCATION'		, $arr['location']);
 		$events[$arr['id']]->setProperty('CATEGORIES'	, $arr['category']);
-		$events[$arr['id']]->color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
+		
+		$color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
+		$events[$arr['id']]->setColor($color);
 		
 		
 		if ('Y' == $arr['bprivate']) {

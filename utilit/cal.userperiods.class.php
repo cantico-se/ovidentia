@@ -227,7 +227,7 @@ class bab_UserPeriods {
 		$arr = array();
 		foreach($this->id_users as $id_user) {
 			$p = new bab_calendarPeriod($begin, $end, $type);
-			$xCtoPuid = & $p->getProperty('X-CTO-PUID');
+			$xCtoPuid = & $p->getProperty('UID');
 			$xCtoPuid .= '.'.$id_user;
 			$arr[] = $p;
 		}
@@ -288,7 +288,7 @@ class bab_UserPeriods {
 	public function setAvailability($event, $available) {
 		$boundary = $this->boundaries[$event->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
-			if ($tmp_evt->getProperty('X-CTO-PUID') === $event->getProperty('X-CTO-PUID')) {
+			if ($tmp_evt->getProperty('UID') === $event->getProperty('UID')) {
 				$this->boundaries[$event->ts_begin][$key]->available = $available;
 			}
 		}
@@ -339,7 +339,7 @@ class bab_UserPeriods {
 					
 					}
 					
-					$r[$event->getProperty('X-CTO-PUID')] = $event;
+					$r[$event->getProperty('UID')] = $event;
 				}
 			}
 		}

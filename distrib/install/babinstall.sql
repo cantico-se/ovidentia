@@ -734,7 +734,8 @@ CREATE TABLE bab_cal_events (
   uuid varchar(255) NOT NULL,
   PRIMARY KEY  (id),
   KEY start_date (start_date),
-  KEY end_date (end_date)
+  KEY end_date (end_date),
+  KEY uuid (uuid)
 );
 
 
