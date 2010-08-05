@@ -62,4 +62,27 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		return new bab_RessourceCalendar;
 	}
 	
+	
+	
+	/**
+	 * Returns the period corresponding to the specified identifier
+	 * this is necessary for all events with a link
+	 * 
+	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
+	 * @param 	string 					$identifier				The UID property of event
+	 * 
+	 * @return bab_CalendarPeriod
+	 */
+	public function getPeriod(bab_PeriodCollection $periodCollection, $identifier)
+	{
+		if ($periodCollection instanceof bab_CalendarEventCollection) 
+		{
+			require_once dirname(__FILE__).'/calincl.php';
+			$oviEvents = new bab_cal_OviCalendarEvents;
+			return $oviEvents->getFromUid($identifier);
+		}
+		
+		return null;
+	}
+	
 }

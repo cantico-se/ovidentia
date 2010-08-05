@@ -112,23 +112,13 @@ class bab_CalendarPeriod {
 	 */
 	public function getUrlIdentifier()
 	{
-		if (!isset($this->collection)) {
-			throw new Exception('Missing period collection on bab_calendarPeriod');
-		}
-		
-		$calendar = $this->collection->getCalendar();
-		
-		if (!isset($calendar)) {
-			throw new Exception('There is no calendar linked to the period, the url identifier cannot be generated');
-		}
-		
 		$uid = $this->getProperty('UID');
 		
 		if (empty($uid)) {
 			throw new Exception('The UID property of period is missing, the url identifier cannot be generated');
 		}
 		
-		return $calendar->getUrlIdentifier().'/'.$uid;
+		return $uid;
 	}
 	
 
@@ -328,6 +318,4 @@ class bab_CalendarPeriod {
 	}
 
 }
-
-
 

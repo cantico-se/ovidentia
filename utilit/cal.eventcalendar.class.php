@@ -269,6 +269,15 @@ abstract class bab_EventCalendar
 	 * @return bool
 	 */
 	abstract public function useApprobationSheme(bab_calendarPeriod $event);
+	
+	
+
+	/**
+	 * Get backend to use for this calendar
+	 * 
+	 * @return Func_CalendarBackend
+	 */
+	abstract public function getBackend();
 }
 
 
@@ -281,8 +290,6 @@ abstract class bab_EventCalendar
  */
 abstract class bab_OviEventCalendar extends bab_EventCalendar 
 {
-
-	
 	
 	/**
 	 * Initilization from database informations
@@ -306,8 +313,18 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 			$this->id_dgowner = $data['id_dgowner'];
 		}
 	}
+
 	
 	
+	/**
+	 * Get backend to use for this calendar
+	 * 
+	 * @return Func_CalendarBackend_Ovi
+	 */
+	public function getBackend()
+	{
+		return bab_functionality::get('CalendarBackend/Ovi');
+	}
 	
 }
 
@@ -326,8 +343,7 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * BAB_CAL_ACCESS_FULL
 	 * BAB_CAL_ACCESS_SHARED_UPDATE
 	 * BAB_CAL_ACCESS_SHARED_FULL
-	 * 
-	 * 
+	 *  
 	 * @var int
 	 */
 	private $sharing_access = BAB_CAL_ACCESS_VIEW;

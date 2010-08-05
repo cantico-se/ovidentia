@@ -119,7 +119,7 @@ class bab_TaskCollection extends bab_PeriodCollection { }
 class bab_WorkingPeriodCollection extends bab_PeriodCollection { }
 
 /**
- * List of non-working periods (computed from working hours)
+ * List of non-working periods computed from working hours
  */
 class bab_NonWorkingPeriodCollection extends bab_PeriodCollection { }
 
@@ -127,3 +127,8 @@ class bab_NonWorkingPeriodCollection extends bab_PeriodCollection { }
  * List of non-working days
  */
 class bab_NonWorkingDaysCollection extends bab_PeriodCollection { }
+
+/**
+ * List of periods for a result of an availability search
+ */
+class bab_AvailablePeriodCollection extends bab_PeriodCollection { }

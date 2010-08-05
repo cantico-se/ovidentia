@@ -375,10 +375,6 @@ class bab_icalendars
 				}
 			}
 		
-		if( empty($this->user_calendarids) && $this->id_percal != 0)
-			{
-			$this->user_calendarids = $this->id_percal;
-			}
 	}
 	
 	/**
@@ -634,102 +630,58 @@ function bab_getCalendarTitle($calid) {
 }
 
 
+
+
+
+
+
 /**
- * set calendar events into object
+ * Create calendar events for CalendarBackend/Ovi
  * 
- * @see bab_UserPeriods
- *  
- * @param bab_CalendarEventCollection	$evt_collection
- * @param array							$calendars	<bab_EventCalendar>
- * @param object						$begin
- * @param object						$end
- * @param array|int|NULL				[$category]
  */
-function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $calendars, $begin, $end, $category = NULL) {
+class bab_cal_OviCalendarEvents
+{
 
-	global $babDB;
-	
-	$ovi_calendars = array();
-	$id_calendars = array();
-	
-	foreach($calendars as $calendar) {
-		
-		if ($calendar instanceof bab_OviEventCalendar) {
-			$id_calendars[] = $calendar->getUid();
-		}
-	}
-	
-	foreach(bab_getICalendars()->getCalendars() as $calendar) {
-		if ($calendar instanceof bab_OviEventCalendar) {
-			$ovi_calendars[$calendar->getUid()] = $calendar;
-		}
-	}
 
-	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	
-	$query_category = '';	
-	if (NULL !== $category) {
-		$query_category = "AND ce.id_cat IN(".$babDB->quote($category).")";
-	}
 
-	$events = array();
-	$query = "
-		SELECT 
-			ceo.*, 
-			ce.*,
-			ca.name category,
-			ca.description category_description, 
-			ca.bgcolor 
-		FROM 
-			".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
-			LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
-			LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
 
-		WHERE 
-			ceo.id_cal			IN(".$babDB->quote($id_calendars).") 
-			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
-			AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
-			AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
-
-			".$query_category." 
-		ORDER BY 
-			ce.start_date asc 
-	";
-
-	$res = $babDB->db_query($query);
-
-	$events = array();
-	$idevtarr = array();
-	
-	while( $arr = $babDB->db_fetch_assoc($res))
-		{
-		$events[$arr['id']] = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
-		
-		
+	/**
+	 * Create a calendar period from a calendar event
+	 * 
+	 * @param	array	$arr
+	 * 
+	 * @return bab_CalendarEvent
+	 */
+	private function createCalendarPeriod($arr)
+	{
+		global $babDB;
+		$event = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
+			
+			
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');
 		$editor->setContent($arr['description']);
 		$editor->setFormat($arr['description_format']);
 		$arr['description']	= $editor->getHtml();
-
-		$events[$arr['id']]->setProperty('UID'	, $arr['uuid']);
-		$events[$arr['id']]->setProperty('DTSTART'		, $arr['start_date']);
-		$events[$arr['id']]->setProperty('DTEND'		, $arr['end_date']);
-		$events[$arr['id']]->setProperty('SUMMARY'		, $arr['title']);
-		$events[$arr['id']]->setProperty('DESCRIPTION'	, $arr['description']);
-		$events[$arr['id']]->setProperty('LOCATION'		, $arr['location']);
-		$events[$arr['id']]->setProperty('CATEGORIES'	, $arr['category']);
+	
+		$event->setProperty('UID'			, $arr['uuid']);
+		$event->setProperty('DTSTART'		, $arr['start_date']);
+		$event->setProperty('DTEND'			, $arr['end_date']);
+		$event->setProperty('SUMMARY'		, $arr['title']);
+		$event->setProperty('DESCRIPTION'	, $arr['description']);
+		$event->setProperty('LOCATION'		, $arr['location']);
+		$event->setProperty('CATEGORIES'	, $arr['category']);
 		
 		$color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
-		$events[$arr['id']]->setColor($color);
+		$event->setColor($color);
 		
 		
 		if ('Y' == $arr['bprivate']) {
-			$events[$arr['id']]->setProperty('CLASS'	, 'PRIVATE');
+			$event->setProperty('CLASS'	, 'PRIVATE');
 		} else {
-			$events[$arr['id']]->setProperty('CLASS'	, 'PUBLIC');
+			$event->setProperty('CLASS'	, 'PUBLIC');
 		}
-
+	
 		unset($arr['start_date']);
 		unset($arr['end_date']);
 		unset($arr['title']);
@@ -739,14 +691,13 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 		unset($arr['bprivate']);
 		unset($arr['color']);
 		unset($arr['bgcolor']);
-
-
-		$arr['alert'] = false;
+		unset($arr['uuid']);
+	
+		$arr['alert'] = !empty($arr['alert']);
 		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
 		$arr['iduser_owners'] = array();
-
-
-
+	
+	
 		$resco = $babDB->db_query("
 		
 			SELECT o.id_cal, c.type, c.owner, o.idfai   
@@ -757,7 +708,7 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 				o.id_event ='".$babDB->db_escape_string($arr['id'])."' 
 				AND c.id = o.id_cal 
 			");
-
+	
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
 			if ($arr2['id_cal'] != $arr['id_cal']) {
 				if (isset($ovi_calendars[$arr2['id_cal']])) {
@@ -770,16 +721,16 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
 				$arr['iduser_owners'][$arr2['owner']] = $arr2['owner'];
 			}
-
+	
 			if (0 !== (int) $arr2['idfai']) {
 				// overright idfai because the idfai is 0 when the event is linked to others calendars
 				$arr['idfai'] = (int) $arr2['idfai'];
 			}
 		}
-
+	
 		$arr['nbowners'] = count($arr['idcal_owners']);
 		
-
+	
 		if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 )
 			{
 			if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
@@ -793,34 +744,142 @@ function bab_cal_setEventsPeriods(bab_CalendarEventCollection $evt_collection, $
 			}
 			
 		if ('Y' === $arr['bfree']) {
-			$events[$arr['id']]->available = true;
+			$event->available = true;
 		}
-
-		$events[$arr['id']]->setData($arr);
-		
-		$evt_collection->addPeriod($events[$arr['id']]);
-		}
-
 	
-
-	if( !empty($GLOBALS['BAB_SESS_USERID']) && count($idevtarr) > 0 )
-		{
-		$res = $babDB->db_query("SELECT * from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event in (".$babDB->quote($idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-		while( $arr = $babDB->db_fetch_array($res)) {
+		$event->setData($arr);
+		
+		
+		return $event;
+	}
+	
+	
+	/**
+	 * 
+	 * @param string $where
+	 * @return string
+	 */
+	private function getQuery($where)
+	{
+		global $babDB;
+		
+		$query = "
+			SELECT 
+				ceo.*, 
+				ce.*,
+				ca.name category,
+				ca.description category_description, 
+				ca.bgcolor, 
+				er.id_event alert, 
+				en.note 
+			FROM 
+				".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
+				LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
+				LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
+				LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."
+	
+			WHERE 
+				".$where." 
+			ORDER BY 
+				ce.start_date asc 
+		";
+		
+		return $query;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * set calendar events into object
+	 * 
+	 *  
+	 * @param bab_UserPeriods				$user_periods		query result set
+	 * @param array							$calendars	<bab_EventCalendar>
+	 * @param object						$begin
+	 * @param object						$end
+	 * @param array|NULL					[$category]
+	 */
+	public function setEventsPeriods(bab_UserPeriods $user_periods, Array $calendars, $begin, $end, $category = NULL) {
+	
+		global $babDB;
+		
+		$backend = bab_functionality::get('CalendarBackend');
+		
+		$ovi_calendars = array();
+		$id_calendars = array();
+		$collections = array();
+		
+		foreach($calendars as $calendar) {
 			
-			$data = & $events[$arr['id_event']]->getData();
-			if (bab_getICalendars()->id_percal == $data['id_cal']) {
-				$data['note'] = $arr['note'];
+			if ($calendar instanceof bab_OviEventCalendar) {
+				$id = $calendar->getUid();
+				$id_calendars[] = $id;
+				$collections[$id] = $backend->CalendarEventCollection();
+				$collections[$id]->setCalendar($calendar);
 			}
 		}
-
-		$res = $babDB->db_query("SELECT id_event from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event in (".$babDB->quote( $idevtarr).") and id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-		while( $arr = $babDB->db_fetch_array($res)) {
-
-			$data = & $events[$arr['id_event']]->getData();
-			$data['alert'] = true;
+		
+		foreach(bab_getICalendars()->getCalendars() as $calendar) {
+			if ($calendar instanceof bab_OviEventCalendar) {
+				$ovi_calendars[$calendar->getUid()] = $calendar;
+			}
 		}
+	
+		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		
+		$query_category = '';	
+		if (NULL !== $category) {
+			$query_category = "AND ca.name IN(".$babDB->quote($category).")";
+		}
+	
+		
+		$query = $this->getQuery(" 
+			ceo.id_cal			IN(".$babDB->quote($id_calendars).") 
+			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
+			AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
+			AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
+			".$query_category." 
+		");
+		
+		$res = $babDB->db_query($query);
+	
+		
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+			$event = $this->createCalendarPeriod($arr);
+			
+			$collections[$arr['id_cal']]->addPeriod($event);
+			$user_periods->addPeriod($event);
+		}
+	
+	}
+
+
+	/**
+	 * Select one event by ical property UID
+	 * 
+	 * @param	string $uid
+	 * @return bab_CalendarPeriod
+	 */
+	public function getFromUid($uid)
+	{
+		global $babDB;
+		
+		$query = $this->getQuery(" 
+			ce.uuid = ".$babDB->quote($uid)." 
+		");
+		
+		$res = $babDB->db_query($query);
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			return null;
+		}
+		
+		return $this->createCalendarPeriod($arr);
 	}
 }
-
-?>

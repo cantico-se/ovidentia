@@ -246,11 +246,15 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	 */
 	public function getUsers()
 	{
+		if (!isset($this->calendars)) {
+			return array();
+		}
+		
 		$return = array();
 		foreach($this->calendars as $calendar) {
 			$iduser = $calendar->getIdUser();
 			if ($iduser) {
-				$return[] = $iduser;
+				$return[$iduser] = $iduser;
 			}
 		}
 		
@@ -306,6 +310,7 @@ class bab_eventPeriodModified extends bab_event {
 function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 {
 	require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+	require_once dirname(__FILE__).'/workinghoursincl.php';
 	
 	$calendars = $event->getCalendars();
 	$users = $event->getUsers();
@@ -321,30 +326,34 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 	
 	if ($event->isPeriodCollection($vac_collection) && $users) {
 		include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-		bab_vac_setVacationPeriods($vac_collection, $users, $begin, $end);
+		bab_vac_setVacationPeriods($vac_collection, $event->periods, $users, $begin, $end);
 	}
 
 	if ($event->isPeriodCollection($evt_collection)) {
 		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-		bab_cal_setEventsPeriods($evt_collection, $calendars, $begin, $end); // TODO add the filter by category
+		
+		$ical = $event->getICalProperties();
+		$categories = null;
+		if (isset($ical['CATEGORY'])) {
+			$categories = $ical['CATEGORY'];
+		}
+		
+		$oviEvents = new bab_cal_OviCalendarEvents;
+		$oviEvents->setEventsPeriods($event->periods, $calendars, $begin, $end, $categories); 
 	}
 
 	if ($event->isPeriodCollection($tsk_collection) && $users) {
 		include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
 		include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
-		bab_tskmgr_setPeriods($tsk_collection, $users, $begin, $end);
+		bab_tskmgr_setPeriods($tsk_collection, $event->periods, $users, $begin, $end);
 	}
 
+
+
 	
-	
-	
-	
-	$begindate = $event->getBeginDate();
-	$enddate = $event->getEndDate();
-	
-	$loop = $begindate->cloneDate();
-	$endts = $enddate->getTimeStamp() + 86400;
-	$begints = $begindate->getTimeStamp();
+	$loop = $begin->cloneDate();
+	$endts = $end->getTimeStamp() + 86400;
+	$begints = $begin->getTimeStamp();
 	$working = $event->isPeriodCollection($wp_collection);
 	$nworking = $event->isPeriodCollection($nwp_collection);
 	$previous_end = NULL;
@@ -355,6 +364,8 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 			if ($working) {
 				foreach($users as $id_user) {
 					$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
+					
+					
 	
 					foreach($arr as $h) {
 						$startHour	= explode(':', $h['startHour']);
@@ -379,28 +390,32 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 							);
 	
 						if ($nworking && NULL == $previous_end) {
-							$previous_end = $this->begin; // reference
+							$previous_end = $begin; // reference
 						}
 	
 						// add non-working period between 2 working period and at the begining
-						if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+						if ($nworking && $begints > $previous_end->getTimeStamp()) {
 	
-							$p = new bab_calendarPeriod($previous_end, $beginDate);
+							$p = new bab_calendarPeriod($previous_end, $begints);
 							$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 							$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-							$p->setProperty('DTEND'			, $beginDate->getIsoDateTime());
+							$p->setProperty('DTEND'			, $begints);
 							$p->setData(array('id_user' => $id_user));
 							
 							$nwp_collection->addPeriod($p);
+							$event->periods->addPeriod($p);
 						}
 	
-						$p = new bab_calendarPeriod($beginDate, $endDate);
+						$p = new bab_calendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
 	
 						$p->setProperty('SUMMARY'		, bab_translate('Working period'));
-						$p->setProperty('DTSTART'		, $beginDate->getIsoDateTime());
-						$p->setProperty('DTEND'			, $endDate->getIsoDateTime());
+						$p->setProperty('DTSTART'		, $begin->getIsoDateTime());
+						$p->setProperty('DTEND'			, $end->getIsoDateTime());
 						$p->setData(array('id_user' => $id_user));
+						$p->available = true;
+						
 						$wp_collection->addPeriod($p);
+						$event->periods->addPeriod($p);
 	
 						$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
 					}
@@ -411,17 +426,17 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 	}
 
 	// add final non-working period
-	if ($nworking && $this->end->getTimeStamp() > $previous_end->getTimeStamp()) {
+	if ($nworking && $end->getTimeStamp() > $previous_end->getTimeStamp()) {
 
-		$p = new bab_calendarPeriod($previous_end, $this->end);
+		$p = new bab_calendarPeriod($previous_end->getTimeStamp(), $end->getTimeStamp());
 		$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
 		$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-		$p->setProperty('DTEND'			, $this->end->getIsoDateTime());
+		$p->setProperty('DTEND'			, $end->getIsoDateTime());
 		$p->setData(array('id_user' => $id_user));
 		
 		$nwp_collection->addPeriod($p);
+		$event->periods->addPeriod($p);
 	}
-	
 }
 
 

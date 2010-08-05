@@ -39,7 +39,7 @@ class bab_mcalendars
 	var $objcals = array();
 	var $idxcat = 0;
 
-	function bab_mcalendars($startdate, $enddate, $idcals)
+	public function __construct($startdate, $enddate, $idcals)
 		{
 		$this->idcals = $idcals;
 		for( $i = 0; $i < count($this->idcals); $i++ )
@@ -48,7 +48,7 @@ class bab_mcalendars
 			}
 		}
 
-	function getCalendarName($idcal)
+	public function getCalendarName($idcal)
 		{
 		if( isset($this->objcals[$idcal]->cal_name) )
 			{
@@ -57,7 +57,7 @@ class bab_mcalendars
 		return "";
 		}
 
-	function getCalendarType($idcal)
+	public function getCalendarType($idcal)
 		{
 		if( isset($this->objcals[$idcal]) )
 			{
@@ -68,7 +68,7 @@ class bab_mcalendars
 
 	
 
-	function getCalendarAccess($idcal)
+	public function getCalendarAccess($idcal)
 		{
 		if( isset($this->objcals[$idcal]) )
 			{
@@ -77,7 +77,7 @@ class bab_mcalendars
 		return "";
 		}
 
-	function getNextEvent($idcal, $startdate, $enddate, &$arr)
+	public function getNextEvent($idcal, $startdate, $enddate, &$arr)
 		{
 		if( isset($this->objcals[$idcal]) )
 			{
@@ -89,8 +89,9 @@ class bab_mcalendars
 			}
 		}
 
-	function getEvents($idcal, $startdate, $enddate, &$arr)
+	public function getEvents($idcal, $startdate, $enddate, &$arr)
 		{
+			
 		if( isset($this->objcals[$idcal]) )
 			{
 			return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
@@ -102,7 +103,7 @@ class bab_mcalendars
 		}
 
 
-	function getHtmlArea($idcal, $startdate, $enddate, &$harray)
+	public function getHtmlArea($idcal, $startdate, $enddate, &$harray)
 		{
 		if( isset($this->objcals[$idcal]) )
 			{
@@ -115,13 +116,13 @@ class bab_mcalendars
 		}
 
 
-	function enumCategories()
+	public function enumCategories()
 		{
 		$this->idxcat = 0;
 		$this->loadCategories();
 		}
 
-	function getNextCategory(&$arr)
+	public function getNextCategory(&$arr)
 		{
 		if( $this->idxcat < count($this->categories))
 			{
@@ -136,7 +137,7 @@ class bab_mcalendars
 			}
 		}
 	
-	function loadCategories()
+	public function loadCategories()
 		{
 		global $babDB;
 		static $bload = false;
@@ -154,7 +155,7 @@ class bab_mcalendars
 			}
 		}
 
-	function getCategoryColor($idcat)
+	public function getCategoryColor($idcat)
 		{
 		$this->loadCategories();
 
@@ -165,7 +166,7 @@ class bab_mcalendars
 		return "";
 		}
 
-	function getCategoryName($idcat)
+	public function getCategoryName($idcat)
 		{
 		$this->loadCategories();
 
@@ -176,7 +177,7 @@ class bab_mcalendars
 		return "";
 		}
 
-	function getCategoryDescription($idcat)
+	public function getCategoryDescription($idcat)
 		{
 		$this->loadCategories();
 
@@ -213,8 +214,7 @@ class bab_mcalendars
 		
 		if (!isset($calendar))
 		{
-			throw new Exception('the period with the collection %s is not linked to a calendar');
-			return;
+			return array();
 		}
 		
 		
@@ -269,21 +269,25 @@ class bab_mcalendars
 			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
+		
+		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
 
-		$filter = array(
-			'bab_NonWorkingDaysCollection', 
-			'bab_WorkingPeriodCollection', 
-			'bab_VacationPeriodCollection', 
-			'bab_CalendarEventCollection'
+		$criteria = $factory->Collection(
+			array(
+				'bab_NonWorkingDaysCollection', 
+				'bab_WorkingPeriodCollection', 
+				'bab_VacationPeriodCollection', 
+				'bab_CalendarEventCollection'
+			)
 		);
 		
 		foreach($idcals as $idcal) {
-			$filter[] = bab_getICalendars()->getEventCalendar($idcal);
+			$criteria = $criteria->_AND_($factory->Calendar(bab_getICalendars()->getEventCalendar($idcal)));
 		}
 
-		$whObj->createPeriods($filter);
+		$whObj->createPeriods($criteria);
 		$whObj->orderBoundaries();
-
+		
 		return $whObj;
 	}
 	
@@ -357,7 +361,8 @@ class bab_icalendar
 		{
 		global $babBody, $babDB;
 
-		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+		
+		require_once dirname(__FILE__).'/cal.userperiods.class.php';
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
 		$this->calendar = bab_getICalendars()->getEventCalendar($calid);
@@ -373,16 +378,17 @@ class bab_icalendar
 		if ($this->calendar->canAddEvent()) {
 			$this->access = BAB_CAL_ACCESS_FULL;
 		} 
-		
+
+		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
 		
 		$this->whObj->createPeriods(
-			array(
-				$this->calendar, 
+			$factory->Calendar($this->calendar)
+			->_AND_($factory->Collection(array(
 				'bab_NonWorkingDaysCollection', 
 				'bab_WorkingPeriodCollection', 
 				'bab_VacationPeriodCollection', 
 				'bab_CalendarEventCollection'
-			)
+			)))
 		);
 		
 		$this->whObj->orderBoundaries();
@@ -418,12 +424,19 @@ class bab_icalendar
 	 */
 	public function getEvents($startdate, $enddate, &$arr)
 		{
+			
 		$arr = array();
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate), array('bab_NonWorkingDaysCollection', 'bab_VacationPeriodCollection', 'bab_CalendarEventCollection'));
 
 			foreach($events as $event) {
-				if (empty($event->data['id_cal']) || $this->idcalendar == $event->data['id_cal'])
+				$collection = $event->getCollection();
+				
+				$calendar = $collection->getCalendar();
+				
+				if (!$calendar || $this->calendar->getUrlIdentifier() === $calendar->getUrlIdentifier())
+				{
 					$arr[] = $event;
+				}
 			}
 			
 		return count($arr);
@@ -803,9 +816,12 @@ class cal_wmdbaseCls
 		return bab_toHtml(bab_abbr($str, BAB_ABBR_FULL_WORDS, $n));
 		}
 
-	function createCommonEventVars($calPeriod)
+	function createCommonEventVars(bab_CalendarPeriod $calPeriod)
 		{
-		if (BAB_PERIOD_CALEVENT != $calPeriod->type) {
+			
+		$collection = $calPeriod->getCollection();
+			
+		if (!($collection instanceof bab_CalendarEventCollection)) {
 			$this->properties = '';
 		} else {
 			$el = array();
@@ -837,14 +853,24 @@ class cal_wmdbaseCls
 
 		$arr = $calPeriod->getData();
 
-		$this->idcal		= isset($arr['id_cal'])		? $arr['id_cal'] : 0;
-		$this->status		= isset($arr['status'])		? $arr['status'] : 0;
-		$this->id_cat		= isset($arr['id_cat'])		? $arr['id_cat'] : 0;
-		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] : 0;
-		$this->hash			= isset($arr['hash'])		? $arr['hash'] : '';
-		$this->balert		= isset($arr['alert'])		? $arr['alert'] : false;
-		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] : 0;
-		$this->idevent		= isset($arr['id'])			? $arr['id'] : 0;
+		$this->idcal		= 0;
+		
+		if ($collection && $calendar = $collection->getCalendar()) {
+			$this->idcal	= $calendar->getUrlIdentifier();
+		}
+		
+		$collectionparameter = '';
+		if ($collection) {
+			$collectionparameter = get_class($collection);
+		}
+		
+		$this->status		= isset($arr['status'])		? $arr['status'] 		: 0;
+		$this->id_cat		= isset($arr['id_cat'])		? $arr['id_cat'] 		: 0;
+		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
+		$this->hash			= isset($arr['hash'])		? $arr['hash'] 			: '';
+		$this->balert		= isset($arr['alert'])		? $arr['alert'] 		: false;
+		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] 		: 0;
+		$this->idevent		= $calPeriod->getUrlIdentifier();
 		$this->bgcolor		= 'fff';
 		
 		$this->viewurl		= isset($arr['viewurl'])	? $arr['viewurl'] : null;
@@ -893,19 +919,19 @@ class cal_wmdbaseCls
 		if( $this->allow_modify )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&collection=".$collectionparameter."&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
 			}
 		elseif( $this->allow_view )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent	."&idcal=".$this->idcal);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&collection=".$collectionparameter."&evtid=". $this->idevent	."&idcal=".$this->idcal);
 			}
 		else
 			{
 			$this->popup		= false;
 			$this->titletenurl	= "";
 			}
-		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&collection=".$collectionparameter."&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		//$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;

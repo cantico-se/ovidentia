@@ -32,7 +32,7 @@ include_once 'base.php';
  * Manage working and non-working hours
  * browse periods with working hours and non-working days
  */
-class bab_UserPeriods {
+class bab_UserPeriods implements Iterator, Countable {
 
 	/**
 	 * @var BAB_DateTime
@@ -90,6 +90,11 @@ class bab_UserPeriods {
 	private $id_users;
 	
 	
+	private $iter_key;
+	private $iter_value;
+	private $iter_status;
+	
+	
 
 	/**
 	 * Working hours object on period
@@ -120,10 +125,10 @@ class bab_UserPeriods {
 	 * @see bab_eventBeforePeriodsCreated
 	 * 
 	 * 
-	 * @param array $options	list of periodCollection class name and calendar instances to filter
+	 * @param bab_PeriodCriteria $criteria	criteria of query (calendar, periodCollection, property)
 	 * @return unknown_type
 	 */
-	public function createPeriods(Array $options) {
+	public function createPeriods(bab_PeriodCriteria $criteria) {
 		
 		
 		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
@@ -131,21 +136,30 @@ class bab_UserPeriods {
 		// collect events
 
 		$event = new bab_eventBeforePeriodsCreated($this);
-		
-		
-		foreach($options as $option) {
-			if (is_string($option)) {
-				$event->addFilterByPeriodCollection($option);
-				
-			} elseif ($option instanceof bab_EventCalendar) {
-				$event->addFilterByCalendar($option);
-			}
-		}
-		
+		$this->processCriteria($event, $criteria);
 		
 		bab_fireEvent($event);
-
 		$this->id_users = $event->getUsers();
+
+	}
+	
+	
+	
+	/**
+	 * Process criteria to event
+	 * @param bab_eventBeforePeriodsCreated $event
+	 * @param bab_PeriodCriteria $criteria
+	 * @return unknown_type
+	 */
+	private function processCriteria(bab_eventBeforePeriodsCreated $event, bab_PeriodCriteria $criteria)
+	{
+
+		// add criteria to event
+		$criteria->process($event);
+		
+		foreach($criteria->getCriterions() as $criteria) {
+			$this->processCriteria($event, $criteria);
+		}
 	}
 
 
@@ -204,9 +218,9 @@ class bab_UserPeriods {
 	}
 
 	/**
-	 * @private
+	 * 
 	 */
-	public function getBeginDate() {
+	private function getBeginDate() {
 		prev($this->boundaries);
 		$ts = key($this->boundaries);
 		next($this->boundaries);
@@ -214,26 +228,13 @@ class bab_UserPeriods {
 	}
 
 	/**
-	 * @private
+	 * 
 	 */
-	public function getEndDate() {
+	private function getEndDate() {
 		return key($this->boundaries)-1;
 	}
 
-	/**
-	 * @private
-	 */
-	public function createUsersPeriods($begin, $end, $type) {
-		$arr = array();
-		foreach($this->id_users as $id_user) {
-			$p = new bab_calendarPeriod($begin, $end, $type);
-			$xCtoPuid = & $p->getProperty('UID');
-			$xCtoPuid .= '.'.$id_user;
-			$arr[] = $p;
-		}
 
-		return $arr;
-	}
 
 	/**
 	 * Get next period
@@ -256,8 +257,51 @@ class bab_UserPeriods {
 	}
 
 	
+	
+ 	public function rewind()
+    {
+        reset($this->boundaries);
+    }
+
+    /**
+     * Period
+     * @return bab_CalendarPeriod
+     */
+    public function current()
+    {
+        return $this->iter_value;
+    }
+
+    /**
+     * timestamp boundary
+     * @return int
+     */
+    public function key()
+    {
+        return $this->iter_key;
+    }
+
+    public function next()
+    {
+      	$this->iter_status = list($this->iter_key, $this->iter_value) = each($this->boundaries);
+    }
+
+    public function valid()
+    {
+        return $this->iter_status;
+    }
+	
+	public function count()
+	{
+		return count($this->boundaries);
+	}
+	
+	
+	
+	
+	
 	/**
-	 *
+	 * Browse periods filtered by event collection
 	 * @param array $filter : events collections to get
 	 *
 	 * @return	object
@@ -305,7 +349,6 @@ class bab_UserPeriods {
 	 */
 	public function getEventsBetween($start, $end, array $filter = null) {
 		reset($this->boundaries);
-
 		$r = array();
 
 		foreach($this->boundaries as $ts => $events) {
@@ -317,17 +360,28 @@ class bab_UserPeriods {
 				
 				/*@var $event bab_CalendarPeriod */
 				
+				$uid = $event->getProperty('UID');
+				
+				if ('' === $uid)
+				{
+					continue;
+				}
+				
+				
+				
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
 					
-					if (null !== $filter)
+					if (null !== $filter && !isset($r[$uid]))
 					{
+						
 						$collection = $event->getCollection();
-						$accepted = true;
+						
+						$accepted = false;
 						foreach($filter as $allowedcollection)
 						{
-							if (!($collection instanceof $allowedcollection))
+							if ($collection instanceof $allowedcollection)
 							{
-								$accepted = false;
+								$accepted = true;
 								break;
 							}
 						}
@@ -339,7 +393,7 @@ class bab_UserPeriods {
 					
 					}
 					
-					$r[$event->getProperty('UID')] = $event;
+					$r[$uid] = $event;
 				}
 			}
 		}
@@ -360,6 +414,7 @@ class bab_UserPeriods {
 		reset($this->boundaries);
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply();
+		$collection = new bab_AvailablePeriodCollection;
 		
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
@@ -389,14 +444,16 @@ class bab_UserPeriods {
 				
 				
 				if (0 === $nb_unAvailable) {
-					// autoriser la creation d'une nouvelle periode � partir de $ts
+					// autoriser la creation d'une nouvelle periode a partir de $ts
 					$previous = $ts;
 				}
 				
 				
 				if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
 					
-					$availabilityReply->available_periods[$previous.'.'.$ts] = new bab_calendarPeriod($previous, $ts, BAB_PERIOD_NONWORKING);
+					$period = new bab_calendarPeriod($previous, $ts);
+					$collection->addPeriod($period);
+					$availabilityReply->available_periods[$previous.'.'.$ts] = $period;
 					
 					// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
 					$previous = false;
@@ -416,7 +473,10 @@ class bab_UserPeriods {
 
 
 			if (false !== $previous && $previous < $test_end) {
-				$availabilityReply->available_periods[$previous.'.'.$test_end] = new bab_calendarPeriod($previous, $test_end, BAB_PERIOD_NONWORKING);
+				
+				$period = new bab_calendarPeriod($previous, $test_end);
+				$collection->addPeriod($period);
+				$availabilityReply->available_periods[$previous.'.'.$test_end] = $period;
 
 			}
 	
@@ -438,7 +498,6 @@ class bab_UserPeriods {
 			}
 			$working_period = false;
 
-			
 
 			// supprimer les utilisateurs pas dispo de la liste pour le boundary
 
@@ -462,8 +521,6 @@ class bab_UserPeriods {
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
 					}
 					
-					
-					
 					if ($event->isAvailable()) {
 						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
 						foreach($id_users as $id_user) {
@@ -486,6 +543,8 @@ class bab_UserPeriods {
 				}
 			}
 			
+			
+			
 			// boolean : le boundary est disponible pour tout le monde
 			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
 
@@ -499,7 +558,9 @@ class bab_UserPeriods {
 				$tmp_end 	= $ts > $test_end ? $test_end : $ts; 
 			
 				if (!isset($availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
-					$availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end] = new bab_calendarPeriod($tmp_begin, $tmp_end, BAB_PERIOD_NONWORKING);
+					$period = new bab_calendarPeriod($tmp_begin, $tmp_end);
+					$collection->addPeriod($period);
+					$availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end] = $period;
 				}
 				$previous = NULL;
 				// bab_debug('non-free '.bab_shortDate($ts));
@@ -507,7 +568,7 @@ class bab_UserPeriods {
 
 
 			if ($boundary_free_for_all && NULL === $previous) {
-				// tout les utilisateurs sont dispo sur tout les evenements du boundary, d�marrer la periode de dispo
+				// tout les utilisateurs sont dispo sur tout les evenements du boundary, demarrer la periode de dispo
 				$previous = $ts; 
 				// bab_debug('free '.bab_shortDate($ts));
 			}
@@ -587,4 +648,219 @@ class bab_availabilityReply {
 	 * @var array
 	 */
 	public $conflicts_events = array();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Main class for all criterions of a calendar request
+ */
+abstract class bab_PeriodCriteria
+{
+	
+	/**
+	 * @var bab_CalendarPeriodCriteria
+	 */
+	private $subcriteria = array();
+	
+	
+	/**
+	 * Join another criteria
+	 * @param	bab_PeriodCriteria $criteria	
+	 * @return bab_CalendarPeriodCriteria
+	 */
+	public function _AND_(bab_PeriodCriteria $criteria)
+	{
+		$this->subcriteria[] = $criteria;
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getCriterions()
+	{
+		return $this->subcriteria;
+	}
+	
+	/**
+	 * Add criteria to event
+	 * @param bab_eventBeforePeriodsCreated $event
+	 * @return unknown_type
+	 */
+	public function process(bab_eventBeforePeriodsCreated $event)
+	{
+		throw Exception('Not implemented');
+	}
+}
+
+
+/**
+ * Criteria on calendar
+ */
+class bab_PeriodCriteriaCalendar extends bab_PeriodCriteria
+{
+	private $calendar = array();
+	
+	public function __construct($calendar = null)
+	{
+		if (null !== $calendar) {
+			if (is_array($calendar)) {
+				$this->calendar = $calendar;
+			} else {
+				$this->calendar[] = $calendar;
+			}
+		}
+	}
+	
+	public function addCalendar(bab_EventCalendar $calendar)
+	{
+		$this->calendar[] = $calendar;
+	}
+	
+	/**
+	 * Add criteria to event
+	 * @param bab_eventBeforePeriodsCreated $event
+	 * @return unknown_type
+	 */
+	public function process(bab_eventBeforePeriodsCreated $event)
+	{
+		$event->filterByCalendar($this->calendar);
+	}
+}
+
+
+/**
+ * Criteria on collection
+ */
+class bab_PeriodCriteriaCollection extends bab_PeriodCriteria
+{
+	private $collection = array();
+	
+	public function __construct($collection = null)
+	{
+		if (null !== $collection) {
+			if (is_array($collection)) {
+				$this->collection = $collection;
+			} else {
+				$this->collection[] = $collection;
+			}
+		}
+	}
+	
+	public function addCollection(bab_PeriodCollection $collection)
+	{
+		$this->collection[] = $collection;
+	}
+	
+	/**
+	 * Add criteria to event
+	 * @param bab_eventBeforePeriodsCreated $event
+	 * @return unknown_type
+	 */
+	public function process(bab_eventBeforePeriodsCreated $event)
+	{
+		$event->filterByPeriodCollection($this->collection);
+	}
+}
+
+
+/**
+ * Criteria on iCal property
+ * 
+ * @todo Only the CATEGORY property is supported by Ovi backend
+ */
+class bab_PeriodCritieraProperty extends bab_PeriodCriteria
+{
+	private $property;
+	private $value = array();
+	
+	/**
+	 * 
+	 * @param string $property
+	 * @param mixed $value
+	 * @return unknown_type
+	 */
+	public function __construct($property, $value = null)
+	{
+		if (null !== $value) {
+			if (is_array($value)) {
+				$this->value = $value;
+			} else {
+				$this->value[] = $value;
+			}
+		}
+	}
+	
+	public function addValue($value)
+	{
+		$this->value[] = $value;
+	}
+	
+	/**
+	 * Add criteria to event
+	 * @param bab_eventBeforePeriodsCreated $event
+	 * @return unknown_type
+	 */
+	public function process(bab_eventBeforePeriodsCreated $event)
+	{
+		$event->filterByICalProperty($this->property, $this->value);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+class bab_PeriodCriteriaFactory 
+{
+	/**
+	 * 
+	 * @param Array | bab_EventCalendar $calendar
+	 * @return unknown_type
+	 */
+	public function Calendar($calendar = null)
+	{
+		return new bab_PeriodCriteriaCalendar($calendar);
+	}
+	
+	
+	/**
+	 * 
+	 * @param array | bab_PeriodCollection $collection
+	 * @return bab_PeriodCriteriaCollection
+	 */
+	public function Collection($collection = null)
+	{
+		return new bab_PeriodCriteriaCollection($collection);
+	}
+	
+	/**
+	 * 
+	 * @param string $property
+	 * @param string | array $value
+	 * @return unknown_type
+	 */
+	public function Property($property, $value = null)
+	{
+		return new bab_PeriodCritieraProperty($property, $value = null);
+	}
 }

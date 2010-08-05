@@ -1759,40 +1759,36 @@ class bab_event_posted {
 	
 		
 		$AvaReply = $whObj->getAvailability();
-		
-		
+
 		
 		$mcals = new bab_mcalendars($sdate, $edate, $calid);
 		foreach($AvaReply->conflicts_events as $calPeriod) {
-		
+			
 			$event = $calPeriod->getData();
 			if (!isset($_POST['evtid']) || $_POST['evtid'] != $event['id_event'])
 				{
 
 				$title = bab_translate("Private");
-				if( 
-					(
-						'PUBLIC' !== $calPeriod->getProperty('CLASS') 
-						&& $event['id_cal'] == bab_getICalendars()->id_percal
-					) 
-					|| 'PUBLIC' === $calPeriod->getProperty('CLASS'))
-				{
-					$title = $calPeriod->getProperty('SUMMARY');
-				}
-				
-				
-				
-				$calendar_labels = array();
-				$cals = $mcals->getEventCalendars($calPeriod);
-				foreach($cals as $id_cal => $arr) {
-					$availability_conflicts_calendars[] = $id_cal;
-					$calendar_labels[] = $arr['name'];
-				}
-				
-				
+				$collection = $calPeriod->getCollection();
+				$calendar = null;
+				if ($collection instanceof bab_CalendarEventCollection) {
+					
+					$calendar = $collection->getCalendar();
 
-				$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+					if(isset($calendar) && $calendar->canViewEventDetails($calPeriod))
+					{
+						$title = $calPeriod->getProperty('SUMMARY');
+					}
+					
+					$calendar_labels = array();
+					$cals = $mcals->getEventCalendars($calPeriod);
+					foreach($cals as $id_cal => $arr) {
+						$availability_conflicts_calendars[] = $id_cal;
+						$calendar_labels[] = $arr['name'];
+					}
 
+					$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+				}
 			}
 		}
 		

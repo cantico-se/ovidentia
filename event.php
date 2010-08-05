@@ -646,29 +646,11 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			
 			$this->evtarr = $babDB->db_fetch_array($res);
 			
-			$iarr = bab_getICalendars()->getCalendarInfo($this->calid);
-			switch( $iarr['type'] )
-				{
-				case BAB_CAL_USER_TYPE:
-					if( $iarr['idowner'] ==  $GLOBALS['BAB_SESS_USERID'] || $iarr['access'] != BAB_CAL_ACCESS_VIEW )
-						{
-						$this->bmodif = true;
-						}
-					break;
-				case BAB_CAL_PUB_TYPE:
-					if( $iarr['manager'] )
-						{
-						$this->bmodif = true;
-						}
-					break;
-				case BAB_CAL_RES_TYPE:
-					if( $iarr['manager'] || ($this->evtarr['id_creator'] ==  $GLOBALS['BAB_SESS_USERID'] && $iarr['upd']))
-						{
-						$this->bmodif = true;
-						}
-					break;
-				}
-			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". bab_getCalendarOwnerName($this->calid, $iarr['type']));
+			$calendar = bab_getICalendars()->getEventCalendar($this->calid);
+			$this->bmodif = $calendar->canUpdateEvent($event);
+			
+			
+			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
 
 			if (!empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R') {
 				$this->brecevt = true;

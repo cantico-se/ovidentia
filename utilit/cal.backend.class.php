@@ -66,6 +66,7 @@ class Func_CalendarBackend extends bab_functionality
 	
 	
 	
+	
 	public function includePeriodCollection()
 	{
 		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
@@ -86,7 +87,7 @@ class Func_CalendarBackend extends bab_functionality
 	 * A collection of events
 	 * @return bab_CalendarEventCollection
 	 */
-	public function EventCollection()
+	public function CalendarEventCollection()
 	{
 		$this->includePeriodCollection();
 		return new bab_CalendarEventCollection;
@@ -157,8 +158,15 @@ class Func_CalendarBackend extends bab_functionality
 		return new bab_CalendarPeriod();
 	}
 	
-	
-	
+	/**
+	 * Access to period criteria objects
+	 * @return bab_PeriodCriteriaFactory
+	 */
+	public function Criteria()
+	{
+		require_once dirname(__FILE__).'/cal.userperiods.class.php';
+		return bab_getInstance('bab_PeriodCriteriaFactory');
+	}
 	
 	
 	
@@ -168,29 +176,32 @@ class Func_CalendarBackend extends bab_functionality
 	 */
 	public function savePeriod(bab_CalendarPeriod $period)
 	{
-		
+		throw new Exception('not implemented');
 	}
 	
 	/**
 	 * Returns the period corresponding to the specified identifier
+	 * this is necessary for all events with a link
 	 * 
-	 * @param string $identifier
+	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
+	 * @param 	string 					$identifier				The UID property of event
+	 * 
 	 * @return bab_CalendarPeriod
 	 */
-	public function getPeriod($identifier)
+	public function getPeriod(bab_PeriodCollection $periodCollection, $identifier)
 	{
-		
+		throw new Exception('not implemented');
 	}
 	
 	/**
 	 * 
-	 * @param unknown_type $criteria
+	 * @param bab_PeriodCriteria $criteria
 	 * 
 	 * @return iterator <bab_CalendarPeriod>
 	 */
-	public function selectPeriods($criteria)
+	public function selectPeriods(bab_PeriodCriteria $criteria)
 	{
-		
+		throw new Exception('not implemented');
 	}
 	
 	
@@ -198,11 +209,14 @@ class Func_CalendarBackend extends bab_functionality
 	/**
 	 * Deletes the period corresponding to the specified identifier.
 	 * 
-	 * @param string $identifier
+	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
+	 * @param 	string 					$identifier				The UID property of event
+	 * 
+	 * @return bool
 	 */
-	public function deletePeriod($identifier)
+	public function deletePeriod(bab_PeriodCollection $periodCollection, $identifier)
 	{
-		
+		throw new Exception('not implemented');
 	}
 	
 	

@@ -3319,7 +3319,9 @@ function bab_getCategoriesName($aIdCategories, $bIsDeletable)
 	return array();
 }
 
-function bab_tskmgr_setPeriods($tsk_collection, $aIdUsers, $oStartDate, $oEndDate)
+
+
+function bab_tskmgr_setPeriods(bab_TaskCollection $tsk_collection, bab_UserPeriods $user_periods, $aIdUsers, $oStartDate, $oEndDate)
 {
 	foreach($aIdUsers as $iIdUser)
 	{
@@ -3340,6 +3342,7 @@ function bab_tskmgr_setPeriods($tsk_collection, $aIdUsers, $oStartDate, $oEndDat
 
 				$oBabCalPeriod = new bab_calendarPeriod($date_begin, $date_end);
 				$tsk_collection->addPeriod($oBabCalPeriod);
+				$user_periods->addPeriod($oBabCalPeriod);
 
 				$oBabCalPeriod->setProperty('SUMMARY', $datas['sShortDescription']);
 				$oBabCalPeriod->setProperty('DTSTART', $datas['startDate']);
