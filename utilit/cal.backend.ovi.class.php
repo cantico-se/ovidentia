@@ -65,6 +65,26 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	/**
+	 * Creates or updates a calendar event.
+	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
+	 * 
+	 * @param	bab_CalendarPeriod	$period
+	 */
+	public function savePeriod(bab_CalendarPeriod $period)
+	{
+		require_once dirname(__FILE__).'/evtincl.php';
+		
+		if ($period->getProperty('UID'))
+		{
+			
+		} else {
+			bab_cal_ovi_insertEvent($period);
+		}
+	}
+	
+	
+	
+	/**
 	 * Returns the period corresponding to the specified identifier
 	 * this is necessary for all events with a link
 	 * 
@@ -83,6 +103,17 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		}
 		
 		return null;
+	}
+	
+	
+	
+	/**
+	 * Test if the backend support saving more than one calendar per event
+	 * @return bool
+	 */
+	public function canHaveMultipleCalendarPerEvent()
+	{
+		return true;
 	}
 	
 }

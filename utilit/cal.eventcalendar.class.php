@@ -189,7 +189,7 @@ abstract class bab_EventCalendar
 	
 	
 	/**
-	 * if a calendar return tru on this method it will be displayed first, as the default personal calendar for the user
+	 * if a calendar return true on this method it will be displayed first, as the default personal calendar for the user
 	 * @return bool
 	 */
 	public function isDefaultCalendar()

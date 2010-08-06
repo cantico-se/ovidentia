@@ -146,6 +146,7 @@ class Func_CalendarBackend extends bab_functionality
 	
 	/**
 	 * Create new calendar period
+	 * VEVENT object item
 	 * 
 	 * @param int $begin	Timestamp
 	 * @param int $end		Timestamp
@@ -155,8 +156,29 @@ class Func_CalendarBackend extends bab_functionality
 	public function CalendarPeriod($begin, $end)
 	{
 		$this->includeCalendarPeriod();
-		return new bab_CalendarPeriod();
+		return new bab_CalendarPeriod($begin, $end);
 	}
+	
+	
+	public function includeCalendarAlarm()
+	{
+		require_once dirname(__FILE__).'/cal.calendarperiod.class.php';
+	}
+	
+	/**
+	 * Create new calendar alarm
+	 * VALARM object item, store rules for reminder on event
+	 * @see bab_CalendarPeriod::setAlarm()
+	 * 
+	 * @return bab_CalendarAlarm
+	 */
+	public function CalendarAlarm()
+	{
+		$this->includeCalendarAlarm();
+		return new bab_CalendarAlarm();
+	}
+	
+	
 	
 	/**
 	 * Access to period criteria objects
@@ -173,6 +195,9 @@ class Func_CalendarBackend extends bab_functionality
 	
 	/**
 	 * Creates or updates a calendar event.
+	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
+	 * 
+	 * @param	bab_CalendarPeriod	$period
 	 */
 	public function savePeriod(bab_CalendarPeriod $period)
 	{
@@ -241,4 +266,13 @@ class Func_CalendarBackend extends bab_functionality
 		
 	}
 	
+	/**
+	 * Test if the backend support saving more than one calendar per event
+	 * @todo add methods for : remove calendar from event and add calendar to event
+	 * @return bool
+	 */
+	public function canHaveMultipleCalendarPerEvent()
+	{
+		return false;
+	}
 }

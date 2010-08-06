@@ -200,7 +200,7 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	
 	
 	/**
-	 * Add a filter by iCal property (ex. CATEGORY)
+	 * Add a filter by iCal property (ex. CATEGORIES)
 	 * @param string $property		iCal property name
 	 * @param array $values			list of allowed exact values for this property
 	 * @return bab_eventCollectPeriodsBeforeDisplay
@@ -334,8 +334,8 @@ function bab_onBeforePeriodsCreated(bab_eventBeforePeriodsCreated $event)
 		
 		$ical = $event->getICalProperties();
 		$categories = null;
-		if (isset($ical['CATEGORY'])) {
-			$categories = $ical['CATEGORY'];
+		if (isset($ical['CATEGORIES'])) {
+			$categories = $ical['CATEGORIES'];
 		}
 		
 		$oviEvents = new bab_cal_OviCalendarEvents;

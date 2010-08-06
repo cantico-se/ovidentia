@@ -247,7 +247,49 @@ function cal_notify($title, $description, $location, $startdate, $enddate, $id_c
 
 
 /**
+ * Create alert for ovidentia events
+ * 
+ * @param	int		$id_event
+ * @param	array	$arralert		
+ * 
+ * @return unknown_type
+ */
+function createEventAlert($id_event, Array $arralert)
+{
+	global $babDB;
+	
+	if (empty($GLOBALS['BAB_SESS_USERID']))
+	{
+		return;
+	}
+	
+	$babDB->db_query("
+	INSERT INTO ".BAB_CAL_EVENTS_REMINDERS_TBL." 
+		(
+			id_event, 
+			id_user, 
+			day, 
+			hour, 
+			minute, 
+			bemail 
+		) 
+	VALUES 
+		(
+			'".$babDB->db_escape_string($id_event)."', 
+			'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
+			'".$babDB->db_escape_string($arralert['day'])."', 
+			'".$babDB->db_escape_string($arralert['hour'])."', 
+			'".$babDB->db_escape_string($arralert['minute'])."', 
+			'".$babDB->db_escape_string($arralert['email'])."'
+		)
+	");
+}
+
+
+
+/**
  * Create calendar event
+ * This function is dedicated to ovidentia backend
  *
  * @param	array	$idcals
  * @param	int		$id_owner
@@ -262,12 +304,12 @@ function cal_notify($title, $description, $location, $startdate, $enddate, $id_c
  * @param	string	$lock			(Y|N)
  * @param	string	$free			(Y|N)
  * @param	string	$hash
- * @param	array	$arralert
+ * @param	array	$arralert		reminder
  *
  * @return	array	calendar id were the event has been inserted
  *
  */
-function createEvent($idcals,$id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
+function createEvent($idcals, $id_owner, $title, $description, $location, $startdate, $enddate, $category, $color, $private, $lock, $free, $hash, $arralert)
 {
 
 	global $babBody, $babDB;
@@ -301,32 +343,434 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
 	$arrcals = bab_updateSelectedCalendars($id_event, $idcals, $exclude);
 	
 
-	if(0 !== count($arrcals) && !empty($GLOBALS['BAB_SESS_USERID']) && $arralert !== false )
+	if(0 !== count($arrcals) && $arralert !== false )
 		{
-		$babDB->db_query("
-			INSERT INTO ".BAB_CAL_EVENTS_REMINDERS_TBL." 
-				(
-					id_event, 
-					id_user, 
-					day, 
-					hour, 
-					minute, 
-					bemail 
-				) 
-			VALUES 
-				(
-					'".$babDB->db_escape_string($id_event)."', 
-					'".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', 
-					'".$babDB->db_escape_string($arralert['day'])."', 
-					'".$babDB->db_escape_string($arralert['hour'])."', 
-					'".$babDB->db_escape_string($arralert['minute'])."', 
-					'".$babDB->db_escape_string($arralert['email'])."'
-				)
-			");
+		createEventAlert($id_event, $arralert);
 		}
 	
 	return $arrcals;
 }
+
+
+/**
+ * Insert calendar event for ovi backend
+ * 
+ * @todo add recuring rules inside calendarPeriod object
+ * 
+ * @param	bab_CalendarPeriod	$period
+ * @return unknown_type
+ */
+function bab_cal_ovi_insertEvent(bab_CalendarPeriod $period)
+{
+	global $babBody, $babDB;
+
+	require_once $GLOBALS['babInstallPath'].'utilit/uuid.php';
+	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
+	
+	$collection = $period->getCollection();
+	
+	if (!$collection)
+	{
+		throw new Exception('Missing period collection');
+	}
+	
+	$calendar = $collection->getCalendar();
+	
+	if (!$calendar)
+	{
+		throw new Exception('Missing calendar');
+	}
+	
+	
+	$id_owner = $GLOBALS['BAB_SESS_USERID'];
+	
+	
+	
+	// search category id from name
+	
+	$category = 0;
+	$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
+	if ($cat)
+	{
+		$category = $cat['id'];
+	}
+	
+	// Private Y|N
+	
+	$private = 'N';
+	if ('PUBLIC' !== $period->getProperty('CLASS')) {
+		$private = 'Y';
+	}
+	
+	
+	$data = $period->getData();
+	
+	
+	// set a new UID to insert
+	
+	$period->setProperty('UID', bab_uuid());
+	
+
+	$babDB->db_query("
+		insert into ".BAB_CAL_EVENTS_TBL." 
+			( title, description, description_format, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash, date_modification, id_modifiedby, uuid) 
+		
+		values (
+			".$babDB->quote($period->getProperty('SUMMARY')).", 
+			".$babDB->quote($period->getProperty('DESCRIPTION')).",
+			".$babDB->quote($data['description_format']).",  
+			".$babDB->quote($period->getProperty('LOCATION')).", 
+			".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTSTART'))->getIsoDateTime()).", 
+			".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTEND'))->getIsoDateTime()).", 
+			".$babDB->quote($category).", 
+			".$babDB->quote($id_owner).", 
+			".$babDB->quote($period->getColor()).", 
+			".$babDB->quote($private).", 
+			".$babDB->quote($data['block']).", 
+			".$babDB->quote($data['bfree']).", 
+			".$babDB->quote($data['hash']).",
+			now(),
+			".$babDB->quote($id_owner).",
+			".$babDB->quote($period->getProperty('UID'))."
+		)
+	");
+}
+
+
+
+
+
+
+/**
+ * Search the main calendar from the posted calendars
+ * @param array $idcals
+ * @return bab_EventCalendar
+ */
+function bab_getMainCalendar(Array $idcals)
+{
+	$list = array_flip($idcals);
+	$calendars = bab_getICalendars()->getCalendars();
+	
+	foreach($calendars as $calendar) {
+		
+		/*@var $calendar bab_EventCalendar */
+		
+		$id = $calendar->getUrlIdentifier();
+		
+		if (!isset($list[$id])) {
+			continue;
+		}
+		
+		if ($calendar->isDefaultCalendar()) {
+			return $calendar;
+		}
+		
+		if ($GLOBALS['BAB_SESS_USERID'] === $calendar->getIdUser()) {
+			return $calendar;
+		}
+	}
+	
+	$first = reset($idcals);
+	
+	if (isset($calendars[$first]))
+	{
+		return $calendars[$first];
+	}
+	
+	throw new Exception('No accessible compatible calendar');
+	return null;
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * Create a period from the arguments posted by event creation form
+ * 
+ *
+ * @param	array		$args
+ *
+ *  $args['title']		
+ *  $args['description']
+ *  $args['descriptionformat']
+ *	$args['startdate'] 	: array('month', 'day', 'year', 'hours', 'minutes')
+ *	$args['enddate'] 	: array('month', 'day', 'year', 'hours', 'minutes')
+ *	$args['owner'] 		: id of the owner
+ *	$args['rrule'] 		: // BAB_CAL_RECUR_DAILY, ...
+ *	$args['until'] 		: array('month', 'day', 'year')
+ *	$args['rdays'] 		: repeat days array("SU","MO","TU","WE","TH","FR", "SA")
+ *	$args['ndays'] 		: nb days 
+ *	$args['nweeks'] 	: nb weeks 
+ *	$args['nmonths'] 	: nb month 
+ *	$args['category'] 	: id of the category
+ *	$args['private'] 	: if the event is private
+ *	$args['lock'] 		: to lock the event
+ *	$args['free'] 		: free event
+ *	$args['alert'] 		: array('day', 'hour', 'minute', 'email'=>'Y')
+ *	$args['selected_calendars'] : array()
+ *
+ * @param	bab_PeriodCollection $collection
+ *
+ * @throws ErrorException
+ * 
+ * @return bab_CalendarPeriod
+ */
+function bab_createCalendarPeriod($args, bab_PeriodCollection $collection)
+{
+	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
+	$idcals = $args['selected_calendars'];
+	
+	if(0 === count($idcals))
+	{
+		throw new ErrorException(bab_translate("You must select at least one calendar type"));
+		return false;
+	}
+	
+	if( empty($args['title']))
+	{
+		throw new ErrorException(bab_translate("You must provide a title"));
+		return false;
+	}
+	
+	
+	$begin 	= bab_event_posted::getDateTime($args['startdate']);
+	$end 	= bab_event_posted::getDateTime($args['enddate']);
+	
+	
+	if( $begin->getTimeStamp() > $end->getTimeStamp())
+	{
+		throw new ErrorException(bab_translate("End date must be older"));
+		return false;
+	}
+	
+	
+	
+	
+	// find the main calendar of event
+	$calendar = bab_getMainCalendar($idcals);
+	$backend = $calendar->getBackend(); 
+	
+	$collection->setCalendar($calendar);
+	
+	$period = $backend->CalendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
+	
+	$period->setCollection($collection);
+	
+	$period->setProperty('DTSTART', $begin->getICal());
+	$period->setProperty('DTEND', $end->getICal());
+	
+	$period->setProperty('SUMMARY', $args['title']);
+	$period->setProperty('DESCRIPTION', striptags($args['description'])); // Text version of description within ICAL property
+	
+	if ('Y' === $args['private']) {
+		$period->setProperty('CLASS', 'PRIVATE');
+	} else {
+		$period->setProperty('CLASS', 'PUBLIC');
+	}
+	
+	$cat = bab_getCalendarCategory($args['category']);
+	if ($cat) {
+		$period->setProperty('CATEGORIES', $cat['name']);
+	}
+	
+	
+	// Attendee
+	// add additional calendars as attendee property
+	
+	$calendars = bab_getICalendars()->getCalendars();
+	foreach($idcals as $idcal)
+	{
+		if (isset($calendars[$idcal]))
+		{
+			$attendee = $calendars[$idcal];
+			
+			if ($id_user = $attendee->getIdUser())
+			{
+				if ($idcal === $calendar->getUrlIdentifier()) {
+					$role = 'CHAIR';
+					$partstat = 'ACCEPTED';
+					$rsvp = 'FALSE';
+				} else {
+					$role = 'REQ-PARTICIPANT';
+					$partstat = 'NEEDS-ACTION';
+					$rsvp = 'TRUE';
+				}
+				
+				$period->addAttendee(bab_getUserEmail($id_user), bab_getUserName($id_user), $role, $partstat, $rsvp);
+			}
+			
+			//TODO join other calendars
+		}
+	}
+	
+	
+	
+	
+	// recur rule
+	
+	$rrule = array();
+	
+	
+	if( isset($args['rrule']) )
+	{
+		$duration = $end->getTimeStamp() - $begin->getTimeStamp();
+		
+		switch( $args['rrule'] )
+		{
+		case BAB_CAL_RECUR_WEEKLY:
+			if( $duration > 24 * 3600 * 7 * $args['nweeks'])
+			{
+				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				return false;					
+			}
+
+			$rrule[]= 'INTERVAL='.$args['nweeks'];
+			
+			if( !isset($args['rdays']) )
+			{
+				// no week day specified, reapeat event every week
+				$rrule[]= 'freq=WEEKLY';
+			}
+			else
+			{
+				$rrule[]= 'freq=WEEKLY';
+				// BYDAY : add list of weekday    = "SU" / "MO" / "TU" / "WE" / "TH" / "FR" / "SA"	
+				$rrule[] = 'BYDAY='.implode(',', $args['rdays']);
+			}
+
+			break;
+			
+			
+		case BAB_CAL_RECUR_MONTHLY:
+			if( $duration > 24*3600*28*$args['nmonths'])
+				{
+				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				return false;					
+				}
+
+			$rrule[]= 'INTERVAL='.$args['nmonths'];
+			$rrule[]= 'freq=MONTHLY';
+			break;
+			
+		case BAB_CAL_RECUR_YEARLY: /* yearly */
+			
+			if( $duration > 24*3600*365*$args['nyears'])
+				{
+				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				return false;					
+				}
+			$rrule[]= 'INTERVAL='.$args['nyears'];
+			$rrule[]= 'freq=YEARLY';
+			break;
+			
+		case BAB_CAL_RECUR_DAILY: /* daily */
+			if( $duration > 24*3600*$args['ndays'] )
+				{
+				throw new ErrorException(bab_translate("The duration of the event must be shorter than how frequently it occurs"));
+				return false;
+				}
+			$rrule[]= 'INTERVAL='.$args['nyears'];
+			$rrule[]= 'freq=YEARLY';
+			break;
+		}
+	}
+	
+	
+	if (isset($args['until'])) 
+	{
+		
+		$until = bab_event_posted::getDateTime($args['until']);
+		$repeatdate = $until->cloneDate()->add(1, BAB_DATETIME_DAY);
+			
+		if( $repeatdate->getTimeStamp() < $end->getTimeStamp()) {
+			throw new ErrorException(bab_translate("Repeat date must be older than end date"));
+			return false;
+		}
+		
+		
+		$rrule[] = 'UNTIL='.$until->getICal();
+	}
+	
+	$period->setProperty('RRULE', implode(';',$rrule));
+	
+	
+	// VALARM
+	
+	if ($args['alert']) {
+		
+		/*
+		 * keys are :
+		 * 
+		 * day
+		 * hour
+		 * minute
+		 * email
+		 */
+		
+		$day = $args['alert']['day'];
+		$hour = $args['alert']['hour'];
+		$minute = $args['alert']['minute'];
+		
+		
+		
+		$alarm = $backend->CalendarAlarm();
+		
+		
+		$duration = '-P';
+		
+		if ($day || $hour || $minute)
+		{
+			if ($day)
+			{
+				$duration .= $day.'D';
+			}
+			
+			if ($hour || $minute) 
+			{
+				$duration .= 'T'.$hour.'H'.$minute.'M';
+			}
+		} else {
+			// default 1 minute
+			$duration = '-P1M';
+		}
+		
+		$alarm->setProperty('TRIGGER', $duration);
+		$alarm->setProperty('SUMMARY', $period->getProperty('SUMMARY'));
+		$alarm->setProperty('DESCRIPTION', $period->getProperty('DESCRIPTION'));
+		
+		if ('Y' === $args['alert']['email']) {
+			$alarm->setProperty('ACTION', 'EMAIL');
+			
+		} else {
+			$alarm->setProperty('ACTION', 'DISPLAY');
+		}
+		
+		$period->setAlarm($alarm);
+	}
+	
+	
+	
+	// data not in iCal standard (ovidentia specific)
+	
+	$data = array(
+		'description'			=> $args['description'],
+		'description_format'	=> $args['descriptionformat'],
+		'block'					=> $args['lock'],
+		'bfree'					=> $args['free']
+	);
+
+	
+
+	
+	
+}
+
 
 
 
@@ -350,7 +794,7 @@ function createEvent($idcals,$id_owner, $title, $description, $location, $startd
  *	$args['lock'] 		: to lock the event
  *	$args['free'] 		: free event
  *	$args['alert'] 		: array('day', 'hour', 'minute', 'email'=>'Y')
- *	$args['selected_calendars']
+ *	$args['selected_calendars'] : array()
  *
  * @param	string		&$msgerror
  * @param	string		[$action_function]
@@ -1472,7 +1916,7 @@ class bab_event_posted {
 
 
 	/**
-	 * Get timestamp from date as array with keys
+	 * Get dateTime object from date as array with keys
 	 * <ul>
 	 *	<li>year</li>
 	 *	<li>month<li>
@@ -1481,12 +1925,11 @@ class bab_event_posted {
 	 *	<li>minutes (optional)</li>
 	 * <ul>
 	 *
-	 * @static
 	 *
 	 * @param	array	$arr
-	 * @return 	int		Timestamp
+	 * @return 	BAB_DateTime
 	 */
-	function getTimestamp($arr) {
+	public static function getDateTime($arr) {
 	
 		if (!isset($arr['hours'])) {
 			$arr['hours'] = 0;
@@ -1496,8 +1939,10 @@ class bab_event_posted {
 			$arr['minutes'] = 0;
 		}
 		
-		return mktime( $arr['hours'], $arr['minutes'], 0, $arr['month'], $arr['day'], $arr['year'] );
+		return new BAB_DateTime($arr['year'], $arr['month'], $arr['day'], $arr['hours'],$arr['minutes']);
 	}
+	
+	
 
 
 
@@ -1633,7 +2078,7 @@ class bab_event_posted {
 						$_POST['repeat_n_2'] = 1;
 						}
 	
-					$this->args['nweeks'] = $_POST['repeat_n_2'];
+					$this->args['nweeks'] = (int) $_POST['repeat_n_2'];
 	
 					if( isset($_POST['repeat_wd']) )
 						{
@@ -1641,6 +2086,7 @@ class bab_event_posted {
 						}
 	
 					break;
+					
 				case BAB_CAL_RECUR_MONTHLY: /* monthly */
 					$this->args['rrule'] = BAB_CAL_RECUR_MONTHLY;
 					if( empty($_POST['repeat_n_3']))
@@ -1648,16 +2094,18 @@ class bab_event_posted {
 						$_POST['repeat_n_3'] = 1;
 						}
 	
-					$this->args['nmonths'] = $_POST['repeat_n_3'];
+					$this->args['nmonths'] = (int) $_POST['repeat_n_3'];
 					break;
+					
 				case BAB_CAL_RECUR_YEARLY: /* yearly */
 					$this->args['rrule'] = BAB_CAL_RECUR_YEARLY;
 					if( empty($_POST['repeat_n_4']))
 						{
 						$_POST['repeat_n_4'] = 1;
 						}
-					$this->args['nyears'] = $_POST['repeat_n_4'];
+					$this->args['nyears'] = (int) $_POST['repeat_n_4'];
 					break;
+					
 				case BAB_CAL_RECUR_DAILY: /* daily */
 				default:
 					$this->args['rrule'] = BAB_CAL_RECUR_DAILY;
@@ -1666,13 +2114,35 @@ class bab_event_posted {
 						$_POST['repeat_n_1'] = 1;
 						}
 	
-					$this->args['ndays'] = $_POST['repeat_n_1'];
-					$rtime = 24*3600*$_POST['repeat_n_1'];
+					$this->args['ndays'] = (int) $_POST['repeat_n_1'];
 					break;
 			}
 		}
 	}
 	
+	
+	/**
+	 * Save new event
+	 * 
+	 * @todo change collection from user 
+	 * 
+	 * @param	string &$message
+	 * 
+	 * @return unknown_type
+	 */
+	public function save(&$message) {
+		// convert posted data to a calendar period object
+		
+		$collection = new bab_CalendarEventCollection;
+		
+		try {
+			$calendarPeriod = bab_createCalendarPeriod($this->args, $collection);
+		} catch(ErrorException $e) {
+			$message = $e->getMessage();
+		}
+		
+		
+	}
 	
 	
 	
@@ -1683,7 +2153,7 @@ class bab_event_posted {
 	 * @param	string	&$message
 	 * @return boolean
 	 */
-	function availabilityCheckAllEvents(&$message) {
+	public function availabilityCheckAllEvents(&$message) {
 		if (false === bab_createEvent($this->args, $message, array($this, 'availabilityCheckCallback'))) {
 			return false;
 		}

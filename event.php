@@ -307,7 +307,7 @@ function newEvent()
 				}
 				
 				
-			for ($i = 0 ; $i < 7 ; $i++)
+			foreach (array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA') as $i)
 				{
 				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
 				}

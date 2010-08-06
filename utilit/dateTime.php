@@ -122,7 +122,7 @@ class BAB_DateTime
 	 * @link http://www.kanzaki.com/docs/ical/dateTime.html
 	 * 
 	 * @param 	string 	$icaldatetime	Datetime or date string
-	 * @param	string	$tzid			Timezone ID
+	 * @param	string	$tzid			Timezone ID	(only for form #3)
 	 * 
 	 * @return BAB_DateTime
 	 */

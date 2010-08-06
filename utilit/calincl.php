@@ -156,6 +156,35 @@ function bab_isCalendarAccessValid($calid)
 }
 
 
+/**
+ * Search a category by name
+ * @param	string | int	$nameorid
+ * @return array | null
+ */
+function bab_getCalendarCategory($nameorid)
+{
+	global $babDB;
+	
+	$query = 'SELECT id, name, description, color FROM '.BAB_CAL_CATEGORIES_TBL." WHERE ";
+	
+	if (is_numeric($nameorid)) {
+		$query .= "id=".$babDB->quote($nameorid);
+	} else {
+		$query .= "name LIKE '".$babDB->db_escape_like($nameorid)."'";
+	}
+	
+	$res = $babDB->db_query($query);
+	if (0 === $babDB->db_num_rows($res)) {
+		return null;
+	}
+	
+	return $babDB->db_fetch_assoc($res);
+}
+
+
+
+
+
 
 
 /**
@@ -646,7 +675,7 @@ class bab_cal_OviCalendarEvents
 
 
 	/**
-	 * Create a calendar period from a calendar event
+	 * Create a calendar period from a calendar event of database
 	 * 
 	 * @param	array	$arr
 	 * 

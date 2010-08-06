@@ -23,12 +23,13 @@
 ************************************************************************/
 
 include_once 'base.php';
+require_once dirname(__FILE__).'/cal.icalendarobject.class.php';
 
 /**
  * Period object
- * 
+ * Represent a VEVENT iCalendar component
  */
-class bab_CalendarPeriod {
+class bab_CalendarPeriod extends bab_ICalendarObject {
 
 	/**
 	 * Timestamp begin date
@@ -55,13 +56,6 @@ class bab_CalendarPeriod {
 	private $data;
 	
 	/**
-	 * ICal properties
-	 * @var array
-	 */
-	private $properties;
-	
-
-	/**
 	 * HTML Color of period
      * color is not defined in ical interface
      * @var string
@@ -76,6 +70,13 @@ class bab_CalendarPeriod {
 	private $periodCollection;
 	
 	
+	/**
+	 * VALAM associated to VEVENT
+	 * @var bab_CalendarAlarm
+	 */
+	private $alarm;
+	
+	
 
 	/**
 	 * @param 	int						$begin		timestamp
@@ -88,10 +89,23 @@ class bab_CalendarPeriod {
 		$this->ts_end		= $end;
 	}
 	
-	
-	public function setCollection($collection)
+	/**
+	 * 
+	 * @return string
+	 */
+	public function getName()
 	{
-		$this->collection 	= $collection;
+		return 'VEVENT';
+	}
+	
+	/**
+	 * Link period to collection
+	 * @param bab_PeriodCollection $collection
+	 * @return unknown_type
+	 */
+	public function setCollection(bab_PeriodCollection $collection)
+	{
+		$this->collection = $collection;
 	}
 	
 	/**
@@ -123,32 +137,7 @@ class bab_CalendarPeriod {
 	
 
 	
-	/**
-	 * define a property with a icalendar property name
-	 * the value is not compliant with the icalendar format
-	 * Dates are defined as ISO datetime
-	 *
-	 * @param	string	$icalProperty
-	 * @param	mixed	$value
-	 */
-	public function setProperty($icalProperty, $value) {
-		$this->properties[$icalProperty] = $value;
-	}
-
-	/**
-	 * get a property with a icalendar property name
-	 *
-	 * @param	string	$icalProperty
-	 * @return	mixed
-	 */
-	public function getProperty($icalProperty) {
-		if (isset($this->properties[$icalProperty])) {
-			return $this->properties[$icalProperty];
-		} else {
-			$this->properties[$icalProperty] = '';
-			return $this->properties[$icalProperty];
-		}
-	}
+	
 
 
 	/**
@@ -164,6 +153,26 @@ class bab_CalendarPeriod {
 	public function setData($data) {
 		$this->data = $data;
 	}
+	
+	
+	/**
+	 * 
+	 * @return bab_CalendarPeriod
+	 */
+	public function setAlarm(bab_CalendarAlarm $alarm) {
+		$this->alarm = $alarm;
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @return bab_CalendarAlarm | null
+	 */
+	public function getAlarm() {
+		return $this->alarm;
+	}
+	
+	
 	
 	/**
 	 * 
@@ -319,3 +328,12 @@ class bab_CalendarPeriod {
 
 }
 
+
+
+
+class bab_CalendarAlarm extends bab_ICalendarObject {
+	
+	public function getName() {
+		return 'VALARM';
+	}
+}
