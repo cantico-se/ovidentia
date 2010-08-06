@@ -99,6 +99,58 @@ class BAB_DateTime
 	}
 	
 	/**
+	 * Create a new BAB_DateTime from a date or datetime string in iCalendar format
+	 * date:
+	 * 	The format for the value type is expressed as the [ISO 8601] complete representation, basic format for a calendar date. The
+	 *  textual format specifies a four-digit year, two-digit month, and two-digit day of the month. There are no separator characters between
+	 *	the year, month and day component text.
+	 * 
+	 * datetime:
+	 *  The format is based on the [ISO 8601] complete representation, basic format for a calendar date
+	 *  and time of day. The text format is a concatenation of the "date",
+	 *  followed by the LATIN CAPITAL LETTER T character (US-ASCII decimal 84) time designator, followed by the "time" format.
+	 * 
+	 * FORM #1: DATE WITH LOCAL TIME
+	 * 		exemple : 19980118T230000
+	 * 
+	 * FORM #2: DATE WITH UTC TIME
+	 * 		exemple : 19980119T070000Z
+	 * 
+	 * FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
+	 * 		exemple : 19980119T020000 with timezone id : US-Eastern
+	 * 
+	 * @link http://www.kanzaki.com/docs/ical/dateTime.html
+	 * 
+	 * @param 	string 	$icaldatetime	Datetime or date string
+	 * @param	string	$tzid			Timezone ID
+	 * 
+	 * @return BAB_DateTime
+	 */
+	public static function fromICal($icaldatetime, $tzid = null)
+	{
+		if (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T(?P<hours>\d{2})(?P<minutes>\d{2})(?P<seconds>\d{2})(?P<utc>Z)?$/', $icaldatetime, $m)) {
+			$datetime = new BAB_DateTime($m['year'], $m['month'], $m['day'], $m['hours'], $m['minutes'], $m['seconds']);
+			
+			if (isset($tzid)) {
+				$tzid = str_replace('-', '/', $tzid);
+			}
+			
+			if (isset($m['utc'])) {
+				$tzid = 'UTC';
+			}
+			
+			$offset = $datetime->getTimeZoneOffset($tzid);
+			$datetime->add($offset, BAB_DATETIME_SECOND);
+			
+		} elseif (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})$/', $icaldatetime, $m)) {
+			$datetime = new BAB_DateTime($m['year'], $m['month'], $m['day']);
+		}
+		
+		return $datetime;
+	}
+	
+	
+	/**
 	 * Returns a new BAB_DateTime corresponding to the present date and time.
 	 *
 	 * @return BAB_DateTime
@@ -132,6 +184,32 @@ class BAB_DateTime
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
+	
+	/**
+	 * Return a datetime string for iCal format
+	 * 
+	 * @param	bool	$utc	default false the time is in local time and event will not take place at the same moment in different timezones, 
+	 * 							set this parameter to true to get the result in UTC time and have the event take place at the same moment
+	 * @return string
+	 */
+	public function getICal($utc = false)
+	{
+		if ($utc) {
+			
+			$offset = $this->getTimeZoneOffset('UTC');
+			if (0 !== $offset)
+			{
+				$datetime = $this->cloneDate();
+				$datetime->add($offset, BAB_DATETIME_SECOND);
+				return date("Ymd\THis\Z", $datetime->getTimeStamp());
+			}
+			
+			return date("Ymd\THis\Z", $this->getTimeStamp());
+		} else {
+			return date("Ymd\THis", $this->getTimeStamp());
+		}
+	}
+	
 	
 	/**
 	 * @return int
@@ -685,6 +763,42 @@ class BAB_DateTime
 			$this->_iMinutes,
 			$this->_iSeconds
 			);	
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Get offset for timezone
+	 * timezone for current date is the default timezone defined by the date_default_timezone_set() function
+	 * 
+	 * @param	string	$tzid		timezone string exemple : Europe/Berlin
+	 * 
+	 * @return int
+	 */
+	public function getTimeZoneOffset($tzid)
+	{
+		if (class_exists('DateTimeZone') && class_exists('DateTime')) {
+
+			$origin_tz = date_default_timezone_get();
+			
+			if (is_string($origin_tz) && is_string($tzid)) {
+				$origin_dtz = new DateTimeZone($origin_tz);
+	   	 		$remote_dtz = new DateTimeZone($tzid);
+	   	 		
+	   	 		$origin_dt = new DateTime("now", $origin_dtz);
+    			$remote_dt = new DateTime("now", $remote_dtz);
+	   	 		
+	   	 		$offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+	   	 		
+	   	 		return $offset;
+			}
+		} else {
+			bab_debug('Error while searching for timezone offset, the classes DateTimeZone and DateTime are required to get the correct offset');
+			return 0;
+		}
 	}
 }
 
