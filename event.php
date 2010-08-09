@@ -562,7 +562,7 @@ function newEvent()
 	}
 
 
-function modifyEvent($idcal, $evtid, $cci, $view, $date)
+function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 	{
 	global $babBody,$babDB;
 	class temp
@@ -602,7 +602,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 		var $aRule = array();
 		var $sCopyCaption;
 		
-		function temp($idcal, $evtid, $cci, $view, $date, $res)
+		function temp(bab_EventCalendar $calendar, $cci, $view, $date, bab_CalendarPeriod $event)
 		{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
 
@@ -616,8 +616,8 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->t_modify = bab_translate("Modify the event");
 			$this->t_test_conflicts = bab_translate("Test conflicts");
 			$this->t_event_owner = bab_translate("Event owner");
-			$this->calid = $idcal;
-			$this->evtid = $evtid;
+			$this->calid = $calendar->getUid();
+			$this->evtid = $event->getProperty('UID');
 			$this->bmodif = false;
 			$this->ccids = $cci;
 			$this->curview = $view;
@@ -633,31 +633,46 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 				3 => bab_translate("This occurence and all previous occurences"),
 				4 => bab_translate("This occurence and all next occurences"));
 			
-			$resown = $babDB->db_query('
-				SELECT id_cal FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($this->evtid).'
-			');
 			
 			$selected_calendars = array();
-			while ($arr = $babDB->db_fetch_assoc($resown)) {
-				$selected_calendars[] = $arr['id_cal'];
+				
+			foreach($event->getCalendars() as $calendar)
+			{
+				$selected_calendars[] = $calendar->getUrlIdentifier();
 			}
 			
 			$this->calendars = calendarchoice('vacform', $selected_calendars);
 			
-			$this->evtarr = $babDB->db_fetch_array($res);
+			$data = $event->getData();
 			
-			$calendar = bab_getICalendars()->getEventCalendar($this->calid);
+			$this->evtarr = array(
+			
+				'title' 				=> $event->getProperty('SUMMARY'),
+				'description' 			=> $data['description'],
+				'description_format' 	=> $data['description_format'],
+				'location' 				=> $event->getProperty('LOCATION'),
+				'start_date' 			=> date('Y-m-d H:i:s', $event->ts_begin),
+				'end_date' 				=> date('Y-m-d H:i:s', $event->ts_end),
+				'id_cat' 				=> bab_getCalendarCategory($event->getProperty('CATEGORIES')),
+				'color' 				=> $event->getColor(),
+				'bprivate' 				=> 'PUBLIC' === $event->getProperty('CLASS') ? 'N' : 'Y',
+				'block' 				=> $data['block'],
+				'bfree' 				=> 'TRANSPARENT' === $event->getProperty('TRANSP') ? 'Y' : 'N'
+			);
+			
+			
 			$this->bmodif = $calendar->canUpdateEvent($event);
 			
 			
 			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
 
-			if (!empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R') {
-				$this->brecevt = true;
-				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-			} else {
+			
+		//	if (!empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R') {
+		//		$this->brecevt = true;
+		//		$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+		//	} else {
 				$this->brecevt = false;
-			}
+		//	}
 
 			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 			if (empty($bshowui)) {
@@ -758,7 +773,7 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 			$this->description = bab_translate("Description");
 			$this->location = bab_translate("Location");
 			$this->category = bab_translate("Category");
-			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$evtid);
+			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$this->evtid);
 
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
@@ -983,14 +998,20 @@ function modifyEvent($idcal, $evtid, $cci, $view, $date)
 
 		}
 
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
-	if( !$res || $babDB->db_num_rows($res) == 0 )
-		{
-		$babBodyPopup->msgerror = bab_translate("Access denied");
-		return false;
-		}
+		
+	$calendar = bab_getICalendars()->getEventCalendar($idcal);
+	if (!isset($calendar))
+	{
+		throw new Exception('Access denied to calendar');
+	}
 	
-	$temp = new temp($idcal, $evtid, $cci, $view, $date, $res);
+	$backend = $calendar->getBackend();
+	/* TODO : use the collection in parameter in a secure way */
+	$collection = $backend->CalendarEventCollection();
+	$event = $backend->getPeriod($collection, $evtid);
+	
+	
+	$temp = new temp($calendar, $cci, $view, $date, $event);
 	$babBody->addStyleSheet('calendar.css');
 	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
 	$babBody->babpopup(bab_printTemplate($temp,"event.html", "modifyevent"));
@@ -1062,16 +1083,10 @@ function addEvent(&$message)
 	
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
-	
 
-	// if event is free
-	if (isset($_POST['bfree']) && $_POST['bfree'] == 'Y') {
-		return bab_createEvent($posted->args, $message);
-	}
-	
 	// if period is available
 	if ($posted->availabilityCheckAllEvents($message)) {
-		return bab_createEvent($posted->args, $message);
+		return $posted->save($message);
 	}
 	
 	// if availability message displayed and the event is submited
@@ -1079,7 +1094,7 @@ function addEvent(&$message)
 		
 		// if availability is NOT mandatory
 		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
-			return bab_createEvent($posted->args, $message);
+			return $posted->save($message);
 		}
 	}
 	
@@ -1566,7 +1581,7 @@ switch($idx)
 	case "modevent":
 		if( !isset($message)) { $message = '';}
 		$babBody->msgerror = $message;
-		modifyEvent($calid, bab_rp('evtid'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
+		modifyEvent($calid, bab_rp('collection'), bab_rp('evtid'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
 		exit;
 		break;
 

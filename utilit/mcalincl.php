@@ -753,17 +753,13 @@ class cal_wmdbaseCls
 			$evtarr = $calPeriod->getData();
 			$calendars = bab_getICalendars();
 			
-			$nbcoals = count($evtarr['idcal_owners']);
-			if( $nbcoals && $result['modify'][0] && $calendar instanceof bab_PersonalCalendar )
+			$linked_calendars = $calPeriod->getRelations('CHILD');
+			
+			if( $linked_calendars && $result['modify'][0] && $calendar instanceof bab_PersonalCalendar )
 			{
-				for($i = 0; $i < $nbcoals; $i++)
+				foreach($linked_calendars as $othercal)
 				{
-					$urlIdentifier = $evtarr['idcal_owners'][$i];
-					$othercal = $calendars[$urlIdentifier];
-					if( !($othercal instanceof bab_PersonalCalendar) )
-					{
-						$this->updateAccessCalendar($calPeriod, $othercal, $result);
-					}
+					$this->updateAccessCalendar($calPeriod, $othercal, $result);
 				}
 			}
 		}
@@ -836,7 +832,7 @@ class cal_wmdbaseCls
 				$el[] = bab_translate('Locked');
 			}
 
-			if ('Y' == $arr['bfree']) {
+			if ('TRANSPARENT' == $calPeriod->getProperty('TRANSP')) {
 				$el[] = bab_translate('Free');
 			}
 
@@ -890,8 +886,6 @@ class cal_wmdbaseCls
 		}
 
 		
-		
-		
 		$time = bab_mktime($calPeriod->getProperty('DTSTART'));
 		$this->starttime = bab_toHtml(bab_time($time));
 		$this->startdate = bab_toHtml(bab_shortDate($time, false));
@@ -919,7 +913,7 @@ class cal_wmdbaseCls
 		if( $this->allow_modify )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&collection=".$collectionparameter."&evtid=".$this->idevent	."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&collection=".$collectionparameter."&evtid=".$this->idevent."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
 			}
 		elseif( $this->allow_view )
 			{
@@ -1038,6 +1032,7 @@ class calendarchoice
 		}
 		
 		reset($this->caltypes);
+		
 		
 	}
 

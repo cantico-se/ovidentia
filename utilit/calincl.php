@@ -29,25 +29,7 @@
 include_once 'base.php';
 
 
-/**
- * Get calendar type
- * @return int
- */
-function bab_getCalendarType($idcal)
-{
-	global $babDB;
-	$query = "select type from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal);
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return (int) $arr['type'];
-		}
-	else
-		{
-		return 0;
-		}
-}
+
 
 /**
  * Get calendar owner
@@ -71,9 +53,11 @@ function bab_getCalendarOwner($idcal)
 
 
 /**
+ * @deprecated
+ *
  * Get calendar owner and type
  * @return array|false
- */
+ 
 function bab_getCalendarOwnerAndType($idcal)
 {
 	global $babDB;
@@ -92,9 +76,11 @@ function bab_getCalendarOwnerAndType($idcal)
 		return false;
 		}
 }
+*/
 
-
-
+/**
+ * @deprecated
+ *
 function bab_getCalendarOwnerName($idcal, $type='')
 {
 	global $babDB;
@@ -122,6 +108,7 @@ function bab_getCalendarOwnerName($idcal, $type='')
 
 	return $ret;
 }
+*/
 
 
 /**
@@ -165,6 +152,12 @@ function bab_getCalendarCategory($nameorid)
 {
 	global $babDB;
 	
+	if (empty($nameorid))
+	{
+		return null;
+	}
+	
+	
 	$query = 'SELECT id, name, description, color FROM '.BAB_CAL_CATEGORIES_TBL." WHERE ";
 	
 	if (is_numeric($nameorid)) {
@@ -186,11 +179,13 @@ function bab_getCalendarCategory($nameorid)
 
 
 
-
 /**
+ * 
+ * @deprecated
+ * 
  * Get a list of available calendar ID
  * @return array
- */
+
 function bab_getAvailableCalendars()
 {
 	$return = array();
@@ -202,10 +197,13 @@ function bab_getAvailableCalendars()
 
 	return $return;
 }
+*/
 
 
-
-
+/**
+ * 
+ * @deprecated
+ * 
 function getAvailableUsersCalendars($bwrite = false)
 {
 	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
@@ -238,7 +236,8 @@ function getAvailableUsersCalendars($bwrite = false)
 		}
 
 	return $tab;
-}	
+}
+*/
 
 /**
  * 
@@ -710,26 +709,37 @@ class bab_cal_OviCalendarEvents
 		} else {
 			$event->setProperty('CLASS'	, 'PUBLIC');
 		}
+		
+		if ('Y' == $arr['bfree']) {
+			$event->setProperty('TRANSP'	, 'TRANSPARENT');
+		} else {
+			$event->setProperty('TRANSP'	, 'OPAQUE');
+		}
 	
 		unset($arr['start_date']);
 		unset($arr['end_date']);
 		unset($arr['title']);
-		unset($arr['description']);
 		unset($arr['location']);
 		unset($arr['category']);
 		unset($arr['bprivate']);
+		unset($arr['bfree']);
 		unset($arr['color']);
 		unset($arr['bgcolor']);
 		unset($arr['uuid']);
 	
-		$arr['alert'] = !empty($arr['alert']);
-		$arr['idcal_owners'] = array(); /* id calendars that ownes this event */
-		$arr['iduser_owners'] = array();
+		if (!empty($arr['alert'])) {
+			
+			$backend = bab_functionality::get('CalendarBackend');
+			$alarm = $backend->CalendarAlarm();
+			$event->setAlarm($alarm);
+		}
+		
 	
 	
 		$resco = $babDB->db_query("
 		
-			SELECT o.id_cal, c.type, c.owner, o.idfai   
+			SELECT 
+				o.id_cal, c.type, c.owner, o.idfai, o.status    
 			FROM 
 				".BAB_CAL_EVENTS_OWNERS_TBL." o, 
 				".BAB_CALENDAR_TBL." c  
@@ -739,44 +749,108 @@ class bab_cal_OviCalendarEvents
 			");
 	
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
-			if ($arr2['id_cal'] != $arr['id_cal']) {
-				if (isset($ovi_calendars[$arr2['id_cal']])) {
-					$arr['idcal_owners'][] = $ovi_calendars[$arr2['id_cal']]->getUrlIdentifier();
-				} else {
-					bab_debug('Error, missing calendar');
-				}
-			}
-			
-			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
-				$arr['iduser_owners'][$arr2['owner']] = $arr2['owner'];
-			}
-	
-			if (0 !== (int) $arr2['idfai']) {
-				// overright idfai because the idfai is 0 when the event is linked to others calendars
-				$arr['idfai'] = (int) $arr2['idfai'];
-			}
-		}
-	
-		$arr['nbowners'] = count($arr['idcal_owners']);
 		
-	
-		if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 )
+			switch($arr2['status'])
 			{
-			if( count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
-				{
-				$idevtarr[] = $arr['id'];
-				}
-			}
-		else
-			{
-			$idevtarr[] = $arr['id'];
+				case BAB_CAL_STATUS_NONE:
+					$partstat = 'NEEDS-ACTION';
+					$rsvp = 'TRUE';
+					break;	
+				case BAB_CAL_STATUS_ACCEPTED:
+					$partstat = 'ACCEPTED';
+					$rsvp = 'FALSE';
+					break;
+				case BAB_CAL_STATUS_DECLINED:
+					$partstat = 'DECLINED';	
+					$rsvp = 'FALSE';
+					break;
 			}
 			
-		if ('Y' === $arr['bfree']) {
-			$event->available = true;
+			
+			
+			
+			switch($arr2['type'])
+			{
+				case BAB_CAL_USER_TYPE:
+					$idcal = 'personal/'.$arr2['id_cal'];
+					break;
+				case BAB_CAL_PUB_TYPE:
+					$idcal = 'public/'.$arr2['id_cal'];
+					break;
+				case BAB_CAL_RES_TYPE:
+					$idcal = 'ressource/'.$arr2['id_cal'];
+					break;
+			}
+		
+			
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!isset($calendar))
+			{
+				throw new Exception('This calendar is not accessible '.$arr2['id_cal']);
+			}
+		
+			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
+				if ($arr2['id_cal'] == $arr['id_cal']) {
+					// main personal calendar 
+					$role = 'CHAIR';
+					
+					// set as organizer
+					$event->setProperty('ORGANIZER;CN='.$calendar->getName(), 'MAILTO:'.bab_getUserEmail($calendar->getIdUser()));
+					
+				} else {
+					$role = 'REQ-PARTICIPANT';
+				}
+				
+				$event->addAttendee($calendar, $role, $partstat, $rsvp);
+				
+				if (isset($alarm))
+				{
+					$alarm->addAttendee($calendar);
+				}
+				
+			} else {
+				if ($arr2['id_cal'] == $arr['id_cal']) {
+					// main calendar 
+					$event->addRelation('PARENT', $calendar);
+				} else {
+					$event->addRelation('CHILD', $calendar);
+				}
+			}
 		}
-	
+			
+		
+		
 		$event->setData($arr);
+		
+		
+		// add VALARM infos
+		
+		
+		$resa = $babDB->db_query('SELECT 
+					day, 
+					hour, 
+					minute, 
+					bemail,
+					id_user   
+					
+				FROM '.BAB_CAL_EVENTS_REMINDERS_TBL.'
+				
+				WHERE id_event = '.$babDB->quote($arr['id']).'	
+		');
+		
+		
+		while($reminder = $babDB->db_fetch_assoc($resa))
+		{
+			$day = (int) $reminder['day'];
+			$hour = (int) $reminder['hour'];
+			$minute = (int) $reminder['minute'];
+			$email = 'Y' === $reminder['bemail'];
+			
+			require_once dirname(__FILE__).'/evtincl.php';
+			bab_setAlarmProperties($alarm, $event, $day, $hour, $minute, $email);
+			break;
+		}
 		
 		
 		return $event;
@@ -806,7 +880,7 @@ class bab_cal_OviCalendarEvents
 				LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
 				LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
 				LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
-				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."
+				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 	
 			WHERE 
 				".$where." 

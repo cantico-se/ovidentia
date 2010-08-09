@@ -610,17 +610,7 @@ ed();
 		{ editor }
 		</td>
 	</tr>
-	<tr id="event_owner">
-		<td align="right">{ t_event_owner }</td>
-		<td>
-			<!--#if evtarr[id_creator] -->
-			<input type="hidden" name="event_owner_post" value="{ evtarr[id_creator] }" />
-			<!--#endif evtarr[id_creator] -->
-			<select name="event_owner">
-				<option value=""></option>
-			</select>
-		</td>
-	</tr>
+	
 	<tr> 
 		<td colspan="2">{ calendars }</td>
 	</tr>
@@ -816,8 +806,8 @@ function view_main_form()
 
 function cal_movecalendar(action,text,value,classname)
 	{
+	/*
 	var tr = document.getElementById('event_owner');
-	var sel = document.forms['vacform'].event_owner;
 	if (document.forms['vacform'].event_owner_post)
 		{
 		var post = document.forms['vacform'].event_owner_post;
@@ -825,7 +815,7 @@ function cal_movecalendar(action,text,value,classname)
 
 	if (action == 0 && classname == 'usr')
 		{
-		sel.options[sel.options.length] = new Option(text, value);
+		
 		if (post && post.value != '' && value == post.value)
 			{
 			sel.selectedIndex = sel.options.length - 1;
@@ -850,6 +840,7 @@ function cal_movecalendar(action,text,value,classname)
 		{
 		tr.style.display = 'none';
 		}
+	*/
 	}
 
 

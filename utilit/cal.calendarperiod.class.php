@@ -45,6 +45,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	/**
 	 * Can be set manually if an event is "free" to not interfere in availability search
+	 * this parameter is only used by the program, to apply the user preference for a free or busy event period, the period transparency "TRANSP" iCalendar parameter is used
+	 * 
 	 * @var bool
 	 */
 	public	$available;
@@ -75,15 +77,21 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * @var bab_CalendarAlarm
 	 */
 	private $alarm;
+
 	
 	
 
 	/**
+	 * The timestamp in constructor parameters will not initialize the DTSTART and DTEND iCalendar properties
+	 * but for periods with no need of iCalendar propoerties, this is more efficient (availability calculation, working hours...)
+	 * 
+	 * @see bab_CalendarPeriod::setDates()
+	 * 
 	 * @param 	int						$begin		timestamp
 	 * @param 	int						$end		timestamp
 	 *
 	 */
-	public function __construct($begin, $end) {
+	public function __construct($begin = 0, $end = 0) {
 
 		$this->ts_begin 	= $begin;
 		$this->ts_end		= $end;
@@ -97,6 +105,25 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	{
 		return 'VEVENT';
 	}
+	
+	/**
+	 * Initialize dates of period, this method will initialize the DTSTART and DTEND properties
+	 * 
+	 * @param BAB_DateTime $begin
+	 * @param BAB_DateTime $end
+	 * @return bab_CalendarPeriod
+	 */
+	public function setDates(BAB_DateTime $begin, BAB_DateTime $end) {
+		
+		$this->ts_begin = $begin->getTimeStamp();
+		$this->ts_end = $end->getTimeStamp();
+		
+		$this->setProperty('DTSTART', $begin->getICal());
+		$this->setProperty('DTEND', $end->getICal());
+		
+		return $this;
+	}
+	
 	
 	/**
 	 * Link period to collection
@@ -171,6 +198,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	public function getAlarm() {
 		return $this->alarm;
 	}
+	
+	
 	
 	
 	
@@ -300,6 +329,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	
 	/**
+	 * Test if availability of event has been overloaded by program 
+	 * ex : during availability search, the event will be ignored
 	 * @return boolean
 	 */
 	public function isAvailable() {
@@ -330,7 +361,9 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 
 
-
+/**
+ * 
+ */
 class bab_CalendarAlarm extends bab_ICalendarObject {
 	
 	public function getName() {

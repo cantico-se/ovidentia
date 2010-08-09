@@ -32,7 +32,7 @@ require_once dirname(__FILE__).'/cal.calendarperiod.class.php';
  * or the list of period can be directly linked to the userPeriods object (for exemple, the working hours or non working days)
  * 
  */
-abstract class bab_PeriodCollection
+abstract class bab_PeriodCollection implements Iterator, Countable
 {
 	/**
 	 * Optional calendar attached to collection
@@ -40,18 +40,18 @@ abstract class bab_PeriodCollection
 	 */
 	private $calendar = null;
 	
-	
-	/**
-	 * @var bab_UserPeriods
-	 */
-	//private $periods = null;
-	
-	
+
 	/**
 	 * 
 	 * @var array
 	 */
 	private $events = array();
+	
+	
+	
+	private $iter_key;
+	private $iter_value;
+	private $iter_status;
 	
 	
 	/**
@@ -84,6 +84,52 @@ abstract class bab_PeriodCollection
 	{
 		return $this->calendar;
 	}
+	
+	
+	
+	
+
+	
+ 	public function rewind()
+    {
+        reset($this->events);
+        $this->next();
+    }
+
+    /**
+     * Period
+     * @return bab_CalendarPeriod
+     */
+    public function current()
+    {
+        return $this->iter_value;
+    }
+
+    /**
+     * 
+     * @return int
+     */
+    public function key()
+    {
+        return $this->iter_key;
+    }
+
+    public function next()
+    {
+      	$this->iter_status = list($this->iter_key, $this->iter_value) = each($this->events);
+    }
+
+    public function valid()
+    {
+        return $this->iter_status;
+    }
+	
+	public function count()
+	{
+		return count($this->events);
+	}
+	
+	
 }
 
 

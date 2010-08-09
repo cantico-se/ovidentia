@@ -38,6 +38,19 @@ abstract class bab_ICalendarObject
 	private $properties = array();
 	
 	
+	/**
+	 * Store aditional information for the ATTENDEE property
+	 * @var array
+	 */
+	private $attendees = array();
+	
+	
+	/**
+	 * Store aditional information for the RELATED-TO property
+	 * @var array
+	 */
+	private $relations = array();
+	
 	
 	abstract public function getName();
 	
@@ -53,7 +66,19 @@ abstract class bab_ICalendarObject
 	 * @return bab_ICalendarObject
 	 */
 	public function setProperty($icalProperty, $value) {
-		$this->properties[$icalProperty] = $value;
+		
+		if (null === $value)
+		{
+			return $this;
+		}
+		
+		$propparam = '';
+		
+		if (false !== $pos = mb_strpos($icalProperty, ';')) {
+			$propparam = $icalProperty;
+		}
+		
+		$this->properties[$icalProperty][$propparam] = $value;
 		return $this;
 	}
 
@@ -65,33 +90,48 @@ abstract class bab_ICalendarObject
 	 */
 	public function getProperty($icalProperty) {
 		if (isset($this->properties[$icalProperty])) {
-			return $this->properties[$icalProperty];
+			
+			if (1 === count($this->properties[$icalProperty]) && isset($this->properties[$icalProperty][''])) {
+				return $this->properties[$icalProperty][''];
+			} else {
+				return $this->properties[$icalProperty];
+			}
+			
+			
 		} else {
-			$this->properties[$icalProperty] = '';
-			return $this->properties[$icalProperty];
+			return '';
 		}
 	}
 	
 	/**
 	 * Set the ATTENDEE property
 	 * 
-	 * @param	string	$cn				Common name
-	 * @param	string	$email
-	 * @param	string	$role			CHAIR | REQ-PARTICIPANT | NON-PARTICIPANT | OPT-PARTICIPANT
-	 * 									To specify the participation role for the calendar user specified by the property.
-	 * @param	string	$partstat		NEEDS-ACTION | TENTATIVE | ACCEPTED | DECLINED | DELEGATED
-	 * 									To specify the participation status for the calendar user specified by the property
-	 * @param	string	$rsvp			TRUE | FALSE					
-	 * 									To specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value.
+	 * @param	bab_EventCalendar	$calendar		Personnal calendar of attendee
+	 * @param	string				$role			CHAIR | REQ-PARTICIPANT | NON-PARTICIPANT | OPT-PARTICIPANT
+	 * 												To specify the participation role for the calendar user specified by the property.
+	 * @param	string				$partstat		NEEDS-ACTION | TENTATIVE | ACCEPTED | DECLINED | DELEGATED
+	 * 												To specify the participation status for the calendar user specified by the property
+	 * @param	string				$rsvp			TRUE | FALSE					
+	 * 												To specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value.
 	 * 
 	 * @return unknown_type
 	 */
-	public function addAttendee($email, $cn=null, $role=null, $partstat=null, $rsvp=null) {
+	public function addAttendee(bab_EventCalendar $calendar, $role=null, $partstat=null, $rsvp=null) {
 		
 		if (!isset($this->properties['ATTENDEE']))
 		{
 			$this->properties['ATTENDEE'] = array();
 		}
+		
+		$id_user = $calendar->getIdUser();
+		
+		if (!$id_user)
+		{
+			throw new Exception('This is not a personnal calendar');
+		}
+		
+		$cn = bab_getUserName($id_user);
+		$email = bab_getUserEmail($id_user);
 		
 		$attendeekey = "ATTENDEE";
 		
@@ -102,12 +142,16 @@ abstract class bab_ICalendarObject
 		
 		$attendeekey .= ':MAILTO:'.$email;
 		
-		$this->properties['ATTENDEE'][$attendeekey] = array(
+		$this->attendees[$attendeekey] = array(
 			'ROLE'		=> $role,
 			'PARTSTAT'	=> $partstat,
 			'CN'		=> $cn,
-			'email' 	=> $email 
+			'RSVP'		=> $rsvp,
+			'email'		=> $email,
+			'calendar' 	=> $calendar
 		);
+		
+		$this->properties['ATTENDEE'][] = $attendeekey;
 	}
 	
 	/**
@@ -117,11 +161,116 @@ abstract class bab_ICalendarObject
 	 */
 	public function getAttendees() {
 		
-		if (!isset($this->properties['ATTENDEE']))
+		if (!isset($this->attendees))
 		{
 			return array();
 		}
 		
-		return $this->properties['ATTENDEE'];
+		return $this->attendees;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Add a RELATED-TO iCalendar property on VEVENT
+	 * 
+	 * @param	string				$reltype	PARENT | CHILD | SIBLING
+	 * @param	bab_EventCalendar	$calendar
+	 * 
+	 * @return bab_CalendarPeriod
+	 */
+	public function addRelation($reltype, bab_EventCalendar $calendar) 
+	{
+
+		if (!isset($this->relations[$reltype]))
+		{
+			$this->relations[$reltype] = array();
+		}
+		
+		if (!isset($this->properties['RELATED-TO']))
+		{
+			$this->properties['RELATED-TO'] = array();
+		}
+		
+		$this->relations[$reltype][] = $calendar;
+		$this->properties['RELATED-TO'][] = "RELATED-TO;RELTYPE=$reltype:".$calendar->getReference()->__toString();
+		
+		return $this;
+	}
+	
+	/**
+	 * Get RELATED-TO iCalendar property on VEVENT
+	 * 
+	 * @param string	$reltype		PARENT | CHILD | SIBLING
+	 * @return array	<bab_EventCalendar>
+	 */
+	public function getRelations($reltype) 
+	{
+		if (!isset($this->relations[$reltype]))
+		{
+			return array();
+		}
+		
+		return $this->relations[$reltype];
+	}
+	
+	
+	
+	/**
+	 * Get all calendars stored as attendees and relations
+	 * @return array
+	 */
+	public function getCalendars()
+	{
+		$return = array();
+		
+		foreach($this->attendees as $arr)
+		{
+			$calendar = $arr['calendar'];
+			$return[$calendar->getUrlIdentifier()] = $calendar;
+		}
+		
+		foreach($this->relations as $reltype => $arr)
+		{
+			foreach($arr as $calendar)
+			{
+				$return[$calendar->getUrlIdentifier()] = $calendar;
+			}
+		}
+		
+		return $return;
+	}
+	
+	
+	
+	/**
+	 * Get all properties
+	 * @return array
+	 */
+	public function getProperties()
+	{
+		$return = array();
+		foreach($this->properties as $property)
+		{
+			$value = $this->getProperty($property);
+			
+			if (is_array($value))
+			{
+				foreach($value as $k => $v) {
+					if (is_numeric($k)) {
+						$return[] = $property.':'.$value;
+					} else {
+						$return[] = $k.':'.$value;
+					}
+				}
+			} else {
+				$return[] = $property.':'.$value;
+			}
+		}
+		
+		return $return;
 	}
 }

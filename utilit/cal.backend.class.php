@@ -189,7 +189,7 @@ class Func_CalendarBackend extends bab_functionality
 		require_once dirname(__FILE__).'/cal.userperiods.class.php';
 		return bab_getInstance('bab_PeriodCriteriaFactory');
 	}
-	
+
 	
 	
 	
@@ -198,10 +198,13 @@ class Func_CalendarBackend extends bab_functionality
 	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
 	 * 
 	 * @param	bab_CalendarPeriod	$period
+	 * 
+	 * @return bool
 	 */
 	public function savePeriod(bab_CalendarPeriod $period)
 	{
 		throw new Exception('not implemented');
+		return false;
 	}
 	
 	/**

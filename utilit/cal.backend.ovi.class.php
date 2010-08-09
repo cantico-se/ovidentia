@@ -72,14 +72,8 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 */
 	public function savePeriod(bab_CalendarPeriod $period)
 	{
-		require_once dirname(__FILE__).'/evtincl.php';
-		
-		if ($period->getProperty('UID'))
-		{
-			
-		} else {
-			bab_cal_ovi_insertEvent($period);
-		}
+		require_once dirname(__FILE__).'/cal.ovievent.class.php';
+		return bab_ovi_event::save($period);
 	}
 	
 	

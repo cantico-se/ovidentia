@@ -261,6 +261,7 @@ class bab_UserPeriods implements Iterator, Countable {
  	public function rewind()
     {
         reset($this->boundaries);
+        $this->next();
     }
 
     /**
