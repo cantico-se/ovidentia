@@ -132,16 +132,22 @@ document.onmousemove = bab_tooltipPosition;
 						<!--#endif bnote -->
 				</div>
 				
-				<div class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> <!--#if link --> onclick="document.location.href='{ vieweventurl }'" <!--#else link --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif link --> <!--#endif popup --> onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">					<!--#if allow_modify -->
-					<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+				<div class="event" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">	
+					<!--#if allow_modify -->
+					<a href="{ titletenurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 					<!--#endif allow_modify -->
-					<!--#if firstday -->{ starttime }&nbsp; <!--#endif firstday -->{ titleten }
+					
+					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
+					
+					<!--#if firstday -->{ starttime }&nbsp; <!--#endif firstday -->
+					{ titleten }
+					</a>
 					<!--#if nbowners -->
-					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
+					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
 					<!--#endif nbowners -->
 					<!--#if bstatus -->
-					<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
-					<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
+						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 					</a>
 					<!--#endif bstatus -->
 					<!--#if bnote -->

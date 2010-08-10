@@ -665,14 +665,15 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			
 			
 			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
-
 			
-		//	if (!empty($this->evtarr['hash']) && $this->evtarr['hash'][0] == 'R') {
-		//		$this->brecevt = true;
-		//		$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-		//	} else {
+			$collection = $event->getCollection();
+
+			if (!empty($collection->hash)) {
+				$this->brecevt = true;
+				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+			} else {
 				$this->brecevt = false;
-		//	}
+			}
 
 			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
 			if (empty($bshowui)) {
@@ -1076,13 +1077,22 @@ function deleteEvent()
 	
 
 
-
+/**
+ * Create a new event (save the posted form)
+ * @param string &$message
+ * @return bool
+ */
 function addEvent(&$message)
 	{
 	
 	
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
+	
+	if (!$posted->isValid($message))
+	{
+		return false;
+	}
 
 	// if period is available
 	if ($posted->availabilityCheckAllEvents($message)) {
@@ -1102,163 +1112,40 @@ function addEvent(&$message)
 }
 
 
-
+/**
+ * Update an event (save the posted form)
+ * @param string &$message
+ * @return bool
+ */
 function updateEvent(&$message)
 {
-	global $babBody, $babDB;
-	
-	if( empty($_POST['title']))
-		{
-		$message = bab_translate("You must provide a title")." !!";
+	$posted = new bab_event_posted();
+	$posted->createArgsData();
+	if (!$posted->isValid($message))
+	{
 		return false;
-		}
-
-	$title = bab_pp('title');
-	$location = bab_pp('location');
-
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
-	$editor = new bab_contentEditor('bab_calendar_event');
-	$description = $editor->getContent();
-
-	if( empty($_POST['category']))
-		$catid = 0;
-	else
-		$catid = $_POST['category'];
-
-	$evtinfo = $babDB->db_fetch_array($babDB->db_query("select hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($_POST['evtid'])."'"));
-
-	$arrupdate = array();
-
-	if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($_POST['bupdrec']) && $_POST['bupdrec'] != "2" )
-	{
-		$aWhereClauseItem = array();
-		$aWhereClauseItem[] = 'hash = ' . $babDB->quote($evtinfo['hash']);
-
-		//Previous
-		if($_POST['bupdrec'] == "3")
-		{
-			$aWhereClauseItem[] = 'start_date <= ' . $babDB->quote($evtinfo['start_date']);
-		}
-		else if($_POST['bupdrec'] == "4")
-		{
-			$aWhereClauseItem[] = 'start_date >= ' . $babDB->quote($evtinfo['start_date']);
-		}
-		
-		$sQuery = 
-			'SELECT 
-				* 
-			FROM ' . 
-				BAB_CAL_EVENTS_TBL . ' 
-			WHERE ' .
-				implode(' AND ', $aWhereClauseItem);
-				
-		//bab_debug($sQuery);
-		
-		$res = $babDB->db_query($sQuery);
-		while( $arr = $babDB->db_fetch_array($res))
-		{
-			$rr = explode(" ", $arr['start_date']);
-			$rr0 = explode("-", $rr[0]);
-			$rr1 = explode(":", $rr[1]);
-			$startdate = sprintf("%04d-%02d-%02d %s:00", $rr0[0], $rr0[1], $rr0[2], $_POST['timebegin']);
-
-			$rr = explode(" ", $arr['end_date']);
-			$rr0 = explode("-", $rr[0]);
-			$rr1 = explode(":", $rr[1]);
-			$enddate = sprintf("%04d-%02d-%02d %s:00", $rr0[0], $rr0[1], $rr0[2], $_POST['timeend']);
-
-			if( bab_mktime($startdate) >= bab_mktime($enddate) )
-				{
-				$message = bab_translate("End date must be older")." !!";
-				return false;
-				}
-
-			$arrupdate[$arr['id']] = array('start'=>$startdate, 'end' => $enddate);
-			$min = $startdate;
-			$max = $enddate;
-		}
-	}
-	else
-	{
-
-		$startdate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearbegin'], $_POST['monthbegin'], $_POST['daybegin'], $_POST['timebegin']);
-		$enddate = sprintf("%04d-%02d-%02d %s:00", $_POST['yearend'], $_POST['monthend'], $_POST['dayend'], $_POST['timeend']);
-
-		if( bab_mktime($startdate) >= bab_mktime($enddate) )
-			{
-			$message = bab_translate("End date must be older")." !!";
-			return false;
-			}
-
-		$arrupdate[$_POST['evtid']] = array('start'=>$startdate, 'end' => $enddate);
-		$min = $startdate;
-		$max = $enddate;
 	}
 
-	reset($arrupdate);
-	$req = "UPDATE ".BAB_CAL_EVENTS_TBL." 
-	SET 
-		title			=".$babDB->quote($title).", 
-		description		=".$babDB->quote($description).", 
-		location		=".$babDB->quote($location).", 
-		id_cat			=".$babDB->quote($catid).", 
-		color			=".$babDB->quote($_POST['color']).", 
-		bprivate		=".$babDB->quote($_POST['bprivate']).", 
-		block			=".$babDB->quote($_POST['block']).", 
-		bfree			=".$babDB->quote($_POST['bfree']).",
-		date_modification=now(),
-		id_modifiedby	=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
-	";
-	
-	if (isset($_POST['event_owner']) && !empty($_POST['event_owner']) )
-		{
-		// owner update
-		$arr = $babDB->db_fetch_array($babDB->db_query("SELECT owner FROM ".BAB_CALENDAR_TBL." WHERE id='".$babDB->db_escape_string($_POST['event_owner'])."'"));
-		if( isset($arr['owner']))
-			{
-			$req .= ", id_creator=".$babDB->quote($arr['owner'])."";
-			}
-		}
-	
-	
-		
-	$modification = false;
-	
-	foreach($arrupdate as $key => $val)
-	{
-		$query = $req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."";
-		$babDB->db_query($query);
-		
-		if (0 !== $babDB->db_affected_rows())
-		{
-			$modification = true;
-		}
-		
-		
-		$min = $val['start'] < $min ? $val['start'] : $min;
-		$max = $val['end']	 > $max ? $val['end'] 	: $max;
-		$exclude = array();
-		bab_updateSelectedCalendars(
-			$key, 
-			bab_pp('selected_calendars'),
-			$exclude
-		);
+	// if period is available
+	if ($posted->availabilityCheckAllEvents($message)) {
+		return $posted->save($message);
 	}
-
-	
-	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
-	$event->types = BAB_PERIOD_CALEVENT;
-	bab_fireEvent($event);
 	
 	
-	// the exlude array contain new calendar in event and removed calendars from event
-	// the do not need a notification
-
-	notifyEventUpdate(bab_pp('evtid'), false, $exclude);
-	return true;
+	// if availability message displayed and the event is submited
+	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
+		
+		// if availability is NOT mandatory
+		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
+			return $posted->save($message);
+		}
+	}
+	
+	return false;
 }
+
+
+
 
 function confirmDeleteEvent()
 {
@@ -1525,7 +1412,7 @@ if (isset($_REQUEST['action']))
 			if( isset($_POST['Submit']) || isset($_POST['test_conflicts']))
 				{
 				$message = '';
-				if (eventAvariabilityCheck() && updateEvent($message))
+				if (updateEvent($message))
 					{
 					$idx = "unload";
 					}
@@ -1574,8 +1461,7 @@ switch($idx)
 				$refreshurl = "";
 				break;
 		}
-		popupUnload($popupmessage, $refreshurl);
-		exit;
+		popupUnload($popupmessage, $refreshurl, false, false);
 		break;
 
 	case "modevent":

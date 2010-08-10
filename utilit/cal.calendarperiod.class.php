@@ -46,6 +46,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	/**
 	 * Can be set manually if an event is "free" to not interfere in availability search
 	 * this parameter is only used by the program, to apply the user preference for a free or busy event period, the period transparency "TRANSP" iCalendar parameter is used
+	 * the available public property will not be saved with the event
 	 * 
 	 * @var bool
 	 */

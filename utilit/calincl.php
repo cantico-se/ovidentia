@@ -53,11 +53,13 @@ function bab_getCalendarOwner($idcal)
 
 
 /**
- * @deprecated
- *
  * Get calendar owner and type
+ * This function is used only for calendars from the ovidentia backend
+ * 
+ * @param	int		$idcal
+ * 
  * @return array|false
- 
+ */
 function bab_getCalendarOwnerAndType($idcal)
 {
 	global $babDB;
@@ -76,7 +78,7 @@ function bab_getCalendarOwnerAndType($idcal)
 		return false;
 		}
 }
-*/
+
 
 /**
  * @deprecated
@@ -680,11 +682,11 @@ class bab_cal_OviCalendarEvents
 	 * 
 	 * @return bab_CalendarEvent
 	 */
-	private function createCalendarPeriod($arr)
+	private function createCalendarPeriod($arr, bab_PeriodCollection $collection)
 	{
 		global $babDB;
 		$event = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
-			
+		$collection->addPeriod($event);
 			
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');
@@ -700,7 +702,7 @@ class bab_cal_OviCalendarEvents
 		$event->setProperty('LOCATION'		, $arr['location']);
 		$event->setProperty('CATEGORIES'	, $arr['category']);
 		
-		$color = isset($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
+		$color = !empty($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
 		$event->setColor($color);
 		
 		
@@ -732,6 +734,12 @@ class bab_cal_OviCalendarEvents
 			$backend = bab_functionality::get('CalendarBackend');
 			$alarm = $backend->CalendarAlarm();
 			$event->setAlarm($alarm);
+		}
+		
+		
+		if (!empty($arr['hash']))
+		{
+			$collection->hash = $arr['hash'];
 		}
 		
 	
@@ -952,9 +960,8 @@ class bab_cal_OviCalendarEvents
 		
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
-			$event = $this->createCalendarPeriod($arr);
+			$event = $this->createCalendarPeriod($arr, $collections[$arr['id_cal']]);
 			
-			$collections[$arr['id_cal']]->addPeriod($event);
 			$user_periods->addPeriod($event);
 		}
 	
@@ -983,6 +990,9 @@ class bab_cal_OviCalendarEvents
 			return null;
 		}
 		
-		return $this->createCalendarPeriod($arr);
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		$collection = $backend->CalendarEventCollection(); 
+		
+		return $this->createCalendarPeriod($arr, $collection);
 	}
 }

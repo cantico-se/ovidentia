@@ -105,9 +105,14 @@ define("BAB_CAL_RECUR_WEEKLY",	2);
 define("BAB_CAL_RECUR_MONTHLY",	3);
 define("BAB_CAL_RECUR_YEARLY",	4);
 
-define("BAB_STAT_ACCESS_MANAGER",	0);
-define("BAB_STAT_ACCESS_DELEGATION",	1);
-define("BAB_STAT_ACCESS_USER",	2);
+define("BAB_CAL_EVT_ALL"			, 1);	// update all events in serie
+define("BAB_CAL_EVT_CURRENT"		, 2);	// update only current event
+define("BAB_CAL_EVT_PREVIOUS"		, 3);	// This occurence and all previous occurences
+define("BAB_CAL_EVT_NEXT"			, 4);	// This occurence and all next occurences
+
+define("BAB_STAT_ACCESS_MANAGER"	, 0);
+define("BAB_STAT_ACCESS_DELEGATION"	, 1);
+define("BAB_STAT_ACCESS_USER"		, 2);
 
 /* sections type */
 define('BAB_SECTIONS_CORE'		,1);

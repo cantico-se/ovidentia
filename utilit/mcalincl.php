@@ -282,7 +282,12 @@ class bab_mcalendars
 		);
 		
 		foreach($idcals as $idcal) {
-			$criteria = $criteria->_AND_($factory->Calendar(bab_getICalendars()->getEventCalendar($idcal)));
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			if (!$calendar)
+			{
+				throw new Exception('Calendar not found for identifier : '.$idcal);
+			}
+			$criteria = $criteria->_AND_($factory->Calendar($calendar));
 		}
 
 		$whObj->createPeriods($criteria);
@@ -861,13 +866,13 @@ class cal_wmdbaseCls
 		}
 		
 		$this->status		= isset($arr['status'])		? $arr['status'] 		: 0;
-		$this->id_cat		= isset($arr['id_cat'])		? $arr['id_cat'] 		: 0;
+		$this->id_cat		= bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
 		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
 		$this->hash			= isset($arr['hash'])		? $arr['hash'] 			: '';
-		$this->balert		= isset($arr['alert'])		? $arr['alert'] 		: false;
+		$this->balert		= $calPeriod->getAlarm();
 		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] 		: 0;
 		$this->idevent		= $calPeriod->getUrlIdentifier();
-		$this->bgcolor		= 'fff';
+		$this->bgcolor		= $calPeriod->getColor();
 		
 		$this->viewurl		= isset($arr['viewurl'])	? $arr['viewurl'] : null;
 
@@ -926,7 +931,6 @@ class cal_wmdbaseCls
 			$this->titletenurl	= "";
 			}
 		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&collection=".$collectionparameter."&evtid=".$this->idevent ."&idcal=".$this->idcal);
-		//$this->vieweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;

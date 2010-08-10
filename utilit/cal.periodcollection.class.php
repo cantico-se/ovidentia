@@ -152,7 +152,14 @@ class bab_VacationPeriodCollection extends bab_PeriodCollection { }
 /**
  * List of accessible events in ovidentia calendar
  */
-class bab_CalendarEventCollection extends bab_PeriodCollection { }
+class bab_CalendarEventCollection extends bab_PeriodCollection { 
+
+	/**
+	 * unique hash for a collection of events
+	 * @var string
+	 */
+	public $hash = null;
+}
 
 /**
  * List of tasks from task manager

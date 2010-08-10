@@ -23,8 +23,9 @@
 ************************************************************************/
 include_once "base.php";
 
-function popupUnload($message, $redirecturl, $openerreload=false)
+function popupUnload($message, $redirecturl, $openerreload=false, $autoclose=true)
 	{
+	global $babBody;
 	class temp
 		{
 		var $message;
@@ -33,18 +34,19 @@ function popupUnload($message, $redirecturl, $openerreload=false)
 		var $openerreload;
 		var $sContent;
 		
-		function temp($message, $redirecturl, $openerreload)
+		function temp($message, $redirecturl, $openerreload, $autoclose)
 			{
 			$this->message = $message;
 			$this->close = bab_translate("Close");
 			$this->redirecturl = $redirecturl;
 			$this->openerreload = $openerreload;
+			$this->autoclose = $autoclose;
 			$this->sContent = 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
 
-	$temp = new temp($message, $redirecturl, $openerreload);
-	echo bab_printTemplate($temp,"uiutil.html", "popupunload");
+	$temp = new temp($message, $redirecturl, $openerreload, $autoclose);
+	$babBody->babPopup(bab_printTemplate($temp,"uiutil.html", "popupunload"));
 	}
 
 class babBodyPopup

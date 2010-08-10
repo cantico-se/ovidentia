@@ -76,6 +76,7 @@ abstract class bab_ICalendarObject
 		
 		if (false !== $pos = mb_strpos($icalProperty, ';')) {
 			$propparam = $icalProperty;
+			$icalProperty = mb_substr($icalProperty, 0, $pos);
 		}
 		
 		$this->properties[$icalProperty][$propparam] = $value;
@@ -221,7 +222,7 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * Get all calendars stored as attendees and relations
-	 * @return array
+	 * @return array	<bab_EventCalendar>
 	 */
 	public function getCalendars()
 	{

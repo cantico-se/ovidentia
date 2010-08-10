@@ -327,7 +327,13 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	$args['selected_calendars'] = $idcals;
 
 	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
-	return bab_createEvent($args, $msgerror);
+	include_once $GLOBALS['babInstallPath'].'utilit/cal.ovievent.php';
+	
+	$backend = bab_functionality::get('CalendarBackend/Ovi');
+	$collection = $backend->CalendarEventCollection();
+	
+	$period = bab_createCalendarPeriod($args, $collection);
+	return $backend->savePeriod($period);
 }
 
 function bab_deleteEventById( $evtid )

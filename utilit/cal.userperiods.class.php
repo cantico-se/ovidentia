@@ -327,16 +327,21 @@ class bab_UserPeriods implements Iterator, Countable {
 	/**
 	 * set availability status for one event
 	 *
-	 * @param	bab_calendarPeriod		$event
+	 * @param	bab_CalendarPeriod		$period
 	 * @param	boolean					$available
+	 * 
+	 * @return  bool					return false on failure
 	 */
-	public function setAvailability($event, $available) {
-		$boundary = $this->boundaries[$event->ts_begin];
+	public function setAvailability($period, $available) {
+		$boundary = $this->boundaries[$period->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
-			if ($tmp_evt->getProperty('UID') === $event->getProperty('UID')) {
-				$this->boundaries[$event->ts_begin][$key]->available = $available;
+			if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
+				bab_debug('event '.$tmp_evt->getProperty('UID').' set available');
+				$this->boundaries[$period->ts_begin][$key]->available = $available;
+				return true;
 			}
 		}
+		return false;
 	}
 
 
