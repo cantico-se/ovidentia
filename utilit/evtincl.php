@@ -1782,14 +1782,26 @@ class bab_event_posted {
 			bab_addHashEventsToCollection($collection, $calendarPeriod, (int) bab_pp('bupdrec'));
 		}
 
+		$min = $calendarPeriod->ts_begin;
+		$max = $calendarPeriod->ts_end;
 		
-		foreach($collection as $key => $period)
+		foreach($collection as $period)
 		{
+			if ($min > $period->ts_begin) 	{ $min = $period->ts_begin; }
+			if ($max < $period->ts_end) 	{ $max = $period->ts_end; 	}
+
 			if (!$backend->savePeriod($period))
 			{
 				return false;
 			}
 		}
+		
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+		$event = new bab_eventPeriodModified($min, $max, false);
+		$event->types = BAB_PERIOD_CALEVENT;
+		bab_fireEvent($event);
+		
 		
 		return true;
 	}

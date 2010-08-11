@@ -140,22 +140,28 @@ document.onmousemove = bab_tooltipPosition;
 					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
 					
 					<!--#if firstday -->{ starttime }&nbsp; <!--#endif firstday -->
-					{ titleten }
+					{ titleten } &nbsp;
+					
+					
+						<!--#if bnote -->
+						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+						<!--#endif bnote -->
+						<!--#if balert -->
+						<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+						<!--#endif balert -->
+					
 					</a>
+					
 					<!--#if nbowners -->
 					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
 					<!--#endif nbowners -->
+					
 					<!--#if bstatus -->
 					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
 						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 					</a>
 					<!--#endif bstatus -->
-					<!--#if bnote -->
-					<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
-					<!--#endif bnote -->
-					<!--#if balert -->
-					<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
-					<!--#endif balert -->
+					
 				</div>
 				<!--#endin getnextevent -->
 			<!--#if countevent "> 0" -->

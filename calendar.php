@@ -193,23 +193,9 @@ function displayAttendees($evtid, $idcal)
 	$babBodyPopup->babecho(bab_printTemplate($temp, "calendar.html", "listattendees"));
 }
 
-function getPropertiesString(&$arr, &$t_option)
-	{
-	$el = array('bprivate' => bab_translate('Private'),'block' => bab_translate('Locked'),'bfree' => bab_translate('Free'));
-	foreach ($el as $k => $v)
-		{
-		if ($arr[$k] != 'Y')
-			unset($el[$k]);
-		}
-	$t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
-	if (count($el) > 0)
-		return implode(', ',$el);
-	else
-		return '';
-	}
 
 
-function getPropertiesStringObj(&$calPeriod, &$t_option)
+function bab_getPropertiesString(&$calPeriod, &$t_option)
 		{
 		$el = array();
 
@@ -223,7 +209,7 @@ function getPropertiesStringObj(&$calPeriod, &$t_option)
 			$el[] = bab_translate('Locked');
 		}
 
-		if (isset($arr['bfree']) && 'Y' == $arr['bfree']) {
+		if ('TRANSPARENT' === $calPeriod->getProperty('TRANSP')) {
 			$el[] = bab_translate('Free');
 		}
 
@@ -244,85 +230,86 @@ function displayEventDetail($evtid, $idcal)
 	class displayEventDetailCls
 		{
 
-		function displayEventDetailCls($evtid, $idcal)
+		public function __construct($evtid, $idcal)
 			{
+			require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 			global $babBodyPopup, $babBody, $babDB;
 			$this->access = false;
-			if( bab_isCalendarAccessValid($idcal))
+			
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!$calendar)
+			{
+				$babBodyPopup->addError(bab_translate("Access denied to the calendar"));
+				return;
+			}
+			
+			$backend = $calendar->getBackend();
+			$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+			
+			if (!$calendarPeriod)
+			{
+				$babBodyPopup->addError(bab_translate("There is no additional informations for this event"));
+				return;
+			}
+			
+			$this->access = true;
+			$this->idcal = $idcal;
+			
+			$this->begindatetxt = bab_translate("Begin date");
+			$this->enddatetxt = bab_translate("End date");
+			$this->titletxt = bab_translate("Title");
+			$this->desctxt = bab_translate("Description");
+			$this->locationtxt = bab_translate("Location");
+			$this->cattxt = bab_translate("Category");
+			
+			$this->begindate = bab_toHtml(bab_longDate($calendarPeriod->ts_begin));
+			$this->enddate = bab_toHtml(bab_longDate($calendarPeriod->ts_end));
+
+			$this->t_option = ''; 
+			$this->properties = bab_toHtml(bab_getPropertiesString($calendarPeriod, $this->t_option));
+
+			if( 'PUBLIC' !== $calendarPeriod->getProperty('CLASS') && $GLOBALS['BAB_SESS_USERID']  != $calendar->getIdUser())
 				{
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'");
-				if( $res && $babDB->db_num_rows($res) == 1)
-					{
-					$this->access = true;
-					$this->idcal = $idcal;
-					$arr = $babDB->db_fetch_array($res);
-					$iarr = bab_getICalendars()->getCalendarInfo($idcal);
-					$this->begindatetxt = bab_translate("Begin date");
-					$this->enddatetxt = bab_translate("End date");
-					$this->titletxt = bab_translate("Title");
-					$this->desctxt = bab_translate("Description");
-					$this->locationtxt = bab_translate("Location");
-					$this->cattxt = bab_translate("Category");
-					$this->begindate = bab_toHtml(bab_longDate(bab_mktime($arr['start_date'])));
-					$this->enddate = bab_toHtml(bab_longDate(bab_mktime($arr['end_date'])));
-
-					$this->t_option = ''; 
-					$this->properties = bab_toHtml(getPropertiesString($arr, $this->t_option));
-
-					if( $arr['bprivate'] ==  'Y' && $GLOBALS['BAB_SESS_USERID']  != $iarr['idowner'])
-						{
-						$this->title= '';
-						$this->description = '';
-						$this->location = '';
-						}
-					else
-						{
-						$this->title= bab_toHtml($arr['title']);
-						include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-						$editor = new bab_contentEditor('bab_calendar_event');
-						$editor->setContent($arr['description']);
-						$editor->setFormat($arr['description_format']);
-						$this->description = $editor->getHtml();
-				
-						$this->location= bab_toHtml($arr['location']);
-						}
-					if( $arr['id_cat'] != 0 )
-						{
-						list($this->category) = $babDB->db_fetch_row($babDB->db_query("select name from ".BAB_CAL_CATEGORIES_TBL." where id='".$babDB->db_escape_string($arr['id_cat'])."'"));
-						
-						$this->category = bab_toHtml($this->category);
-						}
-					else
-						{
-						$this->category = "";
-						}
-
-					list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-					if( empty($bshowui))
-						{
-						$bshowui = $babBody->babsite['show_update_info'];
-						}
-
-					$this->bshowupadetinfo = false;
-					if( $bshowui == 'Y' && $arr['id_modifiedby'] )
-						{
-						$this->bshowupadetinfo = true;
-						$this->modifiedontxt = bab_translate("Created/Updated on");
-						$this->bytxt = bab_translate("By");
-						$this->updatedate = bab_toHtml(bab_shortDate(bab_mktime($arr['date_modification']), true));
-						$this->updateauthor = bab_toHtml(bab_getUserName($arr['id_modifiedby']));
-						}
-
-					}
-				else
-					{
-					$babBodyPopup->msgerror = bab_translate("There is no additional informations for this event");
-					}
+				$this->title= '';
+				$this->description = '';
+				$this->location = '';
+				$this->category = '';
 				}
-				else
-					{
-					$babBodyPopup->msgerror = bab_translate("Access denied to the calendar");
-					}
+			else
+				{
+				$this->title= bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
+				
+				$data = $calendarPeriod->getData();
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_calendar_event');
+				$editor->setContent($data['description']);
+				$editor->setFormat($data['description_format']);
+				
+				$this->description = $editor->getHtml();
+		
+				$this->location= bab_toHtml($calendarPeriod->getProperty('LOCATION'));
+				$this->category = $calendarPeriod->getProperty('CATEGORIES');
+				}
+
+			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+			if( empty($bshowui))
+				{
+				$bshowui = $babBody->babsite['show_update_info'];
+				}
+
+			$this->bshowupadetinfo = false;
+			if( $bshowui == 'Y' )
+				{
+				$this->bshowupadetinfo = true;
+				$this->modifiedontxt = bab_translate("Created/Updated on");
+				$this->bytxt = bab_translate("By");
+				$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($calendarPeriod->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+				
+				$data = $calendarPeriod->getData();
+				
+				$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
+				}
 			}
 		}
 
@@ -341,34 +328,47 @@ function displayEventNotes($evtid, $idcal)
 			{
 			global $babBodyPopup, $babBody, $babDB;
 			$this->access = false;
-			if( bab_isCalendarAccessValid($idcal))
+			
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!$calendar)
+			{
+				$babBodyPopup->addError(bab_translate("Access denied to the calendar"));
+				return;
+			}
+			
+			$backend = $calendar->getBackend();
+			$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+			
+			if (!$calendarPeriod)
+			{
+				$babBodyPopup->addError(bab_translate("There is no additional informations for this event"));
+				return;
+			}
+			
+			
+			$this->access = true;
+			$this->idcal = $idcal;
+			$this->evtid = $evtid;
+			$this->notetxt = bab_translate("Personal notes");
+			$this->updatetxt = bab_translate("Update");
+			
+			$data = $calendarPeriod->getData();
+			$this->noteval = bab_toHtml((string) $data['note']);
+			
+			
+			
+			$collection = $calendarPeriod->getCollection();
+			
+			if( !empty($collection->hash))
 				{
-				$this->access = true;
-				$this->idcal = $idcal;
-				$this->evtid = $evtid;
-				$this->notetxt = bab_translate("Personal notes");
-				$this->updatetxt = bab_translate("Update");
-				$res = $babDB->db_query("select note from ".BAB_CAL_EVENTS_NOTES_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and id_event='".$babDB->db_escape_string($evtid)."'");
-				if( $res && $babDB->db_num_rows($res) > 0 )
-					{
-					$arr = $babDB->db_fetch_array($res);
-					$this->noteval = bab_toHtml($arr['note']);
-					}
-				else
-					{
-					$this->noteval = '';
-					}
-				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
-				if( !empty($hash) && $hash[0] == 'R')
-					{
-					$this->all = bab_translate("All");
-					$this->thisone = bab_translate("This occurence");
-					$this->brecevt = true;
-					}
-				else
-					{
-					$this->brecevt = false;
-					}
+				$this->all = bab_translate("All");
+				$this->thisone = bab_translate("This occurence");
+				$this->brecevt = true;
+				}
+			else
+				{
+				$this->brecevt = false;
 				}
 			}
 		}
@@ -388,53 +388,106 @@ function displayEventAlert($evtid, $idcal)
 			{
 			global $babBodyPopup, $babBody, $babDB;
 			$this->access = false;
-			if( bab_isCalendarAccessValid($idcal))
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!$calendar)
+			{
+				$babBodyPopup->addError(bab_translate("Access denied to the calendar"));
+				return;
+			}
+			
+			$backend = $calendar->getBackend();
+			$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+			
+			if (!$calendarPeriod)
+			{
+				$babBodyPopup->addError(bab_translate("There is no additional informations for this event"));
+				return;
+			}
+			
+			$this->access = true;
+			
+			$this->rcheckedval = '';
+			$alarm = $calendarPeriod->getAlarm();
+			if (isset($alarm))
+			{
+				foreach($alarm->getAttendees() as $attendee)
 				{
-				$this->access = true;
-				$this->idcal = $idcal;
-				$this->evtid = $evtid;
-				$this->alerttxt = bab_translate("Reminder");
-				$this->updatetxt = bab_translate("Update");
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_user='".$GLOBALS['BAB_SESS_USERID']."' and id_event='".$babDB->db_escape_string($evtid)."'");
-				if( $res && $babDB->db_num_rows($res) > 0 )
+					$id_user = $attendee['calendar']->getIdUser();
+					if ($id_user && $id_user == $GLOBALS['BAB_SESS_USERID'])
 					{
-					$this->arralert = $babDB->db_fetch_array($res);
-					$this->rcheckedval = 'checked';
-					}
-				else
-					{
-					$this->arralert = array();
-					$this->rcheckedval = '';
-					}
-
-				list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
-				if( !empty($hash) && $hash[0] == 'R')
-					{
-					$this->all = bab_translate("All");
-					$this->thisone = bab_translate("This occurence");
-					$this->brecevt = true;
-					}
-				else
-					{
-					$this->brecevt = false;
-					}
-				$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
-				$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
-				$this->minutes = array(0, 5, 10, 15, 30, 45);
-				$this->rmcheckedval = '';
-				if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
-					{
-					$this->remailtxt = bab_translate("Use email reminder");
-					if( isset($this->arralert['bemail']) && $this->arralert['bemail'] ==  'Y' )
-						{
-						$this->rmcheckedval = 'checked';
-						}
-					}
-				else
-					{
-					$this->remailtxt = "";
+						$this->rcheckedval = 'checked';
+						break;
 					}
 				}
+			}
+			
+			$this->idcal = $idcal;
+			$this->evtid = $evtid;
+			$this->alerttxt = bab_translate("Reminder");
+			$this->updatetxt = bab_translate("Update");
+			
+			if ($this->rcheckedval)
+			{
+				$this->arralert = array();
+				$this->rmcheckedval = '';
+				
+				$action = $alarm->getProperty('ACTION');
+				$trigger = $alarm->getProperty('TRIGGER');
+				
+				if (0 === mb_strpos($trigger, '-P') && preg_match_all('/(?P<value>\d+)(?P<type>[DHM]{1})/', $trigger, $m, PREG_SET_ORDER)) {
+					
+					foreach($m as $trigger)
+					{
+						$val = $trigger['value'];
+						switch($trigger['type'])
+						{
+							case 'D': $this->arralert['day'] 	= (int) $val; 	break;
+							case 'H': $this->arralert['hour'] 	= (int) $val;	break;
+							case 'M': $this->arralert['minute'] = (int) $val;	break;
+						}
+					}
+					
+					
+					if ('EMAIL' == $action)
+					{
+						$this->rmcheckedval = 'checked';
+					}
+					
+				}
+				
+				
+			} else {
+				$this->arralert = array();
+			}
+
+				
+			$collection = $calendarPeriod->getCollection();
+			if( !empty($collection->hash))
+				{
+				$this->all = bab_translate("All");
+				$this->thisone = bab_translate("This occurence");
+				$this->brecevt = true;
+				}
+			else
+				{
+				$this->brecevt = false;
+				}
+				
+			$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
+			$this->minutes = array(0, 5, 10, 15, 30, 45);
+			
+			
+			if( isset($GLOBALS['babEmailReminder']) && $GLOBALS['babEmailReminder'])
+				{
+				$this->remailtxt = bab_translate("Use email reminder");
+				}
+			else
+				{
+				$this->remailtxt = "";
+				}
+			
 			}
 
 
@@ -668,7 +721,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					$evt['private'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
 					$evt['nbowners'] = isset($arr['nbowners']) ? $arr['nbowners']+1 : 1;
 					$evt['t_option'] = ''; 
-					$evt['properties'] = bab_toHtml(getPropertiesStringObj($calPeriod, $evt['t_option']));
+					$evt['properties'] = bab_toHtml(bab_getPropertiesString($calPeriod, $evt['t_option']));
 
 
 					$evt['location']=bab_toHtml($calPeriod->getProperty('LOCATION'));
@@ -737,6 +790,15 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 
 }
 
+
+
+/**
+ * Update event note only for event of the Ovidentia calendar backend
+ * @param string $evtid
+ * @param string $note
+ * @param int $bupdrec
+ * @return unknown_type
+ */
 function updateEventNotes($evtid, $note, $bupdrec)
 {
 	global $babDB;
@@ -744,23 +806,21 @@ function updateEventNotes($evtid, $note, $bupdrec)
 	{
 
 		$evtidarr = array();
+		
+		list($id_event, $hash) = $babDB->db_fetch_row($babDB->db_query("select id, hash from ".BAB_CAL_EVENTS_TBL." where uuid='".$babDB->db_escape_string($evtid)."'"));
 
-		if( $bupdrec == 1 )
+		if( $bupdrec == BAB_CAL_EVT_ALL &&  !empty($hash) )
 		{
-			list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
-			if( !empty($hash) &&  $hash[0] == 'R')
+			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($hash)."'");
+			while( $arr = $babDB->db_fetch_array($res))
 				{
-				$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($hash)."'");
-				while( $arr = $babDB->db_fetch_array($res))
-					{
-					$evtidarr[] = $arr['id'];
-					}
+				$evtidarr[] = $arr['id'];
 				}
 		}
 
 		if( count($evtidarr) == 0 )
 			{
-			$evtidarr[] = $evtid;
+			$evtidarr[] = $id_event;
 			}
 
 		$updevtarr = array();
@@ -786,7 +846,12 @@ function updateEventNotes($evtid, $note, $bupdrec)
 	}
 }
 
-function updateEventAlert()
+
+/**
+ * @deprecated Old function
+ * @return unknown_type
+ */
+function updateEventAlert_OLD()
 {
 
 	$evtid = bab_rp('evtid');
@@ -818,6 +883,80 @@ function updateEventAlert()
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Save VALARM of event
+ * @return unknown_type
+ */
+function updateEventAlert()
+{
+	$idcal = bab_rp('idcal');
+	$evtid = bab_rp('evtid');
+	$bupdrec = bab_rp('bupdrec', 2);
+	$creminder = bab_rp('creminder', 'N');
+	$day = (int) bab_rp('day');
+	$hour = (int) bab_rp('hour');
+	$minute = (int) bab_rp('minute');
+	$remail = bab_rp('remail');
+	
+	
+	if( empty($GLOBALS['BAB_SESS_USERID']) ||  $creminder != 'Y' )
+	{
+		return;
+	}
+	
+	$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+	if (!$calendar)
+	{
+		$babBodyPopup->addError(bab_translate("Access denied to the calendar"));
+		return;
+	}
+	
+	$backend = $calendar->getBackend();
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	
+	if (!$calendarPeriod)
+	{
+		$babBodyPopup->addError(bab_translate("There is no additional informations for this event"));
+		return;
+	}
+	
+	$alarm = $calendarPeriod->getAlarm();
+	if (!isset($alam))
+	{
+		$alarm = $backend->CalendarAlarm();
+		
+		$personal = bab_getICalendars()->getPersonalCalendar();
+		
+		if (!$personal)
+		{
+			throw new Exception('No personnal calendar');
+		}
+		
+		$alarm->addAttendee($personal);
+		$calendarPeriod->setAlarm($alarm);
+	}
+	
+	bab_setAlarmProperties($alarm, $calendarPeriod, $day, $hour, $minute, 'Y' === $remail);
+
+		
+	
+	// save event
+	$backend->savePeriod($calendarPeriod);
+}
+
 
 
 
@@ -894,7 +1033,7 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
 		if( !isset($reload)) { $reload = false; }
-		popupUnload($popupmessage, '', $reload);
+		popupUnload($popupmessage, '', $reload, false);
 		exit;
 		break;
 

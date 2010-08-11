@@ -140,8 +140,6 @@ class bab_cal_OviEventUpdate
 		require_once dirname(__FILE__).'/evtincl.php';
 		global $babBody, $babDB;
 		
-		
-		
 		$evtinfo = $babDB->db_fetch_assoc($babDB->db_query("
 			SELECT hash, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'
 		"));
@@ -207,16 +205,17 @@ class bab_cal_OviEventUpdate
 			$exclude += $this->applyRelations($period, $id_event);
 			$this->cleanupCalendars($period, $id_event);
 		}
+		
+		
+		// update reminder by VALARM
+		
+		
+		$this->applyAlarm($period, $id_event);
 	
 		
 		if ($modification)
 		{
-			include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-			$event = new bab_eventPeriodModified(bab_mktime($min), bab_mktime($max), false);
-			$event->types = BAB_PERIOD_CALEVENT;
-			bab_fireEvent($event);
-			
-			
+
 			// the exlude array contain new calendar in event
 			// they do not need a notification
 		
@@ -602,9 +601,9 @@ class bab_cal_OviEventUpdate
 						case 'M': $minute = (int) $val;	break;
 					}
 				}
+
 				
-				
-				foreach($alam->getAttendees() as $attendee)
+				foreach($alarm->getAttendees() as $attendee)
 				{
 					$id_user = $attendee['calendar']->getIdUser();
 					
@@ -646,35 +645,56 @@ class bab_cal_OviEventUpdate
 	private function createEventAlert($id_event, $day, $hour, $minute, $email, $id_user)
 	{
 		global $babDB;
-		
+
 		if (empty($GLOBALS['BAB_SESS_USERID']))
 		{
 			return;
 		}
-		
+
 		$email = $email ? 'Y' : 'N';
 		
 		
-		$babDB->db_query("
-			INSERT INTO ".BAB_CAL_EVENTS_REMINDERS_TBL." 
-				(
-					id_event, 
-					id_user, 
-					day, 
-					hour, 
-					minute, 
-					bemail 
-				) 
-			VALUES 
-				(
-					'".$babDB->db_escape_string($id_event)."', 
-					'".$babDB->db_escape_string($id_user)."', 
-					'".$babDB->db_escape_string($day)."', 
-					'".$babDB->db_escape_string($hour)."', 
-					'".$babDB->db_escape_string($minute)."', 
-					'".$babDB->db_escape_string($email)."'
-				)
-		");
+		$res = $babDB->db_query('SELECT id_event FROM '.BAB_CAL_EVENTS_REMINDERS_TBL.' WHERE id_event='.$babDB->quote($id_event).' AND id_user='.$babDB->quote($id_user));
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			
+			$babDB->db_query("
+				UPDATE ".BAB_CAL_EVENTS_REMINDERS_TBL." 
+					SET
+						day=".$babDB->quote($day).", 
+						hour=".$babDB->quote($hour).",  
+						minute=".$babDB->quote($minute).",  
+						bemail=".$babDB->quote($email).",  
+				WHERE 
+					id_event=".$babDB->quote($id_event)." 
+					AND id_user = ".$babDB->quote($id_user)." 
+			");
+			
+			
+		} else {
+		
+			$babDB->db_query("
+				INSERT INTO ".BAB_CAL_EVENTS_REMINDERS_TBL." 
+					(
+						id_event, 
+						id_user, 
+						day, 
+						hour, 
+						minute, 
+						bemail 
+					) 
+				VALUES 
+					(
+						'".$babDB->db_escape_string($id_event)."', 
+						'".$babDB->db_escape_string($id_user)."', 
+						'".$babDB->db_escape_string($day)."', 
+						'".$babDB->db_escape_string($hour)."', 
+						'".$babDB->db_escape_string($minute)."', 
+						'".$babDB->db_escape_string($email)."'
+					)
+			");
+			
+		}
 	}
 	
 	
@@ -980,6 +1000,9 @@ class bab_cal_OviEventSelect
 	 */
 	private function createCalendarPeriod($arr, bab_PeriodCollection $collection)
 	{
+		require_once dirname(__FILE__).'/dateTime.php';
+		
+		
 		global $babDB;
 		$event = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
 		$collection->addPeriod($event);
@@ -1013,17 +1036,17 @@ class bab_cal_OviEventSelect
 		} else {
 			$event->setProperty('TRANSP'	, 'OPAQUE');
 		}
+		
+		if (!empty($arr['hash']))
+		{
+			$collection->hash = $arr['hash'];
+		}
+		
+		$event->setProperty('LAST-MODIFIED', BAB_DateTime::fromIsoDateTime($arr['date_modification'])->getICal(true));
+		
 	
-		unset($arr['start_date']);
-		unset($arr['end_date']);
-		unset($arr['title']);
-		unset($arr['location']);
-		unset($arr['category']);
-		unset($arr['bprivate']);
-		unset($arr['bfree']);
-		unset($arr['color']);
-		unset($arr['bgcolor']);
-		unset($arr['uuid']);
+		
+		
 	
 		if (!empty($arr['alert'])) {
 			
@@ -1033,10 +1056,7 @@ class bab_cal_OviEventSelect
 		}
 		
 		
-		if (!empty($arr['hash']))
-		{
-			$collection->hash = $arr['hash'];
-		}
+		
 		
 	
 	
@@ -1136,8 +1156,6 @@ class bab_cal_OviEventSelect
 			
 		
 		
-		$event->setData($arr);
-		
 		
 		// add VALARM infos
 		
@@ -1168,6 +1186,27 @@ class bab_cal_OviEventSelect
 		}
 		
 		
+		unset($arr['id']);
+		unset($arr['id_event']);
+		unset($arr['id_cal']);
+		unset($arr['id_cat']);
+		unset($arr['start_date']);
+		unset($arr['end_date']);
+		unset($arr['title']);
+		unset($arr['location']);
+		unset($arr['category']);
+		unset($arr['bprivate']);
+		unset($arr['bfree']);
+		unset($arr['color']);
+		unset($arr['bgcolor']);
+		unset($arr['uuid']);
+		unset($arr['hash']);
+		unset($arr['date_modification']);
+		unset($arr['alert']);
+		
+		$event->setData($arr);
+		
+		
 		return $event;
 	}
 	
@@ -1186,7 +1225,6 @@ class bab_cal_OviEventSelect
 				ceo.*, 
 				ce.*,
 				ca.name category,
-				ca.description category_description, 
 				ca.bgcolor, 
 				er.id_event alert, 
 				en.note 
