@@ -69,11 +69,13 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
 	 * 
 	 * @param	bab_CalendarPeriod	$period
+	 * 
+	 * @return bool
 	 */
 	public function savePeriod(bab_CalendarPeriod $period)
 	{
 		require_once dirname(__FILE__).'/cal.ovievent.class.php';
-		return bab_ovi_event::save($period);
+		return bab_cal_OviEventUpdate::save($period);
 	}
 	
 	
@@ -81,6 +83,8 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	/**
 	 * Returns the period corresponding to the specified identifier
 	 * this is necessary for all events with a link
+	 * 
+	 * @TODO other collections ?
 	 * 
 	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
 	 * @param 	string 					$identifier				The UID property of event
@@ -91,9 +95,58 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	{
 		if ($periodCollection instanceof bab_CalendarEventCollection) 
 		{
-			require_once dirname(__FILE__).'/calincl.php';
-			$oviEvents = new bab_cal_OviCalendarEvents;
+			require_once dirname(__FILE__).'/cal.ovievent.class.php';
+			$oviEvents = new bab_cal_OviEventSelect;
 			return $oviEvents->getFromUid($identifier);
+		}
+		
+		return null;
+	}
+	
+	
+	
+	/**
+	 * Select periods from criteria
+	 * the bab_PeriodCriteriaCollection and bab_PeriodCriteriaCalendar are mandatory
+	 * 
+	 * @param bab_PeriodCriteria $criteria
+	 * 
+	 * @return bab_UserPeriods <bab_CalendarPeriod>		(iterator)
+	 */
+	public function selectPeriods(bab_PeriodCriteria $criteria)
+	{
+		require_once dirname(__FILE__).'/cal.userperiods.class.php';
+		require_once dirname(__FILE__).'/cal.ovievent.class.php';
+		
+		$userperiods = new bab_UserPeriods;
+		$userperiods->processCriteria($criteria);
+		
+		$oviEvents = new bab_cal_OviEventSelect;
+		$oviEvents->processQuery($userperiods);
+		
+		$userperiods->orderBoundaries();
+		
+		return $userperiods;
+	}
+	
+	
+	
+	
+	/**
+	 * Delete the period corresponding to the specified identifier.
+	 * 
+	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
+	 * @param 	string 					$identifier				The UID property of event
+	 * 
+	 * @return bool
+	 */
+	public function deletePeriod(bab_PeriodCollection $periodCollection, $identifier)
+	{
+		if ($periodCollection instanceof bab_CalendarEventCollection) 
+		{
+			require_once dirname(__FILE__).'/cal.ovievent.class.php';
+			$oviEvents = new bab_cal_OviEventSelect;
+			return $oviEvents->deleteFromUid($identifier);
 		}
 		
 		return null;

@@ -25,7 +25,7 @@
 include_once 'base.php';
 
 
-
+require_once dirname(__FILE__).'/cal.criteria.class.php';
 
 
 /**
@@ -44,6 +44,32 @@ class bab_UserPeriods implements Iterator, Countable {
 	 * @var BAB_DateTime
 	 */
 	public $end;
+	
+	
+	/**
+	 * @var array	<bab_PeriodCollection>
+	 */
+	public $periodCollection = null;
+	
+	
+	/**
+	 * @var array
+	 */
+	public $icalProperties = null;
+	
+	
+	/**
+	 * @var array	<bab_EventCalendar>
+	 */
+	public $calendars = null;
+	
+	
+	/**
+	 * @var string
+	 */
+	public $hash = null;
+
+	
 	
 	/**
 	 * 
@@ -64,23 +90,12 @@ class bab_UserPeriods implements Iterator, Countable {
 	private $sibling;
 	
 	
-	/**
-	 * List of allowed instance name of PeriodCollection objects
-	 * @var array
-	 */
-	private $options;
 
 	/**
-	 * @private
+	 * used in the getNextEvent method
+	 * @see bab_UserPeriods::getNextEvent
 	 */
 	private $gn_events = NULL;
-
-	/**
-	 * category filter for calendar events
-	 * @access public
-	 * array|int|NULL
-	 */
-	public $category = NULL; 
 	
 	
 	/**
@@ -90,8 +105,33 @@ class bab_UserPeriods implements Iterator, Countable {
 	private $id_users;
 	
 	
-	private $iter_key;
+	/**
+	 * 
+	 * @var int
+	 */
+	private $iter_horizontal;
+	
+	/**
+	 * 
+	 * @var int
+	 */
+	private $iter_vertical;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	private $iter_boundary;
+	
+	/**
+	 * @var bab_CalendarPeriod
+	 */
 	private $iter_value;
+	
+	/**
+	 * 
+	 * @var bool
+	 */
 	private $iter_status;
 	
 	
@@ -99,13 +139,13 @@ class bab_UserPeriods implements Iterator, Countable {
 	/**
 	 * Working hours object on period
 	 * for the current user
+	 * the begin and end dates can be set using criteria
 	 *
-	 * @param BAB_DateTime	$begin
+	 * @param BAB_DateTime	$begin	
 	 * @param BAB_DateTime	$end
 	 *
 	 */
-	public function __construct(BAB_DateTime $begin, BAB_DateTime $end) {		
-		$db = $GLOBALS['babDB'];
+	public function __construct(BAB_DateTime $begin = null, BAB_DateTime $end = null) {		
 		
 		$this->begin		= $begin;
 		$this->end			= $end;
@@ -114,6 +154,124 @@ class bab_UserPeriods implements Iterator, Countable {
 		$this->sibling		= array();
 
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Add a filter by period collection
+	 * @param array $periodCollection	<bab_PeriodCollection>
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function filterByPeriodCollection(array $periodCollection) {
+		$this->periodCollection = $periodCollection;
+		return $this;
+	}
+	
+	/**
+	 * Add a filter by classname of event collection
+	 * @param bab_PeriodCollection $periodCollection
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function addFilterByPeriodCollection(bab_PeriodCollection $periodCollection) {
+		if (!isset($this->periodCollection)) {
+			$this->periodCollection = array();
+		}
+		
+		$this->periodCollection[] = $periodCollection;
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param bab_PeriodCollection $collection
+	 * @return bool
+	 */
+	public function isPeriodCollection(bab_PeriodCollection $collection) {
+		if (null === $this->periodCollection)
+		{
+			return true;
+		}
+		
+		foreach($this->periodCollection as $periodCollection) {
+			if ($collection instanceof $periodCollection) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param array $calendars	array of bab_EventCalendar
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function filterByCalendar(array $calendars) {
+		$this->calendars = $calendars;
+		return $this;
+	}
+	
+	/**
+	 * Add a calendar to the list of displayable calendars
+	 * @param bab_EventCalendar $calendar
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function addFilterByCalendar(bab_EventCalendar $calendar) {
+		if (!isset($this->calendars)) {
+			$this->calendars = array();
+		}
+		
+		$this->calendars[] = $calendar;
+		return $this;
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Add a filter by iCal property (ex. CATEGORIES)
+	 * @param string $property		iCal property name
+	 * @param array $values			list of allowed exact values for this property
+	 * @return bab_eventCollectPeriodsBeforeDisplay
+	 */
+	public function filterByICalProperty($property, Array $values)
+	{
+		$this->icalProperties[$property] = $values;
+		return $this;
+	}
+	
+	
+	/**
+	 * Get users id of calendars
+	 * @return array
+	 */
+	public function getUsers()
+	{
+		if (!isset($this->calendars)) {
+			return array();
+		}
+		
+		$return = array();
+		foreach($this->calendars as $calendar) {
+			$iduser = $calendar->getIdUser();
+			if ($iduser) {
+				$return[$iduser] = $iduser;
+			}
+		}
+		
+		return $return;
+	}
+	
+	
 
 
 	
@@ -136,7 +294,7 @@ class bab_UserPeriods implements Iterator, Countable {
 		// collect events
 
 		$event = new bab_eventBeforePeriodsCreated($this);
-		$this->processCriteria($event, $criteria);
+		$this->processCriteria($criteria);
 		
 		bab_fireEvent($event);
 		$this->id_users = $event->getUsers();
@@ -146,19 +304,19 @@ class bab_UserPeriods implements Iterator, Countable {
 	
 	
 	/**
-	 * Process criteria to event
-	 * @param bab_eventBeforePeriodsCreated $event
+	 * Process criteria to userperiods object
+	 * 
 	 * @param bab_PeriodCriteria $criteria
 	 * @return unknown_type
 	 */
-	private function processCriteria(bab_eventBeforePeriodsCreated $event, bab_PeriodCriteria $criteria)
+	public function processCriteria(bab_PeriodCriteria $criteria)
 	{
 
 		// add criteria to event
-		$criteria->process($event);
+		$criteria->process($this);
 		
 		foreach($criteria->getCriterions() as $criteria) {
-			$this->processCriteria($event, $criteria);
+			$this->processCriteria($criteria);
 		}
 	}
 
@@ -261,6 +419,7 @@ class bab_UserPeriods implements Iterator, Countable {
  	public function rewind()
     {
         reset($this->boundaries);
+        $this->iter_boundary = null;
         $this->next();
     }
 
@@ -274,17 +433,34 @@ class bab_UserPeriods implements Iterator, Countable {
     }
 
     /**
-     * timestamp boundary
+     * boundary timestamp /position in boundary
      * @return int
      */
     public function key()
     {
-        return $this->iter_key;
+        return $this->iter_horizontal.'/'.$this->iter_vertical;
     }
 
     public function next()
     {
-      	$this->iter_status = list($this->iter_key, $this->iter_value) = each($this->boundaries);
+    	if (!isset($this->iter_boundary))
+    	{
+    		if (!list($this->iter_horizontal, $this->iter_boundary) = each($this->boundaries)) 
+    		{
+    			$this->iter_status = false;
+    			return;
+    		}
+    	}
+    	
+    	
+      	if (!list($this->iter_vertical, $this->iter_value) = each($this->iter_boundary))
+      	{
+      		$this->iter_boundary = null;
+      		$this->next();
+      		return;
+      	}
+      	
+      	$this->iter_status = true;
     }
 
     public function valid()
@@ -336,7 +512,6 @@ class bab_UserPeriods implements Iterator, Countable {
 		$boundary = $this->boundaries[$period->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
 			if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
-				bab_debug('event '.$tmp_evt->getProperty('UID').' set available');
 				$this->boundaries[$period->ts_begin][$key]->available = $available;
 				return true;
 			}
@@ -665,208 +840,3 @@ class bab_availabilityReply {
 
 
 
-
-
-
-
-/**
- * Main class for all criterions of a calendar request
- */
-abstract class bab_PeriodCriteria
-{
-	
-	/**
-	 * @var bab_CalendarPeriodCriteria
-	 */
-	private $subcriteria = array();
-	
-	
-	/**
-	 * Join another criteria
-	 * @param	bab_PeriodCriteria $criteria	
-	 * @return bab_CalendarPeriodCriteria
-	 */
-	public function _AND_(bab_PeriodCriteria $criteria)
-	{
-		$this->subcriteria[] = $criteria;
-		return $this;
-	}
-	
-	/**
-	 * 
-	 * @return array
-	 */
-	public function getCriterions()
-	{
-		return $this->subcriteria;
-	}
-	
-	/**
-	 * Add criteria to event
-	 * @param bab_eventBeforePeriodsCreated $event
-	 * @return unknown_type
-	 */
-	public function process(bab_eventBeforePeriodsCreated $event)
-	{
-		throw Exception('Not implemented');
-	}
-}
-
-
-/**
- * Criteria on calendar
- */
-class bab_PeriodCriteriaCalendar extends bab_PeriodCriteria
-{
-	private $calendar = array();
-	
-	public function __construct($calendar = null)
-	{
-		if (null !== $calendar) {
-			if (is_array($calendar)) {
-				$this->calendar = $calendar;
-			} else {
-				$this->calendar[] = $calendar;
-			}
-		}
-	}
-	
-	public function addCalendar(bab_EventCalendar $calendar)
-	{
-		$this->calendar[] = $calendar;
-	}
-	
-	/**
-	 * Add criteria to event
-	 * @param bab_eventBeforePeriodsCreated $event
-	 * @return unknown_type
-	 */
-	public function process(bab_eventBeforePeriodsCreated $event)
-	{
-		$event->filterByCalendar($this->calendar);
-	}
-}
-
-
-/**
- * Criteria on collection
- */
-class bab_PeriodCriteriaCollection extends bab_PeriodCriteria
-{
-	private $collection = array();
-	
-	public function __construct($collection = null)
-	{
-		if (null !== $collection) {
-			if (is_array($collection)) {
-				$this->collection = $collection;
-			} else {
-				$this->collection[] = $collection;
-			}
-		}
-	}
-	
-	public function addCollection(bab_PeriodCollection $collection)
-	{
-		$this->collection[] = $collection;
-	}
-	
-	/**
-	 * Add criteria to event
-	 * @param bab_eventBeforePeriodsCreated $event
-	 * @return unknown_type
-	 */
-	public function process(bab_eventBeforePeriodsCreated $event)
-	{
-		$event->filterByPeriodCollection($this->collection);
-	}
-}
-
-
-/**
- * Criteria on iCal property
- * 
- * @todo Only the CATEGORY property is supported by Ovi backend
- */
-class bab_PeriodCritieraProperty extends bab_PeriodCriteria
-{
-	private $property;
-	private $value = array();
-	
-	/**
-	 * 
-	 * @param string $property
-	 * @param mixed $value
-	 * @return unknown_type
-	 */
-	public function __construct($property, $value = null)
-	{
-		if (null !== $value) {
-			if (is_array($value)) {
-				$this->value = $value;
-			} else {
-				$this->value[] = $value;
-			}
-		}
-	}
-	
-	public function addValue($value)
-	{
-		$this->value[] = $value;
-	}
-	
-	/**
-	 * Add criteria to event
-	 * @param bab_eventBeforePeriodsCreated $event
-	 * @return unknown_type
-	 */
-	public function process(bab_eventBeforePeriodsCreated $event)
-	{
-		$event->filterByICalProperty($this->property, $this->value);
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-class bab_PeriodCriteriaFactory 
-{
-	/**
-	 * 
-	 * @param Array | bab_EventCalendar $calendar
-	 * @return unknown_type
-	 */
-	public function Calendar($calendar = null)
-	{
-		return new bab_PeriodCriteriaCalendar($calendar);
-	}
-	
-	
-	/**
-	 * 
-	 * @param array | bab_PeriodCollection $collection
-	 * @return bab_PeriodCriteriaCollection
-	 */
-	public function Collection($collection = null)
-	{
-		return new bab_PeriodCriteriaCollection($collection);
-	}
-	
-	/**
-	 * 
-	 * @param string $property
-	 * @param string | array $value
-	 * @return unknown_type
-	 */
-	public function Property($property, $value = null)
-	{
-		return new bab_PeriodCritieraProperty($property, $value = null);
-	}
-}

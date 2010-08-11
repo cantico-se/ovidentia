@@ -65,8 +65,6 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	
-	
-	
 	public function includePeriodCollection()
 	{
 		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
@@ -222,6 +220,9 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	/**
+	 * Select periods from criteria
+	 * the bab_PeriodCriteriaCollection and bab_PeriodCriteriaCalendar are mandatory
+	 * 
 	 * 
 	 * @param bab_PeriodCriteria $criteria
 	 * 

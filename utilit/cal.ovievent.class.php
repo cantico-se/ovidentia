@@ -28,7 +28,7 @@ include_once 'base.php';
  * Ovidentia calendar backend event manipulation
  * create or update an event from a bab_CalendarPeriod object
  */
-class bab_ovi_event
+class bab_cal_OviEventUpdate
 {	
 	
 	private $RRULE = false;
@@ -44,8 +44,8 @@ class bab_ovi_event
 	 */
 	public static function save(bab_CalendarPeriod $period)
 	{
-		$manager = bab_getInstance('bab_ovi_event');
-		/*@var $manager bab_ovi_event */
+		$manager = bab_getInstance('bab_cal_OviEventUpdate');
+		/*@var $manager bab_cal_OviEventUpdate */
 		
 		$uid = $period->getProperty('UID');
 		
@@ -54,7 +54,7 @@ class bab_ovi_event
 			// modification
 			$id_event = $manager->getEventByUid($uid);
 			// TODO remove the third parameter
-			$manager->updateEvent($id_event, $period, BAB_CAL_EVT_ALL);
+			$manager->updateEvent($id_event, $period);
 		}
 		else
 		{
@@ -79,8 +79,8 @@ class bab_ovi_event
 	 */
 	public static function getCollection(bab_CalendarPeriod $period)
 	{
-		$manager = bab_getInstance('bab_ovi_event');
-		/*@var $manager bab_ovi_event */
+		$manager = bab_getInstance('bab_cal_OviEventUpdate');
+		/*@var $manager bab_cal_OviEventUpdate */
 		
 		$manager->applyRrule($period);
 		
@@ -129,13 +129,13 @@ class bab_ovi_event
 	 * 
 	 * @param	int					$id_event						Event currently in database
 	 * @param	bab_CalendarPeriod	$period							The posted period with same UID
-	 * @param	int					$collection_update_status		BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
+	 * 
 	 * 																if multiple events are linked with a hash
 	 * 
 	 * @throws ErrorException
 	 * @return unknown_type
 	 */
-	private function updateEvent($id_event, bab_CalendarPeriod $period, $collection_update_status = null)
+	private function updateEvent($id_event, bab_CalendarPeriod $period)
 	{
 		require_once dirname(__FILE__).'/evtincl.php';
 		global $babBody, $babDB;
@@ -147,69 +147,20 @@ class bab_ovi_event
 		"));
 	
 		$arrupdate = array();
-	
-		if( !empty($evtinfo['hash']) &&  $evtinfo['hash'][0] == 'R' && isset($collection_update_status) && $collection_update_status != BAB_CAL_EVT_CURRENT )
-		{
-			$aWhereClauseItem = array();
-			$aWhereClauseItem[] = 'hash = ' . $babDB->quote($evtinfo['hash']);
-	
-			//Previous
-			if($collection_update_status == BAB_CAL_EVT_PREVIOUS)
-			{
-				$aWhereClauseItem[] = 'start_date <= ' . $babDB->quote($evtinfo['start_date']);
-			}
-			else if($collection_update_status == BAB_CAL_EVT_NEXT)
-			{
-				$aWhereClauseItem[] = 'start_date >= ' . $babDB->quote($evtinfo['start_date']);
-			}
-			
-			$sQuery = 
-				'SELECT 
-					* 
-				FROM ' . 
-					BAB_CAL_EVENTS_TBL . ' 
-				WHERE ' .
-					implode(' AND ', $aWhereClauseItem);
 
-			
-			$res = $babDB->db_query($sQuery);
-			while( $arr = $babDB->db_fetch_array($res))
+		if( $period->ts_begin >= $period->ts_end )
 			{
-				$rr = explode(" ", $arr['start_date']);
-				$startdate = sprintf("%s %s", $rr[0], date('H:i:s', $period->ts_begin));
-	
-				$rr = explode(" ", $arr['end_date']);
-				$enddate = sprintf("%s %s", $rr[0], date('H:i:s', $period->ts_end));
-	
-				if( bab_mktime($startdate) >= bab_mktime($enddate) )
-					{
-					throw new ErrorException(bab_translate("End date must be older"));
-					return false;
-					}
-	
-				$arrupdate[$id_event] = array('start'=> $startdate, 'end' => $enddate);
-				$min = $startdate;
-				$max = $enddate;
+			throw new ErrorException(bab_translate("End date must be older"));
+			return false;
 			}
-		}
-		else
-		{
-	
 			
-			if( $period->ts_begin >= $period->ts_end )
-				{
-				throw new ErrorException(bab_translate("End date must be older"));
-				return false;
-				}
-				
-			$startdate 	= date('Y-m-d H:i:s', $period->ts_begin);
-			$enddate 	= date('Y-m-d H:i:s', $period->ts_end);
-	
-	
-			$arrupdate[$id_event] = array('start'=> $startdate, 'end' => $enddate);
-			$min = $startdate;
-			$max = $enddate;
-		}
+		$startdate 	= date('Y-m-d H:i:s', $period->ts_begin);
+		$enddate 	= date('Y-m-d H:i:s', $period->ts_end);
+
+
+		$arrupdate[$id_event] = array('start'=> $startdate, 'end' => $enddate);
+		$min = $startdate;
+		$max = $enddate;
 	
 		reset($arrupdate);
 		
@@ -980,5 +931,567 @@ class bab_ovi_event
 				id_event=".$babDB->quote($id_event)." 
 				AND id_cal=".$babDB->quote($id_calendar)."
 		");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Select events in database for CalendarBackend/Ovi
+ * process data into regular bab_CalendarPeriod objects
+ */
+class bab_cal_OviEventSelect
+{
+
+
+
+
+	/**
+	 * Create a calendar period from a calendar event of database
+	 * 
+	 * @param	array	$arr
+	 * 
+	 * @return bab_CalendarEvent
+	 */
+	private function createCalendarPeriod($arr, bab_PeriodCollection $collection)
+	{
+		global $babDB;
+		$event = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
+		$collection->addPeriod($event);
+			
+		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+		$editor = new bab_contentEditor('bab_calendar_event');
+		$editor->setContent($arr['description']);
+		$editor->setFormat($arr['description_format']);
+		$arr['description']	= $editor->getHtml();
+	
+		$event->setProperty('UID'			, $arr['uuid']);
+		$event->setProperty('DTSTART'		, $arr['start_date']);
+		$event->setProperty('DTEND'			, $arr['end_date']);
+		$event->setProperty('SUMMARY'		, $arr['title']);
+		$event->setProperty('DESCRIPTION'	, $arr['description']);
+		$event->setProperty('LOCATION'		, $arr['location']);
+		$event->setProperty('CATEGORIES'	, $arr['category']);
+		
+		$color = !empty($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
+		$event->setColor($color);
+		
+		
+		if ('Y' == $arr['bprivate']) {
+			$event->setProperty('CLASS'	, 'PRIVATE');
+		} else {
+			$event->setProperty('CLASS'	, 'PUBLIC');
+		}
+		
+		if ('Y' == $arr['bfree']) {
+			$event->setProperty('TRANSP'	, 'TRANSPARENT');
+		} else {
+			$event->setProperty('TRANSP'	, 'OPAQUE');
+		}
+	
+		unset($arr['start_date']);
+		unset($arr['end_date']);
+		unset($arr['title']);
+		unset($arr['location']);
+		unset($arr['category']);
+		unset($arr['bprivate']);
+		unset($arr['bfree']);
+		unset($arr['color']);
+		unset($arr['bgcolor']);
+		unset($arr['uuid']);
+	
+		if (!empty($arr['alert'])) {
+			
+			$backend = bab_functionality::get('CalendarBackend');
+			$alarm = $backend->CalendarAlarm();
+			$event->setAlarm($alarm);
+		}
+		
+		
+		if (!empty($arr['hash']))
+		{
+			$collection->hash = $arr['hash'];
+		}
+		
+	
+	
+		$resco = $babDB->db_query("
+		
+			SELECT 
+				o.id_cal, c.type, c.owner, o.idfai, o.status    
+			FROM 
+				".BAB_CAL_EVENTS_OWNERS_TBL." o, 
+				".BAB_CALENDAR_TBL." c  
+			WHERE 
+				o.id_event ='".$babDB->db_escape_string($arr['id'])."' 
+				AND c.id = o.id_cal 
+			");
+	
+		while( $arr2 = $babDB->db_fetch_array($resco)) {
+		
+			switch($arr2['status'])
+			{
+				case BAB_CAL_STATUS_NONE:
+					$partstat = 'NEEDS-ACTION';
+					$rsvp = 'TRUE';
+					break;	
+				case BAB_CAL_STATUS_ACCEPTED:
+					$partstat = 'ACCEPTED';
+					$rsvp = 'FALSE';
+					break;
+				case BAB_CAL_STATUS_DECLINED:
+					$partstat = 'DECLINED';	
+					$rsvp = 'FALSE';
+					break;
+			}
+			
+			
+			
+			
+			switch($arr2['type'])
+			{
+				case BAB_CAL_USER_TYPE:
+					$idcal = 'personal/'.$arr2['id_cal'];
+					break;
+				case BAB_CAL_PUB_TYPE:
+					$idcal = 'public/'.$arr2['id_cal'];
+					break;
+				case BAB_CAL_RES_TYPE:
+					$idcal = 'ressource/'.$arr2['id_cal'];
+					break;
+			}
+		
+			
+			$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!isset($calendar))
+			{
+				throw new Exception('This calendar is not accessible '.$arr2['id_cal']);
+			}
+			
+			
+			
+			
+		
+			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
+				if ($arr2['id_cal'] == $arr['id_cal']) {
+					// main personal calendar 
+					$role = 'CHAIR';
+					
+					// set as organizer
+					$event->setProperty('ORGANIZER;CN='.$calendar->getName(), 'MAILTO:'.bab_getUserEmail($calendar->getIdUser()));
+					
+					// set as main calendar in collection
+					$collection->setCalendar($calendar);
+					
+				} else {
+					$role = 'REQ-PARTICIPANT';
+				}
+				
+				$event->addAttendee($calendar, $role, $partstat, $rsvp);
+				
+				if (isset($alarm))
+				{
+					$alarm->addAttendee($calendar);
+				}
+				
+			} else {
+				if ($arr2['id_cal'] == $arr['id_cal']) {
+					// main calendar 
+					$event->addRelation('PARENT', $calendar);
+					
+					// set as main calendar in collection
+					$collection->setCalendar($calendar);
+					
+				} else {
+					$event->addRelation('CHILD', $calendar);
+				}
+			}
+		}
+			
+		
+		
+		$event->setData($arr);
+		
+		
+		// add VALARM infos
+		
+		
+		$resa = $babDB->db_query('SELECT 
+					day, 
+					hour, 
+					minute, 
+					bemail,
+					id_user   
+					
+				FROM '.BAB_CAL_EVENTS_REMINDERS_TBL.'
+				
+				WHERE id_event = '.$babDB->quote($arr['id']).'	
+		');
+		
+		
+		while($reminder = $babDB->db_fetch_assoc($resa))
+		{
+			$day = (int) $reminder['day'];
+			$hour = (int) $reminder['hour'];
+			$minute = (int) $reminder['minute'];
+			$email = 'Y' === $reminder['bemail'];
+			
+			require_once dirname(__FILE__).'/evtincl.php';
+			bab_setAlarmProperties($alarm, $event, $day, $hour, $minute, $email);
+			break;
+		}
+		
+		
+		return $event;
+	}
+	
+	
+	/**
+	 * 
+	 * @param string $where
+	 * @return string
+	 */
+	private function getQuery($where)
+	{
+		global $babDB;
+		
+		$query = "
+			SELECT 
+				ceo.*, 
+				ce.*,
+				ca.name category,
+				ca.description category_description, 
+				ca.bgcolor, 
+				er.id_event alert, 
+				en.note 
+			FROM 
+				".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
+				LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
+				LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
+				LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
+	
+			WHERE 
+				".$where." 
+			ORDER BY 
+				ce.start_date asc 
+		";
+		
+		return $query;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * set calendar events into userperiods object
+	 * 
+	 *  
+	 * @param bab_UserPeriods				$user_periods		query result set
+	 * @param array							$calendars			<bab_EventCalendar>
+	 * @param array|NULL					[$category]
+	 */
+	public function setEventsPeriods(bab_UserPeriods $user_periods, Array $calendars, $category = NULL, $hash = null) {
+	
+		global $babDB;
+		
+		$begin 	= $user_periods->begin;
+		$end 	= $user_periods->end;
+		
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		
+		$id_calendars = array();
+		$collections = array();
+		
+		foreach($calendars as $calendar) {
+			
+			if ($calendar instanceof bab_OviEventCalendar) {
+				$id = $calendar->getUid();
+				$id_calendars[] = $id;
+				$collections[$id] = $backend->CalendarEventCollection();
+				$collections[$id]->setCalendar($calendar);
+			}
+		}
+
+
+		$where = " 
+			ceo.id_cal			IN(".$babDB->quote($id_calendars).") 
+			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
+		";
+
+		if (isset($end)) {
+			$where .= "AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
+			";
+		}
+		
+		if (isset($begin)) {
+			$where .= "AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
+			";
+		}
+		
+		if (NULL !== $category) {
+			$where .= "AND ca.name IN(".$babDB->quote($category).") 
+			";
+		}
+		
+		if (null !== $hash) {
+			$where .= "AND ce.hash =".$babDB->quote($hash)." 
+			";
+		}
+		
+		$query = $this->getQuery($where);
+		$res = $babDB->db_query($query);
+		
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+			$event = $this->createCalendarPeriod($arr, $collections[$arr['id_cal']]);
+			$user_periods->addPeriod($event);
+		}
+	
+	}
+
+
+	/**
+	 * Select one event by ical property UID
+	 * 
+	 * @param	string $uid
+	 * @return bab_CalendarPeriod
+	 */
+	public function getFromUid($uid)
+	{
+		global $babDB;
+		
+		$query = $this->getQuery(" 
+			ce.uuid = ".$babDB->quote($uid)." 
+		");
+		
+		$res = $babDB->db_query($query);
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			return null;
+		}
+		
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		$collection = $backend->CalendarEventCollection(); 
+		
+		return $this->createCalendarPeriod($arr, $collection);
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param string $uid
+	 * @return bool
+	 */
+	public function deleteFromUid($uid)
+	{
+		global $babDB;
+		
+		
+		$query = $this->getQuery(" 
+			ce.uuid = ".$babDB->quote($uid)." 
+		");
+		
+		$res = $babDB->db_query($query);
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			return false;
+		}
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
+		$id_event = $arr['id_event'];
+		
+		
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'");
+		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
+		while( $rr = $babDB->db_fetch_array($res2) )
+			{
+			if( $rr['idfai'] != 0 )
+				{
+				deleteFlowInstance($rr['idfai']);
+				}
+			}
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
+		$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
+		
+		return true;
+	}
+	
+	
+	
+	/**
+	 * add periods from ovidentia backend to the userperiods object from the query informations stored in the userperiods object
+	 * 
+	 * @param bab_UserPeriods $userperiods
+	 * @return unknown_type
+	 */
+	public function processQuery(bab_UserPeriods $userperiods)
+	{
+		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+		require_once dirname(__FILE__).'/workinghoursincl.php';
+		
+		$calendars = $userperiods->calendars;
+		$users = $userperiods->getUsers();
+		$begin = $userperiods->begin;
+		$end = $userperiods->end;
+		$hash = $userperiods->hash;
+		
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		
+		$vac_collection	= $backend->VacationPeriodCollection();
+		$evt_collection = $backend->CalendarEventCollection();
+		$tsk_collection = $backend->TaskCollection();
+		$wp_collection 	= $backend->WorkingPeriodCollection();
+		$nwp_collection = $backend->NonWorkingPeriodCollection();
+		
+		
+		if ($userperiods->isPeriodCollection($vac_collection) && $users) {
+			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
+			bab_vac_setVacationPeriods($vac_collection, $userperiods, $users);
+		}
+	
+		if ($userperiods->isPeriodCollection($evt_collection)) {
+			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
+			
+			$ical = $userperiods->icalProperties;
+			$categories = null;
+			if (isset($ical['CATEGORIES'])) {
+				$categories = $ical['CATEGORIES'];
+			}
+			
+			$this->setEventsPeriods($userperiods, $calendars, $categories, $hash); 
+		}
+	
+		if ($userperiods->isPeriodCollection($tsk_collection) && $users) {
+			include_once $GLOBALS['babInstallPath']."utilit/tmdefines.php";
+			include_once $GLOBALS['babInstallPath']."utilit/tmIncl.php";
+			bab_tskmgr_setPeriods($tsk_collection, $userperiods, $users);
+		}
+	
+	
+		if (!isset($begin) || !isset($end))
+		{
+			return;
+		}
+		
+		$loop = $begin->cloneDate();
+		$endts = $end->getTimeStamp() + 86400;
+		$begints = $begin->getTimeStamp();
+		$working = $userperiods->isPeriodCollection($wp_collection);
+		$nworking = $userperiods->isPeriodCollection($nwp_collection);
+		$previous_end = NULL;
+	
+		if ($users) {
+			while ($loop->getTimeStamp() < $endts) {
+				
+				if ($working) {
+					foreach($users as $id_user) {
+						$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
+						
+						
+		
+						foreach($arr as $h) {
+							$startHour	= explode(':', $h['startHour']);
+							$endHour	= explode(':', $h['endHour']);
+							
+							$beginDate = new BAB_DateTime(
+								$loop->getYear(),
+								$loop->getMonth(),
+								$loop->getDayOfMonth(),
+								$startHour[0],
+								$startHour[1],
+								$startHour[2]
+								);
+		
+							$endDate = new BAB_DateTime(
+								$loop->getYear(),
+								$loop->getMonth(),
+								$loop->getDayOfMonth(),
+								$endHour[0], 
+								$endHour[1], 
+								$endHour[2]
+								);
+		
+							if ($nworking && NULL == $previous_end) {
+								$previous_end = $begin; // reference
+							}
+		
+							// add non-working period between 2 working period and at the begining
+							if ($nworking && $begints > $previous_end->getTimeStamp()) {
+		
+								$p = new bab_calendarPeriod($previous_end, $begints);
+								$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+								$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+								$p->setProperty('DTEND'			, $begints);
+								$p->setData(array('id_user' => $id_user));
+								
+								$nwp_collection->addPeriod($p);
+								$userperiods->addPeriod($p);
+							}
+		
+							$p = new bab_calendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
+		
+							$p->setProperty('SUMMARY'		, bab_translate('Working period'));
+							$p->setProperty('DTSTART'		, $begin->getIsoDateTime());
+							$p->setProperty('DTEND'			, $end->getIsoDateTime());
+							$p->setData(array('id_user' => $id_user));
+							$p->available = true;
+							
+							$wp_collection->addPeriod($p);
+							$userperiods->addPeriod($p);
+		
+							$previous_end = $endDate; // the begin date of the non-working period will be a reference to the enddate of the working period
+						}
+					}
+				}
+				$loop->add(1, BAB_DATETIME_DAY);
+			}
+		}
+	
+		// add final non-working period
+		if ($nworking && $end->getTimeStamp() > $previous_end->getTimeStamp()) {
+	
+			$p = new bab_calendarPeriod($previous_end->getTimeStamp(), $end->getTimeStamp());
+			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
+			$p->setProperty('DTEND'			, $end->getIsoDateTime());
+			$p->setData(array('id_user' => $id_user));
+			
+			$nwp_collection->addPeriod($p);
+			$userperiods->addPeriod($p);
+		}
 	}
 }

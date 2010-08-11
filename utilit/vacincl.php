@@ -2362,15 +2362,28 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
 
 
 /**
- * set vacation events into object  
+ * Set vacation events into object  
+ * 
+ * @todo process queries with null dates
+ * 
  * @param bab_VacationPeriodCollection	$period_collection		collection of events
  * @param bab_UserPeriods				$user_periods			query result set
  * @param array							$id_users
  * @param BAB_DateTime					$begin
  * @param BAB_DateTime					$end
+ * 
+ * 
  */
-function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collection, bab_UserPeriods $user_periods, $id_users, $begin, $end) {
+function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collection, bab_UserPeriods $user_periods, $id_users) {
 	global $babDB;
+	
+	$begin = $user_periods->begin;
+	$end = $user_periods->end;
+	
+	if (null === $begin || null === $end)
+	{
+		return;
+	}
 
 	$res = $babDB->db_query("
 	SELECT * from ".BAB_VAC_ENTRIES_TBL." 

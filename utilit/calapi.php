@@ -332,7 +332,10 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	$collection = $backend->CalendarEventCollection();
 	
-	$period = bab_createCalendarPeriod($args, $collection);
+	$calendar = bab_getMainCalendar($idcals);
+	$collection->setCalendar($calendar);
+	
+	$period = bab_createCalendarPeriod($backend, $args, $collection);
 	return $backend->savePeriod($period);
 }
 

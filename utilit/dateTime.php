@@ -282,6 +282,25 @@ class BAB_DateTime
 	{
 		return $this->_iSeconds;
 	}
+	
+	/**
+	 * Set time
+	 * 
+	 * @param int $hours
+	 * @param int $minutes
+	 * @param int $seconds
+	 * 
+	 * @since 7.3.90
+	 * 
+	 * @return BAB_DateTime
+	 */
+	public function setTime($hours, $minutes, $seconds)
+	{
+		$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $hours, $minutes, $seconds);
+		return $this;
+	}
+	
+	
 
 	/**
 	 * Elapsed time in the current day

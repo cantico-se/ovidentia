@@ -3321,11 +3321,16 @@ function bab_getCategoriesName($aIdCategories, $bIsDeletable)
 
 
 
-function bab_tskmgr_setPeriods(bab_TaskCollection $tsk_collection, bab_UserPeriods $user_periods, $aIdUsers, $oStartDate, $oEndDate)
+function bab_tskmgr_setPeriods(bab_TaskCollection $tsk_collection, bab_UserPeriods $user_periods, $aIdUsers)
 {
+	$oStartDate = $user_periods->begin;
+	$oEndDate = $user_periods->end;
+	
 	foreach($aIdUsers as $iIdUser)
 	{
-		$aFilters = array('iIdOwner' => (int) $iIdUser, 'sStartDate' => $oStartDate->getIsoDateTime(), 
+		$aFilters = array(
+			'iIdOwner' => (int) $iIdUser, 
+			'sStartDate' => $oStartDate->getIsoDateTime(), 
 			'sEndDate' => $oEndDate->getIsoDateTime());
 		
 		$query = bab_selectTaskQuery($aFilters);	
@@ -3345,8 +3350,8 @@ function bab_tskmgr_setPeriods(bab_TaskCollection $tsk_collection, bab_UserPerio
 				$user_periods->addPeriod($oBabCalPeriod);
 
 				$oBabCalPeriod->setProperty('SUMMARY', $datas['sShortDescription']);
-				$oBabCalPeriod->setProperty('DTSTART', $datas['startDate']);
-				$oBabCalPeriod->setProperty('DTEND', $datas['endDate']);
+				$oBabCalPeriod->setProperty('DTSTART', $date_begin->getICal());
+				$oBabCalPeriod->setProperty('DTEND', $date_end->getICal());
 				$oBabCalPeriod->setProperty('CATEGORIES', $datas['sCategoryName']);
 				$oBabCalPeriod->setColor($datas['sBgColor']);
 			}

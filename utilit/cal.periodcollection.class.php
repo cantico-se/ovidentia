@@ -150,12 +150,13 @@ abstract class bab_PeriodCollection implements Iterator, Countable
 class bab_VacationPeriodCollection extends bab_PeriodCollection { }
 	
 /**
- * List of accessible events in ovidentia calendar
+ * List of accessible events in calendar
  */
 class bab_CalendarEventCollection extends bab_PeriodCollection { 
 
 	/**
 	 * unique hash for a collection of events
+	 * events with same hash can be modified all at once
 	 * @var string
 	 */
 	public $hash = null;

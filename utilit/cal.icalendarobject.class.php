@@ -254,7 +254,7 @@ abstract class bab_ICalendarObject
 	public function getProperties()
 	{
 		$return = array();
-		foreach($this->properties as $property)
+		foreach($this->properties as $property => $dummy)
 		{
 			$value = $this->getProperty($property);
 			
@@ -262,9 +262,9 @@ abstract class bab_ICalendarObject
 			{
 				foreach($value as $k => $v) {
 					if (is_numeric($k)) {
-						$return[] = $property.':'.$value;
+						$return[] = $property.':'.$v;
 					} else {
-						$return[] = $k.':'.$value;
+						$return[] = $k.':'.$v;
 					}
 				}
 			} else {

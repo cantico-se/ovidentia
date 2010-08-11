@@ -616,7 +616,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			$this->t_modify = bab_translate("Modify the event");
 			$this->t_test_conflicts = bab_translate("Test conflicts");
 			$this->t_event_owner = bab_translate("Event owner");
-			$this->calid = $calendar->getUid();
+			$this->calid = $calendar->getUrlIdentifier();
 			$this->evtid = $event->getProperty('UID');
 			$this->bmodif = false;
 			$this->ccids = $cci;
@@ -1146,123 +1146,68 @@ function updateEvent(&$message)
 
 
 
-
-function confirmDeleteEvent()
+/**
+ * Delete event
+ * @param $calid
+ * @param $bupdrec
+ * @return unknown_type
+ */
+function confirmDeleteEvent($calid, $bupdrec)
 {
-	global $babBody, $babDB;
-	include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
+	$evtid = bab_rp('evtid');
+	$calendars = explode(',', $calid);
+	$calendar = bab_getMainCalendar($calendars);
 	
-	$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($GLOBALS['evtid'])."'");
-	$event = $babDB->db_fetch_array($res);
-	
-	$calendars = array();
-	
-	$res = $babDB->db_query('SELECT * FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($GLOBALS['evtid']));
-	while ($row = $babDB->db_fetch_assoc($res)) {
-		$calendars[$row['id_cal']] = $row['id_cal'];
+	if (!isset($calendar))
+	{
+		throw new Exception('Missing calendar');
 	}
 	
-	if( $GLOBALS['bupdrec'] == "1" )//All event
-		{
-		$date_min = '9999-99-99 99:99:99';
-		$date_max = '0000-00-00 00:00:00';
+	$backend = $calendar->getBackend();
+	/*@var $backend Func_CalendarBackend */
 	
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	
+	if (!isset($calendarPeriod))
+	{
+		throw new Exception('Event not found');
+	}
+	
+	$collection = $calendarPeriod->getCollection();
+	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
+	
+	$date_min = $calendarPeriod->ts_begin;
+	$date_max = $calendarPeriod->ts_end;
+	
+	foreach($collection as $period)
+	{
+		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
+		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
 		
-		if( $event['hash'] != "" && $event['hash'][0] == 'R')
-			{
-			$res = $babDB->db_query("select id, start_date, end_date from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($event['hash'])."'");
-			while( $arr = $babDB->db_fetch_array($res) )
-				{
-				$date_min = $arr['start_date'] < $date_min 	? $arr['start_date'] 	: $date_min;
-				$date_max = $arr['end_date'] > $date_max	? $arr['end_date'] 		: $date_max;
-				
-				$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($arr['id'])."'");
-				$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
-				while( $rr = $babDB->db_fetch_array($res2) )
-					{
-					if( $rr['idfai'] != 0 )
-						{
-						deleteFlowInstance($rr['idfai']);
-						}
-					}
-				$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
-				$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
-				$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($arr['id'])."'");
-				}
-			}
-		}
-	else
-		{
-		$date_min = $event['start_date'];
-		$date_max = $event['end_date'];
-		
-		//2 this event
-		
-		$aWhereClauseItem = array();
-		$aWhereClauseItem[] = 'hash = ' . $babDB->quote($event['hash']);
-
-		//Previous
-		if($GLOBALS['bupdrec'] == "3")
-		{
-			$aWhereClauseItem[] = 'start_date <= ' . $babDB->quote($event['start_date']);
-		}
-		else if($GLOBALS['bupdrec'] == "4")
-		{
-			$aWhereClauseItem[] = 'start_date >= ' . $babDB->quote($event['start_date']);
-		}
-		else
-		{
-			$aWhereClauseItem[] = 'id = ' . $babDB->quote($GLOBALS['evtid']);
-		}
-		
-		$sQuery = 
-			'SELECT 
-				* 
-			FROM ' . 
-				BAB_CAL_EVENTS_TBL . ' 
-			WHERE ' .
-				implode(' AND ', $aWhereClauseItem);
-			
-		$oResult = $babDB->db_query($sQuery);
-		if(false !== $oResult)
-			{	
-				while($aDatas = $babDB->db_fetch_assoc($oResult))
-					{
-					$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($aDatas['id'])."'");
-					$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
-					while( $rr = $babDB->db_fetch_array($res2) )
-						{
-						if( $rr['idfai'] != 0 )
-							{
-							deleteFlowInstance($rr['idfai']);
-							}
-						}
-					$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
-					$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
-					$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event='".$babDB->db_escape_string($aDatas['id'])."'");
-					}
-			}
-		}
-		
-		
+		$backend->deletePeriod($collection, $evtid);
+	}
+	
+	
+	/*
 	foreach($calendars as $id_cal) {
 		$cal = bab_getICalendars()->getCalendarInfo($id_cal);
 			
 		cal_notify(
-			$event['title'], 
-			$event['description'], 
-			$event['location'], 
-			$startdate = bab_longDate(bab_mktime($event['start_date'])),
-			$enddate = bab_longDate(bab_mktime($event['end_date'])),
+			$calendarPeriod->getProperty('SUMMARY'), 
+			$calendarPeriod->getProperty('DESCRIPTION'), 
+			$calendarPeriod->getProperty('LOCATION'), 
+			$startdate = bab_longDate($calendarPeriod->ts_begin),
+			$enddate = bab_longDate($calendarPeriod->ts_end),
 			$id_cal, 
 			$cal['type'], 
 			$cal['idowner'],
 			bab_translate("An appointement has been removed")
 			);
 	}
+	*/
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	$event = new bab_eventPeriodModified(bab_mktime($date_min), bab_mktime($date_max), false);
+	$event = new bab_eventPeriodModified($date_min, $date_max, false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
 }
@@ -1392,7 +1337,7 @@ if (isset($_REQUEST['action']))
 	switch($_REQUEST['action'])
 		{
 		case 'yes':
-			confirmDeleteEvent();
+			confirmDeleteEvent($calid, bab_rp('bupdrec'));
 			$idx="unload";
 			break;
 

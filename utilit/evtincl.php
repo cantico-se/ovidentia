@@ -161,6 +161,7 @@ function bab_getMainCalendar(Array $idcals)
 /**
  * Create a period from the arguments posted by event creation form
  * 
+ * @param	Func_CalendarBackend		$backend
  *
  * @param	array		$args
  *
@@ -190,48 +191,34 @@ function bab_getMainCalendar(Array $idcals)
  * 
  * @return bab_CalendarPeriod
  */
-function bab_createCalendarPeriod($args, bab_PeriodCollection $collection)
+function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_PeriodCollection $collection)
 {
 	
 	
 	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 	$idcals = $args['selected_calendars'];
+
 	
-	if(0 === count($idcals))
-	{
-		throw new ErrorException(bab_translate("You must select at least one calendar type"));
-		return false;
+	if ($args['evtid']) {
+		$period = $backend->getPeriod($backend->CalendarEventCollection(), $args['evtid']);
+		
+		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
+		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
+		
+		$oldcollection = $period->getCollection();
+		
+	} else {
+	
+		$begin 	= bab_event_posted::getDateTime($args['startdate']);
+		$end 	= bab_event_posted::getDateTime($args['enddate']);
+		
+		// create empty period
+		$period = $backend->CalendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
 	}
-	
-	if( empty($args['title']))
-	{
-		throw new ErrorException(bab_translate("You must provide a title"));
-		return false;
-	}
-	
-	
-	$begin 	= bab_event_posted::getDateTime($args['startdate']);
-	$end 	= bab_event_posted::getDateTime($args['enddate']);
-	
-	
-	if( $begin->getTimeStamp() > $end->getTimeStamp())
-	{
-		throw new ErrorException(bab_translate("End date must be older"));
-		return false;
-	}
-	
-	
-	
-	
-	// find the main calendar of event
-	$calendar = bab_getMainCalendar($idcals);
-	$backend = $calendar->getBackend(); 
-	
-	$collection->setCalendar($calendar);
-	
-	$period = $backend->CalendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
 	
 	$collection->addPeriod($period);
+	$collection->hash = $oldcollection->hash;
+
 	
 	if ($args['evtid']) {
 		$period->setProperty('UID', $args['evtid']);
@@ -270,12 +257,12 @@ function bab_createCalendarPeriod($args, bab_PeriodCollection $collection)
 	}
 	
 	
+	$calendar = $collection->getCalendar();
 	
 	// Attendee
 	// add additional calendars as attendee property
-	
 	$calendars = bab_getICalendars()->getCalendars();
-	foreach($idcals as $idcal)
+	foreach($args['selected_calendars'] as $idcal)
 	{
 		if (isset($calendars[$idcal]))
 		{
@@ -513,7 +500,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 	$arr = bab_getICalendars()->getCalendarInfo($idcal);
 	
 	$arrevtids = array();
-	if( $bupdrec == 1)
+	if( $bupdrec == BAB_CAL_EVT_ALL)
 		{
 		list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
 		if( !empty($hash) &&  $hash[0] == 'R')
@@ -1388,6 +1375,14 @@ class bab_event_posted {
 	 * @var bab_CalendarPeriod
 	 */
 	private $calendarPeriod;
+	
+	
+	
+	/**
+	 * 
+	 * @var Func_CalendarBackend
+	 */
+	private $backend;
 
 
 
@@ -1403,11 +1398,30 @@ class bab_event_posted {
 	 *
 	 *
 	 * @param	array	$arr
+	 * 
+	 * @param	int		$default_ts default timestamp value to use if values of date are not set
+	 * 
 	 * @return 	BAB_DateTime
 	 */
-	public static function getDateTime($arr) {
+	public static function getDateTime($arr, $default_ts = null) {
 	
 		require_once dirname(__FILE__).'/dateTime.php';
+		
+		if (!isset($default_ts) && (!isset($arr['year']) || !isset($arr['month']) || !isset($arr['day']))) {
+			return null;
+		}
+		
+		if (!isset($arr['year'])) {
+			$arr['year'] = date('Y', $default_ts);
+		}
+		
+		if (!isset($arr['month'])) {
+			$arr['month'] = date('m', $default_ts);
+		}
+		
+		if (!isset($arr['day'])) {
+			$arr['day'] = date('d', $default_ts);
+		}
 		
 		if (!isset($arr['hours'])) {
 			$arr['hours'] = 0;
@@ -1421,13 +1435,30 @@ class bab_event_posted {
 	}
 	
 	
+	/**
+	 * Backend to use for saving the event
+	 * @return Func_CalendarBackend
+	 */
+	public function getBackend()
+	{
+		
+		if (!isset($this->backend))
+		{
+		
+			// find the main calendar of event
+			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
+			$this->backend = $calendar->getBackend();
+		}
+
+		return $this->backend;
+	}
 
 
 
 	/**
 	 * Populate $this->args from POST data
 	 */
-	function createArgsData() {
+	public function createArgsData() {
 	
 		global $babBody, $babDB;
 		
@@ -1462,9 +1493,9 @@ class bab_event_posted {
 		$this->args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
 		$this->args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
 	
-		$this->args['startdate']['year'] = $_POST['yearbegin'];
-		$this->args['startdate']['month'] = $_POST['monthbegin'];
-		$this->args['startdate']['day'] = $_POST['daybegin'];
+		$this->args['startdate']['year'] = bab_pp('yearbegin', null);
+		$this->args['startdate']['month'] = bab_pp('monthbegin', null);
+		$this->args['startdate']['day'] = bab_pp('daybegin', null);
 		
 		if (isset($_POST['timebegin'])) {
 			$timebegin = $_POST['timebegin'];
@@ -1476,9 +1507,9 @@ class bab_event_posted {
 		$this->args['startdate']['hours'] = $tb[0];
 		$this->args['startdate']['minutes'] = $tb[1];
 	
-		$this->args['enddate']['year'] = $_POST['yearend'];
-		$this->args['enddate']['month'] = $_POST['monthend'];
-		$this->args['enddate']['day'] = $_POST['dayend'];
+		$this->args['enddate']['year'] = bab_pp('yearend', null);
+		$this->args['enddate']['month'] = bab_pp('monthend', null);
+		$this->args['enddate']['day'] = bab_pp('dayend', null);
 		
 		if (isset($_POST['timeend'])) {
 			$timeend = $_POST['timeend'];
@@ -1615,8 +1646,8 @@ class bab_event_posted {
 	 */
 	public function isValid(&$msgerror)
 	{
-		$begin 	= bab_event_posted::getDateTime($this->args['startdate'])->getTimeStamp();
-		$end 	= bab_event_posted::getDateTime($this->args['enddate'])->getTimeStamp();
+		
+
 		
 		
 		if( empty($this->args['title']))
@@ -1635,9 +1666,26 @@ class bab_event_posted {
 				return false;
 			}
 		}
+		
+		
+		
+		$backend = $this->getBackend();
+		
+		if (!empty($this->args['evtid'])) {
+			$period = $backend->getPeriod($backend->CalendarEventCollection(), $this->args['evtid']);
+			
+			$begin 	= bab_event_posted::getDateTime($this->args['startdate'], $period->ts_begin);
+			$end 	= bab_event_posted::getDateTime($this->args['enddate'], $period->ts_end);
+			
+		} else {
+		
+			$begin 	= bab_event_posted::getDateTime($this->args['startdate']);
+			$end 	= bab_event_posted::getDateTime($this->args['enddate']);
+		}
+		
 	
 	
-		if( $begin > $end)
+		if( $begin->getTimeStamp() > $end->getTimeStamp())
 			{
 			$msgerror = bab_translate("End date must be older");
 			return false;
@@ -1668,9 +1716,12 @@ class bab_event_posted {
 	{
 		if (!isset($this->calendarPeriod))
 		{
-			require_once dirname(__FILE__).'/cal.periodcollection.class.php';
-			$collection = new bab_CalendarEventCollection;
-			$this->calendarPeriod = bab_createCalendarPeriod($this->args, $collection);
+			$backend = $this->getBackend();
+			$collection = $backend->CalendarEventCollection();
+			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
+			$collection->setCalendar($calendar);
+			
+			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
 		}
 		
 		
@@ -1678,6 +1729,25 @@ class bab_event_posted {
 		return $this->calendarPeriod;
 	}
 	
+	
+	
+	/**
+	 * @throws ErrorException
+	 * 
+	 * @return bab_PeriodCollection
+	 */
+	private function getCollection()
+	{
+		$period = $this->getCalendarPeriod();
+		$collection = $period->getCollection();
+
+		if (isset($collection->hash))
+		{
+			$calendar = $collection->getCalendar();
+			$backend = $calendar->getBackend();
+			$backend->selectPeriods();
+		}
+	}
 	
 	
 	
@@ -1707,10 +1777,25 @@ class bab_event_posted {
 		$calendar = $collection->getCalendar();
 		$backend = $calendar->getBackend();
 		
+		if ($collection->hash && bab_pp('bupdrec'))
+		{
+			bab_addHashEventsToCollection($collection, $calendarPeriod, (int) bab_pp('bupdrec'));
+		}
+
 		
-		return $backend->savePeriod($calendarPeriod);
+		foreach($collection as $key => $period)
+		{
+			if (!$backend->savePeriod($period))
+			{
+				return false;
+			}
+		}
 		
+		return true;
 	}
+	
+	
+	
 	
 	
 	
@@ -1914,5 +1999,72 @@ class bab_event_posted {
 
 
 
+/**
+ * Add hash events to collection
+ * 
+ * @param	bab_CalendarEventCollection		$collection			A collection of calendar events with a hash and one event
+ * @param	bab_CalendarPeriod				$calendarPeriod		the modified period
+ * @param	int								$method				BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
+ * 
+ * @return unknown_type
+ */
+function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, bab_CalendarPeriod $calendarPeriod, $method)
+{
+	require_once dirname(__FILE__).'/dateTime.php';
+	
+	if (BAB_CAL_EVT_CURRENT === $method)
+	{
+		return;
+	}
+	
+	$calendar = $collection->getCalendar();
+	$backend = $calendar->getBackend();
+	
+	$C = $backend->Criteria();
+	
+	
+	$criteria = $C->Hash($collection->hash)
+		->_AND_($C->Collection($collection))
+		->_AND_($C->Calendar($calendar));
+	
+	
+	if (BAB_CAL_EVT_PREVIOUS === $method)
+	{
+		$criteria->_AND_($C->End(BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin)));
+	}
+	
+	if (BAB_CAL_EVT_NEXT === $method)
+	{
+		$criteria->_AND_($C->Begin(BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end)));
+	}
+	
 
-?>
+	$userperiods = $backend->selectPeriods($criteria);
+	
+	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
+	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);
+	
+	$bh = $ref_begin->getHour();
+	$bm = $ref_begin->getMinute();
+	$bs = $ref_begin->getSecond();
+	
+	$eh = $ref_end->getHour();
+	$em = $ref_end->getMinute();
+	$es = $ref_end->getSecond();
+	
+	foreach($userperiods as $key => $period)
+	{
+		if ($period->getProperty('UID') !== $calendarPeriod->getProperty('UID'))
+		{
+			$updatePeriod = clone $calendarPeriod;
+			$updatePeriod->setProperty('UID', $period->getProperty('UID'));
+			
+			$begin = BAB_DateTime::fromTimeStamp($period->ts_begin)->setTime($bh, $bm, $bs);
+			$end   = BAB_DateTime::fromTimeStamp($period->ts_end)  ->setTime($eh, $em, $es);
+			
+			$updatePeriod->setDates($begin, $end);
+			
+			$collection->addPeriod($updatePeriod);
+		}
+	}
+}
