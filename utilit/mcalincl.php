@@ -262,15 +262,17 @@ class bab_mcalendars
 	 * @return	bab_UserPeriods
 	 */
 	public static function create_events($startdate, $enddate, $idcals) {
-		include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+		include_once $GLOBALS['babInstallPath']."utilit/cal.userperiods.class.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-
+		
+		
 		$whObj = new bab_UserPeriods(
 			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
 		
 		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
+		/* @var $factory bab_PeriodCriteriaFactory */
 
 		$criteria = $factory->Collection(
 			array(
@@ -281,14 +283,18 @@ class bab_mcalendars
 			)
 		);
 		
+		$calendars = array();
 		foreach($idcals as $idcal) {
+			
 			$calendar = bab_getICalendars()->getEventCalendar($idcal);
 			if (!$calendar)
 			{
 				throw new Exception('Calendar not found for identifier : '.$idcal);
 			}
-			$criteria = $criteria->_AND_($factory->Calendar($calendar));
+			$calendars[] = $calendar;
 		}
+		
+		$criteria = $criteria->_AND_($factory->Calendar($calendars));
 
 		$whObj->createPeriods($criteria);
 		$whObj->orderBoundaries();
@@ -657,40 +663,6 @@ class cal_wmdbaseCls
 	}
 
 
-	/**
-	 * Get access shared users for a personal calendars
-	 * @param	int		$id_cal
-	 * @param	int		$access_type
-	 *		possibles types are :
-	 *			<ul>
-	 *				<li>BAB_CAL_ACCESS_SHARED_UPDATE</li>
-	 *				<li>BAB_CAL_ACCESS_SHARED_FULL</li>
-	 *			</ul>
-	 *
-	 * @return array	keys and values are (int) id_user
-	 */
-	function getAccessShared($id_cal, $access_type) {
-		global $babDB;
-		$access_shared = array();
-		
-
-		$rs = $babDB->db_query("
-			select 
-				cut.id_user, bwrite 
-			from 
-				".BAB_CALACCESS_USERS_TBL." cut 
-			where 
-				id_cal='".$babDB->db_escape_string($id_cal)."' 
-				AND bwrite=".$babDB->quote($access_type)."
-		");
-
-		while( $row =  $babDB->db_fetch_assoc($rs))
-		{
-			$access_shared[$row['id_user']] = $row['id_user'];
-		}
-
-		return $access_shared;
-	}
 
 
 
@@ -866,11 +838,13 @@ class cal_wmdbaseCls
 		}
 		
 		$this->status		= isset($arr['status'])		? $arr['status'] 		: 0;
-		$this->id_cat		= bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
+		
+		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
+		$this->id_cat		= $cat['id'];
 		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
 		$this->hash			= isset($arr['hash'])		? $arr['hash'] 			: '';
 		$this->balert		= $calPeriod->getAlarm();
-		$this->nbowners		= isset($arr['nbowners'])	? $arr['nbowners'] 		: 0;
+		$this->nbowners		= count($calPeriod->getCalendars());
 		$this->idevent		= $calPeriod->getUrlIdentifier();
 		$this->bgcolor		= $calPeriod->getColor();
 		
@@ -891,12 +865,11 @@ class cal_wmdbaseCls
 		}
 
 		
-		$time = bab_mktime($calPeriod->getProperty('DTSTART'));
-		$this->starttime = bab_toHtml(bab_time($time));
-		$this->startdate = bab_toHtml(bab_shortDate($time, false));
-		$time = bab_mktime($calPeriod->getProperty('DTEND'));
-		$this->endtime = bab_toHtml(bab_time($time));
-		$this->enddate =  bab_toHtml(bab_shortDate($time, false));
+
+		$this->starttime = bab_toHtml(bab_time($calPeriod->ts_begin));
+		$this->startdate = bab_toHtml(bab_shortDate($calPeriod->ts_begin, false));
+		$this->endtime = bab_toHtml(bab_time($calPeriod->ts_end));
+		$this->enddate =  bab_toHtml(bab_shortDate($calPeriod->ts_end, false));
 		
 		
 		

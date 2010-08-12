@@ -222,7 +222,7 @@ class cal_monthCls extends cal_wmdbaseCls
 			$this->createCommonEventVars($this->evtarr[$i]);
 			
 			
-			$eventstart = bab_mktime($this->evtarr[$i]->getProperty('DTSTART'));
+			$eventstart = $this->evtarr[$i]->ts_begin;
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			
 			if( date("j", $eventstart) == date("j", $mktime) 

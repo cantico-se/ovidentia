@@ -137,6 +137,8 @@ class bab_cal_OviEventUpdate
 	 */
 	private function updateEvent($id_event, bab_CalendarPeriod $period)
 	{
+		
+		
 		require_once dirname(__FILE__).'/evtincl.php';
 		global $babBody, $babDB;
 		
@@ -155,8 +157,8 @@ class bab_cal_OviEventUpdate
 		$startdate 	= date('Y-m-d H:i:s', $period->ts_begin);
 		$enddate 	= date('Y-m-d H:i:s', $period->ts_end);
 
-
 		$arrupdate[$id_event] = array('start'=> $startdate, 'end' => $enddate);
+		
 		$min = $startdate;
 		$max = $enddate;
 	
@@ -167,13 +169,15 @@ class bab_cal_OviEventUpdate
 		$private = 'PUBLIC' !== $period->getProperty('CLASS') ? 'Y' : 'N';
 		$free = 'TRANSPARENT' === $period->getProperty('TRANSP') ? 'Y' : 'N';
 		
+		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
+		
 		$req = "UPDATE ".BAB_CAL_EVENTS_TBL." 
 		SET 
 			title				=".$babDB->quote($period->getProperty('SUMMARY')).", 
 			description			=".$babDB->quote($data['description']).", 
 			description_format	=".$babDB->quote($data['description_format']).", 
 			location			=".$babDB->quote($period->getProperty('LOCATION')).", 
-			id_cat				=".$babDB->quote((int) bab_getCalendarCategory($period->getProperty('CATEGORIES'))).", 
+			id_cat				=".$babDB->quote((int) $cat['id']).", 
 			color				=".$babDB->quote($period->getColor()).", 
 			bprivate			=".$babDB->quote($private).", 
 			block				=".$babDB->quote($data['block']).", 
@@ -189,6 +193,7 @@ class bab_cal_OviEventUpdate
 		foreach($arrupdate as $key => $val)
 		{
 			$query = $req.", start_date=".$babDB->quote($val['start']).", end_date=".$babDB->quote($val['end'])." where id=".$babDB->quote($key)."";
+			
 			$babDB->db_query($query);
 			
 			if (0 !== $babDB->db_affected_rows())
@@ -1004,9 +1009,15 @@ class bab_cal_OviEventSelect
 		
 		
 		global $babDB;
-		$event = new bab_calendarPeriod(bab_mktime($arr['start_date']), bab_mktime($arr['end_date']));
+		
+		
+		$begin = BAB_DateTime::fromIsoDateTime($arr['start_date']);
+		$end = BAB_DateTime::fromIsoDateTime($arr['end_date']);
+		
+		$event = new bab_calendarPeriod();
+		$event->setDates($begin, $end);
 		$collection->addPeriod($event);
-			
+		
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor('bab_calendar_event');
 		$editor->setContent($arr['description']);
@@ -1014,8 +1025,6 @@ class bab_cal_OviEventSelect
 		$arr['description']	= $editor->getHtml();
 	
 		$event->setProperty('UID'			, $arr['uuid']);
-		$event->setProperty('DTSTART'		, $arr['start_date']);
-		$event->setProperty('DTEND'			, $arr['end_date']);
 		$event->setProperty('SUMMARY'		, $arr['title']);
 		$event->setProperty('DESCRIPTION'	, $arr['description']);
 		$event->setProperty('LOCATION'		, $arr['location']);
@@ -1078,19 +1087,14 @@ class bab_cal_OviEventSelect
 			{
 				case BAB_CAL_STATUS_NONE:
 					$partstat = 'NEEDS-ACTION';
-					$rsvp = 'TRUE';
 					break;	
 				case BAB_CAL_STATUS_ACCEPTED:
 					$partstat = 'ACCEPTED';
-					$rsvp = 'FALSE';
 					break;
 				case BAB_CAL_STATUS_DECLINED:
 					$partstat = 'DECLINED';	
-					$rsvp = 'FALSE';
 					break;
 			}
-			
-			
 			
 			
 			switch($arr2['type'])
@@ -1111,7 +1115,8 @@ class bab_cal_OviEventSelect
 			
 			if (!isset($calendar))
 			{
-				throw new Exception('This calendar is not accessible '.$arr2['id_cal']);
+				bab_debug("The calendar $idcal is not accessible but is referenced in event ".$event->getProperty('UID').', calendar ignored');
+				continue;
 			}
 			
 			
@@ -1119,6 +1124,9 @@ class bab_cal_OviEventSelect
 			
 		
 			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
+				
+				
+				
 				if ($arr2['id_cal'] == $arr['id_cal']) {
 					// main personal calendar 
 					$role = 'CHAIR';
@@ -1133,7 +1141,7 @@ class bab_cal_OviEventSelect
 					$role = 'REQ-PARTICIPANT';
 				}
 				
-				$event->addAttendee($calendar, $role, $partstat, $rsvp);
+				$event->addAttendee($calendar, $role, $partstat);
 				
 				if (isset($alarm))
 				{
@@ -1159,30 +1167,32 @@ class bab_cal_OviEventSelect
 		
 		// add VALARM infos
 		
-		
-		$resa = $babDB->db_query('SELECT 
-					day, 
-					hour, 
-					minute, 
-					bemail,
-					id_user   
-					
-				FROM '.BAB_CAL_EVENTS_REMINDERS_TBL.'
-				
-				WHERE id_event = '.$babDB->quote($arr['id']).'	
-		');
-		
-		
-		while($reminder = $babDB->db_fetch_assoc($resa))
+		if (isset($alarm))
 		{
-			$day = (int) $reminder['day'];
-			$hour = (int) $reminder['hour'];
-			$minute = (int) $reminder['minute'];
-			$email = 'Y' === $reminder['bemail'];
+			$resa = $babDB->db_query('SELECT 
+						day, 
+						hour, 
+						minute, 
+						bemail,
+						id_user   
+						
+					FROM '.BAB_CAL_EVENTS_REMINDERS_TBL.'
+					
+					WHERE id_event = '.$babDB->quote($arr['id']).'	
+			');
 			
-			require_once dirname(__FILE__).'/evtincl.php';
-			bab_setAlarmProperties($alarm, $event, $day, $hour, $minute, $email);
-			break;
+			
+			while($reminder = $babDB->db_fetch_assoc($resa))
+			{
+				$day = (int) $reminder['day'];
+				$hour = (int) $reminder['hour'];
+				$minute = (int) $reminder['minute'];
+				$email = 'Y' === $reminder['bemail'];
+				
+				require_once dirname(__FILE__).'/evtincl.php';
+				bab_setAlarmProperties($alarm, $event, $day, $hour, $minute, $email);
+				break;
+			}
 		}
 		
 		
@@ -1446,20 +1456,21 @@ class bab_cal_OviEventSelect
 		}
 		
 		$loop = $begin->cloneDate();
-		$endts = $end->getTimeStamp() + 86400;
+		$endts = $end->getTimeStamp();
 		$begints = $begin->getTimeStamp();
 		$working = $userperiods->isPeriodCollection($wp_collection);
 		$nworking = $userperiods->isPeriodCollection($nwp_collection);
 		$previous_end = NULL;
 	
 		if ($users) {
+			
 			while ($loop->getTimeStamp() < $endts) {
 				
 				if ($working) {
+					
 					foreach($users as $id_user) {
+						
 						$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
-						
-						
 		
 						foreach($arr as $h) {
 							$startHour	= explode(':', $h['startHour']);
@@ -1489,22 +1500,19 @@ class bab_cal_OviEventSelect
 		
 							// add non-working period between 2 working period and at the begining
 							if ($nworking && $begints > $previous_end->getTimeStamp()) {
-		
-								$p = new bab_calendarPeriod($previous_end, $begints);
-								$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-								$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-								$p->setProperty('DTEND'			, $begints);
+								
+								$p = new bab_calendarPeriod;
+								$p->setDates($previous_end, $begin);
+								$p->setProperty('SUMMARY', bab_translate('Non-working period'));
 								$p->setData(array('id_user' => $id_user));
 								
 								$nwp_collection->addPeriod($p);
 								$userperiods->addPeriod($p);
 							}
 		
-							$p = new bab_calendarPeriod($begin->getTimeStamp(), $end->getTimeStamp());
-		
-							$p->setProperty('SUMMARY'		, bab_translate('Working period'));
-							$p->setProperty('DTSTART'		, $begin->getIsoDateTime());
-							$p->setProperty('DTEND'			, $end->getIsoDateTime());
+							$p = new bab_calendarPeriod;
+							$p->setDates($beginDate, $endDate);
+							$p->setProperty('SUMMARY', bab_translate('Working period'));
 							$p->setData(array('id_user' => $id_user));
 							$p->available = true;
 							
@@ -1518,18 +1526,27 @@ class bab_cal_OviEventSelect
 				$loop->add(1, BAB_DATETIME_DAY);
 			}
 		}
-	
-		// add final non-working period
-		if ($nworking && $end->getTimeStamp() > $previous_end->getTimeStamp()) {
-	
-			$p = new bab_calendarPeriod($previous_end->getTimeStamp(), $end->getTimeStamp());
-			$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
-			$p->setProperty('DTSTART'		, $previous_end->getIsoDateTime());
-			$p->setProperty('DTEND'			, $end->getIsoDateTime());
-			$p->setData(array('id_user' => $id_user));
+		
+		
+		
+		if ($nworking)
+		{
+			if (!isset($previous_end))
+			{
+				$previous_end = $begin;
+			}	
 			
-			$nwp_collection->addPeriod($p);
-			$userperiods->addPeriod($p);
+			// add final non-working period
+			if ($endts > $previous_end->getTimeStamp()) {
+						
+				$p = new bab_calendarPeriod;
+				$p->setDates($previous_end, $end);
+				$p->setProperty('SUMMARY'		, bab_translate('Non-working period'));
+				$p->setData(array('id_user' => $id_user));
+
+				$nwp_collection->addPeriod($p);
+				$userperiods->addPeriod($p);
+			}
 		}
 	}
 }

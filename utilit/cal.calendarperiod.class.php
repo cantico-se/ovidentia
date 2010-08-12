@@ -346,7 +346,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	/**
 	 * Get author of event
-	 * @return int
+	 * @return int	id_user
 	 */
 	public function getAuthorId()
 	{
@@ -356,6 +356,22 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * the locked attribute remove modification rights for other person than the event author
+	 * return true if the locked attribute is set
+	 * @return bool
+	 */
+	public function isLocked()
+	{
+		$data = $this->getData();
+		if (isset($data['block'])) {
+			return 'Y' === $data['block'];
+		}
+		
+		return false;
 	}
 
 }

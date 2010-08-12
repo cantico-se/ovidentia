@@ -504,9 +504,10 @@ function site_menu6($id)
 				BAB_CAL_ACCESS_NONE => bab_translate("None"),
 				BAB_CAL_ACCESS_VIEW => bab_translate("Consultation"), 
 				BAB_CAL_ACCESS_UPDATE => bab_translate("Creation and modification"), 
-				BAB_CAL_ACCESS_FULL => bab_translate("Full access"), 
 				BAB_CAL_ACCESS_SHARED_UPDATE => bab_translate("Shared creation and modification"),
-				BAB_CAL_ACCESS_SHARED_FULL => bab_translate("Shared full access"));
+				BAB_CAL_ACCESS_FULL => bab_translate("Full access")
+				
+			);
 			
 			$this->site_configuration_cls($id);
 

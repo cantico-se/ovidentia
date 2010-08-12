@@ -241,41 +241,41 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	if ($personal_calendar)
 	{
 		$event->addCalendar($personal_calendar);
+	}
+	
+	
+	if($personal_calendar || $babBody->babsite['iPersonalCalendarAccess'] == 'Y')
+	{
+		$query = "
+			select 
+				cut.*, 
+				ct.owner, 
+				u.firstname,
+				u.lastname 
 
-		if($babBody->babsite['iPersonalCalendarAccess'] == 'Y')
+			from ".BAB_CALACCESS_USERS_TBL." cut 
+				left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
+				left join ".BAB_USERS_TBL." u on u.id=ct.owner 
+			where 
+				id_user='".$babDB->db_escape_string($event->getAccessUser())."' and ct.actif='Y' and disabled='0'
+		";
+		$res = $babDB->db_query($query);
+
+		while( $arr = $babDB->db_fetch_assoc($res))
 		{
+			$data = array(
 			
-			$query = "
-				select 
-					cut.*, 
-					ct.owner, 
-					u.firstname,
-					u.lastname 
-	
-				from ".BAB_CALACCESS_USERS_TBL." cut 
-					left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
-					left join ".BAB_USERS_TBL." u on u.id=ct.owner 
-				where 
-					id_user='".$babDB->db_escape_string($event->getAccessUser())."' and ct.actif='Y' and disabled='0'
-			";
-			$res = $babDB->db_query($query);
-	
-			while( $arr = $babDB->db_fetch_assoc($res))
-			{
-				$data = array(
-				
-					'idcal' 		=> $arr['id_cal'],
-					'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
-					'description' 	=> '',
-					'idowner' 		=> $arr['owner'],
-					'access' 		=> $arr['bwrite']
-				
-				);
-				
-				$calendar = $backend->PersonalCalendar();
-				$calendar->init($event->getAccessUser(), $data);
-				$event->addCalendar($calendar);
-			}
+				'idcal' 		=> $arr['id_cal'],
+				'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
+				'description' 	=> '',
+				'idowner' 		=> $arr['owner'],
+				'access' 		=> $arr['bwrite']
+			
+			);
+
+			$calendar = $backend->PersonalCalendar();
+			$calendar->init($event->getAccessUser(), $data);
+			$event->addCalendar($calendar);
 		}
 	}
 }

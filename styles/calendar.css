@@ -115,6 +115,7 @@ a img {
 	background-color:#fff;
 	padding: .15em .5em;
 	margin:.2em;
+	border-radius: 3px;
 	-moz-border-radius:3px;
 	border:#fff 1px solid;
 	}
@@ -243,7 +244,7 @@ a img {
 	
 	
 #bab_calmonth .calendar {
-	border:#666 1px solid;
+	border:#aaa 1px solid;
 	margin:4px 0 4px 0;
 	background-color:#fff;
 	}
@@ -253,7 +254,7 @@ a img {
 	padding:2px;
 	margin:0;
 	text-align:center;
-	border-bottom:#666 1px dashed;
+	border-bottom:#aaa 1px dashed;
 	}
 
 #bab_calmonth .event {

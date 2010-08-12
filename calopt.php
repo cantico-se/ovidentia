@@ -80,7 +80,9 @@ function accessCalendar($calid, $urla)
 function addAccessUsers($aCalUserAccess, $iIdCalendar)
 {
 	global $BAB_SESS_USERID;
-	if((int) $iIdCalendar !== (int) bab_getCalendarId($BAB_SESS_USERID, 1))
+	
+	$personal = bab_getICalendars()->getPersonalCalendar();
+	if((int) $iIdCalendar !== (int) $personal->getUid())
 	{
 		return;
 	}
@@ -165,8 +167,13 @@ function cal_half_working_days($day) {
 
 
 
-
-function calendarOptions($calid, $urla)
+/**
+ * 
+ * @param int $calid
+ * @param string $urla
+ * @return unknown_type
+ */
+function calendarOptions($urla)
 	{
 	global $babBody;
 
@@ -179,11 +186,11 @@ function calendarOptions($calid, $urla)
 			var $sCalAccessSelected		= '';
 			var $iSelectedCalAccess		= -1;
 			
-		function temp($calid, $urla)
+		function temp($urla)
 			{
 			include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 			global $babBody, $babDB, $BAB_SESS_USERID;
-			$this->calid = $calid;
+			
 			$this->urla = bab_toHtml($urla);
 			$this->calweekdisptxt = bab_translate("Days to display");
 			$this->calweekworktxt = bab_translate("Working days");
@@ -218,9 +225,9 @@ function calendarOptions($calid, $urla)
 				BAB_CAL_ACCESS_NONE => bab_translate("None"),
 				BAB_CAL_ACCESS_VIEW => bab_translate("Consultation"), 
 				BAB_CAL_ACCESS_UPDATE => bab_translate("Creation and modification"), 
-				BAB_CAL_ACCESS_FULL => bab_translate("Full access"), 
 				BAB_CAL_ACCESS_SHARED_UPDATE => bab_translate("Shared creation and modification"),
-				BAB_CAL_ACCESS_SHARED_FULL => bab_translate("Shared full access"));
+				BAB_CAL_ACCESS_FULL => bab_translate("Full access") 
+			);
 				
 			if(is_array($this->arr) && array_key_exists('iDefaultCalendarAccess', $this->arr))
 			{
@@ -460,7 +467,7 @@ function calendarOptions($calid, $urla)
 			}
 		}
 
-	$temp = new temp($calid, $urla);
+	$temp = new temp($urla);
 	
 
 		$babBody->addStyleSheet('calopt.css');
@@ -689,27 +696,25 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 }
 
 /* main */
-if(!isset($idx))
-	{
-	$idx = "options";
-	}
 
-if(!isset($urla))
-	{
-	$urla = "";
-	}
+$idx = bab_rp('idx', 'options');
+$urla = bab_rp('urla');
+
 
 
 	
 if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
 {
 	addAccessUsers($nuserid, $idcal, $urla);
+	
 }elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
 	}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
+
+$personalCalendar = bab_getICalendars()->getPersonalCalendar();
 
 switch($idx)
 	{
@@ -740,13 +745,14 @@ switch($idx)
 		}
 		
 		$babBody->title = bab_translate("Calendar Options");
-		if( bab_getICalendars()->id_percal != 0 )
+		
+		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
+		
+		if( $personalCalendar instanceof bab_PersonalCalendar )
 		{
-			accessCalendar(bab_getICalendars()->id_percal, bab_rp('urla'));
+			accessCalendar($personalCalendar->getUid(), bab_rp('urla'));
 			
-			$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
-			
-			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".bab_getICalendars()->id_percal);
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$personalCalendar->getUid());
 			
 			if( isset($urla) && !empty($urla) )
 				{
@@ -765,16 +771,14 @@ switch($idx)
 		}
 	
 		$babBody->title = bab_translate("Calendar and Vacations Options");
-		$idcal = bab_getICalendars()->id_percal;
-
-		calendarOptions($idcal, $urla);
-
 		
+		calendarOptions($urla);
+
 		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 
-		if( $idcal != 0 )
+		if( $personalCalendar instanceof bab_PersonalCalendar )
 			{
-			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$idcal."&urla=".urlencode($urla));	
+			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$personalCalendar->getUid()."&urla=".urlencode($urla));	
 			}
 
 		if( isset($urla) && !empty($urla) && bab_getICalendars()->calendarAccess() )

@@ -172,6 +172,11 @@ abstract class bab_ICalendarObject
 	
 	
 	
+	public function removeAttendees() {
+		unset($this->properties['ATTENDEE']);
+		return $this->attendees = null;
+	}
+	
 	
 	
 	
@@ -219,6 +224,13 @@ abstract class bab_ICalendarObject
 	}
 	
 	
+	public function removeRelations()
+	{
+		$this->relations = null;
+		unset($this->properties['RELATED-TO']);
+	}
+	
+	
 	
 	/**
 	 * Get all calendars stored as attendees and relations
@@ -262,7 +274,7 @@ abstract class bab_ICalendarObject
 			{
 				foreach($value as $k => $v) {
 					if (is_numeric($k)) {
-						$return[] = $property.':'.$v;
+						$return[] = $v;
 					} else {
 						$return[] = $k.':'.$v;
 					}

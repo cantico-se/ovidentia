@@ -618,7 +618,6 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			$this->t_event_owner = bab_translate("Event owner");
 			$this->calid = $calendar->getUrlIdentifier();
 			$this->evtid = $event->getProperty('UID');
-			$this->bmodif = false;
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
@@ -645,6 +644,8 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			
 			$data = $event->getData();
 			
+			$cat = bab_getCalendarCategory($event->getProperty('CATEGORIES'));
+			
 			$this->evtarr = array(
 			
 				'title' 				=> $event->getProperty('SUMMARY'),
@@ -653,7 +654,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 				'location' 				=> $event->getProperty('LOCATION'),
 				'start_date' 			=> date('Y-m-d H:i:s', $event->ts_begin),
 				'end_date' 				=> date('Y-m-d H:i:s', $event->ts_end),
-				'id_cat' 				=> bab_getCalendarCategory($event->getProperty('CATEGORIES')),
+				'id_cat' 				=> $cat['id'],
 				'color' 				=> $event->getColor(),
 				'bprivate' 				=> 'PUBLIC' === $event->getProperty('CLASS') ? 'N' : 'Y',
 				'block' 				=> $data['block'],
@@ -661,7 +662,8 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			);
 			
 			
-			$this->bmodif = $calendar->canUpdateEvent($event);
+			
+			$this->bdelete = $calendar->canDeleteEvent($event);
 			
 			
 			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
@@ -1006,10 +1008,18 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 		throw new Exception('Access denied to calendar');
 	}
 	
+	
+	
+	
 	$backend = $calendar->getBackend();
 	/* TODO : use the collection in parameter in a secure way */
 	$collection = $backend->CalendarEventCollection();
 	$event = $backend->getPeriod($collection, $evtid);
+	
+	if (!$calendar->canUpdateEvent($event))
+	{
+		throw new Exception('Access denied to event modification');
+	}
 	
 	
 	$temp = new temp($calendar, $cci, $view, $date, $event);
@@ -1179,12 +1189,24 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
 	
+	// test access on all collection
+	
 	foreach($collection as $period)
 	{
+		if (!$calendar->canDeleteEvent($period))
+		{
+			return false;
+		}
+	}
+	
+	
+	foreach($collection as $period)
+	{
+
 		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
 		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
 		
-		$backend->deletePeriod($collection, $evtid);
+		$backend->deletePeriod($collection, $period->getProperty('UID'));
 	}
 	
 	

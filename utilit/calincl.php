@@ -81,8 +81,9 @@ function bab_getCalendarOwnerAndType($idcal)
 
 
 /**
- * @deprecated
+ * 
  *
+ */
 function bab_getCalendarOwnerName($idcal, $type='')
 {
 	global $babDB;
@@ -110,7 +111,7 @@ function bab_getCalendarOwnerName($idcal, $type='')
 
 	return $ret;
 }
-*/
+
 
 
 /**
@@ -160,7 +161,7 @@ function bab_getCalendarCategory($nameorid)
 	}
 	
 	
-	$query = 'SELECT id, name, description, color FROM '.BAB_CAL_CATEGORIES_TBL." WHERE ";
+	$query = 'SELECT id, name, description, bgcolor FROM '.BAB_CAL_CATEGORIES_TBL." WHERE ";
 	
 	if (is_numeric($nameorid)) {
 		$query .= "id=".$babDB->quote($nameorid);
@@ -225,7 +226,7 @@ function getAvailableUsersCalendars($bwrite = false)
 			{
 			if( $bwrite )
 				{
-				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_FULL)
+				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
 					{
 					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
 					}

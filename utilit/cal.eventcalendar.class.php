@@ -260,17 +260,32 @@ abstract class bab_EventCalendar
 	
 	
 	/**
-	 * Test if the creation of the event require an approbation sheme instance validation
-	 * return true if the event must be created with a waiting status 
-	 * or return false if the event must be created with a approved status
+	 * Get default attendee PARTSTAT property value for new attendee associated to an event of this calendar
+	 * The calendar as given parameter must return an interger value with the method getIdUser
+	 * the return value will be one of the following values from the iCalendar spec :
+	 * <ul>
+	 * 	<li>NEEDS-ACTION : the event will appear on the attendee calendar and request validation from him (default value)</li>
+	 *  <li>ACCEPTED : the event will appear on the attendee calendar</li>
+	 *  <li>DECLINED : the event will not appear on the attendee calendar</li>
+	 *  <li>TENTATIVE : not supported by ovidentia user interface</li>
+	 *  <li>DELEGATED : not supported by ovidentia user interface</li>
+	 * </ul>
 	 * 
-	 * @param	bab_calendarPeriod 	$event
+	 * @link http://www.kanzaki.com/docs/ical/partstat.html
 	 * 
-	 * @return bool
+	 * @see bab_EventCalendar::getIdUser()
+	 * 
+	 * @param	bab_EventCalendar	$calendar			A calendar with an user associated to it
+	 * 
+	 * @return 	string
 	 */
-	abstract public function useApprobationSheme(bab_calendarPeriod $event);
+	public function getDefaultAttendeePARTSTAT(bab_EventCalendar $calendar)
+	{
+		return 'NEEDS-ACTION';
+	}
 	
 	
+
 
 	/**
 	 * Get backend to use for this calendar
@@ -335,18 +350,17 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 class bab_PersonalCalendar extends bab_OviEventCalendar 
 {
 	/**
-	 * Access level for calendar sharing
+	 * Access level for calendar sharing of the access_user
 	 * 
 	 * BAB_CAL_ACCESS_NONE
 	 * BAB_CAL_ACCESS_VIEW
 	 * BAB_CAL_ACCESS_UPDATE
 	 * BAB_CAL_ACCESS_FULL
 	 * BAB_CAL_ACCESS_SHARED_UPDATE
-	 * BAB_CAL_ACCESS_SHARED_FULL
 	 *  
 	 * @var int
 	 */
-	private $sharing_access = BAB_CAL_ACCESS_VIEW;
+	private $sharing_access = BAB_CAL_ACCESS_NONE;
 	
 	/**
 	 * @param	int		$access_user	id of user to test access for
@@ -378,11 +392,62 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * Test if an event can be added on a calendar
 	 * @return bool
 	 */
-	public function canAddEvent() {
+	public function canAddEvent() 
+	{
 		switch($this->sharing_access) {
-			case BAB_CAL_ACCESS_SHARED_FULL:
+			case BAB_CAL_ACCESS_SHARED_UPDATE:
+			case BAB_CAL_ACCESS_UPDATE:
 			case BAB_CAL_ACCESS_FULL:
 				return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Test if the event has been created by a member of the same "shared access" group
+	 * @param bab_calendarPeriod $event
+	 * @return bool
+	 */
+	private function isSharedAccess(bab_calendarPeriod $event)
+	{
+		if ($this->sharing_access != BAB_CAL_ACCESS_SHARED_UPDATE)
+		{
+			return false;
+		}
+
+		// shared access on calendar for access user
+
+		$author = $event->getAuthorId();
+		
+		if (!isset($author))
+		{
+			return false;
+		}
+		
+		
+		if ($this->access_user == $author) 
+		{
+			// i am the author
+			return true;
+		}
+		
+		global $babDB;
+		
+		$res = $babDB->db_query('
+			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.' 
+			WHERE 
+				id_cal='.$babDB->quote($this->getUid()).' 
+				AND id_user='.$babDB->quote($author).'
+				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).' 
+			');
+		
+		
+		if (0 !== $babDB->db_num_rows($res))
+		{
+			// shared access on calendar for author
+			return true;
 		}
 		
 		return false;
@@ -394,18 +459,31 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
-	public function canUpdateEvent(bab_calendarPeriod $event) {
+	public function canUpdateEvent(bab_calendarPeriod $event) 
+	{
 		
 		if ($this->access_user == $event->getAuthorId()) {
+			// i am the author
 			return true;
 		}
 		
+		if ($event->isLocked()) {
+			return false;
+		}
+		
+		
 		switch($this->sharing_access) {
-			case BAB_CAL_ACCESS_SHARED_UPDATE:
-			case BAB_CAL_ACCESS_SHARED_FULL:
+			
 			case BAB_CAL_ACCESS_UPDATE:
+				return ($this->access_user == $event->getAuthorId());
+				
+			case BAB_CAL_ACCESS_SHARED_UPDATE:
+				return $this->isSharedAccess($event);
+				
 			case BAB_CAL_ACCESS_FULL:
 				return true;
+				
+			
 		}
 		
 		return false;
@@ -417,49 +495,53 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
-	public function canDeleteEvent(bab_calendarPeriod $event) {
-		
-		if ($this->access_user == $event->getAuthorId()) {
-			return true;
-		}
-		
-		switch($this->sharing_access) {
-			case BAB_CAL_ACCESS_SHARED_FULL:
-			case BAB_CAL_ACCESS_FULL:
-				return true;
-		}
-		
-		return false;
+	public function canDeleteEvent(bab_calendarPeriod $event) 
+	{
+		return $this->canUpdateEvent($event);
 	}
 	
 	
 	
 	/**
-	 * Test if the creation of the event require an approbation sheme instance validation
-	 * return true if the event must be created with a waiting status 
-	 * or return false if the event must be created with a approved status
+	 * Get default attendee PARTSTAT property value for new attendee associated to an event of this calendar
+	 * The calendar as given parameter must return an interger value with the method getIdUser
+	 * the return value will be one of the following values from the iCalendar spec :
+	 * <ul>
+	 * 	<li>NEEDS-ACTION : the event will appear on the attendee calendar and request validation from him (default value)</li>
+	 *  <li>ACCEPTED : the event will appear on the attendee calendar</li>
+	 * </ul>
+	 * if the user is the attendee or if the user have full access, the attendee is considered accepted
 	 * 
-	 * @param	bab_calendarPeriod 	$event
+	 * @link http://www.kanzaki.com/docs/ical/partstat.html
 	 * 
-	 * @return bool
+	 * @see bab_EventCalendar::getIdUser()
+	 * 
+	 * @param	bab_EventCalendar	$calendar			A calendar with an user associated to it
+	 * 
+	 * @return 	string
 	 */
-	public function useApprobationSheme(bab_calendarPeriod $event) {
+	public function getDefaultAttendeePARTSTAT(bab_EventCalendar $calendar)
+	{
+		if ($this->access_user == $calendar->getIdUser())
+		{
+			// I add myself as attendee on an event
+			return 'ACCEPTED';
+		}
 		
-		if( $this->getIdUser() ==  $GLOBALS['BAB_SESS_USERID'] )
-			{
-			return false;
-			}
-		elseif($this->sharing_access == BAB_CAL_ACCESS_UPDATE || $this->sharing_access == BAB_CAL_ACCESS_SHARED_UPDATE)
-			{
-			return true;
-			}
-		elseif($this->sharing_access == BAB_CAL_ACCESS_FULL || $this->sharing_access == BAB_CAL_ACCESS_SHARED_FULL)
-			{
-			return false;
-			}
+		switch($this->sharing_access) {
+
+			case BAB_CAL_ACCESS_FULL:
+				// i have full access on the calendar where the event is
+				return 'ACCEPTED';
+		}
 		
-		return true;
+		return 'NEEDS-ACTION';
 	}
+	
+	
+	
+	
+
 }
 
 
@@ -524,23 +606,7 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 	
 	
 	
-	/**
-	 * Test if the creation of the event require an approbation sheme instance validation
-	 * return true if the event must be created with a waiting status 
-	 * or return false if the event must be created with a approved status
-	 * 
-	 * @param	bab_calendarPeriod 	$event
-	 * 
-	 * @return bool
-	 */
-	public function useApprobationSheme(bab_calendarPeriod $event) {
-		
-		if($this->getApprobationSheme()) {
-			return true;			
-		}
-		
-		return false;
-	}
+
 }
 
 
@@ -604,24 +670,5 @@ class bab_RessourceCalendar extends bab_OviEventCalendar
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
-	
-	
-	/**
-	 * Test if the creation of the event require an approbation sheme instance validation
-	 * return true if the event must be created with a waiting status 
-	 * or return false if the event must be created with a approved status
-	 * 
-	 * @param	bab_calendarPeriod 	$event
-	 * 
-	 * @return bool
-	 */
-	public function useApprobationSheme(bab_calendarPeriod $event) {
-		
-		if($this->getApprobationSheme()) {
-			return true;			
-		}
-		
-		return false;
-	}
 	
 }

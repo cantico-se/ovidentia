@@ -217,18 +217,19 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	}
 	
 	$collection->addPeriod($period);
-	$collection->hash = $oldcollection->hash;
-
+	if (isset($oldcollection))
+	{
+		$collection->hash = $oldcollection->hash;
+	}
 	
 	if ($args['evtid']) {
 		$period->setProperty('UID', $args['evtid']);
 	}
 	
-	$period->setProperty('DTSTART', $begin->getICal());
-	$period->setProperty('DTEND', $end->getICal());
+	$period->setDates($begin, $end);
 	
 	$period->setProperty('SUMMARY', $args['title']);
-	$period->setProperty('DESCRIPTION', strip_tags($args['description'])); // Text version of description within ICAL property
+	$period->setProperty('DESCRIPTION', trim(strip_tags($args['description']))); // Text version of description within ICAL property
 	
 	if ('Y' === $args['private']) {
 		$period->setProperty('CLASS', 'PRIVATE');
@@ -258,7 +259,10 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	
 	$calendar = $collection->getCalendar();
+	$period->removeAttendees();
+	$period->removeRelations();
 	
+
 	// Attendee
 	// add additional calendars as attendee property
 	$calendars = bab_getICalendars()->getCalendars();
@@ -267,39 +271,39 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		if (isset($calendars[$idcal]))
 		{
 			$attendee = $calendars[$idcal];
+			$id_user = $attendee->getIdUser();
 			
-			if ($id_user = $attendee->getIdUser())
+			
+			if ($id_user)
 			{
-				if ($idcal === $calendar->getUrlIdentifier()) {
+				$partstat = $calendar->getDefaultAttendeePARTSTAT($attendee);
+				
+				if ($idcal === $attendee->getUrlIdentifier()) {
 					$role = 'CHAIR';
-					$partstat = 'ACCEPTED';
-					$rsvp = 'FALSE';
 					
 					// set as organizer
-					$period->setProperty('ORGANIZER;CN='.$calendar->getName(), 'MAILTO:'.bab_getUserEmail($id_user));
+					$period->setProperty('ORGANIZER;CN='.$attendee->getName(), 'MAILTO:'.bab_getUserEmail($id_user));
 					
 					// set as parent
-					$period->addRelation('PARENT', $calendar);
+					$period->addRelation('PARENT', $attendee);
 					
 					
 				} else {
 					$role = 'REQ-PARTICIPANT';
-					$partstat = 'NEEDS-ACTION';
-					$rsvp = 'TRUE';
 				}
 				
-				$period->addAttendee($attendee, $role, $partstat, $rsvp);
+				$period->addAttendee($attendee, $role, $partstat);
 				
 			} else {
 				
-				// calendar is not a user
+				// $attendee is not a user
 			
-				if ($idcal === $calendar->getUrlIdentifier()) {
+				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
 					
-					$period->addRelation('PARENT', $calendar);
+					$period->addRelation('PARENT', $attendee);
 					
 				} else {
-					$period->addRelation('CHILD', $calendar);
+					$period->addRelation('CHILD', $attendee);
 				}
 			}
 		}
@@ -532,7 +536,7 @@ function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
 	switch($arr['type'])
 	{
 		case BAB_CAL_USER_TYPE:
-			if( count($arrevtids) > 0 && ($arr['access'] == BAB_CAL_ACCESS_FULL || $arr['access'] == BAB_CAL_ACCESS_SHARED_FULL))
+			if( count($arrevtids) > 0 && ($arr['access'] == BAB_CAL_ACCESS_FULL))
 				{
 				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."' where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal));
 				notifyEventApprobation($evtid, $bconfirm, $comment, bab_translate("Personal calendar"));
@@ -1657,15 +1661,6 @@ class bab_event_posted {
 		}
 		
 		
-		if (isset($this->args['until'])) {
-			$repeatdate = bab_event_posted::getDateTime($this->args['until']);
-			$repeatdate->add(1, BAB_DATETIME_DAY);
-				
-			if( $repeatdate->getTimeStamp() < $end) {
-				$msgerror = bab_translate("Repeat date must be older than end date");
-				return false;
-			}
-		}
 		
 		
 		
@@ -1681,6 +1676,20 @@ class bab_event_posted {
 		
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate']);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate']);
+		}
+		
+		
+		
+		
+	
+		if (isset($this->args['until'])) {
+			$repeatdate = bab_event_posted::getDateTime($this->args['until']);
+			$repeatdate->add(1, BAB_DATETIME_DAY);
+				
+			if( $repeatdate->getTimeStamp() < $end->getTimeStamp()) {
+				$msgerror = bab_translate("Repeat date must be older than end date");
+				return false;
+			}
 		}
 		
 	
@@ -1723,8 +1732,6 @@ class bab_event_posted {
 			
 			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
 		}
-		
-		
 		
 		return $this->calendarPeriod;
 	}

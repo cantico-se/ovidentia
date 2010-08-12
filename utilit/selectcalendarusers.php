@@ -66,7 +66,6 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$this->sAccessUpdate				= bab_translate("Creation and modification");
 		$this->sAccessFull					= bab_translate("Full access");
 		$this->sAccessSharedUpdate			= bab_translate("Shared creation and modification");
-		$this->sAccessSharedFull			= bab_translate("Shared full access");
 		$this->sGrapCaption					= bab_translate("Grab users");
 		$this->sDropCaption					= bab_translate("Drop users");
 		$this->sSelect						= bab_translate("Select");
@@ -75,13 +74,19 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$this->sMoveTo						= bab_translate("Move to");
 		$this->sWildcard					= bab_translate("The character * allows you to retrieve a list of all users");
 		
+		$this->sAccessUpdateHelp			= bab_translate("The selected users will be able to create events on your personal calendar. Each user can modify and delete events he created on your calendar. They can't modify or delete events you created. You will have to approve new appointments.");
+		$this->sAccessFullHelp				= bab_translate("The selected users will be able to create, modify and delete events of your personal calendar without any validation.");
+		$this->sAccessSharedUpdateHelp		= bab_translate("The selected users will be able to create events on your  personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.");
+
 		$sCleanSessVar = (null == bab_rp('sCleanSessVar', null)) ? 'Y' : 'N';
 		
-		$this->aSessionKey = array(BAB_CAL_ACCESS_VIEW => 'bab_calAccessView', 
-			BAB_CAL_ACCESS_UPDATE => 'bab_calAccessUpdate', 
-			BAB_CAL_ACCESS_FULL => 'bab_calAccessFull', 
-			BAB_CAL_ACCESS_SHARED_UPDATE => 'bab_calAccessSharedUpdate',
-			BAB_CAL_ACCESS_SHARED_FULL => 'bab_calAccessSharedFull');
+		$this->aSessionKey = array(
+			BAB_CAL_ACCESS_VIEW 			=> 'bab_calAccessView', 
+			BAB_CAL_ACCESS_UPDATE 			=> 'bab_calAccessUpdate', 
+			BAB_CAL_ACCESS_SHARED_UPDATE 	=> 'bab_calAccessSharedUpdate',
+			BAB_CAL_ACCESS_FULL 			=> 'bab_calAccessFull'
+			
+		);
 
 		foreach($this->aSessionKey as $iAccess => $sArrayName)
 		{
@@ -108,9 +113,12 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$sAccess = mb_substr($sButtonName, mb_strlen('sGrabAccess'));
 		if(false !== $sAccess)
 		{
-			$aAccess = array('View' => BAB_CAL_ACCESS_VIEW, 'Update' => BAB_CAL_ACCESS_UPDATE, 
-				'Full' => BAB_CAL_ACCESS_FULL, 'SharedUpdate' => BAB_CAL_ACCESS_SHARED_UPDATE, 
-				'SharedFull' => BAB_CAL_ACCESS_SHARED_FULL);
+			$aAccess = array(
+				'View' => BAB_CAL_ACCESS_VIEW, 
+				'Update' => BAB_CAL_ACCESS_UPDATE, 
+				'SharedUpdate' => BAB_CAL_ACCESS_SHARED_UPDATE, 
+				'Full' => BAB_CAL_ACCESS_FULL
+			);
 			
 			if(array_key_exists($sAccess, $aAccess))
 			{
@@ -127,9 +135,12 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		$sAccess = mb_substr($sButtonName, mb_strlen('sGrabAccess'));
 		if(false !== $sAccess)
 		{
-			$aAccess = array('View' => 'aAccessView', 'Update' => 'aAccessUpdate', 
-				'Full' => 'aAccessFull', 'SharedUpdate' => 'aAccessSharedUpdate', 
-				'SharedFull' => 'aAccessSharedFull');
+			$aAccess = array(
+				'View' => 'aAccessView', 
+				'Update' => 'aAccessUpdate', 
+				'SharedUpdate' => 'aAccessSharedUpdate', 
+				'Full' => 'aAccessFull'
+			);
 			
 			if(array_key_exists($sAccess, $aAccess))
 			{
@@ -199,9 +210,12 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 					$_SESSION[$sArrayName] = array();
 				}
 				
-				$aInputBtnName = array('sGrabAccessView', 'sGrabAccessUpdate', 
-					'sGrabAccessFull', 'sGrabAccessSharedUpdate',
-					'sGrabAccessSharedFull');
+				$aInputBtnName = array(
+					'sGrabAccessView', 
+					'sGrabAccessUpdate', 
+					'sGrabAccessSharedUpdate',
+					'sGrabAccessFull'
+				);
 				
 				foreach($aInputBtnName as $sBtnName) 
 				{
@@ -227,7 +241,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 			case 'sGrabAccessUpdate':
 			case 'sGrabAccessFull':
 			case 'sGrabAccessSharedUpdate':
-			case 'sGrabAccessSharedFull':
+			
 				if(isset($_POST['aSearchResult']) && 0 < count($_POST['aSearchResult'])) 
 				{
 					$sKey = $this->getSessionKeyByInputBtnName($act);
@@ -248,7 +262,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 			case 'sDropAccessUpdate':
 			case 'sDropAccessFull':
 			case 'sDropAccessSharedUpdate':
-			case 'sDropAccessSharedFull':
+			
 				$sArrayName = $this->getArrayNameKeyByInputBtnName($act);
 				if(!is_null($sArrayName))
 				{

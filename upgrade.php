@@ -6276,5 +6276,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$functionalities->register('CalendarBackend'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
 	$functionalities->register('CalendarBackend/Ovi'	, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
 	
+	
+	// remove the BAB_CAL_ACCESS_SHARED_FULL
+	$babDB->db_query("UPDATE  `".BAB_CALACCESS_USERS_TBL."` SET bwrite=".$babDB->quote(BAB_CAL_ACCESS_FULL).' WHERE bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_FULL));
+	
 	return true;
 }

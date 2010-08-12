@@ -161,11 +161,6 @@ document.observe('dom:loaded', function(){
 	    callback: function() {
 	      bab_moveSelection('oAccessView', 'oAccessSharedUpdate');
 	    }
-	  },{
-	    name: '{ sMoveTo } { sAccessSharedFull }',
-	    callback: function() {
-	      bab_moveSelection('oAccessView', 'oAccessSharedFull');
-	    }
 	  }
 	]
 	
@@ -191,11 +186,6 @@ document.observe('dom:loaded', function(){
 	    name: '{ sMoveTo } { sAccessSharedUpdate }',
 	    callback: function() {
 	      bab_moveSelection('oAccessUpdate', 'oAccessSharedUpdate');
-	    }
-	  },{
-	    name: '{ sMoveTo } { sAccessSharedFull }',
-	    callback: function() {
-	      bab_moveSelection('oAccessUpdate', 'oAccessSharedFull');
 	    }
 	  }
 	]
@@ -223,11 +213,6 @@ document.observe('dom:loaded', function(){
 	    callback: function() {
 	      bab_moveSelection('oAccessFull', 'oAccessSharedUpdate');
 	    }
-	  },{
-	    name: '{ sMoveTo } { sAccessSharedFull }',
-	    callback: function() {
-	      bab_moveSelection('oAccessFull', 'oAccessSharedFull');
-	    }
 	  }
 	]
 	new Proto.Menu({
@@ -252,11 +237,6 @@ document.observe('dom:loaded', function(){
 	    name: '{ sMoveTo } { sAccessFull }',
 	    callback: function() {
 	      bab_moveSelection('oAccessSharedUpdate', 'oAccessFull');
-	    }
-	  },{
-	    name: '{ sMoveTo } { sAccessSharedFull }',
-	    callback: function() {
-	      bab_moveSelection('oAccessSharedUpdate', 'oAccessSharedFull');
 	    }
 	  }
 	]
@@ -362,6 +342,7 @@ bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; 
 						</td>
 						<td valign="top">
 							<h5>{ sAccessUpdate }</h5>
+							<div>{ sAccessUpdateHelp }</div>
 							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessUpdate'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessUpdate" name="aAccessUpdate[]" multiple="multiple" size="3" style="width:100%">
@@ -379,6 +360,7 @@ bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; 
 						</td>
 						<td valign="top">
 							<h5>{ sAccessFull }</h5>
+							<div>{ sAccessFullHelp }</div>
 							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessFull'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessFull'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessFull" name="aAccessFull[]" multiple="multiple" size="3" style="width:100%">
@@ -396,6 +378,7 @@ bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; 
 						</td>
 						<td valign="top">
 							<h5>{ sAccessSharedUpdate }</h5>
+							<div>{ sAccessSharedUpdateHelp }</div>
 							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessSharedUpdate'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessSharedUpdate'); return false;">{ sNone }</a>
 							<br />
 							<select id="oAccessSharedUpdate" name="aAccessSharedUpdate[]" multiple="multiple" size="3" style="width:100%">
@@ -406,22 +389,7 @@ bab_initFunctions.push(function() { document.onmousemove = bab_tooltipPosition; 
 						</td>
 					</tr>
 					
-					<tr> 
-						<td valign="middle" align="center">
-							<p><input class="bab_grabUser" type="submit" name="act[sGrabAccessSharedFull]" value="{ sGrapCaption }" /></p>
-							<p><input class="bab_dropUser" type="submit" name="act[sDropAccessSharedFull]" value="{ sDropCaption }" /></p>
-						</td>
-						<td valign="top">
-							<h5>{ sAccessSharedFull }</h5>
-							{ sSelect }:&nbsp;<a href="#" onclick="bab_selectAllOption('oAccessSharedFull'); return false;">{ sAll }</a>,&nbsp;<a href="#" onclick="bab_deselectAllOption('oAccessSharedFull'); return false;">{ sNone }</a>
-							<br />
-							<select id="oAccessSharedFull" name="aAccessSharedFull[]" multiple="multiple" size="3" style="width:100%">
-								<!--#in _getNextAccessSharedFullItem -->
-								<option value="{ id_user }">{ username }</option>
-								<!--#endin _getNextAccessSharedFullItem -->
-							</select>
-						</td>
-					</tr>
+					
 		
 					<tr>
 						<td colspan="3" align="center">

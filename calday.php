@@ -45,14 +45,14 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->maxidx = ($this->endwtime - $this->startwtime ) * (60/$this->elapstime) +1;
 
 		$time1 = mktime( 0,0,0, $this->month, $this->day, $this->year);
-		$time2 = $time1 + 24*3600;
+		$time2 = mktime( 0,0,0, $this->month, $this->day + 1, $this->year);
 		
 		$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $time1), date("n", $time1), date("j", $time1));
 		$this->dayname = bab_toHtml(bab_longDate($time1, false));
 		$this->week = bab_toHtml(bab_translate("week").' '.date('W',$time1));
 
 		$this->iso_time1 = sprintf("%s-%02s-%02s 00:00:00", date("Y", $time1), date("n", $time1), date("j", $time1));
-		$this->iso_time2 = sprintf("%04s-%02s-%02s 23:59:59", date("Y", $time2), date("n", $time2), date("j", $time2));
+		$this->iso_time2 = sprintf("%04s-%02s-%02s 00:00:00", date("Y", $time2), date("n", $time2), date("j", $time2));
 
 		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
 		
@@ -79,6 +79,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		function prepare_free_events() {
 			$this->prepare_events();
+			
 			$this->whObj = bab_mcalendars::create_events($this->iso_time1, $this->iso_time2, $this->idcals);
 		}
 
@@ -167,8 +168,8 @@ class cal_dayCls extends cal_wmdbaseCls
 					{
 					$calPeriod = & $this->harray[$this->cindex-1][$this->icols][$i];
 
-					if( $calPeriod->getProperty('DTEND') > $this->startdt && 
-						$calPeriod->getProperty('DTSTART') < $this->enddt )
+					if( $calPeriod->ts_end > bab_mktime($this->startdt) && 
+						$calPeriod->ts_begin < bab_mktime($this->enddt) )
 						{
 						$this->createCommonEventVars($calPeriod);
 						if( !isset($this->bfirstevents[$this->cindex-1][$this->idevent]) )

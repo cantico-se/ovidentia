@@ -310,7 +310,7 @@ class bab_PeriodCriteriaFactory
 	
 	/**
 	 * 
-	 * @param array | bab_PeriodCollection $collection
+	 * @param array | bab_PeriodCollection $collection			array of collection classname or collections instances | instance or classname of a collection
 	 * @return bab_PeriodCriteriaCollection
 	 */
 	public function Collection($collection = null)

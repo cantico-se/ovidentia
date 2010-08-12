@@ -98,12 +98,6 @@ class bab_UserPeriods implements Iterator, Countable {
 	private $gn_events = NULL;
 	
 	
-	/**
-	 * List of id_user after event initialization
-	 * @var array
-	 */
-	private $id_users;
-	
 	
 	/**
 	 * 
@@ -295,10 +289,7 @@ class bab_UserPeriods implements Iterator, Countable {
 
 		$event = new bab_eventBeforePeriodsCreated($this);
 		$this->processCriteria($criteria);
-		
 		bab_fireEvent($event);
-		$this->id_users = $event->getUsers();
-
 	}
 	
 	
@@ -509,6 +500,13 @@ class bab_UserPeriods implements Iterator, Countable {
 	 * @return  bool					return false on failure
 	 */
 	public function setAvailability($period, $available) {
+		
+		if (!isset($this->boundaries[$period->ts_begin]))
+		{
+			// No boundary found for event
+			return false;
+		}
+		
 		$boundary = $this->boundaries[$period->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
 			if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
@@ -599,9 +597,11 @@ class bab_UserPeriods implements Iterator, Countable {
 		
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
+		
+		$global_users = $this->getUsers();
 
 		// si pas d'agenda utilisateur
-		if (!$this->id_users) {
+		if (!$global_users) {
 		
 			foreach($this->boundaries as $ts => $events) {
 				
@@ -672,8 +672,8 @@ class bab_UserPeriods implements Iterator, Countable {
 		foreach($this->boundaries as $ts => $events) {
 
 			// toutes les personnes disponibles sur le boundary
-			if ($this->id_users) {
-				$users_non_available = $this->id_users;
+			if ($global_users) {
+				$users_non_available = $global_users;
 			} else {
 				$users_non_available = array();
 			}
