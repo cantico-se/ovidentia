@@ -80,7 +80,7 @@ function bab_getSitesConfigurationMenus() {
 
 /**
  * List of sites
- * @return ressource
+ * @return resource
  */
 function bab_getSitesRes() {
 	global $babDB;

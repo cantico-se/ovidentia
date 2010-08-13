@@ -499,7 +499,7 @@ function bab_setAlarmProperties(bab_CalendarAlarm $alarm, bab_CalendarPeriod $pe
 
 
 /**
- * Approbation on public calendars and ressource calendars
+ * Approbation on public calendars and resource calendars
  * 
  * @param	string	$uid		event UID
  * @param	string	$idcal		calendar url identifier
@@ -1296,7 +1296,7 @@ function notifyEventApprovers($id_event, $users, bab_EventCalendar $calendar)
 				$this->tmp_location = $evtinfo['location'];
 				if( $calendar instanceof bab_PublicCalendar ) {
 					$this->calendartxt = bab_translate("Public calendar");
-				} elseif ($calendar instanceof bab_RessourceCalendar) {
+				} elseif ($calendar instanceof bab_ResourceCalendar) {
 					$this->calendartxt = bab_translate("Resource calendar");
 				} else {
 					$this->calendartxt = bab_translate("calendar");

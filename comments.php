@@ -34,7 +34,7 @@ function listComments($topics, $article)
 	class ListCommentsTemplate
 	{
 		/**
-		 * @var ressource
+		 * @var resource
 		 */
 		private $comments;
 

@@ -587,7 +587,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 /**
  * Get the text part of the message with mime type
  *
- * @param	ressource	$mbox			An IMAP stream returned by imap_open().
+ * @param	resource	$mbox			An IMAP stream returned by imap_open().
  * @param	int			$msg_number		The message number 
  * @param	int			$cid			Identification string for the message part
  * @param	boolean		[$structure]	Used internaly for the sub structures

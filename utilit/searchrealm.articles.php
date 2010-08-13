@@ -148,7 +148,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 	/**
 	 * Search location "dbtable"
 	 * @see bab_SearchRealmArticles::getSearchLocations()
-	 * @return ressource
+	 * @return resource
 	 */
 	private function dbtable(bab_SearchCriteria $criteria) {
 
@@ -273,7 +273,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 			$this->dbtable($criteria);
 		}
 
-		$result->setRessource($this->getResultRessource());
+		$result->setResource($this->getResultResource());
 		return $result;
 	}
 
@@ -286,9 +286,9 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 	 * The query is a join between the temporary table and the files table, 
 	 * the temporary table contain references to result and relevance key
 	 *
-	 * @return ressource
+	 * @return resource
 	 */
-	private function getResultRessource() {
+	private function getResultResource() {
 		global $babDB;
 
 		if (null === $this->sort_method) {

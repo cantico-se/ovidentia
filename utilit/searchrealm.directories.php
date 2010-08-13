@@ -530,7 +530,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		
 		bab_debug($req, DBG_INFO, 'Search');
 
-		$result->setRessource($babDB->db_query($req));
+		$result->setResource($babDB->db_query($req));
 		return $result;
 	}
 	

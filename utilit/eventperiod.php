@@ -31,7 +31,7 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 
 /**
- * Event used to collect accessibles calendars for user to display on interface
+ * Event used to collect accessible calendars for user to display on interface
  * @package events
  */
 class bab_eventCollectCalendarsBeforeDisplay extends bab_event
@@ -212,9 +212,9 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	
 	
-	// ressource calendars
+	// resource calendars
 	
-	$visible_ressource_cal = bab_getAccessibleObjects(BAB_CAL_RES_VIEW_GROUPS_TBL, $event->getAccessUser());
+	$visible_resource_cal = bab_getAccessibleObjects(BAB_CAL_RES_VIEW_GROUPS_TBL, $event->getAccessUser());
 	
 	$res = $babDB->db_query("
 		select crt.*, ct.id as idcal 
@@ -224,12 +224,12 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 		where 
 			ct.type='".BAB_CAL_RES_TYPE."' 
 			and ct.actif='Y' 
-			AND ct.id IN(".$babDB->quote($visible_ressource_cal).")
+			AND ct.id IN(".$babDB->quote($visible_resource_cal).")
 	");
 	
 	while($arr = $babDB->db_fetch_assoc($res))
 	{
-		$calendar = $backend->RessourceCalendar();
+		$calendar = $backend->ResourceCalendar();
 		$calendar->init($event->getAccessUser(), $arr);
 		$event->addCalendar($calendar);
 	}

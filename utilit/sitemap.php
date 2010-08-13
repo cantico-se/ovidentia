@@ -100,7 +100,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			throw new Exception('Empty rewrite path');
 			return null;
 		}
-		
+
 		$first = array_shift($arr);
 		
 		if (!isset($this->rewriteIndex_rn[$first]))
@@ -517,11 +517,11 @@ class bab_siteMap {
 	
 	/**
 	 * 
-	 * @param 	ressource 	$res
+	 * @param 	resource 	$res
 	 * 
 	 * @return bab_siteMapOrphanRootNode
 	 */
-	private static function buildFromRessource($res)
+	private static function buildFromResource($res)
 	{
 		global $babDB;
 		$rootNode = new bab_siteMapOrphanRootNode();
@@ -733,7 +733,7 @@ class bab_siteMap {
 		}
 		
 		
-		$rootNode = self::buildFromRessource($res);
+		$rootNode = self::buildFromResource($res);
 		
 		$cache[$cachekey] = $rootNode;
 		

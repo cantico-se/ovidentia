@@ -27,10 +27,10 @@ include_once 'base.php';
 
 
 /**
- * Get Faqs as mysql ressource or false if no accessible faq
+ * Get Faqs as mysql resource or false if no accessible faq
  * @param	false|array	$faqid			: array of id or false for all accessible faq
  * @param	false|int	$delegationid	: if delegationid is false, faq are not filtered
- * @return 	ressource|false
+ * @return 	resource|false
  */
 function bab_getFaqRes($faqid, $delegationid) {
 

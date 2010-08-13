@@ -116,7 +116,7 @@ class bab_SearchRealmArticlesComments extends bab_SearchRealmTopic {
 	/**
 	 * Search location "dbtable"
 	 * @see bab_SearchRealmArticlesComments::getSearchLocations()
-	 * @return ressource
+	 * @return resource
 	 */
 	private function dbtable(bab_SearchCriteria $criteria) {
 
@@ -164,8 +164,8 @@ class bab_SearchRealmArticlesComments extends bab_SearchRealmTopic {
 		// only one location possible in this search realm
 
 		if (isset($locations['dbtable'])) {
-			$ressource = $this->dbtable($criteria);
-			$result->setRessource($ressource);
+			$resource = $this->dbtable($criteria);
+			$result->setResource($resource);
 			return $result;
 		}
 		

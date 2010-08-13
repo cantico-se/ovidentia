@@ -224,7 +224,7 @@ class bab_ImageResize
 	 * The supported type are :
 	 * 	'image/gif', 'image/jpeg', 'image/png'
 	 *
-	 * @return resource|bool A ressource is returned on success, false on error
+	 * @return resource|bool A resource is returned on success, false on error
 	 */
 	private function createImageFromType()
 	{

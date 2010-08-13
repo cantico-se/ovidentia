@@ -360,7 +360,7 @@ class bab_searchArrayResult extends ArrayIterator {
 
 
 /**
- * Search results for mysql ressource
+ * Search results for mysql resource
  * @see bab_SearchRealm::search()
  *
  *
@@ -369,12 +369,12 @@ class bab_searchArrayResult extends ArrayIterator {
 class bab_SearchSqlResult extends bab_SearchResult {
 
 	private $key = null;
-	private $ressource = null;
+	private $resource = null;
 	private $current = null;
 
-	public function setRessource($res) {
+	public function setResource($res) {
 
-		$this->ressource = $res;
+		$this->resource = $res;
 	}
 
 	public function current() {
@@ -407,7 +407,7 @@ class bab_SearchSqlResult extends bab_SearchResult {
 	public function next() {
 		global $babDB;
 
-		if ($this->current = $babDB->db_fetch_assoc($this->ressource)) {
+		if ($this->current = $babDB->db_fetch_assoc($this->resource)) {
 			$this->key++;
 		}
 	}
@@ -420,14 +420,14 @@ class bab_SearchSqlResult extends bab_SearchResult {
 
 	public function count() {
 		global $babDB;
-		return $babDB->db_num_rows($this->ressource);
+		return $babDB->db_num_rows($this->resource);
 	}
 
 	public function seek($index) {
 		global $babDB;
 
-		if (!$this->ressource) {
-			throw new OutOfBoundsException('Invalid ressource');
+		if (!$this->resource) {
+			throw new OutOfBoundsException('Invalid resource');
 		}
 
 		if ($index >= $this->count()) {
@@ -436,7 +436,7 @@ class bab_SearchSqlResult extends bab_SearchResult {
 
 		$this->key = (int) $index;
 
-		$babDB->db_data_seek($this->ressource, $this->key);
+		$babDB->db_data_seek($this->resource, $this->key);
 	}
 
 	/**
@@ -461,7 +461,7 @@ class bab_SearchEmptyResult extends bab_SearchSqlResult {
 
 	public function __construct($realm) {
 		$this->setRealm($realm);
-		$this->setRessource(false);
+		$this->setResource(false);
 	}
 }
 

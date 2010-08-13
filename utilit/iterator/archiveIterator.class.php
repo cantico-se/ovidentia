@@ -115,7 +115,7 @@ abstract class bab_ArchiveIterator implements Iterator
 {
 	protected $sFullPathName	= null;
 	protected $iKey				= bab_ArchiveIterator::EOF;
-	protected $oRessource		= null;
+	protected $oResource		= null;
 	protected $oObject			= null;
 	
 	const EOF = -1;
@@ -156,7 +156,7 @@ abstract class bab_ArchiveIterator implements Iterator
 
 	public function next()
 	{
-		if(is_object($this->oRessource))
+		if(is_object($this->oResource))
 		{
 			$aInfo = $this->nextEntry();
 			if(isset($aInfo))
@@ -226,34 +226,34 @@ class bab_ZipIterator extends bab_ArchiveIterator
 	{
 		if(class_exists('ZipArchive'))
 		{
-			$this->oRessource = new ZipArchive();
-			if(!$this->oRessource->open($this->sFullPathName))
+			$this->oResource = new ZipArchive();
+			if(!$this->oResource->open($this->sFullPathName))
 			{
-				unset($this->oRessource);
-				$this->oRessource = null;
+				unset($this->oResource);
+				$this->oResource = null;
 				$this->iCount = 0;
 				return;	
 			}
 			
-			$this->iCount = $this->oRessource->numFiles;
+			$this->iCount = $this->oResource->numFiles;
 		}
 	}
 
 	protected function closeArchive()
 	{
-		if(is_object($this->oRessource))
+		if(is_object($this->oResource))
 		{
-			if($this->oRessource->close())
+			if($this->oResource->close())
 			{
-				unset($this->oRessource);
-				$this->oRessource = null;
+				unset($this->oResource);
+				$this->oResource = null;
 			}
 		}
 	}
 	
 	protected function nextEntry()
 	{
-		$aInfo = $this->oRessource->statIndex($this->iKey);
+		$aInfo = $this->oResource->statIndex($this->iKey);
 		if(false !== $aInfo)
 		{	
 			return $aInfo;
@@ -263,7 +263,6 @@ class bab_ZipIterator extends bab_ArchiveIterator
 	
 	protected function getObject($aInfo)
 	{
-		return new bab_ZipEntry($this->oRessource, $aInfo);
+		return new bab_ZipEntry($this->oResource, $aInfo);
 	}
 }
-?>

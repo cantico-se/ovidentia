@@ -67,7 +67,7 @@ class displayAttendeesCls
 		$this->invitationstatus = bab_translate("Status of my invitation to the appointment");
 		$this->attendeestxt = bab_translate("Attendee");
 		$this->publicstxt = bab_translate("Public calendar");
-		$this->ressourcestxt = bab_translate("Ressource");
+		$this->resourcestxt = bab_translate("Resource");
 		
 		$this->statusdef = array(
 			'NEEDS-ACTION'	=> '',
@@ -86,7 +86,7 @@ class displayAttendeesCls
 			
 		$this->attendees = $this->period->getAttendees();
 		$this->publics = array();
-		$this->ressources = array();
+		$this->resources = array();
 		
 		$relations = array_merge($this->period->getRelations('PARENT'), $this->period->getRelations('CHILD'));
 		foreach($relations as $calendar)
@@ -98,9 +98,9 @@ class displayAttendeesCls
 				$this->publics[] = $calendar;
 			}
 			
-			if ($calendar instanceof bab_RessourceCalendar)
+			if ($calendar instanceof bab_ResourceCalendar)
 			{
-				$this->ressources[] = $calendar;
+				$this->resources[] = $calendar;
 			}
 		}
 		
@@ -299,9 +299,9 @@ class displayAttendeesCls
 	}
 	
 	
-	public function getnextressource()
+	public function getnextresource()
 	{
-		if( list(,$calendar) = each($this->ressources))
+		if( list(,$calendar) = each($this->resources))
 			{
 			$this->altbg = !$this->altbg;
 			$this->name = $calendar->getName();
@@ -880,7 +880,7 @@ function displayEventDetailUpd($evtid, $idcal)
 
 
 /**
- * Approbation page for one public or ressource calendar link to an event (recurring or not)
+ * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
 function approbCalendar($evtid, $idcal)

@@ -447,7 +447,7 @@ class bab_dbdata {
 	/**
 	 * Fetch mysql resource
 	 * @since 6.6.100
-	 * @param	resource	$res	mysql ressource
+	 * @param	resource	$res	mysql resource
 	 * @return	boolean
 	 */
 	function fetchRes($res) {

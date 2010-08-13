@@ -98,7 +98,7 @@ function bab_getCurrentUserDelegation($useDefault = true)
 /**
  * @return array
  */
-function bab_getDelegationsFromRessource($res) {
+function bab_getDelegationsFromResource($res) {
 	
 	global $babDB;
 
@@ -198,7 +198,7 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 	');
 
 	
-	return bab_getDelegationsFromRessource($res);
+	return bab_getDelegationsFromResource($res);
 }
 
 
@@ -235,7 +235,7 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 	');
 
 	
-	return bab_getDelegationsFromRessource($res);
+	return bab_getDelegationsFromResource($res);
 }
 
 

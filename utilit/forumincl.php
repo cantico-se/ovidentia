@@ -29,10 +29,10 @@ define('DELTA_TIME', 86400);
 
 
 /**
- * Get Forums as mysql ressource or false if no accessible forums
+ * Get Forums as mysql resource or false if no accessible forums
  * @param	false | array		$forumid			array of id or false for all accessible forums
  * @param	false | int			$delegationid		if delegationid is false, forums are not filtered
- * @return 	ressource | false
+ * @return 	resource | false
  */
 function bab_getForumsRes($forumid = false, $delegationid = false) {
 

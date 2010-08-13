@@ -223,7 +223,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 		$result = new bab_SearchFilesResult;
 		$result->setRealm($this);
-		$result->setRessource($this->getResultRessource());
+		$result->setResource($this->getResultResource());
 
 		return $result;
 	}
@@ -505,9 +505,9 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 	 * The query is a join between the temporary table and the files table, 
 	 * the temporary table contain references to result and relevance key
 	 *
-	 * @return ressource
+	 * @return resource
 	 */
-	private function getResultRessource() {
+	private function getResultResource() {
 		global $babDB;
 
 		if (null === $this->sort_method) {
