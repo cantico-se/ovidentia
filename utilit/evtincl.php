@@ -276,7 +276,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 			
 			if ($id_user)
 			{
-				$partstat = $calendar->getDefaultAttendeePARTSTAT($attendee);
+				$partstat = $attendee->getDefaultAttendeePARTSTAT();
 				
 				if ($idcal === $attendee->getUrlIdentifier()) {
 					$role = 'CHAIR';
@@ -506,8 +506,9 @@ function bab_setAlarmProperties(bab_CalendarAlarm $alarm, bab_CalendarPeriod $pe
  * @param	int		$status		approver status				BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
  * @return unknown_type
  */
-function confirmApprobEvent($uid, $idcal, $status)
+function confirmApprobEvent($uid, $idcal, $status, $comment)
 {
+	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 	
@@ -520,13 +521,13 @@ function confirmApprobEvent($uid, $idcal, $status)
 		
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	$res = $babDB->db_query("
-		SELECT e.id, eo.idfai from 
+		SELECT e.id, eo.id_cal, eo.idfai from 
 			".BAB_CAL_EVENTS_OWNERS_TBL." eo,
 			".BAB_CAL_EVENTS_TBL." e 
 			
 		WHERE 
 				e.id = eo.id_event 
-				e.uid=".$babDB->quote($uid)." 
+				AND e.uuid=".$babDB->quote($uid)." 
 				and id_cal=".$babDB->quote($calendar->getUid())." 
 				and idfai != '0'
 	");
@@ -553,21 +554,33 @@ function confirmApprobEvent($uid, $idcal, $status)
 	{
 	case 0:
 		deleteFlowInstance($row['idfai']);
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-		notifyEventApprobation($row['id'], $status, '', $calendar->getName());
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
+		notifyEventApprobation(
+			$row['id'], 
+			$status, 
+			$comment, 
+			$calendar->getName(),
+			sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
+		);
 		break;
 		
 		
 		
 	case 1:
 		deleteFlowInstance($row['idfai']);
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-		notifyEventApprobation($row['id'], $status, '', $calendar->getName());
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
+		notifyEventApprobation(
+			$row['id'], 
+			$status, 
+			$comment, 
+			$calendar->getName(), 
+			sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
+		);
 
 		
 		$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id'])."'"));
 		
-		if (BAB_CAL_RES_TYPE == $arr['type']) {
+		if ($calendar instanceof bab_RessourceCalendar) {
 			notifyResourceEvent(
 				$rr['title'], 
 				$rr['description'], 
@@ -575,7 +588,7 @@ function confirmApprobEvent($uid, $idcal, $status)
 				bab_longDate(bab_mktime($rr['start_date'])), 
 				bab_longDate(bab_mktime($rr['end_date'])), 
 				$calendar,
-				bab_translate('The following appointment has been validated')
+				bab_translate('The following resource has been validated')
 			);
 		} else {
 			notifyPublicEvent(
@@ -601,6 +614,8 @@ function confirmApprobEvent($uid, $idcal, $status)
 		break;
 	}
 	
+	
+	return true;
 }
 
 
@@ -1067,7 +1082,17 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 	}
 
 
-function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
+	
+/**
+ * Notify creator of event 
+ * @param int $evtid
+ * @param int $bconfirm
+ * @param string $raison
+ * @param string $calname
+ * @param string $subject
+ * @return unknown_type
+ */
+function notifyEventApprobation($evtid, $bconfirm, $raison, $calname, $subject = null)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -1096,7 +1121,16 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	if( $mail == false )
 		return;
 
-	$res=$babDB->db_query("select cet.*, ut.firstname, ut.lastname, ut.email from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_USERS_TBL." ut on ut.id = cet.id_creator where cet.id='".$babDB->db_escape_string($evtid)."'");
+	$res=$babDB->db_query("
+		select 
+			cet.*, ut.firstname, ut.lastname, ut.email 
+		from 
+			".BAB_CAL_EVENTS_TBL." cet 
+			left join ".BAB_USERS_TBL." ut on ut.id = cet.id_creator 
+			
+		where cet.id='".$babDB->db_escape_string($evtid)."'
+	");
+	
 	$evtinfo = $babDB->db_fetch_array($res);
 
 	$mail->mailTo($evtinfo['email'], bab_composeUserName($evtinfo['firstname'], $evtinfo['lastname']));
@@ -1105,16 +1139,21 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname)
 	$tempc = new clsNotifyEventApprobation($evtinfo, $raison, $calname);
 	
 
-	if( $bconfirm == BAB_CAL_STATUS_ACCEPTED)
+	if (null === $subject)
+	{
+		if( $bconfirm == BAB_CAL_STATUS_ACCEPTED)
 		{
 		$subject = bab_translate("Appointement accepted by ");
 		}
-	else
+		else
 		{
 		$subject = bab_translate("Appointement declined by ");
 		}
+		
+		$subject .= $GLOBALS['BAB_SESS_USER'];
+	}
 
-	$subject .= $GLOBALS['BAB_SESS_USER'];
+	
 	$mail->mailSubject($subject);
 	
 	$tempc->asHtml();
