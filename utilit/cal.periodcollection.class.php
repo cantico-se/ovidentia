@@ -85,10 +85,7 @@ abstract class bab_PeriodCollection implements Iterator, Countable
 	{
 		return $this->calendar;
 	}
-	
-	
-	
-	
+
 
 	
  	public function rewind()
@@ -141,14 +138,16 @@ abstract class bab_PeriodCollection implements Iterator, Countable
 
 
 
-
-
+/**
+ * Inherited collections of this collection will be displayed read-only on ovidentia calendar
+ */
+class bab_ReadOnlyCollection extends bab_PeriodCollection { }
 
 
 /**
  * List of vacation periods
  */
-class bab_VacationPeriodCollection extends bab_PeriodCollection { }
+class bab_VacationPeriodCollection extends bab_ReadOnlyCollection { }
 	
 /**
  * List of accessible events in calendar
@@ -166,7 +165,7 @@ class bab_CalendarEventCollection extends bab_PeriodCollection {
 /**
  * List of tasks from task manager
  */
-class bab_TaskCollection extends bab_PeriodCollection { }
+class bab_TaskCollection extends bab_ReadOnlyCollection { }
 
 /**
  * List of working periods (computed from working hours)
@@ -181,9 +180,9 @@ class bab_NonWorkingPeriodCollection extends bab_PeriodCollection { }
 /**
  * List of non-working days
  */
-class bab_NonWorkingDaysCollection extends bab_PeriodCollection { }
+class bab_NonWorkingDaysCollection extends bab_ReadOnlyCollection { }
 
 /**
  * List of periods for a result of an availability search
  */
-class bab_AvailablePeriodCollection extends bab_PeriodCollection { }
+class bab_AvailablePeriodCollection extends bab_ReadOnlyCollection { }

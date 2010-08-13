@@ -684,7 +684,7 @@ class cal_wmdbaseCls
 		$viewtitle = (int) $calendar->canViewEventDetails($calPeriod);
 		
 	
-		$result['view'][] = $view;
+		$result['view'][] = $view;				
 		$result['modify'][] = $modify;
 		$result['viewtitle'][] = $viewtitle;
 	
@@ -711,14 +711,16 @@ class cal_wmdbaseCls
 		
 		if (!$calendar)
 		{
-			// ignore event, no calendar
+			$this->allow_view 		= false;
+			$this->allow_viewtitle	= true;
+			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
 			return;
 		}
 
-		$this->allow_view		= true;
-		$this->allow_modify		= true;
-		$this->allow_viewtitle	= true;
-		$this->bstatus			= false;
+		$this->allow_view		= true;		// detail view popup
+		$this->allow_modify		= true;		// edit popup
+		$this->allow_viewtitle	= true;		// SUMMARY of event on calendar
+		$this->bstatus			= true;
 
 		$result['view']			= array();
 		$result['modify']		= array();
@@ -732,7 +734,7 @@ class cal_wmdbaseCls
 			
 			$linked_calendars = $calPeriod->getRelations('CHILD');
 			
-			if( $linked_calendars && $result['modify'][0] && $calendar instanceof bab_PersonalCalendar )
+			if( $linked_calendars && $result['modify'][0])
 			{
 				foreach($linked_calendars as $othercal)
 				{
@@ -740,6 +742,8 @@ class cal_wmdbaseCls
 				}
 			}
 		}
+		
+		
 
 		if( in_array(0, $result['view']) )
 			{
@@ -859,9 +863,9 @@ class cal_wmdbaseCls
 
 		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
 
-
-		if (bab_getICalendars()->usebgcolor == 'Y' && !empty($calPeriod->color)) {
-			$this->bgcolor = $calPeriod->color;
+		$color = $calPeriod->getColor();
+		if (bab_getICalendars()->usebgcolor == 'Y' && !empty($color)) {
+			$this->bgcolor = $color;
 		}
 
 		
@@ -891,19 +895,20 @@ class cal_wmdbaseCls
 		if( $this->allow_modify )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&collection=".$collectionparameter."&evtid=".$this->idevent."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
 			}
 		elseif( $this->allow_view )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&collection=".$collectionparameter."&evtid=". $this->idevent	."&idcal=".$this->idcal);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent	."&idcal=".$this->idcal);
 			}
 		else
 			{
 			$this->popup		= false;
 			$this->titletenurl	= "";
 			}
-		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&collection=".$collectionparameter."&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		
 		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
 		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;

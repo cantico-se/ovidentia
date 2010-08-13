@@ -762,6 +762,10 @@ function bab_f_getDebug() {
 		var $nb_messages = 0;
 		var $t_messages;
 		
+		
+		
+		private $iterable_limit;
+		
 		function bab_f_getDebugCls() {
 			$this->messages = $GLOBALS['bab_debug_messages'];
 			$this->nb_messages += count($this->messages);
@@ -832,7 +836,7 @@ function bab_f_getDebug() {
 
 		private function display_iterable($i) {
 
-			if (2 > count($i)) {
+			if (2 > count($i) || $this->iterable_limit <=0) {
 				return $this->html_print_r($i);
 			}
 
@@ -855,6 +859,7 @@ function bab_f_getDebug() {
 				return $this->html_print_r($i);
 			}
 
+			$this->iterable_limit--;
 
 			// visualisation as a table
 
@@ -915,6 +920,9 @@ function bab_f_getDebug() {
 
 		function getNextMessage() {
 			if (list(, $arr) = each($this->messages)) {
+				
+				$this->iterable_limit = 1;
+				
 				$this->message['category']	= bab_toHtml($arr['category']);
 				$this->message['severity']	= bab_toHtml($arr['severity']);
 				$this->message['file'] 		= bab_toHtml(basename($arr['file']));

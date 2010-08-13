@@ -240,17 +240,23 @@ abstract class bab_ICalendarObject
 	{
 		$return = array();
 		
-		foreach($this->attendees as $arr)
+		if (isset($this->attendees))
 		{
-			$calendar = $arr['calendar'];
-			$return[$calendar->getUrlIdentifier()] = $calendar;
+			foreach($this->attendees as $arr)
+			{
+				$calendar = $arr['calendar'];
+				$return[$calendar->getUrlIdentifier()] = $calendar;
+			}
 		}
 		
-		foreach($this->relations as $reltype => $arr)
+		if (isset($this->relations))
 		{
-			foreach($arr as $calendar)
+			foreach($this->relations as $reltype => $arr)
 			{
-				$return[$calendar->getUrlIdentifier()] = $calendar;
+				foreach($arr as $calendar)
+				{
+					$return[$calendar->getUrlIdentifier()] = $calendar;
+				}
 			}
 		}
 		

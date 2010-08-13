@@ -885,11 +885,18 @@ function displayEventDetailUpd($evtid, $idcal)
  */
 function approbCalendar($evtid, $idcal)
 {
+	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
 	{
 		$status = (int) bab_pp('approbstatus');
 		
-		confirmApprobEvent($evtid, $idcal, $status);
+		confirmApprobEvent($evtid, $idcal, $status, bab_pp('comment'));
+		
+		$url = bab_url::get_request('tg');
+		$url->idx = 'unload';
+		$url->reload = '1';
+		
+		$url->location();
 	}
 	
 	global $babBody;	

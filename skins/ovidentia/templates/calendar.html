@@ -163,8 +163,7 @@
 
 <form method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="calendar" />
-<input type="hidden" name="idx" value="unload" />
-<input type="hidden" name="conf" value="event" />
+<input type="hidden" name="idx" value="approb" />
 <input type="hidden" name="evtid" value="{ evtid }" />
 <input type="hidden" name="idcal" value="{ idcal }" />
 <br>
@@ -179,7 +178,7 @@
 			<td align="right" width="30%">&nbsp;</td><td align="left">
 			<select name="approbstatus">
 			<!--#in getnextstatus -->
-				<option value="{ statusval }" <!-- #if selected --> selected="selected" <!-- #endif selected -->>{ statusname }</option>
+				<option value="{ statusval }" <!--#if selected --> selected="selected" <!--#endif selected -->>{ statusname }</option>
 			<!--#endin getnextstatus -->
 			</select>
 			</td>

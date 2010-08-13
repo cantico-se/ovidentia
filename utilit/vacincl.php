@@ -843,9 +843,9 @@ function viewVacationCalendar($users, $period = false )
 
 				$key = $this->curmonth.$this->curyear;
 
-				if (!isset($this->db_month[$key][$this->id_user])) {
+				//if (!isset($this->db_month[$key][$this->id_user])) {
 					bab_vac_updateCalendar($this->id_user, $this->curyear, $this->curmonth);
-				}
+				//}
 
 				global $babDB;
 				
@@ -2632,6 +2632,68 @@ function bab_vac_onModifyPeriod($event) {
 }
 
 
+
+
+
+
+/**
+ * si type2 est prioritaire, return true
+ */
+function bab_vac_compare($type1, $type2, $vacation_is_free) {
+	
+	if ($vacation_is_free) {
+	
+	$order = array(
+		'bab_VacationPeriodCollection'			=> 1,
+		'bab_NonWorkingPeriodCollection'		=> 2,
+		'bab_WorkingPeriodCollection' 			=> 3,
+	//	BAB_PERIOD_CALEVENT			=> 4,
+	//	BAB_PERIOD_TSKMGR			=> 5,
+		'bab_NonWorkingDaysCollection'			=> 6
+	);
+	
+	} else {
+	
+	$order = array(
+
+		'bab_NonWorkingPeriodCollection'		=> 1,
+		'bab_WorkingPeriodCollection'			=> 2,
+	//	BAB_PERIOD_CALEVENT			=> 3,
+	//	BAB_PERIOD_TSKMGR			=> 4,
+		'bab_VacationPeriodCollection'			=> 5,
+		'bab_NonWorkingDaysCollection'			=> 6
+	);
+	
+	}
+
+
+	if ($order[$type2] > $order[$type1]) {
+		return true;
+	}
+
+	return false;
+}
+
+function bab_vac_is_free($collection) {
+
+	
+	switch(true) {
+		case $collection instanceof bab_WorkingPeriodCollection:
+			return true;
+
+		case $collection instanceof bab_VacationPeriodCollection:
+		case $collection instanceof bab_NonWorkingPeriodCollection:
+		case $collection instanceof bab_NonWorkingDaysCollection:
+			return false;
+	}
+}
+
+
+
+
+
+
+
 /**
  * @param	int				$id_user
  * @param	BAB_dateTime	$begin
@@ -2641,103 +2703,70 @@ function bab_vac_onModifyPeriod($event) {
  */
 function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = false) {
 
+	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
 
-	$obj = new bab_userWorkingHours( 
+	$obj = new bab_UserPeriods( 
 			$dateb, 
 			$datee
 		);
-
-	$obj->addIdUser($id_user);
-	$obj->createPeriods(BAB_PERIOD_NWDAY | BAB_PERIOD_NONWORKING | BAB_PERIOD_WORKING | BAB_PERIOD_VACATION);
-	$obj->orderBoundaries();
-
-
-
-	if (!function_exists('bab_vac_compare')) {
 		
-		/**
-		 * si type2 est prioritaire, return true
-		 */
-		function bab_vac_compare($type1, $type2, $vacation_is_free) {
-			
-			if ($vacation_is_free) {
-			
-			$order = array(
-				BAB_PERIOD_VACATION			=> 1,
-				BAB_PERIOD_NONWORKING		=> 2,
-				BAB_PERIOD_WORKING 			=> 3,
-				BAB_PERIOD_CALEVENT			=> 4,
-				BAB_PERIOD_TSKMGR			=> 5,
-				BAB_PERIOD_NWDAY			=> 6
-			);
-			
-			} else {
-			
-			$order = array(
+	$factory = bab_getInstance('bab_PeriodCriteriaFactory');
+	/* @var $factory bab_PeriodCriteriaFactory */
 
-				BAB_PERIOD_NONWORKING		=> 1,
-				BAB_PERIOD_WORKING 			=> 2,
-				BAB_PERIOD_CALEVENT			=> 3,
-				BAB_PERIOD_TSKMGR			=> 4,
-				BAB_PERIOD_VACATION			=> 5,
-				BAB_PERIOD_NWDAY			=> 6
-			);
+	$criteria = $factory->Collection(
+		array(
+			'bab_NonWorkingDaysCollection', 
+			'bab_NonWorkingPeriodCollection',
+			'bab_WorkingPeriodCollection', 
+			'bab_VacationPeriodCollection', 
 			
-			}
-
-
-			if ($order[$type2] > $order[$type1]) {
-				return true;
-			}
-
-			return false;
-		}
-
-		function bab_vac_is_free($p) {
-			
-			switch($p->type) {
-				case BAB_PERIOD_WORKING:
-				case BAB_PERIOD_CALEVENT:
-				case BAB_PERIOD_TSKMGR:
-					return true;
-
-				case BAB_PERIOD_VACATION:
-				case BAB_PERIOD_NONWORKING:
-				case BAB_PERIOD_NWDAY:
-					return false;
-					
-				
-					//return $vacation_is_free;
-			}
-		}
+		)
+	);
+	
+	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='1'");
+	$arr = $babDB->db_fetch_assoc($res);
+	
+	$calendar = bab_getICalendars()->getEventCalendar('personal/'.$arr['id']);
+	
+	if (!isset($calendar))
+	{
+		throw new Exception('missing calendar for user '.$id_user);
+		return;
 	}
 	
+	$criteria = $criteria->_AND_($factory->Calendar($calendar));
+
+	$obj->createPeriods($criteria);
+	$obj->orderBoundaries();
+
 
 	$index = array();
 	$is_free = array();
 	$stack = array();
 	
-	while (false !== $arr = $obj->getNextPeriod()) {
+	foreach($obj as $pe) {
 		
-		foreach($arr as $pe) {
-			$group = $pe->split(12*3600);
-			foreach($group as $p) {
+		bab_debug($pe->getProperties());
+		
+		$group = $pe->split(12 * 3600);
+		foreach($group as $p) {
+			
+			if ($p->ts_begin < $datee->getTimeStamp() && $p->ts_end > $dateb->getTimeStamp()) {
+				$key = date('Ymda',$p->ts_begin);
+				$collection = $p->getCollection();
+				$type = get_class($collection);
 				
-				if ($p->ts_begin < $datee->getTimeStamp() && $p->ts_end > $dateb->getTimeStamp()) {
-					$key = date('Ymda',$p->ts_begin);
+				$stack[$key][$type] = $p;
 
-					$stack[$key][$p->type] = $p;
+				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key]->getCollection()), $type, $vacation_is_free)) {
 
-					if (!isset($index[$key]) || bab_vac_compare($index[$key]->type, $p->type, $vacation_is_free)) {
+					$index[$key] = $p;
 
-						$index[$key] = $p;
-
-						if (bab_vac_is_free($p)) {
-							$is_free[$key] = 1;
-						} elseif (isset($is_free[$key])) {
-							unset($is_free[$key]);
-						}
+					if (bab_vac_is_free($collection)) {
+						$is_free[$key] = 1;
+					} elseif (isset($is_free[$key])) {
+						unset($is_free[$key]);
 					}
 				}
 			}
@@ -2745,8 +2774,35 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	}
 
 
+
 	return array($index, $is_free, $stack);
 }
+
+
+
+
+
+function bab_vac_group_insert($query, $exec = false) {
+	static $values = array();
+	if ($query) {
+		$values[] = $query;
+	}
+	
+	if (300 <= count($values) || (0 < count($values) && $exec)) {
+
+		$GLOBALS['babDB']->db_query("
+		INSERT INTO ".BAB_VAC_CALENDAR_TBL." 
+			(id_user, monthkey, cal_date, ampm, period_type, id_entry, color) 
+		VALUES 
+			".implode(',',$values)."
+		");
+		$values = array();
+	}
+}
+
+
+
+
 
 
 
@@ -2769,27 +2825,6 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$datee->add(1, BAB_DATETIME_MONTH);
 
 	list($index, $is_free, $stack) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
-
-	if (!function_exists('bab_vac_group_insert')) {
-		function bab_vac_group_insert($query, $exec = false) {
-			static $values = array();
-			if ($query) {
-				$values[] = $query;
-			}
-			
-			if (300 <= count($values) || (0 < count($values) && $exec)) {
-
-				$GLOBALS['babDB']->db_query("
-				INSERT INTO ".BAB_VAC_CALENDAR_TBL." 
-					(id_user, monthkey, cal_date, ampm, period_type, id_entry, color) 
-				VALUES 
-					".implode(',',$values)."
-				");
-				$values = array();
-			}
-		}
-	}
-	
 	$previous = NULL;
 
 	foreach($index as $key => $p) {
@@ -2798,11 +2833,33 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 		$data		= $p->getData();
 		$id_entry	= 0;
 		$color		= '';
-		$type		= $p->type;
+		
+		$collection = $p->getCollection();
+		
+		switch(true) {
+			case $collection instanceof bab_WorkingPeriodCollection:
+				$type = BAB_PERIOD_WORKING;
+				break;
+				
+			case $collection instanceof bab_NonWorkingPeriodCollection:
+				$type = BAB_PERIOD_NONWORKING;
+				break;
+				
+			case $collection instanceof bab_VacationPeriodCollection:
+				$type = BAB_PERIOD_VACATION;
+				break;
+				
+			case $collection instanceof bab_NonWorkingDaysCollection:
+				$type = BAB_PERIOD_NWDAY;
+				break;
+			
+		}
+		
+		
 
 
-		if (BAB_PERIOD_VACATION === $p->type) { 
-			if (isset($stack[$key][BAB_PERIOD_WORKING])) {
+		if ($p->getCollection() instanceof bab_VacationPeriodCollection) { 
+			if (isset($stack[$key]['bab_WorkingPeriodCollection'])) {
 				$id_entry = $data['id']; 
 				$arr = bab_vac_typeColorStack($id_entry);
 				$color = $arr['color'];

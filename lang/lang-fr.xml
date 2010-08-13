@@ -1736,6 +1736,7 @@
 <string id="Appointment modifed by ">Evénement modifié par </string>
 <string id="The following appointment has been modified">L'événement suivant a été modifié</string>
 <string id="The following appointment has been validated">L'événement suivant a été approuvé</string>
+<string id="The following resource has been validated">La ressource suivante a été approuvée</string>
 <string id="Selected period">Période sélectionnée</string>
 <string id="Vacations management">Gestion des congés</string>
 <string id="Delegate management">Gestion déléguée</string>
@@ -3105,8 +3106,8 @@
 <string id="Reject">Rejeter</string>
 <string id="Waiting for approbation">En attente d'approbation</string>
 <string id="Status of my invitation to the appointment">Statut de mon invitation à l'évènement</string>
-<string id=""></string>
-<string id=""></string>
+<string id="A calendar in relation with your appointement has been approved by %s">Un agenda en relation avec votre évènement à été approuvé par %s</string>
+<string id="A calendar in relation with your appointement has been rejected by %s">Un agenda en relation avec votre évènement à été rejeté par %s</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>

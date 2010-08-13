@@ -260,6 +260,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * Split period into sub-periods
 	 * sub-period are generated from 00:00:00 the first day of the main period
 	 * only sub-period overlapped with the main period are returned
+	 * work only with timestamps
 	 * 
 	 * @param int		$duration   	Duration of subperiods in seconds
 	 * 
@@ -288,20 +289,16 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		} else {
 			$endDate = $this->ts_end;
 			if ($this->ts_begin < $endDate) {
-				$p = new bab_calendarPeriod($this->ts_begin, $endDate);
-				$p->properties = $this->properties;
-				$p->setData($this->data);
-				$p->setColor($this->color);
+				$p = clone $this;
+				$p->ts_end = $endDate;
 				$return->addPeriod($p);
 			}
 			return $return; // 1 period 
 		}
 
 		if ($this->ts_begin < $endDate) {
-			$p = new bab_calendarPeriod($this->ts_begin, $endDate);
-			$p->properties = $this->properties;
-			$p->setData($this->data);
-			$p->setColor($this->color);
+			$p = clone $this;
+			$p->ts_end = $endDate;
 			$return->addPeriod($p);
 		}
 
@@ -309,19 +306,16 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			
 			$beginDate = $start;
 			$this->add($start, $duration);
-			$p = new bab_calendarPeriod($beginDate, $start);
-			$p->properties = $this->properties;
-			$p->setData($this->data);
-			$p->setColor($this->color);
+			$p = clone $this;
+			$p->ts_begin = $beginDate;
+			$p->ts_end = $start;
 			$return->addPeriod($p);
 		}
 
 		// add last period
 		if ($start < $this->ts_end) {
-			$p = new bab_calendarPeriod($start, $this->ts_end);
-			$p->properties = $this->properties;
-			$p->setData($this->data);
-			$p->setColor($this->color);
+			$p = clone $this;
+			$p->ts_begin = $start;
 			$return->addPeriod($p);
 		}
 

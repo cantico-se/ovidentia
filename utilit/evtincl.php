@@ -580,7 +580,7 @@ function confirmApprobEvent($uid, $idcal, $status, $comment)
 		
 		$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id'])."'"));
 		
-		if ($calendar instanceof bab_RessourceCalendar) {
+		if ($calendar instanceof bab_ResourceCalendar) {
 			notifyResourceEvent(
 				$rr['title'], 
 				$rr['description'], 

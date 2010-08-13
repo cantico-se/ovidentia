@@ -921,7 +921,6 @@ class bab_cal_OviEventUpdate
 					'".$babDB->db_escape_string($idfai)."'
 				)
 		";
-		
 		$babDB->db_query($query);
 		
 		

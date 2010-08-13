@@ -275,11 +275,9 @@ abstract class bab_EventCalendar
 	 * 
 	 * @see bab_EventCalendar::getIdUser()
 	 * 
-	 * @param	bab_EventCalendar	$calendar			A calendar with an user associated to it
-	 * 
 	 * @return 	string
 	 */
-	public function getDefaultAttendeePARTSTAT(bab_EventCalendar $calendar)
+	public function getDefaultAttendeePARTSTAT()
 	{
 		return 'NEEDS-ACTION';
 	}
@@ -494,6 +492,12 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 */
 	public function canUpdateEvent(bab_calendarPeriod $event) 
 	{
+		$collection = $event->getCollection();
+		
+		if ($collection instanceof bab_ReadOnlyCollection) {
+			return false;
+		}
+		
 		
 		if ($this->access_user == $event->getAuthorId()) {
 			// i am the author
@@ -549,13 +553,12 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 	 * 
 	 * @see bab_EventCalendar::getIdUser()
 	 * 
-	 * @param	bab_EventCalendar	$calendar			A calendar with an user associated to it
 	 * 
 	 * @return 	string
 	 */
-	public function getDefaultAttendeePARTSTAT(bab_EventCalendar $calendar)
+	public function getDefaultAttendeePARTSTAT()
 	{
-		if ($this->access_user == $calendar->getIdUser())
+		if ($this->access_user == $this->getIdUser())
 		{
 			// I add myself as attendee on an event
 			return 'ACCEPTED';
@@ -564,7 +567,7 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 		switch($this->sharing_access) {
 
 			case BAB_CAL_ACCESS_FULL:
-				// i have full access on the calendar where the event is
+				// i have full access on the attendee calendar where the event is
 				return 'ACCEPTED';
 		}
 
