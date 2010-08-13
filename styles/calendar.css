@@ -114,13 +114,17 @@ a img {
 	/* Default color for events */
 	background-color:#fff;
 	padding: .15em .5em;
-	margin:.2em;
-	border-radius: 3px;
-	-moz-border-radius:3px;
-	border:#fff 1px solid;
 	}
 	
-.bab_calendar .event:hover {
+#bab_calmonth .event {
+	margin:.2em;
+	border:#fff 1px solid;
+	border-radius: 3px;
+	-moz-border-radius:3px;
+	}
+
+	
+#bab_calmonth .event:hover {
 	border:#777 1px solid;
 	}
 	
@@ -135,7 +139,7 @@ a img {
 	display: inline-block;
 	padding: .15em .4em;
 	vertical-align:middle;
-	width:80%;
+	width:75%;
 	}
 	
 .bab_calendar .eventlink:hover {

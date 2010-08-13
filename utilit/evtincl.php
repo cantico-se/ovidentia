@@ -498,140 +498,181 @@ function bab_setAlarmProperties(bab_CalendarAlarm $alarm, bab_CalendarPeriod $pe
 
 
 
-function confirmEvent($evtid, $idcal, $bconfirm, $comment, $bupdrec)
+/**
+ * Approbation on public calendars and ressource calendars
+ * 
+ * @param	string	$uid		event UID
+ * @param	string	$idcal		calendar url identifier
+ * @param	int		$status		approver status				BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
+ * @return unknown_type
+ */
+function confirmApprobEvent($uid, $idcal, $status)
+{
+	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	
+	if( 0 == count($arrschi))
+		{
+			throw new Exception('You are not an approver');
+			return false;
+		}
+		
+		
+	$calendar = bab_getICalendars()->getEventCalendar($idcal);
+	$res = $babDB->db_query("
+		SELECT e.id, eo.idfai from 
+			".BAB_CAL_EVENTS_OWNERS_TBL." eo,
+			".BAB_CAL_EVENTS_TBL." e 
+			
+		WHERE 
+				e.id = eo.id_event 
+				e.uid=".$babDB->quote($uid)." 
+				and id_cal=".$babDB->quote($calendar->getUid())." 
+				and idfai != '0'
+	");
+	
+	$row = $babDB->db_fetch_assoc($res);
+		
+	if (!$row)
+	{
+		throw new Exception('Event not found');
+		return false;	
+	}
+		
+		
+	if (!in_array($row['idfai'], $arrschi))
+	{
+		throw new Exception('Access denied to this approbation');
+		return false;
+	}
+
+	
+	$ret = updateFlowInstance($row['idfai'], $GLOBALS['BAB_SESS_USERID'], (BAB_CAL_STATUS_ACCEPTED == $status));
+				
+	switch($ret)
+	{
+	case 0:
+		deleteFlowInstance($row['idfai']);
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
+		notifyEventApprobation($row['id'], $status, '', $calendar->getName());
+		break;
+		
+		
+		
+	case 1:
+		deleteFlowInstance($row['idfai']);
+		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
+		notifyEventApprobation($row['id'], $status, '', $calendar->getName());
+
+		
+		$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id'])."'"));
+		
+		if (BAB_CAL_RES_TYPE == $arr['type']) {
+			notifyResourceEvent(
+				$rr['title'], 
+				$rr['description'], 
+				$rr['location'], 
+				bab_longDate(bab_mktime($rr['start_date'])), 
+				bab_longDate(bab_mktime($rr['end_date'])), 
+				$calendar,
+				bab_translate('The following appointment has been validated')
+			);
+		} else {
+			notifyPublicEvent(
+				$rr['title'], 
+				$rr['description'], 
+				$rr['location'], 
+				bab_longDate(bab_mktime($rr['start_date'])), 
+				bab_longDate(bab_mktime($rr['end_date'])), 
+				$calendar,
+				bab_translate('The following appointment has been validated')
+			);
+		}
+		break;
+		
+		
+		
+	default:
+		$nfusers = getWaitingApproversFlowInstance($row['idfai'], true);
+		if( count($nfusers) > 0 )
+			{
+			notifyEventApprovers($row['id'], $nfusers, $calendar);
+			}
+		break;
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+/**
+ * Confirmation of attendees
+ * 
+ * 
+ * @param unknown_type $evtid		event UID
+ * @param unknown_type $idcal		calendar url identifier
+ * @param unknown_type $partstat	New partstat value
+ * @param unknown_type $comment
+ * @param unknown_type $bupdrec
+ * @return unknown_type
+ */
+function confirmEvent($evtid, $idcal, $partstat, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
-	$arr = bab_getICalendars()->getCalendarInfo($idcal);
+	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	
-	$arrevtids = array();
-	if( $bupdrec == BAB_CAL_EVT_ALL)
-		{
-		list($hash) = $babDB->db_fetch_row($babDB->db_query("select hash from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'"));
-		if( !empty($hash) &&  $hash[0] == 'R')
-			{
-			$res = $babDB->db_query("select id from ".BAB_CAL_EVENTS_TBL." where hash='".$babDB->db_escape_string($hash)."'");
-			while($row = $babDB->db_fetch_array($res))
-				{
-				$arrevtids[] = $row['id']; 	
-				}
-			}
-		else
-			{
-			$arrevtids[] = $evtid; 	
-			}
-		}
-	else
-		{
-		$arrevtids[] = $evtid; 	
-		}
-	if( $bconfirm == "Y" )
-		{
-		$bconfirm = BAB_CAL_STATUS_ACCEPTED;
-		}
-	else
-		{
-		$bconfirm = BAB_CAL_STATUS_DECLINED;
-		}
-
-	switch($arr['type'])
+	if (!$calendar || !$calendar->getIdUser())
 	{
-		case BAB_CAL_USER_TYPE:
-			if( count($arrevtids) > 0 && ($arr['access'] == BAB_CAL_ACCESS_FULL))
-				{
-				$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."' where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal));
-				notifyEventApprobation($evtid, $bconfirm, $comment, bab_translate("Personal calendar"));
-				}
-			break;
-		case BAB_CAL_PUB_TYPE:
-		case BAB_CAL_RES_TYPE:
-			if( count($arrevtids) > 0 )
+		throw new Exception('This is not a personal calendar');
+		return;
+	}
+	
+	$backend = $calendar->getBackend();
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	$collection = $calendarPeriod->getCollection();
+	
+	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);	
+	
+	
+	$updatePartstat = array();
+	
+	// verify access	
+	foreach($collection as $period)
+	{
+		$attendees = $period->getAttendees();
+		foreach($attendees as $attendee)
+		{
+			if ($attendee['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
 			{
-			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-			if( count($arrschi) > 0 )
+				if ($attendee['PARTSTAT'] !== $partstat)
 				{
-				$calinfo = bab_getICalendars()->getCalendarInfo($idcal);
-				$res = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event IN (".$babDB->quote($arrevtids).") and id_cal=".$babDB->quote($idcal)." and idfai != '0'");
-				while( $row = $babDB->db_fetch_array($res))
+					if ($calendar->canUpdateAttendeePARTSTAT($period, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 					{
-					if( in_array($row['idfai'], $arrschi))
-						{
-						$ret = updateFlowInstance($row['idfai'], $GLOBALS['BAB_SESS_USERID'], ($bconfirm == 'Y'? true: false ));
-						switch($ret)
-							{
-							case 0:
-								deleteFlowInstance($row['idfai']);
-								$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-								notifyEventApprobation($evtid, $bconfirm, $comment, $arr['name']);
-								break;
-							case 1:
-								deleteFlowInstance($row['idfai']);
-								$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($bconfirm)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id_event'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-								notifyEventApprobation($evtid, $bconfirm, $comment, $arr['name']);
-						
-								$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id_event'])."'"));
-								
-								if (BAB_CAL_RES_TYPE == $arr['type']) {
-									notifyResourceEvent(
-										$rr['title'], 
-										$rr['description'], 
-										$rr['location'], 
-										bab_longDate(bab_mktime($rr['start_date'])), 
-										bab_longDate(bab_mktime($rr['end_date'])), 
-										array($idcal),
-										bab_translate('The following appointment has been validated')
-									);
-								} else {
-									notifyPublicEvent(
-										$rr['title'], 
-										$rr['description'], 
-										$rr['location'], 
-										bab_longDate(bab_mktime($rr['start_date'])), 
-										bab_longDate(bab_mktime($rr['end_date'])), 
-										array($idcal),
-										bab_translate('The following appointment has been validated')
-									);
-								}
-								
-								
-								break;
-							default:
-								$nfusers = getWaitingApproversFlowInstance($row['idfai'], true);
-								if( count($nfusers) > 0 )
-									{
-									notifyEventApprovers($evtid, $nfusers, $calinfo);
-									}
-								break;
-							}
-						}
+						$updatePartstat[] = $period;
 					}
 				}
 			}
-			break;
+		}
 	}
-
-	if( count($arrevtids) > 0 )
+	
+	
+	if (0 === count($updatePartstat))
 	{
-		// delete declined events
-		$res = $babDB->db_query("select count(id_cal) as total, id_event from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event IN (".$babDB->quote($arrevtids).") and status in (".BAB_CAL_STATUS_ACCEPTED.",".BAB_CAL_STATUS_NONE.") group by id_event");
-		$arrtmp =array();
-		while($arr = $babDB->db_fetch_array($res))
-		{
-			$arrtmp[] = $arr['id_event'];
-		}
-
-		for( $i= 0; $i < count($arrevtids); $i++ )
-		{
-			if( count($arrtmp) == 0 || !in_array($arrevtids[$i], $arrtmp))
-			{
-			$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id=".$babDB->quote($arrevtids[$i]));
-			$babDB->db_query("delete from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event=".$babDB->quote($arrevtids[$i]));
-			$babDB->db_query("delete from ".BAB_CAL_EVENTS_NOTES_TBL." where id_event=".$babDB->quote($arrevtids[$i]));
-			$babDB->db_query("delete from ".BAB_CAL_EVENTS_REMINDERS_TBL." where id_event=".$babDB->quote($arrevtids[$i]));
-			}
-		}
+		// nothing modified
+		return;
 	}
-
+	
+	
+	foreach($updatePartstat as $period)
+	{
+		$backend->updateAttendeePartstat($period, $calendar, $partstat, $comment);
+	}
 }
 
 
@@ -1921,7 +1962,7 @@ class bab_event_posted {
 						$calendar_labels[] = $arr['name'];
 					}
 
-					$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate(bab_mktime($calPeriod->getProperty('DTSTART')),false).')';
+					$availability_msg_list[$calPeriod->getProperty('UID')] = implode(', ', $calendar_labels).' '.bab_translate("on the event").' : '. $title .' ('.bab_shortDate($calPeriod->ts_begin,false).')';
 				}
 			}
 		}
@@ -2032,6 +2073,12 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	require_once dirname(__FILE__).'/dateTime.php';
 	
 	if (BAB_CAL_EVT_CURRENT === $method)
+	{
+		return;
+	}
+	
+	
+	if (!$collection->hash)
 	{
 		return;
 	}

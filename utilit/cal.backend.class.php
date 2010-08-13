@@ -249,6 +249,26 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	
+	
+	/**
+	 * Update an attendee PARTSTAT value of a calendar event
+	 * a user can modifiy his participation status without modifing the full event, before triggering this method, the access right will be checked with the
+	 * canUpdateAttendeePARTSTAT method of the calendar
+	 * 
+	 * @see bab_EventCalendar::canUpdateAttendeePARTSTAT()
+	 * 
+	 * @param bab_CalendarPeriod 	$period		the event
+	 * @param bab_EventCalendar 	$calendar	the personal calendar used as an attendee
+	 * @param string 				$partstat	ACCEPTED | DECLINED
+	 * @return bool
+	 */
+	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_EventCalendar $calendar, $partstat)
+	{
+		throw new Exception('not implemented');
+	}
+	
+	
+	
 	/**
 	 * @param unknown_type $calendar
 	 * @param unknown_type $accessType
@@ -270,13 +290,5 @@ class Func_CalendarBackend extends bab_functionality
 		
 	}
 	
-	/**
-	 * Test if the backend support saving more than one calendar per event
-	 * @todo add methods for : remove calendar from event and add calendar to event
-	 * @return bool
-	 */
-	public function canHaveMultipleCalendarPerEvent()
-	{
-		return false;
-	}
+
 }

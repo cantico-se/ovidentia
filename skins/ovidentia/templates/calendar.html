@@ -1,13 +1,20 @@
 
 <!--#begin listattendees -->
+
+
+
 <!--#if access -->
+
+
+<!--#if attendees -->
+<br />
 <table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
 <tr> 
 <td class="BabLoginCadreBackground"> 
-	<table border="0" width="100%" cellpadding="2" cellspacing="0">
+	<table border="0" width="100%" cellpadding="6" cellspacing="0">
 	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>{ fullnametxt }</td>
-		<td align="right">{ statustxt }</td>
+		<td>{ attendeestxt }</td>
+		<td align="right">{ responsetxt }</td>
 	</tr>
 	<!--#in getnextattendee -->
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
@@ -21,14 +28,73 @@
 		<td align="right">{ status }</td>
 	</tr>        
 	<!--#endin getnextattendee -->
-	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
 	</table>
 </td>
 </tr>
 </table>
+
+<!--#endif attendees -->
+
+<!--#if publics -->
+<br />
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="6" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ publicstxt }</td>
+		<td align="right">{ statustxt }</td>
+	</tr>
+	<!--#in getnextpublic -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td>
+		{ name }
+		</td>
+		<td align="right">{ status }
+		<!--#if approver -->
+			<br /><a href="{ accepturl }"><img src="{ babSkinPath }images/Puces/action_success.gif" border="0" alt="" align="absmiddle" />&nbsp;{ t_accept }</a>
+			 &nbsp; <a href="{ rejecturl }"><img src="{ babSkinPath }images/Puces/action_fail.gif" border="0" alt="" align="absmiddle" />&nbsp;{ t_reject }</a>
+		<!--#endif approver -->
+		</td>
+	</tr>        
+	<!--#endin getnextpublic -->
+	</table>
+</td>
+</tr>
+</table>
+
+<!--#endif publics -->
+
+<!--#if ressources -->
+<br />
+<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table border="0" width="100%" cellpadding="6" cellspacing="0">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>{ ressourcestxt }</td>
+		<td align="right">{ statustxt }</td>
+	</tr>
+	<!--#in getnextressource -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td>
+		{ name }
+		</td>
+		<td align="right">{ status }
+		<!--#if approver -->
+			<br /><a href="{ accepturl }"><img src="{ babSkinPath }images/Puces/action_success.gif" border="0" alt="" align="absmiddle" />&nbsp;{ t_accept }</a>
+			 &nbsp; <a href="{ rejecturl }"><img src="{ babSkinPath }images/Puces/action_fail.gif" border="0" alt="" align="absmiddle" />&nbsp;{ t_reject }</a>
+		<!--#endif approver -->
+		</td>
+	</tr>        
+	<!--#endin getnextressource -->
+	</table>
+</td>
+</tr>
+</table>
+
+<!--#endif ressources -->
+
 
 <!--#if countstatus -->
 <br />
@@ -39,50 +105,119 @@
 <input type="hidden" name="evtid" value="{ evtid }">
 <input type="hidden" name="idcal" value="{ idcal }">
 <br>
-<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginCadreBackground"> 
-	<table border="0" width="100%" cellpadding="5" cellspacing="0" class="BabLoginMenuBackground">
+	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
 	<tr> 
-	<td align="right" width="30%">&nbsp;</td><td align="left">
-	<select name="bconfirm">
-	<!--#in getnextstatus -->
-	<option value="{ statusval }">{ statusname }</option>
-	<!--#endin getnextstatus -->
-	</select>
-	</td>
-	</tr>
-	<!--#if brepetitive -->
-	<tr>
-	<td  align="right" width="30%">&nbsp;</td><td  align="left">
-	{ repetitivetxt }
-	</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%">&nbsp;</td><td  align="left">
-	<select name="bupdrec">
-	<option value="1">{ all }</option>
-	<option value="2"  selected>{ thisone }</option>
-	</select>
-	</td>
-	</tr>
-	<!--#endif brepetitive -->
-	<tr>
-	<td align="right" width="30%"><b>{ commenttxt }:</b></td><td align="left"><textarea cols="40" rows="10" name="comment"></textarea>
-	</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="block" value="{ updatetxt }">
+	<td class="BabLoginCadreBackground"> 
+		<table border="0" width="100%" cellpadding="8" cellspacing="0" class="BabLoginMenuBackground">
+		<tr> 
+			<td colspan="2"><h5>{ invitationstatus }</h5></td>
+		</tr>
+		<tr> 
+		<td align="right" width="30%">&nbsp;</td><td align="left">
+		<select name="partstat">
+		<!--#in getnextstatus -->
+		<option value="{ statusval }">{ statusname }</option>
+		<!--#endin getnextstatus -->
+		</select>
+		</td>
+		</tr>
+		<!--#if brepetitive -->
+		<tr>
+		<td  align="right" width="30%">&nbsp;</td><td  align="left">
+		{ repetitivetxt }
+		</td>
+		</tr>
+		<tr>
+		<td align="right" width="30%">&nbsp;</td><td  align="left">
+		<select name="bupdrec">
+		<option value="1">{ all }</option>
+		<option value="2"  selected>{ thisone }</option>
+		</select>
+		</td>
+		</tr>
+		<!--#endif brepetitive -->
+		<tr>
+		<td align="right" width="30%" valign="top">{ commenttxt }:</td><td align="left"><textarea cols="60" rows="4" name="comment"></textarea>
+		</td>
+		</tr>
+		<tr>
+		<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="block" value="{ updatetxt }">
+		</td>
+		</tr>
+		</table>
 	</td>
 	</tr>
 	</table>
-</td>
-</tr>
-</table>
 </form>
 <!--#endif countstatus -->
 <!--#endif access -->
 <!--#end listattendees -->
+
+
+
+
+
+
+<!--#begin approbcalendar -->
+
+
+<form method="post" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="calendar" />
+<input type="hidden" name="idx" value="unload" />
+<input type="hidden" name="conf" value="event" />
+<input type="hidden" name="evtid" value="{ evtid }" />
+<input type="hidden" name="idcal" value="{ idcal }" />
+<br>
+	<table border="0" width="90%" cellpadding="2" cellspacing="0" align="center">
+	<tr> 
+	<td class="BabLoginCadreBackground"> 
+		<table border="0" width="100%" cellpadding="8" cellspacing="0" class="BabLoginMenuBackground">
+		<tr> 
+			<td colspan="2"><h5>{ approbstatus }</h5></td>
+		</tr>
+		<tr> 
+			<td align="right" width="30%">&nbsp;</td><td align="left">
+			<select name="approbstatus">
+			<!--#in getnextstatus -->
+				<option value="{ statusval }" <!-- #if selected --> selected="selected" <!-- #endif selected -->>{ statusname }</option>
+			<!--#endin getnextstatus -->
+			</select>
+			</td>
+		</tr>
+		<!--#if brepetitive -->
+		<tr>
+			<td  align="right" width="30%">&nbsp;</td><td  align="left">
+			{ repetitivetxt }
+			</td>
+		</tr>
+		<tr>
+			<td align="right" width="30%">&nbsp;</td><td  align="left">
+			<select name="bupdrec">
+				<option value="1">{ all }</option>
+				<option value="2"  selected>{ thisone }</option>
+			</select>
+			</td>
+		</tr>
+		<!--#endif brepetitive -->
+		<tr>
+			<td align="right" width="30%" valign="top">{ commenttxt }:</td><td align="left"><textarea cols="60" rows="4" name="comment"></textarea>
+		</td>
+		</tr>
+		<tr>
+			<td align="right" width="30%">&nbsp;</td><td align="left"><input type="submit" name="block" value="{ updatetxt }">
+		</td>
+		</tr>
+		</table>
+	</td>
+	</tr>
+	</table>
+</form>
+
+<!--#end approbcalendar -->
+
+
+
+
 
 <!--#begin eventdetail -->
 <!--#if access -->

@@ -154,13 +154,87 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	
+	
 	/**
-	 * Test if the backend support saving more than one calendar per event
+	 * Update an attendee PARTSTAT value of a calendar event
+	 * a user can modifiy his participation status without modifing the full event, before triggering this method, the access right will be checked with the
+	 * canUpdateAttendeePARTSTAT method of the calendar
+	 * 
+	 * @see bab_EventCalendar::canUpdateAttendeePARTSTAT()
+	 * 
+	 * @param bab_CalendarPeriod 	$period		the event
+	 * @param bab_EventCalendar 	$calendar	the personal calendar used as an attendee
+	 * @param string 				$partstat	ACCEPTED | DECLINED
+	 * @param string				$comment	comment given when changing PARTSTAT (optional)
 	 * @return bool
 	 */
-	public function canHaveMultipleCalendarPerEvent()
+	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_EventCalendar $calendar, $partstat, $comment = '')
 	{
-		return true;
+		global $babDB;
+		
+		if ('DECLINED' === $partstat)
+		{
+			$all_attendees_declined = true;
+			foreach($period->getAttendees() as $attendee) {
+				if ($attendee['calendar']->getUrlIdentifier() !== $calendar->getUrlIdentifier() && 'DECLINED' !== $attendee['PARTSTAT'])
+				{
+					$all_attendees_declined = false;
+				}
+			}
+			
+			if ($all_attendees_declined)
+			{
+				require_once dirname(__FILE__).'/cal.ovievent.class.php';
+				$oviEvents = new bab_cal_OviEventSelect;
+				return $oviEvents->deleteFromUid($period->getProperty('UID'));
+			}
+		}
+		
+		
+		switch($partstat)
+		{
+			case 'ACCEPTED':
+				$status = BAB_CAL_STATUS_ACCEPTED;
+				break;
+				
+			case 'CONFIRMED':
+				$status = BAB_CAL_STATUS_DECLINED;
+				break;
+				
+			default:
+				$status = BAB_CAL_STATUS_NONE;
+				break;
+		}
+		
+		$res = $babDB->db_query('
+			SELECT 
+				id 
+			FROM 
+				'.BAB_CAL_EVENTS_TBL.' 
+			WHERE 
+				uuid='.$babDB->quote($period->getProperty('UID')).'
+		');
+		
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			throw new Exception('event not found');
+		}
+		
+		
+		$babDB->db_query("
+			update ".BAB_CAL_EVENTS_OWNERS_TBL." 
+				set status=".$babDB->quote($status)." 
+			where 
+				id_event=".$babDB->quote($arr['id'])." 
+				and id_cal=".$babDB->quote($calendar->getUid())
+		);
+		
+		notifyEventApprobation($arr['id'], $status, $comment, bab_translate("Personal calendar"));
 	}
+	
+	
+	
 	
 }

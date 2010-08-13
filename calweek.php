@@ -291,8 +291,8 @@ class cal_weekCls extends cal_wmdbaseCls
 					$calPeriod = & $this->harray[$this->cindex-1][$this->icols][$i];
 					
 					if( 
-						$calPeriod->getProperty('DTEND') > $this->startdt && 
-						$calPeriod->getProperty('DTSTART') < $this->enddt )
+						date('Y-m-d H:i:s', $calPeriod->ts_end) > $this->startdt && 
+						date('Y-m-d H:i:s', $calPeriod->ts_begin) < $this->enddt )
 						{
 						$this->createCommonEventVars($calPeriod);
 						if( !isset($this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')]) )

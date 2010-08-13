@@ -45,6 +45,8 @@ class displayAttendeesCls
 	var $arrinfo;
 	var $fullname;
 	var $diskspace;
+	
+	private $period;
 
 	public function __construct($evtid, $idcal)
 		{
@@ -62,24 +64,51 @@ class displayAttendeesCls
 		
 		$this->access = true;
 		
-		$this->fullnametxt = bab_translate("Attendee");
+		$this->invitationstatus = bab_translate("Status of my invitation to the appointment");
+		$this->attendeestxt = bab_translate("Attendee");
+		$this->publicstxt = bab_translate("Public calendar");
+		$this->ressourcestxt = bab_translate("Ressource");
+		
 		$this->statusdef = array(
+			'NEEDS-ACTION'	=> '',
 			'ACCEPTED' => bab_translate("Accepted"), 
 			'DECLINED' => bab_translate("Declined")
 		);
-		$this->statustxt = bab_translate("Response");
+		$this->responsetxt = bab_translate("Response");
+		$this->statustxt = bab_translate("Status");
+		
+		$this->t_accept = bab_translate("Accept");
+		$this->t_reject = bab_translate("Reject");
 		
 		$backend = $calendar->getBackend();
-		$period = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$this->period = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
 			
 			
-		$this->attendees = $period->getAttendees();
+		$this->attendees = $this->period->getAttendees();
+		$this->publics = array();
+		$this->ressources = array();
+		
+		$relations = array_merge($this->period->getRelations('PARENT'), $this->period->getRelations('CHILD'));
+		foreach($relations as $calendar)
+		{
+			// only relations with calendars from ovidentia backend displayed
+			
+			if ($calendar instanceof bab_PublicCalendar)
+			{
+				$this->publics[] = $calendar;
+			}
+			
+			if ($calendar instanceof bab_RessourceCalendar)
+			{
+				$this->ressources[] = $calendar;
+			}
+		}
 		
 		
 		
 		
 		$this->statusarray = array();
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		
 		
 		
 		
@@ -105,22 +134,7 @@ class displayAttendeesCls
 				}
 			}
 			
-			
-			
-			
-		// approbation on public and ressource calendar
-		
-			
-			/*
-			elseif () {	
-					
-						if( $arr['status'] == BAB_CAL_STATUS_NONE && $arr['idfai'] != 0 && count($arrschi) > 0 && in_array($arr['idfai'], $arrschi))
-							{
-							$this->statusarray = array(BAB_CAL_STATUS_ACCEPTED,BAB_CAL_STATUS_DECLINED);
-							}
-						
-					}
-			*/
+
 			
 		
 		$this->countstatus = count($this->statusarray);
@@ -131,7 +145,10 @@ class displayAttendeesCls
 			$this->commenttxt = bab_translate("Raison");
 			$this->accepttxt = bab_translate("Accept");
 			$this->declinetxt = bab_translate("Decline");
-			if( !empty($this->hash) && $this->hash[0] == 'R')
+			
+			$collection = $this->period->getCollection();
+			
+			if( !empty($collection->hash))
 				{
 				$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
 				$this->all = bab_translate("All");
@@ -148,8 +165,6 @@ class displayAttendeesCls
 
 	public function getnextattendee()
 		{
-		global $babBody;
-		static $i = 0;
 		if( list(,$arr) = each($this->attendees))
 			{
 			$this->altbg = !$this->altbg;
@@ -160,16 +175,151 @@ class displayAttendeesCls
 				$this->bcreator = true;
 				}
 			$this->status = $this->statusdef[$arr['PARTSTAT']];
-			$i++;
 			return true;
 			}
-		else
-			{
-			return false;
-			}
+		
+		return false;
 		}
+		
+		
+	/**
+	 * get sheme instance and status for event and calendar
+	 * @param bab_EventCalendar $calendar
+	 * @return int
+	 */
+	private function getShemeInstance(bab_EventCalendar $calendar)
+	{
+		global $babDB;
+		
+		$uid = $this->period->getProperty('UID');
+		$id_cal = $calendar->getUid();
+		
+		$res = $babDB->db_query('SELECT status, idfai 
+			FROM 
+				'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
+				'.BAB_CAL_EVENTS_TBL.' e 
+				
+			WHERE 
+				e.id = eo.id_event 
+				AND e.uuid = '.$babDB->quote($uid).' 
+				AND eo.id_cal = '.$babDB->quote($id_cal).' 
+		');
+		
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			throw new Exception('Error');
+		}
+		
+		return array((int) $arr['status'],(int) $arr['idfai']);
+	}
+	
+	/**
+	 * @param 	bab_EventCalendar 	$calendar
+	 * @param	int					$status			BAB_CAL_STATUS_NONE | BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
+	 * @return string
+	 */
+	private function getStatus(bab_EventCalendar $calendar, $status)
+	{
+		if (!$calendar->getApprobationSheme())
+		{
+			return bab_translate('No validation');
+		}
+		
+		switch($status)
+		{
+			case BAB_CAL_STATUS_NONE:
+				return bab_translate('Waiting for approbation');
+				break;
+			case BAB_CAL_STATUS_ACCEPTED:
+				return bab_translate('Accepted');
+				break;
+			case BAB_CAL_STATUS_DECLINED:
+				return bab_translate('Declined');
+				break;
+		}
+		
+		
+		return '';
+	}
+	
+	/**
+	 * 
+	 * @param int $idfai
+	 * @return bool
+	 */
+	private function isApprover($idfai)
+	{
+		if (!$idfai)
+		{
+			return false;
+		}
+		
+		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		
+		if (in_array($idfai, $arrschi))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	private function approbUrl(bab_EventCalendar $calendar, $status)
+	{
+		require_once dirname(__FILE__).'/utilit/urlincl.php';
+		$url = bab_url::get_request('tg', 'idx', 'evtid', 'idcal');
+		$url->idx = 'approb';
+		$url->idcal = $calendar->getUrlIdentifier();
+		$url->approbstatus = $status;
+		
+		return $url->toString();
+	}
+	
+		
+	public function getnextpublic()
+	{
+		if( list(,$calendar) = each($this->publics))
+			{
+			$this->altbg = !$this->altbg;
+			$this->name = $calendar->getName();
+			list($status, $idfai) = $this->getShemeInstance($calendar);
+			$this->status = $this->getStatus($calendar, $status);
+			$this->approver = $this->isApprover($idfai);
+			
+			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
+			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
+			
+			return true;
+			}
+		
+		return false;
+	}
+	
+	
+	public function getnextressource()
+	{
+		if( list(,$calendar) = each($this->ressources))
+			{
+			$this->altbg = !$this->altbg;
+			$this->name = $calendar->getName();
+			list($status, $idfai) = $this->getShemeInstance($calendar);
+			$this->status = $this->getStatus($calendar, $status);
+			$this->approver = $this->isApprover($idfai);
+			
+			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
+			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
+			
+			return true;
+			}
+		
+		return false;
+	}
+		
 
-	function getnextstatus()
+	public function getnextstatus()
 		{
 		global $babBody;
 		static $i = 0;
@@ -193,6 +343,84 @@ class displayAttendeesCls
 		}
 	}
 
+	
+	
+	
+	
+			
+		
+
+
+	
+class displayApprobCalendarCls
+{
+	
+
+	public function __construct($evtid, $idcal)
+	{
+		global $babBody, $babDB;
+		
+		$this->evtid = $evtid;
+		$this->idcal = $idcal;
+		
+		$calendar = bab_getICalendars()->getEventCalendar($idcal);
+		$backend = $calendar->getBackend();
+		$period = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		
+		$this->commenttxt = bab_translate("Reason");
+		$this->updatetxt = bab_translate("Update");
+		$this->approbstatus = bab_toHtml(sprintf(bab_translate("Approbation for %s"), $calendar->getName()));
+		
+		
+		$this->statusarray = array(
+			BAB_CAL_STATUS_DECLINED => bab_translate('Reject'),
+			BAB_CAL_STATUS_ACCEPTED => bab_translate('Accept')
+		);
+		
+		
+		
+		$collection = $period->getCollection();
+			
+		if( !empty($collection->hash))
+			{
+			$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+			$this->all = bab_translate("All");
+			$this->thisone = bab_translate("This occurence");
+			$this->brepetitive = true;
+			}
+		else
+			{
+			$this->brepetitive = false;
+			}
+		
+	}
+		
+		
+	public function getnextstatus()
+	{
+		global $babBody;
+		
+		if( list($val, $name) = each($this->statusarray))
+			{
+			$this->statusname = bab_toHtml($name);
+			$this->statusval = $val;
+			$this->selected = $val === (int) bab_rp('approbstatus');
+
+			return true;
+			}
+		
+		return false;
+	}
+
+		
+	public function getHtml()
+	{
+		return bab_printTemplate($this, "calendar.html", "approbcalendar");
+	}
+}
+
+	
+	
 	
 	
 	
@@ -617,6 +845,7 @@ function displayAttendees($evtid, $idcal)
 {
 	global $babBody;
 	
+
 	$details = new displayEventDetailCls($evtid, $idcal);
 	$attendees = new displayAttendeesCls($evtid, $idcal);
 	
@@ -647,6 +876,27 @@ function displayEventDetailUpd($evtid, $idcal)
 	$alert = new displayEventAlertCls($evtid, $idcal);
 	
 	$babBody->babPopup($details->getHtml().$notes->getHtml().$alert->getHtml());
+}
+
+
+/**
+ * Approbation page for one public or ressource calendar link to an event (recurring or not)
+ * @return unknown_type
+ */
+function approbCalendar($evtid, $idcal)
+{
+	if (isset($_POST['approbstatus']))
+	{
+		$status = (int) bab_pp('approbstatus');
+		
+		confirmApprobEvent($evtid, $idcal, $status);
+	}
+	
+	global $babBody;	
+	$details = new displayEventDetailCls($evtid, $idcal);
+	$approb = new displayApprobCalendarCls($evtid, $idcal);
+	
+	$babBody->babPopup($details->getHtml().$approb->getHtml());
 }
 
 
@@ -1076,9 +1326,9 @@ if( isset($_REQUEST['conf']) )
 		confirmEvent(
 			bab_rp('evtid'), 
 			bab_rp('idcal'), 
-			bab_rp('bconfirm'), 
+			bab_rp('partstat'), 
 			bab_rp('comment'), 
-			bab_rp('bupdrec', 2)
+			bab_rp('bupdrec', BAB_CAL_EVT_CURRENT)
 		);
 		$reload = true;
 		}
@@ -1087,7 +1337,7 @@ if( isset($_REQUEST['conf']) )
 		updateEventNotes(
 			bab_rp('evtid'), 
 			bab_rp('note'), 
-			bab_rp('bupdrec', 2)
+			bab_rp('bupdrec', BAB_CAL_EVT_CURRENT)
 		);
 		$reload = true;
 		}
@@ -1152,6 +1402,15 @@ switch($idx)
 			
 		$babBody->setTitle(bab_translate("Attendees"));
 		displayAttendees(
+			bab_rp('evtid'),
+			bab_rp('idcal')
+		);
+		break;
+		
+		
+	case 'approb':
+		$babBody->setTitle(bab_translate("Approbation"));
+		approbCalendar(
 			bab_rp('evtid'),
 			bab_rp('idcal')
 		);

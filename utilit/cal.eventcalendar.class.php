@@ -285,6 +285,39 @@ abstract class bab_EventCalendar
 	}
 	
 	
+	/**
+	 * Test if the access user can update this calendar PARTSTAT property on event
+	 * with this default method, all users can modifiy their own PARTSTAT on every events, with one of the two values allowed by the ovidentia user interface
+	 * 
+	 * @param 	bab_CalendarPeriod 	$period
+	 * @param	string				$role			Attendee ROLE value				CHAIR | REQ-PARTICIPANT | OPT-PARTICIPANT
+	 * @param	string				$old_value		Attendee PARTSTAT actual value
+	 * @param	string				$new_value		Attendee PARTSTAT new value
+	 * 
+	 * @return bool
+	 */
+	public function canUpdateAttendeePARTSTAT(bab_CalendarPeriod $period, $role, $old_value, $new_value)
+	{
+		$id_user = $this->getIdUser();
+		
+		if (!$id_user)
+		{
+			return false;
+		}
+		
+		if ($this->access_user != $id_user)
+		{
+			return false;
+		}
+		
+		if ('ACCEPTED' !== $new_value && 'DECLINED' !== $new_value)
+		{
+			return false;
+		}
+
+		return true;
+	}
+	
 
 
 	/**
@@ -534,7 +567,7 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 				// i have full access on the calendar where the event is
 				return 'ACCEPTED';
 		}
-		
+
 		return 'NEEDS-ACTION';
 	}
 	

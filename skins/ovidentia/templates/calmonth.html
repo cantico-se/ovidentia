@@ -135,6 +135,8 @@ document.onmousemove = bab_tooltipPosition;
 				<div class="event" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">	
 					<!--#if allow_modify -->
 					<a href="{ titletenurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+					<!--#else allow_modify -->
+					<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="11" height="11" />
 					<!--#endif allow_modify -->
 					
 					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >

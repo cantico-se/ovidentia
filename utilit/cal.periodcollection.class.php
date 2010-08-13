@@ -65,6 +65,7 @@ abstract class bab_PeriodCollection implements Iterator, Countable
 		return $this;
 	}
 	
+	
 	/**
 	 * Set relation to calendar
 	 * @param bab_EventCalendar $calendar

@@ -723,9 +723,25 @@ class bab_cal_OviEventUpdate
 			$calendar = $attendee['calendar'];
 			$id_user = $calendar->getIdUser();
 			
-			if (($calendar instanceof bab_OviEventCalendar) && $id_user)
+			if (($calendar instanceof bab_PersonalCalendar) && $id_user)
 			{
-				$status = 'TRUE' === $attendee['RSVP'] ? BAB_CAL_STATUS_NONE : BAB_CAL_STATUS_ACCEPTED;
+				switch($attendee['PARTSTAT'])
+				{
+					case 'ACCEPTED':
+						$status = BAB_CAL_STATUS_ACCEPTED;
+						break;
+						
+					case 'DECLINED':
+						$status = BAB_CAL_STATUS_DECLINED;
+						break;
+						
+					default:
+					case 'NEEDS-ACTION':
+						$status = BAB_CAL_STATUS_NONE;
+						break;
+				}
+				
+				
 				$id_calendar = $calendar->getUid();
 				
 				if (isset($associated[$id_calendar]))
@@ -766,7 +782,7 @@ class bab_cal_OviEventUpdate
 		
 		foreach($calendars as $calendar)
 		{			
-			if ($calendar instanceof bab_OviEventCalendar)
+			if (($calendar instanceof bab_PublicCalendar) || ($calendar instanceof bab_RessourceCalendar))
 			{
 				$status = BAB_CAL_STATUS_ACCEPTED;
 				$id_calendar = $calendar->getUid();
@@ -816,7 +832,7 @@ class bab_cal_OviEventUpdate
 		
 		$associated = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$associated[$arr['id_cal']] = $arr['status'];
+			$associated[$arr['id_cal']] = (int) $arr['status'];
 		}
 		
 		return $associated;
@@ -867,7 +883,7 @@ class bab_cal_OviEventUpdate
 	 * @param bab_CalendarPeriod	$period
 	 * @param int					$id_event
 	 * @param bab_EventCalendar 	$id_calendar
-	 * @param int 					$status
+	 * @param int 					$status			BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_NONE | BAB_CAL_STATUS_DECLINED
 	 * 
 	 * @return array
 	 */
@@ -882,13 +898,14 @@ class bab_cal_OviEventUpdate
 		{
 			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 			$idfai = makeFlowInstance($idsa, "cal-".$id_calendar."-".$id_event);
+			$status = BAB_CAL_STATUS_NONE;
 		} 
 		else 
 		{
 			$idfai = 0;
 		}
 		
-		$babDB->db_query("
+		$query = "
 			INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				(
 					id_event,
@@ -903,7 +920,9 @@ class bab_cal_OviEventUpdate
 					'".$babDB->db_escape_string($status)."',
 					'".$babDB->db_escape_string($idfai)."'
 				)
-		");
+		";
+		
+		$babDB->db_query($query);
 		
 		
 		if( $idfai )
@@ -1082,7 +1101,8 @@ class bab_cal_OviEventSelect
 			");
 	
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
-		
+			
+			
 			switch($arr2['status'])
 			{
 				case BAB_CAL_STATUS_NONE:
@@ -1095,6 +1115,7 @@ class bab_cal_OviEventSelect
 					$partstat = 'DECLINED';	
 					break;
 			}
+			
 			
 			
 			switch($arr2['type'])
@@ -1140,6 +1161,8 @@ class bab_cal_OviEventSelect
 				} else {
 					$role = 'REQ-PARTICIPANT';
 				}
+				
+				
 				
 				$event->addAttendee($calendar, $role, $partstat);
 				

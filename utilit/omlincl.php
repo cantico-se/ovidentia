@@ -5072,9 +5072,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$description = $p->getProperty('DESCRIPTION');
 			$this->replace_ref($description, 'html', 'bab_calendar_event');
-			$date = explode(' ', $p->getProperty('DTSTART'));
-			$date = explode('-', $date[0]);
-			$date = $date[0].",".$date[1].",".$date[2];
+			$date = date('Y,m,d',$p->ts_begin);
 
 			$color = isset($p->color) ? $p->color : '';
 
@@ -5083,8 +5081,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventTitle'				, $p->getProperty('SUMMARY'));
 			$this->ctx->curctx->push('EventDescription'			, $description);
 			$this->ctx->curctx->push('EventLocation'			, $p->getProperty('LOCATION'));
-			$this->ctx->curctx->push('EventBeginDate'			, bab_mktime($p->getProperty('DTSTART')));
-			$this->ctx->curctx->push('EventEndDate'				, bab_mktime($p->getProperty('DTEND')));
+			$this->ctx->curctx->push('EventBeginDate'			, $p->ts_begin);
+			$this->ctx->curctx->push('EventEndDate'				, $p->ts_end);
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
 			$this->ctx->curctx->push('EventCategoryColor'		, $color);
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);

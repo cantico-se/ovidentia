@@ -3101,10 +3101,10 @@
 <string id="Comma separator">Séparateur virgule</string>
 <string id="Semicolon separator">Séparateur point virgule</string>
 <string id="You do not have access rights">Vous n'avez pas les droits d'accès</string>
-<string id=""></string>
-<string id=""></string>
-<string id=""></string>
-<string id=""></string>
+<string id="No validation">Pas de validation</string>
+<string id="Reject">Rejeter</string>
+<string id="Waiting for approbation">En attente d'approbation</string>
+<string id="Status of my invitation to the appointment">Statut de mon invitation à l'évènement</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
