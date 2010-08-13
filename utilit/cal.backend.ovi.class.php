@@ -54,12 +54,12 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	}
 	
 	/**
-	 * @return bab_RessourceCalendar
+	 * @return bab_ResourceCalendar
 	 */
-	public function RessourceCalendar()
+	public function ResourceCalendar()
 	{
 		$this->includeEventCalendar();
-		return new bab_RessourceCalendar;
+		return new bab_ResourceCalendar;
 	}
 	
 	

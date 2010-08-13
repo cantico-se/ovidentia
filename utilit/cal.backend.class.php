@@ -59,7 +59,7 @@ class Func_CalendarBackend extends bab_functionality
 	/**
 	 * @return bab_EventCalendar
 	 */
-	public function RessourceCalendar() {
+	public function ResourceCalendar() {
 		throw new Exception('Do not call directly, each backend must have his own calendar implementation');
 		return null;
 	}

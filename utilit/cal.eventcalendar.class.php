@@ -644,22 +644,22 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 
 
 /**
- * Ressource calendar
+ * Resource calendar
  */
-class bab_RessourceCalendar extends bab_OviEventCalendar 
+class bab_ResourceCalendar extends bab_OviEventCalendar 
 {
 	public function getType() 
 	{
-		return bab_translate('Ressource calendar');
+		return bab_translate('Resource calendar');
 	}
 
 	/**
-	 * Get the type part of the refernce
+	 * Get the type part of the reference
 	 * @return unknown_type
 	 */
 	public function getReferenceType()
 	{
-		return 'ressource';
+		return 'resource';
 	}
 	
 	

@@ -769,7 +769,7 @@ class bab_cal_OviEventUpdate
 	
 	
 	/**
-	 * Attach public and ressource calendars from relations, work also for event modification
+	 * Attach public and resource calendars from relations, work also for event modification
 	 * @param bab_CalendarPeriod $period
 	 * @param int $id_event
 	 * @return unknown_type
@@ -782,7 +782,7 @@ class bab_cal_OviEventUpdate
 		
 		foreach($calendars as $calendar)
 		{			
-			if (($calendar instanceof bab_PublicCalendar) || ($calendar instanceof bab_RessourceCalendar))
+			if (($calendar instanceof bab_PublicCalendar) || ($calendar instanceof bab_ResourceCalendar))
 			{
 				$status = BAB_CAL_STATUS_ACCEPTED;
 				$id_calendar = $calendar->getUid();
@@ -1127,7 +1127,7 @@ class bab_cal_OviEventSelect
 					$idcal = 'public/'.$arr2['id_cal'];
 					break;
 				case BAB_CAL_RES_TYPE:
-					$idcal = 'ressource/'.$arr2['id_cal'];
+					$idcal = 'resource/'.$arr2['id_cal'];
 					break;
 			}
 		
