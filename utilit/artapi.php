@@ -215,7 +215,7 @@ function bab_getArticleDelegationId($iIdArticle)
 	
 	
 /**
- * Get first children articles categories (in db_query ressource )
+ * Get first children articles categories (in db_query resource )
  *
  * @param	array		$parentid		: list of id of the parent category
  * @param	int|false	$delegationid	: if delegationid is false, categories are not filtered
@@ -229,7 +229,7 @@ function bab_getArticleDelegationId($iIdArticle)
  *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
  *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  *
- * @return 	ressource|false : first childs of $parentid
+ * @return 	resource|false : first childs of $parentid
  */
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
@@ -526,7 +526,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 
 
 /**
- * Get articles topics (in db_query ressource )
+ * Get articles topics (in db_query resource )
  * @param	array		$categoryid		: list of articles categories
  * @param	int|false	$delegationid	: if delegationid is false, topics are not filtered
  * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, topics are not filtered by user's rights 
@@ -539,7 +539,7 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
  *	BAB_TOPICSSUB_GROUPS_TBL : right submit articles
  *	BAB_TOPICSVIEW_GROUPS_TBL : right view articles (value by default)
  * 
- * @return 	ressource|false
+ * @return 	resource|false
  */
 function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
