@@ -4666,7 +4666,7 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
 class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 {
 	var $res;
-	var $IdEntries = array();
+	var $Entries = array();
 	var $index;
 	var $count;
 
@@ -4677,100 +4677,61 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 		$type = $ctx->get_value('type');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		bab_getICalendars()->initializeCalendars();
+		
 		switch(bab_getICalendars()->defaultview)
-			{
-			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
-			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
-			default: $this->view='calmonth'; break;
-			}
-
-		if( $type === false || $type === '' )
-			{
-			if( bab_getICalendars()->id_percal )
-				{
-				$this->IdEntries[] = bab_getICalendars()->id_percal;
-				}
-
-			reset(bab_getICalendars()->usercal);
-			while( $row=each(bab_getICalendars()->usercal) )
-				{
-				$this->IdEntries[] = $row[0];
-				}
-
-			reset(bab_getICalendars()->pubcal);
-			while( $row=each(bab_getICalendars()->pubcal) )
-				{
-				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
-					continue;
-				$this->IdEntries[] = $row[0];
-				}
-
-			reset(bab_getICalendars()->rescal);
-			while( $row=each(bab_getICalendars()->rescal) )
-				{
-				if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
-					continue;
-
-				$this->IdEntries[] = $row[0];
-				}
-			}
-		else
-			{
-			$typename = mb_strtolower($type);
-			switch($typename)
-				{
-				case 'user': $type = BAB_CAL_USER_TYPE;	break;
-				case 'group': $type = BAB_CAL_PUB_TYPE;	break;
-				case 'resource': $type = BAB_CAL_RES_TYPE;	break;
-				default: $type = ''; break;
-				}
-			switch($type)
-				{
-				case BAB_CAL_USER_TYPE:
-					if( bab_getICalendars()->id_percal )
-						{
-						$this->IdEntries[] = bab_getICalendars()->id_percal;
-						}
-
-					reset(bab_getICalendars()->usercal);
-					while( $row=each(bab_getICalendars()->usercal) )
-						{
-						$this->IdEntries[] = $row[0];
-						}
-					break;
-
-				case BAB_CAL_PUB_TYPE:
-					reset(bab_getICalendars()->pubcal);
-					while( $row=each(bab_getICalendars()->pubcal) )
-						{
-						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
-							continue;
-						$this->IdEntries[] = $row[0];
-						}
-					break;
-
-				case BAB_CAL_RES_TYPE:
-					reset(bab_getICalendars()->rescal);
-					while( $row=each(bab_getICalendars()->rescal) )
-						{
-						if(0 != $delegationid && $delegationid != $row['value']['id_dgowner'])
-							continue;
-						$this->IdEntries[] = $row[0];
-						}
-					break;
-				}
-			}
-
-
+		{
+			case BAB_CAL_VIEW_DAY: 	$this->view='calday';		break;
+			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; 		break;
+			default: 				$this->view='calmonth'; 	break;
+		}
+			
+			
+		$calendars = bab_getICalendars()->getCalendars();
+		$typename = mb_strtolower($type);
+		
+		switch($typename)
+		{
+			case 'user': 		$class = 'bab_PersonalCalendar';	break;
+			case 'group': 		$class = 'bab_PublicCalendar';		break;
+			case 'resource': 	$class = 'bab_ResourceCalendar';	break;
+			default: 			$class = 'bab_OviEventCalendar'; 	break;
+		}
+			
 		$calendarid = $ctx->get_value('calendarid');
 		if( $calendarid !== false && $calendarid !== '' )
+		{
+			$calendarid = array_flip(explode(',',$calendarid));
+		}
+		else
+		{
+			$calendarid = null;	
+		}	
+		
+		foreach($calendars as $calendar)
+		{
+			if (!($calendar instanceof $class))
 			{
-			$calendarid = explode(',',$calendarid);
-			$this->IdEntries = array_intersect($this->IdEntries, $calendarid );
+				continue;
 			}
+			
+			if (isset($calendarid) && !isset($calendarid[$calendar->getUid()]))
+			{
+				continue;
+			}
+			
+			$dg = $calendar->getDgOwner();
+			
+			if(0 != $delegationid && isset($dg) && $delegationid != $dg)
+			{
+				continue;
+			}
+			
+			$this->Entries[] = $calendar;
+		}
 
-		$this->count = count($this->IdEntries);
+		
+
+		$this->count = count($this->Entries);
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -4779,18 +4740,36 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 		global $babBody,$babDB;
 		if( $this->idx < $this->count)
 		{
-			$calendarid = current($this->IdEntries);
+			$calendar = current($this->Entries);
 			$this->ctx->curctx->push('CIndex', $this->idx);
-			$this->ctx->curctx->push('CalendarId', $calendarid);
-			$iarr = bab_getICalendars()->getCalendarInfo($calendarid);
-			$this->ctx->curctx->push('CalendarName', $iarr['name']);
-			$this->ctx->curctx->push('CalendarDescription', $iarr['description']);
-			$this->ctx->curctx->push('CalendarOwnerId', $iarr['idowner']);
-			$this->ctx->curctx->push('CalendarType', $iarr['type']);
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendarid);
+			$this->ctx->curctx->push('CalendarId', $calendar->getUid());
+			$this->ctx->curctx->push('CalendarName', $calendar->getName());
+			$this->ctx->curctx->push('CalendarDescription', $calendar->getDescription());
+			$this->ctx->curctx->push('CalendarOwnerId', $calendar->getIdUser());
+			
+			switch($calendar->getReferenceType())
+			{
+				case 'personal':
+					$this->ctx->curctx->push('CalendarType', BAB_CAL_USER_TYPE);
+					break;
+					
+				case 'public':
+					$this->ctx->curctx->push('CalendarType', BAB_CAL_PUB_TYPE);
+					break;
+					
+				case 'resource':
+					$this->ctx->curctx->push('CalendarType', BAB_CAL_RES_TYPE);
+					break;
+					
+				default:
+					$this->ctx->curctx->push('CalendarType', 0);
+					break;
+			}
+			
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendar->getUid());
 			$this->idx++;
 			$this->index = $this->idx;
-			next($this->IdEntries);
+			next($this->Entries);
 			return true;
 		}
 		else
@@ -4865,7 +4844,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	{
 		global $babBody, $babDB;
 		parent::setOvmlContext($ctx);
-		bab_getICalendars()->initializeCalendars();
+		
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
@@ -4914,34 +4893,51 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		$enddate->add($lr, BAB_DATETIME_DAY);
 
 
-		$this->whObj = new bab_userWorkingHours($startdate, $enddate);
+		$this->whObj = new bab_UserPeriods($startdate, $enddate);
+		
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		/*@var $backend Func_CalendarBackend_Ovi */
+		$factory = $backend->Criteria();
+		/*@var $factory bab_PeriodCriteriaFactory */
 
 		if ($filter) {
-			$this->getUserCalendars($calendarid, $delegationid);
+			$calendars = $this->getUserCalendars($calendarid, $delegationid);
 		} else {
-			$this->getCalendars($calendarid);
+			$calendars = $this->getCalendars($calendarid);
 		}
+		
+		$criteria = $factory->Calendar($calendars);
 
 		$categoryid = $ctx->get_value('categoryid');
 		if( $categoryid !== false && $categoryid !== '' )
 			{
-			$this->whObj->category = explode(",",$categoryid);
+			$catnames = array();
+			$arr = explode(",",$categoryid);
+			foreach($arr as $categoryid)
+			{
+				$cat = bab_getCalendarCategory($categoryid);
+				$catnames[] = $cat['name'];
+			}
+			
+			$criteria = $criteria->_AND_($factory->Property('CATEGORIES', $catnames));
 		}
+		
+		
+		$collections = array($backend->CalendarEventCollection());
 
-
-		$options = BAB_PERIOD_CALEVENT;
 		if( $holiday )
 		{
-			$options |= BAB_PERIOD_VACATION;
-		//	$options |= BAB_PERIOD_NWDAY;
+			$collections[] = $backend->VacationPeriodCollection();
 		}
-		$this->whObj->createPeriods($options);
+		
+		$criteria = $criteria->_AND_($factory->Collection($collections));
+		
+		$this->whObj->createPeriods($criteria);
 		$this->whObj->orderBoundaries();
 
 		$this->events = $this->whObj->getEventsBetween(
 			$startdate->getTimeStamp(),
-			$enddate->getTimeStamp(),
-			$options
+			$enddate->getTimeStamp()
 		);
 
 		$this->count = count($this->events);
@@ -4959,79 +4955,51 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			trigger_error('filter=NO must be used with calendarid');
 			return;
 		}
+		
+		require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
+		
+		$public = bab_cal_getPublicCalendars(0, $calendarid);
+		$resource = bab_cal_getResourceCalendars(0, $calendarid);
+		$personal = bab_cal_getPersonalCalendars(0, $calendarid);
 
-		$res = $babDB->db_query("select id, type, owner from ".BAB_CALENDAR_TBL." where id IN (".$babDB->quote($calendarid).") and  actif='Y'");
-		while( $arr = $babDB->db_fetch_array($res) )
-			{
-			switch($arr['type']) {
-				case BAB_CAL_USER_TYPE:
-					if ($this->cal_users) {
-						$this->whObj->addCalendar($arr['id']);
-						$this->whObj->addIdUser($arr['owner']);
-					}
-					break;
-
-				case BAB_CAL_PUB_TYPE:
-					if ($this->cal_groups) {
-						$this->whObj->addCalendar($arr['id']);
-					}
-					break;
-
-				case BAB_CAL_RES_TYPE:
-					if ($this->cal_resources) {
-						$this->whObj->addCalendar($arr['id']);
-					}
-					break;
-			}
-		}
+		return array_merge($public, $resource, $personal);
 	}
 
 	/**
  	 * Get available calendar with filter
 	 */
 	public function getUserCalendars($calendarid, $delegationid) {
-		global $babBody;
-		$rr = empty($calendarid) ? false : array_flip(explode(',', $calendarid));
-
-		if( bab_getICalendars()->id_percal && $this->cal_users) {
-			if (false === $rr || isset($rr[bab_getICalendars()->id_percal])) {
-				$this->whObj->addCalendar(bab_getICalendars()->id_percal);
-				$this->whObj->addIdUser($GLOBALS['BAB_SESS_USERID']);
-			}
+		$calendars = bab_getICalendars()->getCalendars();
+		
+		if( $calendarid !== false && $calendarid !== '' )
+		{
+			$calendarid = array_flip(explode(',',$calendarid));
 		}
-
-		if ($this->cal_users) {
-
-			if ($rr || (false === $rr && $this->cal_default_users)) {
-
-				foreach( bab_getICalendars()->usercal as $key => $val ) {
-					if (false === $rr || isset($rr[$key])) {
-						$this->whObj->addIdUser(bab_getICalendars()->getCalendarOwner($key));
-						$this->whObj->addCalendar($key);
-					}
-				}
-			}
+		else
+		{
+			$calendarid = null;	
 		}
-
-		if ($this->cal_resources) {
-			foreach( bab_getICalendars()->rescal as $key => $val ) {
-				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-					continue;
-				if (false === $rr || isset($rr[$key])) {
-					$this->whObj->addCalendar($key);
-				}
+		
+		$return = array();
+		
+		foreach($calendars as $calendar)
+		{
+			if (isset($calendarid) && !isset($calendarid[$calendar->getUid()]))
+			{
+				continue;
 			}
-		}
-
-		if ($this->cal_groups) {
-			foreach( bab_getICalendars()->pubcal as $key => $val ) {
-				if(0 != $delegationid && $delegationid != $val['id_dgowner'])
-					continue;
-				if (false === $rr || isset($rr[$key])) {
-					$this->whObj->addCalendar($key);
-				}
+			
+			$dg = $calendar->getDgOwner();
+			
+			if(0 != $delegationid && isset($dg) && $delegationid != $dg)
+			{
+				continue;
 			}
+			
+			$return[] = $calendar;
 		}
+		
+		return $return;
 	}
 
 	/**
@@ -5070,11 +5038,9 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			}
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
-			$description = $p->getProperty('DESCRIPTION');
+			$description = $arr['description'];
 			$this->replace_ref($description, 'html', 'bab_calendar_event');
 			$date = date('Y,m,d',$p->ts_begin);
-
-			$color = isset($p->color) ? $p->color : '';
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventId'					, $id_event);
@@ -5084,7 +5050,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventBeginDate'			, $p->ts_begin);
 			$this->ctx->curctx->push('EventEndDate'				, $p->ts_end);
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
-			$this->ctx->curctx->push('EventCategoryColor'		, $color);
+			$this->ctx->curctx->push('EventCategoryColor'		, (string) $p->getColor());
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
@@ -5095,7 +5061,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventOwner'				, $EventOwner);
 			if( isset($arr['id_modifiedby']) && $arr['id_modifiedby'] )
 			{
-			$this->ctx->curctx->push('EventUpdateDate', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('EventUpdateDate', BAB_DateTime::fromICal($p->getProperty('LAST-MODIFIED'))->getTimeStamp());
 			$this->ctx->curctx->push('EventUpdateAuthor', $arr['id_modifiedby']);
 			}
 			if( isset($arr['id_creator']) && $arr['id_creator'] )

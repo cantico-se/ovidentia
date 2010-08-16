@@ -184,55 +184,28 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 {
 	
 	global $babDB, $babBody;
+	require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
+	
+	
+	$arr = bab_cal_getPublicCalendars($event->getAccessUser());
+	foreach($arr as $calendar)
+	{
+		$event->addCalendar($calendar);
+	}
+	
+	$arr = bab_cal_getResourceCalendars($event->getAccessUser());
+	foreach($arr as $calendar)
+	{
+		$event->addCalendar($calendar);
+	}
+	
+	
+	
 	
 	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	/*@var $backend Func_CalendarBackend_Ovi */
 	
-	// public calendars
 	
-	$visible_public_cal = bab_getAccessibleObjects(BAB_CAL_PUB_VIEW_GROUPS_TBL, $event->getAccessUser());
-	
-	$res = $babDB->db_query("
-		select cpt.*, ct.id as idcal
-		from 
-			".BAB_CAL_PUBLIC_TBL." cpt 
-				left join ".BAB_CALENDAR_TBL." ct on ct.owner=cpt.id 
-		where 
-			ct.type='".BAB_CAL_PUB_TYPE."' 
-			AND ct.actif='Y' 
-			AND ct.id IN(".$babDB->quote($visible_public_cal).")
-	");
-	
-	while( $arr = $babDB->db_fetch_assoc($res))
-	{	
-		$calendar = $backend->PublicCalendar();
-		$calendar->init($event->getAccessUser(), $arr);
-		$event->addCalendar($calendar);
-	}
-	
-	
-	
-	// resource calendars
-	
-	$visible_resource_cal = bab_getAccessibleObjects(BAB_CAL_RES_VIEW_GROUPS_TBL, $event->getAccessUser());
-	
-	$res = $babDB->db_query("
-		select crt.*, ct.id as idcal 
-		from 
-			".BAB_CAL_RESOURCES_TBL." crt 
-				left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id 
-		where 
-			ct.type='".BAB_CAL_RES_TYPE."' 
-			and ct.actif='Y' 
-			AND ct.id IN(".$babDB->quote($visible_resource_cal).")
-	");
-	
-	while($arr = $babDB->db_fetch_assoc($res))
-	{
-		$calendar = $backend->ResourceCalendar();
-		$calendar->init($event->getAccessUser(), $arr);
-		$event->addCalendar($calendar);
-	}
 	
 	// personal calendars
 	
