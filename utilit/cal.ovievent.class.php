@@ -1517,14 +1517,15 @@ class bab_cal_OviEventSelect
 								);
 		
 							if ($nworking && NULL == $previous_end) {
+								
 								$previous_end = $begin; // reference
 							}
 		
 							// add non-working period between 2 working period and at the begining
-							if ($nworking && $begints > $previous_end->getTimeStamp()) {
-								
+							if ($nworking && $beginDate->getTimeStamp() > $previous_end->getTimeStamp()) {
+
 								$p = new bab_calendarPeriod;
-								$p->setDates($previous_end, $begin);
+								$p->setDates($previous_end, $beginDate);
 								$p->setProperty('SUMMARY', bab_translate('Non-working period'));
 								$p->setData(array('id_user' => $id_user));
 								

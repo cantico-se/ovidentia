@@ -213,7 +213,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					}
 					
 					bab_debug(
-							"Disponibilit� en fonction de la p�riode de cong�s demand�e\n".
+							"Disponibilite en fonction de la periode de cones demandee\n".
 							"Dans l'intervale\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' <= '.bab_shortDate($beginp). 
@@ -235,7 +235,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					
 					
 					bab_debug(
-							"Disponibilit� en fonction de la p�riode de cong�s demand�e\n".
+							"Disponibilite en fonction de la periode de cong�s demandee\n".
 							"En dehors de l'intervale\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_end).' <= '.bab_shortDate($beginp). 
@@ -256,8 +256,8 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					
 					
 					bab_debug(
-							"Disponibilit� en fonction de la p�riode de cong�s demand�e\n".
-							"Dans l'intervale mais peut d�passer � l'exterieur\n".
+							"Disponibilite en fonction de la periode de conges demandee\n".
+							"Dans l'intervale mais peut depasser a l'exterieur\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
 							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
@@ -275,8 +275,8 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 					}
 					
 					bab_debug(
-							"acces sur la p�riode, en fonction de la p�riode de la demande\n".
-							"En dehors de l'intervale mais peut d�passer � l'int�rieur\n".
+							"acces sur la periode, en fonction de la periode de la demande\n".
+							"En dehors de l'intervale mais peut depasser a l'interieur\n".
 							'id = '.$id_right."\n".
 							bab_shortDate($period_start).' < '.bab_shortDate($endp). 
 							' && '.bab_shortDate($period_end).' > '.bab_shortDate($beginp)."\n".
@@ -289,7 +289,7 @@ function bab_vac_isRightAccessibleOnPeriod($id_right, $beginp, $endp, $overlap) 
 	$debug_include = $access_include ? 'TRUE' : 'FALSE';
 	$debug_exclude = $access_exclude ? 'TRUE' : 'FALSE';
 
-	bab_debug(sprintf("id = %d \ntests de p�riodes d'inclusion %s \ntests de p�riodes d'exclusion %s\n",$id_right, $debug_include, $debug_exclude));
+	bab_debug(sprintf("id = %d \ntests de periodes d'inclusion %s \ntests de periodes d'exclusion %s\n",$id_right, $debug_include, $debug_exclude));
 	
 	return $access_include && $access_exclude;
 }
@@ -843,9 +843,9 @@ function viewVacationCalendar($users, $period = false )
 
 				$key = $this->curmonth.$this->curyear;
 
-				//if (!isset($this->db_month[$key][$this->id_user])) {
+				if (!isset($this->db_month[$key][$this->id_user])) {
 					bab_vac_updateCalendar($this->id_user, $this->curyear, $this->curmonth);
-				//}
+				}
 
 				global $babDB;
 				
@@ -2460,7 +2460,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 					
 					if ($type_day->getTimeStamp() >= $begin->getTimeStamp() && !isset($ignore[$type_day->getIsoDate()])) {
 						
-						// bab_debug('push '.bab_longDate($type_day->getTimeStamp()).'  end : '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
+						//bab_debug('push '.bab_longDate($type_day->getTimeStamp()).'  end : '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
 
 						bab_vac_typeColorStack(
 								$row['id'], 
@@ -2479,7 +2479,8 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 			//bab_debug($ventilation);
 		}
 
-		$p = new bab_calendarPeriod($row['id_user'], $date_begin, $date_end);
+		$p = new bab_calendarPeriod;
+		$p->setDates($date_begin, $date_end);
 		$period_collection->addPeriod($p);
 		$user_periods->addPeriod($p);
 		
@@ -2501,19 +2502,11 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 				AND cat.id = vct.id_cat 
 		"));
 
-		$data = array(
-			'id' 		=> $row['id'],
-			'id_cat'	=> $id_cat,
-			'confirmed'	=> $row['status'] === 'Y'
-		);
-		$p->setData($data);
 
 		
 		$p->setProperty('SUMMARY'		, bab_translate("Vacation"));
-		$p->setProperty('DTSTART'		, $date_begin->getIsoDateTime());
-		$p->setProperty('DTEND'			, $date_end->getIsoDateTime());
 		$p->setProperty('CATEGORIES'	, $category);
-		$p->color = $color;
+		$p->setColor($color);
 
 		$description = '';
 
@@ -2536,8 +2529,18 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 				);
 		}
 		$description .= '</tbody></table>';
+		
+		$data = array(
+			'id' => $row['id'],
+			'id_cat'	=> $id_cat,
+			'confirmed'	=> $row['status'] === 'Y',
+			'description' => $description,
+			'description_format' => 'html'
+		);
+		
+		$p->setData($data);
 
-		$p->setProperty('DESCRIPTION', $description);
+		$p->setProperty('DESCRIPTION', strip_tags($description));
 
 	}
 }
@@ -2747,11 +2750,11 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	
 	foreach($obj as $pe) {
 		
-		bab_debug($pe->getProperties());
-		
+		/*@var $pe bab_CalendarPeriod */
 		$group = $pe->split(12 * 3600);
 		foreach($group as $p) {
 			
+			/*@var $p bab_CalendarPeriod */
 			if ($p->ts_begin < $datee->getTimeStamp() && $p->ts_end > $dateb->getTimeStamp()) {
 				$key = date('Ymda',$p->ts_begin);
 				$collection = $p->getCollection();
@@ -2760,7 +2763,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 				$stack[$key][$type] = $p;
 
 				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key]->getCollection()), $type, $vacation_is_free)) {
-
+					
 					$index[$key] = $p;
 
 					if (bab_vac_is_free($collection)) {
@@ -3139,8 +3142,7 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	bab_debug(bab_shortDate($begin).' 
-'.bab_shortDate($end));
+	bab_debug(bab_shortDate($begin).' '.bab_shortDate($end));
 
 	list($index, $is_free) = bab_vac_getHalfDaysIndex(
 		$id_user, 
