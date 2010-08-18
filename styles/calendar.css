@@ -112,8 +112,9 @@ a img {
 
 .bab_calendar .event {
 	/* Default color for events */
-	background-color:#fff;
+	background-color:#f7f7f7;
 	padding: .15em .5em;
+	
 	}
 	
 #bab_calmonth .event {
