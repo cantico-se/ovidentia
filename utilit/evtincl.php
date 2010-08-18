@@ -233,8 +233,6 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	if ('Y' === $args['private']) {
 		$period->setProperty('CLASS', 'PRIVATE');
-	} else {
-		$period->setProperty('CLASS', 'PUBLIC');
 	}
 	
 	$cat = bab_getCalendarCategory($args['category']);

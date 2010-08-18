@@ -473,7 +473,7 @@ class displayEventDetailCls
 		$this->t_option = ''; 
 		$this->properties = bab_toHtml(bab_getPropertiesString($calendarPeriod, $this->t_option));
 	
-		if( 'PUBLIC' !== $calendarPeriod->getProperty('CLASS') && $GLOBALS['BAB_SESS_USERID']  != $calendar->getIdUser())
+		if( !$calendarPeriod->isPublic() && $GLOBALS['BAB_SESS_USERID']  != $calendar->getIdUser())
 			{
 			$this->title= '';
 			$this->description = '';
@@ -817,7 +817,7 @@ function bab_getPropertiesString(&$calPeriod, &$t_option)
 {
 	$el = array();
 
-	if ('PUBLIC' !== $calPeriod->getProperty('CLASS')) {
+	if (!$calPeriod->isPublic()) {
 		$el[] = bab_translate('Private');
 	}
 
@@ -1031,7 +1031,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					}
 					
 					$evt['creator'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
-					$evt['private'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && 'PUBLIC' !== $calPeriod->getProperty('CLASS');
+					$evt['private'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && !$calPeriod->isPublic();
 					$evt['nbowners'] = isset($arr['nbowners']) ? $arr['nbowners']+1 : 1;
 					$evt['t_option'] = ''; 
 					$evt['properties'] = bab_toHtml(bab_getPropertiesString($calPeriod, $evt['t_option']));

@@ -803,7 +803,7 @@ class cal_wmdbaseCls
 		} else {
 			$el = array();
 
-			if ('PUBLIC' !== $calPeriod->getProperty('CLASS')) {
+			if (!$calPeriod->isPublic()) {
 				$el[] = bab_translate('Private');
 			}
 

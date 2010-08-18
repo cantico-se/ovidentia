@@ -166,7 +166,7 @@ class bab_cal_OviEventUpdate
 		
 		
 		$data = $period->getData();
-		$private = 'PUBLIC' !== $period->getProperty('CLASS') ? 'Y' : 'N';
+		$private = !$period->isPublic() ? 'Y' : 'N';
 		$free = 'TRANSPARENT' === $period->getProperty('TRANSP') ? 'Y' : 'N';
 		
 		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
@@ -524,7 +524,7 @@ class bab_cal_OviEventUpdate
 		// Private Y|N
 		
 		$private = 'N';
-		if ('PUBLIC' !== $period->getProperty('CLASS')) {
+		if (!$period->isPublic()) {
 			$private = 'Y';
 		}
 		
@@ -1054,9 +1054,7 @@ class bab_cal_OviEventSelect
 		
 		if ('Y' == $arr['bprivate']) {
 			$event->setProperty('CLASS'	, 'PRIVATE');
-		} else {
-			$event->setProperty('CLASS'	, 'PUBLIC');
-		}
+		} 
 		
 		if ('Y' == $arr['bfree']) {
 			$event->setProperty('TRANSP'	, 'TRANSPARENT');

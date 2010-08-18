@@ -322,6 +322,21 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		return $return;
 	}
 	
+	/**
+	 * Test the CLASS iCalendar property
+	 * @return bool
+	 */
+	public function isPublic() {
+		$class = $this->getProperty('CLASS');
+		
+		if ('' === $class || 'PUBLIC' === $class)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	
 	/**
 	 * Test if availability of event has been overloaded by program 

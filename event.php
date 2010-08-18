@@ -656,7 +656,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 				'end_date' 				=> date('Y-m-d H:i:s', $event->ts_end),
 				'id_cat' 				=> $cat['id'],
 				'color' 				=> $event->getColor(),
-				'bprivate' 				=> 'PUBLIC' === $event->getProperty('CLASS') ? 'N' : 'Y',
+				'bprivate' 				=> $event->isPublic() ? 'N' : 'Y',
 				'block' 				=> $data['block'],
 				'bfree' 				=> 'TRANSPARENT' === $event->getProperty('TRANSP') ? 'Y' : 'N'
 			);

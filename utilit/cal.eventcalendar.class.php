@@ -248,7 +248,7 @@ abstract class bab_EventCalendar
 			return true;
 		}
 		
-		if ('PUBLIC' !== $event->getProperty('CLASS')) {
+		if (!$event->isPublic()) {
 			
 			// Can be PRIVATE or CONFIDENTIAL
 			return false;
