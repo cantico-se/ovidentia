@@ -760,7 +760,7 @@ class cal_wmdbaseCls
 			$this->allow_viewtitle = false;
 			}
 
-		if( $evtarr['status'] == BAB_CAL_STATUS_NONE )
+		if( isset($evtarr['status']) && $evtarr['status'] == BAB_CAL_STATUS_NONE )
 			{
 			$this->bstatus = true;
 			}
