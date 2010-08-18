@@ -268,27 +268,5 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	
-	
-	/**
-	 * @param unknown_type $calendar
-	 * @param unknown_type $accessType
-	 * @param unknown_type $user
-	 */
-	public function grantAccess($calendar, $accessType, $user)
-	{
-		
-	}
-	
-	
-	/**
-	 * @param unknown_type $calendar
-	 * @param unknown_type $accessType
-	 * @param unknown_type $user
-	 */
-	public function revokeAccess($calendar, $accessType, $user)
-	{
-		
-	}
-	
 
 }

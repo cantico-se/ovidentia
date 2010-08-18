@@ -777,9 +777,10 @@ INSERT INTO bab_calendar VALUES ( '1', '1', 'Y', '1');
 
 CREATE TABLE bab_calaccess_users (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_cal INT (11) UNSIGNED not null,
-	id_user INT (11) UNSIGNED not null,
-    bwrite smallint(2) unsigned NOT NULL,
+	caltype VARCHAR (100) not null default '',
+	id_cal INT (11) UNSIGNED not null default '0',
+	id_user INT (11) UNSIGNED not null default '0',
+    bwrite smallint(2) unsigned NOT NULL default '0',
 	PRIMARY KEY (id),
     KEY id_cal (id_cal),
     KEY id_user (id_user)

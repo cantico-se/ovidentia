@@ -63,14 +63,6 @@ class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 		return $this->calendar_collection->getAccessUser();
 	}
 	
-	/**
-	 * get personal calendar of access user or null if annonymous and no personal calendar
-	 * @return bab_PersonalCalendar
-	 */
-	public function getPersonalCalendar()
-	{
-		return $this->calendar_collection->getPersonalCalendar();
-	}
 }
 
 
@@ -209,11 +201,33 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	// personal calendars
 	
-	$personal_calendar = $event->getPersonalCalendar();
+	$personal_calendar = null;
+	$access_user = $event->getAccessUser();
 	
-	if ($personal_calendar)
+	if( !empty($access_user))
 	{
-		$event->addCalendar($personal_calendar);
+		global $babDB;
+		
+		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($access_user)."' and actif='Y' and type='1'");
+		if( $res && $babDB->db_num_rows($res) >  0)
+		{
+			$arr = $babDB->db_fetch_assoc($res);
+			
+			$data = array(
+				'idcal'			=> $arr['id'],
+				'idowner'		=> $access_user,
+				'name' 			=> bab_getUserName($access_user), 
+				'description' 	=> '',  
+				'access' 		=> BAB_CAL_ACCESS_FULL
+			);
+			
+			$backend = bab_functionality::get('CalendarBackend/Ovi');
+			/*@var $backend Func_CalendarBackend_Ovi */
+			
+			$personal_calendar = $backend->PersonalCalendar();
+			$personal_calendar->init($access_user, $data);
+			$event->addCalendar($personal_calendar);
+		}
 	}
 	
 	

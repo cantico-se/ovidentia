@@ -6280,5 +6280,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// remove the BAB_CAL_ACCESS_SHARED_FULL
 	$babDB->db_query("UPDATE  `".BAB_CALACCESS_USERS_TBL."` SET bwrite=".$babDB->quote(BAB_CAL_ACCESS_FULL).' WHERE bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_FULL));
 	
+	if (!bab_isTableField(BAB_CALACCESS_USERS_TBL, 'caltype')) {
+		$babDB->db_query("ALTER TABLE `".BAB_CALACCESS_USERS_TBL."` ADD `caltype` varchar(100) NOT NULL default ''");
+	}
+	
+	$babDB->db_query("UPDATE `".BAB_CALACCESS_USERS_TBL."` SET caltype='personal'");
+
 	return true;
 }

@@ -341,11 +341,18 @@ class bab_icalendars
 	
 	
 	/**
-	 * "type/id" reference for the default calendar or null if no default calendar accessible
-	 * @var string
+	 * The default calendar to display or null if no default calendar accessible
+	 * @var bab_EventCalendar
 	 */
 	private $default_calendar = null;
 
+	
+	/**
+	 * The user personal calendar or null if no personal calendar
+	 * @var bab_EventCalendar
+	 */
+	private $personal_calendar = null;
+	
 	
 
 	/**
@@ -418,42 +425,14 @@ class bab_icalendars
 	}
 	
 	/**
-	 * Get personal calendar of access user from ovidentia
-	 * Do not call it directly
-	 * @see bab_eventCollectCalendarsBeforeDisplay::getPersonalCalendar()
+	 * Get personal calendar of access user
+	 * 
 	 * @return bab_PersonalCalendar
 	 */
 	public function getPersonalCalendar()
 	{
-		if( !empty($this->iduser))
-		{
-			global $babDB;
-			
-			$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($this->iduser)."' and actif='Y' and type='1'");
-			if( $res && $babDB->db_num_rows($res) >  0)
-			{
-				$arr = $babDB->db_fetch_assoc($res);
-				$id_percal = $arr['id'];
-				
-				$data = array(
-					'idcal'			=> $arr['id'],
-					'idowner'		=> $this->iduser,
-					'name' 			=> bab_getUserName($this->iduser), 
-					'description' 	=> '',  
-					'access' 		=> BAB_CAL_ACCESS_FULL
-				);
-				
-				$backend = bab_functionality::get('CalendarBackend/Ovi');
-				/*@var $backend Func_CalendarBackend_Ovi */
-				
-				$calendar = $backend->PersonalCalendar();
-				$calendar->init($this->iduser, $data);
-				
-				return $calendar;
-			}
-		}
-		
-		return null;
+		$this->initializeCalendars();
+		return $this->personal_calendar;
 	}
 	
 	
@@ -478,6 +457,11 @@ class bab_icalendars
 		if (null === $this->default_calendar && $calendar->isDefaultCalendar())
 		{
 			$this->default_calendar = $calendar;
+		}	
+
+		if ($this->iduser && ((int) $this->iduser === (int) $calendar->getIdUser()))
+		{
+			$this->personal_calendar = $calendar;
 		}
 	}
 	
@@ -489,6 +473,7 @@ class bab_icalendars
 	 */
 	public function getDefaultCalendar()
 	{
+		$this->initializeCalendars();
 		return $this->default_calendar;
 	}
 	

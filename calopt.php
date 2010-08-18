@@ -86,6 +86,9 @@ function addAccessUsers($aCalUserAccess, $iIdCalendar)
 	{
 		return;
 	}
+	
+	
+	$personal->grantAccess();
 
 	global $babDB;
 	
@@ -748,7 +751,7 @@ switch($idx)
 		
 		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode($urla));
 		
-		if( $personalCalendar instanceof bab_PersonalCalendar )
+		if( $personalCalendar instanceof bab_EventCalendar )
 		{
 			accessCalendar($personalCalendar->getUid(), bab_rp('urla'));
 			
@@ -776,7 +779,7 @@ switch($idx)
 
 		$babBody->addItemMenu("options", bab_translate("Calendar Options"), $GLOBALS['babUrlScript']."?tg=calopt&idx=options");
 
-		if( $personalCalendar instanceof bab_PersonalCalendar )
+		if( $personalCalendar instanceof bab_EventCalendar )
 			{
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=calopt&idx=access&idcal=".$personalCalendar->getUid()."&urla=".urlencode($urla));	
 			}

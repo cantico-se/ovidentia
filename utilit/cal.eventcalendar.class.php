@@ -324,6 +324,94 @@ abstract class bab_EventCalendar
 	 * @return Func_CalendarBackend
 	 */
 	abstract public function getBackend();
+	
+	
+	/**
+	 * Grant access
+	 * 
+	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
+	 * @param int $user				id user
+	 * @return unknown_type
+	 */
+	public function grantAccess($accessType, $user)
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query('
+			SELECT 
+				id_user 
+			FROM '.BAB_CALACCESS_USERS_TBL.' 
+			WHERE 
+				bwrite='.$babDB->quote($accessType).' 
+				AND caltype='.$babDB->quote($this->getReferenceType()).' 
+				AND id_cal='.$babDB->quote($this->getUid()).'
+				AND id_user='.$babDB->quote($user)
+		);
+		
+		if (0 !== $babDB->db_num_rows($res))
+		{
+			// access allready granted
+			return;
+		}
+		
+		$babDB->db_query('INSERT INTO '.BAB_CALACCESS_USERS_TBL.' 
+			(caltype, id_cal, bwrite, id_user) 
+		VALUES 
+			('.$babDB->quote($this->getReferenceType()).', 
+			'.$babDB->quote($this->getUid()).', 
+			'.$babDB->quote($accessType).', 
+			'.$babDB->quote($user).')
+		');
+	}
+	
+	
+	/**
+	 * Revoke access
+	 * 
+	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
+	 * @param int $user				id user
+	 * @return unknown_type
+	 */
+	public function revokeAccess($accessType, $user)
+	{
+		global $babDB;
+		
+		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE 
+			caltype='.$babDB->quote($this->getReferenceType()).'
+			AND id_cal = ' . $babDB->quote($this->getUid()) . ' 
+			AND bwrite = ' . $babDB->quote($accessType).' 
+			AND id_user = '.$babDB->quote($user).'';
+		
+		$babDB->db_query($sQuery);
+	}
+	
+	
+	/**
+	 * Get the list of user with access granted for the specified access type
+	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE	
+	 * @return array				<int> id users
+	 */
+	public function getAccessGrantedUsers($accessType)
+	{
+		$res = $babDB->db_query('
+			SELECT 
+				id_user 
+			FROM '.BAB_CALACCESS_USERS_TBL.' 
+			WHERE 
+				bwrite='.$babDB->quote($accessType).' 
+				AND caltype='.$babDB->quote($this->getReferenceType()).' 
+				AND id_cal='.$babDB->quote($this->getUid())
+		);
+		
+		$return = array();
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$id_user = (int) $arr['id_user'];
+			$return[$id_user] = $id_user;
+		}
+		
+		return $return;
+	}
 }
 
 
