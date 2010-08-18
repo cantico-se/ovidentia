@@ -28,6 +28,7 @@ define('BAB_DATETIME_DAY', 2);
 define('BAB_DATETIME_HOUR', 3);
 define('BAB_DATETIME_MINUTE', 4);
 define('BAB_DATETIME_SECOND', 5);
+define('BAB_DATETIME_ICAL', 6);
 
 
 class BAB_DateTime
@@ -388,6 +389,29 @@ class BAB_DateTime
 				break;
 			case BAB_DATETIME_SECOND:
 				$this->init($this->_iYear, $this->_iMonth, $this->_iDay, $this->_iHours, $this->_iMinutes, ($iNbUnits + $this->_iSeconds));
+				break;
+			
+			case BAB_DATETIME_ICAL:
+				if (preg_match_all('/(?P<value>\d+)(?P<type>[DHMS]{1})/', $iNbUnits, $m, PREG_SET_ORDER)) {
+
+					$days = 0;
+					$hours = 0;
+					$minutes = 0;
+					$seconds = 0;					
+					foreach($m as $trigger)
+					{
+						$val = $trigger['value'];
+						switch($trigger['type'])
+						{
+							case 'W': $days = (int) $val * 7; 	break;
+							case 'D': $days = (int) $val; 	break;
+							case 'H': $hours = (int) $val;	break;
+							case 'M': $minutes = (int) $val;	break;
+							case 'S': $seconds = (int) $val;	break;
+						}
+					}
+					$this->init($this->_iYear, $this->_iMonth, $this->_iDay + $days, $this->_iHours + $hours, $this->_iMinutes + $minutes, $this->_iSeconds + $seconds);
+				}				
 				break;
 		}
 	}
