@@ -298,116 +298,45 @@ function moveOptions(src,dest,action)
 {	
 	var destoptgroup = dest.getElementsByTagName('optgroup');
 	var srcoptgroup = src.getElementsByTagName('optgroup');
-
+	var srcopt = src.getElementsByTagName('option');
+	var srcoptselected = new Array();
 	
-	
-	var destgroups = new Object();
-	
-	assoclength = 0;
-	for(var i in assoc)
-	{
-		assoclength++;
-		break;
+	for(i = 0; i<srcopt.length; i++){
+		srcoptselected[i] = srcopt[i].selected;
 	}
 	
-	if (assoclength == 0)
-		{
-		for (var i = 0; i < srcoptgroup.length ; i++)
-			{
-			var option = srcoptgroup[i].getElementsByTagName('option');
-	
-			for (var j = 0; j < option.length ; j++)
-				{
-				assoc[option.item(j).value] = srcoptgroup[i]['className'];
+	var k=0;
+	for( j=0; j<srcoptgroup.length ; j++){
+		srcOptions = srcoptgroup[j].getElementsByTagName('option');
+		for( i=0 ; i < srcOptions.length; ){
+			if( srcoptselected[k] == false ){
+				i++;
+			}else{
+				destOptions = destoptgroup[j].getElementsByTagName('option');
+				for( y=0; y<destOptions.length ; y++){					
+					if( destOptions[y].text > srcOptions[i].text){
+						break;
+					}
+				}
+				if( y == destOptions.length ){
+					srcOptions[i].selected = false;
+					destoptgroup[j].appendChild(srcOptions[i]);
+				}else{
+					srcOptions[i].selected = false;
+					destoptgroup[j].insertBefore(srcOptions[i],destOptions[y]);
 				}
 			}
+			k++;
 		}
-
-
-	for (var i = 0; i < destoptgroup.length ; i++)
-		{
-		destgroups[destoptgroup[i]['className']] = destoptgroup[i];
-		var option = destoptgroup[i].getElementsByTagName('option');
-		for (var j = 0; j < option.length ; j++)
-			{
-			assoc[option.item(j).value] = destoptgroup[i]['className'];
-			}
-		}
-
+	}
 	
-
-	srclen = src.options.length;
-	if (srclen == 0) return;
-	reslen = dest.options.length + srclen;
-	resopt = new Array(reslen);
-	destcnt = 0;
-	rescnt = 0;
-	nbsel = 0;
-	current_optgroup = '';
-
-	while(destcnt < dest.options.length)
-		{
-		resopt[rescnt] = new Option(dest.options[destcnt].text, dest.options[destcnt].value);
-		destcnt++;
-		rescnt++;
-		}
-	for(i = 0; i < srclen; i++)
-		{
-		while((i < srclen) && (src.options[i].selected == false))
-			i++;
-		if(i < srclen)
-			{
-			nbsel++;
-			resopt[rescnt] = new Option(src.options[i].text, src.options[i].value);
-			current_optgroup = assoc[src.options[i].value];
-			
-			if (typeof cal_movecalendar != 'undefined')
-				{
-				cal_movecalendar(action,src.options[i].text, src.options[i].value, current_optgroup);
-				}
-
-			src.options[i] = null;
-
-			i--;
-			srclen--;
-			rescnt++;
-			}
-		}
-
-	
-	for(i=0; i < nbsel;i++)
-		{
-		dest.options[i] = null;
-		dest.options[i] = resopt[rescnt - nbsel + i];
-		}
-
-	for(i=0; i < rescnt - nbsel; i++)
-		{
-		dest.options[nbsel + i] = null;
-		dest.options[nbsel + i] = resopt[i];
-		}
-
-	
-	// put option in correct optgroup with DOM
-
-	var sort = true;
-	while (sort)
-		{
-		var loop = false;
-		for (i=0 ; i < dest.options.length ; i++ )
-			{
-			if (destgroups[assoc[dest.options[i].value]])
-				destgroups[assoc[dest.options[i].value]].appendChild(dest.options[i]);
-			if (!optionInGroup(destgroups[assoc[dest.options[i].value]],dest.options[i].value))
-				loop = true;
-			}
-		sort = loop ? true : false;
-		}
-
-
-	// sort optgroup
-	if (destgroups[current_optgroup]) {
-		bab_calSortOptGroup(destgroups[current_optgroup]);
+	srcOptions = src.getElementsByTagName('option');
+	for( i = 0 ; i < srcOptions.length ; i++){
+		srcOptions[i].selected = false;
+	}
+	destOptions = dest.getElementsByTagName('option');
+	for( i = 0 ; i < destOptions.length ; i++){
+		destOptions[i].selected = false;
 	}
 }
 
