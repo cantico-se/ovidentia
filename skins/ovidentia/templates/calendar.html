@@ -276,22 +276,6 @@
 <script type="text/javascript">
 <!--
 
-function optionInGroup(grp,optvalue)
-	{
-	if (typeof grp == 'undefined')
-		return true;
-
-	var option = grp.getElementsByTagName('option');
-
-	for (var j = 0; j < option.length ; j++)
-		{
-		if (option.item(j).value == optvalue)
-			return true;
-		}
-
-	return false;
-	}
-
 var assoc = new Object();
 
 function moveOptions(src,dest,action)
