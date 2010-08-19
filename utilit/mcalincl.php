@@ -889,7 +889,19 @@ class cal_wmdbaseCls
 			$this->title		= bab_toHtml($calPeriod->getProperty('SUMMARY'));
 			$this->titleten		= $this->calstr($calPeriod->getProperty('SUMMARY'));
 			$this->location		= bab_toHtml($calPeriod->getProperty('LOCATION'));
-			$this->description	= $calPeriod->getProperty('DESCRIPTION');
+			$this->description	= bab_toHtml($calPeriod->getProperty('DESCRIPTION'));
+			
+			// display html from WYSIWYG if any :
+			
+			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format'])
+				{
+					include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+					$editor = new bab_contentEditor('bab_calendar_event');
+					$editor->setContent($arr['description']);
+					$editor->setFormat($arr['description_format']);
+					
+					$this->description	= $editor->getHtml();
+				}
 			}
 
 		if( $this->allow_modify )

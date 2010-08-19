@@ -529,7 +529,7 @@ class bab_UserPeriods implements Iterator, Countable {
 	public function getEventsBetween($start, $end, array $filter = null) {
 		reset($this->boundaries);
 		$r = array();
-
+		
 		foreach($this->boundaries as $ts => $events) {
 			if ($ts > $end) {
 				break;
@@ -543,6 +543,7 @@ class bab_UserPeriods implements Iterator, Countable {
 				
 				if ('' === $uid)
 				{
+					// bab_debug('event ignored because the is no UID property');
 					continue;
 				}
 				

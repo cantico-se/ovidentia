@@ -76,7 +76,7 @@ class bab_selectCalendarUsers extends bab_selectUsersBase
 		
 		$this->sAccessUpdateHelp			= bab_translate("The selected users will be able to create events on your personal calendar. Each user can modify and delete events he created on your calendar. They can't modify or delete events you created. You will have to approve new appointments.");
 		$this->sAccessFullHelp				= bab_translate("The selected users will be able to create, modify and delete events of your personal calendar without any validation.");
-		$this->sAccessSharedUpdateHelp		= bab_translate("The selected users will be able to create events on your  personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.");
+		$this->sAccessSharedUpdateHelp		= bab_translate("The selected users will be able to create events on your personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.");
 
 		$sCleanSessVar = (null == bab_rp('sCleanSessVar', null)) ? 'Y' : 'N';
 		

@@ -30,14 +30,15 @@ include_once 'base.php';
 include_once $babInstallPath.'utilit/mcalincl.php';
 
 
-function accessCalendar($calid, $urla)
+function accessCalendar($calendar, $urla)
 {
 	global $babBody, $babDB;
+	
 	
 	include_once $GLOBALS['babInstallPath'].'utilit/selectcalendarusers.php';
 	$obj = new bab_selectCalendarUsers();
 	$obj->addVar('urla', $urla);
-	$obj->addVar('calid', $calid);
+	$obj->addVar('calid', $calendar->getUid());
 	
 	$obj->addVar('sCleanSessVar', (null == bab_rp('sCleanSessVar', null) ? 'Y' : 'N'));
 	
@@ -47,24 +48,13 @@ function accessCalendar($calid, $urla)
 	$sAction = bab_rp('act', null);
 	if(is_null($sAction))
 	{
-		$sQuery = 
-			'SELECT 
-				cut.id_user, 
-				cut.bwrite, 
-				ut.firstname, 
-				ut.lastname  
-			FROM ' . 
-				BAB_CALACCESS_USERS_TBL . ' cut 
-			LEFT JOIN ' . 
-				BAB_USERS_TBL . ' ut on ut.id = cut.id_user 
-			WHERE 
-				cut.id_cal = ' . $babDB->quote($calid);
-	
-		$oResult = $babDB->db_query($sQuery);
-
-		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
+		foreach(array(BAB_CAL_ACCESS_VIEW, BAB_CAL_ACCESS_UPDATE, BAB_CAL_ACCESS_SHARED_UPDATE, BAB_CAL_ACCESS_FULL) as $accessType)
 		{
-			$obj->addUser($aDatas['id_user'], $aDatas['bwrite']);
+			$arr = $calendar->getAccessGrantedUsers($accessType);
+			foreach($arr as $id_user)
+			{
+				$obj->addUser($id_user, $accessType);
+			}
 		}
 	}
 	
@@ -86,17 +76,13 @@ function addAccessUsers($aCalUserAccess, $iIdCalendar)
 	{
 		return;
 	}
-	
-	
-	$personal->grantAccess();
 
 	global $babDB;
 	
 	foreach($aCalUserAccess as $iAccess => $sArrayName)
 	{
-		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE id_cal = ' . $babDB->quote($iIdCalendar) . ' AND bwrite = ' . $babDB->quote($iAccess);
-		//bab_debug($sQuery);
-		$babDB->db_query($sQuery);
+		$selected = $personal->getAccessGrantedUsers($iAccess);
+		$personal->revokeAccess($iAccess, $selected);
 			
 		if(0 !== count($aCalUserAccess[$iAccess]))
 		{
@@ -120,21 +106,7 @@ function addAccessUsers($aCalUserAccess, $iIdCalendar)
 						continue;
 					}
 					
-					$sQuery = 
-						'INSERT INTO ' . BAB_CALACCESS_USERS_TBL . ' ' .
-							'(' .
-								'`id`, ' .
-								'`id_cal`, `id_user`, `bwrite`' .
-							') ' .
-						'VALUES ' . 
-							'(\'\', ' . 
-								$babDB->quote($iIdCalendar) . ', ' . 
-								$babDB->quote($aDatas['iIdUser']) . ', ' . 
-								$babDB->quote($iAccess) . 
-							')';
-								
-					//bab_debug($sQuery);			
-					$babDB->db_query($sQuery);
+					$personal->grantAccess($iAccess, $aDatas['iIdUser']);
 				} 
 			}
 		}
@@ -706,11 +678,7 @@ $urla = bab_rp('urla');
 
 
 	
-if( isset($add) && $add == "addu" && $idcal == bab_getCalendarId($BAB_SESS_USERID, 1))
-{
-	addAccessUsers($nuserid, $idcal, $urla);
-	
-}elseif( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
+if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
 	}
@@ -753,7 +721,7 @@ switch($idx)
 		
 		if( $personalCalendar instanceof bab_EventCalendar )
 		{
-			accessCalendar($personalCalendar->getUid(), bab_rp('urla'));
+			accessCalendar($personalCalendar, bab_rp('urla'));
 			
 			$babBody->addItemMenu("access", bab_translate("Calendar access"), $GLOBALS['babUrlScript']."?tg=options&idx=access&idcal=".$personalCalendar->getUid());
 			

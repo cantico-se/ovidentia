@@ -482,18 +482,26 @@ class displayEventDetailCls
 			}
 		else
 			{
-			$this->title= bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
+			$this->title = bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
+			$this->description	= bab_toHtml($calendarPeriod->getProperty('DESCRIPTION'));
+			
 			
 			$data = $calendarPeriod->getData();
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent($data['description']);
-			$editor->setFormat($data['description_format']);
 			
-			$this->description = $editor->getHtml();
+			// display html from WYSIWYG if any :
+			
+			if (isset($data['description']) && isset($data['description_format']) && 'html' === $data['description_format'])
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_calendar_event');
+				$editor->setContent($data['description']);
+				$editor->setFormat($data['description_format']);
+				
+				$this->description = $editor->getHtml();
+				}
 	
 			$this->location= bab_toHtml($calendarPeriod->getProperty('LOCATION'));
-			$this->category = $calendarPeriod->getProperty('CATEGORIES');
+			$this->category = bab_toHtml($calendarPeriod->getProperty('CATEGORIES'));
 			}
 	
 		list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));

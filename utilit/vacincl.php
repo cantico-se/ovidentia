@@ -2384,6 +2384,8 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 	{
 		return;
 	}
+	
+	
 
 	$res = $babDB->db_query("
 	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
@@ -2482,7 +2484,9 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$p = new bab_calendarPeriod;
 		$p->setDates($date_begin, $date_end);
 		$period_collection->addPeriod($p);
-		$user_periods->addPeriod($p);
+		
+		
+		
 		
 		list($id_cat, $category, $color) = $babDB->db_fetch_row($babDB->db_query("
 		
@@ -2531,9 +2535,6 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$description .= '</tbody></table>';
 		
 		$data = array(
-			'id' => $row['id'],
-			'id_cat'	=> $id_cat,
-			'confirmed'	=> $row['status'] === 'Y',
 			'description' => $description,
 			'description_format' => 'html'
 		);
@@ -2541,7 +2542,9 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$p->setData($data);
 
 		$p->setProperty('DESCRIPTION', strip_tags($description));
-
+		$p->setProperty('UID', 'VAC'.$row['id']);
+		
+		$user_periods->addPeriod($p);
 	}
 }
 

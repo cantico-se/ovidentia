@@ -327,7 +327,7 @@ abstract class bab_EventCalendar
 	
 	
 	/**
-	 * Grant access
+	 * Grant access of user to this calendar
 	 * 
 	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
 	 * @param int $user				id user
@@ -366,10 +366,10 @@ abstract class bab_EventCalendar
 	
 	
 	/**
-	 * Revoke access
+	 * Revoke access of user to this calendar
 	 * 
-	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
-	 * @param int $user				id user
+	 * @param int 			$accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
+	 * @param array | int 	$user			id user	or a list of id user
 	 * @return unknown_type
 	 */
 	public function revokeAccess($accessType, $user)
@@ -380,7 +380,7 @@ abstract class bab_EventCalendar
 			caltype='.$babDB->quote($this->getReferenceType()).'
 			AND id_cal = ' . $babDB->quote($this->getUid()) . ' 
 			AND bwrite = ' . $babDB->quote($accessType).' 
-			AND id_user = '.$babDB->quote($user).'';
+			AND id_user IN('.$babDB->quote($user).')';
 		
 		$babDB->db_query($sQuery);
 	}
@@ -388,11 +388,14 @@ abstract class bab_EventCalendar
 	
 	/**
 	 * Get the list of user with access granted for the specified access type
+	 * 
 	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE	
 	 * @return array				<int> id users
 	 */
 	public function getAccessGrantedUsers($accessType)
 	{
+		global $babDB;
+		
 		$res = $babDB->db_query('
 			SELECT 
 				id_user 
