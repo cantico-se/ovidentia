@@ -206,25 +206,6 @@ function bab_emptyNonWorkingDays($id_site = false)
 	}
 
 
-/**
- * get non working day info for a date object
- * instance of BAB_DateTime
- * @param object $dateObj
- * @return string|false
- 
-function bab_getNonWorkingDayLabel($dateObj) {
-	static $year = array();
-	if (!isset($year[$dateObj->getYear()])) {
-		$year[$dateObj->getYear()] = bab_getNonWorkingDays($dateObj->getYear());
-	}
-
-	if (isset($year[$dateObj->getYear()][$dateObj->getIsoDate()])) {
-		return $year[$dateObj->getYear()][$dateObj->getIsoDate()];
-	}
-
-	return false;
-}
-*/
 
 
 /**
@@ -233,16 +214,32 @@ function bab_getNonWorkingDayLabel($dateObj) {
  */
 function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 	
-	// create new collection
+	$backend = bab_functionality::get('CalendarBackend/Ovi');
+	/*@var $backend Func_CalendarBackend_Ovi */
 	
-	require_once dirname(__FILE__).'/cal.periodcollection.class.php';
-	$collection = new bab_NonWorkingDaysCollection;
+	if (!$obj->periods->isPeriodCollection($backend->NonWorkingDaysCollection()))
+	{
+		return;
+	}
+	
+	
+	// create new collection
+	$collection = $backend->NonWorkingDaysCollection();
+	
+	
+	if (null === $obj->getBeginDate() || null === $obj->getEndDate())
+	{
+		// ignore request if no interval
+		return;
+	}
+	
 	
 	$begin = $obj->getBeginDate()->getIsoDate();
 	$end = $obj->getEndDate()->getIsoDate();
 
 	$arr = bab_getNonWorkingDaysBetween($begin, $end);
 	$nwd_color = 'FFFFFF';
+	$nwd_categories =  '';
 	
 	if( $GLOBALS['babBody']->babsite['id_calendar_cat'] != 0)
 	{
@@ -251,6 +248,7 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 		if( isset($idcat[0]['color']))
 		{
 			$nwd_color = $idcat[0]['color'];
+			$nwd_categories = $idcat[0]['name'];
 		}
 	}
 	
@@ -261,9 +259,11 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 		
 		$p = new bab_calendarPeriod;
 		$p->setDates($beginDate, $endDate);
-		$p->setProperty('UID'	,'NWD'.$nw_day);
+		$p->setProperty('UID'			,'NWD'.$nw_day);
 		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
+		$p->setProperty('CATEGORIES'	,bab_toHtml($nwd_categories));
+		
 		
 		$p->setColor($nwd_color);
 		

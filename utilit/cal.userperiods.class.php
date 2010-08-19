@@ -32,7 +32,7 @@ require_once dirname(__FILE__).'/cal.criteria.class.php';
  * Manage working and non-working hours
  * browse periods with working hours and non-working days
  */
-class bab_UserPeriods implements Iterator, Countable {
+class bab_UserPeriods implements Countable, seekableIterator {
 
 	/**
 	 * @var BAB_DateTime
@@ -127,6 +127,12 @@ class bab_UserPeriods implements Iterator, Countable {
 	 * @var bool
 	 */
 	private $iter_status;
+	
+	/**
+	 * 
+	 * @var int
+	 */
+	private $iter_key;
 	
 	
 
@@ -233,13 +239,17 @@ class bab_UserPeriods implements Iterator, Countable {
 	
 	/**
 	 * Add a filter by iCal property (ex. CATEGORIES)
-	 * @param string $property		iCal property name
-	 * @param array $values			list of allowed exact values for this property
+	 * @param 	string 	$property		iCal property name
+	 * @param 	array 	$values			list of allowed exact values for this property
+	 * @param	bool	$contain
 	 * @return bab_eventCollectPeriodsBeforeDisplay
 	 */
-	public function filterByICalProperty($property, Array $values)
+	public function filterByICalProperty($property, Array $values, $contain)
 	{
-		$this->icalProperties[$property] = $values;
+		$this->icalProperties[$property] = array(
+			'values' => $values,
+			'contain' => $contain
+		);
 		return $this;
 	}
 	
@@ -342,6 +352,8 @@ class bab_UserPeriods implements Iterator, Countable {
 				}
 			}
 		}
+		
+		$this->rewind();
 	}
 
 
@@ -353,6 +365,16 @@ class bab_UserPeriods implements Iterator, Countable {
 	 */
 	public function addPeriod(bab_calendarPeriod $p) {
 
+		if (!$p->ts_begin)
+		{
+			require_once dirname(__FILE__).'/devtools.php';
+			
+			bab_debug("Missing begin date on period\n".print_r($p->getProperties(), true));
+			bab_debug_print_backtrace();
+			return;
+		}
+		
+		
 		$this->periods[] = $p;
 
 		$ts = $p->ts_begin;
@@ -411,6 +433,7 @@ class bab_UserPeriods implements Iterator, Countable {
     {
         reset($this->boundaries);
         $this->iter_boundary = null;
+        $this->iter_key = -1;
         $this->next();
     }
 
@@ -424,12 +447,12 @@ class bab_UserPeriods implements Iterator, Countable {
     }
 
     /**
-     * boundary timestamp /position in boundary
+     * period position
      * @return int
      */
     public function key()
     {
-        return $this->iter_horizontal.'/'.$this->iter_vertical;
+    	return $this->iter_key;
     }
 
     public function next()
@@ -452,19 +475,47 @@ class bab_UserPeriods implements Iterator, Countable {
       	}
       	
       	$this->iter_status = true;
+      	$this->iter_key++;
     }
 
+    /**
+	 * @return bool
+     */
     public function valid()
     {
         return $this->iter_status;
     }
 	
+    /**
+	 * @return int
+     */
 	public function count()
 	{
-		return count($this->boundaries);
+		$total = 0;
+		foreach($this->boundaries as $stack)
+		{
+			$total += count($stack);
+		}
+		
+		return $total;
 	}
 	
-	
+	/**
+	 * Seek to position
+	 */
+	public function seek($index)
+	{
+		$this->rewind();
+		
+		if (0 === $index)
+		{
+			return;
+		}
+		
+		while ($this->iter_status && $index !== $this->key()) {
+	        $this->next();
+	    } 
+	}
 	
 	
 	

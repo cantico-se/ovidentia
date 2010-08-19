@@ -299,6 +299,13 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 			case 'swish':
 				include_once dirname(__FILE__).'/searchbackend.swish.php';
 				$obj = new bab_SearchSwishBackEnd;
+				return $obj;
+				break;
+				
+			case 'calendar':
+				include_once dirname(__FILE__).'/searchbackend.calendar.php';
+				$obj = new bab_SearchCalendarBackEnd;
+				return $obj;
 				break;
 		}
 	}

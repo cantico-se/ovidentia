@@ -711,44 +711,49 @@ function printout()
 	$todaymonth = date("n");
 	$todayyear = date("Y");
 	
-	$icalendars = bab_getICalendars();
-	$icalendars->initializeCalendars();
+	$calendars = bab_getICalendars()->getCalendars();
 	
-	$this->idcals = array();
-
-	if (!empty($icalendars->id_percal))
-		$this->idcals[] = $icalendars->id_percal;
-
-
-	foreach($icalendars->pubcal as $id => $pubcal)
+	
+	if(count($calendars) > 0)
+	{
+		require_once dirname(__FILE__).'/dateTime.php';
+		require_once dirname(__FILE__).'/cal.userperiods.class.php';
+		require_once dirname(__FILE__).'/cal.criteria.class.php';
+		
+		$daymin = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, 1,$this->currentYear));
+		$daymax = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear));
+		
+		$periods = new bab_UserPeriods($daymin, $daymax);
+		
+		$factory = new bab_PeriodCriteriaFactory();
+		$criteria = $factory->Collection('bab_CalendarEventCollection');
+		$criteria = $criteria->_AND_($factory->Calendar($calendars));
+		
+		$periods->createPeriods($criteria);
+		$periods->orderBoundaries();
+		$this->currmonthevents = array();
+		
+		foreach($periods as $event)
 		{
-		if ($pubcal['view'])
-			$this->idcals[] = $id;
-		}
-
-	foreach($icalendars->rescal as $id => $rescal)
-		{
-		if ($rescal['view'])
-			$this->idcals[] = $id;
-		}
-
-	$mktime = mktime(0,0,0,$this->currentMonth, 1,$this->currentYear);
-	$daymin = date('Y-m-d', $mktime);
-	$mktime = mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear);
-	$daymax = date('Y-m-d', $mktime);
-	if(count($this->idcals) > 0)
-		{
-		$currmonthevents = array();
-		$res2 = $babDB->db_query('SELECT c.id_cal, IF(EXTRACT(MONTH FROM e.start_date)<'.$this->currentMonth.', 1, DAYOFMONTH(e.start_date)) AS start_day, IF(EXTRACT(MONTH FROM e.end_date)>'.$this->currentMonth.', '.$this->days.', DAYOFMONTH(e.end_date)) AS end_day FROM '.BAB_CAL_EVENTS_TBL.' e,'.BAB_CAL_EVENTS_OWNERS_TBL.' c  WHERE e.id = c.id_event AND c.id_cal IN ('.implode(',', $this->idcals).') AND ((end_date>=\''.$daymin.'\' AND end_date<=\''.$daymax.'\') OR (start_date<=\''.$daymax.'\' AND start_date>=\''.$daymin.'\'))');
-		while($event = $babDB->db_fetch_array($res2))
+			$startday = date('j', $event->ts_begin);
+			$endday = date('j', $event->ts_end);
+			
+			for($day = $startday ; $day<=$endday; $day++)
 			{
-			for($day = $event['start_day'] ; $day<=$event['end_day']; $day++)
+				$collection = $event->getCollection();
+				if ($collection)
 				{
-					$currmonthevents[$day][] = $event['id_cal'];
+					$calendar = $collection->getCalendar();
+					if ($calendar)
+					{
+						$this->currmonthevents[$day][] = $calendar->getUrlIdentifier();
+					}
 				}
 			}
-		$this->currmonthevents = $currmonthevents;
 		}
+			
+
+	}
 
 	$this->htmlid = 'montha';
 	
@@ -829,19 +834,18 @@ function printout()
 					}
 
 				$this->day = $total;
-				if( count($this->idcals) > 0 )
+				
+				if(isset($this->currmonthevents[$this->day]) && !empty($this->currmonthevents[$this->day]))
 					{
-						if(isset($this->currmonthevents[$this->day]) && !empty($this->currmonthevents[$this->day]))
+						$idcals = implode(',', array_unique($this->currmonthevents[$this->day]));
+						if( !empty($idcals))
 							{
-								$idcals = implode(',', array_unique($this->currmonthevents[$this->day]));
-								if( !empty($idcals))
-									{
-										$this->event = 1;
-										$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&amp;calid=".$idcals."&amp;date=".$this->currentYear.",".$this->currentMonth.",".$total;
-										$this->day = $total;
-									}
+								$this->event = 1;
+								$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&amp;calid=".$idcals."&amp;date=".$this->currentYear.",".$this->currentMonth.",".$total;
+								$this->day = $total;
 							}
 					}
+					
 				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
 					{
 					$this->bgcolor = 1;

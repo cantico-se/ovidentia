@@ -157,6 +157,7 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 {
 	private $property;
 	private $value = array();
+	private $contain;
 	
 	/**
 	 * 
@@ -164,7 +165,7 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 	 * @param mixed $value
 	 * @return unknown_type
 	 */
-	public function __construct($property, $value = null)
+	public function __construct($property, $value = null, $contain = false)
 	{
 		if (null !== $value) {
 			if (is_array($value)) {
@@ -173,6 +174,9 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 				$this->value[] = $value;
 			}
 		}
+		
+		$this->property = $property;
+		$this->contain = $contain;
 	}
 	
 	public function addValue($value)
@@ -187,7 +191,7 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 	 */
 	public function process(bab_UserPeriods $userperiods)
 	{
-		$userperiods->filterByICalProperty($this->property, $this->value);
+		$userperiods->filterByICalProperty($this->property, $this->value, $this->contain);
 	}
 }
 
@@ -262,7 +266,7 @@ abstract class bab_PeriodCriteriaDate extends bab_PeriodCriteria
  * filter by end date
  * 
  */
-class bab_PeriodCritieraBeginDateLessThanOrEqual extends bab_PeriodCriteria
+class bab_PeriodCritieraBeginDateLessThanOrEqual extends bab_PeriodCriteriaDate
 {
 	public function process(bab_UserPeriods $userperiods)
 	{
@@ -274,7 +278,7 @@ class bab_PeriodCritieraBeginDateLessThanOrEqual extends bab_PeriodCriteria
 /**
  * filter by begin date
  */
-class bab_PeriodCritieraEndDateGreaterThanOrEqual extends bab_PeriodCriteria
+class bab_PeriodCritieraEndDateGreaterThanOrEqual extends bab_PeriodCriteriaDate
 {
 	public function process(bab_UserPeriods $userperiods)
 	{
@@ -320,13 +324,14 @@ class bab_PeriodCriteriaFactory
 	
 	/**
 	 * 
-	 * @param string $property
-	 * @param string | array $value
+	 * @param 	string 			$property
+	 * @param 	string | array 	$value
+	 * @param	bool			$contain		if false, search for exact value, if true search if the property contain the string or array
 	 * @return bab_PeriodCritieraProperty
 	 */
-	public function Property($property, $value = null)
+	public function Property($property, $value, $contain = false)
 	{
-		return new bab_PeriodCritieraProperty($property, $value = null);
+		return new bab_PeriodCritieraProperty($property, $value, $contain);
 	}
 	
 	/**

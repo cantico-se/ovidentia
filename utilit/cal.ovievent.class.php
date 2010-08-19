@@ -1042,6 +1042,13 @@ class bab_cal_OviEventSelect
 		$editor->setFormat($arr['description_format']);
 		$arr['description']	= $editor->getHtml();
 	
+		
+		if (!$arr['uuid'])
+		{
+			throw new Exception('Invalid event, no UID property');
+			return null;
+		}
+		
 		$event->setProperty('UID'			, $arr['uuid']);
 		$event->setProperty('SUMMARY'		, $arr['title']);
 		$event->setProperty('DESCRIPTION'	, $arr['description']);
@@ -1259,17 +1266,20 @@ class bab_cal_OviEventSelect
 				er.id_event alert, 
 				en.note 
 			FROM 
-				".BAB_CAL_EVENTS_OWNERS_TBL." ceo 
-				LEFT JOIN ".BAB_CAL_EVENTS_TBL." ce ON ceo.id_event=ce.id 
+				".BAB_CAL_EVENTS_OWNERS_TBL." ceo, 
+				".BAB_CAL_EVENTS_TBL." ce 
 				LEFT JOIN ".BAB_CAL_CATEGORIES_TBL." ca ON ca.id = ce.id_cat 
 				LEFT JOIN ".BAB_CAL_EVENTS_REMINDERS_TBL." er ON er.id_event=ce.id AND er.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
 				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 	
 			WHERE 
-				".$where." 
+				ceo.id_event=ce.id 
+				AND ".$where." 
 			ORDER BY 
 				ce.start_date asc 
 		";
+		
+		bab_debug($query);
 		
 		return $query;
 	}
@@ -1284,9 +1294,10 @@ class bab_cal_OviEventSelect
 	 *  
 	 * @param bab_UserPeriods				$user_periods		query result set
 	 * @param array							$calendars			<bab_EventCalendar>
-	 * @param array|NULL					[$category]
+	 * @param array							$ical				ical properties to use as filter
+	 * @param string						$hash
 	 */
-	public function setEventsPeriods(bab_UserPeriods $user_periods, Array $calendars, $category = NULL, $hash = null) {
+	public function setEventsPeriods(bab_UserPeriods $user_periods, Array $calendars, $ical = null, $hash = null) {
 	
 		global $babDB;
 		
@@ -1324,9 +1335,18 @@ class bab_cal_OviEventSelect
 			";
 		}
 		
-		if (NULL !== $category) {
-			$where .= "AND ca.name IN(".$babDB->quote($category).") 
-			";
+		if (NULL !== $ical) {
+			
+			$properties = array();
+			foreach($ical as $property => $arr)
+			{
+				if ($propsearch = $this->processPropertyToSql($property, $arr['values'], $arr['contain']))
+				{
+					$properties[] = $propsearch;
+				}
+			}
+			
+			$where .= "AND (".implode(' OR ', $properties).')';
 		}
 		
 		if (null !== $hash) {
@@ -1340,10 +1360,63 @@ class bab_cal_OviEventSelect
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			$event = $this->createCalendarPeriod($arr, $collections[$arr['id_cal']]);
-			$user_periods->addPeriod($event);
+			if ($event)
+			{
+				$user_periods->addPeriod($event);
+			}
 		}
 	
 	}
+	
+	/**
+	 * 
+	 * @param string $property
+	 * @param array $values
+	 * @param bool $contain
+	 * @return string
+	 */
+	private function processPropertyToSql($property, Array $values, $contain)
+	{	
+		global $babDB;
+		
+		$colname = null;
+		
+		switch($property)
+		{
+			case 'SUMMARY': 			$colname = 'ce.title'; 			break;
+			case 'LOCATION':			$colname = 'ce.location';		break;
+			case 'DESCRIPTION':			$colname = 'ce.description';	break;
+			case 'CATEGORIES':			$colname = 'ca.name';			break;
+		}
+		
+		if (!isset($colname))
+		{
+			// unsupported property ignored
+			return '';
+		}
+		
+		$or = array();
+		foreach($values as $value)
+		{
+			$search = $babDB->db_escape_like($value);
+			if ($contain)
+			{
+				$search = '%'.$search.'%';
+			}
+			
+			$or[] = $colname." LIKE '".$search."'";
+		}
+		
+		if (!$or)
+		{
+			return '';
+		}
+		
+		
+		return '('.implode(' OR ', $or).')';
+		
+	}
+	
 
 
 	/**
@@ -1453,14 +1526,7 @@ class bab_cal_OviEventSelect
 	
 		if ($userperiods->isPeriodCollection($evt_collection)) {
 			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-			
-			$ical = $userperiods->icalProperties;
-			$categories = null;
-			if (isset($ical['CATEGORIES'])) {
-				$categories = $ical['CATEGORIES'];
-			}
-			
-			$this->setEventsPeriods($userperiods, $calendars, $categories, $hash); 
+			$this->setEventsPeriods($userperiods, $calendars, $userperiods->icalProperties, $hash); 
 		}
 	
 		if ($userperiods->isPeriodCollection($tsk_collection) && $users) {

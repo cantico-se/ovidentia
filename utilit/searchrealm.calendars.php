@@ -65,7 +65,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 	public function getSortMethods() {
 
 		return array(
-			'date' => bab_translate('Events start date')
+			'dtstart' => bab_translate('Events start date')
 		);
 	}
 
@@ -76,7 +76,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 	public function getAllSearchLocations() {
 
 		return array(
-			'dbtable' => bab_translate('Events')
+			'api' => bab_translate('Events')
 		);
 	}
 
@@ -86,20 +86,18 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 	public function getFields() {
 		return array(
 			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))			->virtual(true),
-			$this->createField('id'					, bab_translate('Event numeric identifier'))	->searchable(false)->setTableAlias('e'),
-			$this->createField('title'				, bab_translate('Title'))->setTableAlias('e'),
-			$this->createField('description'		, bab_translate('Description'))->setTableAlias('e'),
-			$this->createField('description_format'	, bab_translate('Description format'))->setTableAlias('e')	->searchable(false),
-			$this->createField('location'			, bab_translate('Location'))->setTableAlias('e'),
-			$this->createField('start_date'			, bab_translate('Start date'))->setTableAlias('e'),
-			$this->createField('end_date'			, bab_translate('End date'))->setTableAlias('e'),
-			$this->createField('category'			, bab_translate('Category'))->setTableAlias('c')->setRealName('name'),
-			$this->createField('id_cat'				, bab_translate('Category numeric identifier'))->setTableAlias('e') ->searchable(false),
-			$this->createField('id_cal'				, bab_translate('Calendar numeric identifier'))->setTableAlias('o') ->searchable(false),
-			$this->createField('owner'				, bab_translate('Owner numeric identifier'))->setTableAlias('o') 	->searchable(false),
-			$this->createField('type'				, bab_translate('Owner type'))->setTableAlias('o') 					->searchable(false),
-			$this->createField('date_modification'	, bab_translate('Last modification date'))->setTableAlias('e') 		->searchable(false),
-			$this->createField('bprivate'			, bab_translate('Private event'))->setTableAlias('e') 				->searchable(false),
+			$this->createField('uid'				, bab_translate('Event numeric identifier'))	->searchable(false),
+			$this->createField('summary'			, bab_translate('Title')),
+			$this->createField('description'		, bab_translate('Description')),
+			$this->createField('location'			, bab_translate('Location')),
+			$this->createField('dtstart'			, bab_translate('Start date')),	// iCal
+			$this->createField('dtend'				, bab_translate('End date')),	// iCal
+			$this->createField('start_date'			, bab_translate('Start date')),
+			$this->createField('end_date'			, bab_translate('End date')),
+			$this->createField('categories'			, bab_translate('Category')),
+			$this->createField('calendar'			, bab_translate('Calendar url identifier')) 	->searchable(false),
+			$this->createField('collection'			, bab_translate('Collection')) 					->searchable(false),
+			$this->createField('class'				, bab_translate('Class property')) 				->searchable(false),
 		);
 	}
 
@@ -107,70 +105,38 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 	 * @return bool
 	 */
 	public function isAccessValid() {
-		return 0 < count(bab_getAvailableCalendars());
+		return bab_getICalendars()->calendarAccess();
 	}
 
 
 	/**
-	 * Get default criteria for notes
+	 * Get default criteria for calendars
 	 * @return	bab_SearchCriteria
 	 */
 	public function getDefaultCriteria() {
+		$calendars = bab_getICalendars()->getCalendars();
+		$calendars = array_keys($calendars);
 		
-		return $this->id_cal->in(bab_getAvailableCalendars());
+		return $this->calendar->in($calendars)->_AND_($this->collection->is('bab_CalendarEventCollection'));
 	}
 
 
-
-	/**
-	 * Search location "dbtable"
-	 * @see bab_SearchRealmCalendars::getSearchLocations()
-	 * @return resource
-	 */
-	private function dbtable(bab_SearchCriteria $criteria) {
-
-		global $babDB;
-
-		$mysql = $this->getBackend('mysql');
-		$query = '
-		SELECT 
-			e.id, 
-			e.title, 
-			e.description,
-			e.location,
-			e.start_date,
-			e.end_date,
-			e.bprivate,
-			c.name category,
-			e.id_cat,
-			o.id_cal, 
-			cal.owner,
-			cal.type 
-		FROM 
-			'.BAB_CAL_EVENTS_OWNERS_TBL.' o,
-			'.BAB_CALENDAR_TBL.' cal,
-			'.BAB_CAL_EVENTS_TBL.' e LEFT JOIN '.BAB_CAL_CATEGORIES_TBL.' c ON c.id = e.id_cat  
-		WHERE 
-			e.id = o.id_event 
-			AND cal.id = o.id_cal 
-			';
-			
-		$where = $criteria->tostring($this->getBackend('mysql'));
-		if (!empty($where)) {
-			$query .= ' AND '.$where;
-		}
 
 	
-		 
-		$query .= ' ORDER BY start_date DESC, end_date  DESC';
 
-		bab_debug($query, DBG_INFO, 'Search');
-
-		return $babDB->db_query($query);
+	/**
+	 * Query the calendar api from the search api
+	 * @param bab_SearchCriteria $criteria
+	 * @return unknown_type
+	 */
+	private function api(bab_SearchCriteria $criteria)
+	{
+		$searchbackend = $this->getBackend('calendar');
+		return $searchbackend->getEventsIterator($criteria); 
+		
 	}
-
-
-
+	
+	
 
 
 	/**
@@ -188,9 +154,9 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 
 		// only one location possible in this search realm
 
-		if (isset($locations['dbtable'])) {
-			$resource = $this->dbtable($criteria);
-			$result->setResource($resource);
+		if (isset($locations['api'])) {
+			$iterator = $this->api($criteria);
+			$result->setIterator($iterator);
 			return $result;
 		}
 		
@@ -230,9 +196,9 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		$criteria = bab_SearchDefaultForm::getCriteria($this);
 
 		
-		$h_calendar = (int) bab_rp('h_calendar');
+		$h_calendar = bab_rp('h_calendar');
 		if ($h_calendar) {
-			$criteria = $criteria->_AND_($this->id_cal->is($h_calendar));
+			$criteria = $criteria->_AND_($this->calendar->is($h_calendar));
 		}
 
 		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
@@ -242,7 +208,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 
 		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
 			$before->add(1, BAB_DATETIME_DAY);
-			$criteria = $criteria->_AND_($this->start_date->lessThan($before->getIsoDateTime()));
+			$criteria = $criteria->_AND_($this->start_date->lessThanOrEqual($before->getIsoDateTime()));
 		}
 
 		return $criteria;
@@ -259,28 +225,112 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
  * Custom result object to add reference support to the record
  * @package search
  */
-class bab_SearchCalendarsResult extends bab_SearchSqlResult {
+class bab_SearchCalendarsResult extends bab_SearchResult {
 
+	/**
+	 * 
+	 * @var bab_UserPeriods
+	 */
+	private $periods;
+	
+	public function setIterator(bab_UserPeriods $periods) {
+		$this->periods = $periods;
+	}
+	
+	
 	/**
 	 * @return bab_SearchRecord | false
 	 */
 	public function current() {
-		$record = parent::current();
 
-		if ($record instanceOf bab_SearchRecord) {
-			$record->ov_reference = bab_buildReference('calendars', 'event', $record->id);
+		$calendarPeriod = $this->periods->current();
+		/*@var $calendarPeriod bab_CalendarPeriod */
+		
+		$record = new bab_SearchRecord();
+		$record->setRealm($this->getRealm());
 
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-
-			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent($record->description);
-			$editor->setFormat($record->description_format);
-			$record->description = $editor->getHtml();
-
+		$record->ov_reference = bab_buildReference('calendars', 'event', $calendarPeriod->getProperty('UID'));
+		$record->uid = $calendarPeriod->getProperty('UID');
+		$record->summary = $calendarPeriod->getProperty('SUMMARY');
+		$record->location = $calendarPeriod->getProperty('LOCATION');
+		$record->dtstart = $calendarPeriod->getProperty('DTSTART');
+		$record->dtend = $calendarPeriod->getProperty('DTEND');
+		$record->start_date = date('Y-m-d H:i:s', $calendarPeriod->ts_begin);
+		$record->end_date = date('Y-m-d H:i:s', $calendarPeriod->ts_end);
+		$record->categories = $calendarPeriod->getProperty('CATEGORIES');
+		$record->description = $calendarPeriod->getProperty('DESCRIPTION');
+		$record->class = $calendarPeriod->getProperty('CLASS');
+		
+		$collection = $calendarPeriod->getCollection();
+		
+		$record->collection = $collection;
+		
+		$calendar = $collection->getCalendar();
+		
+		if ($calendar) {
+			$record->calendar = $calendar->getUrlIdentifier();
 		}
+		
+		
+		$data = $calendarPeriod->getData();
+		// display html from WYSIWYG if any :
+		if (isset($data['description']) && isset($data['description_format']) && 'html' === $data['description_format'])
+		{
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$editor->setContent($data['description']);
+			$editor->setFormat($data['description_format']);
+			
+			$record->description = $editor->getHtml();
+		}
+		
+
+	
 
 		return $record;
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * @return string	
+	 */
+	public function key() {
+		return $this->periods->key();
+	}
+
+	public function next() {
+		$this->periods->next();
+	}
+
+	public function rewind() {
+		$this->periods->rewind();
+	}
+
+	public function count() {
+		return $this->periods->count();
+	}
+
+	public function seek($index) {
+		return $this->periods->seek($index);
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function valid() {
+		return $this->periods->valid();
+	}
+	
+	
+	
+	
+	
+	
+	
 
 
 	/**
@@ -296,7 +346,7 @@ class bab_SearchCalendarsResult extends bab_SearchSqlResult {
 
 		include_once dirname(__FILE__).'/dateTime.php';
 		$return = '';
-
+		
 		while ($this->valid() && 0 < $count) {
 
 			$count--;
@@ -306,10 +356,10 @@ class bab_SearchCalendarsResult extends bab_SearchSqlResult {
 			$description 	= '';
 			$location		= '';
 			$category		= '';
-			$visibility		= 'N' === $record->bprivate;
+			$visibility		= empty($record->class) || 'PUBLIC' === $record->class;
 			
 			if ($visibility) {
-				$title		= bab_toHtml($record->title);
+				$title		= bab_toHtml($record->summary);
 				$description= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->description, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 			}
 
@@ -318,11 +368,17 @@ class bab_SearchCalendarsResult extends bab_SearchSqlResult {
 			}
 
 			if (!empty($record->category)) {
-				$category	= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Category'), $record->category);
+				$category	= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Category'), $record->categories);
 			}
 
-			$iarr 			= bab_getICalendars()->getCalendarInfo($record->id_cal);
-			$calendar 		= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Calendar'), $iarr['name']);
+			$obj 			= bab_getICalendars()->getEventCalendar($record->calendar);
+			if ($obj)
+			{
+				$calendar 		= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Calendar'), $obj->getName());
+			} else {
+				$calendar = '';
+				bab_debug('Calendar not found : '.$record->calendar);
+			}
 
 
 			$start_date		= bab_mktime($record->start_date);
@@ -333,7 +389,7 @@ class bab_SearchCalendarsResult extends bab_SearchSqlResult {
 			$startdate		= bab_sprintf('<strong>%s :</strong> <abbr class="dtstart" title="%s">%s</abbr>', bab_translate('Start date'), $record->start_date, bab_LongDate(bab_mktime($record->start_date)));
 			$enddate		= bab_sprintf('<strong>%s :</strong> <abbr class="dtend" title="%s">%s</abbr>', bab_translate('End date'), $record->end_date, bab_LongDate(bab_mktime($record->end_date)));
 
-			$eventurl 		= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$record->id."&idcal=".$record->id_cal);
+			$eventurl 		= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$record->id."&idcal=".$record->calendar);
 			$calendarurl 	= bab_toHtml(bab_sprintf('?tg=calweek&date=%d,%d,%d', date('Y', $start_date), date('n', $start_date), date('j', $start_date)));
 
 
@@ -392,17 +448,9 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
 
-		$this->rescal = array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
+		$this->rescal = bab_getICalendars()->getCalendars();
+		bab_sort::sortObjects($this->rescal, 'getName');
 		
-		foreach ($this->rescal as $k => $arr)
-			{
-			$this->rescal[$arr['name']] = $arr;
-			unset($this->rescal[$k]);
-			}
-		bab_sort::ksort($this->rescal);
-		$this->rescal = array_values($this->rescal);
-
-
 		$this->t_calendar = bab_translate('Calendar');
 		$this->t_all 	= bab_translate('All');
 		$this->t_after 	= bab_translate('After');
@@ -414,10 +462,10 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 
 	public function getnextcal() {
 
-		if (list(, $arr) = each($this->rescal)) {
-			$this->value = bab_toHtml($arr['idcal']);
-			$this->option = bab_toHtml($arr['name']);
-			$this->selected = $arr['idcal'] == bab_rp('h_calendar');
+		if (list(, $calendar) = each($this->rescal)) {
+			$this->value = bab_toHtml($calendar->getUrlIdentifier());
+			$this->option = bab_toHtml($calendar->getName());
+			$this->selected = $calendar->getUrlIdentifier() == bab_rp('h_calendar');
 			return true;
 		}
 
