@@ -1813,29 +1813,7 @@ class bab_event_posted {
 		return $this->calendarPeriod;
 	}
 	
-	
-	
-	/**
-	 * @throws ErrorException
-	 * 
-	 * @return bab_PeriodCollection
-	 */
-	private function getCollection()
-	{
-		$period = $this->getCalendarPeriod();
-		$collection = $period->getCollection();
 
-		if (isset($collection->hash))
-		{
-			$calendar = $collection->getCalendar();
-			$backend = $calendar->getBackend();
-			$backend->selectPeriods();
-		}
-	}
-	
-	
-	
-	
 	
 	/**
 	 * Save new event

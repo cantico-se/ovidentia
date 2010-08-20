@@ -98,6 +98,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	private $gn_events = NULL;
 	
 	
+	/**
+	 * @var bab_PeriodCriteria
+	 */
+	private $criteria;
+	
+	
 	
 	/**
 	 * 
@@ -276,6 +282,15 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	}
 	
 	
+	/**
+	 * 
+	 * @return bab_PeriodCriteria
+	 */
+	public function getCriteria()
+	{
+		return $this->criteria;
+	}
+	
 
 
 	
@@ -294,6 +309,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		
 		
 		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+		
+		
+		$this->criteria = $criteria;
 		
 		// collect events
 

@@ -109,6 +109,15 @@ class bab_eventBeforePeriodsCreated extends bab_event {
 	{
 		return $this->periods->getUsers();
 	}
+	
+	/**
+	 * Get criteria used for query
+	 * @return bab_PeriodCriteria
+	 */
+	public function getCriteria()
+	{
+		return $this->periods->getCriteria();
+	}
 }
 
 
