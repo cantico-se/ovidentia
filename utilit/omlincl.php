@@ -4691,9 +4691,9 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 		
 		switch($typename)
 		{
-			case 'user': 		$class = 'bab_PersonalCalendar';	break;
-			case 'group': 		$class = 'bab_PublicCalendar';		break;
-			case 'resource': 	$class = 'bab_ResourceCalendar';	break;
+			case 'user': 		$class = 'bab_OviPersonalCalendar';	break;
+			case 'group': 		$class = 'bab_OviPublicCalendar';	break;
+			case 'resource': 	$class = 'bab_OviResourceCalendar';	break;
 			default: 			$class = 'bab_OviEventCalendar'; 	break;
 		}
 			

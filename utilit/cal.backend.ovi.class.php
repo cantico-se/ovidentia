@@ -36,30 +36,30 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	/**
-	 * @return bab_PersonalCalendar
+	 * @return bab_OviPersonalCalendar
 	 */
 	public function PersonalCalendar()
 	{
 		$this->includeEventCalendar();
-		return new bab_PersonalCalendar;
+		return new bab_OviPersonalCalendar;
 	}
 	
 	/**
-	 * @return bab_PublicCalendar
+	 * @return bab_OviPublicCalendar
 	 */
 	public function PublicCalendar()
 	{
 		$this->includeEventCalendar();
-		return new bab_PublicCalendar;
+		return new bab_OviPublicCalendar;
 	}
 	
 	/**
-	 * @return bab_ResourceCalendar
+	 * @return bab_OviResourceCalendar
 	 */
 	public function ResourceCalendar()
 	{
 		$this->includeEventCalendar();
-		return new bab_ResourceCalendar;
+		return new bab_OviResourceCalendar;
 	}
 	
 	

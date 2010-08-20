@@ -723,7 +723,7 @@ class bab_cal_OviEventUpdate
 			$calendar = $attendee['calendar'];
 			$id_user = $calendar->getIdUser();
 			
-			if (($calendar instanceof bab_PersonalCalendar) && $id_user)
+			if (($calendar instanceof bab_OviPersonalCalendar) && $id_user)
 			{
 				switch($attendee['PARTSTAT'])
 				{
@@ -782,7 +782,7 @@ class bab_cal_OviEventUpdate
 		
 		foreach($calendars as $calendar)
 		{			
-			if (($calendar instanceof bab_PublicCalendar) || ($calendar instanceof bab_ResourceCalendar))
+			if (($calendar instanceof bab_OviPublicCalendar) || ($calendar instanceof bab_OviResourceCalendar))
 			{
 				$status = BAB_CAL_STATUS_ACCEPTED;
 				$id_calendar = $calendar->getUid();

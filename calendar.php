@@ -93,12 +93,12 @@ class displayAttendeesCls
 		{
 			// only relations with calendars from ovidentia backend displayed
 			
-			if ($calendar instanceof bab_PublicCalendar)
+			if ($calendar instanceof bab_OviPublicCalendar)
 			{
 				$this->publics[] = $calendar;
 			}
 			
-			if ($calendar instanceof bab_ResourceCalendar)
+			if ($calendar instanceof bab_OviResourceCalendar)
 			{
 				$this->resources[] = $calendar;
 			}

@@ -469,7 +469,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 /**
  * Personal calendar
  */
-class bab_PersonalCalendar extends bab_OviEventCalendar 
+class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_PersonalCalendar
 {
 	/**
 	 * Access level for calendar sharing of the access_user
@@ -675,7 +675,7 @@ class bab_PersonalCalendar extends bab_OviEventCalendar
 /**
  * Public calendar
  */
-class bab_PublicCalendar extends bab_OviEventCalendar 
+class bab_OviPublicCalendar extends bab_OviEventCalendar implements bab_PublicCalendar
 {
 	public function getType() 
 	{
@@ -740,7 +740,7 @@ class bab_PublicCalendar extends bab_OviEventCalendar
 /**
  * Resource calendar
  */
-class bab_ResourceCalendar extends bab_OviEventCalendar 
+class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_ResourceCalendar
 {
 	public function getType() 
 	{
@@ -797,5 +797,40 @@ class bab_ResourceCalendar extends bab_OviEventCalendar
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
+	
+}
+
+
+
+
+/**
+ * Identify a personal calendar
+ * the getIdUser method must return an integer
+ * and the getType method should return the same string as the bab_OviPersonalCalendar::getType() method
+ */
+interface bab_PersonalCalendar {
+		
+	
+}
+
+
+/**
+ * Identify a public calendar
+ * the getIdUser method must return a null value
+ * and the getType method should return the same string as the bab_OviPublicCalendar::getType() method
+ */
+interface bab_PublicCalendar {
+		
+	
+}
+
+
+/**
+ * Identify a ressource calendar
+ * the getIdUser method must return a null value
+ * and the getType method should return the same string as the bab_OviResourceCalendar::getType() method
+ */
+interface bab_ResourceCalendar {
+		
 	
 }
