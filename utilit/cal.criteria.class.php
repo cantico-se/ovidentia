@@ -100,6 +100,11 @@ class bab_PeriodCriteriaCalendar extends bab_PeriodCriteria
 		$this->calendar[] = $calendar;
 	}
 	
+	public function getCalendar()
+	{
+		return $this->calendar;
+	}
+	
 	/**
 	 * Add criteria
 	 * @param bab_UserPeriods $userperiods
@@ -184,6 +189,17 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 		$this->value[] = $value;
 	}
 	
+	public function getProperty()
+	{
+		return $this->property;
+	}
+	
+	public function getValue()
+	{
+		return $this->value;
+	}
+
+
 	/**
 	 * Add criteria
 	 * @param bab_UserPeriods $userperiods
@@ -254,6 +270,14 @@ abstract class bab_PeriodCriteriaDate extends bab_PeriodCriteria
 	public function __construct(BAB_DateTime $date)
 	{
 		$this->date = $date;
+	}
+	
+	/**
+	 * @return BAB_DateTime
+	 */
+	public function getDate()
+	{
+		return $this->date;
 	}
 }
 
