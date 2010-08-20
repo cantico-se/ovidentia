@@ -193,8 +193,7 @@ function bab_getMainCalendar(Array $idcals)
  */
 function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_PeriodCollection $collection)
 {
-	
-	
+
 	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 	$idcals = $args['selected_calendars'];
 
@@ -231,7 +230,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	$period->setProperty('SUMMARY', $args['title']);
 	$period->setProperty('DESCRIPTION', trim(strip_tags($args['description']))); // Text version of description within ICAL property
 	
-	if ('Y' === $args['private']) {
+	if ($args['private']) {
 		$period->setProperty('CLASS', 'PRIVATE');
 	}
 	
@@ -247,7 +246,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	// time transparency (free : yes|no)
 	
-	if ('Y' === $args['free'])
+	if ($args['free'])
 	{
 		$period->setProperty('TRANSP', 'TRANSPARENT');
 		
@@ -433,7 +432,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	$data = array(
 		'description'			=> $args['description'],
 		'description_format'	=> $args['descriptionformat'],
-		'block'					=> $args['lock']
+		'block'					=> $args['lock'] ? 'Y' : 'N'
 	);
 
 	$period->setData($data);

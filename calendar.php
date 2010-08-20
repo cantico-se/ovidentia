@@ -474,7 +474,7 @@ class displayEventDetailCls
 		$this->t_option = ''; 
 		$this->properties = bab_toHtml(bab_getPropertiesString($calendarPeriod, $this->t_option));
 	
-		if( !$calendarPeriod->isPublic() && $GLOBALS['BAB_SESS_USERID']  != $calendar->getIdUser())
+		if(!$calendar->canViewEventDetails($calendarPeriod))
 			{
 			$this->title= '';
 			$this->description = '';
@@ -1039,8 +1039,10 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 						$evt['color'] = 'fff';
 					}
 					
+					$calendar = $calPeriod->getCollection()->getCalendar();
+					
 					$evt['creator'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] ? bab_toHtml(bab_getUserName($arr['id_creator'])) : '';
-					$evt['private'] = isset($arr['id_creator']) && $arr['id_creator'] != $GLOBALS['BAB_SESS_USERID'] && !$calPeriod->isPublic();
+					
 					$evt['nbowners'] = isset($arr['nbowners']) ? $arr['nbowners']+1 : 1;
 					$evt['t_option'] = ''; 
 					$evt['properties'] = bab_toHtml(bab_getPropertiesString($calPeriod, $evt['t_option']));
@@ -1050,10 +1052,11 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					global $babDB;
 					$evt['notes'] = ''; /* Annotations personnelles */
 					
-					$calendar = $calPeriod->getCollection()->getCalendar();
+					
 					if ($calendar instanceOf bab_OviEventCalendar)
 					{
-					
+						$evt['private'] = !$calendar->canViewEventDetails($calPeriod);
+						
 						if (isset($arr['id'])) {
 							$res_note = $babDB->db_query("
 								select note from 

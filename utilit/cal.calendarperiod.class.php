@@ -339,12 +339,17 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	
 	/**
-	 * Test if availability of event has been overloaded by program 
+	 * Test if availability of event has been overloaded by program or if the event is transparent
 	 * ex : during availability search, the event will be ignored
 	 * @return boolean
 	 */
-	public function isAvailable() {
+	public function isTransparent() {
 
+		if ('TRANSPARENT' === $this->getProperty('TRANSP'))
+		{
+			return true;
+		}
+		
 	
 		if (isset($this->available)) {
 			return $this->available;
@@ -360,8 +365,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	public function getAuthorId()
 	{
 		$data = $this->getData();
-		if (isset($data['id_user'])) {
-			return (int) $data['id_user'];
+		if (isset($data['id_creator'])) {
+			return (int) $data['id_creator'];
 		}
 		
 		return null;

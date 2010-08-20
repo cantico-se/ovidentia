@@ -637,7 +637,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	
 
 	/**
-	 * Find available periods on all processed period of object
+	 * Find available periods on all processed periods of the query object
 	 * @return 	bab_availabilityReply
 	 */
 	public function getAvailability() {
@@ -655,80 +655,123 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		// si pas d'agenda utilisateur
 		if (!$global_users) {
 		
-			foreach($this->boundaries as $ts => $events) {
-				
-				$nb_unAvailable = 0;
-				foreach($events as $event) {
-					if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
-						if (!$event->isAvailable()) {
-
-							$nb_unAvailable++;
-							$availabilityReply->conflicts_events[] = $event;
-
-						}
-					}
-				}
-
-				
-				if ($nb_unAvailable > 0 && NULL === $previous) {
-					// autoriser la creation d'une nouvelle periode a partir de $test_begin
-					$previous = $test_begin;
-				}
-				
-				
-				if (0 === $nb_unAvailable) {
-					// autoriser la creation d'une nouvelle periode a partir de $ts
-					$previous = $ts;
-				}
-				
-				
-				if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
-					
-					$period = new bab_calendarPeriod($previous, $ts);
-					$collection->addPeriod($period);
-					$availabilityReply->available_periods[$previous.'.'.$ts] = $period;
-					
-					// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
-					$previous = false;
-				}
-			}
-			
-			// si $previous est encore = a NULL, il n'y a aucun evenements qui genere de la non disponibilite
-			if (NULL === $previous) {
-			
-				$availabilityReply->status = true;
-		
-				// autoriser la creation d'une nouvelle periode a partir de $test_begin
-				$previous = $test_begin;
-
-			}
-
-
-
-			if (false !== $previous && $previous < $test_end) {
-				
-				$period = new bab_calendarPeriod($previous, $test_end);
-				$collection->addPeriod($period);
-				$availabilityReply->available_periods[$previous.'.'.$test_end] = $period;
-
-			}
-	
-			return $availabilityReply;
-
+			return $this->getNoUsersAvailablity();
 		}
-		
-		
 		
 		// si agenda utilisateur
 		
+		return $this->getUsersAvailability($global_users);
+	}
+	
+	
+	
+	/**
+	 * Find available periods on all processed periods if there are no personal calendars into the requested calendars
+	 * @return bab_availabilityReply
+	 */
+	private function getNoUsersAvailablity()
+	{
+		reset($this->boundaries);
+		$previous = NULL;
+		$availabilityReply = new bab_availabilityReply;
+		$collection = new bab_AvailablePeriodCollection;
+		
+		$test_begin = $this->begin->getTimeStamp();
+		$test_end = $this->end->getTimeStamp();
+		
+		
+		foreach($this->boundaries as $ts => $events) {
+				
+			$nb_unAvailable = 0;
+			foreach($events as $event) {
+				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
+					if (!$event->isTransparent()) {
+
+						$nb_unAvailable++;
+						$availabilityReply->conflicts_events[] = $event;
+
+					}
+				}
+			}
+
+			
+			if ($nb_unAvailable > 0 && NULL === $previous) {
+				// autoriser la creation d'une nouvelle periode a partir de $test_begin
+				$previous = $test_begin;
+			}
+			
+			
+			if (0 === $nb_unAvailable) {
+				// autoriser la creation d'une nouvelle periode a partir de $ts
+				$previous = $ts;
+			}
+			
+			
+			if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
+				
+				$period = new bab_calendarPeriod($previous, $ts);
+				$collection->addPeriod($period);
+				$availabilityReply->available_periods[$previous.'.'.$ts] = $period;
+				
+				// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
+				$previous = false;
+			}
+		}
+		
+		// si $previous est encore = a NULL, il n'y a aucun evenements qui genere de la non disponibilite
+		if (NULL === $previous) {
+		
+			$availabilityReply->status = true;
+	
+			// autoriser la creation d'une nouvelle periode a partir de $test_begin
+			$previous = $test_begin;
+
+		}
+
+
+
+		if (false !== $previous && $previous < $test_end) {
+			
+			$period = new bab_calendarPeriod($previous, $test_end);
+			$collection->addPeriod($period);
+			$availabilityReply->available_periods[$previous.'.'.$test_end] = $period;
+
+		}
+
+		return $availabilityReply;
+	
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Find available periods on all processed periods if there is at least one personal calendar
+	 * @param array $global_users	the list of users for all query
+	 * @return unknown_type
+	 */
+	private function getUsersAvailability($global_users)
+	{
+		reset($this->boundaries);
+		$previous = NULL;
+		$availabilityReply = new bab_availabilityReply;
+		$collection = new bab_AvailablePeriodCollection;
+		
+		$test_begin = $this->begin->getTimeStamp();
+		$test_end = $this->end->getTimeStamp();
+		
+		
 		foreach($this->boundaries as $ts => $events) {
 
-			// toutes les personnes disponibles sur le boundary
-			if ($global_users) {
-				$users_non_available = $global_users;
-			} else {
-				$users_non_available = array();
-			}
+	
+			/**
+			 * The users non-available on boundary are initialized from all the users contained in the list of calendars requested by the query
+			 * @var array
+			 */
+			$users_non_available = $global_users;
+			
+			
 			$working_period = false;
 
 
@@ -738,12 +781,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
+					/*
 					$data = $event->getData();
 					
 					if (isset($data['id_user'])) {
 						// periode de dispo utilisateur
 						$id_users = array($data['id_user']);
 						$working_period = true;
+						
 						
 					} elseif (!empty($data['iduser_owners'])) {
 						// evenement, liste des utilisateurs associes
@@ -753,8 +798,46 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						// autres : (ex jours feries, agenda de ressource) considerer l'utilisateur courrant comme associe a l'evenement
 						$id_users = array($GLOBALS['BAB_SESS_USERID']);
 					}
+					*/
 					
-					if ($event->isAvailable()) {
+					
+					
+					
+					$collection = $event->getCollection();
+					
+					if ($collection instanceof bab_WorkingPeriodCollection)
+					{
+						$data = $event->getData();
+						$id_users = array($data['id_user']);
+						$working_period = true;
+					}
+					
+					
+					if ($collection instanceof bab_CalendarEventCollection)
+					{
+						$id_users = array();
+						$attendees = $event->getAttendees();
+						if ($attendees)
+						{
+							foreach($attendees as $attendee)
+							{
+								$user = $attendee['calendar']->getIdUser();
+								if ($user)
+								{
+									$id_users[] = $user;
+								}
+								else
+								{
+									bab_debug('there is an attendee without associated user on the event :
+									'.print_r($event->getProperties(), true));
+								}
+							}
+						} 
+					}
+					
+					
+					
+					if ($event->isTransparent()) {
 						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
 						foreach($id_users as $id_user) {
 							if (isset($users_non_available[$id_user]) 
@@ -817,6 +900,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		return $availabilityReply;
 	}
+	
+	
+	
+	
+	
 
 
 	/**

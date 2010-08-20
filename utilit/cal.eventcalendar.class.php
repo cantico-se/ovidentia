@@ -244,6 +244,8 @@ abstract class bab_EventCalendar
 	 */
 	public function canViewEventDetails(bab_calendarPeriod $event) {
 		
+		bab_debug($event->getAuthorId());
+		
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
 		}

@@ -98,6 +98,7 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 			$this->createField('calendar'			, bab_translate('Calendar url identifier')) 	->searchable(false),
 			$this->createField('collection'			, bab_translate('Collection')) 					->searchable(false),
 			$this->createField('class'				, bab_translate('Class property')) 				->searchable(false),
+			$this->createField('color'				, bab_translate('Color')) 						->searchable(false),
 		);
 	}
 
@@ -260,6 +261,7 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 		$record->categories = $calendarPeriod->getProperty('CATEGORIES');
 		$record->description = $calendarPeriod->getProperty('DESCRIPTION');
 		$record->class = $calendarPeriod->getProperty('CLASS');
+		$record->color = $calendarPeriod->getColor();
 		
 		$collection = $calendarPeriod->getCollection();
 		
@@ -389,8 +391,11 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 			$startdate		= bab_sprintf('<strong>%s :</strong> <abbr class="dtstart" title="%s">%s</abbr>', bab_translate('Start date'), $record->start_date, bab_LongDate(bab_mktime($record->start_date)));
 			$enddate		= bab_sprintf('<strong>%s :</strong> <abbr class="dtend" title="%s">%s</abbr>', bab_translate('End date'), $record->end_date, bab_LongDate(bab_mktime($record->end_date)));
 
-			$eventurl 		= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$record->id."&idcal=".$record->calendar);
-			$calendarurl 	= bab_toHtml(bab_sprintf('?tg=calweek&date=%d,%d,%d', date('Y', $start_date), date('n', $start_date), date('j', $start_date)));
+			$eventurl 		= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$record->uid."&idcal=".$record->calendar);
+			
+			$date = bab_sprintf('%d,%d,%d', date('Y', $start_date), date('n', $start_date), date('j', $start_date));
+			
+			$calendarurl 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calweek&date=$date&calid=".$record->calendar);
 
 
 			$return .= bab_SearchResult::getRecordHtml(
@@ -402,12 +407,13 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 										</p>
 										<p class="description">%s</p>
 										<p><a href="%s">%s</a> &nbsp;&nbsp; %s</p>
-										<p><span class="bottom">%s &nbsp;&nbsp; %s &nbsp;&nbsp; %s</span></p>
+										<p><span class="bottom"><span style="background-color:#%s"> &nbsp; &nbsp; </span>&nbsp;&nbsp; %s &nbsp;&nbsp; %s &nbsp;&nbsp; %s</span></p>
 									', 
 									$startdate,
 									$enddate,
 									bab_toHtml($description),
 									$calendarurl, bab_translate('Go to calendar'), $location,
+									$record->color,
 									$calendar,
 									$category,
 									$duration

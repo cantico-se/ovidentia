@@ -168,6 +168,7 @@ class bab_cal_OviEventUpdate
 		$data = $period->getData();
 		$private = !$period->isPublic() ? 'Y' : 'N';
 		$free = 'TRANSPARENT' === $period->getProperty('TRANSP') ? 'Y' : 'N';
+		$block = $data['block'] ? 'Y' : 'N';
 		
 		$cat = bab_getCalendarCategory($period->getProperty('CATEGORIES'));
 		
@@ -185,7 +186,6 @@ class bab_cal_OviEventUpdate
 			date_modification	=now(),
 			id_modifiedby		=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 		";
-		
 
 			
 		$modification = false;
