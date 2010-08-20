@@ -659,7 +659,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 				'id_cat' 				=> $cat['id'],
 				'color' 				=> $event->getColor(),
 				'bprivate' 				=> $event->isPublic() ? 'N' : 'Y',
-				'block' 				=> $data['block'],
+				'block' 				=> isset($data['block']) ? $data['block'] : '',
 				'bfree' 				=> 'TRANSPARENT' === $event->getProperty('TRANSP') ? 'Y' : 'N'
 			);
 			
@@ -1015,7 +1015,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 	
 	$backend = $calendar->getBackend();
 	/* TODO : use the collection in parameter in a secure way */
-	$collection = $backend->CalendarEventCollection();
+	$collection = $backend->CalendarEventCollection()->setCalendar($calendar);
 	$event = $backend->getPeriod($collection, $evtid);
 	
 	if (!$calendar->canUpdateEvent($event))
@@ -1178,7 +1178,7 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$backend = $calendar->getBackend();
 	/*@var $backend Func_CalendarBackend */
 	
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
 	
 	if (!isset($calendarPeriod))
 	{
