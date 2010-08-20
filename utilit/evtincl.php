@@ -199,7 +199,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 
 	
 	if ($args['evtid']) {
-		$period = $backend->getPeriod($backend->CalendarEventCollection(), $args['evtid']);
+		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
+		$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $args['evtid']);
 		
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
@@ -229,6 +230,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	$period->setProperty('SUMMARY', $args['title']);
 	$period->setProperty('DESCRIPTION', trim(strip_tags($args['description']))); // Text version of description within ICAL property
+	$period->setProperty('LOCATION', $args['location']);
 	
 	if ($args['private']) {
 		$period->setProperty('CLASS', 'PRIVATE');
@@ -1548,6 +1550,12 @@ class bab_event_posted {
 		} else {
 			$this->args['evtid'] = '';
 		}
+		if (isset($_POST['calid'])) {
+			$this->args['calid'] = $_POST['calid'];
+		} else {
+			$this->args['calid'] = '';
+		}
+		
 		
 		if (isset($_POST['selected_calendars'])) {
 			$this->args['selected_calendars'] = $_POST['selected_calendars'];
@@ -1744,8 +1752,11 @@ class bab_event_posted {
 		$backend = $this->getBackend();
 		
 		if (!empty($this->args['evtid'])) {
-			$period = $backend->getPeriod($backend->CalendarEventCollection(), $this->args['evtid']);
+
+			$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
 			
+			$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $this->args['evtid']);
+
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate'], $period->ts_begin);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate'], $period->ts_end);
 			
@@ -1806,6 +1817,7 @@ class bab_event_posted {
 			$collection = $backend->CalendarEventCollection();
 			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
 			$collection->setCalendar($calendar);
+			
 			
 			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
 		}
