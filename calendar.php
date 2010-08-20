@@ -449,7 +449,8 @@ class displayEventDetailCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+
 		
 		if (!$calendarPeriod)
 		{
@@ -554,7 +555,7 @@ class displayEventNotesCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
 		
 		if (!$calendarPeriod)
 		{
@@ -570,7 +571,7 @@ class displayEventNotesCls
 		$this->updatetxt = bab_translate("Update");
 		
 		$data = $calendarPeriod->getData();
-		$this->noteval = bab_toHtml((string) $data['note']);
+		$this->noteval = isset($data['note']) ? bab_toHtml((string) $data['note']) : '';
 		
 		
 		
@@ -614,7 +615,7 @@ class displayEventAlertCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
 		
 		if (!$calendarPeriod)
 		{
@@ -1261,7 +1262,7 @@ function updateEventAlert()
 	}
 	
 	$backend = $calendar->getBackend();
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
 	
 	if (!$calendarPeriod)
 	{
