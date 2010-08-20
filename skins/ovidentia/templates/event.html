@@ -72,6 +72,7 @@
 			
 			<a href="javascript: Start('{ datebeginurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ datebegintxt }" /></a>
 			
+			&nbsp;&nbsp;&nbsp; <label><input style="vertical-align:middle" type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked } />&nbsp;{ daytype }</label> &nbsp;
 			
 		</td>
 	</tr>
@@ -105,12 +106,7 @@
 			</select >
 			
 			<a href="javascript: Start('{ dateendurl }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ dateendtxt }" /></a>
-		</td>
-	</tr>
-	<tr> 
-		<td align="right"  width="40%">
-			{ daytype }:<input type="checkbox" name="daytype" value="y" OnClick="daytypeswitch()" { daytypechecked } /></td>
-		<td> 
+			
 			<script type="text/javascript">
 			<!--
 			function repeat_checkbox(obj)
@@ -119,87 +115,92 @@
 				if (obj.checked)
 					{
 					document.getElementById('repeat_tr').style.display = '';
-					document.getElementById('repeat_enddate').style.display = '';
 					}
 				else
 					{
 					document.getElementById('repeat_tr').style.display = 'none';
-					document.getElementById('repeat_enddate').style.display = 'none';
 					}
 				}
 			-->
 			</script>
-			&nbsp;&nbsp;&nbsp;
-			{ t_repeat }:<input type="checkbox" name="repeat_cb" value="1" onclick="repeat_checkbox(this)" { repeat_cb_checked } />
+			&nbsp;&nbsp;&nbsp; 
+			<label><input type="checkbox" style="vertical-align:middle" name="repeat_cb" value="1" onclick="repeat_checkbox(this)" { repeat_cb_checked } />&nbsp;{ t_repeat }</label> &nbsp;
 		</td>
 	</tr>
 	
 	<tr id="repeat_tr"> 
-		<td align="right" valign="top" nowrap>
-			<label for="repeat_radio_1">{ t_daily }</label>
-			<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
-			<label for="repeat_radio_2">{ t_weekly }</label>
-			<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch(this)" /><br />
-			<label for="repeat_radio_3">{ t_monthly }</label>
-			<input type="radio" id="repeat_radio_3" name="repeat" value="3" onclick="repeat_switch(this)" /><br />
-			<label for="repeat_radio_4">{ t_yearly }</label>
-			<input type="radio" id="repeat_radio_4" name="repeat" value="4" onclick="repeat_switch(this)" /><br />
+		<td colspan="2">
+			<table>
+			<tr>
+			<td align="right" valign="top" nowrap>
+				<label for="repeat_radio_1">{ t_daily }</label>
+				<input type="radio" id="repeat_radio_1" name="repeat" value="1" onclick="repeat_switch(this)" /><br />
+				<label for="repeat_radio_2">{ t_weekly }</label>
+				<input type="radio" id="repeat_radio_2" name="repeat" value="2" onclick="repeat_switch(this)" /><br />
+				<label for="repeat_radio_3">{ t_monthly }</label>
+				<input type="radio" id="repeat_radio_3" name="repeat" value="3" onclick="repeat_switch(this)" /><br />
+				<label for="repeat_radio_4">{ t_yearly }</label>
+				<input type="radio" id="repeat_radio_4" name="repeat" value="4" onclick="repeat_switch(this)" /><br />
+			
+			
+			</td>
+			<td valign="top">
+				<div id="event_repeat_0"></div>
+				<div id="event_repeat_1">{ t_all_the }&nbsp;<input type="text" name="repeat_n_1" value="{ arr[repeat_n_1] }" size="4" maxlength="4" />&nbsp;{ t_days }</div>
+				<div id="event_repeat_2">{ t_all_the }&nbsp;<input type="text" name="repeat_n_2" value="{ arr[repeat_n_2] }" size="4" maxlength="4" />&nbsp;{ t_weeks }<br />
+					<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="SU" { repeat_wd_checked[SU] } />
+					<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="MO" { repeat_wd_checked[MO] } />
+					<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="TU" { repeat_wd_checked[TU] } />
+					<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="WE" { repeat_wd_checked[WE] } />
+					<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="TH" { repeat_wd_checked[TH] } />
+					<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="FR" { repeat_wd_checked[FR] } />
+					<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="SA" { repeat_wd_checked[SA] } />
+				</div>
+				<div id="event_repeat_3">{ t_all_the }&nbsp;<input type="text" name="repeat_n_3" value="{ arr[repeat_n_3] }" size="4" maxlength="4" />&nbsp;{ t_months }</div>
+				<div id="event_repeat_4">{ t_all_the }&nbsp;<input type="text" name="repeat_n_4" value="{ arr[repeat_n_4] }" size="4" maxlength="4" />&nbsp;{ t_years }</div>
+				
+				
+				
+				
+				<p>
+					<label for="bab_repeat_dayend">{ repeat_dateendtxt }</label>: <br />
+					
+					<select id="bab_repeat_dayend" name="repeat_dayend">
+					<!--#in getnextday -->
+					<option value="{ dayid }" { selected }>{ dayid }</option>
+					<!--#endin getnextday -->
+					</select>
+			
+					<select name="repeat_monthend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
+					<!--#in getnextmonth -->
+					<option value="{ monthid }" { selected }>{ monthname }</option>
+					<!--#endin getnextmonth -->
+					</select>
+			
+					<select name="repeat_yearend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
+					<!--#in getnextyear -->
+					<option value="{ yearid }"  { selected }>{ yearidval }</option>
+					<!--#endin getnextyear -->
+					</select>
+					
+					<a style="vertical-align:middle" href="javascript: Start('{ repeat_dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ repeat_dateendtxt }" /></a>
+				</p>
+				<script type="text/javascript">
+				<!--
+				document.forms['vacform'].repeat.value = { repeat };
+				document.getElementById('repeat_radio_'+document.forms['vacform'].repeat.value).checked = true;
+				repeat_switch();
+				repeat_checkbox(document.forms['vacform'].repeat_cb);
+				daytypeswitch();
 		
-		
-		</td>
-		<td valign="top">
-			<div id="event_repeat_0"></div>
-			<div id="event_repeat_1">{ t_all_the }<input type="text" name="repeat_n_1" value="{ arr[repeat_n_1] }" size="4" maxlength="4" />{ t_days }</div>
-			<div id="event_repeat_2">{ t_all_the }<input type="text" name="repeat_n_2" value="{ arr[repeat_n_2] }" size="4" maxlength="4" />{ t_weeks }<br />
-				<label for="repeat_wd_0">{ t_sun }</label><input id="repeat_wd_0" type="checkbox" name="repeat_wd[]" value="SU" { repeat_wd_checked[SU] } />
-				<label for="repeat_wd_1">{ t_mon }</label><input id="repeat_wd_1" type="checkbox" name="repeat_wd[]" value="MO" { repeat_wd_checked[MO] } />
-				<label for="repeat_wd_2">{ t_tue }</label><input id="repeat_wd_2" type="checkbox" name="repeat_wd[]" value="TU" { repeat_wd_checked[TU] } />
-				<label for="repeat_wd_3">{ t_wen }</label><input id="repeat_wd_3" type="checkbox" name="repeat_wd[]" value="WE" { repeat_wd_checked[WE] } />
-				<label for="repeat_wd_4">{ t_thu }</label><input id="repeat_wd_4" type="checkbox" name="repeat_wd[]" value="TH" { repeat_wd_checked[TH] } />
-				<label for="repeat_wd_5">{ t_fri }</label><input id="repeat_wd_5" type="checkbox" name="repeat_wd[]" value="FR" { repeat_wd_checked[FR] } />
-				<label for="repeat_wd_6">{ t_sat }</label><input id="repeat_wd_6" type="checkbox" name="repeat_wd[]" value="SA" { repeat_wd_checked[SA] } />
-			</div>
-			<div id="event_repeat_3">{ t_all_the }<input type="text" name="repeat_n_3" value="{ arr[repeat_n_3] }" size="4" maxlength="4" />{ t_months }</div>
-			<div id="event_repeat_4">{ t_all_the }<input type="text" name="repeat_n_4" value="{ arr[repeat_n_4] }" size="4" maxlength="4" />{ t_years }</div>
-			&nbsp;
+				//-->
+				</script>
+			</td>
+			</tr>
+			</table>
 		</td>
 	</tr>
-	<tr id="repeat_enddate"> 
-	<td align="right" nowrap valign="middle">{ repeat_dateendtxt }:</td>
-	<td valign="middle"> 
-		<select name="repeat_dayend">
-		<!--#in getnextday -->
-		<option value="{ dayid }" { selected }>{ dayid }</option>
-		<!--#endin getnextday -->
-		</select>
-
-		<select name="repeat_monthend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
-		<!--#in getnextmonth -->
-		<option value="{ monthid }" { selected }>{ monthname }</option>
-		<!--#endin getnextmonth -->
-		</select>
-
-		<select name="repeat_yearend" onChange="updateDates(this.form.repeat_dayend, this.form.repeat_monthend, this.form.repeat_yearend);">
-		<!--#in getnextyear -->
-		<option value="{ yearid }"  { selected }>{ yearidval }</option>
-		<!--#endin getnextyear -->
-		</select>
-		
-		<a href="javascript: Start('{ repeat_dateend }', 'CalendarWindow', 'width=250,height=250,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/calendar.gif" alt="{ repeat_dateendtxt }" /></a>
-
-		<script type="text/javascript">
-		<!--
-		document.forms['vacform'].repeat.value = { repeat };
-		document.getElementById('repeat_radio_'+document.forms['vacform'].repeat.value).checked = true;
-		repeat_switch();
-		repeat_checkbox(document.forms['vacform'].repeat_cb);
-		daytypeswitch();
-
-		//-->
-		</script>
-
-		</td>
-	</tr>
+	
 	<tr> 
 		<td align="right" valign="middle">{ title }:</td>
 		<td> 
@@ -212,7 +213,7 @@
 		<input type="text" name="location" size="45" maxlength="255" value="{ arr[location] }">
 		</td>
 	</tr>
-	<!--#if rescat -->
+	
 	<tr> 
 		<td align="right">{ category }:</td>
 		<td> 
@@ -222,17 +223,20 @@
 				<option value="{ cat[id] }" style="background:#{ cat[bgcolor] }" { selected }>{ cat[name] }</option>
 				<!--#endin getnextcat -->
 			</select>
-		</td>
-	</tr>
-	<!--#endif rescat -->
-	<tr id="color_tr"> 
-		<td align="right">{ t_color }:</td>
-		<td nowrap> 
-			<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
 			
-			&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
-			
-			&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+			<span id="color_tr">
+				&nbsp;
+				&nbsp;
+				&nbsp;
+				
+				{ t_color }: 
+				
+				<span id="evtColor" style="background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;"> &nbsp; &nbsp; &nbsp;</span><input type="hidden" name="color" value="{ colorvalue }" />
+				
+				&nbsp;<a style="vertical-align:middle" href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
+				
+				&nbsp;<a style="vertical-align:middle" href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+			</span>
 		</td>
 	</tr>
 	
@@ -277,59 +281,85 @@
 				<!--#endif arr[bfree] -->
 			</select>
 			<!--#endif bfree -->
+			
+			&nbsp;&nbsp;&nbsp;
+			
+			
+			<script language="JavaScript">
+			<!--
+			function bab_event_alert_ed()
+			{
+			var f = document.forms.vacform;
+			if (!f.creminder.checked)
+				{
+				document.getElementById('alert_tr').style.display='none';
+				
+				f.rday.disabled = true;
+				f.rhour.disabled = true;
+				f.rminute.disabled = true;
+			<!--#if remailtxt -->
+				f.remail.disabled = true;
+			<!--#endif remailtxt -->
+				}
+			else
+				{
+				document.getElementById('alert_tr').style.display='';
+				
+				f.rday.disabled = false;
+				f.rhour.disabled = false;
+				f.rminute.disabled = false;
+			<!--#if remailtxt -->
+				f.remail.disabled = false;
+			<!--#endif remailtxt -->
+				}
+			}
+			//-->
+			</script>
+			
+			
+			
+			
+			<label><input style="vertical-align:middle" type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="bab_event_alert_ed()" />&nbsp;{ alerttxt }</label>
+			
+			
 		</td>
 	</tr>
-	<tr> 
-<script language="JavaScript">
-<!--
-function ed()
-{
-var f = document.forms.vacform;
-if (!f.creminder.checked)
-	{
-	f.rday.disabled = true;
-	f.rhour.disabled = true;
-	f.rminute.disabled = true;
-<!--#if remailtxt -->
-	f.remail.disabled = true;
-<!--#endif remailtxt -->
-	}
-else
-	{
-	f.rday.disabled = false;
-	f.rhour.disabled = false;
-	f.rminute.disabled = false;
-<!--#if remailtxt -->
-	f.remail.disabled = false;
-<!--#endif remailtxt -->
-	}
-}
-//-->
-</script>
+	<tr id="alert_tr"> 
 		<td colspan="2" align="center">
-		<input type="checkbox" name="creminder" value="Y" { rcheckedval }  OnClick="ed()" />&nbsp;<b>{ alerttxt }</b>&nbsp;<select name="rday">
-<!--#in getnextreminderday -->
-<option value="{ dval }" { dselected }>{ dname }</option>
-<!--#endin getnextreminderday -->
-</select>
-&nbsp;
-<select name="rhour">
-<!--#in getnextreminderhour -->
-<option value="{ hval }" { hselected }>{ hname }</option>
-<!--#endin getnextreminderhour -->
-</select>
-&nbsp;
-<select name="rminute">
-<!--#in getnextreminderminute -->
-<option value="{ mval }" { mselected }>{ mname }</option>
-<!--#endin getnextreminderminute -->
-</select>
-<!--#if remailtxt -->
-&nbsp;
-<input type="checkbox" name="remail" value="Y" { rmcheckedval } />&nbsp;{ remailtxt } 
-<!--#endif remailtxt -->
-
-
+		
+			<div>
+			
+				{ t_remind_me }
+				
+				<span style="white-space:nowrap">
+				<select name="rday">
+				<!--#in getnextreminderday -->
+				<option value="{ dval }" { dselected }>{ dname }</option>
+				<!--#endin getnextreminderday -->
+				</select>
+				&nbsp;
+				<select name="rhour">
+				<!--#in getnextreminderhour -->
+				<option value="{ hval }" { hselected }>{ hname }</option>
+				<!--#endin getnextreminderhour -->
+				</select>
+				&nbsp;
+				<select name="rminute">
+				<!--#in getnextreminderminute -->
+				<option value="{ mval }" { mselected }>{ mname }</option>
+				<!--#endin getnextreminderminute -->
+				</select>
+				</span>
+				
+				{ t_before_event }
+				
+				<!--#if remailtxt -->
+				&nbsp;
+				<input style="vertical-align:middle" type="checkbox" name="remail" value="Y" { rmcheckedval } />&nbsp;{ remailtxt } 
+				<!--#endif remailtxt -->
+			
+			</div>
+		
 		</td>
 	</tr>
 	
@@ -352,7 +382,7 @@ else
 </form>
 <script type="text/javascript">
 <!--
-ed();
+bab_event_alert_ed();
 -->
 </script>
 <!--#end newevent -->

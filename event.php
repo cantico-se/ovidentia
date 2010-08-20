@@ -118,6 +118,8 @@ class bab_cal_event
 		$this->t_test_conflicts = bab_translate("Test conflicts");
 
 		$this->repeat_dateendtxt = bab_translate("Periodicity end date");
+		$this->t_remind_me = bab_translate("Remind me");
+		$this->t_before_event = bab_translate("before the event");
 
 		$this->ymin = 2;
 		$this->ymax = 5;
@@ -224,7 +226,7 @@ function newEvent()
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($editor->getContent());
 //			$editor->setFormat('html');
-			$editor->setParameters(array('height' => 300));
+			$editor->setParameters(array('height' => 200));
 			$this->editor = $editor->getEditor();
 
 

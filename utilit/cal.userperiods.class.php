@@ -749,7 +749,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	/**
 	 * Find available periods on all processed periods if there is at least one personal calendar
 	 * @param array $global_users	the list of users for all query
-	 * @return unknown_type
+	 * @return bab_availabilityReply
 	 */
 	private function getUsersAvailability($global_users)
 	{
@@ -781,27 +781,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
-					/*
-					$data = $event->getData();
-					
-					if (isset($data['id_user'])) {
-						// periode de dispo utilisateur
-						$id_users = array($data['id_user']);
-						$working_period = true;
-						
-						
-					} elseif (!empty($data['iduser_owners'])) {
-						// evenement, liste des utilisateurs associes
-						$id_users = $data['iduser_owners'];
-						
-					} else {
-						// autres : (ex jours feries, agenda de ressource) considerer l'utilisateur courrant comme associe a l'evenement
-						$id_users = array($GLOBALS['BAB_SESS_USERID']);
-					}
-					*/
-					
-					
-					
+
 					
 					$collection = $event->getCollection();
 					
@@ -832,7 +812,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 									'.print_r($event->getProperties(), true));
 								}
 							}
-						} 
+						} else {
+							/**
+							 * No attendees on event
+							 * but the current user have access to this event
+							 */
+							$id_users = array($GLOBALS['BAB_SESS_USERID']);
+						}
 					}
 					
 					
@@ -840,8 +826,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					if ($event->isTransparent()) {
 						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
 						foreach($id_users as $id_user) {
-							if (isset($users_non_available[$id_user]) 
-											&& true !== $users_non_available[$id_user]) {
+							if (isset($users_non_available[$id_user]) && true !== $users_non_available[$id_user]) {
 											
 								unset($users_non_available[$id_user]);
 							}
@@ -955,18 +940,20 @@ class bab_UserPeriods implements Countable, seekableIterator {
 class bab_availabilityReply {
 	
 	/**
+	 * true if all the request interval is available
 	 * @var bool
 	 */
 	public $status = NULL;
 	
 	/**
-	 * @var array
+	 * List of available periods
+	 * @var array	<bab_calendarPeriod>
 	 */
 	public $available_periods = array();
 	
 	/**
 	 * Events in conflict
-	 * @var array
+	 * @var array	<bab_calendarPeriod>
 	 */
 	public $conflicts_events = array();
 }
