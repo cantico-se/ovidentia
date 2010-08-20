@@ -809,7 +809,7 @@ class cal_wmdbaseCls
 
 			$arr = $calPeriod->getData();
 
-			if ('Y' == $arr['block']) {
+			if (isset($arr['block']) && 'Y' == $arr['block']) {
 				$el[] = bab_translate('Locked');
 			}
 
