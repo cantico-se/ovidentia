@@ -339,7 +339,11 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 			if ( (!isset($args['keeplastknown'])) || (!isset($_SESSION['bab_sitemap_lastknowposition'])) ) {
 				return '';
 			}
-			return $_SESSION['bab_sitemap_lastknowposition'];
+			if (isset($_SESSION['bab_sitemap_lastknowposition'])) {
+				return $_SESSION['bab_sitemap_lastknowposition'];
+			} else {
+				return '';
+			}
 		}
 
 //		$html = '<ul class="sitemap-position">'."\n";
