@@ -1359,7 +1359,20 @@ class bab_cal_OviEventSelect
 		
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
-			$event = $this->createCalendarPeriod($arr, $collections[$arr['id_cal']]);
+			if (!empty($arr['hash'])) {
+				if (!isset($hashcollections[$arr['hash']])) 
+				{
+					$hashcollections[$arr['hash']] = $backend->CalendarEventCollection();
+					$hashcollections[$arr['hash']]->setCalendar($calendar);
+				} 
+				
+				$collection = $hashcollections[$arr['hash']];
+			} else {
+				$collection = $collections[$arr['id_cal']];
+			}
+			
+			
+			$event = $this->createCalendarPeriod($arr, $collection);
 			if ($event)
 			{
 				$user_periods->addPeriod($event);
