@@ -564,7 +564,7 @@ function newEvent()
 	}
 
 
-function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
+function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	{
 	global $babBody,$babDB;
 	class temp
@@ -604,6 +604,8 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 		var $aRule = array();
 		var $sCopyCaption;
 		
+		public $dtstart;
+		
 		function temp(bab_EventCalendar $calendar, $cci, $view, $date, bab_CalendarPeriod $event)
 		{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
@@ -623,6 +625,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			$this->ccids = $cci;
 			$this->curview = $view;
 			$this->curdate = $date;
+			$this->dtstart = $event->getProperty('DTSTART');
 			
 			$this->bupdrec = bab_rp('bupdrec', 2);
 
@@ -1017,7 +1020,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 	$backend = $calendar->getBackend();
 	/* TODO : use the collection in parameter in a secure way */
 	$collection = $backend->CalendarEventCollection()->setCalendar($calendar);
-	$event = $backend->getPeriod($collection, $evtid);
+	$event = $backend->getPeriod($collection, $evtid, $dtstart);
 	
 	if (!$calendar->canUpdateEvent($event))
 	{
@@ -1437,7 +1440,7 @@ switch($idx)
 	case "modevent":
 		if( !isset($message)) { $message = '';}
 		$babBody->msgerror = $message;
-		modifyEvent($calid, bab_rp('collection'), bab_rp('evtid'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
+		modifyEvent($calid, bab_rp('collection'), bab_rp('evtid'), bab_rp('dtstart'), bab_rp('cci'), bab_rp('view'), bab_rp('date'));
 		exit;
 		break;
 

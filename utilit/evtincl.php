@@ -200,7 +200,8 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	if ($args['evtid']) {
 		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
-		$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $args['evtid']);
+		
+		$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $args['evtid'], $args['dtstart']);
 		
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
@@ -1555,6 +1556,8 @@ class bab_event_posted {
 		} else {
 			$this->args['calid'] = '';
 		}
+
+		$this->args['dtstart'] = bab_pp('dtstart', null);
 		
 		
 		if (isset($_POST['selected_calendars'])) {
@@ -1755,6 +1758,11 @@ class bab_event_posted {
 
 			$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
 			
+			if (!$calendar)
+			{
+				throw new Exception('Missing calendar '.$this->args['calid']);
+			}
+			
 			$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $this->args['evtid']);
 
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate'], $period->ts_begin);
@@ -1868,13 +1876,13 @@ class bab_event_posted {
 					// no RECURRENCE-ID mean all instances of event
 					break;
 				case BAB_CAL_EVT_CURRENT:
-					$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $calendarPeriod->getProperty('DTSTART'));
+					$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $this->args['dtstart']);
 					break;
 				case BAB_CAL_EVT_PREVIOUS:
-					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $calendarPeriod->getProperty('DTSTART'));
+					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $this->args['dtstart']);
 					break;
 				case BAB_CAL_EVT_NEXT:
-					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $calendarPeriod->getProperty('DTSTART'));
+					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $this->args['dtstart']);
 					break;
 			}
 		}
