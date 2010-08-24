@@ -651,7 +651,7 @@ function confirmEvent($evtid, $idcal, $partstat, $comment, $bupdrec)
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
 	$collection = $calendarPeriod->getCollection();
 	
-	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);	
+	bab_addHashEventsToCollection($collection, $calendarPeriod, (int) $bupdrec);	
 	
 	
 	$updatePartstat = array();
@@ -1932,9 +1932,10 @@ class bab_event_posted {
 	 */
 	public static function availabilityCheck($calid, bab_CalendarPeriod $period) {
 	
-		//$begin = $period->ts_begin;
-		//$end = $period->ts_end;
-		
+		if ($period->isTransparent())
+		{
+			return true;	
+		}
 		
 		$availability_msg_list = array();
 		$availability_conflicts_calendars = array();
