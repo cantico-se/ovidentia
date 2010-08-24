@@ -1850,11 +1850,13 @@ class bab_event_posted {
 		$collection = $calendarPeriod->getCollection();
 		$calendar = $collection->getCalendar();
 		$backend = $calendar->getBackend();
-		
+
 		if ($collection->hash && bab_pp('bupdrec'))
 		{
 			bab_addHashEventsToCollection($collection, $calendarPeriod, (int) bab_pp('bupdrec'));
 		}
+		
+		$backend->savePeriod($calendarPeriod);
 
 		$min = $calendarPeriod->ts_begin;
 		$max = $calendarPeriod->ts_end;
@@ -1863,11 +1865,6 @@ class bab_event_posted {
 		{
 			if ($min > $period->ts_begin) 	{ $min = $period->ts_begin; }
 			if ($max < $period->ts_end) 	{ $max = $period->ts_end; 	}
-
-			if (!$backend->savePeriod($period))
-			{
-				return false;
-			}
 		}
 		
 		
