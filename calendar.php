@@ -148,7 +148,7 @@ class displayAttendeesCls
 			
 			$collection = $this->period->getCollection();
 			
-			if( !empty($collection->hash))
+			if( !empty($collection->hash) || $calendarPeriod->getProperty('RRULE'))
 				{
 				$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
 				$this->all = bab_translate("All");
@@ -681,7 +681,7 @@ class displayEventAlertCls
 
 			
 		$collection = $calendarPeriod->getCollection();
-		if( !empty($collection->hash))
+		if( !empty($collection->hash) || $calendarPeriod->getProperty('RRULE'))
 			{
 			$this->all = bab_translate("All");
 			$this->thisone = bab_translate("This occurence");

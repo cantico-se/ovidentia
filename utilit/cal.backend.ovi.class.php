@@ -104,10 +104,11 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 * 
 	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
 	 * @param 	string 					$identifier				The UID property of event
-	 * 
+	 * @param	string					[$dtstart]				The DTSTART value of the event (this can be usefull if the event is a recurring event, DTSTART will indicate the correct instance)
+	 *  
 	 * @return bab_CalendarPeriod
 	 */
-	public function getPeriod(bab_PeriodCollection $periodCollection, $identifier)
+	public function getPeriod(bab_PeriodCollection $periodCollection, $identifier, $dtstart = null)
 	{
 		if ($periodCollection instanceof bab_CalendarEventCollection) 
 		{

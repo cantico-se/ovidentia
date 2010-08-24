@@ -629,10 +629,11 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			$this->sCopyCaption = bab_translate("Copy event");
 			
 			$this->aRule = array(
-				1 => bab_translate("All"), 
-				2 => bab_translate("This occurence"),
-				3 => bab_translate("This occurence and all previous occurences"),
-				4 => bab_translate("This occurence and all next occurences"));
+				BAB_CAL_EVT_ALL 		=> bab_translate("All"), 
+				BAB_CAL_EVT_CURRENT 	=> bab_translate("This occurence"),
+				BAB_CAL_EVT_PREVIOUS 	=> bab_translate("This occurence and all previous occurences"),
+				BAB_CAL_EVT_NEXT 		=> bab_translate("This occurence and all next occurences")
+			);
 			
 			
 			$selected_calendars = array();
@@ -672,7 +673,7 @@ function modifyEvent($idcal, $collection, $evtid, $cci, $view, $date)
 			
 			$collection = $event->getCollection();
 
-			if (!empty($collection->hash)) {
+			if (!empty($collection->hash) || $event->getProperty('RRULE')) {
 				$this->brecevt = true;
 				$this->updaterec = bab_translate("This is recurring event. Do you want to update this occurence or series?");
 			} else {
