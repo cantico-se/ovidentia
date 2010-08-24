@@ -1850,10 +1850,33 @@ class bab_event_posted {
 		$collection = $calendarPeriod->getCollection();
 		$calendar = $collection->getCalendar();
 		$backend = $calendar->getBackend();
+		
+		$bupdrec = (int) bab_pp('bupdrec');
 
-		if ($collection->hash && bab_pp('bupdrec'))
+		if ($collection->hash && $bupdrec)
 		{
-			bab_addHashEventsToCollection($collection, $calendarPeriod, (int) bab_pp('bupdrec'));
+			bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
+		}
+		
+		if ($bupdrec)
+		{
+			// update calendar period with the RECURRENCE-ID to refeerence the correct events to update
+			
+			switch($bupdrec)
+			{
+				case BAB_CAL_EVT_ALL:
+					// no RECURRENCE-ID mean all instances of event
+					break;
+				case BAB_CAL_EVT_CURRENT:
+					$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $calendarPeriod->getProperty('DTSTART'));
+					break;
+				case BAB_CAL_EVT_PREVIOUS:
+					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $calendarPeriod->getProperty('DTSTART'));
+					break;
+				case BAB_CAL_EVT_NEXT:
+					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $calendarPeriod->getProperty('DTSTART'));
+					break;
+			}
 		}
 		
 		$backend->savePeriod($calendarPeriod);
