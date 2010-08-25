@@ -278,7 +278,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 			{
 				$partstat = $attendee->getDefaultAttendeePARTSTAT();
 				
-				if ($idcal === $attendee->getUrlIdentifier()) {
+				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
 					$role = 'CHAIR';
 					
 					// set as organizer
