@@ -83,12 +83,17 @@ class Func_CalendarBackend extends bab_functionality
 	
 	/**
 	 * A collection of events
+	 * 
+	 * @param	bab_EventCalendar $calendar			for this collection, the calendar is mandatory
+	 * 
 	 * @return bab_CalendarEventCollection
 	 */
-	public function CalendarEventCollection()
+	public function CalendarEventCollection(bab_EventCalendar $calendar)
 	{
 		$this->includePeriodCollection();
-		return new bab_CalendarEventCollection;
+		$collection = new bab_CalendarEventCollection;
+		$collection->setCalendar($calendar);
+		return $collection;
 	}
 	
 	/**

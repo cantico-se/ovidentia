@@ -912,16 +912,16 @@ class cal_wmdbaseCls
 		elseif( $this->allow_view )
 			{
 			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent."&idcal=".$this->idcal);
+			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
 			}
 		else
 			{
 			$this->popup		= false;
 			$this->titletenurl	= "";
 			}
-		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
 		
-		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&idcal=".$this->idcal);
+		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
 		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;
 		if( isset($arr['note']) && !empty($arr['note']))

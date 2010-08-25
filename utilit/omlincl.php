@@ -4922,8 +4922,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$criteria = $criteria->_AND_($factory->Property('CATEGORIES', $catnames));
 		}
 		
-		
-		$collections = array($backend->CalendarEventCollection());
+		$backend->includePeriodCollection();
+		$collections = array(new bab_CalendarEventCollection);
 
 		if( $holiday )
 		{

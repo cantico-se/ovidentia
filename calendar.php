@@ -48,11 +48,12 @@ class displayAttendeesCls
 	
 	private $period;
 
-	public function __construct($evtid, $idcal)
+	public function __construct($evtid, $dtstart, $idcal)
 		{
 		global $babBody, $babDB;
 		$this->access = false;
 		$this->evtid = $evtid;
+		$this->dtstart = $dtstart;
 		$this->idcal = $idcal;
 		
 		$calendar = bab_getICalendars()->getEventCalendar($idcal);
@@ -81,7 +82,7 @@ class displayAttendeesCls
 		$this->t_reject = bab_translate("Reject");
 		
 		$backend = $calendar->getBackend();
-		$this->period = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$this->period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 			
 			
 		$this->attendees = $this->period->getAttendees();
@@ -148,7 +149,7 @@ class displayAttendeesCls
 			
 			$collection = $this->period->getCollection();
 			
-			if( !empty($collection->hash) || $calendarPeriod->getProperty('RRULE'))
+			if( !empty($collection->hash) || $this->period->getProperty('RRULE'))
 				{
 				$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
 				$this->all = bab_translate("All");
@@ -365,7 +366,7 @@ class displayApprobCalendarCls
 		
 		$calendar = bab_getICalendars()->getEventCalendar($idcal);
 		$backend = $calendar->getBackend();
-		$period = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
 		
 		$this->commenttxt = bab_translate("Reason");
 		$this->updatetxt = bab_translate("Update");
@@ -434,7 +435,7 @@ class displayApprobCalendarCls
 class displayEventDetailCls
 	{
 	
-	public function __construct($evtid, $idcal)
+	public function __construct($evtid, $dtstart, $idcal)
 		{
 		require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 		global  $babBody, $babDB;
@@ -449,7 +450,7 @@ class displayEventDetailCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 
 		
 		if (!$calendarPeriod)
@@ -548,6 +549,11 @@ class displayEventNotesCls
 		
 		$calendar = bab_getICalendars()->getEventCalendar($idcal);
 		
+		if (!($calendar instanceof bab_OviEventCalendar))
+		{
+			return;
+		}
+		
 		if (!$calendar)
 		{
 			$babBody->addError(bab_translate("Access denied to the calendar"));
@@ -555,7 +561,7 @@ class displayEventNotesCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
 		
 		if (!$calendarPeriod)
 		{
@@ -591,6 +597,11 @@ class displayEventNotesCls
 		
 	public function getHtml()
 		{
+			if (!$this->access)
+			{
+				return '';
+			}
+			
 		return bab_printTemplate($this, "calendar.html", "eventnotes");
 		}
 	}
@@ -602,7 +613,7 @@ class displayEventNotesCls
 class displayEventAlertCls
 	{
 
-	function displayEventAlertCls($evtid, $idcal)
+	function displayEventAlertCls($evtid, $dtstart, $idcal)
 		{
 		global  $babBody, $babDB;
 		$this->access = false;
@@ -615,7 +626,7 @@ class displayEventAlertCls
 		}
 		
 		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 		
 		if (!$calendarPeriod)
 		{
@@ -642,6 +653,7 @@ class displayEventAlertCls
 		
 		$this->idcal = $idcal;
 		$this->evtid = $evtid;
+		$this->dtstart = $dtstart;
 		$this->alerttxt = bab_translate("Reminder");
 		$this->updatetxt = bab_translate("Update");
 		
@@ -850,39 +862,39 @@ function bab_getPropertiesString(&$calPeriod, &$t_option)
 
 
  
-function displayAttendees($evtid, $idcal)
+function displayAttendees($evtid, $dtstart, $idcal)
 {
 	global $babBody;
 	
 
-	$details = new displayEventDetailCls($evtid, $idcal);
-	$attendees = new displayAttendeesCls($evtid, $idcal);
+	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
+	$attendees = new displayAttendeesCls($evtid, $dtstart, $idcal);
 	
 	$babBody->babPopup($details->getHtml().$attendees->getHtml());
 }
 
 
 
-function displayEventDetail($evtid, $idcal)
+function displayEventDetail($evtid, $dtstart, $idcal)
 {
 	global $babBody;
 	
 
-	$details = new displayEventDetailCls($evtid, $idcal);
+	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
 
 	$babBody->babPopup($details->getHtml());
 }
 
 
 
-function displayEventDetailUpd($evtid, $idcal)
+function displayEventDetailUpd($evtid, $dtstart, $idcal)
 {
 	global $babBody;
 	
 
-	$details = new displayEventDetailCls($evtid, $idcal);
+	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
 	$notes = new displayEventNotesCls($evtid, $idcal);
-	$alert = new displayEventAlertCls($evtid, $idcal);
+	$alert = new displayEventAlertCls($evtid, $dtstart, $idcal);
 	
 	$babBody->babPopup($details->getHtml().$notes->getHtml().$alert->getHtml());
 }
@@ -892,7 +904,7 @@ function displayEventDetailUpd($evtid, $idcal)
  * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
-function approbCalendar($evtid, $idcal)
+function approbCalendar($evtid, $dtstart, $idcal)
 {
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
@@ -909,7 +921,7 @@ function approbCalendar($evtid, $idcal)
 	}
 	
 	global $babBody;	
-	$details = new displayEventDetailCls($evtid, $idcal);
+	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
 	$approb = new displayApprobCalendarCls($evtid, $idcal);
 	
 	$babBody->babPopup($details->getHtml().$approb->getHtml());
@@ -1265,7 +1277,7 @@ function updateEventAlert()
 	}
 	
 	$backend = $calendar->getBackend();
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
 	
 	if (!$calendarPeriod)
 	{
@@ -1344,6 +1356,7 @@ if( isset($_REQUEST['conf']) )
 		{
 		confirmEvent(
 			bab_rp('evtid'), 
+			bab_rp('dtstart'), 
 			bab_rp('idcal'), 
 			bab_rp('partstat'), 
 			bab_rp('comment'), 
@@ -1377,21 +1390,7 @@ switch($idx)
 		exit;
 		break;
 
-	case "evtnote":
-		$babBody->setTitle(bab_translate("Personal notes"));
-		displayEventDetail(
-			bab_rp('evtid'),
-			bab_rp('idcal')
-		);
-		if (!empty($GLOBALS['BAB_SESS_USERID']))
-		{
-			displayEventNotes(
-				bab_rp('evtid'),
-				bab_rp('idcal')
-			);
-		}
-		exit;
-		break;
+	
 
 	case "viewc":
 		$babBody->setTitle(bab_translate("Categories"));
@@ -1404,6 +1403,7 @@ switch($idx)
 		$babBody->setTitle(bab_translate("Event Detail"));
 		displayEventDetail(
 			bab_rp('evtid'),
+			bab_rp('dtstart'),
 			bab_rp('idcal')
 		);
 		break;
@@ -1413,6 +1413,7 @@ switch($idx)
 		$babBody->setTitle(bab_translate("Event Detail"));
 		displayEventDetailUpd(
 			bab_rp('evtid'),
+			bab_rp('dtstart'),
 			bab_rp('idcal')
 		);
 		break;
@@ -1422,6 +1423,7 @@ switch($idx)
 		$babBody->setTitle(bab_translate("Attendees"));
 		displayAttendees(
 			bab_rp('evtid'),
+			bab_rp('dtstart'),
 			bab_rp('idcal')
 		);
 		break;
@@ -1431,6 +1433,7 @@ switch($idx)
 		$babBody->setTitle(bab_translate("Approbation"));
 		approbCalendar(
 			bab_rp('evtid'),
+			bab_rp('dtstart'),
 			bab_rp('idcal')
 		);
 		break;

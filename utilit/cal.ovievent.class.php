@@ -1314,9 +1314,13 @@ class bab_cal_OviEventSelect
 			if ($calendar instanceof bab_OviEventCalendar) {
 				$id = $calendar->getUid();
 				$id_calendars[] = $id;
-				$collections[$id] = $backend->CalendarEventCollection();
-				$collections[$id]->setCalendar($calendar);
+				$collections[$id] = $backend->CalendarEventCollection($calendar);
 			}
+		}
+		
+		if (!$id_calendars)
+		{
+			return;
 		}
 
 
@@ -1362,8 +1366,7 @@ class bab_cal_OviEventSelect
 			if (!empty($arr['hash'])) {
 				if (!isset($hashcollections[$arr['hash']])) 
 				{
-					$hashcollections[$arr['hash']] = $backend->CalendarEventCollection();
-					$hashcollections[$arr['hash']]->setCalendar($calendar);
+					$hashcollections[$arr['hash']] = $backend->CalendarEventCollection($calendar);
 				} 
 				
 				$collection = $hashcollections[$arr['hash']];
@@ -1454,8 +1457,8 @@ class bab_cal_OviEventSelect
 			return null;
 		}
 		
-		$backend = bab_functionality::get('CalendarBackend/Ovi');
-		$collection = $backend->CalendarEventCollection(); 
+		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+		$collection = new bab_CalendarEventCollection; 
 		
 		return $this->createCalendarPeriod($arr, $collection);
 	}
@@ -1526,7 +1529,7 @@ class bab_cal_OviEventSelect
 		$backend = bab_functionality::get('CalendarBackend/Ovi');
 		
 		$vac_collection	= $backend->VacationPeriodCollection();
-		$evt_collection = $backend->CalendarEventCollection();
+		$evt_collection = new bab_CalendarEventCollection;
 		$tsk_collection = $backend->TaskCollection();
 		$wp_collection 	= $backend->WorkingPeriodCollection();
 		$nwp_collection = $backend->NonWorkingPeriodCollection();

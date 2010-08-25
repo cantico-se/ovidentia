@@ -201,7 +201,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	if ($args['evtid']) {
 		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
 		
-		$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $args['evtid'], $args['dtstart']);
+		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $args['evtid'], $args['dtstart']);
 		
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
@@ -630,14 +630,15 @@ function confirmApprobEvent($uid, $idcal, $status, $comment)
  * Confirmation of attendees
  * 
  * 
- * @param unknown_type $evtid		event UID
- * @param unknown_type $idcal		calendar url identifier
- * @param unknown_type $partstat	New partstat value
- * @param unknown_type $comment
- * @param unknown_type $bupdrec
+ * @param string 	$evtid		event UID
+ * @param string	$dtstart
+ * @param string 	$idcal		calendar url identifier
+ * @param string 	$partstat	New partstat value
+ * @param string 	$comment
+ * @param int 		$bupdrec
  * @return unknown_type
  */
-function confirmEvent($evtid, $idcal, $partstat, $comment, $bupdrec)
+function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
@@ -649,7 +650,7 @@ function confirmEvent($evtid, $idcal, $partstat, $comment, $bupdrec)
 	}
 	
 	$backend = $calendar->getBackend();
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 	$collection = $calendarPeriod->getCollection();
 	
 	bab_addHashEventsToCollection($collection, $calendarPeriod, (int) $bupdrec);	
@@ -1763,7 +1764,7 @@ class bab_event_posted {
 				throw new Exception('Missing calendar '.$this->args['calid']);
 			}
 			
-			$period = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $this->args['evtid']);
+			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $this->args['evtid']);
 
 			$begin 	= bab_event_posted::getDateTime($this->args['startdate'], $period->ts_begin);
 			$end 	= bab_event_posted::getDateTime($this->args['enddate'], $period->ts_end);
@@ -1822,9 +1823,8 @@ class bab_event_posted {
 		if (!isset($this->calendarPeriod))
 		{
 			$backend = $this->getBackend();
-			$collection = $backend->CalendarEventCollection();
 			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
-			$collection->setCalendar($calendar);
+			$collection = $backend->CalendarEventCollection($calendar);
 			
 			
 			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);

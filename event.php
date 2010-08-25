@@ -1019,7 +1019,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	
 	$backend = $calendar->getBackend();
 	/* TODO : use the collection in parameter in a secure way */
-	$collection = $backend->CalendarEventCollection()->setCalendar($calendar);
+	$collection = $backend->CalendarEventCollection($calendar);
 	$event = $backend->getPeriod($collection, $evtid, $dtstart);
 	
 	if (!$calendar->canUpdateEvent($event))
@@ -1182,7 +1182,7 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$backend = $calendar->getBackend();
 	/*@var $backend Func_CalendarBackend */
 	
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection()->setCalendar($calendar), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
 	
 	if (!isset($calendarPeriod))
 	{

@@ -329,11 +329,10 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/cal.ovievent.php';
 	
-	$backend = bab_functionality::get('CalendarBackend/Ovi');
-	$collection = $backend->CalendarEventCollection();
-	
 	$calendar = bab_getMainCalendar($idcals);
-	$collection->setCalendar($calendar);
+	
+	$backend = bab_functionality::get('CalendarBackend/Ovi');
+	$collection = $backend->CalendarEventCollection($calendar);
 	
 	$period = bab_createCalendarPeriod($backend, $args, $collection);
 	return $backend->savePeriod($period);
