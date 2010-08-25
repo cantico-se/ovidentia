@@ -274,5 +274,18 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	
+	
+	
+	
+	/**
+	 * Get url off an option page for the backend, the page will be displayed in a popup window accessible for each users
+	 * from the calendar options
+	 * 
+	 * @return string
+	 */
+	public function getOptionsUrl()
+	{
+		return null;
+	}
 
 }

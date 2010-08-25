@@ -190,6 +190,8 @@ function calendarOptions($urla)
 			$this->calweekwork = 'Y' == $GLOBALS['babBody']->babsite['user_workdays'];
 			$this->showupdateinfo = bab_translate("Show the date and the author of the updated event");
 			$this->showonlydaysmonthinfo = bab_translate("In month view, display only the days of current month");
+			$this->t_calendar_backend = bab_translate('Personal calendar type');
+			$this->t_options = bab_translate('Options');
 			$req = "select * from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
 			$res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_assoc($res);
@@ -254,6 +256,11 @@ function calendarOptions($urla)
 			$this->dispdays = explode(',', $this->arr['dispdays']);
 			$this->sttime = $this->arr['start_time'];
 			
+			$this->allbackends = bab_functionality::getFunctionalities('CalendarBackend');
+			if (2 > count($this->allbackends))
+				{
+					$this->allbackends = array();
+				}
 			}
 
 		function getnextshortday()
@@ -438,6 +445,28 @@ function calendarOptions($urla)
 					//bab_debug($aCalAccessItem);
 					return true;
 				}
+				return false;
+			}
+			
+			
+		function getNextBackend()
+			{
+				if (list(,$func) = each($this->allbackends))
+				{
+					$this->name = bab_toHtml($func);
+					$backend = @bab_functionality::get('CalendarBackend/'.$func);
+					if ($backend)
+					{
+						$this->description = bab_toHtml($backend->getDescription());
+						$this->optionsurl = bab_toHtml((string) $backend->getOptionsUrl());
+					} else {
+						$this->description = bab_toHtml($func);
+						$this->optionsurl = false;
+					}
+					$this->selected = $func === bab_getICalendars()->calendar_backend;
+					return true;
+				}
+				
 				return false;
 			}
 		}

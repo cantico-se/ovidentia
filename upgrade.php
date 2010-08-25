@@ -6282,9 +6282,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	if (!bab_isTableField(BAB_CALACCESS_USERS_TBL, 'caltype')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CALACCESS_USERS_TBL."` ADD `caltype` varchar(100) NOT NULL default ''");
+		$babDB->db_query("UPDATE `".BAB_CALACCESS_USERS_TBL."` SET caltype='personal'");
 	}
 	
-	$babDB->db_query("UPDATE `".BAB_CALACCESS_USERS_TBL."` SET caltype='personal'");
+	
+	
+	if (!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'calendar_backend')) {
+		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `calendar_backend` varchar(255) NOT NULL default ''");
+		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET `calendar_backend`='Ovi'");
+	}
 
 	return true;
 }

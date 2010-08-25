@@ -354,6 +354,12 @@ class bab_icalendars
 	private $personal_calendar = null;
 	
 	
+	/**
+	 * 
+	 * @var string
+	 */
+	public $calendar_backend;
+	
 
 	/**
 	 * 
@@ -372,6 +378,7 @@ class bab_icalendars
 		$this->endtime 		= $babBody->babsite['end_time'];
 		$this->dispdays 	= $babBody->babsite['dispdays'];
 		$this->startday 	= $babBody->babsite['startday'];
+		$this->calendar_backend = 'Ovi';
 		$this->bshowonlydaysofmonth = $babBody->babsite['show_onlydays_of_month'];
 		$this->user_calendarids = '';
 		if( empty($iduser) && isset($GLOBALS['BAB_SESS_USERID']))
@@ -410,6 +417,7 @@ class bab_icalendars
 					$this->workdays = $arr['workdays'];
 				
 				$this->user_calendarids = $arr['user_calendarids'];
+				$this->calendar_backend = $arr['calendar_backend'];
 				}
 			}
 		

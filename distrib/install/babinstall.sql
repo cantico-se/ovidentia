@@ -2533,6 +2533,7 @@ CREATE TABLE bab_cal_user_options (
   show_update_info enum('N','Y') NOT NULL default 'N',
   show_onlydays_of_month enum('N','Y') NOT NULL default 'N',
   iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
+  calendar_backend varchar(255) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );
