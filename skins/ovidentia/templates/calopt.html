@@ -537,3 +537,39 @@ this.opener.location.href='{ backurl }';
 <br />
 <div align="center">{ message }</div>
 <!--#end unload -->
+
+
+
+
+
+
+
+
+
+
+<!--#begin calendarBackend -->
+<form method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="tg" value="calopt" />
+	<input type="hidden" name="idx" value="options" />
+	<input type="hidden" name="urla" value="{ urla }" />
+	<input type="hidden" name="calendar_backend" value="{ calendar_backend }" />
+	<input type="hidden" name="confirm" value="1" />
+	
+	<table width="98%" width="98%" border="0" cellspacing="1" cellpadding="2" align="center">
+		<tr>
+			<td align="center">
+			
+				<h5>{ t_intro }</h5>
+			
+				<p>
+					<label><input type="checkbox" name="copy_source" value="1" />&nbsp;{ t_option_copy_source }</label>
+				</p>
+				<p>
+					<label><input type="checkbox" name="delete_destination" value="1" />&nbsp;{ t_option_delete_destination }</label>
+				</p>
+			</td>
+		</tr>
+	</table>
+
+</form>
+<!--#end calendarBackend -->

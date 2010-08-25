@@ -694,10 +694,121 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 		bab_fireEvent($event);
 	}
 	
+	
+}
+
+
+
+
+class bab_changeCalendarBackendCls
+{
+	public function __construct(Func_CalendarBackend $old_backend, Func_CalendarBackend $new_backend, $calendar_backend)
+	{
+		$this->urla = bab_toHtml(bab_rp('urla'));
+		$this->calendar_backend = bab_toHtml($calendar_backend);
+		
+		$this->t_intro = sprintf(
+			bab_translate('Change my personal calendar from %s to %s'), 
+			$old_backend->getDescription(),
+			$new_backend->getDescription()
+		);
+		
+		$this->t_option_copy_source = bab_translate('Copy the events to my new calendar');
+		$this->t_option_delete_destination = bab_translate('Delete the existing events in my new calendar');
+	}
+}
+
+
+
+/**
+ * 
+ * @param string $calendar_backend		new backend name
+ * @return unknown_type
+ */
+function bab_changeCalendarBackend($calendar_backend)
+{
+	global $babBody;
+	
+	$old_backend = @bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
+	$new_backend = @bab_functionality::get('CalendarBackend/'.$calendar_backend);
+	
+	if (!$old_backend || !$new_backend)
+	{
+		$babBody->addError(bab_translate('Configuration error, missing calendar backend'));
+		return false;
+	}
+	
+	$display = new bab_changeCalendarBackendCls($old_backend, $new_backend, $calendar_backend);
+	$babBody->babEcho(bab_printTemplate($display, "calopt.html", "calendarBackend"));
+	
+	return true;
+}
+
+
+
+/**
+ * 
+ * 
+ * @param 	string 	$calendar_backend		new backend name
+ * @param	int		$copy_source
+ * @param	int		$delete_destination
+ * 
+ * @return unknown_type
+ */
+function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $delete_destination)
+{
+	global $babDB;
+	
+	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendar()->calendar_backend);
+	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
+	
+	if ($delete_destination)
+	{
+		// delete events in destination calendar backend
+	}
+	
+	if ($copy_source)
+	{
+		// copy all events to new backend
+	}
+	
+	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
+		SET calendar_backend=".$babDB->quote($calendar_backend)." 
+		where id_user=".$babDB->quote($this->iduser)
+	);
+	
+	$url = $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode(bab_rp('urla'));
+	
+	header('location:'.$url);
+	exit;
+}
+
+
+
+
+function bab_updateCalOptions()
+{
+	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
+	
+	if (bab_pp('calendar_backend') && bab_getICalendars()->calendar_backend !== bab_pp('calendar_backend')) 
+	{
+		
+		if (bab_pp('confirm'))
+		{
+			bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'));
+		}
+		
+		bab_changeCalendarBackend(bab_pp('calendar_backend'));
+		return;
+	}
+	
 	$url = $GLOBALS['babUrlScript'].'?tg=calopt&idx=options';
 	header('location:'.$url);
 	exit;
 }
+
+
+
 
 /* main */
 
@@ -709,8 +820,8 @@ $urla = bab_rp('urla');
 	
 if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
-	updateCalOptions($_POST['startday'], $_POST['starttime'], $_POST['endtime'], $_POST['allday'], $_POST['usebgcolor'], $_POST['elapstime'], $_POST['defaultview'], $_POST['showupdateinfo'], $_POST['iDefaultCalendarAccess'], $_POST['showonlydaysmonthinfo']);
-	}
+	bab_updateCalOptions();
+}
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
 
