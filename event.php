@@ -693,7 +693,11 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				$this->bshowupadetinfo = true;
 				$this->modifiedontxt = bab_translate("Created/Updated on");
 				$this->bytxt = bab_translate("By");
-				$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($event->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+				if ($event->getProperty('LAST-MODIFIED') !== '') {
+					$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($event->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+				} else {
+					$this->updatedate = '';
+				}
 				$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 			}
 				

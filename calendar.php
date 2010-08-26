@@ -520,6 +520,8 @@ class displayEventDetailCls
 			$this->bytxt = bab_translate("By");
 			if ($calendarPeriod->getProperty('LAST-MODIFIED') !== '') {
 				$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($calendarPeriod->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+			} else {
+				$this->updatedate = '';
 			}
 			
 			$data = $calendarPeriod->getData();
