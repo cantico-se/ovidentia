@@ -518,7 +518,9 @@ class displayEventDetailCls
 			$this->bshowupadetinfo = true;
 			$this->modifiedontxt = bab_translate("Created/Updated on");
 			$this->bytxt = bab_translate("By");
-			$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($calendarPeriod->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+			if ($calendarPeriod->getProperty('LAST-MODIFIED') !== '') {
+				$this->updatedate = bab_toHtml(bab_shortDate(BAB_DateTime::fromICal($calendarPeriod->getProperty('LAST-MODIFIED'))->getTimeStamp(), true));
+			}
 			
 			$data = $calendarPeriod->getData();
 			
