@@ -61,6 +61,7 @@ abstract class bab_EventCalendar
 	
 	/**
 	 * ovidentia id user to test access for
+	 * In most case, this is the currently logged user BAB_SESS_USERID
 	 * @var int
 	 */
 	protected $access_user = null;
@@ -415,6 +416,36 @@ abstract class bab_EventCalendar
 		
 		return $return;
 	}
+	
+	
+	
+	/**
+	 * Get the sharring access given to access user by the owner of a calendar
+	 * @param bab_PersonalCalendar $calendar
+	 * @return int		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE | BAB_CAL_ACCESS_NONE
+	 */
+	protected function getSharingAccessForCalendar(bab_PersonalCalendar $calendar)
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query('
+			SELECT 
+				bwrite 
+			FROM '.BAB_CALACCESS_USERS_TBL.' 
+			WHERE 
+				AND caltype='.$babDB->quote($calendar->getReferenceType()).' 
+				AND id_cal='.$babDB->quote($calendar->getUid()).'
+				AND id_user='.$babDB->quote($this->access_user)
+		);
+		
+		
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			return (int) $arr['bwrite'];
+		}
+		
+		return BAB_CAL_ACCESS_NONE;
+	}
 }
 
 
@@ -484,6 +515,134 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	private $sharing_access = BAB_CAL_ACCESS_NONE;
 	
+	
+	
+	public function getSharingAccess()
+	{
+		return $this->sharing_access;
+	}
+	
+	
+	
+	/**
+	 * Create personal calendar from id user
+	 * 
+	 * @param 	int $id_user		owner of calendar
+	 * @param	int	$access_user	User to test access rights for
+	 * @return bool
+	 */
+	public function initFromUser($id_user, $access_user = null)
+	{
+		global $babDB;
+		
+		if (null === $access_user)
+		{
+			$access_user = $GLOBALS['BAB_SESS_USERID'];
+		}
+		
+		
+		if ($access_user === $id_user)
+		{
+			$data = self::getUserCalendarData($id_user, BAB_CAL_ACCESS_FULL);
+			
+			if (!$data)
+			{
+				return false;
+			}
+			
+			$this->init($access_user, $data);
+			return true;
+		}
+		
+		
+		
+		$query = "
+			select 
+				cut.id_cal,
+				cut.bwrite, 
+				u.firstname,
+				u.lastname 
+	
+			from ".BAB_CALACCESS_USERS_TBL." cut 
+				,".BAB_CALENDAR_TBL." ct
+				,".BAB_USERS_TBL." u
+			where 
+				ct.id=cut.id_cal 
+				and u.id=ct.owner 
+				and ct.actif='Y' 
+				and disabled='0'
+				and u.id=".$babDB->db_quote($id_user)."
+				and cut.id_user=".$babDB->db_quote($access_user);
+		 
+	
+		$res = $babDB->db_query($query);
+		
+		
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			// the calendar is accessible throw calendar sharing
+			
+		
+			$data = array(
+			
+				'idcal' 		=> $arr['id_cal'],
+				'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
+				'description' 	=> '',
+				'idowner' 		=> $id_user,
+				'access'		=> (int) $arr['bwrite']
+			
+			);
+			
+			$this->init($access_user, $data);
+			
+			return true;
+		}
+	
+		
+		// the calendar is not accessible
+		
+		
+		$data = self::getUserCalendarData($id_user, BAB_CAL_ACCESS_NONE);
+		
+		if (!$data)
+		{
+			return false;
+		}
+		
+		$this->init($access_user, $data);
+		return true;
+	}
+	
+	
+	
+	
+	private static function getUserCalendarData($id_user, $access)
+	{
+		global $babDB;
+		
+	
+		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and actif='Y' and type='1'");
+		if( $res && $babDB->db_num_rows($res) >  0)
+		{
+			$arr = $babDB->db_fetch_assoc($res);
+			
+			$data = array(
+				'idcal'			=> $arr['id'],
+				'idowner'		=> $id_user,
+				'name' 			=> bab_getUserName($id_user), 
+				'description' 	=> '',  
+				'access' 		=> $access
+			);
+			
+			return $data;
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
 	/**
 	 * @param	int		$access_user	id of user to test access for
 	 * @param	Array	$data			calendar infos from table
@@ -516,7 +675,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function canAddEvent() 
 	{
-		switch($this->sharing_access) {
+		switch($this->getSharingAccess()) {
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
 			case BAB_CAL_ACCESS_UPDATE:
 			case BAB_CAL_ACCESS_FULL:
@@ -534,7 +693,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	private function isSharedAccess(bab_calendarPeriod $event)
 	{
-		if ($this->sharing_access != BAB_CAL_ACCESS_SHARED_UPDATE)
+		if ($this->getSharingAccess() != BAB_CAL_ACCESS_SHARED_UPDATE)
 		{
 			return false;
 		}
@@ -600,7 +759,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		}
 		
 		
-		switch($this->sharing_access) {
+		switch($this->getSharingAccess()) {
 			
 			case BAB_CAL_ACCESS_UPDATE:
 				return ($this->access_user == $event->getAuthorId());
@@ -655,7 +814,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			return 'ACCEPTED';
 		}
 		
-		switch($this->sharing_access) {
+		switch($this->getSharingAccess()) {
 
 			case BAB_CAL_ACCESS_FULL:
 				// i have full access on the attendee calendar where the event is
@@ -810,7 +969,26 @@ class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_Resour
  */
 interface bab_PersonalCalendar {
 		
-	
+	/**
+	 * Access level for calendar sharing of the access_user
+	 * the method must return one of the following constants :
+	 * <ul>
+	 * 	<li>BAB_CAL_ACCESS_NONE</li>
+	 * 	<li>BAB_CAL_ACCESS_VIEW</li>
+	 * 	<li>BAB_CAL_ACCESS_UPDATE</li>
+	 * 	<li>BAB_CAL_ACCESS_FULL</li>
+	 * 	<li>BAB_CAL_ACCESS_SHARED_UPDATE</li>
+	 * </ul>
+	 * 
+	 * The personal calendar of the access user must return BAB_CAL_ACCESS_FULL
+	 * A personal calendar not in any sharing groups of the access user sharing informations must return BAB_CAL_ACCESS_NONE
+	 * 
+	 * Sharing informations are always recored in ovidentia core table
+	 * @see bab_EventCalendar::getSharingAccessForCalendar()
+	 * 
+	 * @return int
+	 */
+	public function getSharingAccess();
 }
 
 

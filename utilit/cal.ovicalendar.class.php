@@ -133,13 +133,15 @@ function bab_cal_getResourceCalendars($access_user, $calendars = null)
 /**
  * Select personal calendars
  * 
- * @param	int		$access_user		id user for accesss rights texting in calendar
+ * @param	int		$access_user		id user for access rights testing in calendar
  * @param	array	$calendars			array of id_calendar
  * 
  * @return array
  */
 function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 {
+	require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
+	
 
 	$query = "
 		select 
@@ -182,7 +184,7 @@ function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 		
 		);
 
-		$calendar = $backend->PersonalCalendar();
+		$calendar = new bab_OviPersonalCalendar;
 		$calendar->init($access_user, $data);
 		$return[] = $calendar;
 	}

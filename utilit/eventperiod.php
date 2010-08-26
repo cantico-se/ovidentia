@@ -215,28 +215,13 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	if( !empty($access_user))
 	{
-		global $babDB;
+
+		$backend = bab_functionality::get('CalendarBackend/Ovi');
+		/*@var $backend Func_CalendarBackend_Ovi */
 		
-		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($access_user)."' and actif='Y' and type='1'");
-		if( $res && $babDB->db_num_rows($res) >  0)
-		{
-			$arr = $babDB->db_fetch_assoc($res);
-			
-			$data = array(
-				'idcal'			=> $arr['id'],
-				'idowner'		=> $access_user,
-				'name' 			=> bab_getUserName($access_user), 
-				'description' 	=> '',  
-				'access' 		=> BAB_CAL_ACCESS_FULL
-			);
-			
-			$backend = bab_functionality::get('CalendarBackend/Ovi');
-			/*@var $backend Func_CalendarBackend_Ovi */
-			
-			$personal_calendar = $backend->PersonalCalendar();
-			$personal_calendar->init($access_user, $data);
-			$event->addCalendar($personal_calendar);
-		}
+		$personal_calendar = $backend->PersonalCalendar($access_user);
+		$event->addCalendar($personal_calendar);
+		
 	}
 	
 	
@@ -269,7 +254,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 			
 			);
 
-			$calendar = $backend->PersonalCalendar();
+			$calendar = new bab_OviPersonalCalendar;
 			$calendar->init($event->getAccessUser(), $data);
 			$event->addCalendar($calendar);
 		}

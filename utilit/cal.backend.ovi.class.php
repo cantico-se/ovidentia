@@ -31,17 +31,28 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 {
 	public function getDescription()
 	{
-		return bab_translate('Ovidentia calendar backend');
+		return bab_translate('Ovidentia calendar');
 	}
 	
 	
 	/**
+	 * Create a personal calendar from an ovidentia user
+	 * 
+	 * @param	int	$id_user		owner of calendar
+	 * 
 	 * @return bab_OviPersonalCalendar
 	 */
-	public function PersonalCalendar()
+	public function PersonalCalendar($id_user)
 	{
 		$this->includeEventCalendar();
-		return new bab_OviPersonalCalendar;
+		$calendar = new bab_OviPersonalCalendar;
+		if (!$calendar->initFromUser($id_user))
+		{
+			// this calendar does not exists or has been disabled
+			return null;
+		}
+		
+		return $calendar;
 	}
 	
 	/**
