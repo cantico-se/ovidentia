@@ -220,7 +220,10 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 		/*@var $backend Func_CalendarBackend_Ovi */
 		
 		$personal_calendar = $backend->PersonalCalendar($access_user);
-		$event->addCalendar($personal_calendar);
+		if ($personal_calendar)
+		{
+			$event->addCalendar($personal_calendar);
+		}
 		
 	}
 	

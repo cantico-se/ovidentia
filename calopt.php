@@ -759,17 +759,71 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 {
 	global $babDB;
 	
+	// my personal calendar on old backend
+	
+	$old_calendar = bab_getICalendars()->getPersonalCalendar();
+	
+	if (!($old_calendar instanceof bab_PersonalCalendar))
+	{
+		throw new Exception('Personal calendar not available on old backend');
+		return;
+	}
+	
+	$factory = $new_backend->Criteria();
+	
 	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendar()->calendar_backend);
 	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
+	
+	/**@var $old_backend Func_CalendarBackend */
+	/**@var $new_backend Func_CalendarBackend */
+	
+	
+	// the new calendar
+	
+	$new_calendar = $new_backend->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+	
+	if (!($new_calendar instanceof bab_PersonalCalendar))
+	{
+		throw new Exception('Personal calendar not available on new backend');
+		return;
+	}
+	
 	
 	if ($delete_destination)
 	{
 		// delete events in destination calendar backend
+		
+		
+		
+		$criteria = $factory->Calendar($new_calendar);
+		$criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+		
+		$events = $new_backend->selectPeriods($criteria);
+		
+		foreach($events as $event)
+		{
+			$collection 	= $event->getCollection();
+			$uid 			= $event->getProperty('UID');
+			$dtstart 		= $event->getProperty('DTSTART');
+			$new_backend->deletePeriod($collection, $uid, $dtstart);
+		}
 	}
 	
 	if ($copy_source)
 	{
 		// copy all events to new backend
+		
+		$criteria = $factory->Calendar($old_calendar);
+		$criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+		
+		$events = $old_backend->selectPeriods($criteria);
+		
+		foreach($events as $event)
+		{
+			$collection = $event->getCollection();
+			$collection->setCalendar($new_calendar);
+			$new_backend->savePeriod($event);
+		}
 	}
 	
 	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
