@@ -1829,8 +1829,8 @@
 <string id="Planning list">Liste des plannings</string>
 <string id="You must complete">Vous devez compléter</string>
 <string id="The calendar">L'agenda</string>
-<string id="is restricted with approbation, your event will not appear until it has been approved">est restreint par une approbation, les évènements n'apparaîtront pas aussitôt</string>
-<string id="are restricted with approbation, your event will not appear until it has been approved">sont restreints par une approbation, les évènements n'apparaîtront pas aussitôt</string>
+<string id="is restricted with approbation, your event will not appear until it has been approved">est restreint par une approbation, les événements n'apparaîtront pas aussitôt</string>
+<string id="are restricted with approbation, your event will not appear until it has been approved">sont restreints par une approbation, les événements n'apparaîtront pas aussitôt</string>
 <string id="Inscription notification">Notification d'inscription</string>
 <string id="Your account will be activated only after validation">Votre compte ne sera activé qu'après validation</string>
 <string id="Preferences">Préférences</string>
@@ -3105,9 +3105,9 @@
 <string id="No validation">Pas de validation</string>
 <string id="Reject">Rejeter</string>
 <string id="Waiting for approbation">En attente d'approbation</string>
-<string id="Status of my invitation to the appointment">Statut de mon invitation à l'évènement</string>
-<string id="A calendar in relation with your appointement has been approved by %s">Un agenda en relation avec votre évènement à été approuvé par %s</string>
-<string id="A calendar in relation with your appointement has been rejected by %s">Un agenda en relation avec votre évènement à été rejeté par %s</string>
+<string id="Status of my invitation to the appointment">Statut de mon invitation à l'événement</string>
+<string id="A calendar in relation with your appointement has been approved by %s">Un agenda en relation avec votre événement à été approuvé par %s</string>
+<string id="A calendar in relation with your appointement has been rejected by %s">Un agenda en relation avec votre événement à été rejeté par %s</string>
 <string id="The selected users will be able to create events on your personal calendar. Each user can modify and delete events he created on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourrons créés des événements dans votre agenda personnel. Chaque utilisateur pourra modifier et supprimer les événements créés sur votre agenda mais ils ne pourrons pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
 <string id="The selected users will be able to create, modify and delete events of your personal calendar without any validation.">Les utilisateurs sélectionnés pourrons créer, modifier et supprimer tout les événements de votre agenda personnel sans aucune validation</string>
 <string id="The selected users will be able to create events on your personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourrons créés des événements dans votre agenda personnel. Ils pourrons modifier et supprimer les évéenements créés par les utilisateurs en accès mutualisé sur votre agenda mais ils ne pourrons pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
