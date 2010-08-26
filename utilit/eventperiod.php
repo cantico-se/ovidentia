@@ -200,13 +200,10 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 		$event->addCalendar($calendar);
 	}
 	
-	
-	
-	
+
 	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	/*@var $backend Func_CalendarBackend_Ovi */
-	
-	
+
 	
 	// personal calendars
 	
@@ -215,10 +212,6 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	if( !empty($access_user))
 	{
-
-		$backend = bab_functionality::get('CalendarBackend/Ovi');
-		/*@var $backend Func_CalendarBackend_Ovi */
-		
 		$personal_calendar = $backend->PersonalCalendar($access_user);
 		if ($personal_calendar)
 		{
@@ -230,35 +223,11 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	if($personal_calendar || $babBody->babsite['iPersonalCalendarAccess'] == 'Y')
 	{
-		$query = "
-			select 
-				cut.*, 
-				ct.owner, 
-				u.firstname,
-				u.lastname 
-
-			from ".BAB_CALACCESS_USERS_TBL." cut 
-				left join ".BAB_CALENDAR_TBL." ct on ct.id=cut.id_cal 
-				left join ".BAB_USERS_TBL." u on u.id=ct.owner 
-			where 
-				id_user='".$babDB->db_escape_string($event->getAccessUser())."' and ct.actif='Y' and disabled='0'
-		";
-		$res = $babDB->db_query($query);
-
-		while( $arr = $babDB->db_fetch_assoc($res))
+		$arr = $backend->getAccessiblePersonalCalendars($access_user, 'personal');
+		
+		foreach( $arr as $id_user)
 		{
-			$data = array(
-			
-				'idcal' 		=> $arr['id_cal'],
-				'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
-				'description' 	=> '',
-				'idowner' 		=> $arr['owner'],
-				'access' 		=> $arr['bwrite']
-			
-			);
-
-			$calendar = new bab_OviPersonalCalendar;
-			$calendar->init($event->getAccessUser(), $data);
+			$calendar = $backend->PersonalCalendar($id_user);
 			$event->addCalendar($calendar);
 		}
 	}

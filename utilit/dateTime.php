@@ -118,7 +118,7 @@ class BAB_DateTime
 	 * 		exemple : 19980119T070000Z
 	 * 
 	 * FORM #3: DATE WITH LOCAL TIME AND TIME ZONE REFERENCE
-	 * 		exemple : 19980119T020000 with timezone id : US-Eastern
+	 * 		exemple : 19980119T020000 with timezone id ex : US-Eastern or US/Eastern
 	 * 
 	 * @link http://www.kanzaki.com/docs/ical/dateTime.html
 	 * 
@@ -145,6 +145,8 @@ class BAB_DateTime
 			
 		} elseif (preg_match('/^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})$/', $icaldatetime, $m)) {
 			$datetime = new BAB_DateTime($m['year'], $m['month'], $m['day']);
+		} else {
+			return null;
 		}
 		
 		return $datetime;

@@ -50,7 +50,7 @@ class bab_mcalendars
 		// add the non working days collection
 			
 		$this->idcals[] = 'bab_NonWorkingDaysCollection';
-		$this->objcals['bab_NonWorkingDaysCollection'] =new bab_icalendarNWorkingDays($startdate, $enddate);
+		$this->objcals['bab_NonWorkingDaysCollection'] = new bab_icalendarNWorkingDays($startdate, $enddate);
 		}
 
 	public function getCalendarName($idcal)

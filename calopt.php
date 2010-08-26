@@ -875,6 +875,7 @@ $urla = bab_rp('urla');
 if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	bab_updateCalOptions();
+	return;
 }
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");

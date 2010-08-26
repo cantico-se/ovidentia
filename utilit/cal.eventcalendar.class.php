@@ -571,8 +571,8 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				and u.id=ct.owner 
 				and ct.actif='Y' 
 				and disabled='0'
-				and u.id=".$babDB->db_quote($id_user)."
-				and cut.id_user=".$babDB->db_quote($access_user);
+				and u.id=".$babDB->quote($id_user)."
+				and cut.id_user=".$babDB->quote($access_user);
 		 
 	
 		$res = $babDB->db_query($query);

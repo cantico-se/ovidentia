@@ -288,5 +288,55 @@ class Func_CalendarBackend extends bab_functionality
 	{
 		return null;
 	}
+	
+	
+	/**
+	 * The list of calendars recorded with the sharing access form
+	 * to use theses calendars, the user must have a personal calendar or $babBody->babsite['iPersonalCalendarAccess'] == 'Y'
+	 * 
+	 * @param int		$access_user		in most case, the current user
+	 * @param string	$calendartype		optional filter by calendar type
+	 * @return array	<int>				array of id_user
+	 */
+	public function getAccessiblePersonalCalendars($access_user = null, $calendartype = null)
+	{
+		global $babDB;
+		
+		if (null == $access_user)
+		{
+			$access_user = $GLOBALS['BAB_SESS_USERID'];
+		}
+		
+		$query = "
+			select 
+				ct.owner  
+
+			from ".BAB_CALACCESS_USERS_TBL." cut,
+				 ".BAB_CALENDAR_TBL." ct, 
+				 ".BAB_USERS_TBL." u  
+			where 
+				ct.id=cut.id_cal 
+				and u.id=ct.owner 
+				and cut.id_user='".$babDB->db_escape_string($access_user)."' 
+				and ct.actif='Y' 
+				and u.disabled='0'
+		";
+		
+		if (null !== $calendartype)
+		{
+			$query .= ' and cut.caltype='.$babDB->quote($calendartype);
+		}
+		
+		$res = $babDB->db_query($query);
+		
+		$return = array();
+
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+			$return[$arr['owner']] = $arr['owner'];
+		}
+		
+		return $return;
+	}
 
 }
