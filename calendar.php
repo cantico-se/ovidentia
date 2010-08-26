@@ -834,30 +834,7 @@ class displayEventAlertCls
 	
 
 
-function bab_getPropertiesString(&$calPeriod, &$t_option)
-{
-	$el = array();
 
-	if (!$calPeriod->isPublic()) {
-		$el[] = bab_translate('Private');
-	}
-
-	$arr = $calPeriod->getData();
-
-	if (isset($arr['block']) && 'Y' == $arr['block']) {
-		$el[] = bab_translate('Locked');
-	}
-
-	if ('TRANSPARENT' === $calPeriod->getProperty('TRANSP')) {
-		$el[] = bab_translate('Free');
-	}
-
-	$t_option = count($el) > 1 ? bab_translate("Options") : bab_translate("Option"); 
-	if (count($el) > 0)
-		return implode(', ',$el);
-	else
-		return '';
-}
 
 
 

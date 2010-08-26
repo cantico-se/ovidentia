@@ -63,18 +63,20 @@ class cal_dayCls extends cal_wmdbaseCls
 
 		
 		$this->bfirstevents = array();
+		
 		}
 
 
 		function prepare_events() {
 			$this->mcals = new bab_mcalendars($this->iso_time1, $this->iso_time2, $this->idcals);
 			$this->harray = array();
-			for( $i = 0; $i < count($this->idcals); $i++ )
-				{
-				$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
-				}
-				
 			
+			$this->mcals->getHtmlArea('bab_NonWorkingDaysCollection', $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray['bab_NonWorkingDaysCollection']);
+			
+			foreach($this->idcals as $calendarId )
+				{
+				$this->mcals->getHtmlArea($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$calendarId]);
+				}
 		}
 
 		function prepare_free_events() {
@@ -129,31 +131,57 @@ class cal_dayCls extends cal_wmdbaseCls
 				return false;
 				}
 			}
+			
+			
+	function getnextcollection()
+		{
+		if(list(,$this->calendarId) = each($this->collections))
+			{
+			$this->cols = count($this->harray[$this->calendarId]);
+
+			$this->icols = 0;
+			
+			if ($this->cols) {
+				$this->cindex++;
+			}
+			
+			return true;
+			}
+			
+		reset($this->collections);
+		reset($this->idcals);
+		return false;
+		}
 
 
 	function getnextcal()
 		{
-		if( $this->cindex < count($this->idcals))
+		if(list(,$this->calendarId) = each($this->idcals))
 			{
-			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
+			$calname = $this->mcals->getCalendarName($this->calendarId);
+
 			$this->fullname = bab_toHtml($calname);
-			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
-			$this->cols = count($this->harray[$this->cindex]);
+			$this->fullnameten = bab_toHtml($this->calstr($calname,BAB_CAL_NAME_LENGTH));
+			$this->cols = count($this->harray[$this->calendarId]);
 			
 			if (0 == $this->cols) {
+				// display the column if no event in it
 				$this->cols = 1;
 			}
-			
+
 			$this->cindex++;
 			$this->icols = 0;
 			return true;
 			}
 		else
 			{
+			reset($this->idcals);
 			$this->cindex = 0;
 			return false;
 			}
 		}
+		
+	
 
 	function getnexteventcol()
 		{
@@ -162,20 +190,20 @@ class cal_dayCls extends cal_wmdbaseCls
 			{
 			$i = 0;
 			$this->bevent = false;
-			if (isset($this->harray[$this->cindex-1][$this->icols]))
+			if (isset($this->harray[$this->calendarId][$this->icols]))
 				{
-				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
+				while( $i < count($this->harray[$this->calendarId][$this->icols]))
 					{
-					$calPeriod = & $this->harray[$this->cindex-1][$this->icols][$i];
+					$calPeriod = & $this->harray[$this->calendarId][$this->icols][$i];
 
 					if( $calPeriod->ts_end > bab_mktime($this->startdt) && 
 						$calPeriod->ts_begin < bab_mktime($this->enddt) )
 						{
 						$this->createCommonEventVars($calPeriod);
-						if( !isset($this->bfirstevents[$this->cindex-1][$this->idevent]) )
+						if( !isset($this->bfirstevents[$this->calendarId][$this->idevent]) )
 							{
 							$this->first=1;
-							$this->bfirstevents[$this->cindex-1][$this->idevent] = 1;
+							$this->bfirstevents[$this->calendarId][$this->idevent] = 1;
 							}
 						else
 							{
@@ -188,7 +216,7 @@ class cal_dayCls extends cal_wmdbaseCls
 					}
 				}
 
-			$this->md5 = 'm'.md5($this->cindex.$this->h_start.$this->icols);
+			$this->md5 = 'm'.md5($this->calendarId.$this->h_start.$this->icols);
 			$this->icols++;
 			return true;
 			}

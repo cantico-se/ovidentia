@@ -96,7 +96,80 @@ document.onmousemove = bab_tooltipPosition;
 				<a class="insert" title="{ t_new_event }" href="javascript:bab_popup('{ neweventurl }',5);"><img src="{ babSkinPath }images/Puces/PuceNewEvent.png" alt="{ t_new_event }" /></a>
 				<!--#endif allow_create -->
 			</div>
-
+			
+			<!--#in getnextcollection -->
+			<!--#if countevent "> 0" -->
+			<div class="calendar">
+				
+			<!--#endif countevent -->
+				<!--#in getnextevent -->
+				<div id="calevent{ evtidx }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
+					<h3>{ title }</h3>
+					<div>
+						<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
+						<p><strong>{ t_date_to } : </strong> { enddate } { endtime }</p>
+						<!--#if id_creator -->
+						<p><strong>{ t_creator } : </strong> { creatorname }</p>
+						<!--#endif id_creator -->
+						<!--#if category -->
+						<p><strong>{ t_category } : </strong> { category }</p>
+						<!--#endif category -->
+						<!--#if properties -->
+						<p><strong>{ t_option } : </strong> { properties }</p>
+						<!--#endif properties -->
+						<!--#if location -->
+						<p><strong>{ t_location } : </strong> { location }</p>
+						<!--#endif location -->
+					</div>
+					<div class="description">{ description }</div>
+						<!--#if bnote -->
+					<h5>
+						{ notestxt }
+					</h5>
+					<div class="description">{ noteval }</div>
+						<!--#endif bnote -->
+				</div>
+				
+				<div class="event" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">	
+					<!--#if allow_modify -->
+					<a href="{ titletenurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+					<!--#else allow_modify -->
+					<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="11" height="11" />
+					<!--#endif allow_modify -->
+					
+					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
+					
+					<!--#if firstday -->{ starttime }&nbsp; <!--#endif firstday -->
+					{ titleten } &nbsp;
+					
+					
+						<!--#if bnote -->
+						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+						<!--#endif bnote -->
+						<!--#if balert -->
+						<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+						<!--#endif balert -->
+					
+					</a>
+					
+					<!--#if nbowners -->
+					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" alt="{ attendeestxt }" /></a>&nbsp;
+					<!--#endif nbowners -->
+					
+					<!--#if bstatus -->
+					<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
+						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
+					</a>
+					<!--#endif bstatus -->
+					
+				</div>
+				<!--#endin getnextevent -->
+			<!--#if countevent "> 0" -->
+			</div>
+			<!--#endif countevent -->
+			<!--#endin getnextcollection -->
+			
+			
 			<!--#in getnextcal -->
 			<!--#if countevent "> 0" -->
 			<div class="calendar">

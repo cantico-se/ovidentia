@@ -72,6 +72,7 @@ class cal_monthCls extends cal_wmdbaseCls
 		
 		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2)."");
 
+		$this->xindex = 0;
 		$this->cindex = 0;
 		$this->evtidx = 0;
 		
@@ -192,17 +193,38 @@ class cal_monthCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
+		
+	public function getnextcollection()
+		{
+		if( $this->xindex < count($this->collections))
+			{
+			$calendarId = $this->collections[$this->xindex];
+			
+			$this->evtarr = array();
+			$this->mcals->getEvents($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
+			$this->countevent = count($this->evtarr);
+			$this->xindex++;
+			return true;
+			}
+		else
+			{
+			$this->xindex = 0;
+			return false;
+			}
+		}
 
 	function getnextcal()
 		{
 		if( $this->cindex < count($this->idcals))
 			{
-			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
+			$calendarId = $this->idcals[$this->cindex];
+			$calname = $this->mcals->getCalendarName($calendarId);
 			$this->fullname = bab_toHtml($calname);
 			$this->fullnameten = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
 			$this->evtarr = array();
-			$this->mcals->getEvents($this->idcals[$this->cindex], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
+			$this->mcals->getEvents($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->evtarr);
 			$this->countevent = count($this->evtarr);
+			$this->cindex++;
 			return true;
 			}
 		else
@@ -242,7 +264,6 @@ class cal_monthCls extends cal_wmdbaseCls
 		else
 			{
 			$i= 0;
-			$this->cindex++;
 			return false;
 			}
 		}

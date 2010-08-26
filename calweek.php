@@ -224,16 +224,18 @@ class cal_weekCls extends cal_wmdbaseCls
 			$this->currday = date("j", $mktime);
 			$this->daynumberurl = bab_toHtml($this->commonurl."&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday);
 			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewq");
+			
 			$this->harray = array();
+			
+			$this->mcals->getHtmlArea('bab_NonWorkingDaysCollection', $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray['bab_NonWorkingDaysCollection']);
 			$this->hcols[0] = 0;
-			for( $i = 0; $i < count($this->idcals); $i++ )
+			foreach($this->idcals as $calendarId )
 				{
-				
-				$this->mcals->getHtmlArea($this->idcals[$i], $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$i]);
-				if (!isset($this->hcols[$i])) $this->hcols[$i] = 0;
-				foreach($this->harray[$i] as $arr)
+				$this->mcals->getHtmlArea($calendarId, $this->cdate." 00:00:00", $this->cdate." 23:59:59", $this->harray[$calendarId]);
+				if (!isset($this->hcols[$calendarId])) $this->hcols[$calendarId] = 0;
+				foreach($this->harray[$calendarId] as $arr)
 					{
-					$this->hcols[$i] += count($arr);
+					$this->hcols[$calendarId] += count($arr);
 					}
 				}
 			$d++;
@@ -245,17 +247,41 @@ class cal_weekCls extends cal_wmdbaseCls
 			return false;
 			}
 		}
+		
+	function getnextcollection()
+		{
+		
+		if(list(,$this->calendarId) = each($this->collections))
+			{
+			$this->nbCalEvents = isset($this->harray[$this->calendarId][0]) ? count($this->harray[$this->calendarId][0]) : 0;
+			$this->cols = count($this->harray[$this->calendarId]);
+			
+			if ($this->cols)
+			{
+				$this->cindex++;
+			}
+			
+			$this->icols = 0;
+			return true;
+			}
+		
+		reset($this->collections);
+		reset($this->idcals);
+		return false;
+			
+		}
 
 	function getnextcal()
 		{
 		
-		if( $this->cindex < count($this->idcals))
+		if(list(,$this->calendarId) = each($this->idcals))
 			{
-			$calname = $this->mcals->getCalendarName($this->idcals[$this->cindex]);
+			$calname = $this->mcals->getCalendarName($this->calendarId);
 			$this->fullname = bab_toHtml($calname);
 			$this->abbrev = $this->calstr($calname,BAB_CAL_NAME_LENGTH);
-			$this->nbCalEvents = isset($this->harray[$this->cindex][0]) ? count($this->harray[$this->cindex][0]) : 0;
-			$this->cols = count($this->harray[$this->cindex]) + 1;
+			$this->nbCalEvents = isset($this->harray[$this->calendarId][0]) ? count($this->harray[$this->calendarId][0]) : 0;
+			$this->cols = count($this->harray[$this->calendarId]);
+			
 			
 			if (0 == $this->cols) {
 				$this->cols = 1;
@@ -271,6 +297,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		else
 			{
 			$this->cindex = 0;
+			reset($this->idcals);
 			return false;
 			}
 		}
@@ -284,21 +311,21 @@ class cal_weekCls extends cal_wmdbaseCls
 			
 			$this->bevent = false;
 			
-			if (isset($this->harray[$this->cindex-1][$this->icols]))
+			if (isset($this->harray[$this->calendarId][$this->icols]))
 				{
-				while( $i < count($this->harray[$this->cindex-1][$this->icols]))
+				while( $i < count($this->harray[$this->calendarId][$this->icols]))
 					{
-					$calPeriod = & $this->harray[$this->cindex-1][$this->icols][$i];
+					$calPeriod = & $this->harray[$this->calendarId][$this->icols][$i];
 					
 					if( 
 						date('Y-m-d H:i:s', $calPeriod->ts_end) > $this->startdt && 
 						date('Y-m-d H:i:s', $calPeriod->ts_begin) < $this->enddt )
 						{
 						$this->createCommonEventVars($calPeriod);
-						if( !isset($this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')]) )
+						if( !isset($this->bfirstevents[$this->calendarId][$calPeriod->getProperty('UID')]) )
 							{
 							$this->first=1;
-							$this->bfirstevents[$this->cindex][$calPeriod->getProperty('UID')] = 1;
+							$this->bfirstevents[$this->calendarId][$calPeriod->getProperty('UID')] = 1;
 							}
 						else
 							{
@@ -312,7 +339,7 @@ class cal_weekCls extends cal_wmdbaseCls
 					}
 				}
 				
-			$this->md5 = 'm'.md5($this->cindex.$this->dayname.$this->currday.$this->h_start.$this->icols);
+			$this->md5 = 'm'.md5($this->calendarId.$this->dayname.$this->currday.$this->h_start.$this->icols);
 			$this->icols++;
 			return true;
 			}
