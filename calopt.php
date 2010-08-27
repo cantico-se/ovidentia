@@ -771,7 +771,6 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 		return;
 	}
 	
-	$factory = $new_backend->Criteria();
 	
 	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendar()->calendar_backend);
 	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
@@ -779,6 +778,7 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 	/**@var $old_backend Func_CalendarBackend */
 	/**@var $new_backend Func_CalendarBackend */
 	
+	$factory = $new_backend->Criteria();
 	
 	// the new calendar
 	
