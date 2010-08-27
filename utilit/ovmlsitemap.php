@@ -436,7 +436,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 				$onclick = '';
 			}
 
-			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
+			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.$siteMapItem->url.'" '.$onclick.' '.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
 		} else {
 			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($siteMapItem->name).'</span>';
 		}
