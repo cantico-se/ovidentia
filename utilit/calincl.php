@@ -360,6 +360,13 @@ class bab_icalendars
 	 */
 	public $calendar_backend;
 	
+	
+	/**
+	 * storage for personal calendar only, each user will be associated to the reference type of the calendar after initialization
+	 * @var array
+	 */
+	private $reftype_by_user = array();
+	
 
 	/**
 	 * 
@@ -471,7 +478,32 @@ class bab_icalendars
 		{
 			$this->personal_calendar = $calendar;
 		}
+		
+		if ($calendar instanceof bab_PersonalCalendar)
+		{
+			$this->reftype_by_user[$calendar->getIdUser()] = $calendar->getReferenceType();
+		}
 	}
+	
+	
+	
+	/**
+	 * Get the reference type currently used by the user personal calendar
+	 * @return string
+	 */
+	public function getUserReferenceType($id_user)
+	{
+		if (isset($this->reftype_by_user[$id_user]))
+		{
+			return $this->reftype_by_user[$id_user];
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
 	
 	
 	/**

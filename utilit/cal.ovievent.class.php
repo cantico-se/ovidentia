@@ -1125,7 +1125,8 @@ class bab_cal_OviEventSelect
 			switch($arr2['type'])
 			{
 				case BAB_CAL_USER_TYPE:
-					$idcal = 'personal/'.$arr2['id_cal'];
+					$reftype = bab_getICalendars()->getUserReferenceType($arr2['id_cal']);
+					$idcal = $reftype.'/'.$arr2['id_cal'];
 					break;
 				case BAB_CAL_PUB_TYPE:
 					$idcal = 'public/'.$arr2['id_cal'];
