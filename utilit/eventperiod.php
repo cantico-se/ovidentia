@@ -209,8 +209,9 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	
 	$personal_calendar = null;
 	$access_user = $event->getAccessUser();
+	$calendar_backend = bab_getICalendars()->calendar_backend;
 	
-	if( !empty($access_user))
+	if( !empty($access_user) && 'Ovi' === $calendar_backend)
 	{
 		$personal_calendar = $backend->PersonalCalendar($access_user);
 		if ($personal_calendar)
@@ -221,7 +222,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	}
 	
 	
-	if($personal_calendar || $babBody->babsite['iPersonalCalendarAccess'] == 'Y')
+	if('Ovi' !== $calendar_backend || $personal_calendar || $babBody->babsite['iPersonalCalendarAccess'] == 'Y')
 	{
 		$arr = $backend->getAccessiblePersonalCalendars($access_user, 'personal');
 		
