@@ -154,7 +154,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['folder'] = $item->folder;
 					$tmp['pageTitle'] = $item->getPageTitle();
 					$tmp['pageDescription'] = $item->getPageDescription();
-					$tmp['pageKeywords'] = $item->getPageKeywords();					
+					$tmp['pageKeywords'] = $item->getPageKeywords();
 					$tmp['classnames'] = $item->getIconClassnames();
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
@@ -467,6 +467,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		
 	
 		$classnames[] = 'sitemap-'.$siteMapItem->id_function;
+		
+		if (!empty($siteMapItem->iconClassnames)) {
+			$classnames[] =  $siteMapItem->iconClassnames;
+		}
 	
 		if ($siteMapItem->folder) {
 			$classnames[] = 'sitemap-folder';
