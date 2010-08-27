@@ -528,7 +528,11 @@ class displayEventDetailCls
 			
 			$data = $calendarPeriod->getData();
 			
-			$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
+			$this->updateauthor = false;
+				if (isset($data['id_modifiedby']))
+				{
+					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
+				}
 			}
 		}
 		

@@ -698,7 +698,12 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				} else {
 					$this->updatedate = '';
 				}
-				$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
+				
+				$this->updateauthor = false;
+				if (isset($data['id_modifiedby']))
+				{
+					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
+				}
 			}
 				
 			

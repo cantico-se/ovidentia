@@ -392,7 +392,7 @@ bab_event_alert_ed();
 <!--#if bshowupadetinfo -->
 <table border="0" width="100%" cellpadding="1" cellspacing="0" align="center">
 <tr>
-<td align="center">{ modifiedontxt }:&nbsp;<b>{ updatedate }</b>&nbsp;{ bytxt }&nbsp;<b>{ updateauthor }</b>
+<td align="center">{ modifiedontxt }:&nbsp;<b>{ updatedate }</b><!--#if updateauthor -->&nbsp;{ bytxt }&nbsp;<b>{ updateauthor }</b><!--#endif updateauthor -->
 </td>
 </tr>
 </table>
