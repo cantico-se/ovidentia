@@ -245,7 +245,15 @@ abstract class bab_EventCalendar
 	 */
 	public function canViewEventDetails(bab_calendarPeriod $event) {
 
-		if ($this->access_user == $event->getAuthorId()) {
+		$author = $event->getAuthorId();
+		
+		if (null === $author) {
+			// no author, consider the calendar owner as the event author
+			$author = $this->getIdUser();
+		}
+		
+		
+		if ($this->access_user == $author) {
 			return true;
 		}
 		
