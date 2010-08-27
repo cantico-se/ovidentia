@@ -168,6 +168,8 @@ class displayAttendeesCls
 		{
 		if( list(,$arr) = each($this->attendees))
 			{
+			bab_debug($arr);
+				
 			$this->altbg = !$this->altbg;
 			$this->fullname = $arr['CN'];
 			$this->bcreator = false;

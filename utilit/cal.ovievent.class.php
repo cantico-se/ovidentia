@@ -1158,7 +1158,7 @@ class bab_cal_OviEventSelect
 					$role = 'CHAIR';
 					
 					// set as organizer
-					$event->setProperty('ORGANIZER;CN='.$calendar->getName(), 'MAILTO:'.bab_getUserEmail($calendar->getIdUser()));
+					$event->setProperty('ORGANIZER;CN='.bab_getUserName($calendar->getIdUser()), 'MAILTO:'.bab_getUserEmail($calendar->getIdUser()));
 					
 					// set as main calendar in collection
 					$collection->setCalendar($calendar);
