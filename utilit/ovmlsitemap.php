@@ -102,6 +102,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryPageTitle', $this->IdEntries[$this->idx]['pageTitle']);
 		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
 		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
+		$this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
@@ -145,7 +146,8 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['folder'] = $item->folder;
 					$tmp['pageTitle'] = $item->getPageTitle();
 					$tmp['pageDescription'] = $item->getPageDescription();
-					$tmp['pageKeywords'] = $item->getPageKeywords();					
+					$tmp['pageKeywords'] = $item->getPageKeywords();
+					$tmp['classnames'] = $item->getIconClassnames();
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
 				}
@@ -199,6 +201,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$tmp['pageTitle'] = $item->getPageTitle();
 				$tmp['pageDescription'] = $item->getPageDescription();
 				$tmp['pageKeywords'] = $item->getPageKeywords();
+				$tmp['classnames'] = $item->getIconClassnames();
 				array_unshift($this->IdEntries, $tmp);
 				if ($item->id_function === $baseNode) {
 					break;
@@ -318,7 +321,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 
 		if (empty($breadcrumb)) {
-			if (!isset($args['keeplastknown'])) {
+			if ( (!isset($args['keeplastknown'])) || (!isset($_SESSION['bab_sitemap_lastknowposition'])) ) {
 				return '';
 			}
 			if (isset($_SESSION['bab_sitemap_lastknowposition'])) {
@@ -432,8 +435,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			} else {
 				$onclick = '';
 			}
-	
-			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($siteMapItem->url).'" '.$onclick.''.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
+
+			$htmlData = '<a class="'.bab_toHtml($icon).'" href="'.bab_toHtml($url).'" '.$onclick.' '.$description.'>'.bab_toHtml($siteMapItem->name).'</a>';
 		} else {
 			$htmlData = '<span class="'.bab_toHtml($icon).'"'.$description.'>'.bab_toHtml($siteMapItem->name).'</span>';
 		}
@@ -441,6 +444,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		
 	
 		$classnames[] = 'sitemap-'.$siteMapItem->id_function;
+		
+		if (!empty($siteMapItem->iconClassnames)) {
+			$classnames[] =  $siteMapItem->iconClassnames;
+		}
 	
 		if ($siteMapItem->folder) {
 			$classnames[] = 'sitemap-folder';
