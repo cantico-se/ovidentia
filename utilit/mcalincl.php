@@ -903,7 +903,6 @@ class cal_wmdbaseCls
 		$this->balert		= $calPeriod->getAlarm();
 		$this->nbowners		= count($calPeriod->getCalendars());
 		$this->idevent		= $calPeriod->getUrlIdentifier();
-		$this->bgcolor		= $calPeriod->getColor();
 		
 		$this->viewurl		= isset($arr['viewurl'])	? $arr['viewurl'] : null;
 
@@ -919,6 +918,8 @@ class cal_wmdbaseCls
 		$color = $calPeriod->getColor();
 		if (bab_getICalendars()->usebgcolor == 'Y' && !empty($color)) {
 			$this->bgcolor = $color;
+		} else {
+			$this->bgcolor = '';
 		}
 
 		$this->starttime = bab_toHtml(bab_time($calPeriod->ts_begin));
