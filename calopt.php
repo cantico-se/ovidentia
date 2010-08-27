@@ -848,12 +848,6 @@ function bab_updateCalOptions()
 	
 	if (bab_pp('calendar_backend') && bab_getICalendars()->calendar_backend !== bab_pp('calendar_backend')) 
 	{
-		
-		if (bab_pp('confirm'))
-		{
-			bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'));
-		}
-		
 		bab_changeCalendarBackend(bab_pp('calendar_backend'));
 		return;
 	}
@@ -878,6 +872,11 @@ if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 	{
 	bab_updateCalOptions();
 	return;
+}
+
+if (bab_pp('calendar_backend') && bab_pp('confirm') && bab_isUserLogged())
+{
+	bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'));
 }
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
