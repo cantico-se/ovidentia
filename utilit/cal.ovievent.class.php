@@ -1054,9 +1054,7 @@ class bab_cal_OviEventSelect
 		$event->setProperty('DESCRIPTION'	, $arr['description']);
 		$event->setProperty('LOCATION'		, $arr['location']);
 		$event->setProperty('CATEGORIES'	, $arr['category']);
-		
-		$color = !empty($arr['bgcolor']) ? $arr['bgcolor'] : $arr['color'];
-		$event->setColor($color);
+		$event->setColor($arr['color']);
 		
 		
 		if ('Y' == $arr['bprivate']) {
@@ -1263,7 +1261,6 @@ class bab_cal_OviEventSelect
 				ceo.*, 
 				ce.*,
 				ca.name category,
-				ca.bgcolor, 
 				er.id_event alert, 
 				en.note 
 			FROM 

@@ -57,13 +57,6 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * @var mixed
 	 */
 	private $data;
-	
-	/**
-	 * HTML Color of period
-     * color is not defined in ical interface
-     * @var string
-	 */
-	private $color;
 
 	
 	/**
@@ -205,13 +198,13 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	
 	/**
-	 * 
+	 * Define a color associated to event, this will be used only if there is no category associated to event
 	 * @param string $color
 	 * @return bab_calendarPeriod
 	 */
 	public function setColor($color)
 	{
-		$this->color = $color;
+		$this->setProperty('X-CTO-COLOR', $color);
 		return $this;
 	}
 	
@@ -222,7 +215,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 */
 	public function getColor()
 	{
-		return $this->color;
+		return $this->getProperty('X-CTO-COLOR');
 	}
 	
 	

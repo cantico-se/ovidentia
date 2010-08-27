@@ -912,12 +912,15 @@ class cal_wmdbaseCls
 			}
 		
 		$this->updateAccess($calPeriod);
-
+		
 		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
-
-		$color = $calPeriod->getColor();
-		if (bab_getICalendars()->usebgcolor == 'Y' && !empty($color)) {
-			$this->bgcolor = $color;
+		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
+		
+		if ($cat)
+		{
+			$this->bgcolor = $cat['bgcolor'];
+		} elseif(bab_getICalendars()->usebgcolor == 'Y') {
+			$this->bgcolor = $calPeriod->getColor();
 		} else {
 			$this->bgcolor = '';
 		}
