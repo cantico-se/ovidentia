@@ -830,7 +830,7 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 	
 	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
 		SET calendar_backend=".$babDB->quote($calendar_backend)." 
-		where id_user=".$babDB->quote($this->iduser)
+		where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])
 	);
 	
 	$url = $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode(bab_rp('urla'));
