@@ -715,6 +715,8 @@ class bab_changeCalendarBackendCls
 		
 		$this->t_option_copy_source = bab_translate('Copy the events to my new calendar');
 		$this->t_option_delete_destination = bab_translate('Delete the existing events in my new calendar');
+		
+		$this->t_submit = bab_translate('Save');
 	}
 }
 
