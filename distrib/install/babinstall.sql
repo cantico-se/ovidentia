@@ -746,6 +746,7 @@ CREATE TABLE bab_cal_events (
 
 CREATE TABLE bab_cal_events_owners (
   id_event int(10) unsigned NOT NULL default '0',
+  calendar_backend VARCHAR (100) not null default '',
   caltype VARCHAR (100) not null default '',
   id_cal int(10) unsigned NOT NULL default '0',
   status tinyint(3) unsigned NOT NULL default '0',
@@ -2534,7 +2535,7 @@ CREATE TABLE bab_cal_user_options (
   show_update_info enum('N','Y') NOT NULL default 'N',
   show_onlydays_of_month enum('N','Y') NOT NULL default 'N',
   iDefaultCalendarAccess SMALLINT( 2 ) DEFAULT NULL,
-  calendar_backend varchar(255) NOT NULL default '',
+  calendar_backend varchar(100) NOT NULL default '',
   PRIMARY KEY  (id),
   KEY id_user (id_user)
 );

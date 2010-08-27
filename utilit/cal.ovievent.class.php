@@ -896,6 +896,8 @@ class bab_cal_OviEventUpdate
 		require_once dirname(__FILE__).'/calincl.php';
 		global $babDB;
 		
+		$classname = get_class($calendar->getBackend());
+		$backend = substr($classname, 1+ strrpos($classname, '_'));
 		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
 		if($idsa = $calendar->getApprobationSheme())
@@ -913,6 +915,7 @@ class bab_cal_OviEventUpdate
 			INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				(
 					id_event,
+					calendar_backend, 
 					caltype,
 					id_cal, 
 					status,
@@ -921,6 +924,7 @@ class bab_cal_OviEventUpdate
 			VALUES 
 				(
 					'".$babDB->db_escape_string($id_event)."',
+					'".$babDB->db_escape_string($backend)."', 
 					'".$babDB->db_escape_string($caltype)."', 
 					'".$babDB->db_escape_string($id_calendar)."', 
 					'".$babDB->db_escape_string($status)."',
@@ -974,6 +978,9 @@ class bab_cal_OviEventUpdate
 		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
 		
+		$classname = get_class($calendar->getBackend());
+		$backend = substr($classname, 1+ strrpos($classname, '_'));
+		
 		$babDB->db_query("
 			UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				SET 
@@ -981,6 +988,7 @@ class bab_cal_OviEventUpdate
 					
 			WHERE 
 				id_event=".$babDB->quote($id_event)." 
+				AND calendar_backend=".$babDB->quote($backend)."
 				AND caltype=".$babDB->quote($caltype)." 
 				AND id_cal=".$babDB->quote($id_calendar)."
 		");

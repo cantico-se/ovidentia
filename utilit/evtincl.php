@@ -111,7 +111,9 @@ function cal_notify($title, $description, $location, $startdate, $enddate, $cale
 /**
  * Search the main calendar from the posted calendars
  * main calendar, calendar of user, first calendar
- * @param array $idcals
+ * 
+ * @param 	array 	$idcals		list of calendar
+ * 
  * @return bab_EventCalendar
  */
 function bab_getMainCalendar(Array $idcals)
