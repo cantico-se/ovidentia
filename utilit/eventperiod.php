@@ -214,6 +214,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 	if( !empty($access_user) && 'Ovi' === $calendar_backend)
 	{
 		$personal_calendar = $backend->PersonalCalendar($access_user);
+		$personal_calendar->setAccessUser($access_user);
 		if ($personal_calendar)
 		{
 			$event->addCalendar($personal_calendar);
@@ -229,6 +230,7 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 		foreach( $arr as $id_user)
 		{
 			$calendar = $backend->PersonalCalendar($id_user);
+			$calendar->setAccessUser($access_user);
 			$event->addCalendar($calendar);
 		}
 	}

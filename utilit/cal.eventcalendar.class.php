@@ -167,6 +167,17 @@ abstract class bab_EventCalendar
 		return $this->id_user;
 	}
 	
+	/**
+	 * Set the user to test access rights for
+	 * @param	int		$access_user
+	 * @return bab_EventCalendar
+	 */
+	public function setAccessUser($access_user)
+	{
+		$this->access_user = $access_user;
+		return $this;
+	}
+	
 	
 	/**
 	 * Get approbation sheme ID
