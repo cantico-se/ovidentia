@@ -1271,7 +1271,7 @@ class bab_cal_OviEventSelect
 				LEFT JOIN ".BAB_CAL_EVENTS_NOTES_TBL." en ON en.id_event=ce.id AND en.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 	
 			WHERE 
-				AND ceo.id_event=ce.id 
+				ceo.id_event=ce.id 
 				AND ".$where." 
 			ORDER BY 
 				ce.start_date asc 

@@ -620,14 +620,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	{
 		global $babDB;
 		
-	
-		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and actif='Y' and type='1'");
-		if( $res && $babDB->db_num_rows($res) >  0)
+		$id_calendar = bab_getICalendars()->getPersonalCalendarUid($id_user);
+		
+		if( null !== $id_calendar)
 		{
-			$arr = $babDB->db_fetch_assoc($res);
-			
 			$data = array(
-				'idcal'			=> $arr['id'],
+				'idcal'			=> $id_calendar,
 				'idowner'		=> $id_user,
 				'name' 			=> bab_getUserName($id_user), 
 				'description' 	=> '',  
