@@ -6285,7 +6285,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("UPDATE `".BAB_CALACCESS_USERS_TBL."` SET caltype='personal'");
 	}
 	
-	
+	if (!bab_isTableField(BAB_CAL_EVENTS_OWNERS_TBL, 'caltype')) {
+		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_OWNERS_TBL."` ADD `caltype` varchar(100) NOT NULL default ''");
+		$res = $babDB->db_query('SELECT eo.id, c.type  FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' eo, '.BAB_CALENDAR.' c WHERE c.id=eo.id_cal');
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			switch((int) $arr['type'])
+			{
+				case BAB_CAL_USER_TYPE:
+					$caltype = 'personal';
+					break;
+				case BAB_CAL_PUB_TYPE:
+					$caltype = 'public';
+					break;
+				case BAB_CAL_RES_TYPE:
+					$caltype = 'resource';
+					break;
+			}
+			
+			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_OWNERS_TBL."` SET caltype=".$babDB->quote($caltype)." WHERE id=".$babDB->quote($arr['id']));
+		}
+		
+	}
 	
 	if (!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'calendar_backend')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `calendar_backend` varchar(255) NOT NULL default ''");

@@ -576,7 +576,7 @@ function bab_isKeyExists($table, $keyname) {
 	
 	global $babDB;
 	
-	$res = $babDB->db_query('SHOW KEYS FROM '.BAB_EVENT_LISTENERS_TBL.'');
+	$res = $babDB->db_query('SHOW KEYS FROM '.$babDB->backTick($table));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if (isset($arr['Key_name']) && $keyname === $arr['Key_name']) {
 			return true;

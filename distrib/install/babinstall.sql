@@ -746,6 +746,7 @@ CREATE TABLE bab_cal_events (
 
 CREATE TABLE bab_cal_events_owners (
   id_event int(10) unsigned NOT NULL default '0',
+  caltype VARCHAR (100) not null default '',
   id_cal int(10) unsigned NOT NULL default '0',
   status tinyint(3) unsigned NOT NULL default '0',
   idfai int(11) unsigned NOT NULL default '0',

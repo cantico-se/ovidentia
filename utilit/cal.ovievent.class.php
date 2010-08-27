@@ -721,10 +721,12 @@ class bab_cal_OviEventUpdate
 		foreach($period->getAttendees() as $attendee)
 		{
 			$calendar = $attendee['calendar'];
-			$id_user = $calendar->getIdUser();
 			
-			if (($calendar instanceof bab_OviPersonalCalendar) && $id_user)
+			
+			if (($calendar instanceof bab_PersonalCalendar))
 			{
+				$id_user = $calendar->getIdUser();
+				
 				switch($attendee['PARTSTAT'])
 				{
 					case 'ACCEPTED':
@@ -742,13 +744,14 @@ class bab_cal_OviEventUpdate
 				}
 				
 				
+				
 				$id_calendar = $calendar->getUid();
 				
 				if (isset($associated[$id_calendar]))
 				{
 					if ($status !== $associated[$id_calendar])
 					{
-						$this->updateCalendarStatus($id_event, $id_calendar, $status);
+						$this->updateCalendarStatus($id_event, $calendar, $status);
 					}
 				}
 				else
@@ -791,7 +794,7 @@ class bab_cal_OviEventUpdate
 				{
 					if ($status !== $associated[$id_calendar])
 					{
-						$this->updateCalendarStatus($id_event, $id_calendar, $status);
+						$this->updateCalendarStatus($id_event, $calendar, $status);
 					}
 				}
 				else
@@ -893,6 +896,7 @@ class bab_cal_OviEventUpdate
 		require_once dirname(__FILE__).'/calincl.php';
 		global $babDB;
 		
+		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
 		if($idsa = $calendar->getApprobationSheme())
 		{
@@ -909,6 +913,7 @@ class bab_cal_OviEventUpdate
 			INSERT INTO ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				(
 					id_event,
+					caltype,
 					id_cal, 
 					status,
 					idfai
@@ -916,6 +921,7 @@ class bab_cal_OviEventUpdate
 			VALUES 
 				(
 					'".$babDB->db_escape_string($id_event)."',
+					'".$babDB->db_escape_string($caltype)."', 
 					'".$babDB->db_escape_string($id_calendar)."', 
 					'".$babDB->db_escape_string($status)."',
 					'".$babDB->db_escape_string($idfai)."'
@@ -956,14 +962,17 @@ class bab_cal_OviEventUpdate
 	/**
 	 * Update calendar status into event
 	 * 
-	 * @param int 	$id_event
-	 * @param int	$id_calendar
-	 * @param int 	$status
+	 * @param int 					$id_event
+	 * @param bab_EventCalendar		$calendar
+	 * @param int 					$status
 	 * @return unknown_type
 	 */
-	private function updateCalendarStatus($id_event, $id_calendar, $status)
+	private function updateCalendarStatus($id_event,bab_EventCalendar $calendar, $status)
 	{
 		global $babDB;
+		
+		$caltype = $calendar->getReferenceType();
+		$id_calendar = $calendar->getUid();
 		
 		$babDB->db_query("
 			UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
@@ -972,6 +981,7 @@ class bab_cal_OviEventUpdate
 					
 			WHERE 
 				id_event=".$babDB->quote($id_event)." 
+				AND caltype=".$babDB->quote($caltype)." 
 				AND id_cal=".$babDB->quote($id_calendar)."
 		");
 	}
