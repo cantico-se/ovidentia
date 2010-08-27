@@ -296,6 +296,17 @@ class bab_siteMapItem {
 	
 	
 	/**
+	 * return space-separated classname string.
+	 * 
+	 * @return string
+	 */
+	public function getIconClassnames()
+	{
+		return $this->iconClassnames;
+	}
+
+
+	/**
 	 * Returns a list of comma separated keywords for an html meta/keywords tag.
 	 * 
 	 * @param bool		$inherit		If true and pageKeywords are not defined the method will return the pageKeywords of
