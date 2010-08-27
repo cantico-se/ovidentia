@@ -772,7 +772,7 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 	}
 	
 	
-	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendar()->calendar_backend);
+	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
 	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
 	
 	/**@var $old_backend Func_CalendarBackend */
