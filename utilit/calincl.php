@@ -503,6 +503,24 @@ class bab_icalendars
 	
 	
 	
+	/**
+	 * Get a personal calendar Uid
+	 * @param int $id_user
+	 * @return int
+	 */
+	public function getPersonalCalendarUid($id_user)
+	{
+		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='".BAB_CAL_USER_TYPE."' and actif='Y'");
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			return (int) $arr['id'];
+		}
+		
+		return null;
+	}
+	
+	
+	
 	
 	
 	

@@ -2730,10 +2730,8 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 		)
 	);
 	
-	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='1'");
-	$arr = $babDB->db_fetch_assoc($res);
-	
-	$calendar = bab_getICalendars()->getEventCalendar('personal/'.$arr['id']);
+	$id_calendar = bab_getICalendars()->getPersonalCalendarUid($id_user);
+	$calendar = bab_getICalendars()->getEventCalendar('personal/'.$id_calendar);
 	
 	if (!isset($calendar))
 	{

@@ -77,15 +77,7 @@ function bab_calGetCategories($ids = null)
  */
 function bab_getPersonalCalendar($iduser)
 {
-	global $babDB;
-
-	$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($iduser)."' and type='".BAB_CAL_USER_TYPE."'");
-	if( $res && $babDB->db_num_rows($res) == 1 )
-	{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['id'];
-	}
-	return 0;
+	return (int) bab_getICalendars()->getPersonalCalendarUid($id_user);
 }
 
 
