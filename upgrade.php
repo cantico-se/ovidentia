@@ -6305,10 +6305,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 					break;
 			}
 			
-			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_OWNERS_TBL."` SET calendar_backend='Ovi', caltype=".$babDB->quote($caltype)." WHERE id_cal=".$babDB->quote($arr['id_cal']));
+			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_OWNERS_TBL."` SET 
+				calendar_backend='Ovi', 
+				caltype=".$babDB->quote($caltype)." 
+				
+			WHERE id_cal=".$babDB->quote($arr['id_cal']));
 		}
-		
 	}
+	
+	
+	if (!bab_isTableField(BAB_CAL_EVENTS_TBL, 'parent_calendar')) {
+		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_TBL."` ADD parent_calendar VARCHAR (255) not null default ''");
+		
+		$res = $babDB->db_query('SELECT eo.id_cal, eo.id_event, eo.caltype FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' eo, '.BAB_CAL_EVENTS_TBL.' e WHERE e.id=eo.id_event GROUP BY e.id');
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+		
+			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_TBL."` SET 
+				parent_calendar=".$babDB->quote($arr['caltype'].'/'.$arr['id_cal'])." 
+			WHERE id=".$babDB->quote($arr['id_event']));
+		}
+	}
+	
 	
 	if (!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'calendar_backend')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `calendar_backend` varchar(255) NOT NULL default ''");

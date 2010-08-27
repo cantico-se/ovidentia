@@ -34,6 +34,16 @@ class Func_CalendarBackend extends bab_functionality
 		return bab_translate('Calendar backend');
 	}
 	
+	/**
+	 * Get backend url identifier
+	 * @return string
+	 */
+	public function getUrlIdentifier()
+	{
+		$classname = get_class($this);
+		return substr($classname, 1+ strrpos($classname, '_'));
+	}
+	
 
 	public function includeEventCalendar()
 	{

@@ -141,6 +141,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	private $iter_key;
 	
 	
+	/**
+	 * cache for requested calendars
+	 * @see self::isRequestedCalendar()
+	 * @var array
+	 */
+	private $requested_calendars = null;
+	
+	
 
 	/**
 	 * Working hours object on period
@@ -393,6 +401,39 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		}
 		
 		
+		$this->addPeriodToBoundaries($p);
+		
+		$collection = $p->getCollection();
+		if (!$collection)
+		{
+			return;
+		}
+		
+		$calendar = $collection->getCalendar();
+		if (!$calendar)
+		{
+			return;
+		}
+
+		
+		foreach($p->getAttendees() as $attendee)
+		{
+			
+			if ('DECLINED' !== $attendee['PARTSTAT'] && $calendar->getUrlIdentifier() !== $attendee['calendar']->getUrlIdentifier()) {
+				$this->addPeriodToAttendeeCalendar($p, $attendee['calendar']);
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * Add one period to boundaries
+	 * @param bab_calendarPeriod $p
+	 * @return unknown_type
+	 */
+	private function addPeriodToBoundaries(bab_calendarPeriod $p)
+	{
 		$this->periods[] = $p;
 
 		$ts = $p->ts_begin;
@@ -405,6 +446,48 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			$this->boundaries[$ts] = array();
 		}
 	}
+	
+	/**
+	 * Create a period for an attendee to see the event
+	 * @param bab_calendarPeriod $p
+	 * @param bab_EventCalendar $calendar
+	 * @return unknown_type
+	 */
+	private function addPeriodToAttendeeCalendar(bab_calendarPeriod $p, bab_EventCalendar $calendar)
+	{
+		if ($this->isRequestedCalendar($calendar))
+		{
+			$backend = $calendar->getBackend();
+			$collection = $backend->CalendarEventCollection($calendar);
+			$attendee_period = clone $p;
+			$attendee_period->setCollection($collection);
+			$attendee_period->setProperty('UID', $p->getProperty('UID').'@'.$calendar->getUrlIdentifier());
+			
+			$this->addPeriodToBoundaries($attendee_period);
+		}
+	}
+	
+	
+	/**
+	 * Test if a calendar has been requested
+	 * @param bab_EventCalendar $calendar
+	 * @return bool
+	 */
+	private function isRequestedCalendar(bab_EventCalendar $calendar)
+	{
+		if (null === $this->requested_calendars)
+		{
+			foreach($this->calendars as $req)
+			{
+				$this->requested_calendars[$req->getUrlIdentifier()] = 1;
+			}
+		}
+		
+		return isset($this->requested_calendars[$calendar->getUrlIdentifier()]);
+	}
+	
+	
+	
 
 	/**
 	 * 

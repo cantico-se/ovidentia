@@ -283,9 +283,6 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
 					$role = 'CHAIR';
 					
-					// set as organizer
-					$period->setProperty('ORGANIZER;CN='.$attendee->getName(), 'MAILTO:'.bab_getUserEmail($id_user));
-					
 					// set as parent
 					$period->addRelation('PARENT', $attendee);
 					

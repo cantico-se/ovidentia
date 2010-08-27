@@ -39,19 +39,23 @@ class bab_mcalendars
 	var $objcals = array();
 	var $idxcat = 0;
 
+
 	public function __construct($startdate, $enddate, $idcals)
-		{
+	{
+		$whObj = self::create_events($startdate, $enddate, $idcals);
 		$this->idcals = $idcals;
 		for( $i = 0; $i < count($this->idcals); $i++ )
-			{
-			$this->objcals[$this->idcals[$i]] =new bab_icalendar($startdate, $enddate, $this->idcals[$i]);
-			}
+		{
+			$this->objcals[$this->idcals[$i]] =new bab_icalendar($whObj, $startdate, $enddate, $this->idcals[$i]);
+		}
 			
 		// add the non working days collection
 			
 		$this->idcals[] = 'bab_NonWorkingDaysCollection';
-		$this->objcals['bab_NonWorkingDaysCollection'] = new bab_icalendarNWorkingDays($startdate, $enddate);
-		}
+		$this->objcals['bab_NonWorkingDaysCollection'] = new bab_icalendarNWorkingDays($whObj, $startdate, $enddate);
+		
+		
+	}
 
 	public function getCalendarName($idcal)
 		{
@@ -362,7 +366,7 @@ abstract class bab_icalendarEventsSource
 	
 	public $access = BAB_CAL_ACCESS_VIEW;
 	
-	var $whObj;	// working hours object
+	protected $whObj;
 	
 	/**
 	 * @var bab_EventCalendar
@@ -370,26 +374,10 @@ abstract class bab_icalendarEventsSource
 	protected $calendar;
 
 	
-	public function __construct($startdate, $enddate)
+	public function __construct($whObj, $startdate, $enddate)
 	{
-		require_once dirname(__FILE__).'/cal.userperiods.class.php';
-		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-		
-		$this->whObj = new bab_UserPeriods(
-			BAB_dateTime::fromIsoDateTime($startdate), 
-			BAB_dateTime::fromIsoDateTime($enddate)
-		);
-		
-		
-
-		$this->whObj->createPeriods(
-			$this->getCriteria()
-		);
-		
-		$this->whObj->orderBoundaries();
+		$this->whObj = $whObj;
 	}
-	
-	abstract protected function getCriteria();
 	
 
 	/**
@@ -415,8 +403,13 @@ abstract class bab_icalendarEventsSource
 	
 
 	
+	/**
+	 * @param	string	$startdate	ISO date time
+	 * @param	string	$enddate	ISO date time
+	 * @param	array	$arr
+	 * @return	int
+	 */
 	abstract public function getEvents($startdate, $enddate, &$arr);
-		
 		
 
 	/**
@@ -493,7 +486,7 @@ class bab_icalendar extends bab_icalendarEventsSource
 	 * @param string	$enddate
 	 * @param string	$calid
 	 */
-	public function __construct($startdate, $enddate, $calid)
+	public function __construct($whObj, $startdate, $enddate, $calid)
 		{
 		global $babBody, $babDB;
 
@@ -507,23 +500,8 @@ class bab_icalendar extends bab_icalendarEventsSource
 			$this->access = BAB_CAL_ACCESS_FULL;
 		} 
 		
-		parent::__construct($startdate, $enddate);
-		
+		parent::__construct($whObj, $startdate, $enddate);
 	}
-	
-	
-	protected function getCriteria()
-	{
-		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
-		
-		return $factory->Calendar($this->calendar)
-			->_AND_($factory->Collection(array(
-			//	'bab_NonWorkingDaysCollection', 
-				'bab_VacationPeriodCollection', 
-				'bab_CalendarEventCollection'
-			)));
-	}
-	
 	
 	
 	/**
@@ -540,35 +518,23 @@ class bab_icalendar extends bab_icalendarEventsSource
 
 			foreach($events as $event) {
 				$collection = $event->getCollection();
-				
-				$calendar = $collection->getCalendar();
-				
-				if ($this->calendar->getUrlIdentifier() === $calendar->getUrlIdentifier())
+				if ($collection && $calendar = $collection->getCalendar())
 				{
-					$arr[] = $event;
+					if ($calendar->getUrlIdentifier() === $this->calendar->getUrlIdentifier())
+					{
+						$arr[] = $event;
+					}
 				}
-				
 			}
 			
 		return count($arr);
 	}
-	
 }
 
 
 
 class bab_icalendarNWorkingDays extends bab_icalendarEventsSource
 {
-	protected function getCriteria()
-	{
-		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
-		
-		return $factory->Collection(array(
-				'bab_NonWorkingDaysCollection'
-			));
-	}
-	
-	
 	/**
 	 * @param	string	$startdate	ISO date time
 	 * @param	string	$enddate	ISO date time
@@ -582,7 +548,11 @@ class bab_icalendarNWorkingDays extends bab_icalendarEventsSource
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
 
 			foreach($events as $event) {
-				$arr[] = $event;
+				$collection = $event->getCollection();
+				if ($collection instanceof bab_NonWorkingDaysCollection)
+				{ 
+					$arr[] = $event;
+				}
 			}
 			
 		return count($arr);
@@ -877,6 +847,8 @@ class cal_wmdbaseCls
 	function createCommonEventVars(bab_CalendarPeriod $calPeriod)
 		{
 		require_once dirname(__FILE__).'/evtincl.php';
+		require_once dirname(__FILE__).'/urlincl.php';
+		
 		$collection = $calPeriod->getCollection();
 			
 
@@ -887,7 +859,7 @@ class cal_wmdbaseCls
 
 		$arr = $calPeriod->getData();
 
-		$this->idcal		= 0;
+		$this->idcal		= '';
 		
 		if ($collection && $calendar = $collection->getCalendar()) {
 			$this->idcal	= $calendar->getUrlIdentifier();
@@ -904,8 +876,7 @@ class cal_wmdbaseCls
 		$this->nbowners		= count($calPeriod->getCalendars());
 		$this->idevent		= $calPeriod->getUrlIdentifier();
 		
-		$this->viewurl		= isset($arr['viewurl'])	? $arr['viewurl'] : null;
-
+		
 		if( $this->id_creator != 0 )
 			{
 			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator)); 
@@ -958,25 +929,67 @@ class cal_wmdbaseCls
 					$this->description	= $editor->getHtml();
 				}
 			}
+			
+		
+		if ($calendar)
+		{
+			// the event is in multiple calendar
+			// find the real parent
+			
+			$arr = $calPeriod->getRelations('PARENT');
+			
+			if (!isset($arr) || 1 !== count($arr))
+			{
+				throw new Exception('Missing a PARENT relation on calendar event '.$calPeriod->getProperty('UID'));
+			}
+	
+			$parent = reset($arr);
+		}
+		
+			
+		$this->popup = false;
 
 		if( $this->allow_modify )
 			{
-			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=modevent&evtid=".$this->idevent."&dtstart=".$calPeriod->getProperty('DTSTART')."&calid=".$this->idcal."&cci=".$this->currentidcals."&view=".$this->currentview."&date=".$this->currentdate);
+			$this->popup = true;
+			$editurl = new bab_url;
+			$editurl->tg = 'event';
+			$editurl->idx = 'modevent';
+			$editurl->evtid = $this->idevent;
+			$editurl->dtstart = $calPeriod->getProperty('DTSTART');
+			$editurl->calid = $this->idcal;
+			$editurl->parent = $parent->getUrlIdentifier();
+			$editurl->cci = $this->currentidcals;
+			$editurl->view = $this->currentview;
+			$editurl->date = $this->currentdate;
+			
+			$this->editurl = bab_toHtml($editurl->toString());
 			}
 		elseif( $this->allow_view )
 			{
-			$this->popup		= true;
-			$this->titletenurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=". $this->idevent."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
+			$this->popup = true;
 			}
-		else
-			{
-			$this->popup		= false;
-			$this->titletenurl	= "";
-			}
-		$this->attendeesurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->idevent ."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
+
+
+		if (isset($parent))
+		{
+			$attendeesurl = new bab_url;
+			$attendeesurl->tg = 'calendar';
+			$attendeesurl->idx = 'attendees';
+			$attendeesurl->evtid = $this->idevent;
+			$attendeesurl->dtstart = $calPeriod->getProperty('DTSTART');
+			$attendeesurl->idcal = $this->idcal;
+			$attendeesurl->parent = $parent->getUrlIdentifier();
+				
+			$vieweventurl = clone $attendeesurl;
+			$vieweventurl->idx = 'veventupd';
+			
+			$this->attendeesurl = bab_toHtml($attendeesurl->toString());
+			
+			$this->vieweventurl = bab_toHtml($vieweventurl->toString());
+		}
 		
-		$this->vieweventurl = isset($arr['viewurl']) ? bab_toHtml($arr['viewurl']) : bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=veventupd&evtid=".$this->idevent ."&dtstart=".$calPeriod->getProperty('DTSTART')."&idcal=".$this->idcal);
+		
 		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;
 		if( isset($arr['note']) && !empty($arr['note']))

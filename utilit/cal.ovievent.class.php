@@ -540,11 +540,41 @@ class bab_cal_OviEventUpdate
 		$period->setProperty('UID', bab_uuid());
 		
 		
+		$parents = $period->getRelations('PARENT');
+		
+		if (1 !== count($parents))
+		{
+			throw new Exception('Parent calendar not found for event');
+			return;
+		}
+		
+		
+		$parent = reset($parents);
+		
+		
 		$hash = (string) $hash;
 	
 		$babDB->db_query("
 			insert into ".BAB_CAL_EVENTS_TBL." 
-				( title, description, description_format, location, start_date, end_date, id_cat, id_creator, color, bprivate, block, bfree, hash, date_modification, id_modifiedby, uuid) 
+				( 
+					title, 
+					description, 
+					description_format, 
+					location, 
+					start_date, 
+					end_date, 
+					id_cat, 
+					id_creator, 
+					color, 
+					bprivate, 
+					block, 
+					bfree, 
+					hash, 
+					date_modification, 
+					id_modifiedby, 
+					uuid,
+					parent_calendar 
+				) 
 			
 			values (
 				".$babDB->quote($period->getProperty('SUMMARY')).", 
@@ -562,7 +592,8 @@ class bab_cal_OviEventUpdate
 				".$babDB->quote($hash).",
 				now(),
 				".$babDB->quote($id_owner).",
-				".$babDB->quote($period->getProperty('UID'))."
+				".$babDB->quote($period->getProperty('UID')).",
+				".$babDB->quote($parent->getUrlIndentifier())."
 			)
 		");
 		
@@ -896,8 +927,8 @@ class bab_cal_OviEventUpdate
 		require_once dirname(__FILE__).'/calincl.php';
 		global $babDB;
 		
-		$classname = get_class($calendar->getBackend());
-		$backend = substr($classname, 1+ strrpos($classname, '_'));
+
+		$backend = $calendar->getBackend()->getUrlIdentifier();
 		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
 		if($idsa = $calendar->getApprobationSheme())
@@ -977,9 +1008,7 @@ class bab_cal_OviEventUpdate
 		
 		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
-		
-		$classname = get_class($calendar->getBackend());
-		$backend = substr($classname, 1+ strrpos($classname, '_'));
+		$backend = $calendar->getBackend()->getUrlIdentifier();
 		
 		$babDB->db_query("
 			UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
@@ -1111,13 +1140,11 @@ class bab_cal_OviEventSelect
 		$resco = $babDB->db_query("
 		
 			SELECT 
-				o.id_cal, c.type, c.owner, o.idfai, o.status    
+				o.id_cal, o.idfai, o.status, o.caltype    
 			FROM 
-				".BAB_CAL_EVENTS_OWNERS_TBL." o, 
-				".BAB_CALENDAR_TBL." c  
+				".BAB_CAL_EVENTS_OWNERS_TBL." o
 			WHERE 
 				o.id_event ='".$babDB->db_escape_string($arr['id'])."' 
-				AND c.id = o.id_cal 
 			");
 	
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
@@ -1136,23 +1163,7 @@ class bab_cal_OviEventSelect
 					break;
 			}
 			
-			
-			
-			switch($arr2['type'])
-			{
-				case BAB_CAL_USER_TYPE:
-					$reftype = bab_getICalendars()->getUserReferenceType($arr2['id_cal']);
-					$idcal = $reftype.'/'.$arr2['id_cal'];
-					break;
-				case BAB_CAL_PUB_TYPE:
-					$idcal = 'public/'.$arr2['id_cal'];
-					break;
-				case BAB_CAL_RES_TYPE:
-					$idcal = 'resource/'.$arr2['id_cal'];
-					break;
-			}
-		
-			
+			$idcal = $arr2['caltype'].'/'.$arr2['id_cal'];
 			$calendar = bab_getICalendars()->getEventCalendar($idcal);
 			
 			if (!isset($calendar))
@@ -1162,22 +1173,25 @@ class bab_cal_OviEventSelect
 			}
 			
 			
+			if (empty($arr['parent_calendar']))
+			{
+				// hack to always have a PARENT calendar
+				$arr['parent_calendar'] = $calendar->getUrlIdentifier();
+			}
 			
 			
 		
-			if (BAB_CAL_USER_TYPE === (int) $arr2['type']) {
+			if ($calendar instanceof bab_PersonalCalendar) {
 				
-				
-				
-				if ($arr2['id_cal'] == $arr['id_cal']) {
+				if ($calendar->getUrlIdentifier() === $arr['parent_calendar']) {
 					// main personal calendar 
 					$role = 'CHAIR';
 					
-					// set as organizer
-					$event->setProperty('ORGANIZER;CN='.bab_getUserName($calendar->getIdUser()), 'MAILTO:'.bab_getUserEmail($calendar->getIdUser()));
-					
 					// set as main calendar in collection
 					$collection->setCalendar($calendar);
+					
+					// main calendar 
+					$event->addRelation('PARENT', $calendar);
 					
 				} else {
 					$role = 'REQ-PARTICIPANT';
@@ -1193,7 +1207,7 @@ class bab_cal_OviEventSelect
 				}
 				
 			} else {
-				if ($arr2['id_cal'] == $arr['id_cal']) {
+				if ($calendar->getUrlIdentifier() === $arr['parent_calendar']) {
 					// main calendar 
 					$event->addRelation('PARENT', $calendar);
 					
@@ -1276,7 +1290,7 @@ class bab_cal_OviEventSelect
 		
 		$query = "
 			SELECT 
-				ceo.*, 
+				
 				ce.*,
 				ca.name category,
 				er.id_event alert, 
@@ -1291,11 +1305,13 @@ class bab_cal_OviEventSelect
 			WHERE 
 				ceo.id_event=ce.id 
 				AND ".$where." 
+			GROUP BY 
+				ce.uuid 
 			ORDER BY 
 				ce.start_date asc 
 		";
 		
-		// bab_debug($query);
+		bab_debug($query);
 		
 		return $query;
 	}
@@ -1324,31 +1340,36 @@ class bab_cal_OviEventSelect
 		
 		$id_calendars = array();
 		$collections = array();
+		$selected_calendars = array();
 		
 		foreach($calendars as $calendar) {
 			
-			if ($calendar instanceof bab_PersonalCalendar) {
-				
-				$id_personal_calendar = $calendar->getUid();
-				$id_calendars[] = $id_personal_calendar;
-				$collections[$id_personal_calendar] = $backend->CalendarEventCollection($calendar);
-				
-			} else if ($calendar instanceof bab_OviEventCalendar) {
-				$id = $calendar->getUid();
-				$id_calendars[] = $id;
-				$collections[$id] = $backend->CalendarEventCollection($calendar);
-			}
+			$id = $calendar->getUid();
+			$id_calendars[] = $id;
+			$selected_calendars[] = $calendar->getUrlIdentifier();
 		}
 		
 		if (!$id_calendars)
 		{
 			return;
 		}
+		
+		$accessible_calendars = array_keys(bab_getICalendars()->getCalendars());
 
-
+		// ovidentia mode :
+		/*
 		$where = " 
-			ceo.id_cal			IN(".$babDB->quote($id_calendars).") 
-			AND ceo.status		!= '".BAB_CAL_STATUS_DECLINED."' 
+			ceo.id_cal				IN(".$babDB->quote($id_calendars).") 
+			AND ce.parent_calendar 	IN(".$babDB->quote($accessible_calendars).")";
+		*/
+
+		// caldav mode :
+		$where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
+		
+		
+		
+		
+		$where .= "AND ceo.status			!= '".BAB_CAL_STATUS_DECLINED."' 
 		";
 
 		if (isset($end)) {
@@ -1385,6 +1406,7 @@ class bab_cal_OviEventSelect
 		
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
+			
 			if (!empty($arr['hash'])) {
 				if (!isset($hashcollections[$arr['hash']])) 
 				{
@@ -1393,15 +1415,18 @@ class bab_cal_OviEventSelect
 				
 				$collection = $hashcollections[$arr['hash']];
 			} else {
-				$collection = $collections[$arr['id_cal']];
+				if (!isset($collections[$arr['parent_calendar']]))
+				{
+					$collections[$arr['parent_calendar']] = $backend->CalendarEventCollection(bab_getICalendars()->getEventCalendar($arr['parent_calendar']));
+				}
+				$collection = $collections[$arr['parent_calendar']];
 			}
-			
 			
 			$event = $this->createCalendarPeriod($arr, $collection);
 			if ($event)
 			{
 				$user_periods->addPeriod($event);
-			}
+			} 
 		}
 	
 	}

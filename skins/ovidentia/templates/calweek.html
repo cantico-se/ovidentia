@@ -144,14 +144,14 @@ document.onmousemove = bab_tooltipPosition;
 							</div>
 							<span>
 								<!--#if allow_modify -->
-								<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+								<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 								<!--#endif allow_modify -->
 								{ titleten }
 								<!--#if nbowners -->
-								<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+								<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
 								<!--#endif nbowners -->
 								<!--#if bstatus -->
-								<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
+								<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
 								<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 								</a>
 								<!--#endif bstatus -->
@@ -211,14 +211,14 @@ document.onmousemove = bab_tooltipPosition;
 							</div>
 							<span>
 								<!--#if allow_modify -->
-								<a href="javascript:bab_popup('{ titletenurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+								<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 								<!--#endif allow_modify -->
 								{ titleten }
 								<!--#if nbowners -->
-								<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+								<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
 								<!--#endif nbowners -->
 								<!--#if bstatus -->
-								<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
+								<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
 								<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 								</a>
 								<!--#endif bstatus -->
