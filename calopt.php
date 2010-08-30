@@ -828,6 +828,21 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 		}
 	}
 	
+	// update all events with links to this personal calendar
+	
+	$babDB->db_query('UPDATE '.BAB_CAL_EVENTS_OWNERS_TBL." 
+		SET 
+			calendar_backend=".$babDB->quote($calendar_backend).", 
+			caltype=".$babDB->quote($new_calendar->getReferenceType())."
+		where 
+			
+			calendar_backend=".$babDB->quote(bab_getICalendars()->calendar_backend)." 
+			AND caltype=".$babDB->quote($old_calendar->getReferenceType())."
+			AND id_cal=".$babDB->quote($old_calendar->getUid())." 
+			
+	");
+	
+	
 	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
 		SET calendar_backend=".$babDB->quote($calendar_backend)." 
 		where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])

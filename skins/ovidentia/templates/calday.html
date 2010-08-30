@@ -97,13 +97,13 @@ document.onmousemove = bab_tooltipPosition;
 				<!--#in getnextcollection -->
 					<!--#in getnexteventcol -->
 					<!--#if bevent -->
-					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
 						<!--#if allow_modify -->
 						<a href="javascript:bab_popup('{ editurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 						<!--#endif allow_modify -->
 						{ titleten }
-						<div id="calevent{ idcal }{ idevent }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
+						<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 							<h3>{ title }</h3>
 							<div>
 								<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
@@ -162,13 +162,13 @@ document.onmousemove = bab_tooltipPosition;
 				<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
 					<!--#if bevent -->
-					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ idcal }{ idevent }',1)" onmouseout="bab_showOnMouse('calevent{ idcal }{ idevent }',0)">
+					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
 						<!--#if allow_modify -->
 						<a href="javascript:bab_popup('{ editurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 						<!--#endif allow_modify -->
 						{ titleten }
-						<div id="calevent{ idcal }{ idevent }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
+						<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 							<h3>{ title }</h3>
 							<div>
 								<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>

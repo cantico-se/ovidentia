@@ -33,7 +33,7 @@ abstract class bab_EventCalendar
 	/**
 	 * Calendar UID unique for one reference type
 	 * @see bab_EventCalendar::getReferenceType()
-	 * @var string
+	 * @var int
 	 */
 	protected $uid = null;
 	
@@ -86,6 +86,8 @@ abstract class bab_EventCalendar
 	 */
 	protected $id_dgowner = 0;
 	
+
+	
 	
 	/**
 	 * Return the unique reference of calendar throw all addons
@@ -115,8 +117,8 @@ abstract class bab_EventCalendar
 	
 	/**
 	 * get calendar unique identifier for one reference type
-	 * exemple : id from database
-	 * @return string
+	 * @example id from database
+	 * @return int
 	 */
 	public function getUid()
 	{
@@ -465,6 +467,30 @@ abstract class bab_EventCalendar
 		
 		return BAB_CAL_ACCESS_NONE;
 	}
+	
+	
+	
+	
+	/**
+	 * Display an event in to a calendar placeholder UI element on page
+	 * this method are called on the main calendar of event only
+	 * 
+	 * the default behaviour is to display an event only on the main calendar placeholder
+	 * 
+	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
+	 * @param	bab_CalendarPeriod	$event			Event to display
+	 * 
+	 * @return unknown_type
+	 */
+	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
+	{
+		if ($calendar === $this)
+		{
+			return true;	
+		}
+		
+		return false;
+	}
 }
 
 
@@ -511,6 +537,42 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	public function getBackend()
 	{
 		return bab_functionality::get('CalendarBackend/Ovi');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Display an event in to a calendar placeholder UI element on page
+	 * this method are called on the main calendar of event only
+	 * 
+	 * the default behaviour is to display an event only on the main calendar placeholder
+	 * 
+	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
+	 * @param	bab_CalendarPeriod	$event			Event to display
+	 * 
+	 * @return unknown_type
+	 */
+	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
+	{
+		if ($calendar === $this)
+		{
+			return true;	
+		}
+		
+		foreach($event->getCalendars() as $attendeeOrRelation)
+		{
+			if ($attendeeOrRelation === $calendar)
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 }
@@ -797,10 +859,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		
 		// if the access is given by one of the attendees or one of the relation, return true
 		// specific beahviour for ovidentia events, in caldav, access is given only with the calendar
-		$parents = $event->getRelations('PARENT');
+		
+		$parents = $event->getRelations('PARENTS');
+		
 		if ($this === reset($parents))
 		{
-			
+			// if we are on the main calendar of event
 			foreach($event->getCalendars() as $calendar)
 			{
 				if ($calendar !== $this && $calendar->canUpdateEvent($event))

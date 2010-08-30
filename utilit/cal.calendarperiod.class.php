@@ -73,6 +73,17 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	private $alarm;
 
 	
+		
+	
+	
+	/**
+	 * If the same event is displayed more than once in the same page
+	 * @var string
+	 */
+	private $uiIdentifier = null;
+	
+	
+	
 	
 
 	/**
@@ -158,6 +169,24 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 
 	
+	public function setUiIdentifier($uid)
+	{
+		$this->uiIdentifier = $uid;
+	}
+	
+	/**
+	 * UID to use for UI action (tooltip)
+	 * @return unknown_type
+	 */
+	public function getUiIdentifier()
+	{
+		if (null !== $this->uiIdentifier)
+		{
+			return $this->uiIdentifier;
+		}	
+		
+		return $this->getProperty('UID');
+	}
 	
 
 

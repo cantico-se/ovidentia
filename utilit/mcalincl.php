@@ -42,6 +42,7 @@ class bab_mcalendars
 
 	public function __construct($startdate, $enddate, $idcals)
 	{
+		
 		$whObj = self::create_events($startdate, $enddate, $idcals);
 		$this->idcals = $idcals;
 		for( $i = 0; $i < count($this->idcals); $i++ )
@@ -366,6 +367,10 @@ abstract class bab_icalendarEventsSource
 	
 	public $access = BAB_CAL_ACCESS_VIEW;
 	
+	/**
+	 * 
+	 * @var bab_UserPeriods
+	 */
 	protected $whObj;
 	
 	/**
@@ -374,7 +379,7 @@ abstract class bab_icalendarEventsSource
 	protected $calendar;
 
 	
-	public function __construct($whObj, $startdate, $enddate)
+	public function __construct(bab_UserPeriods $whObj, $startdate, $enddate)
 	{
 		$this->whObj = $whObj;
 	}
@@ -388,7 +393,7 @@ abstract class bab_icalendarEventsSource
 	 */
 	public function getNextEvent($startdate, $enddate, &$calPeriod)
 		{
-		while( $p = & $this->whObj->getNextEvent(array('bab_NonWorkingDaysCollection', 'bab_VacationPeriodCollection', 'bab_CalendarEventCollection')) )
+		while( $p = $this->whObj->getNextEvent() )
 			{
 			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
 				{
@@ -413,7 +418,7 @@ abstract class bab_icalendarEventsSource
 		
 
 	/**
-	 * 
+	 * each overlapping period create a new first level index
 	 *
 	 * @param	string	$startdate	ISO date time
 	 * @param	string	$enddate	ISO date time
@@ -427,9 +432,11 @@ abstract class bab_icalendarEventsSource
 		$calPeriod = NULL;
 		$harray = array();
 		
-		while( $this->getNextEvent($startdate, $enddate, $calPeriod))
+		$source = array();
+		$this->getEvents($startdate, $enddate, $source);
+		
+		foreach($source as $calPeriod)
 			{
-			
 			$done = false;
 			for( $k = 0; $k < count($harray); $k++ )
 				{
@@ -517,12 +524,19 @@ class bab_icalendar extends bab_icalendarEventsSource
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
 
 			foreach($events as $event) {
-				$collection = $event->getCollection();
-				if ($collection && $calendar = $collection->getCalendar())
+
+				$parents = $event->getRelations('PARENT');
+				if ($parents)
 				{
-					if ($calendar->getUrlIdentifier() === $this->calendar->getUrlIdentifier())
+					$calendar = reset($parents);
+
+					// $calendar is the main calendar of event
+					
+					if ($calendar->displayEventInCalendarUi($this->calendar, $event))
 					{
-						$arr[] = $event;
+						$ui_event = clone $event;
+						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
+						$arr[] = $ui_event;
 					}
 				}
 			}
@@ -735,11 +749,11 @@ class cal_wmdbaseCls
 			throw new Exception('calendar period without collection');
 		}
 		
-		$parents = $calPeriod->getRelations('PARENT');
+		$calendar = $periodCollection->getCalendar();
 
 		$this->bstatus			= false;	// default, nothing to validate
 		
-		if (!$parents)
+		if (!$calendar)
 		{
 			$this->allow_view 		= false;
 			$this->allow_viewtitle	= true;
@@ -747,8 +761,6 @@ class cal_wmdbaseCls
 			return;
 		}
 		
-		$calendar = reset($parents);
-
 		$this->allow_view = true;												// detail view popup
 
 		$this->allow_modify = $calendar->canUpdateEvent($calPeriod);			// edit popup
@@ -815,7 +827,7 @@ class cal_wmdbaseCls
 		$this->balert		= $calPeriod->getAlarm();
 		$this->nbowners		= count($calPeriod->getCalendars());
 		$this->idevent		= $calPeriod->getUrlIdentifier();
-		
+		$this->uiIdentifier = $calPeriod->getUiIdentifier();
 		
 		if( $this->id_creator != 0 )
 			{

@@ -403,26 +403,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		
 		$this->addPeriodToBoundaries($p);
 		
-		$collection = $p->getCollection();
-		if (!$collection)
-		{
-			return;
-		}
 		
-		$calendar = $collection->getCalendar();
-		if (!$calendar)
-		{
-			return;
-		}
-
-		
-		foreach($p->getAttendees() as $attendee)
-		{
-			
-			if ('DECLINED' !== $attendee['PARTSTAT'] && $calendar->getUrlIdentifier() !== $attendee['calendar']->getUrlIdentifier()) {
-				$this->addPeriodToAttendeeCalendar($p, $attendee['calendar']);
-			}
-		}
 	}
 	
 	
@@ -447,25 +428,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		}
 	}
 	
-	/**
-	 * Create a period for an attendee to see the event
-	 * @param bab_calendarPeriod $p
-	 * @param bab_EventCalendar $calendar
-	 * @return unknown_type
-	 */
-	private function addPeriodToAttendeeCalendar(bab_calendarPeriod $p, bab_EventCalendar $calendar)
-	{
-		if ($this->isRequestedCalendar($calendar))
-		{
-			$backend = $calendar->getBackend();
-			$collection = $backend->CalendarEventCollection($calendar);
-			$attendee_period = clone $p;
-			$attendee_period->setCollection($collection);
-			$attendee_period->setProperty('UID', $p->getProperty('UID').'@'.$calendar->getUrlIdentifier());
-			
-			$this->addPeriodToBoundaries($attendee_period);
-		}
-	}
+	
 	
 	
 	/**
@@ -626,7 +589,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 *
 	 * @return	object
 	 */
-	public function getNextEvent(array $filter) {
+	public function getNextEvent(array $filter = null) {
 
 		if (NULL === $this->gn_events) {
 			$this->gn_events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);

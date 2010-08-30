@@ -113,10 +113,10 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#in getnextcollection -->
 					<!--#in getnexteventcol -->
 						<!--#if bevent -->
-						<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->   onmouseover="bab_showOnMouse('calevent{ evtindex }',1)" onmouseout="bab_showOnMouse('calevent{ evtindex }',0)">
+						<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->   onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 							<!--#if first -->
 							
-							<div id="calevent{ evtindex }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
+							<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 								<h3>{ title }</h3>
 								<div>
 									<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>
@@ -180,10 +180,10 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
 						<!--#if bevent -->
-						<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->   onmouseover="bab_showOnMouse('calevent{ evtindex }',1)" onmouseout="bab_showOnMouse('calevent{ evtindex }',0)">
+						<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup --> onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->   onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 							<!--#if first -->
 							
-							<div id="calevent{ evtindex }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
+							<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 								<h3>{ title }</h3>
 								<div>
 									<p><strong>{ t_date_from } : </strong> { startdate } { starttime }</p>

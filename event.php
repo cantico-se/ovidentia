@@ -1027,9 +1027,16 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	
 	
 	$backend = $calendar->getBackend();
-	/* TODO : use the collection in parameter in a secure way */
+	
 	$collection = $backend->CalendarEventCollection($calendar);
+	
 	$event = $backend->getPeriod($collection, $evtid, $dtstart);
+	
+	if (!($event instanceof bab_CalendarPeriod))
+	{
+		throw new Exception('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
+	}
+	
 	
 	if (!$calendar->canUpdateEvent($event))
 	{
