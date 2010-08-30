@@ -751,7 +751,6 @@ class cal_wmdbaseCls
 		
 		$calendar = $periodCollection->getCalendar();
 
-		$this->bstatus			= false;	// default, nothing to validate
 		
 		if (!$calendar)
 		{
@@ -767,10 +766,34 @@ class cal_wmdbaseCls
 
 		$this->allow_viewtitle = $calendar->canViewEventDetails($calPeriod);	// SUMMARY of event on calendar
 		
-
-		if (isset($evtarr['status']) && BAB_CAL_STATUS_NONE === (int) $evtarr['status'])
+		
+		$this->bstatus			= false;	// default, nothing to validate
+		
+		
+		if (bab_isUserLogged())
 		{
-			$this->bstatus = true;
+			foreach($calPeriod->getAttendees() as $attendee)
+			{
+				$user = (int) $attendee['calendar']->getIdUser();
+				if ($user === (int) $GLOBALS['BAB_SESS_USERID'] && $attendee['PARTSTAT'] == 'NEEDS-ACTION')
+				{
+					$this->bstatus = true;
+					break;
+				}
+			}
+			
+			if (!$this->bstatus)
+			{
+				$waitingSheme = bab_getWaitingIdSA($GLOBALS['BAB_SESS_USERID']);
+				foreach($calPeriod->getRelations('CHILD') as $relation)
+				{
+					if ($relation->getApprobationSheme() && in_array($relation->getApprobationSheme(), $waitingSheme))
+					{
+						$this->bstatus = true;
+						break;
+					}
+				}
+			}
 		}
 	}
 
@@ -825,9 +848,12 @@ class cal_wmdbaseCls
 		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
 		$this->hash			= isset($arr['hash'])		? $arr['hash'] 			: '';
 		$this->balert		= $calPeriod->getAlarm();
-		$this->nbowners		= count($calPeriod->getCalendars());
 		$this->idevent		= $calPeriod->getUrlIdentifier();
 		$this->uiIdentifier = $calPeriod->getUiIdentifier();
+		
+		
+		
+		
 		
 		if( $this->id_creator != 0 )
 			{
@@ -923,8 +949,22 @@ class cal_wmdbaseCls
 			}
 
 
+			
+		$this->nbowners		= 0;
+			
 		if (isset($parent))
 		{
+			
+			foreach($calPeriod->getCalendars() as $subcal)
+			{
+				if ($subcal !== $parent)
+				{
+					$this->nbowners++;
+				}
+			}
+			
+			
+			
 			$attendeesurl = new bab_url;
 			$attendeesurl->tg = 'calendar';
 			$attendeesurl->idx = 'attendees';

@@ -311,21 +311,21 @@ abstract class bab_EventCalendar
 	 * 
 	 * @param 	bab_CalendarPeriod 	$period
 	 * @param	string				$role			Attendee ROLE value				CHAIR | REQ-PARTICIPANT | OPT-PARTICIPANT
-	 * @param	string				$old_value		Attendee PARTSTAT actual value
+	 * @param	string				$old_value		Attendee PARTSTAT current value
 	 * @param	string				$new_value		Attendee PARTSTAT new value
 	 * 
 	 * @return bool
 	 */
 	public function canUpdateAttendeePARTSTAT(bab_CalendarPeriod $period, $role, $old_value, $new_value)
 	{
-		$id_user = $this->getIdUser();
+		$id_user = (int) $this->getIdUser();
 		
 		if (!$id_user)
 		{
 			return false;
 		}
 		
-		if ($this->access_user != $id_user)
+		if ($id_user !== (int) $this->access_user)
 		{
 			return false;
 		}
@@ -486,7 +486,7 @@ abstract class bab_EventCalendar
 	{
 		if ($calendar === $this)
 		{
-			return true;	
+			return true;
 		}
 		
 		return false;
@@ -559,14 +559,30 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
+
+		foreach($event->getAttendees() as $attendee)
+		{
+			if ($attendee['calendar'] === $calendar && $attendee['PARTSTAT'] === 'DECLINED')
+			{
+				return false;
+			}
+			
+			if ($attendee['calendar'] === $calendar)
+			{
+				return true;
+			}
+		}
+		
+		
 		if ($calendar === $this)
 		{
 			return true;	
 		}
 		
-		foreach($event->getCalendars() as $attendeeOrRelation)
+		
+		foreach($event->getRelations('CHILD') as $relation)
 		{
-			if ($attendeeOrRelation === $calendar)
+			if ($relation === $calendar)
 			{
 				return true;
 			}

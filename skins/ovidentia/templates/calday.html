@@ -130,13 +130,13 @@ document.onmousemove = bab_tooltipPosition;
 								<!--#endif bnote -->
 						</div>
 						<!--#if nbowners -->
-						<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+						<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+						<!--#endif nbowners -->
 						<!--#if bstatus -->
-						<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
+						<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
 						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 						</a>
 						<!--#endif bstatus -->
-						<!--#endif nbowners -->
 						<!--#if bnote -->
 						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
 						<!--#endif bnote -->
@@ -195,13 +195,13 @@ document.onmousemove = bab_tooltipPosition;
 								<!--#endif bnote -->
 						</div>
 						<!--#if nbowners -->
-						<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+						<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }"><img src="{ babSkinPath }images/Puces/head.gif" /></a>
+						<!--#endif nbowners -->
 						<!--#if bstatus -->
-						<a href="javascript:bab_popup('{ attendeesurl }')" title="{ attendeestxt }">
+						<a href="{ attendeesurl }" onclick="bab_popup(this.href);return false;" title="{ attendeestxt }">
 						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 						</a>
 						<!--#endif bstatus -->
-						<!--#endif nbowners -->
 						<!--#if bnote -->
 						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
 						<!--#endif bnote -->

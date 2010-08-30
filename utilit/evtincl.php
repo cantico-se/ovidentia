@@ -651,41 +651,27 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 	$collection = $calendarPeriod->getCollection();
 	
-	bab_addHashEventsToCollection($collection, $calendarPeriod, (int) $bupdrec);	
+	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);	
 	
 	
 	$updatePartstat = array();
 	
 	// verify access	
-	foreach($collection as $period)
+
+	$attendees = $calendarPeriod->getAttendees();
+	foreach($attendees as $attendee)
 	{
-		$attendees = $period->getAttendees();
-		foreach($attendees as $attendee)
+		$user = (int) $attendee['calendar']->getIdUser();
+		if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 		{
-			if ($attendee['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
+			if ($attendee['PARTSTAT'] !== $partstat)
 			{
-				if ($attendee['PARTSTAT'] !== $partstat)
+				if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 				{
-					if ($calendar->canUpdateAttendeePARTSTAT($period, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
-					{
-						$updatePartstat[] = $period;
-					}
+					$backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
 				}
 			}
 		}
-	}
-	
-	
-	if (0 === count($updatePartstat))
-	{
-		// nothing modified
-		return;
-	}
-	
-	
-	foreach($updatePartstat as $period)
-	{
-		$backend->updateAttendeePartstat($period, $calendar, $partstat, $comment);
 	}
 }
 
@@ -1751,7 +1737,7 @@ class bab_event_posted {
 		
 		
 		
-		$backend = $this->getBackend();
+		
 		
 		if (!empty($this->args['evtid'])) {
 
@@ -1761,6 +1747,8 @@ class bab_event_posted {
 			{
 				throw new Exception('Missing calendar '.$this->args['calid']);
 			}
+			
+			$backend = $calendar->getBackend();
 			
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $this->args['evtid']);
 
@@ -1820,8 +1808,22 @@ class bab_event_posted {
 	{
 		if (!isset($this->calendarPeriod))
 		{
-			$backend = $this->getBackend();
-			$calendar = bab_getMainCalendar($this->args['selected_calendars']);
+			if (!empty($this->args['evtid'])) {
+
+				$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+				
+				if (!$calendar)
+				{
+					throw new Exception('Missing calendar '.$this->args['calid']);
+				}
+				
+			} else {
+
+				$calendar = bab_getMainCalendar($this->args['selected_calendars']);
+				
+			}
+			
+			$backend = $calendar->getBackend();
 			$collection = $backend->CalendarEventCollection($calendar);
 			
 			
@@ -1861,27 +1863,6 @@ class bab_event_posted {
 
 		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 		
-		
-		if ($bupdrec)
-		{
-			// update calendar period with the RECURRENCE-ID to refeerence the correct events to update
-			
-			switch($bupdrec)
-			{
-				case BAB_CAL_EVT_ALL:
-					// no RECURRENCE-ID mean all instances of event
-					break;
-				case BAB_CAL_EVT_CURRENT:
-					$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $this->args['dtstart']);
-					break;
-				case BAB_CAL_EVT_PREVIOUS:
-					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $this->args['dtstart']);
-					break;
-				case BAB_CAL_EVT_NEXT:
-					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $this->args['dtstart']);
-					break;
-			}
-		}
 		
 		if (!$calendar->canUpdateEvent($calendarPeriod))
 		{
@@ -2128,9 +2109,25 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 {
 	require_once dirname(__FILE__).'/dateTime.php';
 	
-	if (BAB_CAL_EVT_CURRENT === $method)
+	$method = (int) $method;
+		
+	switch($method)
 	{
-		return;
+		case BAB_CAL_EVT_CURRENT:
+			return;
+		
+		case BAB_CAL_EVT_ALL:
+			// no RECURRENCE-ID mean all instances of event
+			break;
+		case BAB_CAL_EVT_CURRENT:
+			$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
+			break;
+		case BAB_CAL_EVT_PREVIOUS:
+			$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
+			break;
+		case BAB_CAL_EVT_NEXT:
+			$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $dtstart);
+			break;
 	}
 	
 	

@@ -110,32 +110,28 @@ class displayAttendeesCls
 		
 		$this->statusarray = array();
 		
-		
-		
-		
-		foreach($this->attendees as $attendee)
-			{
-			if( $idcal == $attendee['calendar']->getUrlIdentifier() )
-				{
-				if ($GLOBALS['BAB_SESS_USERID'] == $attendee['calendar']->getIdUser())
-					{
-					switch($attendee['PARTSTAT'])
-						{
-						case 'NEEDS-ACTION':
-							$this->statusarray = array('ACCEPTED','DECLINED');
-							break;
-						case 'ACCEPTED':
-							$this->statusarray = array('DECLINED');
-							break;
-						case 'DECLINED':
-							$this->statusarray = array('ACCEPTED');
-							break;
-						}
-					} 
-				}
-			}
-			
 
+		foreach($this->attendees as $attendee)
+		{
+			$user = (int) $attendee['calendar']->getIdUser();
+			if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
+			{
+				switch($attendee['PARTSTAT'])
+				{
+					case 'NEEDS-ACTION':
+						$this->statusarray = array('ACCEPTED','DECLINED');
+						break;
+					case 'ACCEPTED':
+						$this->statusarray = array('DECLINED');
+						break;
+					case 'DECLINED':
+						$this->statusarray = array('ACCEPTED');
+						break;
+				}
+				
+				break;
+			} 
+		}
 			
 		
 		$this->countstatus = count($this->statusarray);
@@ -168,8 +164,6 @@ class displayAttendeesCls
 		{
 		if( list(,$arr) = each($this->attendees))
 			{
-			bab_debug($arr);
-				
 			$this->altbg = !$this->altbg;
 			$this->fullname = $arr['CN'];
 			$this->bcreator = false;

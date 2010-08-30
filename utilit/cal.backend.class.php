@@ -277,9 +277,10 @@ class Func_CalendarBackend extends bab_functionality
 	 * @param bab_CalendarPeriod 	$period		the event
 	 * @param bab_EventCalendar 	$calendar	the personal calendar used as an attendee
 	 * @param string 				$partstat	ACCEPTED | DECLINED
+	 * @param string				$comment	comment given when changing PARTSTAT (optional)
 	 * @return bool
 	 */
-	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_EventCalendar $calendar, $partstat)
+	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_PersonalCalendar $calendar, $partstat, $comment = '')
 	{
 		throw new Exception('not implemented');
 	}

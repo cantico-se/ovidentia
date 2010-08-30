@@ -192,12 +192,12 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 * @see bab_EventCalendar::canUpdateAttendeePARTSTAT()
 	 * 
 	 * @param bab_CalendarPeriod 	$period		the event
-	 * @param bab_EventCalendar 	$calendar	the personal calendar used as an attendee
+	 * @param bab_PersonalCalendar 	$calendar	the personal calendar used as an attendee
 	 * @param string 				$partstat	ACCEPTED | DECLINED
 	 * @param string				$comment	comment given when changing PARTSTAT (optional)
 	 * @return bool
 	 */
-	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_EventCalendar $calendar, $partstat, $comment = '')
+	public function updateAttendeePartstat(bab_CalendarPeriod $period, bab_PersonalCalendar $calendar, $partstat, $comment = '')
 	{
 		global $babDB;
 		
@@ -226,7 +226,7 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 				$status = BAB_CAL_STATUS_ACCEPTED;
 				break;
 				
-			case 'CONFIRMED':
+			case 'DECLINED':
 				$status = BAB_CAL_STATUS_DECLINED;
 				break;
 				

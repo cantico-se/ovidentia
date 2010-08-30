@@ -1373,8 +1373,9 @@ if(is_array($idx))
 
 
 
-if (isset($_POST['selected_calendars'])) {
-	$calid = implode(',', $_POST['selected_calendars']);
+if (!bab_rp('calid') && isset($_POST['selected_calendars'])) {
+	// creation of a new event
+	$calid = bab_getMainCalendar(implode(',', $_POST['selected_calendars']));
 } else {
 	$calid = bab_rp('calid');
 }
@@ -1382,7 +1383,7 @@ $calid = bab_isCalendarAccessValid($calid);
 
 if( !$calid )
 	{
-	echo bab_translate("Access denied");
+	echo bab_translate("Access denied to calendar").' '.$calid;
 	exit;
 	}
 
