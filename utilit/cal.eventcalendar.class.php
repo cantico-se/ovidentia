@@ -759,6 +759,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function canUpdateEvent(bab_calendarPeriod $event) 
 	{
+		
 		$collection = $event->getCollection();
 		
 		if ($collection instanceof bab_ReadOnlyCollection) {
@@ -779,15 +780,34 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		switch($this->getSharingAccess()) {
 			
 			case BAB_CAL_ACCESS_UPDATE:
-				return ($this->access_user == $event->getAuthorId());
+				if ($this->access_user == $event->getAuthorId())
+				{
+					return true;
+				}
 				
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
-				return $this->isSharedAccess($event);
+				if ($this->isSharedAccess($event)) 
+				{
+					return true;
+				}
 				
 			case BAB_CAL_ACCESS_FULL:
 				return true;
-				
+		}
+		
+		// if the access is given by one of the attendees or one of the relation, return true
+		// specific beahviour for ovidentia events, in caldav, access is given only with the calendar
+		$parents = $event->getRelations('PARENT');
+		if ($this === reset($parents))
+		{
 			
+			foreach($event->getCalendars() as $calendar)
+			{
+				if ($calendar !== $this && $calendar->canUpdateEvent($event))
+				{
+					return true;
+				}
+			}
 		}
 		
 		return false;
@@ -889,6 +909,12 @@ class bab_OviPublicCalendar extends bab_OviEventCalendar implements bab_PublicCa
 			return true;
 		}
 		
+		if (null !== $this->idsa)
+		{
+			// prevent modification if there is an ongoing approbation instance on event
+			return false;
+		}
+		
 		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 	
@@ -952,6 +978,12 @@ class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_Resour
 		
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
+		}
+		
+		if (null !== $this->idsa)
+		{
+			// prevent modification if there is an ongoing approbation instance on event
+			return false;
 		}
 		
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user)

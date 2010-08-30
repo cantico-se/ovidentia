@@ -718,39 +718,13 @@ class cal_wmdbaseCls
 
 
 
-
-
-
-
-	/**
-	 * Update access rights for an event and a calendar
-	 * 
-	 * @param  	bab_CalendarPeriod	$calPeriod		period (event) informations
-	 * @param	bab_EventCalendar	$calendar		calendar associated to event
-	 * @param	array				&$result		result may contain access rights informations for other calendars on the same event
-	 */
-	function updateAccessCalendar(bab_CalendarPeriod $calPeriod, bab_EventCalendar $calendar, &$result)
-	{
-		global $babBody;
-		
-		$view = 1;
-		$modify = (int) $calendar->canUpdateEvent($calPeriod);
-		$viewtitle = (int) $calendar->canViewEventDetails($calPeriod);
-		
-	
-		$result['view'][] = $view;				
-		$result['modify'][] = $modify;
-		$result['viewtitle'][] = $viewtitle;
-	
-	}
-
 	
 	/**
 	 * Set access rights for one event and one calendar
 	 * @param 	bab_CalendarPeriod	$calPeriod		Event infos
 	 * @return null
 	 */
-	function updateAccess(bab_CalendarPeriod $calPeriod)
+	public function updateAccess(bab_CalendarPeriod $calPeriod)
 	{
 		global $babBody;
 		
@@ -761,60 +735,26 @@ class cal_wmdbaseCls
 			throw new Exception('calendar period without collection');
 		}
 		
-		$calendar = $periodCollection->getCalendar();
-		
+		$parents = $calPeriod->getRelations('PARENT');
+
 		$this->bstatus			= false;	// default, nothing to validate
 		
-		if (!$calendar)
+		if (!$parents)
 		{
 			$this->allow_view 		= false;
 			$this->allow_viewtitle	= true;
 			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
 			return;
 		}
-
-		$this->allow_view		= true;		// detail view popup
-		$this->allow_modify		= true;		// edit popup
-		$this->allow_viewtitle	= true;		// SUMMARY of event on calendar
 		
+		$calendar = reset($parents);
 
-		$result['view']			= array();
-		$result['modify']		= array();
-		$result['viewtitle']	= array();
-		$this->updateAccessCalendar($calPeriod, $calendar, $result);
+		$this->allow_view = true;												// detail view popup
 
+		$this->allow_modify = $calendar->canUpdateEvent($calPeriod);			// edit popup
+
+		$this->allow_viewtitle = $calendar->canViewEventDetails($calPeriod);	// SUMMARY of event on calendar
 		
-		if ($calendar instanceof bab_OviEventCalendar) {
-			$evtarr = $calPeriod->getData();
-			$calendars = bab_getICalendars();
-			
-			$linked_calendars = $calPeriod->getRelations('CHILD');
-			
-			if( $linked_calendars && $result['modify'][0])
-			{
-				foreach($linked_calendars as $othercal)
-				{
-					$this->updateAccessCalendar($calPeriod, $othercal, $result);
-				}
-			}
-		}
-		
-		
-
-		if( in_array(0, $result['view']) )
-			{
-			$this->allow_view = false;
-			}
-
-		if( in_array(0, $result['modify']) )
-			{
-			$this->allow_modify = false;
-			}
-
-		if( in_array(0, $result['viewtitle']) )
-			{
-			$this->allow_viewtitle = false;
-			}
 
 		if (isset($evtarr['status']) && BAB_CAL_STATUS_NONE === (int) $evtarr['status'])
 		{
