@@ -635,7 +635,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 		else
 			$filter = true;
 
-		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) GROUP BY at.id order by ".$babDB->db_escape_string($order));
+		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) GROUP BY at.id order by ".$babDB->db_escape_string($order));
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
