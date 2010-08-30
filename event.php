@@ -33,21 +33,7 @@ include_once $babInstallPath.'utilit/mcalincl.php';
 include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/evtincl.php';
 
-function bab_getCalendarEventTitle($evtid)
-{
-	global $babDB;
-	$query = "select title from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($evtid)."'";
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return $arr['title'];
-		}
-	else
-		{
-		return "";
-		}
-}
+
 
 
 class bab_cal_event
@@ -1020,7 +1006,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	if (!isset($calendar))
 	{
-		throw new Exception('Access denied to calendar');
+		throw new Exception('Access denied to calendar '.$idcal);
 	}
 	
 	
@@ -1093,8 +1079,13 @@ function deleteEvent()
 					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 					break;
 			}
-			$this->title = bab_getCalendarEventTitle($_POST['evtid']);
-			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".$_POST['evtid']."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids']);
+			
+			$calendar = bab_getIcalendars()->getEventCalendar($_POST['calid']);
+			$backend = $calendar->getBackend();
+			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_pp('evtid'), bab_pp('dtstart', null));
+			
+			$this->title = $period->getProperty('SUMMARY');
+			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".bab_pp('evtid')."&dtstart=".bab_pp('dtstart')."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids']);
 			$this->yes = bab_translate("Yes");
 			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=");
 			$this->no = bab_translate("No");
@@ -1187,8 +1178,8 @@ function updateEvent(&$message)
 function confirmDeleteEvent($calid, $bupdrec)
 {
 	$evtid = bab_rp('evtid');
-	$calendars = explode(',', $calid);
-	$calendar = bab_getMainCalendar($calendars);
+	$dtstart = bab_rp('dtstart');
+	$calendar = bab_getICalendars()->getEventCalendar($calid);
 	
 	if (!isset($calendar))
 	{
@@ -1198,7 +1189,7 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$backend = $calendar->getBackend();
 	/*@var $backend Func_CalendarBackend */
 	
-	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
+	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 	
 	if (!isset($calendarPeriod))
 	{
@@ -1208,6 +1199,37 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$collection = $calendarPeriod->getCollection();
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 	
+	
+	if ($bupdrec)
+	{
+		// update calendar period with the RECURRENCE-ID to refeerence the correct events to update
+		
+		switch($bupdrec)
+		{
+			case BAB_CAL_EVT_ALL:
+				// no RECURRENCE-ID mean all instances of event
+				break;
+			case BAB_CAL_EVT_CURRENT:
+				$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
+				break;
+			case BAB_CAL_EVT_PREVIOUS:
+				$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
+				break;
+			case BAB_CAL_EVT_NEXT:
+				$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $dtstart);
+				break;
+		}
+	}
+	
+	if (!$calendar->canDeleteEvent($calendarPeriod))
+	{
+		return false;
+	}
+	
+	
+	$backend->deletePeriod($collection, $calendarPeriod->getProperty('UID'), $dtstart);
+	
+	
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
 	
@@ -1215,23 +1237,11 @@ function confirmDeleteEvent($calid, $bupdrec)
 	
 	foreach($collection as $period)
 	{
-		if (!$calendar->canDeleteEvent($period))
-		{
-			return false;
-		}
-	}
-	
-	
-	foreach($collection as $period)
-	{
-
 		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
 		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
-		
-		$backend->deletePeriod($collection, $period->getProperty('UID'));
 	}
-	
-	
+
+
 	/*
 	foreach($calendars as $id_cal) {
 		$cal = bab_getICalendars()->getCalendarInfo($id_cal);
@@ -1361,13 +1371,15 @@ if(is_array($idx))
 	}
 }
 
+
+
 if (isset($_POST['selected_calendars'])) {
 	$calid = implode(',', $_POST['selected_calendars']);
 } else {
 	$calid = bab_rp('calid');
 }
-
 $calid = bab_isCalendarAccessValid($calid);
+
 if( !$calid )
 	{
 	echo bab_translate("Access denied");

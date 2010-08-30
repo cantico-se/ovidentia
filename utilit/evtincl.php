@@ -385,10 +385,9 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	{
 		
 		$until = bab_event_posted::getDateTime($args['until']);
-		$repeatdate = $until->cloneDate();
-		$repeatdate->add(1, BAB_DATETIME_DAY);
-			
-		if( $repeatdate->getTimeStamp() < $end->getTimeStamp()) {
+		$until->add(1, BAB_DATETIME_DAY);
+	
+		if( $until->getTimeStamp() < $end->getTimeStamp()) {
 			throw new ErrorException(bab_translate("Repeat date must be older than end date"));
 			return false;
 		}
@@ -1860,10 +1859,8 @@ class bab_event_posted {
 		
 		$bupdrec = (int) bab_pp('bupdrec');
 
-		if ($collection->hash && $bupdrec)
-		{
-			bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
-		}
+		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
+		
 		
 		if ($bupdrec)
 		{
@@ -1884,6 +1881,11 @@ class bab_event_posted {
 					$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $this->args['dtstart']);
 					break;
 			}
+		}
+		
+		if (!$calendar->canUpdateEvent($calendarPeriod))
+		{
+			return false;
 		}
 		
 		$backend->savePeriod($calendarPeriod);

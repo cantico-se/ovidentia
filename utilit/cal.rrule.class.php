@@ -39,8 +39,8 @@ class bab_CalendarRRULE
 	 */
 	public static function getCollection(bab_CalendarPeriod $period)
 	{
-		$manager = bab_getInstance('bab_CalendarRrule');
-		/*@var $manager bab_CalendarRrule */
+		$manager = bab_getInstance('bab_CalendarRRULE');
+		/*@var $manager bab_CalendarRRULE */
 		
 		$manager->applyRrule($period);
 		

@@ -257,7 +257,7 @@ function calendarOptions($urla)
 			$this->sttime = $this->arr['start_time'];
 			
 			$this->allbackends = bab_functionality::getFunctionalities('CalendarBackend');
-			if (2 > count($this->allbackends))
+			if (2 > count($this->allbackends) || bab_getICalendars()->getPersonalCalendar())
 				{
 					$this->allbackends = array();
 				}
