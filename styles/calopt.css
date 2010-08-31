@@ -103,3 +103,22 @@ input.bab_dropUser {
 	background-position:1px;
 	padding-left:17px;
 }
+
+
+
+
+
+.calendar-backend-options {
+	border-left:#666 1px solid;	
+	border-right:#666 1px solid;	
+	border-top:#666 1px solid;	
+}
+
+.calendar-backend-options td {
+	border-bottom:#666 1px solid;
+		
+}
+
+.calendar-backend-options td * {
+	vertical-align:bottom;
+}

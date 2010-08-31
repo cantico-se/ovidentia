@@ -1661,7 +1661,7 @@ class bab_event_posted {
 				'day'	=> (int) $_POST['repeat_dayend']
 			);
 			
-			switch($_POST['repeat'] )
+			switch(bab_pp('repeat') )
 				{
 				case BAB_CAL_RECUR_WEEKLY: /* weekly */
 					$this->args['rrule'] = BAB_CAL_RECUR_WEEKLY;

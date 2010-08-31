@@ -376,16 +376,19 @@
 			<h5>{ t_calendar_backend }</h5>
 			
 			
-			<table align="center" border="0" cellspacing="0" cellpadding="3" >
+			<table class="calendar-backend-options" align="center" cellspacing="0" cellpadding="3" >
 		
 			<!--#in getNextBackend -->
 			<tr>
-				<td><label><input  type="radio" name="calendar_backend" value="{ name }" <!--#if selected --> checked="checked"<!--#endif selected --> /> 
+				<td><label><input type="radio" name="calendar_backend" value="{ name }" <!--#if selected --> checked="checked"<!--#endif selected --> /> 
 				{ description }</label>
 				</td>
 				<td>
+				&nbsp; 
 				<!--#if optionsurl -->
-				&nbsp; &nbsp; <a href="{ optionsurl }" onclick="bab_popup(this.href);return false;">{ t_options }</a>
+				<button onclick="bab_popup('{ optionsurl }');return false;">{ t_options }</button>
+				<!--#else optionsurl -->
+				<button disabled="disabled">{ t_options }</button>
 				<!--#endif optionsurl -->
 				</td>
 			</tr>

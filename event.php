@@ -205,6 +205,11 @@ function newEvent()
 
 
 			$this->colorvalue = bab_rp('color');
+			
+			$this->usebgcolor = false;
+			if (bab_getICalendars()->usebgcolor == 'Y') {
+				$this->usebgcolor = true;
+			}
 
 			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
@@ -266,7 +271,7 @@ function newEvent()
 				$this->monthsel = $this->arr['monthbegin'];
 				$this->yearsel = $this->arr['yearbegin'];
 				$this->timesel = isset($this->arr['timebegin']) ? $this->arr['timebegin'] : $this->timesel;
-				$this->colorvalue = $this->arr['color'];
+				$this->colorvalue = isset($this->arr['color']) ? $this->arr['color'] : '';
 
 				
 				$this->rcheckedval = isset($this->arr['creminder']) ? 'checked' : '';
@@ -668,14 +673,11 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			} else {
 				$this->brecevt = false;
 			}
-
-			list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-			if (empty($bshowui)) {
-				$bshowui = $babBody->babsite['show_update_info'];
-			}
+			
+			
 
 			$this->bshowupadetinfo = false;
-			if ($bshowui == 'Y') {
+			if (bab_getICalendars()->show_update_info == 'Y') {
 				$this->bshowupadetinfo = true;
 				$this->modifiedontxt = bab_translate("Created/Updated on");
 				$this->bytxt = bab_translate("By");
@@ -690,6 +692,12 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				{
 					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 				}
+			}
+			
+			
+			$this->usebgcolor = false;
+			if (bab_getICalendars()->usebgcolor == 'Y') {
+				$this->usebgcolor = true;
 			}
 				
 			

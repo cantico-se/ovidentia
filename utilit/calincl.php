@@ -377,14 +377,15 @@ class bab_icalendars
 	{
 		global $babBody, $babDB;
 
-		$this->allday 		= $babBody->babsite['allday'];
-		$this->usebgcolor 	= $babBody->babsite['usebgcolor'];
-		$this->elapstime 	= $babBody->babsite['elapstime'];
-		$this->defaultview 	= $babBody->babsite['defaultview'];
-		$this->starttime 	= $babBody->babsite['start_time'];
-		$this->endtime 		= $babBody->babsite['end_time'];
-		$this->dispdays 	= $babBody->babsite['dispdays'];
-		$this->startday 	= $babBody->babsite['startday'];
+		$this->allday 			= $babBody->babsite['allday'];
+		$this->usebgcolor 		= $babBody->babsite['usebgcolor'];
+		$this->elapstime 		= $babBody->babsite['elapstime'];
+		$this->defaultview 		= $babBody->babsite['defaultview'];
+		$this->starttime 		= $babBody->babsite['start_time'];
+		$this->endtime 			= $babBody->babsite['end_time'];
+		$this->dispdays 		= $babBody->babsite['dispdays'];
+		$this->startday 		= $babBody->babsite['startday'];
+		$this->show_update_info = $babBody->babsite['show_update_info'];
 		$this->calendar_backend = 'Ovi';
 		$this->bshowonlydaysofmonth = $babBody->babsite['show_onlydays_of_month'];
 		$this->user_calendarids = '';
@@ -424,7 +425,11 @@ class bab_icalendars
 					$this->workdays = $arr['workdays'];
 				
 				$this->user_calendarids = $arr['user_calendarids'];
-				$this->calendar_backend = $arr['calendar_backend'];
+				if ($arr['calendar_backend'])
+					{
+					$this->calendar_backend = $arr['calendar_backend'];
+					}
+				$this->show_update_info = $arr['show_update_info'];
 				}
 			}
 		

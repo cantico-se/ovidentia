@@ -843,6 +843,17 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 	");
 	
 	
+	// update all sharing access
+	
+	$babDB->db_query('UPDATE '.BAB_CALACCESS_USERS_TBL." 
+		SET 
+			caltype=".$babDB->quote($new_calendar->getReferenceType())."
+		where 
+			caltype=".$babDB->quote($old_calendar->getReferenceType())."
+			AND id_cal=".$babDB->quote($old_calendar->getUid())." 
+	");
+	
+	
 	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
 		SET calendar_backend=".$babDB->quote($calendar_backend)." 
 		where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])

@@ -502,14 +502,9 @@ class displayEventDetailCls
 			$this->category = bab_toHtml($calendarPeriod->getProperty('CATEGORIES'));
 			}
 	
-		list($bshowui) = $babDB->db_fetch_array($babDB->db_query("select show_update_info from ".BAB_CAL_USER_OPTIONS_TBL." where id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-		if( empty($bshowui))
-			{
-			$bshowui = $babBody->babsite['show_update_info'];
-			}
 	
 		$this->bshowupadetinfo = false;
-		if( $bshowui == 'Y' )
+		if( bab_getICalendars()->show_update_info == 'Y' )
 			{
 			$this->bshowupadetinfo = true;
 			$this->modifiedontxt = bab_translate("Created/Updated on");
