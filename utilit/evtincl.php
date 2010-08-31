@@ -2123,9 +2123,6 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 		
 	switch($method)
 	{
-		case BAB_CAL_EVT_CURRENT:
-			return;
-		
 		case BAB_CAL_EVT_ALL:
 			// no RECURRENCE-ID mean all instances of event
 			break;
