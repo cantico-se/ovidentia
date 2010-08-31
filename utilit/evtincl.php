@@ -2120,6 +2120,10 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	require_once dirname(__FILE__).'/dateTime.php';
 	
 	$method = (int) $method;
+	
+	$dtstart = $calendarPeriod->getProperty('DTSTART');
+	
+	
 		
 	switch($method)
 	{

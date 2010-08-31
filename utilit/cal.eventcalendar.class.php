@@ -596,18 +596,22 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 			$status 			= (int) $arr['status'];
 			$linked_calendar 	= bab_getICalendars()->getEventCalendar($urlIdentifier);
 			
-			if ($linked_calendar->getApprobationSheme() && $status === BAB_CAL_STATUS_DECLINED)
+			if ($linked_calendar)
 			{
-				// the event has been rejected by approbation
-				// do not display event in any calendar placeholder
-				return false;
-			}
 			
-			if ($linked_calendar === $calendar && $status === BAB_CAL_STATUS_DECLINED)
-			{
-				// the event attendee has rejected his participation
-				// do not display the event in his calendar
-				return false;
+				if ($linked_calendar->getApprobationSheme() && $status === BAB_CAL_STATUS_DECLINED)
+				{
+					// the event has been rejected by approbation
+					// do not display event in any calendar placeholder
+					return false;
+				}
+				
+				if ($linked_calendar === $calendar && $status === BAB_CAL_STATUS_DECLINED)
+				{
+					// the event attendee has rejected his participation
+					// do not display the event in his calendar
+					return false;
+				}
 			}
 		}
 		
