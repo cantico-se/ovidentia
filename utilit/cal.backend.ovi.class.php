@@ -161,20 +161,21 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	/**
-	 * Delete the period corresponding to the specified identifier.
+	 * Deletes the period corresponding to the specified object.
 	 * 
-	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
-	 * @param 	string 					$identifier				The UID property of event
+	 * @param	bab_CalendarPeriod	$period
 	 * 
 	 * @return bool
 	 */
-	public function deletePeriod(bab_PeriodCollection $periodCollection, $identifier)
+	public function deletePeriod(bab_CalendarPeriod $period)
 	{
+		$periodCollection = $period->getCollection();
+		
 		if ($periodCollection instanceof bab_CalendarEventCollection) 
 		{
 			require_once dirname(__FILE__).'/cal.ovievent.class.php';
 			$oviEvents = new bab_cal_OviEventSelect;
-			return $oviEvents->deleteFromUid($identifier);
+			return $oviEvents->deleteFromUid($period->getUid());
 		}
 		
 		return null;

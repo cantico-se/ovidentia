@@ -1207,7 +1207,7 @@ function confirmDeleteEvent($calid, $bupdrec)
 		return false;
 	}
 	
-	$backend->deletePeriod($collection, $calendarPeriod->getProperty('UID'));
+	$backend->deletePeriod($calendarPeriod);
 	
 	
 	$date_min = $calendarPeriod->ts_begin;

@@ -252,14 +252,13 @@ class Func_CalendarBackend extends bab_functionality
 	
 	
 	/**
-	 * Deletes the period corresponding to the specified identifier.
+	 * Deletes the period corresponding to the specified object.
 	 * 
-	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
-	 * @param 	string 					$identifier				The UID property of event
+	 * @param	bab_CalendarPeriod	$period
 	 * 
 	 * @return bool
 	 */
-	public function deletePeriod(bab_PeriodCollection $periodCollection, $identifier)
+	public function deletePeriod(bab_CalendarPeriod $period)
 	{
 		throw new Exception('not implemented');
 	}
