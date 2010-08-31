@@ -104,6 +104,17 @@ abstract class bab_ICalendarObject
 		}
 	}
 	
+	
+	public function removeProperty($icalProperty)
+	{
+		if (isset($this->properties[$icalProperty])) {
+			unset($this->properties[$icalProperty]);
+		}
+		
+		return $this;
+	}
+	
+	
 	/**
 	 * Set the ATTENDEE property
 	 * 
@@ -143,16 +154,40 @@ abstract class bab_ICalendarObject
 		
 		$attendeekey .= ':MAILTO:'.$email;
 		
-		$this->attendees[$attendeekey] = array(
-			'ROLE'		=> $role,
-			'PARTSTAT'	=> $partstat,
-			'CN'		=> $cn,
-			'RSVP'		=> $rsvp,
-			'email'		=> $email,
-			'calendar' 	=> $calendar
-		);
+		$urlIdentifier = $calendar->getUrlIdentifier();
 		
-		$this->properties['ATTENDEE'][] = $attendeekey;
+		if (!isset($this->attendees[$urlIdentifier]))
+		{
+			$pos = count($this->properties['ATTENDEE']);
+			
+			$this->attendees[$urlIdentifier] = array(
+				'ROLE'		=> $role,
+				'PARTSTAT'	=> $partstat,
+				'CN'		=> $cn,
+				'RSVP'		=> $rsvp,
+				'email'		=> $email,
+				'calendar' 	=> $calendar,
+				'pos'		=> $pos
+			);
+			
+			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+		}
+		else
+		{
+			$pos = $this->attendees[$urlIdentifier]['pos'];
+			
+			$this->attendees[$urlIdentifier] = array(
+				'ROLE'		=> $role,
+				'PARTSTAT'	=> $partstat,
+				'CN'		=> $cn,
+				'RSVP'		=> $rsvp,
+				'email'		=> $email,
+				'calendar' 	=> $calendar,
+				'pos'		=> $pos
+			);
+			
+			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+		}
 	}
 	
 	/**
@@ -190,8 +225,9 @@ abstract class bab_ICalendarObject
 	 */
 	public function addRelation($reltype, bab_EventCalendar $calendar) 
 	{
-
-		if (!isset($this->relations[$reltype]))
+		// only one parent
+		
+		if (!isset($this->relations[$reltype]) || 'PARENT' === $reltype)
 		{
 			$this->relations[$reltype] = array();
 		}
@@ -200,10 +236,15 @@ abstract class bab_ICalendarObject
 		{
 			$this->properties['RELATED-TO'] = array();
 		}
-		
-		$this->relations[$reltype][] = $calendar;
-		$this->properties['RELATED-TO'][] = "RELATED-TO;RELTYPE=$reltype:".$calendar->getReference()->__toString();
-		
+		$urlIdentifier = $calendar->getUrlIdentifier();
+		$value = "RELATED-TO;RELTYPE=$reltype:".$calendar->getReference()->__toString();
+
+		if (!isset($this->relations[$reltype][$urlIdentifier]))
+		{
+			$this->relations[$reltype][$urlIdentifier] = $calendar;
+			$this->properties['RELATED-TO'][] = $value;
+		} 
+
 		return $this;
 	}
 	

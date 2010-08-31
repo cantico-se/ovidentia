@@ -175,13 +175,13 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		{
 			require_once dirname(__FILE__).'/cal.ovievent.class.php';
 			$oviEvents = new bab_cal_OviEventSelect;
-			return $oviEvents->deleteFromUid($period->getUid());
+			return $oviEvents->deleteFromUid($period->getProperty('UID'));
 			
 			if ($collection->hash)
 			{
 				foreach($collection as $period)
 				{
-					if (!$oviEvents->deleteFromUid($period->getUid()))
+					if (!$oviEvents->deleteFromUid($period->getProperty('UID')))
 					{
 						return false;	
 					}
@@ -189,7 +189,7 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 				return true;
 			
 			} else {
-				return $oviEvents->deleteFromUid($period->getUid());
+				return $oviEvents->deleteFromUid($period->getProperty('UID'));
 			}
 		}
 		

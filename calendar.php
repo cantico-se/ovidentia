@@ -83,6 +83,11 @@ class displayAttendeesCls
 		
 		$backend = $calendar->getBackend();
 		$this->period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+		
+		if (!$this->period)
+		{
+			throw new Exception('Event not found backend='.get_class($backend).' UID='.$evtid.' DTSTART='.$dtstart);
+		}
 			
 			
 		$this->attendees = $this->period->getAttendees();

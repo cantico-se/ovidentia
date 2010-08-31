@@ -952,7 +952,6 @@ class cal_wmdbaseCls
 			$editurl->evtid = $this->idevent;
 			$editurl->dtstart = $calPeriod->getProperty('DTSTART');
 			$editurl->calid = $this->idcal;
-			$editurl->parent = $parent->getUrlIdentifier();
 			$editurl->cci = $this->currentidcals;
 			$editurl->view = $this->currentview;
 			$editurl->date = $this->currentdate;
@@ -987,7 +986,6 @@ class cal_wmdbaseCls
 			$attendeesurl->evtid = $this->idevent;
 			$attendeesurl->dtstart = $calPeriod->getProperty('DTSTART');
 			$attendeesurl->idcal = $this->idcal;
-			$attendeesurl->parent = $parent->getUrlIdentifier();
 				
 			$vieweventurl = clone $attendeesurl;
 			$vieweventurl->idx = 'veventupd';

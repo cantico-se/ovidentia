@@ -52,7 +52,13 @@ class bab_cal_OviEventUpdate
 		if ($uid)
 		{
 			// modification
-			$id_event = $manager->getEventByUid($uid);
+			try {
+				$id_event = $manager->getEventByUid($uid);
+			} catch(Exception $e)
+			{
+				throw new Exception('the event have an UID but does not exists in table');
+			}
+			
 			// TODO remove the third parameter
 			$manager->updateEvent($id_event, $period);
 		}
@@ -329,6 +335,13 @@ class bab_cal_OviEventUpdate
 			return;
 		}
 		
+		$block = 'N';
+		
+		if (isset($data['block']))
+		{
+			$block = 'Y';
+		}
+		
 		
 		$parent = reset($parents);
 		
@@ -368,7 +381,7 @@ class bab_cal_OviEventUpdate
 				".$babDB->quote($id_owner).", 
 				".$babDB->quote($period->getColor()).", 
 				".$babDB->quote($private).", 
-				".$babDB->quote($data['block']).", 
+				".$babDB->quote($block).", 
 				".$babDB->quote($free).", 
 				".$babDB->quote($hash).",
 				now(),

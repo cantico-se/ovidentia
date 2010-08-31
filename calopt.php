@@ -798,16 +798,13 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 		
 		
 		$criteria = $factory->Calendar($new_calendar);
-		$criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+		$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
 		
 		$events = $new_backend->selectPeriods($criteria);
 		
 		foreach($events as $event)
 		{
-			$collection 	= $event->getCollection();
-			$uid 			= $event->getProperty('UID');
-			$dtstart 		= $event->getProperty('DTSTART');
-			$new_backend->deletePeriod($collection, $uid, $dtstart);
+			$new_backend->deletePeriod($event);
 		}
 	}
 	
@@ -816,7 +813,7 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 		// copy all events to new backend
 		
 		$criteria = $factory->Calendar($old_calendar);
-		$criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+		$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
 		
 		$events = $old_backend->selectPeriods($criteria);
 		
@@ -824,6 +821,11 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 		{
 			$collection = $event->getCollection();
 			$collection->setCalendar($new_calendar);
+			foreach($collection as $subevent)
+			{
+				$subevent->removeProperty('UID');
+				$subevent->removeProperty('RRULE');
+			}
 			$new_backend->savePeriod($event);
 		}
 	}
