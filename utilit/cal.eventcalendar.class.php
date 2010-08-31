@@ -182,12 +182,22 @@ abstract class bab_EventCalendar
 	
 	
 	/**
-	 * Get approbation sheme ID
+	 * Get approbation sheme ID if any or null if the calendar do not support approbation
 	 * @return int
 	 */
 	public function getApprobationSheme()
 	{
 		return $this->idsa;
+	}
+	
+	/**
+	 * Get the approbation instance associated to the calendar on a period for the access user only or null if the are no approbation instance
+	 * @param bab_CalendarPeriod $period
+	 * @return null | int
+	 */
+	public function getApprobationInstance(bab_CalendarPeriod $period)
+	{
+		return null;
 	}
 	
 	
@@ -518,7 +528,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 		$this->name 		= $data['name'];
 		$this->description 	= $data['description'];	
 		
-		if (isset($data['idsa'])) {
+		if (!empty($data['idsa'])) {
 			$this->idsa		= $data['idsa'];
 		}
 		
@@ -551,6 +561,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	 * this method are called on the main calendar of event only
 	 * 
 	 * the default behaviour is to display an event only on the main calendar placeholder
+	 * the ovidentia backend behaviour is to display event on the main calendar placeholder and attendees or relations placeholders
 	 * 
 	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
 	 * @param	bab_CalendarPeriod	$event			Event to display
@@ -560,16 +571,43 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
 
-		foreach($event->getAttendees() as $attendee)
+		
+		global $babDB;
+		
+		$res = $babDB->db_query('
+			SELECT 
+					eo.caltype,
+					eo.id_cal,
+					eo.status
+					
+				FROM 
+					'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
+					'.BAB_CAL_EVENTS_TBL.' e
+			
+				WHERE 
+					eo.id_event = e.id
+					AND e.uuid = '.$babDB->quote($event->getProperty('UID')).' 
+		');
+		
+		
+		while ($arr = $babDB->db_fetch_assoc($res))
 		{
-			if ($attendee['calendar'] === $calendar && $attendee['PARTSTAT'] === 'DECLINED')
+			$urlIdentifier 		= $arr['caltype'].'/'.$arr['id_cal'];
+			$status 			= (int) $arr['status'];
+			$linked_calendar 	= bab_getICalendars()->getEventCalendar($urlIdentifier);
+			
+			if ($linked_calendar->getApprobationSheme() && $status === BAB_CAL_STATUS_DECLINED)
 			{
+				// the event has been rejected by approbation
+				// do not display event in any calendar placeholder
 				return false;
 			}
 			
-			if ($attendee['calendar'] === $calendar)
+			if ($linked_calendar === $calendar && $status === BAB_CAL_STATUS_DECLINED)
 			{
-				return true;
+				// the event attendee has rejected his participation
+				// do not display the event in his calendar
+				return false;
 			}
 		}
 		
@@ -580,6 +618,14 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 		}
 		
 		
+		foreach($event->getAttendees() as $attendee)
+		{
+			if ($attendee['calendar'] === $calendar)
+			{
+				return true;
+			}
+		}
+		
 		foreach($event->getRelations('CHILD') as $relation)
 		{
 			if ($relation === $calendar)
@@ -588,9 +634,50 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 			}
 		}
 		
+		
 		return false;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Get the approbation instance associated to the calendar on a period for the access user only or null if the are no approbation instance
+	 * @param bab_CalendarPeriod $period
+	 * @return null | int
+	 */
+	public function getApprobationInstance(bab_CalendarPeriod $period)
+	{
+		if (null === $this->getApprobationSheme())
+		{
+			return null;
+		}
+		
+		global $babDB;
+		
+		$res = $babDB->db_query('
+				SELECT 
+					eo.idfai 
+				FROM 
+					'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
+					'.BAB_CAL_EVENTS_TBL.' e
+			
+				WHERE 
+					eo.id_event = e.id
+					AND eo.id_cal = '.$babDB->quote($this->getUid()).'
+					AND	eo.caltype = '.$babDB->quote($this->getReferenceType()).' 
+					AND e.uuid = '.$babDB->quote($period->getProperty('UID')).'
+			
+		');
+		
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			return (int) $arr['idfai'];
+		}
+		
+		return null;
+	}
 }
 
 

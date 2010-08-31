@@ -749,25 +749,24 @@ class cal_wmdbaseCls
 			throw new Exception('calendar period without collection');
 		}
 		
-		$calendar = $periodCollection->getCalendar();
+		$parents = $calPeriod->getRelations('PARENT');
 
-		
-		if (!$calendar)
+		if (!$parents)
 		{
+			$this->bstatus			= false;
 			$this->allow_view 		= false;
 			$this->allow_viewtitle	= true;
 			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
 			return;
 		}
 		
-		$this->allow_view = true;												// detail view popup
-
-		$this->allow_modify = $calendar->canUpdateEvent($calPeriod);			// edit popup
-
-		$this->allow_viewtitle = $calendar->canViewEventDetails($calPeriod);	// SUMMARY of event on calendar
+		$parent = reset($parents);
 		
-		
-		$this->bstatus			= false;	// default, nothing to validate
+		$this->allow_view 			= true;												// detail view popup
+		$this->allow_modify 		= $parent->canUpdateEvent($calPeriod);				// edit popup
+		$this->allow_viewtitle 		= $parent->canViewEventDetails($calPeriod);			// SUMMARY of event on calendar
+
+		$this->bstatus				= false;											// default, nothing to validate
 		
 		
 		if (bab_isUserLogged())
@@ -782,15 +781,32 @@ class cal_wmdbaseCls
 				}
 			}
 			
+			
+			
+			
 			if (!$this->bstatus)
 			{
-				$waitingSheme = bab_getWaitingIdSA($GLOBALS['BAB_SESS_USERID']);
-				foreach($calPeriod->getRelations('CHILD') as $relation)
+				$backend = $parent->getBackend();
+				
+				if (!($backend instanceof Func_CalendarBackend_Ovi))
 				{
-					if ($relation->getApprobationSheme() && in_array($relation->getApprobationSheme(), $waitingSheme))
+					return;
+				}
+				
+				require_once dirname(__FILE__).'/wfincl.php';
+				$user_instances = bab_WFGetWaitingInstances($GLOBALS['BAB_SESS_USERID']);
+				
+				
+				foreach($calPeriod->getCalendars() as $relation)
+				{
+					$idschi = $relation->getApprobationInstance($calPeriod);
+					if (null !== $idschi)
 					{
-						$this->bstatus = true;
-						break;
+						if (in_array($idschi, $user_instances))
+						{
+							$this->bstatus = true;
+							break;
+						}
 					}
 				}
 			}

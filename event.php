@@ -1202,34 +1202,12 @@ function confirmDeleteEvent($calid, $bupdrec)
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 	
 	
-	if ($bupdrec)
-	{
-		// update calendar period with the RECURRENCE-ID to refeerence the correct events to update
-		
-		switch($bupdrec)
-		{
-			case BAB_CAL_EVT_ALL:
-				// no RECURRENCE-ID mean all instances of event
-				break;
-			case BAB_CAL_EVT_CURRENT:
-				$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
-				break;
-			case BAB_CAL_EVT_PREVIOUS:
-				$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
-				break;
-			case BAB_CAL_EVT_NEXT:
-				$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDFUTURE', $dtstart);
-				break;
-		}
-	}
-	
 	if (!$calendar->canDeleteEvent($calendarPeriod))
 	{
 		return false;
 	}
 	
-	
-	$backend->deletePeriod($collection, $calendarPeriod->getProperty('UID'), $dtstart);
+	$backend->deletePeriod($collection, $calendarPeriod->getProperty('UID'));
 	
 	
 	$date_min = $calendarPeriod->ts_begin;

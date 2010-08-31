@@ -602,23 +602,37 @@ function listWaitingEvents()
 			$this->arrevts = array();
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
-				{
-				$res = $babDB->db_query("SELECT cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet , ".BAB_CAL_EVENTS_OWNERS_TBL." ceot where cet.id=ceot.id_event and ceot.idfai in (".$babDB->quote($arrschi).") order by cet.start_date asc");
+			{
+				$res = $babDB->db_query("SELECT cet.*, ceot.caltype, ceot.id_cal 
+					from 
+						".BAB_CAL_EVENTS_TBL." cet ,
+					 	".BAB_CAL_EVENTS_OWNERS_TBL." ceot 
+					 where 
+					 	cet.id=ceot.id_event and ceot.idfai in (".$babDB->quote($arrschi).") order by cet.start_date asc
+				");
+				
 				while( $arr = $babDB->db_fetch_array($res) )
+				{
+						
+					$calendar = bab_getICalendars()->getEventCalendar($arr['caltype'].'/'.$arr['id_cal']);
+						
+					if ($calendar)
 					{
-					$tmp = array();
-					$tmp['title'] = $arr['title'];
-					$tmp['description'] = $arr['description'];
-					$tmp['description_format'] = $arr['description_format'];
-					$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
-					$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
-					$tmp['author'] = bab_getUserName($arr['id_creator']);
-					$tmp['idevent'] = $arr['id'];
-					$tmp['idcal'] = $arr['id_cal'];
-					$tmp['calendar'] = bab_getCalendarOwnerName($arr['id_cal']);
-					$this->arrevts[] = $tmp;
+						$tmp = array();
+						$tmp['uuid'] = $arr['uuid'];
+						$tmp['title'] = $arr['title'];
+						$tmp['description'] = $arr['description'];
+						$tmp['description_format'] = $arr['description_format'];
+						$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
+						$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
+						$tmp['author'] = bab_getUserName($arr['id_creator']);
+						$tmp['idevent'] = $arr['id'];
+						$tmp['idcal'] = $calendar->getUrlIdentifier();
+						$tmp['calendar'] = $calendar->getName();
+						$this->arrevts[] = $tmp;
 					}
 				}
+			}
 
 			$this->weventscount = count($this->arrevts);
 			if( $this->weventscount > 0 )
@@ -640,6 +654,8 @@ function listWaitingEvents()
 			static $i = 0;
 			if( $i < $this->weventscount)
 				{
+				require_once dirname(__FILE__).'/utilit/dateTime.php';
+				$start = BAB_DateTime::fromIsoDateTime($this->arrevts[$i]['startdate']);
 				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
 				
 				$editor = new bab_contentEditor('bab_calendar_event');
@@ -650,7 +666,7 @@ function listWaitingEvents()
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
 				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
 				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confevt&idevent=".$this->arrevts[$i]['idevent']."&idcal=".$this->arrevts[$i]['idcal']);
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=approb&evtid=".$this->arrevts[$i]['uuid']."&dtstart=".$start->getICal()."&idcal=".$this->arrevts[$i]['idcal']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
@@ -1043,73 +1059,6 @@ function confirmWaitingComment($idcom)
 	}
 
 
-function confirmWaitingEvent($idevent, $idcal)
-	{
-	global $babBody;
-
-	class temp extends bab_confirmWaiting
-		{
-		var $datebegintxt;
-
-		function temp($idevent, $idcal)
-			{
-			global $babDB;
-			$this->eventstartdatetxt = bab_translate("Begin date");
-			$this->eventenddatetxt = bab_translate("End date");
-			$this->eventdescriptiontxt = bab_translate("Description");
-			$this->eventattendeestxt = bab_translate("Attendees");
-			$this->confirm = bab_translate("Accept");
-			$this->refuse = bab_translate("Decline");
-			$this->commenttxt = bab_translate("Raison");
-			$this->idevent = bab_toHtml($idevent);
-			$this->idcal = bab_toHtml($idcal);
-			$res = $babDB->db_query("select cet.*, ceot.id_cal from ".BAB_CAL_EVENTS_TBL." cet left join ".BAB_CAL_EVENTS_OWNERS_TBL." ceot on cet.id=ceot.id_event where ceot.id_cal='".$babDB->db_escape_string($idcal)."' and ceot.id_event='".$babDB->db_escape_string($idevent)."'");
-			$arr = $babDB->db_fetch_array($res);
-			$GLOBALS['babBody']->title = $arr['title'];
-			$this->eventstartdate = bab_toHtml(bab_shortDate(bab_mktime($arr['start_date']), true));
-			$this->eventenddate = bab_toHtml(bab_shortDate(bab_mktime($arr['end_date']), true));
-			
-			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			$editor = new bab_contentEditor('bab_calendar_event');
-			$editor->setContent($arr['description']);
-			$editor->setFormat($arr['description_format']);
-			$this->eventdescription = $editor->getHtml();
-
-			if( !empty($arr['hash']) &&  $arr['hash'][0] == 'R' )
-				{
-				$this->recurrent = true;
-				$this->warningmsg = bab_translate("Warning! This appointment is recurrent !");
-				}
-			else
-				{
-				$this->recurrent = false;
-				}
-
-			$this->resatt = $babDB->db_query("select * from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($idevent)."' and id_cal!='".$babDB->db_escape_string($idcal)."'");
-			$this->count = $babDB->db_num_rows($this->resatt);
-			}
-
-		function getnextattendee()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				$arr = $babDB->db_fetch_array($this->resatt);
-				$this->eventattendee = bab_toHtml(bab_getCalendarOwnerName($arr['id_cal']));
-				$i++;
-				return true;
-				}
-			else
-				return false;
-
-			}
-		}
-
-	$temp = new temp($idevent, $idcal);
-	$temp->getHtml("approb.html", "confirmevent");
-	return $temp->count;
-	}
 
 function previewWaitingArticle($idart)
 	{
@@ -1363,18 +1312,6 @@ if( '' != ($conf = bab_pp('conf')))
 		}
 		$idx = 'unload';
 	}
-	elseif( $conf == 'evt' )
-	{
-		if( isset($_POST['confirm']))
-			{
-			confirmEvent(bab_pp('idevent'), bab_pp('idcal'), 'Y', bab_pp('remarks'), 1);
-			}
-		elseif( isset($_POST['refuse']))
-		{
-			confirmEvent(bab_pp('idevent'), bab_pp('idcal'), 'N', bab_pp('remarks'), 1);
-		}
-		$idx = 'unload';
-	}
 }
 
 switch($idx)
@@ -1383,10 +1320,6 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		exit;
-	case "confevt":
-		confirmWaitingEvent(bab_gp('idevent'), bab_gp('idcal'));
-		exit;
-		break;
 
 	case "confart":
 		confirmWaitingArticle(bab_gp('idart'));

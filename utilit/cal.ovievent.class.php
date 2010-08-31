@@ -1138,14 +1138,14 @@ class bab_cal_OviEventSelect
 		$accessible_calendars = array_keys(bab_getICalendars()->getCalendars());
 
 		// ovidentia mode :
-		/*
+		
 		$where = " 
 			ceo.id_cal				IN(".$babDB->quote($id_calendars).") 
 			AND ce.parent_calendar 	IN(".$babDB->quote($accessible_calendars).")";
-		*/
+		
 
 		// caldav mode :
-		$where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
+		// $where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
 		
 		
 		
@@ -1316,7 +1316,7 @@ class bab_cal_OviEventSelect
 		}
 		
 		include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
-		$id_event = $arr['id_event'];
+		$id_event = $arr['id'];
 		
 		
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'");
