@@ -1107,13 +1107,14 @@ function deleteEvent()
  */
 function addEvent(&$message)
 	{
-	
+	global $babBody;
 	
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
 	
 	if (!$posted->isValid($message))
 	{
+		
 		return false;
 	}
 
@@ -1121,6 +1122,7 @@ function addEvent(&$message)
 	if ($posted->availabilityCheckAllEvents($message)) {
 		return $posted->save($message);
 	}
+	
 	
 	// if availability message displayed and the event is submited
 	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
@@ -1375,7 +1377,11 @@ if(is_array($idx))
 
 if (!bab_rp('calid') && isset($_POST['selected_calendars'])) {
 	// creation of a new event
-	$calid = bab_getMainCalendar(implode(',', $_POST['selected_calendars']));
+	$calendar = bab_getMainCalendar($_POST['selected_calendars']);
+	if ($calendar)
+	{
+		$calid = $calendar->getUrlIdentifier();
+	}
 } else {
 	$calid = bab_rp('calid');
 }

@@ -1863,11 +1863,21 @@ class bab_event_posted {
 
 		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 		
+	
+		$uid = $calendarPeriod->getProperty('UID');
 		
-		if (!$calendar->canUpdateEvent($calendarPeriod))
+		if ($uid && !$calendar->canUpdateEvent($calendarPeriod))
 		{
+			$message = bab_translate(sprintf('Modification of this event on calendar %s is not allowed', $calendar->getName()));
 			return false;
 		}
+		
+		if (!$uid && !$calendar->canAddEvent())
+		{
+			$message = bab_translate(sprintf('Creation of an event on calendar %s is not allowed', $calendar->getName()));
+			return false;
+		}
+		
 		
 		$backend->savePeriod($calendarPeriod);
 

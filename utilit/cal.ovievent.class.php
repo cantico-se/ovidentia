@@ -374,7 +374,7 @@ class bab_cal_OviEventUpdate
 				now(),
 				".$babDB->quote($id_owner).",
 				".$babDB->quote($period->getProperty('UID')).",
-				".$babDB->quote($parent->getUrlIndentifier())."
+				".$babDB->quote($parent->getUrlIdentifier())."
 			)
 		");
 		
