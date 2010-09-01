@@ -3108,9 +3108,9 @@
 <string id="Status of my invitation to the appointment">Statut de mon invitation à l'événement</string>
 <string id="A calendar in relation with your appointement has been approved by %s">Un agenda en relation avec votre événement à été approuvé par %s</string>
 <string id="A calendar in relation with your appointement has been rejected by %s">Un agenda en relation avec votre événement à été rejeté par %s</string>
-<string id="The selected users will be able to create events on your personal calendar. Each user can modify and delete events he created on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourrons créés des événements dans votre agenda personnel. Chaque utilisateur pourra modifier et supprimer les événements créés sur votre agenda mais ils ne pourrons pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
-<string id="The selected users will be able to create, modify and delete events of your personal calendar without any validation.">Les utilisateurs sélectionnés pourrons créer, modifier et supprimer tout les événements de votre agenda personnel sans aucune validation</string>
-<string id="The selected users will be able to create events on your personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourrons créés des événements dans votre agenda personnel. Ils pourrons modifier et supprimer les évéenements créés par les utilisateurs en accès mutualisé sur votre agenda mais ils ne pourrons pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
+<string id="The selected users will be able to create events on your personal calendar. Each user can modify and delete events he created on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourront créer des événements dans votre agenda personnel. Chaque utilisateur pourra modifier et supprimer les événements créés sur votre agenda mais il ne pourra pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
+<string id="The selected users will be able to create, modify and delete events of your personal calendar without any validation.">Les utilisateurs sélectionnés pourront créer, modifier et supprimer tous les événements de votre agenda personnel sans aucune validation.</string>
+<string id="The selected users will be able to create events on your personal calendar. They can modify and delete events created by users with shared access on your calendar. They can't modify or delete events you created. You will have to approve new appointments.">Les utilisateurs sélectionnés pourront créer des événements dans votre agenda personnel. Ils pourront modifier et supprimer les événements créés par les utilisateurs en accès mutualisé sur votre agenda mais ils ne pourront pas modifier ou supprimer les événements que vous avez créés. Vous devrez approuver les nouveaux événements.</string>
 <string id="Remind me">Me prévenir</string>
 <string id="before the event">avant l'événement</string>
 <string id="Ovidentia calendar">Agenda Ovidentia</string>
@@ -3118,7 +3118,7 @@
 <string id="Delete the existing events in my new calendar">Supprimer les événements existant de mon nouvel agenda</string>
 <string id="Change my personal calendar from %s to %s">Modifier mon agenda personnel de %s à %s</string>
 <string id="Personal calendar type">Type d'agenda personnel</string>
-<string id=""></string>
+<string id="Modification of this event on calendar %s is not allowed">La modification n'est pas autorisée sur l'agenda %s</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>
