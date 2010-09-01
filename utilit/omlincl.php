@@ -5029,17 +5029,19 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			list(, $p) = each($this->events);
 			$arr = $p->getData();
 
-			$id_category = isset($arr['id_cat']) ? $arr['id_cat'] : 0;
+			$cat = bab_getCalendarCategory($p->getProperty('CATEGORIES'));
+			$id_category = $cat['id'];
 
-			$id_event = isset($arr['id']) ? $arr['id'] : 0;
-
-			if (isset($arr['nbowners']) && (0 < $arr['nbowners'])) {
-				$arr['id_cal'] = implode(',',$this->whObj->id_calendars);
+			$id_event = $p->getProperty('UID');
+			$parents = $p->getRelations('PARENT');
+			if ($parents)
+			{
+				$parent = reset($parents);
+				$arr['id_cal'] = $parent->getUrlIdentifier();
 			}
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
-			$description = $arr['description'];
-			$this->replace_ref($description, 'html', 'bab_calendar_event');
+			$description = $p->getProperty('DESCRIPTION');
 			$date = date('Y,m,d',$p->ts_begin);
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
@@ -5050,7 +5052,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventBeginDate'			, $p->ts_begin);
 			$this->ctx->curctx->push('EventEndDate'				, $p->ts_end);
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
-			$this->ctx->curctx->push('EventCategoryColor'		, (string) $p->getColor());
+			$this->ctx->curctx->push('EventCategoryColor'		, $p->getProperty('X-CTO-COLOR'));
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
