@@ -1866,10 +1866,20 @@ class bab_event_posted {
 	
 		$uid = $calendarPeriod->getProperty('UID');
 		
-		if ($uid && !$calendar->canUpdateEvent($calendarPeriod))
+		if ($uid)
 		{
-			$message = bab_translate(sprintf('Modification of this event on calendar %s is not allowed', $calendar->getName()));
-			return false;
+			$oldevent = $backend->getPeriod($backend->CalendarEventCollection($calendar), $uid);
+			
+			if (!$oldevent)
+			{
+				throw new Exception('event not found UID='.$uid);
+			}
+			
+			if (!$calendar->canUpdateEvent($oldevent))
+			{
+				$message = bab_translate(sprintf('Modification of this event on calendar %s is not allowed', $calendar->getName()));
+				return false;
+			}
 		}
 		
 		if (!$uid && !$calendar->canAddEvent())

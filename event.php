@@ -1455,7 +1455,10 @@ switch($idx)
 				$refreshurl = "";
 				break;
 		}
-		popupUnload($popupmessage, $refreshurl, false, false);
+		
+		$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
+		
+		popupUnload($popupmessage, $refreshurl, false, $autoclose);
 		break;
 
 	case "modevent":

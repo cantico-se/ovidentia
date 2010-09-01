@@ -1367,7 +1367,8 @@ switch($idx)
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
 		if( !isset($reload)) { $reload = false; }
-		popupUnload($popupmessage, '', $reload, false);
+		$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
+		popupUnload($popupmessage, '', $reload, $autoclose);
 		exit;
 		break;
 

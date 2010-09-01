@@ -175,7 +175,6 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		{
 			require_once dirname(__FILE__).'/cal.ovievent.class.php';
 			$oviEvents = new bab_cal_OviEventSelect;
-			return $oviEvents->deleteFromUid($period->getProperty('UID'));
 			
 			if ($collection->hash)
 			{

@@ -936,7 +936,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		}
 		
 		
-		if ($this->access_user == $event->getAuthorId()) {
+		if (((int) $this->access_user) == (int) $event->getAuthorId()) {
 			// i am the author
 			return true;
 		}
