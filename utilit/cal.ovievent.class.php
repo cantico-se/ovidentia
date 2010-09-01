@@ -339,7 +339,7 @@ class bab_cal_OviEventUpdate
 		
 		if (isset($data['block']))
 		{
-			$block = 'Y';
+			$block = $data['block'];
 		}
 		
 		

@@ -2535,6 +2535,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$description .= '</tbody></table>';
 		
 		$data = array(
+			'id' => $row['id'],
 			'description' => $description,
 			'description_format' => 'html'
 		);
@@ -2731,11 +2732,14 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	);
 	
 	$id_calendar = bab_getICalendars()->getPersonalCalendarUid($id_user);
-	$calendar = bab_getICalendars()->getEventCalendar('personal/'.$id_calendar);
+	$caltype = bab_getICalendars()->getUserReferenceType($id_user);
+	$urlidentifier = $caltype.'/'.$id_calendar;
+	
+	$calendar = bab_getICalendars()->getEventCalendar($urlidentifier);
 	
 	if (!isset($calendar))
 	{
-		throw new Exception('missing calendar for user '.$id_user);
+		throw new Exception('missing calendar '.$urlidentifier.' for user '.$id_user);
 		return;
 	}
 	

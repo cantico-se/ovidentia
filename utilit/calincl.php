@@ -498,6 +498,7 @@ class bab_icalendars
 	 */
 	public function getUserReferenceType($id_user)
 	{
+		$this->initializeCalendars();
 		if (isset($this->reftype_by_user[$id_user]))
 		{
 			return $this->reftype_by_user[$id_user];
