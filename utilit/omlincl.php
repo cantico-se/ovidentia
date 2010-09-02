@@ -3432,10 +3432,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 			default: 		$order = "p.date DESC"; break;
 		}
 
-		$req .= " order by ".$order;
-
-		if( $this->last !== false)
-			$req .= " limit 0, ".$this->last;
+		
 
 		$res = $babDB->db_query($req);
 
@@ -3450,7 +3447,8 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-			$this->res = $babDB->db_query("
+				
+			$req = "
 				select p.*, f.id_dgowner
 				from
 					".BAB_POSTS_TBL." p
@@ -3458,8 +3456,12 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 					LEFT JOIN ".BAB_FORUMS_TBL." f on f.id = t.forum
 					LEFT JOIN ".BAB_POSTS_TBL." lp ON lp.id = t.lastpost
 				where
-					p.id IN (".$babDB->quote($this->arrid).") order by ".$order
-				);
+					p.id IN (".$babDB->quote($this->arrid).") order by ".$order;
+
+			if( $this->last !== false)
+				$req .= " limit 0, ".$this->last;
+				
+			$this->res = $babDB->db_query($req);
 
 			$this->count = $babDB->db_num_rows($this->res);
 			}
