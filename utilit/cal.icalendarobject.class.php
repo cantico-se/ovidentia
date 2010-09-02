@@ -52,6 +52,18 @@ abstract class bab_ICalendarObject
 	private $relations = array();
 	
 	
+	/**
+	 * List of events to call with the commitAttendeeEvent method
+	 * 
+	 * @see bab_ICalendarObject::resetAttendeeEvent()
+	 * @see bab_ICalendarObject::commitAttendeeEvent()
+	 * 
+	 * @var array
+	 */
+	private $attendeesEvents = array();
+	
+	
+	
 	abstract public function getName();
 	
 	
@@ -118,17 +130,17 @@ abstract class bab_ICalendarObject
 	/**
 	 * Set the ATTENDEE property
 	 * 
-	 * @param	bab_EventCalendar	$calendar		Personnal calendar of attendee
-	 * @param	string				$role			CHAIR | REQ-PARTICIPANT | NON-PARTICIPANT | OPT-PARTICIPANT
-	 * 												To specify the participation role for the calendar user specified by the property.
-	 * @param	string				$partstat		NEEDS-ACTION | TENTATIVE | ACCEPTED | DECLINED | DELEGATED
-	 * 												To specify the participation status for the calendar user specified by the property
-	 * @param	string				$rsvp			TRUE | FALSE					
-	 * 												To specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value.
+	 * @param	bab_PersonalCalendar	$calendar		Personnal calendar of attendee
+	 * @param	string					$role			CHAIR | REQ-PARTICIPANT | NON-PARTICIPANT | OPT-PARTICIPANT
+	 * 													To specify the participation role for the calendar user specified by the property.
+	 * @param	string					$partstat		NEEDS-ACTION | TENTATIVE | ACCEPTED | DECLINED | DELEGATED
+	 * 													To specify the participation status for the calendar user specified by the property
+	 * @param	string					$rsvp			TRUE | FALSE					
+	 * 													To specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value.
 	 * 
 	 * @return unknown_type
 	 */
-	public function addAttendee(bab_EventCalendar $calendar, $role=null, $partstat=null, $rsvp=null) {
+	public function addAttendee(bab_PersonalCalendar $calendar, $role=null, $partstat=null, $rsvp=null) {
 		
 		if (!isset($this->properties['ATTENDEE']))
 		{
@@ -171,10 +183,23 @@ abstract class bab_ICalendarObject
 			);
 			
 			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+			
+			if (($this instanceof bab_CalendarPeriod)  && !isset($this->attendeesEvents[$urlIdentifier]))
+			{
+				// do not trigger in case of a VALARM
+				$this->attendeesEvents[$urlIdentifier] = 'onAddAttendee';
+			}
 		}
 		else
 		{
 			$pos = $this->attendees[$urlIdentifier]['pos'];
+			
+			if ($this->properties['ATTENDEE'][$pos] === $attendeekey)
+			{
+				// nothing changed
+				return;
+			}
+			
 			
 			$this->attendees[$urlIdentifier] = array(
 				'ROLE'		=> $role,
@@ -187,6 +212,11 @@ abstract class bab_ICalendarObject
 			);
 			
 			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+			
+			if (($this instanceof bab_CalendarPeriod) && !isset($this->attendeesEvents[$urlIdentifier]))
+			{
+				$this->attendeesEvents[$urlIdentifier] = 'onUpdateAttendee';
+			}
 		}
 	}
 	
@@ -212,6 +242,33 @@ abstract class bab_ICalendarObject
 		return $this->attendees = null;
 	}
 	
+	
+	/**
+	 * Reset the list of attendees modifications
+	 * @return bab_ICalendarObject
+	 */
+	public function resetAttendeeEvent()
+	{
+		$this->attendeesEvents = array();
+		return $this;
+	}
+	
+	/**
+	 * call each modified or added attendees 
+	 * @return bab_ICalendarObject
+	 */
+	public function commitAttendeeEvent()
+	{	
+		foreach($this->attendeesEvents as $urlidentifier => $method)
+		{
+			if (isset($this->attendees[$urlIdentifier]))
+			{
+				$calendar = $this->attendees[$urlIdentifier]['calendar'];
+				$calendar->$method($this);
+			}
+		}
+		return $this;
+	}
 	
 	
 	

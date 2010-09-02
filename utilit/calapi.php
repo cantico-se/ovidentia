@@ -327,7 +327,13 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	$collection = $backend->CalendarEventCollection($calendar);
 	
 	$period = bab_createCalendarPeriod($backend, $args, $collection);
-	return $backend->savePeriod($period);
+	if ($backend->savePeriod($period))
+	{
+		$period->commitAttendeeEvent();
+		return true;
+	}
+	
+	return false;
 }
 
 function bab_deleteEventById( $evtid )

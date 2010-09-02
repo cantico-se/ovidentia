@@ -1301,7 +1301,10 @@ class bab_cal_OviEventSelect
 		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
 		$collection = new bab_CalendarEventCollection; 
 		
-		return $this->createCalendarPeriod($arr, $collection);
+		$period = $this->createCalendarPeriod($arr, $collection);
+		$period->resetAttendeeEvent();
+		
+		return $period;
 	}
 	
 	

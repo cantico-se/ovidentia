@@ -1288,6 +1288,7 @@ function updateEventAlert()
 	
 	// save event
 	$backend->savePeriod($calendarPeriod);
+	$calendarPeriod->commitAttendeeEvent();
 }
 
 

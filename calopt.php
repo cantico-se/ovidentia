@@ -827,6 +827,7 @@ function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $dele
 				$subevent->removeProperty('RRULE');
 			}
 			$new_backend->savePeriod($event);
+			$event->commitAttendeeEvent();
 		}
 	}
 	

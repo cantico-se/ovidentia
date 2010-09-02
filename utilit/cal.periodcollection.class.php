@@ -150,7 +150,7 @@ class bab_ReadOnlyCollection extends bab_PeriodCollection { }
 class bab_VacationPeriodCollection extends bab_ReadOnlyCollection { }
 	
 /**
- * List of accessible events in calendar
+ * List of events in calendar
  */
 class bab_CalendarEventCollection extends bab_PeriodCollection { 
 
@@ -161,6 +161,11 @@ class bab_CalendarEventCollection extends bab_PeriodCollection {
 	 */
 	public $hash = null;
 }
+
+/**
+ * List of events in the inbox of a personal calendar
+ */
+class bab_InboxEventCollection extends bab_PeriodCollection { }
 
 /**
  * List of tasks from task manager

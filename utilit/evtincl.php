@@ -1890,6 +1890,7 @@ class bab_event_posted {
 		
 		
 		$backend->savePeriod($calendarPeriod);
+		$calendarPeriod->commitAttendeeEvent();
 
 		$min = $calendarPeriod->ts_begin;
 		$max = $calendarPeriod->ts_end;

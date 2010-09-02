@@ -501,6 +501,8 @@ abstract class bab_EventCalendar
 		
 		return false;
 	}
+	
+
 }
 
 
@@ -1035,7 +1037,25 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	
 	
 	
-
+	/**
+	 * Triggered when the calendar has been added as an attendee on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onAddAttendee(bab_CalendarPeriod $event)
+	{
+		
+	}
+	
+	/**
+	 * Triggered when the calendar has been updated as an attendee on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onUpdateAttendee(bab_CalendarPeriod $event)
+	{
+		
+	}
 }
 
 
@@ -1209,6 +1229,22 @@ interface bab_PersonalCalendar {
 	 * @return int
 	 */
 	public function getSharingAccess();
+	
+	
+	
+	/**
+	 * Triggered when the calendar has been added as an attendee on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onAddAttendee(bab_CalendarPeriod $event);
+	
+	/**
+	 * Triggered when the calendar has been updated as an attendee on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onUpdateAttendee(bab_CalendarPeriod $event);
 }
 
 

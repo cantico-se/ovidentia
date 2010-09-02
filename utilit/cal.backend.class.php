@@ -107,6 +107,21 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	/**
+	 * A collection of events from inbox of a personal calendar
+	 * 
+	 * @param	bab_PersonalCalendar $calendar		for this collection, the calendar is mandatory and must be a personal calendar
+	 * 
+	 * @return bab_InboxEventCollection
+	 */
+	public function InboxEventCollection(bab_PersonalCalendar $calendar)
+	{
+		$this->includePeriodCollection();
+		$collection = new bab_InboxEventCollection;
+		$collection->setCalendar($calendar);
+		return $collection;
+	}
+	
+	/**
 	 * A collection of tasks 
 	 * (exemple task manager from ovidentia)
 	 * @return bab_TaskCollection
@@ -224,7 +239,7 @@ class Func_CalendarBackend extends bab_functionality
 	 * Returns the period corresponding to the specified identifier
 	 * this is necessary for all events with a link
 	 * 
-	 * @param	bab_PeriodCollection	$periodCollection		where to search for event
+	 * @param	bab_PeriodCollection	$periodCollection		where to search for event, the collection can be populated with the selected event
 	 * @param 	string 					$identifier				The UID property of event
 	 * @param	string					[$dtstart]				The DTSTART value of the event (this can be usefull if the event is a recurring event, DTSTART will indicate the correct instance)
 	 * 
@@ -234,6 +249,24 @@ class Func_CalendarBackend extends bab_functionality
 	{
 		throw new Exception('not implemented');
 	}
+	
+	/**
+	 * Return an iterator with events corresponding to an UID
+	 * in case of a recurring event, all instance of event will be returned beetween the $expandStart and $expandEnd boundaries
+	 * if the expandRecurrence parameter is set to false, the iterator will contain the event and the aditional exceptions with RECURENCE-ID property
+	 * 
+	 * @param 	bab_PeriodCollection	$periodCollection
+	 * @param 	string					$identifier				The UID property of event
+	 * @param	bool					$expandRecurrence		
+	 * @param	BAB_DateTime			$expandStart
+	 * @param	BAB_DateTime			$expandEnd
+	 * @return iterator <bab_CalendarPeriod>
+	 */
+	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, $expandStart = null, $expandEnd = null)
+	{
+		throw new Exception('not implemented');
+	}
+	
 	
 	/**
 	 * Select periods from criteria
