@@ -448,28 +448,22 @@ function saveImage($file, $size, $tmpfile, $share,$path="")
 		$bOk = false;
 		}
 
-	$iOffset = mb_strpos($file,'.');
-	$sFileExtention = mb_substr($file, $iOffset);
-		
-	if ($ext = $sFileExtention)
+	$filearr = explode('.',$file);
+	$ext = mb_strtolower(end($filearr));
+
+	switch($ext)
 		{
-		$ext = mb_strtolower(mb_substr($ext,1));
-		switch($ext)
-			{
-			case 'jpg':
-			case 'jpeg':
-			case 'png':
-			case 'gif':
-				break;
-			default:
-				$bOk = false;
-				break;
-			}
+		case 'jpg':
+		case 'jpeg':
+		case 'png':
+		case 'gif':
+			break;
+		default:
+			$bOk = false;
+			break;
 		}
-	else
-		{
-		$bOk = false;
-		}
+	
+
 
 	if( !$bOk )
 		{
