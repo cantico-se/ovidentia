@@ -262,7 +262,7 @@ class Func_CalendarBackend extends bab_functionality
 	 * @param	BAB_DateTime			$expandEnd
 	 * @return iterator <bab_CalendarPeriod>
 	 */
-	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, $expandStart = null, $expandEnd = null)
+	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, BAB_DateTime $expandStart = null, BAB_DateTime $expandEnd = null)
 	{
 		throw new Exception('not implemented');
 	}

@@ -134,6 +134,28 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	
 	
 	/**
+	 * Return an iterator with events corresponding to an UID
+	 * in case of a recurring event, all instance of event will be returned beetween the $expandStart and $expandEnd boundaries
+	 * if the expandRecurrence parameter is set to false, the iterator will contain the event and the aditional exceptions with RECURENCE-ID property
+	 * 
+	 * @param 	bab_PeriodCollection	$periodCollection
+	 * @param 	string					$identifier				The UID property of event
+	 * @param	bool					$expandRecurrence		
+	 * @param	BAB_DateTime			$expandStart
+	 * @param	BAB_DateTime			$expandEnd
+	 * @return iterator <bab_CalendarPeriod>
+	 */
+	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, BAB_DateTime $expandStart = null, BAB_DateTime $expandEnd = null)
+	{
+		throw new Exception('not implemented');
+	}
+	
+	
+	
+	
+	
+	
+	/**
 	 * Select periods from criteria
 	 * the bab_PeriodCriteriaCollection and bab_PeriodCriteriaCalendar are mandatory
 	 * 

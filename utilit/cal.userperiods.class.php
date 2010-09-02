@@ -70,6 +70,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	public $hash = null;
 
 	
+	/**
+	 * Array of UID to select
+	 * @var array	<string>
+	 */
+	public $uid_criteria = null;
+	
 	
 	/**
 	 * 
@@ -202,17 +208,17 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	
 	/**
 	 * 
-	 * @param bab_PeriodCollection $collection
+	 * @param bab_PeriodCollection | string $collection
 	 * @return bool
 	 */
-	public function isPeriodCollection(bab_PeriodCollection $collection) {
+	public function isPeriodCollection($collection) {
 		if (null === $this->periodCollection)
 		{
 			return true;
 		}
 		
 		foreach($this->periodCollection as $periodCollection) {
-			if ($collection instanceof $periodCollection) {
+			if ($collection === $periodCollection || ($collection instanceof $periodCollection)) {
 				return true;
 			}
 		}
@@ -856,8 +862,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						$working_period = true;
 					}
 					
+					if ($collection instanceof bab_VacationPeriodCollection)
+					{
+						$data = $event->getData();
+						$id_users = array($data['id_user']);
+					}
 					
-					if ($collection instanceof bab_CalendarEventCollection)
+					
+					if ($collection instanceof bab_CalendarEventCollection || $collection instanceof bab_InboxEventCollection)
 					{
 						$id_users = array();
 						$attendees = $event->getAttendees();
@@ -884,6 +896,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 							$id_users = array($GLOBALS['BAB_SESS_USERID']);
 						}
 					}
+					
 					
 					
 					

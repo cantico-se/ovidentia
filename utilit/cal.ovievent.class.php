@@ -1119,16 +1119,17 @@ class bab_cal_OviEventSelect
 	 * 
 	 *  
 	 * @param bab_UserPeriods				$user_periods		query result set
-	 * @param array							$calendars			<bab_EventCalendar>
 	 * @param array							$ical				ical properties to use as filter
 	 * @param string						$hash
 	 */
-	public function setEventsPeriods(bab_UserPeriods $user_periods, Array $calendars, $ical = null, $hash = null) {
+	private function setEventsPeriods(bab_UserPeriods $user_periods, $ical = null, $hash = null) {
 	
 		global $babDB;
 		
 		$begin 	= $user_periods->begin;
 		$end 	= $user_periods->end;
+		
+		$calendars = $user_periods->calendars;
 		
 		$backend = bab_functionality::get('CalendarBackend/Ovi');
 		
@@ -1217,6 +1218,8 @@ class bab_cal_OviEventSelect
 			}
 			
 			$event = $this->createCalendarPeriod($arr, $collection);
+			$event->resetAttendeeEvent();
+			
 			if ($event)
 			{
 				$user_periods->addPeriod($event);
@@ -1224,6 +1227,9 @@ class bab_cal_OviEventSelect
 		}
 	
 	}
+	
+	
+
 	
 	/**
 	 * 
@@ -1273,6 +1279,92 @@ class bab_cal_OviEventSelect
 		return '('.implode(' OR ', $or).')';
 		
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * For each personal calendars in query, get the UID from inbox by backend, 
+	 * for each backend query the list of event and set it into userPeriods
+	 * @param bab_UserPeriods $user_periods
+	 * @return unknown_type
+	 */
+	private function setInboxPeriods(bab_UserPeriods $user_periods)
+	{
+		global $babDB;
+		
+		$calendars = $user_periods->calendars;
+		$current_criteria = $user_periods->criteria;
+		$factory = new bab_PeriodCriteriaFactory;
+		
+		// set the calendar criteria to all visible calendars
+		
+		$criteria = $factory->Calendar(bab_getICalendars()->getCalendars())->_AND_($factory->Collection('bab_CalendarPeriodCollection'));
+		
+		
+		// add other criteria
+		
+		$all = $current_criteria->getAllCriterions();
+		foreach($all as $criterion)
+		{
+			switch(true)
+			{
+				case $criterion instanceof bab_PeriodCriteriaCalendar:
+				case $criterion instanceof bab_PeriodCriteriaCollection:
+					break;
+					
+				default:
+					$criteria = $criteria->_AND_($criterion);
+					break;
+			}
+		}
+		
+		
+		// get the inbox
+		
+		$users = array();
+		foreach($calendars as $calendar)
+		{
+			if ($calendar instanceof bab_OviPersonalCalendar)
+			{
+				$users[] = $calendar->getIdUser();
+			}
+		}
+		
+		$queries = array();
+		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['uid'];
+		}
+		
+		
+		foreach($queries as $calendarBackend => $uid_list)
+		{
+		
+			$inbox_criteria = clone $criteria;
+		
+			// add the UID criteria
+			
+			$inbox_criteria->_AND_($factory->Uid($uid_list));
+			
+			
+			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
+			$periods = $backend->selectPeriods($inbox_criteria);
+			
+			foreach($periods as $p)
+			{
+				$user_periods->addPeriod($p);
+			}
+		}
+	}
+	
+	
+	
+	
+	
 	
 
 
@@ -1373,7 +1465,6 @@ class bab_cal_OviEventSelect
 		$backend = bab_functionality::get('CalendarBackend/Ovi');
 		
 		$vac_collection	= $backend->VacationPeriodCollection();
-		$evt_collection = new bab_CalendarEventCollection;
 		$tsk_collection = $backend->TaskCollection();
 		$wp_collection 	= $backend->WorkingPeriodCollection();
 		$nwp_collection = $backend->NonWorkingPeriodCollection();
@@ -1384,9 +1475,12 @@ class bab_cal_OviEventSelect
 			bab_vac_setVacationPeriods($vac_collection, $userperiods, $users);
 		}
 	
-		if ($userperiods->isPeriodCollection($evt_collection)) {
-			include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-			$this->setEventsPeriods($userperiods, $calendars, $userperiods->icalProperties, $hash); 
+		if ($userperiods->isPeriodCollection('bab_CalendarEventCollection')) {
+			$this->setEventsPeriods($userperiods, $userperiods->icalProperties, $hash); 
+		}
+		
+		if ($userperiods->isPeriodCollection('bab_InboxEventCollection')) {
+			$this->setInboxPeriods($userperiods); 
 		}
 	
 		if ($userperiods->isPeriodCollection($tsk_collection) && $users) {

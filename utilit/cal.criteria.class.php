@@ -66,6 +66,22 @@ abstract class bab_PeriodCriteria
 	}
 	
 	/**
+	 * Get all criterions as an array
+	 * @return array
+	 */
+	public function getAllCriterions()
+	{
+		$return = array($this);
+		
+		foreach($this->subcriteria as $crit)
+		{
+			$return = array_merge($return, $crit->getAllCriterions());
+		}
+		
+		return $return;
+	}
+	
+	/**
 	 * Add criteria to userperiod the query object
 	 * @param bab_UserPeriods $userperiods
 	 * @return unknown_type
@@ -312,7 +328,36 @@ class bab_PeriodCritieraEndDateGreaterThanOrEqual extends bab_PeriodCriteriaDate
 
 
 
-
+class bab_PeriodCritieraUid extends bab_PeriodCriteria
+{
+	/**
+	 * @var array
+	 */
+	protected $uid;
+	
+	
+	public function __construct($uid)
+	{
+		if (is_array($uid))
+		{
+			$this->uid = array_values($uid);
+		}
+		else
+		{
+			$this->uid = array($uid);
+		}
+	}
+	
+	/**
+	 * Add criteria
+	 * @param bab_UserPeriods $userperiods
+	 * @return unknown_type
+	 */
+	public function process(bab_UserPeriods $userperiods)
+	{
+		$userperiods->uid_criteria = $this->uid;
+	}
+}
 
 
 
@@ -377,5 +422,15 @@ class bab_PeriodCriteriaFactory
 	public function End(BAB_DateTime $date)
 	{
 		return new bab_PeriodCritieraBeginDateLessThanOrEqual($date);
+	}
+	
+	/**
+	 * 
+	 * @param string | array $uid		an UID or a list of UID to search for
+	 * @return bab_PeriodCritieraUid
+	 */
+	public function Uid($uid)
+	{
+		return new bab_PeriodCritieraUid($uid);
 	}
 }

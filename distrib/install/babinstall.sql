@@ -755,6 +755,27 @@ CREATE TABLE bab_cal_events_owners (
   KEY id_event (id_event,id_cal,status)
 );
 
+
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_cal_inbox'
+#
+
+CREATE TABLE bab_cal_inbox (
+  id_user int(10) unsigned NOT NULL default '0',
+  calendar_backend VARCHAR (100) not null default '',
+  uid VARCHAR (255) not null default '',
+  KEY id_user (id_user),
+  KEY uid (calendar_backend, uid)
+);
+
+
+
+
+
+
 # --------------------------------------------------------
 #
 # Structure de la table 'bab_calendar'

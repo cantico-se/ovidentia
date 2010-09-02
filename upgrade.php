@@ -6332,6 +6332,28 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `calendar_backend` varchar(255) NOT NULL default ''");
 		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET `calendar_backend`='Ovi'");
 	}
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 7.3.91
+	 */
+	
+	
+	if (!bab_isTable('bab_cal_inbox')) {
+		
+		$babDB->db_query("
+		CREATE TABLE bab_cal_inbox (
+		  id_user int(10) unsigned NOT NULL default '0',
+		  calendar_backend VARCHAR (100) not null default '',
+		  uid VARCHAR (255) not null default '',
+		  KEY id_user (id_user),
+		  KEY uid (calendar_backend, uid)
+		)");
+	}
+	
 
 	return true;
 }

@@ -1044,7 +1044,31 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function onAddAttendee(bab_CalendarPeriod $event)
 	{
-		
+		$parent = reset($event->getRelations('PARENT'));
+		$eventBackend = $parent->getBackend();
+		$mybackend = $this->getBackend();
+		if ($eventBackend !== $mybackend)
+		{
+			global $babDB;
+			
+			
+			$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user='.$babDB->quote($this->getIdUser()).' AND uid='.$babDB->quote($event->getProperty('UID')));
+			if ($babDB->db_num_rows($res))
+			{
+				return;
+			}
+			
+			$babDB->db_query('
+				INSERT INTO bab_cal_inbox 
+					(id_user, calendar_backend, uid) 
+				VALUES 
+					(
+						'.$babDB->quote($this->getIdUser()).',
+						'.$babDB->quote($eventBackend->getUrlIdentifier()).',
+						'.$babDB->quote($event->getProperty('UID')).'
+					)
+			');
+		}
 	}
 	
 	/**

@@ -2537,7 +2537,8 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$data = array(
 			'id' => $row['id'],
 			'description' => $description,
-			'description_format' => 'html'
+			'description_format' => 'html',
+			'id_user' => $row['id_user']
 		);
 		
 		$p->setData($data);
