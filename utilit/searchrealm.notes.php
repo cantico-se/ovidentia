@@ -228,7 +228,7 @@ class bab_SearchNotesResult extends bab_SearchSqlResult {
 			$date 			= BAB_DateTimeUtil::relativePastDate($record->date);
 			$date			= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Date'), $date);
 
-			$content		= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->content, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
+			$content		= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->content, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 			$editurl		= bab_toHtml($GLOBALS['babUrlScript']."?tg=note&idx=Modify&item=".$record->id);
 
 			$return .= bab_SearchResult::getRecordHtml(

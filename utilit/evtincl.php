@@ -232,7 +232,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	$period->setDates($begin, $end);
 	
 	$period->setProperty('SUMMARY', $args['title']);
-	$period->setProperty('DESCRIPTION', trim(strip_tags($args['description']))); // Text version of description within ICAL property
+	$period->setProperty('DESCRIPTION', trim(bab_unhtmlentities(strip_tags($args['description'])))); // Text version of description within ICAL property
 	$period->setProperty('LOCATION', $args['location']);
 	
 	if ($args['private']) {

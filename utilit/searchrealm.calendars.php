@@ -362,7 +362,7 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 			
 			if ($visibility) {
 				$title		= bab_toHtml($record->summary);
-				$description= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->description, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
+				$description= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->description, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 500);
 			}
 
 			if ($visibility && !empty($record->location)) {

@@ -257,28 +257,7 @@ abstract class bab_SearchResult implements Countable, seekableIterator {
 
 
 	
-	/**
-	 * Remove html entities 
-	 * @param	string	$string
-	 * @return string
-	 */
-	public static function unhtmlentities($string) {
-
-		// special quote : htmlarea &#8217; and fckeditor &rsquo;
-		$string = preg_replace('~&#8217;~', '\'', $string);
-		
-		// replace numeric entities
-		$string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-		$string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-		
-		// replace literal entities
-		$trans_tbl = get_html_translation_table(HTML_ENTITIES);
-		$trans_tbl = array_flip($trans_tbl);
-				
-		$trans_tbl['&rsquo;'] = "'";
-		
-		return strtr($string, $trans_tbl);
-	}
+	
 
 
 	/**

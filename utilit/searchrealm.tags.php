@@ -289,7 +289,7 @@ class bab_SearchTagsResult extends bab_searchArrayResult {
 			$content = bab_sprintf('<p><strong>%s :</strong> %s</p>', bab_translate('Type'), bab_toHtml($record->type));
 
 			if ($record->description) {
-				$description = trim(bab_SearchResult::unhtmlentities(strip_tags($record->description)));
+				$description = trim(bab_unhtmlentities(strip_tags($record->description)));
 				$content .= '<p>'.bab_toHtml(bab_abbr($description, BAB_ABBR_FULL_WORDS, 500)).'</p>';
 			}
 

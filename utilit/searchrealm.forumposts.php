@@ -268,7 +268,7 @@ class bab_SearchForumsResult extends bab_SearchSqlResult {
 			$date 			= BAB_DateTimeUtil::relativePastDate($record->date);
 			$date			= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Date'), $date);
 
-			$message		= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->message, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 600);
+			$message		= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->message, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 600);
 			$author			= '';
 
 			if ($record->author) {

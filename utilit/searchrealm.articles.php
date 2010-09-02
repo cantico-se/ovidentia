@@ -432,7 +432,7 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 			$arttopic 		= bab_SearchRealmTopic::categoriesHierarchy($record->id_topic);
 			$articleurlpop 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=search&idx=articles&id=".$record->id."&w=".bab_SearchDefaultForm::highlightKeyword());
 			$articleurl 	= bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$record->id_topic."&article=".$record->id);
-			$intro 			= bab_abbr(bab_SearchResult::unhtmlentities(strip_tags(bab_toHtml($record->head, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 600);
+			$intro 			= bab_abbr(bab_unhtmlentities(strip_tags(bab_toHtml($record->head, BAB_HTML_REPLACE))), BAB_ABBR_FULL_WORDS, 600);
 
 			$popupicon 		= bab_sprintf('<img alt="popup" src="%simages/Puces/popupselect.gif" />', $GLOBALS['babSkinPath']);
 			$author			= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Author'), $artauthor);
