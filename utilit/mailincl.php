@@ -495,6 +495,20 @@ class babMail
 	}
 
 
+	/**
+	 * Adds an attachment from a string.
+	 *
+	 * @param string	$content	The content to be attachmed.
+	 * @param string	$realname	The attachment name.
+	 * @param string	$type		File extension (MIME) type.
+	 */
+	public function mailStringAttach($path, $realname, $type)
+	{
+		$result = $this->mail->AddStringAttachment($path, $realname, 'base64', $type);
+		$this->attachements[] = array('', $realname, $type);
+	}
+
+
 	public function mailClearAttachments()
 	{
 		$this->mail->ClearAttachments();
