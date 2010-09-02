@@ -277,6 +277,9 @@ abstract class bab_ICalendarObject
 				$calendar->$method($this);
 			}
 		}
+		
+		$this->attendeesEvents = array();
+		
 		return $this;
 	}
 	

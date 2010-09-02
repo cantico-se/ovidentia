@@ -1121,8 +1121,9 @@ class bab_cal_OviEventSelect
 	 * @param bab_UserPeriods				$user_periods		query result set
 	 * @param array							$ical				ical properties to use as filter
 	 * @param string						$hash
+	 * @param array							$uid_criteria		list of UID to select
 	 */
-	private function setEventsPeriods(bab_UserPeriods $user_periods, $ical = null, $hash = null) {
+	private function setEventsPeriods(bab_UserPeriods $user_periods, $ical = null, $hash = null, $uid_criteria = null) {
 	
 		global $babDB;
 		
@@ -1193,6 +1194,11 @@ class bab_cal_OviEventSelect
 		
 		if (null !== $hash) {
 			$where .= "AND ce.hash =".$babDB->quote($hash)." 
+			";
+		}
+		
+		if (null !== $uid_criteria) {
+			$where .= "AND ce.uuid IN(".$babDB->quote($uid_criteria).") 
 			";
 		}
 		
@@ -1296,7 +1302,7 @@ class bab_cal_OviEventSelect
 		global $babDB;
 		
 		$calendars = $user_periods->calendars;
-		$current_criteria = $user_periods->criteria;
+		$current_criteria = $user_periods->getCriteria();
 		$factory = new bab_PeriodCriteriaFactory;
 		
 		// set the calendar criteria to all visible calendars
@@ -1354,10 +1360,29 @@ class bab_cal_OviEventSelect
 			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
 			$periods = $backend->selectPeriods($inbox_criteria);
 			
+			$selected = array_flip($uid_list);
+			
 			foreach($periods as $p)
 			{
-				$user_periods->addPeriod($p);
+				bab_debug($p->getProperties(), DBG_TRACE, 'INBOX');
+				
+				$uid = $p->getProperty('UID');
+				//$user_periods->addPeriod($p);
+				
+				unset($selected[$uid]);
 			}
+			
+			// remaining in $selected not found in backend or no more accessible
+			if ($selected)
+			{
+				$babDB->db_query('
+					DELETE FROM bab_cal_inbox 
+					WHERE 
+						calendar_backend='.$babDB->quote($calendarBackend).' 
+						AND uid IN('.$babDB->quote(array_keys($selected)).')
+				');
+			}
+			
 		}
 	}
 	
@@ -1476,7 +1501,7 @@ class bab_cal_OviEventSelect
 		}
 	
 		if ($userperiods->isPeriodCollection('bab_CalendarEventCollection')) {
-			$this->setEventsPeriods($userperiods, $userperiods->icalProperties, $hash); 
+			$this->setEventsPeriods($userperiods, $userperiods->icalProperties, $hash, $userperiods->uid_criteria); 
 		}
 		
 		if ($userperiods->isPeriodCollection('bab_InboxEventCollection')) {

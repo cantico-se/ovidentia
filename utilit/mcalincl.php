@@ -289,7 +289,8 @@ class bab_mcalendars
 				'bab_NonWorkingDaysCollection', 
 				'bab_WorkingPeriodCollection', 
 				'bab_VacationPeriodCollection', 
-				'bab_CalendarEventCollection'
+				'bab_CalendarEventCollection',
+				'bab_InboxEventCollection'
 			)
 		);
 		
