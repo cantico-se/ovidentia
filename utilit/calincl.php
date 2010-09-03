@@ -183,144 +183,6 @@ function bab_getCalendarCategory($nameorid)
 
 
 /**
- * 
- * @deprecated
- * 
- * Get a list of available calendar ID
- * @return array
-
-function bab_getAvailableCalendars()
-{
-	$return = array();
-
-	$tmp =  array_merge(getAvailableUsersCalendars(),getAvailableGroupsCalendars(),getAvailableResourcesCalendars());
-	foreach ($tmp as $arr) {
-		$return[] = $arr['idcal'];
-	}
-
-	return $return;
-}
-*/
-
-
-/**
- * 
- * @deprecated
- * 
-function getAvailableUsersCalendars($bwrite = false)
-{
-	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
-	bab_getICalendars()->initializeCalendars();
-
-	$tab = array();
-
-	if( bab_getICalendars()->id_percal != 0 )
-		{
-		$tab[] = array('idcal' => bab_getICalendars()->id_percal, 'name' => $GLOBALS['BAB_SESS_USER']);
-		}
-
-	if( count(bab_getICalendars()->usercal) > 0 )
-		{
-		reset(bab_getICalendars()->usercal);
-		while( $row=each(bab_getICalendars()->usercal) ) 
-			{
-			if( $bwrite )
-				{
-				if( $row[1]['access'] == BAB_CAL_ACCESS_UPDATE || $row[1]['access'] == BAB_CAL_ACCESS_FULL || $row[1]['access'] == BAB_CAL_ACCESS_SHARED_UPDATE)
-					{
-					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
-					}
-				}
-			else
-				{
-				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
-				}
-			}
-		}
-
-	return $tab;
-}
-*/
-
-/**
- * 
- * @deprecated
- * 
-function getAvailableGroupsCalendars($bwrite = false)
-{
-	global $babBody;
-	bab_getICalendars()->initializeCalendars();
-	$tab = array();
-
-	if( count(bab_getICalendars()->pubcal) > 0 )
-		{
-		
-		reset(bab_getICalendars()->pubcal);
-		while( $row=each(bab_getICalendars()->pubcal) ) 
-			{
-			if( $bwrite )
-				{
-				if( $row[1]['manager'])
-					{
-					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
-					}
-				}
-			else
-				{
-				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
-				}
-			}
-		}
-
-	return $tab;
-}
-*/
-
-/**
- * 
- * @deprecated
- * 
- * @param unknown_type $bwrite
- * @return unknown_type
- 
-function getAvailableResourcesCalendars($bwrite = false)
-{
-	global $babBody, $BAB_SESS_USERID,$BAB_SESS_USER;
-	bab_getICalendars()->initializeCalendars();
-	$tab = array();
-
-	if( count(bab_getICalendars()->rescal) > 0 )
-		{
-		reset(bab_getICalendars()->rescal);
-		while( $row=each(bab_getICalendars()->rescal) ) 
-			{
-			if( $bwrite )
-				{
-				if( $row[1]['manager'])
-					{
-					$tab[] = array('idcal' => $row[0], 'name' => $row[1]['name']);
-					}
-				}
-			elseif( $row[1]['view'] || $row[1]['manager'] || $row[1]['add'])
-				{
-				$tab[] =  array('idcal' => $row[0], 'name' => $row[1]['name']);
-				}
-			}
-		}
-
-	return $tab;
-}
-*/
-
-
-
-//function notifyArticleDraftApprovers($id, $users)
-
-
-
-
-
-/**
  * Collection of accessible calendars for a user
  */
 class bab_icalendars
@@ -713,5 +575,50 @@ function bab_getCalendarTitle($calid) {
 
 
 
+/**
+ * Get User by the email and name
+ * return null if no match or multiple match
+ * 
+ * 
+ * @param string $email
+ * @param string $cn
+ * 
+ * @return int | null
+ */
+function bab_getUserIdByEmailAndName($email, $cn)
+{
+	global $babDB;
+	$query = "select id, firstname, lastname from ".BAB_USERS_TBL." where email LIKE '".$babDB->db_escape_string($email)."'";
+	$res = $babDB->db_query($query);
+	
+	$count = $babDB->db_num_rows($res);
+	
+	if(1 === $count)
+	{
+		$arr = $babDB->db_fetch_assoc($res);
+		return (int) $arr['id'];
+	}
+		
+		
+	if (0 === $count)
+	{
+		return null;
+	}
+	
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		if ($cn === bab_composeUserName($arr['firstname'], $arr['lastname']))
+		{
+			return (int) $arr['id'];
+		}
+		
+		if ($cn === bab_composeUserName($arr['lastname'], $arr['firstname']))
+		{
+			return (int) $arr['id'];
+		}
+	}
+	
+	return null;
+}
 
 

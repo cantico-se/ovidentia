@@ -147,7 +147,8 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 */
 	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, BAB_DateTime $expandStart = null, BAB_DateTime $expandEnd = null)
 	{
-		throw new Exception('not implemented');
+		$period = $this->getPeriod($periodCollection, $identifier);
+		return array($period);
 	}
 	
 	

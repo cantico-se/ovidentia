@@ -526,6 +526,8 @@ class bab_icalendar extends bab_icalendarEventsSource
 
 			foreach($events as $event) {
 
+				
+				
 				$parents = $event->getRelations('PARENT');
 				if ($parents)
 				{

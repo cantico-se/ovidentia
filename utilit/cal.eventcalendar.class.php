@@ -485,18 +485,26 @@ abstract class bab_EventCalendar
 	 * Display an event in to a calendar placeholder UI element on page
 	 * this method are called on the main calendar of event only
 	 * 
-	 * the default behaviour is to display an event only on the main calendar placeholder
+	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations
 	 * 
 	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
 	 * @param	bab_CalendarPeriod	$event			Event to display
 	 * 
-	 * @return unknown_type
+	 * @return bool
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
 		if ($calendar === $this)
 		{
 			return true;
+		}
+		
+		foreach($event->getCalendars() as $relationOrAttendee)
+		{
+			if ($relationOrAttendee === $this)
+			{
+				return true;
+			}
 		}
 		
 		return false;
@@ -550,102 +558,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	{
 		return bab_functionality::get('CalendarBackend/Ovi');
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	/**
-	 * Display an event in to a calendar placeholder UI element on page
-	 * this method are called on the main calendar of event only
-	 * 
-	 * the default behaviour is to display an event only on the main calendar placeholder
-	 * the ovidentia backend behaviour is to display event on the main calendar placeholder and attendees or relations placeholders
-	 * 
-	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
-	 * @param	bab_CalendarPeriod	$event			Event to display
-	 * 
-	 * @return unknown_type
-	 */
-	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
-	{
 
-		
-		global $babDB;
-		
-		$res = $babDB->db_query('
-			SELECT 
-					eo.caltype,
-					eo.id_cal,
-					eo.status
-					
-				FROM 
-					'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
-					'.BAB_CAL_EVENTS_TBL.' e
-			
-				WHERE 
-					eo.id_event = e.id
-					AND e.uuid = '.$babDB->quote($event->getProperty('UID')).' 
-		');
-		
-		
-		while ($arr = $babDB->db_fetch_assoc($res))
-		{
-			$urlIdentifier 		= $arr['caltype'].'/'.$arr['id_cal'];
-			$status 			= (int) $arr['status'];
-			$linked_calendar 	= bab_getICalendars()->getEventCalendar($urlIdentifier);
-			
-			if ($linked_calendar)
-			{
-			
-				if ($linked_calendar->getApprobationSheme() && $status === BAB_CAL_STATUS_DECLINED)
-				{
-					// the event has been rejected by approbation
-					// do not display event in any calendar placeholder
-					return false;
-				}
-				
-				if ($linked_calendar === $calendar && $status === BAB_CAL_STATUS_DECLINED)
-				{
-					// the event attendee has rejected his participation
-					// do not display the event in his calendar
-					return false;
-				}
-			}
-		}
-		
-		
-		if ($calendar === $this)
-		{
-			return true;	
-		}
-		
-		
-		foreach($event->getAttendees() as $attendee)
-		{
-			if ($attendee['calendar'] === $calendar)
-			{
-				return true;
-			}
-		}
-		
-		foreach($event->getRelations('CHILD') as $relation)
-		{
-			if ($relation === $calendar)
-			{
-				return true;
-			}
-		}
-		
-		
-		return false;
-	}
-	
-	
-	
 	
 	
 	/**

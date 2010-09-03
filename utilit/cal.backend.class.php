@@ -51,9 +51,14 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	/**
+	 * Create a personal calendar from an ovidentia user
+	 * 
+	 * @param	int	$id_user		owner of calendar
+	 * 
 	 * @return bab_EventCalendar
 	 */
-	public function PersonalCalendar() {
+	public function PersonalCalendar($id_user) 
+	{
 		throw new Exception('Do not call directly, each backend must have his own calendar implementation');
 		return null;
 	}
@@ -61,7 +66,8 @@ class Func_CalendarBackend extends bab_functionality
 	/**
 	 * @return bab_EventCalendar
 	 */
-	public function PublicCalendar() {
+	public function PublicCalendar() 
+	{
 		throw new Exception('Do not call directly, each backend must have his own calendar implementation');
 		return null;
 	}
@@ -69,10 +75,12 @@ class Func_CalendarBackend extends bab_functionality
 	/**
 	 * @return bab_EventCalendar
 	 */
-	public function ResourceCalendar() {
+	public function ResourceCalendar() 
+	{
 		throw new Exception('Do not call directly, each backend must have his own calendar implementation');
 		return null;
 	}
+	
 	
 	
 	public function includePeriodCollection()

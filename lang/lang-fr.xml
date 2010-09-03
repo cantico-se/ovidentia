@@ -3119,7 +3119,7 @@
 <string id="Change my personal calendar from %s to %s">Modifier mon agenda personnel de %s à %s</string>
 <string id="Personal calendar type">Type d'agenda personnel</string>
 <string id="Modification of this event on calendar %s is not allowed">La modification n'est pas autorisée sur l'agenda %s</string>
-<string id=""></string>
+<string id="%s cannot be added as an attendee on event because his email address is not unique in the list of users">%s ne peut pas être ajouté comme invité à l'événement car son adresse email n'est pas unique dans la liste des utilsateurs</string>
 <string id=""></string>
 <string id=""></string>
 <string id=""></string>

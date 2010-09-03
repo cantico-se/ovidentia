@@ -123,7 +123,7 @@ function bab_stripDomainName($txt) {
 
 function bab_isEmailValid($email)
 	{
-	if( empty($email) || ereg(' ', $email))
+	if( empty($email) || preg_match('/\s+/', $email))
 		return false;
 	else
 		return true;

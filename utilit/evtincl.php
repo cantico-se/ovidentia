@@ -1724,7 +1724,7 @@ class bab_event_posted {
 	public function isValid(&$msgerror)
 	{
 		
-
+		require_once dirname(__FILE__).'/calincl.php';
 		
 		
 		if( empty($this->args['title']))
@@ -1791,6 +1791,27 @@ class bab_event_posted {
 			$msgerror = bab_translate("You must select at least one calendar type");
 			return false;
 		}
+		
+		
+		// verification of attendees 
+		
+		foreach($idcals as $urlidentifier)
+		{
+			$calendar = bab_getICalendars()->getEventCalendar($urlidentifier);
+			if ($calendar instanceof bab_PersonalCalendar)
+			{
+				$id_user = $calendar->getIdUser();
+				$cn = bab_getUserName($id_user);
+				$email = bab_getUserEmail($id_user);
+				
+				if (null === bab_getUserIdByEmailAndName($email, $cn))
+				{
+					$msgerror = sprintf(bab_translate("%s cannot be added as an attendee on event because his email address is not unique in the list of users"), $cn);
+					return false;
+				}
+			}
+		}
+		
 		
 		return true;
 	}

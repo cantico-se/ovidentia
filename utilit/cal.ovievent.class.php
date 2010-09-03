@@ -1343,44 +1343,48 @@ class bab_cal_OviEventSelect
 		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
-			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['uid'];
+			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['id_user'];
 		}
 		
 		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
 		
-			$inbox_criteria = clone $criteria;
-		
-			// add the UID criteria
-			
-			$inbox_criteria->_AND_($factory->Uid($uid_list));
-			
-			
-			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
-			$periods = $backend->selectPeriods($inbox_criteria);
-			
-			$selected = array_flip($uid_list);
-			
-			foreach($periods as $p)
+			foreach($uid_list as $uid => $id_user)
 			{
-				bab_debug($p->getProperties(), DBG_TRACE, 'INBOX');
-				
-				$uid = $p->getProperty('UID');
-				//$user_periods->addPeriod($p);
-				
-				unset($selected[$uid]);
-			}
 			
-			// remaining in $selected not found in backend or no more accessible
-			if ($selected)
-			{
-				$babDB->db_query('
-					DELETE FROM bab_cal_inbox 
-					WHERE 
-						calendar_backend='.$babDB->quote($calendarBackend).' 
-						AND uid IN('.$babDB->quote(array_keys($selected)).')
-				');
+				$inbox_criteria = clone $criteria;
+			
+				// add the UID criteria
+				
+				$inbox_criteria->_AND_($factory->Uid($uid));
+				
+				
+				$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
+				$periods = $backend->selectPeriods($inbox_criteria);
+				
+				$found = false;
+				foreach($periods as $p)
+				{
+					/*@var $p bab_CalendarPeriod */
+					$found_uid = $p->getProperty('UID');
+					if ($found_uid === $uid)
+					{
+						$user_periods->addPeriod($p);
+						bab_debug($p->getProperties(), DBG_TRACE, 'Inbox');
+						$found = true;
+					}
+				}
+				
+				if (!$found)
+				{
+					$babDB->db_query('
+						DELETE FROM bab_cal_inbox 
+						WHERE 
+							calendar_backend='.$babDB->quote($calendarBackend).' 
+							AND uid='.$babDB->quote($uid).' 
+					');
+				}
 			}
 			
 		}
