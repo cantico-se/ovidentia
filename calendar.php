@@ -172,7 +172,7 @@ class displayAttendeesCls
 			$this->altbg = !$this->altbg;
 			$this->fullname = $arr['CN'];
 			$this->bcreator = false;
-			if( $arr['ROLE'] ==  'CHAIR' )
+			if( $arr['calendar'] === reset($this->period->getRelations('PARENT')) )
 				{
 				$this->bcreator = true;
 				}

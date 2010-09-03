@@ -978,22 +978,18 @@ class bab_cal_OviEventSelect
 			if ($calendar instanceof bab_PersonalCalendar) {
 				
 				if ($calendar->getUrlIdentifier() === $arr['parent_calendar']) {
-					// main personal calendar 
-					$role = 'CHAIR';
-					
+
 					// set as main calendar in collection
 					$collection->setCalendar($calendar);
 					
 					// main calendar 
 					$event->addRelation('PARENT', $calendar);
 					
-				} else {
-					$role = 'REQ-PARTICIPANT';
-				}
+				} 
 				
 				
 				
-				$event->addAttendee($calendar, $role, $partstat);
+				$event->addAttendee($calendar, 'REQ-PARTICIPANT', $partstat);
 				
 				if (isset($alarm))
 				{
@@ -1371,19 +1367,21 @@ class bab_cal_OviEventSelect
 					if ($found_uid === $uid)
 					{
 						$user_periods->addPeriod($p);
-						bab_debug($p->getProperties(), DBG_TRACE, 'Inbox');
+						// bab_debug($p->getProperties(), DBG_TRACE, 'Inbox');
 						$found = true;
 					}
 				}
 				
 				if (!$found)
 				{
+					/*
 					$babDB->db_query('
 						DELETE FROM bab_cal_inbox 
 						WHERE 
 							calendar_backend='.$babDB->quote($calendarBackend).' 
 							AND uid='.$babDB->quote($uid).' 
 					');
+					*/
 				}
 			}
 			

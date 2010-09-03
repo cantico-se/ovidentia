@@ -111,8 +111,8 @@
 			<!--
 			function repeat_checkbox(obj)
 				{
-
-				if (obj.checked)
+				
+				if (null !== obj && obj.checked)
 					{
 					document.getElementById('repeat_tr').style.display = '';
 					}
@@ -187,11 +187,17 @@
 				</p>
 				<script type="text/javascript">
 				<!--
-				document.forms['vacform'].repeat.value = { repeat };
-				document.getElementById('repeat_radio_'+document.forms['vacform'].repeat.value).checked = true;
-				repeat_switch();
-				repeat_checkbox(document.forms['vacform'].repeat_cb);
-				daytypeswitch();
+
+				bab_initFunctions.push(function() { 
+
+					
+					document.forms['vacform'].repeat.value = '{ repeat }';
+					document.getElementById('repeat_radio_{ repeat }').checked = true;
+					repeat_switch();
+					repeat_checkbox(null);
+					daytypeswitch();
+
+				});
 		
 				//-->
 				</script>

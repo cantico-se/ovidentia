@@ -281,17 +281,14 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 				$partstat = $attendee->getDefaultAttendeePARTSTAT();
 				
 				if ($calendar->getUrlIdentifier() === $attendee->getUrlIdentifier()) {
-					$role = 'CHAIR';
 					
 					// set as parent
 					$period->addRelation('PARENT', $attendee);
 					
 					
-				} else {
-					$role = 'REQ-PARTICIPANT';
-				}
+				} 
 				
-				$period->addAttendee($attendee, $role, $partstat);
+				$period->addAttendee($attendee, 'REQ-PARTICIPANT', $partstat);
 				
 			} else {
 				
@@ -1849,6 +1846,16 @@ class bab_event_posted {
 			
 			
 			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
+			
+			if (empty($this->args['evtid'])) {
+				
+				// creation
+				
+				$this->calendarPeriod->setProperty(
+					'ORGANIZER;CN='.$this->calendarPeriod->escape($GLOBALS['BAB_SESS_USER']), 
+					'MAILTO:'.bab_getUserEmail($GLOBALS['BAB_SESS_USERID'])
+				);
+			}
 		}
 		
 		return $this->calendarPeriod;

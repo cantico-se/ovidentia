@@ -68,6 +68,20 @@ abstract class bab_ICalendarObject
 	
 	
 	/**
+	 * Escape a string tu use a parameter in a iCalendar property
+	 * @param	string	$str
+	 * @return string
+	 */
+	public function escape($str)
+	{
+		$str = str_replace(';', ' ', $str);
+		$str = str_replace(':', ' ', $str);
+		return $str;
+	}
+	
+	
+	
+	/**
 	 * define a property with a icalendar property name
 	 * the value is not compliant with the icalendar format
 	 * Dates are defined as ISO datetime
@@ -161,7 +175,7 @@ abstract class bab_ICalendarObject
 		
 		if (null !== $role) 	$attendeekey .= ";ROLE=$role";
 		if (null !== $partstat) $attendeekey .= ";PARTSTAT=$partstat";
-		if (null !== $cn) 		$attendeekey .= ";CN=$cn";
+		if (null !== $cn) 		$attendeekey .= ";CN=".$this->escape($cn);
 		if (null !== $rsvp) 	$attendeekey .= ";RSVP=$rsvp";
 		
 		$attendeekey .= ':MAILTO:'.$email;
