@@ -298,7 +298,7 @@ abstract class bab_ICalendarObject
 				}
 			}
 			
-			if (mb_strpos($value, 'MAILTO:') !== false) {
+			if (mb_strpos(strtoupper($value), 'MAILTO:') !== false) {
 				list(, $email) = explode('MAILTO:', $value);
 			}
 			

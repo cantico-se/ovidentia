@@ -120,6 +120,8 @@ function bab_getMainCalendar(Array $idcals)
 {
 	$list = array_flip($idcals);
 	$calendars = bab_getICalendars()->getCalendars();
+	$oviBackendCalendars = array();
+	$otherCalendars = array();
 	
 	foreach($calendars as $calendar) {
 		
@@ -138,15 +140,28 @@ function bab_getMainCalendar(Array $idcals)
 		if ($GLOBALS['BAB_SESS_USERID'] === $calendar->getIdUser()) {
 			return $calendar;
 		}
+		
+		if ($calendar->getBackend() instanceof Func_CalendarBackend_Ovi)
+		{
+			$oviBackendCalendars[] = $calendar;
+		} else {
+			$otherCalendars[] = $calendar;
+		}
 	}
 	
-	$first = reset($idcals);
 	
-	if (isset($calendars[$first]))
+	if ($oviBackendCalendars)
 	{
-		return $calendars[$first];
+		bab_Sort::sortObjects($oviBackendCalendars, 'getName');
+		return reset($oviBackendCalendars);
 	}
 	
+	if ($otherCalendars)
+	{
+		bab_Sort::sortObjects($otherCalendars, 'getName');
+		return reset($otherCalendars);
+	}
+
 	throw new Exception('No accessible compatible calendar');
 	return null;
 }

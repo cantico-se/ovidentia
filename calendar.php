@@ -176,7 +176,7 @@ class displayAttendeesCls
 		if( list(,$arr) = each($this->attendees))
 			{
 			$this->altbg = !$this->altbg;
-			$this->fullname = !empty($arr['CN']) ? $arr['CN'] : $arr['email'];
+			$this->fullname = isset($arr['CN']) ? $arr['CN'] : $arr['email'];
 				
 			$this->external = false;
 			if (!isset($arr['calendar']))	
