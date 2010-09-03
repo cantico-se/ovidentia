@@ -191,22 +191,28 @@ abstract class bab_ICalendarObject
 		$email = bab_getUserEmail($id_user);
 		
 		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
-		
+		$insertkey = $cn.' '.$email;
 		$urlIdentifier = $calendar->getUrlIdentifier();
+		
+		$this->attendeesCalendars[$insertkey] = $calendar;
+		
 		
 		if (!isset($this->attendees[$urlIdentifier]))
 		{
+			
+			
 			$this->attendees[$urlIdentifier] = array(
 				'ROLE'		=> $role,
 				'PARTSTAT'	=> $partstat,
 				'CN'		=> $cn,
 				'RSVP'		=> $rsvp,
 				'email'		=> $email,
-				'calendar' 	=> $calendar
+				'calendar' 	=> $calendar,
+				'key'		=> $insertkey
 			);
 			
 			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
-			$this->attendeesCalendars[$attendeekey.':MAILTO:'.$email] = $calendar;
+			
 			
 			if (($this instanceof bab_CalendarPeriod)  && !isset($this->attendeesEvents[$urlIdentifier]))
 			{
@@ -216,12 +222,16 @@ abstract class bab_ICalendarObject
 		}
 		else
 		{
-
 			if (isset($this->properties['ATTENDEE'][$attendeekey]) && $this->properties['ATTENDEE'][$attendeekey] === 'MAILTO:'.$email)
 			{
 				// nothing changed
 				return;
 			}
+			
+			$old = $this->attendees[$urlIdentifier];
+			$oldattendeekey = $this->attendeeKey($old['ROLE'], $old['PARTSTAT'], $old['CN'], $old['RSVP']);
+			
+			unset($this->properties['ATTENDEE'][$oldattendeekey]);
 			
 			
 			$this->attendees[$urlIdentifier] = array(
@@ -234,7 +244,6 @@ abstract class bab_ICalendarObject
 			);
 			
 			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
-			$this->attendeesCalendars[$attendeekey.':MAILTO:'.$email] = $calendar;
 			
 			if (($this instanceof bab_CalendarPeriod) && !isset($this->attendeesEvents[$urlIdentifier]))
 			{
@@ -299,15 +308,14 @@ abstract class bab_ICalendarObject
 			}
 			
 			if (mb_strpos(strtoupper($value), 'MAILTO:') !== false) {
-				list(, $email) = explode('MAILTO:', $value);
+				list(, $email) = explode(':', $value);
 			}
 			
+			$key = $cn.' '.$email;
 			
-			$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
-			
-			if (isset($this->attendeesCalendars[$attendeekey.':MAILTO:'.$email]))
+			if (isset($this->attendeesCalendars[$key]))
 			{
-				$calendar = $this->attendeesCalendars[$attendeekey.':MAILTO:'.$email];
+				$calendar = $this->attendeesCalendars[$key];
 			}
 			
 			

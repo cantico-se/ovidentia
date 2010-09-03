@@ -498,11 +498,14 @@ class displayEventDetailCls
 			$this->title = bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
 			$this->description	= bab_toHtml($calendarPeriod->getProperty('DESCRIPTION'));
 			
-			foreach($calendarPeriod->getProperty('ORGANIZER') as $param => $organizer)
+			if ($calendarPeriod->getProperty('ORGANIZER'))
 			{
-				if (preg_match('/;CN=([\s\w]+)/', $param, $m))
+				foreach($calendarPeriod->getProperty('ORGANIZER') as $param => $organizer)
 				{
-					$this->organizer	= bab_toHtml($m[1]);
+					if (preg_match('/;CN=([\s\w]+)/', $param, $m))
+					{
+						$this->organizer	= bab_toHtml($m[1]);
+					}
 				}
 			}
 			

@@ -1891,6 +1891,7 @@ class bab_event_posted {
 
 		try {
 			$calendarPeriod = $this->getCalendarPeriod();
+			bab_debug($calendarPeriod->getProperties());
 		} catch(ErrorException $e) {
 			$message = $e->getMessage();
 			return false;
