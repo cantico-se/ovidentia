@@ -483,7 +483,7 @@ abstract class bab_EventCalendar
 	
 	/**
 	 * Display an event in to a calendar placeholder UI element on page
-	 * this method are called on the main calendar of event only
+	 * this method is called on the main calendar of event only
 	 * 
 	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations
 	 * 
@@ -501,7 +501,7 @@ abstract class bab_EventCalendar
 		
 		foreach($event->getCalendars() as $relationOrAttendee)
 		{
-			if ($relationOrAttendee === $this)
+			if ($relationOrAttendee->getUrlIdentifier() === $calendar->getUrlIdentifier())
 			{
 				return true;
 			}

@@ -71,7 +71,7 @@ class displayAttendeesCls
 		$this->resourcestxt = bab_translate("Resource");
 		
 		$this->statusdef = array(
-			'NEEDS-ACTION'	=> '',
+			'NEEDS-ACTION'	=> bab_translate("Waiting for approbation"),
 			'ACCEPTED' => bab_translate("Accepted"), 
 			'DECLINED' => bab_translate("Declined")
 		);
@@ -89,8 +89,9 @@ class displayAttendeesCls
 			throw new Exception('Event not found backend='.get_class($backend).' UID='.$evtid.' DTSTART='.$dtstart);
 		}
 			
-			
-		$this->attendees = $this->period->getAttendees();
+		$this->attendees = $this->period->getAllAttendees();
+		
+		
 		$this->publics = array();
 		$this->resources = array();
 		
@@ -118,26 +119,31 @@ class displayAttendeesCls
 
 		foreach($this->attendees as $attendee)
 		{
-			$user = (int) $attendee['calendar']->getIdUser();
-			if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
+			if (isset($attendee['calendar']))
 			{
-				switch($attendee['PARTSTAT'])
+				$user = (int) $attendee['calendar']->getIdUser();
+				if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 				{
-					case 'NEEDS-ACTION':
-						$this->statusarray = array('ACCEPTED','DECLINED');
-						break;
-					case 'ACCEPTED':
-						$this->statusarray = array('DECLINED');
-						break;
-					case 'DECLINED':
-						$this->statusarray = array('ACCEPTED');
-						break;
-				}
-				
-				break;
-			} 
+					switch($attendee['PARTSTAT'])
+					{
+						case 'NEEDS-ACTION':
+							$this->statusarray = array('ACCEPTED','DECLINED');
+							break;
+						case 'ACCEPTED':
+							$this->statusarray = array('DECLINED');
+							break;
+						case 'DECLINED':
+							$this->statusarray = array('ACCEPTED');
+							break;
+					}
+					
+					break;
+				} 
+			}
 		}
-			
+		
+		reset($this->attendees);
+		
 		
 		$this->countstatus = count($this->statusarray);
 		if( $this->countstatus )
@@ -170,12 +176,14 @@ class displayAttendeesCls
 		if( list(,$arr) = each($this->attendees))
 			{
 			$this->altbg = !$this->altbg;
-			$this->fullname = $arr['CN'];
-			$this->bcreator = false;
-			if( $arr['calendar'] === reset($this->period->getRelations('PARENT')) )
+			$this->fullname = !empty($arr['CN']) ? $arr['CN'] : $arr['email'];
+				
+			$this->external = false;
+			if (!isset($arr['calendar']))	
 				{
-				$this->bcreator = true;
+				$this->external = true;
 				}
+				
 			$this->status = $this->statusdef[$arr['PARTSTAT']];
 			return true;
 			}
@@ -469,12 +477,14 @@ class displayEventDetailCls
 		$this->desctxt = bab_translate("Description");
 		$this->locationtxt = bab_translate("Location");
 		$this->cattxt = bab_translate("Category");
+		$this->t_organizer = bab_translate("Organized by");
 		
 		$this->begindate = bab_toHtml(bab_longDate($calendarPeriod->ts_begin));
 		$this->enddate = bab_toHtml(bab_longDate($calendarPeriod->ts_end));
 	
 		$this->t_option = ''; 
 		$this->properties = bab_toHtml(bab_getPropertiesString($calendarPeriod, $this->t_option));
+		$this->organizer = '';
 	
 		if(!$calendar->canViewEventDetails($calendarPeriod))
 			{
@@ -487,6 +497,14 @@ class displayEventDetailCls
 			{
 			$this->title = bab_toHtml($calendarPeriod->getProperty('SUMMARY'));
 			$this->description	= bab_toHtml($calendarPeriod->getProperty('DESCRIPTION'));
+			
+			foreach($calendarPeriod->getProperty('ORGANIZER') as $param => $organizer)
+			{
+				if (preg_match('/;CN=([\s\w]+)/', $param, $m))
+				{
+					$this->organizer	= bab_toHtml($m[1]);
+				}
+			}
 			
 			
 			$data = $calendarPeriod->getData();

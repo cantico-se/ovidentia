@@ -19,11 +19,11 @@
 	<!--#in getnextattendee -->
 	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td>
-		<!--#if bcreator -->
-		<strong>{ fullname }</strong>
-		<!--#else bcreator -->
+		<!--#if external -->
+		<em>{ fullname }</em>
+		<!--#else external -->
 		{ fullname }
-		<!--#endif bcreator -->
+		<!--#endif external -->
 		</td>
 		<td align="right">{ status }</td>
 	</tr>        
@@ -265,6 +265,10 @@
 	<td>{ properties }</td>
 	</tr>
 	<!--#endif properties -->
+	<tr> 
+	<td align="right"><b>{ t_organizer }</b></td>
+	<td>{ organizer }</td>
+	</tr>
 	</table>
 </td>
 </tr>

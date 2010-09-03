@@ -44,6 +44,12 @@ abstract class bab_ICalendarObject
 	 */
 	private $attendees = array();
 	
+	/**
+	 * Store association beetween attendee property and calendar
+	 * @var unknown_type
+	 */
+	private $attendeesCalendars = array();
+	
 	
 	/**
 	 * Store aditional information for the RELATED-TO property
@@ -141,6 +147,19 @@ abstract class bab_ICalendarObject
 	}
 	
 	
+	private function attendeeKey($role, $partstat, $cn, $rsvp)
+	{
+		$attendeekey = "ATTENDEE";
+		
+		if (null !== $role) 	$attendeekey .= ";ROLE=$role";
+		if (null !== $partstat) $attendeekey .= ";PARTSTAT=$partstat";
+		if (null !== $cn) 		$attendeekey .= ";CN=".$this->escape($cn);
+		if (null !== $rsvp) 	$attendeekey .= ";RSVP=$rsvp";
+		
+		return $attendeekey;
+	}
+	
+	
 	/**
 	 * Set the ATTENDEE property
 	 * 
@@ -171,32 +190,23 @@ abstract class bab_ICalendarObject
 		$cn = bab_getUserName($id_user);
 		$email = bab_getUserEmail($id_user);
 		
-		$attendeekey = "ATTENDEE";
-		
-		if (null !== $role) 	$attendeekey .= ";ROLE=$role";
-		if (null !== $partstat) $attendeekey .= ";PARTSTAT=$partstat";
-		if (null !== $cn) 		$attendeekey .= ";CN=".$this->escape($cn);
-		if (null !== $rsvp) 	$attendeekey .= ";RSVP=$rsvp";
-		
-		$attendeekey .= ':MAILTO:'.$email;
+		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
 		
 		$urlIdentifier = $calendar->getUrlIdentifier();
 		
 		if (!isset($this->attendees[$urlIdentifier]))
 		{
-			$pos = count($this->properties['ATTENDEE']);
-			
 			$this->attendees[$urlIdentifier] = array(
 				'ROLE'		=> $role,
 				'PARTSTAT'	=> $partstat,
 				'CN'		=> $cn,
 				'RSVP'		=> $rsvp,
 				'email'		=> $email,
-				'calendar' 	=> $calendar,
-				'pos'		=> $pos
+				'calendar' 	=> $calendar
 			);
 			
-			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
+			$this->attendeesCalendars[$attendeekey.':MAILTO:'.$email] = $calendar;
 			
 			if (($this instanceof bab_CalendarPeriod)  && !isset($this->attendeesEvents[$urlIdentifier]))
 			{
@@ -206,9 +216,8 @@ abstract class bab_ICalendarObject
 		}
 		else
 		{
-			$pos = $this->attendees[$urlIdentifier]['pos'];
-			
-			if ($this->properties['ATTENDEE'][$pos] === $attendeekey)
+
+			if (isset($this->properties['ATTENDEE'][$attendeekey]) && $this->properties['ATTENDEE'][$attendeekey] === 'MAILTO:'.$email)
 			{
 				// nothing changed
 				return;
@@ -221,11 +230,11 @@ abstract class bab_ICalendarObject
 				'CN'		=> $cn,
 				'RSVP'		=> $rsvp,
 				'email'		=> $email,
-				'calendar' 	=> $calendar,
-				'pos'		=> $pos
+				'calendar' 	=> $calendar
 			);
 			
-			$this->properties['ATTENDEE'][$pos] = $attendeekey;
+			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
+			$this->attendeesCalendars[$attendeekey.':MAILTO:'.$email] = $calendar;
 			
 			if (($this instanceof bab_CalendarPeriod) && !isset($this->attendeesEvents[$urlIdentifier]))
 			{
@@ -235,7 +244,7 @@ abstract class bab_ICalendarObject
 	}
 	
 	/**
-	 * Get the list of attendees
+	 * Get the list of attendees with a user in ovidentia database
 	 * keys of array are the iCalendar representations
 	 * @return array	<array>
 	 */
@@ -250,10 +259,84 @@ abstract class bab_ICalendarObject
 	}
 	
 	
+	/**
+	 * Get all attendees, ovidentia attendees and the unreconized attendees defined by property only
+	 * @return array
+	 */
+	public function getAllAttendees() {
+		$return = array();
+		$attendees = (array) $this->getProperty('ATTENDEE');
+		
+		
+		foreach($attendees as $params => $value)
+		{
+			$parameters = explode(';', $params);
+			array_shift($parameters);
+
+			$role = null;
+			$partstat = null;
+			$cn = null;
+			$rsvp = null;
+			$email = null;
+			$calendar = null;
+			
+			foreach ($parameters as $parameter) {
+				list($paramName, $paramValue) = explode('=', $parameter);
+				switch ($paramName) {
+					case 'ROLE':
+						$role = $paramValue;
+						break;
+					case 'PARTSTAT':
+						$partstat = $paramValue;
+						break;
+					case 'RSVP':
+						$rsvp = $paramValue;
+						break;
+					case 'CN':
+						$cn = $paramValue;
+						break;
+				}
+			}
+			
+			if (mb_strpos($value, 'MAILTO:') !== false) {
+				list(, $email) = explode('MAILTO:', $value);
+			}
+			
+			
+			$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
+			
+			if (isset($this->attendeesCalendars[$attendeekey.':MAILTO:'.$email]))
+			{
+				$calendar = $this->attendeesCalendars[$attendeekey.':MAILTO:'.$email];
+			}
+			
+			
+			$return[] = array(
+				'ROLE'		=> $role,
+				'PARTSTAT'	=> $partstat,
+				'CN'		=> $cn,
+				'RSVP'		=> $rsvp,
+				'email'		=> $email,
+				'calendar'	=> $calendar
+			);
+		}
+		
+		
+		
+		return $return;
+	}
 	
+	
+	
+	/**
+	 * Remove attendees from object
+	 * @return bab_ICalendarObject
+	 */
 	public function removeAttendees() {
 		unset($this->properties['ATTENDEE']);
-		return $this->attendees = null;
+		$this->attendees = array();
+		$this->attendeesCalendars = array();
+		return $this;
 	}
 	
 	
