@@ -1166,8 +1166,12 @@ function updateStateSection($c, $w, $closed)
 		$babDB->db_query($req);
 		}
 
-	Header("Location: ". $HTTP_REFERER);
+	if (isset($_SERVER['HTTP_REFERER']))
+	{
+	Header("Location: ". $_SERVER['HTTP_REFERER']);
+	exit;
 	}
+}
 
 function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	{
