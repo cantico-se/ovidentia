@@ -2209,7 +2209,7 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	
 	
 	$criteria = $C->Hash($collection->hash)
-		->_AND_($C->Collection($collection))
+		->_AND_($C->Collection(get_class($collection)))
 		->_AND_($C->Calendar($calendar));
 	
 	
@@ -2223,8 +2223,9 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 		$criteria->_AND_($C->Begin(BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end)));
 	}
 	
-
 	$userperiods = $backend->selectPeriods($criteria);
+	
+	
 	
 	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
 	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);

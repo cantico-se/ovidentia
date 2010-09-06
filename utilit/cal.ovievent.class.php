@@ -1101,7 +1101,7 @@ class bab_cal_OviEventSelect
 				ce.start_date asc 
 		";
 		
-		// bab_debug($query);
+		bab_debug($query);
 		
 		return $query;
 	}
