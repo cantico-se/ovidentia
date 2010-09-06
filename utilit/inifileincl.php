@@ -127,6 +127,69 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
+	
+	
+	
+	function require_mysql_granted_privileges($value) {
+		
+		
+		$db = &$GLOBALS['babDB'];
+		$error = null;
+
+		$res = $db->db_queryWem("SHOW GRANTS");
+		
+		$required_privileges = preg_split('/\s*,\s*/', $value);
+		
+		if (!$res) {
+		
+			$mysql = '';
+			$status = false;
+			$error = bab_translate('The mysql show grants query do not return any result');
+		} else {
+		
+			$status = false;
+			$current = array();
+			while ($arr = $db->db_fetch_array($res))
+			{
+				if (preg_match('/^GRANT\s([A-Z\s,]+)\sON/', $arr[0], $m))
+				{
+					foreach(preg_split('/\s*,\s*/', strtoupper($m[1])) as $privilege)
+					{
+						$current[$privilege] = $privilege;
+					}
+				}
+			}
+			
+			
+		}
+		
+		$status = isset($current['ALL PRIVILEGES']);
+		
+		if (!$status)
+		{
+			$status = true;
+			foreach($required_privileges as $privilege)
+			{
+				if (!isset($current[$privilege]))
+				{
+					$error = sprintf(bab_translate('Missing the %s mysql privilege'), $privilege);
+					$status = false;
+					break;
+				}
+			}
+		}
+
+		return array(
+			'description'	=> bab_translate("MySQL granted privileges"),
+			'current'		=> implode(', ', $current),
+			'result'		=> $status,
+			'error'			=> $error
+		);
+	}
+	
+	
+	
+	
 
 	public static function return_bytes($val) {
 	   $val = trim($val);
@@ -431,6 +494,19 @@ class bab_inifile_requirements {
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
 			'result'		=> $status,
 			'error'			=> $error
+		);
+	}
+	
+	
+	function require_memory_limit($value) {
+	
+		$required = self::return_bytes($value);
+		$current = self::return_bytes(ini_get('memory_limit'));
+		
+		return array(
+			'description'	=> 'memory_limit (php.ini)',
+			'current'		=> ini_get('memory_limit'),
+			'result'		=> $current >= $required
 		);
 	}
 	

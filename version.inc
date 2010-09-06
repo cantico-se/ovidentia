@@ -62,6 +62,10 @@ encoding="UTF-8"
 
 mod_dom="Available"
 
+; available since 7.4.0
+
+mysql_granted_privileges="SELECT, ALTER, CREATE, LOCK TABLES, CREATE TEMPORARY TABLES, DELETE, DROP, INDEX, INSERT, UPDATE"
+
 
 [recommendations]
 register_globals="Off"
@@ -87,5 +91,10 @@ upload_max_file_size=30M
 mysql_max_allowed_packet=15M
 mysql_character_set_database="utf8, latin1"
 mysql_collation_database="utf8_general_ci, utf8_swedish_ci, latin1_swedish_ci"
+
+; available since 7.4.0
+
+memory_limit="32M"
+
 
 ;*/?>
