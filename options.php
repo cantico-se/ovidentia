@@ -1148,7 +1148,7 @@ function updateProfiles()
 
 function updateStateSection($c, $w, $closed)
 	{
-	global $babDB, $HTTP_REFERER, $BAB_SESS_USERID;
+	global $babDB, $BAB_SESS_USERID;
 
 	if( !empty($BAB_SESS_USERID))
 		{
@@ -1166,8 +1166,14 @@ function updateStateSection($c, $w, $closed)
 		$babDB->db_query($req);
 		}
 
-	Header("Location: ". $HTTP_REFERER);
+	
+	if (isset($_SERVER['HTTP_REFERER']))
+	{
+	Header("Location: ". $_SERVER['HTTP_REFERER']);
+	exit;
 	}
+	
+}
 
 function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 	{
