@@ -2026,6 +2026,7 @@ function bab_previewComment($com)
 
 function bab_getDocumentArticle( $idf )
 	{
+	require_once dirname(__FILE__).'/path.class.php';
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	$access = false;
 
@@ -2047,27 +2048,10 @@ function bab_getDocumentArticle( $idf )
 
 	$fullpath = bab_getUploadArticlesPath();
 	
-
 	$fullpath .= $arr['id_article'].",".$file;
-	$fsize = filesize($fullpath);
-	$mime = bab_getFileMimeType($file);
 
-	if( mb_strtolower(bab_browserAgent()) == "msie")
-		header('Cache-Control: public');
-	$inl = bab_getFileContentDisposition() == 1? 1: '';
-	if( $inl == '1' )
-		header("Content-Disposition: inline; filename=\"$file\""."\n");
-	else
-		header("Content-Disposition: attachment; filename=\"$file\""."\n");
-	header("Content-Type: $mime"."\n");
-	header("Content-Length: ". $fsize."\n");
-	header("Content-transfert-encoding: binary"."\n");
-	$fp=fopen($fullpath,"rb");
-	while(!feof($fp)) {
-		echo fread($fp,4096);
-		}
-	fclose($fp);
-	}
+	bab_downloadFile(new bab_Path($fullpath), $file, bab_getFileContentDisposition());
+}
 
 /**
  * Create a new article draft
