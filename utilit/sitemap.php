@@ -618,6 +618,10 @@ class bab_siteMap {
 			return $cache[$cachekey];
 		}
 		
+		if (isset($cache['0'])) {
+			// if global sitemap allready requested on same page, use this sitemap
+			return $cache['0'];
+		}
 		
 		/** @var $babDB bab_Database */
 		global $babDB;
