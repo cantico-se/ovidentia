@@ -166,7 +166,10 @@ function send_checked_mail() {
 			$mail_obj->mailAltBody($arr['altbody']);
 
 			foreach($data['files'] as $file) {
-				$mail_obj->mailFileAttach($file[0], $file[1], $file[2]);
+				if (is_file($file[0]))
+				{
+					$mail_obj->mailFileAttach($file[0], $file[1], $file[2]);
+				}
 			}
 			
 			
