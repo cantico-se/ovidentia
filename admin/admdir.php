@@ -1980,12 +1980,14 @@ if( isset($aclview))
 	{
 	maclGroups();
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=list');
+	exit;
 	}
 
 if( isset($aclfield))
 	{
 	maclGroups();
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=admdir&idx=mdb&id='.$id);
+	exit;
 	}
 
 if( isset($update) )

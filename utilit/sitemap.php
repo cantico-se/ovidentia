@@ -611,6 +611,8 @@ class bab_siteMap {
 	 */
 	public static function get($path = null, $levels = null) {
 		
+		// echo "sitemap get ".implode('/',$path)."\n";
+		
 		include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 		
 		static $cache = array();
@@ -623,6 +625,11 @@ class bab_siteMap {
 		
 		if (isset($cache[$cachekey])) {
 			return $cache[$cachekey];
+		}
+		
+		if (isset($cache['0'])) {
+			// if global sitemap allready requested on same page, use this sitemap
+			return $cache['0'];
 		}
 		
 		

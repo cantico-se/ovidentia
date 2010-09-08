@@ -871,6 +871,7 @@ elseif( isset($aclview))
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=statconf&idx=bask");
+	exit;
 	}
 
 

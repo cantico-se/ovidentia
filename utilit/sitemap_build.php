@@ -1368,7 +1368,8 @@ function bab_siteMap_loadNodes($path, $levels) {
 	
 	// create delegations nodes
 	
-	$delgations = bab_getUserVisiblesDelegations();
+	$delgations = bab_getUserAdministratorDelegations();
+	
 	foreach($delgations as $dgid => $arr) {
 		
 		$dgNode = new bab_siteMap_buildItem($dgid);

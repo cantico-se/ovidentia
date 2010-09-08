@@ -574,6 +574,7 @@ if( isset($aclview))
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admocs&idx=list");
+	exit;
 	}
 
 if (isset($action)) {

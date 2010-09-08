@@ -310,6 +310,7 @@ if( isset($aclview))
 	{
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=forums&idx=list");
+	exit;
 	}
 
 if( isset($action) && $action == "Yes")

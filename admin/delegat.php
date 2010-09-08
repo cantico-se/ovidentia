@@ -949,6 +949,7 @@ if( isset($aclupdate))
 	include_once $babInstallPath.'admin/acl.php';
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
+	exit;
 	}
 
 

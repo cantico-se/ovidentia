@@ -781,6 +781,7 @@ function updateAclGroups()
 	}
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+	exit;
 }
 
 /* main */

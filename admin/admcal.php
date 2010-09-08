@@ -428,12 +428,14 @@ elseif("updcat" == bab_rp('add')  && $babBody->isSuperAdmin)
 	include_once $babInstallPath."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=pub");
+	exit;
 	}
 elseif( isset($aclres))
 	{
 	include_once $babInstallPath."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=admcals&idx=res");
+	exit;
 	}
 
 

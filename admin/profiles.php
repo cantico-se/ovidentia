@@ -553,6 +553,7 @@ elseif( isset($aclview) )
 	include_once $babInstallPath."admin/acl.php";
 	maclGroups();
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=profiles&idx=plist");
+	exit;
 }
 
 
