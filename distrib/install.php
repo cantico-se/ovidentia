@@ -320,10 +320,7 @@ function writeConfig()
 		else
 			$txt = $out;
 		}
-		
-	$optional = replace($txt, 'babUploadPath', $install->babUploadPath);
-	if ($optional !== false)
-		$out = $optional;
+	
 		
 	$succes->add($trans->str('config.php update successful'));
 	
