@@ -482,12 +482,14 @@ class bab_InstallSource {
 		// remove old addons from install folder if exists
 		
 		$msgerror = '';
-		if (!bab_deldir($install->toString().'/addons', $msgerror))
+		if (is_dir($install->toString().'/addons'))
 		{
-			bab_installWindow::message($msgerror);
-			return false;
+			if (!bab_deldir($install->toString().'/addons', $msgerror))
+			{
+				bab_installWindow::message($msgerror);
+				return false;
+			}
 		}
-		
 		
 		if (!unlink($install->toString().'/addons.ini'))
 		{

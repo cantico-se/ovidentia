@@ -201,7 +201,9 @@ class bab_addonsInfos {
 	public static function getDbAddonsByName() {
 		$return = array();
 		foreach(self::getDbRows() as $row) {
-			if ($obj = bab_getAddonInfosInstance($row['title'])) {
+			
+			$obj = new bab_addonInfos();
+			if (false !== $obj->setAddonName($row['title'], false)) {
 				$return[$row['title']] = $obj;
 			}
 		}

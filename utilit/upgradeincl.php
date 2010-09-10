@@ -456,7 +456,7 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 							
 							$newaddon = parse_ini_file($inifile, true);
 							
-							if (version_compare($newaddon['general']['version'], $addon->getVersion(), '<='))
+							if (version_compare($newaddon['general']['version'], $addon->getIniVersion(), '<='))
 							{
 								// ignore this addon if the new version is not superior
 								continue;
@@ -498,6 +498,8 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 	foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
 		$addon->upgrade();
 	}
+	
+	return true;
 }
 
 
@@ -543,24 +545,27 @@ function bab_newInstall() {
 	}
 
 
-	bab_upgradeAddonsFromInstall(true, null);
+	if (bab_upgradeAddonsFromInstall(true, null))
+	{
+		include_once $GLOBALS['babInstallPath'].'install.php';
+		
+		
+		$iniVersion = $ini->getVersion();
+		$arr = explode('.', $iniVersion);
+		
+		$babDB->db_query("INSERT INTO ".BAB_INI_TBL." (foption, fvalue) 
+		
+			VALUES 
+				('ver_major', ".$babDB->quote($arr[0])."),
+				('ver_minor', ".$babDB->quote($arr[1])."),
+				('ver_build', ".$babDB->quote($arr[2]).")
+		");
+		
+		return true;
 	
-	
-	include_once $GLOBALS['babInstallPath'].'install.php';
-	
-	
-	$iniVersion = $ini->getVersion();
-	$arr = explode('.', $iniVersion);
-	
-	$babDB->db_query("INSERT INTO ".BAB_INI_TBL." (foption, fvalue) 
-	
-		VALUES 
-			('ver_major', ".$babDB->quote($arr[0])."),
-			('ver_minor', ".$babDB->quote($arr[1])."),
-			('ver_build', ".$babDB->quote($arr[2]).")
-	");
+	}
 
-	return true;
+	return false;
 }
 
 
