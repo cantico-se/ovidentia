@@ -285,10 +285,10 @@ function writeConfig()
 	
 	function replace($txt, $var, $value)
 		{
-		ereg($var."[[:space:]]*=[[:space:]]*\"([^\"]*)\"", $txt, $match);
+		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
-			$out = ereg_replace($var."[[:space:]]*=[[:space:]]*\"".preg_quote($match[1],"/")."\"", $var." = \"".$value."\"", $txt);
+			$out = preg_replace('/'.preg_quote($var, '/')."\s*=\s*\"".preg_quote($match[1],"/")."\"/", $var." = \"".$value."\"", $txt);
 			if ($out != $txt)
 				return $out;
 			else

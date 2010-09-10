@@ -1770,10 +1770,10 @@ function siteUpdate_menu1()
 		$file = @fopen($filename, "r");
 		$txt = fread($file, filesize($filename));
 		fclose($file);
-		$reg = "babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"";
-		$res = ereg($reg, $txt, $match);
-		$reg = "babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"";
-		$out = ereg_replace($reg, "babSiteName = \"".$name."\"", $txt);
+		$reg = "/babSiteName[[:space:]]*=[[:space:]]*\"([^\"]*)\"/";
+		$res = preg_match($reg, $txt, $match);
+		$reg = "/babSiteName[[:space:]]*=[[:space:]]*\"".$match[1]."\"/";
+		$out = preg_replace($reg, "babSiteName = \"".$name."\"", $txt);
 		$file = fopen($filename, "w");
 		fputs($file, $out);
 		fclose($file);

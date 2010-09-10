@@ -191,10 +191,10 @@ function bab_writeConfig($replace)
 	global $babBody;
 	function replace($txt, $var, $value)
 		{
-		ereg($var."[[:space:]]*=[[:space:]]*\"([^\"]*)\"", $txt, $match);
+		preg_match('/'.preg_quote($var, '/')."\s*=\s*\"([^\"]*)\"/", $txt, $match);
 		if ($match[1] != $value)
 			{
-			$out = ereg_replace($var."[[:space:]]*=[[:space:]]*\"".preg_quote($match[1],"/")."\"", $var." = \"".$value."\"", $txt);
+			$out = preg_replace('/'.preg_quote($var, '/')."\s*=\s*\"".preg_quote($match[1],"/")."\"/", $var." = \"".$value."\"", $txt);
 			if ($out != $txt)
 				return $out;
 			else
@@ -443,19 +443,19 @@ function bab_newInstall() {
 	
 	if(is_dir($sInstallDir))
 	{
-		$ini = parse_ini_file(realpath('.').'/install/addons.ini', true);
+		$addons = parse_ini_file(realpath('.').'/install/addons.ini', true);
 		
 		
 		$aAddonsFilePath	= bab_getAddonsFilePath();
 		
-		if(0 < count($ini))
+		if(0 < count($addons))
 		{
 			$aLocIn	 = $aAddonsFilePath['loc_in'];
 			$aLocOut = $aAddonsFilePath['loc_out'];
 			
 			if(count($aLocIn) == count($aLocOut))
 			{
-				foreach($ini as $sAddonName => $params)
+				foreach($addons as $sAddonName => $params)
 				{
 					if ($params['install'])
 					{
