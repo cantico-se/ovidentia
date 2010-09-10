@@ -434,28 +434,44 @@ function bab_newInstall() {
 
 	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	$sInstallDir = realpath('.').'/install/addons';
+	
+	/*
+	 * Install all addons referenced in addons.ini where the install key is set to 1
+	 * 
+	 */
+	
+	
 	if(is_dir($sInstallDir))
 	{
-		$aAddonsFilePath	= bab_getAddonsFilePath();
-		$aAddonList			= bab_getAddonListFromInstall($sInstallDir);
+		$ini = parse_ini_file(realpath('.').'/install/addons.ini', true);
 		
-		if(0 < count($aAddonList))
+		
+		$aAddonsFilePath	= bab_getAddonsFilePath();
+		
+		if(0 < count($ini))
 		{
 			$aLocIn	 = $aAddonsFilePath['loc_in'];
 			$aLocOut = $aAddonsFilePath['loc_out'];
 			
 			if(count($aLocIn) == count($aLocOut))
 			{
-				foreach($aAddonList as $iKey1 => $sAddonName)
+				foreach($ini as $sAddonName => $params)
 				{
-
-					foreach($aLocIn as $iKey2 => $sPathName)
+					if ($params['install'])
 					{
-						$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
-						$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
-	
-						if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
-							return false;
+						if (!is_dir($sInstallDir . '/' . $sAddonName))
+						{
+							throw new Exception(sprintf('The addon %s found in addons.ini file does not exists in the folder %s',$sAddonName, $sInstallDir));
+						}
+						
+						foreach($aLocIn as $iKey2 => $sPathName)
+						{
+							$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
+							$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
+		
+							if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
+								return false;
+							}
 						}
 					}
 				}
@@ -463,7 +479,7 @@ function bab_newInstall() {
 		} 
 		else 
 		{
-			bab_debug('aAddonList empty');
+			bab_debug('addons.ini is empty');
 		}
 	} 
 	else 
@@ -502,28 +518,6 @@ function bab_newInstall() {
 }
 
 
-
-/**
- * Get addons list from folders
- * @param unknown_type $sInstallDir
- * @return unknown_type
- */
-function bab_getAddonListFromInstall($sInstallDir)
-{
-	$aAddons = array();
-	
-	if(is_dir($sInstallDir))
-	{
-		$oDirIterator = new BabDirectoryFiltered($sInstallDir, 
-			BabDirectoryFilter::DOT | BabDirectoryFilter::FILE);
-			
-		foreach($oDirIterator as $oItem)
-		{
-			$aAddons[] = $oItem->getFilename();
-		}
-	}
-	return $aAddons;
-}
 
 
 
