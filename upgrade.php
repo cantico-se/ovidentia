@@ -6350,7 +6350,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		  calendar_backend VARCHAR (100) not null default '',
 		  uid VARCHAR (255) not null default '',
 		  KEY id_user (id_user),
-		  KEY uid (calendar_backend, uid)
+		  KEY calendar_backend (calendar_backend),
+		  KEY uid (uid)
 		)");
 	}
 	
