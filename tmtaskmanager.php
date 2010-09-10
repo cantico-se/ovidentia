@@ -1020,10 +1020,7 @@ function displayDeleteProjectCommentary()
 
 function displayTaskList($sIdx)
 {
-/*	
-	require_once $GLOBALS['babInstallPath'] . 'upgrade.php';
-	tskMgrFieldOrderUpgrade();
-//*/	
+
 	$aItemMenu = array();
 	
 	$isProject			= (int) bab_rp('isProject', 0);

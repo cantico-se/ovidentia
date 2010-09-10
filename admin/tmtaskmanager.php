@@ -612,11 +612,7 @@ function saveProjectConfiguration()
 
 //bab_cleanGpc();
 
-/*
-require_once($babInstallPath . 'upgrade.php');
-require_once($babInstallPath . 'utilit\upgradeincl.php');
-upgrade582to583();
-//*/
+
 
 /* main */
 $action = isset($_POST['action']) ? $_POST['action'] : 

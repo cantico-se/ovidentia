@@ -393,6 +393,11 @@ class bab_InstallSource {
 	/**
 	 * Install a Ovidentia upgrade
 	 * Unzip the core folder to ovidentia root folder
+	 * 
+	 * @since 7.3.92 	copy addons to the install/addons folder, addons will be installable if the original version is greater than 7.3.92
+	 * 					before this version, the install/addons folder will contain addons from the first package of ovidentia or nothing 
+	 * 					if the original installation is too old
+	 * 
 	 * @param	bab_CoreIniFile $ini
 	 * @return	bool
 	 */
@@ -400,6 +405,7 @@ class bab_InstallSource {
 
 		include_once dirname(__FILE__).'/upgradeincl.php';
 		include_once dirname(__FILE__).'/path.class.php';
+		include_once dirname(__FILE__).'/delincl.php';
 		
 		global $babBody;
 
@@ -446,6 +452,48 @@ class bab_InstallSource {
 			bab_installWindow::message($ini->getRequirementsHtml());
 			return false;
 		}
+		
+		
+		// prepare requirement for addons to upgrade
+		
+		$install = new bab_Path(realpath('.').'/install');
+		
+		// check for the install folder
+		
+		if ($install->isDir()) {
+			
+			try {
+				$install->isFolderWriteable();
+			} catch(bab_FolderAccessRightsException $e) {
+				bab_installWindow::message($e->getMessage());
+				return false;
+			}
+			
+		} else {
+			// try to create the install folder
+			
+			if (!$install->createDir())
+			{
+				bab_installWindow::message(bab_translate('The folder is not writable'));
+				return false;
+			}
+		}
+		
+		// remove old addons from install folder if exists
+		
+		$msgerror = '';
+		if (!bab_deldir($install->toString().'/addons', $msgerror))
+		{
+			bab_installWindow::message($msgerror);
+			return false;
+		}
+		
+		
+		if (!unlink($install->toString().'/addons.ini'))
+		{
+			return false;
+		}
+		
 
 
 		$zipversion = $ini->getVersion();
@@ -467,12 +515,13 @@ class bab_InstallSource {
 		}
 
 
+		// copy temporary unziped core to the new core folder
+		
 		if (true !== $result = bab_recursive_cp($path.$core, $destination)) {
 			bab_installWindow::message($result);
 
 			if (is_dir($destination)) {
 				$msgerror = '';
-				include_once dirname(__FILE__).'/delincl.php';
 				bab_deldir($destination, $msgerror);
 			}
 
@@ -480,9 +529,22 @@ class bab_InstallSource {
 		}
 
 
-		// copy addons from old core
+		// copy addons from old core to new core
 		
 		if (!bab_cpaddons($GLOBALS['babInstallPath'], $destination, $babBody->msgerror)) {
+			return false;
+		}
+		
+		
+		
+		// copy temporary unziped addons and the addons.ini to the install/addons folder
+		if (true !== $result = bab_recursive_cp($path.'install/addons', $install.'/addons')) {
+			bab_installWindow::message($result);
+			return false;
+		}
+		
+		if (!copy($path.'install/addons.ini', $install.'/addons.ini'))
+		{
 			return false;
 		}
 		

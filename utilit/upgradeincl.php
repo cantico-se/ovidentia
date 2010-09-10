@@ -344,6 +344,11 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 	include_once $core_dir.'upgrade.php';
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
+		
+		// the core has been upgraded correctly
+		// update addons if necessary using the install/addons.ini file
+		bab_upgradeAddonsFromInstall(false, $ini->getVersion());
+		
 	
 		putIniDbKey('ver_major', $bab_ver_major);
 		putIniDbKey('ver_minor', $bab_ver_minor);
@@ -389,6 +394,112 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 
 
+/**
+ * Install or upgrade addons from the install/addons folder
+ * this is processed on new install and after ovidentia upgrade
+ * 
+ * @param	bool 			$install		test the install parameter of addons.ini file
+ * @parma	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
+ */
+function bab_upgradeAddonsFromInstall($install, $upgrade) {
+	
+	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	$sInstallDir = realpath('.').'/install/addons';
+	
+	
+	if(is_dir($sInstallDir))
+	{
+		$addons = parse_ini_file(realpath('.').'/install/addons.ini', true);
+		
+		
+		$aAddonsFilePath	= bab_getAddonsFilePath();
+		
+		if(0 < count($addons))
+		{
+			$aLocIn	 = $aAddonsFilePath['loc_in'];
+			$aLocOut = $aAddonsFilePath['loc_out'];
+			
+			if(count($aLocIn) == count($aLocOut))
+			{
+				foreach($addons as $sAddonName => $params)
+				{
+					if (!isset($params['install']))
+					{
+						$params['install'] = 0;
+					}
+					
+					if (!isset($params['upgrade']))
+					{
+						$params['upgrade'] = 0;
+					}
+					
+					if (($install && $params['install']) || ($upgrade && $params['upgrade'] && version_compare($upgrade, $params['upgrade'], '>=')))
+					{
+						if (!is_dir($sInstallDir . '/' . $sAddonName))
+						{
+							throw new Exception(sprintf('The addon %s found in addons.ini file does not exists in the folder %s',$sAddonName, $sInstallDir));
+							return false;
+						}
+						
+						// if addon allready installed verify the version
+						
+						
+						$addon = bab_getAddonInfosInstance($sAddonName);
+						if (false !== $addon)
+						{
+							$inifile = $sInstallDir . '/' . $sAddonName . '/programs/addonini.php';
+							if (!is_file($inifile))
+							{
+								throw new Exception(sprintf('The addon %s found in addons.ini file does not contain an addonini.php file',$sAddonName));
+								return false;
+							}
+							
+							$newaddon = parse_ini_file($inifile, true);
+							
+							if (version_compare($newaddon['general']['version'], $addon->getVersion(), '<='))
+							{
+								// ignore this addon if the new version is not superior
+								continue;
+							}
+						}
+						
+						
+						foreach($aLocIn as $iKey2 => $sPathName)
+						{
+							$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
+							$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
+		
+							if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
+								return false;
+							}
+						}
+					}
+				}
+			}
+		} 
+		else 
+		{
+			bab_debug('addons.ini is empty');
+		}
+	} 
+	else 
+	{
+		bab_debug('missing sInstallDir '.$sInstallDir);
+	}
+
+
+
+
+	// add in database the default addons
+	bab_addonsInfos::insertMissingAddonsInTable();
+	bab_addonsInfos::clear();
+
+	// install database for the default addons
+	foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
+		$addon->upgrade();
+	}
+}
+
 
 
 
@@ -432,72 +543,7 @@ function bab_newInstall() {
 	}
 
 
-	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	$sInstallDir = realpath('.').'/install/addons';
-	
-	/*
-	 * Install all addons referenced in addons.ini where the install key is set to 1
-	 * 
-	 */
-	
-	
-	if(is_dir($sInstallDir))
-	{
-		$addons = parse_ini_file(realpath('.').'/install/addons.ini', true);
-		
-		
-		$aAddonsFilePath	= bab_getAddonsFilePath();
-		
-		if(0 < count($addons))
-		{
-			$aLocIn	 = $aAddonsFilePath['loc_in'];
-			$aLocOut = $aAddonsFilePath['loc_out'];
-			
-			if(count($aLocIn) == count($aLocOut))
-			{
-				foreach($addons as $sAddonName => $params)
-				{
-					if ($params['install'])
-					{
-						if (!is_dir($sInstallDir . '/' . $sAddonName))
-						{
-							throw new Exception(sprintf('The addon %s found in addons.ini file does not exists in the folder %s',$sAddonName, $sInstallDir));
-						}
-						
-						foreach($aLocIn as $iKey2 => $sPathName)
-						{
-							$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
-							$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
-		
-							if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
-								return false;
-							}
-						}
-					}
-				}
-			}
-		} 
-		else 
-		{
-			bab_debug('addons.ini is empty');
-		}
-	} 
-	else 
-	{
-		bab_debug('missing sInstallDir '.$sInstallDir);
-	}
-
-
-
-
-	// add in database the default addons
-	bab_addonsInfos::insertMissingAddonsInTable();
-	bab_addonsInfos::clear();
-
-	// install database for the default addons
-	foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
-		$addon->upgrade();
-	}
+	bab_upgradeAddonsFromInstall(true, null);
 	
 	
 	include_once $GLOBALS['babInstallPath'].'install.php';
