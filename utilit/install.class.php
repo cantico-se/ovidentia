@@ -538,12 +538,12 @@ class bab_InstallSource {
 		
 		
 		// copy temporary unziped addons and the addons.ini to the install/addons folder
-		if (true !== $result = bab_recursive_cp($path.'install/addons', $install.'/addons')) {
+		if (true !== $result = bab_recursive_cp($path.'install/addons', $install->toString().'/addons')) {
 			bab_installWindow::message($result);
 			return false;
 		}
 		
-		if (!copy($path.'install/addons.ini', $install.'/addons.ini'))
+		if (!copy($path.'install/addons.ini', $install->toString().'/addons.ini'))
 		{
 			return false;
 		}
