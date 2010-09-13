@@ -485,7 +485,10 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 				// install database for the default addons
 				foreach($addons as $sAddonName => $params) {
 					$addon = bab_getAddonInfosInstance($sAddonName);
-					$addon->upgrade();
+					if ($addon)
+					{
+						$addon->upgrade();
+					}
 				}
 			}
 		} 
