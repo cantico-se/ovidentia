@@ -366,7 +366,8 @@ abstract class bab_ICalendarObject
 	 */
 	public function commitAttendeeEvent()
 	{	
-		$parent = reset($this->relations['PARENT']);
+		$relation = reset($this->relations['PARENT']);
+		$parent = $relation['calendar'];
 		
 		foreach($this->attendeesEvents as $urlidentifier => $method)
 		{
@@ -392,13 +393,16 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * Add a RELATED-TO iCalendar property on VEVENT
+	 * or update workflow status
 	 * 
-	 * @param	string				$reltype	PARENT | CHILD | SIBLING
+	 * @param	string				$reltype		PARENT | CHILD | SIBLING
 	 * @param	bab_EventCalendar	$calendar
+	 * @param	string				$status			X-CTO-STATUS		acceptation status for related ovidentia calendar	NEEDS-ACTION | ACCEPTED | DECLINED
+	 * @param	int					$wfInstance		X-CTO-WFINSTANCE	workflow sheme instance for the related calendar
 	 * 
 	 * @return bab_CalendarPeriod
 	 */
-	public function addRelation($reltype, bab_EventCalendar $calendar) 
+	public function addRelation($reltype, bab_EventCalendar $calendar, $status = null, $wfInstance = null) 
 	{
 		// only one parent
 		
@@ -411,14 +415,34 @@ abstract class bab_ICalendarObject
 		{
 			$this->properties['RELATED-TO'] = array();
 		}
+		
 		$urlIdentifier = $calendar->getUrlIdentifier();
-		$value = "RELATED-TO;RELTYPE=$reltype:".$calendar->getReference()->__toString();
-
-		if (!isset($this->relations[$reltype][$urlIdentifier]))
+		$value = "RELATED-TO;RELTYPE=$reltype";
+		if (null !== $status)
 		{
-			$this->relations[$reltype][$urlIdentifier] = $calendar;
-			$this->properties['RELATED-TO'][] = $value;
-		} 
+			$value .=";X-CTO-STATUS=".$status;
+		}
+		
+		if (null !== $wfInstance)
+		{
+			$value .=";X-CTO-WFINSTANCE=".$wfInstance;
+		}
+		
+		$value .= ":".$calendar->getReference()->__toString();
+		
+		if (isset($this->relations[$reltype][$urlIdentifier]))
+		{
+			$this->removeRelatedToByCalendar($calendar);
+		}
+		
+		
+		$this->relations[$reltype][$urlIdentifier] = array(
+			'calendar' 			=> $calendar,
+			'X-CTO-STATUS'		=> $status,
+			'X-CTO-WFINSTANCE'	=> $wfInstance
+		);
+
+		$this->properties['RELATED-TO'][] = $value;
 
 		return $this;
 	}
@@ -427,7 +451,7 @@ abstract class bab_ICalendarObject
 	 * Get RELATED-TO iCalendar property on VEVENT
 	 * 
 	 * @param string	$reltype		PARENT | CHILD | SIBLING
-	 * @return array	<bab_EventCalendar>
+	 * @return array	<array>
 	 */
 	public function getRelations($reltype) 
 	{
@@ -439,11 +463,73 @@ abstract class bab_ICalendarObject
 		return $this->relations[$reltype];
 	}
 	
-	
+	/**
+	 * Remove all relations
+	 * @return unknown_type
+	 */
 	public function removeRelations()
 	{
+		foreach($this->relations as $arr)
+		{
+			if ($arr['X-CTO-WFINSTANCE'])	
+			{
+				throw new Exception(sprintf('The relation with calendar %s could not be removed because the is a workflow instance', $arr['calendar']->getName()));
+				return;
+			}
+		}
+		
+		
 		$this->relations = null;
 		unset($this->properties['RELATED-TO']);
+		
+		return $this;
+	}
+	
+	/**
+	 * Remove one relation
+	 * @param bab_EventCalendar $calendar
+	 * @return unknown_type
+	 */
+	public function removeRelation(bab_EventCalendar $calendar)
+	{
+		$id = $calendar->getUrlIdentifier();
+		
+		if (isset($this->relations['PARENT'][$id]))
+		{
+			unset($this->relations['PARENT'][$id]);
+		} 
+		
+		if (isset($this->relations['CHILD'][$id]))
+		{
+			unset($this->relations['CHILD'][$id]);
+		}
+		
+		$this->removeRelatedToByCalendar($calendar);
+		
+		return $this;
+	}
+	
+	
+	/**
+	 * Remove the relation property
+	 * @param bab_EventCalendar $calendar
+	 * @return unknown_type
+	 */
+	private function removeRelatedToByCalendar(bab_EventCalendar $calendar)
+	{
+		if (isset($this->properties['RELATED-TO']))
+		{
+			foreach($this->properties['RELATED-TO'] as $key => $property)
+			{
+				$pos = mb_strpos($property, ':');
+				$value = mb_substr($property, $pos);
+				
+				if ($value === $calendar->getReference()->__toString())
+				{
+					unset($this->properties['RELATED-TO'][$key]);
+				}
+			}
+		}
 	}
 	
 	
@@ -469,8 +555,9 @@ abstract class bab_ICalendarObject
 		{
 			foreach($this->relations as $reltype => $arr)
 			{
-				foreach($arr as $calendar)
+				foreach($arr as $relation)
 				{
+					$calendar = $relation['calendar'];
 					$return[$calendar->getUrlIdentifier()] = $calendar;
 				}
 			}

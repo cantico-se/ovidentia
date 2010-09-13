@@ -293,17 +293,7 @@ function updateResourceCalendar($idcal, $calname, $caldesc, $calidsa)
 			deleteFlowInstance($arr['idfai']);
 			}
 
-		if( $calidsa == 0 )
-			{
-			$idfai = 0;
-			}
-		else
-			{
-			$idfai = makeFlowInstance($calidsa, "cal-".$id_cal."-".$arr['id_event']);
-			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = bab_getICalendars()->getCalendarInfo($id_cal);
-			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
-			}
+		$idfai = 0;
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}
@@ -351,17 +341,7 @@ function updatePublicCalendar($idcal, $calname, $caldesc, $calidsa)
 			deleteFlowInstance($arr['idfai']);
 			}
 
-		if( $calidsa == 0 )
-			{
-			$idfai = 0;
-			}
-		else
-			{
-			$idfai = makeFlowInstance($calidsa, "cal-".$id_cal."-".$arr['id_event']);
-			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			$calinfo = bab_getICalendars()->getCalendarInfo($id_cal);
-			notifyEventApprovers($arr['id_event'], $nfusers, $calinfo);
-			}
+		$idfai = 0;
 		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set idfai='".$babDB->db_escape_string($idfai)."' where id_cal='".$babDB->db_escape_string($id_cal)."'and id_event='".$babDB->db_escape_string($arr['id_event'])."'");
 		}		
 	}

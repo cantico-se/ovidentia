@@ -328,6 +328,9 @@ class bab_cal_OviEventUpdate
 		
 		
 		$parents = $period->getRelations('PARENT');
+		$relation = reset($parents);
+		$parent = $relation['calendar'];
+		
 		
 		if (1 !== count($parents))
 		{
@@ -343,7 +346,6 @@ class bab_cal_OviEventUpdate
 		}
 		
 		
-		$parent = reset($parents);
 		
 		
 		$hash = (string) $hash;
@@ -581,7 +583,7 @@ class bab_cal_OviEventUpdate
 				}
 				else
 				{
-					$this->addCalendar($period, $id_event, $calendar, $status);
+					$this->addCalendar($period, $id_event, $calendar, $attendee['PARTSTAT'], 0);
 					$return[$id_calendar] = $id_calendar;
 				} 
 			}
@@ -608,8 +610,9 @@ class bab_cal_OviEventUpdate
 		$associated = $this->getAssociatedCalendars($id_event);
 		$calendars = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
 		
-		foreach($calendars as $calendar)
+		foreach($calendars as $relation)
 		{			
+			$calendar = $relation['calendar'];
 			if (($calendar instanceof bab_OviPublicCalendar) || ($calendar instanceof bab_OviResourceCalendar))
 			{
 				$status = BAB_CAL_STATUS_ACCEPTED;
@@ -624,7 +627,7 @@ class bab_cal_OviEventUpdate
 				}
 				else
 				{
-					$this->addCalendar($period, $id_event, $calendar, $status);
+					$this->addCalendar($period, $id_event, $calendar, $relation['X-CTO-STATUS'], $relation['X-CTO-WFINSTANCE']);
 					$return[$id_calendar] = $id_calendar;
 				} 
 			}
@@ -711,11 +714,12 @@ class bab_cal_OviEventUpdate
 	 * @param bab_CalendarPeriod	$period
 	 * @param int					$id_event
 	 * @param bab_EventCalendar 	$id_calendar
-	 * @param int 					$status			BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_NONE | BAB_CAL_STATUS_DECLINED
+	 * @param string				$status			NEEDS-ACTION | ACCEPTED | DECLINED
+	 * @param int					$wfinstance
 	 * 
 	 * @return array
 	 */
-	private function addCalendar(bab_CalendarPeriod $period, $id_event, bab_EventCalendar $calendar, $status)
+	private function addCalendar(bab_CalendarPeriod $period, $id_event, bab_EventCalendar $calendar, $status, $wfinstance)
 	{
 		require_once dirname(__FILE__).'/evtincl.php';
 		require_once dirname(__FILE__).'/calincl.php';
@@ -725,15 +729,21 @@ class bab_cal_OviEventUpdate
 		$backend = $calendar->getBackend()->getUrlIdentifier();
 		$caltype = $calendar->getReferenceType();
 		$id_calendar = $calendar->getUid();
-		if($idsa = $calendar->getApprobationSheme())
+		
+		
+		switch($status)
 		{
-			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			$idfai = makeFlowInstance($idsa, "cal-".$id_calendar."-".$id_event);
-			$status = BAB_CAL_STATUS_NONE;
-		} 
-		else 
-		{
-			$idfai = 0;
+			case 'NEEDS-ACTION':
+				$status = BAB_CAL_STATUS_NONE;
+				break;
+				
+			case 'ACCEPTED':
+				$status = BAB_CAL_STATUS_ACCEPTED;
+				break;
+				
+			case 'DECLINED':
+				$status = BAB_CAL_STATUS_DECLINED;
+				break;
 		}
 		
 		$query = "
@@ -753,18 +763,18 @@ class bab_cal_OviEventUpdate
 					'".$babDB->db_escape_string($caltype)."', 
 					'".$babDB->db_escape_string($id_calendar)."', 
 					'".$babDB->db_escape_string($status)."',
-					'".$babDB->db_escape_string($idfai)."'
+					'".$babDB->db_escape_string($wfinstance)."'
 				)
 		";
 		$babDB->db_query($query);
 		
 		
-		if( $idfai )
+		if( $wfinstance )
 		{
 			// approbation instance, notify approvers
 			
 			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			notifyEventApprovers($id_event, $nfusers, $calendar);
+			notifyEventApprovers($period, $nfusers, $calendar);
 		}
 		else 
 		{
@@ -997,15 +1007,26 @@ class bab_cal_OviEventSelect
 				}
 				
 			} else {
+				
+				$status = null;
+				$idfai = null;
+				
+				
+				if ($arr2['idfai']) 
+				{
+				$idfai = (int) $arr2['idfai'];
+				$status = $partstat;
+				}
+				
 				if ($calendar->getUrlIdentifier() === $arr['parent_calendar']) {
 					// main calendar 
-					$event->addRelation('PARENT', $calendar);
+					$event->addRelation('PARENT', $calendar, $status, $idfai);
 					
 					// set as main calendar in collection
 					$collection->setCalendar($calendar);
 					
 				} else {
-					$event->addRelation('CHILD', $calendar);
+					$event->addRelation('CHILD', $calendar, $status, $idfai);
 				}
 			}
 		}

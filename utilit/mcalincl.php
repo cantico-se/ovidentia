@@ -531,7 +531,8 @@ class bab_icalendar extends bab_icalendarEventsSource
 				$parents = $event->getRelations('PARENT');
 				if ($parents)
 				{
-					$calendar = reset($parents);
+					$relation = reset($parents);
+					$calendar = $relation['calendar'];
 
 					// $calendar is the main calendar of event
 					
@@ -763,7 +764,8 @@ class cal_wmdbaseCls
 			return;
 		}
 		
-		$parent = reset($parents);
+		$relation = reset($parents);
+		$parent = $relation['calendar'];
 		
 		$this->allow_view 			= true;												// detail view popup
 		$this->allow_modify 		= $parent->canUpdateEvent($calPeriod);				// edit popup

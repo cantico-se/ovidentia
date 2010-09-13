@@ -5039,7 +5039,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			if ($parents)
 			{
 				$parent = reset($parents);
-				$arr['id_cal'] = $parent->getUrlIdentifier();
+				$arr['id_cal'] = $parent['calendar']->getUrlIdentifier();
 			}
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';

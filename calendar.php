@@ -96,18 +96,18 @@ class displayAttendeesCls
 		$this->resources = array();
 		
 		$relations = array_merge($this->period->getRelations('PARENT'), $this->period->getRelations('CHILD'));
-		foreach($relations as $calendar)
+		foreach($relations as $relation)
 		{
 			// only relations with calendars from ovidentia backend displayed
 			
-			if ($calendar instanceof bab_OviPublicCalendar)
+			if ($relation['calendar'] instanceof bab_OviPublicCalendar)
 			{
-				$this->publics[] = $calendar;
+				$this->publics[] = $relation;
 			}
 			
-			if ($calendar instanceof bab_OviResourceCalendar)
+			if ($relation['calendar'] instanceof bab_OviResourceCalendar)
 			{
-				$this->resources[] = $calendar;
+				$this->resources[] = $relation;
 			}
 		}
 		
@@ -192,42 +192,10 @@ class displayAttendeesCls
 		}
 		
 		
-	/**
-	 * get sheme instance and status for event and calendar
-	 * @param bab_EventCalendar $calendar
-	 * @return int
-	 */
-	private function getShemeInstance(bab_EventCalendar $calendar)
-	{
-		global $babDB;
-		
-		$uid = $this->period->getProperty('UID');
-		$id_cal = $calendar->getUid();
-		
-		$res = $babDB->db_query('SELECT status, idfai 
-			FROM 
-				'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
-				'.BAB_CAL_EVENTS_TBL.' e 
-				
-			WHERE 
-				e.id = eo.id_event 
-				AND e.uuid = '.$babDB->quote($uid).' 
-				AND eo.id_cal = '.$babDB->quote($id_cal).' 
-		');
-		
-		$arr = $babDB->db_fetch_assoc($res);
-		
-		if (!$arr)
-		{
-			throw new Exception('Error, no sheme instance for calendar '.$calendar->getName().', event : '.$uid);
-		}
-		
-		return array((int) $arr['status'], (int) $arr['idfai']);
-	}
 	
 	/**
 	 * @param 	bab_EventCalendar 	$calendar
-	 * @param	int					$status			BAB_CAL_STATUS_NONE | BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
+	 * @param	string				$status
 	 * @return string
 	 */
 	private function getStatus(bab_EventCalendar $calendar, $status)
@@ -239,17 +207,16 @@ class displayAttendeesCls
 		
 		switch($status)
 		{
-			case BAB_CAL_STATUS_NONE:
+			case 'NEEDS-ACTION':
 				return bab_translate('Waiting for approbation');
 				break;
-			case BAB_CAL_STATUS_ACCEPTED:
+			case 'ACCEPTED':
 				return bab_translate('Accepted');
 				break;
-			case BAB_CAL_STATUS_DECLINED:
+			case 'DECLINED':
 				return bab_translate('Declined');
 				break;
 		}
-		
 		
 		return '';
 	}
@@ -267,6 +234,7 @@ class displayAttendeesCls
 		}
 		
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		bab_debug($arrschi);
 		
 		if (in_array($idfai, $arrschi))
 		{
@@ -282,7 +250,7 @@ class displayAttendeesCls
 		require_once dirname(__FILE__).'/utilit/urlincl.php';
 		$url = bab_url::get_request('tg', 'idx', 'evtid', 'idcal');
 		$url->idx = 'approb';
-		$url->idcal = $calendar->getUrlIdentifier();
+		$url->relation = $calendar->getUrlIdentifier();
 		$url->approbstatus = $status;
 		
 		return $url->toString();
@@ -291,13 +259,13 @@ class displayAttendeesCls
 		
 	public function getnextpublic()
 	{
-		if( list(,$calendar) = each($this->publics))
+		if( list(,$relation) = each($this->publics))
 			{
+			$calendar = $relation['calendar'];
 			$this->altbg = !$this->altbg;
 			$this->name = $calendar->getName();
-			list($status, $idfai) = $this->getShemeInstance($calendar);
-			$this->status = $this->getStatus($calendar, $status);
-			$this->approver = $this->isApprover($idfai);
+			$this->status = $this->getStatus($calendar, $relation['X-CTO-STATUS']);
+			$this->approver = $this->isApprover($relation['X-CTO-WFINSTANCE']);
 			
 			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
 			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
@@ -311,13 +279,13 @@ class displayAttendeesCls
 	
 	public function getnextresource()
 	{
-		if( list(,$calendar) = each($this->resources))
+		if( list(,$relation) = each($this->resources))
 			{
+			$calendar = $relation['calendar'];
 			$this->altbg = !$this->altbg;
 			$this->name = $calendar->getName();
-			list($status, $idfai) = $this->getShemeInstance($calendar);
-			$this->status = $this->getStatus($calendar, $status);
-			$this->approver = $this->isApprover($idfai);
+			$this->status = $this->getStatus($calendar, $relation['X-CTO-STATUS']);
+			$this->approver = $this->isApprover($relation['X-CTO-WFINSTANCE']);
 			
 			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
 			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
@@ -366,12 +334,13 @@ class displayApprobCalendarCls
 {
 	
 
-	public function __construct($evtid, $idcal)
+	public function __construct($evtid, $idcal, $relation)
 	{
 		global $babBody, $babDB;
 		
 		$this->evtid = $evtid;
 		$this->idcal = $idcal;
+		$this->relation = $relation;
 		
 		$calendar = bab_getICalendars()->getEventCalendar($idcal);
 		$backend = $calendar->getBackend();
@@ -911,9 +880,10 @@ function approbCalendar($evtid, $dtstart, $idcal)
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
 	{
+		$relation = bab_pp('relation');
 		$status = (int) bab_pp('approbstatus');
 		
-		confirmApprobEvent($evtid, $idcal, $status, bab_pp('comment'));
+		confirmApprobEvent($evtid, $idcal, $relation, $status, bab_pp('comment'));
 		
 		$url = bab_url::get_request('tg');
 		$url->idx = 'unload';
@@ -924,7 +894,7 @@ function approbCalendar($evtid, $dtstart, $idcal)
 	
 	global $babBody;	
 	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
-	$approb = new displayApprobCalendarCls($evtid, $idcal);
+	$approb = new displayApprobCalendarCls($evtid, $idcal, $relation);
 	
 	$babBody->babPopup($details->getHtml().$approb->getHtml());
 }
@@ -1438,7 +1408,8 @@ switch($idx)
 		approbCalendar(
 			bab_rp('evtid'),
 			bab_rp('dtstart'),
-			bab_rp('idcal')
+			bab_rp('idcal'),
+			bab_rp('relation')
 		);
 		break;
 	
