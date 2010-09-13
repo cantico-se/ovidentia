@@ -475,6 +475,18 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 						}
 					}
 				}
+				
+				
+				
+				// add in database the default addons
+				bab_addonsInfos::insertMissingAddonsInTable();
+				bab_addonsInfos::clear();
+			
+				// install database for the default addons
+				foreach($addons as $sAddonName => $params) {
+					$addon = bab_getAddonInfosInstance($sAddonName);
+					$addon->upgrade();
+				}
 			}
 		} 
 		else 
@@ -487,17 +499,6 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 		bab_debug('missing sInstallDir '.$sInstallDir);
 	}
 
-
-
-
-	// add in database the default addons
-	bab_addonsInfos::insertMissingAddonsInTable();
-	bab_addonsInfos::clear();
-
-	// install database for the default addons
-	foreach(bab_addonsInfos::getDbAddonsByName() as $addon) {
-		$addon->upgrade();
-	}
 	
 	return true;
 }

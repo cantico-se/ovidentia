@@ -219,10 +219,10 @@ class displayAttendeesCls
 		
 		if (!$arr)
 		{
-			throw new Exception('Error');
+			throw new Exception('Error, no sheme instance for calendar '.$calendar->getName().', event : '.$uid);
 		}
 		
-		return array((int) $arr['status'],(int) $arr['idfai']);
+		return array((int) $arr['status'], (int) $arr['idfai']);
 	}
 	
 	/**
