@@ -1061,9 +1061,17 @@ class calendarchoice
 			{
 			$this->selectedCalendars = $selected_calendars;
 			}
+		elseif (bab_rp('calid'))
+			{
+			$this->selectedCalendars = explode(',',bab_rp('calid'));
+			}
+		elseif (isset($icalendars->user_calendarids))
+			{
+			$this->selectedCalendars = explode(',',$icalendars->user_calendarids);
+			}
 		else
 			{
-			$this->selectedCalendars = !empty($_REQUEST['calid']) ? explode(',',$_REQUEST['calid']) : (isset($icalendars->user_calendarids) ? explode(',',$icalendars->user_calendarids) : array());
+			$this->selectedCalendars = array();
 			}
 
 		$this->usrcalendarstxt = bab_translate("Users");
@@ -1101,7 +1109,35 @@ class calendarchoice
 		
 		reset($this->caltypes);
 		
+		$this->declined_arr = array();
 		
+		
+		// search for the list of rejected calendars
+		if (bab_rp('evtid') && bab_rp('calid'))
+		{
+			$calendar = $icalendars->getEventCalendar(bab_rp('calid'));
+			$backend = $calendar->getBackend();
+			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_rp('evtid'));
+			
+			if ($period){
+				foreach($period->getAttendees() as $attendee)
+				{
+					if ('DECLINED' === $attendee['PARTSTAT'])
+					{
+						$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
+					}
+				}
+				
+				$relations = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
+				foreach($relations as $relation)
+				{
+					if ('DECLINED' === $relation['X-CTO-STATUS'])
+					{
+						$this->declined_arr[$relation['calendar']->getUrlIdentifier()] = $relation['calendar'];
+					}
+				}
+			}
+		}
 	}
 
 	function getnexttype()
@@ -1132,6 +1168,8 @@ class calendarchoice
 			$this->id = bab_toHtml($key);
 			$this->name = bab_toHtml($calendar->getName());
 			$this->selected = in_array($key,$this->selectedCalendars);
+			
+			$this->declined = isset($this->declined_arr[$key]);
 			
 			/*@var $calendar bab_EventCalendar */
 			
