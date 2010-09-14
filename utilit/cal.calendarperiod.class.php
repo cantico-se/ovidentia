@@ -409,6 +409,65 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		
 		return false;
 	}
+	
+	
+	
+	
+	
+	/**
+	 * get HTML string for object
+	 * displayable in bab_debug
+	 * @return string
+	 */
+	public function toHtml()
+	{
+		$html = ''; 
+		
+		$collection = $this->getCollection();
+		if ($collection) 
+		{
+			$html .= '<p>Collection : '.get_class($collection).'</p>';
+			$calendar = $collection->getCalendar();
+			
+			if ($calendar)
+			{
+				$html .= sprintf('<p>Calendar : %s, %s</p>', $calendar->getName(), $calendar->getUrlIdentifier());
+			}
+		}
+		
+		
+		$html .= '<table class="itterable">';
+		foreach($this->getProperties() as $property)
+		{
+			if (preg_match('/(?P<name>[^:^;]+)(?P<parameters>[^:]*):(?P<value>.+)/', $property, $m))
+			{
+				$paramlist = '';
+				
+				if (!empty($m['parameters']))
+				{
+					$paramlist = array();
+					$parameters = explode(';', $m['parameters']);
+					foreach($parameters as $parameter) {
+						if ($parameter)
+						{
+							list($key, $val) = explode('=', $parameter);
+							$paramlist[] = sprintf('<span style="color:green">%s</span>=<span style="color:blue">%s</span>',$key, $val);
+						}
+					}
+					$paramlist = implode(';', $paramlist);
+				}
+				
+				$html .= '<tr>';
+				$html .= '<th>'.bab_toHtml($m['name']).'</th>';
+				$html .= '<td>'.bab_toHtml($m['value']).'</td>';
+				$html .= '<td>'.$paramlist.'</td>';
+				$html .= '</tr>';
+			}
+		}
+		$html .= '</table>';
+		
+		return $html;
+	}
 
 }
 

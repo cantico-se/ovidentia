@@ -792,22 +792,16 @@ class cal_wmdbaseCls
 			if (!$this->bstatus)
 			{
 				$backend = $parent->getBackend();
-				
-				if (!($backend instanceof Func_CalendarBackend_Ovi))
-				{
-					return;
-				}
-				
+
 				require_once dirname(__FILE__).'/wfincl.php';
 				$user_instances = bab_WFGetWaitingInstances($GLOBALS['BAB_SESS_USERID']);
 				
-				
-				foreach($calPeriod->getCalendars() as $relation)
+				$relations = array_merge($calPeriod->getRelations('PARENT'), $calPeriod->getRelations('CHILD'));
+				foreach($relations as $relation)
 				{
-					$idschi = $relation->getApprobationInstance($calPeriod);
-					if (null !== $idschi)
+					if (null !== $relation['X-CTO-WFINSTANCE'])
 					{
-						if (in_array($idschi, $user_instances))
+						if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
 						{
 							$this->bstatus = true;
 							break;
@@ -942,7 +936,8 @@ class cal_wmdbaseCls
 				throw new Exception('Missing a PARENT relation on calendar event '.$calPeriod->getProperty('UID'));
 			}
 	
-			$parent = reset($arr);
+			$relation = reset($arr);
+			$parent = $relation['calendar'];
 		}
 		
 			
@@ -972,12 +967,12 @@ class cal_wmdbaseCls
 			
 		$this->nbowners		= 0;
 			
-		if (isset($parent))
+		if (isset($parent) && ($parent instanceof bab_EventCalendar))
 		{
 			
 			foreach($calPeriod->getCalendars() as $subcal)
 			{
-				if ($subcal !== $parent)
+				if ($subcal->getUrlIdentifier() !== $parent->getUrlIdentifier())
 				{
 					$this->nbowners++;
 				}

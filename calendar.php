@@ -83,6 +83,7 @@ class displayAttendeesCls
 		
 		$backend = $calendar->getBackend();
 		$this->period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+		bab_debug('<h1>$backend->getPeriod()</h1>'. $this->period->toHtml(), DBG_TRACE, 'CalendarBackend');
 		
 		if (!$this->period)
 		{
@@ -184,7 +185,12 @@ class displayAttendeesCls
 				$this->external = true;
 				}
 				
-			$this->status = $this->statusdef[$arr['PARTSTAT']];
+			if (isset($this->statusdef[$arr['PARTSTAT']]))
+			{
+				$this->status = $this->statusdef[$arr['PARTSTAT']];
+			} else {
+				$this->status = '';
+			}
 			return true;
 			}
 		
@@ -875,7 +881,7 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
  * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
-function approbCalendar($evtid, $dtstart, $idcal)
+function approbCalendar($evtid, $dtstart, $idcal, $relation)
 {
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
@@ -1278,6 +1284,7 @@ function updateEventAlert()
 		
 	
 	// save event
+	bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 	$backend->savePeriod($calendarPeriod);
 	$calendarPeriod->commitAttendeeEvent();
 }

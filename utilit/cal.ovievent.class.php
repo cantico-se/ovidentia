@@ -769,32 +769,7 @@ class bab_cal_OviEventUpdate
 		$babDB->db_query($query);
 		
 		
-		if( $wfinstance )
-		{
-			// approbation instance, notify approvers
-			
-			$nfusers = getWaitingApproversFlowInstance($idfai, true);
-			notifyEventApprovers($period, $nfusers, $calendar);
-		}
-		else 
-		{
-			
-			$arr = bab_getCalendarOwnerAndType($id_calendar);
-
-			// if new calendar in event, notify new appointement 
-			
-			cal_notify(
-				$period->getProperty('SUMMARY'), 
-				$period->getProperty('DESCRIPTION'), 
-				$period->getProperty('LOCATION'), 
-				bab_longDate($period->ts_begin), 
-				bab_longDate($period->ts_end), 
-				$calendar, 
-				$arr['type'], 
-				$arr['owner'],
-				bab_translate("New appointement")
-			);
-		}
+		
 	}
 	
 	

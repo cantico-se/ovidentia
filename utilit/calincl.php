@@ -52,33 +52,6 @@ function bab_getCalendarOwner($idcal)
 }
 
 
-/**
- * Get calendar owner and type
- * This function is used only for calendars from the ovidentia backend
- * 
- * @param	int		$idcal
- * 
- * @return array|false
- */
-function bab_getCalendarOwnerAndType($idcal)
-{
-	global $babDB;
-	$query = "select owner, type from ".BAB_CALENDAR_TBL." where id=".$babDB->quote($idcal);
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
-		{
-		$arr = $babDB->db_fetch_array($res);
-		return array(
-				'owner' => (int) $arr['owner'],
-				'type' => (int) $arr['type']
-			);
-		}
-	else
-		{
-		return false;
-		}
-}
-
 
 /**
  * 

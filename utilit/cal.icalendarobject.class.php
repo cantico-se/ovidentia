@@ -270,12 +270,17 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * Get all attendees, ovidentia attendees and the unreconized attendees defined by property only
+	 * with at least the email
 	 * @return array
 	 */
 	public function getAllAttendees() {
 		$return = array();
-		$attendees = (array) $this->getProperty('ATTENDEE');
+		$attendees = $this->getProperty('ATTENDEE');
 		
+		if (empty($attendees))
+		{
+			return array();
+		}
 		
 		foreach($attendees as $params => $value)
 		{
@@ -318,15 +323,17 @@ abstract class bab_ICalendarObject
 				$calendar = $this->attendeesCalendars[$key];
 			}
 			
-			
-			$return[] = array(
-				'ROLE'		=> $role,
-				'PARTSTAT'	=> $partstat,
-				'CN'		=> $cn,
-				'RSVP'		=> $rsvp,
-				'email'		=> $email,
-				'calendar'	=> $calendar
-			);
+			if ($email)
+			{
+				$return[] = array(
+					'ROLE'		=> $role,
+					'PARTSTAT'	=> $partstat,
+					'CN'		=> $cn,
+					'RSVP'		=> $rsvp,
+					'email'		=> $email,
+					'calendar'	=> $calendar
+				);
+			}
 		}
 		
 		
@@ -430,11 +437,8 @@ abstract class bab_ICalendarObject
 		
 		$value .= ":".$calendar->getReference()->__toString();
 		
-		if (isset($this->relations[$reltype][$urlIdentifier]))
-		{
-			$this->removeRelatedToByCalendar($calendar);
-		}
 		
+		$this->removeRelatedToByCalendar($calendar);
 		
 		$this->relations[$reltype][$urlIdentifier] = array(
 			'calendar' 			=> $calendar,
@@ -442,8 +446,9 @@ abstract class bab_ICalendarObject
 			'X-CTO-WFINSTANCE'	=> $wfInstance
 		);
 
+		
 		$this->properties['RELATED-TO'][] = $value;
-
+		
 		return $this;
 	}
 	
@@ -510,6 +515,31 @@ abstract class bab_ICalendarObject
 	}
 	
 	
+	
+	/**
+	 * Search the RELTYPE parameter for a RELATED-TO property
+	 * @param bab_EventCalendar $calendar
+	 * @return string | null
+	 */
+	public function getRelationType(bab_EventCalendar $calendar)
+	{
+		foreach($this->relations as $reltype => $arr)
+		{
+			foreach($arr as $id => $relation)
+			{
+				if ($id === $calendar->getUrlIdentifier())
+				{
+					return $reltype;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
 	/**
 	 * Remove the relation property
 	 * @param bab_EventCalendar $calendar
@@ -522,12 +552,12 @@ abstract class bab_ICalendarObject
 			foreach($this->properties['RELATED-TO'] as $key => $property)
 			{
 				$pos = mb_strpos($property, ':');
-				$value = mb_substr($property, $pos);
+				$value = mb_substr($property, 1+$pos);
 				
 				if ($value === $calendar->getReference()->__toString())
 				{
 					unset($this->properties['RELATED-TO'][$key]);
-				}
+				} 
 			}
 		}
 	}
@@ -595,4 +625,7 @@ abstract class bab_ICalendarObject
 		
 		return $return;
 	}
+	
+	
+	
 }

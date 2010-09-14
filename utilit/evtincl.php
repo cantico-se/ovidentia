@@ -40,18 +40,16 @@ include_once "base.php";
  * @param	string				$description		event description
  * @param	string				$startdate			internationalized string
  * @param	string				$enddate			internationalized string
- * @param	bab_EventCalendar	$calendar			
- * @param	int					$calendar_type
- * @param	int					$calendar_idowner	
+ * @param	bab_EventCalendar	$calendar				
  * @param	string				$message			used as mail subject and in mail body
  */
-function cal_notify($title, $description, $location, $startdate, $enddate, $calendar, $calendar_type, $calendar_idowner, $message) {
+function cal_notify($title, $description, $location, $startdate, $enddate, bab_EventCalendar $calendar, $message) {
 
 
-	switch($calendar_type)
+	switch($calendar->getReferenceType())
 	{
-	case BAB_CAL_USER_TYPE:
-		if( $calendar_idowner != $GLOBALS['BAB_SESS_USERID'] )
+	case 'personal':
+		if( $calendar->getIdUser() != $GLOBALS['BAB_SESS_USERID'] )
 			{
 			notifyPersonalEvent(
 				$title, 
@@ -65,7 +63,7 @@ function cal_notify($title, $description, $location, $startdate, $enddate, $cale
 			}
 		break;
 		
-	case BAB_CAL_PUB_TYPE:
+	case 'public':
 
 		notifyPublicEvent(
 			$title, 
@@ -79,7 +77,7 @@ function cal_notify($title, $description, $location, $startdate, $enddate, $cale
 
 		break;
 		
-	case BAB_CAL_RES_TYPE:
+	case 'resource':
 
 		notifyResourceEvent(
 			$title, 
@@ -219,6 +217,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		$calendar = bab_getICalendars()->getEventCalendar($args['calid']);
 		
 		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $args['evtid'], $args['dtstart']);
+		bab_debug('<h1>$backend->getPeriod()</h1>'. $period->toHtml(), DBG_TRACE, 'CalendarBackend');
 		
 		$begin 	= bab_event_posted::getDateTime($args['startdate'], $period->ts_begin);
 		$end 	= bab_event_posted::getDateTime($args['enddate'], $period->ts_end);
@@ -553,25 +552,16 @@ function bab_setAlarmProperties(bab_CalendarAlarm $alarm, bab_CalendarPeriod $pe
  * @param	int		$status			approver status				BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
  * @return unknown_type
  */
-function confirmApprobEvent($uid, $idcal, $relation, $status, $comment)
+function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
 {
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 	
-	if( 0 == count($arrschi))
-		{
-			throw new Exception('You are not an approver');
-			return false;
-		}
-		
-		
+	
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	$backend = $calendar->getBackend();
-	$period = $backend->getPeriod($backend->CalendarEventCollection(), $uid);
+	$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $uid);
 	
-	
-		
 	if (!$period)
 	{
 		throw new Exception('Event not found');
@@ -585,77 +575,94 @@ function confirmApprobEvent($uid, $idcal, $relation, $status, $comment)
 		$relation = $relations[$relationcal];
 	}
 	
-		
-		
-	if (!in_array($row['idfai'], $arrschi))
+	
+	if (!$relation)
 	{
-		throw new Exception('Access denied to this approbation');
+		throw new Exception('Access denied to this approbation, relation not found with calendar '.$relationcal);
 		return false;
 	}
 
 	
-	$ret = updateFlowInstance($row['idfai'], $GLOBALS['BAB_SESS_USERID'], (BAB_CAL_STATUS_ACCEPTED == $status));
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+
+	if (!in_array($relation['X-CTO-WFINSTANCE'], $arrschi))
+	{
+		throw new Exception(sprintf('Access denied to this approbation, X-CTO-WFINSTANCE = %s not found in list of instance', $relation['X-CTO-WFINSTANCE']));
+		return false;
+	}
+
+	$ret = updateFlowInstance($relation['X-CTO-WFINSTANCE'], $GLOBALS['BAB_SESS_USERID'], (BAB_CAL_STATUS_ACCEPTED == $status));
 				
 	switch($ret)
 	{
 	case 0:
-		deleteFlowInstance($row['idfai']);
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-		notifyEventApprobation(
-			$row['id'], 
-			$status, 
-			$comment, 
-			$calendar->getName(),
-			sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
-		);
+		
+		if ($backend->setRelationStatus($period, $relation, 'DECLINED'))
+		{
+			deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
+		
+			notifyEventApprobation(
+				$period, 
+				$status, 
+				$comment, 
+				$relation['calendar']->getName(),
+				sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
+			);
+		}
+		
 		break;
 		
 		
 		
 	case 1:
-		deleteFlowInstance($row['idfai']);
-		$babDB->db_query("update ".BAB_CAL_EVENTS_OWNERS_TBL." set status='".$babDB->db_escape_string($status)."', idfai='0' where id_event='".$babDB->db_escape_string($row['id'])."'  and id_cal='".$babDB->db_escape_string($row['id_cal'])."'");
-		notifyEventApprobation(
-			$row['id'], 
-			$status, 
-			$comment, 
-			$calendar->getName(), 
-			sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
-		);
-
 		
-		$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($row['id'])."'"));
+		if ($backend->setRelationStatus($period, $relation, 'ACCEPTED'))
+		{
+			deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
+			
+			notifyEventApprobation(
+				$period, 
+				$status, 
+				$comment, 
+				$relation['calendar']->getName(),
+				sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
+			);
+			
+			
 		
-		if ($calendar instanceof bab_ResourceCalendar) {
-			notifyResourceEvent(
-				$rr['title'], 
-				$rr['description'], 
-				$rr['location'], 
-				bab_longDate(bab_mktime($rr['start_date'])), 
-				bab_longDate(bab_mktime($rr['end_date'])), 
-				$calendar,
-				bab_translate('The following resource has been validated')
-			);
-		} else {
-			notifyPublicEvent(
-				$rr['title'], 
-				$rr['description'], 
-				$rr['location'], 
-				bab_longDate(bab_mktime($rr['start_date'])), 
-				bab_longDate(bab_mktime($rr['end_date'])), 
-				$calendar,
-				bab_translate('The following appointment has been validated')
-			);
+			if ($relation['calendar'] instanceof bab_ResourceCalendar) {
+				notifyResourceEvent(
+					$period->getProperty('SUMMARY'), 
+					$period->getProperty('DESCRIPTION'), 
+					$period->getProperty('LOCATION'), 
+					bab_longDate($period->ts_begin), 
+					bab_longDate($period->ts_end), 
+					$relation['calendar'],
+					bab_translate('The following resource has been validated')
+				);
+			} else {
+				notifyPublicEvent(
+					$period->getProperty('SUMMARY'), 
+					$period->getProperty('DESCRIPTION'), 
+					$period->getProperty('LOCATION'), 
+					bab_longDate($period->ts_begin), 
+					bab_longDate($period->ts_end), 
+					$relation['calendar'],
+					bab_translate('The following appointment has been validated')
+				);
+			}
 		}
+		
+		
 		break;
 		
 		
 		
 	default:
-		$nfusers = getWaitingApproversFlowInstance($row['idfai'], true);
+		$nfusers = getWaitingApproversFlowInstance($relation['X-CTO-WFINSTANCE'], true);
 		if( count($nfusers) > 0 )
 			{
-			notifyEventApprovers($row['id'], $nfusers, $calendar);
+			notifyEventApprovers($period, $nfusers, $relation['calendar']);
 			}
 		break;
 	}
@@ -1117,15 +1124,16 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 
 	
 /**
- * Notify creator of event 
- * @param int $evtid
- * @param int $bconfirm
- * @param string $raison
- * @param string $calname
- * @param string $subject
+ * Notify creator of event if the ORGANIZER property exists
+ * 
+ * @param bab_CalendarPeriod 	$period
+ * @param int 					$bconfirm					BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED		
+ * @param string 				$raison
+ * @param string 				$calname
+ * @param string 				$subject					
  * @return unknown_type
  */
-function notifyEventApprobation($evtid, $bconfirm, $raison, $calname, $subject = null)
+function notifyEventApprobation(bab_CalendarPeriod $period, $bconfirm, $raison, $calname, $subject = null)
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
@@ -1135,16 +1143,16 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname, $subject =
 			{
 			var $calendar;
 
-			function clsNotifyEventApprobation(&$evtinfo, $raison, $calname)
+			function clsNotifyEventApprobation($period, $raison, $calname)
 				{
 				$this->calendar = $calname;
 				
-				$this->vars['title'] 		= $evtinfo['title'];
-				$this->vars['description'] 	= $evtinfo['description'];
-				$this->vars['startdate'] 	= bab_longDate(bab_mktime($evtinfo['start_date']));
-				$this->vars['enddate'] 		= bab_longDate(bab_mktime($evtinfo['end_date']));
+				$this->vars['title'] 		= $period->getProperty('SUMMARY');
+				$this->vars['description'] 	= $period->getProperty('DESCRIPTION');
+				$this->vars['startdate'] 	= bab_longDate($period->ts_begin);
+				$this->vars['enddate'] 		= bab_longDate($period->ts_end);
 				$this->vars['message'] 		= $raison;
-				$this->vars['location'] 	= $evtinfo['location'];
+				$this->vars['location'] 	= $period->getProperty('LOCATION');
 				}
 			}
 		}
@@ -1153,23 +1161,47 @@ function notifyEventApprobation($evtid, $bconfirm, $raison, $calname, $subject =
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
-
-	$res=$babDB->db_query("
-		select 
-			cet.*, ut.firstname, ut.lastname, ut.email 
-		from 
-			".BAB_CAL_EVENTS_TBL." cet 
-			left join ".BAB_USERS_TBL." ut on ut.id = cet.id_creator 
-			
-		where cet.id='".$babDB->db_escape_string($evtid)."'
-	");
+		
+	$organizer = $period->getProperty('ORGANIZER');
 	
-	$evtinfo = $babDB->db_fetch_array($res);
+	if (!$organizer)
+	{
+		return;
+	}
+	
+	if (is_array($organizer))
+	{
+		foreach($organizer as $params => $value)
+		{
+			
+			list(,$email) = explode(':', $value);
+			$name = $email;
+			$arrparams = explode(';', $params);
+			array_shift($arrparams);
+			
+			foreach($arrparams as $param)
+			{
+				if ($param)
+				{
+					list($key, $paramvalue) = explode('=', $param);
+					if ($key === 'CN') {
+						$name = $paramvalue;
+						break;
+					}
+				}
+			}
+			
+			$mail->mailTo($email, $name);
+		}
+	} else {
+		list(,$email) = explode(':', $value);
+		$mail->mailTo($email);
+	}
 
-	$mail->mailTo($evtinfo['email'], bab_composeUserName($evtinfo['firstname'], $evtinfo['lastname']));
+	
 	$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 
-	$tempc = new clsNotifyEventApprobation($evtinfo, $raison, $calname);
+	$tempc = new clsNotifyEventApprobation($period, $raison, $calname);
 	
 
 	if (null === $subject)
@@ -1926,7 +1958,6 @@ class bab_event_posted {
 
 		try {
 			$calendarPeriod = $this->getCalendarPeriod();
-			bab_debug($calendarPeriod->getProperties());
 		} catch(ErrorException $e) {
 			$message = $e->getMessage();
 			return false;
@@ -1942,7 +1973,7 @@ class bab_event_posted {
 
 		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 		
-	
+		$oldrelations = array();
 		$uid = $calendarPeriod->getProperty('UID');
 		
 		if ($uid)
@@ -1959,6 +1990,8 @@ class bab_event_posted {
 				$message = bab_translate(sprintf('Modification of this event on calendar %s is not allowed', $calendar->getName()));
 				return false;
 			}
+			
+			$oldrelations = array_merge($oldevent->getRelations('PARENT'), $oldevent->getRelations('CHILD'));
 		}
 		
 		if (!$uid && !$calendar->canAddEvent())
@@ -1967,8 +2000,13 @@ class bab_event_posted {
 			return false;
 		}
 		
+		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 		$backend->savePeriod($calendarPeriod);
 		$calendarPeriod->commitAttendeeEvent();
+		
+		
+		$this->notifyRelations($calendarPeriod, $oldrelations);
+		
 
 		$min = $calendarPeriod->ts_begin;
 		$max = $calendarPeriod->ts_end;
@@ -1990,8 +2028,53 @@ class bab_event_posted {
 	}
 	
 	
+	/**
+	 * For new relations added to event, notify recipents or approvers
+	 * 
+	 * @param	bab_CalendarPeriod	$calendarPeriod
+	 * @param	Array				$oldrelations
+	 * 
+	 * @return unknown_type
+	 */
+	private function notifyRelations(bab_CalendarPeriod $calendarPeriod, Array $oldrelations)
+	{
+		$newrelations = array_merge($calendarPeriod->getRelations('PARENT'), $calendarPeriod->getRelations('CHILD'));
+		
+		
+		foreach($newrelations as $urlidentifier => $relation)
+		{
+			if (isset($oldrelations[$urlidentifier]))
+			{
+				// allready notified
+				continue;
+			}
+		
+			$wfinstance = $relation['X-CTO-WFINSTANCE'];
 	
-	
+			if( $wfinstance )
+			{
+				// approbation instance, notify approvers
+				
+				$nfusers = getWaitingApproversFlowInstance($wfinstance, true);
+				notifyEventApprovers($calendarPeriod, $nfusers, $relation['calendar']);
+			}
+			else 
+			{
+
+				// if new calendar in event, notify new appointement 
+				
+				cal_notify(
+					$calendarPeriod->getProperty('SUMMARY'), 
+					$calendarPeriod->getProperty('DESCRIPTION'), 
+					$calendarPeriod->getProperty('LOCATION'), 
+					bab_longDate($calendarPeriod->ts_begin), 
+					bab_longDate($calendarPeriod->ts_end), 
+					$relation['calendar'], 
+					bab_translate("New appointement")
+				);
+			}
+		}
+	}
 	
 	
 	/**

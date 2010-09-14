@@ -190,15 +190,7 @@ abstract class bab_EventCalendar
 		return $this->idsa;
 	}
 	
-	/**
-	 * Get the approbation instance associated to the calendar on a period for the access user only or null if the are no approbation instance
-	 * @param bab_CalendarPeriod $period
-	 * @return null | int
-	 */
-	public function getApprobationInstance(bab_CalendarPeriod $period)
-	{
-		return null;
-	}
+
 	
 	
 	
@@ -485,7 +477,7 @@ abstract class bab_EventCalendar
 	 * Display an event in to a calendar placeholder UI element on page
 	 * this method is called on the main calendar of event only
 	 * 
-	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations
+	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations using status or partstat parameter
 	 * 
 	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
 	 * @param	bab_CalendarPeriod	$event			Event to display
@@ -494,16 +486,41 @@ abstract class bab_EventCalendar
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
+		/*
 		if ($calendar === $this)
 		{
 			return true;
 		}
+		
 		
 		foreach($event->getCalendars() as $relationOrAttendee)
 		{
 			if ($relationOrAttendee->getUrlIdentifier() === $calendar->getUrlIdentifier())
 			{
 				return true;
+			}
+		}
+		*/
+		
+		if ($calendar instanceof bab_PersonalCalendar)
+		{
+			foreach($event->getAttendees() as $attendee)
+			{
+				if ($attendee['PARTSTAT'] !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			$relations = array_merge($event->getRelations('PARENT'), $event->getRelations('CHILD'));
+			foreach($relations as $relation)
+			{
+				if ($relation['X-CTO-STATUS'] !== 'DECLINED' && $relation['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
+				{
+					return true;
+				}
 			}
 		}
 		
@@ -560,43 +577,6 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 	}
 
 	
-	
-	/**
-	 * Get the approbation instance associated to the calendar on a period for the access user only or null if the are no approbation instance
-	 * @param bab_CalendarPeriod $period
-	 * @return null | int
-	 */
-	public function getApprobationInstance(bab_CalendarPeriod $period)
-	{
-		if (null === $this->getApprobationSheme())
-		{
-			return null;
-		}
-		
-		global $babDB;
-		
-		$res = $babDB->db_query('
-				SELECT 
-					eo.idfai 
-				FROM 
-					'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
-					'.BAB_CAL_EVENTS_TBL.' e
-			
-				WHERE 
-					eo.id_event = e.id
-					AND eo.id_cal = '.$babDB->quote($this->getUid()).'
-					AND	eo.caltype = '.$babDB->quote($this->getReferenceType()).' 
-					AND e.uuid = '.$babDB->quote($period->getProperty('UID')).'
-			
-		');
-		
-		if ($arr = $babDB->db_fetch_assoc($res))
-		{
-			return (int) $arr['idfai'];
-		}
-		
-		return null;
-	}
 }
 
 

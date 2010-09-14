@@ -1230,9 +1230,8 @@ function confirmDeleteEvent($calid, $bupdrec)
 	}
 
 
-	/*
-	foreach($calendars as $id_cal) {
-		$cal = bab_getICalendars()->getCalendarInfo($id_cal);
+	
+	foreach($calendarPeriod->getCalendars() as $calendar) {
 			
 		cal_notify(
 			$calendarPeriod->getProperty('SUMMARY'), 
@@ -1240,13 +1239,11 @@ function confirmDeleteEvent($calid, $bupdrec)
 			$calendarPeriod->getProperty('LOCATION'), 
 			$startdate = bab_longDate($calendarPeriod->ts_begin),
 			$enddate = bab_longDate($calendarPeriod->ts_end),
-			$id_cal, 
-			$cal['type'], 
-			$cal['idowner'],
+			$calendar, 
 			bab_translate("An appointement has been removed")
-			);
+		);
 	}
-	*/
+	
 		
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 	$event = new bab_eventPeriodModified($date_min, $date_max, false);

@@ -388,5 +388,39 @@ class Func_CalendarBackend extends bab_functionality
 		
 		return $return;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Update the relation status after approbation
+	 * This method will also remove the X-CTO-WFINSTANCE
+	 * 
+	 * @param bab_CalendarPeriod 	$period
+	 * @param array 				$relation		The relation to update
+	 * @param string	 			$status			new status for relation		ACCEPTED | DECLINED	
+	 * @return bool
+	 */
+	public function setRelationStatus(bab_CalendarPeriod $period, Array $relation, $status)
+	{
+		$reltype = $period->getRelationType($relation['calendar']);
+		
+		if (null === $reltype)
+		{
+			throw new Exception(sprintf('the relation beetween event %s and calendar %s does not exists', $period->getProperty('UID'), $relation['calendar']->getName()));
+			return false;
+		}
+		
+		$period->addRelation($reltype, $relation['calendar'], $status);
+		// the addRelation method handle duplicate entries, this will update relation status and remove flow instance
+		
+		bab_debug('<h1>$backend->SavePeriod()</h1>'. $period->toHtml(), DBG_TRACE, 'CalendarBackend');
+		return $this->savePeriod($period);
+	}
 
 }
