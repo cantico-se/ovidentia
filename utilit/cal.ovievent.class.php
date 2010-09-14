@@ -578,7 +578,7 @@ class bab_cal_OviEventUpdate
 				{
 					if ($status !== $associated[$id_calendar])
 					{
-						$this->updateCalendarStatus($id_event, $calendar, $status);
+						$this->updateCalendarStatus($id_event, $calendar, $status, 0);
 					}
 				}
 				else
@@ -615,14 +615,32 @@ class bab_cal_OviEventUpdate
 			$calendar = $relation['calendar'];
 			if (($calendar instanceof bab_OviPublicCalendar) || ($calendar instanceof bab_OviResourceCalendar))
 			{
-				$status = BAB_CAL_STATUS_ACCEPTED;
 				$id_calendar = $calendar->getUid();
 				
 				if (isset($associated[$id_calendar]))
 				{
+					switch($relation['X-CTO-STATUS'])
+					{
+						case 'ACCEPTED':
+							$status = BAB_CAL_STATUS_ACCEPTED;
+							$wfinstance = 0;
+							break;
+							
+						case 'DECLINED':
+							$status = BAB_CAL_STATUS_DECLINED;
+							$wfinstance = 0;
+							break;
+							
+						case 'NEEDS-ACTION':
+							$status = BAB_CAL_STATUS_NONE;
+							$wfinstance = (int) $relation['X-CTO-WFINSTANCE'];
+							break;
+					}
+					
+					
 					if ($status !== $associated[$id_calendar])
 					{
-						$this->updateCalendarStatus($id_event, $calendar, $status);
+						$this->updateCalendarStatus($id_event, $calendar, $status, $wfinstance);
 					}
 				}
 				else
@@ -776,12 +794,13 @@ class bab_cal_OviEventUpdate
 	/**
 	 * Update calendar status into event
 	 * 
-	 * @param int 					$id_event
-	 * @param bab_EventCalendar		$calendar
-	 * @param int 					$status
+	 * @param 	int 				$id_event
+	 * @param 	bab_EventCalendar	$calendar
+	 * @param 	int 				$status
+	 * @param	int					$wfinstance
 	 * @return unknown_type
 	 */
-	private function updateCalendarStatus($id_event,bab_EventCalendar $calendar, $status)
+	private function updateCalendarStatus($id_event,bab_EventCalendar $calendar, $status, $wfinstance)
 	{
 		global $babDB;
 		
@@ -792,8 +811,8 @@ class bab_cal_OviEventUpdate
 		$babDB->db_query("
 			UPDATE ".BAB_CAL_EVENTS_OWNERS_TBL." 
 				SET 
-					status = ".$babDB->quote($status)." 
-					
+					status = ".$babDB->quote($status).", 
+					idfai = ".$babDB->quote($wfinstance)." 
 			WHERE 
 				id_event=".$babDB->quote($id_event)." 
 				AND calendar_backend=".$babDB->quote($backend)."
@@ -919,7 +938,10 @@ class bab_cal_OviEventSelect
 		$resco = $babDB->db_query("
 		
 			SELECT 
-				o.id_cal, o.idfai, o.status, o.caltype    
+				o.id_cal, 
+				o.idfai, 
+				o.status, 
+				o.caltype    
 			FROM 
 				".BAB_CAL_EVENTS_OWNERS_TBL." o
 			WHERE 
@@ -959,6 +981,9 @@ class bab_cal_OviEventSelect
 			}
 			
 			
+			
+			
+			
 		
 			if ($calendar instanceof bab_PersonalCalendar) {
 				
@@ -983,15 +1008,12 @@ class bab_cal_OviEventSelect
 				
 			} else {
 				
-				$status = null;
-				$idfai = null;
-				
-				
-				if ($arr2['idfai']) 
-				{
 				$idfai = (int) $arr2['idfai'];
-				$status = $partstat;
+				if (0 === $idfai) {
+					$idfai = null;
 				}
+				$status = $partstat;
+
 				
 				if ($calendar->getUrlIdentifier() === $arr['parent_calendar']) {
 					// main calendar 
