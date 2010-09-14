@@ -243,6 +243,12 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		$period->setProperty('UID', $args['evtid']);
 	}
 	
+	$critical_change = false;
+	if ($period->ts_begin !== $begin->getTimeStamp() || $period->ts_end !== $end->getTimeStamp() || $period->getProperty('LOCATION') !== $args['location'])
+	{
+		$critical_change = true;
+	}
+	
 	$period->setDates($begin, $end);
 	
 	$period->setProperty('SUMMARY', $args['title']);
@@ -319,6 +325,11 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 				{
 					$idfai = $oldrelations[$urlid]['X-CTO-WFINSTANCE'];
 					$status = $oldrelations[$urlid]['X-CTO-STATUS'];
+				}
+				
+				if ($critical_change && ('ACCEPTED' === $status || 'DECLINED' === $status))
+				{
+					$status = null;
 				}
 				
 				
@@ -2043,9 +2054,9 @@ class bab_event_posted {
 		
 		foreach($newrelations as $urlidentifier => $relation)
 		{
-			if (isset($oldrelations[$urlidentifier]))
+			if (isset($oldrelations[$urlidentifier]) && $oldrelations[$urlidentifier]['X-CTO-WFINSTANCE'])
 			{
-				// allready notified
+				// allready notified, ongoing instance
 				continue;
 			}
 		
