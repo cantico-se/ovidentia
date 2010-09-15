@@ -901,7 +901,7 @@
 				$sShortDescription 			= bab_rp('sShortDescription', '');
 				$iDurationType 				= (int) bab_rp('oDurationType', BAB_TM_DATE);
 				$iDurationUnit 				= (int) bab_rp('oDurationUnit', BAB_TM_DAY);
-				$iDuration 					= number_format(bab_rp('sDuration', ''), 2, '.', '');
+				$iDuration 					= number_format((float) bab_rp('sDuration', ''), 2, '.', '');
 				$iPlannedTimeDurationUnit 	= (int) bab_rp('oPlannedTimeDurationUnit', BAB_TM_DAY);
 				$iPlannedTime 				= number_format(bab_rp('oPlannedTime', 0), 2, '.', '');
 				$iTimeDurationUnit 			= (int) bab_rp('oTimeDurationUnit', BAB_TM_DAY);

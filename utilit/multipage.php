@@ -493,15 +493,15 @@ class BAB_MultiPageBase
 
 	function buildPageUrl($iPageNumber, $bUseHtmlEntities = true)
 	{
-		$sPageUrl = ereg_replace('\?tg=[^&.]+', '', $_SERVER['REQUEST_URI']);
-		$sPageUrl = ereg_replace('&iPage=[^&.]+', '', $sPageUrl);
-		$sPageUrl = ereg_replace('&iNbRowsPerPage=[^&.]+', '', $sPageUrl);
+		$sPageUrl = preg_replace('/\?tg=[^&.]+/', '', $_SERVER['REQUEST_URI']);
+		$sPageUrl = preg_replace('/&iPage=[^&.]+/', '', $sPageUrl);
+		$sPageUrl = preg_replace('/&iNbRowsPerPage=[^&.]+/', '', $sPageUrl);
 		
 		$sExtraParams = '';
 		reset($this->m_aAdditionnalPaginationAndFormParameters);
 		foreach($this->m_aAdditionnalPaginationAndFormParameters as $sName => $sValue)
 		{
-			$sPageUrl = ereg_replace('&' . $sName . '=[^&.]+', '', $sPageUrl);
+			$sPageUrl = preg_replace('/&' . $sName . '=[^&.]+/', '', $sPageUrl);
 			$sExtraParams .= '&' . $sName . '=' . urlencode($sValue);
 		}
 		$sPageUrl = '?tg=' . urlencode($this->sTg);

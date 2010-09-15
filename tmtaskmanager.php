@@ -1789,8 +1789,8 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 					$sOrder = (string) bab_rp('sOrder', '');
 					
 					$this->sColumnHeaderUrl = $this->buildPageUrl($this->iPage, false);
-					$this->sColumnHeaderUrl = ereg_replace('&sOrderBy=[^&.]+', '', $this->sColumnHeaderUrl);
-					$this->sColumnHeaderUrl = ereg_replace('&sOrder=[^&.]+', '', $this->sColumnHeaderUrl);
+					$this->sColumnHeaderUrl = preg_replace('/&sOrderBy=[^&.]+/', '', $this->sColumnHeaderUrl);
+					$this->sColumnHeaderUrl = preg_replace('/&sOrder=[^&.]+/', '', $this->sColumnHeaderUrl);
 					$this->sColumnHeaderUrl .= '&sOrderBy=' . $aDataSourceFieldName['value'];
 					
 					if($sOrderBy === (string) $aDataSourceFieldName['value'])
