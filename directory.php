@@ -1983,7 +1983,11 @@ function processImportDbFile( $pfile, $id, $separ )
 				case 2: // Do not import duplicates
 					if( $idgroup > 0 )
 						{
-						$query = "select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."'";
+						$query = "select id from ".BAB_USERS_TBL." where 
+							nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."' 
+							OR (firstname LIKE '".$babDB->db_escape_like($arr[$GLOBALS['givenname']])."' 
+								AND lastname LIKE '".$babDB->db_escape_like($arr[$GLOBALS['sn']])."')";
+						
 						$res2 = $babDB->db_query($query);
 						if( $babDB->db_num_rows($res2) > 0 )
 							{
