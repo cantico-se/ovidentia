@@ -153,41 +153,7 @@ function calendarOptions($urla)
 	require_once dirname(__FILE__).'/utilit/dateTime.php';
 	global $babBody;
 	
-	$old_calendar = bab_getICalendars()->getPersonalCalendar();
-	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
-	
-	/**@var $old_backend Func_CalendarBackend */
-	
-	$factory = $old_backend->Criteria();
-	/**@var $factory bab_PeriodCriteriaFactory */
-	
-	$criteria = $factory->Calendar($old_calendar);
-	$criteria = $criteria->_AND_($factory->Begin(new BAB_DateTime(2010, 9, 1)));
-	$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
-	
-	$events = $old_backend->selectPeriods($criteria);
-	
-	bab_debug($events->debugBoundaries());
-	
-	$listed = array();
-	$duplicates = '';
-	foreach($events as $event)
-	{
-		$uid = $event->getProperty('UID');
-		if (isset($listed[$uid]))
-		{
-			$duplicates .= $event->getProperty('DTSTART').' '.$event->getProperty('DTEND').' '.$event->getProperty('SUMMARY')."\n";
-		}
-		$listed[$uid] =1;
-	}
-	
-	bab_debug($duplicates);
-	
-	
-	
-	
-	
-	
+
 
 	class temp
 		{
