@@ -374,9 +374,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			$ts = $p->ts_begin;
 			if (isset($this->boundaries[$ts])) {
 				$current_boundary = $ts;
-				while ($current_boundary < $p->ts_end) {
+				while ($current_boundary <= $p->ts_end) {
 					// add period on overlapped boudaries
-					$this->boundaries[$current_boundary][] = & $this->periods[$key];
+					$this->boundaries[$current_boundary][] = $this->periods[$key];
 					if (!isset($this->sibling[$current_boundary])) {
 						break;
 					}
@@ -498,6 +498,37 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	}
 
 	
+	/**
+	 * HTML view of boundaries
+	 * @return unknown_type
+	 */
+	public function debugBoundaries()
+	{
+		$html = '<table border="1">';
+		$html .= '<thead>';
+		foreach($this->boundaries as $h => $arr)
+		{
+			$html .= '<td>'.bab_toHtml(bab_shortDate($h)).'</td>';
+		}
+		
+		$html .= '</thead>';
+		
+		$html .= '<tbody>';
+		foreach($this->boundaries as $h => $arr)
+		{
+			$html .= '<td>';
+			foreach($arr as $v => $event)
+			{
+				$html .= '<p>'.bab_toHtml($event->getProperty('SUMMARY')).'</p>';
+			}
+			$html .= '</td>';
+		}
+		$html .= '</tbody>';
+		$html .= '</table>';
+		
+		return $html;
+	}
+	
 	
  	public function rewind()
     {
@@ -525,6 +556,10 @@ class bab_UserPeriods implements Countable, seekableIterator {
     	return $this->iter_key;
     }
 
+    /**
+	 * Next
+	 * boundaries are ordered by ts_begin, the iterator will browse only event instance attached to the first boundary in chronological order
+     */
     public function next()
     {
     	if (!isset($this->iter_boundary))
@@ -540,6 +575,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
       	if (!list($this->iter_vertical, $this->iter_value) = each($this->iter_boundary))
       	{
       		$this->iter_boundary = null;
+      		$this->next();
+      		return;
+      	}
+      	
+      	if ($this->iter_horizontal !== $this->iter_value->ts_begin)
+      	{
+      		// this is not the first boundary of event
       		$this->next();
       		return;
       	}
