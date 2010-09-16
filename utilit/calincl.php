@@ -346,6 +346,8 @@ class bab_icalendars
 	
 	/**
 	 * Get a personal calendar Uid
+	 * return null if no personal calendar
+	 * 
 	 * @param int $id_user
 	 * @return int
 	 */
@@ -403,8 +405,17 @@ class bab_icalendars
 		}
 		
 		if (empty($keys)) {
-			// init user calendars with all accessible calendars
-			$keys = array_keys($this->calendars);
+			// init user calendars with only my personal calendar
+			
+			$personal = $this->getPersonalCalendar();
+			
+			if (null == $personal)
+			{
+				$keys = array();
+			} else {
+			
+				$keys = array($personal->getUrlIdentifier());
+			}
 			
 		}
 
