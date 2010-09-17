@@ -857,6 +857,8 @@ function loadSections()
 					if(function_exists($func))
 						{
 						if (!isset($template)) $template = false;
+						$stitle = '';
+						$scontent = '';
 						if($func($stitle, $scontent, $template))
 							{
 								if( !$arrsectionsinfo[$objectid]['close'])
