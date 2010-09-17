@@ -896,7 +896,7 @@ class bab_cal_OviEventSelect
 		
 		$event->setProperty('UID'			, $arr['uuid']);
 		$event->setProperty('SUMMARY'		, $arr['title']);
-		$event->setProperty('DESCRIPTION'	, $arr['description']);
+		$event->setProperty('DESCRIPTION'	, trim(bab_unhtmlentities(strip_tags($arr['description']))));
 		$event->setProperty('LOCATION'		, $arr['location']);
 		$event->setProperty('CATEGORIES'	, $arr['category']);
 		$event->setProperty('X-CTO-COLOR'	, $arr['color']);
@@ -1347,7 +1347,7 @@ class bab_cal_OviEventSelect
 		$users = array();
 		foreach($calendars as $calendar)
 		{
-			if ($calendar instanceof bab_OviPersonalCalendar)
+			if ($calendar instanceof bab_PersonalCalendar)
 			{
 				$users[] = $calendar->getIdUser();
 			}
@@ -1362,12 +1362,8 @@ class bab_cal_OviEventSelect
 		
 		
 		
-		
-		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
-		
-			
 				
 			$inbox_criteria = clone $criteria;
 		
