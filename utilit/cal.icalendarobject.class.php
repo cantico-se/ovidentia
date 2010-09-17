@@ -62,11 +62,11 @@ abstract class bab_ICalendarObject
 	 * List of events to call with the commitAttendeeEvent method
 	 * 
 	 * @see bab_ICalendarObject::resetAttendeeEvent()
-	 * @see bab_ICalendarObject::commitAttendeeEvent()
+	 * @see bab_CalendarPeriod::commitAttendeeEvent()
 	 * 
 	 * @var array
 	 */
-	private $attendeesEvents = array();
+	protected $attendeesEvents = array();
 	
 	
 	
@@ -365,43 +365,7 @@ abstract class bab_ICalendarObject
 		return $this;
 	}
 	
-	/**
-	 * call each modified or added attendees 
-	 * if attendee is the parent, do not call events
-	 * 
-	 * @return bab_ICalendarObject
-	 */
-	public function commitAttendeeEvent()
-	{	
-		$collection = $this->getCollection();
-		if (isset($collection))
-		{
-			$calendar = $collection->getCollection();
-		}
-		else
-		{
-			$calendar = null;
-		}
-		
-		foreach($this->attendeesEvents as $urlidentifier => $method)
-		{
-			if (isset($calendar) && $urlidentifier === $calendar->getUrlIdentifier())
-			{
-				continue;
-			}
-			
-			
-			if (isset($this->attendees[$urlidentifier]))
-			{
-				$calendar = $this->attendees[$urlidentifier]['calendar'];
-				$calendar->$method($this);
-			}
-		}
-		
-		$this->attendeesEvents = array();
-		
-		return $this;
-	}
+	
 	
 	
 	
