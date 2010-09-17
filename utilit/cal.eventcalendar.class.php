@@ -486,41 +486,40 @@ abstract class bab_EventCalendar
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
-		/*
-		if ($calendar === $this)
-		{
-			return true;
-		}
-		
-		
-		foreach($event->getCalendars() as $relationOrAttendee)
-		{
-			if ($relationOrAttendee->getUrlIdentifier() === $calendar->getUrlIdentifier())
-			{
-				return true;
-			}
-		}
-		*/
-		
+
 		if ($calendar instanceof bab_PersonalCalendar)
 		{
-			foreach($event->getAttendees() as $attendee)
+			$attendees = $event->getAttendees();
+			foreach($attendees as $attendee)
 			{
 				if ($attendee['PARTSTAT'] !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
 				{
 					return true;
 				}
 			}
+			
+			if (!isset($attendees[$this->getUrlIdentifier()]))
+			{
+				// the main calendar of event is not in attendees
+				return true;
+			}
 		}
 		else
 		{
-			$relations = array_merge($event->getRelations('PARENT'), $event->getRelations('CHILD'));
+			$relations = $event->getRelations();
 			foreach($relations as $relation)
 			{
 				if ($relation['X-CTO-STATUS'] !== 'DECLINED' && $relation['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
 				{
 					return true;
 				}
+			}
+			
+			
+			if (!isset($relations[$this->getUrlIdentifier()]))
+			{
+				// the main calendar of event is not in relations
+				return true;
 			}
 		}
 		

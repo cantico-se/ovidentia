@@ -4925,11 +4925,11 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		}
 		
 		$backend->includePeriodCollection();
-		$collections = array(new bab_CalendarEventCollection);
+		$collections = array('bab_CalendarEventCollection');
 
 		if( $holiday )
 		{
-			$collections[] = $backend->VacationPeriodCollection();
+			$collections[] = 'bab_VacationPeriodCollection';
 		}
 		
 		$criteria = $criteria->_AND_($factory->Collection($collections));

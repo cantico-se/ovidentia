@@ -96,7 +96,7 @@ class displayAttendeesCls
 		$this->publics = array();
 		$this->resources = array();
 		
-		$relations = array_merge($this->period->getRelations('PARENT'), $this->period->getRelations('CHILD'));
+		$relations = $this->period->getRelations();
 		foreach($relations as $relation)
 		{
 			// only relations with calendars from ovidentia backend displayed
@@ -990,7 +990,7 @@ include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 					{
 					/* $calPeriod : object bab_calendarPeriod : see file workinghoursincl.php */
 					$arr = $calPeriod->getData(); /* $calPeriod->data can be NULL (non working days) */
-					$arr['color'] = $calPeriod->getColor();
+					$arr['color'] = $calPeriod->getProperty('X-CTO-COLOR');
 
 					$xCtoPuid = $calPeriod->getProperty('UID');
 					

@@ -265,7 +265,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	} else {
 		if ($args['color'])
 		{
-			$period->setColor($args['color']);
+			$period->setProperty('X-CTO-COLOR', $args['color']);
 		}
 	}
 	
@@ -282,7 +282,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	
 	$calendar = $collection->getCalendar();
 	$period->removeAttendees();
-	$oldrelations = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
+	$oldrelations = $period->getRelations();
 	
 	// Attendee
 	// add additional calendars as attendee property
@@ -580,7 +580,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
 	}
 	
 	// search for relation
-	$relations = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
+	$relations = $period->getRelations();
 	if (isset($relations[$relationcal]))
 	{
 		$relation = $relations[$relationcal];
@@ -2002,7 +2002,7 @@ class bab_event_posted {
 				return false;
 			}
 			
-			$oldrelations = array_merge($oldevent->getRelations('PARENT'), $oldevent->getRelations('CHILD'));
+			$oldrelations = $oldevent->getRelations();
 		}
 		
 		if (!$uid && !$calendar->canAddEvent())
@@ -2049,7 +2049,7 @@ class bab_event_posted {
 	 */
 	private function notifyRelations(bab_CalendarPeriod $calendarPeriod, Array $oldrelations)
 	{
-		$newrelations = array_merge($calendarPeriod->getRelations('PARENT'), $calendarPeriod->getRelations('CHILD'));
+		$newrelations = $calendarPeriod->getRelations();
 		
 		
 		foreach($newrelations as $urlidentifier => $relation)

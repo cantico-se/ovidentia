@@ -90,12 +90,17 @@ class Func_CalendarBackend extends bab_functionality
 	
 	/**
 	 * A collection of vacation periods
+	 * 
+	 * @param	bab_PersonalCalendar $calendar		for this collection, the calendar is mandatory and must be a personal calendar
+	 * 
 	 * @return bab_VacationPeriodCollection
 	 */
-	public function VacationPeriodCollection()
+	public function VacationPeriodCollection(bab_PersonalCalendar $calendar)
 	{
 		$this->includePeriodCollection();
-		return new bab_VacationPeriodCollection;
+		$collection = new bab_VacationPeriodCollection;
+		$collection->setCalendar($calendar);
+		return $collection;
 	}
 	
 	

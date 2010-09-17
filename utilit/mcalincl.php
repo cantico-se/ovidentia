@@ -527,13 +527,10 @@ class bab_icalendar extends bab_icalendarEventsSource
 			foreach($events as $event) {
 
 				
+				$calendar = $event->getCollection()->getCalendar();
 				
-				$parents = $event->getRelations('PARENT');
-				if ($parents)
+				if ($calendar)
 				{
-					$relation = reset($parents);
-					$calendar = $relation['calendar'];
-
 					// $calendar is the main calendar of event
 					
 					if ($calendar->displayEventInCalendarUi($this->calendar, $event))
@@ -541,8 +538,10 @@ class bab_icalendar extends bab_icalendarEventsSource
 						$ui_event = clone $event;
 						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
 						$arr[] = $ui_event;
+					} else {
+						bab_debug($event->toHtml());
 					}
-				}
+				} 
 			}
 			
 		return count($arr);
@@ -753,9 +752,9 @@ class cal_wmdbaseCls
 			throw new Exception('calendar period without collection');
 		}
 		
-		$parents = $calPeriod->getRelations('PARENT');
-
-		if (!$parents)
+		$calendar = $periodCollection->getCalendar();
+		
+		if (!$calendar)
 		{
 			$this->bstatus			= false;
 			$this->allow_view 		= false;
@@ -764,12 +763,9 @@ class cal_wmdbaseCls
 			return;
 		}
 		
-		$relation = reset($parents);
-		$parent = $relation['calendar'];
-		
 		$this->allow_view 			= true;												// detail view popup
-		$this->allow_modify 		= $parent->canUpdateEvent($calPeriod);				// edit popup
-		$this->allow_viewtitle 		= $parent->canViewEventDetails($calPeriod);			// SUMMARY of event on calendar
+		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);			// edit popup
+		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);		// SUMMARY of event on calendar
 
 		$this->bstatus				= false;											// default, nothing to validate
 		
@@ -791,12 +787,12 @@ class cal_wmdbaseCls
 			
 			if (!$this->bstatus)
 			{
-				$backend = $parent->getBackend();
+				$backend = $calendar->getBackend();
 
 				require_once dirname(__FILE__).'/wfincl.php';
 				$user_instances = bab_WFGetWaitingInstances($GLOBALS['BAB_SESS_USERID']);
 				
-				$relations = array_merge($calPeriod->getRelations('PARENT'), $calPeriod->getRelations('CHILD'));
+				$relations = $calPeriod->getRelations();
 				foreach($relations as $relation)
 				{
 					if (null !== $relation['X-CTO-WFINSTANCE'])
@@ -884,7 +880,7 @@ class cal_wmdbaseCls
 		{
 			$this->bgcolor = $cat['bgcolor'];
 		} elseif(bab_getICalendars()->usebgcolor == 'Y') {
-			$this->bgcolor = $calPeriod->getColor();
+			$this->bgcolor = $calPeriod->getProperty('X-CTO-COLOR');
 		} else {
 			$this->bgcolor = '';
 		}
@@ -928,7 +924,7 @@ class cal_wmdbaseCls
 		{
 			// the event is in multiple calendar
 			// find the real parent
-			
+			/*
 			$arr = $calPeriod->getRelations('PARENT');
 			
 			if (!isset($arr) || 1 !== count($arr))
@@ -938,6 +934,9 @@ class cal_wmdbaseCls
 	
 			$relation = reset($arr);
 			$parent = $relation['calendar'];
+			*/
+			
+			$parent = $calendar; 
 		}
 		
 			
@@ -967,12 +966,12 @@ class cal_wmdbaseCls
 			
 		$this->nbowners		= 0;
 			
-		if (isset($parent) && ($parent instanceof bab_EventCalendar))
+		if (isset($calendar) && ($calendar instanceof bab_EventCalendar))
 		{
 			
 			foreach($calPeriod->getCalendars() as $subcal)
 			{
-				if ($subcal->getUrlIdentifier() !== $parent->getUrlIdentifier())
+				if ($subcal->getUrlIdentifier() !== $calendar->getUrlIdentifier())
 				{
 					$this->nbowners++;
 				}
@@ -1128,7 +1127,7 @@ class calendarchoice
 					}
 				}
 				
-				$relations = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
+				$relations = $period->getRelations();
 				foreach($relations as $relation)
 				{
 					if ('DECLINED' === $relation['X-CTO-STATUS'])

@@ -3353,7 +3353,7 @@ function bab_tskmgr_setPeriods(bab_TaskCollection $tsk_collection, bab_UserPerio
 				$oBabCalPeriod->setProperty('DTSTART', $date_begin->getICal());
 				$oBabCalPeriod->setProperty('DTEND', $date_end->getICal());
 				$oBabCalPeriod->setProperty('CATEGORIES', $datas['sCategoryName']);
-				$oBabCalPeriod->setColor($datas['sBgColor']);
+				$oBabCalPeriod->setProperty('X-CTO-COLOR', $datas['sBgColor']);
 			}
 		}
 	}

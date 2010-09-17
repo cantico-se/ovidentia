@@ -762,113 +762,221 @@ function bab_changeCalendarBackend($calendar_backend)
  */
 function bab_changeCalendarBackendConfirm($calendar_backend, $copy_source, $delete_destination)
 {
-	global $babDB;
+	require_once dirname(__FILE__).'/utilit/install.class.php';
 	
-	// my personal calendar on old backend
+	bab_installWindow::getPage(
+		bab_translate('Move my personal calendar'),
+		$GLOBALS['babUrlScript']."?tg=calopt&idx=changeCalendarBackendFrame&calendar_backend=$calendar_backend&copy_source=$copy_source&delete_destination=$delete_destination&urla=".urlencode(bab_rp('urla')),
+		bab_translate('Next'),
+		$GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode(bab_rp('urla'))
+	);
 	
-	$old_calendar = bab_getICalendars()->getPersonalCalendar();
+}
+
+
+/**
+ * Iframe content for calendar backend progress
+ * @param unknown_type $calendar_backend
+ * @param unknown_type $copy_source
+ * @param unknown_type $delete_destination
+ * @return unknown_type
+ */
+function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete_destination)
+{
+	require_once dirname(__FILE__).'/utilit/install.class.php';
 	
-	if (!($old_calendar instanceof bab_PersonalCalendar))
-	{
-		throw new Exception('Personal calendar not available on old backend');
-		return;
-	}
-	
+	$changeCalendar = new bab_changeCalendarBackend($calendar_backend, $copy_source, $delete_destination);
 	
 	$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
 	$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
 	
-	/**@var $old_backend Func_CalendarBackend */
-	/**@var $new_backend Func_CalendarBackend */
+	$window = new bab_installWindow;
 	
-	$factory = $new_backend->Criteria();
 	
-	// the new calendar
+	$window->setStartMessage(sprintf(bab_translate('Move my personal calendar from %s to %s'), $old_backend->getDescription(), $new_backend->getDescription()));
+	$window->setStopMessage(bab_translate('Your calendar has been moved'), bab_translate('Failed'));
 	
-	$new_calendar = $new_backend->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+	$window->startInstall(array($changeCalendar, 'process'));
+}
 	
-	if (!($new_calendar instanceof bab_PersonalCalendar))
+	
+	
+class bab_changeCalendarBackend
+{
+	private $calendar_backend;
+	private $copy_source;
+	private $delete_destination;
+	
+	
+	public function __construct($calendar_backend, $copy_source, $delete_destination)
 	{
-		throw new Exception('Personal calendar not available on new backend');
-		return;
+		$this->calendar_backend = $calendar_backend;
+		$this->copy_source = $copy_source;
+		$this->delete_destination = $delete_destination;
 	}
 	
-	
-	if ($delete_destination)
+	/**
+	 * Callback for install process
+	 * @return unknown_type
+	 */
+	public function process()
 	{
-		// delete events in destination calendar backend
+		global $babDB;
 		
 		
+		$calendar_backend 	= $this->calendar_backend;
+		$copy_source 		= $this->copy_source;
+		$delete_destination = $this->delete_destination;
 		
-		$criteria = $factory->Calendar($new_calendar);
-		$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
 		
-		$events = $new_backend->selectPeriods($criteria);
+		// my personal calendar on old backend
 		
-		foreach($events as $event)
+		$old_calendar = bab_getICalendars()->getPersonalCalendar();
+		
+		if (!($old_calendar instanceof bab_PersonalCalendar))
 		{
-			$new_backend->deletePeriod($event);
+			bab_installWindow::message(bab_translate('Personal calendar not available on old backend'));
+			return false;
 		}
-	}
-	
-	if ($copy_source)
-	{
-		// copy all events to new backend
 		
-		$criteria = $factory->Calendar($old_calendar);
-		$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
 		
-		$events = $old_backend->selectPeriods($criteria);
+		$old_backend = bab_functionality::get('CalendarBackend/'.bab_getICalendars()->calendar_backend);
+		$new_backend = bab_functionality::get('CalendarBackend/'.$calendar_backend);
 		
-		foreach($events as $event)
+		/**@var $old_backend Func_CalendarBackend */
+		/**@var $new_backend Func_CalendarBackend */
+		
+		$factory = $new_backend->Criteria();
+		
+		// the new calendar
+		
+		$new_calendar = $new_backend->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+		
+		if (!($new_calendar instanceof bab_PersonalCalendar))
 		{
-			$collection = $event->getCollection();
-			$collection->setCalendar($new_calendar);
-			foreach($collection as $subevent)
+			bab_installWindow::message(bab_translate('Personal calendar not available on new backend'));
+			return false;
+		}
+		
+		
+		if ($delete_destination)
+		{
+			// delete events in destination calendar backend
+			
+			$progress = new bab_installProgressBar;
+			$progress->setTitle(bab_translate('Remove all events from the new calendar'));
+			
+			$criteria = $factory->Calendar($new_calendar);
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+			
+			$events = $new_backend->selectPeriods($criteria);
+			
+			if ($events instanceof iterator)
 			{
-				$subevent->removeProperty('UID');
-				$subevent->removeProperty('RRULE');
+				$total = $events->count();
+			} else {
+				$total = count($events);
 			}
-			$new_backend->savePeriod($event);
-			$event->commitAttendeeEvent();
+			
+			$i = 0;
+			foreach($events as $event)
+			{
+				bab_setTimeLimit(3); // 3 seconds for each events
+				$new_backend->deletePeriod($event);
+				$i++;
+				
+				$percent = ($i * 100) / $total;
+				$progress->setProgression(round($percent));
+			}
+			
+			$progress->setProgression(100);
+			
 		}
+		
+		if ($copy_source)
+		{
+			bab_setTimeLimit(10); // 10 seconds to initialize the copy
+			
+			$progress = new bab_installProgressBar;
+			$progress->setTitle(bab_translate('Copy all events from old calendar'));
+			
+			
+			$criteria = $factory->Calendar($old_calendar);
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+			
+			$events = $old_backend->selectPeriods($criteria);
+			
+			if ($events instanceof iterator)
+			{
+				$total = $events->count();
+			} else {
+				$total = count($events);
+			}
+			
+			$i = 0;
+			foreach($events as $event)
+			{
+				bab_setTimeLimit(10); // 10 seconds for each events
+				$collection = $event->getCollection();
+				$collection->setCalendar($new_calendar);
+				foreach($collection as $subevent)
+				{
+					$subevent->removeProperty('UID');
+					$subevent->removeProperty('RRULE');
+				}
+				$new_backend->savePeriod($event);
+				$event->commitAttendeeEvent();
+				
+				$i++;
+				
+				$percent = ($i * 100) / $total;
+				$progress->setProgression(round($percent));
+			}
+			
+			$progress->setProgression(100);
+		}
+		
+		bab_setTimeLimit(10); // 10 seconds to en process
+		
+		
+		bab_installWindow::message(bab_translate('Update events where i am an attendee'));
+		
+		// update all events with links to this personal calendar
+		
+		$babDB->db_query('UPDATE '.BAB_CAL_EVENTS_OWNERS_TBL." 
+			SET 
+				calendar_backend=".$babDB->quote($calendar_backend).", 
+				caltype=".$babDB->quote($new_calendar->getReferenceType())."
+			where 
+				
+				calendar_backend=".$babDB->quote(bab_getICalendars()->calendar_backend)." 
+				AND caltype=".$babDB->quote($old_calendar->getReferenceType())."
+				AND id_cal=".$babDB->quote($old_calendar->getUid())." 
+				
+		");
+		
+		
+		bab_installWindow::message(bab_translate('Update my calendar sharing access'));
+		
+		
+		// update all sharing access
+		
+		$babDB->db_query('UPDATE '.BAB_CALACCESS_USERS_TBL." 
+			SET 
+				caltype=".$babDB->quote($new_calendar->getReferenceType())."
+			where 
+				caltype=".$babDB->quote($old_calendar->getReferenceType())."
+				AND id_cal=".$babDB->quote($old_calendar->getUid())." 
+		");
+		
+		
+		$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
+			SET calendar_backend=".$babDB->quote($calendar_backend)." 
+			where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])
+		);
+		
+		return true;
 	}
-	
-	// update all events with links to this personal calendar
-	
-	$babDB->db_query('UPDATE '.BAB_CAL_EVENTS_OWNERS_TBL." 
-		SET 
-			calendar_backend=".$babDB->quote($calendar_backend).", 
-			caltype=".$babDB->quote($new_calendar->getReferenceType())."
-		where 
-			
-			calendar_backend=".$babDB->quote(bab_getICalendars()->calendar_backend)." 
-			AND caltype=".$babDB->quote($old_calendar->getReferenceType())."
-			AND id_cal=".$babDB->quote($old_calendar->getUid())." 
-			
-	");
-	
-	
-	// update all sharing access
-	
-	$babDB->db_query('UPDATE '.BAB_CALACCESS_USERS_TBL." 
-		SET 
-			caltype=".$babDB->quote($new_calendar->getReferenceType())."
-		where 
-			caltype=".$babDB->quote($old_calendar->getReferenceType())."
-			AND id_cal=".$babDB->quote($old_calendar->getUid())." 
-	");
-	
-	
-	$babDB->db_query('UPDATE '.BAB_CAL_USER_OPTIONS_TBL." 
-		SET calendar_backend=".$babDB->quote($calendar_backend)." 
-		where id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])
-	);
-	
-	$url = $GLOBALS['babUrlScript']."?tg=calopt&idx=options&urla=".urlencode(bab_rp('urla'));
-	
-	header('location:'.$url);
-	exit;
 }
 
 
@@ -909,6 +1017,7 @@ if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
 if (bab_pp('calendar_backend') && bab_pp('confirm') && bab_isUserLogged())
 {
 	bab_changeCalendarBackendConfirm(bab_pp('calendar_backend'), (int) bab_pp('copy_source'), (int) bab_pp('delete_destination'));
+	return;
 }
 
 $babBody->addItemMenu("global", bab_translate("Options"), $GLOBALS['babUrlScript']."?tg=options&idx=global");
@@ -917,6 +1026,9 @@ $personalCalendar = bab_getICalendars()->getPersonalCalendar();
 
 switch($idx)
 	{
+	case 'changeCalendarBackendFrame':
+		bab_changeCalendarBackendFrame(bab_rp('calendar_backend'), (int) bab_rp('copy_source'), (int) bab_rp('delete_destination'));
+		break;
 
 	case "pop_calendarchoice":
 		include_once $babInstallPath."utilit/uiutil.php";

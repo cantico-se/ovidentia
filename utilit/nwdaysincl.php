@@ -263,9 +263,7 @@ function bab_NWD_onCreatePeriods(bab_eventBeforePeriodsCreated $obj) {
 		$p->setProperty('SUMMARY'		,bab_translate('Non-working day2'));
 		$p->setProperty('DESCRIPTION'	,bab_toHtml($nw_type));
 		$p->setProperty('CATEGORIES'	,bab_toHtml($nwd_categories));
-		
-		
-		$p->setColor($nwd_color);
+		$p->setProperty('X-CTO-COLOR'	,$nwd_color);
 		
 		// add period to collection
 		$collection->addPeriod($p);

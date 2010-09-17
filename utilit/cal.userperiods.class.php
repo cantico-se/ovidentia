@@ -374,7 +374,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			$ts = $p->ts_begin;
 			if (isset($this->boundaries[$ts])) {
 				$current_boundary = $ts;
-				while ($current_boundary <= $p->ts_end) {
+				while ($current_boundary < $p->ts_end) {
 					// add period on overlapped boudaries
 					$this->boundaries[$current_boundary][] = $this->periods[$key];
 					if (!isset($this->sibling[$current_boundary])) {
@@ -968,7 +968,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			// boolean : le boundary est disponible pour tout le monde
 			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
 
-			// bab_debug($ts.' -- '.bab_shortDate($ts).' --- '.$previous.' -->  count users_non_available : '.count($users_non_available));
+			// bab_debug($ts.' -- '.bab_shortDate($ts).' --- '.$previous.' -->  count users_non_available : '.count($users_non_available).' FFA : '.($boundary_free_for_all ? 'Y' : 'N'));
 
 			if (!$boundary_free_for_all && NULL !== $previous) {
 

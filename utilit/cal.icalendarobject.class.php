@@ -458,8 +458,23 @@ abstract class bab_ICalendarObject
 	 * @param string	$reltype		PARENT | CHILD | SIBLING
 	 * @return array	<array>
 	 */
-	public function getRelations($reltype) 
+	public function getRelations($reltype = null) 
 	{
+		if (null === $reltype)
+		{
+			$relations = array();
+			foreach($this->relations as $arr)
+			{
+				if (isset($arr))
+				{
+					$relations = array_merge($relations, $arr);
+				}
+			}
+			
+			return $relations;
+		}
+		
+		
 		if (!isset($this->relations[$reltype]))
 		{
 			return array();

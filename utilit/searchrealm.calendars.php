@@ -261,7 +261,7 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 		$record->categories = $calendarPeriod->getProperty('CATEGORIES');
 		$record->description = $calendarPeriod->getProperty('DESCRIPTION');
 		$record->class = $calendarPeriod->getProperty('CLASS');
-		$record->color = $calendarPeriod->getColor();
+		$record->color = $calendarPeriod->getProperty('X-CTO-COLOR');
 		
 		$collection = $calendarPeriod->getCollection();
 		

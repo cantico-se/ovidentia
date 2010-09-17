@@ -171,7 +171,7 @@ class bab_cal_OviEventUpdate
 			description_format	=".$babDB->quote($data['description_format']).", 
 			location			=".$babDB->quote($period->getProperty('LOCATION')).", 
 			id_cat				=".$babDB->quote((int) $cat['id']).", 
-			color				=".$babDB->quote($period->getColor()).", 
+			color				=".$babDB->quote($period->getProperty('X-CTO-COLOR')).", 
 			bprivate			=".$babDB->quote($private).", 
 			block				=".$babDB->quote($data['block']).", 
 			bfree				=".$babDB->quote($free).",
@@ -381,7 +381,7 @@ class bab_cal_OviEventUpdate
 				".$babDB->quote(BAB_DateTime::fromICal($period->getProperty('DTEND'))->getIsoDateTime()).", 
 				".$babDB->quote($category).", 
 				".$babDB->quote($id_owner).", 
-				".$babDB->quote($period->getColor()).", 
+				".$babDB->quote($period->getProperty('X-CTO-COLOR')).", 
 				".$babDB->quote($private).", 
 				".$babDB->quote($block).", 
 				".$babDB->quote($free).", 
@@ -608,7 +608,7 @@ class bab_cal_OviEventUpdate
 	{
 		$return = array();
 		$associated = $this->getAssociatedCalendars($id_event);
-		$calendars = array_merge($period->getRelations('PARENT'), $period->getRelations('CHILD'));
+		$calendars = $period->getRelations();
 		
 		foreach($calendars as $relation)
 		{			
@@ -899,7 +899,7 @@ class bab_cal_OviEventSelect
 		$event->setProperty('DESCRIPTION'	, $arr['description']);
 		$event->setProperty('LOCATION'		, $arr['location']);
 		$event->setProperty('CATEGORIES'	, $arr['category']);
-		$event->setColor($arr['color']);
+		$event->setProperty('X-CTO-COLOR'	, $arr['color']);
 		
 		
 		if ('Y' == $arr['bprivate']) {
@@ -1509,15 +1509,14 @@ class bab_cal_OviEventSelect
 		
 		$backend = bab_functionality::get('CalendarBackend/Ovi');
 		
-		$vac_collection	= $backend->VacationPeriodCollection();
 		$tsk_collection = $backend->TaskCollection();
 		$wp_collection 	= $backend->WorkingPeriodCollection();
 		$nwp_collection = $backend->NonWorkingPeriodCollection();
 		
 		
-		if ($userperiods->isPeriodCollection($vac_collection) && $users) {
+		if ($userperiods->isPeriodCollection('bab_VacationPeriodCollection') && $users) {
 			include_once $GLOBALS['babInstallPath']."utilit/vacincl.php";
-			bab_vac_setVacationPeriods($vac_collection, $userperiods, $users);
+			bab_vac_setVacationPeriods($userperiods, $users);
 		}
 	
 		if ($userperiods->isPeriodCollection('bab_CalendarEventCollection')) {

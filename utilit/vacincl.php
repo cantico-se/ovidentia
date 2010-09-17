@@ -2374,7 +2374,7 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
  * 
  * 
  */
-function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collection, bab_UserPeriods $user_periods, $id_users) {
+function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	global $babDB;
 	
 	$begin = $user_periods->begin;
@@ -2385,7 +2385,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		return;
 	}
 	
-	
+	$backend = bab_functionality::get('CalendarBackend/Ovi');
 
 	$res = $babDB->db_query("
 	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
@@ -2397,6 +2397,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 	
 	require_once dirname(__FILE__).'/nwdaysincl.php';
 	$nwdays = bab_getNonWorkingDaysBetween($begin->getIsoDate(), $end->getIsoDate());
+	$collections = array();
 
 	while( $row = $babDB->db_fetch_assoc($res)) {
 
@@ -2406,6 +2407,18 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 			$events[$row['id']] = 1;
 		} else {
 			$events[$row['id']]++;
+		}
+		
+		if (!isset($collections[$row['id_user']]))
+		{
+			$id_user = (int) $row['id_user'];
+			
+			$reftype = bab_getICalendars()->getUserReferenceType($id_user);
+			$uid = bab_getICalendars()->getPersonalCalendarUid($id_user);
+			$urlIdentifier = "$reftype/$uid";
+			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
+			
+			$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
 		}
 
 		$colors = array();
@@ -2483,8 +2496,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 
 		$p = new bab_calendarPeriod;
 		$p->setDates($date_begin, $date_end);
-		$period_collection->addPeriod($p);
-		
+		$collections[$row['id_user']]->addPeriod($p);
 		
 		
 		
@@ -2510,7 +2522,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		
 		$p->setProperty('SUMMARY'		, bab_translate("Vacation"));
 		$p->setProperty('CATEGORIES'	, $category);
-		$p->setColor($color);
+		$p->setProperty('X-CTO-COLOR'	, $color);
 
 		$description = '';
 
@@ -2547,6 +2559,7 @@ function bab_vac_setVacationPeriods(bab_VacationPeriodCollection $period_collect
 		$p->setProperty('UID', 'VAC'.$row['id']);
 		
 		$user_periods->addPeriod($p);
+		
 	}
 }
 
@@ -2655,8 +2668,6 @@ function bab_vac_compare($type1, $type2, $vacation_is_free) {
 		'bab_VacationPeriodCollection'			=> 1,
 		'bab_NonWorkingPeriodCollection'		=> 2,
 		'bab_WorkingPeriodCollection' 			=> 3,
-	//	BAB_PERIOD_CALEVENT			=> 4,
-	//	BAB_PERIOD_TSKMGR			=> 5,
 		'bab_NonWorkingDaysCollection'			=> 6
 	);
 	
@@ -2666,12 +2677,21 @@ function bab_vac_compare($type1, $type2, $vacation_is_free) {
 
 		'bab_NonWorkingPeriodCollection'		=> 1,
 		'bab_WorkingPeriodCollection'			=> 2,
-	//	BAB_PERIOD_CALEVENT			=> 3,
-	//	BAB_PERIOD_TSKMGR			=> 4,
 		'bab_VacationPeriodCollection'			=> 5,
 		'bab_NonWorkingDaysCollection'			=> 6
 	);
 	
+	}
+	
+	
+	if (!isset($order[$type1]))
+	{
+		throw new Exception(sprintf('The vacation calendar request has received the collection %s from a calendar backend, the backends must not return events of non requested collections', $type1));
+	}
+	
+	if (!isset($order[$type2]))
+	{
+		throw new Exception(sprintf('The vacation calendar request has received the collection %s from a calendar backend, the backends must not return events of non requested collections', $type2));
 	}
 
 
