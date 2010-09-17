@@ -3128,4 +3128,6 @@
 <string id="Update my calendar sharing access">Mise à jour des partages d'agenda</string>
 <string id="Move my personal calendar">Déplacement de mon agenda personnel</string>
 <string id="Move my personal calendar from %s to %s">Déplacer mon agenda personnel de %s vers %s</string>
+<string id="Your calendar has been moved">Votre agenda à été déplacé</string>
+
 </fr>

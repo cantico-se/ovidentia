@@ -498,7 +498,7 @@ abstract class bab_EventCalendar
 				}
 			}
 			
-			if (!isset($attendees[$this->getUrlIdentifier()]))
+			if (!isset($attendees[$this->getUrlIdentifier()]) && $this === $calendar)
 			{
 				// the main calendar of event is not in attendees
 				return true;
@@ -516,7 +516,7 @@ abstract class bab_EventCalendar
 			}
 			
 			
-			if (!isset($relations[$this->getUrlIdentifier()]))
+			if (!isset($relations[$this->getUrlIdentifier()]) && $this === $calendar)
 			{
 				// the main calendar of event is not in relations
 				return true;
@@ -937,27 +937,23 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function onAddAttendee(bab_CalendarPeriod $event)
 	{
-		$parents = $event->getRelations('PARENT');
+		bab_debug($this->getName().' '.__FUNCTION__);
 		
-		if (!$parents)
-		{
-			throw new Exception(sprintf('the event %s have no parent', $event->getProperty('UID')));
-		}
-		
-		$relation = reset($parents);
-		$parent = $relation['calendar'];
-		$eventBackend = $parent->getBackend();
-		$mybackend = $this->getBackend();
-		if ($eventBackend !== $mybackend)
+		$collection = $event->getCollection();
+		$calendar = $collection->getCalendar();
+		$eventBackend = $calendar->getBackend();
+
+		if ($calendar !== $this)
 		{
 			global $babDB;
-			
 			
 			$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user='.$babDB->quote($this->getIdUser()).' AND uid='.$babDB->quote($event->getProperty('UID')));
 			if ($babDB->db_num_rows($res))
 			{
 				return;
 			}
+			
+			bab_debug($this->getName().' INSERT');
 			
 			$babDB->db_query('
 				INSERT INTO bab_cal_inbox 

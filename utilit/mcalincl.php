@@ -538,9 +538,7 @@ class bab_icalendar extends bab_icalendarEventsSource
 						$ui_event = clone $event;
 						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
 						$arr[] = $ui_event;
-					} else {
-						bab_debug($event->toHtml());
-					}
+					} 
 				} 
 			}
 			
@@ -763,11 +761,11 @@ class cal_wmdbaseCls
 			return;
 		}
 		
-		$this->allow_view 			= true;												// detail view popup
-		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);			// edit popup
-		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);		// SUMMARY of event on calendar
+		$this->allow_view 			= ($periodCollection instanceof bab_CalendarEventCollection);	// detail view popup
+		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);						// edit popup
+		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);					// SUMMARY of event on calendar
 
-		$this->bstatus				= false;											// default, nothing to validate
+		$this->bstatus				= false;														// default, nothing to validate
 		
 		
 		if (bab_isUserLogged())
@@ -918,27 +916,7 @@ class cal_wmdbaseCls
 					$this->description	= $editor->getHtml();
 				}
 			}
-			
-		
-		if ($calendar)
-		{
-			// the event is in multiple calendar
-			// find the real parent
-			/*
-			$arr = $calPeriod->getRelations('PARENT');
-			
-			if (!isset($arr) || 1 !== count($arr))
-			{
-				throw new Exception('Missing a PARENT relation on calendar event '.$calPeriod->getProperty('UID'));
-			}
-	
-			$relation = reset($arr);
-			$parent = $relation['calendar'];
-			*/
-			
-			$parent = $calendar; 
-		}
-		
+
 			
 		$this->popup = false;
 
@@ -963,7 +941,8 @@ class cal_wmdbaseCls
 			}
 
 
-			
+		$this->attendeesurl = null;
+		$this->vieweventurl = null;
 		$this->nbowners		= 0;
 			
 		if (isset($calendar) && ($calendar instanceof bab_EventCalendar))

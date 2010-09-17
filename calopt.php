@@ -797,6 +797,8 @@ function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete
 	$window->setStopMessage(bab_translate('Your calendar has been moved'), bab_translate('Failed'));
 	
 	$window->startInstall(array($changeCalendar, 'process'));
+	
+	exit;
 }
 	
 	
@@ -861,13 +863,15 @@ class bab_changeCalendarBackend
 		
 		if ($delete_destination)
 		{
+			bab_setTimeLimit(30); // 30 seconds to initialize the delete
+			
 			// delete events in destination calendar backend
 			
 			$progress = new bab_installProgressBar;
 			$progress->setTitle(bab_translate('Remove all events from the new calendar'));
 			
 			$criteria = $factory->Calendar($new_calendar);
-			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection'))); 
 			
 			$events = $new_backend->selectPeriods($criteria);
 			
@@ -881,7 +885,7 @@ class bab_changeCalendarBackend
 			$i = 0;
 			foreach($events as $event)
 			{
-				bab_setTimeLimit(3); // 3 seconds for each events
+				bab_setTimeLimit(10); // 10 seconds for each events
 				$new_backend->deletePeriod($event);
 				$i++;
 				
@@ -895,14 +899,14 @@ class bab_changeCalendarBackend
 		
 		if ($copy_source)
 		{
-			bab_setTimeLimit(10); // 10 seconds to initialize the copy
+			bab_setTimeLimit(30); // 30 seconds to initialize the copy
 			
 			$progress = new bab_installProgressBar;
 			$progress->setTitle(bab_translate('Copy all events from old calendar'));
 			
 			
 			$criteria = $factory->Calendar($old_calendar);
-			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection')));  // bab_VacationPeriodCollection
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection'))); 
 			
 			$events = $old_backend->selectPeriods($criteria);
 			
@@ -917,13 +921,11 @@ class bab_changeCalendarBackend
 			foreach($events as $event)
 			{
 				bab_setTimeLimit(10); // 10 seconds for each events
+				
 				$collection = $event->getCollection();
 				$collection->setCalendar($new_calendar);
-				foreach($collection as $subevent)
-				{
-					$subevent->removeProperty('UID');
-					$subevent->removeProperty('RRULE');
-				}
+				$event->removeProperty('UID');
+				$event->removeProperty('RRULE');
 				$new_backend->savePeriod($event);
 				$event->commitAttendeeEvent();
 				
@@ -936,7 +938,7 @@ class bab_changeCalendarBackend
 			$progress->setProgression(100);
 		}
 		
-		bab_setTimeLimit(10); // 10 seconds to en process
+		bab_setTimeLimit(10); // 10 seconds to end process
 		
 		
 		bab_installWindow::message(bab_translate('Update events where i am an attendee'));

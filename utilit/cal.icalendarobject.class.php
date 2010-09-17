@@ -367,18 +367,25 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * call each modified or added attendees 
-	 * if attendee is the parent, to not call events
+	 * if attendee is the parent, do not call events
 	 * 
 	 * @return bab_ICalendarObject
 	 */
 	public function commitAttendeeEvent()
 	{	
-		$relation = reset($this->relations['PARENT']);
-		$parent = $relation['calendar'];
+		$collection = $this->getCollection();
+		if (isset($collection))
+		{
+			$calendar = $collection->getCollection();
+		}
+		else
+		{
+			$calendar = null;
+		}
 		
 		foreach($this->attendeesEvents as $urlidentifier => $method)
 		{
-			if (isset($parent) && $urlidentifier === $parent->getUrlIdentifier())
+			if (isset($calendar) && $urlidentifier === $calendar->getUrlIdentifier())
 			{
 				continue;
 			}

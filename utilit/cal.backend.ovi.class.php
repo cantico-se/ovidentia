@@ -176,7 +176,6 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		$oviEvents->processQuery($userperiods);
 		
 		$userperiods->orderBoundaries();
-		
 		return $userperiods;
 	}
 	

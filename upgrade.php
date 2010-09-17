@@ -6353,6 +6353,39 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		  KEY calendar_backend (calendar_backend),
 		  KEY uid (uid)
 		)");
+		
+		// create entries in inbox for attendees of events
+		
+		$res = $babDB->db_query('
+			SELECT 
+				c.owner id_user, 
+				e.uuid uid 
+			FROM 
+				'.BAB_CALENDAR_TBL.' c,
+				'.BAB_CAL_EVENTS_OWNERS_TBL.' eo, 
+				'.BAB_CAL_EVENTS_TBL." e 
+			WHERE 
+				c.id=eo.id_cal 
+				AND e.id=eo.id_event 
+				AND e.parent_calendar <> CONCAT(eo.caltype,'/', eo.id_cal)
+		");
+		
+		$stack = array();
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$stack[] = '('.$babDB->quote($arr['id_user']).", 'Ovi', ".$babDB->quote($arr['uid']).')';
+			
+			if (100 <= count($stack))
+			{
+				$babDB->db_query("INSERT INTO bab_cal_inbox (id_user, calendar_backend, uid) VALUES ".implode(",\n", $stack));
+				$stack = array();
+			}
+		}
+		
+		if ($stack)
+		{
+			$babDB->db_query("INSERT INTO bab_cal_inbox (id_user, calendar_backend, uid) VALUES ".implode(",\n", $stack));
+		}
 	}
 	
 

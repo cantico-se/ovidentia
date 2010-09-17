@@ -1161,34 +1161,35 @@ class bab_cal_OviEventSelect
 		
 		if (!$id_calendars)
 		{
+			bab_debug('Request without calendar');
 			return;
 		}
 		
 		$accessible_calendars = array_keys(bab_getICalendars()->getCalendars());
 
 		// ovidentia mode :
-		
+		/*
 		$where = " 
 			ceo.id_cal				IN(".$babDB->quote($id_calendars).") 
 			AND ce.parent_calendar 	IN(".$babDB->quote($accessible_calendars).")";
-		
+		*/
 
 		// caldav mode :
-		// $where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
+		$where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
 		
 		
 		
 		
-		$where .= "AND ceo.status			!= '".BAB_CAL_STATUS_DECLINED."' 
+		$where .= " AND ceo.status != '".BAB_CAL_STATUS_DECLINED."' 
 		";
 
 		if (isset($end)) {
-			$where .= "AND ce.start_date	<= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
+			$where .= " AND ce.start_date <= '".$babDB->db_escape_string($end->getIsoDateTime())."' 
 			";
 		}
 		
 		if (isset($begin)) {
-			$where .= "AND ce.end_date		>= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
+			$where .= " AND ce.end_date >= '".$babDB->db_escape_string($begin->getIsoDateTime())."' 
 			";
 		}
 		
@@ -1203,16 +1204,16 @@ class bab_cal_OviEventSelect
 				}
 			}
 			
-			$where .= "AND (".implode(' OR ', $properties).')';
+			$where .= " AND (".implode(' OR ', $properties).')';
 		}
 		
 		if (null !== $hash) {
-			$where .= "AND ce.hash =".$babDB->quote($hash)." 
+			$where .= " AND ce.hash =".$babDB->quote($hash)." 
 			";
 		}
 		
 		if (null !== $uid_criteria) {
-			$where .= "AND ce.uuid IN(".$babDB->quote($uid_criteria).") 
+			$where .= " AND ce.uuid IN(".$babDB->quote($uid_criteria).") 
 			";
 		}
 		
@@ -1321,8 +1322,7 @@ class bab_cal_OviEventSelect
 		
 		// set the calendar criteria to all visible calendars
 		
-		$criteria = $factory->Calendar(bab_getICalendars()->getCalendars())->_AND_($factory->Collection('bab_CalendarPeriodCollection'));
-		
+		$criteria = $factory->Calendar(bab_getICalendars()->getCalendars())->_AND_($factory->Collection('bab_CalendarEventCollection'));
 		
 		// add other criteria
 		
@@ -1361,47 +1361,39 @@ class bab_cal_OviEventSelect
 		}
 		
 		
+		
+		
+		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
 		
-			foreach($uid_list as $uid => $id_user)
+			
+				
+			$inbox_criteria = clone $criteria;
+		
+			// add the UID criteria
+			
+			$inbox_criteria->_AND_($factory->Uid(array_keys($uid_list)));
+			
+			
+			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
+			$periods = $backend->selectPeriods($inbox_criteria);
+			
+			$found = false;
+			foreach($periods as $p)
 			{
-			
-				$inbox_criteria = clone $criteria;
-			
-				// add the UID criteria
-				
-				$inbox_criteria->_AND_($factory->Uid($uid));
-				
-				
-				$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
-				$periods = $backend->selectPeriods($inbox_criteria);
-				
-				$found = false;
-				foreach($periods as $p)
+				/*@var $p bab_CalendarPeriod */
+				$found_uid = $p->getProperty('UID');
+				if (isset($uid_list[$found_uid]))
 				{
-					/*@var $p bab_CalendarPeriod */
-					$found_uid = $p->getProperty('UID');
-					if ($found_uid === $uid)
-					{
-						$user_periods->addPeriod($p);
-						// bab_debug($p->getProperties(), DBG_TRACE, 'Inbox');
-						$found = true;
-					}
-				}
-				
-				if (!$found)
-				{
-					/*
-					$babDB->db_query('
-						DELETE FROM bab_cal_inbox 
-						WHERE 
-							calendar_backend='.$babDB->quote($calendarBackend).' 
-							AND uid='.$babDB->quote($uid).' 
-					');
-					*/
+					$user_periods->addPeriod($p);
+					bab_debug($p->toHtml(), DBG_TRACE, 'Inbox');
+				} else {
+					bab_debug($p->toHtml(), DBG_TRACE, 'Inbox Error');
 				}
 			}
+				
+			
 			
 		}
 	}
@@ -1471,7 +1463,7 @@ class bab_cal_OviEventSelect
 		include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 		$id_event = $arr['id'];
 		
-		
+		$babDB->db_query("delete from bab_cal_inbox where calendar_backend='Ovi' AND uid='".$babDB->db_escape_string($uid)."'");
 		$babDB->db_query("delete from ".BAB_CAL_EVENTS_TBL." where id='".$babDB->db_escape_string($id_event)."'");
 		$res2 = $babDB->db_query("select idfai from ".BAB_CAL_EVENTS_OWNERS_TBL." where id_event='".$babDB->db_escape_string($id_event)."'");
 		while( $rr = $babDB->db_fetch_array($res2) )
