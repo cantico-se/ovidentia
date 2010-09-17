@@ -491,11 +491,13 @@ class bab_InstallSource {
 			}
 		}
 		
-		if (!unlink($install->toString().'/addons.ini'))
+		if (is_file($install->toString().'/addons.ini'))
 		{
-			return false;
+			if (!unlink($install->toString().'/addons.ini'))
+			{
+				return false;
+			}
 		}
-		
 
 
 		$zipversion = $ini->getVersion();
