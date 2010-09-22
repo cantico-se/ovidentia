@@ -126,21 +126,28 @@ class bab_FileInfo extends SplFileInfo
 	 */
 	private function getFolderFile()
 	{
-		$fmPathname = $this->getFmPathname();
+		$fmPathname = $this->getFmPathname(); /* Example : DG32/Espace/Répertoire/East.jpg */
 		list($delegation) = explode('/', $fmPathname);
-		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix));
-
+		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix)); /* Example : 32 */
 		$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
-
+		
 		$oNameField			= $oFolderFileSet->aField['sName'];
 		$oPathName			= $oFolderFileSet->aField['sPathName'];
 		$oIdDgOwnerField	= $oFolderFileSet->aField['iIdDgOwner'];
 		$oGroup				= $oFolderFileSet->aField['sGroup'];
 
-		$oCriteria = $oNameField->in($this->getFilename());
-		$oCriteria = $oCriteria->_and($oPathName->in(dirname($this->getFmPathname() . '/')));
-		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
-
+		$oCriteria = $oNameField->in($this->getFilename()); /* Criteria to the name of the file */
+		/* Example of sPathName :        Espace/Répertoire/
+		 * Example of $fmPathname : DG32/Espace/Répertoire/East.jpg */
+		$explodeTmp = explode('/', $fmPathname);
+		$pathTmp = '';
+		if (isset($explodeTmp[0])) {
+			array_shift($explodeTmp);
+			$pathTmp = implode('/', $explodeTmp);
+		}
+		$oCriteria = $oCriteria->_and($oPathName->in(dirname($pathTmp).'/')); /* Criteria to the path of the file, example : Espace/Répertoire/ */
+		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation)); /* Criteria to the delegation of the file */
+		
 		return $oFolderFileSet->get($oCriteria);
 	}
 
@@ -150,12 +157,13 @@ class bab_FileInfo extends SplFileInfo
 	 * 
 	 * @return BAB_FmFolderFile
 	 */
-	protected function getFmFile()
+	public function getFmFile()
 	{
 		if (!isset($this->fmFile)) {
 			if ($this->isDir()) {
 				$this->fmFile = $this->getFmFolder();
 			} else {
+				
 				$this->fmFile = $this->getFolderFile();
 			}
 		}
