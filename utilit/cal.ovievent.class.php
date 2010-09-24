@@ -1378,25 +1378,75 @@ class bab_cal_OviEventSelect
 			$found = false;
 			foreach($periods as $p)
 			{
-				/*@var $p bab_CalendarPeriod */
-				$found_uid = $p->getProperty('UID');
-				if (isset($uid_list[$found_uid]))
+				if ($this->addInboxPeriod($uid_list, $p))
 				{
 					$user_periods->addPeriod($p);
-					bab_debug($p->toHtml(), DBG_TRACE, 'Inbox');
-				} else {
-					bab_debug($p->toHtml(), DBG_TRACE, 'Inbox Error');
 				}
 			}
-				
-			
-			
 		}
 	}
 	
 	
 	
 	
+	/**
+	 * 
+	 * @param bab_CalendarPeriod $p
+	 * @return bool
+	 */
+	private function addInboxPeriod(Array $uid_list, bab_CalendarPeriod $p)
+	{
+		
+		/*@var $p bab_CalendarPeriod */
+		$found_uid = $p->getProperty('UID');
+		if (!isset($uid_list[$found_uid]))
+		{
+			return false;	
+		}
+		
+			
+		// once the event is accepted on a caldav event, the event is copied in the calendar
+		// in ovidentia backend, the event remain in the inbox
+		
+		
+		$id_user = $uid_list[$found_uid];
+		$reftype = bab_getICalendars()->getUserReferenceType($id_user);
+		$id = bab_getICalendars()->getPersonalCalendarUid($id_user);
+		$usercal = bab_getICalendars()->getEventCalendar("$reftype/$id");
+		$targetBackend = $usercal->getBackend();
+		
+		if ($targetBackend instanceof Func_CalendarBackend_Ovi)
+		{
+			return true;
+			
+		} else {
+			
+			
+			// Add only periods in a waiting state 
+			foreach($p->getAttendees() as $urlidentifier => $attendee)
+			{
+				if ($urlidentifier === $usercal->getUrlIdentifier() && 'NEEDS-ACTION' === $attendee['PARTSTAT'])
+				{
+					return true;
+				}
+			}
+			
+
+			/*
+			foreach($p->getRelations() as $urlidentifier => $relation)
+			{
+				if ($urlidentifier === $usercal->getUrlIdentifier() && 'NEEDS-ACTION' === $relation['X-CTO-STATUS'])
+				{
+					return true;
+				}
+			}
+			*/
+			
+		}
+
+			
+		return false;
+	}
 	
 	
 

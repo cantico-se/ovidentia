@@ -2376,30 +2376,65 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
  */
 function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	global $babDB;
+	require_once dirname(__FILE__).'/nwdaysincl.php';
+	require_once dirname(__FILE__).'/dateTime.php';
 	
 	$begin = $user_periods->begin;
 	$end = $user_periods->end;
 	
-	if (null === $begin || null === $end)
-	{
-		return;
-	}
 	
 	$backend = bab_functionality::get('CalendarBackend/Ovi');
-
-	$res = $babDB->db_query("
+	
+	$query = "
 	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
 		WHERE 
 		id_user IN(".$babDB->quote($id_users).")   
 		AND status!='N' 
-		AND date_end > ".$babDB->quote($begin->getIsoDateTime())." 
-		AND date_begin < ".$babDB->quote($end->getIsoDateTime())."");
+	";
 	
-	require_once dirname(__FILE__).'/nwdaysincl.php';
+	if (null !== $begin)
+	{
+		$query .= " AND date_end > ".$babDB->quote($begin->getIsoDateTime())." ";
+	}
+	
+	if (null !== $end)
+	{
+		$query .= " AND date_begin < ".$babDB->quote($end->getIsoDateTime())." ";
+	}
+
+	$res = $babDB->db_query($query);
+	
+	// find begin and end
+	
+	$date_end = null;
+	$date_begin = null;
+	
+	while ($row = $babDB->db_fetch_assoc($res))
+	{
+		if (null === $date_end || $row['date_end'] > $date_end)
+		{
+			$date_end = $row['date_end'];
+		}
+		
+		if (null === $date_begin || $row['date_begin'] < $date_begin)
+		{
+			$date_begin = $row['date_begin'];
+		}
+	}
+	
+	$babDB->db_data_seek($res, 0);
+	
+	
+	$begin 	= BAB_DateTime::fromIsoDateTime($date_begin);
+	$end	= BAB_DateTime::fromIsoDateTime($date_end);
+	
+	
+	
 	$nwdays = bab_getNonWorkingDaysBetween($begin->getIsoDate(), $end->getIsoDate());
 	$collections = array();
 
-	while( $row = $babDB->db_fetch_assoc($res)) {
+	while( $row = $babDB->db_fetch_assoc($res)) 
+	{
 
 		static $events = array();
 

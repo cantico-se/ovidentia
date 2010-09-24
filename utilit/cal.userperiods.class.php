@@ -155,6 +155,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	private $requested_calendars = null;
 	
 	
+	/**
+	 * 
+	 * @var int
+	 */
+	private $countperiod = 0;
+	
+	
 
 	/**
 	 * Working hours object on period
@@ -325,21 +332,26 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 		
 		
-		$this->criteria = $criteria;
+		$this->setCriteria($criteria);
 		
 		// collect events
 
 		$event = new bab_eventBeforePeriodsCreated($this);
-		$this->processCriteria($criteria);
+		$this->processCriteria($this->criteria);
 		bab_fireEvent($event);
 	}
 	
 	
 	
+	public function setCriteria(bab_PeriodCriteria $criteria)
+	{
+		$this->criteria = $criteria;
+	}
+	
+	
 	/**
 	 * Process criteria to userperiods object
 	 * 
-	 * @param bab_PeriodCriteria $criteria
 	 * @return unknown_type
 	 */
 	public function processCriteria(bab_PeriodCriteria $criteria)
@@ -406,7 +418,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			return;
 		}
 		
-		
+		$this->countperiod++;
 		$this->addPeriodToBoundaries($p);
 		
 		
@@ -599,17 +611,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
     }
 	
     /**
+     * Number of periods
 	 * @return int
      */
 	public function count()
 	{
-		$total = 0;
-		foreach($this->boundaries as $stack)
-		{
-			$total += count($stack);
-		}
-		
-		return $total;
+		return $this->countperiod;
 	}
 	
 	/**

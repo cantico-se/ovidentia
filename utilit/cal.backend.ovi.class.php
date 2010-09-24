@@ -170,6 +170,7 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		require_once dirname(__FILE__).'/cal.ovievent.class.php';
 		
 		$userperiods = new bab_UserPeriods;
+		$userperiods->setCriteria($criteria);
 		$userperiods->processCriteria($criteria);
 		
 		$oviEvents = new bab_cal_OviEventSelect;

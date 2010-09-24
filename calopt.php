@@ -861,6 +861,11 @@ class bab_changeCalendarBackend
 		}
 		
 		
+		// the select can take a large amount of memory
+			
+		ini_set('memory_limit', '100M');
+		
+		
 		if ($delete_destination)
 		{
 			bab_setTimeLimit(30); // 30 seconds to initialize the delete
@@ -872,6 +877,8 @@ class bab_changeCalendarBackend
 			
 			$criteria = $factory->Calendar($new_calendar);
 			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection'))); 
+			
+			
 			
 			$events = $new_backend->selectPeriods($criteria);
 			
@@ -897,16 +904,35 @@ class bab_changeCalendarBackend
 			
 		}
 		
+		
 		if ($copy_source)
 		{
 			bab_setTimeLimit(30); // 30 seconds to initialize the copy
+			
+			
+			if ($old_backend instanceof Func_CalendarBackend_Ovi)
+			{
+				bab_installWindow::message(bab_translate('Set waiting events to accepted'));
+				
+				// all event of calendar should be accepted or rejected
+				$babDB->db_query('UPDATE '.BAB_CAL_EVENTS_OWNERS_TBL." 
+					SET 
+						status=".$babDB->quote(BAB_CAL_STATUS_ACCEPTED)."
+					where 
+						status=".$babDB->quote(BAB_CAL_STATUS_NONE)."
+						AND calendar_backend=".$babDB->quote(bab_getICalendars()->calendar_backend)." 
+						AND caltype=".$babDB->quote($old_calendar->getReferenceType())."
+						AND id_cal=".$babDB->quote($old_calendar->getUid())." 
+				");
+			}
+			
 			
 			$progress = new bab_installProgressBar;
 			$progress->setTitle(bab_translate('Copy all events from old calendar'));
 			
 			
 			$criteria = $factory->Calendar($old_calendar);
-			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection'))); 
+			$criteria = $criteria->_AND_($factory->Collection(array('bab_CalendarEventCollection', 'bab_VacationPeriodCollection', 'bab_InboxEventCollection'))); 
 			
 			$events = $old_backend->selectPeriods($criteria);
 			
@@ -916,6 +942,9 @@ class bab_changeCalendarBackend
 			} else {
 				$total = count($events);
 			}
+
+			
+			$vacationCollection = $old_backend->CalendarEventCollection($new_calendar);
 			
 			$i = 0;
 			foreach($events as $event)
@@ -923,7 +952,18 @@ class bab_changeCalendarBackend
 				bab_setTimeLimit(10); // 10 seconds for each events
 				
 				$collection = $event->getCollection();
-				$collection->setCalendar($new_calendar);
+				if (($collection instanceof bab_CalendarEventCollection) || ($collection instanceof bab_InboxEventCollection))
+				{
+					$collection->setCalendar($new_calendar);
+					
+				} elseif($collection instanceof bab_VacationPeriodCollection) {
+					
+					$vacationCollection->addPeriod($event);
+					
+				} else {
+					throw new Exception('Unsupported collection');
+				}
+				
 				$event->removeProperty('UID');
 				$event->removeProperty('RRULE');
 				$new_backend->savePeriod($event);
@@ -940,6 +980,7 @@ class bab_changeCalendarBackend
 		
 		bab_setTimeLimit(10); // 10 seconds to end process
 		
+
 		
 		bab_installWindow::message(bab_translate('Update events where i am an attendee'));
 		
