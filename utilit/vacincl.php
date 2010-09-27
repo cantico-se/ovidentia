@@ -2376,6 +2376,7 @@ function bab_vac_typeColorStack($id_entry, $push = false) {
  */
 function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	global $babDB;
+	
 	require_once dirname(__FILE__).'/nwdaysincl.php';
 	require_once dirname(__FILE__).'/dateTime.php';
 	
@@ -2422,7 +2423,10 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 		}
 	}
 	
-	$babDB->db_data_seek($res, 0);
+	if ($babDB->db_num_rows($res))
+	{
+		$babDB->db_data_seek($res, 0);
+	}
 	
 	
 	$begin 	= BAB_DateTime::fromIsoDateTime($date_begin);
@@ -2436,14 +2440,6 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	while( $row = $babDB->db_fetch_assoc($res)) 
 	{
 
-		static $events = array();
-
-		if (!isset($events[$row['id']])) {
-			$events[$row['id']] = 1;
-		} else {
-			$events[$row['id']]++;
-		}
-		
 		if (!isset($collections[$row['id_user']]))
 		{
 			$id_user = (int) $row['id_user'];
@@ -2456,147 +2452,219 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
 		}
 
-		$colors = array();
-		$types	= array();
 
-		$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
-		$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
-		
-		$ventilation = array();
-
-		if (1 === $events[$row['id']]) {
-
-			$req = "SELECT 
-					e.quantity, 
-					t.name type, 
-					t.color 
-				FROM ".BAB_VAC_ENTRIES_ELEM_TBL." e,
-					".BAB_VAC_RIGHTS_TBL." r,
-					".BAB_VAC_TYPES_TBL." t 
-				WHERE 
-					e.id_entry=".$babDB->quote($row['id'])." 
-					AND r.id=e.id_right 
-					AND t.id=r.id_type 
-					
-				ORDER BY t.name";
-	
-			$res2 = $babDB->db_query($req);
-	
-			$count = $babDB->db_num_rows($res2);
-	
-			$type_day       = $date_begin->cloneDate();
-			$type_day_end   = $date_begin->cloneDate();
-			$ignore 		= array();
-			
-			while ($arr = $babDB->db_fetch_assoc($res2))
-				{
-				$ventilation[] = $arr;
-				
-				for($d = 0; $d < $arr['quantity']; $d += 0.5) {
-
-					// si le jour est ferie ou non travaille , ajouter plus de jours
-					while (!$wh = bab_getWHours($row['id_user'], date('w', $type_day_end->getTimeStamp())) || isset($nwdays[$type_day_end->getIsoDate()])) {
-						$ignore[$type_day_end->getIsoDate()] = 1;
-						$type_day_end->add(12, BAB_DATETIME_HOUR);
-					}
-					
-					$type_day_end->add(12, BAB_DATETIME_HOUR);
-					
-				}
-				
-				//bab_debug('periode '.bab_longDate($type_day->getTimeStamp()).' - '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].' '.$arr['quantity'].'</div>');
-				
-				while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
-					
-					if ($type_day->getTimeStamp() >= $begin->getTimeStamp() && !isset($ignore[$type_day->getIsoDate()])) {
-						
-						//bab_debug('push '.bab_longDate($type_day->getTimeStamp()).'  end : '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
-
-						bab_vac_typeColorStack(
-								$row['id'], 
-								array(
-										'id_type'       => $arr['type'], 
-										'color'         => $arr['color']
-								)
-						);	
-					}
-					
-					$type_day->add(12, BAB_DATETIME_HOUR);
-				}
-			}
-
-			
-			//bab_debug($ventilation);
-		}
 
 		$p = new bab_calendarPeriod;
-		$p->setDates($date_begin, $date_end);
+		bab_vac_setPeriodProperties($p, $row, $begin);
 		$collections[$row['id_user']]->addPeriod($p);
-		
-		
-		
-		list($id_cat, $category, $color) = $babDB->db_fetch_row($babDB->db_query("
-		
-			SELECT 
-				cat.id,
-				cat.name,
-				cat.bgcolor  
-			FROM 
-				".BAB_VAC_COLLECTIONS_TBL." vct,
-				".BAB_VAC_PERSONNEL_TBL." vpt, 
-				".BAB_VAC_ENTRIES_TBL." vet, 
-				".BAB_CAL_CATEGORIES_TBL." cat 
-			WHERE 
-				vpt.id_coll=vct.id 
-				AND vet.id_user=vpt.id_user 
-				AND vet.id=".$babDB->quote($row['id'])." 
-				AND cat.id = vct.id_cat 
-		"));
-
-
-		
-		$p->setProperty('SUMMARY'		, bab_translate("Vacation"));
-		$p->setProperty('CATEGORIES'	, $category);
-		$p->setProperty('X-CTO-COLOR'	, $color);
-
-		$description = '';
-
-		if ('Y' !== $row['status']) {
-			$description .= '<p>'.bab_translate("Waiting to be validate").'</p>';
-		}
-
-		$label = (1 === count($ventilation)) ? bab_translate('Vacations type') : bab_translate('Vacations types');
-
-		$description .= '<table class="bab_cal_vacation_types" cellspacing="0">';
-		$description .= '<thead><tr><td colspan="3">'.bab_toHtml($label).'</td></tr></thead>';
-		$description .= '<tbody>';
-		
-		foreach($ventilation as $type) {
-			$description .= sprintf(
-				'<tr><td style="background:#%s">&nbsp; &nbsp;</td><td>%s</td><td>%s</td></tr>',
-				$type['color'],
-				rtrim($type['quantity'],'0.'),
-				$type['type']
-				);
-		}
-		$description .= '</tbody></table>';
-		
-		$data = array(
-			'id' => $row['id'],
-			'description' => $description,
-			'description_format' => 'html',
-			'id_user' => $row['id_user']
-		);
-		
-		$p->setData($data);
-
-		$p->setProperty('DESCRIPTION', strip_tags($description));
 		$p->setProperty('UID', 'VAC'.$row['id']);
 		
 		$user_periods->addPeriod($p);
 		
 	}
 }
+
+
+
+
+
+/**
+ * 
+ * @param int			$id_request
+ * @param BAB_DateTime 	$begin			old begin date
+ * @param BAB_DateTime	$end			old end date
+ * @return unknown_type
+ */
+function bab_vac_updatePeriod($id_request, BAB_DateTime $begin, BAB_DateTime $end)
+{
+	global $babDB;
+	
+	$res = $babDB->db_query('SELECT * FROM '.BAB_VAC_ENTRIES_TBL.' WHERE id='.$babDB->quote($id_request));
+	$row = $babDB->db_fetch_assoc($res);
+	
+	$period = bab_vac_getPeriod($id_request, $row['id_user'], $begin, $end);
+	if (null === $period)
+	{
+		bab_debug('no period found in backend');
+		return null;
+	}
+	
+	bab_vac_setPeriodProperties($period, $row, $begin);
+	
+	$period->save();
+}
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Update the period properties with vacation informations
+ * @param 	bab_CalendarPeriod	$p
+ * @param 	Array				$row
+ * @param	BAB_DateTime		$begin			begin date of request period
+ * @return unknown_type
+ */
+function bab_vac_setPeriodProperties(bab_CalendarPeriod $p, $row, BAB_DateTime $begin)
+{
+	
+	require_once dirname(__FILE__).'/workinghoursincl.php';
+	global $babDB;
+	
+	$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
+	$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
+	$p->setDates($date_begin, $date_end);
+	
+	
+	
+	$ventilation = array();
+
+	
+	$req = "SELECT 
+			e.quantity, 
+			t.name type, 
+			t.color 
+		FROM ".BAB_VAC_ENTRIES_ELEM_TBL." e,
+			".BAB_VAC_RIGHTS_TBL." r,
+			".BAB_VAC_TYPES_TBL." t 
+		WHERE 
+			e.id_entry=".$babDB->quote($row['id'])." 
+			AND r.id=e.id_right 
+			AND t.id=r.id_type 
+			
+		ORDER BY t.name";
+
+	$res2 = $babDB->db_query($req);
+
+	$count = $babDB->db_num_rows($res2);
+
+	$type_day       = $date_begin->cloneDate();
+	$type_day_end   = $date_begin->cloneDate();
+	$ignore 		= array();
+	
+	while ($arr = $babDB->db_fetch_assoc($res2))
+		{
+		$ventilation[] = $arr;
+		
+		for($d = 0; $d < $arr['quantity']; $d += 0.5) {
+
+			// si le jour est ferie ou non travaille , ajouter plus de jours
+			while (!$wh = bab_getWHours($row['id_user'], date('w', $type_day_end->getTimeStamp())) || isset($nwdays[$type_day_end->getIsoDate()])) {
+				$ignore[$type_day_end->getIsoDate()] = 1;
+				$type_day_end->add(12, BAB_DATETIME_HOUR);
+			}
+			
+			$type_day_end->add(12, BAB_DATETIME_HOUR);
+			
+		}
+		
+		//bab_debug('periode '.bab_longDate($type_day->getTimeStamp()).' - '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].' '.$arr['quantity'].'</div>');
+		
+		while ($type_day->getTimeStamp() < $type_day_end->getTimeStamp() ) {
+			
+			if ($type_day->getTimeStamp() >= $begin->getTimeStamp() && !isset($ignore[$type_day->getIsoDate()])) {
+				
+				//bab_debug('push '.bab_longDate($type_day->getTimeStamp()).'  end : '.bab_longDate($type_day_end->getTimeStamp()).' <div style="background:#'.$arr['color'].'">'.$arr['type'].'</div>');
+
+				bab_vac_typeColorStack(
+						$row['id'], 
+						array(
+								'id_type'       => $arr['type'], 
+								'color'         => $arr['color']
+						)
+				);	
+			}
+			
+			$type_day->add(12, BAB_DATETIME_HOUR);
+		}
+	}
+
+	
+	
+	
+	
+	list($id_cat, $category, $color) = $babDB->db_fetch_row($babDB->db_query("
+	
+		SELECT 
+			cat.id,
+			cat.name,
+			cat.bgcolor  
+		FROM 
+			".BAB_VAC_COLLECTIONS_TBL." vct,
+			".BAB_VAC_PERSONNEL_TBL." vpt, 
+			".BAB_VAC_ENTRIES_TBL." vet, 
+			".BAB_CAL_CATEGORIES_TBL." cat 
+		WHERE 
+			vpt.id_coll=vct.id 
+			AND vet.id_user=vpt.id_user 
+			AND vet.id=".$babDB->quote($row['id'])." 
+			AND cat.id = vct.id_cat 
+	"));
+
+
+	
+	$p->setProperty('SUMMARY'			, bab_translate("Vacation"));
+	$p->setProperty('CATEGORIES'		, $category);
+	$p->setProperty('X-CTO-COLOR'		, $color);
+	$p->setProperty('X-CTO-VACATION'	, $row['id']);
+	
+	if ($row['comment'])
+	{
+		$p->setProperty('COMMENT'		, $row['comment']);
+	}
+
+	$description = '';
+	$descriptiontxt = '';
+
+	if ('Y' !== $row['status']) {
+		$description .= '<p>'.bab_translate("Waiting to be validate").'</p>';
+		$descriptiontxt .= bab_translate("Waiting to be validate")."\n";
+	}
+
+	$label = (1 === count($ventilation)) ? bab_translate('Vacations type') : bab_translate('Vacations types');
+
+	$description .= '<table class="bab_cal_vacation_types" cellspacing="0">';
+	$description .= '<thead><tr><td colspan="3">'.bab_toHtml($label).'</td></tr></thead>';
+	$description .= '<tbody>';
+	
+	foreach($ventilation as $type) {
+		
+		$days = rtrim($type['quantity'],'0.');
+		
+		$description .= sprintf(
+			'<tr><td style="background:#%s">&nbsp; &nbsp;</td><td>%s</td><td>%s</td></tr>',
+			$type['color'],
+			$days,
+			$type['type']
+			);
+			
+		$descriptiontxt .= $days.' '.$type['type']."\n";
+	}
+	$description .= '</tbody></table>';
+	
+	$data = array(
+		'id' => $row['id'],
+		'description' => $description,
+		'description_format' => 'html',
+		'id_user' => $row['id_user']
+	);
+	
+	$p->setData($data);
+
+	$p->setProperty('DESCRIPTION', $descriptiontxt);
+}
+
+
+
+
+
+
 
 
 /**
@@ -2997,15 +3065,24 @@ function bab_vac_delete_request($id_request)
 			WHERE id=".$babDB->quote($id_request)));
 
 	if ($arr['idfai'] > 0) 
+	{
 		deleteFlowInstance($arr['idfai']);
+	}
 
 	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)."");
 	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$babDB->quote($id_request));
-
+	
+	
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-
 	$date_begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$date_end	= BAB_DateTime::fromIsoDateTime($arr['date_end']);
+	
+	$period = bab_vac_getPeriod($id_request, $arr['id_user'], $date_begin, $date_end);
+	if (null !== $period)
+	{
+		$period->delete();
+	}
+	
 	$date_end->add(1, BAB_DATETIME_MONTH);
 
 	while ($date_begin->getTimeStamp() <= $date_end->getTimeStamp()) {
@@ -3014,6 +3091,47 @@ function bab_vac_delete_request($id_request)
 		bab_vac_updateCalendar($arr['id_user'], $year, $month);
 		$date_begin->add(1, BAB_DATETIME_MONTH);
 	}
+}
+
+
+
+/**
+ * Try to get a period from the calendar API from the request
+ * The calendar backend can contain a period duplicated into the calendarEventCollection with need to be updated or deleted
+ * This function can work without access to the personal calendar of the user
+ * 
+ * @param	int				$id_request
+ * @param	int				$id_user		search the period in this user personal calendar
+ * @param	BAB_DateTime	$begin			request search begin date	(should be the request begin date)
+ * @param	BAB_DateTime	$end			request search end date		(should be the request end date)
+ * 
+ * @return bab_CalendarPeriod | null
+ */
+function bab_vac_getPeriod($id_request, $id_user, BAB_DateTime $begin, BAB_DateTime $end)
+{
+	require_once dirname(__FILE__).'/calincl.php';
+	global $babDB;
+		
+	$icalendars = new bab_icalendars($id_user);
+	
+	$calendar = $icalendars->getPersonalCalendar();
+	$backend = $calendar->getBackend();
+	
+	$factory = $backend->Criteria();
+	$criteria = $factory->Calendar($calendar);
+	$criteria = $criteria->_AND_($factory->Collection('bab_CalendarEventCollection'));
+	$criteria = $criteria->_AND_($factory->Begin($begin));
+	$criteria = $criteria->_AND_($factory->End($end));
+	$criteria = $criteria->_AND_($factory->Property('X-CTO-VACATION', $id_request));
+	
+	$periods = $backend->selectPeriods($criteria);
+	
+	foreach($periods as $period)
+	{
+		return $period;
+	}
+	
+	return null;
 }
 
 

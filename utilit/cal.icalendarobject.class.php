@@ -114,6 +114,8 @@ abstract class bab_ICalendarObject
 		$this->properties[$icalProperty][$propparam] = $value;
 		return $this;
 	}
+	
+	
 
 	/**
 	 * get a property with a icalendar property name

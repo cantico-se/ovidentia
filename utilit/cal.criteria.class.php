@@ -214,6 +214,11 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 	{
 		return $this->value;
 	}
+	
+	public function getContain()
+	{
+		return $this->contain;
+	}
 
 
 	/**

@@ -2130,7 +2130,11 @@ function rightcopy() {
 
 
 
-
+/**
+ * Delete vacation right and request associated to the vacation right
+ * @param int $idvr
+ * @return bool
+ */
 function deleteVacationRight($idvr)
 	{
 	global $babBody, $babDB;

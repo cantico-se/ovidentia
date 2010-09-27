@@ -440,6 +440,35 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 	
 	
+	
+	/**
+	 * 
+	 * @return bool
+	 */
+	public function save()
+	{
+		$collection = $this->getCollection();
+		$calendar = $collection->getCalendar();
+		$backend = $calendar->getBackend();
+		return $backend->savePeriod($this);
+	}
+	
+	
+	/**
+	 * 
+	 * @return bool
+	 */
+	public function delete()
+	{
+		$collection = $this->getCollection();
+		$calendar = $collection->getCalendar();
+		$backend = $calendar->getBackend();
+		return $backend->deletePeriod($this);
+	}
+
+	
+	
+	
 	/**
 	 * get HTML string for object
 	 * displayable in bab_debug

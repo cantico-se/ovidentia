@@ -793,6 +793,8 @@ function deleteVacationRequest($vrid)
 	return true;
 	}
 
+	
+	
 function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $monthend, $yearend, $halfdaybegin, $halfdayend, $remarks, $total, $vrid)
 {
 	global $babBody, $babDB;
@@ -874,6 +876,11 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 
 	$b = date('Y-m-d H:i:s', $begin);
 	$e = date('Y-m-d H:i:s', $end);
+	
+	
+
+	
+	
 
 	$babDB->db_query("
 		update ".BAB_VAC_ENTRIES_TBL." SET 
@@ -884,7 +891,6 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 			id='".$babDB->db_escape_string($vrid)."'
 		");
 
-
 	for( $i = 0; $i < count($nbdays['id']); $i++)
 		{
 		if( $nbdays['val'][$i] > 0 ) {
@@ -894,6 +900,10 @@ function updateVacationRequest($daybegin, $monthbegin, $yearbegin,$dayend, $mont
 			$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id='".$babDB->db_escape_string($nbdays['id'][$i])."'");
 		}
 	}
+	
+	
+	require_once dirname(__FILE__).'/utilit/dateTime.php';
+	bab_vac_updatePeriod($vrid, BAB_DateTime::fromIsoDateTime($b), BAB_DateTime::fromIsoDateTime($e));
 	
 	
 	$period_begin	= $old_begin 	< $begin 	? $old_begin 	: $begin;
@@ -1109,31 +1119,18 @@ function doDeleteVacationRequests($date, $userid)
 	$ar = explode("-", $date);
 	$dateb = sprintf("%04d-%02d-%02d", $ar[2], $ar[1], $ar[0]);
 
-	$req = "SELECT id, idfai FROM ".BAB_VAC_ENTRIES_TBL." WHERE date_end <= ".$babDB->quote($dateb);
+	$req = "SELECT id FROM ".BAB_VAC_ENTRIES_TBL." WHERE date_end <= ".$babDB->quote($dateb);
 	if( $userid != "" )
 		$req .= " and id_user=".$babDB->quote($userid);
 
 	$res = 	$babDB->db_query($req);
 	while( $arr = $babDB->db_fetch_array($res))
 	{
-		if ($arr['idfai'] > 0) {
-			deleteFlowInstance($arr['idfai']);
-			}
-		doDeleteVacationRequest($arr['id']);
+		bab_vac_delete_request($arr['id']);
 	}
 }
 
-function doDeleteVacationRequest($vrid)
-{
-	global $babDB;
 
-	$res = $babDB->db_query("SELECT id_user FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($vrid));
-	$arr = $babDB->db_fetch_assoc($res);
-	bab_vac_clearUserCalendar($arr['id_user']);
-
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($vrid)."'");
-	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($vrid)."'");
-}
 
 /* main */
 $acclevel = bab_vacationsAccess();
@@ -1168,7 +1165,7 @@ else if( isset($action) && $action == "Yes")
 	}
 else if( isset($action2) && $action2 == "Yes")
 	{
-	doDeleteVacationRequest($vrid);
+	bab_vac_delete_request($vrid);
 	}
 
 $babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");

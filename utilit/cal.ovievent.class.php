@@ -1263,6 +1263,15 @@ class bab_cal_OviEventSelect
 	{	
 		global $babDB;
 		
+		
+		if ('X-CTO-VACATION' === $property)
+		{
+			// return empty result if a vacatation is requested
+			// because vacation are not stored into calendar event collection within ovi backend
+			return '1=0';
+		}
+		
+		
 		$colname = null;
 		
 		switch($property)

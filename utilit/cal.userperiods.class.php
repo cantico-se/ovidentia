@@ -162,6 +162,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	private $countperiod = 0;
 	
 	
+	/**
+	 * List of vacation requests provided by request, used to prevent vacation duplicate
+	 * @var unknown_type
+	 */
+	private $vacationindex = array();
+	
+	
 
 	/**
 	 * Working hours object on period
@@ -371,6 +378,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 * and index siblings
 	 */
 	public function orderBoundaries() {
+		
+		$this->vacationindex = array();
+		
 		// order by date
 		bab_sort::ksort($this->boundaries);
 
@@ -418,10 +428,35 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			return;
 		}
 		
+		// ignore duplicated vacations
+		
+		if ('' !== $id = $p->getProperty('X-CTO-VACATION')) 
+		{
+			if (isset($this->vacationindex[$id]))
+			{
+				$currentcollection = $this->periods[$this->vacationindex[$id]]->getCollection();
+				$newcollection = $p->getCollection();
+				
+				// give priority to the vacationPeriod Collection
+				
+				if (($currentcollection instanceof bab_CalendarEventCollection) && ($newcollection instanceof bab_VacationPeriodCollection))
+				{
+					$pos = $this->vacationindex[$id];
+					$this->periods[$pos] = $p;
+				} 
+			}
+			else
+			{
+				$this->countperiod++;
+				$pos = $this->addPeriodToBoundaries($p);
+				$this->vacationindex[$id] = $pos;
+			}
+			
+			return;
+		}
+		
 		$this->countperiod++;
-		$this->addPeriodToBoundaries($p);
-		
-		
+		$pos = $this->addPeriodToBoundaries($p);
 	}
 	
 	
@@ -433,7 +468,8 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 */
 	private function addPeriodToBoundaries(bab_calendarPeriod $p)
 	{
-		$this->periods[] = $p;
+		$pos = count($this->periods);
+		$this->periods[$pos] = $p;
 
 		$ts = $p->ts_begin;
 		if (!isset($this->boundaries[$ts])) {
@@ -444,6 +480,8 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!isset($this->boundaries[$ts])) {
 			$this->boundaries[$ts] = array();
 		}
+		
+		return $pos;
 	}
 	
 	
