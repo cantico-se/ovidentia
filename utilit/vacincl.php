@@ -2836,6 +2836,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/workinghoursincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
 	$obj = new bab_UserPeriods( 
 			$dateb, 
@@ -2855,11 +2856,9 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 		)
 	);
 	
-	$id_calendar = bab_getICalendars()->getPersonalCalendarUid($id_user);
-	$caltype = bab_getICalendars()->getUserReferenceType($id_user);
-	$urlidentifier = $caltype.'/'.$id_calendar;
-	
-	$calendar = bab_getICalendars()->getEventCalendar($urlidentifier);
+	$icalendars = new bab_icalendars($id_user);
+
+	$calendar = $icalendars->getPersonalCalendar();
 	
 	if (!isset($calendar))
 	{
@@ -3055,23 +3054,22 @@ function bab_vac_shortDate($timestamp) {
  */
 function bab_vac_delete_request($id_request)
 {
+	
 	notifyOnRequestChange($id_request, true);
 
 	global $babDB;
+	
+	
 	
 	$arr = $babDB->db_fetch_assoc($babDB->db_query("
 		SELECT idfai, id_user, date_begin, date_end  
 			FROM ".BAB_VAC_ENTRIES_TBL." 
 			WHERE id=".$babDB->quote($id_request)));
-
-	if ($arr['idfai'] > 0) 
-	{
-		deleteFlowInstance($arr['idfai']);
-	}
-
-	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)."");
-	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$babDB->quote($id_request));
 	
+	if (!$arr)
+	{
+		return false;
+	}
 	
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 	$date_begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
@@ -3082,6 +3080,19 @@ function bab_vac_delete_request($id_request)
 	{
 		$period->delete();
 	}
+
+	if ($arr['idfai'] > 0) 
+	{
+		deleteFlowInstance($arr['idfai']);
+	}
+
+	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)."");
+	$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_TBL." WHERE id=".$babDB->quote($id_request));
+	
+	
+	
+	
+	
 	
 	$date_end->add(1, BAB_DATETIME_MONTH);
 
