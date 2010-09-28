@@ -1142,6 +1142,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 
 	if( $arr['notification'] == "Y" )
 		{
+		// = notifier le moderateur
 		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
 		}
 

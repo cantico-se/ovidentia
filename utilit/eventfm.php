@@ -24,6 +24,7 @@
 include_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 
 /**
  * All file manager based events are extended for this event
@@ -86,7 +87,7 @@ class bab_eventFm extends bab_event
  * @package events
  * @since 7.2.93
  */
-class bab_eventFmFile extends bab_eventFm
+class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 {
 	private $informed_recipients = array();
 	

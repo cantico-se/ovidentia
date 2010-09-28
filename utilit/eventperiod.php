@@ -23,7 +23,7 @@
 ************************************************************************/
 include_once 'base.php';
 require_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
-
+require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 
 
 
@@ -234,4 +234,123 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
 			$event->addCalendar($calendar);
 		}
 	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Event for actions on calendar events
+ * Store additional informations for registered targets
+ * each target can add informed users, the next targets will not inform the allready informed recipients
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipients
+{
+	private $notify = array();
+
+
+	/**
+	 * Add a user to informed user list after a user has been informed about the action
+	 * @param int $id_user
+	 * @return bab_eventFmFile
+	 */
+	public function addInformedUser($id_user)
+	{
+		if (isset($this->notify[$id_user]))
+		{
+			unset($this->notify[$id_user]);	
+		}
+		return $this;
+	}
+	
+	
+	public function notify($id_user, $lastname, $firstname, $email)
+	{
+		$this->notify[$id_user] = array(
+			'name' => bab_composeUserName($firstname, $lastname),
+			'lastname' => $lastname,
+			'firstname' => $firstname,
+			'email'	=> $email
+		);
+		return $this;
+	}
+	
+	
+	/**
+	 * Get user to notify based on folder preferences and access rights
+	 * @return array
+	 */
+	public function getUsersToNotify()
+	{
+		return $this->notify;
+	}
+}
+
+
+/**
+ * After one calendar event has been made visible for a population of users
+ * - event creation
+ * - new attendee
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventAfterEventAdd extends bab_eventCalendarEvent 
+{
+	
+}
+
+
+/**
+ * After one calendar has been updated for a population of users
+ * - event update
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventAfterEventUpdate extends bab_eventCalendarEvent
+{
+	
+}
+
+
+/**
+ * After one calendar has been deleted for a population of users
+ * - event delete
+ * - remove attendee
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventAfterEventDelete extends bab_eventCalendarEvent
+{
+	
+}
+
+
+
+
+
+
+
+
+
+function bab_onCalendarEvent(bab_eventCalendarEvent $event)
+{
+	
 }

@@ -6388,6 +6388,23 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 7.3.93
+	 */
+	
+	bab_addEventListener('bab_eventArticle'			, 'bab_onArticle'		, 'utilit/eventarticle.php');
+	bab_addEventListener('bab_eventCalendarEvent'	, 'bab_onCalendarEvent'	, 'utilit/eventperiod.php');
+	bab_addEventListener('bab_eventForumPost'		, 'bab_onForumPost'		, 'utilit/eventforum.php');
+	
+	
+	
+	
 
 	return true;
 }
