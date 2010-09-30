@@ -113,7 +113,7 @@ function bab_getDelegationsFromResource($res) {
 	$return = array(
 		'DGAll' => array(
 			'id' 			=> false,
-			'name' 			=> bab_translate('Home'),
+			'name' 			=> bab_translate('All site'),
 			'description' 	=> bab_translate('All site'),
 			'color' 		=> 'FFFFFF',
 			'homePageUrl' 	=> '?',

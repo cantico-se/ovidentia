@@ -432,9 +432,15 @@ class bab_SearchDefaultForm {
 	 */
 	private static function addFromCriterions(bab_SearchCriteria $crit, bab_SearchTestable $testable) {
 
+		
+		
 		$primary_search = bab_rp('what');
 		$secondary_search = bab_rp('what2');
 		$option = bab_rp('option');
+		$delegation = bab_rp('delegation', null);
+		
+		
+		
 
 		if ($primary_search) {
 			
@@ -468,6 +474,22 @@ class bab_SearchDefaultForm {
 				}
 			}
 		}
+		
+		
+		if (null !== $delegation && ($testable instanceOf bab_SearchRealm) && isset($testable->id_dgowner) && 'DGAll' !== $delegation)
+		{
+			// if id_dgowner field exist on search real, filter by delegation
+			
+			require_once dirname(__FILE__).'/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+				$crit = $crit->_AND_($testable->id_dgowner->is($id_dgowner));
+			}
+		}
+		
 		
 		return $crit;
 	}

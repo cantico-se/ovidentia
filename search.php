@@ -131,7 +131,14 @@ function searchKeyword($item , $option = 'OR', $hideForm = false)
 			else
 			{
 				$this->search_form = bab_SearchDefaultForm::getHTML();
-			}			
+			}	
+
+			require_once dirname(__FILE__).'/utilit/delegincl.php';
+			
+			$this->delegations = bab_getUserVisiblesDelegations();
+			$this->displaydelegation = count($this->delegations) > 2;
+			
+			$this->t_delegation = bab_translate('Delegation');
 		}
 
 
@@ -147,6 +154,18 @@ function searchKeyword($item , $option = 'OR', $hideForm = false)
 				return true;
 			}
 			return false;
+		}
+		
+		
+		public function getnextdelegation()
+		{
+			if (list($uid, $arr) = each($this->delegations)) {
+				$this->uid = bab_toHtml($uid);
+				$this->name = bab_toHtml($arr['name']);
+				$this->color = bab_toHtml($arr['color']);
+				$this->selected = $uid === bab_rp('delegation');
+				return true;
+			}
 		}
 	}
 

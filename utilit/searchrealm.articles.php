@@ -90,19 +90,20 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 	 */
 	public function getFields() {
 		return array(
-			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))			->virtual(true),
-			$this->createField('id'					, bab_translate('Id'))							->searchable(false),
-			$this->createField('id_topic'			, bab_translate('Topic numeric identifier'))	->searchable(false),
-			$this->createField('id_author'			, bab_translate('Author numeric identifier'))	->searchable(false),
-			$this->createField('title'				, bab_translate('Title')),
-			$this->createField('head'				, bab_translate('Head')),
-			$this->createField('head_format'		, bab_translate('Head format'))->searchable(false),
-			$this->createField('body'				, bab_translate('Body')),
-			$this->createField('body_format'		, bab_translate('Body format'))->searchable(false),
-			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')->searchable(false),
-			$this->createField('archive'			, bab_translate('Archived article'))->searchable(false),
-			$this->createField('relevance'			, bab_translate('Relevance'))->searchable(false),
-			$this->createField('search'				, bab_translate('search in file content'))->searchable(false)
+			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))	->virtual(true),
+			$this->createField('id'					, bab_translate('Id'))									->searchable(false)	->setTableAlias('a'),
+			$this->createField('id_topic'			, bab_translate('Topic numeric identifier'))			->searchable(false)	->setTableAlias('a'),
+			$this->createField('id_author'			, bab_translate('Author numeric identifier'))			->searchable(false)	->setTableAlias('a'),
+			$this->createField('title'				, bab_translate('Title'))													->setTableAlias('a'),
+			$this->createField('head'				, bab_translate('Head'))													->setTableAlias('a'),
+			$this->createField('head_format'		, bab_translate('Head format'))							->searchable(false)	->setTableAlias('a'),
+			$this->createField('body'				, bab_translate('Body'))													->setTableAlias('a'),
+			$this->createField('body_format'		, bab_translate('Body format'))							->searchable(false)	->setTableAlias('a'),
+			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')	->searchable(false)->setTableAlias('a'),
+			$this->createField('archive'			, bab_translate('Archived article'))					->searchable(false)	->setTableAlias('a'),
+			$this->createField('relevance'			, bab_translate('Relevance'))							->searchable(false)	->setTableAlias('a'),
+			$this->createField('id_dgowner'			, bab_translate('Delegation'))							->searchable(false)	->setTableAlias('c'),
+			$this->createField('search'				, bab_translate('search in file content'))				->searchable(false)	->setTableAlias('a')
 		);
 	}
 
@@ -136,6 +137,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 		$req = "
 			CREATE TEMPORARY TABLE artresults (
 				`id` 			int(11) unsigned NOT NULL, 
+				`id_dgowner`	int(11) unsigned NOT NULL, 
 				`relevance` 	int(11) unsigned NOT NULL 
 			)
 		";
@@ -157,13 +159,18 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 		$mysql = $this->getBackend('mysql');
 		$req = 'INSERT INTO artresults 
 			SELECT 
-				id,
+				a.id,
+				c.id_dgowner,
 				\'0\' relevance 
 			
 		FROM 
-			'.BAB_ARTICLES_TBL.' '.$mysql->getWhereClause($criteria).' 
+			'.BAB_ARTICLES_TBL.' a 
+				LEFT JOIN '.BAB_TOPICS_TBL.' t ON t.id=a.id_topic 
+				LEFT JOIN '.BAB_TOPICS_CATEGORIES_TBL.' c ON c.id = t.id_cat 
+			
+			'.$mysql->getWhereClause($criteria).' 
 
-		ORDER BY `title` DESC';
+		ORDER BY a.`title` DESC';
 
 		bab_debug($req, DBG_INFO, 'Search');
 
@@ -320,6 +327,7 @@ class bab_SearchRealmArticles extends bab_SearchRealmTopic {
 				a.`body`,
 				a.`date` date_publication,
 				a.`archive` ,
+				r.id_dgowner, 
 				r.relevance  
 			FROM 
 				artresults r,
