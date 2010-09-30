@@ -1229,23 +1229,19 @@ function confirmDeleteEvent($calid, $bupdrec)
 		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
 	}
 
+	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+	
+	$notifyEvent = new bab_eventAfterEventDelete;
+	$notifyEvent->setPeriod($calendarPeriod);
 
 	
 	foreach($calendarPeriod->getCalendars() as $calendar) {
-			
-		cal_notify(
-			$calendarPeriod->getProperty('SUMMARY'), 
-			$calendarPeriod->getProperty('DESCRIPTION'), 
-			$calendarPeriod->getProperty('LOCATION'), 
-			$startdate = bab_longDate($calendarPeriod->ts_begin),
-			$enddate = bab_longDate($calendarPeriod->ts_end),
-			$calendar, 
-			bab_translate("An appointement has been removed")
-		);
+		$notifyEvent->addCalendar($calendar);
 	}
 	
+	bab_fireEvent($notifyEvent);
 		
-	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
+	
 	$event = new bab_eventPeriodModified($date_min, $date_max, false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);

@@ -59,7 +59,6 @@ class bab_cal_OviEventUpdate
 				throw new Exception('the event have an UID but does not exists in table');
 			}
 			
-			// TODO remove the third parameter
 			$manager->updateEvent($id_event, $period);
 		}
 		else
@@ -198,8 +197,8 @@ class bab_cal_OviEventUpdate
 			$max = $val['end']	 > $max ? $val['end'] 	: $max;
 
 			
-			$exclude = $this->applyAttendees($period, $id_event);
-			$exclude += $this->applyRelations($period, $id_event);
+			$this->applyAttendees($period, $id_event);
+			$this->applyRelations($period, $id_event);
 			$this->cleanupCalendars($period, $id_event);
 		}
 		
@@ -208,16 +207,6 @@ class bab_cal_OviEventUpdate
 		
 		
 		$this->applyAlarm($period, $id_event);
-	
-		
-		if ($modification)
-		{
-
-			// the exlude array contain new calendar in event
-			// they do not need a notification
-		
-			notifyEventUpdate($id_event, false, $exclude);
-		}
 		
 		return true;
 	}

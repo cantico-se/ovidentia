@@ -261,7 +261,18 @@ function bab_onCollectCalendarsBeforeDisplay(bab_eventCollectCalendarsBeforeDisp
  */
 class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipients
 {
-	private $notify = array();
+	private $informed_recipients = array();
+	
+	/**
+	 * @var bab_CalendarPeriod
+	 */
+	private $period = null;
+	
+	/**
+	 * The list of calendars to notify
+	 * @var array
+	 */
+	private $calendars = array();
 
 
 	/**
@@ -271,33 +282,151 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
 	 */
 	public function addInformedUser($id_user)
 	{
-		if (isset($this->notify[$id_user]))
-		{
-			unset($this->notify[$id_user]);	
-		}
+		$this->informed_recipients[$id_user] = $id_user;
+		return $this;
+	}
+	
+	/**
+	 * Set period to notify
+	 * @param bab_CalendarPeriod $period
+	 * @return bab_eventCalendarEvent
+	 */
+	public function setPeriod(bab_CalendarPeriod $period)
+	{
+		$this->period = $period;
+		$collection = $period->getCollection();
+		
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param bab_CalendarPeriod $calendar
+	 * @return bab_eventCalendarEvent
+	 */
+	public function addCalendar(bab_EventCalendar $calendar)
+	{
+		$this->calendars[] = $calendar;
 		return $this;
 	}
 	
 	
-	public function notify($id_user, $lastname, $firstname, $email)
+	public function getPeriod()
 	{
-		$this->notify[$id_user] = array(
-			'name' => bab_composeUserName($firstname, $lastname),
-			'lastname' => $lastname,
-			'firstname' => $firstname,
-			'email'	=> $email
-		);
-		return $this;
+		return $this->period;
+	}
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getCalendars()
+	{
+		return $this->calendars;
 	}
 	
 	
 	/**
-	 * Get user to notify based on folder preferences and access rights
+	 * Get user to notify based on event and access rights
+	 * 
+	 * @param bab_EventCalendar $calendar
 	 * @return array
+	 */
+	public function getUsersToNotifyByCalendar(bab_EventCalendar $calendar)
+	{
+		include_once dirname(__FILE__).'/userinfosincl.php';
+		include_once dirname(__FILE__).'/../admin/acl.php';
+		
+		
+		switch(true)
+		{
+		case $calendar instanceof bab_PersonalCalendar:
+
+			$row = bab_userInfos::getRow($calendar->getIdUser());
+
+			$users = array(
+				$calendar->getIdUser() => array(
+					'name' 		=> bab_composeUserName($row['firstname'], $row['lastname']),
+					'firstname'	=> $row['firstname'], 
+					'lastname'	=> $row['lastname'],
+					'email'		=> $row['email']
+				)
+			);
+			
+			break;
+			
+		case $calendar instanceof bab_PublicCalendar:
+			$users = aclGetAccessUsers(BAB_CAL_PUB_GRP_GROUPS_TBL, $calendar->getUid());
+			break;
+			
+		case $calendar instanceof bab_ResourceCalendar:
+			$users = aclGetAccessUsers(BAB_CAL_RES_GRP_GROUPS_TBL, $calendar->getUid());
+			break;
+		}
+		
+		// add organizer if in ovidentia
+		
+		if ($organizer = $this->period->getOrganizer())
+		{
+			// try to match organizer to an ovidentia user
+			
+			if (isset($organizer['name']))
+			{
+				$id_user = bab_getUserIdByEmailAndName($organizer['email'], $organizer['name']);
+				
+				if ($id_user && !isset($users[$id_user]))
+				{
+					$row = bab_userInfos::getRow($id_user);
+			
+					$users[$id_user] = array(
+						'name' 		=> bab_composeUserName($row['firstname'], $row['lastname']),
+						'firstname'	=> $row['firstname'], 
+						'lastname'	=> $row['lastname'],
+						'email'		=> $row['email']
+					);
+				}
+			}
+		}
+		
+		
+
+		
+		if (isset($users[$GLOBALS['BAB_SESS_USERID']]))
+		{
+			// do not notify current user
+			unset($users[$GLOBALS['BAB_SESS_USERID']]);
+		}
+		
+		foreach($users as $id_user => $dummy)
+		{
+			if (isset($this->informed_recipients[$id_user]))
+			{
+				unset($users[$id_user]);
+			}
+		}
+		
+		return $users;
+	}
+	
+	
+	
+	/**
+	 * Get user to notify based on event and access rights
+	 * 
+	 * @return array
+	 *
 	 */
 	public function getUsersToNotify()
 	{
-		return $this->notify;
+		
+		$users = array();
+		
+		foreach($this->calendars as $calendar)
+		{
+			$users += $this->getUserToNotifyByCalendar($calendar);
+		}
+
+		return $users;
 	}
 }
 
@@ -316,9 +445,11 @@ class bab_eventAfterEventAdd extends bab_eventCalendarEvent
 }
 
 
+
+
 /**
  * After one calendar has been updated for a population of users
- * - event update
+ * - event delete
  * 
  * @package events
  * @since 7.4.0
@@ -329,10 +460,14 @@ class bab_eventAfterEventUpdate extends bab_eventCalendarEvent
 }
 
 
+
+
+
+
 /**
  * After one calendar has been deleted for a population of users
  * - event delete
- * - remove attendee
+ * 
  * 
  * @package events
  * @since 7.4.0
@@ -342,15 +477,66 @@ class bab_eventAfterEventDelete extends bab_eventCalendarEvent
 	
 }
 
+/**
+ * Attendee validation accepted
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventAfterEventRelationAdd extends bab_eventCalendarEvent
+{
+	
+}
+
+/**
+ * Attendee validation rejected
+ * 
+ * @package events
+ * @since 7.4.0
+ */
+class bab_eventAfterEventRelationDelete extends bab_eventCalendarEvent
+{
+	
+}
 
 
 
 
 
-
-
-
+/**
+ * bab_eventAfterEventAdd			cal_notify			utilit/evtincl.php 			2027		new relation, new event
+ * bab_eventAfterEventDelete		cal_notify			event.php					1236
+ * bab_eventAfterEventUpdate		notifyEventUpdate	cal.ovievent.class.php		219			event update, remove attendee
+ * 
+ * @param bab_eventCalendarEvent $event
+ * @return unknown_type
+ */
 function bab_onCalendarEvent(bab_eventCalendarEvent $event)
 {
 	
+	require_once dirname(__FILE__).'/evtincl.php';
+	
+	switch(true)
+	{
+		case $event instanceof bab_eventAfterEventAdd:
+			cal_notify($event, bab_translate("New appointement"));
+			break;
+		
+		case $event instanceof bab_eventAfterEventUpdate:
+			cal_notify($event, bab_translate("Appointment modifed by ").$GLOBALS['BAB_SESS_USER'], bab_translate("The following appointment has been modified"));
+			break;
+			
+		case $event instanceof bab_eventAfterEventDelete:
+			cal_notify($event, bab_translate("An appointement has been removed"));
+			break;
+		/*	
+		case $event instanceof bab_eventAfterEventRelationAdd:
+			cal_notify($event, bab_translate("Appointment added by ").$GLOBALS['BAB_SESS_USER'], bab_translate("The following appointment has been added to your calendar"));
+			break;
+			
+		case $event instanceof bab_eventAfterEventRelationDelete:
+			cal_notify($event, bab_translate("Appointment canceled by ").$GLOBALS['BAB_SESS_USER'], bab_translate("The following appointment has been canceled"));
+			break;
+		*/
+	}
 }

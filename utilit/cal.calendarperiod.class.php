@@ -523,7 +523,62 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		
 		return $html;
 	}
-
+	
+	
+	
+	/**
+	 * Get organizer informations
+	 * @return Array
+	 */
+	function getOrganizer()
+	{
+		$organizer = $this->getProperty('ORGANIZER');
+		
+		if (!$organizer)
+		{
+			return null;
+		}
+		
+		if (is_array($organizer))
+		{
+			foreach($organizer as $params => $value)
+			{
+				
+				list(,$email) = explode(':', $value);
+				$name = null;
+				$arrparams = explode(';', $params);
+				array_shift($arrparams);
+				
+				foreach($arrparams as $param)
+				{
+					if ($param)
+					{
+						list($key, $paramvalue) = explode('=', $param);
+						if ($key === 'CN') {
+							$name = $paramvalue;
+							break;
+						}
+					}
+				}
+				
+				return array(
+					'name' => $name,
+					'email' => $email
+				);
+			}
+			
+		} else {
+			
+			list(,$email) = explode(':', $value);
+			
+			return array(
+				'name' => null,
+				'email' => $email
+			);
+		}
+	
+		return null;
+	}
 }
 
 

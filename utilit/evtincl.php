@@ -30,74 +30,111 @@ include_once "base.php";
 
 
 
+
+
 /**
- * Send a generic notification for create/delete event
- * This function is used only for events of the ovidentia backend
- * or add a calendar to event
- * or remove calendar from event
- *
- * @param	string				$title				event title
- * @param	string				$description		event description
- * @param	string				$startdate			internationalized string
- * @param	string				$enddate			internationalized string
- * @param	bab_EventCalendar	$calendar				
- * @param	string				$message			used as mail subject and in mail body
+ * Notify by email form parameters received in event
+ * @return unknown_type
  */
-function cal_notify($title, $description, $location, $startdate, $enddate, bab_EventCalendar $calendar, $message) {
+function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
+{
+	global $babBody, $babDB, $babAdminEmail;
 
 
-	switch($calendar->getReferenceType())
+	$mail = bab_mail();
+	if( $mail == false )
+		return;
+	
+	
+
+	if( empty($GLOBALS['BAB_SESS_USER']))
+		{
+		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
+		}
+	else
+		{
+		$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
+		}
+
+	$mail->mailSubject($subject);
+	
+	$period = $event->getPeriod();
+	$calendars = $event->getCalendars();
+	
+	
+	foreach($calendars as $calendar)
 	{
-	case 'personal':
-		if( $calendar->getIdUser() != $GLOBALS['BAB_SESS_USERID'] )
+		$calendartitle = $calendar->getName();
+		if (((int) $GLOBALS['BAB_SESS_USERID']) === (int) $calendar->getIdUser())
+		{
+			$calendartitle = bab_translate('Personal calendar');
+		}
+		
+		if (null === $body)
+		{
+			$body = $subject;
+		}
+	
+		$tempc = new clsNotifyEvent(
+			$period->getProperty('SUMMARY'), 
+			$period->getProperty('DESCRIPTION'), 
+			$period->getProperty('LOCATION'), 
+			bab_longDate($period->ts_begin), 
+			bab_longDate($period->ts_end),  
+			$body, 
+			$calendartitle
+		);
+		
+		$tempc->asHtml();
+		$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
+		
+		$mail->mailBody($message, "html");
+	
+		$tempc->asText();
+		$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
+		$mail->mailAltBody($message);
+		
+		$arrusers = $event->getUsersToNotifyByCalendar($calendar);
+		
+		if(!$arrusers)
+		{
+			bab_debug('NO USERS for calendar :'.$calendar->getName().' | notification : '.$subject, DBG_TRACE, 'Notification');
+			continue;
+		}
+		
+		bab_debug(count($arrusers).' USER(S) for calendar :'.$calendar->getName().' | notification : '.$subject, DBG_TRACE, 'Notification');
+		
+		$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
+		$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
+	
+		
+		$count = 0;
+		reset($arrusers);
+		while(list($id_user, $arr) = each($arrusers))
+		{
+		$event->addInformedUser($id_user);
+		$mail->$mailBCT($arr['email'], $arr['name']);
+		$count++;
+	
+		if( $count > $babBody->babsite['mail_maxperpacket'] )
 			{
-			notifyPersonalEvent(
-				$title, 
-				$description, 
-				$location, 
-				$startdate, 
-				$enddate, 
-				$calendar,
-				$message
-				);
+			$mail->send();
+			$mail->$clearBCT();
+			$mail->clearTo();
+			$count = 0;
 			}
-		break;
-		
-	case 'public':
-
-		notifyPublicEvent(
-			$title, 
-			$description, 
-			$location, 
-			$startdate, 
-			$enddate, 
-			$calendar,
-			$message
-			);
-
-		break;
-		
-	case 'resource':
-
-		notifyResourceEvent(
-			$title, 
-			$description, 
-			$location, 
-			$startdate, 
-			$enddate, 
-			$calendar,
-			$message
-			);
-
-		break;
+		}
+	
+		if( $count > 0 )
+		{
+		$mail->send();
+		$mail->$clearBCT();
+		$mail->clearTo();
+		$count = 0;
+		}
+	
 	}
-
 }
-
-
-
-
-
 
 
 
@@ -766,8 +803,22 @@ class clsNotifyEvent {
 	var $startdatetxt;
 	var $enddatetxt;
 	var $message;
+	var $calendar;
+	
+	public function __construct($title, $description, $location, $startdate, $enddate, $message, $calendar)
+	{
+		$this->message 				= $message;
+		$this->calendar 			= $calendar;
+		
+		$this->vars['title'] 		= $title;
+		$this->vars['description'] 	= $description;
+		$this->vars['startdate'] 	= $startdate;
+		$this->vars['enddate'] 		= $enddate;
+		$this->vars['message'] 		= $message;
+		$this->vars['location'] 	= $location;
+	}
 
-	function asText() {
+	public function asText() {
 		$this->title = $this->vars['title'];
 		$this->description = strip_tags(bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL));
 		$this->startdate = $this->vars['startdate'];
@@ -783,7 +834,7 @@ class clsNotifyEvent {
 		$this->locationtxt = bab_translate("Location");
 	}
 
-	function asHtml() {
+	public function asHtml() {
 		$this->title = bab_toHtml($this->vars['title']);
 		$this->description = bab_toHtml($this->vars['description'], BAB_HTML_REPLACE_MAIL);
 		$this->startdate = bab_toHtml($this->vars['startdate']);
@@ -802,95 +853,13 @@ class clsNotifyEvent {
 
 
 
-
-function notifyPersonalEvent($title, $description, $location, $startdate, $enddate, bab_EventCalendar $calendar, $message)
-	{
-	global $babBody, $babDB, $babAdminEmail;
-
-	if(!class_exists("clsNotifyAttendees"))
-		{
-		class clsNotifyAttendees extends clsNotifyEvent
-			{
-			var $calendar;
-
-			function clsNotifyAttendees($title, $description, $location, $startdate, $enddate, $message)
-				{
-				
-				$this->message = $message;
-				$this->calendar = bab_translate("Personal calendar");
-
-				$this->vars['title'] 		= $title;
-				$this->vars['description'] 	= $description;
-				$this->vars['startdate'] 	= $startdate;
-				$this->vars['enddate'] 		= $enddate;
-				$this->vars['message'] 		= $message;
-				$this->vars['location'] 	= $location;
-				}
-				
-			}
-		}
-	
-
-
-	$mail = bab_mail();
-	if( $mail == false )
-		return;
-	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
-
-	
-	$mail->$mailBCT(bab_getUserEmail($calendar->getIdUser()));
-	
-
-	if( empty($GLOBALS['BAB_SESS_USER']))
-		{
-		$mail->mailFrom($GLOBALS['babAdminEmail'], $GLOBALS['babAdminName']);
-		}
-	else
-		{
-		$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
-		}
-
-	$mail->mailSubject($message);
-
-	$tempc = new clsNotifyAttendees($title, $description, $location, $startdate, $enddate, $message);
-	$tempc->asHtml();
-	$message = $mail->mailTemplate(bab_printTemplate($tempc,"mailinfo.html", "newevent"));
-	
-	$mail->mailBody($message, "html");
-
-	$tempc->asText();
-	$message = bab_printTemplate($tempc,"mailinfo.html", "neweventtxt");
-	$mail->mailAltBody($message);
-	$mail->send();
-	
-	}
+		
+			
 
 
 function notifyPublicEvent($title, $description, $location, $startdate, $enddate, bab_EventCalendar $calendar, $message)
 	{
 	global $babBody, $babDB, $babAdminEmail;
-
-	if(!class_exists("clsNotifyPublicEvent"))
-		{
-		class clsNotifyPublicEvent extends clsNotifyEvent
-			{
-			var $calendar;
-
-
-			function clsNotifyPublicEvent($title, $description, $location, $startdate, $enddate, $message)
-				{
-				$this->message = $message;
-				$this->calendar = "";
-				
-				$this->vars['title'] 		= $title;
-				$this->vars['description'] 	= $description;
-				$this->vars['startdate'] 	= $startdate;
-				$this->vars['enddate'] 		= $enddate;
-				$this->vars['message'] 		= $message;
-				$this->vars['location'] 	= $location;
-				}
-			}
-		}
 	
 
 	
@@ -908,7 +877,7 @@ function notifyPublicEvent($title, $description, $location, $startdate, $enddate
 		{
 		$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 		}
-	$tempc = new clsNotifyPublicEvent($title, $description, $location, $startdate, $enddate, $message);
+	$tempc = new clsNotifyEvent($title, $description, $location, $startdate, $enddate, $message, '');
 
 	$arrusers = array();
 	
@@ -1048,29 +1017,7 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 	{
 	global $babBody, $babDB, $babAdminEmail;
 
-	if(!class_exists("clsNotifyResourceEvent"))
-		{
-		class clsNotifyResourceEvent extends clsNotifyEvent
-			{
 
-			var $calendar;
-
-			function clsNotifyResourceEvent($title, $description, $location, $startdate, $enddate, $message)
-				{
-				$this->calendar = "";
-				
-				$this->vars['title'] 		= $title;
-				$this->vars['description'] 	= $description;
-				$this->vars['startdate'] 	= $startdate;
-				$this->vars['enddate'] 		= $enddate;
-				$this->vars['message'] 		= $message;
-				$this->vars['location'] 	= $location;
-				}
-			}
-		}
-	
-
-	
 	$mail = bab_mail();
 	if( $mail == false )
 		return;
@@ -1085,11 +1032,8 @@ function notifyResourceEvent($title, $description, $location, $startdate, $endda
 		{
 		$mail->mailFrom($GLOBALS['BAB_SESS_EMAIL'], $GLOBALS['BAB_SESS_USER']);
 		}
-	$tempc = new clsNotifyResourceEvent($title, $description, $location, $startdate, $enddate, $message);
-	
+	$tempc = new clsNotifyEvent($title, $description, $location, $startdate, $enddate, $message, $calendar->getName());
 
-	
-	$tempc->calendar = $calendar->getName();
 	$mail->mailSubject($message);
 	
 	$tempc->asHtml();
@@ -1173,40 +1117,18 @@ function notifyEventApprobation(bab_CalendarPeriod $period, $bconfirm, $raison, 
 	if( $mail == false )
 		return;
 		
-	$organizer = $period->getProperty('ORGANIZER');
+	$organizer = $period->getOrganizer();
 	
 	if (!$organizer)
 	{
 		return;
 	}
 	
-	if (is_array($organizer))
+	if (isset($organizer['name']))
 	{
-		foreach($organizer as $params => $value)
-		{
-			
-			list(,$email) = explode(':', $value);
-			$name = $email;
-			$arrparams = explode(';', $params);
-			array_shift($arrparams);
-			
-			foreach($arrparams as $param)
-			{
-				if ($param)
-				{
-					list($key, $paramvalue) = explode('=', $param);
-					if ($key === 'CN') {
-						$name = $paramvalue;
-						break;
-					}
-				}
-			}
-			
-			$mail->mailTo($email, $name);
-		}
+		$mail->mailTo($organizer['email'], $organizer['name']);
 	} else {
-		list(,$email) = explode(':', $value);
-		$mail->mailTo($email);
+		$mail->mailTo($organizer['email']);
 	}
 
 	
@@ -1985,6 +1907,7 @@ class bab_event_posted {
 		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 		
 		$oldrelations = array();
+		$oldcalendars = array();
 		$uid = $calendarPeriod->getProperty('UID');
 		
 		if ($uid)
@@ -2003,6 +1926,7 @@ class bab_event_posted {
 			}
 			
 			$oldrelations = $oldevent->getRelations();
+			$oldcalendars = $oldevent->getCalendars();
 		}
 		
 		if (!$uid && !$calendar->canAddEvent())
@@ -2016,7 +1940,8 @@ class bab_event_posted {
 		$calendarPeriod->commitAttendeeEvent();
 		
 		
-		$this->notifyRelations($calendarPeriod, $oldrelations);
+		$this->notifyRelationsApprobation($calendarPeriod, $oldrelations);
+		$this->notifyUpdate($calendarPeriod, $oldcalendars);
 		
 
 		$min = $calendarPeriod->ts_begin;
@@ -2040,21 +1965,23 @@ class bab_event_posted {
 	
 	
 	/**
-	 * For new relations added to event, notify recipents or approvers
+	 * For new relations added to event, notify approvers
 	 * 
 	 * @param	bab_CalendarPeriod	$calendarPeriod
 	 * @param	Array				$oldrelations
 	 * 
 	 * @return unknown_type
 	 */
-	private function notifyRelations(bab_CalendarPeriod $calendarPeriod, Array $oldrelations)
+	private function notifyRelationsApprobation(bab_CalendarPeriod $calendarPeriod, Array $oldrelations)
 	{
+		require_once dirname(__FILE__).'/eventperiod.php';
+	
 		$newrelations = $calendarPeriod->getRelations();
 		
 		
 		foreach($newrelations as $urlidentifier => $relation)
 		{
-			if (isset($oldrelations[$urlidentifier]) && $oldrelations[$urlidentifier]['X-CTO-WFINSTANCE'])
+			if (isset($oldrelations[$urlidentifier]))
 			{
 				// allready notified, ongoing instance
 				continue;
@@ -2069,22 +1996,73 @@ class bab_event_posted {
 				$nfusers = getWaitingApproversFlowInstance($wfinstance, true);
 				notifyEventApprovers($calendarPeriod, $nfusers, $relation['calendar']);
 			}
+			
+		}
+	}
+	
+	
+	
+	/**
+	 * For modifications made in event, notify the relations and organizer
+	 * 
+	 * @param	bab_CalendarPeriod	$calendarPeriod
+	 * @param	Array				$oldcalendars
+	 * 
+	 * @return unknown_type
+	 */
+	private function notifyUpdate(bab_CalendarPeriod $calendarPeriod, Array $oldcalendars)
+	{
+		require_once dirname(__FILE__).'/eventperiod.php';
+		
+		// notify remaining calendars of an update
+		$update = new bab_eventAfterEventUpdate;
+		$update->setPeriod($calendarPeriod);
+		$updatevalid = false;
+		
+		
+		// notify the new added calendars of the new appointement
+		$added = new bab_eventAfterEventAdd;
+		$added->setPeriod($calendarPeriod);
+		$addedvalid = false;
+		
+		
+		// notify the removed calendars
+		$removed = new bab_eventAfterEventDelete;
+		$removed->setPeriod($calendarPeriod);
+		$removedvalid = false;
+		
+		
+		foreach($calendarPeriod->getCalendars() as $calendar)
+		{
+			$identifier = $calendar->getUrlIdentifier();
+			
+			if (isset($oldcalendars[$identifier]))
+			{
+				$update->addCalendar($calendar);
+				$updatevalid = true;
+				unset($oldcalendars[$identifier]);
+			} 
 			else 
 			{
-
-				// if new calendar in event, notify new appointement 
-				
-				cal_notify(
-					$calendarPeriod->getProperty('SUMMARY'), 
-					$calendarPeriod->getProperty('DESCRIPTION'), 
-					$calendarPeriod->getProperty('LOCATION'), 
-					bab_longDate($calendarPeriod->ts_begin), 
-					bab_longDate($calendarPeriod->ts_end), 
-					$relation['calendar'], 
-					bab_translate("New appointement")
-				);
+				$added->addCalendar($calendar);
+				$addedvalid = true;
 			}
 		}
+		
+		// old calendars no more in event
+		
+		foreach($oldcalendars as $calendar)
+		{
+			$removed->addCalendar($calendar);
+			$removedvalid = true;
+		}
+		
+		
+		
+		if ($updatevalid)	{	bab_fireEvent($update);		}
+		if ($addedvalid)	{	bab_fireEvent($added);		}
+		if ($removedvalid)	{	bab_fireEvent($removed);	}
+		
 	}
 	
 	
