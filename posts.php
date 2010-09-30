@@ -896,7 +896,7 @@ function editPost($forum, $thread, $post)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_forum_post');
 				$editor->setContent($this->arr['message']);
-				$editor->setFormat($thsi->arr['message_format']);
+				$editor->setFormat($this->arr['message_format']);
 				$editor->setFormat('html');
 				$this->editor = $editor->getEditor();
 				
@@ -1067,7 +1067,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 	{
 	global $babDB, $BAB_SESS_USER, $BAB_SESS_USERID, $babBody;
 	
-	
+	require_once $GLOBALS['babInstallPath'].'utilit/eventforum.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
 
 	$editor = new bab_contentEditor('bab_forum_post');
@@ -1120,7 +1120,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 	$req = "update ".BAB_THREADS_TBL." set lastpost='".$idpost."' where id='".$babDB->db_escape_string($thread)."'";
 	$res = $babDB->db_query($req);
 
-	$req = "select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
+	$req = "select *, p.subject  from ".BAB_THREADS_TBL." t, ".BAB_POSTS_TBL." p where t.id='".$babDB->db_escape_string($thread)."' AND p.id=t.post";
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
 	if( $confirmed == "Y" && $arr['notify'] == "Y" && $arr['starter'] != 0)
@@ -1130,28 +1130,17 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		$arr = $babDB->db_fetch_array($res);
         notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name);
 		}
-
-	$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'"));
-	$flat = $arr['bflatview'] == 'Y'? 1: 0;
+		
+		
+	$event = new bab_eventForumAfterPostAdd;
+		
+	$event->setForum($forum);
+	$event->setThread($arr['id'], $arr['subject']);
+	$event->setPost($idpost, $name, 'Y' === $confirmed);
 	
-	$tables = array();
-	if( $confirmed == "Y"  )
-		{
-		$tables[] = BAB_FORUMSNOTIFY_GROUPS_TBL;
-		}
-
-	if( $arr['notification'] == "Y" )
-		{
-		// = notifier le moderateur
-		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
-		}
-
-	if( count($tables) > 0 )
-		{
-		$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".urlencode($forum)."&thread=".urlencode($thread)."&flat=".$flat."&views=1";
-		notifyForumGroups($forum, $subject, $name, $arr['name'],$tables, $url, false);
-		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".$flat);
+	bab_fireEvent($event);
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".bab_rp('flat', '1'));
 	exit;
 	}
 

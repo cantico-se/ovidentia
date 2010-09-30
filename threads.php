@@ -453,13 +453,15 @@ function newThread($forum)
 function saveThread()
 	{
 	global $BAB_SESS_USER, $BAB_SESS_USERID, $babBody, $babDB;
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/eventforum.php";
 
 	$forum = intval(bab_pp('forum', 0));
 	$subject = strval(bab_pp('subject', ''));
 	$notifyme = bab_pp('notifyme', 'N');
 	$name = strval(bab_pp('uname', ''));
 	
-	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	
 	$editor = new bab_contentEditor('bab_forum_post');
 	$message = $editor->getContent();
 
@@ -537,23 +539,13 @@ function saveThread()
 		where id = '".$babDB->db_escape_string($idthread)."'";
 	$res = $babDB->db_query($req);
 
-	$tables = array();
-	if( $confirmed == 'Y'  )
-		{
-		$tables[] = BAB_FORUMSNOTIFY_GROUPS_TBL;
-		}
-
-	if( $arr['notification'] == 'Y' )
-		{
-		$tables[] = BAB_FORUMSMAN_GROUPS_TBL;
-		}
-
-	if( count($tables) > 0 )
-		{
-		$flat = $arr['bflatview'] == 'Y'? 1: 0;
-		$url = $GLOBALS['babUrlScript'].'?tg=posts&idx=List&forum='.$forum.'&thread='.$idthread.'&flat='.$flat.'&views=1';
-		notifyForumGroups($forum, stripslashes($subject), stripslashes($name), $arr['name'], $tables, $url, true);
-		}
+	$event = new bab_eventForumAfterThreadAdd;
+		
+	$event->setForum($forum);
+	$event->setThread($idthread, $subject);
+	$event->setPost($idpost, $name, 'Y' === $confirmed);
+	
+	bab_fireEvent($event);
 
 	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=threads&forum='.urlencode($forum));
 	exit;

@@ -175,7 +175,7 @@ function bab_getForumThreadTitle($id)
 		}
 	}
 
-function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $url, $bthread = false)
+function notifyForumGroups(bab_eventForumPost $event)
 	{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
  
@@ -236,6 +236,18 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
     $mail = bab_mail();
 	if( $mail == false )
 		return;
+		
+	$forum = $event->getForumId();
+	$thread = $event->getThreadId();	
+	$threadTitle = $event->getThreadTitle();
+	$author = $event->getPostAuthor();
+	
+	$tmp = $event->getForumInfos();
+	$forumname = $tmp['name'];
+	$nbrecipients = $tmp['nb_recipients'];
+	$flat = $tmp['bflatview'] == 'Y' ? '1' : '0';
+	
+	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=$forum&thread=$thread&flat=$flat&views=1";
 
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
@@ -255,74 +267,35 @@ function notifyForumGroups($forum, $threadTitle, $author, $forumname, $tables, $
 	else
 		$mail->mailSubject($subject);
 
-	list($nbrecipients) = $babDB->db_fetch_row($babDB->db_query("select nb_recipients from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($forum)."'"));
-	for( $mk=0; $mk < count($tables); $mk++ )
+	
+	
+	$users = $event->getUsersToNotify();
+	$count = 0;
+	
+	foreach($users as $id => $arr)
 		{
-		include_once $babInstallPath.'admin/acl.php';
-		$users = aclGetAccessUsers($tables[$mk], $forum);
-		$arrusers = array();
-		$count = 0;
-		$uexclude = array();
-		if( $tables[$mk] == BAB_FORUMSNOTIFY_GROUPS_TBL )
-		{
-			$res = $babDB->db_query("select id_user, forum_notification from ".BAB_FORUMSNOTIFY_USERS_TBL." where id_forum=".$babDB->quote($forum));
-			while($arr = $babDB->db_fetch_array($res))
-			{
-				switch($arr['forum_notification'])
-				{
-					case BAB_FORUMNOTIF_NONE:
-						$uexclude[$arr['id_user']] = $arr['id_user'];
-						break;
-					case BAB_FORUMNOTIF_NEWTHREADS:
-						if( !$bthread )
-						{
-							$uexclude[$arr['id_user']] = $arr['id_user'];
-						}
-						break;
-					default:
-						break;
-				}
-			}
-		}
+		$mail->$mailBCT($arr['email'], $arr['name']);
+		$count++;
+			
 
-		foreach($users as $id => $arr)
-			{
-			if( isset($uexclude[$id]))
-				{
-					continue;
-				}
-			if( count($arrusers) == 0 || !in_array($id, $arrusers))
-				{
-				$arrusers[] = $id;
-				if( $nbrecipients == 1 )
-					{
-					$mail->$mailBCT($arr['email'], $arr['name']);
-					}
-				else
-					{
-					$mail->$mailBCT($arr['email'], $arr['name']);
-					}
-				$count++;
-				}
-
-			if( $count >= $nbrecipients )
-				{
-				$mail->send();
-				$mail->$clearBCT();
-				$mail->clearTo();
-				$count = 0;
-				}
-
-			}
-
-		if( $count > 0 )
+		if( $count >= $nbrecipients )
 			{
 			$mail->send();
 			$mail->$clearBCT();
 			$mail->clearTo();
 			$count = 0;
 			}
+
 		}
+
+	if( $count > 0 )
+		{
+		$mail->send();
+		$mail->$clearBCT();
+		$mail->clearTo();
+		$count = 0;
+		}
+		
 	}
 
 function notifyThreadAuthor($threadTitle, $email, $author)
@@ -643,6 +616,7 @@ function indexAllForumFiles_end($param) {
 
 function bab_confirmPost($forum, $thread, $post)
 	{
+	require_once dirname(__FILE__).'/eventforum.php';
 	global $babDB;
 	$req = "update ".BAB_THREADS_TBL." set lastpost='".$babDB->db_escape_string($post)."' where id='".$babDB->db_escape_string($thread)."'";
 	$res = $babDB->db_query($req);
@@ -650,9 +624,24 @@ function bab_confirmPost($forum, $thread, $post)
 	$req = "update ".BAB_POSTS_TBL." set confirmed='Y', date_confirm=now() where id='".$babDB->db_escape_string($post)."'";
 	$res = $babDB->db_query($req);
 
-	$req = "select * from ".BAB_THREADS_TBL." where id='".$babDB->db_escape_string($thread)."'";
+	$req = "
+		select 
+			t.*, p.subject 
+		from  
+			".BAB_THREADS_TBL." t, 
+			".BAB_POSTS_TBL." p 
+		where 
+			p.id=t.post 
+			AND t.id='".$babDB->db_escape_string($thread)."'
+		";
+	
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
+	
+	if (!$arr)
+	{
+		throw new Exception('Thread not found');
+	}
 
 	$arrpost = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'"));
 
@@ -660,15 +649,28 @@ function bab_confirmPost($forum, $thread, $post)
 		{
 		$req = "select email from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['starter'])."'";
 		$res = $babDB->db_query($req);
-		$arr = $babDB->db_fetch_array($res);
-		$email = $arr['email'];
+		list($email) = $babDB->db_fetch_array($res);
 
 		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
 		}
-	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&flat=1&views=1";
-	$bthread = ($arr['post'] == $arr['lastpost'] ? true: false);
-	notifyForumGroups($forum, $arrpost['subject'], $arrpost['author'], bab_getForumName($forum), array(BAB_FORUMSNOTIFY_GROUPS_TBL), $url, $bthread);
+	
+	$bthread = ($arr['post'] == $arr['lastpost']);
+	
+	if ($bthread)
+	{
+		// new thread
+		$event = new bab_eventForumAfterThreadAdd;
+	} else {
+		// new post
+		$event = new bab_eventForumAfterPostAdd;
 	}
+	
+	$event->setForum($forum);
+	$event->setThread($arr['id'], $arr['subject']);
+	$event->setPost($arrpost['id'], $arrpost['author'], true);
+	
+	bab_fireEvent($event);
+}
 
 /**
  * Deletes the specified post.
