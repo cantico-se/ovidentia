@@ -81,6 +81,39 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 		return $this;
 	}
 	
+	
+	public function getTopicId()
+	{
+		return $this->topic_id;
+	}
+	
+	/**
+	 * 
+	 * @return string
+	 */
+	public function getTopicName()
+	{
+		return $this->topic_name;
+	}
+	
+	public function getArticleId()
+	{
+		return $this->article_id;
+	}
+	
+	
+	public function getArticleTitle()
+	{
+		return $this->article_title;
+	}
+	
+	public function getArticleAuthor()
+	{
+		return $this->article_author;
+	}
+	
+	
+	
 	/**
 	 * Set access restriction of article to use for the recipients of the articles
 	 * @param string $restriction
@@ -155,31 +188,11 @@ class bab_eventAfterArticleAdd extends bab_eventArticle
 }
 
 
-/**
- * After one article has been updated updated into a topic
- * The event must be triggered after approbation, when the modifications are visibles
- * 
- * @package events
- * @since 7.4.0
- * 
- * @todo remove if unused
- * 
- */
-class bab_eventAfterArticleUpdate extends bab_eventArticle
-{
-	
-}
- 
-
-
 
 
 
 /**
  * Default notifications for articles
- * @todo move code from :
- * 
- * bab_eventAfterArticleAdd			notifyArticleGroupMembers	artincl.php	1718
  * 
  * 
  * @param bab_eventArticle $event
@@ -187,5 +200,7 @@ class bab_eventAfterArticleUpdate extends bab_eventArticle
  */
 function bab_onArticle(bab_eventArticle $event)
 {
+	require_once dirname(__FILE__).'/artincl.php';
 	
+	notifyArticleGroupMembers($event, bab_translate("An article has been published"));
 }

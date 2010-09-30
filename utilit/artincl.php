@@ -1258,7 +1258,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 }
 
 
-function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, $restriction, $articleid)
+function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
@@ -1314,25 +1314,16 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 	$mailBCT = 'mail'.$babBody->babsite['mail_fieldaddress'];
 	$clearBCT = 'clear'.$babBody->babsite['mail_fieldaddress'];
 
-	if( $what == 'mod' )
-	{
-		$msg = bab_translate("An article has been modified");
-	}
-	else
-	{
-		$msg = bab_translate("An article has been published");
-	}
-	$tempc = new tempcc($topicname, $title, $author, $msg,$topics, $articleid);
+	$topicname = $event->getTopicName();
+	$title = $event->getArticleTitle();
+	$author = $event->getArticleAuthor();
+	$topics = $event->getTopicId();
+	$articleid = $event->getArticleId();
 
-	$subject = '';
-	if( $what == 'mod' )
-	{
-		$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_update_subject');
-	}
-	else
-	{
-		$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_new_subject');
-	}
+	$tempc = new tempcc($topicname, $title, $author, $msg, $topics, $articleid);
+
+
+	$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_new_subject');
 	
 	if( empty($subject) )
 		$mail->mailSubject($msg);
@@ -1347,40 +1338,15 @@ function notifyArticleGroupMembers($topicname, $topics, $title, $author, $what, 
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
 
-	$sep = ',';
-	if( !empty($restriction))
-	{
-		if( strchr($restriction, ","))
-			$sep = ',';
-		else
-			$sep = '&';
-		$arrres = explode($sep, $restriction);			
-	}
-
-
-	include_once $babInstallPath."admin/acl.php";
-	$users = aclGetAccessUsers(BAB_TOPICSVIEW_GROUPS_TBL, $topics);
 	
-	$alreadySendUser = array();
 
-	$arrusers = array();
+	$users = $event->getUsersToNotify();
+	
 	$count = 0;
 	foreach($users as $id => $arr){
-		if( count($arrusers) == 0 || !in_array($id, $arrusers)){
-			$arrusers[] = $id;
-			if( !empty($restriction)){
-				$add = bab_articleAccessByRestriction($restriction, $id);
-			}else{
-				$add = true;
-			}
-			if( $add ){
-				if(!ISSET($alreadySendUser[$arr['email']])){
-					$mail->$mailBCT($arr['email'], $arr['name']);
-					$count++;
-					$alreadySendUser[$arr['email']] = true;
-				}
-			}
-		}
+		
+		$mail->$mailBCT($arr['email'], $arr['name']);
+		$count++;
 
 		if( $count > $babBody->babsite['mail_maxperpacket'] ){
 			$mail->send();
@@ -1715,7 +1681,11 @@ function acceptWaitingArticle($idart)
 			}
 		if( $arr['notify_members'] == "Y" && bab_mktime($arr['date_publication']) <= mktime())
 			{
-			notifyArticleGroupMembers($arr['topicname'], $arr['id_topic'], $arr['title'], $artauthor, 'add', $arr['restriction'], $articleid);
+			require_once dirname(__FILE__).'/eventarticle.php';
+			$event = new bab_eventAfterArticleAdd;
+			$event->setInformations($arr['id_topic'], $arr['topicname'], $articleid, $arr['title'], $artauthor);
+			$event->setRestriction($arr['restriction']);
+			bab_fireEvent($event);
 			}
 
 		if( $arr['hpage_private'] == "Y" || $arr['hpage_public'] == "Y" )

@@ -276,7 +276,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 		{
 		$mail->$mailBCT($arr['email'], $arr['name']);
 		$count++;
-			
+		$event->addInformedUser($id);
 
 		if( $count >= $nbrecipients )
 			{
