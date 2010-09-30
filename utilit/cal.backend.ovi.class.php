@@ -297,7 +297,6 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 				and id_cal=".$babDB->quote($calendar->getUid())
 		);
 		
-		notifyEventApprobation($arr['id'], $status, $comment, bab_translate("Personal calendar"));
 	}
 	
 	
