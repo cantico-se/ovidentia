@@ -36,6 +36,10 @@ function bab_getFaqRes($faqid, $delegationid) {
 
 	global $babDB;
 	
+	if ($faqid !== false && !is_array($faqid) && is_numeric($faqid)) {
+		$faqid = array($faqid);
+	}
+	
 	$req = "select id from ".BAB_FAQCAT_TBL;
 	
 	if( false !== $faqid ) {
