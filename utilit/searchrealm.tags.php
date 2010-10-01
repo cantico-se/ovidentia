@@ -86,12 +86,13 @@ class bab_SearchRealmTags extends bab_SearchRealm {
 		if (!$return) {
 
 			$return = array(
-				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))		->searchable(false),
-				$this->createField('title'			, bab_translate('Object title'))			->virtual(true),
-				$this->createField('description'	, bab_translate('Object description'))		->virtual(true),
-				$this->createField('url'			, bab_translate('Object url'))				->virtual(true),
-				$this->createField('type'			, bab_translate('Object type'))				->virtual(true),
-				$this->createField('search'			, bab_translate('Search'))					->searchable(false) 
+				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))				->searchable(false),
+				$this->createField('title'			, bab_translate('Object title'))					->virtual(true),
+				$this->createField('description'	, bab_translate('Object description'))				->virtual(true),
+				$this->createField('url'			, bab_translate('Object url'))						->virtual(true),
+				$this->createField('type'			, bab_translate('Object type'))						->virtual(true),
+				$this->createField('search'			, bab_translate('Search'))							->searchable(false)
+				
 
 			);
 		}

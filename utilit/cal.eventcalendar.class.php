@@ -84,7 +84,7 @@ abstract class bab_EventCalendar
 	/**
 	 * Delegation
 	 */
-	protected $id_dgowner = 0;
+	protected $id_dgowner = null;
 	
 
 	
@@ -202,6 +202,22 @@ abstract class bab_EventCalendar
 	{
 		return $this->id_dgowner;
 	}
+	
+	/**
+	 * Test if the calendar is visisble in a delegation
+	 * @param	int		$id_delegation
+	 * @return bool
+	 */
+	public function visibleInDelegation($id_delegation)
+	{
+		if ($this->id_dgowner == $id_delegation)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	
 	
 	/**
@@ -746,6 +762,25 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	public function getReferenceType()
 	{
 		return 'personal';
+	}
+	
+	
+	/**
+	 * Test if the calendar is visisble in a delegation
+	 * the personal calendar is visisble if the user is a member of the delegation
+	 * @param	int		$id_delegation
+	 * @return bool
+	 */
+	public function visibleInDelegation($id_delegation)
+	{
+		require_once dirname(__FILE__).'/delegincl.php';
+
+		if (bab_isUserInDelegation($id_delegation, $this->getIdUser()))
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	

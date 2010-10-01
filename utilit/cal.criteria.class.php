@@ -133,6 +133,27 @@ class bab_PeriodCriteriaCalendar extends bab_PeriodCriteria
 }
 
 
+class bab_PeriodCriteriaDelegation extends bab_PeriodCriteria
+{
+	private $id_delegation = null;
+	
+	public function __construct($id_delegation)
+	{
+		$this->id_delegation = $id_delegation;
+	}
+	
+	/**
+	 * Add criteria
+	 * @param bab_UserPeriods $userperiods
+	 * @return unknown_type
+	 */
+	public function process(bab_UserPeriods $userperiods)
+	{
+		$userperiods->filterByDelegation($this->id_delegation);
+	}
+}
+
+
 /**
  * Criteria on collection
  * create a filter by type or if the collection contains a hash property, filter by hash
@@ -383,6 +404,17 @@ class bab_PeriodCriteriaFactory
 	public function Calendar($calendar = null)
 	{
 		return new bab_PeriodCriteriaCalendar($calendar);
+	}
+	
+	
+	/**
+	 * 
+	 * @param int $id_delegation
+	 * @return unknown_type
+	 */
+	public function Delegation($id_delegation)
+	{
+		return new bab_PeriodCriteriaDelegation($id_delegation);
 	}
 	
 	

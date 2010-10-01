@@ -61,17 +61,6 @@ bab_initFunctions.push(function() {
 
 	<td valign="top">
 	<div id="bab_search_realm">
-		
-		<!--#if displaydelegation -->
-		<label for="">{ t_delegation } :
-		<select name="delegation">
-			<!--#in getnextdelegation -->
-			<option value="{ uid }" <!--#if color -->style="background:#{ color }" <!--#endif color --> <!--#if selected --> selected="selected"<!--#endif selected -->>{ name }</option>
-			<!--#endin getnextdelegation -->
-		</select>
-		</label>
-		<!--#endif displaydelegation -->
-	
 	
 		<label for="">{ t_in } :
 		<select name="item" onchange="bab_searchChangeRealm()">
@@ -81,6 +70,17 @@ bab_initFunctions.push(function() {
 		  <!--#endin getnextitem -->
 		</select>
 		</label>
+		
+		<!--#if displaydelegation -->
+		<label for="">{ t_delegation } :
+		<select name="delegation" onchange="bab_searchChangeRealm()">
+			<!--#in getnextdelegation -->
+			<option value="{ uid }" <!--#if color -->style="background:#{ color }" <!--#endif color --> <!--#if selected --> selected="selected"<!--#endif selected -->>{ name }</option>
+			<!--#endin getnextdelegation -->
+		</select>
+		</label>
+		<!--#endif displaydelegation -->
+		
 	</div>
 	</td>
 

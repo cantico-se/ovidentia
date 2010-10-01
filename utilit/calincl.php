@@ -481,10 +481,31 @@ class bab_icalendars
 	}
 	
 	
-	
-	public function getCalendars()
+	/**
+	 * Get all calendars
+	 * @param int $id_dgowner	filter by delegation (optional)
+	 * @return array
+	 */
+	public function getCalendars($id_dgowner = null)
 	{
 		$this->initializeCalendars();
+		
+		if (null !== $id_dgowner)
+		{
+			$id_dgowner = (int) $id_dgowner;
+			
+			$calendars = array();
+			foreach($this->calendars as $calendar)
+			{
+				/*@var $calendar bab_EventCalendar */
+				if ($calendar->visibleInDelegation($id_dgowner))
+				{
+					$calendars[$calendar->getUrlIdentifier()] = $calendar;
+				}
+			}
+			
+			return $calendars;
+		}
 		
 		return $this->calendars;
 	}

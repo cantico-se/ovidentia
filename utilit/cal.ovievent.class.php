@@ -1141,7 +1141,14 @@ class bab_cal_OviEventSelect
 		$collections = array();
 		$selected_calendars = array();
 		
+		
+		
 		foreach($calendars as $calendar) {
+			
+			if ($user_periods->id_delegation && !$calendar->visibleInDelegation($user_periods->id_delegation))
+			{		
+				continue;
+			}
 			
 			$id = $calendar->getUid();
 			$id_calendars[] = $id;
@@ -1153,22 +1160,10 @@ class bab_cal_OviEventSelect
 			bab_debug('Request without calendar');
 			return;
 		}
-		
-		$accessible_calendars = array_keys(bab_getICalendars()->getCalendars());
 
-		// ovidentia mode :
-		/*
-		$where = " 
-			ceo.id_cal				IN(".$babDB->quote($id_calendars).") 
-			AND ce.parent_calendar 	IN(".$babDB->quote($accessible_calendars).")";
-		*/
 
-		// caldav mode :
 		$where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
-		
-		
-		
-		
+
 		$where .= " AND ceo.status != '".BAB_CAL_STATUS_DECLINED."' 
 		";
 

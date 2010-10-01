@@ -90,7 +90,8 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 			$this->createField('question'			, bab_translate('Question')),
 			$this->createField('response'			, bab_translate('Response')),
 			$this->createField('response_format'	, bab_translate('Response format'))					->searchable(false),
-			$this->createField('date_modification'	, bab_translate('Modification date'))
+			$this->createField('date_modification'	, bab_translate('Modification date')),
+			$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier'))	->searchable(false),
 		);
 	}
 
@@ -124,13 +125,17 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 
 		$mysql = $this->getBackend('mysql');
 		$req = 'SELECT 
-			`id`, 
-			`idcat`, 
-			`question`, 
-			`response`, 
-			`date_modification`  
+			q.`id`, 
+			q.`idcat`, 
+			q.`question`, 
+			q.`response`, 
+			q.`date_modification`,
+			f.id_dgowner 
 		FROM 
-			'.BAB_FAQQR_TBL.' '.$mysql->getWhereClause($criteria).' 
+			'.BAB_FAQQR_TBL.' q
+				LEFT JOIN '.BAB_FAQCAT_TBL.' f ON f.id=q.idcat 
+			
+		'.$mysql->getWhereClause($criteria).' 
 
 		ORDER BY `question` ASC';
 
@@ -170,7 +175,12 @@ class bab_SearchRealmFaqs extends bab_SearchRealm {
 
 
 
-
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
+	}
 
 
 }

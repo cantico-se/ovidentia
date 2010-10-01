@@ -203,6 +203,55 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 
 
 
+/**
+ * Test if a user is memebers of a delegation
+ * if the id_user not given, the current user is used
+ * 
+ * @since 7.4.0
+ * 
+ * @param int $id_delegation
+ * @param int $id_user
+ * 
+ * @return bool
+ */
+function bab_isUserInDelegation($id_delegation, $id_user = null)
+{
+	global $babDB;
+	
+	if (0 === $id_delegation || '0' === $id_delegation) {
+		return true;
+	}
+	
+	
+	if (NULL === $id_user) {
+		$id_user = $GLOBALS['BAB_SESS_USERID'];
+	}
+	
+	
+	$res = $babDB->db_query('
+		SELECT 
+			d.*   
+		
+		FROM 
+			'.BAB_USERS_GROUPS_TBL.' ug,
+			'.BAB_DG_GROUPS_TBL.' d 
+		WHERE 
+			(
+				d.id_group = ug.id_group 
+				OR d.id_group='.$babDB->quote(BAB_REGISTERED_GROUP).' 
+				OR d.id_group='.$babDB->quote(BAB_ALLUSERS_GROUP).'
+			) 
+			AND ug.id_object = '.$babDB->quote($id_user).'
+			AND d.id = '.$babDB->quote($id_delegation).'
+		
+		ORDER BY name 
+	');
+	
+	return ($babDB->db_num_rows($res) !== 0);
+}
+
+
+
 
 /**
  * Get the delegation where the user is administrator

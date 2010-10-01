@@ -81,17 +81,18 @@ class bab_SearchRealmArticlesComments extends bab_SearchRealmTopic {
 	 */
 	public function getFields() {
 		return array(
-			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))			->virtual(true),
-			$this->createField('id'					, bab_translate('Id'))							->searchable(false),
-			$this->createField('id_author'			, bab_translate('Author numeric identifier'))	->searchable(false),
-			$this->createField('name'				, bab_translate('Author name')),
-			$this->createField('id_topic'			, bab_translate('Topic numeric identifier'))	->searchable(false),
-			$this->createField('id_article'			, bab_translate('Article numeric identifier'))	->searchable(false),
-			$this->createField('subject'			, bab_translate('Subject')),
-			$this->createField('message'			, bab_translate('Message')),
-			$this->createField('message_format'		, bab_translate('Message format'))				->searchable(false),
-			$this->createField('confirmed'			, bab_translate('Approbation status'))			->searchable(false),
-			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date') 
+			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))				->virtual(true),
+			$this->createField('id'					, bab_translate('Id'))								->searchable(false)	->setTableAlias('a'),
+			$this->createField('id_author'			, bab_translate('Author numeric identifier'))		->searchable(false)	->setTableAlias('a'),
+			$this->createField('name'				, bab_translate('Author name'))											->setTableAlias('a'),
+			$this->createField('id_topic'			, bab_translate('Topic numeric identifier'))		->searchable(false)	->setTableAlias('a'),
+			$this->createField('id_article'			, bab_translate('Article numeric identifier'))		->searchable(false)	->setTableAlias('a'),
+			$this->createField('subject'			, bab_translate('Subject'))												->setTableAlias('a'),
+			$this->createField('message'			, bab_translate('Message'))												->setTableAlias('a'),
+			$this->createField('message_format'		, bab_translate('Message format'))					->searchable(false)	->setTableAlias('a'),
+			$this->createField('confirmed'			, bab_translate('Approbation status'))				->searchable(false)	->setTableAlias('a'),
+			$this->createField('date_publication'	, bab_translate('Creation date'))->setRealName('date')					->setTableAlias('a'),
+			$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier'))	->searchable(false)	->setTableAlias('c')
 		);
 	}
 
@@ -125,17 +126,20 @@ class bab_SearchRealmArticlesComments extends bab_SearchRealmTopic {
 		$mysql = $this->getBackend('mysql');
 		$req = '
 			SELECT 
-				id, 
-				id_author,
-				`name`,
-				id_topic, 
-				id_article,
-				subject,
-				message,
-				confirmed,
-				`date` date_publication  
+				a.id, 
+				a.id_author,
+				a.`name`,
+				a.id_topic, 
+				a.id_article,
+				a.subject,
+				a.message,
+				a.confirmed,
+				a.`date` date_publication  
 			FROM 
-				'.BAB_COMMENTS_TBL.' '.$mysql->getWhereClause($criteria).' 
+				'.BAB_COMMENTS_TBL.' a
+					LEFT JOIN '.BAB_TOPICS_TBL.' t ON t.id=a.id_topic 
+					LEFT JOIN '.BAB_TOPICS_CATEGORIES_TBL.' c ON c.id = t.id_cat 
+			'.$mysql->getWhereClause($criteria).' 
 			ORDER BY `date` DESC
 		';
 

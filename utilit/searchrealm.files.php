@@ -143,8 +143,9 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				$this->createField('confirmed'		, bab_translate('Approbation status'))->searchable(false),
 				$this->createField('state'			, bab_translate('Delete state'))->searchable(false),
 				$this->createField('relevance'		, bab_translate('Relevance'))->searchable(false), 
-				$this->createField('id_delegation'	, bab_translate('Delegation numeric identifier'))->searchable(false),
+				$this->createField('id_dgowner'		, bab_translate('Delegation numeric identifier'))->setRealName('iIdDgOwner')->searchable(false),
 				$this->createField('search'			, bab_translate('search on metadata and file content'))->setRealName('fvalue')->searchable(false)
+				
 			);
 		}
 
@@ -242,7 +243,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		$req = "
 			CREATE TEMPORARY TABLE filresults (
 				`id` 			int(11) unsigned NOT NULL, 
-				`relevance` 	int(11) unsigned NOT NULL 
+				`relevance` 	int(11) unsigned NOT NULL
 			)
 		";
 
@@ -320,10 +321,32 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				('.implode(' OR ', $search).')
 		';
 
-		$where = $this->getDefaultCriteria()->tostring($this->getBackend('mysql'));
+		$criteria = $this->getDefaultCriteria();
+		
+		// add delegation filter
+		
+		$delegation = bab_rp('delegation', null);
+		
+		if (null !== $delegation && 'DGAll' !== $delegation)
+		{
+			// if id_dgowner field exist on search real, filter by delegation
+			
+			require_once dirname(__FILE__).'/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+				$criteria = $criteria->_AND_($this->id_dgowner->is($id_dgowner));
+			}
+		}
+		
+		
+		$where = $criteria->tostring($this->getBackend('mysql'));
 		if (!empty($where)) {
 			$query .= ' AND '.$where;
 		}
+		
 
 		bab_debug($query, DBG_INFO, 'Search');
 
@@ -337,7 +360,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 		$insert = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$insert[] = '('.$babDB->quote($arr['id']).', '.$babDB->quote($relevance[$arr['path'].$arr['name']]).')';
+			$insert[] = '('.$babDB->quote($arr['id']).', '.$babDB->quote($relevance[$arr['path'].$arr['name']]).', '.$babDB->quote($arr['id_dgowner']).')';
 		}
 
 		// insert result references into temporary table
@@ -545,7 +568,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 				f.author,
 				f.state,
 				f.confirmed, 
-				f.iIdDgOwner id_delegation,
+				f.iIdDgOwner id_dgowner,
 				r.relevance  
 			FROM 
 				filresults r,
@@ -665,7 +688,12 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 
 
-
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
+	}
 
 
 }
@@ -763,7 +791,7 @@ class bab_SearchRealmFiles_ResultTemplate extends bab_SearchTemplate {
 
 		
 			if ('Y' === $record->collective) {
-				$sUploadPath = BAB_FileManagerEnv::getCollectivePath($record->id_delegation);
+				$sUploadPath = BAB_FileManagerEnv::getCollectivePath($record->id_dgowner);
 			}
 			else  {
 				$sUploadPath = BAB_FileManagerEnv::getPersonalPath($GLOBALS['BAB_SESS_USERID']);

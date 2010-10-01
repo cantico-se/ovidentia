@@ -121,22 +121,26 @@ function searchKeyword($item , $option = 'OR', $hideForm = false)
 			$this->index = bab_searchEngineInfos();
 
 			$this->searchItems = bab_getSearchItems();
+			
+			
+			require_once dirname(__FILE__).'/utilit/delegincl.php';
+			$this->delegations = bab_getUserVisiblesDelegations();
+			
 
 			// get html form for current item
 
 			if (isset($this->searchItems[$this->item]))
 			{
 				$this->search_form = $this->searchItems[$this->item]->getSearchFormHtml();
+				$this->displaydelegation = $this->searchItems[$this->item]->selectableDelegation() && count($this->delegations) > 2;
 			}
 			else
 			{
 				$this->search_form = bab_SearchDefaultForm::getHTML();
+				$this->displaydelegation = count($this->delegations) > 2;
 			}	
 
-			require_once dirname(__FILE__).'/utilit/delegincl.php';
 			
-			$this->delegations = bab_getUserVisiblesDelegations();
-			$this->displaydelegation = count($this->delegations) > 2;
 			
 			$this->t_delegation = bab_translate('Delegation');
 		}
@@ -444,14 +448,16 @@ function startSearch( $item, $what, $option, $navpos )
 
 			// end
 
-			if( !$nbresult && $item == 'tags')
+			if( !$nbresult)
 			{
 				$babBody->msgerror = bab_translate("Search result is empty");
+				
+				if( $item == 'tags')
+				{
+					$babBody->msgerror .= ' ('.bab_translate("You do not have access rights").')';
+				}
 			}
-			if( $item == 'tags')
-			{
-				$babBody->msgerror .= ' ('.bab_translate("You do not have access rights").')';
-			}
+			
 
 		}
 

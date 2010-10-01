@@ -93,17 +93,18 @@ class bab_SearchRealmForumPosts extends bab_SearchRealm {
 		if (!$return) {
 
 			$return = array(
-				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))			->virtual(true),
-				$this->createField('id'				, bab_translate('Post numeric identifier'))		->searchable(false)->setTableAlias('p'),
-				$this->createField('id_thread'		, bab_translate('Thread numeric identifier'))	->searchable(false)->setTableAlias('p'),
-				$this->createField('id_forum'		, bab_translate('Forum numeric identifier'))	->searchable(false)->setTableAlias('f')->setRealName('id'),
-				$this->createField('forum_name'		, bab_translate('Forum name'))					->setTableAlias('f')->setRealName('name'),
-				$this->createField('subject'		, bab_translate('Subject'))						->setTableAlias('p'),
-				$this->createField('message'		, bab_translate('Message'))						->setTableAlias('p'),
-				$this->createField('message_format'	, bab_translate('Message format'))				->searchable(false)->setTableAlias('p'),
-				$this->createField('author'			, bab_translate('Author'))						->setTableAlias('p'),
-				$this->createField('date'			, bab_translate('Publication date')) 			->setTableAlias('p'),
-				$this->createField('confirmed'		, bab_translate('Post approbation status'))		->setTableAlias('p')
+				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))	->virtual(true),
+				$this->createField('id'				, bab_translate('Post numeric identifier'))			->searchable(false)->setTableAlias('p'),
+				$this->createField('id_thread'		, bab_translate('Thread numeric identifier'))		->searchable(false)->setTableAlias('p'),
+				$this->createField('id_forum'		, bab_translate('Forum numeric identifier'))		->searchable(false)->setTableAlias('f')->setRealName('id'),
+				$this->createField('forum_name'		, bab_translate('Forum name'))						->setTableAlias('f')->setRealName('name'),
+				$this->createField('subject'		, bab_translate('Subject'))							->setTableAlias('p'),
+				$this->createField('message'		, bab_translate('Message'))							->setTableAlias('p'),
+				$this->createField('message_format'	, bab_translate('Message format'))					->searchable(false)->setTableAlias('p'),
+				$this->createField('author'			, bab_translate('Author'))							->setTableAlias('p'),
+				$this->createField('date'			, bab_translate('Publication date')) 				->setTableAlias('p'),
+				$this->createField('confirmed'		, bab_translate('Post approbation status'))			->setTableAlias('p'),
+				$this->createField('id_dgowner'		, bab_translate('Delegation numeric identifier'))	->searchable(false)->setTableAlias('f')
 			);
 		}
 
@@ -171,7 +172,8 @@ class bab_SearchRealmForumPosts extends bab_SearchRealm {
 				p.author, 
 				p.id_author, 
 				p.date,
-				p.confirmed 
+				p.confirmed,
+				f.id_dgowner  
 			FROM 
 				'.BAB_POSTS_TBL.' p, 
 				'.BAB_THREADS_TBL.' t, 

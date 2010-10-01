@@ -217,7 +217,8 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))					->virtual(true),
 				$this->createField('id'				, bab_translate('directory entry numeric identifier'))	->searchable(false)->setTableAlias('e'),
 				$this->createField('id_user'		, bab_translate('user numeric identifier'))				->searchable(false)->setTableAlias('e'),
-				$this->createField('id_directory'	, bab_translate('directory numeric identifier'))		->searchable(false)->setTableAlias('e')
+				$this->createField('id_directory'	, bab_translate('directory numeric identifier'))		->searchable(false)->setTableAlias('e'),
+				$this->createField('id_dgowner'		, bab_translate('delegation numeric identifier'))		->searchable(false)->setTableAlias('d'),
 			);
 
 			$sd = array_keys($this->getSearchableDirectories());
@@ -474,11 +475,12 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 		
 		$req .= "	 
 		FROM `".BAB_DBDIR_ENTRIES_TBL."` e
-
+			
 		";
 		if( $this->containAllRegisteredUsers())
 			{
 			$req .= " LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = e.id_user AND dis.disabled='0' 
+						LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=".$babDB->quote(BAB_REGISTERED_GROUP)." 
 				";
 			}
 		else
@@ -486,6 +488,7 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 			$req .= " LEFT JOIN ".BAB_USERS_GROUPS_TBL." u ON u.id_object = e.id_user 
 					AND u.id_group IN (".$babDB->quote($this->getSearchableGroups()).") 
 					LEFT JOIN ".BAB_USERS_TBL." dis ON dis.id = u.id_object AND dis.disabled='0' 
+					LEFT JOIN ".BAB_DB_DIRECTORIES_TBL." d ON d.id_group=u.id_group  
 				";
 			}
 
@@ -612,6 +615,13 @@ class bab_SearchRealmDirectories extends bab_SearchRealm {
 
 		return $html;
 	}
+	
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
+	}
 
 
 	/**
@@ -713,8 +723,20 @@ class bab_SearchRealmDirectories_SearchTemplate extends bab_SearchTemplate {
 	public function __construct($realm) 
 		{
 		global $babDB;
+		
+		$delegation = bab_rp('delegation', null);
+		$id_dgowner = false;
+		if (null !== $delegation && 'DGAll' !== $delegation)
+		{
+			include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+			}
+		}
 
-		$this->directories = bab_getUserDirectories();
+		$this->directories = bab_getUserDirectories(true, $id_dgowner);
 
 		foreach($realm->getFields() as $field) {
 			if ($field->searchable()) {

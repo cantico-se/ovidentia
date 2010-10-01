@@ -96,15 +96,15 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 			$return = array(
 				$this->createField('ov_reference'	, bab_translate('Ovidentia reference'))				->virtual(true),
 				$this->createField('file'			, bab_translate('File path'))						->searchable(false),
-				$this->createField('filename'		, bab_translate('File name'))->setRealName('name'),
+				$this->createField('filename'		, bab_translate('File name'))->setRealName('name')->setTableAlias('f'),
 				$this->createField('title'			, bab_translate('File title'))						->searchable(false),
 				$this->createField('relevance'		, bab_translate('Search relevance'))				->searchable(false),
 				$this->createField('id'				, bab_translate('Attachement numeric identifier'))	->virtual(true),
 				$this->createField('id_post'		, bab_translate('Post numeric identifier'))			->virtual(true),
 				$this->createField('id_thread'		, bab_translate('Thread numeric identifier'))		->virtual(true),
 				$this->createField('id_forum'		, bab_translate('Forum numeric identifier'))		->virtual(true),
-				$this->createField('post_subject'	, bab_translate('Post subject'))					->virtual(true)
-				
+				$this->createField('post_subject'	, bab_translate('Post subject'))					->virtual(true),
+				$this->createField('id_dgowner'		, bab_translate('Delegation numeric identifier'))	->searchable(false)->setTableAlias('m')
 			);
 		}
 
@@ -166,19 +166,30 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 					f.id,
 					t.forum id_forum,
 					p.id_thread, 
-					p.subject post_subject 
+					p.subject post_subject,
+					m.id_dgowner  
 				FROM 
 					'.BAB_FORUMSFILES_TBL.' f, 
 					'.BAB_POSTS_TBL.' p,
-					'.BAB_THREADS_TBL.' t 
+					'.BAB_THREADS_TBL.' t,
+					'.BAB_FORUMS_TBL.' m 
 				WHERE 
 					f.name = '.$babDB->quote($filename).' 
 					AND f.id_post = '.$babDB->quote($id_post).' 
 					AND f.id_post = p.id 
 					AND p.id_thread = t.id 
 					AND p.confirmed = '.$babDB->quote('Y').' 
-					AND t.forum IN('.$babDB->quote(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)).')
+					AND t.forum IN('.$babDB->quote(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)).') 
+					AND t.forum = m.id 
 			';
+			
+			$mysql = $this->getBackend('mysql');
+			$where = $criteria->toString($mysql);
+	
+			if ($where) {
+				$query .= ' AND '.$where;
+			}
+			
 
 			// bab_debug($query);
 
@@ -203,7 +214,8 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 				'id_post'			=> (int) $id_post,
 				'id_forum'			=> (int) $access['id_forum'],
 				'id_thread'			=> (int) $access['id_thread'], 
-				'post_subject' 		=> $access['post_subject']
+				'post_subject' 		=> $access['post_subject'],
+				'id_dgowner'		=> (int) $access['id_dgowner']
 			);
 		}
 
@@ -230,16 +242,20 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 				t.forum id_forum,
 				p.id id_post,
 				p.id_thread, 
-				p.subject post_subject 
+				p.subject post_subject,
+				m.id_dgowner  
 			FROM 
 				'.BAB_FORUMSFILES_TBL.' f, 
 				'.BAB_POSTS_TBL.' p,
-				'.BAB_THREADS_TBL.' t 
+				'.BAB_THREADS_TBL.' t, 
+				'.BAB_FORUMS_TBL.' m 
 			WHERE 
 				f.id_post = p.id 
 				AND p.id_thread = t.id 
 				AND p.confirmed = '.$babDB->quote('Y').' 
-				AND t.forum IN('.$babDB->quote(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)).')
+				AND t.forum IN('.$babDB->quote(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)).') 
+				AND t.forum = m.id 
+				
 		';
 
 		$mysql = $this->getBackend('mysql');
@@ -268,7 +284,8 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 				'id_post'			=> (int) $row['id_post'],
 				'id_forum'			=> (int) $row['id_forum'],
 				'id_thread'			=> (int) $row['id_thread'], 
-				'post_subject' 		=> $row['post_subject']
+				'post_subject' 		=> $row['post_subject'],
+				'id_dgowner'		=> (int) $access['id_dgowner']
 			);
 		}
 

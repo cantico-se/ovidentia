@@ -85,8 +85,8 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 	 */
 	public function getFields() {
 		return array(
-			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))			->virtual(true),
-			$this->createField('uid'				, bab_translate('Event numeric identifier'))	->searchable(false),
+			$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))				->virtual(true),
+			$this->createField('uid'				, bab_translate('Event numeric identifier'))		->searchable(false),
 			$this->createField('summary'			, bab_translate('Title')),
 			$this->createField('description'		, bab_translate('Description')),
 			$this->createField('location'			, bab_translate('Location')),
@@ -95,10 +95,11 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 			$this->createField('start_date'			, bab_translate('Start date')),
 			$this->createField('end_date'			, bab_translate('End date')),
 			$this->createField('categories'			, bab_translate('Category')),
-			$this->createField('calendar'			, bab_translate('Calendar url identifier')) 	->searchable(false),
-			$this->createField('collection'			, bab_translate('Collection')) 					->searchable(false),
-			$this->createField('class'				, bab_translate('Class property')) 				->searchable(false),
-			$this->createField('color'				, bab_translate('Color')) 						->searchable(false),
+			$this->createField('calendar'			, bab_translate('Calendar url identifier')) 		->searchable(false),
+			$this->createField('collection'			, bab_translate('Collection')) 						->searchable(false),
+			$this->createField('class'				, bab_translate('Class property')) 					->searchable(false),
+			$this->createField('color'				, bab_translate('Color')) 							->searchable(false),
+			$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier')) 	->searchable(false),
 		);
 	}
 
@@ -213,6 +214,15 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		}
 
 		return $criteria;
+	}
+	
+	
+	
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
 	}
 
 }
@@ -453,8 +463,21 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
 
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
+		
+		
+		$delegation = bab_rp('delegation', null);
+		$id_dgowner = null;
+		if (null !== $delegation && 'DGAll' !== $delegation)
+		{
+			include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+			}
+		}
 
-		$this->rescal = bab_getICalendars()->getCalendars();
+		$this->rescal = bab_getICalendars()->getCalendars($id_dgowner);
 		bab_sort::sortObjects($this->rescal, 'getName');
 		
 		$this->t_calendar = bab_translate('Calendar');

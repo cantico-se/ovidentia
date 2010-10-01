@@ -115,6 +115,10 @@ class bab_SearchCalendarBackEnd extends bab_SearchBackEnd
 			case 'collection':
 				return $this->Factory()->Collection($mixedValue);
 				break;
+				
+			case 'id_dgowner':
+				return $this->Factory()->Delegation($mixedValue);
+				break;
 		};
 		
 		

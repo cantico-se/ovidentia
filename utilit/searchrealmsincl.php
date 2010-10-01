@@ -329,6 +329,15 @@ abstract class bab_SearchRealm extends bab_SearchTestable {
 	public function getSearchFormHtml() {
 		return bab_SearchDefaultForm::getHTML();
 	}
+	
+	/**
+	 * Display a select for delegation filter
+	 * @return bool
+	 */
+	public function selectableDelegation() {
+		return false;
+	}
+	
 
 	/**
 	 * get a criteria from a search query made with the form generated with the method <code>getSearchFormHtml()</code>

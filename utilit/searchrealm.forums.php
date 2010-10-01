@@ -177,7 +177,12 @@ class bab_SearchRealmForums extends bab_SearchRealm {
 
 
 
-
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
+	}
 
 
 	

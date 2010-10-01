@@ -63,6 +63,10 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 */
 	public $calendars = null;
 	
+	/**
+	 * @var int
+	 */
+	public $id_delegation = null;
 	
 	/**
 	 * @var string
@@ -249,6 +253,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 */
 	public function filterByCalendar(array $calendars) {
 		$this->calendars = $calendars;
+		return $this;
+	}
+	
+	
+	public function filterByDelegation($id_delegation) {
+		$this->id_delegation = $id_delegation;
 		return $this;
 	}
 	

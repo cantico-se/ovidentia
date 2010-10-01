@@ -205,8 +205,20 @@ class bab_SearchRealmArticles_SearchTemplate extends bab_SearchTemplate {
 
 		$this->after 	= bab_rp('after');
 		$this->before 	= bab_rp('before');
+		
+		$delegation = bab_rp('delegation', null);
+		$id_dgowner = false;
+		if (null !== $delegation && 'DGAll' !== $delegation)
+		{
+			include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+			}
+		}
 
-		$this->arrtopicscategories = bab_getArticleTopicsAsTextTree();
+		$this->arrtopicscategories = bab_getArticleTopicsAsTextTree(0, $id_dgowner);
 
 		
 

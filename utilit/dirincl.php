@@ -993,7 +993,7 @@ function getUserDirectories($accessCtrl = true, $delegationid = false)
 		WHERE (d.id_group='0' OR g.id>'0') 
 	";
 
-	if ($delegationid) {
+	if (false !== $delegationid) {
 		$req .= ' AND d.id_dgowner='.$babDB->quote($delegationid);
 	}
 

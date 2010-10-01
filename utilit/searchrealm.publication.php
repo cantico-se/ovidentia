@@ -165,6 +165,14 @@ class bab_SearchRealmPublication extends bab_SearchRealm {
 		$articles 	= new bab_SearchRealmArticles;
 		return $articles->getSearchFormHtml();
 	}
+	
+	
+	/**
+	 * Display a select for delegation
+	 */
+	public function selectableDelegation() {
+		return true;
+	}
 
 }
 

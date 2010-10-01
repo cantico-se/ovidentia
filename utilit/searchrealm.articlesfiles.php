@@ -108,15 +108,16 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				$this->createField('ov_reference'		, bab_translate('Ovidentia reference'))					->virtual(true),
 				$this->createField('file'				, bab_translate('File path'))							->searchable(false),
 				$this->createField('filename'			, bab_translate('File name'))->setRealName('name'),
-				$this->createField('description'		, bab_translate('File description')),
+				$this->createField('description'		, bab_translate('File description'))					->setTableAlias('f'),
 				$this->createField('title'				, bab_translate('File title'))							->searchable(false),
-				$this->createField('relevance'			, bab_translate('Search relevance'))					->searchable(false),
-				$this->createField('id'					, bab_translate('Attachement numeric identifier'))		->virtual(true),
-				$this->createField('id_article'			, bab_translate('Article numeric identifier'))			->virtual(true),
-				$this->createField('id_author'			, bab_translate('Article author numeric identifier'))	->virtual(true),
-				$this->createField('date_publication'	, bab_translate('Article publication date'))			->virtual(true)->setRealName('date'),
-				$this->createField('id_topic'			, bab_translate('Articles numeric identifier'))			->virtual(true),
-				$this->createField('search'				, bab_translate('search in file content'))				->searchable(false)
+				$this->createField('relevance'			, bab_translate('Search relevance'))					->virtual(true),
+				$this->createField('id'					, bab_translate('Attachement numeric identifier'))		->searchable(false)->setTableAlias('f'),
+				$this->createField('id_article'			, bab_translate('Article numeric identifier'))			->searchable(false)->setTableAlias('a'),
+				$this->createField('id_author'			, bab_translate('Article author numeric identifier'))	->searchable(false)->setTableAlias('a'),
+				$this->createField('date_publication'	, bab_translate('Article publication date'))			->searchable(false)->setTableAlias('a')->setRealName('date'),
+				$this->createField('id_topic'			, bab_translate('Articles numeric identifier'))			->searchable(false)->setTableAlias('f'),
+				$this->createField('search'				, bab_translate('search in file content'))				->searchable(false),
+				$this->createField('id_dgowner'			, bab_translate('Delegation numeric identifier'))		->searchable(false)->setTableAlias('c')
 				
 			);
 		}
@@ -192,12 +193,17 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 					a.id id_article,
 					a.id_author,
 					a.restriction, 
-					a.date date_publication 
+					a.date date_publication, 
+					c.id_dgowner 
 				FROM 
 					'.BAB_ART_FILES_TBL.' f, 
-					'.BAB_ARTICLES_TBL.' a 
+					'.BAB_ARTICLES_TBL.' a,
+					'.BAB_TOPICS_TBL.' t,
+					'.BAB_TOPICS_CATEGORIES_TBL.' c 
 				WHERE 
-					f.name = '.$babDB->quote($filename).' 
+					a.id_topic = t.id
+					AND c.id = t.id_cat 
+					AND f.name = '.$babDB->quote($filename).' 
 					AND f.id_article = '.$babDB->quote($id_article).' 
 					AND f.id_article = a.id 
 					AND a.id_topic IN('.$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).')
@@ -239,7 +245,8 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				'id_topic'			=> (int) $access['id_topic'],
 				'id_article'		=> (int) $access['id_article'],
 				'id_author'			=> (int) $access['id_author'], 
-				'date_publication' 	=> $access['date_publication']
+				'date_publication' 	=> $access['date_publication'],
+				'id_dgowner'		=> (int) $access['id_dgowner']
 			);
 		}
 
@@ -268,12 +275,17 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				a.id id_article,
 				a.id_author,
 				a.restriction, 
-				a.date date_publication 
+				a.date date_publication,
+				c.id_dgowner 
 			FROM 
 				'.BAB_ART_FILES_TBL.' f, 
-				'.BAB_ARTICLES_TBL.' a 
+				'.BAB_ARTICLES_TBL.' a,
+				'.BAB_TOPICS_TBL.' t,
+				'.BAB_TOPICS_CATEGORIES_TBL.' c  
 			WHERE 
-				f.id_article = a.id 
+				a.id_topic = t.id
+				AND c.id = t.id_cat 
+				AND f.id_article = a.id 
 				AND a.id_topic IN('.$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).')
 		';
 
@@ -308,7 +320,8 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				'id_topic'			=> (int) $row['id_topic'],
 				'id_article'		=> (int) $row['id_article'],
 				'id_author'			=> (int) $row['id_author'], 
-				'date_publication' 	=> $row['date_publication']
+				'date_publication' 	=> $row['date_publication'],
+				'id_dgowner'		=> (int) $access['id_dgowner']
 			);
 		}
 
@@ -363,6 +376,24 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 		$criteria = bab_SearchDefaultForm::getCriteria($this);
 
 		$this->sql_criteria = new bab_SearchInvariant;
+		
+		
+		$delegation = bab_rp('delegation', null);
+		
+		if (null !== $delegation && 'DGAll' !== $delegation)
+		{
+			// if id_dgowner field exist on search real, filter by delegation
+			
+			require_once dirname(__FILE__).'/delegincl.php';
+			$arr = bab_getUserVisiblesDelegations();
+			
+			if (isset($arr[$delegation]))
+			{
+				$id_dgowner = $arr[$delegation]['id'];
+				$this->sql_criteria = $this->sql_criteria->_AND_($this->id_dgowner->is($id_dgowner));
+			}
+		}
+		
 		
 		if ($id_topic = self::getRequestedTopics()) {
 			$this->sql_criteria = $this->sql_criteria->_AND_($this->id_topic->in($id_topic));
