@@ -4169,10 +4169,17 @@ switch($sAction)
 		{
 			$aFiles[] = bab_fmFile::upload($sFieldname);
 		}
+		$optionsReadonly = bab_pp('readonly');
+		if (!is_array($optionsReadonly) || count($optionsReadonly) != count($aFiles)) {
+			$optionsReadonly = array();
+			foreach ($aFiles as $file) {
+				$optionsReadonly[] = 'N';
+			}
+		}
 
 		$bSuccess = saveFile($aFiles, $oFileManagerEnv->iId, $oFileManagerEnv->sGr,
 				$oFileManagerEnv->sPath, bab_pp('description'), bab_pp('keywords'),
-				bab_pp('readonly', 'N'), bab_pp('maxdownloads', null));
+				$optionsReadonly, bab_pp('maxdownloads', null));
 		if(false === $bSuccess)
 		{
 			$idx = "displayAddFileForm";
