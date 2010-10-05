@@ -2293,7 +2293,7 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 			break;
 		case BAB_CAL_EVT_CURRENT:
 			$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
-			break;
+			return;
 		case BAB_CAL_EVT_PREVIOUS:
 			$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
 			break;
