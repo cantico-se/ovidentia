@@ -238,15 +238,13 @@ class bab_CalendarRRULE
 			$begin->add(1, BAB_DATETIME_DAY);
 			$end->add(1, BAB_DATETIME_DAY);
 			
-			$day = $this->dayOfWeek($created->ts_begin);
-			
-			
 			if ($end->getTimeStamp() > $until->getTimeStamp())
 			{
 				break;
 			}
 			
 			$created->setDates($begin, $end);
+			$day = $this->dayOfWeek($created->ts_begin);
 			if (isset($flipped_days[$day]))
 			{
 				$collection->addPeriod($created);
