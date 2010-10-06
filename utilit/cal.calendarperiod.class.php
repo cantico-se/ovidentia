@@ -222,6 +222,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		{
 			$calendar = null;
 		}
+
 		
 		foreach($this->attendeesEvents as $urlidentifier => $method)
 		{
@@ -229,7 +230,6 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			{
 				continue;
 			}
-			
 			
 			if (isset($this->attendees[$urlidentifier]))
 			{

@@ -42,7 +42,7 @@ abstract class bab_ICalendarObject
 	 * Store aditional information for the ATTENDEE property
 	 * @var array
 	 */
-	private $attendees = array();
+	protected $attendees = array();
 	
 	/**
 	 * Store association beetween attendee property and calendar
