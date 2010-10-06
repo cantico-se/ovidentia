@@ -331,7 +331,7 @@ function accountModify($item)
 				$this->resgrp = $babDB->db_query($req);
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND bgroup='N'";
 				$this->resusr = $babDB->db_query($req);
 				$this->countusr = $babDB->db_num_rows($this->resusr);
 				}

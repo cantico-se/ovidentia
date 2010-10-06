@@ -122,7 +122,13 @@ function listMails($accid, $criteria, $reverse, $start)
 					$this->mbox = bab_getMailBox($accid);
 					if($this->mbox)
 						{
-						$this->msguid = imap_sort($this->mbox, $this->criteria, $this->reverse, SE_UID | SE_NOPREFETCH); 
+						$this->msguid = imap_sort($this->mbox, $this->criteria, 0, SE_UID | SE_NOPREFETCH);
+						if ($this->reverse)
+						{
+							// the reverse parameter does not work in POP3
+							$this->msguid = array_reverse($this->msguid);
+						}
+						 
 						$this->count = sizeof($this->msguid);
 						if( $this->count > 0 && $this->maxrows > 0)
 							{
@@ -183,7 +189,7 @@ function listMails($accid, $criteria, $reverse, $start)
 				$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				$arr = imap_mime_header_decode($headinfo->subject);
-				$this->msgsubjecturlname = bab_toHtml($arr[0]->text);
+				$this->msgsubjecturlname = isset($arr[0]) ? bab_toHtml($arr[0]->text) : '';
 				$this->msgsubjecturl = $this->msgfromurl;
 
 				$this->msgdate = bab_shortDate($headinfo->udate);

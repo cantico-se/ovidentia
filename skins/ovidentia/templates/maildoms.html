@@ -115,21 +115,24 @@ if (obj.value == 'pop3')
 		</td>
 		<td>{ arr[description] }</td>
 		<td>{ groupname }</td>
-</tr><!--#endin getnextadm -->
-<!--#in getnextgrp -->
-<tr> 
-<td>
-<!--#if burl "== 1" -->
-<a href="{ url }">{ urlname }</a> 
-<!--#else burl -->
-{ urlname } 
-<!--#endif burl -->
-</td>
-<td>{ arr[description] }</td>
-<td>{ groupname }</td>
-</tr> <!--#endin getnextgrp -->
-<!--#in getnextusr --><tr> 
-		<td valign="middle">
+	</tr>
+	<!--#endin getnextadm -->
+	<!--#in getnextgrp -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>
+		<!--#if burl "== 1" -->
+		<a href="{ url }">{ urlname }</a> 
+		<!--#else burl -->
+		{ urlname } 
+		<!--#endif burl -->
+		</td>
+		<td>{ arr[description] }</td>
+		<td>{ groupname }</td>
+	</tr> 
+	<!--#endin getnextgrp -->
+	<!--#in getnextusr -->
+	<tr class="BabSiteAdminFontBackground"> 
+		<td>
 		<!--#if burl "== 1" -->
 		<a href="{ url }">{ urlname }</a> 
 		<!--#else burl -->

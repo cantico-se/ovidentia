@@ -152,11 +152,11 @@ function domainsList($userid, $grpid, $bgrp)
 				$this->resadm = $babDB->db_query($req);
 				$this->countadm = $babDB->db_num_rows($this->resadm);
 				
-				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group";
+				$req = "select ".BAB_MAIL_DOMAINS_TBL.".* from ".BAB_MAIL_DOMAINS_TBL." join ".BAB_USERS_GROUPS_TBL." where bgroup='Y' and ".BAB_USERS_GROUPS_TBL.".id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."' and owner=".BAB_USERS_GROUPS_TBL.".id_group AND owner<>".$babDB->quote(BAB_REGISTERED_GROUP);
 				$this->resgrp = $babDB->db_query($req);
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
 				
-				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."'";
+				$req = "select * from ".BAB_MAIL_DOMAINS_TBL." where owner='".$babDB->db_escape_string($BAB_SESS_USERID)."' AND bgroup='N'";
 				$this->resusr = $babDB->db_query($req);
 				$this->countusr = $babDB->db_num_rows($this->resusr);
 				}
@@ -205,6 +205,9 @@ function domainsList($userid, $grpid, $bgrp)
 			if( $m < $this->countgrp)
 				{
 				$this->arr = $babDB->db_fetch_array($this->resgrp);
+				
+
+				
 				if( $this->arr['owner'] != 1 && $this->arr['bgroup'] == "Y")
 					$this->groupname = bab_getGroupName($this->arr['owner']);
 				else
