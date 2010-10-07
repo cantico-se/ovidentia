@@ -435,7 +435,7 @@ class displayEventDetailCls
 		
 		$backend = $calendar->getBackend();
 		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-
+		bab_debug($calendarPeriod->toHtml());
 		
 		if (!$calendarPeriod)
 		{

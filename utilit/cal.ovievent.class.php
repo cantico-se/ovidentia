@@ -1353,8 +1353,6 @@ class bab_cal_OviEventSelect
 			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['id_user'];
 		}
 		
-		
-		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
 				
