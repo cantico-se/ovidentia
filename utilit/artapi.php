@@ -1042,6 +1042,25 @@ function bab_getCommentTitle($com)
 	} else {
 		return '';
 	}
+}	
+	
+
+
+/**
+ * @param int	$article	The comment id
+ * @return string
+ */
+function bab_getArticleNbComment($article)
+{
+	global $babDB;
+	$query = 'SELECT count(*) as nb_com FROM '.BAB_COMMENTS_TBL.' WHERE id_article='.$babDB->quote($article);
+	$res = $babDB->db_query($query);
+	if ($res && $babDB->db_num_rows($res) > 0) {
+		$arr = $babDB->db_fetch_assoc($res);
+		return $arr['nb_com'];
+	} else {
+		return '';
+	}
 }
 
 
