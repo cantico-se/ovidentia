@@ -1843,18 +1843,42 @@ class bab_event_posted {
 		{
 			if (!empty($this->args['evtid'])) {
 
-				$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+				// calid is the calendar where the event is recorded
+				// if calid is not in the list of selected calendars, the event must be deleted and a new calendar must be chosen to record the event
 				
-				if (!$calendar)
+				$allowed = array_flip($this->args['selected_calendars']);
+				if (isset($allowed[$this->args['calid']]))
 				{
-					throw new Exception('Missing calendar '.$this->args['calid']);
+					$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+					
+					if (!$calendar)
+					{
+						throw new Exception('Missing calendar '.$this->args['calid']);
+					}
+				} else {
+					
+					// delete event
+					
+					$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+					$backend = $calendar->getBackend();
+					$collection = $backend->CalendarEventCollection($calendar);
+					
+					$period = bab_createCalendarPeriod($backend, $this->args, $collection);
+					
+					$backend->deletePeriod($period);
+					
+					$this->args['evtid'] = null;
 				}
-				
-			} else {
+			} 
 
+			
+			
+			
+			if (empty($this->args['evtid']))
+			{
 				$calendar = bab_getMainCalendar($this->args['selected_calendars']);
-				
-			}
+			}	
+			
 			
 			$backend = $calendar->getBackend();
 			$collection = $backend->CalendarEventCollection($calendar);
@@ -1879,9 +1903,7 @@ class bab_event_posted {
 
 	
 	/**
-	 * Save new event
-	 * 
-	 * @todo change collection from user 
+	 * Save event
 	 * 
 	 * @param	string &$message
 	 * 

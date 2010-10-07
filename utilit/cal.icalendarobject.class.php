@@ -433,7 +433,7 @@ abstract class bab_ICalendarObject
 	 */
 	public function getRelations($reltype = null) 
 	{
-		if (null === $reltype)
+		if (null === $reltype && isset($this->relations))
 		{
 			$relations = array();
 			foreach($this->relations as $arr)
@@ -464,7 +464,7 @@ abstract class bab_ICalendarObject
 	{
 		foreach($this->relations as $arr)
 		{
-			if ($arr['X-CTO-WFINSTANCE'])	
+			if (isset($arr['X-CTO-WFINSTANCE']) && $arr['X-CTO-WFINSTANCE'])	
 			{
 				throw new Exception(sprintf('The relation with calendar %s could not be removed because the is a workflow instance', $arr['calendar']->getName()));
 				return;
