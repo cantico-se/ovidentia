@@ -346,11 +346,20 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			$this->nodes[$obj->parentNode_str]->addChildNode($obj);
 		} else {
-			$this->queue[$obj->parentNode_str] = $obj->uid;
+			
+			if (!isset($this->queue[$obj->parentNode_str]))
+			{
+				$this->queue[$obj->parentNode_str] = array();
+			}
+			
+			$this->queue[$obj->parentNode_str][] = $obj->uid;
 		}
 		
 		if (isset($this->queue[$obj->uid])) {
-			$this->buidtree($this->nodes[$this->queue[$obj->uid]]);
+			foreach($this->queue[$obj->uid] as $objuid)
+			{
+				$this->buidtree($this->nodes[$objuid]);
+			}
 			unset($this->queue[$obj->uid]);
 		}
 	}
@@ -365,6 +374,8 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * Display as text
 	 * @param	string	$uid
 	 * @param	int		[$deep]
+	 * 
+	 * @return string
 	 */
 	public function displayAsText($uid, $deep = 0) {
 	
@@ -1388,6 +1399,7 @@ function bab_siteMap_loadNodes($path, $levels) {
 
 	bab_fireEvent($event);
 	
+	
 	foreach($event->queue as $missing_node => $orphan) {
 		unset($event->nodes[$orphan]);
 	}
@@ -1856,13 +1868,9 @@ function bab_sitemap_userSection($event) {
 				
 				}
 			
-			//}
 			
 	
 				$position = array('root', $id_delegation, $dg_prefix.'User');
-			
-			
-			//if ($event->loadChildNodes($position)) {
 				
 				$item = $event->createItem($dg_prefix.'UserSectionAddons');
 				$item->setLabel(bab_translate("Add-ons links"));
@@ -2046,7 +2054,7 @@ function bab_sitemap_faq($event) {
  * Registred function
  * @param	bab_eventBeforeSiteMapCreated	$event
  */
-function bab_onBeforeSiteMapCreated($event) {
+function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
 	global $babBody, $BAB_SESS_LOGGED;
 	
