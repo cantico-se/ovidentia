@@ -3130,5 +3130,7 @@
 <string id="Move my personal calendar from %s to %s">Déplacer mon agenda personnel de %s vers %s</string>
 <string id="Your calendar has been moved">Votre agenda à été déplacé</string>
 <string id="Set waiting events to accepted">Défini les événements en attente comme accepté</string>
+<string id="No access to granted privileges">Pas d'accès à la liste des privilèges</string>
+
 
 </fr>

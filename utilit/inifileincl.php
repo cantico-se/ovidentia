@@ -137,18 +137,19 @@ class bab_inifile_requirements {
 		$error = null;
 
 		$res = $db->db_queryWem("SHOW GRANTS");
+		$res = false;
 		
 		$required_privileges = preg_split('/\s*,\s*/', $value);
+		$current = array();
 		
 		if (!$res) {
-		
-			$mysql = '';
-			$status = false;
-			$error = bab_translate('The mysql show grants query do not return any result');
+			
+			$current = bab_translate('No access to granted privileges');
+			$status = true;
+			
+			
 		} else {
 		
-			$status = false;
-			$current = array();
 			while ($arr = $db->db_fetch_array($res))
 			{
 				if (preg_match('/^GRANT\s([A-Z\s,]+)\sON/', $arr[0], $m))
@@ -161,27 +162,30 @@ class bab_inifile_requirements {
 			}
 			
 			
-		}
-		
-		$status = isset($current['ALL PRIVILEGES']);
-		
-		if (!$status)
-		{
-			$status = true;
-			foreach($required_privileges as $privilege)
+			$status = isset($current['ALL PRIVILEGES']);
+			
+			if (!$status)
 			{
-				if (!isset($current[$privilege]))
+				$status = true;
+				foreach($required_privileges as $privilege)
 				{
-					$error = sprintf(bab_translate('Missing the %s mysql privilege'), $privilege);
-					$status = false;
-					break;
+					if (!isset($current[$privilege]))
+					{
+						$error = sprintf(bab_translate('Missing the %s mysql privilege'), $privilege);
+						$status = false;
+						break;
+					}
 				}
 			}
+			
+			$current = implode(', ', $current);
 		}
+		
+		
 
 		return array(
 			'description'	=> bab_translate("MySQL granted privileges"),
-			'current'		=> implode(', ', $current),
+			'current'		=> $current,
 			'result'		=> $status,
 			'error'			=> $error
 		);
