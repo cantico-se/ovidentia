@@ -30,8 +30,8 @@ include_once dirname(__FILE__).'/searchapi.php';
  * File manager search realm
  * Search in files
  *
- * to search in files content, use the method <code>setPrimaryCriteria</code>
- * to search in all use <code>setPrimaryCriteria</code> and add the same criteria on the realm object
+ * to search in files content, use the method <code>setFieldLessCriteria</code>
+ * to search in all use <code>setFieldLessCriteria</code> and add the same criteria on the realm object
  *
  * @package	search
  */
@@ -485,7 +485,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 		global $babDB;
 
 		if (null === $this->contentCriteria) {
-			throw new Exception('there is no primary criteria, please use the method bab_SearchRealmFiles::setPrimaryCriteria()');
+			throw new Exception('there is no primary criteria, please use the method bab_SearchRealmFiles::setFieldLessCriteria()');
 			$this->contentCriteria = $this->criteria;
 		}
 
