@@ -137,7 +137,6 @@ class bab_inifile_requirements {
 		$error = null;
 
 		$res = $db->db_queryWem("SHOW GRANTS");
-		$res = false;
 		
 		$required_privileges = preg_split('/\s*,\s*/', $value);
 		$current = array();
