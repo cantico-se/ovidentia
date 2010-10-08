@@ -1229,7 +1229,7 @@ class bab_inifile {
 	
 		$arr = $custom_script_result[$addonname];
 		
-		if (!$arr || !is_array($arr)) {
+		if (!is_array($arr)) {
 			trigger_error('preinstall script must return an array');
 			return false;
 		}
