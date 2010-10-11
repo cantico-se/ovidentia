@@ -831,10 +831,12 @@ function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articl
 	return $articles;
 }
 	
-function bab_submitArticleDraft($idart)
+function bab_submitArticleDraft($idart, &$articleid = null)
 {
-	
 	global $babBody, $babDB, $BAB_SESS_USERID;
+	
+	$articleid = null;
+	
 	$res = $babDB->db_query("select id_article, id_topic, id_author, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
@@ -1012,11 +1014,12 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
  * 
  * @return bool
  */
-function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html')
+function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', &$articleId = null)
 {
+	$articleId = null;
 	$iddraft = bab_addArticleDraft($title, $head, $body, $idTopic, $error, $articleArr, $headFormat, $bodyFormat);
 	if ($iddraft) {
-		return bab_submitArticleDraft($iddraft);
+		return bab_submitArticleDraft($iddraft, $articleId);
 	}
 	return false;
 }
