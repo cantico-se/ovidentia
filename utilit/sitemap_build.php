@@ -1400,9 +1400,14 @@ function bab_siteMap_loadNodes($path, $levels) {
 	bab_fireEvent($event);
 	
 	
-	foreach($event->queue as $missing_node => $orphan) {
-		unset($event->nodes[$orphan]);
+	foreach($event->queue as $missing_node => $orphan) 
+	{
+		foreach($orphan as $tmp)
+		{
+			unset($event->nodes[$tmp]);
+		}
 	}
+	
 	$event->queue = array();
 	
 	return $event;
