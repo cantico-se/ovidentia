@@ -3131,6 +3131,11 @@
 <string id="Your calendar has been moved">Votre agenda à été déplacé</string>
 <string id="Set waiting events to accepted">Défini les événements en attente comme accepté</string>
 <string id="No access to granted privileges">Pas d'accès à la liste des privilèges</string>
+<string id="%d events found in the new calendar">%d événements trouvés dans le nouvel agenda</string>
+<string id="You requested to delete the events in the destination calendars but the program failed to retreive any event, it is probably that your calendar is too large to handle for the program, you will have to empty the calendar manually or use another calendar">Vous avez demandé la suppression de tout les événements de l'agenda de destination mais le programme n'arrive pas a atteindre les événements, il est probable que votre agenda soit vide ou qu'il soit trop gros pour être géré par ce programme, vous devrez vider votre agenda manuellement ou utiliser un autre agenda</string>
+<string id="Moving your calendar has failed">Le déplacement de votre agenda à échoué</string>
+<string id="Source and destination are the same">La source et la destination sont identiques</string>
+
 
 
 </fr>

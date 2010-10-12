@@ -988,18 +988,39 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				return;
 			}
 			
-			bab_debug($this->getName().' INSERT');
+			if (!$collection->hash)
+			{
+				// regular event
+				
+				$babDB->db_query('
+					INSERT INTO bab_cal_inbox 
+						(id_user, calendar_backend, uid) 
+					VALUES 
+						(
+							'.$babDB->quote($this->getIdUser()).',
+							'.$babDB->quote($eventBackend->getUrlIdentifier()).',
+							'.$babDB->quote($event->getProperty('UID')).'
+						)
+				');
 			
-			$babDB->db_query('
-				INSERT INTO bab_cal_inbox 
-					(id_user, calendar_backend, uid) 
-				VALUES 
-					(
-						'.$babDB->quote($this->getIdUser()).',
-						'.$babDB->quote($eventBackend->getUrlIdentifier()).',
-						'.$babDB->quote($event->getProperty('UID')).'
-					)
-			');
+			} else {
+				
+				// recurring event with hash, insert all collection
+				
+				foreach($collection as $event)
+				{
+					$babDB->db_query('
+						INSERT INTO bab_cal_inbox 
+							(id_user, calendar_backend, uid) 
+						VALUES 
+							(
+								'.$babDB->quote($this->getIdUser()).',
+								'.$babDB->quote($eventBackend->getUrlIdentifier()).',
+								'.$babDB->quote($event->getProperty('UID')).'
+							)
+					');
+				}
+			}
 		}
 	}
 	

@@ -1384,26 +1384,7 @@ class bab_cal_OviEventSelect
 			{
 				if ($this->addInboxPeriod($uid_list, $p))
 				{
-					$collection = $p->getCollection();
-					if ($collection->hash) {
-						
-						bab_debug($collection->hash);
-						$this->setEventsPeriods($user_periods, null, null, $collection->hash, null);
-						
-						/*
-						$hash_criteria = clone $criteria;
-						$hash_criteria->_AND_($factory->Hash($collection->hash));
-						
-						$rPeriods = $backend->selectPeriods($hash_criteria);
-						
-						foreach($rPeriods as $rP)
-						{
-							$user_periods->addPeriod($rP);
-						}
-						*/
-					} else {
-						$user_periods->addPeriod($p);
-					}
+					$user_periods->addPeriod($p);
 				}
 			}
 		}

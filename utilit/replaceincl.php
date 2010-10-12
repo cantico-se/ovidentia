@@ -174,11 +174,11 @@ class bab_replace {
 								{
 								$res = $babDB->db_query("select id,id_topic,title,restriction from ".BAB_ARTICLES_TBL." where title LIKE '%".$babDB->db_escape_like($title_object)."%'");
 								if( $res && $babDB->db_num_rows($res) > 0)
-									$arr = $babDB->db_fetch_array($res);
-								}
-							if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && bab_articleAccessByRestriction($arr['restriction']))
-								{
-								$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+									$arr = $babDB->db_fetch_assoc($res);
+									if(isset($arr) && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id_topic']) && bab_articleAccessByRestriction($arr['restriction']))
+									{
+									$title_object = $this->_make_link($GLOBALS['babUrlScript']."?tg=articles&idx=More&article=".$arr['id']."&topics=".$arr['id_topic'],$title_object,$popup,$GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$arr['id_topic']."&article=".$arr['id']);
+									}
 								}
 							bab_replace::_var($txt,$var,$title_object);
 							break;

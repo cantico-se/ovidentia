@@ -794,7 +794,7 @@ function bab_changeCalendarBackendFrame($calendar_backend, $copy_source, $delete
 	
 	
 	$window->setStartMessage(sprintf(bab_translate('Move my personal calendar from %s to %s'), $old_backend->getDescription(), $new_backend->getDescription()));
-	$window->setStopMessage(bab_translate('Your calendar has been moved'), bab_translate('Failed'));
+	$window->setStopMessage(bab_translate('Your calendar has been moved'), bab_translate('Moving your calendar has failed'));
 	
 	$window->startInstall(array($changeCalendar, 'process'));
 	
@@ -838,6 +838,12 @@ class bab_changeCalendarBackend
 		if (!($old_calendar instanceof bab_PersonalCalendar))
 		{
 			bab_installWindow::message(bab_translate('Personal calendar not available on old backend'));
+			return false;
+		}
+		
+		if (bab_getICalendars()->calendar_backend === $calendar_backend)
+		{
+			bab_installWindow::message(bab_translate('Source and destination are the same'));
 			return false;
 		}
 		
@@ -889,6 +895,14 @@ class bab_changeCalendarBackend
 				$total = count($events);
 			}
 			
+			if (0 === $total)
+			{
+				bab_installWindow::message(bab_translate('You requested to delete the events in the destination calendars but the program failed to retreive any event, it is probably that your calendar is too large to handle for the program, you will have to empty the calendar manually or use another calendar'));
+				return false;
+			}
+			
+			bab_installWindow::message(sprintf(bab_translate('%d events found in the new calendar'), $total));
+			
 			$i = 0;
 			foreach($events as $event)
 			{
@@ -907,7 +921,7 @@ class bab_changeCalendarBackend
 		
 		if ($copy_source)
 		{
-			bab_setTimeLimit(30); // 30 seconds to initialize the copy
+			bab_setTimeLimit(300); // 300 seconds to initialize the copy
 			
 			
 			if ($old_backend instanceof Func_CalendarBackend_Ovi)
