@@ -161,7 +161,7 @@ class BAB_DateTime
 	 */
 	public static function now()
 	{
-		return BAB_DateTime::fromIsoDateTime(date("Y-m-d H:i:s"));
+		return BAB_DateTime::fromIsoDateTime(date('Y-m-d H:i:s'));
 	}
 	
 	/**
@@ -172,7 +172,7 @@ class BAB_DateTime
 	 */
 	public function getIsoDateTime()
 	{
-		return date("Y-m-d H:i:s", mktime($this->_iHours, $this->_iMinutes, 
+		return date('Y-m-d H:i:s', mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
 	
@@ -187,6 +187,21 @@ class BAB_DateTime
 		return date("Y-m-d", mktime($this->_iHours, $this->_iMinutes, 
 			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
 	}
+
+	
+	/**
+	 * Returns an iso-formatted time string (HH:MM:SS) corresponding to the BAB_DateTime.
+	 *
+	 * @return string
+     * 
+	 */
+	public function getIsoTime()
+	{
+		return date('H:i:s', mktime($this->_iHours, $this->_iMinutes, 
+			$this->_iSeconds, $this->_iMonth, $this->_iDay, $this->_iYear));
+		
+	}
+	
 	
 	/**
 	 * Return a datetime string for iCal format
@@ -844,6 +859,12 @@ class BAB_DateTime
 			bab_debug('Error while searching for timezone offset, the classes DateTimeZone and DateTime are required to get the correct offset');
 			return 0;
 		}
+	}
+	
+	
+	public function shortFormat($showHours = true)
+	{
+		return bab_shortDate($this->getTimeStamp(), $showHours);
 	}
 }
 
