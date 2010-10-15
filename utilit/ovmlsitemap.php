@@ -132,9 +132,9 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 		$node = $ctx->get_value('node');
 
-		if (isset($this->sitemap)) {				
+		if (isset($this->sitemap)) {
 			$node = $this->sitemap->getNodeById($node);
-	
+
 			if ($node) {
 				$node = $node->firstChild();
 				while($node) {
@@ -173,7 +173,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 /**
  * Get path starting from root to a specific sitemap node
- * <OCSitemapPath node="node" sitemap="sitemapName" [basenode="node"]>
+ * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"]>
  * 
  * </OCSitemapPath>
  * 
@@ -192,13 +192,18 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 		global $babUseRewrittenUrl;
 
 		parent::setOvmlContext($ctx);
+		
+		
 		$node = $ctx->get_value('node');
-		
+
+		if ($node === false) {
+			$node = bab_Sitemap::getPosition();
+		}
+
 		$baseNode = $ctx->get_value('basenode');
-		
+
 		if (isset($this->sitemap)) {
 			$node = $this->sitemap->getNodeById($node);
-	
 
 			while ($node && ($item = $node->getData())) {
 				/* @var $item bab_SitemapItem */
@@ -241,9 +246,10 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 /**
  * Return the sitemap position in a html LI
- * <OFSitemapPosition sitemap="sitemapName">
- * the sitemap attribute is optional, the default value is the sitemap selected in site options
+ * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes] >
  * 
+ * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration
+ * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
  */
 class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 {
@@ -336,11 +342,11 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 
 		if (empty($breadcrumb)) {
-			if ( (!isset($args['keeplastknown'])) || (!isset($_SESSION['bab_sitemap_lastknowposition'])) ) {
+			if ( (!isset($args['keeplastknown'])) || (!$args['keeplastknown']) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
 				return '';
 			}
-			if (isset($_SESSION['bab_sitemap_lastknowposition'])) {
-				return $_SESSION['bab_sitemap_lastknowposition'];
+			if (isset($_SESSION['bab_sitemap_lastknownposition'])) {
+				return $_SESSION['bab_sitemap_lastknownposition'];
 			} else {
 				return '';
 			}
@@ -389,7 +395,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 //		$html .= '</ul>';
 	
 		if (isset($args['keeplastknown'])) {
-			$_SESSION['bab_sitemap_lastknowposition'] = $html;
+			$_SESSION['bab_sitemap_lastknownposition'] = $html;
 		}
 
 		return $html;
@@ -411,16 +417,29 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 /**
  * Return the sitemap menu tree in a html UL LI
- * <OFSitemapMenu sitemap="sitemapName" node="parentNode">
- * the sitemap attribute is optional, the default value is the sitemap selected in site options
- * the node attribute is optional, the default value is babDgAll
+ * <OFSitemapMenu [sitemap="sitemapName"] [node="parentNode"] [keeplastknown="1"] [maxdepth="depth"] >
+ * 
+ * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration
+ * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
+ * - The node attribute is optional, the default value is babDgAll
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
 	protected	$sitemap; 
+
+	/* The current sitemap node id */
+	protected	$selectedNode = null;
+
+	/* the node ids of the current sitemap path */
+	protected	$activeNodes = array();
+
+	protected	$selectedClass = 'selected';
+	protected	$activeClass = 'active';
+	
+	protected	$maxDepth = 100;
 	
 	
-	private function getHtml(bab_Node $node, $mainmenuclass = null) {
+	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 		
 		global $babUseRewrittenUrl;
 
@@ -450,7 +469,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		} else {
 			$url = $siteMapItem->url;
 		}
-		
+
 		if ($url) {
 	
 			if ($siteMapItem->onclick) {
@@ -469,14 +488,22 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$classnames[] = 'sitemap-'.$siteMapItem->id_function;
 		
 		if (!empty($siteMapItem->iconClassnames)) {
-			$classnames[] =  $siteMapItem->iconClassnames;
+			$classnames[] = $siteMapItem->iconClassnames;
 		}
 	
 		if ($siteMapItem->folder) {
 			$classnames[] = 'sitemap-folder';
-		} 
-	
-	
+		}
+		
+		if (isset($this->activeNodes[$siteMapItem->id_function])) {
+			// the nodes in the current path have the "active" class.
+			$classnames[] = $this->activeClass;
+		}
+		if ($this->selectedNode === $siteMapItem->id_function) {
+			// the current node has the "selected" class.
+			$classnames[] = $this->selectedClass;
+		}
+
 		if (null !== $mainmenuclass) {
 			$classnames[] = $mainmenuclass;
 			$return .= '<li class="'.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
@@ -486,12 +513,12 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
 		//  icon-16x16 icon-left icon-left-16
 	
-		if ($node->hasChildNodes()) {
+		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
 			$return .= "<ul>\n";
 	
 			$node = $node->firstChild();
 			do {
-				$return .= $this->getHtml($node);
+				$return .= $this->getHtml($node, null, $depth + 1);
 			} while ($node = $node->nextSibling());
 	
 			$return .= "</ul>\n";
@@ -536,16 +563,46 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (!($dg_node instanceOf bab_Node)) {
 			return '';
 		}
-		
-		
+
+
 		if (isset($args['node'])) {
 			$home = $sitemap->getNodeById($args['node']);
 		} else {
 			$home = $dg_node->firstChild();
 		}
-		
+
 		if (!($home instanceOf bab_Node)) {
 			return '';
+		}
+
+		if (isset($args['maxdepth'])) {
+			$this->maxDepth = $args['maxdepth'];
+		}
+
+		$selectedNode = $args['selectedNode'];
+		if (!$selectedNode) {
+			$selectedNode = bab_Sitemap::getPosition();
+		}
+
+		if (empty($selectedNode)) {
+			if (isset($args['keeplastknown']) && $args['keeplastknown'] && isset($_SESSION['bab_sitemap_lastknownnode'])) {
+				$selectedNode = $_SESSION['bab_sitemap_lastknownnode'];
+			}
+		} else {
+			$_SESSION['bab_sitemap_lastknownnode'] = $selectedNode;
+		}
+
+		$this->selectedNode = $selectedNode;
+		
+		$selectedNode = $this->sitemap->getNodeById($selectedNode);
+
+		while ($selectedNode && ($item = $selectedNode->getData())) {
+			/* @var $item bab_SitemapItem */
+			$this->activeNodes[$item->id_function] = $item->id_function;
+			if ($home->id_function === $item->id_function) {
+				break;
+			}
+			$selectedNode = $selectedNode->parentNode();
 		}
 		
 		$node = $home->firstChild();
