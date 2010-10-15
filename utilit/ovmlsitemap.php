@@ -595,6 +595,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$_SESSION['bab_sitemap_lastknownnode'] = $selectedNode;
 		}
 
+		
 		$this->selectedNode = $selectedNode;
 		
 		$selectedNode = $this->sitemap->getNodeById($selectedNode);
@@ -602,7 +603,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		while ($selectedNode && ($item = $selectedNode->getData())) {
 			/* @var $item bab_SitemapItem */
 			$this->activeNodes[$item->id_function] = $item->id_function;
-			if ($home->id_function === $item->id_function) {
+			if ($home->getData()->id_function === $item->id_function) {
 				break;
 			}
 			$selectedNode = $selectedNode->parentNode();
