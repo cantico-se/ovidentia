@@ -173,12 +173,12 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 /**
  * Get path starting from root to a specific sitemap node
- * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"]>
+ * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"] [limit=max_nodes|start_node,max_nodes]>
  * 
  * </OCSitemapPath>
  * 
- * the sitemap attribute is optional
- *
+ * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration.
+ * 
  */
 class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
@@ -193,17 +193,34 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 		parent::setOvmlContext($ctx);
 		
+		$baseNodeId = $ctx->get_value('basenode');
 		
-		$node = $ctx->get_value('node');
-
-		if ($node === false) {
-			$node = bab_Sitemap::getPosition();
-		}
-
-		$baseNode = $ctx->get_value('basenode');
+		$nodeId = $ctx->get_value('node');
 
 		if (isset($this->sitemap)) {
-			$node = $this->sitemap->getNodeById($node);
+
+			if ($nodeId === false) {
+				$nodeId = bab_Sitemap::getPosition();
+				if ($baseNodeId) {
+					// if base node (parameter 'basenode') has been specified,
+					// we try to find if a descendant of this node has
+					// a target to the current position. 
+					$baseNode = $this->sitemap->getNodeById($baseNodeId);
+					$nodes = $this->sitemap->createNodeIterator($baseNode);
+					
+					while ($node = $nodes->nextNode()) {
+						$sitemapItem = $node->getData();
+						$target = $sitemapItem->target;
+						if ($target === $nodeId) {
+							$nodeId = $sitemapItem->id_function;
+							break;
+						}
+					}
+				}
+			}
+
+		
+			$node = $this->sitemap->getNodeById($nodeId);
 
 			while ($node && ($item = $node->getData())) {
 				/* @var $item bab_SitemapItem */
@@ -223,7 +240,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				$tmp['pageKeywords'] = $item->getPageKeywords();
 				$tmp['classnames'] = $item->getIconClassnames();
 				array_unshift($this->IdEntries, $tmp);
-				if ($item->id_function === $baseNode) {
+				if ($item->id_function === $baseNodeId) {
 					break;
 				}
 				$node = $node->parentNode();
@@ -593,7 +610,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$selectedNodeId = bab_Sitemap::getPosition();
 
 			if (isset($baseNodeId)) {
-				// if base node (parameter 'node') has been specified,
+				// if base node (parameter 'basenode') has been specified,
 				// we try to find if a descendant of this node has
 				// a target to the current position. 
 				$baseNode = $this->sitemap->getNodeById($baseNodeId);
