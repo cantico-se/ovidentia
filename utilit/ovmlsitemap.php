@@ -417,11 +417,12 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 /**
  * Return the sitemap menu tree in a html UL LI
- * <OFSitemapMenu [sitemap="sitemapName"] [node="parentNode"] [keeplastknown="1"] [maxdepth="depth"] >
+ * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="1"] [maxdepth="depth"] >
  * 
  * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
- * - The node attribute is optional, the default value is babDgAll
+ * - The basenode attribute is optional, the default value is babDgAll.
+ * - The selectednode attribute is optional, is the node corresponding to the current page.
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
@@ -581,8 +582,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		}
 
 		
-		if (isset($args['selectedNode'])) {
-			$selectedNodeId = $args['selectedNode'];
+		if (isset($args['selectednode'])) {
+			$selectedNodeId = $args['selectednode'];
 		}
 		if (!isset($selectedNode)) {
 			$selectedNodeId = bab_Sitemap::getPosition();
