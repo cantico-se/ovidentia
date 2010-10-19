@@ -419,10 +419,14 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  * Return the sitemap menu tree in a html UL LI
  * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="1"] [maxdepth="depth"] >
  * 
- * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration
+ * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
- * - The basenode attribute is optional, the default value is babDgAll.
- * - The selectednode attribute is optional, is the node corresponding to the current page.
+ * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
+ * 		The default value is babDgAll.
+ * - The selectednode attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
+ * 		By default it is the node corresponding to the current page.
+ * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
+ * 		No maximum depth by default.
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
