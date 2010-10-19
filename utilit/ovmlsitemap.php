@@ -70,7 +70,11 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$sitemap = $ctx->get_value('sitemap');
 		
 		if (false === $sitemap) {
-			$this->sitemap = bab_siteMap::get();
+			global $babBody;
+			$this->sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
+			if (!isset($this->sitemap)) {
+				$this->sitemap = bab_siteMap::get();
+			}
 		} else {
 			$this->sitemap = bab_siteMap::getByUid($sitemap);
 			
@@ -178,7 +182,8 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
  * </OCSitemapPath>
  * 
  * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration.
- * 
+ * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
+ * 		The default value is babDgAll.
  */
 class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
@@ -201,6 +206,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 			if ($nodeId === false) {
 				$nodeId = bab_Sitemap::getPosition();
+				
 				if ($baseNodeId) {
 					// if base node (parameter 'basenode') has been specified,
 					// we try to find if a descendant of this node has
@@ -586,9 +592,9 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		}
 
 
-		if (isset($args['node'])) {
-			$home = $sitemap->getNodeById($args['node']);
-			$baseNodeId = $args['node'];
+		if (isset($args['basenode'])) {
+			$home = $sitemap->getNodeById($args['basenode']);
+			$baseNodeId = $args['basenode'];
 		} else {
 			$home = $dg_node->firstChild();
 			$baseNodeId = null;
