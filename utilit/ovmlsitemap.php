@@ -176,14 +176,20 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 
 /**
- * Get path starting from root to a specific sitemap node
- * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"] [limit=max_nodes|start_node,max_nodes]>
+ * Get path starting from root (or a specified base node) to a specific sitemap node.
+ * 
+ * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes]>
  * 
  * </OCSitemapPath>
  * 
- * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The node attribute is optional, it specifies the sitemap id of the node for which the path will be returned.
+ * 		The default is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
- * 		The default value is babDgAll.
+ * 		The default value is 'babDgAll'.
+ * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
+ * 		The default value is '1'.
  */
 class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 {
@@ -225,6 +231,20 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 				}
 			}
 
+		
+			if (empty($nodeId)) {
+				$keepLastKnown = $ctx->get_value('keeplastknown');
+				if ($keepLastKnown === false) {
+					// If keeplastknown is not specified, active by default
+					$keepLastKnown = 1;
+				}
+				if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
+					$nodeId = $_SESSION['bab_sitemap_lastknownnode'];
+				}
+			} else {
+				$_SESSION['bab_sitemap_lastknownnode'] = $nodeId;
+			}
+			
 		
 			$node = $this->sitemap->getNodeById($nodeId);
 
@@ -269,10 +289,14 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 /**
  * Return the sitemap position in a html LI
- * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes] >
+ * <OFSitemapPosition [sitemap="sitemapName"] [keeplastknown="0|1"] [basenode="node"] >
  * 
- * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
+ * 		The default value is 'babDgAll'.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
+ * 		The default value is '1'.
  */
 class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 {
@@ -364,8 +388,17 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		}
 
 
+		if (!isset($args['keeplastknown'])) {
+			// If keeplastknown is not specified, active by default
+			$keepLastKnown = 1;
+		} else {
+			$keepLastKnown = $args['keeplastknown'];
+		}
+	
 		if (empty($breadcrumb)) {
-			if ( (!isset($args['keeplastknown'])) || (!$args['keeplastknown']) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
+
+
+			if ((!$keepLastKnown) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
 				return '';
 			}
 			if (isset($_SESSION['bab_sitemap_lastknownposition'])) {
@@ -417,7 +450,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		
 //		$html .= '</ul>';
 	
-		if (isset($args['keeplastknown'])) {
+		if ($keepLastKnown) {
 			$_SESSION['bab_sitemap_lastknownposition'] = $html;
 		}
 
@@ -440,16 +473,35 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 /**
  * Return the sitemap menu tree in a html UL LI
- * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="1"] [maxdepth="depth"] >
  * 
- * - The sitemap attribute is optional, the default value is the sitemap selected in Administration > Sites > Site configuration.
+ * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] >
+ * 
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
+ * 		The default value is '1'.
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
- * 		The default value is babDgAll.
+ * 		The default value is 'babDgAll'.
  * - The selectednode attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
- * 		By default it is the node corresponding to the current page.
+ * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
  * 		No maximum depth by default.
+ * 
+ * 
+ * Example:
+ * 
+ * The following OVML function :
+ * <OFSitemapMenu basenode="babUser">
+ * 
+ * Will yield (when we are on 'Publication' page) :
+ * 
+ * <ul class="sitemap-menu-root">
+ * <li class="no-icon sitemap-babUserSection sitemap-folder active sitemap-main-menu"><div><span class="icon">Ovidentia functions</span></div><ul>
+ * <li class="no-icon sitemap-babUserPublication apps-articles"><a href="index.php?tg=artedit&amp;smed_id=babUserPublication" class="icon apps-articles">Publication</a></li>
+ * <li class="no-icon sitemap-babUserArticlesMan apps-articles active selected"><a title="List article topics where i am manager" href="index.php?tg=topman&amp;smed_id=babUserArticlesMan" class="icon apps-articles">Articles management</a></li>
+ * <li class="no-icon sitemap-babUserOptions categories-preferences-desktop"><a href="index.php?tg=options&amp;smed_id=babUserOptions" class="icon categories-preferences-desktop">Options</a></li>
+ * ...
+ * </ul>
  */
 class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	
@@ -538,8 +590,6 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		} else {
 			$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
 		}
-	
-		//  icon-16x16 icon-left icon-left-16
 	
 		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
 			$return .= "<ul>\n";
@@ -633,8 +683,15 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			}
 		}
 
+		if (!isset($args['keeplastknown'])) {
+			// If keeplastknown is not specified, active by default
+			$keepLastKnown = 1;
+		} else {
+			$keepLastKnown = $args['keeplastknown'];
+		}
+
 		if (empty($selectedNodeId)) {
-			if (isset($args['keeplastknown']) && $args['keeplastknown'] && isset($_SESSION['bab_sitemap_lastknownnode'])) {
+			if ($keepLastKnown && isset($_SESSION['bab_sitemap_lastknownnode'])) {
 				$selectedNodeId = $_SESSION['bab_sitemap_lastknownnode'];
 			}
 		} else {
