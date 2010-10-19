@@ -584,12 +584,12 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$classnames[] = $this->selectedClass;
 		}
 
-		if (null !== $mainmenuclass) {
-			$classnames[] = $mainmenuclass;
-			$return .= '<li class="no-icon '.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
-		} else {
+//		if (null !== $mainmenuclass) {
+//			$classnames[] = $mainmenuclass;
+//			$return .= '<li class="no-icon '.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
+//		} else {
 			$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
-		}
+//		}
 	
 		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
 			$return .= "<ul>\n";
@@ -714,16 +714,27 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		
 		$node = $home->firstChild();
 		$return = '';
-		
+
+		if (!isset($args['outerul'])) {
+			// If keeplastknown is not specified, active by default
+			$outerUl = 1;
+		} else {
+			$outerUl = $args['outerul'];
+		}
+
 		if ($node) {
 			
-			$return .= '<ul class="sitemap-menu-root">'."\n";
+			if ($outerUl) {
+				$return .= '<ul class="sitemap-menu-root">'."\n";
+			}
 			
 			do {
 				$return .= $this->getHtml($node, 'sitemap-main-menu');
 			} while ($node = $node->nextSibling());
 			
-			$return .= '</ul>'."\n";
+			if ($outerUl) {
+				$return .= '</ul>'."\n";
+			}
 		}
 		return $return;
 	}
