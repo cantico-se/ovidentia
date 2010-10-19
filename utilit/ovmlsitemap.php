@@ -583,7 +583,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (isset($args['selectedNode'])) {
 			$selectedNode = $args['selectedNode'];
 		}
-		if (!$selectedNode) {
+		if (!isset($selectedNode)) {
 			$selectedNode = bab_Sitemap::getPosition();
 		}
 
