@@ -428,7 +428,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	protected	$sitemap; 
 
 	/* The current sitemap node id */
-	protected	$selectedNode = null;
+	protected	$selectedNodeId = null;
 
 	/* the node ids of the current sitemap path */
 	protected	$activeNodes = array();
@@ -499,16 +499,16 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			// the nodes in the current path have the "active" class.
 			$classnames[] = $this->activeClass;
 		}
-		if ($this->selectedNode === $siteMapItem->id_function) {
+		if ($this->selectedNodeId === $siteMapItem->id_function) {
 			// the current node has the "selected" class.
 			$classnames[] = $this->selectedClass;
 		}
 
 		if (null !== $mainmenuclass) {
 			$classnames[] = $mainmenuclass;
-			$return .= '<li class="'.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
+			$return .= '<li class="no-icon '.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
 		} else {
-			$return .= '<li class="'.implode(' ', $classnames).'">'.$htmlData;
+			$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
 		}
 	
 		//  icon-16x16 icon-left icon-left-16
@@ -546,8 +546,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		} else {
 			global $babBody;
 			$sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
-			if (!isset($sitemap))
-			{
+			if (!isset($sitemap)) {
 				$sitemap = bab_siteMap::get();
 			}
 		}
@@ -567,8 +566,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 		if (isset($args['node'])) {
 			$home = $sitemap->getNodeById($args['node']);
+			$baseNodeId = $args['node'];
 		} else {
 			$home = $dg_node->firstChild();
+			$baseNodeId = null;
 		}
 
 		if (!($home instanceOf bab_Node)) {
@@ -581,24 +582,41 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 		
 		if (isset($args['selectedNode'])) {
-			$selectedNode = $args['selectedNode'];
+			$selectedNodeId = $args['selectedNode'];
 		}
 		if (!isset($selectedNode)) {
-			$selectedNode = bab_Sitemap::getPosition();
+			$selectedNodeId = bab_Sitemap::getPosition();
+
+			if (isset($baseNodeId)) {
+				// if base node (parameter 'node') has been specified,
+				// we try to find if a descendant of this node has
+				// a target to the current position. 
+				$baseNode = $this->sitemap->getNodeById($baseNodeId);
+				$nodes = $this->sitemap->createNodeIterator($baseNode);
+				
+				while ($node = $nodes->nextNode()) {
+					$sitemapItem = $node->getData();
+					$target = $sitemapItem->target;
+					if ($target === $selectedNodeId) {
+						$selectedNodeId = $sitemapItem->id_function;
+						break;
+					}
+				}
+			}
 		}
 
-		if (empty($selectedNode)) {
+		if (empty($selectedNodeId)) {
 			if (isset($args['keeplastknown']) && $args['keeplastknown'] && isset($_SESSION['bab_sitemap_lastknownnode'])) {
-				$selectedNode = $_SESSION['bab_sitemap_lastknownnode'];
+				$selectedNodeId = $_SESSION['bab_sitemap_lastknownnode'];
 			}
 		} else {
-			$_SESSION['bab_sitemap_lastknownnode'] = $selectedNode;
+			$_SESSION['bab_sitemap_lastknownnode'] = $selectedNodeId;
 		}
 
 		
-		$this->selectedNode = $selectedNode;
+		$this->selectedNodeId = $selectedNodeId;
 		
-		$selectedNode = $this->sitemap->getNodeById($selectedNode);
+		$selectedNode = $this->sitemap->getNodeById($selectedNodeId);
 
 		while ($selectedNode && ($item = $selectedNode->getData())) {
 			/* @var $item bab_SitemapItem */
