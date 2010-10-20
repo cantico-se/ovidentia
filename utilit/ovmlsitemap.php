@@ -116,12 +116,15 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 
 
 /**
- * Get one level of sitemap node
- * <OCSitemapEntries node="parentNode" sitemap="sitemapName">
+ * Get child nodes (one level) of the specified node.
+ *  
+ * <OCSitemapEntries sitemap="sitemapName" node="parentNode">
  * 
  * </OCSitemapEntries>
  * 
- * the sitemap attribute is optional
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The node attribute is mandatory, it specifies the sitemap id of the node for which child nodes be returned.
  *
  */
 class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
@@ -178,14 +181,14 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 /**
  * Get path starting from root (or a specified base node) to a specific sitemap node.
  * 
- * <OCSitemapPath [node="node"] [sitemap="sitemapName"] [basenode="node"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes]>
+ * <OCSitemapPath [sitemap="sitemapName"] [node="node"] [basenode="node"] [keeplastknown="0|1"] [limit=max_nodes|start_node,max_nodes]>
  * 
  * </OCSitemapPath>
  * 
- * - The node attribute is optional, it specifies the sitemap id of the node for which the path will be returned.
- * 		The default is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The node attribute is optional, it specifies the sitemap id of the node for which the path will be returned.
+ * 		The default is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
  * 		The default value is 'babDgAll'.
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
@@ -210,7 +213,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 		if (isset($this->sitemap)) {
 
-			if ($nodeId === false) {
+			if ($nodeId === false || empty($nodeId)) {
 				$nodeId = bab_Sitemap::getPosition();
 				
 				if ($baseNodeId) {
@@ -293,9 +296,11 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
  * 
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The node attribute is optional.
+ * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
  * 		The default value is 'babDgAll'.
- * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
+ * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
  * 		The default value is '1'.
  */
 class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
@@ -358,7 +363,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 	{
 		$args = $this->args;
 
-		if (isset($args['basenode'])) {
+		if (isset($args['basenode']) && (!empty($args['basenode']))) {
 
 			if (isset($args['sitemap'])) {
 				$sitemap = bab_siteMap::getByUid($args['sitemap']);
@@ -642,7 +647,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		}
 
 
-		if (isset($args['basenode'])) {
+		if (isset($args['basenode']) && (!empty($args['basenode']))) {
 			$home = $sitemap->getNodeById($args['basenode']);
 			$baseNodeId = $args['basenode'];
 		} else {
@@ -654,12 +659,12 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			return '';
 		}
 
-		if (isset($args['maxdepth'])) {
+		if (isset($args['maxdepth']) && (!empty($args['maxdepth']))) {
 			$this->maxDepth = $args['maxdepth'];
 		}
 
 		
-		if (isset($args['selectednode'])) {
+		if (isset($args['selectednode']) && (!empty($args['selectednode']))) {
 			$selectedNodeId = $args['selectednode'];
 		}
 		if (!isset($selectedNode)) {
