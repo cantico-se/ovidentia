@@ -423,7 +423,7 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
 		
 		foreach($this->calendars as $calendar)
 		{
-			$users += $this->getUserToNotifyByCalendar($calendar);
+			$users += $this->getUsersToNotifyByCalendar($calendar);
 		}
 
 		return $users;
