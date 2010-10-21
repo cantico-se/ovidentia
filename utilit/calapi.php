@@ -208,14 +208,96 @@ function bab_getFreeEvents($idcals, $sdate, $edate, $gap, $bopt)
 }
 
 
+
+/**
+ * Create a new event or updates an existing one.
+ * In case of an update $updateMethod must be specified.
+ * 
+ * @param	array	$idcals
+ * @param	array	$args
+ * array(
+ * 	'evtid' =>
+ * 	'calid' =>
+ * 	'dtstart' =>
+ * 	'title' =>
+ * 	'location' =>
+ *	'category' =>
+ *	'color' =>
+ *	'yearbegin' =>
+ *	'monthbegin' =>
+ *	'daybegin' =>
+ *	'timebegin' =>
+ *	'yearend' =>
+ *	'monthend' =>
+ *	'dayend' =>
+ *	'timeend' =>
+ *	'bprivate' =>
+ *	'block' =>
+ *	'bfree' =>
+ *	'event_owner' =>
+ *	'repeat_cb' =>
+ *	'repeat_yearend' =>
+ *	'repeat_monthend' =>
+ *	'repeat_dayend' =>
+ *	'repeat' =>
+ *	'repeat_n_1' =>
+ *	'repeat_n_2' =>
+ *	'repeat_n_3' =>
+ *	'repeat_n_4' =>
+ *	'repeat_wd' =>
+ *	'creminder' =>
+ * 	'rday' =>		reminder day of month
+ * 	'rhour' =>		reminder hour
+ * 	'rminute' =>	reminder minute
+ * 	'remail' =>
+ * 	'selected_calendars' => array()
+ * 	'description' => 
+ * 	'descriptionformat' =>
+ * )
+ * @param	string	&$msgerror		empty string
+ * @param	int		$updateMethod				BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
+ * 
+ * @return  bool		True in case of success, false if the event could not be created/updated.
+ * 						In this case $msgerror will contain a translated error message.
+ */
+function bab_saveEvent($idcals, $args, &$msgerror, $updateMethod = null)
+{
+	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
+
+	$posted = new bab_event_posted();
+	$posted->createArgsData($args);
+	if (!$posted->isValid($msgerror)) {
+		return false;
+	}
+
+	// if period is available
+	if ($posted->availabilityCheckAllEvents($msgerror)) {
+		return $posted->save($msgerror);
+	}
+	
+	
+	// if availability message displayed and the event is submited
+	if (isset($args['availability_displayed']) && !isset($args['test_conflicts'])) {
+		
+		// if availability is NOT mandatory
+		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
+			return $posted->save($msgerror);
+		}
+	}
+
+	return false;
+}
+
+
 /**
  * Create new event
- * @see bab_createEvent
  * 
  * @param	array	$idcals
  * @param	array	$args
  * @param	string	&$msgerror		empty string
- */
+ * 
+ * @deprecated		You should probably use @see bab_saveEvent instead.
+ */	
 function bab_newEvent($idcals, $args, &$msgerror)
 {
 	$args['selected_calendars'] = $idcals;
@@ -224,11 +306,13 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	include_once $GLOBALS['babInstallPath'].'utilit/cal.ovievent.php';
 	
 	$calendar = bab_getMainCalendar($idcals);
+
+	$backend = $calendar->getBackend();
 	
-	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	$collection = $backend->CalendarEventCollection($calendar);
 	
 	$period = bab_createCalendarPeriod($backend, $args, $collection);
+	
 	
 	
 	if ($backend->savePeriod($period))
@@ -239,6 +323,9 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	
 	return false;
 }
+
+
+
 
 function bab_deleteEventById( $evtid )
 {
@@ -287,5 +374,3 @@ function bab_calGetWorkingDays($iIdUser, &$sWorkingDays)
 
 	$sWorkingDays = implode(',',$arr);
 }
-
-?>

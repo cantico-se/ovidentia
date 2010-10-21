@@ -325,6 +325,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	// add additional calendars as attendee property
 	$calendars = bab_getICalendars()->getCalendars();
 	
+	
 	foreach($args['selected_calendars'] as $idcal)
 	{
 		if (isset($calendars[$idcal]))
@@ -532,7 +533,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 	);
 
 	$period->setData($data);
-
+	
 	
 	return $period;
 }
@@ -1538,56 +1539,107 @@ class bab_event_posted {
 
 	/**
 	 * Populate $this->args from POST data
+	 * 
+	 * @param array	$data		The data to use to populate $this->args, if not specified or null, _POST will be used instead.
+	 * 
+	 * array(
+	 * 	'evtid' =>
+	 * 	'calid' =>
+	 * 	'dtstart' =>
+	 * 	'title' =>
+	 * 	'location' =>
+	 *	'category' =>
+	 *	'color' =>
+	 *	'yearbegin' =>
+	 *	'monthbegin' =>
+	 *	'daybegin' =>
+	 *	'timebegin' =>
+	 *	'yearend' =>
+	 *	'monthend' =>
+	 *	'dayend' =>
+	 *	'timeend' =>
+	 *	'bprivate' =>
+	 *	'block' =>
+	 *	'bfree' =>
+	 *	'event_owner' =>
+	 *	'repeat_cb' =>
+	 *	'repeat_yearend' =>
+	 *	'repeat_monthend' =>
+	 *	'repeat_dayend' =>
+	 *	'repeat' =>
+	 *	'repeat_n_1' =>
+	 *	'repeat_n_2' =>
+	 *	'repeat_n_3' =>
+	 *	'repeat_n_4' =>
+	 *	'repeat_wd' =>
+	 *	'creminder' =>
+	 * 	'rday' =>		reminder day of month
+	 * 	'rhour' =>		reminder hour
+	 * 	'rminute' =>	reminder minute
+	 * 	'remail' =>
+	 * 	'selected_calendars' => array()
+	 * 	'description' => 
+	 * 	'descriptionformat' =>
+	 * )
 	 */
-	public function createArgsData() {
-	
+	public function createArgsData($data = null)
+	{
 		global $babBody, $babDB;
-		
-		if (isset($_POST['evtid'])) {
-			$this->args['evtid'] = $_POST['evtid'];
+
+		if (!isset($data)) {
+			$data =& $_POST;
+			include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
+					
+			$editor = new bab_contentEditor('bab_calendar_event');
+			$this->args['description'] = $editor->getContent();
+			$this->args['descriptionformat'] = $editor->getFormat();
+		} else {
+			$this->args['description'] = isset($data['description']) ? $data['description'] : '';
+			$this->args['descriptionformat'] = isset($data['descriptionformat']) ? $data['descriptionformat'] : 'html';
+		}
+
+		if (isset($data['evtid'])) {
+			$this->args['evtid'] = $data['evtid'];
 		} else {
 			$this->args['evtid'] = '';
 		}
-		if (isset($_POST['calid'])) {
-			$this->args['calid'] = $_POST['calid'];
+		if (isset($data['calid'])) {
+			$this->args['calid'] = $data['calid'];
 		} else {
 			$this->args['calid'] = '';
 		}
 
-		$this->args['dtstart'] = bab_pp('dtstart', null);
+		$this->args['dtstart'] = isset($data['dtstart']) ? $data['dtstart'] : null;
 		
 		
-		if (isset($_POST['selected_calendars'])) {
-			$this->args['selected_calendars'] = $_POST['selected_calendars'];
+		if (isset($data['selected_calendars'])) {
+			$this->args['selected_calendars'] = $data['selected_calendars'];
 		}
 	
 	
-		if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($_POST['creminder']) && $_POST['creminder'] == 'Y')
+		if( !empty($GLOBALS['BAB_SESS_USERID']) && isset($data['creminder']) && $data['creminder'] == 'Y')
 			{
-			$this->args['alert']['day'] = $_POST['rday'];
-			$this->args['alert']['hour'] = $_POST['rhour'];
-			$this->args['alert']['minute'] = $_POST['rminute'];
-			$this->args['alert']['email'] = isset($_POST['remail'])? $_POST['remail']: 'N';
+			$this->args['alert']['day'] = $data['rday'];
+			$this->args['alert']['hour'] = $data['rhour'];
+			$this->args['alert']['minute'] = $data['rminute'];
+			$this->args['alert']['email'] = isset($data['remail'])? $data['remail']: 'N';
 			}
 		
-		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-				
-		$editor = new bab_contentEditor('bab_calendar_event');
-		$this->args['description'] = $editor->getContent();
-		$this->args['descriptionformat'] = $editor->getFormat();
 		
-		$this->args['title'] = bab_pp('title');
-		$this->args['location'] = bab_pp('location');
+
+		
+		$this->args['title'] = isset($data['title']) ? $data['title'] : '';
+		$this->args['location'] = isset($data['location']) ? $data['location'] : '';
 			
-		$this->args['category'] = empty($_POST['category']) ? '0' : $_POST['category'];
-		$this->args['color'] = empty($_POST['color']) ? '' : $_POST['color'];
+		$this->args['category'] = empty($data['category']) ? '0' : $data['category'];
+		$this->args['color'] = empty($data['color']) ? '' : $data['color'];
 	
-		$this->args['startdate']['year'] = bab_pp('yearbegin', null);
-		$this->args['startdate']['month'] = bab_pp('monthbegin', null);
-		$this->args['startdate']['day'] = bab_pp('daybegin', null);
+		$this->args['startdate']['year'] = isset($data['yearbegin']) ? $data['yearbegin'] : null;
+		$this->args['startdate']['month'] = isset($data['monthbegin']) ? $data['monthbegin'] : null;
+		$this->args['startdate']['day'] = isset($data['daybegin']) ? $data['daybegin'] : null;
 		
-		if (isset($_POST['timebegin'])) {
-			$timebegin = $_POST['timebegin'];
+		if (isset($data['timebegin'])) {
+			$timebegin = $data['timebegin'];
 		} else {
 			$timebegin = bab_getICalendars()->starttime;
 		}
@@ -1596,12 +1648,12 @@ class bab_event_posted {
 		$this->args['startdate']['hours'] = $tb[0];
 		$this->args['startdate']['minutes'] = $tb[1];
 	
-		$this->args['enddate']['year'] = bab_pp('yearend', null);
-		$this->args['enddate']['month'] = bab_pp('monthend', null);
-		$this->args['enddate']['day'] = bab_pp('dayend', null);
+		$this->args['enddate']['year'] = isset($data['yearend']) ? $data['yearend'] : null;
+		$this->args['enddate']['month'] = isset($data['monthend']) ? $data['monthend'] : null;
+		$this->args['enddate']['day'] = isset($data['dayend']) ? $data['dayend'] : null;
 		
-		if (isset($_POST['timeend'])) {
-			$timeend = $_POST['timeend'];
+		if (isset($data['timeend'])) {
+			$timeend = $data['timeend'];
 		} else {
 			if (bab_getICalendars()->endtime > $timebegin) {
 				$timeend = bab_getICalendars()->endtime;
@@ -1615,7 +1667,7 @@ class bab_event_posted {
 		$this->args['enddate']['minutes'] = $tb[1];
 	
 	
-		if( isset($_POST['bprivate']) && $_POST['bprivate'] ==  'Y' )
+		if( isset($data['bprivate']) && $data['bprivate'] ==  'Y' )
 			{
 			$this->args['private'] = true;
 			}
@@ -1624,7 +1676,7 @@ class bab_event_posted {
 			$this->args['private'] = false;
 			}
 	
-		if( isset($_POST['block']) && $_POST['block'] ==  'Y' )
+		if( isset($data['block']) && $data['block'] ==  'Y' )
 			{
 			$this->args['lock'] = true;
 			}
@@ -1633,7 +1685,7 @@ class bab_event_posted {
 			$this->args['lock'] = false;
 			}
 	
-		if( isset($_POST['bfree']) && $_POST['bfree'] ==  'Y' )
+		if( isset($data['bfree']) && $data['bfree'] ==  'Y' )
 			{
 			$this->args['free'] = true;
 			}
@@ -1644,7 +1696,7 @@ class bab_event_posted {
 	
 		$id_owner = $GLOBALS['BAB_SESS_USERID'];
 	
-		if (isset($_POST['event_owner']) && isset(bab_getICalendars()->usercal[$_POST['event_owner']]) )
+		if (isset($data['event_owner']) && isset(bab_getICalendars()->usercal[$data['event_owner']]) )
 			{
 			$arr = $babDB->db_fetch_array(
 				$babDB->db_query("
@@ -1653,7 +1705,7 @@ class bab_event_posted {
 					
 					FROM ".BAB_CALENDAR_TBL." 
 						WHERE 
-						id='".$babDB->db_escape_string($_POST['event_owner'])."'
+						id='".$babDB->db_escape_string($data['event_owner'])."'
 					"
 				)
 			);
@@ -1664,61 +1716,62 @@ class bab_event_posted {
 
 
 	
-		if( isset($_POST['repeat_cb']) && $_POST['repeat_cb'] != 0) {
+		if (isset($data['repeat_cb']) && $data['repeat_cb'] != 0) {
 
 			
 			$this->args['until'] = array(
-				'year'	=> (int) $_POST['repeat_yearend'], 
-				'month'	=> (int) $_POST['repeat_monthend'], 
-				'day'	=> (int) $_POST['repeat_dayend']
+				'year'	=> (int) $data['repeat_yearend'], 
+				'month'	=> (int) $data['repeat_monthend'], 
+				'day'	=> (int) $data['repeat_dayend']
 			);
 			
-			switch(bab_pp('repeat') )
-				{
+			$data['repeat'] = isset($data['repeat']) ? $data['repeat'] : '';
+			switch ($data['repeat']) {
+	
 				case BAB_CAL_RECUR_WEEKLY: /* weekly */
 					$this->args['rrule'] = BAB_CAL_RECUR_WEEKLY;
-					if( empty($_POST['repeat_n_2']))
+					if( empty($data['repeat_n_2']))
 						{
-						$_POST['repeat_n_2'] = 1;
+						$data['repeat_n_2'] = 1;
 						}
 	
-					$this->args['nweeks'] = (int) $_POST['repeat_n_2'];
+					$this->args['nweeks'] = (int) $data['repeat_n_2'];
 	
-					if( isset($_POST['repeat_wd']) )
+					if( isset($data['repeat_wd']) )
 						{
-						$this->args['rdays'] = $_POST['repeat_wd'];
+						$this->args['rdays'] = $data['repeat_wd'];
 						}
 	
 					break;
 					
 				case BAB_CAL_RECUR_MONTHLY: /* monthly */
 					$this->args['rrule'] = BAB_CAL_RECUR_MONTHLY;
-					if( empty($_POST['repeat_n_3']))
+					if( empty($data['repeat_n_3']))
 						{
-						$_POST['repeat_n_3'] = 1;
+						$data['repeat_n_3'] = 1;
 						}
 	
-					$this->args['nmonths'] = (int) $_POST['repeat_n_3'];
+					$this->args['nmonths'] = (int) $data['repeat_n_3'];
 					break;
 					
 				case BAB_CAL_RECUR_YEARLY: /* yearly */
 					$this->args['rrule'] = BAB_CAL_RECUR_YEARLY;
-					if( empty($_POST['repeat_n_4']))
+					if( empty($data['repeat_n_4']))
 						{
-						$_POST['repeat_n_4'] = 1;
+						$data['repeat_n_4'] = 1;
 						}
-					$this->args['nyears'] = (int) $_POST['repeat_n_4'];
+					$this->args['nyears'] = (int) $data['repeat_n_4'];
 					break;
 					
 				case BAB_CAL_RECUR_DAILY: /* daily */
 				default:
 					$this->args['rrule'] = BAB_CAL_RECUR_DAILY;
-					if( empty($_POST['repeat_n_1']))
+					if( empty($data['repeat_n_1']))
 						{
-						$_POST['repeat_n_1'] = 1;
+						$data['repeat_n_1'] = 1;
 						}
 	
-					$this->args['ndays'] = (int) $_POST['repeat_n_1'];
+					$this->args['ndays'] = (int) $data['repeat_n_1'];
 					break;
 			}
 		}
@@ -1909,7 +1962,7 @@ class bab_event_posted {
 	 * 
 	 * @return bool
 	 */
-	public function save(&$message) {
+	public function save(&$message, $updateMethod = null) {
 
 		try {
 			$calendarPeriod = $this->getCalendarPeriod();
@@ -1924,9 +1977,11 @@ class bab_event_posted {
 		$calendar = $collection->getCalendar();
 		$backend = $calendar->getBackend();
 		
-		$bupdrec = (int) bab_pp('bupdrec');
+		if (!isset($updateMethod)) {
+			$updateMethod = (int) bab_pp('bupdrec');
+		}
 
-		bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
+		bab_addHashEventsToCollection($collection, $calendarPeriod, $updateMethod);
 		
 		$oldrelations = array();
 		$oldcalendars = array();
@@ -2138,6 +2193,7 @@ class bab_event_posted {
 	 */
 	public static function availabilityCheck($calid, bab_CalendarPeriod $period) {
 	
+		require_once $GLOBALS['babInstallPath'] . 'utilit/mcalincl.php';
 		if ($period->isTransparent())
 		{
 			return true;	
