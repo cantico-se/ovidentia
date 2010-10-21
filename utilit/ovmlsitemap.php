@@ -522,8 +522,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	protected	$activeClass = 'active';
 	
 	protected	$maxDepth = 100;
-	
-	
+
 	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 		
 		global $babUseRewrittenUrl;
@@ -667,7 +666,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (isset($args['selectednode']) && (!empty($args['selectednode']))) {
 			$selectedNodeId = $args['selectednode'];
 		}
-		if (!isset($selectedNode)) {
+		if (!isset($selectedNodeId)) {
 			$selectedNodeId = bab_Sitemap::getPosition();
 
 			if (isset($baseNodeId)) {
