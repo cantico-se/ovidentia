@@ -252,14 +252,7 @@ if ($tg != 'version' || !isset($idx) || $idx != 'upgrade') {
 	if ($GLOBALS['babCookieIdent'] === true) {
 		include $babInstallPath."utilit/cookieident.php";
 	}
-	if (isset($babNTauth) && !isset($_REQUEST['babNTauth']) && $babNTauth ) {
-		// We force the cache about groups to reload to avoid problems when
-		// using the NT auto login.
-		$babDB->db_query('UPDATE ' . BAB_USERS_LOG_TBL . ' SET grp_change=\'1\'');
-		unset($_SESSION['bab_groupAccess']['acltables']);
-		unset($_SESSION['bab_groupAccess']['usergroups']);
-		include $babInstallPath."utilit/ntident.php";
-	}
+
 	bab_isUserLogged();
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
