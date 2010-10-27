@@ -5672,7 +5672,7 @@ class Func_Ovml_Container_Soap extends Func_Ovml_Container
 
 
 
-class Func_Ovml_Container_MultiPages extends Func_Ovml_Container
+class Func_Ovml_Container_Multipages extends Func_Ovml_Container
 {
 	var $IdEntries = array();
 	var $index;
