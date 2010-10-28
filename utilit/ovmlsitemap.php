@@ -148,12 +148,12 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					/* @var $item bab_SitemapItem */
 					$item = $node->getData();
 					$tmp = array();
-					if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
+					
+					$tmp['url'] = $item->url;
+					if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl && !empty($item->url)) {
 						$tmp['url'] = bab_Sitemap::rewrittenUrl($item->id_function);
-					} else {
-						$tmp['url'] = $item->url;
 					}
-//					$tmp['url'] = $item->url;
+					
 					$tmp['text'] = $item->name;
 					$tmp['description'] = $item->description;
 					$tmp['id'] = $item->id_function;
