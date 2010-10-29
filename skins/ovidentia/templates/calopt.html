@@ -551,6 +551,27 @@ this.opener.location.href='{ backurl }';
 
 
 <!--#begin calendarBackend -->
+
+<script type="text/javascript">
+bab_initFunctions.push(function() {
+
+	document.getElementById('bab_cal_copy_source').onclick = function() {
+		bloc = document.getElementById('bab_cal_start_copy_from');
+		if (document.getElementById('bab_cal_copy_source').checked)
+		{
+			bloc.style.display = 'block';
+		}
+		else
+		{
+			bloc.style.display = 'none';
+		}
+	};
+
+	document.getElementById('bab_cal_copy_source').click();
+	
+});
+</script>
+
 <form method="post" action="{ babPhpSelf }">
 	<input type="hidden" name="tg" value="calopt" />
 	<input type="hidden" name="idx" value="options" />
@@ -571,8 +592,17 @@ this.opener.location.href='{ backurl }';
 					<label><input type="checkbox" name="delete_destination" value="1" />&nbsp;{ t_option_delete_destination }</label>
 				</p>
 				<p>
-					<label><input type="checkbox" name="copy_source" value="1" />&nbsp;{ t_option_copy_source }</label>
+					<label><input type="checkbox" name="copy_source" id="bab_cal_copy_source" value="1" />&nbsp;{ t_option_copy_source }</label>
 				</p>
+				<blockquote id="bab_cal_start_copy_from">
+					<label>{ t_start_copy_from } : 
+						<select name="start_copy_from">
+							<!--#in getnextstart -->
+							<option value="{ value }">{ option }</option>
+							<!--#endin getnextstart -->
+						</select>
+					</label>
+				</blockquote>
 				
 				<p align="center">
 					<input type="submit" value="{ t_submit }" />
