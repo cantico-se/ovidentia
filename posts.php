@@ -896,7 +896,7 @@ function editPost($forum, $thread, $post)
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_forum_post');
 				$editor->setContent($this->arr['message']);
-				$editor->setFormat($thsi->arr['message_format']);
+				$editor->setFormat($this->arr['message_format']);
 				$editor->setFormat('html');
 				$this->editor = $editor->getEditor();
 				
