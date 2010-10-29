@@ -477,7 +477,7 @@ class bab_addonPackage
 		$this->zip = bab_functionality::get('Archive/Zip');
 		
 		$version = str_replace('.','-',$addon->getIniVersion());
-		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.'.zip';
+		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.'.pkg.zip';
 		
 		try {
 			$this->zip->open($this->tmpfile);
@@ -808,6 +808,10 @@ function bab_display_addon_requirements()
 
 				if ($ini->fileExists()) {
 					$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
+					if ($addon->getDependencies()) 
+					{
+						$this->exportpkgurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=exportall&item=".$addon->getId());
+					}
 				}
 			}
 
@@ -830,6 +834,7 @@ function bab_display_addon_requirements()
 			$this->t_delete = bab_translate("Delete");
 			$this->t_history = bab_translate("Historic");
 			$this->t_export = bab_translate("Download");
+			$this->t_exportpkg = bab_translate("Download with dependencies");
 			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"));
 			
 			$this->call_upgrade = true;
