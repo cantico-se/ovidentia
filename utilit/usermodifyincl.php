@@ -243,7 +243,7 @@ class bab_userModify {
 						return false;
 					}
 					
-					$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' where id !='".$arruinfo['id']."'");
+					$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
 					if( $babDB->db_num_rows($res) > 0) {
 						$error = bab_translate("This login ID already exists !!");
 						return false;
