@@ -31,7 +31,7 @@ include_once $babInstallPath."utilit/afincl.php";
 include_once $babInstallPath."utilit/mailincl.php";
 include_once $babInstallPath."utilit/vacincl.php";
 
-function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance)
+function addVacationType($vtid, $what, $tname, $description, $tcolor, $cbalance)
 	{
 	global $babBody, $babDB;
 	class temp
@@ -49,14 +49,13 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 
 		var $add;
 
-		function temp($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance)
+		function temp($vtid, $what, $tname, $description, $tcolor, $cbalance)
 			{
 			global $babDB;
 			$this->what = $what;
 			$this->vtid = $vtid;
 			$this->name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->quantity = bab_translate("Quantity");
 			$this->colortxt = bab_translate("Color");
 			$this->balancetxt = bab_translate("Accept negative balance");
 			$this->yestxt = bab_translate("Yes");
@@ -64,14 +63,11 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 			$this->selctorurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=selectcolor&idx=popup&callback=setColor");
 			$this->tcolor = $tcolor;
 
-			$this->invalidentry1 = bab_translate("Invalid entry!  Only numbers are accepted and . !");
-
 			if( $what == "modvt" && empty($tname))
 				{
 				$arr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_TYPES_TBL." where id=".$babDB->quote($vtid)));
 				$this->tnameval = bab_toHtml($arr['name']);
 				$this->descriptionval = bab_toHtml($arr['description']);
-				$this->quantityval = bab_toHtml($arr['quantity']);
 				$this->tcolorval = bab_toHtml($arr['color']);
 				if( $arr['cbalance'] == 'Y')
 					{
@@ -88,7 +84,6 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 				{
 				$this->tnameval = bab_toHtml($tname);
 				$this->descriptionval = bab_toHtml($description);
-				$this->quantityval = bab_toHtml($quantity);
 				$this->tcolorval = bab_toHtml($tcolor);
 				if( $cbalance == 'N')
 					{
@@ -117,7 +112,7 @@ function addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor,
 		}
 
 	list($count) = $babDB->db_fetch_row($babDB->db_query("select count(*) as total from ".BAB_VAC_TYPES_TBL));
-	$temp = new temp($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance);
+	$temp = new temp($vtid, $what, $tname, $description, $tcolor, $cbalance);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "vtypecreate"));
 	return $count;
 	}
@@ -196,7 +191,6 @@ function listVacationTypes()
 			{
 			$this->nametxt = bab_translate("Name");
 			$this->descriptiontxt = bab_translate("Description");
-			$this->quantitytxt = bab_translate("Quantity");
 			$this->colortxt = bab_translate("Color");
 			$this->altaddvr = bab_translate("Allocate vacation rights");
 			$babDB = $GLOBALS['babDB'];
@@ -215,7 +209,6 @@ function listVacationTypes()
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadm&idx=modvt&id=".$arr['id']);
 				$this->urlname = bab_toHtml($arr['name']);
 				$this->description = bab_toHtml($arr['description']);
-				$this->quantity = bab_toHtml($arr['quantity']);
 				$this->tcolor = bab_toHtml($arr['color']);
 				$this->addurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr&idtype=".$arr['id']);
 				$i++;
@@ -770,7 +763,7 @@ function admmenu()
 	}
 
 
-function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
+function saveVacationType($tname, $description, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
 	{
 	global $babBody;
 	if( empty($tname)) {
@@ -792,7 +785,7 @@ function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $
 	$req .= " values (
 	'".$babDB->db_escape_string($tname)."', 
 	'" .$babDB->db_escape_string($description). "', 
-		'" .$babDB->db_escape_string($quantity). "',
+		'" .$babDB->db_escape_string(0). "',
 		'" .$babDB->db_escape_string($maxdays). "',
 		'" .$babDB->db_escape_string($mindays). "',
 		'" .$babDB->db_escape_string($default). "',
@@ -803,7 +796,7 @@ function saveVacationType($tname, $description, $quantity, $tcolor, $cbalance, $
 	return true;
 	}
 
-function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
+function updateVacationType($vtid, $tname, $description, $tcolor, $cbalance, $maxdays=0, $mindays=0, $default=0)
 	{
 	global $babBody;
 	if( empty($tname))
@@ -826,7 +819,7 @@ function updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cb
 		SET 
 			name='".$babDB->db_escape_string($tname)."', 
 			description='".$babDB->db_escape_string($description)."', 
-			quantity='".$babDB->db_escape_string($quantity)."', 
+			quantity='0', 
 			maxdays='".$babDB->db_escape_string($maxdays)."', 
 			mindays='".$babDB->db_escape_string($mindays)."', 
 			defaultdays='".$babDB->db_escape_string($default)."', 
@@ -1101,7 +1094,7 @@ if( isset($_POST['add']) )
 		{
 		case 'addvt':
 		
-			if(!saveVacationType($tname, $description, $quantity, $tcolor, $cbalance))
+			if(!saveVacationType($tname, $description, $tcolor, $cbalance))
 				$idx ='addvt';
 
 			break;
@@ -1109,7 +1102,7 @@ if( isset($_POST['add']) )
 		case 'modvt':
 			if( isset($bdel))
 				deleteVacationType($vtid);
-			else if(!updateVacationType($vtid, $tname, $description, $quantity, $tcolor, $cbalance))
+			else if(!updateVacationType($vtid, $tname, $description, $tcolor, $cbalance))
 				$idx ='addvt';
 
 			break;
@@ -1356,12 +1349,11 @@ switch($idx)
 		if( !isset($what)) $what ="addvt";
 		if( !isset($tname)) $tname ="";
 		if( !isset($description)) $description ="";
-		if( !isset($quantity)) $quantity ="";
 		if( !isset($tcolor)) $tcolor = "";
 		if( !isset($cbalance)) $cbalance = "";
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
-		addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance);
+		addVacationType($vtid, $what, $tname, $description, $tcolor, $cbalance);
 		
 		break;
 

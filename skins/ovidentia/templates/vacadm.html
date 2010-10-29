@@ -1,21 +1,6 @@
 <!--#begin vtypecreate -->
 <script type="text/javascript">
 <!--
-function validateNum(field) {
-var valid = ".0123456789"
-var ok = "yes";
-var temp;
-for (var i=0; i<field.value.length; i++) {
-temp = "" + field.value.substring(i, i+1);
-if (valid.indexOf(temp) == "-1") ok = "no";
-}
-if (ok == "no") {
-var d1;
-alert('{ invalidentry1 }');
-field.focus();
-field.select();
-   }
-}
 
 function setColor(color)
 	{
@@ -46,12 +31,7 @@ function setColor(color)
 <input type="text" name="description" size="50" maxlength="255" value="{ descriptionval }">
 </td>
 </tr>
-<tr> 
-<td align="right" nowrap valign="middle">{ quantity }:</td>
-<td valign="middle"> 
-<input type="text" name="quantity" size="6" maxlength="6"  value="{ quantityval }" onBlur="validateNum(this)">
-</td>
-</tr>
+
 <tr> 
 <td align="right" nowrap valign="middle">{ balancetxt }:</td>
 <td valign="middle"> 
@@ -94,17 +74,15 @@ function setColor(color)
 <td class="BabLoginCadreBackground"> 
 	<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr class="BabSiteAdminTitleFontBackground"> 
-		<td>{ nametxt }</td>
+		<td width="10%">{ nametxt }</td>
 		<td align="left">{ descriptiontxt }</td>
-		<td>{ quantitytxt }</td>
-		<td>{ altaddvr }</td>
-		<td>{ colortxt }</td>
+		<td width="20%">{ altaddvr }</td>
+		<td width="10%">{ colortxt }</td>
 	</tr>
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td><a href="{ url }">{ urlname }</a></td>
 		<td>{ description }</td>
-		<td align="center">{ quantity }</td>
 		<td align="center"><a href="{ addurl }"><img src="{ babSkinPath }images/Puces/PuceRightVacation.gif" alt="{ altaddvr }" border="0" align="middle" /></a></td>
 		<td bgcolor="#{ tcolor }"><span>&nbsp;</span></td>
 	</tr>
