@@ -477,7 +477,8 @@ class bab_addonPackage
 		$this->zip = bab_functionality::get('Archive/Zip');
 		
 		$version = str_replace('.','-',$addon->getIniVersion());
-		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.'.pkg.zip';
+		$ext = $multiple ? '.pkg.zip' : '.zip';
+		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.$ext;
 		
 		try {
 			$this->zip->open($this->tmpfile);
