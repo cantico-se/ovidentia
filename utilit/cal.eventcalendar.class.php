@@ -543,6 +543,61 @@ abstract class bab_EventCalendar
 	}
 	
 
+	
+	
+	/**
+	 * Add calendar event to ovidentia inbox
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function addToOviInbox(bab_CalendarPeriod $event)
+	{
+		global $babDB;
+		
+		$collection = $event->getCollection();
+		$calendar = $collection->getCalendar();
+		$eventBackend = $calendar->getBackend();
+			
+		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user='.$babDB->quote($this->getIdUser()).' AND uid='.$babDB->quote($event->getProperty('UID')));
+		if ($babDB->db_num_rows($res))
+		{
+			return;
+		}
+		
+		if (!$collection->hash)
+		{
+			// regular event
+			
+			$babDB->db_query('
+				INSERT INTO bab_cal_inbox 
+					(id_user, calendar_backend, uid) 
+				VALUES 
+					(
+						'.$babDB->quote($this->getIdUser()).',
+						'.$babDB->quote($eventBackend->getUrlIdentifier()).',
+						'.$babDB->quote($event->getProperty('UID')).'
+					)
+			');
+		
+		} else {
+			
+			// recurring event with hash, insert all collection
+			
+			foreach($collection as $event)
+			{
+				$babDB->db_query('
+					INSERT INTO bab_cal_inbox 
+						(id_user, calendar_backend, uid) 
+					VALUES 
+						(
+							'.$babDB->quote($this->getIdUser()).',
+							'.$babDB->quote($eventBackend->getUrlIdentifier()).',
+							'.$babDB->quote($event->getProperty('UID')).'
+						)
+				');
+			}
+		}	
+	}
 }
 
 
@@ -965,6 +1020,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	
 	
 	
+	
 	/**
 	 * Triggered when the calendar has been added as an attendee on $event
 	 * @param bab_CalendarPeriod $event
@@ -980,47 +1036,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 		if ($calendar !== $this)
 		{
-			global $babDB;
-			
-			$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user='.$babDB->quote($this->getIdUser()).' AND uid='.$babDB->quote($event->getProperty('UID')));
-			if ($babDB->db_num_rows($res))
-			{
-				return;
-			}
-			
-			if (!$collection->hash)
-			{
-				// regular event
-				
-				$babDB->db_query('
-					INSERT INTO bab_cal_inbox 
-						(id_user, calendar_backend, uid) 
-					VALUES 
-						(
-							'.$babDB->quote($this->getIdUser()).',
-							'.$babDB->quote($eventBackend->getUrlIdentifier()).',
-							'.$babDB->quote($event->getProperty('UID')).'
-						)
-				');
-			
-			} else {
-				
-				// recurring event with hash, insert all collection
-				
-				foreach($collection as $event)
-				{
-					$babDB->db_query('
-						INSERT INTO bab_cal_inbox 
-							(id_user, calendar_backend, uid) 
-						VALUES 
-							(
-								'.$babDB->quote($this->getIdUser()).',
-								'.$babDB->quote($eventBackend->getUrlIdentifier()).',
-								'.$babDB->quote($event->getProperty('UID')).'
-							)
-					');
-				}
-			}
+			$this->addToOviInbox($event);
 		}
 	}
 	
