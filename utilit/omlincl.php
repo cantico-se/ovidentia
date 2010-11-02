@@ -4979,7 +4979,13 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		}
 		else
 		{
-			$calendarid = array(bab_getICalendars()->getPersonalCalendar()->getUrlIdentifier() => 1);	
+			$personal = bab_getICalendars()->getPersonalCalendar();
+			if (!$personal)
+			{
+				return array();
+			}
+			
+			$calendarid = array($personal->getUrlIdentifier() => 1);	
 		}
 		
 		$return = array();
