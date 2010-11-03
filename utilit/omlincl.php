@@ -3591,8 +3591,6 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 				default: $order = 'f.modified DESC'; break;
 			}
 
-			$req .= ' group by f.id';
-
 			$req .= ' order by '.$order;
 
 			if( $this->last !== false)
