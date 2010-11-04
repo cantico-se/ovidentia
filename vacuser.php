@@ -721,6 +721,7 @@ function addNewVacation()
 		$period_begin = $date_begin->getTimestamp();
 		$period_end = $date_end->getTimestamp();
 		
+		
 		}
 	else
 		{
@@ -761,9 +762,12 @@ function addNewVacation()
 			");
 
 		$id = $id_request;
+		
+		$old_date_begin_obj = BAB_DateTime::fromIsoDateTime($old_date_begin);
+		$old_date_end_obj = BAB_DateTime::fromIsoDateTime($old_date_end);
 
-		$old_date_begin = bab_mktime($old_date_begin);
-		$old_date_end = bab_mktime($old_date_end);
+		$old_date_begin = $old_date_begin_obj->getTimeStamp();
+		$old_date_end = $old_date_end_obj->getTimeStamp();
 
 		$new_date_begin = $date_begin->getTimeStamp();
 		$new_date_end = $date_end->getTimeStamp();
@@ -789,6 +793,19 @@ function addNewVacation()
 			");
 		}
 		
+		
+	// set period into calendar backend if necessary
+	
+	if (empty($id_request))
+	{
+		// event creation
+		bab_vac_createPeriod($id);
+		
+	} else 
+	{
+		// event modification
+		bab_vac_updatePeriod($id, $old_date_begin_obj, $old_date_end_obj);
+	}
 		
 		
 	include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";

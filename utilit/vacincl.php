@@ -2469,7 +2469,7 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 
 
 /**
- * 
+ * Search for a vacation request in ovidentia database and update the corresponding calendar period if the period is found using the user calendar backend
  * @param int			$id_request
  * @param BAB_DateTime 	$begin			old begin date
  * @param BAB_DateTime	$end			old end date
@@ -2495,7 +2495,43 @@ function bab_vac_updatePeriod($id_request, BAB_DateTime $begin, BAB_DateTime $en
 }
 
 
-
+/**
+ * Create a new vacation request into calendar backend
+ * @param $id_request
+ * @return unknown_type
+ */
+function bab_vac_createPeriod($id_request)
+{
+	global $babDB;
+	require_once dirname(__FILE__).'/calincl.php';
+	require_once dirname(__FILE__).'/dateTime.php';
+	
+	$res = $babDB->db_query('SELECT * FROM '.BAB_VAC_ENTRIES_TBL.' WHERE id='.$babDB->quote($id_request));
+	$row = $babDB->db_fetch_assoc($res);
+	
+		
+	$icalendars = new bab_icalendars($row['id_user']);
+	
+	$calendar = $icalendars->getPersonalCalendar();
+	$backend = $calendar->getBackend();
+	
+	if ($backend instanceof Func_CalendarBackend_Ovi)
+	{
+		// do not create the vacation period if the canedar backend is ovidentia because the calendar api will get the original vacation period
+		return;
+	}
+	
+	$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
+	$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
+	
+	$period = $backend->CalendarPeriod($date_begin->getTimeStamp(), $date_end->getTimeStamp());
+	$collection = $backend->CalendarEventCollection($calendar);
+	$collection->addPeriod($period);
+	
+	bab_vac_setPeriodProperties($period, $row, $date_begin);
+	
+	$period->save();
+}
 
 
 
@@ -2507,7 +2543,7 @@ function bab_vac_updatePeriod($id_request, BAB_DateTime $begin, BAB_DateTime $en
 /**
  * Update the period properties with vacation informations
  * @param 	bab_CalendarPeriod	$p
- * @param 	Array				$row
+ * @param 	Array				$row			entry of vacation request
  * @param	BAB_DateTime		$begin			begin date of request period
  * @return unknown_type
  */
