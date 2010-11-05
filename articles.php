@@ -1386,7 +1386,7 @@ if (!$topics && count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0) {
 	$topics = $rr[0]; /* Topic Id */
 }
 
-if ($topics === false || (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$topics) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics))) {
+if ($topics === false || (!bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL,$topics) && !bab_requireAccess(BAB_TOPICSVIEW_GROUPS_TBL, $topics, null))) {
 	/* The current user has not rights to view or modification articles in the topic, or there is no topic id */
 	$babBody->msgerror = bab_translate("Access denied");
 	bab_debug("The current user has not rights to view or modification articles in the topic, or there is no topic id");
