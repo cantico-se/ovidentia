@@ -2092,10 +2092,39 @@ function updateDocumentsArticleDraft($idart, &$message)
 	return false;
 }
 
-
+/**
+ * Update article draft properties
+ * @param string &$message
+ * @return bool
+ */
 function updatePropertiesArticleDraft(&$message)
 {
 	global $babBody, $babDB, $BAB_SESS_USERID, $idart, $cdateb, $cdatee, $cdates, $yearbegin, $monthbegin, $daybegin, $timebegin, $yearend, $monthend, $dayend, $timeend, $yearsub, $monthsub, $daysub, $timesub, $restriction, $grpids, $operator, $hpage0, $hpage1, $notifm, $approbid;
+	/*
+	$idart 		= bab_rp('idart');
+	$cdateb 	= bab_rp('cdateb');
+	$cdatee 	= bab_rp('cdatee');
+	$cdates 	= bab_rp('cdates');
+	$yearbegin 	= bab_rp('yearbegin');
+	$monthbegin = bab_rp('monthbegin');
+	$daybegin 	= bab_rp('daybegin');
+	$timebegin 	= bab_rp('timebegin');
+	$yearend 	= bab_rp('yearend');
+	$monthend 	= bab_rp('monthend');
+	$dayend 	= bab_rp('dayend');
+	$timeend 	= bab_rp('timeend');
+	$yearsub 	= bab_rp('yearsub');
+	$monthsub 	= bab_rp('monthsub');
+	$daysub 	= bab_rp('daysub');
+	$timesub 	= bab_rp('timesub');
+	$restriction= bab_rp('restriction');
+	$grpids 	= bab_rp('grpids');
+	$operator 	= bab_rp('operator');
+	$hpage0 	= bab_rp('hpage0');
+	$hpage1 	= bab_rp('hpage1');
+	$notifm 	= bab_rp('notifm');
+	$approbid 	= bab_rp('approbid');
+	*/
 
 	list($topicid) = $babDB->db_fetch_array($babDB->db_query("select id_topic from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'"));
 	$topicidnew = bab_pp('topicid', 0 );
@@ -2899,7 +2928,14 @@ elseif( $updstep3 = bab_rp('updstep3') )
 	}
 	elseif( $updstep3 == 'prev' )
 	{
-		$idx = 's1';
+		$message = '';
+		if(!updatePropertiesArticleDraft($message))
+		{
+			bab_debug($message);
+			$idx = 's3';
+		} else {
+			$idx = 's1';
+		}
 	}
 }
 
