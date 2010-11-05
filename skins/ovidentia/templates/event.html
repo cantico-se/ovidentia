@@ -22,7 +22,7 @@
 			<!--#if display_availability_message -->
 			<div id="avariability_check">	
 				<input type="hidden" name="availability_displayed" value="1" />
-				<div <!--#if availability_mandatory --> class="mandatory" <!--#endif availability_mandatory -->>
+				<div <!--#if availability_mandatory --> class="mandatory" <!--#endif availability_mandatory --> >
 					<h3>{ avariability_message }</h3>
 					<ol>
 						<!--#in getnextavariability -->
@@ -241,9 +241,9 @@
 				
 				<span id="evtColor" style="background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;"> &nbsp; &nbsp; &nbsp;</span><input type="hidden" name="color" value="{ colorvalue }" />
 				
-				&nbsp;<a style="vertical-align:middle" href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
+				&nbsp;<a style="vertical-align:middle" href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');" title="{ t_color }"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
 				
-				&nbsp;<a style="vertical-align:middle" href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+				&nbsp;<a style="vertical-align:middle" href="javascript:evtSetColor('')" title="{ t_remove_color }"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 			</span>
 			
 			<!--#endif usebgcolor -->
@@ -593,9 +593,9 @@ bab_event_alert_ed();
 				{ t_color }:
 				<span id="evtColor" style="background-color:#{ colorvalue };">&nbsp;&nbsp;&nbsp;</span><input type="hidden" name="color" value="{ colorvalue }" />
 				
-				&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
+				&nbsp;<a href="javascript: Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');" title="{ t_color }"><img src="{ babSkinPath }images/Puces/colorize.png" alt="{ t_color }" border="0" /></a>
 				
-				&nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+				&nbsp;<a href="javascript:evtSetColor('')" title="{ t_remove_color }"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 			</span>
 			
 			<!--#endif usebgcolor -->

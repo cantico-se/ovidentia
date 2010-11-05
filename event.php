@@ -95,6 +95,7 @@ class bab_cal_event
 		$this->t_sat = mb_substr(bab_translate("Saturday"),0,3);
 
 		$this->t_color = bab_translate("Color");
+		$this->t_remove_color = bab_translate("Remove color");
 		$this->t_bprivate = bab_translate("Private");
 		$this->t_block = bab_translate("Lock");
 		$this->t_bfree = bab_translate("Free");
@@ -603,6 +604,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			$this->delete = bab_translate("Delete");
 			$this->t_color = bab_translate("Color");
+			$this->t_remove_color = bab_translate("Remove color");
 			$this->t_bprivate = bab_translate("Private");
 			$this->t_block = bab_translate("Lock");
 			$this->t_bfree = bab_translate("Free");
