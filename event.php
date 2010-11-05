@@ -1030,7 +1030,9 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 	
 	if (!($event instanceof bab_CalendarPeriod))
 	{
-		throw new Exception('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
+		bab_debug('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
+		$babBody->addError(bab_translate('The requested event could not be found or the calendar is not accessible'));
+		$babBody->babpopup('');
 	}
 	
 	
