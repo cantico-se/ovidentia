@@ -337,13 +337,15 @@ function bab_getDbUserName($id)
 
 
 
-/* 0 no access, 1 user, 2 user/manager, 3 manager*/ 
+/**
+ * @return int
+ *  0 no access, 1 user
+ */ 
 function bab_mailAccessLevel()
 	{
 	global $babBody;
 
 	$user = 0;
-	$manager = 0;
 	reset($babBody->ovgroups);
 	while( $arr=each($babBody->ovgroups) ) 
 	{ 
@@ -351,18 +353,12 @@ function bab_mailAccessLevel()
 		{
 			if( $arr[1]['member'] == 'Y' || $arr[1]['id'] == 1)
 				$user = 1;
-
-			if( $arr[1]['manager'] == $GLOBALS['BAB_SESS_USERID'])
-				$manager = 1;
 		}
 	}
 
-	if( $user && $manager )
-		return 2;
 	if( $user )
 		return 1;
-	if( $manager )
-		return 3;
+	
 	}
 
 function bab_notesAccess()
