@@ -111,6 +111,7 @@ function modifyUser($userId, $pos, $grp)
 			$this->validity_period = bab_translate("Account validity period:");
 			$this->from = bab_translate("From");
 			$this->to = bab_translate("to");
+			$this->site_option = bab_translate("Defined in site options");
 
 			$req = 'SELECT * FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
 			$this->res = $babDB->db_query($req);
