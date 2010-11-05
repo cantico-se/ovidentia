@@ -108,7 +108,15 @@ function getGroupsMembers($id_grp)
 		return false;
 	}
 
-
+/**
+ * 
+ * @param int 		$id
+ * @param string 	$name
+ * @param string 	$description
+ * @param int 		$managerid			depecated parameter
+ * @param int 		$grpdg
+ * @return bool
+ */
 function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	{
 
@@ -119,8 +127,7 @@ function bab_updateGroupInfo($id, $name, $description, $managerid, $grpdg = 0)
 	$babDB->db_query("UPDATE ".BAB_GROUPS_TBL." 
 			SET 
 				name='".$babDB->db_escape_string($name)."', 
-				description = '".$babDB->db_escape_string($description)."',
-				manager = '".$babDB->db_escape_string($managerid)."'
+				description = '".$babDB->db_escape_string($description)."'
 			WHERE
 				id='".$babDB->db_escape_string($id)."'
 			");
@@ -177,6 +184,15 @@ function bab_moveGroup($id, $id_parent, $moveoption, $groupname)
 	return $tree->moveTreeAlpha($id, $id_parent, $groupname);
 	}
 
+/**
+ * 
+ * @param string 	$name
+ * @param string 	$description
+ * @param int 		$managerid				deprecated parameter
+ * @param int 		$grpdg					delegation group
+ * @param int 		$parent					parent group id
+ * @return int
+ */
 function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 	{
 	global $babBody, $babDB;
@@ -209,7 +225,6 @@ function bab_addGroup($name, $description, $managerid, $grpdg, $parent = 1)
 			SET 
 				name='".$babDB->db_escape_string($name)."', 
 				description = '".$babDB->db_escape_string($description)."',
-				manager = '".$babDB->db_escape_string($managerid)."',
 				nb_set = '0', 	
 				mail = 'N', 
 				ustorage = 'N', 

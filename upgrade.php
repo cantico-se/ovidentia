@@ -6404,6 +6404,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
+	/*
+	 * Upgrade to 7.3.94
+	 */
+	if (bab_isTableField(BAB_GROUPS_TBL, 'manager')) {
+		$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." DROP manager");
+	}
+	
 	
 
 	return true;

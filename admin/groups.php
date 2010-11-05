@@ -31,12 +31,10 @@ function groupCreateMod()
 		{
 		var $name;
 		var $description;
-		var $managertext;
 		var $useemail;
 		var $no;
 		var $yes;
 		var $add;
-		var $usersbrowurl;
 		var $grpid;
 		var $noselected;
 		var $yesselected;
@@ -55,12 +53,10 @@ function groupCreateMod()
 			global $babBody;
 			$this->t_name = bab_translate("Name");
 			$this->description = bab_translate("Description");
-			$this->managertext = bab_translate("Manager");
 			$this->useemail = bab_translate("Use email");
 			$this->no = bab_translate("No");
 			$this->yes = bab_translate("Yes");
 			$this->t_record = bab_translate("Record");
-			$this->usersbrowurl = $GLOBALS['babUrlScript']."?tg=users&idx=brow&cb=";
 			$this->grpdgtxt = bab_translate("Delegation group");
 			$this->t_parent = bab_translate("Parent");
 			$this->t_delete = bab_translate("Delete");
@@ -105,8 +101,6 @@ function groupCreateMod()
 						'id' 			=> $_POST['grpid'],
 						'name' 			=> $_POST['name'],
 						'description' 	=> $_POST['description'],
-						'manager' 		=> $_POST['manager'],
-						'managerval' 	=> bab_getUserName($_POST['manager']),
 						'id_parent' 	=> $_POST['parent']
 					);
 
@@ -118,8 +112,6 @@ function groupCreateMod()
 				$req = "select * from ".BAB_GROUPS_TBL." where id='".$_REQUEST['grpid']."'";
 				$res = $this->db->db_query($req);
 				$this->arr = $this->db->db_fetch_array($res);
-
-				$this->arr['managerval'] = bab_getUserName($this->arr['manager']);
 
 				if ($this->arr['id'] < 3)
 					{
@@ -137,8 +129,6 @@ function groupCreateMod()
 						'id' => '',
 						'name' => '',
 						'description' => '',
-						'manager' => 0,
-						'managerval' => '',
 						'id_parent' => BAB_REGISTERED_GROUP
 					);
 
@@ -198,7 +188,6 @@ function groupList()
 			$this->arr = $tree->getNodeInfo($tree->firstnode);
 			$this->arr['name'] = bab_translate($this->arr['name']);
 			$this->arr['description'] = bab_toHtml(bab_translate($this->arr['description']));
-			$this->arr['managerval'] = bab_toHtml(bab_getUserName($this->arr['manager']));
 			$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($tree->delegat[$this->arr['id']]);
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
@@ -413,7 +402,7 @@ function addModGroup()
 
 	if ( !is_numeric($_POST['grpid']) )
 		{
-		$ret = bab_addGroup($_POST['name'], $_POST['description'], $_POST['manager'], $grpdg, $id_parent);
+		$ret = bab_addGroup($_POST['name'], $_POST['description'], 0, $grpdg, $id_parent);
 		if ($ret)
 			Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$ret);
 		else
@@ -465,7 +454,7 @@ function addModGroup()
 	
 
 	$idgrp = &$_POST['grpid'];
-	bab_updateGroupInfo($idgrp, $name, $description, $_POST['manager'], $grpdg );
+	bab_updateGroupInfo($idgrp, $name, $description, 0, $grpdg );
 	bab_moveGroup($idgrp, $id_parent, $moveoption, $name);
 
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=groups&idx=List&expand_to=".$idgrp);

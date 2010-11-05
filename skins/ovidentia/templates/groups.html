@@ -1,24 +1,5 @@
 <!--#begin groupscreate -->
-<script type="text/javascript">
-<!--
-function onApprover(id, fn)
-{
-document.forms['gcreatemod'].managerval.value=fn;
-document.forms['gcreatemod'].manager.value=id;
-this.focus();
-op.close();
-}
 
-var op = null;
-function openPopup(url)
-{
-if( op == null || op.closed )
-	op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
-else
-	op.focus();
-}
-//-->
-</script>
 
 <form name="gcreatemod" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="groups">
@@ -47,13 +28,7 @@ else
 	<input type="text" name="description" size="45" maxlength="255" value="{ arr[description] }">
 	</td>
 	</tr>
-	<tr> 
-	<td align="right"><a href="javascript: openPopup('{ usersbrowurl }');">{ managertext }</a>:</td>
-	<td> 
-	<input type="text" name="managerval" size="45" value="{ arr[managerval] }" disabled="disabled" />
-	<input type="hidden" name="manager" value="{ arr[manager] }" />
-	</td>
-	</tr>
+	
 	<tr> 
 	<td align="right">{ t_parent }:</td>
 	<td> 
@@ -308,8 +283,7 @@ function ovidentia_hidegroupselect(select) {
 		<!--#else indelegat -->
 		<a href="{ babUrlScript }?tg=groups&amp;idx=Create&amp;grpid={ arr[id] }" title="{ arr[description] }" onclick="return load_edit_form(this);">{ arr[name] }</a>
 		<!--#endif indelegat -->
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
+			
 		<!--#if arr[id] "> 2" -->
 		<span class="right_elements">
 			<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><span class="icon { iconCssClass_Members }">{ t_members }</span></a>
@@ -338,8 +312,6 @@ function load_edit_form(a)
 	var parent		 = parseInt(tmp[2]);
 	var name		 = a.innerHTML;
 	var description	 = a.title;
-	var manager		 = document.getElementById(htmlid+'_manager').value;
-	var managerval	 = document.getElementById(htmlid+'_managerval').value;
 
 	if (typeof document.forms['gcreatemod'].elements == 'undefined')
 		return;
@@ -349,8 +321,6 @@ function load_edit_form(a)
 	el['grpid'].value		 = groupid;
 	el['name'].value		 = name;
 	el['description'].value	 = description;
-	el['manager'].value		 = manager;
-	el['managerval'].value	 = managerval;
 
 	
 	if (groupid > 3)
@@ -395,8 +365,6 @@ function load_clear()
 	el['grpid'].value		 = '';
 	el['name'].value		 = '';
 	el['description'].value	 = '';
-	el['manager'].value		 = 0;
-	el['managerval'].value	 = '';
 	el['parent'].style.visibility = 'visible';
 	el['deleteg'].style.visibility = 'visible';
 	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_create_group }';
@@ -436,8 +404,7 @@ function load_clear()
 		<!--#else bupdate -->
 		{ arr[name] }
 		<!--#endif bupdate -->
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_manager" value="{ arr[manager] }" />
-			<input type="hidden" id="bab_ovgroup_{ arr[id] }_managerval" value="{ arr[managerval] }" />
+			
 			<!--#if arr[id] "> 2" -->
 			<span class="right_elements">
 				<a href="{ babUrlScript }?tg=group&amp;idx=Members&amp;item={ arr[id] }" title="{ t_group_members }"><span class="icon { iconCssClass_Members }">{ t_members }</span></a>
@@ -460,7 +427,6 @@ function load_clear()
 <input type="hidden" name="grpid" value="{ arr[grpid] }" />
 <input type="hidden" name="name" value="{ arr[name] }" />
 <input type="hidden" name="description" value="{ arr[description] }" />
-<input type="hidden" name="manager" value="{ arr[manager] }" />
 <input type="hidden" name="parent" value="{ arr[parent] }" />
 
 <input type="hidden" name="add" value="add">

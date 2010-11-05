@@ -244,10 +244,7 @@ class bab_grp_node
 			$this->arr['description'] = bab_translate($this->arr['description']);
 			}
 
-		//$this->arr['name'] = '['.$this->arr['lf'].','.$this->arr['lr'].'] '.$this->arr['name'];
-
 		$this->arr['description'] = bab_toHtml($this->arr['description']);
-		$this->arr['managerval'] = bab_toHtml(bab_getUserName($this->arr['manager']));
 		$this->delegat = $GLOBALS['babBody']->currentAdmGroup == 0 && isset($this->tree->delegat[$this->arr['id']]);
 		$this->set = $GLOBALS['babBody']->currentAdmGroup == 0 && $this->arr['nb_set'] > 0;
 		$this->option = isset($this->options[$this->arr['id']]) ? $this->options[$this->arr['id']] : false;

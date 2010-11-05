@@ -964,27 +964,16 @@ function bab_isUserAdministrator()
 	return $babBody->isSuperAdmin;
 	}
 
+	
+/**
+ * @deprecated the manager of a group does not exists anymore
+ * @param int $grpid
+ * @return bool
+ */
 function bab_isUserGroupManager($grpid="")
 	{
-	global $babBody, $BAB_SESS_USERID;
-	if( empty($BAB_SESS_USERID))
-		return false;
-
-	reset($babBody->ovgroups);
-	while( $arr=each($babBody->ovgroups) ) 
-		{ 
-		if( $arr[1]['manager'] == $GLOBALS['BAB_SESS_USERID'])
-			{
-			if( empty($grpid))
-				{
-				return true;
-				}
-			else if( $arr[1]['id'] == $grpid )
-				{
-				return true;
-				}
-			}
-		}
+	trigger_error('deprecated function');
+	return false;
 	}
 
 /**
@@ -2000,18 +1989,40 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 	return $arr;
 	}
 
+	
+/**
+ * Create a group 
+ * @param string	$name
+ * @param string	$description
+ * @param int		$managerid		deprecated parameter
+ * @param int		$parent
+ * @return int
+ */
 function bab_createGroup( $name, $description, $managerid, $parent = 1)
 {
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
 	return bab_addGroup($name, $description, $managerid, 0, $parent);
 }
 
-function bab_updateGroup( $id, $name, $description, $managerid)
+
+/**
+ * Update group name and description
+ * @param int		$id
+ * @param string	$name
+ * @param string	$description
+ * @return bool
+ */
+function bab_updateGroup( $id, $name, $description)
 {
 	include_once $GLOBALS['babInstallPath']."utilit/grpincl.php";
-	return bab_updateGroupInfo($id, $name, $description, $managerid);
+	return bab_updateGroupInfo($id, $name, $description, 0);
 }
 
+/**
+ * Delete a group
+ * @param int $id
+ * @return unknown_type
+ */
 function bab_removeGroup($id)
 {
 	include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
