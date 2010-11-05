@@ -2962,8 +2962,7 @@ function fileUnload()
 			$oFileManagerEnv	=& getEnvObject();
 			$this->message		= bab_translate("Your file list has been updated");
 			$this->close		= bab_translate("Close");
-			$url				= $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath);
-			$this->redirecturl	= bab_toHtml($url, BAB_HTML_JS | BAB_HTML_ENTITIES);
+			
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
