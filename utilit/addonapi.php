@@ -2173,7 +2173,7 @@ function bab_canCurrentUserUpdateUser($userId) {
  * @since 	6.7.91	add support for jpegphoto key
  *
  * @param	int		$id			ID user
- * @param	array	$info		Array returned by bab_getUserInfos()
+ * @param	array	$info		Array returned by bab_getUserInfos() : the array can contain keys only to be changed
  * @param	string	&$error		error message
  * @return 	boolean
  */
