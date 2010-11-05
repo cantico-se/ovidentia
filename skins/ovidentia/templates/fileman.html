@@ -1009,7 +1009,7 @@ window.focus();
 </script>
 
 </HEAD>
-<BODY onUnload="javascript:this.opener.location.href='{ redirecturl }';">
+<BODY onUnload="window.opener.location.href = window.opener.location.href;">
 <br><br><br><br>
 
 <table class="BabLoginMenuBackground" width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
