@@ -716,6 +716,16 @@ class bab_inifile_requirements {
 		);
 	}
 	
+	function require_mod_rewrite($value) {
+		
+		$status = function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules());
+		return array(
+			'description'	=> bab_translate("mod_rewrite apache module"),
+			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
+			'result'		=> $status
+		);
+	}
+	
 	
 	function require_mysql_character_set_database($value) {
 

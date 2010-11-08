@@ -3140,5 +3140,7 @@
 <string id="First event">Premier événement</string>
 <string id="Remove color">Enlever la couleur</string>
 <string id="Defined in site options">Défini dans les options du site</string>
+<string id="mod_rewrite apache module">Module d'Apache mod_rewrite</string>
+
 
 </fr>
