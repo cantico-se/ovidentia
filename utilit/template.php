@@ -80,8 +80,8 @@ function getGlobalVariable($var)
 		case 'babAdminEmail': return bab_toHtml($GLOBALS['babAdminEmail']);
 		case 'babMaxFileSize' : return bab_toHtml($GLOBALS['babMaxFileSize']);
 		case 'babAddonFolder' : return bab_toHtml($GLOBALS['babAddonFolder']);
-		case 'tg': return bab_toHtml($GLOBALS['tg']);
-		case 'idx': return bab_toHtml($GLOBALS['idx']);
+		case 'tg': return bab_toHtml(bab_rp('tg'));
+		case 'idx': return bab_toHtml(bab_rp('idx'));
 	}
 	return NULL;
 }

@@ -228,9 +228,6 @@ $babSiteName	= mb_substr($babSiteName, 0, 255);
 
 
 /* Controler */
-if (!isset($tg)) {
-	$tg = '';
-}
 
 include_once $babInstallPath.'utilit/defines.php';
 include_once $babInstallPath.'utilit/dbutil.php';
@@ -247,7 +244,7 @@ unset($BAB_SESS_LOGGED);
  */
 ini_set('default_charset', bab_charset::getIso());
 
-if ($tg != 'version' || !isset($idx) || $idx != 'upgrade') {
+if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 	bab_updateSiteSettings(); /* Get the site settings */
 	if ($GLOBALS['babCookieIdent'] === true) {
 		include $babInstallPath."utilit/cookieident.php";
@@ -657,6 +654,7 @@ if (isset($_GET['babrw']))
 	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'])) 
 	{
 		$_GET += $arr;
+		$_REQUEST += $arr;
 		extract($arr, EXTR_SKIP);
 	}
 }
@@ -1294,7 +1292,7 @@ switch(bab_rp('tg'))
 		$babLevelTwo = "";
 		$incl = "entry";
 		$babWebStat->module($incl);
-		$arr = explode("/", $tg);
+		$arr = explode("/", bab_rp('tg'));
 		if( sizeof($arr) >= 3 && $arr[0] == "addon")
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
@@ -1361,4 +1359,3 @@ $event = new bab_eventPageRefreshed;
 bab_fireEvent($event); /* Fire all event registered as listeners */
 
 printBody(); /* Display the current page : head, m�tas, sections, body... */
-unset($tg);

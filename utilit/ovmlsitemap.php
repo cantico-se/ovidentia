@@ -133,7 +133,6 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		global $babUseRewrittenUrl;
 
 		parent::setOvmlContext($ctx);
 
@@ -149,11 +148,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$item = $node->getData();
 					$tmp = array();
 					
-					$tmp['url'] = $item->url;
-					if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl && !empty($item->url)) {
-						$tmp['url'] = bab_Sitemap::rewrittenUrl($item->id_function);
-					}
-					
+					$tmp['url'] = $item->getRwUrl();
 					$tmp['text'] = $item->name;
 					$tmp['description'] = $item->description;
 					$tmp['id'] = $item->id_function;
@@ -203,8 +198,6 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		global $babUseRewrittenUrl;
-
 		parent::setOvmlContext($ctx);
 		
 		$baseNodeId = $ctx->get_value('basenode');
@@ -254,11 +247,8 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 			while ($node && ($item = $node->getData())) {
 				/* @var $item bab_SitemapItem */
 				$tmp = array();
-				if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
-					$tmp['url'] = bab_Sitemap::rewrittenUrl($item->id_function);
-				} else {
-					$tmp['url'] = $item->url;
-				}
+
+				$tmp['url'] = $item->getRwUrl();
 				$tmp['text'] = $item->name;
 				$tmp['description'] = $item->description;
 				$tmp['id'] = $item->id_function;
@@ -524,8 +514,6 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	protected	$maxDepth = 100;
 
 	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
-		
-		global $babUseRewrittenUrl;
 
 		$return = '';
 		$classnames = array();
@@ -546,13 +534,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		} else {
 			$description = '';
 		}
-
-
-		if (isset($babUseRewrittenUrl) && $babUseRewrittenUrl) {
-			$url = bab_Sitemap::rewrittenUrl($siteMapItem->id_function);
-		} else {
-			$url = $siteMapItem->url;
-		}
+		
+		$url = $siteMapItem->getRwUrl();
 
 		if ($url) {
 	

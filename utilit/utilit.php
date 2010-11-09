@@ -552,9 +552,8 @@ function babBody()
 	}
 
 
-	$idx = isset($GLOBALS['idx']) ? $GLOBALS['idx'] : '';
-	
-	if ( session_id() && ($GLOBALS['tg'] != 'version' || $idx != 'upgrade'))
+
+	if ( session_id() && (bab_rp('tg') !== 'version' || bab_rp('idx') !== 'upgrade'))
 		{
 		$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1484,7 +1483,7 @@ function bab_updateUserSettings()
 			}
 
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$REMOTE_ADDR."', forwarded_for='".$HTTP_X_FORWARDED_FOR."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string($GLOBALS['tg'])."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$REMOTE_ADDR."', forwarded_for='".$HTTP_X_FORWARDED_FOR."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string(bab_rp('tg'))."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
 		{
@@ -1502,7 +1501,7 @@ function bab_updateUserSettings()
 			$userid = 0;
 			}
 
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string($GLOBALS['tg'])."')");
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
 
 	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);

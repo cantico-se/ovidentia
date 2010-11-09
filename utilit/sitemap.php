@@ -137,7 +137,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 */
 	private function getNextRewriteNode(Array $path, $id_parent)
 	{
-		
 		$first = array_shift($path);
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 			if (isset($this->rewriteIndex_id[$nodeId]) && $id_parent === $this->rewriteIndex_id[$nodeId][0]) {
@@ -150,7 +149,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				return $this->getNextRewriteNode($path, $nodeId);
 			} else {
 				bab_debug("the node $nodeId has no parent in index or parent is not $id_parent");
-				return null;
+				//return null;
 			}
 		}
 		
@@ -194,6 +193,12 @@ class bab_siteMapItem {
 	 * @var string
 	 */
 	public $rewriteName = null;
+	
+	/**
+	 * If the node url should be a rewritten url or not
+	 * @var unknown_type
+	 */
+	public $enableRewriting = false;
 	
 	
 	/**
@@ -368,6 +373,24 @@ class bab_siteMapItem {
 			return $parentSitemapItem->getPageDescription();
 		}
 		return '';
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Get rewritten url is the rewriting is enabled or the regular url if there is no rewriting
+	 * @return string
+	 */
+	public function getRwUrl()
+	{
+		$url = $this->url;
+		if ($this->enableRewriting && !empty($url)) {
+			$url = bab_Sitemap::rewrittenUrl($this->id_function);
+		}
+		
+		return $url;
 	}
 }
 
@@ -994,9 +1017,6 @@ class bab_siteMap {
 	public static function rewrittenUrl($id_function)
 	{
 		static $root = null;
-//		echo __METHOD__;
-//		echo '(' . $id_function . ')<br>';
-//		require_once dirname(__FILE__).'/urlincl.php';
 
 		if (!isset($root)) {
 			$root = bab_siteMap::getFromSite();
@@ -1006,7 +1026,6 @@ class bab_siteMap {
 		
 		if (!$node)
 		{
-//			echo 'NULL';
 			return null;
 		}
 		
@@ -1018,13 +1037,9 @@ class bab_siteMap {
 			if (!$sitemapItem || $sitemapItem->getRewriteName() === self::REWRITING_ROOT_NODE) {
 				break;
 			}
-//			echo $sitemapItem->getRewriteName() . '<br> ';
 			array_unshift($arr, $sitemapItem->getRewriteName());
 		} while ($node = $node->parentNode());
 		
-//		$url = new bab_url;
-//		$url->babrw = implode('/', $arr);
-//		echo ' => ' . implode('/', $arr) . '<br>';
 		return implode('/', $arr);
 	}
 

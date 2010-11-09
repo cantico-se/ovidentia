@@ -38,7 +38,7 @@ class bab_WebStatEvent
 		{
 			return;
 		}
-		$this->tg = isset($GLOBALS['tg'])?$GLOBALS['tg']:'';
+		$this->tg = bab_rp('tg');
 		switch($this->tg)
 		{
 			case 'calnotif':
