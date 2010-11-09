@@ -717,7 +717,7 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 	if(!$oAuthObject->isLogged()) 
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
-		if(!bab_haveHttpContext())
+		if('login' !== bab_pp('login'))
 		{
 			bab_storeHttpContext();
 		}

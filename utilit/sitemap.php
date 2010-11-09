@@ -138,6 +138,14 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	private function getNextRewriteNode(Array $path, $id_parent)
 	{
 		$first = array_shift($path);
+		
+		if (!isset($this->rewriteIndex_rn[$first]))
+		{
+			bab_debug("the rewrite name $first has no id_function in index");
+			return null;
+		}
+		
+		
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 			if (isset($this->rewriteIndex_id[$nodeId]) && $id_parent === $this->rewriteIndex_id[$nodeId][0]) {
 				

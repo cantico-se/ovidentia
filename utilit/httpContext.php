@@ -56,7 +56,6 @@ function bab_storeHttpContext()
 			{
 				$_SESSION['babHttpContext'] = array('Post' => array(),
 				'Get' => $tabreferer, 'Request' => array());
-				bab_debug($_SESSION['babHttpContext']['Get']);
 				return;
 			}
 		}
@@ -64,7 +63,6 @@ function bab_storeHttpContext()
 	
 	$_SESSION['babHttpContext'] = array('Post' => $_POST,
 		'Get' => $_GET, 'Request' => $_REQUEST);
-	bab_debug($_SESSION['babHttpContext']['Get']);
 }
 
 /**
