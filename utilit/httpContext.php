@@ -51,15 +51,20 @@ function bab_storeHttpContext()
 			{
 				parse_str($rr['query'], $tabreferer);	
 			}
-
+			
+			if ($tabreferer)
+			{
+				$_SESSION['babHttpContext'] = array('Post' => array(),
+				'Get' => $tabreferer, 'Request' => array());
+				bab_debug($_SESSION['babHttpContext']['Get']);
+				return;
+			}
 		}
-		$_SESSION['babHttpContext'] = array('Post' => array(),
-			'Get' => $tabreferer, 'Request' => array());
-		return;
 	}
 	
 	$_SESSION['babHttpContext'] = array('Post' => $_POST,
 		'Get' => $_GET, 'Request' => $_REQUEST);
+	bab_debug($_SESSION['babHttpContext']['Get']);
 }
 
 /**
@@ -85,6 +90,7 @@ function bab_restoreHttpContext()
 			if ($query = bab_url::buildQuery($_GET)) {
 				$redirectUrl .= '?' . $query;
 			}
+
 			header('Location: ' . $redirectUrl);
 			unset($_SESSION['babHttpContext']);
 			exit;
