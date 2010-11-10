@@ -489,7 +489,7 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		}
 		
 		
-		$rrule[] = 'UNTIL='.$until->getICal();
+		$rrule[] = 'UNTIL='.$until->getICal(true);
 	}
 	
 	$period->setProperty('RRULE', implode(';',$rrule));

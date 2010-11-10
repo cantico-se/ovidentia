@@ -1009,8 +1009,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					} else {
 						// l'evenement n'est pas dispo, ajouter les utilisateurs de l'evenement dans la liste des utilisateurs non dispo du boundary
 						
-						foreach($id_users as $id_user) {
-							$users_non_available[$id_user] = true;
+						if (isset($id_users))
+						{
+							foreach($id_users as $id_user) {
+								$users_non_available[$id_user] = true;
+							}
 						}
 						
 						$availabilityReply->conflicts_events[] = $event;
