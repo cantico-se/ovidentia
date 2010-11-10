@@ -2264,6 +2264,130 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
 	return true;
 }
 
+/**
+ * Updates the specified user's password
+ * @since			ovidentia-7-2-92-20100329180000
+ * 
+ * @param int		$userId						The user id		
+ * @param string	$newPassword				The new user password
+ * @param string	$newPassword2				The new user password (copy : used when we created 2 input fields in a form to confirm the password)
+ * @param bool		$ignoreAccessRights			false (value by default) if you want to verify if the current user can update the account (superadmin...)
+ * @param bool		$ignoreSixCharactersMinimum	false (value by default) if you want to verify if the password have at least 6 characters
+ * @param string	&$error						Error message
+ * 
+ * @return bool		true on success, false on error
+ */
+function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignoreSixCharactersMinimum=false, &$error)
+{
+	global $babBody, $babDB, $BAB_HASH_VAR;
+	
+	/* Test rights */
+	if (!$ignoreAccessRights) {
+		$res = bab_canCurrentUserUpdateUser($userId);
+		if (!$res) {
+			$error = bab_translate("You don't have access to update the user");
+			return false;
+		}
+	}
+	
+	/* Delete spaces in passwords */
+	$newPassword = trim($newPassword);
+	$newPassword2 = trim($newPassword2);
+	
+	/* Test if passwords are same */
+	if ($newPassword != $newPassword2) {
+		$error = bab_translate("Passwords not match !!");
+		return false;
+	}
+	
+	/* Test if the password have at least 6 characters */
+	if (!$ignoreSixCharactersMinimum) {
+		if (mb_strlen($newPassword) < 6) {
+			$error = bab_translate("Password must be at least 6 characters !!");
+			return false;
+		}
+	}
+
+	/* Verify the authentification mode of the user */
+	$sql = 'SELECT nickname, db_authentification FROM ' . BAB_USERS_TBL . ' WHERE id=' . $babDB->quote($userId);
+	list($nickname, $dbauth) = $babDB->db_fetch_row($babDB->db_query($sql));
+
+	$authentification = $babBody->babsite['authentification'];
+	if ($dbauth == 'Y') {
+		$authentification = ''; // force to default
+	}
+
+	switch ($authentification)
+	{
+		case BAB_AUTHENTIFICATION_AD: // Active Directory
+			$error = bab_translate("Nothing Changed !!");
+			return false;
+			break;
+
+		case BAB_AUTHENTIFICATION_LDAP: // Active Directory
+			if (!empty($babBody->babsite['ldap_encryptiontype'])) {
+				include_once $GLOBALS['babInstallPath']."utilit/ldap.php";
+				$ldap = new babLDAP($babBody->babsite['ldap_host'], "", false);
+				$ret = $ldap->connect();
+				if ($ret === false) {
+					$error = bab_translate("LDAP connection failed");
+					return false;
+				}
+
+				$ret = $ldap->bind($babBody->babsite['ldap_admindn'], $babBody->babsite['ldap_adminpassword']);
+				if (!$ret) {
+					$ldap->close();
+					$error = bab_translate("LDAP bind failed");
+					return  false;
+				}
+
+				if (isset($babBody->babsite['ldap_filter']) && !empty($babBody->babsite['ldap_filter'])) {
+					$filter = str_replace('%UID', ldap_escapefilter($babBody->babsite['ldap_attribute']), $babBody->babsite['ldap_filter']);
+					$filter = str_replace('%NICKNAME', ldap_escapefilter($nickname), $filter);
+				} else {
+					$filter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($nickname)."))";
+				}
+
+				$attributes = array("dn", $babBody->babsite['ldap_attribute'], "cn");
+				$entries = $ldap->search($babBody->babsite['ldap_searchdn'], $filter, $attributes);
+
+				if ($entries === false) {
+					$ldap->close();
+					$error = bab_translate("LDAP search failed");
+					return false;
+				}
+
+				$ldappw = ldap_encrypt($newPassword, $babBody->babsite['ldap_encryptiontype']);
+				$ret = $ldap->modify($entries[0]['dn'], array('userPassword'=>$ldappw));
+				$ldap->close();
+				if (!$ret) {
+					$error = bab_translate("Nothing Changed");
+					return false;
+				}
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	/* Update the user's password */
+	$sql = 'UPDATE ' . BAB_USERS_TBL . ' SET password=' . $babDB->quote(md5(mb_strtolower($newPassword))) . ' WHERE id=' . $babDB->quote($userId);
+	$babDB->db_query($sql);
+
+	/* Call the functionnality event onUserChangePassword */
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	bab_callAddonsFunctionArray('onUserChangePassword',
+		array(
+			'id' => $userId, 
+			'nickname' => $nickname, 
+			'password' => $newPassword, 
+			'error' => &$error
+		)
+	);
+
+	return true;
+}
 
 /**
  * Update a user by nickname
