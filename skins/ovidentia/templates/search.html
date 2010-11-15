@@ -865,7 +865,7 @@ function setselects(obj)
 	<tr>
 		<td>
 			<p>
-				<label for="bab_search_calendar_after">{ t_after } :</label>
+				<label for="bab_search_calendar_after">{ t_after } <span style="color:red">*</span> :</label>
 				<input  id="bab_search_calendar_after" type="text" name="after" value="{ after }" size="10" />
 
 				<a href="" onclick="bab_searchCalendarSetDate('bab_search_calendar_after'); return false;">
@@ -878,7 +878,7 @@ function setselects(obj)
 
 		<td>
 			<p>
-				<label for="bab_search_calendar_before">{ t_before } :</label>
+				<label for="bab_search_calendar_before">{ t_before } <span style="color:red">*</span> :</label>
 				<input  id="bab_search_calendar_before" type="text" name="before" value="{ before }" size="10" />
 
 				<a href="" onclick="bab_searchCalendarSetDate('bab_search_calendar_before'); return false;">
@@ -889,6 +889,8 @@ function setselects(obj)
 	</tr>
 </table>
 
+
+<p><span style="color:red">*</span>  { t_calendar_boundaries_mandatory }</p>
 
 
 <!--#end calendar_form -->

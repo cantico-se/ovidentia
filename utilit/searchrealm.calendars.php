@@ -204,14 +204,25 @@ class bab_SearchRealmCalendars extends bab_SearchRealm {
 		}
 
 		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
-		if ($after = BAB_DateTime::fromUserInput(bab_rp('after'))) {
-			$criteria = $criteria->_AND_($this->end_date->greaterThanOrEqual($after->getIsoDateTime()));
+		
+		$after = BAB_DateTime::fromUserInput(bab_rp('after'));
+		
+		if (!$after) {
+			$after = BAB_DateTime::now();
+			$after->less(1, BAB_DATETIME_DAY);
 		}
+		
+		$criteria = $criteria->_AND_($this->end_date->greaterThanOrEqual($after->getIsoDateTime()));
 
 		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
 			$before->add(1, BAB_DATETIME_DAY);
-			$criteria = $criteria->_AND_($this->start_date->lessThanOrEqual($before->getIsoDateTime()));
+			
+		} else {
+			$before = BAB_DateTime::now();
+			$before->add(1, BAB_DATETIME_DAY);
 		}
+		
+		$criteria = $criteria->_AND_($this->start_date->lessThanOrEqual($before->getIsoDateTime()));
 
 		return $criteria;
 	}
@@ -386,7 +397,7 @@ class bab_SearchCalendarsResult extends bab_SearchResult {
 			$obj 			= bab_getICalendars()->getEventCalendar($record->calendar);
 			if ($obj)
 			{
-				$calendar 		= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Calendar'), $obj->getName());
+				$calendar 	= bab_sprintf('<strong>%s :</strong> %s', bab_translate('Calendar'), $obj->getName());
 			} else {
 				$calendar = '';
 				bab_debug('Calendar not found : '.$record->calendar);
@@ -461,7 +472,8 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 		global $babDB;
 		global $babBody;
 		include_once $GLOBALS['babInstallPath']."utilit/calincl.php";
-
+		include_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
+		
 		$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'bab_dialog.js');
 		
 		
@@ -484,9 +496,30 @@ class bab_SearchRealmCalendar_SearchTemplate extends bab_SearchTemplate {
 		$this->t_all 	= bab_translate('All');
 		$this->t_after 	= bab_translate('After');
 		$this->t_before = bab_translate('Before');
+		$this->t_calendar_boundaries_mandatory = bab_translate('The dates search boundaries are mandatory');
+		
+		
+		
+		$after = BAB_DateTime::fromUserInput(bab_rp('after'));
+		
+		if (!$after) {
+			$after = BAB_DateTime::now();
+			$after->less(1, BAB_DATETIME_DAY);
+		}
+		
+		if ($before = BAB_DateTime::fromUserInput(bab_rp('before'))) {
+			$before->add(1, BAB_DATETIME_DAY);
+			
+		} else {
+			$before = BAB_DateTime::now();
+			$before->add(1, BAB_DATETIME_DAY);
+		}
 
-		$this->after 	= bab_rp('after');
-		$this->before 	= bab_rp('before');
+		
+		
+
+		$this->after 	= date('d-m-Y', $after->getTimeStamp());
+		$this->before 	= date('d-m-Y', $before->getTimeStamp());
 	}
 
 	public function getnextcal() {
