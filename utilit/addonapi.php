@@ -759,7 +759,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
 	}
 
 /**
- * @deprecated
+ * Transform a html string with the security filter configured in site options
  */
 function bab_editor_record(&$str)
 	{
