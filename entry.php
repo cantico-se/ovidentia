@@ -162,6 +162,8 @@ function readMore($article, $idg)
 			$this->res = $babDB->db_query($req);
 			$arr = $babDB->db_fetch_array($this->res);
 			
+			bab_siteMap::setPosition('bab', 'ArticleTopic_'.$arr['id_topic']);
+			
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				
 			$editor = new bab_contentEditor('bab_article_body');
