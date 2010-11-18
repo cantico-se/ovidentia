@@ -1038,6 +1038,8 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		{
 			$this->addToOviInbox($event);
 		}
+		
+		$this->updateEventAttendee($event);
 	}
 	
 	/**
@@ -1048,6 +1050,71 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	public function onUpdateAttendee(bab_CalendarPeriod $event)
 	{
 		
+		$this->updateEventAttendee($event);
+	}
+	
+	
+	/**
+	 * Update the ovidentia backend copy of an event
+	 * 
+	 * @param bab_CalendarPeriod $event		the event from another backend
+	 * @return unknown_type
+	 */
+	private function updateEventAttendee(bab_CalendarPeriod $event)
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query('SELECT id FROM '.BAB_CAL_EVENTS_TBL.' WHERE uuid='.$babDB->quote($event->getProperty('UID')));
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		if (!$arr)
+		{
+			bab_debug('event not found with uid='.$event->getProperty('UID'));
+			return;
+		}
+		
+		$event_id = (int) $arr['id'];
+		
+		// if the main event is in ovidentia calendar but the attendee is caldav
+		// updating the partstat of the attendee will trigger this method
+		
+		$attendees = $event->getAttendees();
+		
+		
+		$urlidentifier = $this->getUrlIdentifier();
+		if (isset($attendees[$urlidentifier]))
+		{
+			$attendee = $attendees[$urlidentifier];
+			switch($attendee['PARTSTAT'])
+			{
+				case 'ACCEPTED':
+					$this->updateEventStatus($event_id, BAB_CAL_STATUS_ACCEPTED);
+					break;
+					
+				case 'DECLINED':
+					$this->updateEventStatus($event_id, BAB_CAL_STATUS_DECLINED);
+					break;
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param int $event_id
+	 * @param int $status
+	 * @return unknown_type
+	 */
+	private function updateEventStatus($event_id, $status)
+	{
+		global $babDB;
+		
+		$babDB->db_query('update '.BAB_CAL_EVENTS_OWNERS_TBL.' set status='.$babDB->quote($status).' WHERE 
+			id_event='.$babDB->quote($event_id).' 
+			AND id_cal='.$this->getUid()
+		);
+						
 	}
 }
 
