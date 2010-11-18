@@ -678,193 +678,204 @@ var $dayurl;
 var $babCalendarStartDay;
 
 
-function babMonthA($month='', $year='')
+	public function babMonthA($month='', $year='')
 	{
-	global $babDB,$babBody, $BAB_SESS_USERID;
-
-	$this->babSection("","");
-
-	if(empty($month)) {
-		$this->currentMonth = date("n");
-	} else {
-		$this->currentMonth = $month;
+		global $babDB,$babBody, $BAB_SESS_USERID;
+	
+		$this->babSection("","");
+	
+		if(empty($month)) {
+			$this->currentMonth = date("n");
+		} else {
+			$this->currentMonth = $month;
+		}
+		if(empty($year)) {
+			$this->currentYear = date("Y");
+		} else {
+			$this->currentYear = $year;
+		}
+	
+		$this->babCalendarStartDay = bab_getICalendars()->startday;
+		$this->curDay = 0;
 	}
-	if(empty($year)) {
-		$this->currentYear = date("Y");
-	} else {
-		$this->currentYear = $year;
-	}
 
-	$this->babCalendarStartDay = bab_getICalendars()->startday;
-	$this->curDay = 0;
-	}
-
-function printout()
+	public function printout()
 	{
-	global $babBody, $babDB, $babMonths, $BAB_SESS_USERID;
-	$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
-	$this->curyear = $this->currentYear;
-	$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
-	$this->now = date("j");
-	$this->w = 0;
-	$todaymonth = date("n");
-	$todayyear = date("Y");
+		global $babBody, $babDB, $babMonths, $BAB_SESS_USERID;
+		$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
+		$this->curyear = $this->currentYear;
+		$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+		$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
+		$this->now = date("j");
+		$this->w = 0;
+		$todaymonth = date("n");
+		$todayyear = date("Y");
+		
+		
 	
-	$calendars = bab_getICalendars()->getCalendars();
+		$this->htmlid = 'montha';
+		
+		$nbweek = date('W');
+		if (substr($nbweek,0,1) == 0) {
+			$nbweek = substr($nbweek,1,strlen($nbweek)-1);
+		}
+		$this->title = $this->curmonth.' '.$this->curyear.'&nbsp;&nbsp;'.bab_translate("W.").$nbweek;
 	
-	
-	if(count($calendars) > 0)
-	{
-		require_once dirname(__FILE__).'/dateTime.php';
-		require_once dirname(__FILE__).'/cal.userperiods.class.php';
-		require_once dirname(__FILE__).'/cal.criteria.class.php';
-		
-		$daymin = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, 1,$this->currentYear));
-		$daymax = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear));
-		
-		$periods = new bab_UserPeriods($daymin, $daymax);
-		
-		$factory = new bab_PeriodCriteriaFactory();
-		$criteria = $factory->Collection('bab_CalendarEventCollection');
-		$criteria = $criteria->_AND_($factory->Calendar($calendars));
-		
-		$periods->createPeriods($criteria);
-		$periods->orderBoundaries();
-		$this->currmonthevents = array();
-		
-		foreach($periods as $event)
-		{
-			$startday = date('j', $event->ts_begin);
-			$endday = date('j', $event->ts_end);
-			
-			for($day = $startday ; $day<=$endday; $day++)
+		if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
 			{
-				$collection = $event->getCollection();
-				if ($collection)
+			if (!$this->close) {
+				$this->content = bab_printTemplate($this,'insections.html', 'montha');
+			}
+			return bab_printTemplate($this,'sectiontemplate.html', 'default');
+			}
+	
+		return bab_printTemplate($this,"montha.html", "");
+	}
+	
+	
+	
+	private function initMonthEvents()
+	{
+		$calendars = bab_getICalendars()->getCalendars();
+
+		if(count($calendars) > 0)
+		{
+			require_once dirname(__FILE__).'/dateTime.php';
+			require_once dirname(__FILE__).'/cal.userperiods.class.php';
+			require_once dirname(__FILE__).'/cal.criteria.class.php';
+			
+			$daymin = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, 1,$this->currentYear));
+			$daymax = BAB_DateTime::fromTimeStamp(mktime(0,0,0,$this->currentMonth, $this->days,$this->currentYear));
+			
+			$periods = new bab_UserPeriods($daymin, $daymax);
+			
+			$factory = new bab_PeriodCriteriaFactory();
+			$criteria = $factory->Collection('bab_CalendarEventCollection');
+			$criteria = $criteria->_AND_($factory->Calendar($calendars));
+			
+			$periods->createPeriods($criteria);
+			$periods->orderBoundaries();
+			$this->currmonthevents = array();
+			
+			foreach($periods as $event)
+			{
+				$startday = date('j', $event->ts_begin);
+				$endday = date('j', $event->ts_end);
+				
+				for($day = $startday ; $day<=$endday; $day++)
 				{
-					$calendar = $collection->getCalendar();
-					if ($calendar)
+					$collection = $event->getCollection();
+					if ($collection)
 					{
-						$this->currmonthevents[$day][] = $calendar->getUrlIdentifier();
+						$calendar = $collection->getCalendar();
+						if ($calendar)
+						{
+							$this->currmonthevents[$day][] = $calendar->getUrlIdentifier();
+						}
 					}
 				}
 			}
 		}
-			
-
 	}
-
-	$this->htmlid = 'montha';
 	
-	$nbweek = date('W');
-	if (substr($nbweek,0,1) == 0) {
-		$nbweek = substr($nbweek,1,strlen($nbweek)-1);
-	}
-	$this->title = $this->curmonth.' '.$this->curyear.'&nbsp;&nbsp;'.bab_translate("W.").$nbweek;
+	
+	
 
-	if( !file_exists( 'skins/'.$GLOBALS['babSkin'].'/templates/montha.html' ) )
+	public function getnextday3()
 		{
-		if (!$this->close) {
-			$this->content = bab_printTemplate($this,'insections.html', 'montha');
-		}
-		return bab_printTemplate($this,'sectiontemplate.html', 'default');
-		}
-
-	return bab_printTemplate($this,"montha.html", "");
-	}
-
-	function getnextday3()
-		{
-		global $babDays;
-		static $i = 0;
-		if( $i < 7)
-			{
-			$a = $i + $this->babCalendarStartDay;
-			if( $a > 6)
-				$a -=  7;
-			$this->day3 = mb_substr($babDays[$a], 0, 1);
-			$i++;
-			return true;
-			}
-		else
-			return false;
-		}
-
-	function getnextweek()
-		{
-		if( $this->w < 7 && $this->curDay < $this->days)
-			{
-			$this->w++;
-			return true;
-			}
-		else
-			{
-			return false;
-			}
-		}
-
-	function getnextday()
-		{
-		global $babDB;
-		static $d = 0;
-		static $total = 0;
-		if( $d < 7)
-			{
-			$this->bgcolor = 0;
-			$this->event = 0;
-
-			$a = $this->daynumber - $this->babCalendarStartDay;
-			if( $a < 0)
-				$a += 7;
-
-
-			if( ($this->w == 1 &&  $d < $a) || $total >= $this->days )
+			global $babDays;
+			static $i = 0;
+			if( $i < 7)
 				{
-				$this->day = "&nbsp;";
-				}
+				$a = $i + $this->babCalendarStartDay;
+				if( $a > 6)
+					$a -=  7;
+				$this->day3 = mb_substr($babDays[$a], 0, 1);
+				$i++;
+				return true;
+			}
 			else
-				{
-				$total++;
-				$this->curDay++;
+				return false;
+		}
 
+	public function getnextweek()
+		{
+			if( $this->w < 7 && $this->curDay < $this->days)
+			{
+				if (!isset($this->currmonthevents)) {
+					$this->initMonthEvents();
+				}					
+					
+				$this->w++;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+	public function getnextday()
+		{
+			global $babDB;
+			static $d = 0;
+			static $total = 0;
+			if( $d < 7)
+				{
+				$this->bgcolor = 0;
+				$this->event = 0;
+	
+				$a = $this->daynumber - $this->babCalendarStartDay;
+				if( $a < 0)
+					$a += 7;
+	
+	
+				if( ($this->w == 1 &&  $d < $a) || $total >= $this->days )
+					{
+					$this->day = "&nbsp;";
+				}
+				else
+					{
+					$total++;
+					$this->curDay++;
+	
+					if( $total > $this->days)
+						{
+						return false;
+						}
+	
+					$this->day = $total;
+					
+					if(isset($this->currmonthevents[$this->day]) && !empty($this->currmonthevents[$this->day]))
+						{
+							$idcals = implode(',', array_unique($this->currmonthevents[$this->day]));
+							if( !empty($idcals))
+								{
+									$this->event = 1;
+									$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&amp;calid=".$idcals."&amp;date=".$this->currentYear.",".$this->currentMonth.",".$total;
+									$this->day = $total;
+								}
+						}
+						
+					if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
+						{
+						$this->bgcolor = 1;
+						}
+	
+				}
+	
 				if( $total > $this->days)
 					{
 					return false;
-					}
-
-				$this->day = $total;
-				
-				if(isset($this->currmonthevents[$this->day]) && !empty($this->currmonthevents[$this->day]))
-					{
-						$idcals = implode(',', array_unique($this->currmonthevents[$this->day]));
-						if( !empty($idcals))
-							{
-								$this->event = 1;
-								$this->dayurl = $GLOBALS['babUrlScript']."?tg=calday&amp;calid=".$idcals."&amp;date=".$this->currentYear.",".$this->currentMonth.",".$total;
-								$this->day = $total;
-							}
-					}
+				}
 					
-				if( $total == $this->now && date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear)) == date("n") && $this->currentYear == date("Y"))
-					{
-					$this->bgcolor = 1;
-					}
-
-				}
-
-			if( $total > $this->days)
-				{
-				return false;
-				}
-				
-			$d++;
-			return true;
+				$d++;
+				return true;
 			}
-		else
-			{
-			$d = 0;
-			return false;
+			else
+				{
+				$d = 0;
+				return false;
 			}
 		}
 }
