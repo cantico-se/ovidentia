@@ -1260,7 +1260,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	{
-	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
+	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
 	if(!class_exists("tempcc"))
 		{
@@ -1278,7 +1278,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 			var $dateval;
 
 
-			function tempcc($topicname, $title, $author, $msg,$topics, $articleid)
+			function tempcc($topicname, $title, $author, $msg,$topics, $articleid, $head, $body)
 				{
 				global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
 				$this->topic = bab_translate("Topic");
@@ -1305,6 +1305,8 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 				$this->babtpl_articletitle = $this->titlename;
 				$this->babtpl_articleid = $articleid;
 				$this->babtpl_articletopicid = $topics;
+				$this->babtpl_articlehead = $head;
+				$this->babtpl_articlebody = $body;
 				}
 			}
 		}	
@@ -1319,8 +1321,13 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	$author = $event->getArticleAuthor();
 	$topics = $event->getTopicId();
 	$articleid = $event->getArticleId();
+	
+	$arr = $babDB->db_fetch_array($babDB->db_query('SELECT * FROM ' . BAB_ARTICLES_TBL . ' WHERE id="' . $babDB->db_escape_string($articleid) . '"'));
+	
+	$head = $arr['head'];
+	$body = $arr['body'];
 
-	$tempc = new tempcc($topicname, $title, $author, $msg, $topics, $articleid);
+	$tempc = new tempcc($topicname, $title, $author, $msg, $topics, $articleid, $head, $body);
 
 
 	$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_new_subject');
