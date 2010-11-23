@@ -33,7 +33,7 @@ $GLOBALS['babDG'] = array(
 				array("calendars", bab_translate("Calendar")),
 				array("mails", bab_translate("Mail")),
 				array("directories", bab_translate("Directories")),
-				array("approbations", bab_translate("Approbations")),
+				array("approbations", bab_translate("Approbation schemas")),
 				array("filemanager", bab_translate("File manager")),
 				array("orgchart", bab_translate("Charts")),
 				array("taskmanager", bab_translate("Task Manager"))

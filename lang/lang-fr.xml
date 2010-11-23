@@ -84,6 +84,7 @@
 <string id="Approbation schema for articles">Schéma d'approbation pour les articles</string>
 <string id="Approbation schema for comments">Schéma d'approbation pour les commentaires</string>
 <string id="Approbation schema">Schéma d'approbation</string>
+<string id="Approbation schemas">Schémas d'approbation</string>
 <string id="Approbations">Approbations</string>
 <string id="Approved vacation request">Demande de congé approuvée</string>
 <string id="Approver">Approbateur</string>
@@ -637,6 +638,7 @@
 <string id="Read article">Lire l'article</string>
 <string id="Read more">Suite</string>
 <string id="Read only">Lecture seule</string>
+<string id="Final version">Version définitive</string>
 <string id="Reasons of refusal">Raisons du refus</string>
 <string id="Recent posts">Contributions récentes</string>
 <string id="Refresh">Actualiser</string>
@@ -2539,7 +2541,7 @@
 <string id="Topics of this category">Les thèmes de cette catégorie</string>
 <string id="Subcategories first level">Les sous-catégories de premier niveau</string>
 <string id="Topics of subcategories first level">Les thèmes des sous-catégories de premier niveau</string>
-<string id="All child ( subcategories and topics )">Tous (sous-catégories ainsi que les thèmes)</string>
+<string id="All children ( subcategories and topics )">Tous (sous-catégories ainsi que les thèmes)</string>
 <string id="Apply">Appliquer</string>
 <string id="Unknown organization chart">Organigramme inconnu</string>
 <string id="Duplicate this chart as">Dupliquer cet organigramme en tant que</string>

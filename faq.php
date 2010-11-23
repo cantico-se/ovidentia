@@ -1169,13 +1169,13 @@ else if( 'modscat' == bab_pp('modsc'))
 switch($idx)
 	{
 	case "questions":
-		$babBody->title = bab_translate("Contents");
+		$babBody->title = bab_translate("Management");
 		if( bab_isAccessValid(BAB_FAQCAT_GROUPS_TBL, $item) || bab_isAccessValid(BAB_FAQMANAGERS_GROUPS_TBL, $item))
 			{
 			$GLOBALS['babWebStat']->addFaq($item);
 			FaqTableOfContents($item);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
-			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
+			$babBody->addItemMenu("questions", bab_translate("Management"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item);
 			if( isUserManager())
 				{
@@ -1192,7 +1192,9 @@ switch($idx)
 			$GLOBALS['babWebStat']->addFaq($item);
 			listSubCategoryQuestions($item, $idscat);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
-			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			if( isUserManager()){
+				$babBody->addItemMenu("questions", bab_translate("Management"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			}
 			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
 
 			$babBody->addItemMenu("listq", bab_translate("Questions"),$GLOBALS['babUrlScript']."?tg=faq&idx=listq&item=".$item."&idscat=".$idscat);
@@ -1215,7 +1217,9 @@ switch($idx)
 			$idq = bab_rp('idq');
 			viewQuestion($item, $idscat, $idq);
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
-			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			if( isUserManager()){
+				$babBody->addItemMenu("questions", bab_translate("Management"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			}
 			$babBody->addItemMenu("Print Friendly", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
 			$babBody->addItemMenuAttributes("Print Friendly", "target=_blank");
 			if( isUserManager())
@@ -1238,7 +1242,7 @@ switch($idx)
 		if( isUserManager())
 			{
 			addQuestion($item, $idscat);
-			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
+			$babBody->addItemMenu("questions", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=".$item);
 			$babBody->addItemMenu("addsc", bab_translate("Add sub category"), $GLOBALS['babUrlScript']."?tg=faq&idx=addsc&item=".$item);
 			}
@@ -1249,7 +1253,7 @@ switch($idx)
 		if( isUserManager())
 			{
 			addSubCategory($item, $idscat);
-			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
+			$babBody->addItemMenu("questions", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item);
 			$babBody->addItemMenu("addq", bab_translate("Add Question"), $GLOBALS['babUrlScript']."?tg=faq&idx=addq&item=".$item);
 			$babBody->addItemMenu("addsc", bab_translate("Add sub category"), $GLOBALS['babUrlScript']."?tg=faq&idx=addsc&item=".$item);
 			}
@@ -1261,7 +1265,7 @@ switch($idx)
 			{
 			$idq = bab_rp('idq');
 			modifyQuestion($item, $idscat, $idq);
-			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			$babBody->addItemMenu("questions", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 			$babBody->addItemMenu("Delete", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=faq&idx=Delete&item=".$item."&idscat=".$idscat."&idq=".$idq);
 			}
 		break;
@@ -1271,7 +1275,7 @@ switch($idx)
 		if( isUserManager())
 			{
 			modifySubCategory($item, $idscat, bab_rp('ids'));
-			$babBody->addItemMenu("questions", bab_translate("Contents"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			$babBody->addItemMenu("questions", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
 			$babBody->addItemMenu("ModifyC", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=faq&idx=ModifyC&item=".$item."&idscat=".$idscat);
 			}
 		break;
@@ -1283,7 +1287,9 @@ switch($idx)
 			FaqPrintContents($item);
 
 			$babBody->addItemMenu("Categories", bab_translate("Categories"),$GLOBALS['babUrlScript']."?tg=faq&idx=Categories");
-			$babBody->addItemMenu("questions", bab_translate("Contents"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			if( isUserManager()){
+				$babBody->addItemMenu("questions", bab_translate("Management"),$GLOBALS['babUrlScript']."?tg=faq&idx=questions&item=".$item."&idscat=".$idscat);
+			}
 			$babBody->addItemMenu("Print", bab_translate("Visualisation"),$GLOBALS['babUrlScript']."?tg=faq&idx=Print&item=".$item."&idscat=".$idscat);
 
 		}

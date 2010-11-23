@@ -59,7 +59,7 @@ class BAB_GetHtmlUploadBlock
 		$this->sName			= bab_translate("Name");
 		$this->sDescription		= bab_translate("Description");
 		$this->sKeywords		= bab_toHtml(bab_translate("Keywords"));
-		$this->sAttribute		= bab_translate("Read only");
+		$this->sAttribute		= bab_translate("Final version");
 		$this->sMaxDownloads	= bab_translate("Maximum number of downloads");
 		$this->sYes				= bab_translate("Yes");
 		$this->sNo				= bab_translate("No");
@@ -1400,7 +1400,7 @@ function listFiles()
 			$this->postedtxt = bab_translate("Posted by");
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
-            $this->altreadonly =  bab_translate("Read only");
+            $this->altreadonly =  bab_translate("Final version");
             $this->sFolderFormAdd = bab_translate("Create a folder");
             $this->sFolderFormEdit = bab_translate("Edit folder");
             $this->sRight = bab_translate("Rights");
@@ -2578,7 +2578,7 @@ function viewFile()
 			$this->file = bab_translate("File");
 			$this->name = bab_translate("Name");
 			$this->nameval = bab_toHtml($oFolderFile->getName());
-			$this->attribute = bab_translate("Read only");
+			$this->attribute = bab_translate("Final version");
 			if ('Y' === $oFolderFile->getReadOnly()) {
 				$this->readonlySelected = true;
 				if ($this->bupdate) {

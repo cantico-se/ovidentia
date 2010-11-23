@@ -117,7 +117,7 @@ function topcatModify($id)
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
 			
 			
-			//Si on ne vient pas d'un post alors récupérer l'image
+			//Si on ne vient pas d'un post alors rï¿½cupï¿½rer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
 				$aImageInfo	= bab_getImageCategory($id);
@@ -531,7 +531,7 @@ function howToUseDefaultRights($id)
 			$this->t_topics = bab_translate("Topics of this category");
 			$this->t_subcategories = bab_translate("Subcategories first level");
 			$this->t_topicssubcategories = bab_translate("Topics of subcategories first level");
-			$this->t_all = bab_translate("All child ( subcategories and topics )");
+			$this->t_all = bab_translate("All children ( subcategories and topics )");
 			$this->t_update = bab_translate("Apply");
 			}
 		}
@@ -599,14 +599,14 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	//Si image chargée par ajax
+	//Si image chargï¿½e par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image chargée par la voie normal
+	{//Si image chargï¿½e par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -619,8 +619,8 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	
 	if(false === $bHaveAssociatedImage)
 	{
-		//Aucune image n'est associée alors on supprime celle qui était associée avant
-		//si on a cliqué sur supprimé(ajax) ou coché supprimer (javascript désactivé)
+		//Aucune image n'est associï¿½e alors on supprime celle qui ï¿½tait associï¿½e avant
+		//si on a cliquï¿½ sur supprimï¿½(ajax) ou cochï¿½ supprimer (javascript dï¿½sactivï¿½)
 		if(('' === $sTempName && '' === $sImageName) || bab_rp('deleteImageChk', 0) != 0)
 		{
 			if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
@@ -634,7 +634,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	}
 	
 	
-	//Une image est associée alors on supprime l'ancienne
+	//Une image est associï¿½e alors on supprime l'ancienne
 	if($oPubPathsEnv->setEnv($babBody->currentAdmGroup))
 	{
 		require_once dirname(__FILE__) . '/../utilit/delincl.php';
@@ -653,7 +653,7 @@ function modifyTopcat($oldname, $name, $description, $benabled, $id, $template, 
 	}
 	
 	{
-		//Insérer l'image en base
+		//Insï¿½rer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
