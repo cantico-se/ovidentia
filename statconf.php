@@ -527,7 +527,7 @@ function statPages($url, $page)
 			$this->deletetxt = bab_translate("Delete");
 			$this->desctxt = bab_translate("Name");
 			$this->addtxt = bab_translate("Add");
-			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by id desc");
+			$this->res = $babDB->db_query("select * from ".BAB_STATS_IPAGES_TBL." where id_dgowner='".$babBody->currentAdmGroup."' order by page_name asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->urlval = $url;
 			$this->descval = $page;
