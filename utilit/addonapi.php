@@ -1228,7 +1228,7 @@ function bab_getUserId( $name )
 	}
 
 /**
- * R�cup�re $nb utilisateur contenant $name dans leur nom.
+ * Recupere $nb utilisateur contenant $name dans leur nom.
  * @param $name , $nb
  * @return array { int | id , string | lastname , string | firstname }
  */
