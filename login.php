@@ -660,6 +660,9 @@ function login_signon()
 		$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
 	}
 	
+	// if allready logged, return to homepage
+	header('location:'.$GLOBALS['babUrl']);
+	exit;
 }
 	
 
