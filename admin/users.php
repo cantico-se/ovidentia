@@ -483,6 +483,7 @@ function userCreate($grp = '')
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->adduser = bab_translate("Confirm");
+			$this->string_6_chr = bab_translate("Password must be at least 6 characters !!");
 			}
 		}
 
