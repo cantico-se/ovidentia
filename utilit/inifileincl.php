@@ -161,7 +161,7 @@ class bab_inifile_requirements {
 			}
 			
 			
-			$status = isset($current['ALL PRIVILEGES']);
+			$status = isset($current['ALL PRIVILEGES']) || isset($current['USAGE']);
 			
 			if (!$status)
 			{
