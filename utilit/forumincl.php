@@ -192,7 +192,7 @@ function notifyForumGroups(bab_eventForumPost $event)
         var $dateval;
 
 
-		function tempa($forum, $threadTitle, $author, $forumname, $url)
+		function tempa($forum, $threadTitle, $author, $forumname, $url, $postId)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->message = bab_translate("A new post has been registered on forum") .': '.$forumname;
@@ -204,6 +204,7 @@ function notifyForumGroups(bab_eventForumPost $event)
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
             $this->author = bab_toHtml($author);
+            $this->idpost = $postId;
 			if( !empty($url) )
 				{
 				$groups = bab_getGroupsAccess(BAB_FORUMSVIEW_GROUPS_TBL, $forum);
@@ -241,6 +242,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 	$thread = $event->getThreadId();	
 	$threadTitle = $event->getThreadTitle();
 	$author = $event->getPostAuthor();
+	$postId = $event->getPostId();
 	
 	$tmp = $event->getForumInfos();
 	$forumname = $tmp['name'];
@@ -254,7 +256,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
-	$tempa = new tempa($forum, $threadTitle, $author, $forumname, $url);
+	$tempa = new tempa($forum, $threadTitle, $author, $forumname, $url, $postId);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,'mailinfo.html', 'newpost'));
 	$messagetxt = bab_printTemplate($tempa,'mailinfo.html', 'newposttxt');
 
@@ -298,7 +300,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 		
 	}
 
-function notifyThreadAuthor($threadTitle, $email, $author)
+function notifyThreadAuthor($threadTitle, $email, $author, $idpost = null)
 	{
 	global $babBody, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail, $babInstallPath;
 
@@ -315,7 +317,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
         var $dateval;
 
 
-		function tempb($threadTitle, $email, $author)
+		function tempb($threadTitle, $email, $author, $idpost)
 			{
             global $BAB_SESS_USER, $BAB_SESS_EMAIL, $babSiteName;
             $this->message = bab_translate("A new post has been registered on thread");
@@ -327,6 +329,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
             $this->date = bab_translate("Date");
             $this->dateval = bab_strftime(mktime());
             $this->author = $author;
+            $this->idpost = $idpost;
 			}
 		}
 	
@@ -338,7 +341,7 @@ function notifyThreadAuthor($threadTitle, $email, $author)
     $mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
     $mail->mailSubject(bab_translate("New post"));
 
-	$tempb = new tempb($threadTitle, $email, $author);
+	$tempb = new tempb($threadTitle, $email, $author, $idpost);
 	$message = $mail->mailTemplate(bab_printTemplate($tempb,'mailinfo.html', 'newpost'));
     $mail->mailBody($message, 'html');
 
@@ -651,7 +654,7 @@ function bab_confirmPost($forum, $thread, $post)
 		$res = $babDB->db_query($req);
 		list($email) = $babDB->db_fetch_array($res);
 
-		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author']);
+		notifyThreadAuthor(bab_getForumThreadTitle($thread), $email, $arrpost['author'], $arrpost['id']);
 		}
 	
 	$bthread = ($arr['post'] == $arr['lastpost']);

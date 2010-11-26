@@ -1120,7 +1120,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 	$req = "update ".BAB_THREADS_TBL." set lastpost='".$idpost."' where id='".$babDB->db_escape_string($thread)."'";
 	$res = $babDB->db_query($req);
 
-	$req = "select *, p.subject  from ".BAB_THREADS_TBL." t, ".BAB_POSTS_TBL." p where t.id='".$babDB->db_escape_string($thread)."' AND p.id=t.post";
+	$req = "select t.*, p.subject  from ".BAB_THREADS_TBL." t, ".BAB_POSTS_TBL." p where t.id='".$babDB->db_escape_string($thread)."' AND p.id=t.post";
 	$res = $babDB->db_query($req);
 	$arr = $babDB->db_fetch_array($res);
 	if( $confirmed == "Y" && $arr['notify'] == "Y" && $arr['starter'] != 0)
@@ -1128,7 +1128,7 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		$req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['starter'])."'";
 		$res = $babDB->db_query($req);
 		$arr = $babDB->db_fetch_array($res);
-        notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name);
+        notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name, $idpost);
 		}
 		
 		
