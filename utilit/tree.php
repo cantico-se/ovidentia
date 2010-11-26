@@ -573,6 +573,12 @@ class bab_TreeView extends bab_Template
 	public function appendElement($element, $parentId)
 	{
 		$node = $this->_rootNode->createNode($element, $element->_id);
+		
+		if (!($node instanceof bab_Node))
+		{
+			throw new ErrorException('Unexpected node, id='.$element->_id);
+		}
+		
 		$this->_rootNode->appendChild($node, $parentId);
 		$this->_upToDate = false;
 		$this->onElementAppended($element, $parentId);
