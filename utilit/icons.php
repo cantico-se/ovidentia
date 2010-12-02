@@ -251,9 +251,6 @@ class Func_Icons extends bab_Functionality
 	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
 	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
 	const APPS_PREFERENCES_UPLOAD				= 'apps-preferences-upload';
-	//-----------------------------------------------------------------------
-	// Categories
-	//-----------------------------------------------------------------------
 	
 	//-----------------------------------------------------------------------
 	// Mimetypes	
@@ -321,6 +318,52 @@ class Func_Icons extends bab_Functionality
 	const STATUS_DIALOG_QUESTION				= 'status-dialog-question';
 	const STATUS_DIALOG_WARNING					= 'status-dialog-warning';
 	const STATUS_CONTENT_LOADING				= 'status-content-loading';
+	
+	
+
+	// CSS classes to apply to an html element containing icons
+	// to set their format. 
+	/**
+	 * Icon on left 16x16 pixels
+	 */
+	const ICON_LEFT_16	= 'icon-left-16 icon-left icon-16x16';
+	/**
+	 * Icon to the left of the label, 24x24 pixels
+	 */
+	const ICON_LEFT_24	= 'icon-left-24 icon-left icon-24x24';
+	/**
+	 * Icon to the left of the label, 32x32 pixels
+	 */
+	const ICON_LEFT_32	= 'icon-left-32 icon-left icon-32x32';
+	/**
+	 * Icon to the left of the label, 48x48 pixels
+	 */
+	const ICON_LEFT_48	= 'icon-left-48 icon-left icon-48x48';
+	/**
+	 * Icon to the left of the label, 64x64 pixels
+	 */
+	const ICON_LEFT_64	= 'icon-left-64 icon-left icon-64x64';
+
+	/**
+	 * Icon above of the label, 16x16 pixels
+	 */
+	const ICON_TOP_16	= 'icon-top-16 icon-top icon-16x16';
+	/**
+	 * Icon above of the label, 24x24 pixels
+	 */
+	const ICON_TOP_24	= 'icon-top-24 icon-top icon-24x24';
+	/**
+	 * Icon above of the label, 32x32 pixels
+	 */
+	const ICON_TOP_32	= 'icon-top-32 icon-top icon-32x32';
+	/**
+	 * Icon above of the label, 48x48 pixels
+	 */
+	const ICON_TOP_48	= 'icon-top-48 icon-top icon-48x48';
+	/**
+	 * Icon above of the label, 64x64 pixels
+	 */
+	const ICON_TOP_64	= 'icon-top-64 icon-top icon-64x64';
 }
 
 
