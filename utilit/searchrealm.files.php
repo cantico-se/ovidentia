@@ -360,7 +360,7 @@ class bab_SearchRealmFiles extends bab_SearchRealm {
 
 		$insert = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$insert[] = '('.$babDB->quote($arr['id']).', '.$babDB->quote($relevance[$arr['path'].$arr['name']]).', '.$babDB->quote($arr['id_dgowner']).')';
+			$insert[] = '('.$babDB->quote($arr['id']).', '.$babDB->quote($relevance[$arr['path'].$arr['name']]).')';
 		}
 
 		// insert result references into temporary table
