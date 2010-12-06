@@ -121,11 +121,11 @@ function browseUsers($pos, $cb)
 				$this->firstlast = bab_toHtml($this->firstlast, BAB_HTML_JS);
 				if( $this->ord == "-" )
 					{
-					$this->urlname = $this->arr['lastname'].' '.$this->arr['firstname'];
+					$this->urlname = bab_composeUserName($this->arr['lastname'],$this->arr['firstname']);
 					}
 				else
 					{
-					$this->urlname = $this->arr['firstname'].' '.$this->arr['lastname'];
+					$this->urlname = bab_composeUserName($this->arr['firstname'],$this->arr['lastname']);
 					}
 				$this->urlname = bab_toHtml($this->urlname);
 				$this->userid = bab_toHtml($this->arr['id']);
