@@ -1101,7 +1101,7 @@ function get_topcatview() {
 			$topcats = $this->get_topcats();
 			foreach( $topcatsview_tmp as $cat => $val)
 				{
-				while( $topcats[$cat]['parent'] != 0 )
+				while(isset($topcats[$cat]) && $topcats[$cat]['parent'] != 0 )
 					{
 					if( !isset($topcatview[$topcats[$cat]['parent']]))
 						{
