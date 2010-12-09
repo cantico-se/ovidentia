@@ -542,6 +542,8 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 /**
  * Update a topic
  * 
+ * @since 7.3.95
+ * 
  * @param int 		$id_topic
  * @param string 	$name
  * @param string 	$description
