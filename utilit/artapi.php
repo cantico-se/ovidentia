@@ -453,6 +453,15 @@ function bab_getTopicDescription($id)
 	}
 
 
+/**
+ * Add a topic
+ * @param string	$name
+ * @param string	$description
+ * @param int		$idCategory
+ * @param string	&$error
+ * @param array		$topicArr
+ * @return unknown_type
+ */
 function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = array())
 {
 	global $babBody, $babDB;
@@ -523,6 +532,87 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 	
 	return $id;
 }
+
+
+
+
+
+
+
+/**
+ * Update a topic
+ * 
+ * @param int 		$id_topic
+ * @param string 	$name
+ * @param string 	$description
+ * @param int 		$idCategory
+ * @param string 	&$error
+ * @param array 	$topicArr
+ * @return int
+ */
+function bab_updateTopic($id_topic, $name, $description, $idCategory, &$error, $topicArr = array())
+{
+	global $babBody, $babDB;
+
+	
+	if( empty($name))
+		{
+		$error = bab_translate("ERROR: You must provide a topic name !!");
+		return 0;
+		}
+
+	$res = $babDB->db_query("select * from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($id_topic)."' ");
+	if( $babDB->db_num_rows($res) === 0)
+		{
+		$error = bab_translate("ERROR: This topic does not exists");
+		return 0;
+		}
+		
+	$old = $babDB->db_fetch_assoc($res);
+
+	
+	$topicArr['category']= $name;
+	$topicArr['description']= $description;
+	$topicArr['id_cat']= (string) $idCategory;
+	
+	
+	
+	$tmp = array();
+	foreach($topicArr as $key => $value)
+	{
+		$tmp[]= $key.'='.$babDB->quote($value);
+	}
+
+	$babDB->db_query("UPDATE ".BAB_TOPICS_TBL." SET ".implode(', ', $tmp).' WHERE id='.$babDB->quote($id_topic));
+	
+	if ($topicArr['id_cat'] !== $old['id_cat'])
+	{
+		// the topic has been moved
+		
+		
+		$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($idCategory)."'");
+		$arr = $babDB->db_fetch_array($res);
+		if( isset($arr[0]))
+		{
+			$ord = $arr[0] + 1;
+		}
+		else
+		{
+			$ord = 1;
+		}
+		$babDB->db_query("UPDATE ".BAB_TOPCAT_ORDER_TBL." SET ordering=".$babDB->quote($ord).", id_parent=".$babDB->quote($idCategory)." WHERE id_topcat=".$babDB->quote($id_topic));
+			
+	}
+	
+
+	
+
+	return $id_topic;
+}
+
+
+
+
 
 
 /**
