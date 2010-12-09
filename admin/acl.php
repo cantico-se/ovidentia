@@ -610,6 +610,8 @@ function aclGetAccessGroups($table, $id_object) {
  * @param string $table : name of the table
  * @param int $id_object : id of the object
  * @param string $activeOrderBy : 'lastname', 'firstname', NULL by default (since version ovidentia-7-2-94-20100522)
+ * @param boolean $returnDisabledUsers : if true the list of users contains disabled users. False by default
+ * @param boolean $returnNonConfirmedUsers : if true the list of users contains non confirmed users. False by default
  * @return array :
  * array
    (
@@ -622,7 +624,7 @@ function aclGetAccessGroups($table, $id_object) {
 		)
 	)
  */
-function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL) {
+function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisabledUsers=false, $returnNonConfirmedUsers=false) {
 	global $babBody, $babDB;
 	
 	$groups = aclGetAccessGroups($table, $id_object);
@@ -630,8 +632,19 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL) {
 	$today = date('Y-m-d');
 	if (isset($groups[BAB_REGISTERED_GROUP]) || isset($groups[BAB_ALLUSERS_GROUP])) {
 		$query = 'SELECT `id`, `firstname`, `lastname`, `email` 
-					FROM '.BAB_USERS_TBL.' 
-						WHERE `disabled` = \'0\' AND `is_confirmed` = \'1\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')';
+					FROM '.BAB_USERS_TBL.' ';
+		if ($returnDisabledUsers && $returnNonConfirmedUsers) {
+			//no condition
+		}
+		if ($returnDisabledUsers && !$returnNonConfirmedUsers) {
+			$query .= '		WHERE `is_confirmed` = \'1\'';
+		}
+		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
+			$query .= '		WHERE `disabled` = \'0\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')';
+		}
+		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
+			$query .= '		WHERE `disabled` = \'0\' AND `is_confirmed` = \'1\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')';
+		}
 		if (isset($activeOrderBy)) {
 			if ($activeOrderBy == 'lastname') {
 				$query .= ' ORDER by `lastname`,`firstname`';
@@ -642,8 +655,19 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL) {
 	} else {
 		$query = 'SELECT `u`.id,`u`.`firstname`, `u`.`lastname`,`u`.`email` 
 					FROM '.BAB_USERS_TBL.' `u`, '.BAB_USERS_GROUPS_TBL.' `g`
-						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') 
-						AND `u`.`disabled`=\'0\' AND `u`.`is_confirmed`=\'1\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')';
+						WHERE `g`.`id_object`=`u`.`id` AND `g`.`id_group` IN('.$babDB->quote($groups).') ';
+		if ($returnDisabledUsers && $returnNonConfirmedUsers) {
+			//no condition
+		}
+		if ($returnDisabledUsers && !$returnNonConfirmedUsers) {
+			$query .= '		AND `u`.`is_confirmed` = \'1\'';
+		}
+		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
+			$query .= '		AND `u`.`disabled` = \'0\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')';
+		}
+		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
+			$query .= '		AND `u`.`disabled` = \'0\' AND `u`.`is_confirmed` = \'1\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')';
+		}
 		if (isset($activeOrderBy)) {
 			if ($activeOrderBy == 'lastname') {
 				$query .= ' ORDER by `u`.`lastname`,`u`.`firstname`';
