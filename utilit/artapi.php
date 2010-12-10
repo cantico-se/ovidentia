@@ -186,6 +186,77 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
 		return $id;
 		}
 	}
+	
+	
+	
+	
+/**
+ * Update article category
+ * @param int 		$id_category
+ * @param string 	$name
+ * @param string 	$description
+ * @param string 	$benabled		Y|N			This value can be null
+ * @param string 	$template					This value can be null
+ * @param string 	$disptmpl					This value can be null
+ * @param int 		$topcatid					This value can be null
+ * @param int 		$dgowner					This value can be null
+ * @return unknown_type
+ */	
+function bab_updateTopicsCategory($id_category, $name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=null)
+{
+	global $babBody, $babDB;
+	if( empty($name))
+	{
+		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
+		return false;
+	}
+	
+	$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id=".$babDB->quote($id_category));
+	if( $babDB->db_num_rows($res) === 0)
+	{
+		$babBody->msgerror = bab_translate("This topic category does not exists");
+		return false;
+	}
+	else
+	{
+		$old = $babDB->db_fetch_assoc($res);
+		$tmp = array();	
+		
+		
+		if (isset($name)) 		{	$tmp[]= "title			=".$babDB->quote($name);		}
+		if (isset($description)){	$tmp[]= "description	=".$babDB->quote($description);	}
+		if (isset($benabled)) 	{	$tmp[]= "enabled		=".$babDB->quote($benabled);	}
+		if (isset($template)) 	{	$tmp[]= "template		=".$babDB->quote($template);	}
+		if (isset($dgowner)) 	{	$tmp[]= "id_dgowner		=".$babDB->quote($dgowner);		}
+		if (isset($topcatid)) 	{	$tmp[]= "id_parent		=".$babDB->quote($topcatid);	}
+		if (isset($disptmpl)) 	{	$tmp[]= "display_tmpl	=".$babDB->quote($disptmpl);	}
+		
+		if (empty($tmp))
+		{
+			throw new Exception('Nothing to update in topic category');
+			return false;
+		}
+		
+		$req = "UPDATE ".BAB_TOPICS_CATEGORIES_TBL." SET ".implode(', ',$tmp)." WHERE id=".$babDB->quote($id_category)."";
+		$babDB->db_query($req);
+		
+		if ($old['id_parent'] === (string) $topcatid) {
+	
+			$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($topcatid)."'");
+			$arr = $babDB->db_fetch_array($res);
+			if( isset($arr[0]))
+				$ord = $arr[0] + 1;
+			else
+				$ord = 1;
+				
+			$babDB->db_query("UPDATE ".BAB_TOPCAT_ORDER_TBL." SET id_parent=".$babDB->quote($topcatid).", ordering=".$babDB->quote($ord)." WHERE id_topcat=".$babDB->quote($id_category)."");
+		}
+	}
+}	
+	
+
+	
+	
 
 
 function bab_getArticleDelegationId($iIdArticle)
