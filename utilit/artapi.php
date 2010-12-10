@@ -200,7 +200,7 @@ function bab_addTopicsCategory($name, $description, $benabled, $template, $dispt
  * @param string 	$disptmpl					This value can be null
  * @param int 		$topcatid					This value can be null
  * @param int 		$dgowner					This value can be null
- * @return unknown_type
+ * @return bool
  */	
 function bab_updateTopicsCategory($id_category, $name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=null)
 {
@@ -252,6 +252,8 @@ function bab_updateTopicsCategory($id_category, $name, $description, $benabled, 
 			$babDB->db_query("UPDATE ".BAB_TOPCAT_ORDER_TBL." SET id_parent=".$babDB->quote($topcatid).", ordering=".$babDB->quote($ord)." WHERE id_topcat=".$babDB->quote($id_category)."");
 		}
 	}
+	
+	return true;
 }	
 	
 
