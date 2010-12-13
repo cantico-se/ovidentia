@@ -355,7 +355,7 @@ class bab_icalendars
 	{
 		global $babDB;
 		
-		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='".BAB_CAL_USER_TYPE."' and actif='Y'");
+		$res = $babDB->db_query("select id from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id_user)."' and type='".BAB_CAL_USER_TYPE."'");
 		if ($arr = $babDB->db_fetch_assoc($res))
 		{
 			return (int) $arr['id'];
@@ -377,7 +377,17 @@ class bab_icalendars
 	public function getDefaultCalendar()
 	{
 		$this->initializeCalendars();
-		return $this->default_calendar;
+		if (null !== $this->default_calendar)
+		{
+			return $this->default_calendar;
+		}
+		
+		foreach($this->getCalendars() as $calendar)
+		{
+			return $calendar;
+		}
+		
+		return null;
 	}
 	
 

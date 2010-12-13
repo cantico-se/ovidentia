@@ -48,9 +48,18 @@ class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 		$this->calendar_collection = $calendar_collection;
 	}
 	
-	
+	/**
+	 * Add calendar to accessible calendar list
+	 * personal calendar is get from backend witout control on the actif flag because the personal calendar can be used in a disabled state by vacation program
+	 */
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
+		// do not add calendar if disabled in ovidentia
+		if (!$calendar->canView())
+		{
+			return;
+		}
+		
 		$this->calendar_collection->addCalendar($calendar);
 	}
 	
@@ -62,6 +71,7 @@ class bab_eventCollectCalendarsBeforeDisplay extends bab_event
 	{
 		return $this->calendar_collection->getAccessUser();
 	}
+	
 	
 }
 

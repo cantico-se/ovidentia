@@ -2896,10 +2896,13 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 
 	$calendar = $icalendars->getPersonalCalendar();
 	
+	
 	if (!isset($calendar))
 	{
-		throw new Exception('missing calendar '.$urlidentifier.' for user '.$id_user);
-		return;
+		// the user personal calendar is not accessible
+		// create an instance only for vacations
+		
+		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
 	}
 	
 	$criteria = $criteria->_AND_($factory->Calendar($calendar));

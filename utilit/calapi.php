@@ -77,7 +77,7 @@ function bab_calGetCategories($ids = null)
  */
 function bab_getPersonalCalendar($iduser)
 {
-	return (int) bab_getICalendars()->getPersonalCalendarUid($id_user);
+	return (int) bab_getICalendars()->getPersonalCalendarUid($iduser);
 }
 
 

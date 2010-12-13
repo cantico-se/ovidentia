@@ -230,6 +230,27 @@ abstract class bab_EventCalendar
 	}
 	
 	
+	/**
+	 * Can view calendar, check the active flag only
+	 * this is necessary only for personnal calendar
+	 * @return bool
+	 */
+	public function canView() {
+		
+		if ($this instanceOf bab_PersonalCalendar)
+		{
+			global $babDB;
+		
+			$res = $babDB->db_query('SELECT actif FROM '.BAB_CALENDAR_TBL.' WHERE id='.$babDB->quote($this->getUid()));
+			while ($arr = $babDB->db_fetch_assoc($res))
+			{
+				return ('Y' === $arr['actif']);
+			}
+		}
+		
+		return true;
+	}
+	
 
 	/**
 	 * Test if an event can be added on a calendar
