@@ -1305,6 +1305,11 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 				$this->babtpl_articletitle = $this->titlename;
 				$this->babtpl_articleid = $articleid;
 				$this->babtpl_articletopicid = $topics;
+				
+				//bab_replace()
+				$replace = bab_replace_get();
+				$replace->ref($head);
+				$replace->ref($body);
 				$this->babtpl_articlehead = preg_replace('/src="images/', 'src="' . $GLOBALS['babUrl'] . 'images', $head);
 				$this->babtpl_articlebody = preg_replace('/src="images/', 'src="' . $GLOBALS['babUrl'] . 'images', $body);
 				}
