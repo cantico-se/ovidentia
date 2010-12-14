@@ -5207,7 +5207,7 @@ class Func_Ovml_Container_IfUserMemberOfGroups extends Func_Ovml_Container
 				$tree = new bab_grptree();
 				for( $k=0; $k < count($rr); $k++ )
 					{
-					$groups = $tree->getChilds($rr[$k]);
+					$groups = $tree->getChilds($rr[$k], 1);
 					if( is_array($groups) && count($groups) > 0 )
 						{
 						foreach ($groups as $arr)
