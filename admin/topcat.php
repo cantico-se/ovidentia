@@ -109,7 +109,7 @@ function topcatModify($id)
 			$this->sPostedDispTmpl		= bab_rp('disptmpl', $this->arr['display_tmpl']);
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
-			$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+			$this->sAltImagePreview		= bab_translate("Previsualization of the image");
 			$this->sTempImgName			= bab_rp('sTempImgName', '');
 			$this->sImgName				= bab_rp('sImgName', '');
 			$this->sDeleteImageChecked	= (bab_rp('deleteImageChk', 0) == 0) ? '' : 'checked="checked"';

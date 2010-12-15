@@ -304,7 +304,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->sImagePreviewCaption	= bab_translate('Preview image');
 			$this->sTempImgName			= bab_rp('sTempImgName', '');
 			$this->sImgName				= bab_rp('sImgName', '');
-			$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+			$this->sAltImagePreview		= bab_translate("Previsualization of the image");
 			$this->sDeleteImageChecked	= (bab_rp('deleteImageChk', 0) == 0) ? '' : 'checked="checked"';
 			$this->sDeleteImageCaption	= bab_translate('Remove image');
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');

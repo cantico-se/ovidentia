@@ -1156,7 +1156,7 @@ echo
 					$this->sSelectImageCaption	= bab_translate('Select a picture');
 					$this->sDeleteImageCaption	= bab_translate('Remove image');
 					$this->sImagePreviewCaption = bab_translate('Preview image');
-					$this->sAltImagePreview		= bab_translate("Previlualization of the image");
+					$this->sAltImagePreview		= bab_translate("Previsualization of the image");
 					$this->sImageSubmitCaption	= bab_translate("Update");
 					
 					$this->processDisabledUploadReason();
