@@ -56,6 +56,8 @@ function modifyFolder($fid)
 		var $version;
 		var $yversel;
 		var $nversel;
+		var $orderm;
+		var $boolorderm;
 
 		function temp($fid)
 		{
@@ -75,6 +77,7 @@ function modifyFolder($fid)
 			$this->addtags_txt			= bab_translate("Users can add new tags");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->none					= bab_translate("None");
+			$this->orderm				= bab_translate("Manual order");
 		
 			$this->downloadscappingtxt	= bab_translate("Manage maximum number of downloads per file");
 			$this->maxdownloadstxt		= bab_translate("Default value");
@@ -140,7 +143,9 @@ function modifyFolder($fid)
 					$this->ntagssel = 'selected="selected"';
 					$this->ytagssel = '';
 				}
-
+				
+				$this->boolorderm = $oFmFolder->getManualOrder();
+				
 				$this->isdownloadscapping	= ($oFmFolder->getDownloadsCapping() == 'Y');
 				$this->maxdownloads			= (int) $oFmFolder->getMaxDownloads();
 				$this->isdownloadhistory	= ($oFmFolder->getDownloadHistory() == 'Y');
@@ -193,13 +198,16 @@ function modifyFolder($fid)
 			}
 		}
 	}
+	$temp = new temp($fid);
 
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
 	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify");
+	if( $temp->boolorderm ){
+		$babBody->addItemMenu("order", bab_translate("Order files"), $GLOBALS['babUrlScript']."?tg=admfm&idx=order&fid=".$fid);
+	}
 	$babBody->addItemMenu("fields", bab_translate("Fields"), $GLOBALS['babUrlScript']."?tg=admfm&idx=fields&fid=".$fid);
-		
-	$temp = new temp($fid);
+	
 	$babBody->babecho(bab_printTemplate($temp,"admfms.html", "foldermodify"));
 }
 
@@ -504,7 +512,7 @@ function deleteFieldsFolder($fid, $fields)
 }
 
 
-function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory)
+function updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)
 {
 	global $babBody, $babDB;
 	if(empty($fname))
@@ -657,6 +665,7 @@ function updateFolder($fid, $fname, $active, $said, $notification, $version, $bh
 				$oFmFolder->setDownloadsCapping($bdownloadscapping);
 				$oFmFolder->setMaxDownloads($maxdownloads);
 				$oFmFolder->setDownloadHistory($bdownloadhistory);
+				$oFmFolder->setManualOrder($orderm);
 
 				$oFmFolder->save();
 			}
@@ -730,6 +739,76 @@ function modifyField($fid, $ffid, $ffname, $defval)
 	return true;
 }
 
+function orderFiles($fid){
+	global $babBody;
+	class temp{		
+		var $forumtxt;
+		var $moveup;
+		var $movedown;
+		var $create;
+		var $db;
+		var $res;
+		var $count;
+		var $arrid = array();
+		var $forumid;
+		var $forumval;
+		var $fid;
+
+
+		function temp($fid){
+			global $babBody, $babDB, $BAB_SESS_USERID;
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
+			$this->create = bab_translate("Modify");
+			$this->fid = $fid;
+			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($fid);
+			//bab_debug($oFmFolder->getName());
+			$req = "select id, name from ".BAB_FILES_TBL." where path='" . $oFmFolder->getName() . "/' order by display_position, name asc";
+			$this->res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($this->res) ){
+					$this->arrid[] = $arr['id'];
+					$this->arrname[] = $arr['name'];
+			}
+			$this->count = count($this->arrid);
+		}
+
+		function getnext(){
+			static $i = 0;
+			if( $i < $this->count){
+				$this->filesname = bab_toHtml($this->arrname[$i]);
+				$this->filesid = $this->arrid[$i];
+				$i++;
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	$temp = new temp($fid);
+	
+	$babBody->title = bab_translate("Order files");
+	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
+	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");
+	$babBody->addItemMenu("modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=admfm&idx=modify&fid=".$fid);
+	$babBody->addItemMenu("order", bab_translate("Order files"), $GLOBALS['babUrlScript']."?tg=admfm&idx=order&fid=".$fid);
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "filesorder"));
+	
+	return true;
+}
+
+function updateOrderFiles($fid,$listfiles){
+	global $babDB;
+	
+	$i = 0;
+	foreach($listfiles as $fileID){
+		$babDB->db_query("UPDATE " . BAB_FILES_TBL . " SET display_position='" . $i . "' WHERE id='" . $fileID . "'");
+		$i++;
+	}
+}
+
 /* main */
 if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 {
@@ -745,17 +824,18 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['filemanager'] != 'Y')
 if( isset($mod) && $mod == "modfolder")
 {
 	if( isset($bupdate))
-		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory);
+		updateFolder($fid, $fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm);
 	else if(isset($bdel))
 		$idx = "delf";
-}
-else if( isset($action))
-	{
-	if( $action == 'fyes')
+}else if( isset($action)){
+	if( $action == 'fyes'){
 		confirmDeleteFolder($fid);
-	else if( $action == 'ffyes' )
+	}else if( $action == 'ffyes' ){
 		confirmDeleteFields($fid, $fields);
+	}else if( $action == 'order' ){
+		updateOrderFiles($fid,$listfiles);
 	}
+}
 else if( isset($fmf))
 	{
 	if( $fmf == 'fadd' )
@@ -779,6 +859,10 @@ else if(isset($aclview))
 
 switch($idx)
 {
+	case "order":
+		orderFiles($fid);
+		break;
+		
 	case "rights":
 		displayRightForm($fid);
 		break;

@@ -292,7 +292,8 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			'sAutoApprobation' => new BAB_StringField('`auto_approbation`'),
 			'sDownloadsCapping' => new BAB_StringField('`bcap_downloads`'),
 			'iMaxDownloads' => new BAB_IntField('`max_downloads`'),
-			'sDownloadHistory' => new BAB_StringField('`bdownload_history`')
+			'sDownloadHistory' => new BAB_StringField('`bdownload_history`'),
+			'bManualOrder' => new BAB_StringField('`manual_order`')
 		);
 	}
 
@@ -901,7 +902,8 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			'iVerMinor' => new BAB_IntField('`ver_minor`'),
 			'sVerComment' => new BAB_StringField('`ver_comment`'),
 			'iIndexStatus' => new BAB_IntField('`index_status`'),
-			'iIdDgOwner' => new BAB_IntField('`iIdDgOwner`')
+			'iIdDgOwner' => new BAB_IntField('`iIdDgOwner`'),
+			'iDisplayPosition' =>  new BAB_IntField('`display_position`')
 		);
 	}
 
@@ -1459,6 +1461,17 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('sAutoApprobation');
 	}
+
+	function setManualOrder($bManualOrder)
+	{
+		$this->_set('bManualOrder', $bManualOrder);
+	}
+
+	function getManualOrder()
+	{
+		return $this->_sGet('bManualOrder');
+	}
+	
 
 	function save()
 	{

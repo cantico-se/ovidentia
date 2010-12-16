@@ -6404,14 +6404,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
-	/*
+	/**
 	 * Upgrade to 7.3.94
 	 */
 	if (bab_isTableField(BAB_GROUPS_TBL, 'manager')) {
 		$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." DROP manager");
 	}
 	
-	
+	/**
+	 * Upgrade to 7.3.95
+	 */
+	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'manual_order')) {
+		$babDB->db_query("ALTER TABLE `".BAB_FM_FOLDERS_TBL."` ADD `manual_order` BOOL NOT NULL");
+	}
+	if (!bab_isTableField(BAB_FILES_TBL, 'display_position')) {
+		$babDB->db_query("ALTER TABLE `".BAB_FILES_TBL."` ADD `display_position` INT( 11 ) NULL DEFAULT NULL");
+	}
 
 	return true;
 }

@@ -756,6 +756,8 @@ function aclAdd($sTable, $iIdGroup, $iIdObject)
 	global $babDB;
 
 	if ($babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')')) {
+		unset($_SESSION['bab_groupAccess']['acltables']);
+		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		bab_siteMap::clearAll();
 		return true;
 	}
@@ -789,6 +791,8 @@ function aclRemove($table, $groupId, $objectId)
 	}
 	
 	if ($babDB->db_query('DELETE FROM ' . $babDB->backTick($table) . ' WHERE `id_object` = ' . $babDB->quote($objectId) . ' AND `id_group` IN (' . $babDB->quote($groups) . ')')) {
+		unset($_SESSION['bab_groupAccess']['acltables']);
+		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		bab_siteMap::clearAll();
 		return true;
 	}

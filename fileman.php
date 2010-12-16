@@ -584,7 +584,12 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 
-		$aOrder = array('sName' => 'ASC');
+		if( $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder'] ){
+			$aOrder = array('iDisplayPosition' => 'ASC');		
+		}else{
+			$aOrder = array('sName' => 'ASC');
+		}
+
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
 
 		$this->res = $this->oFolderFileSet->_oResult;

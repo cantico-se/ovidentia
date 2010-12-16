@@ -103,6 +103,7 @@ function addFolder()
 		var $saname;
 		var $said;
 		var $version;
+		var $orderm;
 
 		function temp()
 		{
@@ -121,6 +122,7 @@ function addFolder()
 			$this->display				= bab_translate("Visible in file manager?");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->addtags_txt			= bab_translate("Users can add new tags");
+			$this->orderm				= bab_translate("Manual order");
 	
 			$this->downloadscappingtxt	= bab_translate("Manage maximum number of downloads per file");
 			$this->maxdownloadstxt		= bab_translate("Default value");
@@ -285,7 +287,7 @@ function listFolders()
 }
 
 
-function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory)
+function saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm)
 {
 	global $babBody, $babDB;
 	if(empty($fname))
@@ -347,6 +349,7 @@ function saveFolder($fname, $active, $said, $notification, $version, $bhide, $ba
 			$oFmFolder->setDownloadsCapping($bdownloadscapping);
 			$oFmFolder->setMaxDownloads($maxdownloads);
 			$oFmFolder->setDownloadHistory($bdownloadhistory);
+			$oFmFolder->setManualOrder($orderm);
 
 			return $oFmFolder->save();
 		}
@@ -445,7 +448,7 @@ if(!isset($idx))
 
 if(isset($add) && $add == 'addfolder')
 {
-	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory))
+	if(!saveFolder($fname, $active, $said, $notification, $version, $bhide, $bautoapp, $baddtags, $bdownloadscapping, $maxdownloads, $bdownloadhistory, $orderm))
 	{
 		$idx = 'addf';
 	}

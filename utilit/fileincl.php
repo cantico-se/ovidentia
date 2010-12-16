@@ -1275,10 +1275,11 @@ function fm_unlockFile($idf, $comment)
  * @param	string	$comment
  * @param	Y|N		$vermajor
  * @param	object	$fmFile			bab_fmFile instance
+ * NYI @param	Y|N		$filename
  *
  * @return boolean
  */
-function fm_commitFile($idf, $comment, $vermajor, $fmFile)
+function fm_commitFile($idf, $comment, $vermajor, $fmFile/*, $filename = 'N'*/)
 {
 	require_once dirname(__FILE__) . '/eventfm.php';
 	global $babBody, $babDB;

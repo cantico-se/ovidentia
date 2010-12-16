@@ -114,7 +114,15 @@
 							</select>
 						</td>
 					</tr>
-
+					<tr> 
+						<td align="right">{ orderm }:</td>
+						<td> 
+							<select name="orderm">
+								<option value="1">{ yes }</option>
+								<option value="0" selected="selected">{ no }</option>
+							</select>
+						</td>
+					</tr>
 					<tr> 
 						<td>&nbsp;</td>
 						<td>
@@ -327,7 +335,15 @@ function submitCtr()
 							</select>
 						</td>
 					</tr>
-
+					<tr> 
+						<td align="right">{ orderm }</td>
+						<td> 
+							<select name="orderm">
+								<option value="1" <!--#if boolorderm "== 1" -->selected="selected"<!--#endif boolorderm -->>{ yes }</option>
+								<option value="0" <!--#if boolorderm "== 0" -->selected="selected"<!--#endif boolorderm -->>{ no }</option>
+							</select>
+						</td>
+					</tr>
 					<tr> 
 						<td>&nbsp;</td>
 						<td>
@@ -352,6 +368,113 @@ function submitCtr()
 </form>
 <br />
 <!--#end foldermodify -->
+
+<!--#begin filesorder -->
+<script language="JavaScript">
+<!--
+function movefile(bDir, el)
+	{
+	var idx = el.selectedIndex
+	if (idx !=-1) 
+	{
+		if( idx == 0 && bDir == true)
+			return;
+		if( idx == el.options.length-1 && bDir == false)
+			return;
+		var nxidx = idx + ( bDir ? - 1 : 1)
+		if ( nxidx<0 )
+			nxidx=el.length-1
+		if ( nxidx>=el.length) nxidx=0
+		var oldVal = el[idx].value
+		var oldText = el[idx].text
+		el[idx].value = el[nxidx].value
+		el[idx].text = el[nxidx].text
+		el[nxidx].value = oldVal
+		el[nxidx].text = oldText
+		el.selectedIndex = nxidx
+	}
+}
+
+function selectAllFiles(list)
+{
+	for(i=0; i < list.options.length; i++)
+	{
+		list.options[i].selected = true;
+	}
+}
+
+function sortListFiles(sortType, list)
+{
+	if (list.length < 2) return;
+	sortTypes = new Object;
+	sortTypes["sortAA"] = sortAA;
+	sortTypes["sortAD"] = sortAD;
+	sortTypes["sortDA"] = sortDA;
+	sortTypes["sortDD"] = sortDD;
+	a = new Array();
+	for (var i = 0; i < list.length; i++){
+		a[i] = list.options[i].text + "|" + list.options[i].value;
+	}
+	a.sort(sortTypes[sortType]);
+	for (var i = 0; i < list.length; i++)
+	{
+		idx = a[i].lastIndexOf("|");
+		list.options[i].text = a[i].substring(0, idx);
+		list.options[i].value = a[i].substring(idx + 1, a[i].length);
+	}
+}
+//-->
+</script>
+
+<form method="post" name="ordfiles" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="admfm">
+<input type="hidden" name="idx" value="modify">
+<input type="hidden" name="action" value="order">
+<input type="hidden" name="fid" value="{ fid }">
+
+<table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+<tr> 
+<td valign="middle" align="center"> 
+<select name="listfiles[]"  size=12 multiple>
+  <!--#in getnext --> 
+  <option value="{ filesid }">{ filesname }</option>
+  <!--#endin getnext --> 
+</select>
+</td>
+<td valign="middle" align="center"><a 
+href="Javascript:movefile(true,document.ordfiles.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+width="22" height="18" border=0 alt="{ moveup }"></a> <br>
+<br>
+<a href="Javascript:movefile(false,document.ordfiles.elements[4])"> 
+<img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
+<br /><br />
+<a href="Javascript:sortListFiles('sortAA', document.ordfiles.elements[4])">
+<img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
+</a>
+<br /><br />
+<a href="Javascript:sortListFiles('sortAD', document.ordfiles.elements[4])">
+<img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
+</a>
+</td>
+</tr>
+<tr> 
+<td align="center"> 
+<input type="submit" name="Submit" value="{ create }" 
+onclick="selectAllFiles(document.ordfiles.elements[4]); document.ordfiles.submit()" />
+<br>
+<br>
+</td>
+<td>&nbsp; </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end filesorder -->
 
 <!--#begin fmfields -->
 <form name="fmfield" method="post" action="{ babPhpSelf }">

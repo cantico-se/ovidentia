@@ -161,6 +161,7 @@ function showCommitFile($idf)
 				$this->commenttxt = bab_translate("Comment");
 				$this->commit = bab_translate("Commit file");
 				$this->versiontxt = bab_translate("New major version?");
+				/*$this->nametxt = bab_translate("Include the uploaded file name in the notification");*/
 				$this->no = bab_translate("No");
 				$this->yes = bab_translate("Yes");
 	
@@ -889,7 +890,7 @@ if(isset($_REQUEST['idf']))
 					break;
 					
 				case 'commit':
-					if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf'))) 
+					if(false === fm_commitFile($idf, $_POST['comment'], $_POST['vermajor'], bab_fmFile::upload('uploadf')/*, $_POST['filename']*/)) 
 					{
 							$idx = 'commit';
 					}

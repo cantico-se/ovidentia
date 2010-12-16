@@ -578,6 +578,7 @@
 <string id="Or users having ">Ou les utilisateurs ayant pour régime</string>
 <string id="Or">Ou</string>
 <string id="Order forums">Ordonner les forums</string>
+<string id="Order files">Ordonner les fichiers</string>
 <string id="Order">Ordre</string>
 <string id="Original Message">Message original</string>
 <string id="Other">Autre</string>
@@ -3144,5 +3145,6 @@
 <string id="Defined in site options">Défini dans les options du site</string>
 <string id="mod_rewrite apache module">Module d'Apache mod_rewrite</string>
 <string id="The dates search boundaries are mandatory">Les dates limite de recherche sont obligatoires</string>
-
+<string id="Include the uploaded file name in the notification">Faire apparaître le nom du fichier chargé dans la notification</string>
+<string id="Manual order">Ordre manuel</string>
 </fr>
