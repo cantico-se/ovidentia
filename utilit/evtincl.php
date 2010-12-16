@@ -1827,8 +1827,6 @@ class bab_event_posted {
 		}
 		
 		
-		
-		
 	
 		if (isset($this->args['until'])) {
 			$repeatdate = bab_event_posted::getDateTime($this->args['until']);

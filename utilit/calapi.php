@@ -265,6 +265,8 @@ function bab_saveEvent($idcals, $args, &$msgerror, $updateMethod = null)
 	include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
 
 	$posted = new bab_event_posted();
+	
+	$args['selected_calendars'] = $idcals;
 	$posted->createArgsData($args);
 	if (!$posted->isValid($msgerror)) {
 		return false;
