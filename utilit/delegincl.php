@@ -59,14 +59,15 @@ function bab_setCurrentUserDelegation($iIdDelegation)
  */
 function bab_getCurrentUserDefaultDelegation()
 {
-	$aCurrUsrDg = bab_getUserFmVisibleDelegations();
+	//May it is not a good idea to comment this. /!\ if it cause issue it should be uncomment.
+	/*$aCurrUsrDg = bab_getUserFmVisibleDelegations();
 	if (count($aCurrUsrDg) > 1) {
 		$aItem = each($aCurrUsrDg);
 		$aItem = each($aCurrUsrDg);
 		if (false !== $aItem) {
 			return $aItem['key'];
 		}
-	}
+	}*/
 	return 0;
 }
 
