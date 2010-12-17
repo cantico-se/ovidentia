@@ -493,6 +493,7 @@ function listPostsFlat($forum, $thread, $open, $pos)
 			$this->search_txt = bab_translate("Search");
 			$this->postsubject_txt = bab_translate("Post subject");
 			$this->posted_txt = bab_translate("Posted");
+			$this->mail_txt = bab_translate("Send a mail");
 			$this->forum = $forum;
 			$this->thread = $thread;
 			$this->idx = bab_toHtml($idx);
