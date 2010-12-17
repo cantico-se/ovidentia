@@ -112,12 +112,12 @@
             <a href="{ urlmail }" onclick="bab_popup(this.href);return false;">
             <!--#else accid --><a href="mailto:{ email }">
             <!--#endif accid -->
-            <img src="{ babSkinPath }images/Puces/mail.png" border="0" alt="" /></a>
+            <img src="{ babSkinPath }images/Puces/mail.png" border="0" alt="{ mail_txt }" title="{ mail_txt }" /></a>
           </td>
-          <td valign="middle" width="1%" ><a href="{ url }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0" alt="" /></a></td>
+          <td valign="middle" width="1%" ><a href="{ url }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0" alt="{ view_txt }" title="{ view_txt }" /></a></td>
           <td valign="middle" width="1%" >
            <!--#if bgroup -->
-		  <a href="{ urledir }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/folder_group.gif" border="0" alt="" /></a>
+		  <a href="{ urledir }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/folder_group.gif" border="0" alt="{ dirmember_txt }" title="{ dirmember_txt }" /></a>
            <!--#else bgroup -->&nbsp;
            <!--#endif bgroup -->
 		  </td>

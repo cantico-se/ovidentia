@@ -331,6 +331,9 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->badd						= $badd;
 			$this->xf						= $xf;
 			$this->sContent					= 'text/html; charset=' . bab_charset::getIso();
+			$this->mail_txt					= bab_translate("Send a mail");
+			$this->view_txt					= bab_translate("View the entry");
+			$this->dirmember_txt			= bab_translate("Directory member");
 			
 			if( mb_substr($pos,0,1) == "-" )
 				{
