@@ -940,7 +940,7 @@ class displayLogin_Template
 		$url = str_replace('%0a','', $url);
 		
 		$this->referer = bab_toHtml($url);
-		$this->life = bab_translate("Remember my login");
+		$this->life = bab_translate("Connection timeout");
 		$this->nolife = bab_translate("No");
 		$this->oneday = bab_translate("one day");
 		$this->oneweek = bab_translate("one week");
