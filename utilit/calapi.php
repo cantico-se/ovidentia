@@ -319,7 +319,7 @@ function bab_newEvent($idcals, $args, &$msgerror)
 	
 	if ($backend->savePeriod($period))
 	{
-		$period->commitAttendeeEvent();
+		$period->commitEvent();
 		return true;
 	}
 	

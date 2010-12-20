@@ -20,7 +20,7 @@
  * along with this program; if not, write to the Free Software			*
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
-************************************************************************/
+ ************************************************************************/
 
 include_once 'base.php';
 
@@ -36,68 +36,68 @@ abstract class bab_EventCalendar
 	 * @var int
 	 */
 	protected $uid = null;
-	
+
 
 	/**
 	 * Name of calendar
 	 * @var string
 	 */
 	protected $name;
-	
+
 	/**
 	 * Description of calendar
 	 * @var string
 	 */
 	protected $description;
-	
-	
+
+
 	/**
 	 * Displayable type for calendar (internationalized)
 	 * @var string
 	 */
 	protected $type;
-	
-	
-	
+
+
+
 	/**
 	 * ovidentia id user to test access for
 	 * In most case, this is the currently logged user BAB_SESS_USERID
 	 * @var int
 	 */
 	protected $access_user = null;
-	
-	
-	
+
+
+
 	/**
 	 * Optional id user linked to calendar to add the working hours periods
 	 * @var int
 	 */
 	protected $id_user = null;
-	
-	
+
+
 	/**
 	 * Optional id of workflow sheme
 	 */
 	protected $idsa = null;
-	
-	
+
+
 	/**
 	 * Delegation
 	 */
 	protected $id_dgowner = null;
-	
 
-	
-	
+
+
+
 	/**
 	 * Return the unique reference of calendar throw all addons
 	 * @return bab_Reference
 	 */
-	public function getReference() 
+	public function getReference()
 	{
 		return bab_buildReference('calendar', $this->getReferenceType(), $this->uid);
 	}
-	
+
 	/**
 	 * Get Url identifier of calendar, the type and uid part of the reference
 	 * the string is unique in all calendar application
@@ -106,15 +106,15 @@ abstract class bab_EventCalendar
 	public function getUrlIdentifier()
 	{
 		$type = $this->getReferenceType();
-		
+
 		if (empty($this->uid)) {
 			throw new Exception('the unique identifier of the calendar is missing');
 		}
-		
+
 		return "$type/$this->uid";
 	}
-	
-	
+
+
 	/**
 	 * get calendar unique identifier for one reference type
 	 * @example id from database
@@ -124,14 +124,14 @@ abstract class bab_EventCalendar
 	{
 		return $this->uid;
 	}
-	
-	
+
+
 	/**
 	 * Get the type part of the reference
 	 * @return unknown_type
 	 */
 	abstract function getReferenceType();
-	
+
 	/**
 	 * get name of calendar
 	 * @return string
@@ -140,8 +140,8 @@ abstract class bab_EventCalendar
 	{
 		return $this->name;
 	}
-	
-	
+
+
 	/**
 	 * get description of calendar
 	 * @return string
@@ -150,25 +150,25 @@ abstract class bab_EventCalendar
 	{
 		return $this->description;
 	}
-	
-	
+
+
 	/**
 	 * get description of calendar
 	 * @return string
 	 */
 	abstract public function getType();
-	
+
 	/**
 	 * Get Id user linked to calendar, only for personal calendars
 	 * calendars with id_user, will can load additional periods collection with the working periods, non-working periods and vacation periods
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getIdUser()
 	{
 		return $this->id_user;
 	}
-	
+
 	/**
 	 * Set the user to test access rights for
 	 * @param	int		$access_user
@@ -179,8 +179,8 @@ abstract class bab_EventCalendar
 		$this->access_user = $access_user;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Get approbation sheme ID if any or null if the calendar do not support approbation
 	 * @return int
@@ -189,11 +189,11 @@ abstract class bab_EventCalendar
 	{
 		return $this->idsa;
 	}
-	
 
-	
-	
-	
+
+
+
+
 	/**
 	 * Get delegation of calendar
 	 * @return int
@@ -202,7 +202,7 @@ abstract class bab_EventCalendar
 	{
 		return $this->id_dgowner;
 	}
-	
+
 	/**
 	 * Test if the calendar is visisble in a delegation
 	 * @param	int		$id_delegation
@@ -214,12 +214,12 @@ abstract class bab_EventCalendar
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * if a calendar return true on this method it will be displayed first, as the default personal calendar for the user
 	 * @return bool
@@ -228,29 +228,29 @@ abstract class bab_EventCalendar
 	{
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Can view calendar, check the active flag only
 	 * this is necessary only for personnal calendar
 	 * @return bool
 	 */
 	public function canView() {
-		
+
 		if ($this instanceOf bab_PersonalCalendar)
 		{
 			global $babDB;
-		
+
 			$res = $babDB->db_query('SELECT actif FROM '.BAB_CALENDAR_TBL.' WHERE id='.$babDB->quote($this->getUid()));
 			while ($arr = $babDB->db_fetch_assoc($res))
 			{
 				return ('Y' === $arr['actif']);
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 
 	/**
 	 * Test if an event can be added on a calendar
@@ -259,8 +259,8 @@ abstract class bab_EventCalendar
 	public function canAddEvent() {
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be updated
 	 * @param bab_calendarPeriod $event
@@ -269,8 +269,8 @@ abstract class bab_EventCalendar
 	public function canUpdateEvent(bab_calendarPeriod $event) {
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be deleted
 	 * @param bab_calendarPeriod $event
@@ -279,8 +279,8 @@ abstract class bab_EventCalendar
 	public function canDeleteEvent(bab_calendarPeriod $event) {
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if this calendar is allowed for an avaiability period search
 	 * @return bool
@@ -288,7 +288,7 @@ abstract class bab_EventCalendar
 	public function canSearchAvailabilityPeriod() {
 		return true;
 	}
-	
+
 	/**
 	 * Test if the access user can view event details other than the begin and end dates
 	 * the event details can be protected by the private property of period
@@ -298,28 +298,28 @@ abstract class bab_EventCalendar
 	public function canViewEventDetails(bab_calendarPeriod $event) {
 
 		$author = $event->getAuthorId();
-		
+
 		if (null === $author) {
 			// no author, consider the calendar owner as the event author
 			$author = $this->getIdUser();
 		}
-		
-		
+
+
 		if ($this->access_user == $author) {
 			return true;
 		}
-		
+
 		if (!$event->isPublic()) {
-			
+				
 			// Can be PRIVATE or CONFIDENTIAL
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get default attendee PARTSTAT property value for new attendee associated to an event of this calendar
 	 * The calendar as given parameter must return an interger value with the method getIdUser
@@ -331,44 +331,44 @@ abstract class bab_EventCalendar
 	 *  <li>TENTATIVE : not supported by ovidentia user interface</li>
 	 *  <li>DELEGATED : not supported by ovidentia user interface</li>
 	 * </ul>
-	 * 
+	 *
 	 * @link http://www.kanzaki.com/docs/ical/partstat.html
-	 * 
+	 *
 	 * @see bab_EventCalendar::getIdUser()
-	 * 
+	 *
 	 * @return 	string
 	 */
 	public function getDefaultAttendeePARTSTAT()
 	{
 		return 'NEEDS-ACTION';
 	}
-	
-	
+
+
 	/**
 	 * Test if the access user can update this calendar PARTSTAT property on event
 	 * with this default method, all users can modifiy their own PARTSTAT on every events, with one of the two values allowed by the ovidentia user interface
-	 * 
+	 *
 	 * @param 	bab_CalendarPeriod 	$period
 	 * @param	string				$role			Attendee ROLE value				CHAIR | REQ-PARTICIPANT | OPT-PARTICIPANT
 	 * @param	string				$old_value		Attendee PARTSTAT current value
 	 * @param	string				$new_value		Attendee PARTSTAT new value
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function canUpdateAttendeePARTSTAT(bab_CalendarPeriod $period, $role, $old_value, $new_value)
 	{
 		$id_user = (int) $this->getIdUser();
-		
+
 		if (!$id_user)
 		{
 			return false;
 		}
-		
+
 		if ($id_user !== (int) $this->access_user)
 		{
 			return false;
 		}
-		
+
 		if ('ACCEPTED' !== $new_value && 'DECLINED' !== $new_value)
 		{
 			return false;
@@ -376,20 +376,20 @@ abstract class bab_EventCalendar
 
 		return true;
 	}
-	
+
 
 
 	/**
 	 * Get backend to use for this calendar
-	 * 
+	 *
 	 * @return Func_CalendarBackend
 	 */
 	abstract public function getBackend();
-	
-	
+
+
 	/**
 	 * Grant access of user to this calendar
-	 * 
+	 *
 	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
 	 * @param int $user				id user
 	 * @return unknown_type
@@ -397,7 +397,7 @@ abstract class bab_EventCalendar
 	public function grantAccess($accessType, $user)
 	{
 		global $babDB;
-		
+
 		$res = $babDB->db_query('
 			SELECT 
 				id_user 
@@ -408,14 +408,14 @@ abstract class bab_EventCalendar
 				AND id_cal='.$babDB->quote($this->getUid()).'
 				AND id_user='.$babDB->quote($user)
 		);
-		
+
 		if (0 !== $babDB->db_num_rows($res))
 		{
 			// access allready granted
 			return;
 		}
-		
-		$babDB->db_query('INSERT INTO '.BAB_CALACCESS_USERS_TBL.' 
+
+		$babDB->db_query('INSERT INTO '.BAB_CALACCESS_USERS_TBL.'
 			(caltype, id_cal, bwrite, id_user) 
 		VALUES 
 			('.$babDB->quote($this->getReferenceType()).', 
@@ -424,11 +424,11 @@ abstract class bab_EventCalendar
 			'.$babDB->quote($user).')
 		');
 	}
-	
-	
+
+
 	/**
 	 * Revoke access of user to this calendar
-	 * 
+	 *
 	 * @param int 			$accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
 	 * @param array | int 	$user			id user	or a list of id user
 	 * @return unknown_type
@@ -436,27 +436,27 @@ abstract class bab_EventCalendar
 	public function revokeAccess($accessType, $user)
 	{
 		global $babDB;
-		
-		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE 
+
+		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE
 			caltype='.$babDB->quote($this->getReferenceType()).'
 			AND id_cal = ' . $babDB->quote($this->getUid()) . ' 
 			AND bwrite = ' . $babDB->quote($accessType).' 
 			AND id_user IN('.$babDB->quote($user).')';
-		
+
 		$babDB->db_query($sQuery);
 	}
-	
-	
+
+
 	/**
 	 * Get the list of user with access granted for the specified access type
-	 * 
-	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE	
+	 *
+	 * @param int $accessType		BAB_CAL_ACCESS_VIEW | BAB_CAL_ACCESS_UPDATE | BAB_CAL_ACCESS_FULL | BAB_CAL_ACCESS_SHARED_UPDATE
 	 * @return array				<int> id users
 	 */
 	public function getAccessGrantedUsers($accessType)
 	{
 		global $babDB;
-		
+
 		$res = $babDB->db_query('
 			SELECT 
 				id_user 
@@ -466,19 +466,19 @@ abstract class bab_EventCalendar
 				AND caltype='.$babDB->quote($this->getReferenceType()).' 
 				AND id_cal='.$babDB->quote($this->getUid())
 		);
-		
+
 		$return = array();
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
 			$id_user = (int) $arr['id_user'];
 			$return[$id_user] = $id_user;
 		}
-		
+
 		return $return;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get the sharring access given to access user by the owner of a calendar
 	 * @param bab_PersonalCalendar $calendar
@@ -487,7 +487,7 @@ abstract class bab_EventCalendar
 	protected function getSharingAccessForCalendar(bab_PersonalCalendar $calendar)
 	{
 		global $babDB;
-		
+
 		$res = $babDB->db_query('
 			SELECT 
 				bwrite 
@@ -497,28 +497,28 @@ abstract class bab_EventCalendar
 				AND id_cal='.$babDB->quote($calendar->getUid()).'
 				AND id_user='.$babDB->quote($this->access_user)
 		);
-		
-		
+
+
 		if ($arr = $babDB->db_fetch_assoc($res))
 		{
 			return (int) $arr['bwrite'];
 		}
-		
+
 		return BAB_CAL_ACCESS_NONE;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Display an event in to a calendar placeholder UI element on page
 	 * this method is called on the main calendar of event only
-	 * 
+	 *
 	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations using status or partstat parameter
-	 * 
+	 *
 	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
 	 * @param	bab_CalendarPeriod	$event			Event to display
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
@@ -534,7 +534,7 @@ abstract class bab_EventCalendar
 					return true;
 				}
 			}
-			
+				
 			if (!isset($attendees[$this->getUrlIdentifier()]) && $this === $calendar)
 			{
 				// the main calendar of event is not in attendees
@@ -551,21 +551,21 @@ abstract class bab_EventCalendar
 					return true;
 				}
 			}
-			
-			
+				
+				
 			if (!isset($relations[$this->getUrlIdentifier()]) && $this === $calendar)
 			{
 				// the main calendar of event is not in relations
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
 
-	
-	
+
+
+
 	/**
 	 * Add calendar event to ovidentia inbox
 	 * @param bab_CalendarPeriod $event
@@ -574,7 +574,7 @@ abstract class bab_EventCalendar
 	public function addToOviInbox(bab_CalendarPeriod $event)
 	{
 		global $babDB;
-		
+
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
 		$eventBackend = $calendar->getBackend();
@@ -584,11 +584,11 @@ abstract class bab_EventCalendar
 		{
 			return;
 		}
-		
+
 		if (!$collection->hash)
 		{
 			// regular event
-			
+				
 			$babDB->db_query('
 				INSERT INTO bab_cal_inbox 
 					(id_user, calendar_backend, uid) 
@@ -599,11 +599,11 @@ abstract class bab_EventCalendar
 						'.$babDB->quote($event->getProperty('UID')).'
 					)
 			');
-		
+
 		} else {
-			
+				
 			// recurring event with hash, insert all collection
-			
+				
 			foreach($collection as $event)
 			{
 				$babDB->db_query('
@@ -617,7 +617,7 @@ abstract class bab_EventCalendar
 						)
 				');
 			}
-		}	
+		}
 	}
 }
 
@@ -629,37 +629,37 @@ abstract class bab_EventCalendar
 /**
  * Calendars stored in the core database tables of ovidentia
  */
-abstract class bab_OviEventCalendar extends bab_EventCalendar 
+abstract class bab_OviEventCalendar extends bab_EventCalendar
 {
-	
+
 	/**
 	 * Initilization from database informations
-	 * 
+	 *
 	 * @param	int		$access_user	id of user to test access for
 	 * @param	Array	$data			calendar infos from table
 	 */
 	public function init($access_user, Array $data)
 	{
 		$this->access_user 	= $access_user;
-		
+
 		$this->uid		 	= $data['idcal'];
 		$this->name 		= $data['name'];
-		$this->description 	= $data['description'];	
-		
+		$this->description 	= $data['description'];
+
 		if (!empty($data['idsa'])) {
 			$this->idsa		= $data['idsa'];
 		}
-		
+
 		if (isset($data['id_dgowner'])) {
 			$this->id_dgowner = $data['id_dgowner'];
 		}
 	}
 
-	
-	
+
+
 	/**
 	 * Get backend to use for this calendar
-	 * 
+	 *
 	 * @return Func_CalendarBackend_Ovi
 	 */
 	public function getBackend()
@@ -667,7 +667,7 @@ abstract class bab_OviEventCalendar extends bab_EventCalendar
 		return bab_functionality::get('CalendarBackend/Ovi');
 	}
 
-	
+
 }
 
 
@@ -678,29 +678,29 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 {
 	/**
 	 * Access level for calendar sharing of the access_user
-	 * 
+	 *
 	 * BAB_CAL_ACCESS_NONE
 	 * BAB_CAL_ACCESS_VIEW
 	 * BAB_CAL_ACCESS_UPDATE
 	 * BAB_CAL_ACCESS_FULL
 	 * BAB_CAL_ACCESS_SHARED_UPDATE
-	 *  
+	 *
 	 * @var int
 	 */
 	private $sharing_access = BAB_CAL_ACCESS_NONE;
-	
-	
-	
+
+
+
 	public function getSharingAccess()
 	{
 		return $this->sharing_access;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Create personal calendar from id user
-	 * 
+	 *
 	 * @param 	int $id_user		owner of calendar
 	 * @param	int	$access_user	User to test access rights for
 	 * @return bool
@@ -708,28 +708,28 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	public function initFromUser($id_user, $access_user = null)
 	{
 		global $babDB;
-		
+
 		if (null === $access_user)
 		{
 			$access_user = $GLOBALS['BAB_SESS_USERID'];
 		}
-		
-		
+
+
 		if ($access_user === $id_user)
 		{
 			$data = self::getUserCalendarData($id_user, BAB_CAL_ACCESS_FULL);
-			
+				
 			if (!$data)
 			{
 				return false;
 			}
-			
+				
 			$this->init($access_user, $data);
 			return true;
 		}
-		
-		
-		
+
+
+
 		$query = "
 			select 
 				cut.id_cal,
@@ -747,55 +747,55 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				and disabled='0'
 				and u.id=".$babDB->quote($id_user)."
 				and cut.id_user=".$babDB->quote($access_user);
-		 
-	
+			
+
 		$res = $babDB->db_query($query);
-		
-		
+
+
 		if ($arr = $babDB->db_fetch_assoc($res))
 		{
 			// the calendar is accessible throw calendar sharing
-			
-		
+				
+
 			$data = array(
-			
+				
 				'idcal' 		=> $arr['id_cal'],
 				'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
 				'description' 	=> '',
 				'idowner' 		=> $id_user,
 				'access'		=> (int) $arr['bwrite']
-			
+				
 			);
-			
+				
 			$this->init($access_user, $data);
-			
+				
 			return true;
 		}
-	
-		
+
+
 		// the calendar is not accessible
-		
-		
+
+
 		$data = self::getUserCalendarData($id_user, BAB_CAL_ACCESS_NONE);
-		
+
 		if (!$data)
 		{
 			return false;
 		}
-		
+
 		$this->init($access_user, $data);
 		return true;
 	}
-	
-	
-	
-	
+
+
+
+
 	private static function getUserCalendarData($id_user, $access)
 	{
 		global $babDB;
-		
+
 		$id_calendar = bab_getICalendars()->getPersonalCalendarUid($id_user);
-		
+
 		if( null !== $id_calendar)
 		{
 			$data = array(
@@ -805,16 +805,16 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				'description' 	=> '',  
 				'access' 		=> $access
 			);
-			
+				
 			return $data;
 		}
-		
+
 		return null;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * @param	int		$access_user	id of user to test access for
 	 * @param	Array	$data			calendar infos from table
@@ -825,12 +825,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		$this->id_user 			= $data['idowner'];
 		$this->sharing_access	= $data['access'];
 	}
-	
-	public function getType() 
+
+	public function getType()
 	{
 		return bab_translate('Personal calendar');
 	}
-	
+
 	/**
 	 * Get the type part of the reference
 	 * @return unknown_type
@@ -839,8 +839,8 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	{
 		return 'personal';
 	}
-	
-	
+
+
 	/**
 	 * Test if the calendar is visisble in a delegation
 	 * the personal calendar is visisble if the user is a member of the delegation
@@ -855,16 +855,16 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		{
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be added on a calendar
 	 * @return bool
 	 */
-	public function canAddEvent() 
+	public function canAddEvent()
 	{
 		switch($this->getSharingAccess()) {
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
@@ -872,11 +872,11 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			case BAB_CAL_ACCESS_FULL:
 				return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if the event has been created by a member of the same "shared access" group
 	 * @param bab_calendarPeriod $event
@@ -892,21 +892,21 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		// shared access on calendar for access user
 
 		$author = $event->getAuthorId();
-		
+
 		if (!isset($author))
 		{
 			return false;
 		}
-		
-		
-		if ($this->access_user == $author) 
+
+
+		if ($this->access_user == $author)
 		{
 			// i am the author
 			return true;
 		}
-		
+
 		global $babDB;
-		
+
 		$res = $babDB->db_query('
 			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.' 
 			WHERE 
@@ -914,67 +914,66 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				AND id_user='.$babDB->quote($author).'
 				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).' 
 			');
-		
-		
+
+
 		if (0 !== $babDB->db_num_rows($res))
 		{
 			// shared access on calendar for author
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be updated
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
-	public function canUpdateEvent(bab_calendarPeriod $event) 
+	public function canUpdateEvent(bab_calendarPeriod $event)
 	{
-		
 		$collection = $event->getCollection();
-		
+
 		if ($collection instanceof bab_ReadOnlyCollection) {
 			return false;
 		}
-		
-		
+
+
 		if (((int) $this->access_user) == (int) $event->getAuthorId()) {
 			// i am the author
 			return true;
 		}
-		
+
 		if ($event->isLocked()) {
 			return false;
 		}
-		
-		
+
+
 		switch($this->getSharingAccess()) {
-			
+				
 			case BAB_CAL_ACCESS_UPDATE:
 				if ($this->access_user == $event->getAuthorId())
 				{
 					return true;
 				}
-				
+
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
-				if ($this->isSharedAccess($event)) 
+				if ($this->isSharedAccess($event))
 				{
 					return true;
 				}
-				
+
 			case BAB_CAL_ACCESS_FULL:
 				return true;
 		}
-		
+
 		// if the access is given by one of the attendees or one of the relation, return true
 		// specific beahviour for ovidentia events, in caldav, access is given only with the calendar
-		
+
 		$parents = $event->getRelations('PARENT');
 		$relation = reset($parents);
-		
+
 		if ($this === $relation['calendar'])
 		{
 			// if we are on the main calendar of event
@@ -986,23 +985,23 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be deleted
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
-	public function canDeleteEvent(bab_calendarPeriod $event) 
+	public function canDeleteEvent(bab_calendarPeriod $event)
 	{
 		return $this->canUpdateEvent($event);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get default attendee PARTSTAT property value for new attendee associated to an event of this calendar
 	 * The calendar as given parameter must return an interger value with the method getIdUser
@@ -1012,12 +1011,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 *  <li>ACCEPTED : the event will appear on the attendee calendar</li>
 	 * </ul>
 	 * if the user is the attendee or if the user have full access, the attendee is considered accepted
-	 * 
+	 *
 	 * @link http://www.kanzaki.com/docs/ical/partstat.html
-	 * 
+	 *
 	 * @see bab_EventCalendar::getIdUser()
-	 * 
-	 * 
+	 *
+	 *
 	 * @return 	string
 	 */
 	public function getDefaultAttendeePARTSTAT()
@@ -1027,7 +1026,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			// I add myself as attendee on an event
 			return 'ACCEPTED';
 		}
-		
+
 		switch($this->getSharingAccess()) {
 
 			case BAB_CAL_ACCESS_FULL:
@@ -1037,11 +1036,11 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 		return 'NEEDS-ACTION';
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Triggered when the calendar has been added as an attendee on $event
 	 * @param bab_CalendarPeriod $event
@@ -1050,19 +1049,18 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	public function onAddAttendee(bab_CalendarPeriod $event)
 	{
 		bab_debug($this->getName().' '.__FUNCTION__);
-		
+
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
-		$eventBackend = $calendar->getBackend();
-
+		
 		if ($calendar !== $this)
 		{
 			$this->addToOviInbox($event);
 		}
-		
+
 		$this->updateEventAttendee($event);
 	}
-	
+
 	/**
 	 * Triggered when the calendar has been updated as an attendee on $event
 	 * @param bab_CalendarPeriod $event
@@ -1070,38 +1068,45 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function onUpdateAttendee(bab_CalendarPeriod $event)
 	{
-		
+
 		$this->updateEventAttendee($event);
 	}
 	
 	
+	
+
+	
+	
+	
+
+
 	/**
 	 * Update the ovidentia backend copy of an event
-	 * 
+	 *
 	 * @param bab_CalendarPeriod $event		the event from another backend
 	 * @return unknown_type
 	 */
 	private function updateEventAttendee(bab_CalendarPeriod $event)
 	{
 		global $babDB;
-		
+
 		$res = $babDB->db_query('SELECT id FROM '.BAB_CAL_EVENTS_TBL.' WHERE uuid='.$babDB->quote($event->getProperty('UID')));
 		$arr = $babDB->db_fetch_assoc($res);
-		
+
 		if (!$arr)
 		{
 			bab_debug('event not found with uid='.$event->getProperty('UID'));
 			return;
 		}
-		
+
 		$event_id = (int) $arr['id'];
-		
+
 		// if the main event is in ovidentia calendar but the attendee is caldav
 		// updating the partstat of the attendee will trigger this method
-		
+
 		$attendees = $event->getAttendees();
-		
-		
+
+
 		$urlidentifier = $this->getUrlIdentifier();
 		if (isset($attendees[$urlidentifier]))
 		{
@@ -1111,18 +1116,18 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				case 'ACCEPTED':
 					$this->updateEventStatus($event_id, BAB_CAL_STATUS_ACCEPTED);
 					break;
-					
+						
 				case 'DECLINED':
 					$this->updateEventStatus($event_id, BAB_CAL_STATUS_DECLINED);
 					break;
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @param int $event_id
 	 * @param int $status
 	 * @return unknown_type
@@ -1130,26 +1135,96 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	private function updateEventStatus($event_id, $status)
 	{
 		global $babDB;
-		
-		$babDB->db_query('update '.BAB_CAL_EVENTS_OWNERS_TBL.' set status='.$babDB->quote($status).' WHERE 
+
+		$babDB->db_query('update '.BAB_CAL_EVENTS_OWNERS_TBL.' set status='.$babDB->quote($status).' WHERE
 			id_event='.$babDB->quote($event_id).' 
 			AND id_cal='.$this->getUid()
 		);
-						
+
 	}
 }
+
+
+
+
+
+abstract class bab_OviRelationCalendar extends bab_OviEventCalendar
+{
+	/**
+	 * Create a copy of the event into the relation calendar
+	 * this method is to use only with event stored in external backend to add a copy of the event into ovi backend
+	 * for events with multiple relations, the copy will be added only once.
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	private function addEventCopy(bab_CalendarPeriod $event)
+	{
+		// ovi backend
+		$backend = $this->getBackend();
+		
+		$relationEvent = clone $event;
+		
+		// the new event must have the relation calendar as parent calendar 
+		
+		// create a new collection into the relation calendar
+		$collection = $backend->CalendarEventCollection($this);
+		$collection->addPeriod($relationEvent);
+		
+		// save a copy of the event into the relation calendar
+		// if the event allready exists, it will be updated
+		$backend->savePeriod($relationEvent);
+	}
+	
+
+	/**
+	 * Triggered when the calendar has been added as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onAddRelation(bab_CalendarPeriod $event)
+	{
+		bab_debug($this->getName().' '.__FUNCTION__);
+
+		$collection = $event->getCollection();
+		$calendar = $collection->getCalendar();
+		$backend = $calendar->getBackend();
+		
+		if ($calendar !== $this && !($backend instanceof Func_CalendarBackend_Ovi))
+		{
+			$this->addEventCopy($event);
+		}
+	}
+	
+	/**
+	 * Triggered when the calendar has been updated as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onUpdateRelation(bab_CalendarPeriod $event)
+	{
+		// nothing to do
+	}
+	
+}
+
+
+
+
+
+
+
 
 
 /**
  * Public calendar
  */
-class bab_OviPublicCalendar extends bab_OviEventCalendar implements bab_PublicCalendar
+class bab_OviPublicCalendar extends bab_OviRelationCalendar implements bab_PublicCalendar
 {
-	public function getType() 
+	public function getType()
 	{
 		return bab_translate('Public calendar');
 	}
-	
+
 	/**
 	 * Get the type part of the refernce
 	 * @return unknown_type
@@ -1158,55 +1233,55 @@ class bab_OviPublicCalendar extends bab_OviEventCalendar implements bab_PublicCa
 	{
 		return 'public';
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be added on a calendar
 	 * @return bool
 	 */
 	public function canAddEvent() {
-		return bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $this->uid, $this->access_user) 
-			|| bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $this->uid, $this->access_user)
+		|| bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be updated
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
 	public function canUpdateEvent(bab_calendarPeriod $event) {
-		
+
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
 		}
-		
+
 		if (null !== $this->idsa)
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
 		}
-		
+
 		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be deleted
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
 	public function canDeleteEvent(bab_calendarPeriod $event) {
-		
+
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
 		}
-		
+
 		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
-	
+
+
+
 
 }
 
@@ -1214,9 +1289,9 @@ class bab_OviPublicCalendar extends bab_OviEventCalendar implements bab_PublicCa
 /**
  * Resource calendar
  */
-class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_ResourceCalendar
+class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_ResourceCalendar
 {
-	public function getType() 
+	public function getType()
 	{
 		return bab_translate('Resource calendar');
 	}
@@ -1229,55 +1304,55 @@ class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_Resour
 	{
 		return 'resource';
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be added on a calendar
 	 * @return bool
 	 */
 	public function canAddEvent() {
 		return bab_isAccessValid(BAB_CAL_RES_ADD_GROUPS_TBL, $this->uid, $this->access_user)
-			|| bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
+		|| bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be updated
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
 	public function canUpdateEvent(bab_calendarPeriod $event) {
-		
+
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
 		}
-		
+
 		if (null !== $this->idsa)
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
 		}
-		
+
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user)
-			|| bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
+		|| bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
+
+
 	/**
 	 * Test if an event can be deleted
 	 * @param bab_calendarPeriod $event
 	 * @return bool
 	 */
 	public function canDeleteEvent(bab_calendarPeriod $event) {
-		
+
 		if ($this->access_user == $event->getAuthorId()) {
 			return true;
 		}
-		
+
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-	
-	
+
+
 }
 
 
@@ -1289,7 +1364,7 @@ class bab_OviResourceCalendar extends bab_OviEventCalendar implements bab_Resour
  * and the getType method should return the same string as the bab_OviPersonalCalendar::getType() method
  */
 interface bab_PersonalCalendar {
-		
+
 	/**
 	 * Access level for calendar sharing of the access_user
 	 * the method must return one of the following constants :
@@ -1300,32 +1375,35 @@ interface bab_PersonalCalendar {
 	 * 	<li>BAB_CAL_ACCESS_FULL</li>
 	 * 	<li>BAB_CAL_ACCESS_SHARED_UPDATE</li>
 	 * </ul>
-	 * 
+	 *
 	 * The personal calendar of the access user must return BAB_CAL_ACCESS_FULL
 	 * A personal calendar not in any sharing groups of the access user sharing informations must return BAB_CAL_ACCESS_NONE
-	 * 
+	 *
 	 * Sharing informations are always recored in ovidentia core table
 	 * @see bab_EventCalendar::getSharingAccessForCalendar()
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getSharingAccess();
-	
-	
-	
+
+
+
 	/**
 	 * Triggered when the calendar has been added as an attendee on $event
 	 * @param bab_CalendarPeriod $event
 	 * @return unknown_type
 	 */
 	public function onAddAttendee(bab_CalendarPeriod $event);
-	
+
 	/**
 	 * Triggered when the calendar has been updated as an attendee on $event
 	 * @param bab_CalendarPeriod $event
 	 * @return unknown_type
 	 */
 	public function onUpdateAttendee(bab_CalendarPeriod $event);
+
+
+
 }
 
 
@@ -1335,8 +1413,20 @@ interface bab_PersonalCalendar {
  * and the getType method should return the same string as the bab_OviPublicCalendar::getType() method
  */
 interface bab_PublicCalendar {
-		
-	
+
+	/**
+	 * Triggered when the calendar has been added as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onAddRelation(bab_CalendarPeriod $event);
+
+	/**
+	 * Triggered when the calendar has been updated as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onUpdateRelation(bab_CalendarPeriod $event);
 }
 
 
@@ -1346,6 +1436,18 @@ interface bab_PublicCalendar {
  * and the getType method should return the same string as the bab_OviResourceCalendar::getType() method
  */
 interface bab_ResourceCalendar {
-		
-	
+
+	/**
+	 * Triggered when the calendar has been added as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onAddRelation(bab_CalendarPeriod $event);
+
+	/**
+	 * Triggered when the calendar has been updated as a relation on $event
+	 * @param bab_CalendarPeriod $event
+	 * @return unknown_type
+	 */
+	public function onUpdateRelation(bab_CalendarPeriod $event);
 }

@@ -2012,7 +2012,7 @@ class bab_event_posted {
 		
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
 		$backend->savePeriod($calendarPeriod);
-		$calendarPeriod->commitAttendeeEvent();
+		$calendarPeriod->commitEvent();
 		
 		
 		$this->notifyRelationsApprobation($calendarPeriod, $oldrelations);

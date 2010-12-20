@@ -743,6 +743,7 @@ class cal_wmdbaseCls
 	{
 		global $babBody;
 		
+		
 		$periodCollection = $calPeriod->getCollection();
 		
 		if (!$periodCollection)
@@ -761,11 +762,13 @@ class cal_wmdbaseCls
 			return;
 		}
 		
+		
 		$this->allow_view 			= ($periodCollection instanceof bab_CalendarEventCollection);	// detail view popup
 		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);						// edit popup
 		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);					// SUMMARY of event on calendar
 
 		$this->bstatus				= false;														// default, nothing to validate
+
 		
 		
 		if (bab_isUserLogged())

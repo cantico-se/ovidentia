@@ -1029,7 +1029,7 @@ class bab_changeCalendarBackend
 				$event->removeProperty('UID');
 				$event->removeProperty('RRULE');
 				$new_backend->savePeriod($event);
-				$event->commitAttendeeEvent();
+				$event->commitEvent();
 				
 				$i++;
 				

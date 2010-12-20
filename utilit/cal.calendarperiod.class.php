@@ -211,7 +211,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * 
 	 * @return bab_ICalendarObject
 	 */
-	public function commitAttendeeEvent()
+	public function commitEvent()
 	{	
 		$collection = $this->getCollection();
 		if (isset($collection))
@@ -223,6 +223,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			$calendar = null;
 		}
 
+		// commit attendees
 		
 		foreach($this->attendeesEvents as $urlidentifier => $method)
 		{
@@ -239,6 +240,30 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		}
 		
 		$this->attendeesEvents = array();
+		
+		// commit relations
+		
+		foreach($this->relationsEvents as $urlidentifier => $method)
+		{
+			if (isset($calendar) && $urlidentifier === $calendar->getUrlIdentifier())
+			{
+				continue;
+			}
+			
+			// test for each RELTYPE : PARENT | CHILD | SIBLING
+			
+			foreach(array('PARENT', 'CHILD', 'SIBLING') as $reltype)
+			{
+				if (isset($this->relations[$reltype][$urlidentifier]))
+				{
+					$calendar = $this->relations[$reltype][$urlidentifier]['calendar'];
+					if ($calendar instanceof bab_OviRelationCalendar)
+					{
+						$calendar->$method($this);
+					}
+				}
+			}
+		}
 		
 		return $this;
 	}

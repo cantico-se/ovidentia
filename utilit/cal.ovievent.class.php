@@ -49,16 +49,25 @@ class bab_cal_OviEventUpdate
 		
 		$uid = $period->getProperty('UID');
 		
+		$create = true;
 		if ($uid)
 		{
+			$create = false;
+			
 			// modification
 			try {
 				$id_event = $manager->getEventByUid($uid);
 			} catch(Exception $e)
 			{
-				throw new Exception('the event have an UID but does not exists in table');
+				// throw new Exception('the event have an UID but does not exists in table');
+				$create = true;
 			}
-			
+		} 
+		
+		
+		
+		if (!$create)
+		{
 			$manager->updateEvent($id_event, $period);
 		}
 		else
@@ -278,12 +287,6 @@ class bab_cal_OviEventUpdate
 			throw new Exception('Missing calendar');
 		}
 		
-		if ($period->getProperty('UID'))
-		{
-			throw new Exception('Event allready inserted');
-		}
-		
-		
 		$id_owner = $GLOBALS['BAB_SESS_USERID'];
 		
 		
@@ -311,20 +314,10 @@ class bab_cal_OviEventUpdate
 		
 		$data = $period->getData();
 		
-		// set a new UID to insert
-		
-		$period->setProperty('UID', bab_uuid());
-		
-		
-		$parents = $period->getRelations('PARENT');
-		$relation = reset($parents);
-		$parent = $relation['calendar'];
-		
-		
-		if (1 !== count($parents))
+		// if no UID set a new UID to insert
+		if (!$period->getProperty('UID'))
 		{
-			throw new Exception('Parent calendar not found for event');
-			return;
+			$period->setProperty('UID', bab_uuid());
 		}
 		
 		$block = 'N';
@@ -378,7 +371,7 @@ class bab_cal_OviEventUpdate
 				now(),
 				".$babDB->quote($id_owner).",
 				".$babDB->quote($period->getProperty('UID')).",
-				".$babDB->quote($parent->getUrlIdentifier())."
+				".$babDB->quote($calendar->getUrlIdentifier())."
 			)
 		");
 		
@@ -1236,7 +1229,7 @@ class bab_cal_OviEventSelect
 			}
 			
 			$event = $this->createCalendarPeriod($arr, $collection);
-			$event->resetAttendeeEvent();
+			$event->resetEvent();
 			
 			if ($event)
 			{
@@ -1481,7 +1474,7 @@ class bab_cal_OviEventSelect
 		$collection = new bab_CalendarEventCollection; 
 		
 		$period = $this->createCalendarPeriod($arr, $collection);
-		$period->resetAttendeeEvent();
+		$period->resetEvent();
 		
 		return $period;
 	}

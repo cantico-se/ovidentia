@@ -55,18 +55,29 @@ abstract class bab_ICalendarObject
 	 * Store aditional information for the RELATED-TO property
 	 * @var array
 	 */
-	private $relations = array();
+	protected $relations = array();
 	
 	
 	/**
-	 * List of events to call with the commitAttendeeEvent method
+	 * List of events to call with the commitEvent method
 	 * 
-	 * @see bab_ICalendarObject::resetAttendeeEvent()
-	 * @see bab_CalendarPeriod::commitAttendeeEvent()
+	 * @see bab_ICalendarObject::resetEvent()
+	 * @see bab_CalendarPeriod::commitEvent()
 	 * 
 	 * @var array
 	 */
 	protected $attendeesEvents = array();
+	
+	
+	/**
+	 * List of events to call with the commitEvent method
+	 * 
+	 * @see bab_ICalendarObject::resetEvent()
+	 * @see bab_CalendarPeriod::commitEvent()
+	 * 
+	 * @var array
+	 */
+	protected $relationsEvents = array();
 	
 	
 	
@@ -361,7 +372,7 @@ abstract class bab_ICalendarObject
 	 * Reset the list of attendees modifications
 	 * @return bab_ICalendarObject
 	 */
-	public function resetAttendeeEvent()
+	public function resetEvent()
 	{
 		$this->attendeesEvents = array();
 		return $this;
@@ -410,8 +421,19 @@ abstract class bab_ICalendarObject
 		
 		$value .= ":".$calendar->getReference()->__toString();
 		
-		
 		$this->removeRelatedToByCalendar($calendar);
+		
+		
+		if (isset($this->relations[$reltype][$urlIdentifier]))
+		{
+			// update
+			$method = 'onUpdateRelation';
+			
+		} else {
+			// new relation
+			$method = 'onAddRelation';
+		}
+		
 		
 		$this->relations[$reltype][$urlIdentifier] = array(
 			'calendar' 			=> $calendar,
@@ -421,6 +443,12 @@ abstract class bab_ICalendarObject
 
 		
 		$this->properties['RELATED-TO'][] = $value;
+		
+		if (($this instanceof bab_CalendarPeriod)  && !isset($this->relationsEvents[$urlIdentifier]))
+		{
+			// do not trigger in case of a VALARM
+			$this->relationsEvents[$urlIdentifier] = $method;
+		}
 		
 		return $this;
 	}

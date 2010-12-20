@@ -1219,6 +1219,25 @@ function confirmDeleteEvent($calid, $bupdrec)
 		return false;
 	}
 	
+	// before deleting the main event, try to delete exiting copies in other backends
+	
+	foreach($calendarPeriod->getCalendars() as $associated_calendar)
+	{
+		$associated_backend = $associated_calendar->getBackend();
+		if ($associated_backend instanceof $backend)
+		{
+			continue;
+		}
+		
+		try {
+			$associated_backend->deletePeriod($calendarPeriod);
+		} 
+		catch(Exception $e)
+		{
+			// ignore non-existing periods exception
+		}
+	}
+	
 	$backend->deletePeriod($calendarPeriod);
 	
 	
