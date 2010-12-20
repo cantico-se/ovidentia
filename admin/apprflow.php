@@ -286,7 +286,7 @@ function schemaCreate($formula, $idsch, $schname, $schdesc, $order, $bdel, $ocid
 			$this->frow = 0;
 			$this->rows = 5;
 			$this->cols = 4;
-			if( !empty($order) && $order == "Y")
+			if( empty($order) || $order == "Y")
 				$this->ordchecked = "checked";
 			else
 				$this->ordchecked = "";
