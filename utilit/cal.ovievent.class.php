@@ -601,6 +601,11 @@ class bab_cal_OviEventUpdate
 				
 				if (isset($associated[$id_calendar]))
 				{
+					if (!isset($relation['X-CTO-STATUS']))
+					{
+						bab_debug('Missing the X-CTO-STATUS attribute in the RELATED-TO of calendar '.$calendar->getUrlIdentifier());
+					}					
+					
 					switch($relation['X-CTO-STATUS'])
 					{
 						case 'ACCEPTED':
@@ -620,7 +625,7 @@ class bab_cal_OviEventUpdate
 					}
 					
 					
-					if ($status !== $associated[$id_calendar])
+					if (isset($status) && $status !== $associated[$id_calendar])
 					{
 						$this->updateCalendarStatus($id_event, $calendar, $status, $wfinstance);
 					}

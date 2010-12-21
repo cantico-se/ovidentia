@@ -772,7 +772,24 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 			{
 				if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 				{
-					$backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
+					$saved_backend = array();
+
+					foreach($calendarPeriod->getCalendars() as $associated_calendar)
+					{
+						$associated_backend = $associated_calendar->getBackend();
+						$urlidentifier = $associated_backend->getUrlIdentifier();
+						if (!isset($saved_backend[$urlidentifier]))
+						{
+							try {
+								$associated_backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
+							} 
+							catch(Exception $e)
+							{
+								// ignore missing event in backend
+							}
+							$saved_backend[$urlidentifier] = 1;
+						}
+					}
 				}
 			}
 		}

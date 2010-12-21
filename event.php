@@ -1219,22 +1219,22 @@ function confirmDeleteEvent($calid, $bupdrec)
 		return false;
 	}
 	
-	// before deleting the main event, try to delete exiting copies in other backends
+	$saved_backend = array();
 	
 	foreach($calendarPeriod->getCalendars() as $associated_calendar)
 	{
 		$associated_backend = $associated_calendar->getBackend();
-		if ($associated_backend instanceof $backend)
+		$urlidentifier = $associated_backend->getUrlIdentifier();
+		if (!isset($saved_backend[$urlidentifier]))
 		{
-			continue;
-		}
-		
-		try {
-			$associated_backend->deletePeriod($calendarPeriod);
-		} 
-		catch(Exception $e)
-		{
-			// ignore non-existing periods exception
+			try {
+				$associated_backend->deletePeriod($calendarPeriod);
+			} 
+			catch(Exception $e)
+			{
+				// ignore missing event in backend
+			}
+			$saved_backend[$urlidentifier] = 1;
 		}
 	}
 	
