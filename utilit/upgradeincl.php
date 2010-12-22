@@ -482,17 +482,23 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 				// add in database the default addons
 				bab_addonsInfos::insertMissingAddonsInTable();
 				bab_addonsInfos::clear();
-			
+				
+				
+
 				// install database for the default addons
 				foreach($addons as $sAddonName => $params) {
-					$addon = bab_getAddonInfosInstance($sAddonName);
-					if ($addon)
+					
+					$addon = new bab_addonInfos();
+					if ($addon->setAddonName($sAddonName, false))
 					{
 						if (!$addon->upgrade())
 						{
 							throw new Exception(sprintf('Failed to upgrade addon %s', $sAddonName));
 							return false;
 						}
+					} else {
+						throw new Exception(sprintf('Addon not found %s', $sAddonName));
+						return false;
 					}
 				}
 			}
