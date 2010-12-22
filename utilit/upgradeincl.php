@@ -488,7 +488,11 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 					$addon = bab_getAddonInfosInstance($sAddonName);
 					if ($addon)
 					{
-						$addon->upgrade();
+						if (!$addon->upgrade())
+						{
+							throw new Exception(sprintf('Failed to upgrade addon %s', $sAddonName));
+							return false;
+						}
 					}
 				}
 			}
