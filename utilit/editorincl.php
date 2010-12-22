@@ -455,7 +455,7 @@ function bab_onEditorFunctions(&$event) {
 			bab_translate('Images'), 
 			bab_translate('Insert image from ovidentia content image manager'), 
 			'?tg=images',
-			'scripts/htmlarea/images/ed_bab_image.gif'
+			'skins/ovidentia/images/editor/ed_bab_image.gif'
 		);
 	
 	}
@@ -464,28 +464,28 @@ function bab_onEditorFunctions(&$event) {
 		bab_translate('Files'), 
 		bab_translate('Insert a link to file or folder in ovidentia files manager'), 
 		'?tg=selector&idx=files&show_personal_directories=1&show_files=1&selectable_files=1&selectable_collective_directories=1&selectable_sub_directories=1&multi=1',
-		'scripts/htmlarea/images/ed_bab_file.gif'
+		'skins/ovidentia/images/editor/ed_bab_file.gif'
 	);
 	
 	$event->addFunction(
 		bab_translate('Articles'), 
 		bab_translate('Insert a dynamic link to an article from ovidentia'), 
 		'?tg=editorarticle&idx=brow',
-		'scripts/htmlarea/images/ed_bab_articleid.gif'
+		'skins/ovidentia/images/editor/ed_bab_articleid.gif'
 	);
 	
 	$event->addFunction(
 		bab_translate('Faqs'), 
 		bab_translate('Insert a link to question/response from ovidentia FAQ'), 
 		'?tg=editorfaq',
-		'scripts/htmlarea/images/ed_bab_faqid.gif'
+		'skins/ovidentia/images/editor/ed_bab_faqid.gif'
 	);
 	
 	$event->addFunction(
 		bab_translate('Ovml'), 
 		bab_translate('Insert an ovml file'), 
 		'?tg=editorovml',
-		'scripts/htmlarea/images/ed_bab_ovml.gif'
+		'skins/ovidentia/images/editor/ed_bab_ovml.gif'
 	);
 	
 	if( !empty($GLOBALS['BAB_SESS_USER']) && bab_contactsAccess())
@@ -494,7 +494,7 @@ function bab_onEditorFunctions(&$event) {
 				bab_translate('Contacts'), 
 				bab_translate('Insert a link to a personnal contact'), 
 				'?tg=editorcontdir',
-				'scripts/htmlarea/images/ed_bab_contdir.gif'
+				'skins/ovidentia/images/editor/ed_bab_contdir.gif'
 			);
 		}
 		
@@ -502,7 +502,7 @@ function bab_onEditorFunctions(&$event) {
 		bab_translate('Directories'), 
 		bab_translate('Insert link to a directory entry'), 
 		'?tg=editorcontdir&idx=directory',
-		'scripts/htmlarea/images/ed_bab_contdir.gif'
+		'skins/ovidentia/images/editor/ed_bab_contdir.gif'
 	);
 
 }

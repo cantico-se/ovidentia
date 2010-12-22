@@ -4622,9 +4622,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	// event registration for htmlarea editor
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
-	bab_addEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
-	bab_addEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
-	bab_addEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	// bab_addEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	// bab_addEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	// bab_addEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
+	// commented on 7.3.96 
+	
 	
 	// event registration for editor core implementations
 	bab_addEventListener('bab_eventEditors'					, 'bab_onEventEditors'			, 'utilit/editorincl.php');
@@ -6420,6 +6422,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_FILES_TBL, 'display_position')) {
 		$babDB->db_query("ALTER TABLE `".BAB_FILES_TBL."` ADD `display_position` INT( 11 ) NULL DEFAULT NULL");
 	}
+	
+	
+	/**
+	 * Upgrade to 7.3.96
+	 */
+	
+	// removing htmlarea from source
+	bab_removeEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php');
+	bab_removeEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php');
+	bab_removeEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php');
 
 	return true;
 }
