@@ -470,6 +470,7 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 							$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
 		
 							if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
+								throw new Exception(sprintf('failed to copy addon %s from path %s',$sAddonName, $sOldName));
 								return false;
 							}
 						}
