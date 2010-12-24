@@ -1132,14 +1132,18 @@ function saveReply($forum, $thread, $post, $name, $subject)
         notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name, $idpost);
 		}
 		
+	// fire event if no approbation on post
+
+	if ($confirmed == "Y")
+	{
+		$event = new bab_eventForumAfterPostAdd;
+			
+		$event->setForum($forum);
+		$event->setThread($arr['id'], $arr['subject']);
+		$event->setPost($idpost, $name, 'Y' === $confirmed);
 		
-	$event = new bab_eventForumAfterPostAdd;
-		
-	$event->setForum($forum);
-	$event->setThread($arr['id'], $arr['subject']);
-	$event->setPost($idpost, $name, 'Y' === $confirmed);
-	
-	bab_fireEvent($event);
+		bab_fireEvent($event);
+	}
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".bab_rp('flat', '1'));
 	exit;
