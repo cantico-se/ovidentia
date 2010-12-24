@@ -2513,11 +2513,18 @@ function bab_vac_createPeriod($id_request)
 	$icalendars = new bab_icalendars($row['id_user']);
 	
 	$calendar = $icalendars->getPersonalCalendar();
+	
+	if (!$calendar)
+	{
+		// do not create the vacation period if no personal calendar
+		return;
+	}
+	
 	$backend = $calendar->getBackend();
 	
 	if ($backend instanceof Func_CalendarBackend_Ovi)
 	{
-		// do not create the vacation period if the canedar backend is ovidentia because the calendar api will get the original vacation period
+		// do not create the vacation period if the calendar backend is ovidentia because the calendar api will get the original vacation period
 		return;
 	}
 	
