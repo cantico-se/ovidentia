@@ -6433,5 +6433,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	bab_removeEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php');
 	bab_removeEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php');
 
+	if (bab_isTableField('bab_forums', 'nb_recipients')) {
+		$babDB->db_query("ALTER TABLE bab_forums DROP nb_recipients");
+	}
+	
 	return true;
 }

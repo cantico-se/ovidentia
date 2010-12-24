@@ -62,7 +62,6 @@ function modifyForum($id)
 			$this->no = bab_translate("No");
 			$this->notification = bab_translate("Notify moderator");
 			$this->delete = bab_translate("Delete");
-			$this->nbrecipients = bab_translate("Number of recipients per sending");
 			$this->show_email_txt = bab_translate("Display user's email address");
 			$this->show_authordetails_txt = bab_translate("Display user's personal informations");
 			$this->use_flatview_txt = bab_translate("Use flat view");
@@ -76,7 +75,6 @@ function modifyForum($id)
 			$this->arr['name'] = bab_toHtml($this->arr['name']);
 			$this->arr['description'] = bab_toHtml($this->arr['description']);
 			$this->arr['display'] = bab_toHtml($this->arr['display']);
-			$this->arr['nb_recipients'] = bab_toHtml($this->arr['nb_recipients']);
 			}
 		}
 
@@ -196,7 +194,7 @@ function displayForumFields($id)
 	}
 	
 	
-function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
+function updateForum($id, $name, $description, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody, $babDB;
 	if( empty($name))
@@ -218,10 +216,6 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		$nbmsgdisplay = 20;
 		}
 
-	if (!is_numeric($nbrecipients) || empty($nbrecipients))
-		{
-		$nbrecipients = 30;
-		}
 
 	$bdisplayemailaddress = bab_rp('bdisplayemailaddress', 'N');
 	$bdisplayemailaddress = $bdisplayemailaddress == 'Y'? 'Y' : 'N';
@@ -245,7 +239,6 @@ function updateForum($id, $name, $description, $moderation, $notification, $nbms
 		notification='".$babDB->db_escape_string($notification)."', 
 		display='".$babDB->db_escape_string($nbmsgdisplay)."', 
 		active='".$babDB->db_escape_string($active)."', 
-		nb_recipients='".$babDB->db_escape_string($nbrecipients)."', 
 		bdisplayemailaddress='".$babDB->db_escape_string($bdisplayemailaddress)."', 
 		bdisplayauhtordetails='".$babDB->db_escape_string($bdisplayauhtordetails)."', 
 		bflatview='".$babDB->db_escape_string($bflatview)."', 
@@ -291,7 +284,7 @@ if( isset($update) && $update == "updateforum")
 	{
 	if( isset($submit))
 		{
-		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients);
+		updateForum($item, $fname, $description, $moderation, $notification, $nbmsgdisplay, $active);
 		}
 	elseif( isset($bdelete))
 		{

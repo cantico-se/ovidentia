@@ -246,7 +246,6 @@ function notifyForumGroups(bab_eventForumPost $event)
 	
 	$tmp = $event->getForumInfos();
 	$forumname = $tmp['name'];
-	$nbrecipients = $tmp['nb_recipients'];
 	$flat = $tmp['bflatview'] == 'Y' ? '1' : '0';
 	
 	$url = $GLOBALS['babUrlScript'] ."?tg=posts&idx=List&forum=$forum&thread=$thread&flat=$flat&views=1";
@@ -280,7 +279,7 @@ function notifyForumGroups(bab_eventForumPost $event)
 		$count++;
 		$event->addInformedUser($id);
 
-		if( $count >= $nbrecipients )
+		if( $count >= $babBody->babsite['mail_maxperpacket'] )
 			{
 			$mail->send();
 			$mail->$clearBCT();

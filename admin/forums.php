@@ -49,7 +49,6 @@ function addForum($nameval, $descriptionval, $nbmsgdisplayval)
 			$this->nbmsgdisplay = bab_translate("Threads Per Page");
 			$this->moderation = bab_translate("Moderation");
 			$this->notification = bab_translate("Notify moderator");
-			$this->nbrecipients = bab_translate("Number of recipients per sending");
 			$this->show_email_txt = bab_translate("Display user's email address");
 			$this->show_authordetails_txt = bab_translate("Display user's personal informations");
 			$this->use_flatview_txt = bab_translate("Use flat view");
@@ -206,7 +205,7 @@ function orderForum()
 	return $temp->count;
 	}
 
-function saveForum($name, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients)
+function saveForum($name, $description, $moderation, $notification, $nbmsgdisplay, $active)
 	{
 	global $babBody, $babDB;
 	if( empty($name))
@@ -243,11 +242,6 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		$nbmsgdisplay = 20;
 		}
 
-	if (!is_numeric($nbrecipients) || empty($nbrecipients))
-		{
-		$nbrecipients = 30;
-		}
-
 	$bdisplayemailaddress = bab_rp('bdisplayemailaddress', 'N');
 	$bdisplayemailaddress = $bdisplayemailaddress == 'Y'? 'Y' : 'N';
 
@@ -263,7 +257,7 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 	$bupdateauthor = bab_rp('bupdateauthor', 'N');
 	$bupdateauthor = $bupdateauthor == 'Y'? 'Y' : 'N';
 
-	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, nb_recipients, bdisplayemailaddress, bdisplayauhtordetails, bflatview, bupdatemoderator, bupdateauthor)";
+	$query = "insert into ".BAB_FORUMS_TBL." (name, description, display, moderation, notification, active, ordering, id_dgowner, bdisplayemailaddress, bdisplayauhtordetails, bflatview, bupdatemoderator, bupdateauthor)";
 
 	$query .= " values (
 		'" . $babDB->db_escape_string($name). "',
@@ -274,7 +268,6 @@ function saveForum($name, $description, $moderation, $notification, $nbmsgdispla
 		'" . $babDB->db_escape_string($active). "', 
 		'" . $babDB->db_escape_string($max). "', 
 		'" . $babDB->db_escape_string($babBody->currentAdmGroup). "',
-		'" . $babDB->db_escape_string($nbrecipients). "',
 		'" . $babDB->db_escape_string($bdisplayemailaddress). "',
 		'" . $babDB->db_escape_string($bdisplayauhtordetails). "',
 		'" . $babDB->db_escape_string($bflatview). "',
@@ -352,7 +345,7 @@ if(!isset($idx))
 
 if( isset($addforum) && $addforum == "addforum" )
 	{
-	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active, $nbrecipients))
+	if( !saveForum($fname, $description, $moderation, $notification, $nbmsgdisplay, $active))
 		$idx = "addforum";
 	}
 

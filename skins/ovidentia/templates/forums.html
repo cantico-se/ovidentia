@@ -26,116 +26,110 @@ else
 <input type="hidden" name="idx" value="List">
 <input type="hidden" name="addforum" value="addforum">
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr> 
-<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="text" name="fname" size="30" maxlength="30" value="{ nameval }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<textarea name="description" cols="30">{ descriptionval }</textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ active }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="active">
-<option value="Y" selected >{ yes }</option>
-<option value="N" >{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ moderation }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="moderation">
-<option value="Y" selected >{ yes }</option>
-<option value="N" >{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ notification }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="notification">
-<option value="Y">{ yes }</option>
-<option value="N" selected>{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ nbmsgdisplay }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="10">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ nbrecipients }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="nbrecipients" size="2" maxlength="2" value="30">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ use_flatview_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bflatview">
-<option value="Y"  selected>{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right"  valign="middle">{ show_email_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bdisplayemailaddress">
-<option value="Y" selected>{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ show_authordetails_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bdisplayauhtordetails">
-<option value="Y"  selected>{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ allow_moderatorupdate_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bupdatemoderator">
-<option value="Y"  selected>{ yes }</option>
-<option value="N">{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ allow_authorupdate_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bupdateauthor">
-<option value="N" selected>{ no }</option>
-<option value="Y">{ yes }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="Submit" value="{ add }">
-<br>
-</td>
-</tr>
-</table>
-</td>
-</tr>
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center" valign="middle"> 
+			<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+			<tr> 
+			<td  align="right" nowrap 
+			valign="middle">{ name }:</td>
+			<td valign="middle"> 
+			<input type="text" name="fname" size="30" maxlength="30" value="{ nameval }">
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ description }:</td>
+			<td> 
+			<textarea name="description" cols="30">{ descriptionval }</textarea>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right" >{ active }:</td>
+			<td> 
+			<select name="active">
+			<option value="Y" selected >{ yes }</option>
+			<option value="N" >{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ moderation }:</td>
+			<td> 
+			<select name="moderation">
+			<option value="Y" selected >{ yes }</option>
+			<option value="N" >{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ notification }:</td>
+			<td> 
+			<select name="notification">
+			<option value="Y">{ yes }</option>
+			<option value="N" selected>{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ nbmsgdisplay }:</td>
+			<td>
+			<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="10">
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ use_flatview_txt }:</td>
+			<td> 
+			<select name="bflatview">
+			<option value="Y"  selected>{ yes }</option>
+			<option value="N">{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ show_email_txt }:</td>
+			<td> 
+			<select name="bdisplayemailaddress">
+			<option value="Y" selected>{ yes }</option>
+			<option value="N">{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ show_authordetails_txt }:</td>
+			<td> 
+			<select name="bdisplayauhtordetails">
+			<option value="Y"  selected>{ yes }</option>
+			<option value="N">{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ allow_moderatorupdate_txt }:</td>
+			<td> 
+			<select name="bupdatemoderator">
+			<option value="Y"  selected>{ yes }</option>
+			<option value="N">{ no }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td align="right">{ allow_authorupdate_txt }:</td>
+			<td> 
+			<select name="bupdateauthor">
+			<option value="N" selected>{ no }</option>
+			<option value="Y">{ yes }</option>
+			</select>
+			</td>
+			</tr>
+			<tr> 
+			<td>&nbsp;</td>
+			<td>
+			<input type="submit" name="Submit" value="{ add }">
+			<br>
+			</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
 </table>
 </form>
 <br>
@@ -173,181 +167,169 @@ else
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ name }:</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="text" name="fname" size="30" maxlength="30" value="{ arr[name] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ description }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<textarea name="description" cols="30">{ arr[description] }</textarea>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ active }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="active">
-                      <option value="Y"  
-                      <!--#if arr[active] "== Y" -->
-                      selected 
-                      <!--#endif arr[active] -->
-                      >{ yes }</option>
-                      <option value="N"  
-                      <!--#if arr[active] "== N" -->
-                      selected 
-                      <!--#endif arr[active] -->
-                      >{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ moderation }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="moderation">
- <option value="Y" 
-<!--#if arr[moderation] "== Y" -->
-   selected 
-<!--#endif arr[moderation] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[moderation] "== N" -->
-selected 
-<!--#endif arr[moderation] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ notification }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="notification">
- <option value="Y" 
-<!--#if arr[notification] "== Y" -->
-   selected 
-<!--#endif arr[notification] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[notification] "== N" -->
-selected 
-<!--#endif arr[notification] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ nbmsgdisplay }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="{ arr[display] }">
-</td>
-</tr>
-<tr>
-<td class="BabLoginMenuBackground" align="right" nowrap valign="middle">{ nbrecipients }:</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="text" name="nbrecipients" size="4" maxlength="3" value="{ arr[nb_recipients] }">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ use_flatview_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bflatview">
- <option value="Y" 
-<!--#if arr[bflatview] "== Y" -->
-   selected 
-<!--#endif arr[bflatview] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[bflatview] "== N" -->
-selected 
-<!--#endif arr[bflatview] -->
->{ no }</option>
-</select>
-</td>
-</tr><tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ show_email_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bdisplayemailaddress">
- <option value="Y" 
-<!--#if arr[bdisplayemailaddress] "== Y" -->
-   selected 
-<!--#endif arr[bdisplayemailaddress] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[bdisplayemailaddress] "== N" -->
-selected 
-<!--#endif arr[bdisplayemailaddress] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ show_authordetails_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bdisplayauhtordetails">
- <option value="Y" 
-<!--#if arr[bdisplayauhtordetails] "== Y" -->
-   selected 
-<!--#endif arr[bdisplayauhtordetails] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[bdisplayauhtordetails] "== N" -->
-selected 
-<!--#endif arr[bdisplayauhtordetails] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ allow_moderatorupdate_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bupdatemoderator">
- <option value="Y" 
-<!--#if arr[bupdatemoderator] "== Y" -->
-   selected 
-<!--#endif arr[bupdatemoderator] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[bupdatemoderator] "== N" -->
-selected 
-<!--#endif arr[bupdatemoderator] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" align="right" nowrap 
-valign="middle">{ allow_authorupdate_txt }:</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<select name="bupdateauthor">
- <option value="Y" 
-<!--#if arr[bupdateauthor] "== Y" -->
-   selected 
-<!--#endif arr[bupdateauthor] -->
->{ yes }</option>
-<option value="N"  
-<!--#if arr[bupdateauthor] "== N" -->
-selected 
-<!--#endif arr[bupdateauthor] -->
->{ no }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle">
-<input type="submit" name="submit" value="{ update }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
-<br>
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+		<td width="40%" align="right">{ name }:</td>
+		<td width="60%"> 
+		<input type="text" name="fname" size="30" maxlength="30" value="{ arr[name] }">
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ description }:</td>
+		<td> 
+		<textarea name="description" cols="30">{ arr[description] }</textarea>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ active }:</td>
+		<td> 
+		<select name="active">
+		                      <option value="Y"  
+		                      <!--#if arr[active] "== Y" -->
+		                      selected 
+		                      <!--#endif arr[active] -->
+		                      >{ yes }</option>
+		                      <option value="N"  
+		                      <!--#if arr[active] "== N" -->
+		                      selected 
+		                      <!--#endif arr[active] -->
+		                      >{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ moderation }:</td>
+		<td> 
+		<select name="moderation">
+		 <option value="Y" 
+		<!--#if arr[moderation] "== Y" -->
+		   selected 
+		<!--#endif arr[moderation] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[moderation] "== N" -->
+		selected 
+		<!--#endif arr[moderation] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ notification }:</td>
+		<td> 
+		<select name="notification">
+		 <option value="Y" 
+		<!--#if arr[notification] "== Y" -->
+		   selected 
+		<!--#endif arr[notification] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[notification] "== N" -->
+		selected 
+		<!--#endif arr[notification] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">{ nbmsgdisplay }:</td>
+		<td>
+		<input type="text" name="nbmsgdisplay" size="4" maxlength="3" value="{ arr[display] }">
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ use_flatview_txt }:</td>
+		<td> 
+		<select name="bflatview">
+		 <option value="Y" 
+		<!--#if arr[bflatview] "== Y" -->
+		   selected 
+		<!--#endif arr[bflatview] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[bflatview] "== N" -->
+		selected 
+		<!--#endif arr[bflatview] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ show_email_txt }:</td>
+		<td> 
+		<select name="bdisplayemailaddress">
+		 <option value="Y" 
+		<!--#if arr[bdisplayemailaddress] "== Y" -->
+		   selected 
+		<!--#endif arr[bdisplayemailaddress] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[bdisplayemailaddress] "== N" -->
+		selected 
+		<!--#endif arr[bdisplayemailaddress] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ show_authordetails_txt }:</td>
+		<td valign="middle"> 
+		<select name="bdisplayauhtordetails">
+		 <option value="Y" 
+		<!--#if arr[bdisplayauhtordetails] "== Y" -->
+		   selected 
+		<!--#endif arr[bdisplayauhtordetails] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[bdisplayauhtordetails] "== N" -->
+		selected 
+		<!--#endif arr[bdisplayauhtordetails] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ allow_moderatorupdate_txt }:</td>
+		<td> 
+		<select name="bupdatemoderator">
+		 <option value="Y" 
+		<!--#if arr[bupdatemoderator] "== Y" -->
+		   selected 
+		<!--#endif arr[bupdatemoderator] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[bupdatemoderator] "== N" -->
+		selected 
+		<!--#endif arr[bupdatemoderator] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ allow_authorupdate_txt }:</td>
+		<td> 
+		<select name="bupdateauthor">
+		 <option value="Y" 
+		<!--#if arr[bupdateauthor] "== Y" -->
+		   selected 
+		<!--#endif arr[bupdateauthor] -->
+		>{ yes }</option>
+		<option value="N"  
+		<!--#if arr[bupdateauthor] "== N" -->
+		selected 
+		<!--#endif arr[bupdateauthor] -->
+		>{ no }</option>
+		</select>
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td>
+		<input type="submit" name="submit" value="{ update }">&nbsp;&nbsp;<input type="submit" name="bdelete" value="{ delete }">
+		<br>
+		</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
