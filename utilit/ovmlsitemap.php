@@ -79,7 +79,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 			$this->sitemap = bab_siteMap::getByUid($sitemap);
 			
 			if (null === $this->sitemap) {
-				trigger_error('incorrect sitemap attribute in OCSitemapEntries');
+				trigger_error(sprintf('incorrect attribute in %s sitemap="%s"', get_class($this), $sitemap));
 				return;
 			}
 		}
