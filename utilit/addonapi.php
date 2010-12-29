@@ -2745,7 +2745,7 @@ function bab_printOvmlTemplate($file, $args=array())
 	$GLOBALS['babWebStat']->addOvmlFile($filepath);
 	include_once $babInstallPath.'utilit/omlincl.php';
 	$tpl = new babOvTemplate($args);
-	return $tpl->printout(implode('', file($filepath)));
+	return $tpl->printout(implode('', file($filepath)), $filepath);
 }
 
 

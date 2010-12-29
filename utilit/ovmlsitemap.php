@@ -79,7 +79,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 			$this->sitemap = bab_siteMap::getByUid($sitemap);
 			
 			if (null === $this->sitemap) {
-				trigger_error(sprintf('incorrect attribute in %s sitemap="%s"', get_class($this), $sitemap));
+				trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $ctx->debug_location, get_class($this), $sitemap));
 				return;
 			}
 		}
@@ -617,6 +617,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		}
 		
 		if (!isset($sitemap)) {
+			trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
 			return '';
 		}
 

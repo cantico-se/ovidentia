@@ -6022,10 +6022,21 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 
 class babOvTemplate
 {
-var $contexts = array();
-var $handlers = array();
-var $curctx;
-var $gctx; /* global context */
+	public $contexts = array();
+	public $handlers = array();
+	public $curctx;
+	
+	/**
+	 * global context 
+	 * @var bab_context
+	 */
+	public $gctx; 
+	
+	/**
+	 * @var string
+	 */ 
+	public $debug_location;
+	
 
 	public function __construct($args = array())
 	{
@@ -6464,6 +6475,7 @@ var $gctx; /* global context */
 		$out = '';
 		for( $i = 0; $i< count($m[3]); $i++)
 			{
+				
 			$out .= $this->handle_text($m[1][$i]);
 			$out .= $this->handle_tag($m[2][$i], $m[5][$i], $this->getArgs($m[3][$i]));
 			$out .= $this->handle_text($m[6][$i]);
@@ -6483,9 +6495,16 @@ var $gctx; /* global context */
 	}
 	
 	
-
-	public function printout($txt)
+	/**
+	 * Process ovml source
+	 * 
+	 * @param 	string 	$txt				ovml source content
+	 * @param	string	$debug_location		can contain the file path of the processed ovml file or any info to describe where the ovml source is located
+	 * @return unknown_type
+	 */
+	public function printout($txt, $debug_location = null)
 	{
+		$this->debug_location = $debug_location;
 		$replace = bab_replace_get();
 		$replace->addIgnoreMacro('OVML');
 		$txt = $this->handle_text($txt);
