@@ -179,7 +179,10 @@ class bab_fireEvent_Obj {
  * @param	object	$event_obj (inherited object of bab_event)
  */
 function bab_fireEvent(&$event_obj) {
-
+	//echo "<script type=\"text/javascript\">alert(\"" . get_class($event_obj) . "\")</script>";
+	//static $arrayEvent = array();
+	//$arrayEvent[] = get_class($event_obj);
+	//bab_debug($arrayEvent);
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	
 	global $babDB;

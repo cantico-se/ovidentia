@@ -763,6 +763,7 @@ function orderFiles($fid){
 			$this->sortd = bab_translate("Sort descending");
 			$this->create = bab_translate("Modify");
 			$this->fid = $fid;
+			$this->tg = bab_gp('tg');
 			$oFmFolder = BAB_FmFolderHelper::getFmFolderById($fid);
 			//bab_debug($oFmFolder->getName());
 			$req = "select id, name from ".BAB_FILES_TBL." where path='" . $oFmFolder->getName() . "/' order by display_position, name asc";

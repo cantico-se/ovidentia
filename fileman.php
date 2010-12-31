@@ -583,11 +583,12 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-
-		if( $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder'] ){
-			$aOrder = array('iDisplayPosition' => 'ASC');		
-		}else{
-			$aOrder = array('sName' => 'ASC');
+		
+		$aOrder = array('sName' => 'ASC');
+		if( is_object($this->oFileManagerEnv->oFmFolder) ){
+			if( $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder']){
+				$aOrder = array('iDisplayPosition' => 'ASC');
+			}	
 		}
 
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
@@ -808,6 +809,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
 		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
+		$this->set_caption('sManualOrder', bab_translate("Manual order") . ': ');
 
 	}
 
@@ -824,6 +826,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$sDownloadsCapping		= 'N';
 		$iMaxDownloads			= 0;
 		$sDownloadHistory		= 'N';
+		$bManualOrder			= false;
 
 		$oFileManagerEnv =& getEnvObject();
 		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
@@ -838,6 +841,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sDownloadsCapping		= (string) $oFirstCollectiveParent->getDownloadsCapping();
 			$iMaxDownloads			= (int) $oFirstCollectiveParent->getMaxDownloads();
 			$sDownloadHistory		= (string) $oFirstCollectiveParent->getDownloadHistory();
+			$bManualOrder			= (bool) $oFirstCollectiveParent->getManualOrder();
 		}
 
 		$this->iApprobationSchemeId = $iIdApprobationScheme;
@@ -850,9 +854,11 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('isAddTags', ('Y' === $sAddTags) ? true : false);
 		$this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
 		$this->set_data('isDownloadHistory', ('Y' === $sDownloadHistory) ? true : false);
+		$this->set_data('isManualOrder', $bManualOrder);
 		$this->set_data('iMaxDownloads', $iMaxDownloads);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
+		
 
 		$oFileManagerEnv =& getEnvObject();
 		if ($oFileManagerEnv->userIsInRootFolder()) {
@@ -878,10 +884,18 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->get_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', $sDirName);
 		$this->get_data('iIdFolder', $iIdFolder);
-
 		
+		$this->set_data('sCheckedOder', '');
 
 		$oFileManagerEnv =& getEnvObject();
+
+		
+		$manualOdrder = false;
+		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
+		if( $oFirstCollectiveParent->getManualOrder() ){
+			$manualOdrder = true;
+		}
+		
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
@@ -895,6 +909,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$sDownloadsCapping		= (string) $oFmFolder->getDownloadsCapping();
 			$iMaxDownloads			= (int) $oFmFolder->getMaxDownloads();
 			$sDownloadHistory		= (string) $oFmFolder->getDownloadHistory();
+			$bManualOrder			= (bool) $oFmFolder->getManualOrder();
 
 			$this->iApprobationSchemeId = $iIdApprobationScheme;
 			$this->set_data('isCollective', true);
@@ -906,10 +921,14 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('isAddTags', ('Y' === $sAddTags) ? true : false);
 			$this->set_data('isDownloadsCapping', ('Y' === $sDownloadsCapping) ? true : false);
 			$this->set_data('isDownloadHistory', ('Y' === $sDownloadHistory) ? true : false);
+			$this->set_data('isDownloadHistory', $bManualOrder);
 			$this->set_data('iMaxDownloads', $oFmFolder->getMaxDownloads());
+			$this->set_data('isManualOrder', $oFmFolder->getManualOrder());
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
+			
+			$manualOdrder = $bManualOrder;
 
 			if ($oFileManagerEnv->userIsInRootFolder()) {
 				$this->set_data('sDisabled', 'disabled');
@@ -926,6 +945,18 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iMaxDownloads', $oFileManagerEnv->oFmFolder->getMaxDownloads());
 		}
 		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
+		
+		if( $manualOdrder ){
+			global $babBody;
+			$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
+			'?tg=fileman' .
+			'&idx=displayOrderFolder' .
+			'&id=' . bab_gp('id','') .
+			'&gr=' . bab_gp('gr','') .
+			'&path=' . urlencode(bab_gp('path','')) .
+			'&sDirName=' . urlencode(bab_gp('sDirName','')) .
+			'&iIdFolder=' . bab_gp('iIdFolder',''));
+		}
 	}
 
 	function getNextApprobationScheme()
@@ -3072,6 +3103,101 @@ function displayFolderForm()
 	}
 }
 
+function displayOrderFolder(){
+	global $babBody;
+	class temp{		
+		var $forumtxt;
+		var $moveup;
+		var $movedown;
+		var $create;
+		var $db;
+		var $res;
+		var $count;
+		var $arrid = array();
+		var $forumid;
+		var $forumval;
+
+
+		function temp(){
+			global $babBody, $babDB, $BAB_SESS_USERID;
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->sorta = bab_translate("Sort ascending");
+			$this->sortd = bab_translate("Sort descending");
+			$this->create = bab_translate("Modify");
+			$this->id_record = bab_gp('id');
+			$this->gr_record = bab_gp('gr');
+			$this->path_record = bab_gp('path');
+			$this->sAction = "editOrder";
+			
+			$this->tg = bab_gp('tg');
+			$req = "select id, name from ".BAB_FILES_TBL." where path='" . bab_gp('path','') ."/". bab_gp('sDirName','') . "/' order by display_position, name asc";
+			$this->res = $babDB->db_query($req);
+			while( $arr = $babDB->db_fetch_array($this->res) ){
+					$this->arrid[] = $arr['id'];
+					$this->arrname[] = $arr['name'];
+			}
+			$this->count = count($this->arrid);
+		}
+
+		function getnext(){
+			static $i = 0;
+			if( $i < $this->count){
+				$this->filesname = bab_toHtml($this->arrname[$i]);
+				$this->filesid = $this->arrid[$i];
+				$i++;
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	$temp = new temp();
+	
+
+	global $babBody;
+	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] .
+	'?tg=fileman' .
+	'&idx=list' .
+	'&id=' . bab_gp('id','') .
+	'&gr=' . bab_gp('gr','') .
+	'&path=' . urlencode(bab_gp('path','')));
+	
+	$babBody->addItemMenu('displayFolderForm', bab_translate("Edit folder"), $GLOBALS['babUrlScript'] .
+	'?tg=fileman' .
+	'&idx=displayFolderForm' .
+	'&sFunction=editFolder' .
+	'&id=' . bab_gp('id','') .
+	'&gr=' . bab_gp('gr','') .
+	'&path=' . urlencode(bab_gp('path','')) .
+	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
+	'&iIdFolder=' . bab_gp('iIdFolder','') );
+	
+	$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
+	'?tg=fileman' .
+	'&idx=displayOrderFolder' .
+	'&id=' . bab_gp('displayOrderFolder','') .
+	'&gr=' . bab_gp('gr','') .
+	'&path=' . urlencode(bab_gp('path','')) .
+	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
+	'&iIdFolder=' . bab_gp('iIdFolder',''));
+	
+	$babBody->title = bab_translate("Order files");
+	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
+	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "filesorder"));
+	
+	return true;
+}
+
+function updateOrderFiles(){
+	global $babDB;
+	$listfiles = bab_pp('listfiles','');
+	$i = 0;
+	foreach($listfiles as $fileID){
+		$babDB->db_query("UPDATE " . BAB_FILES_TBL . " SET display_position='" . $i . "' WHERE id='" . $fileID . "'");
+		$i++;
+	}
+}
 
 function displayDeleteFolderConfirm()
 {
@@ -3849,6 +3975,7 @@ function editFolderForCollectiveDir()
 				$iMaxDownloads			= (int) bab_pp('iMaxDownloads', 0);
 				$sDownloadsCapping		= (string) bab_pp('sDownloadsCapping', 'N');
 				$sDownloadHistory		= (string) bab_pp('sDownloadHistory', 'N');
+				$orderm					= (string) bab_pp('manual_order', false);
 
 				$iIdOwner				= 0;
 				//simpleToCollective
@@ -3874,6 +4001,7 @@ function editFolderForCollectiveDir()
 				$oFmFolder->setDownloadsCapping($sDownloadsCapping);
 				$oFmFolder->setMaxDownloads($iMaxDownloads);
 				$oFmFolder->setDownloadHistory($sDownloadHistory);
+				$oFmFolder->setManualOrder($orderm);
 
 
 				$bRedirect = false;
@@ -4118,9 +4246,14 @@ $sAction = isset($_POST['sAction']) ? $_POST['sAction'] :
 	(isset($_POST['setRight']) ? 'setRight' : '???')
 	);
 
-
 switch($sAction)
 {
+	case 'editOrder':
+		updateOrderFiles();
+		header("Location: ". $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
+		bab_pp('id_record') . '&gr=' . bab_pp('gr_record') . '&path=' . urlencode(bab_pp('path_record')));
+		break;
+	
 	case 'createFolder':
 		createFolder();
 		break;
@@ -4238,13 +4371,16 @@ switch($sAction)
 		changeDelegation();
 		break;
 }
-//*/
 
 
 switch($idx)
 {
 	case 'displayFolderForm':
 		displayFolderForm();
+		break;
+		
+	case 'displayOrderFolder':
+		displayOrderFolder();
 		break;
 
 	case 'displayDeleteFolderConfirm':

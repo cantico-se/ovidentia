@@ -1272,6 +1272,23 @@ function ovidentia_fileman_hide()
 					</td>
 				</tr>
 
+				<tr class="showHide"> 
+					<td align="right">
+						{ m_captions[sManualOrder] }
+					</td>
+					<td>
+						<select name="manual_order"> 
+						<!--#if m_datas[isManualOrder] -->
+							<option value="1" selected="selected">{ m_captions[sYes] }</option>
+							<option value="0">{ m_captions[sNo] }</option>
+						<!--#else m_datas[isManualOrder] -->
+							<option value="0" selected="selected">{ m_captions[sNo] }</option>
+							<option value="1">{ m_captions[sYes] }</option>
+						<!--#endif m_datas[isManualOrder] -->
+						</select>
+					</td>
+				</tr>
+
 				<tr> 
 					<td colspan="2">
 						<br />
