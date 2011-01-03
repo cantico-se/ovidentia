@@ -497,8 +497,9 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 							return false;
 						}
 					} else {
-						throw new Exception(sprintf('Addon not found %s', $sAddonName));
-						return false;
+						// addons can be only in new installs
+						// throw new Exception(sprintf('Addon not found %s', $sAddonName));
+						// return false;
 					}
 				}
 			}
