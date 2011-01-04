@@ -112,7 +112,7 @@ function sectionsList()
 				$arr['description'] = bab_translate($arr['description']);
 				$idvalue = $arr['id'].$suffix;
 				
-				$opt = 5 != $arr['id'];
+				$opt = '5-1' != $idvalue;
 				
 				if( $arr['enabled'] == "N")
 					$secchecked = "checked";
