@@ -892,7 +892,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		
 		$manualOdrder = false;
 		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
-		if( $oFirstCollectiveParent->getManualOrder() ){
+		if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() ){
 			$manualOdrder = true;
 		}
 		
