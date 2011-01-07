@@ -3172,6 +3172,12 @@ function bab_vac_getPeriod($id_request, $id_user, BAB_DateTime $begin, BAB_DateT
 	$icalendars = new bab_icalendars($id_user);
 	
 	$calendar = $icalendars->getPersonalCalendar();
+	
+	if (!$calendar)
+	{
+		return null;
+	}
+	
 	$backend = $calendar->getBackend();
 	
 	$factory = $backend->Criteria();
