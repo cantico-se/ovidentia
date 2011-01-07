@@ -635,7 +635,6 @@ function bab_deleteUser($id)
 
 	// delete user from groups
 	$res = $babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($id)."'");
-	$res = $babDB->db_query("UPDATE ".BAB_GROUPS_TBL." SET manager='0' WHERE manager='".$babDB->db_escape_string($id)."'");
 					
 	$res = $babDB->db_query("select * from ".BAB_CALENDAR_TBL." where owner='".$babDB->db_escape_string($id)."' and type='1'");
 	$arr = $babDB->db_fetch_array($res);
