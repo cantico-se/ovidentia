@@ -493,7 +493,7 @@ abstract class bab_EventCalendar
 				bwrite 
 			FROM '.BAB_CALACCESS_USERS_TBL.' 
 			WHERE 
-				AND caltype='.$babDB->quote($calendar->getReferenceType()).' 
+				 caltype='.$babDB->quote($calendar->getReferenceType()).' 
 				AND id_cal='.$babDB->quote($calendar->getUid()).'
 				AND id_user='.$babDB->quote($this->access_user)
 		);
@@ -507,6 +507,53 @@ abstract class bab_EventCalendar
 		return BAB_CAL_ACCESS_NONE;
 	}
 
+	/**
+	 * Test if the event has been created by a member of the same "shared access", shared groups are used only on personal calendar
+	 * @param bab_PersonalCalendar $calendar
+	 * @return bool
+	 */
+	protected function isSharedAccessForCalendar(bab_PersonalCalendar $calendar, bab_calendarPeriod $event)
+	{
+		if ($calendar->getSharingAccess() != BAB_CAL_ACCESS_SHARED_UPDATE)
+		{
+			return false;
+		}
+
+		// shared access on calendar for access user
+
+		$author = $event->getAuthorId();
+
+		if (!isset($author))
+		{
+			return false;
+		}
+
+
+		if ($calendar->getAccessUser() == $author)
+		{
+			// i am the author
+			return true;
+		}
+
+		global $babDB;
+
+		$res = $babDB->db_query('
+			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.' 
+			WHERE 
+				id_cal='.$babDB->quote($calendar->getUid()).' 
+				AND id_user='.$babDB->quote($author).'
+				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).' 
+			');
+
+
+		if (0 !== $babDB->db_num_rows($res))
+		{
+			// shared access on calendar for author
+			return true;
+		}
+
+		return false;
+	}
 
 
 
@@ -877,53 +924,6 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	}
 
 
-	/**
-	 * Test if the event has been created by a member of the same "shared access" group
-	 * @param bab_calendarPeriod $event
-	 * @return bool
-	 */
-	private function isSharedAccess(bab_calendarPeriod $event)
-	{
-		if ($this->getSharingAccess() != BAB_CAL_ACCESS_SHARED_UPDATE)
-		{
-			return false;
-		}
-
-		// shared access on calendar for access user
-
-		$author = $event->getAuthorId();
-
-		if (!isset($author))
-		{
-			return false;
-		}
-
-
-		if ($this->access_user == $author)
-		{
-			// i am the author
-			return true;
-		}
-
-		global $babDB;
-
-		$res = $babDB->db_query('
-			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.' 
-			WHERE 
-				id_cal='.$babDB->quote($this->getUid()).' 
-				AND id_user='.$babDB->quote($author).'
-				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).' 
-			');
-
-
-		if (0 !== $babDB->db_num_rows($res))
-		{
-			// shared access on calendar for author
-			return true;
-		}
-
-		return false;
-	}
 
 
 	/**
@@ -938,9 +938,16 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		if ($collection instanceof bab_ReadOnlyCollection) {
 			return false;
 		}
+		
+		$author = $event->getAuthorId();
+		if (null === $author)
+		{
+			bab_debug('Missing author ID for event '.$event->getUrlIdentifier());
+			return false;
+		}
 
 
-		if (((int) $this->access_user) == (int) $event->getAuthorId()) {
+		if (((int) $this->access_user) == $author) {
 			// i am the author
 			return true;
 		}
@@ -953,16 +960,18 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		switch($this->getSharingAccess()) {
 				
 			case BAB_CAL_ACCESS_UPDATE:
-				if ($this->access_user == $event->getAuthorId())
+				if (((int) $this->access_user) === $author)
 				{
 					return true;
 				}
+				break;
 
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
-				if ($this->isSharedAccess($event))
+				if ($this->isSharedAccessForCalendar($this, $event))
 				{
 					return true;
 				}
+				break;
 
 			case BAB_CAL_ACCESS_FULL:
 				return true;
@@ -1385,7 +1394,7 @@ interface bab_PersonalCalendar {
 	 * @return int
 	 */
 	public function getSharingAccess();
-
+	
 
 
 	/**
