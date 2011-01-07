@@ -3171,15 +3171,7 @@ function displayOrderFolder(){
 	'&gr=' . bab_gp('gr','') .
 	'&path=' . urlencode(bab_gp('path','')));
 	
-	$babBody->addItemMenu('displayFolderForm', bab_translate("Edit folder"), $GLOBALS['babUrlScript'] .
-	'?tg=fileman' .
-	'&idx=displayFolderForm' .
-	'&sFunction=editFolder' .
-	'&id=' . bab_gp('id','') .
-	'&gr=' . bab_gp('gr','') .
-	'&path=' . urlencode(bab_gp('path','')) .
-	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
-	'&iIdFolder=' . bab_gp('iIdFolder','') );
+
 	
 	$babBody->addItemMenu('displayOrderFolder', bab_translate("Order files"), $GLOBALS['babUrlScript'] .
 	'?tg=fileman' .
