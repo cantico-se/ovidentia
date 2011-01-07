@@ -946,17 +946,6 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		}
 		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
 		
-		if( $manualOdrder ){
-			global $babBody;
-			$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
-			'?tg=fileman' .
-			'&idx=displayOrderFolder' .
-			'&id=' . bab_gp('id','') .
-			'&gr=' . bab_gp('gr','') .
-			'&path=' . urlencode(bab_gp('path','')) .
-			'&sDirName=' . urlencode(bab_gp('sDirName','')) .
-			'&iIdFolder=' . bab_gp('iIdFolder',''));
-		}
 	}
 
 	function getNextApprobationScheme()
@@ -1498,6 +1487,21 @@ function listFiles()
 			}
 			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
+			
+			
+			
+			$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+			if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() && $this->bCanManageCurrentFolder){
+
+				global $babBody;
+				$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
+				'?tg=fileman' .
+				'&idx=displayOrderFolder' .
+				'&id=' . bab_gp('id','') .
+				'&gr=' . bab_gp('gr','') .
+				'&path=' . urlencode(bab_gp('path','')) .
+				'&iIdFolder=' . $oFirstCollectiveParent->getId());
+			}
 		}
 
 
@@ -1864,7 +1868,7 @@ function listFiles()
 
 	$oFileManagerEnv =& getEnvObject();
 
-	$temp = new temp();
+	
 	$babBody->title = bab_translate("File manager");
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 
@@ -1889,6 +1893,7 @@ function listFiles()
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 
+	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
 	return $temp->count;
 }
@@ -3131,7 +3136,7 @@ function displayOrderFolder(){
 			$this->sAction = "editOrder";
 			
 			$this->tg = bab_gp('tg');
-			$req = "select id, name from ".BAB_FILES_TBL." where path='" . bab_gp('path','') ."/". bab_gp('sDirName','') . "/' order by display_position, name asc";
+			$req = "select id, name from ".BAB_FILES_TBL." where id_owner=".$babDB->quote(bab_gp('iIdFolder'))." AND path='" . bab_gp('path') . "/' order by display_position, name asc";
 			$this->res = $babDB->db_query($req);
 			while( $arr = $babDB->db_fetch_array($this->res) ){
 					$this->arrid[] = $arr['id'];
@@ -3152,10 +3157,13 @@ function displayOrderFolder(){
 			}
 		}
 	}
-	$temp = new temp();
+	
+	
+	global $babBody;
+	
 	
 
-	global $babBody;
+	
 	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] .
 	'?tg=fileman' .
 	'&idx=list' .
@@ -3182,7 +3190,19 @@ function displayOrderFolder(){
 	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
 	'&iIdFolder=' . bab_gp('iIdFolder',''));
 	
+	
+	if (!haveRightOn(bab_gp('path'), BAB_FMMANAGERS_GROUPS_TBL))
+	{
+		$babBody->addError(bab_translate('Access denied'));
+		return;
+	}
+
+	$temp = new temp();
+	
+	
 	$babBody->title = bab_translate("Order files");
+	
+	
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "filesorder"));
 	
@@ -3190,13 +3210,22 @@ function displayOrderFolder(){
 }
 
 function updateOrderFiles(){
-	global $babDB;
-	$listfiles = bab_pp('listfiles','');
+	global $babDB, $babBody;
+	
+	if (!haveRightOn(bab_pp('path'), BAB_FMMANAGERS_GROUPS_TBL))
+	{
+		$babBody->addError(bab_translate('Access denied'));
+		return false;
+	}
+	
+	$listfiles = bab_pp('listfiles');
 	$i = 0;
 	foreach($listfiles as $fileID){
 		$babDB->db_query("UPDATE " . BAB_FILES_TBL . " SET display_position='" . $i . "' WHERE id='" . $fileID . "'");
 		$i++;
 	}
+	
+	return true;
 }
 
 function displayDeleteFolderConfirm()
@@ -4249,9 +4278,11 @@ $sAction = isset($_POST['sAction']) ? $_POST['sAction'] :
 switch($sAction)
 {
 	case 'editOrder':
-		updateOrderFiles();
-		header("Location: ". $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
-		bab_pp('id_record') . '&gr=' . bab_pp('gr_record') . '&path=' . urlencode(bab_pp('path_record')));
+		if (updateOrderFiles())
+		{
+			header("Location: ". $GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' .
+			bab_pp('id_record') . '&gr=' . bab_pp('gr_record') . '&path=' . urlencode(bab_pp('path_record')));
+		}
 		break;
 	
 	case 'createFolder':

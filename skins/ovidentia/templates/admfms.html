@@ -427,10 +427,12 @@ function sortListFiles(sortType, list)
 </script>
 
 <form method="post" name="ordfiles" action="{ babPhpSelf }">
-<input type="hidden" name="tg" value="{ tg }">
-<input type="hidden" name="idx" value="modify">
-<input type="hidden" name="action" value="order">
-<input type="hidden" name="fid" value="{ fid }">
+<input type="hidden" name="tg" value="{ tg }" />
+<input type="hidden" name="idx" value="modify" />
+<input type="hidden" name="action" value="order" />
+<input type="hidden" name="id" value="{ id_record }" />
+<input type="hidden" name="gr" value="{ gr_record }" />
+<input type="hidden" name="path" value="{ path_record }" />
 
 <table  width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -445,17 +447,17 @@ function sortListFiles(sortType, list)
 </select>
 </td>
 <td valign="middle" align="center"><a 
-href="Javascript:movefile(true,document.ordfiles.elements[4])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
+href="Javascript:movefile(true,document.ordfiles.elements[6])"><img src="{ babSkinPath }images/Puces/PuceGoTop.gif" 
 width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 <br>
-<a href="Javascript:movefile(false,document.ordfiles.elements[4])"> 
+<a href="Javascript:movefile(false,document.ordfiles.elements[6])"> 
 <img src="{ babSkinPath }images/Puces/PuceGoDown.gif" width="22" height="18" border=0 alt="{ movedown }"></a> 
 <br /><br />
-<a href="Javascript:sortListFiles('sortAA', document.ordfiles.elements[4])">
+<a href="Javascript:sortListFiles('sortAA', document.ordfiles.elements[6])">
 <img src="{ babSkinPath }images/Puces/a-z.gif" border=0 alt="{ sorta }">
 </a>
 <br /><br />
-<a href="Javascript:sortListFiles('sortAD', document.ordfiles.elements[4])">
+<a href="Javascript:sortListFiles('sortAD', document.ordfiles.elements[6])">
 <img src="{ babSkinPath }images/Puces/z-a.gif" border=0 alt="{ sortd }">
 </a>
 </td>
@@ -463,7 +465,7 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br>
 <tr> 
 <td align="center"> 
 <input type="submit" name="Submit" value="{ create }" 
-onclick="selectAllFiles(document.ordfiles.elements[4]); document.ordfiles.submit()" />
+onclick="selectAllFiles(document.ordfiles.elements[6]); document.ordfiles.submit()" />
 <br>
 <br>
 </td>

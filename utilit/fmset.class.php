@@ -400,6 +400,11 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		return BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sRelativePath));
 	}
 
+	/**
+	 * 
+	 * @param unknown_type $sRelativePath
+	 * @return BAB_FmFolder
+	 */
 	function getFirstCollectiveFolder($sRelativePath)
 	{
 		global $babBody;
