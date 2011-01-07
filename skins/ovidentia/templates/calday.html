@@ -97,12 +97,31 @@ document.onmousemove = bab_tooltipPosition;
 				<!--#in getnextcollection -->
 					<!--#in getnexteventcol -->
 					<!--#if bevent -->
-					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
+					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
 						<!--#if allow_modify -->
-						<a href="javascript:bab_popup('{ editurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+						<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 						<!--#endif allow_modify -->
-						{ titleten }
+						
+						
+						
+						<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
+
+						{ titleten } &nbsp;
+
+							<!--#if bnote -->
+							<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+							<!--#endif bnote -->
+							<!--#if balert -->
+							<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+							<!--#endif balert -->
+						
+						</a>
+						
+						
+						
+						
+						
 						<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 							<h3>{ title }</h3>
 							<div>
@@ -137,12 +156,7 @@ document.onmousemove = bab_tooltipPosition;
 						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 						</a>
 						<!--#endif bstatus -->
-						<!--#if bnote -->
-						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
-						<!--#endif bnote -->
-						<!--#if balert -->
-						<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
-						<!--#endif balert -->
+						
 						<!--#else first -->
 						&nbsp;
 						<!--#endif first -->
@@ -162,12 +176,26 @@ document.onmousemove = bab_tooltipPosition;
 				<!--#in getnextcal -->
 					<!--#in getnexteventcol -->
 					<!--#if bevent -->
-					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" <!--#if popup -->  onclick="bab_popup('{ vieweventurl }',5)" <!--#endif popup -->  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
+					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }"  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
 						<!--#if allow_modify -->
-						<a href="javascript:bab_popup('{ editurl }')" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
+						<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
 						<!--#endif allow_modify -->
-						{ titleten }
+						
+						
+						<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
+
+						{ titleten } &nbsp;
+
+							<!--#if bnote -->
+							<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
+							<!--#endif bnote -->
+							<!--#if balert -->
+							<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
+							<!--#endif balert -->
+						
+						</a>
+						
 						<div id="calevent{ uiIdentifier }" class="bab_cal_tooltip" style="background-color:#{ bgcolor }">
 							<h3>{ title }</h3>
 							<div>
@@ -202,12 +230,7 @@ document.onmousemove = bab_tooltipPosition;
 						<img src="{ babSkinPath }images/Puces/PuceFileWaitConfirm.gif" alt="{ statustxt }" />
 						</a>
 						<!--#endif bstatus -->
-						<!--#if bnote -->
-						<img src="{ babSkinPath }images/Puces/note.gif" alt="{ t_note }" />
-						<!--#endif bnote -->
-						<!--#if balert -->
-						<img src="{ babSkinPath }images/Puces/bell.gif" alt="{ t_alert }" />
-						<!--#endif balert -->
+						
 						<!--#else first -->
 						&nbsp;
 						<!--#endif first -->

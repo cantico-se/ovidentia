@@ -142,6 +142,9 @@ a img {
 .bab_calendar .eventlink {
 	text-decoration:none;
 	color:#000;
+	}
+	
+#bab_calmonth .eventlink {
 	display: -moz-inline-stack;
 	display: inline-block;
 	padding: .15em .4em;

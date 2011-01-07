@@ -435,13 +435,14 @@ class displayEventDetailCls
 		
 		$backend = $calendar->getBackend();
 		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-		bab_debug($calendarPeriod->toHtml());
-		
+
 		if (!$calendarPeriod)
 		{
 			$babBody->addError(bab_translate("There is no additional informations for this event"));
 			return;
 		}
+		
+		bab_debug($calendarPeriod->toHtml());
 		
 		$this->access = true;
 		$this->idcal = $idcal;
