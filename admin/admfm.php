@@ -77,7 +77,7 @@ function modifyFolder($fid)
 			$this->addtags_txt			= bab_translate("Users can add new tags");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->none					= bab_translate("None");
-			$this->orderm				= bab_translate("Manual order");
+			$this->orderm				= bab_translate("Order files");
 		
 			$this->downloadscappingtxt	= bab_translate("Manage maximum number of downloads per file");
 			$this->maxdownloadstxt		= bab_translate("Default value");

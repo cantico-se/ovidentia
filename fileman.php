@@ -809,7 +809,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
 		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
-		$this->set_caption('sManualOrder', bab_translate("Manual order") . ': ');
+		$this->set_caption('sManualOrder', bab_translate("Order files") . ': ');
 
 	}
 
@@ -1494,7 +1494,7 @@ function listFiles()
 			if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() && $this->bCanManageCurrentFolder){
 
 				global $babBody;
-				$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
+				$babBody->addItemMenu('displayOrderFolder', bab_translate("Order files"), $GLOBALS['babUrlScript'] .
 				'?tg=fileman' .
 				'&idx=displayOrderFolder' .
 				'&id=' . bab_gp('id','') .
@@ -3181,7 +3181,7 @@ function displayOrderFolder(){
 	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
 	'&iIdFolder=' . bab_gp('iIdFolder','') );
 	
-	$babBody->addItemMenu('displayOrderFolder', bab_translate("Manual order"), $GLOBALS['babUrlScript'] .
+	$babBody->addItemMenu('displayOrderFolder', bab_translate("Order files"), $GLOBALS['babUrlScript'] .
 	'?tg=fileman' .
 	'&idx=displayOrderFolder' .
 	'&id=' . bab_gp('displayOrderFolder','') .

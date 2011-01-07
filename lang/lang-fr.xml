@@ -3146,7 +3146,7 @@
 <string id="mod_rewrite apache module">Module d'Apache mod_rewrite</string>
 <string id="The dates search boundaries are mandatory">Les dates limite de recherche sont obligatoires</string>
 <string id="Include the uploaded file name in the notification">Faire apparaître le nom du fichier chargé dans la notification</string>
-<string id="Manual order">Ordre manuel</string>
+<string id="Order files">Ordre des fichiers</string>
 <string id="Send a mail">Envoyer un courriel</string>
 <string id="Directory member">Membres des annuaires</string>
 <string id="View the entry">Visualiser la fiche</string>
