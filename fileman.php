@@ -809,7 +809,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sNone', bab_translate("None"));
 		$this->set_caption('sAdd', bab_translate("Add"));
 		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
-		$this->set_caption('sManualOrder', bab_translate("Order files") . ': ');
+		$this->set_caption('sManualOrder', bab_translate("Manual order") . ': ');
 
 	}
 
