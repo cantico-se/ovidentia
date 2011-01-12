@@ -650,7 +650,7 @@ class bab_indexFileCls extends swishCls {
 	
 	function bab_indexFileCls($object) {
 		
-		parent::swishCls($object);
+		parent::__construct($object);
 	}
 
 	/**
