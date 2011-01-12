@@ -1515,7 +1515,10 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_author']);
 			else
 				$this->ctx->curctx->push('ArticleModifiedBy', $arr['id_modifiedby']);
-			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDate', bab_mktime($arr['date']));  /* for compatibility */
+			$this->ctx->curctx->push('ArticleDateCreation', bab_mktime($arr['date']));
+			$this->ctx->curctx->push('ArticleDateModification', bab_mktime($arr['date_modification']));
+			$this->ctx->curctx->push('ArticleDatePublication', bab_mktime($arr['date_publication']));
 			$this->ctx->curctx->push('ArticleTopicId', $arr['id_topic']);
 			$this->ctx->curctx->push('ArticleLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticleFiles', $arr['nfiles']);
