@@ -3151,5 +3151,6 @@
 <string id="View the entry">Visualiser la fiche</string>
 <string id="Connection timeout">Durée de connexion</string>
 <string id="Manual order">Ordre manuel</string>
-
+<string id="Event title">Titre</string>
+<string id="Event location">Lieu</string>
 </fr>

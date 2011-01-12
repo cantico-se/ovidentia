@@ -66,9 +66,9 @@ class bab_cal_event
 		$this->daystext = bab_translate("Days");
 		$this->or = bab_translate("Or");
 		$this->everyday = bab_translate("Everyday");
-		$this->title = bab_translate("Title");
+		$this->title = bab_translate("Event title");
 		$this->description = bab_translate("Description");
-		$this->location = bab_translate("Location");
+		$this->location = bab_translate("Event location");
 		$this->category = bab_translate("Category");
 		$this->usrcalendarstxt = bab_translate("Users calendars");
 		$this->grpcalendarstxt = bab_translate("Groups calendars");
@@ -783,9 +783,9 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->modify = bab_translate("Update Event");
 			$this->starttime = bab_translate("starttime");
 			$this->endtime = bab_translate("endtime");
-			$this->title = bab_translate("Title");
+			$this->title = bab_translate("Event title");
 			$this->description = bab_translate("Description");
-			$this->location = bab_translate("Location");
+			$this->location = bab_translate("Event location");
 			$this->category = bab_translate("Category");
 			$this->descurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=updesc&calid=".$this->calid."&evtid=".$this->evtid);
 
