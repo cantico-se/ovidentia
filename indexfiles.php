@@ -76,7 +76,28 @@ function bab_indexJobs($idx, $object) {
 			default:	// Addon
 
 				include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-				bab_callAddonsFunction('onIndexObject', $object, $idx);
+				$tmp = bab_callAddonsFunction('onIndexObject', $object, $idx);
+				
+				foreach($tmp as $addon)
+				{
+					$r = $addon['return_value'];
+					if (isset($r)) {
+						while ($msg = $r->getNextInfo()) {
+							$babBody->babEcho('<strong>'.bab_toHtml($msg, BAB_HTML_ALL).'</strong>');
+						}
+				
+						while ($msg = $r->getNextError()) {
+							$babBody->addError($msg);
+						}
+						
+						while ($msg = $r->getNextDebug()) {
+							$babBody->babEcho('<pre>'.bab_toHtml($msg).'</pre>');
+						}
+					}
+				}
+				
+				unset($r);
+				
 				break;
 		}
 

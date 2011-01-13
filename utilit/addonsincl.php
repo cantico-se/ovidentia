@@ -1290,6 +1290,12 @@ function bab_callAddonsFunction($func)
 					$args = func_get_args();
 					$call .= '(';
 					for($k=1; $k < sizeof($args); $k++) {
+						
+						if (is_string($args[$k]))
+						{
+							$args[$k] = "'".$args[$k]."'";
+						}
+						
 						eval ( "\$call .= \"$args[$k],\";");
 					}
 					
