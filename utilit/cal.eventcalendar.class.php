@@ -529,7 +529,7 @@ abstract class bab_EventCalendar
 		}
 
 
-		if ($calendar->getAccessUser() == $author)
+		if (((int) $this->access_user) === (int) $author)
 		{
 			// i am the author
 			return true;
