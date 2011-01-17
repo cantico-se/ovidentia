@@ -913,6 +913,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 	 */
 	public function canAddEvent()
 	{
+		if (((int) $this->access_user) === (int) $this->getIdUser()) {
+			// i am the author
+			return true;
+		}
+		
+		
 		switch($this->getSharingAccess()) {
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
 			case BAB_CAL_ACCESS_UPDATE:

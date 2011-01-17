@@ -815,11 +815,13 @@ class cal_wmdbaseCls
 	 */
 	function updateCreateAccess()
 	{
-		global $babBody;
+		
 		foreach ($this->idcals as $cal)
 		{
 			$calendar = bab_getICalendars()->getEventCalendar($cal);
+
 			if ($calendar && $calendar->canAddEvent()) {
+				
 				$this->allow_create = true;
 				return;
 			}

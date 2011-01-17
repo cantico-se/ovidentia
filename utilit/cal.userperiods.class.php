@@ -975,15 +975,20 @@ class bab_UserPeriods implements Countable, seekableIterator {
 							foreach($attendees as $attendee)
 							{
 								$user = $attendee['calendar']->getIdUser();
-								if ($user)
-								{
-									$id_users[] = $user;
-								}
-								else
+								if (!$user)
 								{
 									bab_debug('there is an attendee without associated user on the event :
 									'.print_r($event->getProperties(), true));
+									continue;	
 								}
+								
+								// ignore declined attendees
+								if (isset($attendee['PARTSTAT']) && 'DECLINED' === $attendee['PARTSTAT'])
+								{
+									continue;
+								}
+								
+								$id_users[] = $user;
 							}
 						} else {
 							/**
@@ -994,11 +999,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						}
 					}
 					
-					
-					
-					
-					if ($event->isTransparent()) {
-						// l'evenement est dispo, retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary
+					if ($event->isTransparent() || 0 === count($id_users)) {
+						
+						// l'evenement est dispo ou aucun utilisateur sur l'evenement, 
+						// retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary si il y en a
+						// l'evenement ne sera pas considere comme un conflit 
+						
 						foreach($id_users as $id_user) {
 							if (isset($users_non_available[$id_user]) && true !== $users_non_available[$id_user]) {
 											
@@ -1007,6 +1013,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						}
 						
 					} else {
+						
 						// l'evenement n'est pas dispo, ajouter les utilisateurs de l'evenement dans la liste des utilisateurs non dispo du boundary
 						
 						if (isset($id_users))
