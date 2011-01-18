@@ -3118,7 +3118,7 @@
 <string id="before the event">avant l'événement</string>
 <string id="Ovidentia calendar">Agenda Ovidentia</string>
 <string id="Copy the events to my new calendar">Copier les événements vers mon nouvel agenda</string>
-<string id="Delete the existing events in my new calendar">Supprimer les événements existant de mon nouvel agenda</string>
+<string id="Delete the existing events in my new calendar">Supprimer les événements existants de mon nouvel agenda</string>
 <string id="Change my personal calendar from %s to %s">Modifier mon agenda personnel de %s à %s</string>
 <string id="Personal calendar type">Type d'agenda personnel</string>
 <string id="Modification of this event on calendar %s is not allowed">La modification n'est pas autorisée sur l'agenda %s</string>
@@ -3144,7 +3144,7 @@
 <string id="Remove color">Enlever la couleur</string>
 <string id="Defined in site options">Défini dans les options du site</string>
 <string id="mod_rewrite apache module">Module d'Apache mod_rewrite</string>
-<string id="The dates search boundaries are mandatory">Les dates limite de recherche sont obligatoires</string>
+<string id="The dates search boundaries are mandatory">Les dates limites de recherche sont obligatoires</string>
 <string id="Include the uploaded file name in the notification">Faire apparaître le nom du fichier chargé dans la notification</string>
 <string id="Send a mail">Envoyer un courriel</string>
 <string id="Directory member">Membres des annuaires</string>
