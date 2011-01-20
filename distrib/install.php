@@ -568,7 +568,7 @@ class installInfos {
 	
 	public function isShell() {
 		
-		if (isset($_SERVER['argv']) && !empty($_SERVER['argv'])) {
+		if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 			return true;
 		}
 		
