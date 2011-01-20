@@ -1588,10 +1588,11 @@ class bab_cal_OviEventSelect
 	
 		if ($users) {
 			
-			while ($loop->getTimeStamp() < $endts) {
-				
+			// the +86400 is usefull for vacations where the $begin date start as 12H and the next date is the next day
+			
+			while ($loop->getTimeStamp() < ($endts + 86400)) {
+
 				if ($working) {
-					
 					foreach($users as $id_user) {
 						
 						$arr = bab_getWHours($id_user, $loop->getDayOfWeek());
@@ -1619,7 +1620,6 @@ class bab_cal_OviEventSelect
 								);
 		
 							if ($nworking && NULL == $previous_end) {
-								
 								$previous_end = $begin; // reference
 							}
 		

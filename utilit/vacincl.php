@@ -2192,52 +2192,28 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 function getDateFromHalfDay($date, $b_pm, $b_end) {
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
+	$arr = explode('-',$date);
+	
 	if ($b_end) {
 		if ($b_pm) {
-			$h = 23;
+			$arr[2]++;
+			$h = 0;
 		} else {
-			$h = 11;
+			$h = 12;
 		}
-		$m = 59;
-		$s = 59;	
 	} else {
 		if ($b_pm) {
 			$h = 12;
 		} else {
 			$h = 0;
 		}
-		$m = 0;
-		$s = 0;
 	}
 
-	$arr = explode('-',$date);
-	return new BAB_DateTime($arr[0], $arr[1], $arr[2], $h, $m, $s);
+	
+	return new BAB_DateTime($arr[0], $arr[1], $arr[2], $h, 0, 0);
 }
 
 
-/**
- * Date display for vacation period
- * @param int $timestamp
- * @return string
- 
-
-class bab_vacDate {
-
-	function bab_vacDate($begin, $end) {
-		$this->begin = $begin;
-		$this->end = $end;
-
-		$this->begin_half	= date('a',$begin);
-		$this->end_half		= date('a',$end);
-	}
-
-	function begin() {
-		$date = bab_longDate($timestamp, false);
-		$ampm = date('a',$timestamp);
-		$date .= 'am' == $ampm ? bab_translate('Morning') : bab_translate('Afternoon');
-	}
-}
-*/
 
 
 
@@ -2862,8 +2838,8 @@ function bab_vac_is_free($collection) {
 		case $collection instanceof bab_WorkingPeriodCollection:
 			return true;
 
-		case $collection instanceof bab_VacationPeriodCollection:
 		case $collection instanceof bab_NonWorkingPeriodCollection:
+		case $collection instanceof bab_VacationPeriodCollection:
 		case $collection instanceof bab_NonWorkingDaysCollection:
 			return false;
 	}
@@ -2901,8 +2877,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 			'bab_NonWorkingDaysCollection', 
 			'bab_NonWorkingPeriodCollection',
 			'bab_WorkingPeriodCollection', 
-			'bab_VacationPeriodCollection', 
-			
+			'bab_VacationPeriodCollection' 
 		)
 	);
 	
@@ -2919,6 +2894,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
 	}
 	
+	
 	$criteria = $criteria->_AND_($factory->Calendar($calendar));
 
 	$obj->createPeriods($criteria);
@@ -2930,6 +2906,8 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	$stack = array();
 	
 	foreach($obj as $pe) {
+		
+		bab_debug(bab_shortDate($pe->ts_begin).' '.bab_shortDate($pe->ts_end).' '.$pe->getProperty('SUMMARY'));
 		
 		/*@var $pe bab_CalendarPeriod */
 		$group = $pe->split(12 * 3600);
@@ -2946,7 +2924,8 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key]->getCollection()), $type, $vacation_is_free)) {
 					
 					$index[$key] = $p;
-
+					
+					
 					if (bab_vac_is_free($collection)) {
 						$is_free[$key] = 1;
 					} elseif (isset($is_free[$key])) {
@@ -2956,8 +2935,6 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 			}
 		}
 	}
-
-
 
 	return array($index, $is_free, $stack);
 }
@@ -3399,7 +3376,6 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 		BAB_DateTime::fromTimeStamp($end),
 		$vacation_is_free
 	);
-
 
 	foreach($index as $key => $p) {
 
