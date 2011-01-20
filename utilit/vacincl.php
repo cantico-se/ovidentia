@@ -2449,17 +2449,24 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			$urlIdentifier = "$reftype/$uid";
 			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
 			
-			$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
+			if (!$calendar)
+			{
+				$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
+			} else {
+				$collections[$row['id_user']] = null;
+			}
 		}
 
 
-
-		$p = new bab_calendarPeriod;
-		bab_vac_setPeriodProperties($p, $row, $begin);
-		$collections[$row['id_user']]->addPeriod($p);
-		$p->setProperty('UID', 'VAC'.$row['id']);
-		
-		$user_periods->addPeriod($p);
+		if (isset($collections[$row['id_user']]))
+		{
+			$p = new bab_calendarPeriod;
+			bab_vac_setPeriodProperties($p, $row, $begin);
+			$collections[$row['id_user']]->addPeriod($p);
+			$p->setProperty('UID', 'VAC'.$row['id']);
+			
+			$user_periods->addPeriod($p);
+		}
 		
 	}
 }
