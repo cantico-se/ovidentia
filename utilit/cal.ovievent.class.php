@@ -1588,7 +1588,7 @@ class bab_cal_OviEventSelect
 	
 		if ($users) {
 			
-			while ($loop->getTimeStamp() < $endts) {
+			while ($loop->getTimeStamp() < ($endts + 86400)) {
 				
 				if ($working) {
 					
