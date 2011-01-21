@@ -1047,6 +1047,7 @@ CREATE TABLE bab_files (
   ver_comment tinytext NOT NULL,
   index_status tinyint(1) unsigned NOT NULL default '0',
   iIdDgOwner int(11) unsigned NOT NULL,
+  `display_position` INT( 11 ) NULL DEFAULT NULL,
   PRIMARY KEY  (id),
   KEY id_owner (id_owner),
   KEY index_status (index_status),
@@ -1243,6 +1244,7 @@ CREATE TABLE bab_fm_folders (
   bcap_downloads enum('Y','N') NOT NULL default 'N',
   max_downloads int(11) unsigned NOT NULL default '0',
   bdownload_history enum('Y','N') NOT NULL default 'N',
+  `manual_order` BOOL NOT NULL,
   PRIMARY KEY  (id),
   KEY folder (folder),
   KEY id_dgowner (id_dgowner)
