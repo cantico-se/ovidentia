@@ -1339,7 +1339,7 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 	public function canUpdateEvent(bab_calendarPeriod $event) {
 
 		if ($this->access_user == $event->getAuthorId()) {
-			return true;
+			return bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
 		}
 
 		if (null !== $this->idsa)
@@ -1348,10 +1348,8 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 			return false;
 		}
 
-		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user)
-		|| bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
+		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
-
 
 	/**
 	 * Test if an event can be deleted
