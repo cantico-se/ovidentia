@@ -107,7 +107,7 @@ function updateAdmGroup($grpdg)
 	bab_siteMap::clear();
 	
 	header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
-		
+	exit;	
 }
 
 /* main */
