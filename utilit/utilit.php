@@ -1504,11 +1504,19 @@ function bab_updateUserSettings()
 		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
 
-	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
+	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as lasthit, UNIX_TIMESTAMP() as time FROM ".BAB_USERS_LOG_TBL);
 	while( $row  = $babDB->db_fetch_array($res))
 		{
-		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
+		$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
+		if (0 === $maxlife)
+			{
+			$maxlife = 1440;
+			}
+
+		if(($row['time'] + $maxlife) < $row['time']) 
+			{
 			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
+			}
 		}
 
 }
