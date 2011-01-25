@@ -99,15 +99,20 @@ function updateAdmGroup($grpdg)
 		}
 	else
 		{
-		trigger_error('no group in delegation');
+		throw new Exception('No group in delegation');
 		}
 
 	$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_dg='".$babDB->db_escape_string($grpdg)."' where sessid='".session_id()."'");
+	$n = $babDB->db_affected_rows();
+	
+	if (0 === $n)
+	{
+		throw new Exception('User session not found');
+	}
 	
 	bab_siteMap::clear();
-	
 	header('Location: '. $GLOBALS['babUrlScript'].'?tg=delegusr');
-	exit;	
+	exit;
 }
 
 /* main */
