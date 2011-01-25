@@ -1482,7 +1482,6 @@ function bab_updateUserSettings()
 			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 			}
 
-
 		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$REMOTE_ADDR."', forwarded_for='".$HTTP_X_FORWARDED_FOR."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string(bab_rp('tg'))."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
@@ -1749,10 +1748,10 @@ function bab_updateSiteSettings()
 	}
 	
 
-	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as time from ".BAB_USERS_LOG_TBL);
+	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as lasthit, UNIX_TIMESTAMP() as time from ".BAB_USERS_LOG_TBL);
 	while( $row  = $babDB->db_fetch_array($res))
 		{
-		if( $row['time'] + get_cfg_var('session.gc_maxlifetime') < time()) 
+		if( ($row['lasthit'] + get_cfg_var('session.gc_maxlifetime')) < $row['time']) 
 			{
 			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
 			while( $arr  = $babDB->db_fetch_array($res2))
