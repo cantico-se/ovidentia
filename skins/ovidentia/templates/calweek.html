@@ -78,7 +78,14 @@ document.onmousemove = bab_tooltipPosition;
 			<!--#if currentday "== 1" --> class="BabCalendarMenuActiveBackground" <!--#else currentday --> class="BabCalendarDays" <!--#endif currentday -->>
 			<!--#else currentmonth -->
 			class="BabCalendarDays">
-			<!--#endif currentmonth -->{ dayname } { daynumbername }</td>
+			<!--#endif currentmonth -->{ dayname } { daynumbername }
+			
+			<!--#if allow_create -->		
+				&nbsp; <a class="insert" title="{ t_new_event }" href="javascript:bab_popup('{ neweventurl }',5);"><img src="{ babSkinPath }images/Puces/PuceNewEvent.png" align="absmiddle" alt="{ t_new_event }" /></a>
+			<!--#endif allow_create -->
+			
+			
+			</td>
 		<!--#endin getnextdayname -->	
 	</tr>
 	</thead>

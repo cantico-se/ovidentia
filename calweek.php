@@ -136,6 +136,8 @@ class cal_weekCls extends cal_wmdbaseCls
 				$this->currentday = 0;
 				}
 			$this->dayname = bab_toHtml($babDays[$this->workdays[$i]]);
+			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewq");
+			
 			$i++;
 			return true;
 			}

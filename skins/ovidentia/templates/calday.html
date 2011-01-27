@@ -63,7 +63,10 @@ document.onmousemove = bab_tooltipPosition;
 	<thead>
 	<tr>
 		<th>&nbsp;</th>
-		<td class="BabCalendarDays" align="center">{ dayname } ({ week })</td>
+		<td class="BabCalendarDays" align="center">{ dayname } ({ week }) 
+			<!--#if allow_create -->		
+				&nbsp; <a class="insert" title="{ t_new_event }" href="javascript:bab_popup('{ neweventurl }',5);"><img src="{ babSkinPath }images/Puces/PuceNewEvent.png" align="absmiddle" alt="{ t_new_event }" /></a>
+			<!--#endif allow_create --></td>
 	</tr>
 	</thead>
 	<tbody>

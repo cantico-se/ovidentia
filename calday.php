@@ -55,8 +55,8 @@ class cal_dayCls extends cal_wmdbaseCls
 		$this->iso_time2 = sprintf("%04s-%02s-%02s 00:00:00", date("Y", $time2), date("n", $time2), date("j", $time2));
 
 		$this->eventlisturl = bab_toHtml( $GLOBALS['babUrlScript']."?tg=calendar&idx=eventlist&calid=".$this->currentidcals."&from=".date('Y,n,j',$time1)."&to=".date('Y,n,j',$time2));
+		$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".$this->year.",".$this->month.",".$this->day."&calid=".implode(',',$this->idcals)."&view=viewd");
 		
-
 		$this->alternate = false;
 		$this->cindex = 0;
 
