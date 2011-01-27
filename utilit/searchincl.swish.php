@@ -41,8 +41,9 @@ class swishCls
 
 	$registry = bab_getRegistryInstance();
 	$registry->changeDirectory('/bab/indexfiles/');
-
-	if ('windows' === bab_browserOS()) {
+	
+	
+	if ('\\' === DIRECTORY_SEPARATOR) {
 		$default_charset = 'ISO-8859-1';
 	} else {
 		$default_charset = 'UTF-8';
@@ -82,7 +83,7 @@ class swishCls
 	
 	
 	if (empty($this->swishCmd)) {
-		if ('windows' === bab_browserOS()) {
+		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->swishCmd = 'C:/Progra~1/SWISH-E/swish-e.exe';
 		} else {
 			$this->swishCmd = $this->getDefaultCommand('swish-e');
@@ -91,7 +92,7 @@ class swishCls
 	
 	
 	if (empty($this->pdftotext)) {
-		if ('windows' === bab_browserOS()) {
+		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->pdftotext = 'C:/Progra~1/SWISH-E/lib/swish-e/pdftotext.exe';
 		} else {
 			$this->pdftotext = $this->getDefaultCommand('pdftotext');
@@ -99,7 +100,7 @@ class swishCls
 	}
 	
 	if (empty($this->xls2csv)) {
-		if ('windows' === bab_browserOS()) {
+		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->xls2csv = 'C:/Progra~1/SWISH-E/lib/swish-e/xls2csv.exe';
 		} else {
 			$this->xls2csv = $this->getDefaultCommand('xls2csv');
@@ -107,7 +108,7 @@ class swishCls
 	}
 	
 	if (empty($this->catdoc)) {
-		if ('windows' === bab_browserOS()) {
+		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->catdoc = 'C:/Progra~1/SWISH-E/lib/swish-e/catdoc.exe';
 		} else {
 			$this->catdoc = $this->getDefaultCommand('catdoc');
@@ -115,7 +116,7 @@ class swishCls
 	}
 	
 	if (empty($this->unzip)) {
-		if ('windows' === bab_browserOS()) {
+		if ('\\' === DIRECTORY_SEPARATOR) {
 			$this->unzip = 'C:/Progra~1/SWISH-E/lib/swish-e/unzip.exe';
 		} else {
 			$this->unzip = $this->getDefaultCommand('unzip');
