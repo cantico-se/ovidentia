@@ -887,6 +887,8 @@ class bab_cal_OviEventSelect
 		$event->setProperty('LOCATION'		, $arr['location']);
 		$event->setProperty('CATEGORIES'	, $arr['category']);
 		$event->setProperty('X-CTO-COLOR'	, $arr['color']);
+		$event->setProperty('ORGANIZER;CN='.bab_getUserName($arr['id_creator'])		, 'MAILTO:'.bab_getUserEmail($arr['id_creator']));
+		
 		
 		
 		if ('Y' == $arr['bprivate']) {
