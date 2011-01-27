@@ -881,12 +881,14 @@ class bab_cal_OviEventSelect
 			return null;
 		}
 		
-		$event->setProperty('UID'			, $arr['uuid']);
-		$event->setProperty('SUMMARY'		, $arr['title']);
-		$event->setProperty('DESCRIPTION'	, trim(bab_unhtmlentities(strip_tags($arr['description']))));
-		$event->setProperty('LOCATION'		, $arr['location']);
-		$event->setProperty('CATEGORIES'	, $arr['category']);
-		$event->setProperty('X-CTO-COLOR'	, $arr['color']);
+		
+		$event->setProperty('UID'													, $arr['uuid']);
+		$event->setProperty('SUMMARY'												, $arr['title']);
+		$event->setProperty('DESCRIPTION'											, trim(bab_unhtmlentities(strip_tags($arr['description']))));
+		$event->setProperty('LOCATION'												, $arr['location']);
+		$event->setProperty('CATEGORIES'											, $arr['category']);
+		$event->setProperty('X-CTO-COLOR'											, $arr['color']);
+		$event->setProperty('ORGANIZER;CN='.bab_getUserName($arr['id_creator'])		, 'MAILTO:'.bab_getUserEmail($arr['id_creator']));
 		
 		
 		if ('Y' == $arr['bprivate']) {

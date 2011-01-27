@@ -306,6 +306,9 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 		}
 	}
 	
+	// organizer is set directly from libcadav ?
+	// $period->setProperty('ORGANIZER;CN='. , 'MAILTO:'.);
+	
 	// time transparency (free : yes|no)
 	
 	if ($args['free'])
