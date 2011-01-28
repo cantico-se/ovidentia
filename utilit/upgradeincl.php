@@ -407,7 +407,7 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 	$sInstallDir = realpath('.').'/install/addons';
 	
 	
-	if(is_dir($sInstallDir))
+	if(is_dir($sInstallDir) && file_exists(realpath('.').'/install/addons.ini'))
 	{
 		$addons = parse_ini_file(realpath('.').'/install/addons.ini', true);
 		
