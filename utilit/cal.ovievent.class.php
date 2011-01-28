@@ -1175,7 +1175,7 @@ class bab_cal_OviEventSelect
 		}
 
 
-		$where = " ce.parent_calendar IN(".$babDB->quote($selected_calendars).")";
+		$where = " (ce.parent_calendar IN(".$babDB->quote($selected_calendars).") OR (ceo.caltype IN('resource', 'public') AND ceo.id_cal IN(".$babDB->quote($id_calendars).")))";
 
 		$where .= " AND ceo.status != '".BAB_CAL_STATUS_DECLINED."' 
 		";
