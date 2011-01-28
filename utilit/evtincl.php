@@ -1140,10 +1140,11 @@ function notifyEventApprobation(bab_CalendarPeriod $period, $bconfirm, $raison, 
 		
 	$organizer = $period->getOrganizer();
 	
-	if (!$organizer)
+	if (!$organizer || $organizer['email'] === bab_getUserEmail($GLOBALS['BAB_SESS_USERID']))
 	{
 		return;
 	}
+	
 	
 	if (isset($organizer['name']))
 	{
