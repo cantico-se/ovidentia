@@ -38,7 +38,7 @@ define('BAB_OPE_GREATERTHANOREQUAL'	, 6);
 
 /**
  * OVML root functionality
- * 
+ *
  *
  */
 class Func_Ovml extends bab_functionality
@@ -66,7 +66,7 @@ class Func_Ovml_Container extends Func_Ovml
 		$this->ctx = $ctx;
 		$this->idx = 0;
 	}
-	
+
 	/**
 	 * default description of OVML functionalities
 	 * @see utilit/bab_functionality#getDescription()
@@ -76,12 +76,12 @@ class Func_Ovml_Container extends Func_Ovml
 		if (__CLASS__ === get_class($this)) {
 			return bab_translate('All OVML containers');
 		}
-		
-		
+
+
 		$classname = explode('_',get_class($this));
 		return BAB_TAG_CONTAINER. end($classname);
 	}
-	
+
 
 	public function printout($txt)
 	{
@@ -122,7 +122,7 @@ class Func_Ovml_Container extends Func_Ovml
 
 	/**
 	 * Fetch the next container's element.
-	 * 
+	 *
 	 * @return bool		True if an element has been fetched, false if the container has reached the end.
 	 */
 	public function getnext()
@@ -160,8 +160,8 @@ class Func_Ovml_Function extends Func_Ovml
 	public $template;
 	protected $gctx;
 	protected $args = array();
-	
-	
+
+
 	/**
 	 * default description of OVML functionalities
 	 * @see utilit/bab_functionality#getDescription()
@@ -171,14 +171,14 @@ class Func_Ovml_Function extends Func_Ovml
 		if (__CLASS__ === get_class($this)) {
 			return bab_translate('All OVML functions');
 		}
-		
+
 		$classname = explode('_',get_class($this));
 		return BAB_TAG_FUNCTION. end($classname);
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param babOvTemplate $template
 	 * @return Func_Ovml_Function
 	 */
@@ -186,12 +186,12 @@ class Func_Ovml_Function extends Func_Ovml
 	{
 		$this->template = $template;
 		$this->gctx = $template->gctx;
-		
+
 		return $this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param array $args
 	 * @return Func_Ovml_Function
 	 */
@@ -200,13 +200,13 @@ class Func_Ovml_Function extends Func_Ovml
 		$this->args = $args;
 		return $this;
 	}
-	
+
 	protected function format_output($val, $matches)
 	{
 		return $this->template->format_output($val, $matches);
 	}
-	
-	
+
+
 	public function cast($str)
 	{
 		return $this->template->cast($str);
@@ -289,7 +289,7 @@ class bab_Ovml_Container_Operator extends Func_Ovml_Container
 	var $count;
 
 	protected $operator = null;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$this->count = 0;
@@ -1732,7 +1732,7 @@ class Func_Ovml_Container_Forum extends Func_Ovml_Container
 			}
 		} else {
 			$this->count = 0;
-		}		
+		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
 
@@ -2127,9 +2127,9 @@ class Func_Ovml_Container_Folders extends Func_Ovml_Container
 			$oCriteria = $oCriteria->_and($oId->in(explode(',', $folderid)));
 		}
 
-		
+
 		$this->oFmFolderSet->select($oCriteria);
-		
+
 
 		while(null !== ($oFmFolder = $this->oFmFolderSet->next()))
 		{
@@ -2443,7 +2443,7 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 	var $sPath = '';
 	var $sEncodedPath = '';
 	var $iIdDelegation = 0;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babBody, $babDB;
@@ -3296,7 +3296,7 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 			if ($this->threadid !== false && is_numeric($this->threadid)) {
 				$req .= " and p.id_thread = '".$this->threadid."'";
 			}
-			
+
 			if( $this->nbdays !== false)
 				{
 				$req .= " and p.date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
@@ -3435,7 +3435,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 			default: 		$order = "p.date DESC"; break;
 		}
 
-		
+
 
 		$res = $babDB->db_query($req);
 
@@ -3450,7 +3450,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 		$this->count = count($this->arrid);
 		if( $this->count > 0 )
 			{
-				
+
 			$req = "
 				select p.*, f.id_dgowner
 				from
@@ -3463,7 +3463,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 
 			if( $this->last !== false)
 				$req .= " limit 0, ".$this->last;
-				
+
 			$this->res = $babDB->db_query($req);
 
 			$this->count = $babDB->db_num_rows($this->res);
@@ -4680,18 +4680,18 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 		$type = $ctx->get_value('type');
 		$delegationid = (int) $ctx->get_value('delegationid');
 
-		
+
 		switch(bab_getICalendars()->defaultview)
 		{
 			case BAB_CAL_VIEW_DAY: 	$this->view='calday';		break;
 			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; 		break;
 			default: 				$this->view='calmonth'; 	break;
 		}
-			
-			
+
+
 		$calendars = bab_getICalendars()->getCalendars();
 		$typename = mb_strtolower($type);
-		
+
 		switch($typename)
 		{
 			case 'user': 		$class = 'bab_OviPersonalCalendar';	break;
@@ -4699,7 +4699,7 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 			case 'resource': 	$class = 'bab_OviResourceCalendar';	break;
 			default: 			$class = 'bab_OviEventCalendar'; 	break;
 		}
-			
+
 		$calendarid = $ctx->get_value('calendarid');
 		if( $calendarid !== false && $calendarid !== '' )
 		{
@@ -4707,32 +4707,32 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 		}
 		else
 		{
-			$calendarid = null;	
-		}	
-		
+			$calendarid = null;
+		}
+
 		foreach($calendars as $calendar)
 		{
 			if (!($calendar instanceof $class))
 			{
 				continue;
 			}
-			
+
 			if (isset($calendarid) && !isset($calendarid[$calendar->getUid()]))
 			{
 				continue;
 			}
-			
+
 			$dg = $calendar->getDgOwner();
-			
+
 			if(0 != $delegationid && isset($dg) && $delegationid != $dg)
 			{
 				continue;
 			}
-			
+
 			$this->Entries[] = $calendar;
 		}
 
-		
+
 
 		$this->count = count($this->Entries);
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -4749,26 +4749,26 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 			$this->ctx->curctx->push('CalendarName', $calendar->getName());
 			$this->ctx->curctx->push('CalendarDescription', $calendar->getDescription());
 			$this->ctx->curctx->push('CalendarOwnerId', $calendar->getIdUser());
-			
+
 			switch($calendar->getReferenceType())
 			{
 				case 'personal':
 					$this->ctx->curctx->push('CalendarType', BAB_CAL_USER_TYPE);
 					break;
-					
+
 				case 'public':
 					$this->ctx->curctx->push('CalendarType', BAB_CAL_PUB_TYPE);
 					break;
-					
+
 				case 'resource':
 					$this->ctx->curctx->push('CalendarType', BAB_CAL_RES_TYPE);
 					break;
-					
+
 				default:
 					$this->ctx->curctx->push('CalendarType', 0);
 					break;
 			}
-			
+
 			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendar->getUid());
 			$this->idx++;
 			$this->index = $this->idx;
@@ -4847,7 +4847,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	{
 		global $babBody, $babDB;
 		parent::setOvmlContext($ctx);
-		
+
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
@@ -4897,7 +4897,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 
 		$this->whObj = new bab_UserPeriods($startdate, $enddate);
-		
+
 		$backend = bab_functionality::get('CalendarBackend/Ovi');
 		/*@var $backend Func_CalendarBackend_Ovi */
 		$factory = $backend->Criteria();
@@ -4908,7 +4908,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		} else {
 			$calendars = $this->getCalendars($calendarid);
 		}
-		
+
 		$criteria = $factory->Calendar($calendars);
 
 		$categoryid = $ctx->get_value('categoryid');
@@ -4921,10 +4921,10 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 				$cat = bab_getCalendarCategory($categoryid);
 				$catnames[] = $cat['name'];
 			}
-			
+
 			$criteria = $criteria->_AND_($factory->Property('CATEGORIES', $catnames));
 		}
-		
+
 		$backend->includePeriodCollection();
 		$collections = array('bab_CalendarEventCollection');
 
@@ -4932,9 +4932,9 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		{
 			$collections[] = 'bab_VacationPeriodCollection';
 		}
-		
+
 		$criteria = $criteria->_AND_($factory->Collection($collections));
-		
+
 		$this->whObj->createPeriods($criteria);
 		$this->whObj->orderBoundaries();
 
@@ -4958,9 +4958,9 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			trigger_error('filter=NO must be used with calendarid');
 			return;
 		}
-		
+
 		require_once dirname(__FILE__).'/cal.ovicalendar.class.php';
-		
+
 		$public = bab_cal_getPublicCalendars(0, $calendarid);
 		$resource = bab_cal_getResourceCalendars(0, $calendarid);
 		$personal = bab_cal_getPersonalCalendars(0, $calendarid);
@@ -4973,7 +4973,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	 */
 	public function getUserCalendars($calendarid, $delegationid) {
 		$calendars = bab_getICalendars()->getCalendars();
-		
+
 		if( $calendarid !== false && $calendarid !== '' )
 		{
 			$calendarid = array_flip(explode(',',$calendarid));
@@ -4985,29 +4985,29 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			{
 				return array();
 			}
-			
-			$calendarid = array($personal->getUrlIdentifier() => 1);	
+
+			$calendarid = array($personal->getUrlIdentifier() => 1);
 		}
-		
+
 		$return = array();
-		
+
 		foreach($calendars as $calendar)
 		{
 			if (isset($calendarid) && !isset($calendarid[$calendar->getUid()]))
 			{
 				continue;
 			}
-			
+
 			$dg = $calendar->getDgOwner();
-			
+
 			if(0 != $delegationid && isset($dg) && $delegationid != $dg)
 			{
 				continue;
 			}
-			
+
 			$return[] = $calendar;
 		}
-		
+
 		return $return;
 	}
 
@@ -5042,11 +5042,11 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$id_category = $cat['id'];
 
 			$id_event = $p->getProperty('UID');
-			
+
 			$collection = $p->getCollection();
 			$calendar = $collection->getCalendar();
 			$arr['id_cal'] = $calendar->getUrlIdentifier();
-			
+
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
@@ -5054,7 +5054,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$location = $p->getProperty('LOCATION');
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
-			
+
 			if (!$p->isPublic() && ((int) $GLOBALS['BAB_SESS_USERID'] === (int) $calendar->getIdUser()))
 			{
 				$summary = bab_translate('Private');
@@ -5062,7 +5062,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 				$location = '';
 				$categories = '';
 			}
-			
+
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventId'					, $id_event);
@@ -5090,7 +5090,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			{
 			$this->ctx->curctx->push('EventAuthor', $arr['id_creator']);
 			}
-			
+
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -5553,7 +5553,7 @@ class Func_Ovml_Container_Soap extends Func_Ovml_Container
 				{
 				$apinamespace = '';
 				}
-				
+
 			$soapAction = '';
 			$headers=false;
 			$style='rpc';
@@ -5578,7 +5578,7 @@ class Func_Ovml_Container_Soap extends Func_Ovml_Container
 				$use = $vars['use'];
 				unset($vars['use']);
 				}
-				
+
 			if( isset($vars['proxyhost']))
 				{
 				$proxyhost = $vars['proxyhost'];
@@ -5830,6 +5830,13 @@ class bab_context
 }
 
 
+/**
+ * @param babOvTemplate $oCtx
+ * @param int           $iMaxImageHeight
+ * @param int           $iMaxImageWidth
+ * @param int           $iIdArticle
+ * @return void
+ */
 function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdArticle)
 {
 	require_once dirname(__FILE__) . '/gdiincl.php';
@@ -5839,11 +5846,9 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
-	if(is_dir($sUploadPath))
-	{
+	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageArticle($iIdArticle);
-		if(false !== $aImgInfo)
-		{
+		if (is_array($aImgInfo)) {
 			$iHeight			= $iMaxImageHeight;
 			$iWidth				= $iMaxImageWidth;
 			$sName				= $aImgInfo['name'];
@@ -5851,39 +5856,54 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&sImage=' . bab_toHtml($sName);
 
-			$oImageResize = new bab_ImageResize();
-			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
-			{
-				$sImageUrl .= '&iIdArticle=' . $iIdArticle;
-				$sImageUrl .= '&iWidth=' . $iWidth;
-				$sImageUrl .= '&iHeight=' . $iHeight;
+			$T = bab_functionality::get('Thumbnailer');
+			$thumbnailUrl = null;
 
+			if ($T) {
+				// The thumbnailer functionality is available.
+			 	$T->setSourceFile($sFullPathName);
+				$T->setBorder(0, '#cccccc', 0, '#ffffff');
+				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
+			}
+			if ($thumbnailUrl) {
+				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
-				$oCtx->curctx->push('ImageUrl', $sImageUrl);
-				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
-				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
-				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
-				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
+				$oCtx->curctx->push('ImageWidth', $iWidth);
+				$oCtx->curctx->push('ImageHeight', $iHeight);
+
+				// We reload the thumbnail image to get the real resized width and height.
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
+				$img = imageCreateFromPng($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
+				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
+				imageDestroy($img);
 
 				$bProcessed = true;
+			} else {
+				// If the thumbnailer was not available or not able to create a thumbnail,
+				// we fall back to the old method for creating thumbnails (url of the page
+				// dynamically resizing the image).
+				$oImageResize = new bab_ImageResize();
+				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
+					$sImageUrl .= '&iIdArticle=' . $iIdArticle;
+					$sImageUrl .= '&iWidth=' . $iWidth;
+					$sImageUrl .= '&iHeight=' . $iHeight;
 
-				/*
-				bab_debug(
-					'AssociatedImage	' . 1 . "\n" .
-					'sFullPathName		' . $sFullPathName . "\n" .
-					'ImageUrl			' . $sImageUrl . "\n" .
-					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
-					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
-					'ResizedImageWidth	' . $iWidth . "\n" .
-					'ResizedImageHeight	' . $iHeight
-				);
-				//*/
+					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('ImageUrl', $sImageUrl);
+					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+					$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+					$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+
+					$bProcessed = true;
+				}
 			}
 		}
 	}
 
-	if(false === $bProcessed)
-	{
+	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
@@ -5893,6 +5913,16 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	}
 }
 
+
+
+
+/**
+ * @param babOvTemplate $oCtx
+ * @param int           $iMaxImageHeight
+ * @param int           $iMaxImageWidth
+ * @param int           $iIdCategory
+ * @return void
+ */
 function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdCategory)
 {
 	require_once dirname(__FILE__) . '/gdiincl.php';
@@ -5902,11 +5932,9 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
-	if(is_dir($sUploadPath))
-	{
+	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageCategory($iIdCategory);
-		if(false !== $aImgInfo)
-		{
+		if (is_array($aImgInfo)) {
 			$iHeight			= $iMaxImageHeight;
 			$iWidth				= $iMaxImageWidth;
 			$sName				= $aImgInfo['name'];
@@ -5914,39 +5942,54 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 
-			$oImageResize = new bab_ImageResize();
-			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
-			{
-				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
-				$sImageUrl .= '&iWidth=' . $iWidth;
-				$sImageUrl .= '&iHeight=' . $iHeight;
+			$T = bab_functionality::get('Thumbnailer');
+			$thumbnailUrl = null;
 
+			if ($T) {
+				// The thumbnailer functionality is available.
+			 	$T->setSourceFile($sFullPathName);
+				$T->setBorder(0, '#cccccc', 0, '#ffffff');
+				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
+			}
+			if ($thumbnailUrl) {
+				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
-				$oCtx->curctx->push('ImageUrl', $sImageUrl);
-				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
-				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
-				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
-				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
+				$oCtx->curctx->push('ImageWidth', $iWidth);
+				$oCtx->curctx->push('ImageHeight', $iHeight);
+
+				// We reload the thumbnail image to get the real resized width and height.
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
+				$img = imageCreateFromPng($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
+				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
+				imageDestroy($img);
 
 				$bProcessed = true;
+			} else {
+				// If the thumbnailer was not available or not able to create a thumbnail,
+				// we fall back to the old method for creating thumbnails (url of the page
+				// dynamically resizing the image).
+				$oImageResize = new bab_ImageResize();
+				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
+					$sImageUrl .= '&iIdCategory=' . $iIdCategory;
+					$sImageUrl .= '&iWidth=' . $iWidth;
+					$sImageUrl .= '&iHeight=' . $iHeight;
 
-				/*
-				bab_debug(
-					'AssociatedImage	' . 1 . "\n" .
-					'sFullPathName		' . $sFullPathName . "\n" .
-					'ImageUrl			' . $sImageUrl . "\n" .
-					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
-					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
-					'ResizedImageWidth	' . $iWidth . "\n" .
-					'ResizedImageHeight	' . $iHeight
-				);
-				//*/
+					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('ImageUrl', $sImageUrl);
+					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+					$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+					$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+
+					$bProcessed = true;
+				}
 			}
 		}
 	}
 
-	if(false === $bProcessed)
-	{
+	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
@@ -5957,6 +6000,16 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 }
 
 
+
+
+/**
+ * @param babOvTemplate $oCtx
+ * @param int           $iMaxImageHeight
+ * @param int           $iMaxImageWidth
+ * @param int           $iIdCategory
+ * @param int           $iIdTopic
+ * @return void
+ */
 function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdCategory, $iIdTopic)
 {
 	require_once dirname(__FILE__) . '/gdiincl.php';
@@ -5966,11 +6019,9 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
-	if(is_dir($sUploadPath))
-	{
+	if(is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageTopic($iIdTopic);
-		if(false !== $aImgInfo)
-		{
+		if (is_array($aImgInfo)) {
 			$iHeight			= $iMaxImageHeight;
 			$iWidth				= $iMaxImageWidth;
 			$sName				= $aImgInfo['name'];
@@ -5978,41 +6029,56 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 
-			$oImageResize = new bab_ImageResize();
-			if(false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight))
-			{
-				$sImageUrl .= '&iIdTopic=' . $iIdTopic;
-				$sImageUrl .= '&item=' . $iIdTopic;
-				$sImageUrl .= '&iIdCategory=' . $iIdCategory;
-				$sImageUrl .= '&iWidth=' . $iWidth;
-				$sImageUrl .= '&iHeight=' . $iHeight;
+			$T = bab_functionality::get('Thumbnailer');
+			$thumbnailUrl = null;
 
+			if ($T) {
+				// The thumbnailer functionality is available.
+			 	$T->setSourceFile($sFullPathName);
+				$T->setBorder(0, '#cccccc', 0, '#ffffff');
+				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
+			}
+			if ($thumbnailUrl) {
+				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
-				$oCtx->curctx->push('ImageUrl', $sImageUrl);
-				$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
-				$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
-				$oCtx->curctx->push('ResizedImageWidth', $iWidth);
-				$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
+				$oCtx->curctx->push('ImageWidth', $iWidth);
+				$oCtx->curctx->push('ImageHeight', $iHeight);
+
+				// We reload the thumbnail image to get the real resized width and height.
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
+				$img = imageCreateFromPng($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
+				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
+				imageDestroy($img);
 
 				$bProcessed = true;
+			} else {
+				// If the thumbnailer was not available or not able to create a thumbnail,
+				// we fall back to the old method for creating thumbnails (url of the page
+				// dynamically resizing the image).
+				$oImageResize = new bab_ImageResize();
+				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
+					$sImageUrl .= '&iIdTopic=' . $iIdTopic;
+					$sImageUrl .= '&item=' . $iIdTopic;
+					$sImageUrl .= '&iIdCategory=' . $iIdCategory;
+					$sImageUrl .= '&iWidth=' . $iWidth;
+					$sImageUrl .= '&iHeight=' . $iHeight;
 
-				/*
-				bab_debug(
-					'AssociatedImage	' . 1 . "\n" .
-					'sFullPathName		' . $sFullPathName . "\n" .
-					'ImageUrl			' . $sImageUrl . "\n" .
-					'ImageWidth			' . $oImageResize->getRealWidth() . "\n" .
-					'ImageHeight		' . $oImageResize->getRealHeight() . "\n" .
-					'ResizedImageWidth	' . $iWidth . "\n" .
-					'ResizedImageHeight	' . $iHeight
-				);
-				//*/
+					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('ImageUrl', $sImageUrl);
+					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
+					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
+					$oCtx->curctx->push('ResizedImageWidth', $iWidth);
+					$oCtx->curctx->push('ResizedImageHeight', $iHeight);
+
+					$bProcessed = true;
+				}
 			}
 		}
 	}
 
-	if(false === $bProcessed)
-	{
+	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
@@ -6028,18 +6094,18 @@ class babOvTemplate
 	public $contexts = array();
 	public $handlers = array();
 	public $curctx;
-	
+
 	/**
-	 * global context 
+	 * global context
 	 * @var bab_context
 	 */
-	public $gctx; 
-	
+	public $gctx;
+
 	/**
 	 * @var string
-	 */ 
+	 */
 	public $debug_location;
-	
+
 
 	public function __construct($args = array())
 	{
@@ -6157,9 +6223,9 @@ class babOvTemplate
 	public function handle_tag( $handler, $txt, $args, $fprint = 'printout' )
 	{
 		$out = '';
-		
+
 		$cls = @bab_functionality::get('Ovml/Container/'.$handler, false);
-		
+
 		if (false === $cls) {
 			if( $fprint == 'object' )
 				{
@@ -6168,7 +6234,7 @@ class babOvTemplate
 			return sprintf(bab_translate("OVML : the container %s does not exists"), BAB_TAG_CONTAINER.$handler);
 		}
 
-		
+
 		$ctx = new bab_context($handler);
 		$ctx->setContent($txt);
 		$this->push_ctx($ctx);
@@ -6177,19 +6243,19 @@ class babOvTemplate
 			{
 			$this->curctx->push($key, $val);
 			}
-		
+
 		$cls->setOvmlContext($this);
 		if( $fprint == 'object' )
 			{
 			return $cls;
 			}
-			
+
 		$out = $cls->$fprint($txt);
 		$this->pop_ctx();
 		return $out;
 	}
-	
-	
+
+
 	public function cast($str)
 	{
 		if( !empty($str) && $str{0} == '(' )
@@ -6393,7 +6459,7 @@ class babOvTemplate
 					$handler = $m[2][$i];
 					$params = array();
 					$argsStr = $this->vars_replace(trim($m[3][$i]));
-					
+
 					if($this->match_args($argsStr, $mm))
 						{
 						for( $j = 0; $j< count($mm[1]); $j++)
@@ -6405,21 +6471,21 @@ class babOvTemplate
 								}
 							}
 						}
-						
+
 					$cls = @bab_functionality::get('Ovml/Function/'.$handler);
-					
+
 					if (false === $cls) {
 						$val = sprintf(bab_translate("OVML : the function %s does not exists"), BAB_TAG_FUNCTION.$handler);
 					} else {
-						
+
 						$cls->setTemplate($this);
 						$cls->setArgs($params);
 						$val = $cls->toString();
 					}
-					
-						
+
+
 					// $val = $this->$handler($params);
-					
+
 					$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 					break;
 				case BAB_TAG_VARIABLE:
@@ -6478,7 +6544,7 @@ class babOvTemplate
 		$out = '';
 		for( $i = 0; $i< count($m[3]); $i++)
 			{
-				
+
 			$out .= $this->handle_text($m[1][$i]);
 			$out .= $this->handle_tag($m[2][$i], $m[5][$i], $this->getArgs($m[3][$i]));
 			$out .= $this->handle_text($m[6][$i]);
@@ -6496,11 +6562,11 @@ class babOvTemplate
 	{
 	return preg_match_all("/(\w+)\s*=\s*([\"'])(.*?)\\2/s", $args, $mm);
 	}
-	
-	
+
+
 	/**
 	 * Process ovml source
-	 * 
+	 *
 	 * @param 	string 	$txt				ovml source content
 	 * @param	string	$debug_location		can contain the file path of the processed ovml file or any info to describe where the ovml source is located
 	 * @return unknown_type
@@ -6515,13 +6581,13 @@ class babOvTemplate
 		return $txt;
 	}
 }
-	
+
 /**
- *  translate text 
+ *  translate text
  */
 class Func_Ovml_Function_Translate extends Func_Ovml_Function {
-	
-	
+
+
 	/**
 	 * @return string
 	 */
@@ -6549,17 +6615,17 @@ class Func_Ovml_Function_Translate extends Func_Ovml_Function {
 	return '';
 	}
 }
-	
+
 /**
- *  Web statistic 
+ *  Web statistic
  */
 class Func_Ovml_Function_WebStat extends Func_Ovml_Function {
 
-	
+
 	public function toString()
 	{
 	$args = $this->args;
-		
+
 	if(count($args))
 		{
 		$name = '';
@@ -6594,7 +6660,7 @@ class Func_Ovml_Function_WebStat extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 class Func_Ovml_Function_SetCookie extends Func_Ovml_Function {
 
 
@@ -6639,7 +6705,7 @@ class Func_Ovml_Function_SetCookie extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 class Func_Ovml_Function_GetCookie extends Func_Ovml_Function {
 
 	public function toString()
@@ -6667,7 +6733,7 @@ class Func_Ovml_Function_GetCookie extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 class Func_Ovml_Function_SetSessionVar extends Func_Ovml_Function {
 
 	public function toString()
@@ -6699,7 +6765,7 @@ class Func_Ovml_Function_SetSessionVar extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 
 
 class Func_Ovml_Function_GetSessionVar extends Func_Ovml_Function {
@@ -6728,9 +6794,9 @@ class Func_Ovml_Function_GetSessionVar extends Func_Ovml_Function {
 			}
 		}
 	}
-	
+
 }
-	
+
 class Func_Ovml_Function_GetPageTitle extends Func_Ovml_Function {
 
 	public function toString()
@@ -6764,15 +6830,15 @@ class Func_Ovml_Function_GetPageTitle extends Func_Ovml_Function {
 		return $babBody->title;
 		}
 	}
-	
-}
-	
-/**
- * save a variable to global space 
- */
-class Func_Ovml_Function_PutVar extends Func_Ovml_Function {	
 
-	
+}
+
+/**
+ * save a variable to global space
+ */
+class Func_Ovml_Function_PutVar extends Func_Ovml_Function {
+
+
 	public function toString()
 	{
 	global $babBody;
@@ -6815,15 +6881,15 @@ class Func_Ovml_Function_PutVar extends Func_Ovml_Function {
 		}
 	}
 
-	
+
 }
-	
+
 /**
- * get a variable 
+ * get a variable
  */
 class Func_Ovml_Function_GetVar extends Func_Ovml_Function {
-	
-	
+
+
 	public function toString()
 	{
 	global $babBody;
@@ -6852,15 +6918,15 @@ class Func_Ovml_Function_GetVar extends Func_Ovml_Function {
 			}
 		}
 	}
-	
+
 }
-	
+
 /**
- *  save a variable to global space if not already defined 
+ *  save a variable to global space if not already defined
  */
 class Func_Ovml_Function_IfNotIsSet extends Func_Ovml_Function {
 
-	
+
 	public function toString()
 	{
 	$args = $this->args;
@@ -6892,11 +6958,11 @@ class Func_Ovml_Function_IfNotIsSet extends Func_Ovml_Function {
 }
 
 /**
- * save a array to global space 
+ * save a array to global space
  */
 class Func_Ovml_Function_PutArray extends Func_Ovml_Function {
 
-	
+
 	public function toString()
 	{
 	$args = $this->args;
@@ -6921,12 +6987,12 @@ class Func_Ovml_Function_PutArray extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 /**
- *  save a soap array type to global space 
+ *  save a soap array type to global space
  */
 class Func_Ovml_Function_PutSoapArray extends Func_Ovml_Function {
-	
+
 	public function toString()
 	{
 	$args = $this->args;
@@ -6951,7 +7017,7 @@ class Func_Ovml_Function_PutSoapArray extends Func_Ovml_Function {
 	$this->gctx->push($name, $arr);
 	}
 }
-	
+
 class bab_rgp extends Func_Ovml_Function {
 
 	public function rgp($args, $method)
@@ -6997,7 +7063,7 @@ class bab_rgp extends Func_Ovml_Function {
 		}
 	}
 }
-	
+
 class Func_Ovml_Function_Request extends bab_rgp {
 
 	public function toString()
@@ -7005,15 +7071,15 @@ class Func_Ovml_Function_Request extends bab_rgp {
 	$this->rgp($this->args, 'bab_rp');
 	}
 }
-	
+
 class Func_Ovml_Function_Post extends bab_rgp {
 	public function toString()
 	{
 	$this->rgp($this->args, 'bab_pp');
 	}
-	
+
 }
-	
+
 class Func_Ovml_Function_Get extends bab_rgp {
 
 	public function toString()
@@ -7034,26 +7100,26 @@ class Func_Ovml_Function_Get extends bab_rgp {
  * @param   indicator	HTML element to show when request is pending
 */
 class Func_Ovml_Function_Ajax extends Func_Ovml_Function {
-		
-		
+
+
 	public function toString()
 	{
 		global $babBody;
-	
+
 		$args = $this->args;
 		$params = array();
 		$url = '';
 		$output = '';
 		$action = 'GET';
 		$indicator = '';
-	
-	
-	
+
+
+
 		if(count($args))
 			{
 			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."prototype/prototype.js");
 			$babBody->addJavascriptFile($GLOBALS['babScriptPath']."babajax.js");
-	
+
 			foreach( $args as $p => $v)
 				{
 				$p = trim($p);
@@ -7083,19 +7149,19 @@ class Func_Ovml_Function_Ajax extends Func_Ovml_Function {
 }
 
 
-/** 
- * Arithmetic operators 
+/**
+ * Arithmetic operators
  */
 class bab_ArithmeticOperator extends Func_Ovml_Function {
-	
 
-	
+
+
 	protected function getValue($args, $ope)
 	{
 		$expr1 = "";
 		$expr2 = "";
 		$saveas = true;
-	
+
 		if(count($args))
 			{
 			foreach( $args as $p => $v)
@@ -7122,7 +7188,7 @@ class bab_ArithmeticOperator extends Func_Ovml_Function {
 				case '/': $val = $expr1 / $expr2; break;
 				case '%': $val = $expr1 % $expr2; break;
 				}
-	
+
 			if( $saveas )
 				$this->gctx->push($varname, $val);
 			else
@@ -7140,7 +7206,7 @@ class Func_Ovml_Function_AOAddition extends bab_ArithmeticOperator {
 		return parent::getValue($this->args, '+');
 	}
 }
-	
+
 /* Arithmetic operators */
 class Func_Ovml_Function_AOSubtraction extends bab_ArithmeticOperator {
 	public function toString()
@@ -7151,35 +7217,35 @@ class Func_Ovml_Function_AOSubtraction extends bab_ArithmeticOperator {
 
 
 /**
- * Arithmetic operators 
+ * Arithmetic operators
  */
 class Func_Ovml_Function_AOMultiplication extends bab_ArithmeticOperator {
 	public function toString()
 	{
 		return parent::getValue($this->args, '*');
 	}
-}	
-	
-	
-/** 
- * Arithmetic operators 
+}
+
+
+/**
+ * Arithmetic operators
  */
 class Func_Ovml_Function_AODivision extends bab_ArithmeticOperator {
-	
+
 	public function toString()
 	{
 		return parent::getValue($this->args, '/');
 	}
-	
-}	
-	
-	
+
+}
+
+
 
 /**
- * Arithmetic operators 
+ * Arithmetic operators
  */
 class Func_Ovml_Function_AOModulus extends bab_ArithmeticOperator {
-	
+
 	public function toString()
 	{
 		return parent::getValue($this->args, '%');
@@ -7189,15 +7255,15 @@ class Func_Ovml_Function_AOModulus extends bab_ArithmeticOperator {
 
 
 /**
- * save a variable to global space 
+ * save a variable to global space
  */
 class Func_Ovml_Function_UrlContent extends Func_Ovml_Function {
 
-	
+
 	public function toString()
 	{
 	$args = $this->args;
-		
+
 	$url = "";
 	if(count($args))
 		{
@@ -7218,7 +7284,7 @@ class Func_Ovml_Function_UrlContent extends Func_Ovml_Function {
 
 
 class Func_Ovml_Function_Header extends Func_Ovml_Function {
-	
+
 	public function toString()
 	{
 	$value = '';
@@ -7238,28 +7304,28 @@ class Func_Ovml_Function_Header extends Func_Ovml_Function {
 	}
 }
 
-	
-	
-class Func_Ovml_Function_Recurse extends Func_Ovml_Function {	
 
 
-	public function toString() 
+class Func_Ovml_Function_Recurse extends Func_Ovml_Function {
+
+
+	public function toString()
 	{
 		$handler = $this->template->curctx->getname();
 		return $this->template->handle_tag($handler, $this->template->curctx->getcontent(), $this->args);
 	}
 
 }
-	
-	
+
+
 class Func_Ovml_Function_Addon extends Func_Ovml_Function {
-	
-	
-	
+
+
+
 	public function toString()
 	{
 		$args = $this->args;
-		
+
 		global $babBody;
 		$output = '';
 		if(count($args))
@@ -7272,7 +7338,7 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 					case 'name':
 						$addon = bab_getAddonInfosInstance($v);
 						break;
-	
+
 					case 'function':
 						$function = $v;
 						break;
@@ -7281,9 +7347,9 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 						break;
 					}
 				}
-	
-	
-	
+
+
+
 			if ($addon && $addon->isAccessValid())
 				{
 				$addonpath = $addon->getPhpPath();
@@ -7296,17 +7362,17 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 					$oldAddonPhpPath =  isset($GLOBALS['babAddonPhpPath'])? $GLOBALS['babAddonPhpPath']: '';
 					$oldAddonHtmlPath =  isset($GLOBALS['babAddonHtmlPath'])? $GLOBALS['babAddonHtmlPath']: '';
 					$oldAddonUpload =  isset($GLOBALS['babAddonUpload'])? $GLOBALS['babAddonUpload']: '';
-	
+
 					include_once $GLOBALS['babInstallPath']."utilit/addonsincl.php";
 					bab_setAddonGlobals($addon->getId());
 					require_once( $addonpath."ovml.php" );
-	
+
 					$call = $addon->getName()."_".$function;
 					if( !empty($call)  && function_exists($call) )
 						{
 						$output = call_user_func_array($call, $function_args );
 						}
-	
+
 					$GLOBALS['babAddonFolder'] = $oldAddonFolder;
 					$GLOBALS['babAddonTarget'] = $oldAddonTarget;
 					$GLOBALS['babAddonUrl'] = $oldAddonUrl;
