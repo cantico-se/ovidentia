@@ -56,7 +56,7 @@ class bab_Sort
 
 
 
-	
+
 
 
 
@@ -97,7 +97,7 @@ class bab_Sort
 
 	/**
 	 * Compare case-sensitively two objects.
-	 * 
+	 *
 	 * @see 	bab_compare
 	 * @param 	object 	$obj1
 	 * @param 	object 	$obj2
@@ -116,7 +116,7 @@ class bab_Sort
 
 	/**
 	 * Compare case-insensitively two objects.
-	 * 
+	 *
 	 * @see 	bab_compare
 	 * @param 	object 	$obj1
 	 * @param 	object 	$obj2
@@ -164,13 +164,13 @@ class bab_Sort
 				$sortCallback = 'compareKeysInsensitive';
 			} else {
 				$sortCallback = 'compareKeysSensitive';
-			}			
+			}
 		} else {
 			if (bab_Sort::CASE_INSENSITIVE == $iCase) {
 				$sortCallback = 'compareStringsInsensitive';
 			} else {
 				$sortCallback = 'compareStringsSensitive';
-			}			
+			}
 		}
 		return uasort($aToSort, array('bab_sort', $sortCallback));
 	}
@@ -198,7 +198,7 @@ class bab_Sort
 
 	/**
 	 * Compare case-sensitively two strings.
-	 * 
+	 *
 	 * @see bab_compare
 	 * @param string $string1
 	 * @param string $string2
@@ -212,7 +212,7 @@ class bab_Sort
 
 	/**
 	 * Compare case-insensitively two strings.
-	 * 
+	 *
 	 * @see bab_compare
 	 * @param string $string1
 	 * @param string $string2
@@ -221,8 +221,8 @@ class bab_Sort
 	private static function compareStringsInsensitive($sStr1, $sStr2)
 	{
 		return bab_compare(mb_strtolower((string) $sStr1), mb_strtolower((string) $sStr2));
-	}	
-	
+	}
+
 
 
 	/**
@@ -262,7 +262,7 @@ class bab_Sort
  * @param string $sStr1				Input string to compare
  * @param string $sStr2				Input string to compare
  * @param string $sStringIsoCharset	Iso charset of the input string to compare.
- * 									If this parameter is null strings are then 
+ * 									If this parameter is null strings are then
  * 									considered in the same format as the database
  *
  * @return							1 if $sStr1 is greater than $sStr2
@@ -280,7 +280,7 @@ function bab_compare($sStr1, $sStr2, $sInputStringIsoCharset = null)
 	if (bab_charset::UTF_8 != $sInputStringIsoCharset)
 	{
 		// warning, characters with diacritics in ISO-8859-15 are not ordered correctly with strnatcmp
-		
+
 		// return strnatcmp($sStr1, $sStr2);
 		return strnatcmp(bab_removeDiacritics($sStr1), bab_removeDiacritics($sStr2));
 	}
@@ -310,7 +310,7 @@ function bab_getStringAccordingToDataBase($input, $sStringIsoCharset)
 		foreach($input as $k => $data) {
 			$input[$k] = bab_getStringAccordingToDataBase($data, $sStringIsoCharset);
 		}
-			
+
 		return $input;
 	}
 
@@ -358,7 +358,7 @@ function bab_convertStringFromDatabase($input, $sIsoCharset)
 function bab_getCollatorInstance($locale = 'en_US')
 {
 	require_once $GLOBALS['babInstallPath'].'utilit/i18n.class.php';
-	
+
 	static $oCollator = null;
 	if(!isset($oCollator))
 	{
@@ -381,14 +381,14 @@ function bab_multibyteToHex($sBuffer)
         }
 //        printf("width=%d => '%s' |hex=%s<br>", $iChlen, $sCh, $sHexs);
     }
-    return $sHexs; 
+    return $sHexs;
 }
 
 
 
 /**
  * Return a formatted string, Wrapper for sprintf function
- * @param	string 	$format  
+ * @param	string 	$format
  * @param	mixed 	$args
 		[ 	mixed 	$...  ]
  * @return
@@ -396,7 +396,7 @@ function bab_multibyteToHex($sBuffer)
  */
 function bab_sprintf($sFormat)
 {
-	$aArgs = func_get_args();	
+	$aArgs = func_get_args();
 	return call_user_func_array('sprintf', $aArgs);
 }
 
@@ -410,7 +410,7 @@ function bab_sprintf($sFormat)
  *
  * @param string $sString The (latin1 encoded) string to process.
  * @return string The processed string (in ascii).
- */	
+ */
 function bab_removeDiacritics($sString)
 {
 	static $aSearch = null;
@@ -464,32 +464,32 @@ function bab_removeDiacritics($sString)
 }
 
 
-class bab_charset 
+class bab_charset
 {
 	private static $sCharset = null;
 	private static $sIsoCharset = null;
-	
+
 	/**
 	 * UTF-8 encoding.
-	 * 
+	 *
 	 * @var string
 	 */
 	const	UTF_8 = 'UTF-8';
 
 	/**
 	 * ISO-8859-15 (latin1) encoding.
-	 * 
+	 *
 	 * @var string
 	 */
 	const	ISO_8859_15 = 'ISO-8859-15';
 
 	/**
 	 * Returns the database charset
-	 * 
+	 *
 	 * @static
 	 * @return   string	The database charset
 	 */
-	public static function getDatabase() 
+	public static function getDatabase()
 	{
 		if(!isset(self::$sCharset))
 		{
@@ -499,32 +499,31 @@ class bab_charset
 			{
 				self::$sCharset = 'latin1';
 			}
-			
+
 			$aDbCharset = $babDB->db_fetch_assoc($oResult);
 			if(false === $aDbCharset)
 			{
 				self::$sCharset = 'latin1';
 			}
-			
+
 			self::$sCharset = $aDbCharset['Value'];
 		}
 		return self::$sCharset;
 	}
-	
+
 	private static function resetCharset()
 	{
 		self::$sCharset = null;
 		bab_charset::getDatabase();
 	}
-	
+
 
 	/**
 	 * Returns the ISO code of the database encoding.
-	 * 
-	 * @param string $sCharset
+	 *
 	 * @return string
 	 */
-	public static function getIso() 
+	public static function getIso()
 	{
 		if(!isset(self::$sIsoCharset)) {
 			 self::$sIsoCharset = self::getIsoCharsetFromDataBaseCharset(self::getDatabase());
@@ -534,20 +533,21 @@ class bab_charset
 
 	/**
 	 * Converts the code of the database encoding to the ISO code.
-	 * 
-	 * @param string $sCharset
+	 *
+	 * @param string $sCharset The charset code as returned by bab_charset::getDatabase().
+	 *
 	 * @return string
 	 */
 	public static function getIsoCharsetFromDataBaseCharset($sCharset)
 	{
-		switch($sCharset) 
+		switch($sCharset)
 		{
 			case 'utf8':
 				return self::UTF_8;
-				
+
 			case 'latin1':
 				return self::ISO_8859_15;
-		
+
 			default:
 				return '';
 		}
@@ -561,8 +561,8 @@ class bab_charset
 
 /**
  * Returns a string containing the time formatted according to the user's preferences
- * 
- * @access  public 
+ *
+ * @access  public
  * @return  string	formatted time
  * @param   int	$time	unix timestamp
  */
@@ -575,8 +575,8 @@ function bab_time($time)
 
 /**
  * Returns a unix timestamp corresponding to the string $time formatted as a MYSQL DATETIME
- * 
- * @access  public 
+ *
+ * @access  public
  * @return  int	unix timestamp
  * @param   string	$time	(eg. '2006-03-10 17:37:02')
  */
@@ -597,7 +597,7 @@ function bab_mktime($time)
 
 /**
  * Returns a string containing the time formatted according to the format
- * 
+ *
  * Formatting options:
  * <pre>
  * %d   A short textual representation of a day, three letters
@@ -614,9 +614,9 @@ function bab_mktime($time)
  * %L   user long date
  * %T   user time format
  * <pre>
- * 
- * 
- * @access  public 
+ *
+ *
+ * @access  public
  * @return  string	formatted time
  * @param   string	$format	desired format
  * @param   int	$time	unix timestamp
@@ -637,7 +637,7 @@ function bab_formatDate($format, $time)
 				case 'D': /* day */
 					$val = $babDays[date("w", $time)];
 					break;
-				case 'j': /* Day of the month with leading zeros */ 
+				case 'j': /* Day of the month with leading zeros */
 					$val = date("d", $time);
 					break;
 				case 'm': /* A short textual representation of a month, three letters */
@@ -682,8 +682,8 @@ function bab_formatDate($format, $time)
 
 /**
  * Returns a string containing the time formatted according to the user's preferences
- * 
- * @access  public 
+ *
+ * @access  public
  * @return  string	formatted time
  * @param   int	$time	unix timestamp
  * @param   boolean $hour	(true == 'Ven 17 Mars 2006',
@@ -713,8 +713,8 @@ function bab_longDate($time, $hour=true)
 
 /**
  * Returns a string containing the time formatted according to the user's preferences
- * 
- * @access  public 
+ *
+ * @access  public
  * @return  string	formatted time
  * @param   int	$time	unix timestamp
  * @param   boolean $hour	(true == '17/03/2006',
@@ -763,7 +763,7 @@ function bab_editor($content, $editname, $formname, $heightpx=300, $what=3)
  */
 function bab_editor_record(&$str)
 	{
-	
+
 	global $babDB;
 	$str = preg_replace("/((href|src)=['\"]?)".preg_quote($GLOBALS['babUrl'],'/i').'/', "\\1", $str);
 
@@ -791,7 +791,7 @@ function bab_editor_record(&$str)
 	for($i = 0; $i < $nbtags ; $i++)
 		{
 		$tag  = &$out[0][$i];
-		
+
 		list($tmp) = explode(' ',trim($out[1][$i]));
 		$name = mb_strtolower($tmp);
 
@@ -942,7 +942,7 @@ function bab_translate($str, $folder = "", $lang="")
 	if( !isset($babLA[$tag])) {
 
 		babLoadLanguage($lang, $folder, $babLA[$tag]);
-		
+
 		if (!isset($babLA[$tag])) {
 			$babLA[$tag] = array();
 		}
@@ -964,7 +964,7 @@ function bab_isUserAdministrator()
 	return $babBody->isSuperAdmin;
 	}
 
-	
+
 /**
  * @deprecated the manager of a group does not exists anymore
  * @param int $grpid
@@ -980,15 +980,15 @@ function bab_isUserGroupManager($grpid="")
 * Return the username of a given user
 *
 * @param integer	$iIdUser			User identifier
-* @param boolean	$bComposeUserName	If true the username will 
-* 										be composed	
-* 
-* @return	mixed	If $bComposeUserName is true the retun value 
+* @param boolean	$bComposeUserName	If true the username will
+* 										be composed
+*
+* @return	mixed	If $bComposeUserName is true the retun value
 * 					is a string, the string is a concatenation of
-* 					the firstname and lastname. The meaning depend 
+* 					the firstname and lastname. The meaning depend
 * 					of ovidentia configuration.
-* 					If $bComposeUserName is false the return value 
-* 					is an array with two keys (firstname, lastname)   
+* 					If $bComposeUserName is false the return value
+* 					is an array with two keys (firstname, lastname)
 */
 function bab_getUserName($iIdUser, $bComposeUserName = true)
 {
@@ -1014,7 +1014,7 @@ function bab_getUserEmail($id)
 	if ($row = bab_userInfos::getRow($id)) {
 		return $row['email'];
 		}
-	
+
 	return '';
 	}
 
@@ -1027,7 +1027,7 @@ function bab_getUserNickname($id)
 	if ($row = bab_userInfos::getRow($id)) {
 		return $row['nickname'];
 		}
-	
+
 	return '';
 	}
 
@@ -1106,7 +1106,7 @@ function bab_getGroupsMembers($ids)
 			$req = "SELECT distinct u.id, u.email, u.firstname, u.lastname FROM ".BAB_USERS_GROUPS_TBL." g, ".BAB_USERS_TBL." u WHERE u.disabled='0' and u.is_confirmed='1' and g.id_group IN (".$babDB->quote($ids).") AND g.id_object=u.id";
 			}
 
-		
+
 		$res = $babDB->db_query($req);
 		$users = array();
 		if( $res && $babDB->db_num_rows($res) > 0)
@@ -1142,10 +1142,10 @@ function bab_isMemberOfGroup($group, $userid="")
 	if(empty($group)) {
 		return false;
 	}
-		
+
 	if( $userid == "")
 		$userid = $BAB_SESS_USERID;
-		
+
 	if (is_numeric($group)) {
 		$id_group = $group;
 	} else {
@@ -1156,20 +1156,20 @@ function bab_isMemberOfGroup($group, $userid="")
 			$arr = $babDB->db_fetch_array($res);
 			$id_group = $arr['id'];
 		} else {
-			return false;	
+			return false;
 		}
 	}
-	
+
 	switch($id_group) {
 		case BAB_ALLUSERS_GROUP:
 			return BAB_ALLUSERS_GROUP;
-			
+
 		case BAB_REGISTERED_GROUP:
 			return $userid ? BAB_REGISTERED_GROUP : false;
-			
+
 		case BAB_UNREGISTERED_GROUP:
 			return $userid ? false : BAB_UNREGISTERED_GROUP;
-			
+
 		default:
 			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group='".$babDB->db_escape_string($id_group)."'";
 			$res = $babDB->db_query($req);
@@ -1216,7 +1216,7 @@ function bab_getUserId( $name )
 	global $babDB;
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(mb_strtolower(strtr($name, $replace)));
-	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";	
+	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";
 	$res = $babDB->db_query($query);
 	if( $babDB->db_num_rows($res) > 0)
 		{
@@ -1252,7 +1252,7 @@ function bab_getUsersByName( $name, $nb = 5 )
 	else
 		return 0;
 	}
-	
+
 function bab_getUserGroups($id = "")
 	{
 	global $babBody, $babDB;
@@ -1305,7 +1305,7 @@ function bab_composeUserName( $F, $L)
 	}
 
 /**
- * Connexion status for current user 
+ * Connexion status for current user
  * @return boolean
  */
 function bab_userIsloggedin()
@@ -1340,10 +1340,10 @@ function bab_userIsloggedin()
 /**
  * Checks that the specified user can access the object $idobject according to the acl table $table.
  * If $iduser is empty, the check is performed for anonymous users.
- * 
+ *
  * @param string	$table		The acl table.
  * @param int		$idobject	The id of the object for which the access is checked.
- * @param mixed		$userId		The user id or '' for anonymous users.	
+ * @param mixed		$userId		The user id or '' for anonymous users.
  *
  * @return bool
  */
@@ -1359,11 +1359,11 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
 /**
  * Checks that the specified user can access the object $idobject according to the acl table $table.
  * If $iduser is empty, the check is performed for the current user.
- * 
+ *
  * @param string	$table		The acl table.
  * @param int		$idobject	The id of the object for which the access is checked.
  * @param mixed		$userId		The user id or '' for the current user.
- * 
+ *
  * @return bool
  */
 function bab_isAccessValid($table, $idobject, $iduser='')
@@ -1371,9 +1371,9 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 	if( $iduser != '')
 		{
 			include_once $GLOBALS['babInstallPath']."admin/acl.php";
-		
+
 			$users = aclGetAccessUsers($table, $idobject);
-		
+
 			if( isset($users[ $iduser]))
 			{
 				return true;
@@ -1399,7 +1399,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
  * The id_object is returned in key and in the value of the result array.
  *
  * @param string	$table		The acl table.
- * @param mixed		$userId		The user id or '' for anonymous users.	
+ * @param mixed		$userId		The user id or '' for anonymous users.
  * @return array
  */
 function bab_getAccessibleObjects($table, $userId)
@@ -1422,7 +1422,7 @@ function bab_getAccessibleObjects($table, $userId)
 	$userGroupIds = $userGroups['id'];
 	$userGroupIds[] = BAB_REGISTERED_GROUP;
 	$userGroupIds[] = BAB_ALLUSERS_GROUP;
-	
+
 	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
 
 	while ($object = $babDB->db_fetch_assoc($res)) {
@@ -1439,7 +1439,7 @@ function bab_getAccessibleObjects($table, $userId)
 		}
 		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) || bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId)) {
 			$objects[$object['id_object']] = $object['id_object'];
-		}		
+		}
 	}
 
 	return $objects;
@@ -1457,7 +1457,7 @@ global $babBody, $babDB;
 if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	{
 	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
-	
+
 	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
 
 	while ($row = $babDB->db_fetch_assoc($res)) {
@@ -1474,8 +1474,8 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 		}
 		elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && in_array($row['id_group'], $babBody->usergroups)) || bab_isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE)) {
 			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
-		}		
-	}		
+		}
+	}
 	}
 
 	return $_SESSION['bab_groupAccess']['acltables'][$table];
@@ -1490,7 +1490,7 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 function bab_getUsersAccess($table)
 {
 	global $babBody, $babDB;
-	
+
 	trigger_error('deprecated function bab_getUsersAccess');
 	$babBody->addError('deprecated function bab_getUsersAccess');
 
@@ -1593,34 +1593,34 @@ function bab_getAvailableLanguages()
 	$langs = array();
 	if( is_dir($GLOBALS['babInstallPath'].'lang/'))
 	{
-	$h = opendir($GLOBALS['babInstallPath'].'lang/'); 
+	$h = opendir($GLOBALS['babInstallPath'].'lang/');
 	while ( $file = readdir($h))
-		{ 
+		{
 		if ($file != "." && $file != "..")
 			{
 			if( preg_match("/lang-([^.]*)/", $file, $regs))
 				{
 				if( $file == 'lang-'.$regs[1].'.xml')
-					$langs[] = $regs[1]; 
+					$langs[] = $regs[1];
 				}
-			} 
+			}
 		}
 	closedir($h);
 	}
 
 	if( is_dir('lang/'))
 	{
-	$h = opendir('lang/'); 
+	$h = opendir('lang/');
 	while ( $file = readdir($h))
-		{ 
+		{
 		if ($file != "." && $file != "..")
 			{
 			if( preg_match('/lang-([^.]*)/', $file, $regs))
 				{
 				if( $file == 'lang-'.$regs[1].'.xml' && !in_array($regs[1], $langs))
-					$langs[] = $regs[1]; 
+					$langs[] = $regs[1];
 				}
-			} 
+			}
 		}
 	closedir($h);
 	}
@@ -1640,10 +1640,10 @@ function bab_getAvailableLanguages()
 function bab_printTemplate( &$class, $file, $section="")
 	{
 	//bab_debug('Template file : '.$file.'<br />'.'Section in template file : '.$section);
-	
+
 	global $babInstallPath, $babSkinPath;
 	$tplfound = false;
-	
+
 	if( isset($GLOBALS['babUseNewTemplateParser']) && $GLOBALS['babUseNewTemplateParser'] === false)
 	{
 		$tpl = new babTemplate(); /* old template parser */
@@ -1673,7 +1673,7 @@ function bab_printTemplate( &$class, $file, $section="")
 		$arr = $tpl->getTemplates($filepath);
 		$tplfound = in_array($section, $arr);
 		}
-	
+
 	if( !$tplfound )
 		{
 		$filepath = $babSkinPath."templates/". $file;
@@ -1739,9 +1739,9 @@ function bab_printTemplate( &$class, $file, $section="")
  *	<li>login_date 			: login date of the current session as timestamp</li>
  *	<li>last_hit_date 		: last refresh date of the user as timestamp</li>
  * </ul>
- * 
+ *
  * @since 7.3.0 	the id_user parameter and tg result key
- * 
+ *
  * @param	int		$id_user
  *
  * @return array
@@ -1750,7 +1750,7 @@ function bab_getActiveSessions($id_user = null)
 {
 	global $babDB;
 	$output = array();
-	
+
 	$query = "SELECT l.id_user,
 			l.sessid,
 			l.remote_addr,
@@ -1761,16 +1761,16 @@ function bab_getActiveSessions($id_user = null)
 			u.email,
 			UNIX_TIMESTAMP(u.lastlog) lastlog,
 			UNIX_TIMESTAMP(u.datelog) datelog,
-			UNIX_TIMESTAMP(u.date) registration, 
-			l.tg  
-			FROM ".BAB_USERS_LOG_TBL." l 
+			UNIX_TIMESTAMP(u.date) registration,
+			l.tg
+			FROM ".BAB_USERS_LOG_TBL." l
 			LEFT JOIN ".BAB_USERS_TBL." u ON u.id=l.id_user";
-	
+
 	if (null !== $id_user) {
 		$query .= " WHERE l.id_user=".$babDB->quote($id_user);
 	}
-	
-	
+
+
 	$res = $babDB->db_query($query);
 
 	while($arr = $babDB->db_fetch_array($res))
@@ -1822,7 +1822,7 @@ function bab_getFileMimeType($file)
 function bab_getUserDirFields($id = false)
 	{
 	trigger_error('This function is deprecated, please use bab_getDirEntry()');
-	
+
 	global $babDB;
 	if (false == $id) $id = &$GLOBALS['BAB_SESS_USERID'];
 	$query = "select * from ".BAB_DBDIR_ENTRIES_TBL." where id_user='".$babDB->db_escape_string($id)."'";
@@ -1835,7 +1835,7 @@ function bab_getUserDirFields($id = false)
 	}
 
 
-/** 
+/**
  * Get a directory entry or a list of entries
  *
  * BAB_DIR_ENTRY_ID_USER		: $id is a user id
@@ -1853,9 +1853,9 @@ function bab_getDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_directo
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getDirEntry($id, $type, $id_directory, true);
 	}
-	
-	
-/** 
+
+
+/**
  * Get a directory entry or a list of entries
  * without acces control
  *
@@ -1874,7 +1874,7 @@ function bab_admGetDirEntry($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id_dire
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	return getDirEntry($id, $type, $id_directory, false);
 	}
-	
+
 
 
 /**
@@ -1895,7 +1895,7 @@ function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
 
 /**
  * List of viewables directories for the user
- * For each directory, you will get an array with keys : 
+ * For each directory, you will get an array with keys :
  * <ul>
  * 	<li>id : the ID in table</li>
  *  <li>name</li>
@@ -1907,7 +1907,7 @@ function bab_searchDirEntriesByField($id_directory, $likefields, $and = true) {
  * @param	bool				$accessCtrl		test access rights on directories, true by default
  * @param	int | false			$delegationid	filter the result by delegation
  * @return array				Each key of the returned array is an id_directory
- */ 
+ */
 function bab_getUserDirectories($accessCtrl = true, $delegationId = false)
 {
 	include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
@@ -1939,9 +1939,9 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
  */
 function bab_getGroupName($id, $fpn=true)
 	{
-	
+
 	$id = (int) $id;
-	
+
 	global $babBody;
 	if($fpn)
 		{
@@ -1949,12 +1949,12 @@ function bab_getGroupName($id, $fpn=true)
 		}
 	else
 		{
-		
+
 		if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
 			return bab_translate($babBody->ovgroups[$id]['name']);
 		}
-		
-		
+
+
 		return $babBody->ovgroups[$id]['name'];
 		}
 	}
@@ -1967,7 +1967,7 @@ function bab_getGroupName($id, $fpn=true)
  * The returned groups are stored in an array with three keys : id, name, description
  * in each keys, a list of group is stored with ordered numeric keys
  * the default value for the $all parameter is true
- * 
+ *
  * @param	int			$parent		parent group in tree
  * @param	boolean		$all		return one level of groups or groups from all sublevels
  * @return	array
@@ -1983,15 +1983,15 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 		{
 		$arr['id'][] = $row['id'];
 		$arr['name'][] = $row['name'];
-		$arr['description'][] = $row['description']; 
+		$arr['description'][] = $row['description'];
 		}
 
 	return $arr;
 	}
 
-	
+
 /**
- * Create a group 
+ * Create a group
  * @param string	$name
  * @param string	$description
  * @param int		$managerid		deprecated parameter
@@ -2058,14 +2058,14 @@ function bab_registerUser( $firstname, $lastname, $middlename, $email, $nickname
 /**
  * Send a email notification to a  new registered account
  * @see bab_registerUser()
- * 
+ *
  * @since 7.3.0
- * 
+ *
  * @param string $name			Full name of user
  * @param string $email			email address to notifiy
  * @param string $nickname		login ID
  * @param string $pwd			if set, the password will readable in email
- * 
+ *
  * @return bool
  */
 function bab_registerUserNotify($name, $email, $nickname, $pwd = null)
@@ -2079,7 +2079,7 @@ function bab_registerUserNotify($name, $email, $nickname, $pwd = null)
  * Attach a user to a group
  * @param int 	$iduser
  * @param int 	$idgroup
- * 
+ *
  */
 function bab_attachUserToGroup($iduser, $idgroup)
 {
@@ -2091,7 +2091,7 @@ function bab_attachUserToGroup($iduser, $idgroup)
  * Detacha a user from a group
  * @param int	$iduser
  * @param int	$idgroup
- * 
+ *
  */
 function bab_detachUserFromGroup($iduser, $idgroup)
 {
@@ -2113,40 +2113,40 @@ function bab_getUserInfos($id_user) {
 	include_once $GLOBALS['babInstallPath'].'utilit/userinfosincl.php';
 
 	$directory = getDirEntry($id_user, BAB_DIR_ENTRY_ID_USER, NULL, false);
-	
+
 	if (!$directory) {
 		return false;
 	}
-	
+
 	$infos = bab_userInfos::getForDirectoryEntry($id_user);
 
 	if (!$infos) {
 		return false;
 	}
-	
+
 	foreach($directory as $field => $arr) {
 		$infos[$field] = $arr['value'];
 	}
-	
+
 	return $infos;
 }
 
 /**
  * Verify if the current user can update the account (superadmin...) of the user specified by id
  * @since			ovidentia-7-2-92-20100329153357
- * 
+ *
  * @param $userId	id (int) of the user who must be updated
  * @return bool		true if the current user has rights to update the user
  */
 function bab_canCurrentUserUpdateUser($userId) {
 	global $babBody;
 	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-	
+
 	/* The user must be authentified */
 	if (!bab_userIsloggedin()) {
 		return false;
 	}
-	
+
 	/* The current user can change his datas */
 	$idCurrentUser = $GLOBALS['BAB_SESS_USERID'];
 	if ($idCurrentUser !== false && $idCurrentUser != 0) {
@@ -2154,7 +2154,7 @@ function bab_canCurrentUserUpdateUser($userId) {
 			return true;
 		}
 	}
-	
+
 	/* Verify the right admin */
 	if ($babBody->currentAdmGroup) {
 		$dg = $babBody->currentAdmGroup;
@@ -2163,7 +2163,7 @@ function bab_canCurrentUserUpdateUser($userId) {
 	} else {
 		return false;
 	}
-	
+
 	$delegations = bab_getUserVisiblesDelegations($userId);
 	foreach($delegations as $delegation) {
 		if ($delegation['id'] == $dg) {
@@ -2206,18 +2206,18 @@ function bab_uppdateUserById($id, $info, &$error)
 /**
  * Updates the specified user's nickname
  * @since			ovidentia-7-2-92-20100329153357
- * 
- * @param int		$userId					The user id		
+ *
+ * @param int		$userId					The user id
  * @param string	$newNickname			The new user nickname
  * @param bool		$ignoreAccessRights		false (value by default) if you want to verify if the current user can update the account (superadmin...)
  * @param string	&$error					Error message
- * 
+ *
  * @return bool		true on success, false on error
  */
 function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=false, &$error)
 {
 	global $babDB, $BAB_HASH_VAR;
-	
+
 	/* Test rights */
 	if (!$ignoreAccessRights) {
 		$res = bab_canCurrentUserUpdateUser($userId);
@@ -2226,19 +2226,19 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
 			return false;
 		}
 	}
-	
+
 	/* Test if the new nickname is empty */
 	if (empty($newNickname)) {
 		$error = bab_translate("You must provide a nickname");
 		return false;
 	}
-	
+
 	/* Test if the new nickname contain spaces */
 	if (mb_strpos($newNickname, ' ') !== false) {
 		$error = bab_translate("Login ID should not contain spaces");
 		return false;
 	}
-	
+
 	/* Test if the new nickname already exists */
 	$db = $GLOBALS['babDB'];
 	$query = 'SELECT * FROM ' . BAB_USERS_TBL . '
@@ -2267,20 +2267,20 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
 /**
  * Updates the specified user's password
  * @since			ovidentia-7-2-92-20100329180000
- * 
- * @param int		$userId						The user id		
+ *
+ * @param int		$userId						The user id
  * @param string	$newPassword				The new user password
  * @param string	$newPassword2				The new user password (copy : used when we created 2 input fields in a form to confirm the password)
  * @param bool		$ignoreAccessRights			false (value by default) if you want to verify if the current user can update the account (superadmin...)
  * @param bool		$ignoreSixCharactersMinimum	false (value by default) if you want to verify if the password have at least 6 characters
  * @param string	&$error						Error message
- * 
+ *
  * @return bool		true on success, false on error
  */
 function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAccessRights=false, $ignoreSixCharactersMinimum=false, &$error)
 {
 	global $babBody, $babDB, $BAB_HASH_VAR;
-	
+
 	/* Test rights */
 	if (!$ignoreAccessRights) {
 		$res = bab_canCurrentUserUpdateUser($userId);
@@ -2289,17 +2289,17 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 			return false;
 		}
 	}
-	
+
 	/* Delete spaces in passwords */
 	$newPassword = trim($newPassword);
 	$newPassword2 = trim($newPassword2);
-	
+
 	/* Test if passwords are same */
 	if ($newPassword != $newPassword2) {
 		$error = bab_translate("Passwords not match !!");
 		return false;
 	}
-	
+
 	/* Test if the password have at least 6 characters */
 	if (!$ignoreSixCharactersMinimum) {
 		if (mb_strlen($newPassword) < 6) {
@@ -2379,9 +2379,9 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	bab_callAddonsFunctionArray('onUserChangePassword',
 		array(
-			'id' => $userId, 
-			'nickname' => $nickname, 
-			'password' => $newPassword, 
+			'id' => $userId,
+			'nickname' => $nickname,
+			'password' => $newPassword,
 			'error' => &$error
 		)
 	);
@@ -2417,14 +2417,14 @@ define('DBG_FATAL',		32);
 
 /**
  * Log the specified information.
- * 
+ *
  * If the file bab_debug.txt is present (same directory as config.php) and writable,
- * the information is appended.  
- * 
+ * the information is appended.
+ *
  * If $GLOBALS['babDebugLogMinSeverity'] is set, it determines the minimum severity of messages
- * that will be logged in bab_debug.txt. 
- *  
- * 
+ * that will be logged in bab_debug.txt.
+ *
+ *
  * @param mixed		$data		The data to log. If not a string $data is transformed through print_r.
  * @param int		$severity	The severity of the logged information (One of: DBG_TRACE, DBG_DEBUG, DBG_INFO, DBG_WARNING, DBG_ERROR, DBG_FATAL)
  * @param string	$category	A string to categorize the debug information.
@@ -2433,10 +2433,10 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 {
 	$file = $line = $function = '';
 
-	
-	
-	
-	
+
+
+
+
 
 
 	// Here we find information about the file and line where bab_debug was called.
@@ -2452,7 +2452,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 	if (is_array($call)) {
 		$function = (isset($call['class'])) ? $call['class'] . '::' . $call['function'] : $call['function'];
 	}
-	
+
 	$message = array(
 		'category' => str_replace(' ', '_', $category),
 		'severity' => $severity,
@@ -2461,10 +2461,10 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		'line' => $line,
 		'function' => $function
 	);
-						 
-						 
+
+
 	if (isset($_COOKIE['bab_debug']) && ((int)$_COOKIE['bab_debug'] & $severity)) {
-	
+
 		// We store the information in the global bab_debug_messages that will later be displayed by bab_getDebug
 		if (isset($GLOBALS['bab_debug_messages'])) {
 			$GLOBALS['bab_debug_messages'][] = $message;
@@ -2479,7 +2479,7 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 		 && file_exists($debugFilename) && is_writable($debugFilename)) {
 
 		$size = 0;
-		
+
 		if (is_array($data) || is_object($data)) {
 			$size = count($data);
 		}
@@ -2509,8 +2509,8 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 
 /**
  * Returns the html for the debug console, useful for popups
- * 
- * @return string	
+ *
+ * @return string
  */
 function bab_getDebug() {
 	if (bab_isUserAdministrator() && isset($GLOBALS['bab_debug_messages'])) {
@@ -2550,7 +2550,7 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  */
 function bab_searchEngineInfos() {
 	include_once $GLOBALS['babInstallPath'].'utilit/indexincl.php';
-	
+
 	if (isset($GLOBALS['babSearchEngine'])) {
 
 		$obj = bab_searchEngineInfosObj($GLOBALS['babSearchEngine']);
@@ -2568,7 +2568,7 @@ function bab_searchEngineInfos() {
 
 /**
  * Get the instance for the registry class
- * 
+ *
  * $instance->changeDirectory($dir)
  * $instance->setKeyValue($key, $value)
  * $instance->removeKey($key)
@@ -2579,7 +2579,7 @@ function bab_searchEngineInfos() {
  * $instance->fetchChildKey()
  *
  * @see bab_registry
- * 
+ *
  * @return bab_Registry
  */
 function bab_getRegistryInstance() {
@@ -2669,11 +2669,11 @@ function bab_getFileContentDisposition() {
  * calling the ovml file.
  * Eg.: $OVMLCACHE(example.ovml,param1=12,_ovml_cache_duration=86400) for a
  * cache duration of 24h.
- * 
+ *
  * The actual caching is done in $_SESSION so it will be lost after the session
  * is destroyed. The cache is stored in a $_SESSION['ovml_cache'] array. It has
  * the following structure:
- * 
+ *
  * ['ovml_cache']
  * 		['example.ovml:param1=12&_ovml_cache_duration=86400'] : unique id
  * 			['timestamp'] => timestamp of cached content creation
@@ -2682,16 +2682,16 @@ function bab_getFileContentDisposition() {
  * 			['timestamp'] => timestamp of cached content creation
  * 			['content'] => parsed ovml content
  *      ...
- * 
+ *
  * @param	string	$file
  * @param	array	$args
  * @return	string	html
- */ 
+ */
 function bab_printCachedOvmlTemplate($file, $args = array())
 {
 	// We create a unique id based on the filename and named arguments.
 	$ovmlId = $file . ':' . http_build_query($args);
-	
+
 	if (!isset($_SESSION['ovml_cache'][$ovmlId])) {
 		$_SESSION['ovml_cache'][$ovmlId] = array();
 	}
@@ -2721,21 +2721,21 @@ function bab_printOvmlTemplate($file, $args=array())
 
 	/* Skin local path */
 	$filepath = $babOvmlPath.$file; /* Ex. : skins/ovidentia_sw/ovml/test.ovml */
-	
+
 	if ($file == '') {
 		bab_debug(bab_translate("Error: The name of the OVML file is not specified"));
 		return '<!-- '.bab_translate("Error: The name of the OVML file is not specified").' : '.bab_toHtml($filepath).' -->';
 	}
-	
+
 	if ((false !== mb_strpos($file, '..')) || mb_strtolower(mb_substr($file, 0, 4)) == 'http') {
 
 		return '<!-- ERROR filename: '.bab_toHtml($file).' -->';
 	}
 
-	
+
 	if (!file_exists($filepath)) {
 		$filepath = $babSkinPath.'ovml/'.$file; /* Ex. : ovidentiainstall/skins/ovidentia/ovml/test.ovml */
-		
+
 		if (!file_exists($filepath)) {
 			bab_debug(bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file));
 			return '<!-- '.bab_translate("Error: OVML file does not exist").' : '.bab_toHtml($file).' -->';
@@ -2753,7 +2753,7 @@ function bab_printOvmlTemplate($file, $args=array())
  * Abbreviate text with 2 types
  * BAB_ABBR_FULL_WORDS 	: the text is trucated if too long without cuting the words
  * BAB_ABBR_INITIAL 	: First letter of each word uppercase with dot
- * 
+ *
  * Additional dots are not included in the $max_length parameter
  *
  * @since	6.1.0
@@ -2761,7 +2761,7 @@ function bab_printOvmlTemplate($file, $args=array())
  * @param	string	$text
  * @param	int		$type
  * @param	int		$max_length
- * 
+ *
  * @return 	string
  */
 function bab_abbr($text, $type, $max_length) {
@@ -2769,7 +2769,7 @@ function bab_abbr($text, $type, $max_length) {
 	if ($len < $max_length) {
 		return $text;
 	}
-	
+
 	$mots = preg_split('/[\s,\.]+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
 
 	if (BAB_ABBR_FULL_WORDS === $type) {
@@ -2783,7 +2783,7 @@ function bab_abbr($text, $type, $max_length) {
 			}
 		}
 	}
-	
+
 	if (BAB_ABBR_INITIAL === $type) {
 		$n = ceil($max_length/count($mots));
 		if ($max_length < $n) {
@@ -2798,27 +2798,27 @@ function bab_abbr($text, $type, $max_length) {
 
 /**
  * Define and get the locale
- * @see		setLocale 
+ * @see		setLocale
  * @since 	6.1.1
  * @return 	false|string
  */
 function bab_locale() {
-	
+
 	static $locale = NULL;
 
 	if (NULL !== $locale) {
 		return $locale;
-		
+
 	} else {
 		global $babLanguage;
-		
-		
+
+
 		if (function_exists('textdomain')) {
 			// clear gettext cache for mo files modifications
 			textdomain(textdomain(NULL));
 		}
-		
-		
+
+
 		switch(mb_strtolower($babLanguage)) {
 			case 'fr':
 				$arrLoc = array('fr_FR', 'fr');
@@ -2830,16 +2830,16 @@ function bab_locale() {
 				$arrLoc = array(mb_strtolower($babLanguage).'_'.mb_strtoupper($babLanguage), mb_strtolower($babLanguage));
 				break;
 		}
-		
+
 		foreach($arrLoc as $languageCode) {
-			
+
 			/*
 			 * Some systems only require LANG, others (like Mandrake) seem to require
 			 * LANGUAGE also.
 			 */
 			// putenv("LANG=${languageCode}");
 			// putenv("LANGUAGE=${languageCode}");
-			
+
 			if ($locale = setLocale(LC_ALL, $languageCode)) {
 				return $locale;
 			}
@@ -2849,7 +2849,7 @@ function bab_locale() {
 			 * Some require a format with hyphen (e.g. gentoo) and others without (e.g. FreeBSD).
 			 */
 			if (false === $locale) {
-				foreach (array('utf8', 'UTF-8', 'UTF8', 
+				foreach (array('utf8', 'UTF-8', 'UTF8',
 						   'ISO8859-1', 'ISO8859-2', 'ISO8859-5', 'ISO8859-7', 'ISO8859-9',
 						   'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-5', 'ISO-8859-7', 'ISO-8859-9',
 						   'EUC', 'Big5') as $charset) {
@@ -2859,12 +2859,12 @@ function bab_locale() {
 				}
 			}
 		}
-		
+
 		if (false === $locale) {
 			bab_debug("No locale found for : $languageCode");
 			return false;
 		}
-		
+
 		return $locale;
 	}
 }
@@ -2886,7 +2886,7 @@ function bab_getInstance($classname) {
 	if (!array_key_exists($classname, $instances)) {
 		$instances[$classname] = new $classname();
 	}
-	
+
 	return $instances[$classname];
 }
 
@@ -2901,7 +2901,7 @@ function bab_getInstance($classname) {
  * @since 6.6.90
  */
 class bab_functionality {
-	
+
 
 	/**
 	 * @deprecated Do not remove old constructor while there are functionalities in addons with direct call to bab_functionality::bab_functionality()
@@ -2922,22 +2922,22 @@ class bab_functionality {
 	 */
 	public static function includefile($path) {
 		$include_result = /*@*/include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
-		
+
 		if (false === $include_result) {
 			trigger_error(sprintf('The functionality %s is not available', $path));
 		}
-		
+
 		return $include_result;
 	}
 
 
 	/**
 	 * Returns the specified functionality object.
-	 * 
+	 *
 	 * If $singleton is set to true, the functionality object will be instanciated as
 	 * a singleton, i.e. there will be at most one instance of the functionality
 	 * at a given time.
-	 * 
+	 *
 	 * @param	string	$path		The functionality path.
 	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
 	 * @return	object				The functionality object or false on error.
@@ -2952,7 +2952,7 @@ class bab_functionality {
 		}
 		return new $classname();
 	}
-	
+
 	/**
 	 * get functionalities compatible with the interface
 	 * @param	string	$path
@@ -2963,7 +2963,7 @@ class bab_functionality {
 		$obj = new bab_functionalities();
 		return $obj->getChildren($path);
 	}
-	
+
 	/**
 	 * Default method to create in inherited functionalities
 	 * @access protected
@@ -2972,8 +2972,8 @@ class bab_functionality {
 	public function getDescription() {
 		return '';
 	}
-	
-	
+
+
 	/**
 	 * Get path to functionality at this node which is the current path or a reference to a childnode
 	 * @return string
@@ -2991,13 +2991,13 @@ class bab_functionality {
  *
  * @since 6.6.93
  * @param	string	$addonname
- * @return bab_addonInfos|false
+ * @return bab_addonInfos Or false
  */
 function bab_getAddonInfosInstance($addonname) {
 
 	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	static $instances = array();
-	
+
 	if (false === array_key_exists($addonname, $instances)) {
 		$obj = new bab_addonInfos();
 		if (false === $obj->setAddonName($addonname, false)) {
@@ -3014,11 +3014,11 @@ function bab_getAddonInfosInstance($addonname) {
  * Ensures that the user is logged in.
  * If the user is not logged the "PortalAutentication" functionality
  * is used to let the user log in with its credential.
- * 
+ *
  * The parameter $sAuthType can be used to force the authentication method,
  * it must be the name (path) of the functionality to use without 'PortalAuthentication/' and the 'Auth' prefix.
- * E.g. for 'PortalAuthentication/BasicAuth' use basic 
- * 
+ * E.g. for 'PortalAuthentication/BasicAuth' use basic
+ *
  * @param	string		$sLoginMessage	Message displayed to the user when asked to log in.
  * @param	string		$sAuthType		Optional authentication type.
  * @since 6.7.0
@@ -3036,14 +3036,14 @@ function bab_requireCredential($sLoginMessage = '', $sAuthType = '') {
 
 
 /**
- * Checks that the user has at least one of the specified ACL access ($tables) on $idobject. 
- * 
+ * Checks that the user has at least one of the specified ACL access ($tables) on $idobject.
+ *
  * If the user has none of the required accesses and is not logged,
  * the function will require en authentication (through) bab_requireCredential
  * and then check once again the access.
- * 
+ *
  * @param	string|array	$tables			The name of the ACL table (*_groups) or an array of them.
- * @param	int				$idObject		
+ * @param	int				$idObject
  * @param	string			$loginMessage	Message displayed to the user when asked to log in.
  * @since 6.7.0
  *
@@ -3075,7 +3075,7 @@ function bab_requireAccess($tables, $idObject, $loginMessage)
 /**
  * Limits the maximum execution time
  *
- * @param int	$seconds	The maximum execution time, in seconds. If set to zero, no time limit is imposed. 
+ * @param int	$seconds	The maximum execution time, in seconds. If set to zero, no time limit is imposed.
  */
 function bab_setTimeLimit($seconds)
 {
@@ -3094,12 +3094,12 @@ function bab_setTimeLimit($seconds)
  * @param	string	$module			addon name or core functionality name
  * @param	string	$type			type of object
  * @param	mixed	$identifier		numeric or string to identify object in the type of object
- * @param	string	$location		optional string, 
- *									empty string or another domain 'ovidentia.org' 
+ * @param	string	$location		optional string,
+ *									empty string or another domain 'ovidentia.org'
  *									or a domain an a path 'ovidentia.org/dev', empty string is the default value it mean the local site
  * @return bab_reference
  */
-function bab_buildReference($module, $type, $identifier, $location = '') 
+function bab_buildReference($module, $type, $identifier, $location = '')
 {
 	require_once dirname(__FILE__) . '/reference.class.php';
 	return bab_Reference::makeReference('ovidentia', $location, $module, $type, $identifier);
@@ -3109,7 +3109,7 @@ function bab_buildReference($module, $type, $identifier, $location = '')
 /**
  * Download a file
  * @since 7.2.92
- * 
+ *
  * @param 	bab_Path 	$path			path to source file
  * @param	string		[$filename]		downloaded filename
  * @param	bool		$inline			inline or attachment mode
@@ -3118,20 +3118,20 @@ function bab_buildReference($module, $type, $identifier, $location = '')
  */
 function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exit = true)
 {
-	if (null === $filename) 
+	if (null === $filename)
 	{
 		$filename = $path->getBasename();
 	}
-	
+
 	$fp = fopen($path->toString(), 'rb');
-	if ($fp) 
+	if ($fp)
 	{
 		bab_setTimeLimit(3600);
 
 		if (mb_strtolower(bab_browserAgent()) == 'msie') {
 			header('Cache-Control: public');
 		}
-		
+
 		if ($inline) {
 			header('Content-Disposition: inline; filename="'.$filename.'"'."\n");
 		} else {
@@ -3148,12 +3148,12 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 			print fread($fp, 8192);
 		}
 		fclose($fp);
-		
+
 		if ($exit) {
 			exit;
 		}
 	}
-	
+
 	return false;
 }
 
