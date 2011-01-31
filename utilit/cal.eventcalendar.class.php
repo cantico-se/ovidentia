@@ -986,10 +986,9 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		// if the access is given by one of the attendees or one of the relation, return true
 		// specific beahviour for ovidentia events, in caldav, access is given only with the calendar
 
-		$parents = $event->getRelations('PARENT');
-		$relation = reset($parents);
+		$main = $event->getCollection()->getCalendar();
 
-		if ($this === $relation['calendar'])
+		if ($this === $main)
 		{
 			// if we are on the main calendar of event
 			foreach($event->getCalendars() as $calendar)
