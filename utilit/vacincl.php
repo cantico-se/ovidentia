@@ -2192,25 +2192,26 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 function getDateFromHalfDay($date, $b_pm, $b_end) {
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	$arr = explode('-',$date);
-	
 	if ($b_end) {
 		if ($b_pm) {
-			$arr[2]++;
-			$h = 0;
+			$h = 23;
 		} else {
-			$h = 12;
+			$h = 11;
 		}
+		$m = 59;
+		$s = 59;	
 	} else {
 		if ($b_pm) {
 			$h = 12;
 		} else {
 			$h = 0;
 		}
+		$m = 0;
+		$s = 0;
 	}
 
-	
-	return new BAB_DateTime($arr[0], $arr[1], $arr[2], $h, 0, 0);
+	$arr = explode('-',$date);
+	return new BAB_DateTime($arr[0], $arr[1], $arr[2], $h, $m, $s);
 }
 
 
@@ -2425,12 +2426,13 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			$urlIdentifier = "$reftype/$uid";
 			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
 			
-			if (!$calendar)
+			if ($calendar)
 			{
 				$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
 			} else {
 				$collections[$row['id_user']] = null;
 			}
+
 		}
 
 
@@ -2440,7 +2442,6 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			bab_vac_setPeriodProperties($p, $row, $begin);
 			$collections[$row['id_user']]->addPeriod($p);
 			$p->setProperty('UID', 'VAC'.$row['id']);
-			
 			$user_periods->addPeriod($p);
 		}
 		
