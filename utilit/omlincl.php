@@ -5861,7 +5861,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
-			if ($T) {
+			if ($T && $iHeight && $iWidth) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
 				$T->setBorder(0, '#cccccc', 0, '#ffffff');
@@ -5947,7 +5947,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
-			if ($T) {
+			if ($T && $iWidth && $iHeight) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
 				$T->setBorder(0, '#cccccc', 0, '#ffffff');
@@ -6034,7 +6034,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$T = bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
-			if ($T) {
+			if ($T && $iWidth && $iHeight) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
 				$T->setBorder(0, '#cccccc', 0, '#ffffff');
