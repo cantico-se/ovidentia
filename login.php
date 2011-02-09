@@ -661,7 +661,7 @@ function login_signon()
 	}
 	
 	// if allready logged, return to homepage
-	header('location:'.$GLOBALS['babUrl']);
+	header('location:'.$GLOBALS['babUrlScript']);
 	exit;
 }
 	
