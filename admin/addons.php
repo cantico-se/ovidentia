@@ -511,8 +511,9 @@ class bab_addonPackage
 		
 		$general['package_collection'] = implode(', ', $dependencies);
 		$general['encoding'] = bab_Charset::getIso();
+		$general['mysql_character_set_database'] = 'latin1,utf8';
 		
-		
+
 		$content = '; <?php/*'."\n";
 		$content .= "[general]\n";
 		
