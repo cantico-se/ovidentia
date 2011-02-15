@@ -2287,7 +2287,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( $baccess || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
+			if( ($baccess && $arr['modifiable'] == 'Y')  || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess[$arr['name']] = $arr;
 				}
@@ -2300,7 +2300,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( $baccess || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
+			if( ($baccess && $arr['modifiable'] == 'Y')  || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess['babdirf'.$arr['id']] = $arr;
 				}
