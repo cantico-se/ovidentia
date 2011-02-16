@@ -1230,7 +1230,11 @@ class bab_cal_OviEventSelect
 			} else {
 				if (!isset($collections[$arr['parent_calendar']]))
 				{
-					$collections[$arr['parent_calendar']] = $backend->CalendarEventCollection(bab_getICalendars()->getEventCalendar($arr['parent_calendar']));
+					$parent_calendar = bab_getICalendars()->getEventCalendar($arr['parent_calendar']);
+					if ($parent_calendar)
+					{
+						$collections[$arr['parent_calendar']] = $backend->CalendarEventCollection($parent_calendar);
+					}
 				}
 				$collection = $collections[$arr['parent_calendar']];
 			}
