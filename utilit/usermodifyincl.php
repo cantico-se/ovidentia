@@ -238,10 +238,15 @@ class bab_userModify {
 						$error = bab_translate("You must provide a nickname");
 						return false;
 					}
+					
+					/*
+					
 					if (mb_strpos($info['nickname'], ' ') !== false) {
 						$error = bab_translate("Login ID should not contain spaces");
 						return false;
 					}
+					
+					*/
 					
 					$res = $babDB->db_query("select id from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($info['nickname'])."' and id !='".$arruinfo['id']."'");
 					if( $babDB->db_num_rows($res) > 0) {

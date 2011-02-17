@@ -2234,10 +2234,12 @@ function bab_updateUserNicknameById($userId, $newNickname, $ignoreAccessRights=f
 	}
 
 	/* Test if the new nickname contain spaces */
+	/*
 	if (mb_strpos($newNickname, ' ') !== false) {
 		$error = bab_translate("Login ID should not contain spaces");
 		return false;
 	}
+	*/
 
 	/* Test if the new nickname already exists */
 	$db = $GLOBALS['babDB'];
