@@ -44,6 +44,13 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 	protected $sitemap;
 	
 	/**
+	 * 
+	 * @var string
+	 */
+	protected $sitemap_name;
+	
+	
+	/**
 	 * @var int $limit				The max number of elements to return.
 	 */
 	protected $limitOffset = 0;
@@ -71,7 +78,8 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		
 		if (false === $sitemap) {
 			global $babBody;
-			$this->sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
+			$this->sitemap_name = $babBody->babsite['sitemap'];
+			$this->sitemap = bab_siteMap::getByUid($this->sitemap_name);
 			if (!isset($this->sitemap)) {
 				$this->sitemap = bab_siteMap::get();
 			}
@@ -82,6 +90,8 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 				trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $ctx->debug_location, get_class($this), $sitemap));
 				return;
 			}
+			
+			$this->sitemap_name = $sitemap;
 		}
 
 	}
@@ -173,6 +183,65 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 
 
 
+
+/**
+ * Get node.
+ *  
+ * <OCSitemapEntry sitemap="sitemapName" node="nodeId">
+ * 
+ * </OCSitemapEntry>
+ * 
+ * - The sitemap attribute is optional.
+ * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
+ * - The node attribute is mandatory.
+ *
+ */
+class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
+{
+
+
+	public function setOvmlContext(babOvTemplate $ctx)
+	{
+
+		parent::setOvmlContext($ctx);
+
+		$node = $ctx->get_value('node');
+
+		if (isset($this->sitemap)) {
+			$node = $this->sitemap->getNodeById($node);
+
+			if ($node) {
+				
+				/* @var $item bab_SitemapItem */
+				$item = $node->getData();
+				$tmp = array();
+				
+				$tmp['url'] = $item->getRwUrl();
+				$tmp['text'] = $item->name;
+				$tmp['description'] = $item->description;
+				$tmp['id'] = $item->id_function;
+				$tmp['onclick'] = $item->onclick;
+				$tmp['folder'] = $item->folder;
+				$tmp['pageTitle'] = $item->getPageTitle();
+				$tmp['pageDescription'] = $item->getPageDescription();
+				$tmp['pageKeywords'] = $item->getPageKeywords();
+				$tmp['classnames'] = $item->getIconClassnames();
+				$this->IdEntries[] = $tmp;
+			}
+	
+			$this->count = count($this->IdEntries);
+			$this->ctx->curctx->push('CCount', $this->count);
+		}
+	}
+
+}
+
+
+
+
+
+
+
 /**
  * Get path starting from root (or a specified base node) to a specific sitemap node.
  * 
@@ -185,7 +254,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
  * - The node attribute is optional, it specifies the sitemap id of the node for which the path will be returned.
  * 		The default is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
- * 		The default value is 'babDgAll'.
+ * 		The default value is set by api (ex: sitemap_editor).
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap.
  * 		The default value is '1'.
  */
@@ -243,6 +312,12 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 			
 		
 			$node = $this->sitemap->getNodeById($nodeId);
+			
+			if (empty($baseNodeId))
+			{
+				$baseNodeId = bab_Sitemap::getVisibleRootNodeByUid($this->sitemap_name);
+			}
+			
 
 			while ($node && ($item = $node->getData())) {
 				/* @var $item bab_SitemapItem */
@@ -296,54 +371,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 {
 	
-	/**
-	 * 
-	 * @param bab_siteMap	$sitemap
-	 * @param string 		$baseNodeId		The node from which the breadcrumb will start.
-	 * @param string		$nodeId			Optional node id, use automatic kernel current node if not specified.		
-	 */	
-	public function breadCrumbFromBaseNode($sitemap, $baseNodeId, $nodeId = null)
-	{
-		if (!isset($nodeId)) {
-			$nodeId = bab_Sitemap::getPosition();
-			if (!isset($nodeId)) {
-				return array();
-			}
-		}
 
-		$baseNode = $sitemap->getNodeById($baseNodeId);
-		if (!isset($baseNode)) {
-			return array();
-		}
-
-		$subNodes = new bab_NodeIterator($baseNode);
-		
-		$matchingNodes = array();
-		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
-			/* @var $node bab_Node */
-			if ($node->getId() === $nodeId) {
-				$matchingNodes[] = $node;
-				continue;
-			}
-			/* @var $data bab_SitemapItem */
-			$data = $node->getData();
-			if ($data->getTarget() === $nodeId) {
-				$matchingNodes[] = $node;
-			}
-		}
-
-		if (count($matchingNodes) !== 1) {
-			return array();			
-		}
-
-		$node = $matchingNodes[0];
-		$breadCrumbs = array($node);
-		while (($node = $node->parentNode()) && ($node->getId() !== $baseNodeId)) {
-			array_unshift($breadCrumbs, $node);
-		}
-
-		return $breadCrumbs;
-	}
 	
 	/**
 	 * 
@@ -353,35 +381,12 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 	{
 		$args = $this->args;
 
-		if (isset($args['basenode']) && (!empty($args['basenode']))) {
-
-			if (isset($args['sitemap'])) {
-				$sitemap = bab_siteMap::getByUid($args['sitemap']);
-			} else {
-				global $babBody;
-				$sitemapId = $babBody->babsite['sitemap'];
-				$sitemap = bab_siteMap::getByUid($sitemapId);
-				if (!isset($sitemap)) {
-					$sitemap = bab_siteMap::getByUid('core');
-				}
-			}
-			if (!isset($sitemap)) {
-				$breadcrumb = array();
-			} else {
-				$node = (isset($args['node']) && (!empty($args['node']))) ? $args['node'] : null; 
-				$breadcrumb = $this->breadcrumbFromBaseNode($sitemap, $args['basenode'], $node);
-			}
-
- 		} else if (isset($args['sitemap'])) {
-
-			$breadcrumb = bab_siteMap::getBreadCrumb($args['sitemap']);
-
-		} else {
-
-			$breadcrumb = bab_siteMap::getBreadCrumb();
-
-		}
-
+		$sitemap = empty($args['sitemap']) ? null : $args['sitemap'];
+		$baseNode = empty($args['basenode']) ? null : $args['basenode'];
+		$node = empty($args['node']) ? null : $args['node'];
+		
+		$breadcrumb = bab_siteMap::getBreadCrumb($sitemap, $baseNode, $node);
+		
 
 		if (!isset($args['keeplastknown'])) {
 			// If keeplastknown is not specified, active by default
@@ -476,7 +481,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  * - The keeplastknown attribute is optional, if set to "1", the last accessed sitemap node is kept selected if accessing a page not in the sitemap. 
  * 		The default value is '1'.
  * - The basenode attribute is optional, it will be the starting node used for the <ul> tree.
- * 		The default value is 'babDgAll'.
+ * 		The default value is set by API (ex: Custom for sitemap from the sitemap_editor).
  * - The selectednode attribute is optional, will add class 'selected' to the corresponding li, and 'active' to itself and all its <li> ancestors.
  * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
@@ -608,10 +613,13 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		
 		if (isset($args['sitemap'])) {
 			$sitemap = bab_siteMap::getByUid($args['sitemap']);
+			$sitemap_name = $args['sitemap'];
 		} else {
 			global $babBody;
 			$sitemap = bab_siteMap::getByUid($babBody->babsite['sitemap']);
+			$sitemap_name = $babBody->babsite['sitemap'];
 			if (!isset($sitemap)) {
+				$sitemap_name = 'core';
 				$sitemap = bab_siteMap::get();
 			}
 		}
@@ -629,6 +637,10 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			return '';
 		}
 
+		if (empty($args['basenode']))
+		{
+			$args['basenode'] = bab_siteMap::getVisibleRootNodeByUid($sitemap_name);
+		}
 
 		if (isset($args['basenode']) && (!empty($args['basenode']))) {
 			$home = $sitemap->getNodeById($args['basenode']);

@@ -7308,6 +7308,47 @@ class Func_Ovml_Function_Header extends Func_Ovml_Function {
 
 
 
+/**
+ * Include another ovml file
+ * <OFInclude file="" cache="1|0">
+ */
+class Func_Ovml_Function_Include extends Func_Ovml_Function {
+
+	public function toString()
+	{
+	$file = '';
+	$cache = false;
+	if(count($this->args))
+		{
+		foreach( $this->args as $p => $v)
+			{
+			switch(mb_strtolower(trim($p)))
+				{
+				case 'file':
+					$file = $v;
+					break;
+					
+				case 'cache':
+					if ($v) {	$cache = true; }
+					break;
+				}
+			}
+			
+			
+			if ($cache)
+			{
+				return bab_printCachedOvmlTemplate($file, $this->gctx->getvars());
+			} else {
+				return bab_printOvmlTemplate($file, $this->gctx->getvars());
+			}
+		}
+	}
+}
+
+
+
+
+
 class Func_Ovml_Function_Recurse extends Func_Ovml_Function {
 
 

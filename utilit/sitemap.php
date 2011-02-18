@@ -422,6 +422,12 @@ class bab_siteMap {
 	private $siteMapDescription = '';
 	
 	/**
+	 * Visible root node UID to use in interfaces
+	 * @var string
+	 */
+	private $visibleRootNode = null;
+	
+	/**
 	 * This string in a rewritten url specifies that node url rewriting
 	 * should stop a this node.
 	 * 
@@ -466,6 +472,26 @@ class bab_siteMap {
 	 */
 	public function getRootNode($path = null, $levels = null) {
 		return bab_siteMap::get($path, $levels);
+	}
+	
+	/**
+	 * 
+	 * @param string $uid
+	 * @return unknown_type
+	 */
+	public function setVisibleRootNode($uid) {
+		$this->visibleRootNode = $uid;
+	}
+	
+	/**
+	 * get the visible root node to use in interfaces
+	 * default is babDGAll 
+	 * externally provided sitemap can set the value to another node in the same sitemap
+	 * @return string
+	 */
+	public function getVisibleRootNode()
+	{
+		return $this->visibleRootNode;
 	}
 	
 
@@ -867,7 +893,27 @@ class bab_siteMap {
 	
 	
 	/**
+	 * get the visible root node to use in interfaces
+	 * default is babDGAll 
+	 * externally provided sitemap can set the value to another node in the same sitemap
+	 * @param string	$uid sitemap uid
+	 * @return string
+	 */
+	public static function getVisibleRootNodeByUid($uid)
+	{
+		$list = self::getList();
+		
+		if (!isset($list[$uid])) {
+			return null;
+		}
+		
+		return $list[$uid]->getVisibleRootNode();
+	}
+	
+	
+	/**
 	 * Get sitemap tree by unique UID from sitemap list
+	 * @param	string	$uid
 	 * @return bab_siteMapOrphanRootNode
 	 */ 
 	public static function getByUid($uid) {
@@ -934,12 +980,14 @@ class bab_siteMap {
 	 * @see bab_sitemap::setPosition()
 	 * 
 	 * @param	string	$sitemap_uid	ID of sitemap tree, default is sitemap selected in site options
+	 * @param	string	$baseNode		start of the breadcrumb, default is the visisble root node of the sitemap
+	 * @param	string	$nodeId			current page node, default is the automatic current page
 	 * 
 	 * @return array					Array of bab_Node
 	 */ 
-	public static function getBreadCrumb($sitemap_uid = null) {
+	public static function getBreadCrumb($sitemap_uid = null, $baseNodeId = null, $nodeId = null) {
 		
-		if (!isset(self::$current_page)) {
+		if (!isset(self::$current_page) && !isset($nodeId)) {
 			return array();
 		}
 		
@@ -948,6 +996,7 @@ class bab_siteMap {
 			$sitemap_uid = $babBody->babsite['sitemap'];
 			$sitemap = self::getByUid($sitemap_uid);
 			if (!isset($sitemap)) {
+				$sitemap_uid = 'core';
 				$sitemap = self::getByUid('core');
 			}
 		} else {
@@ -958,26 +1007,60 @@ class bab_siteMap {
 		}
 
 		
-		$page_node = $sitemap->getNodeById(self::$current_page);
 		
-		if (!isset($page_node)) {
-			bab_debug(sprintf('The node %s does not exists in sitemap %s', self::$current_page, $sitemap_uid), DBG_ERROR);
+		if (!isset($nodeId))
+		{
+			$nodeId = self::$current_page;
+		}
+		
+		// if undefined baseNodeId, use the default visible root for sitemap
+		
+		if (!isset($baseNodeId))
+		{
+			$baseNodeId = bab_siteMap::getVisibleRootNodeByUid($sitemap_uid);
+		}
+		
+		// bab_debug("$sitemap_uid $baseNodeId $nodeId");
+
+		$baseNode = $sitemap->getNodeById($baseNodeId);
+		if (!isset($baseNode)) {
 			return array();
 		}
+
 		
+		// verify if the $nodeId or target is under baseNode
 		
-		$breadcrumb = array($page_node);
+		$subNodes = new bab_NodeIterator($baseNode);
 		
-		while (($page_node instanceOf bab_Node) && $page_node = $page_node->parentNode()) {
-			
-			if ('root' === $page_node->getId()) {
-				break;
+		$matchingNodes = array();
+		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
+			/* @var $node bab_Node */
+			if ($node->getId() === $nodeId) {
+				$matchingNodes[] = $node;
+				continue;
 			}
-			
-			array_unshift($breadcrumb, $page_node);
+			/* @var $data bab_SitemapItem */
+			$data = $node->getData();
+			if ($data->getTarget() === $nodeId) {
+				$matchingNodes[] = $node;
+			}
+		}
+
+		if (count($matchingNodes) !== 1) {
+			bab_debug(sprintf('The node %s does not exists in sitemap %s', $nodeId, $sitemap_uid), DBG_ERROR);
+			return array();			
 		}
 		
-		return $breadcrumb;
+		$node = $matchingNodes[0];
+		
+		
+		
+		$breadCrumbs = array($node);
+		while (($node = $node->parentNode()) && ($node->getId() !== $baseNodeId)) {
+			array_unshift($breadCrumbs, $node);
+		}
+
+		return $breadCrumbs;
 	}
 	
 	
@@ -1080,8 +1163,9 @@ class bab_eventBeforeSiteMapList extends bab_event {
 	 * 
 	 * @return bab_eventBeforeSiteMapList
 	 */ 
-	public function addSiteMap($uid, bab_siteMap $siteMap) {
+	public function addSiteMap($uid, bab_siteMap $siteMap, $viewRoot = 'DGAll') {
 		$this->available[$uid] = $siteMap;
+		$siteMap->setVisibleRootNode($viewRoot);
 		
 		return $this;
 	}
@@ -1093,4 +1177,5 @@ class bab_eventBeforeSiteMapList extends bab_event {
 	public function getAvailable() {
 		return $this->available;
 	}
+
 }
