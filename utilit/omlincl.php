@@ -4769,7 +4769,7 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 					break;
 			}
 
-			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendar->getUid());
+			$this->ctx->curctx->push('CalendarUrl', $GLOBALS['babUrlScript']."?tg=".$this->view."&calid=".$calendar->getUrlIdentifier());
 			$this->idx++;
 			$this->index = $this->idx;
 			next($this->Entries);
