@@ -2517,7 +2517,7 @@ class Func_Ovml_Container_Files extends Func_Ovml_Container
 					$this->IdEntries[] = $oFolderFile->getId();
 					$this->tags[$oFolderFile->getId()] = array();
 
-					$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $oFolderFile->getId()));
+					$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'files', 'file', $oFolderFile->getId()));
 					$oIterator->orderAsc('tag_name');
 					foreach($oIterator as $oTag)
 					{
@@ -2672,7 +2672,7 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 
 				$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
 
-				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'filemanager', 'file', $this->oFolderFile->getId()));
+				$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'files', 'file', $this->oFolderFile->getId()));
 				$oIterator->orderAsc('tag_name');
 				foreach($oIterator as $oTag)
 				{
@@ -2743,6 +2743,74 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 		}
 	}
 }
+
+
+
+
+/**
+ * <OCTags module="files|articles" type="file|article|draft" objectid="">
+ * 		<OVTagName>
+ * </OCTags>
+ */
+class Func_Ovml_Container_Tags extends Func_Ovml_Container
+{
+	
+	private $iterator;
+	
+	public function setOvmlContext(babOvTemplate $ctx)
+	{
+		global $babBody, $babDB;
+		parent::setOvmlContext($ctx);
+		$this->count = 0;
+		$module 	= $ctx->get_value('module'); 
+		$type 		= $ctx->get_value('type');  
+		$objectid	= $ctx->get_value('objectid');
+		
+		require_once dirname(__FILE__) . '/tagApi.php';
+
+		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+
+		$this->iterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', $module, $type, $objectid));
+		$this->iterator->orderAsc('tag_name');
+		
+		bab_debug("ovidentia:///$module/$type/$objectid");
+		
+		$this->ctx->curctx->push('CCount', $this->iterator->count());
+		$this->iterator->rewind();
+		$this->idx = 0;
+	}
+	
+	
+	public function getnext()
+	{
+		global $babDB;
+		if( $this->iterator->valid())
+		{
+			
+			$this->ctx->curctx->push('CIndex', $this->idx);
+			
+			$tag = $this->iterator->current();
+			
+			$this->ctx->curctx->push('TagName', $tag->getName());
+			
+			$this->iterator->next();
+			$this->index = $this->idx;
+			return true;
+		}
+		else
+		{
+			$this->idx = 0;
+			$this->iterator->rewind();
+			return false;
+		}
+	}
+}
+
+
+
+
+
+
 
 class Func_Ovml_Container_FileFields extends Func_Ovml_Container
 {

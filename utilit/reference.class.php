@@ -217,6 +217,7 @@ class bab_ReferenceFilters extends bab_ObjectStorage
 
 class bab_Reference implements IGuid
 {
+	private $sReference = null;
 	private $sProtocol	= null;
 	private $sLocation	= null;
 	private $sModule	= null;
@@ -226,6 +227,9 @@ class bab_Reference implements IGuid
 	public function __construct($sReference = null)
 	{
 		if (null !== $sReference) {
+			
+			$this->sReference = $sReference;
+			
 			// create reference from string
 			$this->init($sReference);
 		}
@@ -247,7 +251,11 @@ class bab_Reference implements IGuid
 	
 	public function getGuid()
 	{
-		return $this->sReference;  
+		if (null === $this->sReference)
+		{
+			$this->sReference = $this->__toString();
+		}
+		return $this->sReference;
 	}
 	
 	public function getProtocol()
