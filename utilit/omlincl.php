@@ -2773,8 +2773,6 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 		$this->iterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', $module, $type, $objectid));
 		$this->iterator->orderAsc('tag_name');
 		
-		bab_debug("ovidentia:///$module/$type/$objectid");
-		
 		$this->ctx->curctx->push('CCount', $this->iterator->count());
 		$this->iterator->rewind();
 		$this->idx = 0;
