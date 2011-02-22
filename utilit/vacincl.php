@@ -2449,12 +2449,13 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			$urlIdentifier = "$reftype/$uid";
 			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
 			
-			if (!$calendar)
+			if ($calendar)
 			{
 				$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
 			} else {
 				$collections[$row['id_user']] = null;
 			}
+
 		}
 
 
@@ -2464,7 +2465,6 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 			bab_vac_setPeriodProperties($p, $row, $begin);
 			$collections[$row['id_user']]->addPeriod($p);
 			$p->setProperty('UID', 'VAC'.$row['id']);
-			
 			$user_periods->addPeriod($p);
 		}
 		
@@ -2901,8 +2901,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 			'bab_NonWorkingDaysCollection', 
 			'bab_NonWorkingPeriodCollection',
 			'bab_WorkingPeriodCollection', 
-			'bab_VacationPeriodCollection', 
-			
+			'bab_VacationPeriodCollection' 
 		)
 	);
 	
