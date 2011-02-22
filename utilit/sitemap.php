@@ -1053,10 +1053,8 @@ class bab_siteMap {
 		
 		$node = $matchingNodes[0];
 		
-		
-		
 		$breadCrumbs = array($node);
-		while (($node = $node->parentNode()) && ($node->getId() !== $baseNodeId)) {
+		while (($node->getId() !== $baseNodeId) && ($node = $node->parentNode())) {
 			array_unshift($breadCrumbs, $node);
 		}
 
