@@ -2750,6 +2750,7 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
 /**
  * <OCTags module="files|articles" type="file|article|draft" objectid="">
  * 		<OVTagName>
+ * 		<OVTagSearchUrl>
  * </OCTags>
  */
 class Func_Ovml_Container_Tags extends Func_Ovml_Container
@@ -2790,6 +2791,7 @@ class Func_Ovml_Container_Tags extends Func_Ovml_Container
 			$tag = $this->iterator->current();
 			
 			$this->ctx->curctx->push('TagName', $tag->getName());
+			$this->ctx->curctx->push('TagSearchUrl', $GLOBALS['babUrlScript'] .'?tg=search&idx=find&item=tags&what='.urlencode($tag->getName()));
 			
 			$this->iterator->next();
 			$this->index = $this->idx;
