@@ -2420,11 +2420,7 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 		if (!isset($collections[$row['id_user']]))
 		{
 			$id_user = (int) $row['id_user'];
-			
-			$reftype = bab_getICalendars()->getUserReferenceType($id_user);
-			$uid = bab_getICalendars()->getPersonalCalendarUid($id_user);
-			$urlIdentifier = "$reftype/$uid";
-			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
+			$calendar = $backend->Personalcalendar($id_user);
 			
 			if ($calendar)
 			{
