@@ -260,7 +260,17 @@ class Func_CalendarBackend extends bab_functionality
 	 */
 	public function getPeriod(bab_PeriodCollection $periodCollection, $identifier, $dtstart = null)
 	{
-		throw new Exception('not implemented');
+		$criteria = $this->Criteria()->Calendar($periodCollection->getCalendar())
+			->_AND_($this->Criteria()->Uid($identifier));
+		
+		$res = $this->selectPeriods($criteria);
+		
+		foreach($res as $period)
+		{
+			return $period;
+		}
+		
+		return null;
 	}
 	
 	/**

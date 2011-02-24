@@ -236,6 +236,10 @@ class bab_PeriodCritieraProperty extends bab_PeriodCriteria
 		return $this->value;
 	}
 	
+	/**
+	 * return true if the property value must contain the value or false if the property value must be the same string
+	 * @return bool
+	 */
 	public function getContain()
 	{
 		return $this->contain;
@@ -382,6 +386,14 @@ class bab_PeriodCritieraUid extends bab_PeriodCriteria
 	public function process(bab_UserPeriods $userperiods)
 	{
 		$userperiods->uid_criteria = $this->uid;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getUidValues()
+	{
+		return $this->uid;
 	}
 }
 
