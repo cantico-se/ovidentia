@@ -2403,6 +2403,7 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 		$query .= " AND date_begin < ".$babDB->quote($end->getIsoDateTime())." ";
 	}
 
+	
 	$res = $babDB->db_query($query);
 	
 	// find begin and end
@@ -2443,11 +2444,7 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 		if (!isset($collections[$row['id_user']]))
 		{
 			$id_user = (int) $row['id_user'];
-			
-			$reftype = bab_getICalendars()->getUserReferenceType($id_user);
-			$uid = bab_getICalendars()->getPersonalCalendarUid($id_user);
-			$urlIdentifier = "$reftype/$uid";
-			$calendar = bab_getICalendars()->getEventCalendar($urlIdentifier);
+			$calendar = $backend->Personalcalendar($id_user);
 			
 			if ($calendar)
 			{
@@ -2862,8 +2859,8 @@ function bab_vac_is_free($collection) {
 		case $collection instanceof bab_WorkingPeriodCollection:
 			return true;
 
-		case $collection instanceof bab_VacationPeriodCollection:
 		case $collection instanceof bab_NonWorkingPeriodCollection:
+		case $collection instanceof bab_VacationPeriodCollection:
 		case $collection instanceof bab_NonWorkingDaysCollection:
 			return false;
 	}
@@ -2907,28 +2904,33 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	
 	$icalendars = new bab_icalendars($id_user);
 
+	/*
 	$calendar = $icalendars->getPersonalCalendar();
-	
 	
 	if (!isset($calendar))
 	{
 		// the user personal calendar is not accessible
 		// create an instance only for vacations
 		
-		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+		// $calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($id_user);
 	}
+	*/
+	
+	$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($id_user);
 	
 	$criteria = $criteria->_AND_($factory->Calendar($calendar));
 
 	$obj->createPeriods($criteria);
 	$obj->orderBoundaries();
 
-
 	$index = array();
 	$is_free = array();
 	$stack = array();
 	
 	foreach($obj as $pe) {
+		
+		bab_debug(bab_shortDate($pe->ts_begin).' '.bab_shortDate($pe->ts_end).' '.$pe->getProperty('SUMMARY'));
 		
 		/*@var $pe bab_CalendarPeriod */
 		$group = $pe->split(12 * 3600);
@@ -2945,7 +2947,8 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key]->getCollection()), $type, $vacation_is_free)) {
 					
 					$index[$key] = $p;
-
+					
+					
 					if (bab_vac_is_free($collection)) {
 						$is_free[$key] = 1;
 					} elseif (isset($is_free[$key])) {
@@ -2955,8 +2958,6 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 			}
 		}
 	}
-
-
 
 	return array($index, $is_free, $stack);
 }
