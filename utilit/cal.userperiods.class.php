@@ -948,7 +948,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 					
-
+					$id_users = array();
 					
 					$collection = $event->getCollection();
 					
@@ -968,7 +968,6 @@ class bab_UserPeriods implements Countable, seekableIterator {
 					
 					if ($collection instanceof bab_CalendarEventCollection || $collection instanceof bab_InboxEventCollection)
 					{
-						$id_users = array();
 						$attendees = $event->getAttendees();
 						if ($attendees)
 						{
