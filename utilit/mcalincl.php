@@ -897,7 +897,7 @@ class cal_wmdbaseCls
 		
 		if(!$this->allow_viewtitle)
 			{
-			$this->title		= bab_toHtml(bab_translate("Private"));
+			$this->title		= $calPeriod->isPublic() ? bab_toHtml(bab_translate("Awaiting approval")) : bab_toHtml(bab_translate("Private"));
 			$this->titleten		= $this->title;
 			$this->description	= "";
 			$this->location		= "";

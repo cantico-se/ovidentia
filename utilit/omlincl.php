@@ -4906,10 +4906,22 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	var $index;
 	var $count;
 
-	var $cal_groups 		= 1;
-	var $cal_resources		= 1;
-	var $cal_users			= 1;
-	var $cal_default_users 	= 1; // if empty calendarid, get all accessibles user calendars
+	var $cal_groups 			= 1;
+	var $cal_resources			= 1;
+	var $cal_users				= 1;
+	var $cal_default_users 		= 1; // if empty calendarid, get all accessibles user calendars
+	
+	/**
+	 * 
+	 * @var bool
+	 */
+	private $private 			= null;
+	
+	/**
+	 * 
+	 * @var bool
+	 */
+	private $awaiting_approval 	= null;
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
@@ -4920,11 +4932,13 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
+		$private = mb_strtoupper($ctx->get_value('private')) !== "YES";
+		$awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) !== "YES";
 
 		switch(bab_getICalendars()->defaultview)
 			{
 			case BAB_CAL_VIEW_DAY: $this->view='calday';	break;
-			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; break;
+			case BAB_CAL_VIEW_WEEK: $this->view='calweek'; 	break;
 			default: $this->view='calmonth'; break;
 			}
 
@@ -5010,6 +5024,36 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$startdate->getTimeStamp(),
 			$enddate->getTimeStamp()
 		);
+		
+		
+		
+		if (!$this->private || !$this->awaiting_approval)
+		{
+			foreach($this->events as $key => $event)
+			{
+				$collection = $event->getCollection();
+				$calendar = $collection->getCalendar();
+				
+				if (!$calendar->canViewEventDetails($event))
+				{
+					if ($event->isPublic())
+					{
+						if (!$this->awaiting_approval)
+						{
+							unset($this->events[$key]);
+						}
+					} else {
+						if (!$this->private)
+						{
+							unset($this->events[$key]);
+						}
+					}
+				}
+			}
+			
+			reset($this->events);
+		}
+		
 
 		$this->count = count($this->events);
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -5106,15 +5150,25 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			list(, $p) = each($this->events);
 			$arr = $p->getData();
 
+			$id_category = '';
+			$category_color = '';
+			$color = $p->getProperty('X-CTO-COLOR');
+			
 			$cat = bab_getCalendarCategory($p->getProperty('CATEGORIES'));
-			$id_category = $cat['id'];
-
+			if ($cat)
+			{
+				$id_category = $cat['id'];
+				$category_color = $cat['bgcolor'];
+				$color = $category_color;
+			}
+			
 			$id_event = $p->getProperty('UID');
 
 			$collection = $p->getCollection();
 			$calendar = $collection->getCalendar();
+			/* @var $calendar bab_EventCalendar */
 			$arr['id_cal'] = $calendar->getUrlIdentifier();
-
+			
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
@@ -5122,15 +5176,15 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$location = $p->getProperty('LOCATION');
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
-
-			if (!$p->isPublic() && ((int) $GLOBALS['BAB_SESS_USERID'] === (int) $calendar->getIdUser()))
+			
+			
+			if (!$calendar->canViewEventDetails($p))
 			{
-				$summary = bab_translate('Private');
+				$summary = $p->isPublic() ? bab_translate('Awaiting approval') : bab_translate('Private');
 				$description = '';
 				$location = '';
 				$categories = '';
 			}
-
 
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventId'					, $id_event);
@@ -5140,7 +5194,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventBeginDate'			, $p->ts_begin);
 			$this->ctx->curctx->push('EventEndDate'				, $p->ts_end);
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
-			$this->ctx->curctx->push('EventCategoryColor'		, $p->getProperty('X-CTO-COLOR'));
+			$this->ctx->curctx->push('EventCategoryColor'		, $category_color);
+			$this->ctx->curctx->push('EventColor'				, $color);
 			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
 			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
 			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
