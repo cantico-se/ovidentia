@@ -50,6 +50,17 @@ class Func_CalendarBackend extends bab_functionality
 		require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
 	}
 	
+	
+	/**
+	 * The backend can be used as a storage backend for the existing calendars (personal only for now)
+	 * @return bool
+	 */
+	public function StorageBackend()
+	{
+		return true;
+	}
+	
+	
 	/**
 	 * Create a personal calendar from an ovidentia user
 	 * 

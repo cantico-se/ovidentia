@@ -259,7 +259,19 @@ function calendarOptions($urla)
 			$this->dispdays = explode(',', $this->arr['dispdays']);
 			$this->sttime = $this->arr['start_time'];
 			
-			$this->allbackends = bab_functionality::getFunctionalities('CalendarBackend');
+			$arr = bab_functionality::getFunctionalities('CalendarBackend');
+			$this->allbackends = array();
+			
+			foreach($arr as $backend)
+			{
+				$obj = bab_functionality::get('CalendarBackend/'.$backend);
+				if ($obj->StorageBackend())
+				{
+					$this->allbackends[] = $backend;
+				}
+			}
+
+			
 			if (2 > count($this->allbackends) || null === bab_getICalendars()->getPersonalCalendar())
 				{
 					$this->allbackends = array();
