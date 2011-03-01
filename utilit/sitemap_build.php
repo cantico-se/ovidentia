@@ -784,7 +784,7 @@ class bab_siteMap_insertTree
 	
 	
 	
-	private function lock()
+	public static function lock()
 	{
 
 		global $babDB;
@@ -811,7 +811,7 @@ class bab_siteMap_insertTree
 	}
 	
 	
-	private function unlock()
+	public static function unlock()
 	{
 		global $babDB;
 		
@@ -826,7 +826,6 @@ class bab_siteMap_insertTree
 	 */
 	private function completeProfile($id_profile)
 	{
-		$this->lock();
 		
 		$this->loadFunctions($id_profile);
 		$this->insertFunction();
@@ -846,8 +845,6 @@ class bab_siteMap_insertTree
 		
 		// write id_dgowner for delegation branchs
 		$this->delegationsRecord();
-		
-		$this->unlock();
 	}
 	
 	
@@ -1428,16 +1425,22 @@ function bab_siteMap_loadNodes($path, $levels) {
  */
 function bab_siteMap_build($path, $levels) {
 
+	
+	
 	$event = bab_siteMap_loadNodes($path, $levels);
 
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
 
+	bab_siteMap_insertTree::lock();
+	
 	// insert tree into database
 	$insert = new bab_siteMap_insertTree($event->nodes['root'], $event->nodes);
 	$root_function = null === $path ? null : end($path);
 	$insert->fromCrc($crc, $root_function, $levels);
 
+	bab_siteMap_insertTree::unlock();
+	
 	return $event->propagation_status;
 }
 
@@ -1456,10 +1459,14 @@ function bab_siteMap_repair($path, $levels)
 	
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
+	
+	bab_siteMap_insertTree::lock();
 
 	$insert = new bab_siteMap_insertTree($event->nodes['root'], $event->nodes);
 	$root_function = null === $path ? null : end($path);
 	$insert->addNodesToProfile($crc, $root_function, $levels);
+	
+	bab_siteMap_insertTree::unlock();
 
 	return $event->propagation_status;
 }
