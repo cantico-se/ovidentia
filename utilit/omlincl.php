@@ -4895,8 +4895,50 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 /**
- * OCCalendarEvents
+ * Return a list of calendar events
+ * 
+ * calendarid 			: coma separated calendars id
+ * delegationid			: filter the list of calendars by delegation
+ * filter 				: filter by delegation YES | NO, if filter=NO calendars without access rights can be used
+ * date					: ISO date or ISO datetime, default is current date
+ * limit				: x days before, y days after the date "x,y"
+ * holiday 				: return vacation events YES | NO
+ * private 				: return non accessibles private events YES | NO
+ * awaiting_approval 	: return non accessibles awaiting approval events YES | NO
+ * 
+ * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="YES">
+ * 
+ * 	<OVEventId>					
+ * 	<OVEventTitle>
+ * 	<OVEventDescription>
+ * 	<OVEventLocation>
+ * 	<OVEventBeginDate>
+ * 	<OVEventEndDate>
+ * 	<OVEventCategoryId>
+ * 	<OVEventCategoryColor>	category color
+ * 	<OVEventColor>			event color or category color if exists
+ * 	<OVEventUrl>
+ * 	<OVEventCalendarUrl>
+ * 	<OVEventCategoriesPopupUrl>
+ * 	<OVEventCategoryName>
+ * 	<OVEventOwner>
+ * 	<OVEventUpdateDate>
+ * 	<OVEventUpdateAuthor>
+ * 	<OVEventAuthor>
+ * 
+ * </OCCalendarEvents>
  *
  */
 class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
@@ -4932,8 +4974,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
-		$private = mb_strtoupper($ctx->get_value('private')) !== "YES";
-		$awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) !== "YES";
+		$this->private = mb_strtoupper($ctx->get_value('private')) === "YES" || !$ctx->get_value('private');
+		$this->awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) === "YES" || !$ctx->get_value('awaiting_approval');
 
 		switch(bab_getICalendars()->defaultview)
 			{
