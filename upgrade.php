@@ -6437,5 +6437,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE bab_forums DROP nb_recipients");
 	}
 	
+	
+	
+	
+	/**
+	 * Upgrade to 7.4.93
+	 */
+	
+	// fix error in articles categories
+	$res = $babDB->db_query("SELECT o.id, c.id_parent FROM bab_topics_categories c, bab_topcat_order o WHERE o.id_topcat=c.id AND o.type='1' AND o.id_parent<>c.id_parent");
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		$babDB->db_query('UPDATE bab_topcat_order SET id_parent='.$babDB->quote($arr['id_parent']).' WHERE id='.$babDB->quote($arr['id']));
+	}
+	
 	return true;
 }
