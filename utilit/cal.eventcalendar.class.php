@@ -570,19 +570,22 @@ abstract class bab_EventCalendar
 	 */
 	public function displayEventInCalendarUi(bab_EventCalendar $calendar, bab_CalendarPeriod $event)
 	{
+		$mainCalendar = $this->getUrlIdentifier();
+		$placeholderCalendar = $calendar->getUrlIdentifier();
+		
 
 		if ($calendar instanceof bab_PersonalCalendar)
 		{
 			$attendees = $event->getAttendees();
 			foreach($attendees as $attendee)
 			{
-				if ($attendee['PARTSTAT'] !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $calendar->getUrlIdentifier())
+				if ($attendee['PARTSTAT'] !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $placeholderCalendar)
 				{
 					return true;
 				}
 			}
-				
-			if (!isset($attendees[$this->getUrlIdentifier()]) && $this === $calendar)
+			
+			if (!isset($attendees[$mainCalendar]) && $mainCalendar === $placeholderCalendar)
 			{
 				// the main calendar of event is not in attendees
 				return true;
@@ -600,7 +603,7 @@ abstract class bab_EventCalendar
 			}
 				
 				
-			if (!isset($relations[$this->getUrlIdentifier()]) && $this === $calendar)
+			if (!isset($relations[$mainCalendar]) && $mainCalendar === $placeholderCalendar)
 			{
 				// the main calendar of event is not in relations
 				return true;
