@@ -291,9 +291,9 @@ function fileNotifyMembers(BAB_FolderFile $file, $users, $msg, $bnew = true)
 	$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 
 	if ($bnew) {
-		$mail->mailSubject(bab_translate("New file file uploaded")." ".$file->getPathName().$file->getName());
+		$mail->mailSubject(sprintf(bab_translate("New file file uploaded %s"), $file->getPathName().$file->getName()));
 	} else {
-		$mail->mailSubject(bab_translate("File has been updated")." ".$file->getPathName().$file->getName());
+		$mail->mailSubject(sprintf(bab_translate("File has been updated %s"), $file->getPathName().$file->getName()));
 	}
 
 	$tempa = new fileNotifyMembersCls($file, $msg);
