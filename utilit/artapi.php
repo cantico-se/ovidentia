@@ -240,7 +240,7 @@ function bab_updateTopicsCategory($id_category, $name, $description, $benabled, 
 		$req = "UPDATE ".BAB_TOPICS_CATEGORIES_TBL." SET ".implode(', ',$tmp)." WHERE id=".$babDB->quote($id_category)."";
 		$babDB->db_query($req);
 		
-		if ($old['id_parent'] === (string) $topcatid) {
+		if ($old['id_parent'] !== (string) $topcatid) {
 	
 			$res = $babDB->db_query("select max(ordering) from ".BAB_TOPCAT_ORDER_TBL." where id_parent='".$babDB->db_escape_string($topcatid)."'");
 			$arr = $babDB->db_fetch_array($res);
