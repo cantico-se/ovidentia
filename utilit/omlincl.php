@@ -5856,7 +5856,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iHeight && $iWidth) {
@@ -5942,7 +5942,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iHeight && $iWidth) {
@@ -6029,7 +6029,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iHeight && $iWidth) {
