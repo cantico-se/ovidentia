@@ -2755,44 +2755,44 @@ class Func_Ovml_Container_File extends Func_Ovml_Container
  */
 class Func_Ovml_Container_Tags extends Func_Ovml_Container
 {
-	
+
 	private $iterator;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babBody, $babDB;
 		parent::setOvmlContext($ctx);
 		$this->count = 0;
-		$module 	= $ctx->get_value('module'); 
-		$type 		= $ctx->get_value('type');  
+		$module 	= $ctx->get_value('module');
+		$type 		= $ctx->get_value('type');
 		$objectid	= $ctx->get_value('objectid');
-		
+
 		require_once dirname(__FILE__) . '/tagApi.php';
 
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
 
 		$this->iterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', $module, $type, $objectid));
 		$this->iterator->orderAsc('tag_name');
-		
+
 		$this->ctx->curctx->push('CCount', $this->iterator->count());
 		$this->iterator->rewind();
 		$this->idx = 0;
 	}
-	
-	
+
+
 	public function getnext()
 	{
 		global $babDB;
 		if( $this->iterator->valid())
 		{
-			
+
 			$this->ctx->curctx->push('CIndex', $this->idx);
-			
+
 			$tag = $this->iterator->current();
-			
+
 			$this->ctx->curctx->push('TagName', $tag->getName());
 			$this->ctx->curctx->push('TagSearchUrl', $GLOBALS['babUrlScript'] .'?tg=search&idx=find&item=tags&what='.urlencode($tag->getName()));
-			
+
 			$this->iterator->next();
 			$this->index = $this->idx;
 			return true;
@@ -6023,7 +6023,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iHeight && $iWidth) {
@@ -6109,7 +6109,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iWidth && $iHeight) {
@@ -6196,7 +6196,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
 
-			$T = bab_functionality::get('Thumbnailer');
+			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
 			if ($T && $iWidth && $iHeight) {
@@ -7492,14 +7492,14 @@ class Func_Ovml_Function_Include extends Func_Ovml_Function {
 				case 'file':
 					$file = $v;
 					break;
-					
+
 				case 'cache':
 					if ($v) {	$cache = true; }
 					break;
 				}
 			}
-			
-			
+
+
 			if ($cache)
 			{
 				return bab_printCachedOvmlTemplate($file, $this->gctx->getvars());
