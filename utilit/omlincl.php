@@ -4970,43 +4970,84 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 	/**
  	 * Get available calendar with filter
+ 	 * @param	string	$calendarid		coma separated list of calendar id
+ 	 * @param	int		$delegationid
+ 	 * 	
 	 */
 	public function getUserCalendars($calendarid, $delegationid) {
 		$calendars = bab_getICalendars()->getCalendars();
 
-		if( $calendarid !== false && $calendarid !== '' )
+		if($calendarid)
 		{
-			$calendarid = array_flip(explode(',',$calendarid));
+			$calendarid_list = array_flip(explode(',',$calendarid));
 		}
-		else
+		elseif (!$delegationid)
 		{
-			$personal = bab_getICalendars()->getPersonalCalendar();
-			if (!$personal)
+			switch(true)
 			{
-				return array();
+				case ($this instanceof Func_Ovml_Container_CalendarGroupEvents):
+					
+					$calendarid_list = array();
+					foreach($calendars as $calendar)
+					{
+						if ($calendar instanceof bab_PublicCalendar)
+						{
+							
+							$calendarid_list[$calendar->getUid()] = 1;
+						}
+					}
+				break;
+				
+				case ($this instanceof Func_Ovml_Container_CalendarResourceEvents):
+					
+					$calendarid_list = array();
+					foreach($calendars as $calendar)
+					{
+						if ($calendar instanceof bab_ResourceCalendar)
+						{
+							
+							$calendarid_list[$calendar->getUid()] = 1;
+						}
+					}
+				break;
+					
+				default:
+					$personal = bab_getICalendars()->getPersonalCalendar();
+					if (!$personal)
+					{
+						return array();
+					}
+		
+					$calendarid_list = array($personal->getUid() => 1);
+				break;
+				
 			}
-
-			$calendarid = array($personal->getUrlIdentifier() => 1);
-		}
+			
+		} 
+		
+		
 
 		$return = array();
 
 		foreach($calendars as $calendar)
 		{
-			if (isset($calendarid) && !isset($calendarid[$calendar->getUid()]))
+			if (isset($calendarid_list) && !isset($calendarid_list[$calendar->getUid()]))
 			{
 				continue;
 			}
 
 			$dg = $calendar->getDgOwner();
 
-			if(0 != $delegationid && isset($dg) && $delegationid != $dg)
+			if($delegationid && $delegationid != $dg)
 			{
 				continue;
 			}
+			
+			
 
 			$return[] = $calendar;
 		}
+		
 
 		return $return;
 	}
