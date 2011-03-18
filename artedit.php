@@ -2015,14 +2015,6 @@ function updateDocumentsArticleDraft($idart, &$message)
 				continue;
 				}
 
-			$totalsize = getDirSize($GLOBALS['babUploadPath']);
-
-			if( $file['size'] + $totalsize > $GLOBALS['babMaxTotalSize'])
-				{
-				$errfiles[] = array('error'=> bab_translate("There is not enough free space"), 'file'=>$file['name']);
-				$k++;
-				continue;
-				}
 
 			$filename = trim($file['name']);
 
