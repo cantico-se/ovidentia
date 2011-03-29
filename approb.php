@@ -1227,9 +1227,11 @@ function updateConfirmationWaitingPost($thread, $post)
 		}
 	}
 
+
 function confirmVacationRequest($veid, $remarks, $action)
 {
 	global $babBody, $babDB, $approbinit;
+	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 
 	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($veid)."'");
 	$arr = $babDB->db_fetch_array($res);
@@ -1252,8 +1254,6 @@ function confirmVacationRequest($veid, $remarks, $action)
 		case 1:
 			deleteFlowInstance($arr['idfai']);
 
-			$remarks = $babDB->db_escape_string($remarks);
-
 			$babDB->db_query("update ".BAB_VAC_ENTRIES_TBL." set status='Y', idfai='0', id_approver='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', comment2='".$babDB->db_escape_string($remarks)."' where id = '".$babDB->db_escape_string($veid)."'");
 
 			$subject = bab_translate("Your vacation request has been accepted");
@@ -1267,10 +1267,29 @@ function confirmVacationRequest($veid, $remarks, $action)
 				}
 			break;
 		}
+		
+	// try to update event copy in other backend (caldav)
+	
+	$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+	$end = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+	$period = bab_vac_getPeriod($veid, $arr['id_user'],  $begin, $end);
+	if ($period)
+	{
+		// select the updated row 
+		$res = $babDB->db_query("select * FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($veid));
+		$row = $babDB->db_fetch_array($res);
+		
+		// probably set a new description if the event has been approved or rejected
+		bab_vac_setPeriodProperties($period, $row, $begin);
+		
+		// save copy of event to calendar backend (if caldav)
+		$period->save();
+	}
+		
 
 	bab_vac_updateEventCalendar($veid);
 }
-
+	
 
 function approb_init()
 {
