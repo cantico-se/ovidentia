@@ -2383,14 +2383,16 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	$begin = $user_periods->begin;
 	$end = $user_periods->end;
 	
-	
-	$backend = bab_functionality::get('CalendarBackend/Ovi');
-	
 	$query = "
-	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
-		WHERE 
-		id_user IN(".$babDB->quote($id_users).")   
-		AND status!='N' 
+	SELECT 
+		e.*,
+		c.calendar_backend  
+	from 
+		".BAB_VAC_ENTRIES_TBL." e 
+			LEFT JOIN ".BAB_CAL_USER_OPTIONS_TBL." c ON e.id_user=c.id_user 
+	WHERE 
+		e.id_user IN(".$babDB->quote($id_users).")   
+		AND e.status!='N' 
 	";
 	
 	if (null !== $begin)
@@ -2440,6 +2442,12 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 
 	while( $row = $babDB->db_fetch_assoc($res)) 
 	{
+		$backend = @bab_functionality::get('CalendarBackend/'.$row['calendar_backend']);
+	
+		if (!$backend)
+		{
+			continue;
+		}
 
 		if (!isset($collections[$row['id_user']]))
 		{
