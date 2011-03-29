@@ -2361,13 +2361,17 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 	$end = $user_periods->end;
 	
 	
-	$backend = bab_functionality::get('CalendarBackend/Ovi');
 	
 	$query = "
-	SELECT * from ".BAB_VAC_ENTRIES_TBL." 
-		WHERE 
-		id_user IN(".$babDB->quote($id_users).")   
-		AND status!='N' 
+	SELECT 
+		e.*,
+		c.calendar_backend  
+	from 
+		".BAB_VAC_ENTRIES_TBL." e 
+			LEFT JOIN ".BAB_CAL_USER_OPTIONS_TBL." c ON e.id_user=c.id_user 
+	WHERE 
+		e.id_user IN(".$babDB->quote($id_users).")   
+		AND e.status!='N' 
 	";
 	
 	if (null !== $begin)
@@ -2416,12 +2420,19 @@ function bab_vac_setVacationPeriods(bab_UserPeriods $user_periods, $id_users) {
 
 	while( $row = $babDB->db_fetch_assoc($res)) 
 	{
+		$backend = @bab_functionality::get('CalendarBackend/'.$row['calendar_backend']);
+	
+		if (!$backend)
+		{
+			continue;
+		}
+		
 
 		if (!isset($collections[$row['id_user']]))
 		{
 			$id_user = (int) $row['id_user'];
 			$calendar = $backend->Personalcalendar($id_user);
-			
+
 			if ($calendar)
 			{
 				$collections[$row['id_user']] = $backend->VacationPeriodCollection($calendar);
@@ -2532,6 +2543,7 @@ function bab_vac_createPeriod($id_request)
  * @param 	bab_CalendarPeriod	$p
  * @param 	Array				$row			entry of vacation request
  * @param	BAB_DateTime		$begin			begin date of request period
+ * @param	bool				$save			true if the event will be saved, false if properties are set only for viewing
  * @return unknown_type
  */
 function bab_vac_setPeriodProperties(bab_CalendarPeriod $p, $row, BAB_DateTime $begin)
@@ -2543,8 +2555,6 @@ function bab_vac_setPeriodProperties(bab_CalendarPeriod $p, $row, BAB_DateTime $
 	$date_begin = BAB_DateTime::fromIsoDateTime($row['date_begin']);
 	$date_end	= BAB_DateTime::fromIsoDateTime($row['date_end']);
 	$p->setDates($date_begin, $date_end);
-	
-	
 	
 	$ventilation = array();
 
