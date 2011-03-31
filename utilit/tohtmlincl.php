@@ -46,6 +46,7 @@ function bab_f_toHtml($pee, $opt) {
 		$pee = str_replace('\\', '\\\\', $pee);
 		$pee = str_replace("'", "\'", $pee);
 		$pee = str_replace('"', "'+String.fromCharCode(34)+'",$pee);
+		$pee = preg_replace("/(\r\n|\n|\r)/", '\n', $pee);
 	}
 
 	if (BAB_HTML_ENTITIES === ($opt & BAB_HTML_ENTITIES))
