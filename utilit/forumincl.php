@@ -242,6 +242,8 @@ function notifyForumGroups(bab_eventForumPost $event)
 	$thread = $event->getThreadId();	
 	$threadTitle = $event->getThreadTitle();
 	$author = $event->getPostAuthor();
+	$author = bab_getNoticesContributor($event->getPostId(), $event->getPostAuthor());
+	
 	$postId = $event->getPostId();
 	
 	$tmp = $event->getForumInfos();
@@ -298,6 +300,75 @@ function notifyForumGroups(bab_eventForumPost $event)
 		}
 		
 	}
+	
+/**
+ * Return fields to display for forums.
+ */
+function bab_getForumNotices()
+	{
+		global $babDB;
+		static $forums_fields = array();
+		
+		if( !empty($forums_fields))
+		{
+			return $forums_fields;
+		}
+		
+		include_once $GLOBALS['babInstallPath'].'utilit/dirincl.php';
+		$ret = array();
+		list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='".BAB_REGISTERED_GROUP."'"));
+		$fields = bab_getDirectoriesFields(array($iddir));
+		$res = $babDB->db_query("select * from ".BAB_FORUMS_NOTICES_TBL." order by field_order asc");
+		while($arr = $babDB->db_fetch_array($res))
+		{	
+			if( isset($fields[$arr['id_field']]))
+			{
+				$ret[] = $fields[$arr['id_field']];
+			}
+		}
+		$forums_fields = $ret;
+		return $ret;
+	}
+
+/**
+ * Return name to display instead of full name.
+ *  
+ * @param int		$id_author		The post id.
+ * @param array		$fields			fields to fetch.
+ * @param string	$author			return value if not found
+ */	
+function bab_getNoticesContributor($id_post, $author)
+{
+	global $babDB;
+	static $forums_contributors = array();
+	
+	$res = $babDB->db_query("select id_author from ".BAB_POSTS_TBL." WHERE id = " . $id_post);
+	$arr = $babDB->db_fetch_array($res);
+	$id_author = $arr['id_author'];
+	
+	if( isset($forums_contributors) && isset($forums_contributors[$id_author]))
+	{
+		$author = $forums_contributors[$id_author];
+	}
+	
+	$fields = bab_getForumNotices();
+	
+	if( $id_author && count($fields))
+	{
+		$author = '';
+		$entries = bab_getDirEntry($id_author, BAB_DIR_ENTRY_ID_USER);
+		foreach($fields as $key => $info )
+		{
+			if( isset($entries[$info['name']]))
+			{
+				$author .= ' '.bab_toHTML($entries[$info['name']]['value']);
+			}
+		}
+		$forums_contributors[$id_author] = $author;
+	}
+	
+	return $author;
+}
 
 function notifyThreadAuthor($threadTitle, $email, $author, $idpost = null)
 	{
