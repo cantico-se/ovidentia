@@ -1672,7 +1672,7 @@ function assignList($id)
 				{
 
 				$this->bview = true;
-//*
+
 				if( in_array(BAB_REGISTERED_GROUP, $arrgrpids))
 					{
 					$arrgrpids = false;
@@ -1739,7 +1739,7 @@ function assignList($id)
 				$this->count = 0;
 				$this->allselected = 1;
 				}
-//*/
+
 			}
 
 		function getnext(&$skip)
