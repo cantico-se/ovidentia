@@ -1616,7 +1616,7 @@ function dbEntryDirectories($id, $idu)
 
 
 
-function assignList($id, $pos)
+function assignList($id)
 	{
 	global $babBody;
 	class temp
@@ -1645,7 +1645,7 @@ function assignList($id, $pos)
 		var $altbg = true;
 
 
-		function temp($id, $pos)
+		function temp($id)
 			{
 			global $babDB;
 			$this->allname = bab_translate("All");
@@ -1672,48 +1672,49 @@ function assignList($id, $pos)
 				{
 
 				$this->bview = true;
-//*
+
 				if( in_array(BAB_REGISTERED_GROUP, $arrgrpids))
 					{
 					$arrgrpids = false;
 					}
 
-				if( isset($pos[0]) && $pos[0] == "-" )
+				$this->orderBy = bab_gp('order',0);
+				$this->pos = bab_gp('pos','');
+				$this->ord = '';
+				
+				$this->arrgrpids = $arrgrpids;
+				if(!$this->orderBy)
 					{
-					$this->pos = bab_toHtml($pos[1]);
-					$this->ord = bab_toHtml($pos[0]);
 					if( $arrgrpids === false )
-						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 and lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
+						{ 
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") and lastname like '".$babDB->db_escape_string($this->pos)."%' order by lastname, firstname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->pos) . "%' order by lastname, firstname asc";
 						}
 
 					$this->fullname = bab_translate("Lastname"). " " . bab_translate("Firstname");
 
-					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=lvrp&chg=&pos=".$this->ord.$this->pos."&idvr=".$this->idvr);
+					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&order=1&id=".$id);
 					}
 				else
 					{
-					$this->pos = bab_toHtml($pos);
-					$this->ord = '';
 					if( $arrgrpids === false )
 						{
-						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where  ut.disabled=0 and  firstname like '".$babDB->db_escape_string($this->pos)."%' order by firstname, lastname asc";
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
 						}
 					else
 						{
-						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") and firstname like '".$babDB->db_escape_string($this->pos)."%' order by firstname, lastname asc";
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->pos) . "%' order by firstname, lastname asc";
 						}
 
 					$this->fullname = bab_translate("Firstname"). " " . bab_translate("Lastname");
-					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&chg=&pos=".$this->ord.$this->pos."&id=".$id);
+					$this->fullnameurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&order=0&id=".$id);
 					}
 				$this->res = $babDB->db_query($req);
 				$this->count = $babDB->db_num_rows($this->res);
-
+				
 				if( empty($this->pos))
 					{
 					$this->allselected = 1;
@@ -1738,7 +1739,7 @@ function assignList($id, $pos)
 				$this->count = 0;
 				$this->allselected = 1;
 				}
-//*/
+
 			}
 
 		function getnext(&$skip)
@@ -1755,8 +1756,8 @@ function assignList($id, $pos)
 					$this->altbg = !$this->altbg;
 
 					
-					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&pos=".$this->ord.$this->pos);
-					if( $this->ord == '-' )
+					$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&id=".$this->id."&order=".$this->orderBy . "&pos=".$this->pos);
+					if(!$this->orderBy)
 						{
 						$this->urlname = bab_toHtml(bab_composeUserName($this->arr['lastname'],$this->arr['firstname']));
 						}
@@ -1786,9 +1787,37 @@ function assignList($id, $pos)
 			if( $k < 26)
 				{
 				$this->selectname = $t[$k];
-				if( $this->count )
+				
+				global $babDB;
+				
+				if(!$this->orderBy)
 					{
-					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->ord.$this->selectname."&id=".$this->id);
+					if( $this->arrgrpids === false )
+						{ 
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
+						}
+					else
+						{
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($this->arrgrpids).") AND lastname like '" . $babDB->db_escape_string($this->selectname) . "%' order by lastname, firstname asc";
+						}
+					}
+				else
+					{
+					if( $this->arrgrpids === false )
+						{
+						$req = "select ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut where ut.disabled=0 AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
+						}
+					else
+						{
+						$req = "select distinct ut.id, ut.firstname, ut.lastname from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ug on ut.id=ug.id_object where ut.disabled=0 and ug.id in (".$babDB->quote($this->arrgrpids).") AND firstname like '" . $babDB->db_escape_string($this->selectname) . "%' order by firstname, lastname asc";
+						}
+					}
+				$res = $babDB->db_query($req);
+				$count = $babDB->db_num_rows($res);
+				
+				if( $count )
+					{
+					$this->selecturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=directory&idx=assign&pos=".$this->selectname."&id=".$this->id."&order=".$this->orderBy);
 					if( $this->pos == $this->selectname)
 						{
 						$this->selected = 1;
@@ -1800,7 +1829,6 @@ function assignList($id, $pos)
 					}
 				else
 					{
-					$this->fullname = '';
 					$this->selected = 1;
 					$this->selecturl = '#';
 					}
@@ -1813,8 +1841,8 @@ function assignList($id, $pos)
 			}
 		}
 
-	$temp = new temp($id, $pos);
-
+	$temp = new temp($id);
+	
 	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
@@ -2287,7 +2315,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( ($baccess && $arr['modifiable'] == 'Y')  || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
+			if( ($baccess && $arr['modifiable'] == 'Y') || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess[$arr['name']] = $arr;
 				}
@@ -2300,7 +2328,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		{
 		while($arr = $babDB->db_fetch_array($res))
 			{
-			if( ($baccess && $arr['modifiable'] == 'Y')  || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
+			if( ($baccess && $arr['modifiable'] == 'Y') || ( ($bupd || bab_isAccessValid(BAB_DBDIRFIELDUPDATE_GROUPS_TBL, $arr['id'])) && $arr['modifiable'] == 'Y'))
 				{
 				$fxidaccess['babdirf'.$arr['id']] = $arr;
 				}
@@ -3096,15 +3124,7 @@ switch($idx)
 		break;
 
 	case 'assign':
-		$pos = bab_gp('pos', '');
-		if( isset($_GET['chg']))
-		{
-			if( $pos[0] == '-')
-				$pos = $pos[1];
-			else
-				$pos = '-' .$pos;
-		}
-		assignList($id, $pos);
+		assignList($id);
 		exit;
 		break;
 
