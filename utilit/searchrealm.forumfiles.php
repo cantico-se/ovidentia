@@ -175,23 +175,13 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 					'.BAB_FORUMS_TBL.' m 
 				WHERE 
 					f.name = '.$babDB->quote($filename).' 
-					AND f.id_post = '.$babDB->quote($id_post).' 
+					AND p.id = '.$babDB->quote($id_post).' 
 					AND f.id_post = p.id 
 					AND p.id_thread = t.id 
 					AND p.confirmed = '.$babDB->quote('Y').' 
 					AND t.forum IN('.$babDB->quote(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL)).') 
 					AND t.forum = m.id 
 			';
-			
-			$mysql = $this->getBackend('mysql');
-			$where = $criteria->toString($mysql);
-	
-			if ($where) {
-				$query .= ' AND '.$where;
-			}
-			
-
-			// bab_debug($query);
 
 			$res = $babDB->db_query($query);
 
@@ -318,7 +308,7 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 		if (isset($locations['dbtable'])) {
 			$arr += $this->dbtable($criteria);
 		}
-
+		
 		$result = new bab_SearchForumFilesResult($arr);
 		$result->setRealm($this);
 
