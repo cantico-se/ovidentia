@@ -592,7 +592,7 @@ class bab_searchFilesCls extends swishCls
 						'relevance' => (int) $matches[1][$j]
 					);
 
-				$debug .= $matches[2][$j]."\n";
+				$debug .= $matches[1][$j].' - '.$matches[2][$j]."\n";
 				}
 			}
 		bab_debug('swish-e query : \''.$this->query."'\n\n".$debug, DBG_INFO ,'swish-e');
