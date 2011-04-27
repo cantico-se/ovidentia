@@ -3253,8 +3253,10 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 		if( $req != '' )
 			{
 			if( $this->nbdays !== false)
+			{
+				$this->nbdays = (int) $this->nbdays;
 				$req .= " and date >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
-
+			}
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
 				$order = "desc";
