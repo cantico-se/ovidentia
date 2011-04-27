@@ -1482,7 +1482,7 @@ function bab_updateUserSettings()
 			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
 			}
 
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr='".$REMOTE_ADDR."', forwarded_for='".$HTTP_X_FORWARDED_FOR."', id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string(bab_rp('tg'))."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr=".$babDB->quote($REMOTE_ADDR).", forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).", id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string(bab_rp('tg'))."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
 		{
