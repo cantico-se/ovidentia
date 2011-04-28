@@ -2882,6 +2882,7 @@
 <string id="Search in a specific field :">Rechercher dans un champ spécifique :</string>
 <string id="The file is not deletable : %s">Le fichier ne peut pas être supprimé : %s</string>
 <string id="The folder is not deletable : %s">Le répertoire ne peut pas être supprimé : %s</string>
+<string id="The folder does not exists : %s">Le répertoire n'existe pas : %s</string>
 <string id="Notes content">Contenu des notes</string>
 <string id="Owner">Propriétaire</string>
 <string id="Note content">Contenu de la note</string>

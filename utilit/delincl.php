@@ -881,6 +881,14 @@ function bab_tskmgr_deleteUserContext($iIdUser)
  * @return	bool
  */
 function bab_deldir($dir, &$msgerror) {
+	
+	if (!file_exists($dir))
+	{
+		$msgerror = bab_sprintf(bab_translate('The folder does not exists : %s'), $dir);
+		return false;
+	}
+	
+	
 	$current_dir = opendir($dir);
 	while($entryname = readdir($current_dir)){
 		if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
@@ -896,7 +904,7 @@ function bab_deldir($dir, &$msgerror) {
 	}
 	closedir($current_dir);
 	if (false === rmdir($dir)) {
-		$msgerror = bab_sprintf(bab_translate('The folder is not deletable : %s'), $dir.'/'.$entryname);
+		$msgerror = bab_sprintf(bab_translate('The folder is not deletable : %s'), $dir);
 		return false;
 	}
 	return true;
