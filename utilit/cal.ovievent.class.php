@@ -478,7 +478,7 @@ class bab_cal_OviEventUpdate
 						day=".$babDB->quote($day).", 
 						hour=".$babDB->quote($hour).",  
 						minute=".$babDB->quote($minute).",  
-						bemail=".$babDB->quote($email).",  
+						bemail=".$babDB->quote($email)."   
 				WHERE 
 					id_event=".$babDB->quote($id_event)." 
 					AND id_user = ".$babDB->quote($id_user)." 
