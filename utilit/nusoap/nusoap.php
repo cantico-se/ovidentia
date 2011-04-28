@@ -698,7 +698,7 @@ class nusoap_base {
 	*/
 	function expandQname($qname){
 		// get element prefix
-		if(strpos($qname,':') && !ereg('^http://',$qname)){
+		if(strpos($qname,':') && !preg_match('/^http:\/\//',$qname)){
 			// get unqualified name
 			$name = substr(strstr($qname,':'),1);
 			// get ns prefix
@@ -3267,7 +3267,7 @@ class soap_server extends nusoap_base {
 		}
 		$this->debug("In service, query string=$qs");
 
-		if (ereg('wsdl', $qs) ){
+		if (preg_match('/wsdl/', $qs) ){
 			$this->debug("In service, this is a request for WSDL");
 			if($this->externalWSDLURL){
               if (strpos($this->externalWSDLURL,"://")!==false) { // assume URL
@@ -4831,7 +4831,7 @@ class wsdl extends nusoap_base {
 			<br><br>
 			<div class=title>'.$this->serviceName.'</div>
 			<div class=nav>
-				<p>View the <a href="'.$PHP_SELF.'?wsdl">WSDL</a> for the service.
+				<p>View the <a href="?tg=omlsoap&wsdl">WSDL</a> for the service.
 				Click on an operation name to view it&apos;s details.</p>
 				<ul>';
 				foreach($this->getOperations() as $op => $data){
