@@ -43,6 +43,13 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 	 */
 	private $rewriteIndex_rn = array();
 	
+	
+	/**
+	 * each node ID under the rewrite root node
+	 * @var array
+	 */
+	private $rewriteIndex_underRoot = array();
+	
 	/**
 	 * Tries to append the node $newNode as child of the node having the id $id.
 	 * If the node $id was not already created in the tree, $newNode is stored
@@ -57,13 +64,38 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		$sitemapItem = $newNode->getData();
 		$rewriteName = $sitemapItem->getRewriteName();
 		
+		if (isset($this->rewriteIndex_underRoot[$id]) || $rewriteName === bab_siteMap::REWRITING_ROOT_NODE)
+		{
+			$this->rewriteIndex_underRoot[$newNode->getId()] = '';
+			
+			if ($newNode->hasChildNodes())
+			{
+				// if the node allready have childnodes, the childnodes are also under base
+				// in this case, this subtree has been added before the rewriting root node
+				
+				$I = new bab_nodeIterator($newNode);
+				foreach($I as $childNode)
+				{
+					$this->rewriteIndex_underRoot[$childNode->getId()] = '';
+				}
+			}
+		}
+			
+
 		$this->rewriteIndex_id[$newNode->getId()] = array($id, $rewriteName);
-		
+
 		if (isset($this->rewriteIndex_rn[$rewriteName])) {
-			$this->rewriteIndex_rn[$rewriteName][] = $newNode->getId();
+			if (isset($this->rewriteIndex_underRoot[$newNode->getId()]))
+			{
+				// if under root node, the node will have priority in the node detection from rewrite url
+				array_unshift($this->rewriteIndex_rn[$rewriteName], $newNode->getId());
+			} else {
+				array_push($this->rewriteIndex_rn[$rewriteName], $newNode->getId());
+			}
 		} else {
 			$this->rewriteIndex_rn[$rewriteName] = array($newNode->getId());
 		}
+		
 		
 		return parent::appendChild($newNode, $id);
 	}
@@ -111,7 +143,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 		
 		
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
-			if (isset($this->rewriteIndex_id[$nodeId]) && $first === $this->rewriteIndex_id[$nodeId][1]) {
+			if (isset($this->rewriteIndex_id[$nodeId])) {
 				
 				if (0 === count($arr))
 				{
@@ -120,7 +152,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				
 				return $this->getNextRewriteNode($arr, $nodeId);
 			} else {
-				bab_debug("the node $nodeId has no parent in index or parent is not $id_parent");
+				bab_debug("the node $nodeId is not in index");
 				return null;
 			}
 		}
