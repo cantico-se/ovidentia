@@ -1582,6 +1582,7 @@ class bab_event_posted {
 	 *	'bprivate' =>
 	 *	'block' =>
 	 *	'bfree' =>
+	 *	'groupe-notif' =>
 	 *	'event_owner' =>
 	 *	'repeat_cb' =>
 	 *	'repeat_yearend' =>
@@ -1713,6 +1714,15 @@ class bab_event_posted {
 		else
 			{
 			$this->args['free'] = false;
+			}
+	
+		if( isset($data['groupe-notif']) && $data['groupe-notif'] ==  1 )
+			{
+			$this->args['groupe-notif'] = true;
+			}
+		else
+			{
+			$this->args['groupe-notif'] = false;
 			}
 	
 		$id_owner = $GLOBALS['BAB_SESS_USERID'];
@@ -2037,7 +2047,10 @@ class bab_event_posted {
 		
 		
 		$this->notifyRelationsApprobation($calendarPeriod, $oldrelations);
-		$this->notifyUpdate($calendarPeriod, $oldcalendars);
+		
+		if($this->args['groupe-notif']){
+			$this->notifyUpdate($calendarPeriod, $oldcalendars);
+		}
 		
 
 		$min = $calendarPeriod->ts_begin;

@@ -243,6 +243,9 @@ function newEvent()
 			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->minutes = array(0, 5, 10, 15, 30, 45);
 			$this->alerttxt = bab_translate("Reminder");
+			
+			$this->groupe_notiftxt = bab_translate("Send the notification");
+			
 			if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
 				{
 				$this->remailtxt = bab_translate("Use email reminder");
@@ -619,6 +622,8 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->curview = $view;
 			$this->curdate = $date;
 			$this->dtstart = $event->getProperty('DTSTART');
+			
+			$this->groupe_notiftxt = bab_translate("Send the notification");
 			
 			$this->bupdrec = bab_rp('bupdrec', 2);
 
