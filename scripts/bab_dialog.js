@@ -153,14 +153,17 @@ bab_dialog.selectdate = function(action) {
  * A user list dialog.
  * @param action function receiving an associative array with keys "id_user" and "name" as parameter.
  */
-bab_dialog.selectuser = function(action) {
+bab_dialog.selectuser = function(action, attributes) {
 
 	var useparam = {
 		'width'		: 700,
 		'height'	: 500
 	}
+	var url = '?tg=lusers&idx=brow&cb=bab_dialog';
+	if (attributes != '')
+		url += '&' + attributes;
 
-	bab_dialog('?tg=lusers&idx=brow&cb=bab_dialog', useparam , action );
+	bab_dialog(url, useparam , action );
 }
 
 /**
