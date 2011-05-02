@@ -6470,6 +6470,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		
 		
 	}
+
+	
+	/**
+	 * Upgrade to 7.4.94
+	 */
+	// Add right table to manage who will be notified when a calendar event is created/modified/deleted
+	if (!bab_isTable(BAB_CAL_PUB_NOT_GROUPS_TBL)) {
+		$babDB->db_query("
+			CREATE TABLE `".BAB_CAL_PUB_NOT_GROUPS_TBL."` 
+			  AS SELECT * FROM `".BAB_CAL_PUB_GRP_GROUPS_TBL."` 
+		");
+		
+		
+	}
+	
+	
 	
 	return true;
 }

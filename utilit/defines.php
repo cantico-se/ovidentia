@@ -147,6 +147,7 @@ define("BAB_CAL_PUBLIC_TBL", "bab_cal_public");
 define("BAB_CAL_PUB_VIEW_GROUPS_TBL", "bab_cal_pub_view_groups");
 define("BAB_CAL_PUB_MAN_GROUPS_TBL", "bab_cal_pub_man_groups");
 define("BAB_CAL_PUB_GRP_GROUPS_TBL", "bab_cal_pub_grp_groups");
+define("BAB_CAL_PUB_NOT_GROUPS_TBL", "bab_cal_pub_not_groups");
 define("BAB_CAL_RES_VIEW_GROUPS_TBL", "bab_cal_res_view_groups");
 define("BAB_CAL_RES_ADD_GROUPS_TBL", "bab_cal_res_add_groups");
 define("BAB_CAL_RES_UPD_GROUPS_TBL", "bab_cal_res_upd_groups");

@@ -366,7 +366,7 @@ class bab_eventCalendarEvent extends bab_event implements bab_eventNotifyRecipie
 			break;
 			
 		case $calendar instanceof bab_PublicCalendar:
-			$users = aclGetAccessUsers(BAB_CAL_PUB_GRP_GROUPS_TBL, $calendar->getUid());
+			$users = aclGetAccessUsers(BAB_CAL_PUB_NOT_GROUPS_TBL, $calendar->getUid());
 			break;
 			
 		case $calendar instanceof bab_ResourceCalendar:
