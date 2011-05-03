@@ -271,7 +271,9 @@ function hideDelegationSubmitBtn()
 		       	</td>
 			</tr>
 		</table>
-	
+
+
+
 		<table width="100%" border="0" cellspacing="0" cellpadding="2" align="center">
 			<tr> 
 				<td class="BabLoginCadreBackground" align="center"> 
@@ -280,13 +282,49 @@ function hideDelegationSubmitBtn()
 							<td align="center">&nbsp;</td>
 							<!--#in getnextfmfield  -->
 							<td align="center">
-							<!--#if fmfieldname "== hits" -->
-							<!--#if bCanManageCurrentFolder -->
-							{ fmfielddesc }
-							<!--#endif bCanManageCurrentFolder -->
-							<!--#else fmfieldname -->
-							{ fmfielddesc }
-							<!--#endif fmfieldname -->
+
+                           <!--#if columnname "== col-path" -->
+                            <a href="{ pathSortUrl }">{ fmfielddesc }</a><!--#if pathSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif pathSortAsc --><!--#if pathSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif pathSortDesc -->
+                           <!--#endif columnname -->
+
+                            <!--#if columnname "== col-name" -->
+                            <a href="{ nameSortUrl }">{ fmfielddesc }</a><!--#if nameSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif nameSortAsc --><!--#if nameSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif nameSortDesc -->
+                            <!--#endif columnname -->
+
+                           <!--#if columnname "== col-description" -->
+                           <a href="{ descriptionSortUrl }">{ fmfielddesc }</a><!--#if descriptionSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif descriptionSortAsc --><!--#if descriptionSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif descriptionSortDesc -->
+                           <!--#endif columnname -->
+
+                            <!--#if columnname "== col-date_update" -->
+							<a href="{ modifiedSortUrl }">{ fmfielddesc }</a><!--#if modifiedSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif modifiedSortAsc --><!--#if modifiedSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif modifiedSortDesc -->
+							<!--#endif columnname -->
+
+                            <!--#if columnname "== col-date_creation" -->
+                            <a href="{ createdSortUrl }">{ fmfielddesc }</a><!--#if createdSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif createdSortAsc --><!--#if createdSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif createdSortDesc -->
+                            <!--#endif columnname -->
+
+                           <!--#if columnname "== col-version" -->
+                            <a href="{ versionSortUrl }">{ fmfielddesc }</a><!--#if versionSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif versionSortAsc --><!--#if versionSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif versionSortDesc -->
+                           <!--#endif columnname -->
+
+                           <!--#if columnname "== col-size" -->
+                           { fmfielddesc }
+                           <!--#endif columnname -->
+
+                           <!--#if columnname "== col-author" -->
+                            <a href="{ authorSortUrl }">{ fmfielddesc }</a><!--#if authorSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif authorSortAsc --><!--#if authorSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif authorSortDesc -->
+                           <!--#endif columnname -->
+
+
+                           <!--#if columnname "== col-updatedby" -->
+                            <a href="{ updatedbySortUrl }">{ fmfielddesc }</a><!--#if updatedbySortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif updatedbySortAsc --><!--#if updatedbySortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif updatedbySortDesc -->
+                           <!--#endif columnname -->
+
+							<!--#if columnname "== col-hits" -->
+							  <!--#if bCanManageCurrentFolder -->
+							   <a href="{ hitsSortUrl }">{ fmfielddesc }</a><!--#if hitsSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif hitsSortAsc --><!--#if hitsSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif hitsSortDesc -->
+							  <!--#endif bCanManageCurrentFolder -->
+							<!--#endif columnname -->
 							</td>
 							<!--#endin getnextfmfield  -->
 							<td> <!-- icones --></td>

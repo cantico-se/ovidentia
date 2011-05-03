@@ -162,12 +162,12 @@ class listFiles
 		$this->{$this->sListFunctionName}();
 
 		$this->prepare();
-		
+
 		if('latin1' == bab_charset::getDatabase())
 		{
 			$this->autoadd_files();
 		}
-		
+
 		$this->fmfields = array();
 		$res = $babDB->db_query("select * from ".BAB_FM_HEADERS_TBL." where fmh_order != '0' order by fmh_order asc");
 		while( $arr = $babDB->db_fetch_array($res))
@@ -175,13 +175,14 @@ class listFiles
 			$this->fmfields[$arr['fmh_name']] = bab_translate($arr['fmh_description']);
 		}
 	}
-	
+
 	function getnextfmfield()
 	{
 		if( list($fhm_name,$fhm_text) = each($this->fmfields))
 		{
 			$this->fmfielddesc = $fhm_text;
 			$this->fmfieldname = $fhm_name;
+			$this->columnname = 'col-' . $fhm_name;
 			$var = 'fmh_'.$fhm_name;
 			if( isset($this->{$var}))
 			{
@@ -583,12 +584,18 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oPathName->in($this->oFileManagerEnv->sRelativePath));
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
-		$aOrder = array('sName' => 'ASC');
+
+		$order = bab_rp('order', 'sNameA');
+		$fieldName = substr($order, 0, -1);
+		$asc = (substr($order, -1) == 'A') ? 'ASC' : 'DESC';
+
+		$aOrder = array($fieldName => $asc);
+
+//		$aOrder = array('sName' => 'ASC');
 		if( is_object($this->oFileManagerEnv->oFmFolder) ){
 			if( $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder']){
 				$aOrder = array('iDisplayPosition' => 'ASC');
-			}	
+			}
 		}
 
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
@@ -602,7 +609,7 @@ class listFiles
 	/**
 	 * if there is file not presents in database, add and recreate $this->res
 	 */
-	function autoadd_files() 
+	function autoadd_files()
 	{
 		global $babDB, $babBody;
 		if(!isset($GLOBALS['babAutoAddFilesAuthorId']) || empty($GLOBALS['babAutoAddFilesAuthorId']))
@@ -858,7 +865,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_data('iMaxDownloads', $iMaxDownloads);
 		$this->set_data('sChecked', 'checked');
 		$this->set_data('sDisabled', '');
-		
+
 
 		$oFileManagerEnv =& getEnvObject();
 		if ($oFileManagerEnv->userIsInRootFolder()) {
@@ -884,18 +891,18 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->get_data('sDirName', $sDirName);
 		$this->set_data('sOldDirName', $sDirName);
 		$this->get_data('iIdFolder', $iIdFolder);
-		
+
 		$this->set_data('sCheckedOder', '');
 
 		$oFileManagerEnv =& getEnvObject();
 
-		
+
 		$manualOdrder = false;
 		$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($oFileManagerEnv->sRelativePath);
 		if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() ){
 			$manualOdrder = true;
 		}
-		
+
 		$oFmFolder = $oFmFolder = BAB_FmFolderHelper::getFmFolderById($iIdFolder);
 		if(!is_null($oFmFolder))
 		{
@@ -927,7 +934,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iIdFolder', $oFmFolder->getId());
 			$this->set_data('sOldDirName', $oFmFolder->getName());
 			$this->set_data('sChecked', '');
-			
+
 			$manualOdrder = $bManualOrder;
 
 			if ($oFileManagerEnv->userIsInRootFolder()) {
@@ -945,7 +952,7 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 			$this->set_data('iMaxDownloads', $oFileManagerEnv->oFmFolder->getMaxDownloads());
 		}
 		$this->set_data('bDelete', canCreateFolder($oFileManagerEnv->sRelativePath));
-		
+
 	}
 
 	function getNextApprobationScheme()
@@ -1403,7 +1410,7 @@ function listFiles()
 
 		var $bUnZip = false;
 
-		function temp()
+		function temp($order)
 		{
 			$this->listFiles();
 			$this->bytes = bab_translate("bytes");
@@ -1422,6 +1429,7 @@ function listFiles()
 			$this->nametxt = bab_translate("Name");
 			$this->sizetxt = bab_translate("Size");
 			$this->modifiedtxt = bab_translate("Modified");
+			$this->createdtxt = bab_translate("Created");
 			$this->postedtxt = bab_translate("Posted by");
 			$this->diskspace = bab_translate("Show disk space usage");
 			$this->hitstxt = bab_translate("Hits");
@@ -1439,9 +1447,43 @@ function listFiles()
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
 
-			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
-			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
-			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
+			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list');
+			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&id='.$iId.'&gr='.$sGr.'&path='.urlencode($this->path));
+			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=disk&id='.$iId.'&gr='.$sGr.'&path='.urlencode($this->path));
+
+
+			// Here we
+			$this->nameSortAsc = $order == 'sNameA';
+			$this->nameSortDesc = $order == 'sNameD';
+			$this->nameSortUrl = $this->refreshurl . bab_toHtml($order == 'sNameA' ? '&order=sNameD' : '&order=sNameA');
+			$this->descriptionSortAsc = $order == 'sDescriptionA';
+			$this->descriptionSortDesc = $order == 'sDescriptionD';
+			$this->descriptionSortUrl = $this->refreshurl . bab_toHtml($order == 'sDescriptionA' ? '&order=sDescriptionD' : '&order=sDescriptionA');
+			$this->modifiedSortAsc = $order == 'sModifiedA';
+			$this->modifiedSortDesc = $order == 'sModifiedD';
+			$this->modifiedSortUrl = $this->refreshurl . bab_toHtml($order == 'sModifiedA' ? '&order=sModifiedD' : '&order=sModifiedA');
+			$this->createdSortAsc = $order == 'sCreationA';
+			$this->createdSortDesc = $order == 'sCreationD';
+			$this->createdSortUrl = $this->refreshurl . bab_toHtml($order == 'sCreationA' ? '&order=sCreationD' : '&order=sCreationA');
+			$this->hitsSortAsc = $order == 'iHitsA';
+			$this->hitsSortDesc = $order == 'iHitsD';
+			$this->hitsSortUrl = $this->refreshurl . bab_toHtml($order == 'iHitsA' ? '&order=iHitsD' : '&order=iHitsA');
+			$this->versionSortAsc = $order == 'iVerMajorA';
+			$this->versionSortDesc = $order == 'iVerMajorD';
+			$this->versionSortUrl = $this->refreshurl . bab_toHtml($order == 'iVerMajorA' ? '&order=iVerMajorD' : '&order=iVerMajorA');
+			$this->pathSortAsc = $order == 'sPathNameA';
+			$this->pathSortDesc = $order == 'sPathNameD';
+			$this->pathSortUrl = $this->refreshurl . bab_toHtml($order == 'sPathNameA' ? '&order=sPathNameD' : '&order=sPathNameA');
+			$this->authorSortAsc = $order == 'iIdAuthorA';
+			$this->authorSortDesc = $order == 'iIdAuthorD';
+			$this->authorSortUrl = $this->refreshurl . bab_toHtml($order == 'iIdAuthorA' ? '&order=iIdAuthorD' : '&order=iIdAuthorA');
+			$this->updatedbySortAsc = $order == 'iIdModifierA';
+			$this->updatedbySortDesc = $order == 'iIdModifierD';
+			$this->updatedbySortUrl = $this->refreshurl . bab_toHtml($order == 'iIdModifierA' ? '&order=iIdModifierD' : '&order=iIdModifierA');
+
+			if ($order == 'sNameD') {
+				$this->aFolders = array_reverse($this->aFolders);
+			}
 
 			$this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sFunction=createFolder&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
@@ -1487,9 +1529,9 @@ function listFiles()
 			}
 			$this->bDisplayDelegationSelect = (count($this->aVisibleDelegation) > 1);
 			$this->iCurrentUserDelegation = bab_getCurrentUserDelegation();
-			
-			
-			
+
+
+
 			$oFirstCollectiveParent = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
 			if(!is_null($oFirstCollectiveParent) && $oFirstCollectiveParent->getManualOrder() && $this->bCanManageCurrentFolder){
 
@@ -1635,7 +1677,7 @@ function listFiles()
 				$this->undopasteurl = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&sAction=undopasteFolder&id=' . $iIdRootFolder .
 					'&gr=' . $this->oFileManagerEnv->sGr . '&path=' . urlencode($this->oFileManagerEnv->sPath) .
 					'&iIdSrcRootFolder=' . $iIdSrcRootFolder . '&sSrcPath=' . $sEncodedSrcPath);
-				
+
 				$this->url = bab_toHtml($GLOBALS['babUrlScript'] . '?tg=fileman&idx=list&id=' . $iIdSrcRootFolder . '&gr=' . $sGr . '&path=' . $sEncodedSrcPath);
 
 				$this->altbg = !$this->altbg;
@@ -1676,7 +1718,7 @@ function listFiles()
 
 			$this->fname = $arr['name'];
 			$this->fmh_name = $arr['name'];
-			
+
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
 			if( file_exists($sFullPathName))
 				{
@@ -1687,7 +1729,7 @@ function listFiles()
 				{
 				$this->sizef = "???";
 				}
-				
+
 			$this->fmh_size = $this->sizef;
 
 			$this->modified = bab_toHtml(bab_shortDate(bab_mktime($arr['modified']), true));
@@ -1868,7 +1910,7 @@ function listFiles()
 
 	$oFileManagerEnv =& getEnvObject();
 
-	
+
 	$babBody->title = bab_translate("File manager");
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$oFileManagerEnv->iId."&gr=".$oFileManagerEnv->sGr."&path=".urlencode($oFileManagerEnv->sPath));
 
@@ -1893,7 +1935,9 @@ function listFiles()
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'prototype/prototype.js');
 	$babBody->addJavascriptFile($GLOBALS['babScriptPath'].'scriptaculous/scriptaculous.js');
 
-	$temp = new temp();
+	$order = bab_rp('order', 'sNameA');
+	$temp = new temp($order);
+//	$temp = new temp();
 	$babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
 	return $temp->count;
 }
@@ -2187,7 +2231,7 @@ function getFile()
 		$babBody->msgerror = bab_translate("The file is not on the server");
 		return;
 	}
-	
+
 	require_once dirname(__FILE__).'/utilit/path.class.php';
 	bab_downloadFile(new bab_Path($sFullPathName), null, $inl);
 
@@ -3003,7 +3047,7 @@ function fileUnload()
 			$oFileManagerEnv	=& getEnvObject();
 			$this->message		= bab_translate("Your file list has been updated");
 			$this->close		= bab_translate("Close");
-			
+
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
 			}
 		}
@@ -3081,7 +3125,7 @@ function displayFolderForm()
 		'&path=' . urlencode($oFileManagerEnv->sPath));
 		$babBody->title = bab_translate("Edit folder");
 	}
-		
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		if(canCreateFolder($oFileManagerEnv->sRelativePath))
@@ -3110,7 +3154,7 @@ function displayFolderForm()
 
 function displayOrderFolder(){
 	global $babBody;
-	class temp{		
+	class temp{
 		var $forumtxt;
 		var $moveup;
 		var $movedown;
@@ -3134,7 +3178,7 @@ function displayOrderFolder(){
 			$this->gr_record = bab_gp('gr');
 			$this->path_record = bab_gp('path');
 			$this->sAction = "editOrder";
-			
+
 			$this->tg = bab_gp('tg');
 			$req = "select id, name from ".BAB_FILES_TBL." where id_owner=".$babDB->quote(bab_gp('iIdFolder'))." AND path='" . bab_gp('path') . "/' order by display_position, name asc";
 			$this->res = $babDB->db_query($req);
@@ -3157,22 +3201,22 @@ function displayOrderFolder(){
 			}
 		}
 	}
-	
-	
-	global $babBody;
-	
-	
 
-	
+
+	global $babBody;
+
+
+
+
 	$babBody->addItemMenu('list', bab_translate("Folders"), $GLOBALS['babUrlScript'] .
 	'?tg=fileman' .
 	'&idx=list' .
 	'&id=' . bab_gp('id','') .
 	'&gr=' . bab_gp('gr','') .
 	'&path=' . urlencode(bab_gp('path','')));
-	
 
-	
+
+
 	$babBody->addItemMenu('displayOrderFolder', bab_translate("Order files"), $GLOBALS['babUrlScript'] .
 	'?tg=fileman' .
 	'&idx=displayOrderFolder' .
@@ -3181,8 +3225,8 @@ function displayOrderFolder(){
 	'&path=' . urlencode(bab_gp('path','')) .
 	'&sDirName=' . urlencode(bab_gp('sDirName','')) .
 	'&iIdFolder=' . bab_gp('iIdFolder',''));
-	
-	
+
+
 	if (!haveRightOn(bab_gp('path'), BAB_FMMANAGERS_GROUPS_TBL))
 	{
 		$babBody->addError(bab_translate('Access denied'));
@@ -3190,33 +3234,33 @@ function displayOrderFolder(){
 	}
 
 	$temp = new temp();
-	
-	
+
+
 	$babBody->title = bab_translate("Order files");
-	
-	
+
+
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"admfms.html", "filesorder"));
-	
+
 	return true;
 }
 
 function updateOrderFiles(){
 	global $babDB, $babBody;
-	
+
 	if (!haveRightOn(bab_pp('path'), BAB_FMMANAGERS_GROUPS_TBL))
 	{
 		$babBody->addError(bab_translate('Access denied'));
 		return false;
 	}
-	
+
 	$listfiles = bab_pp('listfiles');
 	$i = 0;
 	foreach($listfiles as $fileID){
 		$babDB->db_query("UPDATE " . BAB_FILES_TBL . " SET display_position='" . $i . "' WHERE id='" . $fileID . "'");
 		$i++;
 	}
-	
+
 	return true;
 }
 
@@ -3430,7 +3474,7 @@ function undoPasteFolder()
 	$sTrgPath				= $sSrcPath;
 
 	$oFmFolder				= null;
-	
+
 	if($oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInRootFolder())
 	{
 		$bSrcPathIsCollective	= true;
@@ -3441,7 +3485,7 @@ function undoPasteFolder()
 	}
 	$sName = getLastPath($sSrcPath);
 	$sSrcPathRelativePath = addEndSlash(removeLastPath($sSrcPath . '/'));
-	
+
 	$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 	$oFmFolderCliboardSet->deleteEntry($sName, $sSrcPathRelativePath, $bSrcPathIsCollective == true ?'Y':'N');
 }
@@ -4176,7 +4220,7 @@ function deleteFolderForCollectiveDir()
 		return false;
 	}
 
-	
+
 	$iIdFld	= (int) bab_pp('iIdFolder', 0);
 	if(0 !== $iIdFld)
 	{
@@ -4276,7 +4320,7 @@ switch($sAction)
 			bab_pp('id_record') . '&gr=' . bab_pp('gr_record') . '&path=' . urlencode(bab_pp('path_record')));
 		}
 		break;
-	
+
 	case 'createFolder':
 		createFolder();
 		break;
@@ -4303,7 +4347,7 @@ switch($sAction)
 	case 'undopasteFolder':
 		undoPasteFolder();
 		break;
-	
+
 	case 'deleteFolder':
 		deleteFolder();
 		break;
@@ -4381,7 +4425,7 @@ switch($sAction)
 	case 'undopasteFile':
 		undoPasteFile();
 		break;
-	
+
 	case 'pasteFile':
 		pasteFile();
 		break;
@@ -4401,7 +4445,7 @@ switch($idx)
 	case 'displayFolderForm':
 		displayFolderForm();
 		break;
-		
+
 	case 'displayOrderFolder':
 		displayOrderFolder();
 		break;
