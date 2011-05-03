@@ -1446,11 +1446,37 @@ function listFiles()
 
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
-
-			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list');
-			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&id='.$iId.'&gr='.$sGr.'&path='.urlencode($this->path));
-			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript'].'?tg=fileman&idx=disk&id='.$iId.'&gr='.$sGr.'&path='.urlencode($this->path));
-
+			
+			$pathArray  = explode('/', $this->path);
+			$lastArray = array_pop($pathArray);
+			$pathString = '';
+			$this->pathLink = '';
+			
+			foreach($pathArray as $path){
+				if($this->pathLink == ''){
+					$pathString.= $path;
+				}else{
+					$pathString.= '/' . $path;
+				}
+				
+				$this->pathLink.= '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($pathString)) . '">' . $path . '</a>';
+			}
+			$this->pathLink.= '/'.$lastArray;
+				
+		
+			if($sGr == 'N'){
+				if($this->pathLink == '/'){
+					$this->pathLink = '/'.bab_translate('Private folder').$this->pathLink;
+				}else{
+					$this->pathLink = '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=") . '">'.bab_translate('Private folder').'</a>' . $this->pathLink;
+				}
+			}
+			
+			$this->pathLink = '<a href="' . bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list") . '">...</a>'.$this->pathLink;
+			
+			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
+			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
+			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
 			// Here we
 			$this->nameSortAsc = $order == 'sNameA';
@@ -1484,7 +1510,6 @@ function listFiles()
 			if ($order == 'sNameD') {
 				$this->aFolders = array_reverse($this->aFolders);
 			}
-
 			$this->sAddFolderFormUrl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=displayFolderForm&sFunction=createFolder&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
 			$this->sCutFolderUrl = '#';
