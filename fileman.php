@@ -1408,7 +1408,7 @@ function listFiles()
 
 		var $sWaitingFileTitle = '';
 
-		var $bUnZip = false;
+		var $bUnZip;
 
 		function temp($order)
 		{
@@ -1443,6 +1443,7 @@ function listFiles()
             $this->altfileunlock =  bab_translate("Unedit file");
             $this->altfilewrite =  bab_translate("Commit file");
 			$this->sWaitingFileTitle = bab_translate("This file is awaiting approval");
+			$this->unziptxt = bab_translate("Unzip here");
 
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
@@ -1776,6 +1777,13 @@ function listFiles()
 		{
 			global $babDB;
 			if (false !== $this->res && false !== ($arr = $babDB->db_fetch_array($this->res))) {
+				$arrName = explode('.',$arr['name']);
+				$ext = array_pop($arrName);
+				if($ext == 'zip'){
+					$this->bUnZip = true;
+				}else{
+					$this->bUnZip = false;
+				}
 				$this->altbg		= !$this->altbg;
 				$iId				= $this->oFileManagerEnv->iId;
 				$sGr				= $this->oFileManagerEnv->sGr;
@@ -1803,6 +1811,7 @@ function listFiles()
 				$this->viewurl	= bab_toHtml($sUrlFile . '&idx=viewFile');
 				$this->cuturl	= bab_toHtml($sUrlFile . '&sAction=cutFile');
 				$this->delurl	= bab_toHtml($sUrlFile . '&sAction=delFile');
+				$this->unzipurl	= bab_toHtml($sUrlFile . '&sAction=unzipFile');
 				$this->fileid	= $arr['id'];
 
 				$this->updateFileInfo($arr);
@@ -2342,6 +2351,108 @@ function delFile()
 		return true;
 	}
 	return false;
+}
+
+function unzipFile()
+{
+	global $babBody, $babDB;
+
+	$oFileManagerEnv =& getEnvObject();
+
+	if(!canUpload($oFileManagerEnv->sRelativePath))
+	{
+		$babBody->msgerror = bab_translate("Access denied");
+		return false;
+	}
+
+	$file = bab_gp('file');
+
+	$oFolderFileSet = new BAB_FolderFileSet();
+
+	$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
+	$oGroup =& $oFolderFileSet->aField['sGroup'];
+	$oState =& $oFolderFileSet->aField['sState'];
+	$oPathName =& $oFolderFileSet->aField['sPathName'];
+	$oName =& $oFolderFileSet->aField['sName'];
+	$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
+
+	$oCriteria = $oIdOwner->in($oFileManagerEnv->iIdObject);
+	$oCriteria = $oCriteria->_and($oGroup->in($oFileManagerEnv->sGr));
+	$oCriteria = $oCriteria->_and($oState->in(''));
+	$oCriteria = $oCriteria->_and($oPathName->in($oFileManagerEnv->sRelativePath));
+	$oCriteria = $oCriteria->_and($oName->in($file));
+	$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+
+	$oFolderFile = $oFolderFileSet->get($oCriteria);
+	if(bab_gp('gr','') == '' || bab_gp('idf','') == ''){
+		return false;
+	}
+	if(!is_null($oFolderFile))
+	{
+		$arrName = explode('.',$oFolderFile->getName());
+		$ext = array_pop($arrName);
+		if($ext == 'zip'){
+			/* @var $Zip Func_Archive_Zip */
+			$Zip = bab_functionality::get('Archive/Zip');
+			
+			$sUploadPath = '';
+			if (!$oFileManagerEnv->userIsInPersonnalFolder()) {
+				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
+			} else {
+				$sUploadPath = $oFileManagerEnv->getRootFmPath();
+			}
+			$sUploadPath.= $oFolderFile->getPathName();
+			
+			$babPath = new bab_Path($GLOBALS['babUploadPath'],'tmp',session_id());
+			if($babPath->isDir()){
+				$babPath->deleteDir();
+			}
+			$babPath->createDir();
+			
+			$start = time();
+			$Zip->open($sUploadPath.$oFolderFile->getName());
+			$Zip->extractTo($babPath->tostring());
+			$Zip->close();
+			
+			if($babPath->isDir()){
+				
+				$unzipSize = getDirSize($babPath->tostring());
+				if($unzipSize +  $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize']){
+					$babBody->addError(bab_translate("The file size exceed the limit configured for the file manager"));
+				}else{
+					bab_moveUnzipFolder($babPath, $oFolderFile->getPathName(), $oFileManagerEnv->getRootFmPath());
+					header('location: '. $GLOBALS['babUrl'] . 'index.php?tg=fileman&idx=list&id=' . bab_gp('id') . '&gr=' . bab_gp('gr') . '&path=' . bab_gp('path'));
+				}
+				
+				$babPath->deleteDir();
+			}
+			
+			return true;
+		}
+	}
+	return false;
+}
+
+function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
+	foreach($source as $babPath){
+		if($babPath->isDir()){
+			$currentBabPath = new bab_Path($absolutePath, $destination, $babPath->getBasename());
+			$currentBabPath->createDir();
+			$currentBabPath = new bab_Path($destination, $babPath->getBasename());
+			
+			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
+		}else{
+			$start = time();
+			$bgroup = false;
+			if(bab_gp('gr') == 'Y'){
+				$bgroup = true;
+			}
+			$fmFile = bab_FmFile::move($babPath->tostring());
+			$currentBabPath = new bab_Path($destination,$babPath->getBasename());
+			bab_importFmFile($fmFile, bab_gp('idf'), $destination, $bgroup);
+			
+		}
+	}
 }
 
 
@@ -4457,6 +4568,10 @@ switch($sAction)
 
 	case 'delFile':
 		delFile();
+		break;
+
+	case 'unzipFile':
+		unzipFile();
 		break;
 
 	case 'changeDelegation':

@@ -315,7 +315,12 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 		return false;
 	}
 
-	if($fmFile->size + $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize'])
+	static $FMTotalSize = null;
+	if(!isset($FMTotalSize)){
+		$FMTotalSize = $oFileManagerEnv->getFMTotalSize();
+	}
+	
+	if($fmFile->size +  $FMTotalSize > $GLOBALS['babMaxTotalSize'])
 	{
 		$exception = new bab_FmFileErrorException(bab_translate("The file size exceed the limit configured for the file manager"));
 		$exception->fmFileName = $fmFile->filename;

@@ -352,7 +352,7 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 	else 
 	{
 		// create new file
-		return saveFile(array($fmFile), $id_owner, $gr, $sPathName, '', '', 'N');
+		return saveFile(array($fmFile), $id_owner, $gr, $sPathName, array('0'=>''), '', 'N', null);
 	}
 }
 
