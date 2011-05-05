@@ -1219,7 +1219,6 @@ class bab_cal_OviEventSelect
 		
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
-			
 			if (!empty($arr['hash'])) {
 				if (!isset($hashcollections[$arr['hash']])) 
 				{
@@ -1230,13 +1229,15 @@ class bab_cal_OviEventSelect
 			} else {
 				if (!isset($collections[$arr['parent_calendar']]))
 				{
+					// need access right on the calendar :
 					$parent_calendar = bab_getICalendars()->getEventCalendar($arr['parent_calendar']);
+					
 					if ($parent_calendar)
 					{
 						$collections[$arr['parent_calendar']] = $backend->CalendarEventCollection($parent_calendar);
 					} else {
-						// No parent calendar ???
-						continue;
+						// No parent calendar or no access to parent calendar
+						$collections[$arr['parent_calendar']] = new bab_CalendarEventCollection;
 					}
 				}
 				$collection = $collections[$arr['parent_calendar']];

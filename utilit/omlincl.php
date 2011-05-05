@@ -5251,9 +5251,14 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 			$collection = $p->getCollection();
 			$calendar = $collection->getCalendar();
-			/* @var $calendar bab_EventCalendar */
-			$arr['id_cal'] = $calendar->getUrlIdentifier();
 			
+			if ($calendar)
+			{
+				/* @var $calendar bab_EventCalendar */
+				$arr['id_cal'] = $calendar->getUrlIdentifier();
+			} else {
+				$arr['id_cal'] = 0;
+			}
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
@@ -5262,8 +5267,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
 			
-			
-			if (!$calendar->canViewEventDetails($p))
+			// with filter
+			if ($calendar && !$calendar->canViewEventDetails($p))
 			{
 				$summary = $p->isPublic() ? bab_translate('Awaiting approval') : bab_translate('Private');
 				$description = '';
@@ -5281,10 +5286,18 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('EventCategoryId'			, $id_category);
 			$this->ctx->curctx->push('EventCategoryColor'		, $category_color);
 			$this->ctx->curctx->push('EventColor'				, $color);
-			$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
-			$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
-			$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
-			$this->ctx->curctx->push('EventCategoryName'		, $categories);
+			if ($calid_param)
+			{
+				$this->ctx->curctx->push('EventUrl'					, $GLOBALS['babUrlScript']."?tg=calendar&idx=vevent&evtid=".$id_event.$calid_param);
+				$this->ctx->curctx->push('EventCalendarUrl'			, $GLOBALS['babUrlScript']."?tg=".$this->view.$calid_param."&date=".$date);
+				$this->ctx->curctx->push('EventCategoriesPopupUrl'	, $GLOBALS['babUrlScript']."?tg=calendar&idx=viewc".$calid_param);
+			} else {
+				$this->ctx->curctx->push('EventUrl'					, '');
+				$this->ctx->curctx->push('EventCalendarUrl'			, '');
+				$this->ctx->curctx->push('EventCategoriesPopupUrl'	, '');
+			}
+			
+			$this->ctx->curctx->push('EventCategoryName'		, $categories);	
 
 			$EventOwner = isset($arr['id_cal']) ? bab_getCalendarOwner($arr['id_cal']) : '';
 

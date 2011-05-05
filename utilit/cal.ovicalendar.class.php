@@ -69,7 +69,6 @@ function bab_cal_getPublicCalendars($access_user, $calendars = null)
 		$return[] = $calendar;
 	}
 	
-	
 	return $return;
 }
 	
@@ -141,7 +140,7 @@ function bab_cal_getResourceCalendars($access_user, $calendars = null)
 function bab_cal_getPersonalCalendars($access_user, $calendars = null)
 {
 	require_once dirname(__FILE__).'/cal.eventcalendar.class.php';
-	
+	global $babDB;	
 
 	$query = "
 		select 
