@@ -266,6 +266,7 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 				'.BAB_USERS_TBL.' u
 			WHERE 
 				u.id = n.id_user 
+				AND u.disabled = 0
 				AND n.id_forum='.$babDB->quote($this->forum_id).' 
 				AND n.forum_notification IN('.$babDB->quote($types).')
 			
