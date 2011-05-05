@@ -2442,7 +2442,6 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			
 			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
 		}else{
-			$start = time();
 			$bgroup = false;
 			if(bab_gp('gr') == 'Y'){
 				$bgroup = true;
@@ -2450,7 +2449,7 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			$fmFile = bab_FmFile::move($babPath->tostring());
 			$currentBabPath = new bab_Path($destination,$babPath->getBasename());
 			bab_importFmFile($fmFile, bab_gp('idf'), $destination, $bgroup);
-			
+			bab_debug('after');
 		}
 	}
 }
