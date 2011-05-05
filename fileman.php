@@ -2409,7 +2409,6 @@ function unzipFile()
 			}
 			$babPath->createDir();
 			
-			$start = time();
 			$Zip->open($sUploadPath.$oFolderFile->getName());
 			$Zip->extractTo($babPath->tostring());
 			$Zip->close();
@@ -2448,7 +2447,7 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			}
 			$fmFile = bab_FmFile::move($babPath->tostring());
 			$currentBabPath = new bab_Path($destination,$babPath->getBasename());
-			bab_importFmFile($fmFile, bab_gp('idf'), $destination, $bgroup);
+			bab_importFmFile($fmFile, $GLOBALS['BAB_SESS_USERID'], $destination, $bgroup);
 			bab_debug('after');
 		}
 	}
