@@ -28,7 +28,7 @@ class bab_sqlExport
 	function bab_sqlExport($tables = false, $structure = 1, $drop_table = 0, $data = 0)
 		{
 		ini_set('max_execution_time','2400');
-		
+
 		$this->tables = $tables;
 		$this->opt_structure = $structure;
 		$this->opt_drop_table = $drop_table;
@@ -46,19 +46,19 @@ class bab_sqlExport
 		$this->key_index = array();
 		$this->dump = '';
 		$this->db = &$GLOBALS['babDB'];
-		
+
 		$this->commentPush(bab_translate("Ovidentia database dump"));
-		
+
 		$this->commentPush("babSiteName : ".$GLOBALS['babSiteName'],true);
 		$this->commentPush("babDBName : ".$GLOBALS['babDBName'],true);
 		$this->commentPush("babDBLogin : ".$GLOBALS['babDBLogin'],true);
 		$this->commentPush("babInstallPath : ".$GLOBALS['babInstallPath'],true);
 		$this->commentPush("babUrl : ".$GLOBALS['babUrl'],true);
-		
-		
-			
+
+
+
 		$this->commentPush(bab_translate('Ovidentia version')." : ".bab_getDbVersion(),true);
-			
+
 		$arr = $this->db->db_fetch_array($this->db->db_query("show variables like 'version'"));
 		$this->commentPush(bab_translate('Database server version')." : ".$arr['Value'],true);
 		$this->commentPush(bab_translate('Php version')." : ".phpversion(),true);
@@ -71,30 +71,30 @@ class bab_sqlExport
 				}
 			}
 		}
-		
+
 	function sqlAddslashes($str)
 		{
 		global $babDB;
 		return $babDB->db_escape_string($str);
 		}
-		
+
 	function commentPush($str,$nobr = false)
 		{
 		if (!$nobr) $this->str_output("\n");
 		$this->str_output("# ".$str."\n");
 		if (!$nobr) $this->str_output("\n");
 		}
-		
+
 	function brPush()
 		{
 		$this->str_output("\n");
 		}
-		
+
 	function autoCommaStart()
 		{
 		$this->autoComma = 1;
 		}
-		
+
 	function autoCommaEnd()
 		{
 		$this->autoComma = 0;
@@ -106,10 +106,10 @@ class bab_sqlExport
 			else
 				$this->dumpPush($this->commaGroup[$i]);
 			}
-			
+
 		$this->commaGroup = array();
 		}
-		
+
 	function dumpPush($str)
 		{
 		if ($this->autoComma)
@@ -117,7 +117,7 @@ class bab_sqlExport
 		else
 			$this->str_output($str."\n");
 		}
-		
+
 	function handleTable(&$name)
 		{
 		if ($this->opt_structure)
@@ -128,17 +128,17 @@ class bab_sqlExport
 		if ($this->opt_structure)
 			{
 			$this->dumpPush("CREATE TABLE `".$name."` (");
-			
+
 			$this->autoCommaStart();
 			}
-			
+
 		$this->table_collumn = array();
 		$describe = $this->db->db_query("DESCRIBE ".$name);
 		while($collumn = $this->db->db_fetch_array($describe))
 			{
 			$this->handleCollumn($collumn);
 			}
-			
+
 		if ($this->opt_structure)
 			{
 			$key = $this->db->db_query("SHOW KEYS FROM ".$name);
@@ -147,28 +147,28 @@ class bab_sqlExport
 				$this->handleKey($line);
 				}
 			$this->dumpKeys();
-			
+
 			$this->autoCommaEnd();
-			
-			$this->dumpPush(") TYPE=MyISAM;");
+
+			$this->dumpPush(") ;");
 			}
-			
-		
-			
+
+
+
 		if ($this->opt_data)
 			{
 			$this->commentPush(bab_translate('Dumping data for table')." `".$name."`");
-			
+
 			$select = $this->db->db_query("SELECT * FROM ".$name);
 			while($line = $this->db->db_fetch_array($select))
 				{
 				$this->handleData($line,$name);
 				}
 			}
-			
+
 		$this->brPush();
 		}
-		
+
 	function handleCollumn(&$collumn)
 		{
 		$this->table_collumn[] = $collumn['Field'];
@@ -188,14 +188,14 @@ class bab_sqlExport
 				$str .= ' NOT NULL';
 			if (!empty($collumn['Extra']))
 				$str .= ' ' . $collumn['Extra'];
-				
+
 			$this->dumpPush($str);
 			}
 		}
-		
+
 	function handleKey(&$row)
 		{
-		
+
 		$kname    = $row['Key_name'];
 		$comment  = (isset($row['Comment'])) ? $row['Comment'] : '';
 		$sub_part = (isset($row['Sub_part'])) ? $row['Sub_part'] : '';
@@ -212,29 +212,29 @@ class bab_sqlExport
 
 		if ($sub_part > 1) {
 			$this->key_index[$kname][] = $row['Column_name'] . '(' . $sub_part . ')';
-			} 
+			}
 		else {
 			$this->key_index[$kname][] = $row['Column_name'];
 			}
 		}
-		
+
 	function dumpKeys()
 		{
 		if (!is_array($this->key_index) || count($this->key_index)  == 0)
 			return false;
 		reset($this->key_index);
 
-		while (list($x, $columns) = each($this->key_index)) 
+		while (list($x, $columns) = each($this->key_index))
 			{
 			if ($x == 'PRIMARY') {
 				$schema_create = 'PRIMARY KEY (';
-				} else 
+				} else
 			if (mb_substr($x, 0, 6) == 'UNIQUE') {
 				$schema_create = 'UNIQUE ' . mb_substr($x, 7) . ' (';
-				} else 
+				} else
 			if (mb_substr($x, 0, 8) == 'FULLTEXT') {
 				$schema_create = 'FULLTEXT ' . mb_substr($x, 9) . ' (';
-				} 
+				}
 			else {
 				$schema_create = 'KEY ' . $x . ' (';
 				}
@@ -242,7 +242,7 @@ class bab_sqlExport
 			}
 		$this->key_index = array();
 		}
-		
+
 	function getType($str)
 		{
 		if (mb_substr_count($str,'(') > 0)
@@ -253,14 +253,14 @@ class bab_sqlExport
 		else
 			return $str;
 		}
-		
+
 	function handleData(&$line,&$table)
 		{
 		$value = array();
 		for ($i = 0 ; $i < count($this->table_collumn) ; $i++ )
 			{
 			$col = $this->table_collumn[$i];
-			
+
 			if (!isset($line[$col]))
 				$value[$i] = 'NULL';
 			elseif ($line[$col] == 0 || $line[$col] != '')
@@ -308,7 +308,7 @@ class bab_sqlExport
 			$this->dump .= $str;
 			}
 		}
-		
+
 	function exportFile()
 		{
 		header("content-type:text/plain");
@@ -318,13 +318,13 @@ class bab_sqlExport
 		$this->sqlExport();
 		die();
 		}
-		
+
 	function exportString()
 		{
 		$this->sqlExport(true);
 		return $this->dump;
 		}
-		
+
 	}
 
 
