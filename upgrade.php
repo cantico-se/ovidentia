@@ -59,10 +59,10 @@ function removeDir($sFullPathName)
 }
 
 
-function getUploadPathFromDataBase()	
+function getUploadPathFromDataBase()
 {
 	$babDB = &$GLOBALS['babDB'];
-	
+
 	$aData = $babDB->db_fetch_array($babDB->db_query('SELECT uploadpath FROM ' . BAB_SITES_TBL . ' WHERE name= ' . $babDB->quote($GLOBALS['babSiteName'])));
 	if(false != $aData)
 	{
@@ -76,22 +76,22 @@ function getUploadPathFromDataBase()
 		}
 		return $sUploadPath;
 	}
-}	
+}
 
 function createFmDirectories($sUploadPath)
 {
 	$sCollectiveUploadPath = $sUploadPath . 'fileManager/collectives/';
 	$sUserUploadPath = $sUploadPath . 'fileManager/users/';
-	
+
 	global $babBody;
-	
+
 	if(!is_writable($sUploadPath))
 	{
 		$babBody->addError('The directory ' . $sUploadPath . ' is not writable');
 		return false;
 	}
-	
-	
+
+
 	if(!is_dir($sUploadPath . 'fileManager'))
 	{
 		$bCollDirCreated = false;
@@ -103,7 +103,7 @@ function createFmDirectories($sUploadPath)
 			{
 				$babBody->addError('The directory: ' . $sUploadPath . 'fileManager/collectives have not been created');
 			}
-			
+
 			$bUserDirCreated = @mkdir($sUploadPath . 'fileManager/users', 0777);
 			if(false === $bCollDirCreated)
 			{
@@ -116,9 +116,9 @@ function createFmDirectories($sUploadPath)
 		}
 		return ($bCollDirCreated && $bUserDirCreated);
 	}
-	else 
+	else
 	{
-		$babBody->addError('The upgrade of the file manager have not been made because the directory ' . 
+		$babBody->addError('The upgrade of the file manager have not been made because the directory ' .
 			$sUploadPath . 'fileManager already exist');
 	}
 	return false;
@@ -140,8 +140,8 @@ function fmUpgrade()
 	{
 		if(true === createFmDirectories($sUploadPath))
 		{
-			$sQuery = 
-				'SELECT 
+			$sQuery =
+				'SELECT
 					`id` iId,
 					`folder` sName,
 					`sRelativePath` sRelativePath,
@@ -156,7 +156,7 @@ function fmUpgrade()
 				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 				{
 					$sOldPath = $sUploadPath . 'G' . $aDatas['iId'];
-					
+
 					//Dans les anciennes versions tant que l'on avait pas acc�d� au r�pertoire
 					//il n'�tait pas cr��
 					if(!is_dir($sOldPath))
@@ -167,12 +167,12 @@ function fmUpgrade()
 							return false;
 						}
 					}
-					
+
 					if(is_dir($sOldPath))
 					{
 						$sDelegationId	= (string) $aDatas['iIdDgOwner'];
 						$sNewPath		= $sCollectiveUploadPath . 'DG' . $sDelegationId;
-						
+
 						if(!is_dir($sNewPath))
 						{
 							if(false === @mkdir($sNewPath, 0777))
@@ -181,7 +181,7 @@ function fmUpgrade()
 								return false;
 							}
 						}
-						
+
 						if(is_dir($sNewPath))
 						{
 							$sFolderName = $aDatas['sName'];
@@ -190,19 +190,19 @@ function fmUpgrade()
 
 							if(true === @rename($sOldPath, $sNewPath))
 							{
-								$sQuery = 
-									'UPDATE ' . 
+								$sQuery =
+									'UPDATE ' .
 										BAB_FM_FOLDERS_TBL . '
-									SET 
-										`folder` = \'' . $babDB->db_escape_string($sFolderName) . '\' 
-									WHERE 
+									SET
+										`folder` = \'' . $babDB->db_escape_string($sFolderName) . '\'
+									WHERE
 										`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-								
+
 								$babDB->db_query($sQuery);
-								
+
 								updateFolderFilePathName($aDatas['iIdDgOwner'], $aDatas['iId'], 'Y', $sFolderName);
 							}
-							else 
+							else
 							{
 								$babBody->addError('The directory : ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
 								return false;
@@ -216,7 +216,7 @@ function fmUpgrade()
 			return true;
 		}
 	}
-	else 
+	else
 	{
 		$babBody->addError('The upload path: ' . $sUploadPath . ' is not valid');
 	}
@@ -226,15 +226,15 @@ function fmUpgrade()
 function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 {
 	$babDB = &$GLOBALS['babDB'];
-	
-	$sQuery = 
-		'SELECT 
+
+	$sQuery =
+		'SELECT
 			`id` iId,
 			`path` sPathName
 		FROM ' .
 			BAB_FILES_TBL . '
-		WHERE 
-			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\' AND 
+		WHERE
+			`id_owner` = \'' . $babDB->db_escape_string($iIdOwner) . '\' AND
 			`bgroup` = \'' . $babDB->db_escape_string($sGroup) . '\'';
 
 	$oResult = $babDB->db_query($sQuery);
@@ -248,18 +248,18 @@ function updateFolderFilePathName($iIdDgOwner, $iIdOwner, $sGroup, $sDirName)
 			{
 				$sPathName .= '/';
 			}
-			
-			$sQuery = 
-				'UPDATE ' . 
+
+			$sQuery =
+				'UPDATE ' .
 					BAB_FILES_TBL . '
-				SET 
-					`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-					`iIdDgOwner` = \'' . $babDB->db_escape_string($iIdDgOwner) . '\' 
-				WHERE 
+				SET
+					`path` = \'' . $babDB->db_escape_string($sPathName) . '\',
+					`iIdDgOwner` = \'' . $babDB->db_escape_string($iIdDgOwner) . '\'
+				WHERE
 					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-			
+
 			$babDB->db_query($sQuery);
-		}		
+		}
 	}
 	return true;
 }
@@ -269,15 +269,15 @@ function updateUsersFolderFilePathName($sUploadPath)
 	global $babBody;
 	$babDB = &$GLOBALS['babDB'];
 
-	$sQuery = 
-		'SELECT 
+	$sQuery =
+		'SELECT
 			`id` iId,
 			`path` sPathName
 		FROM ' .
 			BAB_FILES_TBL . '
-		WHERE 
+		WHERE
 			`bgroup` = \'' . $babDB->db_escape_string('N') . '\'';
-	
+
 	$oResult = $babDB->db_query($sQuery);
 	if(false !== $oResult)
 	{
@@ -285,9 +285,9 @@ function updateUsersFolderFilePathName($sUploadPath)
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
 			$sPathName = $aDatas['sPathName'];
-			
+
 			$iLength = mb_strlen($sPathName);
-			
+
 			if($iLength > 0)
 			{
 				$sPathName = str_replace('\\', '/', $sPathName);
@@ -297,26 +297,26 @@ function updateUsersFolderFilePathName($sUploadPath)
 				}
 			}
 
-			$sQuery = 
-				'UPDATE ' . 
+			$sQuery =
+				'UPDATE ' .
 					BAB_FILES_TBL . '
-				SET 
-					`path` = \'' . $babDB->db_escape_string($sPathName) . '\', 
-					`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\' 
-				WHERE 
+				SET
+					`path` = \'' . $babDB->db_escape_string($sPathName) . '\',
+					`iIdDgOwner` = \'' . $babDB->db_escape_string(0) . '\'
+				WHERE
 					`id` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-				
+
 			$babDB->db_query($sQuery);
 		}
-	}		
-	
+	}
+
 	$aBuffer = array();
-	
+
 	$oDir = dir($sUploadPath);
-	while(false !== ($sEntry = $oDir->read())) 
+	while(false !== ($sEntry = $oDir->read()))
 	{
 		// Skip pointers
-		if($sEntry == '.' || $sEntry == '..') 
+		if($sEntry == '.' || $sEntry == '..')
 		{
 			continue;
 		}
@@ -353,23 +353,23 @@ function updateFmFromPreviousUpgrade()
 	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives/';
 
 	global $babBody;
-	
+
 	if(is_dir($sUploadPath))
 	{
 		if(true === createFmDirectories($sUploadPath))
 		{
 			//Collective folders processing
-			
-			$sQuery = 
-				'SELECT 
+
+			$sQuery =
+				'SELECT
 					`id` iId,
 					`folder` sName,
 					`id_dgowner` iIdDgOwner
 				FROM ' .
 					BAB_FM_FOLDERS_TBL . '
-				WHERE 
+				WHERE
 					`sRelativePath` = \'' . $babDB->db_escape_string('') . '\'';
-		
+
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
 			{
@@ -381,7 +381,7 @@ function updateFmFromPreviousUpgrade()
 					{
 						$sDelegationId	= $aDatas['iIdDgOwner'];
 						$sNewPath		= $sCollectiveUploadPath . 'DG' . $sDelegationId;
-						
+
 						if(!is_dir($sNewPath))
 						{
 							if(false === @mkdir($sNewPath, 0777))
@@ -390,7 +390,7 @@ function updateFmFromPreviousUpgrade()
 								return false;
 							}
 						}
-						
+
 						if(is_dir($sNewPath))
 						{
 							$sNewPath .= '/' .  $aDatas['sName'];
@@ -399,42 +399,42 @@ function updateFmFromPreviousUpgrade()
 								$babBody->addError('The directory: ' . $sOldPath . ' have not been renamed to ' . $sNewPath);
 								return false;
 							}
-						}						
-					}					
+						}
+					}
 				}
 			}
-			
-			$sQuery = 
-				'SELECT 
+
+			$sQuery =
+				'SELECT
 					`id` iId,
 					`id_dgowner` iIdDgOwner
 				FROM ' .
 					BAB_FM_FOLDERS_TBL;
-		
+
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
 			{
 				$aDatas = array();
 				while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 				{
-					$sQuery = 
-						'UPDATE ' . 
+					$sQuery =
+						'UPDATE ' .
 							BAB_FILES_TBL . '
-						SET 
-							`iIdDgOwner` = \'' . $babDB->db_escape_string($aDatas['iIdDgOwner']) . '\' 
-						WHERE 
+						SET
+							`iIdDgOwner` = \'' . $babDB->db_escape_string($aDatas['iIdDgOwner']) . '\'
+						WHERE
 							`id_owner` = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-					
+
 					$babDB->db_query($sQuery);
 				}
 			}
-			
-			
+
+
 			//Personnal folders processing
-			updateUsersFolderFilePathName($sUploadPath);			
+			updateUsersFolderFilePathName($sUploadPath);
 		}
-	}	
-	else 
+	}
+	else
 	{
 		$babBody->addError('The upload path: ' . $sUploadPath . ' is not valid');
 		return false;
@@ -453,9 +453,9 @@ function processDirName($sUploadPath, $sDirName)
 	static $aTranslation = array('\\' => '_', '/' => '_', ':' => '_', '*' => '_', '?' => '_', '<' => '_', '>' => '_', '|' => '_');
 
 	$sDirName = strtr($sDirName, $aTranslation);
-	
+
 	$iIdx = 0;
-	
+
 	$sTempDirName = $sDirName;
 	while(is_dir($sUploadPath . $sTempDirName))
 	{
@@ -471,7 +471,7 @@ function __walkDirectoryRecursive($sPathName, $sCallbackFunction)
 	if(is_dir($sPathName))
 	{
 		$oDir = dir($sPathName);
-		while(false !== ($sEntry = $oDir->read())) 
+		while(false !== ($sEntry = $oDir->read()))
 		{
 			if($sEntry == '.' || $sEntry == '..')
 			{
@@ -480,13 +480,13 @@ function __walkDirectoryRecursive($sPathName, $sCallbackFunction)
 			else
 			{
 				$sFullPathName = $sPathName . '/' . $sEntry;
-				if(is_dir($sFullPathName)) 
+				if(is_dir($sFullPathName))
 				{
 					if($sEntry != 'OVF')
 					{
-						__walkDirectoryRecursive($sFullPathName, $sCallbackFunction);	
+						__walkDirectoryRecursive($sFullPathName, $sCallbackFunction);
 					}
-					else 
+					else
 					{
 						$sCallbackFunction($sFullPathName);
 					}
@@ -503,15 +503,15 @@ function __renameFmFileVersion($sPathName)
 	if(is_dir($sPathName))
 	{
 		$oDir = dir($sPathName);
-		while(false !== ($sEntry = $oDir->read())) 
+		while(false !== ($sEntry = $oDir->read()))
 		{
 			$sFullPathName = $sPathName . '/' . $sEntry;
 
-			if($sEntry == '.' || $sEntry == '..' || is_dir($sFullPathName)) 
+			if($sEntry == '.' || $sEntry == '..' || is_dir($sFullPathName))
 			{
 				continue;
 			}
-			else 
+			else
 			{
 
 				$iLength = mb_strlen($sEntry);
@@ -520,11 +520,11 @@ function __renameFmFileVersion($sPathName)
 				{
 					$sFirst	= mb_substr($sEntry, 0, 1);
 					$sEnd	= mb_substr($sEntry, 2);
-					
+
 					if(false !== $sFirst && false !== $sEnd)
 					{
 						$sVersionName = $sFirst . ',' . $sEnd;
-						
+
 						$sSrc = $sFullPathName;
 						$sTrg = $sPathName . '/' . $sVersionName;
 						if(file_exists($sSrc) && !file_exists($sTrg))
@@ -544,7 +544,7 @@ function __renameFmFilesVersions()
 {
 	$sUploadPath = getUploadPathFromDataBase();
 	$sCollectiveUploadPath 	= $sUploadPath . 'fileManager/collectives';
-	
+
 	$sCallbackFunction = '__renameFmFileVersion';
 	 __walkDirectoryRecursive($sCollectiveUploadPath, $sCallbackFunction);
 }
@@ -552,12 +552,12 @@ function __renameFmFilesVersions()
 function removeOrphanDbFileEntry()
 {
 	global $babDB;
-	
+
 	$sUploadPath = getUploadPathFromDataBase();
 	if(is_dir($sUploadPath))
 	{
-		$sQuery = 
-			'SELECT 
+		$sQuery =
+			'SELECT
 				`id` iId,
 				`name` sName,
 				`path` sPathName,
@@ -588,7 +588,7 @@ function removeOrphanDbFileEntry()
 							$sQuery = 'SELECT * FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
 //							bab_debug($sQuery);
 							$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
-							
+
 							$sQuery = 'SELECT * FROM ' . BAB_FLOW_APPROVERS_TBL . ' WHERE id = ' . $babDB->quote($arr['idsch']);
 //							bab_debug($sQuery);
 							$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
@@ -599,7 +599,7 @@ function removeOrphanDbFileEntry()
 //								bab_debug($sQuery);
 								$babDB->db_query($sQuery);
 							}
-							
+
 							$sQuery = 'DELETE FROM ' . BAB_FAR_INSTANCES_TBL . ' WHERE idschi = ' . $babDB->quote($iIdFlowApprobationInstance);
 //							bab_debug($sQuery);
 							$babDB->db_query($sQuery);
@@ -607,15 +607,15 @@ function removeOrphanDbFileEntry()
 							$sQuery = 'DELETE FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
 //							bab_debug($sQuery);
 							$babDB->db_query($sQuery);
-							
+
 							$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
 //							bab_debug($sQuery);
 							$babDB->db_query($sQuery);
 						}
 					}
-					
-					$sQuery = 
-						'SELECT 
+
+					$sQuery =
+						'SELECT
 							`ver_major` sVersionMajor,
 							`ver_minor` sVersionMinor,
 							`idfai` iIdFlowApprobationInstance
@@ -631,26 +631,26 @@ function removeOrphanDbFileEntry()
 						while(false !== ($aDataFileVer = $babDB->db_fetch_assoc($oResultFileVer)))
 						{
 							$sVersion = $aDataFileVer['sVersionMajor'] . ',' . $aDataFileVer['sVersionMinor'];
-							
+
 							$sFpn = $sRootColFmPath . $aDataFile['sPathName'] . 'OVF/' . $sVersion . ',' . $aDataFile['sName'];
-					
+
 //							bab_debug($sFpn);
-				
+
 							if(is_file($sFpn))
 							{
 //								bab_debug('unlink(' . $sFpn . ')');
 								unlink($sFpn);
 							}
-							
+
 							$iIdFlowApprobationInstance = (int) $aDataFileVer['iIdFlowApprobationInstance'];
-							
+
 							{//deleteFlowInstance
 								if(0 !== $iIdFlowApprobationInstance)
 								{
 									$sQuery = 'SELECT * FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
 //									bab_debug($sQuery);
 									$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
-									
+
 									$sQuery = 'SELECT * FROM ' . BAB_FLOW_APPROVERS_TBL . ' WHERE id = ' . $babDB->quote($arr['idsch']);
 //									bab_debug($sQuery);
 									$arr = $babDB->db_fetch_assoc($babDB->db_query($sQuery));
@@ -661,7 +661,7 @@ function removeOrphanDbFileEntry()
 //										bab_debug($sQuery);
 										$babDB->db_query($sQuery);
 									}
-									
+
 									$sQuery = 'DELETE FROM ' . BAB_FAR_INSTANCES_TBL . ' WHERE idschi = ' . $babDB->quote($iIdFlowApprobationInstance);
 //									bab_debug($sQuery);
 									$babDB->db_query($sQuery);
@@ -669,23 +669,23 @@ function removeOrphanDbFileEntry()
 									$sQuery = 'DELETE FROM ' . BAB_FA_INSTANCES_TBL . ' WHERE id = ' . $babDB->quote($iIdFlowApprobationInstance);
 //									bab_debug($sQuery);
 									$babDB->db_query($sQuery);
-									
+
 									$sQuery = 'UPDATE ' . BAB_USERS_LOG_TBL . ' SET schi_change =\'1\'';
 //									bab_debug($sQuery);
 									$babDB->db_query($sQuery);
 								}
 							}
 						}
-						
+
 						$sQuery = 'DELETE FROM ' . BAB_FM_FILESVER_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
 //						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
-					
+
 					$sQuery = 'DELETE FROM ' . BAB_FM_FILESLOG_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
 //					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
-					
+
 					$sQuery = 'DELETE FROM ' . BAB_FM_FIELDSVAL_TBL . ' WHERE id_file = ' . $babDB->quote($aDataFile['iId']);
 //					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
@@ -702,7 +702,7 @@ function removeOrphanDbFileEntry()
 function tskMgrCreateTaskFieldContext()
 {
 	global $babDB;
-	
+
 	$babDB->db_query("
 		CREATE TABLE `".BAB_TSKMGR_TASK_FIELDS_TBL."` (
 		  `iId` int(10) UNSIGNED NOT NULL auto_increment,
@@ -713,7 +713,7 @@ function tskMgrCreateTaskFieldContext()
 		)
 	");
 
-	$aTaskField = array(		
+	$aTaskField = array(
 		array('iId' => 1,	'sName' => 'sProjectSpaceName', 				'sLegend' => 'Project space name'),
 		array('iId' => 2,	'sName' => 'sProjectName', 						'sLegend' => 'Project name'),
 		array('iId' => 3,	'sName' => 'sTaskNumber', 						'sLegend' => 'Task number'),
@@ -738,21 +738,21 @@ function tskMgrCreateTaskFieldContext()
 
 	foreach($aTaskField as $aTaskFieldItem)
 	{
-		$sQuery = 
+		$sQuery =
 			'INSERT INTO ' . BAB_TSKMGR_TASK_FIELDS_TBL . ' ' .
 				'(' .
 					'`iId`, `sName`, `sLegend` ' .
 				') ' .
-			'VALUES ' . 
-				'(' . 
-					$babDB->quote($aTaskFieldItem['iId']) . ', ' . 
-					$babDB->quote($aTaskFieldItem['sName']) . ', ' . 
+			'VALUES ' .
+				'(' .
+					$babDB->quote($aTaskFieldItem['iId']) . ', ' .
+					$babDB->quote($aTaskFieldItem['sName']) . ', ' .
 					$babDB->quote($aTaskFieldItem['sLegend']) .
-				')'; 
-				
+				')';
+
 		$babDB->db_query($sQuery);
 	}
-	
+
 	$babDB->db_query("
 		CREATE TABLE `".BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL."` (
 		  `iId` int(10) UNSIGNED NOT NULL auto_increment,
@@ -766,7 +766,7 @@ function tskMgrCreateTaskFieldContext()
 		  KEY `iType` (`iType`)
 		)
 	");
-	
+
 	//For my task and personnal task
 	$aDefaultField = array(
 		array('iIdTaskField' => 20, 'iIdProject' => 0, 'iPosition' => 1, 'iType' => 0),
@@ -774,33 +774,33 @@ function tskMgrCreateTaskFieldContext()
 		array('iIdTaskField' => 14, 'iIdProject' => 0, 'iPosition' => 3, 'iType' => 0),
 		array('iIdTaskField' => 15, 'iIdProject' => 0, 'iPosition' => 4, 'iType' => 0),
 	);
-	
+
 	foreach($aDefaultField as $aDefaultFieldItem)
 	{
-		$sQuery = 
+		$sQuery =
 			'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
 				'(' .
 					'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
 				') ' .
-			'VALUES ' . 
-				'(\'\', ' . 
-					$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
-					$babDB->quote($aDefaultFieldItem['iIdProject']) . ', ' . 
-					$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
-					$babDB->quote($aDefaultFieldItem['iType']) . 
-				')'; 
-				
+			'VALUES ' .
+				'(\'\', ' .
+					$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' .
+					$babDB->quote($aDefaultFieldItem['iIdProject']) . ', ' .
+					$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' .
+					$babDB->quote($aDefaultFieldItem['iType']) .
+				')';
+
 		$babDB->db_query($sQuery);
 	}
-	
+
 	//For project
 	$aDefaultField[0]['iIdTaskField'] = 5;
 	$aDefaultField[] = array('iIdTaskField' => 17, 'iIdProject' => 0, 'iPosition' => 5, 'iType' => 0);
 	$aDefaultField[] = array('iIdTaskField' => 16, 'iIdProject' => 0, 'iPosition' => 6, 'iType' => 0);
 	$aDefaultField[] = array('iIdTaskField' => 13, 'iIdProject' => 0, 'iPosition' => 7, 'iType' => 0);
-	
-	$sQuery = 
-		'SELECT 
+
+	$sQuery =
+		'SELECT
 			`id` iId
 		FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL;
@@ -816,19 +816,19 @@ function tskMgrCreateTaskFieldContext()
 			{
 				foreach($aDefaultField as $aDefaultFieldItem)
 				{
-					$sQuery = 
+					$sQuery =
 						'INSERT INTO ' . BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL . ' ' .
 							'(' .
 								'`iId`, `iIdField`, `iIdProject`,  `iPosition`, `iType` ' .
 							') ' .
-						'VALUES ' . 
-							'(\'\', ' . 
-								$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' . 
-								$babDB->quote($aDatasProject['iId']) . ', ' . 
-								$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' . 
-								$babDB->quote($aDefaultFieldItem['iType']) . 
-							')'; 
-							
+						'VALUES ' .
+							'(\'\', ' .
+								$babDB->quote($aDefaultFieldItem['iIdTaskField']) . ', ' .
+								$babDB->quote($aDatasProject['iId']) . ', ' .
+								$babDB->quote($aDefaultFieldItem['iPosition']) . ', ' .
+								$babDB->quote($aDefaultFieldItem['iType']) .
+							')';
+
 					$babDB->db_query($sQuery);
 				}
 			}
@@ -839,22 +839,22 @@ function tskMgrCreateTaskFieldContext()
 function tskMgrRemoveDuplicateAdditionalFieldInstance()
 {
 	global $babDB;
-	
+
 	//Suppression des doublons d'instance de champs additionnels
-	$sQuery = 
+	$sQuery =
 		'SELECT ' .
-			'id iIdSpecificFieldInstance, ' . 
+			'id iIdSpecificFieldInstance, ' .
 			'idSpFldClass iIdSpFldClass, ' .
 			'idTask iIdTask ' .
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL;
-								
+
 	$oResult = $babDB->db_query($sQuery);
 	$iNumRows = $babDB->db_num_rows($oResult);
 	if(0 < $iNumRows)
 	{
 		$aSpFldClassId = array();
-		
+
 		while(false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
 			$sKey = $aDatas['iIdSpFldClass'] . '_' . $aDatas['iIdTask'];
@@ -862,23 +862,23 @@ function tskMgrRemoveDuplicateAdditionalFieldInstance()
 			{
 				$aSpFldClassId[$sKey] = $sKey;
 			}
-			else 
+			else
 			{
-				$sQuery = 
-					'DELETE FROM '	. 
+				$sQuery =
+					'DELETE FROM '	.
 						BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
 					'WHERE ' .
 						'id = \'' . $babDB->db_escape_string($aDatas['iIdSpecificFieldInstance']) . '\'';
 				$babDB->db_query($sQuery);
-				
-				$sQuery = 
-					'UPDATE ' . 
+
+				$sQuery =
+					'UPDATE ' .
 						BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 					'SET ' .
 						'refCount = refCount - 1 ' .
 					'WHERE ' .
 						'id = \'' . $babDB->db_escape_string($aDatas['iIdSpFldClass']) . '\'';
-			
+
 				//bab_debug($sQuery);
 				$babDB->db_query($sQuery);
 			}
@@ -890,15 +890,15 @@ function tskMgrRemoveDuplicateAdditionalFieldInstance()
 function tskMgrCreateProjectAdditionalFieldContext()
 {
 	global $babDB;
-	
+
 	//Pour chaque projet cr�ation de la table avec la liste des champs additionnels
-	$sQuery = 
+	$sQuery =
 		'SELECT ' .
 			'idProjectSpace iIdProjectSpace, ' .
 			'id iIdProject ' .
 		'FROM ' .
 			BAB_TSKMGR_PROJECTS_TBL;
-			
+
 //	bab_debug($sQuery);
 	$oResultProject = $babDB->db_query($sQuery);
 	$iNumRows = $babDB->db_num_rows($oResultProject);
@@ -907,10 +907,10 @@ function tskMgrCreateProjectAdditionalFieldContext()
 		while(false !== ($aDatasProject = $babDB->db_fetch_assoc($oResultProject)))
 		{
 			//Liste des champs additionnels avec leurs valeurs par d�faut et cr�ation de la table
-			$sQuery = 
+			$sQuery =
 				'SELECT ' .
-					'fb.id iIdFldClass, ' . 
-					'fb.name, ' . 
+					'fb.id iIdFldClass, ' .
+					'fb.name, ' .
 					'fb.nature iFieldType, ' .
 					'CASE fb.nature ' .
 						'WHEN \'0\' THEN ft.defaultValue ' .
@@ -920,27 +920,27 @@ function tskMgrCreateProjectAdditionalFieldContext()
 					'END AS sDefaultValue ' .
 				'FROM ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
-				'LEFT JOIN ' . 
+				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
-				'LEFT JOIN ' . 
+				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
 				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
-				'WHERE ' . 
+				'WHERE ' .
 					'idProjectSpace = \'' . $babDB->db_escape_string($aDatasProject['iIdProjectSpace']) . '\' AND ' .
 					'fb.idProject IN(\'' . $babDB->db_escape_string(0) . '\', \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\') AND ' .
-					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
-					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
-					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) . 
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' .
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' .
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) .
 					'\')';
-					
-					
+
+
 			$aFldClass = array();
-			
+
 			$aTableDefinition	= array();
 			$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
 			$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
-			
+
 //			bab_debug($sQuery);
 			$oResultField = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultField);
@@ -949,34 +949,34 @@ function tskMgrCreateProjectAdditionalFieldContext()
 				while(false !== ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
-					
+
 					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
 					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
 				}
 			}
 
 			$sTableName = 'bab_tskmgr_project' . $aDatasProject['iIdProject'] . '_additional_fields';
-			
-			if(!bab_isTable($sTableName)) 
+
+			if(!bab_isTable($sTableName))
 			{
 				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
 				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
-				
+
 				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
 //				bab_debug($sQuery);
 				$babDB->db_query($sQuery);
 			}
-			
-			
+
+
 			//Pour chaque t�che insertion des champs avec leurs valeurs si il y en a
-			$sQuery = 
+			$sQuery =
 				'SELECT ' .
-					'id iIdTask ' . 
+					'id iIdTask ' .
 				'FROM ' .
 					BAB_TSKMGR_TASKS_TBL . ' ' .
-				'WHERE ' . 
+				'WHERE ' .
 					'idProject = \'' . $babDB->db_escape_string($aDatasProject['iIdProject']) . '\'';
-						
+
 //			bab_debug($query);
 			$oResultTask = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultTask);
@@ -985,23 +985,23 @@ function tskMgrCreateProjectAdditionalFieldContext()
 				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
 				{
 					//Pour chaque t�che du projet cr�er une entr� dans la table des champs additionnels
-					$sQuery = 
+					$sQuery =
 						'SELECT ' .
-							'id iIdSpecificFieldInstance, ' . 
+							'id iIdSpecificFieldInstance, ' .
 							'idSpFldClass iIdSpFldClass, ' .
 							'value sValue, ' .
 							'idTask iIdTask ' .
 						'FROM ' .
 							BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
-						'WHERE ' . 
+						'WHERE ' .
 							'idTask = ' . $babDB->quote($aDatasTask['iIdTask']);
-												
+
 					$aProcessed		= array();
 					$aSpFldClassId	= array();
 					$aInsertField	= array('`iId`', '`iIdTask`');
 					$aInsertValue	= array('\'\'', $aDatasTask['iIdTask']);
 					$aRefCount		= array();
-					
+
 					$oResultSPF = $babDB->db_query($sQuery);
 					$iNumRows = $babDB->db_num_rows($oResultSPF);
 					if(0 < $iNumRows)
@@ -1012,54 +1012,54 @@ function tskMgrCreateProjectAdditionalFieldContext()
 							if(array_key_exists($aDatasSPF['iIdSpFldClass'], $aFldClass))
 							{
 								$aProcessed[$aDatasSPF['iIdSpFldClass']] = $aDatasSPF['iIdSpFldClass'];
-								
+
 								$aInsertField[] = '`sField' . $aDatasSPF['iIdSpFldClass'] . '`';
 								$aInsertValue[] = '\'' . $babDB->db_escape_string($aDatasSPF['sValue']) . '\'';
 							}
 						}
 					}
-					
+
 					//Mettre la valeur par d�faut
 					foreach($aFldClass as $iIdSpFldClass => $sDefaultValue)
 					{
 						if(!array_key_exists($iIdSpFldClass, $aProcessed))
 						{
 							$aRefCount[$iIdSpFldClass] = $iIdSpFldClass;
-							
+
 							$aInsertField[] = '`sField' . $iIdSpFldClass . '`';
 							$aInsertValue[] = '\'' . $babDB->db_escape_string($sDefaultValue) . '\'';
 						}
 					}
-					
-					$sQuery = 
+
+					$sQuery =
 						'INSERT INTO ' . $sTableName . ' ' .
 							'(' .
 								implode(',', $aInsertField) . ' ' .
 							') ' .
-						'VALUES ' . 
-							'(' . 
+						'VALUES ' .
+							'(' .
 								implode(',', $aInsertValue) . ' ' .
 							')';
-							 
-//					bab_debug($sQuery);		
+
+//					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
-				
+
 					foreach($aRefCount as $iIdSpFldClass)
 					{
-						$sQuery = 
-							'UPDATE ' . 
+						$sQuery =
+							'UPDATE ' .
 								BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 							'SET ' .
 								'refCount = refCount + 1 ' .
 							'WHERE ' .
 								'id = \'' . $babDB->db_escape_string($iIdSpFldClass) . '\'';
-					
+
 //						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
 				}
 			}
-		}			
+		}
 	}
 }
 
@@ -1067,16 +1067,16 @@ function tskMgrCreateProjectAdditionalFieldContext()
 function tskMgrCreateUsersAdditionalFieldContext()
 {
 	global $babDB;
-	
+
 	//Pour chaque utilisateur ayant des t�ches perso cr�ation de la table avec la liste des champs additionnels
-	$sQuery = 
+	$sQuery =
 		'SELECT ' .
 			'DISTINCT t0.idUser iIdUser ' .
 		'FROM ' .
 			BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' t0 ' .
-		'WHERE ' . 
+		'WHERE ' .
 			't0.idUser NOT IN(\'0\')';
-			
+
 //	bab_debug($sQuery);
 	$oResultUser = $babDB->db_query($sQuery);
 	$iNumRows = $babDB->db_num_rows($oResultUser);
@@ -1084,12 +1084,12 @@ function tskMgrCreateUsersAdditionalFieldContext()
 	{
 		while(false !== ($aDatasUser = $babDB->db_fetch_assoc($oResultUser)))
 		{
-			
+
 			//Liste des champs additionnels avec leurs valeurs par d�faut et cr�ation de la table
-			$sQuery = 
+			$sQuery =
 				'SELECT ' .
-					'fb.id iIdFldClass, ' . 
-					'fb.name, ' . 
+					'fb.id iIdFldClass, ' .
+					'fb.name, ' .
 					'fb.nature iFieldType, ' .
 					'CASE fb.nature ' .
 						'WHEN \'0\' THEN ft.defaultValue ' .
@@ -1099,25 +1099,25 @@ function tskMgrCreateUsersAdditionalFieldContext()
 					'END AS sDefaultValue ' .
 				'FROM ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' fb ' .
-				'LEFT JOIN ' . 
+				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . ' ft ON ft.id = fb.id ' .
-				'LEFT JOIN ' . 
+				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . ' fa ON fa.id = fb.id ' .
 				'LEFT JOIN ' .
 					BAB_TSKMGR_SPECIFIC_FIELDS_RADIO_CLASS_TBL . ' frd ON frd.idFldBase = fb.id ' .
-				'WHERE ' . 
+				'WHERE ' .
 					'fb.idUser = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' .
-					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
-					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' . 
-					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) . 
+					'(ft.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' .
+					'fa.isDefaultValue = \'' . $babDB->db_escape_string(1) . '\' OR ' .
+					'frd.isDefaultValue = \'' . $babDB->db_escape_string(1) .
 					'\')';
-			
+
 			$aFldClass = array();
-			
+
 			$aTableDefinition	= array();
 			$aTableDefinition[] = '`iId` int(11) unsigned NOT NULL auto_increment';
 			$aTableDefinition[] = '`iIdTask` int(11) unsigned NOT NULL';
-			
+
 //			bab_debug($sQuery);
 			$oResultField = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultField);
@@ -1126,36 +1126,36 @@ function tskMgrCreateUsersAdditionalFieldContext()
 				while(false !== ($aDatasField = $babDB->db_fetch_assoc($oResultField)))
 				{
 					$aFldClass[$aDatasField['iIdFldClass']] = $aDatasField['sDefaultValue'];
-					
+
 					$sType = (1 == $aDatasField['iFieldType']) ? 'TEXT' : 'VARCHAR(255)';
 					$aTableDefinition[] = '`sField' . $aDatasField['iIdFldClass'] . '` ' . $sType . ' NOT NULL';
 				}
 			}
 
 			$sTableName = 'bab_tskmgr_user' . $aDatasUser['iIdUser'] . '_additional_fields';
-			
-			if(!bab_isTable($sTableName)) 
+
+			if(!bab_isTable($sTableName))
 			{
 				$aTableDefinition[] = 'PRIMARY KEY (`iId`)';
 				$aTableDefinition[] = 'KEY `iIdTask` (`iIdTask`)';
-				
+
 				$sQuery = 'CREATE TABLE `' . $sTableName . '` (' . implode(',', $aTableDefinition) . ')';
 //				bab_debug($sQuery);
 				$babDB->db_query($sQuery);
 			}
-			
+
 			//Pour chaque t�che insertion des champs avec leurs valeurs si il y en a
-			$sQuery = 
+			$sQuery =
 				'SELECT ' .
-					'idTask iIdTask ' . 
+					'idTask iIdTask ' .
 				'FROM ' .
 					BAB_TSKMGR_TASKS_INFO_TBL . ' ' .
-				'WHERE ' . 
-					'idOwner = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' . 
+				'WHERE ' .
+					'idOwner = \'' . $babDB->db_escape_string($aDatasUser['iIdUser']) . '\' AND ' .
 					'isPersonnal = \'1\'';
-					
+
 //			bab_debug($sQuery);
-			
+
 			$oResultTask = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResultTask);
 			if(0 < $iNumRows)
@@ -1163,23 +1163,23 @@ function tskMgrCreateUsersAdditionalFieldContext()
 				while(false !== ($aDatasTask = $babDB->db_fetch_assoc($oResultTask)))
 				{
 					//Pour chaque t�che perso cr�er une entr� dans la table des champs additionnels
-					$sQuery = 
+					$sQuery =
 						'SELECT ' .
-							'id iIdSpecificFieldInstance, ' . 
+							'id iIdSpecificFieldInstance, ' .
 							'idSpFldClass iIdSpFldClass, ' .
 							'value sValue, ' .
 							'idTask iIdTask ' .
 						'FROM ' .
 							BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . ' ' .
-						'WHERE ' . 
+						'WHERE ' .
 							'idTask = ' . $babDB->quote($aDatasTask['iIdTask']);
-							
+
 					$aProcessed		= array();
 					$aSpFldClassId	= array();
 					$aInsertField	= array('`iId`', '`iIdTask`');
 					$aInsertValue	= array('\'\'', $aDatasTask['iIdTask']);
 					$aRefCount		= array();
-					
+
 					$oResultSPF = $babDB->db_query($sQuery);
 					$iNumRows = $babDB->db_num_rows($oResultSPF);
 					if(0 < $iNumRows)
@@ -1190,7 +1190,7 @@ function tskMgrCreateUsersAdditionalFieldContext()
 							if(array_key_exists($aDatasSPF['iIdSpFldClass'], $aFldClass))
 							{
 								$aProcessed[$aDatasSPF['iIdSpFldClass']] = $aDatasSPF['iIdSpFldClass'];
-								
+
 								$aInsertField[] = '`sField' . $aDatasSPF['iIdSpFldClass'] . '`';
 								$aInsertValue[] = '\'' . $babDB->db_escape_string($aDatasSPF['sValue']) . '\'';
 							}
@@ -1203,35 +1203,35 @@ function tskMgrCreateUsersAdditionalFieldContext()
 						if(!array_key_exists($iIdSpFldClass, $aProcessed))
 						{
 							$aRefCount[$iIdSpFldClass] = $iIdSpFldClass;
-							
+
 							$aInsertField[] = '`sField' . $iIdSpFldClass . '`';
 							$aInsertValue[] = '\'' . $babDB->db_escape_string($sDefaultValue) . '\'';
 						}
 					}
-					
-					$sQuery = 
+
+					$sQuery =
 						'INSERT INTO ' . $sTableName . ' ' .
 							'(' .
 								implode(',', $aInsertField) . ' ' .
 							') ' .
-						'VALUES ' . 
-							'(' . 
+						'VALUES ' .
+							'(' .
 								implode(',', $aInsertValue) . ' ' .
 							')';
-							 
-//					bab_debug($sQuery);		
+
+//					bab_debug($sQuery);
 					$babDB->db_query($sQuery);
-				
+
 					foreach($aRefCount as $iIdSpFldClass)
 					{
-						$sQuery = 
-							'UPDATE ' . 
+						$sQuery =
+							'UPDATE ' .
 								BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . ' ' .
 							'SET ' .
 								'refCount = refCount + 1 ' .
 							'WHERE ' .
 								'id = \'' . $babDB->db_escape_string($iIdSpFldClass) . '\'';
-					
+
 //						bab_debug($sQuery);
 						$babDB->db_query($sQuery);
 					}
@@ -1246,28 +1246,28 @@ function tskMgrCreateUsersAdditionalFieldContext()
 function tskMgrFieldOrderUpgrade()
 {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/upgradeincl.php';
-	
+
 	global $babDB;
-	
+
 	/*
-	if(bab_isTable(BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL))  
+	if(bab_isTable(BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL))
 	{
 		$babDB->db_query('DROP TABLE `'.BAB_TSKMGR_SELECTED_TASK_FIELDS_TBL.'`');
 	}
-	
-	if(bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
+
+	if(bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))
 	{
 		$babDB->db_query('DROP TABLE `'.BAB_TSKMGR_TASK_FIELDS_TBL.'`');
 	}
 	//*/
-	
-	if(!bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))  
+
+	if(!bab_isTable(BAB_TSKMGR_TASK_FIELDS_TBL))
 	{
 		tskMgrCreateTaskFieldContext();
 		tskMgrRemoveDuplicateAdditionalFieldInstance();
 		tskMgrCreateProjectAdditionalFieldContext();
 		tskMgrCreateUsersAdditionalFieldContext();
-		
+
 		//A la fin il faut supprimer la table des instances de champs car elle ne sert plus
 		//par d�faut lorsqu'une t�che est cr��e tous les champs sont cr��s aussi.
 	}
@@ -1355,7 +1355,7 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 		{
 		if( $arr['manager'] != 0 )
 			{
-			if( !isset($arrusersgroups[$arr['manager']])) 
+			if( !isset($arrusersgroups[$arr['manager']]))
 				{
 				$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['manager']."'");
 				$rr = $db->db_fetch_array($res2);
@@ -1369,7 +1369,7 @@ if ( $arr[0] != BAB_FMMANAGERS_GROUPS_TBL )
 					$arrusersgroups[$arr['manager']] = $id;
 					}
 				}
-			if( isset($arrusersgroups[$arr['manager']])) 
+			if( isset($arrusersgroups[$arr['manager']]))
 				{
 				$db->db_query("insert into ".BAB_FMMANAGERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['manager']]."')");
 				}
@@ -1405,7 +1405,7 @@ if ( $arr[0] != BAB_FAQMANAGERS_GROUPS_TBL )
 		{
 		if( $arr['id_manager'] != 0 )
 			{
-			if( !isset($arrusersgroups[$arr['id_manager']])) 
+			if( !isset($arrusersgroups[$arr['id_manager']]))
 				{
 				$res2 = $db->db_query("select firstname, lastname from ".BAB_USERS_TBL." where id='".$arr['id_manager']."'");
 				$rr = $db->db_fetch_array($res2);
@@ -1420,7 +1420,7 @@ if ( $arr[0] != BAB_FAQMANAGERS_GROUPS_TBL )
 
 					}
 				}
-			if( isset($arrusersgroups[$arr['id_manager']])) 
+			if( isset($arrusersgroups[$arr['id_manager']]))
 				{
 				$db->db_query("insert into ".BAB_FAQMANAGERS_GROUPS_TBL." (id_object, id_group) values ('".$arr['id']."','".$arrusersgroups[$arr['id_manager']]."')");
 				}
@@ -1516,7 +1516,7 @@ if ( $arr[0] != 'day_end_fixed' )
 		}
 	}
 
-$db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." CHANGE `quantity` `quantity` DECIMAL( 3, 1 ) UNSIGNED DEFAULT '0' NOT NULL"); 
+$db->db_query("ALTER TABLE ".BAB_VAC_RIGHTS_TBL." CHANGE `quantity` `quantity` DECIMAL( 3, 1 ) UNSIGNED DEFAULT '0' NOT NULL");
 return $ret;
 }
 
@@ -1638,7 +1638,7 @@ return $ret;
 function upgrade563to564()
 {
 $objDelegat = array(
-	BAB_SECTIONS_TBL, 
+	BAB_SECTIONS_TBL,
 	BAB_TOPICS_CATEGORIES_TBL,
 	BAB_FLOW_APPROVERS_TBL,
 	BAB_FORUMS_TBL,
@@ -1697,19 +1697,19 @@ if ($arr[0] != 'id_group')
 			else
 				{
 				$db->db_query("INSERT INTO `".BAB_DG_GROUPS_TBL."` (name, description, groups, sections, articles, faqs, forums, calendars, mails, directories, approbations, filemanager, orgchart, id_group) VALUES (
-					'".$current['name'].' - '.$arr['name']."', 
+					'".$current['name'].' - '.$arr['name']."',
 					'".$current['description']."',
 					'".$current['groups']."',
-					'".$current['sections']."', 
-					'".$current['articles']."', 
-					'".$current['faqs']."', 
-					'".$current['forums']."', 
-					'".$current['calendars']."', 
-					'".$current['mails']."', 
-					'".$current['directories']."', 
-					'".$current['approbations']."', 
-					'".$current['filemanager']."', 
-					'".$current['orgchart']."', 
+					'".$current['sections']."',
+					'".$current['articles']."',
+					'".$current['faqs']."',
+					'".$current['forums']."',
+					'".$current['calendars']."',
+					'".$current['mails']."',
+					'".$current['directories']."',
+					'".$current['approbations']."',
+					'".$current['filemanager']."',
+					'".$current['orgchart']."',
 					'".$arr['id']."'
 					)");
 
@@ -1731,8 +1731,8 @@ if ($arr[0] != 'id_group')
 			}
 		}
 
-	
-	
+
+
 
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dggroup`");
 	$db->db_query("ALTER TABLE `".BAB_GROUPS_TBL."` DROP `id_dgowner`");
@@ -1834,7 +1834,7 @@ return $ret;
 
 function upgrade564to565()
 {
-	
+
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -1865,7 +1865,7 @@ return $ret;
 
 function upgrade565to566()
 {
-	
+
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -1930,7 +1930,7 @@ return $ret;
 
 function upgrade566to570()
 {
-	
+
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -1980,7 +1980,7 @@ return $ret;
 
 function upgrade570to571()
 {
-	
+
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2003,7 +2003,7 @@ return $ret;
 
 function upgrade571to572()
 {
-	
+
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2076,7 +2076,7 @@ return $ret;
 
 
 function upgrade572to573()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2096,7 +2096,7 @@ return $ret;
 
 
 function upgrade573to574()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2119,7 +2119,7 @@ return $ret;
 }
 
 function upgrade574to575()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2147,7 +2147,7 @@ return $ret;
 }
 
 function upgrade575to576()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2170,7 +2170,7 @@ return $ret;
 
 
 function upgrade577to578()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2233,7 +2233,7 @@ if ( $arr[0] != BAB_DBDIREXPORT_GROUPS_TBL )
 		$ret = "Creation of <b>".BAB_DBDIREXPORT_GROUPS_TBL."</b> table failed !<br>";
 		return $ret;
 		}
-	
+
 	$db->db_query("insert into ".BAB_DBDIREXPORT_GROUPS_TBL." select * from ".BAB_DBDIRADD_GROUPS_TBL."");
 	}
 
@@ -2405,7 +2405,7 @@ return $ret;
 
 
 function upgrade578to579()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2426,7 +2426,7 @@ return $ret;
 
 
 function upgrade580to581()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2487,7 +2487,7 @@ return $ret;
 
 
 function upgrade581to582()
-{	
+{
 $ret = "";
 $db = & $GLOBALS['babDB'];
 
@@ -2496,7 +2496,7 @@ $arr = $db->db_fetch_assoc($res);
 $GLOBALS['babUploadPath'] = $arr['uploadpath'];
 
 if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
-	
+
 	$db->db_query("
 		CREATE TABLE `".BAB_FORUMSFILES_TBL."` (
 		`id` INT UNSIGNED NOT NULL auto_increment,
@@ -2520,9 +2520,9 @@ if (!bab_isTable(BAB_FORUMSFILES_TBL)) {
 
 		foreach($files as $file) {
 			$name = $file['name'];
-			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL." 
-				(id_post, name) 
-			VALUES 
+			$db->db_query("INSERT INTO ".BAB_FORUMSFILES_TBL."
+				(id_post, name)
+			VALUES
 				('".$db->db_escape_string($arr['id'])."','".$db->db_escape_string($name)."')
 			");
 		}
@@ -2544,11 +2544,11 @@ if (!bab_isTable(BAB_INDEX_FILES_TBL)) {
 		  UNIQUE KEY `name` (`name`),
 		  UNIQUE KEY `object` (`object`),
 		  KEY `object_2` (`object`)
-		) 
+		)
 	");
 
 	include_once $GLOBALS['babInstallPath']."utilit/searchincl.php";
-	
+
 	bab_setIndexObject( 'bab_files', 'File manager', false);
 	bab_setIndexObject( 'bab_art_files', 'Articles files', true);
 	bab_setIndexObject( 'bab_forumsfiles', 'Forum post files', false);
@@ -2594,7 +2594,7 @@ if (!bab_isTableField(BAB_ART_FILES_TBL, 'index_status')) {
 	$db->db_query("ALTER TABLE `".BAB_ART_FILES_TBL."` ADD `index_status` TINYINT( 1 ) UNSIGNED NOT NULL");
 	$db->db_query("ALTER TABLE `".BAB_ART_FILES_TBL."` ADD INDEX ( `index_status` )");
 }
-	
+
 
 
 
@@ -2674,13 +2674,13 @@ while( $arr = $db->db_fetch_array($res))
 	}
 
 	reset($results);
-	while( $r1 = each($results) ) 
+	while( $r1 = each($results) )
 	{
 		reset($r1[1]);
-		while( $r2 = each($r1[1]) ) 
+		while( $r2 = each($r1[1]) )
 		{
 			reset($r2[1]);
-			while( $r3 = each($r2[1]) ) 
+			while( $r3 = each($r2[1]) )
 			{
 			$db->db_query("insert into ".BAB_STATS_ARTICLES_NEW_TBL." (st_date, st_hour, st_nb_articles, st_id_dgowner) values ('".$r1[0]."','".$r2[0]."','".$r3[1]."', '".$r3[0]."')");
 			}
@@ -2737,13 +2737,13 @@ while( $arr = $db->db_fetch_array($res))
 	}
 
 	reset($results);
-	while( $r1 = each($results) ) 
+	while( $r1 = each($results) )
 	{
 		reset($r1[1]);
-		while( $r2 = each($r1[1]) ) 
+		while( $r2 = each($r1[1]) )
 		{
 			reset($r2[1]);
-			while( $r3 = each($r2[1]) ) 
+			while( $r3 = each($r2[1]) )
 			{
 			$db->db_query("insert into ".BAB_STATS_FMFILES_NEW_TBL." (st_date, st_hour, st_nb_files, st_id_dgowner) values ('".$r1[0]."','".$r2[0]."','".$r3[1]."', '".$r3[0]."')");
 			}
@@ -2757,7 +2757,7 @@ return $ret;
 
 
 function upgrade582to583()
-{	
+{
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
@@ -2770,7 +2770,7 @@ function upgrade582to583()
 	if (!bab_isTable(BAB_INDEX_ACCESS_TBL)) {
 
 		$db->db_query("
-		
+
 			CREATE TABLE ".BAB_INDEX_ACCESS_TBL." (
 			  file_path varchar(255) NOT NULL,
 			  id_object int(10) unsigned NOT NULL,
@@ -2780,7 +2780,7 @@ function upgrade582to583()
 			  KEY object (object),
 			  KEY id_object (id_object)
 			)
-			
+
 		");
 
 	}
@@ -2799,7 +2799,7 @@ if (!bab_isTableField(BAB_LDAP_DIRECTORIES_TBL, 'server_type')) {
 }
 
 function upgrade583to584()
-{	
+{
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
@@ -2818,15 +2818,15 @@ function upgrade583to584()
 				`idUserModified` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 				`refCount` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 				PRIMARY KEY(`id`),
-				INDEX `idDelegation`(`idDelegation`)) TYPE=MyISAM
+				INDEX `idDelegation`(`idDelegation`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECT_CREATOR_GROUPS_TBL)
 	{
@@ -2837,15 +2837,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PERSONNAL_TASK_CREATOR_GROUPS_TBL)
 	{
@@ -2856,15 +2856,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_DEFAULT_PROJECTS_MANAGERS_GROUPS_TBL)
 	{
@@ -2875,15 +2875,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_DEFAULT_PROJECTS_SUPERVISORS_GROUPS_TBL)
 	{
@@ -2894,15 +2894,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL)
 	{
@@ -2913,15 +2913,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_DEFAULT_TASK_RESPONSIBLE_GROUPS_TBL)
 	{
@@ -2932,15 +2932,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_DEFAULT_PROJECTS_CONFIGURATION_TBL)
 	{
@@ -2954,15 +2954,15 @@ function upgrade583to584()
 				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
 				`faqUrl` MEDIUMTEXT NOT NULL default '',
 				PRIMARY KEY(`id`, `idProjectSpace`),
-				INDEX `idProjectSpace`(`idProjectSpace`)) TYPE=MyISAM
+				INDEX `idProjectSpace`(`idProjectSpace`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL)
 	{
@@ -2981,15 +2981,15 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `name`(`name`),
 				INDEX `idProjectSpace`(`idProjectSpace`),
-				INDEX `idProject`(`idProject`)) TYPE=MyISAM	
+				INDEX `idProject`(`idProject`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_TEXT_CLASS_TBL)
 	{
@@ -2998,15 +2998,15 @@ function upgrade583to584()
 				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` VARCHAR(255) NOT NULL default '',
 				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '1',
-				PRIMARY KEY(`id`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_AREA_CLASS_TBL)
 	{
@@ -3015,9 +3015,9 @@ function upgrade583to584()
 				`id` INTEGER UNSIGNED NOT NULL,
 				`defaultValue` TEXT NOT NULL default '',
 				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '1',
-				PRIMARY KEY(`id`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
@@ -3034,15 +3034,15 @@ function upgrade583to584()
 				`value` VARCHAR(255) NOT NULL default '',
 				`isDefaultValue` TINYINT UNSIGNED NOT NULL default '0',
 				`position` TINYINT UNSIGNED NOT NULL default '0',
-				PRIMARY KEY(`id`)) TYPE=MyISAM
+				PRIMARY KEY(`id`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_SPECIFIC_FIELDS_INSTANCE_LIST_TBL)
 	{
@@ -3054,15 +3054,15 @@ function upgrade583to584()
 				`value` TEXT NOT NULL default '',
 				`position` INTEGER UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`, `idSpFldClass`),
-				INDEX `idSpFldClass`(`idSpFldClass`)) TYPE=MyISAM
+				INDEX `idSpFldClass`(`idSpFldClass`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_CATEGORIES_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_CATEGORIES_TBL)
 	{
@@ -3083,19 +3083,19 @@ function upgrade583to584()
 				INDEX `idProjectSpace`(`idProjectSpace`),
 				INDEX `idProject`(`idProject`),
 				INDEX `name`(`name`),
-				INDEX `refCount`(`refCount`)) TYPE=MyISAM
+				INDEX `refCount`(`refCount`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL)
 	{
@@ -3106,15 +3106,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_SUPERVISORS_GROUPS_TBL)
 	{
@@ -3125,15 +3125,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL)
 	{
@@ -3144,15 +3144,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_TASK_RESPONSIBLE_GROUPS_TBL)
 	{
@@ -3163,15 +3163,15 @@ function upgrade583to584()
 				`id_group` int( 11 ) unsigned NOT NULL default '0',
 				PRIMARY KEY ( `id` ) ,
 				KEY `id_object` ( `id_object` ) ,
-				KEY `id_group` ( `id_group` )) TYPE=MyISAM
+				KEY `id_group` ( `id_group` )) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_CONFIGURATION_TBL)
 	{
@@ -3185,15 +3185,15 @@ function upgrade583to584()
 				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
 				`faqUrl` MEDIUMTEXT NOT NULL default '',
 				PRIMARY KEY(`id`, `idProject`),
-				INDEX `idProject`(`idProject`)) TYPE=MyISAM
+				INDEX `idProject`(`idProject`)) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_TBL)
 	{
@@ -3213,15 +3213,15 @@ function upgrade583to584()
 				INDEX `idProjectSpace`(`idProjectSpace`),
 				INDEX `isLocked`(`isLocked`),
 				INDEX `state`(`state`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_COMMENTS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_COMMENTS_TBL)
 	{
@@ -3236,15 +3236,15 @@ function upgrade583to584()
 				`idUserModified` INTEGER UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`),
 				INDEX `idProject`(`idProject`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_PROJECTS_REVISIONS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_PROJECTS_REVISIONS_TBL)
 	{
@@ -3260,15 +3260,15 @@ function upgrade583to584()
 				INDEX `idProjectComment`(`idProjectComment`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_TASKS_TBL)
 	{
@@ -3303,7 +3303,7 @@ function upgrade583to584()
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
 
 		if(false == $res)
@@ -3311,7 +3311,7 @@ function upgrade583to584()
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_LINKED_TASKS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_LINKED_TASKS_TBL)
 	{
@@ -3324,15 +3324,15 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `idTask`(`idTask`),
 				INDEX `idPredecessorTask`(`idPredecessorTask`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_RESPONSIBLES_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_TASKS_RESPONSIBLES_TBL)
 	{
@@ -3344,15 +3344,15 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `idTask`(`idTask`),
 				INDEX `idResponsible`(`idResponsible`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_TASKS_COMMENTS_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_TASKS_COMMENTS_TBL)
 	{
@@ -3369,26 +3369,26 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `idProject`(`idProject`),
 				INDEX `idTask`(`idTask`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('DESCRIBE `' . BAB_DG_GROUPS_TBL . '` taskmanager'));
 	if ( $arr[0] != 'taskmanager' )
 	{
 		$res = $db->db_query('ALTER TABLE `' . BAB_DG_GROUPS_TBL .'` ADD `taskmanager`  enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER `orgchart` ');
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_WEEK_DAYS_TBL . '\''));
 	if($arr[0] != BAB_WEEK_DAYS_TBL)
 	{
@@ -3400,14 +3400,14 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `weekDay`(`weekDay`),
 				INDEX `position`(`position`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
-		
+
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
@@ -3416,7 +3416,7 @@ function upgrade583to584()
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('6', '5', '4')");
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('7', '6', '5')");
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_WORKING_HOURS_TBL . '\''));
 	if($arr[0] != BAB_WORKING_HOURS_TBL)
 	{
@@ -3430,14 +3430,14 @@ function upgrade583to584()
 				PRIMARY KEY(`id`),
 				INDEX `startHour`(`startHour`),
 				INDEX `endHour`(`endHour`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
 		}
-		
+
 		//require_once($GLOBALS['babInstallPath'] . 'utilit/workinghoursincl.php');
 		//bab_createDefaultWorkingHours(0);
 
@@ -3446,27 +3446,27 @@ function upgrade583to584()
 		while( $arr = $db->db_fetch_array($res))
 		{
 			$awd = explode(',',$arr['workdays']);
-			foreach($awd as $d) 
+			foreach($awd as $d)
 				{
 				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).",'0', '00:00:00', '24:00:00')");
 				}
-			
+
 		}
 
-		// users 
+		// users
 		$res = $db->db_query("select id_user, workdays, start_time, end_time from ".BAB_CAL_USER_OPTIONS_TBL."");
 		while( $arr = $db->db_fetch_array($res))
 		{
 			$awd = explode(',',$arr['workdays']);
-			foreach($awd as $d) 
+			foreach($awd as $d)
 				{
 				$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).",'".$arr['id_user']."', '".$arr['start_time']."', '".$arr['end_time']."')");
 				}
-			
+
 		}
 
 	}
-	
+
 	$arr = $db->db_fetch_array($db->db_query('SHOW TABLES LIKE \'' . BAB_TSKMGR_NOTICE_TBL . '\''));
 	if($arr[0] != BAB_TSKMGR_NOTICE_TBL)
 	{
@@ -3482,9 +3482,9 @@ function upgrade583to584()
 				INDEX `idProject`(`idProject`),
 				INDEX `profil`(`profil`),
 				INDEX `idEvent`(`idEvent`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return $res;
@@ -3495,14 +3495,14 @@ function upgrade583to584()
 
 
 function upgrade584to585()
-{	
+{
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
 	if (!bab_isTable(BAB_STATS_BASKETS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_STATS_BASKETS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  basket_name varchar(255) NOT NULL,
@@ -3512,7 +3512,7 @@ function upgrade584to585()
 				  id_dgowner int(11) unsigned NOT NULL,
 				  PRIMARY KEY  (id)
 				)
-			
+
 		");
 
 	}
@@ -3520,7 +3520,7 @@ function upgrade584to585()
 	if (!bab_isTable(BAB_STATSBASKETS_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_STATSBASKETS_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -3529,7 +3529,7 @@ function upgrade584to585()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -3537,7 +3537,7 @@ function upgrade584to585()
 	if (!bab_isTable(BAB_STATS_BASKET_CONTENT_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_STATS_BASKET_CONTENT_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  basket_id int(11) unsigned NOT NULL,
@@ -3549,7 +3549,7 @@ function upgrade584to585()
 				  PRIMARY KEY  (id),
 				  KEY basket_id (basket_id,bc_type)
 				)
-			
+
 		");
 
 	}
@@ -3582,7 +3582,7 @@ function upgrade585to586()
 	if (!bab_isTable(BAB_MAIL_SPOOLER_TBL)) {
 
 		$res = $db->db_query("
-		
+
 				CREATE TABLE ".BAB_MAIL_SPOOLER_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  mail_hash varchar(255) NOT NULL,
@@ -3598,7 +3598,7 @@ function upgrade585to586()
 				  PRIMARY KEY  (id),
 				  KEY mail_date (mail_date)
 				)
-			
+
 		");
 
 
@@ -3619,9 +3619,9 @@ function upgrade585to586()
 				`tasksNumerotation` TINYINT UNSIGNED NOT NULL default '1',
 				`emailNotice` TINYINT UNSIGNED NOT NULL default '1',
 				PRIMARY KEY(`id`),
-				INDEX `idUser`(`idUser`)) TYPE=MyISAM
+				INDEX `idUser`(`idUser`)) ENGINE=MyISAM
 		");
-		
+
 		if( !$res){
 			$ret = "Creation of <b>".BAB_TSKMGR_PERSONNAL_TASKS_CONFIGURATION_TBL."</b> table failed !<br>";
 			return $ret;
@@ -3638,17 +3638,17 @@ function upgrade585to586()
 				`isPersonnal` TINYINT UNSIGNED NOT NULL default '0',
 				PRIMARY KEY(`id`),
 				INDEX `idTask`(`idTask`),
-				INDEX `idOwner`(`idOwner`)) TYPE=MyISAM
+				INDEX `idOwner`(`idOwner`)) ENGINE=MyISAM
 		");
-		
+
 		if( !$res){
 			$ret = "Creation of <b>".BAB_TSKMGR_TASKS_INFO_TBL."</b> table failed !<br>";
 			return $ret;
 		}
 	}
-	
+
 	$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` CHANGE `taskNumber` `taskNumber` VARCHAR( 9 ) NOT NULL DEFAULT '0'");
-	
+
 
 	if (bab_isTableField(BAB_TSKMGR_TASKS_TBL, 'idOwner')) {
 		$db->db_query("ALTER TABLE `" . BAB_TSKMGR_TASKS_TBL . "` DROP `idOwner`");
@@ -3689,7 +3689,7 @@ function upgrade587to588()
 	if (!bab_isTable(BAB_CAL_RES_UPD_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_CAL_RES_UPD_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -3698,7 +3698,7 @@ function upgrade587to588()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -3726,7 +3726,7 @@ function upgrade588to589()
 				`idProject` INT NOT NULL,
 				`iTaskClass` INT NOT NULL,
 				PRIMARY KEY(`id`),
-				INDEX `idUser`(`idUser`)) TYPE=MyISAM
+				INDEX `idUser`(`idUser`)) ENGINE=MyISAM
 		");
 	}
 
@@ -3734,7 +3734,7 @@ function upgrade588to589()
 
 		$db->db_query("ALTER TABLE ".BAB_DG_GROUPS_TBL." ADD `battach` enum('N','Y') NOT NULL default 'N' AFTER `color`");
 	}
-	
+
 	return $ret;
 }
 
@@ -3743,12 +3743,12 @@ function upgrade589to600()
 	$ret = "";
 	$db = & $GLOBALS['babDB'];
 
-	if(!bab_isTableField(BAB_TSKMGR_CATEGORIES_TBL, 'bgColor')) 
+	if(!bab_isTableField(BAB_TSKMGR_CATEGORIES_TBL, 'bgColor'))
 	{
 		$db->db_query("ALTER TABLE ".BAB_TSKMGR_CATEGORIES_TBL." ADD `bgColor` VARCHAR( 20 ) NOT NULL , ADD `idUser` INT( 11 ) UNSIGNED NOT NULL");
 	}
-	
-	if(!bab_isTableField(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, 'idUser')) 
+
+	if(!bab_isTableField(BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL, 'idUser'))
 	{
 		$db->db_query("ALTER TABLE ".BAB_TSKMGR_SPECIFIC_FIELDS_BASE_CLASS_TBL." ADD `idUser` INT( 11 ) UNSIGNED NOT NULL");
 	}
@@ -3763,7 +3763,7 @@ function upgrade589to600()
 	if (!bab_isTable(BAB_SITES_WS_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_SITES_WS_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -3772,7 +3772,7 @@ function upgrade589to600()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -3780,7 +3780,7 @@ function upgrade589to600()
 	if (!bab_isTable(BAB_SITES_WSOVML_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_SITES_WSOVML_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -3789,7 +3789,7 @@ function upgrade589to600()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -3797,7 +3797,7 @@ function upgrade589to600()
 	if (!bab_isTable(BAB_SITES_WSFILES_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_SITES_WSFILES_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -3806,7 +3806,7 @@ function upgrade589to600()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -3877,11 +3877,11 @@ function upgrade600to601()
 				last_action_time DATETIME NOT NULL,
 				KEY id_user (id_user),
 				KEY id_session (id_session),
-				KEY login_time (login_time)	
+				KEY login_time (login_time)
 			)
 		");
 	}
-	
+
 	return $ret;
 }
 
@@ -3921,7 +3921,7 @@ function upgrade601to602()
 			if (3 == $arr['day_begin']) {
 				$time_begin = '12:00:00';
 			}
-			
+
 			if (2 == $arr['day_end']) {
 				$time_end = '11:59:59';
 			}
@@ -3930,10 +3930,10 @@ function upgrade601to602()
 			$arr['date_end']	= change_time($arr['date_end']	, $time_end);
 
 			$db->db_query("
-				UPDATE `".BAB_VAC_ENTRIES_TBL."` SET 
-					date_begin =".$db->quote($arr['date_begin']).",  
-					date_end =".$db->quote($arr['date_end'])." 
-				WHERE 
+				UPDATE `".BAB_VAC_ENTRIES_TBL."` SET
+					date_begin =".$db->quote($arr['date_begin']).",
+					date_end =".$db->quote($arr['date_end'])."
+				WHERE
 					id=".$db->quote($arr['id'])
 			);
 		}
@@ -3957,14 +3957,14 @@ function upgrade601to602()
 				PRIMARY KEY(`id`),
 				INDEX `weekDay`(`weekDay`),
 				INDEX `position`(`position`)
-				) TYPE=MyISAM
+				) ENGINE=MyISAM
 		");
-		
+
 		if(false == $res)
 		{
 			return "Creation of <b>".BAB_WEEK_DAYS_TBL."</b> failed !<br>";
 		}
-		
+
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('1', '0', '6')");
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('2', '1', '0')");
 		$db->db_query("insert into " . BAB_WEEK_DAYS_TBL . " (`id`, `weekDay`, `position`) VALUES ('3', '2', '1')");
@@ -3980,7 +3980,7 @@ function upgrade601to602()
 	}
 
 
-	
+
 
 
 	if (!bab_isTable(BAB_VAC_CALENDAR_TBL)) {
@@ -4057,8 +4057,8 @@ function upgrade601to602()
 
 
 	// working days
-	
-	
+
+
 	function setUserWd($id_user, $WDStr, $starttime, $endtime) {
 		$awd = explode(',',$WDStr);
 
@@ -4067,32 +4067,32 @@ function upgrade601to602()
 			$db->db_query("INSERT INTO ".BAB_WORKING_HOURS_TBL."( weekDay, idUser,  startHour, endHour) VALUES (".$db->quote($d).','.$db->quote($id_user).", '".$starttime."', '".$endtime."')");
 		}
 	}
-	
-	
+
+
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
-	
+
 		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser='0'");
 
 		$res = $db->db_query("SELECT workdays FROM ".BAB_SITES_TBL." WHERE name=".$db->quote($GLOBALS['babSiteName']));
 		$arr = $db->db_fetch_assoc($res);
 		setUserWd(0, $arr['workdays'], '00:00:00', '24:00:00');
 	}
-	
+
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
 		$db->db_query("DELETE FROM ".BAB_WORKING_HOURS_TBL." WHERE idUser>'0'");
-		
+
 		$res = $db->db_query("SELECT id_user, workdays, start_time, end_time FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE workdays<>".$db->quote($arr['workdays']."  AND workdays<>''"));
 		while($arr = $db->db_fetch_assoc($res)) {
 			setUserWd($arr['id_user'], $arr['workdays'], $arr['start_time'],$arr['end_time']);
 		}
-	
+
 		}
-	
+
 		if (!bab_isTableField(BAB_COMMENTS_TBL, 'id_author')) {
-	
+
 			$db->db_query("ALTER TABLE ".BAB_COMMENTS_TBL." ADD `id_author` INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL AFTER `id_topic`");
 		}
-	
+
 	return $ret;
 }
 
@@ -4107,7 +4107,7 @@ function upgrade602to603()
 
 	if (!bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'trigger_p1_begin')) {
 
-		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` 
+		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."`
 			ADD `trigger_p1_begin` DATE NOT NULL ,
 			ADD `trigger_p1_end` DATE NOT NULL ,
 			ADD `trigger_p2_begin` DATE NOT NULL ,
@@ -4116,26 +4116,26 @@ function upgrade602to603()
 
 		/**
 		 * remove trigger_inperiod
-		 * 
+		 *
 		 *	0 : Sur toute la p�riode du droit
 		 *  1 : Dans la p�riode de la r�gle
 		 *  2 : En dehors de la p�riode de la r�gle et dans la p�riode du droit
 		 */
 
 		 $res = $db->db_query("
-			SELECT 
+			SELECT
 				t1.id,
-				t1.trigger_inperiod, 
+				t1.trigger_inperiod,
 				t1.period_start,
 				t1.period_end,
 				t2.date_begin,
-				t2.date_end 
+				t2.date_end
 
-			FROM 
+			FROM
 				".BAB_VAC_RIGHTS_RULES_TBL." t1,
-				".BAB_VAC_RIGHTS_TBL." t2 
-			WHERE 
-				t1.id_right = t2.id 
+				".BAB_VAC_RIGHTS_TBL." t2
+			WHERE
+				t1.id_right = t2.id
 			");
 
 		while ($arr = $db->db_fetch_assoc($res)) {
@@ -4164,26 +4164,26 @@ function upgrade602to603()
 
 
 			$db->db_query("
-				UPDATE ".BAB_VAC_RIGHTS_RULES_TBL." 
-				SET 
-					trigger_p1_begin	=".$db->quote($trigger_p1_begin).", 
-					trigger_p1_end		=".$db->quote($trigger_p1_end).", 
-					trigger_p2_begin	=".$db->quote($trigger_p2_begin).", 
-					trigger_p2_end		=".$db->quote($trigger_p2_end)." 
-				WHERE 
+				UPDATE ".BAB_VAC_RIGHTS_RULES_TBL."
+				SET
+					trigger_p1_begin	=".$db->quote($trigger_p1_begin).",
+					trigger_p1_end		=".$db->quote($trigger_p1_end).",
+					trigger_p2_begin	=".$db->quote($trigger_p2_begin).",
+					trigger_p2_end		=".$db->quote($trigger_p2_end)."
+				WHERE
 					id=".$db->quote($arr['id'])."
 				");
 		}
 
 		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` DROP `trigger_inperiod`");
 		$db->db_query("ALTER TABLE `".BAB_VAC_RIGHTS_RULES_TBL."` ADD `trigger_overlap` TINYINT UNSIGNED NOT NULL");
-		
+
 	}
 
 	if (!bab_isTable(BAB_TAGSMAN_GROUPS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_TAGSMAN_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -4192,7 +4192,7 @@ function upgrade602to603()
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
 	}
@@ -4217,28 +4217,28 @@ function upgrade602to603()
 	if (!bab_isTable(BAB_ART_DRAFTS_TAGS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_ART_DRAFTS_TAGS_TBL." (
 				  id_draft int(11) unsigned NOT NULL default '0',
 				  id_tag int(11) unsigned NOT NULL default '0',
 				  KEY id_draft (id_draft),
 				  KEY id_tag (id_tag)
 				)
-			
+
 		");
 
 	}
 	if (!bab_isTable(BAB_ART_TAGS_TBL)) {
 
 		$db->db_query("
-		
+
 				CREATE TABLE ".BAB_ART_TAGS_TBL." (
 				  id_art int(11) unsigned NOT NULL default '0',
 				  id_tag int(11) unsigned NOT NULL default '0',
 				  KEY id_art (id_art),
 				  KEY id_tag (id_tag)
 				)
-			
+
 		");
 
 	}
@@ -4290,22 +4290,22 @@ function upgrade605to606()
 {
 	$ret = "";
 	global $babDB;
-	
+
 	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	$res = $babDB->db_query("SELECT id FROM ".BAB_INDEX_FILES_TBL."");
 	$ids = array();
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$ids[$arr['id']] = 1;
 	}
-	
+
 	if (!isset($ids[1])) {
 		$babDB->db_query("INSERT INTO bab_index_files VALUES (1, 'File manager', 'bab_files', 1, 0)");
 	}
-	
+
 	if (!isset($ids[2])) {
 		$babDB->db_query("INSERT INTO bab_index_files VALUES (2, 'Articles files', 'bab_art_files', 1, 0)");
 	}
-	
+
 	if (!isset($ids[3])) {
 		$babDB->db_query("INSERT INTO bab_index_files VALUES (3, 'Forum post files', 'bab_forumsfiles', 0, 0)");
 	}
@@ -4318,29 +4318,29 @@ function upgrade606to610()
 {
 	global $babDB;
 	$ret = "";
-	
+
 	$babDB->db_query("TRUNCATE bab_vac_calendar");
-	
+
 	if (bab_isTableField(BAB_SITES_TBL, 'workdays')) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP workdays");
 	}
-	
+
 	if (bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'workdays')) {
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_USER_OPTIONS_TBL." DROP workdays");
 	}
-	
+
 	if (!bab_isTableField(BAB_USERS_TBL, 'cookie_validity')) {
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD `cookie_validity` DATETIME NOT NULL  default '0000-00-00 00:00:00', ADD `cookie_id` VARCHAR( 255 ) NOT NULL");
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD INDEX ( `cookie_id` )");
-	} 
-	
+	}
+
 	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='odt'");
 	if (0 == $babDB->db_num_rows($res)) {
-	
+
 		$babDB->db_query("
-		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
-			(`ext`, `mimetype`) 
-		VALUES 
+		INSERT INTO `".BAB_MIME_TYPES_TBL."`
+			(`ext`, `mimetype`)
+		VALUES
 			('odt', 'application/vnd.oasis.opendocument.text'),
 			('ods', 'application/vnd.oasis.opendocument.spreadsheet'),
 			('odp', 'application/vnd.oasis.opendocument.presentation'),
@@ -4355,9 +4355,9 @@ function upgrade606to610()
 			('otg', 'application/vnd.oasis.opendocument.graphics-template')
 		");
 	}
-	
+
 	if (!bab_isTable(BAB_EVENT_LISTENERS_TBL)) {
-	
+
 		$babDB->db_query("
 		CREATE TABLE `".BAB_EVENT_LISTENERS_TBL."` (
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
@@ -4369,12 +4369,12 @@ function upgrade606to610()
 			KEY `event_class_name` (`event_class_name`)
 			)"
 		);
-		
-		
+
+
 		$babDB->db_query("INSERT INTO `".BAB_EVENT_LISTENERS_TBL."` (`id`, `event_class_name`, `function_name`, `require_file`, `addon_name`) VALUES (1, 'bab_eventCreatePeriods', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php', 'core')");
 
 	}
-	
+
 	if (!bab_isTable(BAB_INDEX_SPOOLER_TBL)) {
 		$babDB->db_query("
 			CREATE TABLE `".BAB_INDEX_SPOOLER_TBL."` (
@@ -4417,12 +4417,12 @@ function upgrade610to611()
 {
 	global $babDB;
 	$ret = "";
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 	bab_addEventListener('bab_eventPeriodModified', 'bab_vac_onModifyPeriod', 'utilit/vacincl.php');
-	
+
 	$babDB->db_query("UPDATE ".BAB_EVENT_LISTENERS_TBL." set event_class_name='bab_eventBeforePeriodsCreated' WHERE event_class_name='bab_eventCreatePeriods'");
-	
+
 	bab_addEventListener('bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php');
 
 	return $ret;
@@ -4434,42 +4434,42 @@ function upgrade612to620()
 {
 	global $babDB;
 	$ret = "";
-	
+
 	$babDB->db_query("UPDATE ".BAB_EVENT_LISTENERS_TBL." set event_class_name='bab_eventBeforePeriodsCreated' WHERE event_class_name='bab_eventCreatePeriods'");
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 	bab_addEventListener('bab_eventBeforePeriodsCreated', 'bab_NWD_onCreatePeriods', 'utilit/nwdaysincl.php');
-	
+
 	return $ret;
 }
 
 
 /**
- * This function return the version of 
+ * This function return the version of
  * Ovidentia from the version.inc
  *
  */
 /**
- * This function return the version of 
+ * This function return the version of
  * Ovidentia from the version.inc
  *
  */
 function getOvidentiaVersion()
 {
 	$sFullPathName = dirname(__FILE__) . '/version.inc';
-	
+
 	$aParsedIni = parse_ini_file($sFullPathName, true);
 	if(false === $aParsedIni)
 	{
 		return false;
 	}
-	
+
 	if(!array_key_exists('general', $aParsedIni))
 	{
 		return false;
 	}
-	
-	
+
+
 	if(!array_key_exists('version', $aParsedIni['general']))
 	{
 		return false;
@@ -4490,7 +4490,7 @@ function getOvidentiaVersion()
 function ovidentia_upgrade($version_base,$version_ini) {
 
 	global $babBody, $babDB;
-	
+
 
 	/**
 	 * Upgrade to 6.7.92 The first version that support UTF-8
@@ -4498,52 +4498,52 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if(!extension_loaded('mbstring'))
 	{
 		$babBody->addError('The update cannot be done because the mbstring extension is not loaded');
-		return false;	
+		return false;
 	}
 
 	if(version_compare(PHP_VERSION, '5.1.0', '<'))
 	{
-		$babBody->addError('The update cannot be done because the minimum version of php should be 5.1.0');	
-		return false;	
+		$babBody->addError('The update cannot be done because the minimum version of php should be 5.1.0');
+		return false;
 	}
-	
+
 	$sOvVersion = getOvidentiaVersion();
 	if(false === $sOvVersion)
 	{
-		$babBody->addError('The update cannot be done because the version of Ovidentia cannot be determined');	
-		return false;	
+		$babBody->addError('The update cannot be done because the version of Ovidentia cannot be determined');
+		return false;
 	}
-	
+
 	if(version_compare($sOvVersion, '6.7.92', '<'))
 	{
 		$oResult = $babDB->db_query("SHOW VARIABLES LIKE 'character_set_database'");
 		if(false === $oResult)
 		{
-			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
-			return false;	
+			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');
+			return false;
 		}
-		
+
 		$aDbCharset = $babDB->db_fetch_assoc($oResult);
 		if(false === $aDbCharset)
 		{
-			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');	
-			return false;	
+			$babBody->addError('The update cannot be performed because the charset of the database cannot be determined');
+			return false;
 		}
-		
+
 		if('latin1' != $aDbCharset['Value'])
 		{
-			$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');	
-			$babBody->addError('Please make a backup of your database and then convert it into latin1');	
-			return false;	
+			$babBody->addError('The update cannot be performed because the charset of the database is not in latin1');
+			$babBody->addError('Please make a backup of your database and then convert it into latin1');
+			return false;
 		}
-	}	
-	
-	
+	}
+
+
 	/**
 	 * Old upgrades
 	 * from 5.5.3 to 6.2.0
 	 */
-	
+
 	upgrade553to554();
 	upgrade554to555();
 	upgrade555to556();
@@ -4577,24 +4577,24 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	upgrade604to605();
 	upgrade605to606();
 	upgrade606to610();
-	
-	
+
+
 	if (!bab_isTableField(BAB_EVENT_LISTENERS_TBL, 'priority')) {
 		$babDB->db_query("ALTER TABLE ".BAB_EVENT_LISTENERS_TBL." ADD priority INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
 	}
-	
+
 	upgrade610to611();
 	upgrade612to620();
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Upgrade to 6.3.0
 	 */
-	 
-	
-	
+
+
+
 	if (!bab_isTable(BAB_UPGRADE_MESSAGES_TBL)) {
 		$babDB->db_query('
 			CREATE TABLE `'.BAB_UPGRADE_MESSAGES_TBL.'` (
@@ -4608,32 +4608,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		');
 	}
-	
+
 	/**
 	 * Upgrade to 6.3.1 nothing todo
 	 */
-	
+
 	/**
 	 * Upgrade to 6.4.0
 	 */
-	 
-	 
-	
-	
+
+
+
+
 	// event registration for htmlarea editor
 	include_once $GLOBALS['babInstallPath']."utilit/eventincl.php";
 	// bab_addEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
 	// bab_addEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
 	// bab_addEventListener('bab_eventEditorContentToHtml'		, 'htmlarea_onContentToHtml'	, 'utilit/htmlareaincl.php'	, BAB_ADDON_CORE_NAME, 100);
-	// commented on 7.3.96 
-	
-	
+	// commented on 7.3.96
+
+
 	// event registration for editor core implementations
 	bab_addEventListener('bab_eventEditors'					, 'bab_onEventEditors'			, 'utilit/editorincl.php');
-	
+
 	// event registration for editor core functionalities
 	bab_addEventListener('bab_eventEditorFunctions'			, 'bab_onEditorFunctions'		, 'utilit/editorincl.php');
-	
+
 	/**
 	 * Upgrade to 6.5.0
 	 */
@@ -4646,7 +4646,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$wdays[] = $arr['weekDay'];
 	}
 
-	// users 
+	// users
 	$res = $babDB->db_query("select id_user, start_time, end_time from ".BAB_CAL_USER_OPTIONS_TBL."");
 	while( $arr = $babDB->db_fetch_array($res))
 	{
@@ -4659,12 +4659,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			}
 		}
 	}
-	
-	if (!bab_isTable(BAB_DG_ACL_GROUPS_TBL)) 
+
+	if (!bab_isTable(BAB_DG_ACL_GROUPS_TBL))
 		{
 
 		$babDB->db_query("
-		
+
 				CREATE TABLE ".BAB_DG_ACL_GROUPS_TBL." (
 				  id int(11) unsigned NOT NULL auto_increment,
 				  id_object int(11) unsigned NOT NULL default '0',
@@ -4673,10 +4673,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				  KEY id_object (id_object),
 				  KEY id_group (id_group)
 				)
-			
+
 		");
 
-	
+
 		$resdg = $babDB->db_query("select id, name, description from ".BAB_DG_GROUPS_TBL);
 
 		while( $arrdg = $babDB->db_fetch_array($resdg))
@@ -4719,7 +4719,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 
 
-	if (!bab_isTableField(BAB_FAR_INSTANCES_TBL, 'far_order')) 
+	if (!bab_isTableField(BAB_FAR_INSTANCES_TBL, 'far_order'))
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_FAR_INSTANCES_TBL." ADD far_order INT( 11 )  UNSIGNED DEFAULT '0' NOT NULL");
 		$res = $babDB->db_query("select fat.*, fit.iduser, fit.id as fitid from ".BAB_FLOW_APPROVERS_TBL." fat left join ".BAB_FA_INSTANCES_TBL." fit on  fat.id=fit.idsch");
@@ -4763,32 +4763,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET schi_change='1'");
 		}
 
-	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_userdn')) 
+	if (!bab_isTableField(BAB_SITES_TBL, 'ldap_userdn'))
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_userdn TEXT NOT NULL");
 		}
 
-	if (bab_isTableField(BAB_SITES_TBL, 'ldap_password')) 
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_password'))
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_password");
 		}
 
-	if (bab_isTableField(BAB_SITES_TBL, 'ldap_passwordtype')) 
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_passwordtype'))
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_passwordtype");
 		}
 
-	if (bab_isTableField(BAB_SITES_TBL, 'ldap_basedn')) 
+	if (bab_isTableField(BAB_SITES_TBL, 'ldap_basedn'))
 		{
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." DROP ldap_basedn");
 		}
 
-	
-	if (!bab_isTable(BAB_FMNOTIFY_GROUPS_TBL)) 
+
+	if (!bab_isTable(BAB_FMNOTIFY_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_FMNOTIFY_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -4797,7 +4797,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	$babDB->db_query("insert into ".BAB_FMNOTIFY_GROUPS_TBL." select * from ".BAB_FMDOWNLOAD_GROUPS_TBL."");
 
@@ -4806,14 +4806,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTable(BAB_FILES_TAGS_TBL) && bab_isTableField(BAB_FILES_TBL, 'keywords')) {
 
 		$babDB->db_query("
-		
+
 				CREATE TABLE ".BAB_FILES_TAGS_TBL." (
 				  id_file int(11) unsigned NOT NULL default '0',
 				  id_tag int(11) unsigned NOT NULL default '0',
 				  KEY id_file (id_file),
 				  KEY id_tag (id_tag)
 				)
-			
+
 		");
 
 		$res = $babDB->db_query("select * from ".BAB_TAGS_TBL."");
@@ -4822,7 +4822,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		{
 			$tags[$arr['tag_name']] = $arr['id'];
 		}
-		
+
 		$res = $babDB->db_query("select id, keywords from ".BAB_FILES_TBL."");
 		while( $arr = $babDB->db_fetch_array($res))
 		{
@@ -4851,7 +4851,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$babDB->db_query("ALTER TABLE ".BAB_FILES_TBL." DROP keywords");
 	}
 
-	if(!bab_isTableField(BAB_TSKMGR_TASK_LIST_FILTER_TBL, 'iTaskCompletion')) 
+	if(!bab_isTableField(BAB_TSKMGR_TASK_LIST_FILTER_TBL, 'iTaskCompletion'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_TSKMGR_TASK_LIST_FILTER_TBL." ADD `iTaskCompletion` INT(11) NOT NULL default '-1'");
 	}
@@ -4863,23 +4863,23 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// There was still a few registry information related to the kernel not
 	// placed under the /bab/ node.
 	$registry = bab_getRegistryInstance();
-	
+
 	if ($registry)
 	{
 		// Registry about orgcharts is now in "/bab/orgchart/"
 		$registry->moveDirectory('/orgchart/', '/bab/orgchart/');
-	
+
 		// Registry about statistics is now in "/bab/statistics/"
 		$registry->moveDirectory('/statistics/', '/bab/statistics/');
 	}
 
-	
+
 	/**
 	 * Upgrade to 6.5.92
 	 */
 
 	 /* this flag allow admin to specify if users can add tags to thesaurus or not */
-	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'baddtags')) 
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'baddtags'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD baddtags ENUM('Y','N') DEFAULT 'Y' NOT NULL");
 	}
@@ -4906,12 +4906,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY `iIdOwner` (`iIdOwner`)
 			)
 		");
-		
+
 		$babDB->db_query("ALTER TABLE ". BAB_FILES_TBL." ADD `iIdDgOwner` int(11) unsigned NOT NULL");
 	}
 
 
-	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath')) 
+	if(!bab_isTableField(BAB_FM_FOLDERS_TBL, 'sRelativePath'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." ADD `sRelativePath` TEXT NOT NULL AFTER `id`");
 		if(true === fmUpgrade())
@@ -4919,13 +4919,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			__renameFmFilesVersions();
 			bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'The file manager upgrade was successfully completed', 'bab660FmUpgradeDone');
 		}
-		else 
+		else
 		{
 			$babDB->db_query("ALTER TABLE ".BAB_FM_FOLDERS_TBL." DROP `sRelativePath`");
 			return false;
 		}
 	}
-	else 
+	else
 	{
 		$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'bab660FmUpgradeDone');
 		if(false === $ret)
@@ -4935,7 +4935,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				__renameFmFilesVersions();
 				bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'The file manager upgrade was successfully completed', 'bab660FmUpgradeDone');
 			}
-			else 
+			else
 			{
 				return false;
 			}
@@ -4946,11 +4946,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 6.5.100
 	 */
-	if (!bab_isTable(BAB_DEF_TOPCATCOM_GROUPS_TBL)) 
+	if (!bab_isTable(BAB_DEF_TOPCATCOM_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_DEF_TOPCATCOM_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -4959,15 +4959,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	}
 
-	if (!bab_isTable(BAB_DEF_TOPCATMAN_GROUPS_TBL)) 
+	if (!bab_isTable(BAB_DEF_TOPCATMAN_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_DEF_TOPCATMAN_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -4976,15 +4976,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	}
-	
-	if (!bab_isTable(BAB_DEF_TOPCATMOD_GROUPS_TBL)) 
+
+	if (!bab_isTable(BAB_DEF_TOPCATMOD_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_DEF_TOPCATMOD_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -4993,15 +4993,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	}
 
-	if (!bab_isTable(BAB_DEF_TOPCATSUB_GROUPS_TBL)) 
+	if (!bab_isTable(BAB_DEF_TOPCATSUB_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_DEF_TOPCATSUB_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -5010,15 +5010,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	}
 
-	if (!bab_isTable(BAB_DEF_TOPCATVIEW_GROUPS_TBL)) 
+	if (!bab_isTable(BAB_DEF_TOPCATVIEW_GROUPS_TBL))
 	{
 
 	$babDB->db_query("
-	
+
 			CREATE TABLE ".BAB_DEF_TOPCATVIEW_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -5027,47 +5027,47 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
 			)
-		
+
 			");
 	}
 
-	if(!bab_isTableField(BAB_SITES_TBL, 'show_update_info')) 
+	if(!bab_isTableField(BAB_SITES_TBL, 'show_update_info'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD show_update_info ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
-	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'show_update_info')) 
+	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'show_update_info'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD show_update_info ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
 
-	if(!bab_isTableField(BAB_CAL_EVENTS_TBL, 'date_modification')) 
+	if(!bab_isTableField(BAB_CAL_EVENTS_TBL, 'date_modification'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD date_modification DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL");
 	}
 
-	if(!bab_isTableField(BAB_CAL_EVENTS_TBL, 'id_modifiedby')) 
+	if(!bab_isTableField(BAB_CAL_EVENTS_TBL, 'id_modifiedby'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_EVENTS_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
 	}
-	
+
 	/**
 	 * Upgrade to 6.6.90
 	 */
 
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
-	
-	bab_addEventListener('bab_eventLogin', 'bab_onEventLogin', 
+
+	bab_addEventListener('bab_eventLogin', 'bab_onEventLogin',
 		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
-	
-	bab_addEventListener('bab_eventLogout', 'bab_onEventLogout', 
+
+	bab_addEventListener('bab_eventLogout', 'bab_onEventLogout',
 		'utilit/eventAuthentication.php', BAB_ADDON_CORE_NAME, 0);
-		
-	bab_addEventListener('bab_eventBeforeSiteMapCreated', 'bab_onBeforeSiteMapCreated', 
+
+	bab_addEventListener('bab_eventBeforeSiteMapCreated', 'bab_onBeforeSiteMapCreated',
 		'utilit/sitemap_build.php', BAB_ADDON_CORE_NAME, 0);
-		
-		
-		
+
+
+
 	if (!bab_isTable(BAB_SITEMAP_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_SITEMAP_TBL." (
@@ -5084,8 +5084,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
+
+
 	if (!bab_isTable(BAB_SITEMAP_FUNCTION_PROFILE_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_SITEMAP_FUNCTION_PROFILE_TBL." (
@@ -5095,8 +5095,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
+
+
 	if (!bab_isTable(BAB_SITEMAP_FUNCTIONS_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_SITEMAP_FUNCTIONS_TBL." (
@@ -5108,8 +5108,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
+
+
 	if (!bab_isTable(BAB_SITEMAP_FUNCTION_LABELS_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_SITEMAP_FUNCTION_LABELS_TBL." (
@@ -5121,8 +5121,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
+
+
 	if (!bab_isTable(BAB_SITEMAP_PROFILES_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_SITEMAP_PROFILES_TBL." (
@@ -5132,32 +5132,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
+
 	if (!bab_isTableField(BAB_USERS_TBL, 'id_sitemap_profile'))  {
 		$babDB->db_query("ALTER TABLE `".BAB_USERS_TBL."` ADD id_sitemap_profile int(11) unsigned NOT NULL");
 	}
-	
 
-	if(!bab_isTableField(BAB_FAQQR_TBL, 'date_modification')) 
+
+	if(!bab_isTableField(BAB_FAQQR_TBL, 'date_modification'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FAQQR_TBL." ADD date_modification DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL");
 	}
 
-	if(!bab_isTableField(BAB_FAQQR_TBL, 'id_modifiedby')) 
+	if(!bab_isTableField(BAB_FAQQR_TBL, 'id_modifiedby'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_FAQQR_TBL." ADD id_modifiedby INT( 11 ) UNSIGNED DEFAULT '0' NOT NULL");
 	}
-	
-	if(!bab_isTableField(BAB_CAL_RESOURCES_TBL, 'availability_lock')) 
+
+	if(!bab_isTableField(BAB_CAL_RESOURCES_TBL, 'availability_lock'))
 	{
 		$babDB->db_query("ALTER TABLE ".BAB_CAL_RESOURCES_TBL." ADD `availability_lock` tinyint(1) unsigned default NULL");
 	}
 
-	if(!bab_isTableField(BAB_DG_GROUPS_TBL, 'iIdCategory')) 
+	if(!bab_isTableField(BAB_DG_GROUPS_TBL, 'iIdCategory'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_DG_GROUPS_TBL."` ADD `iIdCategory` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `id_group`");
 	}
-	
+
 	if (!bab_isTable(BAB_DG_CATEGORIES_TBL))  {
 		$babDB->db_query("
 			CREATE TABLE ".BAB_DG_CATEGORIES_TBL." (
@@ -5169,19 +5169,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 6.6.92
 	 */
 
-	
+
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
-	
+
 	bab_removeEventListener('bab_eventLogin', 'bab_onEventLogin', 'utilit/eventAuthentication.php');
 	bab_removeEventListener('bab_eventLogout', 'bab_onEventLogout', 'utilit/eventAuthentication.php');
-	
-	
+
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `duration`');
 	if(false !== $oResult)
 	{
@@ -5190,144 +5190,144 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		{
 			if($aData['Type'] != 'double(10,2) unsigned')
 			{
-				$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` CHANGE `duration` `duration` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+				$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` CHANGE `duration` `duration` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');
 			}
 		}
 	}
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iDurationUnit`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL AFTER `duration`');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL AFTER `duration`');
 		}
 	}
-	
+
 	$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'babTmTaskManagmentRuleUpgrade');
 	if(false === $ret)
 	{
-		$sQuery = 
+		$sQuery =
 			'SELECT ' .
-				'id iId, ' . 
+				'id iId, ' .
 				'startDate sStartDate, ' .
 				'endDate sEndDate, ' .
 				'plannedStartDate sPlannedStartDate, ' .
 				'plannedStartDate sPlannedEndDate ' .
 			'FROM ' .
 				BAB_TSKMGR_TASKS_TBL;
-				
+
 		$oResult = $babDB->db_query($sQuery);
 		$iNumRows = $babDB->db_num_rows($oResult);
 		$iIndex = 0;
-		
+
 		while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 		{
 			$iIndex++;
-			
+
 			//Avant le gestionnaire de projet n'utilisait jamais les dates de d�but et de fin plannifi�e, ce qui fait que si elles sont vides toutes
 			//les deux c'est que l'on utilise l'ancien syst�me
 			if('0000-00-00 00:00:00' == $aDatas['sPlannedStartDate'] && '0000-00-00 00:00:00' == $aDatas['sPlannedEndDate'])
 			{
-				$sQuery = 
-					'UPDATE ' . 
+				$sQuery =
+					'UPDATE ' .
 						BAB_TSKMGR_TASKS_TBL . ' ' .
 					'SET ' . ' ' .
 						'`plannedStartDate` = \'' . $babDB->db_escape_string($aDatas['sStartDate']) . '\', ' .
 						'`plannedEndDate` = \'' . $babDB->db_escape_string($aDatas['sEndDate']) . '\' ' .
-					'WHERE ' . 
+					'WHERE ' .
 						'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-						
+
 				$babDB->db_query($sQuery);
 			}
 		}
 		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'Before this upgrade the taskManager use the real start date and the real end date for the planned date', 'babTmTaskManagmentRuleUpgrade');
-	}	
-	
-	
+	}
+
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedTime`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');
 		}
 	}
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedTimeDurationUnit`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');
 		}
 	}
-	
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iTime`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTime` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');
 		}
 	}
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iTimeDurationUnit`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iTimeDurationUnit` TINYINT( 2 ) UNSIGNED DEFAULT \'1\' NOT NULL');
 		}
 	}
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPlannedCost`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPlannedCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');
 		}
 	}
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iCost`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iCost` DOUBLE( 10, 2 ) UNSIGNED NOT NULL DEFAULT \'0\'');
 		}
 	}
-	
+
 	$babDB->db_query('DROP TABLE `' . BAB_TSKMGR_TASK_LIST_FILTER_TBL . '`');
-	 
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_TSKMGR_TASKS_TBL . '` `iPriority`');
 	if(false !== $oResult)
 	{
 		$aData = $babDB->db_fetch_array($oResult);
 		if(!is_array($aData))
 		{
-			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPriority` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT \'5\'');			  
+			$babDB->db_query('ALTER TABLE `' . BAB_TSKMGR_TASKS_TBL . '` ADD `iPriority` TINYINT( 2 ) UNSIGNED NOT NULL DEFAULT \'5\'');
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Upgrade to 6.6.93
 	 */
-	
-	
-	 
+
+
+
 	$oResult = $babDB->db_query('DESCRIBE `' . BAB_CAL_EVENTS_TBL . '` `uuid`');
 	if(false !== $oResult)
 	{
@@ -5335,17 +5335,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		if(!is_array($aData))
 		{
 			$babDB->db_query('ALTER TABLE `' . BAB_CAL_EVENTS_TBL . '` ADD `uuid` varchar(255) NOT NULL');
-	
-			$sQuery = 
+
+			$sQuery =
 				'SELECT ' .
-					'id iId ' . 
+					'id iId ' .
 				'FROM ' .
 					BAB_CAL_EVENTS_TBL;
-					
+
 			$oResult = $babDB->db_query($sQuery);
 			$iNumRows = $babDB->db_num_rows($oResult);
 			$iIndex = 0;
-			
+
 			while($iIndex < $iNumRows && false !== ($aDatas = $babDB->db_fetch_assoc($oResult)))
 			{
 				//Generate a pseudo-random UUID according to RFC 4122
@@ -5354,37 +5354,37 @@ function ovidentia_upgrade($version_base,$version_ini) {
 					mt_rand( 0, 0x0fff ) | 0x4000,
 					mt_rand( 0, 0x3fff ) | 0x8000,
 					mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
-				
+
 				$iIndex++;
-				$sQuery = 
-					'UPDATE ' . 
+				$sQuery =
+					'UPDATE ' .
 						BAB_CAL_EVENTS_TBL . ' ' .
 					'SET ' . ' ' .
 						'`uuid` = \'' . $babDB->db_escape_string($sUUID) . '\' ' .
-					'WHERE ' . 
+					'WHERE ' .
 						'id = \'' . $babDB->db_escape_string($aDatas['iId']) . '\'';
-						
+
 				$babDB->db_query($sQuery);
 			}
 		}
 	}
-	
 
-	
+
+
 	// verify bab_sitemap table
-	
-	if(!bab_isTableField(BAB_SITEMAP_TBL, 'id_dgowner')) 
+
+	if(!bab_isTableField(BAB_SITEMAP_TBL, 'id_dgowner'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_TBL."` ADD `id_dgowner` int(11) unsigned DEFAULT NULL");
 		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_TBL."` ADD INDEX ( `id_dgowner` )");
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/**
 	 * Upgrade to 6.6.95
 	 */
@@ -5400,99 +5400,99 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY `id_right` (`id_right`)
 			)
 		");
-		
-		
-		if(bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'period_start')) 
+
+
+		if(bab_isTableField(BAB_VAC_RIGHTS_RULES_TBL, 'period_start'))
 		{
-			$res = $babDB->db_query('SELECT 
-					id_right, 
-					period_start, 
-					period_end, 
-					right_inperiod  
-				FROM 
-					'.BAB_VAC_RIGHTS_RULES_TBL.' 
-					
-				WHERE 
+			$res = $babDB->db_query('SELECT
+					id_right,
+					period_start,
+					period_end,
+					right_inperiod
+				FROM
+					'.BAB_VAC_RIGHTS_RULES_TBL.'
+
+				WHERE
 					(period_start<>\'0000-00-00\' OR period_end<>\'0000-00-00\')
 			');
-			
+
 			while ($arr = $babDB->db_fetch_assoc($res)) {
-				$babDB->db_query('INSERT INTO '.BAB_VAC_RIGHTS_INPERIOD_TBL.' 
-					(id_right, period_start, period_end, right_inperiod) 
-				VALUES 
+				$babDB->db_query('INSERT INTO '.BAB_VAC_RIGHTS_INPERIOD_TBL.'
+					(id_right, period_start, period_end, right_inperiod)
+				VALUES
 					(
-						'.$babDB->quote($arr['id_right']).', 
+						'.$babDB->quote($arr['id_right']).',
 						'.$babDB->quote($arr['period_start']).',
 						'.$babDB->quote($arr['period_end']).',
 						'.$babDB->quote($arr['right_inperiod']).'
 					)');
 			}
-			
-			
+
+
 			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP period_start');
 			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP period_end');
 			$babDB->db_query('ALTER TABLE '.BAB_VAC_RIGHTS_RULES_TBL.' DROP right_inperiod');
 		}
 	}
-	
+
 	/**
 	 * Upgrade to 6.6.96
 	 */
 
-	$sQuery = 
-		'SELECT 
+	$sQuery =
+		'SELECT
 			`id` iId,
 			`created` sCreated,
 			`author` iIdAuthor
 		FROM ' .
 			BAB_FILES_TBL;
-	
+
 	$oResultFile = $babDB->db_query($sQuery);
 	if(false !== $oResultFile)
 	{
 		$aFileDatas = array();
 		while(false !== ($aFileDatas = $babDB->db_fetch_assoc($oResultFile)))
 		{
-			$sQuery = 
-				'SELECT 
+			$sQuery =
+				'SELECT
 					`action` iAction
 				FROM ' .
 					BAB_FM_FILESLOG_TBL . ' ' .
 				'WHERE ' .
-					'id_file = ' . $babDB->quote($aFileDatas['iId']) . ' AND ' . 
+					'id_file = ' . $babDB->quote($aFileDatas['iId']) . ' AND ' .
 					'action = ' .  $babDB->quote(4);
-	
+
 			// BAB_FACTION_INITIAL_UPLOAD ==> 4
-				
+
 			$oResultFileLog = $babDB->db_query($sQuery);
 			if(false !== $oResultFileLog)
 			{
 				$iNumRows = $babDB->db_num_rows($oResultFileLog);
 				if(0 == $iNumRows)
 				{
-					$sQuery = 
+					$sQuery =
 						'INSERT INTO ' . BAB_FM_FILESLOG_TBL . ' ' .
 							'(' .
 								'`id`, ' .
 								'`id_file`, `date`, `author`, ' .
 								'`action`, `comment`, `version`' .
 							') ' .
-						'VALUES ' . 
-							'(\'\', ' . 
-								$babDB->quote($aFileDatas['iId']) . ', ' . 
-								$babDB->quote($aFileDatas['sCreated']) . ', ' . 
-								$babDB->quote($aFileDatas['iIdAuthor']) . ', ' . 
-								$babDB->quote(4) . ', ' . 
-								$babDB->quote(bab_translate("Initial upload")) . ', ' . 
-								$babDB->quote('1.0') . 
-							')'; 
-							
+						'VALUES ' .
+							'(\'\', ' .
+								$babDB->quote($aFileDatas['iId']) . ', ' .
+								$babDB->quote($aFileDatas['sCreated']) . ', ' .
+								$babDB->quote($aFileDatas['iIdAuthor']) . ', ' .
+								$babDB->quote(4) . ', ' .
+								$babDB->quote(bab_translate("Initial upload")) . ', ' .
+								$babDB->quote('1.0') .
+							')';
+
 					$babDB->db_query($sQuery);
 				}
 			}
 		}
 	}
-	
+
 	$ret = bab_getUpgradeLogMsg(BAB_ADDON_CORE_NAME, 'bab660FmremoveOrphanDbFileEntryDone');
 	if(false === $ret)
 	{
@@ -5504,26 +5504,26 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 6.6.98
 	 */
-	
+
 	// The "PortalAuthentication/Ovidentia" functionality has been renamed as "PortalAuthentication/AuthOvidentia".
 	// If the old version was present on the system, we remove the "PortalAuthentication" directory so that it will be recreated on next login.
 	// If other authentication addons were installed they will have to be reinstalled.
-	
+
 	$portalAuthenticationPath = realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME.'/functionalities/PortalAuthentication/';
 	if (is_dir($portalAuthenticationPath . 'Ovidentia/')) {
 		removeDir($portalAuthenticationPath);
 	}
 
-	if(!bab_isTableField(BAB_SITES_TBL, 'iDefaultCalendarAccess')) 
+	if(!bab_isTableField(BAB_SITES_TBL, 'iDefaultCalendarAccess'))
 	{
 		$babDB->db_query('ALTER TABLE `'.BAB_SITES_TBL.'` ADD `iDefaultCalendarAccess` SMALLINT( 2 ) NOT NULL DEFAULT \'-1\' AFTER `show_update_info`');
 	}
 
-	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'iDefaultCalendarAccess')) 
+	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'iDefaultCalendarAccess'))
 	{
 		$babDB->db_query('ALTER TABLE `'.BAB_CAL_USER_OPTIONS_TBL.'` ADD `iDefaultCalendarAccess` SMALLINT( 2 ) NULL DEFAULT NULL AFTER `show_update_info`');
 	}
-	
+
 	if (!bab_isTableField(BAB_SITES_TBL, 'mail_fieldaddress')) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD mail_fieldaddress char(3) DEFAULT 'Bcc' NOT NULL");
 	}
@@ -5536,9 +5536,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD ldap_notifyadministrators enum('N','Y') NOT NULL default 'N' AFTER ldap_decoding_type");
 	}
-	
+
 	tskMgrFieldOrderUpgrade();
-	
+
 	/**
 	 * Upgrade to 6.6.100
 	 */
@@ -5558,10 +5558,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 6.7.91
 	 */
-	if (!bab_isTable(BAB_DBDIRFIELDUPDATE_GROUPS_TBL)) 
+	if (!bab_isTable(BAB_DBDIRFIELDUPDATE_GROUPS_TBL))
 	{
 
-	$babDB->db_query("	
+	$babDB->db_query("
 			CREATE TABLE ".BAB_DBDIRFIELDUPDATE_GROUPS_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  id_object int(11) unsigned NOT NULL default '0',
@@ -5569,18 +5569,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  PRIMARY KEY  (id),
 			  KEY id_object (id_object),
 			  KEY id_group (id_group)
-			)		
+			)
 			");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 6.7.92
 	 */
-	if(!bab_isTable(BAB_OC_ENTITY_TYPES_TBL)) 
+	if(!bab_isTable(BAB_OC_ENTITY_TYPES_TBL))
 	{
 
-	$babDB->db_query("	
+	$babDB->db_query("
 			CREATE TABLE ".BAB_OC_ENTITY_TYPES_TBL." (
 			  id int(11) unsigned NOT NULL auto_increment,
 			  name varchar(255) NOT NULL default '',
@@ -5591,11 +5591,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 			");
 	}
-	
-	if (!bab_isTable(BAB_OC_ENTITIES_ENTITY_TYPES_TBL)) 
+
+	if (!bab_isTable(BAB_OC_ENTITIES_ENTITY_TYPES_TBL))
 	{
 
-	$babDB->db_query("	
+	$babDB->db_query("
 			CREATE TABLE ".BAB_OC_ENTITIES_ENTITY_TYPES_TBL." (
 			  id_entity int(11) unsigned NOT NULL,
 			  id_entity_type int(11) unsigned NOT NULL
@@ -5613,8 +5613,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_ORG_CHARTS_TBL." ADD ovml_embedded tinytext NOT NULL default '' AFTER ovml_detail");
 	}
-	
-	
+
+
 	// increased the size of fields to 255
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `name` `name` VARCHAR(255)');
 	$babDB->db_query('ALTER TABLE '.BAB_SITES_TBL.' CHANGE `description` `description` VARCHAR(255)');
@@ -5634,14 +5634,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		}
 	}
 
-	
-	
+
+
 	/**
 	 * Upgrade to 6.7.93
 	 */
-	if(!bab_isTable(BAB_TOPICS_CATEGORIES_IMAGES_TBL)) 
+	if(!bab_isTable(BAB_TOPICS_CATEGORIES_IMAGES_TBL))
 	{
-		$babDB->db_query("	
+		$babDB->db_query("
 			CREATE TABLE ".BAB_TOPICS_CATEGORIES_IMAGES_TBL." (
 				id int(11) unsigned NOT NULL auto_increment,
 				idCategory int(11) unsigned NOT NULL,
@@ -5651,10 +5651,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				KEY idCategory (idCategory))
 			");
 	}
-	
-	if(!bab_isTable(BAB_TOPICS_IMAGES_TBL)) 
+
+	if(!bab_isTable(BAB_TOPICS_IMAGES_TBL))
 	{
-		$babDB->db_query("	
+		$babDB->db_query("
 			CREATE TABLE ".BAB_TOPICS_IMAGES_TBL." (
 				id int(11) unsigned NOT NULL auto_increment,
 				idTopic int(11) unsigned NOT NULL,
@@ -5664,15 +5664,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				KEY idTopic (idTopic))
 			");
 	}
-	
-	if(!bab_isTableField(BAB_TOPICS_TBL, 'allow_addImg')) 
+
+	if(!bab_isTableField(BAB_TOPICS_TBL, 'allow_addImg'))
 	{
 		$babDB->db_query('ALTER TABLE ' . BAB_TOPICS_TBL . ' ADD allow_addImg enum(\'N\',\'Y\') NOT NULL default \'N\' AFTER busetags');
 	}
-	
-	if(!bab_isTable(BAB_ARTICLES_IMAGES_TBL)) 
+
+	if(!bab_isTable(BAB_ARTICLES_IMAGES_TBL))
 	{
-		$babDB->db_query("	
+		$babDB->db_query("
 			CREATE TABLE ".BAB_ARTICLES_IMAGES_TBL." (
 				id int(11) unsigned NOT NULL auto_increment,
 				idArticle int(11) unsigned NOT NULL,
@@ -5682,10 +5682,10 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				KEY idArticle (idArticle))
 			");
 	}
-	
-	if(!bab_isTable(BAB_ART_DRAFTS_IMAGES_TBL)) 
+
+	if(!bab_isTable(BAB_ART_DRAFTS_IMAGES_TBL))
 	{
-		$babDB->db_query("	
+		$babDB->db_query("
 			CREATE TABLE ".BAB_ART_DRAFTS_IMAGES_TBL." (
 				id int(11) unsigned NOT NULL auto_increment,
 				idDraft int(11) unsigned NOT NULL,
@@ -5695,7 +5695,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				KEY idDraft (idDraft))
 			");
 	}
-	
+
 	if (!bab_isTableField(BAB_SITES_TBL, 'iPersonalCalendarAccess')) {
 
 		$babDB->db_query("ALTER TABLE ".BAB_SITES_TBL." ADD iPersonalCalendarAccess enum('Y','N') NOT NULL default 'N' AFTER iDefaultCalendarAccess");
@@ -5706,16 +5706,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 6.7.95
 	 */
-	$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." CHANGE `nb_set` `nb_set` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'"); 
-	
+	$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." CHANGE `nb_set` `nb_set` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0'");
+
 	$babDB->db_query("ALTER TABLE ".BAB_STATS_EVENTS_TBL." CHANGE `evt_info` `evt_info` TEXT NOT NULL DEFAULT ''");
 
-	
+
 	/**
 	 * Upgrade to 6.7.100
 	 */
 
-			
+
 
 
 
@@ -5727,7 +5727,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	include_once dirname(__FILE__).'/utilit/eventincl.php';
 	bab_addEventListener('bab_eventSearchRealms', 'bab_onSearchRealms', 'utilit/searchincl.php');
-	
+
 	// ICONS in sitemap
 	if (!bab_isTableField(BAB_SITEMAP_FUNCTIONS_TBL, 'icon')) {
 		$babDB->db_query("ALTER TABLE ".BAB_SITEMAP_FUNCTIONS_TBL." ADD icon varchar(255) NOT NULL default ''");
@@ -5741,15 +5741,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	$functionalities->register('Archive/Zip'			, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 	$functionalities->register('Archive/Zip/Zlib'		, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
 	$functionalities->register('Archive/Zip/ZipArchive'	, $GLOBALS['babInstallPath'].'utilit/archiveincl.php');
-	
+
 
 	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='docx'");
 	if (0 == $babDB->db_num_rows($res)) {
-	
+
 		$babDB->db_query("
-		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
-			(`ext`, `mimetype`) 
-		VALUES 
+		INSERT INTO `".BAB_MIME_TYPES_TBL."`
+			(`ext`, `mimetype`)
+		VALUES
 			('docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
 			('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
 			('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'),
@@ -5768,11 +5768,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	$res = $babDB->db_query("SELECT * FROM ".BAB_INDEX_FILES_TBL." WHERE object='bab_articles'");
 	if (0 == $babDB->db_num_rows($res)) {
-	
+
 		$babDB->db_query("
-		INSERT INTO `".BAB_INDEX_FILES_TBL."` 
-			(`name`, `object`) 
-		VALUES 
+		INSERT INTO `".BAB_INDEX_FILES_TBL."`
+			(`name`, `object`)
+		VALUES
 			('Articles'	, 'bab_articles')
 		");
 	}
@@ -5786,8 +5786,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 
 
-	
-	
+
+
 	$sTableName = 'bab_tags_references';
 	if(!bab_isTable($sTableName))
 	{
@@ -5800,11 +5800,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			  KEY `id_tag` (`id_tag`)
 			)
 		');
-		
+
 		$sFileTagRef			= 'ovidentia:///filemanager/file/';
 		$sArticleTagRef			= 'ovidentia:///articles/article/';
 		$sDraftArticleTagRef	= 'ovidentia:///articles/draft/';
-		
+
 		$aTable = array(
 			'bab_art_tags'			=> array('sTagReference' => $sArticleTagRef,		'sColumnName' => 'id_art'),
 			'bab_art_drafts_tags'	=> array('sTagReference' => $sDraftArticleTagRef,	'sColumnName' => 'id_draft'),
@@ -5813,19 +5813,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 
 		global $babDB;
-	
+
 		foreach($aTable as $sTable => $aItem)
 		{
 			$sTagReference	= $aItem['sTagReference'];
 			$sColumnName	= $aItem['sColumnName'];
-			
-			$sQuery = 
+
+			$sQuery =
 				'SELECT ' .
-					$sColumnName . ' iIdObject, ' . 
+					$sColumnName . ' iIdObject, ' .
 					'id_tag iIdTag ' .
 				'FROM ' .
 					$sTable;
-			
+
 			//bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
@@ -5836,19 +5836,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 					{
 						$iIdObject	= (int) $aDatas['iIdObject'];
 						$iIdTag		= (int) $aDatas['iIdTag'];
-						
-						$sQuery = 
+
+						$sQuery =
 							'INSERT INTO ' . $sTableName . ' ' .
 								'(' .
 									'`id`, ' .
 									'`id_tag`, `reference`' .
 								') ' .
-							'VALUES ' . 
-								'(\'\', ' . 
-									$babDB->quote($iIdTag) . ', ' . 
-									$babDB->quote($sTagReference . $iIdObject) . 
-								')'; 
-								
+							'VALUES ' .
+								'(\'\', ' .
+									$babDB->quote($iIdTag) . ', ' .
+									$babDB->quote($sTagReference . $iIdObject) .
+								')';
+
 						$babDB->db_query($sQuery);
 					}
 				}
@@ -5857,7 +5857,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 		$babDB->db_query('DROP TABLE `bab_files_tags`');
 		$babDB->db_query('DROP TABLE `bab_art_tags`');
-		$babDB->db_query('DROP TABLE `bab_art_drafts_tags`');	
+		$babDB->db_query('DROP TABLE `bab_art_drafts_tags`');
 	}
 
 	require_once $GLOBALS['babInstallPath'] . 'utilit/eventincl.php';
@@ -5897,7 +5897,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_FM_FOLDERS_TBL, 'bcap_downloads')) {
 		$babDB->db_query('ALTER TABLE '.BAB_FM_FOLDERS_TBL." ADD bcap_downloads enum('Y','N') NOT NULL default 'N' AFTER baddtags");
 	}
-	
+
 	// Add table to keep track of downloads (users / date & time) from the filemanager for files in a collective folder with download history activated.
 	if (!bab_isTable('bab_fm_files_download_history')) {
 		$babDB->db_query('
@@ -5911,11 +5911,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		');
 	}
-	
+
 	/**
 	 * Upgrade to 7.0.100
 	 */
-	
+
 	/**
 	 * Upgrade to 7.0.101
 	 */
@@ -5929,11 +5929,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 */
 	$res = $babDB->db_query("SELECT * FROM ".BAB_MIME_TYPES_TBL." WHERE ext='svg'");
 	if (0 == $babDB->db_num_rows($res)) {
-	
+
 		$babDB->db_query("
-		INSERT INTO `".BAB_MIME_TYPES_TBL."` 
-			(`ext`, `mimetype`) 
-		VALUES 
+		INSERT INTO `".BAB_MIME_TYPES_TBL."`
+			(`ext`, `mimetype`)
+		VALUES
 			('svg', 'image/svg+xml')
 		");
 	}
@@ -5958,8 +5958,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (0 == $babDB->db_num_rows($res)) {
 		$babDB->db_query("INSERT INTO `".BAB_MIME_TYPES_TBL."`(`ext`, `mimetype`) VALUES ('flac', 'audio/flac')");
 	}
-	
-	
+
+
 	// Add column for last update on article comments table.
 	if (!bab_isTableField(BAB_COMMENTS_TBL, 'last_update')) {
 		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `last_update` DATETIME DEFAULT '0000-00-00 00:00:00' NOT NULL AFTER `date`");
@@ -5972,30 +5972,30 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_COMMENTS_TBL, 'article_rating')) {
 		$babDB->db_query('ALTER TABLE '.BAB_COMMENTS_TBL." ADD `article_rating` TINYINT DEFAULT 0 NOT NULL AFTER `lang`");
 	}
-	
+
 	// Add column for activating article rating on topics table.
 	if (!bab_isTableField(BAB_TOPICS_TBL, 'allow_article_rating')) {
 		$babDB->db_query('ALTER TABLE '.BAB_TOPICS_TBL." ADD `allow_article_rating` enum('N','Y') NOT NULL default 'N' AFTER `allow_addImg`");
 	}
-	
+
 	/**
 	 * Upgrade to 7.1.91
 	 */
 	// Add table to keep track of fields to display when displaying forum's post.
 	if (!bab_isTable(BAB_FORUMS_FIELDS_TBL)) {
 		$babDB->db_query('
-			CREATE TABLE '.BAB_FORUMS_FIELDS_TBL.' (                       
-            	`id` int(11) unsigned NOT NULL auto_increment,         
-                `id_forum` int(11) unsigned NOT NULL,                  
-                `id_field` int(11) unsigned NOT NULL,                  
-                `field_order` tinyint(2) unsigned default NULL,        
+			CREATE TABLE '.BAB_FORUMS_FIELDS_TBL.' (
+            	`id` int(11) unsigned NOT NULL auto_increment,
+                `id_forum` int(11) unsigned NOT NULL,
+                `id_field` int(11) unsigned NOT NULL,
+                `field_order` tinyint(2) unsigned default NULL,
 				PRIMARY KEY  (id),
 				KEY id_forum (id_forum),
 				KEY id_field (id_field)
 				)
 		');
-		
-		
+
+
 	}
 
 
@@ -6010,7 +6010,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_ARTICLES_TBL, 'body_format')) {
 		$babDB->db_query('ALTER TABLE '.BAB_ARTICLES_TBL." ADD `body_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `body`");
 	}
-	
+
 	// Add column for head and body format on article draft table.
 	if (!bab_isTableField(BAB_ART_DRAFTS_TBL, 'head_format')) {
 		$babDB->db_query('ALTER TABLE '.BAB_ART_DRAFTS_TBL." ADD `head_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `head`");
@@ -6028,11 +6028,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_CAL_EVENTS_TBL, 'description_format')) {
 		$babDB->db_query('ALTER TABLE '.BAB_CAL_EVENTS_TBL." ADD `description_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `description`");
 	}
-	
+
 	// Add column for description format on faq category table.
 	if (!bab_isTableField(BAB_FAQCAT_TBL, 'description_format')) {
 		$babDB->db_query('ALTER TABLE '.BAB_FAQCAT_TBL." ADD `description_format` VARCHAR(32) DEFAULT 'html' NOT NULL AFTER `description`");
-	}	
+	}
 
 	// Add column for description format on faq question-response table.
 	if (!bab_isTableField(BAB_FAQQR_TBL, 'response_format')) {
@@ -6062,39 +6062,39 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	/**
 	 * Upgrade to 7.1.92
 	 */
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade to 7.1.93
 	 */
 	if (!bab_isTable(BAB_FORUMSNOTIFY_USERS_TBL)) {
 		$babDB->db_query('
-			CREATE TABLE '.BAB_FORUMSNOTIFY_USERS_TBL.' (                       
-            	`id` int(11) unsigned NOT NULL auto_increment,         
-                `id_forum` int(11) unsigned NOT NULL,                  
-                `id_user` int(11) unsigned NOT NULL,                  
-                `forum_notification` tinyint(2) unsigned default NULL,        
+			CREATE TABLE '.BAB_FORUMSNOTIFY_USERS_TBL.' (
+            	`id` int(11) unsigned NOT NULL auto_increment,
+                `id_forum` int(11) unsigned NOT NULL,
+                `id_user` int(11) unsigned NOT NULL,
+                `forum_notification` tinyint(2) unsigned default NULL,
 				PRIMARY KEY  (id),
 				KEY id_forum (id_forum),
 				KEY id_user (id_user)
 				)
 		');
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Upgrade to 7.1.95
 	 */
-	
+
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Start Date,Planned start date' WHERE `sLegend`='Start Date,Planned'");
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'End Date,Planned end date' WHERE `sLegend`='End Date,Planned'");
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Time,Planned time' WHERE `sLegend`='Time,Planned'");
 	$babDB->db_query("UPDATE `".BAB_TSKMGR_TASK_FIELDS_TBL."` SET `sLegend` = 'Cost,Planned cost' WHERE `sLegend`='Cost,Planned'");
-	
+
 
 	/**
 	 * Upgrade to 7.2.2
@@ -6102,8 +6102,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	// Ensure that files in personal folders are associated to 'All site' delegation (0).
 	$babDB->db_query("UPDATE `".BAB_FILES_TBL ."` SET iIdDgOwner = '0' WHERE bgroup='N' AND iIdDgOwner <> '0'");
 
-	
-	
+
+
 	/**
 	 * Upgrade to 7.2.90
 	 */
@@ -6111,32 +6111,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/omlincl.php');
 	}
-	
+
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlChart.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlChart.php');
 	}
-	
+
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldeleg.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldeleg.php');
 	}
-	
+
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmldir.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmldir.php');
 	}
-	
+
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmltm.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmltm.php');
 	}
-	
+
 	if (!bab_isTableField(BAB_SITEMAP_TBL, 'progress')) {
 		$babDB->db_query('ALTER TABLE '.BAB_SITEMAP_TBL." ADD `progress` tinyint(1) unsigned DEFAULT '0' NOT NULL");
 	}
-	
-	
+
+
 	if (!bab_isTable(BAB_SITEMAP_PROFILE_VERSIONS_TBL)) {
 		$babDB->db_query("
 		CREATE TABLE ".BAB_SITEMAP_PROFILE_VERSIONS_TBL." (
@@ -6150,32 +6150,32 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		)
 		");
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/**
 	 * Upgrade to 7.2.91
 	 */
-	
-	
+
+
 	if (!bab_isTableField(BAB_DBDIR_OPTIONS_TBL, 'search_sort_fields')) {
 		$babDB->db_query('ALTER TABLE '.BAB_DBDIR_OPTIONS_TBL." ADD `search_sort_fields` varchar(255) NOT NULL default '2,4'");
 	}
-	
+
 	if (!bab_isTableField(BAB_DBDIR_FIELDSEXTRA_TBL, 'sortfield')) {
 		$babDB->db_query('ALTER TABLE '.BAB_DBDIR_FIELDSEXTRA_TBL." ADD `sortfield` int(11) NOT NULL default '0'");
 		$babDB->db_query('UPDATE '.BAB_DBDIR_FIELDSEXTRA_TBL." SET `sortfield`='1' WHERE id_field='2'");
 		$babDB->db_query('UPDATE '.BAB_DBDIR_FIELDSEXTRA_TBL." SET `sortfield`='2' WHERE id_field='4'");
 	}
-	
+
 	/**
 	 * Upgrade to 7.2.92
 	 */
-	
+
 	/**
 	 * Upgrade to 7.2.93
 	 */
@@ -6189,30 +6189,30 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 
 	bab_addEventListener('bab_eventFmFile'			, 'bab_onFmFile'		, 'utilit/filenotifyincl.php');
-	
-	
 
-	
-	if(!bab_isTableField(BAB_SITES_TBL, 'show_onlydays_of_month')) 
+
+
+
+	if(!bab_isTableField(BAB_SITES_TBL, 'show_onlydays_of_month'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD show_onlydays_of_month ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
-	
-	if(bab_isTableField(BAB_SITES_TBL, 'non_workday_bgcolor')) 
+
+	if(bab_isTableField(BAB_SITES_TBL, 'non_workday_bgcolor'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` DROP non_workday_bgcolor");
 	}
-	
-	if(!bab_isTableField(BAB_SITES_TBL, 'id_calendar_cat')) 
+
+	if(!bab_isTableField(BAB_SITES_TBL, 'id_calendar_cat'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD id_calendar_cat int(11) unsigned NOT NULL default '0'");
 	}
-	
-	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'show_onlydays_of_month')) 
+
+	if(!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'show_onlydays_of_month'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD show_onlydays_of_month ENUM('N','Y') DEFAULT 'N' NOT NULL");
 	}
-	
+
 	if (!bab_isTable(BAB_FM_HEADERS_TBL)) {
 		$babDB->db_query("
 		CREATE TABLE ".BAB_FM_HEADERS_TBL." (
@@ -6223,7 +6223,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				  PRIMARY KEY  (id)
 				)
 		");
-		
+
 		$babDB->db_query("INSERT INTO `".BAB_FM_HEADERS_TBL."`(`fmh_name`, `fmh_description`, fmh_order) VALUES ('name', 'Name', '1')");
 		$babDB->db_query("INSERT INTO `".BAB_FM_HEADERS_TBL."`(`fmh_name`, `fmh_description`, fmh_order) VALUES ('description', 'Description', '0')");
 		$babDB->db_query("INSERT INTO `".BAB_FM_HEADERS_TBL."`(`fmh_name`, `fmh_description`, fmh_order) VALUES ('path', 'Path', '0')");
@@ -6235,62 +6235,62 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("INSERT INTO `".BAB_FM_HEADERS_TBL."`(`fmh_name`, `fmh_description`, fmh_order) VALUES ('size', 'Size', '2')");
 		$babDB->db_query("INSERT INTO `".BAB_FM_HEADERS_TBL."`(`fmh_name`, `fmh_description`, fmh_order) VALUES ('hits', 'Hits', '5')");
 	}
-	
-	
-	
-	if(!bab_isTableField(BAB_SITEMAP_FUNCTIONS_TBL, 'rewrite')) 
+
+
+
+	if(!bab_isTableField(BAB_SITEMAP_FUNCTIONS_TBL, 'rewrite'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITEMAP_FUNCTIONS_TBL."` ADD `rewrite` varchar(255) NOT NULL default ''");
 	}
-	
-	if(!bab_isTableField(BAB_SITES_TBL, 'sitemap')) 
+
+	if(!bab_isTableField(BAB_SITES_TBL, 'sitemap'))
 	{
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `sitemap` varchar(255) NOT NULL default 'core'");
 	}
-	
-	
+
+
 	// the sitemapEntries contener has been moved to a new file
 	$functionalities->unregister('Ovml/Container/SitemapEntries');
-	
+
 	$func_to_register = $functionalities->parseFile(dirname(__FILE__).'/utilit/ovmlsitemap.php');
 	foreach($func_to_register as $path) {
 		$functionalities->register($path	, $GLOBALS['babInstallPath'].'utilit/ovmlsitemap.php');
 	}
-	
+
 	/**
 	 * Upgrade to 7.2.94
 	 */
-	
-	
+
+
 	/**
 	 * Upgrade to 7.3.90
 	 */
-	
-	
+
+
 	bab_addEventListener('bab_eventBeforePeriodsCreated', 'bab_onBeforePeriodsCreated', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
 	bab_addEventListener('bab_eventCollectCalendarsBeforeDisplay', 'bab_onCollectCalendarsBeforeDisplay', 'utilit/eventperiod.php', BAB_ADDON_CORE_NAME);
-	
-	
+
+
 	if (!bab_isKeyExists(BAB_CAL_EVENTS_TBL, 'uuid')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_TBL."` ADD INDEX ( `uuid` ) ");
 	}
-	
+
 	$functionalities->register('CalendarBackend'		, $GLOBALS['babInstallPath'].'utilit/cal.backend.class.php');
 	$functionalities->register('CalendarBackend/Ovi'	, $GLOBALS['babInstallPath'].'utilit/cal.backend.ovi.class.php');
-	
-	
+
+
 	// remove the BAB_CAL_ACCESS_SHARED_FULL
 	$babDB->db_query("UPDATE  `".BAB_CALACCESS_USERS_TBL."` SET bwrite=".$babDB->quote(BAB_CAL_ACCESS_FULL).' WHERE bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_FULL));
-	
+
 	if (!bab_isTableField(BAB_CALACCESS_USERS_TBL, 'caltype')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CALACCESS_USERS_TBL."` ADD `caltype` varchar(100) NOT NULL default ''");
 		$babDB->db_query("UPDATE `".BAB_CALACCESS_USERS_TBL."` SET caltype='personal'");
 	}
-	
+
 	if (!bab_isTableField(BAB_CAL_EVENTS_OWNERS_TBL, 'caltype')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_OWNERS_TBL."` ADD `calendar_backend` varchar(100) NOT NULL default ''");
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_OWNERS_TBL."` ADD `caltype` varchar(100) NOT NULL default ''");
-		
+
 		$res = $babDB->db_query('SELECT eo.id_cal, c.type  FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' eo, '.BAB_CALENDAR_TBL.' c WHERE c.id=eo.id_cal GROUP BY eo.id_cal');
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
@@ -6306,46 +6306,46 @@ function ovidentia_upgrade($version_base,$version_ini) {
 					$caltype = 'resource';
 					break;
 			}
-			
-			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_OWNERS_TBL."` SET 
-				calendar_backend='Ovi', 
-				caltype=".$babDB->quote($caltype)." 
-				
+
+			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_OWNERS_TBL."` SET
+				calendar_backend='Ovi',
+				caltype=".$babDB->quote($caltype)."
+
 			WHERE id_cal=".$babDB->quote($arr['id_cal']));
 		}
 	}
-	
-	
+
+
 	if (!bab_isTableField(BAB_CAL_EVENTS_TBL, 'parent_calendar')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_EVENTS_TBL."` ADD parent_calendar VARCHAR (255) not null default ''");
-		
+
 		$res = $babDB->db_query('SELECT eo.id_cal, eo.id_event, eo.caltype FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' eo, '.BAB_CAL_EVENTS_TBL.' e WHERE e.id=eo.id_event GROUP BY e.id');
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
-		
-			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_TBL."` SET 
-				parent_calendar=".$babDB->quote($arr['caltype'].'/'.$arr['id_cal'])." 
+
+			$babDB->db_query("UPDATE `".BAB_CAL_EVENTS_TBL."` SET
+				parent_calendar=".$babDB->quote($arr['caltype'].'/'.$arr['id_cal'])."
 			WHERE id=".$babDB->quote($arr['id_event']));
 		}
 	}
-	
-	
+
+
 	if (!bab_isTableField(BAB_CAL_USER_OPTIONS_TBL, 'calendar_backend')) {
 		$babDB->db_query("ALTER TABLE `".BAB_CAL_USER_OPTIONS_TBL."` ADD `calendar_backend` varchar(255) NOT NULL default ''");
 		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET `calendar_backend`='Ovi'");
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Upgrade to 7.3.91
 	 */
-	
-	
+
+
 	if (!bab_isTable('bab_cal_inbox')) {
-		
+
 		$babDB->db_query("
 		CREATE TABLE bab_cal_inbox (
 		  id_user int(10) unsigned NOT NULL default '0',
@@ -6355,64 +6355,64 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		  KEY calendar_backend (calendar_backend),
 		  KEY uid (uid)
 		)");
-		
+
 		// create entries in inbox for attendees of events
-		
+
 		$res = $babDB->db_query('
-			SELECT 
-				c.owner id_user, 
-				e.uuid uid 
-			FROM 
+			SELECT
+				c.owner id_user,
+				e.uuid uid
+			FROM
 				'.BAB_CALENDAR_TBL.' c,
-				'.BAB_CAL_EVENTS_OWNERS_TBL.' eo, 
-				'.BAB_CAL_EVENTS_TBL." e 
-			WHERE 
-				c.id=eo.id_cal 
-				AND e.id=eo.id_event 
+				'.BAB_CAL_EVENTS_OWNERS_TBL.' eo,
+				'.BAB_CAL_EVENTS_TBL." e
+			WHERE
+				c.id=eo.id_cal
+				AND e.id=eo.id_event
 				AND e.parent_calendar <> CONCAT(eo.caltype,'/', eo.id_cal)
 		");
-		
+
 		$stack = array();
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
 			$stack[] = '('.$babDB->quote($arr['id_user']).", 'Ovi', ".$babDB->quote($arr['uid']).')';
-			
+
 			if (100 <= count($stack))
 			{
 				$babDB->db_query("INSERT INTO bab_cal_inbox (id_user, calendar_backend, uid) VALUES ".implode(",\n", $stack));
 				$stack = array();
 			}
 		}
-		
+
 		if ($stack)
 		{
 			$babDB->db_query("INSERT INTO bab_cal_inbox (id_user, calendar_backend, uid) VALUES ".implode(",\n", $stack));
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/**
 	 * Upgrade to 7.3.93
 	 */
-	
+
 	bab_addEventListener('bab_eventArticle'			, 'bab_onArticle'		, 'utilit/eventarticle.php');
 	bab_addEventListener('bab_eventCalendarEvent'	, 'bab_onCalendarEvent'	, 'utilit/eventperiod.php');
 	bab_addEventListener('bab_eventForumPost'		, 'bab_onForumPost'		, 'utilit/eventforum.php');
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade to 7.3.94
 	 */
 	if (bab_isTableField(BAB_GROUPS_TBL, 'manager')) {
 		$babDB->db_query("ALTER TABLE ".BAB_GROUPS_TBL." DROP manager");
 	}
-	
+
 	/**
 	 * Upgrade to 7.3.95
 	 */
@@ -6422,12 +6422,12 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_FILES_TBL, 'display_position')) {
 		$babDB->db_query("ALTER TABLE `".BAB_FILES_TBL."` ADD `display_position` INT( 11 ) NULL DEFAULT NULL");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 7.3.96
 	 */
-	
+
 	// removing htmlarea from source
 	bab_removeEventListener('bab_eventEditorContentToEditor'	, 'htmlarea_onContentToEditor'	, 'utilit/htmlareaincl.php');
 	bab_removeEventListener('bab_eventEditorRequestToContent'	, 'htmlarea_onRequestToContent'	, 'utilit/htmlareaincl.php');
@@ -6436,22 +6436,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (bab_isTableField('bab_forums', 'nb_recipients')) {
 		$babDB->db_query("ALTER TABLE bab_forums DROP nb_recipients");
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Upgrade to 7.4.5
 	 */
-	
+
 	// fix error in articles categories
 	$res = $babDB->db_query("SELECT o.id, c.id_parent FROM bab_topics_categories c, bab_topcat_order o WHERE o.id_topcat=c.id AND o.type='1' AND o.id_parent<>c.id_parent");
 	while ($arr = $babDB->db_fetch_assoc($res))
 	{
 		$babDB->db_query('UPDATE bab_topcat_order SET id_parent='.$babDB->quote($arr['id_parent']).' WHERE id='.$babDB->quote($arr['id']));
 	}
-	
-	
-	
+
+
+
 	return true;
 }
