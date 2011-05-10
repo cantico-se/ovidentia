@@ -2775,11 +2775,11 @@ function confirmEmptyDb($id)
 	elseif( $idgroup > BAB_ADMINISTRATOR_GROUP )
 		{
 			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-			$res = $babDB->db_query("select id_object from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."'");
-			while( $arr = $babDB->db_fetch_array($res))
+			$res = $babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."'");
+			/*$babDB->db_fetch_array($res))
 			{
 				bab_deleteUser($arr['id_object']);
-			}
+			}*/
 		}
 	}
 
