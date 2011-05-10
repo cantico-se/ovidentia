@@ -538,8 +538,12 @@ class bab_icalendar extends bab_icalendarEventsSource
 						$ui_event = clone $event;
 						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
 						$arr[] = $ui_event;
-					} 
-				} 
+					} else {
+						// bab_debug("Event not displayed (the displayEventInCalendarUi() method on calendar object return false) : ".$event->toHtml());
+					}
+				} else {
+					// bab_debug("Event not displayed (missing main calendar) : ".$event->toHtml());
+				}
 			}
 			
 		return count($arr);

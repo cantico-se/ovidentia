@@ -748,6 +748,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		reset($this->boundaries);
 		$r = array();
 		
+		
 		foreach($this->boundaries as $ts => $events) {
 			if ($ts > $end) {
 				break;
@@ -761,7 +762,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				
 				if ('' === $uid)
 				{
-					// bab_debug('event ignored because the is no UID property');
+					// bab_debug('event ignored because the is no UID property ('.$event->getProperty('SUMMARY').')', DBG_ERROR, 'alert');
 					continue;
 				}
 				
@@ -786,6 +787,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						
 						if (!$accepted)
 						{
+							// bab_debug('Event ingored because not in allowed collection list : '.$event->toHtml());
 							continue;
 						}
 					
