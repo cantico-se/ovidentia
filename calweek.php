@@ -477,7 +477,7 @@ switch($idx)
 
 		if (!$calid )
 			{
-			$calid = bab_getCalendarId($BAB_SESS_USERID, 1);
+			$calid = bab_getDefaultCalendarId();
 			}
 
 		if( !$calid )

@@ -590,7 +590,7 @@ abstract class bab_EventCalendar
 	 * Display an event in to a calendar placeholder UI element on page
 	 * this method is called on the main calendar of event only
 	 *
-	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations using status or partstat parameter
+	 * the default behaviour is to display an event on the main calendar placeholder and the placeholders of the attendees or relations or organizer using status or partstat parameter
 	 *
 	 * @param	bab_EventCalendar	$calendar		calendar of placeholder
 	 * @param	bab_CalendarPeriod	$event			Event to display
@@ -619,6 +619,7 @@ abstract class bab_EventCalendar
 				// the main calendar of event is not in attendees
 				return true;
 			}
+
 		}
 		else
 		{

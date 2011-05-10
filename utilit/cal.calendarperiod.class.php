@@ -580,7 +580,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 					{
 						list($key, $paramvalue) = explode('=', $param);
 						if ($key === 'CN') {
-							$name = $paramvalue;
+							$name = trim($paramvalue, '" ');
 							break;
 						}
 					}
