@@ -3922,7 +3922,6 @@ function editFolderForCollectiveDir()
 				{
 					//changer les iIdOwner
 					//supprimer les droits
-					//supprimer les versions de fichiers
 					//supprimer les instances de schemas d'approbations
 					//supprimer l'entree dans fmfolders
 					$bDbRecordOnly = true;
