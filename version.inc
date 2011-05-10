@@ -27,7 +27,7 @@
 name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
-version="7.2.5"
+version="7.2.6"
 
 ; forbidden_upgrades="6.3.0,6.3.1"
 
