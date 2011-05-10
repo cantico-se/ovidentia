@@ -2388,17 +2388,11 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 				$oFolderFileSet->select($oCriteria);
 
-				$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+				require_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 				while(null !== ($oFolderFile = $oFolderFileSet->next()))
 				{
-					$oIdFile =& $oFolderFileVersionSet->aField['iIdFile'];
-					$oFolderFileVersionSet->remove($oIdFile->in($oFolderFile->getId()),
-					$sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
-
-					require_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
 					deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
-					$oFolderFile->setMajorVer(1);
-					$oFolderFile->setMinorVer(0);
+					
 					$oFolderFile->setFlowApprobationInstanceId(0);
 					$oFolderFile->setConfirmed('Y');
 					$oFolderFile->save();
