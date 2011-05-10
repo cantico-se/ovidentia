@@ -283,7 +283,7 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 		
 		$this->opened_filename = $filename;
 		$this->add_file_limit = 128;
-		return $this->zip->open($filename, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
+		return $this->zip->open($filename);
 	}
 
 
