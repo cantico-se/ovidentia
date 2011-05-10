@@ -204,31 +204,73 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 	private $opened_filename 	= null;
 	private $add_file_limit 	= 128;
 	
-	public function __construct() {
+	public function __construct()
+	{
 		if (class_exists('ZipArchive')) {
 			$this->zip = new ZipArchive;
+		} else {
+			throw new Exception(bab_translate('The php zip extension is not available'));
 		}
 	}
 
-	public function getDescription() {
+
+
+	/**
+	 * @return string
+	 */
+	public function getDescription()
+	{
 		return bab_translate('Zip archive manager with the zip php extension');
 	}
 
-	public function open($filename) {
-		if (class_exists('ZipArchive')) {
-			$this->opened_filename = $filename;
-			return $this->zip->open($filename, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE );
-		} else {
-			throw new Exception(bab_translate('The php zip extension is not available'));
-			return false;
+
+	
+	/**
+	 * Opens a zip archive file.
+	 * 
+	 * @param string $filename The full pathname of the this archive to open (or create).
+	 * @param string $mode     The optional opening mode ('r' or 'w'), by default it will be 'r' if filename
+	 *                         is the name of a readable file, 'w' otherwise.
+	 *
+	 * @return bool | int      True on success.
+	 */
+	public function open($filename, $mode = null)
+	{
+		if (!isset($this->zip)) {
+			throw new Exception(bab_translate('Trying to open an uninitialized ZipArchive.'));
+		}
+		$this->opened_filename = $filename;
+		
+		if (!isset($mode)) {
+			if (is_readable($filename)) {
+				$mode = 'r';
+			} else {
+				$mode = 'w';
+			}
+		}
+		switch ($mode) {
+			case 'r':
+				return $this->zip->open($filename);
+			case 'w':
+				return $this->zip->open($filename, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
 		}
 	}
 
 
 	/**
-	 * Close and open the zip archive
+	 * Closes and open the zip archive.
+	 * 
+	 * This is needed by addFile() to avoid the following problem:
+	 * " When adding a file to your zip, the file is opened and stays open.
+	 *   When adding over 1024 files (depending on your open files limit)
+	 *   the server stops adding files, resulting in a status 11 in your zip Archive.
+	 *   There is no warning when exceeding this open files limit with addFile."
+	 *  	-- Comment by aartdebruijn at gmail dot com on php.net
+	 * 
+	 * @return bool | int
 	 */
-	private function reopen() {
+	private function reopen()
+	{
 		if (null === $this->opened_filename) {
 			return null;
 		}
@@ -240,40 +282,57 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
         }
 		
 		$this->opened_filename = $filename;
-		return $this->zip->open($filename, ZIPARCHIVE::CREATE);
+		$this->add_file_limit = 128;
+		return $this->zip->open($filename, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
 	}
 
 
 	/**
 	 * Commit added files
 	 */
-	public function close() {
-		if (class_exists('ZipArchive')) {
-			$this->opened_filename = null;
-			$this->add_file_limit = 128;
-			return $this->zip->close();
-		} else {
-			return true;
+	public function close()
+	{
+		if (!isset($this->zip)) {
+			throw new Exception(bab_translate('Trying to close an uninitialized ZipArchive.'));
 		}
+		$this->opened_filename = null;
+		$this->add_file_limit = 128;
+		return $this->zip->close();
 	}
 
 
-	public function addFile($filename, $localname) {
-		if (class_exists('ZipArchive')) {
-
-			if ($this->add_file_limit <= 0) {
-				$this->reopen();
-			}
-
-			$this->zip->addFile($filename, $this->encode($localname));
-			$this->add_file_limit--;
+	/**
+	 * Adds the specified file to the archive from a given path. 
+	 * @param string $filename  The full path to the file to add.
+	 * @param string $localname The relative pathname of the file in the archive. 
+	 */
+	public function addFile($filename, $localname)
+	{
+		if (!isset($this->zip)) {
+			throw new Exception(bab_translate('Trying to add a file to an uninitialized ZipArchive.'));
 		}
+
+		if ($this->add_file_limit <= 0) {
+			$this->reopen();
+		}
+
+		$this->zip->addFile($filename, $this->encode($localname));
+		$this->add_file_limit--;
 	}
 
 	
-	public function extractTo($destination) {
-		if (class_exists('ZipArchive')) {
-			$this->zip->extractTo($destination);
+	/**
+	 * 
+	 * @param string $destination The full pathanme of the folder where the archive should be extracted.
+	 * 
+	 * @return bool True on success, false on failure.
+	 */
+	public function extractTo($destination)
+	{
+		if (!isset($this->zip)) {
+			throw new Exception(bab_translate('Trying to extract from an uninitialized ZipArchive.'));
 		}
+		$result = $this->zip->extractTo($destination);
+		return $result;
 	}
 }
