@@ -941,6 +941,7 @@ CREATE TABLE `bab_sites` (
   `user_diskspace` int(11) unsigned NOT NULL default '0',
   `folder_diskspace` int(11) unsigned NOT NULL default '0',
   `maxfilesize` int(11) unsigned NOT NULL default '0',
+  `maxzipsize` int(11) unsigned NOT NULL default '0',
   `uploadpath` varchar(255) NOT NULL default '',
   `babslogan` varchar(255) NOT NULL default '',
   `remember_login` enum('Y','N','L') NOT NULL default 'N',

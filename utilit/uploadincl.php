@@ -251,7 +251,7 @@ class bab_fmFile extends bab_fileHandler {
  *
  * @return 	boolean	id_file
  */
-function bab_importFmFile($fmFile, $id_owner, $path, $bgroup) 
+function bab_importFmFile($fmFile, $id_owner, $path, $bgroup, $withName = true) 
 {
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
@@ -277,7 +277,9 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup)
 			return false;
 			}
 	
-		$path = $oFmRootFolder->getName().'/'.$path;
+		if($withName){
+			$path = $oFmRootFolder->getName().'/'.$path;
+		}
 		
 		$oFmFolder = null;
 		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id_owner, $path, $id_owner, $sPathName, $oFmFolder);

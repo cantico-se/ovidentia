@@ -1667,7 +1667,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babMaxImgFileSize'] = 0; 
 		}
 		
-		
+
 	if( !empty($arr['maxfilesize']))
 		{
 		$GLOBALS['babMaxFileSize'] = $arr['maxfilesize']*1048576;
@@ -1676,6 +1676,14 @@ function bab_updateSiteSettings()
 		{
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		$GLOBALS['babMaxFileSize'] = bab_inifile_requirements::getIniMaxUpload(); 
+		}
+	if( !empty($arr['maxzipsize']) && $arr['maxzipsize']<$GLOBALS['babMaxFileSize'])
+		{
+		$GLOBALS['babMaxZipSize'] = $arr['maxzipsize']*1048576;
+		}
+	else
+		{
+		$GLOBALS['babMaxZipSize'] = $GLOBALS['babMaxFileSize'];
 		}
 		
 	if( !empty($arr['uploadpath']))

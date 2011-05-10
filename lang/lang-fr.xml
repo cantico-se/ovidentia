@@ -745,6 +745,7 @@
 <string id="There is no waiting vacation request">Il n'y a pas de demande de congés en attente</string>
 <string id="There is not enough free space">Il n'y a pas assez d'espace disque</string>
 <string id="The file size exceed the limit configured for the file manager">La taille du fichier excède la limite configurée pour le gestionnaire de fichiers</string>
+<string id="The ZIP file size exceed the limit configured for the file manager">La taille de l'archive excède la limite configurée pour le gestionnaire de fichiers</string>
 <string id="The file size exceed the limit configured for the current type of folder">La taille du fichier excède la limite configurée pour le type de répertoire en cours</string>
 <string id="This collection already exists">Ce régime existe déjà</string>
 <string id="This flow approvers already exists">Ce schéma d'approbation existe déjà</string>
@@ -1196,6 +1197,7 @@
 <string id="Site slogan">Slogan du site</string>
 <string id="Upload path">Répertoire de stockage des fichiers à télécharger</string>
 <string id="Upload max file size">Taille maximum d'un fichier téléchargé vers le serveur</string>
+<string id="Max zip file size for treatement">Taille maximum pour le traitement des archives ZIP (compression/décompression)</string>
 <string id="File manager max group directory size">Espace maximum occupé par un répertoire partagé</string>
 <string id="File manager max user directory size">Espace maximum occupé par un répertoire utilisateur</string>
 <string id="File manager max total size">Espace maximum occupé par le gestionnaire de fichiers</string>
@@ -3160,4 +3162,5 @@
 <string id="Send the notification">Envoyer la notification</string>
 <string id="Who is notified when a calendar event is created, modified, or deleted?">Qui est notifié lors de la création, de la modification ou de la supression d'un évenement?</string>
 <string id="Unzip here">Décompresser ici</string>
+<string id="Download ZIP folder">Télécharger le dossier compressé</string>
 </fr>

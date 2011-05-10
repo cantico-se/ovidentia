@@ -6481,11 +6481,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			CREATE TABLE `".BAB_CAL_PUB_NOT_GROUPS_TBL."`
 			  AS SELECT * FROM `".BAB_CAL_PUB_GRP_GROUPS_TBL."`
 		");
-
-
 	}
-
-
+	
+	/**
+	 * Upgrade to 7.4.95
+	 */
+	// Add field to manage ZIP archive
+	if (!bab_isTableField(BAB_SITES_TBL, 'maxzipsize')) {
+		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `maxzipsize` int(11) unsigned NOT NULL default '0'");
+	}
 
 	return true;
 }

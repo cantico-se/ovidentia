@@ -395,7 +395,8 @@ function hideDelegationSubmitBtn()
 						<!--#endif bCanSetRightOnFolder -->
 						<!--#if bCanCutFolder -->
 							<a href="{ sCutFolderUrl }" title="{ sCutFolder }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ sCutFolder }" border="0" align="middle" /></a>
-						<!--#endif bCanCutFolder -->&nbsp;
+						<!--#endif bCanCutFolder -->
+							<a href="{ sFolderZipUrl }" title="{ sFolderZip }"><img src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" alt="{ sFolderZip }"  /></a>&nbsp;
 							</td>
 						</tr>
 						<!--#endin getNextFolder -->
@@ -522,14 +523,13 @@ function hideDelegationSubmitBtn()
 							<!--#if urlget "== " --><img title="{ download_limit_reached }" src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ download_limit_reached }" border="0" align="middle" />&nbsp;<!--#else urlget --><a href="{ urlget }" title="{ download }"><img src="{ babSkinPath }images/Puces/download.gif" alt="{ download }" border="0" align="middle" /></a>&nbsp;<!--#endif urlget -->
 								
 							<!--#endif bDownload -->
-							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
-							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
-
 							<!--#if bUnZip -->
 							<a href="{ unzipurl }">
 								<img title="{ unziptxt }" src="{ babSkinPath }images/Puces/zip.gif" border="0" align="middle" />
 							<a/>
 							<!--#endif bUnZip -->
+							<!--#if bCanManageCurrentFolder --><a href="{ cuturl }" title="{ cuttxt }"><img src="{ babSkinPath }images/Puces/cut.gif" alt="{ cuttxt }" border="0" align="middle" /></a>&nbsp;<a href="{ delurl }" title="{ deltxt }"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ deltxt }" border="0" align="middle" /></a><!--#endif bCanManageCurrentFolder -->
+							<!--#if bDownload --><span class="bab-file-{ fileid }"></span><!--#endif bDownload -->
 							</td>
 						</tr>
 				<!--#endin getnextfile -->

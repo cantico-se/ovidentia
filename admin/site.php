@@ -370,6 +370,7 @@ function site_menu4($id)
 			$this->imgsize_title = bab_translate("Max image size ( Kb )");
 			$this->uploadpath_title = bab_translate("Upload path");
 			$this->maxfilesize_title = bab_translate("Upload max file size");
+			$this->maxzipsize_title = bab_translate("Max zip file size for treatement");
 			$this->t_filemanager = bab_translate("File manager");
 			$this->folder_diskspace_title = bab_translate("File manager max group directory size");
 			$this->user_diskspace_title = bab_translate("File manager max user directory size");
@@ -1910,7 +1911,7 @@ function siteUpdate_menuUpload()
 	}
 	
 	
-	if (!is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace'])) {
+	if (!is_numeric($_POST['maxzipsize']) || !is_numeric($_POST['maxfilesize']) || !is_numeric($_POST['folder_diskspace']) || !is_numeric($_POST['user_diskspace']) || !is_numeric($_POST['total_diskspace'])) {
 		$babBody->addError(bab_translate("ERROR: You must provide all file manager size limits."));
 		$errors = true;
 	}
@@ -1930,7 +1931,8 @@ function siteUpdate_menuUpload()
 		maxfilesize='".$babDB->db_escape_string($_POST['maxfilesize'])."', 
 		folder_diskspace='".$babDB->db_escape_string($_POST['folder_diskspace'])."', 
 		user_diskspace='".$babDB->db_escape_string($_POST['user_diskspace'])."', 
-		total_diskspace='".$babDB->db_escape_string($_POST['total_diskspace'])."'  
+		total_diskspace='".$babDB->db_escape_string($_POST['total_diskspace'])."' , 
+		maxzipsize='".$babDB->db_escape_string($_POST['maxzipsize'])."'  
 	where id='".$babDB->db_escape_string($_POST['item'])."'";
 	$babDB->db_query($req);
 
