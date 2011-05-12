@@ -6451,11 +6451,15 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('UPDATE bab_topcat_order SET id_parent='.$babDB->quote($arr['id_parent']).' WHERE id='.$babDB->quote($arr['id']));
 	}
 
+<<<<<<< upgrade.php
+	
+=======
 
 
 	/**
 	 * Upgrade to 7.4.93
 	 */
+>>>>>>> 1.454
 	// Add table to keep track of fields to display when displaying forum's post.
 	if (!bab_isTable(BAB_FORUMS_NOTICES_TBL)) {
 		$babDB->db_query('
@@ -6483,6 +6487,69 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		");
 	}
 	
+	
+	// Add column for the size a file.
+	if (!bab_isTableField(BAB_FILES_TBL, 'size')) {
+		$babDB->db_query('ALTER TABLE '.BAB_FILES_TBL." ADD size int DEFAULT -1 NOT NULL AFTER hits");
+
+		// Update size column for all files.
+		$personal_files = $babDB->db_query('
+			SELECT 
+				f.id, f.name, f.path, f.id_owner
+			FROM 
+				'.BAB_FILES_TBL.' f
+			WHERE 
+				f.size = -1 AND f.bgroup = \'N\'  
+		');
+
+		$collective_files = $babDB->db_query('
+			SELECT 
+				f.id, f.name, f.path, f.iIdDgOwner
+			FROM 
+				'.BAB_FILES_TBL.' f
+			WHERE 
+				f.size = -1 AND f.bgroup = \'Y\'  
+		');
+		
+//		$nb_files = $babDB->db_num_rows($personal_files);
+//		$nb_files += $babDB->db_num_rows($collective_files);
+//
+//		echo sprintf('Updating size of %d files.<br />', $nb_files);
+		
+		$babUploadPath = getUploadPathFromDataBase();
+
+		while ($file = $babDB->db_fetch_assoc($personal_files)) {
+
+			$uploadPath = $babUploadPath . 'fileManager/users/U' . $file['id_owner'] . '/';
+
+			$fullPathName = $uploadPath . $file['path'] . $file['name'];
+			if (file_exists($fullPathName)) {
+				$fstat = stat($fullPathName);
+				$size = floor($fstat[7] / 1024);
+//				echo sprintf('Updating %d : %s => %d.<br />', $file['id'], $file['path'] . $file['name'], $size);
+				$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+			}
+			
+		}
+
+		while ($file = $babDB->db_fetch_assoc($collective_files)) {
+
+			$uploadPath = $babUploadPath . 'fileManager/collectives/DG' . $file['iIdDgOwner'] . '/';
+
+			$fullPathName = $uploadPath . $file['path'] . $file['name'];
+			if (file_exists($fullPathName)) {
+				$fstat = stat($fullPathName);
+				$size = floor($fstat[7] / 1024);
+//				echo sprintf('Updating %d : %s => %d.<br />', $file['id'], $file['path'] . $file['name'], $size);
+				$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+			}
+			
+		}
+
+	}
+	
+
+
 	/**
 	 * Upgrade to 7.4.95
 	 */
@@ -6490,6 +6557,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'maxzipsize')) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `maxzipsize` int(11) unsigned NOT NULL default '0'");
 	}
+
 
 	return true;
 }
