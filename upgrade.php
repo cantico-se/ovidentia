@@ -6451,15 +6451,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query('UPDATE bab_topcat_order SET id_parent='.$babDB->quote($arr['id_parent']).' WHERE id='.$babDB->quote($arr['id']));
 	}
 
-<<<<<<< upgrade.php
-	
-=======
 
+	
 
 	/**
 	 * Upgrade to 7.4.93
 	 */
->>>>>>> 1.454
+
 	// Add table to keep track of fields to display when displaying forum's post.
 	if (!bab_isTable(BAB_FORUMS_NOTICES_TBL)) {
 		$babDB->db_query('
