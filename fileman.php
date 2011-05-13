@@ -3469,17 +3469,31 @@ function zipFolder()
 	global $babBody;
 	$oFileManagerEnv =& getEnvObject();
 	$sDirName = (string) bab_gp('sDirName', '');
-	
+	$gr = bab_rp('gr','');
 	if(mb_strlen(trim($sDirName)) > 0 && ($oFileManagerEnv->userIsInRootFolder() || $oFileManagerEnv->userIsInCollectiveFolder() || $oFileManagerEnv->userIsInPersonnalFolder()))
 	{
-		if(bab_rp('gr') == 'Y'){
+		if($gr == 'Y'){
+			require_once $GLOBALS['babInstallPath'].'utilit/filemanApi.php';
 			$folderPath = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
-		}else{
+		}elseif($gr == 'N'){
 			$folderPath = realpath($oFileManagerEnv->getPersonalPath($GLOBALS['BAB_SESS_USERID']) . $oFileManagerEnv->sRelativePath . $sDirName);
+		}else{
 			if($sDirName == bab_translate('Private folder')){
+				$_GET['gr'] = 'N';
+				$_POST['gr'] = 'N';
+				$personalPath = new bab_Path($oFileManagerEnv->getPersonalPath($GLOBALS['BAB_SESS_USERID']) . $oFileManagerEnv->sRelativePath);
+				if(!$personalPath->isDir()){
+					$personalPath->createDir();
+				}
 				$folderPath = realpath($oFileManagerEnv->getPersonalPath($GLOBALS['BAB_SESS_USERID']) . $oFileManagerEnv->sRelativePath);
+			}else{
+				$_GET['gr'] = 'Y';
+				$_POST['gr'] = 'Y';
+				require_once $GLOBALS['babInstallPath'].'utilit/filemanApi.php';
+				$folderPath = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
 			}
 		}
+		
 		if(!is_dir($folderPath))
 		{
 			$babBody->addError(bab_translate("Invalid directory"));
@@ -3489,11 +3503,13 @@ function zipFolder()
 			$babBody->addError(bab_translate("The ZIP file size exceed the limit configured for the file manager"));
 			return false;
 		}
+		
 		$sourcePath = new bab_Path($folderPath);
 		$destPath = new bab_Path($GLOBALS['babUploadPath'],'tmp',session_id());
 		if($destPath->isDir()){
 			$destPath->deleteDir();
 		}
+		
 		$destPath->createDir();
 		$destPath->push($sDirName.'.zip');
 		
@@ -3542,7 +3558,17 @@ function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = ''){
 		if($babPath->isDir()){
 			bab_zipFolderFile($babPath, $Zip, $currentBabPath->tostring());
 		}else{
+			bab_debug($babPath->tostring());
+			if(bab_rp('gr') == 'Y'){
+				$folder = new bab_fileInfo($babPath->tostring());
+				if(!$folder->isReadable()){
+					//$babBody->addError(bab_translate("Invalid directory"));
+					//return;
+					continue;
+				}
+			}
 			$Zip->addFile($babPath->tostring(), $currentBabPath->tostring());
+			
 		}
 	}
 }

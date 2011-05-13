@@ -1716,7 +1716,7 @@ class bab_event_posted {
 			$this->args['free'] = false;
 			}
 	
-		if( isset($data['groupe-notif']) && $data['groupe-notif'] ==  1 )
+		if( $data['groupe-notif'] ==  '1' )
 			{
 			$this->args['groupe-notif'] = true;
 			}
