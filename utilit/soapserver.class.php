@@ -34,6 +34,15 @@ class bab_soapServer extends soap_server
 	public $namespace = 'ovidentia';
 
 	
+	/**
+	 * 
+	 * @return bool
+	 */
+	public static function accessValid()
+	{
+		global $babBody;
+		return bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']);
+	}
 	
 	
 	/**
