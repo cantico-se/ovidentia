@@ -209,7 +209,8 @@ class Func_Archive_Zip_ZipArchive extends Func_Archive_Zip {
 		if (class_exists('ZipArchive')) {
 			$this->zip = new ZipArchive;
 		} else {
-			throw new Exception(bab_translate('The php zip extension is not available'));
+			// do not throw here because object can be creted only for getDescription
+			bab_debug(bab_translate('The php zip extension is not available'));
 		}
 	}
 
