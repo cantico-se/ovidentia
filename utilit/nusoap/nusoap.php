@@ -253,6 +253,9 @@ class nusoap_base {
 	* @access   private
 	*/
 	function debug($string){
+		
+		bab_debug($string, DBG_TRACE, 'nusoap', 2);
+		
 		if ($this->debugLevel > 0) {
 			$this->appendDebug($this->getmicrotime().' '.get_class($this).": $string\n");
 		}
@@ -503,7 +506,7 @@ class nusoap_base {
 			case (is_array($val) || $type):
 				// detect if struct or array
 				$valueType = $this->isArraySimpleOrStruct($val);
-                if($valueType=='arraySimple' || ereg('^ArrayOf',$type)){
+                if($valueType=='arraySimple' || preg_match('/^ArrayOf/',$type)){
 					$i = 0;
 					if(is_array($val) && count($val)> 0){
 						foreach($val as $v){
@@ -827,16 +830,16 @@ function timestamp_to_iso8601($timestamp,$utc=true){
 	$datestr = date('Y-m-d\TH:i:sO',$timestamp);
 	if($utc){
 		$eregStr =
-		'([0-9]{4})-'.	// centuries & years CCYY-
+		'/([0-9]{4})-'.	// centuries & years CCYY-
 		'([0-9]{2})-'.	// months MM-
 		'([0-9]{2})'.	// days DD
 		'T'.			// separator T
 		'([0-9]{2}):'.	// hours hh:
 		'([0-9]{2}):'.	// minutes mm:
 		'([0-9]{2})(\.[0-9]*)?'. // seconds ss.ss...
-		'(Z|[+\-][0-9]{2}:?[0-9]{2})?'; // Z to indicate UTC, -/+HH:MM:SS.SS... for local tz's
+		'(Z|[+\-][0-9]{2}:?[0-9]{2})?/'; // Z to indicate UTC, -/+HH:MM:SS.SS... for local tz's
 
-		if(ereg($eregStr,$datestr,$regs)){
+		if(preg_match($eregStr,$datestr,$regs)){
 			return sprintf('%04d-%02d-%02dT%02d:%02d:%02dZ',$regs[1],$regs[2],$regs[3],$regs[4],$regs[5],$regs[6]);
 		}
 		return false;
@@ -853,15 +856,15 @@ function timestamp_to_iso8601($timestamp,$utc=true){
 */
 function iso8601_to_timestamp($datestr){
 	$eregStr =
-	'([0-9]{4})-'.	// centuries & years CCYY-
+	'/([0-9]{4})-'.	// centuries & years CCYY-
 	'([0-9]{2})-'.	// months MM-
 	'([0-9]{2})'.	// days DD
 	'T'.			// separator T
 	'([0-9]{2}):'.	// hours hh:
 	'([0-9]{2}):'.	// minutes mm:
 	'([0-9]{2})(\.[0-9]+)?'. // seconds ss.ss...
-	'(Z|[+\-][0-9]{2}:?[0-9]{2})?'; // Z to indicate UTC, -/+HH:MM:SS.SS... for local tz's
-	if(ereg($eregStr,$datestr,$regs)){
+	'(Z|[+\-][0-9]{2}:?[0-9]{2})?/'; // Z to indicate UTC, -/+HH:MM:SS.SS... for local tz's
+	if(preg_match($eregStr,$datestr,$regs)){
 		// not utc
 		if($regs[8] != 'Z'){
 			$op = substr($regs[8],0,1);
@@ -1171,7 +1174,7 @@ class XMLSchema extends nusoap_base  {
         if(count($attrs) > 0){
         	foreach($attrs as $k => $v){
                 // if ns declarations, add to class level array of valid namespaces
-				if(ereg("^xmlns",$k)){
+				if(preg_match("/^xmlns/",$k)){
                 	//$this->xdebug("$k: $v");
                 	//$this->xdebug('ns_prefix: '.$this->getPrefix($k));
                 	if($ns_prefix = substr(strrchr($k,':'),1)){
@@ -1281,7 +1284,7 @@ class XMLSchema extends nusoap_base  {
 					//                        minOccurs="0" maxOccurs="unbounded" />
 					//                </sequence>
 					//            </complexType>
-					if(isset($attrs['base']) && ereg(':Array$',$attrs['base'])){
+					if(isset($attrs['base']) && preg_match('/:Array$/',$attrs['base'])){
 						$this->xdebug('complexType is unusual array');
 						$this->complexTypes[$this->currentComplexType]['phpType'] = 'array';
 					} else {
@@ -1300,7 +1303,7 @@ class XMLSchema extends nusoap_base  {
 					//                        minOccurs="0" maxOccurs="unbounded" />
 					//                </sequence>
 					//            </complexType>
-					if(isset($attrs['base']) && ereg(':Array$',$attrs['base'])){
+					if(isset($attrs['base']) && preg_match('/:Array$/',$attrs['base'])){
 						$this->xdebug('complexType is unusual array');
 						$this->complexTypes[$this->currentComplexType]['phpType'] = 'array';
 					} else {
@@ -1698,7 +1701,7 @@ class XMLSchema extends nusoap_base  {
 		} elseif(isset($this->attributes[$type])){
 			$this->xdebug("in getTypeDef, found attribute $type");
 			return $this->attributes[$type];
-		} elseif (ereg('_ContainedType$', $type)) {
+		} elseif (preg_match('/_ContainedType$/', $type)) {
 			$this->xdebug("in getTypeDef, have an untyped element $type");
 			$typeDef['typeClass'] = 'simpleType';
 			$typeDef['phpType'] = 'scalar';
@@ -2041,7 +2044,7 @@ class soap_transport_http extends nusoap_base {
 	function soap_transport_http($url){
 		parent::nusoap_base();
 		$this->setURL($url);
-		ereg('\$Revisio' . 'n: ([^ ]+)', $this->revision, $rev);
+		preg_match('/\$Revisio' . 'n: ([^ ]+)/', $this->revision, $rev);
 		$this->outgoing_headers['User-Agent'] = $this->title.'/'.$this->version.' ('.$rev[1].')';
 		$this->debug('set User-Agent: ' . $this->outgoing_headers['User-Agent']);
 	}
@@ -2580,7 +2583,7 @@ class soap_transport_http extends nusoap_base {
 				}
 			}
 			// remove 100 header
-			if(isset($lb) && ereg('^HTTP/1.1 100',$data)){
+			if(isset($lb) && preg_match('/^HTTP\/1.1 100/',$data)){
 				unset($lb);
 				$data = '';
 			}//
@@ -2733,7 +2736,7 @@ class soap_transport_http extends nusoap_base {
 		curl_close($this->ch);
 		
 		// remove 100 header(s)
-		while (ereg('^HTTP/1.1 100',$data)) {
+		while (preg_match('/^HTTP\/1.1 100/',$data)) {
 			if ($pos = strpos($data,"\r\n\r\n")) {
 				$data = ltrim(substr($data,$pos));
 			} elseif($pos = strpos($data,"\n\n") ) {
@@ -2924,7 +2927,7 @@ class soap_transport_http extends nusoap_base {
 	 */
 	function parseCookie($cookie_str) {
 		$cookie_str = str_replace('; ', ';', $cookie_str) . ';';
-		$data = split(';', $cookie_str);
+		$data = explode(';', $cookie_str);
 		$value_str = $data[0];
 
 		$cookie_param = 'domain=';
@@ -3367,7 +3370,7 @@ class soap_server extends nusoap_base {
 						$enc = substr(strstr($v, '='), 1);
 						$enc = str_replace('"', '', $enc);
 						$enc = str_replace('\\', '', $enc);
-						if (eregi('^(ISO-8859-1|US-ASCII|UTF-8)$', $enc)) {
+						if (preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i', $enc)) {
 							$this->xml_encoding = strtoupper($enc);
 						} else {
 							$this->xml_encoding = 'US-ASCII';
@@ -3401,7 +3404,7 @@ class soap_server extends nusoap_base {
 						$enc = substr(strstr($v, '='), 1);
 						$enc = str_replace('"', '', $enc);
 						$enc = str_replace('\\', '', $enc);
-						if (eregi('^(ISO-8859-1|US-ASCII|UTF-8)$', $enc)) {
+						if (preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i', $enc)) {
 							$this->xml_encoding = strtoupper($enc);
 						} else {
 							$this->xml_encoding = 'US-ASCII';
@@ -3610,7 +3613,7 @@ class soap_server extends nusoap_base {
 		}
         $this->debug('in invoke_method, methodreturn:');
         $this->appendDebug($this->varDump($this->methodreturn));
-		$this->debug("in invoke_method, called method $this->methodname, received $this->methodreturn of type ".gettype($this->methodreturn));
+		// $this->debug("in invoke_method, called method $this->methodname, received $this->methodreturn of type ".gettype($this->methodreturn));
 	}
 
 	/**
@@ -4336,7 +4339,7 @@ class wsdl extends nusoap_base {
             $this->currentSchema->schemaStartElement($parser, $name, $attrs);
             $this->appendDebug($this->currentSchema->getDebug());
             $this->currentSchema->clearDebug();
-        } elseif (ereg('schema$', $name)) {
+        } elseif (preg_match('/schema$/', $name)) {
         	$this->debug('Parsing WSDL schema');
             // $this->debug("startElement for $name ($attrs[name]). status = $this->status (".$this->getLocalPart($name).")");
             $this->status = 'schema';
@@ -4355,7 +4358,7 @@ class wsdl extends nusoap_base {
             if (count($attrs) > 0) {
 				// register namespace declarations
                 foreach($attrs as $k => $v) {
-                    if (ereg("^xmlns", $k)) {
+                    if (preg_match("/^xmlns/", $k)) {
                         if ($ns_prefix = substr(strrchr($k, ':'), 1)) {
                             $this->namespaces[$ns_prefix] = $v;
                         } else {
@@ -4380,7 +4383,7 @@ class wsdl extends nusoap_base {
                 $attrs = array();
             } 
             // get element prefix, namespace and name
-            if (ereg(':', $name)) {
+            if (preg_match('/:/', $name)) {
                 // get ns prefix
                 $prefix = substr($name, 0, strpos($name, ':')); 
                 // get ns
@@ -4545,7 +4548,7 @@ class wsdl extends nusoap_base {
 	*/
 	function end_element($parser, $name){ 
 		// unset schema status
-		if (/*ereg('types$', $name) ||*/ ereg('schema$', $name)) {
+		if (/*ereg('types$', $name) ||*/ preg_match('/schema$/', $name)) {
 			$this->status = "";
             $this->appendDebug($this->currentSchema->getDebug());
             $this->currentSchema->clearDebug();
@@ -5859,7 +5862,7 @@ class soap_parser extends nusoap_base {
 					if (strtoupper($xml_encoding) != $encoding) {
 						$err = "Charset from HTTP Content-Type '" . $encoding . "' does not match encoding from XML declaration '" . $xml_encoding . "'";
 						$this->debug($err);
-						if ($encoding != 'ISO-8859-1' || strtoupper($xml_encoding) != 'UTF-8') {
+						if (($encoding != 'ISO-8859-1' && $encoding != 'US-ASCII') || strtoupper($xml_encoding) != 'UTF-8') {
 							$this->setError($err);
 							return;
 						}
@@ -6741,7 +6744,7 @@ class soapclient_b extends nusoap_base  {
 		// detect transport
 		switch(true){
 			// http(s)
-			case ereg('^http',$this->endpoint):
+			case preg_match('/^http/',$this->endpoint):
 				$this->debug('transporting via HTTP');
 				if($this->persistentConnection == true && is_object($this->persistentConnection)){
 					$http =& $this->persistentConnection;
@@ -6763,10 +6766,10 @@ class soapclient_b extends nusoap_base  {
 					$http->setEncoding($this->http_encoding);
 				}
 				$this->debug('sending message, length='.strlen($msg));
-				if(ereg('^http:',$this->endpoint)){
+				if(preg_match('/^http:/',$this->endpoint)){
 				//if(strpos($this->endpoint,'http:')){
 					$this->responseData = $http->send($msg,$timeout,$response_timeout,$this->cookies);
-				} elseif(ereg('^https',$this->endpoint)){
+				} elseif(preg_match('/^https/',$this->endpoint)){
 				//} elseif(strpos($this->endpoint,'https:')){
 					//if(phpversion() == '4.3.0-dev'){
 						//$response = $http->send($msg,$timeout,$response_timeout);
@@ -6824,7 +6827,7 @@ class soapclient_b extends nusoap_base  {
 		if (strpos($headers['content-type'], '=')) {
 			$enc = str_replace('"', '', substr(strstr($headers["content-type"], '='), 1));
 			$this->debug('Got response encoding: ' . $enc);
-			if(eregi('^(ISO-8859-1|US-ASCII|UTF-8)$',$enc)){
+			if(preg_match('/^(ISO-8859-1|US-ASCII|UTF-8)$/i',$enc)){
 				$this->xml_encoding = strtoupper($enc);
 			} else {
 				$this->xml_encoding = 'US-ASCII';

@@ -203,7 +203,7 @@ function login($nickname, $password)
 		}
 	else
 		{
-		$babBody->msgerror = bab_translate("Access denied");
+		$babBody->msgerror = bab_translate("Access denied to webservice");
 		}
 
 	return array('id'=>0, 'error'=>$babBody->msgerror);	
@@ -215,7 +215,7 @@ function logout($session)
 	{
 	global $babBody;
 	include_once $GLOBALS['babInstallPath']."admin/register.php";
-	include_once $babInstallPath.'utilit/loginIncl.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 	
 	if( isset($_REQUEST['WSSESSIONID']) && $_REQUEST['WSSESSIONID'] == $session && bab_isAccessValid(BAB_SITES_WS_GROUPS_TBL, $babBody->babsite['id']))
 		{

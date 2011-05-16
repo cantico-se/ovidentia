@@ -2431,7 +2431,7 @@ define('DBG_FATAL',		32);
  * @param int		$severity	The severity of the logged information (One of: DBG_TRACE, DBG_DEBUG, DBG_INFO, DBG_WARNING, DBG_ERROR, DBG_FATAL)
  * @param string	$category	A string to categorize the debug information.
  */
-function bab_debug($data, $severity = DBG_TRACE, $category = '')
+function bab_debug($data, $severity = DBG_TRACE, $category = '', $shiftdebug = 1)
 {
 	$file = $line = $function = '';
 
@@ -2443,7 +2443,10 @@ function bab_debug($data, $severity = DBG_TRACE, $category = '')
 
 	// Here we find information about the file and line where bab_debug was called.
 	$backtrace = debug_backtrace();
-	$call = array_shift($backtrace);
+	for($i = 0; $i < $shiftdebug; $i++)
+	{
+		$call = array_shift($backtrace);
+	}
 	if (is_array($call)  && isset($call['file']) && isset($call['line'])) {
 		$file = $call['file'];
 		$line = $call['line'];
