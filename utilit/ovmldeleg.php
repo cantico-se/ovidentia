@@ -66,6 +66,92 @@ class bab_CategoryCache
 }
 
 
+
+
+/**
+ * @param babOvTemplate $oCtx
+ * @param int           $iMaxImageHeight
+ * @param int           $iMaxImageWidth
+ * @param int           $iIdDeleg
+ * @return void
+ */
+function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $iIdDeleg)
+{
+	require_once dirname(__FILE__) . '/gdiincl.php';
+	require_once dirname(__FILE__) . '/artapi.php';
+	require_once dirname(__FILE__) . '/pathUtil.class.php';
+
+	$bProcessed		= false;
+	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+
+	if (is_dir($sUploadPath)) {			
+		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
+		if($uploadPath->isDir() && $iIdDeleg != ''){
+			foreach($uploadPath as $file){}
+			$relativePath = new bab_Path('delegation','image','DG'.$iIdDeleg);
+			
+			$iHeight			= $iMaxImageHeight;
+			$iWidth				= $iMaxImageWidth;
+			$sName				= $file->getBasename();
+			$sRelativePath		= $relativePath->tostring();
+			$sFullPathName		= $file->tostring();
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
+	
+			$T = @bab_functionality::get('Thumbnailer');
+			$thumbnailUrl = null;
+	
+			if ($T && $iHeight && $iWidth) {
+				// The thumbnailer functionality is available.
+			 	$T->setSourceFile($sFullPathName);
+				$T->setBorder(0, '#cccccc', 0, '#ffffff');
+				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
+			}
+			if ($thumbnailUrl) {
+				// The thumbnailer functionality was able to create a thumbnail.
+				$oCtx->curctx->push('DelegationImage', 1);
+				$oCtx->curctx->push('DelegationImageUrl', $thumbnailUrl);
+				$oCtx->curctx->push('DelegationImageWidth', $iWidth);				
+				$oCtx->curctx->push('DelegationImageHeight', $iHeight);
+	
+				// We reload the thumbnail image to get the real resized width and height.
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
+				$img = imageCreateFromPng($thumbnailPath->toString());
+				$oCtx->curctx->push('DelegationResizedImageWidth', imagesx($img));
+				$oCtx->curctx->push('DelegationResizedImageHeight', imagesy($img));
+				imageDestroy($img);
+	
+				$bProcessed = true;
+			} else {
+				// If the thumbnailer was not available or not able to create a thumbnail,
+				// we fall back to the old method for creating thumbnails (url of the page
+				// dynamically resizing the image).
+				$oImageResize = new bab_ImageResize();
+				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
+	
+					$oCtx->curctx->push('DelegationImage', 1);
+					$oCtx->curctx->push('DelegationImageUrl', $sImageUrl);
+					$oCtx->curctx->push('DelegationImageWidth', $oImageResize->getRealWidth());
+					$oCtx->curctx->push('DelegationImageHeight', $oImageResize->getRealHeight());
+					$oCtx->curctx->push('DelegationResizedImageWidth', $iWidth);
+					$oCtx->curctx->push('DelegationResizedImageHeight', $iHeight);
+	
+					$bProcessed = true;
+				}
+			}
+		}
+	}
+
+	if (false === $bProcessed) {
+		$oCtx->curctx->push('DelegationImage', 0);
+		$oCtx->curctx->push('DelegationImageUrl', '');
+		$oCtx->curctx->push('DelegationImageWidth', 0);
+		$oCtx->curctx->push('DelegationImageHeight', 0);
+		$oCtx->curctx->push('DelegationResizedImageWidth', 0);
+		$oCtx->curctx->push('DelegationResizedImageHeight', 0);
+	}
+}
+
+
 class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 {
 	var $index;
@@ -84,6 +170,8 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 		$filter = $ctx->get_value('filter');
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 		if( mb_strtoupper($filter) == "NO" )
 			{
 			$filter = false;
@@ -155,6 +243,8 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
 			$this->ctx->curctx->push('DelegationCategoryColor', '');
 			
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			if(0 !== (int) $arr['iIdCategory'])
 			{
 				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
@@ -183,15 +273,20 @@ class Func_Ovml_Container_Delegation extends Func_Ovml_Container_Delegations
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 		$delegationid = $ctx->get_value('delegationid');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
 			parent::setOvmlContext($ctx);
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $delegationid);
 			}
 		else
 			{
 			parent::setOvmlContext($ctx);
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, '');
 			$this->count = 0;
+			$this->ctx->curctx->push('DelegationImage', '');
 			$this->ctx->curctx->push('CCount', $this->count);
 			}
 	}
@@ -215,6 +310,8 @@ class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 		
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 
 		if( $userid === false || $userid === '' )
 			{
@@ -260,6 +357,8 @@ class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
 			$this->ctx->curctx->push('DelegationCategoryColor', '');
 			
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
+			
 			if(0 !== (int) $arr['iIdCategory'])
 			{
 				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
@@ -288,14 +387,20 @@ class Func_Ovml_Container_DelegationManaged extends Func_Ovml_Container_Delegati
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		$delegationid = $ctx->get_value('delegationid');
+		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
+		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 		if( $delegationid !== false && !empty($delegationid) )
 			{
 			parent::setOvmlContext($ctx);
+			
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $delegationid);
 			}
 		else
 			{
 			parent::setOvmlContext($ctx);
+			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, '');
 			$this->count = 0;
+			$this->ctx->curctx->push('DelegationImage', '');
 			$this->ctx->curctx->push('CCount', $this->count);
 			}
 	}

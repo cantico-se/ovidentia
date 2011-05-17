@@ -159,7 +159,8 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 
 //]]>
 </script>
-<form name="dgcreate" method="post" action="{ babPhpSelf }">
+<form name="dgcreate" enctype="multipart/form-data" method="post" action="{ babPhpSelf }">
+	<input type="hidden" name="MAX_FILE_SIZE" value="{ iMaxImgFileSize }" />
 	<input type="hidden" name="tg" value="{ tgval }" />
 	<input type="hidden" name="idx" value="list" />
 	<input type="hidden" name="id" value="{ id }" />
@@ -187,6 +188,30 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 							&nbsp;<a href="#" onclick="Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=250,height=200,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a> &nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
+					<!--#if bImageUploadEnable  -->					
+					<tr> 
+						<td align="right">{ sSelectImageCaption }</td>
+						<td>
+							<input type="file" id="delegPicture" name="delegPicture" />
+						</td>
+					</tr>
+						<!--#if bImageAlreadyUploaded  -->		
+						<tr> 
+							<td align="right">{ sImageAlreadyUploaded }:</td>
+							<td>
+								<img alt="{ sImageName }" src="{ sImageURL }">
+							</td>
+						</tr>
+						<!--#endif bImageAlreadyUploaded  -->		
+					<!--#else bImageUploadEnable -->
+					<tr>
+						<td colspan="2">
+							<div class="error">
+								{ sDisabledUploadReason }
+							</div>
+						</td>
+					</tr>
+					<!--#endif bImageUploadEnable -->
 					
 				<!--#if bCategoriesAvailable -->
 					<tr>

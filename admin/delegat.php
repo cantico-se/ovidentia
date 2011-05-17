@@ -25,6 +25,7 @@ include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
+include_once $GLOBALS['babInstallPath']."utilit/pathUtil.class.php";
 
 
 
@@ -321,7 +322,37 @@ function groupDelegatMembers($id)
 	$babBody->babecho(	bab_printTemplate($temp, "delegat.html", "delegatmembers"));
 	}
 
+function getImage()
+{	
+	require_once $GLOBALS['babInstallPath'].'/utilit/artincl.php';
+	require_once $GLOBALS['babInstallPath'].'/utilit/gdiincl.php';
 
+	$iWidth			= (int) bab_rp('iWidth', 0);
+	$iHeight		= (int) bab_rp('iHeight', 0);
+	$iIdDeleg	= (int) bab_rp('iIdDeleg', 0);
+	
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	
+	$sPath = '';
+	if(0 !== $iIdDeleg)
+	{
+		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
+		if($uploadPath->isDir()){
+			foreach($uploadPath as $file){
+				if(is_file($file->tostring())){
+					$sPath = $file->tostring();
+				}
+			}
+		}
+	}
+	
+	if($sPath == ''){
+		return '';
+	}
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImageAuto($sPath, $iWidth, $iHeight);
+}
 
 function groupDelegatModify($gname, $description, $id = '')
 {
@@ -369,6 +400,25 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->sCategoryCaption	= bab_translate("Category");
 			$this->tcheck			= bab_translate("Check all");
 			$this->tuncheck			= bab_translate("Uncheck all");
+			$this->sSelectImageCaption	= bab_translate('Select a picture');
+			$this->sImageAlreadyUploaded = bab_translate('Associated picture');
+			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
+			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
+			
+			$this->bImageAlreadyUploaded = '';
+			$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
+			if($uploadPath->isDir() && $id  != ''){
+				foreach($uploadPath as $file){
+					if(is_file($file->tostring())){
+						$this->bImageAlreadyUploaded = 1;
+						$this->sImageURL = $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth=120&iHeight=90&iIdDeleg=' .$id;
+						$this->sImageName = $file->getBasename();
+					}
+				}
+			}
+			
+			$this->processDisabledUploadReason();
 			
 			$db			= $GLOBALS['babDB'];
 			$this->db	= $db;
@@ -431,6 +481,31 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->iPostedIdCategory	= (int) bab_rp('iIdCategory', $iIdCategory);
 			$this->oResCategories		= $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
 			$this->bCategoriesAvailable	= (false !== $this->oResCategories && 0 < $babDB->db_num_rows($this->oResCategories));
+		}
+
+		function processDisabledUploadReason()
+		{
+			$this->sDisabledUploadReason = '';
+			if(false == $this->bImageUploadEnable)
+			{
+				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
+				$this->sDisabledUploadReason .= '<UL>';
+				
+				if('' == $GLOBALS['babUploadPath'])
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
+				}
+				else if(!is_dir($GLOBALS['babUploadPath']))
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
+				}
+				
+				if(0 == $this->iMaxImgFileSize)
+				{
+					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
+				}
+				$this->sDisabledUploadReason .= '</UL>';
+			}
 		}
 
 		function getNextCategory()
@@ -602,6 +677,24 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iI
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
 		$id = $babDB->db_insert_id();
 
+		$tmp_file = $_FILES['delegPicture']['tmp_name'];
+		if( is_uploaded_file($tmp_file) ){
+			$type_file = $_FILES['delegPicture']['type'];
+
+			if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') && !strstr($type_file, 'bmp') && !strstr($type_file, 'gif') && !strstr($type_file, 'png') )
+			{
+				$babBody->msgerror = bab_translate("Invalid image extension");
+			}else{
+				$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
+				$uploadPath->createDir();
+				$uploadPath->push($_FILES['delegPicture']['name']);
+
+				if( !move_uploaded_file($tmp_file, $uploadPath->tostring()) ){
+					$babBody->msgerror = bab_translate("The file could not be uploaded");
+				}
+			}
+		}
+		
 		if( !bab_addTopicsCategory($name, $description, 'Y', '', '', 0, $id ))
 			{
 			return false;
@@ -610,7 +703,6 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iI
 		}
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
-	exit;
 	}
 
 function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id, $iIdCategory)
@@ -658,6 +750,27 @@ function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, 
 		$req .= ", id_group=".$group;
 
 		$babDB->db_query($req ." where id='".$babDB->db_escape_string($id)."'");
+
+		$tmp_file = $_FILES['delegPicture']['tmp_name'];
+		if( is_uploaded_file($tmp_file) ){
+			$type_file = $_FILES['delegPicture']['type'];
+
+			if( !strstr($type_file, 'jpg') && !strstr($type_file, 'jpeg') && !strstr($type_file, 'bmp') && !strstr($type_file, 'gif') && !strstr($type_file, 'png') )
+			{
+				$babBody->msgerror = bab_translate("Invalid image extension");
+			}else{
+				$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
+				if($uploadPath->isDir()){
+					$uploadPath->deleteDir();
+				}
+				$uploadPath->createDir();
+				$uploadPath->push($_FILES['delegPicture']['name']);
+
+				if( !move_uploaded_file($tmp_file, $uploadPath->tostring()) ){
+					$babBody->msgerror = bab_translate("The file could not be uploaded");
+				}
+			}
+		}
 
 		}
 
@@ -877,7 +990,7 @@ if( !$babBody->isSuperAdmin )
 	
 if( !isset($idx))
 	$idx = "list";
-
+	
 if( isset($add))
 	{
 	if( isset($submit))
@@ -955,6 +1068,9 @@ if( isset($aclupdate))
 
 switch($idx)
 	{
+	case 'getImage':
+		getImage();
+		exit;
 	case "bg":
 		browseGroups_dg($cb);
 		exit;
