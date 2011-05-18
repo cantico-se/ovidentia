@@ -121,6 +121,8 @@ function listArticles($id)
 			$this->js_confirm_delete = bab_translate("Are you sure you want to delete those articles");
 			$this->js_confirm_delete = str_replace("'","\'",$this->js_confirm_delete);
 			$this->badmin = bab_isUserAdministrator();
+			$this->removedrafttxt = bab_translate("Remove the draft");
+			$this->removedraftconfirm = mysql_real_escape_string(bab_translate("This will remove all modification on this article, continue?"));
 
 			if (bab_searchEngineInfos()) {
 				$this->index = true;
@@ -136,7 +138,7 @@ function listArticles($id)
 
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$this->siteid;
 			
-			$req = "select at.*, adt.id_article , public.id public, private.id private 
+			$req = "select at.*, adt.id_article, adt.id as id_draft, adt.id_author as id_author, public.id public, private.id private 
 					FROM ".BAB_ARTICLES_TBL." at 
 					LEFT JOIN ".BAB_ART_DRAFTS_TBL." adt 
 						ON at.id=adt.id_article 
@@ -165,11 +167,13 @@ function listArticles($id)
 				$this->articleid = $arr['id'];
 				$this->urltitle = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&item=".$arr['id_topic']."&art=".$arr['id'];
 				$this->propurl = $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$arr['id_topic']."&art=".$arr['id'];
+				$this->removedrafturl = $GLOBALS['babUrlScript']."?tg=topman&idx=rmdraft&item=".$arr['id_topic']."&art=".$arr['id_draft'];
 
 				if( isset($arr['id_article']) && $arr['id_article'] != 0 )
 					{
+					$user = bab_getUserName($arr['id_author']);
 					$this->bupdate = true;
-					$this->status = bab_translate("Article in modification");
+					$this->status = bab_translate("Article in modification by ") . '<b>' . $user . '</b>';
 					}
 				else
 					{
@@ -1433,6 +1437,15 @@ function topman_init($item)
 	return $arrinit;
 }
 
+function bab_removeDraft($art){
+	global $babDB;
+	
+	$req = "UPDATE ".BAB_ART_DRAFTS_TBL." SET id_article = 0 where id='".$babDB->db_escape_string($art)."'";
+	$babDB->db_query($req);
+	
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_gp('item'));
+}
+
 /* main */
 
 
@@ -1538,6 +1551,18 @@ elseif( isset($updateh)  && bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBo
 
 switch($idx)
 	{
+	case "rmdraft":
+		$art = bab_gp('art', '');
+		if( $manager && $art != '' )
+		{
+			bab_removeDraft($art);
+		}
+		else
+		{
+			echo bab_translate("Access denied");
+		}
+		exit;
+		break;
 	case "unload":
 		if( !isset($popupmessage)) { $popupmessage ='';}
 		if( !isset($refreshurl)) { $refreshurl ='';}

@@ -49,6 +49,7 @@ function submitCtrl() {
 				<input type="checkbox" name="articles[]" value="{ articleid }" />
 				
 				<!--#if bupdate -->
+				<a title="{ removedrafttxt }" href="{ removedrafturl }" onclick="return confirm('{ removedraftconfirm }');"><img src="{ babSkinPath }images/Puces/delete.png" alt="{ removedrafttxt }" /></a>
 				<em>{ status }</em> : 
 				<!--#else bupdate -->
 				<a title="{ propertiestxt }" href="{ propurl }" onclick="bab_popup(this.href);return false;"><img src="{ babSkinPath }images/Puces/edit.gif" alt="{ propertiestxt }" /></a>
