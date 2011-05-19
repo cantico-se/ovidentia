@@ -145,7 +145,7 @@ function cal_notify(bab_eventCalendarEvent $event, $subject, $body = null)
 
 /**
  * Search the main calendar from the posted calendars
- * main calendar, calendar of user, first calendar
+ * first public or ressource calendar, calendar of user, first personal calendar
  * 
  * @param 	array 	$idcals		list of calendar
  * 
@@ -155,8 +155,10 @@ function bab_getMainCalendar(Array $idcals)
 {
 	$list = array_flip($idcals);
 	$calendars = bab_getICalendars()->getCalendars();
-	$oviBackendCalendars = array();
-	$otherCalendars = array();
+	$oviBackendGroupCalendars = array();
+	$otherGroupCalendars = array();
+	$personalCalendar = null;
+	$otherPersonalCalendars = array();
 	
 	foreach($calendars as $calendar) {
 		
@@ -168,34 +170,59 @@ function bab_getMainCalendar(Array $idcals)
 			continue;
 		}
 		
+		/*
 		if ($calendar->isDefaultCalendar()) {
 			return $calendar;
 		}
-		
-		if ($GLOBALS['BAB_SESS_USERID'] === $calendar->getIdUser()) {
-			return $calendar;
+		*/
+
+		if ($calendar instanceof bab_PersonalCalendar)
+		{
+			if ($GLOBALS['BAB_SESS_USERID'] === $calendar->getIdUser()) {
+				$personalCalendar = $calendar;
+			} else {
+				$otherPersonalCalendars[] = $calendar;
+			}
+			
+			continue;
 		}
+		
+		
 		
 		if ($calendar->getBackend() instanceof Func_CalendarBackend_Ovi)
 		{
-			$oviBackendCalendars[] = $calendar;
+			$oviBackendGroupCalendars[] = $calendar;
 		} else {
-			$otherCalendars[] = $calendar;
+			$otherGroupCalendars[] = $calendar;
 		}
 	}
 	
 	
-	if ($oviBackendCalendars)
+	if ($oviBackendGroupCalendars)
 	{
-		bab_Sort::sortObjects($oviBackendCalendars, 'getName');
-		return reset($oviBackendCalendars);
+		bab_Sort::sortObjects($oviBackendGroupCalendars, 'getName');
+		// the first ressource or collective calendar
+		return reset($oviBackendGroupCalendars);
 	}
 	
-	if ($otherCalendars)
+	if ($otherGroupCalendars)
 	{
-		bab_Sort::sortObjects($otherCalendars, 'getName');
-		return reset($otherCalendars);
+		bab_Sort::sortObjects($otherGroupCalendars, 'getName');
+		// not used for now
+		return reset($otherGroupCalendars);
 	}
+	
+	if (isset($personalCalendar))
+	{
+		return $personalCalendar;
+	}
+	
+	if ($otherPersonalCalendars)
+	{
+		bab_Sort::sortObjects($otherPersonalCalendars, 'getName');
+		return reset($otherPersonalCalendars);
+	}
+	
 
 	throw new Exception('No accessible compatible calendar');
 	return null;
