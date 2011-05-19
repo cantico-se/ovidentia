@@ -1235,8 +1235,8 @@ class bab_cal_OviEventSelect
 					{
 						$collections[$arr['parent_calendar']] = $backend->CalendarEventCollection($parent_calendar);
 					} else {
-						// No parent calendar ???
-						continue;
+						// No parent calendar or no access to parent calendar
+						$collections[$arr['parent_calendar']] = new bab_CalendarEventCollection;
 					}
 				}
 				$collection = $collections[$arr['parent_calendar']];
