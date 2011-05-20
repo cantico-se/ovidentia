@@ -1128,8 +1128,8 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		{
 		$req = "select * from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($arr['starter'])."'";
 		$res = $babDB->db_query($req);
-		$arr = $babDB->db_fetch_array($res);
-        notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr['email'], $name, $idpost);
+		$arr1 = $babDB->db_fetch_array($res);
+        notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr1['email'], $name, $idpost);
 		}
 		
 	// fire event if no approbation on post
