@@ -2882,7 +2882,7 @@ class Func_Ovml_Container_FilePrevious extends Func_Ovml_Container_File
 				$ctx->curctx->push('fileid', $this->handler->IdEntries[$this->handler->index-2]);
 				}
 			}
-		$this->bab_File($ctx);
+		parent::setOvmlContext($ctx);
 	}
 
 }
@@ -2903,7 +2903,7 @@ class Func_Ovml_Container_FileNext extends Func_Ovml_Container_File
 				$ctx->curctx->push('fileid', $this->handler->IdEntries[$this->handler->index]);
 				}
 			}
-		$this->bab_File($ctx);
+		parent::setOvmlContext($ctx);
 	}
 
 }
