@@ -1,4 +1,4 @@
-<!--#begin selectcolor -->
+<!--#begin selectcolorold -->
 <html style="width: 238px; height: 182px">
 <head>
 <title>{ title }</title>
@@ -344,4 +344,511 @@ function ValidateColor(string) {                // return valid color code
 </table>
 
 </body></html>
+<!--#end selectcolorold -->
+
+
+
+
+
+
+
+
+
+<!--#begin selectcolor -->
+
+<html>
+<head>
+<title>{ title }</title>
+
+<script type="text/javascript">
+
+ 
+
+
+function bab_Color()
+{
+    this.color          = null;
+    this.color_method   = 'RVB';
+    
+    /**
+     * @access private
+     * @return int
+     */
+    this.hue = function(m1, m2, h)
+    {
+        if (h < 0) { h = h+1; }
+        if (h > 1) { h = h-1; }
+        if (h * 6 < 1) { return m1 + (m2 - m1) * h * 6; }
+        if (h*2 < 1) { return m2; }
+        if (h*3 < 2) { return m1 + (m2 - m1)*(2 / 3 - h) * 6; }
+        return m1;
+    }
+    
+    /** 
+     * Convert HSL to RGB
+
+     * @param   Array   hsl     3 floats beetween 0.0 and 1.0
+     *
+     * @return Array            3 floats beetween 0.0 and 1.0
+     */
+    this.hsl2rgb = function(hsl)
+    {
+        var h = hsl[0];
+        var s = hsl[1];
+        var l = hsl[2];
+
+        if (s == 0.0) {
+            r = g = b = l;
+        } else {
+            if (l <= 0.5) {
+                m2 = l * (s + 1);
+            } else {
+                m2 = l + s -(l * s);
+            }
+            m1 = l * 2 - m2;
+            r = this.hue(m1, m2, (h + 1 / 3));
+            g = this.hue(m1, m2, h);
+            b = this.hue(m1, m2, (h - 1 / 3));
+        }
+
+        return [r, g, b];
+    }
+    
+    
+    /**
+    * Convert RGB colors array into HSL array
+    * 
+    * @param Array      rgb     RGB colors set  3 floats beetween 0.0 and 1.0
+    * @return Array             HSL set         3 floats beetween 0.0 and 1.0
+    */
+    this.rgb2hsl = function(rgb)
+    {   
+        var clrR = rgb[0];
+        var clrG = rgb[1];
+        var clrB = rgb[2];
+        
+        var clrMin = Math.min(clrR, clrG, clrB);
+        var clrMax = Math.max(clrR, clrG, clrB);
+        var deltaMax = clrMax - clrMin;
+        
+        var L = (clrMax + clrMin) / 2;
+        
+        if (0 == deltaMax){
+            var H = 0;
+            var S = 0;
+            }
+        else{
+            if (0.5 > L){
+                var S = deltaMax / (clrMax + clrMin);
+                }
+            else{
+                var S = deltaMax / (2 - clrMax - clrMin);
+                }
+            var deltaR = (((clrMax - clrR) / 6) + (deltaMax / 2)) / deltaMax;
+            var deltaG = (((clrMax - clrG) / 6) + (deltaMax / 2)) / deltaMax;
+            var deltaB = (((clrMax - clrB) / 6) + (deltaMax / 2)) / deltaMax;
+            if (clrR == clrMax){
+                var H = deltaB - deltaG;
+                }
+            else if (clrG == clrMax){
+                var H = (1 / 3) + deltaR - deltaB;
+                }
+            else if (clrB == clrMax){
+                var H = (2 / 3) + deltaG - deltaR;
+                }
+            if (0 > H) H += 1;
+            if (1 < H) H -= 1;
+            }
+        return [H, S, L];
+    }
+    
+    
+    
+    /**
+    * Convert YUV colors array into RGB array
+    * 
+    * @param Array  yuv         YUV colors set
+    * @return Array             RGB set
+    */
+    this.yuv2rgb = function(yuv)
+    {
+        var rgb = [
+            yuv[0] - 0.0009267*(yuv[1]-0.5) + 1.4016868*(yuv[2]-0.5),
+            yuv[0] -  0.3436954*(yuv[1]-0.5) - 0.7141690*(yuv[2]-0.5),
+            yuv[0] +  1.7721604*(yuv[1]-0.5) + 0.0009902*(yuv[2]-0.5)
+        ];
+        
+        for (var i =0; i < 3; i++) {
+            if (rgb[i] < 0) {
+                rgb[i] = 0;
+            } else if (rgb[i] > 1) {
+                rgb[i] = 1;
+            }
+        }
+        
+        
+
+        return rgb;
+    }
+    
+    /**
+     * set color in RGB space
+     *
+     * @param   int     r   number beetween 0 and 1
+     * @param   int     g   number beetween 0 and 1
+     * @param   int     b   number beetween 0 and 1
+     * 
+     * @return bab_Color
+     */
+    this.setRGB = function(r, g, b) {
+        this.color_method = 'RGB';
+        this.color = [r, g, b];
+        return this;
+    }
+
+    /** 
+     * Set color in HSL space
+     *
+     * @param   int     h   number beetween 0 and 1
+     * @param   int     s   number beetween 0 and 1
+     * @param   int     l   number beetween 0 and 1
+     *
+     * @return bab_Color
+     */
+    this.setHSL = function(h, s, l) {
+        this.color_method = 'HSL';
+        this.color = [h, s, l];
+        return this;
+    }
+
+    /**
+     * set color in YUV space
+     *
+     * @param   int     y   number beetween 0 and 1
+     * @param   int     u   number beetween 0 and 1
+     * @param   int     v   number beetween 0 and 1
+     * 
+     * @return bab_Color
+     */
+    this.setYUV = function(y, u, v) {
+        this.color_method = 'YUV';
+        this.color = [y, u, v];
+        return this;
+    }
+    
+    
+    /**
+     * @return Array
+     */
+    this.getYUV = function() {
+        switch(this.color_method) {
+            case 'HSL':
+                return null;
+                
+            case 'YUV':
+                return this.color;
+                
+            case 'RGB':
+                return this.yuv2rgb(this.color);
+        }
+        
+        return null;
+    }
+    
+
+    /**
+     * @return Array
+     */
+    this.getRGB = function() {
+        switch(this.color_method) {
+            case 'HSL':
+                return this.hsl2rgb(this.color);
+                
+            case 'YUV':
+                return this.yuv2rgb(this.color);
+                
+            case 'RGB':
+                return this.color;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * @return Array
+     */
+    this.getHSL = function() {
+        switch(this.color_method) {
+            case 'HSL':
+                return this.color;
+                
+            case 'YUV':
+                return this.rgb2hsl(this.yuv2rgb(this.color));
+                
+            case 'RGB':
+                return this.rgb2hsl(this.color);
+        }
+        
+        return null;
+    }
+    
+    /**
+     * set color in RGB space with hexadecimal value (without #)
+     *
+     * @param   string      hexa
+     */
+    this.setHexa = function(hexa) {
+        var decimal = parseInt(hexa, 16);
+        var r = (decimal & 0xFF0000) >> 16;
+        var g = (decimal & 0xFF00) >> 8;
+        var b = decimal & 0xFF;
+        return this.setRGB(r, g, b);
+    }
+
+    
+    /**
+     * get RVB hexadecimal code without #
+     * @return string
+     */
+    this.getHexa = function() {
+        var rgb = this.getRGB();
+        
+        if (null === rgb) {
+            return null;
+        }
+        
+        return this.toHex(rgb[0])+this.toHex(rgb[1])+this.toHex(rgb[2]);
+    }
+    
+    /**
+     * @access private
+     * @param   float       N
+     * @return string
+     */
+    this.toHex = function(N) {
+         if (N==null) return "00";
+         
+         N = Math.round(255 * N);
+         
+         if (N==0 || isNaN(N)) return "00";
+         N=Math.max(0,N); 
+         N=Math.min(N,255);
+         
+         return "0123456789ABCDEF".charAt((N-N%16)/16)
+              + "0123456789ABCDEF".charAt(N%16);
+    }
+
+    
+    /**
+     * Create a color from a string
+     * set HSL color with hue from string
+     * @param   string  str
+     * @param   int     s       saturation : number beetween 0 and 1
+     * @param   int     l       lightness : number beetween 0 and 1
+     *
+     * @return bab_Color
+     */
+    this.setHueFromString = function(str, s, l) {
+
+        if ('' == str)
+        {
+            this.setRGB(1, 1, 1);
+            return this;
+        }
+        
+        str = str.toLowerCase();        // 97 - 122
+        
+        
+        max = 0;
+        current = 0;
+        
+        for (var i=0; i<str.length; i++) {
+            char = str.charCodeAt(i);
+            if (char > 96 && char < 123)
+            {
+                max += (25/(1+(i*10)));
+                current+= ((char -97)/(1+(i*10)));
+            }
+        }
+        
+        if (max > 0)
+        {
+            h = current / max;
+        } else {
+            h =1;
+        }
+        
+        this.setHSL(h, s, l);
+        return this;
+    }
+}
+
+</script>
+
+<style type="text/css">
+
+#colorpicker {
+    border-collapse: collapse;
+}
+#colorpicker > tbody > tr > td {
+    background-color: #fff;
+    border: 4px solid #fff;
+}
+#palette, #levels {
+    border-collapse: collapse;
+    cursor: pointer;
+    background-color: #000;
+    border: 1px solid #000;
+}
+td.color-cell {
+    border: 1px solid #000;
+}
+td.color-cell:hover {
+    outline: 1px solid #fff;
+}
+td.color-level:hover {
+    outline: 1px solid orange;
+}
+</style>
+</head>
+
+<body style="padding:0; margin: 0" onload="init()">
+
+<table id="colorpicker" border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" >
+ <tr height="30">
+  <td style="vertical-align: middle" colspan="2">
+    <span id="ColorPreview" style="vertical-align: middle; display: inline-block; background-color: #000000; padding: 1; height: 32px; width: 64px"></span>
+    <input type="text" name="ColorHex" id="ColorHex" value="" size=15 style="vertical-align: middle; font-size: 12px">
+  </td>
+ </tr>
+ <tr>
+ <td>
+    <table id="palette" border="1" cellspacing="1" cellpadding="0" width="100%" height="100%"></table>
+ </td>
+ <td width="36">
+    <table id="levels" border="1" cellspacing="0" cellpadding="0" width="100%" height="100%"></table>
+ </td>
+ </tr>
+</table>
+
+
+</table>
+
+<script type="text/javascript">
+
+window.focus();
+
+function _CloseOnEsc() {
+    if (event.keyCode == 27) {
+    	   window.close();
+    	   return;
+	}
+}
+
+function init()
+{
+    document.body.onkeypress = _CloseOnEsc;
+}
+
+
+function View(color) {
+    document.getElementById("ColorPreview").style.backgroundColor = '#' + color;
+    document.getElementById("ColorHex").value = '#' + color;
+}
+
+function Set(string) {
+    var color = ValidateColor(string);
+    if (color == null) {
+        alert("Invalid color code: " + string);
+    } else {
+	  View(color);
+	  <!--#if callback -->
+	  { callback }(color<!--#if param -->,'{ param }'<!--#endif param -->);
+	  window.close();
+	  <!--#else callback -->
+	  alert('callback is not defined');
+	  <!--#endif callback -->
+	}
+}
+
+function ValidateColor(string) {
+    string = string || '';
+    string = string + "";
+    string = string.toUpperCase();
+    var chars = '0123456789ABCDEF';
+    var out   = '';
+
+    for (var i=0; i<string.length; i++) {
+    	var schar = string.charAt(i);
+	    if (chars.indexOf(schar) != -1) {
+	    	out += schar;
+	    }
+	}
+
+    if (out.length != 6) {
+    	return null;
+    }
+    return out;
+}
+
+var color = new bab_Color();
+
+var palette = document.getElementById('palette');
+createPalette(palette, 0.5);
+
+var levels = document.getElementById('levels');
+
+var l = 0;
+for (var level = 0.0; level < 1.025; level += 0.025) {
+    var row = levels.insertRow(l++);
+    var cell = row.insertCell(0);
+    cell.className = 'color-level';
+    cell.onmousedown = function () {
+        createPalette(palette, this.level);
+    }
+    var rgb = color.hsl2rgb([0, 0, level]);
+    var r = color.toHex(rgb[0]);
+    var g = color.toHex(rgb[1]);
+    var b = color.toHex(rgb[2]);
+    cell.level = level;
+    cell.style.backgroundColor = '#' + r + g + b;
+}
+
+
+function createPalette(palette, level)
+{
+	var nbTr = palette.getElementsByTagName('TR').length;
+	while (nbTr-- > 0) {
+		palette.deleteRow(0);
+	}
+	
+	var step = 1.0 / 24; 
+	
+	var y = 0;
+	for (var s = 0.0; s < 1.0; s += step) {
+		var row = palette.insertRow(y++);
+		var x = 0;
+	    for	(var h = 0.0; h < 1.0; h += step) {
+	    	var cell = row.insertCell(x++);
+	    	cell.className = 'color-cell';
+	        cell.onclick = function () { Set(this.rgb); }
+	        cell.onmouseover = function () { View(this.rgb); }
+
+	        var rgb = color.hsl2rgb([h, s, level]);
+//            var rgb = color.yuv2rgb([level, s, h]);
+	    	var r = color.toHex(rgb[0]);
+	        var g = color.toHex(rgb[1]);
+	        var b = color.toHex(rgb[2]);
+	        cell.rgb = r + g + b;
+	    	cell.style.backgroundColor = '#' + r + g + b;
+	    }
+	}
+	palette.level = level;
+}
+
+</script>
+
+</body>
+</html>
+
 <!--#end selectcolor -->
