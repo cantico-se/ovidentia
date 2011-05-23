@@ -146,9 +146,9 @@ class listFiles
 	var $files_from_dir = array();
 
 	var $aFolders = array();
-	
+
 	var $order;
-	
+
 
 	function listFiles($what="list")
 	{
@@ -590,14 +590,14 @@ class listFiles
 
 
 		$order = bab_rp('order', null);
-		
+
 		if (isset($order)) {
 			// The user has selected a column to order the list.
 			$fieldName = substr($order, 0, -1);
 			$asc = (substr($order, -1) == 'A') ? 'ASC' : 'DESC';
-	
+
 			$aOrder = array($fieldName => $asc);
-			
+
 			$this->order = $order;
 		} else if (is_object($this->oFileManagerEnv->oFmFolder) && $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder']) {
 			$aOrder = array('iDisplayPosition' => 'ASC');
@@ -1461,24 +1461,24 @@ function listFiles()
 
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
-			
+
 			$pathArray  = explode('/', $this->path);
 			$lastArray = array_pop($pathArray);
 			$pathString = '';
 			$this->pathLink = '';
-			
+
 			foreach($pathArray as $path){
 				if($this->pathLink == ''){
 					$pathString.= $path;
 				}else{
 					$pathString.= '/' . $path;
 				}
-				
+
 				$this->pathLink.= '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($pathString)) . '">' . $path . '</a>';
 			}
 			$this->pathLink.= '/'.$lastArray;
-				
-		
+
+
 			if($sGr == 'N'){
 				if($this->pathLink == '/'){
 					$this->pathLink = '/'.bab_translate('Private folder').$this->pathLink;
@@ -1486,9 +1486,9 @@ function listFiles()
 					$this->pathLink = '/<a href="' . bab_toHtml($GLOBALS['babUrlScript'] . "?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=") . '">'.bab_translate('Private folder').'</a>' . $this->pathLink;
 				}
 			}
-			
+
 			$this->pathLink = '<a href="' . bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list") . '">...</a>'.$this->pathLink;
-			
+
 			$this->rooturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list");
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
@@ -1771,19 +1771,10 @@ function listFiles()
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
 
 			if ($arr['size'] >= 0) {
-				$this->sizef = bab_toHtml(bab_formatSizeFile($arr['size']) . ' ' . bab_translate('Kb'));
+				$this->sizef = bab_toHtml(bab_formatSizeFile($arr['size'] * 1024) . ' ' . bab_translate('Kb'));
 			} else {
 				$this->sizef = '???';
 			}
-//			if( file_exists($sFullPathName))
-//				{
-//				$fstat = stat($sFullPathName);
-//				$this->sizef = bab_toHtml(bab_formatSizeFile($fstat[7])." ".bab_translate("Kb"));
-//				}
-//			else
-//				{
-//				$this->sizef = "???";
-//				}
 
 			$this->fmh_size = $this->sizef;
 
@@ -2000,7 +1991,7 @@ function listFiles()
 
 	$order = bab_rp('order', 'sNameA');
 	$temp = new temp($order);
-	
+
 	$babBody->babecho(bab_printTemplate($temp, 'fileman.html', 'fileslist'));
 	return $temp->count;
 }
@@ -2423,7 +2414,7 @@ function unzipFile()
 		if($ext == 'zip'){
 			/* @var $Zip Func_Archive_Zip */
 			$Zip = bab_functionality::get('Archive/Zip');
-			
+
 			$sUploadPath = '';
 			if (!$oFileManagerEnv->userIsInPersonnalFolder()) {
 				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
@@ -2431,24 +2422,24 @@ function unzipFile()
 				$sUploadPath = $oFileManagerEnv->getRootFmPath();
 			}
 			$sUploadPath.= $oFolderFile->getPathName();
-			
+
 			$babPath = new bab_Path($GLOBALS['babUploadPath'],'tmp',session_id());
 			if($babPath->isDir()){
 				$babPath->deleteDir();
 			}
 			$babPath->createDir();
-			
+
 			if(filesize($sUploadPath.$oFolderFile->getName()) > $GLOBALS['babMaxZipSize']){
 				$babBody->addError(bab_translate("The ZIP file size exceed the limit configured for the file manager"));
 				return false;
 			}
-			
+
 			$Zip->open($sUploadPath.$oFolderFile->getName());
 			$Zip->extractTo($babPath->tostring());
 			$Zip->close();
-			
+
 			if($babPath->isDir()){
-				
+
 				$unzipSize = getDirSize($babPath->tostring());
 				if($unzipSize +  $oFileManagerEnv->getFMTotalSize() > $GLOBALS['babMaxTotalSize']){
 					$babBody->addError(bab_translate("The file size exceed the limit configured for the file manager"));
@@ -2456,10 +2447,10 @@ function unzipFile()
 					bab_moveUnzipFolder($babPath, $oFolderFile->getPathName(), $oFileManagerEnv->getRootFmPath());
 					header('location: '. $GLOBALS['babUrl'] . 'index.php?tg=fileman&idx=list&id=' . bab_rp('id') . '&gr=' . bab_rp('gr') . '&path=' . bab_rp('path'));
 				}
-				
+
 				$babPath->deleteDir();
 			}
-			
+
 			return true;
 		}
 	}
@@ -2472,7 +2463,7 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			$currentBabPath = new bab_Path($absolutePath, $destination, $babPath->getBasename());
 			$currentBabPath->createDir();
 			$currentBabPath = new bab_Path($destination, $babPath->getBasename());
-			
+
 //			bab_debug('folder');
 			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
 		}else{
@@ -3519,7 +3510,7 @@ function zipFolder()
 				$folderPath = realpath($oFileManagerEnv->getCollectiveRootFmPath() . $oFileManagerEnv->sRelativePath . $sDirName);
 			}
 		}
-		
+
 		if(!is_dir($folderPath))
 		{
 			$babBody->addError(bab_translate("Invalid directory"));
@@ -3529,26 +3520,26 @@ function zipFolder()
 			$babBody->addError(bab_translate("The ZIP file size exceed the limit configured for the file manager"));
 			return false;
 		}
-		
+
 		$sourcePath = new bab_Path($folderPath);
 		$destPath = new bab_Path($GLOBALS['babUploadPath'],'tmp',session_id());
 		if($destPath->isDir()){
 			$destPath->deleteDir();
 		}
-		
+
 		$destPath->createDir();
 		$destPath->push($sDirName.'.zip');
-		
+
 		/* @var $Zip Func_Archive_Zip */
 		$Zip = bab_functionality::get('Archive/Zip');
 		$Zip->open($destPath->tostring());
 		bab_zipFolderFile($sourcePath, $Zip, $sDirName);
 		$Zip->close();
-		
+
 		if(is_file($destPath->tostring())){
-				
+
 			$fp = fopen($destPath->tostring(), 'rb');
-			if ($fp) 
+			if ($fp)
 			{
 				bab_setTimeLimit(3600);
 				if (mb_strtolower(bab_browserAgent()) == 'msie') {
@@ -3562,7 +3553,7 @@ function zipFolder()
 				header('Content-Length: '.$fsize."\n");
 				header('Content-transfert-encoding: binary'."\n");
 				readfile($destPath->tostring());
-				
+
 				fclose($fp);
 			}
 		}
@@ -3594,7 +3585,7 @@ function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = ''){
 				}
 			}
 			$Zip->addFile($babPath->tostring(), $currentBabPath->tostring());
-			
+
 		}
 	}
 }
