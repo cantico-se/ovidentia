@@ -251,7 +251,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 //		bab_debug_print_backtrace();
 
 		$sQuery = $this->getSelectQuery($oCriteria, $aOrder, $aLimit);
-		
+
 		global $babDB;
 		$oResult = $babDB->db_query($sQuery);
 		$this->setMySqlResult($oResult);
@@ -893,6 +893,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			'iIdModifier' => new BAB_IntField('`modifiedby`'),
 			'sConfirmed' => new BAB_StringField('`confirmed`'),
 			'iHits' => new BAB_IntField('`hits`'),
+			'iSize' => new BAB_IntField('`size`'),
 			'iMaxDownloads' => new BAB_IntField('`max_downloads`'),
 			'iDownloads' => new BAB_IntField('`downloads`'),
 			'iIdFlowApprobationInstance' => new BAB_IntField('`idfai`'),

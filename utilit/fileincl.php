@@ -450,8 +450,7 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 	}
 
 
-
-	if($bexist)
+	if ($bexist)
 	{
 		$req = "
 		UPDATE ".BAB_FILES_TBL." set 
@@ -463,7 +462,8 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 			hits='0', 
 			modifiedby='".$babDB->db_escape_string($idcreator)."', 
 			state='', 
-			index_status='".$babDB->db_escape_string($index_status)."' 
+			index_status='".$babDB->db_escape_string($index_status)."',
+			size='".$babDB->db_escape_string($fmFile->size)."'
 		WHERE 
 			id='".$babDB->db_escape_string($arr['id'])."'";
 		$babDB->db_query($req);
@@ -489,7 +489,8 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 					modifiedby,
 					confirmed,
 					index_status,
-					iIdDgOwner)
+					iIdDgOwner,
+					size)
 				VALUES (';
 		$req .= $babDB->quote($name). ',
 					' . $babDB->quote($description[$count]) . ',
@@ -506,7 +507,8 @@ function bab_addUploadedFile(bab_fileHandler $fmFile, $count, $id, $gr, $sRelati
 					' . $babDB->quote($idcreator) . ',
 					' . $babDB->quote($confirmed) . ',
 					' . $babDB->quote($index_status) . ',
-					' . $babDB->quote(bab_getCurrentUserDelegation()) . ')';
+					' . $babDB->quote(bab_getCurrentUserDelegation()) . ',
+					' . $babDB->quote($fmFile->size) . ')';
 		$babDB->db_query($req);
 		$idf = $babDB->db_insert_id();
 		
@@ -988,6 +990,12 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 			$tmp[] = 'max_downloads=' . $babDB->quote($maxdownloads);
 		}
 
+//TODO LAUCHO : Update filesize
+		if ($uploadf_size !== '') {
+			$tmp[] = 'size=' . $babDB->quote($uploadf_size);
+		}
+//TODO LAUCHO DONE
+		
 		if(count($tmp) > 0)
 		{
 			$babDB->db_query("update ".BAB_FILES_TBL." set ".implode(", ", $tmp)." where id='".$babDB->db_escape_string($idf)."'");

@@ -146,6 +146,9 @@ class listFiles
 	var $files_from_dir = array();
 
 	var $aFolders = array();
+	
+	var $order;
+	
 
 	function listFiles($what="list")
 	{
@@ -585,18 +588,28 @@ class listFiles
 		$oCriteria = $oCriteria->_and($oConfirmed->in('Y'));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 
-		$order = bab_rp('order', 'sNameA');
-		$fieldName = substr($order, 0, -1);
-		$asc = (substr($order, -1) == 'A') ? 'ASC' : 'DESC';
 
-		$aOrder = array($fieldName => $asc);
+		$order = bab_rp('order', null);
+		
+		if (isset($order)) {
+			// The user has selected a column to order the list.
+			$fieldName = substr($order, 0, -1);
+			$asc = (substr($order, -1) == 'A') ? 'ASC' : 'DESC';
+	
+			$aOrder = array($fieldName => $asc);
+			
+			$this->order = $order;
+		} else if (is_object($this->oFileManagerEnv->oFmFolder) && $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder']) {
+			$aOrder = array('iDisplayPosition' => 'ASC');
+			$this->order = 'iDisplayPositionA';
+		} else {
+			$aOrder = array('sName' => 'ASC');
+			$this->order = 'sNameA';
+		}
 
 //		$aOrder = array('sName' => 'ASC');
-		if( is_object($this->oFileManagerEnv->oFmFolder) ){
-			if( $this->oFileManagerEnv->oFmFolder->aDatas['bManualOrder']){
-				$aOrder = array('iDisplayPosition' => 'ASC');
-			}
-		}
+
+//bab_debug($aOrder);
 
 		$this->oFolderFileSet->select($oCriteria, $aOrder);
 
@@ -1410,7 +1423,7 @@ function listFiles()
 
 		var $bUnZip;
 
-		function temp($order)
+		function temp()
 		{
 			$this->listFiles();
 			$this->bytes = bab_translate("bytes");
@@ -1480,7 +1493,10 @@ function listFiles()
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
+			$order = $this->order;
+
 			// Here we initialize refresh urls used when a column header is clicked.
+
 			$this->nameSortAsc = $order == 'sNameA';
 			$this->nameSortDesc = $order == 'sNameD';
 			$this->nameSortUrl = $this->refreshurl . bab_toHtml($order == 'sNameA' ? '&order=sNameD' : '&order=sNameA');
@@ -1502,6 +1518,9 @@ function listFiles()
 			$this->pathSortAsc = $order == 'sPathNameA';
 			$this->pathSortDesc = $order == 'sPathNameD';
 			$this->pathSortUrl = $this->refreshurl . bab_toHtml($order == 'sPathNameA' ? '&order=sPathNameD' : '&order=sPathNameA');
+			$this->sizeSortAsc = $order == 'iSizeA';
+			$this->sizeSortDesc = $order == 'iSizeD';
+			$this->sizeSortUrl = $this->refreshurl . bab_toHtml($order == 'iSizeA' ? '&order=iSizeD' : '&order=iSizeA');
 			$this->authorSortAsc = $order == 'iIdAuthorA';
 			$this->authorSortDesc = $order == 'iIdAuthorD';
 			$this->authorSortUrl = $this->refreshurl . bab_toHtml($order == 'iIdAuthorA' ? '&order=iIdAuthorD' : '&order=iIdAuthorA');
@@ -1750,15 +1769,21 @@ function listFiles()
 			$this->fmh_name = $arr['name'];
 
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
-			if( file_exists($sFullPathName))
-				{
-				$fstat = stat($sFullPathName);
-				$this->sizef = bab_toHtml(bab_formatSizeFile($fstat[7])." ".bab_translate("Kb"));
-				}
-			else
-				{
-				$this->sizef = "???";
-				}
+
+			if ($arr['size'] >= 0) {
+				$this->sizef = bab_toHtml(bab_formatSizeFile($arr['size']) . ' ' . bab_translate('Kb'));
+			} else {
+				$this->sizef = '???';
+			}
+//			if( file_exists($sFullPathName))
+//				{
+//				$fstat = stat($sFullPathName);
+//				$this->sizef = bab_toHtml(bab_formatSizeFile($fstat[7])." ".bab_translate("Kb"));
+//				}
+//			else
+//				{
+//				$this->sizef = "???";
+//				}
 
 			$this->fmh_size = $this->sizef;
 
@@ -2448,6 +2473,7 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			$currentBabPath->createDir();
 			$currentBabPath = new bab_Path($destination, $babPath->getBasename());
 			
+//			bab_debug('folder');
 			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
 		}else{
 			$bgroup = false;

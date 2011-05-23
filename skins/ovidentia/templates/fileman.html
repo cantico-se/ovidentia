@@ -283,6 +283,10 @@ function hideDelegationSubmitBtn()
 							<!--#in getnextfmfield  -->
 							<td align="center">
 
+                           <!--#if columnname "== col-size" -->
+                            <a href="{ sizeSortUrl }">{ fmfielddesc }</a><!--#if sizeSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif sizeSortAsc --><!--#if sizeSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif sizeSortDesc -->
+                           <!--#endif columnname -->
+
                            <!--#if columnname "== col-path" -->
                             <a href="{ pathSortUrl }">{ fmfielddesc }</a><!--#if pathSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif pathSortAsc --><!--#if pathSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif pathSortDesc -->
                            <!--#endif columnname -->
@@ -305,10 +309,6 @@ function hideDelegationSubmitBtn()
 
                            <!--#if columnname "== col-version" -->
                             <a href="{ versionSortUrl }">{ fmfielddesc }</a><!--#if versionSortAsc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortasc.gif" /><!--#endif versionSortAsc --><!--#if versionSortDesc -->&nbsp;<img src="{ babSkinPath }images/Puces/sortdesc.gif" /><!--#endif versionSortDesc -->
-                           <!--#endif columnname -->
-
-                           <!--#if columnname "== col-size" -->
-                           { fmfielddesc }
                            <!--#endif columnname -->
 
                            <!--#if columnname "== col-author" -->
