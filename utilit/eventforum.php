@@ -31,7 +31,7 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 /**
  * Event for actions on forum posts
  * Store additional informations for registered targets
- * each target can add informed users, the next targets will not inform the allready informed recipients
+ * each target can add informed users, the next targets will not inform the already informed recipients
  * 
  * @package events
  * @since 7.4.0

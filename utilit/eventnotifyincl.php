@@ -41,7 +41,7 @@ interface bab_eventNotifyRecipients
 	
 	/**
 	 * Get user to notify based on preferences and access rights
-	 * the method will return a list of recipients to notify without the allready informed users
+	 * the method will return a list of recipients to notify without the already informed users
 	 * 
 	 * @return array :
 	 * array
