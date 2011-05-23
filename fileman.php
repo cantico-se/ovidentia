@@ -1771,7 +1771,7 @@ function listFiles()
 			$sFullPathName = $this->sUploadPath . $arr['path'] . $arr['name'];
 
 			if ($arr['size'] >= 0) {
-				$this->sizef = bab_toHtml(bab_formatSizeFile($arr['size'] * 1024) . ' ' . bab_translate('Kb'));
+				$this->sizef = bab_toHtml(bab_formatSizeFile($arr['size']) . ' ' . bab_translate('Kb'));
 			} else {
 				$this->sizef = '???';
 			}
