@@ -1480,7 +1480,7 @@ function listFiles()
 			$this->refreshurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=list&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 			$this->urldiskspace = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=disk&id=".$iId."&gr=".$sGr."&path=".urlencode($this->path));
 
-			// Here we
+			// Here we initialize refresh urls used when a column header is clicked.
 			$this->nameSortAsc = $order == 'sNameA';
 			$this->nameSortDesc = $order == 'sNameD';
 			$this->nameSortUrl = $this->refreshurl . bab_toHtml($order == 'sNameA' ? '&order=sNameD' : '&order=sNameA');
