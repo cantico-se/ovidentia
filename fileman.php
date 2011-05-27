@@ -1458,6 +1458,7 @@ function listFiles()
             $this->altfilewrite =  bab_translate("Commit file");
 			$this->sWaitingFileTitle = bab_translate("This file is awaiting approval");
 			$this->unziptxt = bab_translate("Unzip here");
+			$this->unzipconfirmtxt = bab_translate("This archive is about to be extracted and all its files and subfolders will be reachable under the current folder.");
 
 			$iId = $this->oFileManagerEnv->iId;
 			$sGr = $this->oFileManagerEnv->sGr;
