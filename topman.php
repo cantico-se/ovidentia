@@ -1440,7 +1440,7 @@ function topman_init($item)
 function bab_removeDraft($art){
 	global $babDB;
 	
-	$req = "UPDATE ".BAB_ART_DRAFTS_TBL." SET id_article = 0 where id='".$babDB->db_escape_string($art)."'";
+	$req = "UPDATE ".BAB_ART_DRAFTS_TBL." SET id_article = 0, id_topic = 0 where id='".$babDB->db_escape_string($art)."'";
 	$babDB->db_query($req);
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_gp('item'));
