@@ -2464,16 +2464,17 @@ function bab_moveUnzipFolder(bab_Path $source, $destination, $absolutePath){
 			$currentBabPath->createDir();
 			$currentBabPath = new bab_Path($destination, $babPath->getBasename());
 
-//			bab_debug('folder');
 			bab_moveUnzipFolder($babPath, $currentBabPath->tostring(), $absolutePath);
 		}else{
 			$bgroup = false;
+			$id = $GLOBALS['BAB_SESS_USERID'];
 			if(bab_rp('gr') == 'Y'){
 				$bgroup = true;
+				$id = bab_rp('id');
 			}
 			$fmFile = bab_FmFile::move($babPath->tostring());
 			$currentBabPath = new bab_Path($destination,$babPath->getBasename());
-			bab_importFmFile($fmFile, $GLOBALS['BAB_SESS_USERID'], $destination, $bgroup, false);
+			bab_importFmFile($fmFile, $id, $destination, $bgroup, false);
 		}
 	}
 }
