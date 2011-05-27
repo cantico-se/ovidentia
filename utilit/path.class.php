@@ -23,10 +23,57 @@
 require_once 'base.php';
 
 
+/**
+ * @param string $str
+ * @return string
+ */
+function bab_Path_encodeBase64($str)
+{
+	$dotPosition = mb_strrpos($str, '.');
+   	if (false !== $dotPosition) {
+    	$root = mb_substr($str, 0, $dotPosition);
+        $ext = mb_substr($str, $dotPosition);
+	        if (preg_match('/[a-zA-Z0-9]+/', $ext)) {
+        	return bab_Path::BASE64 . base64_encode($root) . $ext;
+        }
+    }
+    $str = base64_encode($str);
+	return bab_Path::BASE64 . $str;
+}
+
+/**
+ * @param string $str
+ * @return string
+ */
+function bab_Path_encodeImap8Bit($str)
+{
+	$encodedStr = imap_8bit($str);
+		// imap_8bit add line break every 76 chars, we don't need that for files names.
+	$aLines = explode('=' . chr(13) . chr(10), $encodedStr);
+	$encodedStr = implode('', $aLines);
+	if ($encodedStr === $str) {
+		return $str;
+	}
+	return bab_Path::QPRINT . $encodedStr;
+}
+
+/**
+ * @param string $str
+ * @return string
+ */
+function bab_Path_encodeQuotedPrintable($str)
+{
+	$encodedStr = quoted_printable_encode($str);
+	if ($encodedStr === $str) {
+		return $str;
+	}
+	return bab_Path::QPRINT.$encodedStr;
+}
+
 
 /**
  * Path object
- * 
+ *
  */
 class bab_Path implements SeekableIterator, Countable {
 
@@ -35,41 +82,110 @@ class bab_Path implements SeekableIterator, Countable {
 	const ATIME		= 'getATime';
 	const CTIME		= 'getCTime';
 	const MTIME		= 'getMTime';
-	
-	
+
+
 	/**
 	 * Path elements
 	 * @var array
 	 */
 	private $allElements = array();
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $absolute = null;
-	
+
 	/**
 	 * Iterator items
 	 * @var array
 	 */
 	private $content = null;
-	
-	
+
+
 	/**
 	 * Iterator items sort params (optional)
 	 * @see bab_Path::orderAsc()
 	 * @see bab_Path::orderDesc()
-	 * 
+	 *
 	 * @var array
 	 */
 	private $contentSortParam = array();
-	
+
 	/**
 	 * Iterator key
 	 * @var int
 	 */
 	private $key = 0;
+
+
+	const PREFIX_LENGTH = 6;
+	const BASE64 	= 'BASE64';
+	const QPRINT 	= 'QPRINT';
+	const NONE		= '______';
+
+	static private $encodingFunction = null;
+
+
+	/**
+	 * @param string $str
+	 * @return string
+	 */
+	public static function decode($str)
+	{
+		// prefix is ascii on filesystem, mb_string is not needed
+		$prefix = substr($str, 0, self::PREFIX_LENGTH);
+		$value = substr($str, self::PREFIX_LENGTH);
+
+		switch ($prefix) {
+			case self::BASE64:
+
+				$iPos = mb_strrpos($value, '.');
+				if (false !== $iPos)
+			    {
+			    	$root = base64_decode(mb_substr($value, 0, $iPos));
+			        $ext = mb_substr($value,$iPos);
+			        return $root.$ext;
+
+			    } else {
+					return base64_decode($value);
+			    }
+
+			case self::QPRINT:
+				return quoted_printable_decode($value);
+
+			case self::NONE:
+				return $value;
+		}
+
+		return $str;
+	}
+
+
+
+	/**
+	 * @param string $str
+	 * @return string
+	 */
+	public static function encode($str)
+	{
+		if (!isset(self::$encodingFunction)) {
+			// autodetect best encoding method
+			if (function_exists('quoted_printable_encode')) {
+				self::$encodingFunction = 'bab_Path_encodeQuotedPrintable';
+			} else if (function_exists('imap_8bit')) {
+				self::$encodingFunction = 'bab_Path_encodeImap8Bit';
+			} else {
+				self::$encodingFunction = 'bab_Path_encodeBase64';
+			}
+		}
+
+		$encodingFunction = self::$encodingFunction;
+		$str = $encodingFunction($str);
+
+		return $str;
+	}
+
 
 
 	/**
@@ -83,12 +199,12 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 			$subPaths = func_get_args();
 			$this->concatPaths($subPaths);
-			
+
 			// bab_path can extends SplFileInfo but with php 5.1.2, ovidentia require only 5.1.0
 			// parent::__construct($this->toString());
 	}
-	
-	
+
+
 	public function __clone() {
 	    $this->content = null;
 	}
@@ -117,25 +233,25 @@ class bab_Path implements SeekableIterator, Countable {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getContent()
 	{
-		if (!isset($this->content)) 
+		if (!isset($this->content))
 		{
 			$this->content = array();
-			
+
 			// load contents
-			
+
 			if ($this->isDir())
-			{				
+			{
 				$d = dir($this->toString());
-		
+
 				while (false !== ($entry = $d->read())) {
 				   if ('.' !== $entry && '..' !== $entry) {
 				   		$path = new bab_Path($this->toString());
@@ -143,17 +259,17 @@ class bab_Path implements SeekableIterator, Countable {
 				   }
 				}
 			}
-			
+
 			// apply sort parameters
-			
-			if ($this->contentSortParam) { 
+
+			if ($this->contentSortParam) {
 				usort($this->content, array($this, 'contentSort'));
 			}
 		}
-		
+
 		return $this->content;
 	}
-	
+
 	/**
 	 * @see	usort
 	 * @param bab_Path $a
@@ -165,26 +281,26 @@ class bab_Path implements SeekableIterator, Countable {
 		foreach($this->contentSortParam as $method => $order) {
 			$va = $a->$method();
 			$vb = $b->$method();
-			
+
 			if ($va === $vb) {
 				continue;
 			}
-			
+
 			if (is_string($va)) {
 				return strcasecmp($va, $vb);
 			}
-			
+
 			if (is_bool($va)) {
 				$va = $va ? 1 : 0;
 				$vb = $vb ? 1 : 0;
 			}
-				
+
 			return ($va < $vb) ? (-1 * $order) : $order;
 		}
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * Sort result of iterator
 	 * @param string	$method		bab_Path::ISDIR | bab_Path::BASENAME | bab_Path::ATIME | bab_Path::CTIME | bab_Path::MTIME
@@ -195,7 +311,7 @@ class bab_Path implements SeekableIterator, Countable {
 		$this->contentSortParam[$method] = 1;
 		return $this;
 	}
-	
+
 	/**
 	 * Sort result of iterator
 	 * @param string	$method		bab_Path::ISDIR | bab_Path::BASENAME | bab_Path::ATIME | bab_Path::CTIME | bab_Path::MTIME
@@ -206,8 +322,8 @@ class bab_Path implements SeekableIterator, Countable {
 		$this->contentSortParam[$method] = -1;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * @return int
 	 */
@@ -215,39 +331,39 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		return $this->key;
 	}
-	
+
 	public function next()
 	{
 		$this->key++;
 	}
-	
+
 	public function rewind()
 	{
 		$this->key = 0;
 	}
-	
+
 	public function seek($position)
 	{
 		$this->key = $position;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
 	public function valid()
 	{
 		$contents = $this->getContent();
-		
+
 		if (!isset($contents[$this->key]))
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return bab_Path
 	 */
 	public function current()
@@ -255,19 +371,19 @@ class bab_Path implements SeekableIterator, Countable {
     	return $this->content[$this->key];
     }
 
-    
+
     public function count()
     {
 		$this->getContent();
     	return count($this->content);
     }
-    
+
 
 	/**
 	 * Checks whether the path is an absolute path.
 	 * On Windows something like C:/example/path or C:\example\path or C:/example\path
 	 * On unix something like /example/path
-	 * 
+	 *
 	 * see bab_Path::isAbsolute
 	 * @param string	$path
 	 * @return bool
@@ -293,7 +409,7 @@ class bab_Path implements SeekableIterator, Countable {
 	 * Checks whether the path is an absolute path.
 	 * On Windows something like C:/example/path or C:\example\path or C:/example\path
 	 * On unix something like /example/path
-	 * 
+	 *
 	 * @see bab_Path::isAbsolutePath
 	 * @return bool
 	 */
@@ -305,7 +421,7 @@ class bab_Path implements SeekableIterator, Countable {
 
 	/**
 	 * Return the path as a string.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function tostring() {
@@ -316,18 +432,18 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 		return $path;
 	}
-	
+
 	/**
 	 * Test if file is a directory
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isDir()
 	{
 		return is_dir($this->toString());
 	}
-	
-	
+
+
 
 	/**
 	 * Test if file or directory is writable
@@ -348,9 +464,9 @@ class bab_Path implements SeekableIterator, Countable {
 	/**
 	 * Test if a folder is accessible to create, update, delete files
 	 * aditionals tests are made for Windows IIS
-	 * 
+	 *
 	 * @throw bab_FolderAccessRightsException | Exception
-	 * 
+	 *
 	 * @return	bool
 	 */
 	public function isFolderWriteable() {
@@ -432,10 +548,10 @@ class bab_Path implements SeekableIterator, Countable {
 
 		return true;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * this function will return the base name of the file
 	 * @since 7.3.0
@@ -446,46 +562,46 @@ class bab_Path implements SeekableIterator, Countable {
 		if (0 === count($this->allElements)) {
 			return null;
 		}
-		
+
 		return $this->allElements[count($this->allElements) -1];
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getRealPath()
 	{
 		return realpath($this->toString());
 	}
-	
-	
-	
+
+
+
 	/**
 	 * pop the last folder of the path
 	 * @return string | null
-	 * 
-	 */ 
+	 *
+	 */
 	public function pop() {
 		return array_pop($this->allElements);
 	}
-	
+
 	/**
 	 * push a folder or a relative path at the end of the path
-	 * 
+	 *
 	 * @param	string | bab_Path		$folder
-	 * 
+	 *
 	 * @return bab_Path
-	 */ 
+	 */
 	public function push($folder) {
-		
+
 		if ($folder instanceOf bab_Path) {
-			
+
 			if ($folder->isAbsolute()) {
 				throw new Exception('the path must be relative');
 			}
-			
+
 			foreach($folder->allElements as $f) {
 				array_push($this->allElements, $f);
 			}
@@ -494,32 +610,32 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Shift the first folder of the path
 	 * @return string | null
-	 * 
-	 */ 
+	 *
+	 */
 	public function shift() {
 		return array_shift($this->allElements);
 	}
-	
+
 	/**
 	 * unshift a folder or a path at the begining of the path
-	 * 
+	 *
 	 * @param	string | bab_Path		$folder
-	 * 
+	 *
 	 * @return bab_Path
-	 */ 
+	 */
 	public function unshift($folder) {
-		
+
 		if ($folder instanceOf bab_Path) {
-			
+
 			if ($this->isAbsolute()) {
 				throw new Exception('the path must be relative');
 			}
-			
+
 			foreach($folder->allElements as $f) {
 				array_unshift($this->allElements, $f);
 			}
@@ -528,74 +644,74 @@ class bab_Path implements SeekableIterator, Countable {
 		}
 		return $this;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Create the folder if not exists
 	 * @return boolean
-	 * 
-	 */ 
+	 *
+	 */
 	public function createDir() {
-		
+
 		if (@is_dir($this->tostring())) {
 			// the folder allready exists
 			return true;
 		}
 
 		$removed = array();
-		
+
 		do {
-			
+
 			$pop = $this->pop();
-			
+
 			if (!$pop) {
 				break;
 			}
-			
+
 			$removed[] = $pop;
-			
+
 			try {
 				$accessible = true;
 				$this->isFolderWriteable();
 			} catch(Exception $e) {
 				$accessible = false;
 			}
-			
+
 		} while(!$accessible);
-		
-		
+
+
 		while ($folder = array_pop($removed)) {
 			$this->push($folder);
 			if (!bab_mkdir($this->tostring())) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Delete the directory recusively
-	 * 
+	 *
 	 * @throw bab_FolderAccessRightsException
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteDir() {
 		include_once dirname(__FILE__).'/delincl.php';
-		
+
 		$msgerror = '';
 		$result = @bab_delDir($this->toString(), $msgerror);
-		
+
 		if (false === $result) {
 			throw new bab_FolderAccessRightsException($msgerror);
 		}
-		
+
 		return $result;
 	}
 }
