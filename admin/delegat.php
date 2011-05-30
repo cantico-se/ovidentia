@@ -402,8 +402,11 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->tuncheck			= bab_translate("Uncheck all");
 			$this->sSelectImageCaption	= bab_translate('Select a picture');
 			$this->sImageAlreadyUploaded = bab_translate('Associated picture');
-			$this->iMaxImgFileSize		= (int) $GLOBALS['babMaxImgFileSize'];
-			$this->bUploadPathValid		= is_dir($GLOBALS['babUploadPath']);
+			$this->sImageRemove 	= bab_translate('Delete this picture');
+			$this->sImageRemoveUrl 	= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=delImg&idDeleg=' .$id;
+			$this->sImageRemoveConfirm = bab_translate("This action will remove the image delegation. This action can not be undone.");
+			$this->iMaxImgFileSize	= (int) $GLOBALS['babMaxImgFileSize'];
+			$this->bUploadPathValid	= is_dir($GLOBALS['babUploadPath']);
 			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
 			
 			$this->bImageAlreadyUploaded = '';
@@ -704,6 +707,17 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iI
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
 	}
+
+function bab_deleteImage(){
+	$id = bab_gp('idDeleg','');
+	if($id == ''){
+		return;
+	}
+	$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
+	if($uploadPath->isDir()){
+		$uploadPath->deleteDir();
+	}
+}
 
 function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id, $iIdCategory)
 	{
@@ -1148,6 +1162,11 @@ switch($idx)
 		$babBody->title = bab_translate("Categories list");
 		$babBody->addItemMenu("list", bab_translate("Delegations"), $GLOBALS['babUrlScript']."?tg=delegat&idx=list");
 		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
+		break;
+
+	case 'delImg':
+		bab_deleteImage();
+		Header("Location:". $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".bab_gp('idDeleg'));
 		break;
 		
 	case "list":

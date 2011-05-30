@@ -199,7 +199,12 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 						<tr> 
 							<td align="right">{ sImageAlreadyUploaded }:</td>
 							<td>
-								<img alt="{ sImageName }" src="{ sImageURL }">
+								<div style="position: relative;width: 100%;">
+									<img alt="{ sImageName }" src="{ sImageURL }">
+									<div style="position: absolute;top: 3px;left: 0px;width: 100%;">
+										<a onclick="return confirm('{ sImageRemoveConfirm }')" style="background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgb(0.5, 0.5, 0.5); background: url('ovidentia/skins/ovidentia/images/22x22/stop.png') no-repeat rgba(0, 0, 0, 0.5); color: white; padding:3px 10px 5px 22px;" href="{ sImageRemoveUrl }">{ sImageRemove }</a>
+									</div>
+								</div>
 							</td>
 						</tr>
 						<!--#endif bImageAlreadyUploaded  -->		

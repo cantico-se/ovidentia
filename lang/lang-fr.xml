@@ -3166,4 +3166,5 @@
 <string id="Remove the draft">Supprimer le brouillon</string>
 <string id="This will remove all modification on this article, continue?">Les corrections et modifications comprises dans le brouillon de cet article vont être conservées dans un brouillon à part. L'article d'origine pourra de nouveau être modifié. </string>
 <string id="This archive is about to be extracted and all its files and subfolders will be reachable under the current folder.">Cette archive va être décompressée et tous ses fichiers et sous-dossiers seront accessibles à la racine du répertoire courant. Etes-vous sûr de vouloir continuer ?</string>
+<string id="This action will remove the image delegation. This action can not be undone.">Etes-vous sur de vouloir supprimer cette image? Ceci est irréversible.</string>
 </fr>
