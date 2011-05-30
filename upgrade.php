@@ -3303,7 +3303,7 @@ function upgrade583to584()
 				INDEX `idProject`(`idProject`),
 				INDEX `majorVersion`(`majorVersion`),
 				INDEX `minorVersion`(`minorVersion`)
-				) TYPE=MyISAM
+				)
 		");
 
 		if(false == $res)
