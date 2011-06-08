@@ -89,6 +89,8 @@ class Func_Icons extends bab_Functionality
 	 * The icon for saving a document. 
 	 */
 	const ACTIONS_DOCUMENT_SAVE					= 'actions-document-save';
+	const ACTIONS_DOCUMENT_DOWNLOAD				= 'actions-document-download';
+	const ACTIONS_DOCUMENT_UPLOAD				= 'actions-document-upload';
 	/**
 	 * The icon for creating a new article category. 
 	 */
@@ -209,6 +211,9 @@ class Func_Icons extends bab_Functionality
 	const ACTIONS_DIALOG_OK						= 'actions-dialog-ok';
 	const ACTIONS_DIALOG_CANCEL					= 'actions-dialog-cancel';
 
+	const ACTIONS_ARCHIVE_CREATE				= 'actions-archive-create';
+	const ACTIONS_ARCHIVE_EXTRACT				= 'actions-archive-extract';
+
 
 
 	//-----------------------------------------------------------------------
@@ -251,6 +256,11 @@ class Func_Icons extends bab_Functionality
 	const APPS_PREFERENCES_MAIL_SERVER			= 'apps-preferences-mail-server';
 	const APPS_PREFERENCES_WYSIWYG_EDITOR		= 'apps-preferences-wysiwyg-editor';
 	const APPS_PREFERENCES_UPLOAD				= 'apps-preferences-upload';
+	
+	const APPS_FACEBOOK							= 'apps-facebook';
+	const APPS_FLICKR							= 'apps-flickr';
+	const APPS_TWITTER							= 'apps-twitter';
+	const APPS_RSS								= 'apps-rss';
 	
 	//-----------------------------------------------------------------------
 	// Mimetypes	
