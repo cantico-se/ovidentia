@@ -1965,10 +1965,17 @@ function processImportDbFile( $pfile, $id, $separ )
 			$babBody->msgerror = bab_translate( "You must complete firstname and lastname fields !!");
 			return false;
 			}
-
-		if ( mb_strlen($GLOBALS['password1']) < 6 )
+			
+		$minPasswordLengh = 6;
+		if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+			$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+			if($minPasswordLengh < 1){
+				$minPasswordLengh = 1;
+			}
+		}
+		if ( mb_strlen($GLOBALS['password1']) < $minPasswordLengh )
 			{
-			$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+			$babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			return false;
 			}
 
@@ -2603,10 +2610,16 @@ function confirmAddDbContact($id, $fields, $file, $tmp_file, $password1, $passwo
 			$babBody->msgerror = bab_translate("Passwords not match !!");
 			return 0;
 			}
-
-		if ( mb_strlen($password1) < 6 )
+		$minPasswordLengh = 6;
+		if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+			$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+			if($minPasswordLengh < 1){
+				$minPasswordLengh = 1;
+			}
+		}
+		if ( mb_strlen($password1) < $minPasswordLengh )
 			{
-			$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+			$babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			return 0;
 			}
 		}

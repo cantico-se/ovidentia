@@ -488,7 +488,15 @@ function userCreate($grp = '')
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->adduser = bab_translate("Confirm");
-			$this->string_6_chr = bab_translate("Password must be at least 6 characters !!");
+	
+			$minPasswordLengh = 6;
+			if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+				$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+				if($minPasswordLengh < 1){
+					$minPasswordLengh = 1;
+				}
+			}
+			$this->string_6_chr = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			}
 		}
 

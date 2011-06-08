@@ -592,7 +592,7 @@
 <string id="Password Changed">Le mot de passe a été modifié</string>
 <string id="Password Reset">Réinitialiser le mot de passe</string>
 <string id="Password incorrect">Mot de passe incorrect</string>
-<string id="Password must be at least 6 characters !!">Le mot de passe doit comporter au moins 6 caractères !</string>
+<string id="Password must be at least %s characters !!">Le mot de passe doit comporter au moins %s caractères !</string>
 <string id="Password">Mot de passe</string>
 <string id="Passwords not match !!">Mots de passe non identiques !</string>
 <string id="Paste">Coller</string>

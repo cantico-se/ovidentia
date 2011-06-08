@@ -2301,11 +2301,16 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 		$error = bab_translate("Passwords not match !!");
 		return false;
 	}
-
-	/* Test if the password have at least 6 characters */
+	
+	$minPasswordLengh = 6;
+	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+	}
+	
+	/* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
 	if (!$ignoreSixCharactersMinimum) {
-		if (mb_strlen($newPassword) < 6) {
-			$error = bab_translate("Password must be at least 6 characters !!");
+		if (mb_strlen($newPassword) < $minPasswordLengh) {
+			$error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			return false;
 		}
 	}

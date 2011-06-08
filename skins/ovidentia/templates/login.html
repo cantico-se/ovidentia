@@ -21,7 +21,7 @@
     	<tr> 
             <td align="right">{ password } : </td>
             <td> 
-              <input type="password" name="password" size="20" maxlength="30" />
+              <input type="password" name="password" size="20" maxlength="255" />
             </td>
     	</tr>
 		<!--#if babCookieIdent -->
@@ -113,14 +113,14 @@
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
                 { password } : </td>
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <input type="password" name="password1" size="20" maxlength="15">
+                <input type="password" name="password1" size="20" maxlength="255">
               </td>
             </tr>
             <tr> 
               <td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle"> 
                 { repassword } : </td>
               <td class="BabLoginMenuBackground" width="70%" align="left" valign="middle">
-                <input type="password" name="password2" size="20" maxlength="15">
+                <input type="password" name="password2" size="20" maxlength="255">
               </td>
             </tr>
             <tr valign="middle"> 
@@ -236,11 +236,11 @@
 	<!--#endin getnextfield -->
 	<tr> 
 	<td align="right">{ password }<font color="red">*</font> : </td>
-	<td><input type="password" name="password1" size="20" maxlength="15" />&nbsp;{ passwordlengthtxt }</td>
+	<td><input type="password" name="password1" size="20" maxlength="255" />&nbsp;{ passwordlengthtxt }</td>
 	</tr>
 	<tr> 
 	<td align="right">{ repassword }<font color="red">*</font> : </td>
-	<td><input type="password" name="password2" size="20" maxlength="15" /></td>
+	<td><input type="password" name="password2" size="20" maxlength="255" /></td>
 	</tr>
 	<!--#if bagree -->
 	<tr> 

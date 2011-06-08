@@ -60,10 +60,18 @@ function updateUserPasswordById($userId, $newPassword, $newPassword2, $ignoreAcc
 		return false;
 	}
 	
-	/* Test if the password have at least 6 characters */
+	$minPasswordLengh = 6;
+	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+		if($minPasswordLengh < 1){
+			$minPasswordLengh = 1;
+		}
+	}
+	
+	/* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
 	if (!$ignoreSixCharactersMinimum) {
-		if (mb_strlen($newPassword) < 6) {
-			$error = bab_translate("Password must be at least 6 characters !!");
+		if (mb_strlen($newPassword) < $minPasswordLengh) {
+			$error = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			return false;
 		}
 	}
@@ -330,10 +338,17 @@ function registerUser( $firstname, $lastname, $middlename, $email, $nickname, $p
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return false;
 		}
-
-	if ( mb_strlen($password1) < 6 )
+	
+	$minPasswordLengh = 6;
+	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+		if($minPasswordLengh < 1){
+			$minPasswordLengh = 1;
+		}
+	}
+	if ( mb_strlen($password1) < $minPasswordLengh )
 		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		$babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 		return false;
 		}
 

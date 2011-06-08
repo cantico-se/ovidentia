@@ -451,9 +451,16 @@ function addNewUser( $nickname, $password1, $password2)
 		$babBody->msgerror = bab_translate("Passwords not match !!");
 		return;
 		}
-	if ( mb_strlen($password1) < 6 )
+	$minPasswordLengh = 6;
+	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
+		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
+		if($minPasswordLengh < 1){
+			$minPasswordLengh = 1;
+		}
+	}
+	if ( mb_strlen($password1) < $minPasswordLengh )
 		{
-		$babBody->msgerror = bab_translate("Password must be at least 6 characters !!");
+		$babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 		return false;
 		}
 
