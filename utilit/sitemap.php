@@ -535,8 +535,7 @@ class bab_siteMap {
 	
 		global $babDB;
 		
-		
-		
+		self::lockTables();
 		
 		if (($GLOBALS['BAB_SESS_LOGGED'] && false === $id_user) || false !== $id_user) {
 		
@@ -562,6 +561,9 @@ class bab_siteMap {
 				WHERE id_profile=\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'"
 			);
 		}
+		
+		
+		self::unlockTables();
 	}
 	
 	/**
@@ -572,6 +574,30 @@ class bab_siteMap {
 	 * 
 	 */
 	public static function clearAll() {
+		global $babDB;
+		
+		self::lockTables();
+		
+		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
+		
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTIONS_TBL);
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
+		$babDB->db_query('UPDATE '.BAB_USERS_TBL." SET id_sitemap_profile='0'");
+		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_TBL);
+		
+		self::unlockTables();
+		
+		//bab_siteMap::build();
+
+	}
+	
+	
+	
+	private static function lockTables()
+	{
 		global $babDB;
 		
 		$babDB->db_query('
@@ -585,20 +611,15 @@ class bab_siteMap {
 				'.BAB_SITEMAP_TBL.' 						 	WRITE
 		');
 		
-		// bab_debug('Clear sitemap...', DBG_TRACE, 'Sitemap');
-		
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILES_TBL.' WHERE id<>\''.BAB_UNREGISTERED_SITEMAP_PROFILE."'");
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL);
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL);
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTIONS_TBL);
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_LABELS_TBL);
-		$babDB->db_query('UPDATE '.BAB_USERS_TBL." SET id_sitemap_profile='0'");
-		$babDB->db_query('DELETE FROM '.BAB_SITEMAP_TBL);
+	}
+	
+	
+	private static function unlockTables()
+	{
+		global $babDB;
 		
 		$babDB->db_query('UNLOCK TABLES');
 		
-		//bab_siteMap::build();
-
 	}
 	
 	
