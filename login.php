@@ -582,7 +582,7 @@ function addNewUser( $nickname, $password1, $password2)
 		return false;
 		}
 
-	if( $bphoto && isset($_FILES['photof']) && $_FILES['photof']['name'] != "none")
+	if( $bphoto && isset($_FILES['photof']) && $_FILES['photof']['name'] != "none" && $_FILES['photof']['tmp_name'] && $_FILES['photof']['name'] != '')
 		{
 		if (0 == $_FILES['photof']['size'] || ($babBody->babsite['imgsize']*1000) < filesize($_FILES['photof']['tmp_name']))
 			{
