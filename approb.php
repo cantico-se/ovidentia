@@ -1174,17 +1174,17 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		{
 		case 0:
 			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
-			$subject = "Your comment has been refused";
+			$subject = bab_translate("Your comment has been refused");
 			deleteFlowInstance($arr['idfai']);
 			bab_deleteComments($idcom);
 			break;
 		case 1:
-			$subject = "Your comment has been accepted";
+			$subject = bab_translate("Your comment has been accepted");
 			deleteFlowInstance($arr['idfai']);
 			$babDB->db_query("update ".BAB_COMMENTS_TBL." set confirmed='Y', idfai='0' where id = '".$babDB->db_escape_string($idcom)."'");
 			break;
 		default:
-			$subject = "About your comment";
+			$subject = bab_translate("About your comment");
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
 			if( count($nfusers) > 0 )
 				{
