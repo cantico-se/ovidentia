@@ -1188,7 +1188,7 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
 			if( count($nfusers) > 0 )
 				{
-				notifyCommentApprovers($com, $nfusers);
+				notifyCommentApprovers($idcom, $nfusers);
 				}
 			break;
 		}
