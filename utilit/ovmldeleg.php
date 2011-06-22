@@ -28,9 +28,9 @@ include_once $GLOBALS['babInstallPath'].'utilit/omlincl.php';
 class bab_CategoryCache
 {
 	var $aCache = array();
-	
 
-	
+
+
 	public function getCategory($iIdCategory)
 	{
 		if(!array_key_exists($iIdCategory, $this->aCache))
@@ -47,7 +47,7 @@ class bab_CategoryCache
 		}
 		return $aCache[$iIdCategory];
 	}
-	
+
 	public function getCategoryInfo($iIdCategory)
 	{
 		global $babDB;
@@ -62,7 +62,7 @@ class bab_CategoryCache
 		}
 		return false;
 	}
-	
+
 }
 
 
@@ -84,42 +84,41 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 	$bProcessed		= false;
 	$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 
-	if (is_dir($sUploadPath)) {			
+	if (is_dir($sUploadPath)) {
 		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
 		if($uploadPath->isDir() && $iIdDeleg != ''){
 			foreach($uploadPath as $file){}
 			$relativePath = new bab_Path('delegation','image','DG'.$iIdDeleg);
-			
+
 			$iHeight			= $iMaxImageHeight;
 			$iWidth				= $iMaxImageWidth;
 			$sName				= $file->getBasename();
 			$sRelativePath		= $relativePath->tostring();
 			$sFullPathName		= $file->tostring();
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
-	
+
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
-	
+
 			if ($T && $iHeight && $iWidth) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
-				$T->setBorder(0, '#cccccc', 0, '#ffffff');
 				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
 			}
 			if ($thumbnailUrl) {
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('DelegationImage', 1);
 				$oCtx->curctx->push('DelegationImageUrl', $thumbnailUrl);
-				$oCtx->curctx->push('DelegationImageWidth', $iWidth);				
+				$oCtx->curctx->push('DelegationImageWidth', $iWidth);
 				$oCtx->curctx->push('DelegationImageHeight', $iHeight);
-	
+
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$img = imageCreateFromPng($thumbnailPath->toString());
 				$oCtx->curctx->push('DelegationResizedImageWidth', imagesx($img));
 				$oCtx->curctx->push('DelegationResizedImageHeight', imagesy($img));
 				imageDestroy($img);
-	
+
 				$bProcessed = true;
 			} else {
 				// If the thumbnailer was not available or not able to create a thumbnail,
@@ -127,14 +126,14 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 				// dynamically resizing the image).
 				$oImageResize = new bab_ImageResize();
 				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
-	
+
 					$oCtx->curctx->push('DelegationImage', 1);
 					$oCtx->curctx->push('DelegationImageUrl', $sImageUrl);
 					$oCtx->curctx->push('DelegationImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('DelegationImageHeight', $oImageResize->getRealHeight());
 					$oCtx->curctx->push('DelegationResizedImageWidth', $iWidth);
 					$oCtx->curctx->push('DelegationResizedImageHeight', $iHeight);
-	
+
 					$bProcessed = true;
 				}
 			}
@@ -159,14 +158,14 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 	var $res;
 
 	var $oCategoryCache = null;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		
+
 		$this->oCategoryCache = new bab_CategoryCache();
-		
+
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 		$filter = $ctx->get_value('filter');
@@ -223,7 +222,7 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
-	
+
 	public function getnext()
 	{
 		global $babDB;
@@ -242,9 +241,9 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 			$this->ctx->curctx->push('DelegationCategoryName', '');
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
 			$this->ctx->curctx->push('DelegationCategoryColor', '');
-			
+
 			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			if(0 !== (int) $arr['iIdCategory'])
 			{
 				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
@@ -255,7 +254,7 @@ class Func_Ovml_Container_Delegations extends Func_Ovml_Container
 					$this->ctx->curctx->push('DelegationCategoryColor', $aDatas['bgcolor']);
 				}
 			}
-			
+
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -300,14 +299,14 @@ class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 	var $res;
 
 	var $oCategoryCache = null;
-	
+
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
 		global $babDB;
 		parent::setOvmlContext($ctx);
-		
+
 		$this->oCategoryCache = new bab_CategoryCache();
-		
+
 		$delegationid = $ctx->get_value('delegationid');
 		$userid = $ctx->get_value('userid');
 		$this->imageheightmax	= (int) $ctx->get_value('imageheightmax');
@@ -356,9 +355,9 @@ class Func_Ovml_Container_DelegationsManaged extends Func_Ovml_Container
 			$this->ctx->curctx->push('DelegationCategoryName', '');
 			$this->ctx->curctx->push('DelegationCategoryDescription', '');
 			$this->ctx->curctx->push('DelegationCategoryColor', '');
-			
+
 			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $arr['id']);
-			
+
 			if(0 !== (int) $arr['iIdCategory'])
 			{
 				$aDatas = $this->oCategoryCache->getCategory($arr['iIdCategory']);
@@ -392,7 +391,7 @@ class Func_Ovml_Container_DelegationManaged extends Func_Ovml_Container_Delegati
 		if( $delegationid !== false && !empty($delegationid) )
 			{
 			parent::setOvmlContext($ctx);
-			
+
 			setDelegationAssociatedImageInfo($this->ctx, $this->imageheightmax, $this->imagewidthmax, $delegationid);
 			}
 		else
@@ -524,7 +523,7 @@ class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 		parent::setOvmlContext($ctx);
 		$this->iCount	= 0;
 		$categoryid		= $ctx->get_value('categoryid');
-		
+
 		if($categoryid === false || $categoryid === '')
 		{
 			$this->oResult = $babDB->db_query('SELECT * FROM '.BAB_DG_CATEGORIES_TBL.' order by name asc');
@@ -544,7 +543,7 @@ class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 		}
 		$this->ctx->curctx->push('CCount', $this->iCount);
 	}
-	
+
 	public function getnext()
 	{
 		global $babDB;
@@ -552,7 +551,7 @@ class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 		if($this->idx < $this->iCount)
 		{
 			$this->ctx->curctx->push('CIndex', $this->idx);
-			
+
 			$aDatas = $babDB->db_fetch_array($this->oResult);
 			if(false !== $aDatas)
 			{
@@ -568,7 +567,7 @@ class Func_Ovml_Container_DelegationsCategories extends Func_Ovml_Container
 				$this->ctx->curctx->push('DelegationCategoryColor', '');
 				$this->ctx->curctx->push('DelegationCategoryId', 0);
 			}
-			
+
 			$this->idx++;
 			$this->iIndex = $this->idx;
 			return true;
