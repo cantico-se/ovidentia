@@ -5091,7 +5091,18 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
-			$description = $p->getProperty('DESCRIPTION');
+			$description = bab_toHtml($p->getProperty('DESCRIPTION'));
+			
+			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format'])
+				{
+				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+				$editor = new bab_contentEditor('bab_calendar_event');
+				$editor->setContent($arr['description']);
+				$editor->setFormat($arr['description_format']);
+				
+				$description = $editor->getHtml();
+				}
+			
 			$location = $p->getProperty('LOCATION');
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
