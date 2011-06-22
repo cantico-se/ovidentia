@@ -88,7 +88,8 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
 		if($uploadPath->isDir() && $iIdDeleg != ''){
 			foreach($uploadPath as $file){}
-			$relativePath = new bab_Path('delegation','image','DG'.$iIdDeleg);
+			
+			$relativePath = new bab_Path($GLOBALS['babUploadPath'],'image','DG'.$iIdDeleg);
 
 			$iHeight			= $iMaxImageHeight;
 			$iWidth				= $iMaxImageWidth;
@@ -109,7 +110,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('DelegationImage', 1);
 				$oCtx->curctx->push('DelegationImageUrl', $thumbnailUrl);
-				$oCtx->curctx->push('DelegationImageRealUrl', $sFullPathName);
+				$oCtx->curctx->push('DelegationImageRealUrl', $sRelativePath.$sName);
 				$oCtx->curctx->push('DelegationImageWidth', $iWidth);
 				$oCtx->curctx->push('DelegationImageHeight', $iHeight);
 
@@ -130,7 +131,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 
 					$oCtx->curctx->push('DelegationImage', 1);
 					$oCtx->curctx->push('DelegationImageUrl', $sImageUrl);
-					$oCtx->curctx->push('DelegationImageRealUrl', $sFullPathName);
+					$oCtx->curctx->push('DelegationImageRealUrl', $sRelativePath.$sName);
 					$oCtx->curctx->push('DelegationImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('DelegationImageHeight', $oImageResize->getRealHeight());
 					$oCtx->curctx->push('DelegationResizedImageWidth', $iWidth);
