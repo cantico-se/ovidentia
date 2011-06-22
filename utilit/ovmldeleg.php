@@ -109,6 +109,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('DelegationImage', 1);
 				$oCtx->curctx->push('DelegationImageUrl', $thumbnailUrl);
+				$oCtx->curctx->push('DelegationImageRealUrl', $sFullPathName);
 				$oCtx->curctx->push('DelegationImageWidth', $iWidth);
 				$oCtx->curctx->push('DelegationImageHeight', $iHeight);
 
@@ -129,6 +130,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 
 					$oCtx->curctx->push('DelegationImage', 1);
 					$oCtx->curctx->push('DelegationImageUrl', $sImageUrl);
+					$oCtx->curctx->push('DelegationImageRealUrl', $sFullPathName);
 					$oCtx->curctx->push('DelegationImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('DelegationImageHeight', $oImageResize->getRealHeight());
 					$oCtx->curctx->push('DelegationResizedImageWidth', $iWidth);
@@ -143,6 +145,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 	if (false === $bProcessed) {
 		$oCtx->curctx->push('DelegationImage', 0);
 		$oCtx->curctx->push('DelegationImageUrl', '');
+		$oCtx->curctx->push('DelegationImageRealUrl', '');
 		$oCtx->curctx->push('DelegationImageWidth', 0);
 		$oCtx->curctx->push('DelegationImageHeight', 0);
 		$oCtx->curctx->push('DelegationResizedImageWidth', 0);
