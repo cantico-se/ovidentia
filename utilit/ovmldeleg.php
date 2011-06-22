@@ -97,6 +97,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 			$sRelativePath		= $relativePath->tostring();
 			$sFullPathName		= $file->tostring();
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
+			$sRealImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&realFile=1&iIdDeleg=' .$iIdDeleg;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -110,7 +111,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('DelegationImage', 1);
 				$oCtx->curctx->push('DelegationImageUrl', $thumbnailUrl);
-				$oCtx->curctx->push('DelegationImageRealUrl', $sRelativePath.$sName);
+				$oCtx->curctx->push('DelegationImageRealUrl', $sRealImageUrl);
 				$oCtx->curctx->push('DelegationImageWidth', $iWidth);
 				$oCtx->curctx->push('DelegationImageHeight', $iHeight);
 
@@ -131,7 +132,7 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 
 					$oCtx->curctx->push('DelegationImage', 1);
 					$oCtx->curctx->push('DelegationImageUrl', $sImageUrl);
-					$oCtx->curctx->push('DelegationImageRealUrl', $sRelativePath.$sName);
+					$oCtx->curctx->push('DelegationImageRealUrl', $sRealImageUrl);
 					$oCtx->curctx->push('DelegationImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('DelegationImageHeight', $oImageResize->getRealHeight());
 					$oCtx->curctx->push('DelegationResizedImageWidth', $iWidth);

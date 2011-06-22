@@ -349,6 +349,11 @@ function getImage()
 	if($sPath == ''){
 		return '';
 	}
+	if(bab_gp('realFile','') == 1){
+		header('Content-type: ' . bab_getFileMimeType($sPath, $subtype));
+		readfile($sPath);
+		die;
+	}
 	
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath, $iWidth, $iHeight);
