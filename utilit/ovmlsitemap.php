@@ -283,14 +283,22 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					// we try to find if a descendant of this node has
 					// a target to the current position.
 					$baseNode = $this->sitemap->getNodeById($baseNodeId);
-					$nodes = $this->sitemap->createNodeIterator($baseNode);
-
-					while ($node = $nodes->nextNode()) {
-						$sitemapItem = $node->getData();
-						$target = $sitemapItem->target;
-						if ($target === $nodeId) {
-							$nodeId = $sitemapItem->id_function;
-							break;
+					
+					if (null === $baseNode)
+					{
+						trigger_error(sprintf('the basenode="%s" attribute has been specified in ovml file %s but the node has not been found in the sitemap',$baseNodeId, (string) $ctx->debug_location));
+						bab_debug((string) $this->sitemap);
+					} else {
+					
+						$nodes = $this->sitemap->createNodeIterator($baseNode);
+	
+						while ($node = $nodes->nextNode()) {
+							$sitemapItem = $node->getData();
+							$target = $sitemapItem->target;
+							if ($target === $nodeId) {
+								$nodeId = $sitemapItem->id_function;
+								break;
+							}
 						}
 					}
 				}
