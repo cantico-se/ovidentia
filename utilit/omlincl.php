@@ -4910,7 +4910,7 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
 
 /**
  * Return a list of calendar events
- * 
+ *
  * calendarid 			: coma separated calendars id
  * delegationid			: filter the list of calendars by delegation
  * filter 				: filter by delegation YES | NO, if filter=NO calendars without access rights can be used
@@ -4919,10 +4919,10 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
  * holiday 				: return vacation events YES | NO
  * private 				: return non accessibles private events YES | NO
  * awaiting_approval 	: return non accessibles awaiting approval events YES | NO
- * 
+ *
  * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="YES">
- * 
- * 	<OVEventId>					
+ *
+ * 	<OVEventId>
  * 	<OVEventTitle>
  * 	<OVEventDescription>
  * 	<OVEventLocation>
@@ -4939,7 +4939,7 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
  * 	<OVEventUpdateDate>
  * 	<OVEventUpdateAuthor>
  * 	<OVEventAuthor>
- * 
+ *
  * </OCCalendarEvents>
  *
  */
@@ -4954,15 +4954,15 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	var $cal_resources			= 1;
 	var $cal_users				= 1;
 	var $cal_default_users 		= 1; // if empty calendarid, get all accessibles user calendars
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $private 			= null;
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $awaiting_approval 	= null;
@@ -5068,16 +5068,16 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$startdate->getTimeStamp(),
 			$enddate->getTimeStamp()
 		);
-		
-		
-		
+
+
+
 		if (!$this->private || !$this->awaiting_approval)
 		{
 			foreach($this->events as $key => $event)
 			{
 				$collection = $event->getCollection();
 				$calendar = $collection->getCalendar();
-				
+
 				if (!$calendar->canViewEventDetails($event))
 				{
 					if ($event->isPublic())
@@ -5094,10 +5094,10 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 					}
 				}
 			}
-			
+
 			reset($this->events);
 		}
-		
+
 
 		$this->count = count($this->events);
 		$this->ctx->curctx->push('CCount', $this->count);
@@ -5128,7 +5128,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
  	 * Get available calendar with filter
  	 * @param	string	$calendarid		coma separated list of calendar id
  	 * @param	int		$delegationid
- 	 * 	
+ 	 *
 	 */
 	public function getUserCalendars($calendarid, $delegationid) {
 		$calendars = bab_getICalendars()->getCalendars();
@@ -5142,46 +5142,46 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			switch(true)
 			{
 				case ($this instanceof Func_Ovml_Container_CalendarGroupEvents):
-					
+
 					$calendarid_list = array();
 					foreach($calendars as $calendar)
 					{
 						if ($calendar instanceof bab_PublicCalendar)
 						{
-							
+
 							$calendarid_list[$calendar->getUid()] = 1;
 						}
 					}
 				break;
-				
+
 				case ($this instanceof Func_Ovml_Container_CalendarResourceEvents):
-					
+
 					$calendarid_list = array();
 					foreach($calendars as $calendar)
 					{
 						if ($calendar instanceof bab_ResourceCalendar)
 						{
-							
+
 							$calendarid_list[$calendar->getUid()] = 1;
 						}
 					}
 				break;
-					
+
 				default:
 					$personal = bab_getICalendars()->getPersonalCalendar();
 					if (!$personal)
 					{
 						return array();
 					}
-		
+
 					$calendarid_list = array($personal->getUid() => 1);
 				break;
-				
+
 			}
-			
-		} 
-		
-		
+
+		}
+
+
 
 		$return = array();
 
@@ -5198,12 +5198,12 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			{
 				continue;
 			}
-			
-			
+
+
 
 			$return[] = $calendar;
 		}
-		
+
 
 		return $return;
 	}
@@ -5238,7 +5238,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$id_category = '';
 			$category_color = '';
 			$color = $p->getProperty('X-CTO-COLOR');
-			
+
 			$cat = bab_getCalendarCategory($p->getProperty('CATEGORIES'));
 			if ($cat)
 			{
@@ -5246,12 +5246,12 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 				$category_color = $cat['bgcolor'];
 				$color = $category_color;
 			}
-			
+
 			$id_event = $p->getProperty('UID');
 
 			$collection = $p->getCollection();
 			$calendar = $collection->getCalendar();
-			
+
 			if ($calendar)
 			{
 				/* @var $calendar bab_EventCalendar */
@@ -5263,22 +5263,22 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
 			$description = bab_toHtml($p->getProperty('DESCRIPTION'));
-			
+
 			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format'])
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_calendar_event');
 				$editor->setContent($arr['description']);
 				$editor->setFormat($arr['description_format']);
-				
+
 				$description = $editor->getHtml();
 				}
-			
-			
+
+
 			$location = $p->getProperty('LOCATION');
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
-			
+
 			// with filter
 			if ($calendar && !$calendar->canViewEventDetails($p))
 			{
@@ -5308,8 +5308,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 				$this->ctx->curctx->push('EventCalendarUrl'			, '');
 				$this->ctx->curctx->push('EventCategoriesPopupUrl'	, '');
 			}
-			
-			$this->ctx->curctx->push('EventCategoryName'		, $categories);	
+
+			$this->ctx->curctx->push('EventCategoryName'		, $categories);
 
 			$EventOwner = isset($arr['id_cal']) ? bab_getCalendarOwner($arr['id_cal']) : '';
 
@@ -6084,8 +6084,8 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageArticle($iIdArticle);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
@@ -6094,7 +6094,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
 
-			if ($T && $iHeight && $iWidth) {
+			if ($T) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
 				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
@@ -6169,8 +6169,8 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageCategory($iIdCategory);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
@@ -6255,8 +6255,8 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	if(is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageTopic($iIdTopic);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;

@@ -88,11 +88,11 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
 		if($uploadPath->isDir() && $iIdDeleg != ''){
 			foreach($uploadPath as $file){}
-			
+
 			$relativePath = new bab_Path($GLOBALS['babUploadPath'],'image','DG'.$iIdDeleg);
 
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $file->getBasename();
 			$sRelativePath		= $relativePath->tostring();
 			$sFullPathName		= $file->tostring();
