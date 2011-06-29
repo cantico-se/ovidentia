@@ -6097,7 +6097,6 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			if ($T && $iHeight && $iWidth) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
-				$T->setBorder(0, '#cccccc', 0, '#ffffff');
 				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
 			}
 			if ($thumbnailUrl) {
@@ -6183,7 +6182,6 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			if ($T && $iWidth && $iHeight) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
-				$T->setBorder(0, '#cccccc', 0, '#ffffff');
 				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
 			}
 			if ($thumbnailUrl) {
@@ -6270,7 +6268,6 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			if ($T && $iWidth && $iHeight) {
 				// The thumbnailer functionality is available.
 			 	$T->setSourceFile($sFullPathName);
-				$T->setBorder(0, '#cccccc', 0, '#ffffff');
 				$thumbnailUrl = $T->getThumbnail($iWidth, $iHeight);
 			}
 			if ($thumbnailUrl) {
