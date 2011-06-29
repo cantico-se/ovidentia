@@ -4972,7 +4972,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
  	 * Get available calendar with filter
  	 * @param	string	$calendarid		coma separated list of calendar id
  	 * @param	int		$delegationid
- 	 * 	
+ 	 *
 	 */
 	public function getUserCalendars($calendarid, $delegationid) {
 		$calendars = bab_getICalendars()->getCalendars();
@@ -4986,46 +4986,46 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			switch(true)
 			{
 				case ($this instanceof Func_Ovml_Container_CalendarGroupEvents):
-					
+
 					$calendarid_list = array();
 					foreach($calendars as $calendar)
 					{
 						if ($calendar instanceof bab_PublicCalendar)
 						{
-							
+
 							$calendarid_list[$calendar->getUid()] = 1;
 						}
 					}
 				break;
-				
+
 				case ($this instanceof Func_Ovml_Container_CalendarResourceEvents):
-					
+
 					$calendarid_list = array();
 					foreach($calendars as $calendar)
 					{
 						if ($calendar instanceof bab_ResourceCalendar)
 						{
-							
+
 							$calendarid_list[$calendar->getUid()] = 1;
 						}
 					}
 				break;
-					
+
 				default:
 					$personal = bab_getICalendars()->getPersonalCalendar();
 					if (!$personal)
 					{
 						return array();
 					}
-		
+
 					$calendarid_list = array($personal->getUid() => 1);
 				break;
-				
+
 			}
-			
-		} 
-		
-		
+
+		}
+
+
 
 		$return = array();
 
@@ -5042,12 +5042,12 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			{
 				continue;
 			}
-			
-			
+
+
 
 			$return[] = $calendar;
 		}
-		
+
 
 		return $return;
 	}
@@ -5092,17 +5092,17 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$calid_param = !empty($arr['id_cal']) ? '&idcal='.$arr['id_cal'] : '';
 			$summary = $p->getProperty('SUMMARY');
 			$description = bab_toHtml($p->getProperty('DESCRIPTION'));
-			
+
 			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format'])
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 				$editor = new bab_contentEditor('bab_calendar_event');
 				$editor->setContent($arr['description']);
 				$editor->setFormat($arr['description_format']);
-				
+
 				$description = $editor->getHtml();
 				}
-			
+
 			$location = $p->getProperty('LOCATION');
 			$categories = $p->getProperty('CATEGORIES');
 			$date = date('Y,m,d',$p->ts_begin);
@@ -5901,8 +5901,8 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageArticle($iIdArticle);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
@@ -5986,8 +5986,8 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 	if (is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageCategory($iIdCategory);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
@@ -6072,8 +6072,8 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 	if(is_dir($sUploadPath)) {
 		$aImgInfo = bab_getImageTopic($iIdTopic);
 		if (is_array($aImgInfo)) {
-			$iHeight			= $iMaxImageHeight;
-			$iWidth				= $iMaxImageWidth;
+			$iHeight			= $iMaxImageHeight ? $iMaxImageHeight : 2048;
+			$iWidth				= $iMaxImageWidth ? $iMaxImageWidth : 2048;
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
