@@ -314,6 +314,10 @@ function newEvent()
 			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(bab_rp('selected_calendars', array()));
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to create this event");
+			
+			$registry = bab_getRegistryInstance();
+			$registry->changeDirectory('/bab/calendar/');
+			$this->notify = $registry->getValue('notify', true);
 			}
 
 		function getnextday()

@@ -294,8 +294,13 @@
 
 			&nbsp;&nbsp;{ groupe_notiftxt }:
 			<select name="groupe-notif">
-				<option value="1" selected>{ t_yes }</option>
+				<!--#if notify -->
+				<option value="1" selected="selected">{ t_yes }</option>
 				<option value="0">{ t_no }</option>
+				<!--#else notify -->
+				<option value="1">{ t_yes }</option>
+				<option value="0" selected="selected">{ t_no }</option>
+				<!--#endif notify -->
 			</select>
 			
 			&nbsp;&nbsp;&nbsp;
