@@ -1293,7 +1293,7 @@ switch(bab_rp('tg'))
 		$incl = "entry";
 		$babWebStat->module($incl);
 		$arr = explode("/", bab_rp('tg'));
-		if( sizeof($arr) >= 3 && $arr[0] == "addon")
+		if( sizeof($arr) == 3 && $arr[0] == "addon")
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 			
