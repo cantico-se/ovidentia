@@ -1801,7 +1801,10 @@ function listFiles()
 				$arrName = explode('.',$arr['name']);
 				$ext = array_pop($arrName);
 				if($ext == 'zip'){
-					$this->bUnZip = true;
+					$idObject = $this->oFileManagerEnv->iIdObject;
+					if( $this->oFileManagerEnv->sGr != 'Y' || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $idObject) ){
+						$this->bUnZip = true;
+					}
 				}else{
 					$this->bUnZip = false;
 				}
@@ -2380,7 +2383,7 @@ function unzipFile()
 
 	$oFileManagerEnv =& getEnvObject();
 
-	if(!canUpload($oFileManagerEnv->sRelativePath))
+	if(!canUpload($oFileManagerEnv->sRelativePath) && ( bab_rp('gr')== 'N' || !canManage($oFileManagerEnv->sRelativePath)))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
