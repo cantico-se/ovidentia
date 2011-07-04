@@ -275,6 +275,8 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
 	return;
 }
 
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 if(!isset($idx))
 	{
 	$idx = "Modify";

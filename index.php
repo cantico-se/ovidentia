@@ -22,22 +22,7 @@
  */
 include_once "base.php";
 
-/**
-* @internal SEC1 PR 18/01/2007 FULL
-*/
 
-/*
- * Security : destroy primary globals variables of Ovidentia (function used in index.php)
- * to avoid the modification of global variables by GET, POST...
- * 
- * @param $arr Array
- */
-function bab_unset(&$arr)
-{
-	unset($arr['babInstallPath'], $arr['babDBHost'], $arr['babDBLogin'], $arr['babDBPasswd'], $arr['babDBName']);
-	unset($arr['babUrl'], $arr['babFileNameTranslation'], $arr['babVersion']);
-	unset($GLOBALS['babTmp']);
-}
 
 /*
  * Return the URL of the site
@@ -140,40 +125,8 @@ if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 }
 
 
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
-	
-/* The old code of Ovidentia used PHP configuration register_globals to On.
- * To remain compatible, we add all received data as globals variables.
- * Security : primary globals variables of Ovidentia are destroyed
- */
-if (!empty($_GET)) {
-	$babTmp =& $_GET;
-}
-if (isset($babTmp)) {
-	extract($babTmp, EXTR_SKIP);
-	bab_unset($babTmp);
-}
-unset($babTmp);
-
-if (!empty($_POST)) {
-	$babTmp =& $_POST;
-}
-if( isset($babTmp)) {
-	extract($babTmp, EXTR_SKIP);
-	bab_unset($babTmp);
-}
-unset($babTmp);
-
-bab_unset($_REQUEST);
-bab_unset($_COOKIE);
-
-
-
-
-
-
-
-	
 $BAB_SESS_NICKNAME 		= isset($_SESSION['BAB_SESS_NICKNAME']) 	? $_SESSION['BAB_SESS_NICKNAME'] 	: "";
 $BAB_SESS_USER 			= isset($_SESSION['BAB_SESS_USER']) 		? $_SESSION['BAB_SESS_USER'] 		: "";
 $BAB_SESS_FIRSTNAME 	= isset($_SESSION['BAB_SESS_FIRSTNAME']) 	? $_SESSION['BAB_SESS_FIRSTNAME'] 	: "";
