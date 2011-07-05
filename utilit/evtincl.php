@@ -1468,6 +1468,17 @@ function bab_deleteEvent($idevent)
 function bab_event_availabilityMandatory($calendars) {
 	global $babDB;
 	
+	$calid_arr = array();
+	foreach($calendars as $calendar)
+	{
+		list($type, $id) = explode('/', $calendar);
+		
+		if ('resource' === $type)
+		{
+			$calid_arr[] = (int) $id;
+		}
+	}
+	
 	$res = $babDB->db_query('
 		SELECT 
 			COUNT(*) 
@@ -1477,7 +1488,7 @@ function bab_event_availabilityMandatory($calendars) {
 		WHERE 
 			r.id = c.owner 
 			AND c.type=\''.BAB_CAL_RES_TYPE.'\' 
-			AND c.id IN('.$babDB->quote($calendars).') 
+			AND c.id IN('.$babDB->quote($calid_arr).') 
 			AND r.availability_lock=\'1\'
 	');
 	
