@@ -6560,6 +6560,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'maxzipsize')) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `maxzipsize` int(11) unsigned NOT NULL default '0'");
 	}
+	
+	
+	
+	/**
+	 * Upgrade tu 7.4.101
+	 */
+	$path = $babDB->db_fetch_assoc($babDB->db_query("describe bab_files 'path'"));
+	if ('text' !== mb_strtolower($path['Type']))
+	{
+		$babDB->db_query("ALTER TABLE `bab_files` CHANGE `path` `path` TEXT NOT NULL");
+	}
 
 
 	return true;

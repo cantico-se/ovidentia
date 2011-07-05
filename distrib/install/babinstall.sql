@@ -1041,7 +1041,7 @@ CREATE TABLE bab_files (
   id int(11) unsigned NOT NULL auto_increment,
   name varchar(255) NOT NULL default '',
   description tinytext NOT NULL,
-  path tinytext NOT NULL,
+  path text NOT NULL,
   id_owner int(11) unsigned NOT NULL default '0',
   bgroup enum('N','Y') NOT NULL default 'N',
   link int(11) unsigned NOT NULL default '0',
