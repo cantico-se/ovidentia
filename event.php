@@ -828,6 +828,10 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(explode(',', $this->calid));
 			
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
+			
+			$registry = bab_getRegistryInstance();
+			$registry->changeDirectory('/bab/calendar/');
+			$this->notify = $registry->getValue('notify', true);
 		}
 
 		function getNextRule()
