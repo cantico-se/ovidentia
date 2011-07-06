@@ -225,7 +225,7 @@ class bab_Path implements SeekableIterator, Countable {
 		foreach ($subPaths as $subPath) {
 			$elements = explode('/', $subPath);
 			foreach ($elements as $element) {
-				if ($element === '..' && count($allElements) > 0) {
+				if ($element === '..' && count($this->allElements) > 0) {
 					array_pop($this->allElements);
 				} elseif ($element !== '.' && $element !== '..' && $element !== '') {
 					array_push($this->allElements, $element);
