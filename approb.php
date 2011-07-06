@@ -811,7 +811,7 @@ class bab_confirmWaiting
 
 function confirmWaitingVacation($id)
 	{
-	global $babBody;
+	global $babBody, $babDB;
 
 	class temp extends bab_confirmWaiting
 		{
@@ -839,7 +839,7 @@ function confirmWaitingVacation($id)
 		var $res;
 		var $veid;
 
-		function temp($id)
+		function temp($id, $row)
 			{
 			global $babDB;
 			$this->datebegintxt = bab_translate("Begin date");
@@ -852,7 +852,7 @@ function confirmWaitingVacation($id)
 			$this->remarktxt = bab_translate("Description");
 			$this->t_alert = bab_translate("Negative balance");
 			$this->t_nomatch = bab_translate("The length of the period is different from the requested vacation");
-			$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+
 			$this->begin = bab_mktime($row['date_begin']);
 			$this->end = bab_mktime($row['date_end']);
 			$this->datebegin	= bab_toHtml(bab_vac_longDate($this->begin));
@@ -901,18 +901,27 @@ function confirmWaitingVacation($id)
 				$i++;
 				return true;
 				}
-			else
-				return false;
+			return false;
 
 			}
 
-		function getmatch() {
+		function getmatch()
+		{
 			$this->nomatch = $this->totalval !== $this->totaldates;
             return false;
 			}
 		}
 
-	$temp = new temp($id);
+
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+
+	if (!$row) {
+		$babBody->addError(bab_translate("Access denied"));
+		$babBody->babpopup('');
+		return 0;
+	}
+
+	$temp = new temp($id, $row);
 	$temp->getHtml("approb.html", "confirmvacation");
 	return $temp->count;
 	}
