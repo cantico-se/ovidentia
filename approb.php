@@ -48,7 +48,7 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
 	 * @public
 	 */
 	var $objects = array();
-	
+
 	function addObject($title,$arr) {
 		static $i = 0;
 		$key = mb_strtolower(mb_substr($title,0,3));
@@ -56,7 +56,7 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
 			'title' => $title,
 			'arr'	=> $arr
 		);
-		
+
 		$i++;
 	}
 }
@@ -334,7 +334,7 @@ function listWaitingFiles()
 					$this->authortxt = bab_translate("Author");
 					}
 
-				
+
 				}
 			$this->altbg = true;
 			}
@@ -351,7 +351,7 @@ function listWaitingFiles()
 				$this->filepath = bab_toHtml($arr['path']);
 				$this->filetitle = bab_toHtml($arr['name']);
 				$this->author = bab_toHtml(bab_getUserName($arr['author']));
-				
+
 				$this->fileviewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=fileman&idx=viewFile&idf=".$arr['id']."&id=".$arr['id_owner']."&gr=".$arr['bgroup']."&path=".urlencode($this->cleanFmPath($arr['path']))."&file=".urlencode($arr['name']));
 				$this->altbg = !$this->altbg;
 				$i++;
@@ -382,7 +382,7 @@ function listWaitingFiles()
 				$fm_file = fm_getFileAccess($arr['id_file']);
 				$oFmFolder =& $fm_file['oFmFolder'];
 				$oFolderFile =& $fm_file['oFolderFile'];
-				$sPathName = getUrlPath($oFolderFile->getPathName());	
+				$sPathName = getUrlPath($oFolderFile->getPathName());
 				$iIdUrl = $oFmFolder->getId();
 				if(mb_strlen($oFmFolder->getRelativePath()) > 0)
 				{
@@ -406,10 +406,10 @@ function listWaitingFiles()
 			}
 		function cleanFmPath($sPath)
 			{
-			return mb_substr($sPath, 0, -1);	
+			return mb_substr($sPath, 0, -1);
 			}
 		}
-		
+
 	$temp = new listWaitingFilesCls();
 	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingfiles"));
 }
@@ -508,7 +508,7 @@ function listWaitingVacations()
 		var $dateb;
 		var $dateetxt;
 		var $datee;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -603,19 +603,19 @@ function listWaitingEvents()
 			$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 			if( count($arrschi) > 0 )
 			{
-				$res = $babDB->db_query("SELECT cet.*, ceot.caltype, ceot.id_cal 
-					from 
+				$res = $babDB->db_query("SELECT cet.*, ceot.caltype, ceot.id_cal
+					from
 						".BAB_CAL_EVENTS_TBL." cet ,
-					 	".BAB_CAL_EVENTS_OWNERS_TBL." ceot 
-					 where 
+					 	".BAB_CAL_EVENTS_OWNERS_TBL." ceot
+					 where
 					 	cet.id=ceot.id_event and ceot.idfai in (".$babDB->quote($arrschi).") order by cet.start_date asc
 				");
-				
+
 				while( $arr = $babDB->db_fetch_array($res) )
 				{
-						
+
 					$calendar = bab_getICalendars()->getEventCalendar($arr['caltype'].'/'.$arr['id_cal']);
-						
+
 					if ($calendar)
 					{
 						$tmp = array();
@@ -645,7 +645,7 @@ function listWaitingEvents()
 				$this->eventcalendartxt = bab_translate("Calendar");
 				}
 			$this->altbg = true;
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
@@ -658,12 +658,12 @@ function listWaitingEvents()
 				require_once dirname(__FILE__).'/utilit/dateTime.php';
 				$start = BAB_DateTime::fromIsoDateTime($this->arrevts[$i]['startdate']);
 				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
-				
+
 				$editor = new bab_contentEditor('bab_calendar_event');
 				$editor->setContent($this->arrevts[$i]['description']);
 				$editor->setFormat($this->arrevts[$i]['description_format']);
 				$this->eventdescription = $editor->getHtml();
-				
+
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
 				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
 				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
@@ -702,11 +702,11 @@ function listWaitingAddons()
 		function listWaitingAddonsCls()
 			{
 			global $babBody;
-			
+
 			$event = new bab_eventBeforeWaitingItemsDisplayed();
 			bab_fireEvent($event);
 			$this->arrObjects = &$event->objects;
-		
+
 			/**
 			 * @deprecated
 			 * Addons should not use this method since 6.1.1
@@ -719,12 +719,12 @@ function listWaitingAddons()
 					{
 					$this->_setGlobals($row['id'],$row['title']);
 					require_once( $addonpath."/init.php" );
-					
+
 					if( function_exists($this->call) )
 						{
-						
+
 						bab_debug('The callback '.$this->call.' is deprecated, please use bab_addEventListener() instead');
-						
+
 						$title = $row['title'];
 						$arr = array();
 						call_user_func_array($this->call, array(&$title, &$arr));
@@ -738,9 +738,9 @@ function listWaitingAddons()
 						}
 					}
 				}
-				
+
 			bab_sort::ksort($this->arrObjects);
-			
+
 			}
 
 		function _setGlobals($id,$title)
@@ -767,11 +767,11 @@ function listWaitingAddons()
 		function getnextitem()
 			{
 			$this->altbg = !$this->altbg;
-			
+
 			if (!isset($this->arr)) {
 				return false;
 			}
-			
+
 			if (list( , $arr) = each($this->arr))
 				{
 				$this->text 			= bab_toHtml($arr['text']);
@@ -786,7 +786,7 @@ function listWaitingAddons()
 				return false;
 			}
 		}
-	
+
 	$temp = new listWaitingAddonsCls();
 	$babBody->babecho( bab_printTemplate($temp, "approb.html", "waitingAddons"));
 }
@@ -810,11 +810,11 @@ class bab_confirmWaiting
 
 
 function confirmWaitingVacation($id)
-	{
-	global $babBody;
+{
+	global $babBody, $babDB;
 
 	class temp extends bab_confirmWaiting
-		{
+	{
 		var $datebegintxt;
 		var $datebegin;
 		var $halfnamebegin;
@@ -832,15 +832,15 @@ function confirmWaitingVacation($id)
 		var $commenttxt;
 		var $remarktxt;
 		var $remark;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
 		var $res;
 		var $veid;
 
-		function temp($id)
-			{
+		function temp($id, $row)
+		{
 			global $babDB;
 			$this->datebegintxt = bab_translate("Begin date");
 			$this->dateendtxt = bab_translate("End date");
@@ -852,7 +852,7 @@ function confirmWaitingVacation($id)
 			$this->remarktxt = bab_translate("Description");
 			$this->t_alert = bab_translate("Negative balance");
 			$this->t_nomatch = bab_translate("The length of the period is different from the requested vacation");
-			$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+
 			$this->begin = bab_mktime($row['date_begin']);
 			$this->end = bab_mktime($row['date_end']);
 			$this->datebegin	= bab_toHtml(bab_vac_longDate($this->begin));
@@ -860,8 +860,8 @@ function confirmWaitingVacation($id)
 			$this->id_user		= $row['id_user'];
 			$this->fullname		= bab_toHtml(bab_getUserName($row['id_user']));
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
-			
-			 $this->totaldates = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
+
+			$this->totaldates = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
@@ -873,26 +873,26 @@ function confirmWaitingVacation($id)
 				}
 
 			$req = "
-				SELECT e.*, r.description FROM 
-					".BAB_VAC_ENTRIES_ELEM_TBL." e 
+				SELECT e.*, r.description FROM
+					".BAB_VAC_ENTRIES_ELEM_TBL." e
 					LEFT JOIN ".BAB_VAC_RIGHTS_TBL." r ON r.id=e.id_right
 				WHERE e.id_entry=".$babDB->quote($id);
-				
+
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->totalval = 0;
 			$this->veid = bab_toHtml($id);
 			$this->nomatch = false;
-			}
+		}
 
 		function getnexttype()
-			{
+		{
 			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
-				{
+			{
 				$arr = $babDB->db_fetch_array($this->res);
-				
+
 				$this->nbdays = $arr['quantity'];
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
@@ -900,22 +900,31 @@ function confirmWaitingVacation($id)
 				$this->typename = bab_toHtml($arr['description']);
 				$i++;
 				return true;
-				}
-			else
-				return false;
-
 			}
+			return false;
 
-		function getmatch() {
-			$this->nomatch = $this->totalval !== $this->totaldates;
-            return false;
-			}
 		}
 
-	$temp = new temp($id);
+		function getmatch()
+		{
+			$this->nomatch = $this->totalval !== $this->totaldates;
+            return false;
+		}
+	}
+
+
+	$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+
+	if (!$row) {
+		$babBody->addError(bab_translate("Access denied"));
+		$babBody->babpopup('');
+		return 0;
+	}
+
+	$temp = new temp($id, $row);
 	$temp->getHtml("approb.html", "confirmvacation");
 	return $temp->count;
-	}
+}
 
 function confirmWaitingArticle($idart)
 {
@@ -946,7 +955,7 @@ function confirmWaitingArticle($idart)
 
 					$this->arttitle = bab_toHtml($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
-					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));				
+					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
 					}
 				else
 					{
@@ -972,7 +981,7 @@ function confirmWaitingPost($thread, $post)
 
 	class confirmWaitingPostCls extends bab_confirmWaiting
 		{
-	
+
 		var $postmessage;
 		var $postsubject;
 		var $postdate;
@@ -987,20 +996,20 @@ function confirmWaitingPost($thread, $post)
 			$this->thread = bab_toHtml($thread);
 
 			$req = "select pt.*, ft.id as forumid, ft.name as forumname from ".BAB_POSTS_TBL." pt left join ".BAB_THREADS_TBL." tt on tt.id=pt.id_thread left join ".BAB_FORUMS_TBL." ft on ft.id=tt.forum where pt.id='".$babDB->db_escape_string($post)."'";
-			
+
 			$arr = $babDB->db_fetch_array($babDB->db_query($req));
-			
+
 			$GLOBALS['babBody']->title = $arr['forumname'];
 			$this->postdate = bab_toHtml(bab_strftime(bab_mktime($arr['date'])));
 			$this->postauthor = bab_getForumContributor($arr['forumid'], $arr['id_author'], $arr['author']);
 			$this->postauthor = bab_toHtml($this->postauthor);
 			$this->postsubject = bab_toHtml($arr['subject']);
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			$editor = new bab_contentEditor('bab_forum_post');
 			$editor->setContent($arr['message']);
 			$this->postmessage = $editor->getHtml();
-			
+
 			$this->close = bab_translate("Close");
 			$this->action = bab_translate("Action");
 			$this->confirm = bab_translate("Confirm");
@@ -1054,7 +1063,7 @@ function confirmWaitingComment($idcom)
 				}
 			}
 		}
-	
+
 	$temp = new confirmWaitingCommentCls($idcom);
 	$temp->getHtml("approb.html", "confirmcomment");
 	}
@@ -1115,7 +1124,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
 			{
 			$bret = $bconfirm == "Y"? true: false;
-			
+
 			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($comment)."','".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now())");
 
 			$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
@@ -1125,9 +1134,9 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$babDB->db_escape_string($idart)."'");
 					if( $arr['id_article'] != 0 )
 						{
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'refused', '".$babDB->db_escape_string($comment)."')");		
+						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'refused', '".$babDB->db_escape_string($comment)."')");
 						}
-					deleteFlowInstance($arr['idfai']);				
+					deleteFlowInstance($arr['idfai']);
 					notifyArticleDraftAuthor($idart, 0);
 					break;
 				case 1:
@@ -1136,12 +1145,12 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 						{
 						return false;
 						}
-					deleteFlowInstance($arr['idfai']);				
+					deleteFlowInstance($arr['idfai']);
 					notifyArticleDraftAuthor($idart, 1);
 					bab_deleteArticleDraft($idart);
 					if( $arr['id_article'] != 0 )
 						{
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'accepted')");		
+						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'accepted')");
 						}
 					break;
 				default:
@@ -1266,25 +1275,25 @@ function confirmVacationRequest($veid, $remarks, $action)
 				}
 			break;
 		}
-		
+
 	// try to update event copy in other backend (caldav)
-	
+
 	$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$end = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$period = bab_vac_getPeriod($veid, $arr['id_user'],  $begin, $end);
 	if ($period)
 	{
-		// select the updated row 
+		// select the updated row
 		$res = $babDB->db_query("select * FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($veid));
 		$row = $babDB->db_fetch_array($res);
-		
+
 		// probably set a new description if the event has been approved or rejected
 		bab_vac_setPeriodProperties($period, $row, $begin);
-		
+
 		// save copy of event to calendar backend (if caldav)
 		$period->save();
 	}
-		
+
 
 	bab_vac_updateEventCalendar($veid);
 }
@@ -1383,13 +1392,12 @@ switch($idx)
 		listWaitingPosts();
 		listWaitingVacations();
 		listWaitingEvents();
-		listWaitingAddons();		
+		listWaitingAddons();
 		}
 
-		
+
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
 	}
 
 $babBody->setCurrentItemMenu($idx);
-?>
