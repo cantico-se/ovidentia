@@ -42,8 +42,8 @@ include_once $babInstallPath.'utilit/eventincl.php';
  * @since 6.1.1
  * @package events
  */
-class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
-
+class bab_eventBeforeWaitingItemsDisplayed extends bab_event
+{
 	/**
 	 * @public
 	 */
@@ -64,7 +64,7 @@ class bab_eventBeforeWaitingItemsDisplayed extends bab_event {
 
 
 function notifyVacationAuthor($id, $subject)
-	{
+{
 	global $babBody, $babDB, $BAB_SESS_USER, $BAB_SESS_EMAIL, $babAdminEmail;
 
 	if(!class_exists('tempa'))
@@ -125,7 +125,7 @@ function notifyVacationAuthor($id, $subject)
 	$mail->mailAltBody($message);
 
 	$mail->send();
-	}
+}
 
 
 function listWaitingArticles()
@@ -926,23 +926,29 @@ function confirmWaitingVacation($id)
 	return $temp->count;
 }
 
+
+
+
+
 function confirmWaitingArticle($idart)
 {
 	global $babBody;
 	class temp extends bab_confirmWaiting
-		{
+	{
 		var $arttxt;
+		var $accessDenied = false;
 
 		function temp($idart)
-			{
-			global $babDB;
+		{
+			global $babBody, $babDB;
+
+			$this->accessDenied = false;
+
 			$res = $babDB->db_query("select id, title, idfai, id_topic, id_author from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
+			if ($res && $babDB->db_num_rows($res) > 0) {
 				$arr = $babDB->db_fetch_array($res);
 				$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-				if( count($arrschi) > 0  && in_array($arr['idfai'], $arrschi) )
-					{
+				if (count($arrschi) > 0  && in_array($arr['idfai'], $arrschi)) {
 					$this->idart = bab_toHtml($idart);
 					$this->arttxt = bab_translate("Article");
 					$this->pathtxt = bab_translate("Path");
@@ -956,31 +962,49 @@ function confirmWaitingArticle($idart)
 					$this->arttitle = bab_toHtml($arr['title']);
 					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
 					$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
-					}
-				else
-					{
-					$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
-					}
+				} else {
+					$babBody->addError(bab_translate("Access denied"));
+					$this->accessDenied = true;
 				}
-			else
-				{
-				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
-				}
+			} else {
+				$babBody->addError(bab_translate("Access denied"));
+				$this->accessDenied = true;
 			}
-
 		}
 
+	}
+
 	$temp = new temp($idart);
+	if ($temp->accessDenied) {
+		$babBody->babpopup('');
+		return;
+	}
 	$temp->getHtml("approb.html", "confirmarticle");
 }
 
 
+
+
+
 function confirmWaitingPost($thread, $post)
-	{
-	global $babBody;
+{
+	global $babBody, $babDB;
+
+	$sql = '
+		SELECT thread.forum
+		FROM ' . BAB_POSTS_TBL . ' post
+		LEFT JOIN ' . BAB_THREADS_TBL . ' thread ON post.id_thread = thread.id
+		WHERE thread.id=' . $babDB->quote($thread) . ' AND post.id=' . $babDB->quote($post);
+
+	$thr = $babDB->db_fetch_assoc($babDB->db_query($sql));
+	if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum']) {
+		$babBody->babpopup('');
+		return;
+	}
+
 
 	class confirmWaitingPostCls extends bab_confirmWaiting
-		{
+	{
 
 		var $postmessage;
 		var $postsubject;
@@ -990,7 +1014,7 @@ function confirmWaitingPost($thread, $post)
 		var $close;
 
 		function confirmWaitingPostCls($thread, $post)
-			{
+		{
 			global $babDB;
 			$this->idpost = bab_toHtml($post);
 			$this->thread = bab_toHtml($thread);
@@ -1015,19 +1039,20 @@ function confirmWaitingPost($thread, $post)
 			$this->confirm = bab_translate("Confirm");
 			$this->refuse = bab_translate("Refuse");
 			$this->modify = bab_translate("Update");
-			}
 		}
+	}
 	$temp = new confirmWaitingPostCls($thread, $post);
 	$temp->getHtml("approb.html", "confirmpost");
-	}
+}
 
 
 
 function confirmWaitingComment($idcom)
-	{
+{
+	global $babBody;
 
 	class confirmWaitingCommentCls extends bab_confirmWaiting
-		{
+	{
 		var $action;
 		var $confirm;
 		var $refuse;
@@ -1038,14 +1063,18 @@ function confirmWaitingComment($idcom)
 		var $db;
 		var $count;
 
+		var $accessDenied = false;
+
 		function confirmWaitingCommentCls($idcom)
-			{
+		{
 			global $babDB;
+
+			$this->accessDenied = false;
+
 			$req = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
 			$res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($res);
-			if( $this->count > 0)
-				{
+			if ($this->count > 0) {
 				$arr = $babDB->db_fetch_array($res);
 				$this->idcom = bab_toHtml($idcom);
 				$this->name = bab_translate("Submiter");
@@ -1056,30 +1085,35 @@ function confirmWaitingComment($idcom)
 				$this->what = bab_translate("Send an email to author");
 				$this->message = bab_translate("Message");
 				$this->confval = 'comment';
-				}
-			else
-				{
+			} else {
 				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
-				}
+				$this->accessDenied = true;
 			}
 		}
+	}
 
 	$temp = new confirmWaitingCommentCls($idcom);
-	$temp->getHtml("approb.html", "confirmcomment");
+
+	if ($temp->accessDenied) {
+		$babBody->babpopup('');
+		return;
 	}
+
+	$temp->getHtml("approb.html", "confirmcomment");
+}
+
+
 
 
 
 function previewWaitingArticle($idart)
-	{
+{
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-		{
+	if ($res && $babDB->db_num_rows($res) > 0) {
 		$arr = $babDB->db_fetch_array($res);
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
-			{
+		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
 			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
 			$GLOBALS['babBodyPopup']->title = & $babBody->title;
@@ -1087,100 +1121,112 @@ function previewWaitingArticle($idart)
 
 			$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart, 0));
 			printBabBodyPopup();
-			}
 		}
-	else
-		{
+	} else {
 		echo bab_translate("Access denied");
-		}
 	}
+}
 
 function previewWaitingComment($idcom)
-	{
+{
 	global $babBody, $babDB, $BAB_SESS_USERID;
 	$res = $babDB->db_query("select idfai from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-		{
+	if ($res && $babDB->db_num_rows($res) > 0) {
 		$arr = $babDB->db_fetch_array($res);
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
-			{
+		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
 			$babBody->babecho(bab_previewComment($idcom));
 			return;
-			}
 		}
-	echo bab_translate("Access denied");
 	}
+	echo bab_translate("Access denied");
+}
 
+
+/**
+ * @param int	$idart
+ * @param  $bconfirm
+ * @param  $comment
+ * @return boolean
+ */
 function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
-	{
+{
 	global $babDB;
 
+
 	$res = $babDB->db_query("select id, idfai, id_author, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-		{
+	if ($res && $babDB->db_num_rows($res) > 0) {
 		$arr = $babDB->db_fetch_array($res);
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if( count($arrschi) > 0 && in_array($arr['idfai'],$arrschi))
-			{
+		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
 			$bret = $bconfirm == "Y"? true: false;
 
 			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($comment)."','".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now())");
 
 			$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
-			switch($res)
-				{
+			switch($res) {
 				case 0:
 					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$babDB->db_escape_string($idart)."'");
-					if( $arr['id_article'] != 0 )
-						{
+					if ($arr['id_article'] != 0) {
 						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'refused', '".$babDB->db_escape_string($comment)."')");
-						}
+					}
 					deleteFlowInstance($arr['idfai']);
 					notifyArticleDraftAuthor($idart, 0);
 					break;
 				case 1:
 					$articleid = acceptWaitingArticle($idart);
-					if( $articleid == 0)
-						{
+					if ($articleid == 0) {
 						return false;
-						}
+					}
 					deleteFlowInstance($arr['idfai']);
 					notifyArticleDraftAuthor($idart, 1);
 					bab_deleteArticleDraft($idart);
-					if( $arr['id_article'] != 0 )
-						{
+					if ($arr['id_article'] != 0) {
 						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'accepted')");
-						}
+					}
 					break;
 				default:
 					$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-					if( count($nfusers) > 0 )
-						{
+					if (count($nfusers) > 0) {
 						notifyArticleDraftApprovers($idart, $nfusers);
-						}
+					}
 					break;
-				}
+			}
 
 			return true;
-			}
 		}
+	}
+	return false;
+}
+
+
+/**
+ * @param int $idcom
+ * @param $action
+ * @param $send
+ * @param $message
+ *
+ * @return boolean
+ */
+function updateConfirmationWaitingComment($idcom, $action, $send, $message)
+{
+	global $babBody, $babDB, $new, $BAB_SESS_USERID, $babAdminEmail;
+
+	$query = 'SELECT * FROM ' . BAB_COMMENTS_TBL . ' WHERE id=' . $babDB->quote($idcom);
+	$res = $babDB->db_query($query);
+	if (!$res || $babDB->db_num_rows($res) <= 0) {
+		return false;
+	}
+	$arr = $babDB->db_fetch_array($res);
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	if (count($arrschi) <= 0 || !in_array($arr['idfai'], $arrschi)) {
 		return false;
 	}
 
 
-function updateConfirmationWaitingComment($idcom, $action, $send, $message)
-	{
-	global $babBody, $babDB, $new, $BAB_SESS_USERID, $babAdminEmail;
-
-	$query = "select * from ".BAB_COMMENTS_TBL." where id='".$babDB->db_escape_string($idcom)."'";
-	$res = $babDB->db_query($query);
-	$arr = $babDB->db_fetch_array($res);
-
 	$bret = $action == "1"? true: false;
 	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
-	switch($res)
-		{
+	switch($res) {
 		case 0:
 			include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 			$subject = bab_translate("Your comment has been refused");
@@ -1195,63 +1241,86 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		default:
 			$subject = bab_translate("About your comment");
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-			if( count($nfusers) > 0 )
-				{
+			if (count($nfusers) > 0) {
 				notifyCommentApprovers($idcom, $nfusers);
-				}
+			}
 			break;
-		}
-
-	if( $send == "1" && $arr['email'] != "")
-		{
-		$msg = nl2br($message);
-        notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
-		}
 	}
 
+	if ($send == '1' && $arr['email'] != '') {
+		$msg = nl2br($message);
+        notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
+	}
+
+	return true;
+}
+
+
+/**
+ * @param int $thread
+ * @param int $post
+ * @return boolean
+ */
 function updateConfirmationWaitingPost($thread, $post)
-	{
+{
 	global $babBody, $babDB;
 
 	$thread = intval($thread);
 	$post = intval($post);
-	if( $thread && $post )
-		{
+	if ($thread && $post) {
+		$sql = '
+				SELECT thread.forum
+				FROM ' . BAB_POSTS_TBL . ' post
+				LEFT JOIN ' . BAB_THREADS_TBL . ' thread ON post.id_thread = thread.id
+				WHERE thread.id=' . $babDB->quote($thread) . ' AND post.id=' . $babDB->quote($post);
+
+		$thr = $babDB->db_fetch_assoc($babDB->db_query($sql));
+		if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum']) {
+			return false;
+		}
+
 		$res = $babDB->db_query("select tt.forum, tt.starter, tt.notify, pt.subject from ".BAB_THREADS_TBL." tt left join ".BAB_POSTS_TBL." pt on tt.post=pt.id where tt.id='".$babDB->db_escape_string($thread)."'");
 		$arrf = $babDB->db_fetch_array($res);
 		$action = bab_pp('action', '');
 
-		if( $action !== '' )
-			{
-			if( $action == 1 ) // Confirm
-				{
+		if ($action !== '' ) {
+			if ($action == 1) {
 					bab_confirmPost($arrf['forum'], $thread, $post);
-				}
-			else // refuse
-				{
+			} else {
 					bab_deletePost($arrf['forum'], $post);
-				}
 			}
-
 		}
+
 	}
 
+	return true;
+}
+
+
+
+
+/**
+ * @param int		$veid		Vacation entry id
+ * @param string	$remarks
+ * @param boolean	$action
+ * @return boolean
+ */
 function confirmVacationRequest($veid, $remarks, $action)
 {
-	global $babBody, $babDB, $approbinit;
+	global $babBody, $babDB;
 	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 
 	$res = $babDB->db_query("select idfai, id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($veid)."'");
 	$arr = $babDB->db_fetch_array($res);
-	if( !in_array($arr['idfai'], $approbinit))
-	{
+
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	if (!in_array($arr['idfai'], $arrschi)) {
 		return false;
 	}
 
 	$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $action);
 
-	switch($res)
-		{
+	switch ($res) {
 		case 0:
 			deleteFlowInstance($arr['idfai']);
 
@@ -1269,20 +1338,18 @@ function confirmVacationRequest($veid, $remarks, $action)
 			break;
 		default:
 			$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-			if( count($nfusers) > 0 )
-				{
+			if (count($nfusers) > 0) {
 				notifyVacationApprovers($veid, $nfusers);
-				}
+			}
 			break;
-		}
+	}
 
 	// try to update event copy in other backend (caldav)
 
 	$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$end = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
 	$period = bab_vac_getPeriod($veid, $arr['id_user'],  $begin, $end);
-	if ($period)
-	{
+	if ($period) {
 		// select the updated row
 		$res = $babDB->db_query("select * FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($veid));
 		$row = $babDB->db_fetch_array($res);
@@ -1296,18 +1363,14 @@ function confirmVacationRequest($veid, $remarks, $action)
 
 
 	bab_vac_updateEventCalendar($veid);
+
+	return true;
 }
 
 
-function approb_init()
-{
-	$arapprob = array();
-	$arapprob = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-	return $arapprob;
-}
 
 /* main */
-$approbinit = approb_init();
+
 $idx = bab_rp('idx', 'all');
 
 if( '' != ($conf = bab_pp('conf')))
@@ -1315,35 +1378,51 @@ if( '' != ($conf = bab_pp('conf')))
 	if( $conf == 'art')
 	{
 		$bconfirm = bab_pp('bconfirm', 'N');
-		updateConfirmationWaitingArticle(bab_pp('idart'), $bconfirm, bab_pp('comment'));
+		if (!updateConfirmationWaitingArticle(bab_pp('idart'), $bconfirm, bab_pp('comment'))) {
+			$babBody->addError(bab_translate('Access denied'));
+			return;
+		}
 		$idx = 'unload';
 	}
 	elseif( $conf == 'com' )
 	{
-		updateConfirmationWaitingComment(bab_pp('idcom'), bab_pp('action'), bab_pp('send'), bab_pp('message'));
+		if (!updateConfirmationWaitingComment(bab_pp('idcom'), bab_pp('action'), bab_pp('send'), bab_pp('message'))) {
+			$babBody->addError(bab_translate('Access denied'));
+			return;
+		}
 		$idx = 'unload';
 	}
 	elseif( $conf == 'post' )
 	{
-		updateConfirmationWaitingPost(bab_pp('thread'), bab_pp('idpost'));
+		if (!updateConfirmationWaitingPost(bab_pp('thread'), bab_pp('idpost'))) {
+			$babBody->addError(bab_translate('Access denied'));
+			return;
+		}
 		$idx = 'unload';
 	}
 	elseif( $conf == 'vac' )
 	{
-		if( isset($_POST['confirm']))
-			{
-			confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), true);
+		if (isset($_POST['confirm'])) {
+
+			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), true) {
+				$babBody->addError(bab_translate('Access denied'));
+				return;
 			}
-		elseif( isset($_POST['refuse']))
-		{
-			confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), false);
+
+		} else if (isset($_POST['refuse'])) {
+
+			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), false) {
+				$babBody->addError(bab_translate('Access denied'));
+				return;
+			}
+
 		}
 		$idx = 'unload';
 	}
 }
 
 switch($idx)
-	{
+{
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		popupUnload(bab_translate("Update done"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
@@ -1384,20 +1463,19 @@ switch($idx)
 	default:
 		$babBody->title = bab_translate("Approbations");
 
-		if( bab_isWaitingApprobations()  || count($approbinit) > 0 )
-		{
-		listWaitingArticles();
-		listWaitingComments();
-		listWaitingFiles();
-		listWaitingPosts();
-		listWaitingVacations();
-		listWaitingEvents();
-		listWaitingAddons();
+		$approbinit = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+		if (bab_isWaitingApprobations()  || count($approbinit) > 0) {
+			listWaitingArticles();
+			listWaitingComments();
+			listWaitingFiles();
+			listWaitingPosts();
+			listWaitingVacations();
+			listWaitingEvents();
+			listWaitingAddons();
 		}
-
 
 		$babBody->addItemMenu("all", bab_translate("Approbations"), $GLOBALS['babUrlScript']."?tg=approb&idx=all");
 		break;
-	}
+}
 
 $babBody->setCurrentItemMenu($idx);
