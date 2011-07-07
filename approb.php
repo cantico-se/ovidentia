@@ -1462,6 +1462,12 @@ switch($idx)
 
 	case "all":
 	default:
+		include_once $GLOBALS['babInstallPath']."utilit/userincl.php";
+		if (!bab_isUserLogged()) {
+			$babBody->addError(bab_translate('Access denied'));
+			return;
+		}
+
 		$babBody->title = bab_translate("Approbations");
 
 		$approbinit = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
