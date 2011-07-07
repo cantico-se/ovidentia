@@ -997,7 +997,8 @@ function confirmWaitingPost($thread, $post)
 		WHERE thread.id=' . $babDB->quote($thread) . ' AND post.id=' . $babDB->quote($post);
 
 	$thr = $babDB->db_fetch_assoc($babDB->db_query($sql));
-	if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum']) {
+	if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum'])) {
+		$babBody->addError(bab_translate("Access denied"));
 		$babBody->babpopup('');
 		return;
 	}
@@ -1067,7 +1068,7 @@ function confirmWaitingComment($idcom)
 
 		function confirmWaitingCommentCls($idcom)
 		{
-			global $babDB;
+			global $babBody, $babDB;
 
 			$this->accessDenied = false;
 
@@ -1086,7 +1087,7 @@ function confirmWaitingComment($idcom)
 				$this->message = bab_translate("Message");
 				$this->confval = 'comment';
 			} else {
-				$GLOBALS['babBody']->msgerror = bab_translate("Access denied");
+				$babBody->addError(bab_translate("Access denied"));
 				$this->accessDenied = true;
 			}
 		}
@@ -1275,7 +1276,7 @@ function updateConfirmationWaitingPost($thread, $post)
 				WHERE thread.id=' . $babDB->quote($thread) . ' AND post.id=' . $babDB->quote($post);
 
 		$thr = $babDB->db_fetch_assoc($babDB->db_query($sql));
-		if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum']) {
+		if ($thr === false || !bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $thr['forum'])) {
 			return false;
 		}
 
@@ -1373,7 +1374,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 
 $idx = bab_rp('idx', 'all');
 
-if( '' != ($conf = bab_pp('conf')))
+if( '' != ($conf = bab_rp('conf')))
 {
 	if( $conf == 'art')
 	{
@@ -1404,14 +1405,14 @@ if( '' != ($conf = bab_pp('conf')))
 	{
 		if (isset($_POST['confirm'])) {
 
-			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), true) {
+			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), true)) {
 				$babBody->addError(bab_translate('Access denied'));
 				return;
 			}
 
 		} else if (isset($_POST['refuse'])) {
 
-			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), false) {
+			if (!confirmVacationRequest(bab_pp('veid'), bab_pp('remarks'), false)) {
 				$babBody->addError(bab_translate('Access denied'));
 				return;
 			}
