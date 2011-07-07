@@ -1,4 +1,4 @@
-; <?php 
+; <?php
 ;/************************************************************************
 ; * OVIDENTIA http://www.ovidentia.org                                   *
 ; ************************************************************************
@@ -27,7 +27,7 @@
 name="ovidentia"
 description="Ovidentia"
 db_prefix="bab_"
-version="7.4.100"
+version="7.4.101"
 mod_xml="Available"
 
 ; forbidden_upgrades="6.3.0,6.3.1"
@@ -40,7 +40,7 @@ php_version="5.1.0"
 ; available since 5.8.7
 
 mod_mysql="Available"
-mysql_version="4.1.0" 
+mysql_version="4.1.0"
 mod_zlib="Available"
 
 ; available since 6.6.0
@@ -70,9 +70,9 @@ mysql_granted_privileges="SELECT, ALTER, CREATE, LOCK TABLES, CREATE TEMPORARY T
 [recommendations]
 register_globals="Off"
 magic_quotes_gpc="Off"
-lang_directory="Available" 
+lang_directory="Available"
 upload_directory="Available"
-images_directory="Available" 
+images_directory="Available"
 mod_calendar="Available"
 mod_ldap="Available"
 versions_directory="Available"
