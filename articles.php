@@ -1514,4 +1514,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-?>
