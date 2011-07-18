@@ -134,7 +134,7 @@ function listArticles($topics)
 
 	class temp extends listArticles
 		{
-	
+
 		function temp($topics)
 			{
 			global $babDB;
@@ -156,7 +156,7 @@ function listArticles($topics)
 					default:
 						$req .= " order by at.ordering asc";
 				}
-				
+
 			$req .= ", at.date_modification desc";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
@@ -181,7 +181,7 @@ function listArticles($topics)
 
 			/* template variables */
 			$this->babtpl_topicid = bab_toHtml($this->topics);
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
@@ -245,25 +245,25 @@ function listArticles($topics)
 
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date_modification'])));
 				$this->author = bab_translate("by") . " ". bab_toHtml($this->articleauthor). " - ". $this->articledate;
-				
+
 				$articleAverageRating = bab_getArticleAverageRating($this->arr['id']);
 				$articleNbRatings = bab_getArticleNbRatings($this->arr['id']);
-	
+
 				$this->article_rating = bab_toHtml($articleAverageRating);
 				$this->article_rating_percent = bab_toHtml($articleAverageRating * 20.0);
 				$this->article_nb_ratings = bab_toHtml($articleNbRatings);
-				
+
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
 				$editor->setFormat($this->arr['head_format']);
 				$this->content = $editor->getHtml();
-				
+
 				/* template variables */
 				$this->babtpl_authorid = bab_toHtml($this->arr['id_author']);
 				$this->babtpl_articleid = $this->arr['id'];
 				$this->babtpl_topicid = $this->arr['id_topic'];
 				$this->babtpl_head = $this->content;
-				
+
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
 				$editor->setFormat($this->arr['body_format']);
@@ -342,8 +342,8 @@ function listArticles($topics)
 				}
 			}
 		}
-	
-	
+
+
 	$temp = new temp($topics);
 	$babBody->babecho(	bab_printTemplate($temp, 'topicsdisplay.html', 'head_'.$temp->template));
 	}
@@ -355,7 +355,7 @@ function listArchiveArticles($topics, $pos)
 
 	class listArchiveArticlesCls extends listArticles
 		{
-	
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -416,13 +416,13 @@ function listArchiveArticles($topics, $pos)
 				}
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
 		function getnext(&$skip)
 			{
-			global $babDB, $new; 
+			global $babDB, $new;
 			static $i = 0;
 			if( $i < $this->count)
 				{
@@ -440,12 +440,12 @@ function listArchiveArticles($topics, $pos)
 					$this->articleauthor = bab_translate("Anonymous");
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
-				
+
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
 				$editor->setFormat($this->arr['head_format']);
 				$this->content = $editor->getHtml();
-				
+
 				$this->title = bab_toHtml(stripslashes($this->arr['title']));
 				$this->bbody = $this->arr['blen'];
 				if( $this->bbody == 0 )
@@ -516,7 +516,7 @@ function listArchiveArticles($topics, $pos)
 			}
 
 		}
-	
+
 	$temp = new listArchiveArticlesCls($topics, $pos);
 	$babBody->babecho(	bab_printTemplate($temp,"topicsdisplay.html", "head_".$temp->template));
 	return $temp->count;
@@ -529,7 +529,7 @@ function readMore($topics, $article)
 
 	class temp extends categoriesHierarchy
 		{
-	
+
 		var $content;
 		var $arr = array();
 		var $db;
@@ -579,9 +579,9 @@ function readMore($topics, $article)
 			$this->t_edited = bab_translate("Edited by ");
 			$this->article = bab_toHtml($article);
 			$this->artcount = 0;
-			
+
 			$this->user_is_topic_manager = bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics);
-			
+
 
 			$this->rescom = $babDB->db_query("select * from ".BAB_COMMENTS_TBL." where id_article='".$babDB->db_escape_string($article)."' and confirmed='Y' order by date desc");
 			$this->countcom = $babDB->db_num_rows($this->rescom);
@@ -648,7 +648,7 @@ function readMore($topics, $article)
 				{
 				$this->battachments = false;
 				}
-				
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
@@ -669,21 +669,21 @@ function readMore($topics, $article)
 
 				$sHead = '';
 				$sBody = '';
-				
+
 				$articleAverageRating = bab_getArticleAverageRating($this->arr['id']);
 				$articleNbRatings = bab_getArticleNbRatings($this->arr['id']);
-	
+
 				$this->article_rating = bab_toHtml($articleAverageRating);
 				$this->article_rating_percent = bab_toHtml($articleAverageRating * 20.0);
 				$this->article_nb_ratings = bab_toHtml($articleNbRatings);
-				
+
 				if( !empty($this->arr['body']))
 					{
 					$editor = new bab_contentEditor('bab_article_head');
 					$editor->setContent($this->arr['head']);
 					$editor->setFormat($this->arr['head_format']);
 					$sHead = $this->head = $editor->getHtml();
-					
+
 					$editor = new bab_contentEditor('bab_article_body');
 					$editor->setContent($this->arr['body']);
 					$editor->setFormat($this->arr['body_format']);
@@ -696,7 +696,7 @@ function readMore($topics, $article)
 					$editor->setFormat($this->arr['head_format']);
 					$sHead = $this->content = $editor->getHtml();
 					}
-				
+
 				/* template variables */
 				$this->babtpl_head = $sHead;
 				$this->babtpl_body = $sBody;
@@ -733,10 +733,10 @@ function readMore($topics, $article)
 					return true;
 					}
 				$this->artcount++;
-				$this->titlearticle = bab_toHtml($arr['title']); 
+				$this->titlearticle = bab_toHtml($arr['title']);
 				$this->urlview = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=viewa&topics=".$this->topics."&article=".$arr['id']);
 				$this->urlreadmore = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$this->topics."&article=".$arr['id']);
-				
+
 				$i++;
 				return true;
 				}
@@ -777,10 +777,10 @@ function readMore($topics, $article)
 				}
 				$this->commenttitle = bab_toHtml($arr['subject']);
 				$this->editcommenturl = bab_toHtml($GLOBALS['babUrlScript'].'?tg=comments&idx=edit&comment_id=' . $arr['id'] . '&topics=' . $arr['id_topic'] . '&article=' . $arr['id_article']);
-				
+
 				$this->article_rating = bab_toHtml($arr['article_rating']);
 				$this->article_rating_percent = bab_toHtml($arr['article_rating'] * 20.0);
-				
+
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
 				$editor->setFormat($arr['message_format']);
@@ -821,7 +821,7 @@ function readMore($topics, $article)
 			}
 
 		}
-	
+
 	if( $arrtop['display_tmpl'] != '' )
 		{
 		$template = $arrtop['display_tmpl'];
@@ -871,39 +871,39 @@ function articlePrint($topics, $article)
 
 	class temp
 		{
-	
+
 		var $content;
 		var $head;
 		var $title;
 		var $url;
 		var $sContent;
-		
+
 		function temp($topics, $article)
 			{
 			global $babDB;
-			
+
 			$this->res		= $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'");
 			$this->count	= $babDB->db_num_rows($this->res);
 			$this->topics	= $topics;
 			$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
-			
+
 			if( $this->count > 0)
 				{
 				$GLOBALS['babWebStat']->addArticle($article);
 				$this->arr = $babDB->db_fetch_array($this->res);
-				
+
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-				
+
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
 				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
-				
+
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
 				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
-				
+
 				$this->title = bab_toHtml($this->arr['title']);
 				$this->url = "<a href=\"".$GLOBALS['babUrl']."\">".$GLOBALS['babSiteName']."</a>";
 				}
@@ -911,14 +911,14 @@ function articlePrint($topics, $article)
 			$this->print_body = bab_translate('With/without body');
 			}
 		}
-	
+
 	$temp = new temp($topics, $article);
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
 
 /**
  * Display the screen 'Reason to modification of an article' when we want to modify an article
- * 
+ *
  * @param $topicId
  * @param $articleId
  * @return int the number of modifications of the article (historic)
@@ -952,12 +952,12 @@ function modifyArticle($topicId, $articleId) {
 			} else {
 				$this->rfurl = bab_toHtml($rfurl);
 			}
-			
+
 			if ($access) {
 				/* Calculate the number of article modifications (historic) */
 				list($this->numberOfModificationsOfTheArticle) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($articleId)."'"));
 				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($articleId)."'");
-				
+
 				/* If there is a draft, the article is locked. The current user can't modify the article */
 				$this->bmodify = false; /* The current user can't modify the article */
 				if ($res && $babDB->db_num_rows($res) > 0) {
@@ -1145,7 +1145,7 @@ function viewArticle($article)
 
 	class temp
 		{
-	
+
 		var $content;
 		var $head;
 		var $arr = array();
@@ -1174,16 +1174,16 @@ function viewArticle($article)
 			$this->countf			= 0;
 			$this->countcom			= 0;
 			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
-			
+
 			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $this->arr['id_topic']) && bab_articleAccessByRestriction($this->arr['restriction']))
 				{
 				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-				
+
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
 				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
-				
+
 				$editor = new bab_contentEditor('bab_article_body');
 				$editor->setContent($this->arr['body']);
 				$editor->setFormat($this->arr['body_format']);
@@ -1250,12 +1250,12 @@ function viewArticle($article)
 					}
 				$this->authorname = bab_toHtml($this->authorname);
 				$this->commenttitle = bab_toHtml($arr['subject']);
-				
+
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
 				$editor->setFormat($arr['message_format']);
 				$this->commentbody = $editor->getHtml();
-				
+
 				$i++;
 				return true;
 				}
@@ -1270,7 +1270,7 @@ function viewArticle($article)
 				}
 			}
 		}
-	
+
 	$temp = new temp($article);
 	echo bab_printTemplate($temp,"articles.html", "articleview");
 	}
@@ -1287,21 +1287,21 @@ function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 	} else {
 		/* Author of the article */
 		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($articleId)."'"));
-		
+
 		/* The current user can modify the article */
 		if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicId) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId))) {
 			/* Create a new article draft */
 			$idart = bab_newArticleDraft($topicId, $articleId);
 			if( $idart != 0 ) {
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");		
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");
 
 				$iIdArticle				= $articleId;
 				$iIdDraft				= $idart;
 				$iIdDelegation			= 0;
 				list($iIdDelegation)	= $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($topicId)."'"));
-				
+
 				require_once dirname(__FILE__) . '/utilit/artincl.php';
-				
+
 				$oPubImpUpl	= new bab_PublicationImageUploader();
 				$sFullPathName = $oPubImpUpl->copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft);
 				if(false !== $sFullPathName)
@@ -1311,11 +1311,11 @@ function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 					$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
 					$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 					$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
-					
+
 					bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
 				}
-				
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($articleId)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");		
+
+				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($articleId)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");
 				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
 				exit;
 			} else {
@@ -1461,10 +1461,10 @@ switch($idx)
 	case "Modify": /* Screen 'Reason of the modification' when we want to modify an article */
 		$babBodyPopup = new babBodyPopup();
 		$babBodyPopup->title = bab_translate("Reason of the modification");
-		
+
 		$article = bab_rp('article');
 		$numberOfModificationsOfTheArticle = modifyArticle($topics, $article); /* Return if  */
-		
+
 		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
 		if ($numberOfModificationsOfTheArticle > 0) {
 			/* Add item menu : Historic of the modifications of the article */
@@ -1482,10 +1482,13 @@ switch($idx)
 
 	case "Print":
 		$article = bab_rp('article');
-		if( bab_articleAccessById($article))
-			{
+
+		$articles = $babDB->db_query("SELECT id_topic from ".BAB_ARTICLES_TBL." WHERE id=".$babDB->quote($article)." AND archive='N'");
+		$art = $babDB->db_fetch_assoc($articles);
+
+		if ($art !== false && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $art['id_topic']) && bab_articleAccessById($article)) {
 			articlePrint($topics, $article);
-			}
+		}
 		exit;
 		break;
 
