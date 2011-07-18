@@ -1486,7 +1486,7 @@ switch($idx)
 		$articles = $babDB->db_query("SELECT id_topic from ".BAB_ARTICLES_TBL." WHERE id=".$babDB->quote($article)." AND archive='N'");
 		$art = $babDB->db_fetch_assoc($articles);
 
-		if (bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $art['id_topic']) && bab_articleAccessById($article)) {
+		if ($art !== false && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $art['id_topic']) && bab_articleAccessById($article)) {
 			articlePrint($topics, $article);
 		}
 		exit;
@@ -1514,4 +1514,3 @@ switch($idx)
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
-?>
