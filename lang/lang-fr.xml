@@ -2951,7 +2951,8 @@
 <string id="in %d seconds">Dans %d secondes</string>
 <string id="in %d minute">Dans %d minute</string>
 <string id="in %d minutes">Dans %d minutes</string>
-<string id="Towmorrow at %s">Demain à %s</string>
+<string id="Tomorrow at %s">Demain à %s</string>
+<string id="Tomorrow">Demain</string>
 <string id="Non-working period">Période non travaillée</string>
 <string id="After date">Après la date</string>
 <string id="Before date">Avant la date</string>
