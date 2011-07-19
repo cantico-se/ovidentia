@@ -1001,12 +1001,20 @@ class BAB_DateTimeUtil
 		
 		
 		if (date('Ymd', $ts) == date('Ymd')) {
-			return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+			if ($hours) {
+				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+			} else {
+				return bab_translate('Yesterday');
+			}
 		}
 		
 		$yesterday = mktime(0, 0, 0, date('n'), (date('j') - 1), date('Y'));
 		if (date('Ymd', $ts) == date('Ymd', $yesterday)) {
-			return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
+			if ($hours) {
+				return bab_sprintf(bab_translate('Yesterday at %s'), date('H:i',$ts));
+			} else {
+				return bab_translate('Yesterday');
+			}
 		}
 		
 		if ($long) {
@@ -1044,12 +1052,20 @@ class BAB_DateTimeUtil
 		
 		
 		if (date('Ymd', $ts) == date('Ymd')) {
-			return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+			if ($hours) {
+				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
+			} else {
+				return bab_translate('Today');
+			} 
 		}
 		
 		$towmorrow = mktime(0, 0, 0, date('n'), (date('j') + 1), date('Y'));
 		if (date('Ymd', $ts) == date('Ymd', $towmorrow)) {
-			return bab_sprintf(bab_translate('Towmorrow at %s'), date('H:i',$ts));
+			if ($hours) {
+				return bab_sprintf(bab_translate('Tomorrow at %s'), date('H:i',$ts));
+			} else {
+				return bab_translate('Tomorrow');
+			} 
 		}
 		
 		if ($long) {
