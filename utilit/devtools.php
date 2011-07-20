@@ -239,9 +239,10 @@ class bab_synchronizeSql
 		if (!empty($this->fileContent)) {
 			if ($this->getCreateQueries())
 			{
-				unset($this->fileContent);
 				$this->showTables();
 				$this->checkTables();
+				
+				$this->alterTables();
 			}
 		}		
 	}
@@ -672,6 +673,24 @@ class bab_synchronizeSql
 			
 			return false;
 		}
+		
+		
+	/**
+	 * add the aditional alter tables in file
+	 * @return unknown_type
+	 */
+	public function alterTables()
+	{
+		global $babDB;
+		if (preg_match_all("/ALTER\s+TABLE\s+`(.*?)`\s+[^;]+\;/s", $this->fileContent, $m))
+			{
+			for ($k = 0; $k < count($m[0]); $k++ )
+				{
+				$babDB->db_queryWem($m[0][$k]);
+				}
+			}
+
+	}
 }
 
 /**
