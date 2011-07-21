@@ -2076,9 +2076,13 @@ function processImportDbFile( $pfile, $id, $separ )
 									}
 								}
 
-							if( $GLOBALS['password3'] !== '' && mb_strlen($arr[$GLOBALS['password3']]) >= 6)
+							if( $GLOBALS['password3'] !== '')
 								{
-								$pwd=md5(mb_strtolower($arr[$GLOBALS['password3']]));
+									$pwd=false;
+									if (mb_strlen($arr[$GLOBALS['password3']]) >= 6)
+									{
+										$pwd = md5(mb_strtolower($arr[$GLOBALS['password3']]));
+									}
 								}
 							else
 								{
@@ -2087,7 +2091,24 @@ function processImportDbFile( $pfile, $id, $separ )
 							$replace = array( " " => "", "-" => "");
 							$hashname = md5(mb_strtolower(strtr($arr[$GLOBALS['givenname']].$arr[$GLOBALS['mn']].$arr[$GLOBALS['sn']], $replace)));
 							$hash=md5($arr[$GLOBALS['nickname']].$GLOBALS['BAB_HASH_VAR']);
-							$babDB->db_query("update ".BAB_USERS_TBL." set nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', hashname='".$babDB->db_escape_string($hashname)."', confirm_hash='".$babDB->db_escape_string($hash)."', password='".$babDB->db_escape_string($pwd)."' where id='".$babDB->db_escape_string($rrr['id'])."'");
+							
+							$query = "update ".BAB_USERS_TBL." set 
+								nickname='".$babDB->db_escape_string($arr[$GLOBALS['nickname']])."', 
+								firstname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."', 
+								lastname='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."', 
+								email='".$babDB->db_escape_string($arr[$GLOBALS['email']])."', 
+								hashname='".$babDB->db_escape_string($hashname)."', 
+								confirm_hash='".$babDB->db_escape_string($hash)."' ";
+							
+							if (false !== $pwd)
+							{
+								$query .= ", password='".$babDB->db_escape_string($pwd)."' ";
+							}
+								
+							$query .= " where id='".$babDB->db_escape_string($rrr['id'])."'";
+							
+							
+							$babDB->db_query($query);
 							if( $bupdate )
 								{
 								$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id_directory='0' and id_user='".$babDB->db_escape_string($rrr['id'])."'");
