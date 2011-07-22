@@ -102,9 +102,9 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#if bevent -->
 					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
-						<!--#if allow_modify -->
+						<!--#if editurl -->
 						<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
-						<!--#endif allow_modify -->
+						<!--#endif editurl -->
 						
 						
 						
@@ -181,9 +181,9 @@ document.onmousemove = bab_tooltipPosition;
 					<!--#if bevent -->
 					<td class="event <!--#if popup --> popup<!--#endif popup -->" style="background-color:#{ bgcolor }"  onmouseover="bab_showOnMouse('calevent{ uiIdentifier }',1)" onmouseout="bab_showOnMouse('calevent{ uiIdentifier }',0)">
 						<!--#if first -->
-						<!--#if allow_modify -->
+						<!--#if editurl -->
 						<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
-						<!--#endif allow_modify -->
+						<!--#endif editurl -->
 						
 						
 						<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
