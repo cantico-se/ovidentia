@@ -6119,6 +6119,8 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				// we fall back to the old method for creating thumbnails (url of the page
 				// dynamically resizing the image).
 				$oImageResize = new bab_ImageResize();
+				$iHeight = $iMaxImageHeight;
+				$iWidth = $iMaxImageWidth;
 				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
 					$sImageUrl .= '&iIdArticle=' . $iIdArticle;
 					$sImageUrl .= '&iWidth=' . $iWidth;
@@ -6204,6 +6206,8 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 				// we fall back to the old method for creating thumbnails (url of the page
 				// dynamically resizing the image).
 				$oImageResize = new bab_ImageResize();
+				$iHeight = $iMaxImageHeight;
+				$iWidth = $iMaxImageWidth;
 				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
 					$sImageUrl .= '&iIdCategory=' . $iIdCategory;
 					$sImageUrl .= '&iWidth=' . $iWidth;
@@ -6290,6 +6294,8 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 				// we fall back to the old method for creating thumbnails (url of the page
 				// dynamically resizing the image).
 				$oImageResize = new bab_ImageResize();
+				$iHeight = $iMaxImageHeight;
+				$iWidth = $iMaxImageWidth;
 				if (false !== $oImageResize->computeImageResizeWidthAndHeight($sFullPathName, $iWidth, $iHeight)) {
 					$sImageUrl .= '&iIdTopic=' . $iIdTopic;
 					$sImageUrl .= '&item=' . $iIdTopic;
