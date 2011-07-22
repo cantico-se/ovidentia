@@ -38,153 +38,153 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 * @var BAB_DateTime
 	 */
 	public $begin;
-	
-	
+
+
 	/**
 	 * @var BAB_DateTime
 	 */
 	public $end;
-	
-	
+
+
 	/**
 	 * @var array	<bab_PeriodCollection>
 	 */
 	public $periodCollection = null;
-	
-	
+
+
 	/**
 	 * @var array
 	 */
 	public $icalProperties = null;
-	
-	
+
+
 	/**
 	 * @var array	<bab_EventCalendar>
 	 */
 	public $calendars = null;
-	
+
 	/**
 	 * @var int
 	 */
 	public $id_delegation = null;
-	
+
 	/**
 	 * @var string
 	 */
 	public $hash = null;
 
-	
+
 	/**
 	 * Array of UID to select
 	 * @var array	<string>
 	 */
 	public $uid_criteria = null;
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	private $periods;
-	
+
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	private $boundaries;
-	
+
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	private $sibling;
-	
-	
+
+
 
 	/**
 	 * used in the getNextEvent method
 	 * @see bab_UserPeriods::getNextEvent
 	 */
 	private $gn_events = NULL;
-	
-	
+
+
 	/**
 	 * @var bab_PeriodCriteria
 	 */
 	private $criteria;
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	private $iter_horizontal;
-	
+
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	private $iter_vertical;
-	
+
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	private $iter_boundary;
-	
+
 	/**
 	 * @var bab_CalendarPeriod
 	 */
 	private $iter_value;
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $iter_status;
-	
+
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	private $iter_key;
-	
-	
+
+
 	/**
 	 * cache for requested calendars
 	 * @see self::isRequestedCalendar()
 	 * @var array
 	 */
 	private $requested_calendars = null;
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	private $countperiod = 0;
-	
-	
+
+
 	/**
 	 * List of vacation requests provided by request, used to prevent vacation duplicate
 	 * @var unknown_type
 	 */
 	private $vacationindex = array();
-	
-	
+
+
 
 	/**
 	 * Working hours object on period
 	 * for the current user
 	 * the begin and end dates can be set using criteria
 	 *
-	 * @param BAB_DateTime	$begin	
+	 * @param BAB_DateTime	$begin
 	 * @param BAB_DateTime	$end
 	 *
 	 */
-	public function __construct(BAB_DateTime $begin = null, BAB_DateTime $end = null) {		
-		
+	public function __construct(BAB_DateTime $begin = null, BAB_DateTime $end = null) {
+
 		$this->begin		= $begin;
 		$this->end			= $end;
 		$this->periods		= array();
@@ -192,12 +192,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$this->sibling		= array();
 
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Add a filter by period collection
 	 * @param array $periodCollection	<bab_PeriodCollection>
@@ -207,7 +207,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$this->periodCollection = $periodCollection;
 		return $this;
 	}
-	
+
 	/**
 	 * Add a filter by classname of event collection
 	 * @param bab_PeriodCollection $periodCollection
@@ -217,15 +217,15 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!isset($this->periodCollection)) {
 			$this->periodCollection = array();
 		}
-		
+
 		$this->periodCollection[] = $periodCollection;
 		return $this;
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @param bab_PeriodCollection | string $collection
 	 * @return bool
 	 */
@@ -234,20 +234,20 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		{
 			return true;
 		}
-		
+
 		foreach($this->periodCollection as $periodCollection) {
 			if ($collection === $periodCollection || ($collection instanceof $periodCollection)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @param array $calendars	array of bab_EventCalendar
 	 * @return bab_eventCollectPeriodsBeforeDisplay
 	 */
@@ -255,13 +255,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$this->calendars = $calendars;
 		return $this;
 	}
-	
-	
+
+
 	public function filterByDelegation($id_delegation) {
 		$this->id_delegation = $id_delegation;
 		return $this;
 	}
-	
+
 	/**
 	 * Add a calendar to the list of displayable calendars
 	 * @param bab_EventCalendar $calendar
@@ -271,16 +271,16 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!isset($this->calendars)) {
 			$this->calendars = array();
 		}
-		
+
 		$this->calendars[] = $calendar;
 		return $this;
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Add a filter by iCal property (ex. CATEGORIES)
 	 * @param 	string 	$property		iCal property name
@@ -296,8 +296,8 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		);
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Get users id of calendars
 	 * @return array
@@ -307,7 +307,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!isset($this->calendars)) {
 			return array();
 		}
-		
+
 		$return = array();
 		foreach($this->calendars as $calendar) {
 			$iduser = $calendar->getIdUser();
@@ -315,60 +315,60 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				$return[$iduser] = $iduser;
 			}
 		}
-		
+
 		return $return;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @return bab_PeriodCriteria
 	 */
 	public function getCriteria()
 	{
 		return $this->criteria;
 	}
-	
 
 
-	
+
+
 	/**
 	 * Get all periods by event
 	 * Filter by period collection is mandatory
 	 * Filter by calendar is mandatory
-	 * 
+	 *
 	 * @see bab_eventBeforePeriodsCreated
-	 * 
-	 * 
+	 *
+	 *
 	 * @param bab_PeriodCriteria $criteria	criteria of query (calendar, periodCollection, property)
 	 * @return unknown_type
 	 */
 	public function createPeriods(bab_PeriodCriteria $criteria) {
-		
-		
+
+
 		require_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-		
-		
+
+
 		$this->setCriteria($criteria);
-		
+
 		// collect events
 
 		$event = new bab_eventBeforePeriodsCreated($this);
 		$this->processCriteria($this->criteria);
 		bab_fireEvent($event);
 	}
-	
-	
-	
+
+
+
 	public function setCriteria(bab_PeriodCriteria $criteria)
 	{
 		$this->criteria = $criteria;
 	}
-	
-	
+
+
 	/**
 	 * Process criteria to userperiods object
-	 * 
+	 *
 	 * @return unknown_type
 	 */
 	public function processCriteria(bab_PeriodCriteria $criteria)
@@ -376,7 +376,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		// add criteria to event
 		$criteria->process($this);
-		
+
 		foreach($criteria->getCriterions() as $criteria) {
 			$this->processCriteria($criteria);
 		}
@@ -388,9 +388,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 * and index siblings
 	 */
 	public function orderBoundaries() {
-		
+
 		$this->vacationindex = array();
-		
+
 		// order by date
 		bab_sort::ksort($this->boundaries);
 
@@ -416,7 +416,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				}
 			}
 		}
-		
+
 		$this->rewind();
 	}
 
@@ -432,28 +432,28 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!$p->ts_begin)
 		{
 			require_once dirname(__FILE__).'/devtools.php';
-			
+
 			bab_debug("Missing begin date on period\n".print_r($p->getProperties(), true));
 			bab_debug_print_backtrace();
 			return;
 		}
-		
+
 		// ignore duplicated vacations
-		
-		if ('' !== $id = $p->getProperty('X-CTO-VACATION')) 
+
+		if ('' !== $id = $p->getProperty('X-CTO-VACATION'))
 		{
 			if (isset($this->vacationindex[$id]))
 			{
 				$currentcollection = $this->periods[$this->vacationindex[$id]]->getCollection();
 				$newcollection = $p->getCollection();
-				
+
 				// give priority to the vacationPeriod Collection
-				
+
 				if (($currentcollection instanceof bab_CalendarEventCollection) && ($newcollection instanceof bab_VacationPeriodCollection))
 				{
 					$pos = $this->vacationindex[$id];
 					$this->periods[$pos] = $p;
-				} 
+				}
 			}
 			else
 			{
@@ -461,16 +461,16 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				$pos = $this->addPeriodToBoundaries($p);
 				$this->vacationindex[$id] = $pos;
 			}
-			
+
 			return;
 		}
-		
+
 		$this->countperiod++;
 		$pos = $this->addPeriodToBoundaries($p);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Add one period to boundaries
 	 * @param bab_calendarPeriod $p
@@ -490,13 +490,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (!isset($this->boundaries[$ts])) {
 			$this->boundaries[$ts] = array();
 		}
-		
+
 		return $pos;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Test if a calendar has been requested
 	 * @param bab_EventCalendar $calendar
@@ -511,25 +511,25 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				$this->requested_calendars[$req->getUrlIdentifier()] = 1;
 			}
 		}
-		
+
 		return isset($this->requested_calendars[$calendar->getUrlIdentifier()]);
 	}
-	
-	
-	
+
+
+
 
 	/**
-	 * 
+	 *
 	 */
 	private function getBeginDate() {
 		prev($this->boundaries);
 		$ts = key($this->boundaries);
 		next($this->boundaries);
-		return $ts; 
+		return $ts;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private function getEndDate() {
 		return key($this->boundaries)-1;
@@ -557,7 +557,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		return false;
 	}
 
-	
+
 	/**
 	 * HTML view of boundaries
 	 * @return unknown_type
@@ -570,9 +570,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		{
 			$html .= '<td>'.bab_toHtml(bab_shortDate($h)).'</td>';
 		}
-		
+
 		$html .= '</thead>';
-		
+
 		$html .= '<tbody>';
 		foreach($this->boundaries as $h => $arr)
 		{
@@ -585,11 +585,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		}
 		$html .= '</tbody>';
 		$html .= '</table>';
-		
+
 		return $html;
 	}
-	
-	
+
+
  	public function rewind()
     {
         reset($this->boundaries);
@@ -624,28 +624,28 @@ class bab_UserPeriods implements Countable, seekableIterator {
     {
     	if (!isset($this->iter_boundary))
     	{
-    		if (!list($this->iter_horizontal, $this->iter_boundary) = each($this->boundaries)) 
+    		if (!list($this->iter_horizontal, $this->iter_boundary) = each($this->boundaries))
     		{
     			$this->iter_status = false;
     			return;
     		}
     	}
-    	
-    	
+
+
       	if (!list($this->iter_vertical, $this->iter_value) = each($this->iter_boundary))
       	{
       		$this->iter_boundary = null;
       		$this->next();
       		return;
       	}
-      	
+
       	if ($this->iter_horizontal !== $this->iter_value->ts_begin)
       	{
       		// this is not the first boundary of event
       		$this->next();
       		return;
       	}
-      	
+
       	$this->iter_status = true;
       	$this->iter_key++;
     }
@@ -657,7 +657,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
     {
         return $this->iter_status;
     }
-	
+
     /**
      * Number of periods
 	 * @return int
@@ -666,26 +666,26 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	{
 		return $this->countperiod;
 	}
-	
+
 	/**
 	 * Seek to position
 	 */
 	public function seek($index)
 	{
 		$this->rewind();
-		
+
 		if (0 === $index)
 		{
 			return;
 		}
-		
+
 		while ($this->iter_status && $index !== $this->key()) {
 	        $this->next();
-	    } 
+	    }
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Browse periods filtered by event collection
 	 * @param array $filter : events collections to get
@@ -696,7 +696,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		if (NULL === $this->gn_events) {
 			$this->gn_events = $this->getEventsBetween($this->begin->getTimeStamp(), $this->end->getTimeStamp(), $filter);
-			
+
 		}
 
 		if (list(,$event) = each($this->gn_events)) {
@@ -706,25 +706,25 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		reset($this->gn_events);
 		return false;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * set availability status for one event
 	 *
 	 * @param	bab_CalendarPeriod		$period
 	 * @param	boolean					$available
-	 * 
+	 *
 	 * @return  bool					return false on failure
 	 */
 	public function setAvailability($period, $available) {
-		
+
 		if (!isset($this->boundaries[$period->ts_begin]))
 		{
 			// No boundary found for event
 			return false;
 		}
-		
+
 		$boundary = $this->boundaries[$period->ts_begin];
 		foreach($boundary as $key => $tmp_evt) {
 			if ($tmp_evt->getProperty('UID') === $period->getProperty('UID')) {
@@ -737,103 +737,101 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 
 	/**
-	 * 
+	 *
 	 *
 	 * @param	int			$start		timestamp
 	 * @param	int			$end		timestamp
 	 * @param	array		$filter		: events collections to get
-	 * @return	array
+	 *
+	 * @return	multitype:bab_CalendarPeriod	An array of bab_CalendarPeriod
 	 */
-	public function getEventsBetween($start, $end, array $filter = null) {
+	public function getEventsBetween($start, $end, array $filter = null)
+	{
 		reset($this->boundaries);
 		$r = array();
-		
-		
-		foreach($this->boundaries as $ts => $events) {
+
+
+		foreach ($this->boundaries as $ts => $events) {
+
 			if ($ts > $end) {
 				break;
 			}
-				
-			foreach($this->boundaries[$ts] as $event) {
-				
+
+			foreach ($this->boundaries[$ts] as $event) {
+
 				/*@var $event bab_CalendarPeriod */
-				
+
 				$uid = $event->getProperty('UID');
-				
-				if ('' === $uid)
-				{
+
+				if ('' === $uid) {
 					// bab_debug('event ignored because the is no UID property ('.$event->getProperty('SUMMARY').')', DBG_ERROR, 'alert');
 					continue;
 				}
-				
-				
-				
+
+
+
 				if ($event->ts_end > $start && $event->ts_begin < $end) {
-					
-					if (null !== $filter && !isset($r[$uid]))
-					{
-						
+
+					if (null !== $filter && !isset($r[$uid])) {
+
 						$collection = $event->getCollection();
-						
+
 						$accepted = false;
-						foreach($filter as $allowedcollection)
-						{
-							if ($collection instanceof $allowedcollection)
-							{
+						foreach ($filter as $allowedcollection) {
+							if ($collection instanceof $allowedcollection) {
 								$accepted = true;
 								break;
 							}
 						}
-						
-						if (!$accepted)
-						{
+
+						if (!$accepted) {
 							// bab_debug('Event ingored because not in allowed collection list : '.$event->toHtml());
 							continue;
 						}
-					
+
 					}
-					
+
 					$r[$uid] = $event;
 				}
 			}
 		}
 		return $r;
 	}
-	
-	
-	
 
-	
+
+
+
+
 
 	/**
 	 * Find available periods on all processed periods of the query object
 	 * @return 	bab_availabilityReply
 	 */
 	public function getAvailability() {
-		
+
 		reset($this->boundaries);
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply();
 		$collection = new bab_AvailablePeriodCollection;
-		
+
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
-		
+
 		$global_users = $this->getUsers();
 
 		// si pas d'agenda utilisateur
 		if (!$global_users) {
-		
+
 			return $this->getNoUsersAvailablity();
 		}
-		
+
 		// si agenda utilisateur
-		
+
 		return $this->getUsersAvailability($global_users);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Find available periods on all processed periods if there are no personal calendars into the requested calendars
 	 * @return bab_availabilityReply
@@ -844,13 +842,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply;
 		$collection = new bab_AvailablePeriodCollection;
-		
+
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
-		
-		
+
+
 		foreach($this->boundaries as $ts => $events) {
-				
+
 			$nb_unAvailable = 0;
 			foreach($events as $event) {
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
@@ -863,35 +861,35 @@ class bab_UserPeriods implements Countable, seekableIterator {
 				}
 			}
 
-			
+
 			if ($nb_unAvailable > 0 && NULL === $previous) {
 				// autoriser la creation d'une nouvelle periode a partir de $test_begin
 				$previous = $test_begin;
 			}
-			
-			
+
+
 			if (0 === $nb_unAvailable) {
 				// autoriser la creation d'une nouvelle periode a partir de $ts
 				$previous = $ts;
 			}
-			
-			
+
+
 			if ($nb_unAvailable > 0 && false !== $previous && $previous < $ts) {
-				
+
 				$period = new bab_calendarPeriod($previous, $ts);
 				$collection->addPeriod($period);
 				$availabilityReply->available_periods[$previous.'.'.$ts] = $period;
-				
+
 				// tant que les boundaries sont unavailable, interdire la creation de nouvelles periodes
 				$previous = false;
 			}
 		}
-		
+
 		// si $previous est encore = a NULL, il n'y a aucun evenements qui genere de la non disponibilite
 		if (NULL === $previous) {
-		
+
 			$availabilityReply->status = true;
-	
+
 			// autoriser la creation d'une nouvelle periode a partir de $test_begin
 			$previous = $test_begin;
 
@@ -900,7 +898,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 
 		if (false !== $previous && $previous < $test_end) {
-			
+
 			$period = new bab_calendarPeriod($previous, $test_end);
 			$collection->addPeriod($period);
 			$availabilityReply->available_periods[$previous.'.'.$test_end] = $period;
@@ -908,13 +906,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		}
 
 		return $availabilityReply;
-	
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Find available periods on all processed periods if there is at least one personal calendar
 	 * @param array $global_users	the list of users for all query
@@ -926,21 +924,21 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply;
 		$collection = new bab_AvailablePeriodCollection;
-		
+
 		$test_begin = $this->begin->getTimeStamp();
 		$test_end = $this->end->getTimeStamp();
-		
-		
+
+
 		foreach($this->boundaries as $ts => $events) {
 
-	
+
 			/**
 			 * The users non-available on boundary are initialized from all the users contained in the list of calendars requested by the query
 			 * @var array
 			 */
 			$users_non_available = $global_users;
-			
-			
+
+
 			$working_period = false;
 
 
@@ -949,25 +947,25 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			foreach($events as $event) {
 
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
-					
+
 					$id_users = array();
-					
+
 					$collection = $event->getCollection();
-					
+
 					if ($collection instanceof bab_WorkingPeriodCollection)
 					{
 						$data = $event->getData();
 						$id_users = array($data['id_user']);
 						$working_period = true;
 					}
-					
+
 					if ($collection instanceof bab_VacationPeriodCollection)
 					{
 						$data = $event->getData();
 						$id_users = array($data['id_user']);
 					}
-					
-					
+
+
 					if ($collection instanceof bab_CalendarEventCollection || $collection instanceof bab_InboxEventCollection)
 					{
 						$attendees = $event->getAttendees();
@@ -980,15 +978,15 @@ class bab_UserPeriods implements Countable, seekableIterator {
 								{
 									bab_debug('there is an attendee without associated user on the event :
 									'.print_r($event->getProperties(), true));
-									continue;	
+									continue;
 								}
-								
+
 								// ignore declined attendees
 								if (isset($attendee['PARTSTAT']) && 'DECLINED' === $attendee['PARTSTAT'])
 								{
 									continue;
 								}
-								
+
 								$id_users[] = $user;
 							}
 						} else {
@@ -999,38 +997,38 @@ class bab_UserPeriods implements Countable, seekableIterator {
 							$id_users = array($GLOBALS['BAB_SESS_USERID']);
 						}
 					}
-					
+
 					if ($event->isTransparent() || 0 === count($id_users)) {
-						
-						// l'evenement est dispo ou aucun utilisateur sur l'evenement, 
+
+						// l'evenement est dispo ou aucun utilisateur sur l'evenement,
 						// retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary si il y en a
-						// l'evenement ne sera pas considere comme un conflit 
-						
+						// l'evenement ne sera pas considere comme un conflit
+
 						foreach($id_users as $id_user) {
 							if (isset($users_non_available[$id_user]) && true !== $users_non_available[$id_user]) {
-											
+
 								unset($users_non_available[$id_user]);
 							}
 						}
-						
+
 					} else {
-						
+
 						// l'evenement n'est pas dispo, ajouter les utilisateurs de l'evenement dans la liste des utilisateurs non dispo du boundary
-						
+
 						if (isset($id_users))
 						{
 							foreach($id_users as $id_user) {
 								$users_non_available[$id_user] = true;
 							}
 						}
-						
+
 						$availabilityReply->conflicts_events[] = $event;
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			// boolean : le boundary est disponible pour tout le monde
 			$boundary_free_for_all = 0 === count($users_non_available) && $working_period;
 
@@ -1039,10 +1037,10 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			if (!$boundary_free_for_all && NULL !== $previous) {
 
 				// au moins 1 evenement pas dispo dans le boundary, fermer la periode de dispo
-			
-				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous; 
-				$tmp_end 	= $ts > $test_end ? $test_end : $ts; 
-			
+
+				$tmp_begin 	= $previous < $test_begin ? $test_begin : $previous;
+				$tmp_end 	= $ts > $test_end ? $test_end : $ts;
+
 				if (!isset($availabilityReply->available_periods[$tmp_begin.'.'.$tmp_end]) && $tmp_begin != $tmp_end) {
 					$period = new bab_calendarPeriod($tmp_begin, $tmp_end);
 					$collection->addPeriod($period);
@@ -1055,13 +1053,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 			if ($boundary_free_for_all && NULL === $previous) {
 				// tout les utilisateurs sont dispo sur tout les evenements du boundary, demarrer la periode de dispo
-				$previous = $ts; 
+				$previous = $ts;
 				// bab_debug('free '.bab_shortDate($ts));
 			}
 		}
-		
-		
-		
+
+
+
 		if (1 === count($availabilityReply->available_periods) && isset($availabilityReply->available_periods[$test_begin.'.'.$test_end])) {
 			$availabilityReply->status = true;
 		} else {
@@ -1070,11 +1068,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		return $availabilityReply;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 
 
 	/**
@@ -1090,12 +1088,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 		if (NULL === $availability) {
 			$obj = $this->getAvailability();
 			$availability = $obj->available_periods;
-			
+
 		} else {
 			reset($availability);
 		}
 
-		
+
 
 		$r = array();
 
@@ -1103,13 +1101,13 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			if ($event->ts_begin > $end) {
 				break;
 			}
-				
+
 
 			if ($event->ts_end > $start && $event->ts_begin < $end && ($event->ts_end - $event->ts_begin) >= $gap) {
 				$r[] = $event;
 			}
 		}
-		
+
 		return $r;
 	}
 }
@@ -1123,19 +1121,19 @@ class bab_UserPeriods implements Countable, seekableIterator {
  * @see bab_UserPeriods::getAvailability()
  */
 class bab_availabilityReply {
-	
+
 	/**
 	 * true if all the request interval is available
 	 * @var bool
 	 */
 	public $status = NULL;
-	
+
 	/**
 	 * List of available periods
 	 * @var array	<bab_calendarPeriod>
 	 */
 	public $available_periods = array();
-	
+
 	/**
 	 * Events in conflict
 	 * @var array	<bab_calendarPeriod>
