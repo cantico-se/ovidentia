@@ -457,6 +457,8 @@ function displayRightForm($fid)
 	$macl->filter(0,0,1,1,1);
 	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
 	$macl->filter(0,0,1,0,1);
+	$macl->addtable( 'bab_fmunzip_groups',bab_translate("Who can unzip archives?"));
+	$macl->filter(0,0,1,0,1);
 	$macl->babecho();
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
 	$babBody->addItemMenu("addf", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=admfms&idx=addf");

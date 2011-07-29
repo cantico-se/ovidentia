@@ -1341,6 +1341,20 @@ CREATE TABLE bab_fmupload_groups (
 
 
 #
+# Structure de la table `bab_fmunzip_groups`
+#
+
+CREATE TABLE bab_fmunzip_groups (
+  id int(11) unsigned NOT NULL auto_increment,
+  id_object int(11) unsigned NOT NULL default '0',
+  id_group int(11) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id_object (id_object),
+  KEY id_group (id_group)
+);
+
+
+#
 # Structure de la table `bab_db_directories`
 #
 

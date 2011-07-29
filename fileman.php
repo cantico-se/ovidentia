@@ -1802,7 +1802,7 @@ function listFiles()
 				$ext = array_pop($arrName);
 				if($ext == 'zip'){
 					$idObject = $this->oFileManagerEnv->iIdObject;
-					if( $this->oFileManagerEnv->sGr != 'Y' || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $idObject) ){
+					if( $this->oFileManagerEnv->sGr != 'Y' || bab_isAccessValid('bab_fmunzip_groups', $idObject) ){
 						$this->bUnZip = true;
 					}
 				}else{
@@ -2383,7 +2383,7 @@ function unzipFile()
 
 	$oFileManagerEnv =& getEnvObject();
 
-	if(!canUpload($oFileManagerEnv->sRelativePath) && ( bab_rp('gr')== 'N' || !canManage($oFileManagerEnv->sRelativePath)))
+	if(!canUpload($oFileManagerEnv->sRelativePath) && ( bab_rp('gr')== 'N' || !canUnzip($oFileManagerEnv->sRelativePath)))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
@@ -3110,6 +3110,8 @@ function displayRightForm()
 			$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 			$macl->filter(0,0,1,1,1);
 			$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
+			$macl->filter(0,0,1,0,1);
+			$macl->addtable( 'bab_fmunzip_groups',bab_translate("Who can unzip archives?"));
 			$macl->filter(0,0,1,0,1);
 			$macl->babecho();
 		}
