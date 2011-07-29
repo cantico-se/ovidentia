@@ -3161,13 +3161,13 @@
 <string id="New file file uploaded %s">Un fichier a été déposé %s</string>
 <string id="File has been updated %s">Un fichier a été modifié %s</string>
 <string id="Send the notification">Envoyer la notification</string>
-<string id="Who is notified when a calendar event is created, modified, or deleted?">Qui est notifié lors de la création, de la modification ou de la supression d'un évenement?</string>
+<string id="Who is notified when a calendar event is created, modified, or deleted?">Qui est notifié lors de la création, de la modification ou de la suppression d'un événement?</string>
 <string id="Unzip here">Décompresser ici</string>
 <string id="Download ZIP folder">Télécharger le dossier compressé</string>
 <string id="Remove the draft">Supprimer le brouillon</string>
 <string id="This will remove all modification on this article, continue?">Les corrections et modifications comprises dans le brouillon de cet article vont être conservées dans un brouillon à part. L'article d'origine pourra de nouveau être modifié. </string>
 <string id="This archive is about to be extracted and all its files and subfolders will be reachable under the current folder.">Cette archive va être décompressée et tous ses fichiers et sous-dossiers seront accessibles à la racine du répertoire courant. Etes-vous sûr de vouloir continuer ?</string>
-<string id="This action will remove the image delegation. This action can not be undone.">Etes-vous sur de vouloir supprimer cette image? Ceci est irréversible.</string>
+<string id="This action will remove the image delegation. This action can not be undone.">Etes-vous sûr de vouloir supprimer cette image ? Ceci est irréversible.</string>
 <string id="Your comment has been refused">Votre commentaire a été refusé</string>
 <string id="Your comment has been accepted">Votre commentaire a été accepté</string>
 <string id="About your comment">Votre commentaire</string>
