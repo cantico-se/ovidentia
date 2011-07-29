@@ -126,16 +126,15 @@ document.onmousemove = bab_tooltipPosition;
 					<h5>
 						{ notestxt }
 					</h5>
-					<div class="description">{ noteval }</div>
 						<!--#endif bnote -->
 				</div>
 				
 				<div class="event" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">	
-					<!--#if allow_modify -->
+					<!--#if editurl -->
 					<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
-					<!--#else allow_modify -->
+					<!--#else editurl -->
 					<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="11" height="11" />
-					<!--#endif allow_modify -->
+					<!--#endif editurl -->
 					
 					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
 					
@@ -206,11 +205,11 @@ document.onmousemove = bab_tooltipPosition;
 				</div>
 				
 				<div class="event" style="background-color:#{ bgcolor }" onmouseover="bab_showOnMouse('calevent{ evtidx }',1)" onmouseout="bab_showOnMouse('calevent{ evtidx }',0)">	
-					<!--#if allow_modify -->
+					<!--#if editurl -->
 					<a href="{ editurl }" onclick="bab_popup(this.href);return false;" title="{ t_modify_event }"><img src="{ babSkinPath }images/Puces/entryview.gif" alt="{ t_modify_event }" /></a>
-					<!--#else allow_modify -->
+					<!--#else editurl -->
 					<img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="11" height="11" />
-					<!--#endif allow_modify -->
+					<!--#endif editurl -->
 					
 					<a class="eventlink" <!--#if popup --> href="{ vieweventurl }" <!--#if link --><!--#else link --> onclick="bab_popup(this.href,5);return false;" <!--#endif link --> <!--#endif popup --> >
 					
