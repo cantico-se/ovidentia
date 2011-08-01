@@ -25,6 +25,8 @@
 * @internal SEC1 NA 11/12/2006 FULL
 */
 include_once 'base.php';
+require_once dirname(__FILE__).'/registerglobals.php';
+
 define("OVSTAT_DEBUG", 1);
 define("OVSTAT_LIMIT", 300);
 define("OVSTAT_ROWS",  30000);

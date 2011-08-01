@@ -25,6 +25,7 @@
 * @internal SEC1 NA 26/01/2007 FULL
 */
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/tempfile.php';
 include_once $babInstallPath.'utilit/imgincl.php';
 

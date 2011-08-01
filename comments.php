@@ -22,6 +22,7 @@
  * @internal SEC1 NA 08/12/2006 FULL
  */
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/topincl.php';

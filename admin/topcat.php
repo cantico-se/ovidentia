@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 require_once "base.php";
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 require_once dirname(__FILE__) . '/acl.php';
 require_once dirname(__FILE__) . '/../utilit/topincl.php';
 

@@ -774,12 +774,6 @@ switch(bab_rp('tg'))
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin )
 			$incl = "admin/admvacs";
 		break;
-	case "admvac":
-		$babLevelOne = bab_translate("Administration");
-		$babLevelTwo = bab_translate("Vacation");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin)
-			$incl = "admin/admvac";
-		break;
 	case "mailspool":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Mail spooler");
@@ -1178,10 +1172,6 @@ switch(bab_rp('tg'))
 		break;
 	case "calnotif":
 		include $babInstallPath."utilit/calnotif.php";
-		exit;
-		break;
-	case "htmlarea":
-		include $babInstallPath."htmlarea.php";
 		exit;
 		break;
 	case "editorarticle":

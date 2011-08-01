@@ -25,6 +25,7 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/forumincl.php';
 
 // serach type 

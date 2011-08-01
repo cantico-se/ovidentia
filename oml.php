@@ -22,16 +22,17 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 $args = array_merge($_GET, $_POST);
 
 if( isset($args['echo']) && $args['echo'] == 1)
 	{
-	echo bab_printOvmlTemplate($file, $args);
+	echo bab_printOvmlTemplate(bab_rp('file'), $args);
 	exit;
 	}
 else
 	{
-	$babBody->babecho( bab_printOvmlTemplate($file, $args));
+	$babBody->babecho( bab_printOvmlTemplate(bab_rp('file'), $args));
 	}
 ?>

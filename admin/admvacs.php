@@ -22,7 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 
 /**
 * @internal SEC1 PR 18/04/2007 FULL

@@ -21,7 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";		
+include_once "base.php";
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';		
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";

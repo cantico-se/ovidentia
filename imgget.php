@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/gdiincl.php';
 
 function getFmImage($idf, $w, $h)

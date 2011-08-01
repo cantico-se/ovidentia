@@ -25,6 +25,7 @@
 * @internal SEC1 NA 15/12/2006 FULL
 */
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 function contactCreate($id, $firstname, $lastname, $email, $compagny, $hometel, $mobiletel, $businesstel, $businessfax, $jobtitle, $baddress, $haddress, $bliste)
 	{

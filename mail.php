@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 
 function getContactId( $name )

@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $babInstallPath.'admin/acl.php';
 include_once $babInstallPath.'utilit/dirincl.php';
 include_once $babInstallPath.'utilit/forumincl.php';
@@ -275,7 +276,7 @@ if( !$babBody->isSuperAdmin && $babBody->currentDGGroup['forums'] != 'Y')
 	return;
 }
 
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
+
 
 if(!isset($idx))
 	{

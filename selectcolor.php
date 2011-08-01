@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 /*
 Used by add-ons to let user select a color

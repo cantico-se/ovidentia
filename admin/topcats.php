@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 require_once 'base.php';
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 require_once dirname(__FILE__) . '/acl.php';
 require_once dirname(__FILE__) . '/../utilit/topincl.php';
 require_once dirname(__FILE__) . '/../utilit/tree.php';

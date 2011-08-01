@@ -22,6 +22,7 @@
  * USA.																	*
 ************************************************************************/
 require_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
 require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';

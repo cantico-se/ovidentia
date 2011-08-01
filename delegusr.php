@@ -26,6 +26,7 @@
 */
 
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 function changeAdmGroup()
 	{

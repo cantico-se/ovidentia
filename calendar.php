@@ -27,6 +27,7 @@
 */
 
 include_once 'base.php';
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/calincl.php';
 include_once $babInstallPath.'utilit/evtincl.php';
 

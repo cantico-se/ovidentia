@@ -22,7 +22,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-
+require_once dirname(__FILE__).'/utilit/registerglobals.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/uiutil.php';
 require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 

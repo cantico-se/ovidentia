@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $babInstallPath."admin/acl.php";
+require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 
 define("ORG_MAX_REQUESTS_LIST", 100);
 
