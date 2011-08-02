@@ -74,6 +74,7 @@ class bab_addons_list
 		$this->t_download = bab_translate("Download");
 		$this->t_configure = bab_translate("Configuration");
 		$this->t_install = bab_translate("Install");
+		$this->chosetheme = bab_translate("Use this theme");
 		$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
 		
 		bab_addonsInfos::insertMissingAddonsInTable();
@@ -117,7 +118,7 @@ class bab_addons_list
 			{
 			$this->altbg = !$this->altbg;
 			
-			
+			/*@var $addon bab_addonInfos */
 			
 			$this->title 			= bab_toHtml($addon->getName());
 			$this->requrl 			= bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$addon->getId());
@@ -148,12 +149,15 @@ class bab_addons_list
 			} else {
 				$this->upgradeurl = false;
 			}
-
-
-			if (is_file($addon->getPhpPath()."history.txt"))
-				$this->history = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
-			else
-				$this->history = false;
+			
+			
+			
+			if ('THEME' === $addon->getAddonType() && $addon->isAccessValid() && $GLOBALS['babSkin'] !== $addon->getName())
+			{
+				$this->chosethemeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=chosetheme&item=".$addon->getId());
+			} else {
+				$this->chosethemeurl = false;
+			}
 
 			return true;
 			}
@@ -1304,7 +1308,31 @@ function display_addons_menu() {
 	$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
 	$babBody->addItemMenu("library", bab_translate('Shared Libraries'), $GLOBALS['babUrlScript']."?tg=addons&idx=library");
 }
+
+
+function chosetheme() {
 	
+	require_once dirname(__FILE__).'/../utilit/urlincl.php';
+	require_once dirname(__FILE__).'/../utilit/skinincl.php';
+	global $babDB;
+	
+	$row = bab_addonsInfos::getDbRow(bab_rp('item'));
+	
+	$skin = new bab_skin($row['title']);
+	if (!$skin->isAccessValid())
+	{
+		return;
+	}
+	
+	$arr = $skin->getStyles();
+	
+	$babDB->db_query('UPDATE bab_sites SET skin='.$babDB->quote($skin->getName()).', style='.$babDB->quote(reset($arr)).'  WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
+	
+	
+	$url = bab_url::get_request_gp();
+	$url->idx = 'theme';
+	$url->location();
+}
 	
 	
 
@@ -1450,6 +1478,10 @@ switch($idx)
 	
 		themeList();
 
+		break;
+		
+	case 'chosetheme':
+		chosetheme();
 		break;
 
 

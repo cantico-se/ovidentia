@@ -39,6 +39,9 @@ function deladdon(id)
 			<td>
 				<strong><a href="{ requrl }">{ title }</a><br /></strong>
 				{ description }
+				<!--#if chosethemeurl -->
+				<p><img src="{ babSkinPath }images/Puces/star_x_orange.gif" alt="" border="0"> <a href="{ chosethemeurl }">{ chosetheme }</a></p>
+				<!--#endif chosethemeurl -->
 			</td>
 			<td align="center">
 				<!--#if upgradeurl -->
@@ -54,7 +57,11 @@ function deladdon(id)
 			<td align="center">{ addversion }</td>
 
 			
-			<td align="center">
+			<td align="center" style="white-space:nowrap">
+			
+				
+			
+			
 				<!--#if access_control -->
 				<a class="BabSiteAdminListLink" href="{ viewurl }">{ view }</a>
 				<!--#else access_control -->
