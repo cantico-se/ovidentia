@@ -94,11 +94,11 @@ function listVacationRequestsb()
 			{
 			
 			
-			$idstatus = bab_rp('idstatus', '');
-			$userid = (int) bab_rp('userid');
-			$dateb = bab_rp('dateb');
-			$datee = bab_rp('datee');
-			$vpos = (int) bab_rp('vpos', 0);
+			$idstatus = $this->param('idstatus');
+			$userid = (int) $this->param('userid');
+			$dateb = $this->param('dateb');
+			$datee = $this->param('datee');
+			$vpos = (int) $this->param('vpos', 0);
 			
 			
 			include_once $GLOBALS['babInstallPath']."utilit/urlincl.php";
@@ -266,8 +266,25 @@ function listVacationRequestsb()
 			$this->res = $babDB->db_query("select e.*, u.lastname, u.firstname from ".$req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
+			
+			
+		private function param($name, $default = '')
+		{
+			if (isset($_REQUEST[$name]))
+			{
+				$_SESSION['babVacation'][$name] = $_REQUEST[$name];
+				return $_REQUEST[$name];
+			}
+			
+			if (isset($_SESSION['babVacation'][$name]))
+			{
+				return $_SESSION['babVacation'][$name];
+			}
+			
+			return $default;
+		}
 
-		function getnext()
+		public function getnext()
 			{
 			global $babDB;
 			static $i = 0;

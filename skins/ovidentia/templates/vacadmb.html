@@ -23,6 +23,13 @@ function openPopup()
 }
 
 
+function removeUser()
+{
+	document.forms['vacfreqs'].user.value	= '';
+	document.forms['vacfreqs'].userid.value	= '';
+}
+
+
 function babReset()
 {
 document.forms['vacfreqs'].userid.value ='';
@@ -98,7 +105,7 @@ document.forms['vacfreqs'].dateb.value ='';
 	<tr valign="middle"> 
 		<td>&nbsp;</td>
 		<td>{ statustxt }</td>
-		<td><a href="#" onclick="openPopup()">{ usertxt }</a></td>
+		<td><a href="#" onclick="openPopup();return false;">{ usertxt }</a></td>
 		<td>{ datetxt }</td>
 	</tr>
 	<tr> 
@@ -116,6 +123,7 @@ document.forms['vacfreqs'].dateb.value ='';
 		<td>
 			<input type="text" name="user" size="35" maxlength="255" value="{ userval }" disabled="disabled" />
 			<input type="hidden" name="userid" value="{ userid }" />
+			<a href="" onclick="removeUser();return false;"><img src="{ babSkinPath }images/Puces/delete.png" border="0" /></a>
 		</td>
 		<td>
 			<a href="#" onclick="getDateFilter('dateb');return false;">{ begintxt }</a> 
