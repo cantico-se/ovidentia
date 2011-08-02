@@ -125,7 +125,6 @@ if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 }
 
 
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 $BAB_SESS_NICKNAME 		= isset($_SESSION['BAB_SESS_NICKNAME']) 	? $_SESSION['BAB_SESS_NICKNAME'] 	: "";
 $BAB_SESS_USER 			= isset($_SESSION['BAB_SESS_USER']) 		? $_SESSION['BAB_SESS_USER'] 		: "";
