@@ -28,11 +28,11 @@ $args = array_merge($_GET, $_POST);
 
 if( isset($args['echo']) && $args['echo'] == 1)
 	{
-	echo bab_printOvmlTemplate(bab_rp('file'), $args);
+	echo bab_printOvmlTemplate($file, $args);
 	exit;
 	}
 else
 	{
-	$babBody->babecho( bab_printOvmlTemplate(bab_rp('file'), $args));
+	$babBody->babecho( bab_printOvmlTemplate($file, $args));
 	}
 ?>
