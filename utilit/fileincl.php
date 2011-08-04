@@ -2533,20 +2533,6 @@ function canManage($sPath)
 }
 
 
-function canUnzip($sPath)
-{
-	$oFileManagerEnv = getEnvObject();
-	$sFullPath = $oFileManagerEnv->getRootFmPath() . $sPath;
-
-	static $aPath = array();
-	if(!array_key_exists($sFullPath, $aPath))
-	{
-		$aPath[$sFullPath] = haveRightOnParent($sPath, 'bab_fmunzip_groups');
-	}
-	return $aPath[$sFullPath];
-}
-
-
 function canUpload($sPath)
 {
 	$oFileManagerEnv = getEnvObject();
