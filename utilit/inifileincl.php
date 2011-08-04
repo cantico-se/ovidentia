@@ -66,7 +66,7 @@ class bab_inifile_requirements {
 		return array(
 			'description'	=> bab_translate("Ovidentia version for upgrade"),
 			'current'		=> $ovidentia,
-			'result'		=> version_compare($value, $ovidentia, '<=')
+			'result'		=> self::multicompare($ovidentia, $value)
 		);
 	}
 
@@ -872,6 +872,36 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
+	
+	
+	/**
+	 * Multi rule version compare for ini file rules (addons, ov_version ...)
+	 * @param string $installed
+	 * @param string $required
+	 * @return bool
+	 */
+	public static function multicompare($installed, $required)
+	{
+		$result = true;
+		
+		$list = explode(',',$required);
+		foreach($list as $r)
+		{
+			$r = trim($r);
+			$operator = '>=';
+			if (preg_match('/^(>=|<=|>|<|=)([0-9\.]+)$/', $r, $m)) {
+				$operator = $m[1];
+				$r = $m[2];
+			}
+			
+			if (false === version_compare($installed, $r, $operator))
+			{
+				$result = false;
+			}
+		}
+		
+		return $result;
+	}
 }
 
 
@@ -1389,6 +1419,10 @@ class bab_inifile {
 	
 	
 	/**
+	 * Addons requirements
+	 * 
+	 * 
+	 * 
 	 * @return array
 	 */
 	function getAddonsRequirements() {
@@ -1406,14 +1440,18 @@ class bab_inifile {
 			}
 			
 			foreach($this->addons as $name => $required) {
+				
+				
+				
 				if (isset($installed[$name])) {
+					
 					$return[] = array(
 						'name'			=> $name,
 						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
 						'required'		=> $required,
 						'recommended'	=> false,
 						'current'		=> $installed[$name],
-						'result'		=> version_compare($required, $installed[$name], '<=')
+						'result'		=> bab_inifile_requirements::multicompare($installed[$name], $required)
 					);
 				} else {
 					$return[] = array(
