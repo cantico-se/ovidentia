@@ -580,7 +580,11 @@ function bab_getGroupEmails($id)
 		}
 }
 
-
+/**
+ * 
+ * @param array $idroles
+ * @return array
+ */
 function bab_getOrgChartRoleUsers($idroles)
 {
 	global $babDB;
@@ -596,6 +600,13 @@ function bab_getOrgChartRoleUsers($idroles)
 	return $arr;
 }
 
+
+/**
+ * Get superior in organizational chart
+ * @param int	$iduser
+ * @param int	$idoc
+ * @return unknown_type
+ */
 function bab_getSuperior($iduser, $idoc = '')
 {
 	global $babBody, $babDB;
@@ -631,14 +642,52 @@ function bab_getSuperior($iduser, $idoc = '')
 
 
 	/* find user primary role */
-	$res = $babDB->db_query("SELECT ocet.id_node, ocet.id as id_entity, ocrut.id_role, ocrt.type  FROM ".BAB_DBDIR_ENTRIES_TBL." det LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity WHERE ocrt.id_oc='".$babDB->db_escape_string($idoc)."' and det.id_user IN ( ".$babDB->db_escape_string($iduser)."  )  AND det.id_directory = '0' and ocrut.isprimary='Y'");
+	$query = "
+		SELECT 
+			ocet.id_node, 
+			ocet.id as id_entity, 
+			ocrut.id_role, 
+			ocrt.type  
+		FROM 
+			".BAB_DBDIR_ENTRIES_TBL." det 
+				LEFT JOIN ".BAB_OC_ROLES_USERS_TBL." ocrut ON det.id = ocrut.id_user 
+				LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role 
+				LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet ON ocet.id = ocrt.id_entity 
+				
+		WHERE 
+			ocrt.id_oc='".$babDB->db_escape_string($idoc)."' 
+			AND det.id_user IN ( ".$babDB->db_escape_string($iduser)."  )  
+			AND det.id_directory = '0' 
+			AND ocrut.isprimary='Y'
+	";
+	$res = $babDB->db_query($query." AND ocrut.isprimary='Y'");
+	
+	if (0 === $babDB->db_num_rows($res))
+	{
+		bab_debug(sprintf('No primary role found in chart %d for user %s', $idoc, bab_getUserName($iduser)));
+		
+		// try on each roles
+		$res = $babDB->db_query($query);
+	}
+	
+	
 	while( $arr = $babDB->db_fetch_array($res) )
 	{
 		$arroles = array();
-		if( $arr['type'] != 1) /* not responsable */
+		if( $arr['type'] != 1) /* not responsible */
 		{
-			/* find user's responsable */
-			$res = $babDB->db_query("SELECT ocrut.*  FROM ".BAB_OC_ROLES_USERS_TBL." ocrut LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  WHERE ocrt.id_entity IN (".$babDB->quote($arr['id_entity']).")  AND ocrt.type = '1'");
+			/* find user's responsible in same entity */
+			
+			$res = $babDB->db_query("
+				SELECT 
+					ocrut.*  
+				FROM ".BAB_OC_ROLES_USERS_TBL." ocrut 
+					LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt ON ocrt.id = ocrut.id_role  
+					
+				WHERE 
+					ocrt.id_entity IN (".$babDB->quote($arr['id_entity']).") 
+					AND ocrt.type = '1'
+			");
 
 			while( $row = $babDB->db_fetch_array($res) )
 			{
@@ -651,18 +700,20 @@ function bab_getSuperior($iduser, $idoc = '')
 		}
 
 		if( count($arroles) == 0 )
-			{
+		{
+			/* find user's responsible in upper entity */
+				
 			$rr = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_OC_TREES_TBL." where id='".$babDB->db_escape_string($arr['id_node'])."'"));
 			$res = $babDB->db_query("
 			
 			SELECT ocrut.* 
 			FROM ".BAB_OC_ROLES_USERS_TBL." ocrut 
-			LEFT  JOIN ".BAB_OC_ROLES_TBL." ocrt 
-				ON ocrt.id = ocrut.id_role 
-			LEFT  JOIN ".BAB_OC_ENTITIES_TBL." ocet 
-				ON ocrt.id_entity = ocet.id 
-			LEFT  JOIN ".BAB_OC_TREES_TBL." oct 
-				ON oct.id = ocet.id_node and oct.id_user='".$babDB->db_escape_string($idoc)."' 
+				LEFT JOIN ".BAB_OC_ROLES_TBL." ocrt 
+					ON ocrt.id = ocrut.id_role 
+				LEFT JOIN ".BAB_OC_ENTITIES_TBL." ocet 
+					ON ocrt.id_entity = ocet.id 
+				LEFT JOIN ".BAB_OC_TREES_TBL." oct 
+					ON oct.id = ocet.id_node and oct.id_user='".$babDB->db_escape_string($idoc)."' 
 			
 			WHERE 
 				ocrt.id_oc='".$babDB->db_escape_string($idoc)."' 
@@ -673,15 +724,17 @@ function bab_getSuperior($iduser, $idoc = '')
 			ORDER  BY oct.lf desc 
 			limit 0,1
 			");
+			
 			while( $row = $babDB->db_fetch_array($res) )
 			{
 				$arroles[]= $row['id_role'];
 			}
+			
 			if( count($arroles) > 0 )
-				{
+			{
 				return $supparr[$idoc.'.'.$iduser] = bab_getOrgChartRoleUsers($arroles);
-				}
-			}		
+			}
+		}
 	}
 	return array();
 }
