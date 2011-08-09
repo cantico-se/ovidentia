@@ -935,7 +935,7 @@ CREATE TABLE `bab_sites` (
   `imgsize` int(11) unsigned NOT NULL default '0',
   `idgroup` int(11) unsigned NOT NULL default '0',
   `smtpuser` varchar(255) NOT NULL default '',
-  `smtppassword` tinyblob NOT NULL default '',
+  `smtppassword` tinyblob NOT NULL,
   `langfilter` int(11) default '0',
   `total_diskspace` int(11) unsigned NOT NULL default '0',
   `user_diskspace` int(11) unsigned NOT NULL default '0',
@@ -955,14 +955,14 @@ CREATE TABLE `bab_sites` (
   `email_password` enum('Y','N') NOT NULL default 'Y',
   `browse_users` enum('N','Y') NOT NULL default 'N',
   `authentification` smallint(5) unsigned NOT NULL default '0',
-  `ldap_host` tinytext NOT NULL default '',
+  `ldap_host` tinytext NOT NULL,
   `ldap_domainname` varchar(255) NOT NULL default '',
-  `ldap_userdn` text NOT NULL default '',
-  `ldap_admindn` text NOT NULL default '',
-  `ldap_adminpassword` tinyblob NOT NULL default '',
-  `ldap_searchdn` text NOT NULL default '',
-  `ldap_attribute` text NOT NULL default '',
-  `ldap_filter` text NOT NULL default '',
+  `ldap_userdn` text NOT NULL,
+  `ldap_admindn` text NOT NULL,
+  `ldap_adminpassword` tinyblob NOT NULL,
+  `ldap_searchdn` text NOT NULL,
+  `ldap_attribute` text NOT NULL,
+  `ldap_filter` text NOT NULL,
   `ldap_allowadmincnx` enum('Y','N') NOT NULL default 'Y',
   `ldap_encryptiontype` varchar(255) NOT NULL default '',
   `ldap_decoding_type` tinyint(1) unsigned NOT NULL default '0',
@@ -995,7 +995,8 @@ CREATE TABLE `bab_sites` (
 );
 
 
-INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday ) values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'theme_default', 'ovidentia.css', '1,2,3,4,5','1');
+INSERT INTO bab_sites (id, name, description, lang, adminemail,  adminname, skin, style, dispdays, startday, smtppassword , ldap_host, ldap_userdn, ldap_admindn, ldap_adminpassword, ldap_searchdn, ldap_attribute, ldap_filter ) 
+values ('1', 'Ovidentia', 'Ovidentia site', 'en', 'admin@your-domain.com', 'Ovidentia Administrator', 'theme_default', 'ovidentia.css', '1,2,3,4,5','1', '', '', '', '', '', '', '', '');
 
 
 # --------------------------------------------------------
@@ -1366,13 +1367,14 @@ CREATE TABLE bab_db_directories (
   id_dgowner int(11) unsigned NOT NULL default '0',
   user_update enum('N','Y') NOT NULL default 'N',
   show_update_info enum('N','Y') NOT NULL default 'N',
-  ovml_list tinytext NOT NULL default '',
-  ovml_detail tinytext NOT NULL default '',
+  ovml_list tinytext NOT NULL,
+  ovml_detail tinytext NOT NULL,
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );
 
-INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner) values (1, 'Ovidentia', 'Ovidentia directory', '1', '0');
+INSERT INTO bab_db_directories (id, name, description, id_group, id_dgowner, ovml_list, ovml_detail) 
+values (1, 'Ovidentia', 'Ovidentia directory', '1', '0', '', '');
 
 #
 # Structure de la table `bab_dbdir_entries`
@@ -1393,7 +1395,7 @@ CREATE TABLE bab_dbdir_entries (
   title varchar(255) NOT NULL default '',
   departmentnumber varchar(255) NOT NULL default '',
   organisationname varchar(255) NOT NULL default '',
-  bstreetaddress text NOT NULL default '',
+  bstreetaddress text NOT NULL,
   bcity varchar(255) NOT NULL default '',
   bpostalcode varchar(10) NOT NULL default '',
   bstate varchar(255) NOT NULL default '',
@@ -1403,10 +1405,10 @@ CREATE TABLE bab_dbdir_entries (
   hpostalcode varchar(10) NOT NULL default '',
   hstate varchar(255) NOT NULL default '',
   hcountry varchar(255) NOT NULL default '',
-  user1 text NOT NULL default '',
-  user2 text NOT NULL default '',
-  user3 text NOT NULL default '',
-  photo_data longblob NOT NULL default '',
+  user1 text NOT NULL,
+  user2 text NOT NULL,
+  user3 text NOT NULL,
+  photo_data longblob NOT NULL,
   photo_type varchar(20) NOT NULL default '',
   id_directory int(11) unsigned NOT NULL default '0',
   id_user int(11) unsigned NOT NULL default '0',
@@ -1419,7 +1421,8 @@ CREATE TABLE bab_dbdir_entries (
   KEY id_directory (id_directory)
 );
 
-INSERT INTO bab_dbdir_entries (sn, email, id_directory, id_user) VALUES ('Administrator', 'admin@admin.bab', '0', '1');
+INSERT INTO bab_dbdir_entries (sn, email, id_directory, id_user, bstreetaddress, hstreetaddress, user1, user2, user3, photo_data) 
+ VALUES ('Administrator', 'admin@admin.bab', '0', '1', '', '', '', '', '', '');
 
 
 #
@@ -1921,8 +1924,8 @@ CREATE TABLE bab_org_charts (
   type smallint(5) unsigned NOT NULL default '0',
   id_first_node int(11) unsigned NOT NULL default '0',
   id_closed_nodes text NOT NULL,
-  ovml_detail tinytext NOT NULL default '',
-  ovml_embedded tinytext NOT NULL default '',
+  ovml_detail tinytext NOT NULL,
+  ovml_embedded tinytext NOT NULL,
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner),
   KEY id_directory (id_directory)
@@ -2449,7 +2452,7 @@ CREATE TABLE bab_stats_events (
   evt_url varchar(255) NOT NULL default '',
   evt_session_id varchar(32) NOT NULL default '',
   evt_iduser int(11) unsigned NOT NULL default '0',
-  evt_info text NOT NULL default '',
+  evt_info text NOT NULL,
   PRIMARY KEY  (id)
 );
 
