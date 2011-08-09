@@ -207,7 +207,7 @@ function searchForums()
 			$this->searchoptions_txt = bab_translate("Options");
 			$this->optionall_txt = bab_translate("Search post title and message");
 			$this->optionsubject_txt = bab_translate("Search post message only");
-			$this->wordvalue = bab_rp('sword', '');
+			$this->wordvalue = bab_toHtml(bab_rp('sword', ''));
 
 			$this->forums = bab_get_forums();
 			}

@@ -117,7 +117,7 @@ function searchKeyword($item , $option = 'OR', $hideForm = false)
 			$this->htmlfields['what'] = bab_toHtml($this->fields['what']);
 			$this->htmlfields['what2'] = bab_toHtml($this->fields['what2']);
 
-			$this->field = bab_rp('field');
+			$this->field = bab_toHtml(bab_rp('field'));
 			$this->order = bab_toHtml(bab_rp('order'));
 			$this->index = bab_searchEngineInfos();
 
@@ -502,7 +502,7 @@ function startSearch( $item, $what, $option, $navpos )
 				$realm->setSortMethod($sortrequest);
 			} else {
 				if (!empty($sortrequest)) {
-					bab_debug('This sort request ('.$sortrequest.') is not compatible with the search realm ('.get_class($realm).')', DBG_WARNING, 'Search');
+					bab_debug(bab_toHtml('This sort request ('.$sortrequest.') is not compatible with the search realm ('.get_class($realm).')'), DBG_WARNING, 'Search');
 				}
 			}
 		}

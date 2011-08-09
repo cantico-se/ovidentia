@@ -31,9 +31,12 @@ var $sContent;
 function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	{
 	global $babBody;
-	$this->year = $year;
-	$this->month = $month;
-	$this->callback = $callback;
+	
+	$ymin = (int) $ymin;
+	$ymax = (int) $ymax;
+	$this->year = (int) $year;
+	$this->month = (int) $month;
+	$this->callback = bab_toHtml($callback, BAB_HTML_JS);
 	$this->ymin = $year - $ymin - 1;
 	$this->ymax = $year + $ymax;
 	$this->value = $this->ymin;
