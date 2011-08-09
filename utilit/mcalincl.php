@@ -549,6 +549,7 @@ class bab_icalendar extends bab_icalendarEventsSource
 					if ($cal->displayEventInCalendarUi($this->calendar, $event)) {
 
 						$ui_event = clone $event;
+						$ui_event->setUiCalendar($cal);
 						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$cal->getUrlIdentifier());
 						$arr[] = $ui_event;
 					}
@@ -995,10 +996,12 @@ class cal_wmdbaseCls
 
 
 			if (empty($this->idcal)) {
-				// If the event has no main calendar we
-				$uiIdentifier = $calPeriod->getUiIdentifier();
-				list($uid, $calid) = explode('@', $uiIdentifier);
-				$attendeesurl->idcal = $calid;
+				// If the event has no main calendar we use the current calendar of UI
+				$uiCalendar = $calPeriod->getUiCalendar();
+				if (isset($uiCalendar))
+				{
+					$attendeesurl->idcal = $uiCalendar->getUrlIdentifier();
+				}
 			}
 
 
