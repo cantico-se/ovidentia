@@ -1046,6 +1046,15 @@ function functionalities() {
 	}
 	
 	
+	if ($remove = bab_gp('remove', false))
+	{
+		$func->unregister($remove);
+		
+		header('location:'.bab_url::request('tg', 'idx'));
+		exit;
+	}
+	
+	
 	
 	
 	
@@ -1064,7 +1073,7 @@ function functionalities() {
 		foreach ($childs as $dir) {
 		
 			$funcpath = trim($path.'/'.$dir, '/');
-			$obj = bab_functionality::get($funcpath);
+			$obj = @bab_functionality::get($funcpath);
 			
 			if (false !== $obj) {
 				$original = $func->getOriginal($funcpath);
@@ -1080,13 +1089,24 @@ function functionalities() {
 				}
 				
 				$description = $labelpath.' : '.$original->getDescription();
+				
+				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 			} else {
-				$description = $dir;
+				$description = $dir . ' : '.bab_translate('Missing target');
+				
+				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+				
+				
+				$element->addAction('delete',
+					bab_translate('Remove link'),
+					$GLOBALS['babSkinPath'] . 'images/Puces/delete.png',
+					$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&remove='.urlencode($funcpath),
+					'');
 			}
 			
 			
 			
-			$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
+			
 		
 		
 			
@@ -1109,8 +1129,8 @@ function functionalities() {
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = @bab_functionality::get($parent_path);
 
-				// quand $parent_obj est false c'est que l'enfant s�lectionn� par d�faut n'existe plus, 
-				// ici on permet de d�finir un enfant a partir de ceux disponibles
+				// quand $parent_obj est false c'est que l'enfant selectionne par defaut n'existe plus, 
+				// ici on permet de definir un enfant a partir de ceux disponibles
 				
 				if ((false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) || (false === $parent_obj)) {
 
