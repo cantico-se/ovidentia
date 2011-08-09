@@ -47,9 +47,9 @@ v.innerHTML = '<b>'+tag+'</b>';
 <!--#in getnexttag -->
 <!--#if big -->
 <big>
-<a href="#" onclick="javascript: updateModifyForm(this.innerHTML, { tagid });" style="text-decoration:none;color:black">{ tagname }</a>
+<a href="#" onclick="updateModifyForm(this.innerHTML, { tagid });return false;" style="text-decoration:none;color:black">{ tagname }</a>
 <!--#else big -->
-<a href="#" onclick="javascript: updateModifyForm(this.innerHTML, { tagid });" >{ tagname }</a>
+<a href="#" onclick="updateModifyForm(this.innerHTML, { tagid });return false;" >{ tagname }</a>
 <!--#endif big -->
 <!--#if big -->
 </big>
