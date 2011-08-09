@@ -139,6 +139,8 @@ class bab_replace {
 	*/
 	function ref(&$txt)
 	{
+	// self::ovidentia_ref($txt);
+		
 	global $babBody, $babDB;
 	
 	$reg = "/\\\$([A-Z]*?)\((.*?)\)/";
@@ -447,6 +449,54 @@ class bab_replace {
 				}
 			}
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Replace reference in HTML string
+	 *
+	 * this function can replace two type of tag :
+	 * 	<a href="ovidentia:///articles/article/12">blabla</a>
+	 *  <img src="ovml_placeholder.jpg" longdesc="ovidentia:///ovml/file/example.html" />
+	 *  
+	 *  in the fist cas, the href attribute will be replaced by the target URL
+	 *  in the second case, the img tag will be replaced by the targeted html replacement string
+	 *  
+	 *
+	 */
+	private static function ovidentia_ref(&$html)
+	{
+		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.-]+)"[^>]*>/', 'bab_replace::ovrefreplace', $html);
+	}
+	
+	/**
+	 * @see bab_replace::ovidentia_ref
+	 * @param array $match
+	 * @return unknown_type
+	 */
+	private static function ovrefreplace(Array $match)
+	{
+		
+		
+		require_once dirname(__FILE__).'/reference.class.php';
+		$reference = new bab_Reference($match['reference']);
+		
+		if ('a' === $match['tag'])
+		{
+			$refDesc = bab_Reference::getReferenceDescription($reference);
+			
+			if ($refDesc && ($refDesc instanceof IReferenceDescription))
+			{
+				return str_replace($match['reference'], $refDesc->getUrl(), $match[0]);
+			}
+		}
+		
+		return $match[0];
 	}
 }
 
