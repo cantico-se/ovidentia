@@ -1069,6 +1069,7 @@ echo
 					}
 				
 				$this->cdateecheck = '';
+				bab_debug($arr);
 				if( $arr['date_submission'] != '0000-00-00 00:00:00' )
 					{
 					$this->cdatescheck = 'checked';
@@ -2184,6 +2185,11 @@ function updatePropertiesArticleDraft(&$message)
 	if( isset($cdates)) 
 		{
 		$date_sub = sprintf("%04d-%02d-%02d %s:00", date("Y") + $yearsub - 1, $monthsub, $daysub, $timesub);
+		if ($date_sub <= date('Y-m-d H:i:s'))
+			{
+				$message = bab_translate("The submit date must be a future date");
+				return false;
+			}
 		}
 
 	if( isset($restriction) && !empty($restriction))
