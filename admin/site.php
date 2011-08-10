@@ -966,7 +966,7 @@ function siteAuthentification($id)
 
 				$this->arrayauthpasstype = array(
 					'plain' => bab_translate("plaintext"), 
-					'md5-hex' => bab_translate("md5"), 
+				//	'md5-hex' => bab_translate("md5"), 
 					'crypt' => bab_translate("The Unix crypt() hash, based on DES"), 
 					'sha' => bab_translate("sha-1"), 
 					'md5-base64' => bab_translate("md5 encoded with base64"), 
