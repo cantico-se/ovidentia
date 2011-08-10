@@ -47,7 +47,9 @@ function emailPassword()
 
 		function temp()
 			{
+			$this->intro = bab_translate("Before we can reset your password, you need to enter the information below to help identify your account:");
 			$this->nickname = bab_translate("Your login ID");
+			$this->email = bab_translate("Your email");
 			$this->send = bab_translate("Send");
 			}
 		}
@@ -720,7 +722,7 @@ if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 }
 else if('send' === bab_pp('sendpassword'))
 {
-	sendPassword(bab_pp('nickname'));
+	sendPassword(bab_pp('nickname'), bab_pp('email'));
 	$cmd = 'displayMessage';
 }
 

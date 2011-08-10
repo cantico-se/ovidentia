@@ -158,13 +158,17 @@
         <td class="BabLoginCadreBackground" align="center" valign="middle"> 
           <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
             <tr> 
-              <td width="30%" align="right" nowrap valign="middle">{ nickname } : </td>
-              <td width="70%" align="left" valign="middle">
-                <input type="text" name="nickname" size="30" maxlength="60" />
+              <td>
+              <p>{ intro }</p>
+              <p>{ nickname } : <br />
+                <input type="text" name="nickname" size="30" maxlength="60" /></p> 
+              
+             <p>{ email } : <br />
+                <input type="text" name="email" size="30" /></p> 
               </td>
             </tr>
             <tr valign="middle"> 
-              <td  colspan="2" align="center">
+              <td align="center">
                 <input type="submit" name="Submit" value="{ send }" />
               </td>
             </tr>

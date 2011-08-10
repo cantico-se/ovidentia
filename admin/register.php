@@ -514,17 +514,17 @@ function destroyAuthCookie() {
 }
 
 
-function sendPassword ($nickname)
+function sendPassword($nickname, $email)
 	{
 	global $babBody, $babDB, $BAB_HASH_VAR, $babAdminEmail;
 
 	if (!empty($nickname))
 		{
-		$req="select id, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."'";
+		$req="select id, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' AND email=".$babDB->quote($email);
 		$res = $babDB->db_query($req);
 		if (!$res || $babDB->db_num_rows($res) < 1)
 			{
-			$babBody->msgerror = bab_translate("Incorrect login ID");
+			$babBody->msgerror = bab_translate("Incorrect login ID or email");
 			return false;
 			}
 		else
@@ -626,7 +626,7 @@ function sendPassword ($nickname)
 		}
 	else
 		{
-		$babBody->msgerror = bab_translate("ERROR - Login ID is required");
+		$babBody->msgerror = bab_translate("ERROR - Login ID and email are required");
 		return false;
 		}
 }
