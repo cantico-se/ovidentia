@@ -2048,7 +2048,7 @@ class bab_event_posted {
 			$updateMethod = (int) bab_pp('bupdrec');
 		}
 
-		bab_addHashEventsToCollection($collection, $calendarPeriod, $updateMethod);
+		bab_addHashEventsToCollection($collection, $calendarPeriod, $updateMethod, $this->args['dtstart']);
 		
 		$oldrelations = array();
 		$oldcalendars = array();
@@ -2421,17 +2421,20 @@ class bab_event_posted {
  * @param	bab_CalendarEventCollection		$collection			A collection of calendar events with a hash and one event
  * @param	bab_CalendarPeriod				$calendarPeriod		the modified period
  * @param	int								$method				BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT | BAB_CAL_EVT_PREVIOUS | BAB_CAL_EVT_NEXT
+ * @param	string							$dtstart			DTSTART of original event to use for event modification
  * 
  * @return unknown_type
  */
-function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, bab_CalendarPeriod $calendarPeriod, $method)
+function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, bab_CalendarPeriod $calendarPeriod, $method, $dtstart = null)
 {
 	require_once dirname(__FILE__).'/dateTime.php';
 	
 	$method = (int) $method;
 	
-	$dtstart = $calendarPeriod->getProperty('DTSTART');
-	
+	if (null === $dtstart)
+	{
+		$dtstart = $calendarPeriod->getProperty('DTSTART');
+	}
 	
 		
 	switch($method)
