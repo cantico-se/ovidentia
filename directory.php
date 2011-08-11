@@ -725,8 +725,9 @@ function modifyDbContact($id, $idu, $fields, $refresh)
 				$this->error = true;
 				}
 	
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			$this->idgroup = $arr['id_group'];
+			$arr = $babDB->db_fetch_array($babDB->db_query("select user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
 			$allowuu = $arr['user_update'];
 
 			$personnal = false;
@@ -2320,8 +2321,9 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 	{
 	global $babBody, $babDB;
 
-	list($idgroup, $allowuu) = $babDB->db_fetch_array($babDB->db_query("select id_group, user_update from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-
+	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+	list($allowuu) = $babDB->db_fetch_array($babDB->db_query("select user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
+	
 	$usertbl = $babDB->db_fetch_assoc($babDB->db_query("select id_user,givenname,mn,sn from ".BAB_DBDIR_ENTRIES_TBL." where id='".$babDB->db_escape_string($idu)."'"));
 
 	$iduser = &$usertbl['id_user'];
@@ -2331,7 +2333,7 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 	$bupd = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
 
 	$baccess = false;
-	if($badd || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID']))
+	if($badd || ($idgroup != '0' && $allowuu == "Y" && $iduser == $GLOBALS['BAB_SESS_USERID'] && $iduser > 0))
 		{
 		$baccess = true;
 		}
@@ -2369,152 +2371,155 @@ function updateDbContact($id, $idu, $fields, $file, $tmp_file, $photod)
 		$baccess = true;
 		}
 
-	if($baccess)
+	if(!$baccess)
 		{
+			$babBody->addError(bab_translate('Access denied'));
+			return false;
+		}
 
-		foreach( $fxidaccess as $fname => $datafield )
+	foreach( $fxidaccess as $fname => $datafield )
+		{
+		if( $datafield['required'] == 'Y' )
 			{
-			if( $datafield['required'] == 'Y' )
+			if( $fname == 'jpegphoto' )
 				{
-				if( $fname == 'jpegphoto' )
+				if( empty($file) || $file == "none")
 					{
-					if( empty($file) || $file == "none")
-						{
-						$tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
+					$tmp = $babDB->db_fetch_assoc($babDB->db_query("select photo_data from ".BAB_DBDIR_ENTRIES_TBL." where id_directory='".($idgroup !=0 ? 0: $babDB->db_escape_string($id))."' and id='".$babDB->db_escape_string($idu)."'"));
 
-						if (empty($tmp['photo_data']))
-							{
-							$babBody->msgerror = bab_translate("You must complete required fields");
-							return false;
-							}
-						}
-					else
+					if (empty($tmp['photo_data']))
 						{
-						if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
-							{
-							$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
-							return false;
-							}
-						include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
-						$cphoto = bab_getUploadedFileContent('photof');
-						}
-					}
-				elseif( $fname == 'email' )
-					{
-						if ( !isset($fields['email']) || empty($fields['email']) || !bab_isEmailValid($fields['email']))
-							{
-							$babBody->msgerror = bab_translate("Your email is not valid !!");
-							return false;
-							}
-					}
-				elseif ( !isset($fields[$fname]) || empty($fields[$fname]) )
-					{
 						$babBody->msgerror = bab_translate("You must complete required fields");
 						return false;
-					}
-
-				}
-
-			}
-
-		if( $idgroup > 0 && (isset($fields['givenname']) || isset($fields['mn']) || isset($fields['sn']) || isset($fields['email'])))
-			{
-
-			$replace = array( " " => "", "-" => "");
-
-			if (!isset($fields['givenname']))
-				$fields['givenname'] = $usertbl['givenname'];
-				
-			if (!isset($fields['mn']))
-				$fields['mn'] = $usertbl['mn'];
-
-			if (!isset($fields['sn']))
-				$fields['sn'] = $usertbl['sn'];
-			
-			$hashname = md5(mb_strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
-			$query = "select * from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."' and id!='".$babDB->db_escape_string($iduser)."'";	
-			$res = $babDB->db_query($query);
-			if( $babDB->db_num_rows($res) > 0)
-				{
-				$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
-				return false;
-				}
-
-			$babDB->db_query("update ".BAB_USERS_TBL." set firstname='".$babDB->db_escape_string($fields['givenname'])."', lastname='".$babDB->db_escape_string($fields['sn'])."', email='".$babDB->db_escape_string($fields['email'])."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($iduser)."'");
-			$bupdate = true;
-			}
-
-		$req = '';
-		reset($fxidaccess);
-		$cphoto = '';
-		foreach( $fxidaccess as $fname => $datafield )
-			{
-			if( $fname == 'jpegphoto' && !empty($file) && $file != "none")
-				{
-				include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
-				$cphoto = bab_getUploadedFileContent('photof');
-				}
-			elseif( isset($fields[$fname]))
-				{
-				if( $datafield['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
-					{
-					$req .= $fname."='".$babDB->db_escape_string($fields[$fname])."',";
+						}
 					}
 				else
 					{
-					if( mb_substr($fname, 0, mb_strlen("babdirf")) == 'babdirf' )
+					if ($babBody->babsite['imgsize'] > 0 && $babBody->babsite['imgsize']*1000 < filesize($tmp_file))
 						{
-						$tmp = mb_substr($fname, mb_strlen("babdirf"));
+						$babBody->msgerror = bab_translate("The image file is too big, maximum is :").$babBody->babsite['imgsize'].bab_translate("Kb");
+						return false;
+						}
+					include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
+					$cphoto = bab_getUploadedFileContent('photof');
+					}
+				}
+			elseif( $fname == 'email' )
+				{
+					if ( !isset($fields['email']) || empty($fields['email']) || !bab_isEmailValid($fields['email']))
+						{
+						$babBody->msgerror = bab_translate("Your email is not valid !!");
+						return false;
+						}
+				}
+			elseif ( !isset($fields[$fname]) || empty($fields[$fname]) )
+				{
+					$babBody->msgerror = bab_translate("You must complete required fields");
+					return false;
+				}
 
-						$bupdate = true;
-						$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
-						if( $rs && $babDB->db_num_rows($rs) > 0 )
-							{
-							$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($fields[$fname])."' where id_fieldx='".$babDB->db_escape_string($tmp)."' and id_entry='".$babDB->db_escape_string($idu)."'");
-							}
-						else
-							{
-							$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($fields[$fname])."', '".$babDB->db_escape_string($tmp)."', '".$babDB->db_escape_string($idu)."')");
-							}
+			}
+
+		}
+
+	if( $idgroup > 0 && (isset($fields['givenname']) || isset($fields['mn']) || isset($fields['sn']) || isset($fields['email'])))
+		{
+
+		$replace = array( " " => "", "-" => "");
+
+		if (!isset($fields['givenname']))
+			$fields['givenname'] = $usertbl['givenname'];
+			
+		if (!isset($fields['mn']))
+			$fields['mn'] = $usertbl['mn'];
+
+		if (!isset($fields['sn']))
+			$fields['sn'] = $usertbl['sn'];
+		
+		$hashname = md5(mb_strtolower(strtr($fields['givenname'].$fields['mn'].$fields['sn'], $replace)));
+		$query = "select * from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hashname)."' and id!='".$babDB->db_escape_string($iduser)."'";	
+		$res = $babDB->db_query($query);
+		if( $babDB->db_num_rows($res) > 0)
+			{
+			$babBody->msgerror = bab_translate("Firstname and Lastname already exists !!");
+			return false;
+			}
+
+		$babDB->db_query("update ".BAB_USERS_TBL." set firstname='".$babDB->db_escape_string($fields['givenname'])."', lastname='".$babDB->db_escape_string($fields['sn'])."', email='".$babDB->db_escape_string($fields['email'])."', hashname='".$babDB->db_escape_string($hashname)."' where id='".$babDB->db_escape_string($iduser)."'");
+		$bupdate = true;
+		}
+
+	$req = '';
+	reset($fxidaccess);
+	$cphoto = '';
+	foreach( $fxidaccess as $fname => $datafield )
+		{
+		if( $fname == 'jpegphoto' && !empty($file) && $file != "none")
+			{
+			include_once $GLOBALS['babInstallPath']."utilit/uploadincl.php";
+			$cphoto = bab_getUploadedFileContent('photof');
+			}
+		elseif( isset($fields[$fname]))
+			{
+			if( $datafield['id_field'] < BAB_DBDIR_MAX_COMMON_FIELDS )
+				{
+				$req .= $fname."='".$babDB->db_escape_string($fields[$fname])."',";
+				}
+			else
+				{
+				if( mb_substr($fname, 0, mb_strlen("babdirf")) == 'babdirf' )
+					{
+					$tmp = mb_substr($fname, mb_strlen("babdirf"));
+
+					$bupdate = true;
+					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($tmp)."' and  id_entry='".$babDB->db_escape_string($idu)."'");
+					if( $rs && $babDB->db_num_rows($rs) > 0 )
+						{
+						$babDB->db_query("update ".BAB_DBDIR_ENTRIES_EXTRA_TBL." set field_value='".$babDB->db_escape_string($fields[$fname])."' where id_fieldx='".$babDB->db_escape_string($tmp)."' and id_entry='".$babDB->db_escape_string($idu)."'");
+						}
+					else
+						{
+						$babDB->db_query("insert into ".BAB_DBDIR_ENTRIES_EXTRA_TBL." ( field_value, id_fieldx, id_entry) values ('".$babDB->db_escape_string($fields[$fname])."', '".$babDB->db_escape_string($tmp)."', '".$babDB->db_escape_string($idu)."')");
 						}
 					}
 				}
 			}
+		}
 
-		if( !empty($cphoto))
-			$req .= " photo_data='".$babDB->db_escape_string($cphoto)."'";
-		elseif ($photod == "delete")
-			$req .= " photo_data=''";
-		else
-			$req = mb_substr($req, 0, mb_strlen($req) -1);
+	if( !empty($cphoto))
+		$req .= " photo_data='".$babDB->db_escape_string($cphoto)."'";
+	elseif ($photod == "delete")
+		$req .= " photo_data=''";
+	else
+		$req = mb_substr($req, 0, mb_strlen($req) -1);
 
-		$bupdate = false;
-		if( !empty($req))
+	$bupdate = false;
+	if( !empty($req))
+		{
+		$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
+		$req .= " where id='".$babDB->db_escape_string($idu)."'";
+		$babDB->db_query($req);
+		$bupdate = true;
+		}
+
+
+	if( $bupdate )
+		{
+		$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$babDB->db_escape_string($idu)."'");
+		
+		include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
+		
+		if( $iduser )
 			{
-			$req = "update ".BAB_DBDIR_ENTRIES_TBL." set " . $req;
-			$req .= " where id='".$babDB->db_escape_string($idu)."'";
-			$babDB->db_query($req);
-			$bupdate = true;
-			}
-
-
-		if( $bupdate )
-			{
-			$babDB->db_query("update ".BAB_DBDIR_ENTRIES_TBL." set date_modification=now(), id_modifiedby='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' where id='".$babDB->db_escape_string($idu)."'");
-			
-			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
-			
-			if( $iduser )
-				{
-				$event = new bab_eventUserModified($iduser);
-				bab_fireEvent($event);
-				}
-
-			$event = new bab_eventDirectoryEntryModified($idu);
+			$event = new bab_eventUserModified($iduser);
 			bab_fireEvent($event);
 			}
 
+		$event = new bab_eventDirectoryEntryModified($idu);
+		bab_fireEvent($event);
 		}
+
+
 
 
 	return true;

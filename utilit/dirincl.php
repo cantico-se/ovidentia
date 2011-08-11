@@ -404,7 +404,13 @@ function summaryDbContact($id, $idu, $update=true)
 			$this->t_print = bab_translate("Print");
 			$this->t_delconf = bab_translate("Do you really want to delete the contact ?");
 
-			list($idgroup, $allowuu, $bshowui) = $babDB->db_fetch_array($babDB->db_query("select id_group, user_update, show_update_info from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			list($idgroup, $bshowui) = $babDB->db_fetch_array($babDB->db_query("
+				select id_group, show_update_info from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'
+			"));
+			
+			list($allowuu) = $babDB->db_fetch_array($babDB->db_query("
+				select user_update from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)."
+			"));
 
 			$this->res = $babDB->db_query("select * from ".BAB_DBDIR_FIELDSEXTRA_TBL." where id_directory='".($idgroup != 0? 0: $babDB->db_escape_string($id))."' AND disabled='N' order by list_ordering asc");
 			if( $this->res && $babDB->db_num_rows($this->res) > 0)
@@ -445,7 +451,7 @@ function summaryDbContact($id, $idu, $update=true)
 					}
 
 				$this->modify = bab_isAccessValid(BAB_DBDIRUPDATE_GROUPS_TBL, $id);
-
+				
 				if( $this->modify == false && $allowuu == "Y" && $this->arr['id_user'] == $GLOBALS['BAB_SESS_USERID'] )
 					{
 					$this->modify = true;
