@@ -189,13 +189,26 @@ function listUsers($pos, $grp, $deleteAction)
 			$this->allurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=users&idx=List&pos=&grp=".$this->grp."&bupd=".$this->bupdate);
 			$this->groupurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$this->grp);
 			
-			list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group='1'"));
-			$this->set_directory = $babBody->currentAdmGroup == 0 && bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$iddir);
+			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0))
+			{
+				list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote(BAB_REGISTERED_GROUP)));
+			} else {
+				list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id from ".BAB_DB_DIRECTORIES_TBL." where id_group=".$babDB->quote($babBody->currentAdmGroup)));
+			}
+			
+			$this->set_directory = bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL,$iddir);
 			
 			if( ($babBody->isSuperAdmin && $babBody->currentAdmGroup == 0) || $babBody->currentDGGroup['users'] == 'Y' )
+			{
+				
 				$this->bmodname = true;
+			}
 			else
+			{
 				$this->bmodname = false;
+			}
+			
+			
 
 			$this->userst = '';
 

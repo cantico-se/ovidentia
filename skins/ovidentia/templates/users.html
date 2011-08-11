@@ -98,7 +98,7 @@ function bab_userListShowHideFilter()
 				<!--#if arr[disabled] "== 1" --><acronym title="{ t_disabled }"><img src="{ babSkinPath }images/Puces/disabled.gif" alt="{ t_disabled }" style="valign:absmiddle;" /></acronym><!--#endif arr[disabled] -->&nbsp;
 				
 				<!--#if set_directory -->
-				<a href="javascript: Start('{ dirdetailurl }', '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');"><img src="{ babSkinPath }images/Puces/contact.png" alt="{ t_dirdetail }" style="valign:absmiddle;" border="0" /></a>&nbsp;
+				<a href="{ dirdetailurl }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" alt="{ t_dirdetail }" style="valign:absmiddle;" border="0" /></a>&nbsp;
 				<!--#endif set_directory -->
 				
 				<a href="{ groupsurl }" onclick="bab_popup(this.href+'&amp;popup=1');return false;"><img src="{ babSkinPath }images/Puces/PuceUsers.gif" alt="{ t_groups }" style="valign:absmiddle;" border="0" /></a>&nbsp;
