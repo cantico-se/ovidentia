@@ -43,9 +43,6 @@ mod_mysql="Available"
 mysql_version="4.1.0"
 mod_zlib="Available"
 
-; available since 6.6.0
-
-mysql_sql_mode="Undefined"
 
 ; available since 6.7.91
 
@@ -91,10 +88,13 @@ upload_max_file_size=30M
 mysql_max_allowed_packet=15M
 mysql_character_set_database="utf8, latin1"
 mysql_collation_database="utf8_general_ci, utf8_swedish_ci, latin1_swedish_ci"
+mysql_sql_mode="Undefined"
 
 ; available since 7.4.0
 
 memory_limit="32M"
+
+
 
 
 ;*/?>

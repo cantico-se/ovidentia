@@ -2452,7 +2452,7 @@ CREATE TABLE bab_stats_events (
   evt_url varchar(255) NOT NULL default '',
   evt_session_id varchar(32) NOT NULL default '',
   evt_iduser int(11) unsigned NOT NULL default '0',
-  evt_info text NOT NULL,
+  evt_info text,
   PRIMARY KEY  (id)
 );
 
@@ -4123,7 +4123,7 @@ CREATE TABLE bab_sitemap (
    `id_parent` int(11) unsigned DEFAULT '0' NOT NULL,
    `lf` int(11) unsigned DEFAULT '0' NOT NULL,
    `lr` int(11) unsigned DEFAULT '0' NOT NULL,
-   `id_function` varchar(64) NOT NULL,
+   `id_function` varchar(64) DEFAULT '' NOT NULL,
    `id_dgowner` int(11) unsigned DEFAULT NULL,
    `progress` tinyint(1) unsigned DEFAULT '0' NOT NULL,
    PRIMARY KEY (`id`),

@@ -97,7 +97,7 @@ class babDatabase
 			}
 
 			echo "<p>This script cannot continue, terminating.";
-			die();
+			die($str);
 			}
 		else
 			return $str;
