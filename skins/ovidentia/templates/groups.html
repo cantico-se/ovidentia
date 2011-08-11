@@ -314,7 +314,9 @@ function load_edit_form(a)
 	var description	 = a.title;
 
 	if (typeof document.forms['gcreatemod'].elements == 'undefined')
+	{
 		return;
+	}
 
 	var el = document.forms['gcreatemod'].elements;
 
@@ -342,7 +344,8 @@ function load_edit_form(a)
 		}
 
 	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_edit_group } : '+name;
-	document.location.href='#bab_groups_tree_end';
+	document.getElementById('groupcreate_formtitle').scrollIntoView(true);
+	
 	return false;
 }
 
@@ -368,14 +371,13 @@ function load_clear()
 	el['parent'].style.visibility = 'visible';
 	el['deleteg'].style.visibility = 'visible';
 	document.getElementById('groupcreate_formtitle').innerHTML = '{ t_create_group }';
-
-	document.location.href='#bab_groups_tree_end';
+	document.getElementById('groupcreate_formtitle').scrollIntoView(true);
+	
 	return false;
 }
 
 </script>
 
-<a name="bab_groups_tree_end"></a>
 
 <br />
 <br />

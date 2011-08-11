@@ -397,6 +397,13 @@ function addModGroup()
 
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
+	
+	if ($babBody->currentAdmGroup != 0 && $babBody->currentDGGroup['groups'] != 'Y')
+	{
+		$babBody->msgerror = bab_translate("Access denied");
+		return 'Create';
+	}
+	
 
 	$id_parent = &$_POST['parent'];
 	$grpdg = isset($_POST['grpdg']) ? $_POST['grpdg'] : 0;
