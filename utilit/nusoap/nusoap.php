@@ -128,7 +128,7 @@ class nusoap_base {
 	* @var      string
 	* @access   public
 	*/
-    var $soap_defencoding = 'ISO-8859-1';
+    var $soap_defencoding = 'ISO-8859-15';
 	//var $soap_defencoding = 'UTF-8';
 
 	/**
@@ -203,6 +203,7 @@ class nusoap_base {
 	* @access	public
 	*/
 	function nusoap_base() {
+		$this->soap_defencoding = bab_Charset::getIso();
 		$this->debugLevel = $GLOBALS['_transient']['static']['nusoap_base']->globalDebugLevel;
 	}
 
@@ -3200,6 +3201,8 @@ class soap_server extends nusoap_base {
 		// turn on debugging?
 		global $debug;
 		global $HTTP_SERVER_VARS;
+		
+		$this->decode_utf8 = bab_Charset::ISO_8859_15 === bab_Charset::getIso();
 
 		if (isset($_SERVER)) {
 			$this->debug("_SERVER is defined:");
@@ -6476,6 +6479,7 @@ class soapclient_b extends nusoap_base  {
 	*/
 	function soapclient_b($endpoint,$wsdl = false,$proxyhost = false,$proxyport = false,$proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30){
 		parent::nusoap_base();
+		$this->decode_utf8 = bab_Charset::ISO_8859_15 === bab_Charset::getIso();
 		$this->endpoint = $endpoint;
 		$this->proxyhost = $proxyhost;
 		$this->proxyport = $proxyport;
