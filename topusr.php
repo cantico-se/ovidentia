@@ -79,7 +79,7 @@ function listTopicCategory($cat)
 			$topcatview = $babBody->get_topcatview();
 			while( $row = $babDB->db_fetch_array($res))
 			{
-				if($row['type'] == '2' && isset($babBody->topview[$row['id_topcat']]))
+				if($row['type'] == '2' && bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL ,$row['id_topcat']))
 				{
 					array_push($this->arrid, array($row['id_topcat'], 2));
 					array_push($arrtop, $row['id_topcat']);

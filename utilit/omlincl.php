@@ -634,13 +634,16 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 			$filter = false;
 		else
 			$filter = true;
+			
+			
+		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
 		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) GROUP BY at.id order by ".$babDB->db_escape_string($order));
 		while($arr = $babDB->db_fetch_array($res))
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
 				{
-				if( $filter == false || isset($babBody->topview[$arr['id_topic']]))
+				if( $filter == false || isset($topview[$arr['id_topic']]))
 					{
 					$this->IdEntries[] = $arr['id'];
 					}
@@ -1094,9 +1097,9 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 		$this->imagewidthmax	= (int) $ctx->get_value('imagewidthmax');
 
 		if( $this->topicid === false || $this->topicid === '' )
-			$this->IdEntries = array_keys($babBody->topview);
+			$this->IdEntries = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 		else
-			$this->IdEntries = array_values(array_intersect(array_keys($babBody->topview), explode(',', $this->topicid)));
+			$this->IdEntries = array_values(array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $this->topicid)));
 		$this->count = count($this->IdEntries);
 
 		if( $this->count > 0 )
@@ -1247,9 +1250,9 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 		}
 
 		if( $topicid === false || $topicid === '' )
-			$topicid = array_keys($babBody->topview);
+			$topicid = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 		else
-			$topicid = array_intersect(array_keys($babBody->topview), explode(',', $topicid));
+			$topicid = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $topicid));
 
 		if( count($topicid) > 0)
 		{
@@ -2940,9 +2943,9 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 		if ( $this->topcatid === false || $this->topcatid === '' )
 			{
 			if( $this->topicid === false || $this->topicid === '' )
-				$this->topicid = array_keys($babBody->topview);
+				$this->topicid = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 			else
-				$this->topicid = array_intersect(array_keys($babBody->topview), explode(',', $this->topicid));
+				$this->topicid = array_intersect(array_keys(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)), explode(',', $this->topicid));
 			}
 		else
 			{
@@ -3125,7 +3128,7 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 		$babDB = &$GLOBALS['babDB'];
 
 
-		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($idparent)."' AND id IN(".$babDB->quote(array_keys($GLOBALS['babBody']->topview)).")");
+		$res = $babDB->db_query("select id from ".BAB_TOPICS_TBL." where id_cat='".$babDB->db_escape_string($idparent)."' AND id IN(".$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).")");
 		while( $row = $babDB->db_fetch_array($res))
 			{
 			$this->topicid[] = $row['id'];
@@ -3216,7 +3219,7 @@ class Func_Ovml_Container_RecentComments extends Func_Ovml_Container
 
 		$req = '';
 		$topview = ' ';
-		if( count($babBody->topview) > 0 )
+		if( count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0 )
 			{
 
 				$req =

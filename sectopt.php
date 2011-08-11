@@ -84,12 +84,13 @@ function sectionsList()
 				list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'1\' AND id_section='.$babDB->quote($private['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
 				$checked = (isset($hidden) && $hidden != 'Y');
 				$this->sections[$private['id'] . '-1'] = array('title' => $private['title'], 'description' => $private['description'], 'checked' => $checked);
-			}				
+			}		
+
 
 			// Add sections from article categories.
 			$res = $babDB->db_query('SELECT '.BAB_TOPICS_TBL.'.id,'.BAB_TOPICS_TBL.'.id_cat FROM '.BAB_TOPICS_TBL.' JOIN '.BAB_TOPICS_CATEGORIES_TBL.' c WHERE '.BAB_TOPICS_TBL.'.id_cat=c.id AND c.optional=\'Y\' AND c.enabled=\'Y\'');
 			while ($row = $babDB->db_fetch_assoc($res)) {
-				if (isset($babBody->topview[$row['id']]) && !in_array($row['id_cat'], $this->arrcatid)) {
+				if (bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) && !in_array($row['id_cat'], $this->arrcatid)) {
 					array_push($this->arrcatid, $row['id_cat']);
 					$category = $babDB->db_fetch_assoc($babDB->db_query('SELECT * FROM '.BAB_TOPICS_CATEGORIES_TBL.' WHERE id='.$babDB->quote($row['id_cat'])));
 					list($hidden) = $babDB->db_fetch_row($babDB->db_query('SELECT hidden FROM '.BAB_SECTIONS_STATES_TBL.' WHERE type=\'3\' AND id_section='.$babDB->quote($category['id']).' AND id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID'])));
@@ -182,7 +183,7 @@ function enableOptionalSections($sections)
 		$res = $babDB->db_query("select ".BAB_TOPICS_TBL.".id,".BAB_TOPICS_TBL.".id_cat  from ".BAB_TOPICS_TBL." join ".BAB_TOPICS_CATEGORIES_TBL." where ".BAB_TOPICS_TBL.".id_cat=".BAB_TOPICS_CATEGORIES_TBL.".id");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if( isset($babBody->topview[$row['id']]) )
+			if( bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $row['id']) )
 				{
 				if( !in_array($row['id_cat'], $arrcatid))
 					array_push($arrcatid, $row['id_cat']);

@@ -203,7 +203,7 @@ function browseArticlesAuthors($pos, $cb)
 				$this->pos = mb_strlen($pos)>1? $pos[1]: '';
 				$this->ord = $pos[0];
 
-				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(array_keys($babBody->topview)).") and ut.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).") and ut.".$this->namesearch2." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch2.", ut.".$this->namesearch." asc";
 
 				$this->fullname = bab_composeUserName(bab_translate("Lastname"),bab_translate("Firstname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=".$this->pos."&cb=".$this->cb;
@@ -212,7 +212,7 @@ function browseArticlesAuthors($pos, $cb)
 				{
 				$this->pos = $pos;
 				$this->ord = "";
-				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(array_keys($babBody->topview)).")  and ut.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch.", ut.".$this->namesearch2." asc";
+				$req = "select distinct ut.* from ".BAB_USERS_TBL." ut left join ".BAB_ARTICLES_TBL." at on ut.id=at.id_author where at.id_author!=0 and at.id_topic in (".$babDB->quote(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)).")  and ut.".$this->namesearch." like '".$babDB->db_escape_like($this->pos)."%' order by ut.".$this->namesearch.", ut.".$this->namesearch2." asc";
 
 				$this->fullname = bab_composeUserName(bab_translate("Firstname"),bab_translate("Lastname"));
 				$this->fullnameurl = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&idx=".$_REQUEST['idx']."&pos=-".$this->pos."&cb=".$this->cb;
