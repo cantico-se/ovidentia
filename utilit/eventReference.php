@@ -26,6 +26,11 @@ require_once dirname(__FILE__) . '/eventincl.php';
 require_once dirname(__FILE__) . '/reference.class.php';
 
 
+/**
+ * Event fired when reference descriptions are needed for a list of references
+ * @see bab_Reference::getReferenceDescription()
+ * @see bab_fireEvent
+ */
 class bab_eventReference extends bab_event 
 {
 	private $oRefMapStorage		= null;
@@ -58,41 +63,30 @@ class bab_eventReference extends bab_event
 	}
 }
 
-
+/**
+ * 
+ * @param bab_eventReference $oEvent
+ * @return unknown_type
+ */
 function bab_onReference(bab_eventReference $oEvent)
 {
 	
-	handleArticlesRequest($oEvent);
-	handleDraftArticlesRequest($oEvent);
-	handleFilesRequest($oEvent);
+	handlePublicationRequest($oEvent, 'articles.article', 'bab_ArticleReferenceDescription');
+	handlePublicationRequest($oEvent, 'articles.draft'	, 'bab_DraftArticleReferenceDescription');
+	handlePublicationRequest($oEvent, 'files.file'		, 'bab_FileReferenceDescription');
+	handlePublicationRequest($oEvent, 'ovml.file'		, 'bab_OvmlFileReferenceDescription');
 }
 
 
-function handleFilesRequest(bab_eventReference $oEvent)
-{
-	$sModule			= 'files.file';
-	$sClassName			= 'bab_FileReferenceDescription';
-	handlePublicationRequest($oEvent, $sModule, $sClassName);
-}
 
-
-function handleArticlesRequest($oEvent)
-{
-	$sModule		= 'articles.article';
-	$sClassName		= 'bab_ArticleReferenceDescription';
-	handlePublicationRequest($oEvent, $sModule, $sClassName);
-}
-
-
-function handleDraftArticlesRequest($oEvent)
-{
-	$sModule		= 'articles.draft';
-	$sClassName		= 'bab_DraftArticleReferenceDescription';
-	handlePublicationRequest($oEvent, $sModule, $sClassName);
-}
-
-
-function handlePublicationRequest($oEvent, $sModule, $sClassName)
+/**
+ * Create the reference description objects needed for each reference
+ * @param bab_eventReference 	$oEvent
+ * @param string 				$sModule			module filter
+ * @param string 				$sClassName			reference description classname to use for the coresponding module filter
+ * @return unknown_type
+ */
+function handlePublicationRequest(bab_eventReference $oEvent, $sModule, $sClassName)
 {
 	$oRefStorage		= $oEvent->getReferences($sModule);
 	$oRefDescStorage	= $oEvent->getReferencesDescriptions($sModule);

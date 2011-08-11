@@ -139,7 +139,7 @@ class bab_replace {
 	*/
 	function ref(&$txt)
 	{
-	// self::ovidentia_ref($txt);
+	self::ovidentia_ref($txt);
 		
 	global $babBody, $babDB;
 	
@@ -464,14 +464,16 @@ class bab_replace {
 	 * 	<a href="ovidentia:///articles/article/12">blabla</a>
 	 *  <img src="ovml_placeholder.jpg" longdesc="ovidentia:///ovml/file/example.html" />
 	 *  
-	 *  in the fist cas, the href attribute will be replaced by the target URL
-	 *  in the second case, the img tag will be replaced by the targeted html replacement string
+	 *  in the fist cas, the href attribute will be replaced by the target URL from the getUrl() method
+	 *  in the second case, the img tag will be replaced by the targeted html replacement string from the getDescription() method
 	 *  
+	 *  @see IReferenceDescription::getUrl()
+	 *  @see IReferenceDescription::getDescription()
 	 *
 	 */
 	private static function ovidentia_ref(&$html)
 	{
-		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.-]+)"[^>]*>/', 'bab_replace::ovrefreplace', $html);
+		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.-\?&=]+)"[^>]*(?:>(?P<linkcontent>.+)<\/a>|>)/', 'bab_replace::ovrefreplace', $html);
 	}
 	
 	/**
@@ -481,18 +483,47 @@ class bab_replace {
 	 */
 	private static function ovrefreplace(Array $match)
 	{
-		
-		
 		require_once dirname(__FILE__).'/reference.class.php';
-		$reference = new bab_Reference($match['reference']);
+		
+		$ref = explode('?', $match['reference']);
+		$reference = new bab_Reference($ref[0]);
+		
+		$refDesc = bab_Reference::getReferenceDescription($reference);
+		
+		if (!isset($refDesc) || !($refDesc instanceof IReferenceDescription))
+		{
+			return sprintf('<span style="color:red">%s</span>', bab_toHtml(sprintf(bab_translate('Missing target API for %s'), $match['reference'])));
+		}
+		
+		if (isset($ref[1]))
+		{
+			parse_str($ref[1], $arr);
+			$refDesc->setParameters($arr);
+		}
+		
+		try {
+			$access = $refDesc->isAccessValid();
+		} catch(Exception $e) {
+			return sprintf('<span style="color:red">%s</span>', bab_toHtml($e->getMessage()));
+		}
 		
 		if ('a' === $match['tag'])
 		{
-			$refDesc = bab_Reference::getReferenceDescription($reference);
-			
-			if ($refDesc && ($refDesc instanceof IReferenceDescription))
+			if ($access)
 			{
-				return str_replace($match['reference'], $refDesc->getUrl(), $match[0]);
+				return str_replace($match['reference'], bab_toHtml($refDesc->getUrl()), $match[0]);
+			} else {
+				return $match['linkcontent'];
+			}
+		}
+		
+		if ('img' === $match['tag'])
+		{
+			if ($access)
+			{
+				return $refDesc->getDescription();
+			} else {
+				return '';
 			}
 		}
 		

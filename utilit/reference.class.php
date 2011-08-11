@@ -340,7 +340,7 @@ class bab_Reference implements IGuid
 	private function init($sReference)
 	{
 		$aBuffer = array();
-		if(1 === preg_match('#^(ovidentia)://(.*)/(.+)/(.+)/(.+)$#', $sReference, $aBuffer))
+		if(1 === preg_match('#^(ovidentia)://([^/]*)/([^/]+)/([^/]+)/(.+)$#', $sReference, $aBuffer))
 		{
 			//bab_debug($aBuffer);
 			$this->sProtocol	= $aBuffer[1]; 
@@ -473,12 +473,12 @@ abstract class bab_ReferenceDescriptionImpl implements IReferenceDescription, IG
 	
 	private $oReference = null;
 	private $sReference	= null;
-	 
+	private $parameters = null; 
 	
 	public function __construct(bab_Reference $oReference)
 	{
 		$this->oReference = $oReference;
-		$this->sReference = (string) $oReference;
+		$this->sReference = $oReference->__toString();
 	}
 	
 	public function getGuid()
@@ -488,6 +488,21 @@ abstract class bab_ReferenceDescriptionImpl implements IReferenceDescription, IG
 
 	public function getReference() {
 		return $this->oReference;
+	}
+	
+	/**
+	 * Set additional parameters for the reference description
+	 * @param array $arr
+	 * @return unknown_type
+	 */
+	public function setParameters(Array $arr)
+	{
+		$this->parameters = $arr;
+	}
+	
+	public function getParameters()
+	{
+		return $this->parameters;
 	}
 }
 
@@ -654,3 +669,62 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 		return bab_getDraftArticleArray($this->getReference()->getObjectId());
 	}
 }
+
+
+
+
+
+
+
+/**
+ * Ovml file reference description
+ * ovidentia:///ovml/file/example.html
+ */
+class bab_OvmlFileReferenceDescription extends bab_ReferenceDescriptionImpl
+{
+	public function getType()
+	{
+		return bab_translate('OVML file');
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->getReference()->getObjectId();
+	}
+
+	/**
+	 * @return string	HTML
+	 */
+	public function getDescription() {
+		$parameters = (array) $this->getParameters();
+		return bab_printOvmlTemplate($this->getReference()->getObjectId(), $parameters);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrl() {
+		return '?tg=oml&file='.urlencode($this->getReference()->getObjectId());
+	}
+
+	/**
+	 * @throws Exception if not a valid file
+	 * @return bool
+	 */
+	public function isAccessValid() 
+	{
+		global $babOvmlPath;
+		
+		$filepath = $babOvmlPath.$this->getReference()->getObjectId();
+		
+		if (!file_exists($filepath))
+		{
+			throw new Exception(sprintf(bab_translate('The ovml file %s does not exists'), $this->getReference()->getObjectId()));
+		}
+		
+		return true;
+	}
+}
+
