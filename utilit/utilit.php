@@ -1124,13 +1124,14 @@ function get_newarticles() {
 	
 	
 	$newarticles = 0;
-	if( count($this->topview) > 0 )
+	$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+	if( count($topview) > 0 )
 		{
 		global $babDB;
 		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where (date_publication = '0000-00-00 00:00:00' OR date_publication <= now()) AND date >= '".$babDB->db_escape_string($this->lastlog)."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if( isset($this->topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
+			if( isset($topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
 				{
 				$newarticles++;
 				}
@@ -1146,13 +1147,14 @@ function get_newcomments() {
 		return $newcomments;
 
 	$newcomments = 0;
-	if( count($this->topview) > 0 )
+	$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+	if( count($topview) > 0 )
 		{
 		global $babDB;
 		$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babDB->db_escape_string($this->lastlog)."'");
 		while( $row = $babDB->db_fetch_array($res))
 			{
-			if( isset($this->topview[$row['id_topic']]) )
+			if( isset($topview[$row['id_topic']]) )
 				{
 				$newcomments++;
 				}
@@ -1300,11 +1302,6 @@ function bab_updateUserSettings()
 			$babBody->usergroups[] = BAB_UNREGISTERED_GROUP;
 			}
 		}
-
-	/** 
-	 * @deprecated 
-	 */
-	$babBody->topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
 	
 	$babBody->isSuperAdmin = false;
@@ -1460,29 +1457,41 @@ function bab_updateUserSettings()
 	$HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '0.0.0.0';
 	$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
+	$query = "select id, id_dg, id_user, cpw, sessid from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'";
 	
-	$res = $babDB->db_query("select id, id_dg, id_user, cpw from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'");
+	if ($GLOBALS['BAB_SESS_LOGGED'])
+	{
+		$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
+	}
+	
+	$res = $babDB->db_query($query);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-		$arr = $babDB->db_fetch_array($res);
-		if( extension_loaded('mcrypt') && !empty($arr['cpw']) && isset($GLOBALS['babEncryptionKey']) && !isset($_REQUEST['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $arr['id_user'])
-			{
-			$GLOBALS['babUserPassword'] = bab_decrypt($arr['cpw'], md5($arr['id'].session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
-			}
-
-		if( 0 != $arr['id_dg'] && count($babBody->dgAdmGroups) > 0 && in_array($arr['id_dg'], $babBody->dgAdmGroups ))
-			{
-			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($arr['id_dg'])."'"));
-			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+			$arr = $babDB->db_fetch_array($res);
 			
-			}
-		else if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+			if ($arr['sessid'] == session_id())
 			{
-			$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
-			$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+				bab_setUserPasswordVariable($arr['id'], $arr['cpw'], $arr['id_user']);
+				bab_setCurrentDelegation($arr['id_dg']);
+		
+				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set 
+					dateact=now(), 
+					remote_addr=".$babDB->quote($REMOTE_ADDR).", 
+					forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).", 
+					id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', 
+					grp_change=NULL, 
+					schi_change=NULL, 
+					tg='".$babDB->db_escape_string(bab_rp('tg'))."'  
+				where 
+					id = '".$babDB->db_escape_string($arr['id'])."'
+				");
+			} else {
+				// another session exists for the same user ID (first is the newest)
+				// we want to stay with the newest session so the current session must be disconnected
+				
+				require_once dirname(__FILE__).'/loginIncl.php';
+				bab_signOff();
 			}
-
-		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set dateact=now(), remote_addr=".$babDB->quote($REMOTE_ADDR).", forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).", id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', grp_change=NULL, schi_change=NULL, tg='".$babDB->db_escape_string(bab_rp('tg'))."'  where id = '".$babDB->db_escape_string($arr['id'])."'");
 		}
 	else
 		{
@@ -1502,25 +1511,56 @@ function bab_updateUserSettings()
 
 		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string($babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
-
-	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as lasthit, UNIX_TIMESTAMP() as time FROM ".BAB_USERS_LOG_TBL);
-	while( $row  = $babDB->db_fetch_array($res))
+		
+		
+	$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
+	if (0 === $maxlife)
 		{
-		$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
-		if (0 === $maxlife)
-			{
-			$maxlife = 1440;
-			}
-
-		if(($row['time'] + $maxlife) < $row['time']) 
-			{
-			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
-			}
+		$maxlife = 1440;
 		}
-
+		
+	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where (UNIX_TIMESTAMP(dateact) + ".$babDB->quote($maxlife).") < UNIX_TIMESTAMP()");
 }
 
 
+/**
+ * Set a global variable with user password if the mcrypt mode is activated
+ * this work if $babEncryptionKey is set in config.php 
+ * @param	int		$id		bab_user_log ID
+ * @param 	string 	$cpw	encrypted password
+ * @param	int		$id_user
+ * @return unknown_type
+ */
+function bab_setUserPasswordVariable($id, $cpw, $id_user)
+{
+	if( extension_loaded('mcrypt') && !empty($cpw) && isset($GLOBALS['babEncryptionKey']) && !isset($_REQUEST['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id_user)
+	{
+	$GLOBALS['babUserPassword'] = bab_decrypt($cpw, md5($id.session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
+	}
+}
+
+
+/**
+ * Set necessary variable for delegations
+ * @param int $id_dg		user current delegation
+ * @return unknown_type
+ */
+function bab_setCurrentDelegation($id_dg)
+{
+	global $babBody;
+	
+	if( 0 != $id_dg && count($babBody->dgAdmGroups) > 0 && in_array($id_dg, $babBody->dgAdmGroups ))
+	{
+		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($id_dg)."'"));
+		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+		
+	}
+	else if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+	{
+		$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.*, g.lf, g.lr from ".BAB_DG_GROUPS_TBL." dg, ".BAB_GROUPS_TBL." g where g.id=dg.id_group AND dg.id='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
+		$babBody->currentAdmGroup = &$babBody->currentDGGroup['id'];
+	}
+}
 
 
 
