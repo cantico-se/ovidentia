@@ -1547,7 +1547,7 @@ function bab_setUserPasswordVariable($id, $cpw, $id_user)
  */
 function bab_setCurrentDelegation($id_dg)
 {
-	global $babBody;
+	global $babBody, $babDB;
 	
 	if( 0 != $id_dg && count($babBody->dgAdmGroups) > 0 && in_array($id_dg, $babBody->dgAdmGroups ))
 	{
