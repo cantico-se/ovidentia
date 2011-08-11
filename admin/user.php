@@ -506,6 +506,8 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
 		} else {
 			$validityStart = $validityStartDateTime->getIsoDate();
 		}
+	} else {
+		$validityStart = '0000-00-00';
 	}
 
 	if (!empty($validityEnd)) {
@@ -516,6 +518,8 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
 		} else {
 			$validityEnd = $validityEndDateTime->getIsoDate();
 		}
+	} else {
+		$validityEnd = '0000-00-00';
 	}
 
 	if ($hasError) {
