@@ -401,7 +401,6 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->alert_msg		= bab_translate("It is necessary to remove all associations with the users groups");
 			$this->grp_members		= bab_translate("Managed group");
 			$this->functions		= bab_translate("Deputy functions");
-			$this->attachdesc		= bab_translate("Assign/unassign a user");
 			$this->none				= bab_translate("None");
 			$this->sCategoryCaption	= bab_translate("Category");
 			$this->tcheck			= bab_translate("Check all");
@@ -453,14 +452,6 @@ function groupDelegatModify($gname, $description, $id = '')
 				$battach			= isset($_POST['battach']) ? $_POST['battach'] : 'N' ;
 			}
 			
-			if($battach == 'Y')
-			{
-				$this->battachchecked = 'checked="checked"';
-			}
-			else
-			{
-				$this->battachchecked = '';
-			}
 
 			$tree = new bab_grptree();
 			$this->groups = $tree->getIndentedGroups(NULL);
@@ -551,18 +542,8 @@ function groupDelegatModify($gname, $description, $id = '')
 			if( $i < count($babDG))
 				{
 				$this->delegitem = $babDG[$i][0];
-				switch($babDG[$i][0])
-					{
-					case 'users':
-						$this->delegitemdesc = bab_translate("Create a new user");
-						break;
-					case 'groups':
-						$this->delegitemdesc = bab_translate("Manage groups");
-						break;
-					default:
-						$this->delegitemdesc = bab_toHtml($babDG[$i][1]);
-						break;
-					}
+				$this->delegitemdesc = bab_toHtml($babDG[$i][1]);
+				
 				if( $this->arr[$babDG[$i][0]] == 'Y')
 					$this->checked = 'checked="checked"';
 				else

@@ -2277,7 +2277,7 @@
 <string id="Who can add update events if he is the author">Qui peut mettre à jour des événements s'il est l'auteur</string>
 <string id="ERROR: You must indicate the delegated group !!">ERREUR : vous devez indiquer le groupe délégué !</string>
 <string id="Create a new article">Créer un nouvel article</string>
-<string id="Assign/unassign a user">Attacher/détacher un utilisateur du groupe administré</string>
+<string id="Assign/unassign a user to group and group children">Attacher/détacher un utilisateur du groupe administré et ces enfants</string>
 <string id="Create a new user">Créer un nouvel utilisateur</string>
 <string id="Manage groups">Gérer les groupes</string>
 <string id="Mail subject">Sujet du message</string>
@@ -3180,5 +3180,6 @@
 <string id="Before we can reset your password, you need to enter the information below to help identify your account:">Avant de pouvoir réinitialiser votre mot de passe, vous devez fournir les informations ci-dessous afin de nous aider à identifier votre compte :</string>
 <string id="The submit date must be a future date">La date de soumission doit être une date future</string>
 <string id="Nothing changed">Rien n'a été modifié</string>
+<string id="Access denied, a user associated to a group out of delegation cannot be modified">Accès refusé, un utilsiateur associé a un groupe en dehors de la délégation ne peut pas être modifié</string>
 
 </fr>

@@ -298,7 +298,14 @@ function bab_isGroup($iIdGroup, $iIdParent = null, $bStrict = true)
 	return false;
 }
 
-function bab_groupIsChildOf($iIdParent, $sName)
+
+/**
+ * Test if a group is a child of another group
+ * @param int 			$iIdParent
+ * @param string | int 	$group			group name or group ID
+ * @return arr | false
+ */
+function bab_groupIsChildOf($iIdParent, $group)
 {
 	global $babDB;
 	
@@ -310,7 +317,12 @@ function bab_groupIsChildOf($iIdParent, $sName)
 	
 	$aWhereClauseItem[] = 'parentGrp.id = ' . $babDB->quote((int)$iIdParent);
 	$aWhereClauseItem[] = 'childGrp.lf > parentGrp.lf AND childGrp.lr < parentGrp.lr';
-	$aWhereClauseItem[] = 'childGrp.name = \'' . $babDB->db_escape_like($sName) . '\'';
+	if (is_numeric($group))
+	{
+		$aWhereClauseItem[] = 'childGrp.id = ' . $babDB->quote($group) . ' ';
+	} else {
+		$aWhereClauseItem[] = 'childGrp.name = \'' . $babDB->db_escape_like($group) . '\'';
+	}
 	
 	$sQuery = 
 		'SELECT ' .

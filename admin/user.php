@@ -25,17 +25,6 @@ include_once 'base.php';
 require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $babInstallPath.'admin/register.php';
 
-/**
- * Verify if the current user can update the account (superadmin...) of the user specified by id
- * @param $userId	id (int) of the user who must be updated
- * @return bool		true if the current user has rights to update the user
- */
-function canUpdateUser($userId)
-{
-	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
-	
-	return bab_canCurrentUserUpdateUser($userId);
-}
 
 
 
@@ -443,7 +432,7 @@ function updateGroups($userId)
 	include_once $GLOBALS['babInstallPath'] . 'admin/mgroup.php';
 
 	$id_user = $_POST['item'];
-	if (!canUpdateUser($userId)) {
+	if (!bab_canCurrentUserUpdateUser($userId)) {
 		return;
 	}
 
@@ -486,7 +475,7 @@ function updateUser($userId, $changepwd, $isConfirmed, $disabled, $validityStart
 	require_once $GLOBALS['babInstallPath'] . '/utilit/dateTime.php';
 	global $babBody, $babDB;
 
-	if (!canUpdateUser($userId)) {
+	if (!bab_canCurrentUserUpdateUser($userId)) {
 		return;
 	}
 
@@ -567,7 +556,7 @@ function confirmDeleteUser($userId)
 {
 	global $babBody;
 
-	if (!canUpdateUser($userId)) {
+	if (!bab_canCurrentUserUpdateUser($userId)) {
 		return;
 	}
 
@@ -590,7 +579,6 @@ function confirmDeleteUser($userId)
  */
 function updateNickname($userId, $newNickname)
 {
-	include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
 	
 	$error = '';
 	$res = bab_updateUserNicknameById($userId, $newNickname, false, $error);
@@ -798,6 +786,14 @@ switch($idx) {
 	case 'Modify':
 		/* $item : contains id of the user who must be modified */
 		if (is_numeric($item)) {
+			
+			if (!bab_canCurrentUserUpdateUser($item))
+			{
+				$babBody->addError(bab_translate('Access denied, a user associated to a group out of delegation cannot be modified'));
+				break;
+			}
+			
+			
 			$babBody->title = bab_getUserName($item);
 			/* $pos : filter for the list of the users when you clic a letter (a letter (A, B...) or nothing (all letters))
 			 * $grp : filter for the list of the users when you attach a user in a group (id of a group or nothing)

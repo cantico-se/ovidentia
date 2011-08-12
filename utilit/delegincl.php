@@ -24,8 +24,9 @@
 include_once "base.php";		
 
 $GLOBALS['babDG'] = array(
-				array("users", bab_translate("Users")),
-				array("groups", bab_translate("Groups")),
+				array("users", bab_translate("Create a new user")),
+				array("groups", bab_translate("Manage groups")),
+				array('battach', bab_translate("Assign/unassign a user to group and group children")),
 				array("sections", bab_translate("Sections")),
 				array("articles", bab_translate("Articles")),
 				array("faqs", bab_translate("Faq")),
@@ -99,7 +100,7 @@ function bab_getCurrentUserDelegation($useDefault = true)
 /**
  * @return array
  */
-function bab_getDelegationsFromResource($res) {
+function bab_getDelegationsFromResource($res, $dgall = true, $dg0 = true) {
 	
 	global $babDB;
 
@@ -108,31 +109,29 @@ function bab_getDelegationsFromResource($res) {
 		$allobjects[$arr[0]] = $arr[1];
 	}
 
+	$return = array();
 
-
-	
-	$return = array(
-		'DGAll' => array(
+	if ($dgall) {
+		$return['DGAll'] = array(
 			'id' 			=> false,
 			'name' 			=> bab_translate('All site'),
 			'description' 	=> bab_translate('All site'),
 			'color' 		=> 'FFFFFF',
 			'homePageUrl' 	=> '?',
 			'objects' 		=> $allobjects
-		)
-	);
+		);
+	}
 	
-	
-
-	$return['DG0'] = array(
-		'id' 			=> 0,
-		'name' 			=> bab_translate('Common content'),
-		'description' 	=> bab_translate('Common content created in the main delegation'),
-		'color' 		=> 'FFFFFF',
-		'homePageUrl' 	=> '?tg=oml&file=DG0.html',
-		'objects' 		=> $allobjects
-	);
-
+	if ($dg0) {
+		$return['DG0'] = array(
+			'id' 			=> 0,
+			'name' 			=> bab_translate('Common content'),
+			'description' 	=> bab_translate('Common content created in the main delegation'),
+			'color' 		=> 'FFFFFF',
+			'homePageUrl' 	=> '?tg=oml&file=DG0.html',
+			'objects' 		=> $allobjects
+		);
+	}
 	
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 
@@ -205,7 +204,7 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 
 
 /**
- * Test if a user is memebers of a delegation
+ * Test if a user is member of a delegation
  * if the id_user not given, the current user is used
  * 
  * @since 7.4.0
@@ -254,6 +253,59 @@ function bab_isUserInDelegation($id_delegation, $id_user = null)
 
 
 
+
+
+/**
+ * Test if a user is member of a group not in the delegation
+ * if the id_user not given, the current user is used
+ * 
+ * @since 7.5.91
+ * 
+ * @param int $id_delegation
+ * @param int $id_user
+ * 
+ * @return bool
+ */
+function bab_isUserOutOfDelegation($id_delegation, $id_user = null)
+{
+	global $babDB;
+	
+	if (0 === $id_delegation || '0' === $id_delegation) {
+		return false;
+	}
+	
+	
+	if (NULL === $id_user) {
+		$id_user = $GLOBALS['BAB_SESS_USERID'];
+	}
+	
+	
+	$res = $babDB->db_query('
+		SELECT 
+			g.id   	
+		FROM 
+			bab_groups g,
+			bab_users_groups ug,
+			bab_dg_groups d,
+			bab_groups dg  
+		WHERE 
+			dg.id = d.id_group 
+			AND ug.id_object = '.$babDB->quote($id_user).'
+			AND d.id = '.$babDB->quote($id_delegation).'
+			AND (g.lf < dg.lf OR g.lr > dg.lr )
+			AND g.id=ug.id_group 
+	');
+	
+	return ($babDB->db_num_rows($res) !== 0);
+}
+
+
+
+
+
+
+
+
 /**
  * Get the delegation where the user is administrator
  * @param	int	$id_user
@@ -283,9 +335,17 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 		
 		ORDER BY d.name 
 	');
-
 	
-	return bab_getDelegationsFromResource($res);
+	$dgall = false;
+	$dg0 = false;
+	
+	if (bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP, $id_user))
+	{
+		$dgall = true;
+		$dg0 = true;
+	}
+	
+	return bab_getDelegationsFromResource($res, $dgall, $dg0);
 }
 
 

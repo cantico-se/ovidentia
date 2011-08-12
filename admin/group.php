@@ -52,7 +52,7 @@ function groupMembers($id)
 
 		function temp($id)
 			{
-			global $babBody;
+			global $babBody, $babDB;
 
 			$this->grpid = $id;
 			$this->t_lastname = bab_translate("Lastname");
@@ -70,7 +70,7 @@ function groupMembers($id)
 			
 			$this->db = &$GLOBALS['babDB'];
 
-			$req = "select ut.*, ugt.isprimary from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where ugt.id_group= '".$id."' order by ut.lastname asc";
+			$req = "select ut.*, ugt.isprimary from ".BAB_USERS_TBL." ut left join ".BAB_USERS_GROUPS_TBL." ugt on ut.id=ugt.id_object where ugt.id_group= ".$babDB->quote($id)." order by ut.lastname asc";
 			
 			$this->res = $this->db->db_query($req);
 			$this->count = $this->db->db_num_rows($this->res);
@@ -82,15 +82,18 @@ function groupMembers($id)
 				{
 				$this->bmodname = false;
 				}
+				
+				
+			$this->bshowform = true;
 
-			if( $babBody->currentAdmGroup != 0 && $id == $babBody->currentDGGroup['id_group'] && $babBody->currentDGGroup['battach'] != 'Y' )
-				{
-				$this->bshowform = false;
-				}
-			else
-				{
-				$this->bshowform = true;
-				}
+			if( $babBody->currentAdmGroup != 0)
+			{
+				$this->bshowform = ($babBody->currentDGGroup['battach'] == 'Y' 
+					&& ($id == $babBody->currentDGGroup['id_group'] || false !== bab_groupIsChildOf($babBody->currentDGGroup['id_group'], $id))
+				);
+			}
+			
+				
 				
 			$tree = new bab_grptree();
 			$this->groups = $tree->getGroups(BAB_REGISTERED_GROUP);
@@ -240,30 +243,58 @@ function deleteMembers($users, $item)
 
 function confirmDeleteMembers($item, $names)
 {
+	global $babBody;
+	
+	if( $babBody->currentAdmGroup != 0)
+	{
+		if ($babBody->currentDGGroup['battach'] != 'Y')
+		{
+			// si la delegation courrante n'a pas le droit d'attacher / detacher des users
+			throw new ErrorException('Members modification is not allowed on this delegation');
+		}
+		
+		if (!($item == $babBody->currentDGGroup['id_group'] || false !== bab_groupIsChildOf($babBody->currentDGGroup['id_group'], $item)))
+		{
+			// si le groupe qu'on essai de modifier n'est pas dans la branche de delegation
+			throw new ErrorException('Members modification is not allowed on this group');
+		}
+	}
+
 	$wchoice = bab_rp('wchoice', '');
 	$id_group = bab_rp('idgroup', '');
-	if( !empty($names) && !empty($wchoice))
+	
+	if (empty($wchoice))
 	{
-		$arr = explode(",", $names);
-		$cnt = count($arr);
-		$db = $GLOBALS['babDB'];
-		for($i = 0; $i < $cnt; $i++)
-			{
-			if( $wchoice == 1 ) // delete
-				{
-				bab_removeUserFromGroup($arr[$i], $item);
-				}
-			elseif($wchoice == 2) // copy
-				{
-					bab_addUserToGroup($arr[$i], $id_group);
-				}
-			elseif($wchoice == 3) // move
-				{
-					bab_removeUserFromGroup($arr[$i], $item);
-					bab_addUserToGroup($arr[$i], $id_group);
-				}
-			}
+		throw new ErrorException('missing action choice');
 	}
+	
+	if (empty($names))
+	{
+		throw new ErrorException('missing names');
+	}
+	
+	
+	$arr = explode(",", $names);
+	$cnt = count($arr);
+	$db = $GLOBALS['babDB'];
+	for($i = 0; $i < $cnt; $i++)
+		{
+		if( $wchoice == 1 ) // delete
+			{
+			bab_removeUserFromGroup($arr[$i], $item);
+			}
+		elseif($wchoice == 2) // copy
+			{
+				bab_addUserToGroup($arr[$i], $id_group);
+			}
+		elseif($wchoice == 3) // move
+			{
+				bab_removeUserFromGroup($arr[$i], $item);
+				bab_addUserToGroup($arr[$i], $id_group);
+			}
+		}
+
+	return true;
 }
 
 function confirmDeleteGroup($id)
@@ -290,9 +321,11 @@ if( isset($action) && $action == "Yes")
 	{
 	if($idx == "Deletem")
 		{
-		confirmDeleteMembers($item, $names);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
-		exit;
+		if (confirmDeleteMembers($item, $names))
+			{
+			Header("Location: ". $GLOBALS['babUrlScript']."?tg=group&idx=Members&item=".$item);
+			exit;
+			}
 		}
 	}
 elseif(isset($action) && $action=="DeleteG")

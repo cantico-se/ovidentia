@@ -2159,18 +2159,22 @@ function bab_canCurrentUserUpdateUser($userId) {
 	if ($babBody->currentAdmGroup) {
 		$dg = $babBody->currentAdmGroup;
 	} elseif ($babBody->isSuperAdmin) {
-		$dg = 0;
+		return true;
 	} else {
 		return false;
 	}
-
-	$delegations = bab_getUserVisiblesDelegations($userId);
-	foreach($delegations as $delegation) {
-		if ($delegation['id'] == $dg) {
-			return true;
-		}
+	
+	if (!bab_isUserInDelegation($dg, $userId))
+	{
+		return false;
 	}
-	return false;
+	
+	if (bab_isUserOutOfDelegation($dg, $userId))
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 
