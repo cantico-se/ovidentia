@@ -193,7 +193,7 @@ function groupList()
 			$this->tpl_tree = bab_grp_node_html($tree, $tree->firstnode, 'groups.html', 'grp_childs');
 
 			$this->indelegat = $GLOBALS['babBody']->currentAdmGroup > 0;
-			$this->bupdate = $GLOBALS['babBody']->isSuperAdmin || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
+			$this->bupdate = $GLOBALS['babBody']->currentAdmGroup == 0 || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
 
 			if (isset($_REQUEST['expand_to']))
 				{
@@ -622,7 +622,9 @@ switch($idx)
 	case "List":
 	default:
 		groupList();
-		groupCreateMod();
+		if ($babBody->currentAdmGroup == 0 || $babBody->currentDGGroup['groups'] == 'Y' ) {
+			groupCreateMod();
+		}
 		$babBody->title = bab_translate("Groups list");
 		break;
 	}
