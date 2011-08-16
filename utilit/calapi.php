@@ -102,7 +102,7 @@ function bab_getPersonalCalendar($iduser)
  */
 function bab_calGetEvents(&$params)
 {
-	trigger_error('Deprected');
+	trigger_error('Deprecated');
 	
 	return array();
 }

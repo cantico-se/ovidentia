@@ -75,7 +75,7 @@ function listDrafts()
 			$this->submittxt = bab_translate("Submit");
 			$this->t_modify = bab_translate("Modify");
 			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
-			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s0");
+			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=newedit");
 			$this->urlmod = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s00");
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
 			$this->res = $babDB->db_query($req);
@@ -89,7 +89,7 @@ function listDrafts()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']);
+				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=newedit&iddraft=".$arr['id']);
 				$this->propurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$arr['id']);
 				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id']);
 				$this->previewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
@@ -2582,6 +2582,462 @@ function deleteDraftArticleImage($iIdDraft, $sPathName)
 }
 
 
+/**
+ * render a labeled string
+ *
+ * @param	string | Widget_Item	$label
+ * @param	string | Widget_Item	$value
+ *
+ * @return Widget_Item
+ */
+function bab_labelStr($label, $value)
+{
+	//@return Func_Widgets
+	$W = bab_functionality::get('Widgets');
+
+	if (!($label instanceOf Widget_Item)) {
+		$label = $W->Label($label);
+	}
+
+	if (!($value instanceOf Widget_Displayable_Interface)) {
+		$value = $W->Label($value);
+	}else{
+		if ($value instanceOf Widget_InputWidget) {
+			$value->setAssociatedLabel($label);
+		}
+	}
+	
+	return $W->VBoxItems(
+		$label->colon(false),
+		$value
+	)->setVerticalAlign('middle');
+}
+
+
+/**
+ * @return Func_Widgets
+ */
+function bab_instanciateWidgetFactory()
+{
+	return bab_functionality::get('Widgets');
+}
+
+function bab_ajaxTopicRow($idTopic){
+	$W = bab_instanciateWidgetFactory();
+	$W->includeCss();
+	$W->HtmlCanvas();
+	global $babDB;
+	$res = $babDB->db_query(
+		"SELECT *
+			FROM " . BAB_TOPICS_TBL . "
+			WHERE id= " . $babDB->quote($idTopic)
+	);
+	if( $res && $babDB->db_num_rows($res) == 1 )
+	{
+		$rr = Widget_HtmlCanvas::json_encode($babDB->db_fetch_assoc($res));
+		echo $rr;
+	}else{
+		echo '0';
+	}
+}
+
+/**
+ * 
+ * New function to edit articles
+ * @param int $idArticle article id ord draft id
+ */
+function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false){
+
+	$W = bab_instanciateWidgetFactory();
+	$W->includeCss();
+
+	$I = bab_functionality::get('Icons');
+	$I->includeCss();
+	global $babBody, $babDB;
+	
+	$res = $babDB->db_query('Select * from ' . BAB_ART_DRAFTS_TBL . ' where id = ' . $babDB->quote($idDraft));
+	$draft = $babDB->db_fetch_assoc($res);
+	if(!$draft){
+		$draft = array('bab_article_head' => '', 'bab_article_body' => '');
+	}else{
+		$draft['bab_article_head'] = $draft['head'];
+		$draft['bab_article_body'] = $draft['body'];
+		$draft['topicid'] = $draft['id_topic'];
+	}
+
+	$babBody->title = 'Publication des articles';
+	
+	$page = $W->BabPage();
+	$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
+	if($arrPreview){
+		$page->addItem(
+			$W->Html('
+				<div id="dialog" style="visibilty: hidden">
+					<iframe src="?tg=artedit&idx=newpreview" width="100%" height="100%">
+						<p>Your browser does not support iframes.</p>
+					</iframe>
+				</div>')
+		);
+	}
+
+	$LeftFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
+	
+	$LeftFrame->addItem($W->Html('
+		<style type="text/css">
+			#title, #intro, #corps, #modify{
+				width: 100%;
+			}
+			#title-label{
+				font-weight: bold;
+			}
+			#textEdit_modify{
+				width: 100%;
+			}
+			#textEdit_modify{
+				border: 2px solid #aaa !important; 
+			}
+			#global-article-page{
+				margin: 20px;
+				margin-top: 0;
+			}
+			.nowrap{
+				white-space: nowrap;
+			}
+		</style>
+	'));
+	
+	$topicList = bab_getArticleTopicsAsTextTree(0, false, true);
+	$accessibleTopic = array('','');
+	foreach($topicList as $topic){
+		if( $idArticle != ''){
+			if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topic['id_object'])){
+				$accessibleTopic[$topic['id_object']] = str_replace('&nbsp;', '', $topic['name']);
+			}
+		}else{
+			if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topic['id_object'])){
+				$accessibleTopic[$topic['id_object']] = str_replace('&nbsp;', '', $topic['name']);
+			}
+		}
+	}
+	
+	$LeftFrame->addItem(
+		$W->Section(
+			$tempLab = $W->Label('Titre'),
+			$W->Frame()->addItem(
+				$W->LineEdit('title')->setAssociatedLabel($tempLab)->setMandatory(true,'Le champs titre est obligatoire')->setName('title')
+			)
+		)->setFoldable(false)
+	);
+	
+	$LeftFrame->addItem(
+		$W->Section(
+			$tempLab = $W->Label('Introduction'),
+			$W->Frame('intro')->addItem(
+				$introEditor = $W->BabHtmlEdit('bab_article_head')->setName('head')->setAssociatedLabel($tempLab)->setMandatory(true,'Le corps est obligatoire')
+			)
+		)->setFoldable(true)
+	);
+	
+	$LeftFrame->addItem(
+		$body = $W->Section(
+			'Corps',
+			$W->Frame('corps')->addItem(
+				$bodyEditor = $W->BabHtmlEdit('bab_article_body')->setName('body')
+			)
+		)->setFoldable(true)
+	);
+	if(isset($draft['bab_article_body']) && empty($draft['bab_article_body'])){
+		$body->setFoldable(true, true);
+	}
+	
+	if($idArticle != ""){
+		$LeftFrame->addItem(
+			$W->Section(
+				'Raisons de modifications',
+				$W->Frame('modify')->addItem(
+					$W->TextEdit('textEdit_modify')->setName('modify')
+				)
+			)->setFoldable(true, true)
+		);
+	}
+	
+	$LeftFrame->addItem(
+		$W->HBoxItems(
+			$W->SubmitButton()->setLabel('Annuler')->setName('cancel'),
+			$W->SubmitButton()->validate(true)->setLabel('Enregistrer en brouillon')->setName('draft'),
+			$W->SubmitButton()->validate(true)->setLabel('Previsualisation')->setName('see'),
+			$W->SubmitButton()->validate(true)->setLabel('Soumettre')->setName('submit')
+		)->setHorizontalSpacing(5,'px')
+	);
+
+	$RightFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			'Theme de l\'article',
+			$W->Select('bab-article-topic')
+				->setOptions($accessibleTopic)
+				->setName('topicid')
+		)
+	);
+	
+	$timeArray = array();
+	for($i=0; $i < 1440; $i=$i+5){
+		$hour = floor($i/60);
+		if(strlen($hour) == 1){
+			$hour = '0'.$hour;
+		}
+		$minute = $i%60;
+		if(strlen($minute) == 1){
+			$minute = '0'.$minute;
+		}
+		$timeArray[$hour.':'.$minute.':00'] = $hour.':'.$minute;
+	}
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			'Date de soumission',
+			$W->HBoxItems(
+				$W->DatePicker()->setName('date_submission'),
+				$time_submission = $W->Select()->setName('time_submission')->setValue('00:00:00')->setOptions($timeArray)
+			)->setHorizontalSpacing(5, 'px')
+		)
+	);
+	$RightFrame->addItem(
+		bab_labelStr(
+			'Date de publication',
+			$W->HBoxItems(
+				$W->DatePicker()->setName('date_publication')->setValue(date('d-m-Y'))->disable(),
+				$time_publication = $W->Select()->setName('time_publication')->setValue('00:00:00')->setOptions($timeArray)
+			)->setHorizontalSpacing(5, 'px')
+		)
+	);
+	$RightFrame->addItem(
+		bab_labelStr(
+			'Date d\'archivage',
+			$W->HBoxItems(
+				$W->DatePicker()->setName('date_archiving')->disable(),
+				$time_archiving = $W->Select()->setName('time_archiving')->setValue('00:00:00')->setOptions($timeArray)
+			)->setHorizontalSpacing(5, 'px')
+		)
+	);
+	$RightFrame->addItem(
+		$W->HBoxItems(
+			$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+			$W->Label("Proposer pour la page d'acceuil publique")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+	);
+	$RightFrame->addItem(
+		$W->HBoxItems(
+			$tempCheck = $W->CheckBox()->setName('hpage_private')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+			$W->Label("Proposer pour la page d'acceuil prive")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+	);
+	$RightFrame->addItem(
+		$W->HBoxItems(
+			$tempCheck = $W->CheckBox()->setName('notify_members')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+			$W->Label("Notifier les utilisateurs une fois l'article publie")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+	);
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			"Langue de l'article",
+			$W->Select()
+				->setValue('fr')
+				->setName('lang')
+				->addOption('*','*')
+				->addOption('fr','fr')
+				->addOption('de','de')
+				->addOption('en','en')
+				->addOption('nl','nl')
+				->addOption('nl-be','nl-be')
+		)
+	);
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			"Mots clef",
+			$W->LineEdit()->setName('tags')/*->setMandatory(true,'Les mots clef sont obligatoire')*/->disable()
+		)
+	);
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			"Restriction d'acces",
+			$W->Select()->disable()
+				->setName('restriction')
+				->addOption('','Pas de restriction')
+				->addOption('1','Groupes')
+		)
+	);
+	
+	$RightFrame->addItem(
+		bab_labelStr(
+			"Avec l'operateur",
+			$W->Select()->disable()
+				->setName('operator')
+				->addOption(',','Ou')
+				->addOption('&','Et')
+		)
+	);
+	
+	$RightFrame->addItem(
+		$W->FilePicker()->oneFileMode(true)->setTitle('Ajouter une image')->setName('articlePicture')->disable()
+	);
+	
+	$RightFrame->addItem(
+		$W->FilePicker()->setTitle('Ajouter un fichier')->setName('docf0')->disable()
+	);
+	
+	$globalFrame = $W->HboxItems(
+		$LeftFrame->setSizePolicy(Widget_SizePolicy::MAXIMUM),
+		$RightFrame->setSizePolicy(Widget_SizePolicy::MINIMUM)
+	)->setHorizontalSpacing(30, 'px')->setId('global-article-page');
+	
+	if(!empty($draft) && isset($draft['date_submission'])){
+		$date_submission = explode(' ', $draft['date_submission']);
+		if(isset($date_submission[0]) && $date_submission[0] == '0000-00-00'){
+			unset($draft['date_submission']);
+		}
+		if(isset($date_submission[1])){
+			$time_submission->setValue($date_submission[1]);
+		}
+		
+	}
+	
+	if(!empty($draft) && isset($draft['date_publication'])){
+		$date_publication = explode(' ', $draft['date_publication']);
+		if(isset($date_publication[0]) && $date_publication[0] == '0000-00-00'){
+			unset($draft['date_publication']);
+		}
+		if(isset($date_publication[1])){
+			$time_publication->setValue($date_publication[1]);
+		}
+		
+	}
+	
+	if(!empty($draft) && isset($draft['date_archiving'])){
+		$date_archiving = explode(' ', $draft['date_archiving']);
+		if(isset($date_archiving[0]) && $date_archiving[0] == '0000-00-00'){
+			unset($draft['date_archiving']);
+		}
+		if(isset($date_archiving[1])){
+			$time_archiving->setValue($date_archiving[1]);
+		}
+		
+	}
+	
+	$FormArticle = $W->Form('article-form',$globalFrame)
+		->setValues($draft)
+		->setValues($_POST)
+		->setHiddenValue('tg', 'artedit')
+		->setHiddenValue('idx', 'newsave')
+		->setHiddenValue('idart', $idArticle)
+		->setHiddenValue('iddraft', $idDraft)
+		->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript']);
+	
+	if(ISSET($_SESSION['bab_article_draft_preview'])){
+		$introEditor->setValue($_SESSION['bab_article_draft_preview']['1']);
+		$bodyEditor->setValue($_SESSION['bab_article_draft_preview']['2']);
+	}
+
+	$page->addItem($FormArticle);
+
+	$page->displayHtml();
+}
+
+function bab_newPreviewArticle(){
+	global $babBody;
+	
+	$txt = '';
+	if(isset($_SESSION['bab_article_draft_preview'])){
+		$txt = $_SESSION['bab_article_draft_preview'][0].$_SESSION['bab_article_draft_preview'][1].$_SESSION['bab_article_draft_preview'][2];
+	}
+	
+	
+	$babBody->babecho($txt);
+	unset($_SESSION['bab_article_draft_preview']);
+	die;
+}
+
+function bab_newSaveArticle(){
+	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	
+	$idArt = bab_pp('idart',0);
+	$idDraft = bab_pp('iddraft',0);
+	$idtopic = bab_pp('topicid',0);
+	
+	$headeditor = new bab_contentEditor('bab_article_head');
+	$bab_article_head = $headeditor->getContent();
+	
+	$bodyeditor = new bab_contentEditor('bab_article_body');
+	$bab_article_body = $bodyeditor->getContent();
+	
+	$date_submission = explode('-', bab_pp('date_submission', '00-00-0000'));
+	$time_submission = '00:00:00';
+	if($date_submission != '00-00-0000'){
+		$time_submission = bab_pp('time_submission','00:00:00');
+	}
+	if(isset($date_submission[1]) && isset($date_submission[2])){
+		$date_submission = $date_submission[2].'-'.$date_submission[1].'-'.$date_submission[0].' '.$time_submission;
+	}
+	
+	$date_archiving = explode('-', bab_pp('date_archiving', '00-00-0000'));
+	$time_archiving = '00:00:00';
+	if($date_archiving != '00-00-0000'){
+		$time_archiving = bab_pp('time_archiving','00:00:00');
+	}
+	$date_archiving = $date_archiving[2].'-'.$date_archiving[1].'-'.$date_archiving[0].' '.$time_archiving;
+	
+	$date_publication = explode('-', bab_pp('date_publication', '00-00-0000'));
+	$time_publication = '00:00:00';
+	if($date_publication != '00-00-0000'){
+		$time_publication = bab_pp('time_publication','00:00:00');
+	}
+	$date_publication = $date_publication[2].'-'.$date_publication[1].'-'.$date_publication[0].' '.$time_publication;
+	
+	$articleArr = array(
+		'date_submission' => $date_submission,
+		'date_archiving' => $date_archiving,
+		'date_publication' => $date_publication,
+		'hpage_private' => bab_pp('hpage_private'),
+		'hpage_public' => bab_pp('hpage_public'),
+		'notify_members' => bab_pp('notify_members'),
+		'lang' => bab_pp('lang')
+	);
+	if(bab_pp('submit', '') != ''){
+		bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $temp=null, $idDraft);
+	}elseif(bab_pp('draft', '') != ''){
+		bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
+	}elseif(bab_pp('see', '') != ''){
+		
+		$titleval = bab_toHtml(bab_pp('title'));
+			
+		$editor = new bab_contentEditor('bab_article_body');
+		$editor->setContent($bab_article_body);
+		$editor->setFormat('html');
+		$bodyval = $editor->getHtml();
+		
+		$editor = new bab_contentEditor('bab_article_head');
+		$editor->setContent($bab_article_head);
+		$editor->setFormat('html');
+		$headval = $editor->getHtml();
+		
+		
+		$_SESSION['bab_article_draft_preview'] = array(0 => $titleval,1=> $headval,2=> $bodyval);
+		
+		bab_newEditArticle($idDraft, $idDraft, true);
+		
+		return;
+	}elseif(bab_pp('cancel', '') != ''){
+		if($idDraft != 0){
+			bab_deleteArticleDraft($idDraft);
+		}
+	}
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+}
+
 //bab_debug($_REQUEST);
 
 
@@ -3199,6 +3655,21 @@ switch($idx)
 		$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
 		}
 		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		break;
+	case "newedit":
+		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+		$babBody->addItemMenu("newedit", bab_translate("New article"), $GLOBALS['babUrlScript']."?tg=artedit&idx=newedit");
+		bab_newEditArticle(bab_rp('idart',''),bab_rp('iddraft',''));
+		break;
+	case "newsave":
+		bab_newSaveArticle();
+		break;
+	case "newpreview":
+		bab_newPreviewArticle();
+		break;
+	case "ajaxTopicRow":
+		bab_ajaxTopicRow(bab_gp('id', 0));
+		die;
 		break;
 	case "sub":
 		$idart = bab_rp('idart', 0);

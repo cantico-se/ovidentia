@@ -1085,7 +1085,7 @@ function bab_submitArticleDraft($idart, &$articleid = null)
  * @param array		$articleArr	An array which contains options for the new article draft : date_submission, notify_members...
  * @return int 		Id of the new article draft
  */
-function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html')
+function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', $idDraft = 0)
 {
 	global $babBody, $babDB;
 	/* Options by default */
@@ -1149,7 +1149,7 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 	} else {
 		$idanonymous = 0;
 	}
-
+	
 	$arrdefaults['title'] = $title;
 	$arrdefaults['body'] = $body;
 	$arrdefaults['head'] = $head;
@@ -1158,8 +1158,26 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 	$arrdefaults['id_topic'] = $idTopic;
 	$arrdefaults['id_anonymous'] = $idanonymous;
 
-	$babDB->db_query('INSERT INTO '.BAB_ART_DRAFTS_TBL.' ('.implode(',', array_keys($arrdefaults)).') VALUES ('.$babDB->quote($arrdefaults).')');
-	$iddraft = $babDB->db_insert_id();
+	if($idDraft != 0){
+		$res = $babDB->db_query("select id_author  FROM " . BAB_ART_DRAFTS_TBL . " WHERE id = '" . $idDraft . "'");
+		$arr = $babDB->db_fetch_assoc($res);
+		if( ISSET($arr['id_author']) && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID']){
+			$iddraft = $idDraft;
+			$req = 'UPDATE '.BAB_ART_DRAFTS_TBL.' SET title='.$babDB->quote($arrdefaults['title']);
+			foreach($arrdefaults as $key => $value){
+				$req.=', ' . $babDB->db_escape_string($key) . ' = ' . $babDB->quote($value);
+			}
+			$req.=' WHERE id=' . $babDB->quote($idDraft);
+			$babDB->db_query($req);
+		}else{
+			$error = bab_translate("Access denied");
+			bab_debug("Error in function bab_addArticleDraft() : the current user has no rights to update this article draft or this draft does not exist ".$idDraft);
+			return 0;
+		}
+	}else{
+		$babDB->db_query('INSERT INTO '.BAB_ART_DRAFTS_TBL.' ('.implode(',', array_keys($arrdefaults)).') VALUES ('.$babDB->quote($arrdefaults).')');
+		$iddraft = $babDB->db_insert_id();
+	}
 	$babDB->db_query('UPDATE '.BAB_ART_DRAFTS_TBL.' SET date_creation=NOW(), date_modification=now() WHERE id=' . $babDB->quote($iddraft));
 	return $iddraft;
 }
@@ -1179,10 +1197,10 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
  * 
  * @return bool
  */
-function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', &$articleId = null)
+function bab_addArticle($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', &$articleId = null, $idDraft = 0)
 {
 	$articleId = null;
-	$iddraft = bab_addArticleDraft($title, $head, $body, $idTopic, $error, $articleArr, $headFormat, $bodyFormat);
+	$iddraft = bab_addArticleDraft($title, $head, $body, $idTopic, $error, $articleArr, $headFormat, $bodyFormat, $idDraft);
 	if ($iddraft) {
 		return bab_submitArticleDraft($iddraft, $articleId);
 	}
