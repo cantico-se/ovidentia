@@ -628,13 +628,6 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 				break;
 			}
 
-		$filter = $ctx->get_value('filter');
-
-		if (($filter == "")||(mb_strtoupper($filter) == "NO"))
-			$filter = false;
-		else
-			$filter = true;
-			
 			
 		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
@@ -643,7 +636,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 		{
 			if( $arr['restriction'] == '' || bab_articleAccessByRestriction($arr['restriction']) )
 				{
-				if( $filter == false || isset($topview[$arr['id_topic']]))
+				if(isset($topview[$arr['id_topic']]))
 					{
 					$this->IdEntries[] = $arr['id'];
 					}
