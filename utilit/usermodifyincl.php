@@ -173,7 +173,7 @@ class bab_userModify {
 
 				if( $iDefaultCalendarSiteAccess != BAB_CAL_ACCESS_NONE )
 					{
-					$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select ".$idusercal.", id, ".$iDefaultCalendarSiteAccess." from ".BAB_USERS_TBL." where id !='".$id."'");
+					$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite, caltype) select ".$idusercal.", id, ".$iDefaultCalendarSiteAccess.", 'personal' from ".BAB_USERS_TBL." where id !='".$id."'");
 					}
 				}
 
