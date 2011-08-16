@@ -299,7 +299,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 		$query .= ' ORDER BY a.date DESC';
 
 		$return = array();
-		
+
 		$res = $babDB->db_query($query);
 		while ($row = $babDB->db_fetch_assoc($res)) {
 
@@ -321,7 +321,7 @@ class bab_SearchRealmArticlesFiles extends bab_SearchRealmTopic {
 				'id_article'		=> (int) $row['id_article'],
 				'id_author'			=> (int) $row['id_author'], 
 				'date_publication' 	=> $row['date_publication'],
-				'id_dgowner'		=> (int) $access['id_dgowner']
+				'id_dgowner'		=> (int) $row['id_dgowner']
 			);
 		}
 
