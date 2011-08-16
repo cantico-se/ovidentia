@@ -2885,12 +2885,23 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	);
 	
 	$RightFrame->addItem(
-		$W->FilePicker()->oneFileMode(true)->setTitle(bab_translate('Add a picture'))->setName('articlePicture')->disable()
+		$articlePicture = $W->FilePicker()->oneFileMode(true)->setTitle(bab_translate('Add a picture'))->setName('articlePicture')->disable()
 	);
 	
 	$RightFrame->addItem(
-		$W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('docf0')->disable()
+		$articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('docf0')->disable()
 	);
+	
+	
+	if ($draft)
+	{
+		$draftPath = new bab_path($GLOBALS['babUploadPath'], 'drafts');
+		// les fichiers actuel sont enregistres dans le repertoire draft avec id,fichier
+		$articleFiles->setFolder($draftPath);
+		
+		// TODO emplacement du fichier image ?
+		// $articlePicture->setFolder();
+	}
 	
 	$globalFrame = $W->HboxItems(
 		$LeftFrame->setSizePolicy(Widget_SizePolicy::MAXIMUM),
