@@ -1088,6 +1088,8 @@ function bab_submitArticleDraft($idart, &$articleid = null)
 function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleArr = array(), $headFormat = 'html', $bodyFormat = 'html', $idDraft = 0)
 {
 	global $babBody, $babDB;
+	
+
 	/* Options by default */
 	$arrdefaults = array(	'id_author'=>$GLOBALS['BAB_SESS_USERID'],
 							'lang'=>$GLOBALS['babLanguage'], 
@@ -1117,6 +1119,14 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 			return 0;
 		} else {
 			$informationTopic = $babDB->db_fetch_array($res);
+		}
+	}
+	
+	foreach(array('date_submission', 'date_archiving', 'date_publication') as $dkey)
+	{
+		if (empty($articleArr[$dkey]))
+		{
+			unset($articleArr[$dkey]);
 		}
 	}
 	
