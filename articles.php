@@ -1276,9 +1276,11 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"articles.html", "articleview");
 	}
 
-/* This function is called after we submit the form 'reason to modification of the article'
+/**
+ * This function is called after we submit the form 'reason to modification of the article'
  * This function create a new article draft
- * When the draft is created, the function go in ?tg=artedit&idx=s1 */
+ * When the draft is created, the function go in ?tg=artedit&idx=s1 
+ */
 function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 	global $babBody, $babDB, $arrtop, $rfurl;
 	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($articleId)."'");
@@ -1294,7 +1296,7 @@ function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 			/* Create a new article draft */
 			$idart = bab_newArticleDraft($topicId, $articleId);
 			if( $idart != 0 ) {
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id='".$idart."'");
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id=".$babDB->quote($idart));
 
 				$iIdArticle				= $articleId;
 				$iIdDraft				= $idart;

@@ -318,6 +318,20 @@ class BAB_DateTime
 		return $this;
 	}
 	
+	/**
+	 * Set time with an ISO string
+	 * 
+	 * @param string $hours
+	 * @since 7.5.92
+	 * 
+	 * @return BAB_DateTime
+	 */
+	public function setIsoTime($str)
+	{
+		list($hours, $minutes, $seconds) = explode(':', $str);
+		return $this->setTime($hours, $minutes, $seconds);
+	}
+	
 	
 
 	/**

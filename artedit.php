@@ -2665,7 +2665,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 		$draft['topicid'] = $draft['id_topic'];
 	}
 
-	$babBody->title = 'Publication des articles';
+	$babBody->title = bab_translate('Article publication');
 	
 	$page = $W->BabPage();
 	$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
@@ -2724,24 +2724,24 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 		$W->Section(
 			$tempLab = $W->Label('Titre'),
 			$W->Frame()->addItem(
-				$W->LineEdit('title')->setAssociatedLabel($tempLab)->setMandatory(true,'Le champs titre est obligatoire')->setName('title')
+				$W->LineEdit('title')->setAssociatedLabel($tempLab)->setMandatory(true, bab_translate('The title is mandatory'))->setName('title')
 			)
 		)->setFoldable(false)
 	);
 	
 	$LeftFrame->addItem(
 		$W->Section(
-			$tempLab = $W->Label('Introduction'),
+			$tempLab = $W->Label(bab_translate('Introduction')),
 			$W->Frame('intro')->addItem(
-				$introEditor = $W->BabHtmlEdit('bab_article_head')->setName('head')->setAssociatedLabel($tempLab)->setMandatory(true,'Le corps est obligatoire')
+				$introEditor = $W->BabHtmlEdit('bab_article_head')->setName('head')->setAssociatedLabel($tempLab)->setMandatory(true, bab_translate('The body is mandatory'))
 			)
 		)->setFoldable(true)
 	);
 	
 	$LeftFrame->addItem(
 		$body = $W->Section(
-			'Corps',
-			$W->Frame('corps')->addItem(
+			bab_translate('Body'),
+			$W->Frame()->addItem(
 				$bodyEditor = $W->BabHtmlEdit('bab_article_body')->setName('body')
 			)
 		)->setFoldable(true)
@@ -2753,7 +2753,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	if($idArticle != ""){
 		$LeftFrame->addItem(
 			$W->Section(
-				'Raisons de modifications',
+				bab_tranlate('Reasons for changes'),
 				$W->Frame('modify')->addItem(
 					$W->TextEdit('textEdit_modify')->setName('modify')
 				)
@@ -2763,10 +2763,10 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	
 	$LeftFrame->addItem(
 		$W->HBoxItems(
-			$W->SubmitButton()->setLabel('Annuler')->setName('cancel'),
-			$W->SubmitButton()->validate(true)->setLabel('Enregistrer en brouillon')->setName('draft'),
-			$W->SubmitButton()->validate(true)->setLabel('Previsualisation')->setName('see'),
-			$W->SubmitButton()->validate(true)->setLabel('Soumettre')->setName('submit')
+			$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel'),
+			$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save a draft'))->setName('draft'),
+			$W->SubmitButton()->validate(true)->setLabel(bab_translate('Preview'))->setName('see'),
+			$W->SubmitButton()->validate(true)->setLabel(bab_translate('Submit'))->setName('submit')
 		)->setHorizontalSpacing(5,'px')
 	);
 
@@ -2774,7 +2774,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	
 	$RightFrame->addItem(
 		bab_labelStr(
-			'Theme de l\'article',
+			bab_translate('Article topic'),
 			$W->Select('bab-article-topic')
 				->setOptions($accessibleTopic)
 				->setName('topicid')
@@ -2796,7 +2796,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	
 	$RightFrame->addItem(
 		bab_labelStr(
-			'Date de soumission',
+			bab_translate("Submission date"),
 			$W->HBoxItems(
 				$W->DatePicker()->setName('date_submission'),
 				$time_submission = $W->Select()->setName('time_submission')->setValue('00:00:00')->setOptions($timeArray)
@@ -2805,7 +2805,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	);
 	$RightFrame->addItem(
 		bab_labelStr(
-			'Date de publication',
+			bab_translate("Publication date"),
 			$W->HBoxItems(
 				$W->DatePicker()->setName('date_publication')->setValue(date('d-m-Y'))->disable(),
 				$time_publication = $W->Select()->setName('time_publication')->setValue('00:00:00')->setOptions($timeArray)
@@ -2814,7 +2814,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	);
 	$RightFrame->addItem(
 		bab_labelStr(
-			'Date d\'archivage',
+			bab_translate("Archiving date"),
 			$W->HBoxItems(
 				$W->DatePicker()->setName('date_archiving')->disable(),
 				$time_archiving = $W->Select()->setName('time_archiving')->setValue('00:00:00')->setOptions($timeArray)
@@ -2824,70 +2824,72 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	$RightFrame->addItem(
 		$W->HBoxItems(
 			$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-			$W->Label("Proposer pour la page d'acceuil publique")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+			$W->Label(bab_translate("Propose for public homepage"))->setAssociatedWidget($tempCheck)
 		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
 	);
 	$RightFrame->addItem(
 		$W->HBoxItems(
 			$tempCheck = $W->CheckBox()->setName('hpage_private')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-			$W->Label("Proposer pour la page d'acceuil prive")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+			$W->Label(bab_translate("Propose for private homepage"))->setAssociatedWidget($tempCheck)
 		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
 	);
 	$RightFrame->addItem(
 		$W->HBoxItems(
 			$tempCheck = $W->CheckBox()->setName('notify_members')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-			$W->Label("Notifier les utilisateurs une fois l'article publie")->setAssociatedWidget($tempCheck)->addClass('nowrap')
+			$W->Label(bab_translate("Notify users when the article is published"))->setAssociatedWidget($tempCheck)
 		)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
 	);
 	
 	$RightFrame->addItem(
 		bab_labelStr(
-			"Langue de l'article",
-			$W->Select()
+			bab_translate("Article language"),
+			$lang = $W->Select()
 				->setValue('fr')
 				->setName('lang')
 				->addOption('*','*')
-				->addOption('fr','fr')
-				->addOption('de','de')
-				->addOption('en','en')
-				->addOption('nl','nl')
-				->addOption('nl-be','nl-be')
 		)
 	);
 	
+	$languages = bab_getAvailableLanguages();
+	foreach($languages as $l)
+	{
+		$lang->addOption($l,$l);
+	}
+	
+	
 	$RightFrame->addItem(
 		bab_labelStr(
-			"Mots clef",
+			bab_translate("Keywords"),
 			$W->LineEdit()->setName('tags')/*->setMandatory(true,'Les mots clef sont obligatoire')*/->disable()
 		)
 	);
 	
 	$RightFrame->addItem(
 		bab_labelStr(
-			"Restriction d'acces",
+			bab_translate('Access restriction'),
 			$W->Select()->disable()
 				->setName('restriction')
-				->addOption('','Pas de restriction')
-				->addOption('1','Groupes')
+				->addOption('', bab_translate('No restrictions'))
+				->addOption('1', bab_translate('Groups'))
 		)
 	);
 	
 	$RightFrame->addItem(
 		bab_labelStr(
-			"Avec l'operateur",
+			bab_translate('With operator'),
 			$W->Select()->disable()
 				->setName('operator')
-				->addOption(',','Ou')
-				->addOption('&','Et')
+				->addOption(',',bab_translate('Or'))
+				->addOption('&',bab_translate('And'))
 		)
 	);
 	
 	$RightFrame->addItem(
-		$W->FilePicker()->oneFileMode(true)->setTitle('Ajouter une image')->setName('articlePicture')->disable()
+		$W->FilePicker()->oneFileMode(true)->setTitle(bab_translate('Add a picture'))->setName('articlePicture')->disable()
 	);
 	
 	$RightFrame->addItem(
-		$W->FilePicker()->setTitle('Ajouter un fichier')->setName('docf0')->disable()
+		$W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('docf0')->disable()
 	);
 	
 	$globalFrame = $W->HboxItems(
@@ -2963,6 +2965,7 @@ function bab_newPreviewArticle(){
 
 function bab_newSaveArticle(){
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 	
 	$idArt = bab_pp('idart',0);
 	$idDraft = bab_pp('iddraft',0);
@@ -2974,28 +2977,30 @@ function bab_newSaveArticle(){
 	$bodyeditor = new bab_contentEditor('bab_article_body');
 	$bab_article_body = $bodyeditor->getContent();
 	
-	$date_submission = explode('-', bab_pp('date_submission', '00-00-0000'));
-	$time_submission = '00:00:00';
-	if($date_submission != '00-00-0000'){
-		$time_submission = bab_pp('time_submission','00:00:00');
+	$date_submission = BAB_DateTime::fromUserInput(bab_pp('date_submission'));
+	if($date_submission != null){
+		$date_submission->setIsoTime(bab_pp('time_submission','00:00:00'));
+		$date_submission = $date_submission->getIsoDateTime();
+	} else {
+		$date_submission = '0000-00-00 00:00:00';
 	}
-	if(isset($date_submission[1]) && isset($date_submission[2])){
-		$date_submission = $date_submission[2].'-'.$date_submission[1].'-'.$date_submission[0].' '.$time_submission;
+
+	
+	$date_archiving = BAB_DateTime::fromUserInput(bab_pp('date_archiving'));
+	if($date_archiving != null){
+		$date_archiving->setIsoTime(bab_pp('time_archiving','00:00:00'));
+		$date_archiving = $date_archiving->getIsoDateTime();
+	} else {
+		$date_archiving = '0000-00-00 00:00:00';
 	}
 	
-	$date_archiving = explode('-', bab_pp('date_archiving', '00-00-0000'));
-	$time_archiving = '00:00:00';
-	if($date_archiving != '00-00-0000'){
-		$time_archiving = bab_pp('time_archiving','00:00:00');
+	$date_publication = BAB_DateTime::fromUserInput(bab_pp('date_publication'));
+	if($date_publication != null){
+		$date_publication->setIsoTime(bab_pp('time_publication','00:00:00'));
+		$date_publication = $date_publication->getIsoDateTime();
+	} else {
+		$date_publication = '0000-00-00 00:00:00';
 	}
-	$date_archiving = $date_archiving[2].'-'.$date_archiving[1].'-'.$date_archiving[0].' '.$time_archiving;
-	
-	$date_publication = explode('-', bab_pp('date_publication', '00-00-0000'));
-	$time_publication = '00:00:00';
-	if($date_publication != '00-00-0000'){
-		$time_publication = bab_pp('time_publication','00:00:00');
-	}
-	$date_publication = $date_publication[2].'-'.$date_publication[1].'-'.$date_publication[0].' '.$time_publication;
 	
 	$articleArr = array(
 		'date_submission' => $date_submission,
@@ -3003,7 +3008,7 @@ function bab_newSaveArticle(){
 		'date_publication' => $date_publication,
 		'hpage_private' => bab_pp('hpage_private'),
 		'hpage_public' => bab_pp('hpage_public'),
-		'notify_members' => bab_pp('notify_members'),
+		'notify_members' => bab_pp('notify_members', 'N'),
 		'lang' => bab_pp('lang')
 	);
 	if(bab_pp('submit', '') != ''){
@@ -3035,7 +3040,9 @@ function bab_newSaveArticle(){
 			bab_deleteArticleDraft($idDraft);
 		}
 	}
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+	exit;
 }
 
 //bab_debug($_REQUEST);

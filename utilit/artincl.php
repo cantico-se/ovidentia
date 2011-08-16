@@ -1547,8 +1547,8 @@ function acceptWaitingArticle($idart)
 			}
 		else
 			{
-			$req = "insert into ".BAB_ARTICLES_TBL." (id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) values ";
-			$req .= "('" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
+			$req = "insert into ".BAB_ARTICLES_TBL." (title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) values ";
+			$req .= "('', '', '', '" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
 
 			if( $arr['date_publication'] == '0000-00-00 00:00:00' )	
 				{
