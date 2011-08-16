@@ -3615,8 +3615,8 @@ function processExport()
 
 function tskmgr_htmlToText($sHtml)
 {
-	$sHtml = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $sHtml);
-	$sHtml = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $sHtml);
+	$sHtml = preg_replace('#<BR[[:space:]]*/?[[:space:]]*>#i', "\n ", $sHtml);
+	$sHtml = preg_replace('#<P>|</P>|<P />|<P/>#i', "\n ", $sHtml);
 	$sHtml = strip_tags($sHtml);
 	return $sHtml;
 }

@@ -138,10 +138,10 @@ switch($idx)
 		$new = "";
 		for( $i = 0; $i < count($tab); $i++)
 			{
-			$reg = "<string[[:space:]]*id=\"".preg_quote($tab[$i])."\">([^<]*)<\/string>";
+			$reg = "/<string[[:space:]]*id=\"".preg_quote($tab[$i])."\">([^<]*)<\/string>/";
 			if( !empty($tab[$i]))
 				{
-				if( !ereg($reg, $txt, $m))
+				if( !preg_match($reg, $txt, $m))
 					{
 					$new .= "<string id=\"$tab[$i]\">".$tab[$i]."</string>"."\r\n";
 					}

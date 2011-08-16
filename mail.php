@@ -50,7 +50,7 @@ function addAddress( $val, $to, &$adarr)
 		for($i=0; $i<count($tmp); $i++)
 		{
 			$addr = trim($tmp[$i]);
-			if( eregi("(.*@.*\..*)", $addr, $res))
+			if( preg_match("/(.*@.*\..*)/i", $addr, $res))
 			{
 				$adarr[$to][] = array($addr,$addr);
 			}
@@ -545,12 +545,12 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 			{
 			$format = "plain";
 			$msgbody = bab_getMimePart($mbox, $idreply, "TEXT/PLAIN");
-			$msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a href='\\1'>\\1</a>",$msgbody); 
+			$msgbody = preg_replace( "/((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})/i", "<a href='\\1'>\\1</a>",$msgbody); 
 			}
 		else
 			{
 			$format = "html";
-			$msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$idreply&cid=\\3\\4", $msgbody);
+			$msgbody = preg_replace("/(src|background)=(['\"])cid:([^'\">]*)(['\"])/i", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$accid."&idx=getpart&msg=$idreply&cid=\\3\\4", $msgbody);
 			}
 		$messageval = $CRLF.$CRLF.$CRLF.$CRLF."------".bab_translate("Original Message")."------".$CRLF;
 		$messageval .= "From: ".$fromorg.$CRLF;
