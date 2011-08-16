@@ -173,7 +173,7 @@ function listMails($accid, $criteria, $reverse, $start)
 						$this->msgfromurlname = $headinfo->from[0]->mailbox ."@". $headinfo->from[0]->host;
 						}
 					else {
-						$this->msgfromurlname = $headinfo->from[0]->personal;
+						$this->msgfromurlname = bab_decodePersonal($headinfo->from[0]);
 						}
 				} else {
 					$this->msgfromurlname = '';
@@ -189,8 +189,8 @@ function listMails($accid, $criteria, $reverse, $start)
 
 				$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
 				//$this->msgfromurl = $GLOBALS['babUrlScript']."?tg=inbox&idx=view&accid=".$this->accid."&msg=".$this->msgid."&criteria=".$this->criteria."&reverse=".$this->reverse;
-				$arr = imap_mime_header_decode($headinfo->subject);
-				$this->msgsubjecturlname = isset($arr[0]) ? bab_toHtml($arr[0]->text) : '';
+
+				$this->msgsubjecturlname = bab_toHtml(bab_mailDecodeSubject($headinfo->subject));
 				$this->msgsubjecturl = $this->msgfromurl;
 
 				$this->msgdate = bab_shortDate($headinfo->udate);
@@ -319,11 +319,9 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			$this->criteria 		= $criteria;
 			$this->reverse 			= $reverse;
 			$this->start 			= $start;
-			$this->babCss 			= bab_printTemplate($this,"config.html", "babCss");
-			$this->babMeta 			= bab_printTemplate($this,"config.html", "babMeta");
 			$this->replyurl			= $GLOBALS['babUrlScript']."?tg=mail&idx=reply&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg;	$this->replyaurl = $GLOBALS['babUrlScript']."?tg=mail&idx=replyall&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1";
 			$this->forwardurl		= $GLOBALS['babUrlScript']."?tg=mail&idx=forward&accid=".$accid."&criteria=".$criteria."&reverse=".$reverse."&idreply=".$msg."&all=1&fw=1";
-			$this->sContent			= 'text/html; charset=' . bab_charset::getIso();
+
 			
 			$this->msg = $msg;
 			$this->accid = $accid;
@@ -341,20 +339,12 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				else
 					{
 					$msg = imap_msgno($this->mbox, $msg); 
-					$headinfo = imap_header($this->mbox, $msg); 
+					$headinfo = imap_header($this->mbox, $msg);
 					$arr = $headinfo->from;
 					$this->fromval = '';
 					for($i=0; $i < count($arr); $i++)
 						{
-						if( isset($arr[$i]->personal))
-							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$mhtext = $mhc[0]->text;
-							}
-						else
-							{
-							$mhtext ='';
-							}
+						$mhtext = bab_decodePersonal($arr[$i]);
 						$this->fromval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
 						$this->arrfrom[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 						}
@@ -363,15 +353,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$this->toval = '';
 					for($i=0; $i < count($arr); $i++)
 						{
-						if( isset($arr[$i]->personal))
-							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$mhtext = $mhc[0]->text;
-							}
-						else
-							{
-							$mhtext ='';
-							}
+						$mhtext = bab_decodePersonal($arr[$i]);
 						$this->toval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
 						$this->arrto[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 						}
@@ -379,24 +361,14 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 					$arr = isset($headinfo->cc) ? $headinfo->cc : array();
 					for($i=0; $i < count($arr); $i++)
 						{
-						if( isset($arr[$i]->personal))
-							{
-							$mhc = imap_mime_header_decode($arr[$i]->personal);
-							$mhtext = $mhc[0]->text;
-							}
-						else
-							{
-							$mhtext ='';
-							}
+						$mhtext = bab_decodePersonal($arr[$i]);
 						$this->ccval .= $mhtext . " &lt;" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "&gt;<br>";
 						$this->arrcc[] = array( $mhtext, $arr[$i]->mailbox . "@" . $arr[$i]->host);
 						}
 
-					$mhc = imap_mime_header_decode($headinfo->subject);
-					if(empty($mhc[0]->text))
-						$this->subjectval = "(".bab_translate("none").")";
-					else
-						$this->subjectval = bab_toHtml($mhc[0]->text);
+					
+					
+					$this->subjectval = bab_toHtml(bab_mailDecodeSubject($headinfo->subject));
 					$this->dateval = bab_strftime($headinfo->udate);
 
 					$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/HTML");
@@ -404,11 +376,11 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 						{
 						$this->msgbody = bab_getMimePart($this->mbox, $msg, "TEXT/PLAIN");
 						$this->msgbody= nl2br(bab_toHtml ( $this->msgbody));
-						$this->msgbody = eregi_replace( "((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})", "<a target='blank' href='\\1'>\\1</a>",$this->msgbody); 
+						$this->msgbody = preg_replace( "/((http|https|mailto|ftp):(\/\/)?[^[:space:]<>]{1,})/i", "<a target='blank' href='\\1'>\\1</a>",$this->msgbody); 
 						}
 					else
 						{
-						$this->msgbody = eregi_replace("(src|background)=(['\"])cid:([^'\">]*)(['\"])", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
+						$this->msgbody = preg_replace("/(src|background)=(['\"])cid:([^'\">]*)(['\"])/i", "src=\\2".$GLOBALS['babPhpSelf']."?tg=inbox&accid=".$this->accid."&idx=getpart&msg=$msg&cid=\\3\\4", $this->msgbody);
 						}
 					$this->get_attachment($msg);
 					$this->count = count($this->attachment);
@@ -417,6 +389,10 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 				}
 
 			}
+			
+
+		
+			
 
 		function getnextattachment()
 			{
@@ -586,7 +562,7 @@ function viewMail($accid, $msg, $criteria, $reverse, $start)
 			}
 		}
 	$temp = new temp($accid, $msg, $criteria, $reverse, $start);
-	echo bab_printTemplate($temp,"inbox.html", "mailview");
+	$babBody->babPopup(bab_printTemplate($temp,"inbox.html", "mailview"));
 	}
 
 

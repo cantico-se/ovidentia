@@ -113,3 +113,53 @@ function bab_getMailBox($id_account) {
 		
 	return $mbox;
 }
+
+
+
+
+function bab_mailDecodeSubject($subject)
+{
+	$mhc = imap_mime_header_decode($subject);
+	if(empty($mhc[0]->text))
+	{
+		return "(".bab_translate("none").")";
+	}
+	
+	$subjectval = '';
+	foreach($mhc as $o)
+	{
+		$charset = $o->charset;
+		if ('default' === $charset)
+		{
+			$subjectval .= $o->text;
+		} else {
+		
+			$subjectval .= bab_getStringAccordingToDatabase($o->text, $charset);
+		}
+	}
+	
+	return $subjectval;
+}
+
+
+/**
+ * 
+ * @param object $item		header info item
+ * @return string
+ */
+function bab_decodePersonal($item)
+{
+	if( isset($item->personal))
+	{
+		$mhc = imap_mime_header_decode($item->personal);
+		$charset = $mhc[0]->charset;
+		if ('default' === $charset)
+		{
+			return $mhc[0]->text;
+		}
+		
+		return bab_getStringAccordingToDatabase($mhc[0]->text, $charset);
+	}
+	
+	return '';
+}

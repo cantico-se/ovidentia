@@ -487,11 +487,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 		$fromorg = '';
 		for($i=0; $i < count($arr); $i++)
 			{
-			if( isset($arr[$i]->personal))
-				{
-				$mhc = imap_mime_header_decode($arr[$i]->personal);
-				$fromorg .= $mhc[0]->text;
-				}
+			$fromorg .= bab_decodePersonal($arr[$i]);
 			$fromorg .= " [" . $arr[$i]->mailbox . "@" . $arr[$i]->host . "] ";
 
 			if( $fw != 1)
@@ -503,11 +499,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 			$arr = $headinfo->to;
 			for($i=0; $i < count($arr); $i++)
 				{
-				if (isset($arr[$i]->personal))
-					{
-					$mhc =  imap_mime_header_decode($arr[$i]->personal);
-					$toorg .= $mhc[0]->text." ";
-					}
+				$toorg .= bab_decodePersonal($arr[$i]);
 				$toorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
 
 				if( $all == 1)
@@ -519,11 +511,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 			$ccval = "";
 			for($i=0; $i < count($arr); $i++)
 				{
-				if( isset($arr[$i]->personal))
-					{
-					$mhc = imap_mime_header_decode($arr[$i]->personal);
-					$ccorg .= $mhc[0]->text . " ";
-					}
+				$ccorg .= bab_decodePersonal($arr[$i]);
 				$ccorg .= "[".$arr[$i]->mailbox . "@" . $arr[$i]->host."] ";
 
 				if( $all == 1)
@@ -538,7 +526,7 @@ function mailReply($accid, $criteria, $reverse, $idreply, $all, $fw)
 		if(empty($mhc[0]->text))
 			$subjectval = $re;
 		else
-			$subjectval = $re." ".$mhc[0]->text;
+			$subjectval = $re." ".bab_mailDecodeSubject($headinfo->subject);
 
 		$msgbody = bab_getMimePart($mbox, $idreply, "TEXT/HTML");
 		if(!$msgbody)

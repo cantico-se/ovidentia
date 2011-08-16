@@ -34,7 +34,15 @@ function bab_getMimeType($type, $subtype)
 	return "TEXT/PLAIN";
 	} 
 
-// function by cleong@organic.com
+/**
+ * get mime part, decode content to ovidentia charset
+ * @param unknown_type $mbox
+ * @param int $msg_number
+ * @param string $mime_type
+ * @param object $structure
+ * @param string $part_number
+ * @return string
+ */
 function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $part_number = false) 
 {
 	if(!$structure) 
@@ -63,16 +71,24 @@ function bab_getMimePart($mbox, $msg_number, $mime_type, $structure = false, $pa
 			$text = imap_fetchbody($mbox, $msg_number, $part_number); 
 			if($structure->encoding == 3) 
 				{ 
-				return imap_base64($text); 
+				$text = imap_base64($text); 
 				} 
 			else if($structure->encoding == 4) 
 				{ 
-				return imap_qprint($text); 
-				} 
-			else 
-				{ 
-				return $text; 
-				} 
+				$text = imap_qprint($text); 
+				}
+				
+			// get encoding from structure
+			
+			foreach($structure->parameters as $param)
+				{
+					if ('CHARSET' === $param->attribute)
+					{
+						return bab_getStringAccordingToDataBase($text, mb_strtoupper($param->value));
+					}
+				}
+			
+			return $text;
 			}
 			
 		if($structure->type == 1) /* multipart */ 
