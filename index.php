@@ -26,7 +26,7 @@ include_once "base.php";
 
 /*
  * Return the URL of the site
- * 
+ *
  * @return string (url)
  */
 function bab_getBabUrl() {
@@ -54,12 +54,12 @@ function bab_getBabUrl() {
 }
 
 
-/** 
+/**
  * Remove escapes if magic quotes is on
- */ 
+ */
 function bab_cleanGpc() {
 	static $firstcall = 1;
-	if (1 !== $firstcall) 
+	if (1 !== $firstcall)
 		return;
 	$firstcall = 0;
 	function bab_slashes(&$val, $key='') {
@@ -83,7 +83,7 @@ function bab_cleanGpc() {
 		bab_slashes($_REQUEST);
 		if (!empty($_FILES))
 			{
-			foreach($_FILES as $userfile => $fileinfo) 
+			foreach($_FILES as $userfile => $fileinfo)
 				{
 				bab_slashes($_FILES[$userfile]['name']);
 				}
@@ -112,11 +112,11 @@ if (isset($_REQUEST['WSSESSIONID'])) {
 	session_name(sprintf("OV%u", crc32($babUrl)));
 	session_start();
 }
-	
+
 /* Restore the REQUEST, POST, GET from the session */
 if (isset($_GET['babHttpContext'])) {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
-	bab_restoreHttpContext();	
+	bab_restoreHttpContext();
 	bab_cleanGpc();
 }
 
@@ -136,7 +136,7 @@ $BAB_SESS_HASHID 		= isset($_SESSION['BAB_SESS_HASHID']) 		? $_SESSION['BAB_SESS
 $BAB_SESS_GROUPID 		= isset($_SESSION['BAB_SESS_GROUPID']) 		? $_SESSION['BAB_SESS_GROUPID'] 	: "";
 $BAB_SESS_GROUPNAME 	= isset($_SESSION['BAB_SESS_GROUPNAME']) 	? $_SESSION['BAB_SESS_GROUPNAME'] 	: "";
 $BAB_SESS_WSUSER 		= isset($_SESSION['BAB_SESS_WSUSER']) 		? $_SESSION['BAB_SESS_WSUSER'] 		: false;
-	
+
 
 $babUserPassword = '';
 $incl = '';
@@ -159,7 +159,7 @@ if (!isset($GLOBALS['babUmaskMode'])) {
 
 /*
  * Get the name of the PHP file of script curently executed (default : index.php)
- * 
+ *
  * @return string
  */
 function bab_getSelf() {
@@ -205,7 +205,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 	bab_isUserLogged();
 	bab_updateUserSettings();
 	$babLangFilter->translateTexts();
-	
+
 	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();
 	}
@@ -215,7 +215,7 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 	}
 	if (!isset($babStyle)) {
 		$babStyle = 'ovidentia.css';
-	}	
+	}
 	if (!isset($babSkin)) {
 		$babSkin = 'ovidentia';
 	}
@@ -243,7 +243,7 @@ foreach($babMonths as $key => $val) {
 			$sm = mb_substr($val, 0 , $m++);
 		}
 
-		$babShortMonths[$key] = $sm;			
+		$babShortMonths[$key] = $sm;
 	}
 }
 
@@ -267,13 +267,13 @@ $babDummy = new babDummy();
  * Class used in section babMeta in template config.html
  */
 class bab_configTemplate_sectionBabmeta {
-	
+
 	/*
 	 * Text used as a value to the html meta tag : <meta http-equiv="Content-type" content="{ sContent }" />
 	 * @var string
 	 */
 	public $sContent;
-	
+
 	public function __construct() {
 		$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 	}
@@ -325,13 +325,14 @@ function printBody()
 		private	$babLogoLB = null;
 		private	$babLogoRB = null;
 		private	$babBanner = null;
+		private $babHeadStyleSheets = null;
 
 		public function __construct()
 		{
 			global $babBody, $BAB_SESS_LOGGED, $babSiteName, $babSlogan, $babStyle;
 			$this->version		= isset($GLOBALS['babVersion']) ? $GLOBALS['babVersion'] : '';
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
-			
+
 			$this->style = $babStyle;
 
 			$this->script = $babBody->script;
@@ -384,7 +385,7 @@ function printBody()
 		/**
 		 * These getter are used to do some initialization stuff when some variables are
 		 * accessed for the first time.
-		 * 
+		 *
 		 * @param string $propertyName
 		 * @return mixed
 		 */
@@ -401,7 +402,7 @@ function printBody()
 					}
 					$this->content = $debug . $babBody->printout();
 					return $this->content;
-					
+
 				// The values of nbsectleft and nbsectright are only valid after loadsections has been called.
 				case 'nbsectleft':
 					$this->loadsections();
@@ -410,37 +411,46 @@ function printBody()
 				case 'nbsectright':
 					$this->loadsections();
 					return $this->nbsectright;
-				
+
 				case 'babLogoLT':
 					if (!isset($this->babLogoLT)) {
-						$this->babLogoLT = bab_printTemplate($this, 'config.html', 'babLogoLT');	
+						$this->babLogoLT = bab_printTemplate($this, 'config.html', 'babLogoLT');
 					}
 					return $this->babLogoLT;
 
 				case 'babLogoRT':
 					if (!isset($this->babLogoRT)) {
-						$this->babLogoRT = bab_printTemplate($this, 'config.html', 'babLogoRT');	
+						$this->babLogoRT = bab_printTemplate($this, 'config.html', 'babLogoRT');
 					}
 					return $this->babLogoRT;
 
 				case 'babLogoLB':
 					if (!isset($this->babLogoLB)) {
-						$this->babLogoLB = bab_printTemplate($this, 'config.html', 'babLogoLB');	
+						$this->babLogoLB = bab_printTemplate($this, 'config.html', 'babLogoLB');
 					}
 					return $this->babLogoLB;
 
 				case 'babLogoRB':
 					if (!isset($this->babLogoRB)) {
-						$this->babLogoRB = bab_printTemplate($this, 'config.html', 'babLogoRB');	
+						$this->babLogoRB = bab_printTemplate($this, 'config.html', 'babLogoRB');
 					}
 					return $this->babLogoRB;
 
 				case 'babBanner':
 					if (!isset($this->babBanner)) {
-						$this->babBanner = bab_printTemplate($this, 'config.html', 'babBanner');	
+						$this->babBanner = bab_printTemplate($this, 'config.html', 'babBanner');
 					}
 					return $this->babBanner;
-					
+
+				case 'babHeadStyleSheets':
+					if (!isset($this->babHeadStyleSheets)) {
+						foreach ($babBody->styleSheet as $sheet) {
+							$this->babHeadStyleSheets .= '<link rel="stylesheet" type="text/css" href="' . bab_toHtml($GLOBALS['babInstallPath'] . 'styles/' . $sheet) . '" />' . "\n";
+						}
+						$babBody->styleSheet = array();
+					}
+					return $this->babHeadStyleSheets;
+
 				case 'sitemapPosition':
 					$func = bab_functionality::get('Ovml/Function/SitemapPosition');
 					return $func->toString();
@@ -462,7 +472,7 @@ function printBody()
 
 		/**
 		 * Isset has to be overriden as well for some variables.
-		 * 
+		 *
 		 * @param string $propertyName
 		 * @return bool
 		 */
@@ -478,6 +488,7 @@ function printBody()
 				case 'babLogoLB':
 				case 'babLogoRB':
 				case 'babBanner':
+				case 'babHeadStyleSheets':
 				case 'sitemapPosition':
 				case 'sitemapPageKeywords':
 					return true;
@@ -495,9 +506,9 @@ function printBody()
 				if (!strcmp($this->menukeys[$i], $babBody->menu->curItem)) {
 					$this->menuclass = 'BabMenuCurArea';
 				} else {
-					$this->menuclass = 'BabMenuArea';	
+					$this->menuclass = 'BabMenuArea';
 				}
-					 
+
 				$this->menutext = $this->menuvals[$i]['text'];
 				if( $this->menuvals[$i]['enabled'] == false) {
 					$this->enabled = 0;
@@ -578,7 +589,7 @@ function printBody()
 			else
 				return false;
 		}
-	
+
 
 		public function getNextStyleSheet()
 		{
@@ -603,7 +614,7 @@ function printBody()
 
 if (isset($_GET['babrw']))
 {
-	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw'])) 
+	if (false !== $arr = bab_siteMap::extractNodeUrlFromRewrite($_GET['babrw']))
 	{
 		$_GET += $arr;
 		$_REQUEST += $arr;
@@ -1238,7 +1249,7 @@ switch(bab_rp('tg'))
 		if( sizeof($arr) == 3 && $arr[0] == "addon")
 			{
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-			
+
 			if (!is_numeric($arr[1]))
 				{
 				$arr[1] = bab_addonsInfos::getAddonIdByName($arr[1]);
@@ -1252,7 +1263,7 @@ switch(bab_rp('tg'))
 				for($i = 2; $i < sizeof($arr); $i++) {
 					$module .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[$i]);
 				}
-				
+
 				bab_setAddonGlobals($arr[1]);
 				$babWebStat->addon($row['title']);
 				$babWebStat->module($module);
@@ -1284,14 +1295,14 @@ switch(bab_rp('tg'))
 		}
 		break;
 	}
-	
+
 
 if( !empty($incl))
 	{
 	include $babInstallPath."$incl.php";
 	}
-	
-	
+
+
 /**
  * Event page refreshed
  * @since 6.6.90
