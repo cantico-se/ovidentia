@@ -3595,6 +3595,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		$this->last = $ctx->get_value('last');
 		$this->folderid = $ctx->get_value('folderid');
 		$delegationid = (int) $ctx->get_value('delegationid');
+		$path = $ctx->get_value('path');
 
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 
@@ -3619,7 +3620,19 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 			}
 		else
 			{
-			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and id IN (".$babDB->quote($arr).")" . $sDelegation;
+			$oId = $this->oFmFolderSet->aField['iId'];
+			$res = $this->oFmFolderSet->select($oId->in($arr));
+			$arrpath = array();
+			
+			foreach($res as $oFmFolder)
+			{
+				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
+				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
+				$sRootFolderName = getFirstPath($sRelativePath);
+				$arrpath[] = $sRootFolderName . '/' . $path;
+			}
+			
+			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and (sRelativePath='' AND id IN(".$babDB->quote($arr).") OR CONCAT(sRelativePath, folder) IN(".$babDB->quote($arrpath)."))" . $sDelegation;
 			}
 
 		$arrid = array();
@@ -3633,7 +3646,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		if( count($arrid) > 0 )
 			{
 			$req = "select f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
-			$path = $ctx->get_value('path');
+			
 			if( $path === false || $path === '' )
 				{
 				$path = '';
