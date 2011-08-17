@@ -420,14 +420,14 @@ address.bottom a:link, address.bottom a:visited {
 	display:inline;
 	}
 
-#bab_adminsection h5, 
-#bab_usersection h5,
-#bab_usersection ul.last {
+.bab_adminsection h5, 
+.bab_usersection h5,
+.bab_usersection ul.last {
 	display:none;
 	}
 
 
-body.logged_0 #bab_usersection {
+body.logged_0 .bab_usersection {
 	display:none;
 	}
 
