@@ -2286,6 +2286,7 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
 	var $rootFolderPath;
 	var $folderId;
 	var $path;
+	private $oFmFolder;
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
@@ -2307,11 +2308,10 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
 		if(0 !== $folderid)
 		{
 			$oFmFolder = $this->oFmFolderSet->get($oId->in($folderid));
-//			bab_debug($this->oFmFolderSet->getSelectQuery($oId->in($folderid)));
+			$this->oFmFolder = $oFmFolder;
+
 			if(!is_null($oFmFolder))
 			{
-
-
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
 				$sRelativePath = ($iRelativePathLength === 0) ? $oFmFolder->getName() : $oFmFolder->getRelativePath();
 
@@ -2415,7 +2415,7 @@ class Func_Ovml_Container_SubFolders extends Func_Ovml_Container
 					continue;
 				}
 
-				if(is_dir($sFullPathName . '/' . $sEntry))
+				if(is_dir($sFullPathName . '/' . $sEntry) && $this->accessValid(getFirstPath($this->rootFolderPath), $this->oFmFolder->getName() . '/' . $this->path. '/' . $sEntry))
 				{
 					$this->IdEntries[] = $sEntry;
 				}
