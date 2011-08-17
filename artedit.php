@@ -2706,7 +2706,7 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 		</style>
 	'));
 	
-	$topicList = bab_getArticleTopicsAsTextTree(0, false, true);
+	$topicList = bab_getArticleTopicsAsTextTree(0);
 	$accessibleTopic = array('','');
 	foreach($topicList as $topic){
 		if( $idArticle != ''){
@@ -2889,15 +2889,32 @@ function bab_newEditArticle($idArticle = '', $idDraft = '', $arrPreview = false)
 	);
 	
 	$RightFrame->addItem(
-		$articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('docf0')->disable()
+		$articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('articleFiles')->disable()
 	);
 	
+	/*@var $articlePicture Widget_FilePicker */
+	/*@var $articleFiles Widget_FilePicker */
 	
-	if ($draft)
+	$articlePicture->setEncodingMethod(null);
+	$articleFiles->setEncodingMethod(null);
+	
+	if ($idDraft)
 	{
 		$draftPath = new bab_path($GLOBALS['babUploadPath'], 'drafts');
 		// les fichiers actuel sont enregistres dans le repertoire draft avec id,fichier
-		$articleFiles->setFolder($draftPath);
+		
+		$tmpPath = $articleFiles->getFolder();
+		$tmpPath->createDir();
+		
+		$res = $babDB->db_query("SELECT name FROM bab_art_drafts_files WHERE id_draft=".$babDB->quote($idDraft));
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$targetPath = clone $tmpPath;
+			$targetPath->push($arr['name']);
+			$filePath = clone $draftPath;
+			$filePath->push($idDraft.','.$arr['name']);
+			copy($filePath->toString(), $targetPath->toString());
+		}
 		
 		// TODO emplacement du fichier image ?
 		// $articlePicture->setFolder();
@@ -3023,9 +3040,13 @@ function bab_newSaveArticle(){
 		'lang' => bab_pp('lang')
 	);
 	if(bab_pp('submit', '') != ''){
-		bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $temp=null, $idDraft);
+		$articleId = null;
+		bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $articleId, $idDraft);
+		bab_saveArticleFiles($articleId);
 	}elseif(bab_pp('draft', '') != ''){
-		bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
+		$saved_idDraft = bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
+		bab_saveDraftFiles($saved_idDraft);
+		
 	}elseif(bab_pp('see', '') != ''){
 		
 		$titleval = bab_toHtml(bab_pp('title'));
@@ -3055,6 +3076,91 @@ function bab_newSaveArticle(){
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 	exit;
 }
+
+
+/**
+ * @param	int	$articleId
+ */
+function bab_saveArticleFiles($articleId)
+{
+	$targetPath = new bab_path($GLOBALS['babUploadPath'], 'articles');
+	
+	// TODO
+}
+
+/**
+ * attach files loaded with filePicker to the draft
+ * @param	int	$idDraft
+ * @return unknown_type
+ */
+function bab_saveDraftFiles($idDraft)
+{
+	$targetPath = new bab_path($GLOBALS['babUploadPath'], 'drafts');
+
+	global $babDB;
+	
+	$tablefiles = array();
+	
+	$res = $babDB->db_query("SELECT id, name FROM bab_art_drafts_files WHERE id_draft=".$babDB->quote($idDraft));
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		$tablefiles[$arr['name']] = $arr['id'];
+	}
+	
+	$W = bab_functionality::get('Widgets');
+	/*@var $W Func_Widgets */
+	$filepicker = $W->FilePicker();
+	/*@var $filepicker Widget_FilePicker */
+	
+	$filepicker->setEncodingMethod(null);
+
+	$I = $filepicker->getTemporaryFiles('articleFiles');
+	if ($I instanceOf Widget_FilePickerIterator)
+	{
+		$targetPath->createDir();
+		foreach($I as $filePickerItem)
+		{
+			/*@var $filePickerItem Widget_FilePickerItem */
+			
+			$fname = $filePickerItem->getFileName();
+			$target = clone $targetPath;
+			$target->push($idDraft.','.$fname);
+			if (isset($tablefiles[$fname]))
+			{
+				unlink($target->toString());
+				unset($tablefiles[$fname]);
+				
+			} else {
+				// add to table
+				
+				$babDB->db_query('INSERT INTO bab_art_drafts_files (id_draft, name) VALUES 
+					('.$babDB->quote($idDraft).', '.$babDB->quote($fname).') 
+				');
+			}
+			
+			rename($filePickerItem->getFilePath()->toString(), $target->toString());
+			
+			
+		}
+		
+		$babDB->db_query('DELETE FROM bab_art_drafts_files 
+					WHERE id IN('.$babDB->quote($tablefiles).')');
+		
+		
+		// remove temporary directory
+		
+		$tmpPath = $filepicker->getFolder();
+		/*@var $tmpPath bab_Path */
+		$tmpPath->deleteDir();
+	}
+	
+	
+	
+	
+	
+}
+
+
 
 //bab_debug($_REQUEST);
 
