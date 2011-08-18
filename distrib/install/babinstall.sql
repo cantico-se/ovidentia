@@ -1022,11 +1022,11 @@ INSERT INTO bab_sites_hpman_groups (id_object, id_group) values ('1', '3');
 
 CREATE TABLE bab_homepages (
 	id INT (11) UNSIGNED not null AUTO_INCREMENT,
-	id_article INT (11) UNSIGNED not null,
-	id_site INT (11) UNSIGNED not null,
-	id_group INT (11) UNSIGNED not null,
-	status ENUM ('N', 'Y') not null,
-	ordering INT (11) UNSIGNED not null,
+	id_article INT (11) UNSIGNED DEFAULT '0' not null,
+	id_site INT (11) UNSIGNED DEFAULT '0' not null,
+	id_group INT (11) UNSIGNED DEFAULT '0' not null,
+	status ENUM ('N', 'Y') DEFAULT 'Y' not null,
+	ordering INT (11) UNSIGNED DEFAULT '0' not null,
 	PRIMARY KEY (id),
     KEY id_site (id_site),
     KEY id_group (id_group),
