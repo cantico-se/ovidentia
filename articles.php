@@ -917,227 +917,7 @@ function articlePrint($topics, $article)
 	echo bab_printTemplate($temp,"articleprint.html");
 	}
 
-/**
- * Display the screen 'Reason to modification of an article' when we want to modify an article
- *
- * @param $topicId
- * @param $articleId
- * @return int the number of modifications of the article (historic)
- */
-function modifyArticle($topicId, $articleId) {
-	global $babBodyPopup;
-	class temp {
-		var $arttxt;
 
-		function temp($topicId, $articleId) {
-			global $babBodyPopup, $babBody, $babDB, $arrtop, $rfurl; /* $arrtop contains information of the topic */
-			/* Verify if the current user has right to modify an article in the topic */
-			$access = false;
-			if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicId) ) {
-				$access = true;
-			} else {
-				/* The current user has not right to modify an article in the topic, but we permit if he is a manager and if the option is selected in topic options */
-				if ($arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId)) {
-					$access = true;
-				} else {
-					/* The current user has not right to modify an article in the topic, but we permit if he is the author of teh article and if the option (allow_update) is selected in topic options */
-					list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($articleId)."'"));
-					if ($arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID'] ) {
-						$access = true;
-					}
-				}
-			}
-
-			if(!isset($rfurl)) {
-				$this->rfurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=articles&topics=".urlencode($topicId));
-			} else {
-				$this->rfurl = bab_toHtml($rfurl);
-			}
-
-			if ($access) {
-				/* Calculate the number of article modifications (historic) */
-				list($this->numberOfModificationsOfTheArticle) = $babDB->db_fetch_row($babDB->db_query("select count(id) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($articleId)."'"));
-				$res = $babDB->db_query("select at.id, at.title, at.id_topic, adt.id_author as id_modifier from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article where at.id='".$babDB->db_escape_string($articleId)."'");
-
-				/* If there is a draft, the article is locked. The current user can't modify the article */
-				$this->bmodify = false; /* The current user can't modify the article */
-				if ($res && $babDB->db_num_rows($res) > 0) {
-					$arr = $babDB->db_fetch_array($res);
-					$this->article = bab_toHtml($articleId);
-					$this->topics = bab_toHtml($topicId);
-					$this->arttxt = bab_translate("Article");
-					$this->pathtxt = bab_translate("Path");
-					$this->arttitle = bab_toHtml($arr['title']);
-					$this->pathname = viewCategoriesHierarchy_txt($arr['id_topic']);
-					if( !isset($arr['id_modifier']) || empty($arr['id_modifier']) ) {
-						$this->commenttxt = bab_translate("Reason of the modification");
-						$this->canceltxt = bab_translate("Cancel");
-						$this->updatetxt = bab_translate("Next");
-						$this->updatemodtxt = bab_translate("Don't update article modification date");
-						$this->bmodify = true; /* The current user can modify the article, because there is no draft */
-					} else {
-						$babBodyPopup->msgerror = bab_translate("Article in modification by ").bab_getUsername($arr['id_modifier']);
-					}
-				} else {
-					$babBodyPopup->msgerror = bab_translate("Access denied");
-				}
-			} else {
-				$babBodyPopup->msgerror = bab_translate("Access denied");
-				bab_debug("The current user has not rights to modify an article in the topic");
-			}
-		}
-
-	}
-
-	$temp = new temp($topicId, $articleId);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "articles.html", "modifyarticle"));
-	return $temp->numberOfModificationsOfTheArticle;
-}
-
-
-function viewArticleLog($topics, $article, $pos)
-{
-	global $babBodyPopup;
-
-	class temp
-		{
-		var $topname;
-		var $topurl;
-		var $prevname;
-		var $prevurl;
-		var $nextname;
-		var $nexturl;
-		var $bottomname;
-		var $bottomurl;
-
-		function temp($topics, $article, $pos)
-			{
-			global $babBodyPopup, $babDB, $rfurl;
-
-			$this->topurl = "";
-			$this->bottomurl = "";
-			$this->nexturl = "";
-			$this->prevurl = "";
-			$this->topname = "";
-			$this->bottomname = "";
-			$this->nextname = "";
-			$this->prevname = "";
-			$this->titletxt = bab_translate("Article");
-			$this->pathtxt = bab_translate("Topic");
-			$this->authortxt = bab_translate("Author");
-			$this->datelocktxt = bab_translate("Date");
-			$this->actiontxt = bab_translate("Action");
-			$this->commenttxt = bab_translate("Reason of the modification");
-
-			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
-				$arr = $babDB->db_fetch_array($res);
-				$this->bmodify = false;
-				if( $arr['id_author'] ==  $GLOBALS['BAB_SESS_USERID'] )
-					{
-					$this->editdrafttxt = bab_translate("Edit");
-					$rfurl = !empty($rfurl) ? urlencode($rfurl) : urlencode($GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
-					$this->editdrafturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$arr['id']."&rfurl=".$rfurl);
-					}
-				else
-					{
-					$this->editdrafttxt = false;
-					}
-				}
-			else
-				{
-				$this->editdrafttxt = false;
-				$this->bmodify = true;
-				}
-
-
-			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc");
-			$row = $babDB->db_fetch_array($res);
-			$total = $row["total"];
-
-			$url = $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article;
-			if( $total > BAB_ART_MAXLOGS)
-				{
-				if( $pos > 0)
-					{
-					$this->topurl = bab_toHtml($url."&pos=0");
-					$this->topname = "&lt;&lt;";
-					}
-
-				$next = $pos - BAB_ART_MAXLOGS;
-				if( $next >= 0)
-					{
-					$this->prevurl = bab_toHtml($url."&pos=".$next);
-					$this->prevname = "&lt;";
-					}
-
-				$next = $pos + BAB_ART_MAXLOGS;
-				if( $next < $total)
-					{
-					$this->nexturl = bab_toHtml($url."&pos=".$next);
-					$this->nextname = "&gt;";
-					if( $next + BAB_ART_MAXLOGS < $total)
-						{
-						$bottom = $total - BAB_ART_MAXLOGS;
-						}
-					else
-						{
-						$bottom = $next;
-						}
-					$this->bottomurl = bab_toHtml($url."&pos=".$bottom);
-					$this->bottomname = "&gt;&gt;";
-					}
-				}
-
-			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc";
-			if( $total > BAB_ART_MAXLOGS)
-				{
-				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_ART_MAXLOGS;
-				}
-
-			$this->artpath = viewCategoriesHierarchy_txt($topics);
-			list($this->arttitle) = $babDB->db_fetch_row($babDB->db_query("select title from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."'"));
-			$this->arttitle = bab_toHtml($this->arttitle);
-			$this->res = $babDB->db_query($req);
-			$this->count = $babDB->db_num_rows($this->res);
-			}
-
-		function getnextlog()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->count)
-				{
-				global $babDB;
-				$arr = $babDB->db_fetch_array($this->res);
-				$this->datelock = bab_toHtml(bab_strftime(bab_mktime($arr['date_log']), true));
-				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
-				switch($arr['action_log'])
-					{
-					case 'lock': $this->action = bab_translate("Lock"); break;
-					case 'unlock': $this->action = bab_translate("Unlock"); break;
-					case 'commit': $this->action = bab_translate("Commit"); break;
-					case 'refused': $this->action = bab_translate("Refused"); break;
-					case 'accepted': $this->action = bab_translate("Accepted"); break;
-					default: $this->action = ""; break;
-					}
-				$this->comment = str_replace("\n", "<br>", bab_toHtml($arr['art_log']));
-				$i++;
-				return true;
-				}
-			else
-				{
-				return false;
-				}
-			}
-
-		}
-
-	$temp = new temp($topics, $article, $pos);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "articles.html", "articlehistoric"));
-	return $temp->bmodify;
-}
 
 
 function viewArticle($article)
@@ -1336,12 +1116,6 @@ function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 	}
 }
 
-function submitArticle($topics)
-{
-	global $babBody, $babDB;
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&topicid=".$topics."&rfurl=".urlencode("?tg=articles&idx=Articles&topics=".$topics));
-	exit;
-}
 
 function articles_init($topics)
 {
@@ -1445,43 +1219,14 @@ switch($idx)
 			}
 		break;
 
-	case "log":
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Article historic");
-		$pos = bab_rp('pos', 0);
-		$article = bab_rp('article');
-		$bmodify = viewArticleLog($topics, $article, $pos);
-		if( $bmodify )
-		{
-		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
-		}
-		$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
-		$babBodyPopup->setCurrentItemMenu($idx);
-		printBabBodyPopup();
-		exit;
+	
+
+	case "Modify":
+		require_once dirname(__FILE__).'/utilit/arteditincl.php';
+		bab_editArticleOrDraft(bab_rp('article'),0);
 		break;
 
-	case "Modify": /* Screen 'Reason of the modification' when we want to modify an article */
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->title = bab_translate("Reason of the modification");
 
-		$article = bab_rp('article');
-		$numberOfModificationsOfTheArticle = modifyArticle($topics, $article); /* Return if  */
-
-		$babBodyPopup->addItemMenu("Modify", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topics."&article=".$article.$supp_rfurl);
-		if ($numberOfModificationsOfTheArticle > 0) {
-			/* Add item menu : Historic of the modifications of the article */
-			$babBodyPopup->addItemMenu("log", bab_translate("Historic"), $GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$topics."&article=".$article.$supp_rfurl);
-		}
-		$babBodyPopup->setCurrentItemMenu($idx);
-		printBabBodyPopup();
-		exit;
-		break;
-
-	case "Submit":
-		submitArticle($topics);
-		exit;
-		break;
 
 	case "Print":
 		$article = bab_rp('article');

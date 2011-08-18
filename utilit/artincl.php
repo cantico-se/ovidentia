@@ -2375,3 +2375,36 @@ function indexAllArticles_end($param) {
 
 
 
+
+
+
+/**
+ * render a labeled string
+ *
+ * @param	string | Widget_Item	$label
+ * @param	string | Widget_Item	$value
+ *
+ * @return Widget_Item
+ */
+function bab_labelStr($label, $value)
+{
+	$W = bab_Widgets();
+
+	if (!($label instanceOf Widget_Item)) {
+		$label = $W->Label($label);
+	}
+
+	if (!($value instanceOf Widget_Displayable_Interface)) {
+		$value = $W->Label($value);
+	}else{
+		if ($value instanceOf Widget_InputWidget) {
+			$value->setAssociatedLabel($label);
+		}
+	}
+	
+	return $W->VBoxItems(
+		$label->colon(false),
+		$value
+	)->setVerticalAlign('middle')->addClass('bab-labelStr');
+}
+

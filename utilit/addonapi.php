@@ -3174,3 +3174,12 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 	return false;
 }
 
+
+
+/**
+ * @return Func_Widgets
+ */
+function bab_Widgets()
+{
+	return bab_functionality::get('Widgets');
+}
