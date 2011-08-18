@@ -2730,6 +2730,11 @@ function bab_newPreviewArticle(){
 	die;
 }
 
+
+/**
+ * 
+ * @return unknown_type
+ */
 function bab_newSaveArticle(){
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -2781,11 +2786,11 @@ function bab_newSaveArticle(){
 	);
 	if(bab_pp('submit', '') != ''){
 		$articleId = null;
-		bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $articleId, $idDraft);
-		bab_saveArticleFiles($articleId, $files);
+		//bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $articleId, $idDraft);
+		//bab_saveArticleFiles($articleId, $files);
 	}elseif(bab_pp('draft', '') != ''){
-		$saved_idDraft = bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
-		bab_saveDraftFiles($saved_idDraft, $files);
+		//$saved_idDraft = bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
+		//bab_saveDraftFiles($saved_idDraft, $files);
 		
 	}elseif(bab_pp('see', '') != ''){
 		

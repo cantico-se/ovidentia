@@ -219,7 +219,7 @@ function listArticles($topics)
 						$this->bmodifyurl = false;
 						$this->modifybytxt = bab_translate("In modification by");
 						$this->modifyauthor	= bab_toHtml(bab_getUserName($rr['id_author']));
-						$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id']);
+						$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id']);
 						if( $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 							{
 							$this->modifydrafttxt = bab_translate("Edit draft");
@@ -1103,7 +1103,7 @@ function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
 				exit;
 			} else {
 				echo bab_translate("Draft creation failed");
-				bab_debug("Article draft creation failed in function confirmModifyArticle() : bab_newArticleDraft() don't want to create teh article draft");
+				bab_debug("Article draft creation failed in function confirmModifyArticle() : bab_newArticleDraft() don't want to create the article draft");
 				echo '<br />'.bab_getDebug();
 				exit;
 			}

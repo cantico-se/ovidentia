@@ -42,17 +42,38 @@ function bab_editArticleOrDraft($idArticle = '', $idDraft = '', $arrPreview = fa
 	$I->includeCss();
 	global $babBody, $babDB;
 	
-	$res = $babDB->db_query('Select * from ' . BAB_ART_DRAFTS_TBL . ' where id = ' . $babDB->quote($idDraft));
-	$draft = $babDB->db_fetch_assoc($res);
-	if(!$draft){
+	
+	if (!$idDraft && $idArticle)
+	{
+		// create draft from article
+		try {
+			$idDraft = bab_newArticleDraft(0, $idArticle);
+		} catch(ErrorException $e)
+		{
+			$babBody->addError($e->getMessage());
+			return;
+		}
+		$idArticle = '';
+	}
+	
+	if ($idDraft)
+	{
+	
+		$res = $babDB->db_query('Select * from ' . BAB_ART_DRAFTS_TBL . ' where id = ' . $babDB->quote($idDraft));
+		$draft = $babDB->db_fetch_assoc($res);
+		if(!$draft){
+			throw new ErrorException('This draft does not exists');
+		}else{
+			$draft['bab_article_head'] = $draft['head'];
+			$draft['bab_article_body'] = $draft['body'];
+			$draft['topicid'] = $draft['id_topic'];
+		}
+	} else {
+		// new draft, not saved
 		$draft = array('bab_article_head' => '', 'bab_article_body' => '');
-	}else{
-		$draft['bab_article_head'] = $draft['head'];
-		$draft['bab_article_body'] = $draft['body'];
-		$draft['topicid'] = $draft['id_topic'];
 	}
 
-	$babBody->title = bab_translate('Article publication');
+	$babBody->setTitle(bab_translate('Article publication'));
 	
 	$page = $W->BabPage();
 	$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
@@ -340,25 +361,6 @@ function bab_editArticleOrDraft($idArticle = '', $idDraft = '', $arrPreview = fa
 		// $articlePicture
 		
 		
-	} else if ($idArticle)
-	{
-		// load files from article
-		
-		$artPath = new bab_path($GLOBALS['babUploadPath'], 'articles');
-		// les fichiers actuel sont enregistres dans le repertoire articles avec id,fichier
-		
-		$res = $babDB->db_query("SELECT name FROM bab_art_files WHERE id_article=".$babDB->quote($idArticle));
-		while ($arr = $babDB->db_fetch_assoc($res))
-		{
-			$targetPath = clone $tmpPath;
-			$targetPath->push($arr['name']);
-			$filePath = clone $artPath;
-			$filePath->push($idArticle.','.$arr['name']);
-			copy($filePath->toString(), $targetPath->toString());
-		}
-		
-		// TODO emplacement du fichier image ?
-		// $articlePicture
 	}
 	
 	$globalFrame = $W->HboxItems(
@@ -408,7 +410,7 @@ function bab_editArticleOrDraft($idArticle = '', $idDraft = '', $arrPreview = fa
 		->setHiddenValue('iddraft', $idDraft)
 		->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript']);
 	
-	if(ISSET($_SESSION['bab_article_draft_preview'])){
+	if(isset($_SESSION['bab_article_draft_preview'])){
 		$introEditor->setValue($_SESSION['bab_article_draft_preview']['1']);
 		$bodyEditor->setValue($_SESSION['bab_article_draft_preview']['2']);
 	}
