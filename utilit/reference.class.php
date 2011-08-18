@@ -566,6 +566,7 @@ class bab_FileReferenceDescription extends bab_ReferenceDescriptionImpl
 	 */
 	public function isAccessValid() 
 	{
+		require_once dirname(__FILE__).'/fileincl.php';
 		return bab_FmFileCanDownload($this->getReference()->getObjectId());
 	}
 }
