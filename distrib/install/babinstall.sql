@@ -2235,7 +2235,7 @@ CREATE TABLE bab_art_log (
   id_author int(11) unsigned NOT NULL default '0',
   date_log datetime NOT NULL default '0000-00-00 00:00:00',
   action_log enum('lock','unlock','commit','refused','accepted') NOT NULL default 'lock',
-  art_log text NOT NULL,
+  art_log text,
   PRIMARY KEY  (id),
   KEY id_article (id_article),
   KEY id_author (id_author)
