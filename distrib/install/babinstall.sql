@@ -1025,7 +1025,7 @@ CREATE TABLE bab_homepages (
 	id_article INT (11) UNSIGNED DEFAULT '0' not null,
 	id_site INT (11) UNSIGNED DEFAULT '0' not null,
 	id_group INT (11) UNSIGNED DEFAULT '0' not null,
-	status ENUM ('N', 'Y') DEFAULT 'Y' not null,
+	status ENUM ('N', 'Y') DEFAULT 'N' not null,
 	ordering INT (11) UNSIGNED DEFAULT '0' not null,
 	PRIMARY KEY (id),
     KEY id_site (id_site),
