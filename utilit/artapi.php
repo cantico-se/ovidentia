@@ -1092,7 +1092,7 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 	
 
 	/* Options by default */
-	$arrdefaults = array(	'id_author'			=> $GLOBALS['BAB_SESS_USERID'],
+	$arrdefaults = array(	'id_author'			=> (int) $GLOBALS['BAB_SESS_USERID'],
 							'lang'				=> $GLOBALS['babLanguage'], 
 							'date_submission'	=> '0000-00-00 00:00:00', 
 							'date_archiving'	=> '0000-00-00 00:00:00', 
