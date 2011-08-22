@@ -454,7 +454,7 @@ class bab_ArtDraft
 		$filepicker->setEncodingMethod(null)->setName('articleFiles');
 	
 		$I = $filepicker->getTemporaryFiles('articleFiles');
-		if ($I instanceOf Widget_FilePickerIterator)
+		if (($I instanceOf Widget_FilePickerIterator) && !empty($files))
 		{
 			$targetPath->createDir();
 			foreach($I as $filePickerItem)

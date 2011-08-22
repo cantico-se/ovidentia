@@ -1525,7 +1525,22 @@ function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;
 
-	$res = $babDB->db_query("select adt.*, tt.category as topicname, tt.allow_attachments, tct.id_dgowner, tt.allow_addImg, tt.busetags from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  where adt.id='".$babDB->db_escape_string($idart)."'");
+	$res = $babDB->db_query("
+		select 
+			adt.*, 
+			tt.category as topicname, 
+			tt.allow_attachments, 
+			tct.id_dgowner, 
+			tt.allow_addImg, 
+			tt.busetags 
+		from 
+			".BAB_ART_DRAFTS_TBL." adt 
+				left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id 
+				left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  
+			
+		where adt.id='".$babDB->db_escape_string($idart)."'
+	");
+	
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
@@ -1536,7 +1551,13 @@ function acceptWaitingArticle($idart)
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
-			$req = "update ".BAB_ARTICLES_TBL." set id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."', date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', date_publication='".$babDB->db_escape_string($arr['date_publication'])."', restriction='".$babDB->db_escape_string($arr['restriction'])."', lang='".$babDB->db_escape_string($arr['lang'])."'";
+			$req = "update ".BAB_ARTICLES_TBL." set 
+				id_topic=".$babDB->quote($arr['id_topic']).", 
+				id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."', 
+				date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', 
+				date_publication='".$babDB->db_escape_string($arr['date_publication'])."', 
+				restriction='".$babDB->db_escape_string($arr['restriction'])."', 
+				lang='".$babDB->db_escape_string($arr['lang'])."'";
 			if( $arr['update_datemodif'] != 'N')
 				{
 				$req .= ", date_modification=now()";
@@ -1547,7 +1568,9 @@ function acceptWaitingArticle($idart)
 			}
 		else
 			{
-			$req = "insert into ".BAB_ARTICLES_TBL." (title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) values ";
+			$req = "insert into ".BAB_ARTICLES_TBL." 
+				(title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) 
+				values ";
 			$req .= "('', '', '', '" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
 
 			if( $arr['date_publication'] == '0000-00-00 00:00:00' )	
@@ -1569,7 +1592,12 @@ function acceptWaitingArticle($idart)
 		$head = imagesUpdateLink($arr['head'], $idart."_draft_", $articleid."_art_" );
 		$body = imagesUpdateLink($arr['body'], $idart."_draft_", $articleid."_art_" );
 
-		$req = "update ".BAB_ARTICLES_TBL." set head='".$babDB->db_escape_string($head)."', body='".$babDB->db_escape_string($body)."', title='".$babDB->db_escape_string($arr['title'])."' where id='".$babDB->db_escape_string($articleid)."'";
+		$req = "update ".BAB_ARTICLES_TBL." set 
+			head='".$babDB->db_escape_string($head)."', 
+			body='".$babDB->db_escape_string($body)."', 
+			title='".$babDB->db_escape_string($arr['title'])."' 
+			
+		where id='".$babDB->db_escape_string($articleid)."'";
 		$res = $babDB->db_query($req);
 
 	
