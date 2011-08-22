@@ -31,7 +31,8 @@ function bab_setTopicSettings(){
 		url: jQuery('[name="ajaxpath"]').val()+'?tg=artedit&idx=ajaxTopicRow&id='+valueSelected,
 		dataType: 'json',
 		success: function(settings){
-			if(settings.restriction == 'Y'){
+
+			if(settings.restrict_access == 'Y'){
 				jQuery('[name="restriction"]').removeAttr('disabled');
 				jQuery('[name="restriction"]').closest('.bab-labelStr').show();
 				jQuery('[name="operator"]').removeAttr('disabled');
