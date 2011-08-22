@@ -1868,7 +1868,7 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 }
 
 
-function bab_previewArticleDraft($idart, $echo=0)
+function bab_previewArticleDraft($idart)
 	{
 	global $babBody;
 
@@ -2056,6 +2056,17 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 		$res = $babDB->db_query("SELECT * FROM ".BAB_ART_DRAFTS_TBL." WHERE id_article=".$babDB->quote($idarticle));
 		if ($babDB->db_num_rows($res) > 0)
 		{
+			// if the current draft is my draft, return the id draft
+			
+			if (1 === $babDB->db_num_rows($res) && $GLOBALS['BAB_SESS_LOGGED'])
+			{
+				$draft_arr = $babDB->db_fetch_assoc($res);
+				if (((int) $draft_arr['id_author']) === (int) $GLOBALS['BAB_SESS_USERID'])
+				{
+					return $draft_arr['id'];
+				}
+			}
+			
 			throw new ErrorException(bab_translate('A draft for this article allready exists'));
 			return 0;
 		}		
@@ -2067,11 +2078,13 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 			throw new ErrorException(bab_translate('The article does not exists'));
 			return 0;
 		}
+		
+		$idtopic = (int) $arr['id_topic'];
 	}
 	
 	
 	$error = '';
-	$id = bab_addArticleDraft(bab_translate("New article"), '', '', (int) $arr['id_topic'], $error);
+	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error);
 	if ($id === 0) {
 		throw new ErrorException($error);
 		return 0;
@@ -2080,6 +2093,8 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 
 	
 	if( $idarticle != 0) {
+		
+		// copy attachments to draft
 
 		$babDB->db_query("
 			UPDATE ".BAB_ART_DRAFTS_TBL." set 
@@ -2115,9 +2130,32 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 		}
 		
 		
-		// TODO copy associated image
+		// copy associated image to draft
+		
+		if ($image = bab_getImageArticle($idarticle))
+		{
+			$source = new bab_path($GLOBALS['babUploadPath'],$image['relativePath'],$image['name']);
+			
+			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
+			/*@var $oPubPathEnv bab_PublicationPathsEnv */
+			$oPubPathEnv->setEnv(0);
+	
+			$targetPath = new bab_path($oPubPathEnv->getDraftArticleImgPath($id));
+			$targetPath->createDir();
+			$target = clone $targetPath;
+			$target->push($image['name']);
+			
+			if (copy($source->toString(), $target->toString()))
+			{
+				$sRelativePath = mb_substr($targetPath->toString(), 1 + mb_strlen($GLOBALS['babUploadPath']));
+				bab_addImageToDraftArticle($id, $image['name'], $sRelativePath.'/');
+			}
+		}
 		
 		
+		
+		
+		// copy tags to draft
 			
 		require_once dirname(__FILE__) . '/tagApi.php';
 	

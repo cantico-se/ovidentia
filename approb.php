@@ -1121,7 +1121,7 @@ function previewWaitingArticle($idart)
 			$GLOBALS['babBodyPopup']->title = & $babBody->title;
 			$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
 
-			$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart, 0));
+			$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart));
 			printBabBodyPopup();
 		}
 	} else {

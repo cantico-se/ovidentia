@@ -25,7 +25,6 @@
 * @internal SEC1 NA 08/12/2006 FULL
 */
 include 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/topincl.php';
@@ -75,7 +74,7 @@ function listDrafts()
 			$this->submittxt = bab_translate("Submit");
 			$this->t_modify = bab_translate("Modify");
 			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
-			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=newedit");
+			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit");
 			$this->urlmod = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s00");
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
 			$this->res = $babDB->db_query($req);
@@ -89,7 +88,7 @@ function listDrafts()
 			if( $i < $this->count)
 				{
 				$arr = $babDB->db_fetch_array($this->res);
-				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=newedit&iddraft=".$arr['id']);
+				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit&iddraft=".$arr['id']);
 				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id']);
 				$this->previewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->name = bab_toHtml($arr['title']);
@@ -809,6 +808,13 @@ function showEditArticle()
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "editarticlestep"));
 }
 
+
+/**
+ * @todo delete
+ * @deprecated
+ * @param $idart
+ * @return unknown_type
+ */
 function showPreviewArticle($idart)
 {
 	global $babBodyPopup;
@@ -885,7 +891,7 @@ function showPreviewArticle($idart)
 					{
 					$this->bupprobchoice = false;
 					}
-				$this->content = bab_previewArticleDraft($idart, 0);
+				$this->content = bab_previewArticleDraft($idart);
 				}
 			else
 				{
@@ -1829,7 +1835,7 @@ function restoreRefusedArticleDraft($idart)
 	
 /**
  * 
- * @deprecated	replaced by bab_editArticleOrDraft
+ * @deprecated	replaced by bab_ArticleDraftEditor
  * 
  * @param $idart
  * @param $title
@@ -1894,32 +1900,7 @@ function editArticleDraft($idart, $title, $lang, $message)
 	$babBodyPopup->babecho(bab_printTemplate($temp, "artedit.html", "editdraft"));
 	}
 
-function previewArticleDraft($idart)
-	{
-	global $babBody, $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-		{
-		$arr = $babDB->db_fetch_array($res);
-		class temp
-			{
-			var $content;
-			
-			
-			function temp($idart)
-				{
-				$this->content	= bab_previewArticleDraft($idart, 0);
-				}
-			}
 
-		$temp = new temp($idart);
-		$babBody->babPopup( bab_printTemplate($temp, "artedit.html", "previewarticle"));
-		}
-	else
-		{
-		$babBody->babPopup( bab_translate("Access denied"));
-		}
-	}
 
 
 function updateArticleDraft($idart, $title,  $lang, $approbid, &$message)
@@ -2716,213 +2697,120 @@ function bab_ajaxRemoveAttachment()
 	
 }
 
-function bab_newPreviewArticle(){
-	global $babBody;
-	
-	$txt = '';
-	if(isset($_SESSION['bab_article_draft_preview'])){
-		$txt = $_SESSION['bab_article_draft_preview'][0].$_SESSION['bab_article_draft_preview'][1].$_SESSION['bab_article_draft_preview'][2];
-	}
-	
-	
-	$babBody->babecho($txt);
-	unset($_SESSION['bab_article_draft_preview']);
-	die;
-}
 
 
 /**
- * 
+ * Save article draft
+ * @todo rename
  * @return unknown_type
  */
 function bab_newSaveArticle(){
+	
+	global $babBody;
+	
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-	
-	$idArt = bab_pp('idart',0);
-	$idDraft = bab_pp('iddraft',0);
-	$idtopic = bab_pp('topicid',0);
-	$files = bab_pp('files');
-	
-	$headeditor = new bab_contentEditor('bab_article_head');
-	$bab_article_head = $headeditor->getContent();
-	
-	$bodyeditor = new bab_contentEditor('bab_article_body');
-	$bab_article_body = $bodyeditor->getContent();
-	
-	$date_submission = BAB_DateTime::fromUserInput(bab_pp('date_submission'));
-	if($date_submission != null){
-		$date_submission->setIsoTime(bab_pp('time_submission','00:00:00'));
-		$date_submission = $date_submission->getIsoDateTime();
-	} else {
-		$date_submission = '0000-00-00 00:00:00';
-	}
+	require_once $GLOBALS['babInstallPath']."utilit/artdraft.class.php";
+	require_once $GLOBALS['babInstallPath']."utilit/arteditincl.php";
 
 	
-	$date_archiving = BAB_DateTime::fromUserInput(bab_pp('date_archiving'));
-	if($date_archiving != null){
-		$date_archiving->setIsoTime(bab_pp('time_archiving','00:00:00'));
-		$date_archiving = $date_archiving->getIsoDateTime();
-	} else {
-		$date_archiving = '0000-00-00 00:00:00';
+
+	
+	$id_topic = (int) bab_pp('topicid',0);
+	
+	if (0 === $id_topic)
+	{
+		$babBody->addError(bab_translate('The topic is mandatory'));
+		return false;
 	}
 	
-	$date_publication = BAB_DateTime::fromUserInput(bab_pp('date_publication'));
-	if($date_publication != null){
-		$date_publication->setIsoTime(bab_pp('time_publication','00:00:00'));
-		$date_publication = $date_publication->getIsoDateTime();
+	$idDraft = bab_pp('iddraft',0);
+	$draft = new bab_ArtDraft;
+	
+	if (empty($idDraft))
+	{
+		$draft->createInTopic($id_topic);
 	} else {
-		$date_publication = '0000-00-00 00:00:00';
+		$draft->getFromIdDraft($idDraft);
+		$draft->id_topic = $id_topic;
 	}
 	
-	$articleArr = array(
-		'date_submission' => $date_submission,
-		'date_archiving' => $date_archiving,
-		'date_publication' => $date_publication,
-		'hpage_private' => bab_pp('hpage_private'),
-		'hpage_public' => bab_pp('hpage_public'),
-		'notify_members' => bab_pp('notify_members', 'N'),
-		'lang' => bab_pp('lang')
-	);
+	
+	
+	$draft->title = bab_pp('title');
+	
+	$headeditor = new bab_contentEditor('bab_article_head');
+	$draft->head = $headeditor->getContent();
+	$draft->head_format = $headeditor->getFormat();
+	
+	$bodyeditor = new bab_contentEditor('bab_article_body');
+	$draft->body = $bodyeditor->getContent();
+	$draft->body_format = $bodyeditor->getFormat();
+	
+	$draft->importDate('date_submission', bab_pp('date_submission'), bab_pp('time_submission','00:00:00'));
+	$draft->importDate('date_archiving', bab_pp('date_archiving'), bab_pp('time_archiving','00:00:00'));
+	$draft->importDate('date_publication', bab_pp('date_publication'), bab_pp('time_publication','00:00:00'));
+
+	$draft->hpage_private = bab_pp('hpage_private', 'N');
+	$draft->hpage_public = bab_pp('hpage_public', 'N');
+	
+	$draft->notify_members = bab_pp('notify_members', 'N');
+	$draft->lang = bab_pp('lang');
+	
+	
+	
+	
 	if(bab_pp('submit', '') != ''){
-		$articleId = null;
-		//bab_addArticle(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $articleId, $idDraft);
-		//bab_saveArticleFiles($articleId, $files);
+		$draft->save();
+		$draft->saveTempAttachments(bab_pp('files', array()));
+		$draft->saveTempPicture();
+		$draft->saveTags(bab_pp('tags'));
+		$draft->submit();
+		
+		$url = bab_pp('submitUrl');
+		
 	}elseif(bab_pp('draft', '') != ''){
-		//$saved_idDraft = bab_addArticleDraft(bab_pp('title'), $bab_article_head, $bab_article_body, $idtopic, $error, $articleArr, 'html', 'html', $idDraft);
-		//bab_saveDraftFiles($saved_idDraft, $files);
+		
+		$draft->save();
+		$draft->saveTempAttachments(bab_pp('files', array()));
+		$draft->saveTempPicture();
+		$draft->saveTags(bab_pp('tags'));
+		
+		$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
 		
 	}elseif(bab_pp('see', '') != ''){
 		
-		$titleval = bab_toHtml(bab_pp('title'));
-			
-		$editor = new bab_contentEditor('bab_article_body');
-		$editor->setContent($bab_article_body);
-		$editor->setFormat('html');
-		$bodyval = $editor->getHtml();
+		$draft->save();
+		$draft->saveTempAttachments(bab_pp('files', array()));
+		$draft->saveTempPicture();
+		$draft->saveTags(bab_pp('tags'));
 		
-		$editor = new bab_contentEditor('bab_article_head');
-		$editor->setContent($bab_article_head);
-		$editor->setFormat('html');
-		$headval = $editor->getHtml();
-		
-		
-		$_SESSION['bab_article_draft_preview'] = array(0 => $titleval,1=> $headval,2=> $bodyval);
-		
-		bab_editArticleOrDraft($idArt, $idDraft, true);
+		$form = new bab_ArticleDraftEditor;
+		$form->fromDraft($idDraft);
+		$form->preview();
+		$form->display();
 		
 		return;
+		
+		
 	}elseif(bab_pp('cancel', '') != ''){
-		if($idDraft != 0){
-			bab_deleteArticleDraft($idDraft);
-		}
+		
+		$draft->delete();
+		$url = bab_pp('cancelUrl');
 	}
 	
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+	
+	if (empty($url))
+	{
+		$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+	}
+	
+	
+	Header("Location: ". $url);
 	exit;
 }
 
 
-/**
- * @param	int	$articleId
- */
-function bab_saveArticleFiles($articleId)
-{
-	$targetPath = new bab_path($GLOBALS['babUploadPath'], 'articles');
-	
-	// TODO
-}
-
-/**
- * attach files loaded with filePicker to the draft
- * @param	int		$idDraft
- * @param	array	$files		submited array with descrptions of files and ordering
- * @return unknown_type
- */
-function bab_saveDraftFiles($idDraft, $files)
-{
-	$targetPath = new bab_path($GLOBALS['babUploadPath'], 'drafts');
-
-	global $babDB;
-	
-	$tablefiles = array();
-	
-	$res = $babDB->db_query("SELECT id, name FROM bab_art_drafts_files WHERE id_draft=".$babDB->quote($idDraft));
-	while ($arr = $babDB->db_fetch_assoc($res))
-	{
-		$tablefiles[$arr['name']] = $arr['id'];
-	}
-	
-	$sortkeys = array_flip(array_keys($files));
-	
-	$W = bab_functionality::get('Widgets');
-	/*@var $W Func_Widgets */
-	$filepicker = $W->FilePicker();
-	/*@var $filepicker Widget_FilePicker */
-	
-	$filepicker->setEncodingMethod(null);
-
-	$I = $filepicker->getTemporaryFiles('articleFiles');
-	if ($I instanceOf Widget_FilePickerIterator)
-	{
-		$targetPath->createDir();
-		foreach($I as $filePickerItem)
-		{
-			/*@var $filePickerItem Widget_FilePickerItem */
-			
-			$fname = $filePickerItem->getFileName();
-			$target = clone $targetPath;
-			$target->push($idDraft.','.$filePickerItem->toString());
-			if (isset($tablefiles[$fname]))
-			{
-				// allredy in table, update sortkey and description
-				
-				unlink($target->toString());
-				unset($tablefiles[$fname]);
-				
-				$babDB->db_query('UPDATE bab_art_drafts_files SET 
-					description='.$babDB->quote($files[$fname]).',
-					ordering='.$babDB->quote($sortkeys[$fname] +1).' 
-					
-					WHERE name='.$babDB->quote($filePickerItem->toString()).' AND id_draft='.$babDB->quote($idDraft).' 
-				');
-				
-			} else {
-				// add to table
-				
-				$babDB->db_query('INSERT INTO bab_art_drafts_files (id_draft, name, description, ordering) VALUES 
-					(
-						'.$babDB->quote($idDraft).', 
-						'.$babDB->quote($filePickerItem->toString()).',
-						'.$babDB->quote($files[$fname]).',
-						'.$babDB->quote($sortkeys[$fname] +1).'
-					) 
-				');
-			}
-			
-			rename($filePickerItem->getFilePath()->toString(), $target->toString());
-			
-			
-		}
-		
-		$babDB->db_query('DELETE FROM bab_art_drafts_files 
-					WHERE id IN('.$babDB->quote($tablefiles).')');
-		
-		
-		// remove temporary directory
-		
-		$tmpPath = $filepicker->getFolder();
-		/*@var $tmpPath bab_Path */
-		$tmpPath->deleteDir();
-		
-		unset($_SESSION['bab_articleTempAttachments']);
-	}
-	
-	
-	
-	
-	
-}
 
 
 
@@ -3434,6 +3322,8 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+		
+	/*
 
 	case "s1":
 		if( !isset($message)) { $message = '';}
@@ -3454,6 +3344,7 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+		
 	case "s3":
 		if( !isset($message)) { $message = '';}
 		$babBodyPopup = new babBodyPopup();
@@ -3464,6 +3355,8 @@ switch($idx)
 		printBabBodyPopup();
 		exit;
 		break;
+	*/		
+
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		if( !isset($popupmessage)) { $popupmessage ='';}
@@ -3482,9 +3375,7 @@ switch($idx)
 		exit;
 		break;
 	case "preview":
-		$idart = bab_gp('idart', 0);
-		previewArticleDraft($idart);
-		exit;
+		$babBody->babEcho(bab_previewArticleDraft(bab_rp('idart')));
 		break;
 	
 	case "ltrash":
@@ -3521,18 +3412,20 @@ switch($idx)
 		break;
 		
 	case "edit":
-	case "newedit":
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-		$babBody->addItemMenu("newedit", bab_translate("New article"), $GLOBALS['babUrlScript']."?tg=artedit&idx=newedit");
+		$babBody->addItemMenu("edit", bab_translate("New article"), $GLOBALS['babUrlScript']."?tg=artedit&idx=edit");
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
-		bab_editArticleOrDraft(bab_rp('idart',''),bab_rp('iddraft',''));
+		$form  = new bab_ArticleDraftEditor;
+		if ($iddraft = bab_rp('iddraft', null))
+		{
+			$form->fromDraft($iddraft);
+		}
+		$form->display();
 		break;
 	case "newsave":
 		bab_newSaveArticle();
 		break;
-	case "newpreview":
-		bab_newPreviewArticle();
-		break;
+	
 	case "ajaxTopicRow":
 		bab_ajaxTopicRow(bab_gp('id', 0));
 		die;

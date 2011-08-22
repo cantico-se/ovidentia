@@ -1630,7 +1630,6 @@ function bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath)
 	$oTblWr = new BAB_TableWrapper(BAB_ART_DRAFTS_IMAGES_TBL);
 	
 	$aAttribut = array(
-		'id'			=> '',
 		'idDraft'		=> $iIdDraft,
 		'name'			=> $sName,
 		'relativePath'	=> $sRelativePath
@@ -1703,7 +1702,6 @@ function bab_addImageToArticle($iIdArticle, $sName, $sRelativePath)
 	$oTblWr = new BAB_TableWrapper(BAB_ARTICLES_IMAGES_TBL);
 	
 	$aAttribut = array(
-		'id'			=> '',
 		'idArticle'		=> $iIdArticle,
 		'name'			=> $sName,
 		'relativePath'	=> $sRelativePath

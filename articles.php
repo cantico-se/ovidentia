@@ -1219,11 +1219,21 @@ switch($idx)
 			}
 		break;
 
+	case 'Submit':
+		require_once dirname(__FILE__).'/utilit/arteditincl.php';
+		$form = new bab_ArticleDraftEditor;
+		$form->fromTopic(bab_rp('topics'));
+		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
+		$form->display();
+		break;
 	
 
 	case "Modify":
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
-		bab_editArticleOrDraft(bab_rp('article'),0);
+		$form = new bab_ArticleDraftEditor;
+		$form->fromArticle(bab_rp('article'));
+		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
+		$form->display();
 		break;
 
 

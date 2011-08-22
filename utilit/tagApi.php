@@ -443,9 +443,9 @@ class bab_ReferenceMgr
 	
 		$sQuery = 
 			'INSERT INTO bab_tags_references
-				(`id`, `id_tag`, `reference`) 
+				(`id_tag`, `reference`) 
 			VALUES
-				(\'\', ' . $babDB->quote($oTag->getId()) . ',' . $babDB->quote($oReference->__tostring()) . ')'; 
+				(' . $babDB->quote($oTag->getId()) . ',' . $babDB->quote($oReference->__tostring()) . ')'; 
 	
 		//bab_debug($sQuery);
 		$oResult = $babDB->db_query($sQuery);

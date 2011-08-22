@@ -157,16 +157,20 @@ function listTopicCategory($cat)
 					}
 				}
 			}
-
-
 		}
 
-		function getnext()
+		function getnext(&$skip)
 		{
 			global $babBody;
 			static $i = 0;
 			if( $i < $this->count)
 			{
+				if (!isset($this->arrid[$i]['title']))
+				{
+					$skip = true;$i++;
+					return true;
+				}
+				
 				$this->submiturl = "";
 				$this->childurl = "";
 				$this->childname = $this->arrid[$i]['title'];
