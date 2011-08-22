@@ -1035,7 +1035,7 @@ class BAB_DateTimeUtil
 			if ($hours) {
 				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
 			} else {
-				return bab_translate('Yesterday');
+				return bab_translate('Today');
 			}
 		}
 		
