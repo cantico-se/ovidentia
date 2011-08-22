@@ -1957,14 +1957,8 @@ function bab_previewArticleDraft($idart)
 		}
 	
 	$temp = new clsPreviewArticleDraft($idart);
-	if( $echo )
-		{
-		echo bab_printTemplate($temp,"artincl.html", "previewarticledraft");
-		}
-	else
-		{
-		return bab_printTemplate($temp,"artincl.html", "previewarticledraft");
-		}
+	return bab_printTemplate($temp,"artincl.html", "previewarticledraft");
+	
 	}
 
 function bab_previewComment($com)
