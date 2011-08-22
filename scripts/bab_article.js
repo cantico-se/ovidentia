@@ -14,7 +14,7 @@ function bab_setTopicSettings(){
 	jQuery('[name="tags"]').closest('.bab-labelStr').hide();
 	
 	jQuery('#bab_article_attachments').hide();
-	// jQuery('.widget-filepicker').last().parent().hide();
+	jQuery('.bab-article-picture').hide();
 
 	jQuery('[name="hpage_public"]').attr('disabled','disabled');
 	jQuery('[name="hpage_public"]').closest('.widget-layout-vbox-item').hide();
@@ -42,9 +42,8 @@ function bab_setTopicSettings(){
 				jQuery('[name="notify_members"]').closest('.widget-layout-vbox-item').show();
 			}
 			
-			//what to do for filepicker????
 			if(settings.allow_addImg == 'Y'){
-				// jQuery('.widget-filepicker').first().parent().show();
+				jQuery('.bab-article-picture').show();
 			}
 			if(settings.allow_attachments == 'Y'){
 				jQuery('#bab_article_attachments').show();
