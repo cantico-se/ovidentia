@@ -971,24 +971,7 @@ class BAB_DateTimeUtil
 	}
 
 
-	/**
-	 * Date display in relatives forms
-	 * @since 7.5.91
-	 * 
-	 * @param	string	$datetime	ISO datetime
-	 * @param	bool	$long		Display a long date format or not
-	 * @param	bool	$hours		always display hours or not
-	 * @return string
-	 */
-	public static function relativeDate($datetime, $long = false, $hours = false)
-	{
-		if ($datetime > date('Y-m-d H:i:s'))
-		{
-			return self::relativeFutureDate($datetime, $long, $hours);
-		} else {
-			return self::relativePastDate($datetime, $long, $hours);
-		}
-	}
+
 
 
 	/**
@@ -1021,7 +1004,7 @@ class BAB_DateTimeUtil
 			if ($hours) {
 				return bab_sprintf(bab_translate('Today at %s'), date('H:i',$ts));
 			} else {
-				return bab_translate('Yesterday');
+				return bab_translate('Today');
 			}
 		}
 		
@@ -1035,14 +1018,11 @@ class BAB_DateTimeUtil
 		}
 		
 		if ($long) {
-			return bab_longDate($ts, $hours);
-		} else {
 			return bab_shortDate($ts, $hours);
+		} else {
+			return bab_longDate($ts, $hours);
 		}
 	}
-	
-	
-	
 
 
 	/**
@@ -1089,9 +1069,9 @@ class BAB_DateTimeUtil
 		}
 		
 		if ($long) {
-			return bab_longDate($ts, $hours);
-		} else {
 			return bab_shortDate($ts, $hours);
+		} else {
+			return bab_longDate($ts, $hours);
 		}
 	}
 
