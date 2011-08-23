@@ -407,7 +407,7 @@ class bab_ArticleDraftEditor {
 		);
 		
 		$RightFrame->addItem(
-			$articlePicture = $W->FilePicker()->oneFileMode(true)
+			$articlePicture = $W->ImagePicker()->oneFileMode(true)
 			->setTitle(bab_translate('Set the article picture'))
 			->setName('articlePicture')
 			->disable()
