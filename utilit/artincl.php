@@ -2060,8 +2060,8 @@ function bab_getDocumentArticle( $idf )
 /**
  * Create a new article draft
  * 
- * @param $idtopic
- * @param $idarticle
+ * @param int $idtopic
+ * @param int $idarticle
  * 
  * @throws ErrorException
  * 

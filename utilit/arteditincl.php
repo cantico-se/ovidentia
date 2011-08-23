@@ -499,7 +499,7 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('iddraft', $this->draft->getId())
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
-			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->submitUrl));
+			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl));
 		
 		if(isset($_SESSION['bab_article_draft_preview'])){
 			$introEditor->setValue($_SESSION['bab_article_draft_preview']['1']);

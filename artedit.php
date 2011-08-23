@@ -29,7 +29,8 @@ include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
-require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
+include_once $babInstallPath.'utilit/urlincl.php';
+require_once $babInstallPath.'utilit/tree.php';
 
 
 function listDrafts()
@@ -2893,8 +2894,17 @@ elseif( $updstep02 = bab_rp('updstep02') )
 	{
 		$topicid = bab_pp('topicid', 0);
 		$articleid = bab_pp('articleid', 0);
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$topicid."&article=".$articleid."&rfurl=".urlencode("?tg=artedit&idx=list"));
-		exit;
+		$iddraft = bab_newArticleDraft($topicid, $articleid);
+		
+		if ($iddraft)
+		{
+			$url = bab_url::get_request('tg');
+			$url->idx = 'edit';
+			$url->iddraft = $iddraft;
+			$url->location();
+		} else {
+			$babBody->addError(bab_translate("Draft creation failed"));
+		}
 	}
 }
 elseif( $updstep0 = bab_rp('updstep0') )
