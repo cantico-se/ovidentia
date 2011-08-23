@@ -198,7 +198,7 @@ class bab_ArticleDraftEditor {
 		$accessibleTopic = array('' => '');
 		foreach($topicList as $topic){
 			if( $this->draft->id_article){
-				if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topic['id_object'])){
+				if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topic['id_object']) || $topic['id_object'] == $this->draft->id_topic){
 					$accessibleTopic[$topic['id_object']] = $topic['name'];
 				}
 			}else{
@@ -207,6 +207,8 @@ class bab_ArticleDraftEditor {
 				}
 			}
 		}
+		
+		
 		
 		if (1 === count($accessibleTopic))
 		{
@@ -384,27 +386,39 @@ class bab_ArticleDraftEditor {
 			$tags->sendSuggestions();
 		}
 		
-		
-		
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate('Access restriction'),
-				$W->Select()->disable()
-					->setName('restriction')
-					->addOption('', bab_translate('No restrictions'))
-					->addOption('1', bab_translate('Groups'))
-			)
-		);
-		
-		$RightFrame->addItem(
-			bab_labelStr(
+		$groups = bab_labelStr(
+				bab_translate('Groups'),
+				$multigroups = $W->MultiField()->setName('groups')
+			);
+			
+			
+		$operator = bab_labelStr(
 				bab_translate('With operator'),
-				$W->Select()->disable()
+				$W->Select()
 					->setName('operator')
 					->addOption(',',bab_translate('Or'))
 					->addOption('&',bab_translate('And'))
-			)
+			);
+		
+		$RightFrame->addItem(
+			$W->Frame()
+				->addItem(
+					bab_labelStr(
+						bab_translate('Access restriction'),
+						$restriction = $W->Select()->disable()
+							->setName('restriction')
+							->addOption('', bab_translate('No restrictions'))
+							->addOption('1', bab_translate('Groups'))
+							->setAssociatedDisplayable($groups, array(1))
+							->setAssociatedDisplayable($operator, array(1))	
+					)
+				)
+				->addItem($groups)
+				->addItem($operator)
+				->addClass('bab-article-restriction')
 		);
+		
+		
 		
 		$RightFrame->addItem(
 			$articlePicture = $W->ImagePicker()->oneFileMode(true)
@@ -452,10 +466,42 @@ class bab_ArticleDraftEditor {
 		$values['bab_article_body'] = $values['body'];
 		$values['topicid'] = $values['id_topic'];
 		$values['tags'] = implode(', ', $this->draft->getTags());
+		$values['operator'] = $this->draft->getOperator();
 		
 		
 		if(empty($values['bab_article_body'])){
 			$body->setFoldable(true, true);
+		}
+		
+		$restrictions = $this->draft->getRestrictions();
+		if (empty($restrictions))
+		{
+
+			// options / values will be set with javascript
+			$multigroups->addItem($W->Select()->setName('0'));
+			
+		} else {
+			
+			$values['restriction'] = 1;
+			
+			// options / values are set server side and lost if topic is changed
+			$i = 0;
+			foreach($restrictions as $id_group)
+			{
+				$options = $this->draft->getRestrictionsOptions();
+				if (!isset($options[$id_group]))
+				{
+					continue;
+				}
+				
+				$multigroups->addItem($W->Select()->setName((string) $i)->setOptions($options)->setValue($id_group));
+				$i++;
+			}
+			
+			if ($this->draft->id_topic)
+			{
+				$restriction->addClass('bab-article-restriction-topic-'.$this->draft->id_topic);
+			}
 		}
 		
 		
@@ -495,7 +541,7 @@ class bab_ArticleDraftEditor {
 			->setValues($values)
 			->setValues($_POST)
 			->setHiddenValue('tg', 'artedit')
-			->setHiddenValue('idx', 'newsave')
+			->setHiddenValue('idx', 'save')
 			->setHiddenValue('iddraft', $this->draft->getId())
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))

@@ -573,6 +573,88 @@ class bab_ArtDraft
 		}
 	}
 	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getRestrictionsOptions()
+	{
+		$g = array();
+			
+		require_once dirname(__FILE__).'/../admin/acl.php';
+		$groups = aclGetAccessGroups(BAB_TOPICSVIEW_GROUPS_TBL, $this->id_topic);
+		
+		foreach($groups as $id_group)
+		{
+			$name = bab_getGroupName($id_group, false);
+			if ($name)
+			{
+				$g[$id_group] = $name;
+			}
+		}
+		
+		return $g;
+	}
+	
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getRestrictions()
+	{
+		if ('' === $this->restriction)
+		{
+			return array();
+		}
+		
+		if( strchr($this->restriction, "&"))
+		{
+			$arr = explode('&', $this->restriction);
+		}
+		else if( strchr($this->restriction, ","))
+		{
+			$arr = explode(',', $this->restriction);
+		}
+		else
+		{
+			$arr = array($this->restriction);
+		}
+		
+		return $arr;
+	}
+	
+	/**
+	 * operator value
+	 * @return string
+	 */
+	public function getOperator()
+	{
+		if (strchr($this->restriction, "&"))
+		{
+			return '&';
+		}
+		
+		return ',';
+	}
+	
+	/**
+	 * 
+	 * @param array $groups
+	 * @return unknown_type
+	 */
+	public function setRestriction($restriction, $groups, $operator)
+	{
+		if (!$restriction)
+		{
+			$this->restriction = '';
+			return;
+		}
+		
+		$this->restriction = implode($operator, $groups);
+	}
+	
+	
 	
 	
 	/**

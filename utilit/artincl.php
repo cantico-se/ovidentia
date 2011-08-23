@@ -2102,6 +2102,51 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 		}
 		
 		$idtopic = (int) $arr['id_topic'];
+		
+		
+		// verify access rights in modification before continue to topic creation
+		
+		if (!bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $idtopic))
+		{
+			// if i am the author or if i am a topic manager
+			if ($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && !bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic))
+			{
+				throw new ErrorException(bab_translate('This article is not modifiable'));
+				return false;
+			}
+			
+			$res = $babDB->db_query('SELECT allow_update, allow_manupdate FROM bab_topics WHERE id='.$babDB->quote($idtopic));
+			$topic = $babDB->db_fetch_assoc($res);
+
+			
+			if (($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && $topic['allow_update'] != '0') 
+				|| (!bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic) && $topic['allow_manupdate'] != '0'))
+			{
+				throw new ErrorException(bab_translate('This article is not modifiable'));
+				return false;
+			}
+		}
+		
+	} elseif ($idtopic != 0 ) {
+		
+		// new article in a topic
+		
+		if (!bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idtopic))
+		{
+			throw new ErrorException(bab_translate('New article submission denied in this topic'));
+			return false;
+		}
+		
+	} else {
+		
+		// verify that the user can submit his draft before allowing creation
+		// for that he need at least one topic with submit access
+		
+		if (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0)
+		{
+			throw new ErrorException(bab_translate('Access denied to draft creation, no accessible topic'));
+			return false;
+		}
 	}
 	
 	

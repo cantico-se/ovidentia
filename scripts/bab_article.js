@@ -2,10 +2,7 @@
 
 function bab_setTopicSettings(){
 	jQuery('[name="restriction"]').attr('disabled','disabled');
-	jQuery('[name="restriction"]').closest('.bab-labelStr').hide();
-	
-	jQuery('[name="operator"]').attr('disabled','disabled');
-	jQuery('[name="operator"]').closest('.bab-labelStr').hide();
+	jQuery('[name="restriction"]').closest('.bab-article-restriction').hide();
 	
 	jQuery('[name="notify_members"]').attr('disabled','disabled');
 	jQuery('[name="notify_members"]').closest('.widget-layout-vbox-item').hide();
@@ -32,12 +29,30 @@ function bab_setTopicSettings(){
 		dataType: 'json',
 		success: function(settings){
 
-			if(settings.restrict_access == 'Y'){
-				jQuery('[name="restriction"]').removeAttr('disabled');
-				jQuery('[name="restriction"]').closest('.bab-labelStr').show();
-				jQuery('[name="operator"]').removeAttr('disabled');
-				jQuery('[name="operator"]').closest('.bab-labelStr').show();
+			if(settings.restrict_access == 'Y') {
+				var restriction = jQuery('[name="restriction"]');
+				restriction.removeAttr('disabled');
+				restriction.closest('.bab-article-restriction').show();
+				
+				var topic = jQuery('[name="topicid"] :selected').attr('value');
+				if (!restriction.hasClass('bab-article-restriction-topic-'+topic))
+				{
+					jQuery('[name="groups[0]"]').closest('.widget-layout-vbox-item').nextAll('.widget-layout-vbox-item').remove();
+					jQuery('[name="groups[0]"]').empty();
+				}
+				
+				for (var i = 0; i < settings.groups.length; i++)
+				{
+					var opt = jQuery('<option value=""></option>');
+					opt.attr('value', settings.groups[i][0]);
+					opt.text(settings.groups[i][1]);
+					jQuery('[name="groups[0]"]').append(opt);
+				}
+				
+				
 			}
+			
+			
 			if(settings.notify == 'Y'){
 				jQuery('[name="notify_members"]').removeAttr('disabled');
 				jQuery('[name="notify_members"]').closest('.widget-layout-vbox-item').show();
@@ -63,12 +78,7 @@ function bab_setTopicSettings(){
 				jQuery('[name="date_archiving"]').closest('.bab-labelStr').show();
 			}
 
-			if(settings.allow_manupdate == 'Y'){
-				//jQuery('[name="notify_members"]').removeAttr('disabled');
-			}
-			if(settings.allow_update == 'Y'){
-				//jQuery('[name="notify_members"]').removeAttr('disabled');
-			}
+			
 			if(settings.busetags == 'Y'){
 				jQuery('[name="tags"]').removeAttr('disabled');
 				jQuery('[name="tags"]').closest('.bab-labelStr').show();
