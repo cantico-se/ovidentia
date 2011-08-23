@@ -3181,5 +3181,9 @@
 <string id="The submit date must be a future date">La date de soumission doit être une date future</string>
 <string id="Nothing changed">Rien n'a été modifié</string>
 <string id="Access denied, a user associated to a group out of delegation cannot be modified">Accès refusé, un utilsiateur associé a un groupe en dehors de la délégation ne peut pas être modifié</string>
+<string id="Allows to specify how many times a file can be downloaded. Any user downloading the file adds one hit to this counter. Once the counter reaches the set value, the file cannot be downloaded anymore.">Permet de définir combien de fois un fichier peut être téléchargé. Chaque utilisateur téléchargeant le fichier est comptabilisé, une fois que le compte atteint la valeur maximum définie, le fichier ne peut plus être téléchargé.</string>
+<string id="Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.">Définit le nombre maximum de téléchargement par défaut, qui apparait dans le formulaire de dépôt. L'utilisateur effectuant le dépôt peut changer cette valeur quand il renseigne le formulaire de dépôt.</string>
+<string id="Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.">Permet d'enregistrer quel utilisateur a téléchargé les fichiers de ce répertoire. Les téléchargements effectués par des utilisateurs anonymes sont tous regroupés en un seul "utilisateur anonyme".</string>
+<string id="Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option.">Permet à l'utilisateur gestionnaire du répertoire d'ordonner manuellement les fichiers. Les sous-dossiers ne sont pas affectés par cette option.</string>
 
 </fr>

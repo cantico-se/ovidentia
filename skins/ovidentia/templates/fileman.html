@@ -1167,7 +1167,7 @@ function ovidentia_fileman_hide()
 				</tr>
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sActive] }
+						{ m_captions[sActive] } <span style="color: red;">(1)</span>
 					</td>
 					<td>
 						<select name="sActive"> 
@@ -1228,7 +1228,7 @@ function ovidentia_fileman_hide()
 				</tr>
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sVersioning] }
+						{ m_captions[sVersioning] } <span style="color: red;">(2)</span>
 					</td>
 					<td>
 						<select name="sVersioning"> 
@@ -1244,7 +1244,7 @@ function ovidentia_fileman_hide()
 				</tr>
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sDisplay] }
+						{ m_captions[sDisplay] } <span style="color: red;">(3)</span>
 					</td>
 					<td>
 						<select name="sDisplay"> 
@@ -1260,7 +1260,7 @@ function ovidentia_fileman_hide()
 				</tr>
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sAddTags] }
+						{ m_captions[sAddTags] } <span style="color: red;">(4)</span>
 					</td>
 					<td>
 						<select name="sAddTags"> 
@@ -1277,7 +1277,7 @@ function ovidentia_fileman_hide()
 
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sDownloadsCapping] }
+						{ m_captions[sDownloadsCapping] } <span style="color: red;">(5)</span>
 					</td>
 					<td>
 						<select name="sDownloadsCapping"> 
@@ -1289,14 +1289,14 @@ function ovidentia_fileman_hide()
 							<option value="{ m_datas[sYes] }">{ m_captions[sYes] }</option>
 						<!--#endif m_datas[isDownloadsCapping] -->
 						</select>
-						&nbsp;{ m_captions[sMaxDownloads] }
+						&nbsp;{ m_captions[sMaxDownloads] } <span style="color: red;">(6)</span>
 						<input style="text-align: right" type="text" size="4" name="iMaxDownloads" value="{ m_datas[iMaxDownloads] }"
 					</td>
 				</tr>
 
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sDownloadHistory] }
+						{ m_captions[sDownloadHistory] } <span style="color: red;">(7)</span>
 					</td>
 					<td>
 						<select name="sDownloadHistory"> 
@@ -1313,7 +1313,7 @@ function ovidentia_fileman_hide()
 
 				<tr class="showHide"> 
 					<td align="right">
-						{ m_captions[sManualOrder] }
+						{ m_captions[sManualOrder] } <span style="color: red;">(8)</span>
 					</td>
 					<td>
 						<select name="manual_order"> 
@@ -1339,6 +1339,20 @@ function ovidentia_fileman_hide()
 					<!--#if m_datas[bDelete] -->				
 						<input type="submit" name="sDeleteFolder" value="{ m_captions[sDelete] }">
 					<!--#endif m_datas[bDelete] -->
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<ul style="list-style: none;margin: 0px;padding: 0px;">
+							<li style="margin: 4px;"><span style="color: red;">(1)</span> { m_captions[thelp1] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(2)</span> { m_captions[thelp2] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(3)</span> { m_captions[thelp3] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(4)</span> { m_captions[thelp4] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(5)</span> { m_captions[thelp5] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(6)</span> { m_captions[thelp6] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(7)</span> { m_captions[thelp7] }</li>
+							<li style="margin: 4px;"><span style="color: red;">(8)</span> { m_captions[thelp8] }</li>
+						</ul>
 					</td>
 				</tr>
 			</table>
