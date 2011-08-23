@@ -239,7 +239,46 @@ class bab_url {
 		header('location:'.$this->url);
 		exit;
 	}
+	
+	
+	/**
+	 * Build a unique number from url parameters, the sum of all crc32 of keys and values
+	 * this can be used to compare two url set of parameters
+	 * @return int
+	 */
+	public function checksum() {
+		$p = parse_url($this->url);
+		
+		if (!isset($p['query']) || empty($p['query']))
+		{
+			return 0;
+		}
+		
+		parse_str($p['query'], $arr);
+		return $this->arrChecksum($arr);
+	}
+	
+	/**
+	 * 
+	 * @return int
+	 */
+	private function arrChecksum($arr)
+	{
+		$sum = 0;
+		foreach($arr as $key => $value)
+		{
+			$sum += abs(crc32($value));
+			
+			if (is_array($value))
+			{
+				$sum += $this->arrChecksum($value);
+			} else {
+				$sum += abs(crc32($value));
+			}
+		}
+		
+		return $sum;
+	}
 }
 
 
-?>

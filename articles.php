@@ -598,7 +598,7 @@ function readMore($topics, $article)
 					$this->bmodifyurl = false;
 					$this->modifybytxt = bab_translate("In modification by");
 					$this->modifyauthor	= bab_toHtml(bab_getUserName($rr['id_author']));
-					$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=log&topics=".$this->topics."&article=".$this->arr['id']);
+					$this->modifyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$this->topics."&article=".$this->arr['id']);
 					}
 				else
 					{
@@ -1234,6 +1234,18 @@ switch($idx)
 		$form = new bab_ArticleDraftEditor;
 		$form->fromArticle(bab_rp('article'));
 		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
+		
+		if (!empty($_SERVER['HTTP_REFERER']))
+		{
+			$referer = new bab_url($_SERVER['HTTP_REFERER']);
+			$self = bab_url::get_request_gp();
+			
+			if ($referer->checksum() !== $self->checksum())
+			{
+				$form->setBackUrl($referer);
+			}
+		}
+		
 		$form->display();
 		break;
 
