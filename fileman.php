@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 require_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
 require_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
 require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
@@ -831,6 +830,14 @@ class DisplayCollectiveFolderForm extends DisplayFolderFormBase
 		$this->set_caption('sAdd', bab_translate("Add"));
 		$this->set_caption('sConfRights', bab_translate("Inherit the rights and the options of the parent directory"));
 		$this->set_caption('sManualOrder', bab_translate("Manual order") . ': ');
+		$this->set_caption('thelp1', bab_translate("Deactivate a folder allows to archive it: it and its contents will not be visible in the file manager"));
+		$this->set_caption('thelp2', bab_translate("Activate the management of the versions allows to keep a history of all the modifications brought to the same file"));
+		$this->set_caption('thelp3', bab_translate("If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)"));
+		$this->set_caption('thelp4', bab_translate("If this option is activated, the keywords of files will be seized freely by their authors and automatically added in the thesaurus. If the option is deactivated, only the keywords seized by the managers of the thesaurus can be selected by the authors of files"));
+		$this->set_caption('thelp5', bab_translate("Allows to specify how many times a file can be downloaded. Any user downloading the file adds one hit to this counter. Once the counter reaches the set value, the file cannot be downloaded anymore."));
+		$this->set_caption('thelp6', bab_translate("Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form."));
+		$this->set_caption('thelp7', bab_translate("Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'."));
+		$this->set_caption('thelp8', bab_translate("Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option."));
 
 	}
 
@@ -1803,7 +1810,7 @@ function listFiles()
 				$ext = array_pop($arrName);
 				if($ext == 'zip'){
 					$idObject = $this->oFileManagerEnv->iIdObject;
-					if( $this->oFileManagerEnv->sGr != 'Y' || bab_isAccessValid('bab_fmunzip_groups', $idObject) ){
+					if( $this->oFileManagerEnv->sGr != 'Y' || bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $idObject) ){
 						$this->bUnZip = true;
 					}
 				}else{
@@ -2384,7 +2391,7 @@ function unzipFile()
 
 	$oFileManagerEnv =& getEnvObject();
 
-	if(!canUpload($oFileManagerEnv->sRelativePath) && ( bab_rp('gr')== 'N' || !canUnzip($oFileManagerEnv->sRelativePath)))
+	if(!canUpload($oFileManagerEnv->sRelativePath) && ( bab_rp('gr')== 'N' || !canManage($oFileManagerEnv->sRelativePath)))
 	{
 		$babBody->msgerror = bab_translate("Access denied");
 		return false;
@@ -3111,8 +3118,6 @@ function displayRightForm()
 			$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 			$macl->filter(0,0,1,1,1);
 			$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
-			$macl->filter(0,0,1,0,1);
-			$macl->addtable( 'bab_fmunzip_groups',bab_translate("Who can unzip archives?"));
 			$macl->filter(0,0,1,0,1);
 			$macl->babecho();
 		}

@@ -80,9 +80,7 @@
 					</tr>
 
 					<tr> 
-						<td align="right">
-							{ downloadscappingtxt }
-						</td>
+						<td align="right">{ downloadscappingtxt } <span style="color: red;">(5)</span>:</td>
 						<td>
 							<select name="bdownloadscapping"> 
 							<!--#if isdownloadscapping -->
@@ -93,15 +91,13 @@
 								<option value="Y">{ yes }</option>
 							<!--#endif isdownloadscapping -->
 							</select>
-							&nbsp;{ maxdownloadstxt }
+							&nbsp;{ maxdownloadstxt } <span style="color: red;">(6)</span>:
 							<input style="text-align: right" type="text" size="4" name="maxdownloads" value="0"
 						</td>
 					</tr>
 	
 					<tr> 
-						<td align="right">
-							{ downloadhistorytxt }
-						</td>
+						<td align="right">{ downloadhistorytxt } <span style="color: red;">(7)</span>:</td>
 						<td>
 							<select name="bdownloadhistory"> 
 							<!--#if isdownloadhistory -->
@@ -115,7 +111,7 @@
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ orderm }:</td>
+						<td align="right">{ orderm } <span style="color: red;">(8)</span>:</td>
 						<td> 
 							<select name="orderm">
 								<option value="1">{ yes }</option>
@@ -137,6 +133,10 @@
 								<li style="margin: 4px;"><span style="color: red;">(2)</span> { thelp2 }</li>
 								<li style="margin: 4px;"><span style="color: red;">(3)</span> { thelp3 }</li>
 								<li style="margin: 4px;"><span style="color: red;">(4)</span> { thelp4 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(5)</span> { thelp5 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(6)</span> { thelp6 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(7)</span> { thelp7 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(8)</span> { thelp8 }</li>
 							</ul>
 						</td>
 					</tr>
@@ -301,9 +301,7 @@ function submitCtr()
 					</tr>
 
 					<tr> 
-						<td align="right">
-							{ downloadscappingtxt }
-						</td>
+						<td align="right">{ downloadscappingtxt } <span style="color: red;">(5)</span>:</td>
 						<td>
 							<select name="bdownloadscapping"> 
 							<!--#if isdownloadscapping -->
@@ -314,15 +312,13 @@ function submitCtr()
 								<option value="Y">{ yes }</option>
 							<!--#endif isdownloadscapping -->
 							</select>
-							&nbsp;{ maxdownloadstxt }
+							&nbsp;{ maxdownloadstxt } <span style="color: red;">(6)</span>:
 							<input style="text-align: right" type="text" size="4" name="maxdownloads" value="{ maxdownloads }"
 						</td>
 					</tr>
 	
 					<tr> 
-						<td align="right">
-							{ downloadhistorytxt }
-						</td>
+						<td align="right">{ downloadhistorytxt } <span style="color: red;">(7)</span>:</td>
 						<td>
 							<select name="bdownloadhistory"> 
 							<!--#if isdownloadhistory -->
@@ -336,7 +332,7 @@ function submitCtr()
 						</td>
 					</tr>
 					<tr> 
-						<td align="right">{ orderm }</td>
+						<td align="right">{ orderm } <span style="color: red;">(8)</span>:</td>
 						<td> 
 							<select name="orderm">
 								<option value="1" <!--#if boolorderm "== 1" -->selected="selected"<!--#endif boolorderm -->>{ yes }</option>
@@ -358,6 +354,10 @@ function submitCtr()
 								<li style="margin: 4px;"><span style="color: red;">(2)</span> { thelp2 }</li>
 								<li style="margin: 4px;"><span style="color: red;">(3)</span> { thelp3 }</li>
 								<li style="margin: 4px;"><span style="color: red;">(4)</span> { thelp4 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(5)</span> { thelp5 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(6)</span> { thelp6 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(7)</span> { thelp7 }</li>
+								<li style="margin: 4px;"><span style="color: red;">(8)</span> { thelp8 }</li>
 							</ul>
 						</td>
 					</tr>

@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once 'base.php';
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $GLOBALS['babInstallPath'] . 'admin/acl.php';
 include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
@@ -88,6 +87,10 @@ function modifyFolder($fid)
 			$this->thelp2				= bab_translate("Activate the management of the versions allows to keep a history of all the modifications brought to the same file");
 			$this->thelp3				= bab_translate("If the folder is hidden, it will not be visible in the file manager, its contents remain accessible except the file manager (link since an article, a file OVML...)");
 			$this->thelp4				= bab_translate("If this option is activated, the keywords of files will be seized freely by their authors and automatically added in the thesaurus. If the option is deactivated, only the keywords seized by the managers of the thesaurus can be selected by the authors of files");
+			$this->thelp5				= bab_translate("Allows to specify how many times a file can be downloaded. Any user downloading the file adds one hit to this counter. Once the counter reaches the set value, the file cannot be downloaded anymore.");
+			$this->thelp6				= bab_translate("Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.");
+			$this->thelp7				= bab_translate("Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.");
+			$this->thelp8				= bab_translate("Allows the user granted with management rights on this folder to order manually the files. Subfolders are not affected by this option.");
 			$this->fid					= $fid;
 			
 			$sFolderName = '';
@@ -457,8 +460,6 @@ function displayRightForm($fid)
 	$macl->addtable( BAB_FMMANAGERS_GROUPS_TBL,bab_translate("Manage"));
 	$macl->filter(0,0,1,1,1);
 	$macl->addtable( BAB_FMNOTIFY_GROUPS_TBL,bab_translate("Who is notified when a new file is uploaded or updated?"));
-	$macl->filter(0,0,1,0,1);
-	$macl->addtable( 'bab_fmunzip_groups',bab_translate("Who can unzip archives?"));
 	$macl->filter(0,0,1,0,1);
 	$macl->babecho();
 	$babBody->addItemMenu("list", bab_translate("Folders"), $GLOBALS['babUrlScript']."?tg=admfms&idx=list");
