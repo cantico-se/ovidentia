@@ -1752,6 +1752,50 @@ function acceptWaitingArticle($idart)
 }
 
 
+
+function bab_getTopicTemplate($template, $head_format, $body_format)
+{
+	$values = array('head' => '', 'body' => '');
+	
+	
+	// We fetch the template corresponding to the correct format (html, text...)
+	// of the article head.
+	$file = 'articlestemplate.' . $head_format;
+	$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+	if (!file_exists($filepath)) {
+		$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
+		if (!file_exists($filepath)) {
+			$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
+		}
+	}
+	if (file_exists($filepath)) {
+		require_once dirname(__FILE__) . '/template.php';
+		$tp = new bab_Template();
+		$values['head'] = $tp->_loadTemplate($filepath, 'head_' . $template);
+	}
+
+	// We fetch the template corresponding to the correct format (html, text...)
+	// of the article body.
+	$file = 'articlestemplate.' . $body_format;
+	$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
+	if (!file_exists($filepath)) {
+		$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
+		if (!file_exists($filepath)) {
+			$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
+		}
+	}
+	if (file_exists($filepath)) {
+		require_once dirname(__FILE__) . '/template.php';
+		$tp = new bab_Template();
+		$values['body'] = $tp->_loadTemplate($filepath, 'body_' . $template);
+	}
+	
+	return $values;
+}
+
+
+
+
 /**
  * 
  * @param string	$title
@@ -1824,37 +1868,10 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 
 			if ($template != '' && $this->headval == '' && $this->bodyval == '') {
 				
-				// We fetch the template corresponding to the correct format (html, text...)
-				// of the article head.
-				$file = 'articlestemplate.' . $headFormat;
-				$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
-				if (!file_exists($filepath)) {
-					$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
-					if (!file_exists($filepath)) {
-						$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
-					}
-				}
-				if (file_exists($filepath)) {
-					require_once dirname(__FILE__) . '/template.php';
-					$tp = new bab_Template();
-					$this->headval = $tp->_loadTemplate($filepath, 'head_' . $template);
-				}
-
-				// We fetch the template corresponding to the correct format (html, text...)
-				// of the article body.
-				$file = 'articlestemplate.' . $bodyFormat;
-				$filepath = 'skins/' . $GLOBALS['babSkin'] . '/templates/' . $file;
-				if (!file_exists($filepath)) {
-					$filepath = $GLOBALS['babSkinPath'] . 'templates/'. $file;
-					if (!file_exists($filepath)) {
-						$filepath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/templates/'. $file;
-					}
-				}
-				if (file_exists($filepath)) {
-					require_once dirname(__FILE__) . '/template.php';
-					$tp = new bab_Template();
-					$this->bodyval = $tp->_loadTemplate($filepath, 'body_' . $template);
-				}
+				$values = bab_getTopicTemplate($template, $headFormat, $bodyFormat);
+				
+				$this->headval = $values['head'];
+				$this->bodyval = $values['body'];
 			}
 
 				

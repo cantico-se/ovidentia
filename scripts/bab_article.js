@@ -85,6 +85,32 @@ function bab_setTopicSettings(){
 			}
 			
 			window.babArticle.filesAttachments();
+			
+			
+			// dynamic template work only with ckeditor
+			
+			if (null != CKEDITOR && null != settings.template)
+			{
+				if (CKEDITOR.instances['bab_article_head'] && settings.template['head'])
+				{
+					var head = CKEDITOR.instances['bab_article_head'];
+					var data = head.getData();
+					if ('' == data)
+					{
+						head.insertHtml(settings.template['head']);
+					}
+				}
+				
+				if (CKEDITOR.instances['bab_article_body'] && settings.template['body'])
+				{
+					var head = CKEDITOR.instances['bab_article_body'];
+					var data = head.getData();
+					if ('' == data)
+					{
+						head.insertHtml(settings.template['body']);
+					}
+				}
+			}
 		}
 	});
 }

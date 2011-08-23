@@ -476,7 +476,6 @@ class bab_ArticleDraftEditor {
 		$restrictions = $this->draft->getRestrictions();
 		if (empty($restrictions))
 		{
-
 			// options / values will be set with javascript
 			$multigroups->addItem($W->Select()->setName('0'));
 			
@@ -547,10 +546,7 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
 			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl));
 		
-		if(isset($_SESSION['bab_article_draft_preview'])){
-			$introEditor->setValue($_SESSION['bab_article_draft_preview']['1']);
-			$bodyEditor->setValue($_SESSION['bab_article_draft_preview']['2']);
-		}
+		
 	
 		$page->addItem($FormArticle);
 	

@@ -2590,9 +2590,7 @@ function bab_ajaxTopicRow($idTopic){
 
 	global $babDB;
 	$res = $babDB->db_query(
-		"SELECT *
-			FROM " . BAB_TOPICS_TBL . "
-			WHERE id= " . $babDB->quote($idTopic)
+		"SELECT * FROM bab_topics WHERE id= " . $babDB->quote($idTopic)
 	);
 	if( $res && $babDB->db_num_rows($res) == 1 )
 	{
@@ -2616,7 +2614,13 @@ function bab_ajaxTopicRow($idTopic){
 				}
 			}
 		}
-		;
+		
+		
+		if ('' !== $row['article_tmpl'])
+		{
+			$row['template'] = bab_getTopicTemplate($row['article_tmpl'], 'html', 'html');
+		}
+		
 		
 		$rr = Widget_HtmlCanvas::json_encode($row);
 		echo $rr;

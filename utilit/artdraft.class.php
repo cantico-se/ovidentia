@@ -146,6 +146,22 @@ class bab_ArtDraft
 	public function getValues()
 	{
 		$arr = get_object_vars($this);
+		
+		if(0 == $this->id_article) {
+			
+			if (null !== $template = $this->getTopicTemplate())
+			{
+				if (empty($arr['head']))
+				{
+					$arr['head'] = $template['head'];
+				}
+				
+				if (empty($arr['body']))
+				{
+					$arr['body'] = $template['body'];
+				}
+			}
+		}
 
 		return $arr;
 	}
@@ -603,7 +619,7 @@ class bab_ArtDraft
 	 */
 	public function getRestrictions()
 	{
-		if ('' === $this->restriction)
+		if ('' === $this->restriction || null === $this->restriction)
 		{
 			return array();
 		}
@@ -653,6 +669,42 @@ class bab_ArtDraft
 		
 		$this->restriction = implode($operator, $groups);
 	}
+	
+	
+	
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public function getTopicTemplate()
+	{
+		$values = array('head' => '', 'body' => '');
+		
+		if (!$this->id_topic)
+		{
+			return $values;
+		}
+		
+		global $babDB;
+		
+		$res = $babDB->db_query("select article_tmpl from bab_topics  where id=".$babDB->quote($this->id_topic));
+		if( !$res || $babDB->db_num_rows($res) !== 1 ) {
+			return $values;
+		}
+		
+	
+		$topic = $babDB->db_fetch_array($res);
+		$template = $topic['article_tmpl'];
+		
+		if (empty($template))
+		{
+			return $values;
+		}
+		
+		return bab_getTopicTemplate($template, $this->head_format, $this->body_format);
+	}
+	
 	
 	
 	
