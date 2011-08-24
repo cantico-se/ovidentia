@@ -197,32 +197,23 @@ class bab_ArticleDraftEditor {
 	
 		$LeftFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
 		
+
+		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
 		
-		$topicList = bab_getArticleTopicsAsTextTree(0);
+		$topic = $W->Select('bab-article-topic');
 		
 		
-		
-		
-		$accessibleTopic = array('' => '');
-		foreach($topicList as $topic){
-			if( $this->draft->id_article){
-				if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topic['id_object']) || $topic['id_object'] == $this->draft->id_topic){
-					$accessibleTopic[$topic['id_object']] = $topic['name'];
-				}
-			}else{
-				if(!$topic['category'] && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $topic['id_object'])){
-					$accessibleTopic[$topic['id_object']] = $topic['name'];
-				}
+		foreach($topicList as $topcat){
+			
+			
+			if($topcat['category']){
+				$topic->addOption($topic->SelectOption('cat-'.$topcat['id_object'], $topcat['name'])->disable()->addClass('category'));
+			} else {
+				$topic->addOption($topic->SelectOption($topcat['id_object'], $topcat['name']));
 			}
 		}
 		
-		
-		
-		if (1 === count($accessibleTopic))
-		{
-			$babBody->addError(bab_translate('No accessible topic'));
-			return;
-		}
+				
 		
 		$LeftFrame->addItem(
 			$W->Section(
@@ -292,9 +283,7 @@ class bab_ArticleDraftEditor {
 		$RightFrame->addItem(
 			bab_labelStr(
 				bab_translate('Article topic'),
-				$W->Select('bab-article-topic')
-					->setOptions($accessibleTopic)
-					->setName('topicid')
+					$topic->setName('topicid')
 			)
 		);
 		

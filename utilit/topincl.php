@@ -171,20 +171,19 @@ function viewCategoriesHierarchy_txt($topics)
  *
  * @param	int			$parentid		: optional id of parent category
  * @param	false|int	$delegationid	: if delegationid is false, categories are not filtered
+ * @param	string		$rightaccesstable
  * @return 	array
  */
-function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $noIndentation = false) {
+function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 
 	static $indentation_level = 0;
 	$indentation = str_repeat(bab_nbsp(), 3*$indentation_level);
-	if($noIndentation){
-		$indentation = '';
-	}
+	
 	$return = array();
 
 	global $babDB;
 	
-	$res = bab_getArticleCategoriesRes($parentid, $delegationid);
+	$res = bab_getArticleCategoriesRes($parentid, $delegationid, $rightaccesstable);
 	
 	if ($res) {
 		while ($arr = $babDB->db_fetch_assoc($res)) {
@@ -198,7 +197,7 @@ function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $n
 			);
 
 			$indentation_level++;
-			$sublevel = bab_getArticleTopicsAsTextTree($id_category, $delegationid, $noIndentation);
+			$sublevel = bab_getArticleTopicsAsTextTree($id_category, $delegationid, $rightaccesstable);
 			$indentation_level--;
 
 			$return = array_merge($return, $sublevel);
