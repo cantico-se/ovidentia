@@ -23,9 +23,11 @@ function bab_setTopicSettings(){
 	jQuery('[name="date_archiving"]').closest('.bab-labelStr').hide();
 	
 
-	valueSelected = jQuery('#bab-article-topic').val();
+	id_topic = jQuery('#bab-article-topic').val();
+	id_draft = jQuery('[name=iddraft]').val();
+	
 	jQuery.ajax({
-		url: jQuery('[name="ajaxpath"]').val()+'?tg=artedit&idx=ajaxTopicRow&id='+valueSelected,
+		url: jQuery('[name="ajaxpath"]').val()+'?tg=artedit&idx=ajaxTopicRow&id_topic='+id_topic+'&id_draft='+id_draft,
 		dataType: 'json',
 		success: function(settings){
 

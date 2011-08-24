@@ -602,6 +602,11 @@ class bab_ArtDraft
 		
 		foreach($groups as $id_group)
 		{
+			if ($id_group < BAB_ADMINISTRATOR_GROUP)
+			{
+				continue;
+			}
+			
 			$name = bab_getGroupName($id_group, false);
 			if ($name)
 			{

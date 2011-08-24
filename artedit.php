@@ -140,6 +140,9 @@ function listDrafts()
 	}
 
 
+/**
+ * List of drafts submited for approval
+ */
 function listSubmitedArticles()
 	{
 	global $babBody;
@@ -246,6 +249,10 @@ function listSubmitedArticles()
 	$babBody->babecho( bab_printTemplate($temp, "artedit.html", "submitedarticleslist"));
 	}
 
+/**
+ * 
+ * @return unknown_type
+ */
 function listDraftsInTrash()
 	{
 	global $babBody;
@@ -381,14 +388,14 @@ function propertiesArticle($idart)
 		}
 
 	$temp = new temp($idart);
-	echo bab_printTemplate($temp, "artedit.html", "propertiesarticles");
+	$babBody->babPopup(bab_printTemplate($temp, "artedit.html", "propertiesarticles"));
 }
 
 
 
 
 /**
- * Display a tree with topics selectables for the step 1 of the publication when we create an article
+ * Dis(lay a tree with topics selectables for the step 1 of the publication when we create an article
  */
 function bab_showTopicsTreeForCreationOfAnArticle()
 {
@@ -2368,6 +2375,7 @@ function submitArticleDraft( $idart, &$message, $force=false)
 	}
 }
 
+/*
 function savePreviewDraft($idart, $approbid)
 {
 	global $babDB, $BAB_SESS_USERID;
@@ -2377,6 +2385,7 @@ function savePreviewDraft($idart, $approbid)
 		$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set approbation='".$babDB->db_escape_string($approbid)."' where id='".$babDB->db_escape_string($idart)."'");
 		}
 }
+*/
 
 /**
  * Return booleans : test if articles drafts exists for the current user : in trash or, not in trash and in approbation (the user can't modify an article in approbation)
@@ -2411,97 +2420,9 @@ function artedit_init()
 }
 
 
-function getHiddenUpload()
-{
-	require_once $GLOBALS['babInstallPath'].'utilit/hiddenUpload.class.php';
-	
-	$oHiddenForm = new bab_HiddenUploadForm();
-	
-	$oHiddenForm->addHiddenField('iIdDraft', bab_rp('iIdDraft', 0));
-	$oHiddenForm->addHiddenField('tg', 'artedit');
-	$oHiddenForm->addHiddenField('MAX_FILE_SIZE', $GLOBALS['babMaxImgFileSize']);
-	$oHiddenForm->addHiddenField('idx', 'uploadDraftArticleImg');
-	
-	header('Cache-control: no-cache');
-	die($oHiddenForm->getHtml());
-}
+
 
 	
-function uploadDraftArticleImg()
-{
-	require_once dirname(__FILE__) . '/utilit/artincl.php';
-	require_once dirname(__FILE__) . '/utilit/hiddenUpload.class.php';
-	
-	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
-	$sJSon			= '';
-	$sKeyOfPhpFile	= 'articlePicture';
-	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	$oPubImpUpl		= new bab_PublicationImageUploader();
-	$iIdDelegation	= 0; //Dummy value, i dont need this here
-	
-	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
-	
-	if(0 < $iIdDraft)
-	{
-		$aImageInfo = bab_getImageDraftArticle($iIdDraft);
-		if(false !== $aImageInfo)
-		{
-			bab_deleteImageDraftArticle($iIdDraft);
-			
-			if(file_exists($sPath . $aImageInfo['name']))
-			{
-				@unlink($sPath . $aImageInfo['name']);
-			}
-		}
-		$sFullPathName = $oPubImpUpl->uploadDraftArticleImage($iIdDraft, $sKeyOfPhpFile);
-	}
-	
-	if(false === $sFullPathName)
-	{
-		$sMessage = implode(',', $oPubImpUpl->getError());
-		if('utf8' == bab_charset::getDatabase())
-		{
-			$sMessage = utf8_encode($sMessage);
-		}
-		/*	
-		$sJSon = json_encode(array(
-				"success"  => false,
-				"failure"  => true,
-				"sMessage" => $sMessage));
-		//*/
-		$sJSon = '{"success":"false", "failure":"true", "sMessage":"' . $sMessage . '"}';
-	}
-	else
-	{
-		//Ins�rer l'image en base
-		$aPathParts		= pathinfo($sFullPathName);
-		$sName			= $aPathParts['basename'];
-		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
-		$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-		$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
-		
-		bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
-		
-		$sMessage = $sName;
-		if('utf8' == bab_charset::getDatabase())
-		{
-			$sMessage = utf8_encode($sMessage);
-		}
-		/*	
-		$sJSon = json_encode(array(
-				"success"	=> true,
-				"failure"	=> false,
-				"sMessage"	=> $sMessage));
-		//*/
-		$sJSon = '{"success":"true", "failure":"false", "sMessage":"' . $sMessage . '"}';
-		
-		//bab_debug(bab_HiddenUploadForm::getHiddenIframeHtml($sJSon));		
-	}
-				
-	header('Cache-control: no-cache');
-	print bab_HiddenUploadForm::getHiddenIframeHtml($sJSon);		
-}
 
 
 function getImage()
@@ -2542,48 +2463,48 @@ function getImage()
 }
 
 
-function deleteDraftImage()
-{
-	require_once dirname(__FILE__) . '/utilit/artincl.php';
-	
-	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
-	$iIdDelegation	= 0; //Dummy value, i dont need this here
-	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	
-	$oEnvObj->setEnv($iIdDelegation);
-	$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
-	
-	deleteDraftArticleImage($iIdDraft, $sPath);
-	die('');
-}
 
 
-function deleteDraftArticleImage($iIdDraft, $sPathName)
-{
-	$aImageInfo = bab_getImageDraftArticle($iIdDraft);
-	if(false !== $aImageInfo)
+
+
+
+
+/**
+ * Get properties of current topic of a draft or the properties of the topic where the draft will be moved to
+ * the access must be restricted to the topic of a modifiable draft or a topic whis access to submit group
+ * 
+ * @return unknown_type
+ */
+function bab_ajaxTopicRow() {
+	
+	$idTopic = (int) bab_gp('id_topic', 0);
+	$idDraft = (int) bab_gp('id_draft', 0);
+	
+	if ($idDraft && !bab_isDraftModifiable($idDraft))
 	{
-		bab_deleteImageDraftArticle($iIdDraft);
+		return;
+	}
+	
+	if (!$idDraft && !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idTopic))
+	{
+		// no draft
+		return;
+	}
+	
+	if ($idDraft)
+	{
+		require_once dirname(__FILE__).'/utilit/artdraft.class.php';
+		$draft = new bab_ArtDraft;
+		$draft->getFromIdDraft($idDraft);
 		
-		if(file_exists($sPathName . $aImageInfo['name']))
+		if ($draft->id_topic != $idTopic && !bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idTopic))
 		{
-			@unlink($sPathName . $aImageInfo['name']);
-			@rmdir($sPathName);
+			// no access to target topic
+			return;
 		}
 	}
-}
-
-
-
-
-
-
-function bab_ajaxTopicRow($idTopic){
 	
-	if (!bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idTopic) && !bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $idTopic))
-	{
-		die('access denied');
-	}
+	
 	
 	$W = bab_Widgets();
 	$W->HtmlCanvas();
@@ -2607,6 +2528,11 @@ function bab_ajaxTopicRow($idTopic){
 			
 			foreach($groups as $id_group)
 			{
+				if ($id_group < BAB_ADMINISTRATOR_GROUP)
+				{
+					continue;
+				}
+				
 				$name = bab_getGroupName($id_group, false);
 				if ($name)
 				{
@@ -2751,14 +2677,41 @@ function bab_saveArticle(){
 		return false;
 	}
 	
+	$title = bab_pp('title');
+	$title = trim($title);
+	
+	if (empty($title))
+	{
+		$babBody->addError(bab_translate('The article title is mandatory'));
+		return false;
+	}
+	
+	$headeditor = new bab_contentEditor('bab_article_head');
+	$head = $headeditor->getContent();
+	$head = trim($head);
+	
+	if (empty($head))
+	{
+		$babBody->addError(bab_translate('The article head is mandatory'));
+		return false;
+	}
+	
+	
 	$idDraft = bab_pp('iddraft',0);
 	$draft = new bab_ArtDraft;
 	
 	try {
 		if (empty($idDraft))
 		{
+			// access rights are verified in bab_newArticleDraft()
 			$draft->createInTopic($id_topic);
 		} else {
+			
+			if (!bab_isDraftModifiable($idDraft))
+			{
+				throw new ErrorException(bab_translate('Error, the draft is not modifiable'));
+			}
+			
 			$draft->getFromIdDraft($idDraft);
 			$draft->id_topic = $id_topic;
 		}
@@ -2770,9 +2723,8 @@ function bab_saveArticle(){
 	}
 	
 	
-	$draft->title = bab_pp('title');
+	$draft->title = $title;
 	
-	$headeditor = new bab_contentEditor('bab_article_head');
 	$draft->head = $headeditor->getContent();
 	$draft->head_format = $headeditor->getFormat();
 	
@@ -2852,18 +2804,19 @@ function bab_saveArticle(){
  */
 function bab_isDraftModifiable($iddraft)
 {
+	global $babDB;
 	
 	$res = $babDB->db_query("
 		select 
-			at.id_topic, 
-			at.id_author, 
+			adt.id_topic, 
+			adt.id_author, 
 			tt.allow_update, 
 			tt.allow_manupdate, 
 			adt.id_article 
 			
-		from ".BAB_ARTICLES_TBL." at 
-			left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id 
-			left join ".BAB_ART_DRAFTS_TBL." adt on at.id=adt.id_article 
+		FROM bab_art_drafts adt 
+			LEFT JOIN bab_topics tt ON adt.id_topic=tt.id
+
 		where 
 			adt.id=".$babDB->quote($iddraft));
 	
@@ -2897,7 +2850,7 @@ function bab_isDraftModifiable($iddraft)
 		
 		
 	}
-	
+
 	return false;
 }
 
@@ -2905,18 +2858,6 @@ function bab_isDraftModifiable($iddraft)
 
 /* main */
 
-
-$iNbSeconds = 2 * 86400; //2 jours
-require_once dirname(__FILE__) . '/utilit/artincl.php';
-bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
-
-if('getImage' == bab_rp('idx', ''))
-{
-	getImage(); // called by ajax
-	exit;
-}
-
-$artedit = array();
 
 $baccess = false;
 if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
@@ -2943,6 +2884,8 @@ if( !$baccess )
 
 $idx = bab_rp('idx', 'list');
 $rfurl = bab_rp('rfurl', "?tg=artedit&idx=list");
+
+
 
 if( $updstep01 = bab_rp('updstep01'))
 {
@@ -3001,6 +2944,7 @@ elseif( $updstep0 = bab_rp('updstep0') )
 		$popupmessage = '';
 	}
 }
+/*
 elseif( $updstep1 = bab_rp('updstep1') )
 {
 	if( $updstep1 == 'cancel' )
@@ -3180,33 +3124,6 @@ elseif( $updstep3 = bab_rp('updstep3') )
 		$refreshurl = $rfurl;
 		$popupmessage = '';
 	}
-	elseif( $updstep3 == 'fadd')
-	{
-		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
-		{
-		$message = '';
-		if( updateDocumentsArticleDraft($_POST['idart'], $message) )
-			{
-			//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_POST['idart']);
-			//exit;
-			$idx='s3';
-			}
-		else
-			{
-			$idx='s3';
-			}
-		}
-		$idx='s3';
-	}
-	elseif( $updstep3 == 'delf')
-	{
-		if( isset($_GET['idart']) && $_GET['idart'] != 0 )
-		{
-		delDocumentArticleDraft( $_GET['idart'], $_GET['idf'] );
-		//Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s3&idart=".$_GET['idart']);
-		}
-		$idx='s3';
-	}
 	elseif( $updstep3 == 'proptop')
 	{
 		$idx='s3';
@@ -3258,20 +3175,10 @@ elseif( $updstep3 = bab_rp('updstep3') )
 			$idx = 's1';
 		}
 	}
+}
+*/
 
-		
-
-
-if($idx == 'movet')
-{
-	$idart = bab_gp('idart', 0);
-	if( $idart )
-	{
-	moveArticleDraftToTrash($idart);
-	}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-	exit;
-}elseif( $idx == 'restore')
+if( $idx == 'restore')
 {
 	$idart = bab_gp('idart', 0);
 	if( $idart && !restoreArticleDraft($idart))
@@ -3283,20 +3190,6 @@ if($idx == 'movet')
 		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		exit;
 	}
-}elseif( $idx == 'empty')
-{
-	emptyTrash();
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-	exit;
-}elseif( $idx == 'delt')
-{
-	$idart = bab_gp('idart', 0);
-	if( $idart )
-	{
-	deleteDraft($idart);
-	}
-	Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
-	exit;
 }elseif( $idx == 'rests')
 {
 	$idart = bab_gp('idart', 0);
@@ -3310,22 +3203,39 @@ if($idx == 'movet')
 		$idx = 'lsub';
 		}
 }
-}
+
 
 switch($idx)
 	{
-	case 'getHiddenUpload': // called by ajax
-		getHiddenUpload();
+		
+	case 'movet':
+		$idart = bab_gp('idart', 0);
+		if( $idart )
+		{
+			moveArticleDraftToTrash($idart);
+		}
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		exit;
-	
-	case 'uploadDraftArticleImg': // called by ajax
-		uploadDraftArticleImg();
-		exit;	
-	
-	case 'deleteDraftImage': // called by ajax
-		deleteDraftImage();
+		break;
+		
+	case 'empty':
+		emptyTrash();
+		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		exit;
-
+		break;
+		
+	case 'delt':
+		$idart = bab_gp('idart', 0);
+		if( $idart )
+		{
+			deleteDraft($idart);
+		}
+		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
+		exit;
+		break;
+	
+	
+		
 	case 'denied':
 		$babBody->msgerror = bab_translate("Access denied");
 		break;
@@ -3364,47 +3274,7 @@ switch($idx)
 		exit;
 		break;
 		
-	/*
-
-	case "s1":
-		if( !isset($message)) { $message = '';}
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = $message;
-		$babBodyPopup->title = bab_translate("Write article");
-		showEditArticle();
-		printBabBodyPopup();
-		exit;
-		break;
-
-	case "s2":
-		if( !isset($message)) { $message = '';}
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = $message;
-		$babBodyPopup->title = bab_translate("Preview");
-		showPreviewArticle($idart);
-		printBabBodyPopup();
-		exit;
-		break;
 		
-	case "s3":
-		if( !isset($message)) { $message = '';}
-		$babBodyPopup = new babBodyPopup();
-		$babBodyPopup->msgerror = $message;
-		$babBodyPopup->title = bab_translate("Set article properties");
-		$idart = bab_rp('idart', 0);
-		showSetArticleProperties($idart);
-		printBabBodyPopup();
-		exit;
-		break;
-		
-
-	case "unload":
-		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) { $popupmessage ='';}
-		if( !isset($refreshurl)) { $refreshurl = isset($rfurl)? $rfurl :'';}
-		popupUnload($popupmessage, $refreshurl);
-		exit;
-	*/	
 		
 	case "getf":
 		$idart = bab_rp('idart', 0);
@@ -3440,19 +3310,19 @@ switch($idx)
 		break;
 		
 		
-	case "lsub":
+	case "lsub": // list articles submited for approbation
 		$arrinit = artedit_init();
 		if( !$arrinit['articles'] )
 		{
-		Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
-		exit;
+			$babBody->addError(bab_translate('Access denied, no waiting articles'));
+			return;
 		}
 		$babBody->title = bab_translate("List of submitted articles");
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		listSubmitedArticles();
 		if( $arrinit['trash'] )
 		{
-		$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
+			$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
 		}
 		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
 		break;
@@ -3479,7 +3349,7 @@ switch($idx)
 		break;
 	
 	case "ajaxTopicRow":
-		bab_ajaxTopicRow(bab_gp('id', 0));
+		bab_ajaxTopicRow();
 		die;
 		break;
 		
