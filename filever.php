@@ -780,6 +780,16 @@ function confirmFile($idf, $bconfirm)
 					case 1:
 						deleteFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId());
 						acceptFileVersion($oFolderFile, $oFolderFileVersion);
+						$oFileManagerEnv =& getEnvObject();
+						$sUploadPath = $oFileManagerEnv->getCollectiveFolderPath();
+						$sFullPathName = $sUploadPath .$oFolderFile->getPathName() . $oFolderFile->getName();
+						global $babDB;
+						$req = "
+							UPDATE ".BAB_FILES_TBL." set
+								size='".$babDB->db_escape_string(filesize($sFullPathName))."'
+							WHERE
+								id='".$babDB->db_escape_string($idf)."'";
+						$babDB->db_query($req);
 						break;
 					default:
 						$nfusers = getWaitingApproversFlowInstance($oFolderFileVersion->getFlowApprobationInstanceId(), true);
