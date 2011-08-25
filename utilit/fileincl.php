@@ -1448,6 +1448,14 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile/*, $filename = 'N'*/)
 			$oFolderFile->setCommentVer($comment);
 			$oFolderFile->setStatusIndex($index_status);
 			$oFolderFile->save();
+			
+			global $babDB;
+			$req = "
+				UPDATE ".BAB_FILES_TBL." set
+					size='".$babDB->db_escape_string($size)."'
+				WHERE
+					id='".$babDB->db_escape_string($idf)."'";
+			$babDB->db_query($req);
 
 			require_once dirname(__FILE__) . '/reference.class.php';
 			$oReference		= bab_Reference::makeReference('ovidentia', '', 'files', 'file', $idf);
