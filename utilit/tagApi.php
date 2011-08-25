@@ -423,31 +423,31 @@ class bab_ReferenceMgr
 	/**
 	 * Associate a tag to a reference
 	 * 
-	 * @param string		$sTagName	Name of the tag to associate
-	 * @param bab_Reference $oReference	The reference to associate
+	 * @param string | bab_Tag		$tag			Name of the tag to associate
+	 * @param bab_Reference 		$oReference		The reference to associate
 	 * 
 	 * @return bool True on success, false otherwise.
 	 */
-	public function add($sTagName, bab_Reference $oReference)
+	public function add($tag, bab_Reference $oReference)
 	{
-		$oTagMgr	= bab_getInstance('bab_TagMgr');
-		$oTag		= $oTagMgr->getByName($sTagName);
-		if(!($oTag instanceof bab_Tag))
+		if (!($tag instanceof bab_Tag))
 		{
-			return false;
+			$oTagMgr	= bab_getInstance('bab_TagMgr');
+			$tag		= $oTagMgr->getByName($sTagName);
+			if(!($tag instanceof bab_Tag))
+			{
+				return false;
+			}
 		}
-		
-		
-		
+
 		global $babDB;
 	
 		$sQuery = 
 			'INSERT INTO bab_tags_references
 				(`id_tag`, `reference`) 
 			VALUES
-				(' . $babDB->quote($oTag->getId()) . ',' . $babDB->quote($oReference->__tostring()) . ')'; 
+				(' . $babDB->quote($tag->getId()) . ',' . $babDB->quote($oReference->__tostring()) . ')'; 
 	
-		//bab_debug($sQuery);
 		$oResult = $babDB->db_query($sQuery);
 		if(false !== $oResult)
 		{

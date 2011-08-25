@@ -31,6 +31,7 @@ include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
 include_once $babInstallPath.'utilit/urlincl.php';
 require_once $babInstallPath.'utilit/tree.php';
+require_once dirname(__FILE__) . '/utilit/tagApi.php';
 
 
 function listDrafts()
@@ -2536,7 +2537,7 @@ function bab_ajaxTopicRow() {
 				$name = bab_getGroupName($id_group, false);
 				if ($name)
 				{
-					$row['groups'][] = array($id_group, $name);
+					$row['groups'][] = array($id_group, bab_abbr($name, BAB_ABBR_FULL_WORDS, 50));
 				}
 			}
 		}
@@ -2659,7 +2660,7 @@ function bab_ajaxRemoveAttachment()
  */
 function bab_saveArticle(){
 	
-	global $babBody;
+	global $babBody, $babDB;
 	
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
@@ -2695,6 +2696,53 @@ function bab_saveArticle(){
 		$babBody->addError(bab_translate('The article head is mandatory'));
 		return false;
 	}
+	
+	
+	
+
+	list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from bab_topics where id=".$babDB->quote($id_topic)));
+	
+
+	$taglist = array();
+	if( $busetags == 'Y' )
+	{
+		
+		$tags = bab_pp('tags');
+		$tags = trim($tags);
+
+		if( !empty($tags))
+		{
+			$atags = explode(',', $tags);
+			foreach( $atags as $tagname )
+			{
+				$tagname = trim($tagname);
+				
+				if ('' === $tagname)
+				{
+					continue;
+				}
+				
+				$oTagMgr	= bab_getInstance('bab_TagMgr');
+				$oTag		= $oTagMgr->getByName($tagname);
+				if(!($oTag instanceof bab_Tag))
+				{
+					$babBody->addError(sprintf(bab_translate("The keyword %s does not exists in the thesaurus"), $tagname));
+					return false;
+				}
+				
+				$taglist[] = $oTag;
+			}
+		}
+
+		if( count($taglist) == 0 )
+		{
+			$babBody->addError(bab_translate("You must specify at least one tag"));
+			return false;
+		}
+	}
+	
+	
+	
 	
 	
 	$idDraft = bab_pp('iddraft',0);
@@ -2749,7 +2797,7 @@ function bab_saveArticle(){
 		$draft->save();
 		$draft->saveTempAttachments(bab_pp('files', array()));
 		$draft->saveTempPicture();
-		$draft->saveTags(bab_pp('tags'));
+		$draft->saveTags($taglist);
 		
 		$draft->submit();
 		
@@ -2760,7 +2808,7 @@ function bab_saveArticle(){
 		$draft->save();
 		$draft->saveTempAttachments(bab_pp('files', array()));
 		$draft->saveTempPicture();
-		$draft->saveTags(bab_pp('tags'));
+		$draft->saveTags($taglist);
 		
 		$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
 		
@@ -2769,7 +2817,7 @@ function bab_saveArticle(){
 		$draft->save();
 		$draft->saveTempAttachments(bab_pp('files', array()));
 		$draft->saveTempPicture();
-		$draft->saveTags(bab_pp('tags'));
+		$draft->saveTags($taglist);
 		
 		$form = new bab_ArticleDraftEditor;
 		$form->fromDraft($idDraft);
@@ -2944,239 +2992,7 @@ elseif( $updstep0 = bab_rp('updstep0') )
 		$popupmessage = '';
 	}
 }
-/*
-elseif( $updstep1 = bab_rp('updstep1') )
-{
-	if( $updstep1 == 'cancel' )
-	{
-		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
-			{
-			deleteDraft($_POST['idart']);
-			unset($_POST['idart']);
-			}
-		$idx='unload';
-		$refreshurl = $rfurl;
-		$popupmessage = '';
-	}
-	elseif( $updstep1 == 'save' )
-	{
-		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
-			{
-			$idart = bab_newArticleDraft($topicid, $articleid);
-			}
-		else
-			{
-			$idart = bab_pp('idart', 0);
-			}
 
-		$approbid = bab_pp('approbid', 0);
-		$message = '';
-		if( $idart == 0 )
-		{
-			$message = bab_translate("Draft creation failed");
-			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
-		{
-			$idx = 's1';
-		}
-		else
-		{
-		$idx='unload';
-		$popupmessage = bab_translate("Update done");
-		$refreshurl = $rfurl;
-		}
-	}
-	elseif( $updstep1 == 'prev' )
-	{
-		$idx = 's0';
-	}
-	elseif( $updstep1 == 'submit' )
-	{
-		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
-			{
-			$idart = bab_newArticleDraft($topicid, $articleid);
-			}
-		else
-			{
-			$idart = bab_pp('idart', 0);
-			}
-
-		if( !isset($approbid)) { $approbid =0;}
-		$message = '';
-		if( $idart == 0 )
-		{
-			$message = bab_translate("Draft creation failed");
-			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, $title, $lang, $approbid, $message))
-		{
-			$idx = 's1';
-		}
-		else
-		{
-		$message = '';
-		if( !submitArticleDraft( $idart, $message) )
-			{
-			$idx = 's1';
-			}
-		else
-			{
-			$idx='unload';
-			$popupmessage = bab_translate("Update done");
-			$refreshurl = $rfurl;
-			}
-		}
-	}
-	elseif( $updstep1 == 'next' )
-	{
-		if( !isset($_POST['idart']) || $_POST['idart'] == 0 )
-			{
-			$idart = bab_newArticleDraft($topicid, $articleid);
-			}
-		else
-			{
-			$idart = bab_pp('idart', 0);
-			}
-		
-		$approbid = bab_pp('approbid', 0);
-
-		$message = '';
-		if( $idart == 0 )
-		{
-			$message = bab_translate("Draft creation failed");
-			$idx = 's0';
-		}elseif(!updateArticleDraft($idart, bab_pp('title'), bab_pp('lang'), $approbid, $message))
-		{
-			$idx = 's1';
-		}
-		else
-		{
-			$idx = 's2';
-		}
-	}
-}
-elseif( $updstep2 = bab_rp('updstep2') )
-{
-	if( $updstep2 == 'cancel' )
-	{
-		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
-			{
-			deleteDraft($_POST['idart']);
-			unset($idart);
-			unset($_POST['idart']);
-			}
-		$idx='unload';
-		$refreshurl = $rfurl;
-		$popupmessage = '';
-	}
-	elseif( $updstep2 == 'save' )
-	{
-		$idx='unload';
-		if( isset($_POST['approbid'])) 
-			{ 
-			savePreviewDraft($_POST['idart'], $_POST['approbid']);
-			}
-		$popupmessage = bab_translate("Update done");
-		$refreshurl = $rfurl;
-	}
-	elseif( $updstep2 == 'submit' )
-	{
-		$message = '';
-		if( isset($_POST['approbid'])) 
-			{ 
-			savePreviewDraft($_POST['idart'], $_POST['approbid']);
-			}
-
-		if( !submitArticleDraft( $_POST['idart'], $message) )
-			{
-			$idx = 's2';
-			}
-		else
-			{
-			$idx='unload';
-			$popupmessage = bab_translate("Update done");
-			$refreshurl = $rfurl;
-			}
-	}
-	elseif( $updstep2 == 'next' )
-	{
-		if( isset($_POST['approbid'])) 
-			{
-			savePreviewDraft($_POST['idart'], $_POST['approbid']);
-			}
-		$idx = 's3';
-	}
-	elseif( $updstep2 == 'prev' )
-	{
-		$idx = 's1';
-	}
-}
-elseif( $updstep3 = bab_rp('updstep3') )
-{
-	if( $updstep3 == 'cancel' )
-	{
-		if( isset($_POST['idart']) && $_POST['idart'] != 0 )
-			{
-			deleteDraft($_POST['idart']);
-			unset($idart);
-			unset($_POST['idart']);
-			}
-		$idx='unload';
-		$refreshurl = $rfurl;
-		$popupmessage = '';
-	}
-	elseif( $updstep3 == 'proptop')
-	{
-		$idx='s3';
-	}
-	elseif( $updstep3 == 'save' )
-	{
-		$message = '';
-		if(!updatePropertiesArticleDraft($message))
-		{
-			$idx = 's3';
-		}
-		else
-		{
-		$idx='unload';
-		$popupmessage = bab_translate("Update done");
-		$refreshurl = $rfurl;
-		}
-	}
-	elseif( $updstep3 == 'submit' )
-	{
-		$message = '';
-		if(!updatePropertiesArticleDraft($message))
-		{
-			$idx = 's3';
-		}
-		else
-		{
-		$message = '';
-		if( !submitArticleDraft( $_POST['idart'], $message) )
-			{
-			$idx = 's3';
-			}
-		else
-			{
-			$idx='unload';
-			$popupmessage = bab_translate("Update done");
-			$refreshurl = $rfurl;
-			}
-		}
-	}
-	elseif( $updstep3 == 'prev' )
-	{
-		$message = '';
-		if(!updatePropertiesArticleDraft($message))
-		{
-			bab_debug($message);
-			$idx = 's3';
-		} else {
-			$idx = 's1';
-		}
-	}
-}
-*/
 
 if( $idx == 'restore')
 {
@@ -3331,6 +3147,9 @@ switch($idx)
 		$babBody->babEcho(bab_previewArticleDraft(bab_rp('idart')));
 		break;
 		
+	case "save":
+		bab_saveArticle();
+		// no break
 	case "edit":
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		$babBody->addItemMenu("edit", bab_translate("New article"), $GLOBALS['babUrlScript']."?tg=artedit&idx=edit");
@@ -3344,9 +3163,7 @@ switch($idx)
 		break;
 		
 		
-	case "save":
-		bab_saveArticle();
-		break;
+	
 	
 	case "ajaxTopicRow":
 		bab_ajaxTopicRow();

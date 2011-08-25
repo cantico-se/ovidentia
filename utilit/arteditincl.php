@@ -205,6 +205,7 @@ class bab_ArticleDraftEditor {
 		
 		foreach($topicList as $topcat){
 			
+			$topcat['name'] = bab_abbr($topcat['name'], BAB_ABBR_FULL_WORDS, 50);
 			
 			if($topcat['category']){
 				$topic->addOption($topic->SelectOption('cat-'.$topcat['id_object'], $topcat['name'])->disable()->addClass('category'));

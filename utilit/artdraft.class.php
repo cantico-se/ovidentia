@@ -567,15 +567,15 @@ class bab_ArtDraft
 	
 	
 	
-	
-	public function saveTags($tags)
+	/**
+	 * 
+	 * @param array $tags <bab_Tag>
+	 * @return unknown_type
+	 */
+	public function saveTags(Array $tags)
 	{
-		$arr = explode(',', $tags);
-		
 		// copy tags to draft
 			
-		require_once dirname(__FILE__) . '/tagApi.php';
-	
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
 		/* @var $oReferenceMgr bab_ReferenceMgr */
 		
@@ -583,9 +583,8 @@ class bab_ArtDraft
 		
 		$oReferenceMgr->removeByReference($oReferenceDraft);
 		
-		foreach($arr as $tagname) {
-			$tagname = trim($tagname);
-			$oReferenceMgr->add($tagname, $oReferenceDraft);
+		foreach($tags as $tag) {
+			$oReferenceMgr->add($tag, $oReferenceDraft);
 		}
 	}
 	
@@ -610,7 +609,7 @@ class bab_ArtDraft
 			$name = bab_getGroupName($id_group, false);
 			if ($name)
 			{
-				$g[$id_group] = $name;
+				$g[$id_group] = bab_abbr($name, BAB_ABBR_FULL_WORDS, 50);
 			}
 		}
 		
