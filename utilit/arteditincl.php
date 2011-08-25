@@ -284,7 +284,7 @@ class bab_ArticleDraftEditor {
 		$RightFrame->addItem(
 			bab_labelStr(
 				bab_translate('Article topic'),
-					$topic->setName('topicid')
+					$topic->setName('id_topic')
 			)
 		);
 		
@@ -459,15 +459,12 @@ class bab_ArticleDraftEditor {
 		
 		
 		$values = $this->draft->getValues();
-			
-		$values['bab_article_head'] = $values['head'];
-		$values['bab_article_body'] = $values['body'];
-		$values['topicid'] = $values['id_topic'];
+		
 		$values['tags'] = implode(', ', $this->draft->getTags());
 		$values['operator'] = $this->draft->getOperator();
 		
 		
-		if(empty($values['bab_article_body'])){
+		if(empty($values['body'])){
 			$body->setFoldable(true, true);
 		}
 		
@@ -543,7 +540,6 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
 			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl));
-		
 		
 	
 		$page->addItem($FormArticle);

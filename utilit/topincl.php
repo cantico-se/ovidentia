@@ -114,7 +114,11 @@ class categoriesHierarchy
 }
 
 
-
+/**
+ * add to page a representation of a topic category
+ * @param int $topics
+ * 
+ */
 function viewCategoriesHierarchy($topics)
 	{
 	global $babBody;
@@ -140,6 +144,11 @@ class tempvch_txt extends categoriesHierarchy
 		}
 	}
 
+/**
+ * Get a textual representation of a topic category
+ * @param int $topics
+ * @return string HTML
+ */
 function viewCategoriesHierarchy_txt($topics)
 	{
 	global $babBody;

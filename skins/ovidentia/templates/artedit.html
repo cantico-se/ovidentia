@@ -14,7 +14,7 @@ function confirm_submit(url)
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" > 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
 	<tr class="BabSiteAdminTitleFontBackground"> 
 		<td>&nbsp;</td>
 		<td>{ nametxt }</td>
@@ -26,20 +26,21 @@ function confirm_submit(url)
 	<tr class="BabSiteAdminFontBackground"> 
 		<td align="center" width="1%" nowrap>
 			<a title="{ t_modify }" href="{ urlname }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>
-			&nbsp;<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
+			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return confirm(this.title);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			
 		</td>
 		<td>
 			<a href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;" title="{ previewtxt }">{ name }</a>
 			<!--#if attachment -->
 			&nbsp;<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
-			<!--#endif attachment -->
+			<!--#endif attachment --><br />
+			{ categoryname } 
 		</td>
 		<td>&nbsp;{ datesub }</td>
 		<td>&nbsp;{ status }</td>
 		<td align="center">
 		<!--#if bsubmit -->
-		<a class="BabSiteAdminListLink" href="#" onclick="confirm_submit('{ bsubmiturl }');return false;" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0"></a>
+		<a href="#" onclick="confirm_submit('{ bsubmiturl }');return false;" title="{ submittxt }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/submit.gif" alt="{ submittxt }" border="0" /></a>
 		<!--#else bsubmit -->&nbsp;
 		<!--#endif bsubmit -->
 		</td>
@@ -114,7 +115,7 @@ window.focus();
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" > 
-	<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
 	<tr class="BabSiteAdminTitleFontBackground">
 		<td>&nbsp;</td>
 		<td>{ nametxt }</td>
@@ -138,6 +139,10 @@ window.focus();
 			<!--#if bnotes -->
 			<img valign="absmiddle" src="{ babSkinPath }images/Puces/entryview.gif" alt="{ notestxt }" border="0">
 			<!--#endif bnotes -->
+			
+			<br />
+			
+			{ categoryname }
 		</td>
 		<td align="center">&nbsp;{ datesub }</td>
 		<td>&nbsp;{ status }</td>

@@ -76,6 +76,7 @@ function listDrafts()
 			$this->submittxt = bab_translate("Submit");
 			$this->t_modify = bab_translate("Modify");
 			$this->js_confirm_submit = bab_translate("Do you really want to submit")."?";
+			$this->confirmdelete = bab_translate('Do you really want to delete the draft?');
 			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit");
 			$this->urlmod = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s00");
 			$req = "select adt.*, count(adft.id) as total from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id where id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.idfai='0' and adt.result='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_modification desc";
@@ -91,9 +92,10 @@ function listDrafts()
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit&iddraft=".$arr['id']);
-				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=movet&idart=".$arr['id']);
+				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id']);
 				$this->previewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->name = bab_toHtml($arr['title']);
+				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				$this->datesub = bab_toHtml($this->datesub);
 				$this->datepub = $arr['date_publication'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_publication']), true);
@@ -198,6 +200,7 @@ function listSubmitedArticles()
 				$this->previewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->restoreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id']);
 				$this->name = bab_toHtml($arr['title']);
+				$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
 				$this->datesub = $arr['date_submission'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_submission']), true);
 				$this->datesub = bab_toHtml($this->datesub);
 
@@ -2670,7 +2673,7 @@ function bab_saveArticle(){
 	
 
 	
-	$id_topic = (int) bab_pp('topicid',0);
+	$id_topic = (int) bab_pp('id_topic',0);
 	
 	if (0 === $id_topic)
 	{
@@ -2688,6 +2691,7 @@ function bab_saveArticle(){
 	}
 	
 	$headeditor = new bab_contentEditor('bab_article_head');
+	$headeditor->setRequestFieldName('head');
 	$head = $headeditor->getContent();
 	$head = trim($head);
 	
@@ -2777,6 +2781,7 @@ function bab_saveArticle(){
 	$draft->head_format = $headeditor->getFormat();
 	
 	$bodyeditor = new bab_contentEditor('bab_article_body');
+	$bodyeditor->setRequestFieldName('body');
 	$draft->body = $bodyeditor->getContent();
 	$draft->body_format = $bodyeditor->getFormat();
 	
@@ -3046,7 +3051,7 @@ switch($idx)
 		{
 			deleteDraft($idart);
 		}
-		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit&idx=lsub');
+		Header('Location: '. $GLOBALS['babUrlScript'].'?tg=artedit');
 		exit;
 		break;
 	
@@ -3189,7 +3194,7 @@ switch($idx)
 	case "list": /* List of articles drafts */
 	default:
 		$arrinit = artedit_init(); /* Test if articles drafts exists for the current user : in trash or, not in trash and in approbation (the user can't modify an article in approbation) */
-		$babBody->title = bab_translate("List of articles");
+		$babBody->title = bab_translate("List of my articles drafts");
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
 		listDrafts();
 		if( $arrinit['trash'] )
