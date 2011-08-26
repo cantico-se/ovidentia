@@ -433,7 +433,7 @@ class bab_ReferenceMgr
 		if (!($tag instanceof bab_Tag))
 		{
 			$oTagMgr	= bab_getInstance('bab_TagMgr');
-			$tag		= $oTagMgr->getByName($sTagName);
+			$tag		= $oTagMgr->getByName($tag);
 			if(!($tag instanceof bab_Tag))
 			{
 				return false;
