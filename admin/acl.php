@@ -755,7 +755,7 @@ function aclAdd($sTable, $iIdGroup, $iIdObject)
 {
 	global $babDB;
 
-	if ($babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' (`id` , `id_object` , `id_group`) VALUES (\'\', ' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')')) {
+	if ($babDB->db_query('INSERT INTO ' . $babDB->backTick($sTable) . ' ( `id_object` , `id_group`) VALUES (' . $babDB->quote($iIdObject) . ', ' . $babDB->quote($iIdGroup) . ')')) {
 		unset($_SESSION['bab_groupAccess']['acltables']);
 		$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 		bab_siteMap::clearAll();

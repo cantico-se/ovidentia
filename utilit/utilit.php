@@ -493,11 +493,6 @@ var $message;
 var $script;
 var $lastlog; /* date of user last log */
 
-var $topview = array();
-var $topsub = array();
-var $topcom = array();
-var $topmod = array();
-var $topman = array();
 /* $babBody->get_topcatview() */
 /* all topics categories : $babBody->get_topcats() */
 
