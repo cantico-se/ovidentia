@@ -272,7 +272,7 @@ class bab_ArticleDraftEditor {
 		
 		$LeftFrame->addItem(
 			$W->HBoxItems(
-				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel'),
+				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save a draft'))->setName('draft'),
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Preview'))->setName('see'),
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Submit'))->setName('submit')

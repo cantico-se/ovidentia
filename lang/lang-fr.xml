@@ -3191,7 +3191,7 @@
 <string id="Configuration error, missing calendar backend">Erreur de configuration, le backend d'agenda est manquant</string>
 <string id="Personal calendar not available on old backend">Agenda personel non disponible dans le backend précédent</string>
 <string id="Personal calendar not available on new backend">Agenda personel non disponible dans le nouveau backend</string>
-<string id="Do you really want to delete the draft?">Voulez-vous vraiment supprimer le draft?</string>
+<string id="Do you really want to delete the draft?">Voulez-vous vraiment supprimer le brouillon?</string>
 <string id="The topic is mandatory">Le thème est obligatoire</string>
 <string id="The article title is mandatory">Le titre de l'article est obligatoire</string>
 <string id="The article head is mandatory">L'introduction de l'article est obligatoire</string>
