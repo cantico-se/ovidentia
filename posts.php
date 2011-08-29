@@ -781,6 +781,16 @@ function newReply($forum, $thread, $post)
 			$this->thread = bab_toHtml($thread);
 			$this->postid = bab_toHtml($post);
 			$this->flat = bab_toHtml($flat);
+			
+			$oCaptcha = @bab_functionality::get('Captcha');
+			$this->bUseCaptcha = false;
+			if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
+			{
+				$this->bUseCaptcha = true;
+				$this->sCaptchaCaption1 = bab_translate("Word Verification");
+				$this->sCaptchaSecurityData = $oCaptcha->getGetSecurityHtmlData();
+				$this->sCaptchaCaption2 = bab_translate("Enter the letters in the image above");
+			}
 
 			$req = "select * from ".BAB_POSTS_TBL." where id='".$babDB->db_escape_string($post)."'";
 			$res = $babDB->db_query($req);
@@ -1086,6 +1096,18 @@ function saveReply($forum, $thread, $post, $name, $subject)
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a subject for your message")." !";
 		return;
+		}
+
+	$oCaptcha = @bab_functionality::get('Captcha');
+	if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
+		{
+		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
+					
+		if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
+			{
+			$babBody->msgerror = bab_translate("The captcha value is incorrect");
+			return;
+			}
 		}
 
 	if( empty($BAB_SESS_USER))

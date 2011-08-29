@@ -482,22 +482,22 @@ function addNewUser( $nickname, $password1, $password2)
 	$oCaptcha = @bab_functionality::get('Captcha');
 	if(false !== $oCaptcha)
 		{
-			$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
-			//echo 'sCaptchaSecurityCode ==> ' . $sCaptchaSecurityCode . ' session ==> ' . $_SESSION['sCaptchaSecurityCode'] . '<br />';
-						
-			if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
-			{
-				$babBody->msgerror = bab_translate("The captcha value is incorrect");
-				return false;
-			}/*
-			else
-			{
-				$babBody->msgerror = bab_translate("The captcha value is correct");
-				return false;
-			}/*/
+		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
+		//echo 'sCaptchaSecurityCode ==> ' . $sCaptchaSecurityCode . ' session ==> ' . $_SESSION['sCaptchaSecurityCode'] . '<br />';
+					
+		if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
+		{
+			$babBody->msgerror = bab_translate("The captcha value is incorrect");
+			return false;
+		}/*
+		else
+		{
+			$babBody->msgerror = bab_translate("The captcha value is correct");
+			return false;
+		}/*/
 		}
 		
-		if ( !bab_isEmailValid($fields['email']))
+	if ( !bab_isEmailValid($fields['email']))
 		{
 		$babBody->msgerror = bab_translate("Your email is not valid !!");
 		return false;

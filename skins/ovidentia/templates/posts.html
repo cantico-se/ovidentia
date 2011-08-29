@@ -119,6 +119,24 @@
 
 		</td>
 	</tr>
+	<!--#if bUseCaptcha -->
+	<tr>
+		<td align="right">
+			{ sCaptchaCaption1 }:
+		</td>
+		<td>
+			{ sCaptchaSecurityData }
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			{ sCaptchaCaption2 }<font color="red">*</font>:
+		</td>
+		<td>
+			<input type="text" name="sCaptchaSecurityCode" size="40" value="" />
+		</td>
+	</tr>
+	<!--#endif bUseCaptcha -->
 	<tr> 
 		<td align="center" colspan="2">
 		<input type="submit" name="submit" value="{ add }">

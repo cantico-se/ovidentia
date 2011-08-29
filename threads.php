@@ -409,6 +409,16 @@ function newThread($forum)
 			$this->t_remove_field = bab_translate("Remove field");
 			$this->forum = bab_toHtml($forum);
 			$this->flat = bab_toHtml(bab_rp('flat', 1));
+			
+			$oCaptcha = @bab_functionality::get('Captcha');
+			$this->bUseCaptcha = false;
+			if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
+			{
+				$this->bUseCaptcha = true;
+				$this->sCaptchaCaption1 = bab_translate("Word Verification");
+				$this->sCaptchaSecurityData = $oCaptcha->getGetSecurityHtmlData();
+				$this->sCaptchaCaption2 = bab_translate("Enter the letters in the image above");
+			}
 
 			if( !isset($_POST['subject']))
 				{
@@ -482,6 +492,18 @@ function saveThread()
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a subject for your message").' !';
 		return false;
+		}
+
+	$oCaptcha = @bab_functionality::get('Captcha');
+	if(false !== $oCaptcha && (!isset($BAB_SESS_USERID) || empty($BAB_SESS_USERID)))
+		{
+		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
+					
+		if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
+			{
+			$babBody->msgerror = bab_translate("The captcha value is incorrect");
+			return false;
+			}
 		}
 
 	if( empty($BAB_SESS_USER))
