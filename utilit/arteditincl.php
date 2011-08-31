@@ -425,7 +425,7 @@ class bab_ArticleDraftEditor {
 			->disable()
 			->addClass('bab-article-picture')
 		);
-	
+
 		
 		/*@var $articlePicture Widget_FilePicker */
 		/*@var $articleFiles Widget_FilePicker */
@@ -433,8 +433,11 @@ class bab_ArticleDraftEditor {
 		$articlePicture->setEncodingMethod(null);
 		$articleFiles->setEncodingMethod(null)->onUpload('filesAttachments', 'window.babArticle');
 		
-		
-
+		$imgsize = (int) $babBody->babsite['imgsize'];
+		if($imgsize > 0)
+		{
+			$articlePicture->setMaxSize($imgsize * 1024);
+		}
 
 		
 		if ($this->draft->getId())

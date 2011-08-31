@@ -1966,7 +1966,7 @@ function siteUpdate_menuUpload()
 							{
 								if(!mkdir($sPath, 0777))
 								{
-									$babBody->addError(bab_translate(sprintf(' The directory: %s have not been created', $sPath)));
+									$babBody->addError(sprintf(bab_translate('The directory: %s have not been created'), $sPath));
 									break;
 								}
 							}
