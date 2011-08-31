@@ -348,11 +348,17 @@ function displayProjectsSpacesList()
  						$bIsManager = bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $datas['id']);
 					}
 					
+					$bIsVisualizer = bab_isAccessValid(BAB_TSKMGR_DEFAULT_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProjectSpace);
+					if(!$bIsVisualizer)
+					{
+						$bIsVisualizer = bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $datas['id']);
+					}
+					
 					$isAccessValid = ($bIsCreator || $bIsManager);
 
 					$iTaskCount = (int) bab_getTaskCount($datas['id']);					
 					
-					$sProjectUrl = ($bIsManager) ? $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST, $iIdProjectSpace, $datas['id']) . bab_toHtml('&isProject=' . urlencode(1)) : null;
+					$sProjectUrl = ($bIsManager || $bIsVisualizer) ? $this->getUrl(BAB_TM_IDX_DISPLAY_PROJECT_TASK_LIST, $iIdProjectSpace, $datas['id']) . bab_toHtml('&isProject=' . urlencode(1)) : null;
 					$oProjectElement =& $this->createElement($this->m_dnp . '_' . $datas['id'], $this->m_dnp, bab_toHtml($datas['name']) . ' (' . $iTaskCount . ')', 
 						bab_toHtml($datas['description']), $sProjectUrl);
                		$this->appendElement($oProjectElement, $this->m_dnps . '_' . $iIdProjectSpace);
@@ -1031,7 +1037,7 @@ function displayTaskList($sIdx)
 	
 	if(1 === $isProject)
 	{
-		if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject))
+		if(!bab_isAccessValid(BAB_TSKMGR_PROJECTS_MANAGERS_GROUPS_TBL, $iIdProject) && !bab_isAccessValid(BAB_TSKMGR_PROJECTS_VISUALIZERS_GROUPS_TBL, $iIdProject))
 		{
 			$GLOBALS['babBody']->msgerror = bab_toHtml(bab_translate("You are not a projects manager"));
 			return false;
@@ -2029,7 +2035,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 	$sLink = $GLOBALS['babUrlScript'] . '?tg=' . urlencode($sTg) . '&idx=' . urlencode(BAB_TM_IDX_DISPLAY_TASK_FORM) .
 		'&sFromIdx=' . urlencode($sIdx) . '&isProject=' . urlencode($isProject);
 
-	//Pour les icônes
+	//Pour les icï¿½nes
 	{		
 		$aDataSourceFields = array(
 			array('sDataSourceFieldName' => 'iIdProjectSpace', 'sUrlParamName' => 'iIdProjectSpace'),	
@@ -2103,7 +2109,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 		foreach($aPeriod as $iKey => $oCalendarPeriod)
 		{
 			$iDayToAdd = 0;
-			//Si la start période est supérieure ou égale à la end période
+			//Si la start pï¿½riode est supï¿½rieure ou ï¿½gale ï¿½ la end pï¿½riode
 			//alors il faut ajouter 1 jour car c'est le lendemain
 			if(!(BAB_TM_PERIOD_BEFORE === $oCalendarPeriod->compare()))
 			{
@@ -2128,7 +2134,7 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 
 			//TODO
 			//Il faut prendre le tableau $events et en fonction des chevauchement 
-			//recréer des périodes pour les traiter plus bas dans le foreach
+			//recrï¿½er des pï¿½riodes pour les traiter plus bas dans le foreach
 
 			$iBegin = 0;
 			$iEnd = 0;
@@ -2146,12 +2152,12 @@ reset($this->aCurrentColumnHeader['value']['aDataSourceFieldName']);
 //				);
 
 				//Exemple: imaginons que le 16/07/2009 et le 17/07/2009 je sois en vacances
-				//c'est à dire de 2009-07-16 00:00:00 à 2009-07-18 00:00:00 soit 48 heures (interval semie ouvert)
-				//L'appel à getEventsBetween('2009-07-16 00:00:00', '2009-07-17 00:00:00') retourne 172800 soit 2 jours
-				//L'appel à getEventsBetween('2009-07-17 00:00:00', '2009-07-18 00:00:00') retourne 172800 soit 2 jours
-				//En fait il faudrait qui travail en interval semie ouvert (début inclut, fin exclus) permette de 
+				//c'est ï¿½ dire de 2009-07-16 00:00:00 ï¿½ 2009-07-18 00:00:00 soit 48 heures (interval semie ouvert)
+				//L'appel ï¿½ getEventsBetween('2009-07-16 00:00:00', '2009-07-17 00:00:00') retourne 172800 soit 2 jours
+				//L'appel ï¿½ getEventsBetween('2009-07-17 00:00:00', '2009-07-18 00:00:00') retourne 172800 soit 2 jours
+				//En fait il faudrait qui travail en interval semie ouvert (dï¿½but inclut, fin exclus) permette de 
 				//determiner retourne le temp disponible, l'agenda le fait mais actuellement le gestionnaire
-				//de tâche à des jours de travail de 24 heures
+				//de tï¿½che ï¿½ des jours de travail de 24 heures
 				{
 					$iBegin = $event->ts_begin;
 					if($event->ts_begin < $oStartPeriodDateTime->getTimeStamp())
@@ -2631,8 +2637,8 @@ function displayOrderTaskFieldsForm()
 			$this->set_data('tg', 'usrTskMgr');
 			$this->set_data('iIdProjectSpace', $iIdProjectSpace);
 			$this->set_data('iIdProject', $iIdProject);
-			$this->set_data('sSelected', '');//Utilisé seulement lors du déplacement
-			$this->set_data('sSelectedField', '');//Utilisé seulement lors du déplacement
+			$this->set_data('sSelected', '');//Utilisï¿½ seulement lors du dï¿½placement
+			$this->set_data('sSelectedField', '');//Utilisï¿½ seulement lors du dï¿½placement
 			
 			$this->set_caption('sSelectableField', bab_translate("Selectable fields"));
 			$this->set_caption('sSelectedField', bab_translate("Selected fields"));
@@ -2815,8 +2821,8 @@ function displayOrderTaskFieldsForm()
 							$aSelectedField[$sKey] = $aItem;
 						}
 						
-						//Pour le déplacement vers le bas
-						//Vu que l'on supprime(unset) l'élément à déplacer
+						//Pour le dï¿½placement vers le bas
+						//Vu que l'on supprime(unset) l'ï¿½lï¿½ment ï¿½ dï¿½placer
 						if(!array_key_exists($sSelectedIndex, $_SESSION))
 						{
 							$aSelectedField[$sSelectedIndex] = $aItemToMove;
@@ -2831,8 +2837,8 @@ function displayOrderTaskFieldsForm()
 		
 		function getNextField($sSessionKeyName)
 		{
-			$this->set_data('sSelected', '');//Utilisé seulement lors du déplacement
-			$this->get_data('sSelectedField', $sSelectedField);//Utilisé seulement lors du déplacement
+			$this->set_data('sSelected', '');//Utilisï¿½ seulement lors du dï¿½placement
+			$this->get_data('sSelectedField', $sSelectedField);//Utilisï¿½ seulement lors du dï¿½placement
 
 			if(array_key_exists($sSessionKeyName, $_SESSION))
 			{
@@ -3201,7 +3207,7 @@ function addModifyTask()
 
 	if(!$bIsOk)
 	{
-		//Pour être en création
+		//Pour ï¿½tre en crï¿½ation
 		if(isset($_POST['iIdTask']) && 0 == $_POST['iIdTask'])
 		{
 			unset($_POST['iIdTask']);
@@ -3517,8 +3523,8 @@ function processExport()
 				if('sDescription' == $sAlias)
 				{
 					//SZ vue avec JLB le 12/08/2008 pour l'instant
-					//on ne traite pas la description car l'éditeur HTML
-					//remonte des caractères qui génére des saut de lignes
+					//on ne traite pas la description car l'ï¿½diteur HTML
+					//remonte des caractï¿½res qui gï¿½nï¿½re des saut de lignes
 					continue;
 				}
 				
@@ -3584,8 +3590,8 @@ function processExport()
 //						$sData = tskmgr_htmlToText(html_entity_decode($oEditor->getHtml(), ENT_QUOTES));
 						
 						//SZ vue avec JLB le 12/08/2008 pour l'instant
-						//on ne traite pas la description car l'éditeur HTML
-						//remonte des caractères qui génére des saut de lignes
+						//on ne traite pas la description car l'ï¿½diteur HTML
+						//remonte des caractï¿½res qui gï¿½nï¿½re des saut de lignes
 						continue;
 					}
 
@@ -3601,7 +3607,7 @@ function processExport()
 				$sOutput .= $sCrlf;
 			}
 			
-			$sFileName = 'listeTâches.csv';
+			$sFileName = 'listeTï¿½ches.csv';
 		
 			header("Content-Disposition: attachment; filename=\"" . $sFileName . "\""."\n");
 			header("Content-Type: csv/plain"."\n");
