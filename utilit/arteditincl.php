@@ -257,7 +257,7 @@ class bab_ArticleDraftEditor {
 		
 		
 		
-		/*
+		
 		if($this->draft->id_article){
 			$LeftFrame->addItem(
 				$W->Section(
@@ -268,7 +268,7 @@ class bab_ArticleDraftEditor {
 				)->setFoldable(true, true)
 			);
 		}
-		*/
+		
 		
 		$LeftFrame->addItem(
 			$W->HBoxItems(

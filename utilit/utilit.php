@@ -678,9 +678,10 @@ function addError($error) {
 function babpopup($txt) {
 	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
-	$GLOBALS['babBodyPopup']->styleSheet = & $GLOBALS['babBody']->styleSheet;
-	$GLOBALS['babBodyPopup']->title = & $GLOBALS['babBody']->title;
-	$GLOBALS['babBodyPopup']->msgerror = & $GLOBALS['babBody']->msgerror;
+	$GLOBALS['babBodyPopup']->menu 			= & $GLOBALS['babBody']->menu;
+	$GLOBALS['babBodyPopup']->styleSheet 	= & $GLOBALS['babBody']->styleSheet;
+	$GLOBALS['babBodyPopup']->title 		= & $GLOBALS['babBody']->title;
+	$GLOBALS['babBodyPopup']->msgerror 		= & $GLOBALS['babBody']->msgerror;
 	$GLOBALS['babBody']->babecho($txt);
 	$GLOBALS['babBodyPopup']->babecho($GLOBALS['babBody']->content);
 	printBabBodyPopup();

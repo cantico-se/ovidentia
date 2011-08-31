@@ -27,6 +27,10 @@ include_once $babInstallPath.'utilit/uiutil.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
 
+
+define("BAB_ART_MAXLOGS"	, 25);
+
+
 function listCategories()
 	{
 
@@ -552,17 +556,157 @@ function orderArticles($id)
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "articlesorder"));
 	}
+	
+	
+function viewArticleHistory($idart)
+{
+	global $babBodyPopup;
+
+	class temp
+		{
+		var $topname;
+		var $topurl;
+		var $prevname;
+		var $prevurl;
+		var $nextname;
+		var $nexturl;
+		var $bottomname;
+		var $bottomurl;
+
+		function temp($article, $pos)
+			{
+			global $babBodyPopup, $babDB, $rfurl;
+
+			$this->topurl = "";
+			$this->bottomurl = "";
+			$this->nexturl = "";
+			$this->prevurl = "";
+			$this->topname = "";
+			$this->bottomname = "";
+			$this->nextname = "";
+			$this->prevname = "";
+			$this->titletxt = bab_translate("Article");
+			$this->pathtxt = bab_translate("Topic");
+			$this->authortxt = bab_translate("Author");
+			$this->datelocktxt = bab_translate("Date");
+			$this->actiontxt = bab_translate("Action");
+			$this->commenttxt = bab_translate("Reason of the modification");
+
+			$res = $babDB->db_query("select id, id_author  from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($article)."'");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+				{
+				$arr = $babDB->db_fetch_array($res);
+				$this->bmodify = false;
+				$this->editdrafttxt = false;
+				}
+			else
+				{
+				$this->editdrafttxt = false;
+				$this->bmodify = true;
+				}
+
+
+			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc");
+			$row = $babDB->db_fetch_array($res);
+			$total = $row["total"];
+
+			$url = bab_url::get_request_gp();
+			if( $total > BAB_ART_MAXLOGS)
+				{
+				if( $pos > 0)
+					{
+					$url->pos = 0;
+					$this->topurl = bab_toHtml($url->toString());
+					$this->topname = "&lt;&lt;";
+					}
+
+				$next = $pos - BAB_ART_MAXLOGS;
+				if( $next >= 0)
+					{
+					$url->pos = $next;
+					$this->prevurl = bab_toHtml($url->toString());
+					$this->prevname = "&lt;";
+					}
+
+				$next = $pos + BAB_ART_MAXLOGS;
+				if( $next < $total)
+					{
+					$url->pos = $next;
+					$this->nexturl = bab_toHtml($url->toString());
+					$this->nextname = "&gt;";
+					if( $next + BAB_ART_MAXLOGS < $total)
+						{
+						$bottom = $total - BAB_ART_MAXLOGS;
+						}
+					else
+						{
+						$bottom = $next;
+						}
+						
+					$url->pos = $bottom;
+					$this->bottomurl = bab_toHtml($url->toString());
+					$this->bottomname = "&gt;&gt;";
+					}
+				}
+
+			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc";
+			if( $total > BAB_ART_MAXLOGS)
+				{
+				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_ART_MAXLOGS;
+				}
+
+			
+			$this->res = $babDB->db_query($req);
+			$this->count = $babDB->db_num_rows($this->res);
+			}
+
+		function getnextlog()
+			{
+			global $babDB;
+			static $i = 0;
+			if( $i < $this->count)
+				{
+				global $babDB;
+				$arr = $babDB->db_fetch_array($this->res);
+				$this->datelock = bab_toHtml(bab_strftime(bab_mktime($arr['date_log']), true));
+				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
+				switch($arr['action_log'])
+					{
+					case 'lock': $this->action = bab_translate("Lock"); break;
+					case 'unlock': $this->action = bab_translate("Unlock"); break;
+					case 'commit': $this->action = bab_translate("Commit"); break;
+					case 'refused': $this->action = bab_translate("Refused"); break;
+					case 'accepted': $this->action = bab_translate("Accepted"); break;
+					default: $this->action = ""; break;
+					}
+				$this->comment = str_replace("\n", "<br>", bab_toHtml($arr['art_log']));
+				$i++;
+				return true;
+				}
+			else
+				{
+				return false;
+				}
+			}
+
+		}
+		
+	global $babBody;
+
+	$temp = new temp($idart, (int) bab_rp('pos', 0));
+	$babBody->babPopup(bab_printTemplate($temp, "topman.html", "articlehistoric"));
+}
 
 
 function viewArticleProperties($item, $idart)
 	{
-	global $babBodyPopup;
+	global $babBody;
 	class temp
 		{
 
 		function temp($item, $idart)
 			{
-			global $babBodyPopup, $babBody, $babDB, $BAB_SESS_USERID;
+			global $babBody, $babDB, $BAB_SESS_USERID;
 			$this->access = false;
 
 			$req = "select at.id, at.title, at.id_topic, at.date_publication, at.date_archiving, at.restriction, count(aft.id) as totalf from ".BAB_ARTICLES_TBL." at left join ".BAB_ART_FILES_TBL." aft on at.id=aft.id_article where at.id='".$babDB->db_escape_string($idart)."' group by aft.id_article";
@@ -737,7 +881,7 @@ function viewArticleProperties($item, $idart)
 				}
 			else
 				{
-				$babBodyPopup->msgerror = bab_translate("Access denied");
+				$babBody->addError(bab_translate("Access denied"));
 				}
 			}
 
@@ -935,7 +1079,7 @@ function viewArticleProperties($item, $idart)
 	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');	
 	
 	$temp = new temp($item, $idart);
-	$babBodyPopup->babecho(bab_printTemplate($temp, "topman.html", "propertiesarticle"));
+	$babBody->babPopup(bab_printTemplate($temp, "topman.html", "propertiesarticle"));
 	}
 
 
@@ -1591,15 +1735,32 @@ switch($idx)
 			echo bab_translate("Access denied");
 		}
 		exit;
+		
+		
+	case 'history';
+		if( $manager )
+		{
+			$babBody->setTitle = bab_translate("Article history");
+			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".$art);
+			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".$art);
+			$babBody->setCurrentItemMenu($idx);
+			viewArticleHistory($art);
+		}
+		else
+		{
+			echo bab_translate("Access denied");
+		}
+		exit;
+		break;
 	
 	case "propa":
 		if( $manager )
 		{
-			$babBodyPopup = new babBodyPopup();
-			$babBodyPopup->title = bab_translate("Article properties");
+			$babBody->setTitle = bab_translate("Article properties");
+			$babBody->addItemMenu("propa", bab_translate("Properties"), $GLOBALS['babUrlScript']."?tg=topman&idx=propa&item=".$item."&art=".$art);
+			$babBody->addItemMenu("history", bab_translate("History"), $GLOBALS['babUrlScript']."?tg=topman&idx=history&item=".$item."&art=".$art);
+			$babBody->setCurrentItemMenu($idx);
 			viewArticleProperties( $item, $art );
-			printBabBodyPopup();
-			exit;
 		}
 		else
 		{

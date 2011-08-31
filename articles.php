@@ -31,7 +31,7 @@ include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/artincl.php';
 include_once $babInstallPath.'utilit/urlincl.php';
 
-define("BAB_ART_MAXLOGS"	, 25);
+
 
 
 class listArticles extends categoriesHierarchy

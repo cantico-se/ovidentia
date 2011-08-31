@@ -254,6 +254,46 @@ class bab_ArtDraft
 		return $this;
 	}
 	
+	/**
+	 * Log article entry
+	 * @param	string	$action		lock|unlock|commit|accepted|refused
+	 * @param 	string 	$comment
+	 * @return bool
+	 */
+	public function log($action, $comment = '')
+	{
+		global $babDB;
+		
+		if (!$this->id_article)
+		{
+			return false;
+		}
+		
+		$babDB->db_query("
+			insert into bab_art_log 
+			(
+				id_article, 
+				id_author, 
+				date_log, 
+				action_log, 
+				art_log
+			) 
+			values 
+			(
+				".$babDB->quote($this->id_article).", 
+				".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
+				now(),
+				".$babDB->quote($action).",
+				".$babDB->quote($comment)."
+			)
+		");
+		
+		
+		return true;
+				
+	}
+	
+	
 	
 	/**
 	 * Save Draft
