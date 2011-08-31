@@ -996,80 +996,27 @@ function bab_getChildrenArticlesInformation($topicid, $fullpath = false, $articl
 	return $articles;
 }
 	
+
+/**
+ * Submit draft as article
+ * create article and delete draft or send notification to approver
+ * @param int $idart
+ * @param int &$articleid
+ * @return bool
+ */
 function bab_submitArticleDraft($idart, &$articleid = null)
 {
-	global $babBody, $babDB, $BAB_SESS_USERID;
+	require_once dirname(__FILE__) . '/artdraft.class.php';
+	$draft = new bab_ArtDraft;
+	$draft->getFromIdDraft($idart);
 	
-	$articleid = null;
+	if ($draft->submit())
+	{
+		$articleid = $draft->id_article;
+		return true;
+	}
 	
-	$res = $babDB->db_query("select id_article, id_topic, id_author, approbation from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-	if( $res && $babDB->db_num_rows($res) > 0 )
-		{
-		$arr = $babDB->db_fetch_array($res);
-
-		if( $arr['id_topic'] == 0 )
-			{
-			return false;
-			}
-
-		if( $arr['id_article'] != 0 )
-			{
-			$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'commit')");	
-			
-			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, tt.auto_approbation from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$babDB->db_escape_string($arr['id_article'])."'");
-			$rr = $babDB->db_fetch_array($res);
-			if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
-				{
-				if( $arr['approbation'] == '2' )
-					{
-					$rr['saupdate'] = 0;
-					}
-				}
-			}
-		else
-			{
-			$res = $babDB->db_query("select tt.idsaart as saupdate, tt.auto_approbation from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($arr['id_topic'])."'");
-			$rr = $babDB->db_fetch_array($res);
-			}
-
-		if( $rr['saupdate'] !=  0 )
-			{
-			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-			if( $rr['auto_approbation'] == 'Y' )
-				{
-				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$idart, $GLOBALS['BAB_SESS_USERID']); // Auto approbation
-				}
-			else
-				{
-				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$idart);
-				}
-			}
-
-		if( $rr['saupdate'] ==  0 || $idfai === true)
-			{
-			if( $arr['id_article'] != 0 )
-				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$arr['id_author']."', now(), 'accepted')");		
-				}
-
-			$articleid = acceptWaitingArticle($idart);
-			if( $articleid == 0)
-				{
-				return false;
-				}
-			bab_deleteArticleDraft($idart);
-			}
-		else
-			{
-			if( !empty($idfai))
-				{
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_WAIT."' , idfai='".$idfai."', date_submission=now() where id='".$babDB->db_escape_string($idart)."'");
-				$nfusers = getWaitingApproversFlowInstance($idfai, true);
-				notifyArticleDraftApprovers($idart, $nfusers);
-				}
-			}		
-		}
-	return true;
+	return false;
 }
 
 

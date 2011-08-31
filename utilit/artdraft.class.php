@@ -130,6 +130,12 @@ class bab_ArtDraft
 	
 	
 	/**
+	 * @var string
+	 */
+	public $modification_comment;
+	
+	
+	/**
 	 * 
 	 * @return int
 	 */
@@ -211,7 +217,14 @@ class bab_ArtDraft
 	{
 		$id_draft = bab_newArticleDraft(0, $id_article);
 		
-		return $this->getFromIdDraft($id_draft);
+		$this->getFromIdDraft($id_draft);
+		
+		if (!$this->log('lock'))
+		{
+			throw new Exception('log failed');
+		}
+		
+		return $this;
 	}
 	
 	
@@ -229,7 +242,9 @@ class bab_ArtDraft
 	{
 		$id_draft = bab_newArticleDraft($id_topic, 0);
 		
-		return $this->getFromIdDraft($id_draft);
+		$this->getFromIdDraft($id_draft);
+		
+		return $this;
 	}
 	
 	
@@ -256,11 +271,19 @@ class bab_ArtDraft
 	
 	/**
 	 * Log article entry
+	 * 
+	 * lock : draft creation
+	 * unlock : cancel draft
+	 * commit : commit draft to article
+	 * accepted, refused : approbation
+	 * 
+	 * 
 	 * @param	string	$action		lock|unlock|commit|accepted|refused
 	 * @param 	string 	$comment
+	 * 
 	 * @return bool
 	 */
-	public function log($action, $comment = '')
+	public function log($action, $comment = null)
 	{
 		global $babDB;
 		
@@ -269,6 +292,21 @@ class bab_ArtDraft
 			return false;
 		}
 		
+		if (null == $comment && 'commit' === $action)
+		{
+			$comment = $this->modification_comment;
+		}
+		
+		$ordering = 0;
+		$res = $babDB->db_query("SELECT ordering FROM bab_art_log WHERE id_article=".$babDB->quote($this->id_article));
+		if ($lastlog = $babDB->db_fetch_assoc($res))
+		{
+			$ordering = (int) $lastlog['ordering'];
+		}
+		
+		$ordering++;
+		
+		
 		$babDB->db_query("
 			insert into bab_art_log 
 			(
@@ -276,7 +314,8 @@ class bab_ArtDraft
 				id_author, 
 				date_log, 
 				action_log, 
-				art_log
+				art_log,
+				ordering 
 			) 
 			values 
 			(
@@ -284,10 +323,10 @@ class bab_ArtDraft
 				".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
 				now(),
 				".$babDB->quote($action).",
-				".$babDB->quote($comment)."
+				".$babDB->quote($comment).",
+				".$babDB->quote($ordering)."
 			)
 		");
-		
 		
 		return true;
 				
@@ -760,7 +799,80 @@ class bab_ArtDraft
 	 */
 	public function submit()
 	{
-		return bab_submitArticleDraft($this->id);
+		global $babBody, $babDB, $BAB_SESS_USERID;
+
+		if( $this->id_topic == 0 )
+		{
+			return false;
+		}
+		
+		
+	
+		if( $this->id_article != 0 )
+		{
+			$this->log('commit', (string) $this->modification_comment);
+
+			$res = $babDB->db_query("select at.id_topic, at.id_author, tt.allow_update, tt.allow_manupdate, tt.idsa_update as saupdate, tt.auto_approbation 
+				from ".BAB_ARTICLES_TBL." at left join ".BAB_TOPICS_TBL." tt on at.id_topic=tt.id where at.id='".$babDB->db_escape_string($this->id_article)."'
+			");
+			
+			$rr = $babDB->db_fetch_array($res);
+			if( $rr['saupdate'] != 0 && ( $rr['allow_update'] == '2' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $rr['allow_manupdate'] == '2' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'])))
+			{
+			if( 2 === (int) $this->approbation )
+				{
+				$rr['saupdate'] = 0;
+				}
+			}
+		}
+		else
+		{
+			$res = $babDB->db_query("select tt.idsaart as saupdate, tt.auto_approbation from ".BAB_TOPICS_TBL." tt where tt.id='".$babDB->db_escape_string($this->id_topic)."'");
+			$rr = $babDB->db_fetch_array($res);
+		}
+
+		
+		$idfai = null;
+		
+		if( $rr['saupdate'] !=  0 )
+		{
+			include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+			if( $rr['auto_approbation'] == 'Y' )
+			{
+				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$this->getId(), $GLOBALS['BAB_SESS_USERID']); // Auto approbation
+			}
+			else
+			{
+				$idfai = makeFlowInstance($rr['saupdate'], "draft-".$this->getId());
+			}
+		}
+
+		if( $rr['saupdate'] == 0 || $idfai === true)
+		{
+			if( $this->id_article != 0 && true === $idfai)
+			{
+			
+				$this->log('accepted', bab_translate('Accepted automatically at the first step of approbation schema'));
+			}
+
+			$this->id_article = acceptWaitingArticle($this->getId());
+			if( $this->id_article == 0)
+			{
+				return false;
+			}
+			bab_deleteArticleDraft($this->getId());
+		}
+		else
+		{
+			if( !empty($idfai))
+			{
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_WAIT."' , idfai='".$idfai."', date_submission=now() where id='".$babDB->db_escape_string($this->getId())."'");
+				$nfusers = getWaitingApproversFlowInstance($idfai, true);
+				notifyArticleDraftApprovers($this->getId(), $nfusers);
+			}
+		}	
+		
+		return true;
 	}
 	
 	
@@ -774,6 +886,7 @@ class bab_ArtDraft
 	{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
 		bab_deleteDraft($this->id);
+		$this->log('unlock');
 		$this->id = null;
 		
 		return $this;

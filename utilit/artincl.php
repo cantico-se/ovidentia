@@ -1521,6 +1521,12 @@ function notifyCommentAuthor($subject, $msg, $idfrom, $to)
 	$mail->send();
 	}
 	
+	
+/**
+ * 
+ * @param int $idart draft ID
+ * @return unknown_type
+ */
 function acceptWaitingArticle($idart)
 {
 	global $babBody, $babDB;

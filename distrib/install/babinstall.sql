@@ -2157,6 +2157,7 @@ CREATE TABLE bab_art_drafts (
   id_anonymous int(11) unsigned NOT NULL default '0',
   approbation enum('0','1','2') NOT NULL default '0',
   update_datemodif enum('Y','N') NOT NULL default 'Y',
+  modification_comment text,
   PRIMARY KEY  (id),
   KEY id_topic (id_topic),
   KEY id_author (id_author),
@@ -2236,6 +2237,7 @@ CREATE TABLE bab_art_log (
   date_log datetime NOT NULL default '0000-00-00 00:00:00',
   action_log enum('lock','unlock','commit','refused','accepted') NOT NULL default 'lock',
   art_log text,
+  ordering int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_article (id_article),
   KEY id_author (id_author)

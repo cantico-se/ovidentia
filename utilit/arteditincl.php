@@ -214,6 +214,17 @@ class bab_ArticleDraftEditor {
 			}
 		}
 		
+		if($this->draft->id_article){
+			$LeftFrame->addItem(
+				$W->Section(
+					bab_translate('Reasons for changes'),
+					$W->Frame()->addItem(
+						$W->TextEdit()->setName('modification_comment')->addClass('modification_comment')
+					)
+				)->setFoldable(true, true)
+			);
+		}
+		
 				
 		
 		$LeftFrame->addItem(
@@ -258,16 +269,7 @@ class bab_ArticleDraftEditor {
 		
 		
 		
-		if($this->draft->id_article){
-			$LeftFrame->addItem(
-				$W->Section(
-					bab_translate('Reasons for changes'),
-					$W->Frame('modify')->addItem(
-						$W->TextEdit('textEdit_modify')->setName('modify')
-					)
-				)->setFoldable(true, true)
-			);
-		}
+		
 		
 		
 		$LeftFrame->addItem(

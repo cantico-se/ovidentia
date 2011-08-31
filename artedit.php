@@ -34,6 +34,7 @@ require_once $babInstallPath.'utilit/tree.php';
 require_once dirname(__FILE__) . '/utilit/tagApi.php';
 
 
+
 function listDrafts()
 	{
 	global $babBody;
@@ -1776,11 +1777,10 @@ function deleteDraft($idart)
 		$arr = $babDB->db_fetch_array($res);
 		if( $arr['result'] != BAB_ART_STATUS_WAIT )
 			{
-			if( $arr['id_article'] != 0 )
-				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($BAB_SESS_USERID)."', now(), 'unlock')");		
-				}
-			bab_deleteArticleDraft($idart);
+			require_once dirname(__FILE__).'/utilit/artdraft.class.php';
+			$draft = new bab_ArtDraft;
+			$draft->getFromIdDraft($idart);
+			$draft->delete();
 			}
 		}
 	}
@@ -1795,23 +1795,6 @@ function emptyTrash()
 		}
 	}
 
-function moveArticleDraftToTrash($idart)
-	{
-	global $babDB, $BAB_SESS_USERID;
-	$res = $babDB->db_query("select id, result, id_article from ".BAB_ART_DRAFTS_TBL." where trash='N' and id='".$idart."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-	if( $res && $babDB->db_num_rows($res) == 1 )
-		{
-		$arr = $babDB->db_fetch_array($res);
-		if( $arr['result'] != BAB_ART_STATUS_WAIT )
-			{
-			if( $arr['id_article'] != 0 )
-				{
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$arr['id_article']."', '".$babDB->db_escape_string($BAB_SESS_USERID)."', now(), 'unlock')");		
-				}
-			$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set id_article='0', trash='Y' where id='".$babDB->db_escape_string($idart)."' and id_author='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-			}
-		}
-	}
 
 function restoreArticleDraft($idart)
 	{
@@ -2795,7 +2778,7 @@ function bab_saveArticle(){
 	$draft->notify_members = bab_pp('notify_members', 'N');
 	$draft->lang = bab_pp('lang');
 	$draft->setRestriction(bab_pp('restriction'), bab_pp('groups'), bab_pp('operator'));
-	
+	$draft->modification_comment = bab_pp('modification_comment', null);
 	
 	
 	if(bab_pp('submit', '') != ''){
@@ -2968,15 +2951,16 @@ elseif( $updstep02 = bab_rp('updstep02') )
 	}
 	elseif( $updstep02 == 'next' )
 	{
-		$topicid = bab_pp('topicid', 0);
 		$articleid = bab_pp('articleid', 0);
-		$iddraft = bab_newArticleDraft($topicid, $articleid);
-		
-		if ($iddraft)
+		require_once dirname(__FILE__) . '/utilit/artdraft.class.php';
+		$draft = new bab_ArtDraft;
+		$draft->getFromIdArticle($articleid);
+
+		if ($draft->getId())
 		{
 			$url = bab_url::get_request('tg');
 			$url->idx = 'edit';
-			$url->iddraft = $iddraft;
+			$url->iddraft = $draft->getId();
 			$url->location();
 		} else {
 			$babBody->addError(bab_translate("Draft creation failed"));

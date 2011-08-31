@@ -6564,7 +6564,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade tu 7.4.101
+	 * Upgrade to 7.4.101
 	 */
 	$path = $babDB->db_fetch_assoc($babDB->db_query("describe bab_files 'path'"));
 	if ('text' !== mb_strtolower($path['Type']))
@@ -6573,7 +6573,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 
 	/**
-	 * Upgrade tu 7.5.90
+	 * Upgrade to 7.5.90
 	 */
 	if (!bab_isTable('bab_fmunzip_groups')) {
 		$babDB->db_query("
@@ -6591,11 +6591,23 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	/**
-	 * Upgrade tu 7.5.91
+	 * Upgrade to 7.5.91
 	 */
 	// add missing default value
 	$babDB->db_query("ALTER TABLE `bab_sitemap` CHANGE `id_function` `id_function` VARCHAR( 64 ) NOT NULL DEFAULT ''");
 	
+	
+	/**
+	 * Upgrade to 7.5.92
+	 */
+	if (!bab_isTableField('bab_art_drafts', 'modification_comment'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_art_drafts` ADD `modification_comment` text");
+	}
+	if (!bab_isTableField('bab_art_log', 'ordering'))
+	{
+	 	$babDB->db_query("ALTER TABLE `bab_art_log` ADD ordering int(11) unsigned NOT NULL default '0'");
+	}
 	
 	return true;
 }

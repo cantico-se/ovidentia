@@ -1154,50 +1154,52 @@ function previewWaitingComment($idcom)
 function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 {
 	global $babDB;
-
+	require_once dirname(__FILE__).'/utilit/artdraft.class.php';
 
 	$res = $babDB->db_query("select id, idfai, id_author, id_article from ".BAB_ART_DRAFTS_TBL." where id='".$babDB->db_escape_string($idart)."'");
-	if ($res && $babDB->db_num_rows($res) > 0) {
-		$arr = $babDB->db_fetch_array($res);
-		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
-			$bret = $bconfirm == "Y"? true: false;
+	$draft = new bab_ArtDraft;
+	$draft->getFromIdDraft($idart);
+	
+	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
+	if (count($arrschi) > 0 && in_array($draft->idfai,$arrschi)) 
+	{
+		$bret = $bconfirm == "Y"? true: false;
 
-			$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($comment)."','".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now())");
+		$babDB->db_query("insert into ".BAB_ART_DRAFTS_NOTES_TBL." (id_draft, content, id_author, date_note) values ('".$babDB->db_escape_string($idart)."','".$babDB->db_escape_string($comment)."','".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now())");
 
-			$res = updateFlowInstance($arr['idfai'], $GLOBALS['BAB_SESS_USERID'], $bret);
-			switch($res) {
-				case 0:
-					$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$babDB->db_escape_string($idart)."'");
-					if ($arr['id_article'] != 0) {
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'refused', '".$babDB->db_escape_string($comment)."')");
-					}
-					deleteFlowInstance($arr['idfai']);
-					notifyArticleDraftAuthor($idart, 0);
-					break;
-				case 1:
-					$articleid = acceptWaitingArticle($idart);
-					if ($articleid == 0) {
-						return false;
-					}
-					deleteFlowInstance($arr['idfai']);
-					notifyArticleDraftAuthor($idart, 1);
-					bab_deleteArticleDraft($idart);
-					if ($arr['id_article'] != 0) {
-						$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log) values ('".$babDB->db_escape_string($arr['id_article'])."', '".$babDB->db_escape_string($arr['id_author'])."', now(), 'accepted')");
-					}
-					break;
-				default:
-					$nfusers = getWaitingApproversFlowInstance($arr['idfai'], true);
-					if (count($nfusers) > 0) {
-						notifyArticleDraftApprovers($idart, $nfusers);
-					}
-					break;
-			}
-
-			return true;
+		$res = updateFlowInstance($draft->idfai, $GLOBALS['BAB_SESS_USERID'], $bret);
+		switch($res) {
+			case 0:
+				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set result='".BAB_ART_STATUS_NOK."', idfai='0' where id = '".$babDB->db_escape_string($idart)."'");
+				if ($draft->id_article != 0) {
+					$draft->log('refused', $comment);
+				}
+				deleteFlowInstance($draft->idfai);
+				notifyArticleDraftAuthor($idart, 0);
+				break;
+			case 1:
+				$articleid = acceptWaitingArticle($idart);
+				if ($articleid == 0) {
+					return false;
+				}
+				deleteFlowInstance($draft->idfai);
+				notifyArticleDraftAuthor($idart, 1);
+				bab_deleteArticleDraft($idart);
+				if ($draft->id_article != 0) {
+					$draft->log('accepted');
+				}
+				break;
+			default:
+				$nfusers = getWaitingApproversFlowInstance($draft->idfai, true);
+				if (count($nfusers) > 0) {
+					notifyArticleDraftApprovers($idart, $nfusers);
+				}
+				break;
 		}
+
+		return true;
 	}
+	
 	return false;
 }
 

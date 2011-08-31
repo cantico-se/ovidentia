@@ -606,7 +606,7 @@ function viewArticleHistory($idart)
 				}
 
 
-			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc");
+			$res = $babDB->db_query("select count(*) as total from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."'");
 			$row = $babDB->db_fetch_array($res);
 			$total = $row["total"];
 
@@ -649,7 +649,7 @@ function viewArticleHistory($idart)
 					}
 				}
 
-			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by date_log desc";
+			$req = "select * from ".BAB_ART_LOG_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering desc, date_log desc";
 			if( $total > BAB_ART_MAXLOGS)
 				{
 				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_ART_MAXLOGS;

@@ -1057,65 +1057,6 @@ function viewArticle($article)
 	echo bab_printTemplate($temp,"articles.html", "articleview");
 	}
 
-/**
- * This function is called after we submit the form 'reason to modification of the article'
- * This function create a new article draft
- * When the draft is created, the function go in ?tg=artedit&idx=s1 
- */
-function confirmModifyArticle($topicId, $articleId, $comment, $bupdmod) {
-	global $babBody, $babDB, $arrtop, $rfurl;
-	$res = $babDB->db_query("select * from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($articleId)."'");
-	if ($res && $babDB->db_num_rows($res) > 0 ) {
-		echo bab_translate("This article is in modification");
-		bab_debug("The article has a draft : it is in modification by a user");
-	} else {
-		/* Author of the article */
-		list($author) = $babDB->db_fetch_row($babDB->db_query("select id_author from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($articleId)."'"));
-
-		/* The current user can modify the article */
-		if (bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $topicId) || ( $arrtop['allow_update'] != '0' && $author == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topicId))) {
-			/* Create a new article draft */
-			$idart = bab_newArticleDraft($topicId, $articleId);
-			if( $idart != 0 ) {
-				$babDB->db_query("update ".BAB_ART_DRAFTS_TBL." set update_datemodif='".$babDB->db_escape_string($bupdmod)."' where id=".$babDB->quote($idart));
-
-				$iIdArticle				= $articleId;
-				$iIdDraft				= $idart;
-				$iIdDelegation			= 0;
-				list($iIdDelegation)	= $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($topicId)."'"));
-
-				require_once dirname(__FILE__) . '/utilit/artincl.php';
-
-				$oPubImpUpl	= new bab_PublicationImageUploader();
-				$sFullPathName = $oPubImpUpl->copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft);
-				if(false !== $sFullPathName)
-				{
-					$aPathParts		= pathinfo($sFullPathName);
-					$sName			= $aPathParts['basename'];
-					$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
-					$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-					$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
-
-					bab_addImageToDraftArticle($iIdDraft, $sName, $sRelativePath);
-				}
-
-				$babDB->db_query("insert into ".BAB_ART_LOG_TBL." (id_article, id_author, date_log, action_log, art_log) values ('".$babDB->db_escape_string($articleId)."', '".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', now(), 'lock', '".$babDB->db_escape_string($comment)."')");
-				Header("Location: ". $GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$idart."&rfurl=".urlencode($rfurl));
-				exit;
-			} else {
-				echo bab_translate("Draft creation failed");
-				bab_debug("Article draft creation failed in function confirmModifyArticle() : bab_newArticleDraft() don't want to create the article draft");
-				echo '<br />'.bab_getDebug();
-				exit;
-			}
-		} else {
-			echo bab_translate("Access denied");
-			bab_debug("Article draft creation failed in function confirmModifyArticle() : the current user can modify the article");
-			echo '<br />'.bab_getDebug();
-			exit;
-		}
-	}
-}
 
 
 function articles_init($topics)
