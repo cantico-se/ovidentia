@@ -1137,6 +1137,39 @@ class bab_addonInfos {
 		return array();
 	}
 	
+	
+	/**
+	 * Get all dependencies for addons sorted in install order
+	 * if the main addon specify a "pakage" configuration string, use it instead of the getSortedDependencies method
+	 * the value and key in array is the addon name
+	 * 
+	 * @return array
+	 */
+	public function getPackageDependencies()
+	{
+		$ini = $this->getIni();
+		if (isset($ini->inifile['package_creation'])) {
+			$return = array();
+			$list = explode(',',$ini->inifile['package_creation']);
+			foreach($list as $addonname)
+			{
+				$addonname = trim($addonname);
+				if (!empty($addonname))
+				{
+					$return[$addonname] = $addonname;
+				}
+			}
+			
+			if (!empty($return))
+			{
+				$return[$this->getName()] = $this->getName();
+				return $return;
+			}
+		}
+		
+		return $this->getSortedDependencies();
+	}
+	
 
 
 	/**

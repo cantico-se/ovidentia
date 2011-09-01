@@ -504,13 +504,11 @@ class bab_addonPackage
 		$general = array();
 		$general['name'] = $addon->getName();
 		
-		$dependencies = $addon->getSortedDependencies();
+		$dependencies = $addon->getPackageDependencies();
 		foreach($dependencies as $addonname) {
 			$dependence = bab_getAddonInfosInstance($addonname);
 			$this->addAddon($dependence);
 			$ini = $dependence->getIni();
-			
-			// $general += $ini->inifile;
 		}
 		
 		
