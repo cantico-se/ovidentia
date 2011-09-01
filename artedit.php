@@ -61,12 +61,14 @@ function listDrafts()
 		var $submittxt;
 		var $bsubmit;
 		var $bsubmiturl;
+		
+		public $altbg = true;
 
 		public function __construct()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
-			$this->datesubtxt = bab_translate("Submission");
+			$this->datesubtxt = bab_translate("Submission date");
 			$this->statustxt = bab_translate("Status");
 			$this->proptxt = bab_translate("Properties");
 			$this->deletetxt = bab_translate("Delete");
@@ -91,6 +93,7 @@ function listDrafts()
 			static $i = 0;
 			if( $i < $this->count)
 				{
+				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit&iddraft=".$arr['id']);
 				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id']);
@@ -144,6 +147,73 @@ function listDrafts()
 	}
 
 
+	
+
+function listMyArticles()
+{
+global $babBody;
+class listDraftsCls
+	{
+	public $altbg = true;
+
+	public function __construct()
+	{
+		global $babDB;
+		$this->nametxt = bab_translate("Articles");
+		$this->datemodtxt = bab_translate("Modification date");
+		$this->statustxt = bab_translate("Status");
+		$this->previewtxt = bab_translate("Preview");
+		$this->attachmenttxt = bab_translate("Attachments");
+		$this->t_modify = bab_translate("Modify");
+		$req = "select 
+			a.*, 
+			count(af.id) as total 
+			from bab_articles a left join bab_art_files af on af.id_article=a.id 
+			where 
+				a.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' GROUP BY a.id order by a.date_modification desc LIMIT 0,1000";
+		$this->res = $babDB->db_query($req);
+		$this->count = $babDB->db_num_rows($this->res);
+	}
+
+	public function getnext()
+	{
+	global $babDB;
+	static $i = 0;
+	if( $i < $this->count)
+		{
+		$this->altbg = !$this->altbg;
+		$arr = $babDB->db_fetch_array($this->res);
+		$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Modify&topics=".$arr['id_topic']."&article=".$arr['id']);
+		$this->articleurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=More&topics=".$arr['id_topic']."&article=".$arr['id']);
+		$this->name = bab_toHtml($arr['title']);
+		$this->categoryname = viewCategoriesHierarchy_txt($arr['id_topic']);
+		$this->datemod = $arr['date_modification'] == "0000-00-00 00:00:00"? "":bab_shortDate(bab_mktime($arr['date_modification']), true);
+		$this->datemod = bab_toHtml($this->datemod);
+		
+		if( $arr['total'] > 0 )
+			{
+			$this->attachment = true;
+			}
+		else
+			{
+			$this->attachment = false;
+			}
+		
+		$i++;
+		return true;
+		}
+	else
+		return false;
+
+	}
+}
+
+$temp = new listDraftsCls();
+$babBody->babecho( bab_printTemplate($temp, "artedit.html", "myarticles"));	
+}
+	
+	
+
 /**
  * List of drafts submited for approval
  */
@@ -173,7 +243,7 @@ function listSubmitedArticles()
 			{
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
-			$this->datesubtxt = bab_translate("Submission");
+			$this->datesubtxt = bab_translate("Submission date");
 			$this->proptxt = bab_translate("Properties");
 			$this->deletetxt = bab_translate("Delete");
 			$this->previewtxt = bab_translate("Preview");
@@ -2779,6 +2849,7 @@ function bab_saveArticle(){
 	$draft->lang = bab_pp('lang');
 	$draft->setRestriction(bab_pp('restriction'), (array) bab_pp('groups'), bab_pp('operator'));
 	$draft->modification_comment = bab_pp('modification_comment', null);
+	$draft->update_datemodif = bab_pp('update_datemodif', 'Y');
 	
 	
 	if(bab_pp('submit', '') != ''){
@@ -2808,11 +2879,10 @@ function bab_saveArticle(){
 		$draft->saveTags($taglist);
 		
 		$form = new bab_ArticleDraftEditor;
-		$form->fromDraft($idDraft);
+		$form->fromDraft($draft->getId());
 		$form->preview();
 		$form->display();
-		
-		return;
+		return true;
 		
 		
 	}elseif(bab_pp('cancel', '') != ''){
@@ -3129,7 +3199,12 @@ switch($idx)
 		{
 			$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
 		}
-		$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		$babBody->addItemMenu("lsub", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		
+		if ($GLOBALS['BAB_SESS_LOGGED'])
+		{
+			$babBody->addItemMenu("articles", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=articles");
+		}
 		break;
 		
 	case "preview":
@@ -3137,7 +3212,10 @@ switch($idx)
 		break;
 		
 	case "save":
-		bab_saveArticle();
+		if (bab_saveArticle())
+		{
+			break;
+		}
 		// no break
 	case "edit":
 		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
@@ -3168,6 +3246,27 @@ switch($idx)
 		bab_ajaxRemoveAttachment();
 		die;
 		break;
+		
+	case 'articles':
+		$arrinit = artedit_init(); /* Test if articles drafts exists for the current user : in trash or, not in trash and in approbation (the user can't modify an article in approbation) */
+		$babBody->title = bab_translate("List of articles where i am the author");
+		$babBody->addItemMenu("list", bab_translate("Drafts"), $GLOBALS['babUrlScript']."?tg=artedit&idx=list");
+		listMyArticles();
+		if( $arrinit['trash'] )
+		{
+			/* There are articles in trash */
+			$babBody->addItemMenu("ltrash", bab_translate("Trash"), $GLOBALS['babUrlScript']."?tg=artedit&idx=ltrash");
+		}
+		if( $arrinit['articles'] )
+		{
+			/* There are articles in approbation */
+			$babBody->addItemMenu("lsub", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		}
+		if ($GLOBALS['BAB_SESS_LOGGED'])
+		{
+			$babBody->addItemMenu("articles", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=articles");
+		}
+		break;
 	
 	case "sub":
 		$idart = bab_rp('idart', 0);
@@ -3189,7 +3288,11 @@ switch($idx)
 		if( $arrinit['articles'] )
 		{
 			/* There are articles in approbation */
-			$babBody->addItemMenu("lsub", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+			$babBody->addItemMenu("lsub", bab_translate("Waiting"), $GLOBALS['babUrlScript']."?tg=artedit&idx=lsub");
+		}
+		if ($GLOBALS['BAB_SESS_LOGGED'])
+		{
+			$babBody->addItemMenu("articles", bab_translate("My Articles"), $GLOBALS['babUrlScript']."?tg=artedit&idx=articles");
 		}
 		break;
 	}
