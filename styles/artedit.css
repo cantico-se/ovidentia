@@ -26,10 +26,10 @@
 	opacity:.7;
 	}
 	
-	
-#title, #intro, #corps, #modify {
+#title {
 	width: 100%;
 }
+
 #title-label{
 	font-weight: bold;
 }
