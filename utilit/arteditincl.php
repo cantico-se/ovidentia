@@ -171,7 +171,7 @@ class bab_ArticleDraftEditor {
 			return;
 		}
 		
-		
+		include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 		global $babBody, $babDB;
 		
 		$W = bab_Widgets();
@@ -236,20 +236,32 @@ class bab_ArticleDraftEditor {
 			)->setFoldable(false)
 		);
 		
+		
+		$headEditor = new bab_contentEditor('bab_article_head');
+		$headEditor->setRequestFieldName('head');
+		$headEditor->setContent($this->draft->head);
+		$headEditor->setParameters(array('height' => '200'));
+		
 		$LeftFrame->addItem(
 			$W->Section(
 				$tempLab = $W->Label(bab_translate('Introduction')),
 				$W->Frame('intro')->addItem(
-					$introEditor = $W->BabHtmlEdit('bab_article_head')->setName('head')->setAssociatedLabel($tempLab)->setMandatory(true, bab_translate('The body is mandatory'))
+					$W->Html($headEditor->getEditor())
 				)
 			)->setFoldable(true)
 		);
+		
+		
+		$bodyEditor = new bab_contentEditor('bab_article_body');
+		$bodyEditor->setRequestFieldName('body');
+		$bodyEditor->setContent($this->draft->body);
+		$bodyEditor->setParameters(array('height' => '300'));
 		
 		$LeftFrame->addItem(
 			$body = $W->Section(
 				bab_translate('Body'),
 				$W->Frame()->addItem(
-					$bodyEditor = $W->BabHtmlEdit('bab_article_body')->setName('body')
+					$W->Html($bodyEditor->getEditor())
 				)
 			)->setFoldable(true)
 		);
