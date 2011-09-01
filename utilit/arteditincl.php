@@ -136,7 +136,7 @@ class bab_ArticleDraftEditor {
 	
 	/**
 	 * 
-	 * @param array $arrPreview
+	 * @param bool $preview
 	 * @return bab_ArticleDraftEditor
 	 */
 	public function preview($preview = true)
@@ -218,9 +218,9 @@ class bab_ArticleDraftEditor {
 			$LeftFrame->addItem(
 				$W->Section(
 					bab_translate('Reasons for changes'),
-					$W->Frame()->addItem(
-						$W->TextEdit()->setName('modification_comment')->addClass('modification_comment')
-					)
+					$W->Frame()
+						->addItem($W->TextEdit()->setName('modification_comment')->addClass('modification_comment'))
+						->additem($W->HBoxItems($W->Checkbox()->setName('update_datemodif')->setCheckedValue('N')->setUncheckedValue('Y'), $W->Label(bab_translate("Don't update article modification date"))))
 				)->setFoldable(true, true)
 			);
 		}

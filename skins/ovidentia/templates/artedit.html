@@ -23,7 +23,7 @@ function confirm_submit(url)
 		<td>&nbsp;</td>
 	</tr>
 	<!--#in getnext -->
-	<tr class="BabSiteAdminFontBackground"> 
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 		<td align="center" width="1%" nowrap>
 			<a title="{ t_modify }" href="{ urlname }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0"></a>
 			&nbsp;<a title="{ confirmdelete }" href="{ deleteurl }" onclick="return confirm(this.title);"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
@@ -57,6 +57,49 @@ function confirm_submit(url)
 </table>
 <!--#end draftslist -->
 
+
+
+
+
+
+
+<!--#begin myarticles -->
+
+<table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground" > 
+	<table width="100%" border="0" cellspacing="0" cellpadding="5">
+	<tr class="BabSiteAdminTitleFontBackground"> 
+		<td>&nbsp;</td>
+		<td>{ nametxt }</td>
+		<td>{ datemodtxt }</td>
+	</tr>
+	<!--#in getnext -->
+	<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+		<td align="center" width="1%" nowrap>
+			<a title="{ t_modify }" href="{ urlname }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/edit.gif" alt="{ t_modify }" border="0" /></a>
+		</td>
+		<td>
+			<a href="{ articleurl }">{ name }</a>
+			<!--#if attachment -->
+			&nbsp;<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
+			<!--#endif attachment --><br />
+			{ categoryname } 
+		</td>
+		<td>&nbsp;{ datemod }</td>
+	</tr>
+	<!--#endin getnext -->
+	</table>
+</td>
+</tr>
+</table>
+<!--#end myarticles -->
+
+
+
+
+
+
 <!--#begin trashlist --> 
 <table  width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
@@ -71,9 +114,9 @@ function confirm_submit(url)
 	<!--#in getnext -->
 	<tr class="BabSiteAdminFontBackground"> 
 		<td nowrap width="1%">
-			<a class="BabForumTopicsNavContribution" title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
+			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/utrash.gif" alt="{ restoretxt }" border="0"></a>&nbsp;
 		</td>
-		<td><a class="BabSiteAdminListLink" title="{ previewtxt }" href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;">{ name }</a></td>
+		<td><a title="{ previewtxt }" href="{ previewurl }" target="_blank" onclick="bab_popup(this.href);return false;">{ name }</a></td>
 		<td align="center">&nbsp;{ datecreate }</td>
 		<td align="center">&nbsp;{ datemodify }</td>
 	</tr>

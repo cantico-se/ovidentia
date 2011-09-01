@@ -2174,7 +2174,7 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 	
 	
 	$error = '';
-	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error);
+	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error, array('update_datemodif' => 'Y'));
 	if ($id === 0) {
 		throw new ErrorException($error);
 		return 0;
