@@ -2777,7 +2777,7 @@ function bab_saveArticle(){
 	
 	$draft->notify_members = bab_pp('notify_members', 'N');
 	$draft->lang = bab_pp('lang');
-	$draft->setRestriction(bab_pp('restriction'), bab_pp('groups'), bab_pp('operator'));
+	$draft->setRestriction(bab_pp('restriction'), (array) bab_pp('groups'), bab_pp('operator'));
 	$draft->modification_comment = bab_pp('modification_comment', null);
 	
 	

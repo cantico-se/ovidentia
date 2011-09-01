@@ -738,11 +738,12 @@ class bab_ArtDraft
 	}
 	
 	/**
-	 * 
-	 * @param array $groups
+	 * @param	int		$restriction
+	 * @param 	array 	$groups
+	 * @param	string	$operator
 	 * @return unknown_type
 	 */
-	public function setRestriction($restriction, $groups, $operator)
+	public function setRestriction($restriction, Array $groups, $operator)
 	{
 		if (!$restriction)
 		{
