@@ -445,8 +445,8 @@ class bab_eventEditorFunctions extends bab_event {
 /**
  * Register core functions
  */
-function bab_onEditorFunctions(&$event) {
-
+function bab_onEditorFunctions(bab_eventEditorFunctions $event) {
+	
 	if ('bab_article_head' === $event->uid
 	 || 'bab_article_body' === $event->uid
 	 || 'bab_faq_response' === $event->uid) {
