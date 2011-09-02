@@ -1935,53 +1935,42 @@ function bab_previewArticleDraft($idart)
 		public $bodyvat;
 		
 		public $imgurl = false;
+		
+		public $tags;
 
 		public function __construct($idart)
 		{
 			global $babDB;
-			$this->counf = 0;
-
-			$res = $babDB->db_query("select adt.* from ".BAB_ART_DRAFTS_TBL." adt where adt.id='".$babDB->db_escape_string($idart)."'");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-				$this->idart = bab_toHtml($idart);
-				$this->filesval = bab_translate("Associated documents");
-				
-				$arr = $babDB->db_fetch_array($res);
-				$this->titleval = bab_toHtml($arr['title']);
-
-				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			
-				$editor = new bab_contentEditor('bab_article_body');
-				$editor->setContent($arr['body']);
-				$editor->setFormat($arr['body_format']);
-				$this->bodyval = $editor->getHtml();
-				
-				$editor = new bab_contentEditor('bab_article_head');
-				$editor->setContent($arr['head']);
-				$editor->setFormat($arr['head_format']);
-				$this->headval = $editor->getHtml();
-				
-				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
-				$this->countf =  $babDB->db_num_rows($this->resf);
-				
-				$image = bab_getImageDraftArticle($idart);
-				if ($image)
-				{ 
-					if ($T = @bab_functionality::get('Thumbnailer'))
-					{
-						/*@var $T Func_Thumbnailer */
-						$T->setSourceFile($GLOBALS['babUploadPath'].'/'.$image['relativePath'].$image['name']);
-						$this->imgurl = $T->getThumbnail(80, 80);
-					}
-				}
-			}
-			else
-			{
-				$this->titleval = '';
-				$this->headval = '';
-				$this->bodyval = '';
-			}
+			require_once dirname(__FILE__).'/artdraft.class.php';
+			
+			$draft = new bab_ArtDraft;
+			$draft->getFromIdDraft($idart);
+
+			
+			$this->idart = bab_toHtml($idart);
+			$this->filesval = bab_translate("Associated documents");
+			$this->tagstitle = bab_translate("Tags");
+			$this->titleval = bab_toHtml($draft->title);
+
+			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+		
+			$editor = new bab_contentEditor('bab_article_body');
+			$editor->setContent($draft->body);
+			$editor->setFormat($draft->body_format);
+			$this->bodyval = $editor->getHtml();
+			
+			$editor = new bab_contentEditor('bab_article_head');
+			$editor->setContent($draft->head);
+			$editor->setFormat($draft->head_format);
+			$this->headval = $editor->getHtml();
+			
+			$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
+			$this->countf =  $babDB->db_num_rows($this->resf);
+			
+			$this->imgurl = $draft->getImageUrl();
+			
+			$this->tags = implode(', ', $draft->getTags());
 		}
 
 		public function getnextfile()

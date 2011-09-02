@@ -375,6 +375,27 @@ class bab_ArtDraft
 	
 	
 	/**
+	 * 
+	 * @return unknown_type
+	 */
+	public function getImageUrl()
+	{
+		$image = bab_getImageDraftArticle($this->getId());
+		if ($image)
+		{ 
+			if ($T = @bab_functionality::get('Thumbnailer'))
+			{
+				/*@var $T Func_Thumbnailer */
+				$T->setSourceFile($GLOBALS['babUploadPath'].'/'.$image['relativePath'].$image['name']);
+				return $T->getThumbnail(80, 80);
+			}
+		}
+		
+		return null; 
+	}
+	
+	
+	/**
 	 * Copy draft image to file picker temporary folder
 	 * @param Widget_FilePicker $filePicker
 	 * @return bab_ArtDraft
@@ -399,6 +420,7 @@ class bab_ArtDraft
 		
 		return $this;
 	}
+	
 	
 	
 	

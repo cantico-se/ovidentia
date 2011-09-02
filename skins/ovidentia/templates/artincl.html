@@ -4,9 +4,14 @@
 <div class="bab-draft-preview">
 	<h2 class="BabTopicsTitleBackground">{ titleval }</h2>
 	<div class="BabTopicsBackground">
+		<!--#if tags -->
+		<div class="bab-article-tags">{ tagstitle } : <strong>{ tags }</strong></div>
+		<!--#endif tags -->
+	
 		<!--#if imgurl -->
 		<img src="{ imgurl }" align="left" class="bab-article-image" /> 
 		<!--#endif imgurl -->
+		
 		<div class="head">{ headval }</div>
 		<!--#if bodyval -->
 		<div class="body">{ bodyval }</div>

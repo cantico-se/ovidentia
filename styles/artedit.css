@@ -60,6 +60,10 @@ option.category {
 }
 
 
+.bab-draft-preview .bab-article-tags {
+	text-align:right;
+	}
+
 .bab-draft-preview .body {
 	border-top:#ccc 1px solid;
 }
