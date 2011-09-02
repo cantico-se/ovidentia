@@ -241,10 +241,10 @@ function listSubmitedArticles()
 
 		function temp()
 			{
+			require_once dirname(__FILE__).'/utilit/wfincl.php';
 			global $babDB;
 			$this->nametxt = bab_translate("Articles");
 			$this->datesubtxt = bab_translate("Submission date");
-			$this->proptxt = bab_translate("Properties");
 			$this->deletetxt = bab_translate("Delete");
 			$this->previewtxt = bab_translate("Preview");
 			$this->statustxt = bab_translate("Status");
@@ -253,7 +253,20 @@ function listSubmitedArticles()
 			$this->attachmenttxt = bab_translate("Attachments");
 			$this->notestxt = bab_translate("Notes");
 			$this->urladd = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=new");
-			$req = "select adt.*, count(adft.id) as totalf, count(adnt.id) as totaln from ".BAB_ART_DRAFTS_TBL." adt left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  left join ".BAB_ART_DRAFTS_NOTES_TBL." adnt on adnt.id_draft=adt.id where adt.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' and adt.trash !='Y' and adt.result!='".BAB_ART_STATUS_DRAFT."' GROUP BY adt.id order by date_submission desc";
+			$req = "
+				select 
+				adt.*, 
+				count(adft.id) as totalf 
+			from 
+				".BAB_ART_DRAFTS_TBL." adt 
+					left join ".BAB_ART_DRAFTS_FILES_TBL." adft on adft.id_draft=adt.id  
+			where 
+				adt.id_author='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."' 
+				and adt.trash !='Y' 
+				and adt.result!='".BAB_ART_STATUS_DRAFT."' 
+				
+			GROUP BY adt.id order by date_submission desc
+			";
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -266,7 +279,6 @@ function listSubmitedArticles()
 				{
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->urlname = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=propa&idart=".$arr['id']);
-				$this->propurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=prop&idart=".$arr['id']);
 				$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=delt&idart=".$arr['id']);
 				$this->previewurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=preview&idart=".$arr['id']);
 				$this->restoreurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=rests&idart=".$arr['id']);
@@ -291,19 +303,18 @@ function listSubmitedArticles()
 					{
 					$this->attachment = false;
 					}
-				if( $arr['totaln'] > 0 )
-					{
-					$this->bnotes = true;
-					}
-				else
-					{
-					$this->bnotes = false;
-					}
+
 				switch($arr['result'])
 					{
 					case BAB_ART_STATUS_WAIT:
-						$this->status = bab_translate("Waiting");
+						$arr = bab_WFGetWaitingApproversInstance($arr['idfai']);
+						$users = array();
+						foreach($arr as $id_user) {
+							$users[] = bab_getUserName($id_user);
+						}
+						$this->status = sprintf(bab_translate("Waiting for approval by : %s"), implode(', ',$users));
 						break;
+						
 					case BAB_ART_STATUS_OK:
 						$this->status = bab_translate("Accepted");
 						break;
@@ -1489,7 +1500,7 @@ switch($idx)
 		
 		
 	case "preview":
-		$babBody->babEcho(bab_previewArticleDraft(bab_rp('idart')));
+		$babBody->babPopup(bab_previewArticleDraft(bab_rp('idart')));
 		break;
 		
 	case "save":

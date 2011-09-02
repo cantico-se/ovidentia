@@ -64,7 +64,7 @@ class bab_ArticleDraftEditor {
 		$I->includeCss();
 		
 		$this->draft = new bab_ArtDraft;
-		
+		$this->cleanFiles();
 	}
 	
 	
@@ -160,6 +160,23 @@ class bab_ArticleDraftEditor {
 	
 	
 	/**
+	 * Remove temorary files used in editor
+	 * @return unknown_type
+	 */
+	private function cleanFiles()
+	{
+		$W = bab_Widgets();
+		
+		try {
+			$W->FilePicker()->setName('articleFiles')->getFolder()->deleteDir();
+			$W->FilePicker()->setName('articlePicture')->getFolder()->deleteDir();
+		} catch(bab_FolderAccessRightsException $e) {
+			// ignore, the folder does not exists
+		}
+	}
+	
+	
+	/**
 	 * Display HTML
 	 * @return unknown_type
 	 */
@@ -216,12 +233,12 @@ class bab_ArticleDraftEditor {
 		
 		if($this->draft->id_article){
 			$LeftFrame->addItem(
-				$W->Section(
+				$update_datemodif = $W->Section(
 					bab_translate('Reasons for changes'),
 					$W->Frame()
 						->addItem($W->TextEdit()->setName('modification_comment')->addClass('modification_comment'))
 						->additem($W->HBoxItems($W->Checkbox()->setName('update_datemodif')->setCheckedValue('N')->setUncheckedValue('Y'), $W->Label(bab_translate("Don't update article modification date"))))
-				)->setFoldable(true, true)
+				)->setFoldable(true)
 			);
 		}
 		
@@ -480,6 +497,10 @@ class bab_ArticleDraftEditor {
 		
 		if(empty($values['body'])){
 			$body->setFoldable(true, true);
+		}
+		
+		if (empty($values['modification_comment'])) {
+			$update_datemodif->setFoldable(true, true);
 		}
 		
 		$restrictions = $this->draft->getRestrictions();

@@ -162,7 +162,7 @@ window.focus();
 	<tr class="BabSiteAdminTitleFontBackground">
 		<td>&nbsp;</td>
 		<td>{ nametxt }</td>
-		<td align="center">{ datesubtxt }</td>
+		<td>{ datesubtxt }</td>
 		<td>{ statustxt }</td>
 	</tr>
 	<!--#in getnext -->
@@ -172,23 +172,19 @@ window.focus();
 			<a title="{ restoretxt }" href="{ restoreurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/backarrow.gif" alt="{ restoretxt }" border="0"></a>
 			<a title="{ deletetxt }" href="{ deleteurl }"><img valign="absmiddle" src="{ babSkinPath }images/Puces/del.gif" alt="{ deletetxt }" border="0"></a>
 			<!--#endif bdelete -->
-			<a title="{ proptxt }" href="{ urlname }" target="_blank" onclick="bab_popup(this.href,2);return false;"><img valign="absmiddle" src="{ babSkinPath }images/Puces/properties.gif" alt="{ proptxt }" border="0"></a>&nbsp;&nbsp;
 		</td>
 		<td>
 			<a href="{ previewurl }" title="{ previewtxt }" target="_blank" onclick="bab_popup(this.href,2);return false;">{ name }</a>&nbsp;
 			<!--#if attachment -->
 			<img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" alt="{ attachmenttxt }" border="0">
 			<!--#endif attachment -->
-			<!--#if bnotes -->
-			<img valign="absmiddle" src="{ babSkinPath }images/Puces/entryview.gif" alt="{ notestxt }" border="0">
-			<!--#endif bnotes -->
-			
+
 			<br />
 			
 			{ categoryname }
 		</td>
-		<td align="center">&nbsp;{ datesub }</td>
-		<td>&nbsp;{ status }</td>
+		<td>{ datesub }</td>
+		<td>{ status }</td>
 	</tr>
 	<!--#endin getnext -->
 	<tr class="BabSiteAdminTitleFontBackground">
@@ -200,43 +196,6 @@ window.focus();
 </table>
 <!--#end submitedarticleslist -->
 
-<!--#begin propertiesarticles -->
-
-<table width="95%" border="0" cellspacing="0" cellpadding="2" align="center">
-<tr>
-<td class="BabLoginCadreBackground"> 
-	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center" class="BabLoginMenuBackground">
-	<tr>
-	<td align="right" width="30%"><b>{ arttxt }:</b></td><td>{ arttitle }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ pathtxt }:</b></td><td>{ pathname }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ authortxt }:</b></td><td>{ author }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ datepubtxt }:</b></td><td>{ datepub }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ datearchtxt }:</b></td><td>{ datearch }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ hpages0txt }:</b></td><td>{ hpages0 }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%"><b>{ hpages1txt }:</b></td><td>{ hpages1 }</td>
-	</tr>
-	<tr>
-	<td align="right" width="30%">&nbsp;</td><td><a href="#" onclick="window.close();return false;">{ closetxt }</a>
-	</td>
-	</tr>
-	</table>
-</td>
-</tr>
-</table>
-
-<!--#end propertiesarticles -->
 
 
 <!--#begin modarticlechoicestep -->

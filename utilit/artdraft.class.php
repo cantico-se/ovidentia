@@ -485,6 +485,15 @@ class bab_ArtDraft
 			bab_deleteImageDraftArticle($this->id);
 		}
 		
+		global $babDB;
+		
+		$res = $babDB->db_query('SELECT allow_addImg FROM bab_topics WHERE id='.$babDB->quote($this->id_topic));
+		$top = $babDB->db_fetch_assoc($res);
+		
+		if ('N' === $top['allow_addImg'])
+		{
+			return $this;
+		}
 		
 		$W = bab_Widgets();
 
@@ -564,6 +573,9 @@ class bab_ArtDraft
 		$sortkeys = array_flip(array_keys($files));
 		
 		$W = bab_Widgets();
+		
+		$res = $babDB->db_query('SELECT allow_attachments FROM bab_topics WHERE id='.$babDB->quote($this->id_topic));
+		$top = $babDB->db_fetch_assoc($res);
 
 		$filepicker = $W->FilePicker();
 		/*@var $filepicker Widget_FilePicker */
@@ -571,7 +583,7 @@ class bab_ArtDraft
 		$filepicker->setEncodingMethod(null)->setName('articleFiles');
 	
 		$I = $filepicker->getTemporaryFiles('articleFiles');
-		if (($I instanceOf Widget_FilePickerIterator) && !empty($files))
+		if (($I instanceOf Widget_FilePickerIterator) && !empty($files) && 'Y' === $top['allow_attachments'])
 		{
 			$targetPath->createDir();
 			foreach($I as $filePickerItem)
