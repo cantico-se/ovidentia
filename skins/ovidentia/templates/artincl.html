@@ -1,74 +1,31 @@
 
 
 <!--#begin previewarticledraft -->
-<table border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
-<tr class="BabTopicsTitleBackground"> 
-<td>{ titleval }</td>
-<td align="right">
-<!--#if countf -->
-<a href="#1"><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0"></a>
-<!--#else countf -->
-&nbsp;
+<div class="bab-draft-preview">
+	<h2 class="BabTopicsTitleBackground">{ titleval }</h2>
+	<div class="BabTopicsBackground">
+		<!--#if imgurl -->
+		<img src="{ imgurl }" align="left" class="bab-article-image" /> 
+		<!--#endif imgurl -->
+		<div class="head">{ headval }</div>
+		<!--#if bodyval -->
+		<div class="body">{ bodyval }</div>
+		<!--#endif bodyval -->
+	</div>
+	<br>
+	<!--#if countf -->
+	<div class="bab-article-files">
+		<h4><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" />
+			&nbsp;{ filesval }</h4>
+		<ul>
+			<!--#in getnextfile -->
+			<li><a class="BabForumTopicsNavContribution" href="{ urlfile }">{ filename }</a></li>
+			<!--#endin getnextfile -->
+		</ul>
+	</div>
+</div>
 <!--#endif countf -->
-<!--#if countn -->
-<a href="#2"><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0"></a>
-<!--#else countn -->
-&nbsp;
-<!--#endif countn -->
-</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" colspan="2">{ headval }</td>
-</tr>
-<tr> 
-<td class="BabTopicsBackground" colspan="2">{ bodyval }</td>
-</tr>
-<tr>
-<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
-</td>
-</tr>
-</table>
-<br>
-<!--#if countf -->
-<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="2" class="BabTopicsTitleBackground"><a name="1"></a><img valign="absmiddle" src="{ babSkinPath }images/Puces/PuceTrombonne.gif" border="0">
-&nbsp;{ filesval }</td>
-</tr>
-<!--#in getnextfile -->
-<tr> 
-<td class="BabTopicsBackground" colspan="2"><a class="BabForumTopicsNavContribution" href="{ urlfile }">{ filename }</a></td>
-</tr>
-<!--#endin getnextfile -->
-<tr>
-<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
-</td>
-</tr>
-</table>
-<br>
-<!--#endif countf -->
-<!--#if countn -->
-<table   border="0" width="99%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td colspan="2" class="BabTopicsTitleBackground"><a name="2"></a><img valign="absmiddle" src="{ babSkinPath }images/Puces/text.gif" border="0">&nbsp;{ notesval }</td>
-</tr>
-<!--#in getnextnote -->
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td width="120">{ date }</td>
-<td align="left">{ author }</td>
-</tr>
-<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
-<td>&nbsp;</td>
-<td align="left">{ note }</td>
-</tr>
-<!--#endin getnextnote -->
-<tr>
-<td class="BabTopicsButtonBackground" colspan="2" align="right" valign="middle"> 
-</td>
-</tr>
-</table>
-<br>
-<!--#endif countn -->
+
 <!--#end previewarticledraft -->
 
 <!--#begin previewcomment -->

@@ -1918,29 +1918,35 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 	return bab_printTemplate($temp, 'artincl.html', 'editarticle');
 }
 
-
+/**
+ * get Html for article preview
+ * @param int	$idart		ID DRAFT
+ * @return unknown_type
+ */
 function bab_previewArticleDraft($idart)
 	{
 	global $babBody;
 
 	class clsPreviewArticleDraft
-		{
+	{
 	
-		var $titleval;
-		var $headval;
-		var $bodyvat;
+		public $titleval;
+		public $headval;
+		public $bodyvat;
+		
+		public $imgurl = false;
 
-		function clsPreviewArticleDraft($idart)
-			{
+		public function __construct($idart)
+		{
 			global $babDB;
 			$this->counf = 0;
 
 			$res = $babDB->db_query("select adt.* from ".BAB_ART_DRAFTS_TBL." adt where adt.id='".$babDB->db_escape_string($idart)."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
+			{
 				$this->idart = bab_toHtml($idart);
 				$this->filesval = bab_translate("Associated documents");
-				$this->notesval = bab_translate("Associated comments");
+				
 				$arr = $babDB->db_fetch_array($res);
 				$this->titleval = bab_toHtml($arr['title']);
 
@@ -1958,59 +1964,48 @@ function bab_previewArticleDraft($idart)
 				
 				$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
 				$this->countf =  $babDB->db_num_rows($this->resf);
-
-				$this->resn = $babDB->db_query("select * from ".BAB_ART_DRAFTS_NOTES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by date_note asc");
-				$this->countn =  $babDB->db_num_rows($this->resn);
-				$this->altbg = false;
+				
+				$image = bab_getImageDraftArticle($idart);
+				if ($image)
+				{ 
+					if ($T = @bab_functionality::get('Thumbnailer'))
+					{
+						/*@var $T Func_Thumbnailer */
+						$T->setSourceFile($GLOBALS['babUploadPath'].'/'.$image['relativePath'].$image['name']);
+						$this->imgurl = $T->getThumbnail(80, 80);
+					}
 				}
+			}
 			else
-				{
+			{
 				$this->titleval = '';
 				$this->headval = '';
 				$this->bodyval = '';
-				}
 			}
+		}
 
-		function getnextfile()
-			{
+		public function getnextfile()
+		{
 			global $babDB;
 			static $i = 0;
 			if( $i < $this->countf)
-				{
+			{
 				$arr = $babDB->db_fetch_array($this->resf);
 				$this->urlfile = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=getf&idart=".$this->idart."&idf=".$arr['id']);
 				$this->filename = bab_toHtml($arr['name']);
 				$i++;
 				return true;
-				}
+			}
 			else
 				return false;
-			}
-
-		function getnextnote()
-			{
-			global $babDB;
-			static $i = 0;
-			if( $i < $this->countn)
-				{
-				$arr = $babDB->db_fetch_array($this->resn);
-				$this->note = str_replace("\n", "<br>", bab_toHtml($arr['content']));
-				$this->author = bab_toHtml(bab_getUserName($arr['id_author']));
-				$this->date = bab_toHtml(bab_strftime(bab_mktime($arr['date_note'])));
-				$this->altbg = !$this->altbg;
-				$i++;
-				return true;
-				}
-			else
-				return false;
-			}
-
 		}
+	}
+	
+	$babBody->addStyleSheet('artedit.css');
 	
 	$temp = new clsPreviewArticleDraft($idart);
 	return bab_printTemplate($temp,"artincl.html", "previewarticledraft");
-	
-	}
+}
 
 function bab_previewComment($com)
 	{

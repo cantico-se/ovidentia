@@ -224,7 +224,7 @@ function listArticles($topics)
 						if( $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'] )
 							{
 							$this->modifydrafttxt = bab_translate("Edit draft");
-							$this->modifydrafturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=s1&idart=".$rr['id']."&rfurl=".urlencode("?tg=articles&idx=Articles&topics=".$this->topics));
+							$this->modifydrafturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=artedit&idx=edit&iddraft=".$rr['id']."&rfurl=".urlencode("?tg=articles&idx=Articles&topics=".$this->topics));
 							}
 						}
 					else

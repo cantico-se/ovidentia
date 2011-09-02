@@ -892,4 +892,58 @@ class bab_ArtDraft
 		
 		return $this;
 	}
+	
+	
+	
+	
+	
+	public function isModifiable()
+	{
+		global $babDB;
+	
+		$res = $babDB->db_query("
+			select 
+				adt.id_topic, 
+				adt.id_author, 
+				tt.allow_update, 
+				tt.allow_manupdate, 
+				adt.id_article 
+				
+			FROM bab_art_drafts adt 
+				LEFT JOIN bab_topics tt ON adt.id_topic=tt.id
+	
+			where 
+				adt.id=".$babDB->quote($this->getId()));
+		
+		if( $res && $babDB->db_num_rows($res) == 1 )
+		{
+			$rr = $babDB->db_fetch_array($res);
+			
+			if ($rr['id_article'] !== '0' && bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $rr['id_topic']))
+			{
+				// the topic is modifiable and the article exists
+				return true;
+			}
+			
+			if ($rr['id_article'] === '0' && bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $rr['id_topic']))
+			{
+				// can create a new article from this draft
+				return true;
+			}
+			
+			if( $rr['allow_update'] !== '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID'])
+			{
+				// i am the author
+				return true;
+			}
+	
+			if ( $rr['allow_manupdate'] !== '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic']))
+			{
+				// i am topic manager
+				return true;
+			}
+		}
+	
+		return false;
+	}
 }

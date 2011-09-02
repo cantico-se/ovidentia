@@ -281,9 +281,6 @@ class bab_ArticleDraftEditor {
 		
 		
 		
-		
-		
-		
 		$LeftFrame->addItem(
 			$W->HBoxItems(
 				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
@@ -454,7 +451,7 @@ class bab_ArticleDraftEditor {
 		}
 
 		
-		if ($this->draft->getId())
+		if ($this->draft->getId() && empty($_POST))
 		{
 			// load files from draft
 			$this->draft->loadTempAttachments($articleFiles);

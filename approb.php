@@ -1116,13 +1116,7 @@ function previewWaitingArticle($idart)
 		$arr = $babDB->db_fetch_array($res);
 		$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
 		if (count($arrschi) > 0 && in_array($arr['idfai'],$arrschi)) {
-			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-			$GLOBALS['babBodyPopup'] = new babBodyPopup();
-			$GLOBALS['babBodyPopup']->title = & $babBody->title;
-			$GLOBALS['babBodyPopup']->msgerror = & $babBody->msgerror;
-
-			$GLOBALS['babBodyPopup']->babecho(bab_previewArticleDraft($idart));
-			printBabBodyPopup();
+			$babBody->babPopup(bab_previewArticleDraft($idart));
 		}
 	} else {
 		echo bab_translate("Access denied");
