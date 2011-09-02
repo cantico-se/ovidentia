@@ -78,6 +78,57 @@ function bab_toAmPm($str)
 		
 }
 
+/**
+ * Return true if the current user can create or modify at least one article
+ * @return bool
+ */
+function bab_isArticleEditAccess()
+{
+	global $babDB;
+	
+	if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0  || count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) > 0 )
+	{
+		return true;
+	}
+	
+	
+	if (!$GLOBALS['BAB_SESS_LOGGED'])
+	{
+		return false;
+	}
+	
+	
+	// topics where i am manager
+	
+	$topman = bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL);
+	
+	if (!empty($topman))
+	{
+		$res = $babDB->db_query('SELECT id FROM bab_topics WHERE id IN('.$babDB->quote($topman).") AND allow_manupdate<>'0'");
+		if ($babDB->db_num_rows($res) > 0)
+		{
+			return true;
+		}
+	}
+	
+	
+	// articles where i am author
+	
+	$res = $babDB->db_query("SELECT a.id FROM bab_topics t, bab_articles a 
+		WHERE a.id_topic=t.id AND allow_update<>'0' AND a.id_author=".$babDB->quote($GLOBALS['BAB_SESS_USERID']));
+	
+	if ($babDB->db_num_rows($res) > 0)
+	{
+		return true;
+	}
+	
+	
+	
+	return false;
+}
+
+
+
 function bab_isUserTopicManager($topics)
 	{
 	return bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $topics);

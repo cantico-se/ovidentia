@@ -1341,22 +1341,8 @@ function bab_art_defaultMenu()
 /* main */
 
 
-$baccess = false;
-if(count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0  && count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) == 0)
-{
-	$iddraft = bab_rp('idart', 0);
-	//Try to verify if current user can update article as manager or author 
-	if( $iddraft )
-	{
-		$baccess = bab_isDraftModifiable($iddraft);
-	}
-}
-else 
-{
-	$baccess = true;
-}
 
-if( !$baccess ) 
+if( !bab_isArticleEditAccess() ) 
 {
 	
 	$babBody->addError(bab_translate('Access denied, no accessible topic'));

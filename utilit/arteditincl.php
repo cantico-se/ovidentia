@@ -219,7 +219,6 @@ class bab_ArticleDraftEditor {
 		
 		$topic = $W->Select('bab-article-topic');
 		
-		
 		foreach($topicList as $topcat){
 			
 			$topcat['name'] = bab_abbr($topcat['name'], BAB_ABBR_FULL_WORDS, 50);
@@ -229,6 +228,11 @@ class bab_ArticleDraftEditor {
 			} else {
 				$topic->addOption($topic->SelectOption($topcat['id_object'], $topcat['name']));
 			}
+		}
+		
+		if ($this->draft->id_topic)
+		{
+			$topic->addOption($topic->SelectOption($this->draft->id_topic, bab_getTopicTitle($this->draft->id_topic)));
 		}
 		
 		if($this->draft->id_article){
@@ -499,7 +503,7 @@ class bab_ArticleDraftEditor {
 			$body->setFoldable(true, true);
 		}
 		
-		if (empty($values['modification_comment'])) {
+		if (isset($update_datemodif) && empty($values['modification_comment'])) {
 			$update_datemodif->setFoldable(true, true);
 		}
 		

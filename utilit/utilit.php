@@ -1837,7 +1837,7 @@ function bab_updateSiteSettings()
 			if( $res && $babDB->db_num_rows($res) == 1 )
 				{
 				$rr = $babDB->db_fetch_array($res);
-				if( ( $rr['allow_update'] != '0' && $rr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $rr['id_topic'], $arr['id_author']) || ( $rr['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $arr['id_author'])))
+				if( ( $rr['allow_update'] != '0' && $rr['id_author'] == $arr['id_author']) || bab_isAccessValidByUser(BAB_TOPICSMOD_GROUPS_TBL, $rr['id_topic'], $arr['id_author']) || ( $rr['allow_manupdate'] != '0' && bab_isAccessValidByUser(BAB_TOPICSMAN_GROUPS_TBL, $rr['id_topic'], $arr['id_author'])))
 					{
 					bab_submitArticleDraft($arr['id']);	
 					continue;

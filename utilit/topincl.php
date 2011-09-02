@@ -213,7 +213,7 @@ function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $r
 		}
 	}
 
-	$res = bab_getArticleTopicsRes($parentid, $delegationid);
+	$res = bab_getArticleTopicsRes($parentid, $delegationid, $rightaccesstable);
 	if ($res) {
 		while ($arr = $babDB->db_fetch_assoc($res)) {
 

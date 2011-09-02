@@ -1558,7 +1558,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		if( count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) > 0  || count(bab_getUserIdObjects(BAB_TOPICSMOD_GROUPS_TBL)) > 0 )
+		if( bab_isArticleEditAccess() )
 			{
 			$array_urls[] = array(
 				'label' => bab_translate("Publication"),
