@@ -101,16 +101,8 @@ function listUsers($pos, $grp, $deleteAction)
 
 			$this->grp		= bab_toHtml($grp);
 
-			switch ($babBody->nameorder[0]) {
-				case "L":
-					$this->namesearch	= "lastname";
-					$this->namesearch2	= "firstname";
-				break;
-				case "F":
-				default:
-					$this->namesearch	= "firstname";
-					$this->namesearch2	= "lastname";
-				break; }
+			$this->namesearch	= "lastname";
+			$this->namesearch2	= "firstname";
 
 			// group members
 			$this->group_members = array();
