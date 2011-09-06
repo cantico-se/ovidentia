@@ -26,7 +26,6 @@
 * @internal SEC1 PR 16/02/2007 FULL
 */
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 require_once $babInstallPath . 'utilit/toolbar.class.php';
 include_once $babInstallPath . 'admin/register.php';
 include_once $babInstallPath . 'utilit/lusersincl.php';
@@ -100,17 +99,9 @@ function listUsers($pos, $grp, $deleteAction)
 			$this->deleteAction = $deleteAction;	
 
 			$this->grp		= bab_toHtml($grp);
-
-			switch ($babBody->nameorder[0]) {
-				case "L":
-					$this->namesearch	= "lastname";
-					$this->namesearch2	= "firstname";
-				break;
-				case "F":
-				default:
-					$this->namesearch	= "firstname";
-					$this->namesearch2	= "lastname";
-				break; }
+			
+			$this->namesearch	= "lastname";
+			$this->namesearch2	= "firstname";
 
 			// group members
 			$this->group_members = array();
