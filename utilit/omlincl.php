@@ -6593,7 +6593,7 @@ class babOvTemplate
 						$val = bab_toHtml($val); break;
 					case '2':
 						$lhtmlentities = true;
-						$trans = get_html_translation_table(HTML_ENTITIES);
+						$trans = get_html_translation_table(HTML_ENTITIES, ENT_COMPAT, bab_charset::getIso());
 						$trans = array_flip($trans);
 						$val = strtr($val, $trans);
 						break;
