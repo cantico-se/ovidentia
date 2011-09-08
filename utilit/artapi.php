@@ -1730,3 +1730,58 @@ function bab_deleteImageArticle($iIdArticle)
 	return $oTblWr->delete($aAttribut);
 }
 
+
+
+
+
+
+
+
+
+/**
+ * Test if an article draft is modifiable
+ * @param int $iddraft
+ * @return bool
+ */
+function bab_isDraftModifiable($iddraft)
+{
+	require_once dirname(__FILE__).'/artdraft.class.php';
+	$draft = new bab_ArtDraft;
+	$draft->getFromIdDraft($iddraft);
+	return $draft->isModifiable();
+}
+
+
+/**
+ * Test if an article is modifiable by the current user
+ * @param int $id_article
+ * @return bool
+ */
+function bab_isArticleModifiable($id_article)
+{
+	global $babDB;
+	
+	$res = $babDB->db_query('SELECT 
+		a.id_topic,
+		t.allow_update, 
+		a.id_author, 
+		t.allow_manupdate   
+		FROM bab_topics t, bab_articles a 
+		WHERE a.id_topic=t.id AND a.id='.$babDB->quote($id_article));
+	$arr = $babDB->db_fetch_assoc($res);
+	
+	if (!$arr)
+	{
+		return false;
+	}
+	
+	
+	if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) || ( $arr['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+

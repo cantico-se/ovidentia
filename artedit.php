@@ -1295,19 +1295,6 @@ function bab_saveArticle(){
 }
 
 
-/**
- * Test if an article draft is modifiable
- * @param int $iddraft
- * @return bool
- */
-function bab_isDraftModifiable($iddraft)
-{
-	require_once dirname(__FILE__).'/utilit/artdraft.class.php';
-	$draft = new bab_ArtDraft;
-	$draft->getFromIdDraft($iddraft);
-	return $draft->isModifiable();
-}
-
 
 
 
