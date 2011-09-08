@@ -628,7 +628,7 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 				break;
 			}
 
-			
+
 		$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
 
 		$res = $babDB->db_query("select ht.id, at.id_topic, at.restriction from ".BAB_ARTICLES_TBL." at LEFT JOIN ".BAB_HOMEPAGES_TBL." ht on ht.id_article=at.id where ht.id_group='".$babDB->db_escape_string($this->idgroup)."' and ht.id_site='".$arr['id']."' and ht.ordering!='0' and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now()) and (date_archiving='0000-00-00 00:00:00' or date_archiving >= now()) GROUP BY at.id order by ".$babDB->db_escape_string($order));
@@ -3619,7 +3619,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 			$oId = $this->oFmFolderSet->aField['iId'];
 			$res = $this->oFmFolderSet->select($oId->in($arr));
 			$arrpath = array();
-			
+
 			foreach($res as $oFmFolder)
 			{
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
@@ -3627,7 +3627,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 				$sRootFolderName = getFirstPath($sRelativePath);
 				$arrpath[] = $sRootFolderName . '/' . $path;
 			}
-			
+
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and (sRelativePath='' AND id IN(".$babDB->quote($arr).") OR CONCAT(sRelativePath, folder) IN(".$babDB->quote($arrpath)."))" . $sDelegation;
 			}
 
@@ -3642,7 +3642,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		if( count($arrid) > 0 )
 			{
 			$req = "select f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
-			
+
 			if( $path === false || $path === '' )
 				{
 				$path = '';
@@ -6593,7 +6593,7 @@ class babOvTemplate
 						$val = bab_toHtml($val); break;
 					case '2':
 						$lhtmlentities = true;
-						$trans = get_html_translation_table(HTML_ENTITIES, ENT_COMPAT, bab_charset::getIso());
+						$trans = get_html_translation_table(HTML_ENTITIES);
 						$trans = array_flip($trans);
 						$val = strtr($val, $trans);
 						break;
@@ -6681,14 +6681,14 @@ class babOvTemplate
 		{
 		$this->gctx->push($varname, $val);
 		}
-		
-	
+
+
 
 	if( !$lhtmlentities && $ghtmlentities )
 		{
 		return bab_toHtml($val);
 		}
-		
+
 	return $val;
 	}
 
