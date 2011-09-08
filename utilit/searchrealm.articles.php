@@ -463,7 +463,8 @@ class bab_SearchArticlesResult extends bab_SearchSqlResult {
 									bab_toHtml($intro),
 									$author,
 									$creation_date
-								)
+								),
+								'bab-article-'.$record->id
 							);
 
 			$this->next();
