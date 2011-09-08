@@ -516,19 +516,15 @@ class bab_searchVisuPopup
 {
 	function bab_searchVisuPopup()
 	{
-		include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
-
-		$GLOBALS['babBodyPopup'] = new babBodyPopup();
+		
 	}
 
 
 	function printHTML($file,$tpl)
 	{
-		$GLOBALS['babBodyPopup']->title = $GLOBALS['babBody']->title;
-		$GLOBALS['babBodyPopup']->msgerror = $GLOBALS['babBody']->msgerror;
-		$GLOBALS['babBodyPopup']->babecho(bab_printTemplate($this, $file, $tpl));
-		printBabBodyPopup();
-		die();
+		global $babBody;
+		$babBody->babPopup(bab_printTemplate($this, $file, $tpl));
+
 	}
 }
 
@@ -568,6 +564,7 @@ function viewArticle($article,$w)
 			$this->res = $babDB->db_query($req);
 			$this->arr = $babDB->db_fetch_array($this->res);
 			$this->title = bab_toHtml($this->arr['title']);
+			$this->articleid = (int) $this->arr['id'];
 			$this->countf = 0;
 			$this->countcom = 0;
 			$this->w = $w;
