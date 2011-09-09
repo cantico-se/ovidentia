@@ -6640,11 +6640,11 @@ class babOvTemplate
 				switch($v)
 					{
 					case 'left':
-						$val = ltrim($val); break;
+						$val = ltrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
 					case 'right':
-						$val = rtrim($val); break;
+						$val = rtrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
 					case 'all':
-						$val = trim($val); break;
+						$val = trim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
 					}
 				break;
 			case 'nl2br':
