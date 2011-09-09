@@ -396,8 +396,6 @@ class bab_ReferenceMgr
 			WHERE 
 				reference = ' . $babDB->quote($oReference->__tostring());
 		
-		bab_debug($sQuery);
-
 		$aTagId		= array();
 		$oResult	= $babDB->db_query($sQuery);
 		

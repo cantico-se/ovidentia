@@ -28,30 +28,23 @@ Variables in "body_default" :
 }
 </style>
 
-<!--#if parentscount -->
-<div id="BabCategTitleNavigation">
-	<table border="0" width="99%" cellpadding="1" cellspacing="0">
-		<tr>
-			<td>
-				<!--#in getnextparent -->
-				<!--#if burl -->
-				<a href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-				<!--#else burl -->
-				{ parentname }
-				<!--#endif burl -->
-				<!--#endin getnextparent -->
-			</td>
-		<!--#if bsubmit -->
-			<td align="right">
-				<span class="bab_buttons">
-					<a href="{ bsubmiturl }">{ submittxt }</a>
-				</span>
-			</td>
-		<!--#endif bsubmit -->
-		</tr>
-	</table>
-</div>
-<!--#endif parentscount -->
+
+<table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
+  <tr>
+  	<td><span class="bab-articletopic-{ babtpl_topicid }"></span></td>
+
+
+
+	<!--#if bsubmit -->
+	<td align="right">
+		<span class="bab_buttons">
+			<a href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+		</span>
+	</td>
+	<!--#endif bsubmit -->
+</tr>
+</table>
+
 
 <!--#if bnavigation -->
 <table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
@@ -59,11 +52,11 @@ Variables in "body_default" :
     <td nowrap align="center"> 
       <table class="BabLoginMenuBackground" border="0" width="100%" cellpadding="2" cellspacing="0" align="center">
         <tr> 
-          <td width="1%" nowrap><a class="BabForumNavigation" href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-          <td width="1%" nowrap><a class="BabForumNavigation" href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
-          <td width="1%" nowrap><a class="BabForumNavigation" href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
+          <td width="1%" nowrap><a href="{ topurl }">{ topname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td width="1%" nowrap><a href="{ prevurl }">{ prevname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td width="1%" nowrap><a href="{ nexturl }">{ nextname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"> 
           </td>
-          <td width="1%" nowrap><a class="BabForumNavigation" href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
+          <td width="1%" nowrap><a href="{ bottomurl }">{ bottomname }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 			<td width="96%"><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="10" height="1" border="0"></td>
 		</tr>
 	</table>
@@ -82,7 +75,12 @@ Variables in "body_default" :
     </td>
   </tr>
   <tr> 
-    <td class="BabTopicsBackground">{ content }</td>
+    <td class="BabTopicsBackground">
+    	<!--#if btags -->
+    	<div class="bab-article-tags" align="right"><em>{ tagstxt }:</em> <!--#in getnexttag --><a href="{ searchurl }">{ tagname }</a> <!--#endin getnexttag --></div>
+    	<!--#endif btags -->
+    	{ content }
+    </td>
   </tr>
 <!--#if battachments -->
   <tr> 
@@ -153,30 +151,19 @@ Variables in "body_default" :
 }
 </style>
 
-<!--#if parentscount -->
-<div id="BabCategTitleNavigation">
-	<table border="0" width="99%" cellpadding="1" cellspacing="0">
-		<tr>
-			<td>
-				<!--#in getnextparent -->
-				<!--#if burl -->
-				<a href="{ parenturl }">{ parentname }</a>&nbsp/&nbsp;
-				<!--#else burl -->
-				{ parentname }
-				<!--#endif burl -->
-				<!--#endin getnextparent -->
-			</td>
-		<!--#if bsubmit -->
-			<td align="right">
-				<span class="bab_buttons">
-					<a href="{ bsubmiturl }" target="_blank" onclick="bab_popup('{ bsubmiturl }',6); return false;">{ submittxt }</a>
-				</span>
-			</td>
-		<!--#endif bsubmit -->
-		</tr>
-	</table>
-</div>
-<!--#endif parentscount -->
+<table width="99%" border="0" cellspacing="1" cellpadding="0" align="center">
+  <tr>
+  	<td><span class="bab-articletopic-{ babtpl_topicid }"></span></td>
+
+	<!--#if bsubmit -->
+	<td align="right">
+		<span class="bab_buttons">
+			<a href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+		</span>
+	</td>
+	<!--#endif bsubmit -->
+</tr>
+</table>
 
 <!--#in getnext -->
 <div class="bab_repeat">
@@ -192,7 +179,12 @@ Variables in "body_default" :
 	</tr>
 
 	<tr>
-		<td class="BabTopicsBackground">{ content }</td>
+		<td class="BabTopicsBackground">
+		<!--#if btags -->
+    	<div class="bab-article-tags" align="right"><em>{ tagstxt }:</em> <!--#in getnexttag --><a href="{ searchurl }">{ tagname }</a> <!--#endin getnexttag --></div>
+    	<!--#endif btags -->
+			{ content }
+		</td>
 	</tr>
 
 	<!--#if battachments -->
@@ -222,7 +214,7 @@ Variables in "body_default" :
 			&nbsp;&nbsp;
 			<a class="BabTopicsFooterLink" href="{ printurl }" target="_blank"><img src="{ babSkinPath }images/Puces/Print.gif" border="0" alt="{ printtxt }" align="absmiddle">&nbsp;{ printtxt }</a><!--#if commentstxt -->&nbsp;&nbsp;<a class="BabTopicsFooterLink" href="{ editcommentsurl }" target="_blank" onclick="bab_popup('{ editcommentsurl }', 6);return false;"><img src="{ babSkinPath }images/Puces/addcomment.gif" border="0" alt="{ commentstxt }" align="absmiddle">&nbsp;{ commentstxt }</a><!--#endif commentstxt -->
 			&nbsp;&nbsp;
-		    <span class="bab-article-{ articleid }"></span>
+		    <span class="bab-article-{ babtpl_articleid }"></span>
 		</td>
 	</tr>
 	</table>

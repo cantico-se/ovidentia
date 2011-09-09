@@ -67,6 +67,8 @@ class listArticles extends categoriesHierarchy
 	var $delurl;
 	var $morename;
 	var $attachmentxt;
+	
+	protected $tags;
 
 	function listArticles($topics)
 		{
@@ -92,6 +94,7 @@ class listArticles extends categoriesHierarchy
 		$this->moretxt = bab_translate("Read More");
 		$this->morename = bab_translate("Read more");
 		$this->attachmentxt = bab_translate("Associated documents");
+		$this->tagstxt = bab_translate("Associated tags");
 
 		$this->template = "default";
 		if( $arrtop['display_tmpl'] != '' )
@@ -127,7 +130,49 @@ class listArticles extends categoriesHierarchy
 				$this->template = "default";
 				}
 			}
+			
+		
+
 		}
+		
+	/**
+	 * Get list of tags
+	 * @param int $article
+	 * @return array
+	 */
+	protected function getTags($article)
+	{
+		require_once dirname(__FILE__) . '/utilit/tagApi.php';
+	
+		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
+		$tags = array();
+		$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $article));
+		$oIterator->orderAsc('tag_name');
+		foreach($oIterator as $oTag) {
+			$tags[] = $oTag->getName();
+		}
+		
+		return $tags;
+	}
+	
+	/**
+	 * Template method
+	 */
+	public function getnexttag()
+	{
+		if (list(, $tag) = each($this->tags))
+		{
+			$this->tagname = bab_toHtml($tag);
+			$searchurl = bab_url::get_request();
+			$searchurl->tg = 'search';
+			$searchurl->idx = 'find';
+			$searchurl->what = $tag;
+			$this->searchurl = bab_toHtml($searchurl->toString());
+			return true;
+		}
+		
+		return false;
+	}
 }
 
 function listArticles($topics)
@@ -136,8 +181,10 @@ function listArticles($topics)
 
 	class temp extends listArticles
 		{
+			
+		
 
-		function temp($topics)
+		public function __construct($topics)
 			{
 			global $babDB;
 			$this->listArticles($topics);
@@ -187,9 +234,9 @@ function listArticles($topics)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 			}
 
-		function getnext(&$skip)
+		public function getnext(&$skip)
 			{
-			global $babDB, $arrtop;
+			global $babDB;
 			static $i = 0;
 			if( $i < $this->count)
 				{
@@ -210,7 +257,7 @@ function listArticles($topics)
 					$this->articleauthor = bab_translate("Anonymous");
 					}
 
-				if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $this->topics) || ( $arrtop['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arrtop['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $this->topics)))
+				if( bab_isArticleModifiable($this->arr['id']))
 					{
 					$this->bmodify = true;
 					$res =  $babDB->db_query("select id, id_author from ".BAB_ART_DRAFTS_TBL." where id_article='".$babDB->db_escape_string($this->arr['id'])."'");
@@ -317,6 +364,11 @@ function listArticles($topics)
 					{
 					$this->battachments = false;
 					}
+					
+					
+				$this->tags = $this->getTags($this->arr['id']);
+				$this->btags = 0 < count($this->tags);
+					
 				$i++;
 				return true;
 				}
@@ -324,7 +376,7 @@ function listArticles($topics)
 				return false;
 			}
 
-		function getnextdoc()
+		public function getnextdoc()
 			{
 			global $babDB, $arrtop;
 			static $i = 0;
@@ -343,6 +395,8 @@ function listArticles($topics)
 				return false;
 				}
 			}
+			
+		
 		}
 
 
@@ -490,6 +544,10 @@ function listArchiveArticles($topics, $pos)
 					{
 					$this->battachments = false;
 					}
+					
+				$this->tags = $this->getTags($this->arr['id']);
+				$this->btags = 0 < count($this->tags);	
+				
 				$i++;
 				return true;
 				}
@@ -529,7 +587,7 @@ function readMore($topics, $article)
 	{
 	global $babBody, $babDB, $arrtop;
 
-	class temp extends categoriesHierarchy
+	class temp extends listArticles
 		{
 
 		var $content;
@@ -558,6 +616,8 @@ function readMore($topics, $article)
 			{
 			global $babDB, $arrtop;
 			/* template variables */
+			$this->listArticles($topics);
+			
 			$this->babtpl_topicid = $topics;
 			$this->babtpl_articleid = $article;
 			$this->babtpl_articlesurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics;
@@ -714,6 +774,10 @@ function readMore($topics, $article)
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				//$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
+				
+				$this->tags = $this->getTags($this->arr['id']);
+				$this->btags = 0 < count($this->tags);
+				
 				$i++;
 				return true;
 				}

@@ -1103,7 +1103,6 @@ function bab_ajaxRemoveAttachment()
 
 /**
  * Save article draft
- * @todo rename
  * @return unknown_type
  */
 function bab_saveArticle(){
@@ -1115,174 +1114,178 @@ function bab_saveArticle(){
 	require_once $GLOBALS['babInstallPath']."utilit/artdraft.class.php";
 	require_once $GLOBALS['babInstallPath']."utilit/arteditincl.php";
 
-	
-
-	
-	$id_topic = (int) bab_pp('id_topic',0);
-	
-	if (0 === $id_topic)
-	{
-		$babBody->addError(bab_translate('The topic is mandatory'));
-		return false;
-	}
-	
-	$title = bab_pp('title');
-	$title = trim($title);
-	
-	if (empty($title))
-	{
-		$babBody->addError(bab_translate('The article title is mandatory'));
-		return false;
-	}
-	
-	$headeditor = new bab_contentEditor('bab_article_head');
-	$headeditor->setRequestFieldName('head');
-	$head = $headeditor->getContent();
-	$head = trim($head);
-	
-	if (empty($head))
-	{
-		$babBody->addError(bab_translate('The article head is mandatory'));
-		return false;
-	}
-	
-	
-	
-
-	list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from bab_topics where id=".$babDB->quote($id_topic)));
-	
-
-	$taglist = array();
-	if( $busetags == 'Y' )
-	{
-		
-		$tags = bab_pp('tags');
-		$tags = trim($tags);
-
-		if( !empty($tags))
+	if(bab_pp('cancel', '') != ''){
+		$idDraft = bab_pp('iddraft',0);
+		if ($idDraft && bab_isDraftModifiable($idDraft))
 		{
-			$atags = explode(',', $tags);
-			foreach( $atags as $tagname )
-			{
-				$tagname = trim($tagname);
-				
-				if ('' === $tagname)
-				{
-					continue;
-				}
-				
-				$oTagMgr	= bab_getInstance('bab_TagMgr');
-				$oTag		= $oTagMgr->getByName($tagname);
-				if(!($oTag instanceof bab_Tag))
-				{
-					$babBody->addError(sprintf(bab_translate("The keyword %s does not exists in the thesaurus"), $tagname));
-					return false;
-				}
-				
-				$taglist[] = $oTag;
-			}
+			$draft = new bab_ArtDraft;
+			$draft->getFromIdDraft($idDraft);
+			$draft->delete();
 		}
+		$url = bab_pp('cancelUrl');
+		
+	} else {
 
-		if( count($taglist) == 0 )
+		
+		$id_topic = (int) bab_pp('id_topic',0);
+		
+		if (0 === $id_topic)
 		{
-			$babBody->addError(bab_translate("You must specify at least one tag"));
+			$babBody->addError(bab_translate('The topic is mandatory'));
 			return false;
 		}
-	}
-	
-	
-	
-	
-	
-	$idDraft = bab_pp('iddraft',0);
-	$draft = new bab_ArtDraft;
-	
-	try {
-		if (empty($idDraft))
+		
+		$title = bab_pp('title');
+		$title = trim($title);
+		
+		if (empty($title))
 		{
-			// access rights are verified in bab_newArticleDraft()
-			$draft->createInTopic($id_topic);
-		} else {
-			
-			if (!bab_isDraftModifiable($idDraft))
-			{
-				throw new ErrorException(bab_translate('Error, the draft is not modifiable'));
-			}
-			
-			$draft->getFromIdDraft($idDraft);
-			$draft->id_topic = $id_topic;
+			$babBody->addError(bab_translate('The article title is mandatory'));
+			return false;
 		}
-	} 
-	catch(ErrorException $e)
-	{
-		$babBody->addError($e->getMessage());
-		return false;
+		
+		$headeditor = new bab_contentEditor('bab_article_head');
+		$headeditor->setRequestFieldName('head');
+		$head = $headeditor->getContent();
+		$head = trim($head);
+		
+		if (empty($head))
+		{
+			$babBody->addError(bab_translate('The article head is mandatory'));
+			return false;
+		}
+		
+		
+		
+	
+		list($busetags) = $babDB->db_fetch_array($babDB->db_query("select busetags from bab_topics where id=".$babDB->quote($id_topic)));
+		
+	
+		$taglist = array();
+		if( $busetags == 'Y' )
+		{
+			
+			$tags = bab_pp('tags');
+			$tags = trim($tags);
+	
+			if( !empty($tags))
+			{
+				$atags = explode(',', $tags);
+				foreach( $atags as $tagname )
+				{
+					$tagname = trim($tagname);
+					
+					if ('' === $tagname)
+					{
+						continue;
+					}
+					
+					$oTagMgr	= bab_getInstance('bab_TagMgr');
+					$oTag		= $oTagMgr->getByName($tagname);
+					if(!($oTag instanceof bab_Tag))
+					{
+						$babBody->addError(sprintf(bab_translate("The keyword %s does not exists in the thesaurus"), $tagname));
+						return false;
+					}
+					
+					$taglist[] = $oTag;
+				}
+			}
+	
+			if( count($taglist) == 0 )
+			{
+				$babBody->addError(bab_translate("You must specify at least one tag"));
+				return false;
+			}
+		}
+		
+		
+		
+		
+		
+		$idDraft = bab_pp('iddraft',0);
+		$draft = new bab_ArtDraft;
+		
+		try {
+			if (empty($idDraft))
+			{
+				// access rights are verified in bab_newArticleDraft()
+				$draft->createInTopic($id_topic);
+			} else {
+				
+				if (!bab_isDraftModifiable($idDraft))
+				{
+					throw new ErrorException(bab_translate('Error, the draft is not modifiable'));
+				}
+				
+				$draft->getFromIdDraft($idDraft);
+				$draft->id_topic = $id_topic;
+			}
+		} 
+		catch(ErrorException $e)
+		{
+			$babBody->addError($e->getMessage());
+			return false;
+		}
+		
+		
+		$draft->title = $title;
+		
+		$draft->head = $headeditor->getContent();
+		$draft->head_format = $headeditor->getFormat();
+		
+		$bodyeditor = new bab_contentEditor('bab_article_body');
+		$bodyeditor->setRequestFieldName('body');
+		$draft->body = $bodyeditor->getContent();
+		$draft->body_format = $bodyeditor->getFormat();
+		
+		$draft->importDate('date_submission', bab_pp('date_submission'), bab_pp('time_submission','00:00:00'));
+		$draft->importDate('date_archiving', bab_pp('date_archiving'), bab_pp('time_archiving','00:00:00'));
+		$draft->importDate('date_publication', bab_pp('date_publication'), bab_pp('time_publication','00:00:00'));
+	
+		$draft->hpage_private = bab_pp('hpage_private', 'N');
+		$draft->hpage_public = bab_pp('hpage_public', 'N');
+		
+		$draft->notify_members = bab_pp('notify_members', 'N');
+		$draft->lang = bab_pp('lang');
+		$draft->setRestriction(bab_pp('restriction'), (array) bab_pp('groups'), bab_pp('operator'));
+		$draft->modification_comment = bab_pp('modification_comment', null);
+		$draft->update_datemodif = bab_pp('update_datemodif', 'Y');
+		
+		
+		if(bab_pp('submit', '') != ''){
+			$draft->save();
+			$draft->saveTempAttachments(bab_pp('files', array()));
+			$draft->saveTempPicture();
+			$draft->saveTags($taglist);
+			
+			$draft->submit();
+			
+			$url = bab_pp('submitUrl');
+			
+		}elseif(bab_pp('draft', '') != ''){
+			
+			$draft->save();
+			$draft->saveTempAttachments(bab_pp('files', array()));
+			$draft->saveTempPicture();
+			$draft->saveTags($taglist);
+			
+			$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+			
+		}elseif(bab_pp('see', '') != ''){
+			
+			$draft->save();
+			$draft->saveTempAttachments(bab_pp('files', array()));
+			$draft->saveTempPicture();
+			$draft->saveTags($taglist);
+			
+			$form = new bab_ArticleDraftEditor;
+			$form->fromDraft($draft->getId());
+			$form->preview();
+			$form->display();
+			return true;
+		}
 	}
-	
-	
-	$draft->title = $title;
-	
-	$draft->head = $headeditor->getContent();
-	$draft->head_format = $headeditor->getFormat();
-	
-	$bodyeditor = new bab_contentEditor('bab_article_body');
-	$bodyeditor->setRequestFieldName('body');
-	$draft->body = $bodyeditor->getContent();
-	$draft->body_format = $bodyeditor->getFormat();
-	
-	$draft->importDate('date_submission', bab_pp('date_submission'), bab_pp('time_submission','00:00:00'));
-	$draft->importDate('date_archiving', bab_pp('date_archiving'), bab_pp('time_archiving','00:00:00'));
-	$draft->importDate('date_publication', bab_pp('date_publication'), bab_pp('time_publication','00:00:00'));
-
-	$draft->hpage_private = bab_pp('hpage_private', 'N');
-	$draft->hpage_public = bab_pp('hpage_public', 'N');
-	
-	$draft->notify_members = bab_pp('notify_members', 'N');
-	$draft->lang = bab_pp('lang');
-	$draft->setRestriction(bab_pp('restriction'), (array) bab_pp('groups'), bab_pp('operator'));
-	$draft->modification_comment = bab_pp('modification_comment', null);
-	$draft->update_datemodif = bab_pp('update_datemodif', 'Y');
-	
-	
-	if(bab_pp('submit', '') != ''){
-		$draft->save();
-		$draft->saveTempAttachments(bab_pp('files', array()));
-		$draft->saveTempPicture();
-		$draft->saveTags($taglist);
-		
-		$draft->submit();
-		
-		$url = bab_pp('submitUrl');
-		
-	}elseif(bab_pp('draft', '') != ''){
-		
-		$draft->save();
-		$draft->saveTempAttachments(bab_pp('files', array()));
-		$draft->saveTempPicture();
-		$draft->saveTags($taglist);
-		
-		$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
-		
-	}elseif(bab_pp('see', '') != ''){
-		
-		$draft->save();
-		$draft->saveTempAttachments(bab_pp('files', array()));
-		$draft->saveTempPicture();
-		$draft->saveTags($taglist);
-		
-		$form = new bab_ArticleDraftEditor;
-		$form->fromDraft($draft->getId());
-		$form->preview();
-		$form->display();
-		return true;
-		
-		
-	}elseif(bab_pp('cancel', '') != ''){
-		
-		$draft->delete();
-		$url = bab_pp('cancelUrl');
-	}
-	
 	
 	if (empty($url))
 	{
