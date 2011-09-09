@@ -6098,7 +6098,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sName				= $aImgInfo['name'];
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=artedit&idx=getImage&sImage=' . bab_toHtml($sName);
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;

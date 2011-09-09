@@ -859,43 +859,6 @@ function artedit_init()
 	
 
 
-function getImage()
-{	
-	require_once dirname(__FILE__) . '/utilit/artincl.php';
-	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
-
-	$iIdDraft		= (int) bab_rp('iIdDraft', 0);
-	$iIdArticle		= (int) bab_rp('iIdArticle', 0);
-	$iWidth			= (int) bab_rp('iWidth', 0);
-	$iHeight		= (int) bab_rp('iHeight', 0);
-	$sImage			= (string) bab_rp('sImage', '');
-	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	$iIdDelegation	= 0; //Dummy value, i dont need this here
-	
-	global $babBody;
-	$sPath = '';
-	
-	if(0 < $iIdDraft)
-	{
-		$oEnvObj->setEnv($iIdDelegation);
-		$sPath = $oEnvObj->getDraftArticleImgPath($iIdDraft);
-	}
-	else
-	{
-		$iIdDelegation = bab_getArticleDelegationId($iIdArticle);
-		if(false === $iIdDelegation)
-		{
-			return '???';
-		}
-		
-		$oEnvObj->setEnv($iIdDelegation);
-		$sPath = $oEnvObj->getArticleImgPath($iIdArticle);
-	}
-	
-	$oImageResize = new bab_ImageResize();
-	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
-}
-
 
 
 

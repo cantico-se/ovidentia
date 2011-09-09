@@ -142,6 +142,13 @@ class listArticles extends categoriesHierarchy
 	 */
 	protected function getTags($article)
 	{
+		global $arrtop;
+
+		if ('Y' !== $arrtop['busetags'])
+		{
+			return array();
+		}
+		
 		require_once dirname(__FILE__) . '/utilit/tagApi.php';
 	
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
@@ -160,6 +167,7 @@ class listArticles extends categoriesHierarchy
 	 */
 	public function getnexttag()
 	{
+		
 		if (list(, $tag) = each($this->tags))
 		{
 			$this->tagname = bab_toHtml($tag);
@@ -172,6 +180,53 @@ class listArticles extends categoriesHierarchy
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * @param	int	$article
+	 * @return bab_url
+	 */
+	protected function getImageUrl($article, $width = 100, $height = 100)
+	{
+		global $arrtop;
+		
+		if ('Y' !== $arrtop['allow_addImg'])
+		{
+			return null;
+		}
+		
+		$img = bab_getImageArticle($article);
+		
+		if (!is_array($img)) {
+			return null;
+		}
+		
+		if ($T = @bab_functionality::get('Thumbnailer'))
+		{
+			require_once dirname(__FILE__) . '/utilit/pathUtil.class.php';
+			
+			$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
+			$sFullPathName		= $sUploadPath . $img['relativePath'] . $img['name'];
+			
+			$T->setSourceFile($sFullPathName);
+			$url = $T->getThumbnail($width, $height);
+			
+			if (is_string($url))
+			{
+				return new bab_url($url);
+			}
+		}
+		
+		$url = bab_url::get_request('tg');
+		$url->idx = 'getImage';
+		$url->sImage = $img['name'];
+		$url->iIdArticle = $article;
+		$url->iWidth = $width;
+		$url->iHeight = $height;
+		
+		return $url;
+		
 	}
 }
 
@@ -368,6 +423,13 @@ function listArticles($topics)
 					
 				$this->tags = $this->getTags($this->arr['id']);
 				$this->btags = 0 < count($this->tags);
+				
+				if ($imgurl = $this->getImageUrl($this->arr['id']))
+				{
+					$this->imageurl = bab_toHtml($imgurl->toString());
+				} else {
+					$this->imageurl = false;
+				}
 					
 				$i++;
 				return true;
@@ -1157,6 +1219,47 @@ function getDocumentArticle($idf, $topics)
 	}
 }
 
+
+
+
+
+function getImage()
+{	
+	require_once dirname(__FILE__) . '/utilit/artincl.php';
+	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
+
+	$iIdArticle		= (int) bab_rp('iIdArticle', 0);
+	$iWidth			= (int) bab_rp('iWidth', 0);
+	$iHeight		= (int) bab_rp('iHeight', 0);
+	$sImage			= (string) bab_rp('sImage', '');
+	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
+	
+	// verify topic access rights
+
+	
+	$article = bab_getArticleArray($iIdArticle);
+	if (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$article['id_topic']))
+	{
+		return;
+	}
+	
+	
+	$iIdDelegation = bab_getArticleDelegationId($iIdArticle);
+	if(false === $iIdDelegation)
+	{
+		return;
+	}
+	
+	$oEnvObj->setEnv($iIdDelegation);
+	$sPath = $oEnvObj->getArticleImgPath($iIdArticle);
+	
+	$oImageResize = new bab_ImageResize();
+	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
+}
+
+
+
+
 /* main */
 $arrtop = array();
 
@@ -1204,6 +1307,10 @@ switch($idx)
 		$idf = bab_gp('idf', 0);
 		getDocumentArticle($idf, $topics);
 		exit;
+		break;
+		
+	case 'getImage':
+		getImage();
 		break;
 
 	case "viewa":
