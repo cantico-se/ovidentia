@@ -130,18 +130,31 @@ class Func_Ovml_Container extends Func_Ovml
 		return false;
 	}
 
+
+	
+	
 	/**
-	 * transform editor content to html
-	 * @param	string	&$txt
+	 * Push editor content into context and apply editor transformations
+	 * 
+	 * @param	string	$var				OVML variable name
+	 * @param	string	$txt
 	 * @param	string	$txtFormat			The text format (html, text...) corresponding to the format of the wysiwyg editor.
-	 * @param	string	$editor
+	 * @param	string	$editor				editor ID
 	 */
-	protected function replace_ref(&$txt, $txtFormat, $editor) {
+	protected function pushEditor($var, $txt, $txtFormat, $editor)
+	{
 		include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 		$editor = new bab_contentEditor($editor);
 		$editor->setContent($txt);
 		$editor->setFormat($txtFormat);
 		$txt = $editor->getHtml();
+		
+		$this->ctx->curctx->push($var, $txt);
+
+		if ('html' === strtolower($txtFormat))
+		{
+			$this->ctx->curctx->setFormat($var, bab_context::HTML);
+		}
 	}
 
 }
@@ -157,7 +170,16 @@ class Func_Ovml_Container extends Func_Ovml
  */
 class Func_Ovml_Function extends Func_Ovml
 {
+	/**
+	 * 
+	 * @var babOvTemplate
+	 */
 	public $template;
+	
+	/**
+	 * 
+	 * @var bab_context
+	 */
 	protected $gctx;
 	protected $args = array();
 
@@ -686,10 +708,12 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
-			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
-			$this->ctx->curctx->push('ArticleHead', $arr['head']);
-			$this->ctx->curctx->push('ArticleBody', $arr['body']);
+			
+			
+			
+			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
+			
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -1027,9 +1051,7 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicTotal', $this->count);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
 
-			$this->replace_ref($arr['description'], $arr['description_format'], 'bab_topic');
-
-			$this->ctx->curctx->push('TopicDescription', $arr['description']);
+			$this->pushEditor('TopicDescription', $arr['description'], $arr['description_format'], 'bab_topic');
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
@@ -1123,8 +1145,7 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('TopicName', $arr['category']);
-			$this->replace_ref($arr['description'], $arr['description_format'], 'bab_topic');
-			$this->ctx->curctx->push('TopicDescription', $arr['description']);
+			$this->pushEditor('TopicDescription', $arr['description'], $arr['description_format'], 'bab_topic');
 			$this->ctx->curctx->push('TopicId', $arr['id']);
 			$this->ctx->curctx->push('TopicLanguage', $arr['lang']);
 			$this->ctx->curctx->push('ArticlesListUrl', $GLOBALS['babUrlScript']."?tg=articles&topics=".$arr['id']);
@@ -1397,10 +1418,8 @@ class Func_Ovml_Container_Articles extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
-			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
-			$this->ctx->curctx->push('ArticleHead', $arr['head']);
-			$this->ctx->curctx->push('ArticleBody', $arr['body']);
+			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -1495,10 +1514,8 @@ class Func_Ovml_Container_Article extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
-			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
-			$this->ctx->curctx->push('ArticleHead', $arr['head']);
-			$this->ctx->curctx->push('ArticleBody', $arr['body']);
+			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -1890,8 +1907,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->pushEditor('PostText', $arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
@@ -3139,10 +3155,8 @@ class Func_Ovml_Container_RecentArticles extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
-			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
-			$this->ctx->curctx->push('ArticleHead', $arr['head']);
-			$this->ctx->curctx->push('ArticleBody', $arr['body']);
+			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -3405,8 +3419,7 @@ class Func_Ovml_Container_RecentPosts extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->pushEditor('PostText', $arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $arr['id_forum']);
@@ -3545,8 +3558,7 @@ class Func_Ovml_Container_RecentThreads extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->pushEditor('PostText', $arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $this->arrfid[$this->idx]);
@@ -3865,10 +3877,8 @@ class Func_Ovml_Container_WaitingArticles extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			$this->replace_ref($arr['head'], $arr['head_format'], 'bab_article_head');
-			$this->replace_ref($arr['body'], $arr['body_format'], 'bab_article_body');
-			$this->ctx->curctx->push('ArticleHead', $arr['head']);
-			$this->ctx->curctx->push('ArticleBody', $arr['body']);
+			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
+			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
 			if( empty($arr['body']))
 				{
 				$this->ctx->curctx->push('ArticleReadMore', 0);
@@ -4174,8 +4184,7 @@ class Func_Ovml_Container_WaitingPosts extends Func_Ovml_Container
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('PostTitle', $arr['subject']);
-			$this->replace_ref($arr['message'], $arr['message_format'], 'bab_forum_post');
-			$this->ctx->curctx->push('PostText', $arr['message']);
+			$this->pushEditor('PostText', $arr['message'], $arr['message_format'], 'bab_forum_post');
 			$this->ctx->curctx->push('PostId', $arr['id']);
 			$this->ctx->curctx->push('PostThreadId', $arr['id_thread']);
 			$this->ctx->curctx->push('PostForumId', $arr['forum']);
@@ -4514,8 +4523,7 @@ class Func_Ovml_Container_FaqQuestions extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
-			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
@@ -4568,8 +4576,7 @@ class Func_Ovml_Container_FaqQuestion extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
-			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
@@ -4718,20 +4725,19 @@ class Func_Ovml_Container_RecentFaqQuestions extends Func_Ovml_Container
 			$arr = $babDB->db_fetch_array($this->res);
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('FaqQuestion', $arr['question']);
-			$this->replace_ref($arr['response'], $arr['response_format'], 'bab_faq_response');
-			$this->ctx->curctx->push('FaqResponse', $arr['response']);
+			$this->pushEditor('FaqResponse', $arr['response'], $arr['response_format'], 'bab_faq_response');
 			$this->ctx->curctx->push('FaqQuestionId', $arr['id']);
 			$this->ctx->curctx->push('FaqQuestionUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewq&item=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			$this->ctx->curctx->push('FaqQuestionPopupUrl', $GLOBALS['babUrlScript']."?tg=faq&idx=viewpq&idcat=".$arr['idcat']."&idscat=".$arr['id_subcat']."&idq=".$arr['id']);
 			if( $arr['id_modifiedby'] )
 			{
-			$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
-			$this->ctx->curctx->push('FaqQuestionAuthor', bab_getUserName($arr['id_modifiedby']));
+				$this->ctx->curctx->push('FaqQuestionDate', bab_mktime($arr['date_modification']));
+				$this->ctx->curctx->push('FaqQuestionAuthor', bab_getUserName($arr['id_modifiedby']));
 			}
 			else
 			{
-			$this->ctx->curctx->push('FaqQuestionDate', '');
-			$this->ctx->curctx->push('FaqQuestionAuthor', '');
+				$this->ctx->curctx->push('FaqQuestionDate', '');
+				$this->ctx->curctx->push('FaqQuestionAuthor', '');
 			}
 			$this->idx++;
 			$this->index = $this->idx;
@@ -6018,11 +6024,30 @@ class Func_Ovml_Container_Multipages extends Func_Ovml_Container
 	}
 }
 
+
+
+/**
+ * 
+ */
 class bab_context
 {
+	const TEXT = 0;
+	const HTML = 1;
+	
 	var $name;
 	var $variables = array();
+	
+	/**
+	 * 
+	 * @var string
+	 */
 	var $content;
+	
+	/**
+	 * storage for variable content format
+	 * @var array
+	 */
+	private $format = array();
 
 	public function bab_context($name)
 	{
@@ -6032,6 +6057,18 @@ class bab_context
 	public function push( $var, $value )
 	{
 		$this->variables[$var] = $value;
+	}
+	
+	/**
+	 * Set optional format of content on a variable (optional)
+	 * @param	string	$var
+	 * @param	int		$format		bab_context::TEXT | bab_context::HTML
+	 * @return unknown_type
+	 */
+	public function setFormat($var, $format )
+	{
+		$this->format[$var] = $format;
+		return $this;
 	}
 
 	public function pop()
@@ -6047,6 +6084,11 @@ class bab_context
 		return $this->content;
 	}
 
+	/**
+	 * Get value in context
+	 * @param string $var
+	 * @return string
+	 */
 	public function get($var)
 	{
 		if( isset($this->variables[$var]))
@@ -6058,6 +6100,27 @@ class bab_context
 			return false;
 			}
 	}
+	
+	/**
+	 * get string format of value
+	 * @param	string	$var
+	 * @return int		bab_context::TEXT | bab_context::HTML
+	 */
+	public function getFormat($var)
+	{
+		if (!isset($this->variables[$var]))
+		{
+			return null;
+		}
+		
+		if (!isset($this->format[$var]))
+		{
+			return self::TEXT;
+		}
+		
+		return $this->format[$var];
+	}
+	
 
 	public function getname()
 	{
@@ -6407,6 +6470,20 @@ class babOvTemplate
 		}
 	return false;
 	}
+	
+	public function get_format($var)
+	{
+	for( $i = count($this->contexts)-1; $i >= 0; $i--)
+		{
+		$val = $this->contexts[$i]->getFormat($var);
+		if( $val !== null)
+			{
+			return $val;
+			}
+		}
+	return null;	
+	}
+	
 
 	public function get_variables($contextname)
 	{
@@ -6537,160 +6614,52 @@ class babOvTemplate
 		return $str;
 	}
 
-	public function format_output($val, $matches)
-	{
-	$saveas = false;
-	$lhtmlentities = false;
-	$ghtmlentities = $this->get_value('babHtmlEntities');
-
-	if( $ghtmlentities === false )
+	/**
+	 * Format output
+	 * @param	string	$val		variable content
+	 * @param	array	$matches	keys are attributes names, values are attribute value
+	 * @param	int		$format		Format of string bab_context::TEXT | bab_context::HTML
+	 * 
+	 * @return string	the modified variable content
+	 */ 
+	public function format_output($val, $matches, $format = bab_context::TEXT)
+	{	
+		$saveas = null;
+		$attributes = new bab_OvmlAttributes($this, $format);
+		
+	
+		foreach( $matches as $p => $v)
 		{
-		$ghtmlentities = 0;
-		}
-	else
-		{
-		$ghtmlentities = intval($ghtmlentities);
-		}
-
-	foreach( $matches as $p => $v)
-		{
-		switch(mb_strtolower(trim($p)))
+			$method = mb_strtolower(trim($p));
+			
+			if ('saveas' === $method)
 			{
-			case 'strlen':
-				$arr = explode(',', $v );
-				if( mb_strlen($val) > $arr[0] )
-					{
-					if (isset($arr[1])) {
-						$val = mb_substr($val, 0, $arr[0]).$arr[1];
-					} else {
-						$val = mb_substr($val, 0, $v);
-					}
-					$this->gctx->push('substr', 1);
-					}
-				else
-					$this->gctx->push('substr', 0);
-				break;
-			case 'striptags':
-				switch($v)
-					{
-					case '1':
-						$val = strip_tags($val);
-						break;
-					case '2':
-						$val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
-						$val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
-						$val = strip_tags($val);
-						break;
-					}
-				break;
-			case 'htmlentities':
-				switch($v)
-					{
-					case '0':
-						$lhtmlentities = true; break;
-					case '1':
-						$lhtmlentities = true;
-						$val = bab_toHtml($val); break;
-					case '2':
-						$lhtmlentities = true;
-						$trans = get_html_translation_table(HTML_ENTITIES);
-						$trans = array_flip($trans);
-						$val = strtr($val, $trans);
-						break;
-					case '3':
-						$lhtmlentities = true;
-
-						require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
-						$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
-						break;
-					}
-				break;
-			case 'stripslashes':
-				if( $v == '1')
-					$val = stripslashes($val);
-				break;
-			case 'urlencode':
-				if( $v == '1')
-					$val = urlencode($val);
-				break;
-			case 'jsencode':
-				if( $v == '1')
-					{
-					$val = bab_toHtml($val, BAB_HTML_JS);
-					}
-				break;
-			case 'strcase':
-				switch($v)
-					{
-					case 'upper':
-						$val = mb_strtoupper($val); break;
-					case 'lower':
-						$val = mb_strtolower($val); break;
-					}
-				break;
-			case 'nlremove':
-				if( $v == '1')
-					$val = preg_replace("(\r\n|\n|\r)", "", $val);
-				break;
-			case 'trim':
-				switch($v)
-					{
-					case 'left':
-						$val = ltrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-					case 'right':
-						$val = rtrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-					case 'all':
-						$val = trim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
-					}
-				break;
-			case 'nl2br':
-				if( $v == '1')
-					$val = nl2br($val);
-				break;
-			case 'sprintf':
-				$val = sprintf($v, $val);
-				break;
-			case 'date':
-				$val = bab_formatDate($v, $val);
-				break;
-			case 'author':
-				$val = bab_formatAuthor($v, $val);
-				break;
-			case 'saveas':
-				$varname = $v;
-				$saveas = true;
-				break;
-			case 'strtr':
-				if( !empty($v))
-				{
-				$trans = array();
-				for( $i =0; $i < mb_strlen($v); $i +=2 )
-					{
-					$trans[mb_substr($v, $i, 1)] = mb_substr($v, $i+1, 1);
-					}
-				if( count($trans)> 0 )
-					{
-					$val = strtr($val, $trans);
-					}
-				}
-				break;
+				$saveas = $v;
+				continue;
 			}
+			
+			$val = $attributes->$method($val, $v);
+			$attributes->history[$method] = $v;
 		}
-
-	if( $saveas )
+		
+		$ghtmlentities = $this->get_value('babHtmlEntities');
+		if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
 		{
-		$this->gctx->push($varname, $val);
-		}
-
-
-
-	if( !$lhtmlentities && $ghtmlentities )
+			// apply global htmlentities
+			$val = $attributes->htmlentities($val, $ghtmlentities);
+		}	
+		
+		if( $saveas )
 		{
-		return bab_toHtml($val);
+			// allways apply saveas as the last attribute
+			$val = $attributes->saveas($val, $saveas);
 		}
-
-	return $val;
+	
+		return $val;
 	}
+	
+	
+	
 
 	public function vars_replace($txt)
 	{
@@ -6743,6 +6712,7 @@ class babOvTemplate
 					{
 						//print_r($m2);
 						$val = $this->get_value($m2[1][0]);
+						$format = $this->get_format($m2[1][0]);
 						for( $t=0; $t < count($m2[2]); $t++)
 							{
 							if( isset($val[$m2[2][$t]]) )
@@ -6759,6 +6729,7 @@ class babOvTemplate
 					else
 					{
 					$val = $this->get_value($m[2][$i]);
+					$format = $this->get_format($m[2][$i]);
 					}
 
 					$args = $this->vars_replace(trim($m[3][$i]));
@@ -6776,7 +6747,7 @@ class babOvTemplate
 									}
 								}
 							}
-						$val = $this->format_output($val, $params);
+						$val = $this->format_output($val, $params, $format);
 						$txt = preg_replace("/".preg_quote($m[0][$i], "/")."/", preg_replace("/\\$[0-9]/", "\\\\$0", $val), $txt);
 						}
 					break;
@@ -6832,6 +6803,297 @@ class babOvTemplate
 	}
 }
 
+
+
+
+
+/**
+ * All methods of this objects are OVML attributes
+ */
+class bab_OvmlAttributes
+{
+	/**
+	 * 
+	 * @var babOvTemplate
+	 */
+	private $ctx;
+	
+	
+	/**
+	 * OVML global context
+	 * @var bab_context
+	 */
+	private $gctx;
+	
+	
+	/**
+	 * contain the list of called methods
+	 * @var bool
+	 */
+	public $history = array();
+	
+	
+	/**
+	 * bab_context::TEXT | bab_context::HTML
+	 * @var int
+	 */
+	private $format;
+	
+
+	/**
+	 * @param	bab_context 	$gctx
+	 * @param	int				$format		bab_context::TEXT | bab_context::HTML
+	 */ 
+	public function __construct(babOvTemplate $ctx, $format)
+	{
+		$this->ctx = $ctx;
+		$this->gctx = $ctx->gctx;
+		$this->format = $format;
+	}
+	
+	/**
+	 * @return bool
+	 */ 
+	private function done($method, $option = null)
+	{
+		if (!isset($this->history[$method]))
+		{
+			return false;
+		}
+		
+		if (null !== $option && $this->history[$method] !== $option)
+		{
+			return false;
+		}
+
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param string $method
+	 * @param array $args
+	 * @return string
+	 */
+	public function __call($method, $args)
+	{
+		trigger_error(sprintf('Unknown OVML attribute %s="%s" in %s, attribute ignored', $method, $args[1], (string) $this->ctx->debug_location));
+		return $args[0];
+	}
+	
+	
+	
+	/**
+	 * Cut string,
+	 * for html, remove tags if not allready removed
+	 * @param string	$val
+	 * @param string	$v
+	 * @return string
+	 */ 
+	public function strlen($val, $v) {
+		
+		
+		if (bab_context::HTML === $this->format )
+		{
+			if (!$this->done('striptags'))
+			{
+				$val = $this->striptags($val , '1');
+			}
+			
+			if (!$this->done('htmlentities', '2'))
+			{
+				$val = $this->htmlentities($val , '2');
+			}
+			
+			if (!$this->done('trim'))
+			{
+				$val = $this->trim($val , 'left');
+			}
+		}
+		
+		$arr = explode(',', $v );
+		if( mb_strlen($val) > $arr[0] )
+			{
+			if (isset($arr[1])) {
+				$val = mb_substr($val, 0, $arr[0]).$arr[1];
+			} else {
+				$val = mb_substr($val, 0, $v);
+			}
+			$this->gctx->push('substr', 1); // permet de savoir dans la suite du code ovml si la variable a ete coupe ou non
+			}
+		else
+			$this->gctx->push('substr', 0);
+			
+		return $val;
+	}
+	
+	
+	
+	public function striptags($val, $v) {
+		switch($v)
+			{
+			case '1':
+				return strip_tags($val);
+
+			case '2':
+				$val = eregi_replace('<BR[[:space:]]*/?[[:space:]]*>', "\n ", $val);
+				$val = eregi_replace('<P>|</P>|<P />|<P/>', "\n ", $val);
+				return strip_tags($val);
+			}
+	}
+	
+	/**
+	 * Encoding of html entites can be set only one time per variable
+	 * @param string $val
+	 * @param int $v
+	 * @return unknown_type
+	 */
+	public function htmlentities($val, $v) {
+		
+	
+		if ($this->done(__FUNCTION__, '0'))
+		{
+			// auto htmlentities has been disabled with an attribute htmlentities="0", others htmlentities are ignored
+			return $val;
+		}
+		
+		if ($this->done(__FUNCTION__, '1') || $this->done(__FUNCTION__, '3'))
+		{
+			// job allready done
+			return $val;
+		}
+		
+		switch($v)
+			{
+			case '0': // disable auto htmlentites
+				break;
+				
+			case '1':
+				$val = bab_toHtml($val); 
+				break;
+			case '2':
+				require_once dirname(__FILE__).'/tohtmlincl.php';
+				$val = bab_unhtmlentities($val);
+				break;
+			case '3':
+				$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
+				break;
+			}
+			
+		return $val;
+	}
+	
+	
+	public function stripslashes($val, $v) {
+		
+		if( $v == '1') {
+			$val = stripslashes($val);
+		}
+		return $val;
+	}
+	
+	public function urlencode($val, $v) {
+		if( $v == '1') {
+			$val = urlencode($val);
+		}
+		
+		return $val;
+	}
+	
+	public function jsencode($val, $v) {
+		if( $v == '1') {
+			$val = bab_toHtml($val, BAB_HTML_JS);
+		}
+		return $val;
+	}
+	
+	
+	public function strcase($val, $v) {
+		switch($v)
+			{
+			case 'upper':
+				$val = mb_strtoupper($val); break;
+			case 'lower':
+				$val = mb_strtolower($val); break;
+			}
+		return $val;
+	}
+	
+	public function nlremove($val, $v) {
+		if( $v == '1') {
+			$val = preg_replace("(\r\n|\n|\r)", "", $val);
+		}
+		
+		return $val;
+	}
+	
+	public function trim($val, $v) {
+		switch($v)
+		{
+			case 'left':
+				$val = ltrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
+			case 'right':
+				$val = rtrim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
+			case 'all':
+				$val = trim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
+		}
+		
+		return $val;
+	}
+	
+	public function nl2br($val, $v) {
+		if( $v == '1') {
+			$val = nl2br($val);
+		}
+		
+		return $val;
+	}
+		
+	public function sprintf($val, $v) {
+		return sprintf($v, $val);
+	}
+	
+	public function date($val, $v) {
+		return bab_formatDate($v, $val);
+	}
+	
+	public function author($val, $v) {
+		return bab_formatAuthor($v, $val);
+	}
+	
+	public function saveas($val, $v) {
+		$this->gctx->push($v, $val);
+		return $val;
+	}
+	
+	public function strtr($val, $v) {
+		if( !empty($v))
+		{
+		$trans = array();
+		for( $i =0; $i < mb_strlen($v); $i +=2 )
+			{
+			$trans[mb_substr($v, $i, 1)] = mb_substr($v, $i+1, 1);
+			}
+		if( count($trans)> 0 )
+			{
+			$val = strtr($val, $trans);
+			}
+		}
+		
+		return $val;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
 /**
  *  translate text
  */
@@ -6854,12 +7116,15 @@ class Func_Ovml_Function_Translate extends Func_Ovml_Function {
 				{
 				case 'text':
 					$text = $v;
+					unset($args[$p]);
 					break;
 				case 'lang':
 					$lang = $v;
+					unset($args[$p]);
 					break;
 				}
 			}
+
 		return $this->format_output(bab_translate($text, "", $lang), $args);
 		}
 	return '';
@@ -7524,6 +7789,7 @@ class Func_Ovml_Function_UrlContent extends Func_Ovml_Function {
 				case 'url':
 					$url = $v;
 					$purl = parse_url($url);
+					unset($args[$p]);
 					break;
 				}
 			}
