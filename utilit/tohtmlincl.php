@@ -109,6 +109,10 @@ function bab_f_toHtml($pee, $opt) {
 	
 /**
  * Remove html entities 
+ * 
+ * @todo compliance with UTF-8
+ * the charset parameter of get_html_translation_table has benn added in php 5.3.4
+ * 
  * @param	string	$string
  * @return string
  */
