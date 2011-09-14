@@ -26,10 +26,19 @@ require_once dirname(__FILE__).'/utilit/registerglobals.php';
 
 $args = array_merge($_GET, $_POST);
 
-if( isset($args['echo']) && $args['echo'] == 1)
+if(isset($args['echo']))
 	{
-	echo bab_printOvmlTemplate($file, $args);
-	exit;
+		switch($args['echo'])
+		{
+			case 'raw':
+			case 1:
+				echo bab_printOvmlTemplate($file, $args);
+				exit;
+				
+			case 'popup':
+				$babBody->babPopup(bab_printOvmlTemplate($file, $args));
+				break;
+		}
 	}
 else
 	{

@@ -7863,6 +7863,42 @@ class Func_Ovml_Function_Include extends Func_Ovml_Function {
 
 
 
+/**
+ * Add a stylesheet to the current page
+ * the file is relative to "style" folder of ovidentia core
+ * <OFAddStylesheet file="addons/addonname/filename.css">
+ */
+class Func_Ovml_Function_AddStyleSheet extends Func_Ovml_Function {
+
+	public function toString()
+	{
+		$file = null;
+		
+		foreach($this->args as $p => $v)
+		{
+		switch(mb_strtolower(trim($p)))
+			{
+			case 'file':
+				$file = $v;
+				break;
+			}
+		}
+		
+		
+		if (isset($file))
+		{
+			global $babBody;
+			$babBody->addStyleSheet($file);
+		} else {
+			trigger_error(sprintf('OFAddStyleSheet : the file attribute is mandatory in %s', (string) $ctx->debug_location));
+		}
+	}
+}
+
+
+
+
+
 class Func_Ovml_Function_Recurse extends Func_Ovml_Function {
 
 
