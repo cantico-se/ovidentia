@@ -995,6 +995,11 @@ function setCurrentItemMenu($title, $enabled=false)
 	$this->menu->setCurrent($title, $enabled);
 }
 
+/**
+ * Add a stylesheet to the page
+ * @param unknown_type $filename
+ * @return unknown_type
+ */
 function addStyleSheet($filename)
 {
 	if (!in_array($filename, $this->styleSheet))
