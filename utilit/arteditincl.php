@@ -234,23 +234,11 @@ class bab_ArticleDraftEditor {
 		{
 			$topic->addOption($topic->SelectOption($this->draft->id_topic, bab_getTopicTitle($this->draft->id_topic)));
 		}
-		
-		if($this->draft->id_article){
-			$LeftFrame->addItem(
-				$update_datemodif = $W->Section(
-					bab_translate('Reasons for changes'),
-					$W->Frame()
-						->addItem($W->TextEdit()->setName('modification_comment')->addClass('modification_comment'))
-						->additem($W->HBoxItems($W->Checkbox()->setName('update_datemodif')->setCheckedValue('N')->setUncheckedValue('Y'), $W->Label(bab_translate("Don't update article modification date"))))
-				)->setFoldable(true)
-			);
-		}
-		
 				
 		
 		$LeftFrame->addItem(
 			$W->Section(
-				$tempLab = $W->Label('Titre'),
+				$tempLab = $W->Label(bab_translate('Title')),
 				$W->Frame()->addItem(
 					$W->LineEdit('title')->setAssociatedLabel($tempLab)->setMandatory(true, bab_translate('The title is mandatory'))->setName('title')
 				)
@@ -294,30 +282,28 @@ class bab_ArticleDraftEditor {
 				$W->Frame()
 					->addItem($articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('articleFiles')->disable()->hideFiles())
 					->addItem($fileList = $W->Frame('bab_article_file_list')->addClass('widget-sortable')),
-				3,
+				4,
 				'bab_article_attachments'
 			)->setFoldable(true, true)
 		);
 		
-		
-		
+		$LeftFrame->addItem(
+				$W->Frame()
+					->addItem($articlePicture = $W->ImagePicker()->oneFileMode(true)
+						->setTitle(bab_translate('Set the article picture'))
+						->setName('articlePicture')
+						->disable()
+						->addClass('bab-article-picture')
+					)
+		);
 		
 		$LeftFrame->addItem(
-			$W->HBoxItems(
-				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
-				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save a draft'))->setName('draft'),
-				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Preview'))->setName('see'),
-				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Submit'))->setName('submit')
-			)->setHorizontalSpacing(5,'px')
-		);
-	
-		$RightFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
-		
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate('Article topic'),
-					$topic->setName('id_topic')
-			)
+				$W->Frame()->addItem(
+					bab_labelStr(
+						bab_translate("Keywords"),
+						$tags = $W->SuggestLineEdit()->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
+					)
+				)
 		);
 		
 		$timeArray = array();
@@ -333,33 +319,40 @@ class bab_ArticleDraftEditor {
 			$timeArray[$hour.':'.$minute.':00'] = $hour.':'.$minute;
 		}
 		
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate("Submission date"),
-				$W->HBoxItems(
-					$W->DatePicker()->setName('date_submission'),
-					$time_submission = $W->Select()->setName('time_submission')->setValue('00:00:00')->setOptions($timeArray)
-				)->setHorizontalSpacing(5, 'px')
-			)
+		$LeftFrame->addItem(
+		
+				$W->FlowLayout()
+					->addItem(
+						bab_labelStr(
+							bab_translate("Submission date"),
+							$W->HBoxItems(
+								$W->DatePicker()->setName('date_submission'),
+								$time_submission = $W->Select()->setName('time_submission')->setValue('00:00:00')->setOptions($timeArray)
+							)->setHorizontalSpacing(5, 'px')
+						)
+					)->addItem(
+						bab_labelStr(
+							bab_translate("Publication date"),
+							$W->HBoxItems(
+								$W->DatePicker()->setName('date_publication')->setValue(date('d-m-Y'))->disable(),
+								$time_publication = $W->Select()->setName('time_publication')->setValue('00:00:00')->setOptions($timeArray)
+							)->setHorizontalSpacing(5, 'px')
+						)
+					)->addItem(
+						bab_labelStr(
+							bab_translate("Archiving date"),
+							$W->HBoxItems(
+								$W->DatePicker()->setName('date_archiving')->setValue(date('d-m-Y'))->disable(),
+								$time_archiving = $W->Select()->setName('time_archiving')->setValue('00:00:00')->setOptions($timeArray)
+							)->setHorizontalSpacing(5, 'px')
+						)
+					)->setHorizontalSpacing(1,'em')
 		);
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate("Publication date"),
-				$W->HBoxItems(
-					$W->DatePicker()->setName('date_publication')->setValue(date('d-m-Y'))->disable(),
-					$time_publication = $W->Select()->setName('time_publication')->setValue('00:00:00')->setOptions($timeArray)
-				)->setHorizontalSpacing(5, 'px')
-			)
-		);
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate("Archiving date"),
-				$W->HBoxItems(
-					$W->DatePicker()->setName('date_archiving')->disable(),
-					$time_archiving = $W->Select()->setName('time_archiving')->setValue('00:00:00')->setOptions($timeArray)
-				)->setHorizontalSpacing(5, 'px')
-			)
-		);
+		
+		
+	
+		$RightFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
+		
 		$RightFrame->addItem(
 			$W->HBoxItems(
 				$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
@@ -394,14 +387,6 @@ class bab_ArticleDraftEditor {
 		{
 			$lang->addOption($l,$l);
 		}
-		
-		
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate("Keywords"),
-				$tags = $W->SuggestLineEdit()->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
-			)
-		);
 		
 		if ($keyword = $tags->getSearchKeyword())
 		{
@@ -448,15 +433,19 @@ class bab_ArticleDraftEditor {
 				->addClass('bab-article-restriction')
 		);
 		
+		$LeftFrame->addItem($RightFrame);
 		
 		
-		$RightFrame->addItem(
-			$articlePicture = $W->ImagePicker()->oneFileMode(true)
-			->setTitle(bab_translate('Set the article picture'))
-			->setName('articlePicture')
-			->disable()
-			->addClass('bab-article-picture')
-		);
+		if($this->draft->id_article){
+			$LeftFrame->addItem(
+				$update_datemodif = $W->Section(
+					bab_translate('Reasons for changes'),
+					$W->Frame()
+						->addItem($W->TextEdit()->setName('modification_comment')->addClass('modification_comment'))
+						->additem($W->HBoxItems($W->Checkbox()->setName('update_datemodif')->setCheckedValue('N')->setUncheckedValue('Y'), $W->Label(bab_translate("Don't update article modification date"))))
+				)->setFoldable(true)
+			);
+		}
 
 		
 		/*@var $articlePicture Widget_FilePicker */
@@ -484,16 +473,47 @@ class bab_ArticleDraftEditor {
 			
 		}
 		
-		$globalFrame = $W->HboxItems(
-			$LeftFrame->setSizePolicy(Widget_SizePolicy::MAXIMUM),
-			$RightFrame->setSizePolicy(Widget_SizePolicy::MINIMUM)
-		)->setHorizontalSpacing(30, 'px')->setId('global-article-page');
-		
 		
 		// Set values in from
 		
 		
 		$values = $this->draft->getValues();
+		
+		if($values['id_topic'] != ""){
+			$topicIdFolded = true;
+			$topicIdOrder = 7;
+			$currentTopic = viewCategoriesHierarchy_txt($values['id_topic']);
+		}else{
+			$currentTopic = bab_translate('None');
+			$topicIdFolded = false;
+			$topicIdOrder = 0;
+		}
+		
+		$LeftFrame->addItem(
+			$W->Frame()->addItem(
+				bab_labelStr(
+					bab_translate('Article topic'),
+					$topic->setName('id_topic')
+				)
+			),
+			$topicIdOrder
+		);
+		
+		$LeftFrame->addItem(
+			$W->Html('(' . bab_translate('Current topic') . ': ' . $currentTopic . ')'),
+			($topicIdOrder+1)
+		);
+		
+		$LeftFrame->addItem(
+			$W->HBoxItems(
+				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
+				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save a draft'))->setName('draft'),
+				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Preview'))->setName('see'),
+				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Submit'))->setName('submit')
+			)->setHorizontalSpacing(5,'px')
+		);
+		
+		$globalFrame = $LeftFrame->setHorizontalSpacing(30, 'px')->setId('global-article-page');
 		
 		$values['tags'] = implode(', ', $this->draft->getTags());
 		$values['operator'] = $this->draft->getOperator();
