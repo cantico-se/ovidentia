@@ -2555,13 +2555,17 @@ function bab_labelStr($label, $value)
 	if (!($value instanceOf Widget_Displayable_Interface)) {
 		$value = $W->Label($value);
 	}else{
-		if ($value instanceOf Widget_InputWidget) {
+		if ($value instanceOf Widget_InputWidget && $label instanceOf Widget_Label) {
 			$value->setAssociatedLabel($label);
 		}
 	}
 	
+	if($label instanceOf Widget_Label){
+		$label->colon(false);
+	}
+	
 	return $W->VBoxItems(
-		$label->colon(false),
+		$label,
 		$value
 	)->setVerticalAlign('middle')->addClass('bab-labelStr');
 }

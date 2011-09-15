@@ -297,15 +297,6 @@ class bab_ArticleDraftEditor {
 					)
 		);
 		
-		$LeftFrame->addItem(
-				$W->Frame()->addItem(
-					bab_labelStr(
-						bab_translate("Keywords"),
-						$tags = $W->SuggestLineEdit()->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
-					)
-				)
-		);
-		
 		$timeArray = array();
 		for($i=0; $i < 1440; $i=$i+5){
 			$hour = floor($i/60);
@@ -347,6 +338,15 @@ class bab_ArticleDraftEditor {
 							)->setHorizontalSpacing(5, 'px')
 						)
 					)->setHorizontalSpacing(1,'em')
+		);
+		
+		$LeftFrame->addItem(
+				$W->Frame()->addItem(
+					bab_labelStr(
+						bab_translate("Keywords"),
+						$tags = $W->SuggestLineEdit()->setSize(35)->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
+					)
+				)
 		);
 		
 		
@@ -484,7 +484,7 @@ class bab_ArticleDraftEditor {
 			$topicIdOrder = 7;
 			$currentTopic = viewCategoriesHierarchy_txt($values['id_topic']);
 		}else{
-			$currentTopic = bab_translate('None');
+			$currentTopic =  bab_translate('Current topic') . ': ' . bab_translate('None');
 			$topicIdFolded = false;
 			$topicIdOrder = 0;
 		}
@@ -492,16 +492,11 @@ class bab_ArticleDraftEditor {
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
 				bab_labelStr(
-					bab_translate('Article topic'),
+					$W->Html(bab_translate('Article topic') . ' (' . $currentTopic . ')'),
 					$topic->setName('id_topic')
 				)
 			),
 			$topicIdOrder
-		);
-		
-		$LeftFrame->addItem(
-			$W->Html('(' . bab_translate('Current topic') . ': ' . $currentTopic . ')'),
-			($topicIdOrder+1)
 		);
 		
 		$LeftFrame->addItem(
@@ -598,7 +593,8 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('iddraft', $this->draft->getId())
 			->setHiddenValue('ajaxpath', $GLOBALS['babUrlScript'])
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
-			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl));
+			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl))
+			->setHiddenValue('babpopup', false);
 		
 	
 		$page->addItem($FormArticle);

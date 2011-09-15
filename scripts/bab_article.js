@@ -184,7 +184,7 @@ window.babArticle.filesAttachments = function()
 			});
 		}
 	});
-}
+};
 
 
 
@@ -198,4 +198,7 @@ jQuery(document).ready(function() {
 	
 	jQuery('#dialog').dialog({width: '90%', height: 600, resizable: false, title: 'Previsualisation', draggable: false, modal: true, buttons: { "Ok": function() { jQuery(this).dialog("close"); } } });
 	
+	if(window.opener != null && window.opener.bab_popup_obj != null && window.opener.bab_popup_obj == window){
+		jQuery('[name="babpopup"]').val(1);
+	}
 });
