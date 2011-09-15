@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -42,7 +42,7 @@ function &bab_TemplateCache_getStore()
  * White-list of global variables accessible by a template.
  *
  * @param string $var	The name of the global variable.
- * @return string	
+ * @return string
  */
 function getGlobalVariable($var)
 {
@@ -94,7 +94,7 @@ class bab_TemplateCache
 	/**
 	 * Tries to retrieve a parsed template from the cache. Returns null if the specified
 	 * template is not in the cache.
-	 * 
+	 *
 	 * @param string	$filename	The path of the template file.
 	 * @param string	$section	The name of the section in the template file.
 	 * @return string|null			The cached parsed template or null.
@@ -112,7 +112,7 @@ class bab_TemplateCache
 
 	/**
 	 * Stores a parsed template in the cache.
-	 * 
+	 *
 	 * @param string	$filename			The path of the template file.
 	 * @param string	$section			The name of the section in the template file.
 	 * @param string	$parsedTemplate		The parsed template to cache.
@@ -131,7 +131,7 @@ class bab_TemplateCache
 function bab_phpHighlightSyntax($templateString, $highlightLineNumber = -1)
 {
 	$lines = preg_split('/\n|\r\n|\r/', $templateString);
-	
+
 	$highlightedTemplateString = '<ol style="font-weight: normal">';
 	$lineNumber = 1;
 	foreach ($lines as $line) {
@@ -144,14 +144,14 @@ function bab_phpHighlightSyntax($templateString, $highlightLineNumber = -1)
 		$lineNumber++;
 	}
 	$highlightedTemplateString .= '</ol>';
-	
+
 	return $highlightedTemplateString;
 }
 
 function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 {
 	$lines = preg_split('/\n|\r\n|\r/', $templateString);
-	
+
 	$highlightedTemplateString = '<ol style="font-weight: normal">';
 	$lineNumber = 1;
 	foreach ($lines as $line) {
@@ -164,7 +164,7 @@ function bab_templateHighlightSyntax($templateString, $highlightLineNumber = -1)
 		$lineNumber++;
 	}
 	$highlightedTemplateString .= '</ol>';
-	
+
 	return $highlightedTemplateString;
 }
 
@@ -186,7 +186,7 @@ class bab_Template
 
 	/**
 	 * Extracts a template section from the specified template file.
-	 * 
+	 *
 	 * @param string	$pathname	The pathname to the template file.
 	 * @param string	$section	The section name in the template file.
 	 * @return string				The content of the section or false if not found.
@@ -211,7 +211,7 @@ class bab_Template
 		if (!$sectionStartFound) {
 			return false;
 		}
-		$sectionContent = '';	
+		$sectionContent = '';
 		for ($sectionEndFound = false; !feof($templateFile); ) {
 			$line = fgets($templateFile, 8192);
 			if (preg_match($sectionEnd, $line, $matches)) {
@@ -230,7 +230,7 @@ class bab_Template
 
 	/**
 	 * Returns the (unparsed) content of a template file or template section.
-	 * 
+	 *
 	 * @param	string	$pathname	The pathname to the template file.
 	 * @param	string	$section	The section name in the template file.
 	 * 								If empty, the whole template file is loaded.
@@ -247,9 +247,9 @@ class bab_Template
 
 	/**
 	 * Format a template so that it can be displayed for debugging purpose.
-	 * 
+	 *
 	 * Returns a string containing the formatted template.
-	 * 
+	 *
 	 * @param	string	$templateString			The Ovidentia template.
 	 * @param	int		$highlightLineNumber	The line number to highlight or -1 if no line to hightlight.
 	 * @return	string							The formatted template.
@@ -257,7 +257,7 @@ class bab_Template
 	public static function highlightSyntax($templateString, $highlightLineNumbers = array())
 	{
 		$lines = preg_split('/\n|\r\n|\r/', $templateString);
-		
+
 		$highlightedTemplateString = '<ol style="font-weight: normal">';
 		$lineNumber = 1;
 		foreach ($lines as $line) {
@@ -270,14 +270,14 @@ class bab_Template
 			$lineNumber++;
 		}
 		$highlightedTemplateString .= '</ol>';
-		
+
 		return $highlightedTemplateString;
 	}
 
 
 	/**
 	 * Removes all errors associated to the template $templateObject
-	 * 
+	 *
 	 * @param	object	$templateObject		The template object.
 	 */
 	private static function resetErrors(&$templateObject)
@@ -288,7 +288,7 @@ class bab_Template
 
 	/**
 	 * Adds an error to the template $templateObject
-	 * 
+	 *
 	 * @param	object	$templateObject		The template object.
 	 * @param	string	$errorMessage		The message associated to the error
 	 * @param	int		$lineNumber			The line number where the error occured in the template
@@ -306,7 +306,7 @@ class bab_Template
 
 	/**
 	 * Returns a string containing the processed template.
-	 * 
+	 *
 	 * @param	object	$template	The template object.
 	 * @param	string	$filename	The path to the template file.
 	 * @param	string	$section	The optional section name in the template file.
@@ -360,7 +360,7 @@ class bab_Template
 
 	/**
 	 * Returns a string containing the processed template.
-	 * 
+	 *
 	 * @param	string	$filename	The path to the template file.
 	 * @param	string	$section	The optional section name in the template file.
 	 * 								If not specified or empty, the whole template file is
@@ -375,9 +375,9 @@ class bab_Template
 
 	/**
 	 * Returns the php code to get the value of the property.
-	 * 
+	 *
 	 * This method is used during template parsing.
-	 * 
+	 *
 	 * @return string
 	 */
 	private static function value($templateObjectName, $propertyName)
@@ -388,9 +388,9 @@ class bab_Template
 
 	/**
 	 * Returns the php code to get the value of the indexed array property.
-	 * 
+	 *
 	 * This method is used during template parsing.
-	 * 
+	 *
 	 * @return string
 	 */
 	private static function valueArray($templateObjectName, $propertyName, $indexValue)
@@ -401,7 +401,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template parsing.
-	 * 
+	 *
 	 * @return string
 	 */
 	private static function lvalue($templateObjectName, $propertyName)
@@ -412,7 +412,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template parsing.
-	 * 
+	 *
 	 * @return string
 	 */
 	private static function lvalueArray($templateObjectName, $propertyName, $indexValue)
@@ -423,7 +423,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template parsing.
-	 * 
+	 *
 	 * @return string
 	 */
 	private static function rvalue($templateObjectName, $propertyName)
@@ -434,7 +434,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template execution.
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private static function getRValue(&$templateObject, $propertyName)
@@ -445,7 +445,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template execution.
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private static function getLValue(&$templateObject, $propertyName)
@@ -453,6 +453,12 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName})) {
 			return $templateObject->{$propertyName};
 		}
+
+		$tr = getGlobalVariable($propertyName);
+		if (!is_null($tr)) {
+			return $tr;
+		}
+
 		if (@isset($GLOBALS[$propertyName])) {
 			return $GLOBALS[$propertyName];
 		}
@@ -462,7 +468,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template execution.
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private static function getLValueArray(&$templateObject, $propertyName, $index)
@@ -470,11 +476,11 @@ class bab_Template
 		if (@isset($templateObject->{$propertyName}[$index])) {
 			return $templateObject->{$propertyName}[$index];
 		}
-		
+
 		if (NULL === @$templateObject->{$propertyName}[$index]) {
 			return '';
 		}
-		
+
 		$call = reset(debug_backtrace()); // $call will contain debug info about the line in the script where this function was called.
 		bab_Template::addError($templateObject, 'Unknown property (' . $propertyName . '[' . $index . '])', $call['line']);
 		return '';
@@ -483,12 +489,12 @@ class bab_Template
 
 	/**
 	 * This method is used during template execution.
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private static function getValue(&$templateObject, $propertyName)
 	{
-		// We check if the property exists in the template object. 
+		// We check if the property exists in the template object.
 		if (@isset($templateObject->{$propertyName})) {
 			if (is_null($templateObject->{$propertyName})) {
 				return '';
@@ -512,7 +518,7 @@ class bab_Template
 
 	/**
 	 * This method is used during template execution.
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private static function getValueArray(&$templateObject, $propertyName, $index)
@@ -568,7 +574,7 @@ class bab_Template
 
 	/**
 	 * Returns an array of strings containing the names of the sections in the template file.
-	 * 
+	 *
 	 * @param	string	$pathname	The pathname of the template file.
 	 * @return	array				The sections names.
 	 */
@@ -588,7 +594,7 @@ class bab_Template
 
 
 /**
- * @deprecated 
+ * @deprecated
  * @see bab_Template
  */
 class babTemplate
@@ -772,7 +778,7 @@ function processTemplate(&$class, $str)
 	for ($i = 0; $i < count($m[1]); $i++ )
 		{
 		$reg = "/".$this->startPatternV."\s+" . preg_quote($m[1][$i]). "\s+".$this->endPatternV."/";
-		
+
 		if( preg_match("/(.*?)\[([^\]]*)/", $m[1][$i], $m2) > 0)
 			{
 			if( isset($class->{$m2[1]}[$m2[2]]))
@@ -788,7 +794,7 @@ function processTemplate(&$class, $str)
 				$tmp = $class->$m[1][$i];
 				$str = preg_replace($reg, preg_replace("/\\$[0-9]/", "\\\\$0", $tmp) , $str);
 				}
-			else 
+			else
 				{
 				$tr = getGlobalVariable($m[1][$i]);
 				if($tr !== NULL)
