@@ -1491,7 +1491,8 @@ function bab_updateUserSettings()
 				// we want to stay with the newest session so the current session must be disconnected
 				
 				require_once dirname(__FILE__).'/loginIncl.php';
-				bab_signOff();
+				bab_logout(false);
+				$babBody->addError(bab_translate('You will be disconnected because another user has logged in with your account'));
 			}
 		}
 	else

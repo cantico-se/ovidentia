@@ -3268,4 +3268,5 @@
 <string id="Waiting for approval by : %s">En attente d'approbation par : %s</string>
 <string id="Associated tags">Mots-clés associés</string>
 <string id="Current topic">Thème actuel</string>
+<string id="You will be disconnected because another user has logged in with your account">Vous allez être déconnecté car un autre utilisateur s'est connecté avec votre identifiant</string>
 </fr>
