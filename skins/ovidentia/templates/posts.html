@@ -265,7 +265,10 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
         <!--#endif what -->
 <!--#if moreurl --> 
 <a class="BabForumTopicsNavContribution" href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
-<!--#endif moreurl --> 
+<!--#endif moreurl -->
+<!--#if removeurl --> 
+<a class="BabForumTopicsNavContribution" href="{ removeurl }" onclick="return confirm('{ removeconfirmtxt }')">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+<!--#endif removeurl --> 
 <!--#if replyurl --> 
 <a class="BabForumTopicsNavContribution" href="{ replyurl }">{ reply_txt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 <!--#endif replyurl --> 
@@ -566,6 +569,9 @@ class="BabForumTopicsNavContribution" href="{ confirmurl }">{ confirmname }</a><
 		<!--#if moreurl --> 
 		<a  href="{ moreurl }">{ morename }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
 		<!--#endif moreurl --> 
+		<!--#if removeurl --> 
+		<a href="{ removeurl }" onclick="return confirm('{ removeconfirmtxt }')">{ removetxt }</a><img src="{ babSkinPath }images/Puces/Space1PxTrans.gif" alt="" width="5" height="1" border="0">
+		<!--#endif removeurl --> 
 		</td>
 		</tr>
 		</tbody>

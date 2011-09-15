@@ -25,7 +25,6 @@
 * @internal SEC1 NA 18/12/2006 FULL
 */
 include_once 'base.php';
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath.'utilit/forumincl.php';
 include_once $babInstallPath.'utilit/topincl.php';
 include_once $babInstallPath.'utilit/mailincl.php';
@@ -184,6 +183,14 @@ function listPosts($forum, $thread, $post)
 					{
 					$this->moreurl = '';
 					}
+
+				if($moderator && $this->forums[$this->forum]['bupdatemoderator'] == 'Y'){
+					$this->removeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->removetxt = bab_translate("Remove");
+					$this->removeconfirmtxt = bab_translate("Are you sure you want to delete this forum post?");
+				}else{
+					$this->removeurl = '';
+				}
 
 				$this->files = bab_getPostFiles($this->forum, $this->postid);
 				$this->ismanager = bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum );
@@ -645,6 +652,13 @@ function listPostsFlat($forum, $thread, $open, $pos)
 					$this->moreurl = '';
 					}
 
+				if($moderator && $this->arrforum['bupdatemoderator'] == 'Y'){
+					$this->removeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=posts&idx=DeleteP&forum=".urlencode($this->forum)."&thread=".urlencode($this->thread)."&post=".urlencode($arr['id'])."&flat=".urlencode($flat));
+					$this->removetxt = bab_translate("Remove");
+					$this->removeconfirmtxt = bab_translate("Are you sure you want to delete this forum post?");
+				}else{
+					$this->removeurl = '';
+				}
 
 				$this->postauthordetailsurl = '';
 				if( $arr['id_author'] != 0 && $this->arrforum['bdisplayauhtordetails'] == 'Y')
