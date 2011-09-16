@@ -1487,7 +1487,7 @@
 <string id="Export table structure">Export table structure</string>
 <string id="Export table data">Export table data</string>
 <string id="Add 'DROP TABLE' instructions">Add 'DROP TABLE' instructions</string>
-<string id="Directory allready exists">Directory allready exists</string>
+<string id="Directory already exists">Directory already exists</string>
 <string id="Zipfile reading error">Zipfile reading error</string>
 <string id="Upload error">Upload error</string>
 <string id="Ovidentia database dump">Ovidentia database dump</string>

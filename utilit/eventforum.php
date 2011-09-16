@@ -32,61 +32,61 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
  * Event for actions on forum posts
  * Store additional informations for registered targets
  * each target can add informed users, the next targets will not inform the already informed recipients
- * 
+ *
  * @package events
  * @since 7.4.0
  */
 class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 {
 	private $informed_recipients = array();
-	
-	
+
+
 	/**
 	 * @var int
 	 */
 	protected $forum_id = null;
-	
+
 	/**
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $forum = null;
-	
+
 	/**
 	 * @var int
 	 */
 	protected $thread_id = null;
-	
+
 	/**
 	 * @var string
 	 */
 	protected $thread_title = null;
 
-	
+
 	/**
-	 * 
+	 *
 	 * @var int
 	 */
 	protected $post_id = null;
-	
+
 	/**
 	 * author name
 	 * @var string
 	 */
 	protected $post_author = null;
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	protected $post_confirmed = null;
 
 	/**
 	 * Set forum details
-	 * 
+	 *
 	 * @param	int		$id
-	 * 
+	 *
 	 * @return bab_eventForumPost
 	 */
 	public function setForum($id)
@@ -94,13 +94,13 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 		$this->forum_id = $id;
 		return $this;
 	}
-	
+
 	public function getForumId()
 	{
 		return $this->forum_id;
 	}
-	
-	
+
+
 	public function getForumInfos()
 	{
 		if (null === $this->forum)
@@ -108,13 +108,13 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 			global $babDB;
 			$this->forum = $babDB->db_fetch_assoc($babDB->db_query("select * from ".BAB_FORUMS_TBL." where id='".$babDB->db_escape_string($this->forum_id)."'"));
 		}
-		
+
 		return $this->forum;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Set thread informations
 	 * @param 	int 		$id
@@ -128,16 +128,16 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 		$this->thread_title = $title;
 		return $this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getThreadId()
 	{
 		return $this->thread_id;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -146,9 +146,9 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 		return $this->thread_title;
 	}
 
-	
-	
-	
+
+
+
 	/**
 	 * Set post informations
 	 * @param int		$id			id of post to notify
@@ -161,26 +161,26 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 		$this->post_author = $author;
 		$this->post_confirmed = $confirmed;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getPostId()
 	{
 		return $this->post_id;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getPostAuthor()
 	{
 		return $this->post_author;
 	}
-	
-	
+
+
 	/**
 	 * Add a user to informed user list after a user has been informed about the action
 	 * @param int $id_user
@@ -191,8 +191,8 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 		$this->informed_recipients[$id_user] = $id_user;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * If the post require an approval, notify the manager group
 	 * or else notify the recipients (notify group)
@@ -201,23 +201,23 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 	protected function getRecipients()
 	{
 		$forum = $this->getForumInfos();
-		
+
 		if ('Y' === $forum['moderation'] && !$this->post_confirmed)
 		{
 			if ($forum['notification'])
 			{
 				// notify moderators
 				return aclGetAccessUsers(BAB_FORUMSMAN_GROUPS_TBL, $this->forum_id);
-			}	
-			
+			}
+
 			return array();
 		}
-		
+
 		return aclGetAccessUsers(BAB_FORUMSNOTIFY_GROUPS_TBL, $this->forum_id);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get user to notify based on folder preferences and access rights
 	 * @return array
@@ -225,10 +225,10 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 	public function getUsersToNotify()
 	{
 		include_once $GLOBALS['babInstallPath']."admin/acl.php";
-		
+
 		$users = $this->getRecipients();
-		
-		// remove allready notified users
+
+		// remove already notified users
 		if (0 < count($this->informed_recipients)) {
 			foreach($users as $id_user => $arr) {
 				if (isset($this->informed_recipients[$id_user])) {
@@ -236,11 +236,11 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 				}
 			}
 		}
-		
+
 		return $users;
 	}
-	
-	
+
+
 	/**
 	 * @param	array $types	list of types to get in saved options
 	 * 							from :
@@ -252,26 +252,26 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 	protected function getFromUserOptions(Array $types)
 	{
 		global $babDB;
-		
+
 		$users = array();
-		
+
 		$res = $babDB->db_query('
-			SELECT 
+			SELECT
 				u.id,
-				u.lastname, 
-				u.firstname, 
-				u.email 
-			FROM 
-				'.BAB_FORUMSNOTIFY_USERS_TBL.' n, 
+				u.lastname,
+				u.firstname,
+				u.email
+			FROM
+				'.BAB_FORUMSNOTIFY_USERS_TBL.' n,
 				'.BAB_USERS_TBL.' u
-			WHERE 
-				u.id = n.id_user 
+			WHERE
+				u.id = n.id_user
 				AND u.disabled = 0
-				AND n.id_forum='.$babDB->quote($this->forum_id).' 
+				AND n.id_forum='.$babDB->quote($this->forum_id).'
 				AND n.forum_notification IN('.$babDB->quote($types).')
-			
+
 		');
-		
+
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
 			$users[$arr['id']] = array(
@@ -281,7 +281,7 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 				'email' 	=> $arr['email']
 			);
 		}
-		
+
 		return $users;
 	}
 }
@@ -290,11 +290,11 @@ class bab_eventForumPost extends bab_event implements bab_eventNotifyRecipients
 /**
  * After one forum post has been made visible for a population of users
  * The event must be triggered after approbation, when the forum post is visible
- * 
+ *
  * @package events
  * @since 7.4.0
  */
-class bab_eventForumAfterPostAdd extends bab_eventForumPost 
+class bab_eventForumAfterPostAdd extends bab_eventForumPost
 {
 	/**
 	 * if necessary, notify also the thread author
@@ -303,11 +303,11 @@ class bab_eventForumAfterPostAdd extends bab_eventForumPost
 	protected function getRecipients()
 	{
 		$users = parent::getRecipients();
-		
+
 		// add user to notify for BAB_FORUMNOTIF_ALL
-		
+
 		$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL));
-		
+
 		return $users;
 	}
 }
@@ -316,11 +316,11 @@ class bab_eventForumAfterPostAdd extends bab_eventForumPost
 /**
  * After one forum thread has been made visible for a population of users
  * The event must be triggered after approbation, when the forum post is visible
- * 
+ *
  * @package events
  * @since 7.4.0
  */
-class bab_eventForumAfterThreadAdd extends bab_eventForumPost 
+class bab_eventForumAfterThreadAdd extends bab_eventForumPost
 {
 	/**
 	 * if necessary, notify also the thread author
@@ -329,11 +329,11 @@ class bab_eventForumAfterThreadAdd extends bab_eventForumPost
 	protected function getRecipients()
 	{
 		$users = parent::getRecipients();
-		
+
 		// add user to notify for BAB_FORUMNOTIF_ALL & BAB_FORUMNOTIF_NEWTHREADS
-		
+
 		$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL, BAB_FORUMNOTIF_NEWTHREADS));
-		
+
 		return $users;
 	}
 }
@@ -346,8 +346,8 @@ class bab_eventForumAfterThreadAdd extends bab_eventForumPost
 
 
 /**
- * 
- * 
+ *
+ *
  * @param bab_eventForumPost $event
  * @return unknown_type
  */

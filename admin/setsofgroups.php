@@ -51,7 +51,7 @@ function slist()
 			$this->t_add_group = bab_translate("Add");
 			$this->t_create_set = bab_translate("Create a set of groups");
 			$this->t_edit_set = bab_translate("Modify the set of groups");
-			
+
 			$this->res = $this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
 
 			}
@@ -92,7 +92,7 @@ function glist()
 			$this->t_update = bab_translate("Update");
 			$this->confirmdelete = bab_translate("Do you really want to delete the selected items ?");
 			$this->sid = bab_rp('sid');
-			
+
 			$this->res = $this->db->db_query("SELECT g.* FROM ".BAB_GROUPS_SET_ASSOC_TBL." a, ".BAB_GROUPS_TBL." g WHERE a.id_set='".$this->db->db_escape_string($_REQUEST['sid'])."' AND g.id=a.id_group");
 
 			}
@@ -139,7 +139,7 @@ function sedit()
 				$this->arr = $this->db->db_fetch_array($this->db->db_query("SELECT * FROM ".BAB_GROUPS_TBL." WHERE id='".$this->db->db_escape_string($_REQUEST['sid'])."' AND nb_groups>='0'"));
 				$this->bdel = true;
 				}
-			
+
 			if (empty($this->arr))
 				{
 				$this->arr = array(
@@ -172,7 +172,7 @@ function getGroupsFromSet($ids)
 
 function sedit_record()
 {
-	
+
 
 	global $babBody;
 	$db = &$GLOBALS['babDB'];
@@ -186,7 +186,7 @@ function sedit_record()
 	list($n) = $db->db_fetch_array($db->db_query("SELECT COUNT(*) FROM ".BAB_GROUPS_TBL." WHERE name='".$db->db_escape_string($_POST['name'])."' AND nb_groups>='0'"));
 	if ($n > 0)
 		{
-		$babBody->msgerror = bab_translate("This set of groups allready exists");
+		$babBody->msgerror = bab_translate("This set of groups already exists");
 		return false;
 		}
 
@@ -216,9 +216,9 @@ function record_setOfGroups($arr)
 {
 	$db = &$GLOBALS['babDB'];
 	$current = getGroupsFromSet($_POST['sid']);
-	
+
 	$db->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
-	
+
 	foreach ($arr as $idgroup)
 		{
 		if (!isset($current[$idgroup]))
@@ -251,7 +251,7 @@ function delete_glist()
 		$db->db_query("UPDATE ".BAB_GROUPS_TBL." SET nb_groups=nb_groups-'".$db->db_escape_string(count($_POST['groups']))."' WHERE id='".$db->db_escape_string($_POST['sid'])."' AND nb_groups>='0'");
 		}
 
-	
+
 }
 
 
@@ -271,7 +271,7 @@ $idx = isset($_REQUEST['idx']) ? $_REQUEST['idx'] : 'list';
 
 
 if (isset($_POST['action']))
-switch ($_POST['action']) 
+switch ($_POST['action'])
 	{
 	case 'sedit':
 		if (isset($_POST['deleteg']))
@@ -319,7 +319,7 @@ switch ($idx)
 		if (!empty($_REQUEST['sid']))
 			glist();
 		break;
-	
+
 	case 'sedit':
 		$babBody->title = bab_translate("Set of groups");
 		$babBody->addItemMenu("sedit", bab_translate("Edit"), $GLOBALS['babUrlScript']."?tg=setsofgroups&idx=sedit");

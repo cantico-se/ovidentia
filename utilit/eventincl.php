@@ -26,8 +26,8 @@ include_once 'base.php';
 
 
 class bab_event {
-	
-	
+
+
 }
 
 /**
@@ -35,7 +35,7 @@ class bab_event {
  * Once the listener is added, the function $function_name will be fired if bab_fireEvent is called with an event
  * inherited or instancied from the class $event_class_name
  *
- * The function return false if the event listener is allready created
+ * The function return false if the event listener is already created
  *
  * @param	string	$event_class_name
  * @param	string	$function_name			function name without (), if the function_name string contain a ->, the text before -> will be evaluated to get an object and the text after will be the method (not evaluated)
@@ -48,38 +48,38 @@ class bab_event {
 function bab_addEventListener($event_class_name, $function_name, $require_file, $addon_name = BAB_ADDON_CORE_NAME, $priority = 0) {
 
 	global $babDB;
-	
-	$res = $babDB->db_query('SELECT * FROM 
-		'.BAB_EVENT_LISTENERS_TBL.' 
+
+	$res = $babDB->db_query('SELECT * FROM
+		'.BAB_EVENT_LISTENERS_TBL.'
 	WHERE
-		event_class_name='.$babDB->quote($event_class_name).' 
-		AND function_name='.$babDB->quote($function_name).' 
+		event_class_name='.$babDB->quote($event_class_name).'
+		AND function_name='.$babDB->quote($function_name).'
 		AND require_file='.$babDB->quote($require_file).'
 	');
-	
+
 	if (0 < $babDB->db_num_rows($res)) {
 		return false;
 	}
-	
+
 	$babDB->db_query('
-		INSERT INTO '.BAB_EVENT_LISTENERS_TBL.' 
+		INSERT INTO '.BAB_EVENT_LISTENERS_TBL.'
 			(
-			event_class_name, 
-			function_name, 
+			event_class_name,
+			function_name,
 			require_file,
 			addon_name,
-			priority 
-			) 
-		VALUES 
+			priority
+			)
+		VALUES
 			(
 			'.$babDB->quote($event_class_name).',
 			'.$babDB->quote($function_name).',
-			'.$babDB->quote($require_file).', 
-			'.$babDB->quote($addon_name).', 
+			'.$babDB->quote($require_file).',
+			'.$babDB->quote($addon_name).',
 			'.$babDB->quote($priority).'
 			)
 	');
-	
+
 	return true;
 }
 
@@ -88,16 +88,16 @@ function bab_addEventListener($event_class_name, $function_name, $require_file, 
  * Remove event listener
  * @see		bab_addEventListener()
  * @param	string	$event_class_name
- * @param	string	$function_name		
+ * @param	string	$function_name
  * @param	string	$require_file
  */
 function bab_removeEventListener($event_class_name, $function_name, $require_file) {
 	global $babDB;
-	
-	$babDB->db_query('DELETE FROM '.BAB_EVENT_LISTENERS_TBL.' WHERE 
-		event_class_name 	= '.$babDB->quote($event_class_name).' 
-		AND function_name 	= '.$babDB->quote($function_name).' 
-		AND require_file	= '.$babDB->quote($require_file).' 
+
+	$babDB->db_query('DELETE FROM '.BAB_EVENT_LISTENERS_TBL.' WHERE
+		event_class_name 	= '.$babDB->quote($event_class_name).'
+		AND function_name 	= '.$babDB->quote($function_name).'
+		AND require_file	= '.$babDB->quote($require_file).'
 	');
 }
 
@@ -109,7 +109,7 @@ function bab_fireEvent_addonCtxStack($arr = null) {
 	if (null === $arr) {
 		return array_pop($stack);
 	}
-	
+
 	array_push($stack, $arr);
 }
 
@@ -118,55 +118,55 @@ function bab_fireEvent_addonCtxStack($arr = null) {
 class bab_fireEvent_Obj {
 
 	var $stack = array();
-	
+
 	function push_className($str) {
 		if ($classname = get_parent_class($str)) {
 			$this->stack[] = $classname;
 			$this->push_className($classname);
 		}
 	}
-	
+
 	function push_obj($obj) {
 		$classname = get_class($obj);
 		$this->stack[] = $classname;
 		$this->push_className($classname);
 	}
-	
+
 	function pop_className() {
 		return array_shift($this->stack);
 	}
-	
+
 	function setAddonCtx($addon_id, $addon_name) {
-	
+
 		if (BAB_ADDON_CORE_NAME == $addon_name) {
 			bab_fireEvent_addonCtxStack(array(false, BAB_ADDON_CORE_NAME));
 			return;
 		}
-		
+
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-		
+
 		if (!empty($GLOBALS['babAddonFolder'])) {
 			$arr = array();
 			$arr[1] = $GLOBALS['babAddonFolder'];
 			$tmp = explode('/',$GLOBALS['babAddonTarget']);
 			$arr[0] = $tmp[1];
-			
+
 			bab_fireEvent_addonCtxStack($arr);
 		}
-		
+
 		bab_setAddonGlobals($addon_id);
 	}
-	
-	
+
+
 	function restoreAddonCtx() {
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-		
+
 		$arr = bab_fireEvent_addonCtxStack();
 		if (null === $arr) {
 			bab_setAddonGlobals(null);
 			return;
 		}
-		
+
 		list($old_addon_id, $old_addon_name) = $arr;
 		bab_setAddonGlobals($old_addon_id);
 	}
@@ -184,34 +184,34 @@ function bab_fireEvent(&$event_obj) {
 	//$arrayEvent[] = get_class($event_obj);
 	//bab_debug($arrayEvent);
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	
+
 	global $babDB;
-	
+
 	$obj = new bab_fireEvent_Obj;
 	$obj->push_obj($event_obj);
 	$classkey = get_class($event_obj);
 
 	static $calls = array();
 	static $unused = array();
-	
+
 	if (!isset($calls[$classkey])) {
 		$calls[$classkey] = array();
 
 		while($class_name = $obj->pop_className()) {
-		
+
 			if (isset($unused[$class_name])) {
 				continue;
 			}
 
 			$res = $babDB->db_query('
-				SELECT 
-					l.* , 
-					a.id id_addon 
-				FROM 
-					'.BAB_EVENT_LISTENERS_TBL.' l 
-					LEFT JOIN '.BAB_ADDONS_TBL.' a ON a.title = l.addon_name 
-				WHERE 
-					l.event_class_name ='.$babDB->quote($class_name).' 
+				SELECT
+					l.* ,
+					a.id id_addon
+				FROM
+					'.BAB_EVENT_LISTENERS_TBL.' l
+					LEFT JOIN '.BAB_ADDONS_TBL.' a ON a.title = l.addon_name
+				WHERE
+					l.event_class_name ='.$babDB->quote($class_name).'
 				ORDER BY l.priority DESC'
 			);
 
@@ -219,12 +219,12 @@ function bab_fireEvent(&$event_obj) {
 				while ($arr = $babDB->db_fetch_assoc($res)) {
 
 					$id_addon = $arr['id_addon'];
-					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] || 
+					if (BAB_ADDON_CORE_NAME === $arr['addon_name'] ||
 					bab_isAddonAccessValid($id_addon)) {
-						
-						
+
+
 						if (empty($arr['require_file']) || is_file($GLOBALS['babInstallPath'].$arr['require_file'])) {
-							
+
 							$calls[$classkey][] = array(
 								'require_file' => $arr['require_file'],
 								'function_name' => $arr['function_name'],
@@ -239,9 +239,9 @@ function bab_fireEvent(&$event_obj) {
 							file : '.$arr['require_file'].'
 							');
 						}
-						
+
 					}
-					
+
 					if (NULL === $id_addon && BAB_ADDON_CORE_NAME !== $arr['addon_name']) {
 						bab_debug('Missing addon : '.$arr['addon_name'].
 						"\nFor registered event : ".$arr['event_class_name'].
@@ -249,38 +249,38 @@ function bab_fireEvent(&$event_obj) {
 						);
 
 						bab_removeEventListener(
-							$arr['event_class_name'], 
-							$arr['function_name'], 
+							$arr['event_class_name'],
+							$arr['function_name'],
 							$arr['require_file']
 						);
 					}
 				}
 			} else {
-			
+
 				$unused[$class_name] = 1;
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	foreach($calls[$classkey] as $arr) {
 		$obj->setAddonCtx($arr['addon_id'], $arr['addon_name']);
-		
+
 		if (!empty($arr['require_file'])) {
 			require_once $GLOBALS['babInstallPath'].$arr['require_file'];
 		}
-		
+
 		if (function_exists($arr['function_name'])) {
 			call_user_func_array($arr['function_name'], array(&$event_obj));
 		} else {
-			
+
 			if ($pos = strrpos($arr['function_name'], '->')) {
 				$method = mb_substr($arr['function_name'], 2 + $pos);
 				$evalstr = 'return '.mb_substr($arr['function_name'], 0, $pos).';';
-				
+
 				// the object part need evaluation
-				
+
 				$object = eval($evalstr);
 				if (is_object($object)) {
 					call_user_func_array(array($object, $method), array(&$event_obj));
@@ -292,7 +292,7 @@ function bab_fireEvent(&$event_obj) {
 					eval string : '.$evalstr.'
 					');
 				}
-				
+
 			} else {
 
 				bab_debug('
@@ -301,10 +301,10 @@ function bab_fireEvent(&$event_obj) {
 				file : '.$arr['require_file'].'
 				function : '.$arr['function_name'].'
 				');
-			
+
 			}
 		}
-		
+
 		$obj->restoreAddonCtx();
 	}
 }

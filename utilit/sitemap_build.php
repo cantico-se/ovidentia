@@ -26,9 +26,9 @@ include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
-/** 
+/**
  * Sitemap node as object
- * 
+ *
  */
 class bab_siteMap_buildItem {
 
@@ -43,31 +43,31 @@ class bab_siteMap_buildItem {
 	public  $parentNode_str;
 	public 	$childNodes 		= array();
 	private	$icon_classnames	= array();
-	
+
 	public 	$id_dgowner 		= false;
-	
+
 	/**
 	 * all sitemap item childnodes loaded
 	 * if folder is false, progress must be true
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $progress 			= null;
-	
-	
+
+
 	/**
 	 * sitemap item is a folder
 	 * @access public
 	 */
 	public  $folder 			= false;
-	
+
 	/**
 	 * sitemap item is a delegation folder
 	 * @access public
 	 */
 	public  $delegation 		= false;
-	
-	
+
+
 	/**
 	 * constructor
 	 * The uid parameter must be unique within the sitemap tree
@@ -77,7 +77,7 @@ class bab_siteMap_buildItem {
 		$this->uid = $uid;
 		$this->lang = $GLOBALS['babLanguage'];
 	}
-	
+
 	/**
 	 * Set node label
 	 * stored as VARCHAR(255)
@@ -86,7 +86,7 @@ class bab_siteMap_buildItem {
 	public function setLabel($label) {
 		$this->label = $label;
 	}
-	
+
 	/**
 	 * Set node descripiton
 	 * stored as a TEXT
@@ -95,7 +95,7 @@ class bab_siteMap_buildItem {
 	public function setDescription($description) {
 		$this->description = $description;
 	}
-	
+
 	/**
 	 * Set link attributes
 	 * record a relative url
@@ -106,15 +106,15 @@ class bab_siteMap_buildItem {
 	public function setLink($href, $onclick = '') {
 
 		$self = bab_getSelf();
-	
+
 		if (0 === mb_strpos($href, $GLOBALS['babUrl'].$self)) {
 			$href = mb_substr($href, mb_strlen($GLOBALS['babUrl'].$self));
 		}
-	
+
 		$this->href = $href;
 		$this->onclick = $onclick;
 	}
-	
+
 	/**
 	 * Set position in tree with the full list of parents
 	 * $position is an array of sitemap node uid
@@ -124,8 +124,8 @@ class bab_siteMap_buildItem {
 		$this->parentNode_str = end($position);
 		$this->position = $position;
 	}
-	
-	
+
+
 	/**
 	 * @param	string	$lang
 	 */
@@ -139,7 +139,7 @@ class bab_siteMap_buildItem {
 	public function addChildNode($obj) {
 		$this->childNodes[$obj->uid] = $obj;
 	}
-	
+
 	/**
 	 * Add Icon classname
 	 * @param	string	$classname
@@ -157,10 +157,10 @@ class bab_siteMap_buildItem {
 	public function getIcon() {
 		return implode(' ', $this->icon_classnames);
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Create a clone
 	 */
@@ -175,11 +175,11 @@ class bab_siteMap_buildItem {
 		$clone->folder 					= $this->folder;
 		$clone->delegation 				= $this->delegation;
 		$clone->progress				= $this->progress;
-		
+
 		return $clone;
 	}
-	
-	
+
+
 }
 
 
@@ -192,14 +192,14 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	public $nodes = array();
 	public $queue = array();
 	public $propagation_status = true;
-	
+
 	/**
 	 * required path for sitemap loading
 	 * if the value is null, the full sitemap is required
 	 * @var array
 	 */
 	public $path;
-	
+
 	/**
 	 * Number of levels required for sitemap loading in path
 	 * @var int
@@ -212,82 +212,82 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 * @return 	bab_siteMap_buildItem
 	 */
 	public function createItem($uid) {
-		
+
 		return new bab_siteMap_buildItem($uid);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Test if childnodes must be loaded
-	 * if childnodes are loaded only while this method return true, the progress property will be atomatically set 
+	 * if childnodes are loaded only while this method return true, the progress property will be atomatically set
 	 * if all childnodes are loaded while this method return false, the progress property must be set to true manually
-	 * 
+	 *
 	 * @param	array	$position		Node position
-	 * 
+	 *
 	 * true 	: all childnodes of the node are loaded
 	 * false 	: childnodes need a reload
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function loadChildNodes(Array $position)
 	{
-		
-		
+
+
 		if (null === $this->path) {
 			return true;
 		}
-		
+
 		foreach($this->path as $k => $parentNode) {
 			if (isset($position[$k]) && $position[$k] !== $parentNode) {
 				// the path of node is not in required path, consider node in load on progress
 				return false;
 			}
 		}
-		
+
 		if (null === $this->levels) {
 			// all childnodes must be loaded
 			return true;
 		}
-		
-		
+
+
 		if (count($position) >= $this->levels + count($this->path)) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Add item as function into sitemap
 	 * item must be unique
-	 * 
+	 *
 	 * @param	bab_siteMap_buildItem	$obj
 	 * @return	boolean
 	 */
 	public function addFunction(bab_siteMap_buildItem $obj) {
 
 		if (isset($this->nodes[$obj->uid])) {
-			trigger_error(sprintf('The node %s is allready in the sitemap',$obj->uid));
+			trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
 			$this->propagation_status = false;
 			return false;
 		}
-		
-		
+
+
 		if (!$this->loadChildNodes($obj->position)) {
 			return false;
 		}
-		
+
 		$obj->progress = true;
 		$this->nodes[$obj->uid] = $obj;
 		$this->buidtree($obj);
-		
+
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Add folder into sitemap
 	 * Folder must be unique
@@ -296,20 +296,20 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 	 */
 	public function addFolder(bab_siteMap_buildItem $obj) {
 		if (isset($this->nodes[$obj->uid])) {
-			trigger_error(sprintf('The node %s is allready in the sitemap',$obj->uid));
+			trigger_error(sprintf('The node %s is already in the sitemap',$obj->uid));
 			$this->propagation_status = false;
 			return false;
 		}
-		
+
 		if (!$this->loadChildNodes($obj->position)) {
 			// bab_debug(sprintf('The node %s is not in the required subtree (%s)',implode('/', $obj->position).'/'.$obj->uid, implode('/', $this->path)), DBG_TRACE, 'Sitemap');
 			return false;
 		}
 
 		$obj->folder = true;
-		
+
 		if (null === $obj->progress) {
-			
+
 			$childNodesPos = $obj->position;
 			$childNodesPos[] = $obj->uid;
 
@@ -318,7 +318,7 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 
 		$this->nodes[$obj->uid] = $obj;
 		$this->buidtree($obj);
-		
+
 		return true;
 	}
 
@@ -336,25 +336,25 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		return $this->nodes[$uid];
 	}
 
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param	bab_siteMap_buildItem	$obj
 	 */
 	public function buidtree($obj) {
 		if (isset($this->nodes[$obj->parentNode_str])) {
 			$this->nodes[$obj->parentNode_str]->addChildNode($obj);
 		} else {
-			
+
 			if (!isset($this->queue[$obj->parentNode_str]))
 			{
 				$this->queue[$obj->parentNode_str] = array();
 			}
-			
+
 			$this->queue[$obj->parentNode_str][] = $obj->uid;
 		}
-		
+
 		if (isset($this->queue[$obj->uid])) {
 			foreach($this->queue[$obj->uid] as $objuid)
 			{
@@ -364,38 +364,38 @@ class bab_eventBeforeSiteMapCreated extends bab_event {
 		}
 	}
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Display as text
 	 * @param	string	$uid
 	 * @param	int		[$deep]
-	 * 
+	 *
 	 * @return string
 	 */
 	public function displayAsText($uid, $deep = 0) {
-	
+
 		$node = $this->getById($uid);
-		
+
 		$href = isset($node->href) ? $node->href : '';
-	
+
 		$str = sprintf("%-50s %-30s %-40s\n", str_repeat('|   ',$deep).$node->label, $node->uid, $href);
-		
+
 		if ($node->childNodes) {
 			$deep++;
 			foreach($node->childNodes as $uid => $obj) {
 				$str .= $this->displayAsText($uid, $deep);
 			}
 		}
-		
+
 		return $str;
 	}
-	
-	
+
+
 }
 
 
@@ -409,7 +409,7 @@ class bab_sitemap_tree extends bab_dbtree
 	var $iduser = '';
 	var $userinfo = '';
 	var $table;
-	
+
 	var $nodes;
 
 	function bab_sitemap_tree() {
@@ -417,23 +417,23 @@ class bab_sitemap_tree extends bab_dbtree
 		$this->bab_dbtree(BAB_SITEMAP_TBL, null);
 		$this->where = '';
 	}
-	
+
 	function setFunction($id_node, $str, $progress) {
 		global $babDB;
-		
+
 		$progress = $progress ? '1' : '0';
-		
-		$babDB->db_query('UPDATE '.BAB_SITEMAP_TBL.' 
-			SET 
-				id_function='.$babDB->quote($str).', 
+
+		$babDB->db_query('UPDATE '.BAB_SITEMAP_TBL.'
+			SET
+				id_function='.$babDB->quote($str).',
 				progress='.$babDB->quote($progress).'
 			WHERE id='.$babDB->quote($id_node) );
 	}
-	
 
-	
-	
-	
+
+
+
+
 	/**
 	 * Get childnodes from this node with collumn to insert
 	 *
@@ -444,8 +444,8 @@ class bab_sitemap_tree extends bab_dbtree
 	 *
 	 */
 	function getLevelToInsert($node, &$id, $id_parent, &$insertlist) {
-	
-		
+
+
 		$lf = 1 + $insertlist[count($insertlist) - 1]['lf'];
 
 		foreach($this->nodes[$node->uid]->childNodes as $childNode) {
@@ -453,7 +453,7 @@ class bab_sitemap_tree extends bab_dbtree
 			$id++;
 			$current_id = $id;
 			$key = count($insertlist);
-			
+
 			$insertlist[$key] = array(
 				'id' => $id,
 				'id_parent' => $id_parent,
@@ -463,25 +463,25 @@ class bab_sitemap_tree extends bab_dbtree
 				'id_dgowner' => $childNode->id_dgowner,
 				'progress' => $childNode->progress ? '1' : '0'
 			);
-			
-			
-			
-			
-			
+
+
+
+
+
 			if (0 < count($this->nodes[$childNode->uid]->childNodes)) {
 				$this->getLevelToInsert($childNode, $id, $id, $insertlist);
-				
+
 				$nb_inserted = $id - $current_id;
 				$insertlist[$key]['lr'] = $lf + 1 + (2*$nb_inserted);
 			}
-			
+
 			$lf = 1 + $insertlist[$key]['lr'];
 		}
-		
-	
-		
+
+
+
 	}
-	
+
 }
 
 
@@ -494,34 +494,34 @@ class bab_sitemap_addFuncToProfile {
 	var $arr = array();
 
 	function add($id_function, $id_profile) {
-		
+
 		$this->arr[] = array(
 			'id_function' => $id_function,
 			'id_profile' => $id_profile
 		);
 	}
-	
+
 	function commit() {
-	
+
 		global $babDB;
-		
+
 		$start = 0;
 		$length = 50;
-		
+
 		while ($arr = array_slice($this->arr, $start, $length)) {
-		
+
 			$values = array();
 			foreach($arr as $row) {
 				$values[] = '('.$babDB->quote($row['id_function']).','.$babDB->quote($row['id_profile']).')';
 			}
-			
+
 			$babDB->db_query('
-				INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
-					(id_function, id_profile) 
-				VALUES 
-						'.implode(",\n ",$values).' 
+				INSERT INTO '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.'
+					(id_function, id_profile)
+				VALUES
+						'.implode(",\n ",$values).'
 			');
-			
+
 			$start += $length;
 		}
 	}
@@ -538,21 +538,21 @@ class bab_sitemap_addFuncToProfile {
 
 function bab_sitemap_removeFuncFromProfile(&$tree, $id_function, $id_profile) {
 	global $babDB;
-	
-	$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 
-		WHERE 
-			id_profile='.$babDB->quote($id_profile).' 
+
+	$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.'
+		WHERE
+			id_profile='.$babDB->quote($id_profile).'
 			AND id_function='.$babDB->quote($id_function)
 		);
-		
+
 	$res = $babDB->db_query('SELECT COUNT(*) FROM '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' WHERE id_function='.$babDB->quote($id_function));
 	$arr = $babDB->db_fetch_array($res);
 	if (0 == $arr[0]) {
 		// la fonction n'existe plus
 		bab_siteMap_deleteFunction($id_function, $tree);
 	}
-	
-	
+
+
 }
 
 
@@ -564,16 +564,16 @@ function bab_siteMap_deleteFunction($id_function, $tree = false) {
 
 	$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTIONS_TBL.' WHERE id_function='.$babDB->quote($id_function));
 	$babDB->db_query('DELETE FROM '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' WHERE id_function='.$babDB->quote($id_function));
-	
+
 	if (false == $tree) {
 		$tree = new bab_sitemap_tree();
 	}
-	
+
 	$res = $babDB->db_query('SELECT id FROM '.BAB_SITEMAP_TBL.' WHERE id_function='.$babDB->quote($id_function));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$tree->remove($arr['id']);
 	}
-	
+
 	// bab_debug('sitemap remove : '.$id_function);
 }
 
@@ -599,12 +599,12 @@ class bab_siteMap_insertFunctionObj {
 	 * @param	bab_siteMap_buildItem	$node
 	 */
 	function insertFunction($node) {
-	
+
 		$this->functions[] = $node;
-	
+
 		$this->insertFunctionLabel($node);
 	}
-	
+
 	/**
 	 * Insert function label for current language into database
 	 * @param	bab_siteMap_buildItem	$node
@@ -612,66 +612,66 @@ class bab_siteMap_insertFunctionObj {
 	function insertFunctionLabel($node) {
 		$this->labels[] = $node;
 	}
-	
-	
+
+
 	function commit() {
 		global $babDB;
-		
+
 		$start = 0;
 		$length = 50;
-		
+
 		while ($arr = array_slice($this->functions, $start, $length)) {
-		
+
 			$values = array();
 			foreach($arr as $node) {
 
 				$onclick 	= isset($node->onclick)	? 	$node->onclick 	: '';
 				$href		= isset($node->href)	?	$node->href		: '';
-			
+
 				$folder = $node->folder ? '1' : '0';
 				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($href).','.$babDB->quote($onclick).','.$babDB->quote($folder).','.$babDB->quote($node->getIcon()).')';
 			}
-			
+
 			$babDB->db_query('
-				INSERT INTO '.BAB_SITEMAP_FUNCTIONS_TBL.' 
+				INSERT INTO '.BAB_SITEMAP_FUNCTIONS_TBL.'
 					(
 						id_function,
 						url,
 						onclick,
 						folder,
-						icon 
+						icon
 					)
-				VALUES 
+				VALUES
 					'.implode(",\n ",$values).'
 			');
-			
+
 			$start += $length;
 		}
-		
-		
-		
+
+
+
 		$start = 0;
-		
+
 		while ($arr = array_slice($this->labels, $start, $length)) {
-			
+
 			$values = array();
 			foreach($arr as $node) {
 				$values[] = '('.$babDB->quote($node->uid).','.$babDB->quote($node->lang).','.$babDB->quote($node->label).','.$babDB->quote($node->description).')';
 			}
-	
+
 			$babDB->db_query('
-				INSERT INTO '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 
+				INSERT INTO '.BAB_SITEMAP_FUNCTION_LABELS_TBL.'
 					(
 						id_function,
 						lang,
 						name,
 						description
 					)
-					
-				VALUES 
+
+				VALUES
 					'.implode(",\n ",$values).'
 			');
-			
+
 			$start += $length;
 		}
 	}
@@ -698,52 +698,52 @@ class bab_siteMap_insertTree
 	 * @var bab_siteMap_buildItem
 	 */
 	private $rootNode;
-	
+
 	/**
 	 * @var array
 	 */
 	private $nodeList;
-	
-	
+
+
 	/**
 	 * All functions in sitemap
 	 * @var array
 	 */
 	private $functions;
-	
+
 	/**
 	 * Missing label on functions in current language
 	 * @var array
 	 */
 	private $missing_labels;
-	
-	
+
+
 	/**
 	 * Missing functions in profile
 	 * @var array
 	 */
 	private $missing_profile;
-	
-	
+
+
 	/**
 	 * Existing nodes with progress set to 0
 	 * @var array
 	 */
 	private $missing_progress;
-	
+
 
 	public function __construct(bab_siteMap_buildItem $rootNode, $nodeList) {
 
-		
+
 		$this->rootNode = $rootNode;
 		$this->nodeList = $nodeList;
 	}
-	
-	
+
+
 	/**
 	 * Create a new profile based on the CRC of the sitemap to insert
-	 * if profile allready exists, the profile is associated to user
-	 * 
+	 * if profile already exists, the profile is associated to user
+	 *
 	 * @param int $crc
 	 * @return null
 	 */
@@ -751,74 +751,74 @@ class bab_siteMap_insertTree
 	{
 		//$crc = abs(crc32(serialize($rootNode)));
 		//bab_debug("crc for new sitemap = $crc");
-		
+
 		$id_profile = $this->getUserProfileFromSiteMap($crc, $root_function, $levels);
 		$this->completeProfile($id_profile);
 	}
-	
-	
+
+
 	/**
 	 * the profile from the current user will be updated with the new nodes
 	 * all users with this profile will have the new inserted nodes
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function addNodesToProfile($crc, $root_function, $levels)
 	{
 		global $babDB;
-		
+
 		$id_profile = $this->getProfileFromUser();
-		
+
 		if (null === $id_profile) {
 			return false;
 		}
-		
-		
+
+
 		// in this case, multiple CRC are valuable for one profile
 		// for now, the system will probably create more profiles
-		
+
 		$this->completeProfile($id_profile);
 		$this->addProfileVersion($id_profile, $crc, $root_function, $levels);
 	}
-	
-	
-	
-	
+
+
+
+
 	public static function lock()
 	{
 
 		global $babDB;
-		
+
 		$babDB->db_query('
-			LOCK TABLES 
+			LOCK TABLES
 				'.BAB_SITEMAP_PROFILES_TBL.' 				 	WRITE,
-				'.BAB_SITEMAP_PROFILES_TBL.' 			AS p 	WRITE, 
-				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 		 	WRITE, 
-				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 	AS pv 	WRITE, 
+				'.BAB_SITEMAP_PROFILES_TBL.' 			AS p 	WRITE,
+				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 		 	WRITE,
+				'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' 	AS pv 	WRITE,
 				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 		 	WRITE,
 				'.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' 	AS fp 	WRITE,
-				'.BAB_SITEMAP_FUNCTIONS_TBL.' 				 	WRITE, 
-				'.BAB_SITEMAP_FUNCTIONS_TBL.' 			AS f 	WRITE, 
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 				 	WRITE,
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' 			AS f 	WRITE,
 				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 		 	WRITE,
-				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 	AS fl 	WRITE, 
-				'.BAB_USERS_TBL.' 							 	WRITE, 
+				'.BAB_SITEMAP_FUNCTION_LABELS_TBL.' 	AS fl 	WRITE,
+				'.BAB_USERS_TBL.' 							 	WRITE,
 				'.BAB_SITEMAP_TBL.' 						 	WRITE,
 				'.BAB_SITEMAP_TBL.' 					AS s 	WRITE,
 				'.BAB_SITEMAP_TBL.' 					AS p1 	WRITE,
-				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE  
+				'.BAB_SITEMAP_TBL.' 					AS p2 	WRITE
 		');
-		
+
 	}
-	
-	
+
+
 	public static function unlock()
 	{
 		global $babDB;
-		
+
 		$babDB->db_query('UNLOCK TABLES');
 	}
-	
-	
+
+
 	/**
 	 * Complete tree and profile
 	 * @param int $id_profile
@@ -826,105 +826,105 @@ class bab_siteMap_insertTree
 	 */
 	private function completeProfile($id_profile)
 	{
-		
+
 		$this->loadFunctions($id_profile);
 		$this->insertFunction();
 
-	
+
 		$tree = new bab_sitemap_tree();
-		
+
 		if (false !== $tree->getNodeInfo(1)) {
 			// tree is not empty, add missing nodes
-			
+
 			$this->addMissingNodes($tree, $id_profile);
-			
+
 		} else {
 			// the tree is empty, build from scratch
 			$this->quickPopulate($tree, $id_profile);
 		}
-		
+
 		// write id_dgowner for delegation branchs
 		$this->delegationsRecord();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * write delegation id into table
 	 */
 	private function delegationsRecord() {
-	
+
 		global $babDB;
-		
+
 		$res = $babDB->db_query('SELECT id_dgowner, lf, lr FROM '.BAB_SITEMAP_TBL.' WHERE id_dgowner IS NOT NULL');
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			$req = '
-				UPDATE '.BAB_SITEMAP_TBL.' SET 
-					id_dgowner = '.$babDB->quote($arr['id_dgowner']).' 
-					
-				WHERE 
-					lf > '.$babDB->quote($arr['lf']).' 
-					AND lr < '.$babDB->quote($arr['lr']).' 
+				UPDATE '.BAB_SITEMAP_TBL.' SET
+					id_dgowner = '.$babDB->quote($arr['id_dgowner']).'
+
+				WHERE
+					lf > '.$babDB->quote($arr['lf']).'
+					AND lr < '.$babDB->quote($arr['lr']).'
 			';
-	
+
 			$babDB->db_query($req);
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * get exisiting functions list
 	 * populate functions list, missing labels and missing functions in profile for the profile and the user language
-	 */ 
+	 */
 	private function loadFunctions($id_profile)
 	{
 		global $babDB;
-		
+
 		$this->functions = array();
 		$this->missing_labels = array();
 		$this->missing_profile = array();
 		$this->missing_progress = array();
-		
+
 		$res = $babDB->db_query('
-			SELECT 
-				f.id_function, 
-				IFNULL(s.id,\'noref\') id, 
+			SELECT
+				f.id_function,
+				IFNULL(s.id,\'noref\') id,
 				fl.lang,
-				fp.id_profile, 
-				s.progress   
-			FROM 
-				'.BAB_SITEMAP_FUNCTIONS_TBL.' f 
-				LEFT JOIN '.BAB_SITEMAP_TBL.' s ON s.id_function = f.id_function 
-				LEFT JOIN '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl 
-					ON f.id_function = fl.id_function AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).' 
+				fp.id_profile,
+				s.progress
+			FROM
+				'.BAB_SITEMAP_FUNCTIONS_TBL.' f
+				LEFT JOIN '.BAB_SITEMAP_TBL.' s ON s.id_function = f.id_function
+				LEFT JOIN '.BAB_SITEMAP_FUNCTION_LABELS_TBL.' fl
+					ON f.id_function = fl.id_function AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
 				LEFT JOIN '.BAB_SITEMAP_FUNCTION_PROFILE_TBL.' fp ON fp.id_function = f.id_function AND fp.id_profile='.$babDB->quote($id_profile).'
 		');
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			$this->functions[$arr['id_function']] = $arr['id'];
-			
+
 			if (is_null($arr['lang']) && !is_null($arr['id'])) {
 				$this->missing_labels[$arr['id_function']] = $arr['id'];
 			}
-			
+
 			if (is_null($arr['id_profile'])) {
 				$this->missing_profile[$arr['id_function']] = $arr['id'];
 			}
-			
+
 			if ('0' === $arr['progress']) {
 				$this->missing_progress[$arr['id_function']] = $arr['id'];
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Insert missing functions and missing labels
 	 * @return null
@@ -936,40 +936,40 @@ class bab_siteMap_insertTree
 
 
 		$insertFunc = new bab_siteMap_insertFunctionObj();
-		
+
 		foreach($this->nodeList as $node) {
 
 			if (isset($this->functions[$node->uid]) && 'noref' === $this->functions[$node->uid]) {
 				// noref : la fonction existe mais n'est pas inseree dans l'arbre
 				$this->functions[$node->uid] = true;
-				
+
 			} elseif (isset($this->functions[$node->uid])) {
 				// isset : la fonction existe et est dans l'arbre
 				$previous_node = $node->uid;
 				$previous_id = $this->functions[$node->uid];
 				$this->functions[$node->uid] = false;
-				
+
 			} else {
 				// !isset : la fonction n'existe pas
 				// bab_debug('sitemap add : '.$node->uid.' ('.$node->label.')');
 				$insertFunc->insertFunction($node);
 				$this->functions[$node->uid] = true;
 			}
-			
+
 			if (isset($this->missing_labels[$node->uid])) {
 				$insertFunc->insertFunctionLabel($node);
 			}
 		}
-		
+
 		$insertFunc->commit();
-		
+
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * The tree is not empty, add missing nodes
 	 * @return unknown_type
@@ -980,69 +980,69 @@ class bab_siteMap_insertTree
 
 		foreach($this->functions as $id_function => $val) {
 
-	
+
 			switch($val) {
 				case true:
 					// the fonction is not linked to tree
 					if (isset($this->nodeList[$id_function])) {
-					
+
 						if ('root' != $id_function) {
 
 							bab_sitemap_insertNode(
-								$tree, 
+								$tree,
 								$this->nodeList[$id_function],
 								0,
 								0
 							);
 						}
-						
+
 						$addFuncToProfile->add($id_function, $id_profile);
 					}
 					break;
-					
+
 				case false:
 					// the fonction is linked to tree
 					if (isset($this->missing_profile[$id_function]) && isset($this->nodeList[$id_function])) {
 						// mais n'est pas dans le profile
 						$addFuncToProfile->add($id_function, $id_profile);
 					} else {
-						// exists and linked to tree 
+						// exists and linked to tree
 						// in sitemap modification, the progress status need to be updated
-						
+
 						if (isset($this->nodeList[$id_function]) && true === $this->nodeList[$id_function]->progress && isset($this->missing_progress[$id_function])) {
 							// consider childnodes as loaded
 							$this->loadCompleted($id_function);
 						}
 					}
 					break;
-				
+
 				default:
 					// la fonction n'est plus dans le profile
 					bab_sitemap_removeFuncFromProfile($tree, $id_function, $id_profile);
 					break;
 			}
 		}
-		
+
 		$addFuncToProfile->commit();
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @param string $id_function
 	 * @return unknown_type
 	 */
 	private function loadCompleted($id_function)
 	{
 		global $babDB;
-		
+
 		$babDB->db_query('UPDATE '.BAB_SITEMAP_TBL.' SET progress=\'1\' WHERE id_function='.$babDB->quote($id_function));
-		
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * the tree is empty, build from scratch
 	 * @return unknown_type
@@ -1050,9 +1050,9 @@ class bab_siteMap_insertTree
 	private function quickPopulate($tree, $id_profile)
 	{
 		global $babDB;
-		
+
 		$id = 1;
-		
+
 		$insertlist = array();
 
 		// root node
@@ -1065,29 +1065,29 @@ class bab_siteMap_insertTree
 			'id_dgowner' => $this->rootNode->id_dgowner,
 			'progress' => '1'
 		);
-		
+
 		$tree->nodes = & $this->nodeList;
 		$tree->getLevelToInsert($this->rootNode, $id, 1, $insertlist);
-		
+
 		$insertlist[0]['lr'] = 2 + (2*(count($insertlist) - 1));
-		
+
 		// insert
-		
+
 		$start = 0;
 		$length = 50;
-		
+
 		while ($arr = array_slice($insertlist, $start, $length)) {
-		
+
 
 			$req = 'INSERT INTO '.BAB_SITEMAP_TBL.' (id, id_parent, lf, lr, id_function, id_dgowner, progress) VALUES '."\n";
 			foreach($arr as $key => $row) {
-			
+
 				if (0 < $key) {
 					$req.= ",\n";
 				}
-				
+
 				$dgOwner = false === $row['id_dgowner'] ? 'NULL' : $babDB->quote($row['id_dgowner']);
-				
+
 
 				$req.= '('.$babDB->quote($row['id'])
 				.','.$babDB->quote($row['id_parent'])
@@ -1098,16 +1098,16 @@ class bab_siteMap_insertTree
 				.','.$babDB->quote($row['progress'])
 				.")";
 			}
-			
+
 			//bab_debug($req);
 			$babDB->db_query($req);
-			
+
 			$start += $length;
 		}
-		
-		
+
+
 		$addFuncToProfile = new bab_sitemap_addFuncToProfile();
-		
+
 		foreach($this->functions as $id_function => $val) {
 
 			// the function is not linked to tree
@@ -1115,18 +1115,18 @@ class bab_siteMap_insertTree
 				$addFuncToProfile->add($id_function, $id_profile);
 			}
 		}
-		
+
 		$addFuncToProfile->commit();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 	/**
 	 * search for available profile or create new profile
 	 * @return int
@@ -1134,70 +1134,70 @@ class bab_siteMap_insertTree
 	private function getUserProfileFromSiteMap($crc, $root_function, $levels)
 	{
 		global $babDB;
-		
+
 		if ($GLOBALS['BAB_SESS_USERID']) {
-			$res = $babDB->db_query('SELECT 
-					p.id 
-				FROM 
-					'.BAB_SITEMAP_PROFILES_TBL.' p, 
+			$res = $babDB->db_query('SELECT
+					p.id
+				FROM
+					'.BAB_SITEMAP_PROFILES_TBL.' p,
 					'.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' pv
-					
-				WHERE 
-					pv.id_profile = p.id 
+
+				WHERE
+					pv.id_profile = p.id
 					AND pv.uid_functions = '.$babDB->quote($crc)
 			);
-			
+
 			if ($arr = $babDB->db_fetch_assoc($res)) {
 				$id_profile = $arr['id'];
-				
+
 				bab_debug('found profile '.$id_profile, DBG_TRACE, 'Sitemap');
 				$this->setUserProfile($id_profile);
 				return $id_profile;
-	
+
 			} else {
-				
+
 				// the uid_functions on profiles table is deprecated
-				// the collumn is not deleted for now (version 7.2.90) 
+				// the collumn is not deleted for now (version 7.2.90)
 				// this way, the database stay compatible with older version of ovidentia (7.2.0 and PATCHS-7-2-0)
 				// this collumn may be deleted in the next main release
-			
+
 				// create new profile
 				$res = $babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILES_TBL.' (uid_functions) VALUES (\'0\')');
 				$id_profile = $babDB->db_insert_id($res);
-				
+
 				$this->addProfileVersion($id_profile, $crc, $root_function, $levels);
-				
+
 				bab_debug('new profile created '.$id_profile, DBG_TRACE, 'Sitemap');
 				$this->setUserProfile($id_profile);
 			}
-			
-			
-			
-			
-			
+
+
+
+
+
 		} else {
-			
+
 			$this->addProfileVersion(BAB_UNREGISTERED_SITEMAP_PROFILE, $crc, $root_function, $levels);
 			$id_profile = BAB_UNREGISTERED_SITEMAP_PROFILE;
 		}
-		
+
 		return $id_profile;
 	}
-	
-	
-	
+
+
+
 	private function addProfileVersion($id_profile, $crc, $root_function, $levels)
 	{
 		global $babDB;
-		
-		$babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' (id_profile, uid_functions, root_function, levels) 
+
+		$babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' (id_profile, uid_functions, root_function, levels)
 					VALUES ('.$babDB->quote($id_profile).', '.$babDB->quote($crc).', '.$babDB->quoteOrNull($root_function).', '.$babDB->quoteOrNull($levels).')');
-			
+
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Get profile
 	 * null : no profile
@@ -1206,41 +1206,41 @@ class bab_siteMap_insertTree
 	private function getProfileFromUser()
 	{
 		global $babDB;
-		
+
 		if ($GLOBALS['BAB_SESS_USERID']) {
-			$res = $babDB->db_query('SELECT id_sitemap_profile 
-				FROM '.BAB_USERS_TBL.'  
+			$res = $babDB->db_query('SELECT id_sitemap_profile
+				FROM '.BAB_USERS_TBL.'
 				WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
-			
+
 			if ($arr = $babDB->db_fetch_assoc($res))
 			{
 				$id_sitemap_profile = (int) $arr['id_sitemap_profile'];
-				
+
 				if (0 !== $id_sitemap_profile && BAB_UNREGISTERED_SITEMAP_PROFILE !== $id_sitemap_profile)
 				{
 					return $id_sitemap_profile;
 				}
 			}
-			
+
 			return null;
-			
-			
+
+
 		} else {
 			return BAB_UNREGISTERED_SITEMAP_PROFILE;
 		}
-		
+
 		return $id_profile;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	private function setUserProfile($id_profile) {
 		global $babDB;
-		
-		$babDB->db_query('UPDATE '.BAB_USERS_TBL.'  
-				SET id_sitemap_profile='.$babDB->quote($id_profile).' 
+
+		$babDB->db_query('UPDATE '.BAB_USERS_TBL.'
+				SET id_sitemap_profile='.$babDB->quote($id_profile).'
 				WHERE id='.$babDB->quote($GLOBALS['BAB_SESS_USERID']));
 	}
 }
@@ -1255,12 +1255,12 @@ class bab_siteMap_insertTree
 function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 
 	global $babDB;
-	
+
 
 	if (!isset($node->position[$deep])) {
-	
+
 		// create node, test if exists
-		
+
 		if ($childs = $tree->getChilds($id_parent)) {
 			foreach($childs as $row) {
 				if ($node->uid == $row['id_function']) {
@@ -1268,7 +1268,7 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 				}
 			}
 		}
-	
+
 		// leaf creation
 
 		$id_node = $tree->add($id_parent);
@@ -1276,18 +1276,18 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 		if ($id_node) {
 			$tree->setFunction($id_node, $node->uid, $node->progress);
 		}
-		
+
 		return $id_node;
 	}
-	
+
 	$current = $node->position[$deep];
-	
+
 	$res = $babDB->db_query('SELECT id FROM '.BAB_SITEMAP_TBL.' WHERE id_parent='.$babDB->quote($id_parent).' AND id_function='.$babDB->quote($current));
 	if ($arr = $babDB->db_fetch_assoc($res)) {
 		// node exists, try to insert next node
 		$deep++;
 		bab_sitemap_insertNode($tree, $node, $arr['id'], $deep);
-		
+
 	} else {
 		// node does not exists, create it
 		$deep++;
@@ -1297,7 +1297,7 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
 		}
 		bab_sitemap_insertNode($tree, $node, $id_node, $deep);
 	}
-	
+
 	return false;
 }
 
@@ -1316,8 +1316,8 @@ function bab_sitemap_insertNode($tree, $node, $id_parent, $deep) {
  * Recursive childs count
  * @param	bab_siteMap_buildItem	$node
  * @param	int						[$n]
- * 
- * 
+ *
+ *
  * @return int
  */
 function bab_sitemap_countChilds($node, $n = 0) {
@@ -1345,7 +1345,7 @@ function bab_getMicrotime() {
 
 
 /**
- * 
+ *
  * @return bab_eventBeforeSiteMapCreated
  */
 function bab_siteMap_loadNodes($path, $levels) {
@@ -1354,15 +1354,15 @@ function bab_siteMap_loadNodes($path, $levels) {
 	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/utilitsections.php';
 	include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
-	
-	
+
+
 	$event = new bab_eventBeforeSiteMapCreated;
-	
+
 	$event->path = $path;
 	$event->levels = $levels;
-	
+
 	// insert rootnode
-	
+
 	$rootNode = new bab_siteMap_buildItem('root');
 	$rootNode->setLabel($GLOBALS['babSiteName']);
 	$rootNode->setDescription($babBody->babsite['babslogan']);
@@ -1373,13 +1373,13 @@ function bab_siteMap_loadNodes($path, $levels) {
 	$rootNode->addIconClassname('action-go-home');
 
 	$event->nodes[$rootNode->uid] = $rootNode;
-	
+
 	// create delegations nodes
-	
+
 	$delgations = bab_getUserVisiblesDelegations();
-	
+
 	foreach($delgations as $dgid => $arr) {
-		
+
 		$dgNode = new bab_siteMap_buildItem($dgid);
 		$dgNode->setLabel($arr['name']);
 		$dgNode->setDescription($arr['description']);
@@ -1389,26 +1389,26 @@ function bab_siteMap_loadNodes($path, $levels) {
 		$dgNode->progress = $event->loadChildNodes(array('root', $dgid));
 		$dgNode->delegation = 1;
 		$dgNode->id_dgowner = $arr['id'];
-		
+
 		$event->nodes[$dgid] = $dgNode;
 		$event->buidtree($dgNode);
 	}
 
 	bab_fireEvent($event);
-	
-	
-	foreach($event->queue as $missing_node => $orphan) 
+
+
+	foreach($event->queue as $missing_node => $orphan)
 	{
 		foreach($orphan as $tmp)
 		{
 			unset($event->nodes[$tmp]);
 		}
 	}
-	
+
 	$event->queue = array();
-	
+
 	return $event;
-	
+
 }
 
 
@@ -1417,30 +1417,30 @@ function bab_siteMap_loadNodes($path, $levels) {
 
 /**
  * @see bab_siteMap::build()
- * 
+ *
  * @param	array	$path
  * @param	int		$levels
- * 
+ *
  * @return boolean
  */
 function bab_siteMap_build($path, $levels) {
 
-	
-	
+
+
 	$event = bab_siteMap_loadNodes($path, $levels);
 
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
 
 	bab_siteMap_insertTree::lock();
-	
+
 	// insert tree into database
 	$insert = new bab_siteMap_insertTree($event->nodes['root'], $event->nodes);
 	$root_function = null === $path ? null : end($path);
 	$insert->fromCrc($crc, $root_function, $levels);
 
 	bab_siteMap_insertTree::unlock();
-	
+
 	return $event->propagation_status;
 }
 
@@ -1448,24 +1448,24 @@ function bab_siteMap_build($path, $levels) {
 
 /**
  * @see bab_siteMap::repair()
- * 
+ *
  * @param	array	$path
  * @param	int		$levels
- * 
+ *
  */
 function bab_siteMap_repair($path, $levels)
 {
 	$event = bab_siteMap_loadNodes($path, $levels);
-	
+
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
-	
+
 	bab_siteMap_insertTree::lock();
 
 	$insert = new bab_siteMap_insertTree($event->nodes['root'], $event->nodes);
 	$root_function = null === $path ? null : end($path);
 	$insert->addNodesToProfile($crc, $root_function, $levels);
-	
+
 	bab_siteMap_insertTree::unlock();
 
 	return $event->propagation_status;
@@ -1489,9 +1489,9 @@ function bab_getUserAddonsUrls() {
 
 	// addons
 	$addon_urls = array();
-	$addons = bab_addonsInfos::getRows();	
-	
-	foreach( $addons as $row ) 
+	$addons = bab_addonsInfos::getRows();
+
+	foreach( $addons as $row )
 		{
 		if($row['access']) {
 			$addonpath = $GLOBALS['babAddonsPath'].$row['title'];
@@ -1499,11 +1499,11 @@ function bab_getUserAddonsUrls() {
 				$arr = bab_getAddonsMenus($row, 'getUserSectionMenus');
 				reset ($arr);
 				while (list ($txt, $url) = each($arr)) {
-				
+
 					if (0 === mb_strpos($url, $GLOBALS['babUrl'].$GLOBALS['babPhpSelf'])) {
 						$url = mb_substr($url, mb_strlen($GLOBALS['babUrl'].$GLOBALS['babPhpSelf']));
 					}
-				
+
 					$addon_urls[] = array(
 						'label' => $txt,
 						'url' => $url,
@@ -1525,8 +1525,8 @@ function bab_getUserAddonsUrls() {
 
 /**
  * get Urls for user section for one delegation
- * @param	int		$id_delegation	
- * @param	array	delegation row	
+ * @param	int		$id_delegation
+ * @param	array	delegation row
  * @param	string	$dg_prefix			string to use in sitemap UIDs, dg_refix will be 'bab' on DGAll and babDG1 on delegation 1
  * @return array
  */
@@ -1537,8 +1537,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 	$array_urls = array();
 
 	// user links
-	
-	
+
+
 	$vac = false;
 	$bemail = false;
 	$idcal = 0;
@@ -1576,7 +1576,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 				'url' => $GLOBALS['babUrlScript']."?tg=approb",
 				'uid' => $dg_prefix.'UserApprob',
 				'desc' => bab_translate("Validate waiting items"),
-				'icon' => 'apps-approbations' 
+				'icon' => 'apps-approbations'
 				);
 			}
 		}
@@ -1594,14 +1594,14 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 
 	if( !empty($GLOBALS['BAB_SESS_USER']))
 		{
-		
+
 		$array_urls[] = array(
 			'label' => bab_translate("Options"),
 			'url' => $GLOBALS['babUrlScript']."?tg=options",
 			'uid' => $dg_prefix.'UserOptions',
 			'icon' => 'categories-preferences-desktop'
 		);
-		
+
 		if( bab_notesAccess())
 			$array_urls[] = array(
 				'label' => bab_translate("Notes"),
@@ -1635,7 +1635,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		}
 
 	if( bab_getICalendars()->calendarAccess())
-		{	
+		{
 		$array_urls[] = array(
 			'label' => bab_translate("Calendar"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=calendar",
@@ -1662,8 +1662,8 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'icon'	=> 'apps-contacts'
 			);
 		}
-		
-		
+
+
 	require_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
 	if(userHavePersonnalStorage() || userHaveRightOnCollectiveFolder(true))
 		{
@@ -1719,26 +1719,26 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			'label' => bab_translate("Statistics"),
 			'url' =>  $GLOBALS['babUrlScript']."?tg=stat",
 			'uid' => $dg_prefix.'UserStats',
-			'icon'	=> 'apps-statistics' 
+			'icon'	=> 'apps-statistics'
 			);
 		}
 
-		
+
 	global $babInstallPath;
 	require_once($babInstallPath . 'tmContext.php');
 
 	$context =& getTskMgrContext();
-	
-	$bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager() 
+
+	$bIsAccessValid = ($context->isUserProjectVisualizer() || $context->isUserCanCreateProject() || $context->isUserProjectManager()
 		|| $context->isUserSuperviseProject() || $context->isUserManageTask() || $context->isUserPersonnalTaskOwner());
-			
+
 	if($bIsAccessValid)
 		{
 			$array_urls[] = array(
 				'label' => bab_translate("Task Manager"),
 				'url' 	=> $GLOBALS['babUrlScript'].'?tg=usrTskMgr',
 				'uid' 	=> $dg_prefix.'UserTm',
-				'icon'	=> 'apps-task-manager', 
+				'icon'	=> 'apps-task-manager',
 				'folder' => true
 			);
 
@@ -1773,7 +1773,7 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 			}
 		}
 
-	
+
 
 	include_once dirname(__FILE__).'/forumincl.php';
 	$res = bab_getForumsRes(false, $deleg['id']);
@@ -1800,14 +1800,14 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 		}
 	}
 
-	
+
 	if( bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1) )
 		{
 		$array_urls[] = array(
 			'label' => bab_translate("Thesaurus"),
 			'url' 	=>  $GLOBALS['babUrlScript'].'?tg=thesaurus',
 			'uid' 	=> $dg_prefix.'UserThesaurus',
-			'icon'	=> 'apps-thesaurus'	
+			'icon'	=> 'apps-thesaurus'
 			);
 		}
 
@@ -1828,15 +1828,15 @@ function bab_sitemap_userSection($event) {
 
 	global $babBody, $babDB;
 
-	
+
 	$delegations = bab_getUserVisiblesDelegations();
-	
+
 	foreach($delegations as $id_delegation => $deleg) {
 
 		$dg_prefix = false === $deleg['id'] ? 'bab' : 'babDG'.$deleg['id'];
 
 		if ($event->loadChildNodes(array('root', $id_delegation))) {
-			
+
 			$item = $event->createItem($dg_prefix.'User');
 			$item->setLabel(bab_translate("User's section"));
 			$item->setPosition(array('root', $id_delegation));
@@ -1845,55 +1845,55 @@ function bab_sitemap_userSection($event) {
 			$position = array('root', $id_delegation, $dg_prefix.'User');
 
 			if ($event->loadChildNodes($position)) {
-				
+
 				$item = $event->createItem($dg_prefix.'UserSection');
 				$item->setLabel(bab_translate("Ovidentia functions"));
 				$item->setPosition($position);
 				$event->addFolder($item);
-				
+
 				if ($event->loadChildNodes(array('root', $id_delegation, $dg_prefix.'User', $dg_prefix.'UserSection'))) {
-					
+
 					$delegation_urls = bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix);
-	
+
 					foreach($delegation_urls as $arr) {
 						$item = $event->createItem($arr['uid']);
 						$item->setLabel($arr['label']);
 						$item->setLink($arr['url']);
 						$position = isset($arr['position']) ? $arr['position'] : array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSection');
 						$item->setPosition($position);
-	
+
 						if (isset($arr['desc'])) {
 							$item->setDescription($arr['desc']);
 						}
-						
+
 						if (isset($arr['folder'])) {
 							$item->progress = true;
 							$event->addFolder($item);
 						} else {
 							$event->addFunction($item);
 						}
-	
+
 						if (isset($arr['icon'])) {
 							$item->addIconClassname($arr['icon']);
 						}
 					}
-				
+
 				}
-			
-			
-	
+
+
+
 				$position = array('root', $id_delegation, $dg_prefix.'User');
-				
+
 				$item = $event->createItem($dg_prefix.'UserSectionAddons');
 				$item->setLabel(bab_translate("Add-ons links"));
 				$item->setPosition($position);
 				$event->addFolder($item);
-				
-				
+
+
 				$position = array('root', $id_delegation, $dg_prefix.'User',$dg_prefix.'UserSectionAddons');
-			
+
 				if ($event->loadChildNodes($position)) {
-				
+
 					$addon_urls = bab_getUserAddonsUrls();
 
 					foreach($addon_urls as $arr) {
@@ -1911,17 +1911,17 @@ function bab_sitemap_userSection($event) {
 
 
 function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_delegation) {
-	
+
 	global $babDB;
 	$res = bab_getArticleCategoriesRes(array($id_category), $id_delegation);
-	
+
 	if (false !== $res) {
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
-	
+
 			$uid = 'bab'.$dg.'ArticleCategory_'.$arr['id'];
-	
+
 			$item = $event->createItem($uid);
 			$item->setLabel($arr['title']);
 			$item->setDescription(strip_tags($arr['description']));
@@ -1930,27 +1930,27 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_
 			$item->addIconClassname('apps-articles');
 			$item->progress = true;
 			$event->addFolder($item);
-			
+
 			array_push($position, $uid);
 			bab_sitemap_articlesCategoryLevel($arr['id'], $position, $event, $id_delegation);
 			array_pop($position);
 		}
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	$res = bab_getArticleTopicsRes(array($id_category), $id_delegation);
-	
+
 	if (false !== $res) {
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 			$dg = false === $id_delegation ? '' : 'DG'.$id_delegation;
-	
+
 			$uid = 'bab'.$dg.'ArticleTopic_'.$arr['id'];
-	
+
 			$item = $event->createItem($uid);
 			$item->setLabel($arr['category']);
 			$item->setDescription(strip_tags($arr['description']));
@@ -1968,38 +1968,38 @@ function bab_sitemap_articlesCategoryLevel($id_category, $position, $event, $id_
  */
 function bab_sitemap_articles($event) {
 	global $babDB;
-	
+
 	include_once $GLOBALS['babInstallPath'].'utilit/artapi.php';
-	
-	
-	
-	
+
+
+
+
 	$delegations = bab_getUserVisiblesDelegations();
-	
+
 	foreach($delegations as $id_delegation => $arr) {
-		
+
 		$delegPosition = array('root', $id_delegation);
-		
+
 		if ($event->loadChildNodes($delegPosition)) {
-			
+
 			$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
-		
+
 			$item = $event->createItem('bab'.$dg.'Articles');
 			$item->setLabel(bab_translate("Articles"));
 			$item->setPosition($delegPosition);
 			$event->addFolder($item);
-			
+
 			if ($event->loadChildNodes(array('root', $id_delegation, 'bab'.$dg.'Articles'))) {
 
 				$res = bab_getArticleCategoriesRes(array(0), $id_delegation);
 				if (0 < $babDB->db_num_rows($res)) {
-	
+
 					$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
 					bab_sitemap_articlesCategoryLevel(0, $position, $event, $arr['id']);
 				}
-			
+
 			}
-		
+
 		}
 
 	}
@@ -2016,34 +2016,34 @@ function bab_sitemap_faq($event) {
 
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/faqincl.php';
-	
-	
-	
+
+
+
 	$delegations = bab_getUserVisiblesDelegations();
-	
+
 	foreach($delegations as $delegation => $arr) {
-	
-		
-		
+
+
+
 		$res = bab_getFaqRes(false, $arr['id']);
 		if (false !== $res) {
 
 			$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
-	
+
 			$item = $event->createItem('bab'.$dg.'Faqs');
 			$item->setLabel(bab_translate("Faqs"));
 			$item->setPosition(array('root', $delegation));
 			$event->addFolder($item);
-		
+
 			$position = array('root', $delegation, 'bab'.$dg.'Faqs');
 
 
 			while ($faq = $babDB->db_fetch_assoc($res)) {
-				
+
 				$dg = false === $arr['id'] ? '' : 'DG'.$arr['id'];
-			
+
 				$uid = 'bab'.$dg.'Faq_'.$faq['id'];
-		
+
 				$item = $event->createItem($uid);
 				$item->setLabel($faq['category']);
 				$item->setDescription(strip_tags($faq['description']));
@@ -2069,7 +2069,7 @@ function bab_sitemap_faq($event) {
 function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 
 	global $babBody, $BAB_SESS_LOGGED;
-	
+
 	// build user node
 	bab_sitemap_userSection($event);
 
@@ -2081,10 +2081,10 @@ function bab_onBeforeSiteMapCreated(bab_eventBeforeSiteMapCreated $event) {
 		include_once $GLOBALS['babInstallPath'].'admin/admmenu.php';
 		bab_sitemap_adminSection($event);
 	}
-	
+
 	// articles
 	bab_sitemap_articles($event);
-	
+
 	// faq
 	bab_sitemap_faq($event);
 }

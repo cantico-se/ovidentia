@@ -5,12 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -34,7 +34,7 @@ class BabDirectoryFilter
 class BabDirectoryFiltered extends FilterIterator
 {
 	protected $iFilterBits = 0;
-	
+
 	public function __construct($sPath, $iFilterBits = 0)
     {
         parent::__construct(new DirectoryIterator($sPath));
@@ -43,30 +43,30 @@ class BabDirectoryFiltered extends FilterIterator
 
     public function setFilter($iBit)
     {
-		$this->iFilterBits |= $iBit;		
+		$this->iFilterBits |= $iBit;
     }
 
     public function accept()
     {
     	$oIterator = $this->getInnerIterator();
-    	
+
     	if($this->bitActivated(BabDirectoryFilter::DOT) && $oIterator->isDot())
     	{
     		return false;
     	}
-    	
+
     	if($this->bitActivated(BabDirectoryFilter::DIR) && $oIterator->isDir())
     	{
     		return false;
     	}
-    	
+
     	if($this->bitActivated(BabDirectoryFilter::FILE) && $oIterator->isFile())
     	{
     		return false;
     	}
     	return true;
     }
-    
+
     public function bitActivated($iBit)
     {
     	return ($this->iFilterBits & $iBit);
@@ -106,8 +106,8 @@ function bab_recursive_cp_ls_a($wh){
  *
  * @return	true | string	if the function return a string, this is the error message
  */
-function bab_recursive_cp($wf, $wto) { 
-	  if (!is_dir($wto)) { 
+function bab_recursive_cp($wf, $wto) {
+	  if (!is_dir($wto)) {
 		  if (!bab_mkdir($wto)) {
 			return sprintf(bab_translate("Error : can't create directory : %s"), $wto);
 		  }
@@ -123,14 +123,14 @@ function bab_recursive_cp($wf, $wto) {
 						return $return;
 					}
 				} else {
-					
+
 					// ignore file if broken symlink
 					if (function_exists('readlink') && false !== $destination = @readlink($fl)) {
 						if (!@file_exists($destination)) {
 							continue;
 						}
 					}
-					
+
 					if (!copy($fl,$flto)) {
 						return sprintf(bab_translate("Error : can't copy the file %s to the directory %s"), basename($fl), dirname($flto) );
 					}
@@ -144,12 +144,12 @@ function bab_recursive_cp($wf, $wto) {
 
 /**
  * Copy addons forlders from one core to another
- * 
+ *
  * @param	string		$from	source core folder
  * @param	string		$to		destination core folder
- * 
+ *
  * @return boolean
- */ 
+ */
 function bab_cpaddons($from, $to, &$message)
 {
 	require_once dirname(__FILE__).'/path.class.php';
@@ -203,7 +203,7 @@ function bab_writeConfig($replace)
 		else
 			return $txt;
 		}
-		
+
 	$file = @fopen('config.php', "r");
 	if (!$file)
 		{
@@ -212,9 +212,9 @@ function bab_writeConfig($replace)
 		}
 	$txt = fread($file, filesize('config.php'));
 	fclose($file);
-	
+
 	$config = array('babDBHost','babDBLogin','babDBPasswd','babDBName','babInstallPath','babUrl');
-	
+
 	foreach ($replace as $key => $value)
 		{
 		$out = replace($txt, $key, $value);
@@ -226,7 +226,7 @@ function bab_writeConfig($replace)
 		else
 			$txt = $out;
 		}
-		
+
 	$file = fopen('config.php', "w");
 	if (!$file)
 		{
@@ -235,7 +235,7 @@ function bab_writeConfig($replace)
 		}
 	fputs($file, $out);
 	fclose($file);
-	
+
 	return true;
 	}
 
@@ -244,9 +244,9 @@ function bab_writeConfig($replace)
 
 /**
  * Ovidentia upgrade
- * 
+ *
  * @param bool	$forceUpgrade		True to force upgrade process even if the database version is up-to-date.
- * 
+ *
  * @return boolean
  */
 function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
@@ -277,33 +277,33 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 		}
 		return false;
 	}
-	
-	
+
+
 	function putIniDbKey($key, $value) {
 		global $babDB;
 
 		$res = $babDB->db_query("SELECT COUNT(*) FROM ".BAB_INI_TBL." WHERE foption=".$babDB->quote($key));
 		list($n) = $babDB->db_fetch_array($res);
-		
+
 
 		if (0 === (int) $n) {
-		
-			$babDB->db_query("INSERT INTO ".BAB_INI_TBL." 
-					(foption, fvalue) 
-				VALUES 
+
+			$babDB->db_query("INSERT INTO ".BAB_INI_TBL."
+					(foption, fvalue)
+				VALUES
 					(
-						'".$babDB->db_escape_string($key)."', 
-						'".$babDB->db_escape_string($value)."' 
+						'".$babDB->db_escape_string($key)."',
+						'".$babDB->db_escape_string($value)."'
 					)
 			");
 		} else {
-			$babDB->db_query("update ".BAB_INI_TBL." set 
-				fvalue='".$babDB->db_escape_string($value)."' 
+			$babDB->db_query("update ".BAB_INI_TBL." set
+				fvalue='".$babDB->db_escape_string($value)."'
 			WHERE foption='".$babDB->db_escape_string($key)."'");
 		}
 	}
 
-	
+
 	$ver_from = bab_getDbVersion();
 
 	$ini = new bab_inifile();
@@ -344,22 +344,22 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 
 	include_once $core_dir.'upgrade.php';
 	if (true === ovidentia_upgrade($ver_from, $ini->getVersion())) {
-		
+
 		// the core has been upgraded correctly
 		// update addons if necessary using the install/addons.ini file
 		bab_upgradeAddonsFromInstall(false, $ini->getVersion());
-		
-	
+
+
 		putIniDbKey('ver_major', $bab_ver_major);
 		putIniDbKey('ver_minor', $bab_ver_minor);
 		putIniDbKey('ver_build', $bab_ver_build);
 		putIniDbKey('ver_nightly', $bab_ver_nightly);
-	
+
 		putVersion($bab_ver_major.".".$bab_ver_minor);
-		
+
 		if (false == $ver_from) {
 			$ret .= sprintf(
-				bab_translate("You site has been completly installed in version %s"), 
+				bab_translate("You site has been completly installed in version %s"),
 				$bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build
 			)." \n";
 
@@ -367,27 +367,27 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 			$ret .= bab_translate("You site has been updated")." \n";
 			$ret .= bab_translate("From").' '. $ver_from. ' ';
 			$ret .= bab_translate("to").' '. $bab_ver_major.'.'.$bab_ver_minor.'.'.$bab_ver_build.' ';
-			
+
 			if ($bab_ver_nightly) {
 				$ret .= bab_translate("Nightly build").' '. $bab_ver_nightly;
 			}
 		}
-		
+
 		bab_setUpgradeLogMsg(BAB_ADDON_CORE_NAME, $ret);
-		
+
 		bab_siteMap::clearAll();
-		
+
 		return true;
 	}
-	
+
 	foreach($babBody->errors as $error) {
 		$ret .= bab_toHtml($error)."\n\n";
 	}
-	
+
 	if (!$babBody->errors) {
 		$ret .= bab_translate('Error on upgrade');
 	}
-	
+
 	return false;
 }
 
@@ -397,28 +397,28 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
 /**
  * Install or upgrade addons from the install/addons folder
  * this is processed on new install and after ovidentia upgrade
- * 
+ *
  * @param	bool 			$install		test the install parameter of addons.ini file
  * @parma	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
  */
 function bab_upgradeAddonsFromInstall($install, $upgrade) {
-	
+
 	require_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
 	$sInstallDir = realpath('.').'/install/addons';
-	
-	
+
+
 	if(is_dir($sInstallDir) && file_exists(realpath('.').'/install/addons.ini'))
 	{
 		$addons = parse_ini_file(realpath('.').'/install/addons.ini', true);
-		
-		
+
+
 		$aAddonsFilePath	= bab_getAddonsFilePath();
-		
+
 		if(0 < count($addons))
 		{
 			$aLocIn	 = $aAddonsFilePath['loc_in'];
 			$aLocOut = $aAddonsFilePath['loc_out'];
-			
+
 			if(count($aLocIn) == count($aLocOut))
 			{
 				foreach($addons as $sAddonName => $params)
@@ -427,12 +427,12 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 					{
 						$params['install'] = 0;
 					}
-					
+
 					if (!isset($params['upgrade']))
 					{
 						$params['upgrade'] = 0;
 					}
-					
+
 					if (($install && $params['install']) || ($upgrade && $params['upgrade'] && version_compare($upgrade, $params['upgrade'], '>=')))
 					{
 						if (!is_dir($sInstallDir . '/' . $sAddonName))
@@ -440,10 +440,10 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 							throw new Exception(sprintf('The addon %s found in addons.ini file does not exists in the folder %s',$sAddonName, $sInstallDir));
 							return false;
 						}
-						
-						// if addon allready installed verify the version
-						
-						
+
+						// if addon already installed verify the version
+
+
 						$addon = bab_getAddonInfosInstance($sAddonName);
 						if (false !== $addon)
 						{
@@ -453,22 +453,22 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 								throw new Exception(sprintf('The addon %s found in addons.ini file does not contain an addonini.php file',$sAddonName));
 								return false;
 							}
-							
+
 							$newaddon = parse_ini_file($inifile, true);
-							
+
 							if (version_compare($newaddon['general']['version'], $addon->getIniVersion(), '<='))
 							{
 								// ignore this addon if the new version is not superior
 								continue;
 							}
 						}
-						
-						
+
+
 						foreach($aLocIn as $iKey2 => $sPathName)
 						{
 							$sOldName = $sInstallDir . '/' . $sAddonName . '/' . $aLocOut[$iKey2];
 							$sNewName = realpath('.').'/'.$aLocIn[$iKey2] . '/' . $sAddonName;
-		
+
 							if (is_dir($sOldName) && !bab_recursive_cp($sOldName, $sNewName)) {
 								throw new Exception(sprintf('failed to copy addon %s from path %s',$sAddonName, $sOldName));
 								return false;
@@ -476,18 +476,18 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 						}
 					}
 				}
-				
-				
-				
+
+
+
 				// add in database the default addons
 				bab_addonsInfos::insertMissingAddonsInTable();
 				bab_addonsInfos::clear();
-				
-				
+
+
 
 				// install database for the default addons
 				foreach($addons as $sAddonName => $params) {
-					
+
 					$addon = new bab_addonInfos();
 					if ($addon->setAddonName($sAddonName, false))
 					{
@@ -503,18 +503,18 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 					}
 				}
 			}
-		} 
-		else 
+		}
+		else
 		{
 			bab_debug('addons.ini is empty');
 		}
-	} 
-	else 
+	}
+	else
 	{
 		bab_debug('missing sInstallDir '.$sInstallDir);
 	}
 
-	
+
 	return true;
 }
 
@@ -532,31 +532,31 @@ function bab_newInstall() {
 
 	global $babBody, $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
-	
+
 	$GLOBALS['babLanguage'] = 'en';
 	$GLOBALS['babStyle'] = 'ovidentia.css';
 	$GLOBALS['babSkin'] = 'ovidentia';
-	
+
 	$ini = new bab_inifile();
 	$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
 
 	if (!$ini->isValid()) {
-	
-	
+
+
 		$GLOBALS['babJs'] = $GLOBALS['babInstallPath']."scripts/ovidentia.js";
 		$GLOBALS['babCssPath'] = bab_getCssUrl();
-		
+
 		$babDummy = new babDummy();
-		
+
 		$GLOBALS['babCss'] = bab_printTemplate($babDummy, "config.html", "babCss");
 		$GLOBALS['babMeta'] = bab_printTemplate($babDummy, "config.html", "babMeta");
-	
+
 		$GLOBALS['babSkinPath'] = $GLOBALS['babInstallPath']."skins/ovidentia/";
 
 		$babBody->setTitle(bab_translate('Ovidentia prerequisit verification'));
 		$babBody->addError(bab_translate('One or more prerequisites are not fullfilled, you must fix them before continuing to Ovidentia homepage'));
 		$babBody->babPopup($ini->getRequirementsHtml());
-		
+
 		exit;
 	}
 
@@ -564,21 +564,21 @@ function bab_newInstall() {
 	if (bab_upgradeAddonsFromInstall(true, null))
 	{
 		include_once $GLOBALS['babInstallPath'].'install.php';
-		
-		
+
+
 		$iniVersion = $ini->getVersion();
 		$arr = explode('.', $iniVersion);
-		
-		$babDB->db_query("INSERT INTO ".BAB_INI_TBL." (foption, fvalue) 
-		
-			VALUES 
+
+		$babDB->db_query("INSERT INTO ".BAB_INI_TBL." (foption, fvalue)
+
+			VALUES
 				('ver_major', ".$babDB->quote($arr[0])."),
 				('ver_minor', ".$babDB->quote($arr[1])."),
 				('ver_build', ".$babDB->quote($arr[2]).")
 		");
-		
+
 		return true;
-	
+
 	}
 
 	return false;
@@ -595,7 +595,7 @@ function bab_newInstall() {
 
 
 
-/** 
+/**
  * Test if table exists
  * @param	string	$table
  * @since	5.8.2
@@ -609,7 +609,7 @@ function bab_isTable($table) {
 }
 
 
-/** 
+/**
  * Test if field exists
  * @param	string	$table
  * @param	string	$field
@@ -628,15 +628,15 @@ function bab_isTableField($table, $field) {
  * Test if a key exists on a table
  * @param string $table
  * @param string $keyname
- * 
+ *
  * @since 7.3.90
- * 
+ *
  * @return bool
  */
 function bab_isKeyExists($table, $keyname) {
-	
+
 	global $babDB;
-	
+
 	$res = $babDB->db_query('SHOW KEYS FROM '.$babDB->backTick($table));
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		if (isset($arr['Key_name']) && $keyname === $arr['Key_name']) {
@@ -649,9 +649,9 @@ function bab_isKeyExists($table, $keyname) {
 
 
 
-/** 
+/**
  * Insert informations into message log
- * If the $uid is given, it must be unique for each $addon_name, the function will return false if the uid is allready inserted
+ * If the $uid is given, it must be unique for each $addon_name, the function will return false if the uid is already inserted
  * @since	6.3.0
  * @param	string	$addon_name
  * @param	string	$message
@@ -661,27 +661,27 @@ function bab_isKeyExists($table, $keyname) {
 function bab_setUpgradeLogMsg($addon_name, $message, $uid = '') {
 
 	global $babDB;
-	
+
 	if ('' !== $uid) {
 		$res = $babDB->db_query('
-			SELECT COUNT(*) FROM '.BAB_UPGRADE_MESSAGES_TBL.' 
+			SELECT COUNT(*) FROM '.BAB_UPGRADE_MESSAGES_TBL.'
 			WHERE addon_name='.$babDB->quote($addon_name).' AND uid='.$babDB->quote($uid).'
 		');
-		
+
 		list($n) = $babDB->db_fetch_array($res);
-		
+
 		if (0 !== (int) $n) {
 			return false;
 		}
 	}
-	
+
 	$babDB->db_query('
-		INSERT INTO '.BAB_UPGRADE_MESSAGES_TBL.' 
-			(addon_name, dt_insert, uid, message) 
-		VALUES 
+		INSERT INTO '.BAB_UPGRADE_MESSAGES_TBL.'
+			(addon_name, dt_insert, uid, message)
+		VALUES
 			('.$babDB->quote($addon_name).', NOW(), '.$babDB->quote($uid).', '.$babDB->quote($message).')
 	');
-	
+
 }
 
 /**
@@ -695,21 +695,21 @@ function bab_setUpgradeLogMsg($addon_name, $message, $uid = '') {
 function bab_getUpgradeLogMsg($addon_name, $uid) {
 
 	global $babDB;
-	
+
 	$res = $babDB->db_query('
-		SELECT 
-			message, 
-			dt_insert 
-		FROM 
-			'.BAB_UPGRADE_MESSAGES_TBL.' 
-		WHERE 
+		SELECT
+			message,
+			dt_insert
+		FROM
+			'.BAB_UPGRADE_MESSAGES_TBL.'
+		WHERE
 			addon_name='.$babDB->quote($addon_name).'
 			AND uid='.$babDB->quote($uid)
 	);
-	
+
 	if ($arr = $babDB->db_fetch_assoc($res)) {
 		return $arr;
 	}
-	
+
 	return false;
 }

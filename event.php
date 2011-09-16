@@ -115,7 +115,7 @@ class bab_cal_event
 		$this->icalendar = bab_getICalendars();
 		$this->icalendar->initializeCalendars();
 
-		
+
 
 		$this->rescat = $babDB->db_query("SELECT * FROM ".BAB_CAL_CATEGORIES_TBL." ORDER BY name");
 		}
@@ -136,12 +136,12 @@ class bab_cal_event
 			$this->cat['bgcolor'] = bab_toHtml($this->cat['bgcolor']);
 			$this->selected = isset($_POST['category']) && $_POST['category'] == $this->cat['id'] ? 'selected' : '';
 			return true;
-			} 
-			
+			}
+
 		return false;
 		}
 
-	
+
 	}
 
 
@@ -167,39 +167,39 @@ function newEvent()
 			$this->repeat = isset($GLOBALS['repeat'])? $GLOBALS['repeat']: 1;
 			$this->repeat_cb_checked = isset($_POST['repeat_cb']) ? 'checked' : '';
 
-			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear); 
+			$this->datebeginurl = $this->urlDate('dateBegin',$this->curmonth,$this->curyear);
 			$this->dateendurl = $this->urlDate('dateEnd',$this->curmonth,$this->curyear);
 			$this->repeat_dateend = $this->urlDate('repeat_dateend',$this->curmonth,$this->curyear);
 			$this->yearmin = $this->curyear - $this->ymin;
-			
-			
-			
+
+
+
 			if (isset($_REQUEST['date0']) && isset($_REQUEST['date1'])) {
 				$date0 = (int) bab_rp('date0', time());
 				$date1 = (int) bab_rp('date1', time());
 
 			} else {
-			
+
 				$date = $this->curyear.'-'.$this->curmonth.'-'.$this->curday;
-			
+
 				$date0 = bab_mktime($date.' '.bab_getICalendars()->starttime);
 				$endtime = bab_getICalendars()->endtime > bab_getICalendars()->starttime ? bab_getICalendars()->endtime : '23:00:00';
 				$date1 = bab_mktime($date.' '.$endtime);
-			} 
-		
-			
-			
+			}
+
+
+
 			$this->yearbegin = date("Y", $date0);
 			$this->monthbegin = date("m", $date0);
 			$this->daybegin = date("d", $date0);
-			
+
 			$this->yearend = date("Y", $date1);
 			$this->monthend = date("m", $date1);
 			$this->dayend = date("d", $date1);
-			
+
 			$this->timebegin = date("H:i", $date0);
 			$this->timeend = date("H:i", $date1);
-			
+
 
 			$this->repeat_yearend 	= !isset($_REQUEST['repeat_yearend']) 	? $this->curyear	: $_REQUEST['repeat_yearend'];
 			$this->repeat_monthend 	= !isset($_REQUEST['repeat_monthend']) 	? $this->curmonth	: $_REQUEST['repeat_monthend'];
@@ -207,15 +207,15 @@ function newEvent()
 
 
 			$this->colorvalue = bab_rp('color');
-			
+
 			$this->usebgcolor = false;
 			if (bab_getICalendars()->usebgcolor == 'Y') {
 				$this->usebgcolor = true;
 			}
 
-			
+
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
+
 			$editor = new bab_contentEditor('bab_calendar_event');
 			$editor->setContent($editor->getContent());
 //			$editor->setFormat('html');
@@ -239,14 +239,14 @@ function newEvent()
 			$this->bfree = true;
 
 			$this->avariability_message = bab_translate("The event is in conflict with a calendar");
-			
+
 			$this->days = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->hours = array(0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12);
 			$this->minutes = array(0, 5, 10, 15, 30, 45);
 			$this->alerttxt = bab_translate("Reminder");
-			
+
 			$this->groupe_notiftxt = bab_translate("Send the notification");
-			
+
 			if( isset($GLOBALS['babEmailReminder']) &&  $GLOBALS['babEmailReminder'])
 				{
 				$this->remailtxt = bab_translate("Use email reminder");
@@ -255,12 +255,12 @@ function newEvent()
 				{
 				$this->remailtxt = "";
 				}
-				
+
 			$this->arr['repeat_n_1'] = '';
 			$this->arr['repeat_n_2'] = '';
 			$this->arr['repeat_n_3'] = '';
 			$this->arr['repeat_n_4'] = '';
-				
+
 			if (isset($_POST) && count($_POST) > 0)
 				{
 				foreach($_POST as $k => $v)
@@ -278,7 +278,7 @@ function newEvent()
 				$this->timesel = isset($this->arr['timebegin']) ? $this->arr['timebegin'] : $this->timesel;
 				$this->colorvalue = isset($this->arr['color']) ? $this->arr['color'] : '';
 
-				
+
 				$this->rcheckedval = isset($this->arr['creminder']) ? 'checked' : '';
 				$this->rmcheckedval = isset($this->arr['remail']) ? 'checked' : '';
 				$this->arralert['day'] = isset($this->arr['rday']) ? $this->arr['rday'] : '';
@@ -303,8 +303,8 @@ function newEvent()
 				$this->arr['block'] = 'N';
 				$this->arr['bfree'] = 'N';
 				}
-				
-				
+
+
 			foreach (array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA') as $i)
 				{
 				$this->repeat_wd_checked[$i] = isset($this->arr['repeat_wd']) && in_array($i,$this->arr['repeat_wd']) ? 'checked' : '';
@@ -313,9 +313,9 @@ function newEvent()
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
 			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(bab_rp('selected_calendars', array()));
-			
+
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to create this event");
-			
+
 			$registry = bab_getRegistryInstance();
 			$registry->changeDirectory('/bab/calendar/');
 			$this->notify = $registry->getValue('notify', true);
@@ -333,7 +333,7 @@ function newEvent()
 					}
 				else
 					$this->selected = "";
-				
+
 				$i++;
 				return true;
 				}
@@ -472,7 +472,7 @@ function newEvent()
 					}
 				if( isset($this->arralert['day']) && $this->dval == $this->arralert['day'])
 					{
-					
+
 					$this->dselected = 'selected';
 					}
 				else
@@ -554,7 +554,7 @@ function newEvent()
 				return false;
 				}
 			}
-		
+
 		}
 
 	$temp = new temp();
@@ -598,14 +598,14 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 		var $brecevt;
 		var $updaterec;
 
-		var $iRule;		
-		var $sRuleCaption;	
-		var $sRuleSelected;	
+		var $iRule;
+		var $sRuleCaption;
+		var $sRuleSelected;
 		var $aRule = array();
 		var $sCopyCaption;
-		
+
 		public $dtstart;
-		
+
 		function temp(bab_EventCalendar $calendar, $cci, $view, $date, bab_CalendarPeriod $event)
 		{
 			global $babBody, $babDB, $BAB_SESS_USERID, $babBodyPopup;
@@ -627,36 +627,36 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->curview = $view;
 			$this->curdate = $date;
 			$this->dtstart = $event->getProperty('DTSTART');
-			
+
 			$this->groupe_notiftxt = bab_translate("Send the notification");
-			
+
 			$this->bupdrec = bab_rp('bupdrec', 2);
 
 			$this->sCopyCaption = bab_translate("Copy event");
-			
+
 			$this->aRule = array(
-				BAB_CAL_EVT_ALL 		=> bab_translate("All"), 
+				BAB_CAL_EVT_ALL 		=> bab_translate("All"),
 				BAB_CAL_EVT_CURRENT 	=> bab_translate("This occurence"),
 				BAB_CAL_EVT_PREVIOUS 	=> bab_translate("This occurence and all previous occurences"),
 				BAB_CAL_EVT_NEXT 		=> bab_translate("This occurence and all next occurences")
 			);
-			
-			
+
+
 			$selected_calendars = array();
-				
+
 			foreach($event->getCalendars() as $calendar)
 			{
 				$selected_calendars[] = $calendar->getUrlIdentifier();
 			}
-			
+
 			$this->calendars = calendarchoice('vacform', $selected_calendars);
-			
+
 			$data = $event->getData();
-			
+
 			$cat = bab_getCalendarCategory($event->getProperty('CATEGORIES'));
-			
+
 			$this->evtarr = array(
-			
+
 				'title' 				=> $event->getProperty('SUMMARY'),
 				'description' 			=> $data['description'],
 				'description_format' 	=> $data['description_format'],
@@ -669,14 +669,14 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				'block' 				=> isset($data['block']) ? $data['block'] : '',
 				'bfree' 				=> 'TRANSPARENT' === $event->getProperty('TRANSP') ? 'Y' : 'N'
 			);
-			
-			
-			
+
+
+
 			$this->bdelete = $calendar->canDeleteEvent($event);
-			
-			
+
+
 			$babBodyPopup->title = bab_toHtml(bab_translate("Calendar"). ":  ". $calendar->getName());
-			
+
 			$collection = $event->getCollection();
 
 			if (!empty($collection->hash) || $event->getProperty('RRULE')) {
@@ -685,8 +685,8 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			} else {
 				$this->brecevt = false;
 			}
-			
-			
+
+
 
 			$this->bshowupadetinfo = false;
 			if (bab_getICalendars()->show_update_info == 'Y') {
@@ -698,22 +698,22 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				} else {
 					$this->updatedate = '';
 				}
-				
+
 				$this->updateauthor = false;
 				if (isset($data['id_modifiedby']))
 				{
 					$this->updateauthor = bab_toHtml(bab_getUserName($data['id_modifiedby']));
 				}
 			}
-			
-			
+
+
 			$this->usebgcolor = false;
 			if (bab_getICalendars()->usebgcolor == 'Y') {
 				$this->usebgcolor = true;
 			}
-				
-			
-			
+
+
+
 			$this->ymin = 2;
 			$this->ymax = 5;
 			if (isset($_POST) && count($_POST) > 0) {
@@ -722,55 +722,55 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				}
 				$this->evtarr['id_cat'] = bab_pp('category');
 			}
-				
-			if (isset($this->evtarr['yearbegin'])) {	
+
+			if (isset($this->evtarr['yearbegin'])) {
 				$this->yearbegin = $this->evtarr['yearbegin'];
 			} else {
 				$this->yearbegin = mb_substr($this->evtarr['start_date'], 0,4 );
 			}
-			
+
 			if (isset($this->evtarr['daybegin'])) {
 				$this->daybegin = $this->evtarr['daybegin'];
 			} else {
 				$this->daybegin = mb_substr($this->evtarr['start_date'], 8, 2);
 			}
-			
+
 			if (isset($this->evtarr['monthbegin'])) {
 				$this->monthbegin = $this->evtarr['monthbegin'];
 			} else {
 				$this->monthbegin = mb_substr($this->evtarr['start_date'], 5, 2);
 			}
-			
+
 			if (isset($this->evtarr['yearend'])) {
 				$this->yearend = $this->evtarr['yearend'];
 			} else {
 				$this->yearend = mb_substr($this->evtarr['end_date'], 0,4 );
 			}
-			
+
 			if (isset($this->evtarr['dayend'])) {
 				$this->dayend = $this->evtarr['dayend'];
 			} else {
 				$this->dayend = mb_substr($this->evtarr['end_date'], 8, 2);
 			}
-			
+
 			if (isset($this->evtarr['monthend'])) {
 				$this->monthend = $this->evtarr['monthend'];
 			} else {
 				$this->monthend = mb_substr($this->evtarr['end_date'], 5, 2);
 			}
-			
+
 			if (isset($this->evtarr['timebegin'])) {
 				$this->timebegin = $this->evtarr['timebegin'];
 			} else {
 				$this->timebegin = mb_substr($this->evtarr['start_date'], 11, 5);
 			}
-			
+
 			if (isset($this->evtarr['timeend'])) {
 				$this->timeend = $this->evtarr['timeend'];
 			} else {
 				$this->timeend = mb_substr($this->evtarr['end_date'], 11, 5);
 			}
-			
+
 
 			$tmp = explode(':',$this->timebegin);
 			$this->minbegin = $tmp[0]*60+$tmp[1];
@@ -803,7 +803,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 
 			$editor = new bab_contentEditor('bab_calendar_event');
-			
+
 
 			$tmp = $editor->getContent();
 			if ($tmp == '') {
@@ -825,11 +825,11 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 			$this->availability_msg_list = bab_event_posted::availabilityConflictsStore('MSG');
 			$this->display_availability_message = 0 < count($this->availability_msg_list);
-			
+
 			$this->availability_mandatory = bab_event_posted::availabilityIsMandatory(explode(',', $this->calid));
-			
+
 			$this->t_availability_mandatory = bab_translate("One of the selected calendars require availability to modify this event");
-			
+
 			$registry = bab_getRegistryInstance();
 			$registry->changeDirectory('/bab/calendar/');
 			$this->notify = $registry->getValue('notify', true);
@@ -837,26 +837,26 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 		function getNextRule()
 		{
-			$this->iRule			= '';		
+			$this->iRule			= '';
 			$this->sRuleCaption		= '';
 			$this->sRuleSelected	= '';
-			
+
 			$aDatas = each($this->aRule);
 			if(false !== $aDatas)
 			{
-				$this->iRule		= bab_toHtml($aDatas['key']);		
-				$this->sRuleCaption	= bab_toHtml($aDatas['value']);	
+				$this->iRule		= bab_toHtml($aDatas['key']);
+				$this->sRuleCaption	= bab_toHtml($aDatas['value']);
 
 				if((int) $this->bupdrec === (int) $aDatas['key'])
 				{
 					$this->sRuleSelected = 'selected="selected"';
 				}
-				
+
 				return true;
 			}
 			return false;
 		}
-			
+
 		function getnextcat()
 			{
 			global $babDB;
@@ -905,7 +905,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 					}
 				else
 					$this->selected = "";
-				
+
 				$i++;
 				return true;
 				}
@@ -1026,36 +1026,36 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 		}
 
-		
+
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	if (!isset($calendar))
 	{
 		throw new Exception('Access denied to calendar '.$idcal);
 	}
-	
-	
-	
-	
+
+
+
+
 	$backend = $calendar->getBackend();
-	
+
 	$collection = $backend->CalendarEventCollection($calendar);
-	
+
 	$event = $backend->getPeriod($collection, $evtid, $dtstart);
-	
+
 	if (!($event instanceof bab_CalendarPeriod))
 	{
 		bab_debug('Error, the event '.$evtid.' cannot be reached with the backend '.get_class($backend));
 		$babBody->addError(bab_translate('The requested event could not be found or the calendar is not accessible'));
 		$babBody->babpopup('');
 	}
-	
-	
+
+
 	if (!$calendar->canUpdateEvent($event))
 	{
 		throw new Exception('Access denied to event modification');
 	}
-	
-	
+
+
 	$temp = new temp($calendar, $cci, $view, $date, $event);
 	$babBody->addStyleSheet('calendar.css');
 	$babBody->babecho(bab_printTemplate($temp,"event.html", "scripts"));
@@ -1065,7 +1065,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 function deleteEvent()
 	{
 	global $babBody,$babBodyPopup;
-	
+
 	class deleteEventCls extends bab_cal_event
 		{
 		var $warning;
@@ -1081,35 +1081,35 @@ function deleteEvent()
 		function deleteEventCls()
 			{
 			$iReccurenceRule = (int) isset($_POST['bupdrec']) ? $_POST['bupdrec'] : 2;
-			
+
 			switch($iReccurenceRule)
 			{
 				case 1://All
 					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
 					$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
 					break;
-					
+
 				case 3://This event and previous
 					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all the previous");
 					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 					break;
-					
+
 				case 4://This event and next
 					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all the next");
 					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 					break;
-					
+
 				default:
 				case 2: //This event
 					$this->message = bab_translate("Are you sure you want to delete this event");
 					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
 					break;
 			}
-			
+
 			$calendar = bab_getIcalendars()->getEventCalendar($_POST['calid']);
 			$backend = $calendar->getBackend();
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_pp('evtid'), bab_pp('dtstart', null));
-			
+
 			$this->title = $period->getProperty('SUMMARY');
 			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".bab_pp('evtid')."&dtstart=".bab_pp('dtstart')."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids']);
 			$this->yes = bab_translate("Yes");
@@ -1121,9 +1121,9 @@ function deleteEvent()
 	$temp = new deleteEventCls();
 	$babBodyPopup->babecho(	bab_printTemplate($temp,"warning.html", "warningyesno"));
 	}
-	
-	
-	
+
+
+
 
 
 /**
@@ -1134,13 +1134,13 @@ function deleteEvent()
 function addEvent(&$message)
 	{
 	global $babBody;
-	
+
 	$posted = new bab_event_posted();
 	$posted->createArgsData();
-	
+
 	if (!$posted->isValid($message))
 	{
-		
+
 		return false;
 	}
 
@@ -1148,17 +1148,17 @@ function addEvent(&$message)
 	if ($posted->availabilityCheckAllEvents($message)) {
 		return $posted->save($message);
 	}
-	
-	
+
+
 	// if availability message displayed and the event is submited
 	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
-		
+
 		// if availability is NOT mandatory
 		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
 			return $posted->save($message);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1181,17 +1181,17 @@ function updateEvent(&$message)
 	if ($posted->availabilityCheckAllEvents($message)) {
 		return $posted->save($message);
 	}
-	
-	
+
+
 	// if availability message displayed and the event is submited
 	if (isset($_POST['availability_displayed']) && !isset($_POST['test_conflicts'])) {
-		
+
 		// if availability is NOT mandatory
 		if (!bab_event_posted::availabilityIsMandatory($posted->args['selected_calendars'])) {
 			return $posted->save($message);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -1208,33 +1208,33 @@ function confirmDeleteEvent($calid, $bupdrec)
 	$evtid = bab_rp('evtid');
 	$dtstart = bab_rp('dtstart');
 	$calendar = bab_getICalendars()->getEventCalendar($calid);
-	
+
 	if (!isset($calendar))
 	{
 		throw new Exception('Missing calendar');
 	}
-	
+
 	$backend = $calendar->getBackend();
 	/*@var $backend Func_CalendarBackend */
-	
+
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-	
+
 	if (!isset($calendarPeriod))
 	{
 		throw new Exception('Event not found');
 	}
-	
+
 	$collection = $calendarPeriod->getCollection();
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
-	
-	
+
+
 	if (!$calendar->canDeleteEvent($calendarPeriod))
 	{
 		return false;
 	}
-	
+
 	$saved_backend = array();
-	
+
 	foreach($calendarPeriod->getCalendars() as $associated_calendar)
 	{
 		$associated_backend = $associated_calendar->getBackend();
@@ -1243,7 +1243,7 @@ function confirmDeleteEvent($calid, $bupdrec)
 		{
 			try {
 				$associated_backend->deletePeriod($calendarPeriod);
-			} 
+			}
 			catch(Exception $e)
 			{
 				// ignore missing event in backend
@@ -1251,15 +1251,15 @@ function confirmDeleteEvent($calid, $bupdrec)
 			$saved_backend[$urlidentifier] = 1;
 		}
 	}
-	
+
 	$backend->deletePeriod($calendarPeriod);
-	
-	
+
+
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
-	
+
 	// test access on all collection
-	
+
 	foreach($collection as $period)
 	{
 		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
@@ -1267,18 +1267,18 @@ function confirmDeleteEvent($calid, $bupdrec)
 	}
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
-	
+
 	$notifyEvent = new bab_eventAfterEventDelete;
 	$notifyEvent->setPeriod($calendarPeriod);
 
-	
+
 	foreach($calendarPeriod->getCalendars() as $calendar) {
 		$notifyEvent->addCalendar($calendar);
 	}
-	
+
 	bab_fireEvent($notifyEvent);
-		
-	
+
+
 	$event = new bab_eventPeriodModified($date_min, $date_max, false);
 	$event->types = BAB_PERIOD_CALEVENT;
 	bab_fireEvent($event);
@@ -1299,35 +1299,35 @@ function calendarquerystring()
 function eventAvariabilityCheck()
 	{
 	global $babDB, $babBody;
-	
-	
+
+
 	if (isset($_POST['bfree']) && $_POST['bfree'] == 'Y' ) {
 		// event is free, allways available
 		return true;
 	}
-	
-	
+
+
 	$calid = explode(',',$GLOBALS['calid']);
 	$bfree = isset($_POST['bfree']) ? $_POST['bfree'] : 'N';
-	
-	
-	
+
+
+
 	if( isset($_POST['monthbegin'])) {
-	
+
 		// one event or multiple event in creation
-		
+
 
 		$timebegin = isset($_POST['timebegin']) ? $_POST['timebegin'] : bab_getICalendars()->starttime;
 		$timeend = isset($_POST['timeend']) ? $_POST['timeend'] : bab_getICalendars()->endtime;
-		
+
 		$tb = explode(':',$timebegin);
 		$te = explode(':',$timeend);
-	
+
 		$begin = mktime( $tb[0],$tb[1],0,$_POST['monthbegin'], $_POST['daybegin'], $_POST['yearbegin'] );
 		$end = mktime( $te[0],$te[1],0,$_POST['monthend'], $_POST['dayend'], $_POST['yearend'] );
-		
+
 		$available_status = bab_event_posted::availabilityCheck($calid, $begin, $end, bab_pp('evtid', false));
-		
+
 	}
 	else {
 		// multiple events in modification
@@ -1337,9 +1337,9 @@ function eventAvariabilityCheck()
 			trigger_error('Unexpected error, missing evtid');
 			return false;
 		}
-		
+
 		$available_status = true;
-		
+
 		$res = $babDB->db_query('SELECT hash FROM '.BAB_CAL_EVENTS_TBL.' WHERE id='.$babDB->quote($evtid));
 		if ($arr = $babDB->db_fetch_assoc($res)) {
 			$res = $babDB->db_query('SELECT id, start_date, end_date FROM '.BAB_CAL_EVENTS_TBL.' WHERE hash='.$babDB->quote($arr['hash']));
@@ -1347,25 +1347,25 @@ function eventAvariabilityCheck()
 				$evtid 	= $arr['id'];
 				$begin 	= bab_mktime($arr['start_date']);
 				$end 	= bab_mktime($arr['end_date']);
-				
+
 				if (false === bab_event_posted::availabilityCheck($calid, $begin, $end, $evtid)) {
 					$available_status = false;
 				}
 			}
 		}
 	}
-	
-	// if period unavailable and availability allready displayed and no mandatory calendars on conflicts 
+
+	// if period unavailable and availability already displayed and no mandatory calendars on conflicts
 	if (
-		false === $available_status 
-		&& isset($_POST['availability_displayed']) 
-		&& !isset($_POST['test_conflicts']) 
+		false === $available_status
+		&& isset($_POST['availability_displayed'])
+		&& !isset($_POST['test_conflicts'])
 		&& !bab_event_posted::availabilityIsMandatory($calid)
 		) {
-		
+
 		$available_status = true;
 	}
-	
+
 	return $available_status;
 }
 
@@ -1455,7 +1455,7 @@ if (isset($_REQUEST['action']))
 				printBabBodyPopup();
 				exit;
 				}
-			
+
 			break;
 		}
 	}
@@ -1466,7 +1466,7 @@ switch($idx)
 	{
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
-		if( !isset($popupmessage)) { 
+		if( !isset($popupmessage)) {
 			$popupmessage = bab_translate("Your event has been updated");
 		}
 		switch($view)
@@ -1485,9 +1485,9 @@ switch($idx)
 				$refreshurl = "";
 				break;
 		}
-		
+
 		$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
-		
+
 		popupUnload($popupmessage, $refreshurl, false, $autoclose);
 		break;
 

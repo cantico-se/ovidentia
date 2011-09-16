@@ -2163,17 +2163,17 @@ function bab_canCurrentUserUpdateUser($userId) {
 	} else {
 		return false;
 	}
-	
+
 	if (!bab_isUserInDelegation($dg, $userId))
 	{
 		return false;
 	}
-	
+
 	if (bab_isUserOutOfDelegation($dg, $userId))
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -2305,12 +2305,12 @@ function bab_updateUserPasswordById($userId, $newPassword, $newPassword2, $ignor
 		$error = bab_translate("Passwords not match !!");
 		return false;
 	}
-	
+
 	$minPasswordLengh = 6;
 	if(ISSET($GLOBALS['babMinPasswordLength']) && is_numeric($GLOBALS['babMinPasswordLength'])){
 		$minPasswordLengh = $GLOBALS['babMinPasswordLength'];
 	}
-	
+
 	/* Test if the password have at least $GLOBALS['babMinPasswordLength'] or 6 characters */
 	if (!$ignoreSixCharactersMinimum) {
 		if (mb_strlen($newPassword) < $minPasswordLengh) {
@@ -2933,7 +2933,7 @@ class bab_functionality {
 	 * Include php file with the functionality class
 	 * @see bab_functionality::get()
 	 * @param	string	$path		path to functionality
-	 * @return string | false		the object class name or false if the file allready included or false if the include failed
+	 * @return string | false		the object class name or false if the file already included or false if the include failed
 	 */
 	public static function includefile($path) {
 		$include_result = /*@*/include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_FILENAME;
@@ -3167,7 +3167,7 @@ function bab_downloadFile(bab_Path $path, $filename = null, $inline = true, $exi
 		if ($exit) {
 			exit;
 		}
-		
+
 		return true;
 	}
 

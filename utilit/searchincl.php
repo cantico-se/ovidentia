@@ -26,24 +26,24 @@ include_once "base.php";
 
 function bab_highlightWord( $w, $text)
 {
-	
+
 	$w = trim($w);
 	if (empty($w)) {
 		return $text;
 	}
 	$arr = explode(' ',$w);
-	
+
 	foreach($arr as $mot)
 		{
 
 		$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($mot,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
 
 		$he = bab_toHtml($mot);
-		
+
 		if ($he != $mot) {
 			$text = str_replace('\"', '"', mb_substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#(" . preg_quote($he,'#') . ")#i', '<span class=\"Babhighlight\">\\\\1</span>', '\\0')", '>' . $text . '<'), 1, -1));
 			}
-    
+
 		}
 
 	return trim($text);
@@ -55,7 +55,7 @@ function bab_highlightWord( $w, $text)
 function bab_sql_finder_he($tbl, $str, $not="")
 	{
 	global $babDB;
-	
+
 	if ($not == "NOT") $op = "AND";
 	else $op =  "OR";
 	$tmp = bab_toHtml($str);
@@ -68,12 +68,12 @@ function bab_sql_finder($req2,$tablename,$option = "OR",$req1="")
 	global $babDB;
 
 	$like = '';
-	
+
 	switch($option) {
 		case 'AND':
 		case 'OR':
 		case 'NOT':
-		
+
 		break;
 		default:
 			$option = 'OR';
@@ -96,7 +96,7 @@ if (trim($req1) != "") {
 		}
 	}
 
-if (trim($req2) != "") 
+if (trim($req2) != "")
 	{
 	$tb = explode(" ",trim($req2));
 	switch ($option)
@@ -231,7 +231,7 @@ function bab_searchIndexedFilesFromCriteria(bab_SearchCriteria $criteria, $objec
 
 /**
  * Add a new index object
- * if the $name is allready used for the same addon, the function return false without any error message
+ * if the $name is already used for the same addon, the function return false without any error message
  * if indexing is disabled, the function return false without any error message
  * @param string $name
  * @param boolean $onload
@@ -248,16 +248,16 @@ function bab_setIndexObject($object, $name, $onload, $disabled = false) {
 		return false;
 
 	$res = $db->db_query("
-		
-		SELECT 
-			COUNT(*) 
-		FROM 
-			".BAB_INDEX_FILES_TBL." 
-		WHERE 
-			 name='".$db->db_escape_string($name)."' 
+
+		SELECT
+			COUNT(*)
+		FROM
+			".BAB_INDEX_FILES_TBL."
+		WHERE
+			 name='".$db->db_escape_string($name)."'
 			OR object ='".$db->db_escape_string($object)."'
 	");
-	
+
 
 	list($n) = $db->db_fetch_array($res);
 	if ($n > 0)
@@ -277,16 +277,16 @@ function bab_setIndexObject($object, $name, $onload, $disabled = false) {
 	if ($obj->createObject($name, $onload)) {
 
 		$db->db_query("
-			
-				INSERT INTO 
-					".BAB_INDEX_FILES_TBL." 
+
+				INSERT INTO
+					".BAB_INDEX_FILES_TBL."
 					(
 						name,
 						object,
 						index_onload,
 						index_disabled
-					) 
-				VALUES 
+					)
+				VALUES
 					(
 						'".$db->db_escape_string($name)."',
 						'".$db->db_escape_string($object)."',
@@ -316,7 +316,7 @@ function bab_removeIndexObject($object) {
 	if (false === $engine) {
 		return false;
 	}
-	
+
 	switch($engine['name'])
 		{
 		case 'swish':
@@ -336,9 +336,9 @@ function bab_removeIndexObject($object) {
 
 
 function bab_removeUploadPath($str) {
-	
+
 	$last_char = mb_substr($GLOBALS['babUploadPath'],-1);
-	
+
 	if ('/' == $last_char || '\\' == $last_char) {
 		return mb_substr($str, mb_strlen($GLOBALS['babUploadPath']));
 	} else {
@@ -352,13 +352,13 @@ function bab_removeUploadPath($str) {
  */
 function bab_removeFmUploadPath($str) {
 	$path = bab_removeUploadPath($str);
-	
+
 	$arr = explode('/', $path);
-	
+
 	unset($arr[0]);
 	unset($arr[1]);
 	unset($arr[2]);
-	
+
 	return implode('/', $arr);
 }
 
@@ -432,30 +432,30 @@ class bab_SearchDefaultForm {
 	 */
 	private static function addFromCriterions(bab_SearchCriteria $crit, bab_SearchTestable $testable) {
 
-		
-		
+
+
 		$primary_search = bab_rp('what');
 		$secondary_search = bab_rp('what2');
 		$option = bab_rp('option');
 		$delegation = bab_rp('delegation', null);
-		
-		
-		
+
+
+
 
 		if ($primary_search) {
-			
+
 			$primary_search_criteria = self::searchStringToCriteria($testable, $primary_search);
-			
+
 			if (!($primary_search_criteria instanceOf bab_SearchInvariant)) {
 				$crit = $crit->_AND_($primary_search_criteria);
 			}
 		}
 
 		if ($secondary_search) {
-			
-			
+
+
 			$secondary_search_criteria = self::searchStringToCriteria($testable, $secondary_search);
-			
+
 			if (!($secondary_search_criteria instanceOf bab_SearchInvariant)) {
 				switch($option) {
 
@@ -474,23 +474,23 @@ class bab_SearchDefaultForm {
 				}
 			}
 		}
-		
-		
+
+
 		if (null !== $delegation && ($testable instanceOf bab_SearchRealm) && isset($testable->id_dgowner) && 'DGAll' !== $delegation)
 		{
 			// if id_dgowner field exist on search real, filter by delegation
-			
+
 			require_once dirname(__FILE__).'/delegincl.php';
 			$arr = bab_getUserVisiblesDelegations();
-			
+
 			if (isset($arr[$delegation]))
 			{
 				$id_dgowner = $arr[$delegation]['id'];
 				$crit = $crit->_AND_($testable->id_dgowner->is($id_dgowner));
 			}
 		}
-		
-		
+
+
 		return $crit;
 	}
 
@@ -500,7 +500,7 @@ class bab_SearchDefaultForm {
 	 * @return array
 	 */
 	public static function getTagsReferences() {
-		
+
 		$option = bab_rp('option');
 
 		require_once dirname(__FILE__) . '/tagApi.php';
@@ -508,7 +508,7 @@ class bab_SearchDefaultForm {
 
 		$primary = array();
 		$secondary = array();
-		
+
 
 		if (bab_rp('what')) {
 			$primary_search 	= $oRefMgr->get(bab_rp('what'));
@@ -519,7 +519,7 @@ class bab_SearchDefaultForm {
 			}
 		}
 
-		
+
 		if (bab_rp('what2')) {
 			$secondary_search 	= $oRefMgr->get(bab_rp('what2'));
 			if ($secondary_search) {
@@ -549,7 +549,7 @@ class bab_SearchDefaultForm {
 	/**
 	 * add default search form criteria to testable object
 	 * the criteria is generated from the default form search
-	 * 
+	 *
 	 * @param	bab_SearchTestable $testable		search realm or search field
 	 * @return 	bab_SearchCriteria
 	 */
@@ -583,7 +583,7 @@ class bab_SearchDefaultForm {
 		if (!isset($realm->search)) {
 			return $crit;
 		}
-		
+
 		return self::addFromCriterions($crit, $realm->search);
 	}
 
@@ -594,7 +594,7 @@ class bab_SearchDefaultForm {
 	/**
 	 * Create a <code>bab_searchCriteria</code> from a string of the search form
 	 * used for primary_search and secondary_search
-	 * 
+	 *
 	 * @param	bab_searchTestable	$testable
 	 * @param	string				$search
 	 * @param	string				$operator
@@ -603,11 +603,11 @@ class bab_SearchDefaultForm {
 	public static function searchStringToCriteria($testable, $search, $operator = '_AND_') {
 
 		$criteria = new bab_SearchInvariant;
-		
+
 		if (preg_match_all('/(?:([^"][^\s]+)|(?:"([^"]+)")|(\w))\s*/', $search, $matchs)) {
-		
+
 			$arr = array();
-			
+
 			foreach($matchs[1] as $key => $match) {
 				if (trim($match)) {
 					$arr[] = trim($match);
@@ -615,23 +615,23 @@ class bab_SearchDefaultForm {
 				if (trim($matchs[2][$key])) {
 					$arr[] = trim($matchs[2][$key]);
 				}
-				
+
 				if (trim($matchs[3][$key])) {
 					$arr[] = trim($matchs[3][$key]);
 				}
 			}
 
-			
+
 			foreach($arr as $keyword) {
-			
+
 				$keyword = trim($keyword, ' ,;.');
-			
+
 				if ($keyword) {
 					$criteria = $criteria->$operator($testable->contain($keyword));
 				}
 			}
 		}
-		
+
 		return $criteria;
 	}
 

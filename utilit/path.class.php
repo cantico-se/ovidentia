@@ -657,7 +657,7 @@ class bab_Path implements SeekableIterator, Countable {
 	public function createDir() {
 
 		if (@is_dir($this->tostring())) {
-			// the folder allready exists
+			// the folder already exists
 			return true;
 		}
 

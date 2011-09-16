@@ -47,32 +47,32 @@ class bab_PublicationPathsEnv
 	private $iIdDelegation			= null;
 	private $aError					= array();
 
-	
+
 	public function __construct()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Set up all the path
 	 *
 	 * @param int $iIdDelegation The delegation identifier
-	 * 
+	 *
 	 * @return bool	True on success, false on error. To get the error call the method getError()
 	 */
 	public function setEnv($iIdDelegation)
 	{
 		require_once dirname(__FILE__) . '/pathUtil.class.php';
 		require_once dirname(__FILE__) . '/fileincl.php';
-		
+
 		$this->iIdDelegation	= (int) $iIdDelegation;
 		$this->sUploadPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
-		
+
 		if(!$this->checkDirAccess($this->sUploadPath))
 		{
 			return false;
-		}		
-		
+		}
+
 		$aPath = array(
 			'root'			=> 'articles',
 			'categories'	=> 'articles/DG' . $this->iIdDelegation . '/categoriesImg',
@@ -81,89 +81,89 @@ class bab_PublicationPathsEnv
 			'draftArticles'	=> 'articles/draftsImg',
 			'temp'			=> 'articles/temp',
 		);
-		
+
 		foreach($aPath as $sKey => $sRelativePath)
 		{
 			BAB_FmFolderHelper::makeDirectory($this->sUploadPath, $sRelativePath);
 		}
-		
+
 		$this->sRootImgPath				= $this->sUploadPath . $aPath['root'] . '/';
 		$this->sCategoriesImgPath		= $this->sUploadPath . $aPath['categories'] . '/';
 		$this->sTopicsImgPath			= $this->sUploadPath . $aPath['topics'] . '/';
 		$this->sArticlesImgPath			= $this->sUploadPath . $aPath['articles'] . '/';
 		$this->sDraftsArticlesImgPath	= $this->sUploadPath . $aPath['draftArticles'] . '/';
 		$this->sTempPath				= $this->sUploadPath . $aPath['temp'] . '/';
-		
+
 		$this->checkDirAccess($this->sRootImgPath);
 		$this->checkDirAccess($this->sCategoriesImgPath);
 		$this->checkDirAccess($this->sTopicsImgPath);
 		$this->checkDirAccess($this->sArticlesImgPath);
 		$this->checkDirAccess($this->sDraftsArticlesImgPath);
 		$this->checkDirAccess($this->sTempPath);
-		
+
 		return (0 === count($this->aError));
 	}
-	
+
 	/**
-	 * Returns the path to the image(s) associated with category, 
+	 * Returns the path to the image(s) associated with category,
 	 * the path is based on the identifier of delegation.
-	 * The path is terminated with a '/'. 
+	 * The path is terminated with a '/'.
 	 *
-	 * @param int $iIdCategory The identifier of the category to which the path must be returned 
-	 * 
+	 * @param int $iIdCategory The identifier of the category to which the path must be returned
+	 *
 	 * @return string The path to the image of the category
 	 */
 	public function getCategoryImgPath($iIdCategory)
 	{
 		return $this->sCategoriesImgPath . $iIdCategory . '/';
 	}
-	
+
 	/**
-	 * Returns the path to the image(s) associated with topic, 
+	 * Returns the path to the image(s) associated with topic,
 	 * the path is based on the identifier of delegation.
-	 * The path is terminated with a '/'. 
+	 * The path is terminated with a '/'.
 	 *
-	 * @param int $iIdTopic The identifier of the topic to which the path must be returned 
-	 * 
+	 * @param int $iIdTopic The identifier of the topic to which the path must be returned
+	 *
 	 * @return string The path to the image of the topic
 	 */
 	public function getTopicImgPath($iIdTopic)
 	{
 		return $this->sTopicsImgPath . $iIdTopic . '/';
 	}
-	
+
 	/**
-	 * Returns the path to the image(s) associated with article, 
+	 * Returns the path to the image(s) associated with article,
 	 * the path is based on the identifier of delegation.
-	 * The path is terminated with a '/'. 
+	 * The path is terminated with a '/'.
 	 *
-	 * @param int $iIdArticle The identifier of the article to which the path must be returned 
-	 * 
+	 * @param int $iIdArticle The identifier of the article to which the path must be returned
+	 *
 	 * @return string The path to the image of the article
 	 */
 	public function getArticleImgPath($iIdArticle)
 	{
 		return $this->sArticlesImgPath . $iIdArticle . '/';
 	}
-	
+
 	/**
-	 * Returns the path to the image(s) associated with article, 
+	 * Returns the path to the image(s) associated with article,
 	 * the path is based on the identifier of delegation.
-	 * The path is terminated with a '/'. 
-	 * 
+	 * The path is terminated with a '/'.
+	 *
 	 * @param int $iIdDraft The identifier of the draft article to which the path must be returned
-	 * 
+	 *
 	 * @return string The path to the draft image of the article
 	 */
 	public function getDraftArticleImgPath($iIdDraft)
 	{
 		return $this->sDraftsArticlesImgPath . $iIdDraft . '/';
 	}
-	
-	
+
+
 	/**
-	 * Returns the temp path used by the publication 
-	 * The path is terminated with a '/'. 
+	 * Returns the temp path used by the publication
+	 * The path is terminated with a '/'.
 	 *
 	 * @return string The temp path used by the publication
 	 */
@@ -171,19 +171,19 @@ class bab_PublicationPathsEnv
 	{
 		return $this->sTempPath;
 	}
-	
+
 	public function getUploadPath()
 	{
 		return $this->sUploadPath;
 	}
-	
+
 	/**
 	 * Return a value that indicate if the directory is accessible.
 	 * To be accessible the $sFullPathName must be a directory,
 	 * must be writable, must be readable.
 	 *
 	 * @param string $sFullPathName The full path name of the directory
-	 * 
+	 *
 	 * @return bool	True on success, false on error. To get the error call the method getError()
 	 */
 	public function checkDirAccess($sFullPathName)
@@ -191,28 +191,28 @@ class bab_PublicationPathsEnv
 		$Success	= true;
 		$aSearch	= array('%directory%');
 		$aReplace	= array($sFullPathName);
-		
+
 		if(!is_dir($sFullPathName))
 		{
 			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% does not exits")));
-			return false;			
+			return false;
 		}
-		
+
 		if(!is_writable($sFullPathName))
 		{
 			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% is not writeable")));
 			$Success = false;
 		}
-		
+
 		if(!is_readable($sFullPathName))
 		{
 			$this->addError(str_replace($aSearch, $aReplace, bab_translate("The directory %directory% is not readable")));
 			$Success = false;
 		}
-		
+
 		return $Success;
 	}
-	
+
 	/**
 	 * Add an error
 	 *
@@ -222,7 +222,7 @@ class bab_PublicationPathsEnv
 	{
 		$this->aError[] = $sMessage;
 	}
-	
+
 	/**
 	 * Return a value that indicate if there is error
 	 *
@@ -232,7 +232,7 @@ class bab_PublicationPathsEnv
 	{
 		return (0 !== count($this->aError));
 	}
-	
+
 	/**
 	 * Return an array of error string
 	 *
@@ -253,12 +253,12 @@ class bab_PublicationPathsEnv
 class bab_PublicationImageUploader
 {
 	private $aError	= array();
-	
+
 	public function __construct()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Upload an image to a category, this function does not
 	 * test the validity of the category identifier.
@@ -267,7 +267,7 @@ class bab_PublicationImageUploader
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdCategory		The category identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * 
+	 *
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
@@ -276,16 +276,16 @@ class bab_PublicationImageUploader
 		$sFunctionName = 'getCategoryImgPath';
 		return $this->uploadImage($iIdDelegation, $iIdCategory, $sKeyOfPhpFile, $sFunctionName);
 	}
-	
+
 	/**
 	 * Upload an image to a topic, this function does not
 	 * test the validity of the topic identifier.
 	 * The identifier is used to determine the upload path
-	 * 
+	 *
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdTopic			The topic identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * 
+	 *
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
@@ -294,16 +294,16 @@ class bab_PublicationImageUploader
 		$sFunctionName = 'getTopicImgPath';
 		return $this->uploadImage($iIdDelegation, $iIdTopic, $sKeyOfPhpFile, $sFunctionName);
 	}
-	
+
 	/**
 	 * Upload an image to an article, this function does not
 	 * test the validity of the article identifier.
 	 * The identifier is used to determine the upload path
-	 * 
+	 *
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $iIdArticle		The article identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * 
+	 *
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
@@ -314,15 +314,15 @@ class bab_PublicationImageUploader
 		return $this->uploadImage($iIdDelegation, $iIdArticle, $sKeyOfPhpFile, $sFunctionName);
 	}
 	//*/
-	
+
 	/**
 	 * Upload an image to an draft article, this function does not
 	 * test the validity of the article identifier.
 	 * The identifier is used to determine the upload path
-	 * 
+	 *
 	 * @param int $iIdDraft			The identifier of the draft article
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * 
+	 *
 	 * @return string|false			The full path name of the uploaded image on success, false otherwise.
 	 * 								To get the error call the method getError().
 	 */
@@ -332,47 +332,47 @@ class bab_PublicationImageUploader
 		$iIdDelegation	= 0;
 		return $this->uploadImage($iIdDelegation, $iIdDraft, $sKeyOfPhpFile, $sFunctionName);
 	}
-	
+
 	/**
-	 * Upload an image to a publication image folder, 
+	 * Upload an image to a publication image folder,
 	 * this function does not test the validity of the $iIdObject.
 	 * The $iIdObject is used to determine the upload path
-	 * 
+	 *
 	 * @param int 		$iIdDelegation	The delegation identifier
 	 * @param int 		$iIdObject		The object identifier (iIdCategory, iIdTopic, iIdArticle)
 	 * @param int		$sKeyOfPhpFile	The index of the $_FILES
 	 * @param string	$sFunctionName	Depending the nature of the $iIdObject, this variable
 	 * 									can be one of ('getCategoryImgPath', 'getTopicImgPath', 'getArticleImgPath')
-	 * 
+	 *
 	 * @return string|false				The full path name of the uploaded image on success, false otherwise.
 	 * 									To get the error call the method getError().
 	 */
 	private function uploadImage($iIdDelegation, $iIdObject, $sKeyOfPhpFile, $sFunctionName)
 	{
 		require_once $GLOBALS['babInstallPath'] . 'utilit/uploadincl.php';
-		
+
 		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
 		if(!($oFileHandler instanceof bab_fileHandler))
 		{
 			return false;
 		}
-		
+
 		if(true === $this->fileSizeToLarge($oFileHandler))
 		{
 			return false;
 		}
-		
+
 		if(false === $this->mimeSupported($oFileHandler))
 		{
 			return false;
 		}
-		
+
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
 		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
 		{
 			return false;
 		}
-		
+
 		$sPathName = $oPubPathEnv->$sFunctionName($iIdObject);
 		if(!is_dir($sPathName))
 		{
@@ -382,7 +382,7 @@ class bab_PublicationImageUploader
 				return false;
 			}
 		}
-		
+
 		if(false === $oPubPathEnv->checkDirAccess($sPathName))
 		{
 			$this->addErrors($oPubPathEnv->getError());
@@ -394,77 +394,77 @@ class bab_PublicationImageUploader
 		{
 			return false;
 		}
-		
+
 		if(false === $this->importFile($oFileHandler, $sFullPathName))
 		{
 			return false;
 		}
 		return $sFullPathName;
 	}
-	
+
 	/**
 	 * Upload an image to the temp path of the publication
-	 * 
+	 *
 	 * @param int $iIdDelegation	The delegation identifier
 	 * @param int $sKeyOfPhpFile	The index of the $_FILES
-	 * 
+	 *
 	 * @return array|false			False on error, an array indexed by two keys:
 	 * 								array('sTempName' => tempName, 'sFileName' => fileName);
-	 * 								To get the file from the temp path use bab_PublicationPathsEnv. 
+	 * 								To get the file from the temp path use bab_PublicationPathsEnv.
 	 * 								To get the error call the method getError().
 	 */
 	public function uploadImageToTemp($iIdDelegation, $sKeyOfPhpFile)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
 		require_once dirname(__FILE__) . '/uuid.php';
-		
+
 		$oFileHandler = $this->uploadFile($sKeyOfPhpFile);
 		if(!($oFileHandler instanceof bab_fileHandler))
 		{
 			return false;
 		}
-		
+
 		if(true === $this->fileSizeToLarge($oFileHandler))
 		{
 			return false;
 		}
-		
+
 		if(false === $this->mimeSupported($oFileHandler))
 		{
 			return false;
 		}
-		
+
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
 		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
 		{
 			return false;
 		}
-		
+
 		$sFileName		= $oFileHandler->filename;
 		$sFullPathName	= $oPubPathEnv->getTempPath() . bab_uuid();
 		if(true === $this->isfile($sFullPathName))
 		{
 			return false;
 		}
-		
+
 		$sFileExtention = $this->getFileExtention($sFileName);
 		if(false !== $sFileExtention)
 		{
 			$sFullPathName .= $sFileExtention;
 		}
-		
+
 		if(false === $this->importFile($oFileHandler, $sFullPathName))
 		{
 			return false;
 		}
 		return array('sTempName' => basename($sFullPathName), 'sFileName' => $sFileName);
 	}
-	
+
 	/**
 	 * Upload the image to the php temp directory
 	 *
 	 * @param string $sKeyOfPhpFile		The index of the $_FILES
-	 * 
+	 *
 	 * @return bab_fileHandler|false	False on error, a bab_fileHandler object on success.
 	 * 									To get the error call the method getError().
 	 */
@@ -478,13 +478,13 @@ class bab_PublicationImageUploader
 		}
 		return $oFileHandler;
 	}
-	
+
 	/**
 	 * Return a value that indicate if the uploaded file
 	 * exceeds the maximum size allowed.
 	 *
 	 * @param bab_fileHandler $oFileHandler The object returned by the method uploadFile
-	 * 
+	 *
 	 * @return bool							True if the file exceeds, false otherwise
 	 * 										To get the error call the method getError().
 	 */
@@ -499,12 +499,12 @@ class bab_PublicationImageUploader
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return a value that indicate if the image format is supported
 	 *
 	 * @param bab_fileHandler $oFileHandler	 The object returned by the method uploadFile
-	 * 
+	 *
 	 * @return bool							True if the file exceeds, false otherwise
 	 * 										To get the error call the method getError().
 	 */
@@ -520,13 +520,13 @@ class bab_PublicationImageUploader
 		}
 		return true;
 	}
-	
+
 	/**
 	 * This function set the publication path environements.
-	 * 
+	 *
 	 * @param bab_PublicationPathsEnv	$oPubPathEnv
 	 * @param int						$iIdDelegation
-	 * 
+	 *
 	 * @return bool						True on success, false on error.
 	 * 									To get the error call the method getError().
 	 */
@@ -539,12 +539,12 @@ class bab_PublicationImageUploader
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Return a value that indicate if a file already exits with this name
 	 *
 	 * @param string $sFullPathName	The full path name
-	 * 
+	 *
 	 * @return bool					True if the file already exists, false othewise.
 	 * 								To get the error call the method getError().
 	 */
@@ -557,13 +557,13 @@ class bab_PublicationImageUploader
 		}
 		return false;
 	}
-	
+
 	/**
 	 * This function import an uploaded file to a destination.
 	 *
 	 * @param bab_fileHandler	$oFileHandler
 	 * @param string			$sFullPathName
-	 * 
+	 *
 	 * @return bool				True if the file was imported successfully, false otherwise.
 	 * 							To get the error call the method getError().
 	 */
@@ -574,9 +574,9 @@ class bab_PublicationImageUploader
 			$this->addError(bab_translate("Cannot upload file"));
 			return false;
 		}
-		return true;		
+		return true;
 	}
-	
+
 	/**
 	 * Move a picture category from the temporary directory to the directory of the category.
 	 *
@@ -584,7 +584,7 @@ class bab_PublicationImageUploader
 	 * @param int $iIdCategory			Identifier of the category
 	 * @param string $sTempImageName	Temporary name of the image
 	 * @param string $sImageName		Name of the image
-	 * 
+	 *
 	 * @return string|bool The full path name of the moved image, false otherwise
 	 */
 	public function importCategoryImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName)
@@ -592,7 +592,7 @@ class bab_PublicationImageUploader
 		$sFunctionName = 'getCategoryImgPath';
 		return $this->importImageFromTemp($iIdDelegation, $iIdCategory, $sTempImageName, $sImageName, $sFunctionName);
 	}
-	
+
 	/**
 	 * Move a picture topic from the temporary directory to the directory of the topic.
 	 *
@@ -600,7 +600,7 @@ class bab_PublicationImageUploader
 	 * @param int $iIdTopic				Identifier of the topic
 	 * @param string $sTempImageName	Temporary name of the image
 	 * @param string $sImageName		Name of the image
-	 * 
+	 *
 	 * @return string|bool The full path name of the moved image, false otherwise
 	 */
 	public function importTopicImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName)
@@ -608,7 +608,7 @@ class bab_PublicationImageUploader
 		$sFunctionName = 'getTopicImgPath';
 		return $this->importImageFromTemp($iIdDelegation, $iIdTopic, $sTempImageName, $sImageName, $sFunctionName);
 	}
-	
+
 	/**
 	 * Move a picture from the temporary directory to the directory of the $iIdObject.
 	 *
@@ -616,19 +616,19 @@ class bab_PublicationImageUploader
 	 * @param int $iIdObject			Identifier of the object (category, topic)
 	 * @param string $sTempImageName	Temporary name of the image
 	 * @param string $sImageName		Name of the image
-	 * 
+	 *
 	 * @return string|bool The full path name of the moved image, false otherwise
 	 */
 	private function importImageFromTemp($iIdDelegation, $iIdObject, $sTempImageName, $sImageName, $sFunctionName)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
-		
+
 		$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
 		if(false === $this->setEnv($oPubPathEnv, $iIdDelegation))
 		{
 			return false;
 		}
-		
+
 		$sPathName = $oPubPathEnv->$sFunctionName($iIdObject);
 		if(!is_dir($sPathName))
 		{
@@ -638,13 +638,13 @@ class bab_PublicationImageUploader
 				return false;
 			}
 		}
-		
+
 		if(false === $oPubPathEnv->checkDirAccess($sPathName))
 		{
 			$this->addErrors($oPubPathEnv->getError());
 			return false;
 		}
-		
+
 		$sFullPathName = $oPubPathEnv->getTempPath() . $sTempImageName;
 		/*
 		if(true === $this->isfile($sFullPathName))
@@ -652,35 +652,35 @@ class bab_PublicationImageUploader
 			return false;
 		}
 		//*/
-		
-		$oFileHandler = bab_fileHandler::move($sFullPathName); 
+
+		$oFileHandler = bab_fileHandler::move($sFullPathName);
 		if(!($oFileHandler instanceof bab_fileHandler))
 		{
 			return false;
 		}
-		
+
 		$sFullPathName = $sPathName . $sImageName;
 		if(false === $this->importFile($oFileHandler, $sFullPathName))
 		{
 			return false;
 		}
-		
+
 		return $sFullPathName;
 	}
-	
+
 	/**
 	 * Move an article picture from the draft directory to the directory of the article.
-	 * 
+	 *
 	 * @param int $iIdDelegation	Delegation identifier
 	 * @param int $iIdDraft			Draft article identifier
 	 * @param int $iIdArticle		Article identifier
-	 * 
+	 *
 	 * @return string|bool The full path name of the moved image, false otherwise
 	 */
 	public function importDraftArticleImageToArticleImage($iIdDelegation, $iIdDraft, $iIdArticle)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
-		
+
 		$aImageInfo = bab_getImageDraftArticle($iIdDraft);
 		if(false !== $aImageInfo)
 		{
@@ -689,7 +689,7 @@ class bab_PublicationImageUploader
 			{
 				return false;
 			}
-			
+
 			$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
 			if(!is_dir($sArticlePathName))
 			{
@@ -699,37 +699,37 @@ class bab_PublicationImageUploader
 					return false;
 				}
 			}
-			
+
 			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
 			if(!is_dir($sDraftArticlePathName))
 			{
 					$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
 					return false;
 			}
-			
+
 			if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
 			{
 				$this->addErrors($oPubPathEnv->getError());
 				return false;
 			}
-			
+
 			if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
 			{
 				$this->addErrors($oPubPathEnv->getError());
 				return false;
 			}
-			$oFileHandler = bab_fileHandler::move($sDraftArticlePathName . $aImageInfo['name']); 
+			$oFileHandler = bab_fileHandler::move($sDraftArticlePathName . $aImageInfo['name']);
 			if(!($oFileHandler instanceof bab_fileHandler))
 			{
 				return false;
 			}
-			
+
 			if(!$this->mimeSupported($oFileHandler))
 			{
 				@unlink($sDraftArticlePathName . $aImageInfo['name']);
 				return false;
 			}
-			
+
 			$sFullPathName = $sArticlePathName . $aImageInfo['name'];
 			if(false === $this->importFile($oFileHandler, $sFullPathName))
 			{
@@ -739,21 +739,21 @@ class bab_PublicationImageUploader
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Copy an article picture from the article directory to the draft directory of the article.
-	 * 
+	 *
 	 * @param int $iIdDelegation	Delegation identifier
 	 * @param int $iIdArticle		Article identifier
 	 * @param int $iIdDraft			Draft article identifier
-	 *  
+	 *
 	 * @return string|bool The full path name of the copied image, false otherwise
 	 */
 	public function copyArticleImageToDraftArticle($iIdDelegation, $iIdArticle, $iIdDraft)
 	{
 		require_once dirname(__FILE__) . '/uploadincl.php';
-		
+
 		$aImageInfo = bab_getImageArticle($iIdArticle);
 		if(false !== $aImageInfo)
 		{
@@ -762,13 +762,13 @@ class bab_PublicationImageUploader
 			{
 				return false;
 			}
-			
+
 			$sArticlePathName = $oPubPathEnv->getArticleImgPath($iIdArticle);
 			if(!is_dir($sArticlePathName))
 			{
 				$this->addError(bab_translate("This folder does not exists") . ':' . $sArticlePathName);
 			}
-			
+
 			$sDraftArticlePathName = $oPubPathEnv->getDraftArticleImgPath($iIdDraft);
 			if(!is_dir($sDraftArticlePathName))
 			{
@@ -778,25 +778,25 @@ class bab_PublicationImageUploader
 					return false;
 				}
 			}
-			
+
 			if(false === $oPubPathEnv->checkDirAccess($sArticlePathName))
 			{
 				$this->addErrors($oPubPathEnv->getError());
 				return false;
 			}
-			
+
 			if(false === $oPubPathEnv->checkDirAccess($sDraftArticlePathName))
 			{
 				$this->addErrors($oPubPathEnv->getError());
 				return false;
 			}
-			
-			$oFileHandler = bab_fileHandler::copy($sArticlePathName . $aImageInfo['name']); 
+
+			$oFileHandler = bab_fileHandler::copy($sArticlePathName . $aImageInfo['name']);
 			if(!($oFileHandler instanceof bab_fileHandler))
 			{
 				return false;
 			}
-			
+
 			$sFullPathName = $sDraftArticlePathName . $aImageInfo['name'];
 			if(false === $this->importFile($oFileHandler, $sFullPathName))
 			{
@@ -806,12 +806,12 @@ class bab_PublicationImageUploader
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return the file extention of a filename
 	 *
 	 * @param string $sFileName
-	 * 
+	 *
 	 * @return string|bool The file extention on success, false on error
 	 */
 	private function getFileExtention($sFileName)
@@ -824,7 +824,7 @@ class bab_PublicationImageUploader
 
 		return mb_strtolower(mb_substr($sFileName, $iOffset));
 	}
-	
+
 	/**
 	 * Add an error
 	 *
@@ -834,7 +834,7 @@ class bab_PublicationImageUploader
 	{
 		$this->aError[] = $sMessage;
 	}
-	
+
 	/**
 	 * Add an array of error
 	 *
@@ -854,15 +854,15 @@ class bab_PublicationImageUploader
 	{
 		$iIdDelegation	= 0;
 		$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-		
+
 		$oEnvObj->setEnv($iIdDelegation);
 		$sPath = $oEnvObj->getTempPath();
-		
+
 		require_once dirname(__FILE__) . '/dateTime.php';
-		
+
 		$oEndDate = BAB_DateTime::now();
 		$oEndDate->add(-$iNbSeconds, BAB_DATETIME_SECOND);
-		
+
 		if(is_dir($sPath))
 		{
 			$oDirIterator = new DirectoryIterator($sPath);
@@ -874,7 +874,7 @@ class bab_PublicationImageUploader
 					$iIsEqual	= 0;
 					$iIsBefore	= -1;
 					$iIsAfter	= 1;
-					
+
 					//Supprimer tous les fichiers qui ont �t� cr��s avant $oEndDate
 					if($iIsBefore == BAB_DateTime::compare($oFileDate, $oEndDate))
 					{
@@ -884,7 +884,7 @@ class bab_PublicationImageUploader
 			}
 		}
 	}
-	
+
 	/**
 	 * Return a value that indicate if there is error
 	 *
@@ -894,7 +894,7 @@ class bab_PublicationImageUploader
 	{
 		return (0 !== count($this->aError));
 	}
-	
+
 	/**
 	 * Return an array of error string
 	 *
@@ -1116,11 +1116,11 @@ function notifyArticleDraftAuthor($idart, $what)
 				$this->babtpl_articledate = bab_strftime($timestamp, false);
 				$this->babtpl_articletime = date('HH:mm', $timestamp);
 				$this->babtpl_articletitle = $this->title;
-				
+
 				}
 			}
 		}
-	
+
     $mail = bab_mail();
 	if( $mail == false )
 		return;
@@ -1228,9 +1228,9 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 
 	include_once $GLOBALS['babInstallPath'].'admin/acl.php';
 	$arrusers = aclGetAccessUsers(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id']);
-	
+
 	$alreadySendUser = array();
-	
+
 	if( $arrusers ){
 		$count = 0;
 		while(list(,$arr) = each($arrusers)){
@@ -1254,7 +1254,7 @@ function notifyArticleHomePage($top, $title, $homepage0, $homepage1)
 			$mail->clearTo();
 			$count = 0;
 		}
-	}	
+	}
 }
 
 
@@ -1295,7 +1295,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 				$this->message = $msg;
 				$this->linkurl = $GLOBALS['babUrlScript']."?tg=login&cmd=detect&referer=".urlencode("?tg=articles&topics=".$topics);
 				$this->linkname = viewCategoriesHierarchy_txt($topics);
-				
+
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->topicname;
 				$this->babtpl_authorname = $this->authorname;
@@ -1305,7 +1305,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 				$this->babtpl_articletitle = $this->titlename;
 				$this->babtpl_articleid = $articleid;
 				$this->babtpl_articletopicid = $topics;
-				
+
 				//bab_replace()
 				$replace = bab_replace_get();
 				$replace->ref($head);
@@ -1314,7 +1314,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 				$this->babtpl_articlebody = preg_replace('/src="images/', 'src="' . $GLOBALS['babUrl'] . 'images', $body);
 				}
 			}
-		}	
+		}
     $mail = bab_mail();
 	if( $mail == false )
 		return;
@@ -1326,9 +1326,9 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	$author = $event->getArticleAuthor();
 	$topics = $event->getTopicId();
 	$articleid = $event->getArticleId();
-	
+
 	$arr = $babDB->db_fetch_array($babDB->db_query('SELECT * FROM ' . BAB_ARTICLES_TBL . ' WHERE id="' . $babDB->db_escape_string($articleid) . '"'));
-	
+
 	$head = $arr['head'];
 	$body = $arr['body'];
 
@@ -1336,7 +1336,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 
 
 	$subject = bab_printTemplate($tempc,'mailinfo.html', 'notifyarticle_new_subject');
-	
+
 	if( empty($subject) )
 		$mail->mailSubject($msg);
 	else
@@ -1350,13 +1350,13 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 	$mail->mailBody($message, "html");
 	$mail->mailAltBody($messagetxt);
 
-	
+
 
 	$users = $event->getUsersToNotify();
-	
+
 	$count = 0;
 	foreach($users as $id => $arr){
-		
+
 		$mail->$mailBCT($arr['email'], $arr['name']);
 		$count++;
 
@@ -1375,7 +1375,7 @@ function notifyArticleGroupMembers(bab_eventArticle $event, $msg)
 		$mail->clearTo();
 		$count = 0;
 	}
-}		
+}
 
 
 function notifyCommentApprovers($idcom, $nfusers)
@@ -1429,7 +1429,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 					$this->authoremail = $BAB_SESS_EMAIL;
 				else
 					$this->authoremail = "";
-					
+
 				/* template variables used in customized file mailinfo.html */
 				$this->babtpl_topicname = $this->categoryname;
 				$this->babtpl_authorname = $this->author;
@@ -1440,7 +1440,7 @@ function notifyCommentApprovers($idcom, $nfusers)
 				$this->babtpl_commentsubject = $this->subjectname;
 				}
 			}
-		
+
 		$mail = bab_mail();
 		if( $mail == false )
 			return;
@@ -1459,13 +1459,13 @@ function notifyCommentApprovers($idcom, $nfusers)
 			}
 		$mail->mailFrom($babAdminEmail, $GLOBALS['babAdminName']);
 		$tempa = new tempca($idcom);
-		
+
 		$subject = bab_printTemplate($tempa,'mailinfo.html', 'commentwait_subject');
 		if( empty($subject) )
 			$mail->mailSubject(bab_translate("New waiting comment"));
 		else
 			$mail->mailSubject($subject);
-			
+
 		$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "commentwait"));
 		$mail->mailBody($message, "html");
 
@@ -1502,7 +1502,7 @@ function notifyCommentAuthor($subject, $msg, $idfrom, $to)
             $this->message = $msg;
 			}
 		}
-	
+
     $mail = bab_mail();
 	if( $mail == false )
 		return;
@@ -1520,10 +1520,10 @@ function notifyCommentAuthor($subject, $msg, $idfrom, $to)
 
 	$mail->send();
 	}
-	
-	
+
+
 /**
- * 
+ *
  * @param int $idart draft ID
  * @return unknown_type
  */
@@ -1532,37 +1532,37 @@ function acceptWaitingArticle($idart)
 	global $babBody, $babDB;
 
 	$res = $babDB->db_query("
-		select 
-			adt.*, 
-			tt.category as topicname, 
-			tt.allow_attachments, 
-			tct.id_dgowner, 
-			tt.allow_addImg, 
-			tt.busetags 
-		from 
-			".BAB_ART_DRAFTS_TBL." adt 
-				left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id 
-				left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id  
-			
+		select
+			adt.*,
+			tt.category as topicname,
+			tt.allow_attachments,
+			tct.id_dgowner,
+			tt.allow_addImg,
+			tt.busetags
+		from
+			".BAB_ART_DRAFTS_TBL." adt
+				left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id
+				left join ".BAB_TOPICS_CATEGORIES_TBL." tct on tt.id_cat=tct.id
+
 		where adt.id='".$babDB->db_escape_string($idart)."'
 	");
-	
+
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
 		$arr = $babDB->db_fetch_array($res);
 
 		$iIdDelegation = (int) $arr['id_dgowner'];
-		
+
 		if( $arr['id_article'] != 0 )
 			{
 			$articleid = $arr['id_article'];
-			$req = "update ".BAB_ARTICLES_TBL." set 
-				id_topic=".$babDB->quote($arr['id_topic']).", 
-				id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."', 
-				date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."', 
-				date_publication='".$babDB->db_escape_string($arr['date_publication'])."', 
-				restriction='".$babDB->db_escape_string($arr['restriction'])."', 
+			$req = "update ".BAB_ARTICLES_TBL." set
+				id_topic=".$babDB->quote($arr['id_topic']).",
+				id_modifiedby='".$babDB->db_escape_string($arr['id_author'])."',
+				date_archiving='".$babDB->db_escape_string($arr['date_archiving'])."',
+				date_publication='".$babDB->db_escape_string($arr['date_publication'])."',
+				restriction='".$babDB->db_escape_string($arr['restriction'])."',
 				lang='".$babDB->db_escape_string($arr['lang'])."'";
 			if( $arr['update_datemodif'] != 'N')
 				{
@@ -1574,12 +1574,12 @@ function acceptWaitingArticle($idart)
 			}
 		else
 			{
-			$req = "insert into ".BAB_ARTICLES_TBL." 
-				(title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang) 
+			$req = "insert into ".BAB_ARTICLES_TBL."
+				(title, head, body, id_topic, id_author, date, date_publication, date_archiving, date_modification, restriction, lang)
 				values ";
 			$req .= "('', '', '', '" .$babDB->db_escape_string($arr['id_topic']). "', '".$babDB->db_escape_string($arr['id_author']). "', now()";
 
-			if( $arr['date_publication'] == '0000-00-00 00:00:00' )	
+			if( $arr['date_publication'] == '0000-00-00 00:00:00' )
 				{
 				$req .= ", now()";
 				}
@@ -1598,19 +1598,19 @@ function acceptWaitingArticle($idart)
 		$head = imagesUpdateLink($arr['head'], $idart."_draft_", $articleid."_art_" );
 		$body = imagesUpdateLink($arr['body'], $idart."_draft_", $articleid."_art_" );
 
-		$req = "update ".BAB_ARTICLES_TBL." set 
-			head='".$babDB->db_escape_string($head)."', 
-			body='".$babDB->db_escape_string($body)."', 
-			title='".$babDB->db_escape_string($arr['title'])."' 
-			
+		$req = "update ".BAB_ARTICLES_TBL." set
+			head='".$babDB->db_escape_string($head)."',
+			body='".$babDB->db_escape_string($body)."',
+			title='".$babDB->db_escape_string($arr['title'])."'
+
 		where id='".$babDB->db_escape_string($articleid)."'";
 		$res = $babDB->db_query($req);
 
-	
+
 		{//Image
-			$iIdDraft	= $idart;	
+			$iIdDraft	= $idart;
 			$iIdArticle	= $articleid;
-			
+
 			$oPubPathsEnv	= new bab_PublicationPathsEnv();
 			$iIdDelegation	= 0; //Dummy value
 			if($oPubPathsEnv->setEnv($iIdDelegation))
@@ -1627,8 +1627,8 @@ function acceptWaitingArticle($idart)
 				}
 				bab_deleteImageArticle($iIdArticle);
 			}
-			
-			
+
+
 			if('Y' == $arr['allow_addImg'])
 			{
 				$oPubImpUpl	= new bab_PublicationImageUploader();
@@ -1640,7 +1640,7 @@ function acceptWaitingArticle($idart)
 					$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);
 					$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 					$sRelativePath	= mb_substr($sPathName, mb_strlen($sUploadPath), mb_strlen($sFullPathName) - mb_strlen($sName));
-					
+
 					bab_addImageToArticle($iIdArticle, $sName, $sRelativePath);
 					$aImageInfo = bab_getImageDraftArticle($iIdDraft);
 					if(false !== $aImageInfo)
@@ -1651,8 +1651,8 @@ function acceptWaitingArticle($idart)
 				}
 			}
 		}
-		
-		
+
+
 		/* move attachements */
 		if( $arr['allow_attachments'] ==  'Y' )
 			{
@@ -1687,28 +1687,28 @@ function acceptWaitingArticle($idart)
 
 			foreach($files_to_insert as $arrf) {
 					$babDB->db_query(
-					
-					"INSERT INTO ".BAB_ART_FILES_TBL." 
-						(id_article, name, description, ordering, index_status) 
-					VALUES 
+
+					"INSERT INTO ".BAB_ART_FILES_TBL."
+						(id_article, name, description, ordering, index_status)
+					VALUES
 						(
-						'".$babDB->db_escape_string($arrf['id_article'])."', 
-						'".$babDB->db_escape_string($arrf['name'])."', 
-						'".$babDB->db_escape_string($arrf['description'])."', 
-						'".$babDB->db_escape_string($arrf['ordering'])."', 
-						'".$babDB->db_escape_string($index_status)."' 
+						'".$babDB->db_escape_string($arrf['id_article'])."',
+						'".$babDB->db_escape_string($arrf['name'])."',
+						'".$babDB->db_escape_string($arrf['description'])."',
+						'".$babDB->db_escape_string($arrf['ordering'])."',
+						'".$babDB->db_escape_string($index_status)."'
 						)
 					");
 				}
 			}
 
 		require_once dirname(__FILE__) . '/tagApi.php';
-		
+
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-		
+
 		$oReference = bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $articleid);
 		$oReferenceMgr->removeByReference($oReference);
-		
+
 		$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $idart);
 		if( $arr['busetags'] ==  'Y' )
 			{
@@ -1720,7 +1720,7 @@ function acceptWaitingArticle($idart)
 				}
 			}
 		$oReferenceMgr->removeByReference($oReferenceDraft);
-		
+
 		if( $arr['id_author'] == 0 || (($artauthor = bab_getUserName($arr['id_author'])) == ''))
 			{
 			$artauthor = bab_translate("Anonymous");
@@ -1748,7 +1748,7 @@ function acceptWaitingArticle($idart)
 
 			notifyArticleHomePage($arr['topicname'], $arr['title'], ($arr['hpage_public'] == "Y"? 2:0), ($arr['hpage_private'] == "Y"?1:0));
 			}
-	
+
 		return $articleid;
 		}
 	else
@@ -1762,8 +1762,8 @@ function acceptWaitingArticle($idart)
 function bab_getTopicTemplate($template, $head_format, $body_format)
 {
 	$values = array('head' => '', 'body' => '');
-	
-	
+
+
 	// We fetch the template corresponding to the correct format (html, text...)
 	// of the article head.
 	$file = 'articlestemplate.' . $head_format;
@@ -1795,7 +1795,7 @@ function bab_getTopicTemplate($template, $head_format, $body_format)
 		$tp = new bab_Template();
 		$values['body'] = $tp->_loadTemplate($filepath, 'body_' . $template);
 	}
-	
+
 	return $values;
 }
 
@@ -1803,7 +1803,7 @@ function bab_getTopicTemplate($template, $head_format, $body_format)
 
 
 /**
- * 
+ *
  * @param string	$title
  * @param string	$head
  * @param string	$body
@@ -1819,7 +1819,7 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 
 	class clsEditArticle
 	{
-	
+
 		var $title;
 		var $head;
 		var $body;
@@ -1873,25 +1873,25 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 			}
 
 			if ($template != '' && $this->headval == '' && $this->bodyval == '') {
-				
+
 				$values = bab_getTopicTemplate($template, $headFormat, $bodyFormat);
-				
+
 				$this->headval = $values['head'];
 				$this->bodyval = $values['body'];
 			}
 
-				
+
 				// l'ordre des appels est important
 			$editorhead->setContent($this->headval);
 			if (isset($headFormat)) {
 				$editorhead->setFormat($headFormat);
 			}
-			
+
 			$editorbody->setContent($this->bodyval);
 			if (isset($bodyFormat)) {
 				$editorbody->setFormat($bodyFormat);
 			}
-			
+
 			$this->editorhead = $editorhead->getEditor();
 			$this->editorbody = $editorbody->getEditor();
 		}
@@ -1913,7 +1913,7 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 		} // function getnextlang
 
 	} // class temp
-	
+
 	$temp = new clsEditArticle($title, $head, $body, $lang, $template, $headFormat, $bodyFormat);
 	return bab_printTemplate($temp, 'artincl.html', 'editarticle');
 }
@@ -1929,47 +1929,47 @@ function bab_previewArticleDraft($idart)
 
 	class clsPreviewArticleDraft
 	{
-	
+
 		public $titleval;
 		public $headval;
 		public $bodyvat;
-		
+
 		public $imgurl = false;
-		
+
 		public $tags;
 
 		public function __construct($idart)
 		{
 			global $babDB;
-			
+
 			require_once dirname(__FILE__).'/artdraft.class.php';
-			
+
 			$draft = new bab_ArtDraft;
 			$draft->getFromIdDraft($idart);
 
-			
+
 			$this->idart = bab_toHtml($idart);
 			$this->filesval = bab_translate("Associated documents");
 			$this->tagstitle = bab_translate("Tags");
 			$this->titleval = bab_toHtml($draft->title);
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-		
+
 			$editor = new bab_contentEditor('bab_article_body');
 			$editor->setContent($draft->body);
 			$editor->setFormat($draft->body_format);
 			$this->bodyval = $editor->getHtml();
-			
+
 			$editor = new bab_contentEditor('bab_article_head');
 			$editor->setContent($draft->head);
 			$editor->setFormat($draft->head_format);
 			$this->headval = $editor->getHtml();
-			
+
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_DRAFTS_FILES_TBL." where id_draft='".$babDB->db_escape_string($idart)."' order by ordering asc");
 			$this->countf =  $babDB->db_num_rows($this->resf);
-			
+
 			$this->imgurl = $draft->getImageUrl();
-			
+
 			$this->tags = implode(', ', $draft->getTags());
 		}
 
@@ -1989,9 +1989,9 @@ function bab_previewArticleDraft($idart)
 				return false;
 		}
 	}
-	
+
 	$babBody->addStyleSheet('artedit.css');
-	
+
 	$temp = new clsPreviewArticleDraft($idart);
 	return bab_printTemplate($temp,"artincl.html", "previewarticledraft");
 }
@@ -2002,7 +2002,7 @@ function bab_previewComment($com)
 
 	class bab_previewCommentCls
 		{
-	
+
 		var $content;
 		var $arr = array();
 		var $count;
@@ -2023,14 +2023,14 @@ function bab_previewComment($com)
 			$this->article_rating = bab_toHtml($this->arr['article_rating']);
 			$this->article_rating_percent = bab_toHtml($this->arr['article_rating'] * 20.0);
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
+
 			$editor = new bab_contentEditor('bab_article_comment');
 			$editor->setContent($this->arr['message']);
 			$editor->setFormat($this->arr['message_format']);
 			$this->content = $editor->getHtml();
 			}
 		}
-	
+
 	$temp = new bab_previewCommentCls($com);
 	echo bab_printTemplate($temp,"artincl.html", "previewcomment");
 	}
@@ -2058,7 +2058,7 @@ function bab_getDocumentArticle( $idf )
 	$file = stripslashes($arr['name']);
 
 	$fullpath = bab_getUploadArticlesPath();
-	
+
 	$fullpath .= $arr['id_article'].",".$file;
 
 	bab_downloadFile(new bab_Path($fullpath), $file, bab_getFileContentDisposition());
@@ -2066,27 +2066,27 @@ function bab_getDocumentArticle( $idf )
 
 /**
  * Create a new article draft
- * 
+ *
  * @param int $idtopic
  * @param int $idarticle
- * 
+ *
  * @throws ErrorException
- * 
+ *
  * @return int return the id of the article draft created
  */
 function bab_newArticleDraft($idtopic, $idarticle) {
 	global $babDB, $BAB_SESS_USERID;
-	
-	
+
+
 	// check if draft allredy exists
-	
+
 	if( $idarticle != 0 ) {
-		
+
 		$res = $babDB->db_query("SELECT * FROM ".BAB_ART_DRAFTS_TBL." WHERE id_article=".$babDB->quote($idarticle));
 		if ($babDB->db_num_rows($res) > 0)
 		{
 			// if the current draft is my draft, return the id draft
-			
+
 			if (1 === $babDB->db_num_rows($res) && $GLOBALS['BAB_SESS_LOGGED'])
 			{
 				$draft_arr = $babDB->db_fetch_assoc($res);
@@ -2095,11 +2095,11 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 					return $draft_arr['id'];
 				}
 			}
-			
-			throw new ErrorException(bab_translate('A draft for this article allready exists'));
+
+			throw new ErrorException(bab_translate('A draft for this article already exists'));
 			return 0;
-		}		
-		
+		}
+
 		$res = $babDB->db_query("select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($idarticle)."'");
 		if ($res && $babDB->db_num_rows($res) == 1 ) {
 			$arr = $babDB->db_fetch_array($res);
@@ -2107,12 +2107,12 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 			throw new ErrorException(bab_translate('The article does not exists'));
 			return 0;
 		}
-		
+
 		$idtopic = (int) $arr['id_topic'];
-		
-		
+
+
 		// verify access rights in modification before continue to topic creation
-		
+
 		if (!bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $idtopic))
 		{
 			// if i am the author or if i am a topic manager
@@ -2121,42 +2121,42 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 				throw new ErrorException(bab_translate('This article is not modifiable'));
 				return false;
 			}
-			
+
 			$res = $babDB->db_query('SELECT allow_update, allow_manupdate FROM bab_topics WHERE id='.$babDB->quote($idtopic));
 			$topic = $babDB->db_fetch_assoc($res);
 
-			
-			if (($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && $topic['allow_update'] != '0') 
+
+			if (($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && $topic['allow_update'] != '0')
 				|| (!bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic) && $topic['allow_manupdate'] != '0'))
 			{
 				throw new ErrorException(bab_translate('This article is not modifiable'));
 				return false;
 			}
 		}
-		
+
 	} elseif ($idtopic != 0 ) {
-		
+
 		// new article in a topic
-		
+
 		if (!bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $idtopic))
 		{
 			throw new ErrorException(bab_translate('New article submission denied in this topic'));
 			return false;
 		}
-		
+
 	} else {
-		
+
 		// verify that the user can submit his draft before allowing creation
 		// for that he need at least one topic with submit access
-		
+
 		if (count(bab_getUserIdObjects(BAB_TOPICSSUB_GROUPS_TBL)) == 0)
 		{
 			throw new ErrorException(bab_translate('Access denied to draft creation, no accessible topic'));
 			return false;
 		}
 	}
-	
-	
+
+
 	$error = '';
 	$id = bab_addArticleDraft(bab_translate("New article"), '', '', $idtopic, $error, array('update_datemodif' => 'Y'));
 	if ($id === 0) {
@@ -2165,22 +2165,22 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 	}
 
 
-	
+
 	if( $idarticle != 0) {
-		
+
 		// copy attachments to draft
 
 		$babDB->db_query("
-			UPDATE ".BAB_ART_DRAFTS_TBL." set 
+			UPDATE ".BAB_ART_DRAFTS_TBL." set
 				id_article			=".$babDB->quote($idarticle).",
-				head				='".$babDB->db_escape_string($arr['head'])."', 
-				body				='".$babDB->db_escape_string($arr['body'])."', 
-				title				='".$babDB->db_escape_string($arr['title'])."', 
-				date_publication	='".$babDB->db_escape_string($arr['date_publication'])."', 
-				date_archiving		='".$babDB->db_escape_string($arr['date_archiving'])."', 
-				lang				='".$babDB->db_escape_string($arr['lang'])."', 
-				restriction			='".$babDB->db_escape_string($arr['restriction'])."' 
-				
+				head				='".$babDB->db_escape_string($arr['head'])."',
+				body				='".$babDB->db_escape_string($arr['body'])."',
+				title				='".$babDB->db_escape_string($arr['title'])."',
+				date_publication	='".$babDB->db_escape_string($arr['date_publication'])."',
+				date_archiving		='".$babDB->db_escape_string($arr['date_archiving'])."',
+				lang				='".$babDB->db_escape_string($arr['lang'])."',
+				restriction			='".$babDB->db_escape_string($arr['restriction'])."'
+
 			where id='".$babDB->db_escape_string($id)."'
 		");
 
@@ -2190,9 +2190,9 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 		while ($rr = $babDB->db_fetch_array($res)) {
 			if ( copy($pathorg.$idarticle.",".$rr['name'], $pathdest.$id.",".$rr['name'])) {
 				$babDB->db_query("
-					insert into ".BAB_ART_DRAFTS_FILES_TBL." 
-						(id_draft, name, description, ordering) 
-					values 
+					insert into ".BAB_ART_DRAFTS_FILES_TBL."
+						(id_draft, name, description, ordering)
+					values
 						(
 							".$babDB->quote($id).",
 							'".$babDB->db_escape_string($rr['name'])."',
@@ -2202,39 +2202,39 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 				");
 			}
 		}
-		
-		
+
+
 		// copy associated image to draft
-		
+
 		if ($image = bab_getImageArticle($idarticle))
 		{
 			$source = new bab_path($GLOBALS['babUploadPath'],$image['relativePath'],$image['name']);
-			
+
 			$oPubPathEnv = bab_getInstance('bab_PublicationPathsEnv');
 			/*@var $oPubPathEnv bab_PublicationPathsEnv */
 			$oPubPathEnv->setEnv(0);
-	
+
 			$targetPath = new bab_path($oPubPathEnv->getDraftArticleImgPath($id));
 			$targetPath->createDir();
 			$target = clone $targetPath;
 			$target->push($image['name']);
-			
+
 			if (copy($source->toString(), $target->toString()))
 			{
 				$sRelativePath = mb_substr($targetPath->toString(), 1 + mb_strlen($GLOBALS['babUploadPath']));
 				bab_addImageToDraftArticle($id, $image['name'], $sRelativePath.'/');
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		// copy tags to draft
-			
+
 		require_once dirname(__FILE__) . '/tagApi.php';
-	
+
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
-	
+
 		$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $idarticle));
 		$oIterator->orderAsc('tag_name');
 		$oReferenceDraft = bab_Reference::makeReference('ovidentia', '', 'articles', 'draft', $id);
@@ -2258,36 +2258,36 @@ function bab_newArticleDraft($idtopic, $idarticle) {
  * @param array $status
  * @return object bab_indexReturn
  */
-function indexAllArtFiles($status, $prepare) 
+function indexAllArtFiles($status, $prepare)
 	{
-	
+
 	global $babDB;
 
 	$res = $babDB->db_query("
-	
-		SELECT 
+
+		SELECT
 			f.id,
 			f.name,
-			f.id_article, 
-			a.id_topic 
+			f.id_article,
+			a.id_topic
 
-		FROM 
+		FROM
 			".BAB_ART_FILES_TBL." f,
-			".BAB_ARTICLES_TBL." a 
-		WHERE 
-			a.id = f.id_article 
+			".BAB_ARTICLES_TBL." a
+		WHERE
+			a.id = f.id_article
 			AND f.index_status IN(".$babDB->quote($status).")
-		
+
 	");
 
-	
+
 	$files = array();
 	$rights = array();
 	$fullpath = bab_getUploadArticlesPath();
 
 	$articlepath = 'articles/';
 
-	
+
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
 		$files[] = $fullpath.$arr['id_article'].",".$arr['name'];
@@ -2333,18 +2333,18 @@ function indexAllArtFiles($status, $prepare)
 
 
 /**
- * 
+ *
  */
 function indexAllArtFiles_end($param) {
-	
+
 	global $babDB;
 
 	$babDB->db_query("
-	
+
 		UPDATE ".BAB_ART_FILES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
-		WHERE 
+		WHERE
 			index_status IN('".implode("','",$param['status'])."')
-		
+
 	");
 
 	include_once $GLOBALS['babInstallPath']."utilit/indexincl.php";
@@ -2427,41 +2427,41 @@ function bab_createArticleFile($id_topic, $id_article, $title, $head, $body, $au
  * @param array $status
  * @return object bab_indexReturn
  */
-function indexAllArticles($status, $prepare) 
+function indexAllArticles($status, $prepare)
 	{
 
-	
-	
+
+
 	global $babDB;
 
 	$res = $babDB->db_query("
-	
-		SELECT 
+
+		SELECT
 			a.id,
 			a.title,
-			a.head, 
+			a.head,
 			a.body,
-			a.id_topic, 
-			a.id_author 
-		FROM 
-			".BAB_ARTICLES_TBL." a 
-		WHERE 
+			a.id_topic,
+			a.id_author
+		FROM
+			".BAB_ARTICLES_TBL." a
+		WHERE
 			a.index_status IN(".$babDB->quote($status).")
-		
+
 	");
-	
+
 	$files = array();
 	$rights = array();
 
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		
+
 		$file = bab_createArticleFile(
-			$arr['id_topic'], 
-			$arr['id'], 
-			$arr['title'], 
-			$arr['head'], 
-			$arr['body'], 
+			$arr['id_topic'],
+			$arr['id'],
+			$arr['title'],
+			$arr['head'],
+			$arr['body'],
 			bab_getUserName($arr['id_author'])
 		);
 
@@ -2517,11 +2517,11 @@ function indexAllArticles_end($param) {
 	global $babDB;
 
 	$babDB->db_query("
-	
+
 		UPDATE ".BAB_ARTICLES_TBL." SET index_status='".BAB_INDEX_STATUS_INDEXED."'
-		WHERE 
+		WHERE
 			index_status IN('".implode("','",$param['status'])."')
-		
+
 	");
 
 	foreach($param['rights'] as $f => $arr) {
@@ -2559,11 +2559,11 @@ function bab_labelStr($label, $value)
 			$value->setAssociatedLabel($label);
 		}
 	}
-	
+
 	if($label instanceOf Widget_Label){
 		$label->colon(false);
 	}
-	
+
 	return $W->VBoxItems(
 		$label,
 		$value

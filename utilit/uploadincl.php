@@ -40,26 +40,26 @@ class bab_fileHandler {
 
 	public $filename;
 	public $size;
-	
+
 	/**
 	 * Error string
 	 * @var string
 	 */
 	public $error;
-	
+
 	/**
 	 * Error code
 	 * @var int
 	 */
 	public $code;
-	
+
 	/**
 	 * Mime type
 	 * @var unknown_type
 	 */
 	public $mime;
 
-	
+
 	/**
 	 * Create object with specified type
 	 * @param	int		$type		BAB_FILEHANDLER_UPLOAD, BAB_FILEHANDLER_MOVE, BAB_FILEHANDLER_COPY
@@ -70,67 +70,67 @@ class bab_fileHandler {
 		$this->source	= $source;
 		$this->error	= false;
 	}
-	
-	
+
+
 	/**
 	 * Prepare file for upload
-	 * 
+	 *
 	 * @param	string | array	$input		name of the field of input array from $_FILES
-	 * 
+	 *
 	 * @return bab_fileHandler
 	 */
 	static public function upload($input) {
 		if (is_string($input)) {
 			if (!isset($_FILES[$input])) {
 				return false;
-			} 
-			
+			}
+
 			$input = $_FILES[$input];
-		} 
-		
+		}
+
 		$tmp_error = false;
-		
+
 		if (isset($input['error'])) {
-		
+
 			/**
 			 * ['error'] is defined since php 4.2.0
 			 * constants are defined since php 4.3.0
 			 */
-		
+
 			switch($input['error']) {
 				case UPLOAD_ERR_OK:
 					break;
-					
+
 				case UPLOAD_ERR_INI_SIZE:
 					$tmp_error = bab_translate('The uploaded file exceeds the upload_max_filesize directive.');
 					break;
-					
+
 				case UPLOAD_ERR_FORM_SIZE:
 					$tmp_error = bab_translate('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.');
 					break;
-					
+
 				case UPLOAD_ERR_PARTIAL:
 					$tmp_error = bab_translate('The uploaded file was only partially uploaded.');
 					break;
-					
+
 				case UPLOAD_ERR_NO_FILE:
 					$tmp_error = bab_translate('No file was uploaded.');
-					break;	
-						
+					break;
+
 				case UPLOAD_ERR_NO_TMP_DIR: //  since PHP 4.3.10 and PHP 5.0.3
 					$tmp_error = bab_translate('Missing a temporary folder.');
-					break;	
-					
+					break;
+
 				case UPLOAD_ERR_CANT_WRITE: //  since php 5.1.0
 					$tmp_error = bab_translate('Failed to write file to disk.');
 					break;
-					
+
 				default :
 					$tmp_error = bab_translate('Unknown File Error.');
 					break;
 			}
 		}
-		
+
 		$obj = new bab_fileHandler(BAB_FILEHANDLER_UPLOAD, $input['tmp_name']);
 		$obj->filename 	= $input['name'];
 		$obj->size	 	= $input['size'];
@@ -139,7 +139,7 @@ class bab_fileHandler {
 		$obj->mime		= $obj->filename ? bab_getFileMimeType($obj->filename) : null;
 		return $obj;
 	}
-	
+
 	/**
 	 * Prepare file for copy
 	 * @param	string	$sourcefile
@@ -151,7 +151,7 @@ class bab_fileHandler {
 		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
-	
+
 	/**
 	 * Prepare file for move
 	 * @param	string	$sourcefile
@@ -163,42 +163,42 @@ class bab_fileHandler {
 		$obj->mime		= bab_getFileMimeType($obj->filename);
 		return $obj;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * install the prepared file into destination
 	 * @param	string	$destination 	(destination full path and file name)
 	 * @return	boolean
 	 */
 	public function import($destination) {
-	
+
 		bab_setTimeLimit(0);
-	
+
 		switch($this->type) {
 			case BAB_FILEHANDLER_UPLOAD:
 				return move_uploaded_file($this->source, $destination);
 				break;
-				
+
 			case BAB_FILEHANDLER_COPY:
 				return copy($this->source, $destination);
 				break;
-				
+
 			case BAB_FILEHANDLER_MOVE:
 				return rename($this->source, $destination);
 				break;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Create a temporary file and change import type to : BAB_FILEHANDLER_MOVE
-	 * If the file allready exists, overright it
+	 * If the file already exists, overwrite it
 	 *
 	 * @return false|string		temporaryPathToFile
 	 */
 	public function importTemporary() {
-	
+
 		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
 		if ($this->import($temporaryPathToFile)) {
 			$this->source	= $temporaryPathToFile;
@@ -206,7 +206,7 @@ class bab_fileHandler {
 			$obj->mime		= bab_getFileMimeType($temporaryPathToFile);
 			return $temporaryPathToFile;
 		}
-		
+
 		return false;
 	}
 }
@@ -241,7 +241,7 @@ class bab_fmFile extends bab_fileHandler {
 
 
 
-/** 
+/**
  * Import a file into the file manager
  * if the file exists, the file is updated or a new version of the file is created
  * @param 	object	$fmFile			bab_fmFile instance
@@ -251,47 +251,47 @@ class bab_fmFile extends bab_fileHandler {
  *
  * @return 	boolean	id_file
  */
-function bab_importFmFile($fmFile, $id_owner, $path, $bgroup, $withName = true) 
+function bab_importFmFile($fmFile, $id_owner, $path, $bgroup, $withName = true)
 {
 	global $babDB, $babBody, $BAB_SESS_USERID;
 	include_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
 
 
-	
+
 
 	$gr = $bgroup ? 'Y' : 'N';
-	
+
 	$sEndSlash = '';
 	if(mb_strlen(trim($path)) > 0)
 	{
 		$sEndSlash = '/';
 	}
-	
+
 	$sPathName = '';
 	if('Y' === (string) $gr)
 	{
-		$oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($id_owner);			
+		$oFmRootFolder = BAB_FmFolderHelper::getFmFolderById($id_owner);
 		if(is_null($oFmRootFolder))
 			{
 			bab_debug('erreur');
 			return false;
 			}
-	
+
 		if($withName){
 			$path = $oFmRootFolder->getName().'/'.$path;
 		}
-		
+
 		$oFmFolder = null;
 		BAB_FmFolderHelper::getFileInfoForCollectiveDir($id_owner, $path, $id_owner, $sPathName, $oFmFolder);
 	}
-	else 
+	else
 	{
 		$sPathName = $path . $sEndSlash;
 	}
-	
-	
+
+
 	$oFileManagerEnv =& getEnvObject();
-	
+
 	$oFileManagerEnv->sPath	= (string) bab_convertToDatabaseEncoding(removeEndSlashes($sPathName));
 	$oFileManagerEnv->sGr	= $gr;
 
@@ -303,55 +303,55 @@ function bab_importFmFile($fmFile, $id_owner, $path, $bgroup, $withName = true)
 	{
 		$oFileManagerEnv->iIdObject = empty($id_owner) ?  0 : $id_owner;
 	}
-	
+
 	$oFileManagerEnv->init();
-	
+
 
 	$sFullPathNane = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation()) . $sPathName . $fmFile->filename;
 
-	if(file_exists($sFullPathNane)) 
+	if(file_exists($sFullPathNane))
 	{
 		$oFolderFileSet = new BAB_FolderFileSet();
-		
+
 		$oPathName	=& $oFolderFileSet->aField['sPathName'];
 		$oName		=& $oFolderFileSet->aField['sName'];
 		$oIdOwner	=& $oFolderFileSet->aField['iIdOwner'];
 		$oGroup		=& $oFolderFileSet->aField['sGroup'];
 		$oIdDgOwner	=& $oFolderFileSet->aField['iIdDgOwner'];
-				
+
 		$oCriteria = $oPathName->in($sPathName);
 		$oCriteria = $oCriteria->_and($oName->in($fmFile->filename));
 		$oCriteria = $oCriteria->_and($oIdOwner->in($id_owner));
 		$oCriteria = $oCriteria->_and($oGroup->in($gr));
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
-		
+
 		$oFolderFile = $oFolderFileSet->get($oCriteria);
-		
+
 		if(!is_null($oFolderFile))
 		{
 			$fm_file = fm_getFileAccess($oFolderFile->getId());
 			$oFmFolder =& $fm_file['oFmFolder'];
-			
-			if(!$fm_file['bupdate']) 
+
+			if(!$fm_file['bupdate'])
 			{
 				return false;
 			}
-	
+
 			if($bgroup && 'Y' == $oFmFolder->getVersioning())
 			{
 				// add a version
-				fm_lockFile($oFolderFile->getId(), ''); 
+				fm_lockFile($oFolderFile->getId(), '');
 				return fm_commitFile($oFolderFile->getId(), '', 'N', $fmFile);
 			}
-		
+
 			// update a file
-			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename, 
-				$oFolderFile->getDescription(), '', 
+			return saveUpdateFile($oFolderFile->getId(), $fmFile, $fmFile->filename,
+				$oFolderFile->getDescription(), '',
 				$oFolderFile->getReadOnly(), 'Y', false, false);
 		}
 		return false;
 	}
-	else 
+	else
 	{
 		// create new file
 		return saveFile(array($fmFile), $id_owner, $gr, $sPathName, array('0'=>''), '', 'N', null);
@@ -370,16 +370,16 @@ function bab_getUploadedFileContent($fieldname) {
 	if (!isset($_FILES[$fieldname]['tmp_name'])) {
 		return false;
 	}
-	
+
 	if (!is_dir($GLOBALS['babUploadPath'].'/tmp/')) {
 		bab_mkdir($GLOBALS['babUploadPath'].'/tmp/');
 	}
-	
+
 	$tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$_FILES[$fieldname]['name'];
 	if (move_uploaded_file($_FILES[$fieldname]['tmp_name'],$tmpfile)) {
-	
+
 		$return = '';
-		
+
 		$fp=fopen($tmpfile,"rb");
 		if( $fp )
 			{
@@ -387,7 +387,7 @@ function bab_getUploadedFileContent($fieldname) {
 				$return .= fread($fp,8192);
 			}
 			fclose($fp);
-			
+
 			unlink($tmpfile);
 			return $return;
 		}

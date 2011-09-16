@@ -113,13 +113,13 @@ function displayRegistration($nickname, $fields, $cagree)
 
 		function temp($nickname, $fields, $cagree)
 			{
-			
+
 			global $babBody, $babDB;
 			$this->nickname = bab_translate("Login ID");
 			$this->password = bab_translate("Password");
 			$this->repassword = bab_translate("Retype Password");
 			$this->adduser = bab_translate("Register");
-			
+
 			$this->requiredtxt = bab_translate("Those fields are required");
 			$this->passwordlengthtxt = bab_translate("At least 6 characters");
 
@@ -185,7 +185,7 @@ function displayRegistration($nickname, $fields, $cagree)
 			$this->respf = $babDB->db_query("select * from ".BAB_PROFILES_TBL." where inscription='Y'");
 			$this->countpf = $babDB->db_num_rows($this->respf);
 			$this->altbg = true;
-			
+
 			$oCaptcha = @bab_functionality::get('Captcha');
 			$this->bUseCaptcha = false;
 			if(false !== $oCaptcha)
@@ -229,7 +229,7 @@ function displayRegistration($nickname, $fields, $cagree)
 					}
 
 				$this->resfxv = $babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." where id_fieldextra='".$babDB->db_escape_string($arr['idfx'])."'");
-				$this->countfxv = $babDB->db_num_rows($this->resfxv); 
+				$this->countfxv = $babDB->db_num_rows($this->resfxv);
 
 				$this->required = $arr['required'];
 				if( $this->countfxv == 0  )
@@ -249,7 +249,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				if( !empty( $arr['default_value'] ) && empty($this->fvalue) && $this->countfxv > 0)
 					{
 					$rr = $babDB->db_fetch_array($babDB->db_query("select field_value from ".BAB_DBDIR_FIELDSVALUES_TBL." WHERE id='".$babDB->db_escape_string($arr['default_value'])."'"));
-					
+
 					$this->fieldval = bab_toHtml($rr['field_value']);
 					}
 
@@ -273,7 +273,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				{
 				$arr = $babDB->db_fetch_array($this->resfxv);
 				$this->fxvvalue = bab_toHtml($arr['field_value']);
-				if( $this->fieldval == $this->fxvvalue ) 
+				if( $this->fieldval == $this->fxvvalue )
 					{
 					$this->selected = 'selected';
 					}
@@ -305,7 +305,7 @@ function displayRegistration($nickname, $fields, $cagree)
 					{
 					$this->bmultiplicity = true;
 					}
-				else 
+				else
 					{
 					$this->bmultiplicity = false;
 					}
@@ -318,12 +318,12 @@ function displayRegistration($nickname, $fields, $cagree)
 					$this->brequired = false;
 					}
 				$this->resgrp = $babDB->db_query("
-					SELECT 
-						gt.* 
-					FROM 
-						".BAB_PROFILES_GROUPSSET_TBL." pgt 
-						LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id 
-					WHERE 
+					SELECT
+						gt.*
+					FROM
+						".BAB_PROFILES_GROUPSSET_TBL." pgt
+						LEFT JOIN ".BAB_GROUPS_TBL." gt on pgt.id_group=gt.id
+					WHERE
 						pgt.id_object ='".$babDB->db_escape_string($arr['id'])."'
 					");
 				$this->countgrp = $babDB->db_num_rows($this->resgrp);
@@ -340,7 +340,7 @@ function displayRegistration($nickname, $fields, $cagree)
 		function getnextgrp()
 			{
 			global $babBody, $babDB;
-			static $i = 0;	
+			static $i = 0;
 			if( $i < $this->countgrp)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
@@ -373,7 +373,7 @@ function displayRegistration($nickname, $fields, $cagree)
 				}
 			}
 		}
-	
+
 	$temp = new temp($nickname, $fields, $cagree);
 	$babBody->babecho(bab_printTemplate($temp,"login.html", "registration"));
 	}
@@ -384,7 +384,7 @@ function displayDisclaimer()
 	$babBody->setTitle(bab_translate("Disclaimer/Privacy statement"));
 	$res = $babDB->db_query("select * from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'");
 	$arr = $babDB->db_fetch_array($res);
-	
+
 	include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
 	$editor = new bab_contentEditor('bab_disclaimer');
 	$editor->setContent($arr['disclaimer_text']);
@@ -420,11 +420,11 @@ function confirmUser($hash, $nickname)
 					bab_addUserToGroup($arr['id'], $babBody->babsite['idgroup']);
 					}
 				}
-				
+
 			include_once $GLOBALS['babInstallPath']."utilit/eventdirectory.php";
 			$event = new bab_eventUserModified($arr['id']);
 			bab_fireEvent($event);
-				
+
 			return true;
 			}
 		}
@@ -435,15 +435,15 @@ function confirmUser($hash, $nickname)
 		}
 
 	}
-	
+
 
 function addNewUser( $nickname, $password1, $password2)
 	{
 	global $babBody, $babDB;
-	
+
 	$fields = bab_pp('fields', array());
 	$cagree = bab_pp('cagree');
-	
+
 	if( empty($nickname) || empty($fields['email']) || empty($fields['givenname']) || empty($fields['sn']) || empty($password1) || empty($password2))
 		{
 		$babBody->msgerror = bab_translate( "You must complete all fields !!");
@@ -484,7 +484,7 @@ function addNewUser( $nickname, $password1, $password2)
 		{
 		$sCaptchaSecurityCode = bab_pp('sCaptchaSecurityCode', '');
 		//echo 'sCaptchaSecurityCode ==> ' . $sCaptchaSecurityCode . ' session ==> ' . $_SESSION['sCaptchaSecurityCode'] . '<br />';
-					
+
 		if(!$oCaptcha->securityCodeValid($sCaptchaSecurityCode))
 		{
 			$babBody->msgerror = bab_translate("The captcha value is incorrect");
@@ -496,7 +496,7 @@ function addNewUser( $nickname, $password1, $password2)
 			return false;
 		}/*/
 		}
-		
+
 	if ( !bab_isEmailValid($fields['email']))
 		{
 		$babBody->msgerror = bab_translate("Your email is not valid !!");
@@ -602,7 +602,7 @@ function addNewUser( $nickname, $password1, $password2)
 		include_once $babInstallPath."utilit/uploadincl.php";
 		$cphoto = bab_getUploadedFileContent('photof');
 		}
-	
+
 	if( !empty($cphoto))
 		{
 		$req .= " photo_data='".$babDB->db_escape_string($cphoto)."'";
@@ -630,11 +630,11 @@ function addNewUser( $nickname, $password1, $password2)
 					$rs = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_EXTRA_TBL." where id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' and  id_entry='".$babDB->db_escape_string($idu)."'");
 					if( $rs && $babDB->db_num_rows($rs) > 0 )
 						{
-						$babDB->db_query("UPDATE ".BAB_DBDIR_ENTRIES_EXTRA_TBL." 
-							SET 
-								field_value='".$babDB->db_escape_string($value)."' 
-							WHERE 
-								id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."' 
+						$babDB->db_query("UPDATE ".BAB_DBDIR_ENTRIES_EXTRA_TBL."
+							SET
+								field_value='".$babDB->db_escape_string($value)."'
+							WHERE
+								id_fieldx='".$babDB->db_escape_string($arridfx[$tmp])."'
 								AND  id_entry='".$babDB->db_escape_string($idu)."'
 							");
 						}
@@ -669,12 +669,12 @@ function login_signon()
 	if (false === bab_requireCredential(bab_translate("Login"), $sAuthType)) {
 		$babBody->addError(sprintf(bab_translate("The authentication method '%s' is invalid"), $sAuthType));
 	}
-	
-	// if allready logged, return to homepage
+
+	// if already logged, return to homepage
 	header('location:'.$GLOBALS['babUrlScript']);
 	exit;
 }
-	
+
 
 
 
@@ -686,20 +686,20 @@ $cmd = bab_rp('cmd','signon');
 
 if('register' === bab_pp('adduser') && $babBody->babsite['registration'] == 'Y')
 {
-	if(!addNewUser(bab_pp('nickname'), bab_pp('password1'), bab_pp('password2'))) 
+	if(!addNewUser(bab_pp('nickname'), bab_pp('password1'), bab_pp('password2')))
 	{
 		$cmd = 'register';
 	}
 	elseif(2 == $babBody->babsite['email_confirm'])
 	{
 		// Confirm account without address email validation
-		
+
 		$sLogin		= (string) bab_pp('nickname');
 		$sPassword	= (string) bab_pp('password1');
 		$iLifeTime	= (int) bab_pp('lifetime', 0);
-		
+
 		$AuthOvidentia = bab_functionality::get('PortalAuthentication/AuthOvidentia');
-		
+
 		$iIdUser = $AuthOvidentia->authenticateUserByLoginPassword($sLogin, $sPassword);
 		if(!is_null($iIdUser) && $AuthOvidentia->userCanLogin($iIdUser))
 		{
@@ -736,22 +736,22 @@ switch($cmd)
 		break;
 
 	case 'displayMessage':
-		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php'; 
-		
+		require_once $GLOBALS['babInstallPath'] . 'utilit/baseFormProcessingClass.php';
+
 		global $babBody;
-		
+
 		$oForm = new BAB_BaseFormProcessing();
-		
+
 		$oForm->set_data('sTg', 'login');
 		$oForm->set_data('sCmd', 'authform');
 		$oForm->set_data('sMessage', $babBody->msgerror);
 		$oForm->set_data('sBtnCaption', bab_translate("Ok"));
-		
+
 		$babBody->msgerror = '';
-		
+
 		$babBody->babecho(bab_printTemplate($oForm, 'login.html', 'displayMessage'));
 		break;
-		
+
 	case "showdp":
 		displayDisclaimer();
 		break;
@@ -761,11 +761,11 @@ switch($cmd)
 		$babBody->addItemMenu("signon", bab_translate("Login"), $GLOBALS['babUrlScript']."?tg=login&cmd=signon");
 		if( $babBody->babsite['registration'] == 'Y') {
 			$babBody->addItemMenu("register", bab_translate("Register"), $GLOBALS['babUrlScript']."?tg=login&cmd=register");
-			
+
 			include_once $babInstallPath."utilit/dirincl.php";
 			displayRegistration(
-					bab_pp('nickname'), 
-					bab_rp('fields', array()), 
+					bab_pp('nickname'),
+					bab_rp('fields', array()),
 					bab_pp('cagree')
 				);
 		}
@@ -786,7 +786,7 @@ switch($cmd)
 			$babBody->msgerror = bab_translate("Access denied");
 		}
 		break;
-		
+
 	case "authform":
 		require_once $GLOBALS['babInstallPath'].'utilit/loginIncl.php';
 		$loginMessage = bab_rp('msg', '');
@@ -794,12 +794,12 @@ switch($cmd)
 		displayAuthenticationForm($loginMessage, $errorMessage);
 		$cmd = 'signon';
 		break;
-		
+
 	case "confirm":
 		confirmUser( $hash, $name );
 		login_signon();
 		break;
-				
+
 	case 'detect':
 		if ($GLOBALS['BAB_SESS_LOGGED']) {
 			header( "location:".bab_rp('referer') );
@@ -815,6 +815,6 @@ switch($cmd)
 	default:
 		login_signon();
 		break;
-				
+
 	}
 $babBody->setCurrentItemMenu($cmd);

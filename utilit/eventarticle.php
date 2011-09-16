@@ -30,44 +30,44 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 /**
  * Event for actions on articles
  * Store additional informations for registered targets
- * each target can add informed users, the next targets will not inform the allready informed recipients
- * 
+ * each target can add informed users, the next targets will not inform the already informed recipients
+ *
  * @package events
  * @since 7.4.0
  */
 class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 {
 	private $informed_recipients = array();
-	
-	
+
+
 	/**
 	 * @var int
 	 */
 	private	  $topic_id 		= null;
 	protected $topic_name 		= null;
-	
+
 	protected $article_id 		= null;
 	protected $article_title 	= null;
 	protected $article_author 	= null;
-	
+
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	private $restriction;
-	
-	
+
+
 
 	/**
 	 * Set informations usefull for notifications
-	 * 
+	 *
 	 * @param	int		$topic_id
 	 * @param	string	$topic_name
-	 * 
+	 *
 	 * @param	int		$article_id
 	 * @param	string	$article_title
 	 * @param	string	$article_author
-	 * 
+	 *
 	 * @return bab_eventArticle
 	 */
 	public function setInformations($topic_id, $topic_name, $article_id, $article_title, $article_author)
@@ -77,43 +77,43 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 		$this->article_id 		= $article_id;
 		$this->article_title 	= $article_title;
 		$this->article_author 	= $article_author;
-		
+
 		return $this;
 	}
-	
-	
+
+
 	public function getTopicId()
 	{
 		return $this->topic_id;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getTopicName()
 	{
 		return $this->topic_name;
 	}
-	
+
 	public function getArticleId()
 	{
 		return $this->article_id;
 	}
-	
-	
+
+
 	public function getArticleTitle()
 	{
 		return $this->article_title;
 	}
-	
+
 	public function getArticleAuthor()
 	{
 		return $this->article_author;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Set access restriction of article to use for the recipients of the articles
 	 * @param string $restriction
@@ -125,12 +125,12 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 		{
 			return $this;
 		}
-		
+
 		$this->restriction = $restriction;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Add a user to informed user list after a user has been informed about the action
 	 * @param int $id_user
@@ -141,9 +141,9 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 		$this->informed_recipients[$id_user] = $id_user;
 		return $this;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Get user to notify based on article restrictions and access rights
 	 * @return array
@@ -151,25 +151,25 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 	public function getUsersToNotify()
 	{
 		include_once $GLOBALS['babInstallPath']."admin/acl.php";
-		
+
 		$users = aclGetAccessUsers(BAB_TOPICSVIEW_GROUPS_TBL, $this->topic_id);
-		
-		// remove allready notified users
+
+		// remove already notified users
 		if (0 < count($this->informed_recipients)) {
 			foreach($users as $id_user => $arr) {
-				
+
 				if( null !== $this->restriction && !bab_articleAccessByRestriction($restriction, $id)){
 					unset($users[$id_user]);
 					continue;
 				}
-				
+
 				if (isset($this->informed_recipients[$id_user])) {
 					unset($users[$id_user]);
 				}
-				
+
 			}
 		}
-		
+
 		return $users;
 	}
 }
@@ -178,13 +178,13 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 /**
  * After one article has been added to a topic and is made visible for a population of users
  * The event must be triggered after approbation, when the article is visible
- * 
+ *
  * @package events
  * @since 7.4.0
  */
-class bab_eventAfterArticleAdd extends bab_eventArticle 
+class bab_eventAfterArticleAdd extends bab_eventArticle
 {
-	
+
 }
 
 
@@ -193,14 +193,14 @@ class bab_eventAfterArticleAdd extends bab_eventArticle
 
 /**
  * Default notifications for articles
- * 
- * 
+ *
+ *
  * @param bab_eventArticle $event
  * @return unknown_type
  */
 function bab_onArticle(bab_eventArticle $event)
 {
 	require_once dirname(__FILE__).'/artincl.php';
-	
+
 	notifyArticleGroupMembers($event, bab_translate("An article has been published"));
 }

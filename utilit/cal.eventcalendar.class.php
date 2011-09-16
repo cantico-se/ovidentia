@@ -310,39 +310,39 @@ abstract class bab_EventCalendar
 		}
 
 		if (!$event->isPublic()) {
-				
+
 			// Can be PRIVATE or CONFIDENTIAL
 			return false;
 		}
-		
-		
+
+
 		// if in a waiting state
-			
+
 		$relations = $event->getRelations();
 		foreach($relations as $relation)
 		{
 			if ($relation['X-CTO-WFINSTANCE'])
 			{
 				$user_instances = array();
-				
+
 				if ($this->access_user)
 				{
 					require_once dirname(__FILE__).'/wfincl.php';
 					$user_instances = bab_WFGetWaitingInstances($this->access_user);
 				}
-				
+
 				if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
 				{
 					// the user is an approbator, he can view event details
 					break;
 				}
-				
+
 				// but other users are not allowed if there is an ongoing instance
 				return false;
 			}
 		}
-		
-		
+
+
 
 		return true;
 	}
@@ -428,28 +428,28 @@ abstract class bab_EventCalendar
 		global $babDB;
 
 		$res = $babDB->db_query('
-			SELECT 
-				id_user 
-			FROM '.BAB_CALACCESS_USERS_TBL.' 
-			WHERE 
-				bwrite='.$babDB->quote($accessType).' 
-				AND caltype='.$babDB->quote($this->getReferenceType()).' 
+			SELECT
+				id_user
+			FROM '.BAB_CALACCESS_USERS_TBL.'
+			WHERE
+				bwrite='.$babDB->quote($accessType).'
+				AND caltype='.$babDB->quote($this->getReferenceType()).'
 				AND id_cal='.$babDB->quote($this->getUid()).'
 				AND id_user='.$babDB->quote($user)
 		);
 
 		if (0 !== $babDB->db_num_rows($res))
 		{
-			// access allready granted
+			// access already granted
 			return;
 		}
 
 		$babDB->db_query('INSERT INTO '.BAB_CALACCESS_USERS_TBL.'
-			(caltype, id_cal, bwrite, id_user) 
-		VALUES 
-			('.$babDB->quote($this->getReferenceType()).', 
-			'.$babDB->quote($this->getUid()).', 
-			'.$babDB->quote($accessType).', 
+			(caltype, id_cal, bwrite, id_user)
+		VALUES
+			('.$babDB->quote($this->getReferenceType()).',
+			'.$babDB->quote($this->getUid()).',
+			'.$babDB->quote($accessType).',
 			'.$babDB->quote($user).')
 		');
 	}
@@ -468,8 +468,8 @@ abstract class bab_EventCalendar
 
 		$sQuery = 'DELETE FROM ' . BAB_CALACCESS_USERS_TBL . ' WHERE
 			caltype='.$babDB->quote($this->getReferenceType()).'
-			AND id_cal = ' . $babDB->quote($this->getUid()) . ' 
-			AND bwrite = ' . $babDB->quote($accessType).' 
+			AND id_cal = ' . $babDB->quote($this->getUid()) . '
+			AND bwrite = ' . $babDB->quote($accessType).'
 			AND id_user IN('.$babDB->quote($user).')';
 
 		$babDB->db_query($sQuery);
@@ -487,12 +487,12 @@ abstract class bab_EventCalendar
 		global $babDB;
 
 		$res = $babDB->db_query('
-			SELECT 
-				id_user 
-			FROM '.BAB_CALACCESS_USERS_TBL.' 
-			WHERE 
-				bwrite='.$babDB->quote($accessType).' 
-				AND caltype='.$babDB->quote($this->getReferenceType()).' 
+			SELECT
+				id_user
+			FROM '.BAB_CALACCESS_USERS_TBL.'
+			WHERE
+				bwrite='.$babDB->quote($accessType).'
+				AND caltype='.$babDB->quote($this->getReferenceType()).'
 				AND id_cal='.$babDB->quote($this->getUid())
 		);
 
@@ -518,11 +518,11 @@ abstract class bab_EventCalendar
 		global $babDB;
 
 		$res = $babDB->db_query('
-			SELECT 
-				bwrite 
-			FROM '.BAB_CALACCESS_USERS_TBL.' 
-			WHERE 
-				 caltype='.$babDB->quote($calendar->getReferenceType()).' 
+			SELECT
+				bwrite
+			FROM '.BAB_CALACCESS_USERS_TBL.'
+			WHERE
+				 caltype='.$babDB->quote($calendar->getReferenceType()).'
 				AND id_cal='.$babDB->quote($calendar->getUid()).'
 				AND id_user='.$babDB->quote($this->access_user)
 		);
@@ -567,11 +567,11 @@ abstract class bab_EventCalendar
 		global $babDB;
 
 		$res = $babDB->db_query('
-			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.' 
-			WHERE 
-				id_cal='.$babDB->quote($calendar->getUid()).' 
+			SELECT * FROM '.BAB_CALACCESS_USERS_TBL.'
+			WHERE
+				id_cal='.$babDB->quote($calendar->getUid()).'
 				AND id_user='.$babDB->quote($author).'
-				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).' 
+				AND bwrite='.$babDB->quote(BAB_CAL_ACCESS_SHARED_UPDATE).'
 			');
 
 
@@ -601,7 +601,7 @@ abstract class bab_EventCalendar
 	{
 		$mainCalendar = $this->getUrlIdentifier();
 		$placeholderCalendar = $calendar->getUrlIdentifier();
-		
+
 
 		if ($calendar instanceof bab_PersonalCalendar)
 		{
@@ -613,7 +613,7 @@ abstract class bab_EventCalendar
 					return true;
 				}
 			}
-			
+
 			if (!isset($attendees[$mainCalendar]) && $mainCalendar === $placeholderCalendar)
 			{
 				// the main calendar of event is not in attendees
@@ -631,8 +631,8 @@ abstract class bab_EventCalendar
 					return true;
 				}
 			}
-				
-				
+
+
 			if (!isset($relations[$mainCalendar]) && $mainCalendar === $placeholderCalendar)
 			{
 				// the main calendar of event is not in relations
@@ -658,7 +658,7 @@ abstract class bab_EventCalendar
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
 		$eventBackend = $calendar->getBackend();
-			
+
 		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user='.$babDB->quote($this->getIdUser()).' AND uid='.$babDB->quote($event->getProperty('UID')));
 		if ($babDB->db_num_rows($res))
 		{
@@ -668,11 +668,11 @@ abstract class bab_EventCalendar
 		if (!$collection->hash)
 		{
 			// regular event
-				
+
 			$babDB->db_query('
-				INSERT INTO bab_cal_inbox 
-					(id_user, calendar_backend, uid) 
-				VALUES 
+				INSERT INTO bab_cal_inbox
+					(id_user, calendar_backend, uid)
+				VALUES
 					(
 						'.$babDB->quote($this->getIdUser()).',
 						'.$babDB->quote($eventBackend->getUrlIdentifier()).',
@@ -681,15 +681,15 @@ abstract class bab_EventCalendar
 			');
 
 		} else {
-				
+
 			// recurring event with hash, insert all collection
-				
+
 			foreach($collection as $event)
 			{
 				$babDB->db_query('
-					INSERT INTO bab_cal_inbox 
-						(id_user, calendar_backend, uid) 
-					VALUES 
+					INSERT INTO bab_cal_inbox
+						(id_user, calendar_backend, uid)
+					VALUES
 						(
 							'.$babDB->quote($this->getIdUser()).',
 							'.$babDB->quote($eventBackend->getUrlIdentifier()).',
@@ -798,12 +798,12 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		if ($access_user === $id_user)
 		{
 			$data = self::getUserCalendarData($id_user, BAB_CAL_ACCESS_FULL);
-				
+
 			if (!$data)
 			{
 				return false;
 			}
-				
+
 			$this->init($access_user, $data);
 			return true;
 		}
@@ -811,23 +811,23 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 
 		$query = "
-			select 
+			select
 				cut.id_cal,
-				cut.bwrite, 
+				cut.bwrite,
 				u.firstname,
-				u.lastname 
-	
-			from ".BAB_CALACCESS_USERS_TBL." cut 
+				u.lastname
+
+			from ".BAB_CALACCESS_USERS_TBL." cut
 				,".BAB_CALENDAR_TBL." ct
 				,".BAB_USERS_TBL." u
-			where 
-				ct.id=cut.id_cal 
-				and u.id=ct.owner 
-				and ct.actif='Y' 
+			where
+				ct.id=cut.id_cal
+				and u.id=ct.owner
+				and ct.actif='Y'
 				and disabled='0'
 				and u.id=".$babDB->quote($id_user)."
 				and cut.id_user=".$babDB->quote($access_user);
-			
+
 
 		$res = $babDB->db_query($query);
 
@@ -835,20 +835,20 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		if ($arr = $babDB->db_fetch_assoc($res))
 		{
 			// the calendar is accessible throw calendar sharing
-				
+
 
 			$data = array(
-				
+
 				'idcal' 		=> $arr['id_cal'],
 				'name' 			=> bab_composeUserName($arr['firstname'], $arr['lastname']),
 				'description' 	=> '',
 				'idowner' 		=> $id_user,
 				'access'		=> (int) $arr['bwrite']
-				
+
 			);
-				
+
 			$this->init($access_user, $data);
-				
+
 			return true;
 		}
 
@@ -881,11 +881,11 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			$data = array(
 				'idcal'			=> $id_calendar,
 				'idowner'		=> $id_user,
-				'name' 			=> bab_getUserName($id_user), 
-				'description' 	=> '',  
+				'name' 			=> bab_getUserName($id_user),
+				'description' 	=> '',
 				'access' 		=> $access
 			);
-				
+
 			return $data;
 		}
 
@@ -950,8 +950,8 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 			// i am the author
 			return true;
 		}
-		
-		
+
+
 		switch($this->getSharingAccess()) {
 			case BAB_CAL_ACCESS_SHARED_UPDATE:
 			case BAB_CAL_ACCESS_UPDATE:
@@ -977,7 +977,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		if ($collection instanceof bab_ReadOnlyCollection) {
 			return false;
 		}
-		
+
 		$author = $event->getAuthorId();
 		if (null === $author)
 		{
@@ -997,7 +997,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 
 		switch($this->getSharingAccess()) {
-				
+
 			case BAB_CAL_ACCESS_UPDATE:
 				if (((int) $this->access_user) === $author)
 				{
@@ -1099,7 +1099,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
-		
+
 		if ($calendar !== $this)
 		{
 			$this->addToOviInbox($event);
@@ -1118,13 +1118,13 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 
 		$this->updateEventAttendee($event);
 	}
-	
-	
-	
 
-	
-	
-	
+
+
+
+
+
+
 
 
 	/**
@@ -1163,7 +1163,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 				case 'ACCEPTED':
 					$this->updateEventStatus($event_id, BAB_CAL_STATUS_ACCEPTED);
 					break;
-						
+
 				case 'DECLINED':
 					$this->updateEventStatus($event_id, BAB_CAL_STATUS_DECLINED);
 					break;
@@ -1184,7 +1184,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		global $babDB;
 
 		$babDB->db_query('update '.BAB_CAL_EVENTS_OWNERS_TBL.' set status='.$babDB->quote($status).' WHERE
-			id_event='.$babDB->quote($event_id).' 
+			id_event='.$babDB->quote($event_id).'
 			AND id_cal='.$this->getUid()
 		);
 
@@ -1208,20 +1208,20 @@ abstract class bab_OviRelationCalendar extends bab_OviEventCalendar
 	{
 		// ovi backend
 		$backend = $this->getBackend();
-		
+
 		$relationEvent = clone $event;
-		
-		// the new event must have the relation calendar as parent calendar 
-		
+
+		// the new event must have the relation calendar as parent calendar
+
 		// create a new collection into the relation calendar
 		$collection = $backend->CalendarEventCollection($this);
 		$collection->addPeriod($relationEvent);
-		
+
 		// save a copy of the event into the relation calendar
-		// if the event allready exists, it will be updated
+		// if the event already exists, it will be updated
 		$backend->savePeriod($relationEvent);
 	}
-	
+
 
 	/**
 	 * Triggered when the calendar has been added as a relation on $event
@@ -1235,13 +1235,13 @@ abstract class bab_OviRelationCalendar extends bab_OviEventCalendar
 		$collection = $event->getCollection();
 		$calendar = $collection->getCalendar();
 		$backend = $calendar->getBackend();
-		
+
 		if ($calendar !== $this && !($backend instanceof Func_CalendarBackend_Ovi))
 		{
 			$this->addEventCopy($event);
 		}
 	}
-	
+
 	/**
 	 * Triggered when the calendar has been updated as a relation on $event
 	 * @param bab_CalendarPeriod $event
@@ -1251,7 +1251,7 @@ abstract class bab_OviRelationCalendar extends bab_OviEventCalendar
 	{
 		// nothing to do
 	}
-	
+
 }
 
 
@@ -1430,7 +1430,7 @@ interface bab_PersonalCalendar {
 	 * @return int
 	 */
 	public function getSharingAccess();
-	
+
 
 
 	/**

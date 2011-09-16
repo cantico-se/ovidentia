@@ -28,37 +28,37 @@ require_once $GLOBALS['babInstallPath'].'utilit/eventnotifyincl.php';
 
 /**
  * All file manager based events are extended for this event
- * 
+ *
  * @package events
  * @since 7.2.93
  */
-class bab_eventFm extends bab_event 
+class bab_eventFm extends bab_event
 {
 	/**
 	 * Ovidentia references in relation with event
 	 * @var array	<bab_reference>
 	 */
 	private $references = array();
-	
+
 	/**
 	 * @var int
 	 */
 	protected $folder_id = null;
-	
-	
-	
-	
+
+
+
+
 	/**
-	 * 
+	 *
 	 * @param bab_reference $reference
 	 * @return bab_eventFm
 	 */
 	public function addReference(bab_reference $reference) {
-		
+
 		$this->references[] = $reference;
 		return $this;
 	}
-	
+
 	/**
 	 * Get iterator of ovidentia references
 	 * @return array	<bab_reference>
@@ -67,7 +67,7 @@ class bab_eventFm extends bab_event
 	{
 		return $this->references;
 	}
-	
+
 	/**
 	 * Set current folder
 	 * @return bab_eventFm
@@ -80,21 +80,21 @@ class bab_eventFm extends bab_event
 }
 
 /**
- * All file from file manager based events 
+ * All file from file manager based events
  * Store additional informations for registered targets
- * each target can add informed users, the next targets will not inform the allready informed recipients
- * 
+ * each target can add informed users, the next targets will not inform the already informed recipients
+ *
  * @package events
  * @since 7.2.93
  */
 class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 {
 	private $informed_recipients = array();
-	
-	
+
+
 	private $user_option_notify = null;
-	
-	
+
+
 	/**
 	 * Add a user to informed user list after a user has been informed about the action done on the file manager file
 	 * @param int $id_user
@@ -105,7 +105,7 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 		$this->informed_recipients[$id_user] = $id_user;
 		return $this;
 	}
-	
+
 	/**
 	 * Test if a user has been informed about the action done one file manager file
 	 * @param int	$id_user
@@ -115,15 +115,15 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 	{
 		return isset($this->informed_recipients[$id_user]);
 	}
-	
-	
+
+
 	/**
 	 * Folder option for notifications.
 	 * If the method return true, the recipients of files must be informed about a newly uploaded or updated file
 	 * if not set by the setFolderOptionNotify method, this method return false
-	 * 
+	 *
 	 * @see self::setFolderOptionNotify()
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function getFolderOptionNotify()
@@ -133,23 +133,23 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 		if ($arr = $babDB->db_fetch_assoc($res)) {
 			return 'Y' === $arr['filenotify'];
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * User option for notifications
 	 * return null if the option is not accessible to user
 	 * return true if the user want to notify the recipients or false otherwise
-	 * 
+	 *
 	 * @return bool | null
 	 */
 	public function getUserOptionNotify()
 	{
-		return $this->user_option_notify;	
+		return $this->user_option_notify;
 	}
-	
+
 	/**
 	 * Set user option for notifications
 	 * @param bool $option
@@ -160,8 +160,8 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 		$this->user_option_notify = $option;
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Get user to notify based on folder preferences and access rights
 	 * @return array
@@ -171,16 +171,16 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 		if (false === $this->getFolderOptionNotify()) {
 			return array();
 		}
-		
+
 		if (false === $this->getUserOptionNotify()) {
 			return array();
 		}
-		
+
 		include_once $GLOBALS['babInstallPath']."admin/acl.php";
-		
+
 		$users = aclGetAccessUsers(BAB_FMNOTIFY_GROUPS_TBL, $this->folder_id);
-		
-		// remove allready notified users
+
+		// remove already notified users
 		if (0 < count($this->informed_recipients)) {
 			foreach($users as $id_user => $arr) {
 				if ($this->isUserInformed($id_user)) {
@@ -188,7 +188,7 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 				}
 			}
 		}
-		
+
 		return $users;
 	}
 }
@@ -197,36 +197,36 @@ class bab_eventFmFile extends bab_eventFm implements bab_eventNotifyRecipients
 /**
  * After one or more files uploaded into file manager
  * The event must be triggered after approbation, when the file is available to recipients
- * 
+ *
  * @package events
  * @since 7.2.93
  */
-class bab_eventFmAfterFileUpload extends bab_eventFmFile 
+class bab_eventFmAfterFileUpload extends bab_eventFmFile
 {
-	
+
 }
 
 
 /**
  * After one or more files updated into file manager
  * The event must be triggered after approbation, when the modifications are available to recipients
- * 
+ *
  * @package events
  * @since 7.2.93
  */
 class bab_eventFmAfterFileUpdate extends bab_eventFmFile
 {
-	
+
 }
 
 /**
  * After a new version uploaded on an existing file in the file manager
  * The event must be triggered after approbation, when the file is available to recipients
- * 
+ *
  * @package events
  * @since 7.2.93
  */
 class bab_eventFmAfterAddVersion extends bab_eventFmAfterFileUpdate
 {
-	
+
 }

@@ -54,7 +54,7 @@ class bab_InstallSource {
 	}
 
 	/**
-	 * Set the install source from an allready unziped folder
+	 * Set the install source from an already unziped folder
 	 * @param	string	$folderpath
 	 */
 	public function setFolder($folderpath) {
@@ -98,7 +98,7 @@ class bab_InstallSource {
 	}
 
 
-	
+
 
 
 	/**
@@ -164,11 +164,11 @@ class bab_InstallSource {
 				return false;
 			}
 
-			// archive allready unziped
+			// archive already unziped
 			$ini->inifile($this->folderpath.'/'.$iniRelativePath);
 			return $ini;
 		}
-		
+
 		if (null !== $this->archive) {
 			// archive exist
 			try{
@@ -215,7 +215,7 @@ class bab_InstallSource {
 	 * @return	bab_inifile
 	 */
 	public function getIni() {
-		
+
 		foreach(array('getAddonIni', 'getAddonCollectionIni', 'getCoreIni') as $method) {
 			$ini = $this->$method();
 
@@ -232,7 +232,7 @@ class bab_InstallSource {
 
 	/**
 	 * Install the package or folder in Ovidentia
-	 * 
+	 *
 	 * @param	bab_inifile 	$ini
 	 * @return	bool
 	 */
@@ -296,7 +296,7 @@ class bab_InstallSource {
 
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
-		
+
 		$addon = bab_getAddonInfosInstance($addon_name);
 		if ($addon) {
 			if (!$addon->upgrade()) {
@@ -320,7 +320,7 @@ class bab_InstallSource {
 		global $babBody;
 
 		$map = bab_getAddonsFilePath();
-		
+
 		foreach ($map['loc_in'] as $directory) {
 			if (!is_dir($directory)) {
 				if (!bab_mkdir($directory, 0777)) {
@@ -328,7 +328,7 @@ class bab_InstallSource {
 					return false;
 				}
 			}
-				
+
 			if (!is_writable($directory)) {
 				$babBody->addError(bab_sprintf(bab_translate('The directory %s is not writable'), $directory));
 				return false;
@@ -393,11 +393,11 @@ class bab_InstallSource {
 	/**
 	 * Install a Ovidentia upgrade
 	 * Unzip the core folder to ovidentia root folder
-	 * 
+	 *
 	 * @since 7.3.92 	copy addons to the install/addons folder, addons will be installable if the original version is greater than 7.3.92
-	 * 					before this version, the install/addons folder will contain addons from the first package of ovidentia or nothing 
+	 * 					before this version, the install/addons folder will contain addons from the first package of ovidentia or nothing
 	 * 					if the original installation is too old
-	 * 
+	 *
 	 * @param	bab_CoreIniFile $ini
 	 * @return	bool
 	 */
@@ -406,7 +406,7 @@ class bab_InstallSource {
 		include_once dirname(__FILE__).'/upgradeincl.php';
 		include_once dirname(__FILE__).'/path.class.php';
 		include_once dirname(__FILE__).'/delincl.php';
-		
+
 		global $babBody;
 
 		$path 	= $this->getFolder().'/';
@@ -414,18 +414,18 @@ class bab_InstallSource {
 		$core 	= 'ovidentia';
 
 		$destination = realpath('.');
-		
-		
+
+
 		if (!is_writable($destination.'/config.php')) {
 			bab_installWindow::message(bab_sprintf(bab_translate('The config.php file is not writable'), $destination));
 			return false;
 		}
-		
+
 		$destpath = new bab_Path($destination);
-		
+
 		try {
 			$destpath->isFolderWriteable();
-			
+
 		} catch(bab_FolderAccessRightsException $e) {
 			bab_installWindow::message($e->getMessage());
 			return false;
@@ -440,10 +440,10 @@ class bab_InstallSource {
 		$version = explode('.', $ini->getVersion());
 		$destination .= '/ovidentia-'.implode('-', $version);
 
-		// stop if the folder allready exists
+		// stop if the folder already exists
 
 		if (is_dir($destination)) {
-			bab_installWindow::message(bab_sprintf(bab_translate('The folder %s allready exists'), $destination));
+			bab_installWindow::message(bab_sprintf(bab_translate('The folder %s already exists'), $destination));
 			return false;
 		}
 
@@ -452,35 +452,35 @@ class bab_InstallSource {
 			bab_installWindow::message($ini->getRequirementsHtml());
 			return false;
 		}
-		
-		
+
+
 		// prepare requirement for addons to upgrade
-		
+
 		$install = new bab_Path(realpath('.').'/install');
-		
+
 		// check for the install folder
-		
+
 		if ($install->isDir()) {
-			
+
 			try {
 				$install->isFolderWriteable();
 			} catch(bab_FolderAccessRightsException $e) {
 				bab_installWindow::message($e->getMessage());
 				return false;
 			}
-			
+
 		} else {
 			// try to create the install folder
-			
+
 			if (!$install->createDir())
 			{
 				bab_installWindow::message(bab_translate('The folder is not writable'));
 				return false;
 			}
 		}
-		
+
 		// remove old addons from install folder if exists
-		
+
 		$msgerror = '';
 		if (is_dir($install->toString().'/addons'))
 		{
@@ -490,7 +490,7 @@ class bab_InstallSource {
 				return false;
 			}
 		}
-		
+
 		if (is_file($install->toString().'/addons.ini'))
 		{
 			if (!unlink($install->toString().'/addons.ini'))
@@ -511,8 +511,8 @@ class bab_InstallSource {
 			bab_installWindow::message(bab_translate("The installed version is newer than the package"));
 			return false;
 		}
-		
-		
+
+
 		if (false === $current_version_ini->is_upgrade_allowed($zipversion)) {
 			bab_installWindow::message(bab_translate("The installed version is not compliant with this package, the upgrade within theses two versions has been disabled"));
 			return false;
@@ -520,7 +520,7 @@ class bab_InstallSource {
 
 
 		// copy temporary unziped core to the new core folder
-		
+
 		if (true !== $result = bab_recursive_cp($path.$core, $destination)) {
 			bab_installWindow::message($result);
 
@@ -534,24 +534,24 @@ class bab_InstallSource {
 
 
 		// copy addons from old core to new core
-		
+
 		if (!bab_cpaddons($GLOBALS['babInstallPath'], $destination, $babBody->msgerror)) {
 			return false;
 		}
-		
-		
-		
+
+
+
 		// copy temporary unziped addons and the addons.ini to the install/addons folder
 		if (true !== $result = bab_recursive_cp($path.'install/addons', $install->toString().'/addons')) {
 			bab_installWindow::message($result);
 			return false;
 		}
-		
+
 		if (!copy($path.'install/addons.ini', $install->toString().'/addons.ini'))
 		{
 			return false;
 		}
-		
+
 
 		// Change config
 
@@ -564,7 +564,7 @@ class bab_InstallSource {
 		$upgrade_page = $GLOBALS['babUrlScript'].'?tg=version&idx=upgrade&iframe=1';
 
 		bab_installWindow::message(sprintf('
-			
+
 			<script type="text/javascript">
 				document.location.href = \'%s\'
 			</script>
@@ -686,7 +686,7 @@ class bab_installWindow {
 	public static function getPage($title, $frameurl, $nextpagetitle, $nextpageurl) {
 
 		global $babBody;
-		
+
 		$page = new bab_installWindowTpl();
 
 		$page->t_upgrade 	= bab_toHtml($title);
@@ -727,12 +727,12 @@ class bab_installWindow {
 
 		echo '<html><head></head><body style="background:#fff;">'."\n";
 		define('BAB_INSTALL_SCRIPT_BEGIN', 1);
-		
+
 		if (null === $this->startMessage) {
 			$this->startMessage = bab_translate('Install start');
 		}
 		self::message($this->startMessage);
-		
+
 		$result = call_user_func($callback);
 
 		if ($babBody->msgerror) {
@@ -761,7 +761,7 @@ class bab_installWindow {
 	 * This function echo a message in displayed install log
 	 * This function is usable in addons
 	 * @see bab_setUpgradeLogMsg
-	 * 
+	 *
 	 * @param	string	$html
 	 */
 	public static function message($html) {

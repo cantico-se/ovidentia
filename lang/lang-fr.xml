@@ -1475,7 +1475,7 @@
 <string id="New core name">Nom du nouveau noyau</string>
 <string id="Name of the archive without extension">Nom de l'archive sans l'extension</string>
 <string id="Copy addons">Copier les modules</string>
-<string id="Directory allready exists">Le répertoire existe déjà</string>
+<string id="Directory already exists">Le répertoire existe déjà</string>
 <string id="Zipfile reading error">Erreur de lecture du fichier zip</string>
 <string id="Upload error">Erreur de téléchargement vers le serveur</string>
 <string id="Config change failed on">Le changement de configuration a échoué sur</string>
@@ -1723,7 +1723,7 @@
 <string id="You can't take more than">Vous ne pouvez pas prendre plus de</string>
 <string id="days on the right">jours sur le droit</string>
 <string id="Error">Erreur</string>
-<string id="ERROR: a request is allready defined on this period">ERREUR : une demande est déja définie sur cette période</string>
+<string id="ERROR: a request is already defined on this period">ERREUR : une demande est déja définie sur cette période</string>
 <string id="Print in landscape">Imprimer en mode paysage</string>
 <string id="The event isn't on displayed hours for all calendars">L'événement ne sera pas visible sur les vues jour et semaine</string>
 <string id="Show / hide finished events">Afficher/cacher les événements terminés</string>
@@ -1866,7 +1866,7 @@
 <string id="groups">groupes</string>
 <string id="Add groups">Ajouter des groupes</string>
 <string id="Do you really want to delete the selected items ?">Voulez-vous vraiment supprimer les éléments sélectionnés</string>
-<string id="This set of groups allready exists">Cet ensemble de groupes existe déja</string>
+<string id="This set of groups already exists">Cet ensemble de groupes existe déja</string>
 <string id="Add groups in set">Ajouter des groupes dans l'ensemble</string>
 <string id="Set of groups">Ensemble de groupes</string>
 <string id="minutes">minutes</string>
@@ -2402,7 +2402,7 @@
 <string id="Rights renewal by years">Renouvellement des droits par année</string>
 <string id="Rights renewal">Renouvellement des droits</string>
 <string id="%d rights has been inserted">%d droits ont été ajoutés</string>
-<string id="The right %s allready exist">Le droit %s existe déja</string>
+<string id="The right %s already exists">Le droit %s existe déja</string>
 <string id="Personnel assignement :">Attribuer ce droit à :</string>
 <string id="By user">Par utilisateur</string>
 <string id="By collection">Par régime</string>
@@ -3021,7 +3021,7 @@
 <string id="The package is not reconized as an Ovidentia package">L'archive n'est pas reconnue comme une archive pour Ovidentia</string>
 <string id="The path %s is not writable">Le chemin %s n'est pas accessible en écriture</string>
 <string id="The core directory is missing (%s)">Le répertoire du noyau est manquant (%s)</string>
-<string id="The folder %s allready exists">Le répertoire %s existe déjà</string>
+<string id="The folder %s already exists">Le répertoire %s existe déjà</string>
 <string id="The version is not valid, requirements are not fullfilled">La version n'est pas valide, les prérequis ne sont pas remplis</string>
 <string id="Unexpected error, the archive could not be created in temporary folder">Erreur inattendue, l'archive ne peut pas être créée dans le répertoire temporaire</string>
 <string id="Archive">Archive</string>
@@ -3222,7 +3222,7 @@
 <string id="OVML : the function %s does not exists">OVML : la fonction %s n'existe pas</string>
 <string id="Invalid path. Should not contain '..'">Chemin invalide, ne doit pas contenir '..'</string>
 <string id="Message format">Format du message</string>
-<string id="A draft for this article allready exists">Un brouillon existe déjà pour cet article</string>
+<string id="A draft for this article already exists">Un brouillon existe déjà pour cet article</string>
 <string id="The article does not exists">L'article n'existe pas</string>
 <string id="This article is not modifiable">L'article ne peut pas être modifié</string>
 <string id="New article submission denied in this topic">La soumission d'un nouvel article n'est pas autorisée dans ce thème</string>
