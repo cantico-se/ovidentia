@@ -430,13 +430,12 @@ function period($id_user, $id = 0)
 
 		function getnextmonth()
 			{
-			global $babMonths;
 			static $i = 1;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = $babMonths[$i];
+				$this->monthname = bab_DateStrings::getMonth($i);
 				$i++;
 				return true;
 				}

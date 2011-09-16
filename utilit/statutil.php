@@ -83,13 +83,12 @@ class summaryDetailBaseCls
 {
 	function summaryDetailBaseCls($year, $month, $day, $idx, $item)
 	{
-		global $babMonths;
-
 		$this->hitstxt = bab_translate("Hits");
 		$this->exporttxt = bab_translate("Export");
 		$time = mktime( 0,0,0, $month, $day, $year);
 		$this->daydate = bab_longDate( $time , false);
-		$this->monthdate = $babMonths[$month]." ".$year;
+		$months = bab_DateStrings::getMonths();
+		$this->monthdate = $months[$month]." ".$year;
 		$this->yeardate = $year;
 		
 		$this->exporturl = $GLOBALS['babUrlScript']."?tg=stat&idx=".$idx."&item=".$item."&date=".$year.",".$month.",".$day."&export=1";
@@ -142,7 +141,6 @@ class summaryDetailBaseCls
 
 	function getnextmonth()
 		{
-		global $babShortMonths;
 		static $i = 0;
 		if( $i < 12)
 			{
@@ -157,7 +155,8 @@ class summaryDetailBaseCls
 				$this->height=0;
 				}
 			$this->month = sprintf("%02s", $i+1);
-			$this->monthname = $babShortMonths[$i+1];
+			$shortMonths = bab_DateStrings::getShortMonths();
+			$this->monthname = $shortMonths[$i+1];
 			$i++;
 			return true;
 			}

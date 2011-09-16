@@ -44,13 +44,14 @@ class cal_monthCls extends cal_wmdbaseCls
 
 	function __construct($idx, $calids, $date)
 	{
-		global $babBody, $babMonths;
+		global $babBody;
 
 		parent::__construct("calmonth", $idx, $calids, $date);
 		$this->w = 0;
 		$dispdays = explode(',', bab_getICalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,1,$this->year);
-		$this->monthname = bab_toHtml($babMonths[date("n", $time)]."  ".$this->year);
+		$months = bab_DateStrings::getMonths();
+		$this->monthname = bab_toHtml($months[date("n", $time)]."  ".$this->year);
 		$this->totaldays = date("t", $time);
 		$b = date("w", $time) - bab_getICalendars()->startday;
 		if ($b < 0) {
@@ -121,10 +122,10 @@ class cal_monthCls extends cal_wmdbaseCls
 
 	function getnextdayname()
 	{
-		global $babBody, $babDays;
+		global $babBody;
 		static $i = 0;
 		if ($i < count($this->workdays)) {
-			$this->dayname = bab_toHtml($babDays[$this->workdays[$i]]);
+			$this->dayname = bab_toHtml(bab_DateStrings::getDay($this->workdays[$i]));
 			$i++;
 			return true;
 		}

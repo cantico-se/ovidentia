@@ -584,7 +584,6 @@ function site_menu6($id)
 
 		function getnextdispday()
 			{
-			global $babDays;
 			static $i = 0;
 			if ($i < 7)
 				{
@@ -597,7 +596,7 @@ function site_menu6($id)
 					$this->checked = "";
 					}
 				$this->dayid = $i;
-				$this->shortday = $babDays[$i];
+				$this->shortday = bab_DateStrings::getDay($i);
 				$i++;
 				return true;
 				}
@@ -610,7 +609,6 @@ function site_menu6($id)
 
 		function getnextstartday()
 			{
-			global $babDays;
 			static $i = 0;
 			if ($i < 7)
 				{
@@ -623,7 +621,7 @@ function site_menu6($id)
 					$this->checked = "";
 					}
 				$this->dayid = $i;
-				$this->shortday = $babDays[$i];
+				$this->shortday = bab_DateStrings::getDay($i);
 				$i++;
 				return true;
 				}
@@ -793,7 +791,6 @@ function site_menu13($id)
 
 		function getnextworkday()
 			{
-			global $babDays;
 			static $i = 0;
 			if ($i < 7)
 				{
@@ -806,7 +803,7 @@ function site_menu13($id)
 					$this->checked = "";
 					}
 				$this->dayid = $i;
-				$this->shortday = $babDays[$i];
+				$this->shortday = bab_DateStrings::getDay($i);
 				$i++;
 				return true;
 				}

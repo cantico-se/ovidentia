@@ -542,15 +542,6 @@ function bab_newInstall() {
 
 	if (!$ini->isValid()) {
 
-
-		$GLOBALS['babJs'] = $GLOBALS['babInstallPath']."scripts/ovidentia.js";
-		$GLOBALS['babCssPath'] = bab_getCssUrl();
-
-		$babDummy = new babDummy();
-
-		$GLOBALS['babCss'] = bab_printTemplate($babDummy, "config.html", "babCss");
-		$GLOBALS['babMeta'] = bab_printTemplate($babDummy, "config.html", "babMeta");
-
 		$GLOBALS['babSkinPath'] = $GLOBALS['babInstallPath']."skins/ovidentia/";
 
 		$babBody->setTitle(bab_translate('Ovidentia prerequisit verification'));

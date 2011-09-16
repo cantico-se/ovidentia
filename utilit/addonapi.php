@@ -594,6 +594,118 @@ function bab_mktime($time)
 		return mktime(0,0,0,$arr0[1],$arr0[2],$arr0[0]);
 		}
 	}
+	
+	
+class bab_DateStrings
+{
+	/**
+	 * 
+	 * @return array
+	 */
+	public static function getMonths()
+	{
+		static $arr = null;
+		
+		if (null === $arr)
+		{
+			$arr = array(
+				1=>bab_translate("January"), 
+				bab_translate("February"), 
+				bab_translate("March"), 
+				bab_translate("April"),
+	            bab_translate("May"), 
+	            bab_translate("June"), 
+	            bab_translate("July"), 
+	            bab_translate("August"),
+	            bab_translate("September"), 
+	            bab_translate("October"), 
+	            bab_translate("November"), 
+	            bab_translate("December")
+	        );
+		}
+		
+		return $arr;
+	}
+	
+	/**
+	 * 
+	 * @param int $i
+	 * @return string
+	 */
+	public static function getMonth($i)
+	{
+		$months = self::getMonths();
+		return $months[$i];
+	}
+	
+	/**
+	 * 
+	 * @return array
+	 */
+	public static function getShortMonths()
+	{
+		static $arr = null;
+		
+		if (null === $arr)
+		{
+			$months = self::getMonths();
+			
+			$arr = array();
+			foreach($months as $key => $val) {
+				$sm = mb_substr($val, 0 , 3);
+				if (count($arr) == 0 || !in_array($sm, $arr)) {
+					$arr[$key] = $sm;
+				} else {
+					$m=4;
+					while(in_array($sm, $arr) && $m < mb_strlen($val)) {
+						$sm = mb_substr($val, 0 , $m++);
+					}
+			
+					$arr[$key] = $sm;
+				}
+			}
+		}
+		
+		return $arr;
+	}
+	
+	/**
+	 * 
+	 * @return arrray
+	 */
+	public static function getDays()
+	{
+		static $arr = null;
+		
+		if (null === $arr)
+		{
+			$arr = array(
+				bab_translate('Sunday'), 
+				bab_translate('Monday'),
+				bab_translate('Tuesday'), 
+				bab_translate('Wednesday'), 
+				bab_translate('Thursday'),
+				bab_translate('Friday'), 
+				bab_translate('Saturday')
+			);
+		}
+		
+		return $arr;
+	}
+	
+	
+	/**
+	 * 
+	 * @param int $i
+	 * @return string
+	 */
+	public function getDay($i)
+	{
+		$days = self::getDays();
+		return $days[$i];
+	}
+}
+	
 
 /**
  * Returns a string containing the time formatted according to the format
@@ -623,7 +735,6 @@ function bab_mktime($time)
  */
 function bab_formatDate($format, $time)
 {
-	global $babDays, $babMonths, $babShortMonths;
 	$txt = $format;
 	if(preg_match_all("/%(.)/", $format, $m))
 		{
@@ -632,19 +743,23 @@ function bab_formatDate($format, $time)
 			switch($m[1][$i])
 				{
 				case 'd': /* A short textual representation of a day, three letters */
-					$val = mb_substr($babDays[date("w", $time)], 0 , 3);
+					$days = bab_DateStrings::getDays();
+					$val = mb_substr($days[date("w", $time)], 0 , 3);
 					break;
 				case 'D': /* day */
-					$val = $babDays[date("w", $time)];
+					$days = bab_DateStrings::getDays();
+					$val = $days[date("w", $time)];
 					break;
 				case 'j': /* Day of the month with leading zeros */
 					$val = date("d", $time);
 					break;
 				case 'm': /* A short textual representation of a month, three letters */
-					$val = $babShortMonths[date("n", $time)];
+					$shortMonths = bab_DateStrings::getShortMonths();
+					$val = $shortMonths[date("n", $time)];
 					break;
 				case 'M': /* Month */
-					$val = $babMonths[date("n", $time)];
+					$month = bab_DateStrings::getMonths();
+					$val = $month[date("n", $time)];
 					break;
 				case 'n': /* Numeric representation of a month, with leading zeros */
 					$val = date("m", $time);

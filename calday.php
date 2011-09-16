@@ -36,7 +36,7 @@ class cal_dayCls extends cal_wmdbaseCls
 
 	function __construct($idx, $calids, $date, $starttime)
 		{
-		global $babBody, $babMonths;
+		global $babBody;
 		parent::__construct("calday", $idx, $calids, $date);
 
 		$this->w = 0;

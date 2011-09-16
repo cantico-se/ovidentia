@@ -60,10 +60,9 @@ class bab_skin {
 	 * @param   string $stylesname
 	 */
 	public static function applyOnCurrentPage($skinname, $stylesname) {
-		global $babSkin, $babStyle, $babCssPath, $babOvmlPath;
+		global $babSkin, $babStyle, $babOvmlPath;
 		$babSkin = $skinname;
 		$babStyle = $stylesname;
-		$babCssPath = self::SKINS_PATH . $babSkin . '/' . self::STYLES_PATH . $babStyle;
 		$babOvmlPath = self::SKINS_PATH . $babSkin . '/' . self::OVML_PATH;
 	}
 	

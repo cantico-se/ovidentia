@@ -226,67 +226,8 @@ $babEditorImages = $babInstallPath."scripts/".$babLanguage."/";
 $babOvidentiaJs = $babScriptPath."ovidentia.js";
 $babOvmlPath = "skins/".$GLOBALS['babSkin']."/ovml/";
 
-/* Definition of globals variables $babMonths, $babShortMonths, $babDays */
-$babMonths = array(1=>bab_translate("January"), bab_translate("February"), bab_translate("March"), bab_translate("April"),
-                        bab_translate("May"), bab_translate("June"), bab_translate("July"), bab_translate("August"),
-                        bab_translate("September"), bab_translate("October"), bab_translate("November"), bab_translate("December"));
-
-$babShortMonths = array();
-foreach($babMonths as $key => $val) {
-	$sm = mb_substr($val, 0 , 3);
-	if (count($babShortMonths) == 0 || !in_array($sm, $babShortMonths)) {
-		$babShortMonths[$key] = $sm;
-	} else {
-		$m=4;
-		while(in_array($sm, $babShortMonths) && $m < mb_strlen($val)) {
-			$sm = mb_substr($val, 0 , $m++);
-		}
-
-		$babShortMonths[$key] = $sm;
-	}
-}
-
-$babDays = array(bab_translate('Sunday'), bab_translate('Monday'),
-				bab_translate('Tuesday'), bab_translate('Wednesday'), bab_translate('Thursday'),
-				bab_translate('Friday'), bab_translate('Saturday'));
 
 
-$babJs = $GLOBALS['babScriptPath']."ovidentia.js";
-$babCssPath = bab_getCssUrl();
-
-/*
- * Empty class used with template config.html
- */
-class babDummy {
-	var $duumy;
-}
-$babDummy = new babDummy();
-
-/*
- * Class used in section babMeta in template config.html
- */
-class bab_configTemplate_sectionBabmeta {
-
-	/*
-	 * Text used as a value to the html meta tag : <meta http-equiv="Content-type" content="{ sContent }" />
-	 * @var string
-	 */
-	public $sContent;
-
-	public function __construct() {
-		$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
-	}
-}
-$bab_configTemplate_sectionBabmeta_object = new bab_configTemplate_sectionBabmeta();
-
-$babCss =  bab_printTemplate($babDummy, "config.html", "babCss");
-$babMeta = bab_printTemplate($bab_configTemplate_sectionBabmeta_object, "config.html", "babMeta");
-$babsectionpuce = bab_printTemplate($babDummy, "config.html", "babSectionPuce");
-$babsectionbullet = bab_printTemplate($babDummy, "config.html", "babSectionBullet");
-if(( mb_strtolower(bab_browserAgent()) == "msie") and (bab_browserOS() == "windows"))
-	$babIE = 1;
-else
-	$babIE = 0;
 
 /*
  * Display the current page : head, metas, sections, body...

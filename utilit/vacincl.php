@@ -653,7 +653,7 @@ function viewVacationCalendar($users, $period = false )
 			$month = isset($_REQUEST['month']) ? $_REQUEST['month'] : Date("n");
 			$year = isset($_REQUEST['year']) ? $_REQUEST['year'] : Date("Y");
 
-			global $babDB,$babMonths;
+			global $babDB;
 			$this->month = $month;
 			$this->year = $year;
 
@@ -811,7 +811,6 @@ function viewVacationCalendar($users, $period = false )
 
 		function getdayname()
 			{
-			global $babDays;
 			static $i = 1;
 			if( $i <= 31)
 				{
@@ -897,7 +896,8 @@ function viewVacationCalendar($users, $period = false )
 
 				$this->curyear = $dateb->getYear();
 				$this->curmonth = $dateb->getMonth();
-				$this->monthname = bab_toHtml($GLOBALS['babShortMonths'][$this->curmonth]);
+				$shortMonths = bab_DateStrings::getShortMonths();
+				$this->monthname = bab_toHtml($shortMonths[$this->curmonth]);
 				$this->totaldays = date("t", $dateb->getTimeStamp());
 				$this->previous_period = NULL;
 				$i++;

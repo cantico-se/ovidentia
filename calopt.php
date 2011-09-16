@@ -281,15 +281,13 @@ function calendarOptions($urla)
 
 		function getnextshortday()
 			{
-			global $babDays;
-
 			static $i = 0;
 			if( $i < 7 )
 				{
 				$this->disp_selected = in_array($i, $this->dispdays) ? "checked" : "";
 
 				$this->dayid = $i;
-				$this->shortday = bab_toHtml($babDays[$i]);
+				$this->shortday = bab_toHtml(bab_DateStrings::getDay($i));
 
 				$arr = bab_getWHours($GLOBALS['BAB_SESS_USERID'], $i);
 				$tmp = array();
@@ -339,8 +337,6 @@ function calendarOptions($urla)
 
 		function getnextday()
 			{
-			global $babDays;
-
 			static $i = 0;
 			if( $i < 7 )
 				{
@@ -349,7 +345,7 @@ function calendarOptions($urla)
 				else
 					$this->selected = "";
 				$this->dayid = $i;
-				$this->dayname = $babDays[$i];		
+				$this->dayname = bab_DateStrings::getDay($i);		
 				$i++;
 				return true;
 				}

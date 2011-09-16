@@ -893,13 +893,12 @@ function addModifyVacationRigths($id = false)
 
 		function getnextmonth()
 			{
-			global $babMonths;
 			static $i = 1;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->t_monthname = bab_toHtml($babMonths[$i]);
+				$this->t_monthname = bab_toHtml(bab_DateStrings::getMonth($i));
 				if( (int)($this->monthsel) == $this->monthid )
 					$this->selected = "selected";
 				else

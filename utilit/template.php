@@ -38,6 +38,26 @@ function &bab_TemplateCache_getStore()
 }
 
 
+
+
+/*
+ * Class used in section babMeta in template config.html
+ */
+class bab_configTemplate_sectionBabmeta {
+
+	/*
+	 * Text used as a value to the html meta tag : <meta http-equiv="Content-type" content="{ sContent }" />
+	 * @var string
+	 */
+	public $sContent;
+
+	public function __construct() {
+		$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
+	}
+}
+
+
+
 /**
  * White-list of global variables accessible by a template.
  *
@@ -46,14 +66,16 @@ function &bab_TemplateCache_getStore()
  */
 function getGlobalVariable($var)
 {
+	
+	
 	switch($var)
 	{
-		case 'babCss': return $GLOBALS['babCss'];
-		case 'babMeta': return $GLOBALS['babMeta'];
-		case 'babsectionpuce': return $GLOBALS['babsectionpuce'];
-		case 'babsectionbullet': return $GLOBALS['babsectionbullet'];
-		case 'babIE': return $GLOBALS['babIE'];
-		case 'babCssPath': return bab_toHtml($GLOBALS['babCssPath']);
+		case 'babCss': return bab_printTemplate(new stdClass, "config.html", "babCss");
+		case 'babMeta': $object = new bab_configTemplate_sectionBabmeta(); return bab_printTemplate($object, "config.html", "babMeta");
+		case 'babsectionpuce': return bab_printTemplate(new stdClass, "config.html", "babSectionPuce");
+		case 'babsectionbullet': return bab_printTemplate(new stdClass, "config.html", "babSectionBullet");
+		case 'babIE': return (( mb_strtolower(bab_browserAgent()) == "msie") && (bab_browserOS() == "windows")) ? 1 : 0;
+		case 'babCssPath': return bab_toHtml(bab_getCssUrl());
 		case 'babScriptPath': return bab_toHtml($GLOBALS['babScriptPath']);
 		//case 'babEditorImages': return $GLOBALS['babEditorImages'];
 		case 'babOvidentiaJs': return $GLOBALS['babOvidentiaJs'];

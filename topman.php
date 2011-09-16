@@ -972,13 +972,12 @@ function viewArticleProperties($item, $idart)
 
 		function getnextmonth()
 			{
-			global $babMonths;
 			static $i = 1, $p;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = $babMonths[$i];
+				$this->monthname = bab_DateStrings::getMonth($i);
 				if( $this->monthsel == $i)
 					{
 					$this->selected = "selected";

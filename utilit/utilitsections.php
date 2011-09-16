@@ -329,6 +329,7 @@ function babUserSection($close) {
 		$this->babUserSectionAddons = $this->babUserSectionAddons->firstChild();
 	}
 	
+	$this->lastlog = $babBody->lastlog;
 }
 
 
@@ -369,22 +370,22 @@ function getnextnew()
 		switch( $i )
 			{
 			case 0:
-				$this->newcount = $babBody->get_newarticles();
+				$this->newcount = $this->get_newarticles();
 				$this->newtext = bab_translate("Article(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newarticles.html&amp;nbdays=0";
 				break;
 			case 1:
-				$this->newcount = $babBody->get_newcomments();
+				$this->newcount = $this->get_newcomments();
 				$this->newtext = bab_translate("Comment(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newcomments.html&amp;nbdays=0";
 				break;
 			case 2:
-				$this->newcount = $babBody->get_newposts();
+				$this->newcount = $this->get_newposts();
 				$this->newtext = bab_translate("Reply(ies)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newposts.html&amp;nbdays=0";
 				break;
 			case 3:
-				$this->newcount = $babBody->get_newfiles();
+				$this->newcount = $this->get_newfiles();
 				$this->newtext = bab_translate("File(s)");
 				$this->newurl = $GLOBALS['babUrlScript']."?tg=oml&amp;file=newfiles.html&amp;nbdays=0";
 				break;
@@ -395,6 +396,98 @@ function getnextnew()
 	else
 		return false;
 	}
+	
+	
+	
+private function get_newarticles() {
+	
+	static $newarticles = null;
+	if (!is_null($newarticles))	
+		return $newarticles;
+	
+	
+	$newarticles = 0;
+	$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+	if( count($topview) > 0 )
+		{
+		global $babDB;
+		$res = $babDB->db_query("select id_topic, restriction from ".BAB_ARTICLES_TBL." where (date_publication = '0000-00-00 00:00:00' OR date_publication <= now()) AND date >= '".$babDB->db_escape_string($this->lastlog)."'");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if( isset($topview[$row['id_topic']]) && ( $row['restriction'] == '' || bab_articleAccessByRestriction($row['restriction']) ))
+				{
+				$newarticles++;
+				}
+			}
+		}
+	return $newarticles;
+	}
+
+private function get_newcomments() {
+
+	static $newcomments = null;
+	if (!is_null($newcomments))	
+		return $newcomments;
+
+	$newcomments = 0;
+	$topview = bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL);
+	if( count($topview) > 0 )
+		{
+		global $babDB;
+		$res = $babDB->db_query("select id_topic from ".BAB_COMMENTS_TBL." where confirmed='Y' and date >= '".$babDB->db_escape_string($this->lastlog)."'");
+		while( $row = $babDB->db_fetch_array($res))
+			{
+			if( isset($topview[$row['id_topic']]) )
+				{
+				$newcomments++;
+				}
+			}
+		}
+	return $newcomments;
+	}
+
+
+
+private function get_newposts() {
+
+	static $newposts = null;
+	if (!is_null($newposts))	
+		return $newposts;
+
+	global $babDB;
+
+	list($newposts) = $babDB->db_fetch_array($babDB->db_query("select count(p.id) from ".BAB_POSTS_TBL." p, ".BAB_THREADS_TBL." t where p.date >= '".$this->lastlog."' and p.confirmed='Y' and p.id_thread=t.id and t.forum IN(".$babDB->quote(array_keys(bab_getUserIdObjects(BAB_FORUMSVIEW_GROUPS_TBL))).")"));
+
+	return $newposts;
+	}
+
+private function get_newfiles() {
+
+	static $newfiles = null;
+	if (!is_null($newfiles))	
+		return $newfiles;
+
+	$arrfid = array();
+	$arrfid = bab_getUserIdObjects(BAB_FMDOWNLOAD_GROUPS_TBL);
+	
+	if( is_array($arrfid) && count($arrfid) > 0 )
+		{
+		global $babDB;
+		$req = "select count(f.id) from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y' and f.id_owner IN (".$babDB->quote($arrfid).")";
+		$req .= " and f.modified >= '".$babDB->db_escape_string($this->lastlog)."'";
+		$req .= " order by f.modified desc";
+
+		list($newfiles) = $babDB->db_fetch_row($babDB->db_query($req));
+		}
+	else
+		{
+			$newfiles = 0;
+		}
+
+	return $newfiles;
+	}
+
+	
 
 }
 
@@ -701,8 +794,9 @@ var $babCalendarStartDay;
 
 	public function printout()
 	{
-		global $babBody, $babDB, $babMonths, $BAB_SESS_USERID;
-		$this->curmonth = $babMonths[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
+		global $babBody, $babDB, $BAB_SESS_USERID;
+		$months = bab_DateStrings::getMonths();
+		$this->curmonth = $months[date("n", mktime(0,0,0,$this->currentMonth,1,$this->currentYear))];
 		$this->curyear = $this->currentYear;
 		$this->days = date("t", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
 		$this->daynumber = date("w", mktime(0,0,0,$this->currentMonth,1,$this->currentYear));
@@ -783,14 +877,13 @@ var $babCalendarStartDay;
 
 	public function getnextday3()
 		{
-			global $babDays;
 			static $i = 0;
 			if( $i < 7)
 				{
 				$a = $i + $this->babCalendarStartDay;
 				if( $a > 6)
 					$a -=  7;
-				$this->day3 = mb_substr($babDays[$a], 0, 1);
+				$this->day3 = mb_substr(bab_DateStrings::getDay($a), 0, 1);
 				$i++;
 				return true;
 			}

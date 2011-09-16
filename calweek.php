@@ -36,14 +36,15 @@ class cal_weekCls extends cal_wmdbaseCls
 
 	function __construct($idx, $calids, $date)
 		{
-		global $babBody, $babMonths;
+		global $babBody;
 		parent::__construct("calweek", $idx, $calids, $date);
 
 		$this->w = 0;
 
 		$dispdays = explode(',', bab_getICalendars()->dispdays);
 		$time = mktime(0,0,0,$this->month,$this->day,$this->year);
-		$this->monthname = $babMonths[date("n", $time)]."  ".$this->year;
+		$months = bab_DateStrings::getMonths();
+		$this->monthname = $months[date("n", $time)]."  ".$this->year;
 		$this->totaldays = date("t", $time);
 
 		$this->elapstime = bab_getICalendars()->elapstime;
@@ -73,7 +74,7 @@ class cal_weekCls extends cal_wmdbaseCls
 		$lastmont = date("n", $mktime2);
 		if($firstmonth != $lastmont)
 		{
-			$this->monthname = $babMonths[$firstmonth].' '.date("Y", $mktime1)." / ".$babMonths[$lastmont].' '.date("Y", $mktime2);
+			$this->monthname = $months[$firstmonth].' '.date("Y", $mktime1)." / ".$months[$lastmont].' '.date("Y", $mktime2);
 		}
 		
 		$time1 = mktime( 0,0,0, $this->month, $this->dworkdays[$this->workdays[0]], $this->year);
@@ -106,7 +107,7 @@ class cal_weekCls extends cal_wmdbaseCls
 
 	function getnextdayname()
 		{
-		global $babBody, $babDays;
+		global $babBody;
 		static $i = 0;
 		if( $i < count($this->workdays))
 			{
@@ -136,7 +137,7 @@ class cal_weekCls extends cal_wmdbaseCls
 				{
 				$this->currentday = 0;
 				}
-			$this->dayname = bab_toHtml($babDays[$this->workdays[$i]]);
+			$this->dayname = bab_toHtml(bab_DateStrings::getDay($this->workdays[$i]));
 			$this->neweventurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=newevent&date=".date("Y", $mktime).",".date("n", $mktime).",".$dday."&calid=".implode(',',$this->idcals)."&view=viewq");
 			
 			$i++;
@@ -204,13 +205,12 @@ class cal_weekCls extends cal_wmdbaseCls
 	
 	function getnextday()
 		{
-		global $babDays;
 		static $d = 0;
 		if( $d < count($this->workdays))
 			{
 			
 			$this->mday = $this->dworkdays[$this->workdays[$d]];
-			$this->dayname = $babDays[$this->workdays[$d]];
+			$this->dayname = bab_DateStrings::getDay($this->workdays[$d]);
 			$mktime = mktime(0,0,0,$this->month, $this->mday,$this->year);
 			$dday = date("j", $mktime);
 			$this->cdate = sprintf("%04s-%02s-%02s", date("Y", $mktime), date("n", $mktime), $dday);

@@ -355,13 +355,12 @@ function newEvent()
 
 		function getnextmonth()
 			{
-			global $babMonths;
 			static $i = 1, $k = 0;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = bab_toHtml($babMonths[$i]);
+				$this->monthname = bab_toHtml(bab_DateStrings::getMonth($i));
 				if( $this->monthsel == $i)
 					{
 					$this->selected = "selected";
@@ -920,14 +919,13 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 
 		function getnextmonth()
 			{
-			global $babMonths;
 			static $i = 1;
 			static $tr = 0;
 
 			if( $i < 13)
 				{
 				$this->monthid = $i;
-				$this->monthname = bab_toHtml($babMonths[$i]);
+				$this->monthname = bab_toHtml(bab_DateStrings::getMonth($i));
 				if( $tr == 0 && $this->monthbegin == $i)
 					{
 					$this->selected = "selected";

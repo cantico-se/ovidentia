@@ -27,6 +27,8 @@ include_once "base.php";
 class bab_calendar
 {
 var $sContent;
+private $months;
+private $days;
 
 function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	{
@@ -42,8 +44,10 @@ function bab_calendar($month, $year, $callback, $ymin, $ymax)
 	$this->value = $this->ymin;
 	$this->sContent	= 'text/html; charset=' . bab_charset::getIso();
 	
-	reset($GLOBALS['babMonths']);
-	reset($GLOBALS['babDays']);
+	$this->months = bab_DateStrings::getMonths();
+	reset($this->months);
+	$this->days = bab_DateStrings::getDays();
+	reset($this->days);
 
 	$this->t_previous_month = bab_translate("Previous month");
 	$this->t_next_month = bab_translate("Next month");
@@ -75,18 +79,18 @@ function getnextyear()
 
 function getnextmonth()
 	{
-	$this->text = current($GLOBALS['babMonths']);
+	$this->text = current($this->months);
 	if ($this->text)
 		{
-		$this->num = key($GLOBALS['babMonths']);
+		$this->num = key($this->months);
 		$this->index = $this->num - 1;
-		next($GLOBALS['babMonths']);
+		next($this->months);
 		$this->selected = $this->num == $this->month ? 'selected' : '';
 		return true;
 		}
 	else
 		{
-		reset($GLOBALS['babMonths']);
+		reset($this->months);
 		return false;
 		}
 	
@@ -99,7 +103,7 @@ function getnextwday()
 	if ($i < 7)
 		{
 		$index = $this->startday + $i < 7 ? $this->startday + $i : $this->startday + $i -7;
-		$this->text = mb_substr($GLOBALS['babDays'][$index],0,3);
+		$this->text = mb_substr($this->days[$index],0,3);
 		$i++;
 		return true;
 		}
