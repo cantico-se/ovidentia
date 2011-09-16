@@ -90,7 +90,7 @@ function listCategories()
 		}
 		
 
-	$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
+	$langFilterValue = bab_getInstance('babLanguageFilter')->getFilterAsInt();
 	switch($langFilterValue)
 	{
 	case 2:

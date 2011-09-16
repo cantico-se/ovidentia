@@ -204,7 +204,6 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 
 	bab_isUserLogged();
 	bab_updateUserSettings();
-	$babLangFilter->translateTexts();
 
 	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();

@@ -1851,7 +1851,7 @@ function bab_editArticle($title, $head, $body, $lang, $template, $headFormat = n
 
 
 			$this->langLabel = bab_translate("Language");
-			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles = bab_getInstance('babLanguageFilter')->getLangFiles();
 			if (isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') {
 				if($lang != '*') {
 					$this->langFiles = array();

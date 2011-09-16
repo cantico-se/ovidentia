@@ -488,7 +488,7 @@ function babTopicsSection($cat, $close)
 				return;
 				}
 
-			$whatToFilter = $GLOBALS['babLangFilter']->getFilterAsInt();
+			$whatToFilter = bab_getInstance('babLanguageFilter')->getFilterAsInt();
 			if(($arr['lang'] == '*') or ($arr['lang'] == ''))
 				$whatToFilter = 0;
 			else if((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and ( bab_isUserTopicManager($arr['id']) or bab_isCurrentUserApproverFlow($arr['idsaart']) or bab_isCurrentUserApproverFlow($arr['iddacom'])))

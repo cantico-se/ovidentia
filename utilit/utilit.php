@@ -33,7 +33,7 @@ include_once $babInstallPath.'utilit/userincl.php';
 include_once $babInstallPath.'utilit/mailincl.php';
 include_once $babInstallPath.'utilit/sitemap.php';
 include_once $babInstallPath.'utilit/eventincl.php';
-
+include_once $babInstallPath.'utilit/groupsincl.php';
 
 
 
@@ -463,6 +463,13 @@ function setCurrent($title, $enabled=false)
 }
 }  /* end of class babMenu */
 
+
+
+
+
+
+
+
 class babBody
 {
 var $sections = array();
@@ -501,8 +508,6 @@ var $isSuperAdmin;
 var $currentAdmGroup; /* current group administrated by current user */	
 var $currentDGGroup; /* contains database row of current delegation groups */
 var $dgAdmGroups; /* all groups administrated by current user */
-var $ovgroups; /* all ovidentia groups */
-var $groupPathName; /* see function getGroupPathName */
 var $babsite;
 var $ocids; /* orgnization chart ids */
 var $ampm; /* true: use am/pm */
@@ -532,7 +537,6 @@ function babBody()
 	$this->currentAdmGroup = 0;
 	$this->currentDGGroup = array('id' => 0);
 	$this->dgAdmGroups = array();
-	$this->usergroups = array();
 	$this->saarray = array();
 	$this->babaddons = array();
 	$this->waitapprobations = false;
@@ -549,93 +553,33 @@ function babBody()
 
 
 	if ( session_id() && (bab_rp('tg') !== 'version' || bab_rp('idx') !== 'upgrade'))
-		{
-		$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid='".session_id()."'");
-		if( $res && $babDB->db_num_rows($res) > 0 )
-			{
-			$arr = $babDB->db_fetch_assoc($res);
-			if ((isset($GLOBALS['babCheckIpAddress']) && $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $REMOTE_ADDR)
-				{
-				die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
-				}
-
-			if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
-				{
-				unset($_SESSION['bab_groupAccess']);
-				}
-
-			if (1 == $arr['schi_change'] && isset($_SESSION['bab_waitingApprobations']))
-				{
-				unset($_SESSION['bab_waitingApprobations']);
-				}
-			}
-		}
-	
-
-	if (isset($_SESSION['bab_groupAccess']['ovgroups']))
-		{
-		$this->ovgroups = &$_SESSION['bab_groupAccess']['ovgroups'];
-		}
-	else
-		{
-		$res = $babDB->db_query("select * from ".BAB_GROUPS_TBL."");
-		while( $arr = $babDB->db_fetch_array($res))
-			{
-			$arr['member'] = 'N';
-			$arr['primary'] = 'N';
-			$this->ovgroups[$arr['id']] = $arr;
-			}
-
-		$_SESSION['bab_groupAccess']['ovgroups'] = &$this->ovgroups;
-		}
-	
-	if (isset($_SESSION['bab_groupAccess']['usergroups']))
-		{
-		$this->usergroups = &$_SESSION['bab_groupAccess']['usergroups'];
-		}
-	else
-		{
-		$_SESSION['bab_groupAccess']['usergroups'] = &$this->usergroups;
-		}
-}
-
-function getGroupPathName($id_group, $id_parent = BAB_REGISTERED_GROUP)
-{
-	if (isset($this->groupPathName[$id_parent][$id_group]))
-		return $this->groupPathName[$id_parent][$id_group];
-	
-	include_once $GLOBALS['babInstallPath'].'utilit/grptreeincl.php';
-
-	$this->groupPathName[$id_parent] = array();
-	
-	$tree = new bab_grptree();
-	$groups = $tree->getGroups($id_parent);
-	$arr = array();
-	foreach ($groups as $row)
-		{
-		$this->groupPathName[$id_parent][$row['id']] = $row['name'];
-		}
-
-	return isset($this->groupPathName[$id_parent][$id_group]) ? $this->groupPathName[$id_parent][$id_group] : '';
-}
-
-function getSetOfGroupName($id_group)
-{
-	static $groupset = array();
-	global $babDB;
-
-	if (isset($groupset[$id_group]))
-		{
-		return $groupset[$id_group];
-		}
-	
-	$res = $babDB->db_query("SELECT id, name FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
-	while( $arr = $babDB->db_fetch_array($res))
 	{
-		$groupset[$arr['id']] = bab_translate("Sets of groups").' > '.$arr['name'];
+	$res = $babDB->db_query("select remote_addr, grp_change, schi_change from ".BAB_USERS_LOG_TBL." where sessid=".$babDB->quote(session_id()));
+	if( $res && $babDB->db_num_rows($res) > 0 )
+		{
+		$arr = $babDB->db_fetch_assoc($res);
+		if ((isset($GLOBALS['babCheckIpAddress']) && $GLOBALS['babCheckIpAddress'] === true) && $arr['remote_addr'] != $REMOTE_ADDR)
+			{
+			die(bab_translate("Access denied, your session id has been created by another ip address than yours"));
+			}
+
+		if (1 == $arr['grp_change'] && isset($_SESSION['bab_groupAccess']))
+			{
+			unset($_SESSION['bab_groupAccess']);
+			}
+
+		if (1 == $arr['schi_change'] && isset($_SESSION['bab_waitingApprobations']))
+			{
+			unset($_SESSION['bab_waitingApprobations']);
+			}
+		}
 	}
-	return isset($groupset[$id_group]) ? $groupset[$id_group] : '';
+	
+	
+	//$this->ovgroups = bab_Groups::getGroups();
+	//$this->usergroups = bab_Groups::getUserGroups();
 }
+
 
 
 function resetContent()
@@ -879,7 +823,7 @@ function loadSections()
 	$type = 'users';
 	if(!empty($arrsectionsbytype[$type]) && ($babSectionsType & BAB_SECTIONS_SITE))
 		{
-			$langFilterValues = $GLOBALS['babLangFilter']->getLangValues();
+			$langFilterValues = bab_getInstance('babLanguageFilter')->getLangValues();
 			$req = "SELECT * FROM ".BAB_SECTIONS_TBL." WHERE id IN(".$babDB->quote(array_keys($arrsectionsbytype[$type])).") and enabled='Y'";
 			if( count($langFilterValues) > 0 )
 				{
@@ -1000,7 +944,7 @@ function setCurrentItemMenu($title, $enabled=false)
  * @param unknown_type $filename
  * @return unknown_type
  */
-function addStyleSheet($filename)
+public function addStyleSheet($filename)
 {
 	if (!in_array($filename, $this->styleSheet))
 	{
@@ -1008,7 +952,7 @@ function addStyleSheet($filename)
 	}
 }
 
-function addJavascriptFile($file)
+public function addJavascriptFile($file)
 {
 	global $babOvidentiaJs;
 	static $jfiles = array();
@@ -1232,29 +1176,40 @@ function bab_getICalendars() {
 
 
 
-
+/**
+ * 
+ * @param int $id_group
+ * @param int $id_user
+ * @return bool
+ */
 function bab_isMemberOfTree($id_group, $id_user = '')
 {
-	global $babBody, $babDB;
+	global $babDB;
 
-	$lf = &$babBody->ovgroups[$id_group]['lf'];
-	$lr = &$babBody->ovgroups[$id_group]['lr'];
+	$group = bab_Groups::get($id_group);
+	
+	$lf = $group['lf'];
+	$lr = $group['lr'];
 
 	if (!empty($id_user))
-		{
+	{
 		if ($id_group == 0 || $id_group == 1)
 			return true;
 
 
-		$res = $babDB->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$babDB->db_escape_string($id_user)."' AND g.lf >= '".$babDB->db_escape_string($babBody->ovgroups[$id_group]['lf'])."' AND g.lr <= '".$babDB->db_escape_string($babBody->ovgroups[$id_group]['lr'])."'");
+		$res = $babDB->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$babDB->db_escape_string($id_user)."' AND g.lf >= '".$babDB->db_escape_string($lf)."' AND g.lr <= '".$babDB->db_escape_string($lr)."'");
 		list($n) = $babDB->db_fetch_array($res);
-		return $n > 0 ? true : false;
-		}
-	foreach($babBody->usergroups as $idg)
+		return ($n > 0);
+	}
+	
+	$usergroups = bab_Groups::getUserGroups();
+	
+	foreach($usergroups as $idg)
 	{
-	if ($babBody->ovgroups[$idg]['lf'] >= $lf && $babBody->ovgroups[$idg]['lr'] <= $lr)
+		$ugroup = bab_Groups::get($idg);
+		if ($ugroup['lf'] >= $lf && $ugroup['lr'] <= $lr)
 		{
-		return true;
+			return true;
 		}
 	}
 	return false;
@@ -1266,49 +1221,11 @@ function bab_updateUserSettings()
 	global $babDB, $babBody,$BAB_SESS_USERID;
 
 	
-	if( 0 == count($babBody->usergroups) )
-		{
-		foreach($babBody->ovgroups as $key => $val)
-			{
-			$babBody->ovgroups[$key]['member'] = 'N';
-			}
-
-		$babBody->ovgroups[BAB_ALLUSERS_GROUP]['member'] = 'Y';
-		$babBody->usergroups[] = BAB_ALLUSERS_GROUP;
-
-		if( !empty($BAB_SESS_USERID))
-			{		
-			$res=$babDB->db_query("select id_group, isprimary from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
-			$babBody->ovgroups[BAB_REGISTERED_GROUP]['member'] = 'Y';
-			$babBody->usergroups[] = BAB_REGISTERED_GROUP;
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$babBody->usergroups[] = $arr['id_group'];
-				$babBody->ovgroups[$arr['id_group']]['member'] = 'Y';
-				$babBody->ovgroups[$arr['id_group']]['primary'] = $arr['isprimary'];
-				}
-
-			$res=$babDB->db_query("select distinct id_set from ".BAB_GROUPS_SET_ASSOC_TBL." where id_group IN(".$babDB->quote($babBody->usergroups).")");
-			while( $arr = $babDB->db_fetch_array($res))
-				{
-				$babBody->usergroups[] = $arr['id_set'];
-				$babBody->ovgroups[$arr['id_set']]['member'] = 'Y';
-				}
-				
-				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' where sessid='".$babDB->db_escape_string(session_id())."'");			
-			}
-		else
-			{
-			$babBody->ovgroups[BAB_UNREGISTERED_GROUP]['member'] = 'Y';
-			$babBody->usergroups[] = BAB_UNREGISTERED_GROUP;
-			}
-		}
-
-	
 	$babBody->isSuperAdmin = false;
 
 	if( !empty($BAB_SESS_USERID))
 		{
+		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' where sessid='".$babDB->db_escape_string(session_id())."'");
 		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
@@ -1322,7 +1239,7 @@ function bab_updateUserSettings()
 					}
 				
 				if($arr['langfilter'] != '') {
-					$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
+					bab_getInstance('babLanguageFilter')->setFilter($arr['langfilter']);
 				}
 			
 			}
@@ -1361,7 +1278,8 @@ function bab_updateUserSettings()
 
 			$babBody->lastlog = $arr['lastlog'];
 
-			if( $babBody->ovgroups[BAB_ADMINISTRATOR_GROUP]['member'] == 'Y') {
+			$administrator = bab_Groups::get(BAB_ADMINISTRATOR_GROUP);
+			if( $administrator['member'] == 'Y') {
 				$babBody->isSuperAdmin = true;
 				
 				if (isset($_GET['debug'])) {
@@ -1670,10 +1588,10 @@ function bab_updateSiteSettings()
 		$GLOBALS['babAdminEmail'] = 'admin@your-domain.com'; }
 	if( $arr['langfilter'] != '')
 		{
-		$GLOBALS['babLangFilter']->setFilter($arr['langfilter']);
+		bab_getInstance('babLanguageFilter')->setFilter($arr['langfilter']);
 		}
 	else {
-		$GLOBALS['babLangFilter']->setFilter(0); }
+		bab_getInstance('babLanguageFilter')->setFilter(0); }
 	// options bloc2
 	if( !empty($arr['total_diskspace']))
 		{
@@ -1879,16 +1797,15 @@ class babLanguageFilter
 		function babLanguageFilter()
 			{
 				$this->setFilter(0);
-			} //function LanguageFilter
-			
-		function translateTexts()
-		{
-			$this->langFilterNames = array(bab_translate("No filter")
+				
+				$this->langFilterNames = array(bab_translate("No filter")
 					,bab_translate("Filter language")
 					,bab_translate("Filter language and country")
 					//,bab_translate("Filter translated")
 					);
-		}
+				
+			} //function LanguageFilter
+
 
 		function setFilter($filterInt)
 			{
@@ -2063,6 +1980,4 @@ function bab_initMbString() {
 bab_initMbString();
 $babBody = new babBody();
 $BAB_HASH_VAR='aqhjlongsmp';
-$babLangFilter = new babLanguageFilter();
 
-?>

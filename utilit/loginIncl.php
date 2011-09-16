@@ -1323,16 +1323,8 @@ function bab_setUserSessionInfo($iIdUser)
 		$GLOBALS['BAB_SESS_EMAIL'] 		= $_SESSION['BAB_SESS_EMAIL'];
 		$GLOBALS['BAB_SESS_USERID'] 	= $_SESSION['BAB_SESS_USERID'];
 		$GLOBALS['BAB_SESS_HASHID'] 	= $_SESSION['BAB_SESS_HASHID'];
-
-		// empty group cache
-		if (isset($babBody)) {
-			$babBody->usergroups = array();
-		}
-
-		// cache des acl
-		if (isset($_SESSION['bab_groupAccess'])) {
-			unset($_SESSION['bab_groupAccess']);
-		}
+		
+		bab_Groups::clearCache();
 
 		// empty approbation cache
 		if (isset($_SESSION['bab_waitingApprobations'])) {

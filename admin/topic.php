@@ -295,7 +295,7 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->tgval 				= "topic";
 			$this->item 				= $id;
 			$this->langLabel 			= bab_translate("Language");
-			$this->langFiles 			= $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles 			= bab_getInstance('babLanguageFilter')->getLangFiles();
 			$this->countLangFiles 		= count($this->langFiles);
 
 			$this->aAllowAddImg			= array('N' => bab_translate("No"), 'Y' => bab_translate("Yes"));

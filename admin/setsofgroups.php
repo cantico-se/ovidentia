@@ -102,7 +102,7 @@ function glist()
 			global $babBody;
 			if( $this->arr = $this->db->db_fetch_array($this->res))
 				{
-				$this->arr['name'] = $babBody->getGroupPathName($this->arr['id']);
+				$this->arr['name'] = bab_Groups::getGroupPathName($this->arr['id']);
 				$this->altbg = !$this->altbg;
 				return true;
 				}

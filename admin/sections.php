@@ -447,7 +447,7 @@ function sectionCreate($jscript)
 			$this->yes = bab_translate("Yes");
 			$this->no = bab_translate("No");
 			$this->langLabel = bab_translate("Language");
-			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles = bab_getInstance('babLanguageFilter')->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->jscript = $jscript;
 			if( $jscript == 0)

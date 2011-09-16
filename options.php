@@ -360,7 +360,7 @@ function changeLanguage()
 			bab_sort::sort($this->arrfiles);
 			reset($this->arrfiles);
 			$this->userlangfilter = $arr['langfilter'];
-			$this->langfiltertxt = bab_translate("Language filter") . " : " . $GLOBALS['babLangFilter']->convertFilterToStr($this->userlangfilter);
+			$this->langfiltertxt = bab_translate("Language filter") . " : " . bab_getInstance('babLanguageFilter')->convertFilterToStr($this->userlangfilter);
 			}
 
 		function getnextlang()
@@ -388,10 +388,10 @@ function changeLanguage()
 		function getnextlangfilter()
 		{
 			static $i = 0;
-			if($i < $GLOBALS['babLangFilter']->countFilters())
+			if($i < bab_getInstance('babLanguageFilter')->countFilters())
 			{
 				$this->langfilterval = 
-					bab_toHtml($GLOBALS['babLangFilter']->getFilterStr($i));
+					bab_toHtml(bab_getInstance('babLanguageFilter')->getFilterStr($i));
 				if($this->userlangfilter == $i)
 					{$this->langfilterselected = 'selected';}
 				else
@@ -604,7 +604,7 @@ function changeProfiles()
 				$this->grpname = bab_toHtml($arr['name']);
 				$this->grpdesc = empty($arr['description'])? $arr['name']: $arr['description'];
 				$this->grpdesc = bab_toHtml($this->grpdesc);
-				if( (isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile])) || (count($babBody->usergroups) > 0  && in_array( $arr['id'],$babBody->usergroups)))
+				if( (isset($GLOBALS["grpids".$this->idprofile]) && count($GLOBALS["grpids".$this->idprofile]) > 0 && in_array($arr['id'] , $GLOBALS["grpids".$this->idprofile])) || bab_isMemberOfGroup($arr['id']))
 					{
 					if( $this->bmultiplicity == true )
 						{
@@ -1271,7 +1271,7 @@ if( '' != ($update = bab_pp('update')))
         case 'lang':
 			$lang = bab_pp('lang');
 			$langfilter = bab_pp('langfilter');
-        	updateLanguage($lang, $babLangFilter->convertFilterToInt($langfilter));
+        	updateLanguage($lang, bab_getInstance('babLanguageFilter')->convertFilterToInt($langfilter));
             break;
         case 'skin':
         	updateSkin(bab_pp('skin'), bab_pp('style'));

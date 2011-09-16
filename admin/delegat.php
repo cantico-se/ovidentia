@@ -78,7 +78,7 @@ function delgatList($res)
 				$this->urltxt	= bab_toHtml($arr['name']);
 				$this->url		= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".$arr['id']);
 				$this->urlmem	= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$arr['id']);
-				$this->grpmval	= bab_toHtml($GLOBALS['babBody']->getGroupPathName($arr['id_group'], NULL));
+				$this->grpmval	= bab_toHtml(bab_Groups::getGroupPathName($arr['id_group'], NULL));
 				$this->c++;
 				$i++;
 				return true;

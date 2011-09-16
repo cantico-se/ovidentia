@@ -135,7 +135,7 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
 			$this->tgval				= "topics";
 			$this->langLabel			= bab_translate("Language");
-			$this->langFiles			= $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles			= bab_getInstance('babLanguageFilter')->getLangFiles();
 			$this->countLangFiles		= count($this->langFiles);
 			$this->item					= "";
 			$this->cat					= $cat;

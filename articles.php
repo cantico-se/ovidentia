@@ -247,7 +247,7 @@ function listArticles($topics)
 			$this->bmanager = bab_isUserTopicManager($this->topics);
 
 			$req = "select at.id, at.id_topic, at.id_author, at.date, at.date_modification, at.title, at.head, at.body, at.head_format, at.body_format, LENGTH(at.body) as blen, at.restriction from ".BAB_ARTICLES_TBL." at where at.id_topic='".$babDB->db_escape_string($topics)."' and at.archive='N' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
-			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
+			$langFilterValue = bab_getInstance('babLanguageFilter')->getFilterAsInt();
 			switch($langFilterValue)
 				{
 					case 2:

@@ -249,9 +249,9 @@ function site_menu1()
 		function getnextlangfilter()
 			{
 			static $i = 0;
-			if( $i < ($GLOBALS['babLangFilter']->countFilters()))
+			if( $i < (bab_getInstance('babLanguageFilter')->countFilters()))
 				{
-				$this->langfilterval =	$GLOBALS['babLangFilter']->getFilterStr($i);
+				$this->langfilterval =	bab_getInstance('babLanguageFilter')->getFilterStr($i);
 				if($this->row['langfilter'] == $i )
 					{
 					$this->langfilterselected = "selected";
@@ -1712,7 +1712,7 @@ function siteSave($name)
 
 function siteUpdate_menu1()
 {
-	global $babBody, $babDB, $babLangFilter;
+	global $babBody, $babDB;
 
 	$name			= &$_POST['name'];
 	$description	= &$_POST['description'];
@@ -1725,7 +1725,7 @@ function siteUpdate_menu1()
 	$mfa			= &$_POST['mfa'];
 	$skin			= &$_POST['skin'];
 	$sitemap		= bab_pp('sitemap');
-	$langfilter		= &$babLangFilter->convertFilterToInt($_POST['langfilter']);
+	$langfilter		= bab_getInstance('babLanguageFilter')->convertFilterToInt($_POST['langfilter']);
 	$name_order		= &$_POST['name_order'];
 	$statlog		= &$_POST['statlog'];
 	$mass_mailing	= &$_POST['mass_mailing'];

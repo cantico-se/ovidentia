@@ -397,30 +397,45 @@ function bab_mailAccessLevel()
 	global $babBody;
 
 	$user = 0;
-	reset($babBody->ovgroups);
-	while( $arr=each($babBody->ovgroups) ) 
+	
+	$ovgroups = bab_Groups::getGroups();
+	
+	reset($ovgroups);
+	while( list(,$arr) = each($ovgroups) ) 
 	{ 
-		if( isset($arr[1]['mail']) && $arr[1]['mail'] == 'Y')
+		if( isset($arr['mail']) && $arr['mail'] == 'Y')
 		{
-			if( $arr[1]['member'] == 'Y' || $arr[1]['id'] == 1)
-				$user = 1;
+			if( false !== bab_isMemberOfGroup($arr['id']))
+			{
+				return 1;
+				
+			}
 		}
 	}
 
-	if( $user )
-		return 1;
-	
-	}
+	return 0;
+}
 
+/**
+ * 
+ * @return bool
+ */
 function bab_notesAccess()
 	{
-	global $babBody;
-	if( $babBody->ovgroups[1]['notes'] == 'Y' )
+	$registered = bab_Groups::get(BAB_REGISTERED_GROUP);
+	
+	if( $GLOBALS['BAB_SESS_LOGGED'] && $registered['notes'] == 'Y' )
+	{
 		return true;
+	}
+	
+	$usergroups = bab_Groups::getUserGroups();
 
-	for( $i = 0; $i < count($babBody->usergroups); $i++)
+	for( $i = 0; $i < count($usergroups); $i++)
 		{
-		if( isset($babBody->ovgroups[$babBody->usergroups[$i]]['notes']) && $babBody->ovgroups[$babBody->usergroups[$i]]['notes'] == 'Y')
+		$group = bab_Groups::get($usergroups[$i]);
+			
+		if( isset($group['notes']) && $group['notes'] == 'Y')
 			{
 			return true;
 			}
@@ -454,15 +469,25 @@ function bab_orgchartAccess()
 	return $ret;
 	}
 
+/**
+ * 
+ * @return bool
+ */
 function bab_contactsAccess()
 	{
-	global $babBody;
-	if( $babBody->ovgroups[1]['contacts'] == 'Y' )
+	
+	$registered = bab_Groups::get(BAB_REGISTERED_GROUP);
+	
+	if( $GLOBALS['BAB_SESS_LOGGED'] && $registered['contacts'] == 'Y' )
+	{
 		return true;
+	}
 
-	for( $i = 0; $i < count($babBody->usergroups); $i++)
+	$usergroups = bab_Groups::getUserGroups();
+	for( $i = 0; $i < count($usergroups); $i++)
 		{
-		if( isset($babBody->ovgroups[$babBody->usergroups[$i]]['contacts']) && $babBody->ovgroups[$babBody->usergroups[$i]]['contacts'] == 'Y')
+			$group = bab_Groups::get($usergroups[$i]);
+		if( isset($group['contacts']) && $group['contacts'] == 'Y')
 			{
 			return true;
 			}
@@ -817,7 +842,8 @@ function bab_addUserToGroup($iduser, $idgroup, $oc = true)
 		$res = $babDB->db_query("insert into ".BAB_USERS_GROUPS_TBL." (id_group, id_object) VALUES ('" .$babDB->db_escape_string($idgroup). "', '" . $babDB->db_escape_string($iduser). "')");
 		if( isset($GLOBALS['BAB_SESS_LOGGED']) && $GLOBALS['BAB_SESS_LOGGED'] && $GLOBALS['BAB_SESS_USERID'] == $iduser )
 			{
-			$babBody->usergroups[] = $idgroup;
+			// add to cache
+			$_SESSION['bab_groupAccess']['usergroups'][] = $idgroup;
 			}
 		}
 		
@@ -847,11 +873,16 @@ function bab_removeUserFromGroup($iduser, $idgroup)
 	global $babDB, $babBody;
 
 	$babDB->db_query("delete from ".BAB_USERS_GROUPS_TBL." where id_group='".$babDB->db_escape_string($idgroup)."' and id_object='".$babDB->db_escape_string($iduser)."'");
-	$idx = bab_array_search($idgroup, $babBody->usergroups);
-	if( $idx )
-		{
-		array_splice($babBody->usergroups, $idx, 1);
-		}
+	
+	if (isset($_SESSION['bab_groupAccess']['usergroups']))
+	{
+		// update in cache
+		$idx = bab_array_search($idgroup, $_SESSION['bab_groupAccess']['usergroups']);
+		if( $idx )
+			{
+			array_splice($_SESSION['bab_groupAccess']['usergroups'], $idx, 1);
+			}
+	}
 
 	list($identity) = $babDB->db_fetch_row($babDB->db_query("select id_ocentity from ".BAB_GROUPS_TBL." where id='".$babDB->db_escape_string($idgroup)."'"));
 	if( $identity )

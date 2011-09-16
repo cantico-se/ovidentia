@@ -1093,7 +1093,7 @@ function bab_getGroupsMembers($ids)
 
 			foreach($ids as $idg)
 				{
-				if ($babBody->ovgroups[$idg]['nb_groups'] > 0)
+				if (bab_Groups::isGroupSet($idg))
 					{
 					$res = $babDB->db_query("SELECT id_group FROM ".BAB_GROUPS_SET_ASSOC_TBL." WHERE id_set='".$babDB->db_escape_string($idg)."'");
 					while ($arr = $babDB->db_fetch_assoc($res))
@@ -1159,6 +1159,17 @@ function bab_isMemberOfGroup($group, $userid="")
 			return false;
 		}
 	}
+	
+	if ($BAB_SESS_USERID == $userid)
+	{
+		// use session cache
+		if (bab_Groups::inUserGroups($id_group))
+		{
+			return $id_group;
+		} else {
+			return false;
+		}
+	} 
 
 	switch($id_group) {
 		case BAB_ALLUSERS_GROUP:
@@ -1174,10 +1185,13 @@ function bab_isMemberOfGroup($group, $userid="")
 			$req = "select id from ".BAB_USERS_GROUPS_TBL." where id_object='".$babDB->db_escape_string($userid)."' and id_group='".$babDB->db_escape_string($id_group)."'";
 			$res = $babDB->db_query($req);
 			if( $res && $babDB->db_num_rows($res) > 0)
+			{
 				return $id_group;
-			else
-				return false;
+			}
+				
 	}
+	
+	return false;
 }
 
 function bab_getUserIdByEmail($email)
@@ -1259,15 +1273,16 @@ function bab_getUserGroups($id = "")
 	$arr = array('id' => array(), 'name' => array());
 	if( empty($id))
 		{
-		for( $i = 0; $i < count($babBody->usergroups); $i++ )
+		$usergroups = bab_Groups::getUserGroups();
+		for( $i = 0; $i < count($usergroups); $i++ )
 			{
-			if( $babBody->usergroups[$i] != BAB_REGISTERED_GROUP && $babBody->usergroups[$i] != BAB_UNREGISTERED_GROUP && $babBody->usergroups[$i] != BAB_ALLUSERS_GROUP)
+			if( $usergroups[$i] != BAB_REGISTERED_GROUP && $usergroups[$i] != BAB_UNREGISTERED_GROUP && $usergroups[$i] != BAB_ALLUSERS_GROUP)
 				{
-				$arr['id'][] = $babBody->usergroups[$i];
-				$nm = $babBody->getGroupPathName($babBody->usergroups[$i]);
+				$arr['id'][] = $usergroups[$i];
+				$nm = bab_Groups::getGroupPathName($usergroups[$i]);
 				if( empty($nm))
 					{
-					$nm =  $babBody->getSetOfGroupName($babBody->usergroups[$i]);
+					$nm =  bab_Groups::getSetOfGroupName($usergroups[$i]);
 					}
 				$arr['name'][] = $nm;
 				}
@@ -1282,10 +1297,10 @@ function bab_getUserGroups($id = "")
 			while( $r = $babDB->db_fetch_array($res))
 				{
 				$arr['id'][] = $r['id_group'];
-				$nm = $babBody->getGroupPathName($r['id_group']);
+				$nm = bab_Groups::getGroupPathName($r['id_group']);
 				if( empty($nm))
 					{
-					$nm =  $babBody->getSetOfGroupName($r['id_group']);
+					$nm =  bab_Groups::getSetOfGroupName($r['id_group']);
 					}
 				$arr['name'][] = $nm;
 				}
@@ -1404,7 +1419,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
  */
 function bab_getAccessibleObjects($table, $userId)
 {
-	global $babBody, $babDB;
+	global $babDB;
 	$objects = array();
 
 	if (empty($userId)) {
@@ -1437,7 +1452,8 @@ function bab_getAccessibleObjects($table, $userId)
 				}
 			}
 		}
-		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) || bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId)) {
+		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) 
+		|| ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
 			$objects[$object['id_object']] = $object['id_object'];
 		}
 	}
@@ -1453,8 +1469,8 @@ function bab_getAccessibleObjects($table, $userId)
  */
 function bab_getUserIdObjects($table)
 {
-global $babBody, $babDB;
-if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
+	global $babDB;
+	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 	{
 	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
 
@@ -1466,13 +1482,14 @@ if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 		$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
 		while( $rr = $babDB->db_fetch_array($rs))
 			{
-			if( in_array($rr['id_group'], $babBody->usergroups))
+			if( bab_isMemberOfGroup($rr['id_group']))
 				{
 					$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
 				}
 			}
 		}
-		elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && in_array($row['id_group'], $babBody->usergroups)) || bab_isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE)) {
+		elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group'])) 
+			|| ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
 			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
 		}
 	}
@@ -1945,17 +1962,17 @@ function bab_getGroupName($id, $fpn=true)
 	global $babBody;
 	if($fpn)
 		{
-		return $babBody->getGroupPathName($id);
+		return bab_Groups::getGroupPathName($id);
 		}
 	else
 		{
 
 		if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
-			return bab_translate($babBody->ovgroups[$id]['name']);
+			return bab_translate(bab_Groups::getName($id));
 		}
 
 
-		return $babBody->ovgroups[$id]['name'];
+		return bab_Groups::getName($id);
 		}
 	}
 

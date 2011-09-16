@@ -63,7 +63,7 @@ function addCategory()
 			$this->manager = bab_translate("Manager");
 			$this->add = bab_translate("Add");
 			$this->langLabel = bab_translate("Language");
-			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles = bab_getInstance('babLanguageFilter')->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
@@ -132,7 +132,7 @@ function listCategories()
 			
 			$this->access = bab_translate("Rights");
 			$this->db = $GLOBALS['babDB'];
-			$langFilterValue = $GLOBALS['babLangFilter']->getFilterAsInt();
+			$langFilterValue = bab_getInstance('babLanguageFilter')->getFilterAsInt();
 			if((isset($GLOBALS['babApplyLanguageFilter']) && $GLOBALS['babApplyLanguageFilter'] == 'loose') and bab_isUserAdministrator()) $langFilterValue = 0;
 			switch($langFilterValue)
 			{

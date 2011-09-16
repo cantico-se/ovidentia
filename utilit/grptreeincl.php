@@ -278,7 +278,7 @@ function bab_grp_node_html(&$tree, $id_group, $file, $template, $options = array
 function bab_grpGetNbChildsByParent($id_parent)
 {
 	$nb = 0;
-	$tmp = $GLOBALS['babBody']->ovgroups;
+	$tmp = bab_Groups::getGroups();
 	foreach($tmp as $grp)
 		{
 		if (isset($grp['id_parent']) && $grp['id_parent'] == $id_parent)

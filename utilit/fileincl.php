@@ -97,10 +97,21 @@ function bab_formatSizeFile($size, $roundoff = true)
 
 }
 
+
+/**
+ * 
+ * @param string $gr
+ * @param int $id
+ * @return bool
+ */
 function bab_isAccessFileValid($gr, $id)
 {
-	global $babBody, $babDB;
+	global $babDB;
+	
 	$access = false;
+	
+	$ovgroups = bab_Groups::getGroups();
+	
 	if( $gr == "Y")
 	{
 		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$babDB->db_escape_string($id)."' and active='Y'");
@@ -113,15 +124,16 @@ function bab_isAccessFileValid($gr, $id)
 	}
 	else if( !empty($GLOBALS['BAB_SESS_USERID']) && $id == $GLOBALS['BAB_SESS_USERID'])
 	{
-		if( $babBody->ovgroups[1]['ustorage'] == 'Y')
+		if( $ovgroups[BAB_REGISTERED_GROUP]['ustorage'] == 'Y')
 		{
 			$access = true;
 		}
 		else
 		{
-			foreach( $babBody->usergroups as $grpid)
+			$usergroups = bab_Groups::getUserGroups();
+			foreach($usergroups as $grpid)
 			{
-				if( $babBody->ovgroups[$grpid]['ustorage'] == 'Y')
+				if( $ovgroups[$grpid]['ustorage'] == 'Y')
 				{
 					$access = true;
 					break;

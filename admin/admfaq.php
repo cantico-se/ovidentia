@@ -77,7 +77,7 @@ function modifyCategory($id)
 			$this->add = bab_translate("Update FAQ");
 			$this->delete = bab_translate("Delete");
 			$this->langLabel = bab_translate("Language");
-			$this->langFiles = $GLOBALS['babLangFilter']->getLangFiles();
+			$this->langFiles = bab_getInstance('babLanguageFilter')->getLangFiles();
 			$this->countLangFiles = count($this->langFiles);
 			$this->db = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_FAQCAT_TBL." where id=".$babDB->quote($id);
