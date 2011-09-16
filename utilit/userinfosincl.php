@@ -208,3 +208,6 @@ class bab_UserName {
 		return (string) bab_userInfos::$method($this->id_user);
 	}
 }
+
+
+

@@ -208,18 +208,131 @@ function deleteFlowInstance($idschi)
 	bab_siteMap::clearAll();
 }
 
+
+
+
+
+
+
+
+class bab_UserUnavailability
+{
+	/**
+	 * 
+	 * @return array
+	 */
+	private static function getSuperiors($id_user)
+	{
+		$superiors = array();
+		$entities = bab_OCGetUserEntities($id_user);
+		if( count($entities['temporary']) > 0 )
+		{
+		for( $i=0; $i < count($entities['temporary']); $i++ )
+			{
+			$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
+			if( $idsup )
+				{
+				$superiors[] =  $idsup['id_user'];
+				}
+			}
+		}
+		
+		return $superiors;
+	}
+	
+	
+	/**
+	 * 
+	 * [0] liste des user que je remplace, par l'interface manuelle
+	 * [1] liste des user que je remplace, par l'organigramme
+	 * 
+	 * @param	int		$id_user (mon id user) BAB_SESS_USERID
+	 * @return array
+	 */
+	public static function get($id_user)
+	{
+		global $babBody, $babDB;
+		$substitutes = array(
+			0 => array(),
+			1 => array()
+		);
+		
+		if('Y' === $babBody->babsite['change_unavailability']) 
+		{
+			$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
+			if( $res && $babDB->db_num_rows($res) > 0 )
+			{
+				
+				include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
+						
+				$superiors = self::getSuperiors($id_user);
+	
+				while($arr = $babDB->db_fetch_array($res))
+				{
+					$idsup = 0;
+					if( count($superiors) && in_array($arr['id_user'], $superiors))
+					{
+						if( count($substitutes[1]) == 0 ||  !in_array($arr['id_user'], $substitutes[1]) )
+						{
+							$substitutes[1][] = $arr['id_user'];
+						}
+					}
+
+					if( $arr['id_substitute'] == $id_user && (count($substitutes[0]) == 0 || !in_array($arr['id_user'], $substitutes[0])))
+					{
+						$add = true;
+						$entities = bab_OCGetUserEntities($arr['id_user']);
+						if( count($entities['superior']) > 0 )
+						{
+							for( $i=0; $i < count($entities['superior']); $i++ )
+							{
+								$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
+								if( $idte && $idte['id_user'] != $id_user)
+								{
+									$add = false;
+									break;
+								}
+							}
+						}
+	
+						if( count($substitutes[0]) == 0 || !in_array($arr['id_user'], $substitutes[0]) )
+						{
+							$substitutes[0][] = $arr['id_user'];
+						}
+	
+						if( $add && (count($substitutes[1]) == 0 || !in_array($arr['id_user'], $substitutes[1]) ))
+						{
+							$substitutes[1][] = $arr['id_user'];
+						}
+					}
+				}
+			}
+		}
+		
+		return $substitutes;
+	}
+}
+
+
+
+
+
+
+
 function updateFlowInstance($idschi, $iduser, $bool)
 {
-	global $babBody, $babDB;
+	global $babDB;
+	
+	$substitutes = bab_UserUnavailability::get($GLOBALS['BAB_SESS_USERID']);
 
 	$idusers = array($iduser);
 	for( $j=0; $j < 2; $j++)
 	{
-		for( $k=0; $k < count($babBody->substitutes[$j]); $k++)
+		for( $k=0; $k < count($substitutes[$j]); $k++)
 		{
-			if( !in_array($babBody->substitutes[$j][$k], $idusers))
+			if( !in_array($substitutes[$j][$k], $idusers))
 				{
-				$idusers[] = $babBody->substitutes[$j][$k];
+				$idusers[] = $substitutes[$j][$k];
 				}
 		}
 	}
@@ -544,10 +657,11 @@ function getWaitingApproversFlowInstance($idschi, $notify=false)
 
 function getWaitingApprobations($iduser, $update=false)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 	if( isset($_SESSION['bab_waitingApprobations'][$iduser]) && !$update )
 	{
+		
 		return $_SESSION['bab_waitingApprobations'][$iduser];
 	}
 
@@ -649,7 +763,10 @@ function getWaitingApprobations($iduser, $update=false)
 /**/
 	if( $iduser == $GLOBALS['BAB_SESS_USERID'] )
 	{
-		$arrsub = array_unique(array_merge($babBody->substitutes[0], $babBody->substitutes[1]));
+		$substitutes = bab_UserUnavailability::get($GLOBALS['BAB_SESS_USERID']);
+		
+		
+		$arrsub = array_unique(array_merge($substitutes[0], $substitutes[1]));
 
 		for($i = 0; $i < count($arrsub); $i++ )
 		{
@@ -659,11 +776,11 @@ function getWaitingApprobations($iduser, $update=false)
 				$add = false;
 
 				list($type) = $babDB->db_fetch_row($babDB->db_query("select satype from ".BAB_FLOW_APPROVERS_TBL." where id='".$babDB->db_escape_string($rr['idsch'][$k])."'"));
-				if( $type == 1 && in_array($arrsub[$i], $babBody->substitutes[1]))
+				if( $type == 1 && in_array($arrsub[$i], $substitutes[1]))
 				{
 					$add = true;
 				}
-				elseif( in_array($arrsub[$i], $babBody->substitutes[0]) )
+				elseif( in_array($arrsub[$i], $substitutes[0]) )
 				{
 					$add = true;
 				}

@@ -514,7 +514,6 @@ var $ampm; /* true: use am/pm */
 var $waitapprobations; /* true if there are waiting approbations */
 var $acltables = array();
 var $idprimaryoc = 0; /* id of primary organizational chart */
-var $substitutes = array();
 var $styleSheet = array();
 
 //var $aclfm;
@@ -540,8 +539,6 @@ function babBody()
 	$this->saarray = array();
 	$this->babaddons = array();
 	$this->waitapprobations = false;
-	$this->substitutes[0] = array(); /* nominatif */
-	$this->substitutes[1] = array(); /* fonctionnel */
 
 
 	if (isset($_SERVER['REMOTE_ADDR'])) {
@@ -574,10 +571,7 @@ function babBody()
 			}
 		}
 	}
-	
-	
-	//$this->ovgroups = bab_Groups::getGroups();
-	//$this->usergroups = bab_Groups::getUserGroups();
+
 }
 
 
@@ -1135,7 +1129,7 @@ function bab_updateUserSettings()
 	$babBody->isSuperAdmin = false;
 
 	if( !empty($BAB_SESS_USERID))
-		{
+	{
 		$babDB->db_query("update ".BAB_USERS_LOG_TBL." set id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' where sessid='".$babDB->db_escape_string(session_id())."'");
 		$res=$babDB->db_query("select lang, skin, style, lastlog, langfilter, date_shortformat, date_longformat, time_format from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1209,71 +1203,18 @@ function bab_updateUserSettings()
 			
 		}
 		
-		
 		if('Y' === $babBody->babsite['change_unavailability']) 
+		{
+			// les retirer le cache de l'approbation si les parametre d'indisponibilite sont actif
+			if (isset($_SESSION['bab_waitingApprobations'][$GLOBALS['BAB_SESS_USERID']]))
 			{
-
-			$res = $babDB->db_query("select id_user, id_substitute from ".BAB_USERS_UNAVAILABILITY_TBL." where curdate() between start_date and end_date");
-			if( $res && $babDB->db_num_rows($res) > 0 )
-				{
-				unset($_SESSION['bab_waitingApprobations'][$BAB_SESS_USERID]);
-				include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-				$superiors = array();
-				$entities = bab_OCGetUserEntities($BAB_SESS_USERID);
-				if( count($entities['temporary']) > 0 )
-					{
-					for( $i=0; $i < count($entities['temporary']); $i++ )
-						{
-						$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
-						if( $idsup )
-							{
-							$superiors[] =  $idsup['id_user'];
-							}
-						}
-					}		
-	
-				while($arr = $babDB->db_fetch_array($res))
-					{
-					$idsup = 0;
-					if( count($superiors) && in_array($arr['id_user'], $superiors))
-						{
-						if( count($babBody->substitutes[1]) == 0 ||  !in_array($arr['id_user'], $babBody->substitutes[1]) )
-							{
-							$babBody->substitutes[1][] = $arr['id_user'];
-							}
-						}
-	
-					if( $arr['id_substitute'] == $BAB_SESS_USERID && (count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0])))
-						{
-						$add = true;
-						$entities = bab_OCGetUserEntities($arr['id_user']);
-						if( count($entities['superior']) > 0 )
-							{
-							for( $i=0; $i < count($entities['superior']); $i++ )
-								{
-								$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
-								if( $idte && $idte['id_user'] != $BAB_SESS_USERID)
-									{
-									$add = false;
-									break;
-									}
-								}
-							}
-	
-						if( count($babBody->substitutes[0]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[0]) )
-							{
-							$babBody->substitutes[0][] = $arr['id_user'];
-							}
-	
-						if( $add && (count($babBody->substitutes[1]) == 0 || !in_array($arr['id_user'], $babBody->substitutes[1]) ))
-							{
-							$babBody->substitutes[1][] = $arr['id_user'];
-							}
-						}
-					}
-				}
+				unset($_SESSION['bab_waitingApprobations'][$GLOBALS['BAB_SESS_USERID']]);
 			}
 		}
+	}	
+		
+		
+
 
 
 	// verify skin validity
