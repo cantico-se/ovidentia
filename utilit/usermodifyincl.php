@@ -158,24 +158,81 @@ class bab_userModify {
 				)");
 	
 			if( isset($babBody->babsite) && isset($babBody->babsite['iDefaultCalendarAccess'] ))
-				{
+			{
 				$iDefaultCalendarSiteAccess = (int)($babBody->babsite['iDefaultCalendarAccess']);
+				
+				// other users share there calendars with me
+				
+				$query = "select 
+						c.id, 
+						c.owner, 
+						uo.iDefaultCalendarAccess,
+						uo.calendar_backend  
+					FROM ".BAB_CALENDAR_TBL." c 
+						left join ".BAB_CAL_USER_OPTIONS_TBL." uo ON c.owner=uo.id_user 
+					WHERE  
+						c.type=".BAB_CAL_USER_TYPE." 
+				";
+						
+				
 				if( $iDefaultCalendarSiteAccess == BAB_CAL_ACCESS_NONE )
+				{
+					// no site option, narrow query to user with setting
+					$query .= " and uo.iDefaultCalendarAccess is not null and uo.iDefaultCalendarAccess != ".BAB_CAL_ACCESS_NONE;
+				}
+				
+				$resc = $babDB->db_query($query);
+				
+				while ($arrc = $babDB->db_fetch_assoc($resc))
+				{
+					$backend = @bab_functionality::get('CalendarBackend/'.$arrc['calendar_backend']);
+					if (!$backend)
 					{
-					$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select c.id, ".$id.", uo.iDefaultCalendarAccess from ".BAB_CALENDAR_TBL." c left join ".BAB_CAL_USER_OPTIONS_TBL." uo on c.owner=uo.id_user where type=".BAB_CAL_USER_TYPE." and uo.iDefaultCalendarAccess is not null and uo.iDefaultCalendarAccess != ".BAB_CAL_ACCESS_NONE);
+						continue;
 					}
-				else
+					
+					$calendar = $backend->Personalcalendar($arrc['owner']);
+					
+					$access = $arrc['iDefaultCalendarAccess'];
+					if( $iDefaultCalendarSiteAccess != BAB_CAL_ACCESS_NONE && (null === $access || BAB_CAL_ACCESS_NONE == $access))
 					{
-					/* hack MySQL : Because we can't select rows without iDefaultCalendarAccess = -1, so we add them with 100 as bwrite value and then delete them */
-					$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select c.id, ".$id.", if(uo.iDefaultCalendarAccess = -1, 100, if(uo.iDefaultCalendarAccess is null, ".$iDefaultCalendarSiteAccess.", uo.iDefaultCalendarAccess))  from ".BAB_CALENDAR_TBL." c left join ".BAB_CAL_USER_OPTIONS_TBL." uo on c.owner=uo.id_user where type=".BAB_CAL_USER_TYPE."");
-					$babDB->db_query("delete from ".BAB_CALACCESS_USERS_TBL." where bwrite = 100");
+						$access = $iDefaultCalendarSiteAccess;
 					}
+					
+					
+					$babDB->db_query("
+						INSERT INTO ".BAB_CALACCESS_USERS_TBL." 
+							(id_cal, id_user, bwrite, caltype) 
+						VALUES 
+							(
+								".$babDB->quote($arrc['id']).", 
+								".$babDB->quote($id).", 
+								".$babDB->quote($access).", 
+								".$babDB->quote($calendar->getReferenceType())."
+							)
+					");
+				}
+					
+				
 
 				if( $iDefaultCalendarSiteAccess != BAB_CAL_ACCESS_NONE )
+				{
+					$resc = $babDB->db_query("select id from ".BAB_USERS_TBL." where id !=".$babDB->quote($id));
+					
+					while ($arrc = $babDB->db_fetch_assoc($resc))
 					{
-					$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." (id_cal, id_user, bwrite) select ".$idusercal.", id, ".$iDefaultCalendarSiteAccess." from ".BAB_USERS_TBL." where id !='".$id."'");
+						$babDB->db_query("insert into ".BAB_CALACCESS_USERS_TBL." 
+							(id_cal, id_user, bwrite, caltype) VALUES (
+								".$babDB->quote($idusercal).", 
+								".$babDB->quote($arrc['id']).", 
+								".$babDB->quote($iDefaultCalendarSiteAccess).", 
+								".$babDB->quote('personal')."
+							)
+						");
 					}
+					
 				}
+			}
 
 			if( $bgroup && isset($babBody->babsite['idgroup']) && $babBody->babsite['idgroup'] != 0)
 				{
