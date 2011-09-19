@@ -1515,19 +1515,11 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 				return true;
 			}
 			return false;
-//		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
-		
-if ('bab_addons_groups' === $table && 28 == $idobject)
-{
-	bab_debug($_SESSION['bab_groupAccess']['acltables'][$table]);
-}
-		
 	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 		{
 		bab_getUserIdObjects($table);
-		
 		}
 
 	return isset($_SESSION['bab_groupAccess']['acltables'][$table][$idobject]);
