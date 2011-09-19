@@ -1254,7 +1254,13 @@ function bab_getGroupsMembers($ids)
 function bab_isMemberOfGroup($group, $userid="")
 {
 	global $BAB_SESS_USERID, $babDB;
-	if(empty($group)) {
+	
+	if (is_numeric($group) && BAB_ALLUSERS_GROUP === (int) $group)
+	{
+		return true;
+	}
+	
+	if('' === $group) {
 		return false;
 	}
 
@@ -1512,9 +1518,16 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 //		return bab_isAccessValidByUser($table, $idobject, $iduser);
 		}
 
+		
+if ('bab_addons_groups' === $table && 28 == $idobject)
+{
+	bab_debug($_SESSION['bab_groupAccess']['acltables'][$table]);
+}
+		
 	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
 		{
 		bab_getUserIdObjects($table);
+		
 		}
 
 	return isset($_SESSION['bab_groupAccess']['acltables'][$table][$idobject]);
