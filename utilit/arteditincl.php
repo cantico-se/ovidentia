@@ -253,7 +253,7 @@ class bab_ArticleDraftEditor {
 		
 		$LeftFrame->addItem(
 			$W->Section(
-				$tempLab = $W->Label(bab_translate('Introduction')),
+				$tempLab = $W->Label(bab_translate('Introduction'))->addClass('widget-label-mandatory'),
 				$W->Frame('intro')->addItem(
 					$W->Html($headEditor->getEditor())
 				)
@@ -273,28 +273,6 @@ class bab_ArticleDraftEditor {
 					$W->Html($bodyEditor->getEditor())
 				)
 			)->setFoldable(true)
-		);
-		
-		
-		$LeftFrame->addItem(
-			$attachments = $W->Section(
-				bab_translate('Files attachments'),
-				$W->Frame()
-					->addItem($articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('articleFiles')->disable()->hideFiles())
-					->addItem($fileList = $W->Frame('bab_article_file_list')->addClass('widget-sortable')),
-				4,
-				'bab_article_attachments'
-			)->setFoldable(true, true)
-		);
-		
-		$LeftFrame->addItem(
-				$W->Frame()
-					->addItem($articlePicture = $W->ImagePicker()->oneFileMode(true)
-						->setTitle(bab_translate('Set the article picture'))
-						->setName('articlePicture')
-						->disable()
-						->addClass('bab-article-picture')
-					)
 		);
 		
 		$timeArray = array();
@@ -340,6 +318,18 @@ class bab_ArticleDraftEditor {
 					)->setHorizontalSpacing(1,'em')
 		);
 		
+		
+		$LeftFrame->addItem(
+			$attachments = $W->Section(
+				bab_translate('Files attachments'),
+				$W->Frame()
+					->addItem($articleFiles = $W->FilePicker()->setTitle(bab_translate('Add a file'))->setName('articleFiles')->disable()->hideFiles())
+					->addItem($fileList = $W->Frame('bab_article_file_list')->addClass('widget-sortable')),
+				4,
+				'bab_article_attachments'
+			)->setFoldable(true, true)
+		);
+		
 		$LeftFrame->addItem(
 				$W->Frame()->addItem(
 					bab_labelStr(
@@ -348,45 +338,6 @@ class bab_ArticleDraftEditor {
 					)
 				)
 		);
-		
-		
-	
-		$RightFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
-		
-		$RightFrame->addItem(
-			$W->HBoxItems(
-				$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-				$W->Label(bab_translate("Propose for public homepage"))->setAssociatedWidget($tempCheck)
-			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
-		);
-		$RightFrame->addItem(
-			$W->HBoxItems(
-				$tempCheck = $W->CheckBox()->setName('hpage_private')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-				$W->Label(bab_translate("Propose for private homepage"))->setAssociatedWidget($tempCheck)
-			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
-		);
-		$RightFrame->addItem(
-			$W->HBoxItems(
-				$tempCheck = $W->CheckBox()->setName('notify_members')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
-				$W->Label(bab_translate("Notify users when the article is published"))->setAssociatedWidget($tempCheck)
-			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
-		);
-		
-		$RightFrame->addItem(
-			bab_labelStr(
-				bab_translate("Article language"),
-				$lang = $W->Select()
-					->setValue('fr')
-					->setName('lang')
-					->addOption('*','*')
-			)
-		);
-		
-		$languages = bab_getAvailableLanguages();
-		foreach($languages as $l)
-		{
-			$lang->addOption($l,$l);
-		}
 		
 		if ($keyword = $tags->getSearchKeyword())
 		{
@@ -401,21 +352,50 @@ class bab_ArticleDraftEditor {
 			$tags->sendSuggestions();
 		}
 		
+		$LeftFrame->addItem(
+				$W->Frame()
+					->addItem($articlePicture = $W->ImagePicker()->oneFileMode(true)
+						->setTitle(bab_translate('Set the article picture'))
+						->setName('articlePicture')
+						->disable()
+						->addClass('bab-article-picture')
+					)
+		);
+		
+		$LeftFrame->addItem(
+			$W->HBoxItems(
+				$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+				$W->Label(bab_translate("Propose for public homepage"))->setAssociatedWidget($tempCheck)
+			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+		);
+		$LeftFrame->addItem(
+			$W->HBoxItems(
+				$tempCheck = $W->CheckBox()->setName('hpage_private')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+				$W->Label(bab_translate("Propose for private homepage"))->setAssociatedWidget($tempCheck)
+			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+		);
+		$LeftFrame->addItem(
+			$W->HBoxItems(
+				$tempCheck = $W->CheckBox()->setName('notify_members')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
+				$W->Label(bab_translate("Notify users when the article is published"))->setAssociatedWidget($tempCheck)
+			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
+		);
+		
 		$groups = bab_labelStr(
-				bab_translate('Groups'),
-				$multigroups = $W->MultiField()->setName('groups')
-			);
+			bab_translate('Groups'),
+			$multigroups = $W->MultiField()->setName('groups')
+		);
 			
 			
 		$operator = bab_labelStr(
-				bab_translate('With operator'),
-				$W->Select()
-					->setName('operator')
-					->addOption(',',bab_translate('Or'))
-					->addOption('&',bab_translate('And'))
-			);
+			bab_translate('With operator'),
+			$W->Select()
+				->setName('operator')
+				->addOption(',',bab_translate('Or'))
+				->addOption('&',bab_translate('And'))
+		);
 		
-		$RightFrame->addItem(
+		$LeftFrame->addItem(
 			$W->Frame()
 				->addItem(
 					bab_labelStr(
@@ -433,7 +413,21 @@ class bab_ArticleDraftEditor {
 				->addClass('bab-article-restriction')
 		);
 		
-		$LeftFrame->addItem($RightFrame);
+		$LeftFrame->addItem(
+			bab_labelStr(
+				bab_translate("Article language"),
+				$lang = $W->Select()
+					->setValue('fr')
+					->setName('lang')
+					->addOption('*','*')
+			)
+		);
+		
+		$languages = bab_getAvailableLanguages();
+		foreach($languages as $l)
+		{
+			$lang->addOption($l,$l);
+		}
 		
 		
 		if($this->draft->id_article){
@@ -481,7 +475,7 @@ class bab_ArticleDraftEditor {
 		
 		if($values['id_topic'] != ""){
 			$topicIdFolded = true;
-			$topicIdOrder = 7;
+			$topicIdOrder = 0;
 			$currentTopic = viewCategoriesHierarchy_txt($values['id_topic']);
 		}else{
 			$currentTopic =  bab_translate('Current topic') . ': ' . bab_translate('None');
@@ -491,12 +485,13 @@ class bab_ArticleDraftEditor {
 		
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
-				bab_labelStr(
+				$W->Section(
 					$W->Html(bab_translate('Article topic') . ' (' . $currentTopic . ')'),
-					$topic->setName('id_topic')
-				)
+					$topic->setName('id_topic'),
+					3
+				)->setFoldable(true, $topicIdFolded)
 			),
-			$topicIdOrder
+			0
 		);
 		
 		$LeftFrame->addItem(
