@@ -577,11 +577,6 @@ class babMail
 		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
 		
 		bab_fireEvent($event);
-		
-		
-		if (!$this->sent_status) {
-			$this->recordMail();
-		}
 
 		return $this->sent_status; 
 	}
@@ -607,75 +602,6 @@ class babMail
 	}
 
 
-	/**
-	 * Record a mail in the database
-	 */
-	private function recordMail() {
-
-		if ($this->attachements) {
-
-			$dir = $GLOBALS['babUploadPath'].'/mail/';
-			if (!is_dir($dir)) {
-				bab_mkdir($dir);
-			}
-
-			foreach($this->attachements as $k => $arr) {
-				$newname = $dir.md5(uniqid(rand(), true));
-				if (is_file($arr[0])) {
-					copy($arr[0], $newname);
-					$this->attachements[$k][0] = $newname;
-				}
-			}
-		}
-
-		$recipients = array();
-		$this->addMail($recipients, $this->mailTo);
-		$this->addMail($recipients, $this->mailCc);
-		$this->addMail($recipients, $this->mailBcc);
-
-		$recipients = implode(', ',$recipients);
-
-		$data = array(
-				'from'		=> array($this->mail->From, $this->mail->FromName),
-				'sender'	=> $this->mail->Sender,
-				'to'		=> $this->mailTo,
-				'cc'		=> $this->mailCc,
-				'bcc'		=> $this->mailBcc,
-				'files'		=> $this->attachements
-			);
-
-		$data = serialize($data);
-
-		$sent_status = $this->sent_status ? 1 : 0;
-
-		$mail_hash = md5($this->mail->Subject.$this->mail->Body.$data);
-
-		$db = $GLOBALS['babDB'];
-
-		$res = $db->db_query("SELECT COUNT(*) FROM ".BAB_MAIL_SPOOLER_TBL." WHERE mail_hash='".$db->db_escape_string($mail_hash)."'");
-		list($n) = $db->db_fetch_array($res);
-
-		if (0 < $n) {
-			return;
-		}
-
-		$db->db_query("INSERT INTO ".BAB_MAIL_SPOOLER_TBL." 
-				( mail_hash, mail_subject, body, altbody, format, recipients, mail_data, sent_status, error_msg, mail_date ) 
-			VALUES 
-				(
-					'".$db->db_escape_string($mail_hash)."',
-					'".$db->db_escape_string($this->mail->Subject)."', 
-					'".$db->db_escape_string($this->mail->Body)."', 
-					'".$db->db_escape_string($this->mail->AltBody)."',
-					'".$db->db_escape_string($this->format)."',
-					'".$db->db_escape_string($recipients)."',
-					'".$db->db_escape_string($data)."', 
-					'".$db->db_escape_string($sent_status)."', 
-					'".$db->db_escape_string($this->mail->ErrorInfo)."', 
-					NOW()
-				)
-			");
-	}
 }
 
 

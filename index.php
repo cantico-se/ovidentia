@@ -724,12 +724,6 @@ switch(bab_rp('tg'))
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin )
 			$incl = "admin/admvacs";
 		break;
-	case "mailspool":
-		$babLevelOne = bab_translate("Administration");
-		$babLevelTwo = bab_translate("Mail spooler");
-		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->isSuperAdmin )
-			$incl = "admin/mailspool";
-		break;
 	case "admcals":
 		$babLevelOne = bab_translate("Administration");
 		$babLevelTwo = bab_translate("Calendar");

@@ -234,7 +234,6 @@ define("BAB_LDAP_SITES_FIELDS_TBL", "bab_ldap_sites_fields");
 define("BAB_MAIL_ACCOUNTS_TBL", "bab_mail_accounts");
 define("BAB_MAIL_DOMAINS_TBL", "bab_mail_domains");
 define("BAB_MAIL_SIGNATURES_TBL", "bab_mail_signatures");
-define("BAB_MAIL_SPOOLER_TBL", "bab_mail_spooler");
 define("BAB_MIME_TYPES_TBL", "bab_mime_types");
 define("BAB_NOTES_TBL", "bab_notes");
 define("BAB_ORG_CHARTS_TBL", "bab_org_charts");
