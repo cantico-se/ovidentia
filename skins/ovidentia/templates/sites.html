@@ -356,7 +356,11 @@ mm(sksel);
 					</table>
 				</td>
 	          <tr> 
-	            <td colspan="2" align="center"><br /><a href="{ babUrlScript }?tg=mailspool&item={ item }">{ t_mailspool }</a><br /><br /></td>
+	            <td colspan="2" align="center"><br />
+	            	<!--#if mailspooler -->
+	            	<a href="{ babUrlScript }?tg=addon/mailspooler/mailspool">{ t_mailspool }</a><br /><br />
+	            	<!--#endif mailspooler -->
+	            </td>
 			  </tr>
 			  <tr>
 	          	<td colspan="2">

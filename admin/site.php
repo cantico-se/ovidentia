@@ -317,6 +317,15 @@ function site_menu2($id)
 			$this->thelp5 = bab_translate('Sendmail: Ovidentia uses the application sendmail installed on the local machine (see variable sendmail_path in the php.ini file');
 			
 			$this->site_configuration_cls($id);
+			
+				$addon = bab_getAddonInfosInstance('mailspooler');
+				if (false === $addon)
+				{
+					$this->mailspooler = false;
+				} else {
+					$this->mailspooler = $addon->isAccessValid();
+				}
+			
 			}
 
 

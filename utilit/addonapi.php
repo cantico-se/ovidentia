@@ -3143,7 +3143,7 @@ class bab_functionality {
  *
  * @since 6.6.93
  * @param	string	$addonname
- * @return bab_addonInfos Or false
+ * @return bab_addonInfos
  */
 function bab_getAddonInfosInstance($addonname) {
 
