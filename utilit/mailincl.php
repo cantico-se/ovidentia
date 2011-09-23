@@ -190,6 +190,17 @@ class bab_eventMail extends bab_event {
 	public $body = null;
 	
 	
+	/**
+	 * @var string
+	 */
+	public $altBody = null;
+	
+	/**
+	 * @var string
+	 */
+	public $format = null;
+	
+	
 	public function setMailInfos(babMail $babMail) {
 		
 		$this->from 		= array($babMail->mail->From, $babMail->mail->FromName);
@@ -202,6 +213,9 @@ class bab_eventMail extends bab_event {
 		
 		$this->subject		= $babMail->mail->Subject;
 		$this->body			= $babMail->mail->Body;
+		
+		$this->altBody		= $babMail->mail->AltBody;
+		$this->format		= $babMail->format;
 	}
 
 }
@@ -258,7 +272,17 @@ class bab_eventBeforeMailSent extends bab_eventMail {
  */ 
 class bab_eventAfterMailSent extends bab_eventMail {
 	
+	/**
+	 * 
+	 * @var bool
+	 */
 	public $sent_status	= null;
+	
+	/**
+	 * error mesage from server or null if no error or no message
+	 * @var string
+	 */
+	public $ErrorInfo = null;
 }
 
 
@@ -550,6 +574,7 @@ class babMail
 		$event = new bab_eventAfterMailSent;
 		$event->setMailInfos($this);
 		$event->sent_status = $this->sent_status;
+		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
 		
 		bab_fireEvent($event);
 		
