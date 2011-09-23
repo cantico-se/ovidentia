@@ -3834,23 +3834,6 @@ CREATE TABLE bab_statsbaskets_groups (
 );
 
 
-CREATE TABLE bab_mail_spooler (
-  id int(11) unsigned NOT NULL auto_increment,
-  mail_hash varchar(255) NOT NULL,
-  mail_subject varchar(255) NOT NULL,
-  body text NOT NULL,
-  altbody text NOT NULL,
-  format varchar(32) NOT NULL,
-  recipients text NOT NULL,
-  mail_data text NOT NULL,
-  sent_status tinyint(1) unsigned NOT NULL,
-  error_msg varchar(255) NOT NULL,
-  mail_date datetime NOT NULL,
-  PRIMARY KEY  (id),
-  KEY mail_date (mail_date)
-
-);
-
 CREATE TABLE bab_cal_res_upd_groups (
   id int(11) unsigned NOT NULL auto_increment,
   id_object int(11) unsigned NOT NULL default '0',
