@@ -442,10 +442,10 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 						}
 
 						// if addon already installed verify the version
-
-
-						$addon = bab_getAddonInfosInstance($sAddonName);
-						if (false !== $addon)
+						// do not use bab_getAddonInfosInstance here because instances are set in cache and new addons will be disabled for this function
+						// to prevent this problem, we use a new instance of bab_addonInfos
+						$addon = new bab_addonInfos();
+						if (false !== $addon->setAddonName($sAddonName, false))
 						{
 							$inifile = $sInstallDir . '/' . $sAddonName . '/programs/addonini.php';
 							if (!is_file($inifile))
