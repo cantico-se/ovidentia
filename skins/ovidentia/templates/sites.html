@@ -505,42 +505,7 @@ mm(sksel);
 				</select>
 			</td>
 		</tr>
-		<tr>
-			<td>{ remember_login_title }</td>
-            <td> 
-				<select name="remember_login">
-				<!--#if arr[remember_login] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<option value="L">{ login_only }</option>
-				<!--#endif arr[remember_login] -->
-				<!--#if arr[remember_login] "== N" -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<option value="L">{ login_only }</option>
-				<!--#endif arr[remember_login] -->
-				<!--#if arr[remember_login] "== L" -->
-				<option value="Y">{ yes }</option>
-				<option value="N">{ no }</option>
-				<option value="L" selected="selected">{ login_only }</option>
-				<!--#endif arr[remember_login] -->
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>{ email_password_title }</td>
-            <td> 
-				<select name="email_password">
-				<!--#if arr[email_password] "== Y" -->
-				<option value="Y" selected="selected">{ yes }</option>
-				<option value="N">{ no }</option>
-				<!--#else arr[email_password] -->
-				<option value="Y">{ yes }</option>
-				<option value="N" selected="selected">{ no }</option>
-				<!--#endif arr[email_password] -->
-				</select>
-			</td>
-		</tr>
+		
 		<tr>
 			<td>{ browse_users_title }</td>
             <td> 
@@ -1145,9 +1110,48 @@ function hideShowCnx()
 <table class="BabLoginCadreBackground"  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td> 
-	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
 	<tr> 
-		<td align="right" nowrap>{ authentificationtxt }</td>
+		<td align="center" colspan="2"><label><input type="checkbox" name="auth_multi_session" <!--#if auth_multi_session --> checked="checked"<!--#endif auth_multi_session --> value="1" style="vertical-align:middle" />&nbsp;{ t_auth_multi_session }</label></td>
+	</tr>
+	<tr>
+		<td align="right" width="50%">{ remember_login_title }</td>
+           <td> 
+			<select name="remember_login">
+			<!--#if remember_login "== Y" -->
+			<option value="Y" selected="selected">{ yes }</option>
+			<option value="N">{ no }</option>
+			<option value="L">{ login_only }</option>
+			<!--#endif remember_login -->
+			<!--#if remember_login "== N" -->
+			<option value="Y">{ yes }</option>
+			<option value="N" selected="selected">{ no }</option>
+			<option value="L">{ login_only }</option>
+			<!--#endif remember_login -->
+			<!--#if remember_login "== L" -->
+			<option value="Y">{ yes }</option>
+			<option value="N">{ no }</option>
+			<option value="L" selected="selected">{ login_only }</option>
+			<!--#endif remember_login -->
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">{ email_password_title }</td>
+           <td> 
+			<select name="email_password">
+			<!--#if email_password "== Y" -->
+			<option value="Y" selected="selected">{ yes }</option>
+			<option value="N">{ no }</option>
+			<!--#else email_password -->
+			<option value="Y">{ yes }</option>
+			<option value="N" selected="selected">{ no }</option>
+			<!--#endif email_password -->
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ authentificationtxt }</td>
 		<td>
 		<select name="authtype" onchange="javascript:hideShowCnx();">
 		<!--#in getnextauth -->

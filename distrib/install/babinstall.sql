@@ -990,6 +990,7 @@ CREATE TABLE `bab_sites` (
   `mail_maxperpacket` smallint(2) unsigned NOT NULL default '25',
   `mass_mailing` enum('Y','N') NOT NULL default 'N',
   `sitemap` varchar(255) NOT NULL default 'core',
+  `auth_multi_session` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 );

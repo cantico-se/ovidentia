@@ -6580,5 +6580,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 	$babDB->db_query("ALTER TABLE `bab_art_log` ADD ordering int(11) unsigned NOT NULL default '0'");
 	}
 	
+	/**
+	 * Upgrade to 7.5.93
+	 */
+	
+	if (!bab_isTableField('bab_sites', 'auth_multi_session'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_multi_session` tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
 	return true;
 }

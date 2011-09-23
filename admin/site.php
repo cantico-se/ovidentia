@@ -347,9 +347,7 @@ function site_menu3($id)
 			{
 			$this->change_nickname_title = bab_translate("User can modifiy his login ID");
 			$this->change_password_title = bab_translate("User can modifiy his password");
-			$this->remember_login_title = bab_translate("Automatic connection");
-			$this->login_only = bab_translate("Login ID only");
-			$this->email_password_title = bab_translate("Display option 'Lost Password'");
+			
 			$this->user_workdays_title = bab_translate("User can modifiy his working days");			
 			$this->change_lang_title = bab_translate("User can modifiy his language");
 			$this->change_skin_title = bab_translate("User can modifiy his skin");
@@ -952,6 +950,10 @@ function siteAuthentification($id)
 				$this->ldapadminpwd1 = $arr['ldapadminpwd'];
 				$this->ldapadminpwd2 = $arr['ldapadminpwd'];
 				$this->vdecodetype = $arr['ldap_decoding_type']; 
+				$this->auth_multi_session = $arr['auth_multi_session'];
+				$this->remember_login = $arr['remember_login'];
+				$this->email_password = $arr['email_password']; 
+				
 				$this->decodetypetxt = bab_translate("Server charset");
 
 				$this->authentificationtxt = bab_translate("Authentification");
@@ -969,6 +971,13 @@ function siteAuthentification($id)
 				$this->adminpwd2txt = bab_translate("Re-type admin password");
 				$this->ldpachkcnxtxt = bab_translate("Allow administrators to connect if LDAP authentification fails");
 				$this->ldpachknotifyadmintxt = bab_translate("Notify administrators when a new user is registered");
+				$this->remember_login_title = bab_translate("Automatic connection");
+				$this->login_only = bab_translate("Login ID only");
+				$this->email_password_title = bab_translate("Display option 'Lost Password'");
+				$this->yes = bab_translate('Yes');
+				$this->no = bab_translate('No');
+				
+				$this->t_auth_multi_session = bab_translate("Allow multiple connexion for all accounts");
 
 				$this->arrayauthpasstype = array(
 					'plain' => bab_translate("plaintext"), 
@@ -1873,8 +1882,6 @@ function siteUpdate_menu3()
 			change_date='".$babDB->db_escape_string($_POST['change_date'])."',
 			change_unavailability='".$babDB->db_escape_string($_POST['change_unavailability'])."',
 			user_workdays='".$babDB->db_escape_string($_POST['user_workdays'])."', 
-			remember_login='".$babDB->db_escape_string($_POST['remember_login'])."', 
-			email_password='".$babDB->db_escape_string($_POST['email_password'])."',
 			browse_users='".$babDB->db_escape_string($_POST['browse_users'])."' 
 		WHERE id='".$babDB->db_escape_string($_POST['item'])."'";
 
@@ -2195,6 +2202,9 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$decodetype = bab_pp('decodetype', '0');
 	$userdn = bab_pp('userdn', '');
 	$ldpapchknotif = bab_pp('ldpapchknotif', 'N');
+	$auth_multi_session = (int) bab_pp('auth_multi_session', 0);
+	$remember_login = bab_pp('remember_login', 'N');
+	$email_password = bab_pp('email_password', 'N');
 
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
@@ -2260,7 +2270,11 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 				}
 			}
 
-		$req = "update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."'";
+		$req = "update ".BAB_SITES_TBL." set 
+			email_password=".$babDB->quote($email_password).", 
+			remember_login=".$babDB->quote($remember_login).", 
+			auth_multi_session=".$babDB->quote($auth_multi_session).", 
+			authentification='".$babDB->db_escape_string($authtype)."'";
 		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_userdn='".$babDB->db_escape_string($userdn)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
 		if( !empty($adminpwd1))
 			{
@@ -2301,9 +2315,16 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 		}
 	else
 		{
-		$babDB->db_query("update ".BAB_SITES_TBL." set authentification='".$babDB->db_escape_string($authtype)."' where id='".$babDB->db_escape_string($id)."'");
+		$babDB->db_query("update ".BAB_SITES_TBL." set 
+			email_password=".$babDB->quote($email_password).", 
+			remember_login=".$babDB->quote($remember_login).", 
+			authentification='".$babDB->db_escape_string($authtype)."', 
+			auth_multi_session=".$babDB->quote($auth_multi_session)." 
+			where id='".$babDB->db_escape_string($id)."'");
 		}
-	Header("Location: ". $GLOBALS['babUrlScript']."?tg=sites&idx=list");
+		
+	Header("Location: ". $GLOBALS['babUrlScript']."?tg=site&item=".$id);
+	exit;
 	}
 
 function siteUpdateRegistration($item, $rw, $rq, $ml, $cdp, $cen, $group)
