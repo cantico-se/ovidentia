@@ -1238,7 +1238,7 @@ function bab_updateUserSettings()
 	$res = $babDB->db_query($query);
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
-			$arr = $babDB->db_fetch_array($res);
+			$arr = $babDB->db_fetch_assoc($res);
 			
 			if ($arr['sessid'] == session_id())
 			{
@@ -1256,14 +1256,15 @@ function bab_updateUserSettings()
 				where 
 					id = '".$babDB->db_escape_string($arr['id'])."'
 				");
-			} else {
+				
+			} elseif (0 === (int) $babBody->babsite['auth_multi_session']) {
 				// another session exists for the same user ID (first is the newest)
 				// we want to stay with the newest session so the current session must be disconnected
 				
 				require_once dirname(__FILE__).'/loginIncl.php';
 				bab_logout(false);
 				$babBody->addError(bab_translate('You will be disconnected because another user has logged in with your account'));
-			}
+			} 
 		}
 	else
 		{
