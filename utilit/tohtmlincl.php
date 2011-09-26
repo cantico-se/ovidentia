@@ -107,29 +107,4 @@ function bab_f_toHtml($pee, $opt) {
 
 
 	
-/**
- * Remove html entities 
- * 
- * @todo compliance with UTF-8
- * the charset parameter of get_html_translation_table has benn added in php 5.3.4
- * 
- * @param	string	$string
- * @return string
- */
-function bab_unhtmlentities($string)
-{
-	// special quote : htmlarea &#8217; and fckeditor &rsquo;
-	$string = preg_replace('~&#8217;~', '\'', $string);
-	
-	// replace numeric entities
-	$string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-	$string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-	
-	// replace literal entities
-	$trans_tbl = get_html_translation_table(HTML_ENTITIES);
-	$trans_tbl = array_flip($trans_tbl);
-			
-	$trans_tbl['&rsquo;'] = "'";
-	
-	return strtr($string, $trans_tbl);
-}
+
