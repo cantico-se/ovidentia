@@ -797,6 +797,10 @@ switch(bab_rp('tg'))
 		if( isset($BAB_SESS_LOGGED) && $BAB_SESS_LOGGED && $babBody->dgAdmGroups > 0)
 			$incl = "delegusr";
 		break;
+
+	case "delegation":
+		$incl = "delegation";
+		break;
 	case "options":
 		$babLevelOne = bab_translate("User's section");
 		$babLevelTwo = bab_translate("Options");

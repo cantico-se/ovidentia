@@ -96,8 +96,8 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 			$sName				= $file->getBasename();
 			$sRelativePath		= $relativePath->tostring();
 			$sFullPathName		= $file->tostring();
-			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
-			$sRealImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&realFile=1&iIdDeleg=' .$iIdDeleg;
+			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=delegation&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&iIdDeleg=' .$iIdDeleg;
+			$sRealImageUrl		= $GLOBALS['babUrlScript'] . '?tg=delegation&idx=getImage&iWidth='.$iWidth.'&iHeight='.$iHeight.'&realFile=1&iIdDeleg=' .$iIdDeleg;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;

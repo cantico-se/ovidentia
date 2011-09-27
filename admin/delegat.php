@@ -323,43 +323,6 @@ function groupDelegatMembers($id)
 	$babBody->babecho(	bab_printTemplate($temp, "delegat.html", "delegatmembers"));
 	}
 
-function getImage()
-{	
-	require_once $GLOBALS['babInstallPath'].'/utilit/artincl.php';
-	require_once $GLOBALS['babInstallPath'].'/utilit/gdiincl.php';
-
-	$iWidth			= (int) bab_rp('iWidth', 0);
-	$iHeight		= (int) bab_rp('iHeight', 0);
-	$iIdDeleg	= (int) bab_rp('iIdDeleg', 0);
-	
-	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	
-	$sPath = '';
-	if(0 !== $iIdDeleg)
-	{
-		$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$iIdDeleg);
-		if($uploadPath->isDir()){
-			foreach($uploadPath as $file){
-				if(is_file($file->tostring())){
-					$sPath = $file->tostring();
-				}
-			}
-		}
-	}
-	
-	if($sPath == ''){
-		return '';
-	}
-	if(bab_gp('realFile','') == 1){
-		header('Content-type: ' . bab_getFileMimeType($sPath, $subtype));
-		readfile($sPath);
-		die;
-	}
-	
-	$oImageResize = new bab_ImageResize();
-	$oImageResize->resizeImageAuto($sPath, $iWidth, $iHeight);
-}
-
 function groupDelegatModify($gname, $description, $id = '')
 {
 	global $babBody;
@@ -420,7 +383,7 @@ function groupDelegatModify($gname, $description, $id = '')
 				foreach($uploadPath as $file){
 					if(is_file($file->tostring())){
 						$this->bImageAlreadyUploaded = 1;
-						$this->sImageURL = $GLOBALS['babUrlScript'] . '?tg=delegat&idx=getImage&iWidth=120&iHeight=90&iIdDeleg=' .$id;
+						$this->sImageURL = $GLOBALS['babUrlScript'] . '?tg=delegation&idx=getImage&iWidth=120&iHeight=90&iIdDeleg=' .$id;
 						$this->sImageName = $file->getBasename();
 					}
 				}
@@ -1069,9 +1032,6 @@ if( isset($aclupdate))
 
 switch($idx)
 	{
-	case 'getImage':
-		getImage();
-		exit;
 	case "bg":
 		browseGroups_dg($cb);
 		exit;
