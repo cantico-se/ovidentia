@@ -131,11 +131,11 @@ class Func_Ovml_Container extends Func_Ovml
 	}
 
 
-	
-	
+
+
 	/**
 	 * Push editor content into context and apply editor transformations
-	 * 
+	 *
 	 * @param	string	$var				OVML variable name
 	 * @param	string	$txt
 	 * @param	string	$txtFormat			The text format (html, text...) corresponding to the format of the wysiwyg editor.
@@ -148,7 +148,7 @@ class Func_Ovml_Container extends Func_Ovml
 		$editor->setContent($txt);
 		$editor->setFormat($txtFormat);
 		$txt = $editor->getHtml();
-		
+
 		$this->ctx->curctx->push($var, $txt);
 
 		if ('html' === strtolower($txtFormat))
@@ -171,13 +171,13 @@ class Func_Ovml_Container extends Func_Ovml
 class Func_Ovml_Function extends Func_Ovml
 {
 	/**
-	 * 
+	 *
 	 * @var babOvTemplate
 	 */
 	public $template;
-	
+
 	/**
-	 * 
+	 *
 	 * @var bab_context
 	 */
 	protected $gctx;
@@ -708,12 +708,12 @@ class Func_Ovml_Container_ArticlesHomePages extends Func_Ovml_Container
 
 			$this->ctx->curctx->push('CIndex', $this->idx);
 			$this->ctx->curctx->push('ArticleTitle', $arr['title']);
-			
-			
-			
+
+
+
 			$this->pushEditor('ArticleHead', $arr['head'], $arr['head_format'], 'bab_article_head');
 			$this->pushEditor('ArticleBody', $arr['body'], $arr['body_format'], 'bab_article_body');
-			
+
 			if( empty($arr['body']))
 				$this->ctx->curctx->push('ArticleReadMore', 0);
 			else
@@ -921,10 +921,18 @@ class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 		else
 			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
 
-		if( count($catid) > 0 )
+		if ( count($catid) > 0 )
 		{
-		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($catid).")");
-		$this->count = $babDB->db_num_rows($this->res);
+			$sql = 'SELECT topics_categories.*, topcat_order.ordering
+					FROM '.BAB_TOPICS_CATEGORIES_TBL.' AS topics_categories
+					LEFT JOIN '.BAB_TOPCAT_ORDER_TBL.' AS topcat_order
+						ON topcat_order.type='.$babDB->quote('1').'
+						AND topcat_order.id_topcat = topics_categories.id
+					WHERE topics_categories.id IN ('.$babDB->quote($catid).')
+					ORDER BY topcat_order.ordering ASC';
+
+			$this->res = $babDB->db_query($sql);
+			$this->count = $babDB->db_num_rows($this->res);
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -6027,22 +6035,22 @@ class Func_Ovml_Container_Multipages extends Func_Ovml_Container
 
 
 /**
- * 
+ *
  */
 class bab_context
 {
 	const TEXT = 0;
 	const HTML = 1;
-	
+
 	var $name;
 	var $variables = array();
-	
+
 	/**
-	 * 
+	 *
 	 * @var string
 	 */
 	var $content;
-	
+
 	/**
 	 * storage for variable content format
 	 * @var array
@@ -6058,7 +6066,7 @@ class bab_context
 	{
 		$this->variables[$var] = $value;
 	}
-	
+
 	/**
 	 * Set optional format of content on a variable (optional)
 	 * @param	string	$var
@@ -6100,7 +6108,7 @@ class bab_context
 			return false;
 			}
 	}
-	
+
 	/**
 	 * get string format of value
 	 * @param	string	$var
@@ -6112,15 +6120,15 @@ class bab_context
 		{
 			return null;
 		}
-		
+
 		if (!isset($this->format[$var]))
 		{
 			return self::TEXT;
 		}
-		
+
 		return $this->format[$var];
 	}
-	
+
 
 	public function getname()
 	{
@@ -6470,7 +6478,7 @@ class babOvTemplate
 		}
 	return false;
 	}
-	
+
 	public function get_format($var)
 	{
 	for( $i = count($this->contexts)-1; $i >= 0; $i--)
@@ -6481,9 +6489,9 @@ class babOvTemplate
 			return $val;
 			}
 		}
-	return null;	
+	return null;
 	}
-	
+
 
 	public function get_variables($contextname)
 	{
@@ -6619,47 +6627,47 @@ class babOvTemplate
 	 * @param	string	$val		variable content
 	 * @param	array	$matches	keys are attributes names, values are attribute value
 	 * @param	int		$format		Format of string bab_context::TEXT | bab_context::HTML
-	 * 
+	 *
 	 * @return string	the modified variable content
-	 */ 
+	 */
 	public function format_output($val, $matches, $format = bab_context::TEXT)
-	{	
+	{
 		$saveas = null;
 		$attributes = new bab_OvmlAttributes($this, $format);
-		
-	
+
+
 		foreach( $matches as $p => $v)
 		{
 			$method = mb_strtolower(trim($p));
-			
+
 			if ('saveas' === $method)
 			{
 				$saveas = $v;
 				continue;
 			}
-			
+
 			$val = $attributes->$method($val, $v);
 			$attributes->history[$method] = $v;
 		}
-		
+
 		$ghtmlentities = $this->get_value('babHtmlEntities');
 		if( $ghtmlentities !== false && 0 !== intval($ghtmlentities))
 		{
 			// apply global htmlentities
 			$val = $attributes->htmlentities($val, $ghtmlentities);
-		}	
-		
+		}
+
 		if( $saveas )
 		{
 			// allways apply saveas as the last attribute
 			$val = $attributes->saveas($val, $saveas);
 		}
-	
+
 		return $val;
 	}
-	
-	
-	
+
+
+
 
 	public function vars_replace($txt)
 	{
@@ -6813,54 +6821,54 @@ class babOvTemplate
 class bab_OvmlAttributes
 {
 	/**
-	 * 
+	 *
 	 * @var babOvTemplate
 	 */
 	private $ctx;
-	
-	
+
+
 	/**
 	 * OVML global context
 	 * @var bab_context
 	 */
 	private $gctx;
-	
-	
+
+
 	/**
 	 * contain the list of called methods
 	 * @var bool
 	 */
 	public $history = array();
-	
-	
+
+
 	/**
 	 * bab_context::TEXT | bab_context::HTML
 	 * @var int
 	 */
 	private $format;
-	
+
 
 	/**
 	 * @param	bab_context 	$gctx
 	 * @param	int				$format		bab_context::TEXT | bab_context::HTML
-	 */ 
+	 */
 	public function __construct(babOvTemplate $ctx, $format)
 	{
 		$this->ctx = $ctx;
 		$this->gctx = $ctx->gctx;
 		$this->format = $format;
 	}
-	
+
 	/**
 	 * @return bool
-	 */ 
+	 */
 	private function done($method, $option = null)
 	{
 		if (!isset($this->history[$method]))
 		{
 			return false;
 		}
-		
+
 		if (null !== $option && $this->history[$method] !== $option)
 		{
 			return false;
@@ -6868,9 +6876,9 @@ class bab_OvmlAttributes
 
 		return true;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $method
 	 * @param array $args
 	 * @return string
@@ -6880,37 +6888,37 @@ class bab_OvmlAttributes
 		trigger_error(sprintf('Unknown OVML attribute %s="%s" in %s, attribute ignored', $method, $args[1], (string) $this->ctx->debug_location));
 		return $args[0];
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Cut string,
 	 * for html, remove tags if not allready removed
 	 * @param string	$val
 	 * @param string	$v
 	 * @return string
-	 */ 
+	 */
 	public function strlen($val, $v) {
-		
-		
+
+
 		if (bab_context::HTML === $this->format )
 		{
 			if (!$this->done('striptags'))
 			{
 				$val = $this->striptags($val , '1');
 			}
-			
+
 			if (!$this->done('htmlentities', '2'))
 			{
 				$val = $this->htmlentities($val , '2');
 			}
-			
+
 			if (!$this->done('trim'))
 			{
 				$val = $this->trim($val , 'left');
 			}
 		}
-		
+
 		$arr = explode(',', $v );
 		if( mb_strlen($val) > $arr[0] )
 			{
@@ -6923,12 +6931,12 @@ class bab_OvmlAttributes
 			}
 		else
 			$this->gctx->push('substr', 0);
-			
+
 		return $val;
 	}
-	
-	
-	
+
+
+
 	public function striptags($val, $v) {
 		switch($v)
 			{
@@ -6941,7 +6949,7 @@ class bab_OvmlAttributes
 				return strip_tags($val);
 			}
 	}
-	
+
 	/**
 	 * Encoding of html entites can be set only one time per variable
 	 * @param string $val
@@ -6949,27 +6957,27 @@ class bab_OvmlAttributes
 	 * @return unknown_type
 	 */
 	public function htmlentities($val, $v) {
-		
-	
+
+
 		if ($this->done(__FUNCTION__, '0'))
 		{
 			// auto htmlentities has been disabled with an attribute htmlentities="0", others htmlentities are ignored
 			return $val;
 		}
-		
+
 		if ($this->done(__FUNCTION__, '1') || $this->done(__FUNCTION__, '3'))
 		{
 			// job allready done
 			return $val;
 		}
-		
+
 		switch($v)
 			{
 			case '0': // disable auto htmlentites
 				break;
-				
+
 			case '1':
-				$val = bab_toHtml($val); 
+				$val = bab_toHtml($val);
 				break;
 			case '2':
 				require_once dirname(__FILE__).'/tohtmlincl.php';
@@ -6979,35 +6987,35 @@ class bab_OvmlAttributes
 				$val = htmlspecialchars($val, ENT_COMPAT, bab_charset::getIso());
 				break;
 			}
-			
+
 		return $val;
 	}
-	
-	
+
+
 	public function stripslashes($val, $v) {
-		
+
 		if( $v == '1') {
 			$val = stripslashes($val);
 		}
 		return $val;
 	}
-	
+
 	public function urlencode($val, $v) {
 		if( $v == '1') {
 			$val = urlencode($val);
 		}
-		
+
 		return $val;
 	}
-	
+
 	public function jsencode($val, $v) {
 		if( $v == '1') {
 			$val = bab_toHtml($val, BAB_HTML_JS);
 		}
 		return $val;
 	}
-	
-	
+
+
 	public function strcase($val, $v) {
 		switch($v)
 			{
@@ -7018,15 +7026,15 @@ class bab_OvmlAttributes
 			}
 		return $val;
 	}
-	
+
 	public function nlremove($val, $v) {
 		if( $v == '1') {
 			$val = preg_replace("(\r\n|\n|\r)", "", $val);
 		}
-		
+
 		return $val;
 	}
-	
+
 	public function trim($val, $v) {
 		switch($v)
 		{
@@ -7037,35 +7045,35 @@ class bab_OvmlAttributes
 			case 'all':
 				$val = trim($val, " \x0B\0\n\t\r".bab_nbsp()); break;
 		}
-		
+
 		return $val;
 	}
-	
+
 	public function nl2br($val, $v) {
 		if( $v == '1') {
 			$val = nl2br($val);
 		}
-		
+
 		return $val;
 	}
-		
+
 	public function sprintf($val, $v) {
 		return sprintf($v, $val);
 	}
-	
+
 	public function date($val, $v) {
 		return bab_formatDate($v, $val);
 	}
-	
+
 	public function author($val, $v) {
 		return bab_formatAuthor($v, $val);
 	}
-	
+
 	public function saveas($val, $v) {
 		$this->gctx->push($v, $val);
 		return $val;
 	}
-	
+
 	public function strtr($val, $v) {
 		if( !empty($v))
 		{
@@ -7079,7 +7087,7 @@ class bab_OvmlAttributes
 			$val = strtr($val, $trans);
 			}
 		}
-		
+
 		return $val;
 	}
 
@@ -7873,7 +7881,7 @@ class Func_Ovml_Function_AddStyleSheet extends Func_Ovml_Function {
 	public function toString()
 	{
 		$file = null;
-		
+
 		foreach($this->args as $p => $v)
 		{
 		switch(mb_strtolower(trim($p)))
@@ -7883,8 +7891,8 @@ class Func_Ovml_Function_AddStyleSheet extends Func_Ovml_Function {
 				break;
 			}
 		}
-		
-		
+
+
 		if (isset($file))
 		{
 			global $babBody;
