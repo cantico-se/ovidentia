@@ -901,10 +901,17 @@ class Func_Ovml_Container_ArticleCategory extends Func_Ovml_Container
 		else
 			$catid = array_intersect(array_keys($babBody->get_topcatview()), explode(',', $catid));
 
-		if( count($catid) > 0 )
-		{
-		$this->res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where id IN (".$babDB->quote($catid).")");
-		$this->count = $babDB->db_num_rows($this->res);
+		if (count($catid) > 0) {
+			$sql = 'SELECT topics_categories.*, topcat_order.ordering
+								FROM '.BAB_TOPICS_CATEGORIES_TBL.' AS topics_categories
+								LEFT JOIN '.BAB_TOPCAT_ORDER_TBL.' AS topcat_order
+									ON topcat_order.type='.$babDB->quote('1').'
+									AND topcat_order.id_topcat = topics_categories.id
+								WHERE topics_categories.id IN ('.$babDB->quote($catid).')
+								ORDER BY topcat_order.ordering ASC';
+
+			$this->res = $babDB->db_query($sql);
+			$this->count = $babDB->db_num_rows($this->res);
 		}
 		$this->ctx->curctx->push('CCount', $this->count);
 	}
@@ -3623,7 +3630,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 			$oId = $this->oFmFolderSet->aField['iId'];
 			$res = $this->oFmFolderSet->select($oId->in($arr));
 			$arrpath = array();
-			
+
 			foreach($res as $oFmFolder)
 			{
 				$iRelativePathLength = mb_strlen($oFmFolder->getRelativePath());
@@ -3631,7 +3638,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 				$sRootFolderName = getFirstPath($sRelativePath);
 				$arrpath[] = $sRootFolderName . '/' . $path;
 			}
-			
+
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and (sRelativePath='' AND id IN(".$babDB->quote($arr).") OR CONCAT(sRelativePath, folder) IN(".$babDB->quote($arrpath)."))" . $sDelegation;
 			}
 
@@ -3646,7 +3653,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		if( count($arrid) > 0 )
 			{
 			$req = "select f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
-			
+
 			if( $path === false || $path === '' )
 				{
 				$path = '';
