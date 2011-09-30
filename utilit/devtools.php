@@ -481,6 +481,11 @@ class bab_synchronizeSql
 	function addKey($table, $key, $keydetail) {
 		global $babDB;
 		$babDB->db_queryWem('ALTER TABLE '.$babDB->backTick($table).' ADD '.$keydetail);
+		
+		$this->differences[] = array(
+				'Table' => $table,
+				'Field' => $keydetail
+			);
 	}
 	
 
