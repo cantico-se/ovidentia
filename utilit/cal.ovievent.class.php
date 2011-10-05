@@ -1368,20 +1368,33 @@ class bab_cal_OviEventSelect
 		}
 		
 		$queries = array();
+		$inbox_calendars = array();
+		
 		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
+			if ('' !== $arr['parent_calendar'])
+			{
+				// calendar is not mandatory
+				$inbox_calendars[$arr['calendar_backend']][$arr['uid']] = $arr['parent_calendar'];
+			}
 			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['id_user'];
 		}
 		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
+			if (!isset($inbox_calendars[$calendarBackend]))
+			{
+				$inbox_calendars[$calendarBackend] = array();
+			}
 				
 			$inbox_criteria = clone $criteria;
 		
 			// add the UID criteria
 			
-			$inbox_criteria->_AND_($factory->Uid(array_keys($uid_list)));
+			$uid_criterion = $factory->Uid(array_keys($uid_list));
+			$uid_criterion->setCalendars($inbox_calendars[$calendarBackend]);
+			$inbox_criteria->_AND_($uid_criterion);
 			
 			
 			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
@@ -1390,9 +1403,23 @@ class bab_cal_OviEventSelect
 			$found = false;
 			foreach($periods as $p)
 			{
+				/*@var $p bab_CalendarPeriod */
 				if ($this->addInboxPeriod($uid_list, $p))
 				{
 					$user_periods->addPeriod($p);
+				}
+				
+				if (!isset($inbox_calendars[$calendarBackend][$p->getProperty('UID')]))
+				{
+					// missing calendar in Inbox
+					if ($collection = $p->getCollection())
+					{
+						if ($calendar = $collection->getCalendar())
+						{
+							$babDB->db_query('UPDATE bab_cal_inbox SET parent_calendar='.$babDB->quote($calendar->getUrlIdentifier()).' 
+								WHERE uid ='.$babDB->quote($p->getProperty('UID')).' AND calendar_backend='.$babDB->quote($calendarBackend));
+						}
+					}
 				}
 			}
 		}

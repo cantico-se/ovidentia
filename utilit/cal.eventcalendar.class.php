@@ -671,12 +671,13 @@ abstract class bab_EventCalendar
 
 			$babDB->db_query('
 				INSERT INTO bab_cal_inbox
-					(id_user, calendar_backend, uid)
+					(id_user, calendar_backend, uid, parent_calendar)
 				VALUES
 					(
 						'.$babDB->quote($this->getIdUser()).',
 						'.$babDB->quote($eventBackend->getUrlIdentifier()).',
-						'.$babDB->quote($event->getProperty('UID')).'
+						'.$babDB->quote($event->getProperty('UID')).',
+						'.$babDB->quote($calendar->getUrlIdentifier()).'
 					)
 			');
 
@@ -688,12 +689,13 @@ abstract class bab_EventCalendar
 			{
 				$babDB->db_query('
 					INSERT INTO bab_cal_inbox
-						(id_user, calendar_backend, uid)
+						(id_user, calendar_backend, uid, parent_calendar)
 					VALUES
 						(
 							'.$babDB->quote($this->getIdUser()).',
 							'.$babDB->quote($eventBackend->getUrlIdentifier()).',
-							'.$babDB->quote($event->getProperty('UID')).'
+							'.$babDB->quote($event->getProperty('UID')).',
+							'.$babDB->quote($calendar->getUrlIdentifier()).'
 						)
 				');
 			}

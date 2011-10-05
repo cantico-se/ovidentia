@@ -6589,5 +6589,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_multi_session` tinyint(1) unsigned NOT NULL default '0'");
 	}
 	
+	if (!bab_isTableField('bab_cal_inbox', 'parent_calendar'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `parent_calendar` VARCHAR (255) not null default ''");
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD INDEX ( `parent_calendar` )");
+	}
+	
+
+	
+	
 	return true;
 }

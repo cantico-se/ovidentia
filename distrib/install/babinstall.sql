@@ -780,8 +780,10 @@ CREATE TABLE bab_cal_inbox (
   id_user int(10) unsigned NOT NULL default '0',
   calendar_backend VARCHAR (100) not null default '',
   uid VARCHAR (255) not null default '',
+  parent_calendar VARCHAR (255) not null default '',
   KEY id_user (id_user),
   KEY calendar_backend (calendar_backend),
+  KEY parent_calendar (parent_calendar),
   KEY uid (uid)
 );
 

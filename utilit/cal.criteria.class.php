@@ -365,6 +365,10 @@ class bab_PeriodCritieraUid extends bab_PeriodCriteria
 	 */
 	protected $uid;
 	
+	/**
+	 * @var array
+	 */
+	private $calendars;
 	
 	public function __construct($uid)
 	{
@@ -394,6 +398,39 @@ class bab_PeriodCritieraUid extends bab_PeriodCriteria
 	public function getUidValues()
 	{
 		return $this->uid;
+	}
+	
+	/**
+	 * set associative array with calendars for each UID
+	 * @return bab_PeriodCritieraUid
+	 */
+	public function setCalendars(Array $arr)
+	{
+		$this->calendars = $arr;
+		return $this;
+	}
+	
+
+	/**
+	 * get list of UID filtered by calendar
+	 * uid without associated calendar are ouputed with the filtered items
+	 * @param bab_EventCalendar $calendar
+	 * @return array
+	 */
+	public function getUidValuesByCalendar(bab_EventCalendar $calendar)
+	{
+		$urlIdentifier = $calendar->getUrlIdentifier();
+		$list = array();
+		
+		foreach($this->uid as $uid)
+		{
+			if (!isset($this->calendars[$uid]) || ($this->calendars[$uid] === $urlIdentifier))
+			{
+				$list[] = $uid;
+			}
+		}
+		
+		return $list;
 	}
 }
 
