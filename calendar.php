@@ -180,11 +180,32 @@ class displayAttendeesCls
 			$this->altbg = !$this->altbg;
 			$this->fullname = isset($arr['CN']) ? $arr['CN'] : $arr['email'];
 
+			
+			$partstat = $arr['PARTSTAT'];
 			$this->external = false;
 			if (!isset($arr['calendar']))
 				{
 				$this->external = true;
 				}
+			else {
+				
+				$backend = $arr['calendar']->getBackend();
+				
+				// try to get copy of event in attendee backend
+				
+				$copy = $backend->getPeriod(clone $this->period->getCollection(), $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
+				if (null !== $copy)
+				{
+					foreach($copy->getAllAttendees() as $arr_copy)
+					{
+						if ($arr_copy['email'] === $arr['email'] && $arr_copy['CN'] === $arr['CN'])
+						{
+							$partstat = $arr_copy['PARTSTAT'];
+							break;
+						}
+					}
+				}
+			}
 
 			if (isset($this->statusdef[$arr['PARTSTAT']]))
 			{
