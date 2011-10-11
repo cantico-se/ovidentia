@@ -517,7 +517,8 @@ function selectAll(list)
 
 	<tr>
 	<td valign="middle" align="center" colspan="4"> 
-	<input type="submit" name="expfile" value="{ export }" onClick="selectAll(document.getElementById('directory_list_selected_fields')); document.dispdbf.submit()">
+	<input type="hidden" name="expfile" value="{ export }">
+	<input type="submit" name="expfile-submit" value="{ export }" onClick="selectAll(document.getElementById('directory_list_selected_fields')); document.dispdbf.submit()/*this.click()*//* jQuery(this).click();*/">
 	<br>
 	</td>
 	</tr>

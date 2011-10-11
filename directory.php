@@ -335,7 +335,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->mail_txt					= bab_translate("Send a mail");
 			$this->view_txt					= bab_translate("View the entry");
 			$this->dirmember_txt			= bab_translate("Directory member");
-			
+
 			if( mb_substr($pos,0,1) == "-" )
 				{
 				$this->pos = mb_substr($pos,1);
@@ -3027,68 +3027,69 @@ if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL
 	{
 	confirmEmptyDb($id);
 	}
-
+	
+	/*var_dump(bab_pp('expfile'));
+	die;*/
 if( '' != ($modify = bab_pp('modify')))
-	{
-		if( $modify == 'dbc' )
+{
+	if( $modify == 'dbc' )
+		{
+		$idx = 'dbmod';
+		$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
+		$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
+		if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $photo_name,$photof,bab_pp('photod')))
 			{
-			$idx = 'dbmod';
-			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
-			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
-			if(updateDbContact($id, bab_pp('idu'), bab_pp('fields', array()), $photo_name,$photof,bab_pp('photod')))
-				{
-				$msg = bab_translate("Your contact has been updated");
+			$msg = bab_translate("Your contact has been updated");
+			$idx = 'dbcunload';
+			$fields = array();
+			}
+		}
+	else if( $modify == 'dbac'  && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
+		{
+		$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
+		$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
+		$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('notifyuser'), bab_pp('sendpwd'));
+		switch($ret)
+			{
+			case 2:
+				$idx = 'cassign';
+				break;
+			case 1:
+				$msg = bab_translate("Your contact has been added");
 				$idx = 'dbcunload';
-				$fields = array();
-				}
+				break;
+			case 0:
+			default:
+				$idx = 'adbc';
+				break;
 			}
-		else if( $modify == 'dbac'  && bab_isAccessValid(BAB_DBDIRADD_GROUPS_TBL, $id))
+		}
+	elseif( $modify == 'assign' && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
+		{
+		assignDbContact($id, bab_pp('userids', array()));
+		$msg = bab_translate("Your contacts has been assigned");
+		$idx = 'dbcunload';
+		}
+	elseif( $modify == 'cassign' )
+		{
+		if( isset($byes) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
 			{
-			$photo_name = isset( $_FILES['photof']['name'] )?  $_FILES['photof']['name']: '';
-			$photof = isset( $_FILES['photof']['tmp_name'] )?  $_FILES['photof']['tmp_name']: '';
-			$ret = confirmAddDbContact($id, bab_pp('fields', array()), $photo_name,$photof, bab_pp('password1'), bab_pp('password2'), bab_pp('nickname'), bab_pp('notifyuser'), bab_pp('sendpwd'));
-			switch($ret)
-				{
-				case 2:
-					$idx = 'cassign';
-					break;
-				case 1:
-					$msg = bab_translate("Your contact has been added");
-					$idx = 'dbcunload';
-					break;
-				case 0:
-				default:
-					$idx = 'adbc';
-					break;
-				}
-			}
-		elseif( $modify == 'assign' && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
-			{
-			assignDbContact($id, bab_pp('userids', array()));
-			$msg = bab_translate("Your contacts has been assigned");
+			$idauser = bab_pp('idauser');
+			assignDbContact($id, ($idauser == ''? array(): array($idauser)));
+			$msg = bab_translate("Your contact has been assigned");
 			$idx = 'dbcunload';
 			}
-		elseif( $modify == 'cassign' )
+		else
 			{
-			if( isset($byes) && bab_isAccessValid(BAB_DBDIRBIND_GROUPS_TBL, $id))
-				{
-				$idauser = bab_pp('idauser');
-				assignDbContact($id, ($idauser == ''? array(): array($idauser)));
-				$msg = bab_translate("Your contact has been assigned");
-				$idx = 'dbcunload';
-				}
-			else
-				{
-				$idx = 'adbc';
-				}
+			$idx = 'adbc';
 			}
-	}
+		}
+}
 else if (  ('' !=  bab_pp('expfile'))  && bab_isAccessValid(BAB_DBDIREXPORT_GROUPS_TBL, $id))
 {
 	exportDbDirectory($id, bab_pp('wsepar'), bab_pp('separ'), bab_pp('listfd', array()));
 	$idx = 'sdb';
 }
-
 
 switch($idx)
 	{
