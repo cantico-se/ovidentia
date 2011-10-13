@@ -446,29 +446,39 @@ function notifyUserPassword($passw, $email, $nickname='')
 
 	$mail->send();
 	}
-
-function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
+	
+	
+class bab_notifyAdminUserRegistrationCls
 	{
-	global $babBody, $babAdminEmail, $babInstallPath;
+    var $sitename;
+    var $linkurl;
+    var $linkname;
+	var $username;
+	var $message;
 
-	class tempa
+
+	function tempa($name, $msg)
 		{
-        var $sitename;
-        var $linkurl;
-        var $linkname;
-		var $username;
-		var $message;
-
-
-		function tempa($name, $msg)
-			{
             global $babSiteName;
             $this->linkname = bab_translate("link");
             $this->username = $name;
-			$this->sitename = $babSiteName;
-			$this->message = $msg;
-			}
+		$this->sitename = $babSiteName;
+		$this->message = $msg;
 		}
+	}
+
+	
+/**
+ * Send notification for registration
+ * @param unknown_type $name
+ * @param unknown_type $email
+ * @param unknown_type $nickname
+ * @param unknown_type $pwd
+ * @return unknown_type
+ */
+function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
+	{
+	global $babBody, $babAdminEmail, $babInstallPath;
 
 	$mail = bab_mail();
 	if( $mail == false )
@@ -484,7 +494,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 		$message .= " / ". bab_translate("Password") .": ". $pwd;
 		}
 
-	$tempa = new tempa($name, $message);
+	$tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
 	$message = $mail->mailTemplate(bab_printTemplate($tempa,"mailinfo.html", "userregistration2"));
 
     $mail->mailBody($message, "html");
@@ -496,7 +506,7 @@ function notifyAdminUserRegistration($name, $email, $nickname, $pwd)
 		$message .= " / ". bab_translate("Password") .": ". $pwd;
 		}
 
-	$tempa = new tempa($name, $message);
+	$tempa = new bab_notifyAdminUserRegistrationCls($name, $message);
 	$message = bab_printTemplate($tempa,"mailinfo.html", "userregistrationtxt2");
 
 	$mail->mailAltBody($message);
