@@ -308,6 +308,10 @@ function bab_isUserOutOfDelegation($id_delegation, $id_user = null)
 
 /**
  * Get the delegation where the user is administrator
+ * 
+ * if the user is administrator of one delegation he will be admin of his delegation AND DGAll
+ * the superadministrator is admin of DG0
+ * 
  * @param	int	$id_user
  * @since	6.7.0
  *
@@ -336,14 +340,9 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 		ORDER BY d.name 
 	');
 	
-	$dgall = false;
-	$dg0 = false;
+	$dgall = $babDB->db_num_rows($res) > 0;
+	$dg0 = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP, $id_user);
 	
-	if (bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP, $id_user))
-	{
-		$dgall = true;
-		$dg0 = true;
-	}
 	
 	return bab_getDelegationsFromResource($res, $dgall, $dg0);
 }
