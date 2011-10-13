@@ -22,12 +22,60 @@
  * @copyright Copyright (c) 2006 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
+require_once dirname(__FILE__).'/iterator/iterator.php';
 
 
+/**
+ * A collection of registry values
+ */
+class bab_RegistryIterator extends BAB_MySqlResultIterator
+{
+	
+	/**
+	 * Process a registry entry
+	 * 
+	 * (non-PHPdoc)
+	 * @see utilit/iterator/BAB_MySqlResultIterator#getObject($aDatas)
+	 * 
+	 * @return mixed
+	 */
+	public function getObject($arr)
+	{
+		switch($arr['value_type']) {
+				
+			case 'boolean':
+				$arr['value'] = $arr['value'] ? true : false;
+				break;
+			
+			case 'object':
+			case 'array':
+				$arr['value'] = unserialize($arr['value']);
+				break;
+
+			default:
+				settype($arr['value'], $arr['value_type']);
+
+		}
+
+		return array(
+			'key' => basename($arr['dirkey']),
+			'value' => $arr['value'],
+			'create_id_user' => (int) $arr['create_id_user'],
+			'update_id_user' => (int) $arr['update_id_user'],
+			'createdate' => (int) $arr['createdate'], // timestamp
+			'lastupdate' => (int) $arr['lastupdate']  // timestamp
+		);
+	}
+	
+}
+
+/**
+ * @see bab_getRegistryInstance in addon api
+ */
 class bab_Registry
 {
 
-	var $dir = '/';
+	private $dir = '/';
 
 	/**
 	 * This constructor should not be used directly.
@@ -36,9 +84,9 @@ class bab_Registry
 	 * @see bab_getRegistryInstance
 	 * @return bab_Registry
 	 */
-	function bab_Registry()
+	public function __construct()
 	{
-//		$this->db = &$GLOBALS['babDB'];
+		
 	}
 
 
@@ -52,7 +100,7 @@ class bab_Registry
 	 * @param string	$path		An absolute or relative path.
 	 * @return string				The corresponding absolute path terminated with a '/'.
 	 */
-	function getFullPath($path)
+	public function getFullPath($path)
 	{
 		if ('/' !== mb_substr($path, 0, 1)) {
 			$path = $this->dir . $path;
@@ -70,7 +118,7 @@ class bab_Registry
 	 * 
 	 * @param string	$path		An absolute or relative path.
 	 */
-	function changeDirectory($path)
+	public function changeDirectory($path)
 	{
 		$this->dir = $this->getFullPath($path);
 	}
@@ -89,7 +137,7 @@ class bab_Registry
 	 * @see bab_registry::changeDirectory()
 	 * @return 0|1|2
 	 */
-	function setKeyValue($key, $value)
+	public function setKeyValue($key, $value)
 	{
 		global $babDB;
 
@@ -177,7 +225,7 @@ class bab_Registry
 	 * @return boolean
 	 * @see bab_registry::changeDirectory()
 	 */
-	function removeKey($key)
+	public function removeKey($key)
 	{
 		global $babDB;
 
@@ -192,7 +240,7 @@ class bab_Registry
 	 * Get current path
 	 * @return string
 	 */
-	function getDirectory()
+	public function getDirectory()
 	{
 		return $this->dir;
 	}
@@ -206,7 +254,7 @@ class bab_Registry
 	 * @param mixed $default_create
 	 * @return mixed|null
 	 */
-	function getValue($key, $default_create = NULL)
+	public function getValue($key, $default_create = NULL)
 	{	
 		$arr = $this->getValueEx($key);
 		if (NULL !== $arr) {
@@ -220,20 +268,25 @@ class bab_Registry
 
 		return NULL;
 	}
+	
 
 
 	/**
 	 * Get a value with additionnal parameters
-	 * @param string $key
-	 * @return array|null
+	 * 
+	 * @since 7.5.94 this method accept an array of keys for the key parameter
+	 * 
+	 * @param string | array $key
+	 * @return array | bab_RegistryIterator | null
 	 */
-	function getValueEx($key)
+	public function getValueEx($key)
 	{
 		global $babDB;
 
 		$dirkey = $this->dir.$key;
 		$res = $babDB->db_query("
 			SELECT 
+				dirkey,
 				value,
 				value_type,
 				create_id_user,
@@ -242,44 +295,35 @@ class bab_Registry
 				UNIX_TIMESTAMP(lastupdate) lastupdate 
 			FROM ".BAB_REGISTRY_TBL." 
 			WHERE 
-				dirkey = ".$babDB->quote($dirkey)."
+				dirkey IN(".$babDB->quote($dirkey).")
 		");
-
-		if ($arr = $babDB->db_fetch_assoc($res)) {
-
-			switch($arr['value_type']) {
-				
-				case 'boolean':
-					$arr['value'] = $arr['value'] ? true : false;
-					break;
-				
-				case 'object':
-				case 'array':
-					$arr['value'] = unserialize($arr['value']);
-					break;
-
-				default:
-					settype($arr['value'], $arr['value_type']);
-
+		
+		
+		
+		$I = new bab_RegistryIterator();
+		$I->setMySqlResult($res);
+		
+		if (!is_array($I))
+		{
+			if (0 === $I->count())
+			{
+				return null;
 			}
-
-			return array(
-				'value' => $arr['value'],
-				'create_id_user' => (int) $arr['create_id_user'],
-				'update_id_user' => (int) $arr['update_id_user'],
-				'createdate' => (int) $arr['createdate'],
-				'lastupdate' => (int) $arr['lastupdate'],
-			);
+			
+			foreach($I as $arr)
+			{
+				return $arr;
+			}
 		}
 
-		return null;
+		return $I;
 	}
 
 	/**
 	 * Delete the current directory
 	 * @return int affected rows
 	 */
-	function deleteDirectory()
+	public function deleteDirectory()
 	{
 		global $babDB;
 
@@ -302,7 +346,7 @@ class bab_Registry
 	 * @param string $path
 	 * @return bool
 	 */
-	function isDirectory($path)
+	public function isDirectory($path)
 	{
 		global $babDB;
 
@@ -325,7 +369,7 @@ class bab_Registry
 	 * @param string	$dest		The absolute or relative path of the destination directory.
 	 * @return bool		TRUE if the directory was moved, FALSE otherwise.
 	 */
-	function moveDirectory($source, $dest)
+	public function moveDirectory($source, $dest)
 	{
 		global $babDB;
 
@@ -353,7 +397,7 @@ class bab_Registry
 	 * get next subfolder
 	 * @return string|false
 	 */
-	function fetchChildDir()
+	public function fetchChildDir()
 	{
 		global $babDB;
 
@@ -385,7 +429,7 @@ class bab_Registry
 	 * get next child key from current directory
 	 * @return string|false
 	 */
-	function fetchChildKey() 
+	public function fetchChildKey() 
 	{
 		global $babDB;
 		

@@ -691,6 +691,10 @@ function bab_deleteUser($id)
 
 	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($id)."' or id_substitute='".$babDB->db_escape_string($id)."'");
 	
+	
+	$babDB->db_query("UPDATE ".BAB_REGISTRY_TBL." SET create_id_user='0' where create_id_user=".$babDB->quote($id));
+	$babDB->db_query("UPDATE ".BAB_REGISTRY_TBL." SET update_id_user='0' where update_id_user=".$babDB->quote($id));
+	
 	// delete user
 	$res = $babDB->db_query("delete from ".BAB_USERS_TBL." where id='".$babDB->db_escape_string($id)."'");
 	
