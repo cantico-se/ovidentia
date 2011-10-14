@@ -617,6 +617,51 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	
 		return null;
 	}
+	
+	
+	/**
+	 * test if a user can view the event with a worflow instance
+	 * if event need approbation for the user, this method return true
+	 * if event need approbation from another the method return false
+	 * if event do not need approbation the method return true
+	 * 
+	 * @param	int		$id_user
+	 * 
+	 * @return bool
+	 */
+	public function WfInstanceAccess($id_user = null)
+	{
+		if (null === $id_user)
+		{
+			$id_user = $GLOBALS['BAB_SESS_USERID'];
+		}
+		
+		$relations = $this->getRelations();
+		foreach($relations as $relation)
+		{
+			if ($relation['X-CTO-WFINSTANCE'])
+			{
+				$user_instances = array();
+
+				if ($id_user)
+				{
+					require_once dirname(__FILE__).'/wfincl.php';
+					$user_instances = bab_WFGetWaitingInstances($id_user);
+				}
+
+				if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
+				{
+					// the user is an approbator, he can view event details
+					return true;
+				}
+
+				// but other users are not allowed if there is an ongoing instance
+				return false;
+			}
+		}
+		
+		return true;
+	}
 }
 
 

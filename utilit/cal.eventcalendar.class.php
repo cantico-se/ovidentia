@@ -317,31 +317,10 @@ abstract class bab_EventCalendar
 
 
 		// if in a waiting state
-
-		$relations = $event->getRelations();
-		foreach($relations as $relation)
+		if (!$event->WfInstanceAccess($this->access_user))
 		{
-			if ($relation['X-CTO-WFINSTANCE'])
-			{
-				$user_instances = array();
-
-				if ($this->access_user)
-				{
-					require_once dirname(__FILE__).'/wfincl.php';
-					$user_instances = bab_WFGetWaitingInstances($this->access_user);
-				}
-
-				if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
-				{
-					// the user is an approbator, he can view event details
-					break;
-				}
-
-				// but other users are not allowed if there is an ongoing instance
-				return false;
-			}
+			return false;
 		}
-
 
 
 		return true;

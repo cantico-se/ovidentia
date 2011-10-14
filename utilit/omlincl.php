@@ -5098,23 +5098,19 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		{
 			foreach($this->events as $key => $event)
 			{
-				$collection = $event->getCollection();
-				$calendar = $collection->getCalendar();
-
-				if (!$calendar->canViewEventDetails($event))
+				/* @var $event bab_CalendarPeriod */
+				
+				if (!$this->awaiting_approval && !$event->WfInstanceAccess($this->access_user)) 
 				{
-					if ($event->isPublic())
-					{
-						if (!$this->awaiting_approval)
-						{
-							unset($this->events[$key]);
-						}
-					} else {
-						if (!$this->private)
-						{
-							unset($this->events[$key]);
-						}
-					}
+					// the ovml container does not require to display waiting events and the event is in waiting state
+					unset($this->events[$key]);
+				}
+				
+				
+				if (!$this->private && (!$event->isPublic() && $event->getAuthorId() !== (int) $GLOBALS['BAB_SESS_USERID']))
+				{
+					// the ovml container does not require to display the private events and the event is private
+					unset($this->events[$key]);
 				}
 			}
 
