@@ -251,6 +251,16 @@ class bab_Path implements SeekableIterator, Countable {
 			if ($this->isDir())
 			{
 				$d = dir($this->toString());
+				
+				if (false === $d)
+				{
+					if (!is_readable($this->toString()))
+					{
+						throw new ErrorException(sprintf('Error, the folder %s is not readable', $this->toString()));
+					}
+					
+					return array();
+				}
 
 				while (false !== ($entry = $d->read())) {
 				   if ('.' !== $entry && '..' !== $entry) {
