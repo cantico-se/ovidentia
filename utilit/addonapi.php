@@ -1504,7 +1504,7 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
  */
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
-	if( $iduser != '')
+	if( $iduser != '' && ((int) $iduser) !== (int) $GLOBALS['BAB_SESS_USERID'])
 		{
 			include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
