@@ -6595,7 +6595,14 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD INDEX ( `parent_calendar` )");
 	}
 	
-
+	$mimetype = $babDB->db_query("SELECT * FROM `bab_mime_types` WHERE ext = 'swf'");
+	$newMimeType = true;
+	while ($tmp = $babDB->db_fetch_assoc($mimetype)) {
+		$newMimeType = false;
+	}
+	if($newMimeType){
+		$babDB->db_query("INSERT INTO bab_mime_types (bab_mime_types, mimetype) VALUES ('swf', 'application/x-shockwave-flash')");
+	}
 	
 	
 	return true;

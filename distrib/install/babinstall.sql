@@ -1145,6 +1145,7 @@ INSERT INTO bab_mime_types VALUES ('docx', 'application/vnd.openxmlformats-offic
 INSERT INTO bab_mime_types VALUES ('xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 INSERT INTO bab_mime_types VALUES ('pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
 INSERT INTO bab_mime_types VALUES ('svg', 'image/svg+xml');
+INSERT INTO bab_mime_types VALUES ('swf', 'application/x-shockwave-flash');
 
 
 # --------------------------------------------------------
