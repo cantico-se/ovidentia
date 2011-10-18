@@ -763,12 +763,12 @@ class bab_cal_OviEventUpdate
 				) 
 			VALUES 
 				(
-					'".$babDB->db_escape_string($id_event)."',
+					'".$babDB->db_escape_string((int) $id_event)."',
 					'".$babDB->db_escape_string($backend)."', 
 					'".$babDB->db_escape_string($caltype)."', 
-					'".$babDB->db_escape_string($id_calendar)."', 
-					'".$babDB->db_escape_string($status)."',
-					'".$babDB->db_escape_string($wfinstance)."'
+					'".$babDB->db_escape_string((int) $id_calendar)."', 
+					'".$babDB->db_escape_string((int) $status)."',
+					'".$babDB->db_escape_string((int) $wfinstance)."'
 				)
 		";
 		$babDB->db_query($query);
