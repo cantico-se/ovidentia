@@ -640,10 +640,10 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 			$query .= '		WHERE `is_confirmed` = \'1\'';
 		}
 		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
-			$query .= '		WHERE `disabled` = \'0\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')';
+			$query .= '		WHERE `disabled` = \'0\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` >= \''.$today.'\')';
 		}
 		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		WHERE `disabled` = \'0\' AND `is_confirmed` = \'1\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` < \''.$today.'\')';
+			$query .= '		WHERE `disabled` = \'0\' AND `is_confirmed` = \'1\' AND (`validity_end` = \'0000-00-00\' OR `validity_end` >= \''.$today.'\')';
 		}
 		if (isset($activeOrderBy)) {
 			if ($activeOrderBy == 'lastname') {
@@ -663,10 +663,10 @@ function aclGetAccessUsers($table, $id_object, $activeOrderBy=NULL, $returnDisab
 			$query .= '		AND `u`.`is_confirmed` = \'1\'';
 		}
 		if (!$returnDisabledUsers && $returnNonConfirmedUsers) {
-			$query .= '		AND `u`.`disabled` = \'0\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')';
+			$query .= '		AND `u`.`disabled` = \'0\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` >= \''.$today.'\')';
 		}
 		if (!$returnDisabledUsers && !$returnNonConfirmedUsers) {
-			$query .= '		AND `u`.`disabled` = \'0\' AND `u`.`is_confirmed` = \'1\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` < \''.$today.'\')';
+			$query .= '		AND `u`.`disabled` = \'0\' AND `u`.`is_confirmed` = \'1\' AND (`u`.`validity_end` = \'0000-00-00\' OR `u`.`validity_end` >= \''.$today.'\')';
 		}
 		if (isset($activeOrderBy)) {
 			if ($activeOrderBy == 'lastname') {
