@@ -1268,8 +1268,8 @@ class bab_OviPublicCalendar extends bab_OviRelationCalendar implements bab_Publi
 	 * @return bool
 	 */
 	public function canAddEvent() {
-		return bab_isAccessValid(BAB_CAL_PUB_GRP_GROUPS_TBL, $this->uid, $this->access_user)
-		|| bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
+		
+		return bab_isAccessValid(BAB_CAL_PUB_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 
 
