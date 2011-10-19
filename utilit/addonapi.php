@@ -2079,19 +2079,16 @@ function bab_getGroupName($id, $fpn=true)
 
 	$id = (int) $id;
 
-	global $babBody;
+	if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
+		return bab_translate(bab_Groups::getName($id));
+		}
+	
 	if($fpn)
 		{
 		return bab_Groups::getGroupPathName($id);
 		}
 	else
 		{
-
-		if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
-			return bab_translate(bab_Groups::getName($id));
-		}
-
-
 		return bab_Groups::getName($id);
 		}
 	}
