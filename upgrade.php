@@ -6578,7 +6578,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$newMimeType = false;
 	}
 	if($newMimeType){
-		$babDB->db_query("INSERT INTO bab_mime_types (bab_mime_types, mimetype) VALUES ('swf', 'application/x-shockwave-flash')");
+		$babDB->db_query("INSERT INTO bab_mime_types (ext, mimetype) VALUES ('swf', 'application/x-shockwave-flash')");
 	}
 
 
