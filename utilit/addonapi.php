@@ -2075,23 +2075,27 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
  * @return string
  */
 function bab_getGroupName($id, $fpn=true)
-	{
+{
 
 	$id = (int) $id;
 
 	if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
 		return bab_translate(bab_Groups::getName($id));
-		}
+	}
 	
 	if($fpn)
+	{
+		$name = bab_Groups::getGroupPathName($id);
+		if ('' !== $name)
 		{
-		return bab_Groups::getGroupPathName($id);
-		}
-	else
-		{
-		return bab_Groups::getName($id);
+			// probably a set of groups
+			return $name;
 		}
 	}
+	
+	return bab_Groups::getName($id);
+	
+}
 
 
 
@@ -2102,12 +2106,30 @@ function bab_getGroupName($id, $fpn=true)
  * in each keys, a list of group is stored with ordered numeric keys
  * the default value for the $all parameter is true
  *
- * @param	int			$parent		parent group in tree
+ * @param	int			$parent		parent group in tree | if $parent is null, retur the list of group sets
  * @param	boolean		$all		return one level of groups or groups from all sublevels
  * @return	array
  */
 function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
+{
+		
+		
+	if (null === $parent)
 	{
+		// list of groups sets
+		global $babDB;
+		$resset = $babDB->db_query("SELECT id, name, description FROM ".BAB_GROUPS_TBL." WHERE nb_groups>='0'");
+		$arr = array();
+		while ($row = $babDB->db_fetch_assoc($resset))
+		{
+			$arr['id'][] = $row['id'];
+			$arr['name'][] = $row['name'];
+			$arr['description'][] = $row['description'];
+		}
+		
+		return $arr;
+	}
+		
 	include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 
 	$tree = new bab_grptree();
@@ -2121,7 +2143,8 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 		}
 
 	return $arr;
-	}
+}
+
 
 
 /**

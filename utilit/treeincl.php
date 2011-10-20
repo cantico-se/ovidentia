@@ -188,7 +188,11 @@ class bab_dbtree
 			$where = $this->getWhereClause('p1');
 			if (!empty($where))
 				$where .= ' and ';
-			$res = $babDB->db_query("SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p1.id=p2.id_parent AND p1.id='".$id."' order by p2.lf asc");
+				
+			$query = "SELECT p2.* FROM ".$this->table." p1 ,".$this->table." p2 WHERE ".$where." p1.id=p2.id_parent AND p1.id=".$babDB->quote($id)." order by p2.lf asc";
+			$res = $babDB->db_query($query);
+			
+			
 		}
 		else
 		{
@@ -219,6 +223,7 @@ class bab_dbtree
 		}
 		else
 		{
+			die($query);
 			return false;
 		}
 	}
