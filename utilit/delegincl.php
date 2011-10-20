@@ -359,7 +359,7 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 *
 * @param mixed $name Array of name or name of the delegation to return
 * @since 6.7.0
-* @author Z�bina Samuel
+* @author Zebina Samuel
 * 
 * @return array The matching delegation
 */
@@ -392,7 +392,7 @@ function bab_getDelegationByName($name)
 *
 * @param mixed $id Array of id or id of the delegation to return
 * @since 6.7.0
-* @author Z�bina Samuel
+* @author Zebina Samuel
 * 
 * @return array The matching delegation
 */

@@ -178,7 +178,7 @@ class displayAttendeesCls
 		if( list(,$arr) = each($this->attendees))
 			{
 			$this->altbg = !$this->altbg;
-			$this->fullname = isset($arr['CN']) ? $arr['CN'] : $arr['email'];
+			$this->fullname = isset($arr['CN']) ? bab_toHtml($arr['CN']) : bab_toHtml($arr['email']);
 
 			
 			$partstat = $arr['PARTSTAT'];
@@ -209,7 +209,7 @@ class displayAttendeesCls
 
 			if (isset($this->statusdef[$arr['PARTSTAT']]))
 			{
-				$this->status = $this->statusdef[$arr['PARTSTAT']];
+				$this->status = bab_toHtml($this->statusdef[$arr['PARTSTAT']]);
 			} else {
 				$this->status = '';
 			}
@@ -290,13 +290,18 @@ class displayAttendeesCls
 		if( list(,$relation) = each($this->publics))
 			{
 			$calendar = $relation['calendar'];
+			/*@var $calendar bab_OviPublicCalendar */
 			$this->altbg = !$this->altbg;
-			$this->name = $calendar->getName();
-			$this->status = $this->getStatus($calendar, $relation['X-CTO-STATUS']);
-			$this->approver = $this->isApprover($relation['X-CTO-WFINSTANCE']);
+			$this->name = bab_toHtml($calendar->getName());
+			if (null !== $dg = $calendar->getDelegationName())
+			{
+				$this->name .= ' ('.bab_toHtml($dg).')';
+			}
+			$this->status = bab_toHtml($this->getStatus($calendar, $relation['X-CTO-STATUS']));
+			$this->approver = bab_toHtml($this->isApprover($relation['X-CTO-WFINSTANCE']));
 
-			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
-			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
+			$this->accepturl = bab_toHtml($this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED));
+			$this->rejecturl = bab_toHtml($this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED));
 
 			return true;
 			}
@@ -311,12 +316,16 @@ class displayAttendeesCls
 			{
 			$calendar = $relation['calendar'];
 			$this->altbg = !$this->altbg;
-			$this->name = $calendar->getName();
-			$this->status = $this->getStatus($calendar, $relation['X-CTO-STATUS']);
-			$this->approver = $this->isApprover($relation['X-CTO-WFINSTANCE']);
+			$this->name = bab_toHtml($calendar->getName());
+			if (null !== $dg = $calendar->getDelegationName())
+			{
+				$this->name .= ' ('.bab_toHtml($dg).')';
+			}
+			$this->status = bab_toHtml($this->getStatus($calendar, $relation['X-CTO-STATUS']));
+			$this->approver = bab_toHtml($this->isApprover($relation['X-CTO-WFINSTANCE']));
 
-			$this->accepturl = $this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED);
-			$this->rejecturl = $this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED);
+			$this->accepturl = bab_toHtml($this->approbUrl($calendar, BAB_CAL_STATUS_ACCEPTED));
+			$this->rejecturl = bab_toHtml($this->approbUrl($calendar, BAB_CAL_STATUS_DECLINED));
 
 			return true;
 			}

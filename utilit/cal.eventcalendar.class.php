@@ -202,6 +202,31 @@ abstract class bab_EventCalendar
 	{
 		return $this->id_dgowner;
 	}
+	
+	/**
+	 * Get delegation name or null if no delegation
+	 * @return string
+	 */
+	public function getDelegationName()
+	{
+		if (!$this->id_dgowner)
+		{
+			return null;
+		}
+		
+		require_once dirname(__FILE__).'/delegincl.php';
+		$arr = bab_getDelegationById($this->id_dgowner);
+		
+		if (count($arr) != 1)
+		{
+			return null;
+		}
+		
+		$d = reset($arr);
+		
+		return $d['name'];
+	}
+	
 
 	/**
 	 * Test if the calendar is visisble in a delegation
