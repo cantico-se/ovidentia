@@ -227,7 +227,7 @@ class bab_grp_node
 	$this->bupdate = $GLOBALS['babBody']->currentAdmGroup == 0 || $GLOBALS['babBody']->currentDGGroup['groups'] == 'Y';
 	
 	/* Icons functionality */
-	$icons = bab_functionality::get('Icons');
+	$icons = @bab_functionality::get('Icons');
 	if ($icons != false) {
 		$icons->includeCss();
 	}
