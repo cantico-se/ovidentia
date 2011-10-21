@@ -1955,9 +1955,14 @@ class bab_event_posted {
 	
 	/**
 	 * @throws ErrorException
+	 * 
+	 * 
+	 * @param	bool	$delete		allow delete of event if calid not in selected calendars (event moved from one calendar to another)
+	 * 								do not delete existing event in availability check
+	 * 
 	 * @return bab_CalendarPeriod
 	 */
-	private function getCalendarPeriod()
+	private function getCalendarPeriod($delete = true)
 	{
 		if (!isset($this->calendarPeriod))
 		{
@@ -1967,28 +1972,30 @@ class bab_event_posted {
 				// if calid is not in the list of selected calendars, the event must be deleted and a new calendar must be chosen to record the event
 				
 				$allowed = array_flip($this->args['selected_calendars']);
+				$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+				
 				if (isset($allowed[$this->args['calid']]))
 				{
-					$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+					
 					
 					if (!$calendar)
 					{
 						throw new Exception('Missing calendar '.$this->args['calid']);
 					}
-				} else {
+				} else if ($delete) {
 					
 					// delete event
-					
-					$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
+				
 					$backend = $calendar->getBackend();
 					$collection = $backend->CalendarEventCollection($calendar);
 					
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection);
 					
 					$backend->deletePeriod($period);
+				
 					
 					$this->args['evtid'] = null;
-				}
+				} 
 			} 
 
 			
@@ -2004,19 +2011,28 @@ class bab_event_posted {
 			$collection = $backend->CalendarEventCollection($calendar);
 			
 			
-			$this->calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
+			$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
 			
 			if (empty($this->args['evtid'])) {
 				
 				// creation
 				
-				$this->calendarPeriod->setProperty(
-					'ORGANIZER;CN='.$this->calendarPeriod->escape($GLOBALS['BAB_SESS_USER']), 
+				$calendarPeriod->setProperty(
+					'ORGANIZER;CN='.$calendarPeriod->escape($GLOBALS['BAB_SESS_USER']), 
 					'MAILTO:'.bab_getUserEmail($GLOBALS['BAB_SESS_USERID'])
 				);
 			}
+			
+			
+			if (!$delete)
+			{
+				// do not save in cache if delete not allowed 
+				return $calendarPeriod;
+			}
+			
+			$this->calendarPeriod = $calendarPeriod;
 		}
-		
+
 		return $this->calendarPeriod;
 	}
 	
@@ -2225,7 +2241,7 @@ class bab_event_posted {
 		require_once dirname(__FILE__).'/cal.rrule.class.php';
 		
 		try {
-			$calendarPeriod = $this->getCalendarPeriod();
+			$calendarPeriod = $this->getCalendarPeriod(false);
 		} catch(ErrorException $e) {
 			$message = $e->getMessage();
 			return false;
