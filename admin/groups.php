@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/../utilit/registerglobals.php';
 include_once $babInstallPath."utilit/grptreeincl.php";
 
 function groupCreateMod()
@@ -179,7 +178,7 @@ function groupList()
 			$this->t_group_members = bab_translate("Group's members");
 			
 			/* Icons functionality */
-			$icons = bab_functionality::get('Icons');
+			$icons = @bab_functionality::get('Icons');
 			if ($icons != false) {
 				$icons->includeCss();
 			}

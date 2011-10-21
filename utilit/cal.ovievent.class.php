@@ -1384,7 +1384,13 @@ class bab_cal_OviEventSelect
 			$inbox_criteria->_AND_($factory->Uid(array_keys($uid_list)));
 			
 			
-			$backend = bab_functionality::get('CalendarBackend/'.$calendarBackend);
+			$backend = @bab_functionality::get('CalendarBackend/'.$calendarBackend);
+			if (false === $backend)
+			{
+				bab_debug(sprintf('Error, loading of %d events from %s failed, the backend is not accessible', count($uid_list),'CalendarBackend/'.$calendarBackend), DBG_ERROR);
+				continue;
+			}
+			
 			$periods = $backend->selectPeriods($inbox_criteria);
 			
 			$found = false;
@@ -1395,6 +1401,7 @@ class bab_cal_OviEventSelect
 					$user_periods->addPeriod($p);
 				}
 			}
+			
 		}
 	}
 	
