@@ -223,7 +223,6 @@ class bab_dbtree
 		}
 		else
 		{
-			die($query);
 			return false;
 		}
 	}
