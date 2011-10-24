@@ -284,10 +284,18 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 			// add nodes without control on delegations
 
-			$superadminDelegations = array(
-				'DGAll' => $delegations['DGAll'],
-				'DG0' => $delegations['DG0']
-			);
+			$superadminDelegations = array();
+			
+			if (isset($delegations['DGAll']))
+			{
+				$superadminDelegations['DGAll'] = $delegations['DGAll'];
+			}
+			
+			if (isset($delegations['DG0']))
+			{
+				$superadminDelegations['DG0'] = $delegations['DG0'];
+			}
+			
 
 			foreach( $superadminDelegations as $key => $deleg )
 			{
