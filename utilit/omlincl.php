@@ -4787,10 +4787,10 @@ class Func_Ovml_Container_Calendars extends Func_Ovml_Container
 
 		switch($typename)
 		{
-			case 'user': 		$class = 'bab_OviPersonalCalendar';	break;
-			case 'group': 		$class = 'bab_OviPublicCalendar';	break;
-			case 'resource': 	$class = 'bab_OviResourceCalendar';	break;
-			default: 			$class = 'bab_OviEventCalendar'; 	break;
+			case 'user': 		$class = 'bab_PersonalCalendar';	break;
+			case 'group': 		$class = 'bab_PublicCalendar';	break;
+			case 'resource': 	$class = 'bab_ResourceCalendar';	break;
+			default: 			$class = 'bab_EventCalendar'; 	break;
 		}
 
 		$calendarid = $ctx->get_value('calendarid');
@@ -5099,14 +5099,14 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			foreach($this->events as $key => $event)
 			{
 				/* @var $event bab_CalendarPeriod */
-				
-				if (!$this->awaiting_approval && !$event->WfInstanceAccess($this->access_user)) 
+
+				if (!$this->awaiting_approval && !$event->WfInstanceAccess($this->access_user))
 				{
 					// the ovml container does not require to display waiting events and the event is in waiting state
 					unset($this->events[$key]);
 				}
-				
-				
+
+
 				if (!$this->private && (!$event->isPublic() && $event->getAuthorId() !== (int) $GLOBALS['BAB_SESS_USERID']))
 				{
 					// the ovml container does not require to display the private events and the event is private
