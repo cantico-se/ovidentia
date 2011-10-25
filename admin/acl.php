@@ -799,3 +799,109 @@ function aclRemove($table, $groupId, $objectId)
 	return false;
 }
 
+
+
+
+/**
+ * Create ACL table if not exists
+ * 
+ * @since 7.5.94
+ * 
+ * @param string $table
+ * @return bool
+ */
+function aclCreateTable($table)
+{
+	global $babDB;
+	
+	return $babDB->db_query("
+		CREATE TABLE IF NOT EXISTS ".$babDB->backTicks($table)." (
+		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `id_object` int(11) unsigned NOT NULL,
+		  `id_group` int(11) unsigned NOT NULL,
+		  PRIMARY KEY (`id`),
+		  KEY `id_object` (`id_object`),
+		  KEY `id_group` (`id_group`)
+		)
+	");
+}
+
+
+/**
+ * Get ACL access rights as string
+ * 
+ * @since 7.5.94
+ * 
+ * @param	string	$table
+ * @param	int		$id_object
+ * 
+ * @return string	Access rights string with coma separated group list ex: 2,3,4+,6
+ */
+function aclGetRightsString($table, $id_object)
+{
+	global $babDB;
+	$res = $babDB->db_query('SELECT id_group FROM '.$babDB->backTick($table).' WHERE id_object='.$babDB->quote($id_object).' ORDER BY id_group');
+	$ouput = array();
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		$id_group = (int) $arr['id_group'];
+		
+		if( $id_group > BAB_ACL_GROUP_TREE )
+		{
+			$id_group -= BAB_ACL_GROUP_TREE;
+			
+			$ouput[] = ((string) $id_group).'+';
+			
+		} else {
+			$ouput[] = (string) $id_group;
+		}
+	}
+	
+	return implode(',', $ouput);
+}
+
+/**
+ * Save ACL access rights from string
+ * 
+ * @since 7.5.94
+ * 
+ * @param	string	$table
+ * @param	int		$id_object		
+ * @param	string	$rights			Access rights string with coma separated group list ex: 2,3,4+,6
+ * 
+ * @return bool
+ */
+function aclSetRightsString($table, $id_object, $rights)
+{
+	global $babDB;
+	$babDB->db_query('DELETE FROM '.$babDB->backTick($table).' WHERE id_object='.$babDB->quote($id_object));
+	
+	$input = explode(',',$rights);
+	$insert = array();
+	
+	foreach($input as $g)
+	{
+		if (mb_strlen(g) > 1 && '+' === mb_substr($g, -1))
+		{
+			$id_group = (int) mb_substr($g, 0, -1);
+			$id_group+= BAB_ACL_GROUP_TREE;
+		} else {
+			$id_group = (int) $g;
+		}
+		
+		$insert[] = '('.$babDB->quote($id_object).', '.$babDB->quote($id_group).')';
+	}
+	
+	if (count($insert) > 0)
+	{
+		if (!$babDB->db_query("INSERT INTO (id_object, id_group) VALUES ".implode(',', $insert)))
+		{
+			return false;
+		}
+	} 
+	
+	
+	bab_siteMap::clearAll();
+	
+	return true;
+}
