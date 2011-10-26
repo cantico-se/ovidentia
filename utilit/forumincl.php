@@ -53,6 +53,12 @@ function bab_getForumsRes($forumid = false, $delegationid = false) {
 		';
 	}
 
+	if ($forumid !== false) {
+		$req .= '
+			AND id IN('.$babDB->quote($forumid).')
+		';
+	}
+
 	$req .= '
 			ORDER BY ordering ASC 
 	';
