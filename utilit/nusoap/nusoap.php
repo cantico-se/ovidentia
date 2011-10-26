@@ -5866,8 +5866,8 @@ class soap_parser extends nusoap_base {
 						$err = "Charset from HTTP Content-Type '" . $encoding . "' does not match encoding from XML declaration '" . $xml_encoding . "'";
 						$this->debug($err);
 						if (($encoding != 'ISO-8859-1' && $encoding != 'US-ASCII') || strtoupper($xml_encoding) != 'UTF-8') {
-							$this->setError($err);
-							return;
+							//$this->setError($err);
+							//return;
 						}
 						// when HTTP says ISO-8859-1 (the default) and XML says UTF-8 (the typical), assume the other endpoint is just sloppy and proceed
 					} else {
