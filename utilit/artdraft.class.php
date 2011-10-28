@@ -341,7 +341,11 @@ class bab_ArtDraft
 	public function save()
 	{
 		global $babDB;
-
+		require_once $GLOBALS['babInstallPath']."utilit/imgincl.php";
+		
+		$ar = array();
+		$this->head = imagesReplace($this->head, $this->id."_draft_", $ar);
+		$this->body = imagesReplace($this->body, $this->id."_draft_", $ar);
 		$values = $this->getValues();
 
 		if (null === $this->id)
@@ -353,7 +357,7 @@ class bab_ArtDraft
 			*/
 
 		} else {
-
+			
 			$tmp = array();
 
 			$query = 'UPDATE bab_art_drafts SET ';
