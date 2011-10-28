@@ -3273,4 +3273,5 @@
 <string id="User groups">Groupes de l'utilisateur</string>
 <string id="Create groups that do not exist">Créer les groupes qui n'existent pas</string>
 <string id="Remove user from other groups">Retirer l'utilisateur des autres groupes</string>
+<string id="The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base">Le champ groups peut être reseigné par une simple chaine de caractères ou bien un lien vers une entité groupe de LDAP. Les groupes externes serons utilisé par ovidentia seulement s'ils correspondent à la base de recherche configurée</string>
 </fr>

@@ -979,6 +979,7 @@ function siteAuthentification($id)
 				$this->groups = bab_translate('User groups');
 				$this->groups_create = bab_translate('Create groups that do not exist');
 				$this->groups_remove = bab_translate('Remove user from other groups');
+				$this->groups_help = bab_translate('The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base');
 				
 				
 				$this->t_auth_multi_session = bab_translate("Allow multiple connexion for all accounts");

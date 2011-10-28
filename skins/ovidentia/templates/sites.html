@@ -1263,7 +1263,7 @@ function hideShowCnx()
 	<tr> 
 		<td align="right" valign="top">{ groups }&nbsp;</td>
 		<td>
-			<input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <br/>
+			<input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <img src="{ babSkinPath }images/Puces/help.gif" onclick="alert(this.title);" title="{ groups_help }" /><br/>
 			<label><input type="checkbox" name="ldap_groups_create" value="1" <!--#if ldap_groups_create --> checked="checked" <!--#endif ldap_groups_create --> style="vertical-align:middle" />&nbsp;{ groups_create }</label><br />
 			<label><input type="checkbox" name="ldap_groups_remove" value="1" <!--#if ldap_groups_remove --> checked="checked" <!--#endif ldap_groups_remove --> style="vertical-align:middle" />&nbsp;{ groups_remove }</label>
 		</td>
