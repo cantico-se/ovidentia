@@ -860,6 +860,12 @@ class cal_wmdbaseCls
 
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
 	{
+		if (bab_rp('print'))
+		{
+			return $str;
+		}
+		
+		
 		return bab_toHtml(bab_abbr($str, BAB_ABBR_FULL_WORDS, $n));
 	}
 
