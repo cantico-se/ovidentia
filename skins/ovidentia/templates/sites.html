@@ -1166,10 +1166,10 @@ function hideShowCnx()
 		<td align="right" colspan="2">
 		<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;<span nowrap>{ ldpachkcnxtxt }</span></td>
+		<td colspan="2"><input type="checkbox" name="ldpapchkcnx" value="Y" { ldpachkcnxchecked } />&nbsp;{ ldpachkcnxtxt }</td>
 	</tr>
 	<tr> 
-		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;<span nowrap>{ ldpachknotifyadmintxt }</span></td>
+		<td colspan="2"><input type="checkbox" name="ldpapchknotif" value="Y" { ldpachknotifchecked } />&nbsp;{ ldpachknotifyadmintxt }</td>
 	</tr>
 	<tr> 
 		<td align="right">&nbsp;</td>
@@ -1259,6 +1259,15 @@ function hideShowCnx()
 		</td>
 	</tr>
 	<!--#endin getnextfield -->
+	
+	<tr> 
+		<td align="right" valign="top">{ groups }&nbsp;</td>
+		<td>
+			<input type="text" name="ldap_groups" size="30" value="{ ldap_groups }" /> <br/>
+			<label><input type="checkbox" name="ldap_groups_create" value="1" <!--#if ldap_groups_create --> checked="checked" <!--#endif ldap_groups_create --> style="vertical-align:middle" />&nbsp;{ groups_create }</label><br />
+			<label><input type="checkbox" name="ldap_groups_remove" value="1" <!--#if ldap_groups_remove --> checked="checked" <!--#endif ldap_groups_remove --> style="vertical-align:middle" />&nbsp;{ groups_remove }</label>
+		</td>
+	</tr>
 
 		</table>
 		</td>

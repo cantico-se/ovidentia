@@ -417,6 +417,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				if ($aEntries['count'] > 0)
 				{
 					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+					bab_ldapEntryGroups($iIdUser, $aEntries[0], $babBody->babsite['ldap_groups'], (bool) $babBody->babsite['ldap_groups_create']);
 				}
 
 				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
@@ -455,60 +456,63 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 	/**
 	 * LDAP method to create the account
+	 * or update directory entry
 	 */
 	private function registerUserIfNotExist($sNickname, $sPassword, $aEntries, $aUpdateAttributes, &$isNew)
 	{
+		global $babBody;
+		
 		$iIdUser = false;
 		$aUser = bab_getUserByNickname($sNickname);
+		
+		
+		$attribute_for_givenname	= isset($aUpdateAttributes['givenname']) 	? $aUpdateAttributes['givenname'] 	: 'givenname';
+		$attribute_for_sn			= isset($aUpdateAttributes['sn']) 			? $aUpdateAttributes['sn']			: 'sn';
+		$attribute_for_mn			= isset($aUpdateAttributes['mn'])			? $aUpdateAttributes['mn']			: '';
+		$attribute_for_mail			= isset($aUpdateAttributes['email'])		? $aUpdateAttributes['email'] 		: 'mail';
+		
+		if (isset($aEntries[0][$attribute_for_givenname][0])) {
+			$sGivenname	= bab_ldapDecode($aEntries[0][$attribute_for_givenname][0]);
+		} else {
+			$this->addError(bab_translate('Error, registration of user is impossible, the givenname is missing'));
+			return false;
+		}
+
+
+		if (isset($aEntries[0][$attribute_for_sn][0])) {
+			$sSn	= bab_ldapDecode($aEntries[0][$attribute_for_sn][0]);
+		} else {
+			$this->addError(bab_translate('Error, registration of user is impossible, the lastname is missing'));
+			return false;
+		}
+
+		if ($attribute_for_mn && isset($aEntries[0][$attribute_for_mn][0])) {
+			$sMn	= bab_ldapDecode($aEntries[0][$attribute_for_mn][0]);
+		} else {
+			$sMn	= '';
+		}
+
+		if (isset($aEntries[0][$attribute_for_mail][0])) {
+			$sMail	= bab_ldapDecode($aEntries[0][$attribute_for_mail][0]);
+		} else {
+			$this->addError(bab_translate('Error, registration of user is impossible, the email is missing'));
+			return false;
+		}
+		
 
 		if(is_null($aUser))
 		{
 
 			$isNew = true;
 
-			if (isset($aUpdateAttributes['givenname'])) {
-				$attribute_for_givenname = $aUpdateAttributes['givenname'];
-			}
-
-			$attribute_for_givenname	= isset($aUpdateAttributes['givenname']) 	? $aUpdateAttributes['givenname'] 	: 'givenname';
-			$attribute_for_sn			= isset($aUpdateAttributes['sn']) 			? $aUpdateAttributes['sn']			: 'sn';
-			$attribute_for_mn			= isset($aUpdateAttributes['mn'])			? $aUpdateAttributes['mn']			: '';
-			$attribute_for_mail			= isset($aUpdateAttributes['email'])		? $aUpdateAttributes['email'] 		: 'mail';
-
-			if (isset($aEntries[0][$attribute_for_givenname][0])) {
-				$sGivenname	= $aEntries[0][$attribute_for_givenname][0];
-			} else {
-				$this->addError(bab_translate('Error, registration of user is impossible, the givenname is missing'));
-				return false;
-			}
-
-
-			if (isset($aEntries[0][$attribute_for_sn][0])) {
-				$sSn	= $aEntries[0][$attribute_for_sn][0];
-			} else {
-				$this->addError(bab_translate('Error, registration of user is impossible, the lastname is missing'));
-				return false;
-			}
-
-			if ($attribute_for_mn && isset($aEntries[0][$attribute_for_mn][0])) {
-				$sMn	= $aEntries[0][$attribute_for_mn][0];
-			} else {
-				$sMn	= '';
-			}
-
-			if (isset($aEntries[0][$attribute_for_mail][0])) {
-				$sMail	= $aEntries[0][$attribute_for_mail][0];
-			} else {
-				$this->addError(bab_translate('Error, registration of user is impossible, the email is missing'));
-				return false;
-			}
+			
 
 
 			$iIdUser = registerUser(
-				bab_ldapDecode($sGivenname),
-				bab_ldapDecode($sSn),
-				bab_ldapDecode($sMn),
-				bab_ldapDecode($sMail),
+				$sGivenname,
+				$sSn,
+				$sMn,
+				$sMail,
 				$sNickname,
 				$sPassword,
 				$sPassword,
@@ -517,7 +521,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 			if (!$iIdUser) {
 				// msgerror should be set by the registerUser function
-				global $babBody;
+				
 				$this->addError($babBody->msgerror);
 				return false;
 			}
@@ -609,6 +613,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 				if ($aEntries['count'] > 0)
 				{
 					bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId);
+					bab_ldapEntryGroups($iIdUser, $aEntries[0], $babBody->babsite['ldap_groups'], (bool) $babBody->babsite['ldap_groups_create']);
 				}
 
 				if( $babBody->babsite['ldap_notifyadministrators'] == 'Y' && $isNew )
@@ -1147,12 +1152,116 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 
 
 
+/**
+ * add user to ldap entry groups
+ * 
+ * 
+ * 
+ * @param int $id_user				
+ * @param array $entry			ldap entry
+ * @param string $ldap_groups	ldap attribute with group
+ * @param bool $create			Create groups if not exists
+ * @return unknown_type
+ */
+function bab_ldapEntryGroups($id_user, $entry, $ldap_groups, $create)
+{
+	require_once dirname(__FILE__).'/grpincl.php';
+	
+	
+	if (empty($ldap_groups))
+	{
+		return;
+	}
+	
+	global $babBody;
+	
+	// get groups in ldap entry
+	
+	$groups = $entry[$ldap_groups];
+	unset($groups['count']);
+	
+	$root_groups = bab_getGroups(BAB_REGISTERED_GROUP, false);
+	$group_names = array_flip($root_groups['name']);
+	
+	$valid_groups = array();
+	
+	foreach($groups as $group)
+	{
+		if (empty($group))
+		{
+			continue;
+		}
+		
+		
+		if (preg_match('/^CN=([^,]+),'.preg_quote($babBody->babsite['ldap_searchdn']).'$/', $group, $m))
+		{
+			// if group is in search DN use CN as group name
+			$group = $m[1];
+		}
+		
+		
+		if (preg_match('/^CN=([^,]+),/', $group, $m))
+		{
+			// ignore groups not in search DN but link to ldap entry
+			continue;
+		}
+		
+		
+		if (!isset($group_names[$group]))
+		{
+			bab_debug($group);
+			
+			if (0 === (int) $babBody->babsite['ldap_groups_create'])
+			{
+				continue;
+			}
+			
+			$id_group = bab_addGroup($group, '', 0, 0, BAB_REGISTERED_GROUP);
+			$valid_groups[$id_group] = $id_group;
+			
+		} else {
+			$id_group = $root_groups['id'][$group_names[$group]];
+			$valid_groups[$id_group] = $id_group;
+			
+			if (bab_isMemberOfGroup($id_group, $id_user))
+			{
+				continue;
+			}
+		}
+		
+		bab_addUserToGroup($id_user, $id_group);
+	}
+	
+	
+	
+	if (1 === (int) $babBody->babsite['ldap_groups_remove'])
+	{
+		$arr = bab_getUserGroups($id_user);
+		foreach($arr['id'] as $id_user_group)
+		{
+			if (!isset($valid_groups[$id_user_group]))
+			{
+				bab_removeUserFromGroup($id_user, $id_user_group);
+			}
+		}
+	}
+	
+}
+
+
 
 
 function bab_getLdapExtraFieldIdAndUpdateAttributes(&$aAttributes, &$aUpdateAttributes, &$aExtraFieldId)
 {
 	global $babDB;
 	global $babBody;
+	
+	
+	if (!empty($babBody->babsite['ldap_groups']))
+	{
+		$aAttributes[] = $babBody->babsite['ldap_groups'];
+	}
+	
 
 	$oResult = $babDB->db_query('select sfrt.*, sfxt.id as idfx from ' . BAB_LDAP_SITES_FIELDS_TBL . ' sfrt left join ' . BAB_DBDIR_FIELDSEXTRA_TBL . ' sfxt on sfxt.id_field=sfrt.id_field where sfrt.id_site=\'' . $babDB->db_escape_string($babBody->babsite['id']) . '\' and sfxt.id_directory=\'0\'');
 	$iNumRows = $babDB->db_num_rows($oResult);

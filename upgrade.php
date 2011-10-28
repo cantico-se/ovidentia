@@ -6605,5 +6605,17 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	}
 	
 	
+	/**
+	 * Upgrade to 7.5.94
+	 */
+	if (!bab_isTableField('bab_sites', 'ldap_groups'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ldap_groups` VARCHAR (255) not null default ''");
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ldap_groups_create` tinyint(1) unsigned NOT NULL default '0'");
+		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ldap_groups_remove` tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
+	
+	
 	return true;
 }

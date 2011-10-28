@@ -976,6 +976,10 @@ function siteAuthentification($id)
 				$this->email_password_title = bab_translate("Display option 'Lost Password'");
 				$this->yes = bab_translate('Yes');
 				$this->no = bab_translate('No');
+				$this->groups = bab_translate('User groups');
+				$this->groups_create = bab_translate('Create groups that do not exist');
+				$this->groups_remove = bab_translate('Remove user from other groups');
+				
 				
 				$this->t_auth_multi_session = bab_translate("Allow multiple connexion for all accounts");
 
@@ -1022,6 +1026,10 @@ function siteAuthentification($id)
 
 				bab_sort::sort($bab_ldapAttributes);
 				$this->countv = count($bab_ldapAttributes);
+				
+				$this->ldap_groups = bab_toHtml($arr['ldap_groups']);
+				$this->ldap_groups_create = '1' === $arr['ldap_groups_create'];
+				$this->ldap_groups_remove = '1' === $arr['ldap_groups_remove'];
 				}
 			else
 				{
@@ -2205,6 +2213,9 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 	$auth_multi_session = (int) bab_pp('auth_multi_session', 0);
 	$remember_login = bab_pp('remember_login', 'N');
 	$email_password = bab_pp('email_password', 'N');
+	$ldap_groups = bab_pp('ldap_groups');
+	$ldap_groups_create = bab_pp('ldap_groups_create', '0');
+	$ldap_groups_remove = bab_pp('ldap_groups_remove', '0');
 
 	if( $authtype != BAB_AUTHENTIFICATION_OVIDENTIA )
 		{
@@ -2274,8 +2285,21 @@ function siteUpdate_authentification($id, $authtype, $host, $hostname, $ldpapchk
 			email_password=".$babDB->quote($email_password).", 
 			remember_login=".$babDB->quote($remember_login).", 
 			auth_multi_session=".$babDB->quote($auth_multi_session).", 
-			authentification='".$babDB->db_escape_string($authtype)."'";
-		$req .= ", ldap_host='".$babDB->db_escape_string($host)."', ldap_domainname='".$babDB->db_escape_string($hostname)."', ldap_userdn='".$babDB->db_escape_string($userdn)."', ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."', ldap_searchdn='".$babDB->db_escape_string($searchdn)."', ldap_attribute='".$babDB->db_escape_string($ldapattr)."', ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', ldap_filter='".$babDB->db_escape_string($ldapfilter)."', ldap_admindn='".$babDB->db_escape_string($admindn)."'";
+			authentification='".$babDB->db_escape_string($authtype)."', 
+			ldap_host='".$babDB->db_escape_string($host)."', 
+			ldap_domainname='".$babDB->db_escape_string($hostname)."', 
+			ldap_userdn='".$babDB->db_escape_string($userdn)."', 
+			ldap_allowadmincnx='".$babDB->db_escape_string($ldpapchkcnx)."', 
+			ldap_notifyadministrators='".$babDB->db_escape_string($ldpapchknotif)."', 
+			ldap_searchdn='".$babDB->db_escape_string($searchdn)."', 
+			ldap_attribute='".$babDB->db_escape_string($ldapattr)."', 
+			ldap_encryptiontype='".$babDB->db_escape_string($crypttype)."', 
+			ldap_decoding_type='".$babDB->db_escape_string($decodetype)."', 
+			ldap_filter='".$babDB->db_escape_string($ldapfilter)."', 
+			ldap_admindn='".$babDB->db_escape_string($admindn)."',
+			ldap_groups=".$babDB->quote($ldap_groups).",
+			ldap_groups_create=".$babDB->quote($ldap_groups_create).",
+			ldap_groups_remove=".$babDB->quote($ldap_groups_remove);
 		if( !empty($adminpwd1))
 			{
 			$req .= ", ldap_adminpassword=ENCODE(\"".$babDB->db_escape_string($adminpwd1)."\",\"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\")";
@@ -2373,7 +2397,7 @@ function confirmDeleteSite($id)
 	$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete registration settings
 	$babDB->db_query("delete from ".BAB_SITES_FIELDS_REGISTRATION_TBL." where id_site='".$babDB->db_escape_string($id)."'");
-	$babDB->db_query("delete from ".BAB_LDAP_SITES_FIELDS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
+	
 	$babDB->db_query("delete from ".BAB_SITES_DISCLAIMERS_TBL." where id_site='".$babDB->db_escape_string($id)."'");
 	// delete site
 	$babDB->db_query("delete from ".BAB_SITES_TBL." where id='".$babDB->db_escape_string($id)."'");

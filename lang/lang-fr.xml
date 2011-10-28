@@ -3270,4 +3270,7 @@
 <string id="Current topic">Thème actuel</string>
 <string id="You will be disconnected because another user has logged in with your account">Vous allez être déconnecté car un autre utilisateur s'est connecté avec votre identifiant</string>
 <string id="Allow multiple connexion for all accounts">Autoriser les connexion multiples pour tout les comptes</string>
+<string id="User groups">Groupes de l'utilisateur</string>
+<string id="Create groups that do not exist">Créer les groupes qui n'existent pas</string>
+<string id="Remove user from other groups">Retirer l'utilisateur des autres groupes</string>
 </fr>
