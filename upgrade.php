@@ -6514,10 +6514,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				f.bgroup = \'Y\'
 		');
 
-//		$nb_files = $babDB->db_num_rows($personal_files);
-//		$nb_files += $babDB->db_num_rows($collective_files);
-//
-//		echo sprintf('Updating size of %d files.<br />', $nb_files);
+
 
 		$babUploadPath = getUploadPathFromDataBase();
 
@@ -6529,7 +6526,6 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			if (file_exists($fullPathName)) {
 				$fstat = stat($fullPathName);
 				$size = floor($fstat[7]);
-//				echo sprintf('Updating %d : %s => %d.<br />', $file['id'], $file['path'] . $file['name'], $size);
 				$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
 			}
 
@@ -6543,13 +6539,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			if (file_exists($fullPathName)) {
 				$fstat = stat($fullPathName);
 				$size = floor($fstat[7]);
-//				echo sprintf('Updating %d : %s => %d.<br />', $file['id'], $file['path'] . $file['name'], $size);
 				$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
 			}
 
 		}
 
 	}
+
 
 
 
@@ -6560,9 +6556,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'maxzipsize')) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `maxzipsize` int(11) unsigned NOT NULL default '0'");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade tu 7.4.101
 	 */
@@ -6581,6 +6577,47 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("INSERT INTO bab_mime_types (ext, mimetype) VALUES ('swf', 'application/x-shockwave-flash')");
 	}
 
+
+	// Update size column for all files with size = 0.
+	$personal_files = $babDB->db_query('
+			SELECT
+				f.id, f.name, f.path, f.id_owner
+			FROM
+				'.BAB_FILES_TBL.' f
+			WHERE
+				f.bgroup = \'N\' AND f.size = 0
+		');
+
+	$collective_files = $babDB->db_query('
+			SELECT
+				f.id, f.name, f.path, f.iIdDgOwner
+			FROM
+				'.BAB_FILES_TBL.' f
+			WHERE
+				f.bgroup = \'Y\' AND f.size = 0
+		');
+
+	$babUploadPath = getUploadPathFromDataBase();
+
+	while ($file = $babDB->db_fetch_assoc($personal_files)) {
+		$uploadPath = $babUploadPath . 'fileManager/users/U' . $file['id_owner'] . '/';
+		$fullPathName = $uploadPath . $file['path'] . $file['name'];
+		if (file_exists($fullPathName)) {
+			$fstat = stat($fullPathName);
+			$size = floor($fstat[7]);
+			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+		}
+	}
+
+	while ($file = $babDB->db_fetch_assoc($collective_files)) {
+		$uploadPath = $babUploadPath . 'fileManager/collectives/DG' . $file['iIdDgOwner'] . '/';
+		$fullPathName = $uploadPath . $file['path'] . $file['name'];
+		if (file_exists($fullPathName)) {
+			$fstat = stat($fullPathName);
+			$size = floor($fstat[7]);
+			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+		}
+	}
 
 	return true;
 }
