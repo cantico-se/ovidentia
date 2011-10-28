@@ -6531,9 +6531,9 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if (!bab_isTableField(BAB_SITES_TBL, 'maxzipsize')) {
 		$babDB->db_query("ALTER TABLE `".BAB_SITES_TBL."` ADD `maxzipsize` int(11) unsigned NOT NULL default '0'");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade to 7.4.101
 	 */
@@ -6558,16 +6558,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade to 7.5.91
 	 */
 	// add missing default value
 	$babDB->db_query("ALTER TABLE `bab_sitemap` CHANGE `id_function` `id_function` VARCHAR( 64 ) NOT NULL DEFAULT ''");
-	
-	
+
+
 	/**
 	 * Upgrade to 7.5.92
 	 */
@@ -6579,22 +6579,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 	 	$babDB->db_query("ALTER TABLE `bab_art_log` ADD ordering int(11) unsigned NOT NULL default '0'");
 	}
-	
+
 	/**
 	 * Upgrade to 7.5.93
 	 */
-	
+
 	if (!bab_isTableField('bab_sites', 'auth_multi_session'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `auth_multi_session` tinyint(1) unsigned NOT NULL default '0'");
 	}
-	
+
 	if (!bab_isTableField('bab_cal_inbox', 'parent_calendar'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `parent_calendar` VARCHAR (255) not null default ''");
 		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD INDEX ( `parent_calendar` )");
 	}
-	
+
 	$mimetype = $babDB->db_query("SELECT * FROM `bab_mime_types` WHERE ext = 'swf'");
 	$newMimeType = true;
 	while ($tmp = $babDB->db_fetch_assoc($mimetype)) {
@@ -6603,8 +6603,8 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	if($newMimeType){
 		$babDB->db_query("INSERT INTO bab_mime_types (ext, mimetype) VALUES ('swf', 'application/x-shockwave-flash')");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 7.5.94
 	 */
@@ -6614,8 +6614,48 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ldap_groups_create` tinyint(1) unsigned NOT NULL default '0'");
 		$babDB->db_query("ALTER TABLE `bab_sites` ADD `ldap_groups_remove` tinyint(1) unsigned NOT NULL default '0'");
 	}
-	
-	
-	
+
+	// Update size column for all files with size = 0.
+	$personal_files = $babDB->db_query('
+			SELECT
+				f.id, f.name, f.path, f.id_owner
+			FROM
+				'.BAB_FILES_TBL.' f
+			WHERE
+				f.bgroup = \'N\' AND f.size = 0
+		');
+
+	$collective_files = $babDB->db_query('
+			SELECT
+				f.id, f.name, f.path, f.iIdDgOwner
+			FROM
+				'.BAB_FILES_TBL.' f
+			WHERE
+				f.bgroup = \'Y\' AND f.size = 0
+		');
+
+	$babUploadPath = getUploadPathFromDataBase();
+
+	while ($file = $babDB->db_fetch_assoc($personal_files)) {
+		$uploadPath = $babUploadPath . 'fileManager/users/U' . $file['id_owner'] . '/';
+		$fullPathName = $uploadPath . $file['path'] . $file['name'];
+		if (file_exists($fullPathName)) {
+			$fstat = stat($fullPathName);
+			$size = floor($fstat[7]);
+			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+		}
+	}
+
+	while ($file = $babDB->db_fetch_assoc($collective_files)) {
+		$uploadPath = $babUploadPath . 'fileManager/collectives/DG' . $file['iIdDgOwner'] . '/';
+		$fullPathName = $uploadPath . $file['path'] . $file['name'];
+		if (file_exists($fullPathName)) {
+			$fstat = stat($fullPathName);
+			$size = floor($fstat[7]);
+			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
+		}
+	}
+
+
 	return true;
 }
