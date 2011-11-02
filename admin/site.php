@@ -982,7 +982,7 @@ function siteAuthentification($id)
 				$this->groups_help = bab_translate('The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base');
 				
 				
-				$this->t_auth_multi_session = bab_translate("Allow multiple connexion for all accounts");
+				$this->t_auth_multi_session = bab_translate("Allow multiple connexions for all accounts");
 
 				$this->arrayauthpasstype = array(
 					'plain' => bab_translate("plaintext"), 
