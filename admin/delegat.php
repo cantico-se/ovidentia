@@ -584,7 +584,7 @@ function deleteDelegatGroup($id)
 	}
 
 
-function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iIdCategory)
+function addDelegatGroup($name, $description, $color, $delegitems, $iIdCategory)
 	{
 	global $babBody, $babDB;
 
@@ -608,13 +608,9 @@ function addDelegatGroup($name, $description, $color, $battach, $delegitems, $iI
 		}
 	else
 		{
-		if( $battach != 'Y' )
-			{
-			$battach = 'N';
-			}
 
-		$req1 = "(name, description, color, battach";
-		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($color). "', '" . $babDB->db_escape_string($battach). "'";
+		$req1 = "(name, description, color";
+		$req2 = "('" .$babDB->db_escape_string($name). "', '" . $babDB->db_escape_string($description). "', '" . $babDB->db_escape_string($color). "'";
 		for( $i = 0; $i < count($delegitems); $i++)
 			{
 			$req1 .= ", ". $babDB->db_escape_string($delegitems[$i]);
@@ -670,7 +666,7 @@ function bab_deleteImage(){
 	}
 }
 
-function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, $id, $iIdCategory)
+function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdCategory)
 	{
 	global $babBody, $babDB, $babDG;
 
@@ -691,16 +687,11 @@ function modifyDelegatGroup($name, $description, $color, $battach, $delegitems, 
 		}
 	else
 		{
-		if( $battach != 'Y' )
-			{
-			$battach = 'N';
-			}
 		$req = "update ".BAB_DG_GROUPS_TBL." set 
 			name='".$babDB->db_escape_string($name)."', 
 			description='".$babDB->db_escape_string($description)."', 
 			color='".$babDB->db_escape_string($color)."',
-			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory)."',
-			battach='".$babDB->db_escape_string($battach)."'";
+			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory)."',";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
@@ -964,14 +955,14 @@ if( isset($add))
 			{
 			if (!empty($_POST['id']))
 				{
-				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], bab_pp('iIdCategory')))
+				if(!modifyDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], (isset($_POST['delegitems'])? $_POST['delegitems']: array()), $_POST['id'], bab_pp('iIdCategory')))
 					$idx = "mod";
 				else
 					$idx = 'list';
 				}
 			else
 				{
-				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'],	(isset($_POST['battach'])? $_POST['battach']: 'N'), (isset($_POST['delegitems'])? $_POST['delegitems']: array()), bab_pp('iIdCategory')))
+				if( !addDelegatGroup($_POST['gname'], $_POST['description'], $_POST['color'], (isset($_POST['delegitems'])? $_POST['delegitems']: array()), bab_pp('iIdCategory')))
 					$idx = 'new';
 				else
 					$idx = 'list';

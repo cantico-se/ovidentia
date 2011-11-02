@@ -86,29 +86,29 @@ function setColor(color)
 	<table width="50%" border="0" cellspacing="0" cellpadding="2" align="center">
 		<tr> 
 			<td class="BabLoginCadreBackground" align="center" valign="middle"> 
-				<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+				<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 					<tr> 
-						<td class="BabLoginMenuBackground" width="30%" align="right" valign="middle">{ nametxt }:</td>
-						<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
+						<td  width="30%" align="right" valign="middle">{ nametxt }:</td>
+						<td  width="70%" valign="middle"> 
 							<input type="text" name="catname" size="40" maxlength="60" value="{ name }" />
 						</td>
 					</tr>
 					<tr> 
-						<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap="nowrap">{ desctxt }:</td>
-						<td class="BabLoginMenuBackground" valign="middle"> 
+						<td align="right" valign="middle" nowrap="nowrap">{ desctxt }:</td>
+						<td valign="middle"> 
 							<input type="text" name="catdesc" size="50" maxlength="255" value="{ desc }" />
 						</td>
 					</tr>
 					<tr> 
-						<td class="BabLoginMenuBackground" align="right" valign="middle" nowrap="nowrap">{ bgcolortxt }:</td>
-						<td class="BabLoginMenuBackground" valign="middle">
+						<td align="right" valign="middle" nowrap="nowrap">{ bgcolortxt }:</td>
+						<td valign="middle">
 							<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#{ bgcolor }; float:left"></div>&nbsp;<a class="BabSiteAdminListLink" href="#" onclick="Start('{ selctorurl }', 'ColorWindow', 'width=400,height=400,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a>
 							<input type="hidden" name="bgcolor" value="{ bgcolor }" />
 						</td>
 					</tr>
 					<tr> 
-						<td class="BabLoginMenuBackground">&nbsp;</td>
-						<td class="BabLoginMenuBackground" valign="middle"> 
+						<td>&nbsp;</td>
+						<td valign="middle"> 
 							<input type="submit" name="submit" value="{ addtxt }" />
 						</td>
 					</tr>
@@ -185,7 +185,7 @@ function ovidentia_optionsdelegations_onCheckAll(state){
 						<td align="right">{ t_color }:</td>
 						<td nowrap="nowrap"> 
 							<div id="evtColor" style="width:30px;height:15px;border:#000 1px solid;background-color:#<!--#if colorvalue -->{ colorvalue }<!--#else colorvalue -->fff<!--#endif colorvalue -->;float:left"></div><input type="hidden" name="color" value="{ colorvalue }" />
-							&nbsp;<a href="#" onclick="Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=400,height=400,status=no,resizable=no,top=200,left=200');"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a> &nbsp;<a href="javascript:evtSetColor('')"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
+							&nbsp;<a href="#" onclick="Start('{ babUrlScript }?tg=selectcolor&amp;idx=popup&amp;callback=evtSetColor', 'ColorWindow', 'width=400,height=400,status=no,resizable=no,top=200,left=200');return false;"><img src="{ babSkinPath }images/Puces/colorize.png" alt="" border="0" /></a> &nbsp;<a href="" onclick="evtSetColor('');return false;"><img src="{ babSkinPath }images/Puces/del.gif" alt="" border="0" /></a>
 						</td>
 					</tr>
 					<!--#if bImageUploadEnable  -->					
