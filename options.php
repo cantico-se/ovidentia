@@ -1240,6 +1240,33 @@ function deleteUnavailability($iduser)
 	$babDB->db_query("delete from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	}
 
+	
+function bab_haveOptionalSections()
+{
+	global $babDB;
+	
+	$res = $babDB->db_query("SELECT * FROM bab_sections WHERE optional='Y'");
+	if (0 !== $babDB->db_num_rows($res))
+	{
+		return true;
+	}
+	
+	$res = $babDB->db_query("SELECT * FROM bab_topics_categories WHERE optional='Y'");
+	if (0 !== $babDB->db_num_rows($res))
+	{
+		return true;
+	}
+	
+	$res = $babDB->db_query("SELECT * FROM bab_private_sections WHERE optional='Y'");
+	if (0 !== $babDB->db_num_rows($res))
+	{
+		return true;
+	}
+	
+	return false;
+}
+	
+	
 
 /* main */
 if( !isset($BAB_SESS_LOGGED) || !$BAB_SESS_LOGGED)
@@ -1417,8 +1444,13 @@ switch($idx)
 			{
 			$babBody->addItemMenu('options', bab_translate("Mail"), $GLOBALS['babUrlScript'].'?tg=mailopt&idx=listacc');
 			}
+		
+		if ( bab_haveOptionalSections())
+			{
+			$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
+			}
+		
 		$iduser = isset($iduser)? $iduser: $BAB_SESS_USERID;
-		$babBody->addItemMenu('list', bab_translate("Sections"), $GLOBALS['babUrlScript'].'?tg=sectopt&idx=list');
 		if( ('Y' == $babBody->babsite['change_unavailability'] && $iduser == $GLOBALS['BAB_SESS_USERID']) || bab_isUserAdministrator() || ($babBody->currentAdmGroup && $babBody->currentDGGroup['users'] == 'Y'))
 			{
 			$babBody->addItemMenu('unav', bab_translate("Unavailability"), $GLOBALS['babUrlScript'].'?tg=options&idx=unav&iduser='.$iduser);
