@@ -165,10 +165,21 @@ class bab_ArticleDraftEditor {
 	 */
 	private function cleanFiles()
 	{
+		if (!empty($_POST))
+		{
+			return;	
+		}
+		
+		
 		$W = bab_Widgets();
 		
 		try {
 			$W->FilePicker()->setName('articleFiles')->getFolder()->deleteDir();
+		} catch(bab_FolderAccessRightsException $e) {
+			// ignore, the folder does not exists
+		}
+		
+		try {
 			$W->FilePicker()->setName('articlePicture')->getFolder()->deleteDir();
 		} catch(bab_FolderAccessRightsException $e) {
 			// ignore, the folder does not exists
@@ -249,6 +260,10 @@ class bab_ArticleDraftEditor {
 		$headEditor = new bab_contentEditor('bab_article_head');
 		$headEditor->setRequestFieldName('head');
 		$headEditor->setContent($this->draft->head);
+		if (isset($_POST['head']))
+		{
+			$headEditor->setContent($_POST['head']);
+		}
 		$headEditor->setParameters(array('height' => '200'));
 		
 		$LeftFrame->addItem(
@@ -264,6 +279,10 @@ class bab_ArticleDraftEditor {
 		$bodyEditor = new bab_contentEditor('bab_article_body');
 		$bodyEditor->setRequestFieldName('body');
 		$bodyEditor->setContent($this->draft->body);
+		if (isset($_POST['body']))
+		{
+			$bodyEditor->setContent($_POST['body']);
+		}
 		$bodyEditor->setParameters(array('height' => '300'));
 		
 		$LeftFrame->addItem(
@@ -303,7 +322,7 @@ class bab_ArticleDraftEditor {
 						bab_labelStr(
 							bab_translate("Publication date"),
 							$W->HBoxItems(
-								$W->DatePicker()->setName('date_publication')->setValue(date('d-m-Y'))->disable(),
+								$W->DatePicker()->setName('date_publication')->disable(),
 								$time_publication = $W->Select()->setName('time_publication')->setValue('00:00:00')->setOptions($timeArray)
 							)->setHorizontalSpacing(5, 'px')
 						)
@@ -311,7 +330,7 @@ class bab_ArticleDraftEditor {
 						bab_labelStr(
 							bab_translate("Archiving date"),
 							$W->HBoxItems(
-								$W->DatePicker()->setName('date_archiving')->setValue(date('d-m-Y'))->disable(),
+								$W->DatePicker()->setName('date_archiving')->disable(),
 								$time_archiving = $W->Select()->setName('time_archiving')->setValue('00:00:00')->setOptions($timeArray)
 							)->setHorizontalSpacing(5, 'px')
 						)
@@ -329,6 +348,13 @@ class bab_ArticleDraftEditor {
 				'bab_article_attachments'
 			)->setFoldable(true, true)
 		);
+		
+		/** @var $articleFiles Widget_FilePicker */
+		
+		if ($articleFiles->getValue())
+		{
+			$attachments->setFoldable(true, false);
+		}
 		
 		$LeftFrame->addItem(
 				$W->Frame()->addItem(
@@ -509,7 +535,7 @@ class bab_ArticleDraftEditor {
 		$values['operator'] = $this->draft->getOperator();
 		
 		
-		if(empty($values['body'])){
+		if(empty($values['body']) && empty($_POST['body'])){
 			$body->setFoldable(true, true);
 		}
 		

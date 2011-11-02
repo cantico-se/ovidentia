@@ -536,6 +536,8 @@ function listArchiveArticles($topics, $pos)
 			$this->count = $babDB->db_num_rows($this->res);
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+			
+			$this->babtpl_topicid = bab_toHtml($this->topics);
 			}
 
 		function getnext(&$skip)
