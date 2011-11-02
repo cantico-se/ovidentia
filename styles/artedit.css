@@ -71,3 +71,15 @@ option.category {
 .bab-draft-preview .bab-article-files {
 	clear:both;
 }
+
+
+.bab-article-approbation {
+	margin:.2em;
+	border:#aaa 1px solid;
+	color:#000;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	
+	padding:1em .5em 1em 70px;
+	background:#fffbcb url(../skins/ovidentia/images/48x48/status/messagebox_warning.png) no-repeat 6px 50%;
+}

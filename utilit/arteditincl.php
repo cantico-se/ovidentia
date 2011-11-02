@@ -521,6 +521,13 @@ class bab_ArticleDraftEditor {
 		);
 		
 		$LeftFrame->addItem(
+			$W->Frame()->addItem(
+				$W->Label(bab_translate('The topic is restricted by an approbation, the article will not be visible imediately'))
+			)
+			->addClass('bab-article-approbation')
+		);
+		
+		$LeftFrame->addItem(
 			$W->HBoxItems(
 				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Save a draft'))->setName('draft'),

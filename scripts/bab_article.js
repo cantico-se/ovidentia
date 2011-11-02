@@ -22,6 +22,8 @@ function bab_setTopicSettings(){
 	jQuery('[name="date_archiving"]').attr('disabled','disabled');
 	jQuery('[name="date_archiving"]').closest('.bab-labelStr').hide();
 	
+	jQuery('.bab-article-approbation').hide();
+	
 
 	id_topic = jQuery('#bab-article-topic').val();
 	id_draft = jQuery('[name=iddraft]').val();
@@ -84,6 +86,10 @@ function bab_setTopicSettings(){
 			if(settings.busetags == 'Y'){
 				jQuery('[name="tags"]').removeAttr('disabled');
 				jQuery('[name="tags"]').closest('.bab-labelStr').show();
+			}
+			
+			if(settings.idsaart != '0'){
+				jQuery('.bab-article-approbation').show();
 			}
 			
 			window.babArticle.filesAttachments();
