@@ -94,7 +94,9 @@ mysql_sql_mode="Undefined"
 
 memory_limit="32M"
 
+; available since 7.6.0
 
+file_is_writable="../config.php"
 
 
 ;*/?>

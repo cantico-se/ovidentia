@@ -48,7 +48,7 @@ require_once dirname(__FILE__).'/path.class.php';
  *
  */
 class bab_inifile_requirements {
-	
+
 	/**
 	 * Required ovidentia version from database or files if not available in database
 	 * there is no version in database for new install
@@ -86,29 +86,29 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 
-		
+
 	}
 
 	function require_mysql_version($value) {
-		
-		
+
+
 		$db = &$GLOBALS['babDB'];
 		$error = null;
 
 		$res = $db->db_queryWem("show variables like 'version'");
-		
+
 		if (!$res) {
-		
+
 			$mysql = '0.0';
 			$status = false;
 			$error = bab_translate('The mysql version could not be found');
 		} else {
-		
-		
+
+
 			$arr = $db->db_fetch_assoc($res);
-			
+
 			$mysql = 'Undefined';
-			
+
 			if (preg_match('/([0-9\.]+)/', $arr['Value'], $matches)) {
 				$mysql = $matches[1];
 			}
@@ -127,28 +127,28 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
-	
+
+
+
 	function require_mysql_granted_privileges($value) {
-		
-		
+
+
 		$db = &$GLOBALS['babDB'];
 		$error = null;
 
 		$res = $db->db_queryWem("SHOW GRANTS");
-		
+
 		$required_privileges = preg_split('/\s*,\s*/', $value);
 		$current = array();
-		
+
 		if (!$res) {
-			
+
 			$current = bab_translate('No access to granted privileges');
 			$status = true;
-			
-			
+
+
 		} else {
-		
+
 			while ($arr = $db->db_fetch_array($res))
 			{
 				if (preg_match('/^GRANT\s([A-Z\s,]+)\sON/', $arr[0], $m))
@@ -159,10 +159,10 @@ class bab_inifile_requirements {
 					}
 				}
 			}
-			
-			
+
+
 			$status = isset($current['ALL PRIVILEGES']) || isset($current['USAGE']);
-			
+
 			if (!$status)
 			{
 				$status = true;
@@ -176,11 +176,11 @@ class bab_inifile_requirements {
 					}
 				}
 			}
-			
+
 			$current = implode(', ', $current);
 		}
-		
-		
+
+
 
 		return array(
 			'description'	=> bab_translate("MySQL granted privileges"),
@@ -189,10 +189,10 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
-	
-	
+
+
+
+
 
 	public static function return_bytes($val) {
 	   $val = trim($val);
@@ -208,38 +208,38 @@ class bab_inifile_requirements {
 		}
 		return $val;
 	}
-	
-	
-	
+
+
+
 	public static function getIniMaxUpload() {
 		$upload_max_filesize = bab_inifile_requirements::return_bytes(ini_get('upload_max_filesize'));
 		$post_max_size = bab_inifile_requirements::return_bytes(ini_get('post_max_size'));
-		return $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size; 
+		return $post_max_size > $upload_max_filesize ? $upload_max_filesize : $post_max_size;
 	}
-	
-	
-	
+
+
+
 
 	function require_upload_max_file_size($value) {
-	
+
 		global $babDB;
 		$error = null;
 
 		$current = bab_inifile_requirements::getIniMaxUpload();
 		$current_display = sprintf("%dM",$current/1024/1024);
 		$result = $current >= self::return_bytes($value);
-		
+
 		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
-		
+
 		// table constants are not available in install script
 		$req = "SELECT maxfilesize from bab_sites WHERE name=".$babDB->quote($sitename)."";
 		$res = $babDB->db_queryWem($req);
-		
+
 		if (!$res) {
 			// if table does not exist, ignore requirement
 			return null;
 		}
-		
+
 		$babsite = $babDB->db_fetch_assoc($res);
 
 		if (isset($babsite['maxfilesize'])) {
@@ -275,7 +275,7 @@ class bab_inifile_requirements {
 			$status = false;
 			$error = $e->getMessage();
 		}
-		
+
 		return array(
 			'description'	=> bab_translate("Images directory for articles"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
@@ -283,7 +283,7 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
+
 	/**
 	 * @since 6.7.91
 	 */
@@ -300,8 +300,8 @@ class bab_inifile_requirements {
 			$error = $e->getMessage();
 		}
 
-		
-		
+
+
 		return array(
 			'description'	=> bab_translate("Writable functionalities directory"),
 			'current'		=> $status ? bab_translate("Available") : bab_translate("Unavailable"),
@@ -309,9 +309,9 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
-	
+
+
+
 
 	function require_versions_directory($value) {
 
@@ -352,12 +352,12 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	function require_search_engine($value) {
 
 		$SearchEngine = bab_searchEngineInfos();
-		
+
 		if (false === $SearchEngine) {
 			$current = bab_translate("Unavailable");
 		} else {
@@ -370,7 +370,7 @@ class bab_inifile_requirements {
 			'result'		=> $current === $value
 		);
 	}
-	
+
 	/**
 	 * addons folders tests, disabled in CVS mode
 	 * @param string $value
@@ -380,20 +380,20 @@ class bab_inifile_requirements {
 
 		include_once dirname(__FILE__).'/addonsincl.php';
 		$folders = bab_getAddonsFilePath();
-		
+
 		$error = null;
 		$status = true;
 		foreach($folders['loc_in'] as $folder) {
 
 			$folder = new bab_Path(realpath('.'), $folder);
-			
+
 			$cvsfolder = clone $folder;
 			$cvsfolder->push('CVS');
 
 			if (file_exists($cvsfolder->toString())) {
-				
+
 				break;
-				
+
 			} else {
 
 				try {
@@ -413,14 +413,14 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	/**
 	 * @since 6.7.91
 	 */
 	function require_headers_not_sent($value) {
 
-		
+
 		$status = !defined('BAB_INSTALL_SCRIPT_BEGIN') && headers_sent();
 
 		return array(
@@ -429,35 +429,35 @@ class bab_inifile_requirements {
 			'result'		=> !$status
 		);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function require_upload_directory($value) {
-	
+
 		global $babDB;
-	
+
 
 		$status = false;
 		$error = null;
-		
+
 		// $babBody->babsite not available in upgrade
 		// $ul = $GLOBALS['babBody']->babsite['uploadpath'];
-		
+
 		$sitename = isset($GLOBALS['babSiteName']) ? $GLOBALS['babSiteName'] : 'Ovidentia';
-		
-		
+
+
 		// table constant are not available in install script
-		
+
 		$req = "SELECT uploadpath from bab_sites WHERE name=".$babDB->quote($sitename);
 		$res = $babDB->db_queryWem($req);
-		
+
 		if (!$res) {
 			// if table does not exists, ignore requirement
 			return null;
 		}
-		
+
 		$babsite = $babDB->db_fetch_assoc($res);
 		$ul = new bab_Path($babsite['uploadpath']);
 
@@ -467,12 +467,12 @@ class bab_inifile_requirements {
 			$status = false;
 			$error = $e->getMessage();
 		}
-		
+
 
 		if ($status) {
 
 			if ($ul->isAbsolute()) {
-				
+
 				$addons = new bab_Path($ul->toString(), 'addons');
 				if (!is_dir($addons->toString())) {
 					bab_mkdir($addons->toString());
@@ -484,7 +484,7 @@ class bab_inifile_requirements {
 					$status = false;
 					$error = $e->getMessage();
 				}
-				
+
 			} else {
 
 				$status = false;
@@ -499,23 +499,23 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	function require_memory_limit($value) {
-	
+
 		$required = self::return_bytes($value);
 		$current = self::return_bytes(ini_get('memory_limit'));
-		
+
 		return array(
 			'description'	=> 'memory_limit (php.ini)',
 			'current'		=> ini_get('memory_limit'),
 			'result'		=> $current >= $required
 		);
 	}
-	
-	
+
+
 	function require_register_globals($value) {
-	
+
 		return array(
 			'description'	=> 'register_globals (php.ini)',
 			'current'		=> ini_get('register_globals') ? 'On' : 'Off',
@@ -524,17 +524,17 @@ class bab_inifile_requirements {
 	}
 
 	function require_magic_quotes_gpc($value) {
-	
+
 		return array(
 			'description'	=> 'magic_quotes_gpc (php.ini)',
 			'current'		=> get_magic_quotes_gpc() ? 'On' : 'Off',
 			'result'		=> !get_magic_quotes_gpc()
 		);
 	}
-	
-	
+
+
 	function require_mod_mbstring($value) {
-		
+
 		$status = extension_loaded('mbstring');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'mbstring'),
@@ -542,9 +542,9 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 	function require_mod_iconv($value) {
-		
+
 		$status = extension_loaded('iconv');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'iconv'),
@@ -552,10 +552,10 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 
 	function require_mod_imap($value) {
-		
+
 		$status = extension_loaded('imap');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'imap'),
@@ -565,7 +565,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_xml($value) {
-		
+
 		$status = extension_loaded('xml');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'xml'),
@@ -573,9 +573,9 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 	function require_mod_dom($value) {
-		
+
 		$status = extension_loaded('dom');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'dom'),
@@ -583,9 +583,9 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 	function require_mod_soap($value) {
-		
+
 		$status = extension_loaded('soap');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'xml'),
@@ -593,9 +593,9 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 	function require_mod_gettext($value) {
-		
+
 		$status = extension_loaded('gettext');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'gettext'),
@@ -605,7 +605,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_calendar($value) {
-		
+
 		$status = extension_loaded('calendar');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'calendar'),
@@ -615,7 +615,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_ldap($value) {
-		
+
 		$status = extension_loaded('ldap');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'ldap'),
@@ -625,7 +625,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_curl($value) {
-		
+
 		$status = extension_loaded('curl');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'curl'),
@@ -636,7 +636,7 @@ class bab_inifile_requirements {
 
 
 	function require_mod_pdf($value) {
-		
+
 		$status = extension_loaded('pdf');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'pdf'),
@@ -647,7 +647,7 @@ class bab_inifile_requirements {
 
 
 	function require_mod_mysql($value) {
-		
+
 		$status = extension_loaded('mysql');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'mysql'),
@@ -658,7 +658,7 @@ class bab_inifile_requirements {
 
 
 	function require_mod_ftp($value) {
-		
+
 		$status = extension_loaded('ftp');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'ftp'),
@@ -668,7 +668,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_zlib($value) {
-		
+
 		$status = extension_loaded('zlib');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'zlib'),
@@ -678,7 +678,7 @@ class bab_inifile_requirements {
 	}
 
 	function require_mod_mcrypt($value) {
-		
+
 		$status = extension_loaded('mcrypt');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'mcrypt'),
@@ -686,10 +686,10 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
-	
+
+
 	function require_mod_expect($value) {
-		
+
 		$status = extension_loaded('expect');
 		return array(
 			'description'	=> sprintf(bab_translate("%s php module"),'expect'),
@@ -700,9 +700,9 @@ class bab_inifile_requirements {
 
 
 	function require_mod_gd2($value) {
-		
+
 		$status = false;
-		
+
 		if (extension_loaded('gd') && function_exists('gd_info')) {
 		   $ver_info = gd_info();
 		   preg_match('/\d/', $ver_info['GD Version'], $match);
@@ -715,9 +715,9 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
+
 	function require_mod_rewrite($value) {
-		
+
 		$status = function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules());
 		return array(
 			'description'	=> bab_translate("mod_rewrite apache module"),
@@ -725,26 +725,26 @@ class bab_inifile_requirements {
 			'result'		=> $status
 		);
 	}
-	
-	
+
+
 	function require_mysql_character_set_database($value) {
 
 		$value = mb_strtolower($value);
 		$error = null;
-		
+
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'character_set_database'");
-		
-		
+
+
 		$charset = 'Undefined';
-		
+
 		if ($arr = $babDB->db_fetch_array($res)) {
 			$charset = mb_strtolower($arr[1]);
 		} else {
 			// undefined on old mysql version
 			$charset = 'latin1';
 		}
-		
+
 		$arr_values = preg_split('/[\s,]+/', $value);
 		$status = in_array($charset, $arr_values);
 
@@ -752,7 +752,7 @@ class bab_inifile_requirements {
 			$error = str_replace('%charsets%', $value, bab_translate('The charset of the database must be one of the following charsets : %charsets%'));
 		}
 
-		
+
 
 
 		return array(
@@ -762,26 +762,26 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	function require_mysql_collation_database($value) {
 
 		$value = mb_strtolower($value);
 		$error = null;
-		
+
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'collation_database'");
-		
-		
+
+
 		$collation = false;
-		
+
 		if ($arr = $babDB->db_fetch_array($res)) {
 			$collation = mb_strtolower($arr[1]);
 		} else {
 			// undefined on old mysql version
 			$collation = 'latin1_swedish_ci';
 		}
-		
+
 		$arr_values = preg_split('/[\s,]+/', $value);
 
 
@@ -798,19 +798,19 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	function require_mysql_max_allowed_packet($value) {
 
 		$value = self::return_bytes($value);
 		$error = null;
-		
+
 		global $babDB;
 		$res = $babDB->db_queryWem("show variables like 'max_allowed_packet'");
-		
-		
+
+
 		$max_allowed_packet = 'Undefined';
-		
+
 		if ($arr = $babDB->db_fetch_array($res)) {
 			$max_allowed_packet = (int) $arr[1];
 		}
@@ -828,21 +828,21 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
 	function require_mysql_sql_mode($value) {
 
-		
+
 		global $babDB;
 		$error = null;
 		$res = $babDB->db_queryWem("show variables like 'sql_mode'");
-		
+
 		if (!$res) {
 			return null;
 		}
-		
+
 		$current = 'Undefined';
-		
+
 		if ($arr = $babDB->db_fetch_array($res)) {
 			if (!empty($arr[1])) {
 				$current = mb_strtolower($arr[1]);
@@ -859,7 +859,7 @@ class bab_inifile_requirements {
 		if (!$status) {
 			$error = str_replace('%val%', $value_display, bab_translate('The variable sql_mode must be : %val%'));
 		}
-		
+
 		if ('Undefined' === $current) {
 			$current = bab_translate('Undefined');
 		}
@@ -872,8 +872,25 @@ class bab_inifile_requirements {
 			'error'			=> $error
 		);
 	}
-	
-	
+
+
+
+	function require_file_is_writable($value) {
+
+		$path = dirname(__FILE__) . '/../' . $value;
+		$path = realpath($path);
+
+		$isWritable = is_writable($path);
+
+		return array(
+				'description'	=> bab_translate(sprintf('File %s is writable'), $value),
+				'current'		=> $isWritable ? bab_translate('Writable') : bab_translate('Not writable'),
+				'result'		=> $isWritable === true
+		);
+	}
+
+
+
 	/**
 	 * Multi rule version compare for ini file rules (addons, ov_version ...)
 	 * @param string $installed
@@ -883,7 +900,7 @@ class bab_inifile_requirements {
 	public static function multicompare($installed, $required)
 	{
 		$result = true;
-		
+
 		$list = explode(',',$required);
 		foreach($list as $r)
 		{
@@ -893,13 +910,13 @@ class bab_inifile_requirements {
 				$operator = $m[1];
 				$r = $m[2];
 			}
-			
+
 			if (false === version_compare($installed, $r, $operator))
 			{
 				$result = false;
 			}
 		}
-		
+
 		return $result;
 	}
 }
@@ -920,7 +937,7 @@ class bab_inifile_requirements_html
 
 	function bab_inifile_requirements_html()
 		{
-		
+
 		$this->t_requirements = bab_translate("Requirements");
 		$this->t_recommended = bab_translate("Recommended");
 		$this->t_install = bab_translate("Install");
@@ -938,25 +955,25 @@ class bab_inifile_requirements_html
 
 	function getnextreq() {
 		if (list(,$arr) = each($this->requirements)) {
-			
+
 			$this->upgradeurl = false;
-			
-			
+
+
 			if ($this->propose_upgrades && isset($arr['name']) && function_exists('bab_getAddonInfosInstance')) {
 				$addon = bab_getAddonInfosInstance($arr['name']);
-				
+
 				if ($addon && $addon->isUpgradable()) {
 					bab_debug($addon);
 					$this->upgradeurl = $GLOBALS['babUrlScript'].'?tg=addons&idx=upgrade&item='.$addon->getId();
 				}
 			}
-			
+
 			$this->altbg = !$this->altbg;
 			$this->description = bab_toHtml($arr['description']);
 			$this->recommended = bab_toHtml($arr['recommended']);
 			$this->required = bab_toHtml($arr['required']);
 			$this->current = bab_toHtml($arr['current']);
-			$this->result = $arr['result']; 
+			$this->result = $arr['result'];
 
 			if (isset($arr['error'])) {
 				$this->error = bab_toHtml($arr['error']);
@@ -991,7 +1008,7 @@ class bab_inifile {
 	var $recommendations = array();
 	var $functionalities;
 	var $customscript = array();
-	
+
 	public $inifile;
 
 	/**
@@ -1012,7 +1029,7 @@ class bab_inifile {
 
 		$addon_paths = bab_getAddonsFilePath();
 		$program_path = $addon_paths['loc_out'][0].'/';
-		
+
 
 		$filename = mb_substr( $inifile,(mb_strrpos( $inifile,'/')+1));
 
@@ -1033,41 +1050,41 @@ class bab_inifile {
 			return false;
 		}
 
-		
+
 		$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
 		$this->inifile( $GLOBALS['babUploadPath'].'/tmp/'.$filename);
 
 		unlink($GLOBALS['babUploadPath'].'/tmp/'.$filename);
 
-		
+
 		// si le ini contiens un preinstall script, le chercher dans le m�me repertoire
-		
+
 		if (isset($this->inifile['preinstall_script'])) {
-		
+
 			$preinstall_script = $this->inifile['preinstall_script'];
-			
+
 			$inifileindex = false;
-			
+
 			foreach ($zipcontents as $k => $arr) {
-				
+
 				if (0 === mb_strpos($arr['filename'], $program_path)) {
 					$archive_filename = mb_substr($arr['filename'], 9);
-					
+
 					if ($preinstall_script === $archive_filename) {
 						$inifileindex = $arr['index'];
 						break;
 					}
 				}
 			}
-			
-			
+
+
 			$name = $this->getName();
-			
+
 			if (false === $name) {
 				$name = basename($zipfile);
 			}
-			
-			
+
+
 			if ($inifileindex) {
 				$zip->Extract($zipfile, $GLOBALS['babUploadPath'].'/tmp/', $inifileindex, false );
 				$this->addCustomScript($name, $GLOBALS['babUploadPath'].'/tmp/'.$preinstall_script);
@@ -1123,20 +1140,20 @@ class bab_inifile {
 
 			$this->inifile = $arr['general'];
 
-			
-			
-			
-			 
+
+
+
+
 			 $this->addons = array();
 			 if (isset($arr['addons'])) {
 				$this->addons = $arr['addons'];
 			 }
-			 
+
 			 $this->recommendations = array();
 			 if (isset($arr['recommendations'])) {
 				$this->recommendations = $arr['recommendations'];
 			 }
-			 
+
 			$this->functionalities = array();
 			if (isset($arr['functionalities'])) {
 				$this->functionalities = $arr['functionalities'];
@@ -1149,45 +1166,45 @@ class bab_inifile {
 			}
 
 
-			
+
 			if (isset($this->inifile['preinstall_script'])) {
-			
+
 				$name = $this->getName();
-			
+
 				if (false === $name) {
 					$name = basename(dirname($file));
 				}
-		
+
 				$preinstall_script = $this->inifile['preinstall_script'];
 				$this->addCustomScript($name, dirname($file).'/'.$preinstall_script);
 			}
-			
-			 
+
+
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-	
+
+
 	/**
 	 * @return boolean
 	 */
 	function inifileGeneral($file) {
-	
+
 		if ($arr = $this->parse($file)) {
 			$this->inifile = $arr['general'];
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	function fileExists() {
 		return !empty($this->inifile);
 	}
-	
+
 
 	function getName() {
 		if (isset($this->inifile['name'])) {
@@ -1199,39 +1216,39 @@ class bab_inifile {
 	function getDescription() {
 
 		$lang = 'description.'.$GLOBALS['babLanguage'];
-	
+
 		if (isset($this->inifile[$lang])) {
 			return $this->inifile[$lang];
 		} elseif(isset($this->inifile['description.en'])) {
 			return $this->inifile['description.en'];
 		}
-		
+
 		if (isset($this->inifile['description'])) {
 			return $this->inifile['description'];
 		}
-	
+
 		return '';
 	}
 
 	function getVersion() {
-	
+
 		if (isset($this->inifile['version'])) {
-		
+
 			if (preg_match('/\$Name$/', $this->inifile['version'], $m)) {
 				$tag = trim($m[1]);
-				
+
 				if (empty($tag)) {
 					// ongoing dev
 					return '';
 				}
-				
+
 				$tag = str_replace('version-', '', $tag);
 				$version = str_replace('-', '.', $tag);
-				
+
 				return $version;
 			}
 
-		
+
 			return $this->inifile['version'];
 		}
 		return '';
@@ -1239,13 +1256,13 @@ class bab_inifile {
 
 
 
-	
 
 
-	
 
-	
-	
+
+
+
+
 	/**
 	 * Add a custom script for requirements
 	 * for addons
@@ -1255,48 +1272,48 @@ class bab_inifile {
 	 * @return 	boolean
 	 */
 	function addCustomScript($addonname, $filepath) {
-	
+
 		if (!file_exists($filepath)) {
 			return false;
 		}
-		
+
 		static $custom_script_result = array();
-		
+
 		if (!isset($custom_script_result[$addonname])) {
 			$custom_script_result[$addonname] = include $filepath;
-		} 
-	
+		}
+
 		$arr = $custom_script_result[$addonname];
-		
+
 		if (!is_array($arr)) {
 			trigger_error('preinstall script must return an array');
 			return false;
 		}
-		
-		
+
+
 		foreach($arr as $prerequisit) {
-		
+
 			if (
-					!isset($prerequisit['description']) 
-				|| 	!isset($prerequisit['required']) 
-				|| 	!isset($prerequisit['recommended']) 
-				||	!isset($prerequisit['current']) 
-				||	!isset($prerequisit['result']) 
+					!isset($prerequisit['description'])
+				|| 	!isset($prerequisit['required'])
+				|| 	!isset($prerequisit['recommended'])
+				||	!isset($prerequisit['current'])
+				||	!isset($prerequisit['result'])
 			) {
 				trigger_error('preinstall script must return an array prerequisit and each prerequisit must contains the keys : description, required, recommended, current, result');
 				return false;
 			}
-			
-			
+
+
 			$this->customscript[] = $prerequisit;
 		}
-		
+
 		return true;
 	}
-	
-	
-	
-	
+
+
+
+
 
 	/**
 	 * The list of requirements specified in the ini file
@@ -1320,7 +1337,7 @@ class bab_inifile {
 			}
 		}
 
-		
+
 
 		foreach($this->recommendations as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
@@ -1335,31 +1352,31 @@ class bab_inifile {
 		}
 
 
-		
+
 		$return = array_merge($return, $this->getAddonsRequirements());
-		
-		
-		
+
+
+
 		if ($this->functionalities) {
 
 			foreach($this->functionalities as $name => $value) {
-			
+
 				// value can be "Available" or "Recommended"
-			
+
 				$obj = @bab_functionality::get($name);
-				
+
 				switch(mb_strtolower($value)) {
 					case 'available':
 						$required = bab_translate('Available');
 						$recommended = false;
 						break;
-						
+
 					case 'recommended':
 						$required = false;
 						$recommended = bab_translate('Available');
 						break;
 				}
-			
+
 				if (false === $obj) {
 					$return[] = array(
 						'description'	=> bab_translate('Library').' : '.$name,
@@ -1379,20 +1396,20 @@ class bab_inifile {
 				}
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		if ($this->customscript) {
 			foreach($this->customscript as $prerequisit) {
 				$return[] = $prerequisit;
 			}
 		}
-		
-		
-		
-		
-	
+
+
+
+
+
 		$order = array();
 		foreach($return as $key => $value) {
 			$order[$key] = $value['description'];
@@ -1411,25 +1428,25 @@ class bab_inifile {
 
 		return $return_ordered;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/**
 	 * Addons requirements
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 * @return array
 	 */
 	function getAddonsRequirements() {
-	
+
 		$return = array();
-		
-		
+
+
 		if ($this->addons) {
 
 			$db = &$GLOBALS['babDB'];
@@ -1438,13 +1455,13 @@ class bab_inifile {
 			while ($arr = $db->db_fetch_assoc($res)) {
 				$installed[$arr['title']] = $arr['version'];
 			}
-			
+
 			foreach($this->addons as $name => $required) {
-				
-				
-				
+
+
+
 				if (isset($installed[$name])) {
-					
+
 					$return[] = array(
 						'name'			=> $name,
 						'description'	=> bab_translate('Ovidentia addon').' : '.$name,
@@ -1465,27 +1482,27 @@ class bab_inifile {
 				}
 			}
 		}
-		
+
 		return $return;
-	
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Tables in database related to the given ini file
@@ -1501,18 +1518,18 @@ class bab_inifile {
 		}
 		return $return;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	/**
 	 * Test the validity of the requirements specified in the ini file on the current ovidentia version
 	 * @return boolean
 	 */
 	function isValid() {
-		
+
 		$requirements = $this->getRequirements();
 		foreach($requirements as $arr) {
 			if (false === $arr['result'] && false !== $arr['required']) {
@@ -1521,8 +1538,8 @@ class bab_inifile {
 		}
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * check validity for new installation
 	 * execution is out of ovidentia context
@@ -1534,26 +1551,26 @@ class bab_inifile {
 	 * @return boolean
 	 */
 	function isInstallValid($installDB, &$error) {
-	
+
 		if (!function_exists('bab_translate')) {
 			function bab_translate($str) {
 				return $str;
 			}
 		}
-		
+
 		if (!function_exists('bab_getDbVersion')) {
 			function bab_getDbVersion() {
 				return null;
 			}
 		}
-		
-		
+
+
 		if (!class_exists('babDatabase')) {
 			$GLOBALS['babDB'] = $installDB;
 		}
-		
 
-		
+
+
 		$requirements = $this->getRequirements();
 		foreach($requirements as $arr) {
 			if (false === $arr['result'] && false !== $arr['required']) {
@@ -1569,15 +1586,15 @@ class bab_inifile {
 		}
 		return true;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * The list of requirements specified in the ini file
-	 * 
+	 *
 	 * @param	bool	$propose_upgrades		propose addon upgrades link if possible
-	 * 
+	 *
 	 * @return string
 	 */
 	function getRequirementsHtml($propose_upgrades = false) {
@@ -1587,7 +1604,7 @@ class bab_inifile {
 		$temp->requirements = $this->getRequirements();
 		return bab_printTemplate($temp,"requirements.html");
 	}
-	
+
 }
 
 
@@ -1664,17 +1681,17 @@ class bab_CoreIniFile extends bab_inifile {
 		if (!isset($this->inifile['forbidden_upgrades'])) {
 			return true;
 		}
-		
+
 		$forbidden = explode(',',$this->inifile['forbidden_upgrades']);
 		foreach($forbidden as $fn) {
 			if ($version === trim($fn)) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 
 }
 
