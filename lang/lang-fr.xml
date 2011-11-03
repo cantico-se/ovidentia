@@ -1723,7 +1723,7 @@
 <string id="You can't take more than">Vous ne pouvez pas prendre plus de</string>
 <string id="days on the right">jours sur le droit</string>
 <string id="Error">Erreur</string>
-<string id="ERROR: a request is already defined on this period">ERREUR : une demande est déja définie sur cette période</string>
+<string id="ERROR: a request is already defined on this period">ERREUR : une demande est déjà définie sur cette période</string>
 <string id="Print in landscape">Imprimer en mode paysage</string>
 <string id="The event isn't on displayed hours for all calendars">L'événement ne sera pas visible sur les vues jour et semaine</string>
 <string id="Show / hide finished events">Afficher/cacher les événements terminés</string>
@@ -1866,7 +1866,7 @@
 <string id="groups">groupes</string>
 <string id="Add groups">Ajouter des groupes</string>
 <string id="Do you really want to delete the selected items ?">Voulez-vous vraiment supprimer les éléments sélectionnés</string>
-<string id="This set of groups already exists">Cet ensemble de groupes existe déja</string>
+<string id="This set of groups already exists">Cet ensemble de groupes existe déjà</string>
 <string id="Add groups in set">Ajouter des groupes dans l'ensemble</string>
 <string id="Set of groups">Ensemble de groupes</string>
 <string id="minutes">minutes</string>
@@ -2402,7 +2402,7 @@
 <string id="Rights renewal by years">Renouvellement des droits par année</string>
 <string id="Rights renewal">Renouvellement des droits</string>
 <string id="%d rights has been inserted">%d droits ont été ajoutés</string>
-<string id="The right %s already exists">Le droit %s existe déja</string>
+<string id="The right %s already exists">Le droit %s existe déjà</string>
 <string id="Personnel assignement :">Attribuer ce droit à :</string>
 <string id="By user">Par utilisateur</string>
 <string id="By collection">Par régime</string>
@@ -3181,7 +3181,7 @@
 <string id="Before we can reset your password, you need to enter the information below to help identify your account:">Avant de pouvoir réinitialiser votre mot de passe, vous devez fournir les informations ci-dessous afin de nous aider à identifier votre compte :</string>
 <string id="The submit date must be a future date">La date de soumission doit être une date future</string>
 <string id="Nothing changed">Rien n'a été modifié</string>
-<string id="Access denied, a user associated to a group out of delegation cannot be modified">Accès refusé, un utilsiateur associé a un groupe en dehors de la délégation ne peut pas être modifié</string>
+<string id="Access denied, a user associated to a group out of delegation cannot be modified">Accès refusé, un utilisateur associé a un groupe en dehors de la délégation ne peut pas être modifié</string>
 <string id="Allows to specify how many times a file can be downloaded. Any user downloading the file adds one hit to this counter. Once the counter reaches the set value, the file cannot be downloaded anymore.">Permet de définir combien de fois un fichier peut être téléchargé. Chaque utilisateur téléchargeant le fichier est comptabilisé, une fois que le compte atteint la valeur maximum définie, le fichier ne peut plus être téléchargé.</string>
 <string id="Sets the default value that appears in the upload form. The upolading user can change this value while filling the upload form.">Définit le nombre maximum de téléchargement par défaut, qui apparait dans le formulaire de dépôt. L'utilisateur effectuant le dépôt peut changer cette valeur quand il renseigne le formulaire de dépôt.</string>
 <string id="Allow to record which user has downloaded the files included in this folder. Downloads by anonymous users are counted as done by one single 'anonymous user'.">Permet d'enregistrer quel utilisateur a téléchargé les fichiers de ce répertoire. Les téléchargements effectués par des utilisateurs anonymes sont tous regroupés en un seul "utilisateur anonyme".</string>
