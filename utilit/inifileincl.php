@@ -883,7 +883,7 @@ class bab_inifile_requirements {
 		$isWritable = is_writable($path);
 
 		return array(
-				'description'	=> bab_translate(sprintf('File %s is writable'), $value),
+				'description'	=> bab_translate(sprintf('File %s is writable', $value)),
 				'current'		=> $isWritable ? bab_translate('Writable') : bab_translate('Not writable'),
 				'result'		=> $isWritable === true
 		);
