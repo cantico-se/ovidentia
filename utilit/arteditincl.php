@@ -38,57 +38,57 @@ class bab_ArticleDraftEditor {
 	 * @var bab_ArtDraft
 	 */
 	private $draft = null;
-	
-	
+
+
 	/**
 	 * @var bool
 	 */
 	private $preview = false;
-	
-	
+
+
 	/**
 	 * @var string
 	 */
 	private $submitUrl = null;
-	
+
 	/**
 	 * @var string
 	 */
 	private $cancelUrl = null;
-	
+
 
 	public function __construct(){
-	
+
 
 		$I = bab_functionality::get('Icons');
 		$I->includeCss();
-		
+
 		$this->draft = new bab_ArtDraft;
 		$this->cleanFiles();
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Init draft from id draft
 	 * @param int $idDraft
 	 * @return bab_ArticleDraftEditor
 	 */
 	public function fromDraft($idDraft)
-	{	
+	{
 		global $babBody;
-		
+
 		if (!bab_isDraftModifiable($idDraft))
 		{
 			$babBody->addError(bab_translate('Error, this draft is not modifiable'));
 			$this->draft = null;
 			return $this;
 		}
-		
+
 		$this->draft->getFromIdDraft($idDraft);
 		return $this;
 	}
-	
+
 	/**
 	 * Init draft from id article
 	 * @param	int	$idArticle
@@ -100,17 +100,17 @@ class bab_ArticleDraftEditor {
 
 		try {
 			$this->draft->getFromIdArticle($idArticle);
-		} 
+		}
 		catch(ErrorException $e)
 		{
 			$babBody->addError($e->getMessage());
 			$this->draft = null;
 		}
-		
+
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Init draft from id topic
 	 * @param int $idTopic
@@ -122,20 +122,20 @@ class bab_ArticleDraftEditor {
 
 		try {
 			$this->draft->createInTopic($idTopic);
-		} 
+		}
 		catch(ErrorException $e)
 		{
 			$babBody->addError($e->getMessage());
 			$this->draft = null;
 		}
-		
+
 		return $this;
 	}
-	
-	
-	
+
+
+
 	/**
-	 * 
+	 *
 	 * @param bool $preview
 	 * @return bab_ArticleDraftEditor
 	 */
@@ -144,9 +144,9 @@ class bab_ArticleDraftEditor {
 		$this->preview = $preview;
 		return $this;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Set url to go to after submit or cancel
 	 * @param	bab_url $url
@@ -157,8 +157,8 @@ class bab_ArticleDraftEditor {
 		$this->submitUrl = $url->toString();
 		$this->cancelUrl = $url->toString();
 	}
-	
-	
+
+
 	/**
 	 * Remove temorary files used in editor
 	 * @return unknown_type
@@ -167,26 +167,26 @@ class bab_ArticleDraftEditor {
 	{
 		if (!empty($_POST))
 		{
-			return;	
+			return;
 		}
-		
-		
+
+
 		$W = bab_Widgets();
-		
+
 		try {
 			$W->FilePicker()->setName('articleFiles')->getFolder()->deleteDir();
 		} catch(bab_FolderAccessRightsException $e) {
 			// ignore, the folder does not exists
 		}
-		
+
 		try {
 			$W->FilePicker()->setName('articlePicture')->getFolder()->deleteDir();
 		} catch(bab_FolderAccessRightsException $e) {
 			// ignore, the folder does not exists
 		}
 	}
-	
-	
+
+
 	/**
 	 * Display HTML
 	 * @return unknown_type
@@ -198,20 +198,20 @@ class bab_ArticleDraftEditor {
 			// a null draft is a failed initilialisation from one of the from... methods
 			return;
 		}
-		
+
 		include_once $GLOBALS['babInstallPath'] . 'utilit/editorincl.php';
 		global $babBody, $babDB;
-		
+
 		$W = bab_Widgets();
 		$W->includeCss();
-		
+
 		$babBody->setTitle(bab_translate('Article publication'));
-		
+
 		$page = $W->BabPage();
 		$page->addJavascriptFile($GLOBALS['babScriptPath'].'bab_article.js');
 		$page->addStyleSheet($GLOBALS['babInstallPath'].'styles/artedit.css');
-		
-		
+
+
 		if($this->preview){
 			$page->addItem(
 				$W->Html('
@@ -222,31 +222,31 @@ class bab_ArticleDraftEditor {
 					</div>')
 			);
 		}
-	
+
 		$LeftFrame = $W->VBoxLayout()->setVerticalSpacing(10,'px');
-		
+
 
 		$topicList = bab_getArticleTopicsAsTextTree(0, false, BAB_TOPICSSUB_GROUPS_TBL);
-		
+
 		$topic = $W->Select('bab-article-topic');
-		
+
 		foreach($topicList as $topcat){
-			
+
 			$topcat['name'] = bab_abbr($topcat['name'], BAB_ABBR_FULL_WORDS, 50);
-			
+
 			if($topcat['category']){
 				$topic->addOption($topic->SelectOption('cat-'.$topcat['id_object'], $topcat['name'])->disable()->addClass('category'));
 			} else {
 				$topic->addOption($topic->SelectOption($topcat['id_object'], $topcat['name']));
 			}
 		}
-		
+
 		if ($this->draft->id_topic)
 		{
 			$topic->addOption($topic->SelectOption($this->draft->id_topic, bab_getTopicTitle($this->draft->id_topic)));
 		}
-				
-		
+
+
 		$LeftFrame->addItem(
 			$W->Section(
 				$tempLab = $W->Label(bab_translate('Title')),
@@ -255,8 +255,8 @@ class bab_ArticleDraftEditor {
 				)
 			)->setFoldable(false)
 		);
-		
-		
+
+
 		$headEditor = new bab_contentEditor('bab_article_head');
 		$headEditor->setRequestFieldName('head');
 		$headEditor->setContent($this->draft->head);
@@ -265,7 +265,7 @@ class bab_ArticleDraftEditor {
 			$headEditor->setContent($_POST['head']);
 		}
 		$headEditor->setParameters(array('height' => '200'));
-		
+
 		$LeftFrame->addItem(
 			$W->Section(
 				$tempLab = $W->Label(bab_translate('Introduction'))->addClass('widget-label-mandatory'),
@@ -274,8 +274,8 @@ class bab_ArticleDraftEditor {
 				)
 			)->setFoldable(true)
 		);
-		
-		
+
+
 		$bodyEditor = new bab_contentEditor('bab_article_body');
 		$bodyEditor->setRequestFieldName('body');
 		$bodyEditor->setContent($this->draft->body);
@@ -284,7 +284,7 @@ class bab_ArticleDraftEditor {
 			$bodyEditor->setContent($_POST['body']);
 		}
 		$bodyEditor->setParameters(array('height' => '300'));
-		
+
 		$LeftFrame->addItem(
 			$body = $W->Section(
 				bab_translate('Body'),
@@ -293,7 +293,7 @@ class bab_ArticleDraftEditor {
 				)
 			)->setFoldable(true)
 		);
-		
+
 		$timeArray = array();
 		for($i=0; $i < 1440; $i=$i+5){
 			$hour = floor($i/60);
@@ -306,9 +306,9 @@ class bab_ArticleDraftEditor {
 			}
 			$timeArray[$hour.':'.$minute.':00'] = $hour.':'.$minute;
 		}
-		
+
 		$LeftFrame->addItem(
-		
+
 				$W->FlowLayout()
 					->addItem(
 						bab_labelStr(
@@ -336,8 +336,8 @@ class bab_ArticleDraftEditor {
 						)
 					)->setHorizontalSpacing(1,'em')
 		);
-		
-		
+
+
 		$LeftFrame->addItem(
 			$attachments = $W->Section(
 				bab_translate('Files attachments'),
@@ -348,14 +348,14 @@ class bab_ArticleDraftEditor {
 				'bab_article_attachments'
 			)->setFoldable(true, true)
 		);
-		
+
 		/** @var $articleFiles Widget_FilePicker */
-		
+
 		if ($articleFiles->getValue())
 		{
 			$attachments->setFoldable(true, false);
 		}
-		
+
 		$LeftFrame->addItem(
 				$W->Frame()->addItem(
 					bab_labelStr(
@@ -364,20 +364,20 @@ class bab_ArticleDraftEditor {
 					)
 				)
 		);
-		
+
 		if ($keyword = $tags->getSearchKeyword())
 		{
 			// search for keyword
-			
+
 			$res = $babDB->db_query("SELECT tag_name FROM bab_tags WHERE tag_name LIKE '".$babDB->db_escape_like($keyword)."%'");
 			while ($arr = $babDB->db_fetch_assoc($res))
 			{
 				$tags->addSuggestion($arr['tag_name'], $arr['tag_name']);
 			}
-			
+
 			$tags->sendSuggestions();
 		}
-		
+
 		$LeftFrame->addItem(
 				$W->Frame()
 					->addItem($articlePicture = $W->ImagePicker()->oneFileMode(true)
@@ -387,7 +387,7 @@ class bab_ArticleDraftEditor {
 						->addClass('bab-article-picture')
 					)
 		);
-		
+
 		$LeftFrame->addItem(
 			$W->HBoxItems(
 				$tempCheck = $W->CheckBox()->setName('hpage_public')->setUncheckedValue('N')->setCheckedValue('Y')->disable(),
@@ -406,13 +406,13 @@ class bab_ArticleDraftEditor {
 				$W->Label(bab_translate("Notify users when the article is published"))->setAssociatedWidget($tempCheck)
 			)->setVerticalSpacing(5, 'px')->setVerticalAlign('middle')
 		);
-		
+
 		$groups = bab_labelStr(
 			bab_translate('Groups'),
 			$multigroups = $W->MultiField()->setName('groups')
 		);
-			
-			
+
+
 		$operator = bab_labelStr(
 			bab_translate('With operator'),
 			$W->Select()
@@ -420,7 +420,7 @@ class bab_ArticleDraftEditor {
 				->addOption(',',bab_translate('Or'))
 				->addOption('&',bab_translate('And'))
 		);
-		
+
 		$LeftFrame->addItem(
 			$W->Frame()
 				->addItem(
@@ -431,14 +431,14 @@ class bab_ArticleDraftEditor {
 							->addOption('', bab_translate('No restrictions'))
 							->addOption('1', bab_translate('Groups'))
 							->setAssociatedDisplayable($groups, array(1))
-							->setAssociatedDisplayable($operator, array(1))	
+							->setAssociatedDisplayable($operator, array(1))
 					)
 				)
 				->addItem($groups)
 				->addItem($operator)
 				->addClass('bab-article-restriction')
 		);
-		
+
 		$LeftFrame->addItem(
 			bab_labelStr(
 				bab_translate("Article language"),
@@ -448,14 +448,14 @@ class bab_ArticleDraftEditor {
 					->addOption('*','*')
 			)
 		);
-		
+
 		$languages = bab_getAvailableLanguages();
 		foreach($languages as $l)
 		{
 			$lang->addOption($l,$l);
 		}
-		
-		
+
+
 		if($this->draft->id_article){
 			$LeftFrame->addItem(
 				$update_datemodif = $W->Section(
@@ -467,38 +467,38 @@ class bab_ArticleDraftEditor {
 			);
 		}
 
-		
+
 		/*@var $articlePicture Widget_FilePicker */
 		/*@var $articleFiles Widget_FilePicker */
-		
+
 		$articlePicture->setEncodingMethod(null);
 		$articleFiles->setEncodingMethod(null)->onUpload('filesAttachments', 'window.babArticle');
-		
+
 		$imgsize = (int) $babBody->babsite['imgsize'];
 		if($imgsize > 0)
 		{
 			$articlePicture->setMaxSize($imgsize * 1024);
 		}
 
-		
+
 		if ($this->draft->getId() && empty($_POST))
 		{
 			// load files from draft
 			$this->draft->loadTempAttachments($articleFiles);
-			
-		
+
+
 			// load picture from draft
 			$this->draft->loadTempPicture($articlePicture);
-			
-			
+
+
 		}
-		
-		
+
+
 		// Set values in from
-		
-		
+
+
 		$values = $this->draft->getValues();
-		
+
 		if($values['id_topic'] != ""){
 			$topicIdFolded = true;
 			$topicIdOrder = 0;
@@ -508,25 +508,25 @@ class bab_ArticleDraftEditor {
 			$topicIdFolded = false;
 			$topicIdOrder = 0;
 		}
-		
+
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
 				$W->Section(
 					$W->Html(bab_translate('Article topic') . ' (' . $currentTopic . ')'),
-					$topic->setName('id_topic'),
+					$W->FlowItems($topic->setName('id_topic')),
 					3
 				)->setFoldable(true, $topicIdFolded)
 			),
 			0
 		);
-		
+
 		$LeftFrame->addItem(
 			$W->Frame()->addItem(
 				$W->Label(bab_translate('The topic is restricted by an approbation, the article will not be visible imediately'))
 			)
 			->addClass('bab-article-approbation')
 		);
-		
+
 		$LeftFrame->addItem(
 			$W->HBoxItems(
 				$W->SubmitButton()->setLabel(bab_translate('Cancel'))->setName('cancel')->setConfirmationMessage(bab_translate('Do you really want to delete the draft?')),
@@ -535,31 +535,31 @@ class bab_ArticleDraftEditor {
 				$W->SubmitButton()->validate(true)->setLabel(bab_translate('Submit'))->setName('submit')
 			)->setHorizontalSpacing(5,'px')
 		);
-		
+
 		$globalFrame = $LeftFrame->setHorizontalSpacing(30, 'px')->setId('global-article-page');
-		
+
 		$values['tags'] = implode(', ', $this->draft->getTags());
 		$values['operator'] = $this->draft->getOperator();
-		
-		
+
+
 		if(empty($values['body']) && empty($_POST['body'])){
 			$body->setFoldable(true, true);
 		}
-		
+
 		if (isset($update_datemodif) && empty($values['modification_comment'])) {
 			$update_datemodif->setFoldable(true, true);
 		}
-		
+
 		$restrictions = $this->draft->getRestrictions();
 		if (empty($restrictions))
 		{
 			// options / values will be set with javascript
 			$multigroups->addItem($W->Select()->setName('0'));
-			
+
 		} else {
-			
+
 			$values['restriction'] = 1;
-			
+
 			// options / values are set server side and lost if topic is changed
 			$i = 0;
 			foreach($restrictions as $id_group)
@@ -569,19 +569,19 @@ class bab_ArticleDraftEditor {
 				{
 					continue;
 				}
-				
+
 				$multigroups->addItem($W->Select()->setName((string) $i)->setOptions($options)->setValue($id_group));
 				$i++;
 			}
-			
+
 			if ($this->draft->id_topic)
 			{
 				$restriction->addClass('bab-article-restriction-topic-'.$this->draft->id_topic);
 			}
 		}
-		
-		
-	
+
+
+
 		if(isset($values['date_submission'])){
 			$date_submission = explode(' ', $values['date_submission']);
 			if(isset($date_submission[0]) && $date_submission[0] == '0000-00-00'){
@@ -591,7 +591,7 @@ class bab_ArticleDraftEditor {
 				$time_submission->setValue($date_submission[1]);
 			}
 		}
-		
+
 		if(isset($values['date_publication'])){
 			$date_publication = explode(' ', $values['date_publication']);
 			if(isset($date_publication[0]) && $date_publication[0] == '0000-00-00'){
@@ -601,7 +601,7 @@ class bab_ArticleDraftEditor {
 				$time_publication->setValue($date_publication[1]);
 			}
 		}
-		
+
 		if(isset($values['date_archiving'])){
 			$date_archiving = explode(' ', $values['date_archiving']);
 			if(isset($date_archiving[0]) && $date_archiving[0] == '0000-00-00'){
@@ -611,8 +611,8 @@ class bab_ArticleDraftEditor {
 				$time_archiving->setValue($date_archiving[1]);
 			}
 		}
-	
-		
+
+
 		$FormArticle = $W->Form('article-form',$globalFrame)
 			->setValues($values)
 			->setValues($_POST)
@@ -623,10 +623,10 @@ class bab_ArticleDraftEditor {
 			->setHiddenValue('submitUrl', bab_pp('submitUrl', $this->submitUrl))
 			->setHiddenValue('cancelUrl', bab_pp('cancelUrl', $this->cancelUrl))
 			->setHiddenValue('babpopup', false);
-		
-	
+
+
 		$page->addItem($FormArticle);
-	
+
 		$page->displayHtml();
 	}
 }
