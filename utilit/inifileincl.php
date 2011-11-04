@@ -883,7 +883,8 @@ class bab_inifile_requirements {
 		$isWritable = is_writable($path);
 
 		return array(
-				'description'	=> bab_translate(sprintf('File %s is writable', $value)),
+				'description'	=> bab_translate(sprintf('File %s is writable', $path)),
+				'display_value' => bab_translate('Writable'),
 				'current'		=> $isWritable ? bab_translate('Writable') : bab_translate('Not writable'),
 				'result'		=> $isWritable === true
 		);
@@ -1330,6 +1331,11 @@ class bab_inifile {
 			if (method_exists ( $requirementsObj, $keyword )) {
 				$arr = $requirementsObj->$keyword($value);
 				if (is_array($arr)) {
+					if (isset($arr['display_value'])) {
+						$arr['required'] = bab_translate($arr['display_value']);
+					} else {
+						$arr['required'] = bab_translate($value);
+					}
 				 	$arr['required'] = bab_translate($value);
 				 	$arr['recommended'] = false;
 				 	$return[] = $arr;
@@ -1341,11 +1347,17 @@ class bab_inifile {
 
 		foreach($this->recommendations as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
+			bab_debug($keyword);
 			if (method_exists ( $requirementsObj, $keyword )) {
+				bab_debug("exists");
 				$arr = $requirementsObj->$keyword($value);
 				if (is_array($arr)) {
 					$arr['required'] = false;
-					$arr['recommended'] = bab_translate($value);
+					if (isset($arr['display_value'])) {
+						$arr['recommended'] = bab_translate($arr['display_value']);
+					} else {
+						$arr['recommended'] = bab_translate($value);
+					}
 					$return[] = $arr;
 				}
 			}
