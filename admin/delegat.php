@@ -745,7 +745,7 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdC
 			name='".$babDB->db_escape_string($name)."',
 			description='".$babDB->db_escape_string($description)."',
 			color='".$babDB->db_escape_string($color)."',
-			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory);
+			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory)."'";
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
