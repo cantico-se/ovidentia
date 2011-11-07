@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,*
  * USA.																	*
 ************************************************************************/
-include_once "base.php";		
+include_once "base.php";
 include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
@@ -47,7 +47,7 @@ function delgatList($res)
 		var $altbg = true;
 
 		var $addtxt = '';
-		
+
 		function temp($res)
 		{
 			global $babDB;
@@ -58,8 +58,8 @@ function delgatList($res)
 			$this->grpmtxt			= bab_translate("Managed group");
 			$this->sAddCaption		= bab_translate("Add");
 			$this->sAddUrl			= bab_toHtml($GLOBALS['babUrlScript']."?tg=delegat&idx=new");
-			
-			
+
+
 			$this->res = $res;
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->c= 0;
@@ -93,11 +93,11 @@ function delgatList($res)
 	$babBody->babecho(	bab_printTemplate($temp, "delegat.html", "delegationlist"));
 }
 
-	
+
 function displayCategoriesListForm()
 {
 	global $babBody;
-	
+
 	class categoriesListForm
 	{
 		var $nametxt;
@@ -107,7 +107,7 @@ function displayCategoriesListForm()
 		var $desctxt;
 		var $bgcolor;
 		var $bgcolortxt;
-				
+
 		var $arr = array();
 		var $db;
 		var $count;
@@ -126,22 +126,22 @@ function displayCategoriesListForm()
 			$this->t_delete_checked	= bab_translate("Delete checked items");
 			$this->t_confirm_delete	= bab_translate("Do you want to delete selected items?");
 			$this->urladdcat 		= bab_toHtml($GLOBALS['babUrlScript'].'?tg=delegat&idx=displayAddCategorieForm');
-			
-			if($delete_category = bab_pp('delete_category')) 
+
+			if($delete_category = bab_pp('delete_category'))
 			{
-				foreach($delete_category as $id_category) 
+				foreach($delete_category as $id_category)
 				{
 					deleteCategory($id_category);
 				}
-				
+
 				Header("Location:". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 				exit;
 			}
-			
+
 			$this->res = $babDB->db_query("select * from ".BAB_DG_CATEGORIES_TBL." ORDER BY name,description ");
 			$this->countcal = $babDB->db_num_rows($this->res);
 		}
-			
+
 		function getnext()
 		{
 			global $babDB;
@@ -165,7 +165,7 @@ function displayCategoriesListForm()
 			}
 		}
 	}
-	
+
 	$oForm = new categoriesListForm();
 	$babBody->babecho(bab_printTemplate($oForm, 'delegat.html', 'categorieslist'));
 }
@@ -231,12 +231,12 @@ function displayModifyCategorieForm()
 			$this->desctxt = bab_translate("Description");
 			$this->bgcolortxt = bab_translate("Color");
 			$this->addtxt = bab_translate("Update");
-			
+
 			$this->idcat = $idcat = bab_rp('idcat');
 			$catname = bab_rp('catname');
 			$catdesc = bab_rp('catdesc');
 			$bgcolor = bab_rp('bgcolor');
-			
+
 			$this->add = 'updateCategory';
 			$this->tgval = 'delegat';
 			$arr = $babDB->db_fetch_array($babDB->db_query("SELECT * FROM ".BAB_DG_CATEGORIES_TBL." WHERE id=".$babDB->quote($idcat)));
@@ -323,16 +323,16 @@ function groupDelegatMembers($id)
 	}
 
 function getImage()
-{	
+{
 	require_once $GLOBALS['babInstallPath'].'/utilit/artincl.php';
 	require_once $GLOBALS['babInstallPath'].'/utilit/gdiincl.php';
 
 	$iWidth			= (int) bab_rp('iWidth', 0);
 	$iHeight		= (int) bab_rp('iHeight', 0);
 	$iIdDeleg	= (int) bab_rp('iIdDeleg', 0);
-	
+
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	
+
 	$sPath = '';
 	if(0 !== $iIdDeleg)
 	{
@@ -345,7 +345,7 @@ function getImage()
 			}
 		}
 	}
-	
+
 	if($sPath == ''){
 		return '';
 	}
@@ -354,7 +354,7 @@ function getImage()
 		readfile($sPath);
 		die;
 	}
-	
+
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath, $iWidth, $iHeight);
 }
@@ -378,7 +378,7 @@ function groupDelegatModify($gname, $description, $id = '')
 
 		var $bCategoriesAvailable	= false;
 		var $oResCategories			= null;
-		
+
 		var $sCategoryName			= '';
 		var $sCategoryDesc			= '';
 		var $iIdCategory			= 0;
@@ -386,7 +386,7 @@ function groupDelegatModify($gname, $description, $id = '')
 		var $iPostedIdCategory		= 0;
 		var $sCategorySelected		= '';
 		var $sCategoryCaption		= '';
-		
+
 		var $id;
 
 		function temp($gname, $description, $id)
@@ -413,7 +413,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			$this->iMaxImgFileSize	= (int) $GLOBALS['babMaxImgFileSize'];
 			$this->bUploadPathValid	= is_dir($GLOBALS['babUploadPath']);
 			$this->bImageUploadEnable	= (0 !== $this->iMaxImgFileSize && $this->bUploadPathValid);
-			
+
 			$this->bImageAlreadyUploaded = '';
 			$uploadPath = new bab_Path($GLOBALS['babUploadPath'],'delegation','image','DG'.$id);
 			if($uploadPath->isDir() && $id  != ''){
@@ -425,17 +425,17 @@ function groupDelegatModify($gname, $description, $id = '')
 					}
 				}
 			}
-			
+
 			$this->processDisabledUploadReason();
-			
+
 			$db			= $GLOBALS['babDB'];
 			$this->db	= $db;
 			$res		= $db->db_query("select * from ".BAB_DG_GROUPS_TBL." where id=".$db->quote($id));
 			$this->arr	= $db->db_fetch_array($res);
 			$this->id	= $id;
-			
+
 			$iIdCategory = 0;
-			
+
 			if(!empty($this->id))
 			{
 				$this->idGrp		= $this->arr['id_group'];
@@ -451,7 +451,7 @@ function groupDelegatModify($gname, $description, $id = '')
 				$this->colorvalue	= isset($_POST['color']) ? $_POST['color'] : '' ;
 				$battach			= isset($_POST['battach']) ? $_POST['battach'] : 'N' ;
 			}
-			
+
 			if($battach == 'Y')
 			{
 				$this->battachchecked = 'checked="checked"';
@@ -463,13 +463,13 @@ function groupDelegatModify($gname, $description, $id = '')
 
 			$tree = new bab_grptree();
 			$this->groups = $tree->getIndentedGroups(NULL);
-			
+
 			//bab_debug($this->groups);
-			
+
 			unset($this->groups[BAB_UNREGISTERED_GROUP]);
 			$this->count2 = count($this->groups);
 
-			
+
 			if($gname != '')
 			{
 				$this->grpname = bab_toHtml($gname);
@@ -480,11 +480,11 @@ function groupDelegatModify($gname, $description, $id = '')
 				$this->grpname = bab_toHtml($this->arr['name']);
 				$this->grpdesc = bab_toHtml($this->arr['description']);
 			}
-			
+
 			$this->tgval = "delegat";
 			$this->what = "mod";
 
-			
+
 			global $babDB;
 			$this->iPostedIdCategory	= (int) bab_rp('iIdCategory', $iIdCategory);
 			$this->oResCategories		= $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL);
@@ -498,7 +498,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			{
 				$this->sDisabledUploadReason = bab_translate("Loading image is not active because");
 				$this->sDisabledUploadReason .= '<UL>';
-				
+
 				if('' == $GLOBALS['babUploadPath'])
 				{
 					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not set");
@@ -507,7 +507,7 @@ function groupDelegatModify($gname, $description, $id = '')
 				{
 					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The upload path is not a dir");
 				}
-				
+
 				if(0 == $this->iMaxImgFileSize)
 				{
 					$this->sDisabledUploadReason .= '<LI>'. bab_translate("The maximum size for a defined image is zero byte");
@@ -519,12 +519,12 @@ function groupDelegatModify($gname, $description, $id = '')
 		function getNextCategory()
 		{
 			global $babDB;
-			
+
 			$this->sCategoryName		= '';
 			$this->iIdCategory			= 0;
 			$this->sCategoryColor		= '';
 			$this->sCategorySelected	= '';
-			
+
 			if(false !== $this->oResCategories)
 			{
 				if(false != ($aDatas = $babDB->db_fetch_assoc($this->oResCategories)))
@@ -542,7 +542,7 @@ function groupDelegatModify($gname, $description, $id = '')
 			}
 			return false;
 		}
-			
+
 		function getnext()
 			{
 			global $babDB, $babDG;
@@ -577,13 +577,13 @@ function groupDelegatModify($gname, $description, $id = '')
 		function getnextgroup()
 		{
 			static $i = 0;
-			
+
 			$aDatas = each($this->groups);
-			
+
 			if(false !== $aDatas)
 			{
 				$this->arrgroups = $aDatas['value'];
-				
+
 				$this->arrgroups['select'] = "";
 				if($this->idGrp == $this->arrgroups['id'])
 				{
@@ -672,10 +672,10 @@ function addDelegatGroup($name, $description, $color, $delegitems, $iIdCategory)
 			}
 
 		$group = $_POST['group'] == 'NULL' ? 'NULL' : "'".$babDB->db_escape_string($_POST['group'])."'";
-		
+
 		$req1 .= ",iIdCategory ";
 		$req2 .= ", " . "'".$babDB->db_escape_string($iIdCategory)."'";
-		
+
 		$req1 .= ",id_group )";
 		$req2 .= ", ".$group." )";
 		$babDB->db_query("insert into ".BAB_DG_GROUPS_TBL." ".$req1." VALUES ".$req2);
@@ -698,14 +698,14 @@ function addDelegatGroup($name, $description, $color, $delegitems, $iIdCategory)
 				}
 			}
 		}
-		
+
 		if( !bab_addTopicsCategory($name, $description, 'Y', '', '', 0, $id ))
 			{
 			return false;
 			}
 
 		}
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=mem&id=".$id);
 	}
 
@@ -732,7 +732,7 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdC
 
 
 
-	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL." 
+	$res = $babDB->db_query("select * from ".BAB_DG_GROUPS_TBL."
 	where id!='".$babDB->db_escape_string($id)."' and name='".$babDB->db_escape_string($name)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
@@ -741,11 +741,11 @@ function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdC
 		}
 	else
 		{
-		$req = "update ".BAB_DG_GROUPS_TBL." set 
-			name='".$babDB->db_escape_string($name)."', 
-			description='".$babDB->db_escape_string($description)."', 
+		$req = "update ".BAB_DG_GROUPS_TBL." set
+			name='".$babDB->db_escape_string($name)."',
+			description='".$babDB->db_escape_string($description)."',
 			color='".$babDB->db_escape_string($color)."',
-			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory)."',";
+			iIdCategory='".$babDB->db_escape_string((int) $iIdCategory);
 		$cnt = count($delegitems);
 		for( $i = 0; $i < count($babDG); $i++)
 			{
@@ -804,16 +804,16 @@ function updateDelegatMembers()
 		}
 
 	$db->db_query("INSERT INTO ".BAB_DG_ADMIN_TBL." (id_dg,id_user) VALUES ('".$_POST['id']."','".$_POST['nuserid']."')");
-	
+
 	bab_siteMap::clearAll();
-	
+
 	include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 	header('location:'.bab_url::request('tg', 'idx', 'id'));
 	exit;
-	
+
 	return true;
 	}
-	
+
 }
 
 function deleteDelegatMembers()
@@ -824,11 +824,11 @@ function deleteDelegatMembers()
 	{
 	$db->db_query("DELETE FROM ".BAB_DG_ADMIN_TBL." WHERE id_dg='".$_POST['id']."' AND id_user IN('".implode("','",$_POST['users'])."')");
 	}
-	
-	
-	
+
+
+
 	bab_siteMap::clearAll();
-	
+
 	include_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 	header('location:'.bab_url::request('tg', 'idx', 'id'));
 	exit;
@@ -845,15 +845,15 @@ function addCategory($catname, $catdesc, $bgcolor)
 		return false;
 	}
 
-	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" . 
+	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" .
 		$babDB->db_escape_like($catname) . "'");
-		
+
 	if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
 	{
 		$babBody->addError(bab_translate("ERROR: A category with the same name already exit")." !");
 		return false;
 	}
-		
+
 	$babDB->db_query("insert into ".BAB_DG_CATEGORIES_TBL." (name, description, bgcolor) values ('" .$babDB->db_escape_string($catname). "', '".$babDB->db_escape_string($catdesc)."', '".$babDB->db_escape_string($bgcolor)."')");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 	exit;
@@ -870,15 +870,15 @@ function updateCategory($idcat, $catname, $catdesc, $bgcolor)
 		return false;
 	}
 
-	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" . 
+	$oResult = $babDB->db_query("select * from " . BAB_DG_CATEGORIES_TBL . " WHERE name LIKE '" .
 		$babDB->db_escape_like($catname) . "' AND id NOT IN('" . $idcat . "')");
-		
+
 	if(false !== $oResult && 0 < $babDB->db_num_rows($oResult))
 	{
 		$babBody->addError(bab_translate("ERROR: A category with the same name already exit")." !");
 		return false;
 	}
-		
+
 	$babDB->db_query("update ".BAB_DG_CATEGORIES_TBL." set name='".$babDB->db_escape_string($catname)."', description='".$babDB->db_escape_string($catdesc)."', bgcolor='".$babDB->db_escape_string($bgcolor)."' where id='".$babDB->db_escape_string($idcat)."'");
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 	exit;
@@ -896,7 +896,7 @@ function confirmDeleteDelegatGroup($id)
 	global $babDB;
 
 	$idsafe = $babDB->db_escape_string($id);
-	
+
 	if( 0 == $_POST['doaction'] )
 		{
 		include_once $GLOBALS['babInstallPath']."utilit/delincl.php";
@@ -959,29 +959,29 @@ function confirmDeleteDelegatGroup($id)
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteCalendar($arr['idcal']);
-			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$arr['id']."'");	
+			$babDB->db_query("delete from ".BAB_CAL_PUBLIC_TBL." where id='".$arr['id']."'");
 			}
 
 		$res = $babDB->db_query("select crt.id, ct.id as idcal from ".BAB_CAL_RESOURCES_TBL." crt left join ".BAB_CALENDAR_TBL." ct on ct.owner=crt.id and ct.type='".BAB_CAL_RES_TYPE."' where crt.id_dgowner='".$idsafe."'");
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteCalendar($arr['idcal']);
-			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$arr['id']."'");	
+			$babDB->db_query("delete from ".BAB_CAL_RESOURCES_TBL." where id='".$arr['id']."'");
 			}
 		}
 	else
 		{
-		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
-		$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");	
+		$babDB->db_query("update ".BAB_SECTIONS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_FLOW_APPROVERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_FORUMS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_FAQCAT_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_FM_FOLDERS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_LDAP_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_ORG_CHARTS_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_CAL_RESOURCES_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
+		$babDB->db_query("update ".BAB_CAL_PUBLIC_TBL." set id_dgowner='0' where id_dgowner='".$idsafe."'");
 		}
 
 
@@ -997,10 +997,10 @@ if( !$babBody->isSuperAdmin )
 	$babBody->title = bab_translate("Access denied");
 	exit;
 	}
-	
+
 if( !isset($idx))
 	$idx = "list";
-	
+
 if( isset($add))
 	{
 	if( isset($submit))
@@ -1050,7 +1050,7 @@ switch($_POST['action'])
 			$idx = 'displayAddCategorieForm';
 		}
 		break;
-		
+
 	case 'updateCategory':
 		if(!updateCategory(bab_rp('idcat'), bab_rp('catname'), bab_rp('catdesc'), bab_rp('bgcolor')))
 		{
@@ -1058,7 +1058,7 @@ switch($_POST['action'])
 		}
 		break;
 	}
-	
+
 
 if( $idx == 'list' )
 {
@@ -1144,7 +1144,7 @@ switch($idx)
 		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 		$babBody->addItemMenu("displayAddCategorieForm", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayAddCategorieForm");
 		break;
-		
+
 	case "displayModifyCategorieForm":
 		displayModifyCategorieForm();
 		$babBody->title = bab_translate("Modify a delegation category");
@@ -1152,7 +1152,7 @@ switch($idx)
 		$babBody->addItemMenu("displayCategoriesListForm", bab_translate("Categories"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayCategoriesListForm");
 		$babBody->addItemMenu("displayModifyCategorieForm", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=delegat&idx=displayModifyCategorieForm");
 		break;
-		
+
 	case 'displayCategoriesListForm':
 		displayCategoriesListForm();
 		$babBody->title = bab_translate("Categories list");
@@ -1164,7 +1164,7 @@ switch($idx)
 		bab_deleteImage();
 		Header("Location:". $GLOBALS['babUrlScript']."?tg=delegat&idx=mod&id=".bab_gp('idDeleg'));
 		break;
-		
+
 	case "list":
 	default:
 		delgatList($dgres);
