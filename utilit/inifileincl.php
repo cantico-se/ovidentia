@@ -1347,9 +1347,9 @@ class bab_inifile {
 
 		foreach($this->recommendations as $keyword => $value) {
 			$keyword = 'require_'.$keyword;
-			bab_debug($keyword);
+			//bab_debug($keyword);
 			if (method_exists ( $requirementsObj, $keyword )) {
-				bab_debug("exists");
+				//bab_debug("exists");
 				$arr = $requirementsObj->$keyword($value);
 				if (is_array($arr)) {
 					$arr['required'] = false;
