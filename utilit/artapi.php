@@ -1776,7 +1776,7 @@ function bab_isArticleModifiable($id_article)
 	}
 	
 	
-	if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) || ( $arr['allow_update'] != '0' && $this->arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
+	if( bab_isAccessValid(BAB_TOPICSMOD_GROUPS_TBL, $arr['id_topic']) || ( $arr['allow_update'] != '0' && $arr['id_author'] == $GLOBALS['BAB_SESS_USERID']) || ( $arr['allow_manupdate'] != '0' && bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $arr['id_topic'])))
 	{
 		return true;
 	}
