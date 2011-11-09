@@ -155,7 +155,7 @@ window.babArticle.filesAttachments = function()
 				}
 				
 				var file = attachments[htmlid];
-				var row = jQuery('<div id="'+htmlid+'" class="bab-art-fileattachment"><a href=""><img src="'+bab_getInstallPath()+'skins/ovidentia/images/Puces/del.gif" /></a> &nbsp;<span></span><br /><input type="text" value="" size="50" /></div>');
+				var row = jQuery('<div id="'+htmlid+'" class="bab-art-fileattachment"><a href=""><img src="'+bab_getInstallPath()+'skins/ovidentia/images/Puces/del.gif" /></a> &nbsp;<span></span><br /><label>Description : <input type="text" value="" size="50" /></label></div>');
 				
 				row.find('span').text(file.name);
 				row.find('input').attr('value', file.description);
