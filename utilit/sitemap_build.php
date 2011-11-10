@@ -1185,12 +1185,31 @@ class bab_siteMap_insertTree
 	}
 
 
-
+	/**
+	 * 
+	 * @param int $id_profile
+	 * @param int $crc
+	 * @param string $root_function
+	 * @param int $levels
+	 * @return unknown_type
+	 */
 	private function addProfileVersion($id_profile, $crc, $root_function, $levels)
 	{
 		global $babDB;
+		
+		if (null === $root_function)
+		{
+			// the unique key does not apply for null value
+			
+			$res = $babDB->db_query('SELECT * FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' WHERE id_profile='.$babDB->quote($id_profile).' AND root_function=NULL AND levels='.$babDB->quoteOrNull($levels));
+			if (0 !== $babDB->db_num_rows($res))
+			{
+				// the profile allready exists
+				return;
+			}
+		}
 
-		$babDB->db_query('INSERT INTO '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' (id_profile, uid_functions, root_function, levels)
+		$babDB->db_queryWem('INSERT INTO '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' (id_profile, uid_functions, root_function, levels)
 					VALUES ('.$babDB->quote($id_profile).', '.$babDB->quote($crc).', '.$babDB->quoteOrNull($root_function).', '.$babDB->quoteOrNull($levels).')');
 
 	}
