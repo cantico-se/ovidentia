@@ -1200,8 +1200,14 @@ class bab_siteMap_insertTree
 		if (null === $root_function)
 		{
 			// the unique key does not apply for null value
-			
-			$res = $babDB->db_query('SELECT * FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' WHERE id_profile='.$babDB->quote($id_profile).' AND root_function=NULL AND levels='.$babDB->quoteOrNull($levels));
+			$query = 'SELECT * FROM '.BAB_SITEMAP_PROFILE_VERSIONS_TBL.' WHERE id_profile='.$babDB->quote($id_profile).' AND root_function IS NULL AND levels';
+			if (null === $levels)
+			{
+				$query .= ' IS NULL';
+			} else {
+				$query .= '='.$babDB->quote($levels);
+			}
+			$res = $babDB->db_query($query);
 			if (0 !== $babDB->db_num_rows($res))
 			{
 				// the profile allready exists
