@@ -537,7 +537,7 @@ class bab_siteMap {
 
 		self::lockTables();
 
-		if (($GLOBALS['BAB_SESS_LOGGED'] && false === $id_user) || false !== $id_user) {
+		if ((isset($GLOBALS['BAB_SESS_LOGGED']) && $GLOBALS['BAB_SESS_LOGGED'] && false === $id_user) || false !== $id_user) {
 
 			if (false === $id_user) {
 				$id_user = $GLOBALS['BAB_SESS_USERID'];
