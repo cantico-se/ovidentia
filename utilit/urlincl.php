@@ -267,8 +267,6 @@ class bab_url {
 		$sum = 0;
 		foreach($arr as $key => $value)
 		{
-			$sum += abs(crc32($value));
-			
 			if (is_array($value))
 			{
 				$sum += $this->arrChecksum($value);
