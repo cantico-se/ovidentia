@@ -3612,6 +3612,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		$this->folderid = $ctx->get_value('folderid');
 		$delegationid = (int) $ctx->get_value('delegationid');
 		$path = $ctx->get_value('path');
+		$fullpath = $ctx->get_value('fullpath');
 
 		$this->oFmFolderSet = new BAB_FmFolderSet();
 
@@ -3622,20 +3623,18 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 		}
 
 		if($this->folderid === false || $this->folderid === '')
-			{
+		{
 			$arr = array();
-			}
+		}
 		else
-			{
+		{
 			$arr = explode(',', $this->folderid);
-			}
+		}
 
 		if( count($arr) == 0 )
-			{
+		{
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'" . $sDelegation;
-			}
-		else
-			{
+		} else {
 			$oId = $this->oFmFolderSet->aField['iId'];
 			$res = $this->oFmFolderSet->select($oId->in($arr));
 			$arrpath = array();
@@ -3649,41 +3648,45 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 			}
 
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' and (sRelativePath='' AND id IN(".$babDB->quote($arr).") OR CONCAT(sRelativePath, folder) IN(".$babDB->quote($arrpath)."))" . $sDelegation;
-			}
+		}
 
 		$arrid = array();
 		$res = $babDB->db_query($req);
 		while( $arr = $babDB->db_fetch_array($res))
-			{
+		{
 			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id']))
 				$arrid[] = $arr['id'];
-			}
+		}
 
 		if( count($arrid) > 0 )
-			{
+		{
 			$req = "select f.* from ".BAB_FILES_TBL." f where f.bgroup='Y' and f.state='' and f.confirmed='Y'";
 
 			if( $path === false || $path === '' )
-				{
+			{
 				$path = '';
-				}
+			}
 			if( $path != '' )
-				{
-				$req .= " and f.path like '%".$babDB->db_escape_like($path.'/')."'";
+			{
+				if($fullpath){
+					$req .= " and f.path = '".$babDB->db_escape_string($path.'/')."'";
+				}else{
+					$req .= " and f.path like '%".$babDB->db_escape_like($path.'/')."'";
 				}
+			}
 
 			$req .= " and f.id_owner IN (".$babDB->quote($arrid).")";
 
 			if( $this->nbdays !== false)
-				{
+			{
 				$req .= " and f.modified >= DATE_ADD(\"".$babDB->db_escape_string($babBody->lastlog)."\", INTERVAL -".$babDB->db_escape_string($this->nbdays)." DAY)";
-				}
+			}
 
 			$order = $ctx->get_value('order');
 			if( $order === false || $order === '' )
-				{
+			{
 				$order = "desc";
-				}
+			}
 
 			switch(mb_strtoupper($order))
 			{
@@ -3696,18 +3699,17 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 			$req .= ' order by '.$order;
 
 			if( $this->last !== false)
-				{
+			{
 				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
-				}
+			}
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			}
-		else
+		} else
 			$this->count = 0;
 
 		$this->ctx->curctx->push('CCount', $this->count);
-		}
+	}
 
 	public function getnext()
 		{
@@ -7983,6 +7985,313 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 	}
 
 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Return the file manager tree in a html UL LI
+ *
+ * <OFFileTree [path=""] [delegation="id"] [file="0|1"] [filelimit="fileNumber"] [maxdepth="depth"]>
+ *
+ * - The path attribute is optional. It define where the tree will start.
+ * 		The default value is the entire file manager with rights.
+ * - The delegation attribute is optional.
+ * 		The default value is '0'.
+ * - The file attribute is optional, it define if file are display or not.
+ * 		The default value is '1'.
+ * - The filelimit attribute is optional, it will limit the number of file per folder which will be display. 0 = no limit.
+ * 		The default value is '0'.
+ * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
+ * 		No maximum depth by default.
+ *
+ *
+ * Example:
+ *
+ * The following OVML function :
+ * <OFFileTree>
+ *
+ * Will yield:
+ *
+ * <ul class="filetree-root">
+ * a definir
+ * </ul>
+ */
+class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
+	
+	protected	$path = null;
+	protected	$delegation = 0;
+	protected	$file = 1;
+	protected	$limitfile = 0;
+
+	protected	$selectedClass = 'selected';
+	protected	$activeClass = 'active';
+
+	protected	$maxDepth = 100;
+
+
+	private function getChild(bab_Path $folder, bab_Path $subFolder, $depth = 1) {
+		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+		global $babDB;
+		
+		$return = "";
+		foreach($folder as $folderPath){
+			if($folderPath->isDir() && $folderPath->getBasename() != "OVF" && $depth < $this->maxDepth){
+				$currentSubFolder = new bab_Path($subFolder->tostring());
+				$currentSubFolder->push($folderPath->getBasename());
+			
+				$req = "SELECT * FROM " . BAB_FILES_TBL . " f WHERE f.bgroup='Y' AND f.state='' AND f.confirmed='Y' AND f.id_owner IN (".$babDB->quote($this->arrid).") AND f.path = '".$babDB->db_escape_string($currentSubFolder->toString().'/')."' ORDER BY display_position ASC, name ASC";
+				$res = $babDB->db_query($req);
+				$return.= "<li>".$folderPath->getBasename()."<ul>";
+			
+				$return.= $this->getChild($folderPath, $currentSubFolder, $depth+1);
+				if($this->file){
+					while($arr = $babDB->db_fetch_assoc($res)){
+						$return.= "<li><a href=\"?tg=fileman&gr=Y&sAction=getFile&idf=".$arr['id']."&path=".$arr['path']."\">".$arr['name']."</a></li>";
+					}
+				}
+				$return.= "</ul></li>";
+			
+			}
+		}
+		return $return;
+	}
+	
+	/**
+	 *[path=""] [delegation="id"] [file="0|1"] [filelimit="fileNumber"] [maxdepth="depth"]
+	 * @return string
+	 */
+	public function toString()
+	{
+		require_once $GLOBALS['babInstallPath'] . 'utilit/fileincl.php';
+		global $babDB;
+		$args = $this->args;
+
+		if (isset($args['delegation'])) {
+			$this->delegation = $args['delegation'];
+		}
+
+		if (isset($args['maxdepth'])) {
+			$this->maxDepth = $args['maxdepth'];
+		}
+
+		if (isset($args['file'])) {
+			$this->file = $args['file'];
+		}
+		
+		if (isset($args['path'])) {
+			$currentPath = $args['path'];
+			$this->path = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation) . '/' . $args['path']));
+		} else {
+			$currentPath = '';
+			$this->path = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation) . '/'));
+		}
+
+		if (!isset($this->path) || !$this->path->isDir()) {
+			trigger_error(sprintf('incorrect attribute in %s#%s delegation="%s" or incorrect attribute in path="%s"', (string) $this->template->debug_location, get_class($this), $args['delegation'], $args['path']));
+			trigger_error(sprintf('', (string) $this->template->debug_location, get_class($this), $args['path']));
+			return '';
+		}
+		
+		$sDelegation = ' ';
+		if(0 != $this->delegation)
+		{
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
+		}
+		$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y'" . $sDelegation;
+		
+		$arrid = array();
+		$res = $babDB->db_query($req);
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $arr['id'])){
+				$this->arrid[] = $arr['id'];
+			}
+		}
+
+		$return = "<ul>";
+		
+		foreach($this->path as $folderPath){
+			if($folderPath->isDir()){
+				$currentSubFolder = new bab_Path($currentPath);
+				$currentSubFolder->push($folderPath->getBasename());
+				
+				$return.= "<li>".$folderPath->getBasename()."<ul>";
+				
+				$return.= $this->getChild($folderPath, $currentSubFolder);
+				if($this->file){
+					$req = "
+						SELECT *
+						FROM " . BAB_FILES_TBL . " f 
+						WHERE f.bgroup='Y' 
+						AND f.state='' 
+						AND f.confirmed='Y' 
+						AND f.path = '".$babDB->db_escape_string($currentSubFolder->tostring().'/')."'
+						AND f.id_owner IN (".$babDB->quote($this->arrid).")
+					";
+					$res = $babDB->db_query($req);
+					while($arr = $babDB->db_fetch_assoc($res)){
+						$return.= "<li><a href=\"?tg=fileman&gr=Y&sAction=getFile&idf=".$arr['id']."&path=".$arr['path']."\">".$arr['name']."</a></li>"; 
+					}
+				}
+				$return.= "</ul></li>";
+				
+			}
+		}
+		
+		$return.= "</ul>";
+		
+		
+		return $return;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Return the file manager tree in a html UL LI
+ *
+ * <OFFileTree [category="id"] [topic="id"] [delegation="id"] [article="0|1"] [articlelimit="articleNumber"] [maxdepth="depth"]>
+ *
+ * - The category attribute is optional. It define where the tree will start.
+ * 		The default value is the entire articles tree with rights.
+ * - The topic attribute is optional. It define where the tree will start.
+ * 		The default value is the entire articles tree with rights.
+ * - The delegation attribute is optional.
+ * 		The default value is '0'.
+ * - The article attribute is optional, it define if article are display or not.
+ * 		The default value is '1'.
+ * - The filelimit attribute is optional, it will limit the number of file per folder which will be display. 0 = no limit.
+ * 		The default value is '0'.
+ * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
+ * 		No maximum depth by default.
+ *
+ *
+ * Example:
+ *
+ * The following OVML function :
+ * <OFFileTree>
+ *
+ * Will yield:
+ *
+ * <ul class="articletree-root">
+ * a definir
+ * </ul>
+ */
+class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
+	
+	protected	$path = null;
+	protected	$delegation = 0;
+	protected	$article = 1;
+	protected	$limitfile = 0;
+
+	protected	$selectedClass = 'selected';
+	protected	$activeClass = 'active';
+
+	protected	$maxDepth = 100;
+
+
+	private function getChild($id, $depth = 1) {
+		global $babDB;
+		$return = "";
+		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=".$babDB->quote($id);
+		$res = $babDB->db_query($req);
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+			//if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
+				$return.= "<li>".$arr['title']."<ul>";
+				$return.= $this->getChild($arr['id']);
+				$return.= "</ul></li>";
+		//	}
+		}
+		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id);
+		$res = $babDB->db_query($req);
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+			if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])){
+				$return.= "<li>".$arr['category']."<ul>";
+				$reqArticles = "select * from ".BAB_ARTICLES_TBL." where id_topic=".$babDB->quote($arr['id']);
+				$resArticles = $babDB->db_query($reqArticles);
+				while( $arrArticles = $babDB->db_fetch_array($resArticles))
+				{
+					$return.='<li>'.$arrArticles['title'].'</li>';
+				}
+				$return.= "</ul></li>";
+			}
+		}
+		return $return;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function toString()
+	{
+		global $babDB;
+		$args = $this->args;
+
+		if (isset($args['delegation'])) {
+			$this->delegation = $args['delegation'];
+		}
+
+		if (isset($args['maxdepth'])) {
+			$this->maxDepth = $args['maxdepth'];
+		}
+
+		if (isset($args['article'])) {
+			$this->article = $args['article'];
+		}
+		
+		if (isset($args['topic'])) {
+			$this->article = $args['topic'];
+		}
+		if (isset($args['category'])) {
+			$this->article = $args['category'];
+		}
+		
+		$sDelegation = ' ';
+		
+		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
+		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=0" . $sDelegation;
+		$res = $babDB->db_query($req);
+		$return = "<ul>";
+		while( $arr = $babDB->db_fetch_assoc($res))
+		{
+		//	if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
+				$return.= "<li>".$arr['title']."<ul>";
+				$return.= $this->getChild($arr['id']);
+				$return.= "</ul></li>";
+		//c	}
+		}
+		
+		
+		$return.= "</ul>";
+		
+		
+		return $return;
+	}
 }
 
 
