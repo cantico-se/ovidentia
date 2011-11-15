@@ -1,31 +1,27 @@
 <!--#begin userslist -->
+
 <script type="text/javascript">
 //<![CDATA[
 document.observe("dom:loaded", function bab_userListInit() {
-	if(null != $('oSearchImg'))
-	{
-		$('oSearchImg').href = '#';
-		$('oSearchImg').observe('click',  bab_userListShowHideFilter);
-	
-		if('' == $('BAB_sSearchField').value)
-		{
-			bab_userListShowHideFilter();
-		}
-	}
+        var oSearchImg = document.getElementById('oSearchImg');
+        if (oSearchImg) {
+                oSearchImg.style.cursor = 'pointer';
+                oSearchImg.onclick = bab_userListShowHideFilter;
+
+                if ('' == $('BAB_sSearchField').value) {
+                     $('babUserListFilter').show();
+                }
+        }
 });
 
 function bab_userListShowHideFilter()
 {
-	if($('babUserListFilter').visible())
-	{
-		$('babUserListFilter').hide();
-	}
-	else
-	{
-		$('babUserListFilter').show();
-	}
-}//]]>
+        $('babUserListFilter').toggle();
+        return false;
+}
+//]]>
 </script>
+
 <!--#if bshowform -->
 <form method="post" action="{ babPhpSelf }" name="listform">
 <input type="hidden" name="tg" value="users" />
