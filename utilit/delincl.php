@@ -483,7 +483,7 @@ function bab_deleteDbDirectory($id)
 
 function bab_deleteGroupAclTables($id)
 {
-
+	aclDeleteGroup(BAB_ADDONS_GROUPS_TBL, $id);
 	aclDeleteGroup(BAB_TOPICSVIEW_GROUPS_TBL, $id);
 	aclDeleteGroup(BAB_TOPICSCOM_GROUPS_TBL, $id);
 	aclDeleteGroup(BAB_TOPICSSUB_GROUPS_TBL, $id);
