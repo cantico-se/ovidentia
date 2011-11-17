@@ -185,6 +185,34 @@ class bab_ArticleDraftEditor {
 			// ignore, the folder does not exists
 		}
 	}
+	
+	public function getTopicTemplate()
+	{
+		$values = array('head' => '', 'body' => '');
+	
+		if (!bab_gp('topics',false))
+		{
+			return false;
+		}
+	
+		global $babDB;
+	
+		$res = $babDB->db_query("select article_tmpl from bab_topics  where id=".$babDB->quote(bab_gp('topics',false)));
+		if( !$res || $babDB->db_num_rows($res) !== 1 ) {
+			return false;
+		}
+	
+	
+		$topic = $babDB->db_fetch_array($res);
+		$template = $topic['article_tmpl'];
+	
+		if (empty($template))
+		{
+			return $values;
+		}
+	
+		return bab_getTopicTemplate($template, 'html', 'html');
+	}
 
 
 	/**
@@ -256,6 +284,7 @@ class bab_ArticleDraftEditor {
 			)->setFoldable(false)
 		);
 
+		$tpl = $this->getTopicTemplate();
 
 		$headEditor = new bab_contentEditor('bab_article_head');
 		$headEditor->setRequestFieldName('head');
@@ -263,6 +292,8 @@ class bab_ArticleDraftEditor {
 		if (isset($_POST['head']))
 		{
 			$headEditor->setContent($_POST['head']);
+		}elseif($tpl){
+			$headEditor->setContent($tpl['head']);
 		}
 		$headEditor->setParameters(array('height' => '200'));
 
@@ -282,6 +313,8 @@ class bab_ArticleDraftEditor {
 		if (isset($_POST['body']))
 		{
 			$bodyEditor->setContent($_POST['body']);
+		}elseif($tpl){
+			$headEditor->setContent($tpl['body']);
 		}
 		$bodyEditor->setParameters(array('height' => '300'));
 
