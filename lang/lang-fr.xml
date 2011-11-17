@@ -894,7 +894,7 @@
 <string id="WARNING: This operation will delete the site and all references">ATTENTION : cette opération va supprimer ce site et toutes ses références</string>
 <string id="WARNING: This operation will delete the status and all references">ATTENTION : cette opération va supprimer cet état et toutes ses références</string>
 <string id="WARNING: This operation will delete the thread and all references">ATTENTION : cette opération supprimera le sujet et tous les éléments qui s'y rattachent</string>
-<string id="WARNING: This operation will delete the topic category with all references">ATTENTION : cette opération supprimera la catégorie de thèmes d'articles et tous les éléments qui y font référence</string>
+<string id="WARNING: This operation will delete the topic category with all sub-categories, topics and articles">ATTENTION : cette opération supprimera la catégorie de thèmes d'articles et toutes les sous-catégories, thèmes et articles</string>
 <string id="WARNING: This operation will delete the topic, articles and comments">ATTENTION : cette opération supprimera le thème d'articles ainsi que tous les articles et commentaires associés</string>
 <string id="WARNING: This operation will delete the user and all references">ATTENTION : cette opération supprimera l'utilisateur et tous les éléments qui y font référence</string>
 <string id="WARNING: This operation will delete the vacation and all references">ATTENTION : cette opération va supprimer ce type de congés et toutes ses références</string>

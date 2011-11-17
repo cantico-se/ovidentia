@@ -52,7 +52,17 @@ function bab_deleteSection($id)
 	$res = $babDB->db_query($req);
 }
 
-function bab_deleteTopicCategory($id)
+
+/**
+ * Delete a topic category
+ * 
+ * @param int $id		id category
+ * @param bool $sub		true : delete sub categories
+ * 						false : move sub categories to parent
+ * 
+ * @return int id parent
+ */
+function bab_deleteTopicCategory($id, $sub = false)
 {
 	global $babDB;
 
@@ -74,9 +84,19 @@ function bab_deleteTopicCategory($id)
 		{
 		bab_confirmDeleteTopic($arr['id']);
 		}
-
+		
 	list($idparent) = $babDB->db_fetch_array($babDB->db_query("select id_parent from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
-	$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL."  set id_parent='".$babDB->db_escape_string($idparent)."' where id_parent='".$babDB->db_escape_string($id)."'");
+
+	if ($sub)
+	{
+		$resc = $babDB->db_query("SELECT id FROM ".BAB_TOPICS_CATEGORIES_TBL."  WHERE id_parent=".$babDB->quote($id));
+		while ($c = $babDB->db_fetch_assoc($resc))
+		{
+			bab_deleteTopicCategory($c['id'], true);
+		}
+	} else {
+		$babDB->db_query("update ".BAB_TOPICS_CATEGORIES_TBL."  set id_parent='".$babDB->db_escape_string($idparent)."' where id_parent='".$babDB->db_escape_string($id)."'");
+	}
 
 	// delete topic category
 	list($iIdDelegation) = $babDB->db_fetch_array($babDB->db_query("SELECT id_dgowner from ".BAB_TOPICS_CATEGORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));

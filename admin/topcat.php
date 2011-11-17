@@ -376,7 +376,7 @@ function topcatDelete($id, $idp)
 			{
 			$this->message = bab_translate("Are you sure you want to delete this topic category");
 			$this->title = bab_getTopicCategoryTitle($id);
-			$this->warning = bab_translate("WARNING: This operation will delete the topic category with all references"). "!";
+			$this->warning = bab_translate("WARNING: This operation will delete the topic category with all sub-categories, topics and articles"). "!";
 			$this->urlyes = $GLOBALS['babUrlScript']."?tg=topcat&idx=Delete&group=".$id."&action=Yes"."&idp=".$idp;
 			$this->yes = bab_translate("Yes");
 			$this->urlno = $GLOBALS['babUrlScript']."?tg=topcats";
@@ -387,14 +387,6 @@ function topcatDelete($id, $idp)
 	if( $idp == 0 && $babBody->currentAdmGroup)
 		{
 		$babBody->msgerror = bab_translate("This topic category can't be deleted");
-		return false;
-		}
-
-	$db = $GLOBALS['babDB'];
-	$r = $db->db_fetch_array($db->db_query("select count(*) as total from ".BAB_TOPICS_TBL." where id_cat='".$id."'"));
-	if( $r['total'] > 0 )
-		{
-		$babBody->msgerror = bab_translate("To delete topic category, you must delete topics before");
 		return false;
 		}
 
@@ -687,8 +679,11 @@ function confirmDeleteTopcat($id)
 		}
 
 	require_once dirname(__FILE__) . '/../utilit/delincl.php';
-	$idp = bab_deleteTopicCategory($id);
+	$idp = bab_deleteTopicCategory($id, true);
+	
+	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topcats");
+	exit;
 	}
 
 function updateDefaultRightsTopics($idcatsrc, $idcat)
