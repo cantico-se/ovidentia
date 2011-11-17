@@ -1103,7 +1103,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 /**
  * Get file array and access rights on the file
- * For versionning
+ * 
  */
 function fm_getFileAccess($idf)
 {
@@ -1134,28 +1134,25 @@ function fm_getFileAccess($idf)
 				$oFmFolder = $oFmFolderSet->get($oId->in($oFolderFile->getOwnerId()));
 				if(!is_null($oFmFolder))
 				{
-					if('Y' === $oFmFolder->getVersioning())
+					if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
 					{
-						if(bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId()) || bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
+						$bupdate = true;
+						if('Y' === $oFmFolder->getVersioning() && 0 !== $oFolderFile->getFolderFileVersionId())
 						{
-							$bupdate = true;
-							if(0 !== $oFolderFile->getFolderFileVersionId())
-							{
-								$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
+							$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 
-								$oId =& $oFmFolderSet->aField['iId'];
-								$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
-								if(!is_null($oFolderFileVersion))
-								{
-									$lockauthor = $oFolderFileVersion->getAuthorId();
-								}
+							$oId =& $oFmFolderSet->aField['iId'];
+							$oFolderFileVersion = $oFolderFileVersionSet->get($oId->in($oFolderFile->getFolderFileVersionId()));
+							if(!is_null($oFolderFileVersion))
+							{
+								$lockauthor = $oFolderFileVersion->getAuthorId();
 							}
 						}
-
-						if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
-						{
-							$bdownload = true;
-						}
+					}
+					
+					if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
+					{
+						$bdownload = true;
 					}
 				}
 			}
@@ -1174,7 +1171,7 @@ function fm_getFileAccess($idf)
 		'oFmFolder' => $oFmFolder,
 		'bupdate' => $bupdate,
 		'bdownload' => $bdownload,
-		'lockauthor' => $lockauthor
+		'lockauthor' => $lockauthor			// versionning only
 		);
 	}
 

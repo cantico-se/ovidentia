@@ -29,16 +29,16 @@ function getFmImage($idf, $w, $h)
 {
 	global $babDB;
 	include_once $GLOBALS['babInstallPath'].'utilit/fileincl.php';
-
-	$res = $babDB->db_query("SELECT * FROM ".BAB_FILES_TBL." WHERE id=".$babDB->quote($idf));
-	if( $res && $babDB->db_num_rows($res) > 0 )
+	
+	$access = fm_getFileAccess($idf);
+	
+	if (!$access['bdownload'])
 	{
-		$file = $babDB->db_fetch_assoc($res);
-		$sUploadPath = BAB_FileManagerEnv::getCollectivePath(bab_getCurrentUserDelegation());
-		$fullpath = $sUploadPath . $file['path'] . $file['name'];
-
-		return bab_getResizedImage($fullpath, $w, $h);
+		die('Access denied');
 	}
+
+	return bab_getResizedImage($access['oFolderFile']->getFullPathname(), $w, $h);
+	
 }
 
 
