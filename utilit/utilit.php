@@ -1311,9 +1311,9 @@ function bab_updateUserSettings()
  */
 function bab_setUserPasswordVariable($id, $cpw, $id_user)
 {
+	global $BAB_SESS_USERID;
 	if( extension_loaded('mcrypt') && !empty($cpw) && isset($GLOBALS['babEncryptionKey']) && !isset($_REQUEST['babEncryptionKey']) && !empty($GLOBALS['babEncryptionKey']) && !empty($BAB_SESS_USERID) && $BAB_SESS_USERID == $id_user)
 	{
-	global $BAB_SESS_USERID;
 	$GLOBALS['babUserPassword'] = bab_decrypt($cpw, md5($id.session_id().$BAB_SESS_USERID.$GLOBALS['babEncryptionKey']));
 	}
 }
