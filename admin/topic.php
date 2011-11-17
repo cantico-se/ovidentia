@@ -178,7 +178,7 @@ function deleteArticles($art, $item)
 
 function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $saupd, $bnotif, $atid, $disptid, $restrict, $bhpages, $bpubdates, $battachment, $bartupdate, $bmanmod, $maxarts, $bautoapp, $busetags, $allowarticlerating)
 	{
-	global $babBody;
+	global $babBody, $babScriptPath;
 	if( !isset($id))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must choose a valid category !!");
