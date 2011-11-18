@@ -340,9 +340,8 @@ function bab_getUserAdministratorDelegations($id_user = NULL) {
 		ORDER BY d.name 
 	');
 	
-	$dgall = $babDB->db_num_rows($res) > 0;
 	$dg0 = bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP, $id_user);
-	
+	$dgall = $babDB->db_num_rows($res) > 0 || $dg0;
 	
 	return bab_getDelegationsFromResource($res, $dgall, $dg0);
 }
