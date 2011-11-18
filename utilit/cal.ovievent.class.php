@@ -1175,7 +1175,7 @@ class bab_cal_OviEventSelect
 		}
 
 
-		$where = " (ce.parent_calendar IN(".$babDB->quote($selected_calendars).") OR (ceo.caltype IN('resource', 'public') AND ceo.id_cal IN(".$babDB->quote($id_calendars).")))";
+		$where = " (ce.parent_calendar IN(".$babDB->quote($selected_calendars).") OR ceo.id_cal IN(".$babDB->quote($id_calendars)."))";
 
 		$where .= " AND ceo.status != '".BAB_CAL_STATUS_DECLINED."' 
 		";
@@ -1370,6 +1370,7 @@ class bab_cal_OviEventSelect
 		$queries = array();
 		$inbox_calendars = array();
 		
+		
 		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
@@ -1380,6 +1381,8 @@ class bab_cal_OviEventSelect
 			}
 			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['id_user'];
 		}
+		
+		
 		
 		foreach($queries as $calendarBackend => $uid_list)
 		{
