@@ -1116,7 +1116,12 @@ function bab_isMemberOfTree($id_group, $id_user = '')
 
 	foreach($usergroups as $idg)
 	{
-		$ugroup = bab_Groups::get($idg);
+		try {
+			$ugroup = bab_Groups::get($idg);
+		} catch (Exception $e) {
+			bab_debug($e->getMessage());
+			continue;
+		}
 		if ($ugroup['lf'] >= $lf && $ugroup['lr'] <= $lr)
 		{
 			return true;
