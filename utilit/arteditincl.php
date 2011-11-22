@@ -292,7 +292,7 @@ class bab_ArticleDraftEditor {
 		if (isset($_POST['head']))
 		{
 			$headEditor->setContent($_POST['head']);
-		}elseif($tpl){
+		}elseif($tpl && !$this->draft->head){
 			$headEditor->setContent($tpl['head']);
 		}
 		$headEditor->setParameters(array('height' => '200'));
