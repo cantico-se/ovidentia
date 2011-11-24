@@ -297,7 +297,7 @@ class bab_Path implements SeekableIterator, Countable {
 			}
 
 			if (is_string($va)) {
-				return strcasecmp($va, $vb);
+				return ($order * strcasecmp($va, $vb));
 			}
 
 			if (is_bool($va)) {
