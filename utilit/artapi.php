@@ -554,7 +554,8 @@ function bab_addTopic($name, $description, $idCategory, &$error, $topicArr = arr
 							'max_articles'=>10,
 							'auto_approbation'=>'N',
 							'busetags'=>'N',
-							'allow_addImg'=>'N'
+							'allow_addImg'=>'N',
+							'allow_unsubscribe' => 0
 							);
 	
 	if( empty($name))
@@ -749,7 +750,17 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
 	}
 
 	if (count($IdEntries) > 0) {
-		$req = "select tc.* from ".BAB_TOPICS_TBL." tc left join ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' order by tot.ordering asc";
+		$req = "select 
+				tc.*,
+				u.id_user unsubscribed 
+			from 
+			".BAB_TOPICS_TBL." tc 
+				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot ON tc.id=tot.id_topcat 
+				LEFT JOIN bab_topics_unsubscribe u ON tc.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+				
+			where tc.id IN (".$babDB->quote($IdEntries).") and tot.type='2' 
+			order by tot.ordering asc
+		";
 		return $babDB->db_query($req);
 	}
 		
@@ -1782,6 +1793,81 @@ function bab_isArticleModifiable($id_article)
 	}
 	
 	return false;
+}
+
+
+
+
+/**
+ * Return -1 if unsubscription not allowed in topic or notification disabled or not accessible in topic or user logged out
+ * Return 0 if user unsubscribed and notifications activated in topic and unsubscription allowed in topic
+ * Return 1 if user subscribed and notifications activated in topic and unsubscription allowed in topic
+ * 
+ * 
+ * @param	int		$id_topic
+ * @param	int		$id_user
+ * @param	bool	$set		Set subscription status of user to topic
+ * 								true : subscribe to notifications (remove table row)
+ * 								false : unsubscribe to notifications (add row in table)
+ * 
+ * @return int
+ */
+function bab_TopicNotificationSubscription($id_topic, $id_user, $set = null)
+{
+	global $babDB;
+	
+	if (!$GLOBALS['BAB_SESS_LOGGED'])
+	{
+		return -1;
+	}
+	
+	$res = $babDB->db_query("SELECT 
+			t.notify, 
+			t.allow_unsubscribe, 
+			u.id_user   
+		FROM bab_topics t LEFT JOIN bab_topics_unsubscribe u ON u.id_topic=t.id AND u.id_user=".$babDB->quote($id_user)." 
+		WHERE 
+			t.id=".$babDB->quote($id_topic)
+	);
+	
+	$arr = $babDB->db_fetch_assoc($res);
+	
+	if ('N' === $arr['notify'])
+	{
+		return -1;
+	}
+	
+	if (0 === (int) $arr['allow_unsubscribe'])
+	{
+		return -1;
+	}
+	
+	if (!bab_isAccessValidByUser(BAB_TOPICSVIEW_GROUPS_TBL, $id_topic, $id_user))
+	{
+		return -1;
+	}
+	
+	
+	if (null !== $set)
+	{
+		if (false === $set)
+		{
+			bab_debug('unsubscribe');
+			
+			$babDB->db_query("INSERT INTO bab_topics_unsubscribe (id_topic, id_user) 
+				VALUES (".$babDB->quote($id_topic).", ".$babDB->quote($id_user).")");
+			
+			return 1;
+			
+		} else {
+			bab_debug('subscribe');
+			$babDB->db_queryWem("DELETE FROM bab_topics_unsubscribe WHERE id_topic=".$babDB->quote($id_topic)." AND id_user=".$babDB->quote($id_user));
+			
+			return 0;
+		}
+	}
+	
+	return (null === $arr['id_user']) ? 1 : 0;
 }
 
 

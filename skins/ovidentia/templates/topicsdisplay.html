@@ -34,14 +34,19 @@ Variables in "body_default" :
   	<td><span class="bab-articletopic-{ babtpl_topicid }"></span></td>
 
 
-
-	<!--#if bsubmit -->
+	<!--#if topicbuttons -->
 	<td align="right">
 		<span class="bab_buttons">
-			<a href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			<!--#if bsubscription -->
+			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/Puces/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
+			<!--#endif bsubscription -->
+		
+			<!--#if bsubmit -->
+			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			<!--#endif bsubmit -->
 		</span>
 	</td>
-	<!--#endif bsubmit -->
+	<!--#endif topicbuttons -->
 </tr>
 </table>
 
@@ -160,13 +165,19 @@ Variables in "body_default" :
   <tr>
   	<td><span class="bab-articletopic-{ babtpl_topicid }"></span></td>
 
-	<!--#if bsubmit -->
+	<!--#if topicbuttons -->
 	<td align="right">
 		<span class="bab_buttons">
-			<a href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			<!--#if bsubscription -->
+			&nbsp; <a class="subscription" href="{ subscriptionurl }"><img src="{ babSkinPath }images/Puces/mail.png" align="absmiddle" border="0" /> { subscriptiontxt }</a>
+			<!--#endif bsubscription -->
+		
+			<!--#if bsubmit -->
+			&nbsp; <a class="submit" href="{ bsubmiturl }"><img src="{ babSkinPath }images/Puces/edit_add.png" align="absmiddle" border="0" /> { submittxt }</a>
+			<!--#endif bsubmit -->
 		</span>
 	</td>
-	<!--#endif bsubmit -->
+	<!--#endif topicbuttons -->
 </tr>
 </table>
 

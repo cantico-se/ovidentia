@@ -133,6 +133,8 @@ function addTopic($cat, $ncat, $category, $description, $saart, $sacom, $saupd, 
 			$this->none					= bab_translate("None");
 			$this->autoapprobationtxt	= bab_translate("Automatically approve author if he belongs to approbation schema");
 			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
+			$this->allow_unsubscribe	= bab_translate("Allow readers to subscribe and unsubsribe from notifications");
+			
 			$this->tgval				= "topics";
 			$this->langLabel			= bab_translate("Language");
 			$this->langFiles			= bab_getInstance('babLanguageFilter')->getLangFiles();
@@ -750,7 +752,8 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 						'max_articles'=>$maxarts,
 						'auto_approbation'=>$bautoapp,
 						'busetags'=>$busetags,
-						'allow_addImg'=>$sAllowAddImg
+						'allow_addImg'=>$sAllowAddImg,
+						'allow_unsubscribe'=>bab_rp('allow_unsubscribe')
 					);
 	
 	require_once dirname(__FILE__) . '/../utilit/editorincl.php';
@@ -772,14 +775,14 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	$sTempName				= (string) bab_rp('sTempImgName', '');
 	$sImageName				= (string) bab_rp('sImgName', '');
 	
-	//Si image charg�e par ajax
+	//Si image chargee par ajax
 	if('' !== $sTempName && '' !== $sImageName)
 	{
 		$bHaveAssociatedImage	= true;
 		$bFromTempPath			= true;
 	}
 	else
-	{//Si image charg�e par la voie normal
+	{//Si image chargee par la voie normal
 		if((array_key_exists($sKeyOfPhpFile, $_FILES) && '' != $_FILES[$sKeyOfPhpFile]['tmp_name']))
 		{
 			$bHaveAssociatedImage = true;
@@ -817,7 +820,7 @@ function saveCategory($category, $cat, $sacom, $saart, $saupd, $bnotif, $lang, $
 	}
 	
 	{
-		//Ins�rer l'image en base
+		//Inserer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);

@@ -309,11 +309,11 @@ function modifyCategory($id, $cat, $category, $description, $saart, $sacom, $sau
 			$this->sDeleteImageChecked	= (bab_rp('deleteImageChk', 0) == 0) ? '' : 'checked="checked"';
 			$this->sDeleteImageCaption	= bab_translate('Remove image');
 			$this->sImageModifyMessage	= bab_translate('Changes affecting the image will be taken into account after having saved');
-
 			$this->sHiddenUploadUrl		= $GLOBALS['babUrlScript'] . '?tg=topic&idx=getHiddenUpload&iIdTopic=' . $id . '&item=' . $id . '&cat=' . $cat;
 
 			$this->allowarticleratingtxt	= bab_translate("Allow commenters to rate articles");
-
+			$this->allow_unsubscribe	= bab_translate("Allow readers to subscribe and unsubsribe from notifications");
+			
 			//Si on ne vient pas d'un post alors recuperer l'image
 			if(!array_key_exists('sImgName', $_POST))
 			{
@@ -1163,9 +1163,10 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 		max_articles='".$db->db_escape_string($maxarts)."',
 		auto_approbation='".$db->db_escape_string($bautoapp)."',
 		busetags='".$db->db_escape_string($busetags)."',
-		allow_article_rating='".$db->db_escape_string($allowarticlerating)."',
-		allow_addImg='".$db->db_escape_string($sAllowAddImg)."'
-	WHERE
+		allow_article_rating='".$db->db_escape_string($allowarticlerating)."', 
+		allow_addImg='".$db->db_escape_string($sAllowAddImg)."', 
+		allow_unsubscribe=".$db->quote(bab_rp('allow_unsubscribe'))."
+	WHERE 
 		id = '".$id."'";
 	$db->db_query($query);
 
@@ -1246,7 +1247,7 @@ function updateCategory($id, $category, $cat, $saart, $sacom, $saupd, $bnotif, $
 	}
 
 	{
-		//Ins�rer l'image en base
+		//Inserer l'image en base
 		$aPathParts		= pathinfo($sFullPathName);
 		$sName			= $aPathParts['basename'];
 		$sPathName		= BAB_PathUtil::addEndSlash($aPathParts['dirname']);

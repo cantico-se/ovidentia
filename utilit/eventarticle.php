@@ -49,6 +49,12 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 	protected $article_id 		= null;
 	protected $article_title 	= null;
 	protected $article_author 	= null;
+	
+	/**
+	 * 
+	 * @var array
+	 */
+	private $unsubscribed_users	= null;
 
 	/**
 	 *
@@ -67,16 +73,28 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 	 * @param	int		$article_id
 	 * @param	string	$article_title
 	 * @param	string	$article_author
+	 * @param	bool	$allow_unsubscribe
 	 *
 	 * @return bab_eventArticle
 	 */
-	public function setInformations($topic_id, $topic_name, $article_id, $article_title, $article_author)
+	public function setInformations($topic_id, $topic_name, $article_id, $article_title, $article_author, $allow_unsubscribe)
 	{
-		$this->topic_id 		= $topic_id;
-		$this->topic_name 		= $topic_name;
-		$this->article_id 		= $article_id;
-		$this->article_title 	= $article_title;
-		$this->article_author 	= $article_author;
+		$this->topic_id 			= $topic_id;
+		$this->topic_name 			= $topic_name;
+		$this->article_id 			= $article_id;
+		$this->article_title 		= $article_title;
+		$this->article_author 		= $article_author;
+		
+		if ($allow_unsubscribe)
+		{
+			// collect unsubscribed users from topic
+			global $babDB;
+			$res = $babDB->db_query("SELECT id_user FROM bab_topics_unsubscribe WHERE id_topic=".$babDB->quote($topic_id));
+			while ($arr = $babDB->db_fetch_assoc($res))
+			{
+				$this->unsubscribed_users[(int) $arr['id_user']] = (int) $arr['id_user'];
+			}
+		}
 
 		return $this;
 	}
@@ -145,7 +163,7 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 
 
 	/**
-	 * Get user to notify based on article restrictions and access rights
+	 * Get user to notify based on article restrictions and access rights and subscribtions
 	 * @return array
 	 */
 	public function getUsersToNotify()
@@ -158,7 +176,12 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 		if (0 < count($this->informed_recipients)) {
 			foreach($users as $id_user => $arr) {
 
-				if( null !== $this->restriction && !bab_articleAccessByRestriction($restriction, $id)){
+				if( null !== $this->restriction && !bab_articleAccessByRestriction($this->restriction, $id_user)){
+					unset($users[$id_user]);
+					continue;
+				}
+				
+				if( isset($this->unsubscribed_users[$id_user])){
 					unset($users[$id_user]);
 					continue;
 				}
@@ -166,7 +189,6 @@ class bab_eventArticle extends bab_event implements bab_eventNotifyRecipients
 				if (isset($this->informed_recipients[$id_user])) {
 					unset($users[$id_user]);
 				}
-
 			}
 		}
 

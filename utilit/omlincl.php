@@ -1087,6 +1087,19 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
+			
+			/**
+			 * @see bab_TopicNotificationSubscription()
+			 */
+			if (!$GLOBALS['BAB_SESS_LOGGED'] || 'N' === $arr['notify'] || 0 === (int) $arr['allow_unsubscribe'])
+			{
+				$this->ctx->curctx->push('TopicSubscription', -1);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', '');
+			} else {
+				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
+			} 
+			
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1127,13 +1140,14 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 
 		if( $this->count > 0 )
 			{
-			if( $this->topicname === false || $this->topicname === '' )
+				
+			$req = "select t.*, u.id_user unsubscribed 
+				from ".BAB_TOPICS_TBL." t
+					LEFT JOIN bab_topics_unsubscribe u ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+				where t.id IN (".$babDB->quote($this->IdEntries).")";
+			if( $this->topicname !== false && $this->topicname !== '' )
 				{
-				$req = "select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).")";
-				}
-			else
-				{
-				$req = "select * from ".BAB_TOPICS_TBL." where id IN (".$babDB->quote($this->IdEntries).") and category like '".$babDB->db_escape_string($this->topicname)."'";
+				$req .= " and t.category like '".$babDB->db_escape_like($this->topicname)."'";
 				}
 
 			$this->res = $babDB->db_query($req);
@@ -1182,6 +1196,22 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
+			
+			
+			/**
+			 * @see bab_TopicNotificationSubscription()
+			 */
+			if (!$GLOBALS['BAB_SESS_LOGGED'] || 'N' === $arr['notify'] || 0 === (int) $arr['allow_unsubscribe'])
+			{
+				$this->ctx->curctx->push('TopicSubscription', -1);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', '');
+			} else {
+				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
+				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
+			} 
+			
+			
+			
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;

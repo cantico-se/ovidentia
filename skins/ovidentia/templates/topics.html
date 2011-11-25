@@ -390,7 +390,7 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
           			</tr>
           			<tr> 
             			<td>
-	            			<table width="100%">
+	            			<table width="100%" cellpadding="3">
 	                			<tr> 
 	                  				<td nowrap="nowrap" align="right">{ modart }:</td>
 	                  				<td>
@@ -435,10 +435,24 @@ function ovidentia_popuptreeviewselectparentcategory_topic() {
 	                			</tr>
 		                		<tr> 
 		                  			<td align="right">{ notiftxt }:</td>
-		                  			<td nowrap="nowrap">
+		                  			<td>
 		                  				<select name="bnotif">
 		                      				<option value="Y" { notifysel }>{ yes }</option>
 		                      				<option value="N" { notifnsel }>{ no }</option>
+		                    			</select>
+		                    		</td>
+		                		</tr>
+		                		<tr> 
+		                  			<td align="right">{ allow_unsubscribe }:</td>
+		                  			<td>
+		                  				<select name="allow_unsubscribe">
+		                  					<!--#if arr[allow_unsubscribe] -->
+		                      				<option value="1" selected="selected">{ yes }</option>
+		                      				<option value="0">{ no }</option>
+		                      				<!--#else arr[allow_unsubscribe] --> 
+		                      				<option value="1">{ yes }</option>
+		                      				<option value="0" selected="selected">{ no }</option>
+		                      				<!--#endif arr[allow_unsubscribe] -->
 		                    			</select>
 		                    		</td>
 		                		</tr>

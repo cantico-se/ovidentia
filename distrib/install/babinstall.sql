@@ -494,9 +494,26 @@ CREATE TABLE bab_topics (
   busetags enum('N','Y') NOT NULL default 'N',
   allow_addImg enum('N','Y') NOT NULL default 'N',
   allow_article_rating enum('N','Y') NOT NULL default 'N',
+  allow_unsubscribe tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_cat (id_cat)
 );
+
+
+
+# --------------------------------------------------------
+#
+# Structure de la table 'bab_topics_unsubscribe'
+#
+
+CREATE TABLE bab_topics_unsubscribe (
+   id_topic int(11) unsigned NOT NULL,
+   id_user int(11) unsigned NOT NULL,
+   PRIMARY KEY (id_topic, id_user)
+);
+
+
+
 
 # --------------------------------------------------------
 #

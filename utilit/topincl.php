@@ -37,7 +37,7 @@ class categoriesHierarchy
 	var $topics;
 	var $topictitle;
 
-	function categoriesHierarchy($topics,$cat,$link)
+	public function __construct($topics,$cat,$link)
 		{
 		global $babBody, $babDB;
 		$this->link = $link;
@@ -127,7 +127,7 @@ function viewCategoriesHierarchy($topics)
 
 		function tempvch($topics)
 			{
-			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
+			parent::__construct($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 			}
 		}
 
@@ -140,7 +140,7 @@ class tempvch_txt extends categoriesHierarchy
 
 	function tempvch_txt($topics)
 		{
-		$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
+		parent::__construct($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 		}
 	}
 

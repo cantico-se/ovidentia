@@ -6656,6 +6656,30 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
 		}
 	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * Upgrade to 7.6.90
+	 */
+	
+	if (!bab_isTableField('bab_topics', 'allow_unsubscribe'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_topics` ADD allow_unsubscribe tinyint(1) unsigned NOT NULL default '0'");
+	}
+	
+	if (!bab_isTable('bab_topics_unsubscribe')) {
+		$babDB->db_query("
+			CREATE TABLE bab_topics_unsubscribe (
+			   id_topic int(11) unsigned NOT NULL,
+			   id_user int(11) unsigned NOT NULL,
+			   PRIMARY KEY (id_topic, id_user)
+			)
+		");
+	}
 
 
 	return true;

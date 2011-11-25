@@ -34,7 +34,7 @@ include_once $babInstallPath.'utilit/urlincl.php';
 
 
 
-class listArticles extends categoriesHierarchy
+abstract class bab_listArticles extends categoriesHierarchy
 {
 
 	var $template;
@@ -70,11 +70,11 @@ class listArticles extends categoriesHierarchy
 	
 	protected $tags;
 
-	function listArticles($topics)
+	public function __construct($topics)
 		{
 		global $babDB, $arrtop;
 
-		$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
+		parent::__construct($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
 		$this->topurl = "";
 		$this->bottomurl = "";
 		$this->nexturl = "";
@@ -131,7 +131,41 @@ class listArticles extends categoriesHierarchy
 				}
 			}
 			
+		$this->topicbuttons = false;
 		
+		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
+			{
+			$this->submittxt = bab_translate("Submit");
+			$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
+			$this->bsubmit = true;
+			$this->topicbuttons = true;
+			}
+		else
+			{
+			$this->bsubmit = false;
+			}
+
+		switch(bab_TopicNotificationSubscription($this->topics, $GLOBALS['BAB_SESS_USERID']))
+			{
+				case -1:
+					$this->bsubscription = false;
+					$this->subscriptiontxt = '';
+					break;
+					
+				case 0:
+					$this->bsubscription = true;
+					$this->topicbuttons = true;
+					$this->subscriptiontxt = bab_translate('Notify me by email when an article is published');
+					break;
+					
+				case 1:
+					$this->bsubscription = true;
+					$this->topicbuttons = true;
+					$this->subscriptiontxt = bab_translate('Stop receiving notifications for this topic');
+					break;
+			}
+			
+		$this->subscriptionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$this->topics);	
 
 		}
 		
@@ -234,7 +268,7 @@ function listArticles($topics)
 	{
 	global $babBody, $babDB, $arrtop;
 
-	class temp extends listArticles
+	class temp extends bab_listArticles
 		{
 			
 		
@@ -242,7 +276,7 @@ function listArticles($topics)
 		public function __construct($topics)
 			{
 			global $babDB;
-			$this->listArticles($topics);
+			parent::__construct($topics);
 			$babDB = $GLOBALS['babDB'];
 			$this->bmanager = bab_isUserTopicManager($this->topics);
 
@@ -272,16 +306,8 @@ function listArticles($topics)
 				{
 				$this->bcomment = false;
 				}
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
-				{
-				$this->submittxt = bab_translate("Submit");
-				$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
-				$this->bsubmit = true;
-				}
-			else
-				{
-				$this->bsubmit = false;
-				}
+				
+				
 
 			/* template variables */
 			$this->babtpl_topicid = bab_toHtml($this->topics);
@@ -471,7 +497,7 @@ function listArchiveArticles($topics, $pos)
 	{
 	global $babBody, $babDB;
 
-	class listArchiveArticlesCls extends listArticles
+	class listArchiveArticlesCls extends bab_listArticles
 		{
 
 		var $arr = array();
@@ -482,11 +508,11 @@ function listArchiveArticles($topics, $pos)
 		var $newc;
 		var $com;
 
-		function listArchiveArticlesCls($topics, $pos)
+		public function __construct($topics, $pos)
 			{
 			global $babDB, $arrtop;
 
-			$this->listArticles($topics);
+			parent::__construct($topics);
 			$maxarticles = $arrtop['max_articles'];
 
 			$res = $babDB->db_query("select count(*) from ".BAB_ARTICLES_TBL." where id_topic='".$babDB->db_escape_string($topics)."'and archive='Y'");
@@ -651,7 +677,7 @@ function readMore($topics, $article)
 	{
 	global $babBody, $babDB, $arrtop;
 
-	class temp extends listArticles
+	class temp extends bab_listArticles
 		{
 
 		var $content;
@@ -676,18 +702,18 @@ function readMore($topics, $article)
 		var $babtpl_head = '';
 		var $babtpl_body = '';
 
-		function temp($topics, $article)
+		public function __construct($topics, $article)
 			{
 			global $babDB, $arrtop;
 			/* template variables */
-			$this->listArticles($topics);
+			parent::__construct($topics);
 			
 			$this->babtpl_topicid = $topics;
 			$this->babtpl_articleid = $article;
 			$this->babtpl_articlesurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics;
 			$this->babtpl_archiveurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
 
-			$this->categoriesHierarchy($topics, -1, $GLOBALS['babUrlScript']."?tg=topusr");
+			
 			$this->printtxt = bab_translate("Print Friendly");
 			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
@@ -751,16 +777,7 @@ function readMore($topics, $article)
 				$this->commentstxt = '';
 				}
 
-			if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
-				{
-				$this->submittxt = bab_translate("Submit");
-				$this->bsubmiturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Submit&topics=".$this->topics);
-				$this->bsubmit = true;
-				}
-			else
-				{
-				$this->bsubmit = false;
-				}
+			
 
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
@@ -1261,6 +1278,46 @@ function getImage()
 
 
 
+/**
+ * Change subsription for current user and go back to previous page
+ * @param int $id_topic
+ * @return unknown_type
+ */
+function bab_topicSubscription($id_topic)
+{
+
+	switch(bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID']))
+	{
+		case 1:
+			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], false);
+			break;
+		
+		case 0:
+			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], true);
+			break;
+	}
+	
+	$backurl = new bab_url;
+	$backurl->tg='articles';
+	$backurl->topics=$id_topic;
+	
+	if (!empty($_SERVER['HTTP_REFERER']))
+	{
+		$referer = new bab_url($_SERVER['HTTP_REFERER']);
+		$self = bab_url::get_request_gp();
+		
+		if ($referer->checksum() !== $self->checksum())
+		{
+			$backurl = $referer;
+		}
+	}
+	
+	$backurl->location();
+}
+
+
+
+
 
 /* main */
 $arrtop = array();
@@ -1340,6 +1397,19 @@ switch($idx)
 		$form->fromTopic(bab_rp('topics'));
 		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
 		$form->display();
+		break;
+		
+		
+	case 'subscription':
+		// change notification subscription status to topic
+		$id_topic = (int) bab_rp('topic');
+		if (!$id_topic || !$GLOBALS['BAB_SESS_LOGGED'])
+		{
+			$babBody->addError(bab_translate('You need to be logged in to subscribe or unsuscribe'));
+			break;
+		}
+		bab_topicSubscription($id_topic);
+		
 		break;
 	
 

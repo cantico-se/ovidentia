@@ -1538,7 +1538,9 @@ function acceptWaitingArticle($idart)
 			tt.allow_attachments,
 			tct.id_dgowner,
 			tt.allow_addImg,
-			tt.busetags
+			tt.busetags,
+			tt.notify,
+			tt.allow_unsubscribe 
 		from
 			".BAB_ART_DRAFTS_TBL." adt
 				left join ".BAB_TOPICS_TBL." tt on adt.id_topic=tt.id
@@ -1725,11 +1727,11 @@ function acceptWaitingArticle($idart)
 			{
 			$artauthor = bab_translate("Anonymous");
 			}
-		if( $arr['notify_members'] == "Y" && bab_mktime($arr['date_publication']) <= mktime())
+		if( $arr['notify_members'] == "Y" && $arr['notify'] == 'Y' && bab_mktime($arr['date_publication']) <= mktime())
 			{
 			require_once dirname(__FILE__).'/eventarticle.php';
 			$event = new bab_eventAfterArticleAdd;
-			$event->setInformations($arr['id_topic'], $arr['topicname'], $articleid, $arr['title'], $artauthor);
+			$event->setInformations($arr['id_topic'], $arr['topicname'], $articleid, $arr['title'], $artauthor, (bool) $arr['allow_unsubscribe']);
 			$event->setRestriction($arr['restriction']);
 			bab_fireEvent($event);
 			}
