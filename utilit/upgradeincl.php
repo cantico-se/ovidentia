@@ -399,7 +399,7 @@ function bab_upgrade($core_dir, &$ret, $forceUpgrade = false)
  * this is processed on new install and after ovidentia upgrade
  *
  * @param	bool 			$install		test the install parameter of addons.ini file
- * @parma	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
+ * @param	null | string	$upgrade		test the upgrade parameter of addons.ini file, contain the version number of ovidentia (after upgrade)
  */
 function bab_upgradeAddonsFromInstall($install, $upgrade) {
 
