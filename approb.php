@@ -1191,6 +1191,7 @@ function updateConfirmationWaitingArticle($idart, $bconfirm, $comment)
 				break;
 		}
 
+		bab_sitemap::clearAll();
 		return true;
 	}
 	
@@ -1249,6 +1250,9 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 		$msg = nl2br($message);
         notifyCommentAuthor($subject, $msg, $BAB_SESS_USERID, $arr['email']);
 	}
+	
+	
+	bab_sitemap::clearAll();
 
 	return true;
 }
@@ -1290,6 +1294,8 @@ function updateConfirmationWaitingPost($thread, $post)
 		}
 
 	}
+	
+	bab_sitemap::clearAll();
 
 	return true;
 }
@@ -1361,6 +1367,8 @@ function confirmVacationRequest($veid, $remarks, $action)
 
 
 	bab_vac_updateEventCalendar($veid);
+	
+	bab_sitemap::clearAll();
 
 	return true;
 }
