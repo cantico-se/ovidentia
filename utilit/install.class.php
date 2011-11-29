@@ -254,6 +254,23 @@ class bab_InstallSource {
 			return $this->installCore($ini);
 		}
 	}
+	
+	
+	private function isIncluded($addon, $file)
+	{
+		global $babBody;
+		
+		$target = realpath('./'.$GLOBALS['babInstallPath'].'addons/'.$addon.'/'.$file);
+		
+		if (false === $target)
+		{
+			// il realpath failed, the file does not exist
+			return false;
+		}
+		
+		return in_array($target, get_included_files());
+		
+	}
 
 
 
@@ -275,6 +292,14 @@ class bab_InstallSource {
 			$babBody->addError(bab_translate('The name of the addon is missing in the addonini file'));
 			return false;
 		}
+		
+		
+		if ($this->isIncluded($addon_name, 'init.php'))
+		{
+			$babBody->addError(bab_translate('The file init.php is allready included for this addon'));
+			return false;
+		}
+		
 
 		$babDB->db_query("UPDATE ".BAB_ADDONS_TBL." SET installed='N' WHERE title=".$babDB->quote($addon_name));
 

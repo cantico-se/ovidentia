@@ -572,9 +572,11 @@ if (isset($_GET['babrw']))
  * Event intervenes just before the inclusion of code PHP which manages the current page:
  * the body of the page is not prepared, the template of the page is not treated.
  */
-class bab_eventBeforePageCreated extends bab_event { }
-$event = new bab_eventBeforePageCreated;
-bab_fireEvent($event); /* Fire all event registered as listeners */
+if ('addons' !== bab_rp('tg') && 'import_frame' !== bab_rp('idx')) {
+	class bab_eventBeforePageCreated extends bab_event { }
+	$event = new bab_eventBeforePageCreated;
+	bab_fireEvent($event); /* Fire all event registered as listeners */
+}
 
 /* Controler */
 switch(bab_rp('tg'))
