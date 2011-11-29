@@ -114,6 +114,13 @@ class bab_Groups
 	public function inUserGroups($id_group)
 	{
 		$groups = self::getGroups();
+		
+		if (!isset($groups[$id_group]))
+		{
+			bab_debug(sprintf('The group does not exists : %d', $id_group));
+			return false;
+		}
+		
 		return ('Y' === $groups[$id_group]['member']);
 	}
 	
