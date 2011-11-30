@@ -269,9 +269,9 @@ class bab_url {
 		{
 			if (is_array($value))
 			{
-				$sum += $this->arrChecksum($value);
+				$sum |= abs(crc32($key)) | $this->arrChecksum($value);
 			} else {
-				$sum += abs(crc32($value));
+				$sum |= abs(crc32($key.$value));
 			}
 		}
 		
