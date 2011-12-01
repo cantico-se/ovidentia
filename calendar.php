@@ -378,37 +378,51 @@ class displayApprobCalendarCls
 		$this->evtid = $evtid;
 		$this->idcal = $idcal;
 		$this->relation = $relation;
-
-		$calendar = bab_getICalendars()->getEventCalendar($idcal);
-		$backend = $calendar->getBackend();
-		$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
-
+		
 		$this->commenttxt = bab_translate("Reason");
 		$this->updatetxt = bab_translate("Update");
-		$this->approbstatus = bab_toHtml(sprintf(bab_translate("Approbation for %s"), $calendar->getName()));
-
-
+		
 		$this->statusarray = array(
 			BAB_CAL_STATUS_DECLINED => bab_translate('Reject'),
 			BAB_CAL_STATUS_ACCEPTED => bab_translate('Accept')
 		);
+		
 
-
-
-		$collection = $period->getCollection();
-
-		if( !empty($collection->hash))
+		$calendar = bab_getICalendars()->getEventCalendar($idcal);
+		
+		
+		
+		if (null === $calendar)
+		{
+			// the main calendar is not accessible, but the user must approve an event in it
+			$calendar = bab_getICalendars()->getEventCalendar($relation);
+			
+			if (null === $calendar)
 			{
-			$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
-			$this->all = bab_translate("All");
-			$this->thisone = bab_translate("This occurence");
-			$this->brepetitive = true;
+				$babBody->addError(bab_translate('The calendar is not accessible'));
 			}
-		else
-			{
-			$this->brepetitive = false;
-			}
+		}
+		
+		$this->brepetitive = false;
+		$this->approbstatus = false;
+		
+		if (isset($calendar))
+		{
+			$backend = $calendar->getBackend();
+			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
+	
+			$this->approbstatus = bab_toHtml(sprintf(bab_translate("Approbation for %s"), $calendar->getName()));
 
+			$collection = $period->getCollection();
+	
+			if( !empty($collection->hash))
+			{
+				$this->repetitivetxt = bab_translate("This is recurring event. Do you want to update this occurence or series?");
+				$this->all = bab_translate("All");
+				$this->thisone = bab_translate("This occurence");
+				$this->brepetitive = true;
+			}
+		}
 	}
 
 
@@ -431,6 +445,11 @@ class displayApprobCalendarCls
 
 	public function getHtml()
 	{
+		if (!$this->approbstatus)
+		{
+			return '';
+		}
+		
 		return bab_printTemplate($this, "calendar.html", "approbcalendar");
 	}
 }
