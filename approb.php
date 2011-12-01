@@ -668,7 +668,7 @@ function listWaitingEvents()
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
 				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
 				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=approb&evtid=".$this->arrevts[$i]['uuid']."&idcal=".$this->arrevts[$i]['idcal']."&relation=".$this->arrevts[$i]['relation']);
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=attendees&evtid=".$this->arrevts[$i]['uuid']."&dtstart=".$start->getICal()."&idcal=".$this->arrevts[$i]['idcal']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
