@@ -22,7 +22,7 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 require_once 'base.php';
-
+require_once dirname(__FILE__).'/delegincl.php';
 
 
 
@@ -2160,14 +2160,27 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	 */
 	public function getDownloadUrl() 
 	{
-		$oFolder = self::getRootFolder($this->getPathName(), $this->getDelegationOwnerId());
-
-		if(!($oFolder instanceof BAB_FmFolder))
+		if ('Y' === $this->getGroup())
 		{
-			return null;
+		
+			$oFolder = self::getRootFolder($this->getPathName(), $this->getDelegationOwnerId());
+	
+			if(!($oFolder instanceof BAB_FmFolder))
+			{
+				return null;
+			}
+			
+			$id = $oFolder->getId();
+		} else {
+			
+			if (!$GLOBALS['BAB_SESS_LOGGED'])
+			{
+				return null;
+			}
+			
+			$id = $GLOBALS['BAB_SESS_USERID'];
 		}
-
-		return $GLOBALS['babUrlScript'] . '?tg=fileman&id=' . $oFolder->getId() . '&gr=' . $this->getGroup() . '&path=' . urlencode(removeEndSlashes($this->getPathName())).'&sAction=getFile&idf='.$this->getId();
+		return $GLOBALS['babUrlScript'] . '?tg=fileman&id=' .$id. '&gr=' . $this->getGroup() . '&path=' . urlencode(removeEndSlashes($this->getPathName())).'&sAction=getFile&idf='.$this->getId();
 	}
 }
 
