@@ -4,43 +4,11 @@
 <!--
 
 
-function func(articleid,title)
-	{
-	var target = 1;
-	var checkb = document.getElementById('tg');
-	if (checkb.checked) {
-		target = 1;
-	}
-	else {
-		target = 0;
-	}
-	
-	var html = opener.getSelection();
-	if (html != '')
-		{
-		title = html;
-		}
-	
-	opener.bab_dialog._return({
-		'callback' 	: 'editorInsertText',
-		'param'		: '$ARTICLEID('+articleid+','+opener.bab_macroEncodeParam(title)+','+target+')'
-	});
-	
-	window.close();
-	}
-
 function updateEditor()
 {
-	var target = 1;
+	
 	var checkb = document.getElementById('tg');
-	if (checkb.checked) {
-		target = 1;
-	}
-	else {
-		target = 0;
-	}
-
-	var param = '';
+	var param = ' ';
 	
 	for( i =0; i < document.editorarticle.length; i++)
 	{
@@ -49,8 +17,21 @@ function updateEditor()
 		{
 		if( document.editorarticle.elements[i].name == 'artcheck[]' && document.editorarticle.elements[i].checked )
 			{
-			var title = document.getElementById('arttitle-'+document.editorarticle.elements[i].value);
-			param += ' $ARTICLEID('+document.editorarticle.elements[i].value+','+opener.bab_macroEncodeParam(title.value)+','+target+') ';
+			
+			var title = document.editorarticle.elements[i].nextSibling.nodeValue.substring(1);
+
+			var link = document.createElement('a');
+			link.setAttribute('href', document.editorarticle.elements[i].value);
+			link.appendChild(document.createTextNode(title));
+			if (checkb.checked)
+			{
+				link.setAttribute('onclick', 'bab_popup(this.href);return false;');
+			}
+			
+			var span = document.createElement("span"); 
+			span.appendChild(link);
+			
+			param +=' '+span.innerHTML;
 			}
 		}
 	}
@@ -79,17 +60,14 @@ function updateEditor()
 
 <ul id="bab_editor_functions">
 	<!--#in getnextarticle -->
-	<li>
-		<input type="checkbox" name="artcheck[]" value="{ articleid }" /> { titledisp }
-		<input type="hidden" id="arttitle-{ articleid }" value="{ title }" />
-	</li>
+	<li><input type="checkbox" name="artcheck[]" value="ovidentia:///articles/article/{ articleid }" style="vertical-align:middle" /> { titledisp }</li>
 	<!--#endin getnextarticle -->
 </ul>
 <p>
 	<input type="checkbox" id="tg" name="tg" checked="checked" /> { target_txt }
 </p>
 <p align="center">
-	<a href="#" onclick="javascript:updateEditor();return false;">{ t_update }</a>
+	<button onclick="updateEditor();return false;">{ t_update }</button>
 </p>
 </form>
 <!--#endif noarticles -->

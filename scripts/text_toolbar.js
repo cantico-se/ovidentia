@@ -115,6 +115,8 @@ function EditorOnCreateImage(param)
 
 function EditorOnInsertFiles(files)
 {
+	console.debug(files);
+	
 	var html = getSelection();
 	if (html != '') {
 		txt = html;
@@ -122,13 +124,36 @@ function EditorOnInsertFiles(files)
 	var insertedItems = new Array();
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
-		if (file.type != 'folder') {
-			insertedItems.push('$FILE(' + file.id + ',' + bab_macroEncodeParam(file.content) + ')');
-		} else {
-			var path = file.id.split(':');
-			var id = path[0];
-			insertedItems.push('$FOLDER(' + id + ',' + path.slice(1).join('/') + ',' + bab_macroEncodeParam(file.content) + ')');
+		
+		switch(file.type)
+		{
+			case 'file':
+				var ref = 'ovidentia:///files/file/' + file.id;
+				break;
+				
+			case 'folder':
+				var path = file.id.split(':');
+				path.shift();
+				var ref = 'ovidentia:///files/folder/' + path.join('/');
+				break;
+				
+			case 'personnalfolder':
+				var path = file.id.split(':');
+				path.shift();
+				var ref = 'ovidentia:///files/personnalfolder/' + path.join('/');
+				break;
 		}
+		
+		var link = document.createElement('a');
+		link.setAttribute('href', ref);
+		link.appendChild(document.createTextNode(file.content));
+		
+		var span = document.createElement("span"); 
+		span.appendChild(link);
+
+		insertedItems.push(span.innerHTML);
+		
+		
 	}
 	if (insertedItems.length > 0) {
 		editorInsertText(insertedItems.join(','));

@@ -71,10 +71,12 @@ class bab_eventReference extends bab_event
 function bab_onReference(bab_eventReference $oEvent)
 {
 	
-	handlePublicationRequest($oEvent, 'articles.article', 'bab_ArticleReferenceDescription');
-	handlePublicationRequest($oEvent, 'articles.draft'	, 'bab_DraftArticleReferenceDescription');
-	handlePublicationRequest($oEvent, 'files.file'		, 'bab_FileReferenceDescription');
-	handlePublicationRequest($oEvent, 'ovml.file'		, 'bab_OvmlFileReferenceDescription');
+	handlePublicationRequest($oEvent, 'articles.article'		, 'bab_ArticleReferenceDescription');
+	handlePublicationRequest($oEvent, 'articles.draft'			, 'bab_DraftArticleReferenceDescription');
+	handlePublicationRequest($oEvent, 'files.file'				, 'bab_FileReferenceDescription');
+	handlePublicationRequest($oEvent, 'files.folder'			, 'bab_FolderReferenceDescription');
+	handlePublicationRequest($oEvent, 'files.personnalfolder'	, 'bab_PersonnalFolderReferenceDescription');
+	handlePublicationRequest($oEvent, 'ovml.file'				, 'bab_OvmlFileReferenceDescription');
 }
 
 

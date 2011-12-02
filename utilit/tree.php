@@ -1668,7 +1668,7 @@ class bab_FileTreeView extends bab_TreeView
 			 . ' AND file.state <> \'D\''
 			 . ' ORDER BY file.name';
 
-		$directoryType = 'folder';
+		$directoryType = 'personnalfolder';
 		if (!($this->hasAttributes(self::MULTISELECT))
 		&& $this->hasAttributes(self::SELECTABLE_SUB_FOLDERS)) {
 			$directoryType .= ' clickable';
@@ -1782,14 +1782,14 @@ class bab_FileTreeView extends bab_TreeView
 
 			if($this->_adminView || $bManager || $bDownload)
 			{
-				$element = $this->createElement('d' . self::ID_SEPARATOR . $folder->getId(),
+				$element = $this->createElement('d' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($folder->getName()),
 												 $elementType,
 												 bab_toHtml($folder->getName()),
 												 '',
 												 '');
 				if ($this->_updateBaseUrl)
 				{
-					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId() . "')"));
+					$element->setFetchContentScript(bab_toHtml("bab_loadSubTree(document.getElementById('li" . $this->_id . '.' . $element->_id .  "'), '" . $this->_updateBaseUrl . "&start=" . $folder->getId().':'.bab_toHtml($folder->getName()) . "')"));
 				}
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 				if (($this->hasAttributes(self::SELECTABLE_COLLECTIVE_FOLDERS))
@@ -1810,10 +1810,11 @@ class bab_FileTreeView extends bab_TreeView
     protected function _addCollectiveFiles($folderId = null, $path = '')
     {
         global $babDB, $babBody;
-
+        
         $sEndSlash = (mb_strlen(trim($path)) > 0 ) ? '/' : '' ;
 
-        $rootPath = '';
+       
+       // $rootPath = '';
 
         $folders = new BAB_FmFolderSet();
         $oId = $folders->aField['iId'];
@@ -1821,7 +1822,7 @@ class bab_FileTreeView extends bab_TreeView
         if ($folderId !== null) {
             $oFolder = $folders->get($oId->in($folderId));
             if (is_a($oFolder, 'BAB_FmFolder')) {
-                $rootPath .= $oFolder->getName() . '/';
+               // $rootPath .= $oFolder->getName() . '/';
                 $idDgOwner = $oFolder->getDelegationOwnerId();
             }
         } elseif ($babBody->currentAdmGroup != 0 && ($this->hasAttributes(self::SHOW_ONLY_DELEGATION))) {
@@ -1844,9 +1845,9 @@ class bab_FileTreeView extends bab_TreeView
             $aWhereClauseItem[]    = 'file.bgroup=\'Y\'';
         }
         
-        if ($rootPath . $path . $sEndSlash !== '')
+        if ($path . $sEndSlash !== '')
         {
-            $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($rootPath . $path . $sEndSlash . '%');
+            $aWhereClauseItem[]    = 'file.path LIKE ' . $babDB->quote($path . $sEndSlash . '%');
         }
 
         $aWhereClauseItem[]    = 'file.state<>\'D\'';
@@ -1886,14 +1887,14 @@ class bab_FileTreeView extends bab_TreeView
 
         $files = $babDB->db_query($sQuery);
 
-
         $folders = new BAB_FmFolderSet();
 
         $oRelativePath = $folders->aField['sRelativePath'];
         $oName = $folders->aField['sName'];
 
         while ($file = $babDB->db_fetch_array($files)) {
-            $filePath = removeFirstPath($file['path']);
+           $filePath = removeFirstPath($file['path']);
+            //$filePath = $file['path'];
             $subdirs = explode('/', $filePath);
 
             $fileId = 'g' . self::ID_SEPARATOR . $file['id'];
@@ -1906,9 +1907,9 @@ class bab_FileTreeView extends bab_TreeView
 	            if (!$folder) {
 	                continue;
 	            }
-            	$rootId = 'd' . self::ID_SEPARATOR . $folder->getId(); // $file['id_owner'];
+            	$rootId = 'd' . self::ID_SEPARATOR . $folder->getId().':'.bab_toHtml($rootFolderName); // $file['id_owner'];
             } else {
-            	$rootId = 'd' . self::ID_SEPARATOR . $folderId; // $file['id_owner'];
+            	$rootId = 'd' . self::ID_SEPARATOR . $folderId.':'.bab_toHtml($oFolder->getName()); // $file['id_owner'];
             }
             $fileType = $groupFileType;
 
@@ -2015,7 +2016,7 @@ class bab_FileTreeView extends bab_TreeView
 				|| $this->hasAttributes(self::SHOW_SUB_FOLDERS)) {
 			$attributes = $this->getAttributes();
 			$this->removeAttributes(self::SHOW_FILES);
-			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
+			//$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
 			$this->setAttributes($attributes);
 			$this->_addCollectiveFiles($this->_startFolderId, $this->_startPath);
 		}
@@ -2027,7 +2028,7 @@ class bab_FileTreeView extends bab_TreeView
 
 		if (!is_null($this->_startFolderId))
 		{
-			$nodeId = 'd' . self::ID_SEPARATOR . $this->_startFolderId;
+			$nodeId = 'd' . self::ID_SEPARATOR . $this->_startFolderId.':'.$this->_startPath;
 			$node = $this->getRootNode()->getNodeById($nodeId);
 			$this->_iterator = $this->getRootNode()->createNodeIterator($node);
 			$this->_iterator->nextNode();

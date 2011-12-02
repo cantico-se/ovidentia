@@ -344,10 +344,10 @@ class bab_Reference implements IGuid
 		{
 			//bab_debug($aBuffer);
 			$this->sProtocol	= $aBuffer[1]; 
-			$this->sLocation	= $aBuffer[2]; 
-			$this->sModule		= $aBuffer[3]; 
-			$this->sType		= $aBuffer[4];
-			$this->iIdObject	= $aBuffer[5];
+			$this->sLocation	= urldecode($aBuffer[2]); 
+			$this->sModule		= urldecode($aBuffer[3]); 
+			$this->sType		= urldecode($aBuffer[4]);
+			$this->iIdObject	= urldecode($aBuffer[5]);
 		}
 		else
 		{
@@ -557,7 +557,7 @@ class bab_FileReferenceDescription extends bab_ReferenceDescriptionImpl
 				throw new Exception('invalid BAB_FolderFile object');
 			}
 		}
-
+		
 		return $this->oFile;
 	}
 
@@ -570,6 +570,145 @@ class bab_FileReferenceDescription extends bab_ReferenceDescriptionImpl
 		return bab_FmFileCanDownload($this->getReference()->getObjectId());
 	}
 }
+
+
+
+
+
+
+
+
+/**
+ * File manager reference description
+ */
+class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
+{
+
+	public function getType()
+	{
+		return bab_translate('Folder');
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->getReference()->getObjectId();
+	}
+
+	/**
+	 * @return string	HTML
+	 */
+	public function getDescription() {
+		return '';
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrl() {
+		return '?tg=fileman&idx=list&gr=Y&path='.urlencode($this->getReference()->getObjectId());
+	}
+
+
+	/**
+	 * 
+	 * @return bool
+	 */
+	public function isAccessValid() 
+	{
+		require_once dirname(__FILE__).'/fmset.class.php';
+		
+		BAB_FmFolderHelper::getInfoFromCollectivePath($this->getReference()->getObjectId(), $iIdRootFolder, $oFmFolder);
+		
+		if (null === $oFmFolder)
+		{
+			return false;
+		}
+		
+		
+		/*@var $oFmFolder BAB_FmFolder */
+		
+		if (bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
+		{
+			return true;
+		}
+		
+		if (bab_isAccessValid(BAB_FMUPDATE_GROUPS_TBL, $oFmFolder->getId()))
+		{
+			return true;
+		}
+		
+		return bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
+	}
+}
+
+
+
+
+
+
+
+
+/**
+ * File manager reference description
+ */
+class bab_PersonnalFolderReferenceDescription extends bab_ReferenceDescriptionImpl
+{
+
+	public function getType()
+	{
+		return bab_translate('Personnal folder');
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->getReference()->getObjectId();
+	}
+
+	/**
+	 * @return string	HTML
+	 */
+	public function getDescription() {
+		return '';
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrl() {
+		return '?tg=fileman&idx=list&gr=N&path='.urlencode($this->getReference()->getObjectId());
+	}
+
+
+	/**
+	 * 
+	 * @return bool
+	 */
+	public function isAccessValid() 
+	{
+		if (!$GLOBALS['BAB_SESS_LOGGED'])
+		{
+			return false;
+		}
+		
+		require_once dirname(__FILE__).'/fileincl.php';
+		
+		$folder = BAB_FileManagerEnv::getFmRealPersonalPath().'U'.$GLOBALS['BAB_SESS_USERID'].'/'.$this->getReference()->getObjectId();
+		
+		if(userHavePersonnalStorage() && is_dir($folder))
+		{
+			return true;
+		}
+		return false;
+	}
+}
+
+
+
+
 
 
 
