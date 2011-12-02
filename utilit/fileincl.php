@@ -2949,7 +2949,7 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
 	}
 
 
-	$oFileMgrEnv = getEnvObject();
+	//$oFileMgrEnv = getEnvObject();
 	if($oFileMgrEnv->userIsInCollectiveFolder() || $oFileMgrEnv->userIsInRootFolder())
 	{
 		$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sPath);
@@ -2964,7 +2964,7 @@ function haveRightOn($sPath, $sTableName, $oFileMgrEnv = null)
 	}
 	else if($oFileMgrEnv->userIsInPersonnalFolder())
 	{
-		return isUserFolder($sPath);
+		return isUserFolder($sPath, $oFileMgrEnv);
 	}
 	else
 	{
@@ -2987,11 +2987,15 @@ function haveAdministratorRight()
 }
 
 
-function isUserFolder($sPath)
+function isUserFolder($sPath, $oFileManagerEnv = null)
 {
 	global $BAB_SESS_USERID;
 
-	$oFileManagerEnv = getEnvObject();
+	if (null === $oFileManagerEnv)
+	{
+		$oFileManagerEnv = getEnvObject();
+	}
+	
 	$sPathName = $oFileManagerEnv->getCurrentFmPath();
 
 	if(userHavePersonnalStorage() && is_dir($sPathName))
@@ -3228,16 +3232,16 @@ function bab_getUserFmVisibleDelegations()
  */
 function bab_FmFileCanDownload($id_file) {
 
-	static $oFmEnv 			= null;
+	
 	static $oFolderFileSet	= null;
 	static $oFolderSet		= null;
 	static $aAccessFolders	= array();
+	
+	
+	$oFmEnv 			= new BAB_FileManagerEnv;
+	$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
+	$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
 
-	if (null === $oFmEnv) {
-		$oFmEnv 			= new BAB_FileManagerEnv;
-		$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
-		$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
-	}
 
 	$oNameField			= $oFolderSet->aField['sName'];
 	$oRelativePathField	= $oFolderSet->aField['sRelativePath'];
@@ -3256,7 +3260,7 @@ function bab_FmFileCanDownload($id_file) {
 	$sGr			= $oFile->getGroup();
 
 	$uid = $iIdDelegation.$sGr.$sPathName;
-
+	
 	if (isset($aAccessFolders[$uid])) {
 		return $aAccessFolders[$uid];
 	}
@@ -3266,17 +3270,23 @@ function bab_FmFileCanDownload($id_file) {
 	$oCriteria = $oCriteria->_and($oRelativePathField->in(''));
 	$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
 
-
+	$iIdObject = 0;
 	$oFolder = $oFolderSet->get($oCriteria);
-	if(!($oFolder instanceof BAB_FmFolder))
+	if($oFolder instanceof BAB_FmFolder)
 	{
-		return false;
+		$iIdObject = $oFolder->getId();
+	}
+	
+	if ('N' === $sGr)
+	{
+		$iIdObject = $GLOBALS['BAB_SESS_USERID'];
 	}
 
 	$oFmEnv->sGr		= $sGr;
 	$oFmEnv->sPath		= BAB_PathUtil::removeEndSlashes($sPathName);
-	$oFmEnv->iIdObject	= $oFolder->getId();
+	$oFmEnv->iIdObject	= $iIdObject;
 	$oFmEnv->init();
+	
 
 	$aAccessFolders[$uid] = canDownload($sPathName, $oFmEnv);
 	return $aAccessFolders[$uid];
