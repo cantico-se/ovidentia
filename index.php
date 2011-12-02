@@ -1198,12 +1198,7 @@ switch(bab_rp('tg'))
 				{
 				$row = bab_addonsInfos::getDbRow($arr[1]);
 				$incl = "addons/".$row['title'];
-
-				$module = "";
-				for($i = 2; $i < sizeof($arr); $i++) {
-					$module .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[$i]);
-				}
-
+				$module = "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $arr[2]);
 				bab_setAddonGlobals($arr[1]);
 				$babWebStat->addon($row['title']);
 				$babWebStat->module($module);
