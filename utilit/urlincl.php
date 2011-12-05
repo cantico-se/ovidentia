@@ -216,6 +216,35 @@ class bab_url {
 	
 	
 	/**
+	 * Property overloading to get an url parameter
+	 * return null if parameter not defined
+	 * 
+	 * @param	string	$param
+	 * @param mixed 	$value
+	 * 
+	 * @since 7.6.91
+	 */ 
+	public function __get($param) {
+		
+		$p = parse_url($this->url);
+		
+		if (!isset($p['query']) || empty($p['query']))
+		{
+			return null;
+		}
+		
+		parse_str($p['query'], $arr);
+		
+		if (!isset($arr[$param]))
+		{
+			return null;
+		}
+		
+		return $arr[$param];
+	}
+	
+	
+	/**
 	 * Url as String
 	 * The method is NOT __toString because the beaviour is not as expexted before php 5.2.0
 	 * 
