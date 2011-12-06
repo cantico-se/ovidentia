@@ -451,14 +451,21 @@ function bab_onEditorFunctions(bab_eventEditorFunctions $event) {
 	 || 'bab_article_body' === $event->uid
 	 || 'bab_faq_response' === $event->uid) {
 
-		$event->addFunction(
-			bab_translate('Images'), 
-			bab_translate('Insert image from ovidentia content image manager'), 
-			'?tg=images',
-			'skins/ovidentia/images/editor/ed_bab_image.gif'
-		);
+		$imageurl = '?tg=images&linked_images=1';
 	
+	} else {
+		
+		$imageurl = '?tg=images';
 	}
+	
+	
+	$event->addFunction(
+		bab_translate('Images'), 
+		bab_translate('Insert image from ovidentia content image manager'), 
+		$imageurl,
+		'skins/ovidentia/images/editor/ed_bab_image.gif'
+	);
+	
 	
 	$event->addFunction(
 		bab_translate('Files'), 

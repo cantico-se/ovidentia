@@ -1,17 +1,10 @@
 <!--#begin imageslisteditor -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-{ babCss }
-<script type="text/javascript" src="{ babScriptPath }htmlarea/popups/popup.js"></script>
+
 <script type="text/javascript">
 <!--
 var prevpath = '';
 
-function onOK(id, url) {
+function onOK(url) {
 	var alt = document.getElementById('f_alt');
 	var ali = document.getElementById('align');
 	var border = document.getElementById('f_border');
@@ -19,7 +12,7 @@ function onOK(id, url) {
 	var vert = document.getElementById('f_vert');
 	var param = new Object();
 
-    param['f_id'] = id;
+    param['f_id'] = '';
     param['f_url'] = url;
 	param['f_alt'] = alt.value;
 	param['f_align'] = ali.value;
@@ -110,108 +103,114 @@ window.focus();
 //-->
 </script>
 
-</HEAD>
-<BODY>
+
+
+
 <br>
-<center><table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr>
-<td class="BabErrorMessage" align="center" >{ msgerror }</td>
-</tr></table><br>
-</center>
+
+<!--#if upload -->
+
 <form name="fmadd" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
-<input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }">
-<input type="hidden" name="tg" value="images">
-<input type="hidden" name="idx" value="list">
-<input type="hidden" name="editor" value="{ editor }">
-<input type="hidden" name="path" value="">
-<input type="hidden" name="addf" value="add">
+<input type="hidden" name="MAX_FILE_SIZE" value="{ maximagessize }" />
+<input type="hidden" name="tg" value="images" />
+<input type="hidden" name="idx" value="list" />
+<input type="hidden" name="path" value="" />
+<input type="hidden" name="addf" value="add" />
+<input type="hidden" name="linked_images" value="{ linked_images }" />
+
+
 <table  width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 <tr> 
 <td class="BabLoginCadreBackground" align="center" valign="middle"> 
-<table  width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-<tr> 
-<td  colspan="2" class="BabLoginMenuBackground" width="100%" align="center" nowrap valign="middle">{ maxsizetxt }</td>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ file }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<input type="file" name="uploadf" size="40" maxlength="255" value="">
-</td>
-</tr>
-<!--#if badmin -->
-<tr> 
-<td class="BabLoginMenuBackground" width="30%" align="right" nowrap valign="middle">{ shared }</td>
-<td class="BabLoginMenuBackground" width="70%" valign="middle"> 
-<select name="share">
-<option value="Y">{ yes }</option>
-<option value="N" selected>{ no }</option>
-</select>
-</td>
-</tr>
-<!--#endif badmin -->
-<tr>
-<td class="BabLoginMenuBackground" nowrap>&nbsp;</td>
-<td class="BabLoginMenuBackground" valign="middle"> 
-<input type="button" value="{ add }" onClick="validateImage('fmadd', '{ invalidimg }')">
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+	<tr> 
+	<td  colspan="2"  width="100%" align="center" nowrap valign="middle">{ maxsizetxt }</td>
+	</td>
+	</tr>
+	<tr> 
+	<td width="30%" align="right" nowrap valign="middle">{ file }</td>
+	<td width="70%" valign="middle"> 
+	<input type="file" name="uploadf" size="40" maxlength="255" value="">
+	</td>
+	</tr>
+	<!--#if badmin -->
+	<!--#if linked_images -->
+	<tr> 
+	<td width="30%" align="right" nowrap valign="middle">{ shared }</td>
+	<td width="70%" valign="middle"> 
+	<select name="share">
+	<option value="Y">{ yes }</option>
+	<option value="N" selected>{ no }</option>
+	</select>
+	</td>
+	</tr>
+	<!--#endif linked_images -->
+	<!--#endif badmin -->
+	<tr>
+	<td nowrap>&nbsp;</td>
+	<td valign="middle"> 
+	<input type="button" value="{ add }" onClick="validateImage('fmadd', '{ invalidimg }')">
+	</td>
+	</tr>
+	</table>
 </td>
 </tr>
 </table>
 </form>
+
 <br>
+
+
+<!--#endif upload -->
+
 <form name="fdummy">
 <center>
-<table border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
-<tr> 
-<td class="BabLoginMenuBackground" ><a class="BabSiteAdminListLink" href="{ refurl }">{ 
-refresh }</a></td>
-<td class="BabLoginMenuBackground" align="right" valign="middle">{ aligntxt 
-}:</td>
-<td class="BabLoginMenuBackground" align="left" valign="middle"> 
-<select name="align" id="align">
-<option value="">{ none }</option>
-<option value="left">{ left }</option>
-<option value="right">{ right }</option>
-<option value="middle">{ middle }</option>
-<option value="absmiddle">{ absmiddle }</option>
-<option value="top">{ top }</option>
-<option value="bottom">{ bottom }</option>
-<option value="center">{ center }</option>
-</select>
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" align="right"> { alt } : </td>
-<td class="BabLoginMenuBackground" align="left"> 
-<input type="text" id="f_alt" name="f_alt">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" align="right">{ hspacing } : </td>
-<td class="BabLoginMenuBackground" align="left"> 
-<input onKeyup="validateNum(this)" type="text" id="f_horiz" name="f_horiz">
-</td>
-</tr>
-<tr> 
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" align="right">{ vspacing } : </td>
-<td class="BabLoginMenuBackground" align="left"> 
-<input onKeyup="validateNum(this)" type="text" id="f_vert" name="f_vert">
-</td>
-</tr>
-<tr>
-<td class="BabLoginMenuBackground">&nbsp;</td>
-<td class="BabLoginMenuBackground" align="right">{ border } : </td>
-<td class="BabLoginMenuBackground" align="left">
-<input onKeyup="validateNum(this)" type="text" id="f_border" name="f_border">
-</td>
-</tr>
-</table>
+	<table class="BabLoginMenuBackground"  border="0" width="90%" cellpadding="3" cellspacing="0" align="center">
+	<tr> 
+		<td><a class="BabSiteAdminListLink" href="{ refurl }">{ refresh }</a></td>
+		<td align="right" valign="middle">{ aligntxt }:</td>
+		<td align="left" valign="middle"> 
+			<select name="align" id="align">
+			<option value="">{ none }</option>
+			<option value="left">{ left }</option>
+			<option value="right">{ right }</option>
+			<option value="middle">{ middle }</option>
+			<option value="absmiddle">{ absmiddle }</option>
+			<option value="top">{ top }</option>
+			<option value="bottom">{ bottom }</option>
+			<option value="center">{ center }</option>
+			</select>
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td align="right"> { alt } : </td>
+		<td align="left"> 
+			<input type="text" id="f_alt" name="f_alt">
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td align="right">{ hspacing } : </td>
+		<td align="left"> 
+			<input onKeyup="validateNum(this)" type="text" id="f_horiz" name="f_horiz">
+		</td>
+	</tr>
+	<tr> 
+		<td>&nbsp;</td>
+		<td align="right">{ vspacing } : </td>
+		<td align="left"> 
+			<input onKeyup="validateNum(this)" type="text" id="f_vert" name="f_vert">
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td align="right">{ border } : </td>
+		<td align="left">
+			<input onKeyup="validateNum(this)" type="text" id="f_border" name="f_border">
+		</td>
+	</tr>
+	</table>
 </form>
 </center>
 <br>
@@ -220,10 +219,10 @@ refresh }</a></td>
 <td align="center">
 	<table border="0" width="90%" cellpadding="1" cellspacing="0" align="center">
 	<tr> 
-	<td class="BabLoginMenuBackground">
-	<a href="javascript:frameloc('{ list_img_url_prev }'+prevpath);"><img src="{ babSkinPath }images/Puces/parent.gif" border="0"></a>
+	<td>
+	<a href="" onclick="frameloc('{ list_img_url_prev }'+prevpath);return false;"><img src="{ babSkinPath }images/Puces/parent.gif" border="0"></a>
 	</td>
-	<td class="BabLoginMenuBackground" align="left" width="95%">
+	<td  align="left" width="95%">
 	<span id="sp" align="left"> </span>
 	</td>
 	</tr>
@@ -254,18 +253,10 @@ iframe : your browser is out off date
 </tr>
 <!--#endif badmin -->
 </table>
-</BODY>
-</HTML>
 <!--#end imageslisteditor -->
 
 <!--#begin imageslist -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-{ babCss }
+
 
 <script type="text/javascript">
 <!--
@@ -274,22 +265,22 @@ function confirm_url(url,msg)
 	if ( confirm(msg) )
 		top.frames['files_frame'].location = url;
 	}
-function errormanager()
-	{
-	/* { msgerror } */
-	var msg = '{ msgerror }';
-	if (msg != '' ) alert(msg);
-	}
 
 function rename_popup(url,msg)
 	{
 	if ( confirm(msg) )
-		window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=400,height=100,scrollbars=no,resizable=no');
+		window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=400,height=200,scrollbars=no,resizable=no');
 	}
+
+
+bab_initFunctions.push(function() {
+
+	parent.prevpath = '{ prevpath }';parent.putpath('{ path }');
+});
+
 -->
 </script>
-</HEAD>
-<BODY onload="parent.prevpath = '{ prevpath }';parent.putpath('{ path }');errormanager()">
+
 <table border="0" cellspacing="0" cellpadding="2" align="left">
 <tr>
 <!--#in getnextufile -->
@@ -298,11 +289,11 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabTopicsAuthorBackground">
 <!--#if gd -->
-<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ imgurl }');">
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
 
-<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ imgurl }');">
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>
@@ -357,10 +348,10 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabLoginMenuBackground">
 <!--#if gd -->
-<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ imgurl }');">
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
-<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ imgurl }');">
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>
@@ -392,7 +383,6 @@ function rename_popup(url,msg)
 	<form name="add_directory" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
-	<input type="hidden" name="editor" value="{ editor }">
 	<input type="hidden" name="path" value="{ path }">
 	<input type="hidden" name="directory" value="">
 	<input type='submit' name='post_message' style='visibility:hidden'>
@@ -401,24 +391,15 @@ function rename_popup(url,msg)
 	<form name="rename" method="post" action="{ babPhpSelf }" enctype="multipart/form-data">
 	<input type="hidden" name="tg" value="images">
 	<input type="hidden" name="idx" value="iframe">
-	<input type="hidden" name="editor" value="{ editor }">
 	<input type="hidden" name="path" value="{ path }">
 	<input type="hidden" name="old_name" value="">
 	<input type="hidden" name="new_name" value="">
 	<input type='submit' name='post_message' style='visibility:hidden'>
 	</form>
-</BODY>
-</HTML>
+
 <!--#end imageslist -->
 
 <!--#begin rename_popup -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>{ babSiteName }</TITLE>
-<meta http-equiv="Content-type" content="{ sContent }"/>
-{ babMeta }
-{ babCss }
 
 <script type="text/javascript">
 <!--
@@ -436,8 +417,7 @@ function rename_dir()
 window.focus();
 -->
 </script>
-</HEAD>
-<BODY>
+
 <table border="0" cellspacing="0" cellpadding="5" align="center" width="70%">
 <tr>
 	<td>
@@ -455,6 +435,5 @@ window.focus();
 	</td>
 </tr>
 </table>
-</BODY>
-</HTML>
+
 <!--#end rename_popup -->
