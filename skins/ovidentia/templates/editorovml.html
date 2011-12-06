@@ -8,7 +8,7 @@ function bab_ovml_func(txt)
 	{
 	opener.bab_dialog._return({
 		'callback' 	: 'editorInsertText',
-		'param'		: '$OVML('+txt+')',
+		'param'		: '<img src="{ babInstallPath }skins/ovidentia/images/editor/ovml_placeholder.png" longdesc="ovidentia:///ovml/file/'+txt+'" />',
 		'filename'	: txt
 	});
 	
