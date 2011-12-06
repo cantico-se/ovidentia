@@ -244,9 +244,9 @@ iframe : your browser is out off date
 	<table border="0" width="50%" cellpadding="2" cellspacing="0" align="center">
 	<tr> 
 	<td align="right">
-	<input type="text" id="directory" size="35" maxlength="128">
+	<input type="text" id="directory" size="30" maxlength="128">
 	</td>
-	<td align="left"><input type="button" value="{ create }" onclick="make_dir();">
+	<td align="left"><input type="button" value="{ create_folder }" onclick="make_dir();">
 	</td>
 	</tr>
 	</table>
@@ -284,7 +284,7 @@ function errormanager()
 function rename_popup(url,msg)
 	{
 	if ( confirm(msg) )
-		window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=300,height=100,scrollbars=no,resizable=no');
+		window.open(url, 'rename','toolbar=no,menubar=no,personalbar=no,width=400,height=100,scrollbars=no,resizable=no');
 	}
 -->
 </script>
@@ -298,11 +298,11 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabTopicsAuthorBackground">
 <!--#if gd -->
-<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
 
-<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>
@@ -325,7 +325,7 @@ function rename_popup(url,msg)
 <table width="100" height="100" cellspacing="3" cellpadding="2" border="0">
 <tr align="center">
 <td valign="middle">
-	<a class="BabSiteAdminListLink" href="{ subdirurl }"><img src="{ babSkinPath }images/Puces/folder_big.gif" border="0" alt="{ subdirname }"></a>
+	<a href="{ subdirurl }"><img src="{ babSkinPath }images/Puces/folder_big.gif" border="0" alt="{ subdirname }"></a>
 </td>
 </tr>
 <tr align="center"> 
@@ -334,7 +334,7 @@ function rename_popup(url,msg)
 	<tr><td align="center" nowrap>
 	<small>
 	<!--#if badmin -->
-	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }','{ msg_renametree }')">{ subdirname_txt }</a>
+	<a href="" onclick="rename_popup('{ rename_popup_url }','{ msg_renametree }');return false;">{ subdirname_txt }</a>
 	<!--#else badmin -->
 	{ subdirname_txt }
 	<!--#endif badmin -->
@@ -357,10 +357,10 @@ function rename_popup(url,msg)
 <tr align="center">
 <td valign="middle" class="BabLoginMenuBackground">
 <!--#if gd -->
-<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <img src="{ srcurl }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#else gd -->
-<a class="BabSiteAdminListLink" href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
+<a href="#" onclick="return parent.onOK('{ editor }', '{ imgurl }');">
 <img src="{ srcurl }" width="{ imgwidth }" height="{ imgheight }" border="0" alt="{ imgname } - { imgalt }"></a>
 <!--#endif gd -->
 </td>
@@ -371,14 +371,14 @@ function rename_popup(url,msg)
 <tr><td align="center" nowrap>
 <small>
 	<!--#if badmin -->
-	<a class="BabTopicsFooterMoreLink" href="javascript:rename_popup('{ rename_popup_url }','{ msg_renamefile }')">{ imgname_txt }</a>
+	<a href="" onclick="rename_popup('{ rename_popup_url }','{ msg_renamefile }');return false;">{ imgname_txt }</a>
 	<!--#else badmin -->
 	{ imgname_txt }
 	<!--#endif badmin -->
 	</small>&nbsp;
 </td>
 <!--#if badmin -->
-<td align=right width="1%"><a class="BabSiteAdminListLink" href="javascript:confirm_url('{ delurl }','{ msg_delfile }')"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
+<td align=right width="1%"><a href="" onclick="confirm_url('{ delurl }','{ msg_delfile }');return false;"><img src="{ babSkinPath }images/Puces/del.gif" alt="{ del }"  border="0"></a>
 </td>
 <!--#endif badmin -->
 </tr></table>

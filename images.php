@@ -145,7 +145,7 @@ function listImages($editor,$path='')
 			$this->no = bab_translate("No");
 			$this->shared = bab_translate("Shared");
 			$this->refresh = bab_translate("Refresh");
-			$this->create = bab_translate("Create");
+			$this->create_folder = bab_translate("Create the folder");
 			$this->delete = bab_translate("Delete");
 			$this->invalidimg = bab_translate("Invalid image extension");
 			$this->aligntxt = bab_translate("Alignment");
@@ -535,16 +535,11 @@ function delImage($com, $f)
 	}
 
 function deldir($dir){
-  $current_dir = opendir($dir);
-  while($entryname = readdir($current_dir)){
-     if(is_dir("$dir/$entryname") and ($entryname != "." and $entryname!="..")){
-       deldir("${dir}/${entryname}");
-     }elseif($entryname != "." and $entryname!=".."){
-        unlink("${dir}/${entryname}");
-     }
-  }
-  closedir($current_dir);
-  rmdir(${dir});
+
+	require_once dirname(__FILE__).'/utilit/urlincl.php';
+	$path = new bab_Path($dir);
+	
+	$path->deleteDir();
 }
 
 
