@@ -602,7 +602,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$return .= "</ul>\n";
 		}
 
-		$return .= "</li>\n";
+		$return .= "</li>";
 
 		return $return;
 	}
