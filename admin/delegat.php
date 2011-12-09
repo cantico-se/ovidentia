@@ -881,6 +881,12 @@ function confirmDeleteDelegatGroup($id)
 		while($arr = $babDB->db_fetch_array($res))
 			{
 			bab_deleteFolder($arr['id']);
+			//deletion of DGx folder
+			require_once $GLOBALS['babInstallPath']."utilit/path.class.php";
+			require_once $GLOBALS['babInstallPath']."utilit/iterator/iterator.php";
+			require_once $GLOBALS['babInstallPath']."utilit/fmset.class.php";
+			$path = new bab_path(BAB_FmFolderHelper::getUploadPath(), 'fileManager', 'collectives', 'DG'.$idsafe);
+			rmdir($path->tostring());
 			}
 
 		$res = $babDB->db_query("select id from ".BAB_LDAP_DIRECTORIES_TBL." where id_dgowner='".$idsafe."'");
