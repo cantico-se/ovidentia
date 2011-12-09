@@ -638,6 +638,20 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
 
 
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
+	
+	if (null === $calendar)
+	{
+		// the main calendar is not accessible, but the user must approve an event in it
+		$calendar = bab_getICalendars()->getEventCalendar($relationcal);
+	
+		if (null === $calendar)
+		{
+			$babBody->addError(bab_translate('The calendar is not accessible'));
+			return false;
+		}
+	}
+	
+	
 	$backend = $calendar->getBackend();
 	$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $uid);
 
