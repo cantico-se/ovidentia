@@ -1883,7 +1883,7 @@ class bab_FileTreeView extends bab_TreeView
 	            implode(' ', $aLeftJoin) . ' ' .
     	        $sWhereClause . ' ' .
             'ORDER BY ' .
-                'file.path ASC, file.name ASC';
+                'file.path ASC, file.display_position ASC, file.name ASC';
 
         $files = $babDB->db_query($sQuery);
 

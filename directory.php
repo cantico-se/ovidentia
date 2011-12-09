@@ -304,7 +304,7 @@ function browseLdapDirectory($id, $pos)
 
 
 
-function browseDbDirectory($id, $pos, $xf, $badd)
+function browseDbDirectory($id, $pos, $xf, $badd, $disable_email='N')
 {
 	global $babBody;
 
@@ -314,7 +314,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 		var $altbg = true;
 		var $sContent;
 		
-		function temp($id, $pos, $xf, $badd)
+		function temp($id, $pos, $xf, $badd, $disable_email)
 			{
 			global $babDB;
 			global $babBody;
@@ -335,6 +335,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 			$this->mail_txt					= bab_translate("Send a mail");
 			$this->view_txt					= bab_translate("View the entry");
 			$this->dirmember_txt			= bab_translate("Directory member");
+			$this->disable_email			= ($disable_email=='Y')?true:false;
 
 			if( mb_substr($pos,0,1) == "-" )
 				{
@@ -599,8 +600,7 @@ function browseDbDirectory($id, $pos, $xf, $badd)
 
 			}
 		}
-
-	$temp = new temp($id, $pos, $xf, $badd);
+	$temp = new temp($id, $pos, $xf, $badd, $disable_email);
 	$babBody->babecho( bab_printTemplate($temp, "directory.html", "adbrowse"));
 	
 	bab_siteMap::setPosition('bab', 'UserDbDirId'.$id);
@@ -617,7 +617,7 @@ function browseDbDirectoryWithOvml($badd)
 
 	if(bab_isAccessValid(BAB_DBDIRVIEW_GROUPS_TBL, $args['directoryid']))
 		{
-		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($args['directoryid'])."'"));
+		$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_list, disable_email from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($args['directoryid'])."'"));
 
 		if( !empty($arr['ovml_list']))
 			{
@@ -626,13 +626,14 @@ function browseDbDirectoryWithOvml($badd)
 			if( !isset($args['order'])) { $args['order'] = 'asc'; }
 			if( !isset($args['orderby'])) { $args['orderby'] = ''; }
 			if( !isset($args['like'])) { $args['like'] = 'A'; }
+			$args['disable_email'] = $arr['disable_email'];
 			$babBody->babecho(bab_printOvmlTemplate( $arr['ovml_list'], $args ));
 			}
 		else
 			{
 			if( !isset($GLOBALS['pos'])) { $GLOBALS['pos'] = 'A'; }
 			if( !isset($GLOBALS['xf'])) { $GLOBALS['xf'] = ''; }
-			return browseDbDirectory($args['directoryid'], $GLOBALS['pos'], $GLOBALS['xf'], $badd);
+			return browseDbDirectory($args['directoryid'], $GLOBALS['pos'], $GLOBALS['xf'], $badd, $arr['disable_email']);
 			}
 		return $arr['id_group'];
 		}

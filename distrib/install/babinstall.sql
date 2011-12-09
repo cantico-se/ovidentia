@@ -1394,6 +1394,7 @@ CREATE TABLE bab_db_directories (
   show_update_info enum('N','Y') NOT NULL default 'N',
   ovml_list tinytext NOT NULL,
   ovml_detail tinytext NOT NULL,
+  disable_email enum('N','Y') NOT NULL default 'N',
   PRIMARY KEY  (id),
   KEY id_dgowner (id_dgowner)
 );

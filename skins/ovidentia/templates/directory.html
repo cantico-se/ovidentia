@@ -108,11 +108,14 @@
         <!--#in getnext -->
         <!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
           <td align="center" valign="middle" width="1%" > 
+          	<!--#if disable_email "!= 1" -->
             <!--#if accid "!= 0" -->
             <a href="{ urlmail }" onclick="bab_popup(this.href);return false;">
             <!--#else accid --><a href="mailto:{ email }">
             <!--#endif accid -->
             <img src="{ babSkinPath }images/Puces/mail.png" border="0" alt="{ mail_txt }" title="{ mail_txt }" /></a>
+            
+            <!--#endif disable_email -->
           </td>
           <td valign="middle" width="1%" ><a href="{ url }" onclick="Start(this.href, '', 'width=550,height=500,status=no,resizable=yes,top=50,left=200,scrollbars=yes');return false;"><img src="{ babSkinPath }images/Puces/contact.png" border="0" alt="{ view_txt }" title="{ view_txt }" /></a></td>
           <td valign="middle" width="1%" >

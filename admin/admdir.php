@@ -937,11 +937,15 @@ function displayDb($id)
 			$this->t_sort_by = bab_translate("Sort search results by");
 			$this->browsetxt = bab_translate("Browse");
 			$this->browseurl = $GLOBALS['babUrlScript'].'?tg=editorovml';
+			
+			$this->disableemailbtntxt = bab_translate("Disable the 'Send a mail' button on the list");
+			$this->yestxt = bab_translate("Yes");
+			$this->notxt = bab_translate("No");
 
 			$this->moveup = bab_translate("Move Up");
 			$this->movedown = bab_translate("Move Down");
 			$this->update = bab_translate("Update");
-			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_detail, ovml_list from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
+			$arr = $babDB->db_fetch_array($babDB->db_query("select id_group, ovml_detail, ovml_list, disable_email from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 			if( $arr['id_group'] != 0 )
 				{
 				$iddir = 0;
@@ -950,6 +954,14 @@ function displayDb($id)
 				{
 				$iddir = $id;
 				}
+				
+			$this->yesselected = '';
+			$this->noselected = 'selected';
+			if( $arr['disable_email'] == 'Y' )
+			{
+				$this->yesselected = 'selected';
+				$this->noselected = '';
+			}
 			$this->ovmllistval = $arr['ovml_list'];
 			$this->ovmldetailval = $arr['ovml_detail'];
 
@@ -1593,11 +1605,15 @@ function dbUpdateDiplay($id, $listfd, $sortfd)
 
 
 
-function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail)
+function dbUpdateOvmlFile($id, $ovmllist, $ovmldetail, $disableemail = null)
 {
 	global $babDB;
-
-	$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set ovml_list='".$babDB->db_escape_string($ovmllist)."', ovml_detail='".$babDB->db_escape_string($ovmldetail)."' where id='".$babDB->db_escape_string($id)."'");
+	
+	if($disableemail === null){
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set ovml_list='".$babDB->db_escape_string($ovmllist)."', ovml_detail='".$babDB->db_escape_string($ovmldetail)."' where id='".$babDB->db_escape_string($id)."'");
+	}else{
+		$babDB->db_query("update ".BAB_DB_DIRECTORIES_TBL." set disable_email='".$babDB->db_escape_string($disableemail)."', ovml_list='".$babDB->db_escape_string($ovmllist)."', ovml_detail='".$babDB->db_escape_string($ovmldetail)."' where id='".$babDB->db_escape_string($id)."'");
+	}
 
 }
 
@@ -2000,7 +2016,7 @@ if( isset($update) )
 		}
 	elseif( $update == 'ovmldb' )
 		{
-		if(!dbUpdateOvmlFile($id, $ovmllist, $ovmldetail))
+		if(!dbUpdateOvmlFile($id, $ovmllist, $ovmldetail, $disableemail))
 			$idx = 'list';
 		}
 	elseif( $update == 'dblistord' )

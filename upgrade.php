@@ -6680,6 +6680,11 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
+	
+	if (!bab_isTableField('bab_db_directories', 'disable_email'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_db_directories` ADD disable_email enum('N','Y') NOT NULL default 'N'");
+	}
 
 
 	return true;

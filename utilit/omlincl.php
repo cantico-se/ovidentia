@@ -8070,7 +8070,11 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		BAB_FmFolderHelper::getInfoFromCollectivePath($this->path.$relativePath, $iIdRootFolder, $oFmFolder);
 		$rPath = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation)), $this->path, $relativePath);
 		if( in_array($iIdRootFolder, $this->arrid) ){
-			$currentFolder = '<ul><li class="folder"><a href="?tg=fileman&idx=list&gr=Y&path='.urlencode($this->path.$relativePath).'&id='.$iIdRootFolder.'">'.$rPath->getBasename().'</a>';
+			$classParent = '';
+			if($relativePath == ""){
+				$classParent = 'class="filetree"';
+			}
+			$currentFolder = '<ul '.$classParent.'><li class="folder"><a href="?tg=fileman&idx=list&gr=Y&path='.urlencode($this->path.$relativePath).'&id='.$iIdRootFolder.'">'.$rPath->getBasename().'</a>';
 			$nextFolder = '';
 			foreach($rPath as $subPath){
 				if($subPath->isDir() && $subPath->getBasename() != 'OVF'){
@@ -8328,7 +8332,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
 		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=0" . $sDelegation;
 		$res = $babDB->db_query($req);
-		$return = '<ul>';
+		$return = '<ul class="articletree">';
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 		//	if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
