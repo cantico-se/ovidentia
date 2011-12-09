@@ -560,6 +560,8 @@ class babMail
 	 */ 
 	public function send()
 	{
+		$this->mail->ErrorInfo = '';
+
 		$event = new bab_eventBeforeMailSent;
 		$event->setMailInfos($this);
 		
@@ -589,6 +591,11 @@ class babMail
 	}
 
 
+	/**
+	 * Get error message of last send() method call
+	 * or false if the mail has been sent successfully
+	 * @return string
+	 */
 	public function ErrorInfo()
 	{
 		return empty($this->mail->ErrorInfo) ? false : $this->mail->ErrorInfo;

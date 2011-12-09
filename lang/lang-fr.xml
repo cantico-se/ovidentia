@@ -3273,7 +3273,7 @@
 <string id="User groups">Groupes de l'utilisateur</string>
 <string id="Create groups that do not exist">Créer les groupes qui n'existent pas</string>
 <string id="Remove user from other groups">Retirer l'utilisateur des autres groupes</string>
-<string id="The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base">Le champ groupe peut être reseigné par une simple chaine de caractères ou bien un lien vers une entité groupe de LDAP. Les groupes externes serons utilisé par ovidentia seulement s'ils correspondent à la base de recherche configurée</string>
+<string id="The group field can be a simple string field or a link to group ldap entry. External groups will be used by ovidentia only if they match the configured search base">Le champ groupe peut être renseigné par une simple chaine de caractères ou bien un lien vers une entité groupe de LDAP. Les groupes externes serons utilisé par ovidentia seulement s'ils correspondent à la base de recherche configurée</string>
 <string id="The topic is restricted by an approbation, the article will not be visible imediately">Le thème d'articles est restreint par une approbation, l'article ne sera donc pas visible imédiatement</string>
 <string id="Allow readers to subscribe and unsubsribe from notifications">Les lecteurs peuvent s'inscrire et se désinscrire aux notifications</string>
 <string id="Notify me by email when an article is published">Me notifier par mail lors d'une publication dans ce thème</string>
