@@ -345,6 +345,232 @@ function addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $c
 	$temp = new temp($vcid, $what, $tname, $description, $vtypeids, $category);
 	$babBody->babecho(	bab_printTemplate($temp,"vacadm.html", "vcolcreate"));
 	}
+	
+	
+// 	available balances export
+function exportAvailableBalances()
+	{
+		global $babBody;
+		
+		class exportAvailableBalancesCls
+		{
+			/**
+			 * 
+			 * @var array
+			 */
+			private $rights;
+	
+			public function getHtml()
+			{
+				
+			
+				$this->separatortxt = bab_translate("Separator");
+				$this->other = bab_translate("Other");
+				$this->comma = bab_translate("Comma");
+				$this->tab = bab_translate("Tab");
+				$this->semicolon = bab_translate("Semicolon");
+				$this->export = bab_translate("Export");
+				$this->sepdectxt = bab_translate("Decimal separator");
+				$this->t_yes = bab_translate("Yes");
+				$this->t_no = bab_translate("No");
+				
+				return bab_printTemplate($this,"vacadm.html", "abexport");
+			}
+			
+			
+			private function query($groupby = '')
+			{
+				global $babDB;
+				
+				
+				$query = "
+					SELECT 
+						u.firstname,
+						u.lastname,
+						ur.id_user,
+						ur.id_right,
+						IF(ur.quantity<>'', ur.quantity , r.quantity) quantity,
+						r.description, 
+						sum(ee.quantity) consumed
+					FROM
+						bab_vac_users_rights ur
+							LEFT JOIN bab_vac_entries e ON e.id_user = ur.id_user AND e.status = 'Y'
+							LEFT JOIN bab_vac_entries_elem ee ON ee.id_entry = e.id AND ee.id_right = ur.id_right, 
+						bab_vac_rights r,
+						bab_vac_types t,
+						bab_vac_personnel p,
+						bab_users u 
+					WHERE
+						ur.id_user=p.id_user
+						AND p.id_user=u.id
+						AND r.id = ur.id_right
+						AND t.id = r.id_type 
+						AND r.active = 'Y' 
+					#	AND NOW() >= r.date_begin
+					#	AND NOW() <= r.date_end
+				".$groupby." 
+					ORDER BY 
+						u.lastname,
+						u.firstname,
+						r.description
+				";
+				
+				return $babDB->db_query($query);
+			}
+			
+			
+			private function csvEncode($str)
+			{
+				return '"'.str_replace('"','""',$str).'"';
+			}
+			
+			
+			private function encodeFloats($currentRow)
+			{
+				// encode float
+				foreach($currentRow as &$val)
+				{
+					if (is_float($val))
+					{
+						$val = $this->csvEncode(number_format($val, 1 , bab_pp('sepdec', ',') , '' ));
+					}
+				}
+				
+				return $currentRow;
+			}
+			
+			
+			
+			private function processRow($arr)
+			{
+				static $currentUser = null;
+				static $currentRow = null;
+				
+				$return = null;
+				
+				if (null === $arr && $currentRow)
+				{
+					return $this->encodeFloats($currentRow);
+				}
+				
+				
+				$remain = ((float) $arr['quantity'] - (float) $arr['consumed']);
+				
+				
+				if ($currentUser !== $arr['id_user'])
+				{
+					$currentUser = $arr['id_user'];
+					
+					if (null !== $currentRow)
+					{
+						$return = $this->encodeFloats($currentRow);
+					}
+					
+					
+					$currentRow = array(
+							$this->csvEncode($arr['lastname']),
+							$this->csvEncode($arr['firstname']),
+							$remain
+					);
+					
+					foreach($this->rights as $initcol)
+					{
+						$currentRow[$initcol] = 0.0;
+					}
+					
+				} else {
+					
+					$currentRow[2] += $remain;
+				}
+				
+				
+				
+				$col = $this->rights[$arr['id_right']];
+				
+				if ($col > 2)
+				{
+					$currentRow[$col] = $remain;
+				}
+				
+				
+				
+				
+				return $return;
+			}
+			
+			
+			public function csv()
+			{
+				global $babDB;
+				
+				
+				switch((int) bab_pp('wsepar'))
+				{
+					case 0:
+						$separator = bab_pp('separ');
+						break;
+					case 1:
+						$separator = ',';
+						break;
+					case 2:
+						$separator = "\t";
+						break;
+					case 3:
+						$separator = ';';
+						break;
+				}
+				
+				$columns = $this->query('GROUP BY r.id');
+				$this->rights = array();
+				
+				$header = array(
+					$this->csvEncode(bab_translate('Lastname')),
+					$this->csvEncode(bab_translate('Firstname')),
+					$this->csvEncode(bab_translate('Available days (total)'))
+				);
+				
+				while ($arr = $babDB->db_fetch_assoc($columns))
+				{
+					$header[] = $this->csvEncode($arr['description']);
+					$this->rights[$arr['id_right']] = (count($header) -1);
+				}
+				
+				
+				header("Content-Disposition: attachment; filename=\"".bab_translate("Vacation").".csv\""."\n");
+				header("Content-Type: text/csv"."\n");
+			//	header("Content-Length: ". mb_strlen($output)."\n");
+				header("Content-transfert-encoding: binary"."\n");
+				
+				echo implode($separator, $header)."\n";
+				
+				
+				
+				$rows = $this->query('GROUP BY u.id, r.id');
+				
+				while ($arr = $babDB->db_fetch_assoc($rows))
+				{
+					if (null !== $line = $this->processRow($arr))
+					{
+						echo implode($separator, $line)."\n";
+					}
+				}
+				echo implode($separator, $this->processRow(null))."\n";
+			
+				exit;
+			}
+		}
+		
+		
+		$export = new exportAvailableBalancesCls();
+		
+		if (!empty($_POST))
+		{
+			$export->csv();
+		}
+	
+		
+		$babBody->babecho($export->getHtml());
+	}
 
 
 function listVacationPersonnel($pos, $idcol, $idsa)
@@ -1277,8 +1503,18 @@ switch($idx)
 		}
 		listVacationPersonnel($pos, $idcol, $idsa);
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
+		$babBody->addItemMenu("abexport", bab_translate("Available balances export"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=abexport");
 		
 		break;
+		
+	// 	available balances export
+	case 'abexport':
+		$babBody->setTitle(bab_translate("Available balances export"));
+		exportAvailableBalances();
+		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
+		$babBody->addItemMenu("abexport", bab_translate("Available balances export"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=abexport");
+		break;
+		
 
 	case "lcol":
 		

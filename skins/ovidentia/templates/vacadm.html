@@ -768,3 +768,57 @@ function validateDayField(field) {
 </tr>
 </table>
 <!--#end menu -->
+
+
+
+
+
+
+
+
+
+
+
+<!--#begin abexport -->
+
+<form method="post" name="export" action="{ babPhpSelf }">
+<input type="hidden" name="tg" value="vacadm" />
+<input type="hidden" name="idx" value="abexport" />
+<table width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
+<tr> 
+<td class="BabLoginCadreBackground"> 
+	<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+
+	
+	<tr> 
+		<td align="right">{ separatortxt }:</td>
+		<td> 
+		<select name="wsepar">
+		<option value="0">{ other }</option>
+		<option value="1" selected >{ comma }</option>
+		<option value="2">{ tab }</option>
+		<option value="3">{ semicolon }</option>
+		</select>&nbsp;&nbsp;
+		<input type="text" name="separ" size="1" maxlength="1" value="" />
+		</td>
+	</tr>
+	<tr> 
+		<td align="right">{ sepdectxt }:</td>
+		<td> 
+		<input type="text" name="sepdec" size="1" maxlength="1" value="," />
+		</td>
+	</tr>
+
+	<tr> 
+		<td>&nbsp;</td>
+		<td> 
+		<input type="submit" name="bexport" value="{ export }" />
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+</form>
+<!--#end abexport -->
+
