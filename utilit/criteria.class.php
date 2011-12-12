@@ -131,6 +131,12 @@ class BAB_Criterion extends BAB_Criteria
 		return new BAB_LikeCriterion($aArgList[0], $aArgList[1]);
 	}
 	
+	function notLike()
+	{
+		$aArgList = func_get_args();
+		return new BAB_NotLikeCriterion($aArgList[0], $aArgList[1]);
+	}
+	
 	function contain()
 	{
 		$aArgList = func_get_args();
