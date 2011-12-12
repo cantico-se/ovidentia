@@ -40,269 +40,263 @@ class bab_mcalendars
 	var $idxcat = 0;
 
 
-
 	public function __construct($startdate, $enddate, $idcals)
 	{
+		
 		$whObj = self::create_events($startdate, $enddate, $idcals);
 		$this->idcals = $idcals;
-		for ($i = 0; $i < count($this->idcals); $i++ ) {
-			$this->objcals[$this->idcals[$i]] = new bab_icalendar($whObj, $this->idcals[$i]);
+		for( $i = 0; $i < count($this->idcals); $i++ )
+		{
+			$this->objcals[$this->idcals[$i]] =new bab_icalendar($whObj, $startdate, $enddate, $this->idcals[$i]);
 		}
-
+			
 		// add the non working days collection
-
+			
 		$this->idcals[] = 'bab_NonWorkingDaysCollection';
-		$this->objcals['bab_NonWorkingDaysCollection'] = new bab_icalendarNWorkingDays($whObj);
+		$this->objcals['bab_NonWorkingDaysCollection'] = new bab_icalendarNWorkingDays($whObj, $startdate, $enddate);
+		
+		
 	}
-
-
-
 
 	public function getCalendarName($idcal)
-	{
-		if (!isset($this->objcals[$idcal]->cal_name)) {
-			return '';
+		{
+		if( isset($this->objcals[$idcal]->cal_name) )
+			{
+			return $this->objcals[$idcal]->cal_name;
+			}
+		return "";
 		}
-		return $this->objcals[$idcal]->cal_name;
-	}
-
-
-
 
 	public function getCalendarType($idcal)
-	{
-		if (!isset($this->objcals[$idcal])) {
-			return '';
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->cal_type;
+			}
+		return "";
 		}
-		return $this->objcals[$idcal]->cal_type;
-	}
 
-
-
+	
 
 	public function getCalendarAccess($idcal)
-	{
-		if (!isset($this->objcals[$idcal])) {
-			return '';
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->access;
+			}
+		return "";
 		}
-		return $this->objcals[$idcal]->access;
-	}
-
-
-
 
 	public function getNextEvent($idcal, $startdate, $enddate, &$arr)
-	{
-		if (!isset($this->objcals[$idcal])) {
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->getNextEvent($startdate, $enddate, $arr);
+			}
+		else
+			{
 			return false;
+			}
 		}
-		return $this->objcals[$idcal]->getNextEvent($startdate, $enddate, $arr);
-	}
-
-
-
 
 	public function getEvents($idcal, $startdate, $enddate, &$arr)
-	{
-		if (!isset($this->objcals[$idcal])) {
+		{
+			
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
+			}
+		else
+			{
 			return 0;
+			}
 		}
-		return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
-	}
-
-
 
 
 	public function getHtmlArea($idcal, $startdate, $enddate, &$harray)
-	{
-		if (!isset($this->objcals[$idcal])) {
+		{
+		if( isset($this->objcals[$idcal]) )
+			{
+			return $this->objcals[$idcal]->getHtmlArea($startdate, $enddate, $harray);
+			}
+		else
+			{
 			return 0;
+			}
 		}
-		return $this->objcals[$idcal]->getHtmlArea($startdate, $enddate, $harray);
-	}
-
-
 
 
 	public function enumCategories()
-	{
+		{
 		$this->idxcat = 0;
 		$this->loadCategories();
-	}
-
-
-
+		}
 
 	public function getNextCategory(&$arr)
-	{
-		if ($this->idxcat < count($this->categories)) {
+		{
+		if( $this->idxcat < count($this->categories))
+			{
 			$arr = $this->categories[$this->idxcat];
 			$this->idxcat++;
 			return true;
-		}
-		$this->idxcat = 0;
-		return false;
-	}
-
-
-
-
-	public function loadCategories()
-	{
-		global $babDB;
-		static $bload = false;
-		if (!$bload) {
-			$res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." order by name");
-			while( $arr = $babDB->db_fetch_array($res)) {
-				$this->categories[$arr['id']] = array(
-					'name' => $arr['name'],
-					'description' => $arr['description'],
-					'bgcolor' => $arr['bgcolor']
-				);
+			}
+		else
+			{
+			$this->idxcat = 0;
+			return false;
 			}
 		}
-	}
-
-
-
-
-	public function getCategoryColor($idcat)
-	{
-		$this->loadCategories();
-
-		if (isset($this->categories[$idcat])) {
-			return $this->categories[$idcat]['bgcolor'];
-		}
-		return '';
-	}
-
-
-
-
-	public function getCategoryName($idcat)
-	{
-		$this->loadCategories();
-
-		if (isset($this->categories[$idcat])) {
-			return $this->categories[$idcat]['name'];
-		}
-		return '';
-	}
-
-
-
-
-	public function getCategoryDescription($idcat)
-	{
-		$this->loadCategories();
-
-		if (isset($this->categories[$idcat])) {
-			return $this->categories[$idcat]['description'];
-		}
-		return '';
-	}
-
-
-
-
-	/**
-	 * Get a list of calendars associated to the event
-	 * @param	bab_calendarPeriod	$calPeriod
-	 * @return 	array
-	 */
-	public function getEventCalendars(bab_calendarPeriod $calPeriod)
-	{
-		$cals = array();
-
-		$collection = $calPeriod->getCollection();
-
-		if (!isset($collection))
+	
+	public function loadCategories()
 		{
-			throw new Exception('the period is not linked to a collection');
-			return;
-		}
-
-		/*@var $collection bab_PeriodCollection */
-
-
-		$calendar = $collection->getCalendar();
-
-		if (!isset($calendar))
-		{
-			return array();
-		}
-
-
-		$cals[$calendar->getUrlIdentifier()] = array(
-			'name' => $calendar->getName(),
-			'type' => $calendar->getType()
-		);
-
-		// ovidentia calendar specific
-
-		$arr = $calPeriod->getData();
-
-		$allCalendars = bab_getICalendars()->getCalendars();
-
-		if (isset($arr['idcal_owners'])) {
-			foreach($arr['idcal_owners'] as $urlIdentifier) {
-
-				if (isset($allCalendars[$urlIdentifier])) {
-
-					$calendar = $allCalendars[$urlIdentifier];
-
-					$cals[$urlIdentifier] = array(
-						'name' => $calendar->getName(),
-						'type' => $calendar->getType()
+		global $babDB;
+		static $bload = false;
+		if( !$bload )
+			{
+			$res = $babDB->db_query("select * from ".BAB_CAL_CATEGORIES_TBL." order by name");
+			while( $arr = $babDB->db_fetch_array($res))
+				{
+				$this->categories[$arr['id']] = array(
+					'name' => $arr['name'], 
+					'description' => $arr['description'],
+					'bgcolor' => $arr['bgcolor']
 					);
 				}
 			}
 		}
 
+	public function getCategoryColor($idcat)
+		{
+		$this->loadCategories();
+
+		if( isset($this->categories[$idcat]))
+			{
+			return $this->categories[$idcat]['bgcolor'];
+			}
+		return "";
+		}
+
+	public function getCategoryName($idcat)
+		{
+		$this->loadCategories();
+
+		if( isset($this->categories[$idcat]))
+			{
+			return $this->categories[$idcat]['name'];
+			}
+		return "";
+		}
+
+	public function getCategoryDescription($idcat)
+		{
+		$this->loadCategories();
+
+		if( isset($this->categories[$idcat]))
+			{
+			return $this->categories[$idcat]['description'];
+			}
+		return "";
+		}
+		
+		
+		
+	/**
+	 * Get a list of calendars associated to the event
+	 * @param	bab_calendarPeriod	$calPeriod
+	 * @return 	array
+	 */
+	public function getEventCalendars(bab_calendarPeriod $calPeriod) {
+	
+		$cals = array();
+		
+		$collection = $calPeriod->getCollection();
+		
+		if (!isset($collection))
+		{
+			throw new Exception('the period is not linked to a collection');
+			return;
+		}
+		
+		/*@var $collection bab_PeriodCollection */
+		
+		
+		$calendar = $collection->getCalendar();
+		
+		if (!isset($calendar))
+		{
+			return array();
+		}
+		
+		
+		$cals[$calendar->getUrlIdentifier()] = array(
+			'name' => $calendar->getName(), 
+			'type' => $calendar->getType()
+		);
+
+		// ovidentia calendar specific
+		
+		$arr = $calPeriod->getData();
+		
+		$allCalendars = bab_getICalendars()->getCalendars();
+		
+		if (isset($arr['idcal_owners'])) {
+			foreach($arr['idcal_owners'] as $urlIdentifier) {	
+				
+				if (isset($allCalendars[$urlIdentifier])) {
+					
+					$calendar = $allCalendars[$urlIdentifier];
+				
+					$cals[$urlIdentifier] = array(
+						'name' => $calendar->getName(), 
+						'type' => $calendar->getType()
+					);
+				}
+			}
+		}
+		
 		return $cals;
-
+	
 	}
-
-
-
+		
+		
+		
 
 	/**
 	 * Create events object
 	 * for all calendars
-	 *
+	 * 
 	 * @param	string	$startdate	ISO datetime
 	 * @param	string	$enddate	ISO datetime
 	 * @param	array	$idcals		list of url identifier of calendars
-	 *
+	 * 
 	 * @return	bab_UserPeriods
 	 */
-	public static function create_events($startdate, $enddate, $idcals)
-	{
+	public static function create_events($startdate, $enddate, $idcals) {
 		include_once $GLOBALS['babInstallPath']."utilit/cal.userperiods.class.php";
 		include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-
-
+		
+		
 		$whObj = new bab_UserPeriods(
-			BAB_dateTime::fromIsoDateTime($startdate),
+			BAB_dateTime::fromIsoDateTime($startdate), 
 			BAB_dateTime::fromIsoDateTime($enddate)
 		);
-
+		
 		$factory = bab_getInstance('bab_PeriodCriteriaFactory');
 		/* @var $factory bab_PeriodCriteriaFactory */
 
 		$criteria = $factory->Collection(
 			array(
-				'bab_NonWorkingDaysCollection',
-				'bab_WorkingPeriodCollection',
-				'bab_VacationPeriodCollection',
+				'bab_NonWorkingDaysCollection', 
+				'bab_WorkingPeriodCollection', 
+				'bab_VacationPeriodCollection', 
 				'bab_CalendarEventCollection',
 				'bab_InboxEventCollection'
 			)
 		);
-
+		
 		$calendars = array();
 		foreach($idcals as $idcal) {
-
+			
 			$calendar = bab_getICalendars()->getEventCalendar($idcal);
 			if (!$calendar)
 			{
@@ -310,15 +304,15 @@ class bab_mcalendars
 			}
 			$calendars[] = $calendar;
 		}
-
+		
 		$criteria = $criteria->_AND_($factory->Calendar($calendars));
 
 		$whObj->createPeriods($criteria);
 		$whObj->orderBoundaries();
-
+		
 		return $whObj;
 	}
-
+	
 
 	/**
 	 * $arr = array(
@@ -329,17 +323,17 @@ class bab_mcalendars
 	 *
 	 * if $arr[2] == 0, this is a free event
 	 *
-	 * @param bab_UserPeriods	$whObj
+	 * @param bab_UserPeriods	$whObj		
 	 * @param string			$startdate	ISO date
 	 * @param string			$startdate	ISO date
 	 * @param array				$arr		reference for event
 	 * @param int				$gap		minimum event duration in seconds
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function getNextFreeEvent($whObj, $startdate, $enddate, &$arr, $gap=0)
-	{
-
+		{
+		
 		static $freeevents = array();
 		if (!isset($freeevents[$startdate.$enddate])) {
 			$freeevents[$startdate.$enddate] = $whObj->getAvailabilityBetween(bab_mktime($startdate), bab_mktime($enddate), $gap);
@@ -354,7 +348,7 @@ class bab_mcalendars
 
 			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -369,31 +363,28 @@ class bab_mcalendars
  */
 abstract class bab_icalendarEventsSource
 {
-
+	
 	public $cal_name;
-
+	
 	public $access = BAB_CAL_ACCESS_VIEW;
-
+	
 	/**
-	 *
+	 * 
 	 * @var bab_UserPeriods
 	 */
 	protected $whObj;
-
+	
 	/**
 	 * @var bab_EventCalendar
 	 */
 	protected $calendar;
 
-
-	/**
-	 * @param bab_UserPeriods $whObj
-	 */
-	public function __construct(bab_UserPeriods $whObj)
+	
+	public function __construct(bab_UserPeriods $whObj, $startdate, $enddate)
 	{
 		$this->whObj = $whObj;
 	}
-
+	
 
 	/**
 	 * @param	string	$startdate	ISO date time
@@ -402,19 +393,22 @@ abstract class bab_icalendarEventsSource
 	 * @return	boolean
 	 */
 	public function getNextEvent($startdate, $enddate, &$calPeriod)
-	{
-		while ($p = $this->whObj->getNextEvent()) {
-			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin) {
+		{
+		while( $p = $this->whObj->getNextEvent() )
+			{
+			if (bab_mktime($startdate) < $p->ts_end && bab_mktime($enddate) > $p->ts_begin )
+				{
 				$calPeriod = $p;
 				return true;
+				}
 			}
-		}
-
+			
+		
 		return false;
-	}
+		}
+	
 
-
-
+	
 	/**
 	 * @param	string	$startdate	ISO date time
 	 * @param	string	$enddate	ISO date time
@@ -422,7 +416,7 @@ abstract class bab_icalendarEventsSource
 	 * @return	int
 	 */
 	abstract public function getEvents($startdate, $enddate, &$arr);
-
+		
 
 	/**
 	 * each overlapping period create a new first level index
@@ -434,40 +428,47 @@ abstract class bab_icalendarEventsSource
 	 * @return int
 	 */
 	public function getHtmlArea($startdate, $enddate, &$harray)
-	{
+		{
+		
 		$calPeriod = NULL;
 		$harray = array();
-
+		
 		$source = array();
 		$this->getEvents($startdate, $enddate, $source);
-
-		foreach($source as $calPeriod) {
+		
+		foreach($source as $calPeriod)
+			{
 			$done = false;
-			for ($k = 0; $k < count($harray); $k++) {
-
+			for( $k = 0; $k < count($harray); $k++ )
+				{
+				
 				$append = true;
-				for ($m = 0; $m < count($harray[$k]); $m++) {
-					if ($harray[$k][$m]->getProperty('DTEND') > $calPeriod->getProperty('DTSTART')
-					  && $harray[$k][$m]->getProperty('DTSTART') < $calPeriod->getProperty('DTEND') ){
+				for( $m = 0; $m < count($harray[$k]); $m++ )
+					{
+					if( 
+						$harray[$k][$m]->getProperty('DTEND') > $calPeriod->getProperty('DTSTART') && 
+						$harray[$k][$m]->getProperty('DTSTART') < $calPeriod->getProperty('DTEND') )
+						{
 						$append = false;
 						break;
+						}
+					}
+
+				if( $append )
+					{
+					$done = true;
+				
+					$harray[$k][] = $calPeriod;
 					}
 				}
-
-				if ($append) {
-					$done = true;
-
-					$harray[$k][] = $calPeriod;
+			if( !$done)
+				{
+				$harray[][] = $calPeriod;
 				}
 			}
-			if (!$done) {
-				$harray[][] = $calPeriod;
-			}
-		}
 
 		return count($harray);
-	}
-
+		}
 }
 
 
@@ -487,75 +488,77 @@ abstract class bab_icalendarEventsSource
  */
 class bab_icalendar extends bab_icalendarEventsSource
 {
-
+	
 	/**
-	 * @param bab_UserPeriods	$whObj
-	 * @param string			$calid			Type and objectid of the reference, "type/id" the format used in url for calendars.
+	 * @param string	$startdate
+	 * @param string	$enddate
+	 * @param string	$calid
 	 */
-	public function __construct(bab_UserPeriods $whObj, $calid)
-	{
+	public function __construct($whObj, $startdate, $enddate, $calid)
+		{
+		global $babBody, $babDB;
+
+		
+		
+
 		$this->calendar = bab_getICalendars()->getEventCalendar($calid);
 		$this->cal_name = $this->calendar->getName();
-
+		
 		if ($this->calendar->canAddEvent()) {
 			$this->access = BAB_CAL_ACCESS_FULL;
-		}
-
-		parent::__construct($whObj);
+		} 
+		
+		parent::__construct($whObj, $startdate, $enddate);
 	}
-
-
-
+	
+	
 	/**
 	 * @param	string	$startdate	ISO date time
 	 * @param	string	$enddate	ISO date time
 	 * @param	array	$arr
-	 * @return	int		The number of events returned in $arr.
+	 * @return	int
 	 */
 	public function getEvents($startdate, $enddate, &$arr)
 	{
-
+			
 		$arr = array();
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
 
-		foreach ($events as $event) {
+			foreach($events as $event) {
 
-			/* @var $event bab_CalendarPeriod */
-
-			$calendar = $event->getCollection()->getCalendar();
-
-
-
-
-			if ($calendar) {
-				// $calendar is the main calendar of event
-
-				if ($calendar->displayEventInCalendarUi($this->calendar, $event)) {
-					$ui_event = clone $event;
-					$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
-					$arr[] = $ui_event;
-				} else {
-					// bab_debug("Event not displayed (the displayEventInCalendarUi() method on calendar object return false) : ".$event->toHtml());
-				}
-
-			} else {
-
-				// The event has no main calendar, we check other associated calendars.
-
-				$associatedCalendars = $event->getCalendars();
-
-				foreach ($associatedCalendars as $cal) {
-					/* @var $cal bab_EventCalendar */
-					if ($cal->displayEventInCalendarUi($this->calendar, $event)) {
-
+				
+				$calendar = $event->getCollection()->getCalendar();
+				
+				if ($calendar) {
+					// $calendar is the main calendar of event
+	
+					if ($calendar->displayEventInCalendarUi($this->calendar, $event)) {
 						$ui_event = clone $event;
-						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$cal->getUrlIdentifier());
+						$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
 						$arr[] = $ui_event;
+					} else {
+						// bab_debug("Event not displayed (the displayEventInCalendarUi() method on calendar object return false) : ".$event->toHtml());
+					}
+	
+				} else {
+	
+					// The event has no main calendar, we check other associated calendars.
+	
+					$associatedCalendars = $event->getCalendars();
+	
+					foreach ($associatedCalendars as $cal) {
+						/* @var $cal bab_EventCalendar */
+						if ($cal->displayEventInCalendarUi($this->calendar, $event)) {
+	
+							$ui_event = clone $event;
+							$ui_event->setUiCalendar($cal);
+							$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$cal->getUrlIdentifier());
+							$arr[] = $ui_event;
+						}
 					}
 				}
 			}
-		}
-
+			
 		return count($arr);
 	}
 }
@@ -572,19 +575,18 @@ class bab_icalendarNWorkingDays extends bab_icalendarEventsSource
 	 */
 	public function getEvents($startdate, $enddate, &$arr)
 	{
-
+			
 		$arr = array();
 		$events = $this->whObj->getEventsBetween(bab_mktime($startdate), bab_mktime($enddate));
 
-
-		foreach ($events as $event) {
-
-			$collection = $event->getCollection();
-			if ($collection instanceof bab_NonWorkingDaysCollection) {
-				$arr[] = $event;
+			foreach($events as $event) {
+				$collection = $event->getCollection();
+				if ($collection instanceof bab_NonWorkingDaysCollection)
+				{ 
+					$arr[] = $event;
+				}
 			}
-		}
-
+			
 		return count($arr);
 	}
 }
@@ -599,8 +601,8 @@ class cal_wmdbaseCls
 	 * @var array	<string>
 	 */
 	public $idcals;
-
-
+	
+	
 	public function __construct($tg, $idx, $calids, $date)
 	{
 		global $babBody;
@@ -610,7 +612,7 @@ class cal_wmdbaseCls
 		$this->currentdate = $date;
 		$this->idcals = explode(",", $calids);
 		$this->collections = array('bab_NonWorkingDaysCollection');		// display additional collections
-
+		
 		$rr = explode(',', $date);
 		if (3 === count($rr)) {
 			$this->year = (int) $rr[0];
@@ -632,7 +634,7 @@ class cal_wmdbaseCls
 
 
 		$this->commonurl = $GLOBALS['babUrlScript']."?tg=".$tg."&idx=".$idx."&calid=".$this->currentidcals;
-
+		
 		$bprint = bab_rp('print',false);
 		if (false !== $bprint) {
 			$this->commonurl .= '&print=1';
@@ -748,7 +750,7 @@ class cal_wmdbaseCls
 
 
 
-
+	
 	/**
 	 * Set access rights for one event and one calendar
 	 * @param 	bab_CalendarPeriod	$calPeriod		Event infos
@@ -757,44 +759,35 @@ class cal_wmdbaseCls
 	public function updateAccess(bab_CalendarPeriod $calPeriod)
 	{
 		global $babBody;
-
-
+		
+		
 		$periodCollection = $calPeriod->getCollection();
-
+		
 		if (!$periodCollection)
 		{
 			throw new Exception('calendar period without collection');
 		}
-
+		
 		$calendar = $periodCollection->getCalendar();
-
+		
 		if (!$calendar)
 		{
-// 			$this->allow_modify = false;
-// 			$associatedCalendars = $calPeriod->getCalendars();
-// 			foreach ($associatedCalendars as $cal) {
-// 				if ($cal->canUpdateEvent($calPeriod)) {
-// 					$this->allow_modify = true;
-// 					break;
-// 				}
-// 			}
-
 			$this->bstatus			= false;
-			$this->allow_view 		= ($periodCollection instanceof bab_CalendarEventCollection);
-			$this->allow_viewtitle  = true;
+			$this->allow_view 		= false;
+			$this->allow_viewtitle	= true;
 			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
 			return;
 		}
-
-
+		
+		
 		$this->allow_view 			= ($periodCollection instanceof bab_CalendarEventCollection);	// detail view popup
 		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);						// edit popup
 		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);					// SUMMARY of event on calendar
 
 		$this->bstatus				= false;														// default, nothing to validate
 
-
-
+		
+		
 		if (bab_isUserLogged())
 		{
 			foreach($calPeriod->getAttendees() as $attendee)
@@ -806,17 +799,17 @@ class cal_wmdbaseCls
 					break;
 				}
 			}
-
-
-
-
+			
+			
+			
+			
 			if (!$this->bstatus)
 			{
 				$backend = $calendar->getBackend();
 
 				require_once dirname(__FILE__).'/wfincl.php';
 				$user_instances = bab_WFGetWaitingInstances($GLOBALS['BAB_SESS_USERID']);
-
+				
 				$relations = $calPeriod->getRelations();
 				foreach($relations as $relation)
 				{
@@ -833,62 +826,54 @@ class cal_wmdbaseCls
 		}
 	}
 
-
-
-
 	/**
-	 *
+	 * 
 	 * @return unknown_type
 	 */
 	function updateCreateAccess()
 	{
+		
 		foreach ($this->idcals as $cal)
 		{
 			$calendar = bab_getICalendars()->getEventCalendar($cal);
 
 			if ($calendar && $calendar->canAddEvent()) {
-
+				
 				$this->allow_create = true;
 				return;
 			}
 		}
 	}
 
-
-
-
 	function calstr($str,$n = BAB_CAL_EVENT_LENGTH)
-	{
+		{	
 		return bab_toHtml(bab_abbr($str, BAB_ABBR_FULL_WORDS, $n));
-	}
-
-
-
+		}
 
 	function createCommonEventVars(bab_CalendarPeriod $calPeriod)
-	{
+		{
 		require_once dirname(__FILE__).'/evtincl.php';
 		require_once dirname(__FILE__).'/urlincl.php';
-
+		
 		$collection = $calPeriod->getCollection();
-
+			
 
 		$this->properties = bab_getPropertiesString($calPeriod, $this->t_option);
-
-
+		
+		
 		global $babBody;
 
 		$arr = $calPeriod->getData();
 
 		$this->idcal		= '';
-
+		
 		if ($collection && $calendar = $collection->getCalendar()) {
 			$this->idcal	= $calendar->getUrlIdentifier();
 		}
-
-
+		
+		
 		// $this->status		= isset($arr['status'])		? $arr['status'] 		: 0;
-
+		
 		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
 		$this->id_cat		= $cat['id'];
 		$this->id_creator	= isset($arr['id_creator']) ? $arr['id_creator'] 	: 0;
@@ -896,23 +881,25 @@ class cal_wmdbaseCls
 		$this->balert		= $calPeriod->getAlarm();
 		$this->idevent		= $calPeriod->getUrlIdentifier();
 		$this->uiIdentifier = $calPeriod->getUiIdentifier();
-
-
-
-
-
-		if ($this->id_creator != 0 ) {
-			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator));
-		}
-
+		
+		
+		
+		
+		
+		if( $this->id_creator != 0 )
+			{
+			$this->creatorname = bab_toHtml(bab_getUserName($this->id_creator)); 
+			}
+		
 		$this->updateAccess($calPeriod);
-
+		
 		$this->category = bab_toHtml($calPeriod->getProperty('CATEGORIES'));
 		$cat = bab_getCalendarCategory($calPeriod->getProperty('CATEGORIES'));
-
-		if ($cat) {
+		
+		if ($cat)
+		{
 			$this->bgcolor = $cat['bgcolor'];
-		} else if (bab_getICalendars()->usebgcolor == 'Y') {
+		} elseif(bab_getICalendars()->usebgcolor == 'Y') {
 			$this->bgcolor = $calPeriod->getProperty('X-CTO-COLOR');
 		} else {
 			$this->bgcolor = '';
@@ -922,114 +909,110 @@ class cal_wmdbaseCls
 		$this->startdate = bab_toHtml(bab_shortDate($calPeriod->ts_begin, false));
 		$this->endtime = bab_toHtml(bab_time($calPeriod->ts_end));
 		$this->enddate =  bab_toHtml(bab_shortDate($calPeriod->ts_end, false));
-
-
-
-		if (!$this->allow_viewtitle) {
+		
+		
+		
+		if(!$this->allow_viewtitle)
+			{
 			$this->title		= $calPeriod->isPublic() ? bab_toHtml(bab_translate("Awaiting approval")) : bab_toHtml(bab_translate("Private"));
 			$this->titleten		= $this->title;
 			$this->description	= "";
 			$this->location		= "";
-		} else {
+			}
+		else
+			{
 			$this->title		= bab_toHtml($calPeriod->getProperty('SUMMARY'));
 			$this->titleten		= $this->calstr($calPeriod->getProperty('SUMMARY'));
 			$this->location		= bab_toHtml($calPeriod->getProperty('LOCATION'));
 			$this->description	= bab_toHtml($calPeriod->getProperty('DESCRIPTION'));
-
+			
 			// display html from WYSIWYG if any :
-
-			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format']) {
-				include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-				$editor = new bab_contentEditor('bab_calendar_event');
-				$editor->setContent($arr['description']);
-				$editor->setFormat($arr['description_format']);
-
-				$this->description	= $editor->getHtml();
+			
+			if (isset($arr['description']) && isset($arr['description_format']) && 'html' === $arr['description_format'])
+				{
+					include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
+					$editor = new bab_contentEditor('bab_calendar_event');
+					$editor->setContent($arr['description']);
+					$editor->setFormat($arr['description_format']);
+					
+					$this->description	= $editor->getHtml();
+				}
 			}
-		}
 
-
+			
 		$this->popup = false;
-		$this->editurl = '';
 
-//		if ($this->allow_modify) {
-		if ($calendar && $calendar->canUpdateEvent($calPeriod)) {
+		if( $this->allow_modify )
+			{
 			$this->popup = true;
 			$editurl = new bab_url;
 			$editurl->tg = 'event';
 			$editurl->idx = 'modevent';
 			$editurl->evtid = $this->idevent;
 			$editurl->dtstart = $calPeriod->getProperty('DTSTART');
-
+			$editurl->calid = $this->idcal;
 			$editurl->cci = $this->currentidcals;
 			$editurl->view = $this->currentview;
 			$editurl->date = $this->currentdate;
-
-			$editurl->calid = $this->idcal;
-
+			
 			$this->editurl = bab_toHtml($editurl->toString());
-		} else if ($this->allow_view) {
+			}
+		elseif( $this->allow_view )
+			{
 			$this->popup = true;
-		}
+			}
 
 
 		$this->attendeesurl = null;
 		$this->vieweventurl = null;
 		$this->nbowners		= 0;
-
-		if (true) { //isset($calendar) && ($calendar instanceof bab_EventCalendar)) {
-
-			foreach($calPeriod->getCalendars() as $subcal) {
-				if (!$calendar || $subcal->getUrlIdentifier() !== $calendar->getUrlIdentifier()) {
+			
+		if (isset($calendar) && ($calendar instanceof bab_EventCalendar))
+		{
+			
+			foreach($calPeriod->getCalendars() as $subcal)
+			{
+				if ($subcal->getUrlIdentifier() !== $calendar->getUrlIdentifier())
+				{
 					$this->nbowners++;
 				}
 			}
-
-
+			
+			
+			
 			$attendeesurl = new bab_url;
 			$attendeesurl->tg = 'calendar';
 			$attendeesurl->idx = 'attendees';
 			$attendeesurl->evtid = $this->idevent;
 			$attendeesurl->dtstart = $calPeriod->getProperty('DTSTART');
 			$attendeesurl->idcal = $this->idcal;
-
-
-			if (empty($this->idcal)) {
-				// If the event has no main calendar we
-				$uiIdentifier = $calPeriod->getUiIdentifier();
-				list($uid, $calid) = explode('@', $uiIdentifier);
-				$attendeesurl->idcal = $calid;
-			}
-
-
-
+				
 			$vieweventurl = clone $attendeesurl;
 			$vieweventurl->idx = 'veventupd';
-
+			
 			$this->attendeesurl = bab_toHtml($attendeesurl->toString());
-
+			
 			$this->vieweventurl = bab_toHtml($vieweventurl->toString());
 		}
-
-
-		$this->link = isset($arr['viewinsamewindow']) ? $arr['viewinsamewindow'] : false;
+		
+		
+		$this->link = isset($arr['viewinsamewindow'])? $arr['viewinsamewindow']: false;
 		$this->bnote = false;
-		if (isset($arr['note']) && !empty($arr['note'])) {
+		if( isset($arr['note']) && !empty($arr['note']))
+			{
 			$this->bnote = true;
 			$this->noteval = bab_toHtml($arr['note']);
+			}
 		}
-	}
 
-
-
-
-	function printout($file, $template)
-	{
+	function printout($file,$template)
+		{
 		global $babBody;
 
-		$html = bab_printTemplate($this, $file, $template);
+		$html = bab_printTemplate($this,$file,$template);
 
-		if ($this->print) {
+		if ($this->print)
+			{
 			include_once $GLOBALS['babInstallPath']."utilit/uiutil.php";
 			$GLOBALS['babBodyPopup'] = new babBodyPopup();
 			$GLOBALS['babBodyPopup']->addStyleSheet('calendar.css');
@@ -1038,15 +1021,14 @@ class cal_wmdbaseCls
 			$GLOBALS['babBodyPopup']->babecho($html);
 			printBabBodyPopup();
 			die();
-		} else {
+			}
+		else
+			{
 			$GLOBALS['babBody']->addStyleSheet('calendar.css');
 			$babBody->babecho($html);
+			}
 		}
-	}
 }
-
-
-
 
 /**
  * Calendar selection interface
@@ -1056,205 +1038,211 @@ class cal_wmdbaseCls
  */
 function calendarchoice($formname, $selected_calendars = NULL)
 {
-	class calendarchoice
+class calendarchoice
 	{
-		private $caltypes = array();
+	private $caltypes = array();
+	
+	private $calfromtype;
+		
+		
+	var $approb = array();
 
-		private $calfromtype;
-
-
-		var $approb = array();
-
-		function calendarchoice($formname, $selected_calendars)
+	function calendarchoice($formname, $selected_calendars)
 		{
-			global $babBody, $babDB;
-
-			$this->formname = $formname;
-			$icalendars = bab_getICalendars();
-
-			if (isset($_POST['selected_calendars'])) {
-				$this->selectedCalendars = $_POST['selected_calendars'];
-			} else if (NULL !== $selected_calendars) {
-				$this->selectedCalendars = $selected_calendars;
-			} else if (bab_rp('calid')) {
-				$this->selectedCalendars = explode(',', bab_rp('calid'));
-			} else if (isset($icalendars->user_calendarids)) {
-				$this->selectedCalendars = explode(',', $icalendars->user_calendarids);
-			} else {
-				$this->selectedCalendars = array();
+		global $babBody, $babDB;
+		$this->formname = $formname;
+		$icalendars = bab_getICalendars();
+		
+		if (isset($_POST['selected_calendars']))
+			{
+			$this->selectedCalendars = $_POST['selected_calendars'];
+			}
+		elseif (NULL !== $selected_calendars) 
+			{
+			$this->selectedCalendars = $selected_calendars;
+			}
+		elseif (bab_rp('calid'))
+			{
+			$this->selectedCalendars = explode(',',bab_rp('calid'));
+			}
+		elseif (isset($icalendars->user_calendarids))
+			{
+			$this->selectedCalendars = explode(',',$icalendars->user_calendarids);
+			}
+		else
+			{
+			$this->selectedCalendars = array();
 			}
 
-			$this->usrcalendarstxt = bab_translate("Users");
-			$this->grpcalendarstxt = bab_translate("Publics");
-			$this->rescalendarstxt = bab_translate("Resources");
-			$this->t_goright = bab_translate("Push right");
-			$this->t_goleft = bab_translate("Push left");
-			$this->t_calendars1 = bab_translate("Available calendars");
-			$this->t_calendars2 = bab_translate("Selected calendars");
-			$this->js_calnum = bab_translate("You must select one calendar");
+		$this->usrcalendarstxt = bab_translate("Users");
+		$this->grpcalendarstxt = bab_translate("Publics");
+		$this->rescalendarstxt = bab_translate("Resources");
+		$this->t_goright = bab_translate("Push right");
+		$this->t_goleft = bab_translate("Push left");
+		$this->t_calendars1 = bab_translate("Available calendars");
+		$this->t_calendars2 = bab_translate("Selected calendars");
+		$this->js_calnum = bab_translate("You must select one calendar");
+		
+
+		$calendars = $icalendars->getCalendars();
+		foreach($calendars as $key => $calendar)
+		{
+			if ($_REQUEST['tg'] != 'event' || $calendar->canAddEvent())
+			{	
+				$type = $calendar->getType();
+				if (!isset($this->caltypes[$type])) {
+					$this->caltypes[$type] = array();
+				}
+				
+				$this->caltypes[$type][$key] = $calendar;
+			}
+		}
 
 
-			$calendars = $icalendars->getCalendars();
-			foreach($calendars as $key => $calendar) {
-				if ($_REQUEST['tg'] != 'event' || $calendar->canAddEvent()) {
-					$type = $calendar->getType();
-					if (!isset($this->caltypes[$type])) {
-						$this->caltypes[$type] = array();
+		bab_sort::ksort($this->caltypes, bab_Sort::CASE_INSENSITIVE);
+
+		foreach($this->caltypes as &$arr)
+		{
+			bab_sort::sortObjects($arr, 'getName', bab_Sort::CASE_INSENSITIVE);
+			reset($arr);
+		}
+		
+		reset($this->caltypes);
+		
+		$this->declined_arr = array();
+		
+		
+		// search for the list of rejected calendars
+		if (bab_rp('evtid') && bab_rp('calid'))
+		{
+			$calendar = $icalendars->getEventCalendar(bab_rp('calid'));
+			$backend = $calendar->getBackend();
+			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_rp('evtid'));
+			
+			if ($period){
+				foreach($period->getAttendees() as $attendee)
+				{
+					if ('DECLINED' === $attendee['PARTSTAT'])
+					{
+						$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
 					}
-
-					$this->caltypes[$type][$key] = $calendar;
+				}
+				
+				$relations = $period->getRelations();
+				foreach($relations as $relation)
+				{
+					if ('DECLINED' === $relation['X-CTO-STATUS'])
+					{
+						$this->declined_arr[$relation['calendar']->getUrlIdentifier()] = $relation['calendar'];
+					}
 				}
 			}
-
-
-			bab_sort::ksort($this->caltypes, bab_Sort::CASE_INSENSITIVE);
-
-			foreach ($this->caltypes as &$arr) {
-				bab_sort::sortObjects($arr, 'getName', bab_Sort::CASE_INSENSITIVE);
-				reset($arr);
-			}
-
-			reset($this->caltypes);
-
-			$this->declined_arr = array();
-
-
-			// search for the list of rejected calendars
-			if (bab_rp('evtid') && bab_rp('calid')) {
-				$calendar = $icalendars->getEventCalendar(bab_rp('calid'));
-				$backend = $calendar->getBackend();
-				$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_rp('evtid'));
-
-				if ($period) {
-					foreach($period->getAttendees() as $attendee) {
-						if ('DECLINED' === $attendee['PARTSTAT']) {
-							$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
-						}
-					}
-
-					$relations = $period->getRelations();
-					foreach($relations as $relation) {
-						if ('DECLINED' === $relation['X-CTO-STATUS']) {
-							$this->declined_arr[$relation['calendar']->getUrlIdentifier()] = $relation['calendar'];
-						}
-					}
-				}
-			}
-		}
-
-
-
-
-		function getnexttype()
-		{
-			static $i = 0;
-
-			if (list($type, $this->calfromtype) = each($this->caltypes)) {
-				$this->type = bab_toHtml($type);
-				$this->number = $i;
-				reset($this->calfromtype);
-				$i++;
-				return true;
-			}
-			reset($this->caltypes);
-			$i = 0;
-			return false;
-		}
-
-
-
-
-		function getnextcal()
-		{
-			if (!isset($this->calfromtype)) {
-				return false;
-			}
-
-			if (list($key, $calendar) = each($this->calfromtype)) {
-				$this->id = bab_toHtml($key);
-				$this->name = bab_toHtml($calendar->getName());
-				$this->selected = in_array($key,$this->selectedCalendars);
-
-				$this->declined = isset($this->declined_arr[$key]);
-
-				/*@var $calendar bab_EventCalendar */
-
-				$idsa = $calendar->getApprobationSheme();
-				if (!empty($idsa)) {
-					$this->approb[] = $calendar->getName();
-				}
-				return true;
-			}
-
-			$this->calfromtype = null;
-			return false;
-		}
-
-
-
-
-		function getapprob()
-		{
-			if (count($this->approb) == 1) {
-				$this->t_approb = bab_toHtml(bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved"));
-				$this->approb = array();
-				return true;
-			}
-
-			if (count($this->approb) > 1) {
-				$this->t_approb = bab_toHtml('"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved"));
-				$this->approb = array();
-				return true;
-			}
-			return false;
-		}
-
-
-
-
-		function printhtml()
-		{
-			return bab_printTemplate($this,"calendar.html", "calendarchoice");
 		}
 	}
 
+	function getnexttype()
+		{
+		static $i = 0;
+		if (list($type, $this->calfromtype) = each($this->caltypes))
+			{
+			$this->type = bab_toHtml($type);
+			$this->number = $i;
+			reset($this->calfromtype);
+			$i++;
+			return true;
+			}
+		reset($this->caltypes);
+		$i = 0;
+		return false;
+		}
 
+	function getnextcal()
+	{
+		if (!isset($this->calfromtype))	
+		{
+			return false;
+		}
+			
+		if (list($key, $calendar) = each($this->calfromtype))
+			{
+			$this->id = bab_toHtml($key);
+			$this->name = bab_toHtml($calendar->getName());
+			$this->selected = in_array($key,$this->selectedCalendars);
+			
+			$this->declined = isset($this->declined_arr[$key]);
+			
+			/*@var $calendar bab_EventCalendar */
+			
+			$idsa = $calendar->getApprobationSheme();
+			if (!empty($idsa)) {
+				$this->approb[] = $calendar->getName();
+				}
+			return true;
+			}
+			
+		$this->calfromtype = null;
+		return false;
+	}
 
+	
 
-	$temp = new calendarchoice($formname, $selected_calendars);
-	return $temp->printhtml();
+	function getapprob()
+		{
+		if (count($this->approb) == 1)
+			{
+			$this->t_approb = bab_toHtml(bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved"));
+			$this->approb = array();
+			return true;
+			}
+
+		if (count($this->approb) > 1)
+			{
+			$this->t_approb = bab_toHtml('"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved"));
+			$this->approb = array();
+			return true;
+			}
+		return false;
+		}
+
+	function printhtml()
+		{
+		return bab_printTemplate($this,"calendar.html", "calendarchoice");
+		}
+	}
+
+$temp = new calendarchoice($formname, $selected_calendars);
+return $temp->printhtml();
 }
-
-
-
 
 
 function record_calendarchoice()
 {
-	global $babBody, $babDB;
+global $babBody, $babDB;
 
-	$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
+$selected = isset($_POST['selected_calendars']) ? $_POST['selected_calendars'] : array();
 
-	if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record'])) {
-		bab_getICalendars()->user_calendarids = implode(',', $selected);
-
-		list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
-		if ($n > 0) {
-			$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."' WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
-		} else {
-			$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, week_numbers, user_calendarids) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', 'N', '".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."')");
+if ($GLOBALS['BAB_SESS_LOGGED'] && !empty($_POST['database_record']))
+	{
+	bab_getICalendars()->user_calendarids = implode(',',$selected);
+	
+	list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_CAL_USER_OPTIONS_TBL." WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'"));
+	if ($n > 0)
+		{
+		$babDB->db_query("UPDATE ".BAB_CAL_USER_OPTIONS_TBL." SET  user_calendarids='".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."' WHERE id_user='".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."'");
+		}
+	else
+		{
+		$babDB->db_query("insert into ".BAB_CAL_USER_OPTIONS_TBL." ( id_user, startday, allday, start_time, end_time, usebgcolor, elapstime, defaultview, week_numbers, user_calendarids) values ('".$babDB->db_escape_string($GLOBALS['BAB_SESS_USERID'])."', '1', 'N', '08:00:00', '18:00:00', 'Y', '30', '0', 'N', '".$babDB->db_escape_string(bab_getICalendars()->user_calendarids)."')");
 		}
 	}
+
 }
-
-
-
 
 /**
  * @param	array	$idcals
  * @param	string	$date0		ISO date or ISO datetime
  * @param	string	$date1		ISO date or ISO datetime
- * @param	int		$gap		seconds
+ * @param	int		$gap		seconds	
  * @param	Y|N		$bopt		if you want to use user's options (deprecated)
  * @return array
  */
@@ -1274,11 +1262,11 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 
 	$whObj = bab_mcalendars::create_events($sdate, $edate, $idcals);
 
-
-	while (bab_mcalendars::getNextFreeEvent($whObj, $sdate, $edate, $arr, $gap)) {
-		if (0 === $arr[2]) {
+	
+	while(  bab_mcalendars::getNextFreeEvent($whObj, $sdate, $edate, $arr, $gap)) {
+		if( 0 === $arr[2] ) {
 			$freeevents[] = array(
-				bab_mktime($arr[0]),
+				bab_mktime($arr[0]), 
 				bab_mktime($arr[1])
 			);
 		}
@@ -1287,20 +1275,16 @@ function cal_getFreeEvents($idcals, $date0, $date1, $gap, $bopt = 0)
 	return $freeevents;
 }
 
-
-
-
 function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 {
 	global $babBody;
-
 	class cal_searchAvailabilityCls
-	{
+		{
 
 		function cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt)
-		{
+			{
 			global $babBodyPopup, $babBody;
-
+			
 			$this->datebegintxt = bab_translate("Begin date")." ".bab_translate("dd-mm-yyyy");
 			$this->dateendtxt = bab_translate("Until date")." ".bab_translate("dd-mm-yyyy");
 			$this->searchtxt = bab_translate("Search");
@@ -1320,9 +1304,10 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$this->date = $date;
 			$this->date0 = $date0;
 			$this->date1 = $date1;
-			if ($this->date0 > $this->date1) {
+			if( $this->date0 > $this->date1)
+				{
 				$babBodyPopup->msgerror = bab_translate("End date must be older")." !!";
-			}
+				}
 
 			$rr = explode(',', $date0);
 			$sqdate = sprintf("%s-%02s-%02s", $rr[0], $rr[1], $rr[2]);
@@ -1336,9 +1321,9 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 			$this->ymin = 2;
 			$this->ymax = 5;
 			list($this->curyear,$this->curmonth,$this->curday) = explode(',', $this->date);
-			$this->datebeginurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear;
+			$this->datebeginurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateBegin&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear; 
 			$this->dateendurl = $GLOBALS['babUrlScript']."?tg=month&callback=dateEnd&ymin=".$this->ymin."&ymax=".$this->ymax."&month=".$this->curmonth."&year=".$this->curyear;
-
+			
 			$this->gaparr = array();
 			$this->gaparr[] = array("name" => bab_translate("One hour"), "val" => 3600);
 			$this->gaparr[] = array("name" => bab_translate("Two hours"), "val" => 7200);
@@ -1359,66 +1344,79 @@ function cal_searchAvailability($tg, $calid, $date, $date0, $date1, $gap, $bopt)
 
 
 			$this->countfree = count($this->freeevents);
-		}
-
-
+			}
 
 
 		function getnextfreeevent()
-		{
-			static $i = 0;
+			{
+			static $i=0;
 			global $babBody;
-
-			if ($i < $this->countfree) {
+			if( $i < $this->countfree )
+				{
 				$this->altbg = !$this->altbg;
 				$time0 = $this->freeevents[$i][0];
 				$this->startdate = bab_shortDate($time0);
 				$time1 = $this->freeevents[$i][1];
 				$this->enddate = bab_shortDate($time1);
-
+				
 				$this->refurl = $GLOBALS['babUrlScript']."?tg=event&amp;idx=newevent&amp;date=".urlencode(date("Y,n,j", $time1))."&amp;calid=".urlencode(implode(',',$this->idcals))."&amp;&st=".$time0;
 
 				$interval = $time1 - $time0;
 				$tmp = (int)($interval / 86400);
-				if ($tmp) {
+				if( $tmp)
+					{
 					$this->interval = $tmp." ".$this->daystxt;
-				} else {
-					$tmp = (int)($interval / 3600);
-					if ($tmp) {
-						$this->interval = $tmp." ".$this->hourstxt;
-					} else{
-						$this->interval = (int)($interval / 60)." ".$this->minutestxt;
 					}
-				}
+				else
+					{
+					$tmp = (int)($interval / 3600);
+					if( $tmp )
+						{
+						$this->interval = $tmp." ".$this->hourstxt;
+						}
+					else
+						{
+						$this->interval = (int)($interval / 60)." ".$this->minutestxt;
+						}
+					}
 				$i++;
 				return true;
+				}
+			else
+				{
+				return false;
+				}
 			}
-			return false;
-		}
-
-
-
 
 		function getnextgap()
-		{
+			{
 			static $i = 0;
-
-			if ($i < $this->countgap) {
+			if( $i < $this->countgap)
+				{
 				$this->gapname = $this->gaparr[$i]['name'];
 				$this->gapval = $this->gaparr[$i]['val'];
-				if ($this->gap == $this->gapval) {
+				if( $this->gap == $this->gapval )
+					{
 					$this->selected = 'selected';
-				} else {
+					}
+				else
+					{
 					$this->selected = '';
-				}
+					}
 				$i++;
 				return true;
+				}
+			else
+				{
+				return false;
+				}
+
 			}
-			return false;
+	
 		}
 
-	}
-
 	$temp = new cal_searchAvailabilityCls($tg, $calid, $date, $date0, $date1, $gap, $bopt);
-	$babBody->babecho(bab_printTemplate($temp, 'calendar.html', 'searchavailability'));
+	$babBody->babecho(bab_printTemplate($temp, "calendar.html", "searchavailability"));
 }
+
+?>

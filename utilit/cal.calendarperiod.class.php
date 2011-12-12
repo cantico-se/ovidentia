@@ -74,7 +74,11 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 	
 		
-	
+	/**
+	 * If the same event is displayed more than once in the same page, contain the calendar associated for visualisation
+	 * @var string
+	 */
+	private $uiCalendar = null;
 	
 	/**
 	 * If the same event is displayed more than once in the same page
@@ -167,6 +171,16 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 		return $uid;
 	}
 	
+	
+	public function setUiCalendar(bab_EventCalendar $calendar)
+	{
+		$this->uiCalendar = $calendar;
+	}
+	
+	public function getUiCalendar()
+	{
+		return $this->uiCalendar;
+	}
 
 	
 	public function setUiIdentifier($uid)
