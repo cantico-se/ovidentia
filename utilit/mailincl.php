@@ -200,6 +200,12 @@ class bab_eventMail extends bab_event {
 	 */
 	public $format = null;
 	
+	/**
+	 * Unique identifier of email used in mailspooler
+	 * @var string
+	 */
+	public $hash = null;
+	
 	
 	public function setMailInfos(babMail $babMail) {
 		
@@ -216,6 +222,8 @@ class bab_eventMail extends bab_event {
 		
 		$this->altBody		= $babMail->mail->AltBody;
 		$this->format		= $babMail->format;
+		
+		$this->hash			= $babMail->hash;
 	}
 
 }
@@ -301,6 +309,11 @@ class babMail
 	public $format;
 	public $sent_status;
 
+	/**
+	 * unique identifier of email
+	 * @var string
+	 */
+	public $hash;
 
 	public function __construct()
 	{
@@ -579,6 +592,8 @@ class babMail
 		$event->ErrorInfo = empty($this->mail->ErrorInfo) ? null : $this->mail->ErrorInfo;
 		
 		bab_fireEvent($event);
+		
+		$this->hash = null;
 
 		return $this->sent_status; 
 	}
