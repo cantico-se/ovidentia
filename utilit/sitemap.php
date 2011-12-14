@@ -428,6 +428,12 @@ class bab_siteMapItem {
 		$url = $this->url;
 		if ($this->enableRewriting && !empty($url)) {
 			$url = bab_Sitemap::rewrittenUrl($this->id_function);
+		} else {
+			$path = bab_Sitemap::rewrittenUrl($this->id_function);
+			if ($path)
+			{
+				$url = '?babrw='.$path;
+			}
 		}
 
 		return $url;
@@ -1130,6 +1136,8 @@ class bab_siteMap {
 		{
 			return false;
 		}
+		
+		bab_siteMap::setPosition($nodeId);
 
 
 		$node = $root->getNodeById($nodeId);
