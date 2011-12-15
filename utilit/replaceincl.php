@@ -485,8 +485,19 @@ class bab_replace {
 	{
 		require_once dirname(__FILE__).'/reference.class.php';
 		
+		// sometimes the string keys are missing because of a bug, workaround :
+		$match['tag'] = $match[1];
+		$match['reference'] = $match[2];
+		$match['linkcontent'] = $match[3];
+		
+		
 		$ref = explode('?', $match['reference']);
-		$reference = new bab_Reference($ref[0]);
+		try {
+			$reference = new bab_Reference($ref[0]);
+		} catch(Exception $e)
+		{
+			return sprintf('<span style="color:red">%s</span>', bab_toHtml($e->getMessage()));
+		}
 		
 		$refDesc = bab_Reference::getReferenceDescription($reference);
 		
