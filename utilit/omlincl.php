@@ -8066,7 +8066,8 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 
 	private function getChildTree($relativePath = ''){
 		global $babDB;
-		
+		$nextFolder = '';
+		$Files = '';
 		BAB_FmFolderHelper::getInfoFromCollectivePath($this->path.$relativePath, $iIdRootFolder, $oFmFolder);
 		$rPath = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation)), $this->path, $relativePath);
 		if( in_array($iIdRootFolder, $this->arrid) ){
@@ -8074,15 +8075,13 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 			if($relativePath == ""){
 				$classParent = 'class="filetree"';
 			}
-			$currentFolder = '<ul '.$classParent.'><li class="folder"><a href="?tg=fileman&idx=list&gr=Y&path='.urlencode($this->path.$relativePath).'&id='.$iIdRootFolder.'">'.$rPath->getBasename().'</a>';
-			$nextFolder = '';
+			$currentFolder = '<ul '.$classParent.'><li class="folder"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder).'">'.$rPath->getBasename().'</a>';
 			foreach($rPath as $subPath){
 				if($subPath->isDir() && $subPath->getBasename() != 'OVF'){
 					$nextFolder.= $this->getChildTree($relativePath.'/'.$subPath->getBasename());
 				}
 			}
 			
-			$Files = '';
 			if($this->file){//file display?
 				$req = "SELECT * FROM " . BAB_FILES_TBL . " f WHERE f.bgroup='Y' AND f.state='' AND f.confirmed='Y' AND f.id_owner IN (".$babDB->quote($iIdRootFolder).") AND f.path = '".$babDB->db_escape_string($this->path.$relativePath.'/')."' ORDER BY display_position ASC, name ASC";
 				if($this->filelimit != 0){
@@ -8090,14 +8089,18 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				}
 				$res = $babDB->db_query($req);
 				while($arr = $babDB->db_fetch_assoc($res)){
-					$Files.= '<li class="file"><a href="?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&path='.$arr['path'].'">'.$arr['name'].'</a></li>';
+					$Files.= '<li class="file"><a href="'. htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&path='.$arr['path']).'">'.$arr['name'].'</a></li>';
 				}
 			}
 		}
 		
 		$return = '';
 		if($this->emptyfolder || $nextFolder != '' || $Files != ''){
-			$return = $currentFolder . $nextFolder . '<ul>' . $Files . '</ul></li></ul>';
+			if($Files == ''){
+				$return = $currentFolder . $nextFolder . '</li></ul>';
+			}else{
+				$return = $currentFolder . $nextFolder . '<ul>' . $Files . '</ul></li></ul>';
+			}
 		}
 		return $return;
 	}
@@ -8231,23 +8234,37 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 	private function getChild($id, $depth = 1) {
 		global $babDB, $babBody;
 		$return = "";
-		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=".$babDB->quote($id);
+	
+		$sCategory = ' ';
+		if($this->category){
+			$sCategory = ' AND id = \'' . $babDB->db_escape_string($this->category) . '\' ';
+		}
+		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=".$babDB->quote($id) . $sCategory;
 		$res = $babDB->db_query($req);
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			//if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
-				$return.= '<li class="category"><a href="?tg=topusr&cat='.$arr['id'].'">'.$arr['title']."</a><ul>";
-				$return.= $this->getChild($arr['id']);
-				$return.= "</ul></li>";
+				$return.= '<li class="category"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a>";
+				$child = $this->getChild($arr['id']);
+				if($child != ''){
+					$return.= '<ul>'.$child.'</ul>';
+				}
+				$return.= "</li>";
 		//	}
 		}
-		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id);
+		
+		$sTopic = ' ';
+		if($this->topic){
+			$sTopic = ' AND id = \'' . $babDB->db_escape_string($this->topic) . '\' ';
+		}
+		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id) . $sTopic;
 		$res = $babDB->db_query($req);
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])){
-				$return.= '<li class="topic"><a href="?tg=articles&idx=Articles&topics='.$arr['id'].'">'.$arr['category']."</a><ul>";
+				$return.= '<li class="topic"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']).'">'.$arr['category']."</a>";
 				if($this->article){
+					$return.= "<ul>";
 					$reqArticles = "select * from ".BAB_ARTICLES_TBL." where id_topic=".$babDB->quote($arr['id']) . 'ORDER BY date DESC';
 					if($this->articlelimit != 0){
 						$reqArticles.= " LIMIT 0,".$this->articlelimit;
@@ -8268,10 +8285,11 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						}elseif( $this->date == 'all'){
 							$date = '('.bab_shortDate($arrArticles['date_publication']) .' - '. bab_shortDate($arrArticles['date_modification']).')';
 						}
-						$return.='<li class="article '.$classNew.'"><a href="?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id'].'">'.$arrArticles['title'].'</a>'.$date.'</li>';
+						$return.='<li class="article '.$classNew.'"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id']).'">'.$arrArticles['title'].'</a>'.$date.'</li>';
 					}
+					$return.= "</ul>";
 				}
-				$return.= "</ul></li>";
+				$return.= "</li>";
 			}
 		}
 		return $return;
@@ -8330,13 +8348,19 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		$sDelegation = ' ';
 		
 		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
-		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=0" . $sDelegation;
+		
+		$sCategory = ' ';
+		if($this->category){
+			$sCategory = ' AND id = \'' . $babDB->db_escape_string($this->category) . '\' ';
+		}
+		
+		$req = "select * from ".BAB_TOPICS_CATEGORIES_TBL." where id_parent=0" . $sDelegation . $sDelegation;
 		$res = $babDB->db_query($req);
 		$return = '<ul class="articletree">';
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 		//	if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
-				$return.= '<li class="category"><a href="?tg=topusr&cat='.$arr['id'].'">'.$arr['title']."</a><ul>";
+				$return.= '<li class="category"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a><ul>";
 				$return.= $this->getChild($arr['id']);
 				$return.= "</ul></li>";
 		//c	}
