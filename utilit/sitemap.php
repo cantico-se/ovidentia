@@ -426,7 +426,14 @@ class bab_siteMapItem {
 	public function getRwUrl()
 	{
 		$url = $this->url;
-		if ($this->enableRewriting && !empty($url)) {
+		
+		if ('' === $url)
+		{
+			return $url;
+		}
+		
+		
+		if ($this->enableRewriting) {
 			$url = bab_Sitemap::rewrittenUrl($this->id_function);
 		} else {
 			$path = bab_Sitemap::rewrittenUrl($this->id_function);
