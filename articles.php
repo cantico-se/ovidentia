@@ -67,7 +67,7 @@ abstract class bab_listArticles extends categoriesHierarchy
 	var $delurl;
 	var $morename;
 	var $attachmentxt;
-	
+
 	protected $tags;
 
 	public function __construct($topics)
@@ -130,9 +130,9 @@ abstract class bab_listArticles extends categoriesHierarchy
 				$this->template = "default";
 				}
 			}
-			
+
 		$this->topicbuttons = false;
-		
+
 		if( bab_isAccessValid(BAB_TOPICSSUB_GROUPS_TBL, $this->topics))
 			{
 			$this->submittxt = bab_translate("Submit");
@@ -151,24 +151,24 @@ abstract class bab_listArticles extends categoriesHierarchy
 					$this->bsubscription = false;
 					$this->subscriptiontxt = '';
 					break;
-					
+
 				case 0:
 					$this->bsubscription = true;
 					$this->topicbuttons = true;
 					$this->subscriptiontxt = bab_translate('Notify me by email when an article is published');
 					break;
-					
+
 				case 1:
 					$this->bsubscription = true;
 					$this->topicbuttons = true;
 					$this->subscriptiontxt = bab_translate('Stop receiving notifications for this topic');
 					break;
 			}
-			
-		$this->subscriptionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$this->topics);	
+
+		$this->subscriptionurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$this->topics);
 
 		}
-		
+
 	/**
 	 * Get list of tags
 	 * @param int $article
@@ -182,9 +182,9 @@ abstract class bab_listArticles extends categoriesHierarchy
 		{
 			return array();
 		}
-		
+
 		require_once dirname(__FILE__) . '/utilit/tagApi.php';
-	
+
 		$oReferenceMgr = bab_getInstance('bab_ReferenceMgr');
 		$tags = array();
 		$oIterator = $oReferenceMgr->getTagsByReference(bab_Reference::makeReference('ovidentia', '', 'articles', 'article', $article));
@@ -192,16 +192,16 @@ abstract class bab_listArticles extends categoriesHierarchy
 		foreach($oIterator as $oTag) {
 			$tags[] = $oTag->getName();
 		}
-		
+
 		return $tags;
 	}
-	
+
 	/**
 	 * Template method
 	 */
 	public function getnexttag()
 	{
-		
+
 		if (list(, $tag) = each($this->tags))
 		{
 			$this->tagname = bab_toHtml($tag);
@@ -212,11 +212,11 @@ abstract class bab_listArticles extends categoriesHierarchy
 			$this->searchurl = bab_toHtml($searchurl->toString());
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * @param	int	$article
 	 * @return bab_url
@@ -224,43 +224,43 @@ abstract class bab_listArticles extends categoriesHierarchy
 	protected function getImageUrl($article, $width = 100, $height = 100)
 	{
 		global $arrtop;
-		
+
 		if ('Y' !== $arrtop['allow_addImg'])
 		{
 			return null;
 		}
-		
+
 		$img = bab_getImageArticle($article);
-		
+
 		if (!is_array($img)) {
 			return null;
 		}
-		
+
 		if ($T = @bab_functionality::get('Thumbnailer'))
 		{
 			require_once dirname(__FILE__) . '/utilit/pathUtil.class.php';
-			
+
 			$sUploadPath	= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($GLOBALS['babUploadPath']));
 			$sFullPathName		= $sUploadPath . $img['relativePath'] . $img['name'];
-			
+
 			$T->setSourceFile($sFullPathName);
 			$url = $T->getThumbnail($width, $height);
-			
+
 			if (is_string($url))
 			{
 				return new bab_url($url);
 			}
 		}
-		
+
 		$url = bab_url::get_request('tg');
 		$url->idx = 'getImage';
 		$url->sImage = $img['name'];
 		$url->iIdArticle = $article;
 		$url->iWidth = $width;
 		$url->iHeight = $height;
-		
+
 		return $url;
-		
+
 	}
 }
 
@@ -270,8 +270,8 @@ function listArticles($topics)
 
 	class temp extends bab_listArticles
 		{
-			
-		
+
+
 
 		public function __construct($topics)
 			{
@@ -306,8 +306,8 @@ function listArticles($topics)
 				{
 				$this->bcomment = false;
 				}
-				
-				
+
+
 
 			/* template variables */
 			$this->babtpl_topicid = bab_toHtml($this->topics);
@@ -445,18 +445,18 @@ function listArticles($topics)
 					{
 					$this->battachments = false;
 					}
-					
-					
+
+
 				$this->tags = $this->getTags($this->arr['id']);
 				$this->btags = 0 < count($this->tags);
-				
+
 				if ($imgurl = $this->getImageUrl($this->arr['id']))
 				{
 					$this->imageurl = bab_toHtml($imgurl->toString());
 				} else {
 					$this->imageurl = false;
 				}
-					
+
 				$i++;
 				return true;
 				}
@@ -483,8 +483,8 @@ function listArticles($topics)
 				return false;
 				}
 			}
-			
-		
+
+
 		}
 
 
@@ -562,7 +562,7 @@ function listArchiveArticles($topics, $pos)
 			$this->count = $babDB->db_num_rows($this->res);
 
 			include_once $GLOBALS['babInstallPath']."utilit/editorincl.php";
-			
+
 			$this->babtpl_topicid = bab_toHtml($this->topics);
 			}
 
@@ -634,10 +634,10 @@ function listArchiveArticles($topics, $pos)
 					{
 					$this->battachments = false;
 					}
-					
+
 				$this->tags = $this->getTags($this->arr['id']);
-				$this->btags = 0 < count($this->tags);	
-				
+				$this->btags = 0 < count($this->tags);
+
 				$i++;
 				return true;
 				}
@@ -707,13 +707,13 @@ function readMore($topics, $article)
 			global $babDB, $arrtop;
 			/* template variables */
 			parent::__construct($topics);
-			
+
 			$this->babtpl_topicid = $topics;
 			$this->babtpl_articleid = $article;
 			$this->babtpl_articlesurl = $GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics;
 			$this->babtpl_archiveurl = $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics;
 
-			
+
 			$this->printtxt = bab_translate("Print Friendly");
 			$babDB = $GLOBALS['babDB'];
 			$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($article)."' and (date_publication='0000-00-00 00:00:00' or date_publication <= now())";
@@ -777,7 +777,7 @@ function readMore($topics, $article)
 				$this->commentstxt = '';
 				}
 
-			
+
 
 			$this->resf = $babDB->db_query("select * from ".BAB_ART_FILES_TBL." where id_article='".$babDB->db_escape_string($article)."' order by ordering asc");
 			$this->countf = $babDB->db_num_rows($this->resf);
@@ -855,10 +855,10 @@ function readMore($topics, $article)
 				$this->articledate = bab_toHtml(bab_strftime(bab_mktime($this->arr['date'])));
 				//$this->author = bab_translate("by") . " ". $this->articleauthor. " - ". $this->articledate;
 				$this->printurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=articles&idx=Print&topics=".$this->topics."&article=".$this->arr['id']);
-				
+
 				$this->tags = $this->getTags($this->arr['id']);
 				$this->btags = 0 < count($this->tags);
-				
+
 				$i++;
 				return true;
 				}
@@ -1243,7 +1243,7 @@ function getDocumentArticle($idf, $topics)
 
 
 function getImage()
-{	
+{
 	require_once dirname(__FILE__) . '/utilit/artincl.php';
 	require_once dirname(__FILE__) . '/utilit/gdiincl.php';
 
@@ -1252,26 +1252,26 @@ function getImage()
 	$iHeight		= (int) bab_rp('iHeight', 0);
 	$sImage			= (string) bab_rp('sImage', '');
 	$oEnvObj		= bab_getInstance('bab_PublicationPathsEnv');
-	
+
 	// verify topic access rights
 
-	
+
 	$article = bab_getArticleArray($iIdArticle);
 	if (!bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL,$article['id_topic']))
 	{
 		return;
 	}
-	
-	
+
+
 	$iIdDelegation = bab_getArticleDelegationId($iIdArticle);
 	if(false === $iIdDelegation)
 	{
 		return;
 	}
-	
+
 	$oEnvObj->setEnv($iIdDelegation);
 	$sPath = $oEnvObj->getArticleImgPath($iIdArticle);
-	
+
 	$oImageResize = new bab_ImageResize();
 	$oImageResize->resizeImageAuto($sPath . $sImage, $iWidth, $iHeight);
 }
@@ -1291,27 +1291,27 @@ function bab_topicSubscription($id_topic)
 		case 1:
 			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], false);
 			break;
-		
+
 		case 0:
 			bab_TopicNotificationSubscription($id_topic, $GLOBALS['BAB_SESS_USERID'], true);
 			break;
 	}
-	
+
 	$backurl = new bab_url;
 	$backurl->tg='articles';
 	$backurl->topics=$id_topic;
-	
+
 	if (!empty($_SERVER['HTTP_REFERER']))
 	{
 		$referer = new bab_url($_SERVER['HTTP_REFERER']);
 		$self = bab_url::get_request_gp();
-		
+
 		if ($referer->checksum() !== $self->checksum())
 		{
 			$backurl = $referer;
 		}
 	}
-	
+
 	$backurl->location();
 }
 
@@ -1324,6 +1324,14 @@ $arrtop = array();
 
 $idx = bab_rp('idx', 'Articles');
 $topics = bab_rp('topics', false); /* Topic Id */
+
+if ($topics === false) {
+	$article = bab_gp('article', null);
+	if (isset($article)) {
+		$articleArray = bab_getArticleArray($article);
+		$topics = $articleArray['id_topic'];
+	}
+}
 
 /* Topic id don't exist, we search a topic id that the current user has rights to view */
 if (!$topics && count(bab_getUserIdObjects(BAB_TOPICSVIEW_GROUPS_TBL)) > 0) {
@@ -1367,7 +1375,7 @@ switch($idx)
 		getDocumentArticle($idf, $topics);
 		exit;
 		break;
-		
+
 	case 'getImage':
 		getImage();
 		break;
@@ -1398,8 +1406,8 @@ switch($idx)
 		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
 		$form->display();
 		break;
-		
-		
+
+
 	case 'subscription':
 		// change notification subscription status to topic
 		$id_topic = (int) bab_rp('topic');
@@ -1409,27 +1417,27 @@ switch($idx)
 			break;
 		}
 		bab_topicSubscription($id_topic);
-		
+
 		break;
-	
+
 
 	case "Modify":
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
 		$form = new bab_ArticleDraftEditor;
 		$form->fromArticle(bab_rp('article'));
 		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
-		
+
 		if (!empty($_SERVER['HTTP_REFERER']))
 		{
 			$referer = new bab_url($_SERVER['HTTP_REFERER']);
 			$self = bab_url::get_request_gp();
-			
+
 			if ($referer->checksum() !== $self->checksum())
 			{
 				$form->setBackUrl($referer);
 			}
 		}
-		
+
 		$form->display();
 		break;
 
