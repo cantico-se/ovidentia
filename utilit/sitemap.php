@@ -432,6 +432,11 @@ class bab_siteMapItem {
 			return $url;
 		}
 		
+		if ('http' === mb_substr($url, 0, 4) && $GLOBALS['babUrl'] !== mb_substr($url, 0, strlen($GLOBALS['babUrl'])))
+		{
+			return $url;
+		}
+		
 		
 		if ($this->enableRewriting) {
 			$url = bab_Sitemap::rewrittenUrl($this->id_function);
