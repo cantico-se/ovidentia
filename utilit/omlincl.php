@@ -8075,7 +8075,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 			if($relativePath == ""){
 				$classParent = 'class="filetree"';
 			}
-			$currentFolder = '<ul '.$classParent.'><li class="folder"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder).'">'.$rPath->getBasename().'</a>';
+			$currentFolder = '<ul '.$classParent.'><li class="folder"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder).'">'.$rPath->getBasename().'</a>';
 			foreach($rPath as $subPath){
 				if($subPath->isDir() && $subPath->getBasename() != 'OVF'){
 					$nextFolder.= $this->getChildTree($relativePath.'/'.$subPath->getBasename());
@@ -8089,7 +8089,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				}
 				$res = $babDB->db_query($req);
 				while($arr = $babDB->db_fetch_assoc($res)){
-					$Files.= '<li class="file"><a href="'. htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&path='.$arr['path']).'">'.$arr['name'].'</a></li>';
+					$Files.= '<li class="file"><span class="unfold-fold"></span><a href="'. htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&path='.$arr['path']).'">'.$arr['name'].'</a></li>';
 				}
 			}
 		}
@@ -8244,7 +8244,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			//if(bab_isAccessValid(BAB_DEF_TOPCATVIEW_GROUPS_TBL, $arr['id'])){
-				$return.= '<li class="category"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a>";
+				$return.= '<li class="category"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a>";
 				$child = $this->getChild($arr['id']);
 				if($child != ''){
 					$return.= '<ul>'.$child.'</ul>';
@@ -8262,7 +8262,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])){
-				$return.= '<li class="topic"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']).'">'.$arr['category']."</a>";
+				$return.= '<li class="topic"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']).'">'.$arr['category']."</a>";
 				if($this->article){
 					$return.= "<ul>";
 					$reqArticles = "select * from ".BAB_ARTICLES_TBL." where id_topic=".$babDB->quote($arr['id']) . 'ORDER BY date DESC';
@@ -8285,7 +8285,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						}elseif( $this->date == 'all'){
 							$date = '('.bab_shortDate($arrArticles['date_publication']) .' - '. bab_shortDate($arrArticles['date_modification']).')';
 						}
-						$return.='<li class="article '.$classNew.'"><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id']).'">'.$arrArticles['title'].'</a>'.$date.'</li>';
+						$return.='<li class="article '.$classNew.'"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id']).'">'.$arrArticles['title'].'</a>'.$date.'</li>';
 					}
 					$return.= "</ul>";
 				}
