@@ -448,5 +448,19 @@ class Func_CalendarBackend extends bab_functionality
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $period->toHtml(), DBG_TRACE, 'CalendarBackend');
 		return $this->savePeriod($period);
 	}
+	
+	
+	
+	/**
+	 * check if a personnal calendar exists for a user
+	 * if the backend need a specific configuration to access the calendar, check the configuration in this method
+	 * @param int	$userId
+	 *
+	 * @return bool
+	 */
+	public function checkCalendar($userId)
+	{
+		return true;
+	}
 
 }
