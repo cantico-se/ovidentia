@@ -265,8 +265,8 @@ function calendarOptions($urla)
 			
 			foreach($arr as $backend)
 			{
-				$obj = bab_functionality::get('CalendarBackend/'.$backend);
-				if ($obj->StorageBackend())
+				$obj = @bab_functionality::get('CalendarBackend/'.$backend);
+				if ($obj && $obj->StorageBackend())
 				{
 					$this->allbackends[] = $backend;
 				}
