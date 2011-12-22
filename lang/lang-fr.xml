@@ -3282,4 +3282,5 @@
 <string id="Create the folder">Créer le dossier</string>
 <string id="Available balances export">Export des soldes</string>
 <string id="Available days (total)">Jours disponibles (total)</string>
+<string id="Configuration error, invalid account for new calendar">Erreur de configuration, le compte du nouvel agenda n'est pas valide</string>
 </fr>

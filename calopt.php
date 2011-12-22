@@ -791,6 +791,13 @@ function bab_changeCalendarBackend($calendar_backend)
 		return false;
 	}
 	
+	// test validity of new backend
+	if (!$new_backend->checkCalendar($GLOBALS['BAB_SESS_USERID']))
+	{
+		$babBody->addError(bab_translate('Configuration error, invalid account for new calendar'));
+		return false;
+	}
+	
 	$display = new bab_changeCalendarBackendCls($old_backend, $new_backend, $calendar_backend);
 	$babBody->babEcho(bab_printTemplate($display, "calopt.html", "calendarBackend"));
 	
@@ -1102,8 +1109,7 @@ function bab_updateCalOptions()
 	
 	if (bab_pp('calendar_backend') && bab_getICalendars()->calendar_backend !== bab_pp('calendar_backend')) 
 	{
-		bab_changeCalendarBackend(bab_pp('calendar_backend'));
-		return;
+		return bab_changeCalendarBackend(bab_pp('calendar_backend'));
 	}
 	
 	$url = $GLOBALS['babUrlScript'].'?tg=calopt&idx=options';
@@ -1123,9 +1129,11 @@ $urla = bab_rp('urla');
 
 	
 if( isset($modify) && $modify == "options" && $BAB_SESS_USERID != '')
+{
+	if (bab_updateCalOptions())
 	{
-	bab_updateCalOptions();
-	return;
+		return;
+	}
 }
 
 if (bab_pp('calendar_backend') && bab_pp('confirm') && bab_isUserLogged())

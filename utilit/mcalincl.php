@@ -238,26 +238,18 @@ class bab_mcalendars
 			'type' => $calendar->getType()
 		);
 
-		// ovidentia calendar specific
+		
+		foreach($calPeriod->getCalendars() as $calendar) {
 
-		$arr = $calPeriod->getData();
-
-		$allCalendars = bab_getICalendars()->getCalendars();
-
-		if (isset($arr['idcal_owners'])) {
-			foreach($arr['idcal_owners'] as $urlIdentifier) {
-
-				if (isset($allCalendars[$urlIdentifier])) {
-
-					$calendar = $allCalendars[$urlIdentifier];
-
-					$cals[$urlIdentifier] = array(
-						'name' => $calendar->getName(),
-						'type' => $calendar->getType()
-					);
-				}
-			}
+			/*@var $calendar bab_EventCalendar */
+			
+			$cals[$calendar->getUrlIdentifier()] = array(
+				'name' => $calendar->getName(),
+				'type' => $calendar->getType()
+			);
+			
 		}
+		
 
 		return $cals;
 
