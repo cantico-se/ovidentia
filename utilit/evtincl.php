@@ -777,7 +777,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
  *
  * @param string 	$evtid		event UID
  * @param string	$dtstart
- * @param string 	$idcal		calendar url identifier
+ * @param string 	$idcal		calendar url identifier (main calendar of event)
  * @param string 	$partstat	New partstat value
  * @param string 	$comment
  * @param int 		$bupdrec
@@ -787,13 +787,25 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 {
 	global $babDB, $babBody;
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
-
-	if (!$calendar || !$calendar->getIdUser())
+	
+	if (!$calendar)
 	{
-		throw new Exception('This is not a personal calendar');
-		return;
+		// the main calendar of event is not accessible
+		
+		// there is probably a copy in the user personal calendar or in the inbox
+		$calendar = bab_getICalendars()->getPersonalCalendar();
+		
+		if (!$calendar)
+		{
+			throw new Exception('This is not a personal calendar');
+			return;
+		}
 	}
 
+	
+	
+	
+	
 	$backend = $calendar->getBackend();
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
 	$collection = $calendarPeriod->getCollection();
