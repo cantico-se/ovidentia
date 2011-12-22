@@ -980,6 +980,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 									'.print_r($event->getProperties(), true));
 									continue;
 								}
+								
+								if (!isset($global_users[$user]))
+								{
+									// the user is in conflict but not requested as available, ignore
+									continue;
+								}
 
 								// ignore declined attendees
 								if (isset($attendee['PARTSTAT']) && 'DECLINED' === $attendee['PARTSTAT'])
@@ -997,6 +1003,8 @@ class bab_UserPeriods implements Countable, seekableIterator {
 							$id_users = array($GLOBALS['BAB_SESS_USERID']);
 						}
 					}
+					
+					
 
 					if ($event->isTransparent() || 0 === count($id_users)) {
 
@@ -1021,7 +1029,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 								$users_non_available[$id_user] = true;
 							}
 						}
-
+						
 						$availabilityReply->conflicts_events[] = $event;
 					}
 				}
