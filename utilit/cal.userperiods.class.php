@@ -980,6 +980,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 									'.print_r($event->getProperties(), true));
 									continue;
 								}
+								
+								
+								if (!isset($global_users[$user]))
+								{
+									// the user is in conflict but not requested as available, ignore
+									continue;
+								}
+								
 
 								// ignore declined attendees
 								if (isset($attendee['PARTSTAT']) && 'DECLINED' === $attendee['PARTSTAT'])
