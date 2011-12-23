@@ -457,11 +457,11 @@ class bab_notifyAdminUserRegistrationCls
 	var $message;
 
 
-	function tempa($name, $msg)
+	public function __construct($name, $msg)
 		{
-            global $babSiteName;
-            $this->linkname = bab_translate("link");
-            $this->username = $name;
+        global $babSiteName;
+        $this->linkname = bab_translate("link");
+        $this->username = $name;
 		$this->sitename = $babSiteName;
 		$this->message = $msg;
 		}
