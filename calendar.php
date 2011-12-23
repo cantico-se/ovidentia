@@ -193,7 +193,10 @@ class displayAttendeesCls
 				
 				// try to get copy of event in attendee backend
 				
-				$copy = $backend->getPeriod(clone $this->period->getCollection(), $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
+				$collection = clone $this->period->getCollection();
+				$collection->setCalendar($arr['calendar']);
+				
+				$copy = $backend->getPeriod($collection, $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
 				if (null !== $copy)
 				{
 					foreach($copy->getAllAttendees() as $arr_copy)
@@ -1374,15 +1377,14 @@ if( isset($_REQUEST['conf']) )
 
 	if( $conf == "event" )
 		{
-		confirmEvent(
-			bab_rp('evtid'),
-			bab_rp('dtstart'),
-			bab_rp('idcal'),
-			bab_rp('partstat'),
-			bab_rp('comment'),
-			bab_rp('bupdrec', BAB_CAL_EVT_CURRENT)
-		);
-		$reload = true;
+		$reload = confirmEvent(
+				bab_rp('evtid'),
+				bab_rp('dtstart'),
+				bab_rp('idcal'),
+				bab_rp('partstat'),
+				bab_rp('comment'),
+				bab_rp('bupdrec', BAB_CAL_EVT_CURRENT)
+			);
 		}
 	elseif( $conf == "note" )
 		{
@@ -1405,8 +1407,13 @@ switch($idx)
 	case "unload":
 		include_once $babInstallPath."utilit/uiutil.php";
 		$popupmessage = bab_translate("Your event has been updated");
-		if( !isset($reload)) { $reload = false; }
-		$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
+		if( isset($reload)) { 
+			$autoclose = false;
+		} 
+		else { 
+			$reload = false; 
+			$autoclose = !isset($_COOKIE['bab_debug']) || !isset($GLOBALS['bab_debug_messages']);
+		}
 		popupUnload($popupmessage, '', $reload, $autoclose);
 		exit;
 		break;
