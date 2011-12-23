@@ -450,18 +450,18 @@ function notifyUserPassword($passw, $email, $nickname='')
 	
 class bab_notifyAdminUserRegistrationCls
 	{
-    var $sitename;
-    var $linkurl;
-    var $linkname;
-	var $username;
-	var $message;
+    public $sitename;
+    public $linkurl;
+    public $linkname;
+	public $username;
+	public $message;
 
 
-	function tempa($name, $msg)
+	public function __construct($name, $msg)
 		{
-            global $babSiteName;
-            $this->linkname = bab_translate("link");
-            $this->username = $name;
+        global $babSiteName;
+        $this->linkname = bab_translate("link");
+        $this->username = $name;
 		$this->sitename = $babSiteName;
 		$this->message = $msg;
 		}
