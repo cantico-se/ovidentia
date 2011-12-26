@@ -1230,27 +1230,33 @@ function confirmDeleteEvent($calid, $bupdrec)
 	{
 		return false;
 	}
+	
+	$calendarPeriod->setProperty('STATUS', 'CANCELLED');
 
 	$saved_backend = array();
 
 	foreach($calendarPeriod->getCalendars() as $associated_calendar)
 	{
 		$associated_backend = $associated_calendar->getBackend();
-		$urlidentifier = $associated_backend->getUrlIdentifier();
-		if (!isset($saved_backend[$urlidentifier]))
-		{
-			try {
-				$associated_backend->deletePeriod($calendarPeriod);
-			}
-			catch(Exception $e)
-			{
-				// ignore missing event in backend
-			}
-			$saved_backend[$urlidentifier] = 1;
+		/*@var $associated_backend Func_CalendarBackend */
+		
+		// create a copy of the event object in a temporary collection associated to the calendar of attendee
+		$periodCopy = clone $calendarPeriod;
+		$collection = $associated_backend->CalendarEventCollection($associated_calendar);
+		$collection->addPeriod($periodCopy);
+
+		try {
+			$associated_backend->savePeriod($periodCopy, 'CANCEL');
 		}
+		catch(Exception $e)
+		{
+			// ignore missing event in backend
+		}
+
 	}
 
-	$backend->deletePeriod($calendarPeriod);
+	// if organizer is not in attendees, cancel the event of the main calendar
+	$backend->savePeriod($calendarPeriod, 'CANCEL');
 
 
 	$date_min = $calendarPeriod->ts_begin;

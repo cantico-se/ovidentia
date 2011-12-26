@@ -781,7 +781,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
  * @param string 	$partstat	New partstat value
  * @param string 	$comment
  * @param int 		$bupdrec
- * @return unknown_type
+ * @return bool
  */
 function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 {
@@ -798,7 +798,7 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 		if (!$calendar)
 		{
 			throw new Exception('This is not a personal calendar');
-			return;
+			return false;
 		}
 	}
 
@@ -808,6 +808,23 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 	
 	$backend = $calendar->getBackend();
 	$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+	
+	// do not continue if there is no calendarPeriod or if event is CANCELLED
+	
+	if (null === $calendarPeriod)
+	{
+		$babBody->addError(bab_translate('This event does not exists'));
+		return false;
+	}
+	
+	
+	if ('CANCELLED' === $calendarPeriod->getProperty('STATUS'))
+	{
+		$babBody->addError(bab_translate('This event has been cancelled'));
+		return false;
+	}
+	
+	
 	$collection = $calendarPeriod->getCollection();
 
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
@@ -815,7 +832,6 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 
 	$updatePartstat = array();
 
-	// verify access
 
 	$attendees = $calendarPeriod->getAttendees();
 	foreach($attendees as $attendee)
@@ -823,32 +839,27 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 		$user = (int) $attendee['calendar']->getIdUser();
 		if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 		{
-			if ($attendee['PARTSTAT'] !== $partstat)
+			if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 			{
-				if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
+				// set period in a new collection linked to the attendee calendar
+				
+				$backend = $attendee['calendar']->getBackend();
+				$collection = $backend->CalendarEventCollection($attendee['calendar']);
+				$collection->addPeriod($calendarPeriod);
+				
+				try {
+					$backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
+				} catch(Exception $e)
 				{
-					$saved_backend = array();
-
-					foreach($calendarPeriod->getCalendars() as $associated_calendar)
-					{
-						$associated_backend = $associated_calendar->getBackend();
-						$urlidentifier = $associated_backend->getUrlIdentifier();
-						if (!isset($saved_backend[$urlidentifier]))
-						{
-							try {
-								$associated_backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
-							}
-							catch(Exception $e)
-							{
-								// ignore missing event in backend
-							}
-							$saved_backend[$urlidentifier] = 1;
-						}
-					}
+					// ignore missing event in backend
+					bab_debug($e->getMessage());
 				}
 			}
 		}
 	}
+	
+	
+	return true;
 }
 
 
@@ -1994,7 +2005,7 @@ class bab_event_posted {
 			if (!empty($this->args['evtid'])) {
 
 				// calid is the calendar where the event is recorded
-				// if calid is not in the list of selected calendars, the event must be deleted and a new calendar must be chosen to record the event
+				// if calid is not in the list of selected calendars, the event must be canceled and a new calendar must be chosen to record the event
 				
 				$allowed = array_flip($this->args['selected_calendars']);
 				$calendar = bab_getICalendars()->getEventCalendar($this->args['calid']);
@@ -2016,7 +2027,8 @@ class bab_event_posted {
 					
 					$period = bab_createCalendarPeriod($backend, $this->args, $collection);
 					
-					$backend->deletePeriod($period);
+					$period->setProperty('STATUS', 'CANCELLED');
+					$backend->savePeriod($period, 'CANCEL');
 				
 					
 					$this->args['evtid'] = null;

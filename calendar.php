@@ -37,7 +37,7 @@ include_once $babInstallPath.'utilit/evtincl.php';
 
 
 
-class displayAttendeesCls
+class displayAttendeesCls extends displayEventCls
 	{
 	var $altbg = true;
 	var $fullnametxt;
@@ -51,16 +51,16 @@ class displayAttendeesCls
 
 	public function __construct($evtid, $dtstart, $idcal)
 		{
+		parent::__construct($evtid, $dtstart, $idcal);
 		global $babBody, $babDB;
 		$this->access = false;
 		$this->evtid = $evtid;
 		$this->dtstart = $dtstart;
 		$this->idcal = $idcal;
 
-		$calendar = bab_getICalendars()->getEventCalendar($idcal);
+		$calendar = self::$calendar;
 		if (!$calendar)
 		{
-			$babBody->addError(bab_translate("Access denied"));
 			return;
 		}
 
@@ -82,8 +82,7 @@ class displayAttendeesCls
 		$this->t_accept = bab_translate("Accept");
 		$this->t_reject = bab_translate("Reject");
 
-		$backend = $calendar->getBackend();
-		$this->period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+		$this->period = $this->getPeriod();
 		
 		if (!$this->period)
 		{
@@ -127,16 +126,20 @@ class displayAttendeesCls
 				$user = (int) $attendee['calendar']->getIdUser();
 				if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 				{
-					switch($attendee['PARTSTAT'])
+					switch($attendee['AttendeeBackend']->getRealPartstat())
 					{
-						case 'NEEDS-ACTION':
-							$this->statusarray = array('ACCEPTED','DECLINED');
-							break;
+						
 						case 'ACCEPTED':
 							$this->statusarray = array('DECLINED');
 							break;
+							
 						case 'DECLINED':
 							$this->statusarray = array('ACCEPTED');
+							break;
+							
+						default:
+						case 'NEEDS-ACTION':
+							$this->statusarray = array('ACCEPTED','DECLINED');
 							break;
 					}
 
@@ -182,43 +185,18 @@ class displayAttendeesCls
 			$this->fullname = isset($arr['CN']) ? bab_toHtml($arr['CN']) : bab_toHtml($arr['email']);
 
 			
-			$partstat = $arr['PARTSTAT'];
+			$partstat = $arr['AttendeeBackend']->getRealPartstat();
 			$this->external = false;
 			if (!isset($arr['calendar']))
-				{
+			{
 				$this->external = true;
-				}
-			else {
-				
-				$backend = $arr['calendar']->getBackend();
-				
-				
-				// try to get copy of event in attendee backend
-				
-				$collection = clone $this->period->getCollection();
-				$collection->setCalendar($arr['calendar']);
-				
-				$copy = $backend->getPeriod($collection, $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
-				
-				
-				if (null !== $copy)
-				{
-					foreach($copy->getAllAttendees() as $arr_copy)
-					{
-						if ($arr_copy['email'] === $arr['email'] && $arr_copy['CN'] === $arr['CN'])
-						{
-							$partstat = $arr_copy['PARTSTAT'];
-							break;
-						}
-					}
-				}
 			}
 
 			if (isset($this->statusdef[$partstat]))
 			{
 				$this->status = bab_toHtml($this->statusdef[$partstat]);
 			} else {
-				$this->status = '';
+				$this->status = $partstat;
 			}
 			return true;
 			}
@@ -467,30 +445,83 @@ class displayApprobCalendarCls
 
 
 
+class displayEventCls
+{
+	/**
+	 * 
+	 * @var bab_EventCalendar
+	 */
+	protected static $calendar;
+	
+	/**
+	 * 
+	 * @var bab_EventCalendar
+	 */
+	private static $calendarPeriod;
+	
+	public $evtid;
+	public $dtstart;
+	
+	
+	public function __construct($evtid, $dtstart, $idcal)
+	{
+		$this->evtid = $evtid;
+		$this->dtstart = $dtstart;
+		
+		if (!isset(self::$calendar))
+		{
+			self::$calendar = bab_getICalendars()->getEventCalendar($idcal);
+			
+			if (!self::$calendar) {
+				$babBody->addError(bab_translate("Access denied to the calendar"));
+				return;
+			}
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @param string $evtid
+	 * @param string $dtstart
+	 */
+	protected function getPeriod()
+	{
+		if (!isset(self::$calendarPeriod))
+		{
+		
+			$backend = self::$calendar->getBackend();
+			self::$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection(self::$calendar), $this->evtid, $this->dtstart);
+		}
+		
+		return self::$calendarPeriod;
+	}
+}
 
 
 
 
 
-
-class displayEventDetailCls
+class displayEventDetailCls extends displayEventCls
 {
 
 	public function __construct($evtid, $dtstart, $idcal)
 	{
+		parent::__construct($evtid, $dtstart, $idcal);
+		
 		require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
 		global  $babBody, $babDB;
 		$this->access = false;
 
-		$calendar = bab_getICalendars()->getEventCalendar($idcal);
-
-		if (!$calendar) {
-			$babBody->addError(bab_translate("Access denied to the calendar"));
+		$calendar = self::$calendar;
+		if (!$calendar)
+		{
 			return;
 		}
+		
 
-		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+		$calendarPeriod = $this->getPeriod();
 
 		if (!$calendarPeriod) {
 			$babBody->addError(bab_translate("There is no additional informations for this event"));
@@ -586,29 +617,30 @@ class displayEventDetailCls
 
 
 
-class displayEventNotesCls
+class displayEventNotesCls extends displayEventCls
 	{
 
-	function displayEventNotesCls($evtid, $idcal)
+	public function __construct($evtid, $idcal)
 		{
+			
+		parent::__construct($evtid, null, $idcal);
+		
 		global $babBody, $babDB;
 		$this->access = false;
 
-		$calendar = bab_getICalendars()->getEventCalendar($idcal);
-
+		$calendar = self::$calendar;
+		if (!$calendar)
+		{
+			return;
+		}
+		
 		if (!($calendar instanceof bab_OviEventCalendar))
 		{
 			return;
 		}
+		
 
-		if (!$calendar)
-		{
-			$babBody->addError(bab_translate("Access denied to the calendar"));
-			return;
-		}
-
-		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid);
+		$calendarPeriod = $this->getPeriod();
 
 		if (!$calendarPeriod)
 		{
@@ -657,23 +689,22 @@ class displayEventNotesCls
 
 
 
-class displayEventAlertCls
+class displayEventAlertCls extends displayEventCls
 	{
 
-	function displayEventAlertCls($evtid, $dtstart, $idcal)
+	function __construct($evtid, $dtstart, $idcal)
 		{
+		parent::__construct($evtid, $dtstart, $idcal);
 		global  $babBody, $babDB;
 		$this->access = false;
-		$calendar = bab_getICalendars()->getEventCalendar($idcal);
+		$calendar = self::$calendar;
 
 		if (!$calendar)
 		{
-			$babBody->addError(bab_translate("Access denied to the calendar"));
 			return;
 		}
 
-		$backend = $calendar->getBackend();
-		$calendarPeriod = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
+		$calendarPeriod = $this->getPeriod();
 
 		if (!$calendarPeriod)
 		{

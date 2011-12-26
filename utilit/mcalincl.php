@@ -107,6 +107,9 @@ class bab_mcalendars
 		if (!isset($this->objcals[$idcal])) {
 			return 0;
 		}
+		
+		/*@var $this->objcals[$idcal] bab_icalendar */
+		
 		return $this->objcals[$idcal]->getEvents($startdate, $enddate, $arr);
 	}
 
@@ -534,6 +537,7 @@ class bab_icalendar extends bab_icalendarEventsSource
 					$ui_event = clone $event;
 					$ui_event->setUiIdentifier($event->getProperty('UID').'@'.$this->calendar->getUrlIdentifier());
 					$arr[] = $ui_event;
+					
 				} else {
 					// bab_debug("Event not displayed (the displayEventInCalendarUi() method on calendar object return false) : ".$event->toHtml());
 				}
@@ -545,7 +549,17 @@ class bab_icalendar extends bab_icalendarEventsSource
 				$associatedCalendars = $event->getCalendars();
 
 				foreach ($associatedCalendars as $cal) {
+					
 					/* @var $cal bab_EventCalendar */
+					
+					if ($cal->getUrlIdentifier() !== $this->calendar->getUrlIdentifier())
+					{
+						// in this case, the event has no main calendar (the main calendar is not accessible), we try to display only if one of the linked calendar match the UI placeholder
+						// this continue prevent an event duplication for each accessible attendee or relation
+						continue;
+					}
+					
+					
 					if ($cal->displayEventInCalendarUi($this->calendar, $event)) {
 
 						$ui_event = clone $event;
@@ -768,49 +782,42 @@ class cal_wmdbaseCls
 		}
 
 		$calendar = $periodCollection->getCalendar();
-
-		if (!$calendar)
-		{
-// 			$this->allow_modify = false;
-// 			$associatedCalendars = $calPeriod->getCalendars();
-// 			foreach ($associatedCalendars as $cal) {
-// 				if ($cal->canUpdateEvent($calPeriod)) {
-// 					$this->allow_modify = true;
-// 					break;
-// 				}
-// 			}
-
-			$this->bstatus			= false;
-			$this->allow_view 		= ($periodCollection instanceof bab_CalendarEventCollection);
-			$this->allow_viewtitle  = true;
-			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
-			return;
-		}
-
-
-		$this->allow_view 			= ($periodCollection instanceof bab_CalendarEventCollection);	// detail view popup
-		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);						// edit popup
-		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);					// SUMMARY of event on calendar
-
-		$this->bstatus				= false;														// default, nothing to validate
-
-
-
+		$this->bstatus			= false;		// default, nothing to validate
+		
 		if (bab_isUserLogged())
 		{
 			foreach($calPeriod->getAttendees() as $attendee)
 			{
 				$user = (int) $attendee['calendar']->getIdUser();
-				if ($user === (int) $GLOBALS['BAB_SESS_USERID'] && $attendee['PARTSTAT'] == 'NEEDS-ACTION')
+			
+				if ($user === (int) $GLOBALS['BAB_SESS_USERID'] && $attendee['AttendeeBackend']->getRealPartstat() == 'NEEDS-ACTION')
 				{
 					$this->bstatus = true;
 					break;
 				}
 			}
+		}
+		
+		$this->allow_view 			= ($periodCollection instanceof bab_CalendarEventCollection);	// detail view popup
+		
+
+		if (!$calendar)
+		{
+			$this->allow_viewtitle  = true;
+			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
+			return;
+		}
+
+		
+		$this->allow_modify 		= $calendar->canUpdateEvent($calPeriod);						// edit popup
+		$this->allow_viewtitle 		= $calendar->canViewEventDetails($calPeriod);					// SUMMARY of event on calendar
+
+													
 
 
 
-
+		if (bab_isUserLogged())
+		{
 			if (!$this->bstatus)
 			{
 				$backend = $calendar->getBackend();
@@ -1136,7 +1143,7 @@ function calendarchoice($formname, $selected_calendars = NULL)
 
 				if ($period) {
 					foreach($period->getAttendees() as $attendee) {
-						if ('DECLINED' === $attendee['PARTSTAT']) {
+						if ('DECLINED' === $attendee['AttendeeBackend']->getRealPartstat()) {
 							$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
 						}
 					}

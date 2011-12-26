@@ -990,7 +990,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 								
 
 								// ignore declined attendees
-								if (isset($attendee['PARTSTAT']) && 'DECLINED' === $attendee['PARTSTAT'])
+								if ('DECLINED' === $attendee['AttendeeBackend']->getRealPartstat())
 								{
 									continue;
 								}

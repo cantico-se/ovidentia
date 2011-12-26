@@ -612,7 +612,7 @@ abstract class bab_EventCalendar
 			$attendees = $event->getAttendees();
 			foreach($attendees as $attendee)
 			{
-				if ($attendee['PARTSTAT'] !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $placeholderCalendar)
+				if ($attendee['AttendeeBackend']->getRealPartstat() !== 'DECLINED' && $attendee['calendar']->getUrlIdentifier() === $placeholderCalendar)
 				{
 					return true;
 				}
@@ -1090,6 +1090,7 @@ class bab_OviPersonalCalendar extends bab_OviEventCalendar implements bab_Person
 		return 'NEEDS-ACTION';
 	}
 
+	
 
 
 
@@ -1452,7 +1453,6 @@ interface bab_PersonalCalendar {
 	 * @return unknown_type
 	 */
 	public function onUpdateAttendee(bab_CalendarPeriod $event);
-
 
 
 }

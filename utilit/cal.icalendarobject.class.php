@@ -240,17 +240,20 @@ abstract class bab_ICalendarObject
 		
 		if (!isset($this->attendees[$urlIdentifier]))
 		{
-			
-			
-			$this->attendees[$urlIdentifier] = array(
-				'ROLE'		=> $role,
-				'PARTSTAT'	=> $partstat,
-				'CN'		=> $cn,
-				'RSVP'		=> $rsvp,
-				'email'		=> $email,
-				'calendar' 	=> $calendar,
-				'key'		=> $insertkey
+			$attendee = array(
+					'ROLE'		=> $role,
+					'PARTSTAT'	=> $partstat,
+					'CN'		=> $cn,
+					'RSVP'		=> $rsvp,
+					'email'		=> $email,
+					'calendar' 	=> $calendar,
+					'key'		=> $insertkey
 			);
+			
+			$AttendeeBackend = new bab_CalAttendeeBackend($attendee, $this);
+			$attendee['AttendeeBackend'] = $AttendeeBackend;
+			
+			$this->attendees[$urlIdentifier] = $attendee;
 			
 			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
 			
@@ -274,8 +277,7 @@ abstract class bab_ICalendarObject
 			
 			unset($this->properties['ATTENDEE'][$oldattendeekey]);
 			
-			
-			$this->attendees[$urlIdentifier] = array(
+			$attendee = array(
 				'ROLE'		=> $role,
 				'PARTSTAT'	=> $partstat,
 				'CN'		=> $cn,
@@ -283,6 +285,11 @@ abstract class bab_ICalendarObject
 				'email'		=> $email,
 				'calendar' 	=> $calendar
 			);
+			
+			$AttendeeBackend = new bab_CalAttendeeBackend($attendee, $this);
+			$attendee['AttendeeBackend'] = $AttendeeBackend;
+			
+			$this->attendees[$urlIdentifier] = $attendee;
 			
 			$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
 			
@@ -366,14 +373,19 @@ abstract class bab_ICalendarObject
 			
 			if ($email)
 			{
-				$return[] = array(
-					'ROLE'		=> $role,
-					'PARTSTAT'	=> $partstat,
-					'CN'		=> $cn,
-					'RSVP'		=> $rsvp,
-					'email'		=> $email,
-					'calendar'	=> $calendar
+				$attendee = array(
+					'ROLE'				=> $role,
+					'PARTSTAT'			=> $partstat,
+					'CN'				=> $cn,
+					'RSVP'				=> $rsvp,
+					'email'				=> $email,
+					'calendar'			=> $calendar
 				);
+				
+				$AttendeeBackend = new bab_CalAttendeeBackend($attendee, $this);
+				$attendee['AttendeeBackend'] = $AttendeeBackend;
+				
+				$return[] = $attendee;
 			}
 		}
 		
@@ -610,6 +622,7 @@ abstract class bab_ICalendarObject
 	
 	/**
 	 * Get all calendars stored as attendees and relations
+	 * keys are calendar url indentifier
 	 * @return array	<bab_EventCalendar>
 	 */
 	public function getCalendars()
@@ -672,4 +685,103 @@ abstract class bab_ICalendarObject
 	
 	
 	
+}
+
+
+
+
+/**
+ * Object used to fetch informations from attendee backend
+ */
+class bab_CalAttendeeBackend
+{
+	/**
+	 * 
+	 * @var Array
+	 */
+	private $attendee;
+	
+	/**
+	 * @var Array
+	 */
+	private $real_attendee = null;
+	
+	
+	/**
+	 * 
+	 * @var bab_CalendarPeriod
+	 */
+	private $period;
+
+	
+	
+	public function __construct(Array $attendee, bab_CalendarPeriod $period)
+	{
+		$this->attendee = $attendee;
+		$this->period = $period;
+	}
+	
+	/**
+	 * 
+	 */
+	private function getRealAttendee()
+	{
+		if (null === $this->real_attendee)
+		{
+			if (!isset($this->attendee['calendar']))
+			{				
+				$this->real_attendee = false;
+				return false;
+			}
+			
+			$sourceCollection = $this->period->getCollection();
+			$sourceCalendar = $sourceCollection->getCalendar();
+			
+			if (isset($sourceCalendar) && $sourceCalendar->getUrlIdentifier() === $this->attendee['calendar']->getUrlIdentifier())
+			{
+				$this->real_attendee = $this->attendee;
+				return $this->real_attendee;
+			}
+			
+			$backend = $this->attendee['calendar']->getBackend();
+			$collection = $backend->CalendarEventCollection($this->attendee['calendar']);
+			
+			$copy = $backend->getPeriod($collection, $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
+			
+			if (null === $copy)
+			{
+				// not found, use the partstat from the main event
+				$this->real_attendee = false;
+				return false;
+			}
+			
+			
+			foreach($copy->getAllAttendees() as $arr_copy)
+			{
+				if ($arr_copy['email'] === $this->attendee['email'] && $arr_copy['CN'] === $this->attendee['CN'])
+				{
+					$this->real_attendee = $arr_copy;
+					break;
+				}
+			}
+		}
+		
+		return $this->real_attendee;
+	}
+	
+	/**
+	 * Query partstat in attendee backend
+	 * @return string
+	 */
+	public function getRealPartstat()
+	{
+		$real_attendee = $this->getRealAttendee();
+			
+		if (false === $real_attendee)
+		{
+			return $this->attendee['PARTSTAT'];
+		}
+		
+		return $real_attendee['PARTSTAT'];
+	}
 }
