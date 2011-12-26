@@ -172,6 +172,34 @@ abstract class bab_ICalendarObject
 		return $attendeekey;
 	}
 	
+	/**
+	 * Set the ATTENDEE property by id_user, usable for non accessible calendars
+	 *
+	 * @param	int						$id_user		Ovidentia user
+	 * @param	string					$role			CHAIR | REQ-PARTICIPANT | NON-PARTICIPANT | OPT-PARTICIPANT
+	 * 													To specify the participation role for the calendar user specified by the property.
+	 * @param	string					$partstat		NEEDS-ACTION | TENTATIVE | ACCEPTED | DECLINED | DELEGATED
+	 * 													To specify the participation status for the calendar user specified by the property
+	 * @param	string					$rsvp			TRUE | FALSE
+	 * 													To specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value.
+	 *
+	 * @return unknown_type
+	 */
+	public function addAttendeeByUserId($id_user, $role=null, $partstat=null, $rsvp=null)
+	{
+		if (!isset($this->properties['ATTENDEE']))
+		{
+			$this->properties['ATTENDEE'] = array();
+		}
+		
+		$cn = bab_getUserName($id_user);
+		$email = bab_getUserEmail($id_user);
+		
+		$attendeekey = $this->attendeeKey($role, $partstat, $cn, $rsvp);
+		
+		$this->properties['ATTENDEE'][$attendeekey] = 'MAILTO:'.$email;
+	}
+	
 	
 	/**
 	 * Set the ATTENDEE property
