@@ -512,6 +512,14 @@ class bab_icalendar extends bab_icalendarEventsSource
 
 		foreach ($events as $event) {
 
+			if ('CANCELLED' === $event->getProperty('STATUS'))
+			{
+				// ignore canceled events
+				continue;
+			}
+			
+			
+			
 			/* @var $event bab_CalendarPeriod */
 
 			$calendar = $event->getCollection()->getCalendar();
