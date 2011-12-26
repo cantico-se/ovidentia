@@ -79,12 +79,22 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 * Creates or updates a calendar event.
 	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
 	 * 
-	 * @param	bab_CalendarPeriod	$period
+	 * @param	bab_CalendarPeriod		$period
+	 * @param	string					$method		iCalendar Transport-Independent Interoperability Protocol (iTIP) (RFC 5546)
+	 * 												PUBLISH | REQUEST | REPLY | ADD | CANCEL | REFRESH | COUNTER | DECLINECOUNTER
 	 * 
 	 * @return bool
 	 */
-	public function savePeriod(bab_CalendarPeriod $period)
+	public function savePeriod(bab_CalendarPeriod $period, $method = null)
 	{
+		// ovidentia backend does not support method CANCEL, so we delete if the event is canceled
+		
+		if ('CANCEL' === $method)
+		{
+			return $this->deletePeriod($period);
+		}
+		
+		
 		require_once dirname(__FILE__).'/cal.ovievent.class.php';
 		
 		$collection = $period->getCollection();
