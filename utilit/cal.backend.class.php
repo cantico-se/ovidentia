@@ -249,11 +249,13 @@ class Func_CalendarBackend extends bab_functionality
 	 * Creates or updates a calendar event.
 	 * if the period have a UID property, the event will be modified or if the UID property is empty, the event will be created
 	 * 
-	 * @param	bab_CalendarPeriod	$period
+	 * @param	bab_CalendarPeriod		$period
+	 * @param	string					$method		iCalendar Transport-Independent Interoperability Protocol (iTIP) (RFC 5546)
+	 * 												PUBLISH | REQUEST | REPLY | ADD | CANCEL | REFRESH | COUNTER | DECLINECOUNTER
 	 * 
 	 * @return bool
 	 */
-	public function savePeriod(bab_CalendarPeriod $period)
+	public function savePeriod(bab_CalendarPeriod $period, $method = null)
 	{
 		throw new Exception('not implemented');
 		return false;
@@ -331,7 +333,7 @@ class Func_CalendarBackend extends bab_functionality
 	}
 	
 	
-	
+		
 	/**
 	 * Update an attendee PARTSTAT value of a calendar event
 	 * a user can modifiy his participation status without modifing the full event, before triggering this method, the access right will be checked with the
