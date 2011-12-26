@@ -84,12 +84,13 @@ class displayAttendeesCls
 
 		$backend = $calendar->getBackend();
 		$this->period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $evtid, $dtstart);
-		bab_debug('<h1>$backend->getPeriod()</h1>'. $this->period->toHtml(), DBG_TRACE, 'CalendarBackend');
-
+		
 		if (!$this->period)
 		{
 			throw new Exception('Event not found backend='.get_class($backend).' UID='.$evtid.' DTSTART='.$dtstart);
 		}
+		
+		
 
 		$this->attendees = $this->period->getAllAttendees();
 
@@ -191,12 +192,15 @@ class displayAttendeesCls
 				
 				$backend = $arr['calendar']->getBackend();
 				
+				
 				// try to get copy of event in attendee backend
 				
 				$collection = clone $this->period->getCollection();
 				$collection->setCalendar($arr['calendar']);
 				
 				$copy = $backend->getPeriod($collection, $this->period->getProperty('UID'), $this->period->getProperty('DTSTART'));
+				
+				
 				if (null !== $copy)
 				{
 					foreach($copy->getAllAttendees() as $arr_copy)
@@ -210,9 +214,9 @@ class displayAttendeesCls
 				}
 			}
 
-			if (isset($this->statusdef[$arr['PARTSTAT']]))
+			if (isset($this->statusdef[$partstat]))
 			{
-				$this->status = bab_toHtml($this->statusdef[$arr['PARTSTAT']]);
+				$this->status = bab_toHtml($this->statusdef[$partstat]);
 			} else {
 				$this->status = '';
 			}
