@@ -59,7 +59,7 @@ class bab_cal_OviEventUpdate
 				$id_event = $manager->getEventByUid($uid);
 			} catch(Exception $e)
 			{
-				// throw new Exception('the event have an UID but does not exists in table');
+				//throw new Exception('the event have an UID but does not exists in table');
 				$create = true;
 			}
 		} 
@@ -930,11 +930,15 @@ class bab_cal_OviEventSelect
 				o.id_cal, 
 				o.idfai, 
 				o.status, 
-				o.caltype    
+				o.caltype,
+				c.owner,
+				c.type       
 			FROM 
-				".BAB_CAL_EVENTS_OWNERS_TBL." o
+				".BAB_CAL_EVENTS_OWNERS_TBL." o,
+				bab_calendar c 
 			WHERE 
 				o.id_event ='".$babDB->db_escape_string($arr['id'])."' 
+				AND c.id=o.id_cal 
 			");
 	
 		while( $arr2 = $babDB->db_fetch_array($resco)) {
@@ -958,7 +962,20 @@ class bab_cal_OviEventSelect
 			
 			if (!isset($calendar))
 			{
-				bab_debug("The calendar $idcal is not accessible but is referenced in event ".$event->getProperty('UID').', calendar ignored');
+				switch($arr2['type'])
+				{
+					case BAB_CAL_USER_TYPE:
+						$event->addAttendeeByUserId($arr2['owner'], 'REQ-PARTICIPANT', $partstat);
+						break;
+					case BAB_CAL_PUB_TYPE:
+						//TODO : inaccessible public calendar are not visible
+						break;
+					case BAB_CAL_RES_TYPE:
+						//TODO : inaccessible ressource calendar are not visible
+						break;
+				}
+				
+				
 				continue;
 			}
 			
