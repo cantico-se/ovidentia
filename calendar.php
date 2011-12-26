@@ -207,9 +207,9 @@ class displayAttendeesCls
 				}
 			}
 
-			if (isset($this->statusdef[$arr['PARTSTAT']]))
+			if (isset($this->statusdef[$partstat]))
 			{
-				$this->status = bab_toHtml($this->statusdef[$arr['PARTSTAT']]);
+				$this->status = bab_toHtml($this->statusdef[$partstat]);
 			} else {
 				$this->status = '';
 			}
