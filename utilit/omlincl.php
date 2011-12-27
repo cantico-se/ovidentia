@@ -8026,7 +8026,7 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
 /**
  * Return the file manager tree in a html UL LI
  *
- * <OFFileTree [path=""] [file="0|1"] [filelimit="fileNumber"] [maxdepth="depth"] [emptyfolder=0|1]>
+ * <OFFileTree [path=""] [file="0|1"] [filelimit="fileNumber"] [maxdepth="depth"] [emptyfolder=0|1] [hidefirstnode="0|1"]>
  *
  * - The path attribute is optional. It define where the tree will start.
  * 		The default value is the entire file manager with rights.
@@ -8038,7 +8038,9 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
  * 		No maximum depth by default.
  * - The emptyfolder attribute is optional, it will desside if empty folder should be display.
  * 		The default value is '1'.
- *
+ * - The hidefirstnode attribute is optional, it define if the name of the first not should be display or not.
+ * 		The default value is '0'.
+ * 
  *
  * Example:
  *
@@ -8067,23 +8069,21 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 	private function getChildTree($relativePath = ''){
 		global $babDB;
 		$nextFolder = '';
-		$Files = '';
 		$currentFolder = '';
 		$return = '';
+		$child = '';
 		
 		BAB_FmFolderHelper::getInfoFromCollectivePath($this->path.$relativePath, $iIdRootFolder, $oFmFolder);
 		$rPath = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation)), $this->path, $relativePath);
 		$rPath->orderAsc(bab_Path::BASENAME);
 		
 		if( in_array($oFmFolder->getId(), $this->arrid) ){
-			$classParent = '';
-			if($relativePath == ""){
-				$classParent = 'class="filetree"';
-			}
-			$currentFolder = '<ul '.$classParent.'><li class="folder"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder).'">'.$rPath->getBasename().'</a>';
 			foreach($rPath as $subPath){
 				if($subPath->isDir() && $subPath->getBasename() != 'OVF'){
-					$nextFolder.= $this->getChildTree($relativePath.'/'.$subPath->getBasename());
+					$childs = $this->getChildTree($relativePath.'/'.$subPath->getBasename());
+					if($childs != ''){
+						$child[] = $this->getChildTree($relativePath.'/'.$subPath->getBasename());
+					}
 				}
 			}
 			
@@ -8094,16 +8094,53 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				}
 				$res = $babDB->db_query($req);
 				while($arr = $babDB->db_fetch_assoc($res)){
-					$Files.= '<li class="file"><span class="unfold-fold"></span><a href="'. htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&id='.$iIdRootFolder.'&path='.$arr['path']).'">'.$arr['name'].'</a></li>';
+					$child[] = array(
+						'type' => 'file',
+						'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&gr=Y&sAction=getFile&idf='.$arr['id'].'&id='.$iIdRootFolder.'&path='.$arr['path']),
+						'name' => $arr['name'],
+						'child' => ''
+					);
 				}
 			}
-		
-			if($this->emptyfolder || $nextFolder != '' || $Files != ''){
-				if($Files == ''){
-					$return = $currentFolder . $nextFolder . '</li></ul>';
+			
+			if($this->emptyfolder || $child != ''){
+				$return = array(
+					'type' => 'folder',
+					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=fileman&idx=list&gr=Y&path='.$this->path.$relativePath.'&id='.$iIdRootFolder),
+					'name' => $rPath->getBasename(),
+					'child' => $child
+				);
+			}
+		}
+		return $return;
+	}
+	
+	function generateUL($currentStage, $firstLevel = false){
+		$currentPath;
+	
+		$return = '';
+		foreach($currentStage as $nextStage){
+			if($firstLevel){
+				$return.='<ul class="filetree">';
+			}
+			if(!($this->hidefirstnode && $firstLevel)){
+				//Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
+				$return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>";
+			}
+				
+			if($nextStage['child'] != ''){
+				if(!($this->hidefirstnode && $firstLevel)){
+					$return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
 				}else{
-					$return = $currentFolder . $nextFolder . '<ul>' . $Files . '</ul></li></ul>';
+					$return.= $this->generateUL($nextStage['child']);
 				}
+			}
+				
+			if(!($this->hidefirstnode && $firstLevel)){
+				$return.= '</li>';
+			}
+			if($firstLevel){
+				$return.='</ul>';
 			}
 		}
 		return $return;
@@ -8147,6 +8184,12 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		}else{
 			$this->path = '';
 		}
+
+		if (isset($args['hidefirstnode'])) {
+			$this->hidefirstnode = $args['hidefirstnode'];
+		}else{
+			$this->hidefirstnode = 0;
+		}
 		
 		$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' AND id_dgowner = 0 ORDER BY folder ASC";
 		
@@ -8158,6 +8201,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				$this->arrid[] = $arr['id'];
 			}
 		}
+		$core = array();
 		if($this->path == ''){
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where sRelativePath = '' AND id IN (".$babDB->quote($this->arrid).") AND active='Y' AND id_dgowner = 0";
 		
@@ -8165,13 +8209,12 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 			$return = '';
 			while($arr = $babDB->db_fetch_assoc($res)){
 				$this->path = $arr['folder'];
-				$return.= $this->getChildTree();
+				$core[]= $this->getChildTree();
 			}
 		}else{
-			$return = $this->getChildTree();
+			$core[] = $this->getChildTree();
 		}
-		
-		return $return;
+		return $this->generateUL($core, true);
 	}
 }
 
@@ -8191,7 +8234,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 /**
  * Return the article tree in a html UL LI
  *
- * <OFArticleTree [category="id"] [topic="id"] [delegation="id"] [article="0|1"] [articlelimit="articleNumber"] [maxdepth="depth"] [hideempty="none|topic|category|all"] [date="publication|modification|all|none"]>
+ * <OFArticleTree [category="id"] [topic="id"] [delegation="id"] [article="0|1"] [articlelimit="articleNumber"] [maxdepth="depth"] [hideempty="none|topic|category|all"] [date="publication|modification|all|none"] [hidefirstnode="0|1"]>
  *
  * - The category attribute is optional. It define where the tree will start.
  * 		The default value is the entire articles tree with rights.
@@ -8207,6 +8250,8 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
  * 		No maximum depth by default.
  * - The date attribute is optional, choose which date should be display with the article title.
  * 		The default value is 'none'.
+ * - The hidefirstnode attribute is optional, it define if the name of the first not should be display or not.
+ * 		The default value is '0'.
  *
  *
  * Example:
@@ -8227,6 +8272,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 	protected	$article = 1;
 	protected	$articlelimit = 0;
 	protected	$hideempty = 'none';
+	protected	$hidefirstnode = 0;
 
 	protected	$selectedClass = 'selected';
 	protected	$activeClass = 'active';
@@ -8238,7 +8284,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 
 	private function getChild($id, $depth = 1) {
 		global $babDB, $babBody;
-		$return = "";
+		$return = '';
 		
 		$req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
 				FROM ".BAB_TOPICS_CATEGORIES_TBL.", ".BAB_TOPCAT_ORDER_TBL."
@@ -8251,11 +8297,13 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		{
 			$child = $this->getChild($arr['id']);
 			if(!($child == '' && ($this->hideempty == "all" || $this->hideempty == "category"))){
-				$return.= '<li class="category"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a>";
-				if($child != ''){
-					$return.= '<ul>'.$child.'</ul>';
-				}
-				$return.= "</li>";
+				$return[] = array(
+					'type' => 'category',
+					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']),
+					'name' => $arr['title'],
+					'child' => $child,
+					'date' => ''
+				);
 			}
 		}
 		
@@ -8272,20 +8320,18 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id) . $sTopic;
 		$res = $babDB->db_query($req);
 		
-		$returnTopic = '';
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			$returnTempTopic = '';
 			if(bab_isAccessValid(BAB_TOPICSVIEW_GROUPS_TBL, $arr['id'])){
-				$returnTempTopic= '<li class="topic"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']).'">'.$arr['category']."</a>";
+				$child = '';
 				if($this->article){
-					$returnTempTopic.= "<ul>";
 					$reqArticles = "select * from ".BAB_ARTICLES_TBL." where id_topic=".$babDB->quote($arr['id']) . 'ORDER BY date DESC';
 					if($this->articlelimit != 0){
 						$reqArticles.= " LIMIT 0,".$this->articlelimit;
 					}
 					$resArticles = $babDB->db_query($reqArticles);
-					
+						
 					$returnArticle = "";
 					while( $arrArticles = $babDB->db_fetch_array($resArticles))
 					{
@@ -8302,23 +8348,63 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						}elseif( $this->date == 'all'){
 							$date = '('.bab_shortDate($arrArticles['date_publication']) .' - '. bab_shortDate($arrArticles['date_modification']).')';
 						}
-						$returnArticle.='<li class="article '.$classNew.'"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id']).'">'.$arrArticles['title'].'</a>'.$date.'</li>';
+						$child[] = array(
+							'type' => 'article '.$classNew,
+							'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=More&topics='.$arrArticles['id_topic'].'&article='.$arrArticles['id']),
+							'name' => $arrArticles['title'],
+							'child' => '',
+							'date' => $date
+						);
 					}
-					if(($this->hideempty == "all" || $this->hideempty == "topic") && $returnArticle == ""){
-						continue;
-					}else{
-						$returnTempTopic.= $returnArticle;
-					}
-					$returnTempTopic.= "</ul>";
 				}
-				$returnTempTopic.= "</li>";
+				
+				$returnTempTopic = array(
+					'type' => 'topic',
+					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']),
+					'name' => $arr['category'],
+					'child' => $child,
+					'date' => ''
+				);
+				
+				if($child != "" || ($this->hideempty != "all" && $this->hideempty != "topic")){
+					$return[] = $returnTempTopic;
+				}
 			}
-			$returnTopic.= $returnTempTopic;
 		}
 		
-		$return.= $returnTopic;
 		return $return;
 	}
+	
+	function generateUL($currentStage, $firstLevel = false){
+		$currentPath;
+		
+		$return = '';
+		foreach($currentStage as $nextStage){
+			if($firstLevel){
+				$return.='<ul class="articletree">';
+			}
+			if(!($this->hidefirstnode && $firstLevel)){//Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
+				$return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>".$nextStage['date'];
+			}
+			
+			if($nextStage['child'] != ''){
+				if(!($this->hidefirstnode && $firstLevel)){
+					$return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
+				}else{
+					$return.= $this->generateUL($nextStage['child']);
+				}
+			}
+			
+			if(!($this->hidefirstnode && $firstLevel)){
+				$return.= '</li>';
+			}
+			if($firstLevel){
+				$return.='</ul>';
+			}
+		}
+		return $return;
+	}
+	
 	
 	/**
 	 * @return string
@@ -8375,6 +8461,12 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		}else{
 			$this->hideempty = 'none';
 		}
+
+		if (isset($args['hidefirstnode'])) {
+			$this->hidefirstnode = $args['hidefirstnode'];
+		}else{
+			$this->hidefirstnode = 0;
+		}
 		
 		$sDelegation = ' ';
 		
@@ -8391,18 +8483,19 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 				AND bab_topcat_order.id_topcat=bab_topics_categories.id" . $sDelegation . $sCategory."
 				ORDER BY bab_topcat_order.ordering ASC";
 		$res = $babDB->db_query($req);
-		$return = '<ul class="articletree">';
+		
+		$core = array();
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
-			$return.= '<li class="category"><span class="unfold-fold"></span><a href="'.htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']).'">'.$arr['title']."</a><ul>";
-			$return.= $this->getChild($arr['id']);
-			$return.= "</ul></li>";
+			$core[]= array(
+				'type' => 'category',
+				'url' => htmlentities($GLOBALS['babUrlScript'].'?tg=topusr&cat='.$arr['id']),
+				'name' => $arr['title'],
+				'child' => $this->getChild($arr['id']),
+				'date' => '');
 		}
 		
-		
-		$return.= "</ul>";
-		
-		return $return;
+		return $this->generateUL($core, true);
 	}
 }
 
