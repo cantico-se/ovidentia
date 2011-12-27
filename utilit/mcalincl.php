@@ -803,6 +803,8 @@ class cal_wmdbaseCls
 
 		if (!$calendar)
 		{
+			// the main calendar is not accessible
+			
 			$this->allow_viewtitle  = true;
 			$this->allow_modify 	= !($periodCollection instanceof bab_ReadOnlyCollection);
 			return;
@@ -966,7 +968,7 @@ class cal_wmdbaseCls
 		$this->popup = false;
 		$this->editurl = '';
 
-//		if ($this->allow_modify) {
+		
 		if ($calendar && $calendar->canUpdateEvent($calPeriod)) {
 			$this->popup = true;
 			$editurl = new bab_url;
@@ -991,41 +993,40 @@ class cal_wmdbaseCls
 		$this->vieweventurl = null;
 		$this->nbowners		= 0;
 
-		if (true) { //isset($calendar) && ($calendar instanceof bab_EventCalendar)) {
 
-			foreach($calPeriod->getCalendars() as $subcal) {
-				if (!$calendar || $subcal->getUrlIdentifier() !== $calendar->getUrlIdentifier()) {
-					$this->nbowners++;
-				}
+		foreach($calPeriod->getCalendars() as $subcal) {
+			if (!$calendar || $subcal->getUrlIdentifier() !== $calendar->getUrlIdentifier()) {
+				$this->nbowners++;
 			}
-
-
-			$attendeesurl = new bab_url;
-			$attendeesurl->tg = 'calendar';
-			$attendeesurl->idx = 'attendees';
-			$attendeesurl->evtid = $this->idevent;
-			$attendeesurl->dtstart = $calPeriod->getProperty('DTSTART');
-			$attendeesurl->idcal = $this->idcal;
-
-
-			if (empty($this->idcal)) {
-				// If the event has no main calendar we use the current calendar of UI
-				$uiCalendar = $calPeriod->getUiCalendar();
-				if (isset($uiCalendar))
-				{
-					$attendeesurl->idcal = $uiCalendar->getUrlIdentifier();
-				}
-			}
-
-
-
-			$vieweventurl = clone $attendeesurl;
-			$vieweventurl->idx = 'veventupd';
-
-			$this->attendeesurl = bab_toHtml($attendeesurl->toString());
-
-			$this->vieweventurl = bab_toHtml($vieweventurl->toString());
 		}
+
+
+		$attendeesurl = new bab_url;
+		$attendeesurl->tg = 'calendar';
+		$attendeesurl->idx = 'attendees';
+		$attendeesurl->evtid = $this->idevent;
+		$attendeesurl->dtstart = $calPeriod->getProperty('DTSTART');
+		$attendeesurl->idcal = $this->idcal;
+
+
+		if (empty($this->idcal)) {
+			// If the event has no main calendar we use the current calendar of UI
+			$uiCalendar = $calPeriod->getUiCalendar();
+			if (isset($uiCalendar))
+			{
+				$attendeesurl->idcal = $uiCalendar->getUrlIdentifier();
+			}
+		}
+
+
+
+		$vieweventurl = clone $attendeesurl;
+		$vieweventurl->idx = 'veventupd';
+
+		$this->attendeesurl = bab_toHtml($attendeesurl->toString());
+
+		$this->vieweventurl = bab_toHtml($vieweventurl->toString());
+	
 
 
 		$this->link = isset($arr['viewinsamewindow']) ? $arr['viewinsamewindow'] : false;
