@@ -1305,6 +1305,8 @@ $pos = bab_rp('pos', 0);
 $flat = bab_rp('flat', 0);
 $forum = bab_rp('forum', 0);
 
+bab_siteMap::setPosition('bab', 'UserForum'.$forum);
+
 if( isset($forum) && bab_isAccessValid(BAB_FORUMSMAN_GROUPS_TBL, $forum))
 	{
 	$moderator = true;
