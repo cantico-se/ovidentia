@@ -1087,7 +1087,7 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
-			
+
 			/**
 			 * @see bab_TopicNotificationSubscription()
 			 */
@@ -1098,8 +1098,8 @@ class Func_Ovml_Container_ArticleTopics extends Func_Ovml_Container
 			} else {
 				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
 				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
-			} 
-			
+			}
+
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1140,10 +1140,10 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 
 		if( $this->count > 0 )
 			{
-				
-			$req = "select t.*, u.id_user unsubscribed 
+
+			$req = "select t.*, u.id_user unsubscribed
 				from ".BAB_TOPICS_TBL." t
-					LEFT JOIN bab_topics_unsubscribe u ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])." 
+					LEFT JOIN bab_topics_unsubscribe u ON t.id=u.id_topic AND u.id_user=".$babDB->quote($GLOBALS['BAB_SESS_USERID'])."
 				where t.id IN (".$babDB->quote($this->IdEntries).")";
 			if( $this->topicname !== false && $this->topicname !== '' )
 				{
@@ -1196,8 +1196,8 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			$this->ctx->curctx->push('TopicCategoryId', $arr['id_cat']);
 			$this->ctx->curctx->push('TopicCategoryTitle', $cattitle);
 			$this->ctx->curctx->push('TopicCategoryDelegationId', $iddgowner);
-			
-			
+
+
 			/**
 			 * @see bab_TopicNotificationSubscription()
 			 */
@@ -1208,10 +1208,10 @@ class Func_Ovml_Container_ArticleTopic extends Func_Ovml_Container
 			} else {
 				$this->ctx->curctx->push('TopicSubscription', null === $arr['unsubscribed'] ? 1 : 0);
 				$this->ctx->curctx->push('TopicSubscriptionUrl', $GLOBALS['babUrlScript']."?tg=articles&idx=subscription&topic=".$arr['id']);
-			} 
-			
-			
-			
+			}
+
+
+
 			$this->idx++;
 			$this->index = $this->idx;
 			return true;
@@ -1939,7 +1939,7 @@ class Func_Ovml_Container_Post extends Func_Ovml_Container
 
 	public function getnext()
 		{
-		global $babBody, $babDB;
+		global $babBody, $babDB, $BAB_SESS_USERID;
 		if( $this->idx < $this->count)
 			{
 			$arr = $babDB->db_fetch_array($this->res);
@@ -5330,7 +5330,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$this->ctx->curctx->push('CIndex'					, $this->idx);
 			$this->ctx->curctx->push('EventId'					, $id_event);
 			$this->ctx->curctx->push('EventTitle'				, $summary);
-			
+
 			if (isset($arr['description']) && isset($arr['description_format'])) {
 				$this->pushEditor('EventDescription', $arr['description'], $arr['description_format'], 'bab_calendar_event');
 			} else {
@@ -8040,7 +8040,7 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
  * 		The default value is '1'.
  * - The hidefirstnode attribute is optional, it define if the name of the first not should be display or not.
  * 		The default value is '0'.
- * 
+ *
  *
  * Example:
  *
@@ -8054,7 +8054,7 @@ class Func_Ovml_Function_Addon extends Func_Ovml_Function {
  * </ul>
  */
 class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
-	
+
 	protected	$path = '';
 	protected	$delegation = 0;
 	protected	$file = 1;
@@ -8072,11 +8072,11 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		$currentFolder = '';
 		$return = '';
 		$child = '';
-		
+
 		BAB_FmFolderHelper::getInfoFromCollectivePath($this->path.$relativePath, $iIdRootFolder, $oFmFolder);
 		$rPath = new bab_Path(realpath(BAB_FileManagerEnv::getCollectivePath($this->delegation)), $this->path, $relativePath);
 		$rPath->orderAsc(bab_Path::BASENAME);
-		
+
 		if( in_array($oFmFolder->getId(), $this->arrid) ){
 			foreach($rPath as $subPath){
 				if($subPath->isDir() && $subPath->getBasename() != 'OVF'){
@@ -8086,7 +8086,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 					}
 				}
 			}
-			
+
 			if($this->file){//file display?
 				$req = "SELECT * FROM " . BAB_FILES_TBL . " f WHERE f.bgroup='Y' AND f.state='' AND f.confirmed='Y' AND iIdDgOwner = '" . $babDB->db_escape_string($this->delegation) . "'  AND f.path = '".$babDB->db_escape_string($this->path.$relativePath.'/')."' ORDER BY display_position ASC, name ASC";
 				if($this->filelimit != 0){
@@ -8102,7 +8102,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 					);
 				}
 			}
-			
+
 			if($this->emptyfolder || $child != ''){
 				$return = array(
 					'type' => 'folder',
@@ -8114,10 +8114,10 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		}
 		return $return;
 	}
-	
+
 	function generateUL($currentStage, $firstLevel = false){
 		$currentPath;
-	
+
 		$return = '';
 		foreach($currentStage as $nextStage){
 			if($firstLevel){
@@ -8127,7 +8127,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				//Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
 				$return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>";
 			}
-				
+
 			if($nextStage['child'] != ''){
 				if(!($this->hidefirstnode && $firstLevel)){
 					$return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
@@ -8135,7 +8135,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 					$return.= $this->generateUL($nextStage['child']);
 				}
 			}
-				
+
 			if(!($this->hidefirstnode && $firstLevel)){
 				$return.= '</li>';
 			}
@@ -8145,7 +8145,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		}
 		return $return;
 	}
-	
+
 	/**
 	 * @return string
 	 */
@@ -8178,7 +8178,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		}else{
 			$this->emptyfolder = 1;
 		}
-		
+
 		if (isset($args['path'])) {
 			$this->path = $args['path'];
 		}else{
@@ -8190,9 +8190,9 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		}else{
 			$this->hidefirstnode = 0;
 		}
-		
+
 		$req = "select * from ".BAB_FM_FOLDERS_TBL." where active='Y' AND id_dgowner = 0 ORDER BY folder ASC";
-		
+
 		$this->arrid = array();
 		$res = $babDB->db_query($req);
 		while( $arr = $babDB->db_fetch_array($res))
@@ -8204,7 +8204,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 		$core = array();
 		if($this->path == ''){
 			$req = "select * from ".BAB_FM_FOLDERS_TBL." where sRelativePath = '' AND id IN (".$babDB->quote($this->arrid).") AND active='Y' AND id_dgowner = 0";
-		
+
 			$res = $babDB->db_query($req);
 			$return = '';
 			while($arr = $babDB->db_fetch_assoc($res)){
@@ -8266,7 +8266,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
  * </ul>
  */
 class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
-	
+
 	protected	$path = null;
 	protected	$delegation = 0;
 	protected	$article = 1;
@@ -8277,7 +8277,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 	protected	$selectedClass = 'selected';
 	protected	$activeClass = 'active';
 	protected	$date = 'none';
-	
+
 
 	protected	$maxDepth = 100;
 
@@ -8285,7 +8285,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 	private function getChild($id, $depth = 1) {
 		global $babDB, $babBody;
 		$return = '';
-		
+
 		$req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
 				FROM ".BAB_TOPICS_CATEGORIES_TBL.", ".BAB_TOPCAT_ORDER_TBL."
 				WHERE bab_topcat_order.type = 1
@@ -8306,7 +8306,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 				);
 			}
 		}
-		
+
 		$sTopic = ' ';
 		if($this->topic){
 			$sTopic = ' AND id = \'' . $babDB->db_escape_string($this->topic) . '\' ';
@@ -8319,7 +8319,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 				ORDER BY bab_topcat_order.ordering ASC";
 		$req = "select * from ".BAB_TOPICS_TBL." where id_cat=".$babDB->quote($id) . $sTopic;
 		$res = $babDB->db_query($req);
-		
+
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
 			$returnTempTopic = '';
@@ -8331,7 +8331,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						$reqArticles.= " LIMIT 0,".$this->articlelimit;
 					}
 					$resArticles = $babDB->db_query($reqArticles);
-						
+
 					$returnArticle = "";
 					while( $arrArticles = $babDB->db_fetch_array($resArticles))
 					{
@@ -8357,7 +8357,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 						);
 					}
 				}
-				
+
 				$returnTempTopic = array(
 					'type' => 'topic',
 					'url'=> htmlentities($GLOBALS['babUrlScript'].'?tg=articles&idx=Articles&topics='.$arr['id']),
@@ -8365,19 +8365,19 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 					'child' => $child,
 					'date' => ''
 				);
-				
+
 				if($child != "" || ($this->hideempty != "all" && $this->hideempty != "topic")){
 					$return[] = $returnTempTopic;
 				}
 			}
 		}
-		
+
 		return $return;
 	}
-	
+
 	function generateUL($currentStage, $firstLevel = false){
 		$currentPath;
-		
+
 		$return = '';
 		foreach($currentStage as $nextStage){
 			if($firstLevel){
@@ -8386,7 +8386,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 			if(!($this->hidefirstnode && $firstLevel)){//Si on est au prmier niveau et qu'on veut cacher le premier niveau on ne rentre pas dans le IF
 				$return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>".$nextStage['date'];
 			}
-			
+
 			if($nextStage['child'] != ''){
 				if(!($this->hidefirstnode && $firstLevel)){
 					$return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
@@ -8394,7 +8394,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 					$return.= $this->generateUL($nextStage['child']);
 				}
 			}
-			
+
 			if(!($this->hidefirstnode && $firstLevel)){
 				$return.= '</li>';
 			}
@@ -8404,8 +8404,8 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		}
 		return $return;
 	}
-	
-	
+
+
 	/**
 	 * @return string
 	 */
@@ -8431,13 +8431,13 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		}else{
 			$this->article = 1;
 		}
-		
+
 		if (isset($args['topic'])) {
 			$this->topic = $args['topic'];
 		}else{
 			$this->topic = null;
 		}
-		
+
 		if (isset($args['category'])) {
 			$this->category = $args['category'];
 		}else{
@@ -8467,23 +8467,23 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 		}else{
 			$this->hidefirstnode = 0;
 		}
-		
+
 		$sDelegation = ' ';
-		
+
 		$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($this->delegation) . '\' ';
-		
+
 		$sCategory = ' ';
 		if($this->category){
 			$sCategory = ' AND bab_topics_categories.id = \'' . $babDB->db_escape_string($this->category) . '\' ';
 		}
-		
+
 		$req = "SELECT bab_topics_categories.id as id, bab_topics_categories.title as title
 				FROM ".BAB_TOPICS_CATEGORIES_TBL.", ".BAB_TOPCAT_ORDER_TBL."
 				WHERE bab_topcat_order.type = 1
 				AND bab_topcat_order.id_topcat=bab_topics_categories.id" . $sDelegation . $sCategory."
 				ORDER BY bab_topcat_order.ordering ASC";
 		$res = $babDB->db_query($req);
-		
+
 		$core = array();
 		while( $arr = $babDB->db_fetch_assoc($res))
 		{
@@ -8494,7 +8494,7 @@ class Func_Ovml_Function_ArticleTree extends Func_Ovml_Function {
 				'child' => $this->getChild($arr['id']),
 				'date' => '');
 		}
-		
+
 		return $this->generateUL($core, true);
 	}
 }
