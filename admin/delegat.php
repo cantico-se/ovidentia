@@ -26,7 +26,7 @@ include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/delegincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/topincl.php";
 include_once $GLOBALS['babInstallPath']."utilit/pathUtil.class.php";
-
+include_once $GLOBALS['babInstallPath']."utilit/path.class.php";
 
 
 function delgatList($res)
