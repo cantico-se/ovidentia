@@ -1230,10 +1230,13 @@ function viewVersion()
 			
 			$this->dirs = array();
 			
-			while (($file = readdir($dh)) !== false) {
-				if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
-					$this->dirs[] = $file;
-				} 
+			if ($dh)
+			{
+				while (($file = readdir($dh)) !== false) {
+					if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+						$this->dirs[] = $file;
+					} 
+				}
 			}
 			
 			bab_sort::natcasesort($this->dirs);
