@@ -1424,19 +1424,30 @@ switch($idx)
 	case "Modify":
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
 		$form = new bab_ArticleDraftEditor;
-		$form->fromArticle(bab_rp('article'));
-		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
+		$article = bab_rp('article');
+		$form->fromArticle($article);
 
-		if (!empty($_SERVER['HTTP_REFERER']))
-		{
+		$backUrl = null;
+
+		if (!empty($_SERVER['HTTP_REFERER'])) {
 			$referer = new bab_url($_SERVER['HTTP_REFERER']);
 			$self = bab_url::get_request_gp();
 
-			if ($referer->checksum() !== $self->checksum())
-			{
-				$form->setBackUrl($referer);
+			if ($referer->checksum() !== $self->checksum()) {
+				$backUrl = $referer;
 			}
 		}
+
+		if (!isset($backUrl)) {
+			// If the referer url is not available we go back to the article's topic page.
+			$backUrl = bab_url::request('tg');
+			$articles = $babDB->db_query("SELECT id_topic from ".BAB_ARTICLES_TBL." WHERE id=".$babDB->quote($article)." AND archive='N'");
+			$art = $babDB->db_fetch_assoc($articles);
+
+			$backUrl->topics = $art['id_topic'];
+		}
+
+		$form->setBackUrl($backUrl);
 
 		$form->display();
 		break;
