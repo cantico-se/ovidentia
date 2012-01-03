@@ -26,43 +26,47 @@
 */
 include_once 'base.php';
 
-/*
+/**
  * Security : destroy primary globals variables of Ovidentia (function used in index.php)
  * to avoid the modification of global variables by GET, POST...
- * 
+ *
  * @param $arr Array
  */
 function bab_unset(&$arr)
 {
 	unset($arr['babInstallPath'], $arr['babDBHost'], $arr['babDBLogin'], $arr['babDBPasswd'], $arr['babDBName']);
 	unset($arr['babUrl'], $arr['babFileNameTranslation'], $arr['babVersion']);
-	unset($GLOBALS['babTmp']);
 }
 
 
 /*
  * The old code of Ovidentia used PHP configuration register_globals to On.
- * To remain compatible, we add all received data as globals variables.
- * Security : primary globals variables of Ovidentia are destroyed
- */
+* To remain compatible, we add all received data as globals variables.
+* Security : primary globals variables of Ovidentia are destroyed
+*/
+
 
 if (!empty($_GET)) {
-	$babTmp =& $_GET;
+	bab_unset($_GET);
+	foreach($_GET as $param => $value)
+	{
+		if (!isset($GLOBALS[$param]))
+		{
+			$GLOBALS[$param] = $value;
+		}
+	}
 }
-if (isset($babTmp)) {
-	extract($babTmp, EXTR_SKIP);
-	bab_unset($babTmp);
-}
-unset($babTmp);
 
 if (!empty($_POST)) {
-	$babTmp =& $_POST;
+	bab_unset($_POST);
+	foreach($_POST as $param => $value)
+	{
+		if (!isset($GLOBALS[$param]))
+		{
+			$GLOBALS[$param] = $value;
+		}
+	}
 }
-if( isset($babTmp)) {
-	extract($babTmp, EXTR_SKIP);
-	bab_unset($babTmp);
-}
-unset($babTmp);
 
 bab_unset($_REQUEST);
 bab_unset($_COOKIE);
