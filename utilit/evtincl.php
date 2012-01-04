@@ -830,31 +830,42 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 
 
-	$updatePartstat = array();
-
-
+	$attendeeCalendar = null;
 	$attendees = $calendarPeriod->getAttendees();
 	foreach($attendees as $attendee)
 	{
 		$user = (int) $attendee['calendar']->getIdUser();
 		if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 		{
-			if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
+			$attendeeCalendar = $attendee['calendar'];
+			if (!$attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 			{
-				// set period in a new collection linked to the attendee calendar
-				
-				$backend = $attendee['calendar']->getBackend();
-				$collection = $backend->CalendarEventCollection($attendee['calendar']);
-				$collection->addPeriod($calendarPeriod);
-				
-				try {
-					$backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
-				} catch(Exception $e)
-				{
-					// ignore missing event in backend
-					bab_debug($e->getMessage());
-				}
+				return false;
 			}
+		}
+	}
+	
+	if (null === $attendeeCalendar)
+	{
+		throw new Exception('Calendar for partstat modification not found in event');
+		return false;
+	}
+
+	
+	foreach($attendees as $attendee)
+	{
+		// set period in a new collection linked to the attendee calendar
+		
+		$backend = $attendee['calendar']->getBackend();
+		$collection = $backend->CalendarEventCollection($attendee['calendar']);
+		$collection->addPeriod($calendarPeriod);
+		
+		try {
+			$backend->updateAttendeePartstat($calendarPeriod, $attendeeCalendar, $partstat, $comment);
+		} catch(Exception $e)
+		{
+			// ignore missing event in backend
+			bab_debug($e->getMessage());
 		}
 	}
 	

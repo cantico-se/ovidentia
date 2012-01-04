@@ -295,7 +295,8 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 		
 		if (!$arr)
 		{
-			throw new Exception('event not found');
+			
+			throw new Exception('event not found '.$period->getProperty('UID'));
 		}
 		
 		
