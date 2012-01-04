@@ -810,40 +810,42 @@ function confirmEvent($evtid, $dtstart, $idcal, $partstat, $comment, $bupdrec)
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 
 
-	$updatePartstat = array();
-
-	// verify access
-
+	$attendeeCalendar = null;
 	$attendees = $calendarPeriod->getAttendees();
 	foreach($attendees as $attendee)
 	{
 		$user = (int) $attendee['calendar']->getIdUser();
 		if ($user === (int) $GLOBALS['BAB_SESS_USERID'])
 		{
-			if ($attendee['PARTSTAT'] !== $partstat)
+			$attendeeCalendar = $attendee['calendar'];
+			if (!$attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
 			{
-				if ($attendee['calendar']->canUpdateAttendeePARTSTAT($calendarPeriod, $attendee['ROLE'], $attendee['PARTSTAT'], $partstat))
-				{
-					$saved_backend = array();
-
-					foreach($calendarPeriod->getCalendars() as $associated_calendar)
-					{
-						$associated_backend = $associated_calendar->getBackend();
-						$urlidentifier = $associated_backend->getUrlIdentifier();
-						if (!isset($saved_backend[$urlidentifier]))
-						{
-							try {
-								$associated_backend->updateAttendeePartstat($calendarPeriod, $attendee['calendar'], $partstat, $comment);
-							}
-							catch(Exception $e)
-							{
-								// ignore missing event in backend
-							}
-							$saved_backend[$urlidentifier] = 1;
-						}
-					}
-				}
+				return false;
 			}
+		}
+	}
+	
+	if (null === $attendeeCalendar)
+	{
+		throw new Exception('Calendar for partstat modification not found in event');
+		return false;
+	}
+
+	
+	foreach($attendees as $attendee)
+	{
+		// set period in a new collection linked to the attendee calendar
+		
+		$backend = $attendee['calendar']->getBackend();
+		$collection = $backend->CalendarEventCollection($attendee['calendar']);
+		$collection->addPeriod($calendarPeriod);
+		
+		try {
+			$backend->updateAttendeePartstat($calendarPeriod, $attendeeCalendar, $partstat, $comment);
+		} catch(Exception $e)
+		{
+			// ignore missing event in backend
+			bab_debug($e->getMessage());
 		}
 	}
 }
