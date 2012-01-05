@@ -1066,7 +1066,15 @@ function isEmailPassword()
 }
 
 
-
+/**
+ * Update directory entry from LDAP entry
+ * @param unknown_type 	$oLdap
+ * @param int 			$iIdUser
+ * @param string 		$sPassword
+ * @param array 		$aEntries
+ * @param array 		$aUpdateAttributes
+ * @param array 		$aExtraFieldId
+ */
 function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdateAttributes, $aExtraFieldId)
 {
 	global $babDB;
@@ -1100,6 +1108,13 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 		reset($aUpdateAttributes);
 		while(list($key, $val) = each($aUpdateAttributes))
 		{
+			
+			/**
+			 * ldap attributes are in lowercase
+			 * @see http://fr2.php.net/ldap_get_entries
+			 */
+			$key = mb_strtolower($key);
+			
 			switch($key)
 			{
 				case 'jpegphoto':
