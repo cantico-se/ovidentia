@@ -1246,6 +1246,7 @@ function bab_saveArticle(){
 			$draft->saveTempPicture();
 			$draft->saveTags($taglist);
 			
+			$_POST = array();//need to empty POST to get file attachement and associated image
 			$form = new bab_ArticleDraftEditor;
 			$form->fromDraft($draft->getId());
 			$form->preview();
