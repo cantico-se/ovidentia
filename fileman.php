@@ -3499,7 +3499,7 @@ function cutFolder()
 
 function zipFolder()
 {
-	global $babBody;
+	global $babBody, $babDB;
 	$oFileManagerEnv =& getEnvObject();
 	$sDirName = (string) bab_gp('sDirName', '');
 	$gr = bab_rp('gr','');
@@ -3546,12 +3546,18 @@ function zipFolder()
 		$destPath->createDir();
 		$destPath->push($sDirName.'.zip');
 
+		$sql = "SELECT * FROM " . BAB_FILES_TBL . " WHERE confirmed = 'N' AND iIdDgOwner = '".bab_getCurrentUserDelegation."'";
+		$res = $babDB->db_query($sql);
+		$notApproveFile = array();
+		while($arr = $babDB->db_fetch_assoc($res)){
+			$tmpPath = new bab_Path($oFileManagerEnv->getCollectiveRootFmPath(),$arr['path'],$arr['name']);
+			$notApproveFile[] = realpath($tmpPath->tostring());
+		}
 		/* @var $Zip Func_Archive_Zip */
 		$Zip = bab_functionality::get('Archive/Zip');
 		$Zip->open($destPath->tostring());
-		bab_zipFolderFile($sourcePath, $Zip, $sDirName);
+		bab_zipFolderFile($sourcePath, $Zip, $sDirName, $notApproveFile);
 		$Zip->close();
-
 		if(is_file($destPath->tostring())){
 
 			$fp = fopen($destPath->tostring(), 'rb');
@@ -3581,7 +3587,7 @@ function zipFolder()
 	}
 }
 
-function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = ''){
+function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = '', $notApproveFile){
 	foreach($source as $babPath){
 		if($currentPath == ''){
 			$currentBabPath = new bab_Path($babPath->getBasename());
@@ -3589,9 +3595,8 @@ function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = ''){
 			$currentBabPath = new bab_Path($currentPath, $babPath->getBasename());
 		}
 		if($babPath->isDir()){
-			bab_zipFolderFile($babPath, $Zip, $currentBabPath->tostring());
+			bab_zipFolderFile($babPath, $Zip, $currentBabPath->tostring(), $notApproveFile);
 		}else{
-			bab_debug($babPath->tostring());
 			if(bab_rp('gr') == 'Y'){
 				$folder = new bab_fileInfo($babPath->tostring());
 				if(!$folder->isReadable()){
@@ -3599,6 +3604,9 @@ function bab_zipFolderFile(bab_Path $source, $Zip, $currentPath = ''){
 					//return;
 					continue;
 				}
+			}
+			if(in_array(realpath($babPath->tostring()), $notApproveFile)){
+				continue;
 			}
 			$Zip->addFile($babPath->tostring(), $currentBabPath->tostring());
 
