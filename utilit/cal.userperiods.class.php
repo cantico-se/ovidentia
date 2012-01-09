@@ -997,12 +997,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 								$id_users[] = $user;
 							}
-						} else {
-							/**
-							 * No attendees on event
-							 * but the current user have access to this event
-							 */
-							$id_users = array($GLOBALS['BAB_SESS_USERID']);
+						}
+						
+						if (!in_array($GLOBALS['BAB_SESS_USERID'], $id_users))
+						{
+							$id_users[] = $GLOBALS['BAB_SESS_USERID'];
 						}
 					}
 
