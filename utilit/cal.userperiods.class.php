@@ -945,8 +945,10 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			// supprimer les utilisateurs pas dispo de la liste pour le boundary
 
 			foreach($events as $event) {
-
+				
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
+					
+					
 
 					$id_users = array();
 
@@ -964,7 +966,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 						$data = $event->getData();
 						$id_users = array($data['id_user']);
 					}
-
+					
 
 					if ($collection instanceof bab_CalendarEventCollection || $collection instanceof bab_InboxEventCollection)
 					{
@@ -995,19 +997,18 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 								$id_users[] = $user;
 							}
-						} else {
-							/**
-							 * No attendees on event
-							 * but the current user have access to this event
-							 */
-							$id_users = array($GLOBALS['BAB_SESS_USERID']);
+						}
+						
+						if (!in_array($GLOBALS['BAB_SESS_USERID'], $id_users))
+						{
+							$id_users[] = $GLOBALS['BAB_SESS_USERID'];
 						}
 					}
 					
 					
 
 					if ($event->isTransparent() || 0 === count($id_users)) {
-
+						
 						// l'evenement est dispo ou aucun utilisateur sur l'evenement,
 						// retirer les utilisateurs de l'evenement de la liste des utilisateurs non dispo du boundary si il y en a
 						// l'evenement ne sera pas considere comme un conflit
