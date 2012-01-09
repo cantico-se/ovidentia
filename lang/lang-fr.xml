@@ -3285,4 +3285,5 @@
 <string id="Configuration error, invalid account for new calendar">Erreur de configuration, le compte du nouvel agenda n'est pas valide</string>
 <string id="This event does not exists">Cet événement n'existe pas</string>
 <string id="This event has been cancelled">Cet événement à été annulé</string>
+<string id="Year filter">Filtre par année</string>
 </fr>

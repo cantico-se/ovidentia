@@ -808,6 +808,19 @@ function validateDayField(field) {
 		<input type="text" name="sepdec" size="1" maxlength="1" value="," />
 		</td>
 	</tr>
+	
+	
+	<tr> 
+		<td align="right">{ t_year }:</td>
+		<td> 
+			<select name="year">
+				<option value=""></option>
+				<!--#in getnextyear -->
+				<option value="{ year }">{ year }</option>
+				<!--#endin getnextyear -->
+			</select>
+		</td>
+	</tr>
 
 	<tr> 
 		<td>&nbsp;</td>

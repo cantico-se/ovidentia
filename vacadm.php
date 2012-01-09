@@ -354,6 +354,8 @@ function exportAvailableBalances()
 		
 		class exportAvailableBalancesCls
 		{
+			private $resYears;
+			
 			/**
 			 * 
 			 * @var array
@@ -362,7 +364,7 @@ function exportAvailableBalances()
 	
 			public function getHtml()
 			{
-				
+				global $babDB;
 			
 				$this->separatortxt = bab_translate("Separator");
 				$this->other = bab_translate("Other");
@@ -373,14 +375,38 @@ function exportAvailableBalances()
 				$this->sepdectxt = bab_translate("Decimal separator");
 				$this->t_yes = bab_translate("Yes");
 				$this->t_no = bab_translate("No");
+				$this->t_year = bab_translate('Year filter');
+				
+				$this->resYears = $babDB->db_query("SELECT YEAR(date_begin) year FROM bab_vac_rights GROUP BY year");
 				
 				return bab_printTemplate($this,"vacadm.html", "abexport");
 			}
 			
-			
-			private function query($groupby = '')
+			/**
+			 * template method to list available years
+			 */
+			public function getnextyear()
 			{
 				global $babDB;
+
+				if ($arr = $babDB->db_fetch_assoc($this->resYears))
+				{
+					$this->year = bab_toHtml($arr['year']);
+					return true;
+				}
+				
+				return false;
+			}
+			
+			
+			
+			private function query($year, $groupby = '')
+			{
+				global $babDB;
+				
+				if (!empty($year)) {
+					$year = 'AND YEAR(r.date_begin)='.$babDB->quote($year);
+				}
 				
 				
 				$query = "
@@ -406,9 +432,8 @@ function exportAvailableBalances()
 						AND r.id = ur.id_right
 						AND t.id = r.id_type 
 						AND r.active = 'Y' 
-					#	AND NOW() >= r.date_begin
-					#	AND NOW() <= r.date_end
-				".$groupby." 
+						$year 
+					$groupby 
 					ORDER BY 
 						u.lastname,
 						u.firstname,
@@ -520,7 +545,7 @@ function exportAvailableBalances()
 						break;
 				}
 				
-				$columns = $this->query('GROUP BY r.id');
+				$columns = $this->query(bab_rp('year'), 'GROUP BY r.id');
 				$this->rights = array();
 				
 				$header = array(
@@ -545,7 +570,7 @@ function exportAvailableBalances()
 				
 				
 				
-				$rows = $this->query('GROUP BY u.id, r.id');
+				$rows = $this->query(bab_rp('year'), 'GROUP BY u.id, r.id');
 				
 				while ($arr = $babDB->db_fetch_assoc($rows))
 				{
