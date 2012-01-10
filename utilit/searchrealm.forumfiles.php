@@ -275,7 +275,7 @@ class bab_SearchRealmForumFiles extends bab_SearchRealm {
 				'id_forum'			=> (int) $row['id_forum'],
 				'id_thread'			=> (int) $row['id_thread'], 
 				'post_subject' 		=> $row['post_subject'],
-				'id_dgowner'		=> (int) $access['id_dgowner']
+				'id_dgowner'		=> (int) $row['id_dgowner']
 			);
 		}
 
