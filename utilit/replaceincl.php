@@ -488,7 +488,9 @@ class bab_replace {
 		// sometimes the string keys are missing because of a bug, workaround :
 		$match['tag'] = $match[1];
 		$match['reference'] = $match[2];
-		$match['linkcontent'] = $match[3];
+		if (isset($match[3])) {
+			$match['linkcontent'] = $match[3];
+		}
 		
 		
 		$ref = explode('?', $match['reference']);
