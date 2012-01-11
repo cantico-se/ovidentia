@@ -115,7 +115,6 @@ function EditorOnCreateImage(param)
 
 function EditorOnInsertFiles(files)
 {
-	console.debug(files);
 	
 	var html = getSelection();
 	if (html != '') {
@@ -127,7 +126,8 @@ function EditorOnInsertFiles(files)
 		
 		switch(file.type)
 		{
-			case 'file':
+			case 'gfile': 
+			case 'pfile':
 				var ref = 'ovidentia:///files/file/' + file.id;
 				break;
 				
