@@ -578,6 +578,7 @@ class bab_addonPackage
 	
 	public function download()
 	{
+		global $babBody;
 		$this->zip->close();
 
 		if (!file_exists($this->tmpfile)) {
