@@ -1894,13 +1894,21 @@ class BAB_FileManagerEnv
 
 		$this->sGr = (string) bab_rp('gr', '');
 
-		if(!empty($BAB_SESS_USERID))
+		if(!empty($BAB_SESS_USERID) && $this->sGr != 'Y')
 		{
 			$this->iIdObject = (int) bab_rp('id', $BAB_SESS_USERID);
 		}
 		else
 		{
 			$this->iIdObject = (int) bab_rp('id', 0);
+			
+			// autodetect id object from path
+			
+			if (0 === $this->iIdObject && !empty($this->sPath))
+			{
+				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $iIdRootFolder, $oFmFolder);
+				$this->iIdObject = $iIdRootFolder;
+			}
 		}
 	}
 
