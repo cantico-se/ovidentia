@@ -333,17 +333,28 @@ function babUserSection($close) {
 }
 
 
-function addUrl() {
+function addUrl(&$skip) {
 
 	if (!$this->babUserSection) {
 		return false;
 	}
-
+	
+	$uid = $this->babUserSection->getId();
 	$item = $this->babUserSection->getData();
+
+	
 	$this->url = bab_toHtml($item->url);
 	$this->text = bab_toHtml($item->name);
 	$this->description = bab_toHtml($item->description);
 	$this->babUserSection = $this->babUserSection->nextSibling();
+	
+	if ('babUserApprob' === $uid && !bab_isWaitingApprobations())
+	{
+		// the approbation entry will not be displayed in user section if there is no approbation
+		// but the entry is still in sitemap
+		$skip = true;
+	}
+	
 	return true;
 }
 

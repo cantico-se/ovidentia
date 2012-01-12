@@ -1252,8 +1252,7 @@ function updateConfirmationWaitingComment($idcom, $action, $send, $message)
 	}
 	
 	
-	bab_sitemap::clearAll();
-
+	
 	return true;
 }
 
@@ -1368,8 +1367,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 
 	bab_vac_updateEventCalendar($veid);
 	
-	bab_sitemap::clearAll();
-
+	
 	return true;
 }
 

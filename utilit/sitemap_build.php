@@ -1593,18 +1593,16 @@ function bab_getUserDelegationUrls($id_delegation, $deleg, $dg_prefix) {
 				);
 			}
 
-		$babBody->waitapprobations = bab_isWaitingApprobations();
-		if( $babBody->waitapprobations )
-			{
-			$array_urls[] = array(
-				'label' => bab_translate("Approbations"),
-				'url' => $GLOBALS['babUrlScript']."?tg=approb",
-				'uid' => $dg_prefix.'UserApprob',
-				'desc' => bab_translate("Validate waiting items"),
-				'icon' => 'apps-approbations'
-				);
-			}
+		
+		$array_urls[] = array(
+			'label' => bab_translate("Approbations"),
+			'url' => $GLOBALS['babUrlScript']."?tg=approb",
+			'uid' => $dg_prefix.'UserApprob',
+			'desc' => bab_translate("Validate waiting items"),
+			'icon' => 'apps-approbations'
+			);
 		}
+		
 
 	if( count(bab_getUserIdObjects(BAB_TOPICSMAN_GROUPS_TBL)) > 0 || bab_isAccessValid(BAB_SITES_HPMAN_GROUPS_TBL, $babBody->babsite['id'])|| bab_isAccessValid(BAB_TAGSMAN_GROUPS_TBL, 1))
 		{
