@@ -374,8 +374,6 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 	
 	while ( $arr = $babDB->db_fetch_assoc($res) )
 		{
-
-		
 		$access = true;
 
 		if( $arr['date_begin_valid'] != '0000-00-00' && (bab_mktime($arr['date_begin_valid']." 00:00:00") > mktime())){
@@ -387,7 +385,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			}
 
 		// dont't display vacations with fixed dates that are gone 
-		if( $arr['date_end_fixed'] != '0000-00-00' && (bab_mktime($arr['date_end_fixed']." 23:59:59") < mktime())){
+		if( $arr['date_end_fixed'] != '0000-00-00 00:00:00' && (bab_mktime($arr['date_end_fixed']) < mktime())){
 			$access= false;
 			}
 		
@@ -420,11 +418,11 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 		if( $arr['ur_quantity'] != '')
 			{
-			$quantitydays = $arr['ur_quantity'] - $qdp;
+			$quantity_available = $arr['ur_quantity'] - $qdp;
 			}
 		else
 			{
-			$quantitydays = $arr['quantity'] - $qdp;
+			$quantity_available = $arr['quantity'] - $qdp;
 			}	
 		
 		if ($access && !empty($arr['id_right']) ) {
@@ -433,7 +431,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 			
 
-			// acces sur la p�riode, en fonction de la p�riode de la demande
+			// acces sur la p�riode, en fonction de la periode de la demande
 			
 			
 			
@@ -447,7 +445,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 			
 
 			
-			// Attribution du droit en fonction des jours demand�s et valid�s
+			// Attribution du droit en fonction des jours demandes et valides
 			if ( $access ) {
 
 				
@@ -549,8 +547,8 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 					if ( '' !== $arr['trigger_nbdays_min'] && '' !== $arr['trigger_nbdays_max'] && $arr['trigger_nbdays_min'] <= $nbdays && $nbdays < $arr['trigger_nbdays_max'] ) {
 
 						bab_debug(
-							"Attribution du droit en fonction des jours demand�s et valid�s\n".
-							"Le droit est accord� si l'utilisateur a pris entre ".$arr['trigger_nbdays_min']." et ".$arr['trigger_nbdays_max']." jours\n".
+							"Attribution du droit en fonction des jours demandes et valides\n".
+							"Le droit est accorde si l'utilisateur a pris entre ".$arr['trigger_nbdays_min']." et ".$arr['trigger_nbdays_max']." jours\n".
 							$arr['description']."\n".
 							"nb de jours pris : ".$nbdays
 						);
@@ -565,18 +563,19 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 
 		if ( $access )
 			$return[$arr['id']] = array(
-						'id'				=> $arr['id'],
-						'date_begin'		=> $arr['date_begin'],
-						'date_end'			=> $arr['date_end'],
-						'quantity'			=> $arr['quantity'],
-						'description'		=> $arr['description'],
-						'cbalance'			=> $arr['cbalance'],
-						'quantitydays'		=> $quantitydays,
-						'used'				=> $qdp,
-						'waiting'			=> $waiting,
-						'no_distribution'	=> $arr['no_distribution'],
-						'id_rgroup'			=> $arr['id_rgroup'],
-						'rgroup'			=> $arr['rgroup']
+						'id'					=> $arr['id'],
+						'date_begin'			=> $arr['date_begin'],
+						'date_end'				=> $arr['date_end'],
+						'quantity'				=> $arr['quantity'],
+						'quantity_unit'			=> $arr['quantity_unit'],
+						'description'			=> $arr['description'],
+						'cbalance'				=> $arr['cbalance'],
+						'quantity_available'	=> $quantity_available,
+						'used'					=> $qdp,
+						'waiting'				=> $waiting,
+						'no_distribution'		=> $arr['no_distribution'],
+						'id_rgroup'				=> $arr['id_rgroup'],
+						'rgroup'				=> $arr['rgroup']
 					);
 		}
 	return $return;
@@ -586,6 +585,7 @@ function bab_getRightsOnPeriod($begin = false, $end = false, $id_user = false, $
 function bab_getRightsByGroupOnPeriod($id_user, $rfrom = 0) {
 
 	$arr = bab_getRightsOnPeriod(false, false, $id_user, $rfrom);
+
 	$rights = array();
 	foreach($arr as $right) {
 		if (empty($right['id_rgroup'])) {
@@ -597,24 +597,25 @@ function bab_getRightsByGroupOnPeriod($id_user, $rfrom = 0) {
 		}
 
 		if (isset($rights[$id])) {
-				$quantity		= $rights[$id]['quantity'] + $right['quantity'];
-				$quantitydays	= $rights[$id]['quantitydays'] + $right['quantitydays'];
-				$used			= $rights[$id]['used'] + $right['used'];
-				$waiting		= $rights[$id]['waiting'] + $right['waiting'];
+				$quantity			= $rights[$id]['quantity'] + $right['quantity'];
+				$quantity_available	= $rights[$id]['quantity_available'] + $right['quantity_available'];
+				$used				= $rights[$id]['used'] + $right['used'];
+				$waiting			= $rights[$id]['waiting'] + $right['waiting'];
 			} else {
-				$quantity		= $right['quantity'];
-				$quantitydays	= $right['quantitydays'];
-				$used			= $right['used'];
-				$waiting		= $right['waiting'];
+				$quantity			= $right['quantity'];
+				$quantity_available	= $right['quantity_available'];
+				$used				= $right['used'];
+				$waiting			= $right['waiting'];
 			}
 		
 		$rights[$id] = array(
-			'quantity'		=> $right['quantity'],
-			'description'	=> $description,
-			'quantity'		=> $quantity,
-			'quantitydays'	=> $quantitydays,
-			'used'			=> $used,
-			'waiting'		=> $waiting 
+			'quantity'				=> $right['quantity'],
+			'description'			=> $description,
+			'quantity'				=> $quantity,
+			'quantity_unit'			=> $right['quantity_unit'],
+			'quantity_available'	=> $quantity_available,
+			'used'					=> $used,
+			'waiting'				=> $waiting 
 		);
 	}
 
@@ -1208,7 +1209,8 @@ function listVacationRequests($id_user)
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=vacuser&idx=morve&id=".$arr['id']);
-				list($this->quantity) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry ='".$babDB->db_escape_string($arr['id'])."'"));
+
+				$this->quantity = bab_toHtml(bab_vacEntryQuantity($arr['id']));
 				$this->urlname = bab_toHtml(bab_getUserName($arr['id_user']));
 
 				$begin_ts = bab_mktime($arr['date_begin']);
@@ -1321,6 +1323,7 @@ function listRightsByUser($id)
 					t.name type, 
 					r.description,
 					r.quantity r_quantity,
+					r.quantity_unit,  
 					YEAR(r.date_begin) year,
 					r.date_begin,
 					r.date_end,
@@ -1364,6 +1367,18 @@ function listRightsByUser($id)
 						$this->quantity = $arr['quantity'];
 					else
 						$this->quantity = $arr['r_quantity'];
+					
+					switch($arr['quantity_unit'])
+					{
+						case 'D':
+							$this->unit = bab_translate('day(s)');
+							break;
+							
+						case 'H':
+							$this->unit = bab_translate('hour(s)');
+							break;
+					}
+					
 
 					$this->year = $arr['year'] !== $y ? $arr['year'] : '';
 					$y = $arr['year'];
@@ -1375,18 +1390,17 @@ function listRightsByUser($id)
 
 					$this->dateb = bab_shortDate(bab_mktime($arr['date_begin']), false);
 					$this->datee = bab_shortDate(bab_mktime($arr['date_end']), false);
-					$arr = $babDB->db_fetch_array($babDB->db_query(
-						"SELECT sum(quantity) as total 
-						FROM 
-							".BAB_VAC_ENTRIES_ELEM_TBL." ee, 
-							".BAB_VAC_ENTRIES_TBL." e
-						WHERE 
-								e.id_user = ".$babDB->quote($this->iduser)." 
-							AND e.status = 'Y' 
-							AND ee.id_right = ".$babDB->quote($this->idright)." 
-							AND ee.id_entry = e.id
-						"));
-					$this->consumed = isset($arr['total'])? $arr['total'] : 0;
+					
+					$confirmed = $this->getQuantity($this->iduser, $this->idright, 'Y');
+					$this->consumed = bab_vac_quantity($confirmed, $arr['quantity_unit']);
+					
+					$waiting = $this->getQuantity($this->iduser, $this->idright, '');
+					if (0.0 !== round($waiting, 1)) {
+						$this->waiting = bab_toHtml(sprintf(bab_translate('%s waiting for approbation'), bab_vac_quantity($waiting, $arr['quantity_unit'])));
+					} else {
+						$this->waiting = '';
+					}
+					
 					$this->bview = true;
 					}
 				$i++;
@@ -1395,6 +1409,40 @@ function listRightsByUser($id)
 			else
 				return false;
 
+			}
+			
+			
+			/**
+			 * 
+			 * @param int $id_user
+			 * @param int $id_right
+			 * @param string $status
+			 * 
+			 * @return string
+			 */
+			private function getQuantity($id_user, $id_right, $status)
+			{
+				global $babDB;
+				
+				$res = $babDB->db_query(
+						"SELECT sum(quantity) as total
+						FROM
+						".BAB_VAC_ENTRIES_ELEM_TBL." ee,
+						".BAB_VAC_ENTRIES_TBL." e
+						WHERE
+						e.id_user = ".$babDB->quote($this->iduser)."
+						AND e.status = ".$babDB->quote($status)."
+						AND ee.id_right = ".$babDB->quote($this->idright)."
+						AND ee.id_entry = e.id
+						");
+				
+				
+				if ($ee = $babDB->db_fetch_assoc($res))
+				{
+					return $ee['total'];
+				} else {
+					return '0.0';
+				}
 			}
 			
 			
@@ -1594,22 +1642,21 @@ function listRightsByUser($id)
 
 /**
  * @param	int		$userid
- * @param	array	$quantities
- * @param	array	$idrights
+ * @param	array	$quantity
  *
  * @return 	boolean
  */
-function updateVacationRightByUser($userid, $quantities, $idrights)
+function updateVacationRightByUser($userid, $quantity)
 {
 	global $babDB;
 	
 
-	for($i = 0; $i < count($idrights); $i++)
+	foreach($quantity as $id_right => $q)
 		{
 		
-		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($idrights[$i])."'"));
-		if( $quantity != $quantities[$i] )
-			$quant = $quantities[$i];
+		list($quantity) = $babDB->db_fetch_array($babDB->db_query("select quantity from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($id_right)."'"));
+		if( $quantity != $q )
+			$quant = $q;
 		else
 			$quant = '';
 
@@ -1619,7 +1666,7 @@ function updateVacationRightByUser($userid, $quantities, $idrights)
 					SET quantity='".$babDB->db_escape_string($quant)."' 
 			WHERE 
 				id_user='".$babDB->db_escape_string($userid)."' 
-				AND id_right='".$babDB->db_escape_string($idrights[$i])."'
+				AND id_right='".$babDB->db_escape_string($id_right)."'
 		");
 	}
 	
@@ -2046,7 +2093,7 @@ function changeucol($id_user,$newcol)
 				$this->rights[$v['id']] = array( 
 							'description' => $v['description'], 
 							'quantity_old' => $v['quantity'],
-							'quantitydays' => $v['quantitydays']
+							'quantity_available' => $v['quantity_available']
 							);
 				}
 
@@ -2057,7 +2104,7 @@ function changeucol($id_user,$newcol)
 					$this->rights[$v['id']] = array( 
 							'description' => $v['description'], 
 							'quantity_new' => $v['quantity'],
-							'quantitydays' => ''
+							'quantity_available' => ''
 							);
 					}
 				else
@@ -2073,7 +2120,7 @@ function changeucol($id_user,$newcol)
 			if (list($this->id,$this->right) = each($this->rights))
 				{
 				$this->altbg = !$this->altbg;
-				$default = (isset($this->right['quantity_new']) && $this->right['quantitydays'] > $this->right['quantity_new']) || !is_numeric($this->right['quantitydays']) ? $this->right['quantity_new'] : $this->right['quantitydays'];
+				$default = (isset($this->right['quantity_new']) && $this->right['quantity_available'] > $this->right['quantity_new']) || !is_numeric($this->right['quantity_available']) ? $this->right['quantity_new'] : $this->right['quantitydays'];
 				$this->newrightvalue = isset($_POST['right_'.$this->id]) ? $_POST['right_'.$this->id] : $default;
 				if (!isset($this->right['quantity_new']))
 					$this->right['quantity_new'] = '';
@@ -2183,6 +2230,9 @@ function saveVacationPersonnel($userid,  $idcol, $idsa)
 
 
 /**
+ * 
+ * @deprecated all request are in hours
+ * 
  * @param	string		$date	0000-00-00
  * @param	boolean		$b_pm
  * @param	boolean		$b_end
@@ -2932,6 +2982,18 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 					
 					$index[$key] = $p;
 					
+					// ajdjust period according to selection
+					
+					if ($p->ts_begin < $dateb->getTimeStamp())
+					{
+						$p->setBeginDate($dateb);
+					}
+					
+					if ($p->ts_end > $datee->getTimeStamp())
+					{
+						$p->setEndDate($datee);
+					}
+					
 					
 					if (bab_vac_is_free($collection)) {
 						$is_free[$key] = 1;
@@ -3069,16 +3131,16 @@ function bab_vac_longDate($timestamp) {
 	if (empty($timestamp)) {
 		return '';
 	}
-	$add = 'am' == date('a', $timestamp) ? bab_translate('Morning') : bab_translate('Afternoon');
-	return bab_longDate($timestamp, false).' '.$add;
+	
+	return bab_longDate($timestamp, true);
 }
 
 function bab_vac_shortDate($timestamp) {
 	if (empty($timestamp)) {
 		return '';
 	}
-	$add = 'am' == date('a', $timestamp) ? bab_translate('Morning') : bab_translate('Afternoon');
-	return bab_shortDate($timestamp, false).' '.$add;
+	
+	return bab_shortDate($timestamp, true);
 }
 
 
@@ -3273,10 +3335,10 @@ class bab_vacationRequestDetail
 		
 		$this->approb = bab_toHtml(bab_getUserName($row['id_approver']));
 
-		$req = "select * from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry=".$babDB->quote($id);
+		$req = "select r.description, e.quantity, r.quantity_unit from ".BAB_VAC_ENTRIES_ELEM_TBL." e, bab_vac_rights r where e.id_entry=".$babDB->quote($id).' AND r.id=e.id_right ORDER BY r.description';
 		$this->res = $babDB->db_query($req);
 		$this->count = $babDB->db_num_rows($this->res);
-		$this->totalval = 0;
+		$this->totalval = bab_vacEntryQuantity($id);
 		$this->veid = $id;
 		}
 
@@ -3287,10 +3349,8 @@ class bab_vacationRequestDetail
 			{
 			global $babDB;
 			$arr = $babDB->db_fetch_array($this->res);
-			list($this->typename) = $babDB->db_fetch_row($babDB->db_query("select description from ".BAB_VAC_RIGHTS_TBL." where id ='".$babDB->db_escape_string($arr['id_right'])."'"));
-			$this->nbdays = $arr['quantity'];
-			$this->totalval += $this->nbdays;
-			$this->typename = bab_toHtml($this->typename);
+			$this->typename = bab_toHtml($arr['description']);
+			$this->nbdays = bab_toHtml(bab_vac_quantity($arr['quantity'], $arr['quantity_unit']));
 			$i++;
 			return true;
 			}
@@ -3367,11 +3427,12 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
  * @param	int		$begin				timestamp
  * @param	int		$end				timestamp
  * @param	boolean	$vacation_is_free
- * @return	int
+ * @return	array (days, hours)
  */
 function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = false) {
 
-	$calcul = 0;
+	$days 	= 0.0;
+	$hours 	= 0.0;
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
@@ -3383,19 +3444,174 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 		BAB_DateTime::fromTimeStamp($end),
 		$vacation_is_free
 	);
+	
+	
+	
 
 	foreach($index as $key => $p) {
 
 		if (isset($is_free[$key])) {
-			$calcul += 0.5;
+			$days 	+= 0.5;
+			$hours 	+= ($p->getDuration() / 3600);
 		}
+		
+		
 	}
 
 	
-	return $calcul;
+	return array($days, round($hours, 2));
 }
 
 
+/**
+ * Get the list of available hours for a user
+ * if the id_user parameter is null, return hours list based on site parameters
+ * 
+ * @param	int		$id_user
+ * 
+ * @return array
+ */
+function bab_vac_hoursList($id_user = null)
+{
+	global $babDB, $babBody;
+	
+	$elapstime = null;
+	
+	if (null === $id_user)
+	{
+		$elapstime = (int) $babBody->babsite['elapstime'];
+	} else {
+		
+		$res = $babDB->db_query("SELECT elapstime FROM bab_cal_user_options WHERE id_user=".$babDB->quote($id_user));
+		if ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$elapstime = (int) $arr['elapstime'];
+		}
+	}
+	
+	if (!isset($elapstime) || $elapstime === 0)
+	{
+		$elapstime = 5;
+	}
+	
+	$list = array();
+	$min = 0;
+	$hour = 0;
+	for ($i = 0; $i < 1440; $i += $elapstime)
+	{
+		$min += $elapstime;
+		
+		if ($min >= 60)
+		{
+			$hour++;
+			$min = 0;
+		}
+		
+		if (24 === $hour)
+		{
+			break;
+		}
+		
+		$list[sprintf('%02d:%02d:00', $hour, $min)] = sprintf('%02d:%02d', $hour, $min);
+	}
+	
+	// add fixed hours
+	
+	$list['00:00:00'] = '00:00';
+	$list['11:59:59'] = '11:59';
+	$list['12:00:00'] = '12:00';
+	$list['23:59:59'] = '23:59';
+	
+	ksort($list);
+	
+	return $list;
+}
 
+
+/**
+ * Display a vacation right quantity
+ * @param	string|float	$quantity		numeric
+ * @param	string			$unit			D | H
+ */
+function bab_vac_quantity($quantity, $unit)
+{
+	if ('1.' === rtrim($quantity,'0'))
+	{
+		switch($unit) {
+			case 'D':
+				$unit = bab_translate('day');
+				break;
+			case 'H':
+				$unit = bab_translate('hour');
+				break;
+		}
+	} else {
+		switch($unit) {
+			case 'D':
+				$unit = bab_translate('days');
+				break;
+			case 'H':
+				$unit = bab_translate('hours');
+				
+				// convertire en heures, minutes plustot que d'afficher des heures a virgules
+				
+				$minutes = round(($quantity - floor($quantity)) * 60);
+				if (0 != $minutes) {
+					$quantity = floor($quantity);
+					
+					if (0 == $quantity)
+					{
+						return $minutes.' '.bab_translate('minutes');
+					}
+					
+					return $quantity.' '.$unit.' '.$minutes.' '.bab_translate('min');
+				}
+				
+				break;
+		}
+	}
+	
+	$quantity = rtrim($quantity, '0.');
+	
+	if ('' === $quantity) {
+		$quantity = '0';
+	}
+	
+	return $quantity.' '.$unit;
+}
+
+
+/**
+ * Get displayable quantity for one vacation entry
+ * @param	int		$id_entry
+ * @return string
+ */
+function bab_vacEntryQuantity($id_entry)
+{
+	global $babDB;
+	
+	$res = $babDB->db_query("
+			SELECT 
+				SUM(e.quantity) quantity,
+				r.quantity_unit  
+			FROM 
+				bab_vac_entries_elem e,
+				bab_vac_rights r
+			WHERE 
+				e.id_entry =".$babDB->quote($id_entry)." 
+				AND r.id = e.id_right 
+			GROUP BY r.quantity_unit 
+			ORDER BY r.quantity_unit DESC
+	"
+	);
+	
+	$list = array();
+	while ($arr = $babDB->db_fetch_assoc($res))
+	{
+		$list[] = bab_vac_quantity($arr['quantity'], $arr['quantity_unit']);
+	}
+	
+	return implode(', ', $list);
+}
 
 

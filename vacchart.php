@@ -423,7 +423,7 @@ if( isset($_POST['add']) && $entities_access > 0 )
 		case 'modrbu':
 			if ( bab_IsUserUnderSuperior($_POST['iduser']) )
 				{
-				updateVacationRightByUser($_POST['iduser'], $_POST['quantities'], $_POST['idrights']);
+				updateVacationRightByUser($_POST['iduser'], $_POST['quantity']);
 				}
 			break;
 
@@ -456,7 +456,6 @@ if( isset($_POST['add']) && $entities_access > 0 )
 		}
 	}
 
-$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 
 switch($idx)
 	{
@@ -464,6 +463,7 @@ switch($idx)
 		$idx = 'entity_members';
 	case 'entity_members':
 		$babBody->title = bab_translate("Entity members");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members");
 		if ($entities_access > 0)
@@ -478,6 +478,7 @@ switch($idx)
 		if (bab_isPlanningAccessValid())
 			{
 			$babBody->title = bab_translate("Entity members");
+			$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 			$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
 			$babBody->addItemMenu("planning_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning_members");
 			entity_members($_REQUEST['ide'], 'planning_members');
@@ -489,7 +490,6 @@ switch($idx)
 		break;
 
 	case 'entity_cal':
-		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		if ($entities_access > 0 || bab_isPlanningAccessValid($_REQUEST['ide']))
 			entity_cal($_REQUEST['ide']);
 		else
@@ -499,7 +499,7 @@ switch($idx)
 		break;
 
 	case 'rights':
-		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
+
 		if (bab_IsUserUnderSuperior($_GET['id_user']) && $_GET['id_user'] != $GLOBALS['BAB_SESS_USERID'])
 			{
 			listRightsByUser($_GET['id_user']);
@@ -516,6 +516,7 @@ switch($idx)
 		exit;
 
 	case 'asks':
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
 		if (bab_IsUserUnderSuperior($_GET['id_user']))
 			{
@@ -535,6 +536,7 @@ switch($idx)
 
 		if ($entities_access > 0)
 			{
+			$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 			$babBody->addItemMenu("entity_requests", bab_translate("Requests"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
@@ -548,8 +550,8 @@ switch($idx)
 		break;
 
 	case 'entity_planning':
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
-
 		$babBody->addItemMenu("entity_planning", bab_translate("Planning accès"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_requests");
 
 		$ide = bab_rp('ide');
@@ -559,6 +561,7 @@ switch($idx)
 		break;
 
 	case 'comanager':
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		$babBody->addItemMenu("comanager", bab_translate("Co-managers"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=comanager");
 
@@ -569,6 +572,7 @@ switch($idx)
 		break;
 
 	case 'view':
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
 		
@@ -585,8 +589,8 @@ switch($idx)
 		break;
 
 	case "modp":
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
-
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_GET['ide']);
 		
 		if (bab_IsUserUnderSuperior($_REQUEST['iduser']) && $_GET['iduser'] != $GLOBALS['BAB_SESS_USERID'])
@@ -602,8 +606,8 @@ switch($idx)
 		break;
 
 	case 'changeucol':
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 		$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
-
 		$babBody->addItemMenu("entity_members", bab_translate("Entity members"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entity_members&ide=".$_REQUEST['ide']);
 		if (bab_IsUserUnderSuperior($_POST['idp']) && $_POST['idp'] != $GLOBALS['BAB_SESS_USERID'])
 			{
@@ -620,6 +624,7 @@ switch($idx)
 	case 'planning':
 		if (bab_isPlanningAccessValid())
 			{
+			$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 			$babBody->addItemMenu("planning", bab_translate("Planning"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=planning");
 			$babBody->title = bab_translate("Planning list");
 			entities($userentities, 'planning');
@@ -630,6 +635,7 @@ switch($idx)
 	case 'entities':
 		if ($entities_access > 0)
 			{
+			$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
 			$babBody->addItemMenu("entities", bab_translate("Delegate management"), $GLOBALS['babUrlScript']."?tg=vacchart&idx=entities");
 
 			$babBody->title = bab_translate("Entities list");

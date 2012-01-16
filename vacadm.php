@@ -417,6 +417,7 @@ function exportAvailableBalances()
 						ur.id_right,
 						IF(ur.quantity<>'', ur.quantity , r.quantity) quantity,
 						r.description, 
+						r.quantity_unit, 
 						sum(ee.quantity) consumed
 					FROM
 						bab_vac_users_rights ur
@@ -479,7 +480,8 @@ function exportAvailableBalances()
 				}
 				
 				
-				$remain = ((float) $arr['quantity'] - (float) $arr['consumed']);
+				$remain = array('D' => 0.0, 'H' => 0.0);
+				$remain_line = $remain[$arr['quantity_unit']] = ((float) $arr['quantity'] - (float) $arr['consumed']);
 				
 				
 				if ($currentUser !== $arr['id_user'])
@@ -495,7 +497,8 @@ function exportAvailableBalances()
 					$currentRow = array(
 							$this->csvEncode($arr['lastname']),
 							$this->csvEncode($arr['firstname']),
-							$remain
+							$remain['D'],
+							$remain['H']
 					);
 					
 					foreach($this->rights as $initcol)
@@ -505,16 +508,17 @@ function exportAvailableBalances()
 					
 				} else {
 					
-					$currentRow[2] += $remain;
+					$currentRow[2] += $remain['D'];
+					$currentRow[3] += $remain['H'];
 				}
 				
 				
 				
 				$col = $this->rights[$arr['id_right']];
 				
-				if ($col > 2)
+				if ($col > 3)
 				{
-					$currentRow[$col] = $remain;
+					$currentRow[$col] = $remain_line;
 				}
 				
 				
@@ -551,12 +555,20 @@ function exportAvailableBalances()
 				$header = array(
 					$this->csvEncode(bab_translate('Lastname')),
 					$this->csvEncode(bab_translate('Firstname')),
-					$this->csvEncode(bab_translate('Available days (total)'))
+					$this->csvEncode(bab_translate('Total days')),
+					$this->csvEncode(bab_translate('Total hours'))
 				);
 				
 				while ($arr = $babDB->db_fetch_assoc($columns))
 				{
-					$header[] = $this->csvEncode($arr['description']);
+					switch($arr['quantity_unit'])
+					{
+						case 'D': $unit = bab_translate('days'); break;
+						case 'H': $unit = bab_translate('hours'); break;
+					}
+					
+					
+					$header[] = $this->csvEncode($arr['description'].' ('.$unit.')');
 					$this->rights[$arr['id_right']] = (count($header) -1);
 				}
 				
@@ -1418,8 +1430,7 @@ if( isset($_POST['add']) )
 		case 'modrbu':
 			if (true === updateVacationRightByUser(
 				bab_pp('iduser'), 
-				bab_pp('quantities'), 
-				bab_pp('idrights')
+				bab_pp('quantity')
 			)) {
 			
 				require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
@@ -1443,9 +1454,6 @@ else if( isset($action) && $action == "Yes")
 if( !isset($pos)) $pos ="";
 if( !isset($idcol)) $idcol ="";
 if( !isset($idsa)) $idsa ="";
-
-$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
-$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 
 switch($idx)
 	{
@@ -1483,6 +1491,8 @@ switch($idx)
 			bab_rp('idsa'), 
 			bab_rp('userids',array())
 		);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("delu", bab_translate("Delete"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=delu");
 		break;
@@ -1491,6 +1501,9 @@ switch($idx)
 		$babBody->title = bab_translate("Modify user");
 
 		addVacationPersonnel($_REQUEST['idp']);
+		
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos);
 		$babBody->addItemMenu("modp", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modp");
 		break;
@@ -1498,12 +1511,17 @@ switch($idx)
 	case "addp":
 		$babBody->title = bab_translate("Add users");
 		addVacationPersonnel();
+		
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("addp", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addp");
 		break;
 
 	case 'changeucol':
 		$babBody->title = bab_translate("Change user collection");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 		$babBody->addItemMenu("changeucol", bab_translate("User collection"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=changeucol");
 		changeucol($_POST['idp'],$_POST['idcol']);
@@ -1512,6 +1530,8 @@ switch($idx)
 	case "addg":
 		$babBody->title = bab_translate("Add/Modify users by group");
 		addGroupVacationPersonnel();
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper&pos=".$pos."&idcol=".$idcol."&idsa=".$idsa);
 		$babBody->addItemMenu("addg", bab_translate("Add/Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addg");
 		break;
@@ -1527,6 +1547,8 @@ switch($idx)
 				$pos = "-" .$pos;
 		}
 		listVacationPersonnel($pos, $idcol, $idsa);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 		$babBody->addItemMenu("abexport", bab_translate("Available balances export"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=abexport");
 		
@@ -1536,6 +1558,8 @@ switch($idx)
 	case 'abexport':
 		$babBody->setTitle(bab_translate("Available balances export"));
 		exportAvailableBalances();
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lper", bab_translate("Personnel"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lper");
 		$babBody->addItemMenu("abexport", bab_translate("Available balances export"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=abexport");
 		break;
@@ -1545,6 +1569,8 @@ switch($idx)
 		
 		$babBody->title = bab_translate("Vacations type's collections");
 		listVacationCollections();
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("addvc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvc");
 		break;
@@ -1561,6 +1587,8 @@ switch($idx)
 		if( !isset($category)) $category =0;
 		if( !isset($vtypeids)) $vtypeids =array();
 		addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $category);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("modvc", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvc");
 		$babBody->addItemMenu("addvc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvc");
@@ -1579,6 +1607,8 @@ switch($idx)
 		if( !isset($category)) $category =0;
 		if( !isset($vtypeids)) $vtypeids =array();
 		addVacationCollection($vcid, $what, $tname, $description, $vtypeids, $category);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lcol", bab_translate("Collections"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lcol");
 		$babBody->addItemMenu("addvc", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvc");
 
@@ -1597,6 +1627,8 @@ switch($idx)
 		if( !isset($tcolor)) $tcolor = "";
 		if( !isset($cbalance)) $cbalance = "";
 		addVacationType($vtid, $what, $tname, $description, $quantity, $tcolor, $cbalance);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("modvt", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=modvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
@@ -1613,6 +1645,8 @@ switch($idx)
 		if( !isset($description)) $description ="";
 		if( !isset($tcolor)) $tcolor = "";
 		if( !isset($cbalance)) $cbalance = "";
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
 		addVacationType($vtid, $what, $tname, $description, $tcolor, $cbalance);
@@ -1625,6 +1659,8 @@ switch($idx)
 		if( !isset($idcol)) $idcol ="";
 		if( !isset($idsa)) $idsa ="";
 		$babBody->title = bab_translate("Vacations types");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lvt", bab_translate("Types"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=lvt");
 		$babBody->addItemMenu("addvt", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=addvt");
 		listVacationTypes();
@@ -1634,6 +1670,8 @@ switch($idx)
 
 	case "menu":
 	default:
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->title = bab_translate("Vacations management");
 		admmenu();
 		break;

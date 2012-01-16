@@ -358,6 +358,7 @@ function addUrl(&$skip) {
 	return true;
 }
 
+
 function addAddonUrl()
 	{
 	if (!$this->babUserSectionAddons) {

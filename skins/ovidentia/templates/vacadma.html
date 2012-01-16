@@ -381,7 +381,16 @@ function group_delete_selected() {
 			<tr> 
 				<td align="right">{ t_quantity }:</td>
 				<td> 
-					<input type="text" name="quantity" size="5" maxlength="5" value="{ arr[quantity] }" onBlur="validateNum(this)" />&nbsp;&nbsp;{ t_days }
+					<input type="text" name="quantity" size="2" maxlength="5" value="{ arr[quantity] }" onBlur="validateNum(this)" />
+					<select name="quantity_unit">
+						<!--#if arr[quantity_unit] "== H" -->
+						<option value="D">{ t_days }</option>
+						<option value="H" selected="selected">{ t_hours }</option>
+						<!--#else arr[quantity_unit] -->
+						<option value="D" selected="selected">{ t_days }</option>
+						<option value="H">{ t_hours }</option>
+						<!--#endif arr[quantity_unit] -->
+					</select>
 				</td>
 			</tr>
 			
@@ -505,10 +514,10 @@ function group_delete_selected() {
 				<option value="{ yearid }" { selected }>{ t_yearidval }</option>
 				<!--#endin getnextyear -->
 				</select>&nbsp;
-				<select name="halfdaybeginfx">
-				<!--#in getnexthalf -->
-				<option value="{ halfid }" { selected }>{ t_halfname }</option>
-				<!--#endin getnexthalf -->
+				<select name="hourbeginfx">
+					<!--#in getnexthour -->
+					<option value="{ value }" { selected }>{ option }</option>
+					<!--#endin getnexthour -->
 				</select>
 				</td>
 			</tr>
@@ -530,10 +539,10 @@ function group_delete_selected() {
 				<option value="{ yearid }" { selected }>{ t_yearidval }</option>
 				<!--#endin getnextyear -->
 				</select>&nbsp;
-				<select name="halfdayendfx">
-				<!--#in getnexthalf -->
-				<option value="{ halfid }" { selected }>{ t_halfname }</option>
-				<!--#endin getnexthalf -->
+				<select name="hourendfx">
+					<!--#in getnexthour -->
+					<option value="{ value }" { selected }>{ option }</option>
+					<!--#endin getnexthour -->
 				</select>
 				</td>
 			</tr>

@@ -314,11 +314,11 @@ return true;
 </select>
 </td>
 <td valign="middle"> 
-<select name="halfdaybegin">
-  <!--#in getnexthalf -->
-  <option value="{ halfid }" { selected }>{ halfname }</option>
-  <!--#endin getnexthalf -->
-</select>
+<select name="hourbegin">
+	<!--#in getnexthour -->
+	<option value="{ value }" { selected }>{ option }</option>
+	<!--#endin getnexthour -->
+</select >
 </td>
 </tr>
 <tr> 
@@ -345,10 +345,10 @@ return true;
 </select >
 </td>
 <td valign="middle"> 
-<select name="halfdayend">
-  <!--#in getnexthalf -->
-  <option value="{ halfid }" { selected }>{ halfname }</option>
-  <!--#endin getnexthalf -->
+<select name="hourend">
+  <!--#in getnexthour -->
+  <option value="{ value }" { selected }>{ option }</option>
+  <!--#endin getnexthour -->
 </select >
 </td>
 </tr>
@@ -358,17 +358,12 @@ return true;
 <table width="100%" border="0" cellspacing="0" cellpadding="1" align="center">
 <tr><td>&nbsp;</td><td>&nbsp;</td><td>{ balancetxt }</td></tr>
 <!--#in getnexttype -->
-<tr><td><input type="text" name="{ nbdaysname }" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)" /></td><td>{ typename }</td><td>{ quantitydays }</td></tr>
+<tr><td><input type="text" name="quantity[{ id_entry_elem }]" size="5" maxlength="5" value="{ nbdays }" onBlur="validateDayField(this)" /> { unit }</td><td>{ typename }</td><td>{ quantity_available }</td></tr>
 <!--#endin getnexttype -->
 </table>
 </td>
 </tr>
-<tr> 
-<td align="right">{ totaltxt }: </td>
-<td colspan="4">
-<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
-</td>
-</tr>
+
 <tr> 
 <td align="right">{ remark }: </td>
 <td colspan="4">

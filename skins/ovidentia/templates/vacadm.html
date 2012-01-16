@@ -586,7 +586,7 @@ function computeRights(obj,max)
 		<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 			<td>{ right[description] }</td>
 			<td>{ right[quantity_old] }</td>
-			<td>{ right[quantitydays] }</td>
+			<td>{ right[quantity_available] }</td>
 
 			<td>{ right[quantity_new] }</td>
 			<td>
@@ -611,44 +611,7 @@ function computeRights(obj,max)
 <!--#end changeucol -->
 
 <!--#begin rlistbyuser -->
-<script type="text/javascript">
-<!--
-function validateNum(field) {
-var valid = ".0123456789"
-var ok = "yes";
-var temp;
-for (var i=0; i<field.value.length; i++) {
-temp = "" + field.value.substring(i, i+1);
-if (valid.indexOf(temp) == "-1") ok = "no";
-}
-if (ok == "no") {
-var d2;
-alert("{ invalidentry }");
-field.focus();
-field.select();
-return false;
-   }
-return true;
-}
 
-function validateDayField(field) {
-	if( field.value.length > 0 && validateNum(field))
-	{
-	tp = parseFloat(field.value);
-	if( isNaN(tp) )
-		alert( '{ invalidentry1 }');
-
-	if( tp % 0.5 != 0 )
-		{
-		var d1;
-		alert( '{ invalidentry2 }' );
-		field.focus();
-		field.select();
-		}
-	}
-}
-//-->
-</script>
 
 <form name="rmodify" method="post" action="{ babPhpSelf }">
 <input type="hidden" name="tg" value="{ tg }" />
@@ -692,9 +655,14 @@ function validateDayField(field) {
 			<!--#endif in_rgroup -->
 			<td>{ type }</td>
 			<td>
-			<input type="text" name="quantities[]" size="5" maxlength="5" value="{ quantity }" onBlur="validateDayField(this)"></td>
-			<input type="hidden" name="idrights[]" value="{ idright }">
-			<td>{ consumed }</td>
+			<input type="text" name="quantity[{ idright }]" size="2" maxlength="8" value="{ quantity }" /> { unit } &nbsp;
+			<td>
+				<!--#if waiting -->
+				<strong title="{ waiting }">{ consumed }</strong>
+				<!--#else waiting -->
+				{ consumed }
+				<!--#endif waiting -->
+			</td>
 			<td>{ dateb }</td>
 			<td>{ datee }</td>
 		</tr>

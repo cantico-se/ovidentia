@@ -25,13 +25,10 @@ include_once "base.php";
 
 
 
-function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $remarks, $total)
+function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $remarks, $total)
 {
 	global $babBody, $babDB;
 
-
-	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
-	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
 
 	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." 
 	(id_user, date_begin, date_end, comment, date, idfai, status) 
@@ -68,12 +65,9 @@ function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybe
 /**
  * @return bool
  */
-function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $halfdaybegin, $halfdayend, $total)
+function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 {
 	global $babBody, $babDB;
-
-	$datebegin	.= 1 == $halfdaybegin	? ' 12:00:00' : ' 00:00:00';
-	$dateend	.= 1 == $halfdayend		? ' 23:59:59' : ' 11:59:59';
 
 	$res = $babDB->db_query("select vet.id as entry, veet.id as entryelem 
 	from ".BAB_VAC_ENTRIES_ELEM_TBL." veet 
@@ -140,21 +134,19 @@ function bab_vac_updateFixedRightsOnUser($id_user) {
 			r.id,
 			r.quantity,
 			r.date_begin_fixed,
-			r.date_end_fixed,
-			r.day_begin_fixed,
-			r.day_end_fixed 
+			r.date_end_fixed 
 		FROM 
 			'.BAB_VAC_USERS_RIGHTS_TBL.' ur, 
 			'.BAB_VAC_RIGHTS_TBL.' r 
 		WHERE 
 			r.id = ur.id_right 
-			AND r.date_begin_fixed <> \'0000-00-00\' 
+			AND r.date_begin_fixed <> \'0000-00-00 00:00:00\' 
 			AND ur.id_user = '.$babDB->quote($id_user).'
 	');
 
 	while ($arr = $babDB->db_fetch_assoc($res)) {
-		if (false === updateFixedVacation($id_user, $arr['id'], $arr['date_begin_fixed'] , $arr['date_end_fixed'], $arr['day_begin_fixed'], $arr['day_end_fixed'], $arr['quantity'])) {
-			addFixedVacation($id_user, $arr['id'], $arr['date_begin_fixed'] ,  $arr['date_end_fixed'], $arr['day_begin_fixed'], $arr['day_end_fixed'], '', $arr['quantity']);
+		if (false === updateFixedVacation($id_user, $arr['id'], $arr['date_begin_fixed'] , $arr['date_end_fixed'], $arr['quantity'])) {
+			addFixedVacation($id_user, $arr['id'], $arr['date_begin_fixed'] ,  $arr['date_end_fixed'], '', $arr['quantity']);
 		}
 	}
 }

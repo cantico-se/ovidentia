@@ -22,7 +22,6 @@
  * USA.																	*
 ************************************************************************/
 include_once "base.php";
-require_once dirname(__FILE__).'/utilit/registerglobals.php';
 include_once $babInstallPath."utilit/vacincl.php";
 include_once $babInstallPath."utilit/vacfixedincl.php";
 
@@ -238,7 +237,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 			$this->desctxt = bab_translate("Description");
 			$this->typetxt = bab_translate("Type");
 			$this->nametxt = bab_translate("Name");
-			$this->quantitytxt = bab_translate("Number of days");
+			$this->quantitytxt = bab_translate("Quantity");
 			$this->creditortxt = bab_translate("Author");
 			$this->datetxt = bab_translate("Entry date");
 			$this->date2txt = bab_translate("Entry date ( dd-mm-yyyy )");
@@ -399,7 +398,7 @@ function listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos)
 				$this->vrviewurl	= bab_toHtml($GLOBALS['babUrlScript']."?tg=vacadma&idx=viewvr&idvr=".$arr['id']);
 				$this->typename		= bab_toHtml($arr['type']);
 				$this->description	= bab_toHtml($arr['description']);
-				$this->quantity		= bab_toHtml($arr['quantity']);
+				$this->quantity		= bab_toHtml(bab_vac_quantity($arr['quantity'], $arr['quantity_unit']));
 				$this->creditor		= bab_toHtml(bab_getUserName($arr['id_creditor']));
 				$this->date			= bab_toHtml(bab_shortDate(bab_mktime($arr['date_entry']), false));
 				$this->bclose		= $arr['active'] == "N";
@@ -506,13 +505,14 @@ function addModifyVacationRigths($id = false)
 			$this->t_id_type = bab_translate("Type");
 			$this->t_id_creditor = bab_translate("User");
 			$this->t_collid = bab_translate("Collection");
-			$this->t_quantity = bab_translate("Number of day for this right");
+			$this->t_quantity = bab_translate("Quantity for this right");
 			$this->t_reset = bab_translate("Reset");
 			$this->t_delete = bab_translate("Delete");
 			$this->t_orand = bab_translate("Or users having ");
 			$this->t_allcol = bab_translate("All collections");
 			$this->t_allpers = bab_translate("All users");
 			$this->t_days = bab_translate("Day(s)");
+			$this->t_hours = bab_translate("Hour(s)");
 			$this->t_description = bab_translate("Name of the right");
 			$this->t_period = bab_translate("Right period"). " (".bab_translate("dd-mm-yyyy").")";
 			$this->t_date_begin = $this->t_period_start = bab_translate("Begin");
@@ -612,13 +612,13 @@ function addModifyVacationRigths($id = false)
 			);
 
 			$dates_to_init = array(
-				'date_begin', 			// date de d�but de la p�riode th�orique du droit
+				'date_begin', 			// date de debut de la periode theorique du droit
 				'date_end',
-				'date_begin_valid', 	// Disponibilit� en fonction de la date de saisie de la demande de cong�s
+				'date_begin_valid', 	// Disponibilite en fonction de la date de saisie de la demande de conges
 				'date_end_valid',
-				'trigger_p1_begin', 	// Attribution du droit en fonction des jours demand�s et valid�s
+				'trigger_p1_begin', 	// Attribution du droit en fonction des jours demandes et valides
 				'trigger_p1_end',
-				'trigger_p2_begin', 	// Attribution du droit en fonction des jours demand�s et valid�s
+				'trigger_p2_begin', 	// Attribution du droit en fonction des jours demandes et valides
 				'trigger_p2_end'
 			);
 
@@ -656,7 +656,7 @@ function addModifyVacationRigths($id = false)
 
 				$this->collid = "";
 
-				if( $this->arr['date_begin_fixed'] != '0000-00-00')
+				if( $this->arr['date_begin_fixed'] != '0000-00-00 00:00:00')
 					{
 					$this->arr['righttype'] =  2;
 					}
@@ -719,12 +719,10 @@ function addModifyVacationRigths($id = false)
 
 			$this->year = isset($_POST['year']) ? $_POST['year'] : date('Y');
 
-			if (!empty($id) && !isset($_POST['daybeginfx']) && $this->arr['date_begin_fixed'] != '0000-00-00')
+			if (!empty($id) && !isset($_POST['daybeginfx']) && $this->arr['date_begin_fixed'] != '0000-00-00 00:00:00')
 				{
-				list($this->yearbegin, $this->monthbegin, $this->daybegin) = explode('-',$this->arr['date_begin_fixed']);
-				list($this->yearend, $this->monthend, $this->dayend) = explode('-',$this->arr['date_end_fixed']);
-				$this->halfdaybegin = $this->arr['day_begin_fixed'];
-				$this->halfdayend = $this->arr['day_end_fixed'];
+				list($this->yearbegin, $this->monthbegin, $this->daybegin, $this->hourbegin) = $this->getDateArr($this->arr['date_begin_fixed']);
+				list($this->yearend, $this->monthend, $this->dayend, $this->hourend) = $this->getDateArr($this->arr['date_end_fixed']);
 				}
 			elseif (isset($_POST['daybeginfx']))
 				{
@@ -734,8 +732,8 @@ function addModifyVacationRigths($id = false)
 				$this->monthend = $_POST['monthendfx'];
 				$this->yearbegin = $this->year+ $_POST['yearbeginfx']-1;
 				$this->yearend = $this->year+ $_POST['yearendfx']-1;
-				$this->halfdaybegin = $_POST['halfdaybeginfx'];
-				$this->halfdayend = $_POST['halfdayendfx'];
+				$this->hourbegin = bab_pp('hourbegin');
+				$this->hourend = bab_pp('hourend');
 				}
 			else
 				{
@@ -745,11 +743,11 @@ function addModifyVacationRigths($id = false)
 				$this->monthend = date("n");
 				$this->yearbegin = $this->year;
 				$this->yearend = $this->year;
-				$this->halfdaybegin = 1;
-				$this->halfdayend = 1;
+				$this->hourbegin = '00:00:00';
+				$this->hourend = '23:59:59';
 				}
 
-			$this->halfdaysel = $this->halfdaybegin;
+			$this->hoursel = $this->hourbegin;
 			$this->daysel = $this->daybegin;
 			$this->monthsel = $this->monthbegin;
 			$this->yearsel = $this->yearbegin -$this->year +1;
@@ -768,8 +766,9 @@ function addModifyVacationRigths($id = false)
 				}
 
 
-			$this->dayType = array(0 => bab_translate("Morning"), 1 => bab_translate("Afternoon"));
-
+			$this->hours = bab_vac_hoursList();
+				
+				
 			$this->res_rgroup = $babDB->db_query("SELECT * FROM ".BAB_VAC_RGROUPS_TBL."");
 
 
@@ -779,8 +778,18 @@ function addModifyVacationRigths($id = false)
 			);
 
 			}
+			
+			
+		private function getDateArr($datetime)
+		{
+			if (preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}:[0-9]{2}:[0-9]{2})$/', $datetime, $m))
+			{
+				return array($m[1], $m[2], $m[3], $m[4]);
+			}
+			return array('0000', '00', '00', '00:00:00');
+		}
 
-		function getnextrighttype()
+		public function getnextrighttype()
 			{
 			if (list($valid,$valname) = each($this->rightypes))
 				{
@@ -802,7 +811,7 @@ function addModifyVacationRigths($id = false)
 				}
 			}
 
-		function getnextcol()
+		public function getnextcol()
 			{
 			static $j= 0;
 			if( $j < $this->countcol )
@@ -824,7 +833,7 @@ function addModifyVacationRigths($id = false)
 				}
 			}
 
-		function getnexttype()
+		public function getnexttype()
 			{
 			global $babDB;
 			static $i = 0;
@@ -867,7 +876,7 @@ function addModifyVacationRigths($id = false)
 				}
 
 			}
-		function getnextday()
+		public function getnextday()
 			{
 			static $i = 1;
 
@@ -891,7 +900,7 @@ function addModifyVacationRigths($id = false)
 
 			}
 
-		function getnextmonth()
+		public function getnextmonth()
 			{
 			static $i = 1;
 
@@ -914,7 +923,7 @@ function addModifyVacationRigths($id = false)
 				}
 
 			}
-		function getnextyear()
+		public function getnextyear()
 			{
 			static $i = -10;
 			if( $i < 10)
@@ -936,31 +945,32 @@ function addModifyVacationRigths($id = false)
 				}
 
 			}
-		function getnexthalf()
-			{
-
+			
+		public function getnexthour()
+		{
+			
 
 			static $i = 0;
 
-			if( $i < 2)
+			if(list($value, $option) = each($this->hours))
 				{
-				$this->t_halfname = bab_toHtml($this->dayType[$i]);
-				$this->halfid = $i;
-				if( $this->halfdaysel == $this->halfid )
+				$this->option = bab_toHtml($option);
+				$this->value = bab_toHtml($value);
+				
+				if( $this->hoursel == $value )
 					$this->selected = "selected";
 				else
 					$this->selected = "";
 				$i++;
 				return true;
 				}
-			else
-				{
-				$i = 0;
-				$this->halfdaysel = $this->halfdayend;
+			
+				reset($this->hours);
+				$this->hoursel = $this->hourend;
 				return false;
-				}
+			
 
-			}
+		}
 
 
 		function getnextrgroup() {
@@ -1025,7 +1035,7 @@ function addModifyVacationRigths($id = false)
 		}
 
 	$temp = new temp($id);
-	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/prototype/prototype.js');
+	// $babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/prototype/prototype.js');
 	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
 	$babBody->addStyleSheet('vac_rights.css');
 	$babBody->babecho(bab_printTemplate($temp,"vacadma.html", "rightsedit"));
@@ -1365,11 +1375,24 @@ function updateVacationRight()
 		return false;
 		}
 
-	if( 0 !== ($post['quantity']*10) %5)
+	if( 0 === (int) $post['quantity'])
 		{
 		$babBody->msgerror = bab_translate("You must specify a correct number days");
 		return false;
 		}
+		
+	if (0 !== (int) $post['id_rgroup'])
+	{
+		$res = $babDB->db_query("SELECT quantity_unit FROM bab_vac_rights WHERE id_rgroup=".$babDB->quote($post['id_rgroup']));
+		if ($right_from_same_group = $babDB->db_fetch_assoc($res))
+		{
+			if ($right_from_same_group['quantity_unit'] != $post['quantity_unit'])
+			{
+				$babBody->msgerror = bab_translate("You must use a right group with only rights of same quantity unit");
+				return false;
+			}
+		}
+	}
 
 
 	if (isset($post['id_type']))
@@ -1410,15 +1433,20 @@ function updateVacationRight()
 
     if( $post['righttype'] == '2')
         {
-        $post['date_begin_fixed'] = sprintf("%02d-%02d-%04d", $post['daybeginfx'], $post['monthbeginfx'], ($post['yearbeginfx'] + $post['year'] - 1 ));
-        $post['date_end_fixed'] = sprintf("%02d-%02d-%04d", $post['dayendfx'], $post['monthendfx'], ($post['yearendfx']+ $post['year'] - 1 ));
-        $dates_to_init['date_begin_fixed']	= 1;
-        $dates_to_init['date_end_fixed']	= 1;
+        $post['date_begin_fixed'] = sprintf("%04d-%02d-%02d %s",($post['yearbeginfx'] + $post['year'] - 1 ), $post['monthbeginfx'],  $post['daybeginfx'] , $post['hourbeginfx']);
+        $post['date_end_fixed'] = sprintf("%04d-%02d-%02d %s", ($post['yearendfx']+ $post['year'] - 1 ), $post['monthendfx'], $post['dayendfx'], $post['hourendfx']);
+        
+	        if ('0000-00-00 00:00:00' === $post['date_begin_fixed'] || '0000-00-00 00:00:00' === $post['date_end_fixed'])
+	        {
+	        	$babBody->msgerror = bab_translate("Invalid date");
+	        	return false;
+	        }
+        
         }
     else
         {
-        $post['date_begin_fixed'] = '0000-00-00';
-        $post['date_end_fixed'] = '0000-00-00';
+        $post['date_begin_fixed'] = '0000-00-00 00:00:00';
+        $post['date_end_fixed'] = '0000-00-00 00:00:00';
         }
 
 	foreach ($dates_to_init as $date => $required)
@@ -1454,21 +1482,14 @@ function updateVacationRight()
 		{
 		list($dbfx) = $babDB->db_fetch_row($babDB->db_query("select date_begin_fixed from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($post['idvr'])."'"));
 
-		if( $dbfx != '0000-00-00' && $post['righttype'] != '2')
+		if( $dbfx != '0000-00-00 00:00:00' && $post['righttype'] != '2')
 			{
 			// on ne doit pas passer ici, normallement
 			$babBody->msgerror = bab_translate("Something is wrong");
 			return false;
 			}
 
-		if( $post['righttype'] != '2')
-			{
-			$post['date_begin_fixed'] = '0000-00-00';
-			$post['date_end_fixed'] = '0000-00-00';
-			$post['day_begin_fixed'] = '0';
-			$post['day_end_fixed'] = '0';
-			}
-		else
+		if( $post['righttype'] == '2')
 			{
 			$res = $babDB->db_query("select * from ".BAB_VAC_RIGHTS_TBL." where id='".$babDB->db_escape_string($post['idvr'])."'");
 			if( $res && $babDB->db_num_rows($res) > 0 )
@@ -1497,9 +1518,7 @@ function updateVacationRight()
 					}
 
 				if( $arrright['date_begin_fixed'] != $post['date_begin_fixed']
-					|| $arrright['date_end_fixed'] != $post['date_end_fixed']
-					|| $arrright['day_begin_fixed'] != $post['halfdaybeginfx']
-					|| $arrright['day_end_fixed'] != $post['halfdayendfx'] )
+					|| $arrright['date_end_fixed'] != $post['date_end_fixed'])
 					{
 					$updatevac = true;
 					}
@@ -1514,14 +1533,14 @@ function updateVacationRight()
 					{
 					if( isset($entriesusers[$ukey]) && $updatevac )
 						{
-						updateFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], $post['quantity']);
+						updateFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], $post['quantity']);
 						$uupd[] = $ukey;
 						// update
 						}
 					elseif( !isset($entriesusers[$ukey]))
 						{
 						// add
-						addFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], '', $post['quantity']);
+						addFixedVacation($ukey, $post['idvr'], $post['date_begin_fixed'] , $post['date_end_fixed'], '', $post['quantity']);
 						$uadd[] = $ukey;
 						}
 					}
@@ -1537,7 +1556,7 @@ function updateVacationRight()
 				}
 			}
 
-
+			
 		if (!isset($post['active'])) {
 			$post['active'] = 'N';
 		}
@@ -1549,6 +1568,7 @@ function updateVacationRight()
 				description=".$babDB->quote($post['description']).",
 				id_creditor=".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
 				quantity=".$babDB->quote($post['quantity']).",
+				quantity_unit=".$babDB->quote($post['quantity_unit']).",
 				date_entry=curdate(),
 				date_begin=".$babDB->quote($post['date_begin']).",
 				date_end=".$babDB->quote($post['date_end']).",
@@ -1558,8 +1578,6 @@ function updateVacationRight()
 				date_end_valid=".$babDB->quote($post['date_end_valid']).",
 				date_begin_fixed=".$babDB->quote($post['date_begin_fixed']).",
 				date_end_fixed=".$babDB->quote($post['date_end_fixed']).",
-				day_begin_fixed=".$babDB->quote($post['halfdaybeginfx']).",
-				day_end_fixed=".$babDB->quote($post['halfdayendfx']).",
 				no_distribution=".$babDB->quote($post['no_distribution']).",
 				id_rgroup=".$babDB->quote($post['id_rgroup'])."
 			WHERE id=".$babDB->quote($post['idvr'])."
@@ -1629,6 +1647,7 @@ function updateVacationRight()
 				id_creditor,
 				id_type,
 				quantity,
+				quantity_unit,
 				date_entry,
 				date_begin,
 				date_end,
@@ -1638,8 +1657,6 @@ function updateVacationRight()
 				date_end_valid,
 				date_begin_fixed,
 				date_end_fixed,
-				day_begin_fixed,
-				day_end_fixed,
 				no_distribution,
 				id_rgroup
 				)
@@ -1649,6 +1666,7 @@ function updateVacationRight()
 				".$babDB->quote($GLOBALS['BAB_SESS_USERID']).",
 				".$babDB->quote($post['id_type']).",
 				".$babDB->quote($post['quantity']).",
+				".$babDB->quote($post['quantity_unit']).",
 				curdate(),
 				".$babDB->quote($post['date_begin']).",
 				".$babDB->quote($post['date_end']).",
@@ -1658,8 +1676,6 @@ function updateVacationRight()
 				".$babDB->quote($post['date_end_valid']).",
 				".$babDB->quote($post['date_begin_fixed']).",
 				".$babDB->quote($post['date_end_fixed']).",
-				".$babDB->quote($post['halfdaybeginfx']).",
-				".$babDB->quote($post['halfdayendfx']).",
 				".$babDB->quote($post['no_distribution']).",
 				".$babDB->quote($post['id_rgroup'])."
 				)
@@ -1827,7 +1843,7 @@ function modifyVacationRightPersonnel($idvr, $userids, $nuserids)
 			$babDB->db_query("insert into ".BAB_VAC_USERS_RIGHTS_TBL." (id_user, id_right) values (".$babDB->quote($userids[$i]).", ".$babDB->quote($idvr).")");
 			if( $arrright['date_begin_fixed'] != '0000-00-00' )
 				{
-				addFixedVacation($userids[$i], $idvr, $arrright['date_begin_fixed'] , $arrright['date_end_fixed'], $arrright['day_begin_fixed'], $arrright['day_end_fixed'], '', $arrright['quantity']);
+				addFixedVacation($userids[$i], $idvr, $arrright['date_begin_fixed'] , $arrright['date_end_fixed'], '', $arrright['quantity']);
 				$arrnotif[] = $userids[$i];
 				notifyOnVacationChange($arrnotif, $arrright['quantity'], $arrright['date_begin_fixed'], $arrright['date_end_fixed'],  VAC_FIX_ADD);
 				}
@@ -2007,9 +2023,19 @@ function rightcopy() {
 			if ('0000-00-00' === $date) {
 				return $date;
 			}
+			
+			if ('0000-00-00 00:00:00' === $date) {
+				return $date;
+			}
+			
 			$obj = BAB_DateTime::fromIsoDateTime($date);
 			$obj->add($this->increment,BAB_DATETIME_YEAR);
-			return $obj->getIsoDate();
+			
+			if (10 == mb_strlen($date)) {
+				return $obj->getIsoDate();
+			} else {
+				return $obj->getIsoDateTime();
+			}
 		}
 
 
@@ -2191,9 +2217,9 @@ if( !isset($acclevel['manager']) || $acclevel['manager'] != true)
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
 	}
+	
+$idx = bab_rp('idx', "lrig");
 
-if( !isset($idx))
-	$idx = "lrig";
 
 if( isset($_POST['action']) )
 	{
@@ -2233,19 +2259,17 @@ if( isset($_POST['action']) )
 
 	}
 
-$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
-$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
+
 
 switch($idx)
 	{
 	case "browt":
-		if( !isset($pos)) $pos ="";
 		$babBody->title = bab_translate("Personnel associated with type");
-		browsePersonnelByType($pos,  bab_rp('cb'), bab_rp('idtype'));
+		browsePersonnelByType(bab_rp('pos'),  bab_rp('cb'), bab_rp('idtype'));
 		exit;
 		break;
 	case "viewvr":
-		viewVacationRightPersonnel($idvr);
+		viewVacationRightPersonnel(bab_rp('idvr'));
 		exit;
 		break;
 
@@ -2254,20 +2278,21 @@ switch($idx)
 		break;
 
 	case "delvru":
-		if (!isset($userids))
-			$userids = array();
-		modifyVacationRightPersonnel($idvr, $userids, $nuserids);
+		$userids = bab_rp('userids', array());
+		modifyVacationRightPersonnel(bab_rp('idvr'), $userids, bab_rp('nuserids'));
 		/* no break; */
 	case "lvrp":
-		if( !isset($pos)) $pos ="";
-		if( isset($chg))
+		
+		$pos = bab_rp('pos');
+		
+		if(null !== bab_rp('chg', null))
 		{
 			if( $pos[0] == "-")
 				$pos = $pos[1];
 			else
 				$pos = "-" .$pos;
 		}
-		listVacationRightPersonnel($pos, $idvr);
+		listVacationRightPersonnel($pos, bab_rp('idvr'));
 		exit;
 		break;
 
@@ -2276,6 +2301,8 @@ switch($idx)
 		addModifyVacationRigths(bab_rp('idvr'));
 
 		$babBody->title = bab_translate("Modify vacation right");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("modvr", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=modvr");
 		break;
@@ -2285,12 +2312,16 @@ switch($idx)
 		addModifyVacationRigths();
 
 		$babBody->title = bab_translate("Allocate vacation rights");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("addvr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr");
 		break;
 
 	case 'rgroup':
 		$babBody->title = bab_translate("Rights groups");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("rgroup", bab_translate("Rights groups"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroup");
 		$babBody->addItemMenu("rgroupmod", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroupmod");
 		rgrouplist();
@@ -2298,6 +2329,8 @@ switch($idx)
 
 	case 'rgroupmod':
 		$babBody->title = bab_translate("Right group");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("rgroupmod", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroupmod");
 		rgroupmod();
 		break;
@@ -2305,6 +2338,8 @@ switch($idx)
 
 	case 'copy':
 		$babBody->title = bab_translate("Rights renewal by years");
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu('copy', bab_translate("Rights renewal"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=rgroupmod");
 		rightcopy();
 		break;
@@ -2321,6 +2356,8 @@ switch($idx)
 		$active			= bab_rp('active','Y');
 
 		listVacationRigths($idtype, $idcreditor, $dateb, $datee, $active, $pos);
+		$babBody->addItemMenu("vacuser", bab_translate("Vacations"), $GLOBALS['babUrlScript']."?tg=vacuser");
+		$babBody->addItemMenu("menu", bab_translate("Management"), $GLOBALS['babUrlScript']."?tg=vacadm&idx=menu");
 		$babBody->addItemMenu("lrig", bab_translate("Rights"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=lrig");
 		$babBody->addItemMenu("addvr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=vacadma&idx=addvr");
 		break;

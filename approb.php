@@ -556,8 +556,7 @@ function listWaitingVacations()
 				$this->altbg = !$this->altbg;
 				$arr = $babDB->db_fetch_array($this->res);
 				$this->url = bab_toHtml($GLOBALS['babUrlScript']."?tg=approb&idx=confvac&idvac=".$arr['id']);
-				list($this->total) = $babDB->db_fetch_row($babDB->db_query("select sum(quantity) from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry =".$babDB->quote($arr['id']).""));
-				$this->total = bab_toHtml($this->total);
+				$this->total = bab_toHtml(bab_vacEntryQuantity($arr['id']));
 				$this->urlname = bab_toHtml(bab_getUserName($arr['id_user']));
 				$this->dateb = bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_begin'])));
 				$this->datee = bab_toHtml(bab_vac_shortDate(bab_mktime($arr['date_end'])));
@@ -862,26 +861,32 @@ function confirmWaitingVacation($id)
 			$this->fullname		= bab_toHtml(bab_getUserName($row['id_user']));
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
 
-			$this->totaldates = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
+			list($this->totaldates_days, $this->totaldates_hours) = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
+			$this->availability = sprintf(bab_translate('%s days or %s hours in period'), $this->totaldates_days, $this->totaldates_hours);
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
 			foreach ($rights as $r)
 				{
-				$after = $r['quantitydays'] - $r['waiting'];
+				$after = $r['quantity_available'] - $r['waiting'];
 				if ($after < 0)
 					$this->negative[$r['id']] = $after;
 				}
 
 			$req = "
-				SELECT e.*, r.description FROM
+				SELECT 
+					e.*, 
+					r.description, 
+					r.quantity_unit 
+				
+				FROM
 					".BAB_VAC_ENTRIES_ELEM_TBL." e
 					LEFT JOIN ".BAB_VAC_RIGHTS_TBL." r ON r.id=e.id_right
 				WHERE e.id_entry=".$babDB->quote($id);
 
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
-			$this->totalval = 0;
+			$this->totalval = array('D' => 0, 'H' => 0); // quantity in days
 			$this->veid = bab_toHtml($id);
 			$this->nomatch = false;
 		}
@@ -894,10 +899,10 @@ function confirmWaitingVacation($id)
 			{
 				$arr = $babDB->db_fetch_array($this->res);
 
-				$this->nbdays = $arr['quantity'];
+				$this->totalval[$arr['quantity_unit']] += $arr['quantity'];
+				$this->nbdays = bab_vac_quantity($arr['quantity'], $arr['quantity_unit']);
 				$this->alert = isset($this->negative[$arr['id_right']]) ? $this->negative[$arr['id_right']] : false;
 
-				$this->totalval += $this->nbdays;
 				$this->typename = bab_toHtml($arr['description']);
 				$i++;
 				return true;
@@ -908,7 +913,13 @@ function confirmWaitingVacation($id)
 
 		function getmatch()
 		{
-			$this->nomatch = $this->totalval !== $this->totaldates;
+			// jours non pris (doit etre occupe par les heures)
+			$days1 = $this->totaldates_days - $this->totalval['D'];
+			
+			// nombre de jours calcules corespondant aux heures prises sur la periode
+			$days2 = ($this->totaldates_days * $this->totalval['H']) / $this->totaldates_hours;
+			
+			$this->nomatch = $days1 !== $days2;
             return false;
 		}
 	}

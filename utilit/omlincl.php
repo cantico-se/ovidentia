@@ -5217,15 +5217,28 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 						}
 					}
 				break;
-
-				default:
-					$personal = bab_getICalendars()->getPersonalCalendar();
+				
+				
+				case ($this instanceof Func_Ovml_Container_CalendarUserEvents):
+					
+					 $personal = bab_getICalendars()->getPersonalCalendar();
 					if (!$personal)
 					{
-						return array();
+					return array();
+					}
+					
+					$calendarid_list = array($personal->getUid() => 1);
+					
+				break;
+
+				default:
+
+					$calendarid_list = array();
+					foreach($calendars as $calendar)
+					{
+						$calendarid_list[$calendar->getUid()] = 1;
 					}
 
-					$calendarid_list = array($personal->getUid() => 1);
 				break;
 
 			}

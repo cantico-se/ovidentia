@@ -2,7 +2,7 @@
 <script language="JavaScript">
 <!--
 function validateNum(field) {
-var valid = ".0123456789"
+var valid = ",.0123456789"
 var ok = "yes";
 var temp;
 for (var i=0; i<field.value.length; i++) {
@@ -19,38 +19,79 @@ return false;
 return true;
 }
 
+
+function bab_vac_parseFloat(value)
+{
+	// replace comma with dot
+	
+	value = value.replace(',', '.');
+	
+	return parseFloat(value);
+}
+
+
 function validateDayField(field) {
 	if( field.value.length > 0 && validateNum(field))
 	{
-	tp = parseFloat(field.value);
-	if( isNaN(tp) )
-		alert( '{ invalidentry1 }');
-
-	if( tp % 0.5 != 0 )
+		tp = bab_vac_parseFloat(field.value);
+		if( isNaN(tp) )
+			alert( '{ invalidentry1 }');
+	
+		var total_days = 0;
+		var total_hours = 0;
+		for( i=0; i < document.vacform.elements.length; i++)
 		{
-		var d1;
-		alert( '{ invalidentry2 }' );
-		field.focus();
-		field.select();
+			obj = document.vacform.elements[i];
+			
+			if (obj.value == '')
+			{
+				continue;
+			}
+			
+			if( obj.name.substring(0, 8) == 'quantity' || obj.name.substring(0, 12) == 'rgroup_value')
+			{
+				switch(obj.className)
+				{
+				case 'D':
+					d = bab_vac_parseFloat(obj.value);
+					total_days += d;
+					total_hours += daysToHours(d);
+					break;
+					
+				case 'H':
+					h = bab_vac_parseFloat(obj.value);
+					total_hours += h;
+					total_days += hoursToDays(h);
+					break;
+				}
+				
+			}
 		}
-	var total = 0;
-	for( i=0; i < document.vacform.elements.length; i++)
-	{
-		obj = document.vacform.elements[i];
-		if( obj.name.substring(0, 6) == 'nbdays' || obj.name.substring(0, 12) == 'rgroup_value')
-		{
-			total += parseFloat(obj.value);
-		}
-	}
-	document.vacform.elements['total'].value = total;
+		
+		document.vacform.elements['total[D]'].value = total_days;
+		document.vacform.elements['total[H]'].value = total_hours;
 	}
 }
+
+
+function daysToHours(days)
+{
+	var ratio = { period_nbhours } / { period_nbdays };	
+	return Math.round((ratio * days) * 100) / 100;
+}
+
+
+function hoursToDays(hours)
+{
+	var ratio = { period_nbdays } / { period_nbhours };	
+	return Math.round((ratio * hours) * 100) / 100;
+}
+
 
 function validateForm()
 {
 	var f = document.forms['vacform'];
-	if ({ period_nbdays } != f.total.value) {
-		//}
+	if ({ period_nbdays } != f.elements['total[D]'].value) {
 		return confirm('{ t_confirm_nomatch }');
 	}
 	return true;
@@ -75,9 +116,7 @@ function rgroup_display(obj, str_dest) {
 <input type="hidden" name="idx" value="vunew" />
 <input type="hidden" name="action" value="vacation_request" />
 <input type="hidden" name="begin" value="{ begin }" />
-<input type="hidden" name="halfdaybegin" value="{ halfdaybegin }" />
 <input type="hidden" name="end" value="{ end }" />
-<input type="hidden" name="halfdayend" value="{ halfdayend }" />
 <input type="hidden" name="period_nbdays" value="{ period_nbdays }" />
 <input type="hidden" name="id" value="{ id }" />
 <input type="hidden" name="id_user" value="{ id_user }" />
@@ -89,7 +128,7 @@ function rgroup_display(obj, str_dest) {
 	<table class="BabLoginCadreBackground" width="70%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
 	<td> 
-		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="4">
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="6">
 		<tr> 
 
 			<td colspan="2" align="center"> 
@@ -112,28 +151,30 @@ function rgroup_display(obj, str_dest) {
 			</td>
 		</tr>
 		<tr> 
-			<td align="right">{ nbdaystxt }: </td>
+			<td align="right">&nbsp;</td>
 			<td> 
-				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<table width="100%" border="0" cellspacing="0" cellpadding="3">
+					<thead>
 					<tr>
-						<td colspan="2">&nbsp;</td>
-						<td>{ balancetxt }</td>
+						<td colspan="2"><strong>{ nbdaystxt }</strong></td>
+						<td><strong>{ balancetxt }</strong></td>
 					</tr>
+					</thead>
 					<!--#in getnextright -->
 					<!--#if id_rgroup -->
 					<tr>
 						<td>
-							<input type="text" name="rgroup_value[{ id_rgroup }]" size="5" maxlength="5" value="{ nbdays }" onKeyUp="validateDayField(this)" />
+							<input type="text" name="rgroup_value[{ id_rgroup }]" size="5" maxlength="5" value="{ quantity }" onKeyUp="validateDayField(this)" class="{ right[quantity_unit] }" /> { unit }
 						</td>
 						<td>
 							{ rgroup } : 
 							<select name="rgroup_right[{ id_rgroup }]" onchange="rgroup_display(this, 'bab_vac_rgroup_display{ id_rgroup }')">
 								<!--#in getnextrgroupright -->
-								<option id="bab_vac_right_{ id_right }" title="{ quantitydays }" value="{ id_right }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
+								<option id="bab_vac_right_{ id_right }" title="{ quantity_available }" value="{ id_right }" <!--#if selected --> selected="selected"<!--#endif selected -->>{ description }</option>
 								<!--#endin getnextrgroupright -->
 							</select>							
 						</td>
-						<td id="bab_vac_rgroup_display{ id_rgroup }"></td>
+						<td><span id="bab_vac_rgroup_display{ id_rgroup }"></span> { unit }</td>
 					</tr>
 
 					<script type="text/javascript">
@@ -143,10 +184,10 @@ function rgroup_display(obj, str_dest) {
 
 					<tr>
 						<td>
-							<input type="text" name="nbdays[{ right[id] }]" size="5" maxlength="5" value="{ nbdays }" onkeyup="validateDayField(this)" />
+							<input type="text" name="quantity[{ right[id] }]" size="5" maxlength="5" value="{ quantity }" onkeyup="validateDayField(this)" class="{ right[quantity_unit] }" /> { unit }
 						</td>
 						<td>{ right[description] }</td>
-						<td>{ right[quantitydays] }</td>
+						<td>{ right[quantity_available] }</td>
 					</tr>
 					<!--#endif id_rgroup -->
 					<!--#endin getnextright -->
@@ -156,8 +197,9 @@ function rgroup_display(obj, str_dest) {
 		<tr> 
 			<td align="right">{ totaltxt } : </td>
 			<td>
-				<input type="text" name="total" size="5" maxlength="5" value="{ totalval }" />
-				&nbsp; { t_period } <strong>{ period_nbdays }</strong> { t_days }
+				<input type="text" name="total[D]" size="3" maxlength="5" value="{ total_days }" />j 
+				<input type="text" name="total[H]" size="3" maxlength="5" value="{ total_hours }" />h 
+				&nbsp; { period_infos }
 			</td>
 		</tr>
 		<tr> 
@@ -515,14 +557,69 @@ var begindate = false;
 var firstclick = false;
 
 
-function decompose_date(str) {
+function decompose_date(str, period_position) {
 	tmp = str.split('.');
 	arr = tmp[1].split('-');
-	var r = new Array();
+	var r = new Object();
 	r['year']	= arr[0];
 	r['month']	= arr[1];
 	r['day']	= arr[2];
-	r['half']	= tmp[2];
+	
+	if (0 == period_position && 0 == tmp[2])
+	{
+		r['hour']	= '00:00:00';
+	}
+	
+	if (0 == period_position && 1 == tmp[2])
+	{
+		r['hour']	= '12:00:00';
+	}
+	
+	if (1 == period_position && 0 == tmp[2])
+	{
+		r['hour']	= '11:59:59';
+	}
+	
+	if (1 == period_position && 1 == tmp[2])
+	{
+		r['hour']	= '23:59:59';
+	}
+	
+	
+	var working_hours = { json_working_hours };
+	
+	// try to update hour based on working hours periods
+	
+	if (working_hours.length > 0)
+	{
+		var d = new Date(r['year'], r['month'] - 1, r['day']);
+
+		
+		for(var i = 0; i < working_hours.length ; i++)
+		{
+			if (d.getDay() == working_hours[i]['weekDay'])
+			{
+				switch(period_position)
+				{
+				case 0:
+					if ((0 == tmp[2] && working_hours[i]['startHour'] < '11:59:59') || (1 == tmp[2] && working_hours[i]['startHour'] > '12:00:00'))
+					{
+						r['hour'] = working_hours[i]['startHour'];
+					}
+					
+					break;
+				case 1:
+					if ((0 == tmp[2] && working_hours[i]['endHour'] < '11:59:59') || (1 == tmp[2] && working_hours[i]['endHour'] > '12:00:00'))
+					{
+						r['hour'] = working_hours[i]['endHour'];
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+
 
 	return r;
 }
@@ -546,11 +643,11 @@ function setPeriod(obj, init)
 	f.begin_tmp.value = begindate;
 	f.end_tmp.value = obj.id;
 
-	arr = decompose_date(begindate);
-	dateBegin(arr['day'], arr['month'], arr['year'], arr['half']);
+	arr = decompose_date(begindate, 0);
+	dateBegin(arr['day'], arr['month'], arr['year'], arr['hour']);
 
-	arr = decompose_date(obj.id);
-	dateEnd(arr['day'], arr['month'], arr['year'], arr['half']);
+	arr = decompose_date(obj.id, 1);
+	dateEnd(arr['day'], arr['month'], arr['year'], arr['hour']);
 
 	setPeriod2();
 
@@ -558,17 +655,6 @@ function setPeriod(obj, init)
 		begindate = obj.id;
 	}
 
-
-function id_to_date(str) {
-	arr = decompose_date(str);
-	hours = 0;
-	if (1 == arr['half']) {
-		hours = 12;
-	}
-
-	return new Date(arr['year'], arr['month'], arr['day'], hours, 0, 0, 0);
-
-}
 
 
 function update_selection(obj, begindate, enddate) {
@@ -673,24 +759,39 @@ function updateDates(elemDay, elemMonth, elemYear)
 
 
 
-function dateBegin(day, month, year, half)
+function dateBegin(day, month, year, hour)
 {
 	var f = document.forms['vacform'];
 	f.elements['monthbegin'].options[month-1].selected = true;
 	f.elements['yearbegin'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['daybegin'], f.elements['monthbegin'], f.elements['yearbegin']);
 	f.elements['daybegin'].options[day-1].selected = true;
-	f.elements['halfdaybegin'].options[half].selected = true;
+	
+	
+	for (var i = 0; i < f.elements['hourbegin'].options.length; i++)
+	{
+		if (hour == f.elements['hourbegin'].options[i].value)
+		{
+			f.elements['hourbegin'].options[i].selected = true;
+		}
+	}
 }
 
-function dateEnd(day, month, year, half)
+function dateEnd(day, month, year, hour)
 {
 	var f = document.forms['vacform'];
 	f.elements['monthend'].options[month-1].selected = true;
 	f.elements['yearend'].options[year-{ yearbegin }].selected = true;
 	updateDates(f.elements['dayend'], f.elements['monthend'], f.elements['yearend']);
 	f.elements['dayend'].options[day-1].selected = true;
-	f.elements['halfdayend'].options[half].selected = true;
+	
+	for (var i = 0; i < f.elements['hourend'].options.length; i++)
+	{
+		if (hour == f.elements['hourend'].options[i].value)
+		{
+			f.elements['hourend'].options[i].selected = true;
+		}
+	}
 }
 
 function validateForm(fr)
@@ -772,10 +873,10 @@ return true;
 		</select>
 	</td>
 	<td> 
-		<select name="halfdaybegin" onchange="update_plan();">
-		  <!--#in getnexthalf -->
-		  <option value="{ halfid }" { selected }>{ halfname }</option>
-		  <!--#endin getnexthalf -->
+		<select name="hourbegin"  onchange="update_plan();">
+		  <!--#in getnexthour -->
+		  <option value="{ value }">{ option }</option>
+		  <!--#endin getnexthour -->
 		</select>
 	</td>
 </tr>
@@ -805,10 +906,10 @@ return true;
 		</select>
 	</td>
 	<td> 
-		<select name="halfdayend"  onchange="update_plan();">
-		  <!--#in getnexthalf -->
-		  <option value="{ halfid }" { selected }>{ halfname }</option>
-		  <!--#endin getnexthalf -->
+		<select name="hourend" onchange="update_plan();">
+		  <!--#in getnexthour -->
+		  <option value="{ value }">{ option }</option>
+		  <!--#endin getnexthour -->
 		</select>
 	</td>
 	</tr>
@@ -838,21 +939,23 @@ return true;
 	<tbody id="view_rights" style="display:none">
 		<tr> 
 			<td colspan="2" align="right">&nbsp;</td>
-			<td colspan="2" align="center">{ t_avariable_days }</td>
-			<td colspan="1" align="center">{ t_waiting_days }</td>
+			<td colspan="2" align="center">{ t_available }</td>
+			<td colspan="1" align="center">{ t_waiting }</td>
 		</tr>
 		<!--#in getnextright -->
 		<tr> 
 			<td colspan="2" align="right">{ right[description] }</td>
-			<td colspan="2" align="center">{ right[quantitydays] }</td>
+			<td colspan="2" align="center">{ right[quantity_available] }</td>
 			<td colspan="1" align="center">{ right[waiting] }</td>
 		</tr>
 		<!--#endin getnextright -->
+		<!--#in gettotal -->
 		<tr> 
 			<th colspan="2" align="right">{ t_total }</th>
 			<th colspan="2" align="center">{ total }</th>
 			<th colspan="1" align="center">{ total_waiting }</th>
 		</tr>
+		<!--#endin gettotal -->
 	</tbody>
 	</table>
 </td>
@@ -866,16 +969,16 @@ function initialize()
 var daybegin = parseInt('{ daybegin }');
 var monthbegin = parseInt('{ monthbegin }');
 var yearbegin = parseInt('{ yearbegin }');
-var halfdaybegin = parseInt('{ halfdaybegin }');
+var hourbegin = '{ hourbegin }';
 
 var dayend = parseInt('{ dayend }');
 var monthend = parseInt('{ monthend }');
 var yearend = parseInt('{ yearend }');
-var halfdayend = parseInt('{ halfdayend }');
+var hourend = '{ hourend }';
 
 
-dateBegin( daybegin, monthbegin, yearbegin, halfdaybegin);
-dateEnd( dayend, monthend, yearend, halfdayend);
+dateBegin( daybegin, monthbegin, yearbegin, hourbegin);
+dateEnd( dayend, monthend, yearend, hourend);
 
 }
 
@@ -979,27 +1082,36 @@ initialize();
 <tr>
 	<td class="BabLoginCadreBackground"> 
 		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-			<thead>
-			<tr class="BabSiteAdminTitleFontBackground"> 
+			<thead class="BabSiteAdminTitleFontBackground">
+			<tr> 
 				<td align="right">&nbsp;</td>
-				<td align="center">{ t_avariable_days }</td>
-				<td align="center">{ t_waiting_days }</td>
+				<td align="center" colspan="2" style="border-left:#000 1px solid">{ t_available }</td>
+				<td align="center" colspan="2" style="border-left:#000 1px solid">{ t_waiting }</td>
+			</tr>
+			<tr> 
+				<td align="right">&nbsp;</td>
+				<td align="center" style="border-left:#000 1px solid">Jours</td><td align="center">Heures</td>
+				<td align="center" style="border-left:#000 1px solid">Jours</td><td align="center">Heures</td>
 			</tr>
 			</thead>
 			<tbody>
 			<!--#in getnextright -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg --> 
-				<td align="right">{ right[description] }</td>
-				<td align="center">{ right[quantitydays] }</td>
-				<td align="center">{ right[waiting] }</td>
+				<td align="right">{ description }</td>
+				<td align="center" style="border-left:#000 1px solid">{ quantity_available[D] }</td>
+				<td align="center">{ quantity_available[H] }</td>
+				<td align="center" style="border-left:#000 1px solid">{ waiting[D] }</td>
+				<td align="center">{ waiting[H] }</td>
 			</tr>
 			<!--#endin getnextright -->
 			</tbody>
 			<tfoot>
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<th align="right">{ t_total }</th>
-				<th align="center">{ total }</th>
-				<th align="center">{ total_waiting }</th>
+				<th align="center" style="border-left:#000 1px solid">{ total[D] }</th>
+				<th align="center">{ total[H] }</th>
+				<th align="center" style="border-left:#000 1px solid">{ total_waiting[D] }</th>
+				<th align="center">{ total_waiting[H] }</th>
 			</tr>
 			</tfoot>
 		</table>
