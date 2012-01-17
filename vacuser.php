@@ -157,7 +157,7 @@ function requestVacation($begin,$end, $id)
 			
 			$days = sprintf('<strong>%s</strong>', $days);
 			$hours = sprintf('<strong>%s</strong>', $hours);
-			$this->period_infos = sprintf(bab_translate('The period contain %s days or %s hours'), $days, $hours);
+			$this->period_infos = sprintf(bab_translate('The period contain %s day(s) or %s hour(s)'), $days, $hours);
 
 			$this->t_days = bab_translate("Day(s)");
 
