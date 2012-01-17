@@ -3290,7 +3290,7 @@
 <string id="Year filter">Filtre par année</string>
 <string id="History">Historique</string>
 <string id="You must use a right group with only rights of same quantity unit">Vous devez utiliser un regroupement de droit contenant des droits de la même unité de quantité</string>
-<string id="The period contain %s days or %s hours">La période contiens %s jours ou %s heures</string>
+<string id="The period contain %s days or %s hours">La période contient %s jours ou %s heures</string>
 <string id="day(s)">jour(s)</string>
 <string id="hour(s)">heure(s)</string>
 <string id="Total days">Total jours</string>
