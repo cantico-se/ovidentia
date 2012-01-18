@@ -3368,3 +3368,15 @@ function bab_Widgets()
 {
 	return bab_functionality::get('Widgets');
 }
+
+
+/**
+ * Strip tags and add spaces
+ * @param unknown_type $str
+ */
+function bab_strip_tags($str)
+{
+	$str = preg_replace('/\<[^<]+\>/', '${0} ', $str);
+	
+	return strip_tags($str);
+}
