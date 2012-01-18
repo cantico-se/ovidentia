@@ -5217,18 +5217,18 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 						}
 					}
 				break;
-				
-				
+
+
 				case ($this instanceof Func_Ovml_Container_CalendarUserEvents):
-					
+
 					 $personal = bab_getICalendars()->getPersonalCalendar();
 					if (!$personal)
 					{
 					return array();
 					}
-					
+
 					$calendarid_list = array($personal->getUid() => 1);
-					
+
 				break;
 
 				default:
@@ -6221,11 +6221,10 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				$oCtx->curctx->push('ImageHeight', $iHeight);
 
 				// We reload the thumbnail image to get the real resized width and height.
-				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
-				$img = imageCreateFromPng($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
-				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
-				imageDestroy($img);
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $eiHeight);
+				$imageSize = getImageSize($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
 
 				$bProcessed = true;
 			} else {
@@ -6309,10 +6308,9 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
-				$img = imageCreateFromPng($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
-				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
-				imageDestroy($img);
+				$imageSize = getImageSize($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
 
 				$bProcessed = true;
 			} else {
@@ -6397,10 +6395,9 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
-				$img = imageCreateFromPng($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', imagesx($img));
-				$oCtx->curctx->push('ResizedImageHeight', imagesy($img));
-				imageDestroy($img);
+				$imageSize = getImageSize($thumbnailPath->toString());
+				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
 
 				$bProcessed = true;
 			} else {

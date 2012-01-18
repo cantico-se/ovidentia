@@ -117,10 +117,10 @@ function setDelegationAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWid
 
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
-				$img = imageCreateFromPng($thumbnailPath->toString());
-				$oCtx->curctx->push('DelegationResizedImageWidth', imagesx($img));
-				$oCtx->curctx->push('DelegationResizedImageHeight', imagesy($img));
-				imageDestroy($img);
+				$imageSize = getImageSize($thumbnailPath->toString());
+				$oCtx->curctx->push('DelegationResizedImageWidth', $imageSize[0]);
+				$oCtx->curctx->push('DelegationResizedImageHeight', $imageSize[1]);
+
 
 				$bProcessed = true;
 			} else {
