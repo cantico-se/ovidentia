@@ -68,8 +68,15 @@ function validateDayField(field) {
 			}
 		}
 		
-		document.vacform.elements['total[D]'].value = total_days;
-		document.vacform.elements['total[H]'].value = total_hours;
+		if (document.vacform.elements['total[D]'])
+		{
+			document.vacform.elements['total[D]'].value = total_days;
+		}
+		
+		if (document.vacform.elements['total[H]'])
+		{
+			document.vacform.elements['total[H]'].value = total_hours;
+		}
 	}
 }
 
@@ -198,8 +205,11 @@ function rgroup_display(obj, str_dest) {
 			<td align="right">{ totaltxt } : </td>
 			<td>
 				<input type="text" name="total[D]" size="3" maxlength="5" value="{ total_days }" />j 
+				<!--#if contain_hours_rights -->
+				 { t_or } 
 				<input type="text" name="total[H]" size="3" maxlength="5" value="{ total_hours }" />h 
-				&nbsp; { period_infos }
+				<!--#endif contain_hours_rights -->
+				&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; { period_infos }
 			</td>
 		</tr>
 		<tr> 

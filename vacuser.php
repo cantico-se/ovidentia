@@ -132,7 +132,7 @@ function requestVacation($begin,$end, $id)
 			$this->username = bab_toHtml(bab_getUserName($this->id_user));
 			$this->t_days = bab_translate("working days");
 			$this->t_confirm_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period, do you really want to submit your request with this mismatch?"),BAB_HTML_JS);
-
+			$this->t_or = bab_translate('Or');
 
 
 			$date_begin = BAB_DateTime::fromIsoDateTime($begin);
@@ -157,8 +157,7 @@ function requestVacation($begin,$end, $id)
 			
 			$days = sprintf('<strong>%s</strong>', $days);
 			$hours = sprintf('<strong>%s</strong>', $hours);
-			$this->period_infos = sprintf(bab_translate('The period contain %s day(s) or %s hour(s)'), $days, $hours);
-
+			
 			$this->t_days = bab_translate("Day(s)");
 
 			
@@ -169,10 +168,17 @@ function requestVacation($begin,$end, $id)
 			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
 			$this->rights = array();
 			$rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user, $this->rfrom);
+			
+			$this->contain_hours_rights = false;
 
 
 			foreach($rights as $right) {
 				$id		= empty($right['id_rgroup']) ? 'r'.$right['id'] : 'g'.$right['id_rgroup'];
+				
+				if ('H' === $right['quantity_unit'])
+				{
+					$this->contain_hours_rights = true;
+				}
 
 				if (isset($this->rights[$id])) {
 					$this->rights[$id]['rights'][$right['id']] = array(
@@ -180,6 +186,7 @@ function requestVacation($begin,$end, $id)
 						'quantity_available'	=> $right['quantity_available'] - $right['waiting']
 					);
 					continue;
+					
 				} elseif(!empty($right['id_rgroup'])) {
 					$right['rights'] = array(
 						$right['id'] => array(
@@ -191,6 +198,17 @@ function requestVacation($begin,$end, $id)
 
 				$this->rights[$id] = $right;
 			}
+			
+			
+			if ($this->contain_hours_rights)
+			{
+				$this->period_infos = sprintf(bab_translate('The period contain %s day(s) or %s hour(s)'), $days, $hours);
+				
+			} else {
+				$this->period_infos = sprintf(bab_translate('The period contain %s day(s)'), $days);
+				
+			}
+			
 
 
 			if (!empty($this->id))
