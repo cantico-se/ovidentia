@@ -1035,7 +1035,7 @@ function addModifyVacationRigths($id = false)
 		}
 
 	$temp = new temp($id);
-	// $babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/prototype/prototype.js');
+
 	$babBody->addJavascriptFile($GLOBALS['babInstallPath'].'scripts/bab_dialog.js');
 	$babBody->addStyleSheet('vac_rights.css');
 	$babBody->babecho(bab_printTemplate($temp,"vacadma.html", "rightsedit"));
@@ -1371,13 +1371,13 @@ function updateVacationRight()
 
 	if( !is_numeric($post['quantity']))
 		{
-		$babBody->msgerror = bab_translate("You must specify a correct number days");
+		$babBody->msgerror = bab_translate("You must specify a correct quantity");
 		return false;
 		}
 
-	if( 0 === (int) $post['quantity'])
+	if( 0 > (int) $post['quantity'])
 		{
-		$babBody->msgerror = bab_translate("You must specify a correct number days");
+		$babBody->msgerror = bab_translate("You must specify a correct quantity");
 		return false;
 		}
 		

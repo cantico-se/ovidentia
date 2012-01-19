@@ -636,10 +636,11 @@ function group_delete_selected() {
 								var a1 = document.createElement('a');
 								a1.href='#';
 								a1.appendChild(document.createTextNode('{ t_period_start }'));
-								Event.observe(a1, 'click', function(evt) {
-									calwin(Event.element(evt));
-									Event.stop(evt);
-								}, false);
+								a1.onclick = function(event) {
+									calwin(this);
+									return false;
+								};
+								
 								p.appendChild(a1);
 								
 								var input1 = document.createElement('input');
@@ -650,10 +651,11 @@ function group_delete_selected() {
 								var a2 = document.createElement('a');
 								a2.href='#';
 								a2.appendChild(document.createTextNode('{ t_period_end }'));
-								Event.observe(a2, 'click', function(evt) {
-									calwin(Event.element(evt));
-									Event.stop(evt);
-								}, false);
+								a2.onclick = function(event) {
+									calwin(this);
+									return false;
+								};
+								
 								p.appendChild(a2);
 								
 								var input2 = document.createElement('input');
@@ -663,11 +665,10 @@ function group_delete_selected() {
 								
 								var a3 = document.createElement('a');
 								a3.href='#';
-								Event.observe(a3, 'click', function(evt) {
-									var clicked = Event.element(evt);
-									bab_vac_rights_inperiod_remove(clicked.parentNode.parentNode);
-									Event.stop(evt);
-								}, false);
+								a3.onclick = function(event) {
+									bab_vac_rights_inperiod_remove(this.parentNode);
+									return false;
+								};
 								
 								var img = document.createElement('img');
 								img.src = '{ babSkinPath }images/Puces/PuceDelete.png';
@@ -675,7 +676,7 @@ function group_delete_selected() {
 								a3.appendChild(img);
 								p.appendChild(a3);
 								
-								$('bab_vac_rights_inperiod_contener').appendChild(p);
+								document.getElementById('bab_vac_rights_inperiod_contener').appendChild(p);
 							}
 							
 							

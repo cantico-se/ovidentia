@@ -3299,6 +3299,7 @@
 <string id="%s waiting for approbation">%s en attente d'approbation</string>
 <string id="%s days or %s hours in period">%s jours ou %s heures dans la période</string>
 
+<string id="You must specify a correct quantity">Vous devez spécifier une quantité correcte</string>
 
 
 </fr>
