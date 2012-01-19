@@ -6221,7 +6221,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				$oCtx->curctx->push('ImageHeight', $iHeight);
 
 				// We reload the thumbnail image to get the real resized width and height.
-				$thumbnailPath = $T->getThumbnailPath($iWidth, $eiHeight);
+				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
 				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
 				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
