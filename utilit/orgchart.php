@@ -295,7 +295,29 @@ class bab_OrgChart extends bab_TreeView
 			$this->t_link =& $element->_link;
 			$this->t_linkEntity =& $element->_linkEntity;
 			$this->t_info =& $element->_info;
-			$this->t_nodeIcon =& $element->_icon;
+			
+			/* @var $T Func_Thumbnailer */
+			$T = @bab_functionality::get('Thumbnailer');
+			$thumbnailUrl = null;
+			
+			if ($T && $element->_icon) {
+				// The thumbnailer functionality is available.
+				require_once $GLOBALS['babInstallPath']."utilit/urlincl.php";
+				require_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+				$url = new bab_url($element->_icon);
+				$id = $url->__get('idu');
+				$width = $url->__get('width');
+				$height = $url->__get('height');
+				$direntry = bab_getDirEntry($id, BAB_DIR_ENTRY_ID);
+				
+				$photo = new bab_dirEntryPhoto($id);
+				if($photo->getData()){
+					$T->setSourceBinary($photo->getData(), $photo->lastUpdate());
+					$this->t_nodeIcon = $T->getThumbnail($width, $height);
+				}
+			}else{
+				$this->t_nodeIcon =& $element->_icon;
+			}
 			$this->_currentElement =& $element;
 			reset($this->_currentElement->_actions);
 			reset($this->_currentElement->_members);
