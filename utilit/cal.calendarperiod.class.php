@@ -398,7 +398,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			$endDate = $this->ts_end;
 			if ($this->ts_begin < $endDate) {
 				$p = clone $this;
-				$p->ts_end = $endDate;
+				//$p->ts_end = $endDate;
+				$p->setEndDate(BAB_DateTime::fromTimeStamp($endDate));
 				$return->addPeriod($p);
 			}
 			return $return; // 1 period 
@@ -406,7 +407,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 
 		if ($this->ts_begin < $endDate) {
 			$p = clone $this;
-			$p->ts_end = $endDate;
+			//$p->ts_end = $endDate;
+			$p->setEndDate(BAB_DateTime::fromTimeStamp($endDate));
 			$return->addPeriod($p);
 		}
 
@@ -415,15 +417,18 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 			$beginDate = $start;
 			$this->add($start, $duration);
 			$p = clone $this;
-			$p->ts_begin = $beginDate;
-			$p->ts_end = $start;
+			//$p->ts_begin = $beginDate;
+			$p->setBeginDate(BAB_DateTime::fromTimeStamp($beginDate));
+			//$p->ts_end = $start;
+			$p->setEndDate(BAB_DateTime::fromTimeStamp($start));
 			$return->addPeriod($p);
 		}
 
 		// add last period
 		if ($start < $this->ts_end) {
 			$p = clone $this;
-			$p->ts_begin = $start;
+			//$p->ts_begin = $start;
+			$p->setBeginDate(BAB_DateTime::fromTimeStamp($start));
 			$return->addPeriod($p);
 		}
 

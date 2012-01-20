@@ -567,6 +567,11 @@ var begindate = false;
 var firstclick = false;
 
 
+/**
+ * @param	string	str					ex : d.2012-05-07.1
+ * @param	int		period_position		0 : start of period
+ *										1 : end of period
+ */
 function decompose_date(str, period_position) {
 	tmp = str.split('.');
 	arr = tmp[1].split('-');
@@ -575,22 +580,24 @@ function decompose_date(str, period_position) {
 	r['month']	= arr[1];
 	r['day']	= arr[2];
 	
-	if (0 == period_position && 0 == tmp[2])
+	var type = 0 == tmp[2] ? 'AM' : 'PM';
+	
+	if (0 == period_position && 'AM' == type)
 	{
 		r['hour']	= '00:00:00';
 	}
 	
-	if (0 == period_position && 1 == tmp[2])
+	if (0 == period_position && 'PM' == type)
 	{
 		r['hour']	= '12:00:00';
 	}
 	
-	if (1 == period_position && 0 == tmp[2])
+	if (1 == period_position && 'AM' == type)
 	{
 		r['hour']	= '11:59:59';
 	}
 	
-	if (1 == period_position && 1 == tmp[2])
+	if (1 == period_position && 'PM' == type)
 	{
 		r['hour']	= '23:59:59';
 	}
@@ -612,16 +619,23 @@ function decompose_date(str, period_position) {
 				switch(period_position)
 				{
 				case 0:
-					if ((0 == tmp[2] && working_hours[i]['startHour'] < '11:59:59') || (1 == tmp[2] && working_hours[i]['startHour'] > '12:00:00'))
+					if (('AM' == type && working_hours[i]['startHour'] < '11:59:59') || ('PM' == type && working_hours[i]['startHour'] > '12:00:00'))
 					{
-						r['hour'] = working_hours[i]['startHour'];
+						if (r['hour'] == '12:00:00' || r['hour'] == '00:00:00' || r['hour'] > working_hours[i]['startHour'])
+						{
+							r['hour'] = working_hours[i]['startHour'];
+						}
+						
 					}
 					
 					break;
 				case 1:
-					if ((0 == tmp[2] && working_hours[i]['endHour'] < '11:59:59') || (1 == tmp[2] && working_hours[i]['endHour'] > '12:00:00'))
+					if (('AM' == type && working_hours[i]['endHour'] < '11:59:59') || ('PM' == type && working_hours[i]['endHour'] > '12:00:00'))
 					{
-						r['hour'] = working_hours[i]['endHour'];
+						if (r['hour'] == '23:59:59' || r['hour'] == '11:59:59' || r['hour'] < working_hours[i]['endHour'])
+						{
+							r['hour'] = working_hours[i]['endHour'];
+						}
 					}
 					break;
 				}

@@ -2964,8 +2964,6 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	
 	foreach($obj as $pe) {
 		
-		bab_debug(bab_shortDate($pe->ts_begin).' '.bab_shortDate($pe->ts_end).' '.$pe->getProperty('SUMMARY'));
-		
 		/*@var $pe bab_CalendarPeriod */
 		$group = $pe->split(12 * 3600);
 		foreach($group as $p) {
@@ -2978,11 +2976,18 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 				
 				$stack[$key][$type] = $p;
 
-				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key]->getCollection()), $type, $vacation_is_free)) {
+				if (!isset($index[$key]) || bab_vac_compare(get_class($index[$key][0]->getCollection()), $type, $vacation_is_free) || bab_vac_distinctPeriod($index[$key], $p)) {
 					
-					$index[$key] = $p;
 					
-					// ajdjust period according to selection
+					if (!isset($index[$key]))
+					{
+						$index[$key] = array();
+					}
+					
+					$index[$key][] = $p;
+					
+					
+					// ajust period according to selection
 					
 					if ($p->ts_begin < $dateb->getTimeStamp())
 					{
@@ -3008,8 +3013,24 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	return array($index, $is_free, $stack);
 }
 
-
-
+/**
+ * Test if the period $p do not overlap one of the periods of $periods
+ * @param array $periods
+ * @param bab_CalendarPeriod $p
+ * @return bool
+ */
+function bab_vac_distinctPeriod(Array $periods, bab_CalendarPeriod $p)
+{
+	foreach($periods as $test)
+	{
+		if ($test->ts_begin < $p->ts_end || $test->ts_end > $p->ts_begin)
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
 
 
 function bab_vac_group_insert($query, $exec = false) {
@@ -3057,7 +3078,10 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	list($index, $is_free, $stack) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
 	$previous = NULL;
 
-	foreach($index as $key => $p) {
+	foreach($index as $key => $period_list) {
+		
+		// just use the first period of morning or afternoon
+		$p = $period_list[0];
 
 		$ampm		= 'pm' === date('a',$p->ts_begin) ? 1 : 0;
 		$data		= $p->getData();
@@ -3431,13 +3455,13 @@ function bab_addCoManagerEntities(&$entities, $id_user) {
  */
 function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = false) {
 
+	
 	$days 	= 0.0;
 	$hours 	= 0.0;
 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
-	bab_debug(bab_shortDate($begin).' '.bab_shortDate($end));
-
+	
 	list($index, $is_free) = bab_vac_getHalfDaysIndex(
 		$id_user, 
 		BAB_DateTime::fromTimeStamp($begin), 
@@ -3448,14 +3472,20 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 	
 	
 
-	foreach($index as $key => $p) {
+	foreach($index as $key => $period_list) {
 
 		if (isset($is_free[$key])) {
 			$days 	+= 0.5;
-			$hours 	+= ($p->getDuration() / 3600);
+			
+			foreach($period_list as $p)
+			{
+				if ($p->getCollection() instanceof bab_WorkingPeriodCollection)
+				{
+					bab_debug($p->toHtml());
+					$hours 	+= ($p->getDuration() / 3600);
+				}
+			}
 		}
-		
-		
 	}
 
 	
