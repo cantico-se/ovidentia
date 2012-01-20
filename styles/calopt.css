@@ -7,6 +7,7 @@
 #bab_calopt_days td {
 	border:#000 1px solid;
 	cursor:pointer;
+	width:6px;
 }
 
 #bab_calopt_days .workinghours {
@@ -18,7 +19,9 @@
 	left:-9px;
 	top:-14px;
 	font-size:9px;
+	margin-right:-10px;
 }
+
 
 
 #bab_calopt_days .waiting {

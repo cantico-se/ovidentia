@@ -25,30 +25,54 @@
 					<h5>{ shortday }</h5>
 					<table id="bab_calopt_day_{ dayid }">
 						<tr>
-							<td><span>00</span></td>
-							<td><span>01</span></td>
-							<td><span>02</span></td>
-							<td><span>03</span></td>
-							<td><span>04</span></td>
-							<td><span>05</span></td>
-							<td><span>06</span></td>
-							<td><span>07</span></td>
-							<td><span>08</span></td>
-							<td><span>09</span></td>
-							<td><span>10</span></td>
-							<td><span>11</span></td>
-							<td><span>12</span></td>
-							<td><span>13</span></td>
-							<td><span>14</span></td>
-							<td><span>15</span></td>
-							<td><span>16</span></td>
-							<td><span>17</span></td>
-							<td><span>18</span></td>
-							<td><span>19</span></td>
-							<td><span>20</span></td>
-							<td><span>21</span></td>
-							<td><span>22</span></td>
-							<td><span>23</span></td>
+							<td title="00:00:00"><span>00</span></td>
+							<td title="00:30:00"></td>
+							<td title="01:00:00"><span>01</span></td>
+							<td title="01:30:00"></td>
+							<td title="02:00:00"><span>02</span></td>
+							<td title="02:30:00"></td>
+							<td title="03:00:00"><span>03</span></td>
+							<td title="03:30:00"></td>
+							<td title="04:00:00"><span>04</span></td>
+							<td title="04:30:00"></td>
+							<td title="05:00:00"><span>05</span></td>
+							<td title="05:30:00"></td>
+							<td title="06:00:00"><span>06</span></td>
+							<td title="06:30:00"></td>
+							<td title="07:00:00"><span>07</span></td>
+							<td title="07:30:00"></td>
+							<td title="08:00:00"><span>08</span></td>
+							<td title="08:30:00"></td>
+							<td title="09:00:00"><span>09</span></td>
+							<td title="09:30:00"></td>
+							<td title="10:00:00"><span>10</span></td>
+							<td title="10:30:00"></td>
+							<td title="11:00:00"><span>11</span></td>
+							<td title="11:30:00"></td>
+							<td title="12:00:00"><span>12</span></td>
+							<td title="12:30:00"></td>
+							<td title="13:00:00"><span>13</span></td>
+							<td title="13:30:00"></td>
+							<td title="14:00:00"><span>14</span></td>
+							<td title="14:30:00"></td>
+							<td title="15:00:00"><span>15</span></td>
+							<td title="15:30:00"></td>
+							<td title="16:00:00"><span>16</span></td>
+							<td title="16:30:00"></td>
+							<td title="17:00:00"><span>17</span></td>
+							<td title="17:30:00"></td>
+							<td title="18:00:00"><span>18</span></td>
+							<td title="18:30:00"></td>
+							<td title="19:00:00"><span>19</span></td>
+							<td title="19:30:00"></td>
+							<td title="20:00:00"><span>20</span></td>
+							<td title="20:30:00"></td>
+							<td title="21:00:00"><span>21</span></td>
+							<td title="21:30:00"></td>
+							<td title="22:00:00"><span>22</span></td>
+							<td title="22:30:00"></td>
+							<td title="23:00:00"><span>23</span></td>
+							<td title="23:30:00"></td>
 						</tr>
 					</table>
 					
@@ -110,14 +134,10 @@
 				}
 				
 				/**
-				 * @return int
+				 * @return string
 				 */
 				function bab_calopt_tdVal(td) {
-					span = td.childNodes[0];
-					while (span.nodeType != 1) {
-						span = span.nextSibling;
-					}
-					return bab_calopt_hourToInt(span.innerHTML);
+					return td.title;
 				}
 				
 				
@@ -131,13 +151,22 @@
 
 						val = bab_calopt_tdVal(tds[i]);
 						
+						if (tds[i].previousSibling)
+						{
+							prevtd = tds[i].previousSibling
+							while (prevtd && prevtd.nodeType != 1)
+								{
+								prevtd = prevtd.previousSibling;
+								}
+						}
+						
 						
 						if (null == currentval && 'selected' == tds[i].className) {
 							//start period
 							currentval = val;
 							currentstart = val;
 							
-						} else if (currentval+1 == val && 'selected' == tds[i].className) {
+						} else if (prevtd && currentval == bab_calopt_tdVal(prevtd) && 'selected' == tds[i].className) {
 							currentval = val;
 							
 						} else if (null != currentstart) {
@@ -217,24 +246,46 @@
 					
 					for (var i = 0 ; i <= 6; i++) {
 					
-						var field = document.getElementById('workinghours_'+i).value;
-						
-						if (field) {
+						var field = document.getElementById('workinghours_'+i).defaultValue;
+
+						if ('' != field) {
+							
 							var periods = field.split(',');
 							var table = document.getElementById('bab_calopt_day_'+i);
-							var tds = table.getElementsByTagName('td');
+							var td_list = table.getElementsByTagName('td');
+							var tds = new Object;
+							for (var k = 0; k < td_list.length; k++)
+								{
+								tds[td_list[k].title] = td_list[k];
+								}
 							
 							for(var j = 0; j < periods.length; j++) {
 								var hours = periods[j].split('-');
 	
-								var begin = hours[0].split(':');
-								var end = hours[1].split(':');
+								var begin = hours[0];
+								var end = hours[1];
 								
-								begin = bab_calopt_hourToInt(begin[0]);
-								end = bab_calopt_hourToInt(end[0])-1;
+								if (!tds[begin])
+									{
+									alert(begin);
+									return;
+									}
+								
+								if (!tds[end])
+								{
+									alert(end);
+									return;
+								}
 								
 								bab_calopt_click_td(tds[begin]);
-								bab_calopt_click_td(tds[end]);
+								
+								prev = tds[end].previousSibling;
+								while(prev.nodeType != 1)
+									{
+									prev = prev.previousSibling
+									}
+								
+								bab_calopt_click_td(prev);
 							}
 						}
 					}

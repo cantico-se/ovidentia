@@ -805,6 +805,7 @@ class bab_vac_saveVacation
 	 */
 	private static function addVacationRight(&$nbdays, Array $arr, $quantity, $id_request)
 	{
+		global $babBody;
 		$quantity = str_replace(',','.', $quantity);
 		
 		
@@ -828,7 +829,7 @@ class bab_vac_saveVacation
 		
 		
 		if (!empty($quantity) && $arr['cbalance'] != 'Y' && ($arr['quantity_available'] - $arr['waiting'] - $quantity) < 0) {
-			$babBody->addError(bab_translate("You can't take more than").' '.($arr['quantity_available']- $arr['waiting']).' '.bab_translate("days on the right").' '.$arr['description']);
+			$babBody->addError(bab_translate("You can't take more than").' '.bab_vac_quantity(($arr['quantity_available']- $arr['waiting']), $arr['quantity_unit']).' '.bab_translate("on the right").' '.$arr['description']);
 			return false;
 		}
 		
@@ -893,7 +894,10 @@ class bab_vac_saveVacation
 			if( isset($_POST['quantity'][$arr['id']]))
 			{
 				$quantity = $_POST['quantity'][$arr['id']];
-				self::addVacationRight($nbdays, $arr, $quantity, $id_request);
+				if (!self::addVacationRight($nbdays, $arr, $quantity, $id_request))
+				{
+					return false;
+				}
 			}
 	
 			if ($arr['id_rgroup'] > 0) {
@@ -909,7 +913,10 @@ class bab_vac_saveVacation
 					$quantity = $_POST['rgroup_value'][$id_rgroup];
 					$arr = $rights[$id_right];
 	
-					self::addVacationRight($nbdays, $arr, $quantity, $id_request);
+					if (!self::addVacationRight($nbdays, $arr, $quantity, $id_request))
+					{
+						return false;
+					}
 				}
 			}
 		}

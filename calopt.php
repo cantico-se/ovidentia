@@ -659,15 +659,15 @@ function updateCalOptions($startday, $starttime, $endtime, $allday, $usebgcolor,
 	  [0]=>
 	  string(0) ""
 	  [1]=>
-	  string(4) "8-18"
+	  string(4) "8:00:00-18:00:00"
 	  [2]=>
-	  string(4) "8-18"
+	  string(4) "8:00:00-12:00:00,13:00:00-18:00:00"
 	  [3]=>
-	  string(4) "8-18"
+	  string(4) "8:00:00-18:00:00"
 	  [4]=>
-	  string(4) "8-18"
+	  string(4) "8:00:00-18:00:00"
 	  [5]=>
-	  string(4) "8-18"
+	  string(4) "8:00:00-18:00:00"
 	  [6]=>
 	  string(0) ""
 	}

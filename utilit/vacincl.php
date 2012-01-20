@@ -3535,7 +3535,7 @@ function bab_vac_hoursList($id_user = null)
  */
 function bab_vac_quantity($quantity, $unit)
 {
-	if ('1.' === rtrim($quantity,'0'))
+	if ('1.' === rtrim($quantity,'0') || 100 === (int) round(100 * $quantity))
 	{
 		switch($unit) {
 			case 'D':
