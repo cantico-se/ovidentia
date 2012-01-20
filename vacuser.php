@@ -1012,6 +1012,8 @@ class bab_vac_saveVacation
 	
 		// insert rights
 	
+		if (isset($nbdays['id']))
+		{
 		for( $i = 0; $i < count($nbdays['id']); $i++)
 			{
 			$babDB->db_query("INSERT into ".BAB_VAC_ENTRIES_ELEM_TBL."
@@ -1024,7 +1026,7 @@ class bab_vac_saveVacation
 					)
 				");
 			}
-	
+		}
 	
 		// set period into calendar backend if necessary
 	
