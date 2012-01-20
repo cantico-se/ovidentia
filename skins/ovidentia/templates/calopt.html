@@ -147,14 +147,15 @@
 					var currentval = null;
 					var currentstart = null;
 					var periods = new Array();
+					var prevtd = null;
 					for(var i = 0; i < tds.length; i++) {
 
 						val = bab_calopt_tdVal(tds[i]);
 						
-						if (tds[i].previousSibling)
+						if (null != tds[i].previousSibling)
 						{
 							prevtd = tds[i].previousSibling
-							while (prevtd && prevtd.nodeType != 1)
+							while (null != prevtd && prevtd.nodeType != 1)
 								{
 								prevtd = prevtd.previousSibling;
 								}
@@ -166,7 +167,7 @@
 							currentval = val;
 							currentstart = val;
 							
-						} else if (prevtd && currentval == bab_calopt_tdVal(prevtd) && 'selected' == tds[i].className) {
+						} else if (null != prevtd && currentval == bab_calopt_tdVal(prevtd) && 'selected' == tds[i].className) {
 							currentval = val;
 							
 						} else if (null != currentstart) {
