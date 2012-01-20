@@ -295,29 +295,8 @@ class bab_OrgChart extends bab_TreeView
 			$this->t_link =& $element->_link;
 			$this->t_linkEntity =& $element->_linkEntity;
 			$this->t_info =& $element->_info;
+			$this->t_nodeIcon =& $element->_icon;
 			
-			/* @var $T Func_Thumbnailer */
-			$T = @bab_functionality::get('Thumbnailer');
-			$thumbnailUrl = null;
-			
-			if ($T && $element->_icon) {
-				// The thumbnailer functionality is available.
-				require_once $GLOBALS['babInstallPath']."utilit/urlincl.php";
-				require_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
-				$url = new bab_url($element->_icon);
-				$id = $url->__get('idu');
-				$width = $url->__get('width');
-				$height = $url->__get('height');
-				$direntry = bab_getDirEntry($id, BAB_DIR_ENTRY_ID);
-				
-				$photo = new bab_dirEntryPhoto($id);
-				if($photo->getData()){
-					$T->setSourceBinary($photo->getData(), $photo->lastUpdate());
-					$this->t_nodeIcon = $T->getThumbnail($width, $height);
-				}
-			}else{
-				$this->t_nodeIcon =& $element->_icon;
-			}
 			$this->_currentElement =& $element;
 			reset($this->_currentElement->_actions);
 			reset($this->_currentElement->_members);
@@ -563,7 +542,21 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 					$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
 					if ($member['role_type'] == 1) {
 						if (isset($dirEntry['jpegphoto']) && !empty($dirEntry['jpegphoto']['value'])) {
-							$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+							
+							/* @var $T Func_Thumbnailer */
+							$T = @bab_functionality::get('Thumbnailer');
+							
+							if ($T) {
+								// The thumbnailer functionality is available.
+
+								if(isset($dirEntry['jpegphoto']['photo'])){
+									$T->setSourceBinary($dirEntry['jpegphoto']['photo']->getData(), $dirEntry['jpegphoto']['photo']->lastUpdate());
+									$element->setIcon($T->getThumbnail(150, 150));
+								}
+							}else{
+								
+								$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+							}
 						}
 						$element->setInfo($memberName);
 						$element->setLink('javascript:'
