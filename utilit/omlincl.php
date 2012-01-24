@@ -8138,7 +8138,7 @@ class Func_Ovml_Function_FileTree extends Func_Ovml_Function {
 				$return.= '<li class="'.$nextStage['type'].'"><span class="unfold-fold"></span><a href="'.$nextStage['url'].'">'.$nextStage['name']."</a>";
 			}
 
-			if($nextStage['child'] != ''){
+			if(isset($nextStage['child']) && $nextStage['child'] != ''){
 				if(!($this->hidefirstnode && $firstLevel)){
 					$return.= '<ul>' . $this->generateUL($nextStage['child']) . '</ul>';
 				}else{

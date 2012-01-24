@@ -1441,6 +1441,7 @@ switch($idx)
 		if (!isset($backUrl)) {
 			// If the referer url is not available we go back to the article's topic page.
 			$backUrl = bab_url::request('tg');
+			$backUrl = new bab_url($backUrl);
 			$articles = $babDB->db_query("SELECT id_topic from ".BAB_ARTICLES_TBL." WHERE id=".$babDB->quote($article)." AND archive='N'");
 			$art = $babDB->db_fetch_assoc($articles);
 
