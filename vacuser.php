@@ -155,8 +155,6 @@ function requestVacation($begin,$end, $id)
 			 */
 			$this->last_hours = $hours;
 			
-			$days = sprintf('<strong>%s</strong>', $days);
-			$hours = sprintf('<strong>%s</strong>', $hours);
 			
 			$this->t_days = bab_translate("Day(s)");
 
@@ -198,6 +196,11 @@ function requestVacation($begin,$end, $id)
 
 				$this->rights[$id] = $right;
 			}
+			
+			
+			
+			$days = sprintf('<strong>%s</strong>', $days);
+			$hours = sprintf('<strong>%s</strong>', $hours);
 			
 			
 			if ($this->contain_hours_rights)
@@ -342,7 +345,7 @@ function requestVacation($begin,$end, $id)
 				$this->right['description'] = bab_toHtml($this->right['description']);
 				$this->right['waiting'] -= isset($this->current[$id]) ? $this->current[$id] : 0;
 				$this->right['quantity_available'] = $this->right['quantity_available'] - $this->right['waiting'];
-				$this->right['quantity_available'] = bab_toHtml(bab_vac_quantity($this->right['quantity_available'], $this->right['quantity_unit']));
+				$this->quantity_available = bab_toHtml(bab_vac_quantity($this->right['quantity_available'], $this->right['quantity_unit']));
 				
 				switch($this->right['quantity_unit'])
 				{
@@ -372,6 +375,7 @@ function requestVacation($begin,$end, $id)
 					{
 
 					$last = $this->last($this->right['quantity_unit']);
+					
 						
 					if ($last >= $this->right['quantity_available'])
 						{

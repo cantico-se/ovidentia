@@ -2909,11 +2909,18 @@ function bab_vac_is_free($collection) {
 
 
 /**
+ * Return arrays with periods for each half-day beetween two dates
+ * 
  * @param	int				$id_user
  * @param	BAB_dateTime	$begin
  * @param	BAB_dateTime	$end
  * @param	boolean			$vacation_is_free
  * @return array
+ * 				0 : working periods for each half-day
+ * 				1 : only the main period for each half day
+ * 				2 : free-busy status for each half day
+ * 				3 : periods indexed by type
+ * 
  */
 function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = false) {
 
@@ -2957,8 +2964,8 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 	$obj->createPeriods($criteria);
 	$obj->orderBoundaries();
 
-	// all periods for each half-day with no overlap, for sum of vacation period duration
-	$index = array();
+	// working periods for each half-day
+	$index_working = array();
 	
 	// only the main period for each half day
 	$index_reduced = array();
@@ -2984,8 +2991,12 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 				$stack[$key][$type] = $p;
 				
 				if (!isset($index_reduced[$key]) || bab_vac_compare(get_class($index_reduced[$key]->getCollection()), $type, $vacation_is_free)) {
+					
 					// overwrite reduced index if bab_vac_compare return true
+					
 					$index_reduced[$key] = $p;
+					
+					// and reset the free-busy status with the new period
 
 					if (bab_vac_is_free($collection)) {
 						$is_free[$key] = 1;
@@ -2994,17 +3005,16 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 					}
 				}
 				
-
-				if (!isset($index[$key]) || bab_vac_distinctPeriod($index[$key], $p)) {
-					
-					if (!isset($index[$key]))
+				
+				if ($p->getCollection() instanceof bab_WorkingPeriodCollection)
+				{
+					if (!isset($index_working[$key]))
 					{
-						$index[$key] = array();
+						$index_working[$key] = array();
 					}
 					
-					$index[$key][] = $p;
+					$index_working[$key][] = $p;
 				}
-				
 				
 				// ajust period according to selection
 				
@@ -3020,28 +3030,12 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 			}
 		}
 	}
-
-	return array($index, $index_reduced, $is_free, $stack);
-}
-
-/**
- * Test if the period $p do not overlap one of the periods of $periods
- * @param array $periods
- * @param bab_CalendarPeriod $p
- * @return bool
- */
-function bab_vac_distinctPeriod(Array $periods, bab_CalendarPeriod $p)
-{
-	foreach($periods as $test)
-	{
-		if ($test->ts_begin < $p->ts_end || $test->ts_end > $p->ts_begin)
-		{
-			return false;
-		}
-	}
 	
-	return true;
+	
+	return array($index_working, $index_reduced, $is_free, $stack);
 }
+
+
 
 
 function bab_vac_group_insert($query, $exec = false) {
@@ -3086,7 +3080,7 @@ function bab_vac_updateCalendar($id_user, $year, $month) {
 	$datee = $dateb->cloneDate();
 	$datee->add(1, BAB_DATETIME_MONTH);
 
-	list($index, $index_reduced, $is_free, $stack) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
+	list($index_working, $index_reduced, $is_free, $stack) = bab_vac_getHalfDaysIndex($id_user, $dateb, $datee);
 	$previous = NULL;
 
 	foreach($index_reduced as $key => $p) {
@@ -3470,32 +3464,30 @@ function bab_vac_getFreeDaysBetween($id_user, $begin, $end, $vacation_is_free = 
 	include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
 
 	
-	list($index, $index_reduced, $is_free) = bab_vac_getHalfDaysIndex(
+	list($index_working, $index_reduced, $is_free) = bab_vac_getHalfDaysIndex(
 		$id_user, 
 		BAB_DateTime::fromTimeStamp($begin), 
 		BAB_DateTime::fromTimeStamp($end),
 		$vacation_is_free
 	);
-	
-	
-	
 
-	foreach($index as $key => $period_list) {
+	foreach($index_working as $key => $period_list) {
 
 		if (isset($is_free[$key])) {
 			$days 	+= 0.5;
-			
+
 			foreach($period_list as $p)
 			{
 				if ($p->getCollection() instanceof bab_WorkingPeriodCollection)
 				{
-					bab_debug($p->toHtml());
 					$hours 	+= ($p->getDuration() / 3600);
 				}
 			}
 		}
 	}
 
+	
+	
 	
 	return array($days, round($hours, 2));
 }

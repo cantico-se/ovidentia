@@ -194,7 +194,7 @@ function rgroup_display(obj, str_dest) {
 							<input type="text" name="quantity[{ right[id] }]" size="5" maxlength="5" value="{ quantity }" onkeyup="validateDayField(this)" class="{ right[quantity_unit] }" /> { unit }
 						</td>
 						<td>{ right[description] }</td>
-						<td>{ right[quantity_available] }</td>
+						<td>{ quantity_available }</td>
 					</tr>
 					<!--#endif id_rgroup -->
 					<!--#endin getnextright -->
@@ -619,7 +619,7 @@ function decompose_date(str, period_position) {
 				switch(period_position)
 				{
 				case 0:
-					if (('AM' == type && working_hours[i]['startHour'] < '11:59:59') || ('PM' == type && working_hours[i]['startHour'] > '12:00:00'))
+					if (('AM' == type && working_hours[i]['startHour'] < '11:59:59') || ('PM' == type && working_hours[i]['startHour'] >= '12:00:00'))
 					{
 						if (r['hour'] == '12:00:00' || r['hour'] == '00:00:00' || r['hour'] > working_hours[i]['startHour'])
 						{
@@ -630,7 +630,7 @@ function decompose_date(str, period_position) {
 					
 					break;
 				case 1:
-					if (('AM' == type && working_hours[i]['endHour'] < '11:59:59') || ('PM' == type && working_hours[i]['endHour'] > '12:00:00'))
+					if (('AM' == type && working_hours[i]['endHour'] <= '11:59:59') || ('PM' == type && working_hours[i]['endHour'] > '12:00:00'))
 					{
 						if (r['hour'] == '23:59:59' || r['hour'] == '11:59:59' || r['hour'] < working_hours[i]['endHour'])
 						{
