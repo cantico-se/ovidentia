@@ -83,6 +83,11 @@ function validateDayField(field) {
 
 function daysToHours(days)
 {
+	if ({ period_nbdays } == 0)
+	{
+		return 0;
+	}
+	
 	var ratio = { period_nbhours } / { period_nbdays };	
 	return Math.round((ratio * days) * 100) / 100;
 }
@@ -90,6 +95,11 @@ function daysToHours(days)
 
 function hoursToDays(hours)
 {
+	if ({ period_nbhours } == 0)
+	{
+		return 0;
+	}
+	
 	var ratio = { period_nbdays } / { period_nbhours };	
 	return Math.round((ratio * hours) * 100) / 100;
 }
