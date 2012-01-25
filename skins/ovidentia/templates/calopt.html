@@ -137,7 +137,7 @@
 				 * @return string
 				 */
 				function bab_calopt_tdVal(td) {
-					return td.title;
+					return td.saved_date;
 				}
 				
 				
@@ -257,7 +257,9 @@
 							var tds = new Object;
 							for (var k = 0; k < td_list.length; k++)
 								{
+								td_list[k].saved_date = td_list[k].title;
 								tds[td_list[k].title] = td_list[k];
+								td_list[k].title = '';
 								}
 							
 							for(var j = 0; j < periods.length; j++) {
