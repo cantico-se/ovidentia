@@ -104,11 +104,11 @@ class bab_FileInfo extends SplFileInfo
 
 		$oFmFolderSet		= bab_getInstance('BAB_FmFolderSet');
 
-		$oNameField			= $oFolderFileSet->aField['sName'];
-		$oRelativePathField = $oFolderFileSet->aField['sRelativePath'];
-		$oIdDgOwnerField	= $oFolderFileSet->aField['iIdDgOwner'];
+		$oNameField			= $oFmFolderSet->aField['sName'];
+		$oRelativePathField = $oFmFolderSet->aField['sRelativePath'];
+		$oIdDgOwnerField	= $oFmFolderSet->aField['iIdDgOwner'];
 
-		$oCriteria = $oNameField->in($this->getFilename());
+				$oCriteria = $oNameField->in($this->getFilename());
 		$oCriteria = $oCriteria->_and($oRelativePathField->in(dirname($this->getFmPathname() . '/')));
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
 
