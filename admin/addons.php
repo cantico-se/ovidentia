@@ -476,6 +476,16 @@ class bab_addonPackage
 	{
 		$this->multiple = $multiple;
 		
+		if (!file_exists($GLOBALS['babUploadPath']))
+		{
+			throw new ErrorException('The upload directory is not accessible : '.$GLOBALS['babUploadPath']);
+		}
+		
+		if (!file_exists($GLOBALS['babUploadPath'].'/tmp'))
+		{
+			throw new ErrorException('The temporary folder is not accessible');
+		}
+		
 		
 		bab_setTimeLimit(0);
 		
