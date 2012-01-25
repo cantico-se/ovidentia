@@ -2093,7 +2093,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	/**
 	 * Set the delegation identifier of the file
 	 *
-	 * @param int $iId The delagation identifier
+	 * @param int $iId The delegation identifier
 	 */
 	function setDelegationOwnerId($iId)
 	{
@@ -2103,11 +2103,31 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	/**
 	 * Get the delegation identifier of the file
 	 *
-	 * @return int The delagation identifier 
+	 * @return int The delegation identifier 
 	 */
 	function getDelegationOwnerId()
 	{
 		return $this->_iGet('iIdDgOwner');
+	}
+
+	/**
+	 * Set the size of the file
+	 *
+	 * @param int $iId The size in bytes
+	 */
+	function setSize($iSize)
+	{
+		$this->_set('iSize', $iSize);
+	}
+
+	/**
+	 * Get the size of the file
+	 *
+	 * @return int The size in bytes
+	 */
+	function getSize()
+	{
+		return $this->_iGet('iSize');
 	}
 
 	/**
