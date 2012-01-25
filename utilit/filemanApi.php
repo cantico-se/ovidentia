@@ -126,7 +126,7 @@ class bab_FileInfo extends SplFileInfo
 	 */
 	private function getFolderFile()
 	{
-		$fmPathname = $this->getFmPathname(); /* Example : DG32/Espace/Répertoire/East.jpg */
+		$fmPathname = $this->getFmPathname(); /* Example : DG32/Espace/Rï¿½pertoire/East.jpg */
 		list($delegation) = explode('/', $fmPathname);
 		$iIdDelegation = (int)substr($delegation, strlen(BAB_FileManagerEnv::delegationPrefix)); /* Example : 32 */
 		$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
@@ -137,15 +137,15 @@ class bab_FileInfo extends SplFileInfo
 		$oGroup				= $oFolderFileSet->aField['sGroup'];
 
 		$oCriteria = $oNameField->in($this->getFilename()); /* Criteria to the name of the file */
-		/* Example of sPathName :        Espace/Répertoire/
-		 * Example of $fmPathname : DG32/Espace/Répertoire/East.jpg */
+		/* Example of sPathName :        Espace/Rï¿½pertoire/
+		 * Example of $fmPathname : DG32/Espace/Rï¿½pertoire/East.jpg */
 		$explodeTmp = explode('/', $fmPathname);
 		$pathTmp = '';
 		if (isset($explodeTmp[0])) {
 			array_shift($explodeTmp);
 			$pathTmp = implode('/', $explodeTmp);
 		}
-		$oCriteria = $oCriteria->_and($oPathName->in(dirname($pathTmp).'/')); /* Criteria to the path of the file, example : Espace/Répertoire/ */
+		$oCriteria = $oCriteria->_and($oPathName->in(dirname($pathTmp).'/')); /* Criteria to the path of the file, example : Espace/Rï¿½pertoire/ */
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation)); /* Criteria to the delegation of the file */
 		
 		return $oFolderFileSet->get($oCriteria);
@@ -1329,6 +1329,7 @@ class bab_Directory
 		$oFolderFile->setCommentVer('');
 		$oFolderFile->setStatusIndex($iIndexStatus);
 		$oFolderFile->setDelegationOwnerId($this->getDelegationId());
+		$oFolderFile->setSize(filesize($sFullPathName));
 		
 		if(false === $oFolderFile->save())
 		{
