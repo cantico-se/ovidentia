@@ -879,11 +879,18 @@ class bab_inifile_requirements {
 
 		$path = dirname(__FILE__) . '/../' . $value;
 		$path = realpath($path);
+		
+		if (false === $path)
+		{
+			// try with SCRIPT_FILENAME
+			
+			$path = dirname($_SERVER['SCRIPT_FILENAME']).'/'.$GLOBALS['babInstallPath'].$value;
+		}
 
 		$isWritable = is_writable($path);
 
 		return array(
-				'description'	=> bab_translate(sprintf('File %s is writable', $path)),
+				'description'	=> sprintf(bab_translate('File %s is writable'), $path),
 				'display_value' => bab_translate('Writable'),
 				'current'		=> $isWritable ? bab_translate('Writable') : bab_translate('Not writable'),
 				'result'		=> $isWritable === true

@@ -3301,5 +3301,6 @@
 
 <string id="You must specify a correct quantity">Vous devez spécifier une quantité correcte</string>
 
+<string id="File %s is writable">Le fichier %s est accessible en écriture</string>
 
 </fr>
