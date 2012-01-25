@@ -1329,6 +1329,7 @@ class bab_Directory
 		$oFolderFile->setCommentVer('');
 		$oFolderFile->setStatusIndex($iIndexStatus);
 		$oFolderFile->setDelegationOwnerId($this->getDelegationId());
+		$oFolderFile->setSize(filesize($sFullPathName));
 		
 		if(false === $oFolderFile->save())
 		{
