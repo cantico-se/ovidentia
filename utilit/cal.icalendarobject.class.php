@@ -708,14 +708,14 @@ class bab_CalAttendeeBackend
 	
 	
 	/**
-	 * 
-	 * @var bab_CalendarPeriod
+	 * event or alarm
+	 * @var bab_ICalendarObject
 	 */
 	private $period;
 
 	
 	
-	public function __construct(Array $attendee, bab_CalendarPeriod $period)
+	public function __construct(Array $attendee, bab_ICalendarObject $period)
 	{
 		$this->attendee = $attendee;
 		$this->period = $period;
