@@ -429,6 +429,8 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					{
 						$sRelativePath .= '/';
 					}
+					
+					
 
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
@@ -454,17 +456,37 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		return null;
 	}
 	
-	function getRootCollectiveFolder($sRelativePath)
+	
+	/**
+	 * Search the root collective folder from path name
+	 * warning, if delegation_id is not given, the selection will be made with current user delegation
+	 * 
+	 * 
+	 * @param 	string 	$sRelativePath
+	 * @param	int		$delegation_id
+	 * 
+	 * @return BAB_FmFolder|NULL
+	 */
+	function getRootCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
 		
+		if (null === $delegation_id)
+		{
+			$delegation_id = bab_getCurrentUserDelegation();
+		} 
+		
+		
 		$aPath = explode('/', $sRelativePath);
+		
 		if(is_array($aPath))
 		{
 			$iLength = count($aPath);
 			if($iLength >= 1)
 			{
+				
 				$sName = $aPath[0];
+				
 
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
@@ -474,7 +496,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				global $babDB;
 				$oCriteria = $oRelativePath->like($babDB->db_escape_like(''));
 				$oCriteria = $oCriteria->_and($oName->in($sName));
-				$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+				$oCriteria = $oCriteria->_and($oIdDgOwner->in($delegation_id));
 				$oFmFolder = $oFmFolderSet->get($oCriteria);
 
 				if(!is_null($oFmFolder))
@@ -2515,17 +2537,28 @@ class BAB_FmFolderHelper
 		return $bSuccess;
 	}
 
-	function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false)
+	/**
+	 * 
+	 * warning, if delegation_id is not given, the selection will be made with current user delegation (selected in file manager?)
+	 * 
+	 * @param string 			$sPath
+	 * @param int 				$iIdRootFolder		Value given by this method
+	 * @param BAB_FmFolder 		$oFmFolder			Value given by this method
+	 * @param bool 				$bParentPath		Optional
+	 * @param int				$delegation_id		Optional
+	 * @return boolean
+	 */
+	function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false, $delegation_id = null)
 	{
 		$bSuccess = false;
 		
-		$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($sPath);
+		$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($sPath, $delegation_id);
 		if(!is_null($oRootFmFolder))
 		{
 			$iIdRootFolder = $oRootFmFolder->getId();
 
 			$sRelativePath = canonizePath($sPath);
-
+			
 			$oFmFolder = null;
 
 			if(false === $bParentPath)
