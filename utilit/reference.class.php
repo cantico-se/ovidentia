@@ -583,6 +583,8 @@ class bab_FileReferenceDescription extends bab_ReferenceDescriptionImpl
  */
 class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
 {
+	private $folderInfos = null;
+	
 
 	public function getType()
 	{
@@ -602,12 +604,55 @@ class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
 	public function getDescription() {
 		return '';
 	}
+	
+	/**
+	 * @return array id_delegation, path
+	 */
+	protected function getPath() {
+		$fullpath = $this->getReference()->getObjectId();
+		$arr = explode('/', $fullpath);
+		
+		$id_delegation = 0;
+		
+		if (preg_match('/^DG(\d+)$/', $arr['0'], $m)) {
+			$id_delegation = (int) $m[1];
+			array_shift($arr);
+		}
+		
+		$path = implode('/', $arr);
+		
+		return array($id_delegation, $path);
+	}
 
 	/**
 	 * @return string
 	 */
 	public function getUrl() {
-		return '?tg=fileman&idx=list&gr=Y&path='.urlencode($this->getReference()->getObjectId());
+		
+		list($id_delegation, $path) = $this->getPath();
+		
+		list($iIdRootFolder, $oFmFolder) = $this->getFolder();
+		
+		return '?tg=fileman&idx=list&id='.$iIdRootFolder.'&gr=Y&path='.urlencode($path);
+	}
+	
+	/**
+	 * @return array $iIdRootFolder, $oFmFolder
+	 */
+	protected function getFolder() {
+		
+		if (null === $this->folderInfos)
+		{
+			require_once dirname(__FILE__).'/fmset.class.php';
+			require_once dirname(__FILE__).'/fileincl.php';
+			
+			list($id_delegation, $path) = $this->getPath();
+			BAB_FmFolderHelper::getInfoFromCollectivePath($path, $iIdRootFolder, $oFmFolder, false, $id_delegation);
+			
+			$this->folderInfos = array($iIdRootFolder, $oFmFolder);
+		}
+		
+		return $this->folderInfos;
 	}
 
 
@@ -617,12 +662,13 @@ class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
 	 */
 	public function isAccessValid() 
 	{
-		require_once dirname(__FILE__).'/fmset.class.php';
 		
-		BAB_FmFolderHelper::getInfoFromCollectivePath($this->getReference()->getObjectId(), $iIdRootFolder, $oFmFolder);
+		list($iIdRootFolder, $oFmFolder) = $this->getFolder();
 		
 		if (null === $oFmFolder)
 		{
+			list($id_delegation, $path) = $this->getPath();
+			bab_debug("Folder not found from path : $path (delegation : $id_delegation)");
 			return false;
 		}
 		

@@ -130,11 +130,27 @@ treeview.onSubmitTree = function()
 						break;
 					}
 				}
+				
+				// get root node ID, if this is a files tree view, root node is the delegation
+
+				var root = null;
+				var variant = element;
+				do {
+					variant = variant.parentNode;
+					if (variant.nodeName == 'LI' && variant.parentNode.nodeName == 'UL' && variant.parentNode.parentNode.nodeName != 'LI')
+						{
+						root = variant.id.split('.')[1];
+						break;
+						}
+					
+				} while(variant);
+				
 
 				var returnParameter = {
 					'type': element.className.split(' ')[1],
 					'id': input.parentNode.parentNode.parentNode.id.split('{ t_id_separator }')[1],
-					'content': element.firstChild.nodeValue
+					'content': element.firstChild.nodeValue,
+					'root': root
 				}
 				returnParameters.push(returnParameter);
 				returnParameters['param'] = returnParameters;
