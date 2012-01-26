@@ -6223,8 +6223,10 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
 
 				$bProcessed = true;
 			} else {
@@ -6309,8 +6311,10 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
 
 				$bProcessed = true;
 			} else {
@@ -6396,8 +6400,10 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
 
 				$bProcessed = true;
 			} else {
