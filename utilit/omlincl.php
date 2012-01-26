@@ -5217,18 +5217,18 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 						}
 					}
 				break;
-				
-				
+
+
 				case ($this instanceof Func_Ovml_Container_CalendarUserEvents):
-					
+
 					 $personal = bab_getICalendars()->getPersonalCalendar();
 					if (!$personal)
 					{
 					return array();
 					}
-					
+
 					$calendarid_list = array($personal->getUid() => 1);
-					
+
 				break;
 
 				default:
@@ -6223,8 +6223,10 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
 
 				$bProcessed = true;
 			} else {
@@ -6309,8 +6311,11 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
+
 
 				$bProcessed = true;
 			} else {
@@ -6396,9 +6401,10 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 				// We reload the thumbnail image to get the real resized width and height.
 				$thumbnailPath = $T->getThumbnailPath($iWidth, $iHeight);
 				$imageSize = getImageSize($thumbnailPath->toString());
-				$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
-				$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
-
+				if ($imageSize !== false) {
+					$oCtx->curctx->push('ResizedImageWidth', $imageSize[0]);
+					$oCtx->curctx->push('ResizedImageHeight', $imageSize[1]);
+				}
 				$bProcessed = true;
 			} else {
 				// If the thumbnailer was not available or not able to create a thumbnail,
