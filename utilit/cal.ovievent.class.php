@@ -1125,7 +1125,7 @@ class bab_cal_OviEventSelect
 				ce.start_date asc 
 		";
 		
-		// bab_debug($query);
+		//bab_debug($query);
 		
 		return $query;
 	}
@@ -1230,6 +1230,9 @@ class bab_cal_OviEventSelect
 			$where .= " AND ce.uuid IN(".$babDB->quote($uid_criteria).") 
 			";
 		}
+		
+		
+		
 		
 		$query = $this->getQuery($where);
 		$res = $babDB->db_query($query);
@@ -1525,27 +1528,39 @@ class bab_cal_OviEventSelect
 	 */
 	public function getFromUid($uid)
 	{
-		global $babDB;
 		
-		$query = $this->getQuery(" 
-			ce.uuid = ".$babDB->quote($uid)." 
-		");
 		
-		$res = $babDB->db_query($query);
-		$arr = $babDB->db_fetch_assoc($res);
+		// use a cache for mutiple calls on same UID
 		
-		if (!$arr)
+		static $cache = array();
+		
+		
+		if (!isset($cache[$uid]))
 		{
-			return null;
+			global $babDB;
+			
+			$query = $this->getQuery(" 
+				ce.uuid = ".$babDB->quote($uid)." 
+			");
+			
+			$res = $babDB->db_query($query);
+			$arr = $babDB->db_fetch_assoc($res);
+			
+			if (!$arr)
+			{
+				return null;
+			}
+			
+			require_once dirname(__FILE__).'/cal.periodcollection.class.php';
+			$collection = new bab_CalendarEventCollection; 
+			
+			$period = $this->createCalendarPeriod($arr, $collection);
+			$period->resetEvent();
+			
+			$cache[$uid] = $period;
 		}
 		
-		require_once dirname(__FILE__).'/cal.periodcollection.class.php';
-		$collection = new bab_CalendarEventCollection; 
-		
-		$period = $this->createCalendarPeriod($arr, $collection);
-		$period->resetEvent();
-		
-		return $period;
+		return $cache[$uid];
 	}
 	
 	

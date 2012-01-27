@@ -2299,6 +2299,8 @@ class bab_event_posted {
 
 		$calendars = $calendarPeriod->getCalendars();
 		$collection = bab_CalendarRRULE::getCollection($calendarPeriod);
+		
+		
 
 		$result = true;
 		foreach($collection as $period)
@@ -2308,6 +2310,8 @@ class bab_event_posted {
 				$result = false;
 			}
 		}
+		
+		
 
 		return $result;
 	}
@@ -2339,10 +2343,12 @@ class bab_event_posted {
 		$sdate = date('Y-m-d H:i:s', $period->ts_begin);
 		$edate = date('Y-m-d H:i:s', $period->ts_end);
 
+		
 
 		// working hours test
 
 		$whObj = bab_mcalendars::create_events($sdate, $edate, $calid);
+		
 		if ($period->getProperty('UID'))
 		{
 			if (!$whObj->setAvailability($period, true))
@@ -2351,12 +2357,14 @@ class bab_event_posted {
 				// it is possible when a new calendar is added to event
 			}
 		}
-
-
+		
+		
+		
+		
 		$AvaReply = $whObj->getAvailability();
 
-
-		$mcals = new bab_mcalendars($sdate, $edate, $calid);
+		
+		$mcals = new bab_mcalendars($sdate, $edate, $calid, $whObj);
 		foreach($AvaReply->conflicts_events as $calPeriod) {
 
 
@@ -2386,8 +2394,6 @@ class bab_event_posted {
 				}
 			}
 		}
-
-
 
 
 

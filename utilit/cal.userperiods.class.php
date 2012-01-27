@@ -355,7 +355,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		$event = new bab_eventBeforePeriodsCreated($this);
 		$this->processCriteria($this->criteria);
+		
+		$start = microtime(true);
+		
 		bab_fireEvent($event);
+		
+		$duration = microtime(true) - $start;
+		bab_debug(sprintf("createPeriods bab_fireEvent  : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
+		
 	}
 
 
@@ -390,9 +397,9 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	public function orderBoundaries() {
 
 		$this->vacationindex = array();
-
+		
 		// order by date
-		bab_sort::ksort($this->boundaries);
+		ksort($this->boundaries);
 
 		$previous = NULL;
 		foreach($this->boundaries as $ts => $arr) {
@@ -808,7 +815,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 * @return 	bab_availabilityReply
 	 */
 	public function getAvailability() {
-
+		
 		reset($this->boundaries);
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply();

@@ -292,10 +292,16 @@ class cal_monthCls extends cal_wmdbaseCls
 function cal_month($calids, $date)
 {
 	global $babBody;
+	
+	$start = microtime(true);
 
 	$temp = new cal_monthCls('view', $calids, $date);
 	$temp->prepare_events();
 	$temp->printout('calmonth.html', 'calmonth');
+	
+
+	$duration = microtime(true) - $start;
+	bab_debug(sprintf("Month view : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
 }
 
 

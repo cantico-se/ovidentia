@@ -40,10 +40,19 @@ class bab_mcalendars
 	var $idxcat = 0;
 
 
-
-	public function __construct($startdate, $enddate, $idcals)
+	/**
+	 * @param	string				$startdate	ISO datetime
+	 * @param	string				$enddate	ISO datetime
+	 * @param	array				$idcals		list of url identifier of calendars
+	 * @param	bab_UserPeriods		$whObj		optional user periods associated to previous parameters
+	 */
+	public function __construct($startdate, $enddate, $idcals, $whObj = null)
 	{
-		$whObj = self::create_events($startdate, $enddate, $idcals);
+		if (null === $whObj)
+		{
+			$whObj = self::create_events($startdate, $enddate, $idcals);
+		}
+		
 		$this->idcals = $idcals;
 		for ($i = 0; $i < count($this->idcals); $i++ ) {
 			$this->objcals[$this->idcals[$i]] = new bab_icalendar($whObj, $this->idcals[$i]);
@@ -310,6 +319,7 @@ class bab_mcalendars
 
 		$whObj->createPeriods($criteria);
 		$whObj->orderBoundaries();
+		
 
 		return $whObj;
 	}
