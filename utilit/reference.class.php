@@ -685,6 +685,11 @@ class bab_FolderReferenceDescription extends bab_ReferenceDescriptionImpl
 			return true;
 		}
 		
+		if (bab_isAccessValid(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId()))
+		{
+			return true;
+		}
+		
 		return bab_isAccessValid(BAB_FMMANAGERS_GROUPS_TBL, $oFmFolder->getId());
 	}
 }
