@@ -389,9 +389,9 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 
 	//--------------------------------------
-	function getFirstCollectiveParentFolder($sRelativePath)
+	function getFirstCollectiveParentFolder($sRelativePath, $delegation_id = null)
 	{
-		return BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sRelativePath));
+		return BAB_FmFolderSet::getFirstCollectiveFolder(removeLastPath($sRelativePath), $delegation_id);
 	}
 
 	/**
@@ -399,9 +399,14 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	 * @param unknown_type $sRelativePath
 	 * @return BAB_FmFolder
 	 */
-	function getFirstCollectiveFolder($sRelativePath)
+	function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
+		
+		if (null === $delegation_id)
+		{
+			$delegation_id = bab_getCurrentUserDelegation();
+		}
 		
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
@@ -434,7 +439,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
-					$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
+					$oCriteria = $oCriteria->_and($oIdDgOwner->in($delegation_id));
 					$oFmFolder = $oFmFolderSet->get($oCriteria);
 					if(!is_null($oFmFolder))
 					{
@@ -2563,11 +2568,11 @@ class BAB_FmFolderHelper
 
 			if(false === $bParentPath)
 			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath);
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath, $delegation_id);
 			}
 			else 
 			{
-				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($sRelativePath);
+				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($sRelativePath, $delegation_id);
 			}
 				
 			if(!is_null($oFmFolder))
