@@ -40,7 +40,7 @@ function imagesReplace($txt, $prefix, &$tab)
 		{
 		$arr = explode('/', $link);
 		$newfile = "";
-		if( $arr[sizeof($arr) -2] == "tmp" )
+		if( isset($arr[sizeof($arr) -2]) && $arr[sizeof($arr) -2] == "tmp" )
 			{
 			clearstatcache();
 			if( is_file(BAB_IUD_TMP.$arr[sizeof($arr) -1]) )
