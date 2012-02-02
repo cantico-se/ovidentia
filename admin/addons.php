@@ -1252,7 +1252,53 @@ function viewVersion()
 			
 			bab_sort::natcasesort($this->dirs);
 
+			
+			bab_debug($this->getMd5(realpath(dirname(__FILE__).'/../md5_file')));
 			}
+			
+			
+		/**
+		 * get list of differences
+		 * @param string $path
+		 *
+		 * @return string
+		 */
+		private function getMd5($file)
+		{
+			if (!file_exists($file))
+			{
+				return array();
+			}
+			
+			
+			
+			$arr = file($file);
+			$result = array();
+			
+			$root = realpath(dirname(__FILE__).'/..');
+
+			foreach ($arr as $line) {
+				
+				$md5 = substr($line, 0, 32);
+				$path = trim(substr($line, 33));
+				
+				$test = trim($root.$path);
+				
+				if (file_exists($test))
+				{
+					
+					if ($md5 !== md5_file($test))
+					{
+						$result[] = $path;
+					}
+				}
+			}
+		
+			return $result;
+		}
+		
+		
+		
 
 		function set_message()
 		{
