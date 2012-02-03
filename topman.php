@@ -35,9 +35,9 @@ function listCategories()
 	{
 
 	global $babBody;
-	
+
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
-	
+
 	$topicTree = new bab_ArticleTreeView('article_topics_tree' . BAB_ARTICLE_TREE_VIEW_MANAGE_TOPIC);
 	$topicTree->setAttributes(BAB_ARTICLE_TREE_VIEW_SHOW_TOPICS
 							| BAB_ARTICLE_TREE_VIEW_SELECTABLE_TOPICS
@@ -48,13 +48,13 @@ function listCategories()
 	$topicTree->setTopicsLinks($GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=%s");
 	$topicTree->order();
 	$topicTree->sort();
-	
+
 	$babBody->babecho($topicTree->printTemplate());
 
 	}
-	
-	
-	
+
+
+
 
 function listArticles($id)
 	{
@@ -142,16 +142,16 @@ function listArticles($id)
 			$this->siteid = $babBody->babsite['id'];
 
 			$this->homepagesurl = $GLOBALS['babUrlScript']."?tg=site&idx=modify&item=".$this->siteid;
-			
-			$req = "select at.*, adt.id_article, adt.id as id_draft, adt.id_author as id_author, public.id public, private.id private 
-					FROM ".BAB_ARTICLES_TBL." at 
-					LEFT JOIN ".BAB_ART_DRAFTS_TBL." adt 
-						ON at.id=adt.id_article 
-					LEFT JOIN ".BAB_HOMEPAGES_TBL." public 
-						ON public.id_site='".$babDB->db_escape_string($this->siteid)."' AND public.id_article=at.id AND public.id_group='2' 
-					LEFT JOIN ".BAB_HOMEPAGES_TBL." private 
-						ON private.id_site='".$this->siteid."' AND private.id_article=at.id AND private.id_group='1' 
-					WHERE at.id_topic='".$babDB->db_escape_string($id)."' and at.archive='N' 
+
+			$req = "select at.*, adt.id_article, adt.id as id_draft, adt.id_author as id_author, public.id public, private.id private
+					FROM ".BAB_ARTICLES_TBL." at
+					LEFT JOIN ".BAB_ART_DRAFTS_TBL." adt
+						ON at.id=adt.id_article
+					LEFT JOIN ".BAB_HOMEPAGES_TBL." public
+						ON public.id_site='".$babDB->db_escape_string($this->siteid)."' AND public.id_article=at.id AND public.id_group='2'
+					LEFT JOIN ".BAB_HOMEPAGES_TBL." private
+						ON private.id_site='".$this->siteid."' AND private.id_article=at.id AND private.id_group='1'
+					WHERE at.id_topic='".$babDB->db_escape_string($id)."' and at.archive='N'
 					ORDER by at.ordering asc, at.date_modification desc
 						";
 			$this->res = $babDB->db_query($req);
@@ -241,7 +241,7 @@ function listArticles($id)
 			}
 
 
-		function getnextfile() 
+		function getnextfile()
 			{
 			global $babDB;
 			if ($arr = $babDB->db_fetch_assoc($this->resfiles)) {
@@ -254,7 +254,7 @@ function listArticles($id)
 				return false;
 			}
 		}
-		
+
 		}
 
 	$temp = new temp($id);
@@ -321,7 +321,7 @@ function listOldArticles($id)
 				return false;
 
 			}
-		
+
 		}
 
 	$temp = new temp($id);
@@ -334,7 +334,7 @@ function viewArticle($article)
 
 	class temp
 		{
-	
+
 		var $content;
 		var $head;
 		var $arr = array();
@@ -362,7 +362,7 @@ function viewArticle($article)
 			$this->res			= $babDB->db_query($req);
 			$this->arr			= $babDB->db_fetch_array($this->res);
 			$this->sContent		= 'text/html; charset=' . bab_charset::getIso();
-			
+
 			if( bab_isUserTopicManager($this->arr['id_topic']))
 				{
 				include_once $GLOBALS['babInstallPath'].'utilit/editorincl.php';
@@ -370,12 +370,12 @@ function viewArticle($article)
 				$editor->setContent($this->arr['body']);
 				$editor->setFormat($this->arr['body_format']);
 				$this->content = $editor->getHtml();
-				
+
 				$editor = new bab_contentEditor('bab_article_head');
 				$editor->setContent($this->arr['head']);
 				$editor->setFormat($this->arr['head_format']);
 				$this->head = $editor->getHtml();
-				
+
 				}
 			else
 				{
@@ -436,12 +436,12 @@ function viewArticle($article)
 					$this->authorname = $arr['name'];
 					}
 				$this->commenttitle = $arr['subject'];
-				
+
 				$editor = new bab_contentEditor('bab_article_comment');
 				$editor->setContent($arr['message']);
 				$editor->setFormat($arr['message_format']);
 				$this->commentbody = $editor->getHtml();
-				
+
 				$this->delcomurl = $GLOBALS['babUrlScript']."?tg=topman&idx=viewa&delc=com&item=".$this->arr['id_topic']."&art=".$this->arr['id']."&idc=".$arr['id'];
 				$i++;
 				return true;
@@ -454,7 +454,7 @@ function viewArticle($article)
 				}
 			}
 		}
-	
+
 	$temp = new temp($article);
 	echo bab_printTemplate($temp,"topman.html", "articleview");
 	}
@@ -481,7 +481,7 @@ function deleteArticles($art, $item)
 			$items = "";
 			for($i = 0; $i < count($art); $i++)
 				{
-				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($art[$i])."'";	
+				$req = "select * from ".BAB_ARTICLES_TBL." where id='".$babDB->db_escape_string($art[$i])."'";
 				$res = $babDB->db_query($req);
 				if( $babDB->db_num_rows($res) > 0)
 					{
@@ -516,7 +516,7 @@ function orderArticles($id)
 	{
 	global $babBody;
 	class temp
-		{		
+		{
 		var $sorta;
 		var $sortd;
 		var $topicid;
@@ -556,8 +556,8 @@ function orderArticles($id)
 	$babBody->babecho(	bab_printTemplate($temp, "sites.html", "scripts"));
 	$babBody->babecho(	bab_printTemplate($temp,"topman.html", "articlesorder"));
 	}
-	
-	
+
+
 function viewArticleHistory($idart)
 {
 	global $babBodyPopup;
@@ -642,7 +642,7 @@ function viewArticleHistory($idart)
 						{
 						$bottom = $next;
 						}
-						
+
 					$url->pos = $bottom;
 					$this->bottomurl = bab_toHtml($url->toString());
 					$this->bottomname = "&gt;&gt;";
@@ -655,7 +655,7 @@ function viewArticleHistory($idart)
 				$req .= " limit ".$babDB->db_escape_string($pos).",".BAB_ART_MAXLOGS;
 				}
 
-			
+
 			$this->res = $babDB->db_query($req);
 			$this->count = $babDB->db_num_rows($this->res);
 			}
@@ -690,7 +690,7 @@ function viewArticleHistory($idart)
 			}
 
 		}
-		
+
 	global $babBody;
 
 	$temp = new temp($idart, (int) bab_rp('pos', 0));
@@ -736,7 +736,7 @@ function viewArticleProperties($item, $idart)
 					for ($i=0;$i<=$this->counttopics-1;$i++) {
 						$this->array_parent_topics[] = $babDB->db_fetch_assoc($this->restopics);
 					}
-					
+
 					/* Tree view popup when javascript is activated */
 					global $babSkinPath;
 					$this->urlimgselecttopic = $babSkinPath.'images/nodetypes/topic.png';
@@ -747,8 +747,8 @@ function viewArticleProperties($item, $idart)
 							$this->namecurrentparenttopic = $this->array_parent_topics[$i]['category'];
 						}
 					}
-					
-					
+
+
 					if( $arrart['totalf'] > 0 )
 						{
 						$this->warnfilemessage = bab_translate("Warning! If you change topic, you can lost associated documents");
@@ -825,7 +825,7 @@ function viewArticleProperties($item, $idart)
 				$this->invaliddate = bab_translate("ERROR: End date must be older");
 				$this->invaliddate = str_replace("'", "\'", $this->invaliddate);
 				$this->invaliddate = str_replace('"', "'+String.fromCharCode(34)+'",$this->invaliddate);
-				
+
 				$rr = $babDB->db_fetch_array($babDB->db_query("select restrict_access from ".BAB_TOPICS_TBL." where id='".$babDB->db_escape_string($arrart['id_topic'])."'"));
 				if( $arrart['restriction'] != '' || (isset($rr['restrict_access']) && $rr['restrict_access'] == 'Y'))
 					{
@@ -918,7 +918,11 @@ function viewArticleProperties($item, $idart)
 				{
 				$arr = $babDB->db_fetch_array($this->resgrp);
 				$this->grpid = $arr['id_group'];
-				$this->grpname = bab_getGroupName($arr['id_group']);
+				if ($this->grpid > BAB_ACL_GROUP_TREE) {
+					$this->grpid -= BAB_ACL_GROUP_TREE;
+				}
+				$this->grpname = bab_getGroupName($this->grpid);
+
 				if( in_array($this->grpid, $this->arrrest))
 					{
 					$this->grpcheck = 'checked';
@@ -1075,8 +1079,8 @@ function viewArticleProperties($item, $idart)
 		}
 
 	global $babBody, $babScriptPath;
-	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');	
-	
+	$babBody->addJavascriptFile($babScriptPath.'bab_dialog.js');
+
 	$temp = new temp($item, $idart);
 	$babBody->babPopup(bab_printTemplate($temp, "topman.html", "propertiesarticle"));
 	}
@@ -1089,7 +1093,7 @@ function siteHomePage0($id)
 	class temp0
 		{
 		var $create;
-	
+
 		var $moveup;
 		var $movedown;
 
@@ -1169,7 +1173,7 @@ function siteHomePage1($id)
 	class temp1
 		{
 		var $create;
-	
+
 		var $moveup;
 		var $movedown;
 
@@ -1456,7 +1460,7 @@ function unarchiveArticles($item, $aart)
 function saveOrderArticles($id, $listarts)
 	{
 	global $babBody, $babDB;
-	
+
 	$babDB->db_query("update ".BAB_ARTICLES_TBL." set ordering='0' where id_topic='".$babDB->db_escape_string($id)."'");
 	for($i=0; $i < count($listarts); $i++)
 		{
@@ -1477,7 +1481,7 @@ function saveArticleProperties()
 		$arrreq = array();
 
 		$arrart = $babDB->db_fetch_array($res);
-		if( isset($cdatep)) 
+		if( isset($cdatep))
 			{
 			$date_pub = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearpub - 1, $monthpub, $daypub, $timepub);
 			$arrreq[] = "date_publication='".$babDB->db_escape_string($date_pub)."'";
@@ -1487,7 +1491,7 @@ function saveArticleProperties()
 			$arrreq[] = "date_publication='0000-00-00 00:00'";
 			}
 
-		if( isset($cdatee)) 
+		if( isset($cdatee))
 			{
 			$date_end = sprintf("%04d-%02d-%02d %s:00", $ymin + $yearend - 1, $monthend, $dayend, $timeend);
 			$arrreq[] = "date_archiving='".$babDB->db_escape_string($date_end)."'";
@@ -1510,7 +1514,7 @@ function saveArticleProperties()
 
 			$arrreq[] = "restriction='".$babDB->db_escape_string($restriction)."'";
 			}
-		
+
 		if( $arrart['id_topic'] != $topicid )
 			{
 			$babDB->db_query("update ".BAB_COMMENTS_TBL." set id_topic='".$babDB->db_escape_string($topicid)."' where id_article='".$babDB->db_escape_string($idart)."' and id_topic='".$babDB->db_escape_string($topicid)."'");
@@ -1583,10 +1587,10 @@ function topman_init($item)
 
 function bab_removeDraft($art){
 	global $babDB;
-	
+
 	$req = "UPDATE ".BAB_ART_DRAFTS_TBL." SET id_article = 0, id_topic = 0 where id='".$babDB->db_escape_string($art)."'";
 	$babDB->db_query($req);
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=topman&idx=Articles&item=".bab_gp('item'));
 }
 
@@ -1734,8 +1738,8 @@ switch($idx)
 			echo bab_translate("Access denied");
 		}
 		exit;
-		
-		
+
+
 	case 'history';
 		if( $manager )
 		{
@@ -1751,7 +1755,7 @@ switch($idx)
 		}
 		exit;
 		break;
-	
+
 	case "propa":
 		if( $manager )
 		{
