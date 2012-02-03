@@ -405,6 +405,9 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 		if( $bLdapOk )
 		{
+			bab_debug($aEntries, DBG_TRACE, 'LDAP');
+			bab_debug($aUpdateAttributes, DBG_TRACE, 'LDAP');
+			
 			$isNew = false;
 			$iIdUser = $this->registerUserIfNotExist($sLogin, $sPassword, $aEntries, $aUpdateAttributes, $isNew);
 			if (false === $iIdUser)

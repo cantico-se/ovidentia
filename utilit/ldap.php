@@ -272,6 +272,8 @@ class babLDAP
 
 	function search($basedn, $filter, $attributes = array(), $attronly = 0, $sizelimit = 0)
 	{
+		bab_debug(sprintf("ldap search :\nbaseDN %s\nfilter %s\nattributes %s", $basedn, $filter, print_r($attributes, true)), DBG_TRACE, 'LDAP');
+		
 		$res = ldap_search($this->idlink, $basedn, $filter, $attributes, $attronly, $sizelimit);
 		if( $res === false )
 			{
