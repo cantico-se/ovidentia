@@ -99,7 +99,7 @@ function bab_formatSizeFile($size, $roundoff = true)
 
 
 /**
- * 
+ *
  * @param string $gr
  * @param int $id
  * @return bool
@@ -107,11 +107,11 @@ function bab_formatSizeFile($size, $roundoff = true)
 function bab_isAccessFileValid($gr, $id)
 {
 	global $babDB;
-	
+
 	$access = false;
-	
+
 	$ovgroups = bab_Groups::getGroups();
-	
+
 	if( $gr == "Y")
 	{
 		$res = $babDB->db_query("select id from ".BAB_FM_FOLDERS_TBL." where id ='".$babDB->db_escape_string($id)."' and active='Y'");
@@ -1103,7 +1103,7 @@ function saveUpdateFile($idf, $fmFile, $fname, $description, $keywords, $readonl
 
 /**
  * Get file array and access rights on the file
- * 
+ *
  */
 function fm_getFileAccess($idf)
 {
@@ -1149,7 +1149,7 @@ function fm_getFileAccess($idf)
 							}
 						}
 					}
-					
+
 					if(bab_isAccessValid(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId()))
 					{
 						$bdownload = true;
@@ -1457,7 +1457,7 @@ function fm_commitFile($idf, $comment, $vermajor, $fmFile/*, $filename = 'N'*/)
 			$oFolderFile->setCommentVer($comment);
 			$oFolderFile->setStatusIndex($index_status);
 			$oFolderFile->save();
-			
+
 			global $babDB;
 			$req = "
 				UPDATE ".BAB_FILES_TBL." set
@@ -1901,9 +1901,9 @@ class BAB_FileManagerEnv
 		else
 		{
 			$this->iIdObject = (int) bab_rp('id', 0);
-			
+
 			// autodetect id object from path
-			
+
 			if (0 === $this->iIdObject && !empty($this->sPath))
 			{
 				BAB_FmFolderHelper::getInfoFromCollectivePath($this->sPath, $iIdRootFolder, $oFmFolder);
@@ -2249,9 +2249,24 @@ function isStringSupportedByFileSystem($sName)
 }
 
 
-function canonizePath($sPath)
+/**
+ * Canonicalize the path given in parameter.
+ *
+ * @param string $sPath
+ */
+function canonicalizePath($sPath)
 {
 	return addEndSlash(removeEndSlashes($sPath));
+}
+
+/**
+ *
+ * @deprecated
+ * @see canonicalizePath
+ */
+function canonizePath($sPath)
+{
+	return canonicalizePath($sPath);
 }
 
 
@@ -2705,7 +2720,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		$oOwnerSrcFmFolder = null;
 		$bParentPath = true;
 
-		$sSrcPath = canonizePath($sSrcPath);
+		$sSrcPath = canonicalizePath($sSrcPath);
 
 		$bIsRootFolder = ('' === removeLastPath($sSrcPath));
 
@@ -2744,7 +2759,7 @@ function canPasteFolder($iIdSrcRootFolder, $sSrcPath, $bSrcPathIsCollective, $iI
 		{
 			$iIdRootFolder = 0;
 			$oOwnerTrgFmFolder = null;
-			$sTrgPath = canonizePath($sTrgPath);
+			$sTrgPath = canonicalizePath($sTrgPath);
 
 			$bIsRootFolder = ('' === removeLastPath($sTrgPath));
 
@@ -3003,7 +3018,7 @@ function isUserFolder($sPath, $oFileManagerEnv = null)
 	{
 		$oFileManagerEnv = getEnvObject();
 	}
-	
+
 	$sPathName = $oFileManagerEnv->getCurrentFmPath();
 
 	if(userHavePersonnalStorage() && is_dir($sPathName))
@@ -3240,12 +3255,12 @@ function bab_getUserFmVisibleDelegations()
  */
 function bab_FmFileCanDownload($id_file) {
 
-	
+
 	static $oFolderFileSet	= null;
 	static $oFolderSet		= null;
 	static $aAccessFolders	= array();
-	
-	
+
+
 	$oFmEnv 			= new BAB_FileManagerEnv;
 	$oFolderFileSet		= bab_getInstance('BAB_FolderFileSet');
 	$oFolderSet			= bab_getInstance('BAB_FmFolderSet');
@@ -3268,7 +3283,7 @@ function bab_FmFileCanDownload($id_file) {
 	$sGr			= $oFile->getGroup();
 
 	$uid = $iIdDelegation.$sGr.$sPathName;
-	
+
 	if (isset($aAccessFolders[$uid])) {
 		return $aAccessFolders[$uid];
 	}
@@ -3284,7 +3299,7 @@ function bab_FmFileCanDownload($id_file) {
 	{
 		$iIdObject = $oFolder->getId();
 	}
-	
+
 	if ('N' === $sGr)
 	{
 		$iIdObject = $GLOBALS['BAB_SESS_USERID'];
@@ -3294,7 +3309,7 @@ function bab_FmFileCanDownload($id_file) {
 	$oFmEnv->sPath		= BAB_PathUtil::removeEndSlashes($sPathName);
 	$oFmEnv->iIdObject	= $iIdObject;
 	$oFmEnv->init();
-	
+
 
 	$aAccessFolders[$uid] = canDownload($sPathName, $oFmEnv);
 	return $aAccessFolders[$uid];

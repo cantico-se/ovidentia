@@ -125,7 +125,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			'(' . implode(',', $aInto) . ') ' .
 			'VALUES ' .
 			'(' . implode(',', $aValue) . ') ';
-			
+
 //			bab_debug($sQuery);
 			$oResult = $babDB->db_queryWem($sQuery);
 			if(false !== $oResult)
@@ -137,20 +137,20 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 				}
 				return true;
 			}
-			else 
+			else
 			{
-				$sQuery = 
-					'UPDATE ' . 
+				$sQuery =
+					'UPDATE ' .
 						$this->sTableName . ' ' .
 					'SET ' .
 						implode(',', $aOnDuplicateKey) .
 					'WHERE ' . $this->aField['iId']->getName() . ' =\'' . $iId . '\'';
-			
+
 //				bab_debug($sQuery);
 				$oResult = $babDB->db_queryWem($sQuery);
 				return (false !== $oResult);
 			}
-			
+
 			//En MySql 3.23 cela ne marche pas
 			/*
 			$sQuery =
@@ -160,7 +160,7 @@ class BAB_BaseSet extends BAB_MySqlResultIterator
 			'(' . implode(',', $aValue) . ') ' .
 			'ON DUPLICATE KEY UPDATE ' .
 			implode(',', $aOnDuplicateKey);
-			
+
 //			bab_debug($sQuery);
 			$oResult = $babDB->db_query($sQuery);
 			if(false !== $oResult)
@@ -312,7 +312,7 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
 		{
 			$oFileManagerEnv =& getEnvObject();
-			
+
 			require_once $GLOBALS['babInstallPath'].'admin/acl.php';
 			aclDelete(BAB_FMUPLOAD_GROUPS_TBL, $oFmFolder->getId());
 			aclDelete(BAB_FMDOWNLOAD_GROUPS_TBL, $oFmFolder->getId());
@@ -327,28 +327,28 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					$oFirstFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($oFmFolder->getRelativePath());
 					$sPathName = $oFmFolder->getRelativePath() . $oFmFolder->getName() . '/';
 					$oFolderFileSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
-					
+
 					$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 					$oFmFolderCliboardSet->setOwnerId($sPathName, $oFmFolder->getId(), $oFirstFmFolder->getId());
 				}
-				
+
 				$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
 
 				$oIdOwner =& $oFolderFileSet->aField['iIdOwner'];
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
 				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
-				
+
 				$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 				$oCriteria = $oCriteria->_and($oIdOwner->in($oFirstFmFolder->getId()));
 				$oCriteria = $oCriteria->_and($oPathName->in($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/'));
 
 				$oFolderFileSet->select($oCriteria);
 				require_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
-				
+
 				while(null !== ($oFolderFile = $oFolderFileSet->next()))
 				{
 					deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
-					
+
 					$oFolderFile->setFlowApprobationInstanceId(0);
 					$oFolderFile->setConfirmed('Y');
 					$oFolderFile->save();
@@ -357,14 +357,14 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			else if(false === $bDbRecordOnly)
 			{
 				global $babDB, $babBody;
-				
+
 				$oPathName =& $oFolderFileSet->aField['sPathName'];
 				$oIdDgOwner =& $oFolderFileSet->aField['iIdDgOwner'];
-				
+
 				$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 				$oCriteria = $oCriteria->_and($oPathName->like($babDB->db_escape_like($oFmFolder->getRelativePath() . $oFmFolder->getName() . '/') . '%'));
 				$oFolderFileSet->remove($oCriteria);
-				
+
 				$sRootFmPath = BAB_FileManagerEnv::getCollectivePath($oFmFolder->getDelegationOwnerId());
 				$sFullPathName = $sRootFmPath . $oFmFolder->getRelativePath() . $oFmFolder->getName();
 				$this->removeDir($sFullPathName);
@@ -377,8 +377,8 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			return parent::remove($oId->in($oFmFolder->getId()));
 		}
 	}
-	
-	
+
+
 	function save(&$oFmFolder)
 	{
 		if(is_a($oFmFolder, 'BAB_FmFolder'))
@@ -395,19 +395,19 @@ class BAB_FmFolderSet extends BAB_BaseSet
 	}
 
 	/**
-	 * 
+	 *
 	 * @param unknown_type $sRelativePath
 	 * @return BAB_FmFolder
 	 */
 	function getFirstCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
-		
+
 		if (null === $delegation_id)
 		{
 			$delegation_id = bab_getCurrentUserDelegation();
 		}
-		
+
 		$aPath = explode('/', $sRelativePath);
 		if(is_array($aPath))
 		{
@@ -434,8 +434,8 @@ class BAB_FmFolderSet extends BAB_BaseSet
 					{
 						$sRelativePath .= '/';
 					}
-					
-					
+
+
 
 					$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath));
 					$oCriteria = $oCriteria->_and($oName->in($sFolderName));
@@ -460,38 +460,38 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Search the root collective folder from path name
 	 * warning, if delegation_id is not given, the selection will be made with current user delegation
-	 * 
-	 * 
+	 *
+	 *
 	 * @param 	string 	$sRelativePath
 	 * @param	int		$delegation_id
-	 * 
+	 *
 	 * @return BAB_FmFolder|NULL
 	 */
 	function getRootCollectiveFolder($sRelativePath, $delegation_id = null)
 	{
 		global $babBody;
-		
+
 		if (null === $delegation_id)
 		{
 			$delegation_id = bab_getCurrentUserDelegation();
-		} 
-		
-		
+		}
+
+
 		$aPath = explode('/', $sRelativePath);
-		
+
 		if(is_array($aPath))
 		{
 			$iLength = count($aPath);
 			if($iLength >= 1)
 			{
-				
+
 				$sName = $aPath[0];
-				
+
 
 				$oFmFolderSet = new BAB_FmFolderSet();
 				$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
@@ -545,33 +545,33 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			}
 		}
 	}
-	
+
 	function removeSimpleCollectiveFolder($sRelativePath)
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/pathUtil.class.php';
-			
+
 		//1 Chercher tous les repertoires collectifs
 		//2 Supprimer les repertoires collectifs
 		//3 Lister le contenu du repertoire a supprimer
 		//4 Pour chaque repertoire rappeler la fonction deleteSimpleCollectiveFolder
 		//5 Supprimer le repertoire
-		
+
 		global $babBody, $babDB;
-	
+
 		$oFileManagerEnv	=& getEnvObject();
 		$sUplaodPath		= BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($oFileManagerEnv->getRootFmPath()));
-	
+
 		$bDbRecordOnly	= false;
 		$oFmFolderSet	= new BAB_FmFolderSet();
 		$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
 		$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
 		$oName			=& $oFmFolderSet->aField['sName'];
-		
+
 		$sRelativePath = BAB_PathUtil::addEndSlash(BAB_PathUtil::sanitize($sRelativePath));
-		
+
 		$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
-	
+
 		$oFmFolderSet->select($oCriteria);
 		if($oFmFolderSet->count() > 0)
 		{
@@ -581,18 +581,18 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				bab_deleteFolder($oFolder->getId());
 			}
 		}
-	
+
 		$sFullPathName = $sUplaodPath . $sRelativePath;
-	
+
 		if(is_dir($sFullPathName))
 		{
 			$oFolderFileSet = new BAB_FolderFileSet();
 			$oName =& $oFolderFileSet->aField['sName'];
 			$oPathName =& $oFolderFileSet->aField['sPathName'];
 			$oIdDgOwnerFile =& $oFolderFileSet->aField['iIdDgOwner'];
-	
+
 			$oDir = dir($sFullPathName);
-			while(false !== ($sEntry = $oDir->read())) 
+			while(false !== ($sEntry = $oDir->read()))
 			{
 				if($sEntry == '.' || $sEntry == '..')
 				{
@@ -601,42 +601,42 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				else
 				{
 					$sFullPathName = $sUplaodPath . $sRelativePath . $sEntry;
-	
-					if(is_dir($sFullPathName)) 
+
+					if(is_dir($sFullPathName))
 					{
-						$this->removeSimpleCollectiveFolder($sRelativePath . $sEntry . '/');	
+						$this->removeSimpleCollectiveFolder($sRelativePath . $sEntry . '/');
 					}
 					else if(is_file($sFullPathName))
 					{
 						$oCriteria = $oName->in($sEntry);
 						$oCriteria = $oCriteria->_and($oPathName->in($sRelativePath));
 						$oCriteria = $oCriteria->_and($oIdDgOwnerFile->in(bab_getCurrentUserDelegation()));
-	
+
 						$oFolderFileSet->remove($oCriteria);
 					}
 				}
 			}
 			$oDir->close();
 			rmdir($sUplaodPath . $sRelativePath);
-			
+
 			$sName			= getLastPath($sRelativePath);
-			$sRelativePath	= removeLastPath($sRelativePath); 
+			$sRelativePath	= removeLastPath($sRelativePath);
 			if('' != $sRelativePath)
 			{
-				$sRelativePath = BAB_PathUtil::addEndSlash($sRelativePath); 
+				$sRelativePath = BAB_PathUtil::addEndSlash($sRelativePath);
 			}
-				
+
 			$oFmFolderCliboardSet = bab_getInstance('BAB_FmFolderCliboardSet');
 			$oFmFolderCliboardSet->deleteFolder($sName, $sRelativePath, 'Y');
 		}
 	}
-		
+
 	function rename($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 		if(BAB_FmFolderHelper::renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName))
 		{
 			global $babBody, $babBody;
-			
+
 			$sOldRelativePath = $sRelativePath . $sOldName . '/';
 			$sNewRelativePath = $sRelativePath . $sNewName . '/';
 
@@ -644,10 +644,10 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			$oFmFolderSet = new BAB_FmFolderSet();
 			$oRelativePath =& $oFmFolderSet->aField['sRelativePath'];
 			$oIdDgOwner =& $oFmFolderSet->aField['iIdDgOwner'];
-			
+
 			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
-			
+
 			$oFmFolderSet = $oFmFolderSet->select($oCriteria);
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
@@ -659,18 +659,18 @@ class BAB_FmFolderSet extends BAB_BaseSet
 		}
 		return false;
 	}
-	
-	
+
+
 	function move($sUploadPath, $sOldRelativePath, $sNewRelativePath)
 	{
 		$sSrc = removeEndSlah($sUploadPath . $sOldRelativePath);
 		$sTrg = removeEndSlah($sUploadPath . $sNewRelativePath);
-		
+
 		if(rename($sSrc, $sTrg))
 		{
 			global $babBody, $babDB;
 			$oFmFolderSet = new BAB_FmFolderSet();
-			
+
 			$oIdDgOwner		=& $oFmFolderSet->aField['iIdDgOwner'];
 			$oName			=& $oFmFolderSet->aField['sName'];
 			$oRelativePath	=& $oFmFolderSet->aField['sRelativePath'];
@@ -679,11 +679,11 @@ class BAB_FmFolderSet extends BAB_BaseSet
 			$sName = getLastPath($sOldRelativePath);
 			$sRelativePath = removeLastPath($sOldRelativePath);
 			$sRelativePath .= (mb_strlen(trim($sRelativePath)) !== 0 ) ? '/' : '';
-			
+
 			$oCriteria = $oIdDgOwner->in(bab_getCurrentUserDelegation());
 			$oCriteria = $oCriteria->_and($oName->in($sName));
 			$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
-			
+
 			$oFmFolder = $oFmFolderSet->get($oCriteria);
 			if(!is_null($oFmFolder))
 			{
@@ -692,11 +692,11 @@ class BAB_FmFolderSet extends BAB_BaseSet
 				$oFmFolder->setRelativePath($sNewRelPath);
 				$oFmFolder->save();
 			}
-			
+
 			//2 changer les sous repertoires
 			$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in($babBody->currentAdmGroup));
-			
+
 			$oFmFolderSet->select($oCriteria);
 			while(null !== ($oFmFolder = $oFmFolderSet->next()))
 			{
@@ -730,41 +730,41 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 			'sCheckSum' => new BAB_IntField('`sCheckSum`')
 		);
 	}
-	
+
 
 	function rename($sRelativePath, $sOldName, $sNewName, $sGr)
 	{
 		$iOffset = 2;
-		
+
 		global $babBody, $babDB, $BAB_SESS_USERID;
-		
+
 		$oFileManagerEnv =& getEnvObject();
-		
+
 		$oFmFolderCliboardSet = new BAB_FmFolderCliboardSet();
 		$oRelativePath	=& $oFmFolderCliboardSet->aField['sRelativePath'];
 		$oIdDgOwner		=& $oFmFolderCliboardSet->aField['iIdDgOwner'];
 		$oGroup			=& $oFmFolderCliboardSet->aField['sGroup'];
 		$oIdOwner		=& $oFmFolderCliboardSet->aField['iIdOwner'];
 		$oName			=& $oFmFolderCliboardSet->aField['sName'];
-		
+
 		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sRelativePath . $sOldName . '/') . '%');
-		
+
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		if('N' === $sGr)
 		{
 			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 		}
-		else 
+		else
 		{
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		}
-		
+
 		$oFmFolderCliboardSet->select($oCriteria);
 
 		$sRelPath = $sRelativePath . $sOldName . '/';
 		$iLength = mb_strlen(trim($sRelPath));
-		
+
 		while(null !== ($oFmFolderCliboard = $oFmFolderCliboardSet->next()))
 		{
 			$sBegin = mb_substr($oFmFolderCliboard->getRelativePath(), 0, $iLength);
@@ -787,7 +787,7 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 			}
 		}
 	}
-	
+
 	function setOwnerId($sPathName, $iOldIdOwner, $iNewIdOwner)
 	{
 		global $babBody, $babDB;
@@ -804,25 +804,25 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 			$oFmFolderCliboard->save();
 		}
 	}
-	
+
 	function deleteEntry($sName, $sRelativePath, $sGroup)
 	{
 		$oIdDgOwner		=& $this->aField['iIdDgOwner'];
 		$oGroup 		=& $this->aField['sGroup'];
 		$oName 			=& $this->aField['sName'];
 		$oRelativePath	=& $this->aField['sRelativePath'];
-		
+
 		$iDelegation = ('Y' === $sGroup) ? bab_getCurrentUserDelegation() : 0;
-		
+
 		global $babBody;
 		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oGroup->in($sGroup));
 		$oCriteria = $oCriteria->_and($oName->in($sName));
 		$oCriteria = $oCriteria->_and($oRelativePath->in($sRelativePath));
-		
+
 		$this->remove($oCriteria);
 	}
-	
+
 	function deleteFolder($sName, $sRelativePath, $sGroup)
 	{
 		$oIdDgOwner =& $this->aField['iIdDgOwner'];
@@ -830,22 +830,22 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		$oName =& $this->aField['sName'];
 		$oRelativePath =& $this->aField['sRelativePath'];
 		$oGroup =& $this->aField['sGroup'];
-		
+
 		$iDelegation = ('Y' === $sGroup) ? bab_getCurrentUserDelegation() : 0;
-		
+
 		global $babBody, $babDB;
 		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath . $sName . '/') . '%'));
 		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
 		$this->remove($oCriteria);
-		
+
 		$oCriteria = $oCriteria->_and($oName->in($sName));
 		$oCriteria = $oIdDgOwner->in($iDelegation);
 		$oCriteria = $oCriteria->_and($oRelativePath->like($babDB->db_escape_like($sRelativePath)));
 		$oCriteria = $oCriteria->_and($oGroup->in('Y'));
 		$this->remove($oCriteria);
 	}
-	
+
 	function move($sOldRelativePath, $sNewRelativePath, $sGr)
 	{
 		$oIdDgOwner		=& $this->aField['iIdDgOwner'];
@@ -853,9 +853,9 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		$oGroup 		=& $this->aField['sGroup'];
 		$oName 			=& $this->aField['sName'];
 		$oRelativePath	=& $this->aField['sRelativePath'];
-		
+
 		global $babBody, $babDB, $BAB_SESS_USERID;
-		
+
 		$oCriteria = $oRelativePath->like($babDB->db_escape_like($sOldRelativePath) . '%');
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
 		if('N' === $sGr)
@@ -863,11 +863,11 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(0));
 		}
-		else 
+		else
 		{
 			$oCriteria = $oCriteria->_and($oIdDgOwner->in(bab_getCurrentUserDelegation()));
 		}
-		
+
 		$aProcessedPath = array();
 		$iIdRootFolder = 0;
 		$this->select($oCriteria);
@@ -875,16 +875,16 @@ class BAB_FmFolderCliboardSet extends BAB_BaseSet
 		{
 			$sOldRelPath = $oFmFolderCliboard->getRelativePath();
 			$sNewRelPath = $sNewRelativePath . mb_substr($sOldRelPath, mb_strlen($sOldRelativePath));
-			
+
 			if(false === array_key_exists($sNewRelPath, $aProcessedPath))
 			{
 				if('Y' === $sGr)
 				{
 					$_oFmFolder = null;
-					BAB_FmFolderHelper::getInfoFromCollectivePath($sNewRelPath, $iIdRootFolder, $_oFmFolder);							
+					BAB_FmFolderHelper::getInfoFromCollectivePath($sNewRelPath, $iIdRootFolder, $_oFmFolder);
 					$iIdOwner = $_oFmFolder->getId();
 				}
-				else 
+				else
 				{
 					$iIdOwner = $BAB_SESS_USERID;
 				}
@@ -936,7 +936,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 
 	/**
 	 * Loads a file using its id.
-	 * 
+	 *
 	 * @param int $iFileId
 	 * @return BAB_FolderFile
 	 */
@@ -953,7 +953,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 	function remove($oCriteria)
 	{
 		$oFileManagerEnv =& getEnvObject();
-		
+
 		$sUploadPath = $oFileManagerEnv->getRootFmPath();
 
 		$this->select($oCriteria);
@@ -998,15 +998,15 @@ class BAB_FolderFileSet extends BAB_BaseSet
 	{
 		$oFileManagerEnv = getEnvObject();
 		$sUploadPath = $oFileManagerEnv->getCollectiveRootFmPath();
-		
+
 		$this->select($oCriteria);
-			
+
 		$oFolderFileLogSet = new BAB_FolderFileLogSet();
 		$oIdVersion =& $oFolderFileLogSet->aField['iIdFile'];
 
 		$oFolderFileVersionSet = new BAB_FolderFileVersionSet();
 		$oId =& $oFolderFileVersionSet->aField['iIdFile'];
-		
+
 		while(null !== ($oFolderFile = $this->next()))
 		{
 			$oFolderFileVersionSet->remove($oId->in($oFolderFile->getId()),
@@ -1017,11 +1017,11 @@ class BAB_FolderFileSet extends BAB_BaseSet
 				include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
 				deleteFlowInstance($oFolderFile->getFlowApprobationInstanceId());
 			}
-			
+
 			$oFolderFileLogSet->remove($oIdVersion->in($oFolderFile->getId()));
 		}
 	}
-	
+
 	function setOwnerId($sPathName, $iOldIdOwner, $iNewIdOwner)
 	{
 		$oPathName =& $this->aField['sPathName'];
@@ -1042,15 +1042,15 @@ class BAB_FolderFileSet extends BAB_BaseSet
 	function renameFolder($sRelativePath, $sNewName, $sGr)
 	{
 		$iOffset = 2; //pour le slash a la fin
-		
+
 		global $babBody, $babDB, $BAB_SESS_USERID;
-		
+
 		$oFolderFileSet	= new BAB_FolderFileSet();
 		$oPathName		=& $oFolderFileSet->aField['sPathName'];
 		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
 		$oGroup			=& $oFolderFileSet->aField['sGroup'];
 		$oIdOwner		=& $oFolderFileSet->aField['iIdOwner'];
-		
+
 		$oCriteria = $oPathName->like($babDB->db_escape_like($sRelativePath) . '%');
 		$oCriteria = $oCriteria->_and($oIdDgOwner->in( (('Y' === $sGr) ? bab_getCurrentUserDelegation() : 0) ));
 		$oCriteria = $oCriteria->_and($oGroup->in($sGr));
@@ -1058,7 +1058,7 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		{
 			$oCriteria = $oCriteria->_and($oIdOwner->in($BAB_SESS_USERID));
 		}
-		
+
 		$oFolderFileSet->select($oCriteria);
 
 		while(null !== ($oFolderFile = $oFolderFileSet->next()))
@@ -1083,12 +1083,12 @@ class BAB_FolderFileSet extends BAB_BaseSet
 			}
 		}
 	}
-	
-	
+
+
 	function move($sOldRelativePath, $sNewRelativePath, $sGr)
 	{
 		global $babBody, $babDB;
-		
+
 		$oFolderFileSet	= new BAB_FolderFileSet();
 		$oPathName		=& $oFolderFileSet->aField['sPathName'];
 		$oIdDgOwner		=& $oFolderFileSet->aField['iIdDgOwner'];
@@ -1104,14 +1104,14 @@ class BAB_FolderFileSet extends BAB_BaseSet
 		{
 			$sOldPathName = $oFolderFile->getPathName();
 			$sNewPathName = $sNewRelativePath . mb_substr($sOldPathName, mb_strlen($sOldRelativePath));
-			
+
 			if(false === array_key_exists($sNewPathName, $aProcessedPath))
 			{
 				$iIdRootFolder = 0;
 				$_oFmFolder = null;
-				BAB_FmFolderHelper::getInfoFromCollectivePath($sNewPathName, $iIdRootFolder, $_oFmFolder);							
+				BAB_FmFolderHelper::getInfoFromCollectivePath($sNewPathName, $iIdRootFolder, $_oFmFolder);
 				$iIdOwner = $_oFmFolder->getId();
-				
+
 				$aProcessedPath[$sNewPathName] = $iIdOwner;
 			}
 			$oFolderFile->setPathName($sNewPathName);
@@ -1269,7 +1269,7 @@ class BAB_DbRecord
 class BAB_FmFolderFile extends BAB_DbRecord
 {
 	function BAB_FmFolderFile() {
-		
+
 	}
 }
 
@@ -1418,7 +1418,7 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	/**
 	 * Activates or deactivates the download capping for this folder.
 	 * If capping is activated, the maximum number of downloads is set through setMaxDownloads
-	 * 
+	 *
 	 * @see setMaxDownloads
 	 * @param string	$sMaximumDownloads	'Y' to activate download capping for this folder, 'N' otherwise.
 	 */
@@ -1429,7 +1429,7 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
 	/**
 	 * Returns the download capping status for this folder.
-	 * 
+	 *
 	 * @return string 	'Y' if download capping is activated for this folder, 'N' otherwise.
 	 */
 	function getDownloadsCapping()
@@ -1439,8 +1439,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
 	/**
 	 * Setss the default maximum number of downloads for this folder.
-	 * 
-	 * @param int	$iMaxDownloads	The default maximum number of downloads for this folder. 
+	 *
+	 * @param int	$iMaxDownloads	The default maximum number of downloads for this folder.
 	 */
 	function setMaxDownloads($iMaxDownloads)
 	{
@@ -1449,8 +1449,8 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
 	/**
 	 * Returns the default maximum number of downloads for this folder.
-	 * 
-	 * @return int		The default maximum number of downloads for this folder. 
+	 *
+	 * @return int		The default maximum number of downloads for this folder.
 	 */
 	function getMaxDownloads()
 	{
@@ -1459,7 +1459,7 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
 	/**
 	 * Activates or deactivates the download history for this folder.
-	 * 
+	 *
 	 * @param string	$sDownloadHistory	'Y' to activate download history for this folder, 'N' otherwise.
 	 */
 	function setDownloadHistory($sDownloadHistory)
@@ -1469,7 +1469,7 @@ class BAB_FmFolder extends BAB_FmFolderFile
 
 	/**
 	 * Returns the download history activation status for this folder.
-	 * 
+	 *
 	 * @return string	'Y' if download history is activated for this folder, 'N' otherwise.
 	 */
 	function getDownloadHistory()
@@ -1498,7 +1498,7 @@ class BAB_FmFolder extends BAB_FmFolderFile
 	{
 		return $this->_sGet('bManualOrder');
 	}
-	
+
 
 	function save()
 	{
@@ -1775,7 +1775,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	 * Set the read only status of the file
 	 * 'Y' if the file is read only
 	 * 'N' if the file is not read only
-	 * 
+	 *
 	 * @param string $sReadOnly The read only flag of the file
 	 */
 	function setReadOnly($sReadOnly)
@@ -1787,7 +1787,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	 * Get the read only status of the file
 	 * 'Y' if the file is read only
 	 * 'N' if the file is not read only
-	 * 
+	 *
 	 * @return string 'Y' if the file is read only. 'N' if the file is not read only
 	 */
 	function getReadOnly()
@@ -1817,7 +1817,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 
 	/**
 	 * Set the creation date of the file in ISO
-	 * 
+	 *
 	 * @return string The ISO datetime
 	 */
 	function getCreationDate()
@@ -1866,7 +1866,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	}
 
 	/**
-	 * Set the user identifier of the file modifier 
+	 * Set the user identifier of the file modifier
 	 *
 	 * @param int $iIdModifier The user identifier of the file modifier
 	 */
@@ -1876,7 +1876,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	}
 
 	/**
-	 * Get the user identifier of the file modifier 
+	 * Get the user identifier of the file modifier
 	 *
 	 * @return int The user identifier of the file modifier
 	 */
@@ -1965,10 +1965,10 @@ class BAB_FolderFile extends BAB_FmFolderFile
 		return $this->_iGet('iMaxDownloads');
 	}
 
-	
+
 	/**
 	 * Checks if the file maximum download number has been reached.
-	 * 
+	 *
 	 * @return bool
 	 */
 	function downloadLimitReached()
@@ -1986,7 +1986,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 			return true;
 		}
 
-		return false;		
+		return false;
 	}
 
 
@@ -2012,9 +2012,9 @@ class BAB_FolderFile extends BAB_FmFolderFile
 
 	/**
 	 * Set the identifier of the file version.
-	 * 
+	 *
 	 * @see BAB_FolderFile::getFolderFileVersionId
-	 * 
+	 *
 	 * @param int $iIdFolderFileVersion The identifier of the file version
 	 */
 	function setFolderFileVersionId($iIdFolderFileVersion)
@@ -2027,10 +2027,10 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	 *
 	 * If the file is locked (by the user) the returned value
 	 * is the id of the file version table record (bab_fm_filesver).
-	 * 
+	 *
 	 * If the file is not locked getFolderFileVersionId returns 0
 	 *
-	 * @return int		The identifier of the file version record or 0. 
+	 * @return int		The identifier of the file version record or 0.
 	 */
 	function getFolderFileVersionId()
 	{
@@ -2130,7 +2130,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	/**
 	 * Get the delegation identifier of the file
 	 *
-	 * @return int The delegation identifier 
+	 * @return int The delegation identifier
 	 */
 	function getDelegationOwnerId()
 	{
@@ -2166,10 +2166,10 @@ class BAB_FolderFile extends BAB_FmFolderFile
 		$oFolderFileSet = new BAB_FolderFileSet();
 		$oFolderFileSet->save($this);
 	}
-	
+
 	/**
 	 * Returns the full pathname of the file
-	 * 
+	 *
 	 * @return string
 	 */
 	function getFullPathname()
@@ -2196,7 +2196,7 @@ class BAB_FolderFile extends BAB_FmFolderFile
 		$oCriteria = $oNameField->in($sRootFldName);
 		$oCriteria = $oCriteria->_and($oRelativePathField->in(''));
 		$oCriteria = $oCriteria->_and($oIdDgOwnerField->in($iIdDelegation));
-		
+
 		return $oFolderSet->get($oCriteria);
 	}
 
@@ -2205,26 +2205,26 @@ class BAB_FolderFile extends BAB_FmFolderFile
 	 * Get download url
 	 * @return string
 	 */
-	public function getDownloadUrl() 
+	public function getDownloadUrl()
 	{
 		if ('Y' === $this->getGroup())
 		{
-		
+
 			$oFolder = self::getRootFolder($this->getPathName(), $this->getDelegationOwnerId());
-	
+
 			if(!($oFolder instanceof BAB_FmFolder))
 			{
 				return null;
 			}
-			
+
 			$id = $oFolder->getId();
 		} else {
-			
+
 			if (!$GLOBALS['BAB_SESS_LOGGED'])
 			{
 				return null;
 			}
-			
+
 			$id = $GLOBALS['BAB_SESS_USERID'];
 		}
 		return $GLOBALS['babUrlScript'] . '?tg=fileman&id=' .$id. '&gr=' . $this->getGroup() . '&path=' . urlencode(removeEndSlashes($this->getPathName())).'&sAction=getFile&idf='.$this->getId();
@@ -2489,7 +2489,7 @@ class BAB_FolderFileFieldValue extends BAB_DbRecord
 
 
 //Il faudra couper cette classe en deux faire une classe de base
-//et deux classe d�riv�es. Une pour les repertoire simple et une
+//et deux classe derivees. Une pour les repertoire simple et une
 //pour les repertoire collectif
 class BAB_FmFolderHelper
 {
@@ -2498,10 +2498,14 @@ class BAB_FmFolderHelper
 
 	}
 
+	/**
+	 * @param int $iId
+	 * @return BAB_FmFolder
+	 */
 	function getFmFolderById($iId)
 	{
 		global $babBody;
-		
+
 		$oFmFolderSet = new BAB_FmFolderSet();
 		$oId =& $oFmFolderSet->aField['iId'];
 		return $oFmFolderSet->get($oId->in($iId));
@@ -2515,12 +2519,12 @@ class BAB_FmFolderHelper
 		if(!is_null($oFmFolder))
 		{
 			$iIdOwner = $oFmFolder->getId();
-			
+
 			if($oFmFolder->getName() === $sPath || '' === $sPath)
 			{
 				$sRelativePath = $oFmFolder->getName() . '/';
 			}
-			else 
+			else
 			{
 				$sRelativePath = $sPath . ((mb_substr($sPath, - 1) !== '/') ? '/' : '');
 
@@ -2543,9 +2547,9 @@ class BAB_FmFolderHelper
 	}
 
 	/**
-	 * 
+	 *
 	 * warning, if delegation_id is not given, the selection will be made with current user delegation (selected in file manager?)
-	 * 
+	 *
 	 * @param string 			$sPath
 	 * @param int 				$iIdRootFolder		Value given by this method
 	 * @param BAB_FmFolder 		$oFmFolder			Value given by this method
@@ -2556,25 +2560,25 @@ class BAB_FmFolderHelper
 	function getInfoFromCollectivePath($sPath, &$iIdRootFolder, &$oFmFolder, $bParentPath = false, $delegation_id = null)
 	{
 		$bSuccess = false;
-		
+
 		$oRootFmFolder = BAB_FmFolderSet::getRootCollectiveFolder($sPath, $delegation_id);
 		if(!is_null($oRootFmFolder))
 		{
 			$iIdRootFolder = $oRootFmFolder->getId();
 
-			$sRelativePath = canonizePath($sPath);
-			
+			$sRelativePath = canonicalizePath($sPath);
+
 			$oFmFolder = null;
 
 			if(false === $bParentPath)
 			{
 				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveFolder($sRelativePath, $delegation_id);
 			}
-			else 
+			else
 			{
 				$oFmFolder = BAB_FmFolderSet::getFirstCollectiveParentFolder($sRelativePath, $delegation_id);
 			}
-				
+
 			if(!is_null($oFmFolder))
 			{
 				$bSuccess = true;
@@ -2599,7 +2603,7 @@ class BAB_FmFolderHelper
 	{
 		global $babBody;
 		$bSuccess = true;
-		
+
 		bab_debug('(' . $sFullPathName . ')');
 		if(mb_strlen(trim($sFullPathName)) > 0 && preg_match('#^(|.*[/\\\\])\.\.(|[/\\\\].*)$#', $sFullPathName) === 0)
 		{
@@ -2634,7 +2638,7 @@ class BAB_FmFolderHelper
 				if(mb_strlen(trim($sPathItem)) !== 0)
 				{
 					$sPathItem = replaceInvalidFolderNameChar($sPathItem);
-					
+
 					$sPath .= '/' . $sPathItem;
 					if(!is_dir($sPath))
 					{
@@ -2649,15 +2653,15 @@ class BAB_FmFolderHelper
 		}
 		return false;
 	}
-	
+
 	/**
-	 * The $sPathName must be canonized before calling this function
+	 * The $sPathName must be canonicalized before calling this function
 	 */
 	function sanitizePathname(&$sPathname)
 	{
 		$sPathname	= removeEndSlashes($sPathname);
 		$aPaths		= explode('/', $sPathname);
-		
+
 		if(is_array($aPaths) && count($aPaths) > 0)
 		{
 			foreach($aPaths as $iKey => $sPathItem)
@@ -2667,15 +2671,15 @@ class BAB_FmFolderHelper
 					$aPaths[$iKey] = replaceInvalidFolderNameChar($sPathItem);
 				}
 			}
-			
+
 			$sPathname = implode('/', $aPaths);
-			
+
 			return addEndSlash($sPathname);
 		}
-		
+
 		return $sPathname;
 	}
-	
+
 	function renameDirectory($sUploadPath, $sRelativePath, $sOldName, $sNewName)
 	{
 		global $babBody;
@@ -2683,22 +2687,22 @@ class BAB_FmFolderHelper
 
 		$bOldNameValid = (mb_strlen(trim($sOldName)) > 0);
 		$bNewNameValid = (mb_strlen(trim($sNewName)) > 0 && ($sNewName !== '..'));
-		
+
 		if($bOldNameValid && $bNewNameValid)
 		{
 			$sOldPathName = '';
 			$sNewPathName = '';
 
-			$sUploadPath = canonizePath(realpath($sUploadPath));
+			$sUploadPath = canonicalizePath(realpath($sUploadPath));
 			if(mb_strlen(trim($sRelativePath)) > 0)
 			{
-				$sPathName		= canonizePath(realpath($sUploadPath . $sRelativePath));
-				$sOldPathName	= canonizePath(realpath($sPathName . $sOldName));
+				$sPathName		= canonicalizePath(realpath($sUploadPath . $sRelativePath));
+				$sOldPathName	= canonicalizePath(realpath($sPathName . $sOldName));
 				$sNewPathName	= $sPathName . $sNewName;
 			}
 			else
 			{
-				$sOldPathName	= canonizePath(realpath($sUploadPath . $sOldName));
+				$sOldPathName	= canonicalizePath(realpath($sUploadPath . $sOldName));
 				$sNewPathName	= $sUploadPath . $sNewName;
 			}
 

@@ -1177,8 +1177,8 @@ class bab_Directory
 			}
 			else
 			{
-				$sPath = canonizePath(removeLastPath($sSanitizedTrgPathName));
-				$oDirRenContext->setTrgPathName(canonizePath('DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName));
+				$sPath = canonicalizePath(removeLastPath($sSanitizedTrgPathName));
+				$oDirRenContext->setTrgPathName(canonicalizePath('DG' . $iIdTrgDelegation . '/' . $sPath . $sSrcName));
 				$oDirRenContext->setSanitizedTrgPathName($sPath . $sSrcName . '/');
 				$oDirRenContext->setTrgName($sSrcName);
 				$oDirRenContext->setTrgPath($sPath);
@@ -1498,7 +1498,7 @@ class bab_Directory
 		}
 		else
 		{
-			$oDirRenContext->setTrgPathName(canonizePath('DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName) . $sSrcName);
+			$oDirRenContext->setTrgPathName(canonicalizePath('DG' . $iIdTrgDelegation . '/' . $sSanitizedTrgPathName) . $sSrcName);
 			$oDirRenContext->setSanitizedTrgPathName($sSanitizedTrgPathName);
 			$oDirRenContext->setTrgName($sSrcName);
 			$oDirRenContext->setTrgPath($sSanitizedTrgPathName);
