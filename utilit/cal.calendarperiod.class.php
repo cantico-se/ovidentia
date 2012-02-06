@@ -56,7 +56,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * Non-iCal data
 	 * @var mixed
 	 */
-	private $data;
+	private $data = array();
 
 	
 	/**
@@ -235,8 +235,8 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	/**
 	 * @param mixed $data
 	 */
-	public function setData($data) {
-		$this->data = $data;
+	public function setData(Array $data) {
+		$this->data += $data;
 	}
 	
 	
@@ -478,6 +478,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	public function getAuthorId()
 	{
 		$data = $this->getData();
+		
 		if (isset($data['id_creator'])) {
 			return (int) $data['id_creator'];
 		}
