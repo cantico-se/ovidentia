@@ -1403,7 +1403,25 @@ switch($idx)
 		require_once dirname(__FILE__).'/utilit/arteditincl.php';
 		$form = new bab_ArticleDraftEditor;
 		$form->fromTopic(bab_rp('topics'));
-		$form->setBackUrl(bab_url::get_request('tg', 'topics'));
+		
+		$backUrl = null;
+		
+		if (!empty($_SERVER['HTTP_REFERER'])) {
+			$referer = new bab_url($_SERVER['HTTP_REFERER']);
+			$self = bab_url::get_request_gp();
+		
+			if ($referer->checksum() !== $self->checksum()) {
+				$backUrl = $referer;
+			}
+		}
+		
+		if (!isset($backUrl)) {
+			$backUrl = bab_url::get_request('tg', 'topics');
+		}
+		
+		$form->setBackUrl($backUrl);
+		
+		
 		$form->display();
 		break;
 
