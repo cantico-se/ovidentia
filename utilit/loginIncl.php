@@ -378,15 +378,22 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 					$sFilter = "(|(".ldap_escapefilter($babBody->babsite['ldap_attribute'])."=".ldap_escapefilter($sLogin)."))";
 				}
 
-				$aEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), $aAttributes);
+				$DnEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), array('dn'));
 
-				if($aEntries !== false && $aEntries['count'] > 0 && isset($aEntries[0]['dn']))
+				if($DnEntries !== false && $DnEntries['count'] > 0 && isset($DnEntries[0]['dn']))
 				{
 
-					if(false === $oLdap->bind($aEntries[0]['dn'], bab_ldapEncode($sPassword)))
+					if(false === $oLdap->bind($DnEntries[0]['dn'], bab_ldapEncode($sPassword)))
 					{
 						$this->addError(bab_translate("LDAP bind failed. Please contact your administrator"));
 						$bLdapOk = false;
+					} else {
+						
+						// the aEntries array contain the directory entry from a search done before the bind
+						// in some cases, the search is not allowed on all fields so a first search get the DN from search filter
+						// and the second search get the directory entry after the bind operation
+						
+						$aEntries = $oLdap->search(bab_ldapEncode($babBody->babsite['ldap_searchdn']), bab_ldapEncode($sFilter), $aAttributes);
 					}
 				}
 				else
