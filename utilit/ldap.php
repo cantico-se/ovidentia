@@ -304,6 +304,7 @@ class babLDAP
 			return $res;
 			}
 	}
+	
 
 	function first_entry($ri)
 	{
