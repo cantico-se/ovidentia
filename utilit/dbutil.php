@@ -124,6 +124,8 @@ class babDatabase
 			if('utf8' == bab_charset::getDatabase())
 			{
 				$this->db_query("SET NAMES utf8");
+			} else {
+				$this->db_query("SET NAMES latin1");
 			}			
 		}
 
