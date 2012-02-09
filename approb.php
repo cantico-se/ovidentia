@@ -862,7 +862,13 @@ function confirmWaitingVacation($id)
 			$this->remark = bab_toHtml($row['comment'], BAB_HTML_ALL);
 
 			list($this->totaldates_days, $this->totaldates_hours) = bab_vac_getFreeDaysBetween($this->id_user, $this->begin, $this->end, true);
-			$this->availability = sprintf(bab_translate('%s days or %s hours in period'), $this->totaldates_days, $this->totaldates_hours);
+			
+			if (0 === (int) round(100 * $this->totaldates_hours)) {
+				// pas d'heures travaillees 
+				$this->availability = sprintf(bab_translate('%s days in period'), $this->totaldates_days);
+			} else {
+				$this->availability = sprintf(bab_translate('%s days or %s hours in period'), $this->totaldates_days, $this->totaldates_hours);
+			}
 
 			$rights = bab_getRightsOnPeriod($row['date_begin'], $row['date_end'], $row['id_user']);
 			$this->negative = array();
@@ -913,6 +919,14 @@ function confirmWaitingVacation($id)
 
 		function getmatch()
 		{
+			// si aucun droit en heure, verifier que le nombre de jours pris corespond au nombre de jour de la periode
+			if (0 === round(100 * $this->totalval['H']))
+			{
+				// pour les demi-jours, une precision d'un chiffre apres la virgule suffi
+				$this->nomatch = !(round(10 * $this->totalval['D']) === round(10 * $this->totaldates_days));
+				return false;
+			}
+			
 			// jours non pris (doit etre occupe par les heures)
 			$days1 = $this->totaldates_days - $this->totalval['D'];
 			

@@ -3302,5 +3302,6 @@
 <string id="You must specify a correct quantity">Vous devez spécifier une quantité correcte</string>
 
 <string id="File %s is writable">Le fichier %s est accessible en écriture</string>
+<string id="%s days or %s hours in period">%s jours ou %s heures dans la période</string>
 
 </fr>
