@@ -941,7 +941,7 @@ class bab_vac_saveVacation
 			$babDB->db_query("
 				INSERT INTO
 					".BAB_VAC_ENTRIES_TBL."
-					(id_user, date_begin, date_end, comment, date, idfai)
+					(id_user, date_begin, date_end, comment, date, idfai, status)
 				values
 					(
 						'" . $babDB->db_escape_string($id_user) . "',
@@ -949,7 +949,8 @@ class bab_vac_saveVacation
 						'" . $babDB->db_escape_string($date_end->getIsoDateTime()) . "',
 						'" . $babDB->db_escape_string($remarks) . "',
 						curdate(),
-						'0'
+						'0',
+						'Y'
 					)
 			");
 			$id = $babDB->db_insert_id();
@@ -991,8 +992,9 @@ class bab_vac_saveVacation
 					date_begin	= '".$babDB->db_escape_string($date_begin->getIsoDateTime())."',
 					date_end	= '".$babDB->db_escape_string($date_end->getIsoDateTime())."',
 					comment		= '".$babDB->db_escape_string($remarks)."',
-					date = curdate(),
-					idfai = '0'
+					date 		= curdate(),
+					idfai 		= '0',
+					status 		= 'Y' 
 				WHERE
 					id='".$babDB->db_escape_string($id_request)."'
 				");
@@ -1061,35 +1063,30 @@ class bab_vac_saveVacation
 	
 				$nfusers = getWaitingApproversFlowInstance($idfai, true);
 	
-	
-	
 				if (empty($nfusers))
 				{
 					// if no approvers, delete instance
-					deleteFlowInstance($idfai);
-					$idfai = 0;
-					$status = 'Y';
-				}
-	
-				$babDB->db_query("
-					UPDATE
-						".BAB_VAC_ENTRIES_TBL."
-					SET
-						idfai=".$babDB->quote($idfai).",
-						status=".$babDB->quote($status)."
-					WHERE
-						id=".$babDB->quote($id)
-				);
-	
-	
-				if (!empty($nfusers))
+					deleteFlowInstance($idfai);	
+				} 
+				else 
 				{
+					$babDB->db_query("
+							UPDATE
+							".BAB_VAC_ENTRIES_TBL."
+							SET
+							idfai=".$babDB->quote($idfai).",
+							status=".$babDB->quote($status)."
+							WHERE
+							id=".$babDB->quote($id)
+					);
+					
 					notifyVacationApprovers($id, $nfusers, !empty($id_request));
 				}
 	
 			}
 		else
 			{
+			// creation or modification of a vacation request without approbation
 			notifyOnRequestChange($id);
 			}
 		return true;
