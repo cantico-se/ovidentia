@@ -2955,7 +2955,7 @@ function bab_vac_getHalfDaysIndex($id_user, $dateb, $datee, $vacation_is_free = 
 		// the user personal calendar is not accessible
 		// create an instance only for vacations
 		
-		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($GLOBALS['BAB_SESS_USERID']);
+		$calendar = bab_functionality::get('CalendarBackend')->PersonalCalendar($id_user);
 	}
 	
 	
