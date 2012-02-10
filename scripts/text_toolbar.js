@@ -135,13 +135,13 @@ function EditorOnInsertFiles(files)
 				var path = file.id.split(':');
 				path.shift();
 				delegation = file.root.substr(1);
-				var ref = 'ovidentia:///files/folder/DG'+ delegation+ '/' + encodeURIComponent(path.join('/')); 
+				var ref = 'ovidentia:///files/folder/DG'+ delegation+ '/' + escape(path.join('/')); 
 				break;
 				
 			case 'personnalfolder':
 				var path = file.id.split(':');
 				path.shift();
-				var ref = 'ovidentia:///files/personnalfolder/' + encodeURIComponent(path.join('/'));
+				var ref = 'ovidentia:///files/personnalfolder/' + escape(path.join('/'));
 				break;
 		}
 		
