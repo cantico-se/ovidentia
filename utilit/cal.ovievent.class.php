@@ -1336,7 +1336,20 @@ class bab_cal_OviEventSelect
 	}
 	
 	
-	
+	private function getInboxBackends($users)
+	{
+		global $babDB;
+		
+		$backend =array();
+		
+		$res = $babDB->db_query('SELECT calendar_backend FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).') GROUP BY calendar_backend');
+		while ($arr = $babDB->db_fetch_assoc($res))
+		{
+			$backend[$arr['calendar_backend']] = $arr['calendar_backend'];
+		}
+		
+		return $backend;
+	}
 	
 	
 	
@@ -1367,6 +1380,7 @@ class bab_cal_OviEventSelect
 			{
 				case $criterion instanceof bab_PeriodCriteriaCalendar:
 				case $criterion instanceof bab_PeriodCriteriaCollection:
+					// ignore
 					break;
 					
 				default:
@@ -1377,6 +1391,7 @@ class bab_cal_OviEventSelect
 		
 		
 		// get the inbox
+		
 		
 		$users = array();
 		foreach($calendars as $calendar)
@@ -1390,8 +1405,28 @@ class bab_cal_OviEventSelect
 		$queries = array();
 		$inbox_calendars = array();
 		
+		$backends = $this->getInboxBackends($users);
 		
-		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
+		if (1 === count($backends) && isset($backends['Ovi']))
+		{
+			// dans le cas "tout ovidentia" filtrer la inbox par la date de recherche
+			$query = 'SELECT * 
+				FROM 
+					bab_cal_inbox i,
+					bab_cal_events e  
+				WHERE 
+					e.uuid = i.uid 
+					AND i.id_user IN('.$babDB->quote($users).') 
+					AND e.start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
+					AND e.end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).' 
+					
+			';
+		} else {
+			$query = 'SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')';
+		}
+		
+		
+		$res = $babDB->db_query($query);
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
 			if ('' !== $arr['parent_calendar'])
@@ -1427,7 +1462,10 @@ class bab_cal_OviEventSelect
 				continue;
 			}
 			
+			$start = microtime(true);
 			$periods = $backend->selectPeriods($inbox_criteria);
+			$duration = microtime(true) - $start;
+			bab_debug(sprintf("INBOX selectPeriods  : %s s (%d results)", round($duration,3), $periods->count()), DBG_TRACE, 'Statistics');
 			
 			$found = false;
 			foreach($periods as $p)
@@ -1643,7 +1681,7 @@ class bab_cal_OviEventSelect
 		}
 		
 		if ($userperiods->isPeriodCollection('bab_InboxEventCollection')) {
-			$this->setInboxPeriods($userperiods); 
+			$this->setInboxPeriods($userperiods);
 		}
 	
 		if ($userperiods->isPeriodCollection($tsk_collection) && $users) {
