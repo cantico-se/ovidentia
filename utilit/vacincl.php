@@ -648,7 +648,7 @@ function viewVacationCalendar($users, $period = false )
 			global $babBody;
 
 			include_once $GLOBALS['babInstallPath']."utilit/dateTime.php";
-
+			include_once $GLOBALS['babInstallPath']."utilit/urlincl.php";
 
 			$month = isset($_REQUEST['month']) ? $_REQUEST['month'] : Date("n");
 			$year = isset($_REQUEST['year']) ? $_REQUEST['year'] : Date("Y");
@@ -698,7 +698,7 @@ function viewVacationCalendar($users, $period = false )
 
 			$this->nbmonth = bab_rp('nbmonth',12);
 
-			$urltmp = $GLOBALS['babUrlScript']."?tg=".$_REQUEST['tg']."&amp;idx=".$_REQUEST['idx']."&amp;id=".$this->id_request;
+			$urltmp = bab_url::get_request_gp();
 			$this->nwd_color = 'FFFFFF';
 			
 			if( $GLOBALS['babBody']->babsite['id_calendar_cat'] != 0)
@@ -710,48 +710,52 @@ function viewVacationCalendar($users, $period = false )
 					$this->nwd_color = $idcat[0]['color'];
 				}
 			}
-			
-
 
 			if (!empty($_REQUEST['popup']))
 				{
-				$urltmp .= '&amp;popup=1';
 				$this->popup = true;
 				}
 
-			if (isset($_REQUEST['ide']))
+			if (!isset($_REQUEST['ide']))
 				{
-				$urltmp .= '&amp;ide='.$_REQUEST['ide'];
-				}
-			else
-				{
-				$urltmp .= '&amp;idu='.implode(',',$this->idusers);
+				$urltmp->idu = implode(',',$this->idusers);
 				}
 
+			$switchurl = clone $urltmp;
+				
 			if (1 == $this->nbmonth) {
-				$this->switchurl = $urltmp.'&amp;nbmonth=12';
+				
+				$switchurl->nbmonth = 12;
+				$this->switchurl = $switchurl->toString();
 				$this->switchlabel = bab_translate("Year view");
 			} else {
-				$this->switchurl = $urltmp.'&amp;nbmonth=1';
+				$switchurl->nbmonth = 1;
+				$this->switchurl = $switchurl->toString();
 				$this->switchlabel = bab_translate("Month view");
 			}
 
-			$urltmp .= '&amp;nbmonth='.$this->nbmonth;
+			$urltmp->nbmonth = $this->nbmonth;
 			
-			if (1 == bab_rp('rfrom', 0)) {
-				$urltmp .= '&amp;rfrom='.bab_rp('rfrom');
-			}
+			
+			$previousmonth = clone $urltmp;
+			$previousmonth->month = date("n", mktime( 0,0,0, $month-1, 1, $year));
+			$previousmonth->year = date("Y", mktime( 0,0,0, $month-1, 1, $year));
+			$this->previousmonth	= $previousmonth->toString();
+			
+			$nextmonth = clone $urltmp;
+			$nextmonth->month = date("n", mktime( 0,0,0, $month+1, 1, $year));
+			$nextmonth->year = date("Y", mktime( 0,0,0, $month+1, 1, $year));
+			$this->nextmonth = $nextmonth->toString();
 
-
-			$this->previousmonth	= $urltmp."&amp;month=".date("n", mktime( 0,0,0, $month-1, 1, $year));
-			$this->previousmonth	.= "&amp;year=".date("Y", mktime( 0,0,0, $month-1, 1, $year));
-			$this->nextmonth		= $urltmp."&amp;month=". date("n", mktime( 0,0,0, $month+1, 1, $year));
-			$this->nextmonth		.= "&amp;year=". date("Y", mktime( 0,0,0, $month+1, 1, $year));
-
-			$this->previousyear		= $urltmp."&amp;month=".date("n", mktime( 0,0,0, $month, 1, $year-1));
-			$this->previousyear		.= "&amp;year=".date("Y", mktime( 0,0,0, $month, 1, $year-1));
-			$this->nextyear			= $urltmp."&amp;month=". date("n", mktime( 0,0,0, $month, 1, $year+1));
-			$this->nextyear			.= "&amp;year=". date("Y", mktime( 0,0,0, $month, 1, $year+1));
+			$previousyear = clone $urltmp;
+			$previousyear->month = date("n", mktime( 0,0,0, $month, 1, $year-1));
+			$previousyear->year = date("Y", mktime( 0,0,0, $month, 1, $year-1));
+			$this->previousyear = $previousyear->toString();
+			
+			$nextyear = clone $urltmp;
+			$nextyear->month = date("n", mktime( 0,0,0, $month, 1, $year+1));
+			$nextyear->year = date("Y", mktime( 0,0,0, $month, 1, $year+1));
+			$this->nextyear = $nextyear->toString();
 
 			if( $month != 1 )
 				{
