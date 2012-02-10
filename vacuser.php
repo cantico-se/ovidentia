@@ -817,39 +817,35 @@ function addNewVacation()
 
 
 
-	if ($id_user == $GLOBALS['BAB_SESS_USERID'] || $rfrom == 1)
-		{
-			$idfai = makeFlowInstance($row['id_sa'], "vac-".$id );
-			$status = '';
-			setFlowInstanceOwner($idfai, $id_user);
+	
+	$idfai = makeFlowInstance($row['id_sa'], "vac-".$id );
+	$status = '';
+	setFlowInstanceOwner($idfai, $id_user);
 
-			$nfusers = getWaitingApproversFlowInstance($idfai, true);
+	$nfusers = getWaitingApproversFlowInstance($idfai, true);
 
-			if (empty($nfusers))
-			{
-				// if no approvers, delete instance
-				deleteFlowInstance($idfai);
-			}
-			else
-			{
-				$babDB->db_query("
-						UPDATE
-						".BAB_VAC_ENTRIES_TBL."
-						SET
-						idfai=".$babDB->quote($idfai).",
-						status=".$babDB->quote($status)."
-						WHERE
-						id=".$babDB->quote($id)
-				);
-			
-				notifyVacationApprovers($id, $nfusers, !empty($id_request));
-			}
-
-		}
-	else
-		{
+	if (empty($nfusers))
+	{
+		// if no approvers, delete instance
+		deleteFlowInstance($idfai);
 		notifyOnRequestChange($id);
-		}
+	}
+	else
+	{
+		$babDB->db_query("
+				UPDATE
+				".BAB_VAC_ENTRIES_TBL."
+				SET
+				idfai=".$babDB->quote($idfai).",
+				status=".$babDB->quote($status)."
+				WHERE
+				id=".$babDB->quote($id)
+		);
+	
+		notifyVacationApprovers($id, $nfusers, !empty($id_request));
+	}
+
+		
 	return true;
 }
 
