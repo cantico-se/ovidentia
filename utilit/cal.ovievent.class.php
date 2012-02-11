@@ -1465,7 +1465,6 @@ class bab_cal_OviEventSelect
 			$start = microtime(true);
 			$periods = $backend->selectPeriods($inbox_criteria);
 			$duration = microtime(true) - $start;
-			bab_debug(sprintf("INBOX selectPeriods  : %s s (%d results)", round($duration,3), $periods->count()), DBG_TRACE, 'Statistics');
 			
 			$found = false;
 			foreach($periods as $p)
