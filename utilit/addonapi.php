@@ -2326,10 +2326,15 @@ function bab_canCurrentUserUpdateUser($userId) {
 		return false;
 	}
 
+	// Mantis #1867
+	// this test was used from 7.5.91 to 7.7.3
+
+	/*
 	if (bab_isUserOutOfDelegation($dg, $userId))
 	{
 		return false;
 	}
+	*/
 
 	return true;
 }
