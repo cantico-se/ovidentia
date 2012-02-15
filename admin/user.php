@@ -789,7 +789,7 @@ switch($idx) {
 			
 			if (!bab_canCurrentUserUpdateUser($item))
 			{
-				$babBody->addError(bab_translate('Access denied, a user associated to a group out of delegation cannot be modified'));
+				$babBody->addError(bab_translate('Access denied'));
 				break;
 			}
 			
