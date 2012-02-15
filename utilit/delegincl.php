@@ -207,12 +207,13 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
  * Test if a user is member of a delegation
  * if the id_user not given, the current user is used
  * 
- * @since 7.4.0
+ * @since 7.4.0	The user must be attached to the group
+ * @since 7.7.4 The user must be attached to the group or one of the sub-group (BUGM #1867)
  * 
  * @param int $id_delegation
  * @param int $id_user
  * 
- * @return bool
+ * @return bool 
  */
 function bab_isUserInDelegation($id_delegation, $id_user = null)
 {
@@ -227,27 +228,9 @@ function bab_isUserInDelegation($id_delegation, $id_user = null)
 		$id_user = $GLOBALS['BAB_SESS_USERID'];
 	}
 	
+	$deleg = bab_getDelegationById($id_delegation);
 	
-	$res = $babDB->db_query('
-		SELECT 
-			d.*   
-		
-		FROM 
-			'.BAB_USERS_GROUPS_TBL.' ug,
-			'.BAB_DG_GROUPS_TBL.' d 
-		WHERE 
-			(
-				d.id_group = ug.id_group 
-				OR d.id_group='.$babDB->quote(BAB_REGISTERED_GROUP).' 
-				OR d.id_group='.$babDB->quote(BAB_ALLUSERS_GROUP).'
-			) 
-			AND ug.id_object = '.$babDB->quote($id_user).'
-			AND d.id = '.$babDB->quote($id_delegation).'
-		
-		ORDER BY name 
-	');
-	
-	return ($babDB->db_num_rows($res) !== 0);
+	return bab_isMemberOfTree($deleg[0]['id_group'], $id_user);
 }
 
 
