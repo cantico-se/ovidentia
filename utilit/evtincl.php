@@ -1956,7 +1956,7 @@ class bab_event_posted {
 
 
 
-		if( $begin->getTimeStamp() > $end->getTimeStamp())
+		if( $begin->getTimeStamp() >= $end->getTimeStamp())
 			{
 			$msgerror = bab_translate("End date must be older");
 			return false;
