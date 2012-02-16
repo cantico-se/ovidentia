@@ -124,34 +124,12 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 */
 	public function setDates(BAB_DateTime $begin, BAB_DateTime $end) {
 		
-		$this->setBeginDate($begin);
-		$this->setEndDate($end); 
-		
-		return $this;
-	}
-	
-	/**
-	 * @param BAB_DateTime $begin
-	 * @param bab_CalendarPeriod
-	 */
-	public function setBeginDate(BAB_DateTime $begin) {
-		
 		$this->ts_begin = $begin->getTimeStamp();
-		$this->setProperty('DTSTART', $begin->getICal());
-		
-		return $this;
-	}
-	
-	
-	/**
-	 * @param BAB_DateTime $end
-	 * @param bab_CalendarPeriod
-	 */
-	public function setEndDate(BAB_DateTime $end) {
-	
 		$this->ts_end = $end->getTimeStamp();
+		
+		$this->setProperty('DTSTART', $begin->getICal());
 		$this->setProperty('DTEND', $end->getICal());
-	
+		
 		return $this;
 	}
 	
@@ -236,7 +214,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * @param mixed $data
 	 */
 	public function setData($data) {
-		$this->data = $data;
+		$this->data = array_merge($this->data, $data);
 	}
 	
 	
