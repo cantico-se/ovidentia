@@ -236,7 +236,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * @param mixed $data
 	 */
 	public function setData(Array $data) {
-		$this->data += $data;
+		$this->data = array_merge($this->data, $data);
 	}
 	
 	
