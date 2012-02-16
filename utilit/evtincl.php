@@ -2186,6 +2186,7 @@ class bab_event_posted {
 	private function notifyRelationsApprobation(bab_CalendarPeriod $calendarPeriod, Array $oldrelations)
 	{
 		require_once dirname(__FILE__).'/eventperiod.php';
+		require_once dirname(__FILE__).'/afincl.php';
 
 		$newrelations = $calendarPeriod->getRelations();
 
