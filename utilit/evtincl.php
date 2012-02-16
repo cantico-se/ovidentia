@@ -1956,7 +1956,7 @@ class bab_event_posted {
 
 
 
-		if( $begin->getTimeStamp() > $end->getTimeStamp())
+		if( $begin->getTimeStamp() >= $end->getTimeStamp())
 			{
 			$msgerror = bab_translate("End date must be older");
 			return false;
@@ -2144,7 +2144,17 @@ class bab_event_posted {
 		}
 
 		bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
-		$backend->savePeriod($calendarPeriod);
+		
+		try {
+		
+			$backend->savePeriod($calendarPeriod);
+		} catch(ErrorException $e)
+		{
+			// get backend specific errors
+			$message = $e->getMessage();
+			return false;
+		}
+		
 		$calendarPeriod->commitEvent();
 
 
