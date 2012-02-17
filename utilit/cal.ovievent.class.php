@@ -1387,8 +1387,26 @@ class bab_cal_OviEventSelect
 		$queries = array();
 		$inbox_calendars = array();
 		
+		$query = 'SELECT * 
+			FROM 
+				bab_cal_inbox i 
+					LEFT JOIN bab_cal_events e ON i.calendar_backend=\'Ovi\' AND e.uuid = i.uid 
+			WHERE 
+				
+				i.id_user IN('.$babDB->quote($users).') 
+				AND 
+				(
+					e.id IS NULL 
+					 OR (
+						e.start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
+						AND e.end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).'
+					)
+				)
+				
+		';
 		
-		$res = $babDB->db_query('SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')');
+		
+		$res = $babDB->db_query($query);
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
 			if ('' !== $arr['parent_calendar'])
