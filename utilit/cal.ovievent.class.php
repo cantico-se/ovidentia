@@ -1336,21 +1336,6 @@ class bab_cal_OviEventSelect
 	}
 	
 	
-	private function getInboxBackends($users)
-	{
-		global $babDB;
-		
-		$backend =array();
-		
-		$res = $babDB->db_query('SELECT calendar_backend FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).') GROUP BY calendar_backend');
-		while ($arr = $babDB->db_fetch_assoc($res))
-		{
-			$backend[$arr['calendar_backend']] = $arr['calendar_backend'];
-		}
-		
-		return $backend;
-	}
-	
 	
 	
 	/**
@@ -1405,25 +1390,26 @@ class bab_cal_OviEventSelect
 		$queries = array();
 		$inbox_calendars = array();
 		
-		$backends = $this->getInboxBackends($users);
 		
-		if (1 === count($backends) && isset($backends['Ovi']))
-		{
-			// dans le cas "tout ovidentia" filtrer la inbox par la date de recherche
-			$query = 'SELECT * 
-				FROM 
-					bab_cal_inbox i,
-					bab_cal_events e  
-				WHERE 
-					e.uuid = i.uid 
-					AND i.id_user IN('.$babDB->quote($users).') 
-					AND e.start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
-					AND e.end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).' 
-					
-			';
-		} else {
-			$query = 'SELECT * FROM bab_cal_inbox WHERE id_user IN('.$babDB->quote($users).')';
-		}
+		
+		$query = 'SELECT * 
+			FROM 
+				bab_cal_inbox i 
+					LEFT JOIN bab_cal_events e ON i.calendar_backend=\'Ovi\' AND e.uuid = i.uid 
+			WHERE 
+				
+				i.id_user IN('.$babDB->quote($users).') 
+				AND 
+				(
+					e.id IS NULL 
+					 OR (
+						e.start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
+						AND e.end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).'
+					)
+				)
+				
+		';
+		
 		
 		
 		$res = $babDB->db_query($query);
