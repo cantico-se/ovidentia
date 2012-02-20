@@ -56,7 +56,7 @@ class bab_CalendarPeriod extends bab_ICalendarObject {
 	 * Non-iCal data
 	 * @var mixed
 	 */
-	private $data;
+	private $data = array();
 
 	
 	/**
