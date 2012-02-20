@@ -1295,14 +1295,6 @@ function bab_updateUserSettings()
 		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
 
-
-	$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
-	if (0 === $maxlife)
-		{
-		$maxlife = 1440;
-		}
-
-	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where (UNIX_TIMESTAMP(dateact) + ".$babDB->quote($maxlife).") < UNIX_TIMESTAMP()");
 }
 
 
@@ -1578,21 +1570,24 @@ function bab_updateSiteSettings()
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		bab_newInstall();
 	}
+	
+	
+	$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
+	if (0 === $maxlife)
+	{
+		$maxlife = 1440;
+	}
 
-
-	$res = $babDB->db_query("select id, UNIX_TIMESTAMP(dateact) as lasthit, UNIX_TIMESTAMP() as time from ".BAB_USERS_LOG_TBL);
+	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." WHERE (UNIX_TIMESTAMP(dateact) + ".$babDB->quote($maxlife).") < UNIX_TIMESTAMP()");
 	while( $row  = $babDB->db_fetch_array($res))
-		{
-		if( ($row['lasthit'] + get_cfg_var('session.gc_maxlifetime')) < $row['time'])
+	{
+		$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
+		while( $arr  = $babDB->db_fetch_array($res2))
 			{
-			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
-			while( $arr  = $babDB->db_fetch_array($res2))
-				{
-				bab_deleteArticleDraft($arr['id']);
-				}
-			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
+			bab_deleteArticleDraft($arr['id']);
 			}
-		}
+		$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
+	}
 
 
 
