@@ -21,12 +21,15 @@ function updateEditor()
 			var title = document.editorarticle.elements[i].nextSibling.nodeValue.substring(1);
 
 			var link = document.createElement('a');
-			link.setAttribute('href', document.editorarticle.elements[i].value);
+			var reference = document.editorarticle.elements[i].value;
 			link.appendChild(document.createTextNode(title));
 			if (checkb.checked)
 			{
 				link.setAttribute('onclick', 'bab_popup(this.href);return false;');
+				reference += '?popup=1';
 			}
+			
+			link.setAttribute('href', reference);
 			
 			var span = document.createElement("span"); 
 			span.appendChild(link);
