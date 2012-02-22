@@ -6749,6 +6749,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_vac_entries_elem` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
 	}
 
+	
+	/**
+	 * Upgrade to 7.7.93
+	 */
+	if (!bab_isTableField('bab_cal_inbox', 'lastupdate'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `start_date` datetime NOT NULL default '0000-00-00 00:00:00'");
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `end_date` datetime NOT NULL default '0000-00-00 00:00:00'");
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `lastupdate` datetime NOT NULL default '0000-00-00 00:00:00'");
+	}
+	
+	
 	return true;
 }
 

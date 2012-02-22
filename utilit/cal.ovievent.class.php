@@ -1125,7 +1125,7 @@ class bab_cal_OviEventSelect
 				ce.start_date asc 
 		";
 		
-		//bab_debug($query);
+		bab_debug($query, DBG_TRACE, 'query');
 		
 		return $query;
 	}
@@ -1388,56 +1388,49 @@ class bab_cal_OviEventSelect
 		}
 		
 		$queries = array();
-		$inbox_calendars = array();
 		
-		
-		
-		$query = 'SELECT * 
+		$query = 'SELECT *  
 			FROM 
-				bab_cal_inbox i 
-					LEFT JOIN bab_cal_events e ON i.calendar_backend=\'Ovi\' AND e.uuid = i.uid 
+				bab_cal_inbox 
 			WHERE 
 				
-				i.id_user IN('.$babDB->quote($users).') 
+				id_user IN('.$babDB->quote($users).') 
 				AND 
 				(
-					e.id IS NULL 
+					start_date =\'0000-00-00 00:00:00\' 
 					 OR (
-						e.start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
-						AND e.end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).'
+						start_date <='.$babDB->quote($user_periods->end->getIsoDateTime()).' 
+						AND end_date >='.$babDB->quote($user_periods->begin->getIsoDateTime()).'
 					)
 				)
 				
 		';
-		
-		
-		
+
 		$res = $babDB->db_query($query);
 		while ($arr = $babDB->db_fetch_assoc($res))
 		{
-			if ('' !== $arr['parent_calendar'])
-			{
-				// calendar is not mandatory
-				$inbox_calendars[$arr['calendar_backend']][$arr['uid']] = $arr['parent_calendar'];
-			}
-			$queries[$arr['calendar_backend']][$arr['uid']] = $arr['id_user'];
+			$queries[$arr['calendar_backend']][$arr['uid']] = $arr;
 		}
 		
-		
-		
 		foreach($queries as $calendarBackend => $uid_list)
-		{
-			if (!isset($inbox_calendars[$calendarBackend]))
+		{	
+			$calendars = array();
+			foreach($uid_list as $uid => $arr)
 			{
-				$inbox_calendars[$calendarBackend] = array();
+				if ($arr['parent_calendar'])
+				{
+					$calendars[$uid] = $arr['parent_calendar'];
+				}
 			}
-				
+			
+			
+			
 			$inbox_criteria = clone $criteria;
 		
 			// add the UID criteria
 			
 			$uid_criterion = $factory->Uid(array_keys($uid_list));
-			$uid_criterion->setCalendars($inbox_calendars[$calendarBackend]);
+			$uid_criterion->setCalendars($calendars);
 			$inbox_criteria->_AND_($uid_criterion);
 			
 			
@@ -1448,31 +1441,60 @@ class bab_cal_OviEventSelect
 				continue;
 			}
 			
-			$start = microtime(true);
 			$periods = $backend->selectPeriods($inbox_criteria);
-			$duration = microtime(true) - $start;
 			
-			$found = false;
+			$success = false;
+			
 			foreach($periods as $p)
 			{
+				$success = true;
+				
+				$arr = $uid_list[$p->getProperty('UID')];
+				unset($uid_list[$p->getProperty('UID')]);
+				
 				/*@var $p bab_CalendarPeriod */
 				if ($this->addInboxPeriod($uid_list, $p))
 				{
 					$user_periods->addPeriod($p);
 				}
 				
-				if (!isset($inbox_calendars[$calendarBackend][$p->getProperty('UID')]))
+				$parent_calendar = '';
+				if ($collection = $p->getCollection())
 				{
-					// missing calendar in Inbox
-					if ($collection = $p->getCollection())
+					if ($calendar = $collection->getCalendar())
 					{
-						if ($calendar = $collection->getCalendar())
-						{
-							$babDB->db_query('UPDATE bab_cal_inbox SET parent_calendar='.$babDB->quote($calendar->getUrlIdentifier()).' 
-								WHERE uid ='.$babDB->quote($p->getProperty('UID')).' AND calendar_backend='.$babDB->quote($calendarBackend));
-						}
+						$parent_calendar = $calendar->getUrlIdentifier();
 					}
 				}
+				
+
+				if ('0000-00-00 00:00:00' === $arr['start_date'] || ('' === $arr['parent_calendar'] && $parent_calendar))
+				{
+					$babDB->db_query('UPDATE bab_cal_inbox SET 
+							start_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_begin)).',
+							end_date='.$babDB->quote(date('Y-m-d H:i:s',$p->ts_end)).',
+							parent_calendar='.$babDB->quote($parent_calendar).',
+							lastupdate='.$babDB->quote(date('Y-m-d H:i:s')).' 
+						WHERE 
+							uid ='.$babDB->quote($p->getProperty('UID')).' 
+							AND calendar_backend='.$babDB->quote($calendarBackend) 
+					);
+						
+				}
+			}
+			
+			if (!empty($uid_list))
+			{
+				bab_debug('Items in inbox but not processed : <br />'.print_r($uid_list, true));
+			}
+			
+			
+			if (!empty($uid_list) && $success)
+			{
+				$babDB->db_query('DELETE FROM bab_cal_inbox WHERE 
+					uid IN('.$babDB->quote(array_keys($uid_list)).') 
+					AND calendar_backend='.$babDB->quote($calendarBackend).'  
+				');
 			}
 			
 		}
@@ -1501,7 +1523,7 @@ class bab_cal_OviEventSelect
 		// in ovidentia backend, the event remain in the inbox
 		
 		
-		$id_user = $uid_list[$found_uid];
+		$id_user = $uid_list[$found_uid]['id_user'];
 		$reftype = bab_getICalendars()->getUserReferenceType($id_user);
 		$id = bab_getICalendars()->getPersonalCalendarUid($id_user);
 		$usercal = bab_getICalendars()->getEventCalendar("$reftype/$id");
