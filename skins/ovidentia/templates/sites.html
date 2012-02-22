@@ -874,7 +874,12 @@ document.forms.formsite_bloc3[edit].value = obj.value;
 		<td>{ basedir }</td>
 	</tr>
 	<tr> 
-		<td align="center" nowrap colspan="2"><a href="javascript:bab_popup('{ urlphpinfo }',6,1);">{ phpinfo }</a></td>
+		<td align="center" nowrap colspan="2"><a href="{ urlphpinfo }" onclick="bab_popup(this.href,6,1);return false;">{ phpinfo }</a>
+		<!--#if md5file -->
+		&nbsp; &nbsp; <a href="{ modifiedurl }" onclick="bab_popup(this.href);return false;">{ t_modified }</a>
+		<!--#endif md5file -->
+		
+		</td>
 	</tr>
 	<tr> 
 		<td align="center" colspan="2">&copy; 2001-{ currentyear }, <a href="http://www.cantico.fr/">CANTICO</a> All rights reserved.</td>

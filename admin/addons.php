@@ -1234,6 +1234,7 @@ function viewVersion()
 			$this->t_version_directories = bab_translate("List of version directories");
 			$this->t_current_core = bab_translate("Current core");
 			$this->t_not_used = bab_translate("Not used");
+			$this->t_modified = bab_translate('Modified files');
 
 
 			$basedir = realpath('.').'/';
@@ -1250,54 +1251,12 @@ function viewVersion()
 				}
 			}
 			
-			bab_sort::natcasesort($this->dirs);
-
+			bab_sort::natcasesort($this->dirs);	
 			
-			bab_debug($this->getMd5(realpath(dirname(__FILE__).'/../md5_file')));
-			}
-			
-			
-		/**
-		 * get list of differences
-		 * @param string $path
-		 *
-		 * @return string
-		 */
-		private function getMd5($file)
-		{
-			if (!file_exists($file))
-			{
-				return array();
-			}
-			
-			
-			
-			$arr = file($file);
-			$result = array();
-			
-			$root = realpath(dirname(__FILE__).'/..');
-
-			foreach ($arr as $line) {
-				
-				$md5 = substr($line, 0, 32);
-				$path = trim(substr($line, 33));
-				
-				$test = trim($root.$path);
-				
-				if (file_exists($test))
-				{
-					
-					if ($md5 !== md5_file($test))
-					{
-						$result[] = $path;
-					}
-				}
-			}
-		
-			return $result;
+			$this->md5file = file_exists(realpath(dirname(__FILE__).'/../md5_file'));
+			$this->modifiedurl = $GLOBALS['babUrlScript']."?tg=addons&idx=modified";
 		}
-		
-		
+
 		
 
 		function set_message()
@@ -1345,6 +1304,59 @@ function viewVersion()
 }
 
 
+/**
+ * get list of differences
+ * @param string $path
+ *
+ * @return string
+ */
+function bab_getMd5($file)
+{
+	if (!file_exists($file))
+	{
+		return array();
+	}
+
+
+
+	$arr = file($file);
+	$result = array();
+
+	$root = realpath(dirname(__FILE__).'/..');
+
+	foreach ($arr as $line) {
+
+		$md5 = substr($line, 0, 32);
+		$path = trim(substr($line, 33));
+
+		$test = trim($root.$path);
+
+		if (file_exists($test))
+		{
+
+			if ($md5 !== md5_file($test))
+			{
+				$result[] = $path;
+			}
+		}
+	}
+
+	return $result;
+}
+
+function viewModified()
+{
+	global $babBody;
+	
+	$infos = '';
+	$list = bab_getMd5(realpath(dirname(__FILE__).'/../md5_file'));
+	foreach($list as $file)
+	{
+		$infos .= $file."\n";
+	}
+	
+	$babBody->babPopup(bab_toHtml($infos, BAB_HTML_ALL));
+}
 
 
 
@@ -1457,6 +1469,11 @@ switch($idx)
 		display_addons_menu();
 		$babBody->title = bab_translate("Ovidentia informations");
 		viewVersion();
+		break;
+		
+	case 'modified':
+		$babBody->setTitle(bab_translate("List of modified files"));
+		viewModified();
 		break;
 
 	case 'zipupgrade':
