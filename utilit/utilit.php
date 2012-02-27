@@ -942,7 +942,15 @@ public function addStyleSheet($filename)
 {
 	if (!in_array($filename, $this->styleSheet))
 	{
-		$this->styleSheet[] = $filename;
+		// $filename can be relative to styles folders
+		// or a full path relative to main folder
+		
+		if ($GLOBALS['babInstallPath'] === mb_substr($filename, 0, mb_strlen($GLOBALS['babInstallPath'])))
+		{
+			$this->styleSheet[] = '../../'.$filename;
+		} else {
+			$this->styleSheet[] = $filename;
+		}
 	}
 }
 
@@ -971,7 +979,7 @@ function addJavascript($code)
 
 function getnextstylesheet()
 {
-return list(,$this->file) = each($this->styleSheet);
+	return list(,$this->file) = each($this->styleSheet);
 }
 
 
