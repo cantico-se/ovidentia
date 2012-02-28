@@ -842,7 +842,19 @@ var $babCalendarStartDay;
 	
 	private function initMonthEvents()
 	{
-		$calendars = bab_getICalendars()->getCalendars();
+		// all calendars, before 7.7.94 :
+		// $calendars = bab_getICalendars()->getCalendars();
+		
+		// only personal calendar, since 7.7.94 :
+		$personalCalendar = bab_getICalendars()->getPersonalCalendar();
+		if (null === $personalCalendar)
+		{
+			return;
+		}
+		
+		$calendars = array($personalCalendar);
+		
+		
 
 		if(count($calendars) > 0)
 		{
@@ -986,4 +998,3 @@ var $babCalendarStartDay;
 }
 
 
-?>
