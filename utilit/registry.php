@@ -274,7 +274,7 @@ class bab_Registry
 	/**
 	 * Get a value with additionnal parameters
 	 * 
-	 * @since 7.5.94 this method accept an array of keys for the key parameter
+	 * @since 7.7.94 this method accept an array of keys for the key parameter
 	 * 
 	 * @param string | array $key
 	 * @return array | bab_RegistryIterator | null
@@ -283,7 +283,18 @@ class bab_Registry
 	{
 		global $babDB;
 
-		$dirkey = $this->dir.$key;
+		if (is_array($key))
+		{
+			$dirkey = array();
+			foreach($key as $name)
+			{
+				$dirkey[] = $this->dir.$name;
+			}
+		} else {
+
+			$dirkey = $this->dir.$key;
+		}
+		
 		$res = $babDB->db_query("
 			SELECT 
 				dirkey,
@@ -303,7 +314,7 @@ class bab_Registry
 		$I = new bab_RegistryIterator();
 		$I->setMySqlResult($res);
 		
-		if (!is_array($I))
+		if (!is_array($key))
 		{
 			if (0 === $I->count())
 			{
