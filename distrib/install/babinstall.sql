@@ -695,7 +695,7 @@ CREATE TABLE `bab_users_log` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_user` int(11) unsigned NOT NULL default '0',
   `dateact` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `sessid` tinytext NOT NULL,
+  `sessid` CHAR(32) NOT NULL,
   `remote_addr` varchar(255) NOT NULL default '',
   `forwarded_for` varchar(255) NOT NULL default '',
   `id_dg` int(11) unsigned NOT NULL default '0',
@@ -705,7 +705,8 @@ CREATE TABLE `bab_users_log` (
   `cpw` varchar(255) NOT NULL default '',
   `tg` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `id_user` (`id_user`)
+  KEY `id_user` (`id_user`),
+  KEY `sessid` (`sessid`)
 );
 
 # --------------------------------------------------------
