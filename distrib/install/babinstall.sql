@@ -695,7 +695,7 @@ CREATE TABLE `bab_users_log` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_user` int(11) unsigned NOT NULL default '0',
   `dateact` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `sessid` tinytext NOT NULL,
+  `sessid` CHAR(32) NOT NULL,
   `remote_addr` varchar(255) NOT NULL default '',
   `forwarded_for` varchar(255) NOT NULL default '',
   `id_dg` int(11) unsigned NOT NULL default '0',
@@ -705,7 +705,8 @@ CREATE TABLE `bab_users_log` (
   `cpw` varchar(255) NOT NULL default '',
   `tg` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `id_user` (`id_user`)
+  KEY `id_user` (`id_user`),
+  KEY `sessid` (`sessid`)
 );
 
 # --------------------------------------------------------
@@ -1680,7 +1681,7 @@ CREATE TABLE bab_vac_entries_elem (
   id int(11) unsigned NOT NULL auto_increment,
   id_entry int(11) unsigned NOT NULL default '0',
   id_right int(11) unsigned NOT NULL default '0',
-  quantity decimal(4,2) NOT NULL default '0.00',
+  quantity decimal(3,1) NOT NULL default '0.0',
   PRIMARY KEY  (id),
   KEY id_entry (id_entry),
   KEY id_right (id_right)
@@ -1722,16 +1723,17 @@ CREATE TABLE `bab_vac_rights` (
   `date_entry` date NOT NULL default '0000-00-00',
   `date_begin` date NOT NULL default '0000-00-00',
   `date_end` date NOT NULL default '0000-00-00',
-  `quantity` decimal(4,2) unsigned NOT NULL default '0.00',
-  `quantity_unit` enum('H','D') NOT NULL default 'D',
+  `quantity` decimal(3,1) unsigned NOT NULL default '0.0',
   `id_type` int(11) unsigned NOT NULL,
   `description` varchar(255) NOT NULL,
   `active` enum('Y','N') NOT NULL default 'Y',
   `cbalance` enum('Y','N') NOT NULL default 'Y',
   `date_begin_valid` date NOT NULL default '0000-00-00',
   `date_end_valid` date NOT NULL default '0000-00-00',
-  `date_begin_fixed` datetime NOT NULL default '0000-00-00 00:00:00',
-  `date_end_fixed` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_end_fixed` date NOT NULL default '0000-00-00',
+  `date_begin_fixed` date NOT NULL default '0000-00-00',
+  `day_begin_fixed` tinyint(3) unsigned NOT NULL,
+  `day_end_fixed` tinyint(3) unsigned NOT NULL,
   `no_distribution` tinyint(1) unsigned NOT NULL,
   `id_rgroup` int(10) unsigned NOT NULL,
   PRIMARY KEY  (`id`),

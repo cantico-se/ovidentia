@@ -6688,69 +6688,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	
 	
 	
-	
-	
 	/**
-	 * Upgrade to 7.7.90
-	 * vacation hours
+	 * Upgrade to 7.7.6
 	 */
-	if (!bab_isTableField('bab_vac_rights', 'quantity_unit'))
-	{
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` ADD `quantity_unit` enum('H','D') NOT NULL default 'D'");
-	}
 	
-	if (bab_isTableField('bab_vac_rights', 'day_begin_fixed'))
-	{
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_begin_fixed` `date_begin_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_end_fixed` `date_end_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
-		
-		$res = $babDB->db_query("SELECT `id`, `date_begin_fixed` FROM `bab_vac_rights` WHERE `day_begin_fixed`='1' AND `date_begin_fixed`<>'0000-00-00 00:00:00'");
-		while($arr = $babDB->db_fetch_assoc($res))
-		{
-			list($date) = explode(' ', $arr['date_begin_fixed']);
-			$babDB->db_query("UPDATE `bab_vac_rights` SET `date_begin_fixed`=".$babDB->quote($date.' 12:00:00')." WHERE id=".$babDB->quote($arr['id']));
-		}
-		
-		$res = $babDB->db_query("SELECT `id`, `date_end_fixed`, `day_end_fixed` FROM `bab_vac_rights` WHERE `date_end_fixed`<>'0000-00-00 00:00:00'");
-		while($arr = $babDB->db_fetch_assoc($res))
-		{
-			switch($arr['day_end_fixed'])
-			{
-				case 0:	// am
-					$hour = '12:59:59';
-					break;
-				case 1:	// pm
-					$hour = '23:59:59';
-					break;
-				default:
-					return 'Unexpected value in `bab_vac_rights` table';
-			}
-		
-			list($date) = explode(' ', $arr['date_end_fixed']);
-			if (!$babDB->db_query("UPDATE `bab_vac_rights` SET `date_end_fixed`=".$babDB->quote($date.' '.$hour)." WHERE id=".$babDB->quote($arr['id'])))
-			{
-				return 'The upgrade in `bab_vac_rights` failed';
-			}
-		}
-		
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` DROP `day_begin_fixed`");
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` DROP `day_end_fixed`");
-	}
+	$res = $babDB->db_query('DESCRIBE `bab_users_log` sessid');
+	$sessid = $babDB->db_fetch_assoc($res);
 	
-	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_rights` `quantity`'));
-	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
+	if ($sessid['Type'] != 'char(32)')
 	{
-		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
+		$babDB->db_query("ALTER TABLE `bab_users_log` CHANGE `sessid` `sessid` CHAR(32) NOT NULL");
+		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`sessid`)");
 	}
-	
-	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_entries_elem` `quantity`'));
-	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
-	{
-		$babDB->db_query("ALTER TABLE `bab_vac_entries_elem` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
-	}
+
 
 	return true;
 }
-
-
-
