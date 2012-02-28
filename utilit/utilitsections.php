@@ -898,7 +898,33 @@ var $babCalendarStartDay;
 		}
 	}
 	
-	
+	private function cacheMonthEvents()
+	{
+		if (isset($this->currmonthevents)) {
+			return;
+		}
+		
+		if (isset($_SESSION['bab_MonthSection']))
+		{
+			$lastupdate = $_SESSION['bab_MonthSection']['lastupdate'];
+			
+			if ((time() - $lastupdate) < 900) // 15 minutes cache
+			{
+				$this->currmonthevents = $_SESSION['bab_MonthSection']['events'];
+				return;
+			}
+		}
+		
+		
+		bab_debug('refresh mont section cache');
+		$this->initMonthEvents();
+		
+		
+		$_SESSION['bab_MonthSection'] = array(
+			'events' => $this->currmonthevents,
+			'lastupdate' => time()
+		);
+	}
 	
 
 	public function getnextday3()
@@ -921,9 +947,7 @@ var $babCalendarStartDay;
 		{
 			if( $this->w < 7 && $this->curDay < $this->days)
 			{
-				if (!isset($this->currmonthevents)) {
-					$this->initMonthEvents();
-				}					
+				$this->cacheMonthEvents();					
 					
 				$this->w++;
 				return true;
