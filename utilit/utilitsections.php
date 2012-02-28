@@ -842,18 +842,20 @@ var $babCalendarStartDay;
 	
 	private function initMonthEvents()
 	{
-		// all calendars, before 7.7.94 :
-		// $calendars = bab_getICalendars()->getCalendars();
-		
-		// only personal calendar, since 7.7.94 :
-		$personalCalendar = bab_getICalendars()->getPersonalCalendar();
-		if (null === $personalCalendar)
+		// all calendars, before 7.7.94
+		// only personal calendar for users logged in, since 7.7.94
+		if ($GLOBALS['BAB_SESS_LOGGED'])
 		{
-			return;
+			$personalCalendar = bab_getICalendars()->getPersonalCalendar();
+			if (null === $personalCalendar)
+			{
+				return;
+			}
+			
+			$calendars = array($personalCalendar);
+		} else {
+			$calendars = bab_getICalendars()->getCalendars();
 		}
-		
-		$calendars = array($personalCalendar);
-		
 		
 
 		if(count($calendars) > 0)
