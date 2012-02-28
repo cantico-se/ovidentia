@@ -916,7 +916,7 @@ var $babCalendarStartDay;
 		}
 		
 		
-		bab_debug('refresh mont section cache');
+		bab_debug('refresh month section cache');
 		$this->initMonthEvents();
 		
 		
