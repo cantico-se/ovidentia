@@ -6656,7 +6656,22 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
 		}
 	}
-
+	
+	
+	
+	/**
+	 * Upgrade to 7.6.8
+	 */
+	
+	$res = $babDB->db_query('DESCRIBE `bab_users_log` sessid');
+	$sessid = $babDB->db_fetch_assoc($res);
+	
+	if ($sessid['Type'] != 'char(32)')
+	{
+		$babDB->db_query("ALTER TABLE `bab_users_log` CHANGE `sessid` `sessid` CHAR(32) NOT NULL");
+		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`sessid`)");
+	}
+	
 
 	return true;
 }
