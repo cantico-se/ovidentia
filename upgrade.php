@@ -6692,6 +6692,13 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	 * Upgrade to 7.7.6
 	 */
 	
+	if (!bab_isTableField('bab_cal_inbox', 'lastupdate'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `start_date` datetime NOT NULL default '0000-00-00 00:00:00'");
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `end_date` datetime NOT NULL default '0000-00-00 00:00:00'");
+		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `lastupdate` datetime NOT NULL default '0000-00-00 00:00:00'");
+	}
+	
 	$res = $babDB->db_query('DESCRIBE `bab_users_log` sessid');
 	$sessid = $babDB->db_fetch_assoc($res);
 	
