@@ -1105,6 +1105,7 @@ function bab_addArticleDraft($title, $head, $body, $idTopic, &$error, $articleAr
 			$arr = $babDB->db_fetch_array($res);
 			$idanonymous = $arr['id'];
 		} else {
+			$error = bab_translate("The Ovidentia configuration does not allow article saving for anonymous users (the anonymous users log is missing)");
 			return 0;
 		}
 	} else {
