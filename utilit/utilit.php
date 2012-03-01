@@ -1243,66 +1243,124 @@ function bab_updateUserSettings()
 		$GLOBALS['babSkin'] = bab_skin::getDefaultSkin()->getName();
 	}
 
-	$HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '0.0.0.0';
-	$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-
-	$query = "select id, id_dg, id_user, cpw, sessid from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'";
-
-	if ($GLOBALS['BAB_SESS_LOGGED'])
+	
+	if ($GLOBALS['BAB_SESS_LOGGED'] || !defined('BAB_DISABLE_ANONYMOUS_LOG') || 0 == BAB_DISABLE_ANONYMOUS_LOG)
 	{
-		$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
+		bab_UsersLog::update();
 	}
+}
 
-	$res = $babDB->db_query($query);
-	if( $res && $babDB->db_num_rows($res) > 0)
+
+
+
+
+/**
+ * Change the bab_users_log table
+ * mandatory for logged in users
+ * if not used for logged out users, article draft will not work for anonymous
+ *
+ */
+class bab_UsersLog
+{
+	
+	/**
+	 * Update an insert row
+	 * check for multiple connexion with same account if configured in site : auth_multi_session
+	 */
+	public static function update()
+	{
+		global $babDB, $babBody, $BAB_SESS_USERID;
+		
+		$HTTP_X_FORWARDED_FOR = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '0.0.0.0';
+		$REMOTE_ADDR = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+		
+		$query = "select id, id_dg, id_user, cpw, sessid from ".BAB_USERS_LOG_TBL." where sessid='".$babDB->db_escape_string(session_id())."'";
+		
+		if ($GLOBALS['BAB_SESS_LOGGED'])
+		{
+			$query .= ' OR (id_user='.$babDB->quote($GLOBALS['BAB_SESS_USERID']).' AND sessid<>'.$babDB->quote(session_id()).') ORDER BY dateact DESC';
+		}
+		
+		$res = $babDB->db_query($query);
+		if( $res && $babDB->db_num_rows($res) > 0)
 		{
 			$arr = $babDB->db_fetch_assoc($res);
-
+		
 			if ($arr['sessid'] == session_id())
 			{
 				bab_setUserPasswordVariable($arr['id'], $arr['cpw'], $arr['id_user']);
 				bab_setCurrentDelegation($arr['id_dg']);
-
+		
 				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set
-					dateact=now(),
-					remote_addr=".$babDB->quote($REMOTE_ADDR).",
-					forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).",
-					id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."',
-					grp_change=NULL,
-					schi_change=NULL,
-					tg='".$babDB->db_escape_string(bab_rp('tg'))."'
-				where
-					id = '".$babDB->db_escape_string($arr['id'])."'
-				");
-
+						dateact=now(),
+						remote_addr=".$babDB->quote($REMOTE_ADDR).",
+						forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).",
+						id_dg='".$babDB->db_escape_string($babBody->currentDGGroup['id'])."',
+						grp_change=NULL,
+						schi_change=NULL,
+						tg='".$babDB->db_escape_string(bab_rp('tg'))."'
+						where
+						id = '".$babDB->db_escape_string($arr['id'])."'
+						");
+		
 			} elseif (0 === (int) $babBody->babsite['auth_multi_session']) {
 				// another session exists for the same user ID (first is the newest)
 				// we want to stay with the newest session so the current session must be disconnected
-
+		
 				require_once dirname(__FILE__).'/loginIncl.php';
 				bab_logout(false);
 				$babBody->addError(bab_translate('You will be disconnected because another user has logged in with your account'));
 			}
 		}
-	else
+		else
 		{
-		if( !empty($BAB_SESS_USERID))
+			if( !empty($BAB_SESS_USERID))
 			{
-			$userid = $BAB_SESS_USERID;
-			if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+				$userid = $BAB_SESS_USERID;
+				if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
 				{
-				$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
-				$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
+					$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
+					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
 				}
 			}
-		else
+			else
 			{
-			$userid = 0;
+				$userid = 0;
 			}
-
-		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
+		
+			$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
 		}
-
+		
+	}
+	
+	
+	
+	/**
+	 * Cleanup expired sessions from bab_users_log
+	 * cleanup associated article draft
+	 */
+	public static function cleanup()
+	{
+		global $babDB;
+		
+		$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
+		if (0 === $maxlife)
+		{
+			$maxlife = 1440;
+		}
+		
+		$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." WHERE (UNIX_TIMESTAMP(dateact) + ".$babDB->quote($maxlife).") < UNIX_TIMESTAMP()");
+		while( $row  = $babDB->db_fetch_array($res))
+		{
+			$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
+			while( $arr  = $babDB->db_fetch_array($res2))
+			{
+				bab_deleteArticleDraft($arr['id']);
+			}
+			$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
+		}
+		
+	}
 }
 
 
@@ -1580,22 +1638,7 @@ function bab_updateSiteSettings()
 	}
 	
 	
-	$maxlife = (int) get_cfg_var('session.gc_maxlifetime');
-	if (0 === $maxlife)
-	{
-		$maxlife = 1440;
-	}
-
-	$res = $babDB->db_query("select id from ".BAB_USERS_LOG_TBL." WHERE (UNIX_TIMESTAMP(dateact) + ".$babDB->quote($maxlife).") < UNIX_TIMESTAMP()");
-	while( $row  = $babDB->db_fetch_array($res))
-	{
-		$res2 = $babDB->db_query("select id from ".BAB_ART_DRAFTS_TBL." where id_author='0' and id_anonymous='".$babDB->db_escape_string($row['id'])."'");
-		while( $arr  = $babDB->db_fetch_array($res2))
-			{
-			bab_deleteArticleDraft($arr['id']);
-			}
-		$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id='".$babDB->db_escape_string($row['id'])."'");
-	}
+	bab_UsersLog::cleanup();
 
 
 
