@@ -1542,6 +1542,12 @@ class bab_inifile {
 	 */
 	function isValid() {
 
+		if (!$this->fileExists())
+		{
+			return false;
+		}
+		
+		
 		$requirements = $this->getRequirements();
 		foreach($requirements as $arr) {
 			if (false === $arr['result'] && false !== $arr['required']) {
