@@ -1280,7 +1280,8 @@ class bab_UsersLog
 				bab_setUserPasswordVariable($arr['id'], $arr['cpw'], $arr['id_user']);
 				bab_setCurrentDelegation($arr['id_dg']);
 		
-				$babDB->db_query("update ".BAB_USERS_LOG_TBL." set
+				$babDB->db_query("
+					update ".BAB_USERS_LOG_TBL." set
 						dateact=now(),
 						remote_addr=".$babDB->quote($REMOTE_ADDR).",
 						forwarded_for=".$babDB->quote($HTTP_X_FORWARDED_FOR).",
@@ -1288,38 +1289,47 @@ class bab_UsersLog
 						grp_change=NULL,
 						schi_change=NULL,
 						tg='".$babDB->db_escape_string(bab_rp('tg'))."'
-						where
+					where
 						id = '".$babDB->db_escape_string($arr['id'])."'
-						");
+				");
+				
+				return;
 		
-			} elseif (0 === (int) $babBody->babsite['auth_multi_session']) {
+			} 
+			
+			if (0 === (int) $babBody->babsite['auth_multi_session']) {
 				// another session exists for the same user ID (first is the newest)
 				// we want to stay with the newest session so the current session must be disconnected
 		
 				require_once dirname(__FILE__).'/loginIncl.php';
 				bab_logout(false);
 				$babBody->addError(bab_translate('You will be disconnected because another user has logged in with your account'));
+				return;
+				
+			}
+			
+			// multi session allowed
+		}
+		
+		
+		
+		if( !empty($BAB_SESS_USERID))
+		{
+			$userid = $BAB_SESS_USERID;
+			if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
+			{
+				$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
+				$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
 			}
 		}
 		else
 		{
-			if( !empty($BAB_SESS_USERID))
-			{
-				$userid = $BAB_SESS_USERID;
-				if( !$babBody->isSuperAdmin && count($babBody->dgAdmGroups) > 0 )
-				{
-					$babBody->currentAdmGroup = $babBody->dgAdmGroups[0];
-					$babBody->currentDGGroup = $babDB->db_fetch_array($babDB->db_query("select dg.* from ".BAB_DG_GROUPS_TBL." dg where dg.id_group='".$babDB->db_escape_string($babBody->dgAdmGroups[0])."'"));
-				}
-			}
-			else
-			{
-				$userid = 0;
-			}
-		
-			$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
+			$userid = 0;
 		}
-		
+	
+		$babDB->db_query("insert into ".BAB_USERS_LOG_TBL." (id_user, sessid, dateact, remote_addr, forwarded_for, id_dg, grp_change, schi_change, tg) 
+				values ('".$babDB->db_escape_string($userid)."', '".session_id()."', now(), '".$babDB->db_escape_string($REMOTE_ADDR)."', '".$babDB->db_escape_string($HTTP_X_FORWARDED_FOR)."', '".$babDB->db_escape_string((int) $babBody->currentDGGroup['id'])."', NULL, NULL, '".$babDB->db_escape_string(bab_rp('tg'))."')");
+
 	}
 	
 	
