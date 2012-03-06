@@ -3605,7 +3605,15 @@ function bab_vac_quantity($quantity, $unit)
 		}
 	}
 	
-	$quantity = rtrim($quantity, '0.');
+	
+	
+	
+	if (false !== mb_strpos($quantity, '.'))
+	{
+		$quantity = rtrim($quantity, '0');
+	}
+	
+	$quantity = rtrim($quantity, '.');
 	
 	if ('' === $quantity) {
 		$quantity = '0';
