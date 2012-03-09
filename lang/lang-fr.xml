@@ -222,7 +222,6 @@
 <string id="Date">Date</string>
 <string id="Day">Jour</string>
 <string id="Day(s)">Jour(s)</string>
-<string id="Hour(s)">Heure(s)</string>
 <string id="Days must be multiple of 0.5">Le nombre de jours doit être multiple de 0,5</string>
 <string id="Days">Jours</string>
 <string id="December">Décembre</string>
@@ -3286,18 +3285,7 @@
 <string id="Configuration error, invalid account for new calendar">Erreur de configuration, le compte du nouvel agenda n'est pas valide</string>
 <string id="This event does not exists">Cet événement n'existe pas</string>
 <string id="This event has been cancelled">Cet événement à été annulé</string>
-<string id="Quantity for this right">Quantité pour ce droit</string>
 <string id="Year filter">Filtre par année</string>
 <string id="History">Historique</string>
-<string id="You must use a right group with only rights of same quantity unit">Vous devez utiliser un regroupement de droit contenant des droits de la même unité de quantité</string>
-<string id="The period contain %s days or %s hours">La période contiens %s jours ou %s heures</string>
-<string id="day(s)">jour(s)</string>
-<string id="hour(s)">heure(s)</string>
-<string id="Total days">Total jours</string>
-<string id="Total hours">Total heures</string>
-<string id="%s waiting for approbation">%s en attente d'approbation</string>
-<string id="%s days or %s hours in period">%s jours ou %s heures dans la période</string>
-
-
-
+<string id="Account encryption does not match with credentials">L'identifiant crypté ne correspond pas aux paramètres de connexion</string>
 </fr>

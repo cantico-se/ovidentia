@@ -302,10 +302,21 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	function authenticateUserByLoginPassword($sLogin, $sPassword)
 	{
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
+		
+		// test confirm hash, this is done only for authentication tu prevent a succes on login without a logged status
+		
+		if ($aUser['confirm_hash'] !== md5($sLogin.$BAB_HASH_VAR))
+		{
+			$this->addError(bab_translate("Account encryption does not match with credentials"));
+			return null;
+		}
+		
+		
 		if (!is_null($aUser))
 		{
 			return (int) $aUser['id'];
 		}
+		
 		$this->addError(bab_translate("User not found or bad password"));
 		return null;
 	}

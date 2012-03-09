@@ -1880,5 +1880,10 @@ function bab_initMbString() {
 
 bab_initMbString();
 $babBody = new babBody();
-$BAB_HASH_VAR='aqhjlongsmp';
+if (defined('BAB_HASH_VAR'))
+{
+	$BAB_HASH_VAR = BAB_HASH_VAR;
+} else {
+	$BAB_HASH_VAR = 'aqhjlongsmp';
+}
 
