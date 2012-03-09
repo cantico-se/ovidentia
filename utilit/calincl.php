@@ -303,11 +303,6 @@ class bab_icalendars
 	{
 		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
 		
-		if(empty($this->user_calendarids) && count($this->calendars) > 0)
-		{
-			$keys = array_keys($this->calendars);
-			$this->user_calendarids = $keys[0];
-		}
 			
 		if (null === $this->default_calendar && $calendar->isDefaultCalendar())
 		{
@@ -382,6 +377,11 @@ class bab_icalendars
 			return $this->default_calendar;
 		}
 		
+		if (null !== $this->personal_calendar)
+		{
+			return $this->personal_calendar;
+		}
+		
 		foreach($this->getCalendars() as $calendar)
 		{
 			return $calendar;
@@ -428,6 +428,8 @@ class bab_icalendars
 			}
 			
 		}
+		
+		
 
 		return implode(',', $keys);
 
