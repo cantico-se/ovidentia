@@ -1714,7 +1714,7 @@ class Func_Ovml_Container_Forums extends Func_Ovml_Container
 			}
 
 
-		if( $forumid === '' )
+		if( $forumid === '' || $forumid === false )
 			{
 			$forumid = false;
 			}
