@@ -379,7 +379,7 @@ function calendarChoice_selectAll(formname)
 			<!--#in getnexttype -->
 			<optgroup class="caltype{ number }" label="{ type }">
 				<!--#in getnextcal -->
-				<option value="{ id }" <!--#if selected --> selected="selected"<!--#endif selected --> <!--#if declined --> style="color:#ccc;"<!--#endif declined --> >{ name }</option>
+				<option value="{ id }" <!--#if selected --> selected="selected"<!--#endif selected --> <!--#if style --> style="{ style }"<!--#endif style --> >{ name }</option>
 				<!--#endin getnextcal -->
 			</optgroup>
 			<!--#endin getnexttype -->

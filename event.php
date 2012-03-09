@@ -648,7 +648,7 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 				$selected_calendars[] = $calendar->getUrlIdentifier();
 			}
 
-			$this->calendars = calendarchoice('vacform', $selected_calendars);
+			$this->calendars = calendarchoice('vacform', $selected_calendars, $event);
 
 			$data = $event->getData();
 

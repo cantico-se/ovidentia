@@ -1074,181 +1074,239 @@ class cal_wmdbaseCls
 
 
 
-
-/**
- * Calendar selection interface
- * @param	string	$formname
- * @param	array	[$selected_calendars]
- * @return 	string
- */
-function calendarchoice($formname, $selected_calendars = NULL)
+class bab_calendarchoice
 {
-	class calendarchoice
+	private $caltypes = array();
+
+	private $calfromtype;
+
+
+	var $approb = array();
+	
+	
+	/**
+	 * list of calendar associated but not accessible in modification (only for event modification)
+	 * @var array
+	 */
+	private $noaccess_arr = array();
+
+	/**
+	 * list of calendar associated but declined by attendee or approbation
+	 * @var array
+	 */
+	private $declined_arr = array();
+
+	/**
+	 * Calendar selection interface
+	 * @param	string				$formname
+	 * @param	array				[$selected_calendars]
+	 * @param	bab_CalendarPeriod	$period					Period if the calendar choice referer to the calendar associated to an event
+	 */
+	public function __construct($formname, $selected_calendars = null, bab_CalendarPeriod $period = null)
 	{
-		private $caltypes = array();
+		global $babBody, $babDB;
 
-		private $calfromtype;
+		$this->formname = $formname;
+		$icalendars = bab_getICalendars();
+
+		if (isset($_POST['selected_calendars'])) {
+			$this->selectedCalendars = $_POST['selected_calendars'];
+		} else if (NULL !== $selected_calendars) {
+			$this->selectedCalendars = $selected_calendars;
+		} else if (bab_rp('calid')) {
+			$this->selectedCalendars = explode(',', bab_rp('calid'));
+		} else if (isset($icalendars->user_calendarids)) {
+			$this->selectedCalendars = explode(',', $icalendars->user_calendarids);
+		} else {
+			$this->selectedCalendars = array();
+		}
+
+		$this->usrcalendarstxt = bab_translate("Users");
+		$this->grpcalendarstxt = bab_translate("Publics");
+		$this->rescalendarstxt = bab_translate("Resources");
+		$this->t_goright = bab_translate("Push right");
+		$this->t_goleft = bab_translate("Push left");
+		$this->t_calendars1 = bab_translate("Available calendars");
+		$this->t_calendars2 = bab_translate("Selected calendars");
+		$this->js_calnum = bab_translate("You must select one calendar");
 
 
-		var $approb = array();
+		$calendars = $icalendars->getCalendars();
+		
+		foreach($calendars as $key => $calendar) {
+			
+			// calendar selection for visualisation || add event || update event
 
-		function calendarchoice($formname, $selected_calendars)
-		{
-			global $babBody, $babDB;
+			if ($_REQUEST['tg'] != 'event' || $calendar->canAddEvent() || (isset($period) && $calendar->canUpdateEvent($period) )) {
+				$type = $calendar->getType();
+				if (!isset($this->caltypes[$type])) {
+					$this->caltypes[$type] = array();
+				}
 
-			$this->formname = $formname;
-			$icalendars = bab_getICalendars();
-
-			if (isset($_POST['selected_calendars'])) {
-				$this->selectedCalendars = $_POST['selected_calendars'];
-			} else if (NULL !== $selected_calendars) {
-				$this->selectedCalendars = $selected_calendars;
-			} else if (bab_rp('calid')) {
-				$this->selectedCalendars = explode(',', bab_rp('calid'));
-			} else if (isset($icalendars->user_calendarids)) {
-				$this->selectedCalendars = explode(',', $icalendars->user_calendarids);
-			} else {
-				$this->selectedCalendars = array();
+				$this->caltypes[$type][$key] = $calendar;
 			}
+		}
+		
+		// if event modification add read-only calendars
+		
+		if (isset($period))
+		{
+			foreach($period->getCalendars() as $key => $linked_calendar)
+			{
+				$type = $linked_calendar->getType();
+				if (!isset($this->caltypes[$type])) {
+					$this->caltypes[$type] = array();
+				}
+				
+				if (!isset($this->caltypes[$type][$key]))
+				{
+					$this->caltypes[$type][$key] = $linked_calendar;
+					$this->noaccess_arr[$linked_calendar->getUrlIdentifier()] = $linked_calendar;
+				}
+			}
+			
+			// TODO add also inaccessible attendees
+			
+			
+		}
+		
+		
 
-			$this->usrcalendarstxt = bab_translate("Users");
-			$this->grpcalendarstxt = bab_translate("Publics");
-			$this->rescalendarstxt = bab_translate("Resources");
-			$this->t_goright = bab_translate("Push right");
-			$this->t_goleft = bab_translate("Push left");
-			$this->t_calendars1 = bab_translate("Available calendars");
-			$this->t_calendars2 = bab_translate("Selected calendars");
-			$this->js_calnum = bab_translate("You must select one calendar");
+
+		bab_sort::ksort($this->caltypes, bab_Sort::CASE_INSENSITIVE);
+
+		foreach ($this->caltypes as &$arr) {
+			bab_sort::sortObjects($arr, 'getName', bab_Sort::CASE_INSENSITIVE);
+			reset($arr);
+		}
+
+		reset($this->caltypes);
 
 
-			$calendars = $icalendars->getCalendars();
-			foreach($calendars as $key => $calendar) {
-				if ($_REQUEST['tg'] != 'event' || $calendar->canAddEvent()) {
-					$type = $calendar->getType();
-					if (!isset($this->caltypes[$type])) {
-						$this->caltypes[$type] = array();
-					}
+		// edit event mode
+		// search for the list of rejected calendars
 
-					$this->caltypes[$type][$key] = $calendar;
+		if (isset($period)) {
+			foreach($period->getAttendees() as $attendee) {
+				if ('DECLINED' === $attendee['AttendeeBackend']->getRealPartstat()) {
+					$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
 				}
 			}
 
-
-			bab_sort::ksort($this->caltypes, bab_Sort::CASE_INSENSITIVE);
-
-			foreach ($this->caltypes as &$arr) {
-				bab_sort::sortObjects($arr, 'getName', bab_Sort::CASE_INSENSITIVE);
-				reset($arr);
-			}
-
-			reset($this->caltypes);
-
-			$this->declined_arr = array();
-
-
-			// search for the list of rejected calendars
-			if (bab_rp('evtid') && bab_rp('calid')) {
-				$calendar = $icalendars->getEventCalendar(bab_rp('calid'));
-				$backend = $calendar->getBackend();
-				$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_rp('evtid'));
-
-				if ($period) {
-					foreach($period->getAttendees() as $attendee) {
-						if ('DECLINED' === $attendee['AttendeeBackend']->getRealPartstat()) {
-							$this->declined_arr[$attendee['calendar']->getUrlIdentifier()] = $attendee['calendar'];
-						}
-					}
-
-					$relations = $period->getRelations();
-					foreach($relations as $relation) {
-						if ('DECLINED' === $relation['X-CTO-STATUS']) {
-							$this->declined_arr[$relation['calendar']->getUrlIdentifier()] = $relation['calendar'];
-						}
-					}
+			$relations = $period->getRelations();
+			foreach($relations as $relation) {
+				if ('DECLINED' === $relation['X-CTO-STATUS']) {
+					$this->declined_arr[$relation['calendar']->getUrlIdentifier()] = $relation['calendar'];
 				}
 			}
 		}
-
-
-
-
-		function getnexttype()
-		{
-			static $i = 0;
-
-			if (list($type, $this->calfromtype) = each($this->caltypes)) {
-				$this->type = bab_toHtml($type);
-				$this->number = $i;
-				reset($this->calfromtype);
-				$i++;
-				return true;
-			}
-			reset($this->caltypes);
-			$i = 0;
-			return false;
-		}
-
-
-
-
-		function getnextcal()
-		{
-			if (!isset($this->calfromtype)) {
-				return false;
-			}
-
-			if (list($key, $calendar) = each($this->calfromtype)) {
-				$this->id = bab_toHtml($key);
-				$this->name = bab_toHtml($calendar->getName());
-				$this->selected = in_array($key,$this->selectedCalendars);
-
-				$this->declined = isset($this->declined_arr[$key]);
-
-				/*@var $calendar bab_EventCalendar */
-
-				$idsa = $calendar->getApprobationSheme();
-				if (!empty($idsa)) {
-					$this->approb[] = $calendar->getName();
-				}
-				return true;
-			}
-
-			$this->calfromtype = null;
-			return false;
-		}
-
-
-
-
-		function getapprob()
-		{
-			if (count($this->approb) == 1) {
-				$this->t_approb = bab_toHtml(bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved"));
-				$this->approb = array();
-				return true;
-			}
-
-			if (count($this->approb) > 1) {
-				$this->t_approb = bab_toHtml('"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved"));
-				$this->approb = array();
-				return true;
-			}
-			return false;
-		}
-
-
-
-
-		function printhtml()
-		{
-			return bab_printTemplate($this,"calendar.html", "calendarchoice");
-		}
+		
 	}
 
 
 
 
-	$temp = new calendarchoice($formname, $selected_calendars);
+	public function getnexttype()
+	{
+		static $i = 0;
+
+		if (list($type, $this->calfromtype) = each($this->caltypes)) {
+			$this->type = bab_toHtml($type);
+			$this->number = $i;
+			reset($this->calfromtype);
+			$i++;
+			return true;
+		}
+		reset($this->caltypes);
+		$i = 0;
+		return false;
+	}
+
+
+
+
+	public function getnextcal()
+	{
+		if (!isset($this->calfromtype)) {
+			return false;
+		}
+
+		if (list($key, $calendar) = each($this->calfromtype)) {
+			$this->id = bab_toHtml($key);
+			$this->name = bab_toHtml($calendar->getName());
+			$this->selected = in_array($key,$this->selectedCalendars);
+
+			$declined = isset($this->declined_arr[$key]);
+			$noaccess = isset($this->noaccess_arr[$key]);
+			
+			if ($noaccess && !$declined) {
+				$this->style = 'background:#f3f3f3;';
+			} else if ($noaccess && $declined) {
+				$this->style = 'color:#bbb;background:#f3f3f3;';
+			} else if ($declined) {
+				$this->style = 'color:#bbb;';
+			} else {
+				$this->style = false;
+			}
+			
+
+			/*@var $calendar bab_EventCalendar */
+
+			$idsa = $calendar->getApprobationSheme();
+			if (!empty($idsa)) {
+				$this->approb[] = $calendar->getName();
+			}
+			return true;
+		}
+
+		$this->calfromtype = null;
+		return false;
+	}
+
+
+
+
+	public function getapprob()
+	{
+		if (count($this->approb) == 1) {
+			$this->t_approb = bab_toHtml(bab_translate("The calendar").' "'.implode('',$this->approb).'" '.bab_translate("is restricted with approbation, your event will not appear until it has been approved"));
+			$this->approb = array();
+			return true;
+		}
+
+		if (count($this->approb) > 1) {
+			$this->t_approb = bab_toHtml('"'.implode('", "',$this->approb).'" '.bab_translate("are restricted with approbation, your event will not appear until it has been approved"));
+			$this->approb = array();
+			return true;
+		}
+		return false;
+	}
+
+
+
+	/**
+	 * 
+	 * @return string
+	 */
+	public function printhtml()
+	{
+		return bab_printTemplate($this,"calendar.html", "calendarchoice");
+	}
+}
+
+
+
+
+/**
+ * Calendar selection interface
+ * @param	string				$formname
+ * @param	array				[$selected_calendars]
+ * @param	bab_CalendarPeriod	$period					Period if the calendar choice referer to the calendar assocaited to an event
+ * @return 	string
+ */
+function calendarchoice($formname, $selected_calendars = NULL, bab_CalendarPeriod $period = null)
+{
+	$temp = new bab_calendarchoice($formname, $selected_calendars, $period);
 	return $temp->printhtml();
 }
 
