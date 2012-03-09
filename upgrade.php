@@ -6672,6 +6672,18 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`sessid`)");
 	}
 	
+	
+	/**
+	 * Upgrade to 7.6.9
+	 */
+	
+	$res = $babDB->db_query("show indexes from bab_users_log WHERE Column_name='dateact'");
+	if ($res && 0 === $babDB->db_num_rows($res))
+	{
+		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`dateact`)");
+	}
+	
+	
 
 	return true;
 }
