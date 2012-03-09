@@ -302,12 +302,6 @@ class bab_icalendars
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
 		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
-		
-		if(empty($this->user_calendarids) && count($this->calendars) > 0)
-		{
-			$keys = array_keys($this->calendars);
-			$this->user_calendarids = $keys[0];
-		}
 			
 		if (null === $this->default_calendar && $calendar->isDefaultCalendar())
 		{
