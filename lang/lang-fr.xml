@@ -3277,4 +3277,5 @@
 <string id="The topic is restricted by an approbation, the article will not be visible imediately">Le thème d'articles est restreint par une approbation, l'article ne sera donc pas visible imédiatement</string>
 <string id="Configuration error, invalid account for new calendar">Erreur de configuration, le compte du nouvel agenda n'est pas valide</string>
 <string id="History">Historique</string>
+<string id="Account encryption does not match with credentials">L'identifiant crypté ne correspond pas aux paramètres de connexion</string>
 </fr>
