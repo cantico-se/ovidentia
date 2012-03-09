@@ -137,7 +137,13 @@
 				 * @return string
 				 */
 				function bab_calopt_tdVal(td) {
-					return td.saved_date;
+					
+					if (td.saved_date)
+					{
+						return td.saved_date;
+					}
+					
+					return td.title;
 				}
 				
 				
@@ -201,7 +207,7 @@
 					}
 
 					wtd = window['bab_calopt_lastclick_td'];
-
+					
 					if (window['bab_calopt_lastclick_table'] == table && 
 						bab_calopt_tdVal(wtd) <= bab_calopt_tdVal(td)) {
 
