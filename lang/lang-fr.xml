@@ -3306,4 +3306,6 @@
 <string id="List of modified files">Liste des fichiers modifiés</string>
 <string id="Modified files">Fichiers modifiés</string>
 <string id="The Ovidentia configuration does not allow article saving for anonymous users (the anonymous users log is missing)">La configuration d'ovidentia ne permet pas l'enregistrement des articles pour les utilisateurs anonymes</string>
+<string id="Account encryption does not match with credentials">L'identifiant crypté ne correspond pas aux paramètres de connexion</string>
+
 </fr>
