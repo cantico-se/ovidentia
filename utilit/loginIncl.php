@@ -1124,21 +1124,6 @@ function bab_ldapEntryToOvEntry($oLdap, $iIdUser, $sPassword, $aEntries, $aUpdat
 			switch($key)
 			{
 				case 'jpegphoto':
-					/*
-					$oRes = $oLdap->read($aEntries[0]['dn'], 'objectClass=*', array('jpegphoto'));
-					if($oRes)
-					{
-						$ei = $oLdap->first_entry($oRes);
-						if($ei)
-						{
-							$info = $oLdap->get_values_len($ei, 'jpegphoto');
-							if($info && is_array($info))
-							{
-								$sQuery .= ', photo_data=\'' . $babDB->db_escape_string($info[0]) . '\'';
-							}
-						}
-					}
-					*/
 					$sQuery .= ', photo_data=\'' . $babDB->db_escape_string($aEntries[0][$key][0]) . '\'';
 					break;
 
