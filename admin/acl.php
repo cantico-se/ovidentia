@@ -881,7 +881,7 @@ function aclSetRightsString($table, $id_object, $rights)
 	
 	foreach($input as $g)
 	{
-		if (mb_strlen(g) > 1 && '+' === mb_substr($g, -1))
+		if (mb_strlen($g) > 1 && '+' === mb_substr($g, -1))
 		{
 			$id_group = (int) mb_substr($g, 0, -1);
 			$id_group+= BAB_ACL_GROUP_TREE;
@@ -894,7 +894,7 @@ function aclSetRightsString($table, $id_object, $rights)
 	
 	if (count($insert) > 0)
 	{
-		if (!$babDB->db_query("INSERT INTO (id_object, id_group) VALUES ".implode(',', $insert)))
+		if (!$babDB->db_query('INSERT INTO '.$babDB->backTick($table).' (id_object, id_group) VALUES '.implode(',', $insert)))
 		{
 			return false;
 		}
