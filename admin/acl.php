@@ -900,7 +900,7 @@ function aclSetRightsString($table, $id_object, $rights)
 		}
 	} 
 	
-	
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
 	
 	return true;
