@@ -815,7 +815,7 @@ function aclCreateTable($table)
 	global $babDB;
 	
 	return $babDB->db_query("
-		CREATE TABLE IF NOT EXISTS ".$babDB->backTicks($table)." (
+		CREATE TABLE IF NOT EXISTS ".$babDB->backTick($table)." (
 		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 		  `id_object` int(11) unsigned NOT NULL,
 		  `id_group` int(11) unsigned NOT NULL,
