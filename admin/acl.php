@@ -876,29 +876,32 @@ function aclSetRightsString($table, $id_object, $rights)
 	global $babDB;
 	$babDB->db_query('DELETE FROM '.$babDB->backTick($table).' WHERE id_object='.$babDB->quote($id_object));
 	
-	$input = explode(',',$rights);
-	$insert = array();
-	
-	foreach($input as $g)
+	if ('' !== $rights)
 	{
-		if (mb_strlen($g) > 1 && '+' === mb_substr($g, -1))
+		$input = explode(',',$rights);
+		$insert = array();
+		
+		foreach($input as $g)
 		{
-			$id_group = (int) mb_substr($g, 0, -1);
-			$id_group+= BAB_ACL_GROUP_TREE;
-		} else {
-			$id_group = (int) $g;
+			if (mb_strlen($g) > 1 && '+' === mb_substr($g, -1))
+			{
+				$id_group = (int) mb_substr($g, 0, -1);
+				$id_group+= BAB_ACL_GROUP_TREE;
+			} else {
+				$id_group = (int) $g;
+			}
+			
+			$insert[] = '('.$babDB->quote($id_object).', '.$babDB->quote($id_group).')';
 		}
 		
-		$insert[] = '('.$babDB->quote($id_object).', '.$babDB->quote($id_group).')';
-	}
-	
-	if (count($insert) > 0)
-	{
-		if (!$babDB->db_query('INSERT INTO '.$babDB->backTick($table).' (id_object, id_group) VALUES '.implode(',', $insert)))
+		if (count($insert) > 0)
 		{
-			return false;
+			if (!$babDB->db_query('INSERT INTO '.$babDB->backTick($table).' (id_object, id_group) VALUES '.implode(',', $insert)))
+			{
+				return false;
+			}
 		}
-	} 
+	}
 	
 	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
 	bab_siteMap::clearAll();
