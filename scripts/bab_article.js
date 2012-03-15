@@ -206,7 +206,7 @@ jQuery(document).ready(function() {
 
 	try{
 		if(window.opener != null && window.opener.bab_popup_obj != null && window.opener.bab_popup_obj == window){
-			jQuery('[name="babpopup"]').val(1);
+			jQuery('[name="babpopup"]').val(1); 
 		}
 	}catch(err){}
 });
