@@ -307,6 +307,8 @@ class bab_eventForumAfterPostAdd extends bab_eventForumPost
 		// add user to notify for BAB_FORUMNOTIF_ALL
 
 		$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL));
+		
+		$users = array_diff($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE, BAB_FORUMNOTIF_NEWTHREADS)));
 
 		return $users;
 	}
@@ -333,6 +335,8 @@ class bab_eventForumAfterThreadAdd extends bab_eventForumPost
 		// add user to notify for BAB_FORUMNOTIF_ALL & BAB_FORUMNOTIF_NEWTHREADS
 
 		$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL, BAB_FORUMNOTIF_NEWTHREADS));
+		
+		$users = array_diff($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE)));
 
 		return $users;
 	}
