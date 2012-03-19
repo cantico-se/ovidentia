@@ -301,6 +301,8 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 */
 	function authenticateUserByLoginPassword($sLogin, $sPassword)
 	{
+		global $BAB_HASH_VAR;
+		
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
 		
 		// test confirm hash, this is done only for authentication tu prevent a succes on login without a logged status
