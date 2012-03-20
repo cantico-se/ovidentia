@@ -305,6 +305,13 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
 		
+		if (null == $aUser )
+		{
+			$this->addError(bab_translate("User not found or bad password"));
+			return null;
+		}
+		
+		
 		// test confirm hash, this is done only for authentication tu prevent a succes on login without a logged status
 
 		if ($aUser['confirm_hash'] !== md5($sLogin.$BAB_HASH_VAR))
@@ -313,12 +320,8 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 			return null;
 		}
 		
-		if (!is_null($aUser))
-		{
-			return (int) $aUser['id'];
-		}
-		$this->addError(bab_translate("User not found or bad password"));
-		return null;
+
+		return (int) $aUser['id'];
 	}
 
 
