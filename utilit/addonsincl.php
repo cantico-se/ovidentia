@@ -973,7 +973,7 @@ class bab_addonInfos {
 	 */
 	public function delete(&$msgerror) {
 	
-		global $babDB;
+		global $babDB, $babBody;
 		include_once dirname(__FILE__).'/delincl.php';
 		
 		if (false === $this->isDeletable()) {
