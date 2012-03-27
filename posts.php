@@ -1170,18 +1170,15 @@ function saveReply($forum, $thread, $post, $name, $subject)
         notifyThreadAuthor(bab_getForumThreadTitle($thread), $arr1['email'], $name, $idpost);
 		}
 		
-	// fire event if no approbation on post
+	// always fire event only recipients are different
 
-	if ($confirmed == "Y")
-	{
-		$event = new bab_eventForumAfterPostAdd;
-			
-		$event->setForum($forum);
-		$event->setThread($arr['id'], $arr['subject']);
-		$event->setPost($idpost, $name, 'Y' === $confirmed);
+	$event = new bab_eventForumAfterPostAdd;
 		
-		bab_fireEvent($event);
-	}
+	$event->setForum($forum);
+	$event->setThread($arr['id'], $arr['subject']);
+	$event->setPost($idpost, $name, 'Y' === $confirmed);
+	
+	bab_fireEvent($event);
 	
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=posts&idx=List&forum=".$forum."&thread=".$thread."&post=".$post."&flat=".bab_rp('flat', '1'));
 	exit;
