@@ -482,6 +482,9 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	{
 		global $babBody;
 		
+		//has to do it because keys and values are flipped
+		$aUpdateAttributes = array_flip($aUpdateAttributes);
+		
 		$iIdUser = false;
 		$aUser = bab_getUserByNickname($sNickname);
 		
