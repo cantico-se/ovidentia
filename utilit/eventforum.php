@@ -310,7 +310,7 @@ class bab_eventForumAfterPostAdd extends bab_eventForumPost
 
 			$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL));
 			
-			$users = array_diff($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE, BAB_FORUMNOTIF_NEWTHREADS)));
+			$users = array_diff_key($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE, BAB_FORUMNOTIF_NEWTHREADS)));
 		}
 
 		return $users;
@@ -341,7 +341,7 @@ class bab_eventForumAfterThreadAdd extends bab_eventForumPost
 
 			$users += $this->getFromUserOptions(array(BAB_FORUMNOTIF_ALL, BAB_FORUMNOTIF_NEWTHREADS));
 			
-			$users = array_diff($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE)));
+			$users = array_diff_key($users, $this->getFromUserOptions(array(BAB_FORUMNOTIF_NONE)));
 		}
 
 		return $users;
