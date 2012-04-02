@@ -110,6 +110,19 @@ switch($idx)
 			bab_cpaddons($_GET['from'], bab_rp('to',$GLOBALS['babInstallPath']), $str);
 			}
 		break;
+		
+	case 'addon':
+		// allow addon upgrade for annonymous users
+		$name = bab_rp('name');
+		if ($addon = bab_getAddonInfosInstance($name))
+		{
+			if ($addon->isUpgradable() && $addon->upgrade())
+			{
+				die(bab_translate("Ok"));
+			}
+		}
+		die(bab_translate("Failed"));
+		break;
 
 	case "lang":
 		if( !bab_isUserAdministrator())
