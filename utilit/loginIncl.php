@@ -36,12 +36,9 @@ class Func_PortalAuthentication extends bab_functionality
 	var $loginMessage = '';
 	var $errorMessages = array();
 
-	function Func_PortalAuthentication()
-	{
-		parent::bab_functionality();
-	}
 
-	function getDescription()
+
+	public function getDescription()
 	{
 		return bab_translate("Authentication functionality");
 	}
@@ -59,7 +56,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 *
 	 * @param string	$message
 	 */
-	function setLoginMessage($message)
+	public function setLoginMessage($message)
 	{
 		$this->loginMessage = $message;
 	}
@@ -69,12 +66,12 @@ class Func_PortalAuthentication extends bab_functionality
 	 *
 	 * @param unknown_type $message
 	 */
-	function addError($message)
+	public function addError($message)
 	{
 		$this->errorMessages[] = $message;
 	}
 
-	function clearErrors()
+	public function clearErrors()
 	{
 		$this->errorMessages = array();
 	}
@@ -85,7 +82,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 * @param int		$iIdUser
 	 * @return bool
 	 */
-	function checkAttempts()
+	public function checkAttempts()
 	{
 		global $babDB;
 		$babDB->db_query('UPDATE '.BAB_USERS_LOG_TBL.' SET grp_change=1');
@@ -101,7 +98,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 * @param int		$iIdUser
 	 * @return bool
 	 */
-	function userCanLogin($iIdUser)
+	public function userCanLogin($iIdUser)
 	{
 		if (is_null($iIdUser)) {
 			return false;
@@ -136,7 +133,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 *
 	 * @return bool
 	 */
-	function isLogged()
+	public function isLogged()
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
 		return bab_isUserLogged();
@@ -150,7 +147,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 * @param string	$sCookie		The cookie id (stored in c_password cookie).
 	 * @return int		The user id or null if not found
 	 */
-	function authenticateUserByCookie($sCookie)
+	public function authenticateUserByCookie($sCookie)
 	{
 		$aUser = bab_getUserByCookie($sCookie);
 		if (!is_null($aUser))
@@ -172,7 +169,7 @@ class Func_PortalAuthentication extends bab_functionality
 	 * @param string	$sPassword	The user password
 	 * @return int		The user id or null if not found
 	 */
-	function authenticateUser($sLogin, $sPassword)
+	public function authenticateUser($sLogin, $sPassword)
 	{
 		global $babBody;
 		$aUser = bab_getUserByLoginPassword($sLogin, $sPassword);
@@ -195,25 +192,65 @@ class Func_PortalAuthentication extends bab_functionality
 		}
 		return null;
 	}
+	
+	/**
+	 * Init the session for a logged in user
+	 * This method have to be called after the userCanLogin method
+	 * This method should be followed by a redirect to refresh the page and display the logged in status
+	 * 
+	 * @see Func_PortalAuthentication::userCanLogin
+	 * @see bab_eventAfterUserLoggedIn
+	 * 
+	 * @param	int	$id_user			The user must exists in ovidentia database
+	 * @param	int	$cookie_duration	null = no cookie
+	 * 
+	 * @todo return false if one of the function does not work
+	 * 
+	 * @return bool
+	 */
+	public function setUserSession($id_user, $cookie_duration = null)
+	{
+		require_once dirname(__FILE__).'/eventloginincl.php';
+		
+		if (!session_id())
+		{
+			return false;
+		}
+		
+		bab_setUserSessionInfo($id_user);
+		bab_logUserConnectionToStat($id_user);
+		bab_updateUserConnectionDate($id_user);
+		
+		if (null !== $cookie_duration)
+		{
+			bab_addUserCookie($id_user, bab_getUserNickname($id_user), $cookie_duration);
+		}
+		
+		$event = new bab_eventAfterUserLoggedIn;
+		$event->id_user = $id_user;
+		
+		bab_fireEvent($event);
+		
+		return true;
+	}
 
 
 	/**
 	 * Register myself as a functionality.
-	 * @static
 	 */
-	function register()
+	public static function register()
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
 		return $functionalities->registerClass('Func_PortalAuthentication', __FILE__);
 	}
 
-	function login()
+	public function login()
 	{
 		die(bab_translate("Func_PortalAuthentication::login must not be called directly"));
 	}
 
-	function logout()
+	public function logout()
 	{
 		die(bab_translate("Func_PortalAuthentication::logout must not be called directly"));
 	}
@@ -227,12 +264,8 @@ class Func_PortalAuthentication extends bab_functionality
  */
 class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 {
-	function Func_PortalAuthentication_AuthOvidentia()
-	{
-		parent::Func_PortalAuthentication();
-	}
 
-	function getDescription()
+	public function getDescription()
 	{
 		return bab_translate("Authentication methods: Form, LDAP, Active directory, Cookie");
 	}
@@ -241,14 +274,14 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 * Register myself as a functionality.
 	 * @static
 	 */
-	function register()
+	public static function register()
 	{
 		require_once $GLOBALS['babInstallPath'].'utilit/functionalityincl.php';
 		$functionalities = new bab_functionalities();
 		return $functionalities->registerClass('Func_PortalAuthentication_AuthOvidentia', __FILE__);
 	}
 
-	function registerAuthType()
+	public function registerAuthType()
 	{
 		if (Func_PortalAuthentication::register() === false) {
 			return false;
@@ -256,7 +289,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 		return Func_PortalAuthentication_AuthOvidentia::register();
 	}
 
-	function login()
+	public function login()
 	{
 		$sLogin		= bab_pp('nickname', null);
 		$sPassword	= bab_pp('password', null);
@@ -268,12 +301,9 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 			if ($this->userCanLogin($iIdUser))
 			{
-				require_once $GLOBALS['babInstallPath'] . 'utilit/loginIncl.php';
-				bab_setUserSessionInfo($iIdUser);
-				bab_logUserConnectionToStat($iIdUser);
-				bab_updateUserConnectionDate($iIdUser);
+				$this->setUserSession($iIdUser, $iLifeTime);
 				bab_createReversableUserPassword($iIdUser, $sPassword);
-				bab_addUserCookie($iIdUser, $sLogin, $iLifeTime);
+
 				return true;
 			}
 		}
@@ -286,7 +316,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	}
 
 
-	function logout()
+	public function logout()
 	{
 		bab_logout();
 	}
@@ -299,7 +329,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 * @param string	$sPassword	The user password
 	 * @return int		The user id or null if not found
 	 */
-	function authenticateUserByLoginPassword($sLogin, $sPassword)
+	public function authenticateUserByLoginPassword($sLogin, $sPassword)
 	{
 		global $BAB_HASH_VAR;
 		
@@ -333,7 +363,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 * @param string	$sPassword	The user password
 	 * @return int		The user id or null if not found
 	 */
-	function authenticateUserByLDAP($sLogin, $sPassword)
+	public function authenticateUserByLDAP($sLogin, $sPassword)
 	{
 		global $babBody;
 
@@ -571,7 +601,7 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 	 * @param string	$sPassword	The user password
 	 * @return int		The user id or null if not found
 	 */
-	function authenticateUserByActiveDirectory($sLogin, $sPassword)
+	public function authenticateUserByActiveDirectory($sLogin, $sPassword)
 	{
 		global $babBody;
 
@@ -904,11 +934,14 @@ function bab_signOff()
 
 function bab_logout($bRedirect = true)
 {
+	require_once dirname(__FILE__).'/eventloginincl.php';
 	global $babBody, $babDB, $BAB_HASH_VAR, $BAB_SESS_USER, $BAB_SESS_EMAIL, $BAB_SESS_USERID, $BAB_SESS_HASHID,$BAB_SESS_LOGGED;
-
+	
 	$babDB->db_query("delete from ".BAB_USERS_LOG_TBL." where id_user='".$babDB->db_escape_string($BAB_SESS_USERID)."' and sessid='".$babDB->db_escape_string(session_id())."'");
-
 	$babDB->db_query("UPDATE ".BAB_USERS_TBL." SET  cookie_validity=NOW(), cookie_id='' WHERE id='".$babDB->db_escape_string($BAB_SESS_USERID)."'");
+
+	$event = new bab_eventAfterUserLoggedOut;
+	$event->id_user = $BAB_SESS_USERID;
 
 	bab_unsetUserSessionInfo();
 
@@ -919,6 +952,8 @@ function bab_logout($bRedirect = true)
 	}
 	session_destroy();
 	destroyAuthCookie();
+	
+	bab_fireEvent($event);
 
 	if($bRedirect)
 	{

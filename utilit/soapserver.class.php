@@ -197,15 +197,14 @@ function login($nickname, $password)
 		   Func_PortalAuthentication_AuthOvidentia::registerAuthType();
 		   $oAuthObject = @bab_functionality::get('PortalAuthentication/AuthOvidentia');
 		}
+		
+		/*@var $oAuthObject Func_PortalAuthentication */
 
        $iIdUser = $oAuthObject->authenticateUser($nickname, $password);           
 	   if($oAuthObject->userCanLogin($iIdUser))
 			{
-			bab_setUserSessionInfo($iIdUser);
-			bab_logUserConnectionToStat($iIdUser);
-			bab_updateUserConnectionDate($iIdUser);
-			bab_createReversableUserPassword($iIdUser, $password);
-			bab_addUserCookie($iIdUser, $nickname, 0);
+			$oAuthObject->setUserSession($iIdUser);
+			
 			$_SESSION['BAB_SESS_WSUSER'] = true;
 			return array('id'=>session_id(), 'error'=>'');	
 			}
