@@ -38,7 +38,7 @@ class bab_addons_list
 	var $name;
 	var $url;
 	var $desctxt;
-			
+
 	var $arr = array();
 	var $db;
 	var $count;
@@ -55,7 +55,7 @@ class bab_addons_list
 	function bab_addons_list()
 		{
 		include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-		
+
 		$this->display_in_form = true;
 		$this->title = false;
 
@@ -76,13 +76,13 @@ class bab_addons_list
 		$this->t_install = bab_translate("Install");
 		$this->chosetheme = bab_translate("Use this theme");
 		$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"), BAB_HTML_JS);
-		
+
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
-		
+
 		$this->res = $this->getRes();
 	}
-		
+
 	function getRes() {
 
 		$return = array();
@@ -95,31 +95,31 @@ class bab_addons_list
 		bab_sort::ksort($return, bab_sort::CASE_INSENSITIVE);
 		return $return;
 	}
-	
-	
-	
+
+
+
 	function display($addon) {
 
 		if (!$addon) {
 			return false;
 		}
-	
+
 		$type = $addon->getAddonType();
 		return 'EXTENSION' === $type;
 	}
-	
-	
-		
+
+
+
 
 	function getnext()
 		{
-		
+
 		if( list(,$addon) = each($this->res))
 			{
 			$this->altbg = !$this->altbg;
-			
+
 			/*@var $addon bab_addonInfos */
-			
+
 			$this->title 			= bab_toHtml($addon->getName());
 			$this->requrl 			= bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$addon->getId());
 			$this->viewurl 			= bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=view&item=".$addon->getId());
@@ -127,31 +127,31 @@ class bab_addons_list
 			$this->deleteurl		= bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=del&item=".$addon->getId());
 
 			$addon->updateInstallStatus();
-			
+
 			$this->id_addon 		= $addon->getId();
-			
+
 			$this->catchecked 		= $addon->isDisabled();
 			$this->access_control 	= $addon->hasAccessControl();
 			$this->delete 			= $addon->isDeletable();
 			$this->addversion 		= bab_toHtml($addon->getDbVersion());
 			$this->description 		= bab_toHtml($addon->getDescription(), BAB_HTML_ALL);
 			$this->iconpath			= bab_toHtml($addon->getIconPath());
-			
+
 			$confurl = $addon->getConfigurationUrl();
 			if (null !== $confurl && $addon->isAccessValid()) {
 				$this->configurationurl	= bab_toHtml($confurl);
 			} else {
 				$this->configurationurl	= false;
 			}
-			
+
 			if ($addon->isUpgradable()) {
 				$this->upgradeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=upgrade&item=".$addon->getId());
 			} else {
 				$this->upgradeurl = false;
 			}
-			
-			
-			
+
+
+
 			if ('THEME' === $addon->getAddonType() && $addon->isAccessValid() && $GLOBALS['babSkin'] !== $addon->getName())
 			{
 				$this->chosethemeurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=chosetheme&item=".$addon->getId());
@@ -161,19 +161,19 @@ class bab_addons_list
 
 			return true;
 			}
-		
+
 		return false;
 		}
 	}
-	
+
 
 class bab_addons_list_library extends bab_addons_list {
 
 	function bab_addons_list_library() {
 		parent::bab_addons_list();
-		
+
 		$this->display_in_form = false;
-		
+
 	}
 
 	function display($addon) {
@@ -187,9 +187,9 @@ class bab_addons_list_theme extends bab_addons_list {
 
 	function bab_addons_list_theme() {
 		parent::bab_addons_list();
-		
+
 		$this->display_in_form = false;
-		
+
 	}
 
 	function display($addon) {
@@ -209,18 +209,18 @@ class bab_addons_list_theme extends bab_addons_list {
 
 function goto_list($addon) {
 
-	
+
 	$type = $addon->getAddonType();
-	
+
 	switch($type) {
 		case 'EXTENSION':
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=list');
 			break;
-		
+
 		case 'THEME':
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=theme');
 			break;
-		
+
 		case 'LIBRARY':
 			header('location:'.$GLOBALS['babUrlScript'].'?tg=addons&idx=library');
 			break;
@@ -245,12 +245,12 @@ function getAddonName($id)
 
 function callSingleAddonFunction($id,$name,$func)
 {
-	
+
 	$addonpath = $GLOBALS['babAddonsPath'].$name;
 	if( is_file($addonpath."/init.php" ))
 		{
 		bab_setAddonGlobals($id);
-		
+
 		require_once( $addonpath."/init.php" );
 		$call = $name."_".$func;
 		if( function_exists($call) )
@@ -266,27 +266,27 @@ function addonsList()
 	global $babBody;
 	$temp = new bab_addons_list();
 	$babBody->babecho(bab_printTemplate($temp, "addons.html", "addonslist"));
-	
+
 	}
-	
-	
+
+
 function libraryList()
 	{
 	global $babBody;
-	
+
 	$temp = new bab_addons_list_library();
 	$babBody->babecho(bab_printTemplate($temp, "addons.html", "addonslist"));
-	
+
 	}
 
 
 function themeList()
 	{
 	global $babBody;
-	
+
 	$temp = new bab_addons_list_theme();
 	$babBody->babecho(bab_printTemplate($temp, "addons.html", "addonslist"));
-	
+
 	}
 
 
@@ -294,14 +294,14 @@ function themeList()
  * Disable of enable addons
  */
 function disableAddons($addons) {
-	
+
 	$addons = (array) $addons;
 	$kaddons = array_flip($addons);
-	
+
 	foreach(bab_addonsInfos::getDbRows() as $row) {
-	
+
 		$addon = bab_getAddonInfosInstance($row['title']);
-	
+
 		if (isset($kaddons[$row['id']])) {
 			$addon->disable();
 		} else {
@@ -311,11 +311,11 @@ function disableAddons($addons) {
 
 	global $babDB;
 
-	
+
 	// if an addon has put some events in vacation cache
 	$babDB->db_query("TRUNCATE bab_vac_calendar");
 	bab_siteMap::clearAll();
-	
+
 	Header("Location: ". $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	exit;
 }
@@ -338,14 +338,14 @@ function addon_display_upgrade($id) {
 		return;
 	}
 
-	
-	$t_upgrade = sprintf(bab_translate('Upgrade of addon %s from version %s to version %s'), 
-		$addon->getName(), 
+
+	$t_upgrade = sprintf(bab_translate('Upgrade of addon %s from version %s to version %s'),
+		$addon->getName(),
 		$addon->getDbVersion(),
-		$addon->getIniVersion() 
+		$addon->getIniVersion()
 	);
 
-	
+
 	$t_continue = bab_translate('Back to list');
 
 	$url = bab_url::request();
@@ -361,17 +361,17 @@ function addon_display_upgrade($id) {
 		case 'EXTENSION':
 			$url = bab_url::mod($url, 'idx', 'list');
 			break;
-		
+
 		case 'THEME':
 			$url = bab_url::mod($url, 'idx', 'theme');
 			break;
-		
+
 		case 'LIBRARY':
 			$url = bab_url::mod($url, 'idx', 'library');
 			break;
 	}
 
-	
+
 	$listurl = bab_url::mod($url, 'item', $id);
 
 	bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $listurl);
@@ -392,7 +392,7 @@ function addon_call_upgrade($id) {
 
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
-	
+
 	if (!$addon->isValid()) {
 		die();
 	}
@@ -400,7 +400,7 @@ function addon_call_upgrade($id) {
 	$frame = new bab_installWindow;
 	$frame->setStartMessage(bab_translate('Install start'));
 	$frame->setStopMessage(
-		bab_translate('The addon upgrade was successful'), 
+		bab_translate('The addon upgrade was successful'),
 		bab_translate('An error occurred during the addon upgrade')
 	);
 
@@ -458,105 +458,105 @@ function bab_addon_export_rd($d) {
 class bab_addonPackage
 {
 	/**
-	 * 
+	 *
 	 * @var bab_addonInfos
 	 */
 	protected $addon;
-	
+
 	/**
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $multiple = false;
-	
+
 	private $tmpfile;
 	private $zip;
-	
+
 	public function __construct($multiple, bab_addonInfos $addon)
 	{
 		$this->multiple = $multiple;
-		
+
 		if (!file_exists($GLOBALS['babUploadPath']))
 		{
 			throw new ErrorException('The upload directory is not accessible : '.$GLOBALS['babUploadPath']);
 		}
-		
+
 		if (!file_exists($GLOBALS['babUploadPath'].'/tmp'))
 		{
 			throw new ErrorException('The temporary folder is not accessible');
 		}
-		
-		
+
+
 		bab_setTimeLimit(0);
-		
+
 		$this->zip = bab_functionality::get('Archive/Zip');
-		
+
 		$version = str_replace('.','-',$addon->getIniVersion());
 		$ext = $multiple ? '.pkg.zip' : '.zip';
 		$this->tmpfile = $GLOBALS['babUploadPath'].'/tmp/'.$addon->getName().'-'.$version.$ext;
-		
+
 		try {
 			$this->zip->open($this->tmpfile);
 		} catch (Exception $e) {
 			$babBody->addError($e->getMessage());
 		}
-		
+
 		if ($this->multiple) {
 			$this->addAllAddons($addon);
 		} else {
 			$this->addAddon($addon);
 		}
 	}
-	
-	
+
+
 	private function addAllAddons(bab_addonInfos $addon)
 	{
 		$general = array();
 		$general['name'] = $addon->getName();
-		
+
 		$dependencies = $addon->getPackageDependencies();
 		foreach($dependencies as $addonname) {
 			$dependence = bab_getAddonInfosInstance($addonname);
 			$this->addAddon($dependence);
 			$ini = $dependence->getIni();
 		}
-		
-		
+
+
 		$general['package_collection'] = implode(', ', $dependencies);
 		$general['encoding'] = bab_Charset::getIso();
 		$general['mysql_character_set_database'] = 'latin1,utf8';
-		
+
 
 		$content = '; <?php/*'."\n";
 		$content .= "[general]\n";
-		
+
 		foreach($general as $key => $value) {
 			$content .= "$key=\"$value\"\n";
 		}
-		
+
 		$content .= ";*/ ?>";
-		
+
 		$tmpini = $GLOBALS['babUploadPath'].'/tmp/addons.ini';
-		
+
 		file_put_contents($tmpini, $content);
-		
+
 		$this->zip->addFile($tmpini, 'install/addons/addons.ini');
 	}
-	
-	
-	
-	
+
+
+
+
 	private function addAddon(bab_addonInfos $addon)
 	{
 		$addons_files_location = bab_getAddonsFilePath();
 		$loc_in = $addons_files_location['loc_in'];
 		$loc_out = $addons_files_location['loc_out'];
-		
+
 		if (!callSingleAddonFunction($addon->getId(), $addon->getName(), 'onPackageAddon'))
 		{
 			return;
 		}
-		
+
 		$res = array();
 		foreach ($loc_in as $k => $path)
 		{
@@ -567,9 +567,9 @@ class bab_addonPackage
 				die(sprintf(bab_translate('Error reading directory %s'), $path));
 				return;
 			}
-	
+
 			$len = mb_strlen($path);
-	
+
 			foreach ($res as $file)
 			{
 				if (is_file($file))
@@ -582,10 +582,10 @@ class bab_addonPackage
 				}
 			}
 		}
-	
+
 	}
-	
-	
+
+
 	public function download()
 	{
 		global $babBody;
@@ -595,12 +595,12 @@ class bab_addonPackage
 			$babBody->addError(bab_translate('Error in zip creation'));
 			return;
 		}
-	
-	
+
+
 		header("Content-Type:application/zip");
 		header("Content-Disposition: attachment; filename=".basename($this->tmpfile));
 		echo file_get_contents($this->tmpfile);
-	
+
 		@unlink($this->tmpfile);
 		exit;
 	}
@@ -616,17 +616,17 @@ class bab_addonPackage
  */
 function export($id)
 	{
-		
+
 		$row = bab_addonsInfos::getDbRow($id);
 		$addon = bab_getAddonInfosInstance($row['title']);
-		
+
 		$package = new bab_addonPackage(false, $addon);
-		
+
 		$package->download();
 	}
-	
-	
-	
+
+
+
 /**
  * Get a zip archive for one addon
  * @param	int	$id
@@ -635,38 +635,38 @@ function exportall($id)
 	{
 		$row = bab_addonsInfos::getDbRow($id);
 		$addon = bab_getAddonInfosInstance($row['title']);
-		
+
 		$package = new bab_addonPackage(true, $addon);
-		
+
 		$package->download();
 	}
-	
-	
-	
-	
-	
-	
 
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Delete addon
  * @param	int	$id
  */
 function bab_AddonDel($id)
 	{
-	
+
 	$row = bab_addonsInfos::getDbRow($id);
 	$addon = bab_getAddonInfosInstance($row['title']);
-	
+
 	if (false === $addon->delete($msgerror)) {
 		global $babBody;
 		$babBody->addError($msgerror);
-		
+
 		bab_display_addon_requirements();
 		return;
 	}
@@ -749,21 +749,21 @@ function bab_display_addon_requirements()
 		 */
 		public $allok = null;
 
-		
+
 		public $altbg = false;
-	
+
 		function temp()
 			{
 			global $babBody;
 			$this->installed = false;
-			
+
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
 				// display requirements from temporary package into installation process
 				$this->item = '';
 
 				$ul = upload_tmpfile();
-				
+
 				$name 			= mb_substr( $ul,(mb_strrpos( $ul,'/')+2+strlen(session_id())));
 				$filename 		= mb_substr( $ul,(mb_strrpos( $ul,'/')+1));
 				$this->tmpfile 	= bab_toHtml($filename);
@@ -780,7 +780,7 @@ function bab_display_addon_requirements()
 				}
 
 				$this->imagepath = false;
-				
+
 				$this->t_addon = bab_translate("Archive");
 				$this->t_install = bab_translate("Install");
 				$babBody->setTitle(bab_translate("Requirements to install the new archive"));
@@ -800,12 +800,12 @@ function bab_display_addon_requirements()
 				$addon = bab_getAddonInfosInstance($row['title']);
 				$this->installed = $addon->isInstalled();
 				$this->dependences = $addon->getDependences();
-				
+
 				$ini->inifile($addon->getPhpPath()."addonini.php");
 				$this->tmpfile = '';
 				$this->action = 'upgrade';
 				$this->t_install = bab_translate("Upgrade");
-				
+
 				$name = $addon->getName();
 				try {
 					$description = $addon->getDescription();
@@ -817,14 +817,14 @@ function bab_display_addon_requirements()
 				if ($addon->isDeletable()) {
 					$this->deleteurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=del&item=".$addon->getId());
 				}
-				
+
 				if (is_file($addon->getPhpPath()."history.txt")) {
 					$this->historyurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=history&item=".$addon->getId());
-				}		
+				}
 
 				if ($ini->fileExists()) {
 					$this->exporturl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=export&item=".$addon->getId());
-					if ($addon->getDependencies()) 
+					if ($addon->getDependencies())
 					{
 						$this->exportpkgurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=exportall&item=".$addon->getId());
 					}
@@ -834,15 +834,15 @@ function bab_display_addon_requirements()
 			$this->name = bab_toHtml($name);
 			$this->adescription = bab_toHtml($description);
 			$this->version = bab_toHtml($ini->getVersion());
-			
+
 			$this->requirementsHtml = $ini->getRequirementsHtml(true);
-			
+
 			$this->t_requirements = bab_translate("Requirements");
 			$this->t_recommended = bab_translate("Recommended");
 			$this->t_dependencies = bab_translate("Dependencies");
 			$this->t_required = bab_translate("Required value");
 			$this->t_current = bab_translate("Current value");
-			
+
 			$this->t_description = bab_translate("Description");
 			$this->t_version = bab_translate("Version");
 			$this->t_ok = bab_translate("Ok");
@@ -852,31 +852,31 @@ function bab_display_addon_requirements()
 			$this->t_export = bab_translate("Download");
 			$this->t_exportpkg = bab_translate("Download with dependencies");
 			$this->confirmdelete = bab_toHtml(bab_translate("Are you sure you want to delete this add-on ?"));
-			
+
 			$this->call_upgrade = true;
 			$this->t_call_upgrade = bab_translate("Launch addon installation program");
 
 			$this->allok = $ini->fileExists() && $ini->isValid();
 		}
 
-		
+
 		function getnextdependence() {
 			if (!isset($this->dependences)) {
 				return false;
 			}
-			
+
 			if (list($name, $status) = each($this->dependences)) {
 				$this->addonname = bab_toHtml($name);
 				if ($addon = bab_getAddonInfosInstance($name)) {
 					$this->addonurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=addons&idx=requirements&item=".$addon->getId());
 				}
-				
+
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 	}
 
 	$temp = new temp();
@@ -897,7 +897,7 @@ class bab_import_package {
 
 		if(bab_rp('tmpfile')) {
 			$ul = $GLOBALS['babUploadPath'].'/tmp/'.bab_rp('tmpfile');
-			
+
 			if (is_file($ul)) {
 				$install = new bab_InstallSource;
 				$install->setArchive($ul);
@@ -924,7 +924,7 @@ class bab_import_package {
 	 * unzip and install package
 	 */
 	public static function install() {
-		
+
 		bab_setTimeLimit(1200);
 
 		try {
@@ -935,7 +935,7 @@ class bab_import_package {
 			bab_installWindow::message($e->getMessage());
 			return false;
 		}
-		
+
 		if ($install->install($ini)) {
 			if (unlink($install->getArchive())) {
 				return true;
@@ -944,13 +944,13 @@ class bab_import_package {
 
 		return false;
 	}
-	
+
 	/**
 	 * Display page for installation
-	 * 
+	 *
 	 */
 	public static function page() {
-		
+
 		try {
 			$install = self::getInstallSource();
 			$ini = self::getIni($install);
@@ -961,20 +961,20 @@ class bab_import_package {
 			return false;
 		}
 
-		
+
 		require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
 
 		$t_upgrade = bab_translate('Installation of the package');
-		
+
 
 		$url = bab_url::request();
 		$url = bab_url::mod($url, 'tg', 'addons');
 		$frameurl = bab_url::mod($url, 'idx', 'import_frame');
-		
+
 
 		$frameurl = bab_url::mod($frameurl, 'tmpfile', bab_rp('tmpfile'));
-		
-		
+
+
 		if ($ini instanceOf bab_CoreIniFile) {
 			$t_continue = bab_translate('Home');
 			$continueurl = bab_url::request();
@@ -982,7 +982,7 @@ class bab_import_package {
 			$t_continue = bab_translate('Back to list');
 			$continueurl = bab_url::mod($url, 'idx', 'list');
 		}
-		
+
 		bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $continueurl);
 	}
 
@@ -1011,7 +1011,7 @@ function history($item)
 
 			$arr = bab_addonsInfos::getDbRow($item);
 			$addon = bab_getAddonInfosInstance($arr['title']);
-			
+
 			if ($addon)
 				{
 				$encoding = 'ISO-8859-15';
@@ -1031,116 +1031,116 @@ function history($item)
 	$temp = new temp($item);
 	$babBody->babpopup(bab_printTemplate($temp, "addons.html", "history"));
 	}
-	
-	
 
-	
-	
+
+
+
+
 function functionalities() {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/tree.php';
 	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
 	require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
-	
-	
-	
+
+
+
 	$func = new bab_functionalities();
-	
-	
+
+
 	if ($uppath = bab_gp('uppath', false)) {
-	
+
 		$func->copyToParent($uppath);
-	
+
 		header('location:'.bab_url::request('tg', 'idx'));
 		exit;
 	}
-	
-	
+
+
 	if ($remove = bab_gp('remove', false))
 	{
 		$func->unregister($remove);
-		
+
 		header('location:'.bab_url::request('tg', 'idx'));
 		exit;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	$tree = new bab_TreeView('bab_functionalities');
 
 	$root = & $tree->createElement( 'R', 'directory', bab_translate('All functionalities'), '', '');
-	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');					
+	$root->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/category.png');
 	$tree->appendElement($root, NULL);
 
 
 	function buid_nodeLevel(&$tree, $node, $id, $path) {
 		$func = new bab_functionalities();
 		$childs = $func->getChildren($path);
-		
+
 		$i = 1;
 		foreach ($childs as $dir) {
-		
+
 			$funcpath = trim($path.'/'.$dir, '/');
 			$obj = @bab_functionality::get($funcpath);
-			
+
 			if (false !== $obj) {
 				$original = $func->getOriginal($funcpath);
-			
+
 				$labelpath = $obj->getPath();
 				$iPos = mb_strpos($labelpath,'/');
 				if (false !== $iPos) {
 					$labelpath = mb_substr($labelpath,$iPos+1);
 				}
-				
+
 				if ($labelpath !== $dir) {
 					$labelpath = $dir . ' ('.$labelpath.')';
 				}
-				
+
 				$description = $labelpath.' : '.$original->getDescription();
-				
+
 				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 			} else {
 				$description = $dir . ' : '.bab_translate('Missing target');
-				
+
 				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
-				
-				
+
+
 				$element->addAction('delete',
 					bab_translate('Remove link'),
 					$GLOBALS['babSkinPath'] . 'images/Puces/delete.png',
 					$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&remove='.urlencode($funcpath),
 					'');
 			}
-			
-			
-			
-			
-		
-		
-			
-			
-			
-			
-			
+
+
+
+
+
+
+
+
+
+
+
 			if (false === buid_nodeLevel($tree, $element, $id.'.'.$i, $funcpath)) {
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/topic.png');
-			
+
 			} else {
 				$element->setIcon($GLOBALS['babSkinPath'] . 'images/nodetypes/folder.png');
 			}
-			
-			
-			
-			
+
+
+
+
 			if (0 < mb_substr_count($funcpath, '/')) {
-			
+
 				$parent_path = $func->getParentPath($funcpath);
 				$parent_obj = @bab_functionality::get($parent_path);
 
-				// quand $parent_obj est false c'est que l'enfant selectionne par defaut n'existe plus, 
+				// quand $parent_obj est false c'est que l'enfant selectionne par defaut n'existe plus,
 				// ici on permet de definir un enfant a partir de ceux disponibles
-				
+
 				if ((false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) || (false === $parent_obj)) {
 
 					$element->addAction('moveup',
@@ -1148,19 +1148,19 @@ function functionalities() {
 									$GLOBALS['babSkinPath'] . 'images/Puces/go-up.png',
 									$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&uppath='.urlencode($funcpath),
 									'');
-				
-				} 
-				
+
+				}
+
 			}
-			
-			
-			
-			
+
+
+
+
 			$tree->appendElement($element, $id);
-			
+
 			$i++;
 		}
-		
+
 		return 0 < count($childs);
 
 	}
@@ -1172,7 +1172,7 @@ function functionalities() {
 	$babBody->setTitle(bab_translate('Libraries administration'));
 	$babBody->babecho($tree->printTemplate());
 }
-	
+
 
 
 
@@ -1210,7 +1210,7 @@ function viewVersion()
 			$this->phpinfo = "phpinfo";
 			$this->currentyear = date("Y");
 			$this->basedir = realpath('');
-			
+
 
 			$ini = new bab_inifile();
 			$ini->inifile($GLOBALS['babInstallPath'].'version.inc');
@@ -1239,25 +1239,26 @@ function viewVersion()
 
 			$basedir = realpath('.').'/';
 			$dh = opendir($basedir);
-			
+
 			$this->dirs = array();
-			
+
 			if ($dh)
 			{
 				while (($file = readdir($dh)) !== false) {
-					if (is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
+					if ($file !== '.' && $file !== '..'
+					 && is_dir($basedir.$file) && file_exists($basedir.$file.'/version.inc')) {
 						$this->dirs[] = $file;
-					} 
+					}
 				}
 			}
-			
-			bab_sort::natcasesort($this->dirs);	
-			
+
+			bab_sort::natcasesort($this->dirs);
+
 			$this->md5file = file_exists(realpath(dirname(__FILE__).'/../md5_file'));
 			$this->modifiedurl = $GLOBALS['babUrlScript']."?tg=addons&idx=modified";
 		}
 
-		
+
 
 		function set_message()
 		{
@@ -1273,11 +1274,11 @@ function viewVersion()
 
 		function getnextdir() {
 			if (list(,$file) = each($this->dirs)) {
-				
+
 				$this->altbg = !$this->altbg;
 				$this->name = $file;
 				$this->current_core = $file.'/' === $GLOBALS['babInstallPath'];
-				
+
 				return true;
 			}
 			return false;
@@ -1292,9 +1293,9 @@ function viewVersion()
 	$oToolbar = new BAB_Toolbar();
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
-	
+
 	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade', 
+		new BAB_ToolbarItem( bab_translate('Ovidentia upgrade'), $GLOBALS['babUrlScript'].'?tg=addons&idx=zipupgrade',
 			$sImgPath . 'package_settings.png', '', '', '')
 	);
 
@@ -1347,14 +1348,14 @@ function bab_getMd5($file)
 function viewModified()
 {
 	global $babBody;
-	
+
 	$infos = '';
 	$list = bab_getMd5(realpath(dirname(__FILE__).'/../md5_file'));
 	foreach($list as $file)
 	{
 		$infos .= $file."\n";
 	}
-	
+
 	$babBody->babPopup(bab_toHtml($infos, BAB_HTML_ALL));
 }
 
@@ -1368,15 +1369,15 @@ function bab_addonUploadToolbar($message, $func = null) {
 	$oToolbar = new BAB_Toolbar();
 
 	$sImgPath = $GLOBALS['babInstallPath'] . 'skins/ovidentia/images/Puces/';
-	
+
 	$oToolbar->addToolbarItem(
-		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload', 
+		new BAB_ToolbarItem($message, $GLOBALS['babUrlScript'].'?tg=addons&idx=upload',
 			$sImgPath . 'package_settings.png', '', '', '')
 	);
 
 	if (null !== $func) {
 		$oToolbar->addToolbarItem(
-			new BAB_ToolbarItem(bab_translate("Libraries administration"), $GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities', 
+			new BAB_ToolbarItem(bab_translate("Libraries administration"), $GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities',
 				$sImgPath . 'folder.gif', '', '', '')
 		);
 	}
@@ -1387,12 +1388,12 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 
 
-	
-	
-	
+
+
+
 function display_addons_menu() {
 	global $babBody;
-	
+
 	$babBody->addItemMenu("version", bab_translate('Version'), $GLOBALS['babUrlScript']."?tg=addons&idx=version");
 	$babBody->addItemMenu("list", bab_translate('Add-ons'), $GLOBALS['babUrlScript']."?tg=addons&idx=list");
 	$babBody->addItemMenu("theme", bab_translate('Skins'), $GLOBALS['babUrlScript']."?tg=addons&idx=theme");
@@ -1401,30 +1402,30 @@ function display_addons_menu() {
 
 
 function chosetheme() {
-	
+
 	require_once dirname(__FILE__).'/../utilit/urlincl.php';
 	require_once dirname(__FILE__).'/../utilit/skinincl.php';
 	global $babDB;
-	
+
 	$row = bab_addonsInfos::getDbRow(bab_rp('item'));
-	
+
 	$skin = new bab_skin($row['title']);
 	if (!$skin->isAccessValid())
 	{
 		return;
 	}
-	
+
 	$arr = $skin->getStyles();
-	
+
 	$babDB->db_query('UPDATE bab_sites SET skin='.$babDB->quote($skin->getName()).', style='.$babDB->quote(reset($arr)).'  WHERE name='.$babDB->quote($GLOBALS['babSiteName']));
-	
-	
+
+
 	$url = bab_url::get_request_gp();
 	$url->idx = 'theme';
 	$url->location();
 }
-	
-	
+
+
 
 /* main */
 
@@ -1456,7 +1457,7 @@ if( isset($acladd))
 
 if (isset($_POST['action'])) {
 	switch($_POST['action']) {
-		
+
 		case 'upgrade':
 			addon_display_upgrade($_POST['item']);
 			break;
@@ -1470,7 +1471,7 @@ switch($idx)
 		$babBody->title = bab_translate("Ovidentia informations");
 		viewVersion();
 		break;
-		
+
 	case 'modified':
 		$babBody->setTitle(bab_translate("List of modified files"));
 		viewModified();
@@ -1521,7 +1522,7 @@ switch($idx)
 	case "history":
 		history($_GET['item']);
 		break;
-		
+
 	case 'functionalities':
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new library'));
@@ -1535,7 +1536,7 @@ switch($idx)
 		$babBody->addItemMenu("upgrade", bab_translate("Upgrade"), $GLOBALS['babUrlScript']."?tg=addons&idx=upgrade");
 		$babBody->setTitle(bab_translate("Add-ons installation"));
 		break;
-		
+
 	case 'call_upgrade':
 		addon_call_upgrade($_GET['item']);
 		break;
@@ -1551,30 +1552,30 @@ switch($idx)
 	case "export":
 		export($item);
 		break;
-		
+
 	case "exportall":
 		exportall($item);
 		break;
-		
+
 	case 'library':
 		$babBody->title = bab_translate('Shared Libraries');
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new library'), true);
 		libraryList();
-		
-		
+
+
 		break;
 
-		
+
 	case 'theme':
 		$babBody->title = bab_translate('Skins');
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new skin'));
-	
+
 		themeList();
 
 		break;
-		
+
 	case 'chosetheme':
 		chosetheme();
 		break;
@@ -1583,7 +1584,7 @@ switch($idx)
 	case "list":
 	default:
 		$babBody->title = bab_translate("Add-ons list");
-		
+
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new add-on'));
 
