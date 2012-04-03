@@ -353,6 +353,46 @@ class Func_PortalAuthentication_AuthOvidentia extends Func_PortalAuthentication
 
 		return (int) $aUser['id'];
 	}
+	
+	
+	
+	/**
+	 * Returns the user id for the specified email and password using the local database backend.
+	 *
+	 * @param string	$email		The user email
+	 * @param string	$sPassword	The user password
+	 * @return int		The user id or null if not found
+	 */
+	public function authenticateUserByEmailPassword($email, $sPassword)
+	{
+		global $BAB_HASH_VAR;
+	
+		$aUser = bab_getUserByEmailPassword($email, $sPassword);
+	
+		if (null === $aUser )
+		{
+			$this->addError(bab_translate("User not found or bad password"));
+			return null;
+		}
+		
+		if (false === $aUser )
+		{
+			$this->addError(bab_translate("There are more than one user with this email and password"));
+			return null;
+		}
+	
+	
+		// test confirm hash, this is done only for authentication tu prevent a succes on login without a logged status
+	
+		if ($aUser['confirm_hash'] !== md5($aUser['nickname'].$BAB_HASH_VAR))
+		{
+			$this->addError(bab_translate("Account encryption does not match with credentials"));
+			return null;
+		}
+	
+	
+		return (int) $aUser['id'];
+	}
 
 
 
@@ -790,6 +830,42 @@ function bab_doRequireCredential($sLoginMessage, $sAuthType)
 	return true;
 }
 
+/**
+ * get user by email and password
+ * return false if more than one user with this email and password
+ * 
+ * @param string $email
+ * @param string $sPassword
+ * @return multitype:|boolean|NULL
+ */
+function bab_getUserByEmailPassword($email, $sPassword)
+{
+	global $babDB;
+
+	$sQuery = '
+	SELECT *
+	FROM ' . BAB_USERS_TBL . '
+	WHERE email = ' . $babDB->quote($email) . '
+	AND password = ' . $babDB->quote(md5(mb_strtolower($sPassword)));
+
+	$oResult = $babDB->db_query($sQuery);
+	if(false !== $oResult)
+	{
+		$iRows = $babDB->db_num_rows($oResult);
+		if($iRows === 1 && false !== ($aDatas = $babDB->db_fetch_array($oResult)))
+		{
+			return $aDatas;
+		}
+		
+		if ($iRows > 1)
+		{
+			return false;
+		}
+	}
+	return null;
+}
+
+
 
 function bab_getUserByLoginPassword($sLogin, $sPassword)
 {
@@ -1049,7 +1125,7 @@ function displayAuthenticationForm($title, $errorMessages)
 
 	if(!isset($_REQUEST['referer']))
 	{
-		$referer = !empty($GLOBALS['HTTP_REFERER']) ? $GLOBALS['HTTP_REFERER'] : '';
+		$referer = '';
 	}
 	else
 	{
