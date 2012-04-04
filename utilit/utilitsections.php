@@ -189,81 +189,147 @@ var $foot;
 var $key;
 var $val;
 
+private $links = array();
+private $addonlinks = array();
+
 function babAdminSection($close)
 	{
-	global $babBody, $babDB;
-	$this->babSectionTemplate("adminsection.html", "template");
-	$this->title = bab_translate("Administration");
-	if( $close )
-		return;
+		global $babBody, $babDB;
+		$this->babSectionTemplate("adminsection.html", "template");
+		$this->title = bab_translate("Administration");
+		if( $close )
+			return;
+			
 		
-	$dgPrefix = 'babDG'.$babBody->currentAdmGroup;
-
-	$rootNode = bab_siteMap::get(array('root', 'DG'.$babBody->currentAdmGroup , $dgPrefix.'Admin'));
-	$nodename = $dgPrefix.'AdminSection';
-
-	$this->babAdminSection = $rootNode->getNodeById($nodename);
-	
-	$this->head = '';
-	$this->foot = '';
-	
-	global $babBody;
-	
-	$sDgName = '';
-	if( $babBody->currentAdmGroup == 0 ) {
-		$sDgName = bab_translate("all site");
+		$this->foot = '';
+		
+		$sDgName = '';
+		if( $babBody->currentAdmGroup == 0 ) {
+			$sDgName = bab_translate("all site");
 		}
-	else {
-		$sDgName = $babBody->currentDGGroup['name'];
+		else {
+			$sDgName = $babBody->currentDGGroup['name'];
 		}
-
-	if ($this->babAdminSection) {
-		$this->babAdminSection->sortChildNodes();
+		
 		$this->head = bab_translate("Currently you administer ") . $sDgName;
-		$this->babAdminSection = $this->babAdminSection->firstChild();
-	}
+		
+		
+		if (0 == $babBody->currentAdmGroup)
+		{
+			$rootNode = bab_siteMap::get(array('root', 'DGAll' , 'babAdmin'));
+			$babAdminSection = $rootNode->getNodeById('babAdminSection');
+			
+			if ($babAdminSection) {
+				$babAdminSection->sortChildNodes();
+				$babAdminSection = $babAdminSection->firstChild();
+				do {
+					$item = $babAdminSection->getData();
+					
+					$this->links[] = array(
+						'url' 			=> $item->url,
+						'name' 			=> $item->name,
+						'description' 	=> $item->description
+					);
+				}
+				while($babAdminSection = $babAdminSection->nextSibling());
+			}
+			
+			$babAdminSectionAddons = $rootNode->getNodeById('babAdminSectionAddons');
+		
+			if ($babAdminSectionAddons) {
+				$babAdminSectionAddons->sortChildNodes();
+				$babAdminSectionAddons = $babAdminSectionAddons->firstChild();
+				do {
+					$item = $babAdminSectionAddons->getData();
+				
+					$this->addonlinks[] = array(
+							'url' 			=> $item->url,
+							'name' 			=> $item->name,
+							'description' 	=> $item->description
+					);
+				}
+				while($babAdminSectionAddons = $babAdminSectionAddons->nextSibling());
+			}
+		} else {
+			
+			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
+			$delegation = $delegation[0];
+			
+			foreach(bab_getDelegationsObjects() as $link)
+			{
+				if (!isset($link[3]))
+				{
+					continue;
+				}
+				
+				if ($delegation[$link[0]] !== 'Y')
+				{
+					continue;
+				}
+				
+				$this->links[] = array(
+						'url' 			=> $link[3],
+						'name' 			=> $link[1],
+						'description' 	=> $link[4]
+				);
+			}
+			
+			if( count($babBody->dgAdmGroups) > 0) {
+			
+				$this->links[] = array(
+						'url' 			=> $GLOBALS['babUrlScript'].'?tg=delegusr',
+						'name' 			=> bab_translate("Change administration"),
+						'description' 	=> bab_translate("Change administration delegation")
+				);
+			}
+			
+			
+			$this->links[] = array(
+					'url' 			=> $GLOBALS['babUrlScript'].'?tg=users&bupd=0',
+					'name' 			=> bab_translate("Users"),
+					'description' 	=> ''
+			);
+			
+			$this->links[] = array(
+					'url' 			=> $GLOBALS['babUrlScript'].'?tg=groups',
+					'name' 			=> bab_translate("Groups"),
+					'description' 	=> ''
+			);
+			
+			
+			
 	
-	$this->babAdminSectionAddons = $rootNode->getNodeById($dgPrefix.'AdminSectionAddons');
-
-	
-
-	if ($this->babAdminSectionAddons) {
-		$this->babAdminSectionAddons->sortChildNodes();
-		$this->babAdminSectionAddons = $this->babAdminSectionAddons->firstChild();
-	}
-
+			
+		}
 
 	}
 
 function addUrl()
 	{
-	if (!$this->babAdminSection) {
+		if (list(, $link) = each($this->links))
+		{
+			$this->val = bab_toHtml($link['url']);
+			$this->key = bab_toHtml($link['name']);
+			$this->description = bab_toHtml($link['description']);
+			
+			return true; 
+		}
+		
 		return false;
-	}
-
-	$item = $this->babAdminSection->getData();
-	$this->val = bab_toHtml($item->url);
-	$this->key = bab_toHtml($item->name);
-	$this->description = bab_toHtml($item->description);
-	$this->babAdminSection = $this->babAdminSection->nextSibling();
-	return true; 
-	
 	}
 
 function addAddonUrl()
 	{
-	
-	
-	
-	if (!$this->babAdminSectionAddons) {
+		if (list(, $link) = each($this->addonlinks))
+		{
+			$this->val = bab_toHtml($link['url']);
+			$this->key = bab_toHtml($link['name']);
+			$this->description = bab_toHtml($link['description']);
+			
+			return true; 
+		}
+		
 		return false;
-	}
-
-	$item = $this->babAdminSectionAddons->getData();
-	$this->val = bab_toHtml($item->url);
-	$this->key = bab_toHtml($item->name);
-	$this->babAdminSectionAddons = $this->babAdminSectionAddons->nextSibling();
-	return true;
 	}
 
 }

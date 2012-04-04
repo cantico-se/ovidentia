@@ -1401,7 +1401,7 @@ function bab_siteMap_loadNodes($path, $levels) {
 
 	// create delegations nodes
 
-	$delgations = bab_getUserVisiblesDelegations();
+	$delgations = bab_getUserSitemapDelegations();
 
 	foreach($delgations as $dgid => $arr) {
 
@@ -1852,7 +1852,7 @@ function bab_sitemap_userSection($event) {
 	global $babBody, $babDB;
 
 
-	$delegations = bab_getUserVisiblesDelegations();
+	$delegations = bab_getUserSitemapDelegations();
 
 	foreach($delegations as $id_delegation => $deleg) {
 
@@ -1997,7 +1997,7 @@ function bab_sitemap_articles($event) {
 
 
 
-	$delegations = bab_getUserVisiblesDelegations();
+	$delegations = bab_getUserSitemapDelegations();
 
 	foreach($delegations as $id_delegation => $arr) {
 
@@ -2042,7 +2042,7 @@ function bab_sitemap_faq($event) {
 
 
 
-	$delegations = bab_getUserVisiblesDelegations();
+	$delegations = bab_getUserSitemapDelegations();
 
 	foreach($delegations as $delegation => $arr) {
 

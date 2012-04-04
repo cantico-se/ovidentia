@@ -420,8 +420,11 @@ class Func_Ovml_Container_DelegationItems extends Func_Ovml_Container
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		global $babDB, $babDG;
+		global $babDB;
 		parent::setOvmlContext($ctx);
+		
+		$babDG = bab_getDelegationsObjects();
+		
 		$delegationid = $ctx->get_value('delegationid');
 
 		if( $delegationid !== false && $delegationid !== '' )
@@ -440,7 +443,9 @@ class Func_Ovml_Container_DelegationItems extends Func_Ovml_Container
 
 	public function getnext()
 	{
-		global $babDB, $babDG;
+		global $babDB;
+		
+		$babDG = bab_getDelegationsObjects();
 
 		if( $this->idx < $this->count)
 		{
@@ -476,7 +481,7 @@ class Func_Ovml_Container_DelegationAdministrators extends Func_Ovml_Container
 
 	public function setOvmlContext(babOvTemplate $ctx)
 	{
-		global $babDB, $babDG;
+		global $babDB;
 		parent::setOvmlContext($ctx);
 		$delegationid = $ctx->get_value('delegationid');
 
@@ -494,7 +499,7 @@ class Func_Ovml_Container_DelegationAdministrators extends Func_Ovml_Container
 
 	public function getnext()
 	{
-		global $babDB, $babDG;
+		global $babDB;
 
 		if( $this->idx < $this->count)
 		{

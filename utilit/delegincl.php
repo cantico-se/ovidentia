@@ -23,22 +23,49 @@
 ************************************************************************/
 include_once "base.php";		
 
-$GLOBALS['babDG'] = array(
-				array("users", bab_translate("Create a new user")),
-				array("groups", bab_translate("Manage groups")),
-				array('battach', bab_translate("Assign/unassign a user to group and group children")),
-				array("sections", bab_translate("Sections")),
-				array("articles", bab_translate("Articles")),
-				array("faqs", bab_translate("Faq")),
-				array("forums", bab_translate("Forums")),
-				array("calendars", bab_translate("Calendar")),
-				array("mails", bab_translate("Mail")),
-				array("directories", bab_translate("Directories")),
-				array("approbations", bab_translate("Approbation schemas")),
-				array("filemanager", bab_translate("File manager")),
-				array("orgchart", bab_translate("Charts")),
-				array("taskmanager", bab_translate("Task Manager"))
-				);
+
+/**
+ * Get delegation objects in an array
+ * object with url are displayed in administration section only if the user is superadmin or delegated on this object
+ * for users and groups, the link is allways displayed for delegated administors
+ * 
+ * 0 : object name as in dg_groups table
+ * 1 : object name, translated
+ * 2 : sitemap ID without the bab prefix or null if no url
+ * 3 : url or null
+ * 4 : description or null
+ * 5 : icon classname
+ * 
+ * @return array
+ */
+function bab_getDelegationsObjects()
+{
+	static $objects = null;
+	
+	if (null === $objects)
+	{
+		bab_functionality::includefile('Icons');
+		
+		$objects = array(
+			array("users"		, bab_translate("Create a new user")	, null				, null											, null, null),
+			array("groups"		, bab_translate("Manage groups")		, null				, null											, null, null),
+			array('battach'		, bab_translate("Assign/unassign a user to group and group children"), null, null							, null, null),
+			array("sections"	, bab_translate("Sections")				, 'AdminSections'	, $GLOBALS['babUrlScript'].'?tg=sections'		, null, Func_Icons::APPS_SECTIONS),
+			array("articles"	, bab_translate("Articles")				, 'AdminArticles'	, $GLOBALS['babUrlScript'].'?tg=topcats'		, bab_translate("Categories and topics management"), Func_Icons::APPS_ARTICLES),
+			array("faqs"		, bab_translate("Faq")					, 'AdminFaqs'		, $GLOBALS['babUrlScript'].'?tg=admfaqs'		, bab_translate("Frequently Asked Questions"), Func_Icons::APPS_FAQS),
+			array("forums"		, bab_translate("Forums")				, 'AdminForums'		, $GLOBALS['babUrlScript'].'?tg=forums'			, null, Func_Icons::APPS_FORUMS),
+			array("calendars"	, bab_translate("Calendar")				, 'AdminCalendars'	, $GLOBALS['babUrlScript'].'?tg=admcals'		, null, Func_Icons::APPS_CALENDAR),
+			array("mails"		, bab_translate("Mail")					, 'AdminMail'		, $GLOBALS['babUrlScript'].'?tg=maildoms&userid=0&bgrp=y' , null, Func_Icons::APPS_MAIL),
+			array("directories"	, bab_translate("Directories")			, 'AdminDir'		, $GLOBALS['babUrlScript'].'?tg=admdir'			, null, Func_Icons::APPS_DIRECTORIES),
+			array("approbations", bab_translate("Approbation schemas")	, 'AdminApprob'		, $GLOBALS['babUrlScript'].'?tg=apprflow'		, null, Func_Icons::APPS_APPROBATIONS),
+			array("filemanager"	, bab_translate("File manager")			, 'AdminFm'			, $GLOBALS['babUrlScript'].'?tg=admfms'			, null, Func_Icons::APPS_FILE_MANAGER),
+			array("orgchart"	, bab_translate("Charts")				, 'AdminCharts'		, $GLOBALS['babUrlScript'].'?tg=admocs'			, null, Func_Icons::APPS_ORGCHARTS),
+			array("taskmanager"	, bab_translate("Task Manager")			, 'AdminTm'			, $GLOBALS['babUrlScript'].'?tg=admTskMgr'		, null, Func_Icons::APPS_TASK_MANAGER)
+		);
+	}
+	
+	return $objects;
+}
 
 
 /**
@@ -104,9 +131,9 @@ function bab_getDelegationsFromResource($res, $dgall = true, $dg0 = true) {
 	
 	global $babDB;
 
-	$allobjects = array();
-	foreach($GLOBALS['babDG'] as $arr) {
-		$allobjects[$arr[0]] = $arr[1];
+
+	foreach(bab_getDelegationsObjects() as $arr) {
+		$allobjects[$arr[0]] = $arr;
 	}
 
 	$return = array();
@@ -201,6 +228,30 @@ function bab_getUserVisiblesDelegations($id_user = NULL) {
 	return bab_getDelegationsFromResource($res);
 }
 
+
+/**
+ * delegations in sitemap
+ * 
+ * @since 7.8.0 this function replace bab_getUserVisiblesDelegations since 7.8.0
+ * @see bab_getUserVisiblesDelegations()
+ * 
+ * @return array
+ */
+function bab_getUserSitemapDelegations($id_user = NULL)
+{
+	
+	$return = array();
+	
+	$return['DGAll'] = array(
+			'id' 			=> false,
+			'name' 			=> bab_translate('All site'),
+			'description' 	=> bab_translate('All site'),
+			'color' 		=> 'FFFFFF',
+			'homePageUrl' 	=> '?'
+		);
+	
+	return $return;
+}
 
 
 /**

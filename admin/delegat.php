@@ -501,7 +501,10 @@ function groupDelegatModify($gname, $description, $id = '')
 
 		function getnext()
 			{
-			global $babDB, $babDG;
+			global $babDB;
+			
+			$babDG = bab_getDelegationsObjects();
+			
 			static $i = 0;
 			if( $i < count($babDG))
 				{
@@ -668,8 +671,10 @@ function bab_deleteImage(){
 
 function modifyDelegatGroup($name, $description, $color, $delegitems, $id, $iIdCategory)
 	{
-	global $babBody, $babDB, $babDG;
+	global $babBody, $babDB;
 
+	$babDG = bab_getDelegationsObjects();
+	
 	if( empty($name))
 		{
 		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
