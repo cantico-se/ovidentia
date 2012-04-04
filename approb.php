@@ -26,16 +26,16 @@
 */
 include 'base.php';
 require_once dirname(__FILE__).'/utilit/registerglobals.php';
-include_once $babInstallPath.'utilit/mailincl.php';
-include_once $babInstallPath.'utilit/afincl.php';
-include_once $babInstallPath.'utilit/topincl.php';
-include_once $babInstallPath.'utilit/artincl.php';
-include_once $babInstallPath.'utilit/vacincl.php';
-include_once $babInstallPath.'utilit/evtincl.php';
-include_once $babInstallPath.'utilit/calincl.php';
-include_once $babInstallPath.'utilit/forumincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/afincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/topincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/artincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/vacincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/evtincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/calincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/forumincl.php';
 
-include_once $babInstallPath.'utilit/eventincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
 
 
 /**

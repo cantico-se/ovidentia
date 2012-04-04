@@ -3730,7 +3730,7 @@ class Func_Ovml_Container_RecentFiles extends Func_Ovml_Container
 
 			if( $this->last !== false)
 			{
-				$req .= " limit 0, ".$babDB->db_escape_string($this->last);
+				$req .= ' limit 0, ' . $babDB->db_escape_string((int)$this->last);
 			}
 
 			$this->res = $babDB->db_query($req);

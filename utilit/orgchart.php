@@ -477,6 +477,40 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 	}
 
 
+	/**
+	 *
+	 */
+
+	function _getDirEntry($id = false) {
+		include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
+		global $babDB;
+
+		$res = $babDB->db_query("
+			SELECT
+				e.id,
+				e.sn,
+				e.givenname,
+				LENGTH(e.photo_data) photo_data
+			FROM 
+				".BAB_DBDIR_ENTRIES_TBL." e
+			WHERE 
+				e.id = ".$babDB->quote($id)."
+		");
+		
+		
+		
+		while( $arr = $babDB->db_fetch_assoc($res)) {
+			$jpegphoto = null;
+			if ($arr['photo_data'] > 0) {
+				$photo = new bab_dirEntryPhoto($arr['id']);
+				//$jpegphoto['value'] = $photo->getUrl();
+				$jpegphoto['photo'] = $photo;
+			}
+			return array('givenname' => array('value' => $arr['givenname']), 'sn' => array('value' => $arr['sn']), 'jpegphoto' => $jpegphoto);
+		}
+	}
+
+
 
 	/**
 	 * Returns an array containing information about types associated with the specified entity.
@@ -537,25 +571,27 @@ class bab_OvidentiaOrgChart extends bab_OrgChart
 		while ($member = $babDB->db_fetch_array($members)) {
 			if ($member['user_disabled'] !== '1' && $member['user_confirmed'] !== '0') { // We don't display disabled and unconfirmed users
 				$memberDirectoryEntryId = $member['id_dir_entry'];
-				$dirEntry = bab_getDirEntry($member['id_dir_entry'], BAB_DIR_ENTRY_ID);
+				$dirEntry = $this->_getDirEntry($member['id_dir_entry']);
 				if (isset($dirEntry['givenname']) && isset($dirEntry['sn'])) {
 					$memberName = bab_composeUserName($dirEntry['givenname']['value'], $dirEntry['sn']['value']);
 					if ($member['role_type'] == 1) {
-						if (isset($dirEntry['jpegphoto']) && !empty($dirEntry['jpegphoto']['value'])) {
-							
-							/* @var $T Func_Thumbnailer */
-							$T = @bab_functionality::get('Thumbnailer');
-							
-							if ($T) {
-								// The thumbnailer functionality is available.
-
-								if(isset($dirEntry['jpegphoto']['photo'])){
-									$T->setSourceBinary($dirEntry['jpegphoto']['photo']->getData(), $dirEntry['jpegphoto']['photo']->lastUpdate());
-									$element->setIcon($T->getThumbnail(150, 150));
-								}
-							}else{
+						if (isset($dirEntry['jpegphoto'])) {
+							$photo = $dirEntry['jpegphoto']['photo'];
+							$dirEntry['jpegphoto']['value'] = $photo->getUrl();
+							if(!empty($dirEntry['jpegphoto']['value'])){
+								/* @var $T Func_Thumbnailer */
+								$T = @bab_functionality::get('Thumbnailer');
 								
-								$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+								if ($T) {
+									// The thumbnailer functionality is available.
+
+									if(isset($dirEntry['jpegphoto']['photo'])){
+										$T->setSourceBinary($dirEntry['jpegphoto']['photo']->getData(), $dirEntry['jpegphoto']['photo']->lastUpdate());
+										$element->setIcon($T->getThumbnail(150, 150));
+									}
+								}else{
+									$element->setIcon($dirEntry['jpegphoto']['value'] . '&width=150&height=150');
+								}
 							}
 						}
 						$element->setInfo($memberName);
