@@ -3309,5 +3309,5 @@
 <string id="Account encryption does not match with credentials">L'identifiant crypté ne correspond pas aux paramètres de connexion</string>
 
 <string id="Failed">Echec</string>
-
+<string id="There are more than one user with this email and password">Il y a plus d'un utilisateur avec le même mot de passe et email</string>
 </fr>
