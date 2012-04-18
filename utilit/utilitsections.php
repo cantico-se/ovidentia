@@ -908,6 +908,8 @@ var $babCalendarStartDay;
 	
 	private function initMonthEvents()
 	{
+		$this->currmonthevents = array();
+		
 		// all calendars, before 7.7.94
 		// only personal calendar for users logged in, since 7.7.94
 		if ($GLOBALS['BAB_SESS_LOGGED'])
@@ -941,7 +943,6 @@ var $babCalendarStartDay;
 			
 			$periods->createPeriods($criteria);
 			$periods->orderBoundaries();
-			$this->currmonthevents = array();
 			
 			foreach($periods as $event)
 			{
