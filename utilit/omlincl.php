@@ -6593,7 +6593,7 @@ class babOvTemplate
 	{
 		$out = '';
 
-		$cls = @bab_functionality::get('Ovml/Container/'.$handler, false);
+		$cls = bab_functionality::get('Ovml/Container/'.$handler, false);
 
 		if (false === $cls) {
 			if( $fprint == 'object' )

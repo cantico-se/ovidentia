@@ -176,24 +176,24 @@ function deladdon(id)
 						&nbsp;&nbsp;
 						
 						<!--#if exporturl -->
-						<a href="{ exporturl }"><img alt="" border="0" src="{ babSkinPath }images/Puces/download.gif"> { t_export }</a>
+						<a href="{ exporturl }"><img alt="" border="0" src="{ babSkinPath }images/Puces/download.gif">&nbsp;{ t_export }</a>
 						<!--#endif exporturl -->
 						
 						<!--#if exportpkgurl -->
 						&nbsp;&nbsp;
-						<a href="{ exportpkgurl }"><img alt="" border="0" src="{ babSkinPath }images/Puces/download.gif"> { t_exportpkg }</a>
+						<a href="{ exportpkgurl }"><img alt="" border="0" src="{ babSkinPath }images/Puces/download.gif">&nbsp;{ t_exportpkg }</a>
 						<!--#endif exportpkgurl -->
 						
 						&nbsp;&nbsp;
 						
 						<!--#if historyurl -->
-						<a href="{ historyurl }" onclick="bab_popup(this.href); return false;"><img alt="" border="0" src="{ babSkinPath }images/Puces/properties.gif"> { t_history }</a>
+						<a href="{ historyurl }" onclick="bab_popup(this.href); return false;"><img alt="" border="0" src="{ babSkinPath }images/Puces/properties.gif">&nbsp;{ t_history }</a>
 						<!--#endif historyurl -->
 						
 						&nbsp;&nbsp;
 
 						<!--#if deleteurl -->
-						<a href="{ deleteurl }" title="{ confirmdelete }" onclick="return confirm(this.title);"><img alt="" border="0" src="{ babSkinPath }images/Puces/del.gif"> { t_delete }</a>
+						<a href="{ deleteurl }" title="{ confirmdelete }" onclick="return confirm(this.title);" style="white-space:nowrap;"><img alt="" border="0" src="{ babSkinPath }images/Puces/del.gif">&nbsp;{ t_delete }</a>
 						<!--#endif deleteurl -->
 					</p>
 				</td>
