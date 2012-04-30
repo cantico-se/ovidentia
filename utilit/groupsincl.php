@@ -177,6 +177,25 @@ class bab_Groups
 		
 	}
 	
+	/**
+	 * Get list of ancestors for a group
+	 * results are sorted from root to last group parent
+	 * @param int $id_group
+	 * @return array
+	 */
+	public static function getAncestors($id_group)
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query("SELECT a.id, a.name FROM ".BAB_GROUPS_TBL." a, ".BAB_GROUPS_TBL." g WHERE g.id=".$babDB->quote($id_group)." AND a.lf < g.lf AND a.lr > g.lr ORDER BY a.lf");
+		while( $arr = $babDB->db_fetch_array($res))
+		{
+			$ancestors[$arr['id']] = $arr['name'];
+		}
+
+		return $ancestors;
+	}
+	
 	
 	/**
 	 * 
