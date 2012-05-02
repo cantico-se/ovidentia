@@ -417,6 +417,17 @@ class bab_sitemap_tree extends bab_dbtree
 		$this->bab_dbtree(BAB_SITEMAP_TBL, null);
 		$this->where = '';
 	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isEmpty()
+	{
+		global $babDB;
+		
+		$res = $babDB->db_query('SELECT id FROM '.$this->table);
+		return ($babDB->db_num_rows($res) === 0);
+	}
 
 	function setFunction($id_node, $str, $progress) {
 		global $babDB;
@@ -829,11 +840,10 @@ class bab_siteMap_insertTree
 
 		$this->loadFunctions($id_profile);
 		$this->insertFunction();
-
-
+		
 		$tree = new bab_sitemap_tree();
 
-		if (false !== $tree->getNodeInfo(1)) {
+		if (!$tree->isEmpty()) {
 			// tree is not empty, add missing nodes
 
 			$this->addMissingNodes($tree, $id_profile);
@@ -844,7 +854,8 @@ class bab_siteMap_insertTree
 		}
 
 		// write id_dgowner for delegation branchs
-		$this->delegationsRecord();
+		// delegation record has been commented since we only record the DGAll branch
+		// $this->delegationsRecord();
 	}
 
 
