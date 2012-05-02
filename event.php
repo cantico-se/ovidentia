@@ -1109,7 +1109,7 @@ function deleteEvent()
 			$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), bab_pp('evtid'), bab_pp('dtstart', null));
 
 			$this->title = $period->getProperty('SUMMARY');
-			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".bab_pp('evtid')."&dtstart=".bab_pp('dtstart')."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids']);
+			$this->urlyes = bab_toHtml( $GLOBALS['babUrlScript']."?tg=event&date=".$_POST['date']."&calid=".$_POST['calid']."&evtid=".bab_pp('evtid')."&dtstart=".bab_pp('dtstart')."&action=yes&view=".$_POST['view']."&bupdrec=".$iReccurenceRule."&curcalids=".$_POST['curcalids'].'&notify='.bab_pp('groupe-notif'));
 			$this->yes = bab_translate("Yes");
 			$this->urlno = bab_toHtml($GLOBALS['babUrlScript']."?tg=event&idx=unload&action=no&calid=".$_POST['calid']."&view=");
 			$this->no = bab_translate("No");
@@ -1197,11 +1197,12 @@ function updateEvent(&$message)
 
 /**
  * Delete event
- * @param $calid
- * @param $bupdrec
+ * @param 	int		$calid
+ * @param 	string	$bupdrec
+ * @param	int		$notify
  * @return unknown_type
  */
-function confirmDeleteEvent($calid, $bupdrec)
+function confirmDeleteEvent($calid, $bupdrec, $notify)
 {
 	$evtid = bab_rp('evtid');
 	$dtstart = bab_rp('dtstart');
@@ -1272,16 +1273,18 @@ function confirmDeleteEvent($calid, $bupdrec)
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 
-	$notifyEvent = new bab_eventAfterEventDelete;
-	$notifyEvent->setPeriod($calendarPeriod);
-
-
-	foreach($calendarPeriod->getCalendars() as $calendar) {
-		$notifyEvent->addCalendar($calendar);
+	if ($notify)
+	{
+		$notifyEvent = new bab_eventAfterEventDelete;
+		$notifyEvent->setPeriod($calendarPeriod);
+	
+	
+		foreach($calendarPeriod->getCalendars() as $calendar) {
+			$notifyEvent->addCalendar($calendar);
+		}
+	
+		bab_fireEvent($notifyEvent);
 	}
-
-	bab_fireEvent($notifyEvent);
-
 
 	$event = new bab_eventPeriodModified($date_min, $date_max, false);
 	$event->types = BAB_PERIOD_CALEVENT;
@@ -1420,7 +1423,7 @@ if (isset($_REQUEST['action']))
 	switch($_REQUEST['action'])
 		{
 		case 'yes':
-			confirmDeleteEvent($calid, bab_rp('bupdrec'));
+			confirmDeleteEvent($calid, bab_rp('bupdrec'), bab_rp('notify', 1));
 			$idx="unload";
 			break;
 
