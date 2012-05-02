@@ -236,9 +236,18 @@ class bab_siteMapItem {
 
 	/**
 	 * If the node url should be a rewritten url or not
-	 * @var unknown_type
+	 * 
+	 * @var bool
 	 */
 	public $enableRewriting = false;
+	
+	
+	/**
+	 * If the node url should be a modified with a rewrite rule or not
+	 * @example ?babrw=/path is a modified url but generated with $enableRewriting = false
+	 * @var bool
+	 */
+	public $disabledRewrite = false;
 
 
 	/**
@@ -324,6 +333,7 @@ class bab_siteMapItem {
 
 		return $this;
 	}
+	
 
 
 	/**
@@ -427,7 +437,7 @@ class bab_siteMapItem {
 	{
 		$url = $this->url;
 		
-		if ('' === $url)
+		if ('' === $url || $this->disabledRewrite)
 		{
 			return $url;
 		}
@@ -1174,7 +1184,7 @@ class bab_siteMap {
 	/**
 	 * Get the rewritten url of a sitemap node
 	 * @param string $id_function
-	 * @return bab_url
+	 * @return string
 	 */
 	public static function rewrittenUrl($id_function)
 	{
