@@ -109,9 +109,11 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 
 	// add nodes to delegations
 
-
+	foreach(bab_getDelegationsObjects() as $arr) {
+		$allobjects[$arr[0]] = $arr;
+	}
 	
-	$delegations = bab_getUserAdministratorDelegations();
+	$delegations = bab_getUserSitemapDelegations();
 
 	foreach( $delegations as $key => $deleg ) {
 
@@ -149,7 +151,7 @@ function bab_sitemap_adminSection(bab_eventBeforeSiteMapCreated $event) {
 		}
 		
 		
-		foreach($deleg['objects'] as $o)
+		foreach($allobjects as $o)
 		{
 			if (null === $o[3])
 			{
