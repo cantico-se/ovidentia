@@ -4007,7 +4007,8 @@ INSERT INTO `bab_event_listeners` (`id`, `event_class_name`, `function_name`, `r
 (11,'bab_eventCollectCalendarsBeforeDisplay'	, 'bab_onCollectCalendarsBeforeDisplay'		, 'utilit/eventperiod.php'			, 'core', 0),
 (12,'bab_eventArticle'							, 'bab_onArticle'							, 'utilit/eventarticle.php'			, 'core', 0),
 (13,'bab_eventCalendarEvent'					, 'bab_onCalendarEvent'						, 'utilit/eventperiod.php'			, 'core', 0),
-(14,'bab_eventForumPost'						, 'bab_onForumPost'							, 'utilit/eventforum.php'			, 'core', 0);
+(14,'bab_eventForumPost'						, 'bab_onForumPost'							, 'utilit/eventforum.php'			, 'core', 0),
+(15,'bab_eventReference'						, 'bab_onReference'							, 'utilit/eventReference.php'		, 'core', 100);
 
 
 CREATE TABLE `bab_upgrade_messages` (
