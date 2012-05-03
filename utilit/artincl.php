@@ -2127,9 +2127,10 @@ function bab_newArticleDraft($idtopic, $idarticle) {
 			$res = $babDB->db_query('SELECT allow_update, allow_manupdate FROM bab_topics WHERE id='.$babDB->quote($idtopic));
 			$topic = $babDB->db_fetch_assoc($res);
 
+			$author_access = ($arr['id_author'] == $GLOBALS['BAB_SESS_USERID'] && $topic['allow_update'] != '0');
+			$manager_access = (bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic) && $topic['allow_manupdate'] != '0');
 
-			if (($arr['id_author'] != $GLOBALS['BAB_SESS_USERID'] && $topic['allow_update'] != '0')
-				|| (!bab_isAccessValid(BAB_TOPICSMAN_GROUPS_TBL, $idtopic) && $topic['allow_manupdate'] != '0'))
+			if (!$author_access && !$manager_access)
 			{
 				throw new ErrorException(bab_translate('This article is not modifiable'));
 				return false;
