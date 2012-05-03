@@ -4971,11 +4971,11 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
  * filter 				: filter by delegation YES | NO, if filter=NO calendars without access rights can be used
  * date					: ISO date or ISO datetime, default is current date
  * limit				: x days before, y days after the date "x,y"
- * holiday 				: return vacation events YES | NO
- * private 				: return non accessibles private events YES | NO
- * awaiting_approval 	: return non accessibles awaiting approval events YES | NO
+ * holiday 				: return vacation events YES | NO (default YES)
+ * private 				: return non accessibles private events YES | NO (default YES)
+ * awaiting_approval 	: return non accessibles awaiting approval events YES | NO (default NO)
  *
- * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="YES">
+ * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="NO">
  *
  * 	<OVEventId>
  * 	<OVEventTitle>
@@ -5032,7 +5032,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
 		$this->private = mb_strtoupper($ctx->get_value('private')) === "YES" || !$ctx->get_value('private');
-		$this->awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) === "YES" || !$ctx->get_value('awaiting_approval');
+		$this->awaiting_approval = mb_strtoupper($ctx->get_value('awaiting_approval')) === "YES";
 
 		switch(bab_getICalendars()->defaultview)
 			{
@@ -5124,15 +5124,13 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 			$enddate->getTimeStamp()
 		);
 
-
-
+		
 		if (!$this->private || !$this->awaiting_approval)
 		{
 			foreach($this->events as $key => $event)
 			{
 				/* @var $event bab_CalendarPeriod */
-
-				if (!$this->awaiting_approval && !$event->WfInstanceAccess($this->access_user))
+				if (!$this->awaiting_approval && !$event->WfInstanceAccess())
 				{
 					// the ovml container does not require to display waiting events and the event is in waiting state
 					unset($this->events[$key]);

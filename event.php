@@ -1515,4 +1515,3 @@ switch($idx)
 	default:
 		break;
 	}
-?>

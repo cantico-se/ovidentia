@@ -1310,7 +1310,7 @@ class bab_OviPublicCalendar extends bab_OviRelationCalendar implements bab_Publi
 			return true;
 		}
 
-		if (null !== $this->idsa)
+		if (null !== $event->getWfInstance($this))
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
@@ -1381,12 +1381,13 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 			return bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
 		}
 
-		if (null !== $this->idsa)
+		
+		if (null !== $event->getWfInstance($this))
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
 		}
-
+		
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 
@@ -1482,7 +1483,7 @@ interface bab_PublicCalendar {
 
 
 /**
- * Identify a ressource calendar
+ * Identify a resource calendar
  * the getIdUser method must return a null value
  * and the getType method should return the same string as the bab_OviResourceCalendar::getType() method
  */
