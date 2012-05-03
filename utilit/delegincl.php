@@ -469,6 +469,11 @@ function bab_deleteDelegation($id_delegation, $deleteObjects)
 {
 	global $babDB;
 	
+	if (empty($id_delegation))
+	{
+		throw new ErrorException('Invalid delegation id');
+	}
+	
 	$idsafe = $babDB->db_escape_string($id_delegation);
 	
 	if($deleteObjects)
