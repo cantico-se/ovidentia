@@ -302,11 +302,11 @@ class bab_Reference implements IGuid
 
 
 	/**
-	 * Return all the reference description for a reference.
+	 * Return the reference description for a reference.
 	 * 
 	 * @param bab_Reference	$oReference	The name of the tag
 	 * 
-	 * @return bab_StorageMap|null An iterator that hold all the reference description on sucess, null otherwise
+	 * @return IReferenceDescription
 	 */
 	public static function getReferenceDescription(bab_Reference $oReference)
 	{
