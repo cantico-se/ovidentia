@@ -461,6 +461,8 @@ function bab_getDelegationById($id)
  * @param	int		$id_delegation
  * @param	bool	$deleteObjects		true : objects in delegation are deleted, false : objects are moved into main site (DG0)
  * 
+ * @since 7.7.100
+ * 
  * @return bool
  */
 function bab_deleteDelegation($id_delegation, $deleteObjects)
