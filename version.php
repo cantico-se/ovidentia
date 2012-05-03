@@ -114,6 +114,10 @@ switch($idx)
 	case 'addon':
 		// allow addon upgrade for annonymous users
 		$name = bab_rp('name');
+		
+		bab_addonsInfos::insertMissingAddonsInTable();
+		bab_addonsInfos::clear();
+		
 		if ($addon = bab_getAddonInfosInstance($name))
 		{
 			if ($addon->isUpgradable() && $addon->upgrade())
