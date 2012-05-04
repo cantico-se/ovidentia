@@ -6734,7 +6734,7 @@ class babOvTemplate
 							}
 						}
 
-					$cls = @bab_functionality::get('Ovml/Function/'.$handler);
+					$cls = bab_functionality::get('Ovml/Function/'.$handler);
 
 					if (false === $cls) {
 						$val = sprintf(bab_translate("OVML : the function %s does not exists"), BAB_TAG_FUNCTION.$handler);
