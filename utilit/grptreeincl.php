@@ -97,9 +97,12 @@ class bab_grptree extends bab_dbtree
 	$prefix = array();
 	
 	$groups = $this->getChilds($id_parent, $all);
+	
+	
 
-	if ($id_parent === $this->firstnode_parent)
+	if ($id_parent === $this->firstnode_parent && $all)
 		{
+		// add the parent node ony if it is the first node and we requested all groups
 		array_unshift ($groups, $this->getNodeInfo($id_parent));
 		}
 
