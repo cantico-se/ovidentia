@@ -508,6 +508,7 @@ class bab_addonInfos {
 		include_once $GLOBALS['babInstallPath'].'utilit/inifileincl.php';
 		$ini = new bab_inifile();
 		$ini->inifile($this->getPhpPath().'addonini.php');
+		
 		return $ini->isValid();
 	}
 	

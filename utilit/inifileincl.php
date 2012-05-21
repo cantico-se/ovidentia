@@ -1375,14 +1375,14 @@ class bab_inifile {
 		$return = array_merge($return, $this->getAddonsRequirements());
 
 
-
+		
 		if ($this->functionalities) {
 
 			foreach($this->functionalities as $name => $value) {
 
 				// value can be "Available" or "Recommended"
 
-				$obj = @bab_functionality::get($name);
+				$obj = bab_functionality::get($name);
 
 				switch(mb_strtolower($value)) {
 					case 'available':
@@ -1415,7 +1415,7 @@ class bab_inifile {
 				}
 			}
 		}
-
+		
 
 
 
@@ -1444,7 +1444,7 @@ class bab_inifile {
 		foreach($order as $key => $value) {
 			$return_ordered[] = $return[$key];
 		}
-
+		
 		return $return_ordered;
 	}
 

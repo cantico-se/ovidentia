@@ -337,7 +337,7 @@ function addon_display_upgrade($id) {
 		bab_display_addon_requirements();
 		return;
 	}
-
+	
 
 	$t_upgrade = sprintf(bab_translate('Upgrade of addon %s from version %s to version %s'),
 		$addon->getName(),
@@ -756,7 +756,7 @@ function bab_display_addon_requirements()
 			{
 			global $babBody;
 			$this->installed = false;
-
+			
 			$ini = new bab_inifile();
 			if (isset($_FILES['uploadf'])) {
 				// display requirements from temporary package into installation process
@@ -1041,7 +1041,7 @@ function functionalities() {
 	require_once $GLOBALS['babInstallPath'] . 'utilit/functionalityincl.php';
 	require_once $GLOBALS['babInstallPath'] . 'utilit/urlincl.php';
 
-
+	
 
 	$func = new bab_functionalities();
 
@@ -1050,7 +1050,7 @@ function functionalities() {
 
 		$func->copyToParent($uppath);
 
-		header('location:'.bab_url::request('tg', 'idx'));
+		header('location:'.bab_url::request('tg', 'idx', 'failsafe'));
 		exit;
 	}
 
@@ -1059,12 +1059,11 @@ function functionalities() {
 	{
 		$func->unregister($remove);
 
-		header('location:'.bab_url::request('tg', 'idx'));
+		header('location:'.bab_url::request('tg', 'idx', 'failsafe'));
 		exit;
 	}
 
-
-
+	
 
 
 	$tree = new bab_TreeView('bab_functionalities');
@@ -1077,12 +1076,19 @@ function functionalities() {
 	function buid_nodeLevel(&$tree, $node, $id, $path) {
 		$func = new bab_functionalities();
 		$childs = $func->getChildren($path);
+		
+		$failsafe = (bool) bab_gp('failsafe', true);
 
 		$i = 1;
 		foreach ($childs as $dir) {
 
 			$funcpath = trim($path.'/'.$dir, '/');
-			$obj = @bab_functionality::get($funcpath);
+			
+			$obj = false;
+			if (!$failsafe)
+			{
+				$obj = @bab_functionality::get($funcpath);
+			}
 
 			if (false !== $obj) {
 				$original = $func->getOriginal($funcpath);
@@ -1101,15 +1107,22 @@ function functionalities() {
 
 				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 			} else {
-				$description = $dir . ' : '.bab_translate('Missing target');
-
+				if ($failsafe)
+				{
+					$description = $dir;
+				} else {
+					$description = $dir . ' : '.bab_translate('Missing target');
+				}
+				
 				$element = & $tree->createElement( $id.'.'.$i, 'directory', $description, '', '');
 
+				$url = bab_url::get_request('tg', 'idx', 'failsafe');
+				$url->remove = $funcpath;
 
 				$element->addAction('delete',
 					bab_translate('Remove link'),
 					$GLOBALS['babSkinPath'] . 'images/Puces/delete.png',
-					$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&remove='.urlencode($funcpath),
+					$url->toString(),
 					'');
 			}
 
@@ -1133,20 +1146,23 @@ function functionalities() {
 
 
 
-			if (0 < mb_substr_count($funcpath, '/')) {
+			if (!$failsafe && 0 < mb_substr_count($funcpath, '/')) {
 
 				$parent_path = $func->getParentPath($funcpath);
-				$parent_obj = @bab_functionality::get($parent_path);
+				$parent_obj = bab_functionality::get($parent_path);
 
 				// quand $parent_obj est false c'est que l'enfant selectionne par defaut n'existe plus,
 				// ici on permet de definir un enfant a partir de ceux disponibles
 
 				if ((false !== $obj && false !== $parent_obj && $parent_obj->getPath() !== $obj->getPath()) || (false === $parent_obj)) {
+					
+					$url = bab_url::get_request('tg', 'idx', 'failsafe');
+					$url->uppath = $funcpath;
 
 					$element->addAction('moveup',
 									bab_translate('Move Up'),
 									$GLOBALS['babSkinPath'] . 'images/Puces/go-up.png',
-									$GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&uppath='.urlencode($funcpath),
+									$url->toString(),
 									'');
 
 				}
@@ -1377,7 +1393,7 @@ function bab_addonUploadToolbar($message, $func = null) {
 
 	if (null !== $func) {
 		$oToolbar->addToolbarItem(
-			new BAB_ToolbarItem(bab_translate("Libraries administration"), $GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities',
+			new BAB_ToolbarItem(bab_translate("Libraries administration"), $GLOBALS['babUrlScript'].'?tg=addons&idx=functionalities&failsafe=0',
 				$sImgPath . 'folder.gif', '', '', '')
 		);
 	}
