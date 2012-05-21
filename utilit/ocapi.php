@@ -211,7 +211,10 @@ function bab_OCGetChildsEntities($idroot='', $idoc='')
 	return $ret;
 }
 
-
+/**
+ * Get the supperior of entity
+ * @param int $identity
+ */
 function bab_OCGetSuperior($identity)
 {
 	global $babDB;
@@ -266,6 +269,12 @@ function bab_OCGetSuperiors($idoc='')
 	return $ret;
 }
 
+/**
+ * search for a temporary employee in the entity
+ * used for approbation
+ * @param int $identity
+ * @return array
+ */
 function bab_OCGetTemporaryEmployee($identity)
 {
 	global $babDB;

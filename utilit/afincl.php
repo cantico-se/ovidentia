@@ -218,7 +218,8 @@ function deleteFlowInstance($idschi)
 class bab_UserUnavailability
 {
 	/**
-	 * 
+	 * List supperiors of entities where i am temporary employee
+	 * The temporary employee replace the supperior when he is unavailable
 	 * @return array
 	 */
 	private static function getSuperiors($id_user)
@@ -227,8 +228,11 @@ class bab_UserUnavailability
 		$entities = bab_OCGetUserEntities($id_user);
 		if( count($entities['temporary']) > 0 )
 		{
+		// liste des entitees ou l'utilisateur est interimaire
+			
 		for( $i=0; $i < count($entities['temporary']); $i++ )
 			{
+			// trouver le supperieur hirarchique de l'entitee
 			$idsup = bab_OCGetSuperior($entities['temporary'][$i]['id']);
 			if( $idsup )
 				{
@@ -265,7 +269,7 @@ class bab_UserUnavailability
 				
 				include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
 						
-				$superiors = self::getSuperiors($id_user);
+				$superiors = self::getSuperiors($id_user); // liste des personnes que je remplace dans l'organigramme
 	
 				while($arr = $babDB->db_fetch_array($res))
 				{
@@ -277,13 +281,18 @@ class bab_UserUnavailability
 							$substitutes[1][] = $arr['id_user'];
 						}
 					}
+					
+					
+					
+					
 
-					if( $arr['id_substitute'] == $id_user && (count($substitutes[0]) == 0 || !in_array($arr['id_user'], $substitutes[0])))
+					if($arr['id_substitute'] == $id_user && (count($substitutes[0]) == 0 || !in_array($arr['id_user'], $substitutes[0])))
 					{
 						$add = true;
 						$entities = bab_OCGetUserEntities($arr['id_user']);
 						if( count($entities['superior']) > 0 )
 						{
+							// si le substitut est dans l'organigramme, on verifie qu'il est bien un interimaire de la personne a remplacer
 							for( $i=0; $i < count($entities['superior']); $i++ )
 							{
 								$idte = bab_OCGetTemporaryEmployee($entities['superior'][$i]['id']);
