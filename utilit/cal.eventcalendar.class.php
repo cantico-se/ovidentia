@@ -328,6 +328,12 @@ abstract class bab_EventCalendar
 			// no author, consider the calendar owner as the event author
 			$author = $this->getIdUser();
 		}
+		
+		// if in a waiting state
+		if (!$event->WfInstanceAccess($this->access_user))
+		{
+			return false;
+		}
 
 
 		if ($this->access_user == $author) {
@@ -337,13 +343,6 @@ abstract class bab_EventCalendar
 		if (!$event->isPublic()) {
 
 			// Can be PRIVATE or CONFIDENTIAL
-			return false;
-		}
-
-
-		// if in a waiting state
-		if (!$event->WfInstanceAccess($this->access_user))
-		{
 			return false;
 		}
 

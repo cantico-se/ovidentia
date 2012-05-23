@@ -476,6 +476,7 @@ abstract class bab_ICalendarObject
 		
 		
 		$this->relations[$reltype][$urlIdentifier] = array(
+			'reltype'			=> $reltype,
 			'calendar' 			=> $calendar,
 			'X-CTO-STATUS'		=> $status,
 			'X-CTO-WFINSTANCE'	=> $wfInstance

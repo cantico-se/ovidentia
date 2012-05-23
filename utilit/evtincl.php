@@ -625,17 +625,19 @@ function bab_setAlarmProperties(bab_CalendarAlarm $alarm, bab_CalendarPeriod $pe
 /**
  * Approbation on public calendars and resource calendars
  *
- * @param	string	$uid			event UID
- * @param	string	$idcal			calendar url identifier
- * @param	string	$relationcal	calendar url identifier of relation
- * @param	int		$status			approver status				BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
+ * @param	string	$uid			Event UID
+ * @param	string	$idcal			Calendar url identifier
+ * @param	string	$relationcal	Calendar url identifier of relation
+ * @param	int		$status			Approver status				BAB_CAL_STATUS_ACCEPTED | BAB_CAL_STATUS_DECLINED
+ * @param	string	$comment		Approver comment
+ * @param   string	$dtstart		Start date of event (necessary for recuring events)
+ * @param	int		$bupdrec		All event or only current event 	BAB_CAL_EVT_ALL | BAB_CAL_EVT_CURRENT
  * @return unknown_type
  */
-function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
+function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtstart, $bupdrec)
 {
 	global $babDB;
 	include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-
 
 	$calendar = bab_getICalendars()->getEventCalendar($idcal);
 	
@@ -652,109 +654,131 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
 	}
 	
 	$backend = $calendar->getBackend();
-	$period = $backend->getPeriod($backend->CalendarEventCollection($calendar), $uid);
-
-	if (!$period)
-	{
-		throw new Exception('Event not found');
-		return false;
-	}
-
+	$collection = $backend->CalendarEventCollection($calendar);
+	
+	$period = $backend->getPeriod($collection, $uid, $dtstart);
+	
 	// search for relation
 	$relations = $period->getRelations();
 	if (isset($relations[$relationcal]))
 	{
 		$relation = $relations[$relationcal];
 	}
-
-
+	
+	
+	if (empty($relation['X-CTO-WFINSTANCE']))
+	{
+		throw new ErrorException('missing approbation instance');
+	}
+	
+	
 	if (!$relation)
 	{
 		throw new Exception('Access denied to this approbation, relation not found with calendar '.$relationcal);
 		return false;
 	}
-
-
+	
+	
 	$arrschi = bab_getWaitingIdSAInstance($GLOBALS['BAB_SESS_USERID']);
-
+	
 	if (!in_array($relation['X-CTO-WFINSTANCE'], $arrschi))
 	{
 		throw new Exception(sprintf('Access denied to this approbation, X-CTO-WFINSTANCE = %s not found in list of instance', $relation['X-CTO-WFINSTANCE']));
 		return false;
 	}
+	
+	
+	
+	
+	switch($bupdrec)
+	{
+		case BAB_CAL_EVT_ALL:
+			$period_list = $backend->getAllPeriods($collection, $uid);
+			break;
+			
+		case BAB_CAL_EVT_CURRENT:
+			$period_list = array($period);
+			break;
+	}
 
+	
+	
 	$ret = updateFlowInstance($relation['X-CTO-WFINSTANCE'], $GLOBALS['BAB_SESS_USERID'], (BAB_CAL_STATUS_ACCEPTED == $status));
-
+	
 	switch($ret)
 	{
-	case 0:
-
-		if ($backend->setRelationStatus($period, $relation, 'DECLINED'))
-		{
-			deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
-
-			notifyEventApprobation(
-				$period,
-				$status,
-				$comment,
-				$relation['calendar']->getName(),
-				sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
-			);
-		}
-
-		break;
-
-
-
-	case 1:
-
-		if ($backend->setRelationStatus($period, $relation, 'ACCEPTED'))
-		{
-			deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
-
-			notifyEventApprobation(
-				$period,
-				$status,
-				$comment,
-				$relation['calendar']->getName(),
-				sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
-			);
-
-
-
-			if ($relation['calendar'] instanceof bab_ResourceCalendar) {
-				notifyResourceEvent(
-					$period->getProperty('SUMMARY'),
-					$period->getProperty('DESCRIPTION'),
-					$period->getProperty('LOCATION'),
-					bab_longDate($period->ts_begin),
-					bab_longDate($period->ts_end),
-					$relation['calendar'],
-					bab_translate('The following resource has been validated')
-				);
-			} else {
-				notifyPublicEvent(
-					$period->getProperty('SUMMARY'),
-					$period->getProperty('DESCRIPTION'),
-					$period->getProperty('LOCATION'),
-					bab_longDate($period->ts_begin),
-					bab_longDate($period->ts_end),
-					$relation['calendar'],
-					bab_translate('The following appointment has been validated')
+		case 0:
+	
+			if (confirmApprobEvent_setRelationStatus($backend, $period_list, $relationcal, 'DECLINED'))
+			{
+				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
+				
+				confirmApprobEvent_replaceInstance($period_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
+	
+				notifyEventApprobation(
+						$period,
+						$status,
+						$comment,
+						$relation['calendar']->getName(),
+						sprintf(bab_translate('A calendar in relation with your appointement has been rejected by %s'), $GLOBALS['BAB_SESS_USER'])
 				);
 			}
-		}
-
-
-		break;
-
-
-
-	default:
-		$nfusers = getWaitingApproversFlowInstance($relation['X-CTO-WFINSTANCE'], true);
-		if( count($nfusers) > 0 )
+	
+			break;
+	
+	
+	
+		case 1:
+			
+			if (confirmApprobEvent_setRelationStatus($backend, $period_list, $relationcal, 'ACCEPTED'))
 			{
-			notifyEventApprovers($period, $nfusers, $relation['calendar']);
+				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
+				
+				confirmApprobEvent_replaceInstance($period_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
+	
+				notifyEventApprobation(
+						$period,
+						$status,
+						$comment,
+						$relation['calendar']->getName(),
+						sprintf(bab_translate('A calendar in relation with your appointement has been approved by %s'), $GLOBALS['BAB_SESS_USER'])
+				);
+	
+	
+	
+				if ($relation['calendar'] instanceof bab_ResourceCalendar) {
+					notifyResourceEvent(
+							$period->getProperty('SUMMARY'),
+							$period->getProperty('DESCRIPTION'),
+							$period->getProperty('LOCATION'),
+							bab_longDate($period->ts_begin),
+							bab_longDate($period->ts_end),
+							$relation['calendar'],
+							bab_translate('The following resource has been validated')
+					);
+				} else {
+					notifyPublicEvent(
+							$period->getProperty('SUMMARY'),
+							$period->getProperty('DESCRIPTION'),
+							$period->getProperty('LOCATION'),
+							bab_longDate($period->ts_begin),
+							bab_longDate($period->ts_end),
+							$relation['calendar'],
+							bab_translate('The following appointment has been validated')
+					);
+				}
+			}
+	
+	
+			break;
+	
+	
+	
+		default: // next approbator
+			$nfusers = getWaitingApproversFlowInstance($relation['X-CTO-WFINSTANCE'], true);
+			if( count($nfusers) > 0 )
+			{
+				notifyEventApprovers($period, $nfusers, $relation['calendar']);
 			}
 		break;
 	}
@@ -765,7 +789,91 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment)
 
 
 
+/**
+ * set relation status in all events of period list
+ * 
+ * @param Func_CalendarBackend 	$backend
+ * @param array 				$period_list
+ * @param string 				$relationcal
+ * @param string				$status			new status for relation		ACCEPTED | DECLINED	
+ */
+function confirmApprobEvent_setRelationStatus(Func_CalendarBackend $backend, $period_list, $relationcal, $status)
+{
+	foreach($period_list as $period)
+	{
+		/*@var $period bab_CalendarPeriod */
+		
+		// search for relation
+		$relations = $period->getRelations();
+		if (isset($relations[$relationcal]))
+		{
+			$relation = $relations[$relationcal];
+			$backend->setRelationStatus($period, $relation, $status);
+		} else {
+			throw new ErrorException(sprintf('relation %s not found in event %s %s', $relationcal, $period->getProperty('UID'), $period->getProperty('DTSTART')));
+		}
+	}
+	
+	return true;
+}
 
+
+/**
+ * create a new flow instance to replace to deleted one
+ * @param array 				$period_list
+ * @param string				$relationcal
+ * @param int 					$wf_instance	old instance to replace
+ * 
+ * @return bool
+ */
+function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_instance)
+{
+	
+	$idfai = null;
+	
+	foreach($period_list as $period)
+	{
+		/*@var $period bab_CalendarPeriod */
+		
+		// search for relation
+		$relations = $period->getRelations();
+		if (isset($relations[$relationcal]))
+		{
+			$relation = $relations[$relationcal];
+			if (((int) $relation['X-CTO-WFINSTANCE']) === (int) $wf_instance)
+			{
+				$attendee = $relation['calendar'];
+				/*@var $attendee bab_EventCalendar */
+				
+				if (null === $idfai)
+				{
+					// create new instance for the first waiting associated calendar
+					
+					if($idsa = $attendee->getApprobationSheme())
+					{
+						$idfai = makeFlowInstance($idsa, "cal-".$attendee->getUid().'-'.$period->getProperty('DTSTART').'-'.uniqid());
+					} else {
+						throw new ErrorException('failed to create approbation instance for non aproved events');
+					}
+				}
+				
+				$period->addRelation($relation['reltype'], $attendee, 'NEEDS-ACTION', $idfai);
+				$attendee->getBackend()->savePeriod($period);
+			}
+			
+		} else {
+			throw new ErrorException(sprintf('relation %s not found in event %s %s', $relationcal, $period->getProperty('UID'), $period->getProperty('DTSTART')));
+		}
+	}
+	
+	// considerer comme deja notifie
+	if (null !== $idfai)
+	{
+		getWaitingApproversFlowInstance($idfai, true);
+	}
+
+	return true;
+}
 
 
 

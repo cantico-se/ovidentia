@@ -1226,47 +1226,48 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	$collection = $calendarPeriod->getCollection();
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
 
-
-	if (!$calendar->canDeleteEvent($calendarPeriod))
-	{
-		return false;
-	}
 	
-	$calendarPeriod->setProperty('STATUS', 'CANCELLED');
-
-	$saved_backend = array();
-
-	foreach($calendarPeriod->getCalendars() as $associated_calendar)
-	{
-		$associated_backend = $associated_calendar->getBackend();
-		/*@var $associated_backend Func_CalendarBackend */
-		
-		// create a copy of the event object in a temporary collection associated to the calendar of attendee
-		$periodCopy = clone $calendarPeriod;
-		$collection = $associated_backend->CalendarEventCollection($associated_calendar);
-		$collection->addPeriod($periodCopy);
-
-		try {
-			$associated_backend->savePeriod($periodCopy, 'CANCEL');
-		}
-		catch(Exception $e)
-		{
-			// ignore missing event in backend
-		}
-
-	}
-
-	// if organizer is not in attendees, cancel the event of the main calendar
-	$backend->savePeriod($calendarPeriod, 'CANCEL');
-
-
+	
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
-
+	
 	// test access on all collection
-
+	
 	foreach($collection as $period)
 	{
+
+		if (!$calendar->canDeleteEvent($period))
+		{
+			return false;
+		}
+		
+		$period->setProperty('STATUS', 'CANCELLED');
+	
+		foreach($period->getCalendars() as $associated_calendar)
+		{
+			$associated_backend = $associated_calendar->getBackend();
+			/*@var $associated_backend Func_CalendarBackend */
+			
+			// create a copy of the event object in a temporary collection associated to the calendar of attendee
+			$periodCopy = clone $period;
+			$collection = $associated_backend->CalendarEventCollection($associated_calendar);
+			$collection->addPeriod($periodCopy);
+	
+			try {
+				$associated_backend->savePeriod($periodCopy, 'CANCEL');
+			}
+			catch(Exception $e)
+			{
+				// ignore missing event in backend
+			}
+	
+		}
+	
+		// if organizer is not in attendees, cancel the event of the main calendar
+		$backend->savePeriod($period, 'CANCEL');
+
+
+	
 		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
 		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
 	}

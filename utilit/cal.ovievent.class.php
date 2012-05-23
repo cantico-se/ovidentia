@@ -1125,7 +1125,7 @@ class bab_cal_OviEventSelect
 				ce.start_date asc 
 		";
 		
-		bab_debug($query, DBG_TRACE, 'query');
+		// bab_debug($query, DBG_TRACE, 'query');
 		
 		return $query;
 	}
@@ -1615,13 +1615,14 @@ class bab_cal_OviEventSelect
 	 * @param string $uid
 	 * @return bool
 	 */
-	public function deleteFromUid($uid)
+	public function deleteFromUid($uid, $ts_begin)
 	{
 		global $babDB;
 		
 		
 		$query = $this->getQuery(" 
 			ce.uuid = ".$babDB->quote($uid)." 
+			AND ce.start_date = ".$babDB->quote(date('Y-m-d H:i:s', $ts_begin))." 
 		");
 		
 		$res = $babDB->db_query($query);

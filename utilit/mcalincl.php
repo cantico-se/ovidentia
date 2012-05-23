@@ -840,6 +840,7 @@ class cal_wmdbaseCls
 				$relations = $calPeriod->getRelations();
 				foreach($relations as $relation)
 				{
+					
 					if (null !== $relation['X-CTO-WFINSTANCE'])
 					{
 						if (in_array($relation['X-CTO-WFINSTANCE'], $user_instances))
