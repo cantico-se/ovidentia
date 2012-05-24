@@ -118,14 +118,32 @@ switch($idx)
 		bab_addonsInfos::insertMissingAddonsInTable();
 		bab_addonsInfos::clear();
 		
-		if ($addon = bab_getAddonInfosInstance($name))
+		$addon = bab_getAddonInfosInstance($name);
+		if (false === $addon)
 		{
-			if ($addon->isUpgradable() && $addon->upgrade())
-			{
-				die(bab_translate("Ok"));
-			}
+			trigger_error('this addon does not exists');
+			die(bab_translate("Failed"));
 		}
-		die(bab_translate("Failed"));
+		
+		if (!$addon->isUpgradable())
+		{
+			trigger_error('Addon allready up to date');
+			die(bab_translate("Failed"));
+		}
+		
+		if (!$addon->isValid())
+		{
+			trigger_error('Invalid addon prerequists');
+			die(bab_translate("Failed"));
+		}
+		
+		if (!$addon->upgrade())
+		{
+			trigger_error('Addon upgrade failed');
+			die(bab_translate("Failed"));
+		}
+		
+		die(bab_translate("Ok"));
 		break;
 
 	case "lang":
