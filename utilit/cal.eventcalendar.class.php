@@ -328,6 +328,12 @@ abstract class bab_EventCalendar
 			// no author, consider the calendar owner as the event author
 			$author = $this->getIdUser();
 		}
+		
+		// if in a waiting state
+		if (!$event->WfInstanceAccess($this->access_user))
+		{
+			return false;
+		}
 
 
 		if ($this->access_user == $author) {
@@ -337,13 +343,6 @@ abstract class bab_EventCalendar
 		if (!$event->isPublic()) {
 
 			// Can be PRIVATE or CONFIDENTIAL
-			return false;
-		}
-
-
-		// if in a waiting state
-		if (!$event->WfInstanceAccess($this->access_user))
-		{
 			return false;
 		}
 
@@ -1310,7 +1309,7 @@ class bab_OviPublicCalendar extends bab_OviRelationCalendar implements bab_Publi
 			return true;
 		}
 
-		if (null !== $this->idsa)
+		if (null !== $event->getWfInstance($this))
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
@@ -1381,12 +1380,13 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 			return bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
 		}
 
-		if (null !== $this->idsa)
+		
+		if (null !== $event->getWfInstance($this))
 		{
 			// prevent modification if there is an ongoing approbation instance on event
 			return false;
 		}
-
+		
 		return bab_isAccessValid(BAB_CAL_RES_MAN_GROUPS_TBL, $this->uid, $this->access_user);
 	}
 
@@ -1482,7 +1482,7 @@ interface bab_PublicCalendar {
 
 
 /**
- * Identify a ressource calendar
+ * Identify a resource calendar
  * the getIdUser method must return a null value
  * and the getType method should return the same string as the bab_OviResourceCalendar::getType() method
  */

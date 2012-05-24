@@ -302,6 +302,7 @@ class bab_icalendars
 	public function addCalendar(bab_EventCalendar $calendar)
 	{
 		$this->calendars[$calendar->getUrlIdentifier()] = $calendar;
+
 			
 		if (null === $this->default_calendar && $calendar->isDefaultCalendar())
 		{
@@ -376,6 +377,11 @@ class bab_icalendars
 			return $this->default_calendar;
 		}
 		
+		if (null !== $this->personal_calendar)
+		{
+			return $this->personal_calendar;
+		}
+		
 		foreach($this->getCalendars() as $calendar)
 		{
 			return $calendar;
@@ -422,6 +428,8 @@ class bab_icalendars
 			}
 			
 		}
+		
+		
 
 		return implode(',', $keys);
 
@@ -513,6 +521,7 @@ class bab_icalendars
 		
 		return $this->calendars;
 	}
+	
 }
 
 

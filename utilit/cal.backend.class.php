@@ -436,6 +436,7 @@ class Func_CalendarBackend extends bab_functionality
 	 */
 	public function setRelationStatus(bab_CalendarPeriod $period, Array $relation, $status)
 	{
+		/*
 		$reltype = $period->getRelationType($relation['calendar']);
 		
 		if (null === $reltype)
@@ -443,8 +444,9 @@ class Func_CalendarBackend extends bab_functionality
 			throw new Exception(sprintf('the relation beetween event %s and calendar %s does not exists', $period->getProperty('UID'), $relation['calendar']->getName()));
 			return false;
 		}
+		*/
 		
-		$period->addRelation($reltype, $relation['calendar'], $status);
+		$period->addRelation($relation['reltype'], $relation['calendar'], $status);
 		// the addRelation method handle duplicate entries, this will update relation status and remove flow instance
 		
 		// bab_debug('<h1>$backend->SavePeriod()</h1>'. $period->toHtml(), DBG_TRACE, 'CalendarBackend');

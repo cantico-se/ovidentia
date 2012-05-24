@@ -476,6 +476,7 @@ abstract class bab_ICalendarObject
 		
 		
 		$this->relations[$reltype][$urlIdentifier] = array(
+			'reltype'			=> $reltype,
 			'calendar' 			=> $calendar,
 			'X-CTO-STATUS'		=> $status,
 			'X-CTO-WFINSTANCE'	=> $wfInstance
@@ -683,8 +684,27 @@ abstract class bab_ICalendarObject
 		return $return;
 	}
 	
-	
-	
+	/**
+	 * Get workflow instance of a calendar or null if no workflow instance running (confirmed event on the calendar return null)
+	 * @param bab_EventCalendar $calendar
+	 * @return int | null
+	 */
+	public function getWfInstance(bab_EventCalendar $calendar)
+	{
+		if (null === $calendar->getApprobationSheme())
+		{
+			return null;
+		}
+		
+		$relations = $this->getRelations();
+		$identifier = $calendar->getUrlIdentifier();
+		if (isset($relations[$identifier]) && !empty($relations[$identifier]['X-CTO-WFINSTANCE']))
+		{
+			return (int) $relations[$identifier]['X-CTO-WFINSTANCE'];
+		}
+		
+		return null;
+	}
 }
 
 

@@ -158,7 +158,25 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	public function getAllPeriods(bab_PeriodCollection $periodCollection, $identifier, $expandRecurrence = true, BAB_DateTime $expandStart = null, BAB_DateTime $expandEnd = null)
 	{
 		$period = $this->getPeriod($periodCollection, $identifier);
-		return array($period);
+		$collection = $period->getCollection();
+		
+		if ($collection->hash)
+		{
+			require_once dirname(__FILE__).'/evtincl.php';
+			bab_addHashEventsToCollection($collection, $period, BAB_CAL_EVT_ALL);
+		}
+		
+		// on peut retourner directement la collection mais on la convertie en tableau pour plus de securitee
+		// car il arrive que la collection soit modifiee lors de manipulation sur les periodes
+		// et LibCaldav retourne 1 tableau
+		
+		$list = array();
+		foreach($collection as $period)
+		{
+			$list[] = $period;
+		}
+		
+		return $list;
 	}
 	
 	
@@ -202,30 +220,11 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 	 */
 	public function deletePeriod(bab_CalendarPeriod $period)
 	{
-		$collection = $period->getCollection();
-
-		if ($collection instanceof bab_CalendarEventCollection) 
-		{
-			require_once dirname(__FILE__).'/cal.ovievent.class.php';
-			$oviEvents = new bab_cal_OviEventSelect;
-			
-			if ($collection->hash)
-			{
-				foreach($collection as $period)
-				{
-					if (!$oviEvents->deleteFromUid($period->getProperty('UID')))
-					{
-						return false;	
-					}
-				}
-				return true;
-			
-			} else {
-				return $oviEvents->deleteFromUid($period->getProperty('UID'));
-			}
-		}
+		require_once dirname(__FILE__).'/cal.ovievent.class.php';
+		$oviEvents = new bab_cal_OviEventSelect;
 		
-		return null;
+		
+		return $oviEvents->deleteFromUid($period->getProperty('UID'), $period->ts_begin);
 	}
 	
 	
@@ -262,7 +261,7 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 			{
 				require_once dirname(__FILE__).'/cal.ovievent.class.php';
 				$oviEvents = new bab_cal_OviEventSelect;
-				return $oviEvents->deleteFromUid($period->getProperty('UID'));
+				return $oviEvents->deleteFromUid($period->getProperty('UID'), $period->ts_begin);
 			}
 		}
 		

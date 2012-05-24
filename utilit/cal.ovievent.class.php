@@ -558,7 +558,7 @@ class bab_cal_OviEventUpdate
 				
 				if (isset($associated[$id_calendar]))
 				{
-					if ($status !== $associated[$id_calendar])
+					if ($status !== $associated[$id_calendar]['status'])
 					{
 						$this->updateCalendarStatus($id_event, $calendar, $status, 0);
 					}
@@ -625,7 +625,7 @@ class bab_cal_OviEventUpdate
 					}
 					
 					
-					if (isset($status) && $status !== $associated[$id_calendar])
+					if (isset($status) && ($status !== $associated[$id_calendar]['status'] || $wfinstance !== $associated[$id_calendar]['idfai']))
 					{
 						$this->updateCalendarStatus($id_event, $calendar, $status, $wfinstance);
 					}
@@ -663,12 +663,15 @@ class bab_cal_OviEventUpdate
 		
 		$associated = array();
 		$res = $babDB->db_query('
-			SELECT id_cal, status FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($id_event).'
+			SELECT id_cal, status, idfai FROM '.BAB_CAL_EVENTS_OWNERS_TBL.' WHERE id_event='.$babDB->quote($id_event).'
 		');
 		
 		$associated = array();
 		while ($arr = $babDB->db_fetch_assoc($res)) {
-			$associated[$arr['id_cal']] = (int) $arr['status'];
+			$associated[$arr['id_cal']] = array(
+					'status' => (int) $arr['status'],
+					'idfai' => (int) $arr['idfai']
+			);
 		}
 		
 		return $associated;
@@ -1125,7 +1128,7 @@ class bab_cal_OviEventSelect
 				ce.start_date asc 
 		";
 		
-		// bab_debug($query);
+		// bab_debug($query, DBG_TRACE, 'query');
 		
 		return $query;
 	}
@@ -1231,6 +1234,9 @@ class bab_cal_OviEventSelect
 			";
 		}
 		
+		
+		
+		
 		$query = $this->getQuery($where);
 		$res = $babDB->db_query($query);
 		
@@ -1331,8 +1337,6 @@ class bab_cal_OviEventSelect
 		return '('.implode(' OR ', $or).')';
 		
 	}
-	
-	
 	
 	
 	
@@ -1602,13 +1606,14 @@ class bab_cal_OviEventSelect
 	 * @param string $uid
 	 * @return bool
 	 */
-	public function deleteFromUid($uid)
+	public function deleteFromUid($uid, $ts_begin)
 	{
 		global $babDB;
 		
 		
 		$query = $this->getQuery(" 
 			ce.uuid = ".$babDB->quote($uid)." 
+			AND ce.start_date = ".$babDB->quote(date('Y-m-d H:i:s', $ts_begin))." 
 		");
 		
 		$res = $babDB->db_query($query);

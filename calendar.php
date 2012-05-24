@@ -261,7 +261,7 @@ class displayAttendeesCls extends displayEventCls
 	private function approbUrl(bab_EventCalendar $calendar, $status)
 	{
 		require_once dirname(__FILE__).'/utilit/urlincl.php';
-		$url = bab_url::get_request('tg', 'idx', 'evtid', 'idcal');
+		$url = bab_url::get_request('tg', 'idx', 'evtid', 'idcal', 'dtstart');
 		$url->idx = 'approb';
 		$url->relation = $calendar->getUrlIdentifier();
 		$url->approbstatus = $status;
@@ -356,13 +356,14 @@ class displayApprobCalendarCls
 {
 
 
-	public function __construct($evtid, $idcal, $relation)
+	public function __construct($evtid, $idcal, $relation, $dtstart)
 	{
 		global $babBody, $babDB;
 
 		$this->evtid = $evtid;
 		$this->idcal = $idcal;
 		$this->relation = $relation;
+		$this->dtstart = $dtstart;
 		
 		$this->commenttxt = bab_translate("Reason");
 		$this->updatetxt = bab_translate("Update");
@@ -959,15 +960,18 @@ function displayEventDetailUpd($evtid, $dtstart, $idcal)
  * Approbation page for one public or resource calendar link to an event (recurring or not)
  * @return unknown_type
  */
-function approbCalendar($evtid, $dtstart, $idcal, $relation)
+function approbCalendar($evtid, $dtstart, $idcal, $relation, $dtstart)
 {
 	require_once dirname(__FILE__).'/utilit/urlincl.php';
 	if (isset($_POST['approbstatus']))
 	{
 		$relation = bab_pp('relation');
 		$status = (int) bab_pp('approbstatus');
+		$comment = bab_pp('comment');
+		$bupdrec = (int) bab_pp('bupdrec', null);
+		$dtstart = bab_pp('dtstart');
 
-		confirmApprobEvent($evtid, $idcal, $relation, $status, bab_pp('comment'));
+		confirmApprobEvent($evtid, $idcal, $relation, $status, $comment, $dtstart, $bupdrec);
 
 		$url = bab_url::get_request('tg');
 		$url->idx = 'unload';
@@ -978,7 +982,7 @@ function approbCalendar($evtid, $dtstart, $idcal, $relation)
 
 	global $babBody;
 	$details = new displayEventDetailCls($evtid, $dtstart, $idcal);
-	$approb = new displayApprobCalendarCls($evtid, $idcal, $relation);
+	$approb = new displayApprobCalendarCls($evtid, $idcal, $relation, $dtstart);
 
 	$babBody->babPopup($details->getHtml().$approb->getHtml());
 }
@@ -1498,7 +1502,8 @@ switch($idx)
 			bab_rp('evtid'),
 			bab_rp('dtstart'),
 			bab_rp('idcal'),
-			bab_rp('relation')
+			bab_rp('relation'),
+			bab_rp('dtstart')
 		);
 		break;
 
