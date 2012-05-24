@@ -659,7 +659,21 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 	$backend = $calendar->getBackend();
 	$collection = $backend->CalendarEventCollection($calendar);
 	
-	$period = $backend->getPeriod($collection, $uid, $dtstart);
+	$period = null;
+	$allperiods = $backend->getAllPeriods($collection, $uid);
+	foreach($allperiods as $tmp_period)
+	{
+		if ($tmp_period->getProperty('DTSTART') === $dtstart)
+		{
+			$period = $tmp_period;
+			break;
+		}
+	}
+	
+	if (!isset($period))
+	{
+		throw new ErrorException('missing period');
+	}
 	
 	// search for relation
 	$relations = $period->getRelations();
@@ -696,13 +710,13 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 	switch($bupdrec)
 	{
 		case BAB_CAL_EVT_ALL:
-			$period_list = $backend->getAllPeriods($collection, $uid);
+			$period_list = $allperiods;
 			$replace_list = array();
 			break;
 			
 		case BAB_CAL_EVT_CURRENT:
 			$period_list = array($period);
-			$replace_list = $backend->getAllPeriods($collection, $uid);
+			$replace_list = $allperiods;
 			break;
 	}
 
@@ -847,7 +861,7 @@ function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_inst
 			$relation = $relations[$relationcal];
 			
 			
-			if (((int) $relation['X-CTO-WFINSTANCE']) === (int) $wf_instance)
+			if (((int) $relation['X-CTO-WFINSTANCE']) === (int) $wf_instance && 'NEEDS-ACTION' === $relation['X-CTO-STATUS'])
 			{
 				$attendee = $relation['calendar'];
 				/*@var $attendee bab_EventCalendar */
@@ -2682,31 +2696,11 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	$userperiods = $backend->selectPeriods($criteria);
 
 
-
-	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
-	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);
-
-	$bh = $ref_begin->getHour();
-	$bm = $ref_begin->getMinute();
-	$bs = $ref_begin->getSecond();
-
-	$eh = $ref_end->getHour();
-	$em = $ref_end->getMinute();
-	$es = $ref_end->getSecond();
-
-	foreach($userperiods as $key => $period)
+	foreach($userperiods as $period)
 	{
 		if ($period->getProperty('UID') !== $calendarPeriod->getProperty('UID'))
 		{
-			$updatePeriod = clone $calendarPeriod;
-			$updatePeriod->setProperty('UID', $period->getProperty('UID'));
-
-			$begin = BAB_DateTime::fromTimeStamp($period->ts_begin)->setTime($bh, $bm, $bs);
-			$end   = BAB_DateTime::fromTimeStamp($period->ts_end)  ->setTime($eh, $em, $es);
-
-			$updatePeriod->setDates($begin, $end);
-
-			$collection->addPeriod($updatePeriod);
+			$collection->addPeriod($period);
 		}
 	}
 }
