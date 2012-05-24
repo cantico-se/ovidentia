@@ -270,7 +270,7 @@ function bab_getMainCalendar(Array $idcals)
  *
  * @return bab_CalendarPeriod
  */
-function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_PeriodCollection $collection)
+function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_PeriodCollection $collection, $createinstance = true)
 {
 
 	require_once $GLOBALS['babInstallPath'].'utilit/dateTime.php';
@@ -405,8 +405,11 @@ function bab_createCalendarPeriod(Func_CalendarBackend $backend, $args, bab_Peri
 				{
 					if($idsa = $attendee->getApprobationSheme())
 					{
-						include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
-						$idfai = makeFlowInstance($idsa, "cal-".$attendee->getUid().'-'.$period->getProperty('DTSTART').'-'.uniqid());
+						if ($createinstance)
+						{
+							include_once $GLOBALS['babInstallPath']."utilit/afincl.php";
+							$idfai = makeFlowInstance($idsa, $attendee->getUrlIdentifier().'-'.$period->getProperty('DTSTART').'-'.$period->getProperty('SUMMARY'));
+						}
 						$status = 'NEEDS-ACTION';
 					}
 				}
@@ -694,10 +697,12 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 	{
 		case BAB_CAL_EVT_ALL:
 			$period_list = $backend->getAllPeriods($collection, $uid);
+			$replace_list = array();
 			break;
 			
 		case BAB_CAL_EVT_CURRENT:
 			$period_list = array($period);
+			$replace_list = $backend->getAllPeriods($collection, $uid);
 			break;
 	}
 
@@ -713,7 +718,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			{
 				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
 				
-				confirmApprobEvent_replaceInstance($period_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
+				confirmApprobEvent_replaceInstance($replace_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
 	
 				notifyEventApprobation(
 						$period,
@@ -734,7 +739,7 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			{
 				deleteFlowInstance($relation['X-CTO-WFINSTANCE']);
 				
-				confirmApprobEvent_replaceInstance($period_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
+				confirmApprobEvent_replaceInstance($replace_list, $relationcal, $relation['X-CTO-WFINSTANCE']);
 	
 				notifyEventApprobation(
 						$period,
@@ -840,6 +845,8 @@ function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_inst
 		if (isset($relations[$relationcal]))
 		{
 			$relation = $relations[$relationcal];
+			
+			
 			if (((int) $relation['X-CTO-WFINSTANCE']) === (int) $wf_instance)
 			{
 				$attendee = $relation['calendar'];
@@ -851,7 +858,7 @@ function confirmApprobEvent_replaceInstance($period_list, $relationcal, $wf_inst
 					
 					if($idsa = $attendee->getApprobationSheme())
 					{
-						$idfai = makeFlowInstance($idsa, "cal-".$attendee->getUid().'-'.$period->getProperty('DTSTART').'-'.uniqid());
+						$idfai = makeFlowInstance($idsa, $attendee->getUrlIdentifier().'-'.$period->getProperty('DTSTART').'-'.$period->getProperty('SUMMARY'));
 					} else {
 						throw new ErrorException('failed to create approbation instance for non aproved events');
 					}
@@ -2112,12 +2119,15 @@ class bab_event_posted {
 	 * @throws ErrorException
 	 * 
 	 * 
-	 * @param	bool	$delete		allow delete of event if calid not in selected calendars (event moved from one calendar to another)
-	 * 								do not delete existing event in availability check
+	 * @param	bool	$delete				allow delete of event if calid not in selected calendars (event moved from one calendar to another)
+	 * 										do not delete existing event in availability check
+	 * 
+	 * @param	bool	$createinstance		Create approbation instance for the calendar period
+	 * 										do not create instance in availablity check
 	 * 
 	 * @return bab_CalendarPeriod
 	 */
-	private function getCalendarPeriod($delete = true)
+	private function getCalendarPeriod($delete = true, $createinstance = true)
 	{
 		if (!isset($this->calendarPeriod))
 		{
@@ -2144,7 +2154,7 @@ class bab_event_posted {
 					$backend = $calendar->getBackend();
 					$collection = $backend->CalendarEventCollection($calendar);
 					
-					$period = bab_createCalendarPeriod($backend, $this->args, $collection);
+					$period = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
 					
 					$period->setProperty('STATUS', 'CANCELLED');
 					$backend->savePeriod($period, 'CANCEL');
@@ -2167,7 +2177,7 @@ class bab_event_posted {
 			$collection = $backend->CalendarEventCollection($calendar);
 			
 			
-			$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection);
+			$calendarPeriod = bab_createCalendarPeriod($backend, $this->args, $collection, $createinstance);
 			
 			if (empty($this->args['evtid'])) {
 				
@@ -2180,7 +2190,7 @@ class bab_event_posted {
 			}
 			
 			
-			if (!$delete)
+			if (!$delete || !$createinstance)
 			{
 				// do not save in cache if delete not allowed 
 				return $calendarPeriod;
@@ -2408,7 +2418,7 @@ class bab_event_posted {
 		require_once dirname(__FILE__).'/cal.rrule.class.php';
 
 		try {
-			$calendarPeriod = $this->getCalendarPeriod(false);
+			$calendarPeriod = $this->getCalendarPeriod(false, false);
 		} catch(ErrorException $e) {
 			$message = $e->getMessage();
 			return false;
