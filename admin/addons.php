@@ -1599,7 +1599,7 @@ switch($idx)
 
 	case "list":
 	default:
-		$babBody->title = bab_translate("Add-ons list");
+		$babBody->setTitle(bab_translate("Add-ons list"));
 
 		display_addons_menu();
 		bab_addonUploadToolbar(bab_translate('Upload a new add-on'));

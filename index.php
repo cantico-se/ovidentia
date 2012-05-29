@@ -394,19 +394,66 @@ function printBody()
 				case 'sitemapPosition':
 					$func = bab_functionality::get('Ovml/Function/SitemapPosition');
 					return $func->toString();
-
+					
+					
+				case 'pageTitle':
+					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
+						return bab_toHtml($sitemapItem->getPageTitle());
+					}
+					
+					$head = bab_getInstance('babHead');
+					if ($title = $head->getTitle())
+					{
+						return bab_toHtml($title);
+					}
+					return '';
+					
+				case 'pageDescription':
+					
+					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
+						return bab_toHtml($sitemapItem->getPageDescription());
+					}
+				
+					$head = bab_getInstance('babHead');
+					if ($description = $head->getDescription())
+					{
+						return bab_toHtml($description);
+					}
+					return '';
+					
+				case 'pageKeywords':
 				case 'sitemapPageKeywords':
-					if ( ($rootNode = bab_siteMap::getFromSite())
-					  && ($currentNodeId = bab_Sitemap::getPosition())
-					  && ($currentNode = $rootNode->getNodeById($currentNodeId))
-					  && ($sitemapItem = $currentNode->getData()) ) {
-						return $sitemapItem->getPageKeywords();
+					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
+						return bab_toHtml($sitemapItem->getPageKeywords());
+					}
+				
+					$head = bab_getInstance('babHead');
+					if ($keywords = $head->getKeywords())
+					{
+						return bab_toHtml($keywords);
 					}
 					return '';
 
 				default:
 					return $this->$propertyName;
 			}
+		}
+		
+		/**
+		 * 
+		 * @return bab_sitemapItem
+		 */
+		private function getSitemapItem()
+		{
+			if ( ($rootNode = bab_siteMap::getFromSite())
+					&& ($currentNodeId = bab_Sitemap::getPosition())
+					&& ($currentNode = $rootNode->getNodeById($currentNodeId))
+					&& ($sitemapItem = $currentNode->getData()) ) {
+				// if on a positioned sitemap node
+				return $sitemapItem;
+			}
+			
+			return null;
 		}
 
 
@@ -431,6 +478,9 @@ function printBody()
 				case 'babHeadStyleSheets':
 				case 'sitemapPosition':
 				case 'sitemapPageKeywords':
+				case 'pageKeywords':
+				case 'pageDescription':
+				case 'pageTitle':
 					return true;
 			}
 			return false;

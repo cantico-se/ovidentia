@@ -466,10 +466,101 @@ function setCurrent($title, $enabled=false)
 
 
 
+/**
+ * Page head
+ *
+ */
+class babHead
+{
+	/**
+	 * Page title in raw text
+	 * used for referencing
+	 * @see babBody::setTitle()
+	 * @var string
+	 */
+	private $page_title = null;
+	
+	
+	/**
+	 * Contain page description used for referencing
+	 * @see babBody::setDescription()
+	 * @var string
+	 */
+	private $page_description = null;
+	
+	/**
+	 * Contain page keywords used for referencing
+	 * @see babBody::setKeywords()
+	 * @var string
+	 */
+	private $page_keywords = null;
+	
+	
+	/**
+	 * Get page title
+	 * @return string
+	 */
+	public function getTitle()
+	{
+		if (null === $this->page_title)
+		{
+			return $GLOBALS['babBody']->raw_title;
+		}
+		
+		return $this->page_title;
+	}
+	
+	/**
+	 * Set page title with a text string (no html)
+	 * @param	string $title
+	 */
+	public function setTitle($title) {
+		$this->page_title = $title;
+	}
+	
+	/**
+	 * 
+	 * @param string $description
+	 */
+	public function setDescription($description)
+	{
+		$this->page_description = $description;
+	}
+	
+	
+	/**
+	 * 
+	 * @param string $keywords
+	 */
+	public function setKeywords($keywords)
+	{
+		$this->page_keywords = $keywords;
+	}
+	
+	/**
+	 *
+	 * @return string
+	 */
+	public function getDescription()
+	{
+		return $this->page_description;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getKeywords()
+	{
+		return $this->page_keywords;
+	}
+}
 
 
 
-
+/**
+ * page body
+ *
+ */
 class babBody
 {
 var $sections = array();
@@ -490,11 +581,20 @@ var $errors = array();
 
 var $content;
 
+
+/**
+ * Page title text
+ * @var string
+ */
+public $raw_title;
+
 /**
  * Page title
- * @access public
+ * HTML
  */
-var $title;
+public $title;
+
+
 
 var $message;
 var $script;
@@ -587,19 +687,23 @@ function babecho($txt)
 	$this->content .= $txt;
 }
 
+
 /**
  * Set page title with a text string (no html)
  * @param	string $title
  */
-function setTitle($title) {
+public function setTitle($title) {
+	$this->raw_title = $title;
 	$this->title = bab_toHtml($title);
 }
+
+
 
 /**
  * Add error message
  * @param	string $title
  */
-function addError($error) {
+public function addError($error) {
 	$this->errors[] = $error;
 	if (empty($this->msgerror)) {
 		$this->msgerror = bab_toHtml($error);
@@ -613,7 +717,7 @@ function addError($error) {
  * @param	string	$txt
  *
  */
-function babpopup($txt) {
+public function babpopup($txt) {
 	include_once $GLOBALS['babInstallPath'].'utilit/uiutil.php';
 	$GLOBALS['babBodyPopup'] = new babBodyPopup();
 	$GLOBALS['babBodyPopup']->menu 			= & $GLOBALS['babBody']->menu;
@@ -1888,7 +1992,7 @@ function bab_initMbString() {
 
 
 bab_initMbString();
-$babBody = new babBody();
+$babBody = bab_getInstance('babBody');
 
 if (defined('BAB_HASH_VAR'))
 {

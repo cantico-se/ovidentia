@@ -366,42 +366,97 @@ class bab_siteMapItem {
 	 *
 	 * @param bool		$inherit		If true and pageKeywords are not defined the method will return the pageKeywords of
 	 * 									the closest parent with pageKeywords defined.
+	 * 
+	 * @return string
 	 */
 	public function getPageKeywords($inherit = true)
+	{
+		if ($keywords = $this->getSitemapPageKeywords($inherit)) {
+			return $keywords;
+		}
+		
+		$head = bab_getInstance('babHead');
+		
+		if (null !== $keywords = $head->getKeywords())
+		{
+			return $keywords;
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Returns a list of comma separated keywords defined in sitemap for an html meta/keywords tag.
+	 *
+	 * @param bool		$inherit		If true and pageKeywords are not defined the method will return the pageKeywords of
+	 * 									the closest parent with pageKeywords defined.
+	 * @return string
+	 */
+	private function getSitemapPageKeywords($inherit = true)
 	{
 		if (!empty($this->pageKeywords)) {
 			return $this->pageKeywords;
 		}
+		
 		if ($inherit
-		  && $this->node
-		  && ($parentNode = $this->node->parentNode())
-		  && ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getPageKeywords();
+				&& $this->node
+				&& ($parentNode = $this->node->parentNode())
+				&& ($parentSitemapItem = $parentNode->getData())) {
+			return $parentSitemapItem->getSitemapPageKeywords();
 		}
-		return '';
+		
+		return null;
 	}
-
-
+	
+	
+	
 	/**
 	 * Returns the page title for the html title tag.
 	 *
 	 * @param bool		$inherit		If true and pageTitle are not defined the method will return the pageTitle of
 	 * 									the closest parent with pageTitle defined.
+	 * 
+	 * @return string
 	 */
 	public function getPageTitle($inherit = false)
+	{
+		if ($title = $this->getSitemapPageTitle($inherit))
+		{
+			return $title;
+		}
+	
+		$head = bab_getInstance('babHead');
+		if (null !== $title = $head->getTitle())
+		{
+			return $title;
+		}
+	
+		return $this->name;
+	}
+
+
+	/**
+	 * Returns the page title defined in sitemap for the html title tag.
+	 *
+	 * @param bool		$inherit		If true and pageTitle are not defined the method will return the pageTitle of
+	 * 									the closest parent with pageTitle defined.
+	 * @return string
+	 */
+	private function getSitemapPageTitle($inherit = false)
 	{
 		if (!empty($this->pageTitle)) {
 			return $this->pageTitle;
 		}
+		
 		if ($inherit
 		  && $this->node
 		  && ($parentNode = $this->node->parentNode())
 		  && ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getPageTitle();
-		} else {
-			return $GLOBALS['babBody']->title;
-		}
-		return '';
+			return $parentSitemapItem->getSitemapPageTitle();
+		} 
+		
+		return null;
 	}
 
 
@@ -413,20 +468,46 @@ class bab_siteMapItem {
 	 */
 	public function getPageDescription($inherit = true)
 	{
-		if (!empty($this->pageDescription)) {
-			return $this->pageDescription;
+		if ($description = $this->getSitemapPageDescription($inherit))
+		{
+			return $description;
 		}
-		if ($inherit
-		  && $this->node
-		  && ($parentNode = $this->node->parentNode())
-		  && ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getPageDescription();
+		
+		$head = bab_getInstance('babHead');
+		if (null !== $description = $head->getDescription())
+		{
+			return $description;
 		}
-		return '';
+		
+		return $this->description;
 	}
 
 
 
+	/**
+	 * Returns the page description defined in sitemap for an html meta/description tag.
+	 *
+	 * @param bool		$inherit		If true and pageDescription are not defined the method will return the pageDescription of
+	 * 									the closest parent with pageDescription defined.
+	 * 
+	 * @return null
+	 */
+	private function getSitemapPageDescription($inherit)
+	{
+		if (!empty($this->pageDescription)) {
+			return $this->pageDescription;
+		}
+	
+		if ($inherit
+				&& $this->node
+				&& ($parentNode = $this->node->parentNode())
+				&& ($parentSitemapItem = $parentNode->getData())) {
+			return $parentSitemapItem->getSitemapPageDescription($inherit);
+		}
+		
+		return null;
+	}
+	
 
 
 	/**
