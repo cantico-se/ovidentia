@@ -2140,6 +2140,7 @@ function bab_getGroups($parent=BAB_REGISTERED_GROUP, $all=true)
 		$arr['id'][] = $row['id'];
 		$arr['name'][] = $row['name'];
 		$arr['description'][] = $row['description'];
+		$arr['position'][] = array('lf' => $row['lf'], 'lr' => $row['lr']);
 		}
 
 	return $arr;
