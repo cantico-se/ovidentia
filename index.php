@@ -396,7 +396,22 @@ function printBody()
 					return $func->toString();
 					
 					
+				case 'canonicalUrl':
+					
+					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
+						return bab_toHtml($sitemapItem->getCanonicalUrl());
+					}
+					
+					$head = bab_getInstance('babHead');
+					if ($canonicalUrl = $head->getCanonicalUrl())
+					{
+						return bab_toHtml($canonicalUrl);
+					}
+					return '';
+					
+					
 				case 'pageTitle':
+					
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
 						return bab_toHtml($sitemapItem->getPageTitle());
 					}
@@ -445,7 +460,8 @@ function printBody()
 		 */
 		private function getSitemapItem()
 		{
-			if ( ($rootNode = bab_siteMap::getFromSite())
+			
+			if (($rootNode = bab_siteMap::getFromSite()) 
 					&& ($currentNodeId = bab_Sitemap::getPosition())
 					&& ($currentNode = $rootNode->getNodeById($currentNodeId))
 					&& ($sitemapItem = $currentNode->getData()) ) {
@@ -481,6 +497,7 @@ function printBody()
 				case 'pageKeywords':
 				case 'pageDescription':
 				case 'pageTitle':
+				case 'canonicalUrl':
 					return true;
 			}
 			return false;

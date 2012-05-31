@@ -723,6 +723,11 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			$period_list = array($period);
 			$replace_list = $allperiods;
 			break;
+			
+		default:
+			$period_list = array($period);
+			$replace_list = array();
+			break;
 	}
 
 	

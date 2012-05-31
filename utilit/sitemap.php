@@ -269,6 +269,12 @@ class bab_siteMapItem {
 	 */
 	public $pageKeywords;
 
+	
+	/**
+	 * canonicalUrl of page, used if not empty
+	 * @var string
+	 */
+	public $canonicalUrl;
 
 
 	/**
@@ -404,6 +410,17 @@ class bab_siteMapItem {
 				&& ($parentNode = $this->node->parentNode())
 				&& ($parentSitemapItem = $parentNode->getData())) {
 			return $parentSitemapItem->getSitemapPageKeywords();
+		}
+		
+		return null;
+	}
+	
+	
+	
+	public function getCanonicalUrl()
+	{
+		if (!empty($this->canonicalUrl)) {
+			return $this->canonicalUrl;
 		}
 		
 		return null;
@@ -855,7 +872,7 @@ class bab_siteMap {
 		/** @var $babDB bab_Database */
 		global $babDB;
 
-
+		
 		$root_function = null === $path ? null : end($path);
 
 		$query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function='.$babDB->quote($root_function);
@@ -917,7 +934,7 @@ class bab_siteMap {
 			AND fl.lang='.$babDB->quote($GLOBALS['babLanguage']).'
 		';
 
-
+		
 		/*
 		$viewable_delegations = array();
 
@@ -933,16 +950,16 @@ class bab_siteMap {
 		$query .= 'ORDER BY s.lf';
 
 		// bab_debug($query);
-
+		
 		$res = $babDB->db_query($query);
-
+		
 		if (0 === $babDB->db_num_rows($res)) {
 			// no sitemap for user, build it
-
+			
 			self::build($path, $levels);
 			$res = $babDB->db_query($query);
 		}
-
+		
 
 		$firstnode = $babDB->db_fetch_assoc($res);
 
@@ -1080,11 +1097,12 @@ class bab_siteMap {
 	 */
 	public static function getByUid($uid) {
 		$list = self::getList();
+		
 
 		if (!isset($list[$uid])) {
 			return null;
 		}
-
+		
 		return $list[$uid]->getRootNode();
 	}
 

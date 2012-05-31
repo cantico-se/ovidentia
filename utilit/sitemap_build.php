@@ -1429,9 +1429,9 @@ function bab_siteMap_loadNodes($path, $levels) {
 		$event->nodes[$dgid] = $dgNode;
 		$event->buidtree($dgNode);
 	}
-
+	
 	bab_fireEvent($event);
-
+	
 
 	foreach($event->queue as $missing_node => $orphan)
 	{
@@ -1462,14 +1462,14 @@ function bab_siteMap_loadNodes($path, $levels) {
 function bab_siteMap_build($path, $levels) {
 
 
-
+	
 	$event = bab_siteMap_loadNodes($path, $levels);
-
+	
 	$textview = $event->displayAsText('root');
 	$crc = abs(crc32($textview));
 
 	bab_siteMap_insertTree::lock();
-
+	
 	// insert tree into database
 	$insert = new bab_siteMap_insertTree($event->nodes['root'], $event->nodes);
 	$root_function = null === $path ? null : end($path);

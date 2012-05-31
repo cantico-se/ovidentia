@@ -495,6 +495,12 @@ class babHead
 	 */
 	private $page_keywords = null;
 	
+	/**
+	 * 
+	 * @var string
+	 */
+	private $canonicalUrl = null;
+	
 	
 	/**
 	 * Get page title
@@ -537,6 +543,18 @@ class babHead
 		$this->page_keywords = $keywords;
 	}
 	
+	
+	/**
+	 *
+	 * @param string $canonicalUrl
+	 */
+	public function setCanonicalUrl($canonicalUrl)
+	{
+		$this->canonicalUrl = $canonicalUrl;
+	}
+	
+	
+	
 	/**
 	 *
 	 * @return string
@@ -552,6 +570,12 @@ class babHead
 	public function getKeywords()
 	{
 		return $this->page_keywords;
+	}
+	
+	
+	public function getCanonicalUrl()
+	{
+		return $this->canonicalUrl;
 	}
 }
 
