@@ -597,6 +597,8 @@ function listWaitingEvents()
 		function listWaitingEventsCls()
 			{
 			global $babDB;
+			require_once dirname(__FILE__).'/utilit/dateTime.php';
+			
 			$this->validationtxt = bab_translate("Validation");
 			$this->weventscount = 0;
 			$this->arrevts = array();
@@ -618,11 +620,14 @@ function listWaitingEvents()
 
 					if ($calendar)
 					{
+						$start = BAB_DateTime::fromIsoDateTime($arr['start_date']);
+						
 						$tmp = array();
 						$tmp['uuid'] = $arr['uuid'];
 						$tmp['title'] = $arr['title'];
 						$tmp['description'] = $arr['description'];
 						$tmp['description_format'] = $arr['description_format'];
+						$tmp['dtstart'] = $start->getICal();
 						$tmp['startdate'] = bab_shortDate(bab_mktime($arr['start_date']), true);
 						$tmp['enddate'] = bab_shortDate(bab_mktime($arr['end_date']), true);
 						$tmp['author'] = bab_getUserName($arr['id_creator']);
@@ -655,8 +660,7 @@ function listWaitingEvents()
 			static $i = 0;
 			if( $i < $this->weventscount)
 				{
-				require_once dirname(__FILE__).'/utilit/dateTime.php';
-				$start = BAB_DateTime::fromIsoDateTime($this->arrevts[$i]['startdate']);
+				
 				$this->eventdate = bab_toHtml($this->arrevts[$i]['startdate']);
 
 				$editor = new bab_contentEditor('bab_calendar_event');
@@ -667,7 +671,7 @@ function listWaitingEvents()
 				$this->eventtitle = bab_toHtml($this->arrevts[$i]['title']);
 				$this->eventauthor = bab_toHtml($this->arrevts[$i]['author']);
 				$this->eventcalendar = bab_toHtml($this->arrevts[$i]['calendar']);
-				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=approb&evtid=".$this->arrevts[$i]['uuid']."&idcal=".$this->arrevts[$i]['idcal']."&relation=".$this->arrevts[$i]['relation']);
+				$this->confirmurl = bab_toHtml($GLOBALS['babUrlScript']."?tg=calendar&idx=approb&evtid=".$this->arrevts[$i]['uuid']."&idcal=".$this->arrevts[$i]['idcal']."&relation=".$this->arrevts[$i]['relation']."&dtstart=".$this->arrevts[$i]['dtstart']);
 				$this->altbg = !$this->altbg;
 				$i++;
 				return true;
