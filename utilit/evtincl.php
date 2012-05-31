@@ -656,6 +656,11 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 		}
 	}
 	
+	if (empty($dtstart))
+	{
+		throw new ErrorException('missing dtstart parameter');
+	}
+	
 	$backend = $calendar->getBackend();
 	$collection = $backend->CalendarEventCollection($calendar);
 	$period = null;
