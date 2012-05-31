@@ -719,9 +719,15 @@ function confirmApprobEvent($uid, $idcal, $relationcal, $status, $comment, $dtst
 			$replace_list = array();
 			break;
 			
+		
 		case BAB_CAL_EVT_CURRENT:
 			$period_list = array($period);
 			$replace_list = $allperiods;
+			break;
+			
+		default:
+			$period_list = array($period);
+			$replace_list = array();
 			break;
 	}
 
