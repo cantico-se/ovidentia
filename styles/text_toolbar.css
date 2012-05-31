@@ -11,7 +11,7 @@
 }
 
 .bab_text_toolbar a {
-	background: ButtonFace url(../scripts/htmlarea/images/ed_bab_contdir.gif) no-repeat 1px 1px;
+	background: ButtonFace url(../skins/ovidentia/images/editor/ed_bab_contdir.gif) no-repeat 1px 1px;
 	color: ButtonText;
 	border: 1px solid ButtonFace;
 	padding: 2px 6px 2px 25px;
