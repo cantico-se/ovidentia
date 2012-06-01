@@ -350,7 +350,7 @@ function site_menu3($id)
 			
 			$this->user_workdays_title = bab_translate("User can modifiy his working days");			
 			$this->change_lang_title = bab_translate("User can modifiy his language");
-			$this->change_skin_title = bab_translate("User can modifiy his skin");
+			$this->change_skin_title = bab_translate("User can choose his skin");
 			$this->change_date_title = bab_translate("User can modifiy his date format");
 			$this->change_unavailability_title = bab_translate("User can modifiy his unavailability");
 			$this->browse_users_title = bab_translate("User can browse all registered users");
