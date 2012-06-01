@@ -273,6 +273,12 @@ class bab_UserUnavailability
 	
 				while($arr = $babDB->db_fetch_array($res))
 				{
+					if ($arr['id_user'] == $id_user )
+					{
+						continue;
+					}
+					
+					
 					$idsup = 0;
 					if( count($superiors) && in_array($arr['id_user'], $superiors))
 					{
@@ -309,7 +315,7 @@ class bab_UserUnavailability
 							$substitutes[0][] = $arr['id_user'];
 						}
 	
-						if( $add && (count($substitutes[1]) == 0 || !in_array($arr['id_user'], $substitutes[1]) ))
+						if( $add && (count($substitutes[1]) == 0 || !in_array($arr['id_user'], $substitutes[1]) ) )
 						{
 							$substitutes[1][] = $arr['id_user'];
 						}
@@ -673,6 +679,8 @@ function getWaitingApprobations($iduser, $update=false)
 		
 		return $_SESSION['bab_waitingApprobations'][$iduser];
 	}
+	
+	
 
 	$res = $babDB->db_query("select 
 		
@@ -692,7 +700,7 @@ function getWaitingApprobations($iduser, $update=false)
 			AND frit.result='' 
 			AND frit.notified='Y'
 	");
-
+	
 	$result['idsch'] = array();
 	$result['idschi'] = array();
 	while( $row = $babDB->db_fetch_array($res))
@@ -774,12 +782,12 @@ function getWaitingApprobations($iduser, $update=false)
 	{
 		$substitutes = bab_UserUnavailability::get($GLOBALS['BAB_SESS_USERID']);
 		
-		
 		$arrsub = array_unique(array_merge($substitutes[0], $substitutes[1]));
 
 		for($i = 0; $i < count($arrsub); $i++ )
 		{
 			$rr = getWaitingApprobations($arrsub[$i], $update);
+			
 			for( $k=0; $k < count($rr['idsch']); $k++ )
 			{
 				$add = false;
