@@ -213,6 +213,29 @@ class bab_ArticleDraftEditor {
 	
 		return bab_getTopicTemplate($template, 'html', 'html');
 	}
+	
+	
+	public static function suggestTag()
+	{
+		global $babDB;
+		$W = bab_Widgets();
+		
+		$tags = $W->SuggestLineEdit('bab_artedit_suggesttag');
+		if ($keyword = $tags->getSearchKeyword())
+		{
+			// search for keyword
+		
+			$res = $babDB->db_query("SELECT tag_name FROM bab_tags WHERE tag_name LIKE '".$babDB->db_escape_like($keyword)."%'");
+			while ($arr = $babDB->db_fetch_assoc($res))
+			{
+				$tags->addSuggestion($arr['tag_name'], $arr['tag_name']);
+			}
+		
+			$tags->sendSuggestions();
+		}
+		
+		die();
+	}
 
 
 	/**
@@ -232,6 +255,10 @@ class bab_ArticleDraftEditor {
 
 		$W = bab_Widgets();
 		$W->includeCss();
+		
+		
+
+
 
 		$babBody->setTitle(bab_translate('Article publication'));
 
@@ -393,23 +420,13 @@ class bab_ArticleDraftEditor {
 				$W->Frame()->addItem(
 					bab_labelStr(
 						bab_translate("Keywords"),
-						$tags = $W->SuggestLineEdit()->setSize(35)->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
+						$W->SuggestLineEdit('bab_artedit_suggesttag')->setSize(35)->setName('tags')->disable()->setMultiple(',')->setMinChars(1)
+							->setSuggestAction($W->Action()->fromUrl($GLOBALS['babUrlScript']."?tg=artedit&idx=suggesttag"))
 					)
 				)
 		);
 
-		if ($keyword = $tags->getSearchKeyword())
-		{
-			// search for keyword
-
-			$res = $babDB->db_query("SELECT tag_name FROM bab_tags WHERE tag_name LIKE '".$babDB->db_escape_like($keyword)."%'");
-			while ($arr = $babDB->db_fetch_assoc($res))
-			{
-				$tags->addSuggestion($arr['tag_name'], $arr['tag_name']);
-			}
-
-			$tags->sendSuggestions();
-		}
+		
 
 		$LeftFrame->addItem(
 				$W->Frame()

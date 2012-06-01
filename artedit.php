@@ -1473,7 +1473,10 @@ switch($idx)
 		$form->display();
 		break;
 		
-		
+	case 'suggesttag':
+		require_once dirname(__FILE__).'/utilit/arteditincl.php';
+		bab_ArticleDraftEditor::suggestTag();
+		break;
 	
 	
 	case "ajaxTopicRow":
