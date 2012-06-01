@@ -1220,6 +1220,46 @@ function updateUnavailability($iduser, $fromdate, $todate, $id_substitute)
 		return false;
 		}
 
+		
+	if ($id_substitute)
+	{
+		// verifier que le suppleant n'est pas absent
+	
+		$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." 
+				where 
+					id_user='".$babDB->db_escape_string($id_substitute)."' 
+					AND (start_date<".$babDB->quote($sqlenddate)." AND end_date>".$babDB->quote($sqlstartdate).")
+			");
+		
+		if ($babDB->db_num_rows($res) > 0)
+		{
+			$babBody->addError(bab_translate("This substitute is not available for this period"));
+			return false;
+		}
+	}
+
+	// verifier que je ne suis pas le supplenant de quelqu'un
+	
+	$res = $babDB->db_query("select id_user, start_date, end_date from ".BAB_USERS_UNAVAILABILITY_TBL."
+		where
+			id_substitute='".$babDB->db_escape_string($iduser)."'
+			AND (start_date<".$babDB->quote($sqlenddate)." AND end_date>".$babDB->quote($sqlstartdate).")
+	");
+	
+	if ($babDB->db_num_rows($res) > 0)
+	{
+		$arr = $babDB->db_fetch_assoc($res);
+		$babBody->addError(sprintf(bab_translate("%s is unavailable from %s to %s with %s as substitute"), 
+				bab_getUserName($arr['id_user']), 
+				bab_shortDate(bab_mktime($arr['start_date']), false),
+				bab_shortDate(bab_mktime($arr['end_date']), false),
+				bab_getUserName($iduser)
+			)
+		);
+		return false;
+	}
+	
+
 	$res = $babDB->db_query("select * from ".BAB_USERS_UNAVAILABILITY_TBL." where id_user='".$babDB->db_escape_string($iduser)."'");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
