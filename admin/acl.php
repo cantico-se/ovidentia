@@ -29,8 +29,8 @@ require_once $GLOBALS['babInstallPath']."utilit/session.class.php";
  * 
  * @deprecated
  *
- */
-class _macl
+ 
+class macl
 	{
 	var $tables = array();
 	var $altbg = true;
@@ -205,11 +205,7 @@ class _macl
 					BAB_UNREGISTERED_GROUP => 1
 					);
 			}
-/*
-		if ($disabled) {
-			trigger_error('You can\'t filter on disabled, this function has been deprecated');
-			}
-*/
+
 		if ($everybody && isset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP])) {
 			unset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP]);
 			}
@@ -358,7 +354,7 @@ class _macl
 		}
 	
 	}
-	
+*/	
 	
 	
 	
@@ -572,8 +568,8 @@ function acl_grp_node_html(&$acl, $id_group)
 
 /**
  * Record ACL form
- * @deprecated
- */
+ * 
+
 function _maclGroups()
 	{
 
@@ -660,7 +656,7 @@ function _maclGroups()
 		}
 	}
 }
-
+ */
 
 
 /**
