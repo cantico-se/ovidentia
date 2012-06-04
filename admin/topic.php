@@ -1442,6 +1442,10 @@ require_once dirname(__FILE__) . '/../utilit/artincl.php';
 bab_PublicationImageUploader::deleteOutDatedTempImage($iNbSeconds);
 
 
+$idx = bab_rp('idx');
+$item = bab_rp('item');
+
+
 if(!isset($idx))
 	{
 	$idx = "Modify";

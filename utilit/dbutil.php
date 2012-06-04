@@ -121,13 +121,18 @@ class babDatabase
 
 	public function db_setCharset()
 		{
-			require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
-			if('utf8' == bab_charset::getDatabase())
+			$oResult = $this->db_query("SHOW VARIABLES LIKE 'character_set_database'");
+			if(false !== $oResult)
 			{
-				$this->db_query("SET NAMES utf8");
-			} else {
-				$this->db_query("SET NAMES latin1");
-			}			
+				$aDbCharset = $this->db_fetch_assoc($oResult);
+				if(false !== $aDbCharset && 'utf8' == $aDbCharset['Value'])
+				{
+					$this->db_query("SET NAMES utf8");
+					return;
+				}
+			}
+			
+			$this->db_query("SET NAMES latin1");			
 		}
 
 	public function db_create_db($dbname)

@@ -21,16 +21,16 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 
-/**
-* @internal SEC1 PR 16/02/2007 FULL
-*/
-
-
 include_once "base.php";
-include_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+require_once $GLOBALS['babInstallPath']."utilit/grptreeincl.php";
+require_once $GLOBALS['babInstallPath']."utilit/session.class.php";
 
-
-class macl
+/**
+ * 
+ * @deprecated
+ *
+ */
+class _macl
 	{
 	var $tables = array();
 	var $altbg = true;
@@ -358,6 +358,162 @@ class macl
 		}
 	
 	}
+	
+	
+	
+	
+class macl
+{
+	var $tables = array();
+	var $altbg = true;
+	var $aHiddenFields = array();
+	var $iIdDelegation = null;
+
+	function macl($target, $index, $id_object, $return, $bsetofgroups=true, $iIdDelegation=NULL)
+	{
+		$this->target = $target;
+		$this->index = $index;
+		$this->id_object = $id_object;
+		$this->return = $return;
+		
+		$session = bab_getInstance('bab_Session');
+		$session->bab_acl_tablelist = array();
+	}
+	
+	
+	function addtable($table, $name = '')
+	{
+		global $babDB;
+
+		$this->tables[] = array(
+				'table'		=> $table,
+				'title'		=> empty($name) ? bab_translate("Access rights") : $name,
+				'groups'	=> array()
+		);
+		
+		$session = bab_getInstance('bab_Session');
+		if (isset($session->bab_acl_tablelist))
+		{
+			$s_table = $session->bab_acl_tablelist;
+		} else {
+			$s_table = array();
+		}
+		
+		// store allowed table for verification while saving
+		$s_table[$table] = $table;
+		
+		$session->bab_acl_tablelist = $s_table;
+	}
+	
+
+	function filter($listgroups = 0,$disabled = 0,$everybody = 0,$users = 0,$guest = 0,$groups = array())
+	{
+		$tblindex = count($this->tables) - 1;
+
+		if ($listgroups) {
+			$this->tables[$tblindex]['groups'] = array(
+					BAB_ALLUSERS_GROUP => 1,
+					BAB_REGISTERED_GROUP => 1,
+					BAB_UNREGISTERED_GROUP => 1
+			);
+		}
+		/*
+		if ($disabled) {
+			trigger_error('You can\'t filter on disabled, this function has been deprecated');
+		}
+		*/
+		if ($everybody && isset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP])) {
+			unset($this->tables[$tblindex]['groups'][BAB_ALLUSERS_GROUP]);
+		}
+
+		if ($users && isset($this->tables[$tblindex]['groups'][BAB_REGISTERED_GROUP])) {
+			unset($this->tables[$tblindex]['groups'][BAB_REGISTERED_GROUP]);
+		}
+
+		if ($guest && isset($this->tables[$tblindex]['groups'][BAB_UNREGISTERED_GROUP])) {
+			unset($this->tables[$tblindex]['groups'][BAB_UNREGISTERED_GROUP]);
+		}
+
+		if (count($groups) > 0) {
+			foreach($groups as $grp)
+			{
+				if (isset($this->tables[$tblindex]['groups'][$grp]))
+				{
+					unset($this->tables[$tblindex]['groups'][$grp]);
+				}
+			}
+		}
+	}
+
+	
+
+
+	private function getForm()
+	{
+		$W = bab_Widgets();
+		
+		$form = $W->Form(null, $W->VBoxLayout()->setVerticalSpacing(1.5,'em'));
+		$form->addClass('bab-acl-form');
+		$form->setHiddenValue('tg', $this->target);
+		$form->setHiddenValue('idx', $this->index);
+		$form->setHiddenValue('item', $this->id_object);
+		$form->setHiddenValue($this->return, 'update');
+		
+		foreach($this->aHiddenFields as $name => $value)
+		{
+			$form->setHiddenValue($name, $value);
+		}
+		
+		foreach($this->tables as $table)
+		{
+			$form->addItem($W->Acl()->setTitle($table['title'])->setName($table['table'])->setValue(aclGetRightsString($table['table'], $this->id_object)));
+		}
+		
+		$form->addItem($W->SubmitButton()->setLabel(bab_translate('Save')));
+		
+		return $form;
+	}
+
+	
+	public function getHtml()
+	{
+		// TODO
+		
+		return '';
+	}
+	
+
+	function babecho()
+	{
+		$W = bab_Widgets();
+		
+		$page = $W->BabPage();
+		$page->setEmbedded();
+		$page->addItem($this->getForm());
+		
+		$page->displayHtml();
+	}
+	
+
+	function get_hidden_field($sName, &$sValue)
+	{
+		if(isset($this->aHiddenFields[$sName]))
+		{
+			$sValue = $this->aHiddenFields[$sName];
+			return true;
+		}
+		return false;
+	}
+
+	function set_hidden_field($sName, $sValue)
+	{
+		$this->aHiddenFields[$sName] = $sValue;
+		return true;
+	}
+}
+		
+	
+	
 
 
 
@@ -416,8 +572,9 @@ function acl_grp_node_html(&$acl, $id_group)
 
 /**
  * Record ACL form
+ * @deprecated
  */
-function maclGroups()
+function _maclGroups()
 	{
 
 	global $babBody,$babDB;
@@ -503,6 +660,44 @@ function maclGroups()
 		}
 	}
 }
+
+
+
+/**
+ * Record ACL form
+ * 
+ */
+function maclGroups()
+{
+	global $babDB;
+	$id_object = &$_POST['item'];
+	
+	unset($_SESSION['bab_groupAccess']['acltables']);
+	$babDB->db_query("UPDATE ".BAB_USERS_LOG_TBL." SET grp_change='1'");
+	bab_siteMap::clearAll();
+	
+	$session = bab_getInstance('bab_Session');
+	
+	if (!isset($session->bab_acl_tablelist)) {
+		return;
+	}
+
+	$s_table = $session->bab_acl_tablelist;
+	unset($session->bab_acl_tablelist);
+	
+	foreach($s_table as $tablename)
+	{
+		if (isset($_POST[$tablename]))
+		{
+			aclSetRightsString($tablename, $id_object, $_POST[$tablename]);
+		}
+	}
+}
+
+
+
+
+
 	
 function aclGroups($target, $index, $table, $id, $return)
 	{

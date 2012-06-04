@@ -21,17 +21,8 @@
  * @copyright Copyright (c) 2008 by CANTICO ({@link http://www.cantico.fr})
  */
 include_once 'base.php';
-
-
-/**
- * Retun true if the HttpContext was saved, false otherwise
- * 
- * @return boolean True if the context was saved, false otherwise
- */
-function bab_haveHttpContext()
-{
-	return array_key_exists('babHttpContext', $_SESSION); 
-}
+include_once dirname(__FILE__).'/addonapi.php';
+include_once dirname(__FILE__).'/session.class.php';
 
 
 /**
@@ -39,6 +30,8 @@ function bab_haveHttpContext()
  */
 function bab_storeHttpContext()
 {
+	$session = bab_getInstance('bab_Session');
+	
 	if('login' == bab_rp('tg', '') && 'signon' == bab_rp('cmd', 'signon'))
 	{
 		$tabreferer = array();
@@ -54,14 +47,14 @@ function bab_storeHttpContext()
 			
 			if ($tabreferer)
 			{
-				$_SESSION['babHttpContext'] = array('Post' => array(),
+				$session->babHttpContext = array('Post' => array(),
 				'Get' => $tabreferer, 'Request' => array());
 				return;
 			}
 		}
 	}
 	
-	$_SESSION['babHttpContext'] = array('Post' => $_POST,
+	$session->babHttpContext = array('Post' => $_POST,
 		'Get' => $_GET, 'Request' => $_REQUEST);
 }
 
@@ -72,15 +65,17 @@ function bab_storeHttpContext()
  * to the corresponding page, so that the url will be visible in
  * the user's web browser navigation bar.
  * 
- * @see bab_storeHttpContext, bab_haveHttpContext
+ * @see bab_storeHttpContext
  */
 function bab_restoreHttpContext()
 {
-	if(bab_haveHttpContext())
+	$session = bab_getInstance('bab_Session');
+
+	if(isset($session->babHttpContext))
 	{
-		$_POST		= $_SESSION['babHttpContext']['Post'];
-		$_GET 		= $_SESSION['babHttpContext']['Get'];
-		$_REQUEST 	= $_SESSION['babHttpContext']['Request'];
+		$_POST		= $session->babHttpContext['Post'];
+		$_GET 		= $session->babHttpContext['Get'];
+		$_REQUEST 	= $session->babHttpContext['Request'];
 
 		if (empty($_POST)) {
 			require_once $GLOBALS['babInstallPath'].'utilit/urlincl.php';
@@ -90,10 +85,10 @@ function bab_restoreHttpContext()
 			}
 
 			header('Location: ' . $redirectUrl);
-			unset($_SESSION['babHttpContext']);
+			unset($session->babHttpContext);
 			exit;
 		}
 
-		unset($_SESSION['babHttpContext']);
+		unset($session->babHttpContext);
 	}
 }

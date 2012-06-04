@@ -36,6 +36,7 @@ class bab_addonsInfos {
 	private $fullIndexById		= array();
 	private $fullIndexByName	= array();
 
+	private static $instance = null;
 
 
 	/**
@@ -58,7 +59,7 @@ class bab_addonsInfos {
 		global $babDB;
 		
 		$ini = new bab_inifile();
-		$ini->inifileGeneral($GLOBALS['babAddonsPath'].$title.'/addonini.php');
+		$ini->inifileGeneral($GLOBALS['babInstallPath'].'addons/'.$title.'/addonini.php');
 		$arr_ini = $ini->inifile;
 
 		$access_control = isset($arr_ini['addon_access_control']) ? (int) $arr_ini['addon_access_control'] : 1;
@@ -129,6 +130,15 @@ class bab_addonsInfos {
 	}
 	
 	
+	private static function getInstance()
+	{
+		if (null === self::$instance)
+		{
+			self::$instance = new bab_addonsInfos;
+		}
+		
+		return self::$instance;
+	}
 
 
 
@@ -139,7 +149,7 @@ class bab_addonsInfos {
 	 */
 	public static function getRows() {
 	
-		$obj = bab_getInstance('bab_addonsInfos');
+		$obj = self::getInstance();
 		$obj->createIndex();
 		
 		return $obj->indexById;
@@ -175,7 +185,7 @@ class bab_addonsInfos {
 	 */
 	public static function getDbRows() {
 	
-		$obj = bab_getInstance('bab_addonsInfos');
+		$obj = self::getInstance();
 		$obj->createFullIndex();
 		
 		return $obj->fullIndexById;

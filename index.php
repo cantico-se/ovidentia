@@ -100,6 +100,41 @@ if (!isset($babUrl)) {
 	$babUrl = bab_getBabUrl();
 }
 
+
+/* Restore the REQUEST, POST, GET from the session */
+if (isset($_GET['babHttpContext'])) {
+	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
+	bab_restoreHttpContext();
+	bab_cleanGpc();
+}
+
+
+// addon controller
+
+if (isset($_REQUEST['addon']))
+{
+	include_once $babInstallPath.'utilit/dbutil.php';
+	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+	
+	$babDB = new babDatabase();
+	$babDB->db_setCharset();
+	
+	$addon = explode('.',$_REQUEST['addon']);
+
+	if($id_addon = bab_addonsInfos::getAddonIdByName($addon[0]))
+	{
+		$row = bab_addonsInfos::getDbRow($id_addon);
+		$incl = "addons/".$row['title'];
+		$incl .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $addon[1]);
+		
+		include $babInstallPath.$incl.'.php';
+	}
+	
+	die();
+}
+
+
+
 /* Management of WSSESSIONID for Web Services */
 if (isset($_REQUEST['WSSESSIONID'])) {
 	session_name(sprintf("OV%u", crc32($babUrl)));
@@ -113,12 +148,7 @@ if (isset($_REQUEST['WSSESSIONID'])) {
 	session_start();
 }
 
-/* Restore the REQUEST, POST, GET from the session */
-if (isset($_GET['babHttpContext'])) {
-	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
-	bab_restoreHttpContext();
-	bab_cleanGpc();
-}
+
 
 if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 	parse_str($_SERVER["argv"][1], $_GET);
