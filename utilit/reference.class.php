@@ -486,6 +486,9 @@ abstract class bab_ReferenceDescriptionImpl implements IReferenceDescription, IG
 		return $this->sReference;
 	}
 
+	/**
+	 * @return bab_Reference
+	 */
 	public function getReference() {
 		return $this->oReference;
 	}
@@ -878,7 +881,7 @@ class bab_DraftArticleReferenceDescription extends bab_ArticleReferenceDescripti
 
 /**
  * Ovml file reference description
- * ovidentia:///ovml/file/example.html
+ * ovidentia:///ovml/file/example.html?param1=value1
  */
 class bab_OvmlFileReferenceDescription extends bab_ReferenceDescriptionImpl
 {
