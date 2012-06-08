@@ -511,6 +511,7 @@ class bab_replace {
 		
 		if (isset($ref[1]))
 		{
+			parse_str($ref[1], $arr);
 			$refDesc->setParameters($arr);
 		}
 		
