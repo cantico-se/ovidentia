@@ -473,7 +473,7 @@ class bab_replace {
 	 */
 	private static function ovidentia_ref(&$html)
 	{
-		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.\-\?&=%]+)"[^>]*(?:>(?P<linkcontent>[^<]+)<\/a>|>)/', array('bab_replace', 'ovrefreplace'), $html);
+		$html = preg_replace_callback('/<(?P<tag>a|img)[^>]+(?:href|longdesc)="(?P<reference>ovidentia:\/\/[\w\/\.\-\?&=%;]+)"[^>]*(?:>(?P<linkcontent>[^<]+)<\/a>|>)/', array('bab_replace', 'ovrefreplace'), $html);
 	}
 	
 	/**
@@ -492,6 +492,7 @@ class bab_replace {
 			$match['linkcontent'] = $match[3];
 		}
 		
+		$match['reference'] = bab_unhtmlentities($match['reference']);
 		
 		$ref = explode('?', $match['reference']);
 		try {
