@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -39,7 +39,7 @@ function getAttributesFromRp(array $params)
 		}
 	}
 	return array($attributes, $urlAttributes);
-} 
+}
 
 
 /**
@@ -73,7 +73,7 @@ function selectArticles()
 	$treeView->ignoreCategories($ignoredCategories);
 	$treeView->order();
 	$treeView->sort();
-	
+
 	$babBody->babPopup($treeView->printTemplate());
 	die();
 }
@@ -139,14 +139,14 @@ function selectForums()
 
 /**
  * Displays a file selection popup for files from ovidentia file manager.
- * 
+ *
  * This selection popup uses Ajax to dynamically load root folders subfolders.
- * 
+ *
  * If $folderId is not specified, a popup containing the root folders will be output
  * (when they are opened by the user, selectFiles will be called automatically with
  * the selected folderId as a parameter).
  * Otherwise, the function will output the sub folder tree of the folder.
- * 
+ *
  * @param int		$folderId
  * @param string	$path
  */
@@ -165,7 +165,7 @@ function selectFiles($folderId = null, $path = '')
 		'show_files' => bab_FileTreeView::SHOW_FILES,
 /* DEPRECATED */		'selectable_collective_directories' => bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS, /* DEPRECATED */
 /* DEPRECATED */		'selectable_sub_directories' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS, /* DEPRECATED */
-		'selectable_collective_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
+		'selectable_collective_folders' => bab_FileTreeView::SELECTABLE_COLLECTIVE_FOLDERS,
 		'selectable_sub_folders' => bab_FileTreeView::SELECTABLE_SUB_FOLDERS,
 		'selectable_files' => bab_FileTreeView::SELECTABLE_FILES,
 /* DEPRECATED */		'show_only_delegation' => bab_FileTreeView::SHOW_ONLY_ADMINISTERED_DELEGATION, /* DEPRECATED */
@@ -180,10 +180,10 @@ function selectFiles($folderId = null, $path = '')
 	$treeView = new bab_FileTreeView('bab_tv_file', $GLOBALS['babBody']->isSuperAdmin);
 
 	$treeView->setUpdateBaseUrl('?tg=selector&idx=files' . $urlAttributes);
-	
+
 	if (!is_null($folderId)) {
 		// Here we are in the case where $folderId is specified,
-		// so we return only its sub folders tree. 
+		// so we return only its sub folders tree.
 		$treeView->setStartPath($folderId, $path);
 		$treeView->setAttributes($attributes);
 //		header('Content-type: text/html; charset=' . bab_charset::getIso());
@@ -211,7 +211,7 @@ function selectGroups()
 		'multi' => bab_TreeView::MULTISELECT,
 		'toolbar' => bab_TreeView::SHOW_TOOLBAR,
 		'memorize' => bab_TreeView::MEMORIZE_OPEN_NODES
-	
+
 	);
 
 	list($attributes, $urlAttributes) = getAttributesFromRp($params);
