@@ -478,9 +478,12 @@ bab_Tree.prototype.initSearch = function()
 	for (var i = 0; i < nbListItems; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0]
 		var span = div.getElementsByTagName('SPAN')[1];
-		var text = span.firstChild.nodeValue;
-		text = cleanStringDiacritics(text);
-		listItems[i].setAttribute('content', text);
+		
+		try {
+			var text = span.firstChild.nodeValue;
+			text = cleanStringDiacritics(text);
+			listItems[i].setAttribute('content', text);
+		} catch (e) {};
 		
 		div.onmouseover = bab_onItemMouseOver;
 		div.onmouseout = bab_onItemMouseOut;
@@ -499,9 +502,11 @@ function bab_initSubTreeSearch(rootList)
 	for (var i = 0; i < nbListItems; i++) {
 		var div = listItems[i].getElementsByTagName('DIV')[0]
 		var span = div.getElementsByTagName('SPAN')[0];
-		var text = span.firstChild.nodeValue;
-		text = cleanStringDiacritics(text);
-		listItems[i].setAttribute('content', text);
+		try {
+			var text = span.firstChild.nodeValue;
+			text = cleanStringDiacritics(text);
+			listItems[i].setAttribute('content', text);
+		} catch(e) {};
 		
 		div.onmouseover = bab_onItemMouseOver;
 		div.onmouseout = bab_onItemMouseOut;
@@ -583,12 +588,12 @@ bab_Tree.prototype.loadState = function()
 function cleanStringDiacritics(text)
 {
 	try {
-		text = text.replace(/à|â|ä/g, "a");
-		text = text.replace(/é|è|ê|ë/g, "e");
-		text = text.replace(/ì|î|ï/g, "i");
-		text = text.replace(/ò|ô|ö/g, "o");
-		text = text.replace(/ù|û|ü/g, "u");
-		text = text.replace(/ç/g, "c");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "a");
+		text = text.replace(/ï¿½|ï¿½|ï¿½|ï¿½/g, "e");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "i");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "o");
+		text = text.replace(/ï¿½|ï¿½|ï¿½/g, "u");
+		text = text.replace(/ï¿½/g, "c");
 	} catch (e) {
 		text = '';
 	}
