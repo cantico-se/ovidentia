@@ -169,7 +169,7 @@ window.babArticle.filesAttachments = function()
 					var filename = jQuery(this).closest('.bab-art-fileattachment').data('filename');
 					
 					jQuery.get(
-						jQuery('[name="ajaxpath"]').val()+'?tg=artedit&idx=ajaxRemoveAttachment&filename='+filename,
+						jQuery('[name="ajaxpath"]').val()+'?tg=artedit&idx=ajaxRemoveAttachment&filename='+encodeURIComponent(filename),
 						function() {
 							window.babArticle.filesAttachments();
 						}

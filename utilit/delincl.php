@@ -350,12 +350,12 @@ function bab_deleteForum($id)
 		bab_deleteThread($id, $arr['id']);
 		}
 
-
-	aclDelete(BAB_FORUMSVIEW_GROUPS_TBL, $id);
-	aclDelete(BAB_FORUMSPOST_GROUPS_TBL, $id);
-	aclDelete(BAB_FORUMSREPLY_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSFILES_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSMAN_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSNOTIFY_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSPOST_GROUPS_TBL, $id);	
+	aclDelete(BAB_FORUMSREPLY_GROUPS_TBL, $id);
+	aclDelete(BAB_FORUMSVIEW_GROUPS_TBL, $id);
 	
 	$babDB->db_query("delete from ".BAB_FORUMS_FIELDS_TBL." where id_forum='".$babDB->db_escape_string($id)."'");
 	

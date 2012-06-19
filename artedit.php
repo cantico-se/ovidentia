@@ -1057,7 +1057,7 @@ function bab_ajaxRemoveAttachment()
 	{
 		/*@var $f Widget_FilePickerItem */
 		
-		if ($filename === $f->getFileName())
+		if (utf8_decode($filename) === $f->getFileName())
 		{
 			$f->delete();
 			return;

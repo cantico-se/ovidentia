@@ -185,31 +185,116 @@ function viewCategoriesHierarchy_txt($topics)
  */
 function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 
-	static $indentation_level = 0;
+	static $indentation_level = 0, $categories = false, $idcategoriesbyrights = array();
 	$indentation = str_repeat(bab_nbsp(), 3*$indentation_level);
 	
 	$return = array();
 
-	global $babDB;
+	global $babDB, $babBody;
 	
-	$res = bab_getArticleCategoriesRes($parentid, $delegationid, $rightaccesstable);
+	// Verify the type array of $parentid
+	if (!is_array($parentid)) {
+		$parentid = array($parentid);
+	}
 	
-	if ($res) {
-		while ($arr = $babDB->db_fetch_assoc($res)) {
+	if (false === $rightaccesstable) {
+		if (!bab_isUserAdministrator()) {
+			$res = false;
+		}
+	}
+	
+	//INITALISE CATEGORY ARRAY
+	if($categories === false){
+		$sDelegation = ' ';
+		if(false !== $delegationid) {
+			$sDelegation = ' AND id_dgowner = \'' . $babDB->db_escape_string($delegationid) . '\' ';
+		}
+	
+		// All fields and values of categories 
+		$req = "SELECT 
+				tc.* 
+				
+			from ".BAB_TOPICS_CATEGORIES_TBL." tc 
+				LEFT JOIN ".BAB_TOPCAT_ORDER_TBL." tot on tc.id=tot.id_topcat 
+				
+			WHERE 
+				tot.type='1' " . $sDelegation .  " 
+				
+			order by tot.ordering asc
+		";
+		
+		$res = $babDB->db_query($req);
+		
+		if ($res) {
+			while ($arr = $babDB->db_fetch_assoc($res)) {
+				$categories[$arr['id_parent']][$arr['id']] = $arr;
+			}
+		}
+	}
+	
+	//INITIALISE RIGHTS
+	if(!isset($idcategoriesbyrights[$rightaccesstable])){
+		//Accessibles topics
+		$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable);
+		
+		// categories with accessibles topics
+		$idcategoriesbyrights[$rightaccesstable] = array();
+		
+		if (BAB_TOPICSVIEW_GROUPS_TBL === $rightaccesstable) {
+			// if tested access is topic view use cached values
+			$idcategoriesbyrights[$rightaccesstable] = $babBody->get_topcatview();
+		} else {
+		
+			$res2 = $babDB->db_query("
+				select id_cat 
+				from ".BAB_TOPICS_TBL." 
+				where id in(".$babDB->quote($idtopicsbyrights).") AND id_cat NOT IN(".$babDB->quote($idcategoriesbyrights[$rightaccesstable]).")
+			");
 
-			$id_category = (int) $arr['id'];
-
-			$return[] = array(
-				'name' 		=> $indentation.$arr['title'],
-				'category'	=> true,
-				'id_object'	=> $id_category
-			);
-
-			$indentation_level++;
-			$sublevel = bab_getArticleTopicsAsTextTree($id_category, $delegationid, $rightaccesstable);
-			$indentation_level--;
-
-			$return = array_merge($return, $sublevel);
+			while ($row2 = $babDB->db_fetch_array($res2)) {
+				$idcategoriesbyrights[$rightaccesstable][$row2['id_cat']] = 1;
+			}
+				
+				
+			// All parents of categories accessibles
+			$idcategoriesbyrightstmp = $idcategoriesbyrights[$rightaccesstable];
+				
+			foreach($idcategoriesbyrightstmp as $idcategory => $dummy) {
+				$idParents = bab_getParentsArticleCategory($idcategory);
+				foreach($idParents as $idParent) {
+					$idcategoriesbyrights[$rightaccesstable][$idParent['id']] = 1;
+				}
+			}
+		}
+	}
+	
+	if($categories){
+		foreach($parentid as $idparent){
+			if(isset($categories[$idparent])){
+				foreach($categories[$idparent] as $category){
+					// Specifics rights or all rights ? 
+					if (false === $rightaccesstable) {
+					}else{
+						if(!isset($idcategoriesbyrights[$rightaccesstable][$category['id']])){
+							continue;
+						}
+					}
+				
+					$id_category = (int) $category['id'];
+					
+					$return[] = array(
+						'name' 		=> $indentation.$category['title'],
+						'category'	=> true,
+						'id_object'	=> $id_category
+					);
+					
+					$indentation_level++;
+					$sublevel = bab_getArticleTopicsAsTextTree($id_category, $delegationid, $rightaccesstable);
+					$indentation_level--;
+					
+					$return = array_merge($return, $sublevel);
+				}
+			}
 		}
 	}
 
