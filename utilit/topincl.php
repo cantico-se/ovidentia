@@ -314,7 +314,7 @@ function bab_getArticleTopicsAsTextTree($parentid = 0, $delegationid = false, $r
 	}
 
 	return $return;
-}
+	}
 
 
 
