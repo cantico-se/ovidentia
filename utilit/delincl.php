@@ -348,7 +348,7 @@ function bab_deleteForum($id)
 	while( $arr = $babDB->db_fetch_array($res))
 		{
 		bab_deleteThread($id, $arr['id']);
-		} 
+		}
 
 	aclDelete(BAB_FORUMSFILES_GROUPS_TBL, $id);
 	aclDelete(BAB_FORUMSMAN_GROUPS_TBL, $id);
