@@ -449,7 +449,7 @@ class bab_siteMapItem {
 			return $title;
 		}
 	
-		return $this->name;
+		return '';
 	}
 
 
