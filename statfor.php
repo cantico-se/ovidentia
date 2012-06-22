@@ -198,6 +198,7 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 					AND pt.date <= ' . $babDB->quote($this->endday) . '
 					AND pt.date >= ' . $babDB->quote($this->startday) . '
 				';
+				list($nbNewPosts) = $babDB->db_fetch_row($babDB->db_query($sql));
 				$this->nbposts = $nbPosts . ' (+' . $nbNewPosts . ')';
 
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=stat&idx=sfor&item=".$this->arrinfo[$i]['id']."&date=".$this->currentdate;
