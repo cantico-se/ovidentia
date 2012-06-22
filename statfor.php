@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -157,8 +157,41 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 				$this->size=$taille;
 				$this->size2=100-$taille;
 
-				list($this->nbthreads) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_THREADS_TBL." where forum='".$this->arrinfo[$i]['id']."'"));
-				list($this->nbposts) = $babDB->db_fetch_row($babDB->db_query("SELECT count( pt.id ) FROM  `bab_posts` pt LEFT  JOIN bab_threads tt ON tt.id = pt.id_thread LEFT  JOIN bab_forums ft ON ft.id = tt.forum WHERE ft.id ='".$this->arrinfo[$i]['id']."'"));
+// 				list($this->nbthreads) = $babDB->db_fetch_row($babDB->db_query("select count(id) from ".BAB_THREADS_TBL." where forum='".$this->arrinfo[$i]['id']."'"));
+// 				list($this->nbposts) = $babDB->db_fetch_row($babDB->db_query("SELECT count( pt.id ) FROM  `bab_posts` pt LEFT  JOIN bab_threads tt ON tt.id = pt.id_thread LEFT  JOIN bab_forums ft ON ft.id = tt.forum WHERE ft.id ='".$this->arrinfo[$i]['id']."'"));
+
+				$sql = '
+					SELECT COUNT(id)
+					FROM '.BAB_THREADS_TBL.'
+					WHERE forum=' . $babDB->quote($this->arrinfo[$i]['id']) . '
+					AND `date` <= ' . $babDB->quote($this->endday) . '
+				';
+				list($nbThreads) = $babDB->db_fetch_row($babDB->db_query($sql));
+				$sql = '
+					SELECT COUNT(id)
+					FROM '.BAB_THREADS_TBL.'
+					WHERE forum=' . $babDB->quote($this->arrinfo[$i]['id']) . '
+					AND `date` <= ' . $babDB->quote($this->endday) . '
+					AND `date` >= ' . $babDB->quote($this->startday) . '
+				';
+				list($nbNewThreads) = $babDB->db_fetch_row($babDB->db_query($sql));
+				$this->nbthreads = $nbThreads . ' (+' . $nbNewThreads . ')';
+
+				$sql = '
+					SELECT COUNT(pt.id)
+					FROM `bab_posts` pt LEFT JOIN bab_threads tt ON tt.id = pt.id_thread LEFT JOIN bab_forums ft ON ft.id = tt.forum
+					WHERE ft.id = ' . $babDB->quote($this->arrinfo[$i]['id']) . '
+					AND pt.date <= ' . $babDB->quote($this->endday) . '
+				';
+				list($nbPosts) = $babDB->db_fetch_row($babDB->db_query($sql));
+				$sql = '
+					SELECT COUNT(pt.id)
+					FROM `bab_posts` pt LEFT JOIN bab_threads tt ON tt.id = pt.id_thread LEFT JOIN bab_forums ft ON ft.id = tt.forum
+					WHERE ft.id = ' . $babDB->quote($this->arrinfo[$i]['id']) . '
+					AND pt.date <= ' . $babDB->quote($this->endday) . '
+					AND pt.date >= ' . $babDB->quote($this->startday) . '
+				';
+
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=stat&idx=sfor&item=".$this->arrinfo[$i]['id']."&date=".$this->currentdate;
 				$i++;
 				return true;
@@ -478,7 +511,7 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 					$rr = $babDB->db_fetch_array($babDB->db_query("select pt.subject, ft.name from ".BAB_FORUMS_TBL." ft left join ".BAB_THREADS_TBL." tt on tt.forum=ft.id left join ".BAB_POSTS_TBL." pt on pt.id=tt.post where tt.id='".$arr['id_thread']."'"));
 					$tmparr['forum'] = $rr['name'];
 					$tmparr['thread'] = $rr['subject'];
-					
+
 					$this->arrinfo[] = $tmparr;
 					$this->ptotalhits += $tmparr['hits'];
 					}
@@ -532,7 +565,7 @@ function summaryPosts($col, $order, $pos, $startday, $endday)
 				$this->urlview = $GLOBALS['babUrlScript']."?tg=stat&idx=sforpo&item=".$this->arrinfo[$i]['id']."&date=".$this->currentdate;
 				$this->forumname = $this->arrinfo[$i]['forum'];
 				$this->threadname = $this->arrinfo[$i]['thread'];
-				
+
 				$i++;
 				return true;
 				}
