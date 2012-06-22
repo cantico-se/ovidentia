@@ -37,9 +37,16 @@ function summaryForums($col, $order, $pos, $startday, $endday)
 		var $urlname;
 		var $altbg = true;
 
+		var $startday = null;
+		var $endday = null;
+
 		function summaryForumsCls($col, $order, $pos, $startday, $endday)
 			{
 			global $babBody, $babDB;
+
+			$this->endday = $endday;
+			$this->startday = $startday;
+
 			$this->fullname = bab_translate("Forums");
 			$this->hitstxt = bab_translate("Hits");
 			$this->threadstxt = bab_translate("Threads");
