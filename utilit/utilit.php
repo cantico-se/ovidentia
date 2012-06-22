@@ -27,13 +27,13 @@
 
 
 include_once 'base.php';
-include_once $babInstallPath.'utilit/addonapi.php';
-include_once $babInstallPath.'utilit/template.php';
-include_once $babInstallPath.'utilit/userincl.php';
-include_once $babInstallPath.'utilit/mailincl.php';
-include_once $babInstallPath.'utilit/sitemap.php';
-include_once $babInstallPath.'utilit/eventincl.php';
-include_once $babInstallPath.'utilit/groupsincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+include_once $GLOBALS['babInstallPath'].'utilit/template.php';
+include_once $GLOBALS['babInstallPath'].'utilit/userincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/mailincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/sitemap.php';
+include_once $GLOBALS['babInstallPath'].'utilit/eventincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/groupsincl.php';
 
 
 
@@ -268,157 +268,6 @@ function bab_convertToDatabaseEncoding($sString)
 	return $sString;
 }
 
-
-/**
- * return non breakin space
- * @return string
- */
-function bab_nbsp()
-{
-	switch(bab_charset::getIso()) {
-		case 'UTF-8':
-			return chr(0xC2).chr(0xA0);
-		case 'ISO-8859-15':
-			return chr(160);
-		default:
-			return '-';
-	}
-}
-
-
-
-/**
- * Get translations matchs found in one lang file
- * @param	string	$lang
- * @param	string	$filename
- * @return array
- */
-function bab_getLangFileMatchs($lang, $filename)
-{
-	$file = @fopen($filename, 'r');
-	if( $file )
-		{
-		$tmp = fread($file, filesize($filename));
-		fclose($file);
-
-
-		$charset = 'ISO-8859-15';
-
-
-		$xml_header_pos = strpos($tmp, "?>");
-		if (false !== $xml_header_pos) {
-			$xml_header = substr($tmp, 0, $xml_header_pos);
-			if (preg_match('/encoding="(UTF-8|ISO-8859-[0-9]{1,2})"/', $xml_header, $m)) {
-				$charset = $m[1];
-			}
-		}
-
-		$tmp = bab_getStringAccordingToDataBase($tmp, $charset);
-
-		if (preg_match('/<'.$lang.'>(.*)<\/'.$lang.'>/s', $tmp)) {
-			preg_match_all('/<string\s+id=\"([^\"]*)\">(.*?)<\/string>/s', $tmp , $tmparr);
-			return $tmparr;
-			}
-		}
-
-	return array();
-}
-
-
-
-function babLoadLanguage($lang, $folder, &$arr)
-	{
-	if( empty($folder))
-		{
-		$filename_c = 'lang/lang-'.$lang.'.dat';
-		$filename_m = 'lang/lang-'.$lang.'.xml';
-		$filename = $GLOBALS['babInstallPath'].'lang/lang-'.$lang.'.xml';
-		}
-	else
-		{
-		$filename_c = 'lang/addons-'.$folder.'-lang-'.$lang.'.dat';
-		$filename_m = 'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
-		$filename = $GLOBALS['babInstallPath'].'lang/addons/'.$folder.'/lang-'.$lang.'.xml';
-		}
-
-	if (!file_exists($filename))
-		{
-		$filename = false;
-		}
-	else
-		{
-		$time = filemtime($filename);
-		}
-
-	if (!file_exists($filename_m))
-		{
-		$filename_m = false;
-		}
-	else
-		{
-		$time_m = filemtime($filename_m);
-		}
-
-	if (!file_exists($filename_c))
-		{
-		$bfile_c = false;
-		}
-	else
-		{
-		$bfile_c = true;
-		$time_c = filemtime($filename_c);
-		}
-
-	if( !$filename && !$filename_c)
-		{
-		return;
-		}
-
-	if( !$bfile_c || (($filename && ($time > $time_c)) || ($filename_m && ($time_m > $time_c)) ))
-		{
-		if( $filename )
-			{
-			$tmparr = bab_getLangFileMatchs($lang, $filename);
-			}
-
-		if( isset($tmparr[0]))
-			{
-			for( $i = 0; $i < count($tmparr[0]); $i++ )
-				{
-				$arr[$tmparr[1][$i]] = $tmparr[2][$i];
-				}
-			}
-
-		if ($filename_m)
-			{
-			$arr_replace = bab_getLangFileMatchs($lang, $filename_m);
-
-			if (isset($arr_replace[0]))
-				{
-				for( $i = 0; $i < count($arr_replace[0]); $i++ )
-					{
-					$arr[$arr_replace[1][$i]] = $arr_replace[2][$i];
-					}
-				}
-			}
-
-		if (is_writable(dirname($filename_c))) {
-			$file = @fopen($filename_c, 'w');
-			if( $file )
-				{
-				fwrite($file, serialize($arr));
-				fclose($file);
-				}
-			}
-		}
-	else
-		{
-			$file = @fopen($filename_c, 'r');
-			$arr = unserialize(fread($file, filesize($filename_c)));
-			fclose($file);
-		}
-
-	}
 
 
 

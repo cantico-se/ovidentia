@@ -1144,7 +1144,7 @@ function bab_translate($str, $folder = "", $lang="")
 		$tag = "bab/".$lang;
 
 	if( !isset($babLA[$tag])) {
-
+		require_once dirname(__FILE__).'/loadlanguage.php';
 		babLoadLanguage($lang, $folder, $babLA[$tag]);
 
 		if (!isset($babLA[$tag])) {
@@ -1372,6 +1372,8 @@ function bab_isMemberOfGroup($group, $userid="")
 	
 	if ($BAB_SESS_USERID == $userid)
 	{
+		require_once dirname(__FILE__).'/groupsincl.php';
+		
 		// use session cache
 		if (bab_Groups::inUserGroups($id_group))
 		{
@@ -3205,6 +3207,7 @@ class bab_functionality {
 
 
 	public static function getRootPath() {
+		require_once dirname(__FILE__).'/defines.php';
 		return realpath('.').'/'.BAB_FUNCTIONALITY_ROOT_DIRNAME;
 	}
 
@@ -3474,4 +3477,23 @@ function bab_strip_tags($str)
 	$str = preg_replace('/\<[^<]+\>/', '${0} ', $str);
 	
 	return strip_tags($str);
+}
+
+
+
+
+/**
+ * return non breaking space
+ * @return string
+ */
+function bab_nbsp()
+{
+	switch(bab_charset::getIso()) {
+		case 'UTF-8':
+			return chr(0xC2).chr(0xA0);
+		case 'ISO-8859-15':
+			return chr(160);
+		default:
+			return '-';
+	}
 }

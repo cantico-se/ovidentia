@@ -117,7 +117,7 @@ class bab_addonsInfos {
 		
 			global $babDB;
 	
-			$res = $babDB->db_query("select * from ".BAB_ADDONS_TBL."");
+			$res = $babDB->db_query("select * from bab_addons");
 			while( $arr = $babDB->db_fetch_array($res)) {
 					
 				$this->fullIndexById[$arr['id']] 		= $arr;
@@ -268,6 +268,7 @@ class bab_addonsInfos {
 	 */
 	public static function getAddonIdByName($name, $access_rights = true) {
 		
+		require_once dirname(__FILE__).'/addonapi.php';
 		
 		$obj = bab_getInstance('bab_addonsInfos');
 		$obj->createFullIndex();
