@@ -216,11 +216,11 @@ function bab_getTimeFormat($format)
 	$pos = mb_strpos(mb_strtolower($format), 't');
 	if( $pos !== false)
 	{
-		$babBody->ampm = true;
+		bab_getInstance('babBody')->ampm = true;
 	}
 	else
 	{
-		$babBody->ampm = false;
+		bab_getInstance('babBody')->ampm = false;
 	}
 
 	$format = preg_replace("/(?<!h)h(?!h)/", "$1g$2", $format);
@@ -1393,25 +1393,27 @@ function bab_getSkinPath() {
  */
 function bab_updateSiteSettings()
 {
-	global $babDB, $babBody;
+	global $babDB;
 
+	$babBody = bab_getInstance('babBody');
+	$BAB_HASH_VAR = bab_getHashVar();
+	
+	require_once dirname(__FILE__).'/settings.class.php';
+	
+	$settings = bab_getInstance('bab_Settings');
+	/*@var $settings bab_Settings */
+	
+	try {
+		$arr = $settings->getSiteSettings();
+	} catch (ErrorException $e)
+	{
+		$babBody->addError($e->getMessage());
+		return;
+	}
 
-
-
-	$req="select *, DECODE(smtppassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as smtppass, DECODE(ldap_adminpassword, \"".$babDB->db_escape_string($GLOBALS['BAB_HASH_VAR'])."\") as ldap_adminpassword from ".BAB_SITES_TBL." where name='".$babDB->db_escape_string($GLOBALS['babSiteName'])."'";
-	$res=$babDB->db_query($req);
-	if ($babDB->db_num_rows($res) == 0)
-		{
-		$babBody->msgerror = bab_translate("Configuration error : babSiteName in config.php not match site name in administration sites configuration");
-		}
-	$arr = $babDB->db_fetch_assoc($res);
 	$babBody->babsite = $arr;
 
-
 	$GLOBALS['babSkin'] = $arr['skin'];
-
-
-
 
 	if( $arr['style'] != '')
 		{
@@ -1516,10 +1518,11 @@ function bab_updateSiteSettings()
 		}
 	if( $arr['name_order'] != '')
 		{
-		$GLOBALS['babBody']->nameorder = explode(' ',$arr['name_order']);
+		$babBody->nameorder = explode(' ',$arr['name_order']);
 		}
 	else {
-		$GLOBALS['babBody']->nameorder = Array('F','L');}
+		$babBody->nameorder = Array('F','L');
+	}
 	if( $arr['remember_login'] == 'Y')
 		{
 		$GLOBALS['babCookieIdent'] = true;
@@ -1549,7 +1552,7 @@ function bab_updateSiteSettings()
 		$GLOBALS['babLongDateFormat'] = bab_getDateFormat($arr['date_longformat']) ; }
 
 	if( $arr['time_format'] == '') {
-		$babBody->ampm = false;
+		bab_getInstance('babBody')->ampm = false;
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat('HH:mm') ; }
 	else {
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat($arr['time_format']) ; }
@@ -1628,193 +1631,180 @@ function bab_updateSiteSettings()
 }
 
 class babLanguageFilter
-	{
-		var $langFilterNames;
-		var $activeLanguageFilter;
-		var $activeLanguageValues;
+{
+	var $langFilterNames;
+	var $activeLanguageFilter;
+	var $activeLanguageValues;
 
-		function babLanguageFilter()
+	function babLanguageFilter()
+		{
+			$this->setFilter(0);
+
+			$this->langFilterNames = array(bab_translate("No filter")
+				,bab_translate("Filter language")
+				,bab_translate("Filter language and country")
+				//,bab_translate("Filter translated")
+				);
+
+		} //function LanguageFilter
+
+
+	function setFilter($filterInt)
+		{
+			$this->activeLanguageValues = array();
+			switch($filterInt)
 			{
-				$this->setFilter(0);
+				case 2:
+					$this->activeLanguageValues[] = '\'*\'';
+					$this->activeLanguageValues[] = '\'\'';
+					break;
+				case 1:
+					$this->activeLanguageValues[] = '\''.mb_substr($GLOBALS['babLanguage'], 0, 2).'\'';
+					$this->activeLanguageValues[] = '\'*\'';
+					$this->activeLanguageValues[] = '\'\'';
+					break;
+				case 0:
+				default:
+					break;
+			}
+			$this->activeLanguageFilter = $filterInt;
+		}
 
-				$this->langFilterNames = array(bab_translate("No filter")
-					,bab_translate("Filter language")
-					,bab_translate("Filter language and country")
-					//,bab_translate("Filter translated")
-					);
+	function getFilterAsInt()
+		{
+			return $this->activeLanguageFilter;
+		}
 
-			} //function LanguageFilter
+	function getFilterAsStr()
+		{
+			return $this->langFilterNames[$this->activeLanguageFilter];
+		}
 
+	function convertFilterToStr($filterInt)
+		{
+			return $this->langFilterNames[$filterInt];
+		}
 
-		function setFilter($filterInt)
-			{
-				$this->activeLanguageValues = array();
-				switch($filterInt)
+	function convertFilterToInt($filterStr)
+		{
+			$i = 0;
+			while ($i < count($this->langFilterNames))
 				{
-					case 2:
-						$this->activeLanguageValues[] = '\'*\'';
-						$this->activeLanguageValues[] = '\'\'';
-						break;
-					case 1:
-						$this->activeLanguageValues[] = '\''.mb_substr($GLOBALS['babLanguage'], 0, 2).'\'';
-						$this->activeLanguageValues[] = '\'*\'';
-						$this->activeLanguageValues[] = '\'\'';
-						break;
-					case 0:
-					default:
-						break;
-				}
-				$this->activeLanguageFilter = $filterInt;
-			}
-
-		function getFilterAsInt()
-			{
-				return $this->activeLanguageFilter;
-			}
-
-		function getFilterAsStr()
-			{
-				return $this->langFilterNames[$this->activeLanguageFilter];
-			}
-
-		function convertFilterToStr($filterInt)
-			{
-				return $this->langFilterNames[$filterInt];
-			}
-
-		function convertFilterToInt($filterStr)
-			{
-				$i = 0;
-				while ($i < count($this->langFilterNames))
-					{
-						if ($this->langFilterNames[$i] == $filterStr) return $i;
-						$i++;
-					}
-				return 0;
-			}
-
-		function countFilters()
-			{
-				return count($this->langFilterNames);
-			}
-
-		function getFilterStr($i)
-			{
-				return $this->langFilterNames[$i];
-			}
-
-		function isLangFile($fileName)
-			{
-				$res = mb_substr($fileName, 0, 5);
-				if ($res != 'lang-')
-				{
-					return false;
-				}
-
-				$iOffset = mb_strpos($fileName, '.');
-				if(false === $iOffset)
-				{
-					return false;
-				}
-
-				$iOffset = mb_strpos($fileName, '.');
-				if(false === $iOffset)
-				{
-					return false;
-				}
-
-				$sFileExtention = mb_strtolower(mb_substr($fileName, $iOffset));
-
-				if($sFileExtention != '.xml')
-				{
-					return false;
-				}
-
-				return true;
-			}
-
-		function getLangCode($file)
-			{
-				$langCode = mb_substr($file,5);
-				return mb_substr($langCode,0,mb_strlen($langCode)-4);
-			}
-
-		function readLangFiles()
-			{
-				global $babInstallPath;
-				$tmpLangFiles = array();
-				$i = 0;
-				if (file_exists($babInstallPath.'lang'))
-					{
-						$folder = opendir($babInstallPath.'lang');
-						while (false!==($file = readdir($folder)))
-							{
-								if ($this->isLangFile($file))
-									{
-										$tmpLangFiles[$i] = $this->getLangCode($file);
-										$i++;
-									}
-							}
-				closedir($folder);
-					}
-				if (file_exists('lang'))
-					{
-						$folder = opendir('lang');
-						while (false!==($file = readdir($folder)))
-							{
-								if ($this->isLangFile($file))
-									{
-										$tmpLangFiles[$i] = $this->getLangCode($file);
-										$i++;
-									}
-							}
-						closedir($folder);
-}
-				$tmpLangFiles[] = '*';
-				bab_sort::sort($tmpLangFiles);
-				$this->langFiles = array();
-				$tmpLang = '';
-				$i = 0;
-				$tmpLangFiles[-1]='';
-				while ($i < count($tmpLangFiles) - 1)
-				{
-					if ($tmpLangFiles[$i] != $tmpLangFiles[$i-1])
-					{
-						$this->langFiles[] = $tmpLangFiles[$i];
-					}
+					if ($this->langFilterNames[$i] == $filterStr) return $i;
 					$i++;
 				}
-			} // function readLangFiles() // 2003-09-08
+			return 0;
+		}
 
-		function getLangFiles()
+	function countFilters()
+		{
+			return count($this->langFilterNames);
+		}
+
+	function getFilterStr($i)
+		{
+			return $this->langFilterNames[$i];
+		}
+
+	function isLangFile($fileName)
+		{
+			$res = mb_substr($fileName, 0, 5);
+			if ($res != 'lang-')
 			{
-				static $callNbr = 0;
-				if($callNbr == 0)
-					{
-						$this->readLangFiles();
-						$callNbr++;
-					}
-				return $this->langFiles;
-			}  // getLangFiles
+				return false;
+			}
 
-		function getLangValues()
+			$iOffset = mb_strpos($fileName, '.');
+			if(false === $iOffset)
 			{
-				return $this->activeLanguageValues;
-			}  // getLangFiles
+				return false;
+			}
 
-	} //class LanguageFilter
+			$iOffset = mb_strpos($fileName, '.');
+			if(false === $iOffset)
+			{
+				return false;
+			}
 
+			$sFileExtention = mb_strtolower(mb_substr($fileName, $iOffset));
 
+			if($sFileExtention != '.xml')
+			{
+				return false;
+			}
 
+			return true;
+		}
 
+	function getLangCode($file)
+		{
+			$langCode = mb_substr($file,5);
+			return mb_substr($langCode,0,mb_strlen($langCode)-4);
+		}
 
+	function readLangFiles()
+		{
+			global $babInstallPath;
+			$tmpLangFiles = array();
+			$i = 0;
+			if (file_exists($babInstallPath.'lang'))
+				{
+					$folder = opendir($babInstallPath.'lang');
+					while (false!==($file = readdir($folder)))
+						{
+							if ($this->isLangFile($file))
+								{
+									$tmpLangFiles[$i] = $this->getLangCode($file);
+									$i++;
+								}
+						}
+			closedir($folder);
+				}
+			if (file_exists('lang'))
+				{
+					$folder = opendir('lang');
+					while (false!==($file = readdir($folder)))
+						{
+							if ($this->isLangFile($file))
+								{
+									$tmpLangFiles[$i] = $this->getLangCode($file);
+									$i++;
+								}
+						}
+					closedir($folder);
+				}
+			$tmpLangFiles[] = '*';
+			bab_sort::sort($tmpLangFiles);
+			$this->langFiles = array();
+			$tmpLang = '';
+			$i = 0;
+			$tmpLangFiles[-1]='';
+			while ($i < count($tmpLangFiles) - 1)
+			{
+				if ($tmpLangFiles[$i] != $tmpLangFiles[$i-1])
+				{
+					$this->langFiles[] = $tmpLangFiles[$i];
+				}
+				$i++;
+			}
+		} // function readLangFiles() // 2003-09-08
 
+	function getLangFiles()
+		{
+			static $callNbr = 0;
+			if($callNbr == 0)
+				{
+					$this->readLangFiles();
+					$callNbr++;
+				}
+			return $this->langFiles;
+		}  // getLangFiles
 
+	function getLangValues()
+		{
+			return $this->activeLanguageValues;
+		}  // getLangFiles
 
-
-
-bab_initMbString();
-$babBody = bab_getInstance('babBody');
-$BAB_HASH_VAR = bab_getHashVar();
+} //class LanguageFilter
 
 
