@@ -274,5 +274,56 @@ class bab_Groups
 		$arr = self::get($id_group);
 		return ($arr['nb_groups'] > 0);
 	}
+	
+	
+	/**
+	 *
+	 * @param int $id_group
+	 * @param int $id_user
+	 * @return bool
+	 */
+	public static function isMemberOfTree($id_group, $id_user = '')
+	{
+		global $babDB;
+	
+		try {
+			$group = bab_Groups::get($id_group);
+		} catch (Exception $e) {
+			bab_debug($e->getMessage());
+			return false;
+		}
+	
+		$lf = $group['lf'];
+		$lr = $group['lr'];
+	
+		if (!empty($id_user))
+		{
+			if ($id_group == 0 || $id_group == 1)
+				return true;
+	
+	
+			$res = $babDB->db_query("SELECT COUNT(g.id) FROM ".BAB_GROUPS_TBL." g, ".BAB_USERS_GROUPS_TBL." u WHERE u.id_group=g.id AND u.id_object='".$babDB->db_escape_string($id_user)."' AND g.lf >= '".$babDB->db_escape_string($lf)."' AND g.lr <= '".$babDB->db_escape_string($lr)."'");
+			list($n) = $babDB->db_fetch_array($res);
+			return ($n > 0);
+		}
+	
+		$usergroups = bab_Groups::getUserGroups();
+	
+		foreach($usergroups as $idg)
+		{
+			try {
+				$ugroup = bab_Groups::get($idg);
+			} catch (Exception $e) {
+				bab_debug($e->getMessage());
+				continue;
+			}
+			if ($ugroup['lf'] >= $lf && $ugroup['lr'] <= $lr)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }
 

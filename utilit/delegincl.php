@@ -268,6 +268,7 @@ function bab_getUserSitemapDelegations($id_user = NULL)
  */
 function bab_isUserInDelegation($id_delegation, $id_user = null)
 {
+	require_once dirname(__FILE__).'/groupsincl.php';
 	global $babDB;
 	
 	if (0 === $id_delegation || '0' === $id_delegation) {
@@ -281,7 +282,7 @@ function bab_isUserInDelegation($id_delegation, $id_user = null)
 	
 	$deleg = bab_getDelegationById($id_delegation);
 	
-	return bab_isMemberOfTree($deleg[0]['id_group'], $id_user);
+	return bab_Groups::isMemberOfTree($deleg[0]['id_group'], $id_user);
 }
 
 

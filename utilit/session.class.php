@@ -29,6 +29,8 @@ class bab_Session
 	
 	protected function start()
 	{
+		global $babUrl;
+		
 		session_name(sprintf("OV%u", crc32($babUrl)));
 		session_start();
 	}
@@ -45,7 +47,7 @@ class bab_Session
 	public function __get($name)
 	{
 		if (!session_id()) {
-			return null;
+			$this->start();
 		}
 		
 		return $_SESSION[$name];
@@ -54,7 +56,7 @@ class bab_Session
 	public function __isset($name)
 	{
 		if (!session_id()) {
-			return false;
+			$this->start();
 		}
 		
 		return array_key_exists($name, $_SESSION);
@@ -63,7 +65,7 @@ class bab_Session
 	public function __unset($name)
 	{
 		if (!session_id()) {
-			return null;
+			$this->start();
 		}
 		
 		unset($_SESSION[$name]);

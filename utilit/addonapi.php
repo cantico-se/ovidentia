@@ -1406,6 +1406,11 @@ function bab_isMemberOfGroup($group, $userid="")
 	return false;
 }
 
+/**
+ * Get user ID by email
+ * @param string $email
+ * @return int
+ */
 function bab_getUserIdByEmail($email)
 	{
 	global $babDB;
@@ -1414,7 +1419,7 @@ function bab_getUserIdByEmail($email)
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['id'];
+		return (int) $arr['id'];
 		}
 	else
 		{
@@ -1422,6 +1427,12 @@ function bab_getUserIdByEmail($email)
 		}
 	}
 
+	
+/**
+ * Get user ID by nickname
+ * @param string $nickname
+ * @return int
+ */
 function bab_getUserIdByNickname($nickname)
 	{
 	global $babDB;
@@ -1429,7 +1440,7 @@ function bab_getUserIdByNickname($nickname)
 	if( $res && $babDB->db_num_rows($res) > 0)
 		{
 		$arr = $babDB->db_fetch_array($res);
-		return $arr['id'];
+		return (int) $arr['id'];
 		}
 	else
 		{
@@ -1437,25 +1448,41 @@ function bab_getUserIdByNickname($nickname)
 		}
 	}
 
-function bab_getUserId( $name )
+	
+/**
+ * Get the user ID from logged in user or from the fullname
+ * @param string $name
+ * @return int
+ */
+function bab_getUserId($name = null)
+{
+		
+	if (null === $name)
 	{
+		require_once dirname(__FILE__).'/session.class.php';
+		$session = bab_getInstance('bab_Session');
+		return ((int) $session->BAB_SESS_USERID);
+	}
+		
+		
 	global $babDB;
 	$replace = array( " " => "", "-" => "");
 	$hash = md5(mb_strtolower(strtr($name, $replace)));
 	$query = "select id from ".BAB_USERS_TBL." where hashname='".$babDB->db_escape_string($hash)."'";
 	$res = $babDB->db_query($query);
 	if( $babDB->db_num_rows($res) > 0)
-		{
+	{
 		$arr = $babDB->db_fetch_array($res);
 		return $arr['id'];
-		}
-	else
-		return 0;
 	}
+	
+	return 0;
+}
 
 /**
- * Recupere $nb utilisateur contenant $name dans leur nom.
- * @param $name , $nb
+ * Get $nb users with $name in their name.
+ * @param string 	$name
+ * @param int		$nb
  * @return array { int | id , string | lastname , string | firstname }
  */
 function bab_getUsersByName( $name, $nb = 5 )
@@ -1595,7 +1622,10 @@ function bab_isAccessValidByUser($table, $idobject, $iduser)
  */
 function bab_isAccessValid($table, $idobject, $iduser='')
 {
-	if( $iduser != '' && ((int) $iduser) !== (int) $GLOBALS['BAB_SESS_USERID'])
+	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
+	$session = bab_getInstance('bab_Session');
+	
+	if( $iduser != '' && ((int) $iduser) !== (int) $session->BAB_SESS_USERID)
 		{
 			include_once $GLOBALS['babInstallPath']."admin/acl.php";
 
@@ -1607,13 +1637,10 @@ function bab_isAccessValid($table, $idobject, $iduser='')
 			}
 			return false;
 		}
+		
+	$objects = bab_getUserIdObjects($table);
 
-	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
-		{
-		bab_getUserIdObjects($table);
-		}
-
-	return isset($_SESSION['bab_groupAccess']['acltables'][$table][$idobject]);
+	return isset($objects[$idobject]);
 }
 
 
@@ -1630,6 +1657,7 @@ function bab_isAccessValid($table, $idobject, $iduser='')
  */
 function bab_getAccessibleObjects($table, $userId)
 {
+	require_once dirname(__FILE__).'/groupsincl.php';
 	global $babDB;
 	$objects = array();
 
@@ -1664,7 +1692,7 @@ function bab_getAccessibleObjects($table, $userId)
 			}
 		}
 		elseif ( ($object['id_group'] < BAB_ACL_GROUP_TREE && in_array($object['id_group'], $userGroupIds)) 
-		|| ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
+		|| ($object['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($object['id_group'] - BAB_ACL_GROUP_TREE, $userId))) {
 			$objects[$object['id_object']] = $object['id_object'];
 		}
 	}
@@ -1680,33 +1708,42 @@ function bab_getAccessibleObjects($table, $userId)
  */
 function bab_getUserIdObjects($table)
 {
+	require_once dirname(__FILE__).'/groupsincl.php';
+	require_once $GLOBALS['babInstallPath'].'utilit/session.class.php';
+	
 	global $babDB;
-	if( !isset($_SESSION['bab_groupAccess']['acltables'][$table]))
+	$session = bab_getInstance('bab_Session');
+	
+	$groupAccess = $session->bab_groupAccess;
+	
+	if(isset($groupAccess) || !isset($groupAccess['acltables'][$table]))
 	{
-	$_SESSION['bab_groupAccess']['acltables'][$table] = array();
-
-	$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
-
-	while ($row = $babDB->db_fetch_assoc($res)) {
-		if( $row['nb_groups'] !== null )
-		{
-		$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
-		while( $rr = $babDB->db_fetch_array($rs))
+		$groupAccess['acltables'][$table] = array();
+	
+		$res = $babDB->db_query("SELECT t.id_object, t.id_group, g.nb_groups FROM ".$babDB->backTick($table)." t left join ".BAB_GROUPS_TBL." g on g.id=t.id_group");
+	
+		while ($row = $babDB->db_fetch_assoc($res)) {
+			if( $row['nb_groups'] !== null )
 			{
-			if( bab_isMemberOfGroup($rr['id_group']))
+			$rs=$babDB->db_query("select id_group from ".BAB_GROUPS_SET_ASSOC_TBL." where id_set=".$babDB->quote($row['id_group']));
+			while( $rr = $babDB->db_fetch_array($rs))
 				{
-					$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
+				if( bab_isMemberOfGroup($rr['id_group']))
+					{
+						$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
+					}
 				}
 			}
+			elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group'])) 
+				|| ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_Groups::isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
+				$groupAccess['acltables'][$table][$row['id_object']] = $row['id_object'];
+			}
 		}
-		elseif ( ($row['id_group'] < BAB_ACL_GROUP_TREE && bab_isMemberOfGroup($row['id_group'])) 
-			|| ($row['id_group'] > BAB_ACL_GROUP_TREE && bab_isMemberOfTree($row['id_group'] - BAB_ACL_GROUP_TREE))) {
-			$_SESSION['bab_groupAccess']['acltables'][$table][$row['id_object']] = $row['id_object'];
-		}
-	}
+		
+		$session->bab_groupAccess = $groupAccess;
 	}
 
-	return $_SESSION['bab_groupAccess']['acltables'][$table];
+	return $groupAccess['acltables'][$table];
 }
 
 
@@ -3164,6 +3201,24 @@ function bab_locale() {
 
 		return $locale;
 	}
+}
+
+
+
+function bab_getHashVar()
+{
+	if (defined('BAB_HASH_VAR'))
+	{
+		return BAB_HASH_VAR;
+	} else {
+		return 'aqhjlongsmp';
+	}
+}
+
+
+function bab_initMbString() {
+	mb_internal_encoding(bab_charset::getIso());
+	mb_http_output(bab_charset::getIso());
 }
 
 
