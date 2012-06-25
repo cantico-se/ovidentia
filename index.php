@@ -219,6 +219,13 @@ include_once $babInstallPath.'utilit/statincl.php';
 $babWebStat =new bab_WebStatEvent();
 
 include $babInstallPath.'utilit/utilit.php';
+
+
+bab_initMbString();
+$babBody = bab_getInstance('babBody');
+$BAB_HASH_VAR = bab_getHashVar();
+
+
 unset($BAB_SESS_LOGGED);
 
 /* Set the charset of the current page (ISO-8859-15, UTF-8...)

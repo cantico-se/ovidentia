@@ -441,7 +441,14 @@ class bab_addonInfos {
 	 * @return string
 	 */
 	public function getUploadPath() {
-		return $GLOBALS['babUploadPath'].'/'.$this->getRelativePath();
+		
+		
+		require_once dirname(__FILE__).'/settings.class.php';
+		$settings = bab_getInstance('bab_Settings');
+		/*@var $settings bab_Settings */
+		$site = $settings->getSiteSettings();
+		
+		return $site['uploadpath'].'/'.$this->getRelativePath();
 	}
 	
 	/**

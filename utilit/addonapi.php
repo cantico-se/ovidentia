@@ -931,6 +931,7 @@ function bab_shortDate($time, $hour=true)
 
 	if( !isset($GLOBALS['babShortDateFormat']))
 		{
+		require_once dirname(__FILE__).'/utilit.php';
 		$GLOBALS['babShortDateFormat'] = bab_getDateFormat("dd/mm/yyyy");
 		$GLOBALS['babTimeFormat'] = bab_getTimeFormat("HH:mm");
 		}
@@ -1163,10 +1164,16 @@ function bab_translate($str, $folder = "", $lang="")
 	}
 
 function bab_isUserAdministrator()
-	{
+{
 	global $babBody;
-	return $babBody->isSuperAdmin;
+	
+	if (!isset($babBody->isSuperAdmin))
+	{
+		return bab_isMemberOfGroup(BAB_ADMINISTRATOR_GROUP);
 	}
+	
+	return $babBody->isSuperAdmin;
+}
 
 
 /**
