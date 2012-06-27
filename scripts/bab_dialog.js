@@ -95,7 +95,7 @@ bab_dialog._removeEvent = function(el, evname, func) {
 
 
 bab_dialog._openModal = function(url, parameters, action, init, obj) {
-	var dlg = window.open(url, "bab_dialog", parameters );
+	var dlg = window.open(url, null, parameters );
 	bab_dialog._modal = dlg;
 	bab_dialog._arguments = init;
 
