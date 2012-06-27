@@ -492,7 +492,6 @@ class bab_replace {
 			$match['linkcontent'] = $match[3];
 		}
 		
-		$match['reference'] = bab_unhtmlentities($match['reference']);
 		
 		$ref = explode('?', $match['reference']);
 		try {
