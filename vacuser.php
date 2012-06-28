@@ -136,7 +136,6 @@ function requestVacation($begin,$end, $id)
 			$this->t_or = bab_translate('Or');
 
 
-			$sql = 'SELECT allow_mismatch FROM ' . BAB_VAC_OPTIONS_TBL;
 			$res = $babDB->db_query('SELECT allow_mismatch FROM ' . BAB_VAC_OPTIONS_TBL);
 			if ($arr = $babDB->db_fetch_array($res)) {
 				$this->allow_mismatch = $arr['allow_mismatch'];
