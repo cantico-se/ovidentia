@@ -109,11 +109,15 @@ function validateForm()
 {
 	var f = document.forms['vacform'];
 	if ({ period_nbdays } != f.elements['total[D]'].value) {
+		<!--#if allow_mismatch "== 1" -->
 		return confirm('{ t_confirm_nomatch }');
+		<!--#else allow_mismatch -->
+        alert('{ t_alert_nomatch }');
+        return false;
+		<!--#endif allow_mismatch -->
 	}
 	return true;
 }
-
 
 
 function rgroup_display(obj, str_dest) {

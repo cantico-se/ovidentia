@@ -6656,21 +6656,21 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			$babDB->db_query('UPDATE '.BAB_FILES_TBL." SET size = " . $babDB->quote($size) . " WHERE id=" . $babDB->quote($file['id']));
 		}
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * Upgrade to 7.6.90
 	 */
-	
+
 	if (!bab_isTableField('bab_topics', 'allow_unsubscribe'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_topics` ADD allow_unsubscribe tinyint(1) unsigned NOT NULL default '0'");
 	}
-	
+
 	if (!bab_isTable('bab_topics_unsubscribe')) {
 		$babDB->db_query("
 			CREATE TABLE bab_topics_unsubscribe (
@@ -6680,16 +6680,16 @@ function ovidentia_upgrade($version_base,$version_ini) {
 			)
 		");
 	}
-	
+
 	if (!bab_isTableField('bab_db_directories', 'disable_email'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_db_directories` ADD disable_email enum('N','Y') NOT NULL default 'N'");
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Upgrade to 7.7.90
 	 * vacation hours
@@ -6698,19 +6698,19 @@ function ovidentia_upgrade($version_base,$version_ini) {
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` ADD `quantity_unit` enum('H','D') NOT NULL default 'D'");
 	}
-	
+
 	if (bab_isTableField('bab_vac_rights', 'day_begin_fixed'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_begin_fixed` `date_begin_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `date_end_fixed` `date_end_fixed` datetime NOT NULL default '0000-00-00 00:00:00'");
-		
+
 		$res = $babDB->db_query("SELECT `id`, `date_begin_fixed` FROM `bab_vac_rights` WHERE `day_begin_fixed`='1' AND `date_begin_fixed`<>'0000-00-00 00:00:00'");
 		while($arr = $babDB->db_fetch_assoc($res))
 		{
 			list($date) = explode(' ', $arr['date_begin_fixed']);
 			$babDB->db_query("UPDATE `bab_vac_rights` SET `date_begin_fixed`=".$babDB->quote($date.' 12:00:00')." WHERE id=".$babDB->quote($arr['id']));
 		}
-		
+
 		$res = $babDB->db_query("SELECT `id`, `date_end_fixed`, `day_end_fixed` FROM `bab_vac_rights` WHERE `date_end_fixed`<>'0000-00-00 00:00:00'");
 		while($arr = $babDB->db_fetch_assoc($res))
 		{
@@ -6725,31 +6725,31 @@ function ovidentia_upgrade($version_base,$version_ini) {
 				default:
 					return 'Unexpected value in `bab_vac_rights` table';
 			}
-		
+
 			list($date) = explode(' ', $arr['date_end_fixed']);
 			if (!$babDB->db_query("UPDATE `bab_vac_rights` SET `date_end_fixed`=".$babDB->quote($date.' '.$hour)." WHERE id=".$babDB->quote($arr['id'])))
 			{
 				return 'The upgrade in `bab_vac_rights` failed';
 			}
 		}
-		
+
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` DROP `day_begin_fixed`");
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` DROP `day_end_fixed`");
 	}
-	
+
 	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_rights` `quantity`'));
 	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_rights` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
 	}
-	
+
 	$quantity_field = $babDB->db_fetch_assoc($babDB->db_query('describe `bab_vac_entries_elem` `quantity`'));
 	if (false !== mb_strpos($quantity_field['Type'], 'decimal(3,1)'))
 	{
 		$babDB->db_query("ALTER TABLE `bab_vac_entries_elem` CHANGE `quantity` `quantity` decimal(4,2) unsigned NOT NULL default '0.00'");
 	}
 
-	
+
 	/**
 	 * Upgrade to 7.7.93
 	 */
@@ -6759,40 +6759,46 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `end_date` datetime NOT NULL default '0000-00-00 00:00:00'");
 		$babDB->db_query("ALTER TABLE `bab_cal_inbox` ADD `lastupdate` datetime NOT NULL default '0000-00-00 00:00:00'");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Upgrade to 7.7.94
 	 */
-	
+
 	$res = $babDB->db_query('DESCRIBE `bab_users_log` sessid');
 	$sessid = $babDB->db_fetch_assoc($res);
-	
+
 	if ($sessid['Type'] != 'char(32)')
 	{
 		$babDB->db_query("ALTER TABLE `bab_users_log` CHANGE `sessid` `sessid` CHAR(32) NOT NULL");
 		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`sessid`)");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 7.7.95
 	 */
-	
+
 	$res = $babDB->db_query("show indexes from bab_users_log WHERE Column_name='dateact'");
 	if ($res && 0 === $babDB->db_num_rows($res))
 	{
 		$babDB->db_query("ALTER TABLE `bab_users_log` ADD INDEX (`dateact`)");
 	}
-	
-	
+
+
 	/**
 	 * Upgrade to 7.8.90
 	 */
-	
+
 	bab_addEventListener('LibTimer_eventHourly', 'bab_onHourly', 'utilit/timerincl.php');
-	
+
+
+	if (!bab_isTableField('bab_vac_options', 'allow_mismatch'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '0'");
+	}
+
 	return true;
 }
 

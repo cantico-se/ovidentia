@@ -1814,7 +1814,8 @@ CREATE TABLE bab_vac_users_rights (
 
 
 CREATE TABLE `bab_vac_options` (
-`chart_superiors_create_request` TINYINT( 1 ) UNSIGNED NOT NULL
+  `chart_superiors_create_request` TINYINT( 1 ) UNSIGNED NOT NULL default '0',
+  `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '1',
 );
 
 

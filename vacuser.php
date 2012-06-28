@@ -131,9 +131,18 @@ function requestVacation($begin,$end, $id)
 			$this->id_user = $_POST['id_user'];
 			$this->username = bab_toHtml(bab_getUserName($this->id_user));
 			$this->t_days = bab_translate("working days");
+			$this->t_alert_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period."),BAB_HTML_JS);
 			$this->t_confirm_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period, do you really want to submit your request with this mismatch?"),BAB_HTML_JS);
 			$this->t_or = bab_translate('Or');
 
+
+			$sql = 'SELECT allow_mismatch FROM ' . BAB_VAC_OPTIONS_TBL;
+			$res = $babDB->db_query('SELECT allow_mismatch FROM ' . BAB_VAC_OPTIONS_TBL);
+			if ($arr = $babDB->db_fetch_array($res)) {
+				$this->allow_mismatch = $arr['allow_mismatch'];
+			} else {
+				$this->allow_mismatch = '1';
+			}
 
 			$date_begin = BAB_DateTime::fromIsoDateTime($begin);
 			$date_end	= BAB_DateTime::fromIsoDateTime($end);
@@ -144,21 +153,21 @@ function requestVacation($begin,$end, $id)
 			list($days, $hours) = bab_vac_getFreeDaysBetween($this->id_user, $begin, $end, true);
 			$this->period_nbdays = $days;
 			$this->period_nbhours = $hours;
-			
+
 			/**
 			 * nombre de jours non utilises restant, initialisation
 			 */
 			$this->last_days = $days;
-			
+
 			/**
 			 * nombre d'heures non utilises restantes, initialisation
 			 */
 			$this->last_hours = $hours;
-			
-			
+
+
 			$this->t_days = bab_translate("Day(s)");
 
-			
+
 
 			$this->begin		= $date_begin->getIsoDateTime();
 			$this->end			= $date_end->getIsoDateTime();
@@ -166,13 +175,13 @@ function requestVacation($begin,$end, $id)
 			$this->rfrom = isset($_POST['rfrom'])? $_POST['rfrom'] : 0;
 			$this->rights = array();
 			$rights = bab_getRightsOnPeriod($this->begin, $this->end, $this->id_user, $this->rfrom);
-			
+
 			$this->contain_hours_rights = false;
 
 
 			foreach($rights as $right) {
 				$id		= empty($right['id_rgroup']) ? 'r'.$right['id'] : 'g'.$right['id_rgroup'];
-				
+
 				if ('H' === $right['quantity_unit'])
 				{
 					$this->contain_hours_rights = true;
@@ -184,7 +193,7 @@ function requestVacation($begin,$end, $id)
 						'quantity_available'	=> $right['quantity_available'] - $right['waiting']
 					);
 					continue;
-					
+
 				} elseif(!empty($right['id_rgroup'])) {
 					$right['rights'] = array(
 						$right['id'] => array(
@@ -196,22 +205,22 @@ function requestVacation($begin,$end, $id)
 
 				$this->rights[$id] = $right;
 			}
-			
-			
-			
+
+
+
 			$days = sprintf('<strong>%s</strong>', $days);
 			$hours = sprintf('<strong>%s</strong>', $hours);
-			
-			
+
+
 			if ($this->contain_hours_rights)
 			{
 				$this->period_infos = sprintf(bab_translate('The period contain %s day(s) or %s hour(s)'), $days, $hours);
-				
+
 			} else {
 				$this->period_infos = sprintf(bab_translate('The period contain %s day(s)'), $days);
-				
+
 			}
-			
+
 
 
 			if (!empty($this->id))
@@ -262,7 +271,7 @@ function requestVacation($begin,$end, $id)
 			$this->calurl = $GLOBALS['babUrlScript']."?tg=vacuser&idx=cal&idu=".$this->id_user."&popup=1";
 
 			}
-			
+
 		/**
 		 *
 		 * @param float $hours
@@ -274,13 +283,13 @@ function requestVacation($begin,$end, $id)
 			{
 				return 0;
 			}
-			
-			$ratio = $this->period_nbhours / $this->period_nbdays;	
+
+			$ratio = $this->period_nbhours / $this->period_nbdays;
 			return round(($ratio * $days), 2);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param float $hours
 		 * @return float
 		 */
@@ -290,16 +299,16 @@ function requestVacation($begin,$end, $id)
 			{
 				return 0;
 			}
-			
-			$ratio = $this->period_nbdays / $this->period_nbhours;	
+
+			$ratio = $this->period_nbdays / $this->period_nbhours;
 			return round(($ratio * $hours), 2);
 		}
-		
+
 		/**
-		 * 
+		 *
 		 * @param string 	$unit		D | H
 		 * @param float		$set
-		 * 
+		 *
 		 * @return mixed
 		 */
 		private function last($unit, $set = null)
@@ -310,7 +319,7 @@ function requestVacation($begin,$end, $id)
 				{
 					case 'D':
 						return $this->last_days;
-				
+
 					case 'H':
 						return $this->last_hours;
 				}
@@ -323,7 +332,7 @@ function requestVacation($begin,$end, $id)
 						$this->last_days = $set;
 						$this->last_hours = $this->daysToHours($set);
 						break;
-						
+
 					case 'H':
 						$this->last_days = $this->hoursToDays($set);
 						$this->last_hours = $set;
@@ -346,18 +355,18 @@ function requestVacation($begin,$end, $id)
 				$this->right['waiting'] -= isset($this->current[$id]) ? $this->current[$id] : 0;
 				$this->right['quantity_available'] = $this->right['quantity_available'] - $this->right['waiting'];
 				$this->quantity_available = bab_toHtml(bab_vac_quantity($this->right['quantity_available'], $this->right['quantity_unit']));
-				
+
 				switch($this->right['quantity_unit'])
 				{
 					case 'D':
 						$this->unit = bab_translate('day(s)');
 						break;
-						
+
 					case 'H':
 						$this->unit = bab_translate('hour(s)');
 						break;
 				}
-				
+
 
 				if (isset($_POST['nbdays'][$id]))
 					{
@@ -375,12 +384,12 @@ function requestVacation($begin,$end, $id)
 					{
 
 					$last = $this->last($this->right['quantity_unit']);
-					
-						
+
+
 					if ($last >= $this->right['quantity_available'])
 						{
 						$this->quantity = $this->right['quantity_available'];
-						
+
 						$last -= $this->right['quantity_available'];
 						$this->last($this->right['quantity_unit'], $last);
 						}
@@ -542,10 +551,10 @@ function period($id_user, $id = 0)
 				bab_translate("Morning"),
 				bab_translate("Afternoon")
 				);
-			
+
 			$this->hours = bab_vac_hoursList($GLOBALS['BAB_SESS_USERID']);
-			
-			
+
+
 			require_once dirname(__FILE__).'/utilit/workinghoursincl.php';
 			$jSON = array();
 			$this->addWorkingPeriod(bab_getWHours($GLOBALS['BAB_SESS_USERID'], 0), $jSON);
@@ -555,11 +564,11 @@ function period($id_user, $id = 0)
 			$this->addWorkingPeriod(bab_getWHours($GLOBALS['BAB_SESS_USERID'], 4), $jSON);
 			$this->addWorkingPeriod(bab_getWHours($GLOBALS['BAB_SESS_USERID'], 5), $jSON);
 			$this->addWorkingPeriod(bab_getWHours($GLOBALS['BAB_SESS_USERID'], 6), $jSON);
-			
+
 			$this->json_working_hours = '['.implode(',', $jSON).']';
-			
+
 		}
-		
+
 		/**
 		 * reduce working periods for planning
 		 */
@@ -569,7 +578,7 @@ function period($id_user, $id = 0)
 			{
 				return;
 			}
-			
+
 			foreach($whours as $k => $period)
 			{
 				if ($period['startHour'] < '11:59:59' && $period['endHour'] > '12:00:00')
@@ -582,8 +591,8 @@ function period($id_user, $id = 0)
 					);
 				}
 			}
-			
-			
+
+
 			foreach($whours as $period)
 			{
 				$jSON[] = '{
@@ -667,10 +676,10 @@ function period($id_user, $id = 0)
 				{
 				next($this->rights);
 				$this->right['quantity_available'] = $this->right['quantity_available'] - $this->right['waiting'];
-				
+
 				$this->total[$this->right['quantity_unit']] += $this->right['quantity_available'];
 				$this->total_waiting[$this->right['quantity_unit']] += $this->right['waiting'];
-				
+
 				$this->right['quantity_available'] = bab_toHtml(bab_vac_quantity($this->right['quantity_available'], $this->right['quantity_unit']));
 				$this->right['waiting'] = bab_toHtml(bab_vac_quantity($this->right['waiting'], $this->right['quantity_unit']));
 
@@ -680,7 +689,7 @@ function period($id_user, $id = 0)
 				return false;
 
 			}
-			
+
 		private function getDisplay($arr)
 		{
 			$list = array();
@@ -689,23 +698,23 @@ function period($id_user, $id = 0)
 					$list[] = bab_vac_quantity($quantity, $quantity_unit);
 				}
 			}
-			
+
 			return implode(', ', $list);
 		}
-			
+
 		public function gettotal()
 			{
 				static $call = null;
-				
+
 				if (isset($call)) {
 					return false;
 				}
-				
+
 				$call = true;
-				
+
 				$this->total = bab_toHtml($this->getDisplay($this->total));
 				$this->total_waiting = bab_toHtml($this->getDisplay($this->total_waiting));
-				
+
 				return true;
 			}
 
@@ -732,10 +741,10 @@ function viewrights($id_user)
 			$this->t_waiting_days = bab_translate("Waiting days");
 			$this->t_period_nbdays = bab_translate("Period days");
 			$this->t_total = bab_translate("Total");
-			
+
 			$this->t_available = bab_translate("Available");
 			$this->t_waiting = bab_translate("Waiting");
-			
+
 			$this->total = array('D' => 0, 'H' => 0);
 			$this->total_waiting = array('D' => 0, 'H' => 0);
 		}
@@ -748,13 +757,13 @@ function viewrights($id_user)
 				next($this->rights);
 				$quantity_available = $right['quantity_available'] - $right['waiting'];
 				$this->description = bab_toHtml($right['description']);
-				
+
 				$this->quantity_available = array('D' => 0, 'H' => 0);
 				$this->waiting = array('D' => 0, 'H' => 0);
-				
+
 				$this->quantity_available[$right['quantity_unit']] = $quantity_available;
 				$this->waiting[$right['quantity_unit']] = $right['waiting'];
-				
+
 				$this->total[$right['quantity_unit']] += $this->quantity_available[$right['quantity_unit']];
 				$this->total_waiting[$right['quantity_unit']] += $this->waiting[$right['quantity_unit']];
 				return true;
@@ -793,68 +802,68 @@ function vedUnload()
 	}
 
 
-	
+
 class bab_vac_saveVacation
 {
-	
-		
+
+
 	/**
 	 * Test vacation right validity
 	 * @see addNewVacation()
-	 * 
+	 *
 	 * @param	array	&$nbdays	list of rights to save in request, rows are added on each valid calls
 	 * @param	Array	$arr		vacation rights properties
-	 * @param	float	$quantity	requested quantity in form	
+	 * @param	float	$quantity	requested quantity in form
 	 * @param	int		$id_request	if this is a request modification
 	 */
 	private static function addVacationRight(&$nbdays, Array $arr, $quantity, $id_request)
 	{
 		global $babBody;
 		$quantity = str_replace(',','.', $quantity);
-		
-		
+
+
 		if (!empty($id_request))
 		{
 			global $babDB;
-			
+
 			$res = $babDB->db_query("SELECT quantity FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry=".$babDB->quote($id_request)." AND id_right=".$babDB->quote($arr['id']));
 			while ($current = $babDB->db_fetch_array($res))
 			{
 				$arr['waiting'] -= $current['quantity'];
 			}
 		}
-		
-		
+
+
 		if( !is_numeric($quantity) || $quantity < 0 ) {
 			$babBody->msgerror = bab_translate("You must specify a correct number days") ." !";
 			return false;
 		}
-		
-		
-		
+
+
+
 		if (!empty($quantity) && $arr['cbalance'] != 'Y' && ($arr['quantity_available'] - $arr['waiting'] - $quantity) < 0) {
 			$babBody->addError(bab_translate("You can't take more than").' '.bab_vac_quantity(($arr['quantity_available']- $arr['waiting']), $arr['quantity_unit']).' '.bab_translate("on the right").' '.$arr['description']);
 			return false;
 		}
-		
+
 		if( $quantity > 0 ) {
 			$nbdays['id'][] = (int) $arr['id'];
 			$nbdays['val'][] = $quantity;
 		}
-		
+
 		return true;
 	}
-		
-	
+
+
 	public static function save()
 	{
 		require_once dirname(__FILE__).'/utilit/dateTime.php';
 		global $babBody, $babDB;
-		
-		
-		
-	
-	
+
+
+
+
+
 		$id_user		= $_POST['id_user'];
 		$id_request		= $_POST['id'];
 		$begin			= $_POST['begin'];
@@ -862,18 +871,18 @@ class bab_vac_saveVacation
 		$remarks		= $_POST['remarks'];
 		$total			= $_POST['total'];
 		$rfrom			= bab_pp('rfrom',0);
-	
-	
+
+
 		$date_begin = BAB_DateTime::fromIsoDateTime($begin);
 		$date_end	= BAB_DateTime::fromIsoDateTime($end);
-	
+
 		if (!test_period2($id_request, $id_user, $date_begin->getTimeStamp(), $date_end->getTimeStamp())) {
 			return false;
 		}
-	
-	
+
+
 		$row = $babDB->db_fetch_array($babDB->db_query("select * from ".BAB_VAC_PERSONNEL_TBL." WHERE  id_user='".$babDB->db_escape_string($id_user)."'"));
-	
+
 		if( $rfrom == 1 )
 			{
 			$acclevel = bab_vacationsAccess();
@@ -882,16 +891,16 @@ class bab_vac_saveVacation
 				$rfrom = 0;
 				}
 			}
-	
-	
-		
-	
+
+
+
+
 		$rights = bab_getRightsOnPeriod($begin, $end, $id_user, $rfrom);
-	
+
 		$rgroups = array();
-	
+
 		$nbdays = array();
-		
+
 		// regular vacation rights
 		foreach($rights as $arr)
 		{
@@ -903,20 +912,20 @@ class bab_vac_saveVacation
 					return false;
 				}
 			}
-	
+
 			if ($arr['id_rgroup'] > 0) {
 				$rgroups[$arr['id']] = $arr['id_rgroup'];
 			}
 		}
-	
+
 		// right groups
-	
+
 		if (isset($_POST['rgroup_right'])) {
 			foreach($_POST['rgroup_right'] as $id_rgroup => $id_right) {
 				if (isset($rgroups[$id_right]) && $rgroups[$id_right] == $id_rgroup) {
 					$quantity = $_POST['rgroup_value'][$id_rgroup];
 					$arr = $rights[$id_right];
-	
+
 					if (!self::addVacationRight($nbdays, $arr, $quantity, $id_request))
 					{
 						return false;
@@ -925,19 +934,19 @@ class bab_vac_saveVacation
 			}
 		}
 
-	
-	
+
+
 		if( $date_begin->getTimeStamp() >= $date_end->getTimeStamp())
 			{
 			$babBody->msgerror = bab_translate("ERROR: End date must be older")." !";
 			return false;
 			}
-	
-	
+
+
 		if (empty($id_request))
 			{
 			// event creation
-	
+
 			$babDB->db_query("
 				INSERT INTO
 					".BAB_VAC_ENTRIES_TBL."
@@ -954,19 +963,19 @@ class bab_vac_saveVacation
 					)
 			");
 			$id = $babDB->db_insert_id();
-	
+
 			$period_begin = $date_begin->getTimestamp();
 			$period_end = $date_end->getTimestamp();
-	
-	
+
+
 			}
 		else
 			{
 			// event modification
-	
-	
+
+
 			$babDB->db_query("DELETE FROM ".BAB_VAC_ENTRIES_ELEM_TBL." WHERE id_entry='".$babDB->db_escape_string($id_request)."'");
-	
+
 			$rescurrent = $babDB->db_query("
 				SELECT
 					idfai,
@@ -978,14 +987,14 @@ class bab_vac_saveVacation
 					id='".$babDB->db_escape_string($id_request)."'
 			");
 			list($idfai, $old_date_begin, $old_date_end) = $babDB->db_fetch_array($rescurrent);
-	
-	
-	
-	
+
+
+
+
 			if ($idfai > 0) {
 				deleteFlowInstance($idfai);
 			}
-	
+
 			$babDB->db_query("
 				UPDATE ".BAB_VAC_ENTRIES_TBL."
 					SET
@@ -994,30 +1003,30 @@ class bab_vac_saveVacation
 					comment		= '".$babDB->db_escape_string($remarks)."',
 					date 		= curdate(),
 					idfai 		= '0',
-					status 		= 'Y' 
+					status 		= 'Y'
 				WHERE
 					id='".$babDB->db_escape_string($id_request)."'
 				");
-	
+
 			$id = $id_request;
-	
+
 			$old_date_begin_obj = BAB_DateTime::fromIsoDateTime($old_date_begin);
 			$old_date_end_obj = BAB_DateTime::fromIsoDateTime($old_date_end);
-	
+
 			$old_date_begin = $old_date_begin_obj->getTimeStamp();
 			$old_date_end = $old_date_end_obj->getTimeStamp();
-	
+
 			$new_date_begin = $date_begin->getTimeStamp();
 			$new_date_end = $date_end->getTimeStamp();
-	
+
 			$period_begin	= $old_date_begin 	< $new_date_begin 	? $old_date_begin 	: $new_date_begin;
 			$period_end 	= $old_date_end 	> $new_date_end 	? $old_date_end 	: $new_date_end;
-	
+
 			}
-	
-	
+
+
 		// insert rights
-	
+
 		if (isset($nbdays['id']))
 		{
 		for( $i = 0; $i < count($nbdays['id']); $i++)
@@ -1033,34 +1042,34 @@ class bab_vac_saveVacation
 				");
 			}
 		}
-	
+
 		// set period into calendar backend if necessary
-	
+
 		if (empty($id_request))
 		{
 			// event creation
 			bab_vac_createPeriod($id);
-	
+
 		} else
 		{
 			// event modification
 			bab_vac_updatePeriod($id, $old_date_begin_obj, $old_date_end_obj);
 		}
-	
-	
+
+
 		include_once $GLOBALS['babInstallPath']."utilit/eventperiod.php";
 		$event = new bab_eventPeriodModified($period_begin, $period_end, $id_user);
 		$event->types = BAB_PERIOD_VACATION;
 		bab_fireEvent($event);
-	
-	
-	
+
+
+
 		$idfai = makeFlowInstance($row['id_sa'], "vac-".$id );
 		$status = '';
 		setFlowInstanceOwner($idfai, $id_user);
-	
+
 		$nfusers = getWaitingApproversFlowInstance($idfai, true);
-	
+
 		if (empty($nfusers))
 		{
 			// if no approvers, delete instance
@@ -1078,10 +1087,10 @@ class bab_vac_saveVacation
 					WHERE
 					id=".$babDB->quote($id)
 			);
-		
+
 			notifyVacationApprovers($id, $nfusers, !empty($id_request));
 		}
-		
+
 		return true;
 	}
 
