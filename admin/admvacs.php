@@ -61,6 +61,7 @@ function vacationOptions()
 			$this->t_yes = bab_translate("Yes");
 			$this->t_no = bab_translate("No");
 			$this->t_chart_superiors_create_request = bab_translate("Allow managers to create vacation requests for users in chart");
+			$this->t_allow_mismatch = bab_translate("Allow users to create vacation requests with mismatch in total number of days");
 
 			$req = "SELECT * FROM ".BAB_VAC_OPTIONS_TBL."";
 			$this->arr = $babDB->db_fetch_assoc($babDB->db_query($req));
@@ -97,9 +98,16 @@ function record_options() {
 	list($n) = $babDB->db_fetch_array($babDB->db_query("SELECT COUNT(*) FROM ".BAB_VAC_OPTIONS_TBL.""));
 	if ($n > 0) {
 
-		$babDB->db_query("UPDATE ".BAB_VAC_OPTIONS_TBL." SET chart_superiors_create_request=".$babDB->quote($_POST['chart_superiors_create_request'])."");
+		$babDB->db_query('
+			UPDATE ' . BAB_VAC_OPTIONS_TBL . '
+			SET chart_superiors_create_request = ' . $babDB->quote($_POST['chart_superiors_create_request']) . ',
+				allow_mismatch = ' . $babDB->quote($_POST['allow_mismatch'])
+		);
 	} else {
-		$babDB->db_query("INSERT INTO ".BAB_VAC_OPTIONS_TBL." ( chart_superiors_create_request) VALUES (".$babDB->quote($_POST['chart_superiors_create_request']).")");
+		$babDB->db_query('
+			INSERT INTO ' . BAB_VAC_OPTIONS_TBL . '(chart_superiors_create_request, allow_mismatch)
+			VALUES (' . $babDB->quote($_POST['chart_superiors_create_request']) . ',' . $babDB->quote($_POST['allow_mismatch']) . ')'
+		);
 	}
 }
 
@@ -139,17 +147,16 @@ $babBody->addItemMenu('options', bab_translate("Options"), $GLOBALS['babUrlScrip
 switch($idx)
 	{
 	case 'options':
-		$babBody->title = bab_translate("List of vacations managers");
+		$babBody->title = bab_translate("Vacations options");
 		vacationOptions();
 		break;
 	
 	
 	default:
-	case "list":
+	case 'list':
 		$babBody->title = bab_translate("List of vacations managers");
 		listVacationManagers();
 		break;
 	}
 $babBody->setCurrentItemMenu($idx);
 bab_siteMap::setPosition('bab','AdminVacations');
-?>

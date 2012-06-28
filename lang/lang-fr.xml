@@ -1130,6 +1130,7 @@
 <string id="Vacation managers">Gestionnaires de congés</string>
 <string id="New manager">Nouveau gestionnaire</string>
 <string id="List of vacations managers">Liste des Gestionnaires de congés</string>
+<string id="Vacations options">Options des congés</string>
 <string id="Managers">Gestionnaires</string>
 <string id="WARNING: This operation will delete group and all references">ATTENTION : cette opération supprime le groupe et ses références</string>
 <string id="Delete delegation">Supprimer la délégation</string>
@@ -1951,6 +1952,7 @@
 <string id="On all right period">Sur toute la période du droit</string>
 <string id="Right period">Période théorique du droit</string>
 <string id="Allow managers to create vacation requests for users in chart">Autoriser les gestionnaires délégués à créer des demandes de congé pour les membres de l'organigramme</string>
+<string id="Allow users to create vacation requests with mismatch in total number of days">Autoriser les utilisateurs à faire des demandes de congé avec des incohérences dans le nombre total de jours</string>
 <string id="Distribution on request">Répartition lors de la demande</string>
 <string id="The read access on the topic must be defined with a list of groups to use the group restriction">Le droit d'accès en lecture sur le thème d'article doit être défini avec une liste de groupe pour utiliser la restriction par groupe (les sélections "groupe avec enfants" ou "utilisateurs enregistrés" ne peuvent fonctionner)</string>
 <string id="Who is notified when a new post is registered?">Qui est notifié lors de la publication d'une contribution</string>
@@ -2392,6 +2394,7 @@
 <string id="Drop users">Enlever</string>
 <string id="Do you really want to delete the vacation request ?">Voulez-vous vraiment supprimer la demande de congés ?</string>
 <string id="Total number of affected days does not match the period, do you really want to submit your request with this mismatch?">Le nombre total de jours affectés ne correspond pas à la durée de la période, voulez-vous vraiment soumettre votre demande avec cette incohérence ?</string>
+<string id="Total number of affected days does not match the period.">Le nombre total de jours affectés ne correspond pas à la durée de la période.</string>
 <string id="Year view">Afficher la vue année</string>
 <string id="Month view">Afficher la vue mois</string>
 <string id="Some vacation requests are linked to this right, if you delete the right, the vacation requests will be deleted with it">Des demandes de congés sont liées à ce droit, si vous supprimez le droit, les demandes de congés seront supprimées avec lui</string>

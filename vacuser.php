@@ -131,9 +131,17 @@ function requestVacation($begin,$end, $id)
 			$this->id_user = $_POST['id_user'];
 			$this->username = bab_toHtml(bab_getUserName($this->id_user));
 			$this->t_days = bab_translate("working days");
+			$this->t_alert_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period."),BAB_HTML_JS);
 			$this->t_confirm_nomatch = bab_toHtml(bab_translate("Total number of affected days does not match the period, do you really want to submit your request with this mismatch?"),BAB_HTML_JS);
 			$this->t_or = bab_translate('Or');
 
+
+			$res = $babDB->db_query('SELECT allow_mismatch FROM ' . BAB_VAC_OPTIONS_TBL);
+			if ($arr = $babDB->db_fetch_array($res)) {
+				$this->allow_mismatch = $arr['allow_mismatch'];
+			} else {
+				$this->allow_mismatch = '1';
+			}
 
 			$date_begin = BAB_DateTime::fromIsoDateTime($begin);
 			$date_end	= BAB_DateTime::fromIsoDateTime($end);

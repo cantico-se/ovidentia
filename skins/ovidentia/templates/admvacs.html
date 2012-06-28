@@ -25,6 +25,20 @@
 	</td>
 	</tr>
 	<tr> 
+    <td align="right">{ t_allow_mismatch }</td>
+    <td> 
+        <select name="allow_mismatch">
+            <!--#if arr[allow_mismatch] -->
+            <option value="0">{ t_no }</option>
+            <option value="1" selected="selected">{ t_yes }</option>
+            <!--#else arr[allow_mismatch] -->
+            <option value="0" selected="selected">{ t_no }</option>
+            <option value="1">{ t_yes }</option>
+            <!--#endif arr[allow_mismatch] -->
+        </select>
+    </td>
+    </tr>
+	<tr> 
 	<td colspan="2" align="center"> 
 		<input type="submit" name="submit" value="{ t_record }" />
 		<br />
