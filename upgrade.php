@@ -6796,7 +6796,7 @@ function ovidentia_upgrade($version_base,$version_ini) {
 
 	if (!bab_isTableField('bab_vac_options', 'allow_mismatch'))
 	{
-		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '0'");
+		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '1'");
 	}
 
 	return true;
