@@ -830,7 +830,7 @@ function deleteFileVersions($idf, $versions)
 				$iVerMajor	= (int) $aVersion[0];
 				$iVerMinor	= (int) $aVersion[1];
 				$oCriteria	= $oVerMajor->in($iVerMajor);
-				$oCriteria	= $oVerMinor->in($iVerMinor);
+				$oCriteria	= $oCriteria->_and($oVerMinor->in($iVerMinor));
 				$oCriteria	= $oCriteria->_and($oIdFile->in($idf));
 				$oFolderFileVersionSet->remove($oCriteria, $sUploadPath . $oFolderFile->getPathName(), $oFolderFile->getName());
 				
