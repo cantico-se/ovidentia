@@ -1463,6 +1463,7 @@ function bab_getUserIdByNickname($nickname)
 	
 /**
  * Get the user ID from logged in user or from the fullname
+ * @since 7.8.90 the name parameter is optional since the 7.8.90
  * @param string $name
  * @return int
  */
