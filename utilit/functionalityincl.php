@@ -311,11 +311,11 @@ class bab_functionalities {
 	/**
 	 * Get functionality object with original link
 	 * @access public
-	 * @static
+	 * 
 	 * @param	string	$path
 	 * @return false|object
 	 */
-	function getOriginal($path) {
+	public function getOriginal($path) {
 
 		if ($classname = @include $this->treeRootPath.$path.'/'.$this->original) {
 			return new $classname();

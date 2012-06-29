@@ -3294,6 +3294,47 @@ class bab_functionality {
 
 		return $include_result;
 	}
+	
+	/**
+	 * Include original php file with the functionality class
+	 * 
+	 * @since 7.8.90
+	 * 
+	 * @param string $path 			path to functionality
+	 * @return string | false		the object class name or false if the file already included or false if the include failed
+	 */
+	public static function includeOriginal($path)
+	{
+		return include self::getRootPath().'/'.$path.'/'.BAB_FUNCTIONALITY_LINK_ORIGINAL_FILENAME;
+	}
+	
+	
+	/**
+	 * Returns the specified functionality object without the default inherithed object.
+	 *
+	 * If $singleton is set to true, the functionality object will be instanciated as
+	 * a singleton, i.e. there will be at most one instance of the functionality
+	 * at a given time.
+	 * 
+	 * @since 7.8.90
+	 * 
+	 * @param string 	$path
+	 * @param bool 		$singleton
+	 * 
+	 * @return bab_functionality
+	 */
+	public static function getOriginal($path, $singleton = true)
+	{
+		$classname = bab_functionality::includeOriginal($path);
+		if (!$classname) {
+			return false;
+		}
+		if ($singleton) {
+			return bab_getInstance($classname);
+		}
+		return new $classname();
+	}
+	
 
 
 	/**
@@ -3305,7 +3346,7 @@ class bab_functionality {
 	 *
 	 * @param	string	$path		The functionality path.
 	 * @param	bool	$singleton	Whether the functionality should be instanciated as singleton (default true).
-	 * @return	object				The functionality object or false on error.
+	 * @return	bab_functionality	The functionality object or false on error.
 	 */
 	public static function get($path, $singleton = true) {
 		$classname = bab_functionality::includefile($path);
