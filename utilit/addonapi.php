@@ -1163,6 +1163,11 @@ function bab_translate($str, $folder = "", $lang="")
 		}
 	}
 
+	
+/**
+ * Test if the user is member of administrators group
+ * @return bool
+ */
 function bab_isUserAdministrator()
 {
 	global $babBody;

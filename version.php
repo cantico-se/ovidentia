@@ -125,7 +125,7 @@ switch($idx)
 			die(bab_translate("Failed"));
 		}
 		
-		if (!$addon->isUpgradable())
+		if (!$addon->isUpgradable() && !bab_isUserAdministrator())
 		{
 			trigger_error('Addon allready up to date');
 			die(bab_translate("Failed"));
