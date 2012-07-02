@@ -23,6 +23,7 @@
 ************************************************************************/
 include_once "base.php";
 include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
+include_once $GLOBALS['babInstallPath'].'utilit/delegincl.php';
 
 
 function bab_getAddonsMenus($row, $what)
