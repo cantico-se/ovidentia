@@ -1069,7 +1069,7 @@ function aclSetRightsString($table, $id_object, $rights)
 	
 	if ('' !== $rights)
 	{
-		$input = explode(',',$rights);
+		$input = array_unique(explode(',',$rights));
 		$insert = array();
 		
 		foreach($input as $g)
