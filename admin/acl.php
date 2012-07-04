@@ -1037,7 +1037,7 @@ function aclGetRightsString($table, $id_object)
 	{
 		$id_group = (int) $arr['id_group'];
 		
-		if( $id_group > BAB_ACL_GROUP_TREE )
+		if( $id_group >= BAB_ACL_GROUP_TREE )
 		{
 			$id_group -= BAB_ACL_GROUP_TREE;
 			
@@ -1077,7 +1077,10 @@ function aclSetRightsString($table, $id_object, $rights)
 			if (mb_strlen($g) > 1 && '+' === mb_substr($g, -1))
 			{
 				$id_group = (int) mb_substr($g, 0, -1);
-				$id_group+= BAB_ACL_GROUP_TREE;
+				if ($id_group > BAB_UNREGISTERED_GROUP)
+				{
+					$id_group+= BAB_ACL_GROUP_TREE;
+				}
 			} else {
 				$id_group = (int) $g;
 			}
