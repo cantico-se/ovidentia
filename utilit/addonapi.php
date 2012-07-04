@@ -2222,7 +2222,8 @@ function bab_getUserDirEntryLink($id = false, $type = BAB_DIR_ENTRY_ID_USER, $id
  */
 function bab_getGroupName($id, $fpn=true)
 {
-
+	require_once dirname(__FILE__).'/defines.php';
+	
 	$id = (int) $id;
 
 	if (BAB_ALLUSERS_GROUP === $id || BAB_REGISTERED_GROUP === $id || BAB_UNREGISTERED_GROUP === $id || BAB_ADMINISTRATOR_GROUP === $id) {
