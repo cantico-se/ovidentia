@@ -355,14 +355,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 		$event = new bab_eventBeforePeriodsCreated($this);
 		$this->processCriteria($this->criteria);
-		
+
 		$start = microtime(true);
-		
+
 		bab_fireEvent($event);
-		
+
 		$duration = microtime(true) - $start;
 		bab_debug(sprintf("createPeriods bab_fireEvent  : %s s", round($duration,3)), DBG_TRACE, 'Statistics');
-		
+
 	}
 
 
@@ -397,7 +397,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	public function orderBoundaries() {
 
 		$this->vacationindex = array();
-		
+
 		// order by date
 		ksort($this->boundaries);
 
@@ -815,7 +815,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	 * @return 	bab_availabilityReply
 	 */
 	public function getAvailability() {
-		
+
 		reset($this->boundaries);
 		$previous = NULL;
 		$availabilityReply = new bab_availabilityReply();
@@ -953,6 +953,12 @@ class bab_UserPeriods implements Countable, seekableIterator {
 
 			foreach($events as $event) {
 
+				if ('CANCELLED' === $event->getProperty('STATUS'))
+				{
+					// ignore canceled events
+					continue;
+				}
+
 				if ($event->ts_end > $test_begin && $event->ts_begin < $test_end) {
 
 					$id_users = array();
@@ -987,14 +993,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 									'.print_r($event->getProperties(), true));
 									continue;
 								}
-								
-								
+
+
 								if (!isset($global_users[$user]))
 								{
 									// the user is in conflict but not requested as available, ignore
 									continue;
 								}
-								
+
 
 								// ignore declined attendees
 								if ('DECLINED' === $attendee['AttendeeBackend']->getRealPartstat())
@@ -1005,7 +1011,7 @@ class bab_UserPeriods implements Countable, seekableIterator {
 								$id_users[] = $user;
 							}
 						}
-						
+
 						if (!in_array($GLOBALS['BAB_SESS_USERID'], $id_users))
 						{
 							$id_users[] = $GLOBALS['BAB_SESS_USERID'];
