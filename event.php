@@ -1241,7 +1241,7 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	}
 
 	// test access on all collection
-	foreach ($collectionPeriods as $period) {
+	foreach ($collectionPeriods as $period)
 	{
 
 		if (!$calendar->canDeleteEvent($period))
