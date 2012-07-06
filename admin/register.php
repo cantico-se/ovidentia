@@ -530,7 +530,7 @@ function sendPassword($nickname, $email)
 
 	if (!empty($nickname))
 		{
-		$req="select id, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' AND email=".$babDB->quote($email);
+		$req="select id, nickname, email, changepwd from ".BAB_USERS_TBL." where nickname='".$babDB->db_escape_string($nickname)."' AND email=".$babDB->quote($email);
 		$res = $babDB->db_query($req);
 		if (!$res || $babDB->db_num_rows($res) < 1)
 			{
@@ -614,16 +614,18 @@ function sendPassword($nickname, $email)
 			$res=$babDB->db_query($req);
 
 			//send a simple email with the new password
-			notifyUserPassword($new_pass, $arr['email'], $nickname);
+			notifyUserPassword($new_pass, $arr['email'], $arr['nickname']);
 			$babBody->addError(bab_translate("Your new password has been emailed to you.") ." <".$arr['email'].">");
 			$error = '';
 			
 			include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-			bab_callAddonsFunctionArray('onUserChangePassword', array(
-				'id'=>$arr['id'], 
-				'nickname'=>$nickname, 
-				'password'=>$new_pass, 
-				'error'=>&$error)
+			bab_callAddonsFunctionArray('onUserChangePassword', 
+				array(
+					'id'		=> $arr['id'], 
+					'nickname'	=> $arr['nickname'], 
+					'password'	=> $new_pass, 
+					'error'		=> &$error
+				)
 			);
 			
 			if( !empty($error))
