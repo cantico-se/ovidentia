@@ -746,13 +746,14 @@ class bab_UserPeriods implements Countable, seekableIterator {
 	/**
 	 *
 	 *
-	 * @param	int			$start		timestamp
-	 * @param	int			$end		timestamp
-	 * @param	array		$filter		: events collections to get
+	 * @param	int			$start				timestamp
+	 * @param	int			$end				timestamp
+	 * @param	array		$filter				: events collections to get
+	 * @param	bool		$includeCancelled	Bool
 	 *
 	 * @return	multitype:bab_CalendarPeriod	An array of bab_CalendarPeriod
 	 */
-	public function getEventsBetween($start, $end, array $filter = null)
+	public function getEventsBetween($start, $end, array $filter = null, $includeCancelled = true)
 	{
 		reset($this->boundaries);
 		$r = array();
@@ -767,6 +768,11 @@ class bab_UserPeriods implements Countable, seekableIterator {
 			foreach ($this->boundaries[$ts] as $event) {
 
 				/*@var $event bab_CalendarPeriod */
+
+				if ((!$includeCancelled) && ('CANCELLED' === $event->getProperty('STATUS'))) {
+					// Ignore cancelled events
+					continue;
+				}
 
 				$uid = $event->getProperty('UID');
 

@@ -5121,10 +5121,12 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 		$this->events = $this->whObj->getEventsBetween(
 			$startdate->getTimeStamp(),
-			$enddate->getTimeStamp()
+			$enddate->getTimeStamp(),
+			null,
+			false
 		);
 
-		
+
 		if (!$this->private || !$this->awaiting_approval)
 		{
 			foreach($this->events as $key => $event)
