@@ -958,37 +958,65 @@ class bab_inifile_requirements_html
 		$this->t_error = bab_translate("Error");
 
 		}
+		
+		
+	private function getRequirement($arr)
+	{
+		$this->upgradeurl = false;
+		
+		
+		if ($this->propose_upgrades && isset($arr['name']) && function_exists('bab_getAddonInfosInstance')) {
+			$addon = bab_getAddonInfosInstance($arr['name']);
+		
+			if ($addon && $addon->isUpgradable()) {
+				$this->upgradeurl = $GLOBALS['babUrlScript'].'?tg=addons&idx=upgrade&item='.$addon->getId();
+			}
+		}
+		
+		$this->altbg = !$this->altbg;
+		$this->description = bab_toHtml($arr['description']);
+		$this->recommended = bab_toHtml($arr['recommended']);
+		$this->required = bab_toHtml($arr['required']);
+		$this->current = bab_toHtml($arr['current']);
+		$this->result = $arr['result'];
+		
+		if (isset($arr['error'])) {
+			$this->error = bab_toHtml($arr['error']);
+		} else {
+			$this->error = null;
+		}
+		
+	}
 
+	
+	
 
 
 	function getnextreq() {
-		if (list(,$arr) = each($this->requirements)) {
+		
+		if (!isset($this->requirements['required']))
+		{
+			return false;
+		}
+		
+		if (list(,$arr) = each($this->requirements['required'])) {
 
-			$this->upgradeurl = false;
-
-
-			if ($this->propose_upgrades && isset($arr['name']) && function_exists('bab_getAddonInfosInstance')) {
-				$addon = bab_getAddonInfosInstance($arr['name']);
-
-				if ($addon && $addon->isUpgradable()) {
-					bab_debug($addon);
-					$this->upgradeurl = $GLOBALS['babUrlScript'].'?tg=addons&idx=upgrade&item='.$addon->getId();
-				}
-			}
-
-			$this->altbg = !$this->altbg;
-			$this->description = bab_toHtml($arr['description']);
-			$this->recommended = bab_toHtml($arr['recommended']);
-			$this->required = bab_toHtml($arr['required']);
-			$this->current = bab_toHtml($arr['current']);
-			$this->result = $arr['result'];
-
-			if (isset($arr['error'])) {
-				$this->error = bab_toHtml($arr['error']);
-			} else {
-				$this->error = null;
-			}
-
+			$this->getRequirement($arr);
+			return true;
+		}
+		return false;
+	}
+	
+	function getnextrec() {
+		
+		if (!isset($this->requirements['recommended']))
+		{
+			return false;
+		}
+		
+		if (list(,$arr) = each($this->requirements['recommended'])) {
+	
+			$this->getRequirement($arr);
 			return true;
 		}
 		return false;
@@ -1319,6 +1347,36 @@ class bab_inifile {
 		return true;
 	}
 
+	
+	/**
+	 * Get the requierments classified in mutiple sub array
+	 * mandatory, optional
+	 * 
+	 * @return array
+	 */
+	public function getRequirementsCategories()
+	{
+		$arr = $this->getRequirements();
+		
+		$optional = array();
+		$mandatory = array();
+		
+		foreach($arr as $req)
+		{
+			if (isset($req['required']) && false !== $req['required'])
+			{
+				$mandatory[] = $req;
+			} else {
+				$optional[] = $req;
+			}
+		}
+		
+		
+		return array(
+			'required'	=> $mandatory,
+			'recommended' => $optional
+		);
+	}
 
 
 
@@ -1625,7 +1683,10 @@ class bab_inifile {
 
 		$temp = new bab_inifile_requirements_html();
 		$temp->propose_upgrades = $propose_upgrades;
-		$temp->requirements = $this->getRequirements();
+		$temp->requirements = $this->getRequirementsCategories();
+		$temp->list_required = !empty($temp->requirements['required']);
+		$temp->list_recommended = !empty($temp->requirements['recommended']);
+		
 		return bab_printTemplate($temp,"requirements.html");
 	}
 

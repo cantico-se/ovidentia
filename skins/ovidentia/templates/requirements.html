@@ -1,3 +1,5 @@
+
+<!--#if list_required -->
 <br />
 <table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
 	<tr> 
@@ -6,7 +8,6 @@
 			
 			<tr class="BabSiteAdminTitleFontBackground"> 
 				<td>&nbsp;</td>
-				<td>{ t_recommended }</td>
 				<td>{ t_required }</td>
 				<td>{ t_current }</td>
 				<td>&nbsp;</td>
@@ -14,7 +15,6 @@
 			<!--#in getnextreq -->
 			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
 				<td <!--#if error --> title="{ error }"<!--#endif error -->>&nbsp;{ description }</td>
-				<td>{ recommended }</td>
 				<td>{ required }</td>
 				<td>
 					{ current }
@@ -33,4 +33,42 @@
 		</table>
 		</td>
 	</tr>
+</table>		
+<!--#endif list_required -->
+			
+<!--#if list_recommended -->
+<br />		
+<table width="90%" border="0" cellspacing="0" cellpadding="2" align="center">
+	<tr> 
+		<td class="BabLoginCadreBackground" align="center"> 
+		<table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5">
+			
+			<tr class="BabSiteAdminTitleFontBackground"> 
+				<td>&nbsp;</td>
+				<td>{ t_recommended }</td>
+				<td>{ t_current }</td>
+				<td>&nbsp;</td>
+			</tr>		
+			<!--#in getnextrec -->
+			<!--#if altbg --><tr class="BabSiteAdminFontBackground"><!--#else altbg --><tr class="BabForumBackground1"><!--#endif altbg -->
+				<td <!--#if error --> title="{ error }"<!--#endif error -->>&nbsp;{ description }</td>
+				<td>{ recommended }</td>
+				<td>
+					{ current }
+				
+					<!--#if upgradeurl -->
+					<a href="{ upgradeurl }"><img src="{ babSkinPath }images/Puces/exe.gif" alt="" /></a>
+					<!--#endif upgradeurl -->
+				</td>
+				<!--#if result -->
+				<td><img src="{ babSkinPath }images/Puces/action_success.gif" alt="{ t_ok }" /></td>
+				<!--#else result -->
+				<td><img src="{ babSkinPath }images/Puces/action_fail.gif" alt="{ t_error }" /></td>
+				<!--#endif result -->
+			</tr>
+			<!--#endin getnextrec -->
+		</table>
+		</td>
+	</tr>
 </table>
+<!--#endif list_recommended -->	
