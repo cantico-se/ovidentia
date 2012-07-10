@@ -141,13 +141,13 @@ function modifyOrgChartEntity($ocid, $eid)
 
 			require_once $GLOBALS['babInstallPath']."utilit/ocapi.php";
 			$this->ocEntityTypes = bab_OCGetOrgChartEntityTypes($ocid);
-			
+
 			$this->entityTypes = bab_OCGetEntityTypes($eid);
 			$this->selectedEntityTypes = array();
 			while ($entityType = $babDB->db_fetch_assoc($this->entityTypes)) {
 				$this->selectedEntityTypes[$entityType['id']] = $entityType['id'];
 			}
-			
+
 		}
 
 		function entityTypes()
@@ -415,7 +415,7 @@ function listOrgChartRoles($ocid, $oeid)
 
 			$this->res = $babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1, 2) order by name asc");
 			$this->count = $babDB->db_num_rows($this->res);
-	
+
 			}
 
 		function getnext()
@@ -437,7 +437,7 @@ function listOrgChartRoles($ocid, $oeid)
 				return false;
 
 			}
-		
+
 		}
 
 	$temp = new temp($ocid, $oeid);
@@ -475,7 +475,8 @@ function usersOrgChartRole($ocid, $oeid, $orid)
 			$this->orid = $orid;
 			$this->addururl = $GLOBALS['babUrlScript']."?tg=flbchart&idx=addur&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid."&iduser=";
 
-			$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$orid."' order by det.givenname asc");
+//			$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$orid."' order by det.givenname asc");
+			$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$orid."' order by det.sn, det.givenname asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->noadd = false;
 			switch($orinfo['type'])
@@ -512,7 +513,7 @@ function usersOrgChartRole($ocid, $oeid, $orid)
 				return false;
 
 			}
-		
+
 		}
 
 	$temp = new temp($ocid, $oeid, $orid);
@@ -649,10 +650,10 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 		}
 
 	$babTree = new bab_dbtree(BAB_OC_TREES_TBL, $ocid);
-	
+
 	if( !isset($oeid) || $oeid == 0 )
 		{
-		$idnode = $babTree->add();		
+		$idnode = $babTree->add();
 		}
 	else
 		{
@@ -696,14 +697,14 @@ function saveOrgChartEntity($ocid, $name, $description, $oeid, $hsel, $grpid)
 
 
 
-		$query = "INSERT into ".BAB_OC_ENTITIES_TBL." 
-			(name, description, id_oc, id_node, id_group) 
-		values 
+		$query = "INSERT into ".BAB_OC_ENTITIES_TBL."
+			(name, description, id_oc, id_node, id_group)
+		values
 			(
-				'" .$babDB->db_escape_string($name). "', 
-				'" .$babDB->db_escape_string($description). "', 
-				'" .$babDB->db_escape_string($ocid)."', 
-				'" .$babDB->db_escape_string($idnode)."', 
+				'" .$babDB->db_escape_string($name). "',
+				'" .$babDB->db_escape_string($description). "',
+				'" .$babDB->db_escape_string($ocid)."',
+				'" .$babDB->db_escape_string($idnode)."',
 				'" .$babDB->db_escape_string($idgroup)."'
 			)
 		";
@@ -762,13 +763,13 @@ function updateOrgChartEntity($ocid, $name, $description, $oeid, $entityTypes = 
 		return false;
 		}
 
-	$babDB->db_query("UPDATE ".BAB_OC_ENTITIES_TBL." set 
-		name='".$babDB->db_escape_string($name)."', 
-		description='".$babDB->db_escape_string($description)."' 
+	$babDB->db_query("UPDATE ".BAB_OC_ENTITIES_TBL." set
+		name='".$babDB->db_escape_string($name)."',
+		description='".$babDB->db_escape_string($description)."'
 		WHERE id='".$oeid."'
 	");
-	
-	
+
+
 
 	$sql = 'DELETE FROM ' . BAB_OC_ENTITIES_ENTITY_TYPES_TBL . ' WHERE id_entity = ' . $babDB->quote($oeid);
 	$babDB->db_query($sql);
@@ -905,7 +906,7 @@ function confirmPermuteOrgChartEntity($ocid, $oeid, $permid)
 	{
 		return true;
 	}
-	
+
 	$res = $babDB->db_query("select id_node from ".BAB_OC_ENTITIES_TBL." where id='".$oeid."' and id_oc='".$ocid."'");
 	if( $res && $babDB->db_num_rows($res) == 1)
 	{
@@ -983,12 +984,12 @@ function saveOrgChartRole($ocid, $name, $description, $oeid, $cardinality)
 		return false;
 		}
 
-	
-	$req = "INSERT INTO ".BAB_OC_ROLES_TBL." (name, description, id_oc, id_entity, type, cardinality) 
-	VALUES  
+
+	$req = "INSERT INTO ".BAB_OC_ROLES_TBL." (name, description, id_oc, id_entity, type, cardinality)
+	VALUES
 	(
 		'" .$babDB->db_escape_string($name). "',
-		'" . $babDB->db_escape_string($description). "', 
+		'" . $babDB->db_escape_string($description). "',
 		'".$babDB->db_escape_string($ocid)."',
 		'".$babDB->db_escape_string($oeid)."',
 		'0',
@@ -1020,9 +1021,9 @@ function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinali
 			}
 		}
 
-	
-	$req = "UPDATE ".BAB_OC_ROLES_TBL." set 
-	name='".$babDB->db_escape_string($name)."', 
+
+	$req = "UPDATE ".BAB_OC_ROLES_TBL." set
+	name='".$babDB->db_escape_string($name)."',
 	description='".$babDB->db_escape_string($description)."'
 	";
 	if( !empty($cardinality))
@@ -1076,11 +1077,11 @@ function delUserOrgChartRole($ocid, $oeid, $ocfid)
 	$babDB->db_query("delete from ".BAB_VAC_PLANNING_TBL." where id_user='".$idduser."'");
 
 	if( $isprimary == 'Y' )
-		{		
+		{
 		$res = $babDB->db_query("select ocrut.id from  ".BAB_OC_ROLES_USERS_TBL." ocrut left join ".BAB_OC_ROLES_TBL." ocrt on ocrut.id_role=ocrt.id where ocrt.id_oc='".$ocid."' and  ocrut.id_user='".$idduser."'");
 		if( $res && $babDB->db_num_rows($res) > 0 )
 			{
-			$k = 0; 
+			$k = 0;
 			while( $arr = $babDB->db_fetch_array($res))
 				{
 				if( $k == 0 ) //user must have a primary role, use the first
@@ -1347,8 +1348,8 @@ switch($idx)
 		$babLittleBody->addItemMenu("modr", bab_translate("Modify"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=modr&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		$babLittleBody->addItemMenu("users", bab_translate("Users"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=users&ocid=".$ocid."&oeid=".$oeid."&orid=".$orid);
 		$babLittleBody->setCurrentItemMenu($idx);
-		if(!isset($fname)) { $fname ='';}  
-		if(!isset($description)) { $description ='';}  
+		if(!isset($fname)) { $fname ='';}
+		if(!isset($description)) { $description ='';}
 		modifyOrgChartRole($ocid, $oeid, $fname, $description, $orid);
 		break;
 	case "addr":
@@ -1356,8 +1357,8 @@ switch($idx)
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
-		if(!isset($fname)) { $fname ='';}  
-		if(!isset($description)) { $description ='';}  
+		if(!isset($fname)) { $fname ='';}
+		if(!isset($description)) { $description ='';}
 		addOrgChartRole($ocid, $oeid, $fname, $description);
 		break;
 	case "listr":
