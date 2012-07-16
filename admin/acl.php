@@ -473,9 +473,9 @@ class macl
 	
 	public function getHtml()
 	{
-		// TODO
+		$W = bab_Widgets();
 		
-		return '';
+		return $this->getForm()->display($W->HtmlCanvas());
 	}
 	
 
