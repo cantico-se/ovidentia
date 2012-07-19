@@ -6,12 +6,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2, or (at your option)
 // any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
@@ -32,8 +32,8 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 	global $babDB;
 	global $babLittleBody;
 
-	
-	// We check if an ovml file has been specified for the embedded user view has been specified. 
+
+	// We check if an ovml file has been specified for the embedded user view has been specified.
 	$sql = 'SELECT ovml_embedded
 			FROM '.BAB_ORG_CHARTS_TBL.'
 			WHERE id='.$babDB->quote($ocid);
@@ -41,10 +41,10 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 
 
 	if (!empty($arr['ovml_embedded'])) {
-		
+
 		if (empty($userid)) {
 			include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-			
+
 			$members = bab_OCselectEntityCollaborators($oeid);
 			if ($members && ($member = $babDB->db_fetch_array($members))) {
 				$userid = $member['id_dir_entry'];
@@ -66,17 +66,17 @@ function bab_embeddedContactWithOvml($ocid, $oeid, $userid, $access)
 			$directories = $babDB->db_fetch_array($babDB->db_query($sql));
 			$directoryid = $directories['id'];
 		}
-		
+
 		$args = array(
 				'ocid' => $ocid,
 				'entityid' => $oeid,
 				'userid' => $userid,
 				'directoryid' => $directoryid
 		);
-		
+
 		$babLittleBody->babecho(bab_printOvmlTemplate($arr['ovml_embedded'], $args));
 		return $userid;
-		
+
 	} else {
 		// Here we don't use ovml to display the user info.
 		return viewOrgChartRoleDetail($ocid, $oeid, $userid, $access);
@@ -88,18 +88,18 @@ function bab_popupContactWithOvml($ocid, $oeid, $userid, $access)
 {
 	global $babDB;
 
-	
-	// We check if an ovml file has been specified for the embedded user view has been specified. 
+
+	// We check if an ovml file has been specified for the embedded user view has been specified.
 	$sql = 'SELECT ovml_detail
 			FROM '.BAB_ORG_CHARTS_TBL.'
 			WHERE id='.$babDB->quote($ocid);
 	$arr = $babDB->db_fetch_array($babDB->db_query($sql));
 
 
-		
+
 	if (empty($userid)) {
 		include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-		
+
 		$members = bab_OCselectEntityCollaborators($oeid);
 		if ($members && ($member = $babDB->db_fetch_array($members))) {
 			$userid = $member['id_dir_entry'];
@@ -121,7 +121,7 @@ function bab_popupContactWithOvml($ocid, $oeid, $userid, $access)
 		$directories = $babDB->db_fetch_array($babDB->db_query($sql));
 		$directoryid = $directories['id'];
 	}
-	
+
 	$args = array(
 			'ocid' => $ocid,
 			'entityid' => $oeid,
@@ -129,7 +129,7 @@ function bab_popupContactWithOvml($ocid, $oeid, $userid, $access)
 			'directoryid' => $directoryid
 	);
 
-	
+
 	if (!empty($arr['ovml_detail'])) {
 		echo(bab_printOvmlTemplate($arr['ovml_detail'], $args));
 		return $userid;
@@ -216,7 +216,7 @@ function listOrgChartRoles($ocid, $oeid, $iduser)
 				$this->temporarytitle = "";
 				}
 
-			$this->resroles = $babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1,2)");
+			$this->resroles = $babDB->db_query("select id, name from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1,2) order by ordering ASC");
 			$this->countroles = $babDB->db_num_rows($this->resroles);
 			$this->altbg = false;
 			if( $babBody->nameorder[0] == 'F' )
@@ -282,7 +282,7 @@ function listOrgChartRoles($ocid, $oeid, $iduser)
 				}
 
 			}
-		
+
 		}
 
 	$temp = new temp($ocid, $oeid, $iduser);
@@ -393,7 +393,7 @@ function viewOrgChartRoleDetail($ocid, $oeid, $iduser, $access)
 	global $babLittleBody;
 	include_once $GLOBALS['babInstallPath']."utilit/dirincl.php";
 	include_once $GLOBALS['babInstallPath'].'utilit/ocapi.php';
-	
+
 	class temp extends bab_viewDirectoryUser
 		{
 
@@ -470,7 +470,7 @@ function updateOrgChartPrimaryRoleUser($ocid, $oeid, $iduser, $prole)
 				$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='N' where id='".$row['id']."'");
 			}
 		}
-	
+
 	$babDB->db_query("update ".BAB_OC_ROLES_USERS_TBL." set isprimary='Y' where id='".$prole."'");
 	}
 
@@ -555,7 +555,7 @@ switch($idx)
 	case "detrpopup":
 		$iduser = bab_popupContactWithOvml($ocid, $oeid, $iduser, $access);
 		break;
-		
+
 	case "more":
 		$babLittleBody->title = '';
 		$babLittleBody->addItemMenu("detr", bab_translate("Detail"), $GLOBALS['babUrlScript']."?tg=fltchart&idx=detr&ocid=".$ocid."&oeid=".$oeid."&iduser=".$iduser);

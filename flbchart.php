@@ -413,7 +413,7 @@ function listOrgChartRoles($ocid, $oeid)
 			$this->temporaryurl = $GLOBALS['babUrlScript']."?tg=flbchart&idx=modr&ocid=".$this->ocid."&oeid=".$this->oeid."&orid=".$arr['id'];
 
 
-			$this->res = $babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1, 2) order by name asc");
+			$this->res = $babDB->db_query("select * from ".BAB_OC_ROLES_TBL." where id_entity='".$oeid."' and type NOT IN (1, 2) order by ordering asc");
 			$this->count = $babDB->db_num_rows($this->res);
 
 			}
@@ -1391,6 +1391,7 @@ else if( isset($modocr) )
 			$roles = bab_rp('roles', null);
 			if (isset($roles) && is_array($roles)) {
 				updateOrgChartRolesOrder($roles);
+				Header("Location: ". $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid."&ltf=1");
 			}
 			break;
 
