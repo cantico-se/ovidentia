@@ -553,7 +553,6 @@ function usersOrgChartRole($ocid, $oeid, $orid)
 			$this->deletealt = bab_translate("Delete");
 			$this->roletitle = $orinfo['name'];
 			list($iddir) = $babDB->db_fetch_row($babDB->db_query("select id_directory from ".BAB_ORG_CHARTS_TBL." where id='".$ocid."'"));
-			$this->urltitle = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$iddir."&cb=";
 			$this->ocid = $ocid;
 			$this->oeid = $oeid;
 			$this->orid = $orid;
@@ -563,6 +562,14 @@ function usersOrgChartRole($ocid, $oeid, $orid)
 			$this->res = $babDB->db_query("select det.sn, det.givenname, det.id as id_entry, ort.* from ".BAB_OC_ROLES_USERS_TBL." ort left join ".BAB_DBDIR_ENTRIES_TBL." det on det.id=ort.id_user where ort.id_role='".$orid."' order by det.sn, det.givenname asc");
 			$this->count = $babDB->db_num_rows($this->res);
 			$this->noadd = false;
+
+			$this->urltitle = $GLOBALS['babUrlScript']."?tg=directory&idx=usdb&id=".$iddir."&cb=";
+			if ($orinfo['cardinality'] == 'Y') {
+				$this->urltitle .= 'onApproverMultiple';
+			} else {
+				$this->urltitle .= 'onApproverUnique';
+			}
+
 			switch($orinfo['type'])
 				{
 				case '1':

@@ -497,19 +497,25 @@ width="22" height="18" border=0 alt="{ moveup }"></a> <br />
 <script type="text/javascript">
 <!--
 var ctrlf = null;
-function onApprover(id, fn)
+function onApproverMultiple(id, fn)
 {
-// if( op != null )
-//	op.close();
-this.document.location.href='{ addururl }' + id;
-this.focus();
+    this.document.location.href='{ addururl }' + id;
+    this.focus();
+}
+function onApproverUnique(id, fn)
+{
+	if (op != null) {
+	    op.close();
+	}
+	this.document.location.href='{ addururl }' + id;
+    this.focus();
 }
 
 var op = null;
 function openPopup(url)
 {
 if( op == null || op.closed )
-	op = this.open(url+'onApprover', 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
+	op = this.open(url, 'babuserslist', 'width=550,height=550,status=no,resizable=yes,top=200,left=200,scrollbars=yes');
 else
 	op.focus();
 }
@@ -565,6 +571,11 @@ function closepop()
 </form>
 <br>
 <!--#end roleuserslist -->
+
+
+
+
+
 
 <!--#begin ocrcreate -->
 <form name="ocrcreate" method="post" action="{ babPhpSelf }">
