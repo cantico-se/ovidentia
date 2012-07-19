@@ -2042,6 +2042,7 @@ CREATE TABLE bab_oc_roles (
   id_entity int(11) NOT NULL default '0',
   type tinyint(3) unsigned NOT NULL default '0',
   cardinality enum('N','Y') NOT NULL default 'N',
+  ordering int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   KEY id_oc (id_oc),
   KEY type (type),

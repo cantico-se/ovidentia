@@ -6799,7 +6799,23 @@ function ovidentia_upgrade($version_base,$version_ini) {
 		$babDB->db_query("ALTER TABLE `bab_vac_options` ADD `allow_mismatch` TINYINT( 1 ) UNSIGNED NOT NULL default '1'");
 	}
 
+
+
+	/**
+	 * Upgrade to 7.8.91
+	 */
+	if (!bab_isTableField('bab_oc_roles', 'ordering'))
+	{
+		$babDB->db_query("ALTER TABLE `bab_oc_roles` ADD `ordering` int(11) unsigned NOT NULL default '0'");
+
+	}
+
+	$res = $babDB->db_query("UPDATE `bab_oc_roles` SET ordering = `type` WHERE `type` IN('1','2','3') AND ordering = '0'");
+	$res = $babDB->db_query("UPDATE `bab_oc_roles` SET ordering = '4' WHERE `type` NOT IN('1','2','3') AND ordering = '0'");
+
 	return true;
+
+
 }
 
 

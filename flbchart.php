@@ -373,7 +373,7 @@ function modifyOrgChartRole($ocid, $oeid, $nameval, $descriptionval, $orid)
 	}
 
 function listOrgChartRoles($ocid, $oeid)
-	{
+{
 	global $babLittleBody;
 
 	class temp
@@ -442,7 +442,91 @@ function listOrgChartRoles($ocid, $oeid)
 
 	$temp = new temp($ocid, $oeid);
 	$babLittleBody->babecho( bab_printTemplate($temp,"flbchart.html", "functionslist"));
+}
+
+
+
+/**
+ * Displays a form to allow reordering of the specified entity role.
+ *
+ * @param int $ocid		The orgchart id
+ * @param int $oeid		The entity id
+ *
+ * @return void
+ */
+function orderOrgChartRoles($ocid, $oeid)
+{
+	global $babLittleBody;
+
+	class OrderOrgChartRolesTemplate {
+
+		var $title;
+		var $save;
+		var $movedown;
+		var $moveup;
+		var $toplisttxt;
+		var $ocfid;
+
+		var $res;
+		var $count;
+
+		var $functions;
+
+
+		public function __construct($ocid, $oeid)
+		{
+			global $babDB;
+
+			$this->functions = array();
+
+			$this->save = bab_translate("Save");
+			$this->moveup = bab_translate("Move Up");
+			$this->movedown = bab_translate("Move Down");
+			$this->toplisttxt = '---- ' . bab_translate("Top") . ' ----';
+
+			$this->ocid = $ocid;
+			$this->oeid = $oeid;
+
+			$sql = '
+				SELECT * FROM '.BAB_OC_ROLES_TBL.'
+				WHERE id_entity=' . $babDB->quote($oeid) . '
+				ORDER BY ordering ASC';
+
+			$this->res = $babDB->db_query($sql);
+
+
+			while ($arr = $babDB->db_fetch_array($this->res)) {
+				$this->functions[] = $arr;
+			}
+
+			$this->count = count($this->functions);
+
+		}
+
+
+		function getnext()
+		{
+			static $i = 0;
+			if ($i < $this->count) {
+				$arr = $this->functions[$i];
+				$this->ocfid = $arr['id'];
+				$this->title = $arr['name'];
+				$this->description = $arr['description'];
+				$i++;
+				return true;
+			}
+			return false;
+		}
+
 	}
+
+	$orderOrgChartRolesTemplate = new OrderOrgChartRolesTemplate($ocid, $oeid);
+	$babLittleBody->babecho(	bab_printTemplate($orderOrgChartRolesTemplate, 'sites.html', 'scripts'));
+	$babLittleBody->babecho( bab_printTemplate($orderOrgChartRolesTemplate, 'flbchart.html', 'functionsorder'));
+}
+
+
+
 
 function usersOrgChartRole($ocid, $oeid, $orid)
 	{
@@ -1001,6 +1085,31 @@ function saveOrgChartRole($ocid, $name, $description, $oeid, $cardinality)
 	return true;
 	}
 
+
+
+/**
+ * Saves the roles order.
+ *
+ * @param array $roles array (ordering => roleid, ...)
+ */
+function updateOrgChartRolesOrder($roles)
+{
+	global $babDB;
+
+	foreach ($roles as $ordering => $roleId) {
+		$sql = '
+			UPDATE '.BAB_OC_ROLES_TBL.'
+			SET ordering = ' . $babDB->quote($ordering + 1) . '
+			WHERE id = ' . $babDB->quote($roleId);
+		$babDB->db_query($sql);
+	}
+}
+
+
+
+
+
+
 function updateOrgChartRole($ocid, $name, $description, $oeid, $orid, $cardinality)
 	{
 	global $babBody, $babDB, $babLittleBody, $oeinfo, $orinfo;
@@ -1259,6 +1368,7 @@ else if( isset($addocr) )
 
 	}
 }
+
 else if( isset($modocr) )
 {
 	switch($modocr)
@@ -1268,6 +1378,12 @@ else if( isset($modocr) )
 			if( !updateOrgChartRole($ocid, $fname, $description, $oeid, $orid, $cardinality))
 			{
 			$idx = "modr";
+			}
+			break;
+		case "orderocr":
+			$roles = bab_rp('roles', null);
+			if (isset($roles) && is_array($roles)) {
+				updateOrgChartRolesOrder($roles);
 			}
 			break;
 
@@ -1356,6 +1472,7 @@ switch($idx)
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
+		$babLittleBody->addItemMenu("orderr", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=orderr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		if(!isset($fname)) { $fname ='';}
 		if(!isset($description)) { $description ='';}
@@ -1365,8 +1482,17 @@ switch($idx)
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
 		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
+		$babLittleBody->addItemMenu("orderr", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=orderr&ocid=".$ocid."&oeid=".$oeid);
 		$babLittleBody->setCurrentItemMenu($idx);
 		listOrgChartRoles($ocid, $oeid);
+		break;
+	case "orderr":
+		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
+		$babLittleBody->addItemMenu("listr", bab_translate("Roles"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=listr&ocid=".$ocid."&oeid=".$oeid);
+		$babLittleBody->addItemMenu("addr", bab_translate("Add"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=addr&ocid=".$ocid."&oeid=".$oeid);
+		$babLittleBody->addItemMenu("orderr", bab_translate("Order"), $GLOBALS['babUrlScript']."?tg=flbchart&idx=orderr&ocid=".$ocid."&oeid=".$oeid);
+		$babLittleBody->setCurrentItemMenu($idx);
+		orderOrgChartRoles($ocid, $oeid);
 		break;
 	case "move":
 		$babLittleBody->title = isset($oeinfo['name'])? $oeinfo['name']:'';
