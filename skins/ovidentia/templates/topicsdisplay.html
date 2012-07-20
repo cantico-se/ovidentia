@@ -199,6 +199,11 @@ Variables in "body_default" :
 		<!--#if btags -->
     	<div class="bab-article-tags" align="right"><em>{ tagstxt }:</em> <!--#in getnexttag --><a href="{ searchurl }">{ tagname }</a> <!--#endin getnexttag --></div>
     	<!--#endif btags -->
+    	
+    	<!--#if imageurl -->
+    	<img src="{ imageurl }" align="left" hspace="5" vspace="5" />
+    	<!--#endif imageurl -->
+    	
 			{ content }
 		</td>
 	</tr>
