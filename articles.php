@@ -858,6 +858,13 @@ function readMore($topics, $article)
 
 				$this->tags = $this->getTags($this->arr['id']);
 				$this->btags = 0 < count($this->tags);
+				
+				if ($imgurl = $this->getImageUrl($this->arr['id']))
+				{
+					$this->imageurl = bab_toHtml($imgurl->toString());
+				} else {
+					$this->imageurl = false;
+				}
 
 				$i++;
 				return true;
