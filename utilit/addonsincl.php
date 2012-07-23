@@ -951,6 +951,7 @@ class bab_addonInfos {
 			}
 		}
 			
+		trigger_error(sprintf('failed processing the addon upgrade %s()', $func_name));
 		return false;
 	}
 
@@ -1247,8 +1248,8 @@ function bab_isAddonAccessValid($id_addon) {
 
 
 /**
- * Set addons context variables
- * @param	int		$id_addon
+ * Set or unset addons context variables
+ * @param	int	| null	$id_addon
  * @return boolean
  */
 function bab_setAddonGlobals($id_addon) {
@@ -1269,8 +1270,7 @@ function bab_setAddonGlobals($id_addon) {
 	
 	if (!$arr) {
 		
-		
-		
+		trigger_error('Failed to load addon row for id:'.$id_addon);
 		return false;
 	}
 	

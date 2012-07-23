@@ -494,7 +494,6 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 						if (!$addon->upgrade())
 						{
 							trigger_error(sprintf('Failed to upgrade addon %s', $sAddonName));
-							return false;
 						}
 					} else {
 						// addons can be only in new installs
