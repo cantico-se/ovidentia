@@ -34,7 +34,7 @@ function bab_onHourly(LibTimer_eventHourly $event)
 	{
 		include_once dirname(__FILE__).'/statprocincl.php';
 		
-		list($total, $processed) = bab_stat_process();
+		list($total, $processed) = bab_stat_process(OVSTAT_ROWS, OVSTAT_LIMIT, null);
 		$event->log('core', sprintf('statistics process %d/%d', $processed, $total));
 	}
 }

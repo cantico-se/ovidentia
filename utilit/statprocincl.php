@@ -1196,9 +1196,15 @@ class bab_stats_handler
 {
 	var $statrows;
 	var $statlimit;
-	var $statecho;
+	var $statecho = false;
 	var $handlers = array();
 
+	/**
+	 * 
+	 * @param int $statrows
+	 * @param int $statlimit
+	 * @param bool | null $statecho			null: display nothing | false: html throw babBody | true: log infos (echo)
+	 */
 	function bab_stats_handler($statrows, $statlimit, $statecho)
 		{
 		$this->statrows = $statrows;
@@ -1290,18 +1296,21 @@ class bab_stats_handler
 			}
 
 		$babDB->db_query("update ".BAB_SITES_TBL." set stat_update_time=now()");
-		if( !$this->statecho )
-			{
-			global $babBody;
-			$temp = new tempCLs($total, $count);
-			$babBody->babecho(bab_printTemplate($temp,"statconf.html", "updatestat"));
-			}
-		else
-			{
-			bab_stat_debug("Number of rows ... ".$total."<br>");	
-			bab_stat_debug("Number of rows processed... ".$count."<br>");
-			}
-			
+		
+		if (null !== $this->statecho)
+		{
+			if( !$this->statecho )
+				{
+				global $babBody;
+				$temp = new tempCLs($total, $count);
+				$babBody->babecho(bab_printTemplate($temp,"statconf.html", "updatestat"));
+				}
+			else
+				{
+				bab_stat_debug("Number of rows ... ".$total."<br>");	
+				bab_stat_debug("Number of rows processed... ".$count."<br>");
+				}
+		}	
 			
 		return array($total, $count);
 		}
