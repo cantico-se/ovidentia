@@ -132,12 +132,7 @@ class bab_addonsInfos {
 	
 	private static function getInstance()
 	{
-		if (null === self::$instance)
-		{
-			self::$instance = new bab_addonsInfos;
-		}
-		
-		return self::$instance;
+		return bab_getInstance('bab_addonsInfos');
 	}
 
 
@@ -185,7 +180,8 @@ class bab_addonsInfos {
 	 */
 	public static function getDbRows() {
 	
-		$obj = self::getInstance();
+		$obj = bab_getInstance('bab_addonsInfos');
+		/*@var $obj bab_addonsInfos */
 		$obj->createFullIndex();
 		
 		return $obj->fullIndexById;

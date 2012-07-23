@@ -139,7 +139,7 @@ class bab_fireEvent_Obj {
 	function setAddonCtx($addon_id, $addon_name) {
 
 		if (BAB_ADDON_CORE_NAME == $addon_name) {
-			bab_fireEvent_addonCtxStack(array(false, BAB_ADDON_CORE_NAME));
+			bab_fireEvent_addonCtxStack(array(null, BAB_ADDON_CORE_NAME));
 			return;
 		}
 
@@ -168,7 +168,10 @@ class bab_fireEvent_Obj {
 		}
 
 		list($old_addon_id, $old_addon_name) = $arr;
-		bab_setAddonGlobals($old_addon_id);
+		if ($old_addon_id)
+		{
+			bab_setAddonGlobals($old_addon_id);
+		}
 	}
 }
 
