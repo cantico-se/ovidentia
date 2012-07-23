@@ -912,6 +912,7 @@ class bab_addonInfos {
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		
 		if (!is_file($this->getPhpPath().'init.php')) {
+			trigger_error('ini file not found for addon in '.$this->getPhpPath().'init.php');
 			return false;	
 		}
 		

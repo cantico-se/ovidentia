@@ -493,7 +493,7 @@ function bab_upgradeAddonsFromInstall($install, $upgrade) {
 					{
 						if (!$addon->upgrade())
 						{
-							throw new Exception(sprintf('Failed to upgrade addon %s', $sAddonName));
+							trigger_error(sprintf('Failed to upgrade addon %s', $sAddonName));
 							return false;
 						}
 					} else {
