@@ -111,7 +111,7 @@ class bab_Groups
 	 * @param int $id_group
 	 * @return bool
 	 */
-	public function inUserGroups($id_group)
+	public static function inUserGroups($id_group)
 	{
 		$groups = self::getGroups();
 		

@@ -32,7 +32,11 @@ if(isset($args['echo']))
 		{
 			case 'raw':
 			case 1:
-				echo bab_printOvmlTemplate($file, $args);
+				if(isset($args['ovmlcache']) && $args['ovmlcache'] == 1){
+					echo bab_printCachedOvmlTemplate($file, $args);
+				}else{
+					echo bab_printOvmlTemplate($file, $args);
+				}
 				exit;
 				
 			case 'popup':

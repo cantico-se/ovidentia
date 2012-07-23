@@ -788,7 +788,7 @@ class bab_DateStrings
 	 * @param int $i
 	 * @return string
 	 */
-	public function getDay($i)
+	public static function getDay($i)
 	{
 		$days = self::getDays();
 		return $days[$i];
