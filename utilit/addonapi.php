@@ -3053,6 +3053,7 @@ function bab_printCachedOvmlTemplate($file, $args = array())
 	// We check if there the specified ovml is in the cache and the cache is
 	// less than 1 hour (or the specified duration) old.
 	if (!isset($ovmlCache['timestamp'])
+	|| !isset($ovmlCache['content']) 
 	|| (time() - $ovmlCache['timestamp'] > (isset($args['_ovml_cache_duration']) ? $args['_ovml_cache_duration'] : 3600))) {
 		$ovmlCache['timestamp'] = time();
 		$ovmlCache['content'] = bab_printOvmlTemplate($file, $args);
