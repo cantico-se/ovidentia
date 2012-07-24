@@ -1729,10 +1729,10 @@ function bab_getUserIdObjects($table)
 	
 	if (!isset($session->bab_groupAccess))
 	{
-		return array();
+		$groupAccess = array();
+	} else {
+		$groupAccess = $session->bab_groupAccess;
 	}
-	
-	$groupAccess = $session->bab_groupAccess;
 	
 	if(isset($groupAccess) || !isset($groupAccess['acltables'][$table]))
 	{
