@@ -288,11 +288,11 @@ function bab_getArticleDelegationId($iIdArticle)
 	
 	
 /**
- * Get first children articles categories (in db_query resource )
+ * Get categories in db_query resource
  *
- * @param	array		$parentid		: list of id of the parent category
- * @param	int|false	$delegationid	: if delegationid is false, categories are not filtered
- * @param   string|false   $rightaccesstable    : name of the right access table in topic. If false, categories are not filtered by user's rights 
+ * @param	int|array		$parentid			: list of id of the parent category
+ * @param	int|false		$delegationid		: if delegationid is false, categories are not filtered
+ * @param   string|false   $rightaccesstable   : name of the right access table in topic. If false, categories are not filtered by user's rights 
  * 
  * Values of $rightsaccesstable :
  * 	false : administrator access (the user must be an administrator)
@@ -307,6 +307,8 @@ function bab_getArticleDelegationId($iIdArticle)
 function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightaccesstable = BAB_TOPICSVIEW_GROUPS_TBL) {
 	global $babBody, $babDB;
 	
+	/* @var $babBody babBody */
+	
 	// Verify the type array of $parentid 
 	if (!is_array($parentid)) {
 		$parentid = array($parentid);
@@ -317,6 +319,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 			return false;
 		}
 	}
+
 
 	$sDelegation = ' ';
 	if(false !== $delegationid) {
@@ -351,6 +354,7 @@ function bab_getArticleCategoriesRes($parentid, $delegationid = false, $rightacc
 			if (BAB_TOPICSVIEW_GROUPS_TBL === $rightaccesstable) {
 				// if tested access is topic view use cached values
 				$idcategoriesbyrights = $babBody->get_topcatview();
+
 			} else {
 			
 				$res2 = $babDB->db_query("
