@@ -2024,8 +2024,8 @@ function bab_sitemap_articles($event) {
 			$event->addFolder($item);
 
 			if ($event->loadChildNodes(array('root', $id_delegation, 'bab'.$dg.'Articles'))) {
-
-				$res = bab_getArticleCategoriesRes(array(0), $id_delegation);
+				
+				$res = bab_getArticleCategoriesRes(array(0), $arr['id']);
 				if (0 < $babDB->db_num_rows($res)) {
 
 					$position = array('root', $id_delegation, 'bab'.$dg.'Articles');
