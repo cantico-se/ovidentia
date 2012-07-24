@@ -1261,6 +1261,7 @@ class bab_siteMap {
 
 		$matchingNodes = array();
 		while (($node = $subNodes->nextNode()) && (count($matchingNodes) < 2)) {
+			
 			/* @var $node bab_Node */
 			if ($node->getId() === $nodeId) {
 				$matchingNodes[] = $node;
@@ -1274,7 +1275,8 @@ class bab_siteMap {
 		}
 
 		if (count($matchingNodes) !== 1) {
-			bab_debug(sprintf('The node %s does not exists in sitemap %s', $nodeId, $sitemap_uid), DBG_ERROR);
+
+			bab_debug(sprintf('The node %s does not exists in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
 			return array();
 		}
 
