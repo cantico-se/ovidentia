@@ -834,6 +834,54 @@ class bab_siteMap {
 
 		return $sitemap;
 	}
+	
+	
+	/**
+	 * Get sitemap profil UID of user
+	 * return the CRC of the list of functions accessibles to the user
+	 * 
+	 * @param	array	$path
+	 * @param	int		$levels
+	 * 
+	 * @return int (crc32) or NULL if no sitemap registered for the user
+	 */
+	public static function getProfilVersionUid($path = null, $levels = null)
+	{
+		/** @var $babDB bab_Database */
+		global $babDB;
+		
+		$root_function = null === $path ? null : end($path);
+		
+		$query_root_function = null === $root_function ? 'pv.root_function IS NULL' : 'pv.root_function='.$babDB->quote($root_function);
+		$query_levels = null === $levels ? 'pv.levels IS NULL' : 'pv.levels='.$babDB->quote($levels);
+		
+		if (!bab_isUserLogged())
+		{
+			$query = "SELECT pv.uid_functions FROM bab_sitemap_profile_versions pv WHERE pv.id_profile=".$babBD->quote(BAB_UNREGISTERED_SITEMAP_PROFILE);
+		} else {
+			$query = "SELECT pv.uid_functions FROM bab_users u, bab_sitemap_profile_versions pv WHERE  pv.id_profile=u.id_sitemap_profile AND u.id=".$babDB->quote(bab_getUserId());
+		}
+		
+		$query .= ' AND '.$query_root_function;
+		$query .= ' AND '.$query_levels;
+		
+		$res = $babDB->db_query($query);
+		
+		if (0 === $babDB->db_num_rows($res)) {
+			return null;
+		}
+		
+		if (1 !== $babDB->db_num_rows($res)) {
+			throw new Exception('error in profile version');
+			return null;
+		}
+		
+		$arr = $babDB->db_fetch_assoc($res);
+		
+		return (int) $arr['uid_functions'];
+	}
+	
+	
 
 
 
