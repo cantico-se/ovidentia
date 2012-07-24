@@ -244,6 +244,10 @@ if ('version' !== bab_rp('tg') || 'upgrade' !== bab_rp('idx')) {
 
 	if (isset($_GET['clear'])) {
 		bab_siteMap::clearAll();
+		if (isset($_SESSION['ovml_cache']))
+		{
+			unset($_SESSION['ovml_cache']);
+		}
 	}
 } else {
 	if (!isset($babLanguage)) {
