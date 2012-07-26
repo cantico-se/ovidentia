@@ -1207,7 +1207,7 @@ class bab_siteMap {
 	 * @see bab_sitemap::setPosition()
 	 *
 	 * @param	string	$sitemap_uid	ID of sitemap tree, default is sitemap selected in site options
-	 * @param	string	$baseNode		start of the breadcrumb, default is the visisble root node of the sitemap
+	 * @param	string	$baseNodeId		start of the breadcrumb, default is the visible root node of the sitemap
 	 * @param	string	$nodeId			current page node, default is the automatic current page
 	 *
 	 * @return array					Array of bab_Node
