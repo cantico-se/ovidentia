@@ -1092,7 +1092,7 @@ function bab_saveArticle(){
 		$url = bab_pp('cancelUrl');
 		
 	} else {
-
+		$submitUrl = $_POST['submitUrl'];
 		
 		$id_topic = (int) bab_pp('id_topic',0);
 		
@@ -1228,7 +1228,7 @@ function bab_saveArticle(){
 			
 			$draft->submit();
 			
-			$url = bab_pp('submitUrl');
+			$url = $submitUrl;
 			
 		}elseif(bab_pp('draft', '') != ''){
 			
@@ -1237,7 +1237,7 @@ function bab_saveArticle(){
 			$draft->saveTempPicture();
 			$draft->saveTags($taglist);
 			
-			$url = $GLOBALS['babUrlScript']."?tg=artedit&idx=list";
+			$url = $submitUrl;
 			
 		}elseif(bab_pp('see', '') != ''){
 			
@@ -1249,6 +1249,9 @@ function bab_saveArticle(){
 			$_POST = array();//need to empty POST to get file attachement and associated image
 			$form = new bab_ArticleDraftEditor;
 			$form->fromDraft($draft->getId());
+			if($submitUrl){
+				$form->setBackUrl(new bab_url($submitUrl));
+			}
 			$form->preview();
 			$form->display();
 			return true;
