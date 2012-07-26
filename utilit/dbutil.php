@@ -88,20 +88,19 @@ class babDatabase
 		$str .= $this->db_error();
 		$str .= "</b></p>\n";
 
+		$error_reporting = (int) ini_get('error_reporting');
+		if (E_USER_ERROR === ($error_reporting & E_USER_ERROR)) {
+			echo $str;
+		}
 		
 		if ($this->db_die_on_fail)
 			{
-			$error_reporting = (int) ini_get('error_reporting');
-			if (E_USER_ERROR === ($error_reporting & E_USER_ERROR)) {
-				echo $str;
-			}
-
 			echo "<p>This script cannot continue, terminating.";
 			die();
-			}
-		else
-			return $str;
 		}
+		
+		return $str;
+	}
 		
 
 	public function db_connect()
