@@ -253,6 +253,8 @@ function babAdminSection($close)
 			}
 		} else {
 			
+			require_once dirname(__FILE__).'/delegincl.php';
+			
 			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
 			$delegation = $delegation[0];
 			
