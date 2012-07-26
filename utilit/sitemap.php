@@ -248,6 +248,13 @@ class bab_siteMapItem {
 	 * @var bool
 	 */
 	public $disabledRewrite = false;
+	
+	/**
+	 * Specify if a node and childnodes should be ignored in a menu
+	 * @see Func_Ovml_Function_SitemapMenu::toString()
+	 * @var bool
+	 */
+	public $menuIgnore = false;
 
 
 	/**

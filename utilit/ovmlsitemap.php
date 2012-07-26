@@ -117,6 +117,7 @@ abstract class Ovml_Container_Sitemap extends Func_Ovml_Container
 		$this->ctx->curctx->push('SitemapEntryPageDescription', $this->IdEntries[$this->idx]['pageDescription']);
 		$this->ctx->curctx->push('SitemapEntryPageKeywords', $this->IdEntries[$this->idx]['pageKeywords']);
 		$this->ctx->curctx->push('SitemapEntryClassnames', $this->IdEntries[$this->idx]['classnames']);
+		$this->ctx->curctx->push('SitemapEntryMenuIgnore', $this->IdEntries[$this->idx]['menuIgnore']);
 		$this->idx++;
 		$this->index = $this->idx;
 		return true;
@@ -168,6 +169,7 @@ class Func_Ovml_Container_SitemapEntries extends Ovml_Container_Sitemap
 					$tmp['pageDescription'] = $item->getPageDescription();
 					$tmp['pageKeywords'] = $item->getPageKeywords();
 					$tmp['classnames'] = $item->getIconClassnames();
+					$tmp['menuIgnore'] = $item->menuIgnore;
 					$this->IdEntries[] = $tmp;
 					$node = $node->nextSibling();
 				}
@@ -226,6 +228,7 @@ class Func_Ovml_Container_SitemapEntry extends Ovml_Container_Sitemap
 				$tmp['pageDescription'] = $item->getPageDescription();
 				$tmp['pageKeywords'] = $item->getPageKeywords();
 				$tmp['classnames'] = $item->getIconClassnames();
+				$tmp['menuIgnore'] = $item->menuIgnore;
 				$this->IdEntries[] = $tmp;
 			}
 
@@ -349,6 +352,7 @@ class Func_Ovml_Container_SitemapPath extends Ovml_Container_Sitemap
 					$tmp['pageDescription'] = $item->getPageDescription();
 					$tmp['pageKeywords'] = $item->getPageKeywords();
 					$tmp['classnames'] = $item->getIconClassnames();
+					$tmp['menuIgnore'] = $item->menuIgnore;
 					array_unshift($this->IdEntries, $tmp);
 					if ($item->id_function === $baseNodeId) {
 						break;
@@ -505,7 +509,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] >
+ * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"]>
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
@@ -517,6 +521,8 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  * 		By default it is the node corresponding to the current page (or the last known page displayed if keeplastknown is active).
  * - The maxdepth attribute is optional, limits the number of levels of nested <ul>.
  * 		No maximum depth by default.
+ * - The outerul attribute is optional, if set to "1" add a UL htmltag
+ * 		The default value is '1'.
  *
  *
  * Example:
@@ -557,6 +563,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$id = $node->getId();
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
+		
 
 		if (!empty($siteMapItem->iconClassnames)) {
 			$icon = 'icon '.$siteMapItem->iconClassnames;
@@ -607,19 +614,17 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			$classnames[] = $this->selectedClass;
 		}
 
-//		if (null !== $mainmenuclass) {
-//			$classnames[] = $mainmenuclass;
-//			$return .= '<li class="no-icon '.implode(' ', $classnames).'"><div>'.$htmlData.'</div>';
-//		} else {
-			$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
-//		}
+		$return .= '<li class="no-icon '.implode(' ', $classnames).'">'.$htmlData;
 
 		if ($node->hasChildNodes() && $depth < $this->maxDepth) {
 			$return .= "<ul>\n";
 
 			$node = $node->firstChild();
 			do {
-				$return .= $this->getHtml($node, null, $depth + 1);
+				if (!$node->getData()->menuIgnore)
+				{
+					$return .= $this->getHtml($node, null, $depth + 1);
+				}
 			} while ($node = $node->nextSibling());
 
 			$return .= "</ul>\n";
