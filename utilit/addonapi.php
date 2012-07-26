@@ -2895,8 +2895,17 @@ function bab_getFileContentDisposition() {
  */
 function bab_printCachedOvmlTemplate($file, $args = array())
 {
+	
+	$uidargs = $args;
+	if (isset($uidargs['babCurrentDate']))
+	{
+		unset($uidargs['babCurrentDate']);
+	}
+	
+	
 	// We create a unique id based on the filename and named arguments.
-	$ovmlId = $file . ':' . http_build_query($args);
+	$ovmlId = $file . ':' . http_build_query($uidargs);
+	
 
 	if (!isset($_SESSION['ovml_cache'][$ovmlId])) {
 		$_SESSION['ovml_cache'][$ovmlId] = array();
