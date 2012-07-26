@@ -859,7 +859,7 @@ class bab_siteMap {
 		{
 			$query = "SELECT pv.uid_functions FROM bab_sitemap_profile_versions pv WHERE pv.id_profile=".$babDB->quote(BAB_UNREGISTERED_SITEMAP_PROFILE);
 		} else {
-			$query = "SELECT pv.uid_functions FROM bab_users u, bab_sitemap_profile_versions pv WHERE  pv.id_profile=u.id_sitemap_profile AND u.id=".$babDB->quote(bab_getUserId());
+			$query = "SELECT pv.uid_functions FROM bab_users u, bab_sitemap_profile_versions pv WHERE  pv.id_profile=u.id_sitemap_profile AND u.id=".$babDB->quote($GLOBALS['BAB_SESS_USERID']);
 		}
 	
 		$query .= ' AND '.$query_root_function;
