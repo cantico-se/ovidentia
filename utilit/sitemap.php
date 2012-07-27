@@ -1209,8 +1209,8 @@ class bab_siteMap {
 
 	/**
 	 * get position in the sitemap from homepage (delegation node) to current position
-	 * empty array is for an empty breadcrumb (a breadcrumb should not be displayed)
-	 * null if for breadcrumb failure (no position found in sitemap or no sitemap) in this case, the last khnow breadcrumb can be displayed
+	 * empty array is for an empty breadcrumb (no breadcrumb should be displayed)
+	 * null if for breadcrumb failure because of unkhnown postion (no position set) in this case, the last khnow breadcrumb can be displayed
 	 *
 	 * @see bab_sitemap::setPosition()
 	 *
@@ -1236,11 +1236,11 @@ class bab_siteMap {
 			}
 		} else {
 			$sitemap = self::getByUid($sitemap_uid);
-			if (!isset($sitemap)) {
-				return null;
-			}
 		}
-
+		
+		if (!isset($sitemap)) {
+			return array();
+		}
 
 
 		if (!isset($nodeId))
@@ -1259,7 +1259,7 @@ class bab_siteMap {
 		$baseNode = $sitemap->getNodeById($baseNodeId);
 		if (!isset($baseNode)) {
 			// basenode not found
-			return null;
+			return array();
 		}
 
 
@@ -1285,7 +1285,7 @@ class bab_siteMap {
 		if (count($matchingNodes) !== 1) {
 
 			bab_debug(sprintf('The node %s does not exists in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
-			return null;
+			return array();
 		}
 
 		$node = $matchingNodes[0];
