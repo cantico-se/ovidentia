@@ -307,6 +307,8 @@ function printBody()
 		private	$babLogoRB = null;
 		private	$babBanner = null;
 		private $babHeadStyleSheets = null;
+		
+		private $sitemapPosition = null;
 
 		public function __construct()
 		{
@@ -433,8 +435,12 @@ function printBody()
 					return $this->babHeadStyleSheets;
 
 				case 'sitemapPosition':
-					$func = bab_functionality::get('Ovml/Function/SitemapPosition');
-					return $func->toString();
+					if (null === $this->sitemapPosition)
+					{
+						$func = bab_functionality::get('Ovml/Function/SitemapPosition');
+						$this->sitemapPosition = $func->toString();
+					}
+					return $this->sitemapPosition;
 					
 					
 				case 'canonicalUrl':
@@ -1318,7 +1324,7 @@ switch(bab_rp('tg'))
 			}
 		else
 		{
-			bab_siteMap::setPosition('DGAll');
+			bab_siteMap::setPosition(bab_siteMap::getVisibleRootNodeByUid($babBody->babsite['sitemap']));
 			if( $BAB_SESS_LOGGED)
 				{
 				$file = "private.html";

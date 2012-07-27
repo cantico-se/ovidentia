@@ -422,15 +422,17 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 
 		$breadcrumb = bab_siteMap::getBreadCrumb($sitemap, $baseNode, $node);
 
-
 		if (!isset($args['keeplastknown'])) {
 			// If keeplastknown is not specified, active by default
 			$keepLastKnown = 1;
 		} else {
 			$keepLastKnown = $args['keeplastknown'];
 		}
+		
+		
+		
 
-		if (empty($breadcrumb)) {
+		if (null === $breadcrumb) {
 
 
 			if ((!$keepLastKnown) || (!isset($_SESSION['bab_sitemap_lastknownposition'])) ) {
@@ -442,6 +444,12 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 				return '';
 			}
 		}
+		
+		if (empty($breadcrumb))
+		{
+			return '';
+		}
+		
 
 //		$html = '<ul class="sitemap-position">'."\n";
 		$html = '';
@@ -488,6 +496,8 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 		if ($keepLastKnown) {
 			$_SESSION['bab_sitemap_lastknownposition'] = $html;
 		}
+		
+		
 
 		return $html;
 	}

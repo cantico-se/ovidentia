@@ -1175,7 +1175,7 @@ class bab_siteMap {
 	 *
 	 */
 	public static function setPosition($uid_prefix, $uid_suffix = null) {
-
+		
 		if (null !== self::$current_page) {
 			return;
 		}
@@ -1209,7 +1209,8 @@ class bab_siteMap {
 
 	/**
 	 * get position in the sitemap from homepage (delegation node) to current position
-	 * If position is not set, the method returns an empty array
+	 * empty array is for an empty breadcrumb (a breadcrumb should not be displayed)
+	 * null if for breadcrumb failure (no position found in sitemap or no sitemap) in this case, the last khnow breadcrumb can be displayed
 	 *
 	 * @see bab_sitemap::setPosition()
 	 *
@@ -1217,12 +1218,12 @@ class bab_siteMap {
 	 * @param	string	$baseNodeId		start of the breadcrumb, default is the visible root node of the sitemap
 	 * @param	string	$nodeId			current page node, default is the automatic current page
 	 *
-	 * @return array					Array of bab_Node
+	 * @return array | null				Array of bab_Node 
 	 */
 	public static function getBreadCrumb($sitemap_uid = null, $baseNodeId = null, $nodeId = null) {
 
 		if (!isset(self::$current_page) && !isset($nodeId)) {
-			return array();
+			return null;
 		}
 
 		if (null === $sitemap_uid) {
@@ -1236,7 +1237,7 @@ class bab_siteMap {
 		} else {
 			$sitemap = self::getByUid($sitemap_uid);
 			if (!isset($sitemap)) {
-				return array();
+				return null;
 			}
 		}
 
@@ -1254,11 +1255,11 @@ class bab_siteMap {
 			$baseNodeId = bab_siteMap::getVisibleRootNodeByUid($sitemap_uid);
 		}
 
-		// bab_debug("$sitemap_uid $baseNodeId $nodeId");
-
+		
 		$baseNode = $sitemap->getNodeById($baseNodeId);
 		if (!isset($baseNode)) {
-			return array();
+			// basenode not found
+			return null;
 		}
 
 
@@ -1284,7 +1285,7 @@ class bab_siteMap {
 		if (count($matchingNodes) !== 1) {
 
 			bab_debug(sprintf('The node %s does not exists in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
-			return array();
+			return null;
 		}
 
 		$node = $matchingNodes[0];
