@@ -456,10 +456,10 @@ FUNCTIONS ORDER
 <table class="BabLoginMenuBackground" width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
 <tr> 
 <td valign="middle" align="center"> 
-<select name="roles[]" size="12" multiple="multiple" style="min-width: 150px;">
+<select name="roles[]" size="12" multiple="multiple" style="width: 150px;">
   <option value="0">{ toplisttxt }</option>
   <!--#in getnext --> 
-  <option value="{ ocfid }" title="{ description }">{ title }</option>
+  <option value="{ ocfid }" title="{ title }<!--#if description --> : { description }<!--#endif description -->">{ title }</option>
   <!--#endin getnext --> 
 </select>
 </td>
