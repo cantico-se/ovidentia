@@ -912,8 +912,8 @@ function setCurrentItemMenu($title, $enabled=false)
 
 /**
  * Add a stylesheet to the page
- * @param unknown_type $filename
- * @return unknown_type
+ * @param string $filename
+ * @return void
  */
 public function addStyleSheet($filename)
 {
@@ -921,7 +921,7 @@ public function addStyleSheet($filename)
 	{
 		// $filename can be relative to styles folders
 		// or a full path relative to main folder
-		
+
 		if ($GLOBALS['babInstallPath'] === mb_substr($filename, 0, mb_strlen($GLOBALS['babInstallPath'])))
 		{
 			$this->styleSheet[] = '../../'.$filename;
@@ -1568,7 +1568,7 @@ function bab_updateSiteSettings()
 		include_once $GLOBALS['babInstallPath'].'utilit/upgradeincl.php';
 		bab_newInstall();
 	}
-	
+
 	
 	bab_UsersLog::cleanup();
 
