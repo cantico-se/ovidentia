@@ -466,6 +466,8 @@ class displayEventCls
 	
 	public function __construct($evtid, $dtstart, $idcal)
 	{
+		global $babBody;
+		
 		$this->evtid = $evtid;
 		$this->dtstart = $dtstart;
 		
