@@ -1177,6 +1177,9 @@ class bab_cal_OviEventSelect
 
 		foreach($calendars as $calendar) {
 
+			if (!($calendar->getBackend() instanceof Func_CalendarBackend_Ovi)) {
+				continue;
+			}
 			if ($user_periods->id_delegation && !$calendar->visibleInDelegation($user_periods->id_delegation))
 			{
 				continue;
