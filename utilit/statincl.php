@@ -54,7 +54,7 @@ class bab_WebStatEvent
 		$this->idevt = 0;
 		$this->info = array();
 
-		if ($_SERVER['REMOTE_ADDR'])
+		if (!empty($_SERVER['REMOTE_ADDR']))
 			{
 			$this->ip = $_SERVER['REMOTE_ADDR'];
 			}
