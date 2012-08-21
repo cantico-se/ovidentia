@@ -1737,22 +1737,45 @@ function acceptWaitingArticle($idart)
 			}
 
 		if( $arr['hpage_private'] == "Y" || $arr['hpage_public'] == "Y" )
+		{
+			$escapeArticleId = $babDB->db_escape_string($articleid);
+			$idSite = $babDB->db_escape_string($babBody->babsite['id']);
+			$private = $arr['hpage_private'];
+			$public = $arr['hpage_private'];
+			
+			
+			if( $private == "Y")
 			{
-			if( $arr['hpage_private'] == "Y")
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$escapeArticleId."' and id_group='1' and id_site='".$idSite."'";
+				$res2 = $babDB->db_query($req);
+				if( !$res2 || $babDB->db_num_rows($res2) < 1)
 				{
-				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$babDB->db_escape_string($articleid). "', '" . $babDB->db_escape_string($babBody->babsite['id']). "', '1')");
+					$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$escapeArticleId. "', '" . $idSite. "', '1')");
+				}else{
+					$private = 'N';
 				}
-
-			if( $arr['hpage_public'] == "Y" )
-				{
-				$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$babDB->db_escape_string($articleid). "', '" . $babDB->db_escape_string($babBody->babsite['id']). "', '2')");
-				}
-
-			notifyArticleHomePage($arr['topicname'], $arr['title'], ($arr['hpage_public'] == "Y"? 2:0), ($arr['hpage_private'] == "Y"?1:0));
 			}
 
-		return $articleid;
+			if( $public == "Y" )
+			{
+				$req = "select * from ".BAB_HOMEPAGES_TBL." where id_article='".$escapeArticleId."' and id_group='2' and id_site='".$idSite."'";
+				$res2 = $babDB->db_query($req);
+				if( !$res2 || $babDB->db_num_rows($res2) < 1)
+				{
+					$res = $babDB->db_query("insert into ".BAB_HOMEPAGES_TBL." (id_article, id_site, id_group) values ('" .$escapeArticleId. "', '" . $idSite. "', '2')");
+				}else{
+					$public = 'N';
+				}				
+			}
+			
+			if( $private == "Y" || $public == "Y" )
+			{
+				notifyArticleHomePage($arr['topicname'], $arr['title'], ($public == "Y"? 2:0), ($private == "Y"?1:0));
+			}
 		}
+
+		return $articleid;
+	}
 	else
 	{
 		return 0;
