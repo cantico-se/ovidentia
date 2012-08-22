@@ -400,7 +400,7 @@ class bab_InstallSource {
 			try {
 				$ini = $install->getIni();
 			} catch(Exception $e) {
-				$babBody->addError($e->getMessage());
+				bab_installWindow::message($e->getMessage());
 				return false;
 			}
 

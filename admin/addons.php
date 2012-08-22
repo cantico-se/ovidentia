@@ -517,8 +517,11 @@ class bab_addonPackage
 		$dependencies = $addon->getPackageDependencies();
 		foreach($dependencies as $addonname) {
 			$dependence = bab_getAddonInfosInstance($addonname);
-			$this->addAddon($dependence);
-			$ini = $dependence->getIni();
+			if (false !== $dependence)
+			{
+				$this->addAddon($dependence);
+				$ini = $dependence->getIni();
+			}
 		}
 
 
