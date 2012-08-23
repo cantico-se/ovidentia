@@ -1059,11 +1059,11 @@ class bab_siteMap {
 		}
 
 		$sitemapItem = $notesNode->getData();
-		if (!$sitemapItem->title) {
-			throw new Exception('Missing title on node '.$sId);
+		if (!$sitemapItem->name) {
+			throw new Exception('Missing name on node '.$sId);
 		}
 
-		return $sitemapItem->title;
+		return $sitemapItem->name;
 	}
 
 
