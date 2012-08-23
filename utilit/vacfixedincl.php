@@ -24,10 +24,20 @@
 include_once "base.php";
 
 
-
+/**
+ * Add a fixed vacation for a user
+ * appelle lors de la creation/modification d'un droit de conge pre attribue
+ * 
+ * @param int $id_user
+ * @param int $id_right
+ * @param string $datebegin			ISO datetime
+ * @param string $dateend			ISO datetime
+ * @param string $remarks
+ * @param float $total			 	decimal(4,2)
+ */
 function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $remarks, $total)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
 
 	$babDB->db_query("insert into ".BAB_VAC_ENTRIES_TBL." 
@@ -57,19 +67,32 @@ function addFixedVacation($id_user, $id_right, $datebegin , $dateend, $remarks, 
 		");
 
 	bab_vac_updateEventCalendar($identry);
-
+	bab_vac_createPeriod($identry);
 }
 
 
 
 /**
+ * Update dates and quantity of a fixed vacation for a user
+ * appelle lors de la creation/modification d'un droit de conge pre attribue
+ * 
+ * @param	int		$id_user
+ * @param 	int		$id_right
+ * @param	string	$datebegin		ISO datetime
+ * @param	string	$dateend		ISO datetime
+ * @param	float	$total			decimal(4,2)
+ * 
  * @return bool
  */
 function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 {
-	global $babBody, $babDB;
+	global $babDB;
 
-	$res = $babDB->db_query("select vet.id as entry, veet.id as entryelem 
+	$res = $babDB->db_query("select 
+		vet.id as entry, 
+		vet.date_begin, 
+		vet.date_end,
+		veet.id as entryelem 
 	from ".BAB_VAC_ENTRIES_ELEM_TBL." veet 
 		left join ".BAB_VAC_ENTRIES_TBL." vet 
 		on veet.id_entry=vet.id 
@@ -100,20 +123,44 @@ function updateFixedVacation($id_user, $id_right, $datebegin , $dateend, $total)
 			where id=".$babDB->quote($arr['entryelem']));
 
 		bab_vac_updateEventCalendar($arr['entry']);
+	
+	
+		$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+		$end = BAB_DateTime::fromIsoDateTime($arr['date_end']);
+	
+		// try to update event copy in other backend (caldav)
+		bab_vac_updatePeriod($arr['entry'], $begin, $end);
 	}
-
 
 	return true;
 }
 
+
+/**
+ * Remove fixed vacation
+ * @param int $id_entry
+ */
 function removeFixedVacation($id_entry)
 {
-	global $babBody, $babDB;
-
-	bab_vac_clearCalendars();
+	global $babDB;
 	
+	$res = $babDB->db_query("select id_user, date_begin, date_end FROM ".BAB_VAC_ENTRIES_TBL." where id=".$babDB->quote($id_entry));
+	$arr = $babDB->db_fetch_array($res);
+	
+
 	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_TBL." where id='".$babDB->db_escape_string($id_entry)."'");
 	$babDB->db_query("delete from ".BAB_VAC_ENTRIES_ELEM_TBL." where id_entry='".$babDB->db_escape_string($id_entry)."'");
+	
+	bab_vac_clearCalendars();
+	
+	// try to delete event copy in other backend (caldav)
+	
+	$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+	$end = BAB_DateTime::fromIsoDateTime($arr['date_end']);
+	$period = bab_vac_getPeriod($id_entry, $arr['id_user'],  $begin, $end);
+	if ($period) {
+		$period->delete();
+	}
 }
 
 
