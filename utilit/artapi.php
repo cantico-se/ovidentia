@@ -123,21 +123,32 @@ function bab_getTopicCategoryDelegationId($id)
 		}
 	}	
 	
-
+/**
+ * 
+ * @throws ErrorException
+ * 
+ * @param string 	$name
+ * @param string 	$description		HTML
+ * @param string 	$benabled			Y | N		section
+ * @param string 	$template
+ * @param string 	$disptmpl
+ * @param int 		$topcatid
+ * @param int 		$dgowner			Delegation
+ * 
+ * @return int
+ */
 function bab_addTopicsCategory($name, $description, $benabled, $template, $disptmpl, $topcatid, $dgowner=0)
 	{
-	global $babBody, $babDB;
+	global $babDB;
 	if( empty($name))
 		{
-		$babBody->msgerror = bab_translate("ERROR: You must provide a name !!");
-		return false;
+		throw new ErrorException(bab_translate("ERROR: You must provide a name !!"));
 		}
 
 	$res = $babDB->db_query("select * from ".BAB_TOPICS_CATEGORIES_TBL." where title='".$babDB->db_escape_string($name)."' and id_parent='".$babDB->db_escape_string($topcatid)."' and id_dgowner='".$babDB->db_escape_string($dgowner)."'");
 	if( $babDB->db_num_rows($res) > 0)
 		{
-		$babBody->msgerror = bab_translate("This topic category already exists");
-		return false;
+		throw new ErrorException(bab_translate("This topic category already exists"));
 		}
 	else
 		{
