@@ -1697,7 +1697,7 @@ function updateVacationRight()
 			{
 			for($k=0; $k < $nbidusers; $k++ )
 				{
-				addFixedVacation($idusers[$k], $id, $post['date_begin_fixed'] , $post['date_end_fixed'], $post['halfdaybeginfx'], $post['halfdayendfx'], '', $post['quantity']);
+				addFixedVacation($idusers[$k], $id, $post['date_begin_fixed'] , $post['date_end_fixed'], '', $post['quantity']);
 				}
 			notifyOnVacationChange($idusers, $post['quantity'], $post['date_begin_fixed'],  $post['date_end_fixed'], VAC_FIX_ADD);
 			}

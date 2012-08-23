@@ -1379,7 +1379,7 @@ function confirmVacationRequest($veid, $remarks, $action)
 	// try to update event copy in other backend (caldav)
 
 	$begin = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
-	$end = BAB_DateTime::fromIsoDateTime($arr['date_begin']);
+	$end = BAB_DateTime::fromIsoDateTime($arr['date_end']);
 	$period = bab_vac_getPeriod($veid, $arr['id_user'],  $begin, $end);
 	if ($period) {
 		// select the updated row
