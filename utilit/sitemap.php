@@ -140,8 +140,7 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 			bab_debug('first node of rewrite path not found : '.$first);
 			return null;
 		}
-
-
+		
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
 			if (isset($this->rewriteIndex_id[$nodeId])) {
 
@@ -179,6 +178,20 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 
 
 		foreach($this->rewriteIndex_rn[$first] as $nodeId) {
+			
+			if (!isset($this->rewriteIndex_id[$nodeId]))
+			{
+				bab_debug("the node $nodeId has no parent in index");
+				continue;
+			}
+			
+			if ($id_parent !== $this->rewriteIndex_id[$nodeId][0])
+			{
+				// bab_debug("$nodeId parent is not $id_parent");
+				continue;
+			}
+			
+			
 			if (isset($this->rewriteIndex_id[$nodeId]) && $id_parent === $this->rewriteIndex_id[$nodeId][0]) {
 
 				if (0 === count($path))
@@ -187,9 +200,6 @@ class bab_siteMapOrphanRootNode extends bab_OrphanRootNode {
 				}
 
 				return $this->getNextRewriteNode($path, $nodeId);
-			} else {
-				bab_debug("the node $nodeId has no parent in index or parent is not $id_parent");
-				//return null;
 			}
 		}
 
@@ -1275,17 +1285,25 @@ class bab_siteMap {
 				$matchingNodes[] = $node;
 				continue;
 			}
-			/* @var $data bab_SitemapItem */
-			$data = $node->getData();
-			if ($data->getTarget() === $nodeId) {
+			/* @var $sitemapItem bab_SitemapItem */
+			$sitemapItem = $node->getData();
+			$sitemapItem = $sitemapItem->getTarget();
+			if ($sitemapItem->id_function === $nodeId) {
 				$matchingNodes[] = $node;
 			}
 		}
-
-		if (count($matchingNodes) !== 1) {
-
-			bab_debug(sprintf('The node %s does not exists in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
+		
+		if (count($matchingNodes) === 0) {
+		
+			bab_debug(sprintf('Breadcrumb : The node %s does not exists in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
 			return array();
+		}
+		
+
+		if (count($matchingNodes) > 1) {
+
+			bab_debug(sprintf('Breadcrumb : Multiple matching nodes for %s in sitemap %s under baseNode %s', $nodeId, $sitemap_uid, $baseNodeId), DBG_ERROR);
+			// return array();
 		}
 
 		$node = $matchingNodes[0];
