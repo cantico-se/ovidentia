@@ -285,6 +285,18 @@ class bab_Groups
 	public static function isMemberOfTree($id_group, $id_user = '')
 	{
 		global $babDB;
+		
+		if ('' === $id_user)
+		{
+			if (bab_Groups::inUserGroups($id_group))
+			{
+				return true;
+			}
+			
+			$id_user = $GLOBALS['BAB_SESS_USERID'];
+		}
+		
+
 	
 		try {
 			$group = bab_Groups::get($id_group);
@@ -296,7 +308,7 @@ class bab_Groups
 		$lf = $group['lf'];
 		$lr = $group['lr'];
 	
-		if (!empty($id_user))
+		if ($GLOBALS['BAB_SESS_USERID'] != $id_user)
 		{
 			if ($id_group == 0 || $id_group == 1)
 				return true;
@@ -306,6 +318,9 @@ class bab_Groups
 			list($n) = $babDB->db_fetch_array($res);
 			return ($n > 0);
 		}
+		
+		
+		
 	
 		$usergroups = bab_Groups::getUserGroups();
 	
