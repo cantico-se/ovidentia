@@ -756,8 +756,7 @@ function bab_getArticleTopicsRes($categoryid, $delegationid = false, $rightacces
 				array_push($IdEntries, $row['id_topcat']);
 			} else {
 				/* Specific right */
-				$idtopicsbyrights = bab_getUserIdObjects($rightaccesstable); /* all id topics with right */
-				if (isset($idtopicsbyrights[$row['id_topcat']])) {
+				if (bab_isAccessValid($rightaccesstable, $row['id_topcat'])) {
 					array_push($IdEntries, $row['id_topcat']);
 				}
 			}
