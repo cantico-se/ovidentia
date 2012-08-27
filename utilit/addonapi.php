@@ -584,7 +584,7 @@ function bab_mktime($time)
 	{
 	$arr = explode(" ", $time); //Split days and hours
 	if ('0000-00-00' == $arr[0] || '' == $arr[0]) {
-		return -1;
+		return null;
 	}
 	$arr0 = explode("-", $arr[0]); //Split year, month et day
 	if (isset($arr[1])) { //If the hours exist we send back days and hours
@@ -806,7 +806,7 @@ function bab_formatDate($format, $time)
  */
 function bab_longDate($time, $hour=true)
 	{
-	if( $time < 0)
+	if( null === $time)
 		return "";
 
 	if( !isset($GLOBALS['babLongDateFormat']))
@@ -837,7 +837,7 @@ function bab_longDate($time, $hour=true)
  */
 function bab_shortDate($time, $hour=true)
 	{
-	if( $time < 0)
+	if( null === $time)
 		return "";
 
 	if( !isset($GLOBALS['babShortDateFormat']))
