@@ -1476,6 +1476,12 @@ function bab_getUserId($name = null)
 	{
 		require_once dirname(__FILE__).'/session.class.php';
 		$session = bab_getInstance('bab_Session');
+		
+		if (!isset($session->BAB_SESS_USERID))
+		{
+			return 0;
+		}
+		
 		return ((int) $session->BAB_SESS_USERID);
 	}
 		
