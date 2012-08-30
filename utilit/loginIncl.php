@@ -1557,8 +1557,6 @@ function bab_setUserSessionInfo($iIdUser)
 		$_SESSION['BAB_SESS_EMAIL']		= $aUser['email'];
 		$_SESSION['BAB_SESS_USERID']	= $aUser['id'];
 		$_SESSION['BAB_SESS_HASHID']	= $aUser['confirm_hash'];
-		$_SESSION['BAB_SESS_GROUPID']	= bab_getPrimaryGroupId($aUser['id']);
-		$_SESSION['BAB_SESS_GROUPNAME']	= bab_getGroupName($_SESSION['BAB_SESS_GROUPID']);
 
 		$GLOBALS['BAB_SESS_NICKNAME'] 	= $_SESSION['BAB_SESS_NICKNAME'];
 		$GLOBALS['BAB_SESS_USER'] 		= $_SESSION['BAB_SESS_USER'];
