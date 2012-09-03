@@ -426,7 +426,7 @@ class bab_siteMapItem {
 				&& $this->node
 				&& ($parentNode = $this->node->parentNode())
 				&& ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getSitemapPageKeywords();
+			return $parentSitemapItem->getSitemapPageKeywords($inherit);
 		}
 		
 		return null;
@@ -487,7 +487,7 @@ class bab_siteMapItem {
 		  && $this->node
 		  && ($parentNode = $this->node->parentNode())
 		  && ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getSitemapPageTitle();
+			return $parentSitemapItem->getSitemapPageTitle($inherit);
 		} 
 		
 		return null;
@@ -1153,6 +1153,35 @@ class bab_siteMap {
 
 		return $list[$uid]->getVisibleRootNode();
 	}
+	
+	
+	/**
+	 * get the visible root node associated to site configured sitemap
+	 * @return string
+	 */
+	public static function getSitemapRootNode()
+	{
+		global $babBody;
+		return self::getVisibleRootNodeByUid($babBody->babsite['sitemap']);
+	}
+	
+	
+	/**
+	 * get the visible root node associated to site configured sitemap
+	 * @return bab_siteMapItem
+	 */
+	public static function getVisibleRootNodeSitemapItem()
+	{
+		$nodeId = self::getSitemapRootNode();
+		$node = self::get()->getNodeById($nodeId);
+
+		if (!isset($node)) {
+			return null;
+		}
+
+		return $node->getData();
+	}
+	
 
 
 	/**
