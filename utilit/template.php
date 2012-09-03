@@ -518,10 +518,7 @@ class bab_Template
 	{
 		// We check if the property exists in the template object.
 		if (@isset($templateObject->{$propertyName})) {
-			if (is_null($templateObject->{$propertyName})) {
-				return '';
-			}
-			return $templateObject->{$propertyName};
+			return (string) $templateObject->{$propertyName};
 		}
 
 		// The property is not defined in the template object,
