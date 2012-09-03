@@ -362,6 +362,8 @@ function printBody()
 			$this->message = $babBody->message;
 			$this->title = $babBody->title;
 			$this->msgerror = $babBody->msgerror;
+			
+			
 		}
 
 
@@ -458,22 +460,35 @@ function printBody()
 					
 					
 				case 'pageTitle':
-					
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageTitle());
+						if ($title = $sitemapItem->getPageTitle(true))
+						{
+							return bab_toHtml($title);
+						}
 					}
 					
+					// no sitemap node, use title provided by script 
 					$head = bab_getInstance('babHead');
 					if ($title = $head->getTitle())
 					{
 						return bab_toHtml($title);
 					}
+
+					// use the sitemap root node page title
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageTitle());
+					}
+					
 					return '';
 					
-				case 'pageDescription':
 					
+					
+				case 'pageDescription':
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageDescription());
+						if ($description = $sitemapItem->getPageDescription(true))
+						{
+							return bab_toHtml($description);
+						}
 					}
 				
 					$head = bab_getInstance('babHead');
@@ -481,12 +496,22 @@ function printBody()
 					{
 						return bab_toHtml($description);
 					}
+					
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageDescription());
+					}
+					
 					return '';
+					
+					
 					
 				case 'pageKeywords':
 				case 'sitemapPageKeywords':
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageKeywords());
+						if ($keywords = $sitemapItem->getPageKeywords(true))
+						{
+							return bab_toHtml($keywords);
+						}
 					}
 				
 					$head = bab_getInstance('babHead');
@@ -494,6 +519,11 @@ function printBody()
 					{
 						return bab_toHtml($keywords);
 					}
+					
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageKeywords());
+					}
+					
 					return '';
 
 				default:
@@ -1324,7 +1354,7 @@ switch(bab_rp('tg'))
 			}
 		else
 		{
-			bab_siteMap::setPosition(bab_siteMap::getVisibleRootNodeByUid($babBody->babsite['sitemap']));
+			bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
 			if( $BAB_SESS_LOGGED)
 				{
 				$file = "private.html";
