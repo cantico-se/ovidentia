@@ -420,7 +420,7 @@ class bab_siteMapItem {
 				&& $this->node
 				&& ($parentNode = $this->node->parentNode())
 				&& ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getSitemapPageKeywords();
+			return $parentSitemapItem->getSitemapPageKeywords($inherit);
 		}
 		
 		return null;
@@ -481,7 +481,7 @@ class bab_siteMapItem {
 		  && $this->node
 		  && ($parentNode = $this->node->parentNode())
 		  && ($parentSitemapItem = $parentNode->getData())) {
-			return $parentSitemapItem->getSitemapPageTitle();
+			return $parentSitemapItem->getSitemapPageTitle($inherit);
 		} 
 		
 		return null;
