@@ -100,41 +100,6 @@ if (!isset($babUrl)) {
 	$babUrl = bab_getBabUrl();
 }
 
-
-/* Restore the REQUEST, POST, GET from the session */
-if (isset($_GET['babHttpContext'])) {
-	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
-	bab_restoreHttpContext();
-	bab_cleanGpc();
-}
-
-
-// addon controller
-
-if (isset($_REQUEST['addon']))
-{
-	include_once $babInstallPath.'utilit/dbutil.php';
-	include_once $GLOBALS['babInstallPath'].'utilit/addonsincl.php';
-	
-	$babDB = new babDatabase();
-	$babDB->db_setCharset();
-	
-	$addon = explode('.',$_REQUEST['addon']);
-
-	if($id_addon = bab_addonsInfos::getAddonIdByName($addon[0]))
-	{
-		$row = bab_addonsInfos::getDbRow($id_addon);
-		$incl = "addons/".$row['title'];
-		$incl .= "/".preg_replace("/[^A-Za-z0-9_\-]/", "", $addon[1]);
-		
-		include $babInstallPath.$incl.'.php';
-	}
-	
-	die();
-}
-
-
-
 /* Management of WSSESSIONID for Web Services */
 if (isset($_REQUEST['WSSESSIONID'])) {
 	session_name(sprintf("OV%u", crc32($babUrl)));
@@ -148,7 +113,12 @@ if (isset($_REQUEST['WSSESSIONID'])) {
 	session_start();
 }
 
-
+/* Restore the REQUEST, POST, GET from the session */
+if (isset($_GET['babHttpContext'])) {
+	require_once $GLOBALS['babInstallPath'] . 'utilit/httpContext.php';
+	bab_restoreHttpContext();
+	bab_cleanGpc();
+}
 
 if (!isset($_SERVER['HTTP_HOST']) && isset($_SERVER["argv"][1])) {
 	parse_str($_SERVER["argv"][1], $_GET);
@@ -441,22 +411,35 @@ function printBody()
 					
 					
 				case 'pageTitle':
-					
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageTitle());
+						if ($title = $sitemapItem->getPageTitle(true))
+						{
+							return bab_toHtml($title);
+						}
 					}
 					
+					// no sitemap node, use title provided by script 
 					$head = bab_getInstance('babHead');
 					if ($title = $head->getTitle())
 					{
 						return bab_toHtml($title);
 					}
+
+					// use the sitemap root node page title
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageTitle());
+					}
+					
 					return '';
 					
-				case 'pageDescription':
 					
+					
+				case 'pageDescription':
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageDescription());
+						if ($description = $sitemapItem->getPageDescription(true))
+						{
+							return bab_toHtml($description);
+						}
 					}
 				
 					$head = bab_getInstance('babHead');
@@ -464,12 +447,22 @@ function printBody()
 					{
 						return bab_toHtml($description);
 					}
+					
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageDescription());
+					}
+					
 					return '';
+					
+					
 					
 				case 'pageKeywords':
 				case 'sitemapPageKeywords':
 					if ( null !== $sitemapItem = $this->getSitemapItem() ) {
-						return bab_toHtml($sitemapItem->getPageKeywords());
+						if ($keywords = $sitemapItem->getPageKeywords(true))
+						{
+							return bab_toHtml($keywords);
+						}
 					}
 				
 					$head = bab_getInstance('babHead');
@@ -477,6 +470,11 @@ function printBody()
 					{
 						return bab_toHtml($keywords);
 					}
+					
+					if ($root = bab_siteMap::getVisibleRootNodeSitemapItem()) {
+						return bab_toHtml($root->getPageKeywords());
+					}
+					
 					return '';
 
 				default:
@@ -640,10 +638,6 @@ function printBody()
 			return false;
 		}
 	}
-	
-	// we make sure that the sitemap is created before final processing of the page
-	// because sitemap reconstruction errors are hidden if the reconstruction process is done in an eval
-	bab_sitemap::get();
 
 	$temp = new tpl();
 	echo bab_printTemplate($temp, 'page.html', '');
