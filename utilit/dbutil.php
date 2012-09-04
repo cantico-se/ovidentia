@@ -88,8 +88,9 @@ class babDatabase
 		$str .= $this->db_error();
 		$str .= "</b></p>\n";
 
+		$display_errors = (int) ini_get('display_errors');
 		$error_reporting = (int) ini_get('error_reporting');
-		if (E_USER_ERROR === ($error_reporting & E_USER_ERROR)) {
+		if (E_USER_ERROR === ($error_reporting & E_USER_ERROR) && $display_errors) {
 			echo $str;
 		}
 		
