@@ -1145,6 +1145,35 @@ class bab_siteMap {
 
 		return $list[$uid]->getVisibleRootNode();
 	}
+	
+	
+	/**
+	 * get the visible root node associated to site configured sitemap
+	 * @return string
+	 */
+	public static function getSitemapRootNode()
+	{
+		global $babBody;
+		return self::getVisibleRootNodeByUid($babBody->babsite['sitemap']);
+	}
+	
+	
+	/**
+	 * get the visible root node associated to site configured sitemap
+	 * @return bab_siteMapItem
+	 */
+	public static function getVisibleRootNodeSitemapItem()
+	{
+		$nodeId = self::getSitemapRootNode();
+		$node = self::get()->getNodeById($nodeId);
+
+		if (!isset($node)) {
+			return null;
+		}
+
+		return $node->getData();
+	}
+	
 
 
 	/**
