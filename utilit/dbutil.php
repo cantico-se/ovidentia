@@ -91,8 +91,9 @@ class babDatabase
 		
 		if ($this->db_die_on_fail)
 			{
+			$display_errors = (int) ini_get('display_errors');
 			$error_reporting = (int) ini_get('error_reporting');
-			if (E_USER_ERROR === ($error_reporting & E_USER_ERROR)) {
+			if (E_USER_ERROR === ($error_reporting & E_USER_ERROR) && $display_errors) {
 				echo $str;
 			}
 
@@ -121,18 +122,13 @@ class babDatabase
 
 	public function db_setCharset()
 		{
-			$oResult = $this->db_query("SHOW VARIABLES LIKE 'character_set_database'");
-			if(false !== $oResult)
+			require_once $GLOBALS['babInstallPath'].'utilit/addonapi.php';
+			if('utf8' == bab_charset::getDatabase())
 			{
-				$aDbCharset = $this->db_fetch_assoc($oResult);
-				if(false !== $aDbCharset && 'utf8' == $aDbCharset['Value'])
-				{
-					$this->db_query("SET NAMES utf8");
-					return;
-				}
-			}
-			
-			$this->db_query("SET NAMES latin1");			
+				$this->db_query("SET NAMES utf8");
+			} else {
+				$this->db_query("SET NAMES latin1");
+			}			
 		}
 
 	public function db_create_db($dbname)
