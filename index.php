@@ -1301,7 +1301,7 @@ switch(bab_rp('tg'))
 			}
 		else
 		{
-			bab_siteMap::setPosition('DGAll');
+			bab_siteMap::setPosition(bab_siteMap::getSitemapRootNode());
 			if( $BAB_SESS_LOGGED)
 				{
 				$file = "private.html";
