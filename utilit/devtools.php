@@ -535,7 +535,7 @@ class bab_synchronizeSql
 				$res_const = $this->db->db_query('select CONSTRAINT_NAME FROM information_schema.key_column_usage WHERE TABLE_NAME='.$this->db->quote($table).' AND COLUMN_NAME='.$this->db->quote($field));
 				if ($const = $this->db->db_fetch_assoc($res_const))
 				{
-					$this->db->db_query('ALTER TABLE '.$this->db->quote($table).' DROP FOREIGN KEY '.$this->db->backTick($const['CONSTRAINT_NAME']));
+					$this->db->db_query('ALTER TABLE '.$this->db->backTick($table).' DROP FOREIGN KEY '.$this->db->backTick($const['CONSTRAINT_NAME']));
 				}
 				
 				$this->db->db_query("ALTER TABLE ".$this->db->backTick($table)." DROP ".$this->db->backTick($field));
