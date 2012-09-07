@@ -519,7 +519,7 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
 /**
  * Return the sitemap menu tree in a html UL LI
  *
- * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"]>
+ * <OFSitemapMenu [sitemap="sitemapName"] [basenode="parentNode"] [selectednode=""] [keeplastknown="0|1"] [maxdepth="depth"] [outerul="1"] [admindelegation="0"]>
  *
  * - The sitemap attribute is optional.
  * 		The default value is the sitemap selected in Administration > Sites > Site configuration.
@@ -533,6 +533,8 @@ class Func_Ovml_Function_SitemapPosition extends Func_Ovml_Function
  * 		No maximum depth by default.
  * - The outerul attribute is optional, if set to "1" add a UL htmltag
  * 		The default value is '1'.
+ * - The admindelegation attribute is optional, if set to "1" the display of ovidentia administration node will only display if the user can manage this property
+ * 		The default value is '0'.
  *
  *
  * Example:
@@ -562,11 +564,13 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 	protected	$selectedClass = 'selected';
 	protected	$activeClass = 'active';
+	protected	$delegAdmin = array();
 
 	protected	$maxDepth = 100;
 
 	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
 
+		global $babBody;
 		$return = '';
 		$classnames = array();
 
@@ -574,7 +578,12 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
 		
-
+		if(isset($this->delegAdmin[$babBody->currentAdmGroup][$id]))
+		{
+			return $return;
+		}
+		
+		
 		if (!empty($siteMapItem->iconClassnames)) {
 			$icon = 'icon '.$siteMapItem->iconClassnames;
 		} else {
@@ -648,13 +657,14 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 
 
 
-
 	/**
 	 *
 	 * @return string
 	 */
 	public function toString()
 	{
+		require_once dirname(__FILE__).'/delegincl.php';
+		global $babBody;
 		$args = $this->args;
 
 		if (isset($args['sitemap'])) {
@@ -673,6 +683,25 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		if (!isset($sitemap)) {
 			trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
 			return '';
+		}
+		
+		if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && $babBody->currentAdmGroup != 0 && !isset($this->delegAdmin[$babBody->currentAdmGroup]))
+		{
+			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
+			$delegation = $delegation[0];
+			foreach(bab_getDelegationsObjects() as $link)
+			{
+				if (!isset($link[3]))
+				{
+					continue;
+				}
+			
+				if ($delegation[$link[0]] !== 'Y')
+				{
+					$this->delegAdmin[$babBody->currentAdmGroup]['bab'.$link[2]] = true;
+					continue;
+				}
+			}
 		}
 
 		$this->sitemap = $sitemap;

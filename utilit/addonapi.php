@@ -2886,6 +2886,11 @@ function bab_toHtml($str, $option = BAB_HTML_ENTITIES) {
  */
 function bab_unhtmlentities($string)
 {
+	if( bab_charset::getDatabase() == "utf8")
+	{//Because this character cause display issue
+		$string = str_replace('&nbsp;', ' ', $string);
+	}	
+	
 	// special quote : htmlarea &#8217; and fckeditor &rsquo;
 	$string = preg_replace('~&#8217;~', '\'', $string);
 	
