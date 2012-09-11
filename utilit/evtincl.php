@@ -2706,11 +2706,30 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 	$userperiods = $backend->selectPeriods($criteria);
 
 
-	foreach($userperiods as $period)
+	$ref_begin = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_begin);
+	$ref_end = BAB_DateTime::fromTimeStamp($calendarPeriod->ts_end);
+	
+	$bh = $ref_begin->getHour();
+	$bm = $ref_begin->getMinute();
+	$bs = $ref_begin->getSecond();
+	
+	$eh = $ref_end->getHour();
+	$em = $ref_end->getMinute();
+	$es = $ref_end->getSecond();
+	
+	foreach($userperiods as $key => $period)
 	{
 		if ($period->getProperty('UID') !== $calendarPeriod->getProperty('UID'))
 		{
-			$collection->addPeriod($period);
+			$updatePeriod = clone $calendarPeriod;
+			$updatePeriod->setProperty('UID', $period->getProperty('UID'));
+	
+			$begin = BAB_DateTime::fromTimeStamp($period->ts_begin)->setTime($bh, $bm, $bs);
+			$end   = BAB_DateTime::fromTimeStamp($period->ts_end)  ->setTime($eh, $em, $es);
+	
+			$updatePeriod->setDates($begin, $end);
+	
+			$collection->addPeriod($updatePeriod);
 		}
 	}
 }
