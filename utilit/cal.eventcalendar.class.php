@@ -1375,9 +1375,8 @@ class bab_OviResourceCalendar extends bab_OviRelationCalendar implements bab_Res
 	 * @return bool
 	 */
 	public function canUpdateEvent(bab_calendarPeriod $event) {
-
-		if ($this->access_user == $event->getAuthorId()) {
-			return bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user);
+		if ($this->access_user == $event->getAuthorId() && bab_isAccessValid(BAB_CAL_RES_UPD_GROUPS_TBL, $this->uid, $this->access_user)) {
+			return true;
 		}
 
 		
