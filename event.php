@@ -1082,6 +1082,12 @@ function deleteEvent()
 
 			switch($iReccurenceRule)
 			{
+				case 0://Default value for not recurring event.
+					$this->message = bab_translate("Are you sure you want to delete this event");
+					$this->warning = bab_translate("WARNING: This operation will delete event permanently"). "!";
+					$iReccurenceRule = 1;
+					break;
+
 				case 1://All
 					$this->message = bab_translate("This is a reccuring event.Are you sure you want to delete this event and all occurrences");
 					$this->warning = bab_translate("WARNING: This operation will delete all occurrences permanently"). "!";
@@ -1230,7 +1236,6 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
-
 
 	// We copy the collection periods in a separate array
 	// to avoid infinite loops if the original collection
