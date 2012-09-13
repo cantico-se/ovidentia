@@ -654,6 +654,13 @@ if (isset($_GET['babrw']))
 		$_GET += $arr;
 		$_REQUEST += $arr;
 		extract($arr, EXTR_SKIP);
+	} else {
+		class bab_eventPageNotFound extends bab_event { }
+		$event = new bab_eventPageNotFound;
+		bab_fireEvent($event);
+		
+		header("HTTP/1.0 404 Not Found");
+		$babBody->addError(bab_translate('This page does not exists'));
 	}
 }
 
