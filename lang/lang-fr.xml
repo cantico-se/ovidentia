@@ -3315,4 +3315,5 @@
 <string id="There are more than one user with this email and password">Il y a plus d'un utilisateur avec le même mot de passe et email</string>
 <string id="%s is unavailable from %s to %s with %s as substitute">%s n'est pas disponible du %s au %s avec %s comme suppléant</string>
 <string id="This substitute is not available for this period">Ce suppléant n'est pas disponible pour cette période</string>
+<string id="This page does not exists">Cette page n'existe pas</string>
 </fr>

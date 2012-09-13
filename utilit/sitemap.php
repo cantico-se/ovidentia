@@ -1375,7 +1375,7 @@ class bab_siteMap {
 		$tmp = explode('?', $sitemapItem->url);
 
 		if (count($tmp) <= 1) {
-			return false;
+			return array(); // the node exists but there are no variables : homepage
 		}
 
 		parse_str($tmp[1], $arr);
