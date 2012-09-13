@@ -1172,8 +1172,11 @@ class bab_siteMap {
 	 */
 	public static function getVisibleRootNodeSitemapItem()
 	{
+		global $babBody;
+		
 		$nodeId = self::getSitemapRootNode();
-		$node = self::get()->getNodeById($nodeId);
+		$sitemapRootNode = bab_sitemap::getByUid($babBody->babsite['sitemap']);
+		$node = $sitemapRootNode->getNodeById($nodeId);
 
 		if (!isset($node)) {
 			return null;
