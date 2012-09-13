@@ -1336,7 +1336,10 @@ if ($topics === false) {
 	$article = bab_gp('article', null);
 	if (isset($article)) {
 		$articleArray = bab_getArticleArray($article);
-		$topics = $articleArray['id_topic'];
+		if (isset($articleArray['id_topic']))
+		{
+			$topics = $articleArray['id_topic'];
+		}
 	}
 }
 
@@ -1505,9 +1508,9 @@ switch($idx)
 		bab_siteMap::setPosition('bab', 'ArticleTopic_'.$topics);
 		listArticles($topics);
 		$arr = articles_init($topics);
-		$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 		if( $arr['nbarchive'] )
 			{
+			$babBody->addItemMenu("Articles",bab_translate("Articles"),$GLOBALS['babUrlScript']."?tg=articles&idx=Articles&topics=".$topics);
 			$babBody->addItemMenu("larch", bab_translate("Archives"), $GLOBALS['babUrlScript']."?tg=articles&idx=larch&topics=".$topics);
 			}
 		break;
