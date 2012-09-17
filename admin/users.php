@@ -690,11 +690,11 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 		switch($babBody->nameorder[0])
 		{
 			case "L":
-				$pos = mb_substr($lastname,0,1);
+				$pos = mb_strtoupper(mb_substr($lastname,0,1));
 			break;
 			case "F":
 			default:
-				$pos = mb_substr($firstname,0,1);
+				$pos = '-'.mb_strtoupper(mb_substr($firstname,0,1));
 			break;
 		}
 		
@@ -708,12 +708,21 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 	}
 }
 
+if( mb_strlen($pos) > 0 && $pos[0] == "-" ){
+	$babBody->nameorder[0] = 'F';
+} else {
+	$babBody->nameorder[0] = 'L';
+}
+
 if( $idx == "chg")
 {
-	if( mb_strlen($pos) > 0 && $pos[0] == "-" )
+	if( mb_strlen($pos) > 0 && $pos[0] == "-" ){
 		$pos = mb_strlen($pos)>1? $pos[1]: '';
-	else
+		$babBody->nameorder[0] = 'L';
+	} else {
 		$pos = "-" .$pos;
+		$babBody->nameorder[0] = 'F';
+	}
 	$idx = "List";
 }
 
