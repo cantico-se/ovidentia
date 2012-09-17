@@ -710,8 +710,10 @@ if( isset($adduser) && ($babBody->isSuperAdmin || $babBody->currentDGGroup['user
 
 if( mb_strlen($pos) > 0 && $pos[0] == "-" ){
 	$babBody->nameorder[0] = 'F';
+	$babBody->nameorder[1] = 'L';
 } else {
 	$babBody->nameorder[0] = 'L';
+	$babBody->nameorder[1] = 'F';
 }
 
 if( $idx == "chg")
@@ -719,9 +721,11 @@ if( $idx == "chg")
 	if( mb_strlen($pos) > 0 && $pos[0] == "-" ){
 		$pos = mb_strlen($pos)>1? $pos[1]: '';
 		$babBody->nameorder[0] = 'L';
+		$babBody->nameorder[1] = 'F';
 	} else {
 		$pos = "-" .$pos;
 		$babBody->nameorder[0] = 'F';
+		$babBody->nameorder[1] = 'L';
 	}
 	$idx = "List";
 }
