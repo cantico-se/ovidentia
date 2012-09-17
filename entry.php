@@ -47,6 +47,8 @@ function ListArticles($idgroup)
 
 		function temp($idgroup)
 			{
+			$topics = bab_getAccessibleObjects(BAB_TOPICSVIEW_GROUPS_TBL, $GLOBALS['BAB_SESS_USERID']);
+
 			global $babBody, $babDB;
 			$this->idgroup = $idgroup;
 			$req = "select at.id, at.id_topic ,at.id_author, at.date, at.date_modification, at.title, at.head, at.head_format, LENGTH(at.body) as blen, at.restriction
@@ -57,6 +59,7 @@ function ListArticles($idgroup)
 					and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."'
 					and (at.date_publication='0000-00-00 00:00:00' or at.date_publication <= now())
 					and (at.date_archiving='0000-00-00 00:00:00' or at.date_archiving > now())
+					and at.id_topic IN (" . $babDB->quote($topics) . ")
 					and ht.ordering!='0' order by ht.ordering asc";
 			$this->res = $babDB->db_query($req);
 			$this->countres = $babDB->db_num_rows($this->res);
@@ -322,7 +325,18 @@ function isAccessValid($article, $idg)
 	if( !bab_articleAccessById($article))
 		return $access;
 
-	$res = $babDB->db_query("select * from ".BAB_HOMEPAGES_TBL." where id_group='".$babDB->db_escape_string($idg)."' and id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' and id_article='".$babDB->db_escape_string($article)."' and ordering!='0'");
+	$topics = bab_getAccessibleObjects(BAB_TOPICSVIEW_GROUPS_TBL, $GLOBALS['BAB_SESS_USERID']);
+	
+	$res = $babDB->db_query("
+			select *
+			from ".BAB_HOMEPAGES_TBL." ht
+			left join ".BAB_ARTICLES_TBL." at
+			on ht.id_article=at.id
+			where ht.id_group='".$babDB->db_escape_string($idg)."' 
+			and ht.id_site='".$babDB->db_escape_string($babBody->babsite['id'])."' 
+			and ht.id_article='".$babDB->db_escape_string($article)."' 
+			and ht.ordering!='0' 
+			and at.id_topic IN (" . $babDB->quote($topics) . ")");
 	if( $res && $babDB->db_num_rows($res) > 0 )
 		{
 		$access = true;
