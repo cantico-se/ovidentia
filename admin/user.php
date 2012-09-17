@@ -618,8 +618,7 @@ function updatePassword($userId, $newpwd1, $newpwd2)
 
 /* main */
 
-
-if (!$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y')
+if (!$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y' && $babBody->currentAdmGroup == 0)
 {
 	$babBody->msgerror = bab_translate("Access denied");
 	return;
@@ -630,11 +629,21 @@ $pos = bab_rp('pos');
 $grp = bab_rp('grp');
 $item = bab_rp('item', null);
 
-
 $modify = bab_rp('modify', null);
 $bupdate = bab_rp('bupdate', null);
 $bdelete = bab_rp('bdelete', null);
 
+if ((!$babBody->isSuperAdmin && $babBody->currentDGGroup['users'] != 'Y') && $babBody->currentAdmGroup != 0)
+{//deleged admin only have access to the group view.
+	$idx = bab_rp('idx','viewgroups');
+	$pos = bab_rp('pos');
+	$grp = bab_rp('grp');
+	$item = null;
+	
+	$modify = null;
+	$bupdate = null;
+	$bdelete = null;
+}
 
 if (isset($modify)) {
 	if (isset($bupdate)) {
