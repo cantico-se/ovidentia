@@ -6204,6 +6204,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
+			$sOriginalImageUrl	= $sImageUrl . '&iIdArticle=' . $iIdArticle;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -6216,6 +6217,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			if ($thumbnailUrl) {
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
 				$oCtx->curctx->push('ImageWidth', $iWidth);
 				$oCtx->curctx->push('ImageHeight', $iHeight);
@@ -6242,6 +6244,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 					$sImageUrl .= '&iHeight=' . $iHeight;
 
 					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 					$oCtx->curctx->push('ImageUrl', $sImageUrl);
 					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
@@ -6256,6 +6259,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 
 	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('OriginalImageUrl', '');
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
@@ -6292,6 +6296,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
+			$sOriginalImageUrl	= $sImageUrl . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -6304,6 +6309,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			if ($thumbnailUrl) {
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
 				$oCtx->curctx->push('ImageWidth', $iWidth);
 				$oCtx->curctx->push('ImageHeight', $iHeight);
@@ -6330,6 +6336,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 					$sImageUrl .= '&iHeight=' . $iHeight;
 
 					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 					$oCtx->curctx->push('ImageUrl', $sImageUrl);
 					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
@@ -6344,6 +6351,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 
 	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('OriginalImageUrl', '');
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
@@ -6381,6 +6389,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
+			$sOriginalImageUrl	= $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic  . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -6393,6 +6402,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			if ($thumbnailUrl) {
 				// The thumbnailer functionality was able to create a thumbnail.
 				$oCtx->curctx->push('AssociatedImage', 1);
+				$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 				$oCtx->curctx->push('ImageUrl', $thumbnailUrl);
 				$oCtx->curctx->push('ImageWidth', $iWidth);
 				$oCtx->curctx->push('ImageHeight', $iHeight);
@@ -6421,6 +6431,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 					$sImageUrl .= '&iHeight=' . $iHeight;
 
 					$oCtx->curctx->push('AssociatedImage', 1);
+					$oCtx->curctx->push('OriginalImageUrl', $sOriginalImageUrl);
 					$oCtx->curctx->push('ImageUrl', $sImageUrl);
 					$oCtx->curctx->push('ImageWidth', $oImageResize->getRealWidth());
 					$oCtx->curctx->push('ImageHeight', $oImageResize->getRealHeight());
@@ -6435,6 +6446,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 
 	if (false === $bProcessed) {
 		$oCtx->curctx->push('AssociatedImage', 0);
+		$oCtx->curctx->push('OriginalImageUrl', '');
 		$oCtx->curctx->push('ImageUrl', '');
 		$oCtx->curctx->push('ImageWidth', 0);
 		$oCtx->curctx->push('ImageHeight', 0);
