@@ -96,6 +96,11 @@ class bab_SearchSwishBackEnd extends bab_SearchBackEnd
 
 		return '('.implode(' OR ', $mixedValue).')';
 	}
+	
+	public function is(bab_SearchField $oField, $mixedValue)
+	{
+		return $this->contain($oField, $mixedValue);
+	}
 
 	
 	public function contain(bab_SearchField $oField, $sValue)
