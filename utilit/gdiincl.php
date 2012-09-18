@@ -87,19 +87,19 @@ function bab_getResizedImage($imgf, $w, $h)
 				if( $wtmp > $w )
 					{
 					$wimg = $w;
-					$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);          
-					}  
-				else if ($htmp > $h)  
-					{  
-					$himg = $h;  
-					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
-					}  
-				else  
-					{  
-					$himg = $h;  
-					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);  
+					$himg = (real)( ((real)(($wimg/$wtmp)*100) * $wtmp)/100);
 					}
-				
+				else if ($htmp > $h)
+					{
+					$himg = $h;
+					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);
+					}
+				else
+					{
+					$himg = $h;
+					$wimg = (real)( ((real)(($himg/$htmp)*100) * $wtmp)/100);
+					}
+
 				function chkgd2(){
 					  if (function_exists('gd_info'))
 						{
@@ -141,12 +141,12 @@ function bab_getResizedImage($imgf, $w, $h)
 					   phpinfo(8);
 					   $info = ob_get_contents();
 					   ob_end_clean();
-					   
+
 					   $info = mb_strtolower($info);
 					   $iOffset = mb_strpos($info, 'gd version');
 					   if(false !== $iOffset)
 					   {
-					   		$info = mb_substr($info, $iOffset);	
+					   		$info = mb_substr($info, $iOffset);
 						   preg_match('/\d/', $info, $match);
 						   $gd_ver = $match[0];
 						   return $match[0];
@@ -163,9 +163,9 @@ function bab_getResizedImage($imgf, $w, $h)
 					$out = ImageCreate($wimg, $himg);
 					imagecopyresized($out, $tmp, 0, 0, 0, 0, $wimg, $himg, $imgsize[0], $imgsize[1]);
 					}
-				
+
 				imagedestroy($tmp);
-					
+
 				switch($imgsize[2])
 					{
 					case '2':
@@ -192,11 +192,11 @@ function bab_getResizedImage($imgf, $w, $h)
 			header("Content-transfert-encoding: binary"."\n");
 			$fp=fopen($imgf,"rb");
 			print fread($fp,$fsize);
-			fclose($fp);	
+			fclose($fp);
 			}
 		}
 	}
-	
+
 /**
  * Helper class to resize image
  * The supported type are :
@@ -208,17 +208,17 @@ class bab_ImageResize
 	private $sMime			= null;
 	private $iRealHeight	= null;
 	private $iRealWidth		= null;
-	
+
 	public function __construct()
 	{
-		
+
 	}
-	
+
 	private function gdLoaded()
 	{
 		return extension_loaded('gd');
 	}
-	
+
 	/**
 	 * Create a new image from file or URL.
 	 * The supported type are :
@@ -231,19 +231,19 @@ class bab_ImageResize
 		switch($this->sMime)
 		{
 	        case 'image/gif':
-	            if(imagetypes() & IMG_GIF)  
+	            if(imagetypes() & IMG_GIF)
 	            {
 	                return imageCreateFromGIF($this->sFullPathName);
-	            }	            
+	            }
 	            break;
 	        case 'image/jpeg':
-	            if(imagetypes() & IMG_JPG)  
+	            if(imagetypes() & IMG_JPG)
 	            {
 	                return imageCreateFromJPEG($this->sFullPathName);
 	            }
 	            break;
 	        case 'image/png':
-	            if(imagetypes() & IMG_PNG) 
+	            if(imagetypes() & IMG_PNG)
 	            {
 	                return imageCreateFromPNG($this->sFullPathName);
 	            }
@@ -251,7 +251,7 @@ class bab_ImageResize
 	            return false;
     	}
 	}
-	
+
 	/**
 	 * This function check if the gd2 extention
 	 * is loaded
@@ -264,7 +264,7 @@ class bab_ImageResize
 		{
 			$aInfo = gd_info();
 			preg_match('/\d/', $aInfo['GD Version'], $aMatch);
-			if($aMatch[0] >= 2) 
+			if($aMatch[0] >= 2)
 			{
 				return true;
 			}
@@ -282,31 +282,31 @@ class bab_ImageResize
 	{
 	   static $iGdVer = 0;
 	   // Just accept the specified setting if it's 1.
-	   if($iUserVer == 1) 
-	   { 
-	   		$iGdVer = 1; 
-	   		return 1; 
+	   if($iUserVer == 1)
+	   {
+	   		$iGdVer = 1;
+	   		return 1;
 	   }
-	   
+
 	   // Use the static variable if function was called previously.
-	   if($iUserVer != 2 && $iGdVer > 0) 
-	   { 
-	   		return $iGdVer; 
+	   if($iUserVer != 2 && $iGdVer > 0)
+	   {
+	   		return $iGdVer;
 	   }
-	   
+
 	   // Use the gd_info() function if possible.
-	   if(function_exists('gd_info')) 
+	   if(function_exists('gd_info'))
 	   {
 		   $aInfo = gd_info();
 		   preg_match('/\d/', $aInfo['GD Version'], $aMatch);
 		   $iGdVer = $aMatch[0];
 		   return $aMatch[0];
 	   }
-	   
+
 	   // If phpinfo() is disabled use a specified / fail-safe choice...
-	   if(preg_match('/phpinfo/', ini_get('disable_functions'))) 
+	   if(preg_match('/phpinfo/', ini_get('disable_functions')))
 	   {
-		   if($iUserVer == 2) 
+		   if($iUserVer == 2)
 		   {
 			   $iUserVer = 2;
 			   return 2;
@@ -317,7 +317,7 @@ class bab_ImageResize
 			   return 1;
 		   }
 	   }
-	   
+
 	   // ...otherwise use phpinfo().
 	   ob_start();
 	   phpinfo(8);
@@ -333,7 +333,7 @@ class bab_ImageResize
 	 * Output image to browser or file
 	 *
 	 * @param resource $oOutImgRes
-	 */				
+	 */
 	private function outputImage($oOutImgRes)
 	{
 		switch($this->sMime)
@@ -354,50 +354,50 @@ class bab_ImageResize
 	            echo '';
     	}
 	}
-	
+
 	/**
-	 * Resizes an image based on a percentage 
+	 * Resizes an image based on a percentage
 	 *
 	 * @param string $sFullPathname The full path name of the image
 	 * @param int $iScale			The percentage
-	 * 
+	 *
 	 * @return string The resized image
 	 */
-	public function scale($sFullPathname, $iScale) 
+	public function scale($sFullPathname, $iScale)
 	{
 		if(!bab_ImageResize::gdLoaded())
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		if(!$this->setImageInformation($sFullPathname))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$oImgRes = $this->createImageFromType();
 		if(is_null($oImgRes))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$iWidth = $this->iRealWidth * $iScale / 100;
-    	$iHeight = $this->iRealHeight * $iScale / 100; 
+    	$iHeight = $this->iRealHeight * $iScale / 100;
     	$this->resize($oImgRes, $iWidth, $iHeight);
 	}
- 
+
 	/**
 	 * Return a value that indicate the real width of
-	 * the image 
+	 * the image
 	 *
 	 * @return int
 	 */
 	public function getRealWidth()
 	{
-		return $this->iRealWidth;		
+		return $this->iRealWidth;
 	}
 
 	/**
@@ -408,20 +408,20 @@ class bab_ImageResize
 	 */
 	public function getRealHeight()
 	{
-		return $this->iRealHeight;		
+		return $this->iRealHeight;
 	}
-	
+
 	/**
-	 * Calculating the size and height of an image based on a size and height. 
-	 * In the entry must indicate the size, the height at which the image 
+	 * Calculating the size and height of an image based on a size and height.
+	 * In the entry must indicate the size, the height at which the image
 	 * should be resized. the calculation and returns the size, height resized.
 	 * If the width is equal to zero then the image is scaled according to height.
-	 * If height is zero then the image is scaled according to the width.   
+	 * If height is zero then the image is scaled according to the width.
 	 *
 	 * @param string $sFullPathname	image from file or URL
 	 * @param int $iWidth
 	 * @param int $iHeight
-	 * 
+	 *
 	 * @return bool False on error, true on success
 	 */
 	public function computeImageResizeWidthAndHeight($sFullPathname, &$iWidth, &$iHeight)
@@ -430,18 +430,18 @@ class bab_ImageResize
 		{
 			return false;
 		}
-		
+
 		if(!$this->setImageInformation($sFullPathname))
 		{
 			return false;
 		}
-		
+
 		$oImgRes = $this->createImageFromType();
 		if(is_null($oImgRes))
 		{
 			return false;
 		}
-		
+
 		if(0 === (int) $iWidth && 0 < (int) $iHeight)
 		{
 			$iRatio	= $iHeight / $this->iRealHeight;
@@ -458,41 +458,48 @@ class bab_ImageResize
 			{
 				$iWidth = $this->iRealWidth;
 			}
-			
+
 			if(0 == $iHeight)
 			{
 				$iHeight = $this->iRealHeight;
 			}
-			
+
 			if($this->iRealHeight > $this->iRealWidth)
 			{
 				$iRatio = ($iHeight / $this->iRealHeight);
 			}
-			else 
+			else
 			{
 				$iRatio = ($iWidth / $this->iRealWidth);
 			}
-			
+
 			$iHeight = $iRatio * $this->iRealHeight;
 			$iWidth	 = $iRatio * $this->iRealWidth;
 		}
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * This feature automatically resizes images depending on the size and height.
 	 * If the width is equal to zero then the image is scaled according to height.
-	 * If height is zero then the image is scaled according to the width.   
+	 * If height is zero then the image is scaled according to the width.
+	 * If width and height are 0, the image is not resized.
 	 *
 	 * @param string $sFullPathname image from file or URL
 	 * @param int $iWidth
 	 * @param int $iHeight
-	 * 
+	 *
 	 * @return string The resized image
 	 */
 	public function resizeImageAuto($sFullPathname, $iWidth, $iHeight)
 	{
+
+		if (0 === (int) $iWidth && 0 === (int) $iHeight)
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
 		if(0 === (int) $iWidth && 0 < (int) $iHeight)
 		{
 			$this->resizeToHeight($sFullPathname, $iHeight);
@@ -506,13 +513,13 @@ class bab_ImageResize
 			$this->resizeImage($sFullPathname, $iWidth, $iHeight);
 		}
 	}
-	
+
 	/**
 	 * 	Resizes an image based on width
 	 *
 	 * @param string $sFullPathname image from file or URL
 	 * @param int $iWidth
-	 * 
+	 *
 	 * @return string The resized image
 	 */
 	public function resizeImageToWidth($sFullPathname, $iWidth)
@@ -522,66 +529,66 @@ class bab_ImageResize
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		if(!$this->setImageInformation($sFullPathname))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$oImgRes = $this->createImageFromType();
 		if(is_null($oImgRes))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$iRatio		= $iWidth / $this->iRealWidth;
      	$iHeight	= $this->iRealHeight * $iRatio;
       	$this->resize($oImgRes, $iWidth, $iHeight);
 	}
-	
+
 	/**
 	 * Resizes an image based on height
 	 *
 	 * @param string $sFullPathname image from file or URL
 	 * @param int $iHeight
-	 * 
+	 *
 	 * @return string The resized image
 	 */
-	public function resizeToHeight($sFullPathname, $iHeight) 
+	public function resizeToHeight($sFullPathname, $iHeight)
 	{
 		if(!bab_ImageResize::gdLoaded())
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		if(!$this->setImageInformation($sFullPathname))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$oImgRes = $this->createImageFromType();
 		if(is_null($oImgRes))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$iRatio	= $iHeight / $this->iRealHeight;
       	$iWidth	= $this->iRealWidth * $iRatio;
       	$this->resize($oImgRes, $iWidth, $iHeight);
 	}
-	
+
 	/**
-	 * resize an image depending on width and height.   
+	 * resize an image depending on width and height.
 	 *
 	 * @param string $sFullPathname	image from file or URL
 	 * @param int $iWidth
 	 * @param int $iHeight
-	 * 
+	 *
 	 * @return string The resized image
 	 */
 	public function resizeImage($sFullPathname, $iWidth, $iHeight)
@@ -591,51 +598,51 @@ class bab_ImageResize
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		if(!$this->setImageInformation($sFullPathname))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		$oImgRes = $this->createImageFromType();
 		if(is_null($oImgRes))
 		{
 			$this->outputNoResizedImage($sFullPathname);
 			return;
 		}
-		
+
 		if(0 == $iWidth)
 		{
 			$iWidth = $this->iRealWidth;
 		}
-		
+
 		if(0 == $iHeight)
 		{
 			$iHeight = $this->iRealHeight;
 		}
-		
+
 		if($this->iRealHeight > $this->iRealWidth)
 		{
 			$iRatio = ($iHeight / $this->iRealHeight);
 		}
-		else 
+		else
 		{
 			$iRatio = ($iWidth / $this->iRealWidth);
 		}
-		
+
 		$iHeight	= $iRatio * $this->iRealHeight;
 		$iWidth		= $iRatio * $this->iRealWidth;
 		$this->resize($oImgRes, $iWidth, $iHeight);
 	}
-	
+
 	/**
-	 * resize an image that is represented by a resource depending on width and height.   
+	 * resize an image that is represented by a resource depending on width and height.
 	 *
 	 * @param resource $sFullPathname
 	 * @param int $iWidth
 	 * @param int $iHeight
-	 * 
+	 *
 	 * @return string The resized image
 	 */
 	private function resize($oImgRes, $iWidth, $iHeight)
@@ -650,16 +657,16 @@ class bab_ImageResize
 			$oOutImgRes = ImageCreate($iWidth, $iHeight);
 			imagecopyresized($oOutImgRes, $oImgRes, 0, 0, 0, 0, $iWidth, $iHeight, $this->iRealWidth, $this->iRealHeight);
 		}
-		
+
 		imagedestroy($oImgRes);
 		$this->outputImage($oOutImgRes);
 	}
-	
+
 	/**
-	 * Set internal information of an image.   
+	 * Set internal information of an image.
 	 *
 	 * @param resource $sFullPathname
-	 * 
+	 *
 	 * @return True on success, false on error
 	 */
 	private function setImageInformation($sFullPathname)
@@ -668,7 +675,7 @@ class bab_ImageResize
 		{
 			return false;
 		}
-		
+
 		if(!is_readable($sFullPathname))
 		{
 			return false;
@@ -685,20 +692,20 @@ class bab_ImageResize
 		{
 			return false;
 		}
-		
+
 		$this->sFullPathName	= $sFullPathname;
 		$this->sMime			= $aImgInfo['mime'];
 		$this->iRealWidth		= $aImgInfo[0];
 		$this->iRealHeight		= $aImgInfo[1];
 		return true;
 	}
-	
+
 	/**
 	 * Ouput a unresized image, this function is used
 	 * when the gd extention not loaded
 	 *
 	 * @param string $sFullPathName
-	 * 
+	 *
 	 * @return string The unresized image
 	 */
 	private function outputNoResizedImage($sFullPathName)
@@ -708,22 +715,22 @@ class bab_ImageResize
 			echo '';
 			return;
 		}
-		
+
 		if(!is_readable($sFullPathName))
 		{
 			echo '';
 			return;
 		}
-		
+
 		$sMime = bab_getFileMimeType($sFullPathName);
 		$iSize = filesize($sFullPathName);
 		header("Content-Type: $sMime" . "\n");
 		header("Content-Length: ". $iSize . "\n");
 		header("Content-transfert-encoding: binary"."\n");
-		$fp = fopen($this->sFullPathName, "rb");
+		$fp = fopen($sFullPathName, "rb");
 		print fread($fp, $iSize);
-		fclose($fp);	
+		fclose($fp);
 	}
 }
-	
+
 ?>
