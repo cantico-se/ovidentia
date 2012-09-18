@@ -484,6 +484,7 @@ class bab_ImageResize
 	 * This feature automatically resizes images depending on the size and height.
 	 * If the width is equal to zero then the image is scaled according to height.
 	 * If height is zero then the image is scaled according to the width.   
+	 * If width and height are 0, the image is not resized.
 	 *
 	 * @param string $sFullPathname image from file or URL
 	 * @param int $iWidth
@@ -493,6 +494,12 @@ class bab_ImageResize
 	 */
 	public function resizeImageAuto($sFullPathname, $iWidth, $iHeight)
 	{
+
+		if (0 === (int) $iWidth && 0 === (int) $iHeight)
+		{
+			$this->outputNoResizedImage($sFullPathname);
+			return;
+		}
 		if(0 === (int) $iWidth && 0 < (int) $iHeight)
 		{
 			$this->resizeToHeight($sFullPathname, $iHeight);
@@ -720,7 +727,7 @@ class bab_ImageResize
 		header("Content-Type: $sMime" . "\n");
 		header("Content-Length: ". $iSize . "\n");
 		header("Content-transfert-encoding: binary"."\n");
-		$fp = fopen($this->sFullPathName, "rb");
+		$fp = fopen($sFullPathName, "rb");
 		print fread($fp, $iSize);
 		fclose($fp);	
 	}
