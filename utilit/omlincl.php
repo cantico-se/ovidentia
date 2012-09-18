@@ -6204,7 +6204,7 @@ function setArticleAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth,
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=articles&idx=getImage&sImage=' . urlencode($sName);
-			$sOriginalImageUrl	= $sImageUrl;
+			$sOriginalImageUrl	= $sImageUrl . '&iIdArticle=' . $iIdArticle;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -6296,7 +6296,7 @@ function setCategoryAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getCategoryImage&sImage=' . bab_toHtml($sName);
-			$sOriginalImageUrl	= $sImageUrl;
+			$sOriginalImageUrl	= $sImageUrl . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
@@ -6389,7 +6389,7 @@ function setTopicAssociatedImageInfo($oCtx, $iMaxImageHeight, $iMaxImageWidth, $
 			$sRelativePath		= $aImgInfo['relativePath'];
 			$sFullPathName		= $sUploadPath . $sRelativePath . $sName;
 			$sImageUrl			= $GLOBALS['babUrlScript'] . '?tg=topusr&idx=getTopicImage&sImage=' . bab_toHtml($sName);
-			$sOriginalImageUrl	= $sImageUrl;
+			$sOriginalImageUrl	= $sImageUrl . '&iIdTopic=' . $iIdTopic . '&item=' . $iIdTopic  . '&iIdCategory=' . $iIdCategory;
 
 			$T = @bab_functionality::get('Thumbnailer');
 			$thumbnailUrl = null;
