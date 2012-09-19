@@ -1176,6 +1176,11 @@ class bab_siteMap {
 		
 		$nodeId = self::getSitemapRootNode();
 		$sitemapRootNode = bab_sitemap::getByUid($babBody->babsite['sitemap']);
+		if (null === $sitemapRootNode)
+		{
+			return null;
+		}
+		
 		$node = $sitemapRootNode->getNodeById($nodeId);
 
 		if (!isset($node)) {
