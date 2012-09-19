@@ -566,6 +566,8 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 	protected	$activeClass = 'active';
 	protected	$delegAdmin = array();
 
+	protected	$admindelegation = false;
+	
 	protected	$maxDepth = 100;
 
 	private function getHtml(bab_Node $node, $mainmenuclass = null, $depth = 1) {
@@ -578,7 +580,7 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 		$siteMapItem = $node->getData();
 		/* @var $siteMapItem bab_siteMapItem */
 		
-		if(isset($this->delegAdmin[$babBody->currentAdmGroup][$id]))
+		if($this->admindelegation && !isset($this->delegAdmin[$babBody->currentAdmGroup][$id]) && (substr($id, 0, 8) == 'babAdmin' || $id == 'babSearchIndex') && $id != 'babAdmin')
 		{
 			return $return;
 		}
@@ -684,9 +686,9 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 			trigger_error(sprintf('incorrect attribute in %s#%s sitemap="%s"', (string) $this->template->debug_location, get_class($this), $args['sitemap']));
 			return '';
 		}
-		
 		if( (isset($args['admindelegation']) && $args['admindelegation'] == '1' ) && $babBody->currentAdmGroup != 0 && !isset($this->delegAdmin[$babBody->currentAdmGroup]))
 		{
+			$this->admindelegation = $args['admindelegation'];
 			$delegation = bab_getDelegationById($babBody->currentAdmGroup);
 			$delegation = $delegation[0];
 			foreach(bab_getDelegationsObjects() as $link)
@@ -696,12 +698,16 @@ class Func_Ovml_Function_SitemapMenu extends Func_Ovml_Function {
 					continue;
 				}
 			
-				if ($delegation[$link[0]] !== 'Y')
+				if ($delegation[$link[0]] === 'Y')
 				{
 					$this->delegAdmin[$babBody->currentAdmGroup]['bab'.$link[2]] = true;
-					continue;
 				}
 			}
+			if( count($babBody->dgAdmGroups) > 0) {
+				$this->delegAdmin[$babBody->currentAdmGroup]['babAdminDelegChange'] = true;
+			}
+			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminGroups'] = true;
+			$this->delegAdmin[$babBody->currentAdmGroup]['babAdminUsers'] = true;
 		}
 
 		$this->sitemap = $sitemap;
