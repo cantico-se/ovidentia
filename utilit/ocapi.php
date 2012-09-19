@@ -27,6 +27,8 @@ include_once $GLOBALS['babInstallPath'].'utilit/treeincl.php';
 
 /**
  * Returns the primary org chart id.
+ * 
+ * @todo remove the idprimaryoc on babBody
  *
  * @return int	or null.
  */
@@ -51,7 +53,11 @@ function bab_OCgetPrimaryOcId()
 }
 
 
-
+/**
+ * 
+ * @param int $idoc
+ * @return array
+ */
 function bab_OCGetRootEntity($idoc='')
 {
 	static $ocrootentities = array();
@@ -329,6 +335,14 @@ function bab_OCGetTemporaryEmployees($idoc='')
 	return $ret;
 }
 
+
+/**
+ * entity collaborators
+ * 
+ * @see bab_OCSelectEntityCollaborators() 
+ * @param int $identity
+ * @return multitype:multitype:
+ */
 function bab_OCGetCollaborators($identity)
 {
 	global $babDB;
@@ -1022,7 +1036,6 @@ class bab_OrgChartUtil
 	 *  <li>id_closed_nodes
 	 * </ul>
 	 *
-	 * @param	int	$iIdOrgChart	The identifier of the organizational chart.
 	 *
 	 * @return	array|false			array on success, false otherwise.
 	 */
@@ -1468,6 +1481,11 @@ class bab_OrgChartUtil
 	}
 
 
+	/**
+	 * 
+	 * @param int $iIdEntity
+	 * @return array
+	 */
 	function getEntity($iIdEntity)
 	{
 		global $babBody, $babDB;
@@ -1517,6 +1535,13 @@ class bab_OrgChartUtil
 	}
 
 
+	/**
+	 * 
+	 * @param int $iIdUser
+	 * @param array $aRoleType
+	 * 
+	 * @return array
+	 */
 	function getUserEntities($iIdUser, $aRoleType = null)
 	{
 		global $babBody, $babDB;
@@ -1589,6 +1614,12 @@ class bab_OrgChartUtil
 	}
 
 
+	/**
+	 * 
+	 * @param unknown_type $iIdEntity
+	 * @param unknown_type $sName
+	 * @param unknown_type $sDescription
+	 */
 	function updateEntity($iIdEntity, $sName, $sDescription)
 	{
 		if(!$this->isLockedBy($this->iIdSessUser))
@@ -1834,6 +1865,11 @@ class bab_OrgChartUtil
 	}
 
 
+	/**
+	 * 
+	 * @param unknown_type $iIdRole
+	 * @return array | false
+	 */
 	function getRoleById($iIdRole)
 	{
 		global $babBody, $babDB;
