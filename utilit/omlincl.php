@@ -4974,8 +4974,9 @@ class Func_Ovml_Container_CalendarCategories extends Func_Ovml_Container
  * holiday 				: return vacation events YES | NO (default YES)
  * private 				: return non accessibles private events YES | NO (default YES)
  * awaiting_approval 	: return non accessibles awaiting approval events YES | NO (default NO)
+ * maxevents		 	: max number of events display (default 0) (0 = unlimited)
  *
- * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="NO">
+ * <OCCalendarEvents calendarid="" delegationid="" date="NOW()" limit="" filter="YES" holiday="YES" private="YES" awaiting_approval="NO" maxevents="0">
  *
  * 	<OVEventId>
  * 	<OVEventTitle>
@@ -5004,6 +5005,8 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	var $IdEntries = array();
 	var $index;
 	var $count;
+	
+	var $maxEvent;
 
 	var $cal_groups 			= 1;
 	var $cal_resources			= 1;
@@ -5029,6 +5032,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 
 		$calendarid = $ctx->get_value('calendarid');
 		$delegationid = (int) $ctx->get_value('delegationid');
+		$this->maxEvent = (int) $ctx->get_value('maxevents');
 		$filter = mb_strtoupper($ctx->get_value('filter')) !== "NO";
 		$holiday = mb_strtoupper($ctx->get_value('holiday')) !== "NO";
 		$this->private = mb_strtoupper($ctx->get_value('private')) === "YES" || !$ctx->get_value('private');
@@ -5294,7 +5298,7 @@ class Func_Ovml_Container_CalendarEvents extends Func_Ovml_Container
 	public function getnext()
 	{
 		global $babBody,$babDB;
-		if( $this->idx < $this->count)
+		if( $this->idx < $this->count && ($this->maxEvent == 0 || $this->idx < $this->maxEvent))
 		{
 			list(, $p) = each($this->events);
 			$arr = $p->getData();
