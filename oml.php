@@ -54,17 +54,20 @@ else
 if (null === bab_sitemap::getPosition() && isset($_SERVER['QUERY_STRING']))
 {
 	$rootNode = bab_sitemap::getByUid($babBody->babsite['sitemap']);
-	$searchBase = $rootNode->getNodeById(bab_sitemap::getSitemapRootNode());
-	$subNodes = new bab_NodeIterator($searchBase);
-	
-	while (($node = $subNodes->nextNode())) {
-		/* @var $node bab_Node */
-		$sitemapItem = $node->getData();
-		/* @var $sitemapItem bab_SitemapItem */
+	if (isset($rootNode))
+	{
+		$searchBase = $rootNode->getNodeById(bab_sitemap::getSitemapRootNode());
+		$subNodes = new bab_NodeIterator($searchBase);
 		
-		if ($sitemapItem->url === bab_getSelf().'?'.$_SERVER['QUERY_STRING']) {
-			bab_sitemap::setPosition($sitemapItem->id_function);
-			break;
+		while (($node = $subNodes->nextNode())) {
+			/* @var $node bab_Node */
+			$sitemapItem = $node->getData();
+			/* @var $sitemapItem bab_SitemapItem */
+			
+			if ($sitemapItem->url === bab_getSelf().'?'.$_SERVER['QUERY_STRING']) {
+				bab_sitemap::setPosition($sitemapItem->id_function);
+				break;
+			}
 		}
 	}
 }
