@@ -657,8 +657,8 @@ function modifyEvent($idcal, $collection, $evtid, $dtstart, $cci, $view, $date)
 			$this->evtarr = array(
 
 				'title' 				=> $event->getProperty('SUMMARY'),
-				'description' 			=> $data['description'],
-				'description_format' 	=> $data['description_format'],
+				'description' 			=> isset($data['description']) ? $data['description'] : $event->getProperty('DESCRIPTION'),
+				'description_format' 	=> isset($data['description_format']) ? $data['description_format'] : 'text',
 				'location' 				=> $event->getProperty('LOCATION'),
 				'start_date' 			=> date('Y-m-d H:i:s', $event->ts_begin),
 				'end_date' 				=> date('Y-m-d H:i:s', $event->ts_end),
@@ -1228,6 +1228,9 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	{
 		throw new Exception('Event not found');
 	}
+	
+	
+	$calendarPeriod->setProperty('STATUS', 'CANCELLED');
 
 	$collection = $calendarPeriod->getCollection();
 	bab_addHashEventsToCollection($collection, $calendarPeriod, $bupdrec);
@@ -1237,54 +1240,30 @@ function confirmDeleteEvent($calid, $bupdrec, $notify)
 	$date_min = $calendarPeriod->ts_begin;
 	$date_max = $calendarPeriod->ts_end;
 
-	// We copy the collection periods in a separate array
-	// to avoid infinite loops if the original collection
-	// is modified inside the next loop.
 
-	$collectionPeriods = array();
+	
 	foreach ($collection as $period) {
-		$collectionPeriods[] = $period;
-	}
-
-	// test access on all collection
-	foreach ($collectionPeriods as $period)
-	{
-
-		if (!$calendar->canDeleteEvent($period))
-		{
-			return false;
-		}
-
-		$period->setProperty('STATUS', 'CANCELLED');
-
-		foreach($period->getCalendars() as $associated_calendar)
-		{
-			$associated_backend = $associated_calendar->getBackend();
-			/*@var $associated_backend Func_CalendarBackend */
-
-			// create a copy of the event object in a temporary collection associated to the calendar of attendee
-			$periodCopy = clone $period;
-			$collectionCopy = $associated_backend->CalendarEventCollection($associated_calendar);
-			$collectionCopy->addPeriod($periodCopy);
-
-			try {
-				$associated_backend->savePeriod($periodCopy, 'CANCEL');
-			}
-			catch(Exception $e)
-			{
-				// ignore missing event in backend
-			}
-
-		}
-
-		// if organizer is not in attendees, cancel the event of the main calendar
-		$backend->savePeriod($period, 'CANCEL');
-
-
-
 		if ($period->ts_begin < $date_min) 	{ $date_min = $period->ts_begin; 	}
 		if ($period->ts_end > $date_max) 	{ $date_max = $period->ts_end; 		}
 	}
+
+
+	bab_debug('<h1>$backend->SavePeriod()</h1>'. $calendarPeriod->toHtml(), DBG_TRACE, 'CalendarBackend');
+	
+	try {
+
+		// if organizer is not in attendees, cancel the event of the main calendar
+		$backend->savePeriod($calendarPeriod, 'CANCEL');
+		
+	} catch(ErrorException $e)
+	{
+		// get backend specific errors
+		bab_debug($e->getMessage());
+		return false;
+	}
+	
+	// $calendarPeriod->commitEvent();
+	
 
 	include_once $GLOBALS['babInstallPath'].'utilit/eventperiod.php';
 
