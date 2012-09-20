@@ -2666,8 +2666,10 @@ function bab_addHashEventsToCollection(bab_CalendarEventCollection $collection, 
 			// no RECURRENCE-ID mean all instances of event
 			break;
 		case BAB_CAL_EVT_CURRENT:
+			$calendarPeriod->removeProperty('RRULE');
 			$calendarPeriod->setProperty('RECURRENCE-ID;VALUE=DATE-TIME', $dtstart);
-			return;
+			return; // <--- ! exit function here if we select only the current period !
+			
 		case BAB_CAL_EVT_PREVIOUS:
 			$calendarPeriod->setProperty('RECURRENCE-ID;RANGE=THISANDPRIOR', $dtstart);
 			break;
