@@ -117,7 +117,14 @@ class Func_CalendarBackend_Ovi extends Func_CalendarBackend
 			return true;
 		
 		} else {
-			return bab_cal_OviEventUpdate::save($period);
+			
+			if ('CANCEL' === $method)
+			{
+				// ovidentia backend does not support method CANCEL, so we delete if the event is canceled
+				return $this->deletePeriod($period);
+			} else {
+				return bab_cal_OviEventUpdate::save($period);
+			}
 		}
 	}
 	
