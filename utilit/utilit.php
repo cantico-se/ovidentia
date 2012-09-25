@@ -939,7 +939,7 @@ public function addJavascriptFile($file)
 	if( !in_array($file, $jfiles))
 	{
 		$jfiles[] = $file;
-		$babOvidentiaJs .= '"></script><script type="text/javascript" src="'.$file;
+		$babOvidentiaJs .= '"></script>'."\n\t".'<script type="text/javascript" src="'.$file;
 	}
 }
 
