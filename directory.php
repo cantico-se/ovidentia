@@ -959,7 +959,13 @@ function addDbContact($id, $fields)
 		var $name;
 		var $urlimg;
 		var $idgroup;
-		var $buserinfo;
+		
+		/**
+		 * The directory contain users or not
+		 * @var bool
+		 */
+		public $buserinfo;
+		
 		var $nickname;
 		var $password;
 		var $repassword;
@@ -1403,9 +1409,12 @@ function mapDbFile($id, $wsepar, $separ)
 
 			$encoding = bab_rp('encoding', 'ISO-8859-15');
 
-			$fd = fopen($pfile, "r");
-			$this->arr = bab_getStringAccordingToDataBase(fgetcsv( $fd, 4096, $separ), $encoding );
-			fclose($fd);
+			if (file_exists($pfile))
+			{
+				$fd = fopen($pfile, "r");
+				$this->arr = bab_getStringAccordingToDataBase(fgetcsv( $fd, 4096, $separ), $encoding );
+				fclose($fd);
+			}
 			$this->separ = bab_toHtml($separ);
 			$this->encoding = bab_toHtml($encoding);
 			}
@@ -1477,12 +1486,16 @@ function mapDbFile($id, $wsepar, $separ)
 	include_once $GLOBALS['babInstallPath'].'utilit/uploadincl.php';
 		
 	$fileObj = bab_fileHandler::upload('uploadf');
-	$tmpfile = $fileObj->importTemporary();
-	if (false === $tmpfile) {
-		$babBody->msgerror = bab_translate("Cannot create temporary file");
-		return;
+	if($fileObj)
+	{
+		$tmpfile = $fileObj->importTemporary();
+		if (false === $tmpfile) {
+			$babBody->msgerror = bab_translate("Cannot create temporary file");
+			return;
+		}
+	} elseif(isset($_POST['pfile'])) {
+		$tmpfile = bab_pp('pfile');
 	}
-
 	
 	$temp = new temp($id, $tmpfile, $wsepar, $separ);
 	$babBody->babecho(	bab_printTemplate($temp,"directory.html", "dbmapfile"));
@@ -1919,9 +1932,174 @@ function confirmAssignEntry($id, $fields, $idauser, $idatype)
 }
 
 
+
+class bab_processImportEmailUsers
+{
+	/**
+	 * 
+	 * @var int
+	 */
+	private $id_directory;
+	
+	/**
+	 * 
+	 * @var bab_Path
+	 */
+	private $file;
+	
+	/**
+	 * 
+	 * @param int $id_directory
+	 */
+	public function __construct($id_directory)
+	{
+		require_once dirname(__FILE__).'/utilit/path.class.php';
+		
+		$this->id_directory = $id_directory;
+		
+		// create a temporary file to store the created users
+		
+		$this->file = new bab_Path($GLOBALS['babUploadPath'], 'tmp');
+		$this->file->createDir();
+		$this->file->push(session_id().'_created_users.csv');
+		
+		if ($this->file->fileExists())
+		{
+			$this->file->delete();
+		}
+	}
+	
+	/**
+	 * Add a user to the temporary CSV file
+	 * @param int $id_user
+	 * @param string | null $password
+	 */
+	public function addUser($id_user, $password)
+	{
+		if (null !== $password)
+		{
+			$password = str_replace('"', '""', $password);
+		}
+		
+		$csvline = '"'.$id_user.'","'.((string) $password).'"'."\n";
+		return file_put_contents($this->file->tostring(), $csvline , FILE_APPEND);
+	}
+	
+	
+	/**
+	 * Display HTML page with progress
+	 */
+	public function displayProgress()
+	{
+		require_once dirname(__FILE__).'/utilit/install.class.php';
+		require_once dirname(__FILE__).'/utilit/session.class.php';
+		
+		$session = bab_getInstance('bab_Session');
+		$session->bab_directory_import_email_tmp_file = $this->file->getBasename();
+		
+		$t_upgrade = bab_translate('Send email notifications to the imported users');
+		$t_continue = bab_translate('Back to directory');
+		$frameurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=emailimported';
+		$nextpageurl = $GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$this->id_directory;
+		
+		bab_installWindow::getPage($t_upgrade, $frameurl, $t_continue, $nextpageurl);
+		
+		return true;
+	}
+	
+	
+	
+	public static function iframe()
+	{
+		require_once dirname(__FILE__).'/utilit/install.class.php';
+		
+		$frame = new bab_installWindow;
+		$frame->setStartMessage(bab_translate('Send an email for each created or updated account'));
+		$frame->setStopMessage(
+				bab_translate('Task done'),
+				bab_translate('No mail to send or all mail allready sent')
+		);
+		
+		$frame->startInstall(array(__CLASS__, 'iframe_process'));
+		die();
+	}
+	
+	
+	/**
+	 * iframe progress
+	 */
+	public static function iframe_process()
+	{
+		require_once dirname(__FILE__).'/utilit/path.class.php';
+		require_once dirname(__FILE__).'/utilit/session.class.php';
+		require_once dirname(__FILE__).'/utilit/userinfosincl.php';
+		require_once dirname(__FILE__).'/admin/register.php';
+		
+		$session = bab_getInstance('bab_Session');
+		
+		if (!isset($session->bab_directory_import_email_tmp_file))
+		{
+			return false;
+		}
+		
+		$file = new bab_Path($GLOBALS['babUploadPath'], 'tmp', $session->bab_directory_import_email_tmp_file);
+		if (!$file->fileExists())
+		{
+			return false;
+		}
+		
+		$fd = fopen($file->tostring(), "r");
+		if( $fd )
+		{
+			while ($arr = fgetcsv($fd, 1024))
+			{
+				if ($user = bab_userInfos::getRow($arr[0]))
+				{
+					$name = bab_composeUserName($user['firstname'], $user['lastname']);
+					$email = trim($user['email']);
+					if (empty($email))
+					{
+						bab_installWindow::message(sprintf(bab_translate('Error, empty email address for %s'), $name));
+						continue;
+					}
+					
+					
+					if (notifyAdminUserRegistration($name, $email, $user['nickname'], $arr[1]))
+					{
+						bab_installWindow::message(sprintf(bab_translate('Notification sent to %s'), $name));
+					} else {
+						bab_installWindow::message(sprintf(bab_translate('Error : failed to notify %s (%s)'), $name, $email));
+					}
+				}
+				
+				
+			}
+		}
+		
+		$file->delete();
+		unset($session->bab_directory_import_email_tmp_file);
+		return true;
+		
+	}
+}
+
+
+
+
+/***
+ * Import CSV file to database
+ */
 function processImportDbFile( $pfile, $id, $separ )
 	{
 	global $babBody, $babDB;
+	
+	
+	if (!file_exists($pfile))
+	{
+		$babBody->msgerror = bab_translate("No ongoing import");
+		return false;
+	}
+	
 
 	list($idgroup) = $babDB->db_fetch_array($babDB->db_query("select id_group from ".BAB_DB_DIRECTORIES_TBL." where id='".$babDB->db_escape_string($id)."'"));
 	if($idgroup > 0)
@@ -1957,7 +2135,7 @@ function processImportDbFile( $pfile, $id, $separ )
 
 	if( $idgroup > 0 )
 		{
-		if( empty($GLOBALS['password1']) || empty($GLOBALS['password2']) || mb_strlen($GLOBALS['nickname']) == 0)
+		if( '' == bab_rp('password1') || '' == bab_rp('password2') || mb_strlen(bab_rp('nickname')) == 0)
 			{
 			$babBody->msgerror = bab_translate("You must complete required fields");
 			return false;
@@ -1976,19 +2154,28 @@ function processImportDbFile( $pfile, $id, $separ )
 				$minPasswordLengh = 1;
 			}
 		}
-		if ( mb_strlen($GLOBALS['password1']) < $minPasswordLengh )
+		if ( mb_strlen(bab_rp('password1')) < $minPasswordLengh )
 			{
 			$babBody->msgerror = sprintf(bab_translate("Password must be at least %s characters !!"),$minPasswordLengh);
 			return false;
 			}
 
-		if( $GLOBALS['password1'] != $GLOBALS['password2'])
+		if( bab_rp('password1') != bab_rp('password2'))
 			{
 			$babBody->msgerror = bab_translate("Passwords not match !!");
 			return false;
 			}
-		$password1=md5(mb_strtolower($GLOBALS['password1']));
+		$password1=md5(mb_strtolower(bab_rp('password1')));
+		
+		
+
+		
+		if ('Y' == bab_rp('notifyuser'))
+		{
+			$email_users = new bab_processImportEmailUsers($id);
 		}
+		
+	}
 
 	$encoding = bab_rp('encoding', 'ISO-8859-15');
 
@@ -2018,7 +2205,7 @@ function processImportDbFile( $pfile, $id, $separ )
 					}
 				}
 
-			switch($GLOBALS['duphand'])
+			switch(bab_rp('duphand'))
 				{
 				case 1: // Replace duplicates with items imported
 				case 2: // Do not import duplicates
@@ -2032,7 +2219,7 @@ function processImportDbFile( $pfile, $id, $separ )
 						$res2 = $babDB->db_query($query);
 						if( $babDB->db_num_rows($res2) > 0 )
 							{
-							if( $GLOBALS['duphand'] == 2 )
+							if( 2 == bab_rp('duphand') )
 							{
 							break;
 							}
@@ -2078,13 +2265,15 @@ function processImportDbFile( $pfile, $id, $separ )
 										}
 									}
 								}
+								
+							$password3 = bab_rp('password3');
 
-							if( $GLOBALS['password3'] !== '')
+							if( $password3 !== '')
 								{
 									$pwd=false;
-									if (mb_strlen($arr[$GLOBALS['password3']]) >= 6)
+									if (mb_strlen($arr[$password3]) >= 6)
 									{
-										$pwd = md5(mb_strtolower($arr[$GLOBALS['password3']]));
+										$pwd = md5(mb_strtolower($arr[$password3]));
 									}
 								}
 							else
@@ -2121,6 +2310,13 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								bab_addUserToGroup($rrr['id'], $idgroup);
 								}
+								
+								
+							if (isset($email_users))
+							{
+								$emailpwd = ($pwd && 'Y' === bab_rp('sendpwd')) ? $pwd : null;
+								$email_users->addUser($rrr['id'], $pwd);
+							}
 
 							break;
 							}
@@ -2130,7 +2326,7 @@ function processImportDbFile( $pfile, $id, $separ )
 						$res2 = $babDB->db_query("select id from ".BAB_DBDIR_ENTRIES_TBL." where givenname='".$babDB->db_escape_string($arr[$GLOBALS['givenname']])."' and sn='".$babDB->db_escape_string($arr[$GLOBALS['sn']])."' and id_directory='".$babDB->db_escape_string($id)."'");
 						if( $res2 && $babDB->db_num_rows($res2 ) > 0 )
 							{
-							if( $GLOBALS['duphand'] == 2 )
+							if( 2 == bab_rp('duphand') )
 								break;
 							else
 								{
@@ -2184,8 +2380,10 @@ function processImportDbFile( $pfile, $id, $separ )
 							break;
 							}
 						}
-					/* no break; */
-				case 0: // Allow duplicates to be created
+						
+				/* no break; */
+						
+				case 0: // Allow duplicates to be created or create a new entry
 					$req = "";
 					$arrv = array();
 					for( $k =0; $k < count($arrnamef); $k++ )
@@ -2229,7 +2427,13 @@ function processImportDbFile( $pfile, $id, $separ )
 								{
 								bab_addUserToGroup($iduser, $idgroup);
 								}
+								
+							if (isset($email_users))
+							{
+								$emailpwd = ('Y' === bab_rp('sendpwd')) ? $pwd : null;
+								$email_users->addUser($iduser, $emailpwd);
 							}
+						}
 
 						if( count($arridfx) > 0 )
 							{
@@ -2247,6 +2451,11 @@ function processImportDbFile( $pfile, $id, $separ )
 			}
 		fclose($fd);
 		unlink($pfile);
+		}
+		
+		if (isset($email_users))
+		{
+			return $email_users->displayProgress();
 		}
 
 		header('location:'.$GLOBALS['babUrlScript'].'?tg=directory&idx=sdbovml&directoryid='.$id);
@@ -3021,7 +3230,12 @@ $idx = bab_rp('idx', 'list');
 
 if( ('' != bab_pp('pfile')) && bab_isAccessValid(BAB_DBDIRIMPORT_GROUPS_TBL, $id))
 	{
-	processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ'));
+	if (!processImportDbFile(bab_pp('pfile'), $id, bab_pp('separ')))
+		{
+			$idx = 'dbmap';
+		} else {
+			return;
+		}
 	}
 
 if( ('Yes' ==  bab_gp('action'))  && bab_isAccessValid(BAB_DBDIREMPTY_GROUPS_TBL, $id))
@@ -3316,6 +3530,11 @@ switch($idx)
 			{
 			$babBody->addItemMenu('empdb', bab_translate("Empty"), $GLOBALS['babUrlScript']."?tg=directory&idx=empdb&id=".$id);
 			}
+		break;
+		
+	case 'emailimported':
+		bab_processImportEmailUsers::iframe();
+		exit;
 		break;
 
 	case 'list':

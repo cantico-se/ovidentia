@@ -199,6 +199,11 @@ class bab_fileHandler {
 	 */
 	public function importTemporary() {
 
+		if (!file_exists($GLOBALS['babUploadPath'].'/tmp'))
+		{
+			bab_mkdir($GLOBALS['babUploadPath'].'/tmp');
+		}
+		
 		$temporaryPathToFile = $GLOBALS['babUploadPath'].'/tmp/'.session_id().'_'.$this->filename;
 		if ($this->import($temporaryPathToFile)) {
 			$this->source	= $temporaryPathToFile;

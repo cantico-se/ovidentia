@@ -3316,4 +3316,14 @@
 <string id="%s is unavailable from %s to %s with %s as substitute">%s n'est pas disponible du %s au %s avec %s comme suppléant</string>
 <string id="This substitute is not available for this period">Ce suppléant n'est pas disponible pour cette période</string>
 <string id="This page does not exists">Cette page n'existe pas</string>
+<string id="No ongoing import">Pas d'import en cours</string>
+<string id="Task done">Tâche effectuée</string>
+<string id="Error : failed to notify %s (%s)">Erreur : la notification de %s à échouée (%s)</string>
+<string id="Notification sent to %s">Notification envoyée à %s</string>
+<string id="Error, empty email address for %s">Erreur, l'adresse email est vide pour %s</string>
+<string id="No mail to send or all mail allready sent">Pas d'email a envoyer ou tout les mails ont déjà été envoyés</string>
+<string id="Back to directory">Retour à l'annuaire</string>
+<string id="Send email notifications to the imported users">Envoi des notifications vers les utilisateurs importés</string>
+<string id="Send an email for each created or updated account">Envoyer un email pour chaque compte créé ou mis a jour</string>
+
 </fr>

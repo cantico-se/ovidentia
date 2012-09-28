@@ -452,6 +452,27 @@ class bab_Path implements SeekableIterator, Countable {
 	{
 		return is_dir($this->toString());
 	}
+	
+	/**
+	 * Test if file is a real file
+	 * @since 7.8.92
+	 * @return boolean
+	 */
+	public function isFile()
+	{
+		return is_file($this->toString());
+	}
+	
+	
+	/**
+	 * Test if the file exists
+	 * @since 7.8.92
+	 * @return boolean
+	 */
+	public function fileExists()
+	{
+		return file_exists($this->toString());
+	}
 
 
 
@@ -724,12 +745,49 @@ class bab_Path implements SeekableIterator, Countable {
 
 		return $result;
 	}
+	
+	
+	/**
+	 * Delete directory of file
+	 * @since 7.8.92
+	 * @throws bab_FileAccessRightsException, ErrorException
+	 * 
+	 * @return bool
+	 */
+	public function delete() {
+		if ($this->isDir())
+		{
+			return $this->deleteDir();
+		}
+		
+		if ($this->isFile())
+		{
+			if (!is_writable($this->toString()))
+			{
+				throw new bab_FileAccessRightsException(sprintf(bab_translate('The file %s is not writable'), $this->getBasename()));
+			}
+			
+			if (!unlink($this->toString()))
+			{
+				throw new ErrorException(sprintf('failed to delete %s', $this->getBasename()));
+			}
+			
+			return true;
+		}
+		
+		throw new ErrorException(sprintf(bab_translate('The file %s does not exists'), $this->getBasename()));
+		return false;
+	}
+}
+
+/**
+ * @since 7.8.92
+ */
+class bab_FileAccessRightsException extends Exception {
+	
 }
 
 
-
-
-
-class bab_FolderAccessRightsException extends Exception {
+class bab_FolderAccessRightsException extends bab_FileAccessRightsException {
 
 }

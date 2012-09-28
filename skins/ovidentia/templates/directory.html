@@ -596,15 +596,26 @@ function selectAll(list)
 </td>
 </tr>
 <!--#endin getnextfield -->
+<!--#if buserinfo -->
+<tr> 
+	<td align="right">{ notifyuser }</td>
+	<td><select name="notifyuser"><option value="Y">{ yes }</option><option value="N" selected="selected">{ no }</option></select></td>
+</tr>
+<tr> 
+	<td align="right">{ sendpassword }</td>
+	<td ><select name="sendpwd"><option value="Y" selected="selected">{ yes }</option><option value="N">{ no }</option></select></td>
+</tr>
+<!--#endif buserinfo -->
+
 <tr> 
 	<td width="50%" align="right">{ handling }</td>
 	<td width="50%" align="left">
 	<!--#if buserinfo -->
 	<!--#else buserinfo -->
-	<input type="radio" name="duphand" value="0">{ duphand0 }<br>
+	<input type="radio" name="duphand" value="0" />{ duphand0 }<br>
 	<!--#endif buserinfo -->
-	<input type="radio" name="duphand" value="1" checked>{ duphand1 }<br>
-	<input type="radio" name="duphand" value="2">{ duphand2 }<br>
+	<input type="radio" name="duphand" value="1" checked="checked" />{ duphand1 }<br>
+	<input type="radio" name="duphand" value="2" />{ duphand2 }<br>
 	</td>
 </tr>
 <tr>
